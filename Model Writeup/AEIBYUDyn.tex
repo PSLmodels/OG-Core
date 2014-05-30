@@ -82,7 +82,38 @@
 
 \section{Details of the Macro Model}\label{SecMacro}
 
-We use a model based heavily on \citet{ZodrowDiamond:2013}.
+  We use a model based heavily on \citet{ZodrowDiamond:2013}.
+
+  \subsection{Households}
+
+  \begin{equation}
+  LU_t(a,\gamma) = \frac{1}{1-1/\sigma_U} \left[ \sum_{s=t}^{t+T-a-1} \frac{U_s(a,\gamma)^{1-1/\sigma_U}}{(1+\rho)^{s-t}} + \frac{1}{(1+\rho)^{T-a-1}} \alpha_B(\gamma)B_{t+T-a-1}(a,\gamma)^{1-1/\sigma_U} \right]
+  \end{equation}
+  where $LU_t(a,\gamma)$ is utility for a household of age $a$ and ability level $\gamma$ in period $t$, $U_t(a,\gamma)$ is within-period utility for a household of age $a$ and ability level $\gamma$ in period $t$, $B_{t+T-a-1}(a,\gamma)$ is the bequest left by a houshold of age $a$ and ability level $\gamma$ when it dies in period $t+T-a-1$.  $\sigma_U$ is the intertemporal elasticity of substitution for utility across periods, and $rho$ is the pure rate of time preference.
+
+  Within-period utility depends on consumptions of composite goods $CH$ and leisure $LE$.
+  \begin{equation}
+  U_s(a,\gamma) = \left[ \alpha_u^{1/\sigma_u} CH_s(a,\gamma)^{1-1/\sigma_u} + (1-\alpha_u)^{1/\sigma_u} LE_s(a,\gamma)^{1-1/\sigma_u}\right]^{\frac{\sigma_u}{\sigma_u-1}}
+  \end{equation}
+
+  Composite goods are made up of housing goods $HR$ and non-housing goods $CN$.
+  \begin{equation}
+  CH_s(a,\gamma) = \left[ \alpha_H^{1/\sigma_H} CN_s(a,\gamma)^{1-1/\sigma_H} + (1-\alpha_H)^{1/\sigma_H} HR_s(a,\gamma)^{1-1/\sigma_H}\right]^{\frac{\sigma_H}{\sigma_H-1}}
+  \end{equation}
+
+  Non-housing goods are made up of those produced by the corporate secotor $C$ and non-corporate sector $N$.
+  \begin{equation}
+  CN_s(a,\gamma) = \left[ \alpha_N^{1/\sigma_N} [C_s(a,\gamma)-b_s^C(a,\gamma)]^{1-1/\sigma_N} + (1-\alpha_N)^{1/\sigma_N} [N_s(a,\gamma)-b_s^N(a,\gamma)]^{1-1/\sigma_N} \right]^{\frac{\sigma_N}{\sigma_N-1}}
+  \end{equation}
+
+  Housing goods are made up of owner-occupied housing $H$ and rental housing $R$.
+  \begin{equation}
+  HR_s(a,\gamma) = \left[ \alpha_R{1/\sigma_R} [H_s(a,\gamma)-b_s^H(a,\gamma)]^{1-1/\sigma_R} + (1-\alpha_R)^{1/\sigma_R} [R_s(a,\gamma)-b_s^R(a,\gamma)]^{1-1/\sigma_R} \right]^{\frac{\sigma_R}{\sigma_R-1}}
+  \end{equation}
+
+  \subsection{Firms}
+
+  \subsection{Market Clearing}
 
 \section{Incorporating Feedbacks with Micro Tax Simulations}\label{SecMicro}
 
