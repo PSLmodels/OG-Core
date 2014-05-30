@@ -1,0 +1,116 @@
+\documentclass[letterpaper,12pt]{article}
+
+  \usepackage{threeparttable}
+  \usepackage{geometry}
+  \geometry{letterpaper,tmargin=1in,bmargin=1in,lmargin=1.25in,rmargin=1.25in}
+  \usepackage[format=hang,font=normalsize,labelfont=bf]{caption}
+  \usepackage{amsmath}
+  \usepackage{multirow}
+  \usepackage{array}
+  \usepackage{delarray}
+  \usepackage{amssymb}
+  \usepackage{amsthm}
+  \usepackage{lscape}
+  \usepackage{natbib}
+  \usepackage{setspace}
+  \usepackage{float,color}
+  \usepackage[pdftex]{graphicx}
+  \usepackage{hyperref}
+  \usepackage{placeins}
+  \hypersetup{colorlinks,linkcolor=red,urlcolor=blue,citecolor=red}
+  \theoremstyle{definition}
+  \newtheorem{theorem}{Theorem}
+  \newtheorem{acknowledgement}[theorem]{Acknowledgement}
+  \newtheorem{algorithm}[theorem]{Algorithm}
+  \newtheorem{axiom}[theorem]{Axiom}
+  \newtheorem{case}[theorem]{Case}
+  \newtheorem{claim}[theorem]{Claim}
+  \newtheorem{conclusion}[theorem]{Conclusion}
+  \newtheorem{condition}[theorem]{Condition}
+  \newtheorem{conjecture}[theorem]{Conjecture}
+  \newtheorem{corollary}[theorem]{Corollary}
+  \newtheorem{criterion}[theorem]{Criterion}
+  \newtheorem{definition}{Definition} % Number definitions on their own
+  \newtheorem{derivation}{Derivation} % Number derivations on their own
+  \newtheorem{example}[theorem]{Example}
+  \newtheorem{exercise}[theorem]{Exercise}
+  \newtheorem{lemma}[theorem]{Lemma}
+  \newtheorem{notation}[theorem]{Notation}
+  \newtheorem{problem}[theorem]{Problem}
+  \newtheorem{proposition}{Proposition} % Number propositions on their own
+  \newtheorem{remark}[theorem]{Remark}
+  \newtheorem{solution}[theorem]{Solution}
+  \newtheorem{summary}[theorem]{Summary}
+  \numberwithin{equation}{section}
+  \bibliographystyle{aer}
+  \newcommand\ve{\varepsilon}
+  \renewcommand\theenumi{\roman{enumi}}
+  \providecommand{\norm}[1]{\lVert#1\rVert}
+
+\begin{document}
+
+%titlepage
+\begin{titlepage}
+  \title{Dyanmic General Equilibrim Tax Scoring with Micro Tax Simulations
+         \thanks{} }
+
+  \author{ Richard W. Evans\footnote{Brigham Young University, Department of Economics, 167 FOB, Provo, Utah 84602, (801) 422-8303, \href{mailto:revans@byu.edu}{revans@byu.edu}.} \\[-2pt]
+         \and
+         Kerk L. Phillips\footnote{Brigham Young University, Department of Economics, 166 FOB, Provo, Utah 84602, \href{mailto:kerk_phillips@byu.edu}{kerk\_phillips@byu.edu}.} \\[-2pt]}
+  \date{June 2014 \\
+        \scriptsize{(version 14.06.a)}\\
+        \small Preliminary and incomplete; please do not cite.}
+  \maketitle
+  \begin{abstract}
+  \small{This paper ...
+
+  \vspace{0.3in}
+
+  \textit{keywords:} dynamic general equilibrium, taxation, numerical simulation, computational techniques, simulation modeling.
+
+  \vspace{0.3in}
+
+  \textit{JEL classifications:} C63, C68, E62, H24, H25, H68}
+  \end{abstract}
+  \thispagestyle{empty}
+\end{titlepage}
+
+\begin{spacing}{1.5}
+
+
+\section{Introduction}\label{SecIntro}
+
+\section{Details of the Macro Model}\label{SecMacro}
+
+We use a model based heavily on \citet{ZodrowDiamond:2013}.
+
+\section{Incorporating Feedbacks with Micro Tax Simulations}\label{SecMicro}
+
+\section{Conclusion}\label{SecConclusion}
+
+
+\end{spacing}
+
+
+\newpage
+\renewcommand{\theequation}{A.\arabic{section}.\arabic{equation}}
+                                                 % redefine the command that creates the equation number
+\renewcommand{\thedefinition}{A.\arabic{section}.\arabic{definition}}
+                                                 % redefine the command that creates the definition number
+\renewcommand{\thesection}{A-\arabic{section}}   % redefine the command that creates the section number
+
+\setcounter{equation}{0}                         % reset counter
+\setcounter{section}{0}                          % reset section number
+\section*{TECHNICAL APPENDICES}
+
+\setcounter{definition}{0}
+\setcounter{equation}{0}                         % reset counter
+
+
+
+
+\newpage
+\bibliography{AEIBYUDyn}
+
+
+\end{document}
