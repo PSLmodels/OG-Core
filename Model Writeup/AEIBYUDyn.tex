@@ -82,33 +82,94 @@
 
 \section{Details of the Macro Model}\label{SecMacro}
 
-  We use a model based heavily on \citet{ZodrowDiamond:2013}.
+  We use a model based heavily on \citet{ZodrowDiamond:2013} which we refer to hereafter as the DZ model.
 
   \subsection{Households}
+  Households differ along two dimensions: age and earnings ability, indexed by $a$ and $\gamma$.  Households enter the model at age $a=1$ and all die at age $a=T$.  In the DZ model $T=55$ and households enter the labor force at age twenty-three.  This implies that all households die at age seventy-eight.
 
+  Earnings ability is divided into ten deciles, the top and bottom of which are further subdivided into the top two and bottom two pecent and the remaining eight percent for that decile.  This gives us values for $\gamma \in \{\gamma_1, \gamma_2, \dots, \gamma_{12} \}$.
+
+  We therefore have $T\times 12$ different households alive each period.  This is 660 for the DZ model.
+
+
+  Lifetime utility is given by the equation below.
   \begin{equation}
   LU_t(a,\gamma) = \frac{1}{1-1/\sigma_U} \left[ \sum_{s=t}^{t+T-a-1} \frac{U_s(a,\gamma)^{1-1/\sigma_U}}{(1+\rho)^{s-t}} + \frac{1}{(1+\rho)^{T-a-1}} \alpha_B(\gamma)B_{t+T-a-1}(a,\gamma)^{1-1/\sigma_U} \right]
   \end{equation}
-  where $LU_t(a,\gamma)$ is utility for a household of age $a$ and ability level $\gamma$ in period $t$, $U_t(a,\gamma)$ is within-period utility for a household of age $a$ and ability level $\gamma$ in period $t$, $B_{t+T-a-1}(a,\gamma)$ is the bequest left by a houshold of age $a$ and ability level $\gamma$ when it dies in period $t+T-a-1$.  $\sigma_U$ is the intertemporal elasticity of substitution for utility across periods, and $rho$ is the pure rate of time preference.
+  where $LU_t(a,\gamma)$ is total remaining lifetime utility for a household of age $a$ and ability level $\gamma$ in period $t$, $U_t(a,\gamma)$ is within-period utility for a household of age $a$ and ability level $\gamma$ in period $t$, $B_{t+T-a-1}(a,\gamma)$ is the bequest left by a houshold of age $a$ and ability level $\gamma$ when it dies in period $t+T-a-1$.  $\sigma_U$ is the intertemporal elasticity of substitution for utility across periods, and $rho$ is the pure rate of time preference.
 
-  Within-period utility depends on consumptions of composite goods $CH$ and leisure $LE$.
+  Within-period utility depends on consumptions of composite goods ($CH$) and leisure ($LE$).
   \begin{equation}
   U_s(a,\gamma) = \left[ \alpha_u^{1/\sigma_u} CH_s(a,\gamma)^{1-1/\sigma_u} + (1-\alpha_u)^{1/\sigma_u} LE_s(a,\gamma)^{1-1/\sigma_u}\right]^{\frac{\sigma_u}{\sigma_u-1}}
   \end{equation}
 
-  Composite goods are made up of housing goods $HR$ and non-housing goods $CN$.
+  Composite goods are made up of housing goods ($HR$) and non-housing goods ($CN$).
   \begin{equation}
   CH_s(a,\gamma) = \left[ \alpha_H^{1/\sigma_H} CN_s(a,\gamma)^{1-1/\sigma_H} + (1-\alpha_H)^{1/\sigma_H} HR_s(a,\gamma)^{1-1/\sigma_H}\right]^{\frac{\sigma_H}{\sigma_H-1}}
   \end{equation}
 
-  Non-housing goods are made up of those produced by the corporate secotor $C$ and non-corporate sector $N$.
+  Non-housing goods are made up of those produced by the corporate secotor ($C$) and non-corporate sector ($N$).
   \begin{equation}
   CN_s(a,\gamma) = \left[ \alpha_N^{1/\sigma_N} [C_s(a,\gamma)-b_s^C(a,\gamma)]^{1-1/\sigma_N} + (1-\alpha_N)^{1/\sigma_N} [N_s(a,\gamma)-b_s^N(a,\gamma)]^{1-1/\sigma_N} \right]^{\frac{\sigma_N}{\sigma_N-1}}
   \end{equation}
 
-  Housing goods are made up of owner-occupied housing $H$ and rental housing $R$.
+  Housing goods are made up of owner-occupied housing ($H$) and rental housing ($R$).
   \begin{equation}
   HR_s(a,\gamma) = \left[ \alpha_R{1/\sigma_R} [H_s(a,\gamma)-b_s^H(a,\gamma)]^{1-1/\sigma_R} + (1-\alpha_R)^{1/\sigma_R} [R_s(a,\gamma)-b_s^R(a,\gamma)]^{1-1/\sigma_R} \right]^{\frac{\sigma_R}{\sigma_R-1}}
+  \end{equation}
+
+  This completes the description of the household's utility function.  There are four fundamental goods consumed: $C$, $N$, $H$ and $R$ along with consumption of leisure, $LE$.  The utility parameters are: $\rho$, $\sigma_U$, $\sigma_C$, $\sigma_H$, $\sigma_N$, $\sigma_R$, $\alpha_B$, $\alpha_C$, $\alpha_H$, $\alpha_N$, $\alpha_R$, $\{b_s^C(a,\gamma_i)\}_{a=1,i=1}^{T,12}$, $\{b_s^N(a,\gamma_i)\}_{a=1,i=1}^{T,12}$, $\{b_s^H(a,\gamma_i)\}_{a=1,i=1}^{T,12}$, $\{b_s^R(a,\gamma_i)\}_{a=1,i=1}^{T,12}$.
+
+  The households remaining lifetime budget constraint is given by the equation below.
+  \begin{equation}
+  TDW_t(a,\gamma) = TDE_t(a,\gamma)
+  \end{equation}
+  where $TDW$ stands for total discretionary wealth and $TDE$ is total discretionary expenditure.
+
+  \begin{equation}
+  TDE_t(a,\gamma) = \sum_{s=1}^{t+T-1-a} \sum_{j\in\{C,N,H,R\}}p_s^j(1+\tau_{vs}^j)j_s D_s
+  \end{equation}
+  $\tau_{vs}^j$ is the value added tax (VAT) on good $j$ in period $s$.
+  \begin{equation}
+  D_s = \left\{ \begin{matrix} \prod_{u=t+1}^s\frac{1}{1+r_u} & \text{if }s>t \\ 1 & \text{otherwise} \end{matrix}\right.
+  \end{equation}
+  \begin{equation}
+  \tau_{vs}^j = \tau_{vs} f_{vs}^j; j\in\{C,N,H,R\}
+  \end{equation}
+  where $f_{vs}^j$ is the proportion of goods in category $j$ subject to the VAT
+
+  \begin{equation}
+  \begin{split}
+  TDW_t(a,\gamma) & = A_t(a,\gamma)(1+r_t) + TRA_t(a,\gamma)(1+i_t) \\
+  & + \sum_{s=t}^{t+T-1-a} D_s w_s(a,\gamma) [HT_s(a,\gamma) - LE_s(a,\gamma)] - D_s LIT_s(a,\gamma) - D_s SST_s(a,\gamma) \\
+  & + \sum_{s=t}^{t+T-1-a} D_s SSB_s(a,\gamma)[1-\tau_{bs}(\gamma)] - D_s RS(\gamma)\\
+  & + \sum_{s=t}^{t+T-1-a} D_s WD_s(a,\gamma)[1-s_d\tau_{rs}(\gamma)] + D_s TR_s(a,\gamma) + D_s LSR_S(a,\gamma)
+  \end{split}
+  \end{equation}
+
+  $LIT$ is the labor income tax, $SST$ is the social security tax, $SSB$ is social security benefits, $\tau_{bs}$ is the tax rate on social security benefits is period $s$, $RS$ is retirement savings which is a constant amount each year the household is not retired, $WD$ is withdrawls from retirement accounts, $TR$ is transfers received, $LSR$ is lump sum rebates received.
+
+  \begin{equation}
+  r_u = i_u(1-\tau_{iu})
+  \end{equation}
+  where $\tau{iu}$ is the tax on interest income in period $u.$
+
+  \begin{equation}
+  TRA_s(a,\gamma) = TDA_s(a,\gamma) + TPA(a,\gamma)
+  \end{equation}
+  where $TDA$ is tax-deferred assets and $TPA$ is tax-prepaid assets.
+
+  \begin{equation}
+  WD_s(a,\gamma) = \left\{ \begin{matrix} 0 & \text{if }a\le R \\ \frac{1}{T+1-a} TRA_s(a,\gamma)& \text{otherwise} \end{matrix}\right.
+  \end{equation}
+
+  \begin{equation}
+  LIT_s(a,\gamma) = \psi_sLIB_s(a,\gamma) + \frac{\chi_s}{2} LIB_s(a,\gamma)^2
+  \end{equation}
+  where $LIB$ is the labor income base, defined below.
+
+  \begin{equation}
+  LIB_s(a,\gamma) = w_s(a,\gamma) [HT_s(a,\gamma) - LE_s(a,\gamma)] - DED_s(a,\gamma) - s_d RS(\gamma)
   \end{equation}
 
   \subsection{Firms}
@@ -116,6 +177,14 @@
   \subsection{Market Clearing}
 
 \section{Incorporating Feedbacks with Micro Tax Simulations}\label{SecMicro}
+
+  We take a guess for the time-path of the four capital stocks.  This gives us a time path for interest rates and wage rates from the macro model.  Given this time series of prices we solve for the planned behavior of each subcohort over its lifetime.  When calculating the taxes paid we use the tax code from TaxSim and the large sample from the micro simulations.  We collapse this into bins and get averages for each of the $12T$ types of individuals in the macro model.  We follow the evolution of $12T$ types over the entire history of the economy until the steady state is reached.  This gives us savings and hence updates of the 4 capital stocks.  We use time-path iteration to get the transition path.  We save current period behavior and move to the next period.
+
+  In the next period we use an aged distribution of the previous period's large set of individuals and proceed as above.
+
+  This is very costly computationally.  We can parallelize over the $12T$ individuals, but everything else must be serial.
+
+
 
 \section{Conclusion}\label{SecConclusion}
 
