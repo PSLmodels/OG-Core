@@ -178,12 +178,27 @@
 
 \section{Incorporating Feedbacks with Micro Tax Simulations}\label{SecMicro}
 
-  We take a guess for the time-path of the four capital stocks.  This gives us a time path for interest rates and wage rates from the macro model.  Given this time series of prices we solve for the planned behavior of each subcohort over its lifetime.  When calculating the taxes paid we use the tax code from TaxSim and the large sample from the micro simulations.  We collapse this into bins and get averages for each of the $12T$ types of individuals in the macro model.  We follow the evolution of $12T$ types over the entire history of the economy until the steady state is reached.  This gives us savings and hence updates of the 4 capital stocks.  We use time-path iteration to get the transition path.  We save current period behavior and move to the next period.
-
-  In the next period we use an aged distribution of the previous period's large set of individuals and proceed as above.
-
-  This is very costly computationally.  We can parallelize over the $12T$ individuals, but everything else must be serial.
-
+  Follow this algorthim:
+  \begin{itemize}
+    \item Period 1
+    \begin{itemize}
+      \item Use current IRS public use sample.
+      \item Run the following within-period routine
+      \begin{itemize}
+        \item Do the static tax analysis of this sample, save the results
+        \item Summarize the public use sample by aggregating into bins over age and earnings ability
+        \item Use this as a starting point for the dynamic macro model
+        \item Get values for fundamental interest rates and effective wages for next period
+      \end{itemize}
+    \end{itemize}
+  \item Period 2
+    \begin{itemize}
+      \item “Age” the public use data demographically by one year.
+      \item Let wages and interest rates rise by the amounts predicted in the macro model.
+      \item Rerun the within-period routine
+    \end{itemize}
+  \item Iterate over periods until end of forecast period is reached.
+  \end{itemize}
 
 
 \section{Conclusion}\label{SecConclusion}

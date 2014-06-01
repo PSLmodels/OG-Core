@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.2.27)  30 MAY 2014 21:35
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.2.27)  31 MAY 2014 19:03
 entering extended mode
 **C:/Users/klp4/Bitbucket/aei-byu-dynamic-tax-scoring/Model*Writeup/AEIBYUDyn.t
 ex
@@ -487,29 +487,44 @@ Overfull \hbox (19.44434pt too wide) in paragraph at lines 148--148
 [] 
  []
 
-[3] [4] [5] [6]
+[3]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 183.
+
+ ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\omscmr.fd"
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 183.
+Missing character: There is no ‚ in font cmr12!
+Missing character: There is no Ä in font cmr12!
+Missing character: There is no ú in font cmr12!
+Missing character: There is no ‚ in font cmr12!
+Missing character: There is no Ä in font cmr12!
+Missing character: There is no ù in font cmr12!
+ [4] [5]
+[6]
 ("C:\Users\klp4\Bitbucket\aei-byu-dynamic-tax-scoring\Model Writeup\AEIBYUDyn.b
 bl")
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 216.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 231.
  [7]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 216.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 231.
 
 ("C:\Users\klp4\Bitbucket\aei-byu-dynamic-tax-scoring\Model Writeup\AEIBYUDyn.a
 ux")
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 216.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 216.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 231.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 231.
 Package rerunfilecheck Info: File `AEIBYUDyn.out' has not changed.
 (rerunfilecheck)             Checksum: BA9A4BC492F18F2199744A6970A18116;422.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 216.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 231.
  ) 
 Here is how much of TeX's memory you used:
- 8051 strings out of 493921
- 119654 string characters out of 3144879
+ 8069 strings out of 493921
+ 119978 string characters out of 3144879
  206762 words of memory out of 3000000
- 11208 multiletter control sequences out of 15000+200000
+ 11223 multiletter control sequences out of 15000+200000
  15596 words of font info for 60 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 36i,15n,38p,854b,395s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 36i,15n,38p,587b,517s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx10.pfb>
 <C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C
 :/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/
@@ -527,7 +542,7 @@ X 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files (x86)/MiKTeX
 nts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts
 /type1/public/amsfonts/cm/cmti10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/t
 ype1/public/amsfonts/cm/cmti12.pfb>
-Output written on AEIBYUDyn.pdf (8 pages, 227870 bytes).
+Output written on AEIBYUDyn.pdf (8 pages, 228245 bytes).
 PDF statistics:
  165 PDF objects out of 1000 (max. 8388607)
  33 named destinations out of 1000 (max. 500000)
