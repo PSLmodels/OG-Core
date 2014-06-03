@@ -200,6 +200,50 @@
   \item Iterate over periods until end of forecast period is reached.
   \end{itemize}
 
+\section{Calibration}
+  \subsection{Tax Bend Points}
+      We use IRS data which summarizes individual tax returns for 2011 by 19 income categories and 4 filing statuses.  For each filing status we fit the mapping from reported income into adjusted gross income (AGI) using a sufficiently high-order polynomial.  We then use this function to solve for the income level which corresponds to each of the five bend points in the tax code for each filing type.
+      \begin{table}[ht]
+        \caption{AGI and Income Bend Points}
+        \label{Calib_Bend_Tab1}
+        \centering
+        AGI Bend Points
+        \begin{tabular}{|r|r|r|r|r|} \hline 
+          Tax rate & Married Joint & Married Separate & Head of Household & Single \\ \hline 
+          10\% & 17,400 & 8700 & 12,400 & 8700 \\ \hline 
+          15\% & 70,700 & 35,350 & 47,350 & 35,350 \\ \hline 
+          25\% & 142,700 & 71,350 & 122,300 & 85,650 \\ \hline 
+          28\% & 217,450 & 108,725 & 198,050 & 178,650 \\ \hline 
+          33\% & 388,350 & 194,175 & 388,350 & 388,350 \\ \hline 
+        \end{tabular}
+        \\
+        Corresponding Reported Income Bendpoints
+        \begin{tabular}{|r|r|r|r|r|} \hline 
+          Tax rate & Married Joint & Married Separate & Head of Household & Single \\ \hline 
+          0\%  & 5850  & 91 & 756 & 1435 \\ \hline 
+          10\% & 22,932 & 8591 & 12,911 & 9956 \\ \hline 
+          15\% & 75,181 & 34,592 & 47,023 & 36,021 \\ \hline 
+          25\% & 145,866 & 69,768 & 120,200 & 85,244 \\ \hline 
+          28\% & 219,162 & 106,245 & 194,176 & 176,270 \\ \hline 
+          33\% & 386,798 & 189,674 & 380,043 & 381,524 \\ \hline 
+        \end{tabular}
+      \end{table}
+
+      We then fit a bivariate probabililty density function over income and filing type from the data.  For each bendpoint we calculate the probability density at that bendpoint and use these as weights in a weighted average over filing types to generate an aggregate bendpoint.
+      \begin{table}[ht]
+        \caption{Aggregated Bend Points}
+        \label{Calib_Bend_Tab2}
+        \centering
+        \begin{tabular}{|r|r|} \hline 
+          Tax rate & Bend Point \\ \hline 
+          0\% & 2889 \\ \hline 
+          10\% & 15,116 \\ \hline 
+          15\% & 52,580 \\ \hline 
+          25\% & 114,552 \\ \hline 
+          28\% & 196,201 \\ \hline 
+          33\% & 380,657 \\ \hline 
+        \end{tabular}
+      \end{table}
 
 \section{Conclusion}\label{SecConclusion}
 
@@ -216,7 +260,7 @@
 
 \setcounter{equation}{0}                         % reset counter
 \setcounter{section}{0}                          % reset section number
-\section*{TECHNICAL APPENDICES}
+\section*{TECHNICAL APPENDIX}
 
 \setcounter{definition}{0}
 \setcounter{equation}{0}                         % reset counter
