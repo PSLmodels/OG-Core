@@ -3,6 +3,12 @@
 \fi
 \begin{thebibliography}{xx}
 
+\harvarditem[Evans and Phillips]{Evans and Phillips}{2014}{EvansPhillips2014}
+{\bf Evans, Richard~W. and Kerk~L. Phillips}, ``Linearization about the Current
+  State: A Computational Method for Approximating Nonlinear Policy Functions
+  during Simulation,'' Technical Report, Brigham Young University Department of
+  Economics 2014.
+
 \harvarditem[Zodrow and Diamond]{Zodrow and Diamond}{2013}{ZodrowDiamond:2013}
 {\bf Zodrow, George~R. and John~W. Diamond}, {\it Handbook of CGE Modeling -
   Vol. I}, North Holland,

@@ -82,99 +82,79 @@
 
 \section{Details of the Macro Model}\label{SecMacro}
 
-  We use a model based heavily on \citet{ZodrowDiamond:2013} which we refer to hereafter as the DZ model.
+  We use a model based initially on that from \citet{EvansPhillips2014} and incorporate many of the features of \citet{ZodrowDiamond:2013} which we refer to hereafter as the DZ model.
 
-  \subsection{Households}
-  Households differ along two dimensions: age and earnings ability, indexed by $a$ and $\gamma$.  Households enter the model at age $a=1$ and all die at age $a=T$.  In the DZ model $T=55$ and households enter the labor force at age twenty-three.  This implies that all households die at age seventy-eight.
+  \subsection{Baseline Model}
+    For our first baseline model we take \citet{EvansPhillips2014} and add a leisure-labor decision, while removing the switching of ability from period to period.  Hence all workers remain the same type throughout their lifetime.  Agents live for $S$ periods and exogenously retire in period $R$.  This is a perfect foresight model.
 
-  Earnings ability is divided into ten deciles, the top and bottom of which are further subdivided into the top two and bottom two pecent and the remaining eight percent for that decile.  This gives us values for $\gamma \in \{\gamma_1, \gamma_2, \dots, \gamma_{12} \}$.
+    Housholds maximize utility as given in the equation below.
+    \begin{equation}
+    U_{ist} = \sum_{u=0}^{S-s}\beta^u u(c_{i,s+u,t+u},\ell_{i,s+u,t+u});\text{ where }u(c,\ell) = \frac{c^{1-\gamma}-1}{1-\gamma} - \eta \frac{\ell^{1-\xi}-1}{1-\xi}
+    \end{equation}
+    $U_{ist}$ is the remaining lifetime utility of a household with ability level $i$ of age $s$ in period $t$.  $c$ denotes consumption of goods and $\ell$ denotes labor supplied to the market.
 
-  We therefore have $T\times 12$ different households alive each period.  This is 660 for the DZ model.
+    The household faces the following set of budget constraints.
+    \begin{align}
+    w_t \ell_{ist} n_i & \ge c_{ist} + b_{i,s+1,t+1} \text{     for } s=1,\forall i \\
+    w_t \ell_{ist} n_i + (1+r_t)b_{ist} & \ge c_{ist} + b_{i,s+1,t+1} \text{     for } 1<s<S,\forall i \\
+    w_t \ell_{ist} n_i + (1+r_t)b_{ist} & \ge c_{ist} \text{     for } s=S,\forall i
+    \end{align}
+    $b_{ist}$ is the holdings of bonds by household of type $i$ coming due in period $t$ when the household is age $s$. $w$ is the wage rate, $r$ denotes the return on savings, $n$ denotes the effective labor productivity of the houshold.
 
+    The Euler equations from this maximization problem are given below.
+    \begin{align}
+    c_{ist}^{-\gamma} & = \beta c_{i,s+1,t+1}^{-\gamma}(1+r_{t+1}) \text{     for } 1\le s<S,\forall i \\
+    c_{ist}^{-\gamma} w_t & = \eta \ell_{ist}^{-\xi}, \forall s,i
+    \end{align}
 
-  Lifetime utility is given by the equation below.
-  \begin{equation}
-  LU_t(a,\gamma) = \frac{1}{1-1/\sigma_U} \left[ \sum_{s=t}^{t+T-a-1} \frac{U_s(a,\gamma)^{1-1/\sigma_U}}{(1+\rho)^{s-t}} + \frac{1}{(1+\rho)^{T-a-1}} \alpha_B(\gamma)B_{t+T-a-1}(a,\gamma)^{1-1/\sigma_U} \right]
-  \end{equation}
-  where $LU_t(a,\gamma)$ is total remaining lifetime utility for a household of age $a$ and ability level $\gamma$ in period $t$, $U_t(a,\gamma)$ is within-period utility for a household of age $a$ and ability level $\gamma$ in period $t$, $B_{t+T-a-1}(a,\gamma)$ is the bequest left by a houshold of age $a$ and ability level $\gamma$ when it dies in period $t+T-a-1$.  $\sigma_U$ is the intertemporal elasticity of substitution for utility across periods, and $rho$ is the pure rate of time preference.
+    Firms produce using a Cobb-Douglas production function each period and maximize profits as shown below:
+    \begin{equation}
+    \Pi_t = \sum_{u=0}^{\infty} \pi_u;\; \pi_u = K_u^\alpha (e^{gu}L_u)^{1-\alpha} + (1-\delta)K_u - K_{u+1} - w_uL_u
+    \end{equation}
 
-  Within-period utility depends on consumptions of composite goods ($CH$) and leisure ($LE$).
-  \begin{equation}
-  U_s(a,\gamma) = \left[ \alpha_u^{1/\sigma_u} CH_s(a,\gamma)^{1-1/\sigma_u} + (1-\alpha_u)^{1/\sigma_u} LE_s(a,\gamma)^{1-1/\sigma_u}\right]^{\frac{\sigma_u}{\sigma_u-1}}
-  \end{equation}
+    The profit maximizing conditions are:
+    \begin{align}
+    r_t + \delta & = \alpha K_t^{\alpha-1}(e^{gt}L_t)^{1-\alpha} \\
+    w_t & = (1-\alpha) K_t^{\alpha}e^{(1-\alpha)gt}L_t)^{-\alpha}
+    \end{align}
 
-  Composite goods are made up of housing goods ($HR$) and non-housing goods ($CN$).
-  \begin{equation}
-  CH_s(a,\gamma) = \left[ \alpha_H^{1/\sigma_H} CN_s(a,\gamma)^{1-1/\sigma_H} + (1-\alpha_H)^{1/\sigma_H} HR_s(a,\gamma)^{1-1/\sigma_H}\right]^{\frac{\sigma_H}{\sigma_H-1}}
-  \end{equation}
+    Market-clearing conditions require the following:
+    \begin{align}
+    K_t & = \sum_{s=2}^S \sum_{i=1}^I \phi_i b_{ist} \\
+    L_t & = \sum_{s=1}^S \sum_{i=1}^I \phi_i \ell_{ist}
+    \end{align}
+    $\phi_i$ is the proportion of type $i$ in the total population of workers.
 
-  Non-housing goods are made up of those produced by the corporate secotor ($C$) and non-corporate sector ($N$).
-  \begin{equation}
-  CN_s(a,\gamma) = \left[ \alpha_N^{1/\sigma_N} [C_s(a,\gamma)-b_s^C(a,\gamma)]^{1-1/\sigma_N} + (1-\alpha_N)^{1/\sigma_N} [N_s(a,\gamma)-b_s^N(a,\gamma)]^{1-1/\sigma_N} \right]^{\frac{\sigma_N}{\sigma_N-1}}
-  \end{equation}
+    This model can be simulated using either the TPI or AMF method described in \citet{EvansPhillips2014}.
 
-  Housing goods are made up of owner-occupied housing ($H$) and rental housing ($R$).
-  \begin{equation}
-  HR_s(a,\gamma) = \left[ \alpha_R{1/\sigma_R} [H_s(a,\gamma)-b_s^H(a,\gamma)]^{1-1/\sigma_R} + (1-\alpha_R)^{1/\sigma_R} [R_s(a,\gamma)-b_s^R(a,\gamma)]^{1-1/\sigma_R} \right]^{\frac{\sigma_R}{\sigma_R-1}}
-  \end{equation}
+  \subsection{Adding Taxes on the Household}
+    The social security payroll tax paid is as follows.
+    \begin{equation}
+    T^P_{ist} = \left\{ \begin{matrix} \tau_P w_t \ell_{ist} n_i & \text{if } w_t \ell_{ist} n_i < \chi_P \\
+                                        \tau_P \chi_P & \text{otherwise} \end{matrix} \right.
+    \end{equation}
+    $\tau_P$ is the payroll tax rate and $\chi_P$ is the payroll tax ceiling.
 
-  This completes the description of the household's utility function.  There are four fundamental goods consumed: $C$, $N$, $H$ and $R$ along with consumption of leisure, $LE$.  The utility parameters are: $\rho$, $\sigma_U$, $\sigma_C$, $\sigma_H$, $\sigma_N$, $\sigma_R$, $\alpha_B$, $\alpha_C$, $\alpha_H$, $\alpha_N$, $\alpha_R$, $\{b_s^C(a,\gamma_i)\}_{a=1,i=1}^{T,12}$, $\{b_s^N(a,\gamma_i)\}_{a=1,i=1}^{T,12}$, $\{b_s^H(a,\gamma_i)\}_{a=1,i=1}^{T,12}$, $\{b_s^R(a,\gamma_i)\}_{a=1,i=1}^{T,12}$.
+    Define income as $X_{ist} \equiv w_t \ell_{ist} n_i + r_t b_{ist}$.  Income tax paid is defined as follows.
+    \begin{equation}
+    T^I_{ist} = \left\{ \begin{matrix} 0 & \text{if } X_{ist} < \chi_1 \\
+                \tau^1 (X_{ist} - \chi_1) & \text{if }  \chi_1 \le X_{ist} < \chi_2 \\
+                \tau^1 \chi_1 + \tau^2 (X_{ist} - \chi_2) & \text{if }  \chi_2 \le X_{ist} < \chi_3 \\
+                \tau^1 \chi_1 + \tau^2 (\chi_3 - \chi_2) + \tau_3 (X_{ist} - \chi_3) & \text{if }  \chi_3 \le X_{ist} < \chi_4 \\
+                \vdots \\
+                \tau^1 \chi_1 + \tau^2 (\chi_3 - \chi_2) +\dots+ \tau_N (X_{ist} - \chi_N) & \text{if }  \chi_N \le X_{ist} \\
+                \end{matrix} \right.
+    \end{equation}
+    $\tau^i$ is the marginal tax rate in bracket $i$, the bend points between brackets are denoted $\chi_i$.
 
-  The households remaining lifetime budget constraint is given by the equation below.
-  \begin{equation}
-  TDW_t(a,\gamma) = TDE_t(a,\gamma)
-  \end{equation}
-  where $TDW$ stands for total discretionary wealth and $TDE$ is total discretionary expenditure.
+    The consumption tax rate is denoted $\tau_c$
 
-  \begin{equation}
-  TDE_t(a,\gamma) = \sum_{s=1}^{t+T-1-a} \sum_{j\in\{C,N,H,R\}}p_s^j(1+\tau_{vs}^j)j_s D_s
-  \end{equation}
-  $\tau_{vs}^j$ is the value added tax (VAT) on good $j$ in period $s$.
-  \begin{equation}
-  D_s = \left\{ \begin{matrix} \prod_{u=t+1}^s\frac{1}{1+r_u} & \text{if }s>t \\ 1 & \text{otherwise} \end{matrix}\right.
-  \end{equation}
-  \begin{equation}
-  \tau_{vs}^j = \tau_{vs} f_{vs}^j; j\in\{C,N,H,R\}
-  \end{equation}
-  where $f_{vs}^j$ is the proportion of goods in category $j$ subject to the VAT
-
-  \begin{equation}
-  \begin{split}
-  TDW_t(a,\gamma) & = A_t(a,\gamma)(1+r_t) + TRA_t(a,\gamma)(1+i_t) \\
-  & + \sum_{s=t}^{t+T-1-a} D_s w_s(a,\gamma) [HT_s(a,\gamma) - LE_s(a,\gamma)] - D_s LIT_s(a,\gamma) - D_s SST_s(a,\gamma) \\
-  & + \sum_{s=t}^{t+T-1-a} D_s SSB_s(a,\gamma)[1-\tau_{bs}(\gamma)] - D_s RS(\gamma)\\
-  & + \sum_{s=t}^{t+T-1-a} D_s WD_s(a,\gamma)[1-s_d\tau_{rs}(\gamma)] + D_s TR_s(a,\gamma) + D_s LSR_S(a,\gamma)
-  \end{split}
-  \end{equation}
-
-  $LIT$ is the labor income tax, $SST$ is the social security tax, $SSB$ is social security benefits, $\tau_{bs}$ is the tax rate on social security benefits is period $s$, $RS$ is retirement savings which is a constant amount each year the household is not retired, $WD$ is withdrawls from retirement accounts, $TR$ is transfers received, $LSR$ is lump sum rebates received.
-
-  \begin{equation}
-  r_u = i_u(1-\tau_{iu})
-  \end{equation}
-  where $\tau{iu}$ is the tax on interest income in period $u.$
-
-  \begin{equation}
-  TRA_s(a,\gamma) = TDA_s(a,\gamma) + TPA(a,\gamma)
-  \end{equation}
-  where $TDA$ is tax-deferred assets and $TPA$ is tax-prepaid assets.
-
-  \begin{equation}
-  WD_s(a,\gamma) = \left\{ \begin{matrix} 0 & \text{if }a\le R \\ \frac{1}{T+1-a} TRA_s(a,\gamma)& \text{otherwise} \end{matrix}\right.
-  \end{equation}
-
-  \begin{equation}
-  LIT_s(a,\gamma) = \psi_sLIB_s(a,\gamma) + \frac{\chi_s}{2} LIB_s(a,\gamma)^2
-  \end{equation}
-  where $LIB$ is the labor income base, defined below.
-
-  \begin{equation}
-  LIB_s(a,\gamma) = w_s(a,\gamma) [HT_s(a,\gamma) - LE_s(a,\gamma)] - DED_s(a,\gamma) - s_d RS(\gamma)
-  \end{equation}
-
-  \subsection{Firms}
-
-  \subsection{Market Clearing}
+    The household faces the following set of budget constraints.
+    \begin{align}
+    c_{ist} & = (1-\tau_c)\left[w_t \ell_{ist} n_i - b_{i,s+1,t+1} - T^p_{ist} - T^i_{ist} \right] \\
+    c_{ist} & = (1-\tau_c)\left[w_t \ell_{ist} n_i + r_t b_{ist} + b_{ist} - b_{i,s+1,t+1} - T^p_{ist} - T^i_{ist} \right] \\
+    c_{ist} & = (1-\tau_c)\left[w_t \ell_{ist} n_i + r_t b_{ist} + b_{ist} - T^p_{ist} - T^i_{ist} \right] 
+    \end{align}
 
 \section{Incorporating Feedbacks with Micro Tax Simulations}\label{SecMicro}
 
