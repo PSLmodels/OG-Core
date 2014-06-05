@@ -78,83 +78,139 @@
 \begin{spacing}{1.5}
 
 
-\section{Introduction}\label{SecIntro}
+\section{Introduction}\label{Sec_Intro}
 
-\section{Details of the Macro Model}\label{SecMacro}
+\section{Details of the Macro Model}\label{Sec_Macro}
 
   We use a model based initially on that from \citet{EvansPhillips2014} and incorporate many of the features of \citet{ZodrowDiamond:2013} which we refer to hereafter as the DZ model.
 
-  \subsection{Baseline Model}
+  \subsection{Baseline Model}\label{SubSec_Macro_Base}
     For our first baseline model we take \citet{EvansPhillips2014} and add a leisure-labor decision, while removing the switching of ability from period to period.  Hence all workers remain the same type throughout their lifetime.  Agents live for $S$ periods and exogenously retire in period $R$.  This is a perfect foresight model.
 
     Housholds maximize utility as given in the equation below.
-    \begin{equation}
+    \begin{equation}\label{Macro_Base_Utility}
     U_{ist} = \sum_{u=0}^{S-s}\beta^u u(c_{i,s+u,t+u},\ell_{i,s+u,t+u});\text{ where }u(c,\ell) = \frac{c^{1-\gamma}-1}{1-\gamma} - \eta \frac{\ell^{1-\xi}-1}{1-\xi}
     \end{equation}
     $U_{ist}$ is the remaining lifetime utility of a household with ability level $i$ of age $s$ in period $t$.  $c$ denotes consumption of goods and $\ell$ denotes labor supplied to the market.
 
     The household faces the following set of budget constraints.
     \begin{align}
-    w_t \ell_{ist} n_i & \ge c_{ist} + b_{i,s+1,t+1} \text{     for } s=1,\forall i \\
-    w_t \ell_{ist} n_i + (1+r_t)b_{ist} & \ge c_{ist} + b_{i,s+1,t+1} \text{     for } 1<s<S,\forall i \\
-    w_t \ell_{ist} n_i + (1+r_t)b_{ist} & \ge c_{ist} \text{     for } s=S,\forall i
+    w_t \ell_{ist} n_i & \ge c_{ist} + k_{i,s+1,t+1} \text{     for } s=1,\forall i \label{Macro_Base_BC1}\\
+    w_t \ell_{ist} n_i + (1+r_t-\delta)k_{ist} & \ge c_{ist} + k_{i,s+1,t+1} \text{     for } 1<s<S,\forall i \label{Macro_Base_BC2}\\
+    w_t \ell_{ist} n_i + (1+r_t-\delta)k_{ist} & \ge c_{ist} \text{     for } s=S,\forall i \label{Macro_Base_BC3}
     \end{align}
-    $b_{ist}$ is the holdings of bonds by household of type $i$ coming due in period $t$ when the household is age $s$. $w$ is the wage rate, $r$ denotes the return on savings, $n$ denotes the effective labor productivity of the houshold.
+    $k_{ist}$ is the holdings of capital by household of type $i$ coming due in period $t$ when the household is age $s$. $w$ is the wage rate, $r$ denotes the return on savings, $n$ denotes the effective labor productivity of the houshold.
 
     The Euler equations from this maximization problem are given below.
     \begin{align}
-    c_{ist}^{-\gamma} & = \beta c_{i,s+1,t+1}^{-\gamma}(1+r_{t+1}) \text{     for } 1\le s<S,\forall i \\
-    c_{ist}^{-\gamma} w_t & = \eta \ell_{ist}^{-\xi}, \forall s,i
+    c_{ist}^{-\gamma} & = \beta c_{i,s+1,t+1}^{-\gamma}(1+r_{t+1}-\delta) \text{     for } 1\le s<S,\forall i \label{Macro_Base_Euler1}\\
+    c_{ist}^{-\gamma} w_t & = \eta \ell_{ist}^{-\xi}, \forall s,i \label{Macro_Base_Euler2}
     \end{align}
 
     Firms produce using a Cobb-Douglas production function each period and maximize profits as shown below:
     \begin{equation}
-    \Pi_t = \sum_{u=0}^{\infty} \pi_u;\; \pi_u = K_u^\alpha (e^{gu}L_u)^{1-\alpha} + (1-\delta)K_u - K_{u+1} - w_uL_u
+    \Pi_t = K_t^\alpha (e^{gt}L_t)^{1-\alpha} - r_tK_t - w_tL_t \label{Macro_Base_Profit}
     \end{equation}
 
     The profit maximizing conditions are:
     \begin{align}
-    r_t + \delta & = \alpha K_t^{\alpha-1}(e^{gt}L_t)^{1-\alpha} \\
-    w_t & = (1-\alpha) K_t^{\alpha}e^{(1-\alpha)gt}L_t)^{-\alpha}
+    r_t & = \alpha K_t^{\alpha-1}(e^{gt}L_t)^{1-\alpha} \label{Macro_Base_FirmFOC1}\\
+    w_t & = (1-\alpha) K_t^{\alpha}e^{(1-\alpha)gt}L_t^{-\alpha} \label{Macro_Base_FirmFOC2}
     \end{align}
 
     Market-clearing conditions require the following:
     \begin{align}
-    K_t & = \sum_{s=2}^S \sum_{i=1}^I \phi_i b_{ist} \\
-    L_t & = \sum_{s=1}^S \sum_{i=1}^I \phi_i \ell_{ist}
+    K_t & = \sum_{s=2}^S \sum_{i=1}^I \phi_i k_{ist} \label{Macro_Base_Clear1}\\
+    L_t & = \sum_{s=1}^S \sum_{i=1}^I \phi_i \ell_{ist} \label{Macro_Base_Clear2}
     \end{align}
     $\phi_i$ is the proportion of type $i$ in the total population of workers.
 
     This model can be simulated using either the TPI or AMF method described in \citet{EvansPhillips2014}.
 
-  \subsection{Adding Taxes on the Household}
-    The social security payroll tax paid is as follows.
-    \begin{equation}
-    T^P_{ist} = \left\{ \begin{matrix} \tau_P w_t \ell_{ist} n_i & \text{if } w_t \ell_{ist} n_i < \chi_P \\
-                                        \tau_P \chi_P & \text{otherwise} \end{matrix} \right.
+  \subsection{Adding Taxes on the Household}\label{SubSec_Macro_HHTax}
+    The social security payroll tax paid or benefit received is caclualted as follows.
+    \begin{equation}\label{Macro_HHTax_PayrollTax}
+    T^P_{ist} = \left\{ \begin{matrix} \tau_P w_t \ell_{ist} n_i & \text{if } w_t \ell_{ist} n_i < \chi_P, s<R \\
+                                       \tau_P \chi_P & \text{if } w_t \ell_{ist} n_i \ge \chi_P, s<R \\
+                                       -\theta w_t n_i & \text{if } s\ge R
+                                       \end{matrix} \right.
     \end{equation}
     $\tau_P$ is the payroll tax rate and $\chi_P$ is the payroll tax ceiling.
 
-    Define income as $X_{ist} \equiv w_t \ell_{ist} n_i + r_t b_{ist}$.  Income tax paid is defined as follows.
-    \begin{equation}
+    Income is $w_t \ell_{ist} n_i + (r_t-\delta) k_{ist}$.  Define $D\{w\ell n+(r-\delta)b,\Omega\}$ as the exemptions and benefits claimed as a function of income and other variables, $\Omega$.  Adjusted gross income is $X_{ist} \equiv w_t \ell_{ist} n_i + (r_t-\delta) k_{ist} - D\{w_t \ell_{ist} n_i + (r_t-\delta) k_{ist},\Omega_{ist}\} -\tau_\delta \delta k_{ist}$.  The final term is a capital depreciation allowance at rate $\tau_\delta$.  We have fit this $D$ function to the data for 2011 using a polynomial function.  Income tax paid is defined as follows.
+    \begin{equation}\label{Macro_HHTax_IncomeTax}
     T^I_{ist} = \left\{ \begin{matrix} 0 & \text{if } X_{ist} < \chi_1 \\
-                \tau^1 (X_{ist} - \chi_1) & \text{if }  \chi_1 \le X_{ist} < \chi_2 \\
-                \tau^1 \chi_1 + \tau^2 (X_{ist} - \chi_2) & \text{if }  \chi_2 \le X_{ist} < \chi_3 \\
-                \tau^1 \chi_1 + \tau^2 (\chi_3 - \chi_2) + \tau_3 (X_{ist} - \chi_3) & \text{if }  \chi_3 \le X_{ist} < \chi_4 \\
+                \tau_1 (X_{ist} - \chi_1) & \text{if }  \chi_1 \le X_{ist} < \chi_2 \\
+                \tau_1 \chi_1 + \tau_2 (X_{ist} - \chi_2) & \text{if }  \chi_2 \le X_{ist} < \chi_3 \\
+                \tau_1 \chi_1 + \tau_2 (\chi_3 - \chi_2) + \tau_3 (X_{ist} - \chi_3) & \text{if }  \chi_3 \le X_{ist} < \chi_4 \\
                 \vdots \\
-                \tau^1 \chi_1 + \tau^2 (\chi_3 - \chi_2) +\dots+ \tau_N (X_{ist} - \chi_N) & \text{if }  \chi_N \le X_{ist} \\
+                \tau_1 \chi_1 + \tau_2 (\chi_3 - \chi_2) +\dots+ \tau_N (X_{ist} - \chi_N) & \text{if }  \chi_N \le X_{ist} \\
                 \end{matrix} \right.
     \end{equation}
-    $\tau^i$ is the marginal tax rate in bracket $i$, the bend points between brackets are denoted $\chi_i$.
+    $\tau_i$ is the marginal tax rate in bracket $i$, the bend points between brackets are denoted $\chi_i$.
 
     The consumption tax rate is denoted $\tau_c$
 
     The household faces the following set of budget constraints.
     \begin{align}
-    c_{ist} & = (1-\tau_c)\left[w_t \ell_{ist} n_i - b_{i,s+1,t+1} - T^p_{ist} - T^i_{ist} \right] \\
-    c_{ist} & = (1-\tau_c)\left[w_t \ell_{ist} n_i + r_t b_{ist} + b_{ist} - b_{i,s+1,t+1} - T^p_{ist} - T^i_{ist} \right] \\
-    c_{ist} & = (1-\tau_c)\left[w_t \ell_{ist} n_i + r_t b_{ist} + b_{ist} - T^p_{ist} - T^i_{ist} \right] 
+    c_{ist} & = (1-\tau_c)\left[w_t \ell_{ist} n_i - k_{i,s+1,t+1} - T^p_{ist} - T^i_{ist} \right] \label{Macro_HHTax_BC1}\\
+    c_{ist} & = (1-\tau_c)\left[w_t \ell_{ist} n_i + (1+r_t-\delta) k_{ist} - k_{i,s+1,t+1} - T^p_{ist} - T^i_{ist} \right] \label{Macro_HHTax_BC2}\\
+    c_{ist} & = (1-\tau_c)\left[w_t \ell_{ist} n_i + (1+r_t-\delta) k_{ist} - T^p_{ist} - T^i_{ist} \right] \label{Macro_HHTax_BC3}
     \end{align}
+
+  \subsection{Adding Taxes on Firms}\label{SubSec_Macro_CorpTax}
+    We nedd to allow firms to acquire capital by renting it as above, or by accumulating their own capital and paying dividends, or by issuing bonds.  How do we determine the proportions?
+
+    Imagine a financial intermediary which takes deposits from households and invests these in bonds and equities.  Each houshold puts deposits of $b_{ist}$ in the intermediary.  The intermediary pool these to get total funds of $B_t$.  It then allowcates a fraction $\xi_t$ to bonds and the remainder to equities.
+
+    \begin{align} 
+    B_t & = \xi_t\sum_i \sum_s b_{ist} \label{Macro_CorpTax_Intermed1}\\
+    P_tE_t & = (1-\xi_t)\sum_i \sum_s b_{ist} \label{Macro_CorpTax_Intermed2}
+    \end{align}
+
+    Next period the intermediary recieves principal and interest on the bonds and dividends on the equties.  So that it's total assests are $B_t (1+i_{t+1}) + (\pi_t + P_{t+1})E_t$.  The intermediate must pay a tax on interest income ($T^B$), a tax on dividends ($T^\pi$), and a capital gains tax ($T^E$).
+    \begin{align}
+    T^B_t & = \tau_B i_t B_{t-1} \\
+    T^\pi_t & = \tau_\pi \pi_t E_{t-1} \\
+    T^E_t & = \tau_E (\tfrac{P_t}{P_{t-1}}-1) E_{t-1}
+    \end{align}
+
+    The intermediary chooses $\xi_t$ given it's deposits to maximize its return:
+    \begin{equation}
+    R_{t+1} = \xi_t i_{t+1} (1-\tau_B) + (1-\xi_t)\left[\pi_{t+1}(1-\tau_\pi)+\left(\tfrac{P_{t+1}}{P_{t}}-1\right)(1-\tau_E)\right]
+    \end{equation}
+
+    The necessary condition for this maximization is:
+    \begin{equation}
+    i_{t+1} (1-\tau_B) = \left[\pi_{t+1}(1-\tau_\pi)+\left(\tfrac{P_{t+1}}{P_{t}}-1\right)(1-\tau_E)\right]
+    \end{equation}
+
+    We assume firms and households pay a percent quadratic capital adjustment cost of $\psi\left\{\tfrac{K_t}{K_{t-1}} \right\} = \tfrac{\kappa}{2} \left(\tfrac{K_t}{K_{t-1}}\right)^2$.
+
+    The typical household budget constraint is:
+    \begin{equation}
+    c_{ist} = (1-\tau_c)\begin{bmatrix} w_t \ell_{ist} n_i + (1+r_t-\delta)k_{ist} + (1+R_t)b_{ist} \\- k_{i,s+1,t+1}\psi\left\{\tfrac{k_{i,s+1,t+1}}{k_{ist}} \right\} - b_{i,s+1,t+1}- T^p_{ist} - T^i_{ist} \end{bmatrix} \\
+    \end{equation}
+    where income is now $w_t \ell_{ist} n_i + (r_t-\delta)k_{ist} + R_t b_{ist}$.
+
+
+    The firm's intertemporal profits are now:
+    \begin{align}
+    \Pi_t & = \sum_{u=0}^\infty d_{ut}\pi_{t+u} \\
+    d_{ut} & \equiv \left\{\begin{matrix} 1 & \text{if } u = 0 \\
+                              \prod_{j=1}^u \tfrac{1}{1+i_{t+u+j}} & \text{otherwise} \end{matrix} \right. \\
+    \pi_t & = \begin{matrix} (K_t+H_t)^\alpha(e^{gt}L_t)^{1-\alpha} - r_t K_t - w_t L_t - (1+i_t) B_t \\
+                              + B_{t+1} + (1-\delta) H_t - H_{t+1}\psi\left\{\tfrac{H_{t+1}}{H_{t}} \right\} \end{matrix}
+    \end{align}
+
+    FOCs with respect to $K_t, L_t, H_{t+1}$ and $B_{t+1}$ are:
+    \begin{align}
+    r_t & = \alpha (K_t+H_t)^{\alpha-1}(e^{gt}L_t)^{1-\alpha} \\
+    w_t & = (1-\alpha) (K_t+H_t)^{-\alpha}e^{(1-\alpha)gt}L_t^{-\alpha} \\
+    1 + r_t - \delta & = (1+i_t)\kappa \left|\tfrac{H_{t+1}}{H_{t}}\right| \\
+    1 + i_t & = 1 + i_t
+    \end{align}
+
 
 \section{Incorporating Feedbacks with Micro Tax Simulations}\label{SecMicro}
 
