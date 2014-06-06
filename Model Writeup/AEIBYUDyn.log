@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.2.27)  5 JUN 2014 19:10
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.2.27)  5 JUN 2014 19:18
 entering extended mode
 **C:/Users/klp4/Bitbucket/aei-byu-dynamic-tax-scoring/Model*Writeup/AEIBYUDyn.t
 ex
@@ -464,109 +464,57 @@ tination with the same identifier (name{page.1}) has been already used, duplica
 te ignored
 <to be read again> 
                    \relax 
-l.104 
-       [1pdfTeX warning (ext4): destination with the same identifier (name{equa
-tion.2.1}) has been already used, duplicate ignored
+l.96 \newpage
+              [1]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 102.
 
-\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
-                                                  \fi \fi 
-l.104 
-      ] [2pdfTeX warning (ext4): destination with the same identifier (name{equ
-ation.2.6}) has been already used, duplicate ignored
-
-\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
-                                                  \fi \fi 
-l.135 
-      ] [3] [4] [5] [6pdfTeX warning (ext4): destination with the same identifi
-er (name{equation.2.16}) has been already used, duplicate ignored
-
-\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
-                                                  \fi \fi 
-l.230       \end{align}
-                       ] [7] [8pdfTeX warning (ext4): destination with the same
- identifier (name{equation.2.26}) has been already used, duplicate ignored
-
-\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
-                                                  \fi \fi 
-l.295       \end{equation}
-                          pdfTeX warning (ext4): destination with the same iden
-tifier (name{equation.2.26}) has been already used, duplicate ignored
-
-\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
-                                                  \fi \fi 
-l.295       \end{equation}
-                          ] [9pdfTeX warning (ext4): destination with the same 
-identifier (name{equation.2.26}) has been already used, duplicate ignored
-
-\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
-                                                  \fi \fi 
-l.328       \end{align}
-                       pdfTeX warning (ext4): destination with the same identif
-ier (name{equation.2.27}) has been already used, duplicate ignored
-
-\AtBegShi@Output ...ipout \box \AtBeginShipoutBox 
-                                                  \fi \fi 
-l.328       \end{align}
-                       ] [10] [11] [12]
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 410.
-
-
-("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\omscmr.fd"
+ ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\base\omscmr.fd"
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 410.
- [13] [14]
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 102.
 Missing character: There is no ‚ in font cmr12!
 Missing character: There is no Ä in font cmr12!
 Missing character: There is no ú in font cmr12!
 Missing character: There is no ‚ in font cmr12!
 Missing character: There is no Ä in font cmr12!
 Missing character: There is no ù in font cmr12!
-
-[15] [16] [17]
+ [2] [3] [4]
 ("C:\Users\klp4\Bitbucket\aei-byu-dynamic-tax-scoring\Model Writeup\AEIBYUDyn.b
 bl")
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 522.
- [18]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 522.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 194.
+ [5]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 194.
 
 ("C:\Users\klp4\Bitbucket\aei-byu-dynamic-tax-scoring\Model Writeup\AEIBYUDyn.a
 ux")
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 522.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 522.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 194.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 194.
 Package rerunfilecheck Info: File `AEIBYUDyn.out' has not changed.
-(rerunfilecheck)             Checksum: 6CF48C615C4B32A0FCECBDEF53611AF4;1851.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 522.
+(rerunfilecheck)             Checksum: 04CA7B9F4185CFE04BDF232E0FBC935E;671.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 194.
  ) 
 Here is how much of TeX's memory you used:
- 8214 strings out of 493921
- 122419 string characters out of 3144879
- 214278 words of memory out of 3000000
- 11303 multiletter control sequences out of 15000+200000
+ 8074 strings out of 493921
+ 120128 string characters out of 3144879
+ 208925 words of memory out of 3000000
+ 11238 multiletter control sequences out of 15000+200000
  15596 words of font info for 60 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
- 36i,17n,38p,708b,449s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 36i,13n,38p,486b,397s stack positions out of 5000i,500n,10000p,200000b,50000s
 <C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx10.pfb>
 <C:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmbx12.pfb><C
-:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/
-Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi12.pfb><C:/Pr
-ogram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi6.pfb><C:/Progr
-am Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmmi8.pfb><C:/Program 
-Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Fil
-es (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files 
-(x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program Files (x8
-6)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr6.pfb><C:/Program Files (x86)/M
-iKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Program Files (x86)/MiKTe
-X 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files (x86)/MiKTeX 
-2.9/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Program Files (x86)/MiKTeX 2.9
-/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x86)/MiKTeX 2.9/fo
-nts/type1/public/amsfonts/cm/cmsy8.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts
-/type1/public/amsfonts/cm/cmti10.pfb><C:/Program Files (x86)/MiKTeX 2.9/fonts/t
-ype1/public/amsfonts/cm/cmti12.pfb>
-Output written on AEIBYUDyn.pdf (19 pages, 282793 bytes).
+:/Program Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/P
+rogram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr12.pfb><C:/Prog
+ram Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr17.pfb><C:/Program
+ Files (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Program Fil
+es (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy10.pfb><C:/Program Files
+ (x86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Program Files (x
+86)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti10.pfb><C:/Program Files (x86
+)/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmti12.pfb>
+Output written on AEIBYUDyn.pdf (6 pages, 149443 bytes).
 PDF statistics:
- 371 PDF objects out of 1000 (max. 8388607)
- 98 named destinations out of 1000 (max. 500000)
- 201 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 127 PDF objects out of 1000 (max. 8388607)
+ 23 named destinations out of 1000 (max. 500000)
+ 89 words of extra memory for PDF output out of 10000 (max. 10000000)
 
