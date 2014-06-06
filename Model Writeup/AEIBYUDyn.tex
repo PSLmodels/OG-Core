@@ -261,7 +261,7 @@
       \begin{align}
       \begin{split}
       & c_{ist}^{-\gamma}\left[(1-\tau_c)\left(-1+\tau_\delta \delta + \tau_{\Delta k} - \kappa \left|k_{i,s+1,t+1} - k_{ist} \right|\right)\right] \\
-      & = \beta c_{i,s+1,t+1}^{-\gamma}(1-\tau_c)\left[ 1 + (1-\tau_j)r_{t+1} + (\tau_\delta -1)\delta + \tau_{\Delta k} \right]
+      & = \beta c_{i,s+1,t+1}^{-\gamma}(1-\tau_c)\left[ 1 + (1-\tau_j)r_{t+1} + (\tau_\delta -1)\delta + \tau_{\Delta k} \right] \text{     for } E\le s<S,\forall i
       \end{split} \label{Macro_CorpTax_Euler1}\\
       \begin{split}
       & c_{ist}^{-\gamma} = \beta c_{i,s+1,t+1}^{-\gamma} \left[ 1+(1-\tau_j)i_{t+1} \right] \text{     for } 1\le s<S,\forall i 
@@ -344,6 +344,76 @@
       The parameters of the model are $\alpha$, $\beta$, $\delta$, $\gamma$, $\xi$, $g$, $\{n_i\}$, $\{\phi_i\}$, $\tau_p$, $\chi_p$, $\{\tau_n\}_{n=1}^N$, $\{\chi_n\}_{n=1}^N$, $\tau_c$, $\tau_q$, $\tau_\delta$, $\tau{\Delta k}$ and $\kappa$.
 
   \subsection{Adding Demographics - Model 4}\label{SubSec_Macro_Demog}
+    Our next step is to add demographic movements to the model.  Rather than keeping the population distribution constant we allow it to evolve naturally over time.
+
+    We denote the number of households of type $i$ age $s$ in period $t$ as $N_{ist}$.  We assume that workers all become economically active at age $E$.  For each age cohort a fraction $\rho_s$ survive from period $t$ into $t+1$.  For each age cohort a fraction $f_s$ of new children are added to next period's age 1 cohort.  The distribution of these children over ability is assumed to be the previously described $\{\phi_i\}_{i=1}^I$  This gives us the following exogenous laws of motion for the population.
+    \begin{align}
+    N_{i1,t+1} & = \sum_s f_s N_{ist} \phi_i \\
+    N_{i,s+1,t+1} & = N_{ist} \rho_s
+    \end{align}
+
+    Since workers become economically active at age $E$, rather than at age 1, we need to keep track of $I-E+1$ cohorts' capital stocks, bond holdings and equity holdings.  We assume that people in cohorts 1 throgh $E$ do not work or consume (alternatively their conssumption is included in that of their parents until age $E$).
+
+    We define the total working age population in period $t$ as below.
+    \begin{equation}
+    N_t = \sum_{s=E}^S \sum_{i=1}^I N_{ist}
+    \end{equation}
+
+    This model has unintentional bequests since households will die before age $S$.  We assume their holdings of capital, bonds, and equity shares are distributed lump sum at the begining of the next peroid.  The amounts of each of these lump-sum transfers is shown below.
+
+    \begin{align}
+    T^k_t & = \frac{1}{N_t}\sum_{s=E+1}^S \sum_{i=1}^I N_{ist} (1-\rho_i) k_{i,s+1,t+1} \\
+    T^b_t & = \frac{1}{N_t}\sum_{s=E+1}^S \sum_{i=1}^I N_{ist} (1-\rho_i) b_{i,s+1,t+1} \\
+    T^q_t & = \frac{1}{N_t}\sum_{s=E+1}^S \sum_{i=1}^I N_{ist} (1-\rho_i) q_{i,s+1,t+1}
+    \end{align}
+
+    We add these lump sum transfers to the budget constraint and generate \eqref{Macro_Demog_BC}, whcih we substitute in place of \eqref{Macro_CorpTax_BC}
+    \begin{equation} \label{Macro_Demog_BC}
+    c_{ist} = (1-\tau_c)\begin{bmatrix} w_t \ell_{ist} n_i + (1+r_t-\delta)k_{ist} + (1+i_t)b_{ist} + p_t q_{ist} \\
+      - \tfrac{\kappa}{2}\left(k_{i,s+1,t+1} - k_{ist}\right)^2 - k_{i,s+1,t+1} - b_{i,s+1,t+1} - p_t q_{i,s+1,t+1} \\
+      +\tau_\delta \delta k_{ist} + \tau_{\Delta k} (k_{i,s+1,t+1} - k_{ist}) \\
+      - T^p_{ist} - T^i_{ist} - T^q_{ist} + T^k_t + T^b_t + p_tT^q_t\end{bmatrix} \\
+    \end{equation}
+
+    We also add additional discounting to the household's problem and rewrite \eqref{Macro_CorpTax_Euler1} - \eqref{Macro_CorpTax_Euler3} as below:
+    \begin{align}
+    \begin{split}
+    & c_{ist}^{-\gamma}\left[(1-\tau_c)\left(-1+\tau_\delta \delta + \tau_{\Delta k} - \kappa \left|k_{i,s+1,t+1} - k_{ist} \right|\right)\right] \\
+    & = \beta \rho_s c_{i,s+1,t+1}^{-\gamma}(1-\tau_c)\left[ 1 + (1-\tau_j)r_{t+1} + (\tau_\delta -1)\delta + \tau_{\Delta k} \right] \text{     for } E\le s<S,\forall i
+    \end{split} \label{Macro_Demog_Euler1}\\
+    \begin{split}
+    & c_{ist}^{-\gamma} = \beta \rho_s c_{i,s+1,t+1}^{-\gamma} \left[ 1+(1-\tau_j)i_{t+1} \right] \text{     for } E\le s<S,\forall i 
+    \end{split} \label{Macro_Demog_Euler2}\\
+    \begin{split}
+    & c_{ist}^{-\gamma} = \beta \rho_s c_{i,s+1,t+1}^{-\gamma}\left[ 1 + (1 - \tau_q)(\tfrac{p_{t+1}}{p_t}-1) + (1-\tau_j)\tfrac{\pi_t}{p_t} \right] \text{     for } E\le s<S,\forall i 
+    \end{split} \label{Macro_Demog_Euler3}
+    \end{align}
+
+    Market-clearing conditions \eqref{Macro_CorpTax_Clear1} - \eqref{Macro_CorpTax_Clear2} are replaced with the following.
+    \begin{align}
+    K_t & = \sum_{s=E+1}^S \sum_{i=1}^I N_{ist} k_{ist} \label{Macro_Demog_Clear1}\\
+    L_t & = \sum_{s=E}^S \sum_{i=1}^I N_{ist} \ell_{ist} \label{Macro_Demog_Clear2}\\
+    B_t & = \sum_{s=E+1}^S \sum_{i=1}^I N_{ist} b_{ist} \label{Macro_Demog_Clear3}\\
+    1 & = \sum_{s=E+1}^S \sum_{i=1}^I N_{ist} q_{ist} \label{Macro_Demog_Clear4}
+    \end{align}  
+
+    We have added $4 + IS$ new variables to the model: $T^k_t$, $T^q_t$, $T^q_t$, $N_t$ and $\{N_{ist}\}_{s=1}^S$.
+
+    We have also eliminated $9(E-1)$ variables: $\{c_{ist}\}_{s=E-1}^S$, $\{\ell_{ist}\}_{s=E-1}^S$, $\{k_{ist}\}_{s=E}^S$, $\{T^p_{ist}\}_{s=E-1}^S$, $\{T^i_{ist}\}_{s=E-1}^S$, $\{b_{ist}\}_{s=E}^S$, $\{q_{ist}\}_{s=E}^S$, $\{I_{ist}\}_{s=E-1}^S$ and $\{X_{ist}\}_{s=E-1}^S$.
+
+    This gives a total of $13 + 9(S-E+1)I - 3I + IS$ varaibles.
+
+    We have also added the following parameters: $\{\rho_s\}_{s=1}^S$ and $\{f_s\}_{s=E}^S$
+
+    *** TO DO ***
+    \begin{itemize}
+    \item Add immigration - average into the cohort/type bin
+    \item Let mortality and fertility vary by ability type as well as age.
+    \item Allow for trends in these parameters
+    \end{itemize}
+
+  \newpage
+
 
   \subsection{Adding Open Economy Interest Rate Responsiveness - Model 5}\label{SubSec_Macro_Open}
 
