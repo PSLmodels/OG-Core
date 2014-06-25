@@ -14,19 +14,17 @@ import matplotlib.pyplot as plt
 import time
 
 '''
+------------------------------------------------------------------------
 Setting up the Model
-'''
-
-'''
-Definitions:
-
+------------------------------------------------------------------------
 S     = number of periods an individual lives
 beta  = discount factor
 sigma = coefficient of relative risk aversion
 alpha = capital share of income
 rho   = contraction parameter in steady state iteration process
         representing the weight on the new distribution gamma_new
-A     = total factor productivity parameter in firms' production function
+A     = total factor productivity parameter in firms' production
+        function
 delta = depreciation rate of capital
 n     = 1 x S vector of inelastic labor supply for each age s
 e     = S x J matrix of age dependent possible working abilities e_s
@@ -38,7 +36,7 @@ bmax  = maximum value of b
 bsize = number of discrete points in the support of b
 b     = 1 x bsize vector of possible values for initial wealth b
         and savings b'
-
+------------------------------------------------------------------------
 '''
 starttime = time.time()
 
@@ -66,13 +64,11 @@ bmin = 0
 bmax = 15
 b = np.linspace(bmin, bmax, bsize)
 
+
 '''
+------------------------------------------------------------------------
 Finding the Steady State
-'''
-
-'''
-Definitions:
-
+------------------------------------------------------------------------
 ssiter     = index value that tracks the iteration number
 ssmaxiter  = maximum number of iterations
 ssdist     = sup norm distance measure of the elements of the wealth
@@ -82,19 +78,19 @@ ssmindist  = minimum value of the sup norm distance measure velow which
 gamma_init = initial guess for steady state capital distribution:
              (S-1) x J x bsize array
 gamma_new  = (S-1) x J x bsize array, new iteration distribution of
-             wealth computed from the old distribution gamma_init and the
-             policy rule bprime
+             wealth computed from the old distribution gamma_init and
+             the policy rule bprime
 Kss        = steady state aggregate capital stock
 Nss        = steady state aggregate labor
 Yss        = steady state aggregate output
 wss        = steady state real wage
 rss        = steady state real rental rate
-phi_ind    = S x J x bsize policy function indicies for b' = phi(s,e,b).
+phiind    = S x J x bsize policy function indicies for b' = phi(s,e,b).
              The last row phiind(S,e,b) is ones and corresponds to
              b_{S+1}. The first row phi(1,e,b) corresponds to b_2.
 phi        = S x J x bsize policy function values for b' = phi(s,e,b).
-             The last row phi(S,e,b) is zeros and corresponds to b_{S+1}.
-             The first row corresponds to b_2.
+             The last row phi(S,e,b) is zeros and corresponds to
+             b_{S+1}. The first row corresponds to b_2.
 Vinit      = bsize x J matrix of values of the state in the next period
              V(b',e')
 sind       = year index variable in for-loop
@@ -115,11 +111,11 @@ Vnew       = the new value function when b' is chosen optimally
 bprimeind  = the index of the optimal
 gamma_ss   = (S-1) x J x bsize array of steady state distribution of
              wealth
-phi_ind_ss  = S x J x bsize steady-state policy function indicies for
+phiind_ss  = S x J x bsize steady-state policy function indicies for
              b' = phi(s,e,b)
 phi_ss     = S x J x bsize steady-state policy function values for
              b' = phi(s,e,b)
-
+------------------------------------------------------------------------
 '''
 
 # Functions and Definitions
@@ -173,7 +169,7 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
     Yss = get_Y(Kss, Nss)
     wss = get_w(Yss, Nss)
     rss = get_r(Yss, Kss)
-    phi_ind = np.zeros((S, J, bsize))
+    phiind = np.zeros((S, J, bsize))
     phi = np.zeros((S, J, bsize))
     Vinit = np.zeros((bsize, J))
     for sind in xrange(S):
@@ -199,7 +195,7 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
         EVprimenew = np.tile(EVprime.reshape(1, 1, bsize), (bsize, J, 1))
         Vnewarray = uc + beta * (EVprimenew * cposind)
         Vnew, bprimeind = Vnewarray.max(2), Vnewarray.argmax(2)
-        phi_ind[S-sind-1, :, :] = bprimeind.T.reshape(1, J, bsize)
+        phiind[S-sind-1, :, :] = bprimeind.T.reshape(1, J, bsize)
         phi[S-sind-1, :, :] = b[bprimeind].T.reshape(1, J, bsize)
         Vinit = Vnew
     gamma_new = np.zeros((S-1, J, bsize))
@@ -209,19 +205,33 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
                 if sind == 0:
                     gamma_new[sind, eind, bind] = (
                         1 / float(S - 1)) * f[sind+1, eind] * np.sum(
-                        (phi_ind[sind, :, 1] == bind) * f[sind, :])
+                        (phiind[sind, :, 1] == bind) * f[sind, :])
                 else:
                     gamma_new[sind, eind, bind] = f[sind+1, eind] * np.sum(
-                        (phi_ind[sind, :, :] == bind) * gamma_init[sind-1, :, :])
+                        (phiind[sind, :, :] == bind) * gamma_init[sind-1, :, :])
     ssiter += 1
     ssdist = np.max(abs(gamma_new - gamma_init))
     gamma_init = rho * gamma_new + (1 - rho) * gamma_init
 
 gamma_ss = gamma_init
-phi_ind_ss = phi_ind
+phiind_ss = phiind
 phi_ss = phi
 
-#graph of distribution of capital
+'''
+------------------------------------------------------------------------
+ Generate graph of the steady-state distribution of wealth
+------------------------------------------------------------------------
+ domain     = 1 x S vector of each age cohort
+ bsavg      = 1 x S vector of the average wealth b of each age cohort
+ wealthwgts = (S-1) x J x bsize array of distribution weights times the
+              value of wealth
+ bpct       = (S-1) x 1 x bsize array of percent of population with each
+              wealth level for each age cohort
+ bpctl      = (S-1) x 1 x bsize array of percentile of each wealth level
+              for each age cohort
+ pctl_init  = (S-1) x 1 vector of zeros for initial percentile
+------------------------------------------------------------------------
+'''
 domain = np.linspace(0, S, S)
 bsavg = np.zeros((1, S))
 
