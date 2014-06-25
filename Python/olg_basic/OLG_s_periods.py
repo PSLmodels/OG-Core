@@ -40,7 +40,7 @@ b     = 1 x bsize vector of possible values for initial wealth b
 
 '''
 
-S = 60
+S = 6
 beta = .96
 sigma = 3.0
 alpha = .35
@@ -49,15 +49,17 @@ A = 1.0
 delta = 0.0
 n = np.ones(S)
 n[0:6] = np.array([.87, .89, .91, .93, .96, .98])
+'''
 n[40:] = np.array(
     [.95, .89, .84, .79, .73, .68, .63, .57, .52, .47,
      .4, .33, .26, .19, .12, .11, .11, .10, .10, .09])
+'''
 e = np.array([.1, .5, .8, 1.0, 1.2, 1.5, 1.9]).T
 e = np.tile(e, (S, 1))
 f = np.array([.04, .09, .2, .34, .2, .09, .04]).T
 f = np.tile(f, (S, 1))
 J = e.shape[1]
-bsize = 350
+bsize = 50
 bmin = 0
 bmax = 15
 b = np.linspace(bmin, bmax, bsize)
@@ -154,7 +156,7 @@ def get_K(e, f, b, gamma):
     return K_now
 
 ssiter = 0
-ssmaxiter = 700
+ssmaxiter = 70
 ssdist = 10
 ssmindist = 1e-9
 # Generate gamma_init
@@ -172,15 +174,15 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
     phi_ind = np.zeros((S, J, bsize))
     phi = np.zeros((S, J, bsize))
     Vinit = np.zeros((bsize, J))
-    for sind in xrange(1, S):
-        if sind < S:
-            c = (1 + rss - delta) * np.tile(b.T, (1, J, bsize)) + (
-                wss * n[S-sind+1]) * np.tile(
-                e[S-sind+1, :], (bsize, 1, bsize)) - np.tile(
+    for sind in xrange(S):
+        if sind < S - 1:
+            c = (1 + rss - delta) * np.tile(b.reshape(bsize, 1, 1), (1, J, bsize)) + (
+                wss * n[S-sind-1]) * np.tile(
+                e[S-sind-1, :].reshape(1, J, 1), (bsize, 1, bsize)) - np.tile(
                 b.reshape(1, 1, bsize), (bsize, J, 1))
         else:
-            c = (wss * n[S-sind+1]) * np.tile(
-                e[S-sind+1, :], (bsize, 1, bsize)) - np.tile(
+            c = (wss * n[S-sind-1]) * np.tile(
+                e[S-sind-1, :].reshape(1, J, 1), (bsize, 1, bsize)) - np.tile(
                 b.reshape(1, 1, bsize), (bsize, J, 1))
         cposind = c > 0
         cnonposind = np.ones((bsize, J, bsize)) - cposind
@@ -188,20 +190,20 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
         uc = ((np.power(cpos, (1 - sigma)) - np.ones((bsize, J, bsize))) / (
             1 - sigma)) * cposind - (1e-8) * cnonposind
         if sind == 1:
-            EVprime = np.sum(Vinit, 2)
+            EVprime = np.sum(Vinit, 1)
         else:
-            EVprime = np.sum(Vinit * np.tile(f[S-sind+2, :], (
+            EVprime = np.sum(Vinit * np.tile(f[S-sind-1, :], (
                 bsize, 1)), axis=1)
         EVprimenew = np.tile(EVprime.reshape(1, 1, bsize), (bsize, J, 1))
         Vnewarray = uc + beta * (EVprimenew * cposind)
         Vnew, bprimeind = Vnewarray.max(2), Vnewarray.argmax(2)
-        phi_ind[S-sind+1, :, :] = bprimeind.T.reshape(1, J, bsize)
-        phi[S-sind+1, :, :] = b[bprimeind].T.reshape(1, J, bsize)
+        phi_ind[S-sind-1, :, :] = bprimeind.T.reshape(1, J, bsize)
+        phi[S-sind-1, :, :] = b[bprimeind].T.reshape(1, J, bsize)
         Vinit = Vnew
-    gamma_new = np.zeros(S-1, J, bsize)
-    for sind in (1, S-1):
-        for eind in (1, J):
-            for bind in (1, bsize):
+    gamma_new = np.zeros((S-1, J, bsize))
+    for sind in xrange(S-1):
+        for eind in xrange(J):
+            for bind in xrange(bsize):
                 if sind == 1:
                     gamma_new[sind, eind, bind] = (
                         1 / float(S - 1)) * f[sind+1, eind] * np.sum(
@@ -216,6 +218,8 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
 gamma_ss = gamma_init
 phi_ind_ss = phi_ind
 phi_ss = phi
+
+
 
 
 
