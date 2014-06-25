@@ -8,9 +8,7 @@ alternate model forecast method to solve
 
 #Packages
 import numpy as np
-import scipy.optimize as opt
 import matplotlib.pyplot as plt
-import math
 
 '''
 Setting up the Model
@@ -41,19 +39,19 @@ b     = 1 x bsize vector of possible values for initial wealth b
 '''
 
 S = 6
-beta = .96
+beta = .96 ** (60 / S)
 sigma = 3.0
 alpha = .35
 rho = .2
 A = 1.0
-delta = 0.0
-n = np.ones(S)
+delta = 0.0 ** (60 / S)
+n = np.ones(60)
 n[0:6] = np.array([.87, .89, .91, .93, .96, .98])
-'''
 n[40:] = np.array(
     [.95, .89, .84, .79, .73, .68, .63, .57, .52, .47,
      .4, .33, .26, .19, .12, .11, .11, .10, .10, .09])
-'''
+#if S is not 60:
+n = n[60%S :: 60/S]
 e = np.array([.1, .5, .8, 1.0, 1.2, 1.5, 1.9]).T
 e = np.tile(e, (S, 1))
 f = np.array([.04, .09, .2, .34, .2, .09, .04]).T
@@ -204,7 +202,7 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
     for sind in xrange(S-1):
         for eind in xrange(J):
             for bind in xrange(bsize):
-                if sind == 1:
+                if sind == 0:
                     gamma_new[sind, eind, bind] = (
                         1 / float(S - 1)) * f[sind+1, eind] * np.sum(
                         (phi_ind[sind, :, 1] == bind) * f[sind, :])
@@ -219,8 +217,27 @@ gamma_ss = gamma_init
 phi_ind_ss = phi_ind
 phi_ss = phi
 
+#graph of distribution of capital
+domain = np.linspace(0, S, S)
+bsavg = np.zeros(S)
 
+wealthwgts = ((S-1) * gamma_ss) * np.tile(b.reshape(1, 1, bsize), (S-1, J, 1))
+bpct = (S-1) * np.sum(gamma_init, axis=1).reshape(S-1, 1, bsize)
+bpctl = np.zeros((S-1, 1, bsize))
+pctl_init = np.zeros((S-1, 1))
+for bind in xrange(bsize):
+    if bind == 0:
+        bpctl[:, 0, bind] = bpct[:, 0, bind] + pctl_init.flatten()
+    else:
+        bpctl[:, 0, bind] = bpct[:, 0, bind] + bpctl[:, 0, bind-1]
 
+for sind in xrange(1, S):
+    bsavg[1:sind] = np.sum(wealthwgts[sind-1, :, :])
+
+plt.plot(domain, bsavg, color='b', label='Average capital stock')
+plt.axhline(y=Kss, color='r', label='Steady State')
+plt.legend(loc=0)
+plt.show()
 
 
 
