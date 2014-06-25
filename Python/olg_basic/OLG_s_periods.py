@@ -8,7 +8,10 @@ alternate model forecast method to solve
 
 #Packages
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import time
 
 '''
 Setting up the Model
@@ -37,8 +40,9 @@ b     = 1 x bsize vector of possible values for initial wealth b
         and savings b'
 
 '''
+starttime = time.time()
 
-S = 6
+S = 60
 beta = .96 ** (60 / S)
 sigma = 3.0
 alpha = .35
@@ -57,7 +61,7 @@ e = np.tile(e, (S, 1))
 f = np.array([.04, .09, .2, .34, .2, .09, .04]).T
 f = np.tile(f, (S, 1))
 J = e.shape[1]
-bsize = 50
+bsize = 350
 bmin = 0
 bmax = 15
 b = np.linspace(bmin, bmax, bsize)
@@ -154,7 +158,7 @@ def get_K(e, f, b, gamma):
     return K_now
 
 ssiter = 0
-ssmaxiter = 70
+ssmaxiter = 700
 ssdist = 10
 ssmindist = 1e-9
 # Generate gamma_init
@@ -219,7 +223,7 @@ phi_ss = phi
 
 #graph of distribution of capital
 domain = np.linspace(0, S, S)
-bsavg = np.zeros(S)
+bsavg = np.zeros((1, S))
 
 wealthwgts = ((S-1) * gamma_ss) * np.tile(b.reshape(1, 1, bsize), (S-1, J, 1))
 bpct = (S-1) * np.sum(gamma_init, axis=1).reshape(S-1, 1, bsize)
@@ -232,12 +236,22 @@ for bind in xrange(bsize):
         bpctl[:, 0, bind] = bpct[:, 0, bind] + bpctl[:, 0, bind-1]
 
 for sind in xrange(1, S):
-    bsavg[1:sind] = np.sum(wealthwgts[sind-1, :, :])
+    bsavg[0, sind] = np.sum(wealthwgts[sind-1, :, :])
+
+bsavg = bsavg.flatten()
+
+elapsed_time = time.time() - starttime
+print 'This took %.6f seconds.' % elapsed_time
+print 'Kss is ', Kss
+print 'Iterations:', ssiter
+print 'Distance:', ssdist
+
 
 plt.plot(domain, bsavg, color='b', label='Average capital stock')
 plt.axhline(y=Kss, color='r', label='Steady State')
+plt.title('Steady-state Distribution of Savings')
 plt.legend(loc=0)
-plt.show()
-
+# plt.show()
+plt.savefig("distribution_plot")
 
 
