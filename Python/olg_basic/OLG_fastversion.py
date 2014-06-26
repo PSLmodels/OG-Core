@@ -11,7 +11,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import time
-import shelve
+import pickle
 
 '''
 ------------------------------------------------------------------------
@@ -40,7 +40,7 @@ b     = 1 x bsize vector of possible values for initial wealth b
 '''
 starttime = time.time()
 
-S = 20
+S = 60
 beta = .96 ** (60 / S)
 sigma = 3.0
 alpha = .35
@@ -59,7 +59,7 @@ e = np.tile(e, (S, 1))
 f = np.array([.04, .09, .2, .34, .2, .09, .04]).T
 f = np.tile(f, (S, 1))
 J = e.shape[1]
-bsize = 50
+bsize = 350
 bmin = 0
 bmax = 15
 b = np.linspace(bmin, bmax, bsize)
@@ -211,6 +211,9 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
                     phiind[sind, :, :] == bind) * gamma_init[sind-1, :, :])
     ssiter += 1
     ssdist = np.max(abs(gamma_new - gamma_init))
+    if (ssiter % 20) == 0:
+        print ssiter, 'iterations:'
+        print '\tDistance=', ssdist
     gamma_init = rho * gamma_new + (1 - rho) * gamma_init
 
 gamma_ss = gamma_init
@@ -251,11 +254,11 @@ for sind in xrange(1, S):
 
 bsavg = bsavg.flatten()
 
-elapsed_time = time.time() - starttime
-print 'This took %.6f seconds.' % elapsed_time
-print 'Kss is ', Kss
-print 'Iterations:', ssiter
-print 'Distance:', ssdist
+runtime = time.time() - starttime
+inhours = runtime / float(60 * 60)
+hours = np.round(inhours)
+minutes = (inhours - hours) * 60
+print 'This took %.0f hours and %.4f minutes.' % (hours, minutes)
 
 
 plt.plot(domain, bsavg, color='b', label='Average capital stock')
@@ -263,7 +266,7 @@ plt.axhline(y=Kss, color='r', label='Steady State')
 plt.title('Steady-state Distribution of Savings')
 plt.legend(loc=0)
 # plt.show()
-plt.savefig("distribution_plot")
+plt.savefig("distribution_of_capital")
 
 '''
 ------------------------------------------------------------------------
@@ -300,12 +303,10 @@ Save variables/values so they can be used in other modules
 ------------------------------------------------------------------------
 '''
 
-filename = "Steady_State_Variables.out"
-variables = shelve.open(filename, 'n')
-
-for key in dir():
-    try:
-        variables[key] = globals()[key]
-    except TypeError:
-        pass
-variables.close()
+var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'n', 'e',
+             'f', 'J', 'bmin', 'bmax', 'bsize', 'b', 'gamma_ss', 'Kss',
+             'Nss', 'Yss', 'wss', 'rss', 'phiind_ss', 'phi_ss']
+dictionary = {}
+for key in var_names:
+    dictionary[key] = globals()[key]
+pickle.dump(dictionary, open("ss_vars.pkl", "w"))

@@ -12,6 +12,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import time
+import pickle
 
 '''
 ------------------------------------------------------------------------
@@ -251,11 +252,8 @@ for sind in xrange(1, S):
 
 bsavg = bsavg.flatten()
 
-elapsed_time = time.time() - starttime
-print 'This took %.6f seconds.' % elapsed_time
-print 'Kss is ', Kss
-print 'Iterations:', ssiter
-print 'Distance:', ssdist
+runtime = time.time() - starttime
+print 'This took %.6f seconds.' % runtime
 
 
 plt.plot(domain, bsavg, color='b', label='Average capital stock')
@@ -299,13 +297,10 @@ plt.savefig("euler_errors")
 Save variables/values so they can be used in other modules
 ------------------------------------------------------------------------
 '''
-
-filename = "Steady_State_Variables.out"
-variables = shelve.open(filename, 'n')
-
-for key in dir():
-    try:
-        variables[key] = globals()[key]
-    except TypeError:
-        pass
-variables.close()
+var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'n', 'e',
+             'f', 'J', 'bmin', 'bmax', 'bsize', 'b', 'gamma_ss', 'Kss',
+             'Nss', 'Yss', 'wss', 'rss', 'phiind_ss', 'phi_ss']
+dictionary = {}
+for key in var_names:
+    dictionary[key] = globals()[key]
+pickle.dump(dictionary, open("ss_vars.pkl", "w"))
