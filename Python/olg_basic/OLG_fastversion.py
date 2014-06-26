@@ -1,6 +1,5 @@
 '''
-Python version of the Evan/Phillips 2014 paper
-Last updated: 6/25/2014
+Last updated: 6/26/2014
 Python version of the Evan/Phillips 2014 paper
 Calculates steady state, and then usies timepath iteration and
 alternate model forecast method to solve
@@ -41,7 +40,7 @@ b     = 1 x bsize vector of possible values for initial wealth b
 '''
 starttime = time.time()
 
-S = 20
+S = 60
 beta = .96 ** (60 / S)
 sigma = 3.0
 alpha = .35
@@ -60,7 +59,7 @@ e = np.tile(e, (S, 1))
 f = np.array([.04, .09, .2, .34, .2, .09, .04]).T
 f = np.tile(f, (S, 1))
 J = e.shape[1]
-bsize = 50
+bsize = 350
 bmin = 0
 bmax = 15
 b = np.linspace(bmin, bmax, bsize)
@@ -205,7 +204,11 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
         1 / float(S - 1)) * f[1, :].reshape(J, 1).dot(
         ((phiind[0, :, 0].reshape(1, J, 1) == np.arange(
             bsize)) * f[0, :].reshape(J, 1)).sum(axis=1))
-    gamma_new[1:, :, :] = f[2:, :].reshape(S-2, J, 1) * (((phiind[1:-1, :, :].reshape(S-2, J, bsize) == np.arange(bsize)) * gamma_init[:-1, :, :].reshape(S-2, J, bsize)).sum(axis=1).sum(axis=0).reshape(1, 1, bsize))
+    gamma_new[1:, :, :] = f[2:, :].reshape(S-2, J, 1) * \
+        (((phiind[1:-1, :, :].reshape(S-2, J, bsize) == np.tile\
+            (np.arange(bsize).reshape((1,1,bsize)),(S-2, J, 1))) * \
+        gamma_init[:-1, :, :].reshape(S-2, J, bsize)).sum(axis=1).sum\
+        (axis=0).reshape(1, 1, bsize))
     ssiter += 1
     ssdist = np.max(abs(gamma_new - gamma_init))
     gamma_init = rho * gamma_new + (1 - rho) * gamma_init
@@ -262,17 +265,17 @@ plt.legend(loc=0)
 plt.savefig("distribution_plot")
 
 '''
--------------------------------------------------------------------------
+------------------------------------------------------------------------
  Generate steady state multiplier values
--------------------------------------------------------------------------
+------------------------------------------------------------------------
 '''
 
 ssbsavg = (S-1) * (gamma_ss * np.tile(b.reshape(1,1,bsize), \
     (S-1,J,1))).sum(axis=2).sum(axis=1)
 esavg = (e*f).sum(axis=1)
 nsavg = n.T
-cssvec = (1+rss) * np.array([0]+list(ssbsavg[:S-2])) + wss * esavg[:S-1] * \
-    nsavg[:S-1] - ssbsavg
+cssvec = (1+rss) * np.array([0]+list(ssbsavg[:S-2])) + wss * \
+    esavg[:S-1] * nsavg[:S-1] - ssbsavg
 cp1ssvec = (1+rss) * ssbsavg + wss*esavg[1:] * nsavg[1:] - \
     np.array(list(ssbsavg[1:])+[0])
 gxbar = (cssvec**(-sigma)) / ((beta*(1+rss)) * cp1ssvec**(-sigma))
