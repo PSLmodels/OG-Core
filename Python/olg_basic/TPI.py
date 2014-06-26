@@ -24,6 +24,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import time
 import shelve
+import pickle
 
 '''
 ------------------------------------------------------------------------
@@ -66,13 +67,9 @@ phi_ss    = S x J x bsize steady-state policy function values for
 '''
 
 st = time.time()
-variables = shelve.open('Steady_State_Variables.out')
+variables = pickle.load(open('Steady_State_Variables','r'))
 for key in variables:
-    try:
-	   globals()[key] = variables[key]
-    except:
-        pass
-variables.close()
+    globals()[key] = variables[key]
 print "Reading the data takes",time.time()-st,"seconds."
 
 start_time = time.time() # Start timer
