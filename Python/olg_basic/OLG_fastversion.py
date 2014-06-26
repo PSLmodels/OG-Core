@@ -200,16 +200,11 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
         phi[S-sind-1, :, :] = b[bprimeind].T.reshape(1, J, bsize)
         Vinit = Vnew
     gamma_new = np.zeros((S-1, J, bsize))
-    for sind in xrange(S-1):
-        for eind in xrange(J):
-            for bind in xrange(bsize):
-                if sind == 0:
-                    gamma_new[sind, eind, bind] = (
-                        1 / float(S - 1)) * f[sind+1, eind] * np.sum(
-                        (phiind[sind, :, 0] == bind) * f[sind, :])
-                else:
-                    gamma_new[sind, eind, bind] = f[sind+1, eind] * np.sum(
-                        (phiind[sind, :, :] == bind) * gamma_init[sind-1, :, :])
+    gamma_new[0, :, :] = (
+        1 / float(S - 1)) * f[1, :].reshape(J, 1).dot(
+        ((phiind[0, :, 0].reshape(1, J, 1) == np.arange(
+            bsize)) * f[0, :].reshape(J, 1)).sum(axis=1))
+    gamma_new[1:, :, :] = f[2:, :].reshape(S-2, J, 1) * (((phiind[1:-1, :, :].reshape(S-2, J, bsize) == np.arange(bsize)) * gamma_init[:-1, :, :].reshape(S-2, J, bsize)).sum(axis=1).sum(axis=0).reshape(1, 1, bsize))
     ssiter += 1
     ssdist = np.max(abs(gamma_new - gamma_init))
     gamma_init = rho * gamma_new + (1 - rho) * gamma_init
@@ -264,5 +259,3 @@ plt.title('Steady-state Distribution of Savings')
 plt.legend(loc=0)
 # plt.show()
 plt.savefig("distribution_plot")
-
-
