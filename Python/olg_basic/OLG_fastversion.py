@@ -40,7 +40,7 @@ b     = 1 x bsize vector of possible values for initial wealth b
 '''
 starttime = time.time()
 
-S = 60
+S = 20
 beta = .96 ** (60 / S)
 sigma = 3.0
 alpha = .35
@@ -59,7 +59,7 @@ e = np.tile(e, (S, 1))
 f = np.array([.04, .09, .2, .34, .2, .09, .04]).T
 f = np.tile(f, (S, 1))
 J = e.shape[1]
-bsize = 350
+bsize = 50
 bmin = 0
 bmax = 15
 b = np.linspace(bmin, bmax, bsize)
@@ -204,11 +204,11 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
         1 / float(S - 1)) * f[1, :].reshape(J, 1).dot(
         ((phiind[0, :, 0].reshape(1, J, 1) == np.arange(
             bsize)) * f[0, :].reshape(J, 1)).sum(axis=1))
-    gamma_new[1:, :, :] = f[2:, :].reshape(S-2, J, 1) * \
-        (((phiind[1:-1, :, :].reshape(S-2, J, bsize) == np.tile\
-            (np.arange(bsize).reshape((1,1,bsize)),(S-2, J, 1))) * \
-        gamma_init[:-1, :, :].reshape(S-2, J, bsize)).sum(axis=1).sum\
-        (axis=0).reshape(1, 1, bsize))
+    for sind in xrange(1, S-1):
+        for eind in xrange(J):
+            for bind in xrange(bsize):
+                gamma_new[sind, eind, bind] = f[sind+1, eind] * np.sum((
+                    phiind[sind, :, :] == bind) * gamma_init[sind-1, :, :])
     ssiter += 1
     ssdist = np.max(abs(gamma_new - gamma_init))
     gamma_init = rho * gamma_new + (1 - rho) * gamma_init
@@ -216,6 +216,7 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
 gamma_ss = gamma_init
 phiind_ss = phiind
 phi_ss = phi
+
 
 '''
 ------------------------------------------------------------------------
@@ -266,12 +267,12 @@ plt.savefig("distribution_plot")
 
 '''
 ------------------------------------------------------------------------
- Generate steady state multiplier values
+Generate steady state multiplier values
 ------------------------------------------------------------------------
 '''
 
-ssbsavg = (S-1) * (gamma_ss * np.tile(b.reshape(1,1,bsize), \
-    (S-1,J,1))).sum(axis=2).sum(axis=1)
+ssbsavg = (S-1) * (gamma_ss * np.tile(b.reshape(1, 1, bsize), (
+    S-1, J, 1))).sum(axis=2).sum(axis=1)
 esavg = (e*f).sum(axis=1)
 nsavg = n.T
 cssvec = (1+rss) * np.array([0]+list(ssbsavg[:S-2])) + wss * \
@@ -281,12 +282,23 @@ cp1ssvec = (1+rss) * ssbsavg + wss*esavg[1:] * nsavg[1:] - \
 gxbar = (cssvec**(-sigma)) / ((beta*(1+rss)) * cp1ssvec**(-sigma))
 
 
+'''
+------------------------------------------------------------------------
+Generate graph of Euler Errors
+------------------------------------------------------------------------
+'''
 
-plt.plot(np.arange(1,S), gxbar)
+plt.plot(np.arange(1, S), gxbar)
 plt.title('Euler errors: S = {}'.format(S))
 # plt.legend(loc=0)
 # plt.show()
 plt.savefig("euler_errors")
+
+'''
+------------------------------------------------------------------------
+Save variables/values so they can be used in other modules
+------------------------------------------------------------------------
+'''
 
 filename = "Steady_State_Variables.out"
 variables = shelve.open(filename, 'n')
@@ -297,5 +309,3 @@ for key in dir():
     except TypeError:
         pass
 variables.close()
-
-

@@ -40,7 +40,7 @@ b     = 1 x bsize vector of possible values for initial wealth b
 '''
 starttime = time.time()
 
-S = 20
+S = 60
 beta = .96 ** (60 / S)
 sigma = 3.0
 alpha = .35
@@ -59,7 +59,7 @@ e = np.tile(e, (S, 1))
 f = np.array([.04, .09, .2, .34, .2, .09, .04]).T
 f = np.tile(f, (S, 1))
 J = e.shape[1]
-bsize = 50
+bsize = 350
 bmin = 0
 bmax = 15
 b = np.linspace(bmin, bmax, bsize)
@@ -263,6 +263,49 @@ plt.axhline(y=Kss, color='r', label='Steady State')
 plt.title('Steady-state Distribution of Savings')
 plt.legend(loc=0)
 # plt.show()
-plt.savefig("distribution_plot")
+plt.savefig("distribution_of_capital")
+
+'''
+------------------------------------------------------------------------
+Generate steady state multiplier values
+------------------------------------------------------------------------
+'''
+
+ssbsavg = (S-1) * (gamma_ss * np.tile(b.reshape(1, 1, bsize), (
+    S-1, J, 1))).sum(axis=2).sum(axis=1)
+esavg = (e*f).sum(axis=1)
+nsavg = n.T
+cssvec = (1+rss) * np.array([0]+list(ssbsavg[:S-2])) + wss * \
+    esavg[:S-1] * nsavg[:S-1] - ssbsavg
+cp1ssvec = (1+rss) * ssbsavg + wss*esavg[1:] * nsavg[1:] - \
+    np.array(list(ssbsavg[1:])+[0])
+gxbar = (cssvec**(-sigma)) / ((beta*(1+rss)) * cp1ssvec**(-sigma))
 
 
+'''
+------------------------------------------------------------------------
+Generate graph of Euler Errors
+------------------------------------------------------------------------
+'''
+
+plt.plot(np.arange(1, S), gxbar)
+plt.title('Euler errors: S = {}'.format(S))
+# plt.legend(loc=0)
+# plt.show()
+plt.savefig("euler_errors")
+
+'''
+------------------------------------------------------------------------
+Save variables/values so they can be used in other modules
+------------------------------------------------------------------------
+'''
+
+filename = "Steady_State_Variables.out"
+variables = shelve.open(filename, 'n')
+
+for key in dir():
+    try:
+        variables[key] = globals()[key]
+    except TypeError:
+        pass
+variables.close()
