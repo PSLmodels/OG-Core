@@ -210,7 +210,8 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
                         (phiind[sind, :, 0] == bind) * f[sind, :])
                 else:
                     gamma_new[sind, eind, bind] = f[sind+1, eind] * np.sum(
-                        (phiind[sind, :, :] == bind) * gamma_init[sind-1, :, :])
+                        (phiind[sind, :, :] == bind) * gamma_init[
+                            sind-1, :, :])
     ssiter += 1
     ssdist = np.max(abs(gamma_new - gamma_init))
     gamma_init = rho * gamma_new + (1 - rho) * gamma_init
@@ -219,12 +220,21 @@ gamma_ss = gamma_init
 phiind_ss = phiind
 phi_ss = phi
 
+runtime = time.time() - starttime
+inhours = runtime / float(60 * 60)
+hours = np.round(inhours)
+minutes = (inhours - hours) * 60
+print 'This took %.0f hours and %.4f minutes.' % (hours, minutes)
+
+
 '''
 ------------------------------------------------------------------------
  Generate graph of the steady-state distribution of wealth
 ------------------------------------------------------------------------
 domain     = 1 x S vector of each age cohort
 bsavg      = 1 x S vector of the average wealth b of each age cohort
+b(i)        = 1 x S vector of the (i)th percentile of wealth holdings of
+             each age cohort
 wealthwgts = (S-1) x J x bsize array of distribution weights times the
              value of wealth
 bpct       = (S-1) x 1 x bsize array of percent of population with each
@@ -234,8 +244,14 @@ bpctl      = (S-1) x 1 x bsize array of percentile of each wealth level
 pctl_init  = (S-1) x 1 vector of zeros for initial percentile
 ------------------------------------------------------------------------
 '''
+
 domain = np.linspace(0, S, S)
 bsavg = np.zeros((1, S))
+b90 = np.zeros((1, S))
+b75 = np.zeros((1, S))
+b50 = np.zeros((1, S))
+b25 = np.zeros((1, S))
+b10 = np.zeros((1, S))
 
 wealthwgts = ((S-1) * gamma_ss) * np.tile(b.reshape(1, 1, bsize), (S-1, J, 1))
 bpct = (S-1) * np.sum(gamma_init, axis=1).reshape(S-1, 1, bsize)
@@ -249,19 +265,46 @@ for bind in xrange(bsize):
 
 for sind in xrange(1, S):
     bsavg[0, sind] = np.sum(wealthwgts[sind-1, :, :])
-
+    b90diffsq = np.power(
+        (bpctl[sind-1, 0, :] - .90 * np.ones((1, 1, bsize))), 2)
+    b75diffsq = np.power(
+        (bpctl[sind-1, 0, :] - .75 * np.ones((1, 1, bsize))), 2)
+    b50diffsq = np.power(
+        (bpctl[sind-1, 0, :] - .50 * np.ones((1, 1, bsize))), 2)
+    b25diffsq = np.power(
+        (bpctl[sind-1, 0, :] - .25 * np.ones((1, 1, bsize))), 2)
+    b10diffsq = np.power(
+        (bpctl[sind-1, 0, :] - .10 * np.ones((1, 1, bsize))), 2)
+    b90minind = b90diffsq.argmin()
+    b75minind = b75diffsq.argmin()
+    b50minind = b50diffsq.argmin()
+    b25minind = b25diffsq.argmin()
+    b10minind = b10diffsq.argmin()
+    b90[0, sind] = b[b90minind]
+    b75[0, sind] = b[b75minind]
+    b50[0, sind] = b[b50minind]
+    b25[0, sind] = b[b25minind]
+    b10[0, sind] = b[b10minind]
 bsavg = bsavg.flatten()
-
-runtime = time.time() - starttime
-print 'This took %.6f seconds.' % runtime
+b90 = b90.flatten()
+b75 = b75.flatten()
+b50 = b50.flatten()
+b25 = b25.flatten()
+b10 = b10.flatten()
 
 
 plt.plot(domain, bsavg, color='b', label='Average capital stock')
 plt.axhline(y=Kss, color='r', label='Steady State')
-plt.title('Steady-state Distribution of Savings')
+plt.title('Steady-state Distribution of Capital')
 plt.legend(loc=0)
 # plt.show()
 plt.savefig("distribution_of_capital")
+
+'''
+------------------------------------------------------------------------
+Generate steady state multiplier values
+------------------------------------------------------------------------
+'''
 
 '''
 ------------------------------------------------------------------------
@@ -279,6 +322,43 @@ cp1ssvec = (1+rss) * ssbsavg + wss*esavg[1:] * nsavg[1:] - \
     np.array(list(ssbsavg[1:])+[0])
 gxbar = (cssvec**(-sigma)) / ((beta*(1+rss)) * cp1ssvec**(-sigma))
 
+b0array = np.array(list(np.zeros((1, J, bsize))) + list(np.tile(
+    b.reshape(1, 1, bsize), (S-2, J, 1))))
+e0array = np.tile(e[:S-1, :].reshape(S-1, J, 1), (1, 1, bsize))
+n0array = np.tile(n[:S-1].reshape(S-1, 1, 1), (1, J, bsize))
+b1array = phi_ss[:S-1, :, :]
+c0array = ((1 + rss) * b0array) + (wss * e0array * n0array) - b1array
+mu0array = np.power(c0array, (-sigma))
+Eb1array = np.tile(b1array.reshape(S-1, J, bsize, 1), (1, 1, 1, J))
+Een1start = e[1:S, :] * np.tile(n[1:S].reshape((S-1), 1), (1, J))
+Een1array = np.tile(Een1start.reshape(S-1, 1, 1, J), (1, J, bsize, 1))
+b2b1ind = np.tile(phiind_ss.reshape(S, J, bsize, 1), (1, 1, 1, J))
+b2s1ind = np.tile(np.arange(1, S).reshape(S-1, 1, 1, 1), (1, J, bsize, J))
+b2e1ind = np.tile(np.arange(J).reshape(1, 1, 1, J), (S-1, J, bsize, 1))
+Eb2array = np.zeros((S-1, J, bsize, J))
+for sind in xrange(S-1):
+    for e1ind in xrange(J):
+        for bind in xrange(bsize):
+            for e2ind in xrange(J):
+                Eb2array[sind, e1ind, bind, e2ind] = phi_ss[
+                    b2s1ind[sind, e1ind, bind, e2ind], b2e1ind[
+                        sind, e1ind, bind, e2ind], b2b1ind[
+                        sind, e1ind, bind, e2ind]]
+f1array = np.tile(f[1:S, :].reshape(S-1, 1, 1, J), (1, J, bsize, 1))
+Ec1array = ((1 + rss) * Eb1array) + (wss * Een1array) - Eb2array
+Emu1array = (np.power(Ec1array, (-sigma)) * f1array).sum(3)
+lamdif = (mu0array - (beta * (1 + rss)) * Emu1array) / beta
+lam1pos = phiind_ss[:S-1, :, :] == 1
+lamdifpos = lamdif > 0
+lambda1 = lamdif * lam1pos * lamdifpos
+lam2pos = phiind[:S-1, :, :] == bsize
+lamdifneg = lamdif < 0
+lambda2 = -lamdif * lam2pos * lamdifneg
+lambda1sbar = ((S-1) * lambda1 * gamma_ss).sum(2).sum(1)
+lambda2sbar = ((S-1) * lambda2 * gamma_ss).sum(2).sum(1)
+lamgxbar = (np.power(cssvec, (
+    -sigma)) - beta * lambda1sbar + beta * lambda2sbar) / (
+    (beta * (1 + rss)) * np.power(cssvec, (-sigma)))
 
 '''
 ------------------------------------------------------------------------
@@ -297,6 +377,7 @@ plt.savefig("euler_errors")
 Save variables/values so they can be used in other modules
 ------------------------------------------------------------------------
 '''
+
 var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'n', 'e',
              'f', 'J', 'bmin', 'bmax', 'bsize', 'b', 'gamma_ss', 'Kss',
              'Nss', 'Yss', 'wss', 'rss', 'phiind_ss', 'phi_ss']
