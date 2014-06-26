@@ -65,6 +65,7 @@ phi_ss    = S x J x bsize steady-state policy function values for
 ------------------------------------------------------------------------
 '''
 
+st = time.time()
 variables = shelve.open('Steady_State_Variables.out')
 for key in variables:
     try:
@@ -72,6 +73,7 @@ for key in variables:
     except:
         pass
 variables.close()
+print "Reading the data takes",time.time()-st,"seconds."
 
 start_time = time.time() # Start timer
 
@@ -154,15 +156,89 @@ TPIdist = 10
 TPImindist = 3.0*10**(-6)
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
+    gammat = np.zeros((S-1,J,bsize,T))
+    gammat[:,:,:,0] = gamma0
+    phiindt = np.zeros((S,J,bsize,T+S-2))
+    phit = np.zeros((S,J,bsize,T+S-2))
+
+    # Solve for the lifetime savings policy rules of each type of 
+    # person at t = 1. 
+    for p1aind in xrange(S):
+        Vinit = np.zeros((bsize,J))
+        for sind in xrange(p1aind):
+            if sind < S-1:
+                c = (1+rinit[p1aind-sind]) * np.tile(b.reshape(
+                    bsize,1,1),(1,J,bsize)) + (winit[p1aind-sind] * 
+                n[S-sind-1]) * np.tile(e[S-sind-1,:].reshape((1,7,1)), 
+                (bsize,1,bsize)) - np.tile(b.reshape((1,1,bsize)), 
+                (bsize,J,1))
+            elif sind == S-1:
+                c = (winit[p1aind-sind] * n[S-sind-1]) * np.tile(
+                    e[S-sind-1,:].reshape((1,7,1)), (bsize,1,bsize)) - \
+                np.tile(b.reshape((1,1,bsize)), (bsize,J,1))
+            cposind = c > 0
+            cnonposind = np.ones((bsize,J,bsize)) - cposind
+            cpos = c*cposind + (10**(-8))*cnonposind
+            uc = ((cpos**(1-sigma) - np.ones((bsize,J,bsize))) / (1 - \
+                sigma)) * cposind - (10**(8))*cnonposind
+            if sind == 0:
+                EVprime = Vinit.sum(axis=1)
+            else:
+                EVprime = (Vinit * np.tile(f[S-sind,:],(bsize,1))).sum(\
+                    axis=1)
+            EVprimenew = np.tile(EVprime.reshape(1,1,bsize),(bsize,J,1))
+            Vnewarray = uc + beta * (EVprimenew * cposind)
+            Vnew = Vnewarray.max(axis=2)
+            bprimeind = Vnewarray.argmax(axis=2)
+            phiindt[S-sind-1,:,:,p1aind-sind] = bprimeind.T.reshape(\
+                (1,J,bsize))
+            phit[S-1-sind,:,:,p1aind-sind] = b[bprimeind].T.reshape(\
+                (1,J,bsize))
+            Vinit = Vnew
+
+    # Solve for the lifetime savings policy rules of each age-1 person 
+    # from t = 2 to t = T-1
+    for tind in xrange(1,T-1):
+        Vinit = np.zeros((bsize,J))
+        for sind in xrange(S):
+            if sind < S-1:
+                c = (1+rinit[tind+S-sind]) * np.tile(b.reshape(
+                    bsize,1,1),(1,J,bsize)) + (winit[tind+S-sind] * 
+                n[S-sind-1]) * np.tile(e[S-sind-1,:].reshape((1,7,1)), 
+                (bsize,1,bsize)) - np.tile(b.reshape((1,1,bsize)), 
+                (bsize,J,1))
+            elif sind == S-1:
+                c = (winit[tind+S-sind] * n[S-sind-1]) * np.tile(
+                    e[S-sind-1,:].reshape((1,7,1)), (bsize,1,bsize)) - \
+                np.tile(b.reshape((1,1,bsize)), (bsize,J,1))
+            cposind = c > 0
+            cnonposind = np.ones((bsize,J,bsize)) - cposind
+            cpos = c*cposind + (10**(-8))*cnonposind
+            uc = ((cpos**(1-sigma) - np.ones((bsize,J,bsize))) / (1 - \
+                sigma)) * cposind - (10**(8))*cnonposind
+            if sind == 0:
+                EVprime = Vinit.sum(axis=1)
+            else:
+                EVprime = (Vinit * np.tile(f[S-sind,:],(bsize,1))).sum(\
+                    axis=1)
+            EVprimenew = np.tile(EVprime.reshape(1,1,bsize),(bsize,J,1))
+            Vnewarray = uc + beta * (EVprimenew * cposind)
+            Vnew = Vnewarray.max(axis=2)
+            bprimeind = Vnewarray.argmax(axis=2)
+            phiindt[S-sind-1,:,:,tind+S-sind] = bprimeind.T.reshape(\
+                (1,J,bsize))
+            phit[S-1-sind,:,:,tind+S-sind] = b[bprimeind].T.reshape(\
+                (1,J,bsize))
+            Vinit = Vnew
 
     TPIiter += 1
 
 Kpath_TPI = Kinit
-# gammat_TPI = gammat
+gammat_TPI = gammat
 
 elapsed_time = time.time() - start_time
 
-print "This took", elapsed_time
+print "TPI took", elapsed_time
 print "The time path is", Kpath_TPI
 print "Iterations:", TPIiter
 print "Distance:", TPIdist
