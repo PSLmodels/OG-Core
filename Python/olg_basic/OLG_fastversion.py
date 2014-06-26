@@ -40,7 +40,7 @@ b     = 1 x bsize vector of possible values for initial wealth b
 '''
 starttime = time.time()
 
-S = 60
+S = 6
 beta = .96 ** (60 / S)
 sigma = 3.0
 alpha = .35
@@ -59,7 +59,7 @@ e = np.tile(e, (S, 1))
 f = np.array([.04, .09, .2, .34, .2, .09, .04]).T
 f = np.tile(f, (S, 1))
 J = e.shape[1]
-bsize = 350
+bsize = 35
 bmin = 0
 bmax = 15
 b = np.linspace(bmin, bmax, bsize)
@@ -211,9 +211,6 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
                     phiind[sind, :, :] == bind) * gamma_init[sind-1, :, :])
     ssiter += 1
     ssdist = np.max(abs(gamma_new - gamma_init))
-    if (ssiter % 20) == 0:
-        print ssiter, 'iterations:'
-        print '\tDistance=', ssdist
     gamma_init = rho * gamma_new + (1 - rho) * gamma_init
 
 gamma_ss = gamma_init
@@ -223,8 +220,7 @@ phi_ss = phi
 runtime = time.time() - starttime
 inhours = runtime / float(60 * 60)
 hours = np.round(inhours)
-minutes = (inhours - hours) * 60
-print 'This took %.0f hours and %.4f minutes.' % (hours, minutes)
+minutes = abs(inhours - hours) * 60
 
 
 '''
@@ -292,7 +288,7 @@ b50 = b50.flatten()
 b25 = b25.flatten()
 b10 = b10.flatten()
 
-
+plt.figure(1)
 plt.plot(domain, bsavg, color='b', label='Average capital stock')
 plt.axhline(y=Kss, color='r', label='Steady State')
 plt.title('Steady-state Distribution of Capital')
@@ -360,6 +356,7 @@ Generate graph of Euler Errors
 ------------------------------------------------------------------------
 '''
 
+plt.figure(2)
 plt.plot(np.arange(1, S), gxbar)
 plt.title('Euler errors: S = {}'.format(S))
 # plt.legend(loc=0)

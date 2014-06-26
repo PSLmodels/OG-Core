@@ -223,8 +223,7 @@ phi_ss = phi
 runtime = time.time() - starttime
 inhours = runtime / float(60 * 60)
 hours = np.round(inhours)
-minutes = (inhours - hours) * 60
-print 'This took %.0f hours and %.4f minutes.' % (hours, minutes)
+minutes = abs(inhours - hours) * 60
 
 
 '''
@@ -292,7 +291,7 @@ b50 = b50.flatten()
 b25 = b25.flatten()
 b10 = b10.flatten()
 
-
+plt.figure(1)
 plt.plot(domain, bsavg, color='b', label='Average capital stock')
 plt.axhline(y=Kss, color='r', label='Steady State')
 plt.title('Steady-state Distribution of Capital')
@@ -366,6 +365,7 @@ Generate graph of Euler Errors
 ------------------------------------------------------------------------
 '''
 
+plt.figure(2)
 plt.plot(np.arange(1, S), gxbar)
 plt.title('Euler errors: S = {}'.format(S))
 # plt.legend(loc=0)
