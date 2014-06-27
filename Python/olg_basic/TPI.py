@@ -148,7 +148,7 @@ winit = (1-alpha) * (Yinit/Ninit)
 rinit = alpha * (Yinit/Kinit)
 
 TPIiter = 0
-TPImaxiter = 50
+TPImaxiter = 500
 TPIdist = 10
 TPImindist = 3.0*10**(-6)
 
