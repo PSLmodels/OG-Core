@@ -199,10 +199,10 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
         cpos = c * cposind + (1e-8) * cnonposind
         uc = (((cpos ** (1 - sigma)) - np.ones((bsize, J, bsize))) / (
             1 - sigma)) * cposind - (10 ** 8) * cnonposind
-        if sind == 1:
+        if sind == 0:
             EVprime = np.sum(Vinit, 1)
         else:
-            EVprime = np.sum(Vinit * np.tile(f[S-sind-1, :], (
+            EVprime = np.sum(Vinit * np.tile(f[S-sind, :], (
                 bsize, 1)), axis=1)
         EVprimenew = np.tile(EVprime.reshape(1, 1, bsize), (bsize, J, 1))
         Vnewarray = uc + beta * (EVprimenew * cposind)
