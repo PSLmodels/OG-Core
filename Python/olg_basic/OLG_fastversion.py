@@ -59,7 +59,7 @@ e = np.tile(e, (S, 1))
 f = np.array([.04, .09, .2, .34, .2, .09, .04]).T
 f = np.tile(f, (S, 1))
 J = e.shape[1]
-bsize = 30
+bsize = 35
 bmin = 0
 bmax = 15
 b = np.linspace(bmin, bmax, bsize)
@@ -205,10 +205,9 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
         ((phiind[0, :, 0].reshape(1, J, 1) == np.arange(
             bsize)) * f[0, :].reshape(J, 1)).sum(axis=1))
     for sind in xrange(1, S-1):
-        for eind in xrange(J):
-            for bind in xrange(bsize):
-                gamma_new[sind, eind, bind] = f[sind+1, eind] * np.sum((
-                    phiind[sind, :, :] == bind) * gamma_init[sind-1, :, :])
+        for bind in xrange(bsize):
+            gamma_new[sind, :, bind] = f[sind+1, :] * np.sum((
+                phiind[sind, :, :] == bind) * gamma_init[sind-1, :, :])
     # gamma_new[1:,:,:] = f[2:,:].reshape((J,S-2)).dot(((phiind[1:-1,:,:]==np.arange(bsize)) * gamma_init[:-1,:,:]).sum(axis=1))
     ssiter += 1
     ssdist = np.max(abs(gamma_new - gamma_init))
