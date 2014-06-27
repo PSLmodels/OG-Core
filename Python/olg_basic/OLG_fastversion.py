@@ -40,18 +40,19 @@ b     = 1 x bsize vector of possible values for initial wealth b
 '''
 starttime = time.time()
 
-S = 10
+S = 60
 beta = .96 ** (60 / S)
-sigma = 3.0
+sigma = 3
 alpha = .35
-rho = .2
-A = 1.0
+rho = .20
+A = 1
 delta = 0.0 ** (60 / S)
 n = np.ones(60)
-n[0:6] = np.array([.87, .89, .91, .93, .96, .98])
+n[0:6] = np.array([.865, .8875, .91, .9325, .955, .9775])
 n[40:] = np.array(
-    [.95, .89, .84, .79, .73, .68, .63, .57, .52, .47,
-     .4, .33, .26, .19, .12, .11, .11, .10, .10, .09])
+    [.9465, .893, .8395, .786, .7325, .679, .6255, .572, .5185,
+     .465, .3952, .3254, .2556, .1858, .116, .1114, .1068, .1022
+     .0976, .093])
 #if S is not 60:
 n = n[60 % S:: 60 / S]
 e = np.array([.1, .5, .8, 1.0, 1.2, 1.5, 1.9]).T
@@ -59,7 +60,7 @@ e = np.tile(e, (S, 1))
 f = np.array([.04, .09, .2, .34, .2, .09, .04]).T
 f = np.tile(f, (S, 1))
 J = e.shape[1]
-bsize = 35
+bsize = 350
 bmin = 0
 bmax = 15
 b = np.linspace(bmin, bmax, bsize)
@@ -212,6 +213,8 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
     ssiter += 1
     ssdist = np.max(abs(gamma_new - gamma_init))
     gamma_init = rho * gamma_new + (1 - rho) * gamma_init
+    print ssiter
+    print ssdist
 
 gamma_ss = gamma_init
 phiind_ss = phiind
@@ -378,7 +381,8 @@ Save variables/values so they can be used in other modules
 var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'n', 'e',
              'f', 'J', 'bmin', 'bmax', 'bsize', 'b', 'gamma_ss', 'Kss',
              'Nss', 'Yss', 'wss', 'rss', 'phiind_ss', 'phi_ss', 'runtime',
-             'hours', 'minutes', 'seconds', 'ssiter']
+             'hours', 'minutes', 'seconds', 'ssiter', 'ssdist', 'bsavg',
+             'gxbar']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
