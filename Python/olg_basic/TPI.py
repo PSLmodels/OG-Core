@@ -273,3 +273,14 @@ print "Distance:", TPIdist
 plt.plot(np.arange(T+10), Kpath_TPI[:T+10])
 plt.axhline(y=Kss)
 plt.savefig("TPI")
+
+var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'n', 'e',
+             'f', 'J', 'bmin', 'bmax', 'bsize', 'b', 'gamma_ss', 'Kss',
+             'Nss', 'Yss', 'wss', 'rss', 'phiind_ss', 'phi_ss', 'runtime',
+             'hours', 'minutes', 'seconds', 'ssiter', 'ssdist', 'bsavg',
+             'gxbar', 'Kpath_TPI', 'TPIiter', 'TPIdist', 'elapsed_time',
+             'gammat_TPI']
+dictionary = {}
+for key in var_names:
+    dictionary[key] = globals()[key]
+pickle.dump(dictionary, open("TPI_vars.pkl", "w"))
