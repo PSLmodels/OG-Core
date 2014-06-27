@@ -148,7 +148,7 @@ winit = (1-alpha) * (Yinit/Ninit)
 rinit = alpha * (Yinit/Kinit)
 
 TPIiter = 0
-TPImaxiter = 500
+TPImaxiter = 50
 TPIdist = 10
 TPImindist = 3.0*10**(-6)
 
@@ -162,17 +162,17 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     # person at t = 1. 
     for p1aind in xrange(S):
         Vinit = np.zeros((bsize,J))
-        for sind in xrange(p1aind):
+        for sind in xrange(p1aind+1):
             if sind < S-1:
-                c = (1+rinit[p1aind-sind]) * np.tile(b.reshape(
-                    bsize,1,1),(1,J,bsize)) + (winit[p1aind-sind] * 
-                n[S-sind-1]) * np.tile(e[S-sind-1,:].reshape((1,7,1)), 
-                (bsize,1,bsize)) - np.tile(b.reshape((1,1,bsize)), 
-                (bsize,J,1))
+                c = (1+rinit.flatten()[p1aind-sind]) * np.tile(b.reshape(
+                    bsize,1,1),(1,J,bsize)) + (winit.flatten()[p1aind-sind] * 
+                    n[S-sind-1]) * np.tile(e[S-sind-1,:].reshape((1,7,1)), 
+                    (bsize,1,bsize)) - np.tile(b.reshape((1,1,bsize)), 
+                    (bsize,J,1))
             elif sind == S-1:
-                c = (winit[p1aind-sind] * n[S-sind-1]) * np.tile(
+                c = (winit.flatten()[p1aind-sind] * n[S-sind-1]) * np.tile(
                     e[S-sind-1,:].reshape((1,7,1)), (bsize,1,bsize)) - \
-                np.tile(b.reshape((1,1,bsize)), (bsize,J,1))
+                    np.tile(b.reshape((1,1,bsize)), (bsize,J,1))
             cposind = c > 0
             cnonposind = np.ones((bsize,J,bsize)) - cposind
             cpos = c*cposind + (10**(-8))*cnonposind
@@ -199,13 +199,13 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         Vinit = np.zeros((bsize,J))
         for sind in xrange(S):
             if sind < S-1:
-                c = (1+rinit[tind+S-sind-2]) * np.tile(b.reshape(
-                    bsize,1,1),(1,J,bsize)) + (winit[tind+S-sind-2] * 
+                c = (1+rinit.flatten()[tind+S-sind-2]) * np.tile(b.reshape(
+                    bsize,1,1),(1,J,bsize)) + (winit.flatten()[tind+S-sind-2] * 
                 n[S-sind-1]) * np.tile(e[S-sind-1,:].reshape((1,7,1)), 
                 (bsize,1,bsize)) - np.tile(b.reshape((1,1,bsize)), 
                 (bsize,J,1))
             elif sind == S-1:
-                c = (winit[tind+S-sind] * n[S-sind-1]) * np.tile(
+                c = (winit.flatten()[tind+S-sind] * n[S-sind-1]) * np.tile(
                     e[S-sind-1,:].reshape((1,7,1)), (bsize,1,bsize)) - \
                 np.tile(b.reshape((1,1,bsize)), (bsize,J,1))
             cposind = c > 0
@@ -265,7 +265,8 @@ print "The time path is", Kpath_TPI
 print "Iterations:", TPIiter
 print "Distance:", TPIdist
 
-plt.plot(np.arange(T+10), Kssvec)
+# plt.plot(np.arange(T+10), Kssvec)
 plt.plot(np.arange(T+10), Kpath_TPI[:T+10])
+plt.axhline(y=Kss)
 plt.savefig("TPI")
 
