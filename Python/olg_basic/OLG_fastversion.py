@@ -40,7 +40,7 @@ b     = 1 x bsize vector of possible values for initial wealth b
 '''
 starttime = time.time()
 
-S = 6
+S = 20
 beta = .96 ** (60 / S)
 sigma = 3.0
 alpha = .35
@@ -59,7 +59,7 @@ e = np.tile(e, (S, 1))
 f = np.array([.04, .09, .2, .34, .2, .09, .04]).T
 f = np.tile(f, (S, 1))
 J = e.shape[1]
-bsize = 35
+bsize = 50
 bmin = 0
 bmax = 15
 b = np.linspace(bmin, bmax, bsize)
@@ -209,6 +209,7 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
             for bind in xrange(bsize):
                 gamma_new[sind, eind, bind] = f[sind+1, eind] * np.sum((
                     phiind[sind, :, :] == bind) * gamma_init[sind-1, :, :])
+    # gamma_new[1:,:,:] = f[2:,:].reshape((J,S-2)).dot(((phiind[1:-1,:,:]==np.arange(bsize)) * gamma_init[:-1,:,:]).sum(axis=1))
     ssiter += 1
     ssdist = np.max(abs(gamma_new - gamma_init))
     gamma_init = rho * gamma_new + (1 - rho) * gamma_init
