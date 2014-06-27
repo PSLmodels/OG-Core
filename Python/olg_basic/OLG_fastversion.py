@@ -186,8 +186,8 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
         cposind = c > 0
         cnonposind = np.ones((bsize, J, bsize)) - cposind
         cpos = c * cposind + (1e-8) * cnonposind
-        uc = ((np.power(cpos, (1 - sigma)) - np.ones((bsize, J, bsize))) / (
-            1 - sigma)) * cposind - (1e-8) * cnonposind
+        uc = (((cpos ** (1 - sigma)) - np.ones((bsize, J, bsize))) / (
+            1 - sigma)) * cposind - (10 ** 8) * cnonposind
         if sind == 1:
             EVprime = np.sum(Vinit, 1)
         else:
@@ -262,16 +262,16 @@ for bind in xrange(bsize):
 
 for sind in xrange(1, S):
     bsavg[0, sind] = np.sum(wealthwgts[sind-1, :, :])
-    b90diffsq = np.power(
-        (bpctl[sind-1, 0, :] - .90 * np.ones((1, 1, bsize))), 2)
-    b75diffsq = np.power(
-        (bpctl[sind-1, 0, :] - .75 * np.ones((1, 1, bsize))), 2)
-    b50diffsq = np.power(
-        (bpctl[sind-1, 0, :] - .50 * np.ones((1, 1, bsize))), 2)
-    b25diffsq = np.power(
-        (bpctl[sind-1, 0, :] - .25 * np.ones((1, 1, bsize))), 2)
-    b10diffsq = np.power(
-        (bpctl[sind-1, 0, :] - .10 * np.ones((1, 1, bsize))), 2)
+    b90diffsq = (
+        (bpctl[sind-1, 0, :] - .90 * np.ones((1, 1, bsize))) ** 2)
+    b75diffsq = (
+        (bpctl[sind-1, 0, :] - .75 * np.ones((1, 1, bsize))) ** 2)
+    b50diffsq = (
+        (bpctl[sind-1, 0, :] - .50 * np.ones((1, 1, bsize))) ** 2)
+    b25diffsq = (
+        (bpctl[sind-1, 0, :] - .25 * np.ones((1, 1, bsize))) ** 2)
+    b10diffsq = (
+        (bpctl[sind-1, 0, :] - .10 * np.ones((1, 1, bsize))) ** 2)
     b90minind = b90diffsq.argmin()
     b75minind = b75diffsq.argmin()
     b50minind = b50diffsq.argmin()
@@ -303,15 +303,21 @@ Generate steady state multiplier values
 ------------------------------------------------------------------------
 '''
 
+'''
+------------------------------------------------------------------------
+Generate steady state multiplier values
+------------------------------------------------------------------------
+'''
+
 ssbsavg = (S-1) * (gamma_ss * np.tile(b.reshape(1, 1, bsize), (
     S-1, J, 1))).sum(axis=2).sum(axis=1)
-esavg = (e*f).sum(axis=1)
+esavg = (e * f).sum(axis=1)
 nsavg = n.T
-cssvec = (1+rss) * np.array([0]+list(ssbsavg[:S-2])) + wss * \
-    esavg[:S-1] * nsavg[:S-1] - ssbsavg
-cp1ssvec = (1+rss) * ssbsavg + wss*esavg[1:] * nsavg[1:] - \
+cssvec = (1 + rss) * np.array([0]+list(ssbsavg[:S-2])) + wss * esavg[
+    :S-1] * nsavg[:S-1] - ssbsavg
+cp1ssvec = (1 + rss) * ssbsavg + wss * esavg[1:] * nsavg[1:] - \
     np.array(list(ssbsavg[1:])+[0])
-gxbar = (cssvec**(-sigma)) / ((beta*(1+rss)) * cp1ssvec**(-sigma))
+gxbar = (cssvec**(-sigma)) / ((beta * (1 + rss)) * cp1ssvec ** (-sigma))
 
 b0array = np.array(list(np.zeros((1, J, bsize))) + list(np.tile(
     b.reshape(1, 1, bsize), (S-2, J, 1))))
@@ -319,7 +325,7 @@ e0array = np.tile(e[:S-1, :].reshape(S-1, J, 1), (1, 1, bsize))
 n0array = np.tile(n[:S-1].reshape(S-1, 1, 1), (1, J, bsize))
 b1array = phi_ss[:S-1, :, :]
 c0array = ((1 + rss) * b0array) + (wss * e0array * n0array) - b1array
-mu0array = np.power(c0array, (-sigma))
+mu0array = c0array ** (-sigma)
 Eb1array = np.tile(b1array.reshape(S-1, J, bsize, 1), (1, 1, 1, J))
 Een1start = e[1:S, :] * np.tile(n[1:S].reshape((S-1), 1), (1, J))
 Een1array = np.tile(Een1start.reshape(S-1, 1, 1, J), (1, J, bsize, 1))
@@ -337,7 +343,7 @@ for sind in xrange(S-1):
                         sind, e1ind, bind, e2ind]]
 f1array = np.tile(f[1:S, :].reshape(S-1, 1, 1, J), (1, J, bsize, 1))
 Ec1array = ((1 + rss) * Eb1array) + (wss * Een1array) - Eb2array
-Emu1array = (np.power(Ec1array, (-sigma)) * f1array).sum(3)
+Emu1array = ((Ec1array ** (-sigma)) * f1array).sum(3)
 lamdif = (mu0array - (beta * (1 + rss)) * Emu1array) / beta
 lam1pos = phiind_ss[:S-1, :, :] == 1
 lamdifpos = lamdif > 0
@@ -347,9 +353,9 @@ lamdifneg = lamdif < 0
 lambda2 = -lamdif * lam2pos * lamdifneg
 lambda1sbar = ((S-1) * lambda1 * gamma_ss).sum(2).sum(1)
 lambda2sbar = ((S-1) * lambda2 * gamma_ss).sum(2).sum(1)
-lamgxbar = (np.power(cssvec, (
+lamgxbar = ((cssvec ** (
     -sigma)) - beta * lambda1sbar + beta * lambda2sbar) / (
-    (beta * (1 + rss)) * np.power(cssvec, (-sigma)))
+    (beta * (1 + rss)) * (cssvec ** (-sigma)))
 
 '''
 ------------------------------------------------------------------------
@@ -370,6 +376,14 @@ Save variables/values so they can be used in other modules
 ------------------------------------------------------------------------
 '''
 
+var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'n', 'e',
+             'f', 'J', 'bmin', 'bmax', 'bsize', 'b', 'gamma_ss', 'Kss',
+             'Nss', 'Yss', 'wss', 'rss', 'phiind_ss', 'phi_ss', 'runtime',
+             'hours', 'minutes', 'ssiter']
+dictionary = {}
+for key in var_names:
+    dictionary[key] = globals()[key]
+pickle.dump(dictionary, open("ss_vars.pkl", "w"))
 var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'n', 'e',
              'f', 'J', 'bmin', 'bmax', 'bsize', 'b', 'gamma_ss', 'Kss',
              'Nss', 'Yss', 'wss', 'rss', 'phiind_ss', 'phi_ss']
