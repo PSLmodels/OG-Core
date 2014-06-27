@@ -40,7 +40,7 @@ b     = 1 x bsize vector of possible values for initial wealth b
 '''
 starttime = time.time()
 
-S = 20
+S = 10
 beta = .96 ** (60 / S)
 sigma = 3.0
 alpha = .35
@@ -59,7 +59,7 @@ e = np.tile(e, (S, 1))
 f = np.array([.04, .09, .2, .34, .2, .09, .04]).T
 f = np.tile(f, (S, 1))
 J = e.shape[1]
-bsize = 50
+bsize = 30
 bmin = 0
 bmax = 15
 b = np.linspace(bmin, bmax, bsize)
@@ -364,7 +364,7 @@ Generate graph of Euler Errors
 '''
 
 plt.figure(2)
-plt.plot(np.arange(1, S), gxbar)
+plt.plot(np.arange(0, S-1), gxbar)
 plt.title('Euler errors: S = {}'.format(S))
 # plt.legend(loc=0)
 # plt.show()

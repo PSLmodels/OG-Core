@@ -366,7 +366,7 @@ Generate graph of Euler Errors
 '''
 
 plt.figure(2)
-plt.plot(np.arange(1, S), gxbar)
+plt.plot(np.arange(0, S-1), gxbar)
 plt.title('Euler errors: S = {}'.format(S))
 # plt.legend(loc=0)
 # plt.show()
