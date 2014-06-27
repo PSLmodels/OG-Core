@@ -3,12 +3,12 @@
 Last updated 6/25/2014
 Python version of Evans/Philips 2014 paper
 
-This program solves for transition path of the distribution of wealth 
-and the aggregate capital stock using the time path iteration (TPI) 
+This program solves for transition path of the distribution of wealth
+and the aggregate capital stock using the time path iteration (TPI)
 method
 
-This m-file calls the following other file(s):
-            Steady_State_Variables.out
+This py-file calls the following other file(s):
+            ss_vars.pkl
 ------------------------------------------------------------------------
 '''
 
@@ -23,7 +23,6 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import time
-import shelve
 import pickle
 
 '''
@@ -67,12 +66,12 @@ phi_ss    = S x J x bsize steady-state policy function values for
 '''
 
 st = time.time()
-variables = pickle.load(open("ss_vars.pkl","r"))
+variables = pickle.load(open("ss_vars.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
-print "Reading the data takes",time.time()-st,"seconds."
+print "Reading the data takes", time.time()-st, "seconds."
 
-start_time = time.time() # Start timer
+start_time = time.time()  # Start timer
 
 '''
 ------------------------------------------------------------------------
@@ -82,18 +81,18 @@ T       = number of periods until the steady state
 gamma0  = (S-1) x J x bsize array, initial distribution of wealth
 K0      = initial aggregate capital stock as a function of the initial
           distribution of wealth
-rho_TPI = contraction parameter in TPI process representing weight on 
+rho_TPI = contraction parameter in TPI process representing weight on
           new time path of aggregate capital stock
 ------------------------------------------------------------------------
 '''
 
 T = 60
 I0 = np.identity(bsize)
-I0row = I0[bsize/2 - S/3,:]
-gamma0 = np.tile(I0row.reshape(1,1,bsize), (S-1,J,1)) * \
-    np.tile(f[:S-1,:].reshape(S-1,J,1), (1,1,bsize)) / (S-1)
-K0 = (float(S-1)/S) * (gamma0 * np.tile(b.reshape(1,1,bsize),\
-    (S-1,J,1))).sum()
+I0row = I0[bsize/2 - S/3, :]
+gamma0 = np.tile(I0row.reshape(1, 1, bsize), (
+    S-1, J, 1)) * np.tile(f[:S-1, :].reshape(S-1, J, 1), (1, 1, bsize)) / (S-1)
+K0 = (float(S-1)/S) * (gamma0 * np.tile(b.reshape(1, 1, bsize), (
+    S-1, J, 1))).sum()
 rho_TPI = 0.2
 
 '''
@@ -101,7 +100,7 @@ rho_TPI = 0.2
 Solve for equilibrium transition path by TPI
 ------------------------------------------------------------------------
 Kinit   = 1 x T vector, initial time path of aggregate capital stock
-Ninit   = 1 x T vector, initial time path of aggregate labor demand. 
+Ninit   = 1 x T vector, initial time path of aggregate labor demand.
           This is just equal to a 1 x T vector of Nss because labor is
           supplied inelastically
 Yinit   = 1 x T vector, initial time path of aggregate output
@@ -113,7 +112,7 @@ phiindt = S x J x bsize x T array time path of policy function indicies
           for b' = phi(s,e,b,t). The last row phiindt(S,e,b,t) is ones
           and corresponds to b_{S+1}=0. The first row phi(1,e,b,t)
           corresponds to b_2.
-phit    = S x J x bsize x T array time path of policy function values 
+phit    = S x J x bsize x T array time path of policy function values
           for b' = phi(s,e,b,t). The last row phi(S,e,b,t) is zeros and
           corresponds to b_{S+1}=0. The first row corresponds to b_2.
 p1aind  = index of period-1 age
@@ -153,98 +152,103 @@ TPIdist = 10
 TPImindist = 3.0*10**(-6)
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-    gammat = np.zeros((S-1,J,bsize,T))
-    gammat[:,:,:,0] = gamma0
-    phiindt = np.zeros((S,J,bsize,T+S-2))
-    phit = np.zeros((S,J,bsize,T+S-2))
+    gammat = np.zeros((S-1, J, bsize, T))
+    gammat[:, :, :, 0] = gamma0
+    phiindt = np.zeros((S, J, bsize, T+S-2))
+    phit = np.zeros((S, J, bsize, T+S-2))
 
-    # Solve for the lifetime savings policy rules of each type of 
-    # person at t = 1. 
+    # Solve for the lifetime savings policy rules of each type of
+    # person at t = 1.
     for p1aind in xrange(S):
-        Vinit = np.zeros((bsize,J))
+        Vinit = np.zeros((bsize, J))
         for sind in xrange(p1aind+1):
             if sind < S-1:
                 c = (1+rinit.flatten()[p1aind-sind]) * np.tile(b.reshape(
-                    bsize,1,1),(1,J,bsize)) + (winit.flatten()[p1aind-sind] * 
-                    n[S-sind-1]) * np.tile(e[S-sind-1,:].reshape((1,7,1)), 
-                    (bsize,1,bsize)) - np.tile(b.reshape((1,1,bsize)), 
-                    (bsize,J,1))
+                    bsize, 1, 1), (1, J, bsize)) + (winit.flatten()[
+                    p1aind-sind] * n[S-sind-1]) * np.tile(
+                    e[S-sind-1, :].reshape((1, 7, 1)), (
+                        bsize, 1, bsize)) - np.tile(
+                    b.reshape((1, 1, bsize)), (bsize, J, 1))
             elif sind == S-1:
                 c = (winit.flatten()[p1aind-sind] * n[S-sind-1]) * np.tile(
-                    e[S-sind-1,:].reshape((1,7,1)), (bsize,1,bsize)) - \
-                    np.tile(b.reshape((1,1,bsize)), (bsize,J,1))
+                    e[S-sind-1, :].reshape((1, 7, 1)),  (
+                        bsize, 1, bsize)) - np.tile(b.reshape(
+                    (1, 1, bsize)),  (bsize, J, 1))
             cposind = c > 0
-            cnonposind = np.ones((bsize,J,bsize)) - cposind
+            cnonposind = np.ones((bsize, J, bsize)) - cposind
             cpos = c*cposind + (10**(-8))*cnonposind
-            uc = ((cpos**(1-sigma) - np.ones((bsize,J,bsize))) / (1 - \
-                sigma)) * cposind - (10**(8))*cnonposind
+            uc = ((cpos**(1-sigma) - np.ones((bsize, J, bsize))) / (
+                1 - sigma)) * cposind - (10**(8))*cnonposind
             if sind == 0:
                 EVprime = Vinit.sum(axis=1)
             else:
-                EVprime = (Vinit * np.tile(f[S-sind,:],(bsize,1))).sum(\
+                EVprime = (Vinit * np.tile(f[S-sind, :], (bsize, 1))).sum(
                     axis=1)
-            EVprimenew = np.tile(EVprime.reshape(1,1,bsize),(bsize,J,1))
+            EVprimenew = np.tile(EVprime.reshape(1, 1, bsize), (bsize, J, 1))
             Vnewarray = uc + beta * (EVprimenew * cposind)
             Vnew = Vnewarray.max(axis=2)
             bprimeind = Vnewarray.argmax(axis=2)
-            phiindt[S-sind-1,:,:,p1aind-sind] = bprimeind.T.reshape(\
-                (1,J,bsize))
-            phit[S-1-sind,:,:,p1aind-sind] = b[bprimeind].T.reshape(\
-                (1,J,bsize))
+            phiindt[S-sind-1, :, :, p1aind-sind] = bprimeind.T.reshape(
+                (1, J, bsize))
+            phit[S-1-sind, :, :, p1aind-sind] = b[bprimeind].T.reshape(
+                (1, J, bsize))
             Vinit = Vnew
 
-    # Solve for the lifetime savings policy rules of each age-1 person 
+    # Solve for the lifetime savings policy rules of each age-1 person
     # from t = 2 to t = T-1
-    for tind in xrange(1,T-1):
-        Vinit = np.zeros((bsize,J))
+    for tind in xrange(1, T-1):
+        Vinit = np.zeros((bsize, J))
         for sind in xrange(S):
             if sind < S-1:
                 c = (1+rinit.flatten()[tind+S-sind-2]) * np.tile(b.reshape(
-                    bsize,1,1),(1,J,bsize)) + (winit.flatten()[tind+S-sind-2] * 
-                n[S-sind-1]) * np.tile(e[S-sind-1,:].reshape((1,7,1)), 
-                (bsize,1,bsize)) - np.tile(b.reshape((1,1,bsize)), 
-                (bsize,J,1))
+                    bsize, 1, 1), (1, J, bsize)) + (winit.flatten()[
+                    tind+S-sind-2] * n[S-sind-1]) * np.tile(
+                    e[S-sind-1, :].reshape((1, 7, 1)), (
+                        bsize, 1, bsize)) - np.tile(
+                    b.reshape((1, 1, bsize)), (bsize, J, 1))
             elif sind == S-1:
                 c = (winit.flatten()[tind+S-sind] * n[S-sind-1]) * np.tile(
-                    e[S-sind-1,:].reshape((1,7,1)), (bsize,1,bsize)) - \
-                np.tile(b.reshape((1,1,bsize)), (bsize,J,1))
+                    e[S-sind-1, :].reshape((1, 7, 1)),  (
+                        bsize, 1, bsize)) - np.tile(b.reshape(
+                    (1, 1, bsize)),  (bsize, J, 1))
             cposind = c > 0
-            cnonposind = np.ones((bsize,J,bsize)) - cposind
+            cnonposind = np.ones((bsize, J, bsize)) - cposind
             cpos = c*cposind + (10**(-8))*cnonposind
-            uc = ((cpos**(1-sigma) - np.ones((bsize,J,bsize))) / (1 - \
-                sigma)) * cposind - (10**(8))*cnonposind
+            uc = ((cpos**(1-sigma) - np.ones((bsize, J, bsize))) / (
+                1 - sigma)) * cposind - (10**(8))*cnonposind
             if sind == 0:
                 EVprime = Vinit.sum(axis=1)
             else:
-                EVprime = (Vinit * np.tile(f[S-sind,:],(bsize,1))).sum(\
+                EVprime = (Vinit * np.tile(f[S-sind, :], (bsize, 1))).sum(
                     axis=1)
-            EVprimenew = np.tile(EVprime.reshape(1,1,bsize),(bsize,J,1))
+            EVprimenew = np.tile(EVprime.reshape(1, 1, bsize), (bsize, J, 1))
             Vnewarray = uc + beta * (EVprimenew * cposind)
             Vnew = Vnewarray.max(axis=2)
             bprimeind = Vnewarray.argmax(axis=2)
-            phiindt[S-sind-1,:,:,tind+S-sind-2] = bprimeind.T.reshape(\
-                (1,J,bsize))
-            phit[S-1-sind,:,:,tind+S-sind-2] = b[bprimeind].T.reshape(\
-                (1,J,bsize))
+            phiindt[S-sind-1, :, :, tind+S-sind-2] = bprimeind.T.reshape(
+                (1, J, bsize))
+            phit[S-1-sind, :, :, tind+S-sind-2] = b[bprimeind].T.reshape(
+                (1, J, bsize))
             Vinit = Vnew
 
-    # Generate new time path for distribution of capital gammat and of 
+    # Generate new time path for distribution of capital gammat and of
     # the aggregate capital stock K
     Knew = np.array([[K0] + list(np.zeros(T-1)) + list(Kss*np.ones(S-2))])
-    for tind in xrange(1,T):
+    for tind in xrange(1, T):
         for sind in xrange(S-1):
             for eind in xrange(J):
                 for bind in xrange(bsize):
                     if sind == 0:
-                        gammat[sind,eind,bind,tind] = (1/float(S-1)) * \
-                            f[sind+1,eind] * ((phiindt[sind,:,0,tind-1] == \
-                            bind) * f[sind,:]).sum()
+                        gammat[sind, eind, bind, tind] = (1/float(S-1)) * \
+                            f[sind+1, eind] * ((phiindt[
+                                sind, :, 0, tind-1] == bind) * f[
+                                sind, :]).sum()
                     else:
-                        gammat[sind,eind,bind,tind] = f[sind+1,eind] * \
-                            ((phiindt[sind,:,:,tind-1] == bind) * \
-                            gammat[sind-1,:,:,tind-1]).sum()
-        Knew[0,tind] = float(float(S-1)/S*(gammat[:,:,:,tind] * \
-            np.tile(b.reshape(1,1,bsize), (S-1,J,1))).sum())
+                        gammat[sind, eind, bind, tind] = f[sind+1, eind] * \
+                            ((phiindt[sind, :, :, tind-1] == bind) * gammat[
+                                sind-1, :, :, tind-1]).sum()
+        Knew[0, tind] = float(float(S-1)/S*(gammat[:, :, :, tind] * np.tile(
+            b.reshape(1, 1, bsize),  (S-1, J, 1))).sum())
 
     TPIiter += 1
     TPIdist = (abs(Knew - Kinit)).max()
@@ -269,4 +273,3 @@ print "Distance:", TPIdist
 plt.plot(np.arange(T+10), Kpath_TPI[:T+10])
 plt.axhline(y=Kss)
 plt.savefig("TPI")
-
