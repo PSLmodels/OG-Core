@@ -67,7 +67,7 @@ phi_ss    = S x J x bsize steady-state policy function values for
 '''
 
 st = time.time()
-variables = pickle.load(open('Steady_State_Variables','r'))
+variables = pickle.load(open("ss_vars.pkl","r"))
 for key in variables:
     globals()[key] = variables[key]
 print "Reading the data takes",time.time()-st,"seconds."
@@ -89,7 +89,7 @@ rho_TPI = contraction parameter in TPI process representing weight on
 
 T = 60
 I0 = np.identity(bsize)
-I0row = I0[155,:]
+I0row = I0[bsize/2 - S/3,:]
 gamma0 = np.tile(I0row.reshape(1,1,bsize), (S-1,J,1)) * \
     np.tile(f[:S-1,:].reshape(S-1,J,1), (1,1,bsize)) / (S-1)
 K0 = (float(S-1)/S) * (gamma0 * np.tile(b.reshape(1,1,bsize),\
@@ -199,8 +199,8 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         Vinit = np.zeros((bsize,J))
         for sind in xrange(S):
             if sind < S-1:
-                c = (1+rinit[tind+S-sind]) * np.tile(b.reshape(
-                    bsize,1,1),(1,J,bsize)) + (winit[tind+S-sind] * 
+                c = (1+rinit[tind+S-sind-2]) * np.tile(b.reshape(
+                    bsize,1,1),(1,J,bsize)) + (winit[tind+S-sind-2] * 
                 n[S-sind-1]) * np.tile(e[S-sind-1,:].reshape((1,7,1)), 
                 (bsize,1,bsize)) - np.tile(b.reshape((1,1,bsize)), 
                 (bsize,J,1))
@@ -222,13 +222,38 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             Vnewarray = uc + beta * (EVprimenew * cposind)
             Vnew = Vnewarray.max(axis=2)
             bprimeind = Vnewarray.argmax(axis=2)
-            phiindt[S-sind-1,:,:,tind+S-sind] = bprimeind.T.reshape(\
+            phiindt[S-sind-1,:,:,tind+S-sind-2] = bprimeind.T.reshape(\
                 (1,J,bsize))
-            phit[S-1-sind,:,:,tind+S-sind] = b[bprimeind].T.reshape(\
+            phit[S-1-sind,:,:,tind+S-sind-2] = b[bprimeind].T.reshape(\
                 (1,J,bsize))
             Vinit = Vnew
 
+    # Generate new time path for distribution of capital gammat and of 
+    # the aggregate capital stock K
+    Knew = np.array([[K0] + list(np.zeros(T-1)) + list(Kss*np.ones(S-2))])
+    for tind in xrange(1,T):
+        for sind in xrange(S-1):
+            for eind in xrange(J):
+                for bind in xrange(bsize):
+                    if sind == 0:
+                        gammat[sind,eind,bind,tind] = (1/float(S-1)) * \
+                            f[sind+1,eind] * ((phiindt[sind,:,0,tind-1] == \
+                            bind) * f[sind,:]).sum()
+                    else:
+                        gammat[sind,eind,bind,tind] = f[sind+1,eind] * \
+                            ((phiindt[sind,:,:,tind-1] == bind) * \
+                            gammat[sind-1,:,:,tind-1]).sum()
+        Knew[0,tind] = float(float(S-1)/S*(gammat[:,:,:,tind] * \
+            np.tile(b.reshape(1,1,bsize), (S-1,J,1))).sum())
+
     TPIiter += 1
+    TPIdist = (abs(Knew - Kinit)).max()
+    print TPIiter
+    print TPIdist
+    Kinit = rho_TPI*Knew + (1-rho_TPI)*Kinit
+    Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
+    winit = (1-alpha) * (Yinit/Kinit)
+    rinit = alpha * (Yinit/Kinit)
 
 Kpath_TPI = Kinit
 gammat_TPI = gammat
@@ -239,4 +264,8 @@ print "TPI took", elapsed_time
 print "The time path is", Kpath_TPI
 print "Iterations:", TPIiter
 print "Distance:", TPIdist
+
+plt.plot(np.arange(T+10), Kssvec)
+plt.plot(np.arange(T+10), Kpath_TPI[:T+10])
+plt.savefig("TPI")
 

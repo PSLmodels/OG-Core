@@ -41,7 +41,7 @@ b     = 1 x bsize vector of possible values for initial wealth b
 '''
 starttime = time.time()
 
-S = 60
+S = 6
 beta = .96 ** (60 / S)
 sigma = 3.0
 alpha = .35
@@ -60,7 +60,7 @@ e = np.tile(e, (S, 1))
 f = np.array([.04, .09, .2, .34, .2, .09, .04]).T
 f = np.tile(f, (S, 1))
 J = e.shape[1]
-bsize = 350
+bsize = 35
 bmin = 0
 bmax = 15
 b = np.linspace(bmin, bmax, bsize)
