@@ -249,7 +249,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             b.reshape(1, 1, bsize),  (S-1, J, 1))).sum())
 
     TPIiter += 1
-    TPIdist = (abs(Knew - Kinit)).max()
+    TPIdist = ((Knew - Kinit).abs()).max()
     print TPIiter
     print TPIdist
     Kinit = rho_TPI*Knew + (1-rho_TPI)*Kinit
