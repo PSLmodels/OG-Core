@@ -231,7 +231,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
 
     # Generate new time path for distribution of capital gammat and of
     # the aggregate capital stock K
-    Knew = np.array([[K0] + list(np.zeros(T-1)) + list(Kss*np.ones(S-2))])
+    Knew = np.array([K0] + list(np.zeros(T-1)) + list(Kss*np.ones(S-2)))
     for tind in xrange(1, T):
         for sind in xrange(S-1):
             for eind in xrange(J):
@@ -245,11 +245,11 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
                         gammat[sind, eind, bind, tind] = f[sind+1, eind] * \
                             ((phiindt[sind, :, :, tind-1] == bind) * gammat[
                                 sind-1, :, :, tind-1]).sum()
-        Knew[0, tind] = (float(S-1)/S*(gammat[:, :, :, tind] * np.tile(
+        Knew[tind] = (float(S-1)/S*(gammat[:, :, :, tind] * np.tile(
             b.reshape(1, 1, bsize),  (S-1, J, 1))).sum())
 
     TPIiter += 1
-    TPIdist = ((Knew - Kinit).abs()).max()
+    TPIdist = (np.abs(Knew - Kinit)).max()
     print TPIiter
     print TPIdist
     Kinit = rho_TPI*Knew + (1-rho_TPI)*Kinit
