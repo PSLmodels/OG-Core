@@ -85,10 +85,8 @@ rho_TPI = contraction parameter in TPI process representing weight on
 '''
 
 T = 60
-I0 = np.identity(bsize)
-I0row = I0[bsize/2 - S/3, :]
-gamma0 = np.tile(I0row.reshape(1, 1, bsize), (
-    S-1, J, 1)) * np.tile(f[:S-1, :].reshape(S-1, J, 1), (1, 1, bsize)) / (S-1)
+gamma0 = np.zeros((S-1, J, bsize))
+gamma0[:, :, (bsize * S) / 150] = f[:S-1, :] / (S-1)
 K0 = (float(S-1)/S) * (gamma0 * np.tile(b.reshape(1, 1, bsize), (
     S-1, J, 1))).sum()
 rho_TPI = 0.2
@@ -145,7 +143,7 @@ winit = (1-alpha) * (Yinit/Ninit)
 rinit = alpha * (Yinit/Kinit)
 
 TPIiter = 0
-TPImaxiter = 50
+TPImaxiter = 500
 TPIdist = 10
 TPImindist = 3.0*10**(-6)
 
@@ -164,12 +162,12 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
                 c = (1+rinit.flatten()[p1aind-sind]) * np.tile(b.reshape(
                     bsize, 1, 1), (1, J, bsize)) + (winit.flatten()[
                     p1aind-sind] * n[S-sind-1]) * np.tile(
-                    e[S-sind-1, :].reshape((1, 7, 1)), (
+                    e[S-sind-1, :].reshape((1, J, 1)), (
                         bsize, 1, bsize)) - np.tile(
                     b.reshape((1, 1, bsize)), (bsize, J, 1))
             elif sind == S-1:
                 c = (winit.flatten()[p1aind-sind] * n[S-sind-1]) * np.tile(
-                    e[S-sind-1, :].reshape((1, 7, 1)),  (
+                    e[S-sind-1, :].reshape((1, J, 1)),  (
                         bsize, 1, bsize)) - np.tile(b.reshape(
                     (1, 1, bsize)),  (bsize, J, 1))
             cposind = c > 0
@@ -201,12 +199,12 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
                 c = (1+rinit.flatten()[tind+S-sind-2]) * np.tile(b.reshape(
                     bsize, 1, 1), (1, J, bsize)) + (winit.flatten()[
                     tind+S-sind-2] * n[S-sind-1]) * np.tile(
-                    e[S-sind-1, :].reshape((1, 7, 1)), (
+                    e[S-sind-1, :].reshape((1, J, 1)), (
                         bsize, 1, bsize)) - np.tile(
                     b.reshape((1, 1, bsize)), (bsize, J, 1))
             elif sind == S-1:
                 c = (winit.flatten()[tind] * n[0]) * np.tile(
-                    e[0, :].reshape((1, 7, 1)),  (
+                    e[0, :].reshape((1, J, 1)),  (
                         bsize, 1, bsize)) - np.tile(b.reshape(
                     (1, 1, bsize)),  (bsize, J, 1))
             cposind = c > 0
@@ -252,10 +250,14 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     print '\tDistance:', TPIdist
     Kinit = rho_TPI*Knew + (1-rho_TPI)*Kinit
     Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
-    winit = (1-alpha) * (Yinit/Kinit)
+    winit = (1-alpha) * (Yinit/Ninit)
     rinit = alpha * (Yinit/Kinit)
+    #Delete these
+    plt.plot(np.arange(T+10), Kinit[:T+10])
+    plt.axhline(y=Kss)
+    plt.savefig("TPI_partway")
 
-Kpath_TPI = Kinit.flatten()
+Kpath_TPI = Kinit
 gammat_TPI = gammat
 
 elapsed_time = time.time() - start_time
