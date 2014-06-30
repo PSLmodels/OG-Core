@@ -28,7 +28,7 @@ import pickle
 '''
 ------------------------------------------------------------------------
 Import steady state distribution, parameters and other objects from
-steady state computation in OLGabilss.m
+steady state computation in ss_vars.pkl
 ------------------------------------------------------------------------
 S        = number of periods an individual lives
 beta     = discount factor (0.96 per year)

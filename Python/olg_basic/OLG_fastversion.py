@@ -48,22 +48,12 @@ rho = .20
 A = 1
 delta = 0.0 ** (60 / S)
 
-# This method calculates n for any S that is a multiple of 12
+# S must be greater than of equal to 12.  
 n = np.ones(S)
-n[0:S/10] = np.linspace(0.865, .9775, (S/10))
-n[S * 2 / 3:S * 5 / 6] = np.linspace(1+((0.465-1)/(S/6)), 0.465, (S/6))
-n[S * 5 / 6:S * 5 / 6 + S/12] = np.linspace(0.465+((0.116-0.465)/(S/12)), .116, (S/12))
-n[S * 5 / 6 + S/12:] = np.linspace(0.116+((0.093-0.116)/(S/12)), .093, (S/12))
-
-# This method calculates n for any S less than or equal to 60
-# n = np.ones(60)
-# n[0:6] = np.array([.865, .8875, .91, .9325, .955, .9775])
-# n[40:] = np.array(
-#     [.9465, .893, .8395, .786, .7325, .679, .6255, .572, .5185,
-#      .465, .3952, .3254, .2556, .1858, .116, .1114, .1068, .1022,
-#      .0976, .093])
-# #if S is not 60:
-# n = n[60 % S:: 60 / S]
+n[0:S/10+1] = np.linspace(0.865, 1, (S/10)+1)
+n[- 2*((S/12)+1)+1 - ((S/6)+2) : - 2*((S/12)+1)+1] = np.linspace(1, 0.465, (S/6)+2)
+n[- 2*((S/12)+1) : -(S/12+1)+1] = np.linspace(0.465, .116, (S/12)+2)
+n[-(S/12+1):] = np.linspace(0.116, .093, (S/12)+1)
 
 e = np.array([.1, .5, .8, 1.0, 1.2, 1.5, 1.9]).T
 e = np.tile(e, (S, 1))
