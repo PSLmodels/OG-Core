@@ -65,11 +65,9 @@ phi_ss    = S x J x bsize steady-state policy function values for
 ------------------------------------------------------------------------
 '''
 
-st = time.time()
 variables = pickle.load(open("ss_vars.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
-print "Reading the data takes", time.time()-st, "seconds."
 
 start_time = time.time()  # Start timer
 
@@ -207,8 +205,8 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
                         bsize, 1, bsize)) - np.tile(
                     b.reshape((1, 1, bsize)), (bsize, J, 1))
             elif sind == S-1:
-                c = (winit.flatten()[tind+S-sind] * n[S-sind-1]) * np.tile(
-                    e[S-sind-1, :].reshape((1, 7, 1)),  (
+                c = (winit.flatten()[tind] * n[0]) * np.tile(
+                    e[0, :].reshape((1, 7, 1)),  (
                         bsize, 1, bsize)) - np.tile(b.reshape(
                     (1, 1, bsize)),  (bsize, J, 1))
             cposind = c > 0
@@ -247,7 +245,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
                         gammat[sind, eind, bind, tind] = f[sind+1, eind] * \
                             ((phiindt[sind, :, :, tind-1] == bind) * gammat[
                                 sind-1, :, :, tind-1]).sum()
-        Knew[0, tind] = float(float(S-1)/S*(gammat[:, :, :, tind] * np.tile(
+        Knew[0, tind] = (float(S-1)/S*(gammat[:, :, :, tind] * np.tile(
             b.reshape(1, 1, bsize),  (S-1, J, 1))).sum())
 
     TPIiter += 1
@@ -259,7 +257,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     winit = (1-alpha) * (Yinit/Kinit)
     rinit = alpha * (Yinit/Kinit)
 
-Kpath_TPI = Kinit
+Kpath_TPI = Kinit.flatten()
 gammat_TPI = gammat
 
 elapsed_time = time.time() - start_time
