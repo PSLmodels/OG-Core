@@ -252,10 +252,6 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
     winit = (1-alpha) * (Yinit/Ninit)
     rinit = alpha * (Yinit/Kinit)
-    #Delete these
-    plt.plot(np.arange(T+10), Kinit[:T+10])
-    plt.axhline(y=Kss)
-    plt.savefig("TPI_partway")
 
 Kpath_TPI = Kinit
 gammat_TPI = gammat
