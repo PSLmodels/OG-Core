@@ -7,6 +7,7 @@ alternate model forecast method to solve
 
 #Packages
 import numpy as np
+import income
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -41,6 +42,8 @@ b     = 1 x bsize vector of possible values for initial wealth b
 starttime = time.time()
 
 S = 60
+J = 7
+bsize = 350
 beta = .96 ** (60 / S)
 sigma = 3
 alpha = .35
@@ -48,19 +51,25 @@ rho = .20
 A = 1
 delta = 0.0 ** (60 / S)
 
-# S must be greater than of equal to 12.  
-n = np.ones(S)
-n[0:S/10+1] = np.linspace(0.865, 1, (S/10)+1)
-n[- 2*((S/12)+1)+1 - ((S/6)+2) : - 2*((S/12)+1)+1] = np.linspace(1, 0.465, (S/6)+2)
-n[- 2*((S/12)+1) : -(S/12+1)+1] = np.linspace(0.465, .116, (S/12)+2)
-n[-(S/12+1):] = np.linspace(0.116, .093, (S/12)+1)
+# S must be greater than of equal to 12.
+if S >= 12:
+    n = np.ones(S)
+    n[0:S/10+1] = np.linspace(0.865, 1, (S/10)+1)
+    n[- 2*((S/12)+1)+1 - ((S/6)+2) : - 2*((S/12)+1)+1] = np.linspace(1, 0.465, (S/6)+2)
+    n[- 2*((S/12)+1) : -(S/12+1)+1] = np.linspace(0.465, .116, (S/12)+2)
+    n[-(S/12+1):] = np.linspace(0.116, .093, (S/12)+1)
+else:
+    n = np.ones(60)
+    n[0:6] = np.array([.865, .8875, .91, .9325, .955, .9775])
+    n[40:] = np.array(
+        [.9465, .893, .8395, .786, .7325, .679, .6255, .572, .5185,
+         .465, .3952, .3254, .2556, .1858, .116, .1114, .1068, .1022,
+         .0976, .093])
+    n = n[60 % S:: 60 / S]
 
-e = np.array([.1, .5, .8, 1.0, 1.2, 1.5, 1.9]).T
-e = np.tile(e, (S, 1))
-f = np.array([.04, .09, .2, .34, .2, .09, .04]).T
-f = np.tile(f, (S, 1))
-J = e.shape[1]
-bsize = 350
+e = income.get_e(S, J)
+f = income.get_f(S, J)
+
 bmin = 0
 bmax = 15
 b = np.linspace(bmin, bmax, bsize)
@@ -246,11 +255,6 @@ pctl_init  = (S-1) x 1 vector of zeros for initial percentile
 
 domain = np.linspace(0, S, S)
 bsavg = np.zeros((1, S))
-b90 = np.zeros((1, S))
-b75 = np.zeros((1, S))
-b50 = np.zeros((1, S))
-b25 = np.zeros((1, S))
-b10 = np.zeros((1, S))
 
 wealthwgts = ((S-1) * gamma_ss) * np.tile(b.reshape(1, 1, bsize), (S-1, J, 1))
 bpct = (S-1) * np.sum(gamma_init, axis=1).reshape(S-1, 1, bsize)
@@ -264,32 +268,8 @@ for bind in xrange(bsize):
 
 for sind in xrange(1, S):
     bsavg[0, sind] = np.sum(wealthwgts[sind-1, :, :])
-    b90diffsq = (
-        (bpctl[sind-1, 0, :] - .90 * np.ones((1, 1, bsize))) ** 2)
-    b75diffsq = (
-        (bpctl[sind-1, 0, :] - .75 * np.ones((1, 1, bsize))) ** 2)
-    b50diffsq = (
-        (bpctl[sind-1, 0, :] - .50 * np.ones((1, 1, bsize))) ** 2)
-    b25diffsq = (
-        (bpctl[sind-1, 0, :] - .25 * np.ones((1, 1, bsize))) ** 2)
-    b10diffsq = (
-        (bpctl[sind-1, 0, :] - .10 * np.ones((1, 1, bsize))) ** 2)
-    b90minind = b90diffsq.argmin()
-    b75minind = b75diffsq.argmin()
-    b50minind = b50diffsq.argmin()
-    b25minind = b25diffsq.argmin()
-    b10minind = b10diffsq.argmin()
-    b90[0, sind] = b[b90minind]
-    b75[0, sind] = b[b75minind]
-    b50[0, sind] = b[b50minind]
-    b25[0, sind] = b[b25minind]
-    b10[0, sind] = b[b10minind]
 bsavg = bsavg.flatten()
-b90 = b90.flatten()
-b75 = b75.flatten()
-b50 = b50.flatten()
-b25 = b25.flatten()
-b10 = b10.flatten()
+
 
 plt.figure(1)
 plt.plot(domain, bsavg, color='b', label='Average capital stock')
@@ -320,44 +300,6 @@ cssvec = (1 + rss) * np.array([0]+list(ssbsavg[:S-2])) + wss * esavg[
 cp1ssvec = (1 + rss) * ssbsavg + wss * esavg[1:] * nsavg[1:] - \
     np.array(list(ssbsavg[1:])+[0])
 gxbar = (cssvec**(-sigma)) / ((beta * (1 + rss)) * cp1ssvec ** (-sigma))
-
-b0array = np.array(list(np.zeros((1, J, bsize))) + list(np.tile(
-    b.reshape(1, 1, bsize), (S-2, J, 1))))
-e0array = np.tile(e[:S-1, :].reshape(S-1, J, 1), (1, 1, bsize))
-n0array = np.tile(n[:S-1].reshape(S-1, 1, 1), (1, J, bsize))
-b1array = phi_ss[:S-1, :, :]
-c0array = ((1 + rss) * b0array) + (wss * e0array * n0array) - b1array
-mu0array = c0array ** (-sigma)
-Eb1array = np.tile(b1array.reshape(S-1, J, bsize, 1), (1, 1, 1, J))
-Een1start = e[1:S, :] * np.tile(n[1:S].reshape((S-1), 1), (1, J))
-Een1array = np.tile(Een1start.reshape(S-1, 1, 1, J), (1, J, bsize, 1))
-b2b1ind = np.tile(phiind_ss.reshape(S, J, bsize, 1), (1, 1, 1, J))
-b2s1ind = np.tile(np.arange(1, S).reshape(S-1, 1, 1, 1), (1, J, bsize, J))
-b2e1ind = np.tile(np.arange(J).reshape(1, 1, 1, J), (S-1, J, bsize, 1))
-Eb2array = np.zeros((S-1, J, bsize, J))
-for sind in xrange(S-1):
-    for e1ind in xrange(J):
-        for bind in xrange(bsize):
-            for e2ind in xrange(J):
-                Eb2array[sind, e1ind, bind, e2ind] = phi_ss[
-                    b2s1ind[sind, e1ind, bind, e2ind], b2e1ind[
-                        sind, e1ind, bind, e2ind], b2b1ind[
-                        sind, e1ind, bind, e2ind]]
-f1array = np.tile(f[1:S, :].reshape(S-1, 1, 1, J), (1, J, bsize, 1))
-Ec1array = ((1 + rss) * Eb1array) + (wss * Een1array) - Eb2array
-Emu1array = ((Ec1array ** (-sigma)) * f1array).sum(3)
-lamdif = (mu0array - (beta * (1 + rss)) * Emu1array) / beta
-lam1pos = phiind_ss[:S-1, :, :] == 1
-lamdifpos = lamdif > 0
-lambda1 = lamdif * lam1pos * lamdifpos
-lam2pos = phiind[:S-1, :, :] == bsize
-lamdifneg = lamdif < 0
-lambda2 = -lamdif * lam2pos * lamdifneg
-lambda1sbar = ((S-1) * lambda1 * gamma_ss).sum(2).sum(1)
-lambda2sbar = ((S-1) * lambda2 * gamma_ss).sum(2).sum(1)
-lamgxbar = ((cssvec ** (
-    -sigma)) - beta * lambda1sbar + beta * lambda2sbar) / (
-    (beta * (1 + rss)) * (cssvec ** (-sigma)))
 
 '''
 ------------------------------------------------------------------------
