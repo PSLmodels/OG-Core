@@ -47,7 +47,7 @@ starttime = time.time()
 
 S = 60
 J = 7
-bsize = 30
+bsize = 50
 beta = .96 ** (60 / S)
 sigma = 3
 alpha = .35

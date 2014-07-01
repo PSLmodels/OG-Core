@@ -86,7 +86,7 @@ rho_TPI = contraction parameter in TPI process representing weight on
 
 T = 60
 gamma0 = np.zeros((S-1, J, bsize))
-gamma0[:, :, (bsize * S) / 150] = f[:S-1, :] / (S-1)
+gamma0[:, :, (bsize * S) / 150] = (f[:S-1, :, :]).sum(axis=2) / (J*(S-1))
 K0 = (float(S-1)/S) * (gamma0 * np.tile(b.reshape(1, 1, bsize), (
     S-1, J, 1))).sum()
 rho_TPI = 0.2
@@ -175,11 +175,8 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             cpos = c*cposind + (10**(-8))*cnonposind
             uc = ((cpos**(1-sigma) - np.ones((bsize, J, bsize))) / (
                 1 - sigma)) * cposind - (10**(8))*cnonposind
-            if sind == 0:
-                EVprime = Vinit.sum(axis=1)
-            else:
-                EVprime = (Vinit * np.tile(f[S-sind, :], (bsize, 1))).sum(
-                    axis=1)
+            EVprime = np.sum(Vinit.reshape(bsize, J, 1) * np.tile(f[S-sind-1, :, :], (
+                bsize, 1, 1)), axis=1).sum(axis=1)/J
             EVprimenew = np.tile(EVprime.reshape(1, 1, bsize), (bsize, J, 1))
             Vnewarray = uc + beta * (EVprimenew * cposind)
             Vnew = Vnewarray.max(axis=2)
@@ -212,11 +209,8 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             cpos = c*cposind + (10**(-8))*cnonposind
             uc = ((cpos**(1-sigma) - np.ones((bsize, J, bsize))) / (
                 1 - sigma)) * cposind - (10**(8))*cnonposind
-            if sind == 0:
-                EVprime = Vinit.sum(axis=1)
-            else:
-                EVprime = (Vinit * np.tile(f[S-sind, :], (bsize, 1))).sum(
-                    axis=1)
+            EVprime = np.sum(Vinit.reshape(bsize, J, 1) * np.tile(f[S-sind-1, :, :], (
+                bsize, 1, 1)), axis=1).sum(axis=1)/J
             EVprimenew = np.tile(EVprime.reshape(1, 1, bsize), (bsize, J, 1))
             Vnewarray = uc + beta * (EVprimenew * cposind)
             Vnew = Vnewarray.max(axis=2)
@@ -233,15 +227,15 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     for tind in xrange(1, T):
         for bind in xrange(bsize):
             gammat[0, :, bind, tind] = (1/float(S-1)) * \
-                f[1, :] * ((phiindt[
-                    0, :, 0, tind-1] == bind) * f[
-                    0, :]).sum()
+                (1.0/J)*f[1, :,:].sum(1) * ((phiindt[
+                    0, :, 0, tind-1] == bind) * (1.0/J)*\
+                f[0, :, :].sum(1)).sum()
     for tind in xrange(1, T):
         for sind in xrange(1, S-1):
             for bind in xrange(bsize):
-                gammat[sind, :, bind, tind] = f[sind+1, :] * \
-                    ((phiindt[sind, :, :, tind-1] == bind) * gammat[
-                        sind-1, :, :, tind-1]).sum()
+                gammat[sind, :, bind, tind] = (1.0/J)*\
+                f[sind+1, :, :].sum(1) * ((phiindt[sind, :, :, tind-1]\
+                 == bind) * gammat[sind-1, :, :, tind-1]).sum()
         Knew[tind] = ((float(S-1)/S)*(gammat[:, :, :, tind] * np.tile(
             b.reshape(1, 1, bsize),  (S-1, J, 1))).sum())
     TPIiter += 1
