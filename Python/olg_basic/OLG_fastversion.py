@@ -214,12 +214,12 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
         Vinit = Vnew
     gamma_new = np.zeros((S-1, J, bsize))
     gamma_new[0, :, :] = (
-        1 / float(S - 1)) * f[1, :].reshape(J, 1).dot(
+        1 / float(S - 1)) * (1.0/J)*f2[1, :,:].sum(1).reshape(J, 1).dot(
         ((phiind[0, :, 0].reshape(1, J, 1) == np.arange(
-            bsize)) * f[0, :].reshape(J, 1)).sum(axis=1))
+            bsize)) * (1.0/J)*f2[0, :, :].sum(1).reshape(J, 1)).sum(axis=1))
     for sind in xrange(1, S-1):
         for bind in xrange(bsize):
-            gamma_new[sind, :, bind] = f[sind+1, :] * np.sum((
+            gamma_new[sind, :, bind] = (1.0/J)*f2[sind+1, :, :].sum(1) * np.sum((
                 phiind[sind, :, :] == bind) * gamma_init[sind-1, :, :])
     # gamma_new[1:,:,:] = f[2:,:].reshape((J,S-2)).dot(((phiind[
         #1:-1,:,:]==np.arange(bsize)) * gamma_init[:-1,:,:]).sum(axis=1))
