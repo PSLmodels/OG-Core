@@ -53,7 +53,7 @@ markov_dta = markov_dta.query("wage_01 != 0")
 markov_dta = markov_dta.query("wage_99 != 999")
 markov_dta = markov_dta.query("wage_01 != 999")
 markov_dta = markov_dta.reset_index()
-# del markov_dta['index']
+del markov_dta['index']
 
 
 def get_e(S, J):
@@ -90,6 +90,17 @@ def get_f_simple(S, J):
 
 
 def get_f(S, J):
+    '''
+    Parameters: S - Number of age cohorts
+                J - Number of ability levels by age
+
+    Returns:    f - S x J x J matrix of probabilities for each ability level
+                    by age group
+
+    Note:       Because the data is separated by 2 years, but the Markov
+                    matrix is for a transition to the next year, we find
+                    the "square root" of f.
+    '''
     f = np.zeros((J, J))
     sort99 = np.array(markov_dta['wage_99'])
     sort01 = np.array(markov_dta['wage_01'])
@@ -97,6 +108,7 @@ def get_f(S, J):
     sort01.sort()
     percentiles99 = np.zeros(J-1)
     percentiles01 = np.zeros(J-1)
+    # Generate J ability groups, where each group represents 1/J 
     for j in xrange(J-1):
         percentiles99[j] = sort99[len(sort99)*(j+1)/J]
         percentiles01[j] = sort01[len(sort01)*(j+1)/J]
@@ -105,22 +117,32 @@ def get_f(S, J):
             num_in_99df = markov_dta.query('wage_99 <= percentiles99[ind99]')
             num_in_99 = np.array(num_in_99df.count()[0])
         elif ind99 < J-1:
-            num_in_99df = markov_dta.query('percentiles99[ind99-1] < wage_99 <= percentiles99[ind99]')
+            num_in_99df = markov_dta.query(
+                'percentiles99[ind99-1] < wage_99 <= percentiles99[ind99]')
             num_in_99 = np.array(num_in_99df.count()[0])
         else:
             num_in_99df = markov_dta.query('percentiles99[ind99-1] < wage_99')
             num_in_99 = np.array(num_in_99df.count()[0])
         for ind01 in xrange(J):
             if ind01 == 0:
-                num_in_both = num_in_99df.query('wage_01 <= percentiles01[ind01]').count()
+                num_in_both = num_in_99df.query(
+                    'wage_01 <= percentiles01[ind01]').count()
                 num_in_both = np.array(num_in_both[0])
             elif ind01 < J-1:
-                num_in_both = num_in_99df.query('percentiles01[ind01-1] < wage_01 <= percentiles01[ind01]').count()
+                num_in_both = num_in_99df.query(
+                    'percentiles01[ind01-1] < wage_01 <= percentiles01[ind01]').count()
                 num_in_both = np.array(num_in_both[0])
             else:
-                num_in_both = num_in_99df.query('percentiles01[ind01-1] < wage_01').count()
+                num_in_both = num_in_99df.query(
+                    'percentiles01[ind01-1] < wage_01').count()
                 num_in_both = np.array(num_in_both[0])
             f[ind99, ind01] = float(num_in_both) / num_in_99
-    f = np.linalg.matrix_power(f, 60/S)
-    f = np.tile(f.reshape(1, J, J), (S, J, J))
-    return f
+    eigvals, eigvecs = np.linalg.eig(f)
+    Diagonal = np.diag(eigvals)
+    eigvecs_inv = np.linalg.inv(eigvecs)
+    Diagonal_squareroot = np.sqrt(Diagonal)
+    f_root = eigvecs.dot(Diagonal_squareroot).dot(eigvecs_inv)
+    f_root = np.real(f_root)
+    f_root = np.linalg.matrix_power(f_root, 60/S)
+    f_root = np.tile(f_root.reshape(1, J, J), (S, 1, 1))
+    return f_root
