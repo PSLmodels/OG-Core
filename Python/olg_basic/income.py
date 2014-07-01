@@ -108,11 +108,12 @@ def get_f(S, J):
     sort01.sort()
     percentiles99 = np.zeros(J-1)
     percentiles01 = np.zeros(J-1)
-    # Generate J ability groups, where each group represents 1/J 
+    # Generate J percentile groups for ability
     for j in xrange(J-1):
         percentiles99[j] = sort99[len(sort99)*(j+1)/J]
         percentiles01[j] = sort01[len(sort01)*(j+1)/J]
     for ind99 in xrange(J):
+        # Count the number of individuals in each percentile group in 1999
         if ind99 == 0:
             num_in_99df = markov_dta.query('wage_99 <= percentiles99[ind99]')
             num_in_99 = np.array(num_in_99df.count()[0])
@@ -124,6 +125,8 @@ def get_f(S, J):
             num_in_99df = markov_dta.query('percentiles99[ind99-1] < wage_99')
             num_in_99 = np.array(num_in_99df.count()[0])
         for ind01 in xrange(J):
+            # Count the number of individuals that were in a certain
+                # percentile group in 1999 who remain in that group
             if ind01 == 0:
                 num_in_both = num_in_99df.query(
                     'wage_01 <= percentiles01[ind01]').count()
@@ -136,13 +139,20 @@ def get_f(S, J):
                 num_in_both = num_in_99df.query(
                     'percentiles01[ind01-1] < wage_01').count()
                 num_in_both = np.array(num_in_both[0])
+            # Each entry of the Markov matrix is the number of individuals who
+                # were in a percentile group and stayed in that percentile
+                # group, divided by the number of individuals originally in
+                # that percentile group
             f[ind99, ind01] = float(num_in_both) / num_in_99
     eigvals, eigvecs = np.linalg.eig(f)
     Diagonal = np.diag(eigvals)
     eigvecs_inv = np.linalg.inv(eigvecs)
     Diagonal_squareroot = np.sqrt(Diagonal)
+    # Generate the value of f for a one year interval, not 2
     f_root = eigvecs.dot(Diagonal_squareroot).dot(eigvecs_inv)
     f_root = np.real(f_root)
+    # Multiply f by itself 60/S times, where 60/S is the number of ages
+        # in each age group
     f_root = np.linalg.matrix_power(f_root, 60/S)
     f_root = np.tile(f_root.reshape(1, J, J), (S, 1, 1))
     return f_root
