@@ -47,7 +47,7 @@ starttime = time.time()
 
 S = 60
 J = 7
-bsize = 50
+bsize = 100
 beta = .96 ** (60 / S)
 sigma = 3
 alpha = .35
@@ -274,7 +274,7 @@ Generate steady state multiplier values
 
 ssbsavg = (S-1) * (gamma_ss * np.tile(b.reshape(1, 1, bsize), (
     S-1, J, 1))).sum(axis=2).sum(axis=1)
-esavg = (e * f).sum(axis=1)
+esavg = (e.reshape(bsize,J,1) * f).sum(axis=1)
 nsavg = n.T
 cssvec = (1 + rss) * np.array([0]+list(ssbsavg[:S-2])) + wss * esavg[
     :S-1] * nsavg[:S-1] - ssbsavg
