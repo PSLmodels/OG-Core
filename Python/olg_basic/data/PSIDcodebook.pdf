@@ -1,0 +1,2270 @@
+%PDF-1.1
+1 0 obj
+<<
+/Creator (Developer 2000)
+/CreatorDate (Tue Jul 01  2014)
+/Author (Oracle Reports)
+/Producer (Oracle PDF driver)
+/Title (J175705.pdf)
+>>
+endobj
+3 0 obj
+<<
+/Type /Pages
+/Kids 4 0 R
+/Count 5 0 R
+>>
+endobj
+7 0 obj
+<</Length 8 0 R>>
+stream
+BT
+208.48 25.20 TD
+/F0 10.00 Tf
+(Tuesday July 1 2014 12:19 PM) Tj
+32.24 460.44 TD
+/F1 20.00 Tf
+(The PSID Data) Tj
+-14.28 -23.48 TD
+(Custom Codebook) Tj
+ ET
+1 G
+0.00 w
+0 J
+0 j
+306.00 634.48 54.00 13.52 re S
+q
+306.00 634.48 54.00 13.52 re W n
+BT
+306.00 637.20 TD
+/F2 12.00 Tf
+(175705) Tj
+ET
+Q 0 g 0 G
+1 G
+0.00 w
+0 J
+0 j
+333.00 413.96 54.00 13.52 re S
+q
+333.00 413.96 54.00 13.52 re W n
+BT
+333.00 416.72 TD
+/F2 12.00 Tf
+(12) Tj
+ET
+Q 0 g 0 G
+q
+220.52 634.48 85.52 13.52 re W n
+BT
+282.84 637.20 TD
+/F2 12.00 Tf
+(Job: ) Tj
+ET
+Q 0 g 0 G
+q
+247.52 413.96 85.52 13.52 re W n
+BT
+249.00 416.48 TD
+/F1 12.00 Tf
+(N. of Variables: ) Tj
+ET
+Q 0 g 0 G
+endstream
+endobj
+8 0 obj
+686
+endobj
+9 0 obj
+<</Type /Font
+/Name /F0
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/BaseFont /Courier
+>>
+endobj
+10 0 obj
+<</Type /Font
+/Name /F1
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/BaseFont /Times-Bold
+>>
+endobj
+11 0 obj
+<</Type /Font
+/Name /F2
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/BaseFont /Times-Roman
+>>
+endobj
+6 0 obj
+<<
+/Type /Page
+/MediaBox [0 0 612 792]
+/Parent 3 0 R
+/Resources <</ProcSet [ /PDF /Text ] /Font << /F0 9 0 R /F1 10 0 R /F2 11 0 R >> >>
+/Contents 7 0 R
+/CropBox [0 0 612 792]
+>>
+endobj
+13 0 obj
+<</Length 14 0 R>>
+stream
+1 G
+0.00 w
+0 J
+0 j
+306.00 745.44 72.00 10.56 re S
+BT
+306.00 748.20 TD
+/F0 10.00 Tf
+(175705) Tj
+-42.00 0.00 TD
+(Job ID ) Tj
+15.60 -721.56 TD
+/F0 8.00 Tf
+(Page ) Tj
+(2) Tj
+( of ) Tj
+(9) Tj
+ -243.60 667.32 TD
+/F3 10.00 Tf
+(1968) Tj
+ 0.00 -66.16 TD
+(1999) Tj
+ 0.00 -98.08 TD
+(2001) Tj
+ 36.00 150.76 TD
+(Summary Variables \(Sampling Variables, Family History Variables,) Tj
+0.00 -11.04 TD
+(and Sex\)) Tj
+ 0.00 -55.12 TD
+(PSID Individual Data by Years) Tj
+ 0.00 -98.12 TD
+(PSID Individual Data by Years) Tj
+90.00 142.44 TD
+/F0 10.00 Tf
+(1968 INTERVIEW NUMBER) Tj
+0.00 -13.48 TD
+(PERSON NUMBER                         68) Tj
+0.00 -44.12 TD
+(1999 INTERVIEW NUMBER) Tj
+0.00 -13.48 TD
+(SEQUENCE NUMBER                       99) Tj
+0.00 -13.52 TD
+(RELATION TO HEAD                      99) Tj
+0.00 -13.48 TD
+(AGE OF INDIVIDUAL                     99) Tj
+0.00 -13.52 TD
+(CALCULATED HOURLY WAGE RATE IN 1997   99) Tj
+0.00 -44.08 TD
+(2001 INTERVIEW NUMBER) Tj
+0.00 -13.52 TD
+(SEQUENCE NUMBER                       01) Tj
+0.00 -13.48 TD
+(RELATION TO HEAD                      01) Tj
+0.00 -13.52 TD
+(AGE OF INDIVIDUAL                     01) Tj
+0.00 -13.48 TD
+(CALCULATED HOURLY WAGE RATE IN 1999   01) Tj
+0 0 1 rg
+-58.48 209.68 TD
+(ER30001) Tj
+ET
+0 0 1 RG
+0.48 w
+103.52 656.64 m 145.52 656.64 l B*
+BT
+103.52 645.16 TD
+(ER30002) Tj
+ET
+103.52 643.16 m 145.52 643.16 l B*
+BT
+103.52 601.04 TD
+(ER33501) Tj
+ET
+103.52 599.04 m 145.52 599.04 l B*
+BT
+103.52 587.56 TD
+(ER33502) Tj
+ET
+103.52 585.56 m 145.52 585.56 l B*
+BT
+103.52 574.04 TD
+(ER33503) Tj
+ET
+103.52 572.04 m 145.52 572.04 l B*
+BT
+103.52 560.56 TD
+(ER33504) Tj
+ET
+103.52 558.56 m 145.52 558.56 l B*
+BT
+103.52 547.04 TD
+(ER33537O) Tj
+ET
+103.52 545.04 m 151.52 545.04 l B*
+BT
+103.52 502.96 TD
+(ER33601) Tj
+ET
+103.52 500.96 m 145.52 500.96 l B*
+BT
+103.52 489.44 TD
+(ER33602) Tj
+ET
+103.52 487.44 m 145.52 487.44 l B*
+BT
+103.52 475.96 TD
+(ER33603) Tj
+ET
+103.52 473.96 m 145.52 473.96 l B*
+BT
+103.52 462.44 TD
+(ER33604) Tj
+ET
+103.52 460.44 m 145.52 460.44 l B*
+BT
+103.52 448.96 TD
+(ER33628O) Tj
+ET
+103.52 446.96 m 151.52 446.96 l B*
+0 g
+BT
+225.00 711.96 TD
+/F3 10.00 Tf
+(Variable Index ) Tj
+0 0 1 rg
+245.60 -53.32 TD
+/F0 10.00 Tf
+(NC note) Tj
+ET
+470.60 656.64 m 512.60 656.64 l B*
+BT
+535.52 658.64 TD
+(Codes) Tj
+ET
+535.52 656.64 m 565.52 656.64 l B*
+BT
+535.52 645.16 TD
+(Codes) Tj
+ET
+535.52 643.16 m 565.52 643.16 l B*
+BT
+535.52 601.04 TD
+(Codes) Tj
+ET
+535.52 599.04 m 565.52 599.04 l B*
+BT
+535.52 587.56 TD
+(Codes) Tj
+ET
+535.52 585.56 m 565.52 585.56 l B*
+BT
+535.52 574.04 TD
+(Codes) Tj
+ET
+535.52 572.04 m 565.52 572.04 l B*
+BT
+535.52 560.56 TD
+(Codes) Tj
+ET
+535.52 558.56 m 565.52 558.56 l B*
+BT
+535.52 547.04 TD
+(Codes) Tj
+ET
+535.52 545.04 m 565.52 545.04 l B*
+BT
+535.52 502.96 TD
+(Codes) Tj
+ET
+535.52 500.96 m 565.52 500.96 l B*
+BT
+535.52 489.44 TD
+(Codes) Tj
+ET
+535.52 487.44 m 565.52 487.44 l B*
+BT
+535.52 475.96 TD
+(Codes) Tj
+ET
+535.52 473.96 m 565.52 473.96 l B*
+BT
+535.52 462.44 TD
+(Codes) Tj
+ET
+535.52 460.44 m 565.52 460.44 l B*
+BT
+535.52 448.96 TD
+(Codes) Tj
+ET
+535.52 446.96 m 565.52 446.96 l B*
+endstream
+endobj
+14 0 obj
+3232
+endobj
+15 0 obj
+<</Type /Font
+/Name /F3
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/BaseFont /Courier-Bold
+>>
+endobj
+12 0 obj
+<<
+/Type /Page
+/MediaBox [0 0 612 792]
+/Parent 3 0 R
+/Resources <</ProcSet [ /PDF /Text ] /Font << /F0 9 0 R /F3 15 0 R >> >>
+/Contents 13 0 R
+/CropBox [0 0 612 792]
+/Annots [ 16 0 R 17 0 R 18 0 R 19 0 R 20 0 R 21 0 R 22 0 R 23 0 R 24 0 R 25 0 R 26 0 R 27 0 R 28 0 R 29 0 R 30 0 R 31 0 R 32 0 R 33 0 R 34 0 R 35 0 R 36 0 R 37 0 R 38 0 R 39 0 R 40 0 R ]>>
+endobj
+16 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [103.40 652.84 157.64 666.56]
+/Border [0 0 0]
+/A <</S /GoTo /D /ER30001>>
+>>
+endobj
+17 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [103.40 639.32 157.64 653.04]
+/Border [0 0 0]
+/A <</S /GoTo /D /ER30002>>
+>>
+endobj
+18 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [103.40 595.24 157.64 608.96]
+/Border [0 0 0]
+/A <</S /GoTo /D /ER33501>>
+>>
+endobj
+19 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [103.40 581.72 157.64 595.44]
+/Border [0 0 0]
+/A <</S /GoTo /D /ER33502>>
+>>
+endobj
+20 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [103.40 568.24 157.64 581.96]
+/Border [0 0 0]
+/A <</S /GoTo /D /ER33503>>
+>>
+endobj
+21 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [103.40 554.72 157.64 568.44]
+/Border [0 0 0]
+/A <</S /GoTo /D /ER33504>>
+>>
+endobj
+22 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [103.40 541.24 157.64 554.96]
+/Border [0 0 0]
+/A <</S /GoTo /D /ER33537O>>
+>>
+endobj
+23 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [103.40 497.16 157.64 510.88]
+/Border [0 0 0]
+/A <</S /GoTo /D /ER33601>>
+>>
+endobj
+24 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [103.40 483.64 157.64 497.36]
+/Border [0 0 0]
+/A <</S /GoTo /D /ER33602>>
+>>
+endobj
+25 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [103.40 470.16 157.64 483.88]
+/Border [0 0 0]
+/A <</S /GoTo /D /ER33603>>
+>>
+endobj
+26 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [103.40 456.64 157.64 470.36]
+/Border [0 0 0]
+/A <</S /GoTo /D /ER33604>>
+>>
+endobj
+27 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [103.40 443.16 157.64 456.88]
+/Border [0 0 0]
+/A <</S /GoTo /D /ER33628O>>
+>>
+endobj
+28 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [470.52 654.32 513.12 666.56]
+/Border [0 0 0]
+/A <</S /GoTo /D /NC-ER30001>>
+>>
+endobj
+29 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [535.40 654.32 571.64 666.56]
+/Border [0 0 0]
+/A <</S /GoTo /D /CD-ER30001>>
+>>
+endobj
+30 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [535.40 640.80 571.64 653.04]
+/Border [0 0 0]
+/A <</S /GoTo /D /CD-ER30002>>
+>>
+endobj
+31 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [535.40 596.72 571.64 608.96]
+/Border [0 0 0]
+/A <</S /GoTo /D /CD-ER33501>>
+>>
+endobj
+32 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [535.40 583.20 571.64 595.44]
+/Border [0 0 0]
+/A <</S /GoTo /D /CD-ER33502>>
+>>
+endobj
+33 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [535.40 569.72 571.64 581.96]
+/Border [0 0 0]
+/A <</S /GoTo /D /CD-ER33503>>
+>>
+endobj
+34 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [535.40 556.20 571.64 568.44]
+/Border [0 0 0]
+/A <</S /GoTo /D /CD-ER33504>>
+>>
+endobj
+35 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [535.40 542.72 571.64 554.96]
+/Border [0 0 0]
+/A <</S /GoTo /D /CD-ER33537O>>
+>>
+endobj
+36 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [535.40 498.64 571.64 510.88]
+/Border [0 0 0]
+/A <</S /GoTo /D /CD-ER33601>>
+>>
+endobj
+37 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [535.40 485.12 571.64 497.36]
+/Border [0 0 0]
+/A <</S /GoTo /D /CD-ER33602>>
+>>
+endobj
+38 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [535.40 471.64 571.64 483.88]
+/Border [0 0 0]
+/A <</S /GoTo /D /CD-ER33603>>
+>>
+endobj
+39 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [535.40 458.12 571.64 470.36]
+/Border [0 0 0]
+/A <</S /GoTo /D /CD-ER33604>>
+>>
+endobj
+40 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [535.40 444.64 571.64 456.88]
+/Border [0 0 0]
+/A <</S /GoTo /D /CD-ER33628O>>
+>>
+endobj
+42 0 obj
+<</Length 43 0 R>>
+stream
+1 G
+0.00 w
+0 J
+0 j
+306.00 745.44 72.00 10.56 re S
+BT
+306.00 748.20 TD
+/F0 10.00 Tf
+(175705) Tj
+-42.00 0.00 TD
+(Job ID ) Tj
+15.60 -721.56 TD
+/F0 8.00 Tf
+(Page ) Tj
+(3) Tj
+( of ) Tj
+(9) Tj
+-243.60 667.32 TD
+/F3 10.00 Tf
+(ER30001   "1968 INTERVIEW NUMBER") Tj
+0.00 -288.92 TD
+(ER30002   "PERSON NUMBER                         68") Tj
+0.00 275.68 TD
+/F0 10.00 Tf
+(1968 Interview Number \(1968 ID Number\)) Tj
+0.00 -288.96 TD
+(Person Number) Tj
+67.52 146.96 TD
+(1 - 2,930) Tj
+-24.00 -24.72 TD
+(3,001 - 3,511) Tj
+0.00 -45.80 TD
+(5,001 - 6,872) Tj
+0.00 -17.12 TD
+(7,001 - 9,308) Tj
+42.00 -86.32 TD
+(1 - 19) Tj
+24.00 -45.80 TD
+(20) Tj
+-30.00 -56.36 TD
+(21 - 26) Tj
+-6.00 -77.52 TD
+(30 - 169) Tj
+61.48 353.64 TD
+(Member of, or moved into, a family from the 1968 SRC cross-section) Tj
+0.00 -10.56 TD
+(sample) Tj
+0.00 -14.16 TD
+(Member of, or moved into, a family from the Immigrant sample added) Tj
+0.00 -10.56 TD
+(in 1997 and 1999.  Values of 3001-3441 indicate families first) Tj
+0.00 -10.56 TD
+(interviewed in 1997; values of 3442-3511 indicate families not) Tj
+0.00 -10.56 TD
+(interviewed until 1999.) Tj
+0.00 -14.12 TD
+(Member of, or moved into, a family from the 1968 Census sample) Tj
+0.00 -17.12 TD
+(Member of, or moved into, a family from the Latino sample added in) Tj
+0.00 -10.56 TD
+(1990 and 1992.  Values of 7001-9043 indicate families first) Tj
+0.00 -10.56 TD
+(interviewed in 1990; values of 9044-9308 indicate families not) Tj
+0.00 -10.52 TD
+(interviewed until 1992.) Tj
+0.00 -54.68 TD
+(Individuals living in core sample families at the time of the 1968) Tj
+0.00 -10.56 TD
+(interview; individuals living in Latino sample families at the time) Tj
+0.00 -10.52 TD
+(of the 1990 \(or 1992\) interview; individuals living in Immigrant) Tj
+0.00 -10.56 TD
+(sample families at the time of the 1997 \(or 1999\) interview) Tj
+0.00 -14.16 TD
+(Husband of a core sample 1968 Head living in an institution at the) Tj
+0.00 -10.56 TD
+(time of the 1968 interview; spouse of a Latino sample 1990 Head) Tj
+0.00 -10.56 TD
+(living in an institution at the time of the 1990 interview; spouse) Tj
+0.00 -10.56 TD
+(of an Immigrant sample 1997/1999 Head living in an institution at) Tj
+0.00 -10.56 TD
+(the time of the 1997/1999 interview) Tj
+0.00 -14.12 TD
+(Children or stepchildren of a 1968 core sample Head who were under) Tj
+0.00 -10.56 TD
+(25 and living in institutions at the time of the 1968 interview;) Tj
+0.00 -10.56 TD
+(children of a Latino sample 1990 \(or 1992\) Head who were under 25) Tj
+0.00 -10.56 TD
+(and living in institutions at the time of the 1990 \(or 1992\)) Tj
+0.00 -10.56 TD
+(interview; children of an Immigrant sample 1997 \(or 1999\) Head who) Tj
+0.00 -10.56 TD
+(were under 25 and living in institutions at the time of the 1997) Tj
+0.00 -10.56 TD
+(\(or 1999\) interview) Tj
+0.00 -14.16 TD
+(Individuals born into the core sample since the 1968 interview, the) Tj
+0.00 -10.52 TD
+(Latino sample since the 1990 \(or 1992\) interview, or the Immigrant) Tj
+0.00 -10.56 TD
+(sample since the 1997 \(or 1999\) interview and who have at least one) Tj
+0.00 -10.56 TD
+(sample parent; these persons are sample members) Tj
+0 0 1 rg
+343.88 540.76 TD
+(Var Index) Tj
+ET
+0 0 1 RG
+0.48 w
+514.88 692.20 m 568.88 692.20 l B*
+BT
+514.88 405.28 TD
+(Var Index) Tj
+ET
+514.88 403.28 m 568.88 403.28 l B*
+0 g
+BT
+36.00 666.72 TD
+/F4 10.00 Tf
+(This variable is the 1968 family ID number. The combination of this variable and Person) Tj
+0.00 -10.92 TD
+(Number \(ER30002\) provides unique identification for each individual on the data file.) Tj
+0.00 -10.92 TD
+(Individuals associated with families from the Latino and Immigrant samples, added to the) Tj
+0.00 -10.92 TD
+(PSID in 1990/1992 and 1997/1999, respectively, were assigned 1968 IDs so that they, too,) Tj
+0.00 -10.92 TD
+(have unique identifiers compatible with the PSID structure for the core \(SRC and Census\)) Tj
+0.00 -10.88 TD
+(sample.) Tj
+18.00 -37.44 TD
+/F0 10.00 Tf
+(k) Tj
+36.00 0.00 TD
+(Field width differs.) Tj
+-36.00 17.76 TD
+/F3 10.00 Tf
+(Non-comparability Notes) Tj
+ET
+0 G
+0.96 w
+54.00 590.48 m 192.00 590.48 l B*
+BT
+54.00 551.96 TD
+(Codes) Tj
+ET
+54.00 549.96 m 84.00 549.96 l B*
+BT
+54.00 378.04 TD
+(Codes) Tj
+ET
+54.00 376.04 m 84.00 376.04 l B*
+endstream
+endobj
+43 0 obj
+4344
+endobj
+44 0 obj
+<</Type /Font
+/Name /F4
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/BaseFont /Courier-Oblique
+>>
+endobj
+41 0 obj
+<<
+/Type /Page
+/MediaBox [0 0 612 792]
+/Parent 3 0 R
+/Resources <</ProcSet [ /PDF /Text ] /Font << /F0 9 0 R /F3 15 0 R /F4 44 0 R >> >>
+/Contents 42 0 R
+/CropBox [0 0 612 792]
+/Annots [ 45 0 R 46 0 R ]>>
+endobj
+45 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [508.40 689.88 575.40 702.12]
+/Border [0 0 0]
+/A <</S /GoTo /D /VI-ER30001>>
+>>
+endobj
+46 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [508.40 400.96 575.40 413.20]
+/Border [0 0 0]
+/A <</S /GoTo /D /VI-ER30002>>
+>>
+endobj
+48 0 obj
+<</Length 49 0 R>>
+stream
+1 G
+0.00 w
+0 J
+0 j
+306.00 745.44 72.00 10.56 re S
+BT
+306.00 748.20 TD
+/F0 10.00 Tf
+(175705) Tj
+-42.00 0.00 TD
+(Job ID ) Tj
+15.60 -721.56 TD
+/F0 8.00 Tf
+(Page ) Tj
+(4) Tj
+( of ) Tj
+(9) Tj
+-243.60 304.60 TD
+/F3 10.00 Tf
+(ER33501   "1999 INTERVIEW NUMBER") Tj
+0.00 -178.20 TD
+(ER33502   "SEQUENCE NUMBER                       99") Tj
+0.00 164.96 TD
+/F0 10.00 Tf
+(1999 Interview Number \(1999 ID Number\)) Tj
+0.00 -178.20 TD
+(1999 Sequence Number) Tj
+67.52 554.40 TD
+(170 - 226) Tj
+36.00 -119.72 TD
+(227) Tj
+0.00 -66.92 TD
+(228) Tj
+-36.00 -56.36 TD
+(229 - 399) Tj
+0.00 -223.80 TD
+(1 - 6,985) Tj
+-36.00 -24.68 TD
+(10,001 - 10,071) Tj
+84.00 -24.72 TD
+(0) Tj
+-30.00 -96.04 TD
+(1 - 20) Tj
+49.48 612.24 TD
+(Individuals who moved into a core family for the first time after) Tj
+0.00 -10.56 TD
+(the 1968 interview or who have no sample parent; individuals from) Tj
+0.00 -10.56 TD
+(the Latino sample, other than the spouse of a 1990 \(or 1992\) Head,) Tj
+0.00 -10.56 TD
+(who moved out in the year preceding the 1990 \(or 1992\) interview or) Tj
+0.00 -10.52 TD
+(who moved in for the first time after the 1990 \(or 1992\) interview;) Tj
+0.00 -10.56 TD
+(individuals from the Immigrant sample, other than the spouse of a) Tj
+0.00 -10.56 TD
+(1997 \(or 1999\) Head, who moved out in the year preceding the 1997) Tj
+0.00 -10.56 TD
+(\(or 1999\) interview or who moved in for the first time after the) Tj
+0.00 -10.56 TD
+(1997 \(or 1999\) interview. These individuals are nonsample unless) Tj
+0.00 -10.56 TD
+(they were born after the initial wave and have at least one sample) Tj
+0.00 -10.56 TD
+(parent.) Tj
+0.00 -14.16 TD
+(Spouse of a core sample 1968 Head who moved out in the year prior) Tj
+0.00 -10.52 TD
+(to the 1968 interview; spouse of a Latino sample 1990 Head who) Tj
+0.00 -10.56 TD
+(moved out in the year preceding the 1990 \(or 1992\) interview;) Tj
+0.00 -10.56 TD
+(spouse of an Immigrant sample 1997 \(or 1999\) Head who moved out in) Tj
+0.00 -10.56 TD
+(the year preceding the 1997 \(or 1999\) interview. These individuals) Tj
+0.00 -10.56 TD
+(are nonsample.) Tj
+0.00 -14.16 TD
+(Spouse of a core sample 1968 Head who died in the year prior to the) Tj
+0.00 -10.56 TD
+(1968 interview; spouse of a Latino sample 1990 \(or 1992\) Head in) Tj
+0.00 -10.56 TD
+(the year prior to the 1990 \(or 1992\) interview; spouse of an) Tj
+0.00 -10.52 TD
+(Immmigrant Latino sample 1997 \(or 1999\) Head in the year prior to) Tj
+0.00 -10.56 TD
+(the 1997 \(or 1999\) interview. These individuals are nonsample.) Tj
+0.00 -14.16 TD
+(Individuals who moved into a core family for the first time after) Tj
+0.00 -10.56 TD
+(the 1968 interview or who have no sample parent; individuals from) Tj
+0.00 -10.56 TD
+(the Latino sample, other than the spouse of a 1990 \(or 1992\) Head,) Tj
+0.00 -10.56 TD
+(who moved out in the year preceding the 1990 \(or 1992\) interview or) Tj
+0.00 -10.56 TD
+(who moved in for the first time after the 1990 \(or 1992\) interview;) Tj
+0.00 -10.56 TD
+(individuals from the Immigrant sample, other than the spouse of a) Tj
+0.00 -10.52 TD
+(1997 \(or 1999\) Head, who moved out in the year preceding the 1997) Tj
+0.00 -10.56 TD
+(\(or 1999\) interview or who moved in for the first time after the) Tj
+0.00 -10.56 TD
+(1997 \(or 1999\) interview. These individuals are nonsample unless) Tj
+0.00 -10.56 TD
+(they were born after the initial wave and have at least one sample) Tj
+0.00 -10.56 TD
+(parent.  This series is simply a continuation of the 170-226 group.) Tj
+0.00 -118.24 TD
+(1999 family interview number for core and 1997 Immigrant sample) Tj
+0.00 -10.56 TD
+(families) Tj
+0.00 -14.12 TD
+(1999 family interview number for 1999 Immigrant recontact sample) Tj
+0.00 -10.56 TD
+(families) Tj
+0.00 -14.16 TD
+(This individual was main family nonresponse by 1999 or mover-out) Tj
+0.00 -10.56 TD
+(nonresponse by 1997; from Latino sample \(ER30001=7001-9308\)) Tj
+0.00 -85.48 TD
+(Individuals in the family at the time of the 1999 interview) Tj
+0 0 1 rg
+343.88 249.52 TD
+(Var Index) Tj
+ET
+0 0 1 RG
+0.48 w
+514.88 329.48 m 568.88 329.48 l B*
+BT
+514.88 153.28 TD
+(Var Index) Tj
+ET
+514.88 151.28 m 568.88 151.28 l B*
+0 g
+BT
+36.00 304.00 TD
+/F4 10.00 Tf
+(The values for this variable represent the 1999 interview number of the family in which) Tj
+0.00 -10.92 TD
+(this individual was included in 1999. We interviewed a total of 6,997 families in 1999, 70) Tj
+0.00 -10.92 TD
+(of whom were Immigrant "recontacts"--that is, who were eligible but nonresponse for the) Tj
+0.00 -10.92 TD
+(1997 Immigrant sample or who were ineligible in 1997 but became eligible by 1999.  This) Tj
+0.00 -10.88 TD
+(group of 70 families is referred to as the Immigrant recontact sample.) Tj
+0.00 -134.56 TD
+(This variable provides a means of identifying an individual's status with regard to the FU) Tj
+0.00 -10.92 TD
+(at the time of the 1999 interview.) Tj
+18.00 125.80 TD
+/F3 10.00 Tf
+(Codes) Tj
+ET
+0 G
+0.96 w
+54.00 238.68 m 84.00 238.68 l B*
+BT
+54.00 95.24 TD
+(Codes) Tj
+ET
+54.00 93.24 m 84.00 93.24 l B*
+endstream
+endobj
+49 0 obj
+5118
+endobj
+47 0 obj
+<<
+/Type /Page
+/MediaBox [0 0 612 792]
+/Parent 3 0 R
+/Resources <</ProcSet [ /PDF /Text ] /Font << /F0 9 0 R /F3 15 0 R /F4 44 0 R >> >>
+/Contents 48 0 R
+/CropBox [0 0 612 792]
+/Annots [ 50 0 R 51 0 R ]>>
+endobj
+50 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [508.40 327.16 575.40 339.40]
+/Border [0 0 0]
+/A <</S /GoTo /D /VI-ER33501>>
+>>
+endobj
+51 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [508.40 148.96 575.40 161.20]
+/Border [0 0 0]
+/A <</S /GoTo /D /VI-ER33502>>
+>>
+endobj
+53 0 obj
+<</Length 54 0 R>>
+stream
+1 G
+0.00 w
+0 J
+0 j
+306.00 745.44 72.00 10.56 re S
+BT
+306.00 748.20 TD
+/F0 10.00 Tf
+(175705) Tj
+-42.00 0.00 TD
+(Job ID ) Tj
+15.60 -721.56 TD
+/F0 8.00 Tf
+(Page ) Tj
+(5) Tj
+( of ) Tj
+(9) Tj
+-243.60 555.00 TD
+/F3 10.00 Tf
+(ER33503   "RELATION TO HEAD                      99") Tj
+0.00 -13.28 TD
+/F0 10.00 Tf
+(1999 Relationship to Head) Tj
+79.52 125.84 TD
+(51 - 59) Tj
+0.00 -17.08 TD
+(71 - 80) Tj
+0.00 -35.28 TD
+(81 - 89) Tj
+36.00 -24.68 TD
+(0) Tj
+-6.00 -150.28 TD
+(10) Tj
+0.00 -24.72 TD
+(20) Tj
+0.00 -24.68 TD
+(22) Tj
+0.00 -35.28 TD
+(30) Tj
+0.00 -24.68 TD
+(33) Tj
+0.00 -24.72 TD
+(35) Tj
+0.00 -35.28 TD
+(37) Tj
+0.00 -24.68 TD
+(38) Tj
+0.00 -17.12 TD
+(40) Tj
+0.00 -24.68 TD
+(47) Tj
+0.00 -24.72 TD
+(48) Tj
+0.00 -24.72 TD
+(50) Tj
+0.00 -17.08 TD
+(57) Tj
+0.00 -24.72 TD
+(58) Tj
+0.00 -24.68 TD
+(60) Tj
+25.48 579.08 TD
+(Individuals in institutions at the time of the 1999 interview) Tj
+0.00 -17.08 TD
+(Individuals who moved out of the FU or out of institutions and) Tj
+0.00 -10.56 TD
+(established their own households between the 1997 and 1999) Tj
+0.00 -10.56 TD
+(interviews) Tj
+0.00 -14.16 TD
+(Individuals who were living in 1997 but died by the time of the) Tj
+0.00 -10.56 TD
+(1999 interview) Tj
+0.00 -14.12 TD
+(Inap.:  born or moved in after the 1999 interview; from Latino) Tj
+0.00 -10.56 TD
+(sample \(ER30001=7001-9308\); main family nonresponse by 1999 or) Tj
+0.00 -10.56 TD
+(mover-out nonresponse by 1997 \(ER33501=0\)) Tj
+0.00 -129.16 TD
+(Head in 1999; 1997 Head who was mover-out nonresponse by the time) Tj
+0.00 -10.56 TD
+(of the 1999 interview) Tj
+0.00 -14.16 TD
+(Legal wife in 1999; 1997 wife who was mover-out nonresponse by the) Tj
+0.00 -10.52 TD
+(time of the 1999 interview) Tj
+0.00 -14.16 TD
+("Wife"--female cohabitor who has lived with Head for 12 months or) Tj
+0.00 -10.56 TD
+(more; 1997 "wife" who was mover-out nonresponse by the time of the) Tj
+0.00 -10.56 TD
+(1999 interview) Tj
+0.00 -14.16 TD
+(Son or daughter of Head \(includes adopted children but not) Tj
+0.00 -10.56 TD
+(stepchildren\)) Tj
+0.00 -14.12 TD
+(Stepson or stepdaughter of Head \(children of legal wife \(code 20\)) Tj
+0.00 -10.56 TD
+(who are not children of Head\)) Tj
+0.00 -14.16 TD
+(Son or daughter of "wife" but not Head \(includes only those) Tj
+0.00 -10.56 TD
+(children of mothers whose relationship to Head is 22 but who are) Tj
+0.00 -10.56 TD
+(not children of Head\)) Tj
+0.00 -14.16 TD
+(Son-in-law or daughter-in-law of Head \(includes stepchildren-in-) Tj
+0.00 -10.52 TD
+(law\)) Tj
+0.00 -14.16 TD
+(Foster son or foster daughter, not legally adopted) Tj
+0.00 -17.12 TD
+(Brother or sister of Head \(includes step and half sisters and) Tj
+0.00 -10.56 TD
+(brothers\)) Tj
+0.00 -14.12 TD
+(Brother-in-law or sister-in-law of Head; i.e., brother or sister of) Tj
+0.00 -10.56 TD
+(legal wife, or spouse of Head's brother or sister.) Tj
+0.00 -14.16 TD
+(Brother or sister of Head's cohabitor \(the cohabitor is coded 22 or) Tj
+0.00 -10.56 TD
+(88\)) Tj
+0.00 -14.16 TD
+(Father or mother of Head \(includes stepparents\)) Tj
+0.00 -17.08 TD
+(Father-in-law or mother-in-law of Head \(includes parents of legal) Tj
+0.00 -10.56 TD
+(wives \(code 20\) only\)) Tj
+0.00 -14.16 TD
+(Father or mother of Head's cohabitor \(the cohabitor is coded 22 or) Tj
+0.00 -10.52 TD
+(88\)) Tj
+0.00 -14.16 TD
+(Grandson or granddaughter of Head \(includes grandchildren of legal) Tj
+0.00 -10.56 TD
+(wife \(code 20\), but those of a cohabitor are coded 97\)) Tj
+0 0 1 rg
+343.88 477.32 TD
+(Var Index) Tj
+ET
+0 0 1 RG
+0.48 w
+514.88 579.88 m 568.88 579.88 l B*
+0 g
+BT
+36.00 554.40 TD
+/F4 10.00 Tf
+(Note that these relationships are those to the 1997 Head for any individual whose 1999) Tj
+0.00 -10.92 TD
+(sequence number \(ER33502\) is greater than 50, that is, has moved out of the FU. Thus, for) Tj
+0.00 -10.92 TD
+(example, if the 1997 Head is no longer present at the time of the 1999 interview, his or) Tj
+0.00 -10.92 TD
+(her relationship to Head is coded 10; the new 1999 Head also is coded 10. Therefore, to) Tj
+0.00 -10.92 TD
+(select current Heads, the user must select those coded 10 in this variable whose sequence) Tj
+0.00 -10.92 TD
+(numbers \(ER33502=01\).) Tj
+18.00 -19.64 TD
+/F3 10.00 Tf
+(Codes) Tj
+ET
+0 G
+0.96 w
+54.00 478.16 m 84.00 478.16 l B*
+endstream
+endobj
+54 0 obj
+4364
+endobj
+52 0 obj
+<<
+/Type /Page
+/MediaBox [0 0 612 792]
+/Parent 3 0 R
+/Resources <</ProcSet [ /PDF /Text ] /Font << /F0 9 0 R /F3 15 0 R /F4 44 0 R >> >>
+/Contents 53 0 R
+/CropBox [0 0 612 792]
+/Annots [ 55 0 R ]>>
+endobj
+55 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [508.40 577.56 575.40 589.80]
+/Border [0 0 0]
+/A <</S /GoTo /D /VI-ER33503>>
+>>
+endobj
+57 0 obj
+<</Length 58 0 R>>
+stream
+1 G
+0.00 w
+0 J
+0 j
+306.00 745.44 72.00 10.56 re S
+BT
+306.00 748.20 TD
+/F0 10.00 Tf
+(175705) Tj
+-42.00 0.00 TD
+(Job ID ) Tj
+15.60 -721.56 TD
+/F0 8.00 Tf
+(Page ) Tj
+(6) Tj
+( of ) Tj
+(9) Tj
+-243.60 290.96 TD
+/F3 10.00 Tf
+(ER33504   "AGE OF INDIVIDUAL                     99") Tj
+0.00 -13.24 TD
+/F0 10.00 Tf
+(Age at the Time of the 1999 Interview) Tj
+109.52 389.84 TD
+(65) Tj
+0.00 -35.24 TD
+(66) Tj
+0.00 -17.12 TD
+(67) Tj
+0.00 -17.08 TD
+(68) Tj
+0.00 -17.12 TD
+(69) Tj
+0.00 -17.08 TD
+(70) Tj
+0.00 -17.08 TD
+(71) Tj
+0.00 -17.12 TD
+(72) Tj
+0.00 -17.08 TD
+(73) Tj
+0.00 -17.08 TD
+(74) Tj
+0.00 -17.12 TD
+(75) Tj
+0.00 -17.08 TD
+(83) Tj
+0.00 -24.72 TD
+(88) Tj
+0.00 -17.08 TD
+(90) Tj
+0.00 -17.12 TD
+(95) Tj
+0.00 -17.08 TD
+(96) Tj
+0.00 -17.08 TD
+(97) Tj
+0.00 -17.12 TD
+(98) Tj
+6.00 -24.68 TD
+(0) Tj
+0.00 -128.44 TD
+(1) Tj
+-36.00 -17.08 TD
+(2 - 125) Tj
+24.00 -17.12 TD
+(999) Tj
+12.00 -17.08 TD
+(0) Tj
+19.48 520.80 TD
+(Great-grandson or great-granddaughter of Head \(includes great-) Tj
+0.00 -10.56 TD
+(grandchildren of legal wife \(code 20\), but those of a cohabitor are) Tj
+0.00 -10.56 TD
+(coded 97\)) Tj
+0.00 -14.12 TD
+(Grandfather or grandmother of Head \(includes stepgrandparents\)) Tj
+0.00 -17.12 TD
+(Grandfather or grandmother of legal wife \(code 20\)) Tj
+0.00 -17.08 TD
+(Great-grandfather or great-grandmother of Head) Tj
+0.00 -17.12 TD
+(Great-grandfather or great-grandmother of legal wife \(code 20\)) Tj
+0.00 -17.08 TD
+(Nephew or niece of Head) Tj
+0.00 -17.08 TD
+(Nephew or niece of legal wife \(code 20\)) Tj
+0.00 -17.12 TD
+(Uncle or Aunt of Head) Tj
+0.00 -17.08 TD
+(Uncle or Aunt of legal wife \(code 20\)) Tj
+0.00 -17.08 TD
+(Cousin of Head) Tj
+0.00 -17.12 TD
+(Cousin of legal wife \(code 20\)) Tj
+0.00 -17.08 TD
+(Children of first-year cohabitor but not of Head \(the parent of) Tj
+0.00 -10.56 TD
+(this child is coded 88\)) Tj
+0.00 -14.16 TD
+(First-year cohabitor of Head) Tj
+0.00 -17.08 TD
+(Legal husband of Head) Tj
+0.00 -17.12 TD
+(Other relative of Head) Tj
+0.00 -17.08 TD
+(Other relative of legal wife \(code 20\)) Tj
+0.00 -17.08 TD
+(Other relative of cohabitor \(the cohabitor is code 22 or 88\)) Tj
+0.00 -17.12 TD
+(Other nonrelatives \(includes homosexual partners, friends of) Tj
+0.00 -10.56 TD
+(children of the FU, etc.\)) Tj
+0.00 -14.12 TD
+(Inap.:  from Latino sample \(ER30001=7001-9308\); main family) Tj
+0.00 -10.56 TD
+(nonresponse by 1999 or mover-out nonresponse by 1997 \(ER33501=0\);) Tj
+0.00 -10.56 TD
+(born or moved in after the 1999 interview \(ER33501>0 and ER33502=0\)) Tj
+0.00 -107.32 TD
+(Newborn up to second birthday) Tj
+0.00 -17.08 TD
+(Actual age) Tj
+0.00 -17.12 TD
+(NA; DK) Tj
+0.00 -17.08 TD
+(Inap.:  from Latino sample \(ER30001=7001-9308\); main family) Tj
+0.00 -10.56 TD
+(nonresponse by 1999 or mover-out nonresponse by 1997 \(ER33501=0\);) Tj
+0.00 -10.56 TD
+(born or moved in after the 1999 interview \(ER33501>0 and ER33502=0\)) Tj
+0 0 1 rg
+343.88 165.56 TD
+(Var Index) Tj
+ET
+0 0 1 RG
+0.48 w
+514.88 315.84 m 568.88 315.84 l B*
+0 g
+BT
+36.00 290.36 TD
+/F4 10.00 Tf
+(The values for this variable represent the actual age of the individual reported in years) Tj
+0.00 -10.92 TD
+(on his or her most recent birthday. Consistency of ER33504 with ER33505-ER33506 was not) Tj
+0.00 -10.92 TD
+(forced unless it was clear that the interviewer made an error in recording the) Tj
+0.00 -10.92 TD
+(individual's age or birth date.) Tj
+18.00 -19.64 TD
+/F3 10.00 Tf
+(Codes) Tj
+ET
+0 G
+0.96 w
+54.00 235.96 m 84.00 235.96 l B*
+endstream
+endobj
+58 0 obj
+3592
+endobj
+56 0 obj
+<<
+/Type /Page
+/MediaBox [0 0 612 792]
+/Parent 3 0 R
+/Resources <</ProcSet [ /PDF /Text ] /Font << /F0 9 0 R /F3 15 0 R /F4 44 0 R >> >>
+/Contents 57 0 R
+/CropBox [0 0 612 792]
+/Annots [ 59 0 R ]>>
+endobj
+59 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [508.40 313.52 575.40 325.76]
+/Border [0 0 0]
+/A <</S /GoTo /D /VI-ER33504>>
+>>
+endobj
+61 0 obj
+<</Length 62 0 R>>
+stream
+1 G
+0.00 w
+0 J
+0 j
+306.00 745.44 72.00 10.56 re S
+BT
+306.00 748.20 TD
+/F0 10.00 Tf
+(175705) Tj
+-42.00 0.00 TD
+(Job ID ) Tj
+15.60 -721.56 TD
+/F0 8.00 Tf
+(Page ) Tj
+(7) Tj
+( of ) Tj
+(9) Tj
+-243.60 667.32 TD
+/F3 10.00 Tf
+(ER33537O  "CALCULATED HOURLY WAGE RATE IN 1997   99") Tj
+0.00 -165.48 TD
+(ER33601   "2001 INTERVIEW NUMBER") Tj
+0.00 -113.12 TD
+(ER33602   "SEQUENCE NUMBER                       01") Tj
+0.00 265.36 TD
+/F0 10.00 Tf
+(Hourly Wage Rate in 1997, calculated from Reported Earnings and Time Worked) Tj
+0.00 -165.52 TD
+(2001 Interview Number \(2001 ID Number\)) Tj
+0.00 -113.12 TD
+(2001 Sequence Number) Tj
+85.52 220.80 TD
+(-99.00) Tj
+-36.00 -24.72 TD
+(.01 - 998.99) Tj
+36.00 -17.08 TD
+(999.00) Tj
+18.00 -17.12 TD
+(.00) Tj
+-36.00 -106.56 TD
+(1 - 7,457) Tj
+48.00 -17.12 TD
+(0) Tj
+-30.00 -96.04 TD
+(1 - 20) Tj
+-6.00 -17.08 TD
+(51 - 59) Tj
+0.00 -17.08 TD
+(71 - 80) Tj
+0.00 -35.28 TD
+(81 - 89) Tj
+36.00 -24.72 TD
+(0) Tj
+19.48 372.80 TD
+(Earnings loss of unknown amount from own unincorporated business in) Tj
+0.00 -10.56 TD
+(1997) Tj
+0.00 -14.16 TD
+(Actual hourly wage rate in dollars and cents for 1997) Tj
+0.00 -17.08 TD
+(NA; DK; refused) Tj
+0.00 -17.12 TD
+(Inap.:  did not work in 1997; was not in FU in 1997; under age 18) Tj
+0.00 -10.52 TD
+(in 1999; worked in own unincorporated business that broke even in) Tj
+0.00 -10.56 TD
+(1997) Tj
+0.00 -85.48 TD
+(2001 family interview number) Tj
+0.00 -17.12 TD
+(This individual was main family nonresponse by 2001 or mover-out) Tj
+0.00 -10.56 TD
+(nonresponse by 1999; from Latino sample \(ER30001=7001-9308\)) Tj
+0.00 -85.48 TD
+(Individuals in the family at the time of the 2001 interview) Tj
+0.00 -17.08 TD
+(Individuals in institutions at the time of the 2001 interview) Tj
+0.00 -17.08 TD
+(Individuals who moved out of the FU or out of institutions and) Tj
+0.00 -10.56 TD
+(established their own households between the 1999 and 2001) Tj
+0.00 -10.56 TD
+(interviews) Tj
+0.00 -14.16 TD
+(Individuals who were living in 1999 but died by the time of the) Tj
+0.00 -10.56 TD
+(2001 interview) Tj
+0.00 -14.16 TD
+(Inap.:  born or moved in after the 2001 interview; from Latino) Tj
+0.00 -10.56 TD
+(sample \(ER30001=7001-9308\); main family nonresponse by 2001 or) Tj
+0.00 -10.52 TD
+(mover-out nonresponse by 1999 \(ER33601=0\)) Tj
+0 0 1 rg
+343.88 465.20 TD
+(Var Index) Tj
+ET
+0 0 1 RG
+0.48 w
+514.88 692.20 m 568.88 692.20 l B*
+BT
+514.88 528.72 TD
+(Var Index) Tj
+ET
+514.88 526.72 m 568.88 526.72 l B*
+BT
+514.88 415.60 TD
+(Var Index) Tj
+ET
+514.88 413.60 m 568.88 413.60 l B*
+0 g
+BT
+36.00 666.72 TD
+/F4 10.00 Tf
+(The values for this variable contain a calculated hourly wage rate for 1997 for the) Tj
+0.00 -10.92 TD
+(individual. Missing data have not been assigned) Tj
+0.00 -154.56 TD
+(The values for this variable represent the 2001 interview number of the family in which) Tj
+0.00 -10.92 TD
+(this individual was included in 2001. We interviewed 7,406 families in 2001.) Tj
+0.00 -102.24 TD
+(This variable provides a means of identifying an individual's status with regard to the FU) Tj
+0.00 -10.88 TD
+(at the time of the 2001 interview.) Tj
+18.00 258.92 TD
+/F3 10.00 Tf
+(Codes) Tj
+ET
+0 G
+0.96 w
+54.00 634.12 m 84.00 634.12 l B*
+BT
+54.00 470.64 TD
+(Codes) Tj
+ET
+54.00 468.64 m 84.00 468.64 l B*
+BT
+54.00 357.52 TD
+(Codes) Tj
+ET
+54.00 355.52 m 84.00 355.52 l B*
+endstream
+endobj
+62 0 obj
+3438
+endobj
+60 0 obj
+<<
+/Type /Page
+/MediaBox [0 0 612 792]
+/Parent 3 0 R
+/Resources <</ProcSet [ /PDF /Text ] /Font << /F0 9 0 R /F3 15 0 R /F4 44 0 R >> >>
+/Contents 61 0 R
+/CropBox [0 0 612 792]
+/Annots [ 63 0 R 64 0 R 65 0 R ]>>
+endobj
+63 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [508.40 689.88 575.40 702.12]
+/Border [0 0 0]
+/A <</S /GoTo /D /VI-ER33537O>>
+>>
+endobj
+64 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [508.40 524.40 575.40 536.64]
+/Border [0 0 0]
+/A <</S /GoTo /D /VI-ER33601>>
+>>
+endobj
+65 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [508.40 411.24 575.40 423.48]
+/Border [0 0 0]
+/A <</S /GoTo /D /VI-ER33602>>
+>>
+endobj
+67 0 obj
+<</Length 68 0 R>>
+stream
+1 G
+0.00 w
+0 J
+0 j
+306.00 745.44 72.00 10.56 re S
+BT
+306.00 748.20 TD
+/F0 10.00 Tf
+(175705) Tj
+-42.00 0.00 TD
+(Job ID ) Tj
+15.60 -721.56 TD
+/F0 8.00 Tf
+(Page ) Tj
+(8) Tj
+( of ) Tj
+(9) Tj
+-243.60 667.32 TD
+/F3 10.00 Tf
+(ER33603   "RELATION TO HEAD                      01") Tj
+0.00 -13.24 TD
+/F0 10.00 Tf
+(2001 Relationship to Head) Tj
+109.52 -101.52 TD
+(10) Tj
+0.00 -24.68 TD
+(20) Tj
+0.00 -24.72 TD
+(22) Tj
+0.00 -35.28 TD
+(30) Tj
+0.00 -24.68 TD
+(33) Tj
+0.00 -24.72 TD
+(35) Tj
+0.00 -35.24 TD
+(37) Tj
+0.00 -24.72 TD
+(38) Tj
+0.00 -17.12 TD
+(40) Tj
+0.00 -24.68 TD
+(47) Tj
+0.00 -24.72 TD
+(48) Tj
+0.00 -24.68 TD
+(50) Tj
+0.00 -17.12 TD
+(57) Tj
+0.00 -24.68 TD
+(58) Tj
+0.00 -24.72 TD
+(60) Tj
+0.00 -24.72 TD
+(65) Tj
+0.00 -35.24 TD
+(66) Tj
+0.00 -17.12 TD
+(67) Tj
+0.00 -17.08 TD
+(68) Tj
+0.00 -17.08 TD
+(69) Tj
+0.00 -17.12 TD
+(70) Tj
+0.00 -17.08 TD
+(71) Tj
+25.48 497.20 TD
+(Head in 2001; 1999 Head who was mover-out nonresponse by the time) Tj
+0.00 -10.56 TD
+(of the 2001 interview) Tj
+0.00 -14.12 TD
+(Legal wife in 2001; 1999 wife who was mover-out nonresponse by the) Tj
+0.00 -10.56 TD
+(time of the 2001 interview) Tj
+0.00 -14.16 TD
+("Wife"--female cohabitor who has lived with Head for 12 months or) Tj
+0.00 -10.56 TD
+(more; 1999 "wife" who was mover-out nonresponse by the time of the) Tj
+0.00 -10.56 TD
+(2001 interview) Tj
+0.00 -14.16 TD
+(Son or daughter of Head \(includes adopted children but not) Tj
+0.00 -10.56 TD
+(stepchildren\)) Tj
+0.00 -14.12 TD
+(Stepson or stepdaughter of Head \(children of legal wife \(code 20\)) Tj
+0.00 -10.56 TD
+(who are not children of Head\)) Tj
+0.00 -14.16 TD
+(Son or daughter of "wife" but not Head \(includes only those) Tj
+0.00 -10.56 TD
+(children of mothers whose relationship to Head is 22 but who are) Tj
+0.00 -10.56 TD
+(not children of Head\)) Tj
+0.00 -14.12 TD
+(Son-in-law or daughter-in-law of Head \(includes stepchildren-in-) Tj
+0.00 -10.56 TD
+(law\)) Tj
+0.00 -14.16 TD
+(Foster son or foster daughter, not legally adopted) Tj
+0.00 -17.12 TD
+(Brother or sister of Head \(includes step and half sisters and) Tj
+0.00 -10.52 TD
+(brothers\)) Tj
+0.00 -14.16 TD
+(Brother-in-law or sister-in-law of Head; i.e., brother or sister of) Tj
+0.00 -10.56 TD
+(legal wife, or spouse of Head's brother or sister.) Tj
+0.00 -14.16 TD
+(Brother or sister of Head's cohabitor \(the cohabitor is coded 22 or) Tj
+0.00 -10.56 TD
+(88\)) Tj
+0.00 -14.12 TD
+(Father or mother of Head \(includes stepparents\)) Tj
+0.00 -17.12 TD
+(Father-in-law or mother-in-law of Head \(includes parents of legal) Tj
+0.00 -10.56 TD
+(wives \(code 20\) only\)) Tj
+0.00 -14.12 TD
+(Father or mother of Head's cohabitor \(the cohabitor is coded 22 or) Tj
+0.00 -10.56 TD
+(88\)) Tj
+0.00 -14.16 TD
+(Grandson or granddaughter of Head \(includes grandchildren of legal) Tj
+0.00 -10.56 TD
+(wife \(code 20\), but those of a cohabitor are coded 97\)) Tj
+0.00 -14.16 TD
+(Great-grandson or great-granddaughter of Head \(includes great-) Tj
+0.00 -10.56 TD
+(grandchildren of legal wife \(code 20\), but those of a cohabitor are) Tj
+0.00 -10.56 TD
+(coded 97\)) Tj
+0.00 -14.12 TD
+(Grandfather or grandmother of Head \(includes stepgrandparents\)) Tj
+0.00 -17.12 TD
+(Grandfather or grandmother of legal wife \(code 20\)) Tj
+0.00 -17.08 TD
+(Great-grandfather or great-grandmother of Head) Tj
+0.00 -17.08 TD
+(Great-grandfather or great-grandmother of legal wife \(code 20\)) Tj
+0.00 -17.12 TD
+(Nephew or niece of Head) Tj
+0.00 -17.08 TD
+(Nephew or niece of legal wife \(code 20\)) Tj
+0 0 1 rg
+343.88 612.20 TD
+(Var Index) Tj
+ET
+0 0 1 RG
+0.48 w
+514.88 692.20 m 568.88 692.20 l B*
+0 g
+BT
+36.00 666.72 TD
+/F4 10.00 Tf
+(Note that these relationships are those to the 1999 Head for any individual whose 2001) Tj
+0.00 -10.92 TD
+(sequence number \(ER33602\) is greater than 50, that is, has moved out of the FU. Thus, for) Tj
+0.00 -10.92 TD
+(example, if the 1999 Head is no longer present at the time of the 2001 interview, his or) Tj
+0.00 -10.92 TD
+(her relationship to Head is coded 10; the new 2001 Head also is coded 10. Therefore, to) Tj
+0.00 -10.92 TD
+(select current Heads, the user must select those coded 10 in this variable whose sequence) Tj
+0.00 -10.88 TD
+(numbers \(ER33602=01\).) Tj
+18.00 -19.68 TD
+/F3 10.00 Tf
+(Codes) Tj
+ET
+0 G
+0.96 w
+54.00 590.48 m 84.00 590.48 l B*
+endstream
+endobj
+68 0 obj
+4418
+endobj
+66 0 obj
+<<
+/Type /Page
+/MediaBox [0 0 612 792]
+/Parent 3 0 R
+/Resources <</ProcSet [ /PDF /Text ] /Font << /F0 9 0 R /F3 15 0 R /F4 44 0 R >> >>
+/Contents 67 0 R
+/CropBox [0 0 612 792]
+/Annots [ 69 0 R ]>>
+endobj
+69 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [508.40 689.88 575.40 702.12]
+/Border [0 0 0]
+/A <</S /GoTo /D /VI-ER33603>>
+>>
+endobj
+71 0 obj
+<</Length 72 0 R>>
+stream
+1 G
+0.00 w
+0 J
+0 j
+306.00 745.44 72.00 10.56 re S
+BT
+306.00 748.20 TD
+/F0 10.00 Tf
+(175705) Tj
+-42.00 0.00 TD
+(Job ID ) Tj
+15.60 -721.56 TD
+/F0 8.00 Tf
+(Page ) Tj
+(9) Tj
+( of ) Tj
+(9) Tj
+-243.60 428.80 TD
+/F3 10.00 Tf
+(ER33604   "AGE OF INDIVIDUAL                     01") Tj
+0.00 -179.72 TD
+(ER33628O  "CALCULATED HOURLY WAGE RATE IN 1999   01") Tj
+0.00 166.44 TD
+/F0 10.00 Tf
+(Age at the Time of the 2001 Interview) Tj
+0.00 -179.68 TD
+(Hourly Wage Rate in 1999, calculated from Reported Earnings and Time Worked) Tj
+109.52 431.72 TD
+(72) Tj
+0.00 -17.08 TD
+(73) Tj
+0.00 -17.12 TD
+(74) Tj
+0.00 -17.08 TD
+(75) Tj
+0.00 -17.08 TD
+(83) Tj
+0.00 -24.72 TD
+(88) Tj
+0.00 -17.08 TD
+(90) Tj
+0.00 -17.12 TD
+(95) Tj
+0.00 -17.08 TD
+(96) Tj
+0.00 -17.08 TD
+(97) Tj
+0.00 -17.12 TD
+(98) Tj
+6.00 -24.72 TD
+(0) Tj
+0.00 -128.40 TD
+(1) Tj
+-36.00 -17.12 TD
+(2 - 125) Tj
+24.00 -17.08 TD
+(999) Tj
+12.00 -17.08 TD
+(0) Tj
+-30.00 -106.60 TD
+(-99.00) Tj
+-36.00 -24.72 TD
+(.01 - 998.99) Tj
+36.00 -17.08 TD
+(999.00) Tj
+18.00 -17.08 TD
+(.00) Tj
+31.48 548.44 TD
+(Uncle or Aunt of Head) Tj
+0.00 -17.08 TD
+(Uncle or Aunt of legal wife \(code 20\)) Tj
+0.00 -17.12 TD
+(Cousin of Head) Tj
+0.00 -17.08 TD
+(Cousin of legal wife \(code 20\)) Tj
+0.00 -17.08 TD
+(Children of first-year cohabitor but not of Head \(the parent of) Tj
+0.00 -10.56 TD
+(this child is coded 88\)) Tj
+0.00 -14.16 TD
+(First-year cohabitor of Head) Tj
+0.00 -17.08 TD
+(Legal husband of Head) Tj
+0.00 -17.12 TD
+(Other relative of Head) Tj
+0.00 -17.08 TD
+(Other relative of legal wife \(code 20\)) Tj
+0.00 -17.08 TD
+(Other relative of cohabitor \(the cohabitor is code 22 or 88\)) Tj
+0.00 -17.12 TD
+(Other nonrelatives \(includes homosexual partners, friends of) Tj
+0.00 -10.56 TD
+(children of the FU, etc.\)) Tj
+0.00 -14.16 TD
+(Inap.:  from Latino sample \(ER30001=7001-9308\); main family) Tj
+0.00 -10.52 TD
+(nonresponse by 2001 or mover-out nonresponse by 1999 \(ER33601=0\);) Tj
+0.00 -10.56 TD
+(born or moved in after the 2001 interview \(ER33601>0 and ER33602=0\)) Tj
+0.00 -107.32 TD
+(Newborn up to second birthday) Tj
+0.00 -17.12 TD
+(Actual age) Tj
+0.00 -17.08 TD
+(NA; DK) Tj
+0.00 -17.08 TD
+(Inap.:  from Latino sample \(ER30001=7001-9308\); main family) Tj
+0.00 -10.56 TD
+(nonresponse by 2001 or mover-out nonresponse by 1999 \(ER33601=0\);) Tj
+0.00 -10.56 TD
+(born or moved in after the 2001 interview \(ER33601>0 and ER33602=0\)) Tj
+0.00 -85.48 TD
+(Earnings loss of unknown amount from own unincorporated business in) Tj
+0.00 -10.56 TD
+(1999) Tj
+0.00 -14.16 TD
+(Actual hourly wage rate in dollars and cents for 1999) Tj
+0.00 -17.08 TD
+(NA; DK; refused) Tj
+0.00 -17.08 TD
+(Inap.:  did not work in 1999; was not in FU in 1999; under age 18) Tj
+0.00 -10.56 TD
+(in 2001; worked in own unincorporated business that broke even in) Tj
+0.00 -10.56 TD
+(1999) Tj
+0 0 1 rg
+343.88 331.04 TD
+(Var Index) Tj
+ET
+0 0 1 RG
+0.48 w
+514.88 453.68 m 568.88 453.68 l B*
+BT
+514.88 275.96 TD
+(Var Index) Tj
+ET
+514.88 273.96 m 568.88 273.96 l B*
+0 g
+BT
+36.00 428.20 TD
+/F4 10.00 Tf
+(The values for this variable represent the actual age of the individual reported in years) Tj
+0.00 -10.92 TD
+(on his or her most recent birthday. Consistency of ER33604 with ER33605-ER33606 was not) Tj
+0.00 -10.92 TD
+(forced unless it was clear that the interviewer made an error in recording the) Tj
+0.00 -10.92 TD
+(individual's age or birth date.) Tj
+0.00 -146.96 TD
+(The values for this variable contain a calculated hourly wage rate for 1999 for the) Tj
+0.00 -10.92 TD
+(individual. Missing data have not been assigned.) Tj
+18.00 138.20 TD
+/F3 10.00 Tf
+(Codes) Tj
+ET
+0 G
+0.96 w
+54.00 373.76 m 84.00 373.76 l B*
+BT
+54.00 217.88 TD
+(Codes) Tj
+ET
+54.00 215.88 m 84.00 215.88 l B*
+endstream
+endobj
+72 0 obj
+3840
+endobj
+70 0 obj
+<<
+/Type /Page
+/MediaBox [0 0 612 792]
+/Parent 3 0 R
+/Resources <</ProcSet [ /PDF /Text ] /Font << /F0 9 0 R /F3 15 0 R /F4 44 0 R >> >>
+/Contents 71 0 R
+/CropBox [0 0 612 792]
+/Annots [ 73 0 R 74 0 R ]>>
+endobj
+73 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [508.40 451.36 575.40 463.60]
+/Border [0 0 0]
+/A <</S /GoTo /D /VI-ER33604>>
+>>
+endobj
+74 0 obj
+<<
+/Type /Annot
+/Subtype /Link
+/Rect [508.40 271.64 575.40 283.88]
+/Border [0 0 0]
+/A <</S /GoTo /D /VI-ER33628O>>
+>>
+endobj
+2 0 obj
+<<
+/Type /Catalog
+/Pages 3 0 R
+/Dests 75 0 R
+/PageMode /UseOutlines
+/Outlines 76 0 R
+>>
+endobj
+75 0 obj
+<<
+/bm437 [6 0 R /XYZ 0 648.12 0]
+/Back2Top [6 0 R /XYZ 0 648.12 0]
+/bm1794 [12 0 R /XYZ 0 702.12 0]
+/bm1839 [12 0 R /XYZ 0 635.96 0]
+/bm1867 [12 0 R /XYZ 0 537.88 0]
+/bm1895 [12 0 R /XYZ 0 688.60 0]
+/bm2017 [12 0 R /XYZ 0 622.44 0]
+/bm2070 [12 0 R /XYZ 0 524.36 0]
+/VI-ER30001 [12 0 R /XYZ 0 666.56 0]
+/VI-ER30002 [12 0 R /XYZ 0 653.04 0]
+/VI-ER33501 [12 0 R /XYZ 0 608.96 0]
+/VI-ER33502 [12 0 R /XYZ 0 595.44 0]
+/VI-ER33503 [12 0 R /XYZ 0 581.96 0]
+/VI-ER33504 [12 0 R /XYZ 0 568.44 0]
+/VI-ER33537O [12 0 R /XYZ 0 554.96 0]
+/VI-ER33601 [12 0 R /XYZ 0 510.88 0]
+/VI-ER33602 [12 0 R /XYZ 0 497.36 0]
+/VI-ER33603 [12 0 R /XYZ 0 483.88 0]
+/VI-ER33604 [12 0 R /XYZ 0 470.36 0]
+/VI-ER33628O [12 0 R /XYZ 0 456.88 0]
+/ER30001 [41 0 R /XYZ 0 702.12 0]
+/ER30002 [41 0 R /XYZ 0 413.20 0]
+/NC-ER30001 [41 0 R /XYZ 0 600.60 0]
+/CD-ER30001 [41 0 R /XYZ 0 560.12 0]
+/CD-ER30002 [41 0 R /XYZ 0 386.20 0]
+/ER33501 [47 0 R /XYZ 0 339.40 0]
+/ER33502 [47 0 R /XYZ 0 161.20 0]
+/CD-ER33501 [47 0 R /XYZ 0 248.80 0]
+/CD-ER33502 [47 0 R /XYZ 0 103.36 0]
+/ER33503 [52 0 R /XYZ 0 589.80 0]
+/CD-ER33503 [52 0 R /XYZ 0 488.28 0]
+/ER33504 [56 0 R /XYZ 0 325.76 0]
+/CD-ER33504 [56 0 R /XYZ 0 246.08 0]
+/ER33537O [60 0 R /XYZ 0 702.12 0]
+/ER33601 [60 0 R /XYZ 0 536.64 0]
+/ER33602 [60 0 R /XYZ 0 423.48 0]
+/CD-ER33537O [60 0 R /XYZ 0 644.28 0]
+/CD-ER33601 [60 0 R /XYZ 0 478.80 0]
+/CD-ER33602 [60 0 R /XYZ 0 365.68 0]
+/ER33603 [66 0 R /XYZ 0 702.12 0]
+/CD-ER33603 [66 0 R /XYZ 0 600.60 0]
+/ER33604 [70 0 R /XYZ 0 463.60 0]
+/ER33628O [70 0 R /XYZ 0 283.88 0]
+/CD-ER33604 [70 0 R /XYZ 0 383.92 0]
+/CD-ER33628O [70 0 R /XYZ 0 226.04 0]
+>>
+endobj
+76 0 obj
+<<
+/Count 19
+/First 77 0 R
+/Last 77 0 R
+>>
+endobj
+77 0 obj
+<<
+/Title (Job175705)
+/A <</S /GoTo /D /bm437>>
+/Parent 76 0 R
+/First 78 0 R
+/Last 80 0 R
+/Count 18
+>>
+endobj
+78 0 obj
+<<
+/Title (1968)
+/A <</S /GoTo /D /bm1794>>
+/Parent 77 0 R
+/Next 79 0 R
+/First 81 0 R
+/Last 81 0 R
+/Count 3
+>>
+endobj
+79 0 obj
+<<
+/Title (1999)
+/A <</S /GoTo /D /bm1839>>
+/Parent 77 0 R
+/Prev 78 0 R
+/Next 80 0 R
+/First 82 0 R
+/Last 82 0 R
+/Count 6
+>>
+endobj
+80 0 obj
+<<
+/Title (2001)
+/A <</S /GoTo /D /bm1867>>
+/Parent 77 0 R
+/Prev 79 0 R
+/First 83 0 R
+/Last 83 0 R
+/Count 6
+>>
+endobj
+81 0 obj
+<<
+/Title (Summary Variables \(Sampling Variables, Family History Variables, and Sex\))
+/A <</S /GoTo /D /bm1895>>
+/Parent 78 0 R
+/First 84 0 R
+/Last 85 0 R
+/Count 2
+>>
+endobj
+82 0 obj
+<<
+/Title (PSID Individual Data by Years)
+/A <</S /GoTo /D /bm2017>>
+/Parent 79 0 R
+/First 86 0 R
+/Last 90 0 R
+/Count 5
+>>
+endobj
+83 0 obj
+<<
+/Title (PSID Individual Data by Years)
+/A <</S /GoTo /D /bm2070>>
+/Parent 80 0 R
+/First 91 0 R
+/Last 95 0 R
+/Count 5
+>>
+endobj
+84 0 obj
+<<
+/Title (ER30001)
+/A <</S /GoTo /D /ER30001>>
+/Parent 81 0 R
+/Next 85 0 R
+>>
+endobj
+85 0 obj
+<<
+/Title (ER30002)
+/A <</S /GoTo /D /ER30002>>
+/Parent 81 0 R
+/Prev 84 0 R
+>>
+endobj
+86 0 obj
+<<
+/Title (ER33501)
+/A <</S /GoTo /D /ER33501>>
+/Parent 82 0 R
+/Next 87 0 R
+>>
+endobj
+87 0 obj
+<<
+/Title (ER33502)
+/A <</S /GoTo /D /ER33502>>
+/Parent 82 0 R
+/Prev 86 0 R
+/Next 88 0 R
+>>
+endobj
+88 0 obj
+<<
+/Title (ER33503)
+/A <</S /GoTo /D /ER33503>>
+/Parent 82 0 R
+/Prev 87 0 R
+/Next 89 0 R
+>>
+endobj
+89 0 obj
+<<
+/Title (ER33504)
+/A <</S /GoTo /D /ER33504>>
+/Parent 82 0 R
+/Prev 88 0 R
+/Next 90 0 R
+>>
+endobj
+90 0 obj
+<<
+/Title (ER33537O)
+/A <</S /GoTo /D /ER33537O>>
+/Parent 82 0 R
+/Prev 89 0 R
+>>
+endobj
+91 0 obj
+<<
+/Title (ER33601)
+/A <</S /GoTo /D /ER33601>>
+/Parent 83 0 R
+/Next 92 0 R
+>>
+endobj
+92 0 obj
+<<
+/Title (ER33602)
+/A <</S /GoTo /D /ER33602>>
+/Parent 83 0 R
+/Prev 91 0 R
+/Next 93 0 R
+>>
+endobj
+93 0 obj
+<<
+/Title (ER33603)
+/A <</S /GoTo /D /ER33603>>
+/Parent 83 0 R
+/Prev 92 0 R
+/Next 94 0 R
+>>
+endobj
+94 0 obj
+<<
+/Title (ER33604)
+/A <</S /GoTo /D /ER33604>>
+/Parent 83 0 R
+/Prev 93 0 R
+/Next 95 0 R
+>>
+endobj
+95 0 obj
+<<
+/Title (ER33628O)
+/A <</S /GoTo /D /ER33628O>>
+/Parent 83 0 R
+/Prev 94 0 R
+>>
+endobj
+4 0 obj
+[ 6 0 R 12 0 R 41 0 R 47 0 R 52 0 R 56 0 R 60 0 R 66 0 R 70 0 R ]
+endobj
+5 0 obj
+9
+endobj
+xref
+0 96
+0000000000 65535 f
+0000000010 00000 n
+0000041993 00000 n
+0000000174 00000 n
+0000046218 00000 n
+0000046302 00000 n
+0000001348 00000 n
+0000000240 00000 n
+0000000981 00000 n
+0000001003 00000 n
+0000001115 00000 n
+0000001231 00000 n
+0000004983 00000 n
+0000001552 00000 n
+0000004841 00000 n
+0000004865 00000 n
+0000005364 00000 n
+0000005503 00000 n
+0000005642 00000 n
+0000005781 00000 n
+0000005920 00000 n
+0000006059 00000 n
+0000006198 00000 n
+0000006338 00000 n
+0000006477 00000 n
+0000006616 00000 n
+0000006755 00000 n
+0000006894 00000 n
+0000007034 00000 n
+0000007176 00000 n
+0000007318 00000 n
+0000007460 00000 n
+0000007602 00000 n
+0000007744 00000 n
+0000007886 00000 n
+0000008028 00000 n
+0000008171 00000 n
+0000008313 00000 n
+0000008455 00000 n
+0000008597 00000 n
+0000008739 00000 n
+0000013428 00000 n
+0000008882 00000 n
+0000013283 00000 n
+0000013307 00000 n
+0000013659 00000 n
+0000013801 00000 n
+0000019142 00000 n
+0000013943 00000 n
+0000019118 00000 n
+0000019373 00000 n
+0000019515 00000 n
+0000024102 00000 n
+0000019657 00000 n
+0000024078 00000 n
+0000024326 00000 n
+0000028141 00000 n
+0000024468 00000 n
+0000028117 00000 n
+0000028365 00000 n
+0000032026 00000 n
+0000028507 00000 n
+0000032002 00000 n
+0000032264 00000 n
+0000032407 00000 n
+0000032549 00000 n
+0000037190 00000 n
+0000032691 00000 n
+0000037166 00000 n
+0000037414 00000 n
+0000041477 00000 n
+0000037556 00000 n
+0000041453 00000 n
+0000041708 00000 n
+0000041850 00000 n
+0000042105 00000 n
+0000043778 00000 n
+0000043844 00000 n
+0000043973 00000 n
+0000044111 00000 n
+0000044263 00000 n
+0000044401 00000 n
+0000044596 00000 n
+0000044745 00000 n
+0000044894 00000 n
+0000044997 00000 n
+0000045100 00000 n
+0000045203 00000 n
+0000045320 00000 n
+0000045437 00000 n
+0000045554 00000 n
+0000045659 00000 n
+0000045762 00000 n
+0000045879 00000 n
+0000045996 00000 n
+0000046113 00000 n
+trailer
+<<
+/Size 96
+/Root 2 0 R
+/Info 1 0 R
+>>
+startxref
+46322
+%%EOF
