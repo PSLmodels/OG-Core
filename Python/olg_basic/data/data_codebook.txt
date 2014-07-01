@@ -12,8 +12,8 @@ With the following Ranges:
 
 
 Topic: Earnings Variables
-PTERNH1O
-Earnings-hourly pay rate,amount
+PTERNHLY
+Earnings-hourly pay rate,amount recoded
 
 With the following Ranges:
 -1  Not in Universe

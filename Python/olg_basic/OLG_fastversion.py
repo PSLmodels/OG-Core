@@ -55,8 +55,9 @@ delta = 0.0 ** (60 / S)
 if S >= 12:
     n = np.ones(S)
     n[0:S/10+1] = np.linspace(0.865, 1, (S/10)+1)
-    n[- 2*((S/12)+1)+1 - ((S/6)+2) : - 2*((S/12)+1)+1] = np.linspace(1, 0.465, (S/6)+2)
-    n[- 2*((S/12)+1) : -(S/12+1)+1] = np.linspace(0.465, .116, (S/12)+2)
+    n[- 2*((S/12)+1)+1 - ((S/6)+2): - 2*((S/12)+1)+1] = np.linspace(
+        1, 0.465, (S/6)+2)
+    n[- 2*((S/12)+1): -(S/12+1)+1] = np.linspace(0.465, .116, (S/12)+2)
     n[-(S/12+1):] = np.linspace(0.116, .093, (S/12)+1)
 else:
     n = np.ones(60)
@@ -218,7 +219,8 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
         for bind in xrange(bsize):
             gamma_new[sind, :, bind] = f[sind+1, :] * np.sum((
                 phiind[sind, :, :] == bind) * gamma_init[sind-1, :, :])
-    # gamma_new[1:,:,:] = f[2:,:].reshape((J,S-2)).dot(((phiind[1:-1,:,:]==np.arange(bsize)) * gamma_init[:-1,:,:]).sum(axis=1))
+    # gamma_new[1:,:,:] = f[2:,:].reshape((J,S-2)).dot(((phiind[
+        #1:-1,:,:]==np.arange(bsize)) * gamma_init[:-1,:,:]).sum(axis=1))
     ssiter += 1
     ssdist = np.max(abs(gamma_new - gamma_init))
     gamma_init = rho * gamma_new + (1 - rho) * gamma_init
