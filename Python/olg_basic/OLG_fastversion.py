@@ -1,8 +1,12 @@
 '''
+------------------------------------------------------------------------
 Last updated: 6/26/2014
 Python version of the Evan/Phillips 2014 paper
-Calculates steady state, and then usies timepath iteration and
-alternate model forecast method to solve
+Calculates steady state of OLG model with S age cohorts
+
+This py-file calls the following other file(s):
+            income.py
+------------------------------------------------------------------------
 '''
 
 #Packages
@@ -51,7 +55,6 @@ rho = .20
 A = 1
 delta = 0.0 ** (60 / S)
 
-# S must be greater than of equal to 12.
 if S >= 12:
     n = np.ones(S)
     n[0:S/10+1] = np.linspace(0.865, 1, (S/10)+1)
@@ -165,6 +168,7 @@ def get_K(b, gamma):
     return K_now
 
 ssiter = 0
+#Takes 590 iterations when S=60, J=7, and bsize=350
 ssmaxiter = 700
 ssdist = 10
 ssmindist = 1e-9
@@ -243,34 +247,18 @@ seconds = runtime % 60
 ------------------------------------------------------------------------
 domain     = 1 x S vector of each age cohort
 bsavg      = 1 x S vector of the average wealth b of each age cohort
-b(i)        = 1 x S vector of the (i)th percentile of wealth holdings of
-             each age cohort
 wealthwgts = (S-1) x J x bsize array of distribution weights times the
              value of wealth
-bpct       = (S-1) x 1 x bsize array of percent of population with each
-             wealth level for each age cohort
-bpctl      = (S-1) x 1 x bsize array of percentile of each wealth level
-             for each age cohort
-pctl_init  = (S-1) x 1 vector of zeros for initial percentile
 ------------------------------------------------------------------------
 '''
 
 domain = np.linspace(0, S, S)
-bsavg = np.zeros((1, S))
+bsavg = np.zeros(S)
 
 wealthwgts = ((S-1) * gamma_ss) * np.tile(b.reshape(1, 1, bsize), (S-1, J, 1))
-bpct = (S-1) * np.sum(gamma_init, axis=1).reshape(S-1, 1, bsize)
-bpctl = np.zeros((S-1, 1, bsize))
-pctl_init = np.zeros((S-1, 1))
-for bind in xrange(bsize):
-    if bind == 0:
-        bpctl[:, 0, bind] = bpct[:, 0, bind] + pctl_init.flatten()
-    else:
-        bpctl[:, 0, bind] = bpct[:, 0, bind] + bpctl[:, 0, bind-1]
 
 for sind in xrange(1, S):
-    bsavg[0, sind] = np.sum(wealthwgts[sind-1, :, :])
-bsavg = bsavg.flatten()
+    bsavg[sind] = np.sum(wealthwgts[sind-1, :, :])
 
 
 plt.figure(1)
@@ -280,12 +268,6 @@ plt.title('Steady-state Distribution of Capital')
 plt.legend(loc=0)
 # plt.show()
 plt.savefig("distribution_of_capital")
-
-'''
-------------------------------------------------------------------------
-Generate steady state multiplier values
-------------------------------------------------------------------------
-'''
 
 '''
 ------------------------------------------------------------------------
