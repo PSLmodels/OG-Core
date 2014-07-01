@@ -45,9 +45,9 @@ b     = 1 x bsize vector of possible values for initial wealth b
 '''
 starttime = time.time()
 
-S = 60
+S = 20
 J = 7
-bsize = 350
+bsize = 35
 beta = .96 ** (60 / S)
 sigma = 3
 alpha = .35
@@ -72,7 +72,8 @@ else:
     n = n[60 % S:: 60 / S]
 
 e = income.get_e(S, J)
-f = income.get_f(S, J)
+f = income.get_f_simple(S, J)
+f2 = income.get_f(S, J)
 
 bmin = 0
 bmax = 15
@@ -155,7 +156,7 @@ def get_r(Y_now, K_now):
 
 def get_N(f, e, n):
     # Equation 2.15
-    N_now = np.sum(f * e * n.reshape(S, 1))
+    N_now = np.sum(f2 * e.reshape(S,J,1) * n.reshape(S, 1, 1))
     N_now /= S
     return N_now
 
@@ -173,7 +174,7 @@ ssmaxiter = 700
 ssdist = 10
 ssmindist = 1e-9
 # Generate gamma_init
-gamma_init = np.copy(f).reshape(S, J, 1)
+gamma_init = np.copy(f2.sum(axis=2)).reshape(S, J, 1)
 gamma_init = np.tile(gamma_init, (1, 1, bsize))
 gamma_init = gamma_init[1:, :, :]
 gamma_init /= bsize * (S - 1)
