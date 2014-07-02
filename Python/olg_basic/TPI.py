@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 6/25/2014
+Last updated 7/1/2014
 Python version of Evans/Philips 2014 paper
 
 This program solves for transition path of the distribution of wealth
@@ -9,6 +9,10 @@ method
 
 This py-file calls the following other file(s):
             ss_vars.pkl
+
+This py-file creates the following other file(s):
+            TPI_vars.pkl
+            TPI.png
 ------------------------------------------------------------------------
 '''
 
@@ -40,8 +44,8 @@ A        = total factor productivity parameter in firms' production
            function
 n        = 1 x S vector of inelastic labor supply for each age s
 e        = S x J matrix of age dependent possible working abilities e_s
-f        = S x J matrix of age dependent discrete probability mass
-           function for e: f(e_s)
+f        = S x J x J matrix of age dependent discrete probability mass 
+           function for e as Markov proccess: f(e_s)
 J        = number of points in the support of e
 bmin     = minimum value of b (usually is bmin = 0)
 bmax     = maximum value of b

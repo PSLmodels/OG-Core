@@ -1,11 +1,16 @@
 '''
 ------------------------------------------------------------------------
-Last updated: 6/26/2014
+Last updated: 7/1/2014
 Python version of the Evan/Phillips 2014 paper
 Calculates steady state of OLG model with S age cohorts
 
 This py-file calls the following other file(s):
             income.py
+
+This py-file creates the following other file(s):
+            ss_vars.pkl
+            distribution_of_capital.png
+            euler_errors.png
 ------------------------------------------------------------------------
 '''
 
@@ -33,9 +38,9 @@ A     = total factor productivity parameter in firms' production
 delta = depreciation rate of capital
 n     = 1 x S vector of inelastic labor supply for each age s
 e     = S x J matrix of age dependent possible working abilities e_s
-f     = S x J matrix of age dependent discrete probability mass function
-        for e: f(e_s)
-J     = number of points in the support of e
+f     = S x J x J matrix of age dependent discrete probability mass 
+        function for e as Markov proccess: f(e_s)
+J     = number of points in the support of e_s
 bmin  = minimum value of b
 bmax  = maximum value of b
 bsize = number of discrete points in the support of b
@@ -62,7 +67,9 @@ if S >= 12:
         1, 0.465, (S/6)+2)
     n[- 2*((S/12)+1): -(S/12+1)+1] = np.linspace(0.465, .116, (S/12)+2)
     n[-(S/12+1):] = np.linspace(0.116, .093, (S/12)+1)
-else:
+# The above method doesn't work well with very small S, so we have this 
+# alternative
+else: 
     n = np.ones(60)
     n[0:6] = np.array([.865, .8875, .91, .9325, .955, .9775])
     n[40:] = np.array(
@@ -203,8 +210,8 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
         cpos = c * cposind + (1e-8) * cnonposind
         uc = (((cpos ** (1 - sigma)) - np.ones((bsize, J, bsize))) / (
             1 - sigma)) * cposind - (10 ** 8) * cnonposind
-        EVprime = np.sum(Vinit.reshape(bsize, J, 1) * np.tile(f[S-sind-1, :, :], (
-                bsize, 1, 1)), axis=1).sum(axis=1)/J
+        EVprime = np.sum(Vinit.reshape(bsize, J, 1) * np.tile(f[S-sind-1,\
+         :, :], (bsize, 1, 1)), axis=1).sum(axis=1)/J
         EVprimenew = np.tile(EVprime.reshape(1, 1, bsize), (bsize, J, 1))
         Vnewarray = uc + beta * (EVprimenew * cposind)
         Vnew, bprimeind = Vnewarray.max(2), Vnewarray.argmax(2)
@@ -237,6 +244,8 @@ hours = runtime / 3600
 minutes = (runtime / 60) % 60
 seconds = runtime % 60
 
+print 'Finding the steady state took %.0f hours, %.0f minutes, and %.0f \
+seconds.' % (abs(hours - .5), abs(minutes - .5), seconds)
 
 '''
 ------------------------------------------------------------------------
@@ -254,9 +263,7 @@ bsavg = np.zeros(S)
 
 wealthwgts = ((S-1) * gamma_ss) * np.tile(b.reshape(1, 1, bsize), (S-1, J, 1))
 
-for sind in xrange(1, S):
-    bsavg[sind] = np.sum(wealthwgts[sind-1, :, :])
-
+bsavg[1:] = wealthwgts[:-1,:,:].sum(axis=2).sum(axis=1)
 
 plt.figure(1)
 plt.plot(domain, bsavg, color='b', label='Average capital stock')
@@ -276,11 +283,11 @@ ssbsavg = (S-1) * (gamma_ss * np.tile(b.reshape(1, 1, bsize), (
     S-1, J, 1))).sum(axis=2).sum(axis=1)
 esavg = (e.reshape(S, J, 1) * f).sum(axis=1).sum(axis=1)
 nsavg = n.T
-cssvec = (1 + rss) * np.array([0]+list(ssbsavg[:S-2])) + wss * esavg[
+cssvec = (1 + rss - delta) * np.array([0]+list(ssbsavg[:S-2])) + wss * esavg[
     :S-1] * nsavg[:S-1] - ssbsavg
-cp1ssvec = (1 + rss) * ssbsavg + wss * esavg[1:] * nsavg[1:] - \
+cp1ssvec = (1 + rss - delta) * ssbsavg + wss * esavg[1:] * nsavg[1:] - \
     np.array(list(ssbsavg[1:])+[0])
-gxbar = (cssvec**(-sigma)) / ((beta * (1 + rss)) * cp1ssvec ** (-sigma))
+gxbar = (cssvec**(-sigma)) / ((beta * (1 + rss - delta)) * cp1ssvec ** (-sigma))
 
 '''
 ------------------------------------------------------------------------
