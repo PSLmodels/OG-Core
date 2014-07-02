@@ -88,7 +88,7 @@ rho_TPI = contraction parameter in TPI process representing weight on
 ------------------------------------------------------------------------
 '''
 
-T = 60
+T = 75
 gamma0 = np.zeros((S-1, J, bsize))
 gamma0[:, :, (bsize * S) / 150] = (f[:S-1, :, :]).sum(axis=2) / (J*(S-1))
 K0 = (float(S-1)/S) * (gamma0 * np.tile(b.reshape(1, 1, bsize), (
@@ -266,12 +266,12 @@ print 'TPI took %.0f hours, %.0f minutes, and %.0f seconds.' % (
     abs(hours - .5), abs(minutes - .5), seconds)
 
 # plt.plot(np.arange(T+10), Kssvec)
-plt.plot(np.arange(T), Kpath_TPI[:T], 'r')
+plt.plot(np.arange(T+10), Kpath_TPI[:T+10], 'r')
 plt.axhline(y=Kss)
 plt.savefig("TPI")
 
 var_names = ['Kpath_TPI', 'TPIiter', 'TPIdist', 'elapsed_time',
-             'gammat_TPI', 'hours', 'minutes', 'seconds']
+             'gammat_TPI', 'hours', 'minutes', 'seconds', 'T']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
