@@ -263,7 +263,7 @@ bsavg = np.zeros(S)
 
 wealthwgts = ((S-1) * gamma_ss) * np.tile(b.reshape(1, 1, bsize), (S-1, J, 1))
 
-bsavg[1:] = wealthwgts[:-1,:,:].sum(axis=2).sum(axis=1)
+bsavg[1:] = wealthwgts[:,:,:].sum(axis=2).sum(axis=1)
 
 plt.figure(1)
 plt.plot(domain, bsavg, color='b', label='Average capital stock')
