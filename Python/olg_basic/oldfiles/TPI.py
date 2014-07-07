@@ -270,7 +270,7 @@ print 'TPI took %.0f hours, %.0f minutes, and %.0f seconds.' % (
     hours - .5, minutes - .5, seconds)
 
 # plt.plot(np.arange(T+10), Kssvec)
-plt.plot(np.arange(T), Kpath_TPI[:T])
+plt.plot(np.arange(T+10), Kpath_TPI[:T+10])
 plt.axhline(y=Kss)
 plt.savefig("TPI")
 
