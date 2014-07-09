@@ -219,7 +219,7 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
         Vinit = Vnew
     gamma_new = np.zeros((S-1, J, bsize))
     gamma_new[0, :, :] = (
-        1 / float(S - 1)) * (1.0/J)*f[1, :,:].sum(1).reshape(J, 1).dot(
+        1 / float(S - 1)) * (1.0/J)*f[1, :, :].sum(1).reshape(J, 1).dot(
         ((phiind[0, :, 0].reshape(1, J, 1) == np.arange(
             bsize)) * (1.0/J)*f[0, :, :].sum(1).reshape(J, 1)).sum(axis=1))
     for sind in xrange(1, S-1):

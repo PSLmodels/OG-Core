@@ -85,7 +85,7 @@ def get_f_equalprobabilities(S, J):
     Returns:    f - S x J matrix of probabilities for each ability level
                     by age group
     '''
-    f = np.ones((J, J))*(1.0/J)  # or (S, J)
+    f = np.ones((J, J))*(1.0/J)
     f = np.tile(f.reshape(1, J, J), (S, 1, 1))
     return f
 
