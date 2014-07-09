@@ -179,8 +179,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             cpos = c*cposind + (10**(-8))*cnonposind
             uc = ((cpos**(1-sigma) - np.ones((bsize, J, bsize))) / (
                 1 - sigma)) * cposind - (10**(8))*cnonposind
-            EVprime = np.sum(Vinit.reshape(bsize, J, 1) * np.tile(
-                f[S-sind-1, :, :], (bsize, 1, 1)), axis=1).sum(axis=1)/J
+            EVprime = Vinit.dot(f[S-sind-1, :, :]).mean(1)
             EVprimenew = np.tile(EVprime.reshape(1, 1, bsize), (bsize, J, 1))
             Vnewarray = uc + beta * (EVprimenew * cposind)
             Vnew = Vnewarray.max(axis=2)
@@ -213,8 +212,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             cpos = c*cposind + (10**(-8))*cnonposind
             uc = ((cpos**(1-sigma) - np.ones((bsize, J, bsize))) / (
                 1 - sigma)) * cposind - (10**(8))*cnonposind
-            EVprime = np.sum(Vinit.reshape(bsize, J, 1) * np.tile(f[S-sind-1, :, :], (
-                bsize, 1, 1)), axis=1).sum(axis=1)/J
+            EVprime = Vinit.dot(f[S-sind-1, :, :]).mean(1)
             EVprimenew = np.tile(EVprime.reshape(1, 1, bsize), (bsize, J, 1))
             Vnewarray = uc + beta * (EVprimenew * cposind)
             Vnew = Vnewarray.max(axis=2)
