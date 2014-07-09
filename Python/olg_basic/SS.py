@@ -79,7 +79,7 @@ else:
     n = n[60 % S:: 60 / S]
 
 e = income.get_e(S, J)
-f = income.get_f_noswitch(S, J)
+f = income.get_f_markov(S, J)
 
 bmin = 0
 bmax = 15
@@ -280,7 +280,7 @@ Generate steady state multiplier values
 
 ssbsavg = (S-1) * (gamma_ss * np.tile(b.reshape(1, 1, bsize), (
     S-1, J, 1))).sum(axis=2).sum(axis=1)
-esavg = (e.reshape(S, J, 1) * f).sum(axis=1).sum(axis=1)
+esavg = e.mean(1)
 nsavg = n.T
 cssvec = (1 + rss - delta) * np.array([0]+list(ssbsavg[:S-2])) + wss * esavg[
     :S-1] * nsavg[:S-1] - ssbsavg
