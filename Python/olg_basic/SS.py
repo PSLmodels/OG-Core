@@ -52,7 +52,7 @@ starttime = time.time()
 
 S = 60
 J = 7
-bsize = 35
+bsize = 100
 beta = .96 ** (60 / S)
 sigma = 3
 alpha = .35
@@ -79,7 +79,7 @@ else:
     n = n[60 % S:: 60 / S]
 
 e = income.get_e(S, J)
-f = income.get_f_equalprobabilities(S, J)
+f = income.get_f_noswitch(S, J)
 
 bmin = 0
 bmax = 15
@@ -210,7 +210,7 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
         cpos = c * cposind + (1e-8) * cnonposind
         uc = (((cpos ** (1 - sigma)) - np.ones((bsize, J, bsize))) / (
             1 - sigma)) * cposind - (10 ** 8) * cnonposind
-        EVprime = Vinit.dot(f[S-sind-1, :, :]).sum(axis=1)/J
+        EVprime = Vinit.dot(f[S-sind-1, :, :]).mean(1)
         EVprimenew = np.tile(EVprime.reshape(1, 1, bsize), (bsize, J, 1))
         Vnewarray = uc + beta * (EVprimenew * cposind)
         Vnew, bprimeind = Vnewarray.max(2), Vnewarray.argmax(2)
@@ -219,12 +219,12 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
         Vinit = Vnew
     gamma_new = np.zeros((S-1, J, bsize))
     gamma_new[0, :, :] = (
-        1 / float(S - 1)) * f[1, :, :].mean(0).reshape(J, 1).dot(
+        1 / float(S - 1)) * f[1, :, :].mean(1).reshape(J, 1).dot(
         ((phiind[0, :, 0].reshape(1, J, 1) == np.arange(
-            bsize)) * f[0, :, :].mean(0).reshape(J, 1)).sum(axis=1))
+            bsize)) * f[0, :, :].mean(1).reshape(J, 1)).sum(axis=1))
     for sind in xrange(1, S-1):
         for bind in xrange(bsize):
-            gamma_new[sind, :, bind] = f[sind+1, :, :].mean(0) * np.sum((
+            gamma_new[sind, :, bind] = f[sind+1, :, :].mean(1) * np.sum((
                 phiind[sind, :, :] == bind) * gamma_init[sind-1, :, :])
     # gamma_new[1:,:,:] = f[2:,:].reshape((J,S-2)).dot(((phiind[
         #1:-1,:,:]==np.arange(bsize)) * gamma_init[:-1,:,:]).sum(axis=1))
