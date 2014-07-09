@@ -52,7 +52,7 @@ starttime = time.time()
 
 S = 60
 J = 7
-bsize = 100
+bsize = 35
 beta = .96 ** (60 / S)
 sigma = 3
 alpha = .35
@@ -180,7 +180,7 @@ ssmaxiter = 700
 ssdist = 10
 ssmindist = 1e-9
 # Generate gamma_init
-gamma_init = np.copy(f.sum(axis=2)).reshape(S, J, 1) / J
+gamma_init = np.copy(f[:,:,0]).reshape(S,J,1)
 gamma_init = np.tile(gamma_init, (1, 1, bsize))
 gamma_init = gamma_init[1:, :, :]
 gamma_init /= bsize * (S - 1)
@@ -210,8 +210,7 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
         cpos = c * cposind + (1e-8) * cnonposind
         uc = (((cpos ** (1 - sigma)) - np.ones((bsize, J, bsize))) / (
             1 - sigma)) * cposind - (10 ** 8) * cnonposind
-        EVprime = np.sum(Vinit.reshape(bsize, J, 1) * np.tile(f[S-sind-1,\
-         :, :], (bsize, 1, 1)), axis=1).sum(axis=1)/J
+        EVprime = Vinit.dot(f[S-sind-1, :, :]).sum(axis=1)/J
         EVprimenew = np.tile(EVprime.reshape(1, 1, bsize), (bsize, J, 1))
         Vnewarray = uc + beta * (EVprimenew * cposind)
         Vnew, bprimeind = Vnewarray.max(2), Vnewarray.argmax(2)
