@@ -77,7 +77,7 @@ def get_e(S, J):
     return e
 
 
-def get_f_simple(S, J):
+def get_f_equalprobabilities(S, J):
     '''
     Parameters: S - Number of age cohorts
                 J - Number of ability levels by age
@@ -85,11 +85,18 @@ def get_f_simple(S, J):
     Returns:    f - S x J matrix of probabilities for each ability level
                     by age group
     '''
-    f = np.ones((S, J))*(1.0/J)
+    f = np.ones((J, J))*(1.0/J)  # or (S, J)
+    f = np.tile(f.reshape(1, J, J), (S, 1, 1))
     return f
 
 
-def get_f(S, J):
+def get_f_noswitch(S, J):
+    f = np.identity(J)
+    f = np.tile(f.reshape(1, J, J), (S, 1, 1))
+    return f
+
+
+def get_f_markov(S, J):
     '''
     Parameters: S - Number of age cohorts
                 J - Number of ability levels by age

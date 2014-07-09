@@ -52,7 +52,7 @@ starttime = time.time()
 
 S = 60
 J = 7
-bsize = 350
+bsize = 100
 beta = .96 ** (60 / S)
 sigma = 3
 alpha = .35
@@ -79,7 +79,7 @@ else:
     n = n[60 % S:: 60 / S]
 
 e = income.get_e(S, J)
-f = income.get_f(S, J)
+f = income.get_f_equalprobabilities(S, J)
 
 bmin = 0
 bmax = 15
