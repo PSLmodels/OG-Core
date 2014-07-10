@@ -88,12 +88,12 @@ rho_TPI = contraction parameter in TPI process representing weight on
 ------------------------------------------------------------------------
 '''
 
-T = 75
+T = 60
 gamma0 = np.zeros((S-1, J, bsize))
 gamma0[:, :, (bsize * S) / 150] = (f[:S-1, :, :]).sum(axis=2) / (J*(S-1))
 K0 = (float(S-1)/S) * (gamma0 * np.tile(b.reshape(1, 1, bsize), (
     S-1, J, 1))).sum()
-rho_TPI = 0.2
+rho_TPI = 0.5
 
 '''
 ------------------------------------------------------------------------
