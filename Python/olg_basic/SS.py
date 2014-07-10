@@ -21,7 +21,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import time
-import pickle
+import cPickle as pickle
 
 '''
 ------------------------------------------------------------------------
@@ -50,9 +50,9 @@ b     = 1 x bsize vector of possible values for initial wealth b
 '''
 starttime = time.time()
 
-S = 60
+S = 30
 J = 7
-bsize = 100
+bsize = 10
 beta = .96 ** (60 / S)
 sigma = 3
 alpha = .35
@@ -226,8 +226,6 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
         for bind in xrange(bsize):
             gamma_new[sind, :, bind] = f[sind+1, :, :].mean(1) * np.sum((
                 phiind[sind, :, :] == bind) * gamma_init[sind-1, :, :])
-    # gamma_new[1:,:,:] = f[2:,:].reshape((J,S-2)).dot(((phiind[
-        # 1:-1,:,:]==np.arange(bsize)) * gamma_init[:-1,:,:]).sum(axis=1))
     ssiter += 1
     ssdist = np.max(abs(gamma_new - gamma_init))
     gamma_init = rho * gamma_new + (1 - rho) * gamma_init

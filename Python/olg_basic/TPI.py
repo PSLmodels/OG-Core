@@ -27,7 +27,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import time
-import pickle
+import cPickle as pickle
 
 '''
 ------------------------------------------------------------------------

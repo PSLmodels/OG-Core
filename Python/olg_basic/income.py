@@ -27,7 +27,7 @@ The data comes from the Consumer Population Survey.  The variables used
 are age (PRTAGE) and hourly wage (PTERNHLY).  Because the sample size
 for each month is small, we used data from May 2014 and September 2013
 (the samples must be at least 8 months apart so that observations do not
-appear in both samples).  
+appear in both samples).
 ------------------------------------------------------------------------
 '''
 
@@ -36,6 +36,7 @@ data = data[(19 < data.PRTAGE) & (data.PRTAGE < 80)]
 data['age'], data['wage'] = data['PRTAGE'], data['PTERNHLY']
 del data['HRHHID'], data['OCCURNUM'], data['YYYYMM'], data[
     'HRHHID2'], data['PRTAGE'], data['PTERNHLY']
+
 
 def get_e(S, J):
     '''
@@ -57,7 +58,6 @@ def get_e(S, J):
             e[i, j] = inc[len(inc)*(j+.5)/J]
     e /= e.mean()
     return e
-
 
 
 '''
@@ -177,7 +177,7 @@ def get_f_markov(S, J):
     f_root = eigvecs.dot(Diagonal_squareroot).dot(eigvecs_inv)
     f_root = np.real(f_root)
     # Multiply f by itself 60/S times, where 60/S is the number of ages
-        # in each age group
+    #   in each age group
     f_root = np.linalg.matrix_power(f_root, 60/S)
     f_root = np.tile(f_root.reshape(1, J, J), (S, 1, 1))
     return f_root
