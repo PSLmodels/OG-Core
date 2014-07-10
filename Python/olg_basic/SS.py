@@ -38,7 +38,7 @@ A     = total factor productivity parameter in firms' production
 delta = depreciation rate of capital
 n     = 1 x S vector of inelastic labor supply for each age s
 e     = S x J matrix of age dependent possible working abilities e_s
-f     = S x J x J matrix of age dependent discrete probability mass 
+f     = S x J x J matrix of age dependent discrete probability mass
         function for e as Markov proccess: f(e_s)
 J     = number of points in the support of e_s
 bmin  = minimum value of b
@@ -67,9 +67,9 @@ if S >= 12:
         1, 0.465, (S/6)+2)
     n[- 2*((S/12)+1): -(S/12+1)+1] = np.linspace(0.465, .116, (S/12)+2)
     n[-(S/12+1):] = np.linspace(0.116, .093, (S/12)+1)
-# The above method doesn't work well with very small S, so we have this 
+# The above method doesn't work well with very small S, so we have this
 # alternative
-else: 
+else:
     n = np.ones(60)
     n[0:6] = np.array([.865, .8875, .91, .9325, .955, .9775])
     n[40:] = np.array(
@@ -162,7 +162,7 @@ def get_r(Y_now, K_now):
 
 def get_N(f, e, n):
     # Equation 2.15
-    N_now = np.sum(f * e.reshape(S,J,1) * n.reshape(S, 1, 1)) / J
+    N_now = np.sum(f * e.reshape(S, J, 1) * n.reshape(S, 1, 1)) / J
     N_now /= S
     return N_now
 
@@ -175,12 +175,12 @@ def get_K(b, gamma):
     return K_now
 
 ssiter = 0
-#Takes 590 iterations when S=60, J=7, and bsize=350
+# Takes 590 iterations when S=60, J=7, and bsize=350
 ssmaxiter = 700
 ssdist = 10
 ssmindist = 1e-9
 # Generate gamma_init
-gamma_init = np.copy(f[:,:,0]).reshape(S,J,1)
+gamma_init = np.copy(f[:, :, 0]).reshape(S, J, 1)
 gamma_init = np.tile(gamma_init, (1, 1, bsize))
 gamma_init = gamma_init[1:, :, :]
 gamma_init /= bsize * (S - 1)
@@ -227,7 +227,7 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
             gamma_new[sind, :, bind] = f[sind+1, :, :].mean(1) * np.sum((
                 phiind[sind, :, :] == bind) * gamma_init[sind-1, :, :])
     # gamma_new[1:,:,:] = f[2:,:].reshape((J,S-2)).dot(((phiind[
-        #1:-1,:,:]==np.arange(bsize)) * gamma_init[:-1,:,:]).sum(axis=1))
+        # 1:-1,:,:]==np.arange(bsize)) * gamma_init[:-1,:,:]).sum(axis=1))
     ssiter += 1
     ssdist = np.max(abs(gamma_new - gamma_init))
     gamma_init = rho * gamma_new + (1 - rho) * gamma_init
@@ -262,7 +262,7 @@ bsavg = np.zeros(S)
 
 wealthwgts = ((S-1) * gamma_ss) * np.tile(b.reshape(1, 1, bsize), (S-1, J, 1))
 
-bsavg[1:] = wealthwgts[:,:,:].sum(axis=2).sum(axis=1)
+bsavg[1:] = wealthwgts[:, :, :].sum(axis=2).sum(axis=1)
 
 plt.figure(1)
 plt.plot(domain, bsavg, color='b', label='Average capital stock')
@@ -286,7 +286,8 @@ cssvec = (1 + rss - delta) * np.array([0]+list(ssbsavg[:S-2])) + wss * esavg[
     :S-1] * nsavg[:S-1] - ssbsavg
 cp1ssvec = (1 + rss - delta) * ssbsavg + wss * esavg[1:] * nsavg[1:] - \
     np.array(list(ssbsavg[1:])+[0])
-gxbar = (cssvec**(-sigma)) / ((beta * (1 + rss - delta)) * cp1ssvec ** (-sigma))
+gxbar = (cssvec**(-sigma)) / (
+    (beta * (1 + rss - delta)) * cp1ssvec ** (-sigma))
 
 '''
 ------------------------------------------------------------------------
@@ -297,7 +298,7 @@ Generate graph of Euler Errors
 plt.figure(2)
 plt.plot(np.arange(0, S-1), gxbar)
 plt.title('Euler errors: S = {}'.format(S))
-plt.ylim((0,2))
+plt.ylim((0, 2))
 # plt.legend(loc=0)
 # plt.show()
 plt.savefig("euler_errors")

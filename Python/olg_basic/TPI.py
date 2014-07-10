@@ -44,7 +44,7 @@ A        = total factor productivity parameter in firms' production
            function
 n        = 1 x S vector of inelastic labor supply for each age s
 e        = S x J matrix of age dependent possible working abilities e_s
-f        = S x J x J matrix of age dependent discrete probability mass 
+f        = S x J x J matrix of age dependent discrete probability mass
            function for e as Markov proccess: f(e_s)
 J        = number of points in the support of e
 bmin     = minimum value of b (usually is bmin = 0)
@@ -165,7 +165,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             if sind < S-1:
                 c = (1+rinit.flatten()[p1aind-sind]-delta) * np.tile(b.reshape(
                     bsize, 1, 1), (1, J, bsize)) + (winit.flatten()[
-                    p1aind-sind] * n[S-sind-1]) * np.tile(
+                        p1aind-sind] * n[S-sind-1]) * np.tile(
                     e[S-sind-1, :].reshape((1, J, 1)), (
                         bsize, 1, bsize)) - np.tile(
                     b.reshape((1, 1, bsize)), (bsize, J, 1))
@@ -173,7 +173,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
                 c = (winit.flatten()[p1aind-sind] * n[S-sind-1]) * np.tile(
                     e[S-sind-1, :].reshape((1, J, 1)),  (
                         bsize, 1, bsize)) - np.tile(b.reshape(
-                    (1, 1, bsize)),  (bsize, J, 1))
+                            (1, 1, bsize)),  (bsize, J, 1))
             cposind = c > 0
             cnonposind = np.ones((bsize, J, bsize)) - cposind
             cpos = c*cposind + (10**(-8))*cnonposind
@@ -198,7 +198,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             if sind < S-1:
                 c = (1+rinit.flatten()[tind+S-sind-2]) * np.tile(b.reshape(
                     bsize, 1, 1), (1, J, bsize)) + (winit.flatten()[
-                    tind+S-sind-2] * n[S-sind-1]) * np.tile(
+                        tind+S-sind-2] * n[S-sind-1]) * np.tile(
                     e[S-sind-1, :].reshape((1, J, 1)), (
                         bsize, 1, bsize)) - np.tile(
                     b.reshape((1, 1, bsize)), (bsize, J, 1))
@@ -206,7 +206,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
                 c = (winit.flatten()[tind] * n[0]) * np.tile(
                     e[0, :].reshape((1, J, 1)),  (
                         bsize, 1, bsize)) - np.tile(b.reshape(
-                    (1, 1, bsize)),  (bsize, J, 1))
+                            (1, 1, bsize)),  (bsize, J, 1))
             cposind = c > 0
             cnonposind = np.ones((bsize, J, bsize)) - cposind
             cpos = c*cposind + (10**(-8))*cnonposind
@@ -229,15 +229,16 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     for tind in xrange(1, T):
         for bind in xrange(bsize):
             gammat[0, :, bind, tind] = (1/float(S-1)) * \
-                (1.0/J)*f[1, :,:].sum(1) * ((phiindt[
-                    0, :, 0, tind-1] == bind) * (1.0/J)*\
-                f[0, :, :].sum(1)).sum()
+                (1.0/J)*f[1, :, :].sum(1) * ((phiindt[
+                    0, :, 0, tind-1] == bind) * (
+                    1.0/J) * f[0, :, :].sum(1)).sum()
     for tind in xrange(1, T):
         for sind in xrange(1, S-1):
             for bind in xrange(bsize):
-                gammat[sind, :, bind, tind] = (1.0/J)*\
-                f[sind+1, :, :].sum(1) * ((phiindt[sind, :, :, tind-1]\
-                 == bind) * gammat[sind-1, :, :, tind-1]).sum()
+                gammat[sind, :, bind, tind] = (1.0/J) * \
+                    f[sind+1, :, :].sum(1) * ((
+                        phiindt[sind, :, :, tind-1] == bind) * gammat[
+                        sind-1, :, :, tind-1]).sum()
         Knew[tind] = ((float(S-1)/S)*(gammat[:, :, :, tind] * np.tile(
             b.reshape(1, 1, bsize),  (S-1, J, 1))).sum())
     TPIiter += 1
@@ -264,7 +265,8 @@ print 'TPI took %.0f hours, %.0f minutes, and %.0f seconds.' % (
     abs(hours - .5), abs(minutes - .5), seconds)
 
 plt.figure(3)
-plt.plot(np.arange(T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label="Capital Path")
+plt.plot(
+    np.arange(T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label="Capital Path")
 plt.xlabel("Time")
 plt.ylabel("Aggregate Capital")
 plt.title("Time Path of Capital Stock")
