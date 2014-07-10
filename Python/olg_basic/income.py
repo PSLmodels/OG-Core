@@ -21,10 +21,13 @@ import pandas as pd
 
 '''
 ------------------------------------------------------------------------
-    Read Data
+    Read Data for e
 ------------------------------------------------------------------------
-The data comes from **************
-The data has the age and hourly wage for each observation
+The data comes from the Consumer Population Survey.  The variables used
+are age (PRTAGE) and hourly wage (PTERNHLY).  Because the sample size
+for each month is small, we used data from May 2014 and September 2013
+(the samples must be at least 8 months apart so that observations do not
+appear in both samples).  
 ------------------------------------------------------------------------
 '''
 
@@ -33,6 +36,16 @@ data = data[(19 < data.PRTAGE) & (data.PRTAGE < 80)]
 data['age'], data['wage'] = data['PRTAGE'], data['PTERNHLY']
 del data['HRHHID'], data['OCCURNUM'], data['YYYYMM'], data[
     'HRHHID2'], data['PRTAGE'], data['PTERNHLY']
+
+'''
+------------------------------------------------------------------------
+    Read Data for Markov Matrix
+------------------------------------------------------------------------
+The data comes from the Panel Study of Income Dynamics (PSID).  The
+variables come from samples taken in 1999 and 2001.  The variables used
+are the age of the individual and the hourly wage of the individual.
+------------------------------------------------------------------------
+'''
 
 markov_dta = pd.read_csv("data/PSIDdata.csv", sep=',', header=0)
 markov_dta['age_99'], markov_dta['wage_99'] = markov_dta[
