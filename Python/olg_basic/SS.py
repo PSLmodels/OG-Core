@@ -14,7 +14,7 @@ This py-file creates the following other file(s):
 ------------------------------------------------------------------------
 '''
 
-#Packages
+# Packages
 import numpy as np
 import income
 import matplotlib
