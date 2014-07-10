@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated: 7/1/2014
+Last updated: 7/10/2014
 Python version of the Evan/Phillips 2014 paper
 Calculates steady state of OLG model with S age cohorts
 
@@ -28,6 +28,8 @@ import pickle
 Setting up the Model
 ------------------------------------------------------------------------
 S     = number of periods an individual lives
+J     = number of different ability groups
+bsize = number of discrete points in the support of b
 beta  = discount factor
 sigma = coefficient of relative risk aversion
 alpha = capital share of income
@@ -40,26 +42,23 @@ n     = 1 x S vector of inelastic labor supply for each age s
 e     = S x J matrix of age dependent possible working abilities e_s
 f     = S x J x J matrix of age dependent discrete probability mass
         function for e as Markov proccess: f(e_s)
-J     = number of points in the support of e_s
 bmin  = minimum value of b
 bmax  = maximum value of b
-bsize = number of discrete points in the support of b
 b     = 1 x bsize vector of possible values for initial wealth b
         and savings b'
 ------------------------------------------------------------------------
 '''
-starttime = time.time()
 
-S = 30
+starttime = time.time()
+S = 60
 J = 7
-bsize = 10
+bsize = 100
 beta = .96 ** (60 / S)
 sigma = 3
 alpha = .35
 rho = .20
 A = 1
 delta = 0.0 ** (60 / S)
-
 if S >= 12:
     n = np.ones(S)
     n[0:S/10+1] = np.linspace(0.865, 1, (S/10)+1)
@@ -77,14 +76,11 @@ else:
          .465, .3952, .3254, .2556, .1858, .116, .1114, .1068, .1022,
          .0976, .093])
     n = n[60 % S:: 60 / S]
-
 e = income.get_e(S, J)
 f = income.get_f_markov(S, J)
-
 bmin = 0
 bmax = 15
 b = np.linspace(bmin, bmax, bsize)
-
 
 '''
 ------------------------------------------------------------------------
@@ -231,7 +227,6 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
     gamma_init = rho * gamma_new + (1 - rho) * gamma_init
     print ssiter
     print ssdist
-
 gamma_ss = gamma_init
 phiind_ss = phiind
 phi_ss = phi
@@ -240,7 +235,6 @@ runtime = time.time() - starttime
 hours = runtime / 3600
 minutes = (runtime / 60) % 60
 seconds = runtime % 60
-
 print 'Finding the steady state took %.0f hours, %.0f minutes, and %.0f \
 seconds.' % (abs(hours - .5), abs(minutes - .5), seconds)
 
@@ -257,9 +251,7 @@ wealthwgts = (S-1) x J x bsize array of distribution weights times the
 
 domain = np.linspace(0, S, S)
 bsavg = np.zeros(S)
-
 wealthwgts = ((S-1) * gamma_ss) * np.tile(b.reshape(1, 1, bsize), (S-1, J, 1))
-
 bsavg[1:] = wealthwgts[:, :, :].sum(axis=2).sum(axis=1)
 
 plt.figure(1)
