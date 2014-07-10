@@ -263,9 +263,13 @@ seconds = elapsed_time % 60
 print 'TPI took %.0f hours, %.0f minutes, and %.0f seconds.' % (
     abs(hours - .5), abs(minutes - .5), seconds)
 
-# plt.plot(np.arange(T+10), Kssvec)
-plt.plot(np.arange(T+10), Kpath_TPI[:T+10], 'r')
-plt.axhline(y=Kss)
+plt.figure(3)
+plt.plot(np.arange(T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label="Capital Path")
+plt.xlabel("Time")
+plt.ylabel("Aggregate Capital")
+plt.title("Time Path of Capital Stock")
+plt.axhline(y=Kss, color='black', linewidth=2, label="Steady State", ls='--')
+plt.legend(loc=0)
 plt.savefig("TPI")
 
 var_names = ['Kpath_TPI', 'TPIiter', 'TPIdist', 'elapsed_time',
