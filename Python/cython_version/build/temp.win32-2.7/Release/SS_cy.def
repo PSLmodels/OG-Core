@@ -1,3 +1,0 @@
-LIBRARY SS_cy.pyd
-EXPORTS
-initSS_cy
