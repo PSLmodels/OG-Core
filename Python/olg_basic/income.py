@@ -37,6 +37,29 @@ data['age'], data['wage'] = data['PRTAGE'], data['PTERNHLY']
 del data['HRHHID'], data['OCCURNUM'], data['YYYYMM'], data[
     'HRHHID2'], data['PRTAGE'], data['PTERNHLY']
 
+def get_e(S, J):
+    '''
+    Parameters: S - Number of age cohorts
+                J - Number of ability levels by age
+
+    Returns:    e - S x J matrix of J working ability levels for each
+                    age cohort measured by hourly wage, normalized so
+                    the mean is one
+    '''
+    age_groups = np.linspace(20, 80, S+1)
+    e = np.zeros((S, J))
+    for i in xrange(S):
+        incomes = data[(age_groups[i] <= data.age) & (
+            data.age < age_groups[i+1])]
+        inc = np.array(incomes['wage'])
+        inc.sort()
+        for j in xrange(J):
+            e[i, j] = inc[len(inc)*(j+.5)/J]
+    e /= e.mean()
+    return e
+
+
+
 '''
 ------------------------------------------------------------------------
     Read Data for Markov Matrix
@@ -66,28 +89,6 @@ markov_dta = markov_dta[(markov_dta.wage_01 != -99) & (
     markov_dta.wage_01 != 0) & (markov_dta.wage_01 != 999)]
 markov_dta = markov_dta.reset_index()
 del markov_dta['index']
-
-
-def get_e(S, J):
-    '''
-    Parameters: S - Number of age cohorts
-                J - Number of ability levels by age
-
-    Returns:    e - S x J matrix of J working ability levels for each
-                    age cohort measured by hourly wage, normalized so
-                    the mean is one
-    '''
-    age_groups = np.linspace(20, 80, S+1)
-    e = np.zeros((S, J))
-    for i in xrange(S):
-        incomes = data[(age_groups[i] <= data.age) & (
-            data.age < age_groups[i+1])]
-        inc = np.array(incomes['wage'])
-        inc.sort()
-        for j in xrange(J):
-            e[i, j] = inc[len(inc)*(j+.5)/J]
-    e /= e.mean()
-    return e
 
 
 def get_f_equalprobabilities(S, J):
