@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 7/1/2014
+Last updated 7/9/2014
 Python version of Evans/Philips 2014 paper
 
 This program solves for transition path of the distribution of wealth
