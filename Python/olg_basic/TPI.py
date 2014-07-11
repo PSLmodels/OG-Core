@@ -42,6 +42,7 @@ rho      = contraction parameter in steady state iteration process
            representing the weight on the new distribution gamma_new
 A        = total factor productivity parameter in firms' production
            function
+delta    = decreciation rate of capital
 n        = 1 x S vector of inelastic labor supply for each age s
 e        = S x J matrix of age dependent possible working abilities e_s
 f        = S x J x J matrix of age dependent discrete probability mass
@@ -66,6 +67,17 @@ phiind_ss = S x J x bsize steady-state policy function indicies for
 phi_ss    = S x J x bsize steady-state policy function values for
             b' = phi(s,e,b). The last row phi(S,e,b) is zeros and
             corresponds to b_{S+1}. The first row corresponds to b_2
+runtime   = total time (in seconds) that the steady state solver took to
+            run
+hours     = total hours that the steady state solver took to run
+minutes   = total minutes (minus the total hours) that the steady state
+            solver took to run
+seconds   = total seconds (minus the total hours and minutes) that the
+            steady state solver took to run
+ssiter    = number of iterations the SS solver took
+ssdist    = the distance between the last 2 iterations of the SS solver
+bsavg     = 1 x S vector of the average wealth b of each age cohort
+gxbar     = 1 x S-1 vector of Euler errors
 ------------------------------------------------------------------------
 '''
 
