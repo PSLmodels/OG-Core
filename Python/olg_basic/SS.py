@@ -56,7 +56,7 @@ bsize = 100
 beta = .96 ** (60 / S)
 sigma = 3
 alpha = .35
-rho = .20
+rho = .50
 A = 1
 delta = 0.0 ** (60 / S)
 
@@ -178,7 +178,7 @@ ssiter = 0
 # Takes 590 iterations when S=60, J=7, and bsize=350
 ssmaxiter = 700
 ssdist = 10
-ssmindist = 1e-9
+ssmindist = 3e-6
 # Generate gamma_init
 gamma_init = np.copy(f[:, :, 0]).reshape(S, J, 1)
 gamma_init = np.tile(gamma_init, (1, 1, bsize))
@@ -265,7 +265,7 @@ wealthwgts = ((S-1) * gamma_ss) * np.tile(b.reshape(1, 1, bsize), (S-1, J, 1))
 bsavg[1:] = wealthwgts[:, :, :].sum(axis=2).sum(axis=1)
 
 plt.figure(1)
-plt.plot(domain, bsavg, color='b', label='Average capital stock')
+plt.plot(domain, bsavg, color='b', linewidth=2, label='Average capital stock')
 plt.axhline(y=Kss, color='r', label='Steady State')
 plt.title('Steady-state Distribution of Capital')
 plt.legend(loc=0)
@@ -296,7 +296,7 @@ Generate graph of Euler Errors
 '''
 
 plt.figure(2)
-plt.plot(np.arange(0, S-1), gxbar)
+plt.plot(np.arange(0, S-1), gxbar, linewidth=2)
 plt.title('Euler errors: S = {}'.format(S))
 plt.ylim((0, 2))
 # plt.legend(loc=0)
