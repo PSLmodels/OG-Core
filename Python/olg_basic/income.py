@@ -1,12 +1,16 @@
 '''
 ------------------------------------------------------------------------
-Last updated 7/1/2014
+Last updated 7/11/2014
 
 Functions for created the matrix of ability levels, e, and the
 probabilities, f, to be used in OLG_fastversion.py
 
 This py-file calls the following other file(s):
-            data/income_data.asc
+            data/e_vec_data/jan2014.asc
+            data/e_vec_data/feb2014.asc
+            data/e_vec_data/march2014.asc
+            data/e_vec_data/april2014.asc
+            data/e_vec_data/may2014.asc
 ------------------------------------------------------------------------
 '''
 
