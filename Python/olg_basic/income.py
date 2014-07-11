@@ -25,9 +25,10 @@ import pandas as pd
 ------------------------------------------------------------------------
 The data comes from the Consumer Population Survey.  The variables used
 are age (PRTAGE) and hourly wage (PTERNHLY).  Because the sample size
-for each month is small, we used data from May 2014 and September 2013
-(the samples must be at least 8 months apart so that observations do not
-appear in both samples).
+for each month is small, we used data from January, February, March,
+April, and May 2014.  The matrix of ability levels was created for each
+month, and then the average of the 5 matrices was taken for the final
+matrix to return.
 ------------------------------------------------------------------------
 '''
 
@@ -101,12 +102,14 @@ def get_e(S, J):
 The data comes from the Panel Study of Income Dynamics (PSID).  The
 variables come from samples taken in 1999 and 2001.  The variables used
 are the age of the individual and the hourly wage of the individual.
+Wages in 1999 are multiplied by 1.06 to account for inflation.
 ------------------------------------------------------------------------
 '''
 
 markov_dta = pd.read_csv("data/PSIDdata.csv", sep=',', header=0)
 markov_dta['age_99'], markov_dta['wage_99'] = markov_dta[
     'ER33504'], markov_dta['ER33537O']
+markov_dta['wage_99'] *= 1.06303
 markov_dta['age_01'], markov_dta['wage_01'] = markov_dta[
     'ER33604'], markov_dta['ER33628O']
 del markov_dta['ER33504'], markov_dta['ER33537O'], markov_dta[
@@ -183,8 +186,8 @@ def get_f_markov(S, J):
                 ind99-1] < markov_dta.wage_99]
             num_in_99 = np.array(num_in_99df.count()[0])
         for ind01 in xrange(J):
-            # Count the number of individuals that were in a certain
-                # percentile group in 1999 who remain in that group
+            # Count the number of individuals in the ind01 percentile group
+                # in 2001 that were in the ind99 percentile group
             if ind01 == 0:
                 num_in_both = num_in_99df[
                     num_in_99df.wage_01 <= percentiles01[ind01]]
@@ -199,9 +202,10 @@ def get_f_markov(S, J):
                     percentiles01[ind01-1] < num_in_99df.wage_01]
                 num_in_both = np.array(num_in_both.count()[0])
             # Each entry of the Markov matrix is the number of individuals who
-                # were in a percentile group and stayed in that percentile
-                # group, divided by the number of individuals originally in
-                # that percentile group
+                # were in a certain percentile group in 1999, and some other
+                # percentile group in 2001,
+                # divided by the number of individuals originally in
+                # that percentile group in 1999
             f[ind99, ind01] = float(num_in_both) / num_in_99
     eigvals, eigvecs = np.linalg.eig(f)
     Diagonal = np.diag(eigvals)
