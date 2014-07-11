@@ -31,14 +31,38 @@ appear in both samples).
 ------------------------------------------------------------------------
 '''
 
-data = pd.read_table("data/income_data.asc", sep=',', header=0)
-data = data[(19 < data.PRTAGE) & (data.PRTAGE < 80)]
-data['age'], data['wage'] = data['PRTAGE'], data['PTERNHLY']
-del data['HRHHID'], data['OCCURNUM'], data['YYYYMM'], data[
-    'HRHHID2'], data['PRTAGE'], data['PTERNHLY']
+jan_dat = pd.read_table("data/e_vec_data/jan2014.asc", sep=',', header=0)
+jan_dat = jan_dat[(19 < jan_dat.PRTAGE) & (jan_dat.PRTAGE < 80)]
+jan_dat['age'], jan_dat['wage'] = jan_dat['PRTAGE'], jan_dat['PTERNHLY']
+del jan_dat['HRHHID'], jan_dat['OCCURNUM'], jan_dat['YYYYMM'], jan_dat[
+    'HRHHID2'], jan_dat['PRTAGE'], jan_dat['PTERNHLY']
+
+feb_dat = pd.read_table("data/e_vec_data/feb2014.asc", sep=',', header=0)
+feb_dat = feb_dat[(19 < feb_dat.PRTAGE) & (feb_dat.PRTAGE < 80)]
+feb_dat['age'], feb_dat['wage'] = feb_dat['PRTAGE'], feb_dat['PTERNHLY']
+del feb_dat['HRHHID'], feb_dat['OCCURNUM'], feb_dat['YYYYMM'], feb_dat[
+    'HRHHID2'], feb_dat['PRTAGE'], feb_dat['PTERNHLY']
+
+mar_dat = pd.read_table("data/e_vec_data/march2014.asc", sep=',', header=0)
+mar_dat = mar_dat[(19 < mar_dat.PRTAGE) & (mar_dat.PRTAGE < 80)]
+mar_dat['age'], mar_dat['wage'] = mar_dat['PRTAGE'], mar_dat['PTERNHLY']
+del mar_dat['HRHHID'], mar_dat['OCCURNUM'], mar_dat['YYYYMM'], mar_dat[
+    'HRHHID2'], mar_dat['PRTAGE'], mar_dat['PTERNHLY']
+
+apr_dat = pd.read_table("data/e_vec_data/april2014.asc", sep=',', header=0)
+apr_dat = apr_dat[(19 < apr_dat.PRTAGE) & (apr_dat.PRTAGE < 80)]
+apr_dat['age'], apr_dat['wage'] = apr_dat['PRTAGE'], apr_dat['PTERNHLY']
+del apr_dat['HRHHID'], apr_dat['OCCURNUM'], apr_dat['YYYYMM'], apr_dat[
+    'HRHHID2'], apr_dat['PRTAGE'], apr_dat['PTERNHLY']
+
+may_dat = pd.read_table("data/e_vec_data/may2014.asc", sep=',', header=0)
+may_dat = may_dat[(19 < may_dat.PRTAGE) & (may_dat.PRTAGE < 80)]
+may_dat['age'], may_dat['wage'] = may_dat['PRTAGE'], may_dat['PTERNHLY']
+del may_dat['HRHHID'], may_dat['OCCURNUM'], may_dat['YYYYMM'], may_dat[
+    'HRHHID2'], may_dat['PRTAGE'], may_dat['PTERNHLY']
 
 
-def get_e(S, J):
+def get_e_indiv(S, J, data):
     '''
     Parameters: S - Number of age cohorts
                 J - Number of ability levels by age
@@ -59,6 +83,16 @@ def get_e(S, J):
     e /= e.mean()
     return e
 
+
+def get_e(S, J):
+    e = np.zeros((S, J))
+    e += get_e_indiv(S, J, jan_dat)
+    e += get_e_indiv(S, J, feb_dat)
+    e += get_e_indiv(S, J, mar_dat)
+    e += get_e_indiv(S, J, apr_dat)
+    e += get_e_indiv(S, J, may_dat)
+    e /= 5
+    return e
 
 '''
 ------------------------------------------------------------------------
