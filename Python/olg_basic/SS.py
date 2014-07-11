@@ -295,6 +295,23 @@ plt.savefig("euler_errors")
 
 '''
 ------------------------------------------------------------------------
+Generate graph of Consumption
+------------------------------------------------------------------------
+'''
+
+cssvec_tograph = np.array(list(cssvec) + [cp1ssvec[-1]])
+
+plt.figure(3)
+#plt.plot(domain, bsavg, label='Average capital stock')
+plt.plot(domain, cssvec_tograph, label='Consumption')
+#plt.plot(domain, n * wss * e.mean(axis=1), label='Income')
+plt.title('Savings: S = {}'.format(S))
+# plt.legend(loc=0)
+# plt.show()
+plt.savefig("consumption")
+
+'''
+------------------------------------------------------------------------
 Save variables/values so they can be used in other modules
 ------------------------------------------------------------------------
 '''
