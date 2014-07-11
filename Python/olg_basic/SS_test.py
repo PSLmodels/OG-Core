@@ -60,7 +60,7 @@ alpha = .35
 rho = .50
 A = 1
 delta = 0.0 ** (60 / S)
-eta = 0.2
+eta = 0.5
 xi = 3
 e = income.get_e(S, J)
 f = income.get_f_markov(S, J)
@@ -147,7 +147,7 @@ def get_r(Y_now, K_now):
 
 def get_N(gamma, e, n):
     # Equation 2.15
-    N_now = np.sum(gamma.reshape(S,J,bsize,1) * e.reshape(S, J, 1, 1) * n.reshape(1, 1, 1, nsize)) 
+    N_now = np.sum(gamma * e.reshape(S, J, 1) * n.reshape(1, 1, nsize)) 
     return N_now
 
 
@@ -173,7 +173,7 @@ gamma_init_b /= bsize * (S - 1)
 # gamma_init_n = np.tile(gamma_init_n, (1, 1, bsize))
 # gamma_init_n = gamma_init_n[:, :, :]
 # gamma_init_n /= bsize * (S)
-gamma_init_n = np.ones(S*J*bsize).reshape((S,J,bsize))/(S*J*bsize)
+gamma_init_n = np.ones(S*J*nsize).reshape((S,J,nsize))/(S*J*nsize)
 
 while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
     Kss = get_K(b, gamma_init_b)
@@ -223,15 +223,15 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
         for bind in xrange(bsize):
             gamma_new_b[sind, :, bind] = f[sind+1, :, :].mean(1) * np.sum((
                 phiind_b[sind, :, :] == bind) * gamma_init_b[sind-1, :, :])
-    gamma_new_n = np.zeros((S, J, bsize))
+    gamma_new_n = np.zeros((S, J, nsize))
     gamma_new_n[0, :, :] = (
         1 / float(S - 1)) * f[1, :, :].mean(1).reshape(J, 1).dot(
         ((phiind_n[0, :, 0].reshape(1, J, 1) == np.arange(
-            bsize)) * f[0, :, :].mean(1).reshape(J, 1)).sum(axis=1))
+            nsize)) * f[0, :, :].mean(1).reshape(J, 1)).sum(axis=1))
     for sind in xrange(1, S):
-        for bind in xrange(bsize):
-            gamma_new_n[sind, :, bind] = f[sind, :, :].mean(1) * np.sum((
-                phiind_n[sind, :, :] == bind) * gamma_init_n[sind-1, :, :])
+        for nind in xrange(nsize):
+            gamma_new_n[sind, :, nind] = f[sind, :, :].mean(1) * np.sum((
+                phiind_n[sind, :, :] == nind).reshape(J,bsize,1) * gamma_init_n[sind-1, :, :].reshape(J,1,nsize))/bsize
     ssiter += 1
     ssdist = np.max(abs(gamma_new_b - gamma_init_b)) + np.max(abs(gamma_new_n - gamma_init_n))
     gamma_init_b = rho * gamma_new_b + (1 - rho) * gamma_init_b
@@ -282,7 +282,7 @@ navg      = A vector of the average labor supply n of each age cohort
 ------------------------------------------------------------------------
 '''
 
-navg = np.sum(gamma_ss_n.reshape(S,J,bsize, 1) * np.tile(n.reshape(1,1,1,nsize),(S,J,bsize,1)), axis=3).sum(2).sum(1)
+navg = (gamma_ss_n * np.tile(n.reshape(1,1,nsize),(S,J,1))).sum(2).sum(1)
 plt.figure(4)
 plt.plot(domain, navg, color='b', linewidth=2, label='Average labor supply')
 plt.legend(loc=0)
