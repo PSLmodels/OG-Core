@@ -107,10 +107,12 @@ def get_r(Y_now, K_now):
     return r_now
 
 
-def get_N(e, n):
+def get_N(f, e, n):
     # Equation 2.15
-    N_now = (e*n.reshape(S,1)).mean()
+    N_now = np.sum(f * e.reshape(S, J, 1) * n.reshape(S, 1, 1)) / J
+    N_now /= S
     return N_now
+
 
 def MUc(c):
 
@@ -143,28 +145,30 @@ def Steady_State(K_guess):
     Returns:    Array of S-1 Euler equation errors
     """
     K = K_guess.mean()
-    N = get_N(e, n)
+    N = get_N(f, e, n)
     Y = get_Y(K, N)
     w = get_w(Y, N)
     r = get_r(Y, K)
     K_guess = K_guess.reshape((S-1, J))
-    
-    K1 = np.array(list(np.zeros(J).reshape((1,J))) + list(K_guess[:-1,:]))
-    K2 = K_guess
-    K3 = np.array(list(K_guess[1:,:]) + list(np.zeros(J).reshape((1,J))))
 
-    error = MUc((1 + r)*K1 + w * e[:-1,:] * (n[:-1]).reshape((S-1,1)) - K2) \
-    - beta * (1 + r)*MUc((1 + r)*K2 + w*(e[1:,:].dot(f[1:,:,:])[:,0,:])*(n[1:]).reshape((S-1,1)) - K3)
+    K1 = np.array(list(np.zeros(J).reshape((1, J))) + list(K_guess[:-1, :]))
+    K2 = K_guess
+    K3 = np.array(list(K_guess[1:, :]) + list(np.zeros(J).reshape((1, J))))
+
+    error = MUc((1 + r)*K1 + w * e[:-1, :] * (
+        n[:-1]).reshape((S-1, 1)) - K2) - beta * (1 + r)*MUc(
+        (1 + r)*K2 + w * (e[1:, :].reshape(S-1, J, 1) * f[
+            1:, :, :]).sum(axis=2) * n[1:].reshape((S-1, 1)) - K3)
 
     return error.flatten()
 
-K_guess = np.ones((S-1, J))*0.05
+K_guess = np.ones((S-1, J)) * .05
 Kssmat = opt.fsolve(Steady_State, K_guess, xtol=1e-5)
 Kssvec = Kssmat.reshape((S-1, J)).mean(1)
 Kssvec = np.array([0]+list(Kssvec))
 Kss = Kssvec.mean()
 print Kss
-Nss = get_N(e, n)
+Nss = get_N(f, e, n)
 print Nss
 Yss = get_Y(Kss, Nss)
 print Yss
@@ -213,9 +217,9 @@ cssvec = (1 + rss) * newK[:-1] + wss * esavg * nsavg - newK[1:]
 
 
 plt.figure(2)
-#plt.plot(domain, bsavg, label='Average capital stock')
+# plt.plot(domain, bsavg, label='Average capital stock')
 plt.plot(domain, cssvec, label='Consumption')
-#plt.plot(domain, n * wss * e.mean(axis=1), label='Income')
+# plt.plot(domain, n * wss * e.mean(axis=1), label='Income')
 plt.title('Consumption: S = {}'.format(S))
 # plt.legend(loc=0)
 # plt.show()
