@@ -28,6 +28,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import time
 import pickle
+import scipy.optimize as opt
 
 '''
 ------------------------------------------------------------------------
@@ -48,25 +49,11 @@ e        = S x J matrix of age dependent possible working abilities e_s
 f        = S x J x J matrix of age dependent discrete probability mass
            function for e as Markov proccess: f(e_s)
 J        = number of points in the support of e
-bmin     = minimum value of b (usually is bmin = 0)
-bmax     = maximum value of b
-bsize    = scalar, number of discrete points in the support of b
-b        = 1 x bsize vector of possible values for initial wealth b and
-           savings b'
-gamma_ss = (S-1) x J x bsize array of steady state distribution of
-           wealth
 Kss      = steady state aggregate capital stock: scalar
 Nss      = steady state aggregate labor: scalar
 Yss      = steady state aggregate output: scalar
 wss      = steady state real wage: scalar
 rss      = steady state real rental rate: scalar
-phiind_ss = S x J x bsize steady-state policy function indicies for
-            b' = phi(s,e,b). The last row phiind(S,e,b) is ones and
-            corresponds to b_{S+1}. The first row phi(1,e,b) corresponds
-            to b_2.
-phi_ss    = S x J x bsize steady-state policy function values for
-            b' = phi(s,e,b). The last row phi(S,e,b) is zeros and
-            corresponds to b_{S+1}. The first row corresponds to b_2
 runtime   = total time (in seconds) that the steady state solver took to
             run
 hours     = total hours that the steady state solver took to run
@@ -74,10 +61,6 @@ minutes   = total minutes (minus the total hours) that the steady state
             solver took to run
 seconds   = total seconds (minus the total hours and minutes) that the
             steady state solver took to run
-ssiter    = number of iterations the SS solver took
-ssdist    = the distance between the last 2 iterations of the SS solver
-bsavg     = 1 x S vector of the average wealth b of each age cohort
-gxbar     = 1 x S-1 vector of Euler errors
 ------------------------------------------------------------------------
 '''
 
@@ -92,20 +75,12 @@ start_time = time.time()  # Start timer
 Set other parameters and objects
 ------------------------------------------------------------------------
 T       = number of periods until the steady state
-gamma0  = (S-1) x J x bsize array, initial distribution of wealth
-K0      = initial aggregate capital stock as a function of the initial
-          distribution of wealth
-rho_TPI = contraction parameter in TPI process representing weight on
-          new time path of aggregate capital stock
+K0      = initial aggregate capital stock 
 ------------------------------------------------------------------------
 '''
 
-T = 60
-gamma0 = np.zeros((S-1, J, bsize))
-gamma0[:, :, (bsize * S) / 150] = (f[:S-1, :, :]).sum(axis=2) / (J*(S-1))
-K0 = (float(S-1)/S) * (gamma0 * np.tile(b.reshape(1, 1, bsize), (
-    S-1, J, 1))).sum()
-rho_TPI = 0.5
+T = 30
+K0 = .8*Kss
 
 '''
 ------------------------------------------------------------------------
@@ -118,39 +93,40 @@ Ninit   = 1 x T vector, initial time path of aggregate labor demand.
 Yinit   = 1 x T vector, initial time path of aggregate output
 winit   = 1 x T vector, initial time path of real wage
 rinit   = 1 x T vector, initial time path of real interest rate
-gammat  = (S-1) x J x bsize x T array time path of the distribution of
-          capital
-phiindt = S x J x bsize x T array time path of policy function indicies
-          for b' = phi(s,e,b,t). The last row phiindt(S,e,b,t) is ones
-          and corresponds to b_{S+1}=0. The first row phi(1,e,b,t)
-          corresponds to b_2.
-phit    = S x J x bsize x T array time path of policy function values
-          for b' = phi(s,e,b,t). The last row phi(S,e,b,t) is zeros and
-          corresponds to b_{S+1}=0. The first row corresponds to b_2.
-p1aind  = index of period-1 age
-Vinit   = bsize x J matrix of values of the state in the next period:
-          V(b',e')
-sind    = index of age from period 1
-tind    = index of time period
-------------------------------------------------------------------------
-c          = bsize x J x bsize matrix of values for consumption in the
-             current period: c(b,e,b')
-cposind    = bsize x J x bsize array of = 1 if c > 0 and = 0 if c <= 0
-cpos       = bsize x J x bsize c array with c <= 0 values replaces with
-             positive values very close to zero
-bposind    = bsize x J x bsize array of = 1 if c >= 0 and = 0 if c < 0.
-             This matrix is important because it allows for b'=0 to be
-             the optimal choice when income equals zero
-uc         = utility of consumption. The utility of c<0 is set to -10^8
-EVprime    = the expected value of the value function in the next period
-EVprimenew = the expected value of the value function in the next period
-             reshaped to be added to the utility of current consumption
-Vnewarray  = new value function in terms of b, e, and the unoptimized
-             possible values of b'
-Vnew       = the new value function when b' is chosen optimally
-bprimeind  = the index of the optimal
 ------------------------------------------------------------------------
 '''
+
+def MUc(c):
+
+    """
+    Parameters: Consumption
+
+    Returns:    Marginal Utility of Consumption
+    """
+
+    return c**(-sigma)
+
+def Euler_Error(K_guess, winit, rinit, i):
+
+    K_guess = K_guess.reshape((S-1, J))
+    
+    K1 = np.array(list(np.zeros(J).reshape((1,J))) + list(K_guess[:-1,:]))
+    K2 = K_guess
+    K3 = np.array(list(K_guess[1:,:]) + list(np.zeros(J).reshape((1,J))))
+
+    w1 = winit[i:i+S-1].reshape(S-1,1)
+    w2 = winit[i+1:i+S].reshape(S-1,1)
+
+    r1 = rinit[i:i+S-1].reshape(S-1,1)
+    r2 = rinit[i+1:i+S].reshape(S-1,1)
+
+    n1 = n[:-1].reshape((S-1,1))
+    n2 = n[1:].reshape((S-1,1))
+
+    error = MUc((1 + r1)*K1 + w1 * e[:-1,:] * n1 - K2) \
+    - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*(e[1:,:].dot(f[1:,:,:])[:,0,:])*n2 - K3)
+
+    return error.flatten()
 
 Kinit = np.array(list(np.linspace(K0, Kss, T)) + list(np.ones(S-2)*Kss))
 Ninit = np.ones(T+S-2) * Nss
@@ -164,18 +140,24 @@ TPIdist = 10
 TPImindist = 3.0*10**(-6)
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-    
+    K_mat = np.zeros((T+S-1, S-1))
+    for i in xrange(T):
+        K_vec = opt.fsolve(Euler_Error, np.ones((S-1, J)), args=(winit, rinit, i))
+        K_vec = (K_vec.reshape(S-1, J)).mean(1)
+        K_mat[i:i+S-1, :] += np.diag(K_vec)
+        print i
+    Knew = K_mat[:T,:].sum(1)
     TPIiter += 1
-    TPIdist = (np.abs(Knew - Kinit)).max()
+    TPIdist = (np.abs(Knew - Kinit[:T])).max()
     print 'Iteration:', TPIiter
     print '\tDistance:', TPIdist
     Kinit = rho_TPI*Knew + (1-rho_TPI)*Kinit
+    Ninit = np.ones(T+S-2) * Nss
     Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
     winit = (1-alpha) * (Yinit/Ninit)
     rinit = alpha * (Yinit/Kinit) - delta
 
 Kpath_TPI = Kinit
-gammat_TPI = gammat
 
 elapsed_time = time.time() - start_time
 
@@ -199,7 +181,7 @@ plt.legend(loc=0)
 plt.savefig("TPI")
 
 var_names = ['Kpath_TPI', 'TPIiter', 'TPIdist', 'elapsed_time',
-             'gammat_TPI', 'hours', 'minutes', 'seconds', 'T']
+             'hours', 'minutes', 'seconds', 'T']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
