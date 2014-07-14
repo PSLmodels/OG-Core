@@ -145,12 +145,15 @@ def Steady_State(guesses):
     Returns:    Array of S-1 Euler equation errors
     """
     K_guess = guesses[0:(S-1) * J] 
+    # N_guess = guesses[(S-1) * J:]
+    K_guess = K_guess.reshape((S-1, J))
+    # N_guess = N_guess.reshape((S, J))
     K = K_guess.mean()
+    # N = N_guess.mean()
     N = get_N(f, e, n)
     Y = get_Y(K, N)
     w = get_w(Y, N)
     r = get_r(Y, K)
-    K_guess = K_guess.reshape((S-1, J))
 
     K1 = np.array(list(np.zeros(J).reshape((1, J))) + list(K_guess[:-1, :]))
     K2 = K_guess
@@ -166,12 +169,16 @@ def Steady_State(guesses):
 K_guess = np.ones((S-1, J)) * .05
 N_guess = np.ones((S, J)) * .1
 guesses = [K_guess, N_guess]
-Kssmat = opt.fsolve(Steady_State, K_guess, xtol=1e-5)
+solutions = opt.fsolve(Steady_State, K_guess, xtol=1e-5)
+Kssmat = solutions[0:(S-1) * J]
 Kssvec = Kssmat.reshape((S-1, J)).mean(1)
 Kssvec = np.array([0]+list(Kssvec))
 Kss = Kssvec.mean()
 print Kss
 Nss = get_N(f, e, n)
+# Nssmat = solutions[(S-1) * J:]
+# Nssvec = Nssmat.mean(1)
+# Nss = Nssvec.mean()
 print Nss
 Yss = get_Y(Kss, Nss)
 print Yss
@@ -235,7 +242,7 @@ Save variables/values so they can be used in other modules
 '''
 
 var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'n', 'e',
-             'f', 'J', 'Kss', 'Kssvec', 'Nss', 'Yss', 'wss', 'rss', 'runtime',
+             'f', 'J', 'Kss', 'Kssvec', 'Kssmat', 'Nss', 'Yss', 'wss', 'rss', 'runtime',
              'hours', 'minutes', 'seconds']
 dictionary = {}
 for key in var_names:
