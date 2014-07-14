@@ -136,7 +136,7 @@ def MUl(l):
     return - eta * l**(-xi)
 
 
-def Steady_State(K_guess):
+def Steady_State(guesses):
 
     """
     Parameters: Steady state distribution of capital guess as array
@@ -144,6 +144,7 @@ def Steady_State(K_guess):
 
     Returns:    Array of S-1 Euler equation errors
     """
+    K_guess = guesses[0:(S-1) * J] 
     K = K_guess.mean()
     N = get_N(f, e, n)
     Y = get_Y(K, N)
@@ -163,6 +164,8 @@ def Steady_State(K_guess):
     return error.flatten()
 
 K_guess = np.ones((S-1, J)) * .05
+N_guess = np.ones((S, J)) * .1
+guesses = [K_guess, N_guess]
 Kssmat = opt.fsolve(Steady_State, K_guess, xtol=1e-5)
 Kssvec = Kssmat.reshape((S-1, J)).mean(1)
 Kssvec = np.array([0]+list(Kssvec))
@@ -232,7 +235,7 @@ Save variables/values so they can be used in other modules
 '''
 
 var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'n', 'e',
-             'f', 'J', 'Kss', 'Nss', 'Yss', 'wss', 'rss', 'runtime',
+             'f', 'J', 'Kss', 'Kssvec', 'Nss', 'Yss', 'wss', 'rss', 'runtime',
              'hours', 'minutes', 'seconds']
 dictionary = {}
 for key in var_names:
