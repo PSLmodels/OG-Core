@@ -52,7 +52,7 @@ b     = 1 x bsize vector of possible values for initial wealth b
 starttime = time.time()
 S = 60
 J = 7
-bsize = 50
+bsize = 35
 beta = .96 ** (60.0 / S)
 sigma = 3
 alpha = .35
@@ -249,7 +249,7 @@ wealthwgts = (S-1) x J x bsize array of distribution weights times the
 ------------------------------------------------------------------------
 '''
 
-domain = np.linspace(0, S, S)
+domain = np.linspace(0, S-1, S)
 bsavg = np.zeros(S)
 wealthwgts = ((S-1) * gamma_ss) * np.tile(b.reshape(1, 1, bsize), (S-1, J, 1))
 bsavg[1:] = wealthwgts[:, :, :].sum(axis=2).sum(axis=1)
