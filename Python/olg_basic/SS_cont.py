@@ -107,10 +107,9 @@ def get_r(Y_now, K_now):
     return r_now
 
 
-def get_N(f, e, n):
+def get_N(e, n):
     # Equation 2.15
-    N_now = np.sum(f * e.reshape(S, J, 1) * n.reshape(S, 1, 1)) / J
-    N_now /= S
+    N_now = (e*n.reshape(S,1)).mean()
     return N_now
 
 def MUc(c):
@@ -143,8 +142,8 @@ def Steady_State(K_guess):
 
     Returns:    Array of S-1 Euler equation errors
     """
-    K = K_guess.sum()
-    N = get_N(f, e, n)
+    K = K_guess.mean()
+    N = get_N(e, n)
     Y = get_Y(K, N)
     w = get_w(Y, N)
     r = get_r(Y, K)
@@ -155,7 +154,7 @@ def Steady_State(K_guess):
     K3 = np.array(list(K_guess[1:,:]) + list(np.zeros(J).reshape((1,J))))
 
     error = MUc((1 + r)*K1 + w * e[:-1,:] * (n[:-1]).reshape((S-1,1)) - K2) \
-    - beta * (1 + r)*MUc((1 + r)*K2 + w*e[1:,:]*f[1:, :, :]*(n[1:]).reshape((S-1,1)) - K3)
+    - beta * (1 + r)*MUc((1 + r)*K2 + w*(e[1:,:].dot(f[1:,:,:])[:,0,:])*(n[1:]).reshape((S-1,1)) - K3)
 
     return error.flatten()
 
@@ -165,7 +164,7 @@ Kssvec = Kssmat.reshape((S-1, J)).mean(1)
 Kssvec = np.array([0]+list(Kssvec))
 Kss = Kssvec.mean()
 print Kss
-Nss = get_N(f, e, n)
+Nss = get_N(e, n)
 print Nss
 Yss = get_Y(Kss, Nss)
 print Yss
@@ -189,7 +188,7 @@ domain     = 1 x S vector of each age cohort
 ------------------------------------------------------------------------
 '''
 
-domain = np.linspace(0, S-1, S)
+domain = np.linspace(0, S, S)
 
 
 plt.figure(1)
