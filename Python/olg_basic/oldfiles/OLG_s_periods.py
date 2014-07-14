@@ -166,21 +166,6 @@ def get_K(b, gamma):
     K_now *= float(S - 1) / S
     return K_now
 
-@autojit
-def get_gamma_last(f, phiind, gamma_init):
-    gamma_new = np.zeros((S-1, J, bsize))
-    for sind in xrange(S-1):
-        for eind in xrange(J):
-            for bind in xrange(bsize):
-                if sind == 0:
-                    gamma_new[sind, eind, bind] = (
-                        1 / float(S - 1)) * f[sind+1, eind] * np.sum(
-                        (phiind[sind, :, 0] == bind) * f[sind, :])
-                else:
-                    gamma_new[sind, eind, bind] = f[sind+1, eind] * np.sum(
-                        (phiind[sind, :, :] == bind) * gamma_init[
-                            sind-1, :, :])
-    return gamma_new
 
 ssiter = 0
 ssmaxiter = 700
