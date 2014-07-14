@@ -29,7 +29,6 @@ Setting up the Model
 ------------------------------------------------------------------------
 S     = number of periods an individual lives
 J     = number of different ability groups
-bsize = number of discrete points in the support of b
 beta  = discount factor
 sigma = coefficient of relative risk aversion
 alpha = capital share of income
@@ -135,7 +134,7 @@ def MUl(l):
     Returns:    Marginal Utility of Labor
     """
 
-    return - eta * l**(-xi)
+    return - eta * (l ** (-xi))
 
 
 def Steady_State(guesses):
