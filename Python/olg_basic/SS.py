@@ -52,7 +52,7 @@ b     = 1 x bsize vector of possible values for initial wealth b
 starttime = time.time()
 S = 60
 J = 7
-bsize = 35
+bsize = 30
 beta = .96 ** (60.0 / S)
 sigma = 3
 alpha = .35
@@ -305,7 +305,7 @@ plt.figure(3)
 #plt.plot(domain, bsavg, label='Average capital stock')
 plt.plot(domain, cssvec_tograph, label='Consumption')
 #plt.plot(domain, n * wss * e.mean(axis=1), label='Income')
-plt.title('Savings: S = {}'.format(S))
+plt.title('Consumption: S = {}'.format(S))
 # plt.legend(loc=0)
 # plt.show()
 plt.savefig("consumption")

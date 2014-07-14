@@ -72,7 +72,7 @@ else:
          .0976, .093])
     n = n[60 % S:: 60 / S]
 e = income.get_e(S, J)
-f = income.get_f_markov(S, J)
+f = income.get_f_noswitch(S, J)
 
 '''
 ------------------------------------------------------------------------
@@ -107,6 +107,12 @@ def get_r(Y_now, K_now):
     return r_now
 
 
+def get_N(f, e, n):
+    # Equation 2.15
+    N_now = np.sum(f * e.reshape(S, J, 1) * n.reshape(S, 1, 1)) / J
+    N_now /= S
+    return N_now
+
 def MUc(c):
 
     """
@@ -138,7 +144,7 @@ def Steady_State(K_guess):
     Returns:    Array of S-1 Euler equation errors
     """
     K = K_guess.sum()
-    N = (e * n.reshape(S, 1)).sum()
+    N = get_N(f, e, n)
     Y = get_Y(K, N)
     w = get_w(Y, N)
     r = get_r(Y, K)
@@ -149,19 +155,24 @@ def Steady_State(K_guess):
     K3 = np.array(list(K_guess[1:,:]) + list(np.zeros(J).reshape((1,J))))
 
     error = MUc((1 + r)*K1 + w * e[:-1,:] * (n[:-1]).reshape((S-1,1)) - K2) \
-    - beta * (1 + r)*MUc((1 + r)*K2 + w*e[1:,:]*(n[1:]).reshape((S-1,1)) - K3)
+    - beta * (1 + r)*MUc((1 + r)*K2 + w*e[1:,:]*f[1:, :, :]*(n[1:]).reshape((S-1,1)) - K3)
 
     return error.flatten()
 
 K_guess = np.ones((S-1, J))*0.05
-Kssmat = opt.fsolve(Steady_State, K_guess, xtol=1e-9)
+Kssmat = opt.fsolve(Steady_State, K_guess, xtol=1e-5)
 Kssvec = Kssmat.reshape((S-1, J)).mean(1)
 Kssvec = np.array([0]+list(Kssvec))
 Kss = Kssvec.mean()
-Nss = (e * n.reshape(S, 1)).sum()
+print Kss
+Nss = get_N(f, e, n)
+print Nss
 Yss = get_Y(Kss, Nss)
+print Yss
 wss = get_w(Yss, Nss)
+print wss
 rss = get_r(Yss, Kss)
+print rss
 
 runtime = time.time() - starttime
 hours = runtime / 3600
@@ -196,20 +207,20 @@ Generate graph of Consumption
 ------------------------------------------------------------------------
 '''
 
-# cs1 = wss * Nss - Kssvec[1]
-# cslast = wss * Nss + (1 + rss) * Kssvec[-1]
-# csother = wss * Nss + rss * Kssvec[1:-1]
+newK = np.array(list(Kssvec) + [0])
+esavg = e.mean(1)
+nsavg = n
+cssvec = (1 + rss) * newK[:-1] + wss * esavg * nsavg - newK[1:]
 
-# cssvec_tograph = np.array([cs1] + list(csother) + [cslast])
 
-# plt.figure(3)
-# #plt.plot(domain, bsavg, label='Average capital stock')
-# plt.plot(domain, cssvec_tograph, label='Consumption')
-# #plt.plot(domain, n * wss * e.mean(axis=1), label='Income')
-# plt.title('Savings: S = {}'.format(S))
-# # plt.legend(loc=0)
-# # plt.show()
-# plt.savefig("consumption")
+plt.figure(2)
+#plt.plot(domain, bsavg, label='Average capital stock')
+plt.plot(domain, cssvec, label='Consumption')
+#plt.plot(domain, n * wss * e.mean(axis=1), label='Income')
+plt.title('Consumption: S = {}'.format(S))
+# plt.legend(loc=0)
+# plt.show()
+plt.savefig("consumption")
 
 '''
 ------------------------------------------------------------------------
