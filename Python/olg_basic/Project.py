@@ -1,9 +1,13 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.optimize as opt
+import income
 
 # Number of age cohorts
 S = 60
+
+# Number of different ability levels
+J = 7
 
 # Exogenous retirement age
 # R = 5
@@ -21,6 +25,7 @@ n = np.array([.87,.89,.91,.93,.96,.98]+list(np.ones(34))+[.95,.89,.84,
     .79,.73,.68,.63,.57,.52,.47,.4,.33,.26,.19,.12,.11,.11,.1,.1,.09])
 n = n[ (60%S) : : (60/S) ]
 phi = 0
+e = income.get_e(S,J)
 
 # Parameters of estimation 
 tol = 0.1
@@ -81,20 +86,22 @@ def Steady_State(K_guess):
     """
 
     K = K_guess.sum()
-    w = wage(K, n.sum())
-    r = rate(K, n.sum())
+    w = wage(K, (e*n.reshape(S,1)).sum())
+    r = rate(K, (e*n.reshape(S,1)).sum())
+    K_guess = K_guess.reshape((S-1,J))
     
-    K1 = np.array([0] + list(K_guess[:-1]))
+    K1 = np.array(list(np.zeros(J).reshape((1,J))) + list(K_guess[:-1,:]))
     K2 = K_guess
-    K3 = np.array(list(K_guess[1:]) + [0])
+    K3 = np.array(list(K_guess[1:,:]) + list(np.zeros(J).reshape((1,J))))
 
-    error = MUc((1 + r - delta)*K1 + w * n[:-1] - K2) \
-    - beta * (1 + r - delta) * MUc((1 + r - delta)*K2 + w * n[1:] - K3)
-    
-    return error
+    error = MUc((1 + r - delta)*K1 + w * e[:-1,:] * (n[:-1]).reshape((S-1,1)) - K2) \
+    - beta * (1 + r - delta)*MUc((1 + r - delta)*K2 + w*e[1:,:]*(n[1:]).reshape((S-1,1)) - K3)
 
-K_guess = np.ones(S-1)*0.3
-Kss = opt.fsolve(Steady_State, K_guess)
+    return error.flatten()
+
+K_guess = np.ones((S-1,J))*0.05
+Kssmat = opt.fsolve(Steady_State, K_guess)
+Kss = Kssmat.reshape((S-1,J)).mean(1)
 Kss = np.array([0]+list(Kss))
 domain = np.linspace(0,S,S)
 
@@ -155,10 +162,10 @@ def UpperTriangle(K_opt, init, w_path, r_path, i):
 
     return error
 
-initial = (np.random.rand(S)+.5) * Kss
-K_path = np.linspace(initial.sum(), Kss.sum(), T+(S-1))
-w_path = wage(K_path, n.sum())
-r_path = rate(K_path, n.sum())
+# initial = (np.random.rand(S-1)+.5) * Kss[1:]
+# K_path = np.linspace(initial.sum(), Kss.sum(), T+(S-1))
+# w_path = wage(K_path, n.sum())
+# r_path = rate(K_path, n.sum())
 
 # sup_norm = 1
 # max_iter = 100
@@ -175,11 +182,13 @@ r_path = rate(K_path, n.sum())
 #         K_opt = np.diag(K_opt)
 #         K_mat[j:j+S-1, 1:] += K_opt
 #     K = K_mat.sum(axis=1)
-#     sup_norm = np.max(K_path-K)
+#     sup_norm = np.max(abs(K_path-K))
 #     K_path = rho*K + (1-rho)*K_path
 #     w_path = wage(K_path, n.sum())
 #     r_path = rate(K_path, n.sum())
 #     count += 1
+#     print count
+#     print sup_norm
 
 # plt.plot(np.arange(T), K_path[:-(S-1)], label='Capital Time Path')
 # plt.plot(np.arange(T), np.ones(T)*Kss.sum(), 'k--', label='Steady State')
