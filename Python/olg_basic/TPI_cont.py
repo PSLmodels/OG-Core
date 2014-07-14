@@ -80,7 +80,7 @@ K0      = initial aggregate capital stock
 '''
 
 T = 30
-K0 = .8*Kss
+K0 = .9*Kss
 
 '''
 ------------------------------------------------------------------------
@@ -142,10 +142,11 @@ TPImindist = 3.0*10**(-6)
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat = np.zeros((T+S-1, S-1))
     for i in xrange(T):
-        K_vec = opt.fsolve(Euler_Error, np.ones((S-1, J)), args=(winit, rinit, i))
+        K_vec = opt.fsolve(Euler_Error, Kssmat.reshape(S-1,J), args=(winit, rinit, i))
         K_vec = (K_vec.reshape(S-1, J)).mean(1)
         K_mat[i:i+S-1, :] += np.diag(K_vec)
         print i
+    K_mat[0,:] = .9*Kssvec[1:]
     Knew = K_mat[:T,:].sum(1)
     TPIiter += 1
     TPIdist = (np.abs(Knew - Kinit[:T])).max()
