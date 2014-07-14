@@ -152,7 +152,7 @@ def get_w(Y_now, N_now):
 
 def get_r(Y_now, K_now):
     # Equation 2.14
-    r_now = alpha * Y_now / K_now
+    r_now = (alpha * Y_now / K_now) - delta
     return r_now
 
 
@@ -192,7 +192,7 @@ while (ssiter < ssmaxiter) & (ssdist >= ssmindist):
     Vinit = np.zeros((bsize, J))
     for sind in xrange(S):
         if sind < S - 1:
-            c = (1 + rss - delta) * np.tile(b.reshape(
+            c = (1 + rss) * np.tile(b.reshape(
                 bsize, 1, 1), (1, J, bsize)) + (
                 wss * n[S-sind-1]) * np.tile(
                 e[S-sind-1, :].reshape(1, J, 1), (bsize, 1, bsize)) - np.tile(
@@ -272,12 +272,12 @@ ssbsavg = (S-1) * (gamma_ss * np.tile(b.reshape(1, 1, bsize), (
     S-1, J, 1))).sum(axis=2).sum(axis=1)
 esavg = e.mean(1)
 nsavg = n.T
-cssvec = (1 + rss - delta) * np.array([0]+list(ssbsavg[:S-2])) + wss * esavg[
+cssvec = (1 + rss) * np.array([0]+list(ssbsavg[:S-2])) + wss * esavg[
     :S-1] * nsavg[:S-1] - ssbsavg
-cp1ssvec = (1 + rss - delta) * ssbsavg + wss * esavg[1:] * nsavg[1:] - \
+cp1ssvec = (1 + rss) * ssbsavg + wss * esavg[1:] * nsavg[1:] - \
     np.array(list(ssbsavg[1:])+[0])
 gxbar = (cssvec**(-sigma)) / (
-    (beta * (1 + rss - delta)) * cp1ssvec ** (-sigma))
+    (beta * (1 + rss)) * cp1ssvec ** (-sigma))
 
 '''
 ------------------------------------------------------------------------
