@@ -128,37 +128,37 @@ def Euler_Error(K_guess, winit, rinit, i):
 
     return error.flatten()
 
-Kinit = np.array(list(np.linspace(K0, Kss, T)) + list(np.ones(S-2)*Kss))
-Ninit = np.ones(T+S-2) * Nss
+Kinit = np.array(list(np.linspace(K0, Kss, T)) + list(np.ones(S)*Kss))
+Ninit = np.ones(T+S) * Nss
 Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
 winit = (1-alpha) * (Yinit/Ninit)
 rinit = alpha * (Yinit/Kinit) - delta
 
 TPIiter = 0
-TPImaxiter = 500
+TPImaxiter = 1
 TPIdist = 10
 TPImindist = 3.0*10**(-6)
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-    K_mat = np.zeros((T+S-1, S-1))
+    K_mat = np.zeros((T+S, S-1))
     for i in xrange(T):
         K_vec = opt.fsolve(Euler_Error, Kssmat.reshape(S-1,J), args=(winit, rinit, i))
         K_vec = (K_vec.reshape(S-1, J)).mean(1)
         K_mat[i:i+S-1, :] += np.diag(K_vec)
         print i
     K_mat[0,:] = .9*Kssvec[1:]
-    Knew = K_mat[:T,:].sum(1)
+    Knew = K_mat[:T,:].mean(1)
     TPIiter += 1
     TPIdist = (np.abs(Knew - Kinit[:T])).max()
     print 'Iteration:', TPIiter
     print '\tDistance:', TPIdist
-    Kinit = rho_TPI*Knew + (1-rho_TPI)*Kinit
-    Ninit = np.ones(T+S-2) * Nss
-    Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
-    winit = (1-alpha) * (Yinit/Ninit)
-    rinit = alpha * (Yinit/Kinit) - delta
+    Kinit = rho*Knew + (1-rho)*Kinit[:T]
+    Ninit = np.ones(T) * Nss
+    Yinit = np.array(list(A*((Kinit**alpha) * (Ninit**(1-alpha)))) + list(np.ones(S)*Yss))
+    winit = np.array(list((1-alpha) * (Yinit[:T]/Ninit)) + list(np.ones(S)*wss))
+    rinit = np.array(list(alpha * (Yinit[:T]/Kinit) - delta) + list(np.ones(S)*rss))
 
-Kpath_TPI = Kinit
+Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
 
 elapsed_time = time.time() - start_time
 
