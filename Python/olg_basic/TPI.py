@@ -156,7 +156,7 @@ Kinit = np.array(list(np.linspace(K0, Kss, T)) + list(np.ones(S-2)*Kss))
 Ninit = np.ones(T+S-2) * Nss
 Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
 winit = (1-alpha) * (Yinit/Ninit)
-rinit = alpha * (Yinit/Kinit)
+rinit = alpha * (Yinit/Kinit) - delta
 
 TPIiter = 0
 TPImaxiter = 500
@@ -175,7 +175,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         Vinit = np.zeros((bsize, J))
         for sind in xrange(p1aind+1):
             if sind < S-1:
-                c = (1+rinit.flatten()[p1aind-sind]-delta) * np.tile(b.reshape(
+                c = (1+rinit.flatten()[p1aind-sind]) * np.tile(b.reshape(
                     bsize, 1, 1), (1, J, bsize)) + (winit.flatten()[
                         p1aind-sind] * n[S-sind-1]) * np.tile(
                     e[S-sind-1, :].reshape((1, J, 1)), (
@@ -260,7 +260,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     Kinit = rho_TPI*Knew + (1-rho_TPI)*Kinit
     Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
     winit = (1-alpha) * (Yinit/Ninit)
-    rinit = alpha * (Yinit/Kinit)
+    rinit = alpha * (Yinit/Kinit) - delta
 
 Kpath_TPI = Kinit
 gammat_TPI = gammat
