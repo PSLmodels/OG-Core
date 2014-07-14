@@ -46,7 +46,7 @@ f     = S x J x J matrix of age dependent discrete probability mass
 '''
 
 starttime = time.time()
-S = 60
+S = 10
 J = 7
 beta = .96 ** (60.0 / S)
 sigma = 3
@@ -54,6 +54,8 @@ alpha = .35
 rho = .50
 A = 1
 delta = 1 - (0.95 ** (60.0 / S))
+xi = 3.0
+eta = .5
 if S >= 12:
     n = np.ones(S)
     n[0:S/10+1] = np.linspace(0.865, 1, (S/10)+1)
@@ -144,34 +146,42 @@ def Steady_State(guesses):
 
     Returns:    Array of S-1 Euler equation errors
     """
-    K_guess = guesses[0:(S-1) * J] 
+    K_guess = guesses[0: (S-1) * J]
+    N_guess = guesses[(S-1) * J:]
+    K_guess = K_guess.reshape((S-1, J))
+    N_guess = N_guess.reshape((S, J))
     K = K_guess.mean()
-    N = get_N(f, e, n)
+    N = N_guess.mean()
     Y = get_Y(K, N)
     w = get_w(Y, N)
     r = get_r(Y, K)
-    K_guess = K_guess.reshape((S-1, J))
 
     K1 = np.array(list(np.zeros(J).reshape((1, J))) + list(K_guess[:-1, :]))
     K2 = K_guess
     K3 = np.array(list(K_guess[1:, :]) + list(np.zeros(J).reshape((1, J))))
 
-    error = MUc((1 + r)*K1 + w * e[:-1, :] * (
-        n[:-1]).reshape((S-1, 1)) - K2) - beta * (1 + r)*MUc(
+    K1_2 = np.array(list(K1) + list(np.zeros(J).reshape((1, J))))
+    K2_2 = np.array(list(K_guess) + list(np.zeros(J).reshape((1, J))))
+
+    error1 = MUc((1 + r)*K1 + w * e[:-1, :] * N_guess[:-1, :] - K2) - beta * (1 + r)*MUc(
         (1 + r)*K2 + w * (e[1:, :].reshape(S-1, J, 1) * f[
-            1:, :, :]).sum(axis=2) * n[1:].reshape((S-1, 1)) - K3)
+            1:, :, :]).sum(axis=2) * N_guess[1:, :] - K3)
+    error2 = MUc((1 + r)*K1_2 + w * e * N_guess - K2_2) * w * e + MUl(N_guess)
+    error1, error2 = error1.flatten(), error2.flatten()
+    return np.array(list(error1) + list(error2))
 
-    return error.flatten()
-
-K_guess = np.ones((S-1, J)) * .05
-N_guess = np.ones((S, J)) * .1
-guesses = [K_guess, N_guess]
-Kssmat = opt.fsolve(Steady_State, K_guess, xtol=1e-5)
+K_guess = np.ones((S-1, J)) / ((S-1) * J)
+N_guess = np.ones((S, J)) / (S * J)
+guesses = np.array(list(K_guess) + list(N_guess))
+solutions = opt.fsolve(Steady_State, guesses, xtol=1e-5)
+Kssmat = solutions[0:(S-1) * J]
 Kssvec = Kssmat.reshape((S-1, J)).mean(1)
 Kssvec = np.array([0]+list(Kssvec))
 Kss = Kssvec.mean()
 print Kss
-Nss = get_N(f, e, n)
+Nssmat = solutions[(S-1) * J:]
+Nssvec = Nssmat.reshape((S, J)).mean(1)
+Nss = Nssvec.mean()
 print Nss
 Yss = get_Y(Kss, Nss)
 print Yss
@@ -186,6 +196,9 @@ minutes = (runtime / 60) % 60
 seconds = runtime % 60
 print 'Finding the steady state took %.0f hours, %.0f minutes, and %.0f \
 seconds.' % (abs(hours - .5), abs(minutes - .5), seconds)
+
+if Kss > 100 or Kss < .1:
+    print 'And it was wrong.'
 
 '''
 ------------------------------------------------------------------------
@@ -235,8 +248,8 @@ Save variables/values so they can be used in other modules
 '''
 
 var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'n', 'e',
-             'f', 'J', 'Kss', 'Kssvec', 'Kssmat', 'Nss', 'Yss', 'wss', 'rss', 'runtime',
-             'hours', 'minutes', 'seconds']
+             'f', 'J', 'Kss', 'Kssvec', 'Kssmat', 'Nss', 'Yss', 'wss', 'rss',
+             'runtime', 'hours', 'minutes', 'seconds', 'eta', 'xi']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
