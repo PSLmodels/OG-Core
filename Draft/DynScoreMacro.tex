@@ -66,7 +66,7 @@
   \and
   Isaac Swift\footnote{Brigham Young University, Department of Economics, 163 FOB, Provo, Utah 84602, \href{mailto:isaacdswift@gmail.com}{isaacdswift@gmail.com}.} \\[-2pt]}
 \date{July 2014 \\
-  \scriptsize{(version 14.07.a)}}
+  \scriptsize{(version 14.07.b)}}
 \maketitle
 \begin{abstract}
 \normalsize{Put abstract here.
@@ -95,51 +95,45 @@
   Model intro here.
 
 
-\subsection{Individual problem}\label{SecIndProb}
+  \subsection{Individual problem}\label{SecIndProb}
 
-  A measure $1/S$ of individuals with heterogeneous working ability $e \in\mathcal{E}\subset\mathbb{R}_{++}$ is born in each period $t$ and live for $S\geq 3$ periods. Their working ability evolves over their lifetime according to an age-dependent deterministic process. At birth, a fraction $1/J$ of the $1/S$ measure of new agents are randomly assigned to one of $J$ ability types indexed by $j=1,2,...J$. Once ability type is determined, that measure $1/(SJ)$ of individuals' ability evolves deterministically according to $e_j(s)$. We calibrate the matrix of lifetime ability paths $e_j(s)$ for all types $j$ using CPS hourly wage by age distribution data.\footnote{Appendix \ref{AppAbilCalib} gives a detailed description of the calibration of the deterministic ability process by age $s$ and type $j$, as well as alternative specifications and calibrations.}
+    A measure $1/S$ of individuals with heterogeneous working ability $e \in\mathcal{E}\subset\mathbb{R}_{++}$ is born in each period $t$ and live for $S\geq 3$ periods. Their working ability evolves over their lifetime according to an age-dependent deterministic process. At birth, a fraction $1/J$ of the $1/S$ measure of new agents are randomly assigned to one of $J$ ability types indexed by $j=1,2,...J$. Once ability type is determined, that measure $1/(SJ)$ of individuals' ability evolves deterministically according to $e_j(s)$. We calibrate the matrix of lifetime ability paths $e_j(s)$ for all types $j$ using CPS hourly wage by age distribution data.\footnote{Appendix \ref{AppAbilCalib} gives a detailed description of the calibration of the deterministic ability process by age $s$ and type $j$, as well as alternative specifications and calibrations.}
 
-  Individuals are endowed with a measure of time in each period $t$ that they supply inelastically to the labor market. Let $s$ represent the periods that an individual has been alive. The fixed labor supply in each period $t$ by each age-$s$ individual is denoted by $l(s)$.
+    Individuals are endowed with a measure of time in each period $t$ that they supply inelastically to the labor market. Let $s$ represent the periods that an individual has been alive. The fixed labor supply in each period $t$ by each age-$s$ individual is denoted by $l(s)$.
 
-  At time $t$, all generation $s$ agents with ability $e_j(s)$ know the real wage rate $w_t$ and know the one-period real net interest rate $r_t - \delta$ on bond holdings $b_{j,s,t}$ that mature at the beginning of period $t$. For ease of notation, we subtract the depreciation rate $\delta$ from the net interest rate $r_t$ to represent the fact that any depreciation is passed through directly from firms to households. In each period $t$, age-$s$ agents with working ability $e$ choose how much to consume $c_{j,s,t}$ and how much to save for the next period by loaning capital to firms in the form of a one-period bond $b_{j,s+1,t+1}$ in order to maximize expected lifetime utility of the following form,
-  \begin{equation}\label{EqUtilMax}
-     U_{j,s,t} = \sum_{v=0}^{S-s}\beta^u u\left(c_{j,s+u,t+u}\right) \quad \text{where} \quad u\left(c_{j,s,t}\right) = \frac{\left(c_{j,s,t}\right)^{1-\sigma} - 1}{1-\sigma} \quad\forall j,s,t
-  \end{equation}
-  where $u(c)$ is a constant relative risk aversion utility function, $\sigma\geq 1$ is the coefficient of relative risk aversion, and $\beta\in(0,1)$ is the agent's discount factor.
+    At time $t$, all generation $s$ agents with ability $e_j(s)$ know the real wage rate $w_t$ and know the one-period real net interest rate $r_t$ on bond holdings $b_{j,s,t}$ that mature at the beginning of period $t$. In each period $t$, age-$s$ agents with working ability $e$ choose how much to consume $c_{j,s,t}$ and how much to save for the next period by loaning capital to firms in the form of a one-period bond $b_{j,s+1,t+1}$ in order to maximize expected lifetime utility of the following form,
+    \begin{equation}\label{EqUtilMax}
+      U_{j,s,t} = \sum_{v=0}^{S-s}\beta^u u\left(c_{j,s+u,t+u}\right) \quad \text{where} \quad u\left(c_{j,s,t}\right) = \frac{\left(c_{j,s,t}\right)^{1-\sigma} - 1}{1-\sigma} \quad\forall j,s,t
+    \end{equation}
+    where $u(c)$ is a constant relative risk aversion utility function, $\sigma\geq 1$ is the coefficient of relative risk aversion, and $\beta\in(0,1)$ is the agent's discount factor.
 
-  Because agents are born without any bonds maturing and because they purchase no bonds in the last period of life $s=S$, the per-period budget constraints for each agent normalized by the price of consumption are the following,
-  \begin{align}
-     w_t e_j(s)l(s) &\geq c_{j,s,t} + b_{j,s+1,t+1} \quad \text{for} \quad s = 1 \quad\quad\quad\quad\:\:\: \forall j,t \label{EqBC1} \\
-     \left(1 + r_t - \delta\right) b_{j,s,t} + w_t e_j(s)l(s) &\geq c_{j,s,t} + b_{j,s+1,t+1} \quad \text{for} \quad 2\leq s \leq S-1 \quad \forall j,t \label{EqBC2} \\
-     \left(1 + r_t - \delta\right) b_{j,s,t} + w_t e_j(s)l(s) &\geq c_{j,s,t} \quad\quad\quad\quad\quad\quad \text{for} \quad s = S \quad\quad\quad\quad\:\:\, \forall j,t \label{EqBC3}
-  \end{align}
-  In addition to the budget constraints in each period, the utility function imposes nonnegative consumption through inifinite marginal utility. We allow the possibility for individual agents to borrow $b_{j,s,t}<0$ for some $j$ and $s$ in period $t$. However, the borrowing must satisfy a series of individual feasibility constraints as well as a strict constraint that the aggregate capital stock $K_t>0$ be positive in every period.\footnote{We describe these constraints in detail in Appendix \ref{AppBorConstr}.}
+    Because agents are born without any bonds maturing and because they purchase no bonds in the last period of life $s=S$, the per-period budget constraints for each agent normalized by the price of consumption are the following.
+    \begin{align}
+      w_t e_j(s)l(s) &\geq c_{j,s,t} + b_{j,s+1,t+1} \quad \text{for} \quad s = 1 \quad\quad\quad\quad\:\:\: \forall j,t \label{EqBC1} \\
+      \left(1 + r_t\right) b_{j,s,t} + w_t e_j(s)l(s) &\geq c_{j,s,t} + b_{j,s+1,t+1} \quad \text{for} \quad 2\leq s \leq S-1 \quad \forall j,t \label{EqBC2} \\
+      \left(1 + r_t\right) b_{j,s,t} + w_t e_j(s)l(s) &\geq c_{j,s,t} \quad\quad\quad\quad\quad\quad \text{for} \quad s = S \quad\quad\quad\quad\:\:\, \forall j,t \label{EqBC3}
+    \end{align}
+    Note that the price of consumption is normalized to one, so $w_t$ is the real wage and $r_t$ is the real net interest rate.
 
-  We next describe the Euler equations that govern the choices of consumption $c_{j,s,t}$ and savings $b_{j,s+1,t+1}$ by household of age $s$ and ability $e_j(s)$ in each period $t$. We work backward from the last period of life $s = S$. Because households do not save in the last period of life $b_{j,s+1,t+1}=0$ due to our assumption of no bequest motive, the household's final-period maximization problem is given by the following.
-  \begin{equation}\label{EqSmaxprob}
-    \max_{c_{j,S,t}} \frac{\left(c_{j,S,t}\right)^{1-\sigma} - 1}{1 - \sigma} \quad \text{s.t.} \quad \left(1+r_t-\delta\right)b_{j,S,t} + w_t e_j(S)l(S) \geq c_{j,S,t} \quad \forall t
-  \end{equation}
-  Because $u(c)$ is monotonically increasing in $c$, the $s=S$ problem \eqref{EqSmaxprob} is simply to choose the maximum amount of consumption possible. The household trivially consumes all of its income in the last period of life.
-  \begin{equation}\label{EqScons}
-    c_{j,S,t} = \left(1+r_t-\delta\right)b_{j,S,t} + w_t e_j(S)l(S) \quad \forall t
-  \end{equation}
+    In addition to the budget constraints in each period, the utility function imposes nonnegative consumption through inifinite marginal utility. We allow the possibility for individual agents to borrow $b_{j,s,t}<0$ for some $j$ and $s$ in period $t$. However, the borrowing must satisfy a series of individual feasibility constraints as well as a strict constraint that the aggregate capital stock $K_t>0$ be positive in every period.\footnote{We describe these constraints in detail in Appendix \ref{AppBorConstr}.}
 
-  In general, maximizing \eqref{EqUtilMax} with respect to \eqref{EqBC1}, \eqref{EqBC2}, \eqref{EqBC3}, and the implied individual and aggregate borrowing constraints gives the following set of $S-1$ intertemporal Euler equations.
-  \begin{equation}\label{EqIntertempEuler}
-    \begin{split}
-      \left(c_{j,s,t}\right)^{-\sigma} = \beta \left(1+r_{t+1}-\delta\right)\left(c_{j,s+1,t+1}\right)^{-\sigma} \\
-      \text{for} \quad 1\leq s\leq S-1, \quad \forall t
-    \end{split}
-  \end{equation}
-  Note from \eqref{EqBC2} that $c_{j,s,t}$ in \eqref{EqIntertempEuler} depends on the household's age $s$, his ability $e_j(s)$, and the initial wealth with which the household entered the period $b_{j,s,t}$.
+    We next describe the Euler equations that govern the choices of consumption $c_{j,s,t}$ and savings $b_{j,s+1,t+1}$ by household of age $s$ and ability $e_j(s)$ in each period $t$. We work backward from the last period of life $s = S$. Because households do not save in the last period of life $b_{j,s+1,t+1}=0$ due to our assumption of no bequest motive, the household's final-period maximization problem is given by the following.
+    \begin{equation}\label{EqSmaxprob}
+      \max_{c_{j,S,t}} \frac{\left(c_{j,S,t}\right)^{1-\sigma} - 1}{1 - \sigma} \quad \text{s.t.} \quad \left(1+r_t\right)b_{j,S,t} + w_t e_j(S)l(S) \geq c_{j,S,t} \quad \forall t
+    \end{equation}
+    Because $u(c)$ is monotonically increasing in $c$, the $s=S$ problem \eqref{EqSmaxprob} is simply to choose the maximum amount of consumption possible. The household trivially consumes all of its income in the last period of life.
+    \begin{equation}\label{EqScons}
+      c_{j,S,t} = \left(1+r_t\right)b_{j,S,t} + w_t e_j(S)l(S) \quad \forall t
+    \end{equation}
 
-% As will be shown in Section \ref{SecModelGenEquil}, equilibrium prices depend on the entire distribution of capital. Let the object $\Gamma_t=\{\gamma_t(s,e,b)\}\subset\mathbf{R}^S\times\mathbf{R}^J\times\mathbf{R}^B$ represent the entire distribution of capital in period $t$ among all types of households $s$, $e$, and $b$, where each $\gamma_t(s,e,b)$ represents the fraction of the total population that is age $s$, ability $e$, and wealth $b$. Let general beliefs about the future distribution of capital in period $t+u$ be characterized by the operator $\Omega(\cdot)$ such that:
-% \begin{equation}\label{EqModelGenOmegaBeliefs}
-%    \Gamma^e_{t+u} = \Omega^u\left(\Gamma_t\right) \quad \forall t, \quad u\geq 1
-% \end{equation}
-% where the $e$ superscript signifies that $\Gamma^e_{t+u}$ is the expected distribution of wealth at time $t+u$ based on general beliefs $\Omega(\cdot)$ that are not constrained to be correct.
-
-% Now we can express the policy function for savings in the next period from \eqref{EqModelGenIntertempEuler} as a function of the state and beliefs $b' = \phi(s,e,b|\Omega)$, where $s\in\{1,2,...S-1\}$, $e\in\{e_1,e_2,...e_J\}$, and $b=\{b_1,b_2,...b_B\}$. Discretizing the support of the current period wealth in bond holdings $b$ allows us to not have to account for the history of ability shocks received up to age $s$. That is, equations \eqref{EqModelGenseqScons} and \eqref{EqModelGenIntertempEuler} are perfectly identified but represent $\sum_{v=1}^{S-1}J^v$ equations and $\sum_{v=1}^{S-1}J^v$ unknowns. If agents only live $S=10$ periods and there are only $J=5$ different abilities, then \eqref{EqModelGenseqScons} and \eqref{EqModelGenIntertempEuler} represent 2,441,405 equations and 2,441,405 unknowns. Discretizing the possible values of current wealth to $B$ points such that $b_{s,t}\in\{b_1,b_2,...b_B\}$ allows us to deal with only $(S-1)\times J\times B$ equations and unknowns. If the number of points in the support of $b$ is $B=100$, then \eqref{EqModelGenseqScons} and \eqref{EqModelGenIntertempEuler} only represent 4,500 equations and 4,500 unknowns.
+    In general, maximizing \eqref{EqUtilMax} with respect to \eqref{EqBC1}, \eqref{EqBC2}, \eqref{EqBC3}, and the implied individual and aggregate borrowing constraints gives the following set of $S-1$ intertemporal Euler equations.
+    \begin{equation}\label{EqIntertempEuler}
+      \begin{split}
+        \left(c_{j,s,t}\right)^{-\sigma} = \beta \left(1+r_{t+1}\right)\left(c_{j,s+1,t+1}\right)^{-\sigma} \\
+        \text{for} \quad 1\leq s\leq S-1, \quad \forall t
+      \end{split}
+    \end{equation}
+    Note from \eqref{EqBC2} that $c_{j,s,t}$ in \eqref{EqIntertempEuler} depends on the household's age $s$, his ability $e_j(s)$, and the initial wealth with which the household entered the period $b_{j,s,t}$.
 
 
   \subsection{Firm problem}\label{SecModelGenFirm}
@@ -148,76 +142,67 @@
     \begin{equation}\label{EqCobbDougProd}
        Y_t = A K_t^\alpha L_t^{1-\alpha} \quad \forall t
     \end{equation}
-    where $A$ is the fixed technology process and $\alpha\in(0,1)$ and $L_t$ is measured in efficiency units of labor. The interest rate $r_t$ in the cost function is a gross real interest rate because depreciation is paid by the households. The real profit function of the firm is the following.
+    where $A$ is the fixed technology process and $\alpha\in(0,1)$ and $L_t$ is measured in efficiency units of labor. The interest rate $r_t$ in the cost function is a net real interest rate because depreciation $\delta$ is paid by the firms. The real wage is $w_t$. The real profit function of the firm is the following.
     \begin{equation}\label{EqFirmProfit}
-       \text{Real Profits} = A K_t^\alpha L_t^{1-\alpha} - r_t K_t - w_t L_t
+       \text{Real Profits} = A K_t^\alpha L_t^{1-\alpha} - (r_t + \delta)K_t - w_t L_t
     \end{equation}
+    As in the budget constraints \eqref{EqBC1}, \eqref{EqBC2}, and \eqref{EqBC3}, note that the price of the good has been normalized to one.
 
     Profit maximization results in the real wage $w_t$ and the real rental rate of capital $r_t$ being determined by the marginal products of labor and capital, respectively.
     \begin{align}
        w_t &= (1-\alpha)\frac{Y_t}{L_t} \quad \forall t \label{EqFOCwage}\\
-       r_t &= \alpha\frac{Y_t}{K_t} \quad\quad\quad\:\: \forall t \label{EqFOCrate}
+       r_t &= \alpha\frac{Y_t}{K_t} - \delta \quad\:\:\: \forall t \label{EqFOCrate}
     \end{align}
 
 
   \subsection{Market clearing and equilibrium}\label{SecMCandEqlbm}
 
-    Labor market clearing requires that aggregate labor demand $L_t$ measured in efficiency units equal the sum of individual efficiency labor supplied $e_j{s}l(s)$. The supply side of market clearing in the labor market is trivial because household labor is supplied inelastically. Capital market clearing requires that aggregate capital demand $K_t$ equal the sum of capital investment by households $b_{j,s,t}$. Aggregate consumption $C_t$ is defined in \eqref{EqAggrCons}, and investment is defined by the standard $Y = C + I$ constraint as shown in \eqref{EqMktClrGoods}.
+    Labor market clearing requires that aggregate labor demand $L_t$ measured in efficiency units equal the sum of individual efficiency labor supplied $e_j{s}l(s)$. The supply side of market clearing in the labor market is trivial because household labor is supplied inelastically. Capital market clearing requires that aggregate capital demand $K_t$ equal the sum of capital investment by households $b_{j,s,t}$. Aggregate consumption $C_t$ is defined as the sum of all individual consumptions, and investment is defined by the standard $Y = C + I$ constraint as shown in \eqref{EqMktClrGoods}.
     \begin{align}
       L_t &= \frac{1}{SJ}\sum_{s=1}^S\sum_{j=1}^{J} e_j(s)l(s) \quad\quad \forall t \label{EqMktClrLab} \\
       K_t &= \frac{1}{SJ}\sum_{s=1}^{S}\sum_{j=1}^{J}b_{j,s,t} \quad\quad\quad\quad \forall t \label{EqMktClrCap} \\
-      C_t &\equiv \frac{1}{SJ}\sum_{s=1}^{S}\sum_{j=1}^{J}c_{j,s,t} \quad\quad\quad\quad \forall t \label{EqAggrCons} \\
-      Y_t &= C_t + K_{t+1} - (1-\delta)K_t \quad\forall t \label{EqMktClrGoods}
+      \begin{split}
+        Y_t &= C_t + K_{t+1} - (1-\delta)K_t \quad\forall t \\
+        &\quad\text{where}\quad C_t \equiv \frac{1}{SJ}\sum_{s=1}^{S}\sum_{j=1}^{J}c_{j,s,t}
+      \end{split} \label{EqMktClrGoods}
     \end{align}
-
     The steady-state equilibrium for this economy is defined as follows.
 
     \vspace{7mm}
     \end{spacing}
     \hrule
     \begin{definition}[\textbf{Steady-state equilibrium}]\label{DefEquilSS}
-      A non-autarkic steady-state equilibrium in the overlapping generations model with $S$-period lived agents and heterogeneous ability $e_j(s)$ is defined as a constant distribution of capital
-       \begin{equation*}
-          \Gamma_t = \bar{\Gamma}=\bar{\gamma}(s,e,b) \quad \forall t,
-       \end{equation*}
-       a savings decision rule given beliefs $b' = \phi(s,e,b|\Omega)$, consumption allocations $c_{s,t}$ for all $s$ and $t$, aggregate firm production $Y_t$, aggregate labor demand $N_t$, aggregate capital demand $K_t$, real wage $w_t$, and real interest rate $r_t$ for all $t$ such that the following conditions hold:
+      A non-autarkic steady-state equilibrium in the overlapping generations model with $S$-period lived agents and heterogeneous ability $e_j(s)$ is defined as constant allocations $c_{j,s,t}=\bar{c}_{j,s}$ and $b_{j,s+1,t+1}=\bar{b}_{j,s+1}$ and constant prices $w_t=\bar{w}$ and $r_t=\bar{r}$ for all $j$, $s$, and $t$ such that the following conditions hold:
        \begin{enumerate}
-          \item households optimize according to \eqref{EqModelBorrowConstr}, \eqref{EqModelGenseqScons} and \eqref{EqModelGenIntertempEuler},
-          \item firms optimize according to \eqref{EqModelGenCobbDougRealWage} and \eqref{EqModelGenCobbDougRentRate},
-          \item markets clear according to \eqref{EqModelGenEquilLabMktClr}, \eqref{EqModelGenEquilCapMktClr}, and \eqref{EqModelGenEquilGoodMktClr},
-          \item and the steady-state distribution $\Gamma_t=\bar{\Gamma}$ is induced by the policy rule $b' = \phi(s,e,b|\Omega)$.
+          \item households optimize according to \eqref{EqSmaxprob}, \eqref{EqScons} and \eqref{EqIntertempEuler},
+          \item firms optimize according to \eqref{EqFOCwage} and \eqref{EqFOCrate}, and
+          \item markets clear according to \eqref{EqMktClrLab}, \eqref{EqMktClrCap}, and \eqref{EqMktClrGoods}.
        \end{enumerate}
     \end{definition}
     \hrule
     \begin{spacing}{1.5}
     \vspace{10mm}
 
-% \noindent Note that the steady-state rational expectations equilibrium definition has no constraint that beliefs be correct $\Gamma_{t+1} = \Gamma^e_{t+1} = \Omega(\Gamma_t)$. The steady-state assumption that $\Gamma_t = \Gamma_{t+1} = \bar{\Gamma}$ removes the need for beliefs about other households' actions because $\Gamma_{t+1}$ is known.
+    The steady-state equilibrium is characterized by the system of $J\times(S-1)$ equations and $J\times(S-1)$ unknowns $\bar{b}_{j,s+1}$ along with the individual borrowing constraints and aggregate borrowing constraint described in Appendix \ref{AppBorConstr}.
 
-% The steady-state rational expectations equilibrium is computed by guessing a steady-state distribution $\bar{\Gamma}_i$, where $i$ is the index of the guess, and finding the implied steady-state real wage and real interest rate $\bar{w}_i$ and $\bar{r}_i$.\footnote{\citet{Wendner:2004} provides an analytical proof for the existence and uniqueness of the steady-state rational expectations equilibrium.} The policy function for each individual can then be found by backward induction by first solving the age-$S-1$ savings problem for $b_S$ for all values of $b_{S-1}$ and $e_{S-1}$,
-% \begin{equation}\label{EqModelGenEquilSSEulerSm1}
-%    \begin{split}
-%       &\Bigl(\left[1+\bar{r}_i-\delta\right]b_{S-1} + \bar{w}_i e_{S-1}n(S-1) - b_S\Bigr)^{-\sigma} = ... \\
-%       &\quad\quad\quad\quad\quad\quad\quad\beta (1+\bar{r}_i-\delta)E\biggl[\Bigl(\left[1+\bar{r}_i-\delta\right]b_{S} + \bar{w}_i e_S n(S)\Bigr)^{-\sigma}\biggr]
-%    \end{split}
-% \end{equation}
-% and then using the solution for $b_S$ to solve the previous period problem for $b_{S-1}$.The process is repeated from the age $S-1$ Euler equation \eqref{EqModelGenEquilSSEulerSm1} backward to the age-1 Euler equation.
-% \begin{equation}\label{EqModelGenEquilSSEulerGen}
-%    \begin{split}
-%       &\Bigl(\left[1+\bar{r}_i-\delta\right]b_{s} + \bar{w}_i e_{s}n(s) - b_{s+1}\Bigr)^{-\sigma} = ... \\
-%       &\quad\quad\quad\quad\quad\quad \beta (1+\bar{r}_i-\delta)E\biggl[\Bigl(\left[1+\bar{r}_i-\delta\right]b_{s+1} + \bar{w}_i e_{s+1} n(s+1) - b_{s+2}\Bigr)^{-\sigma}\biggr] \\
-%       &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\text{for}\quad s\in\{S-2,S-3,...2,1\}
-%    \end{split}
-% \end{equation}
+    \begin{equation}\label{EqSSeuler}
+      \begin{split}
+        &\left(\bar{c}_{j,s}\right)^{-\sigma} = \beta \left(1+\bar{r}\right)\left(\bar{c}_{j,s+1}\right)^{-\sigma}, \quad 1\leq s\leq S-1 \\
+        &\quad\quad\quad\quad\quad\quad\quad\text{or} \\
+        &\Bigl([1+\bar{r}]\bar{b}_{j,s} + \bar{w}e_j(s)l(s) - \bar{b}_{j,s+1}\Bigr)^{-\sigma} = \\
+        &\quad\quad\quad\quad\quad \beta(1+\bar{r})\Bigl([1+\bar{r}]\bar{b}_{j,s+1} + \bar{w}e_j(s+1)l(s+1) - \bar{b}_{j,s+2}\Bigr)^{-\sigma}, \\
+        &\quad\quad\quad\quad\quad \text{for} \quad 1\leq s\leq S-1,\quad\text{where}\quad \bar{b}_{j,1},\bar{b}_{j,S+1} = 0 \quad\forall j
+      \end{split}
+    \end{equation}
 
-% Once a policy function is found $b' = \phi_i(s,e,b|\Omega)$ given the guess for the steady-state distribution of wealth $\bar{\Gamma}_i$ and the corresponding steady-state real wage $\bar{w}_i$ and real interest rate $\bar{r}_i$, the policy function can be used to check if the next period distribution of wealth $\bar{\Gamma}'_i$ is equal to the initial guess for the steady-state distribution of wealth $\bar{\Gamma}_i$. If they are equal, then $\bar{\Gamma} = \bar{\Gamma}_i = \bar{\Gamma}'_i$. If they are not equal, then choose another steady-state distribution that is a convex combination of the initial guess and the new implied distribution $\bar{\Gamma}_{i+1} = \rho\bar{\Gamma}'_i + (1-\rho)\bar{\Gamma}_i$ where $\rho\in(0,1)$.\footnote{A detailed description of the algorithm for computing the steady-state distribution is given in Appendix \ref{AppSSEqlbCompAlg}.}
+    In equilibrium, the steady-state real wage $\bar{w}$ and the steady-state real rental rate $\bar{r}$ are simply functions of the steady-state distribution of capital $\bar{b}_{j,s+1}$. This is clear from the steady-state version of the capital market clearing condition \eqref{EqMktClrCap} and the fact that aggregate labor supply is a function of the sum of exogenous efficiency units of labor in the labor market clearing condition \eqref{EqMktClrLab}. And the two firm first order conditions for the real wage $w_t$ \eqref{EqFOCwage} and real rental rate $r_t$ \eqref{EqFOCrate} are only functions of the aggregate capital stock $K_t$ and aggregate labor $L_t$. Appendix \ref{AppSSsolve} details how to solve for the steady-state equilibrium.
 
-% Figure \ref{FigSSsavdist} shows the computed steady-state equilibrium distribution of savings $\bar{\Gamma}$ over the life cycle for a particular calibration of the model parameters $[S,\beta,\sigma,\alpha,A,\delta] = [60,0.96,3,0.35,1,0]$ and computation parameter $\rho=0.2$. We assume that labor is supplied inelastically, and we calibrate the labor supply at each age to match the average labor supply reported by age in the CPS monthly survey.\footnote{A person's lifespan here is defined as the duration from the period they start working until the period they die. We ignore childhood. The exact calibration of $n(s)$ is reported in Appendix \ref{AppSSEqlbCompAlg}.} The steady-state aggregate capital stock shown in Figure \ref{FigSSsavdist} is $\bar{K}\left(\bar{\Gamma}\right) = 7.62$, and the steady-state equilibrium real wage and real interest rate are $\bar{w}\left(\bar{\Gamma}\right) = 1.43$ and $\bar{r}\left(\bar{\Gamma}\right) = 0.08$, respectively.
+    % Figure \ref{FigSSsavdist} shows the computed steady-state equilibrium distribution of savings $\bar{\Gamma}$ over the life cycle for a particular calibration of the model parameters $[S,\beta,\sigma,\alpha,A,\delta] = [60,0.96,3,0.35,1,0]$ and computation parameter $\rho=0.2$. We assume that labor is supplied inelastically, and we calibrate the labor supply at each age to match the average labor supply reported by age in the CPS monthly survey.\footnote{A person's lifespan here is defined as the duration from the period they start working until the period they die. We ignore childhood. The exact calibration of $n(s)$ is reported in Appendix \ref{AppSSEqlbCompAlg}.} The steady-state aggregate capital stock shown in Figure \ref{FigSSsavdist} is $\bar{K}\left(\bar{\Gamma}\right) = 7.62$, and the steady-state equilibrium real wage and real interest rate are $\bar{w}\left(\bar{\Gamma}\right) = 1.43$ and $\bar{r}\left(\bar{\Gamma}\right) = 0.08$, respectively.
 
-% \begin{figure}[htb]\centering \captionsetup{width=4.0in}
-%    \caption{\label{FigSSsavdist}\textbf{Steady-state distribution of savings $\mathbf{\bar{b}_s}$: $S=60$}}
-%    \fbox{\resizebox{4.0in}{3.2in}{\includegraphics{FigSSsavdist.pdf}}}
-% \end{figure}
+    % \begin{figure}[htb]\centering \captionsetup{width=4.0in}
+    %   \caption{\label{FigSSsavdist}\textbf{Steady-state distribution of savings $\mathbf{\bar{b}_s}$: $S=60$}}
+    %   \fbox{\resizebox{4.0in}{3.2in}{\includegraphics{FigSSsavdist.pdf}}}
+    % \end{figure}
 
 % Outside of the steady state, an age-$s$ household's intertemporal consumption decision in each period from \eqref{EqModelGenIntertempEuler} also depends on both the current period's distribution of capital $\Gamma_t$ and the expected value of next period's distribution of capital $\Gamma_{t+1}$. But $\Gamma_t \neq \Gamma_{t+1}$ in general outside of the steady state.
 
@@ -346,118 +331,9 @@
 % The equilibrium transition path overshoots the steady state and takes 60 periods to arrive at the new steady state because the initial state is so different from the new steady state. The initial state $K_1=5.45$ in the time path in Figure \ref{FigTPIpath} is 28 percent less than the steady-state aggregate capital stock level $\bar{K}=7.62$ to which it must converge. Also, the initial distribution of savings across household types $\Gamma_1$ as defined in Section \ref{SecModelGenHous} is very different from the steady-state distribution of savings across household types $\bar{\Gamma}$.\footnote{More specifically, we assumed a uniform initial distribution of savings across all types, which resulted in an initial aggregate capital stock of $K_1=5.45$. The steady-state distribution $\bar{\Gamma}$ that results in $\bar{K}=7.62$ is not uniform.}
 
 
-% \subsection{Relax rational expectations: Alternate model forecast}\label{SecSolMethsAMF}
-
-% We propose an alternative method for computing non-steady-state rational expectations transition paths in OLG life cycle models that we call the alternate model forecast (AMF) method. AMF relaxes the rational expectations requirement from part (i) of Definition \ref{DefModelGenEquilNonSS} that each agent knows the policy function of all other agents. Instead, AMF uses a weaker assumption that agents use some general alternative model to forecast in each period the transition path of the aggregate capital stock $\left\{K_u^f,w_u^f,r_u^f\right\}_{u=t}^{t+S}$ for the remaining periods of their lives, where the ``$f$" superscript represents forecast values. This forecasted series is then updated each period when the value of the capital stock next period is realized.
-
-% As discussed in the introduction, this relaxation of rational expectations of the AMF method can have two interpretations. The first interpretation is that the AMF solution method is solely a computational approximation of a the rational expectations equilibrium described in Definition \ref{DefModelGenEquilNonSS}. In this interpretation, the agents are assumed to have correct beliefs, but the computation is simplified by approximating those beliefs. The validity of this interpretation depends on how close the AMF approximation is to the TPI rational expectations time path. Section \ref{SecSolMethsComp} details the comparison of the TPI and AMF solution methods.
-
-% The other interpretation of the AMF method is to assume that the adaptive expectations implied by the approximation of beliefs are not an approximation but are rather a characterization of how individuals behave. Either interpretation can be valid, but the latter interpretation implies an adaptive expectations equilibrium different from the rational expectations equilibrium from Definition \ref{DefModelGenEquilNonSS}.
-
-% With respect to the rational expectations equilibrium time path, the approximation error in the AMF method comes from agents' beliefs about the future trajectory of the distribution of capital not being exactly correct, $\Gamma^e_{t+u}\neq\Gamma_{t+u}$ for all $u\geq 1$. But the size of the error is limited because beliefs are updated after each period as new information becomes available. In contrast to the benchmark TPI method from Section \ref{SecSolMethsTPI}, AMF is faster because the household decision rules only have to be computed for one transition path rather than iterating until beliefs equal the truth.
-
-% This approach of using a forecasting method from outside the model is analogous to the approach taken by \citet{KrusellSmith:1998}. They conjectured a law of motion for the moments of the distribution of wealth in an infinitely lived heterogeneous agent environment, and the moments determined the levels of the aggregate variables. They found that a simple log-linear law of motion was enough to closely approximate the benchmark rational expectations equilibrium.
-
-% The AMF method also has some of the flavor of the rational inattention concept of \citet{MankiwReis:2002} and \citet{Sims:2003} who justify relaxing the information burden of rational expectations on the grounds that agents update their information infrequently and agents have limited information-processing capacity. We use this type of assumption in the AMF method in order to streamline computation time. However, we find that the resulting equilbrium transition path has a very small approximation error relative to the benchmark TPI rational expectations transition path.
-
-% Let $\Omega_a(\cdot)$ represent the general form of the alternative model each agent uses to forecast the transition paths of the aggregate capital stock, real wage, and real rental rate $\{K_u^f,w_u^f,r_u^f\}_{u=t}^{t+S}$ which are functions of the distribution of capital $\Gamma_u$ at time $u$. Then let the forecast for the aggregate capital stock be generated by the following general alternative model:
-% \begin{equation}\label{EqSolMethsAMFAltModel}
-%    \Gamma_{t+u}^f = \Omega_a^u\left(\Gamma_t\right) \quad\text{s.t.}\quad \lim_{u\rightarrow\infty}\Omega^u\left(\Gamma_t\right) = \bar{\Gamma}
-% \end{equation}
-% where $w_{t+u}^f$ and $r_{t+u}^f$ are just functions of $K_{t+u}^f\bigl(\Omega_a^u(\Gamma_t)\bigr)$. The only condition that must be imposed on the alternative model is that the forecasts must go to the steady state in the limit $\lim_{u\rightarrow\infty} \Omega^u(\Gamma_t) = \bar{\Gamma}$. With $\left\{K_u^f,w_u^f,r_u^f\right\}_{u=t}^S$, each agent can choose their savings for the next period $b_{s+1,t+1}$ as well as planned savings levels $b_{s+u,t+u}^p$ for $u\in\{2,3,..S-s\}$ for the remaining periods of life given the forecasted transition path of the aggregate variables in the same way as described in equations \eqref{EqSolMethsTPIGenSmin1Euler} through \eqref{EqSolMethsTPIGen1Euler} in Section \ref{SecSolMethsTPI}. The ``$p$" superscript refers to a planned policy decision because that policy will likely change by the time the household needs to make that choice due to the updating of the forecast.
-
-% At the end of period $t$, the distribution of capital for the next period $\Gamma_{t+1}$ has been decided and implies an aggregate capital stock that is not equal to the forecasted capital stock $K_{t+1}\left(\Gamma_{t+1}\right) \neq K_{t+1}^f$, in general. With the new aggregate capital stock $K_{t+1}$, each agent repeats the process of forecasting the future values of the aggregate variables using the alternative model $\Omega_a(\cdot)$ until the transition path reaches the steady state in period $T$. Each distribution of capital $\Gamma_{t+u}$ calculated using the alternative model from \eqref{EqSolMethsAMFAltModel} and the corresponding time-$t$ allocations and prices in the computed equilibrium transition path $\left\{\mathbf{b}_t\right\}_{t=1}^T$ represents an alternate model forecast non-steady-state equilibrium transition path.
-
-% \vspace{7mm}
-% \end{spacing}
-% \hrule
-% \begin{definition}[\textbf{Alternate model forecast (AMF) equilibrium transition path of the distribution of capital}]\label{DefSolMethsAMF}
-%    Given some initial distribution of capital $\Gamma_1$ and a steady-state distribution of capital arrived at after $T$ periods $\Gamma_t = \bar{\Gamma}$ for $t\geq T$, the alternate model forecast (AMF) equilibrium transition path of the distribution of capital $\left\{\Gamma_t\right\}_{t=1}^T$ is defined as the individual distributions of capital $\Gamma_t$ calculated by forecasting future aggregate variables using the alternative forecasting model $\Omega_a(\cdot)$ specified in equation \eqref{EqSolMethsAMFAltModel} that is specified as follows:
-%    \begin{equation*}
-%       \Gamma_{t+1}^f = \Omega_a\left(\Gamma_t\right) \quad\Rightarrow\quad \Gamma_{t+u}^f = \Omega_a^u\left(\Gamma_t\right) \quad\text{s.t.}\quad \lim_{u\rightarrow\infty}\Omega^u\left(\Gamma_t\right) = \bar{\Gamma}
-%    \end{equation*}
-%    Each individual distribution of capital is calculated using the remaining life forecasts of aggregate variables $K_{t+u}^f$ according to equations \eqref{EqSolMethsTPIGenSmin1Euler} through \eqref{EqSolMethsTPIGen1Euler}.
-% \end{definition}
-% \hrule
-% \begin{spacing}{1.5}
-% \vspace{10mm}
-
-% Figure \ref{FigAMFpath} shows the AMF computed transition path of the aggregate capital stock using the same calibrated example from the steady-state computation in Section \ref{SecModelGenEquil}. To this point, the alternative model $\Omega_a(\cdot)$ has been generally specified. In practice, it could be a complex econometric model based on observed data, or it could be an extremely simple interpolation. We use a na\"{i}ve linear forecast between the current aggregate capital stock and the steady state to forecast the future aggregate capital stock,
-% \begin{equation}\label{EqSolMethsAMFAltModel}
-%    K_{t+1} = K_t + \frac{\bar{K}-K_t}{T-t}
-% \end{equation}
-% where $\bar{K}$ is the steady-state capital stock, $t$ is the current period, and $T$ is the period in which the economy has reached the steady state.\footnote{We tried this with a log-linear forecast between the current state and the steady state, similar to \citet{KrusellSmith:1998}, and the transition path was nearly identical to the one from Figure \ref{FigAMFpath} using the more na\"{i}ve linear forecast.} The AMF rule \eqref{EqSolMethsAMFAltModel} is simply a linear forecast between the current state $K_t$ and the steady state $\bar{K}$. The na\"{i}ve alternative model is conservative in that our computed approximation errors should represent an upper bound. A detailed outline of the computational algorithm is given in Appendix \ref{AppAMFpathCompAlg}.
-
-% \begin{figure}[htb]\centering \captionsetup{width=4.0in}
-%    \caption{\label{FigAMFpath}\textbf{AMF computed equilibrium transition path for aggregate capital stock $K_t$}}
-%    \fbox{\resizebox{4.0in}{3.2in}{\includegraphics{FigAMFpath.pdf}}}
-% \end{figure}
-
-% The AMF transition path is very close to the benchmark TPI transition path even though we use a na\"{i}ve alternative model to forecast future wage rates and interest rates.  In terms of mean percent deviation from the TPI path, the approximation error of the AMF path was only 0.7 percent. It took 4 hours, 50 minutes, and 9 seconds to compute the solution by the AMF method, which is roughly 15 percent of the TPI computation time.
 
 
-% \subsection{Comparison of solution methods and robustness}\label{SecSolMethsComp}
 
-% Because the AMF method is an approximation of the benchmark TPI method, the goal of this paper is to compare the AMF method to the TPI method in terms of both computing time and accuracy. The benchmark time path iteration (TPI) method for computing the non-steady-state equilibrium transition path of the distribution of capital is the exact rational expectations equilibrium concept. The alternate model forecast (AMF) method approximates the benchmark TPI method by using the alternative model $\Omega_a(\cdot)$ to forecast future aggregate variables rather than the TPI method's rational expectations requirement. In addition to comparing computation speed and accuracy for the calibration given previously, we show how these comparisons change with different calibrations.
-
-% Table \ref{TabSolMethCompTimes} shows the computation times and accuracy comparisons of the AMF method to the TPI method for Calibration 1 from Sections \ref{SecSolMethsTPI} and \ref{SecSolMethsAMF} that generated the transition paths in Figure \ref{FigAMFpath} as well as for two additional calibrations that differ in terms of initial states and degree of heterogeneity.
-
-% \begin{table}[htbp] \centering \captionsetup{width=4.6in}
-% \caption{\label{TabSolMethCompTimes}\textbf{Computation times and accuracy of TPI and AMF methods}}
-%     \begin{threeparttable}
-%     \begin{tabular}{>{\small}l >{\small}c >{\small}c >{\small}c >{\small}c}
-%         \hline\hline
-%         & \multicolumn{3}{c}{\small{Speed (hours)}} & MAPD from \\
-%         \cline{2-4}
-%         \multicolumn{1}{c}{\small{Calibration}} & TPI & AMF & \% reduction & TPI path \\
-%         \hline
-%         1 ($B=350$, $K_0=5.5$) & 32.0 & 4.8 & 84.9\% & 0.7\% \\
-%         2 ($B=200$, $K_0=5.5$) & 11.7 & 1.6 & 86.0\% & 0.6\% \\
-%         3 ($B=350$, $K_0=6.5$) & 32.0 & 5.0 & 84.5\% & 0.3\% \\
-%         \hline\hline
-%     \end{tabular}
-%     \begin{tablenotes}
-%         \scriptsize{\item[]All computations were performed using MatLab on a Dell PowerEdge 2950 with 8 Intel Xeon E5345 2.33GHz processor cores, 16 GB  of RAM, and 500 GB RAID hard drive.}
-%     \end{tablenotes}
-%     \end{threeparttable}
-% \end{table}
-
-% The accuracy and speed comparison for the example presented in Sections \ref{SecSolMethsTPI} and \ref{SecSolMethsAMF} are presented in the first line of Table \ref{TabSolMethCompTimes} as Calibration 1. The AMF method reduces the computation time from almost 32 hours to just under 5 hours, an 85\% reduction. To measure the approximation error of the AMF transition path from the benchmark TPI transition path shown in Figure \ref{FigAMFpath}, we use the mean absolute percent deviation (MAPD) of the AMF path from the TPI path over the first $\tau$ periods where $\tau=60$ in this case.
-% \begin{equation}\label{EqCompMPD}
-%    MAPD = \frac{1}{\tau}\sum_{t=1}^\tau\frac{|K_t^{AMF} - K_t^{TPI}|}{K_t^{TPI}}
-% \end{equation}
-% The approximation error in Calibration 1 is less than 1 percent (0.7\%).
-
-% In Calibration 2, we test the speed and accuracy of the AMF method in a version of the model with less heterogeneity. We use a basic simplification of reducing the grid points in the discretized continuum of possible wealth levels to $B=200$ with the same bounds. The computation times for both the TPI and AMF methods are less, and the speed reduction of the AMF method over the TPI method is about the same as the baseline calibration. The approximation error of the AMF method in Calibration 2 is a little bit smaller than that of the baseline calibration. Figure \ref{FigAMFpath2} shows the TPI and AMF transition paths for Calibration 2.
-
-% \begin{figure}[htb]\centering \captionsetup{width=4.0in}
-%    \caption{\label{FigAMFpath2}\textbf{TPI and AMF equilibrium transition paths for Calibration 2}}
-%    \fbox{\resizebox{4.0in}{3.2in}{\includegraphics{FigAMFpath2.pdf}}}
-% \end{figure}
-
-% In Calibration 3, we test the speed and accuracy of the AMF method in a version of the model with an initial state ($K_0=6.5$) that is closer to the steady state than in the baseline calibration. We keep the same number if grid points $B=350$ as in the baseline calibration. The computation times for both the TPI and AMF methods are comparable to the baseline calibration with a reduction in computation time of 84.5\%. The mean percent deviation of the AMF transition path is smaller than that of the TPI method in Calibration 3 as would be expected with an initial state that is closer to the steady state. Figure \ref{FigAMFpath3} shows the TPI and AMF transition paths for Calibration 3.
-
-% \begin{figure}[htb]\centering \captionsetup{width=4.0in}
-%    \caption{\label{FigAMFpath3}\textbf{TPI and AMF equilibrium transition paths for Calibration 3}}
-%    \fbox{\resizebox{4.0in}{3.2in}{\includegraphics{FigAMFpath3.pdf}}}
-% \end{figure}
-
-% In each calibration, the AMF method reduces computation times by about 85 percent, and the mean absolute percent deviations are less than 1 percent. It is important to note that the calibrations with the highest approximation error used an initial state that was relatively far away from the new steady state. In practice, most policy experiments study changes that imply a much smaller difference between the initial state and the new steady state. The results of this paper suggest that the approximation error of the AMF method will be significantly less than 1 percent in terms of mean percent deviation in more realistic policy experiments.
-
-
-% \section{Conclusion}\label{SecConclusion}
-
-% We propose a method for computing rational expectations equilibrium transition paths for OLG life cycle models that reduces computation time relative to the benchmark TPI method by 85 percent and has an approximation error of less than 1 percent. For our main calibration, the AMF method reduced the computation time from 32 hours to less than 5 hours.
-
-% The AMF method presented in this paper used extremely na\"{i}ve alternative models for forecasting future prices. When these models are actually taken to the data to perform policy experiments, more sophisticated alternative models could further reduce the approximation error without increasing computation time. For example, a VAR could be used to forecast future prices based on past observables in the data.
-
-% An obvious extension of our AMF method is to use it to calculate transition paths for infinite horizon models. \citet{KrusellSmith:1998} use a similar idea to estimate the parameters of a stationary equilibrium in an environment with infinitely lived heterogeneous agents. The AMF method extends this idea and could simplify the equilibrium transition path computation in this class of models.
-
-% Another characteristic common to the infinitely lived heterogenous agent models that is often missing in large OLG life cycle models is an uninsurable aggregate shock. A transition path in an environment with aggregate uncertainty would be a stochastic object and would require some notion of confidence intervals computed by simulation. Because each computation of a transition path by the benchmark TPI method can take more than a day, simulation of confidence intervals can be computationally impractical. The increased computational speed of the AMF method makes simulation more practical.\footnote{As an example, 1,000 simulations of the TPI transition path in main calibration presented in Section \ref{SecSolMethsTPI} would take 3.65 computer years. The same simulations would take only 0.55 computer years using the AMF method.}
-
-% Lastly, linearization methods are most commonly use for computing equilibrium solutions to dynamic general equilibrium models, but they have not been applied to OLG life cycle models with occasionally binding constraints. \citet{Uhlig:1999} and \citet{Christiano:2002} present the standard method of undetermined coefficients linearization method for these types of models. Computers are particularly well suited for dealing with linear systems, and few methods can match linearization in speed. However, both Christiano and Uhlig note that the method of undetermined coefficients only works in models in which there are no occasionally binding constraints.\footnote{\citet{ChristianoFisher:2000} detail a parameterized expectations algorithm for solving infinite horizon DSGE models with occasionally binding constraints. But it is not a linearization method.} Borrowing constraints are a leading example of occasionally binding constraints and are an important characteristic of OLG life cycle models. A linearization method for solving OLG life cycle models with occasionally binding constraints has the potential to increase computation speeds enough to easily simulate the models.
-
-% Much research has been dedicated to solution methods for DSGE models with infinitely lived agents. \citet{TaylorUhlig:1990} survey a number of papers dedicated to various solution methods to the nonlinear rational expectations stochastic growth model. More recently, \citet{AruobaVillaverdeRamirez:2006} compare perturbation methods, finite elements methods, Chebyshev polynomial approximation, and value function iteration solution methods on the stochastic neoclassical growth model. \citet{VillaverdeRamirez:2006} focus on the value of perturbation methods in solving the growth model. It is our hope that more efforts are dedicated to transition path solution methods for the valuable OLG life cycle model.
 
 
 \clearpage
@@ -473,11 +349,11 @@
 
 \section{Calibration of ability process}\label{AppAbilCalib}
 
-  The calibration of the ability process $e_j(s)$ is as follows.  First, the ability types themselves must be calibrated. For each age group $s \in S$, the hourly wage rates are sorted into $J$ percentile groups.  The ability type for each percentile group is the median wage for the percentile group, divided by the average wage of all individuals in the data set.  
+  The calibration of the ability process $e_j(s)$ is as follows.  First, the ability types themselves must be calibrated. For each age group $s \in S$, the hourly wage rates are sorted into $J$ percentile groups.  The ability type for each percentile group is the median wage for the percentile group, divided by the average wage of all individuals in the data set.
 
   The data used to calibrate the ability types were obtained from the Current Population Survey.\footnote{U.S. Census Bureau, Dataferret, Current Population Survey, 2014. The variables $PRTAGE$ and $PTERNHLY$ were used for the age and hourly wage rate of individuals, respectively. \\ [-2pt]} Individuals younger than 20 and older than 79 are dropped from the data. This is due to the extremely small amount of observations for ages outside of those bounds. The data was truncated to allow for either method. Due to a limited number of observations in the survey who included their hourly wage, data was taken from the months of January, February, March, April, and May 2014.  The ability types were then calculated for each month, and then an average was taken of the five calibrations of the ability types in order to produce a final calibration to be used in the model.
 
-  The ability types evolve according to a Markov process, which is altered depending on the specifications of the model.  An individual in period $s$ and of ability type $j$ faces a distribution which will determine in which ability type they fall in the period $s+1$.  In this paper, individuals are assigned ability types at the beginning of their life, and cannot change types later on.  This Markov process is simply an identity matrix for each age group.  
+  The ability types evolve according to a Markov process, which is altered depending on the specifications of the model.  An individual in period $s$ and of ability type $j$ faces a distribution which will determine in which ability type they fall in the period $s+1$.  In this paper, individuals are assigned ability types at the beginning of their life, and cannot change types later on.  This Markov process is simply an identity matrix for each age group.
 
   However, the model will readily accept a more complex Markov process.  The data used to create the Markov process comes from the Panel Study of Income Dynamics (PSID) for 1999 and 2001. \footnote{Panel Study of Income Dynamics, public use dataset. Produced and distributed by the Survey Research Center, Institute for Social Research, University of Michigan, Ann Arbor, MI (2014). The variables for age and wage in 1999 and age and wage in 2001 are $ER33504$, $ER33537O$, $ER33604$, and $ER33628O$, respectively.\\ [-2pt]} Again, since $S=60$, only individuals with ages 20 through 79 are included.  Wages in 1999 are multiplied by 1.06303 to convert them to 2001 wages. Individuals without wage information in both years are dropped. Due to the low number of observations per age group, one Markov process is generated which is applied to all age groups in the model. \cite{Nishiyama:2003} noted that this Markov transition matrix was reasonably consistent across age cohorts, and so using the same process for all cohorts should not present a problem in the model.
 
@@ -491,6 +367,8 @@
 \newpage
 \section{Constraints on individual borrowing}\label{AppBorConstr}
 
+  \setcounter{equation}{0}
+
   As described in Section \ref{SecIndProb}, individuals are allowed to borrow $b_{j,s,t}$ for some $j$ and $s$ in period $t$. However, two constraints must hold. First, the individual must be able to pay back the balance with interest $r_{t+1}$ in the next period without driving consumption in the next period $c_{j,s+1,t+1}$ to be nonpositive. Let $\bar{b}_{j,s,t}$ be the minimum value of savings in a period.
   \begin{equation}\label{EqSavMin}
     b_{j,s,t}\geq\bar{b}_{j,s,t} \quad\forall j,s,t
@@ -498,10 +376,10 @@
   Rearranging the bugdet constraints in \eqref{EqBC1}, \eqref{EqBC2}, and \eqref{EqBC3} and using backward induction gives the following expressions for $\bar{b}_{j,s,t}$,
   \begin{equation}\label{EqBorConsts}
     \begin{split}
-      \bar{b}_{j,S,t} &= \frac{\ve - w_te_j(S)l(S)}{1+r_t-\delta}  \\
-      \bar{b}_{j,S-1,t-1} &= \frac{\ve + \bar{b}_{j,S,t} - w_{t-1}e_j(S-1)l(S-1)}{1+r_{t-1}-\delta} \\
+      \bar{b}_{j,S,t} &= \frac{\ve - w_te_j(S)l(S)}{1+r_t}  \\
+      \bar{b}_{j,S-1,t-1} &= \frac{\ve + \bar{b}_{j,S,t} - w_{t-1}e_j(S-1)l(S-1)}{1+r_{t-1}} \\
       &\vdots \\
-      \bar{b}_{j,2,t-S+2} &= \frac{\ve + \bar{b}_{j,3,t-S+3} - w_{t-S+2}e_j(2)l(2)}{1+r_{t-S+2}-\delta}
+      \bar{b}_{j,2,t-S+2} &= \frac{\ve + \bar{b}_{j,3,t-S+3} - w_{t-S+2}e_j(2)l(2)}{1+r_{t-S+2}}
     \end{split}
   \end{equation}
 
@@ -511,60 +389,38 @@
   \end{equation}
 
 
+\newpage
+\section{Solving for steady-state equilibrium}\label{AppSSsolve}
 
-  % \newpage
-  % \section{Description of differences between OLG and infinite horizon models}\label{AppOLGvIH}
+  \setcounter{equation}{0}
 
-  % In this section, we describe the difference between the OLG model with idiosyncratic uncertainty and no aggregate uncertainty and its infinite horizon counterpart. \citet{Chatterjee:1994} and \citet{KrusellRiosRull:1999} show that infinite horizon models with standard period utility functions and only idiosyncratic uncertainty with no aggregate uncertainty exhibit an aggregation theorem. That is, the law of motion for the aggregate capital stock, which is a function of the entire distribution of capital among idiosyncratically heterogeneous households, can be derived as a function solely of aggregate variables in the current information set.
+  This section describes the solution method for the steady-state equilibrium described in Definition \ref{DefEquilSS}.
 
-  % This means that the infinite horizon analogue of our OLG model with idiosyncratic uncertainty has no need of adaptive expectations. Household beliefs about future interest rates and wages in the rational expectations infinite horizon model are simply a function of the aggregate capital stock in the current period. No alternate model forecast rule can be used here because the exact rational expectations law of motion can already be calculated with limited information.
-
-  % For this reason, we only use our AMF approximation solution method for the OLG model with idiosyncratic uncertainty. The aggregation theorem does not hold in the OLG model with only idiosyncratic uncertainty, because each agent type within each generation cannot perfectly smooth consumption over its lifetime. This is the reason that the fundamental welfare theorems of economics do not hold in OLG models, in general. It is also the reason that the aggregation theorem does not hold, and forecasts of the aggregate capital stock remain a function of the entire distribution of capital rather than just a summary statistic (the aggregate capital stock) in the current information set.
-
-  % For heterogeneous agent models with both idiosyncratic and aggregate uncertainty, other solution methods have been developed, such as \citet{KrusellSmith:1998}, \citet{KruegerKubler:2004}, and \citet{JuddMaliarMaliar:2011}. But the OLG model with only idiosyncratic uncertainty remains important for answering many economic questions. Therefore, solution methods for this class of models are relevant.
-
-
-  % \newpage
-  % \section{Computational algorithm for steady-state equilibrium}\label{AppSSEqlbCompAlg}
-  % \setcounter{equation}{0}   % reset equation counter
-  % \renewcommand\theenumi{\arabic{enumi}}
-  % \renewcommand\theenumii{\alph{enumii}}
-  % \renewcommand\theenumiii{\roman{enumiii}}
-
-  % The computation of the steady-state equilibrium described in Definition \ref{DefModelGenEquilSS} requires the following steps. The MatLab code for this steady-state computation is available upon request.
-  % \begin{enumerate}
-  %    \item Calibrate the exogenous parameters of the model $S$, $\beta$, $\sigma$, $\alpha$, $A$, $\delta$, the computation parameter $\rho$, the distribution of the ability shock $f_s(e)$, and the inelastic labor supply function as a function of age $n(s)$.
-  %       \begin{itemize}
-  %          \item We chose the parameter values $[S,\beta,\sigma,\alpha,\rho,A,\delta]=[60,0.96,3,0.35,0.2,1,0]$.
-  %          \item The inelastic labor supply function of age $n(s)$ was calibrated to match the average labor supply by age reported in the CPS monthly survey, where the maximum average hours worked is normalized to unity.
-  %             \begin{equation*}
-  %                n(s) = \begin{cases}
-  %                          \left[0.87,0.89,0.91,0.93,0.96,0.98\right] \quad\text{for}\quad 1\leq s\leq 6 \\
-  %                          1 \quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\,\text{for}\quad 7\leq s\leq 40 \\
-  %                         \bigl[0.95,0.89,0.84,0.79,0.73,0.68,0.63,0.57,0.52,... \\ \quad 0.47,0.40,0.33,0.26,0.19,0.12,0.11,0.11,0.10,0.10,0.09\bigr] \\
-  %                         \quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\:\:\:\text{for}\quad 41\leq s\leq 60
-  %                       \end{cases}
-  %             \end{equation*}
-  %          \item The discretized approximation of the ability shock is the following seven ability types $e_{s,t} \in\{0.1,0.5,0.8,1.0,1.2,1.5,1.9\}$ with a mass function $f_s(e) = \{0.04,0.09,0.20,0.34,0.20,0.09,0.04\}$ for all $s$. We could have just as easily made the probability distribution be conditional on $s$ but that does not increase the computation time.
-  %       \end{itemize}
-  %    \item Discretize the space of possible wealth levels into $B$ possible values such that $b\in\{b_1,b_2,...b_B\}$, where $b_1=0$ and $b_B<\infty$.
-  %       \begin{itemize}
-  %          \item We chose a discretized support of $B=350$ equally spaced points between $b_1=0$ and $b_B=15$.
-  %          \item Note that we have to impose a savings maximum constraint due to there being some states in which the household wants to save more than their current wealth level. Setting $b_{max}=15$ is high enough to minimize the number of states in which the upper bound binds. The smoothness of Figure \ref{FigSSsavdist} at its peak shows that the upper bound creates a minimal distortion.
-  %       \end{itemize}
-  %    \item Choose an arbitrary initial guess for the steady-state distribution of wealth $\bar{\Gamma}_0 = \bar{\gamma}_0(s,e,b)$ such that $\bar{\gamma}_0(s,e,b)\in[0,1]$ and $\sum_s\sum_e\sum_b\bar{\gamma}_0(s,e,b)=1$.
-  %       \begin{itemize}
-  %          \item Our initial guess was simply the distribution across abilities by age spread across each possible wealth level $\gamma_0(s,e,b) = f_s(e)/\left[(S-1)B\right]$ for all $s$, $e$, and $b$.
-  %       \end{itemize}
-  %    \item Use $\bar{\Gamma}_0$ to calculate steady-state values for $\bar{K}_0$, $\bar{Y}_0$, $\bar{r}_0$ and $\bar{w}_0$ using equations \eqref{EqModelGenCobbDougProd}, \eqref{EqModelGenCobbDougRealWage}, \eqref{EqModelGenCobbDougRentRate}, \eqref{EqModelGenEquilLabMktClr}, and \eqref{EqModelGenEquilCapMktClr}.
-  %    \item Taking $\bar{r}_0$ and $\bar{w}_0$ as given each period, solve for the optimal policy rule of each agent $b'=\phi(s,e,b|\Omega)$ by backward induction.
-  %    \item Use $b'=\phi(s,e,b|\Omega)$ and $\bar{\Gamma}_0$ to calculate the distribution of wealth in the next period $\bar{\Gamma}'_0$.
-  %    \item Generate a new guess for the steady-state distribution of wealth $\bar{\Gamma}_1$ as a convex combination of the two distributions from the previous step $\bar{\Gamma}_1 = \rho\bar{\Gamma}'_0 + (1-\rho)\bar{\Gamma}_0$, where $\rho\in(0,1)$.
-  %    \item Repeat steps (4) through (7) until the distance between $\bar{\Gamma}_i$ and $\bar{\Gamma}'_i$ is arbitrarily close to zero, where $i$ is the index of the iteration number. Let $|\cdot|$ be the sup norm and let $\ve>0$ be some scalar arbitrarily close to zero. Then the steady state $\bar{\Gamma}$ is found when $\left|\bar{\Gamma}_i - \bar{\Gamma}'_i\right| < \ve$.
-  % \end{enumerate}
-
-  % In our example, the computation of the steady-state equilibrium took 3 hours, 5 minutes, and 25 seconds. Figure \ref{FigSSsavdist} shows the steady-state aggregate capital stock $\bar{K}$ and the average wealth $\bar{b}_s$ as a function of age $s$.
-
+  \begin{enumerate}
+    \item Choose an initial guess for the steady-state distribution of capital $\bar{b}_{j,s+1}$ for all $j$ and $s=1,2,...S-1$.
+      \begin{itemize}
+        \item choose some small positive number that is strictly less that is small enough to be less than the minimum income that an individual might have $\bar{w}e_j(s)l(s)$.
+      \end{itemize}
+    \item Perform an unconstrained root finder that chooses $\bar{b}_{j,s+1}$ that solves the $J\times(S-1)$ steady-state Euler equations \eqref{EqSSeuler}.
+    \item Make sure none of the implied steady-state consumptions $\bar{c}_{j,s,t}$ is less-than-or-equal-to zero.
+      \begin{itemize}
+        \item If one consumption is less-than-or-equal-to zero $\bar{c}_{j,s}\leq 0$, then try different starting values.
+        \item If that does not work, then we must perform the root finding operation as a constrained minimization problem that puts a maximum value on $\bar{b}_{j,s+1}$.
+      \end{itemize}
+    \item Make sure that none of the Euler errors is too large in absolute value. A steady-state Euler error is the following, which is supposed to be close to zero for all $j$ and $s=1,2,...S-1$:
+      \begin{equation}\label{EqSSeulerr}
+        \frac{\beta \left(1+\bar{r}\right)\left(\bar{c}_{j,s+1}\right)^{-\sigma}}{\left(\bar{c}_{j,s}\right)^{-\sigma}} - 1
+      \end{equation}
+    \item Make sure that the unconstrained solution satisfies the individual borrowing constraints in \eqref{EqSavMin} and \eqref{EqBorConsts}.
+      \begin{itemize}
+        \item If any individual's borrowing constraint is not satisfied using the unconstrained root finding operation, rerun the root finding operation in step (ii) as a constrained minimization problem with the borrowing constraints imposed on those individuals.
+        \item Repeat steps (ii) through (v) until all the individual borrowing constraints are met.
+      \end{itemize}
+    \item Make sure that the solution satisfies the aggregate borrowing constraint \eqref{EqAggrCapConstr}.
+      \begin{itemize}
+        \item If it does not, what is the least distortionary upward adjustment to individual steady-state savings $\bar{b}_{j,s+1}$?
+      \end{itemize}
+  \end{enumerate}
 
   % \newpage
   % \section{Computational algorithm for TPI transition path}\label{AppTPIpathCompAlg}
@@ -622,38 +478,6 @@
   % In our example, the computation of the TPI transition path took 31 hours, 59 minutes, and 39 seconds. Figure \ref{FigTPIpath} shows the transition path of the aggregate capital stock from its initial state at $K_1$ to the steady state $\bar{K}$. The aggregate capital stock arrived at its steady state in about 60 periods.
 
   % \clearpage
-
-
-  % \newpage
-  % \section{Computational algorithm for AMF transition path}\label{AppAMFpathCompAlg}
-  % \setcounter{equation}{0}   % reset equation counter
-  % \renewcommand\theenumi{\arabic{enumi}}
-  % \renewcommand\theenumii{\alph{enumii}}
-  % \renewcommand\theenumiii{\roman{enumiii}}
-
-  % The computation of the alternate model forecast (AMF) transition path described in Definition \ref{DefSolMethsAMF} requires the following steps. The MatLab code for this AMF transition path computation is available upon request.
-  % \begin{enumerate}
-  %    \item Conjecture an alternative model forecast method $\Omega_a$.
-  %       \begin{itemize}
-  %          \item We use a linear trend from the current state $K_t$ to the steady state $\bar{K}$.
-  %             \begin{equation}\tag{\ref{EqSolMethsAMFAltModel}}
-  %                K_{t+1} = \Omega_a\left(K_t\right) \quad\Rightarrow\quad K_{t+1} = K_t + \frac{\bar{K}-K_t}{T-t}
-  %             \end{equation}
-  %          \item Our specific alternative model is written as a law of motion for the aggregate capital stock, but it implies a law of motion for the average wealth. From \eqref{EqModelGenEquilCapMktClr} we know that aggregate capital $K_t$ is just a function of the average wealth.
-  %             \begin{equation}\label{EqAppAMFpathCompAlgKavgB}
-  %                K_t = \frac{S-1}{S}\bar{b}_t
-  %             \end{equation}
-  %          So the alternative model $\Omega_a$ implies a similar linear law of motion for the moments by combining \eqref{EqSolMethsAMFAltModel} with \eqref{EqAppAMFpathCompAlgKavgB}.
-  %             \begin{equation}\label{EqAppAMFpathCompAlgAltModelB}
-  %                \bar{b}_{t+1} = \Omega_a\left(\bar{b}_t\right) \quad\Rightarrow\quad \bar{b}_{t+1} = \bar{b}_t + \frac{\bar{b}_{ss}-\bar{b}_t}{T-t}
-  %             \end{equation}
-  %       \end{itemize}
-  %    \item Solve the lifetime savings policy functions $\phi(s,e,b)$ for each agent alive at time $t$ by backward induction using the alternate model forecast method \eqref{EqSolMethsAMFAltModel} to obtain the forecasted series of prices over those lifetimes. (This step is the same as step 4 in Appendix \ref{AppTPIpathCompAlg}.)
-  %    \item Use the complete set of policy functions for the current period in order to calculate the next period's distribution of wealth $\Gamma_{t+1}$ and the corresponding aggregate capital stock $K_{t+1}$.
-  %    \item Repeat this process until the distribution of wealth $\Gamma_T$ and the aggregate capital stock $K_T$ have been computed for time $T$. Make sure that $\Gamma_T = \bar{\Gamma}$ and $K_T = \bar{K}$.
-  % \end{enumerate}
-
-  % In our example, the computation of the AMF transition path took 4 hours, 50 minutes, and 9 seconds. Figure \ref{FigAMFpath} shows the transition path of the aggregate capital stock from its initial state at $K_1$ to the steady state $\bar{K}$ as compared to the benchmark TPI transition path. The aggregate capital stock arrived at its steady state in about 60 periods.
 
 
 \newpage
