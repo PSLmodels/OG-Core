@@ -106,7 +106,7 @@ Kss = np.array([0]+list(Kss))
 domain = np.linspace(0,S,S)
 
 plt.plot(domain, Kss, label="Distribution of Capital")
-plt.plot(np.arange(S), Kss.mean() * np.ones(S), 'k--', label="Steady State")
+plt.plot(np.arange(S+1), Kss.mean() * np.ones(S+1), 'k--', label="Steady State")
 plt.title("Distribution of capital across age cohorts")
 plt.legend(loc=0)
 plt.show()

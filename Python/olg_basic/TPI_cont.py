@@ -114,17 +114,19 @@ def Euler_Error(K_guess, winit, rinit, i):
     K2 = K_guess
     K3 = np.array(list(K_guess[1:,:]) + list(np.zeros(J).reshape((1,J))))
 
-    w1 = winit[i:i+S-1].reshape(S-1,1)
-    w2 = winit[i+1:i+S].reshape(S-1,1)
+    length = K_guess.shape[0]
 
-    r1 = rinit[i:i+S-1].reshape(S-1,1)
-    r2 = rinit[i+1:i+S].reshape(S-1,1)
+    w1 = winit[i:i+length].reshape(length,1)
+    w2 = winit[i+1:i+1+length].reshape(length,1)
 
-    n1 = n[:-1].reshape((S-1,1))
-    n2 = n[1:].reshape((S-1,1))
+    r1 = rinit[i:i+length].reshape(length,1)
+    r2 = rinit[i+1:i+1+length].reshape(length,1)
+
+    n1 = n[-(length+1):-1].reshape((length,1))
+    n2 = n[-length:].reshape((length,1))
 
     error = MUc((1 + r1)*K1 + w1 * e[:-1,:] * n1 - K2) \
-    - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*(e[1:,:].dot(f[1:,:,:])[:,0,:])*n2 - K3)
+    - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*(e[1:,:].reshape(S-1,J,1)*f[1:,:,:]).sum(2)*n2 - K3)
 
     return error.flatten()
 
@@ -141,6 +143,10 @@ TPImindist = 3.0*10**(-6)
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat = np.zeros((T+S, S-1))
+    for j in xrange(S-2): # Upper triangle
+        K_vec = opt.fsolve(Euler_Error, Kssmat.reshape(S-1,J)[-(j+2):,:], args=(winit, rinit, 0))
+        K_vec = (K_vec.reshape(j+2,J)).mean(1)
+        K_mat[:S,:] += np.diag(K_vec, S-(j+1))
     for i in xrange(T):
         K_vec = opt.fsolve(Euler_Error, Kssmat.reshape(S-1,J), args=(winit, rinit, i))
         K_vec = (K_vec.reshape(S-1, J)).mean(1)
