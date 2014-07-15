@@ -81,6 +81,7 @@ K0      = initial aggregate capital stock
 
 T = 60
 K0 = .9*Kss
+initial = 0.9*Kssvec[1:]
 
 '''
 ------------------------------------------------------------------------
@@ -106,27 +107,31 @@ def MUc(c):
 
     return c**(-sigma)
 
-def Euler_Error(K_guess, winit, rinit, i):
-
-    K_guess = K_guess.reshape((S-1, J))
+def Euler_Error(K_guess, winit, rinit, t):
+    length = len(K_guess)/J
+    K_guess = K_guess.reshape((length, J))
     
-    K1 = np.array(list(np.zeros(J).reshape((1,J))) + list(K_guess[:-1,:]))
+    if length==S-1:
+        K1 = np.array(list(np.zeros(J).reshape((1,J))) + list(K_guess[:-1,:]))
+    else:
+        K1 = np.array(list((.9*Kssmat.reshape(S-1,J)[-(j+2),:]).reshape(1,J)) + list(K_guess[:-1,:]))
     K2 = K_guess
     K3 = np.array(list(K_guess[1:,:]) + list(np.zeros(J).reshape((1,J))))
 
-    length = K_guess.shape[0]
+    w1 = winit[t:t+length].reshape(length,1)
+    w2 = winit[t+1:t+1+length].reshape(length,1)
 
-    w1 = winit[i:i+length].reshape(length,1)
-    w2 = winit[i+1:i+1+length].reshape(length,1)
+    r1 = rinit[t:t+length].reshape(length,1)
+    r2 = rinit[t+1:t+1+length].reshape(length,1)
 
-    r1 = rinit[i:i+length].reshape(length,1)
-    r2 = rinit[i+1:i+1+length].reshape(length,1)
+    n1 = n[-(length+1):-1].reshape(length,1)
+    n2 = n[-length:].reshape(length,1)
 
-    n1 = n[-(length+1):-1].reshape((length,1))
-    n2 = n[-length:].reshape((length,1))
+    e1 = e[-(length+1):-1,:].reshape((length,J))
+    e2 = e[-length:,:].reshape((length,J))
 
-    error = MUc((1 + r1)*K1 + w1 * e[:-1,:] * n1 - K2) \
-    - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*(e[1:,:].reshape(S-1,J,1)*f[1:,:,:]).sum(2)*n2 - K3)
+    error = MUc((1 + r1)*K1 + w1 * e1 * n1 - K2) \
+    - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*(e2.reshape(length,J,1)*f[-length:,:,:]).sum(2)*n2 - K3)
 
     return error.flatten()
 
@@ -144,14 +149,16 @@ TPImindist = 3.0*10**(-6)
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat = np.zeros((T+S, S-1))
     for j in xrange(S-2): # Upper triangle
-        K_vec = opt.fsolve(Euler_Error, Kssmat.reshape(S-1,J)[-(j+2):,:], args=(winit, rinit, 0))
+        K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J)[-(j+2):,:], args=(winit, rinit, 0))
         K_vec = (K_vec.reshape(j+2,J)).mean(1)
-        K_mat[:S,:] += np.diag(K_vec, S-(j+1))
-    for i in xrange(T):
-        K_vec = opt.fsolve(Euler_Error, Kssmat.reshape(S-1,J), args=(winit, rinit, i))
+        K_mat[1:S,:] += np.diag(K_vec, S-(j+3))
+        
+    for t in xrange(T):
+        K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J), args=(winit, rinit, t))
         K_vec = (K_vec.reshape(S-1, J)).mean(1)
-        K_mat[i:i+S-1, :] += np.diag(K_vec)
-    K_mat[0,:] = .9*Kssvec[1:]
+        K_mat[t:t+S-1, :] += np.diag(K_vec)
+        
+    K_mat[0,:] = initial
     Knew = K_mat[:T,:].mean(1)
     TPIiter += 1
     TPIdist = (np.abs(Knew - Kinit[:T])).max()
@@ -162,6 +169,15 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     Yinit = np.array(list(A*((Kinit**alpha) * (Ninit**(1-alpha)))) + list(np.ones(S)*Yss))
     winit = np.array(list((1-alpha) * (Yinit[:T]/Ninit)) + list(np.ones(S)*wss))
     rinit = np.array(list(alpha * (Yinit[:T]/Kinit) - delta) + list(np.ones(S)*rss))
+    plt.figure(5)
+    plt.plot(
+        np.arange(T), Kinit, 'b', linewidth=2, label="Capital Path")
+    plt.xlabel("Time")
+    plt.ylabel("Aggregate Capital")
+    plt.title("Time Path of Capital Stock")
+    plt.axhline(y=Kss, color='black', linewidth=2, label="Steady State", ls='--')
+    plt.legend(loc=0)
+    plt.savefig("TPI")
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
 
