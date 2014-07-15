@@ -47,13 +47,13 @@ f     = S x J x J matrix of age dependent discrete probability mass
 '''
 
 starttime = time.time()
-S = 10
+S = 60
 J = 7
 beta = .96 ** (60.0 / S)
-sigma = 3
+sigma = 3.0
 alpha = .35
 rho = .50
-A = 1
+A = 1.0
 delta = 1 - (0.95 ** (60.0 / S))
 xi = 3.0
 eta = .5
@@ -124,8 +124,8 @@ def MUc(c):
 
     Returns:    Marginal Utility of Consumption
     """
-
-    return c**(-sigma)
+    output = c**(-sigma)
+    return output
 
 
 def MUl(l):
@@ -135,8 +135,8 @@ def MUl(l):
 
     Returns:    Marginal Utility of Labor
     """
-
-    return - eta * (l ** (-xi))
+    output = - eta * (l ** (-xi))
+    return output
 
 
 def Steady_State(guesses):
@@ -148,11 +148,15 @@ def Steady_State(guesses):
     Returns:    Array of S-1 Euler equation errors
     """
     K_guess = guesses[0: (S-1) * J]
-    N_guess = guesses[(S-1) * J:]
     K_guess = K_guess.reshape((S-1, J))
-    N_guess = N_guess.reshape((S, J))
     K = K_guess.mean()
-    N = (f * (e*N_guess).reshape(S, J, 1)).mean()
+    
+    # Labor Leisure only:
+    # N_guess = guesses[(S-1) * J:]
+    # N_guess = N_guess.reshape((S, J))
+    # N = (f * (e*N_guess).reshape(S, J, 1)).mean()
+
+    N = get_N(f, e, n)
     Y = get_Y(K, N)
     w = get_w(Y, N)
     r = get_r(Y, K)
@@ -164,35 +168,48 @@ def Steady_State(guesses):
     K1_2 = np.array(list(np.zeros(J).reshape((1, J))) + list(K_guess))
     K2_2 = np.array(list(K_guess) + list(np.zeros(J).reshape((1, J))))
 
-    error1 = MUc((1 + r)*K1 + w * e[:-1, :] * N_guess[:-1, :] - K2) - beta * (1 + r)*MUc(
+    error_onlycapital = MUc((1 + r)*K1 + w * e[:-1, :] * n[:-1].reshape(S-1, 1) - K2) - beta * (1 + r)*MUc(
         (1 + r)*K2 + w * (e[1:, :].reshape(S-1, J, 1) * f[
-            1:, :, :]).sum(axis=2) * N_guess[1:, :] - K3)
-    error2 = MUc((1 + r)*K1_2 + w * e * N_guess - K2_2) * w * e + MUl(N_guess)
+            1:, :, :]).sum(axis=2) * n[1:].reshape(S-1, 1) - K3)
+
+    # Labor Leisure only:
+    # error1 = MUc((1 + r)*K1 + w * e[:-1, :] * N_guess[:-1, :] - K2) - beta * (1 + r)*MUc(
+    #     (1 + r)*K2 + w * (e[1:, :].reshape(S-1, J, 1) * f[
+    #         1:, :, :]).sum(axis=2) * N_guess[1:, :] - K3)
+    # error2 = MUc((1 + r)*K1_2 + w * e * N_guess - K2_2) * w * e + MUl(N_guess)
 
     # if (((1 + r)*K1_2 + w * e * N_guess - K2_2) <= 0).any():
     #     error1 += 10000
     # if (N_guess < 0.0).any() or (N_guess>3.0).any():
     #     error2 += 10000
 
-    error1, error2 = abs(error1.flatten()), abs(error2.flatten())
-    return np.array(list(error1) + list(error2))
+    # Labor Leisure only:
+    # error1, error2 = error1.flatten(), error2.flatten()
+    # return np.array(list(error1) + list(error2))
+
+    return error_onlycapital.flatten()
 
 K_guess = np.ones((S-1, J)) / ((S-1) * J)
-# K_guess = np.ones((S-1,J))*0.5
-N_guess = np.ones((S, J)) / (S*J)
-# N_guess = np.tile(n.reshape(S,1),(1,J))
+N_guess = np.ones((S, J)) * .5
 guesses = np.array(list(K_guess.flatten()) + list(N_guess.flatten()))
-solutions = opt.fsolve(Steady_State, guesses, xtol=1e-5)
+solutions = opt.fsolve(Steady_State, K_guess, xtol=1e-9)
+
+# Solvers for large matrices
 # solutions = newton_krylov(Steady_State, guesses, method='gmres')
 # solutions = anderson(Steady_State, guesses)
+
 Kssmat = solutions[0:(S-1) * J]
 Kssvec = Kssmat.reshape((S-1, J)).mean(1)
 Kssvec = np.array([0]+list(Kssvec))
 Kss = Kssvec.mean()
 print "Kss:", Kss
-Nssmat = solutions[(S-1) * J:]
-Nssvec = Nssmat.reshape((S, J)).mean(1)
-Nss = Nssvec.mean()
+
+# Labor Leisure only
+# Nssmat = solutions[(S-1) * J:]
+# Nssvec = Nssmat.reshape((S, J)).mean(1)
+# Nss = Nssvec.mean()
+
+Nss = get_N(f, e, n)
 print "Nss:", Nss
 Yss = get_Y(Kss, Nss)
 print "Yss:", Yss
