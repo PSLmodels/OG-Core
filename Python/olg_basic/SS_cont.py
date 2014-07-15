@@ -21,6 +21,8 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import time
 import scipy.optimize as opt
+from scipy.optimize import newton_krylov
+from scipy.optimize import anderson
 import pickle
 
 '''
@@ -45,7 +47,7 @@ f     = S x J x J matrix of age dependent discrete probability mass
 '''
 
 starttime = time.time()
-S = 60
+S = 10
 J = 7
 beta = .96 ** (60.0 / S)
 sigma = 3
@@ -150,7 +152,7 @@ def Steady_State(guesses):
     K_guess = K_guess.reshape((S-1, J))
     N_guess = N_guess.reshape((S, J))
     K = K_guess.mean()
-    N = (e*N_guess).mean()
+    N = (f * (e*N_guess).reshape(S, J, 1)).mean()
     Y = get_Y(K, N)
     w = get_w(Y, N)
     r = get_r(Y, K)
@@ -166,7 +168,7 @@ def Steady_State(guesses):
         (1 + r)*K2 + w * (e[1:, :].reshape(S-1, J, 1) * f[
             1:, :, :]).sum(axis=2) * N_guess[1:, :] - K3)
     error2 = MUc((1 + r)*K1_2 + w * e * N_guess - K2_2) * w * e + MUl(N_guess)
-    
+
     # if (((1 + r)*K1_2 + w * e * N_guess - K2_2) <= 0).any():
     #     error1 += 10000
     # if (N_guess < 0.0).any() or (N_guess>3.0).any():
@@ -177,25 +179,27 @@ def Steady_State(guesses):
 
 K_guess = np.ones((S-1, J)) / ((S-1) * J)
 # K_guess = np.ones((S-1,J))*0.5
-N_guess = np.ones((S, J))/(S*J)
+N_guess = np.ones((S, J)) / (S*J)
 # N_guess = np.tile(n.reshape(S,1),(1,J))
-guesses = np.array(list(K_guess) + list(N_guess))
+guesses = np.array(list(K_guess.flatten()) + list(N_guess.flatten()))
 solutions = opt.fsolve(Steady_State, guesses, xtol=1e-5)
+# solutions = newton_krylov(Steady_State, guesses, method='gmres')
+# solutions = anderson(Steady_State, guesses)
 Kssmat = solutions[0:(S-1) * J]
 Kssvec = Kssmat.reshape((S-1, J)).mean(1)
 Kssvec = np.array([0]+list(Kssvec))
 Kss = Kssvec.mean()
-print "Kss:",Kss
+print "Kss:", Kss
 Nssmat = solutions[(S-1) * J:]
 Nssvec = Nssmat.reshape((S, J)).mean(1)
 Nss = Nssvec.mean()
-print "Nss:",Nss
+print "Nss:", Nss
 Yss = get_Y(Kss, Nss)
-print "Yss:",Yss
+print "Yss:", Yss
 wss = get_w(Yss, Nss)
-print "wss:",wss
+print "wss:", wss
 rss = get_r(Yss, Kss)
-print "rss:",rss
+print "rss:", rss
 
 runtime = time.time() - starttime
 hours = runtime / 3600
@@ -204,7 +208,7 @@ seconds = runtime % 60
 print 'Finding the steady state took %.0f hours, %.0f minutes, and %.0f \
 seconds.' % (abs(hours - .5), abs(minutes - .5), seconds)
 
-if Kss > 100 or Kss < .1:
+if Kss > 20 or Kss < .1:
     print 'And it was wrong.'
 
 '''
