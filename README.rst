@@ -10,5 +10,7 @@ This paper details the dynamic model.
 
 Contributors
 ============
-- Rick Evans
+- Richard W. Evans
 - Kerk Phillips
+- Evan Magnusson
+- Isaac Swift
