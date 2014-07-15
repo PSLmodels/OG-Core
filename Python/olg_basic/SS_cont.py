@@ -167,16 +167,16 @@ def Steady_State(guesses):
             1:, :, :]).sum(axis=2) * N_guess[1:, :] - K3)
     error2 = MUc((1 + r)*K1_2 + w * e * N_guess - K2_2) * w * e + MUl(N_guess)
     
-    if (((1 + r)*K1_2 + w * e * N_guess - K2_2) <= 0).any():
-        error1 += 10000
-    if (N_guess < 0.0).any() or (N_guess>3.0).any():
-        error2 += 10000
+    # if (((1 + r)*K1_2 + w * e * N_guess - K2_2) <= 0).any():
+    #     error1 += 10000
+    # if (N_guess < 0.0).any() or (N_guess>3.0).any():
+    #     error2 += 10000
 
     error1, error2 = abs(error1.flatten()), abs(error2.flatten())
     return np.array(list(error1) + list(error2))
 
-# K_guess = np.ones((S-1, J)) / ((S-1) * J)
-K_guess = np.ones((S-1,J))*0.5
+K_guess = np.ones((S-1, J)) / ((S-1) * J)
+# K_guess = np.ones((S-1,J))*0.5
 N_guess = np.ones((S, J))/(S*J)
 # N_guess = np.tile(n.reshape(S,1),(1,J))
 guesses = np.array(list(K_guess) + list(N_guess))
