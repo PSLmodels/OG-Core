@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 7/9/2014
+Last updated 7/15/2014
 Python version of Evans/Philips 2014 paper
 
 This program solves for transition path of the distribution of wealth
@@ -180,7 +180,7 @@ TPIdist = 10
 TPImindist = 3.0*10**(-6)
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-    K_mat = np.ones((T+S, S-1, J))*2.0
+    K_mat = np.ones((T+S, S-1, J))* 2.0
     # for j in xrange(S-2): # Upper triangle
     #     K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J)[-(j+2):,:], args=(winit, rinit, 0))
     #     K_vec = (K_vec.reshape(j+2,J)).mean(1)
@@ -191,7 +191,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     #     K_vec = (K_vec.reshape(S-1, J)).mean(1)
     #     K_mat[t:t+S-1, :] += np.diag(K_vec)
         
-    K_mat[1:,:,:] = opt.newton_krylov(zero_func, K_mat[1:,:,:])
+    K_mat[1:,:,:] = opt.newton_krylov(zero_func, K_mat[1:,:,:], verbose=1)
 
     K_mat[0,:, :] = Kssmat.reshape(S-1,J)
     Knew = K_mat[:T,:,:].mean(1).mean(1)

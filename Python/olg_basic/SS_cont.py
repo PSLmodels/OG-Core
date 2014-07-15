@@ -177,13 +177,12 @@ def Euler2(w, r, e, N_guess, K1_2, K2_2):
 
 
 def Steady_State(guesses):
-
-    """
+    '''
     Parameters: Steady state distribution of capital guess as array
                 size S-1
 
     Returns:    Array of S-1 Euler equation errors
-    """
+    '''
     K_guess = guesses[0: (S-1) * J]
     K_guess = K_guess.reshape((S-1, J))
     K = K_guess.mean()
@@ -232,8 +231,8 @@ solutions = opt.fsolve(Steady_State, K_guess, xtol=1e-9)
 # solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9)
 
 # Solvers for large matrices
-# solutions = newton_krylov(Steady_State, guesses, method='gmres')
-# solutions = anderson(Steady_State, guesses)
+# solutions = newton_krylov(Steady_State, guesses, method='gmres', verbose=1)
+# solutions = anderson(Steady_State, guesses, verbose=1)
 
 Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
 Kssvec = Kssmat.mean(1)
@@ -315,9 +314,8 @@ k3 = np.array(list(Kssmat[1:, :]) + list(np.zeros(J).reshape((1, J))))
 euler_justcapital = Euler_justcapital(wss, rss, f, e, n, k1, k2, k3)
 
 # labor Leisure Only:
-k1_2 = np.array(list(np.zeros(J).reshape((1, J))) + list(Kssmat))
-k2_2 = np.array(list(Kssmat) + list(np.zeros(J).reshape((1, J))))
-
+# k1_2 = np.array(list(np.zeros(J).reshape((1, J))) + list(Kssmat))
+# k2_2 = np.array(list(Kssmat) + list(np.zeros(J).reshape((1, J))))
 # euler1 = Euler1(wss, rss, f, e, Nssmat, k1, k2, k3)
 # euler2 = Euler2(wss, rss, e, Nssmat, k1_2, k2_2)
 
@@ -326,7 +324,7 @@ plt.plot(domain[1:], np.abs(euler_justcapital).max(1))
 
 # Labor Leisure Only:
 # plt.plot(domain[1:], np.abs(euler1).max(1), label='Capital')
-# plt.plot(domain[1:], np.abs(euler2).max(1), label='Labor')
+# plt.plot(domain, np.abs(euler2).max(1), label='Labor')
 # plt.legend(loc=0)
 
 # plt.show()
