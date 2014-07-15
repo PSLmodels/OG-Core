@@ -14,6 +14,7 @@ dist/*
 *.pdfsync
 *.blg
 *.bbl
+*.bib.bak
 *.log
 *.fls
 *.m~
