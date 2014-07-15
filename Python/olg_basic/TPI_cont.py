@@ -135,6 +135,39 @@ def Euler_Error(K_guess, winit, rinit, t):
 
     return error.flatten()
 
+def Euler_Error2(K_guess, winit, rinit, e, n):
+
+    K_guess = K_guess.reshape(T+S-1,S-1,J)
+
+    K1 = np.zeros((T+S-1,S-1,J))
+    K1[0,1:,:] = .9*Kssmat.reshape(S-1,J)[:-1,:]
+    K1[1:,1:,:] = K_guess[:-1,:-1,:]
+
+    K2 = K_guess
+
+    K3 = np.zeros((T+S-1,S-1,J))
+    K3[-1,:-1,:] = Kssmat.reshape(S-1,J)[1:,:]
+    K3[:-1,:-1,:] = K_guess[1:,1:,:]
+
+    n1 = n[:-1].reshape(1,S-1,1)
+    n2 = n[1:].reshape(1,S-1,1)
+
+    w1 = winit[:-1].reshape(T+S-1,1,1)
+    w2 = winit[1:].reshape(T+S-1,1,1)
+
+    r1 = rinit[:-1].reshape(T+S-1,1,1)
+    r2 = rinit[1:].reshape(T+S-1,1,1)
+
+    e1 = e[:-1,:].reshape(1,S-1,J)
+    e2 = e[1:,:].reshape(1,S-1,J)
+
+    error = MUc((1 + r1)*K1 + w1 * e1 * n1 - K2) \
+    - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*n2 - K3)
+
+    return error.flatten()
+
+zero_func = lambda x: Euler_Error2(x, winit, rinit, e, n)
+
 Kinit = np.array(list(np.linspace(K0, Kss, T)) + list(np.ones(S)*Kss))
 Ninit = np.ones(T+S) * Nss
 Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
@@ -147,37 +180,30 @@ TPIdist = 10
 TPImindist = 3.0*10**(-6)
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-    K_mat = np.zeros((T+S, S-1))
-    for j in xrange(S-2): # Upper triangle
-        K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J)[-(j+2):,:], args=(winit, rinit, 0))
-        K_vec = (K_vec.reshape(j+2,J)).mean(1)
-        K_mat[1:S,:] += np.diag(K_vec, S-(j+3))
+    K_mat = np.ones((T+S, S-1, J))*2.0
+    # for j in xrange(S-2): # Upper triangle
+    #     K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J)[-(j+2):,:], args=(winit, rinit, 0))
+    #     K_vec = (K_vec.reshape(j+2,J)).mean(1)
+    #     K_mat[1:S,:] += np.diag(K_vec, S-(j+3))
         
-    for t in xrange(T):
-        K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J), args=(winit, rinit, t))
-        K_vec = (K_vec.reshape(S-1, J)).mean(1)
-        K_mat[t:t+S-1, :] += np.diag(K_vec)
+    # for t in xrange(T):
+    #     K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J), args=(winit, rinit, t))
+    #     K_vec = (K_vec.reshape(S-1, J)).mean(1)
+    #     K_mat[t:t+S-1, :] += np.diag(K_vec)
         
-    K_mat[0,:] = initial
-    Knew = K_mat[:T,:].mean(1)
+    K_mat[1:,:,:] = opt.newton_krylov(zero_func, K_mat[1:,:,:])
+
+    K_mat[0,:, :] = Kssmat.reshape(S-1,J)
+    Knew = K_mat[:T,:,:].mean(1).mean(1)
     TPIiter += 1
     TPIdist = (np.abs(Knew - Kinit[:T])).max()
     print 'Iteration:', TPIiter
     print '\tDistance:', TPIdist
     Kinit = rho*Knew + (1-rho)*Kinit[:T]
     Ninit = np.ones(T) * Nss
-    Yinit = np.array(list(A*((Kinit**alpha) * (Ninit**(1-alpha)))) + list(np.ones(S)*Yss))
-    winit = np.array(list((1-alpha) * (Yinit[:T]/Ninit)) + list(np.ones(S)*wss))
-    rinit = np.array(list(alpha * (Yinit[:T]/Kinit) - delta) + list(np.ones(S)*rss))
-    plt.figure(5)
-    plt.plot(
-        np.arange(T), Kinit, 'b', linewidth=2, label="Capital Path")
-    plt.xlabel("Time")
-    plt.ylabel("Aggregate Capital")
-    plt.title("Time Path of Capital Stock")
-    plt.axhline(y=Kss, color='black', linewidth=2, label="Steady State", ls='--')
-    plt.legend(loc=0)
-    plt.savefig("TPI")
+    Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
+    winit = np.array(list((1-alpha) * (Yinit/Ninit)) + list(np.ones(S)*wss))
+    rinit = np.array(list(alpha * (Yinit/Kinit) - delta) + list(np.ones(S)*rss))
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
 

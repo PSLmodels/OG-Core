@@ -318,8 +318,8 @@ euler_justcapital = Euler_justcapital(wss, rss, f, e, n, k1, k2, k3)
 k1_2 = np.array(list(np.zeros(J).reshape((1, J))) + list(Kssmat))
 k2_2 = np.array(list(Kssmat) + list(np.zeros(J).reshape((1, J))))
 
-euler1 = Euler1(wss, rss, f, e, Nssmat, k1, k2, k3)
-euler2 = Euler2(wss, rss, e, Nssmat, k1_2, k2_2)
+# euler1 = Euler1(wss, rss, f, e, Nssmat, k1, k2, k3)
+# euler2 = Euler2(wss, rss, e, Nssmat, k1_2, k2_2)
 
 plt.figure(3)
 plt.plot(domain[1:], np.abs(euler_justcapital).max(1))
