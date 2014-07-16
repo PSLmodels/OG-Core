@@ -80,7 +80,7 @@ K0      = initial aggregate capital stock
 '''
 
 T = 90
-r = np.random.rand(S-1,J)*.2 + .8
+r = (np.random.rand(S-1,J) + .5) * .2
 initial = Kssmat.reshape(S-1,J) * r
 K0 = initial.mean()
 
