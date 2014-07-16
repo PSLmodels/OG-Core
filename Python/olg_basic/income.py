@@ -221,5 +221,5 @@ def get_f_markov(S, J):
     # Multiply f by itself 60/S times, where 60/S is the number of ages
     #   in each age group
     f_root = np.linalg.matrix_power(f_root, 60/S)
-    f_root = np.tile(f_root.reshape(1, J, J), (S, 1, 1))
+    f_root = np.tile(f_root.T.reshape(1, J, J), (S, 1, 1))
     return f_root
