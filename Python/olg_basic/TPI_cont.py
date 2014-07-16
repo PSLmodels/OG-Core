@@ -75,7 +75,7 @@ start_time = time.time()  # Start timer
 Set other parameters and objects
 ------------------------------------------------------------------------
 T       = number of periods until the steady state
-K0      = initial aggregate capital stock 
+K0      = initial aggregate capital stock
 ------------------------------------------------------------------------
 '''
 
@@ -97,6 +97,7 @@ rinit   = 1 x T vector, initial time path of real interest rate
 ------------------------------------------------------------------------
 '''
 
+
 def MUc(c):
 
     """
@@ -107,10 +108,11 @@ def MUc(c):
 
     return c**(-sigma)
 
+
 def Euler_Error(K_guess, winit, rinit, t):
     length = len(K_guess)/J
     K_guess = K_guess.reshape((length, J))
-    
+
     if length==S-1:
         K1 = np.array(list(np.zeros(J).reshape((1,J))) + list(K_guess[:-1,:]))
     else:
@@ -134,6 +136,7 @@ def Euler_Error(K_guess, winit, rinit, t):
     - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*(e2.reshape(length,J,1)*f[-length:,:,:]).sum(2)*n2 - K3)
 
     return error.flatten()
+
 
 def Euler_Error2(K_guess, winit, rinit, e, n):
 
@@ -162,7 +165,7 @@ def Euler_Error2(K_guess, winit, rinit, e, n):
     e2 = e[1:,:].reshape(1,S-1,J)
 
     error = MUc((1 + r1)*K1 + w1 * e1 * n1 - K2) \
-    - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*n2 - K3)
+        - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*n2 - K3)
 
     return error.flatten()
 
@@ -180,21 +183,21 @@ TPIdist = 10
 TPImindist = 3.0*10**(-6)
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-    K_mat = np.ones((T+S, S-1, J))* 2.0
+    K_mat = np.ones((T+S, S-1, J)) * 2.0
     # for j in xrange(S-2): # Upper triangle
     #     K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J)[-(j+2):,:], args=(winit, rinit, 0))
     #     K_vec = (K_vec.reshape(j+2,J)).mean(1)
     #     K_mat[1:S,:] += np.diag(K_vec, S-(j+3))
-        
+
     # for t in xrange(T):
     #     K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J), args=(winit, rinit, t))
     #     K_vec = (K_vec.reshape(S-1, J)).mean(1)
     #     K_mat[t:t+S-1, :] += np.diag(K_vec)
-        
-    K_mat[1:,:,:] = opt.newton_krylov(zero_func, K_mat[1:,:,:], verbose=1)
 
-    K_mat[0,:, :] = Kssmat.reshape(S-1,J)
-    Knew = K_mat[:T,:,:].mean(1).mean(1)
+    K_mat[1:, :, :] = opt.newton_krylov(zero_func, K_mat[1:, :, :], verbose=1)
+
+    K_mat[0, :, :] = Kssmat.reshape(S-1, J)
+    Knew = K_mat[:T, :, :].mean(1).mean(1)
     TPIiter += 1
     TPIdist = (np.abs(Knew - Kinit[:T])).max()
     print 'Iteration:', TPIiter
