@@ -79,7 +79,7 @@ K0      = initial aggregate capital stock
 ------------------------------------------------------------------------
 '''
 
-T = 60
+T = 100
 K0 = .9*Kss
 initial = 0.9*Kssvec[1:]
 
@@ -178,21 +178,21 @@ winit = (1-alpha) * (Yinit/Ninit)
 rinit = alpha * (Yinit/Kinit) - delta
 
 TPIiter = 0
-TPImaxiter = 1
+TPImaxiter = 3
 TPIdist = 10
 TPImindist = 3.0*10**(-6)
-K_mat = np.tile(.9*Kssmat.reshape(1,S-1,J), (T+S,1,1))
+
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-    # K_mat = np.ones((T+S, S-1, J)) * 2.0
-    
+    K_mat = np.zeros((T+S, S-1, J))
+    # K_mat = np.tile(.9*Kssmat.reshape(1,S-1,J), (T+S,1,1))
     for j in xrange(J):
-        for s in xrange(S-3): # Upper triangle
-            K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J)[-(s+2):,j], args=(winit, rinit, 0))
+        for s in xrange(S-2): # Upper triangle
+            K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J)[-(s+1):,j], args=(winit, rinit, 0))
             # K_vec = (K_vec.reshape(s+2,J)).mean(1)
-            K_mat[1:S,:,j] += np.diag(K_vec, S-(s+3))
+            K_mat[1:S,:,j] += np.diag(K_vec, S-(s+2))
 
         for t in xrange(1,T):
-            K_vec = opt.fsolve(Euler_Error, np.diag(K_mat[t:t+S-1, :, j]), args=(winit, rinit, t))
+            K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J)[:,j], args=(winit, rinit, t))
             # K_vec = (K_vec.reshape(S-1, J)).mean(1)
             K_mat[t:t+S-1, :, j] += np.diag(K_vec)
     
@@ -201,6 +201,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     #     print i
 
     K_mat[0, :, :] = .9*Kssmat.reshape(S-1, J)
+    K_mat[T, :, :] = Kssmat.reshape(S-1, J)
     Knew = K_mat[:T, :, :].mean(1).mean(1)
     TPIiter += 1
     TPIdist = (np.abs(Knew - Kinit[:T])).max()
