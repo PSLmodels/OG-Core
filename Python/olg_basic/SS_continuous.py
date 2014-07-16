@@ -303,7 +303,7 @@ plt.legend(loc=0)
 plt.savefig("capital_dist_2D")
 
 # 3D Graph
-my_cmap = matplotlib.cm.get_cmap('summer')
+cmap1 = matplotlib.cm.get_cmap('cool')
 Kssmat2 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)))
 Sgrid = np.linspace(1, S, S)
 Jgrid = np.linspace(1, J, J)
@@ -314,7 +314,7 @@ ax1.set_xlabel('S')
 ax1.set_ylabel('J')
 ax1.set_zlabel('K')
 ax1.set_title('Distribution of Capital Stock')
-ax1.plot_surface(X, Y, Kssmat2.T, rstride=1, cstride=1, cmap=my_cmap)
+ax1.plot_surface(X, Y, Kssmat2.T, rstride=1, cstride=1, cmap=cmap1)
 
 plt.savefig('capital_dist_3D')
 
@@ -336,9 +336,10 @@ plt.title('Consumption: S = {}'.format(S))
 plt.savefig("consumption_2D")
 
 # 3D Graph
+cmap2 = matplotlib.cm.get_cmap('jet')
 fig2 = plt.figure(4)
 ax2 = fig2.gca(projection='3d')
-ax2.plot_surface(X, Y, cssmat.T, rstride=1, cstride=1, cmap=my_cmap)
+ax2.plot_surface(X, Y, cssmat.T, rstride=1, cstride=1, cmap=cmap2)
 ax2.set_xlabel('S')
 ax2.set_ylabel('J')
 ax2.set_zlabel('C')

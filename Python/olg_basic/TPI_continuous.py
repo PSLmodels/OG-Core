@@ -81,7 +81,7 @@ K0      = initial aggregate capital stock
 
 T = 90
 # r = (np.random.rand(S-1,J) + .5) * .2
-initial = .9 * Kssmat.reshape(S-1,J)
+initial = .9 * Kssmat.reshape(S-1, J)
 K0 = initial.mean()
 
 '''
@@ -113,10 +113,10 @@ def MUc(c):
 def Euler_Error(K_guess, winit, rinit, t):
     length = len(K_guess)
 
-    if length==S-1:
+    if length == S-1:
         K1 = np.array([0] + list(K_guess[:-1]))
     else:
-        K1 = np.array([(initial[-(s+2),j])] + list(K_guess[:-1]))
+        K1 = np.array([(initial[-(s+2), j])] + list(K_guess[:-1]))
     K2 = K_guess
     K3 = np.array(list(K_guess[1:]) + [0])
 
@@ -129,11 +129,11 @@ def Euler_Error(K_guess, winit, rinit, t):
     n1 = n[-(length+1):-1]
     n2 = n[-length:]
 
-    e1 = e[-(length+1):-1,j]
-    e2 = e[-length:,j]
+    e1 = e[-(length+1):-1, j]
+    e2 = e[-length:, j]
 
     error = MUc((1 + r1)*K1 + w1 * e1 * n1 - K2) \
-    - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*n2 - K3)
+        - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*n2 - K3)
 
     return error.flatten()
 
@@ -185,16 +185,18 @@ TPImindist = 3.0*10**(-6)
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat = np.zeros((T+S, S-1, J))
     for j in xrange(J):
-        for s in xrange(S-2): # Upper triangle
-            K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J)[-(s+1):,j], args=(winit, rinit, 0))
-            K_mat[1:S,:,j] += np.diag(K_vec, S-(s+2))
+        for s in xrange(S-2):  # Upper triangle
+            K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(
+                S-1, J)[-(s+1):, j], args=(winit, rinit, 0))
+            K_mat[1:S, :, j] += np.diag(K_vec, S-(s+2))
 
-        for t in xrange(1,T-1):
-            K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J)[:,j], args=(winit, rinit, t))
+        for t in xrange(1, T-1):
+            K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(
+                S-1, J)[:, j], args=(winit, rinit, t))
             K_mat[t:t+S-1, :, j] += np.diag(K_vec)
 
     K_mat[0, :, :] = initial
-    K_mat[T-1,:,:] = Kssmat.reshape(S-1,J)
+    K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
     Knew = K_mat[:T, :, :].mean(2).mean(1)
     TPIiter += 1
     Kinit = rho*Knew + (1-rho)*Kinit[:T]
@@ -204,8 +206,8 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     Ninit = np.ones(T) * Nss
     Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
     winit = np.array(list((1-alpha) * (Yinit/Ninit)) + list(np.ones(S)*wss))
-    rinit = np.array(list(alpha * (Yinit/Kinit) - delta) + list(np.ones(S)*rss))
-    
+    rinit = np.array(list(alpha * (Yinit/Kinit) - delta) + list(
+        np.ones(S)*rss))
 
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
@@ -232,7 +234,7 @@ plt.legend(loc=0)
 plt.savefig("TPI")
 
 var_names = ['Kpath_TPI', 'TPIiter', 'TPIdist', 'elapsed_time',
-             'hours', 'minutes', 'seconds', 'T']
+             'hours', 'minutes', 'seconds', 'T', 'K_mat']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
