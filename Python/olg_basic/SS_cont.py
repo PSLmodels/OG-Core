@@ -52,7 +52,7 @@ f     = S x J x J matrix of age dependent discrete probability mass
 
 starttime = time.time()
 S = 60
-J = 1
+J = 9
 beta = .96 ** (60.0 / S)
 sigma = 3.0
 alpha = .35
@@ -280,36 +280,51 @@ plt.plot(domain, Kssvec, color='b', linewidth=2, label='Average capital stock')
 plt.axhline(y=Kss, color='r', label='Steady State capital stock')
 plt.title('Steady-state Distribution of Capital')
 plt.legend(loc=0)
-plt.savefig("capital_dist_2d")
+plt.savefig("capital_dist_2D")
 
 # 3D Graph
 my_cmap = matplotlib.cm.get_cmap('summer')
 Kssmat2 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)))
-Sgrid = np.linspace(0, S-1, S)
-Jgrid = np.linspace(0, J-1, J)
+Sgrid = np.linspace(1, S, S)
+Jgrid = np.linspace(1, J, J)
 X, Y = np.meshgrid(Sgrid, Jgrid)
 fig = plt.figure(2)
 ax1 = fig.gca(projection='3d')
+ax1.set_xlabel('S')
+ax1.set_ylabel('J')
+ax1.set_zlabel('K')
+ax1.set_title('Distribution of Capital Stock')
 ax1.plot_surface(X, Y, Kssmat2.T, rstride=1, cstride=1, cmap=my_cmap)
-plt.savefig('capital_dist_3d')
+
+plt.savefig('capital_dist_3D')
 
 '''
 ------------------------------------------------------------------------
 Generate graph of Consumption
 ------------------------------------------------------------------------
 '''
+Kssmat3 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
+cssmat = (1 + rss) * Kssmat3 + wss * e * n.reshape(S, 1) - Kssmat2
 
-newK = np.array(list(Kssvec) + [0])
-cssvec = (1 + rss) * newK[:-1] + wss * e.mean(1) * n - newK[1:]
-
-
+# 2D Graph
 plt.figure(3)
 # plt.plot(domain, bsavg, label='Average capital stock')
-plt.plot(domain, cssvec, label='Consumption')
+plt.plot(domain, cssmat.mean(1), label='Consumption')
 # plt.plot(domain, n * wss * e.mean(axis=1), label='Income')
 plt.title('Consumption: S = {}'.format(S))
 # plt.legend(loc=0)
-plt.savefig("consumption")
+plt.savefig("consumption_2D")
+
+# 3D Graph
+fig2 = plt.figure(4)
+ax2 = fig2.gca(projection='3d')
+ax2.plot_surface(X, Y, cssmat.T, rstride=1, cstride=1, cmap=my_cmap)
+ax2.set_xlabel('S')
+ax2.set_ylabel('J')
+ax2.set_zlabel('C')
+ax2.set_title('Distribution of Consumption')
+plt.savefig('consumption_3D')
+
 
 '''
 ------------------------------------------------------------------------
@@ -329,7 +344,7 @@ euler_justcapital = Euler_justcapital(wss, rss, f, e, n, k1, k2, k3)
 # euler1 = Euler1(wss, rss, f, e, Nssmat, k1, k2, k3)
 # euler2 = Euler2(wss, rss, e, Nssmat, k1_2, k2_2)
 
-plt.figure(4)
+plt.figure(5)
 plt.plot(domain[1:], np.abs(euler_justcapital).max(1))
 
 # Labor Leisure Only:
