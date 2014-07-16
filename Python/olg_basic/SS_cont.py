@@ -52,7 +52,7 @@ f     = S x J x J matrix of age dependent discrete probability mass
 
 starttime = time.time()
 S = 60
-J = 9
+J = 5
 beta = .96 ** (60.0 / S)
 sigma = 3.0
 alpha = .35
@@ -85,11 +85,31 @@ f = income.get_f_noswitch(S, J)
 ------------------------------------------------------------------------
 Finding the Steady State
 ------------------------------------------------------------------------
-Kss        = steady state aggregate capital stock
-Nss        = steady state aggregate labor
-Yss        = steady state aggregate output
-wss        = steady state real wage
-rss        = steady state real rental rate
+
+K_guess_init = (S-1 x J) array for the initial guess of the distribution
+               of capital
+N_guess_init = (S x J) array for the initial guess of the distribution
+               of labor
+solutions    = ((S * (S-1) * J * J) x 1) array of solutions of the
+               steady state distributions of capital and labor
+Kssmat       = ((S-1) x J) array of the steady state distribution of
+               capital
+Kssvec       = ((S-1) x 1) vector of the steady state level of capital
+               (averaged across ability types)
+Kss          = steady state aggregate capital stock
+Nssmat       = (S x J) array of the steady state distribution of labor
+Nssvec       = (S x 1) vector of the steady state level of labor
+               (averaged across ability types)
+Nss          = steady state aggregate labor
+Yss          = steady state aggregate output
+wss          = steady state real wage
+rss          = steady state real rental rate
+runtime      = Time needed to find the steady state (seconds)
+hours        = Hours needed to find the steady state
+minutes      = Minutes needed to find the steady state, less the number
+               of hours
+seconds      = Seconds needed to find the steady state, less the number
+               of hours and minutes
 ------------------------------------------------------------------------
 '''
 
@@ -222,11 +242,11 @@ def Steady_State(guesses):
 
     return error_onlycapital.flatten()
 
-K_guess = np.ones((S-1, J)) / ((S-1) * J)
-N_guess = np.ones((S, J)) / (S * J)
-guesses = np.array(list(K_guess.flatten()) + list(N_guess.flatten()))
+K_guess_init = np.ones((S-1, J)) / ((S-1) * J)
+N_guess_init = np.ones((S, J)) / (S * J)
+guesses = np.array(list(K_guess_init.flatten()) + list(N_guess_init.flatten()))
 
-solutions = opt.fsolve(Steady_State, K_guess, xtol=1e-9)
+solutions = opt.fsolve(Steady_State, K_guess_init, xtol=1e-9)
 
 # Labor Leisure Only:
 # solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9)
@@ -239,7 +259,6 @@ Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
 Kssvec = Kssmat.mean(1)
 Kssvec = np.array([0]+list(Kssvec))
 Kss = Kssvec.mean()
-print "Kss:", Kss
 
 # Labor Leisure only
 # Nssmat = solutions[(S-1) * J:].reshape(S, J)
@@ -247,12 +266,14 @@ print "Kss:", Kss
 # Nss = Nssvec.mean()
 
 Nss = get_N(f, e, n)
-print "Nss:", Nss
 Yss = get_Y(Kss, Nss)
-print "Yss:", Yss
 wss = get_w(Yss, Nss)
-print "wss:", wss
 rss = get_r(Yss, Kss)
+
+print "Kss:", Kss
+print "Nss:", Nss
+print "Yss:", Yss
+print "wss:", wss
 print "rss:", rss
 
 runtime = time.time() - starttime
@@ -265,16 +286,15 @@ seconds.' % (abs(hours - .5), abs(minutes - .5), seconds)
 
 '''
 ------------------------------------------------------------------------
- Generate graph of the steady-state distribution of wealth
+ Generate graphs of the steady-state distribution of wealth
 ------------------------------------------------------------------------
 domain     = 1 x S vector of each age cohort
 ------------------------------------------------------------------------
 '''
 
-domain = np.linspace(0, S, S)
+domain = np.linspace(1, S, S)
 
 # 2D Graph
-
 plt.figure(1)
 plt.plot(domain, Kssvec, color='b', linewidth=2, label='Average capital stock')
 plt.axhline(y=Kss, color='r', label='Steady State capital stock')
