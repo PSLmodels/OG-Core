@@ -52,7 +52,7 @@ f     = S x J x J matrix of age dependent discrete probability mass
 
 starttime = time.time()
 S = 60
-J = 5
+J = 7
 beta = .96 ** (60.0 / S)
 sigma = 3.0
 alpha = .35
