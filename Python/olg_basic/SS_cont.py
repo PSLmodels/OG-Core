@@ -20,6 +20,7 @@ import income
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import time
 import scipy.optimize as opt
 from scipy.optimize import newton_krylov
@@ -272,15 +273,25 @@ domain     = 1 x S vector of each age cohort
 
 domain = np.linspace(0, S, S)
 
+# 2D Graph
 
 plt.figure(1)
 plt.plot(domain, Kssvec, color='b', linewidth=2, label='Average capital stock')
 plt.axhline(y=Kss, color='r', label='Steady State capital stock')
 plt.title('Steady-state Distribution of Capital')
 plt.legend(loc=0)
-# plt.show()
-plt.savefig("distribution_of_capital")
+plt.savefig("capital_dist_2d")
 
+# 3D Graph
+my_cmap = matplotlib.cm.get_cmap('summer')
+Kssmat2 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)))
+Sgrid = np.linspace(0, S-1, S)
+Jgrid = np.linspace(0, J-1, J)
+X, Y = np.meshgrid(Sgrid, Jgrid)
+fig = plt.figure(2)
+ax1 = fig.gca(projection='3d')
+ax1.plot_surface(X, Y, Kssmat2.T, rstride=1, cstride=1, cmap=my_cmap)
+plt.savefig('capital_dist_3d')
 
 '''
 ------------------------------------------------------------------------
@@ -292,13 +303,12 @@ newK = np.array(list(Kssvec) + [0])
 cssvec = (1 + rss) * newK[:-1] + wss * e.mean(1) * n - newK[1:]
 
 
-plt.figure(2)
+plt.figure(3)
 # plt.plot(domain, bsavg, label='Average capital stock')
 plt.plot(domain, cssvec, label='Consumption')
 # plt.plot(domain, n * wss * e.mean(axis=1), label='Income')
 plt.title('Consumption: S = {}'.format(S))
 # plt.legend(loc=0)
-# plt.show()
 plt.savefig("consumption")
 
 '''
@@ -319,7 +329,7 @@ euler_justcapital = Euler_justcapital(wss, rss, f, e, n, k1, k2, k3)
 # euler1 = Euler1(wss, rss, f, e, Nssmat, k1, k2, k3)
 # euler2 = Euler2(wss, rss, e, Nssmat, k1_2, k2_2)
 
-plt.figure(3)
+plt.figure(4)
 plt.plot(domain[1:], np.abs(euler_justcapital).max(1))
 
 # Labor Leisure Only:
@@ -327,7 +337,6 @@ plt.plot(domain[1:], np.abs(euler_justcapital).max(1))
 # plt.plot(domain, np.abs(euler2).max(1), label='Labor')
 # plt.legend(loc=0)
 
-# plt.show()
 plt.title('Euler Errors')
 plt.savefig('euler_errors')
 
