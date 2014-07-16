@@ -79,7 +79,7 @@ K0      = initial aggregate capital stock
 ------------------------------------------------------------------------
 '''
 
-T = 100
+T = 60
 K0 = .9*Kss
 initial = 0.9*Kssvec[1:]
 
@@ -178,11 +178,16 @@ winit = (1-alpha) * (Yinit/Ninit)
 rinit = alpha * (Yinit/Kinit) - delta
 
 TPIiter = 0
-TPImaxiter = 3
+TPImaxiter = 10
 TPIdist = 10
 TPImindist = 3.0*10**(-6)
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
+    plt.figure(5)
+    plt.plot(
+        np.arange(T), Kinit[:T], 'b', linewidth=2, label="Capital Path")
+    plt.axhline(y=Kss, color='black', linewidth=2, label="Steady State", ls='--')
+    plt.savefig("TPI")
     K_mat = np.zeros((T+S, S-1, J))
     # K_mat = np.tile(.9*Kssmat.reshape(1,S-1,J), (T+S,1,1))
     for j in xrange(J):
@@ -204,20 +209,22 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat[T, :, :] = Kssmat.reshape(S-1, J)
     Knew = K_mat[:T, :, :].mean(1).mean(1)
     TPIiter += 1
+    Kinit = rho*Knew + (1-rho)*Kinit[:T]
     TPIdist = (np.abs(Knew - Kinit[:T])).max()
     print 'Iteration:', TPIiter
     print '\tDistance:', TPIdist
-    Kinit = rho*Knew + (1-rho)*Kinit[:T]
     Ninit = np.ones(T) * Nss
     Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
     winit = np.array(list((1-alpha) * (Yinit/Ninit)) + list(np.ones(S)*wss))
     rinit = np.array(list(alpha * (Yinit/Kinit) - delta) + list(np.ones(S)*rss))
+    
+
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
 
 elapsed_time = time.time() - start_time
 
-print "The time path is", Kpath_TPI
+print "The time path is", np.array(Kpath_TPI)
 
 hours = elapsed_time / 3600
 minutes = (elapsed_time / 60) % 60
