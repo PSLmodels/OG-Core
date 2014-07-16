@@ -64,7 +64,7 @@ seconds   = total seconds (minus the total hours and minutes) that the
 ------------------------------------------------------------------------
 '''
 
-variables = pickle.load(open("ss_vars.pkl", "r"))
+variables = pickle.load(open("OUTPUT/ss_vars.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 
@@ -79,7 +79,7 @@ K0      = initial aggregate capital stock
 ------------------------------------------------------------------------
 '''
 
-T = 90
+T = 60
 # r = (np.random.rand(S-1,J) + .5) * .2
 initial = .9 * Kssmat.reshape(S-1, J)
 K0 = initial.mean()
@@ -180,7 +180,7 @@ rinit = alpha * (Yinit/Kinit) - delta
 TPIiter = 0
 TPImaxiter = 100
 TPIdist = 10
-TPImindist = 3.0*10**(-6)
+TPImindist = 3 * 1e-6
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat = np.zeros((T+S, S-1, J))
@@ -194,6 +194,9 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(
                 S-1, J)[:, j], args=(winit, rinit, t))
             K_mat[t:t+S-1, :, j] += np.diag(K_vec)
+        if (K_mat.sum() <= 0).any():
+            print 'WARNING: Aggregate capital stock is less than or' \
+                ' equal to zero.'
 
     K_mat[0, :, :] = initial
     K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
@@ -231,11 +234,11 @@ plt.ylabel("Aggregate Capital")
 plt.title("Time Path of Capital Stock")
 plt.axhline(y=Kss, color='black', linewidth=2, label="Steady State", ls='--')
 plt.legend(loc=0)
-plt.savefig("TPI")
+plt.savefig("OUTPUT/TPI")
 
 var_names = ['Kpath_TPI', 'TPIiter', 'TPIdist', 'elapsed_time',
              'hours', 'minutes', 'seconds', 'T', 'K_mat']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
-pickle.dump(dictionary, open("TPI_vars.pkl", "w"))
+pickle.dump(dictionary, open("OUTPUT/TPI_vars.pkl", "w"))

@@ -258,6 +258,9 @@ solutions = opt.fsolve(Steady_State, K_guess_init, xtol=1e-9)
 Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
 Kssvec = Kssmat.mean(1)
 Kss = Kssvec.mean()
+K_agg = Kssmat.sum()
+if K_agg <= 0:
+    print 'WARNING: Aggregate capital is less than or equal to zero.'
 Kssvec = np.array([0]+list(Kssvec))
 
 # Labor Leisure only
@@ -300,7 +303,7 @@ plt.plot(domain, Kssvec, color='b', linewidth=2, label='Average capital stock')
 plt.axhline(y=Kss, color='r', label='Steady State capital stock')
 plt.title('Steady-state Distribution of Capital')
 plt.legend(loc=0)
-plt.savefig("capital_dist_2D")
+plt.savefig("OUTPUT/capital_dist_2D")
 
 # 3D Graph
 cmap1 = matplotlib.cm.get_cmap('cool')
@@ -316,7 +319,7 @@ ax1.set_zlabel('K')
 ax1.set_title('Distribution of Capital Stock')
 ax1.plot_surface(X, Y, Kssmat2.T, rstride=1, cstride=1, cmap=cmap1)
 
-plt.savefig('capital_dist_3D')
+plt.savefig('OUTPUT/capital_dist_3D')
 
 '''
 ------------------------------------------------------------------------
@@ -333,7 +336,7 @@ plt.plot(domain, cssmat.mean(1), label='Consumption')
 # plt.plot(domain, n * wss * e.mean(axis=1), label='Income')
 plt.title('Consumption: S = {}'.format(S))
 # plt.legend(loc=0)
-plt.savefig("consumption_2D")
+plt.savefig("OUTPUT/consumption_2D")
 
 # 3D Graph
 cmap2 = matplotlib.cm.get_cmap('jet')
@@ -344,7 +347,7 @@ ax2.set_xlabel('S')
 ax2.set_ylabel('J')
 ax2.set_zlabel('C')
 ax2.set_title('Distribution of Consumption')
-plt.savefig('consumption_3D')
+plt.savefig('OUTPUT/consumption_3D')
 
 
 '''
@@ -374,7 +377,7 @@ plt.plot(domain[1:], np.abs(euler_justcapital).max(1))
 # plt.legend(loc=0)
 
 plt.title('Euler Errors')
-plt.savefig('euler_errors')
+plt.savefig('OUTPUT/euler_errors')
 
 '''
 ------------------------------------------------------------------------
@@ -384,8 +387,8 @@ Save variables/values so they can be used in other modules
 
 var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'n', 'e',
              'f', 'J', 'Kss', 'Kssvec', 'Kssmat', 'Nss', 'Yss', 'wss', 'rss',
-             'runtime', 'hours', 'minutes', 'seconds', 'eta', 'xi']
+             'runtime', 'hours', 'minutes', 'seconds', 'eta', 'xi', 'K_agg']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
-pickle.dump(dictionary, open("ss_vars.pkl", "w"))
+pickle.dump(dictionary, open("OUTPUT/ss_vars.pkl", "w"))
