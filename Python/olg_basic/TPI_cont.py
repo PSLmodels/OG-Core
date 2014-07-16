@@ -110,15 +110,15 @@ def MUc(c):
 
 
 def Euler_Error(K_guess, winit, rinit, t):
-    length = len(K_guess)/J
-    K_guess = K_guess.reshape((length, J))
+    length = len(K_guess)
+    K_guess = K_guess.reshape((length, 1))
 
     if length==S-1:
-        K1 = np.array(list(np.zeros(J).reshape((1,J))) + list(K_guess[:-1,:]))
+        K1 = np.array(list(np.zeros(1).reshape((1,1))) + list(K_guess[:-1,:]))
     else:
-        K1 = np.array(list((.9*Kssmat.reshape(S-1,J)[-(j+2),:]).reshape(1,J)) + list(K_guess[:-1,:]))
+        K1 = np.array(list((.9*Kssmat.reshape(S-1,J)[-(s+2),j]).reshape(1,1)) + list(K_guess[:-1,:]))
     K2 = K_guess
-    K3 = np.array(list(K_guess[1:,:]) + list(np.zeros(J).reshape((1,J))))
+    K3 = np.array(list(K_guess[1:,:]) + list(np.zeros(1).reshape((1,1))))
 
     w1 = winit[t:t+length].reshape(length,1)
     w2 = winit[t+1:t+1+length].reshape(length,1)
@@ -129,40 +129,40 @@ def Euler_Error(K_guess, winit, rinit, t):
     n1 = n[-(length+1):-1].reshape(length,1)
     n2 = n[-length:].reshape(length,1)
 
-    e1 = e[-(length+1):-1,:].reshape((length,J))
-    e2 = e[-length:,:].reshape((length,J))
+    e1 = e[-(length+1):-1,j].reshape((length,1))
+    e2 = e[-length:,j].reshape((length,1))
 
     error = MUc((1 + r1)*K1 + w1 * e1 * n1 - K2) \
-    - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*(e2.reshape(length,J,1)*f[-length:,:,:]).sum(2)*n2 - K3)
+    - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*n2 - K3)
 
     return error.flatten()
 
 
 def Euler_Error2(K_guess, winit, rinit, e, n):
 
-    K_guess = K_guess.reshape(T+S-1,S-1,J)
+    K_guess = K_guess.reshape(T+S-1,S-1)
 
-    K1 = np.zeros((T+S-1,S-1,J))
-    K1[0,1:,:] = .9*Kssmat.reshape(S-1,J)[:-1,:]
-    K1[1:,1:,:] = K_guess[:-1,:-1,:]
+    K1 = np.zeros((T+S-1,S-1))
+    K1[0,1:] = .9*Kssmat.reshape(S-1,J)[:-1,i]
+    K1[1:,1:] = K_guess[:-1,:-1]
 
     K2 = K_guess
 
-    K3 = np.zeros((T+S-1,S-1,J))
-    K3[-1,:-1,:] = Kssmat.reshape(S-1,J)[1:,:]
-    K3[:-1,:-1,:] = K_guess[1:,1:,:]
+    K3 = np.zeros((T+S-1,S-1))
+    K3[-1,:-1] = Kssmat.reshape(S-1,J)[1:,i]
+    K3[:-1,:-1] = K_guess[1:,1:]
 
-    n1 = n[:-1].reshape(1,S-1,1)
-    n2 = n[1:].reshape(1,S-1,1)
+    n1 = n[:-1].reshape(1,S-1)
+    n2 = n[1:].reshape(1,S-1)
 
-    w1 = winit[:-1].reshape(T+S-1,1,1)
-    w2 = winit[1:].reshape(T+S-1,1,1)
+    w1 = winit[:-1].reshape(T+S-1,1)
+    w2 = winit[1:].reshape(T+S-1,1)
 
-    r1 = rinit[:-1].reshape(T+S-1,1,1)
-    r2 = rinit[1:].reshape(T+S-1,1,1)
+    r1 = rinit[:-1].reshape(T+S-1,1)
+    r2 = rinit[1:].reshape(T+S-1,1)
 
-    e1 = e[:-1,:].reshape(1,S-1,J)
-    e2 = e[1:,:].reshape(1,S-1,J)
+    e1 = e[:-1,i].reshape(1,S-1)
+    e2 = e[1:,i].reshape(1,S-1)
 
     error = MUc((1 + r1)*K1 + w1 * e1 * n1 - K2) \
         - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*n2 - K3)
@@ -178,25 +178,29 @@ winit = (1-alpha) * (Yinit/Ninit)
 rinit = alpha * (Yinit/Kinit) - delta
 
 TPIiter = 0
-TPImaxiter = 100
+TPImaxiter = 1
 TPIdist = 10
 TPImindist = 3.0*10**(-6)
-
+K_mat = np.tile(.9*Kssmat.reshape(1,S-1,J), (T+S,1,1))
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-    K_mat = np.ones((T+S, S-1, J)) * 2.0
-    # for j in xrange(S-2): # Upper triangle
-    #     K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J)[-(j+2):,:], args=(winit, rinit, 0))
-    #     K_vec = (K_vec.reshape(j+2,J)).mean(1)
-    #     K_mat[1:S,:] += np.diag(K_vec, S-(j+3))
+    # K_mat = np.ones((T+S, S-1, J)) * 2.0
+    
+    for j in xrange(J):
+        for s in xrange(S-3): # Upper triangle
+            K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J)[-(s+2):,j], args=(winit, rinit, 0))
+            # K_vec = (K_vec.reshape(s+2,J)).mean(1)
+            K_mat[1:S,:,j] += np.diag(K_vec, S-(s+3))
 
-    # for t in xrange(T):
-    #     K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J), args=(winit, rinit, t))
-    #     K_vec = (K_vec.reshape(S-1, J)).mean(1)
-    #     K_mat[t:t+S-1, :] += np.diag(K_vec)
+        for t in xrange(1,T):
+            K_vec = opt.fsolve(Euler_Error, np.diag(K_mat[t:t+S-1, :, j]), args=(winit, rinit, t))
+            # K_vec = (K_vec.reshape(S-1, J)).mean(1)
+            K_mat[t:t+S-1, :, j] += np.diag(K_vec)
+    
+    # for i in xrange(J):
+    #     K_mat[1:, :, i] = (opt.newton_krylov(zero_func, K_mat[1:, :, i])).reshape(T+S-1,S-1)
+    #     print i
 
-    K_mat[1:, :, :] = opt.newton_krylov(zero_func, K_mat[1:, :, :], verbose=1)
-
-    K_mat[0, :, :] = Kssmat.reshape(S-1, J)
+    K_mat[0, :, :] = .9*Kssmat.reshape(S-1, J)
     Knew = K_mat[:T, :, :].mean(1).mean(1)
     TPIiter += 1
     TPIdist = (np.abs(Knew - Kinit[:T])).max()
