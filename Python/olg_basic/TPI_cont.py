@@ -79,9 +79,10 @@ K0      = initial aggregate capital stock
 ------------------------------------------------------------------------
 '''
 
-T = 60
-K0 = .9*Kss
-initial = 0.9*Kssvec[1:]
+T = 90
+r = np.random.rand(S-1,J)*.2 + .8
+initial = Kssmat.reshape(S-1,J) * r
+K0 = initial.mean()
 
 '''
 ------------------------------------------------------------------------
@@ -111,26 +112,25 @@ def MUc(c):
 
 def Euler_Error(K_guess, winit, rinit, t):
     length = len(K_guess)
-    K_guess = K_guess.reshape((length, 1))
 
     if length==S-1:
-        K1 = np.array(list(np.zeros(1).reshape((1,1))) + list(K_guess[:-1,:]))
+        K1 = np.array([0] + list(K_guess[:-1]))
     else:
-        K1 = np.array(list((.9*Kssmat.reshape(S-1,J)[-(s+2),j]).reshape(1,1)) + list(K_guess[:-1,:]))
+        K1 = np.array([(initial[-(s+2),j])] + list(K_guess[:-1]))
     K2 = K_guess
-    K3 = np.array(list(K_guess[1:,:]) + list(np.zeros(1).reshape((1,1))))
+    K3 = np.array(list(K_guess[1:]) + [0])
 
-    w1 = winit[t:t+length].reshape(length,1)
-    w2 = winit[t+1:t+1+length].reshape(length,1)
+    w1 = winit[t:t+length]
+    w2 = winit[t+1:t+1+length]
 
-    r1 = rinit[t:t+length].reshape(length,1)
-    r2 = rinit[t+1:t+1+length].reshape(length,1)
+    r1 = rinit[t:t+length]
+    r2 = rinit[t+1:t+1+length]
 
-    n1 = n[-(length+1):-1].reshape(length,1)
-    n2 = n[-length:].reshape(length,1)
+    n1 = n[-(length+1):-1]
+    n2 = n[-length:]
 
-    e1 = e[-(length+1):-1,j].reshape((length,1))
-    e2 = e[-length:,j].reshape((length,1))
+    e1 = e[-(length+1):-1,j]
+    e2 = e[-length:,j]
 
     error = MUc((1 + r1)*K1 + w1 * e1 * n1 - K2) \
     - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*n2 - K3)
@@ -178,36 +178,24 @@ winit = (1-alpha) * (Yinit/Ninit)
 rinit = alpha * (Yinit/Kinit) - delta
 
 TPIiter = 0
-TPImaxiter = 10
+TPImaxiter = 100
 TPIdist = 10
 TPImindist = 3.0*10**(-6)
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-    plt.figure(5)
-    plt.plot(
-        np.arange(T), Kinit[:T], 'b', linewidth=2, label="Capital Path")
-    plt.axhline(y=Kss, color='black', linewidth=2, label="Steady State", ls='--')
-    plt.savefig("TPI")
     K_mat = np.zeros((T+S, S-1, J))
-    # K_mat = np.tile(.9*Kssmat.reshape(1,S-1,J), (T+S,1,1))
     for j in xrange(J):
         for s in xrange(S-2): # Upper triangle
             K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J)[-(s+1):,j], args=(winit, rinit, 0))
-            # K_vec = (K_vec.reshape(s+2,J)).mean(1)
             K_mat[1:S,:,j] += np.diag(K_vec, S-(s+2))
 
-        for t in xrange(1,T):
+        for t in xrange(1,T-1):
             K_vec = opt.fsolve(Euler_Error, .9*Kssmat.reshape(S-1,J)[:,j], args=(winit, rinit, t))
-            # K_vec = (K_vec.reshape(S-1, J)).mean(1)
             K_mat[t:t+S-1, :, j] += np.diag(K_vec)
-    
-    # for i in xrange(J):
-    #     K_mat[1:, :, i] = (opt.newton_krylov(zero_func, K_mat[1:, :, i])).reshape(T+S-1,S-1)
-    #     print i
 
-    K_mat[0, :, :] = .9*Kssmat.reshape(S-1, J)
-    K_mat[T, :, :] = Kssmat.reshape(S-1, J)
-    Knew = K_mat[:T, :, :].mean(1).mean(1)
+    K_mat[0, :, :] = initial
+    K_mat[T-1,:,:] = Kssmat.reshape(S-1,J)
+    Knew = K_mat[:T, :, :].mean(2).mean(1)
     TPIiter += 1
     Kinit = rho*Knew + (1-rho)*Kinit[:T]
     TPIdist = (np.abs(Knew - Kinit[:T])).max()

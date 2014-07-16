@@ -257,8 +257,8 @@ solutions = opt.fsolve(Steady_State, K_guess_init, xtol=1e-9)
 
 Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
 Kssvec = Kssmat.mean(1)
-Kssvec = np.array([0]+list(Kssvec))
 Kss = Kssvec.mean()
+Kssvec = np.array([0]+list(Kssvec))
 
 # Labor Leisure only
 # Nssmat = solutions[(S-1) * J:].reshape(S, J)
