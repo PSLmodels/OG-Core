@@ -66,7 +66,7 @@
   \and
   Isaac Swift\footnote{Brigham Young University, Department of Economics, 163 FOB, Provo, Utah 84602, \href{mailto:isaacdswift@gmail.com}{isaacdswift@gmail.com}.} \\[-2pt]}
 \date{July 2014 \\
-  \scriptsize{(version 14.07.b)}}
+  \scriptsize{(version 14.07.c)}}
 \maketitle
 \begin{abstract}
 \normalsize{Put abstract here.
@@ -197,6 +197,17 @@
 
     In equilibrium, the steady-state real wage $\bar{w}$ and the steady-state real rental rate $\bar{r}$ are simply functions of the steady-state distribution of capital $\bar{b}_{j,s+1}$. This is clear from the steady-state version of the capital market clearing condition \eqref{EqMktClrCap} and the fact that aggregate labor supply is a function of the sum of exogenous efficiency units of labor in the labor market clearing condition \eqref{EqMktClrLab}. And the two firm first order conditions for the real wage $w_t$ \eqref{EqFOCwage} and real rental rate $r_t$ \eqref{EqFOCrate} are only functions of the aggregate capital stock $K_t$ and aggregate labor $L_t$. Appendix \ref{AppSSsolve} details how to solve for the steady-state equilibrium.
 
+    \begin{figure}[htb]\centering \captionsetup{width=4.0in}
+      \caption{\label{FigSavSS}\textbf{Steady-state distribution of savings $\bar{\bm{\Gamma}}$ for $S=60$ and $J=7$}}
+      \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/SavSS.pdf}}}
+    \end{figure}
+
+    Define $\bm{\Gamma}_t$ as the distribution of savings across individuals at time $t$.
+    \begin{equation}\label{EqSavDist}
+      \bm{\Gamma}_t \equiv \{b_{j,s,t}\}_{j=1,s=1}^{J,S} \quad\forall t
+    \end{equation}
+    Figure \ref{FigSavSS} shows the steady-state distribution individual savings $\bar{\bm{\Gamma}}$ for a particular calibration of the model. The deterministic individual ability process $e_j(s)$ is calibrated from CPS wage distribution data as described in Appendix \ref{AppAbilCalib}, with $S=60$ and $J=7$. The inelastic labor supply function $l(s)$ is taken from \citet{EvansPhillips:2014}. We calibrate the other parameters to $[\beta,\sigma,\delta,\alpha,A] = [0.96,3,0.05,0.35,1]$. Notice that some intergenerational risk sharing is taking place. Young individuals of high ability, know that they will have high ability and borrow $b_{j,s,t}<0$ in their early years in the steady-state.
+
     The definition of the non-steady-state equilibrium is similar to Definition \ref{DefEquilSS}, with the steady-state equilibrium definition being a special case of the non-steady-state equilibrium.
 
     \vspace{7mm}
@@ -236,86 +247,16 @@
 
     Each optimal saving decision for each household requires knowledge of at least todays prices and tomorrows prices and at most $S$ periods of prices. In equilibrium, one can see that the prices $(w_t,r_t)$ in each period $t$ are functions of the entire distribution of savings $b_{j,s,t}$ for all $j$ and $s$. This is clear from the steady-state version of the capital market clearing condition \eqref{EqMktClrCap} and the fact that aggregate labor supply is a function of the sum of exogenous efficiency units of labor in the labor market clearing condition \eqref{EqMktClrLab}. And the two firm first order conditions for the real wage $w_t$ \eqref{EqFOCwage} and real rental rate $r_t$ \eqref{EqFOCrate} are only functions of the aggregate capital stock $K_t$ and aggregate labor $L_t$. The requirement that individuals be able to forecast prices with perfect foresight over their lifetimes implies that each individual has correct information and beliefs about all the other individuals optimization problems and information. It also implies that the equilibrium allocations and prices are really just functions of the entire distribution of savings at a particular period, as well as a law of motion for that distribution of savings.
 
-    To solve for any non-steady-state equilibrium time path of the economy from an arbitrary current state to the steady state, we follow the time path iteration (TPI) method of \citet{AuerbachKotlikoff:1987}. Appendix \ref{AppNonSSsolve} details how to solve for the non-steady-state equilibrium time path using the TPI method.
+    \begin{figure}[htb]\centering \captionsetup{width=4.0in}
+      \caption{\label{FigKpathTPI}\textbf{Equilibrium time path of $K_t$ for $S=60$ and $J=7$}}
+      \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/KpathTPI.pdf}}}
+    \end{figure}
 
-
-
-
-% \section{Transition Path Solution Methods}\label{SecSolMeths}
-
-% This section outlines the benchmark time path iteration (TPI) method for solving the non-steady-state rational expectations equilibrium transition path of the distribution of savings and then details our new alternate model forecast (AMF) method for computing the equilibrium transition path. Because the AMF method represents an approximation of the rational expectations assumption, we compare the AMF method to the benchmark TPI method in terms of both speed and accuracy in the context of the model from Section \ref{SecModelGen}. This model has enough heterogeneity to match the varied richness and computational complexity of equilibrium transition paths in current life cycle models.
-
-
-% \subsection{Benchmark: Time path iteration}\label{SecSolMethsTPI}
-
-% The most common method of solving for non-steady-state equilibrium transition path for the capital distribution in OLG models is finding a fixed point for the transition path of the distribution of capital for a given initial state of the distribution of capital. This solution method is detailed for the perfect foresight case in \citet[ch. 4]{AuerbachKotlikoff:1987} and for the stochastic case in \citet[Appendix II]{NishiyamaSmetters:2007}. The idea is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see \citet[ch. 17]{StokeyLucas:1989}).
-
-% The key assumption is that the economy will reach the steady-state equilibrium $\bar{\Gamma}$ described in Definition \ref{DefModelGenEquilSS} in a finite number of periods $T<\infty$ regardless of the initial state $\Gamma_0$. The first step is to assume a transition path for aggregate capital $\mathbf{K}^i = \left\{K_1^i,K_2^i,...K_T^i\right\}$ such that $T$ is sufficiently large to ensure that $\Gamma_T = \bar{\Gamma}$ and $K_T^i\left(\Gamma_T\right) = \bar{K}\left(\bar{\Gamma}\right)$. The superscript $i$ is an index for the iteration number. The transition path for aggregate capital determines the transition path for both the real wage $\mathbf{w}^i = \left\{w_1^i,w_2^i,...w_T^i\right\}$ and the real return on investment $\mathbf{r}^i = \left\{r_1^i,r_2^i,...r_T^i\right\}$. The exact initial distribution of capital in the first period $\Gamma_1$ can be arbitrarily chosen as long as it satisfies $K_1^i = \frac{S-1}{S}\sum_{s=2}^{S}\sum_{e=e_1}^{e_J}\sum_{b=b_1}^{b_B}\gamma_1(s,e,b)b$ according to market clearing condition \eqref{EqModelGenEquilCapMktClr}. One could also first choose the initial distribution of capital $\Gamma_1$ and then choose an initial aggregate capital stock $K_1^i$ that corresponds to that distribution. As mentioned earlier, the only other restriction on the initial transition path for aggregate capital is that it equal the steady-state level $K_T^i = \bar{K}\left(\bar{\Gamma}\right)$ by period $T$. But the aggregate capital stocks $K_t^i$ for periods $1<t<T$ can be any level.
-
-% Given the initial capital distribution $\Gamma_1$ and the transition paths of aggregate capital $\mathbf{K}^i = \left\{K_1^i,K_2^i,...K_T^i\right\}$, the real wage $\mathbf{w}^i = \left\{w_1^i,w_2^i,...w_T^i\right\}$, and the real return to investment $\mathbf{r}^i = \left\{r_1^i,r_2^i,...r_T^i\right\}$, one can solve for the optimal savings policy rule for each type of $S-1$-aged agent for the last period of his life $b_{S,2} = \phi_1(S-1,e,b)$ using his intertemporal Euler equation, where the ``1" subscript on $\phi$ represents the time $t=1$ savings decision with the real wage $w_1^i$ and real interest rate $r_1^i$.\footnote{Note that the $\Gamma$ and $\Omega$ that usually appear in the policy functions $\phi$ have been dropped because they are assumed in the guess of the transition path $\mathbf{K}^i$.}
-% \begin{equation}\label{EqSolMethsTPIGenSmin1Euler}
-%    \begin{split}
-%       &\Bigl(\bigl[1 + r_1^i-\delta\bigr]b_{S-1,1} + w_1^i e_{S-1,1}n(S-1) - b_{S,2}\Bigr)^{-\sigma} = ... \\
-%       &\quad\quad\quad\quad\quad\quad \beta\left(1 + r_2^i-\delta\right)E\biggl[\Bigl(\bigl[1 + r_2^i-\delta\bigr]b_{S,2} + w_2^i e_{S,2}n(S)\Bigr)^{-\sigma}\biggr]
-%    \end{split}
-% \end{equation}
-
-% The final two savings decisions of each type of $S-2$-aged household in period 1, $b_{S-1,2}$ and $b_{S,3}$, are characterized by the following two intertemporal Euler equations and are solved by backward induction.
-% \begin{equation}\label{EqSolMethsTPIGenSmin2Euler}
-%    \begin{split}
-%       &\Bigl(\bigl[1 + r_1^i-\delta\bigr]b_{S-2,1} + w_1^i e_{S-2,1}n(S-2) - b_{S-1,2}\Bigr)^{-\sigma} = ... \\
-%       &\quad\quad\quad\quad\quad \beta\left(1 + r_2^i-\delta\right)E\biggl[\Bigl(\bigl[1 + r_2^i-\delta\bigr]b_{S-1,2} + w_2^i e_{S-1,2}n(S-1) - b_{S,3}\Bigr)^{-\sigma}\biggr] \\
-%       &\quad\Bigl(\bigl[1 + r_2^i-\delta\bigr]b_{S-1,2} + w_2^i e_{S-1,2} n(S-1) - b_{S,3}\Bigr)^{-\sigma} = ... \\
-%       &\quad\quad\quad\quad\quad\quad \beta\left(1 + r_3^i-\delta\right)E\biggl[\Bigl(\bigl[1 + r_3^i-\delta\bigr]b_{S,3} + w_3^i e_{S,3}n(S)\Bigr)^{-\sigma}\biggr]
-%    \end{split}
-% \end{equation}
-% The solution to the second equation delivers the savings policy function for $b_{S,3} = \phi_2(S-1,e,b)$. This policy function is then used in the first equation of \eqref{EqSolMethsTPIGenSmin2Euler} in order to solve for the policy function $b_{S-1,2} = \phi_1(S-2,e,b)$.
-
-% This process is repeated for every age of household in $t=1$ down to the age-1 household at time $t=1$. This household solves the full set of $S-1$ savings decisions characterized by the following equations.
-% \begin{equation}\label{EqSolMethsTPIGen1Euler}
-%    \begin{split}
-%       &\Bigl(w_1^i e_{1,1}n(1) - b_{2,2}\Bigr)^{-\sigma} = ... \\
-%       &\quad\quad\quad\quad\quad \beta\left(1 + r_2^i-\delta\right)E\biggl[\Bigl(\bigl[1 + r_2^i-\delta\bigr]b_{2,2} + w_2^i e_{2,2}n(2) - b_{3,3}\Bigr)^{-\sigma}\biggr] \\
-%       &\Bigl(\bigl[1 + r_2^i-\delta\bigr]b_{2,2} + w_2^i e_{2,2} n(2) - b_{3,3}\Bigr)^{-\sigma} = ... \\
-%       &\quad\quad\quad\quad\quad \beta\left(1 + r_3^i-\delta\right)E\biggl[\Bigl(\bigl[1 + r_3^i-\delta\bigr]b_{3,3} + w_3^i e_{3,3}n(3) - b_{4,4}\Bigr)^{-\sigma}\biggr] \\
-%       &\quad\quad\quad\quad\quad\quad\quad\quad\vdots \\
-%       &\Bigl(\bigl[1 + r_{S-1}^i-\delta\bigr]b_{S-1,S-1} + w_{S-1}^i e_{S-1,S-1} n(S-1) - b_{S,S}\Bigr)^{-\sigma} = ... \\
-%       &\quad\quad\quad\quad\quad \beta\left(1 + r_S^i-\delta\right)E\biggl[\Bigl(\bigl[1 + r_S^i-\delta\bigr]b_{S,S} + w_S^i e_{S,S}n(S)\Bigr)^{-\sigma}\biggr]
-%    \end{split}
-% \end{equation}
-
-% Once the remaining lifetime decision rules have been solved for all households alive in period $t=1$, the set of first period policy functions $\phi_1(s,e,b)$ is complete. The first period policy function $\phi_1(s,e,b)$ is then combined with the first period distribution of capital $\Gamma_1$ to compute the second period distribution of capital $\Gamma_2$.The second period distribution of capital $\Gamma_2$ implies an aggregate capital stock $K_2^{i'}$ through \eqref{EqModelGenEquilCapMktClr} which is not equal to the originally assumed second period aggregate capital stock $K_2^{i'}\neq K_2^i$, in general.
-
-% For every $1<t<T$, the set of period-$t$ policy functions $\phi_t(s,e,b)$ is computed by solving the full set of $S-1$ savings decisions for the age-1 household at period $t$. The policy rule $\phi_t(s,e,b)$ is then combined with the distribution of savings $\Gamma_t$ computed in period $t-1$ in order to compute the distribution of savings in the next period $\Gamma_{t+1}$. The new $\Gamma_{t+1}$ implies an aggregate capital stock $K_{t+1}^{i'}$ that, in general, is not equal to the originally assumed aggregate capital stock $K_{t+1}^{i'}\neq K_{t+1}^{i}$.\footnote{A check here for whether $T$ is large enough is if $K_T^{i'}=\bar{K}\left(\bar{\Gamma}\right)$ as well as $K_{T+1}^{i'}$ and $K_{T+2}^{i'}$. If not, then $T$ needs to be larger.}
-
-% Once this process has been completed for all $1<t<T$, a new transition path for the aggregate capital stock has been computed $\mathbf{K}^{i'}=\{K_1^{i'},K_2^{i'},...K_T^{i'}\}$. Let $\lvert\cdot\rvert$ be the sup norm. Then the fixed point necessary for the equilibrium transition path from Definition \ref{DefModelGenEquilNonSS} has been found when the distance between $\mathbf{K}^{i'}$ and $\mathbf{K}^{i}$ is arbitrarily close to zero.
-% \begin{equation}\label{EqSolMethsTPIdist}
-%    \lvert\mathbf{K}^{i'} - \mathbf{K}^{i}\rvert < \ve \quad\text{for}\quad \ve>0
-% \end{equation}
-% If the fixed point has not been found $\lvert\mathbf{K}^{i'} - \mathbf{K}^{i}\rvert > \ve$, then a new transition path for the aggregate capital stock is generated as a convex combination of $\mathbf{K}^{i'}$ and $\mathbf{K}^{i}$.
-% \begin{equation}\label{EqSolMethsTPInewpath}
-%    \mathbf{K}^{i+1} = \rho\mathbf{K}^{i'} + (1-\rho)\mathbf{K}^{i} \quad\text{for}\quad \rho\in(0,1)
-% \end{equation}
-% This process is repeated until the initial transition path for the aggregate capital stock is consistent with the transition path implied by those beliefs and household and firm optimization.
-
-% In essence, the TPI method iterates on beliefs represented by a transition path for the aggregate capital stock $\mathbf{K}^i$ until a fixed point in beliefs is found that are consistent with the transition path implied by optimization based on those beliefs.
-
-% \begin{figure}[htb]\centering \captionsetup{width=4.0in}
-%    \caption{\label{FigTPIpath}\textbf{TPI computed equilibrium transition path for aggregate capital stock $K_t$}}
-%    \fbox{\resizebox{4.0in}{3.2in}{\includegraphics{FigTPIpath.pdf}}}
-% \end{figure}
-
-% Figure \ref{FigTPIpath} shows the TPI computed transition path of the aggregate capital stock using the same calibrated example from the steady-state computation in Section \ref{SecModelGenEquil}. A detailed outline of the computational algorithm is given in Appendix \ref{AppTPIpathCompAlg}. The benchmark TPI computational method shows the aggregate capital stock $K_t$ converging to its steady state $\bar{K}$ in roughly 60 periods. It took 31 hours, 59 minutes, and 39 seconds to compute the solution by time path iteration.
-
-% The equilibrium transition path overshoots the steady state and takes 60 periods to arrive at the new steady state because the initial state is so different from the new steady state. The initial state $K_1=5.45$ in the time path in Figure \ref{FigTPIpath} is 28 percent less than the steady-state aggregate capital stock level $\bar{K}=7.62$ to which it must converge. Also, the initial distribution of savings across household types $\Gamma_1$ as defined in Section \ref{SecModelGenHous} is very different from the steady-state distribution of savings across household types $\bar{\Gamma}$.\footnote{More specifically, we assumed a uniform initial distribution of savings across all types, which resulted in an initial aggregate capital stock of $K_1=5.45$. The steady-state distribution $\bar{\Gamma}$ that results in $\bar{K}=7.62$ is not uniform.}
-
-
-
-
-
+    To solve for any non-steady-state equilibrium time path of the economy from an arbitrary current state to the steady state, we follow the time path iteration (TPI) method of \citet{AuerbachKotlikoff:1987}. Appendix \ref{AppNonSSsolve} details how to solve for the non-steady-state equilibrium time path using the TPI method. Figure \ref{FigKpathTPI} shows the equilibrium time path of the aggregate capital stock for the calibration used in Figure \ref{FigKpathTPI} for $T=70$ periods starting from an initial distribution of savings in which $b_{j,s,1}=(0.9\bar{K})/[(S-1)J]$ for all $j$ and $s$. We used $\rho=0.2$ as our time-path updating parameter (see Equation \eqref{EqTPInewpath} in Appendix \ref{AppNonSSsolve}.)
 
 
 \clearpage
+
 \end{spacing}
 
 \newpage
@@ -348,17 +289,17 @@
 
   \setcounter{equation}{0}
 
-  As described in Section \ref{SecIndProb}, individuals are allowed to borrow $b_{j,s,t}$ for some $j$ and $s$ in period $t$. However, two constraints must hold. First, the individual must be able to pay back the balance with interest $r_{t+1}$ in the next period without driving consumption in the next period $c_{j,s+1,t+1}$ to be nonpositive. Let $\bar{b}_{j,s,t}$ be the minimum value of savings in a period.
+  As described in Section \ref{SecIndProb}, individuals are allowed to borrow $b_{j,s,t}$ for some $j$ and $s$ in period $t$. However, two constraints must hold. First, the individual must be able to pay back the balance with interest $r_{t+1}$ in the next period without driving consumption in the next period $c_{j,s+1,t+1}$ to be nonpositive. Let $\tilde{b}_{j,s,t}$ be the minimum value of savings in a period.
   \begin{equation}\label{EqSavMin}
-    b_{j,s,t}\geq\bar{b}_{j,s,t} \quad\forall j,s,t
+    b_{j,s,t}\geq\tilde{b}_{j,s,t} \quad\forall j,s,t
   \end{equation}
   Rearranging the bugdet constraints in \eqref{EqBC1}, \eqref{EqBC2}, and \eqref{EqBC3} and using backward induction gives the following expressions for $\bar{b}_{j,s,t}$,
   \begin{equation}\label{EqBorConsts}
     \begin{split}
-      \bar{b}_{j,S,t} &= \frac{\ve - w_te_j(S)l(S)}{1+r_t}  \\
-      \bar{b}_{j,S-1,t-1} &= \frac{\ve + \bar{b}_{j,S,t} - w_{t-1}e_j(S-1)l(S-1)}{1+r_{t-1}} \\
+      \tilde{b}_{j,S,t} &= \frac{\ve - w_te_j(S)l(S)}{1+r_t}  \\
+      \tilde{b}_{j,S-1,t-1} &= \frac{\ve + \tilde{b}_{j,S,t} - w_{t-1}e_j(S-1)l(S-1)}{1+r_{t-1}} \\
       &\vdots \\
-      \bar{b}_{j,2,t-S+2} &= \frac{\ve + \bar{b}_{j,3,t-S+3} - w_{t-S+2}e_j(2)l(2)}{1+r_{t-S+2}}
+      \tilde{b}_{j,2,t-S+2} &= \frac{\ve + \tilde{b}_{j,3,t-S+3} - w_{t-S+2}e_j(2)l(2)}{1+r_{t-S+2}}
     \end{split}
   \end{equation}
 
@@ -372,6 +313,9 @@
 \section{Solving for steady-state equilibrium}\label{AppSSsolve}
 
   \setcounter{equation}{0}
+  \renewcommand\theenumi{\arabic{enumi}}
+  \renewcommand\theenumii{\alph{enumii}}
+  \renewcommand\theenumiii{\roman{enumiii}}
 
   This section describes the solution method for the steady-state equilibrium described in Definition \ref{DefEquilSS}.
 
@@ -406,14 +350,11 @@
 \section{Solving for non-steady-state equilibrium by time path iteration}\label{AppNonSSsolve}
 
   \setcounter{equation}{0}
-  \renewcommand\theenumi{\arabic{enumi}}
-  \renewcommand\theenumii{\alph{enumii}}
-  \renewcommand\theenumiii{\roman{enumiii}}
 
   This section outlines the benchmark time path iteration (TPI) method of \citet{AuerbachKotlikoff:1987} for solving the non-steady-state equilibrium transition path of the distribution of savings. TPI finds a fixed point for the transition path of the distribution of capital for a given initial state of the distribution of capital. The idea is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see \citet[ch. 17]{StokeyLucas:1989}).
 
   The key assumption is that the economy will reach the steady-state equilibrium described in Definition \ref{DefEquilSS} in a finite number of periods $T<\infty$ regardless of the initial state. Let $\bm{\Gamma}_t$ represent the distribution of savings at time $t$.
-  \begin{equation}\label{EqSavDist}
+  \begin{equation}\tag{\ref{EqSavDist}}
     \bm{\Gamma}_t \equiv \{b_{j,s,t}\}_{j=1,s=1}^{J,S} \quad\forall t
   \end{equation}
   In Section \ref{SecMCandEqlbm}, we described how the equilibrium non-steady-state time path of allocations and price is described by functions of the state $\bm{\Gamma}_t$ and its law of motion. TPI starts the economy at any initial distribution of savings $\bm{\Gamma}_0$ and solves for its equilibrium time path over $T$ periods to the steady-state distribution $\bar{\bm{\Gamma}}_T$.
@@ -451,60 +392,69 @@
     \end{split}\quad\forall j
   \end{equation}
 
-  Once the remaining lifetime decision rules have been solved for all households alive in period $t=1$, the set of first period policy functions $\phi_1(s,e,b)$ is complete. The first period policy function $\phi_1(s,e,b)$ is then combined with the first period distribution of capital $\Gamma_1$ to compute the second period distribution of capital $\Gamma_2$.The second period distribution of capital $\Gamma_2$ implies an aggregate capital stock $K_2^{i'}$ through \eqref{EqModelGenEquilCapMktClr} which is not equal to the originally assumed second period aggregate capital stock $K_2^{i'}\neq K_2^i$, in general.
+  We can then solve for the entire lifetime of savings decisions for each age $s=1$ individual in periods $t=2,3,...T$. The central part of the schematic diagram in Figure \ref{FigTPIdiag} shows how this process is done in order to solve for the equilibrium time path of the economy from period $t=1$ to $T$. Note that for each full lifetime savings path solved for an individual born in period $t\geq 2$, we can solve for the aggregate capital stock implied by those savings decisions $K_t^{i'}=\frac{1}{SJ}\sum_{s=1}^S\sum_{j=1}^J b_{j,s,t}$.
 
+  \begin{figure}[htb]\centering \captionsetup{width=4.0in}
+    \caption{\label{FigTPIdiag}\textbf{Diagram of TPI solution method within each iteration for $S=4$ and $J=1$}}
+    \fbox{\resizebox{4.0in}{5.0in}{\includegraphics{images/TPIdiag.pdf}}}
+  \end{figure}
 
+  % THIS IS THE CODE FOR THE TABLE UNDERLYING THE FIGURE ABOVE
+  % \begin{tabular}{>{\normalsize}l| >{\normalsize}c >{\normalsize}c >{\normalsize}c >{\normalsize}c >{\normalsize}c >{\normalsize}c >{\normalsize}c}
+  %          & Initial & & & & & & Implied \\
+  %          & Capital & & \multicolumn{3}{c}{Implied distribution} & & Capital \\
+  %   Period & Path    & & \multicolumn{3}{c}{of savings $\bm{\Gamma}_t$}   & & Path    \\
+  %   \hline
+  %   & & & & & & & \\
+  %   $t=1$ & $K_1^i$ & $=$ & $b_{2,1}$ & $b_{3,1}$ & $b_{4,1}$ & $=$ & $K_1^i$ \\[8mm]
+  %   $t=2$ & $K_2^i$ & $\rightarrow$ & $b_{2,2}$ & $b_{3,2}$ & $b_{4,2}$ & $\rightarrow$ & $K_2^{i'}$ \\[8mm]
+  %   $t=3$ & $K_3^i$ & $\rightarrow$ & $b_{2,3}$ & $b_{3,3}$ & $b_{4,3}$ & $\rightarrow$ & $K_3^{i'}$ \\[8mm]
+  %   $t=4$ & $K_4^i$ & $\rightarrow$ & $b_{2,4}$ & $b_{3,4}$ & $b_{4,4}$ & $\rightarrow$ & $K_4^{i'}$ \\[8mm]
+  %   $\quad\vdots$ & $\vdots$ & & $\vdots$ & $\vdots$ & $\vdots$ & & $\vdots$ \\[8mm]
+  %   $t=T-2$ & $K_{T-2}^i$ & $\rightarrow$ & $b_{2,T-2}$ & $b_{3,T-2}$ & $b_{4,T-2}$ & $\rightarrow$ & $K_{T-2}^{i'}$ \\[8mm]
+  %   $t=T-1$ & $K_{T-1}^i$ & $\rightarrow$ & $b_{2,T-1}$ & $b_{3,T-1}$ & $b_{4,T-1}$ & $\rightarrow$ & $K_{T-1}^{i'}$ \\[8mm]
+  %   $t=T$ & $K_{T}^i$ & $\rightarrow$ & $b_{2,T}$ & $b_{3,T}$ & $b_{4,T}$ & $\rightarrow$ & $K_T^{i'}$ \\[8mm]
+  %   $t=T+1$ & $K_{T+1}^i$ & $\rightarrow$ & $\bullet$ & $b_{3,T+1}$ & $b_{4,T+1}$ & $\rightarrow$ & $K_{T+1}^{i'}$ \\[8mm]
+  %   $t=T+2$ & $K_{T+2}^i$ & $\rightarrow$ & $\bullet$ & $\bullet$ & $b_{4,T+2}$ & $\rightarrow$ & $K_{T+2}^{i'}$ \\
+  % \end{tabular}
 
+  Once the set of lifetime saving decisions has been computed for all individuals alive in $1\leq t\leq T$, we use the household decisions to compute a new implied time path of the aggregate capital stock. The implied path of the aggregate capital stock $\bm{K}^{i'}=\{K_1^i,K_2^{i'},...K_T^{i'}\}$ in general does not equal the initial path of the aggregate capital stock $\bm{K}^{i}=\{K_1^i,K_2^{i},...K_T^{i}\}$ that was used to compute the household savings decisions $\bm{K}^{i'}\neq\bm{K}^i$.
 
-  % The computation of the time path iteration (TPI) transition path described in Section \ref{SecSolMethsTPI} requires the following steps. The MatLab code for this TPI transition path computation is available upon request.
-  % \begin{enumerate}
-  %    \item Using the parameterization from the steady-state computation, and choose the value for $T$ at which the non-steady-state transition path should have converged to the steady state. We used $T=60$.
-  %    \item Choose an initial state of the aggregate capital stock $K_1$. Choose an initial distribution of capital $\Gamma_1$ consistent with $K_1$ according to \eqref{EqModelGenEquilCapMktClr}.
-  %       \begin{itemize}
-  %          \item We chose an initial capital stock of $K_1=5.45$, which is consistent with a simple initial distribution of wealth---the distribution of ability by age spread across all possible wealth levels $\gamma_1(s,e,b)= f_s(e)/\left[(S-1)B\right]$ for all $s$, $e$, and $b$.
-  %       \end{itemize}
-  %    \item Conjecture a transition path for the aggregate capital stock $\mathbf{K}^i=\{K^i_t\}_{t=1}^\infty$ where the only requirements are that $K^i_1=K_1$ is your initial state and that $K^i_t=\bar{K}$ for all $t\geq T$. The conjectured transition path of the aggregate capital stock $\mathbf{K}^i$, along with the exogenous aggregate labor supply from \eqref{EqModelGenEquilLabMktClr}, implies specific transition paths for the real wage $\mathbf{w}^i=\{w^i_t\}_{t=1}^\infty$ and the real interest rate $\mathbf{r}^i=\{r^i_t\}_{t=1}^\infty$ through expressions \eqref{EqModelGenCobbDougProd}, \eqref{EqModelGenCobbDougRealWage}, and \eqref{EqModelGenCobbDougRentRate}.
-  %    \item With the conjectured transition paths $\mathbf{w}^i$ and $\mathbf{r}^i$, one can solve for the lifetime policy functions of each household alive at time $t=1$ by backward induction using the Euler equations of the form \eqref{EqSolMethsTPIGen1Euler}. Rows 1 through 5 of Table \ref{TabAppTPIpathCompAlgPolFunc} illustrate this process.
-  %       \begin{itemize}
-  %          \item The first line is solving for the solution of the individual who is age $S-1$ at time $t=1$ obtaining $b_{2,2}=\phi_1(S-1,e,b)$ from equation \eqref{EqSolMethsTPIGenSmin1Euler}.
-  %          \item Each subsequent row from Table \ref{TabAppTPIpathCompAlgPolFunc} represents the solution of the lifetime savings policy functions of an individual with more years remaining in their life at time $t=1$, down the the person who is age $s=1$ at time $t=1$ and has the entire set of $S-1$ policy functions characterized by \eqref{EqSolMethsTPIGen1Euler}.
-  %       \end{itemize}
+  Let $\norm{\:\cdot\:}$ be a norm on the space of time paths of the aggregate capital stock $\bm{K}\in\mathcal{K}\subset\mathbb{R}_{++}^T$. Then the fixed point necessary for the equilibrium transition path from Definition \ref{DefEquilNonSS} has been found when the distance between $\bm{K}^{i'}$ and $\bm{K}^{i}$ is arbitrarily close to zero.
+  \begin{equation}\label{EqTPIconverge}
+    \norm{\bm{K}^{i'} - \bm{K}^{i}} \leq \ve \quad\text{for}\quad \ve>0
+  \end{equation}
+  If the fixed point has not been found $\norm{\bm{K}^{i'} - \bm{K}^{i}} > \ve$, then a new transition path for the aggregate capital stock is generated as a convex combination of $\bm{K}^{i'}$ and $\bm{K}^{i}$.
+  \begin{equation}\label{EqTPInewpath}
+    \bm{K}^{i+1} = \rho\bm{K}^{i'} + (1-\rho)\bm{K}^{i} \quad\text{for}\quad \rho\in(0,1)
+  \end{equation}
+  This process is repeated until the initial transition path for the aggregate capital stock is consistent with the transition path implied by those beliefs and household and firm optimization.
 
-  % \begin{table}[htbp] \centering \captionsetup{width=6.0in}
-  % \caption{\label{TabAppTPIpathCompAlgPolFunc}\textbf{TPI backward induction policy function solution method}}
-  %     \begin{threeparttable}
-  %     \begin{tabular}{>{\scriptsize}c >{\scriptsize}c >{\scriptsize}c >{\scriptsize}c >{\scriptsize}c >{\scriptsize}c >{\scriptsize}c}
-  %         \hline\hline
-  %         $t=1$ & $t=2$ & $t=3$ & $\cdot$ & $t=S-2$ & $t=S-1$ & $t=S$ \\
-  %         \hline
-  %         $\phi_1(S-1,e,b)$ & & & & & & \\
-  %         $\phi_1(S-2,e,b)$ & $\phi_2(S-1,e,b)$ & & & & & \\
-  %         $\phi_1(S-3,e,b)$ & $\phi_2(S-2,e,b)$ & $\phi_3(S-1,e,b)$ & & & & \\
-  %         $\vdots$ & $\vdots$ & $\vdots$ & & & & \\
-  %         $\phi_1(2,e,b)$ & $\phi_2(3,e,b)$ & $\phi_3(4,e,b)$ & $\cdots$ & & & \\
-  %         $\phi_1(1,e,b)$ & $\phi_2(2,e,b)$ & $\phi_3(3,e,b)$ & $\cdots$ & $\phi_{S-2}(S-1,e,b)$ & & \\
-  %         & $\phi_2(1,e,b)$ & $\phi_3(2,e,b)$ & $\cdots$ & $\phi_{S-2}(S-2,e,b)$ & $\phi_{S-1}(S-1,e,b)$ & \\
-  %         &  & $\phi_3(1,e,b)$ & $\cdots$ & $\phi_{S-2}(S-3,e,b)$ & $\phi_{S-1}(S-2,e,b)$ & $\phi_{S}(S-1,e,b)$ \\
-  %         & & & & $\vdots$ & $\vdots$ & $\vdots$ \\
-  %         \hline
-  %         $\Gamma_2,K_2$ & $\Gamma_3,K_3$ & $\Gamma_4,K_4$ & $\cdots$ & $\Gamma_{S-1},K_{S-1}$ & $\Gamma_{S},K_{S}$ & $\Gamma_{S+1},K_{S+1}$ \\
-  %         \hline\hline
-  %     \end{tabular}
-  %     \end{threeparttable}
-  % \end{table}
+  In essence, the TPI method iterates on individual beliefs about the time path of prices represented by a time path for the aggregate capital stock $\bm{K}^i$ until a fixed point in beliefs is found that are consistent with the transition path implied by optimization based on those beliefs.
 
-  %    \item In similar fashion to step (4), solve for the lifetime policy functions by backward induction for the age $s=1$ household at times $2\leq t \leq T$. In Table \ref{TabAppTPIpathCompAlgPolFunc}, this means solving for the policy functions in the last two rows down to the age $s=1$ household at time $t=T$.
-  %    \item Each column in Table \ref{TabAppTPIpathCompAlgPolFunc} represents a complete set of policy functions for the corresponding period. Using the initial distribution of wealth $\Gamma_1$ and all the period $t=1$ policy functions $\phi_1(s,e,b)$ for the households alive at time $t=1$, the next period distribution of wealth $\Gamma_2$ and the corresponding aggregate capital stock $K^{i'}_2$ can be calculated. Consecutively repeat this procedure for each time period (column of Table \ref{TabAppTPIpathCompAlgPolFunc}) until a new transition path for the aggregate capital stock has been computed $\mathbf{K}^{i'}=\{K^{i'}_t\}_{t=1}^T$.
-  %    \item Generate a new guess for the transition path of the aggregate capital stock $\mathbf{K}^{i+1}$ as a convex combination of the initially conjectured transition path $\mathbf{K}^{i}$ and the newly generated transition path $\mathbf{K}^{i'}$.
-  %       \begin{equation*}
-  %          \mathbf{K}^{i+1} = \rho\mathbf{K}^{i'} + (1-\rho)\mathbf{K}^i \quad\text{where}\quad \rho\in(0,1)
-  %       \end{equation*}
-  %    \item Repeat steps (4) through (7) until the distance between $\mathbf{K}^{i'}$ and $\mathbf{K}^{i}$ is arbitrarily close to zero, where $i$ is the index of the iteration number. Let $|\cdot|$ be the sup norm and let $\ve>0$ be some scalar arbitrarily close to zero. Then the rational expectations equilibrium transition path of the economy is found when when $\left|\mathbf{K}^{i'} - \mathbf{K}^i\right| < \ve$.
-  % \end{enumerate}
+  The following are the steps for computing a non-steady-state equilibrium time path for the economy.
+  \begin{enumerate}
+    \item Using the parameterization from the steady-state computation, and choose the value for $T$ at which the non-steady-state transition path should have converged to the steady state.
+    \item Choose an initial state of the aggregate capital stock $K_1$. Choose an initial distribution of savings $\bm{\Gamma}_1$ consistent with $K_1$ according to \eqref{EqMktClrCap}.
+    \item Conjecture a transition path for the aggregate capital stock $\bm{K}^i=\{K^i_t\}_{t=1}^\infty$ where the only requirements are that $K^i_1=K_1$ is your initial state and that $K^i_t=\bar{K}$ for all $t\geq T$. The conjectured transition path of the aggregate capital stock $\bm{K}^i$, along with the exogenous aggregate labor supply from \eqref{EqMktClrLab}, implies specific transition paths for the real wage $\bm{w}^i=\{w^i_t\}_{t=1}^\infty$ and the real interest rate $\bm{r}^i=\{r^i_t\}_{t=1}^\infty$ through expressions \eqref{EqCobbDougProd}, \eqref{EqFOCwage}, and \eqref{EqFOCrate}.
+    \item With the conjectured transition paths $\bm{w}^i$ and $\bm{r}^i$, one can solve for the lifetime policy functions of each household alive at time $1\leq t\leq T$ using the systems of Euler equations of the form \eqref{EqEulerFullp1}.
+      \begin{enumerate}
+        \item Make sure that the individual borrowing constraints \eqref{EqSavMin} are satisfied for each individual in every period.
+        \item Increase any individual savings to the minimum $\tilde{b}_{j,s,t}$ if the borrowing constraint is not satisfied.
+      \end{enumerate}
+    \item Use the implied distribution of savings in each period (each row of $b_{j,s,t}$ in Figure \ref{FigTPIdiag}) to compute the new implied time path for the aggregate capital stock $\bm{K}^{i'} = \{K_1^i,K_2^{i'},...K_T^{i'}\}$.
+      \begin{enumerate}
+        \item Make sure that the aggregate borrowing constraint \eqref{EqAggrCapConstr} is satisfied in each period $t$.
+        \item If the aggregate borrowing constraint is not satisfied, increase every individual's savings by the fraction that makes the aggregate capital stock slightly greater than zero.
+      \end{enumerate}
+    \item Check the distance between the two time paths $\norm{\bm{K}^{i'}-\bm{K}^i}$.
+      \begin{enumerate}
+        \item If the distance between the initial time path and the implied time path is less-than-or-equal-to some convergence criterion $\ve>0$, then the fixed point has been achieved and the equilibrium time path has been found \eqref{EqTPIconverge}.
+        \item If the distance between the initial time path and the implied time path is greater than some convergence criterion $\norm{}>\ve$, then update the guess for the time path of the aggregate capital stock according to \eqref{EqTPInewpath} and repeat steps (4) through (6) until a fixed point is reached.
+      \end{enumerate}
+  \end{enumerate}
 
-  % In our example, the computation of the TPI transition path took 31 hours, 59 minutes, and 39 seconds. Figure \ref{FigTPIpath} shows the transition path of the aggregate capital stock from its initial state at $K_1$ to the steady state $\bar{K}$. The aggregate capital stock arrived at its steady state in about 60 periods.
-
-  % \clearpage
+  \clearpage
 
 
 \newpage
@@ -536,7 +486,7 @@
 \section{Comments and Notes}\label{TAppComments}
 
   \begin{itemize}
-    \item We don't need to put the PSID acknowledgment text in our thanks on the title page. We just cite in our ability calibration appendix that we used any PSID data.
+    \item Put comments and notes here.
   \end{itemize}
 
 
