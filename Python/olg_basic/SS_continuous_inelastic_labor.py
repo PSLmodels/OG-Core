@@ -300,6 +300,23 @@ ax2.set_zlabel('Consumption')
 ax2.set_title('Steady State Distribution of Consumption')
 plt.savefig('OUTPUT/consumption_3D')
 
+'''
+------------------------------------------------------------------------
+Graph of Distribution of Income
+------------------------------------------------------------------------
+'''
+
+# 3D Graph
+cmap2 = matplotlib.cm.get_cmap('winter')
+fig2 = plt.figure(5)
+ax2 = fig2.gca(projection='3d')
+ax2.plot_surface(X, Y, e.T, rstride=1, cstride=2, cmap=cmap2)
+ax2.set_xlabel(r'Age Cohorts $S$')
+ax2.set_ylabel(r'Ability Types $J$')
+ax2.set_zlabel('Income Level')
+# ax2.set_title('Income Levels')
+plt.savefig('OUTPUT/ability_3D')
+
 
 '''
 ------------------------------------------------------------------------
@@ -314,7 +331,7 @@ k3 = np.array(list(Kssmat[1:, :]) + list(np.zeros(J).reshape((1, J))))
 euler_justcapital = Euler_justcapital(wss, rss, f, e, n, k1, k2, k3)
 
 
-plt.figure(5)
+plt.figure(6)
 plt.plot(domain[1:], np.abs(euler_justcapital).max(1))
 plt.title('Euler Errors')
 plt.xlabel('Age Cohorts')
