@@ -313,7 +313,7 @@ ax2 = fig2.gca(projection='3d')
 ax2.plot_surface(X, Y, e.T, rstride=1, cstride=2, cmap=cmap2)
 ax2.set_xlabel(r'Age Cohorts $S$')
 ax2.set_ylabel(r'Ability Types $J$')
-ax2.set_zlabel('Income Level')
+ax2.set_zlabel(r'Income Level $e_j(s)$')
 # ax2.set_title('Income Levels')
 plt.savefig('OUTPUT/ability_3D')
 
