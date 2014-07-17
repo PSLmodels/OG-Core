@@ -42,8 +42,6 @@ rho   = contraction parameter in steady state iteration process
 A     = total factor productivity parameter in firms' production
         function
 delta = depreciation rate of capital
-xi    = ...
-eta   = ...
 n     = 1 x S vector of inelastic labor supply for each age s
 e     = S x J matrix of age dependent possible working abilities e_s
 f     = S x J x J matrix of age dependent discrete probability mass

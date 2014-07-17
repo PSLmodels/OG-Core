@@ -43,7 +43,6 @@ A     = total factor productivity parameter in firms' production
 delta = depreciation rate of capital
 xi    = ...
 eta   = ...
-n     = 1 x S vector of inelastic labor supply for each age s
 e     = S x J matrix of age dependent possible working abilities e_s
 f     = S x J x J matrix of age dependent discrete probability mass
         function for e as Markov proccess: f(e_s)
@@ -62,23 +61,6 @@ A = 1.0
 delta = 1 - (0.95 ** (60.0 / S))
 xi = 1.5
 eta = .5
-if S >= 12:
-    n = np.ones(S)
-    n[0:S/10+1] = np.linspace(0.865, 1, (S/10)+1)
-    n[- 2*((S/12)+1)+1 - ((S/6)+2): - 2*((S/12)+1)+1] = np.linspace(
-        1, 0.465, (S/6)+2)
-    n[- 2*((S/12)+1): -(S/12+1)+1] = np.linspace(0.465, .116, (S/12)+2)
-    n[-(S/12+1):] = np.linspace(0.116, .093, (S/12)+1)
-# The above method doesn't work well with very small S, so we have this
-# alternative
-else:
-    n = np.ones(60)
-    n[0:6] = np.array([.865, .8875, .91, .9325, .955, .9775])
-    n[40:] = np.array(
-        [.9465, .893, .8395, .786, .7325, .679, .6255, .572, .5185,
-         .465, .3952, .3254, .2556, .1858, .116, .1114, .1068, .1022,
-         .0976, .093])
-    n = n[60 % S:: 60 / S]
 e = income.get_e(S, J)
 f = income.get_f_noswitch(S, J)
 
@@ -177,14 +159,6 @@ def MUl(l):
     return output
 
 
-def Euler_justcapital(w, r, f, e, n, K1, K2, K3):
-    euler = MUc((1 + r)*K1 + w * e[:-1, :] * n[:-1].reshape(
-        S-1, 1) - K2) - beta * (1 + r)*MUc(
-        (1 + r)*K2 + w * (e[1:, :].reshape(S-1, J, 1) * f[
-            1:, :, :]).sum(axis=2) * n[1:].reshape(S-1, 1) - K3)
-    return euler
-
-
 def Euler1(w, r, f, e, N_guess, K1, K2, K3):
     euler = MUc((1 + r)*K1 + w * e[:-1, :] * N_guess[:-1, :] - K2) - beta * (
         1 + r)*MUc((1 + r)*K2 + w * (e[1:, :].reshape(S-1, J, 1) * f[
@@ -207,36 +181,21 @@ def Steady_State(guesses):
     K_guess = guesses[0: (S-1) * J ]
     K_guess = K_guess.reshape((S-1, J))
     K = K_guess.mean()
-
-    # Labor Leisure only:
     N_guess = guesses[(S-1) * J :]
     N_guess = N_guess.reshape((S, J))
     N = get_N(e, N_guess)
-
-    # N = get_N(e, n)
     Y = get_Y(K, N)
     w = get_w(Y, N)
     r = get_r(Y, K)
-
     K1 = np.array(list(np.zeros(J).reshape(1, J)) + list(K_guess[:-1, :]))
     K2 = K_guess
     K3 = np.array(list(K_guess[1:, :]) + list(np.zeros(J).reshape(1, J)))
-
     K1_2 = np.array(list(np.zeros(J).reshape(1, J)) + list(K_guess))
     K2_2 = np.array(list(K_guess) + list(np.zeros(J).reshape(1, J)))
-
-    # error_onlycapital = Euler_justcapital(w, r, f, e, n, K1, K2, K3)
-
-    # Labor Leisure only:
     error1 = Euler1(w, r, f, e, N_guess, K1, K2, K3)
     error2 = Euler2(w, r, e, N_guess, K1_2, K2_2)
-
-    # Labor Leisure only:
     # return np.array(list(error1.flatten()) + list(error2.flatten()))
     return np.array(list(error1.flatten()) + list(error2.flatten())).sum()
-
-
-    # return error_onlycapital.flatten()
 
 K_guess_init = np.ones((S-1, J))
 N_guess_init = np.ones((S, J)) * .1
@@ -247,28 +206,20 @@ solutions = opt.minimize(Steady_State, guesses)
 print 'It converged:', solutions.success
 solutions = solutions.x
 
-# solutions = opt.fsolve(Steady_State, K_guess_init, xtol=1e-9)
-
 # Solvers for large matrices
 # solutions = newton_krylov(Steady_State, guesses, method='gmres', verbose=1)
 # solutions = anderson(Steady_State, guesses, verbose=1)
 
 Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
-# Kssmat = solutions[:S-1, :]
 Kssvec = Kssmat.mean(1)
 Kss = Kssvec.mean()
 K_agg = Kssmat.sum()
 if K_agg <= 0:
     print 'WARNING: Aggregate capital is less than or equal to zero.'
 Kssvec = np.array([0]+list(Kssvec))
-
-# Labor Leisure only
 Nssmat = solutions[(S-1) * J:].reshape(S, J)
-# Nssmat = solutions[S-1:,:]
 Nssvec = Nssmat.mean(1)
 Nss = Nssvec.mean()
-
-# Nss = get_N(e, n)
 Yss = get_Y(Kss, Nss)
 wss = get_w(Yss, Nss)
 rss = get_r(Yss, Kss)
@@ -359,10 +310,6 @@ Check Euler Equations
 k1 = np.array(list(np.zeros(J).reshape((1, J))) + list(Kssmat[:-1, :]))
 k2 = Kssmat
 k3 = np.array(list(Kssmat[1:, :]) + list(np.zeros(J).reshape((1, J))))
-
-# euler_justcapital = Euler_justcapital(wss, rss, f, e, n, k1, k2, k3)
-
-# labor Leisure Only:
 k1_2 = np.array(list(np.zeros(J).reshape((1, J))) + list(Kssmat))
 k2_2 = np.array(list(Kssmat) + list(np.zeros(J).reshape((1, J))))
 
@@ -370,9 +317,6 @@ euler1 = Euler1(wss, rss, f, e, Nssmat, k1, k2, k3)
 euler2 = Euler2(wss, rss, e, Nssmat, k1_2, k2_2)
 
 plt.figure(5)
-# plt.plot(domain[1:], np.abs(euler_justcapital).max(1))
-
-# Labor Leisure Only:
 plt.plot(domain[1:], np.abs(euler1).max(1), label='Capital')
 plt.plot(domain, np.abs(euler2).max(1), label='Labor')
 plt.legend(loc=0)
