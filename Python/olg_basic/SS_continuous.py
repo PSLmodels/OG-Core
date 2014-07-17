@@ -50,6 +50,7 @@ f     = S x J x J matrix of age dependent discrete probability mass
 ------------------------------------------------------------------------
 '''
 
+# Parameters
 starttime = time.time()
 S = 60
 J = 7
@@ -210,7 +211,7 @@ def Steady_State(guesses):
     # Labor Leisure only:
     N_guess = guesses[(S-1) :]
     # N_guess = N_guess.reshape((S, J))
-    N = (e[:,j]*N_guess).mean()
+    N = get_N(e[:,j], N_guess)
 
     # N = get_N(e, n)
     Y = get_Y(K, N)
@@ -230,14 +231,8 @@ def Steady_State(guesses):
     error1 = Euler1(w, r, f, e, N_guess, K1, K2, K3)
     error2 = Euler2(w, r, e, N_guess, K1_2, K2_2)
 
-    # if (((1 + r)*K1_2 + w * e * N_guess - K2_2) <= 0).any():
-    #     error1 += 10000
-    # if (N_guess < 0.0).any() or (N_guess>3.0).any():
-    #     error2 += 10000
-
     # Labor Leisure only:
-    error1, error2 = error1.flatten(), error2.flatten()
-    return np.array(list(error1) + list(error2))
+    return list(error1) + list(error2)
 
     # return error_onlycapital.flatten()
 
@@ -249,8 +244,7 @@ N_guess_init = np.ones((S, J)) / (S*J)
 # Labor Leisure Only:
 solutions = np.zeros((S+S-1,J))
 for j in xrange(J):
-    print j
-    guesses = np.array(list(K_guess_init[:,j].flatten()) + list(N_guess_init[:,j].flatten()))
+    guesses = list(K_guess_init[:,j].flatten()) + list(N_guess_init[:,j].flatten())
     solutions[:,j] = opt.fsolve(Steady_State, guesses, xtol=1e-9)
 
 # Solvers for large matrices

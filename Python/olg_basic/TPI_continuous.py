@@ -16,12 +16,7 @@ This py-file creates the following other file(s):
 ------------------------------------------------------------------------
 '''
 
-'''
-------------------------------------------------------------------------
-    Packages
-------------------------------------------------------------------------
-'''
-
+# Packages
 import numpy as np
 import matplotlib
 matplotlib.use('Agg')
@@ -140,39 +135,6 @@ def Euler_Error(K_guess, winit, rinit, t):
 
     return error.flatten()
 
-
-def Euler_Error2(K_guess, winit, rinit, e, n):
-
-    K_guess = K_guess.reshape(T+S-1,S-1)
-
-    K1 = np.zeros((T+S-1,S-1))
-    K1[0,1:] = .9*Kssmat.reshape(S-1,J)[:-1,i]
-    K1[1:,1:] = K_guess[:-1,:-1]
-
-    K2 = K_guess
-
-    K3 = np.zeros((T+S-1,S-1))
-    K3[-1,:-1] = Kssmat.reshape(S-1,J)[1:,i]
-    K3[:-1,:-1] = K_guess[1:,1:]
-
-    n1 = n[:-1].reshape(1,S-1)
-    n2 = n[1:].reshape(1,S-1)
-
-    w1 = winit[:-1].reshape(T+S-1,1)
-    w2 = winit[1:].reshape(T+S-1,1)
-
-    r1 = rinit[:-1].reshape(T+S-1,1)
-    r2 = rinit[1:].reshape(T+S-1,1)
-
-    e1 = e[:-1,i].reshape(1,S-1)
-    e2 = e[1:,i].reshape(1,S-1)
-
-    error = MUc((1 + r1)*K1 + w1 * e1 * n1 - K2) \
-        - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*n2 - K3)
-
-    return error.flatten()
-
-zero_func = lambda x: Euler_Error2(x, winit, rinit, e, n)
 
 Kinit = np.array(list(np.linspace(K0, Kss, T)) + list(np.ones(S)*Kss))
 Ninit = np.ones(T+S) * Nss
