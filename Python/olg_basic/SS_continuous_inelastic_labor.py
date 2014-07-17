@@ -203,7 +203,7 @@ def Steady_State(guesses):
     error_onlycapital = Euler_justcapital(w, r, f, e, n, K1, K2, K3)
     return error_onlycapital.flatten()
 
-K_guess_init = np.ones((S-1, J)) * .05
+K_guess_init = np.ones((S-1, J)) / ((S-1) * J)
 
 solutions = opt.fsolve(Steady_State, K_guess_init, xtol=1e-9)
 
