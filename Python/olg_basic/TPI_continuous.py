@@ -132,14 +132,11 @@ def Euler_Error(K_guess, winit, rinit, t):
     e1 = e[-(length+1):-1, j]
     e2 = e[-length:, j]
 
-    e2length = e2.shape[0]
-    e2shape = e2.shape
-    e2 = e2.reshape(e2length, 1, 1)
-    f2 = f[-length:, j, :].reshape(e2length, 1, J)
+    e2 = e2.reshape(length, 1)
+    f2 = f[-length:, j, :]
     
-
     error = MUc((1 + r1)*K1 + w1 * e1 * n1 - K2) \
-        - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*(e2 * f2).sum(axis=2).reshape(e2shape)*n2 - K3)
+        - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*(e2 * f2).sum(axis=1)*n2 - K3)
 
     return error.flatten()
 
