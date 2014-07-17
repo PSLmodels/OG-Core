@@ -193,11 +193,11 @@ print 'TPI took %.0f hours, %.0f minutes, and %.0f seconds.' % (
 
 plt.figure(5)
 plt.plot(
-    np.arange(T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label="Capital Path")
-plt.xlabel("Time")
-plt.ylabel("Aggregate Capital")
-plt.title("Time Path of Capital Stock")
-plt.axhline(y=Kss, color='black', linewidth=2, label="Steady State", ls='--')
+    np.arange(T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path K$_t$")
+plt.xlabel("Time t")
+plt.ylabel("Aggregate Capital K")
+plt.title(r"Time Path of Capital Stock K$_t$")
+plt.axhline(y=Kss, color='black', linewidth=2, label="Steady State K", ls='--')
 plt.legend(loc=0)
 plt.savefig("OUTPUT/TPI")
 

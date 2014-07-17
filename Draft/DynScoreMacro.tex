@@ -199,7 +199,7 @@
 
     \begin{figure}[htb]\centering \captionsetup{width=4.0in}
       \caption{\label{FigSavSS}\textbf{Steady-state distribution of savings $\bar{\bm{\Gamma}}$ for $S=60$ and $J=7$}}
-      \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/SavSS.pdf}}}
+      \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/SavSS.png}}}
     \end{figure}
 
     Define $\bm{\Gamma}_t$ as the distribution of savings across individuals at time $t$.
@@ -274,12 +274,6 @@
   The data used to calibrate the ability types were obtained from the Current Population Survey.\footnote{U.S. Census Bureau, Dataferret, Current Population Survey, 2014. The variables $PRTAGE$ and $PTERNHLY$ were used for the age and hourly wage rate of individuals, respectively. \\ [-2pt]} Individuals younger than 20 and older than 79 are dropped from the data. This is due to the extremely small amount of observations for ages outside of those bounds. The data was truncated to allow for either method. Due to a limited number of observations in the survey who included their hourly wage, data was taken from the months of January, February, March, April, and May 2014.  The ability types were then calculated for each month, and then an average was taken of the five calibrations of the ability types in order to produce a final calibration to be used in the model.
 
   The ability types evolve according to a Markov process, which is altered depending on the specifications of the model.  An individual in period $s$ and of ability type $j$ faces a distribution which will determine in which ability type they fall in the period $s+1$.  In this paper, individuals are assigned ability types at the beginning of their life, and cannot change types later on.  This Markov process is simply an identity matrix for each age group.
-
-  However, the model will readily accept a more complex Markov process.  The data used to create the Markov process comes from the Panel Study of Income Dynamics (PSID) for 1999 and 2001. \footnote{Panel Study of Income Dynamics, public use dataset. Produced and distributed by the Survey Research Center, Institute for Social Research, University of Michigan, Ann Arbor, MI (2014). The variables for age and wage in 1999 and age and wage in 2001 are $ER33504$, $ER33537O$, $ER33604$, and $ER33628O$, respectively.\\ [-2pt]} Again, since $S=60$, only individuals with ages 20 through 79 are included.  Wages in 1999 are multiplied by 1.06303 to convert them to 2001 wages. Individuals without wage information in both years are dropped. Due to the low number of observations per age group, one Markov process is generated which is applied to all age groups in the model. \cite{Nishiyama:2003} noted that this Markov transition matrix was reasonably consistent across age cohorts, and so using the same process for all cohorts should not present a problem in the model.
-
-  To generate the transition matrix, the 1999 and 2001 wages are sorted into $J$ percentile groups.  For each percentile group in 2001, the number of individuals that came from each of the percentile groups in 1999 are counted.  This generates $J ** 2$ summations of individuals, $J$ for each percentile group.  Then, the $J$ summations for the first percentile group in 2001 are divided by the count of individuals in the first percentile group in 1999.  Next, the $J$ summations for the second percentile group in 2001 are divided by the count of individuals in the second percentile group in 1999.  This continues through the $J^{th}$ percentile group.  We then have a $J \times J$ matrix of probabilities, where the first row is the probability of being in the first percentile group, given that one is in the $j^{th}$ percentile group before (where $j$ indicates the column of the matrix), and so on.
-
-  Because this Markov transitional matrix represents the probabilities of changing abilities types after two years, we must take the ``square root'' of the matrix.  This process is described in the Python code for the model, and involves diagonalizing the matrix and taking the square root of the diagonalized matrix.  Finally, the Markov matrix is then raised to the $60/S$ power, denoting the number of years that separate each age cohort.
 
 % Do we need to cite the data set sources? (for both e and f)
 
