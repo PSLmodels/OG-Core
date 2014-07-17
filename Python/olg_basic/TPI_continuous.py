@@ -153,11 +153,11 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat = np.zeros((T+S, S-1, J))
     for j in xrange(J):
         for s in xrange(S-2):  # Upper triangle
-            K_vec = opt.fsolve(Euler_Error, initial[-(s+1):, j], args=(winit, rinit, 0))
+            K_vec = opt.fsolve(Euler_Error, initial[-(s+1):, j]/100.0, args=(winit, rinit, 0))
             K_mat[1:S, :, j] += np.diag(K_vec, S-(s+2))
 
         for t in xrange(1, T-1):
-            K_vec = opt.fsolve(Euler_Error, initial[:, j], args=(winit, rinit, t))
+            K_vec = opt.fsolve(Euler_Error, initial[:, j]/100.0, args=(winit, rinit, t))
             K_mat[t:t+S-1, :, j] += np.diag(K_vec)
         if (K_mat.sum() <= 0).any():
             print 'WARNING: Aggregate capital stock is less than or' \
