@@ -153,7 +153,7 @@ def get_N(e, n):
 
     Returns:    Aggregate labor
     '''
-    N_now = np.mean(e * n.reshape(S, 1))
+    N_now = np.mean(e * n)
     return N_now
 
 
@@ -173,7 +173,7 @@ def MUl(l):
 
     Returns:    Marginal Utility of Labor
     '''
-    output = - eta * (l ** (-xi))
+    output = - eta * ((1-l) ** (-xi))
     return output
 
 
@@ -186,14 +186,14 @@ def Euler_justcapital(w, r, f, e, n, K1, K2, K3):
 
 
 def Euler1(w, r, f, e, N_guess, K1, K2, K3):
-    euler = MUc((1 + r)*K1 + w * e[:-1, j] * N_guess[:-1] - K2) - beta * (
-        1 + r)*MUc((1 + r)*K2 + w * (e[1:, j].reshape(S-1, 1) * f[
-            1:, j, :]).sum(axis=1) * N_guess[1:] - K3)
+    euler = MUc((1 + r)*K1 + w * e[:-1, :] * N_guess[:-1, :] - K2) - beta * (
+        1 + r)*MUc((1 + r)*K2 + w * (e[1:, :].reshape(S-1, J, 1) * f[
+            1:, :, :]).sum(axis=2) * N_guess[1:, :] - K3)
     return euler
 
 
 def Euler2(w, r, e, N_guess, K1_2, K2_2):
-    euler = MUc((1 + r)*K1_2 + w * e[:,j] * N_guess - K2_2) * w * e[:,j] + MUl(N_guess)
+    euler = MUc((1 + r)*K1_2 + w * e[:,:] * N_guess - K2_2) * w * e[:,:] + MUl(N_guess)
     return euler
 
 
@@ -204,26 +204,26 @@ def Steady_State(guesses):
 
     Returns:    Array of S-1 Euler equation errors
     '''
-    K_guess = guesses[0: (S-1) ]
-    # K_guess = K_guess.reshape((S-1, J))
+    K_guess = guesses[0: (S-1) * J ]
+    K_guess = K_guess.reshape((S-1, J))
     K = K_guess.mean()
 
     # Labor Leisure only:
-    N_guess = guesses[(S-1) :]
-    # N_guess = N_guess.reshape((S, J))
-    N = get_N(e[:,j], N_guess)
+    N_guess = guesses[(S-1) * J :]
+    N_guess = N_guess.reshape((S, J))
+    N = get_N(e, N_guess)
 
     # N = get_N(e, n)
     Y = get_Y(K, N)
     w = get_w(Y, N)
     r = get_r(Y, K)
 
-    K1 = np.array([0] + list(K_guess[:-1]))
+    K1 = np.array(list(np.zeros(J).reshape(1, J)) + list(K_guess[:-1, :]))
     K2 = K_guess
-    K3 = np.array(list(K_guess[1:]) + [0])
+    K3 = np.array(list(K_guess[1:, :]) + list(np.zeros(J).reshape(1, J)))
 
-    K1_2 = np.array([0] + list(K_guess))
-    K2_2 = np.array(list(K_guess) + [0])
+    K1_2 = np.array(list(np.zeros(J).reshape(1, J)) + list(K_guess))
+    K2_2 = np.array(list(K_guess) + list(np.zeros(J).reshape(1, J)))
 
     # error_onlycapital = Euler_justcapital(w, r, f, e, n, K1, K2, K3)
 
@@ -232,27 +232,29 @@ def Steady_State(guesses):
     error2 = Euler2(w, r, e, N_guess, K1_2, K2_2)
 
     # Labor Leisure only:
-    return list(error1) + list(error2)
+    # return np.array(list(error1.flatten()) + list(error2.flatten()))
+    return np.array(list(error1.flatten()) + list(error2.flatten())).sum()
+
 
     # return error_onlycapital.flatten()
 
-K_guess_init = np.ones((S-1, J)) /((S-1)*J)
-N_guess_init = np.ones((S, J)) / (S*J)
+K_guess_init = np.ones((S-1, J))
+N_guess_init = np.ones((S, J)) * .1
+
+guesses = np.array(list(K_guess_init.flatten()) + list(N_guess_init.flatten()))
+# solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9)
+solutions = opt.minimize(Steady_State, guesses)
+print 'It converged:', solutions.success
+solutions = solutions.x
 
 # solutions = opt.fsolve(Steady_State, K_guess_init, xtol=1e-9)
-
-# Labor Leisure Only:
-solutions = np.zeros((S+S-1,J))
-for j in xrange(J):
-    guesses = list(K_guess_init[:,j].flatten()) + list(N_guess_init[:,j].flatten())
-    solutions[:,j] = opt.fsolve(Steady_State, guesses, xtol=1e-9)
 
 # Solvers for large matrices
 # solutions = newton_krylov(Steady_State, guesses, method='gmres', verbose=1)
 # solutions = anderson(Steady_State, guesses, verbose=1)
 
-# Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
-Kssmat = solutions[:S-1, :]
+Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
+# Kssmat = solutions[:S-1, :]
 Kssvec = Kssmat.mean(1)
 Kss = Kssvec.mean()
 K_agg = Kssmat.sum()
@@ -261,8 +263,8 @@ if K_agg <= 0:
 Kssvec = np.array([0]+list(Kssvec))
 
 # Labor Leisure only
-# Nssmat = solutions[(S-1) * J:].reshape(S, J)
-Nssmat = solutions[S-1:,:]
+Nssmat = solutions[(S-1) * J:].reshape(S, J)
+# Nssmat = solutions[S-1:,:]
 Nssvec = Nssmat.mean(1)
 Nss = Nssvec.mean()
 
@@ -352,27 +354,28 @@ plt.savefig('OUTPUT/consumption_3D')
 ------------------------------------------------------------------------
 Check Euler Equations
 ------------------------------------------------------------------------
-
 '''
+
 k1 = np.array(list(np.zeros(J).reshape((1, J))) + list(Kssmat[:-1, :]))
 k2 = Kssmat
 k3 = np.array(list(Kssmat[1:, :]) + list(np.zeros(J).reshape((1, J))))
 
-euler_justcapital = Euler_justcapital(wss, rss, f, e, n, k1, k2, k3)
+# euler_justcapital = Euler_justcapital(wss, rss, f, e, n, k1, k2, k3)
 
 # labor Leisure Only:
-# k1_2 = np.array(list(np.zeros(J).reshape((1, J))) + list(Kssmat))
-# k2_2 = np.array(list(Kssmat) + list(np.zeros(J).reshape((1, J))))
-# euler1 = Euler1(wss, rss, f, e, Nssmat, k1, k2, k3)
-# euler2 = Euler2(wss, rss, e, Nssmat, k1_2, k2_2)
+k1_2 = np.array(list(np.zeros(J).reshape((1, J))) + list(Kssmat))
+k2_2 = np.array(list(Kssmat) + list(np.zeros(J).reshape((1, J))))
+
+euler1 = Euler1(wss, rss, f, e, Nssmat, k1, k2, k3)
+euler2 = Euler2(wss, rss, e, Nssmat, k1_2, k2_2)
 
 plt.figure(5)
-plt.plot(domain[1:], np.abs(euler_justcapital).max(1))
+# plt.plot(domain[1:], np.abs(euler_justcapital).max(1))
 
 # Labor Leisure Only:
-# plt.plot(domain[1:], np.abs(euler1).max(1), label='Capital')
-# plt.plot(domain, np.abs(euler2).max(1), label='Labor')
-# plt.legend(loc=0)
+plt.plot(domain[1:], np.abs(euler1).max(1), label='Capital')
+plt.plot(domain, np.abs(euler2).max(1), label='Labor')
+plt.legend(loc=0)
 
 plt.title('Euler Errors')
 plt.savefig('OUTPUT/euler_errors')
