@@ -59,7 +59,7 @@ alpha = .35
 rho = .20
 A = 1.0
 delta = 1 - (0.95 ** (60.0 / S))
-xi = 3.0
+xi = 1.5
 eta = .5
 if S >= 12:
     n = np.ones(S)
@@ -241,15 +241,15 @@ def Steady_State(guesses):
 
     # return error_onlycapital.flatten()
 
-K_guess_init = np.ones((S-1, J)) *.05
-N_guess_init = np.ones((S, J)) *.1
-guesses = np.array(list(K_guess_init.flatten()) + list(N_guess_init.flatten()))
+K_guess_init = np.ones((S-1, J)) /((S-1)*J)
+N_guess_init = np.ones((S, J)) / (S*J)
 
 # solutions = opt.fsolve(Steady_State, K_guess_init, xtol=1e-9)
 
 # Labor Leisure Only:
 solutions = np.zeros((S+S-1,J))
 for j in xrange(J):
+    print j
     guesses = np.array(list(K_guess_init[:,j].flatten()) + list(N_guess_init[:,j].flatten()))
     solutions[:,j] = opt.fsolve(Steady_State, guesses, xtol=1e-9)
 
