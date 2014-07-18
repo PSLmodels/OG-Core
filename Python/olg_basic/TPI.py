@@ -75,9 +75,26 @@ K0      = initial aggregate capital stock
 ------------------------------------------------------------------------
 '''
 
+
+def borrowing_constraints(K_dist, w, r, e, n):
+    b_min = np.zeros((S-1, J))
+    b_min[-1, :] = (epsilon - w * e[S-1, :] * n[S-1]) / (1 + r)
+    for i in xrange(S-2):
+        b_min[-(i+2), :] = (epsilon + b_min[-(i+1), :] - w * e[-(i+2), :] * n[-(i+2)]) / (1 + r)
+    difference = K_dist - b_min
+    if (difference < 0).any():
+        return True
+    else:
+        return False
+
 T = 70
 # r = (np.random.rand(S-1,J) + .5) * .2
 initial = .9 * Kssmat.reshape(S-1, J)
+problem = borrowing_constraints(initial, wss, rss, e, n)
+if problem is True:
+    print 'The initial distribution does not fulfill the borrowing constraints.'
+else:
+    print 'The initial distribution fulfills the borrowing constraints.'
 # initial = cssmat[:-1, :] * 2
 
 K0 = initial.mean()
@@ -138,9 +155,9 @@ def Euler_Error(K_guess, winit, rinit, t):
 
 def check_agg_K(K_matrix):
     if (K_matrix.sum() <= 0).any():
-        print 'WARNING: Aggregate capital stock is less than or' \
-            ' equal to zero.'
-
+        return True
+    else:
+        return False
 
 Kinit = np.array(list(np.linspace(K0, Kss, T)) + list(np.ones(S)*Kss))
 Ninit = np.ones(T+S) * Nss
@@ -152,7 +169,7 @@ TPIiter = 0
 TPImaxiter = 100
 TPIdist = 10
 TPImindist = 3 * 1e-6
-
+print 'TPI has started.\n'
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat = np.zeros((T+S, S-1, J))
     for j in xrange(J):
@@ -182,8 +199,23 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
 
-print 'TPI is finished.'
-check_agg_K(K_mat)
+print '\nTPI is finished.'
+flag = False
+for t in xrange(T):
+    problem = borrowing_constraints(K_mat[t], winit[t], rinit[t], e, n)
+    if problem is True:
+        print 'There is a violation in the borrowing constraints in period %.f.' % t
+        flag = True
+    problem2 = check_agg_K(K_mat[t])
+    if problem2 is True:
+        print 'WARNING: Aggregate capital stock is less than or' \
+            ' equal to zero in period %.f.' % t
+        flag = True
+if flag is False:
+    print 'There were no violations of the borrowing constraints in any period.'
+    
+
+
 # print "The time path is", np.array(Kpath_TPI)
 
 elapsed_time = time.time() - start_time

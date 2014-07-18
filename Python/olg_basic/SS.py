@@ -59,6 +59,7 @@ alpha = .35
 rho = .20
 A = 1.0
 delta = 1 - (0.95 ** (60.0 / S))
+epsilon = .01
 
 if S >= 12:
     n = np.ones(S)
@@ -201,22 +202,42 @@ def Steady_State(guesses):
     error_onlycapital = Euler_justcapital(w, r, e, n, K1, K2, K3)
     return error_onlycapital.flatten()
 
-K_guess_init = np.ones((S-1, J)) / ((S-1) * J)
 
+def borrowing_constraints(K_dist, w, r, e, n):
+    b_min = np.zeros((S-1, J))
+    b_min[-1, :] = (epsilon - w * e[S-1, :] * n[S-1]) / (1 + r)
+    for i in xrange(S-2):
+        b_min[-(i+2), :] = (epsilon + b_min[-(i+1), :] - w * e[-(i+2), :] * n[-(i+2)]) / (1 + r)
+    difference = K_dist - b_min
+    if (difference < 0).any():
+        return True
+    else:
+        return False
+        
+K_guess_init = np.ones((S-1, J)) / ((S-1) * J)
 solutions = opt.fsolve(Steady_State, K_guess_init, xtol=1e-9)
 
 Kssmat = solutions.reshape(S-1, J)
 Kssvec = Kssmat.mean(1)
 Kss = Kssvec.mean()
-K_agg = Kssmat.sum()
-if K_agg <= 0:
-    print 'WARNING: Aggregate capital is less than or equal to zero.'
 Kssvec = np.array([0]+list(Kssvec))
 
 Nss = get_N(e, n)
 Yss = get_Y(Kss, Nss)
 wss = get_w(Yss, Nss)
 rss = get_r(Yss, Kss)
+
+flag = False
+K_agg = Kssmat.sum()
+if K_agg <= 0:
+    print 'WARNING: Aggregate capital is less than or equal to zero.'
+    flag = True
+if borrowing_constraints(Kssmat, wss, rss, e, n) is True:
+    print 'WARNING: Borrowing constraints have been violated.'
+    flag = True
+if flag is False:
+    print 'There were no violations of the borrowing constraints.'
+
 
 print "Kss:", Kss
 print "Nss:", Nss
@@ -356,7 +377,8 @@ Save variables/values so they can be used in other modules
 
 var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'n', 'e',
              'J', 'Kss', 'Kssvec', 'Kssmat', 'Nss', 'Yss', 'wss', 'rss',
-             'runtime', 'hours', 'minutes', 'seconds', 'K_agg', 'cssmat']
+             'runtime', 'hours', 'minutes', 'seconds', 'K_agg', 'cssmat',
+             'epsilon']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
