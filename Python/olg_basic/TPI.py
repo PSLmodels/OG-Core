@@ -21,6 +21,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import time
 import pickle
 import scipy.optimize as opt
@@ -223,12 +224,27 @@ for t in xrange(T):
     euler_mat[t, :, :] = Euler_justcapital(winit[t], rinit[t], winit[t+1], rinit[t+1], e, n, k1[t, :, :], k2[t, :, :], k3[t, :, :])
 
 domain = np.linspace(1, T, T)
-plt.figure(6)
+plt.figure(8)
 plt.plot(domain, np.abs(euler_mat).max(1).max(1))
 plt.ylabel('Error Value')
 plt.xlabel(r'Time $t$')
 plt.title('Maximum Euler Error for each period across S and J')
 plt.savefig('OUTPUT/euler_errors_TPI')
+
+# 3D Graph
+Sgrid = np.linspace(1, S, S)
+Jgrid = np.linspace(1, J, J)
+X2, Y2 = np.meshgrid(Sgrid[1:], Jgrid)
+
+fig9 = plt.figure(9)
+cmap2 = matplotlib.cm.get_cmap('winter')
+ax9 = fig9.gca(projection='3d')
+ax9.plot_surface(X2, Y2, np.abs(euler_mat[1, :, :].T).reshape(S-1, J).max(1), rstride=1, cstride=2, cmap=cmap2)
+ax9.set_xlabel(r'Age Cohorts $S$')
+ax9.set_ylabel(r'Ability Types $J$')
+ax9.set_zlabel('Error Level')
+ax9.set_title('Euler Errors')
+plt.savefig('OUTPUT/euler_errors_TPI_3D')
 
 
 '''

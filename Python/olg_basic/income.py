@@ -40,36 +40,35 @@ matrix to return.
 ------------------------------------------------------------------------
 '''
 
-# jan_dat = pd.read_table("data/e_vec_data/jan2014.asc", sep=',', header=0)
-# jan_dat = jan_dat[(15 < jan_dat.PRTAGE) & (jan_dat.PRTAGE < 77)]
-# jan_dat['age'], jan_dat['wage'] = jan_dat['PRTAGE'], jan_dat['PTERNHLY']
-# del jan_dat['HRHHID'], jan_dat['OCCURNUM'], jan_dat['YYYYMM'], jan_dat[
-#     'HRHHID2'], jan_dat['PRTAGE'], jan_dat['PTERNHLY']
+jan_dat = pd.read_table("data/e_vec_data/jan2014.asc", sep=',', header=0)
+jan_dat['wgt'] = jan_dat['PWCMPWGT']
+jan_dat['age'], jan_dat['wage'] = jan_dat['PRTAGE'], jan_dat['PTERNHLY']
+del jan_dat['HRHHID'], jan_dat['OCCURNUM'], jan_dat['YYYYMM'], jan_dat[
+    'HRHHID2'], jan_dat['PRTAGE'], jan_dat['PTERNHLY'], jan_dat['PWCMPWGT']
 
+feb_dat = pd.read_table("data/e_vec_data/feb2014.asc", sep=',', header=0)
+feb_dat['wgt'] = feb_dat['PWCMPWGT']
+feb_dat['age'], feb_dat['wage'] = feb_dat['PRTAGE'], feb_dat['PTERNHLY']
+del feb_dat['HRHHID'], feb_dat['OCCURNUM'], feb_dat['YYYYMM'], feb_dat[
+    'HRHHID2'], feb_dat['PRTAGE'], feb_dat['PTERNHLY'], feb_dat['PWCMPWGT']
 
-# feb_dat = pd.read_table("data/e_vec_data/feb2014.asc", sep=',', header=0)
-# feb_dat = feb_dat[(15 < feb_dat.PRTAGE) & (feb_dat.PRTAGE < 77)]
-# feb_dat['age'], feb_dat['wage'] = feb_dat['PRTAGE'], feb_dat['PTERNHLY']
-# del feb_dat['HRHHID'], feb_dat['OCCURNUM'], feb_dat['YYYYMM'], feb_dat[
-#     'HRHHID2'], feb_dat['PRTAGE'], feb_dat['PTERNHLY']
+mar_dat = pd.read_table("data/e_vec_data/mar2014.asc", sep=',', header=0)
+mar_dat['wgt'] = mar_dat['PWCMPWGT']
+mar_dat['age'], mar_dat['wage'] = mar_dat['PRTAGE'], mar_dat['PTERNHLY']
+del mar_dat['HRHHID'], mar_dat['OCCURNUM'], mar_dat['YYYYMM'], mar_dat[
+    'HRHHID2'], mar_dat['PRTAGE'], mar_dat['PTERNHLY'], mar_dat['PWCMPWGT']
 
-# mar_dat = pd.read_table("data/e_vec_data/march2014.asc", sep=',', header=0)
-# mar_dat = mar_dat[(15 < mar_dat.PRTAGE) & (mar_dat.PRTAGE < 77)]
-# mar_dat['age'], mar_dat['wage'] = mar_dat['PRTAGE'], mar_dat['PTERNHLY']
-# del mar_dat['HRHHID'], mar_dat['OCCURNUM'], mar_dat['YYYYMM'], mar_dat[
-#     'HRHHID2'], mar_dat['PRTAGE'], mar_dat['PTERNHLY']
-
-# apr_dat = pd.read_table("data/e_vec_data/april2014.asc", sep=',', header=0)
-# apr_dat = apr_dat[(15 < apr_dat.PRTAGE) & (apr_dat.PRTAGE < 77)]
-# apr_dat['age'], apr_dat['wage'] = apr_dat['PRTAGE'], apr_dat['PTERNHLY']
-# del apr_dat['HRHHID'], apr_dat['OCCURNUM'], apr_dat['YYYYMM'], apr_dat[
-#     'HRHHID2'], apr_dat['PRTAGE'], apr_dat['PTERNHLY']
+apr_dat = pd.read_table("data/e_vec_data/apr2014.asc", sep=',', header=0)
+apr_dat['wgt'] = apr_dat['PWCMPWGT']
+apr_dat['age'], apr_dat['wage'] = apr_dat['PRTAGE'], apr_dat['PTERNHLY']
+del apr_dat['HRHHID'], apr_dat['OCCURNUM'], apr_dat['YYYYMM'], apr_dat[
+    'HRHHID2'], apr_dat['PRTAGE'], apr_dat['PTERNHLY'], apr_dat['PWCMPWGT']
 
 may_dat = pd.read_table("data/e_vec_data/may2014.asc", sep=',', header=0)
-may_dat = may_dat[(15 < may_dat.PRTAGE) & (may_dat.PRTAGE < 77)]
 may_dat['age'], may_dat['wage'] = may_dat['PRTAGE'], may_dat['PTERNHLY']
+may_dat['wgt'] = may_dat['PWCMPWGT']
 del may_dat['HRHHID'], may_dat['OCCURNUM'], may_dat['YYYYMM'], may_dat[
-    'HRHHID2'], may_dat['PRTAGE'], may_dat['PTERNHLY']
+    'HRHHID2'], may_dat['PRTAGE'], may_dat['PTERNHLY'], may_dat['PWCMPWGT']
 
 
 def get_e_indiv(S, J, data):
@@ -84,41 +83,36 @@ def get_e_indiv(S, J, data):
     age_groups = np.linspace(16, 76, S+1)
     e = np.zeros((S, J))
     for i in xrange(S):
+        data = data[(15 < data.age) & (data.age < 77)]
         incomes = data[(age_groups[i] <= data.age) & (
             data.age < age_groups[i+1])]
-        inc = np.array(incomes['wage'])
-        inc.sort()
+        incomes = incomes.sort(['wage'])
+        inc = np.array(incomes.wage)
+        wgt_ar = np.array(incomes.wgt)
+        wgt_cum = np.zeros(inc.shape[0])
+        cum_weight_scalar = 0
+        for k in xrange(inc.shape[0]):
+            cum_weight_scalar += wgt_ar[k]
+            wgt_cum[k] = cum_weight_scalar
+        total_wgts = wgt_cum[-1]
         for j in xrange(J):
-            e[i, j] = inc[len(inc)*(j+.5)/J]
+            percentile = total_wgts*(j+.5)/J
+            ind = 0
+            while wgt_cum[ind] < percentile:
+                ind += 1
+            e[i, j] = inc[ind]
     e /= e.mean()
     return e
 
 
 def get_e(S, J):
     e = np.zeros((S, J))
-    # e += get_e_indiv(S, J, jan_dat)
-    # e += get_e_indiv(S, J, feb_dat)
-    # e += get_e_indiv(S, J, mar_dat)
-    # e += get_e_indiv(S, J, apr_dat)
+    e += get_e_indiv(S, J, jan_dat)
+    e += get_e_indiv(S, J, feb_dat)
+    e += get_e_indiv(S, J, mar_dat)
+    e += get_e_indiv(S, J, apr_dat)
     e += get_e_indiv(S, J, may_dat)
-    # e /= 5
+    e /= 5
     return e
 
-S = 60
-J = 7
-e = get_e(S, J)
 
-Sgrid = np.linspace(1, S, S)
-Jgrid = np.linspace(1, J, J)
-X, Y = np.meshgrid(Sgrid, Jgrid)
-# 3D Graph
-cmap2 = matplotlib.cm.get_cmap('winter')
-fig5 = plt.figure(5)
-ax5 = fig5.gca(projection='3d')
-ax5.plot_surface(X, Y, e.T, rstride=1, cstride=2, cmap=cmap2)
-ax5.set_xlabel(r'age-$s$')
-ax5.set_ylabel(r'ability-$j$')
-ax5.set_zlabel(r'Income Level $e_j(s)$')
-# ax5.set_title('Income Levels')
-plt.savefig('data/income_graph')
-# plt.show()
