@@ -2,9 +2,9 @@
 This will run the steady state solver as well as time path iteration.
 '''
 
-import SS_continuous
+import SS
 
-import TPI_continuous
+import TPI
 
 '''
 See the pickles for results.
