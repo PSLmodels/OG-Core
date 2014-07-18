@@ -260,13 +260,13 @@ Kssmat2 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)))
 Sgrid = np.linspace(1, S, S)
 Jgrid = np.linspace(1, J, J)
 X, Y = np.meshgrid(Sgrid, Jgrid)
-fig = plt.figure(2)
-ax1 = fig.gca(projection='3d')
-ax1.set_xlabel(r'Age Cohorts $S$')
-ax1.set_ylabel(r'Ability Types $J$')
-ax1.set_zlabel(r'Capital $K$')
-# ax1.set_title(r'Steady State Distribution of Capital Stock $K$')
-ax1.plot_surface(X, Y, Kssmat2.T, rstride=1, cstride=1, cmap=cmap1)
+fig2 = plt.figure(2)
+ax2 = fig2.gca(projection='3d')
+ax2.set_xlabel(r'Age Cohorts $S$')
+ax2.set_ylabel(r'Ability Types $J$')
+ax2.set_zlabel(r'Capital $K$')
+# ax2.set_title(r'Steady State Distribution of Capital Stock $K$')
+ax2.plot_surface(X, Y, Kssmat2.T, rstride=1, cstride=1, cmap=cmap1)
 
 plt.savefig('OUTPUT/capital_dist_3D')
 
@@ -291,13 +291,13 @@ plt.savefig("OUTPUT/consumption_2D")
 
 # 3D Graph
 cmap2 = matplotlib.cm.get_cmap('jet')
-fig2 = plt.figure(4)
-ax2 = fig2.gca(projection='3d')
-ax2.plot_surface(X, Y, cssmat.T, rstride=1, cstride=1, cmap=cmap2)
-ax2.set_xlabel('Age Cohorts')
-ax2.set_ylabel('Ability Types')
-ax2.set_zlabel('Consumption')
-ax2.set_title('Steady State Distribution of Consumption')
+fig3 = plt.figure(4)
+ax3 = fig3.gca(projection='3d')
+ax3.plot_surface(X, Y, cssmat.T, rstride=1, cstride=1, cmap=cmap2)
+ax3.set_xlabel('Age Cohorts')
+ax3.set_ylabel('Ability Types')
+ax3.set_zlabel('Consumption')
+ax3.set_title('Steady State Distribution of Consumption')
 plt.savefig('OUTPUT/consumption_3D')
 
 '''
@@ -308,13 +308,13 @@ Graph of Distribution of Income
 
 # 3D Graph
 cmap2 = matplotlib.cm.get_cmap('winter')
-fig2 = plt.figure(5)
-ax2 = fig2.gca(projection='3d')
-ax2.plot_surface(X, Y, e.T, rstride=1, cstride=2, cmap=cmap2)
-ax2.set_xlabel(r'Age Cohorts $S$')
-ax2.set_ylabel(r'Ability Types $J$')
-ax2.set_zlabel(r'Income Level $e_j(s)$')
-# ax2.set_title('Income Levels')
+fig5 = plt.figure(5)
+ax5 = fig5.gca(projection='3d')
+ax5.plot_surface(X, Y, e.T, rstride=1, cstride=2, cmap=cmap2)
+ax5.set_xlabel(r'Age Cohorts $S$')
+ax5.set_ylabel(r'Ability Types $J$')
+ax5.set_zlabel(r'Income Level $e_j(s)$')
+# ax5.set_title('Income Levels')
 plt.savefig('OUTPUT/ability_3D')
 
 
@@ -328,14 +328,27 @@ k1 = np.array(list(np.zeros(J).reshape((1, J))) + list(Kssmat[:-1, :]))
 k2 = Kssmat
 k3 = np.array(list(Kssmat[1:, :]) + list(np.zeros(J).reshape((1, J))))
 
-euler_justcapital = Euler_justcapital(wss, rss, f, e, n, k1, k2, k3)
+eulererrors = Euler_justcapital(wss, rss, f, e, n, k1, k2, k3)
 
-
+# 2D Graph
 plt.figure(6)
-plt.plot(domain[1:], np.abs(euler_justcapital).max(1))
+plt.plot(domain[1:], np.abs(eulererrors).max(1))
 plt.title('Euler Errors')
 plt.xlabel('Age Cohorts')
-plt.savefig('OUTPUT/euler_errors')
+plt.savefig('OUTPUT/euler_errors_SS')
+
+# 3D Graph
+X2, Y2 = np.meshgrid(Sgrid[1:], Jgrid)
+
+fig7 = plt.figure(7)
+cmap2 = matplotlib.cm.get_cmap('winter')
+ax7 = fig7.gca(projection='3d')
+ax7.plot_surface(X2, Y2, eulererrors.T, rstride=1, cstride=2, cmap=cmap2)
+ax7.set_xlabel(r'Age Cohorts $S$')
+ax7.set_ylabel(r'Ability Types $J$')
+ax7.set_zlabel('Error Level')
+ax7.set_title('Euler Errors')
+plt.savefig('OUTPUT/euler_errors_SS_3D')
 
 '''
 ------------------------------------------------------------------------
@@ -345,7 +358,7 @@ Save variables/values so they can be used in other modules
 
 var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'n', 'e',
              'f', 'J', 'Kss', 'Kssvec', 'Kssmat', 'Nss', 'Yss', 'wss', 'rss',
-             'runtime', 'hours', 'minutes', 'seconds', 'K_agg']
+             'runtime', 'hours', 'minutes', 'seconds', 'K_agg', 'cssmat']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
