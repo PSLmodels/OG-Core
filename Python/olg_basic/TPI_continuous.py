@@ -107,11 +107,10 @@ def MUc(c):
     return c**(-sigma)
 
 
-def Euler_justcapital(w, r, f, e, n, K1, K2, K3):
-    euler = MUc((1 + r)*K1 + w * e[:-1, :] * n[:-1].reshape(
-        S-1, 1) - K2) - beta * (1 + r)*MUc(
-        (1 + r)*K2 + w * (e[1:, :].reshape(S-1, J, 1) * f[
-            1:, :, :]).sum(axis=2) * n[1:].reshape(S-1, 1) - K3)
+def Euler_justcapital(w1, r1, w2, r2, e, n, K1, K2, K3):
+    euler = MUc((1 + r1)*K1 + w1 * e[:-1, :] * n[:-1].reshape(
+        S-1, 1) - K2) - beta * (1 + r2)*MUc(
+        (1 + r2)*K2 + w2 * e[1:, :] * n[1:].reshape(S-1, 1) - K3)
     return euler
 
 
@@ -131,10 +130,8 @@ def Euler_Error(K_guess, winit, rinit, t):
     n2 = n[-length:]
     e1 = e[-(length+1):-1, j]
     e2 = e[-length:, j]
-    e2 = e2.reshape(length, 1)
-    f2 = f[-length:, j, :]    
     error = MUc((1 + r1)*K1 + w1 * e1 * n1 - K2) \
-        - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*(e2 * f2).sum(axis=1)*n2 - K3)
+        - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*n2 - K3)
     return error.flatten()
 
 
@@ -223,7 +220,7 @@ k3[:, :-1, :] = K_mat[:T, 1:, :]
 euler_mat = np.zeros((T, S-1, J))
 
 for t in xrange(T):
-    euler_mat[t, :, :] = Euler_justcapital(wss, rss, f, e, n, k1[t, :, :], k2[t, :, :], k3[t, :, :])
+    euler_mat[t, :, :] = Euler_justcapital(winit[t], rinit[t], winit[t+1], rinit[t+1], e, n, k1[t, :, :], k2[t, :, :], k3[t, :, :])
 
 domain = np.linspace(1, T, T)
 plt.figure(6)

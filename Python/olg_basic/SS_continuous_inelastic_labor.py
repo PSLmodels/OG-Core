@@ -78,7 +78,6 @@ else:
          .0976, .093])
     n = n[60 % S:: 60 / S]
 e = income.get_e(S, J)
-f = income.get_f_noswitch(S, J)
 
 '''
 ------------------------------------------------------------------------
@@ -175,11 +174,10 @@ def MUl(l):
     return output
 
 
-def Euler_justcapital(w, r, f, e, n, K1, K2, K3):
+def Euler_justcapital(w, r, e, n, K1, K2, K3):
     euler = MUc((1 + r)*K1 + w * e[:-1, :] * n[:-1].reshape(
         S-1, 1) - K2) - beta * (1 + r)*MUc(
-        (1 + r)*K2 + w * (e[1:, :].reshape(S-1, J, 1) * f[
-            1:, :, :]).sum(axis=2) * n[1:].reshape(S-1, 1) - K3)
+        (1 + r)*K2 + w * e[1:, :] * n[1:].reshape(S-1, 1) - K3)
     return euler
 
 
@@ -200,7 +198,7 @@ def Steady_State(guesses):
     K1 = np.array(list(np.zeros(J).reshape(1, J)) + list(K_guess[:-1, :]))
     K2 = K_guess
     K3 = np.array(list(K_guess[1:, :]) + list(np.zeros(J).reshape(1, J)))
-    error_onlycapital = Euler_justcapital(w, r, f, e, n, K1, K2, K3)
+    error_onlycapital = Euler_justcapital(w, r, e, n, K1, K2, K3)
     return error_onlycapital.flatten()
 
 K_guess_init = np.ones((S-1, J)) / ((S-1) * J)
@@ -328,7 +326,7 @@ k1 = np.array(list(np.zeros(J).reshape((1, J))) + list(Kssmat[:-1, :]))
 k2 = Kssmat
 k3 = np.array(list(Kssmat[1:, :]) + list(np.zeros(J).reshape((1, J))))
 
-eulererrors = Euler_justcapital(wss, rss, f, e, n, k1, k2, k3)
+eulererrors = Euler_justcapital(wss, rss, e, n, k1, k2, k3)
 
 # 2D Graph
 plt.figure(6)
@@ -357,7 +355,7 @@ Save variables/values so they can be used in other modules
 '''
 
 var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'n', 'e',
-             'f', 'J', 'Kss', 'Kssvec', 'Kssmat', 'Nss', 'Yss', 'wss', 'rss',
+             'J', 'Kss', 'Kssvec', 'Kssmat', 'Nss', 'Yss', 'wss', 'rss',
              'runtime', 'hours', 'minutes', 'seconds', 'K_agg', 'cssmat']
 dictionary = {}
 for key in var_names:
