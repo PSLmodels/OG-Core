@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated: 7/16/2014
+Last updated: 7/18/2014
 Calculates steady state of OLG model with S age cohorts, where labor
 is inelastically supplied.
 
@@ -8,10 +8,15 @@ This py-file calls the following other file(s):
             income.py
 
 This py-file creates the following other file(s):
-            ss_vars.pkl
-            distribution_of_capital.png
-            consumption.png
-            euler_errors.png
+    (make sure that an OUTPUT folder exists)
+            OUTPUT/ss_vars.pkl
+            OUTPUT/ability_3D.png
+            OUTPUT/capital_dist_2D.png
+            OUTPUT/capital_dist_3D.png
+            OUTPUT/consumption_2D.png
+            OUTPUT/consumption_3D.png
+            OUTPUT/euler_errors_SS_2D.png
+            OUTPUT/euler_errors_SS_3D.png
 ------------------------------------------------------------------------
 '''
 
@@ -24,8 +29,6 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import time
 import scipy.optimize as opt
-from scipy.optimize import newton_krylov
-from scipy.optimize import anderson
 import pickle
 
 '''
@@ -354,7 +357,7 @@ plt.figure(6)
 plt.plot(domain[1:], np.abs(eulererrors).max(1))
 plt.title('Euler Errors')
 plt.xlabel('Age Cohorts')
-plt.savefig('OUTPUT/euler_errors_SS')
+plt.savefig('OUTPUT/euler_errors_SS_2D')
 
 # 3D Graph
 X2, Y2 = np.meshgrid(Sgrid[1:], Jgrid)
