@@ -172,11 +172,12 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     TPIdist = (np.abs(Knew - Kinit[:T])).max()
     print 'Iteration:', TPIiter
     print '\tDistance:', TPIdist
-    Ninit = np.ones(T) * Nss
-    Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
-    winit = np.array(list((1-alpha) * (Yinit/Ninit)) + list(np.ones(S)*wss))
-    rinit = np.array(list(alpha * (Yinit/Kinit) - delta) + list(
-        np.ones(S)*rss))
+    if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
+        Ninit = np.ones(T) * Nss
+        Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
+        winit = np.array(list((1-alpha) * (Yinit/Ninit)) + list(np.ones(S)*wss))
+        rinit = np.array(list(alpha * (Yinit/Kinit) - delta) + list(
+            np.ones(S)*rss))
 
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
@@ -223,6 +224,15 @@ euler_mat = np.zeros((T, S-1, J))
 for t in xrange(T):
     euler_mat[t, :, :] = Euler_justcapital(winit[t], rinit[t], winit[t+1], rinit[t+1], e, n, k1[t, :, :], k2[t, :, :], k3[t, :, :])
 
+# for j in xrange(J):
+#         for s in xrange(S-2):  # Upper triangle
+#             diag_sol = Euler_Error()
+            
+
+#         for t in xrange(1, T-1):
+#             euler_mat = Euler_Error
+
+
 domain = np.linspace(1, T, T)
 plt.figure(8)
 plt.plot(domain, np.abs(euler_mat).max(1).max(1))
@@ -239,7 +249,7 @@ X2, Y2 = np.meshgrid(Sgrid[1:], Jgrid)
 fig9 = plt.figure(9)
 cmap2 = matplotlib.cm.get_cmap('winter')
 ax9 = fig9.gca(projection='3d')
-ax9.plot_surface(X2, Y2, np.abs(euler_mat[1, :, :].T).reshape(S-1, J).max(1), rstride=1, cstride=2, cmap=cmap2)
+ax9.plot_surface(X2, Y2, euler_mat[1, :, :].T, rstride=1, cstride=2, cmap=cmap2)
 ax9.set_xlabel(r'Age Cohorts $S$')
 ax9.set_ylabel(r'Ability Types $J$')
 ax9.set_zlabel('Error Level')
