@@ -35,20 +35,20 @@ import pickle
 ------------------------------------------------------------------------
 Setting up the Model
 ------------------------------------------------------------------------
-S     = number of periods an individual lives
-J     = number of different ability groups
-beta  = discount factor
-sigma = coefficient of relative risk aversion
-alpha = capital share of income
-rho   = contraction parameter in steady state iteration process
-        representing the weight on the new distribution gamma_new
-A     = total factor productivity parameter in firms' production
-        function
-delta = depreciation rate of capital
-n     = 1 x S vector of inelastic labor supply for each age s
-e     = S x J matrix of age dependent possible working abilities e_s
-f     = S x J x J matrix of age dependent discrete probability mass
-        function for e as Markov proccess: f(e_s)
+starttime = Starting time of the program.
+S         = number of periods an individual lives
+J         = number of different ability groups
+beta      = discount factor
+sigma     = coefficient of relative risk aversion
+alpha     = capital share of income
+rho       = contraction parameter in steady state iteration process
+            representing the weight on the new distribution gamma_new
+A         = total factor productivity parameter in firms' production
+            function
+delta     = depreciation rate of capital
+epsilon   = minimum value for borrowing constraint
+n         = 1 x S vector of inelastic labor supply for each age s
+e         = S x J matrix of age dependent possible working abilities e_s
 ------------------------------------------------------------------------
 '''
 
@@ -87,25 +87,22 @@ e = income.get_e(S, J)
 ------------------------------------------------------------------------
 Finding the Steady State
 ------------------------------------------------------------------------
-
 K_guess_init = (S-1 x J) array for the initial guess of the distribution
                of capital
-N_guess_init = (S x J) array for the initial guess of the distribution
-               of labor
-solutions    = ((S * (S-1) * J * J) x 1) array of solutions of the
+solution    = (((S-1) * J) x 1) array of solution of the
                steady state distributions of capital and labor
 Kssmat       = ((S-1) x J) array of the steady state distribution of
                capital
 Kssvec       = ((S-1) x 1) vector of the steady state level of capital
                (averaged across ability types)
 Kss          = steady state aggregate capital stock
-Nssmat       = (S x J) array of the steady state distribution of labor
-Nssvec       = (S x 1) vector of the steady state level of labor
-               (averaged across ability types)
 Nss          = steady state aggregate labor
 Yss          = steady state aggregate output
 wss          = steady state real wage
 rss          = steady state real rental rate
+K_agg        = Aggregate level of capital
+flag         = False if all borrowing constraints are met, true
+               otherwise.
 runtime      = Time needed to find the steady state (seconds)
 hours        = Hours needed to find the steady state
 minutes      = Minutes needed to find the steady state, less the number
@@ -179,6 +176,19 @@ def MUl(l):
 
 
 def Euler_justcapital(w, r, e, n, K1, K2, K3):
+    '''
+    Parameters:
+        w  = wage rate (scalar)
+        r  = rental rate (scalar)
+        e  = distribution of abilities (SxJ array)
+        n  = distribution of labor (Sx1 vector)
+        K1 = distribution of capital in period t ((S-1) x J array)
+        K2 = distribution of capital in period t+1 ((S-1) x J array)
+        K3 = distribution of capital in period t+2 ((S-1) x J array)
+
+    Returns:
+        Value of Euler error.
+    '''
     euler = MUc((1 + r)*K1 + w * e[:-1, :] * n[:-1].reshape(
         S-1, 1) - K2) - beta * (1 + r)*MUc(
         (1 + r)*K2 + w * e[1:, :] * n[1:].reshape(S-1, 1) - K3)
@@ -207,6 +217,18 @@ def Steady_State(guesses):
 
 
 def borrowing_constraints(K_dist, w, r, e, n):
+    '''
+    Parameters:
+        K_dist = Distribution of capital ((S-1)xJ array)
+        w      = wage rate (scalar)
+        r      = rental rate (scalar)
+        e      = distribution of abilities (SxJ array)
+        n      = distribution of labor (Sx1 vector)
+
+    Returns:
+        False value if all the borrowing constraints are met, True
+            if there are violations.
+    '''
     b_min = np.zeros((S-1, J))
     b_min[-1, :] = (epsilon - w * e[S-1, :] * n[S-1]) / (1 + r)
     for i in xrange(S-2):
@@ -216,11 +238,11 @@ def borrowing_constraints(K_dist, w, r, e, n):
         return True
     else:
         return False
-        
-K_guess_init = np.ones((S-1, J)) / ((S-1) * J)
-solutions = opt.fsolve(Steady_State, K_guess_init, xtol=1e-9)
 
-Kssmat = solutions.reshape(S-1, J)
+K_guess_init = np.ones((S-1, J)) / ((S-1) * J)
+solution = opt.fsolve(Steady_State, K_guess_init, xtol=1e-9)
+
+Kssmat = solution.reshape(S-1, J)
 Kssvec = Kssmat.mean(1)
 Kss = Kssvec.mean()
 Kssvec = np.array([0]+list(Kssvec))
@@ -261,6 +283,7 @@ seconds.' % (abs(hours - .5), abs(minutes - .5), seconds)
  Generate graphs of the steady-state distribution of wealth
 ------------------------------------------------------------------------
 domain     = 1 x S vector of each age cohort
+Kssmat2    = SxJ array of capital (zeros appended at the end of Kssmat2)
 ------------------------------------------------------------------------
 '''
 
@@ -289,12 +312,15 @@ ax2.set_ylabel(r'ability-$j$')
 ax2.set_zlabel(r'individual savings $\bar{b}_{j,s}$')
 # ax2.set_title(r'Steady State Distribution of Capital Stock $K$')
 ax2.plot_surface(X, Y, Kssmat2.T, rstride=1, cstride=1, cmap=cmap1)
-
 plt.savefig('OUTPUT/capital_dist_3D')
 
 '''
 ------------------------------------------------------------------------
 Generate graph of Consumption
+------------------------------------------------------------------------
+Kssmat3 = SxJ array of capital (zeros appended at the beginning of
+          Kssmat)
+cssmat  = SxJ array of consumption across age and ability groups
 ------------------------------------------------------------------------
 '''
 Kssmat3 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
@@ -343,6 +369,11 @@ plt.savefig('OUTPUT/ability_3D')
 '''
 ------------------------------------------------------------------------
 Check Euler Equations
+------------------------------------------------------------------------
+k1          = (S-1)xJ array of Kssmat in period t-1
+k2          = copy of Kssmat
+k3          = (S-1)xJ array of Kssmat in period t+1
+eulererrors = SxJ arry of euler errors across age and ability level
 ------------------------------------------------------------------------
 '''
 
