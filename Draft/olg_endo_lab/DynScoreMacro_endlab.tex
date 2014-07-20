@@ -126,15 +126,28 @@
     In addition to the budget constraints in each period, the utility function imposes nonnegative consumption through inifinite marginal utility and individual labor and leisure must be nonnegative $n_{j,s,t},l_{j,s,t}\geq 0$. We allow the possibility for individual agents to borrow $b_{j,s,t}<0$ for some $j$ and $s$ in period $t$. However, the borrowing must satisfy a series of individual feasibility constraints as well as a strict constraint that the aggregate capital stock $K_t>0$ be positive in every period.\footnote{We describe these constraints in detail in Appendix \ref{AppBorConstr}.}
 
     We next describe the Euler equations that govern the choices of consumption $c_{j,s,t}$ and savings $b_{j,s+1,t+1}$ by household of age $s$ and ability $e_j(s)$ in each period $t$. We work backward from the last period of life $s = S$. Because households do not save in the last period of life $b_{j,s+1,t+1}=0$ due to our assumption of no bequest motive, the household's final-period maximization problem is given by the following.
-    % \begin{equation}\label{EqSmaxprob}
-    %   \max_{c_{j,S,t}} \frac{\left(c_{j,S,t}\right)^{1-\sigma} - 1}{1 - \sigma} \quad \text{s.t.} \quad \left(1+r_t\right)b_{j,S,t} + w_t e_j(S)l(S) \geq c_{j,S,t} \quad \forall t
-    % \end{equation}
-    % Because $u(c)$ is monotonically increasing in $c$, the $s=S$ problem \eqref{EqSmaxprob} is simply to choose the maximum amount of consumption possible. The household trivially consumes all of its income in the last period of life.
-    % \begin{equation}\label{EqScons}
-    %   c_{j,S,t} = \left(1+r_t\right)b_{j,S,t} + w_t e_j(S)l(S) \quad \forall t
-    % \end{equation}
+    \begin{equation}\label{EqSmaxprob}
+      \max_{c_{j,S,t},n_{j,S,t}} \frac{\left(c_{j,S,t}\right)^{1-\sigma} - 1}{1 - \sigma} + \chi\frac{(\tilde{l}-n_{j,s,t})^\eta}{\eta} \quad \text{s.t.} \quad \left(1+r_t\right)b_{j,S,t} + w_t e_j(S)n_{j,S,t} \geq c_{j,S,t} \quad \forall t
+    \end{equation}
+    Because $u(c)$ is monotonically increasing in $c$, the $s=S$ consumption part of the maximization problem \eqref{EqSmaxprob} is simply to choose the maximum amount of consumption possible. The household trivially consumes all of its income in the last period of life. However, the household must choose labor to balance its benefits in extra consumption with its costs in disutility.
+    \begin{gather}
+      w_t e_j(S)\Bigl[\left(1+r_t\right)b_{j,S,t} + w_t e_j(S)n_{j,S,t}\Bigr]^{-\sigma} = \chi(\tilde{l} - n_{j,S,t})^{\eta-1} \quad\forall t \label{EqEulerSlab} \\
+      c_{j,S,t} = \left(1+r_t\right)b_{j,S,t} + w_t e_j(S)n_{j,S,t} \quad \forall t \label{EqScons}
+    \end{gather}
 
-    % In general, maximizing \eqref{EqUtilMax} with respect to \eqref{EqBC1}, \eqref{EqBC2}, \eqref{EqBC3}, and the implied individual and aggregate borrowing constraints gives the following set of $S-1$ intertemporal Euler equations.
+    In the second-to-last period of life $s=S-1$ the individual must choose how much to consume and how much to save for the last period of life $b_{j,S,t+1}$ as well as how much to work $n_{j,S-1,t}$, given his knowledge that he will optimize in the last period of life according to \eqref{EqEulerSlab} and \eqref{EqScons}. The $S-1$ labor decision is governed by a similar static first order condition, while the savings decision is governed by a dynamic Euler equation.
+    \begin{gather}
+      \begin{split}
+        w_t e_j(S-1)\Bigl[\left(1+r_t\right)b_{j,S-1,t} + w_t e_j(S-1)n_{j,S-1,t} - b_{j,S,t+1}\Bigr]^{-\sigma} = ... \\
+        \chi(\tilde{l} - n_{j,S-1,t})^{\eta-1} \quad\forall t
+      \end{split} \label{EqEulerSm1lab} \\
+      \begin{split}
+        \Bigl[\left(1+r_t\right)b_{j,S-1,t} + w_t e_j(S-1)n_{j,S-1,t} - b_{j,S,t+1}\Bigr]^{-\sigma} = ... \\
+        ? \quad \forall t \label{EqEulerSm1Sav}
+      \end{split}
+    \end{gather}
+
+    In general, maximizing \eqref{EqUtilMax} with respect to \eqref{EqBC1}, \eqref{EqBC2}, \eqref{EqBC3}, and the implied individual and aggregate borrowing constraints gives the following set of $S-1$ intertemporal Euler equations.
     % \begin{equation}\label{EqIntertempEuler}
     %   \begin{split}
     %     \left(c_{j,s,t}\right)^{-\sigma} = \beta \left(1+r_{t+1}\right)\left(c_{j,s+1,t+1}\right)^{-\sigma} \\
@@ -146,35 +159,35 @@
 
   \subsection{Firm problem}\label{SecModelGenFirm}
 
-    % A unit measure of identical, perfectly competitive firms exist in this economy. The representative firm is characterized by the following Cobb-Douglas production technology,
-    % \begin{equation}\label{EqCobbDougProd}
-    %    Y_t = A K_t^\alpha L_t^{1-\alpha} \quad \forall t
-    % \end{equation}
-    % where $A$ is the fixed technology process and $\alpha\in(0,1)$ and $L_t$ is measured in efficiency units of labor. The interest rate $r_t$ in the cost function is a net real interest rate because depreciation $\delta$ is paid by the firms. The real wage is $w_t$. The real profit function of the firm is the following.
-    % \begin{equation}\label{EqFirmProfit}
-    %    \text{Real Profits} = A K_t^\alpha L_t^{1-\alpha} - (r_t + \delta)K_t - w_t L_t
-    % \end{equation}
-    % As in the budget constraints \eqref{EqBC1}, \eqref{EqBC2}, and \eqref{EqBC3}, note that the price of the good has been normalized to one.
+    A unit measure of identical, perfectly competitive firms exist in this economy. The representative firm is characterized by the following Cobb-Douglas production technology,
+    \begin{equation}\label{EqCobbDougProd}
+       Y_t = A K_t^\alpha L_t^{1-\alpha} \quad \forall t
+    \end{equation}
+    where $A$ is the fixed technology process and $\alpha\in(0,1)$ and $L_t$ is measured in efficiency units of labor. The interest rate $r_t$ in the cost function is a net real interest rate because depreciation $\delta$ is paid by the firms. The real wage is $w_t$. The real profit function of the firm is the following.
+    \begin{equation}\label{EqFirmProfit}
+       \text{Real Profits} = A K_t^\alpha L_t^{1-\alpha} - (r_t + \delta)K_t - w_t L_t
+    \end{equation}
+    As in the budget constraints \eqref{EqBC1}, \eqref{EqBC2}, and \eqref{EqBC3}, note that the price of the good has been normalized to one.
 
-    % Profit maximization results in the real wage $w_t$ and the real rental rate of capital $r_t$ being determined by the marginal products of labor and capital, respectively.
-    % \begin{align}
-    %    w_t &= (1-\alpha)\frac{Y_t}{L_t} \quad \forall t \label{EqFOCwage}\\
-    %    r_t &= \alpha\frac{Y_t}{K_t} - \delta \quad\:\:\: \forall t \label{EqFOCrate}
-    % \end{align}
+    Profit maximization results in the real wage $w_t$ and the real rental rate of capital $r_t$ being determined by the marginal products of labor and capital, respectively.
+    \begin{align}
+       w_t &= (1-\alpha)\frac{Y_t}{L_t} \quad \forall t \label{EqFOCwage}\\
+       r_t &= \alpha\frac{Y_t}{K_t} - \delta \quad\:\:\: \forall t \label{EqFOCrate}
+    \end{align}
 
 
   \subsection{Market clearing and equilibrium}\label{SecMCandEqlbm}
 
-    % Labor market clearing requires that aggregate labor demand $L_t$ measured in efficiency units equal the sum of individual efficiency labor supplied $e_j{s}l(s)$. The supply side of market clearing in the labor market is trivial because household labor is supplied inelastically. Capital market clearing requires that aggregate capital demand $K_t$ equal the sum of capital investment by households $b_{j,s,t}$. Aggregate consumption $C_t$ is defined as the sum of all individual consumptions, and investment is defined by the standard $Y = C + I$ constraint as shown in \eqref{EqMktClrGoods}.
-    % \begin{align}
-    %   L_t &= \frac{1}{SJ}\sum_{s=1}^S\sum_{j=1}^{J} e_j(s)l(s) \quad\quad \forall t \label{EqMktClrLab} \\
-    %   K_t &= \frac{1}{SJ}\sum_{s=1}^{S}\sum_{j=1}^{J}b_{j,s,t} \quad\quad\quad\quad \forall t \label{EqMktClrCap} \\
-    %   \begin{split}
-    %     Y_t &= C_t + K_{t+1} - (1-\delta)K_t \quad\forall t \\
-    %     &\quad\text{where}\quad C_t \equiv \frac{1}{SJ}\sum_{s=1}^{S}\sum_{j=1}^{J}c_{j,s,t}
-    %   \end{split} \label{EqMktClrGoods}
-    % \end{align}
-    % The steady-state equilibrium for this economy is defined as follows.
+    Labor market clearing requires that aggregate labor demand $L_t$ measured in efficiency units equal the sum of individual efficiency labor supplied $e_j(s)n_{j,s,t}$. Capital market clearing requires that aggregate capital demand $K_t$ equal the sum of capital investment by households $b_{j,s,t}$. Aggregate consumption $C_t$ is defined as the sum of all individual consumptions, and investment is defined by the standard $Y = C + I$ constraint as shown in \eqref{EqMktClrGoods}.
+    \begin{align}
+      L_t &= \frac{1}{SJ}\sum_{s=1}^S\sum_{j=1}^{J} e_j(s)n_{j,s,t} \quad\quad \forall t \label{EqMktClrLab} \\
+      K_t &= \frac{1}{SJ}\sum_{s=1}^{S}\sum_{j=1}^{J}b_{j,s,t} \quad\quad\quad\quad \forall t \label{EqMktClrCap} \\
+      \begin{split}
+        Y_t &= C_t + K_{t+1} - (1-\delta)K_t \quad\forall t \\
+        &\quad\text{where}\quad C_t \equiv \frac{1}{SJ}\sum_{s=1}^{S}\sum_{j=1}^{J}c_{j,s,t}
+      \end{split} \label{EqMktClrGoods}
+    \end{align}
+    The steady-state equilibrium for this economy is defined as follows.
 
     % \vspace{7mm}
     % \end{spacing}
