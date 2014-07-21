@@ -46,7 +46,7 @@ rho       = contraction parameter in steady state iteration process
 A         = total factor productivity parameter in firms' production
             function
 delta     = depreciation rate of capital
-epsilon   = minimum value for borrowing constraint
+ctilde    = minimum value amount of consumption
 n         = 1 x S vector of inelastic labor supply for each age s
 e         = S x J matrix of age dependent possible working abilities e_s
 ------------------------------------------------------------------------
@@ -62,7 +62,7 @@ alpha = .35
 rho = .20
 A = 1.0
 delta = 1 - (0.95 ** (60.0 / S))
-epsilon = .01
+ctilde = .01
 
 if S >= 12:
     n = np.ones(S)
@@ -230,9 +230,9 @@ def borrowing_constraints(K_dist, w, r, e, n):
             if there are violations.
     '''
     b_min = np.zeros((S-1, J))
-    b_min[-1, :] = (epsilon - w * e[S-1, :] * n[S-1]) / (1 + r)
+    b_min[-1, :] = (ctilde - w * e[S-1, :] * n[S-1]) / (1 + r)
     for i in xrange(S-2):
-        b_min[-(i+2), :] = (epsilon + b_min[-(i+1), :] - w * e[-(i+2), :] * n[-(i+2)]) / (1 + r)
+        b_min[-(i+2), :] = (ctilde + b_min[-(i+1), :] - w * e[-(i+2), :] * n[-(i+2)]) / (1 + r)
     difference = K_dist - b_min
     if (difference < 0).any():
         return True
@@ -412,7 +412,7 @@ Save variables/values so they can be used in other modules
 var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'n', 'e',
              'J', 'Kss', 'Kssvec', 'Kssmat', 'Nss', 'Yss', 'wss', 'rss',
              'runtime', 'hours', 'minutes', 'seconds', 'K_agg', 'cssmat',
-             'epsilon']
+             'ctilde']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
