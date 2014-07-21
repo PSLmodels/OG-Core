@@ -59,10 +59,9 @@ alpha = .35
 rho = .20
 A = 1.0
 delta = 1 - (0.95 ** (60.0 / S))
-xi = 1.5
-eta = .5
+chi = 1.0
+eta = 1.5
 e = income.get_e(S, J)
-f = income.get_f_noswitch(S, J)
 
 '''
 ------------------------------------------------------------------------
@@ -149,25 +148,24 @@ def MUc(c):
     return output
 
 
-def MUl(l):
+def MUl(n):
     '''
     Parameters: Labor
 
     Returns:    Marginal Utility of Labor
     '''
-    output = - eta * ((1-l) ** (-xi))
+    output = - chi * ((1 - n) ** (eta - 1))
     return output
 
 
-def Euler1(w, r, f, e, N_guess, K1, K2, K3):
+def Euler1(w, r, e, N_guess, K1, K2, K3):
     euler = MUc((1 + r)*K1 + w * e[:-1, :] * N_guess[:-1, :] - K2) - beta * (
-        1 + r)*MUc((1 + r)*K2 + w * (e[1:, :].reshape(S-1, J, 1) * f[
-            1:, :, :]).sum(axis=2) * N_guess[1:, :] - K3)
+        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * N_guess[1:, :] - K3)
     return euler
 
 
 def Euler2(w, r, e, N_guess, K1_2, K2_2):
-    euler = MUc((1 + r)*K1_2 + w * e[:,:] * N_guess - K2_2) * w * e[:,:] + MUl(N_guess)
+    euler = MUc((1 + r)*K1_2 + w * e * N_guess - K2_2) * w * e + MUl(N_guess)
     return euler
 
 
@@ -192,19 +190,19 @@ def Steady_State(guesses):
     K3 = np.array(list(K_guess[1:, :]) + list(np.zeros(J).reshape(1, J)))
     K1_2 = np.array(list(np.zeros(J).reshape(1, J)) + list(K_guess))
     K2_2 = np.array(list(K_guess) + list(np.zeros(J).reshape(1, J)))
-    error1 = Euler1(w, r, f, e, N_guess, K1, K2, K3)
+    error1 = Euler1(w, r, e, N_guess, K1, K2, K3)
     error2 = Euler2(w, r, e, N_guess, K1_2, K2_2)
     # return np.array(list(error1.flatten()) + list(error2.flatten()))
-    return np.array(list(error1.flatten()) + list(error2.flatten())).sum()
+    return list(error1.flatten()) + list(error2.flatten())
 
-K_guess_init = np.ones((S-1, J))
-N_guess_init = np.ones((S, J)) * .1
+K_guess_init = np.ones((S-1, J)) * 2.0
+N_guess_init = np.ones((S, J)) * 0.8
 
-guesses = np.array(list(K_guess_init.flatten()) + list(N_guess_init.flatten()))
-# solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9)
-solutions = opt.minimize(Steady_State, guesses)
-print 'It converged:', solutions.success
-solutions = solutions.x
+guesses = list(K_guess_init.flatten()) + list(N_guess_init.flatten())
+solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9)
+# solutions = opt.minimize(Steady_State, guesses)
+# print 'It converged:', solutions.success
+# solutions = solutions.x
 
 # Solvers for large matrices
 # solutions = newton_krylov(Steady_State, guesses, method='gmres', verbose=1)
