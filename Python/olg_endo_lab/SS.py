@@ -23,8 +23,6 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import time
 import scipy.optimize as opt
-from scipy.optimize import newton_krylov
-from scipy.optimize import anderson
 import pickle
 
 '''
@@ -154,7 +152,7 @@ def MUl(n):
 
     Returns:    Marginal Utility of Labor
     '''
-    output = - chi * ((1 - n) ** (eta - 1))
+    output = - chi * ((1-n) ** (eta - 1))
     return output
 
 
@@ -176,11 +174,9 @@ def Steady_State(guesses):
 
     Returns:    Array of S-1 Euler equation errors
     '''
-    K_guess = guesses[0: (S-1) * J ]
-    K_guess = K_guess.reshape((S-1, J))
+    K_guess = guesses[0: (S-1) * J ].reshape((S-1, J))
     K = K_guess.mean()
-    N_guess = guesses[(S-1) * J :]
-    N_guess = N_guess.reshape((S, J))
+    N_guess = guesses[(S-1) * J :].reshape((S, J))
     N = get_N(e, N_guess)
     Y = get_Y(K, N)
     w = get_w(Y, N)
@@ -197,10 +193,9 @@ def Steady_State(guesses):
 
 
 def Utility(guesses):
-
+    K = guesses[0: (S-1) * J ].mean()
     K_guess = np.array([0] * J + list(guesses[0: (S-1) * J ]) + [0] * J)
     K_guess = K_guess.reshape((S+1, J))
-    K = K_guess.mean()
     N_guess = guesses[(S-1) * J :]
     N_guess = N_guess.reshape((S, J))
     N = get_N(e, N_guess)
@@ -215,18 +210,14 @@ def Utility(guesses):
 
     return -1 * sum_utils
 
-K_guess_init = np.ones((S-1, J)) * .05
-N_guess_init = np.ones((S, J)) * 0.1
+K_guess_init = np.ones((S-1, J)) * 2
+N_guess_init = np.ones((S, J)) 
 
 guesses = list(K_guess_init.flatten()) + list(N_guess_init.flatten())
-# solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9)
-solutions = opt.minimize(Utility, guesses)
-print 'It converged:', solutions.success
-solutions = solutions.x
-
-# Solvers for large matrices
-# solutions = newton_krylov(Steady_State, guesses, method='gmres', verbose=1)
-# solutions = anderson(Steady_State, guesses, verbose=1)
+solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9)
+# solutions = opt.minimize(Utility, guesses)
+# print 'It converged:', solutions.success
+# solutions = solutions.x
 
 Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
 Kssvec = Kssmat.mean(1)
@@ -296,7 +287,7 @@ Generate graph of Consumption
 ------------------------------------------------------------------------
 '''
 Kssmat3 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
-cssmat = (1 + rss) * Kssmat3 + wss * e * n.reshape(S, 1) - Kssmat2
+cssmat = (1 + rss) * Kssmat3 + wss * e * Nssmat - Kssmat2
 
 # 2D Graph
 plt.figure(3)
@@ -331,7 +322,7 @@ k3 = np.array(list(Kssmat[1:, :]) + list(np.zeros(J).reshape((1, J))))
 k1_2 = np.array(list(np.zeros(J).reshape((1, J))) + list(Kssmat))
 k2_2 = np.array(list(Kssmat) + list(np.zeros(J).reshape((1, J))))
 
-euler1 = Euler1(wss, rss, f, e, Nssmat, k1, k2, k3)
+euler1 = Euler1(wss, rss, e, Nssmat, k1, k2, k3)
 euler2 = Euler2(wss, rss, e, Nssmat, k1_2, k2_2)
 
 plt.figure(5)
@@ -348,9 +339,10 @@ Save variables/values so they can be used in other modules
 ------------------------------------------------------------------------
 '''
 
-var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'n', 'e',
-             'f', 'J', 'Kss', 'Kssvec', 'Kssmat', 'Nss', 'Yss', 'wss', 'rss',
-             'runtime', 'hours', 'minutes', 'seconds', 'eta', 'xi', 'K_agg']
+var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'e',
+             'J', 'Kss', 'Kssvec', 'Kssmat', 'Nss', 'Nssvec', 'Nssmat',
+             'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes',
+             'seconds', 'eta', 'chi', 'K_agg']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
