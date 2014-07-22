@@ -14,7 +14,7 @@ This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
             OUTPUT/euler_errors_TPI_2D.png
             OUTPUT/euler_errors_TPI_3D.png
-            OUTPUT/PI_vars.pkl
+            OUTPUT/TPI_vars.pkl
             OUTPUT/TPI.png
 ------------------------------------------------------------------------
 '''
