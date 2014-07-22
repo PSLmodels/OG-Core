@@ -199,7 +199,7 @@
 
     \begin{figure}[htb]\centering \captionsetup{width=4.0in}
       \caption{\label{FigSavSS}\textbf{Steady-state distribution of savings $\bar{\bm{\Gamma}}$ for $S=60$ and $J=7$}}
-      \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/SavSS.pdf}}}
+      \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/SavSS.png}}}
     \end{figure}
 
     Define $\bm{\Gamma}_t$ as the distribution of savings across individuals at time $t$.
@@ -247,7 +247,7 @@
 
     \begin{figure}[htb]\centering \captionsetup{width=4.0in}
       \caption{\label{FigKpathTPI}\textbf{Equilibrium time path of $K_t$ for $S=60$ and $J=7$}}
-      \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/KpathTPI.pdf}}}
+      \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/KpathTPI.png}}}
     \end{figure}
 
     To solve for any non-steady-state equilibrium time path of the economy from an arbitrary current state to the steady state, we follow the time path iteration (TPI) method of \citet{AuerbachKotlikoff:1987}. Appendix \ref{AppNonSSsolve} details how to solve for the non-steady-state equilibrium time path using the TPI method. Figure \ref{FigKpathTPI} shows the equilibrium time path of the aggregate capital stock for the calibration used in Figure \ref{FigKpathTPI} for $T=70$ periods starting from an initial distribution of savings in which $b_{j,s,1}=(0.9\bar{K})/[(S-1)J]$ for all $j$ and $s$. We used $\rho=0.2$ as our time-path updating parameter (see Equation \eqref{EqTPInewpath} in Appendix \ref{AppNonSSsolve}.)
@@ -269,15 +269,14 @@
 
   The calibration of the ability process $e_j(s)$ is as follows.  First, the ability types themselves must be calibrated. For each age group $s \in S$, the hourly wage rates are sorted into $J$ percentile groups.  The ability type for each percentile group is the median wage for the percentile group, divided by the average wage of all individuals in the data set.
 
-  The data used to calibrate the ability types were obtained from the Current Population Survey.\footnote{U.S. Census Bureau, Dataferret, Current Population Survey, 2014. The variables $PRTAGE$ and $PTERNHLY$ were used for the age and hourly wage rate of individuals, respectively. \\ [-2pt]} Individuals younger than 20 and older than 79 are dropped from the data. This is due to the extremely small amount of observations for ages outside of those bounds. Due to a limited number of observations in the survey who included their hourly wage, data was taken from the months of January, February, March, April, and May 2014.  The income levels for the $J$ ability types were then calculated for each month, and then an average was taken of the five calibrations of the ability types in order to produce a final calibration to be used in the model. Figure \ref{FigIncome} shows this income distribution across age and ability type.
+  The data used to calibrate the ability types were obtained from the Current Population Survey.\footnote{U.S. Census Bureau, Dataferret, Current Population Survey, 2014. The variables $PRTAGE$, $PTERNHLY$, and $PWCMPWGT$ were used for the age, hourly wage rate, and population weight of individuals, respectively. \\ [-2pt]} Individuals younger than 20 and older than 79 are dropped from the data. This is due to the extremely small amount of observations for ages outside of those bounds. Due to a limited number of observations in the survey who included their hourly wage, data was taken from the months of January, February, March, April, and May 2014.  Population weights were also used to obtain the correct percentile groups of individuals.  The income levels for the $J$ ability types were then calculated for each month, and then an average was taken of the five calibrations of the ability types in order to produce a final calibration to be used in the model. Figure \ref{FigIncome} shows this income distribution across age and ability type.
 
     \begin{figure}[htb]\centering \captionsetup{width=4.0in}
       \caption{\label{FigIncome}\textbf{Distribution of Income where $S=60$ and $J=7$}}
       \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/income.png}}}
     \end{figure}
 
-  The ability types evolve according to a Markov process, which is altered depending on the specifications of the model.  An individual in period $s$ and of ability type $j$ faces a distribution which will determine in which ability type they fall in the period $s+1$.  In this paper, individuals are assigned ability types at the beginning of their life, and cannot change types later on.  This Markov process is simply an identity matrix for each age group.
-
+  In this paper, individuals are assigned ability types at the beginning of their life, and cannot change types later on.
 % Do we need to cite the data set sources? (for both e and f)
 
 

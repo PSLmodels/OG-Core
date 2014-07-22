@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 7/11/2014
+Last updated 7/21/2014
 
 Functions for created the matrix of ability levels, e, and the
 probabilities, f, to be used in OLG_fastversion.py
@@ -8,8 +8,8 @@ probabilities, f, to be used in OLG_fastversion.py
 This py-file calls the following other file(s):
             data/e_vec_data/jan2014.asc
             data/e_vec_data/feb2014.asc
-            data/e_vec_data/march2014.asc
-            data/e_vec_data/april2014.asc
+            data/e_vec_data/mar2014.asc
+            data/e_vec_data/apr2014.asc
             data/e_vec_data/may2014.asc
 ------------------------------------------------------------------------
 '''
@@ -32,11 +32,11 @@ from mpl_toolkits.mplot3d import Axes3D
     Read Data for e
 ------------------------------------------------------------------------
 The data comes from the Consumer Population Survey.  The variables used
-are age (PRTAGE) and hourly wage (PTERNHLY).  Because the sample size
-for each month is small, we used data from January, February, March,
-April, and May 2014.  The matrix of ability levels was created for each
-month, and then the average of the 5 matrices was taken for the final
-matrix to return.
+are age (PRTAGE), hourly wage (PTERNHLY), and a population weighting
+variable (PWCMPWGT).  Because the sample size for each month is small,
+we used data from January, February, March, April, and May 2014.  The
+matrix of ability levels was created for each month, and then the
+average of the 5 matrices was taken for the final matrix to return.
 ------------------------------------------------------------------------
 '''
 
@@ -75,6 +75,7 @@ def get_e_indiv(S, J, data):
     '''
     Parameters: S - Number of age cohorts
                 J - Number of ability levels by age
+                data - data set to analyze
 
     Returns:    e - S x J matrix of J working ability levels for each
                     age cohort measured by hourly wage, normalized so
@@ -106,6 +107,14 @@ def get_e_indiv(S, J, data):
 
 
 def get_e(S, J):
+    '''
+    Parameters: S - Number of age cohorts
+                J - Number of ability levels by age
+
+    Returns:    e - S x J matrix of J working ability levels for each
+                    age cohort measured by hourly wage, normalized so
+                    the mean is one
+    '''
     e = np.zeros((S, J))
     e += get_e_indiv(S, J, jan_dat)
     e += get_e_indiv(S, J, feb_dat)

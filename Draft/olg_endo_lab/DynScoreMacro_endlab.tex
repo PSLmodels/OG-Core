@@ -68,7 +68,7 @@
   \and
   Isaac Swift\footnote{Brigham Young University, Department of Economics, 163 FOB, Provo, Utah 84602, \href{mailto:isaacdswift@gmail.com}{isaacdswift@gmail.com}.} \\[-2pt]}
 \date{July 2014 \\
-  \scriptsize{(version 14.07.c)}}
+  \scriptsize{(version 14.07.d)}}
 \maketitle
 \begin{abstract}
 \normalsize{Put abstract here.
@@ -127,34 +127,42 @@
 
     We next describe the Euler equations that govern the choices of consumption $c_{j,s,t}$ and savings $b_{j,s+1,t+1}$ by household of age $s$ and ability $e_j(s)$ in each period $t$. We work backward from the last period of life $s = S$. Because households do not save in the last period of life $b_{j,s+1,t+1}=0$ due to our assumption of no bequest motive, the household's final-period maximization problem is given by the following.
     \begin{equation}\label{EqSmaxprob}
-      \max_{c_{j,S,t},n_{j,S,t}} \frac{\left(c_{j,S,t}\right)^{1-\sigma} - 1}{1 - \sigma} + \chi\frac{(\tilde{l}-n_{j,s,t})^\eta}{\eta} \quad \text{s.t.} \quad \left(1+r_t\right)b_{j,S,t} + w_t e_j(S)n_{j,S,t} \geq c_{j,S,t} \quad \forall t
+      \begin{split}
+        \max_{c_{j,S,t},n_{j,S,t},b_{j,s+1,t+1}} &\frac{\left(c_{j,S,t}\right)^{1-\sigma} - 1}{1 - \sigma} + \chi\frac{(\tilde{l}-n_{j,s,t})^\eta}{\eta} \\
+        &\text{s.t.} \quad \left(1+r_t\right)b_{j,S,t} + w_t e_j(S)n_{j,S,t} \geq c_{j,S,t} \quad \forall t
+      \end{split}
     \end{equation}
     Because $u(c)$ is monotonically increasing in $c$, the $s=S$ consumption part of the maximization problem \eqref{EqSmaxprob} is simply to choose the maximum amount of consumption possible. The household trivially consumes all of its income in the last period of life. However, the household must choose labor to balance its benefits in extra consumption with its costs in disutility.
     \begin{gather}
-      w_t e_j(S)\Bigl[\left(1+r_t\right)b_{j,S,t} + w_t e_j(S)n_{j,S,t}\Bigr]^{-\sigma} = \chi(\tilde{l} - n_{j,S,t})^{\eta-1} \quad\forall t \label{EqEulerSlab} \\
-      c_{j,S,t} = \left(1+r_t\right)b_{j,S,t} + w_t e_j(S)n_{j,S,t} \quad \forall t \label{EqScons}
+      c_{j,S,t} = \left(1+r_t\right)b_{j,S,t} + w_t e_j(S)n_{j,S,t} \quad \forall t \label{EqScons} \\
+      w_t e_j(S)\Bigl[\left(1+r_t\right)b_{j,S,t} + w_t e_j(S)n_{j,S,t}\Bigr]^{-\sigma} = \chi(\tilde{l} - n_{j,S,t})^{\eta-1} \quad\forall t \label{EqEulerSlab}
     \end{gather}
 
-    In the second-to-last period of life $s=S-1$ the individual must choose how much to consume and how much to save for the last period of life $b_{j,S,t+1}$ as well as how much to work $n_{j,S-1,t}$, given his knowledge that he will optimize in the last period of life according to \eqref{EqEulerSlab} and \eqref{EqScons}. The $S-1$ labor decision is governed by a similar static first order condition, while the savings decision is governed by a dynamic Euler equation.
+    An individual in his second-to-last period of life $s=S-1$ must choose how much to consume and how much to save for the last period of life $b_{j,S,t+1}$ as well as how much to work in the current period $n_{j,S-1,t}$ and how much to work in the final period $n_{j,S,t+1}$. The $S-1$ individual optimization problem is governed by two static first order conditions for labor  $n_{j,S-1,t}$ and $n_{j,S,t+1}$ and an intertemporal Euler equation for the savings decision.
     \begin{gather}
       \begin{split}
-        w_t e_j(S-1)\Bigl[\left(1+r_t\right)b_{j,S-1,t} + w_t e_j(S-1)n_{j,S-1,t} - b_{j,S,t+1}\Bigr]^{-\sigma} = ... \\
-        \chi(\tilde{l} - n_{j,S-1,t})^{\eta-1} \quad\forall t
+        w_t e_j(S-1)\Bigl[\left(1+r_t\right)b_{j,S_1,t} + w_t e_j(S-1)n_{j,S-1,t} - &b_{j,S,t+1}\Bigr]^{-\sigma} = ... \\
+        &\chi(\tilde{l} - n_{j,S-1,t})^{\eta-1} \quad\forall t
       \end{split} \label{EqEulerSm1lab} \\
+      w_{t+1} e_j(S)\Bigl[\left(1+r_{t+1}\right)b_{j,S,t+1} + w_{t+1} e_j(S)n_{j,S,t+1}\Bigr]^{-\sigma} = \chi(\tilde{l} - n_{j,S,t+1})^{\eta-1} \quad\forall t \label{EqEulerSlab2} \\
       \begin{split}
-        \Bigl[\left(1+r_t\right)b_{j,S-1,t} + w_t e_j(S-1)n_{j,S-1,t} - b_{j,S,t+1}\Bigr]^{-\sigma} = ... \\
-        ? \quad \forall t \label{EqEulerSm1Sav}
-      \end{split}
+        \Bigl[\left(1+r_t\right)b_{j,S_1,t} + w_t &e_j(S-1)n_{j,S-1,t} - b_{j,S,t+1}\Bigr]^{-\sigma} = ... \\
+        &\beta(1+r_{t+1})\Bigl[\left(1+r_{t+1}\right)b_{j,S,t+1} + w_{t+1} e_j(S)n_{j,S,t+1}\Bigr]^{-\sigma} \quad\forall t
+      \end{split} \label{EqEulerSm1Sav}
     \end{gather}
 
-    In general, maximizing \eqref{EqUtilMax} with respect to \eqref{EqBC1}, \eqref{EqBC2}, \eqref{EqBC3}, and the implied individual and aggregate borrowing constraints gives the following set of $S-1$ intertemporal Euler equations.
-    % \begin{equation}\label{EqIntertempEuler}
-    %   \begin{split}
-    %     \left(c_{j,s,t}\right)^{-\sigma} = \beta \left(1+r_{t+1}\right)\left(c_{j,s+1,t+1}\right)^{-\sigma} \\
-    %     \text{for} \quad 1\leq s\leq S-1, \quad \forall t
-    %   \end{split}
-    % \end{equation}
-    % Note from \eqref{EqBC2} that $c_{j,s,t}$ in \eqref{EqIntertempEuler} depends on the household's age $s$, his ability $e_j(s)$, and the initial wealth with which the household entered the period $b_{j,s,t}$.
+    In general, maximizing \eqref{EqUtilMax} with respect to \eqref{EqBC1}, \eqref{EqBC2}, \eqref{EqBC3}, and the implied individual and aggregate borrowing constraints gives the following set of $S-1$ intertemporal Euler equations and $S$ static first order conditions characterizing lifetime savings $b_{j,s,t}$ for all $j$ and $2\leq s\leq S$ and labor supply $n_{j,s,t}$ for all $j$ and $1\leq s\leq S$.
+    \begin{gather}
+      \begin{split}
+        w_t e_j(s)\Bigl[\left(1+r_t\right)b_{j,s,t} + &w_t e_j(s)n_{j,s,t} - b_{j,s+1,t+1}\Bigr]^{-\sigma} = \chi(\tilde{l} - n_{j,s,t})^{\eta-1} \\
+        &\forall j,t \quad\text{and}\quad 1\leq s\leq S \quad\text{with}\quad b_{j,1,t},b_{j,S+1,t}=0
+      \end{split} \label{EqEulerLabGen} \\
+      \begin{split}
+        &\Bigl[\left(1+r_t\right)b_{j,s,t} + w_t e_j(s)n_{j,s,t} - b_{j,s+1,t+1}\Bigr]^{-\sigma} = ... \\
+        &\quad \beta(1+r_{t+1})\Bigl[\left(1+r_{t+1}\right)b_{j,s+1,t+1} + w_{t+1} e_j(s+1)n_{j,s+1,t+1} - b_{j,s+2,t+2}\Bigr]^{-\sigma} \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\forall j,t \quad\text{and}\quad 1\leq s\leq S-1 \quad\text{with}\quad b_{j,1,t},b_{j,S+1,t}=0
+      \end{split} \label{EqEulerSavGen}
+    \end{gather}
 
 
   \subsection{Firm problem}\label{SecModelGenFirm}
@@ -189,91 +197,89 @@
     \end{align}
     The steady-state equilibrium for this economy is defined as follows.
 
-    % \vspace{7mm}
-    % \end{spacing}
-    % \hrule
-    % \begin{definition}[\textbf{Steady-state equilibrium}]\label{DefEquilSS}
-    %   A non-autarkic steady-state equilibrium in the overlapping generations model with $S$-period lived agents and heterogeneous ability $e_j(s)$ is defined as constant allocations $c_{j,s,t}=\bar{c}_{j,s}$ and $b_{j,s+1,t+1}=\bar{b}_{j,s+1}$ and constant prices $w_t=\bar{w}$ and $r_t=\bar{r}$ for all $j$, $s$, and $t$ such that the following conditions hold:
-    %    \begin{enumerate}
-    %       \item households optimize according to \eqref{EqSmaxprob}, \eqref{EqScons} and \eqref{EqIntertempEuler},
-    %       \item firms optimize according to \eqref{EqFOCwage} and \eqref{EqFOCrate}, and
-    %       \item markets clear according to \eqref{EqMktClrLab}, \eqref{EqMktClrCap}, and \eqref{EqMktClrGoods}.
-    %    \end{enumerate}
-    % \end{definition}
-    % \hrule
-    % \begin{spacing}{1.5}
-    % \vspace{10mm}
+    \vspace{7mm}
+    \end{spacing}
+    \hrule
+    \begin{definition}[\textbf{Steady-state equilibrium}]\label{DefEquilSS}
+      A non-autarkic steady-state equilibrium in the overlapping generations model with $S$-period lived agents and heterogeneous ability $e_j(s)$ is defined as constant allocations $c_{j,s,t}=\bar{c}_{j,s}$, $b_{j,s+1,t+1}=\bar{b}_{j,s+1}$, and $n_{j,s,t}=\bar{n}_{j,s}$ and constant prices $w_t=\bar{w}$ and $r_t=\bar{r}$ for all $j$, $s$, and $t$ such that the following conditions hold:
+       \begin{enumerate}
+          \item households optimize according to \eqref{EqSmaxprob}, \eqref{EqScons}, \eqref{EqEulerLabGen}, and \eqref{EqEulerSavGen},
+          \item firms optimize according to \eqref{EqFOCwage} and \eqref{EqFOCrate}, and
+          \item markets clear according to \eqref{EqMktClrLab}, \eqref{EqMktClrCap}, and \eqref{EqMktClrGoods}.
+       \end{enumerate}
+    \end{definition}
+    \hrule
+    \begin{spacing}{1.5}
+    \vspace{10mm}
 
-    % The steady-state equilibrium is characterized by the system of $J\times(S-1)$ equations and $J\times(S-1)$ unknowns $\bar{b}_{j,s+1}$ along with the individual borrowing constraints and aggregate borrowing constraint described in Appendix \ref{AppBorConstr}.
+    The steady-state equilibrium is characterized by the system of $J(2S-1)$ equations and $J(2S-1)$ unknowns $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ along with the individual borrowing constraints and aggregate borrowing constraint described in Appendix \ref{AppBorConstr}.
 
-    % \begin{equation}\label{EqSSeuler}
-    %   \begin{split}
-    %     &\left(\bar{c}_{j,s}\right)^{-\sigma} = \beta \left(1+\bar{r}\right)\left(\bar{c}_{j,s+1}\right)^{-\sigma}, \quad 1\leq s\leq S-1 \\
-    %     &\quad\quad\quad\quad\quad\quad\quad\text{or} \\
-    %     &\Bigl([1+\bar{r}]\bar{b}_{j,s} + \bar{w}e_j(s)l(s) - \bar{b}_{j,s+1}\Bigr)^{-\sigma} = \\
-    %     &\quad\quad\quad\quad\quad \beta(1+\bar{r})\Bigl([1+\bar{r}]\bar{b}_{j,s+1} + \bar{w}e_j(s+1)l(s+1) - \bar{b}_{j,s+2}\Bigr)^{-\sigma}, \\
-    %     &\quad\quad\quad\quad\quad \text{for} \quad 1\leq s\leq S-1,\quad\text{where}\quad \bar{b}_{j,1},\bar{b}_{j,S+1} = 0 \quad\forall j
-    %   \end{split}
-    % \end{equation}
+    \begin{gather}
+      \begin{split}
+        \bar{w}e_j(s)\Bigl[\left(1+\bar{r}\right)\bar{b}_{j,s} + &\bar{w} e_j(s)\bar{n}_{j,s} - \bar{b}_{j,s+1}\Bigr]^{-\sigma} = \chi(\tilde{l} - \bar{n}_{j,s})^{\eta-1} \\
+        &\forall j \quad\text{and}\quad 1\leq s\leq S \quad\text{with}\quad \bar{b}_{j,1},\bar{b}_{j,S+1}=0
+      \end{split} \label{EqEulerLabGenSS} \\
+      \begin{split}
+        &\Bigl[\left(1+\bar{r}\right)\bar{b}_{j,s} + \bar{w}e_j(s)\bar{n}_{j,s} - \bar{b}_{j,s+1}\Bigr]^{-\sigma} = ... \\
+        &\quad\quad\quad \beta(1+\bar{r})\Bigl[\left(1+\bar{r}\right)\bar{b}_{j,s+1} + \bar{w}e_j(s+1)\bar{n}_{j,s+1} - \bar{b}_{j,s+2}\Bigr]^{-\sigma} \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\forall j \quad\text{and}\quad 1\leq s\leq S-1 \quad\text{with}\quad \bar{b}_{j,1},\bar{b}_{j,S+1}=0
+      \end{split} \label{EqEulerSavGenSS}
+    \end{gather}
 
-    % In equilibrium, the steady-state real wage $\bar{w}$ and the steady-state real rental rate $\bar{r}$ are simply functions of the steady-state distribution of capital $\bar{b}_{j,s+1}$. This is clear from the steady-state version of the capital market clearing condition \eqref{EqMktClrCap} and the fact that aggregate labor supply is a function of the sum of exogenous efficiency units of labor in the labor market clearing condition \eqref{EqMktClrLab}. And the two firm first order conditions for the real wage $w_t$ \eqref{EqFOCwage} and real rental rate $r_t$ \eqref{EqFOCrate} are only functions of the aggregate capital stock $K_t$ and aggregate labor $L_t$. Appendix \ref{AppSSsolve} details how to solve for the steady-state equilibrium.
+    Define $\bm{\Gamma}_t$ as the distribution of savings across individuals at time $t$.
+    \begin{equation}\label{EqSavDist}
+      \bm{\Gamma}_t \equiv \{b_{j,s,t}\}_{j=1,s=2}^{J,S} \quad\forall t
+    \end{equation}
+    In equilibrium, the steady-state individual labor supplies $\bar{n}_{j,s}$ for all $j$ and $s$, the steady-state real wage $\bar{w}$, and the steady-state real rental rate $\bar{r}$ are simply functions of the steady-state distribution of savings $\bar{\Gamma}$. This is clear from the steady-state version of the capital market clearing condition \eqref{EqMktClrCap} and the fact that aggregate labor supply is a function of the sum of exogenous efficiency units of labor in the labor market clearing condition \eqref{EqMktClrLab}. And the two firm first order conditions for the real wage $w_t$ \eqref{EqFOCwage} and real rental rate $r_t$ \eqref{EqFOCrate} are only functions of the aggregate capital stock $K_t$ and aggregate labor $L_t$. Appendix \ref{AppSSsolve} details how to solve for the steady-state equilibrium.
 
-    % \begin{figure}[htb]\centering \captionsetup{width=4.0in}
-    %   \caption{\label{FigSavSS}\textbf{Steady-state distribution of savings $\bar{\bm{\Gamma}}$ for $S=60$ and $J=7$}}
-    %   \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/SavSS.pdf}}}
-    % \end{figure}
+    \begin{figure}[htb]\centering \captionsetup{width=4.0in}
+      \caption{\label{FigSavSS}\textbf{Steady-state distribution of savings $\bar{\bm{\Gamma}}$ for $S=60$ and $J=7$}}
+      \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/SavSS.pdf}}}
+    \end{figure}
 
-    % Define $\bm{\Gamma}_t$ as the distribution of savings across individuals at time $t$.
-    % \begin{equation}\label{EqSavDist}
-    %   \bm{\Gamma}_t \equiv \{b_{j,s,t}\}_{j=1,s=1}^{J,S} \quad\forall t
-    % \end{equation}
-    % Figure \ref{FigSavSS} shows the steady-state distribution individual savings $\bar{\bm{\Gamma}}$ for a particular calibration of the model. The deterministic individual ability process $e_j(s)$ is calibrated from CPS wage distribution data as described in Appendix \ref{AppAbilCalib}, with $S=60$ and $J=7$. The inelastic labor supply function $l(s)$ is taken from \citet{EvansPhillips:2014}. We calibrate the other parameters to $[\beta,\sigma,\delta,\alpha,A] = [0.96,3,0.05,0.35,1]$. Notice that some intergenerational risk sharing is taking place. Young individuals of high ability, know that they will have high ability and borrow $b_{j,s,t}<0$ in their early years in the steady-state.
+    \begin{figure}[htb]\centering \captionsetup{width=4.0in}
+      \caption{\label{FigLabSS}\textbf{Steady-state distribution of individual labor supply $\bar{n}_{j,s}$ for $S=60$ and $J=7$}}
+      \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/LabSS.pdf}}}
+    \end{figure}
 
-    % The definition of the non-steady-state equilibrium is similar to Definition \ref{DefEquilSS}, with the steady-state equilibrium definition being a special case of the non-steady-state equilibrium.
+    Figure \ref{FigSavSS} shows the steady-state distribution of individual savings $\bar{\bm{\Gamma}}$ and Figure \ref{FigLabSS} shows the steady-state distribution of individual labor supply $\bar{n}_{j,s}$ for a particular calibration of the model. The deterministic individual ability process $e_j(s)$ is calibrated from CPS wage distribution data as described in Appendix \ref{AppAbilCalib}, with $S=60$ and $J=7$. We calibrate the other parameters to $[\beta,\sigma,\delta,\chi,\eta,\alpha,A] = [0.96,3,0.05,1,1.5,0.35,1]$. Notice .... %that some intergenerational risk sharing is taking place. Young individuals of high ability, know that they will have high ability and borrow $b_{j,s,t}<0$ in their early years in the steady-state.
 
-    % \vspace{7mm}
-    % \end{spacing}
-    % \hrule
-    % \begin{definition}[\textbf{Non-steady-state equilibrium}]\label{DefEquilNonSS}
-    %   A non-autarkic non-steady-state equilibrium in the overlapping generations model with $S$-period lived agents and heterogeneous ability $e_j(s)$ is defined as allocations $c_{j,s,t}$ and $b_{j,s+1,t+1}$ and prices $w_t$ and $r_t$ for all $j$, $s$, and $t$ such that the following conditions hold:
-    %    \begin{enumerate}
-    %       \item households optimize according to \eqref{EqSmaxprob}, \eqref{EqScons} and \eqref{EqIntertempEuler},
-    %       \item firms optimize according to \eqref{EqFOCwage} and \eqref{EqFOCrate}, and
-    %       \item markets clear according to \eqref{EqMktClrLab}, \eqref{EqMktClrCap}, and \eqref{EqMktClrGoods}.
-    %    \end{enumerate}
-    % \end{definition}
-    % \hrule
-    % \begin{spacing}{1.5}
-    % \vspace{10mm}
+    The definition of the non-steady-state equilibrium is similar to Definition \ref{DefEquilSS}, with the steady-state equilibrium definition being a special case of the non-steady-state equilibrium.
 
-    % \noindent The household saving decision in the last period of life shows that the optimal saving for age $s=S$ is a function of individual holdings of savings and prices this period and next $b_{j,S,t+1}=\psi\bigl(b_{j,S-1,t},w_t,r_t,w_{t+1},r_{t+1}\bigr)$. This decision is characterized by the final period Euler equation.
-    % \begin{equation}\label{EqEulerSm1}
-    %   \begin{split}
-    %     &\Bigl([1+r_t]b_{j,S-1,t} + w_t e_j(S-1)l(S-1) - b_{j,S,t+1}\Bigr)^{-\sigma} = \\
-    %     &\quad\quad\quad\quad\quad \beta(1+r_{t+1})\Bigl([1+r_{t+1}]b_{j,S,t+1} + w_{t+1}e_j(S)l(S)\Bigr)^{-\sigma} \quad\forall j,t
-    %   \end{split}
-    % \end{equation}
+    \vspace{7mm}
+    \end{spacing}
+    \hrule
+    \begin{definition}[\textbf{Non-steady-state equilibrium}]\label{DefEquilNonSS}
+      A non-autarkic non-steady-state equilibrium in the overlapping generations model with $S$-period lived agents and heterogeneous ability $e_j(s)$ is defined as allocations $c_{j,s,t}$, $n_{j,s,t}$ and $b_{j,s+1,t+1}$ and prices $w_t$ and $r_t$ for all $j$, $s$, and $t$ such that the following conditions hold:
+       \begin{enumerate}
+          \item households optimize according to \eqref{EqSmaxprob}, \eqref{EqScons}, \eqref{EqEulerLabGen}, and \eqref{EqEulerSavGen},
+          \item firms optimize according to \eqref{EqFOCwage} and \eqref{EqFOCrate}, and
+          \item markets clear according to \eqref{EqMktClrLab}, \eqref{EqMktClrCap}, and \eqref{EqMktClrGoods}.
+       \end{enumerate}
+    \end{definition}
+    \hrule
+    \begin{spacing}{1.5}
+    \vspace{10mm}
 
-    % If we substitute in the solution $\psi\bigl(b_{j,S-1,t},w_t,r_t,w_{t+1},r_{t+1}\bigr)$ to \eqref{EqEulerSm1} to the previous period's problem of how much to save for the second-to-last period of life, we see that the optimal saving decision is the following function,
-    % \begin{equation}\label{EqEulerSm2}
-    %   \begin{split}
-    %     &\Bigl([1+r_{t-1}]b_{j,S-2,t-1} + w_{t-1} e_j(S-2)l(S-2) - b_{j,S-1,t}\Bigr)^{-\sigma} = \\
-    %     &\quad \beta(1+r_t)\Bigl([1+r_t]b_{j,S-1,t} + w_{t}e_j(S-1)l(S-1) - \psi_{j,S,t+1}\Bigr)^{-\sigma} \quad\forall j,t
-    %   \end{split}
-    % \end{equation}
-    % where $\psi_{j,S,t+1}$ is short hand notation for $b_{j,S,t+1}=\psi(b_{j,S-1,t},w_t,r_t,w_{t+1},r_{t+1})$. Equation \eqref{EqEulerSm2}, in conjunction with \eqref{EqEulerSm1}, show that the optimal household decision in the third-to-last period of life of how much to save for the second-to-last period of life is a function of current savings and the remaining lifetime series of prices $b_{j,S-1,t}=\psi\bigl(b_{j,S-2,t-1},(w_v,r_v)_{v=t-1}^{t+1}\bigr)$. By backward induction, we can show that the solution to the households saving decision in any period is a function of their current holdings of savings and the series of prices over the rest of their life.
-    % \begin{equation}\label{EqPsiGen}
-    %   b_{j,s+1,t+1} = \psi\Bigl(b_{j,s,t},(w_v,r_v)_{v=t}^{t+S-s}\Bigr) \quad\forall j,t \quad\text{and}\quad 1\leq s\leq S-1
-    % \end{equation}
+    \noindent The household labor-leisure decision in the last period of life shows that the optimal labor supply for age $s=S$ is a function of individual holdings of savings and the prices in that period $n_{j,S,t}=\phi\bigl(b_{j,S,t},w_t,r_t\bigr)$. This decision is characterized by final-age Euler equation \eqref{EqEulerSlab}. Households in their second-to-last period of life in period $t$ have three decisions to make. They must choose how much to work this period $n_{j,S-1,t}$ and next $n_{j,S,t+1}$ and how much to save this period for next period $b_{j,S,t+1}$. The optimal responses for this individual are characterized by the first order conditions \eqref{EqEulerSm1lab}, \eqref{EqEulerSlab2}, and \eqref{EqEulerSm1Sav}, respectively.
 
-    % Each optimal saving decision for each household requires knowledge of at least todays prices and tomorrows prices and at most $S$ periods of prices. In equilibrium, one can see that the prices $(w_t,r_t)$ in each period $t$ are functions of the entire distribution of savings $b_{j,s,t}$ for all $j$ and $s$. This is clear from the steady-state version of the capital market clearing condition \eqref{EqMktClrCap} and the fact that aggregate labor supply is a function of the sum of exogenous efficiency units of labor in the labor market clearing condition \eqref{EqMktClrLab}. And the two firm first order conditions for the real wage $w_t$ \eqref{EqFOCwage} and real rental rate $r_t$ \eqref{EqFOCrate} are only functions of the aggregate capital stock $K_t$ and aggregate labor $L_t$. The requirement that individuals be able to forecast prices with perfect foresight over their lifetimes implies that each individual has correct information and beliefs about all the other individuals optimization problems and information. It also implies that the equilibrium allocations and prices are really just functions of the entire distribution of savings at a particular period, as well as a law of motion for that distribution of savings.
+    The optimal labor supply at age $s=S-1$ is a function of the current savings and the current prices $n_{j,S-1,t}=\phi\bigl(b_{j,S-1,t},w_t,r_t\bigr)$, and the optimal labor supply at age $s=S$ is a function of the next period's prices $n_{j,S,t+1}=\phi\bigl(b_{j,S,t+1},w_{t+1},r_{t+1}\bigr)$. However, optimal savings in the second-to-last period of life is a function of the current savings and the prices in the current period and in the next period $b_{j,S,t+1} = \psi\bigl(b_{j,S-1,t},w_t,r_t,w_{t+1},r_{t+1}\bigr)$. By induction, we can show that the optimal labor supply function for any individual with ability $j$, age $s$, and in period $t$ is a function of current holdings of savings and the current period prices.
+    \begin{equation}\label{EqLabPolFuncGen}
+      n_{j,s,t} = \phi\bigl(b_{j,s,t},w_t,r_t\bigr) \quad\forall j,s,t
+    \end{equation}
+    We can also show that the solution to the households saving decision in any period is a function of their current holdings of savings and the series of prices over the rest of their life.
+    \begin{equation}\label{EqSavPolFuncGen}
+      b_{j,s+1,t+1} = \psi\Bigl(b_{j,s,t},(w_v,r_v)_{v=t}^{t+S-s}\Bigr) \quad\forall j,t \quad\text{and}\quad 1\leq s\leq S-1
+    \end{equation}
 
-    % \begin{figure}[htb]\centering \captionsetup{width=4.0in}
-    %   \caption{\label{FigKpathTPI}\textbf{Equilibrium time path of $K_t$ for $S=60$ and $J=7$}}
-    %   \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/KpathTPI.pdf}}}
-    % \end{figure}
+    Each optimal saving decision for each household requires knowledge of at least todays prices and tomorrows prices and at most $S$ periods of prices. In equilibrium, one can see that the prices $(w_t,r_t)$ in each period $t$ are functions of the entire distribution of savings $\bm{\Gamma}_t$. The requirement that individuals be able to forecast prices with perfect foresight over their lifetimes implies that each individual has correct information and beliefs about all the other individuals optimization problems and information. It also implies that the equilibrium allocations and prices are really just functions of the entire distribution of savings at a particular period, as well as a law of motion for that distribution of savings.
 
-    % To solve for any non-steady-state equilibrium time path of the economy from an arbitrary current state to the steady state, we follow the time path iteration (TPI) method of \citet{AuerbachKotlikoff:1987}. Appendix \ref{AppNonSSsolve} details how to solve for the non-steady-state equilibrium time path using the TPI method. Figure \ref{FigKpathTPI} shows the equilibrium time path of the aggregate capital stock for the calibration used in Figure \ref{FigKpathTPI} for $T=70$ periods starting from an initial distribution of savings in which $b_{j,s,1}=(0.9\bar{K})/[(S-1)J]$ for all $j$ and $s$. We used $\rho=0.2$ as our time-path updating parameter (see Equation \eqref{EqTPInewpath} in Appendix \ref{AppNonSSsolve}.)
+    \begin{figure}[htb]\centering \captionsetup{width=4.0in}
+      \caption{\label{FigKpathTPI}\textbf{Equilibrium time path of $K_t$ for $S=60$ and $J=7$}}
+      \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/KpathTPI.pdf}}}
+    \end{figure}
+
+    To solve for any non-steady-state equilibrium time path of the economy from an arbitrary current state to the steady state, we follow the time path iteration (TPI) method of \citet{AuerbachKotlikoff:1987}. Appendix \ref{AppNonSSsolve} details how to solve for the non-steady-state equilibrium time path using the TPI method. Figure \ref{FigKpathTPI} shows the equilibrium time path of the aggregate capital stock for the calibration used in Figure \ref{FigKpathTPI} for $T=70$ periods starting from an initial distribution of savings in which $b_{j,s,1}=(0.9\bar{K})/[(S-1)J]$ for all $j$ and $s$. We used $\rho=0.2$ as our time-path updating parameter (see Equation \eqref{EqTPInewpath} in Appendix \ref{AppNonSSsolve}.)
 
 
 \clearpage
@@ -292,15 +298,14 @@
 
   The calibration of the ability process $e_j(s)$ is as follows.  First, the ability types themselves must be calibrated. For each age group $s \in S$, the hourly wage rates are sorted into $J$ percentile groups.  The ability type for each percentile group is the median wage for the percentile group, divided by the average wage of all individuals in the data set.
 
-  The data used to calibrate the ability types were obtained from the Current Population Survey.\footnote{U.S. Census Bureau, Dataferret, Current Population Survey, 2014. The variables $PRTAGE$ and $PTERNHLY$ were used for the age and hourly wage rate of individuals, respectively. \\ [-2pt]} Individuals younger than 20 and older than 79 are dropped from the data. This is due to the extremely small amount of observations for ages outside of those bounds. Due to a limited number of observations in the survey who included their hourly wage, data was taken from the months of January, February, March, April, and May 2014.  The income levels for the $J$ ability types were then calculated for each month, and then an average was taken of the five calibrations of the ability types in order to produce a final calibration to be used in the model. Figure \ref{FigIncome} shows this income distribution across age and ability type.
+  The data used to calibrate the ability types were obtained from the Current Population Survey.\footnote{U.S. Census Bureau, Dataferret, Current Population Survey, 2014. The variables $PRTAGE$, $PTERNHLY$, and $PWCMPWGT$ were used for the age, hourly wage rate, and population weight of individuals, respectively. \\ [-2pt]} Individuals younger than 20 and older than 79 are dropped from the data. This is due to the extremely small amount of observations for ages outside of those bounds. Due to a limited number of observations in the survey who included their hourly wage, data was taken from the months of January, February, March, April, and May 2014.  Population weights were also used to obtain the correct percentile groups of individuals.  The income levels for the $J$ ability types were then calculated for each month, and then an average was taken of the five calibrations of the ability types in order to produce a final calibration to be used in the model. Figure \ref{FigIncome} shows this income distribution across age and ability type.
 
     \begin{figure}[htb]\centering \captionsetup{width=4.0in}
       \caption{\label{FigIncome}\textbf{Distribution of Income where $S=60$ and $J=7$}}
       \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/income.png}}}
     \end{figure}
 
-  The ability types evolve according to a Markov process, which is altered depending on the specifications of the model.  An individual in period $s$ and of ability type $j$ faces a distribution which will determine in which ability type they fall in the period $s+1$.  In this paper, individuals are assigned ability types at the beginning of their life, and cannot change types later on.  This Markov process is simply an identity matrix for each age group.
-
+  In this paper, individuals are assigned ability types at the beginning of their life, and cannot change types later on.
 % Do we need to cite the data set sources? (for both e and f)
 
 
