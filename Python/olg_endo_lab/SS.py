@@ -195,14 +195,34 @@ def Steady_State(guesses):
     # return np.array(list(error1.flatten()) + list(error2.flatten()))
     return list(error1.flatten()) + list(error2.flatten())
 
-K_guess_init = np.ones((S-1, J)) * 2.0
-N_guess_init = np.ones((S, J)) * 0.8
+
+def Utility(guesses):
+
+    K_guess = np.array([0] * J + list(guesses[0: (S-1) * J ]) + [0] * J)
+    K_guess = K_guess.reshape((S+1, J))
+    K = K_guess.mean()
+    N_guess = guesses[(S-1) * J :]
+    N_guess = N_guess.reshape((S, J))
+    N = get_N(e, N_guess)
+    Y = get_Y(K, N)
+    w = get_w(Y, N)
+    r = get_r(Y, K)
+
+    c = (1 + r) * K_guess[:-1, :] + w * e * N_guess - K_guess[1:, :]
+
+    utils = ((c**(1-sigma) - 1) / (1 - sigma)) + (chi * ((1 - N_guess)**(eta) / eta))
+    sum_utils = utils.sum()
+
+    return -1 * sum_utils
+
+K_guess_init = np.ones((S-1, J)) * .05
+N_guess_init = np.ones((S, J)) * 0.1
 
 guesses = list(K_guess_init.flatten()) + list(N_guess_init.flatten())
-solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9)
-# solutions = opt.minimize(Steady_State, guesses)
-# print 'It converged:', solutions.success
-# solutions = solutions.x
+# solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9)
+solutions = opt.minimize(Utility, guesses)
+print 'It converged:', solutions.success
+solutions = solutions.x
 
 # Solvers for large matrices
 # solutions = newton_krylov(Steady_State, guesses, method='gmres', verbose=1)
