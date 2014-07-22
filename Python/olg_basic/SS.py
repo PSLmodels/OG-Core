@@ -165,16 +165,6 @@ def MUc(c):
     return output
 
 
-def MUl(l):
-    '''
-    Parameters: Labor
-
-    Returns:    Marginal Utility of Labor
-    '''
-    output = - eta * (l ** (-xi))
-    return output
-
-
 def Euler_justcapital(w, r, e, n, K1, K2, K3):
     '''
     Parameters:
