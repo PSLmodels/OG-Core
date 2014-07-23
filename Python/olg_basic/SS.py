@@ -273,7 +273,8 @@ seconds.' % (abs(hours - .5), abs(minutes - .5), seconds)
  Generate graphs of the steady-state distribution of wealth
 ------------------------------------------------------------------------
 domain     = 1 x S vector of each age cohort
-Kssmat2    = SxJ array of capital (zeros appended at the end of Kssmat2)
+Kssmat2    = SxJ array of capital (zeros appended at the beginning of
+             Kssmat)
 ------------------------------------------------------------------------
 '''
 
@@ -291,7 +292,7 @@ plt.savefig("OUTPUT/capital_dist_2D")
 
 # 3D Graph
 cmap1 = matplotlib.cm.get_cmap('winter')
-Kssmat2 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)))
+Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
 Sgrid = np.linspace(1, S, S)
 Jgrid = np.linspace(1, J, J)
 X, Y = np.meshgrid(Sgrid, Jgrid)
@@ -308,13 +309,13 @@ plt.savefig('OUTPUT/capital_dist_3D')
 ------------------------------------------------------------------------
 Generate graph of Consumption
 ------------------------------------------------------------------------
-Kssmat3 = SxJ array of capital (zeros appended at the beginning of
-          Kssmat)
+Kssmat3    = SxJ array of capital (zeros appended at the end of
+             Kssmat)
 cssmat  = SxJ array of consumption across age and ability groups
 ------------------------------------------------------------------------
 '''
-Kssmat3 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
-cssmat = (1 + rss) * Kssmat3 + wss * e * n.reshape(S, 1) - Kssmat2
+Kssmat3 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)))
+cssmat = (1 + rss) * Kssmat2 + wss * e * n.reshape(S, 1) - Kssmat3
 
 # 2D Graph
 plt.figure(3)

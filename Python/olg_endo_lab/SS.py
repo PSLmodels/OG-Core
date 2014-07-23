@@ -61,6 +61,7 @@ alpha = .35
 rho = .20
 A = 1.0
 delta = 1 - (0.95 ** (60.0 / S))
+ctilde = .01
 chi = 1.0
 eta = 2.5
 e = income.get_e(S, J)
@@ -223,6 +224,30 @@ def Steady_State(guesses):
     return list(error1.flatten()) + list(error2.flatten())
 
 
+def borrowing_constraints(K_dist, w, r, e, n):
+    '''
+    Parameters:
+        K_dist = Distribution of capital ((S-1)xJ array)
+        w      = wage rate (scalar)
+        r      = rental rate (scalar)
+        e      = distribution of abilities (SxJ array)
+        n      = distribution of labor (SxJ array)
+
+    Returns:
+        False value if all the borrowing constraints are met, True
+            if there are violations.
+    '''
+    b_min = np.zeros((S-1, J))
+    b_min[-1, :] = (ctilde - w * e[S-1, :] * n[S-1, :]) / (1 + r)
+    for i in xrange(S-2):
+        b_min[-(i+2), :] = (ctilde + b_min[-(i+1), :] - w * e[-(i+2), :] * n[-(i+2), :]) / (1 + r)
+    difference = K_dist - b_min
+    if (difference < 0).any():
+        return True
+    else:
+        return False
+
+
 def Utility(guesses):
     K = guesses[0: (S-1) * J ].mean()
     K_guess = np.array([0] * J + list(guesses[0: (S-1) * J ]) + [0] * J).reshape((S+1, J))
@@ -241,16 +266,7 @@ def Utility(guesses):
 K_guess_init = np.ones((S-1, J)) * .01
 N_guess_init = np.ones((S, J)) * .95
 guesses = list(K_guess_init.flatten()) + list(N_guess_init.flatten())
-
-
 solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9)
-
-
-
-# else:
-#     solutions = opt.minimize(Utility, guesses)
-#     print 'It converged:', solutions.success
-#     solutions = solutions.x
 
 Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
 Kssvec = Kssmat.mean(1)
@@ -267,6 +283,9 @@ flag = False
 K_agg = Kssmat.sum()
 if K_agg <= 0:
     print 'WARNING: Aggregate capital is less than or equal to zero.'
+    flag = True
+if borrowing_constraints(Kssmat, wss, rss, e, Nssmat) is True:
+    print 'WARNING: Borrowing constraints have been violated.'
     flag = True
 if flag is False:
     print 'There were no violations of the borrowing constraints.'
@@ -417,13 +436,36 @@ k2_2 = np.array(list(Kssmat) + list(np.zeros(J).reshape((1, J))))
 euler1 = Euler1(wss, rss, e, Nssmat, k1, k2, k3)
 euler2 = Euler2(wss, rss, e, Nssmat, k1_2, k2_2)
 
+# 2D Graph
 plt.figure(8)
-plt.plot(domain[1:], np.abs(euler1).max(1), label='Capital')
-plt.plot(domain, np.abs(euler2).max(1), label='Labor')
+plt.plot(domain[1:], np.abs(euler1).max(1), label='Euler1')
+plt.plot(domain, np.abs(euler2).max(1), label='Euler2')
 plt.legend(loc=0)
-
 plt.title('Euler Errors')
-plt.savefig('OUTPUT/euler_errors')
+plt.savefig('OUTPUT/euler_errors_2D')
+
+# 3D Graph
+X2, Y2 = np.meshgrid(Sgrid[1:], Jgrid)
+
+fig9 = plt.figure(9)
+cmap2 = matplotlib.cm.get_cmap('winter')
+ax9 = fig9.gca(projection='3d')
+ax9.plot_surface(X2, Y2, euler1.T, rstride=1, cstride=2, cmap=cmap2)
+ax9.set_xlabel(r'Age Cohorts $S$')
+ax9.set_ylabel(r'Ability Types $J$')
+ax9.set_zlabel('Error Level')
+ax9.set_title('Euler Errors')
+plt.savefig('OUTPUT/euler_errors_euler1_SS_3D')
+
+fig10 = plt.figure(10)
+cmap2 = matplotlib.cm.get_cmap('winter')
+ax10 = fig10.gca(projection='3d')
+ax10.plot_surface(X, Y, euler2.T, rstride=1, cstride=2, cmap=cmap2)
+ax10.set_xlabel(r'Age Cohorts $S$')
+ax10.set_ylabel(r'Ability Types $J$')
+ax10.set_zlabel('Error Level')
+ax10.set_title('Euler Errors')
+plt.savefig('OUTPUT/euler_errors_euler2_SS_3D')
 
 '''
 ------------------------------------------------------------------------
