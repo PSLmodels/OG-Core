@@ -62,7 +62,7 @@ rho = .20
 A = 1.0
 delta = 1 - (0.95 ** (60.0 / S))
 chi = 1.0
-eta = 1.5
+eta = 2.0
 e = income.get_e(S, J)
 
 '''
@@ -159,7 +159,7 @@ def MUl(n):
 
     Returns:    Marginal Utility of Labor
     '''
-    output = - chi * ((1-n) ** (eta - 1))
+    output = - chi * ((1-n) ** (-eta))
     return output
 
 
@@ -232,7 +232,7 @@ def Utility(guesses):
     w = get_w(Y, N)
     r = get_r(Y, K)
     c = (1 + r) * K_guess[:-1, :] + w * e * N_guess - K_guess[1:, :]
-    utils = ((c**(1-sigma) - 1) / (1 - sigma)) + (chi * ((1 - N_guess)**(eta) / eta))
+    utils = (c**(1-sigma) - 1) / (1 - sigma) + chi * ((1 - N_guess)**(1-eta)) / (1-eta)
     for i in xrange(S):
         utils[i, :] *= beta ** i
     sum_utils = -utils.sum()
@@ -242,7 +242,7 @@ K_guess_init = np.ones((S-1, J)) * .05
 N_guess_init = np.ones((S, J)) * .95
 guesses = list(K_guess_init.flatten()) + list(N_guess_init.flatten())
 
-utility = 1
+utility = 0
 
 if utility == 0:
     solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9)
@@ -390,7 +390,7 @@ k2_2 = np.array(list(Kssmat) + list(np.zeros(J).reshape((1, J))))
 euler1 = Euler1(wss, rss, e, Nssmat, k1, k2, k3)
 euler2 = Euler2(wss, rss, e, Nssmat, k1_2, k2_2)
 
-plt.figure(5)
+plt.figure(6)
 plt.plot(domain[1:], np.abs(euler1).max(1), label='Capital')
 plt.plot(domain, np.abs(euler2).max(1), label='Labor')
 plt.legend(loc=0)
