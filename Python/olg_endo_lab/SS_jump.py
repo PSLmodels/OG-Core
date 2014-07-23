@@ -45,7 +45,6 @@ A      = total factor productivity parameter in firms' production
          function
 delta  = depreciation rate of capital
 ctilde = minimum value amount of consumption
-ltilde = measure of time each individual is endowed with each period
 xi     = ...
 eta    = Frisch elasticity of labor supply
 e      = S x J matrix of age dependent possible working abilities e_s
@@ -63,28 +62,15 @@ rho = .20
 A = 1.0
 delta = 1 - (0.95 ** (60.0 / S))
 ctilde = .01
-ltilde = 1.0
 chi = 1.0
-eta = 2.0
+eta = 2.5
 e = income.get_e(S, J)
-
-print 'The following are the parameter values of the simulation:'
-print '\tS:\t\t\t', S
-print '\tJ:\t\t\t', J
-print '\tBeta:\t\t', beta
-print '\tSigma:\t\t', sigma
-print '\tAlpha:\t\t', alpha
-print '\tRho:\t\t', rho
-print '\tA:\t\t\t', A
-print '\tDelta:\t\t', delta
-print '\tL-tilde:\t', ltilde
-print '\tChi:\t\t', chi
-print '\tEta:\t\t', eta
 
 '''
 ------------------------------------------------------------------------
 Finding the Steady State
 ------------------------------------------------------------------------
+
 K_guess_init = (S-1 x J) array for the initial guess of the distribution
                of capital
 N_guess_init = (S x J) array for the initial guess of the distribution
@@ -93,14 +79,9 @@ solutions    = ((S * (S-1) * J * J) x 1) array of solutions of the
                steady state distributions of capital and labor
 Kssmat       = ((S-1) x J) array of the steady state distribution of
                capital
-Kssmat2      = SxJ array of capital (zeros appended at the end of
-               Kssmat2)
-Kssmat3      = SxJ array of capital (zeros appended at the beginning of
-               Kssmat)
 Kssvec       = ((S-1) x 1) vector of the steady state level of capital
                (averaged across ability types)
 Kss          = steady state aggregate capital stock
-K_agg        = Aggregate level of capital
 Nssmat       = (S x J) array of the steady state distribution of labor
 Nssvec       = (S x 1) vector of the steady state level of labor
                (averaged across ability types)
@@ -108,7 +89,9 @@ Nss          = steady state aggregate labor
 Yss          = steady state aggregate output
 wss          = steady state real wage
 rss          = steady state real rental rate
-cssmat       = SxJ array of consumption across age and ability groups
+K_agg        = Aggregate level of capital
+flag         = False if all borrowing constraints are met, true
+               otherwise.
 runtime      = Time needed to find the steady state (seconds)
 hours        = Hours needed to find the steady state
 minutes      = Minutes needed to find the steady state, less the number
@@ -177,7 +160,7 @@ def MUl(n):
 
     Returns:    Marginal Utility of Labor
     '''
-    output = - chi * ((ltilde-n) ** (-eta))
+    output = - chi * ((1-n) ** (-eta))
     return output
 
 
@@ -200,7 +183,7 @@ def Euler1(w, r, e, N_guess, K1, K2, K3):
     return euler
 
 
-def Euler2(w, r, e, N_guess, K1_2, K2_2):
+def Euler2(e, N_guess, K1_2, K2_2):
     '''
     Parameters:
         w        = wage rate (scalar)
@@ -213,7 +196,14 @@ def Euler2(w, r, e, N_guess, K1_2, K2_2):
     Returns:
         Value of Euler error.
     '''
+    N_guess = N_guess.reshape(S, J)
+    K = K2_2[:-1, :].mean()
+    N = get_N(e, N_guess)
+    Y = get_Y(K, N)
+    w = get_w(Y, N)
+    r = get_r(Y, K)
     euler = MUc((1 + r)*K1_2 + w * e * N_guess - K2_2) * w * e + MUl(N_guess)
+    euler = euler.flatten()
     return euler
 
 
@@ -224,23 +214,30 @@ def Steady_State(guesses):
 
     Returns:    Array of S-1 Euler equation errors
     '''
-    K_guess = guesses[0: (S-1) * J ].reshape((S-1, J))
+    K_guess = guesses.reshape((S-1, J))
     K = K_guess.mean()
-    N_guess = guesses[(S-1) * J :].reshape((S, J))
-    N = get_N(e, N_guess)
-    Y = get_Y(K, N)
-    w = get_w(Y, N)
-    r = get_r(Y, K)
+
     K1 = np.array(list(np.zeros(J).reshape(1, J)) + list(K_guess[:-1, :]))
     K2 = K_guess
     K3 = np.array(list(K_guess[1:, :]) + list(np.zeros(J).reshape(1, J)))
     K1_2 = np.array(list(np.zeros(J).reshape(1, J)) + list(K_guess))
     K2_2 = np.array(list(K_guess) + list(np.zeros(J).reshape(1, J)))
+
+    N_guess = np.ones((S, J)) * .95
+    N = get_N(e, N_guess)
+    Y = get_Y(K, N)
+    w = get_w(Y, N)
+    r = get_r(Y, K)
+    Euler2_zero = lambda x: Euler2(e, x, K1_2, K2_2)
+    N_guess = N_guess.flatten()
+    N_guess = opt.fsolve(Euler2_zero, N_guess).reshape(S, J)
+    N = get_N(e, N_guess)
+    Y = get_Y(K, N)
+    w = get_w(Y, N)
+    r = get_r(Y, K)
+    print N
     error1 = Euler1(w, r, e, N_guess, K1, K2, K3)
-    error2 = Euler2(w, r, e, N_guess, K1_2, K2_2)
-    mask = N_guess < 0
-    error2[mask] += 1e3 
-    return list(error1.flatten()) + list(error2.flatten())
+    return list(error1.flatten())
 
 
 def borrowing_constraints(K_dist, w, r, e, n):
@@ -266,62 +263,42 @@ def borrowing_constraints(K_dist, w, r, e, n):
     else:
         return False
 
-
-def constraint_checker(Kssmat, Nssmat, wss, rss, e, cssmat):
-    '''
-    Parameters:
-
-    Created Variables:
-        flag1 = False if all borrowing constraints are met, true
-               otherwise.
-
-    Returns:
-    '''
-    print 'Checking constraints on capital, labor, and consumption.'
-    flag1 = False
-    if Kssmat.sum() <= 0:
-        print '\tWARNING: Aggregate capital is less than or equal to zero.'
-        flag1 = True
-    if borrowing_constraints(Kssmat, wss, rss, e, Nssmat) is True:
-        print '\tWARNING: Borrowing constraints have been violated.'
-        flag1 = True
-    if flag1 is False:
-        print '\tThere were no violations of the borrowing constraints.'
-    flag2 = False
-    if (Nssmat < 0).any():
-        print '\tWARNING: Labor supply violates nonnegativity constraints.'
-        flag2 = True
-    if (Nssmat > ltilde).any():
-        print '\tWARNING: Labor suppy violates the ltilde constraint.'
-    if flag2 is False:
-        print '\tThere were no violations of the constraints on labor supply.'
-    if (cssmat < 0).any():
-        print '\tWARNING: Conusmption volates nonnegativity constraints.'
-    else:
-        print '\tThere were no violations of the constraints on consumption.'
-
-def Utility(guesses):
-    K = guesses[0: (S-1) * J ].mean()
-    K_guess = np.array([0] * J + list(guesses[0: (S-1) * J ]) + [0] * J).reshape((S+1, J))
-    N_guess = guesses[(S-1) * J :].reshape((S, J))
-    N = get_N(e, N_guess)
-    Y = get_Y(K, N)
-    w = get_w(Y, N)
-    r = get_r(Y, K)
-    c = (1 + r) * K_guess[:-1, :] + w * e * N_guess - K_guess[1:, :]
-    utils = (c**(1-sigma) - 1) / (1 - sigma) + chi * ((1 - N_guess)**(1-eta)) / (1-eta)
-    for i in xrange(S):
-        utils[i, :] *= beta ** i
-    sum_utils = -utils.sum()
-    return sum_utils
-
 K_guess_init = np.ones((S-1, J)) * .01
-N_guess_init = np.ones((S, J)) * .95
-guesses = list(K_guess_init.flatten()) + list(N_guess_init.flatten())
+solutions = opt.fsolve(Steady_State, K_guess_init, xtol=1e-9)
 
-print 'Solving for steady state level distribution of capital and labor.'
-solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9)
-print '\tFinished.'
+Kssmat = solutions.reshape(S-1, J)
+Kssvec = Kssmat.mean(1)
+Kss = Kssvec.mean()
+Kssvec = np.array([0]+list(Kssvec))
+
+K1_2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
+K2_2 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)))
+Euler2_zero = lambda x: Euler2(e, x, K1_2, K2_2)
+
+N_guess_init = np.ones((S, J)) * .95
+Nssmat = opt.fsolve(Euler2_zero, N_guess_init).reshape(S, J)
+Nssvec = Nssmat.mean(1)
+Nss = Nssvec.mean()
+Yss = get_Y(Kss, Nss)
+wss = get_w(Yss, Nss)
+rss = get_r(Yss, Kss)
+
+flag = False
+K_agg = Kssmat.sum()
+if K_agg <= 0:
+    print 'WARNING: Aggregate capital is less than or equal to zero.'
+    flag = True
+if borrowing_constraints(Kssmat, wss, rss, e, Nssmat) is True:
+    print 'WARNING: Borrowing constraints have been violated.'
+    flag = True
+if flag is False:
+    print 'There were no violations of the borrowing constraints.'
+
+print "Kss:", Kss
+print "Nss:", Nss
+print "Yss:", Yss
+print "wss:", wss
+print "rss:", rss
 
 runtime = time.time() - starttime
 hours = runtime / 3600
@@ -330,42 +307,16 @@ seconds = runtime % 60
 print 'Finding the steady state took %.0f hours, %.0f minutes, and %.0f \
 seconds.' % (abs(hours - .5), abs(minutes - .5), seconds)
 
-Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
-Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
-Kssmat3 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
-
-Kssvec = Kssmat.mean(1)
-Kss = Kssvec.mean()
-K_agg = Kssmat.sum()
-Kssvec = np.array([0]+list(Kssvec))
-Nssmat = solutions[(S-1) * J:].reshape(S, J)
-Nssvec = Nssmat.mean(1)
-Nss = Nssvec.mean()
-Yss = get_Y(Kss, Nss)
-wss = get_w(Yss, Nss)
-rss = get_r(Yss, Kss)
-
-cssmat = (1 + rss) * Kssmat3 + wss * e * Nssmat - Kssmat2
-
-
-constraint_checker(Kssmat, Nssmat, wss, rss, e, cssmat)
-
-print 'The steady state values for:'
-print "\tCapital:\t\t", Kss
-print "\tLabor:\t\t\t", Nss
-print "\tOutput:\t\t\t", Yss
-print "\tWage:\t\t\t", wss
-print "\tRental Rate:\t", rss
 
 '''
 ------------------------------------------------------------------------
  Generate graphs of the steady-state distribution of wealth
 ------------------------------------------------------------------------
 domain     = 1 x S vector of each age cohort
+Kssmat2    = SxJ array of capital (zeros appended at the end of Kssmat2)
 ------------------------------------------------------------------------
 '''
 
-print 'Generating graphs.'
 domain = np.linspace(1, S, S)
 
 # 2D Graph
@@ -379,7 +330,8 @@ plt.ylabel('Capital')
 plt.savefig("OUTPUT/capital_dist_2D")
 
 # 3D Graph
-cmap1 = matplotlib.cm.get_cmap('summer')
+cmap1 = matplotlib.cm.get_cmap('autumn')
+Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
 Sgrid = np.linspace(1, S, S)
 Jgrid = np.linspace(1, J, J)
 X, Y = np.meshgrid(Sgrid, Jgrid)
@@ -422,11 +374,19 @@ plt.savefig('OUTPUT/labor_dist_3D')
 ------------------------------------------------------------------------
 Generate graph of Consumption
 ------------------------------------------------------------------------
+Kssmat3 = SxJ array of capital (zeros appended at the beginning of
+          Kssmat)
+cssmat  = SxJ array of consumption across age and ability groups
+------------------------------------------------------------------------
 '''
+Kssmat3 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
+cssmat = (1 + rss) * Kssmat3 + wss * e * Nssmat - Kssmat2
 
 # 2D Graph
 plt.figure(5)
+# plt.plot(domain, bsavg, label='Average capital stock')
 plt.plot(domain, cssmat.mean(1), label='Consumption')
+# plt.plot(domain, n * wss * e.mean(axis=1), label='Income')
 plt.title('Consumption across cohorts: S = {}'.format(S))
 # plt.legend(loc=0)
 plt.xlabel('Age cohorts')
@@ -451,7 +411,7 @@ Graph of Distribution of Income
 '''
 
 # 3D Graph
-cmap2 = matplotlib.cm.get_cmap('summer')
+cmap2 = matplotlib.cm.get_cmap('winter')
 fig7 = plt.figure(7)
 ax7 = fig7.gca(projection='3d')
 ax7.plot_surface(X, Y, e.T, rstride=1, cstride=2, cmap=cmap2)
@@ -478,7 +438,7 @@ k1_2 = np.array(list(np.zeros(J).reshape((1, J))) + list(Kssmat))
 k2_2 = np.array(list(Kssmat) + list(np.zeros(J).reshape((1, J))))
 
 euler1 = Euler1(wss, rss, e, Nssmat, k1, k2, k3)
-euler2 = Euler2(wss, rss, e, Nssmat, k1_2, k2_2)
+euler2 = Euler2(e, Nssmat, k1_2, k2_2).reshape(S, J)
 
 # 2D Graph
 plt.figure(8)
@@ -492,6 +452,7 @@ plt.savefig('OUTPUT/euler_errors_2D')
 X2, Y2 = np.meshgrid(Sgrid[1:], Jgrid)
 
 fig9 = plt.figure(9)
+cmap2 = matplotlib.cm.get_cmap('winter')
 ax9 = fig9.gca(projection='3d')
 ax9.plot_surface(X2, Y2, euler1.T, rstride=1, cstride=2, cmap=cmap2)
 ax9.set_xlabel(r'Age Cohorts $S$')
@@ -501,6 +462,7 @@ ax9.set_title('Euler Errors')
 plt.savefig('OUTPUT/euler_errors_euler1_SS_3D')
 
 fig10 = plt.figure(10)
+cmap2 = matplotlib.cm.get_cmap('winter')
 ax10 = fig10.gca(projection='3d')
 ax10.plot_surface(X, Y, euler2.T, rstride=1, cstride=2, cmap=cmap2)
 ax10.set_xlabel(r'Age Cohorts $S$')
@@ -509,21 +471,17 @@ ax10.set_zlabel('Error Level')
 ax10.set_title('Euler Errors')
 plt.savefig('OUTPUT/euler_errors_euler2_SS_3D')
 
-print '\tFinished.'
-
 '''
 ------------------------------------------------------------------------
 Save variables/values so they can be used in other modules
 ------------------------------------------------------------------------
 '''
 
-print 'Saving variable values.'
 var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'e',
              'J', 'Kss', 'Kssvec', 'Kssmat', 'Nss', 'Nssvec', 'Nssmat',
              'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes',
-             'seconds', 'eta', 'chi', 'K_agg', 'ltilde']
+             'seconds', 'eta', 'chi', 'K_agg']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
 pickle.dump(dictionary, open("OUTPUT/ss_vars.pkl", "w"))
-print '\tFinished.'
