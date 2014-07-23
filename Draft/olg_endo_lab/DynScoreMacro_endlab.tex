@@ -110,10 +110,10 @@
     \begin{equation}\label{EqUtilMax}
       \begin{split}
         &U_{j,s,t} = \sum_{v=0}^{S-s}\beta^u u\left(c_{j,s+u,t+u},n_{j,s+u,t+u}\right) \\
-        &\text{where} \quad u\left(c_{j,s,t},n_{j,s,t}\right) = \frac{\left(c_{j,s,t}\right)^{1-\sigma} - 1}{1-\sigma} + \chi\frac{(\tilde{l}-n_{j,s,t})^\eta}{\eta} \quad\forall j,s,t
+        &\text{where} \quad u\left(c_{j,s,t},n_{j,s,t}\right) = \frac{\left(c_{j,s,t}\right)^{1-\sigma} - 1}{1-\sigma} + \chi\frac{(\tilde{l}-n_{j,s,t})^{1-\eta}}{1-\eta} \quad\forall j,s,t
       \end{split}
     \end{equation}
-    where $\sigma\geq 1$ is the coefficient of relative risk aversion on consumption, $\eta>1$ is proportional to the Frisch elasticity of labor supply, and $\beta\in(0,1)$ is the agent's discount factor.
+    where $\sigma\geq 1$ is the coefficient of relative risk aversion on consumption, $\eta\geq 1$ is proportional to the Frisch elasticity of labor supply, and $\beta\in(0,1)$ is the agent's discount factor.
 
     Because agents are born without any bonds maturing and because they purchase no bonds in the last period of life $s=S$, the per-period budget constraints for each agent normalized by the price of consumption are the following.
     \begin{align}
@@ -128,23 +128,23 @@
     We next describe the Euler equations that govern the choices of consumption $c_{j,s,t}$ and savings $b_{j,s+1,t+1}$ by household of age $s$ and ability $e_j(s)$ in each period $t$. We work backward from the last period of life $s = S$. Because households do not save in the last period of life $b_{j,s+1,t+1}=0$ due to our assumption of no bequest motive, the household's final-period maximization problem is given by the following.
     \begin{equation}\label{EqSmaxprob}
       \begin{split}
-        \max_{c_{j,S,t},n_{j,S,t},b_{j,s+1,t+1}} &\frac{\left(c_{j,S,t}\right)^{1-\sigma} - 1}{1 - \sigma} + \chi\frac{(\tilde{l}-n_{j,s,t})^\eta}{\eta} \\
+        \max_{c_{j,S,t},n_{j,S,t},b_{j,s+1,t+1}} &\frac{\left(c_{j,S,t}\right)^{1-\sigma} - 1}{1 - \sigma} + \chi\frac{(\tilde{l}-n_{j,s,t})^{1-\eta}}{1-\eta} \\
         &\text{s.t.} \quad \left(1+r_t\right)b_{j,S,t} + w_t e_j(S)n_{j,S,t} \geq c_{j,S,t} \quad \forall t
       \end{split}
     \end{equation}
     Because $u(c)$ is monotonically increasing in $c$, the $s=S$ consumption part of the maximization problem \eqref{EqSmaxprob} is simply to choose the maximum amount of consumption possible. The household trivially consumes all of its income in the last period of life. However, the household must choose labor to balance its benefits in extra consumption with its costs in disutility.
     \begin{gather}
       c_{j,S,t} = \left(1+r_t\right)b_{j,S,t} + w_t e_j(S)n_{j,S,t} \quad \forall t \label{EqScons} \\
-      w_t e_j(S)\Bigl[\left(1+r_t\right)b_{j,S,t} + w_t e_j(S)n_{j,S,t}\Bigr]^{-\sigma} = \chi(\tilde{l} - n_{j,S,t})^{\eta-1} \quad\forall t \label{EqEulerSlab}
+      w_t e_j(S)\Bigl[\left(1+r_t\right)b_{j,S,t} + w_t e_j(S)n_{j,S,t}\Bigr]^{-\sigma} = \chi(\tilde{l} - n_{j,S,t})^{-\eta} \quad\forall t \label{EqEulerSlab}
     \end{gather}
 
     An individual in his second-to-last period of life $s=S-1$ must choose how much to consume and how much to save for the last period of life $b_{j,S,t+1}$ as well as how much to work in the current period $n_{j,S-1,t}$ and how much to work in the final period $n_{j,S,t+1}$. The $S-1$ individual optimization problem is governed by two static first order conditions for labor  $n_{j,S-1,t}$ and $n_{j,S,t+1}$ and an intertemporal Euler equation for the savings decision.
     \begin{gather}
       \begin{split}
         w_t e_j(S-1)\Bigl[\left(1+r_t\right)b_{j,S_1,t} + w_t e_j(S-1)n_{j,S-1,t} - &b_{j,S,t+1}\Bigr]^{-\sigma} = ... \\
-        &\chi(\tilde{l} - n_{j,S-1,t})^{\eta-1} \quad\forall t
+        &\chi(\tilde{l} - n_{j,S-1,t})^{-\eta} \quad\forall t
       \end{split} \label{EqEulerSm1lab} \\
-      w_{t+1} e_j(S)\Bigl[\left(1+r_{t+1}\right)b_{j,S,t+1} + w_{t+1} e_j(S)n_{j,S,t+1}\Bigr]^{-\sigma} = \chi(\tilde{l} - n_{j,S,t+1})^{\eta-1} \quad\forall t \label{EqEulerSlab2} \\
+      w_{t+1} e_j(S)\Bigl[\left(1+r_{t+1}\right)b_{j,S,t+1} + w_{t+1} e_j(S)n_{j,S,t+1}\Bigr]^{-\sigma} = \chi(\tilde{l} - n_{j,S,t+1})^{-\eta} \quad\forall t \label{EqEulerSlab2} \\
       \begin{split}
         \Bigl[\left(1+r_t\right)b_{j,S_1,t} + w_t &e_j(S-1)n_{j,S-1,t} - b_{j,S,t+1}\Bigr]^{-\sigma} = ... \\
         &\beta(1+r_{t+1})\Bigl[\left(1+r_{t+1}\right)b_{j,S,t+1} + w_{t+1} e_j(S)n_{j,S,t+1}\Bigr]^{-\sigma} \quad\forall t
@@ -154,7 +154,7 @@
     In general, maximizing \eqref{EqUtilMax} with respect to \eqref{EqBC1}, \eqref{EqBC2}, \eqref{EqBC3}, and the implied individual and aggregate borrowing constraints gives the following set of $S-1$ intertemporal Euler equations and $S$ static first order conditions characterizing lifetime savings $b_{j,s,t}$ for all $j$ and $2\leq s\leq S$ and labor supply $n_{j,s,t}$ for all $j$ and $1\leq s\leq S$.
     \begin{gather}
       \begin{split}
-        w_t e_j(s)\Bigl[\left(1+r_t\right)b_{j,s,t} + &w_t e_j(s)n_{j,s,t} - b_{j,s+1,t+1}\Bigr]^{-\sigma} = \chi(\tilde{l} - n_{j,s,t})^{\eta-1} \\
+        w_t e_j(s)\Bigl[\left(1+r_t\right)b_{j,s,t} + &w_t e_j(s)n_{j,s,t} - b_{j,s+1,t+1}\Bigr]^{-\sigma} = \chi(\tilde{l} - n_{j,s,t})^{-\eta} \\
         &\forall j,t \quad\text{and}\quad 1\leq s\leq S \quad\text{with}\quad b_{j,1,t},b_{j,S+1,t}=0
       \end{split} \label{EqEulerLabGen} \\
       \begin{split}
@@ -216,7 +216,7 @@
 
     \begin{gather}
       \begin{split}
-        \bar{w}e_j(s)\Bigl[\left(1+\bar{r}\right)\bar{b}_{j,s} + &\bar{w} e_j(s)\bar{n}_{j,s} - \bar{b}_{j,s+1}\Bigr]^{-\sigma} = \chi(\tilde{l} - \bar{n}_{j,s})^{\eta-1} \\
+        \bar{w}e_j(s)\Bigl[\left(1+\bar{r}\right)\bar{b}_{j,s} + &\bar{w} e_j(s)\bar{n}_{j,s} - \bar{b}_{j,s+1}\Bigr]^{-\sigma} = \chi(\tilde{l} - \bar{n}_{j,s})^{-\eta} \\
         &\forall j \quad\text{and}\quad 1\leq s\leq S \quad\text{with}\quad \bar{b}_{j,1},\bar{b}_{j,S+1}=0
       \end{split} \label{EqEulerLabGenSS} \\
       \begin{split}
@@ -242,7 +242,7 @@
       \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/LabSS.pdf}}}
     \end{figure}
 
-    Figure \ref{FigSavSS} shows the steady-state distribution of individual savings $\bar{\bm{\Gamma}}$ and Figure \ref{FigLabSS} shows the steady-state distribution of individual labor supply $\bar{n}_{j,s}$ for a particular calibration of the model. The deterministic individual ability process $e_j(s)$ is calibrated from CPS wage distribution data as described in Appendix \ref{AppAbilCalib}, with $S=60$ and $J=7$. We calibrate the other parameters to $[\beta,\sigma,\delta,\chi,\eta,\alpha,A] = [0.96,3,0.05,1,1.5,0.35,1]$. Notice .... %that some intergenerational risk sharing is taking place. Young individuals of high ability, know that they will have high ability and borrow $b_{j,s,t}<0$ in their early years in the steady-state.
+    Figure \ref{FigSavSS} shows the steady-state distribution of individual savings $\bar{\bm{\Gamma}}$ and Figure \ref{FigLabSS} shows the steady-state distribution of individual labor supply $\bar{n}_{j,s}$ for a particular calibration of the model. The deterministic individual ability process $e_j(s)$ is calibrated from CPS wage distribution data as described in Appendix \ref{AppAbilCalib}, with $S=60$ and $J=7$. We calibrate the other parameters to $[\beta,\sigma,\delta,\chi,\eta,\alpha,A] = [0.96,3,0.05,1,2,0.35,1]$. Notice .... %that some intergenerational risk sharing is taking place. Young individuals of high ability, know that they will have high ability and borrow $b_{j,s,t}<0$ in their early years in the steady-state.
 
     The definition of the non-steady-state equilibrium is similar to Definition \ref{DefEquilSS}, with the steady-state equilibrium definition being a special case of the non-steady-state equilibrium.
 
@@ -302,7 +302,7 @@
 
     \begin{figure}[htb]\centering \captionsetup{width=4.0in}
       \caption{\label{FigIncome}\textbf{Distribution of Income where $S=60$ and $J=7$}}
-      \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/income.png}}}
+      \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/income.png}}}
     \end{figure}
 
   In this paper, individuals are assigned ability types at the beginning of their life, and cannot change types later on.
@@ -346,9 +346,9 @@
   This section describes the solution method for the steady-state equilibrium described in Definition \ref{DefEquilSS}.
 
   \begin{enumerate}
-    \item Choose an initial guess for the steady-state distribution of capital $\bar{b}_{j,s+1}$ for all $j$ and $s=1,2,...S-1$.
+    \item Choose an initial guess for the steady-state distribution of capital $\bar{b}_{j,s+1}$ for all $j$ and $s=1,2,...S-1$ and labor supply $\bar{n}_{j,s}$ for all $j$ and $s$.
       \begin{itemize}
-        \item choose some small positive number that is strictly less that is small enough to be less than the minimum income that an individual might have $\bar{w}e_j(s)l(s)$.
+        \item A good first guess is a large positive number for all the $\bar{n}_{j,s}$ that is slightly less than $\tilde{l}$ and to choose some small positive number that is small enough to be less than the minimum income that an individual might have $\bar{w}e_j(s)\bar{n}_{j,s}$.
       \end{itemize}
     \item Perform an unconstrained root finder that chooses $\bar{b}_{j,s+1}$ that solves the $J\times(S-1)$ steady-state Euler equations \eqref{EqSSeuler}.
     \item Make sure none of the implied steady-state consumptions $\bar{c}_{j,s,t}$ is less-than-or-equal-to zero.
