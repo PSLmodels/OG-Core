@@ -114,8 +114,11 @@ def Euler_justcapital(w1, r1, w2, r2, e, n, K1, K2, K3):
     return euler
 
 
-def Euler_Error(K_guess, winit, rinit, t):
-    length = len(K_guess)
+def Euler_Error(guesses, winit, rinit, t):
+    length = len(guesses)/2
+    K_guess = guesses[:length]
+    N_guess = guesses[length:]
+
     if length == S-1:
         K1 = np.array([0] + list(K_guess[:-1]))
     else:
@@ -126,14 +129,23 @@ def Euler_Error(K_guess, winit, rinit, t):
     w2 = winit[t+1:t+1+length]
     r1 = rinit[t:t+length]
     r2 = rinit[t+1:t+1+length]
-    n1 = n[-(length+1):-1]
-    n2 = n[-length:]
+    n1 = N_guess[:-1]
+    n2 = N_guess[1:]
     e1 = e[-(length+1):-1, j]
     e2 = e[-length:, j]
     error1 = MUc((1 + r1)*K1 + w1 * e1 * n1 - K2) \
         - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*n2 - K3)
-    error2 = MUc((1 + r)*K1_2 + w * e * N_guess - K2_2) * w * e + MUn(N_guess)
-    return error1.flatten()
+
+    if length == S-1:
+        K1_2 = np.array([0] + list(K_guess))
+    else:
+        K1_2 = np.array([(initial[-(s+2), j])] + list(K_guess))
+    K2_2 = np.array(list(K_guess) + [0])
+    w = winit[t:t+length+1]
+    r = rinit[t:t+length+1]
+    error2 = MUc((1 + r)*K1_2 + w * e[-(length+1):,j] * N_guess - K2_2) * w * e[-(length+1):,j] + MUn(N_guess)
+
+    return list(error1.flatten()) + list(error2.flatten())
 
 
 def check_agg_K(K_matrix):
@@ -158,12 +170,18 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     N_mat = np.zeros((T+S, S, J))
     for j in xrange(J):
         for s in xrange(S-2):  # Upper triangle
-            K_vec = opt.fsolve(Euler_Error, .9 * Kssmat.reshape(S-1, J)[-(s+1):, j], args=(winit, rinit, 0))
+            solutions = opt.fsolve(Euler_Error, list(.9*Kssmat.reshape(S-1, J)[-(s+1):, j]) + list(.9*Nssmat.reshape(S, J)[-(s+2):, j]), args=(winit, rinit, 0))
+            K_vec = solutions[:len(solutions)/2]
             K_mat[1:S, :, j] += np.diag(K_vec, S-(s+2))
+            N_vec = solutions[len(solutions)/2:]
+            N_mat[:S, :, j] += np.diag(N_vec, S-(s+2))
 
         for t in xrange(1, T-1):
-            K_vec = opt.fsolve(Euler_Error, .9 * Kssmat.reshape(S-1, J)[:, j], args=(winit, rinit, t))
+            solutions = opt.fsolve(Euler_Error, list(.9*Kssmat.reshape(S-1, J)[:, j]) + list(.9*Nssmat.reshape(S, J)[:, j]), args=(winit, rinit, t))
+            K_vec = solutions[:S-1]
             K_mat[t:t+S-1, :, j] += np.diag(K_vec)
+            N_vec = solutions[S-1:]
+            N_mat[t:t+S, :, j] += np.diag(N_vec)
 
     K_mat[0, :, :] = initial
     K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
@@ -173,7 +191,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     TPIdist = (np.abs(Knew - Kinit[:T])).max()
     print 'Iteration:', TPIiter
     print '\tDistance:', TPIdist
-    Ninit = np.ones(T) * Nss
+    Ninit = N_mat[:T,:,:].mean(2).mean(1)
     Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
     winit = np.array(list((1-alpha) * (Yinit/Ninit)) + list(np.ones(S)*wss))
     rinit = np.array(list(alpha * (Yinit/Kinit) - delta) + list(
