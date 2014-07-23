@@ -62,7 +62,7 @@ rho = .20
 A = 1.0
 delta = 1 - (0.95 ** (60.0 / S))
 chi = 1.0
-eta = 2.0
+eta = 2.5
 e = income.get_e(S, J)
 
 '''
@@ -238,18 +238,19 @@ def Utility(guesses):
     sum_utils = -utils.sum()
     return sum_utils
 
-K_guess_init = np.ones((S-1, J)) * .05
+K_guess_init = np.ones((S-1, J)) * .01
 N_guess_init = np.ones((S, J)) * .95
 guesses = list(K_guess_init.flatten()) + list(N_guess_init.flatten())
 
-utility = 0
 
-if utility == 0:
-    solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9)
-else:
-    solutions = opt.minimize(Utility, guesses)
-    print 'It converged:', solutions.success
-    solutions = solutions.x
+solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9)
+
+
+
+# else:
+#     solutions = opt.minimize(Utility, guesses)
+#     print 'It converged:', solutions.success
+#     solutions = solutions.x
 
 Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
 Kssvec = Kssmat.mean(1)
@@ -306,8 +307,8 @@ plt.ylabel('Capital')
 plt.savefig("OUTPUT/capital_dist_2D")
 
 # 3D Graph
-cmap1 = matplotlib.cm.get_cmap('winter')
-Kssmat2 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)))
+cmap1 = matplotlib.cm.get_cmap('autumn')
+Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
 Sgrid = np.linspace(1, S, S)
 Jgrid = np.linspace(1, J, J)
 X, Y = np.meshgrid(Sgrid, Jgrid)
@@ -322,6 +323,32 @@ plt.savefig('OUTPUT/capital_dist_3D')
 
 '''
 ------------------------------------------------------------------------
+ Generate graphs of the steady-state distribution of wealth
+------------------------------------------------------------------------
+'''
+
+# 2D Graph
+plt.figure(3)
+plt.plot(domain, Nssvec, color='b', linewidth=2, label='Average Labor Supply')
+plt.axhline(y=Nss, color='r', label='Steady state labor supply')
+plt.title('Steady-state Distribution of Labor')
+plt.legend(loc=0)
+plt.xlabel(r'Age Cohorts $S$')
+plt.ylabel('Labor')
+plt.savefig("OUTPUT/labor_dist_2D")
+
+# 3D Graph
+fig4 = plt.figure(4)
+ax4 = fig4.gca(projection='3d')
+ax4.set_xlabel(r'age-$s$')
+ax4.set_ylabel(r'ability-$j$')
+ax4.set_zlabel(r'individual labor supply $\bar{n}_{j,s}$')
+# ax4.set_title(r'Steady State Distribution of Labor Supply $K$')
+ax4.plot_surface(X, Y, Nssmat.T, rstride=1, cstride=1, cmap=cmap1)
+plt.savefig('OUTPUT/labor_dist_3D')
+
+'''
+------------------------------------------------------------------------
 Generate graph of Consumption
 ------------------------------------------------------------------------
 Kssmat3 = SxJ array of capital (zeros appended at the beginning of
@@ -333,7 +360,7 @@ Kssmat3 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
 cssmat = (1 + rss) * Kssmat3 + wss * e * Nssmat - Kssmat2
 
 # 2D Graph
-plt.figure(3)
+plt.figure(5)
 # plt.plot(domain, bsavg, label='Average capital stock')
 plt.plot(domain, cssmat.mean(1), label='Consumption')
 # plt.plot(domain, n * wss * e.mean(axis=1), label='Income')
@@ -345,13 +372,13 @@ plt.savefig("OUTPUT/consumption_2D")
 
 # 3D Graph
 cmap2 = matplotlib.cm.get_cmap('jet')
-fig3 = plt.figure(4)
-ax3 = fig3.gca(projection='3d')
-ax3.plot_surface(X, Y, cssmat.T, rstride=1, cstride=1, cmap=cmap2)
-ax2.set_xlabel(r'age-$s$')
-ax2.set_ylabel(r'ability-$j$')
-ax3.set_zlabel('Consumption')
-ax3.set_title('Steady State Distribution of Consumption')
+fig6 = plt.figure(6)
+ax6 = fig6.gca(projection='3d')
+ax6.plot_surface(X, Y, cssmat.T, rstride=1, cstride=1, cmap=cmap2)
+ax6.set_xlabel(r'age-$s$')
+ax6.set_ylabel(r'ability-$j$')
+ax6.set_zlabel('Consumption')
+ax6.set_title('Steady State Distribution of Consumption')
 plt.savefig('OUTPUT/consumption_3D')
 
 '''
@@ -362,13 +389,13 @@ Graph of Distribution of Income
 
 # 3D Graph
 cmap2 = matplotlib.cm.get_cmap('winter')
-fig5 = plt.figure(5)
-ax5 = fig5.gca(projection='3d')
-ax5.plot_surface(X, Y, e.T, rstride=1, cstride=2, cmap=cmap2)
-ax5.set_xlabel(r'age-$s$')
-ax5.set_ylabel(r'ability-$j$')
-ax5.set_zlabel(r'Income Level $e_j(s)$')
-# ax5.set_title('Income Levels')
+fig7 = plt.figure(7)
+ax7 = fig7.gca(projection='3d')
+ax7.plot_surface(X, Y, e.T, rstride=1, cstride=2, cmap=cmap2)
+ax7.set_xlabel(r'age-$s$')
+ax7.set_ylabel(r'ability-$j$')
+ax7.set_zlabel(r'Income Level $e_j(s)$')
+# ax7.set_title('Income Levels')
 plt.savefig('OUTPUT/ability_3D')
 
 '''
@@ -390,7 +417,7 @@ k2_2 = np.array(list(Kssmat) + list(np.zeros(J).reshape((1, J))))
 euler1 = Euler1(wss, rss, e, Nssmat, k1, k2, k3)
 euler2 = Euler2(wss, rss, e, Nssmat, k1_2, k2_2)
 
-plt.figure(6)
+plt.figure(8)
 plt.plot(domain[1:], np.abs(euler1).max(1), label='Capital')
 plt.plot(domain, np.abs(euler2).max(1), label='Labor')
 plt.legend(loc=0)
