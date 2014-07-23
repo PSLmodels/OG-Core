@@ -75,10 +75,7 @@ K0      = initial aggregate capital stock
 '''
 
 T = 70
-# r = (np.random.rand(S-1,J) + .5) * .2
 initial = .9 * Kssmat.reshape(S-1, J)
-# initial = cssmat[:-1, :] * 2
-
 K0 = initial.mean()
 
 '''
@@ -106,6 +103,9 @@ def MUc(c):
 
     return c**(-sigma)
 
+def MUn(n):
+    return - chi * ((1-n)**(-eta))
+
 
 def Euler_justcapital(w1, r1, w2, r2, e, n, K1, K2, K3):
     euler = MUc((1 + r1)*K1 + w1 * e[:-1, :] * n[:-1].reshape(
@@ -130,9 +130,10 @@ def Euler_Error(K_guess, winit, rinit, t):
     n2 = n[-length:]
     e1 = e[-(length+1):-1, j]
     e2 = e[-length:, j]
-    error = MUc((1 + r1)*K1 + w1 * e1 * n1 - K2) \
+    error1 = MUc((1 + r1)*K1 + w1 * e1 * n1 - K2) \
         - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*n2 - K3)
-    return error.flatten()
+    error2 = MUc((1 + r)*K1_2 + w * e * N_guess - K2_2) * w * e + MUn(N_guess)
+    return error1.flatten()
 
 
 def check_agg_K(K_matrix):
@@ -154,6 +155,7 @@ TPImindist = 3 * 1e-6
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat = np.zeros((T+S, S-1, J))
+    N_mat = np.zeros((T+S, S, J))
     for j in xrange(J):
         for s in xrange(S-2):  # Upper triangle
             K_vec = opt.fsolve(Euler_Error, .9 * Kssmat.reshape(S-1, J)[-(s+1):, j], args=(winit, rinit, 0))
