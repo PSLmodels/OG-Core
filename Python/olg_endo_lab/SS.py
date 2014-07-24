@@ -521,7 +521,7 @@ print 'Saving variable values.'
 var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'e',
              'J', 'Kss', 'Kssvec', 'Kssmat', 'Nss', 'Nssvec', 'Nssmat',
              'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes',
-             'seconds', 'eta', 'chi', 'K_agg', 'ltilde']
+             'seconds', 'eta', 'chi', 'K_agg', 'ltilde', 'ctilde']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
