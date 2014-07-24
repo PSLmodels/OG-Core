@@ -54,7 +54,7 @@ e      = S x J matrix of age dependent possible working abilities e_s
 
 # Parameters
 starttime = time.time()
-S = 60
+S = 10
 J = 7
 beta = .96 ** (60.0 / S)
 sigma = 3.0
@@ -77,7 +77,7 @@ print '\tAlpha:\t\t', alpha
 print '\tRho:\t\t', rho
 print '\tA:\t\t\t', A
 print '\tDelta:\t\t', delta
-print '\tL-tilde:\t', ltilde
+print '\tl-tilde:\t', ltilde
 print '\tChi:\t\t', chi
 print '\tEta:\t\t', eta
 

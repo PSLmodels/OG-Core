@@ -104,7 +104,7 @@ def MUc(c):
     return c**(-sigma)
 
 def MUn(n):
-    return - chi * ((1-n)**(-eta))
+    return - chi * ((ltilde-n)**(-eta))
 
 
 def Euler_justcapital(w1, r1, w2, r2, e, n, K1, K2, K3):
@@ -144,7 +144,8 @@ def Euler_Error(guesses, winit, rinit, t):
     w = winit[t:t+length+1]
     r = rinit[t:t+length+1]
     error2 = MUc((1 + r)*K1_2 + w * e[-(length+1):,j] * N_guess - K2_2) * w * e[-(length+1):,j] + MUn(N_guess)
-
+    mask = N_guess < 0
+    error2[mask] += 1e3
     return list(error1.flatten()) + list(error2.flatten())
 
 
