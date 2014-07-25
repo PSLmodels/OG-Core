@@ -64,7 +64,7 @@ delta = 1 - (0.95 ** (60.0 / S))
 ctilde = .01
 ltilde = 1.0
 chi = 1.0
-eta = 2.5
+eta = 2.0
 e = income.get_e(S, J)
 
 print 'The following are the parameter values of the simulation:'
@@ -272,7 +272,9 @@ def constraint_checker(Kssmat, Nssmat, wss, rss, e, cssmat):
 
     Created Variables:
         flag1 = False if all borrowing constraints are met, true
-               otherwise.
+                otherwise.
+        flag2 = Flase if labor supply constraints are met, true
+                otherwise.
 
     Returns:
     '''

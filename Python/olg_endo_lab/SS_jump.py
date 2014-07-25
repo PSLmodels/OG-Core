@@ -53,7 +53,7 @@ e      = S x J matrix of age dependent possible working abilities e_s
 
 # Parameters
 starttime = time.time()
-S = 60
+S = 10
 J = 7
 beta = .96 ** (60.0 / S)
 sigma = 3.0
@@ -224,10 +224,6 @@ def Steady_State(guesses):
     K2_2 = np.array(list(K_guess) + list(np.zeros(J).reshape(1, J)))
 
     N_guess = np.ones((S, J)) * .95
-    N = get_N(e, N_guess)
-    Y = get_Y(K, N)
-    w = get_w(Y, N)
-    r = get_r(Y, K)
     Euler2_zero = lambda x: Euler2(e, x, K1_2, K2_2)
     N_guess = N_guess.flatten()
     N_guess = opt.fsolve(Euler2_zero, N_guess).reshape(S, J)
@@ -235,7 +231,6 @@ def Steady_State(guesses):
     Y = get_Y(K, N)
     w = get_w(Y, N)
     r = get_r(Y, K)
-    print N
     error1 = Euler1(w, r, e, N_guess, K1, K2, K3)
     return list(error1.flatten())
 

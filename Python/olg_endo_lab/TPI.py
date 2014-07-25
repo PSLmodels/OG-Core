@@ -279,13 +279,13 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat[0, :, :] = initial_K
     K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
     # N_mat[0, :, :] = initial_N
-    # N_mat[T-1, :, :] = Nssmat.reshape(S, J)
+    N_mat[T-1, :, :] = Nssmat.reshape(S, J)
     Knew = K_mat[:T, :, :].mean(2).mean(1)
     Nnew = N_mat[:T,:,:].mean(2).mean(1)
     TPIiter += 1
     Kinit = rho*Knew + (1-rho)*Kinit[:T]
     Ninit = rho*Nnew + (1-rho)*Ninit[:T]
-    TPIdist = (np.abs(Knew - Kinit[:T])).max()
+    TPIdist = (np.abs(Knew - Kinit[:T])).max() + (np.abs(Nnew - Ninit[:T])).max()
     print 'Iteration:', TPIiter
     print '\tDistance:', TPIdist
     Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
