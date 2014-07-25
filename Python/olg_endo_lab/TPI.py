@@ -106,11 +106,102 @@ def borrowing_constraints(K_dist, w, r, e, n):
     else:
         return False
 
+
+def get_Y(K_now, N_now):
+    '''
+    Parameters: Aggregate capital, Aggregate labor
+
+    Returns:    Aggregate output
+    '''
+    Y_now = A * (K_now ** alpha) * (N_now ** (1 - alpha))
+    return Y_now
+
+
+def get_w(Y_now, N_now):
+    '''
+    Parameters: Aggregate output, Aggregate labor
+
+    Returns:    Returns to labor
+    '''
+    w_now = (1 - alpha) * Y_now / N_now
+    return w_now
+
+
+def get_r(Y_now, K_now):
+    '''
+    Parameters: Aggregate output, Aggregate capital
+
+    Returns:    Returns to capital
+    '''
+    r_now = (alpha * Y_now / K_now) - delta
+    return r_now
+
+
+def get_N(e, n):
+    '''
+    Parameters: e, n
+
+    Returns:    Aggregate labor
+    '''
+    N_now = np.mean(e * n)
+    return N_now
+
+
+def MUc(c):
+
+    """
+    Parameters: Consumption
+
+    Returns:    Marginal Utility of Consumption
+    """
+
+    return c**(-sigma)
+
+
+def MUn(n):
+    '''
+    Parameters: Labor
+
+    Returns:    Marginal Utility of Labor
+    '''
+    output = - chi * ((ltilde-n) ** (-eta))
+    return output
+
+
+def get_N_init(e, N_guess, K1_2, K2_2):
+    '''
+    Parameters:
+        w        = wage rate (scalar)
+        r        = rental rate (scalar)
+        e        = distribution of abilities (SxJ array)
+        N_guess  = distribution of labor (SxJ array)
+        K1_2     = distribution of capital in period t (S x J array)
+        K2_2     = distribution of capital in period t+1 (S x J array)
+
+    Returns:
+        Value of Euler error.
+    '''
+    N_guess = N_guess.reshape(S, J)
+    K = K2_2[:-1, :].mean()
+    N = get_N(e, N_guess)
+    Y = get_Y(K, N)
+    w = get_w(Y, N)
+    r = get_r(Y, K)
+    euler = MUc((1 + r)*K1_2 + w * e * N_guess - K2_2) * w * e + MUn(N_guess)
+    euler = euler.flatten()
+    return euler
+
+
 T = 70
 # r = (np.random.rand(S-1,J) + .5) * .2
 initial_K = .9*Kssmat
 K0 = initial_K.mean()
-initial_N = .9*Nssmat
+
+K1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_K))
+K2_2init = np.array(list(initial_K) + list(np.zeros(J).reshape(1, J)))
+initial_N_guess = .9*Nssmat.flatten()
+get_N_init_zero = lambda x: get_N_init(e, x, K1_2init, K2_2init)
+initial_N = opt.fsolve(get_N_init_zero, initial_N_guess).reshape(S, J)
 N0 = initial_N.mean()
 
 problem = borrowing_constraints(initial_K, wss, rss, e, Nssmat)
@@ -154,27 +245,6 @@ seconds      = Seconds needed to find the steady state, less the number
                of hours and minutes
 ------------------------------------------------------------------------
 '''
-
-
-def MUc(c):
-
-    """
-    Parameters: Consumption
-
-    Returns:    Marginal Utility of Consumption
-    """
-
-    return c**(-sigma)
-
-
-def MUn(n):
-    '''
-    Parameters: Labor
-
-    Returns:    Marginal Utility of Labor
-    '''
-    output = - chi * ((ltilde-n) ** (-eta))
-    return output
 
 
 def Euler_justcapital(w1, r1, w2, r2, e, n, K1, K2, K3):
@@ -279,9 +349,9 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             N_mat[t-1:t+S-1, :, j] += np.diag(N_vec)
 
     K_mat[0, :, :] = initial_K
-    # K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
+    K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
     # N_mat[0, :, :] = initial_N
-    # N_mat[T-1, :, :] = Nssmat.reshape(S, J)
+    N_mat[T-1, :, :] = Nssmat.reshape(S, J)
     Knew = K_mat[:T, :, :].mean(2).mean(1)
     Nnew = N_mat[:T,:,:].mean(2).mean(1)
     TPIiter += 1
