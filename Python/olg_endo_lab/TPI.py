@@ -237,7 +237,7 @@ def Euler_Error(guesses, winit, rinit, t):
     mask = N_guess < 0
     error2[mask] += 1e3
     return list(error1.flatten()) + list(error2.flatten())
-
+ 
 
 def check_agg_K(K_matrix):
     if (K_matrix.sum() <= 0).any():

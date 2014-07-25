@@ -198,7 +198,7 @@ def Euler1(w, r, e, N_guess, K1, K2, K3):
     euler = MUc((1 + r)*K1 + w * e[:-1, :] * N_guess[:-1, :] - K2) - beta * (
         1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * N_guess[1:, :] - K3)
     return euler
-
+ 
 
 def Euler2(w, r, e, N_guess, K1_2, K2_2):
     '''
