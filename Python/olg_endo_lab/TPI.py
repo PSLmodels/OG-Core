@@ -370,6 +370,7 @@ plt.title(r"Time Path of Labor Supply N$_t$")
 plt.legend(loc=0)
 plt.savefig("OUTPUT/TPI_N")
 
+
 '''
 ------------------------------------------------------------------------
 Compute Plot Euler Errors
@@ -401,23 +402,6 @@ plt.ylabel('Error Value')
 plt.xlabel(r'Time $t$')
 plt.title('Maximum Euler Error for each period across S and J')
 plt.savefig('OUTPUT/euler_errors_TPI_2D')
-
-# 3D Graph
-Sgrid = np.linspace(1, S, S)
-Jgrid = np.linspace(1, J, J)
-X2, Y2 = np.meshgrid(Sgrid[1:], Jgrid)
-
-fig9 = plt.figure(9)
-cmap2 = matplotlib.cm.get_cmap('winter')
-ax9 = fig9.gca(projection='3d')
-ax9.plot_surface(
-    X2, Y2, euler_mat[T-2, :, :].T, rstride=1, cstride=2, cmap=cmap2)
-ax9.set_xlabel(r'Age Cohorts $S$')
-ax9.set_ylabel(r'Ability Types $J$')
-ax9.set_zlabel('Error Level')
-ax9.set_title('Euler Errors')
-plt.savefig('OUTPUT/euler_errors_TPI_3D')
-
 
 '''
 ------------------------------------------------------------------------

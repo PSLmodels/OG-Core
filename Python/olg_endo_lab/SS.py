@@ -316,7 +316,7 @@ def Utility(guesses):
 
 starttime = time.time()
 
-K_guess_init = np.ones((S-1, J)) * .01
+K_guess_init = np.ones((S-1, J)) * .05
 N_guess_init = np.ones((S, J)) * .95
 guesses = list(K_guess_init.flatten()) + list(N_guess_init.flatten())
 
@@ -333,7 +333,7 @@ seconds.' % (abs(hours - .5), abs(minutes - .5), seconds)
 
 Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
 Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
-Kssmat3 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
+Kssmat3 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)) )
 
 Kssvec = Kssmat.mean(1)
 Kss = Kssvec.mean()
@@ -346,7 +346,7 @@ Yss = get_Y(Kss, Nss)
 wss = get_w(Yss, Nss)
 rss = get_r(Yss, Kss)
 
-cssmat = (1 + rss) * Kssmat3 + wss * e * Nssmat - Kssmat2
+cssmat = (1 + rss) * Kssmat2 + wss * e * Nssmat - Kssmat3
 
 
 constraint_checker(Kssmat, Nssmat, wss, rss, e, cssmat)
