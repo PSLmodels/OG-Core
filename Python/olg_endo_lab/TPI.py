@@ -366,9 +366,9 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         np.ones(S)*rss))
     plt.figure(7)
     plt.axhline(
-        y=Kss, color='black', linewidth=2, label="Steady State K", ls='--')
+        y=Kss, color='black', linewidth=2)
     plt.plot(np.arange(
-        T), Kinit, 'b', linewidth=2, label=r"TPI time path K$_t$")
+        T), Kinit, 'b', linewidth=2)
     plt.xlabel("Time t")
     plt.ylabel("Aggregate Capital K")
     plt.title(r"Time Path of Capital Stock K$_t$")
@@ -376,9 +376,9 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
 
     plt.figure(13)
     plt.axhline(
-        y=Nss, color='black', linewidth=2, label="Steady State N", ls='--')
+        y=Nss, color='black', linewidth=2)
     plt.plot(np.arange(
-        T), Ninit, 'b', linewidth=2, label=r"TPI time path N$_t$")
+        T), Ninit, 'b', linewidth=2)
     plt.xlabel("Time t")
     plt.ylabel("Aggregate Labor N")
     plt.title(r"Time Path of Labor Supply N$_t$")
