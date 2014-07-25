@@ -238,7 +238,7 @@ def Steady_State(guesses):
     error1 = Euler1(w, r, e, N_guess, K1, K2, K3)
     error2 = Euler2(w, r, e, N_guess, K1_2, K2_2)
     mask = N_guess < 0
-    error2[mask] += 1e3 
+    error2[mask] += 1e9
     return list(error1.flatten()) + list(error2.flatten())
 
 

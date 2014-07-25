@@ -64,6 +64,7 @@ delta = 1 - (0.95 ** (60.0 / S))
 ctilde = .01
 chi = 1.0
 eta = 2.5
+ltilde = 1.0
 e = income.get_e(S, J)
 
 '''
@@ -475,7 +476,7 @@ Save variables/values so they can be used in other modules
 var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'e',
              'J', 'Kss', 'Kssvec', 'Kssmat', 'Nss', 'Nssvec', 'Nssmat',
              'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes',
-             'seconds', 'eta', 'chi', 'K_agg']
+             'seconds', 'eta', 'chi', 'K_agg', 'ctilde', 'ltilde']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
