@@ -108,10 +108,12 @@ def borrowing_constraints(K_dist, w, r, e, n):
 
 T = 70
 # r = (np.random.rand(S-1,J) + .5) * .2
-initial = .9 * Kssmat
-K0 = initial.mean()
+initial_K = .9 * Kssmat
+K0 = initial_K.mean()
+initial_N = .9 * Nssmat
+N0 = initial_N.mean()
 
-problem = borrowing_constraints(initial, wss, rss, e, Nssmat)
+problem = borrowing_constraints(initial_K, wss, rss, e, Nssmat)
 if problem is True:
     print 'The initial distribution does not fulfill the' \
         ' borrowing constraints.'
@@ -212,7 +214,7 @@ def Euler_Error(guesses, winit, rinit, t):
     if length == S-1:
         K1 = np.array([0] + list(K_guess[:-1]))
     else:
-        K1 = np.array([(initial[-(s+2), j])] + list(K_guess[:-1]))
+        K1 = np.array([(initial_K[-(s+2), j])] + list(K_guess[:-1]))
     K2 = K_guess
     K3 = np.array(list(K_guess[1:]) + [0])
     w1 = winit[t:t+length]
@@ -229,7 +231,7 @@ def Euler_Error(guesses, winit, rinit, t):
     if length == S-1:
         K1_2 = np.array([0] + list(K_guess))
     else:
-        K1_2 = np.array([(initial[-(s+2), j])] + list(K_guess))
+        K1_2 = np.array([(initial_K[-(s+2), j])] + list(K_guess))
     K2_2 = np.array(list(K_guess) + [0])
     w = winit[t:t+length+1]
     r = rinit[t:t+length+1]
@@ -246,7 +248,7 @@ def check_agg_K(K_matrix):
         return False
 
 Kinit = np.array(list(np.linspace(K0, Kss, T)) + list(np.ones(S)*Kss))
-Ninit = np.ones(T+S) * Nss
+Ninit = np.array(list(np.linspace(N0, Nss, T)) + list(np.ones(S)*Nss))
 Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
 winit = (1-alpha) * (Yinit/Ninit)
 rinit = alpha * (Yinit/Kinit) - delta
@@ -261,28 +263,31 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     N_mat = np.zeros((T+S, S, J))
     for j in xrange(J):
         for s in xrange(S-2):  # Upper triangle
-            solutions = opt.fsolve(Euler_Error, list(.9*Kssmat.reshape(S-1, J)[-(s+1):, j]) + list(.9*Nssmat.reshape(S, J)[-(s+2):, j]), args=(winit, rinit, 0))
+            solutions = opt.fsolve(Euler_Error, list(initial_K[-(s+1):, j]) + list(initial_N[-(s+2):, j]), args=(winit, rinit, 0))
             K_vec = solutions[:len(solutions)/2]
             K_mat[1:S, :, j] += np.diag(K_vec, S-(s+2))
             N_vec = solutions[len(solutions)/2:]
             N_mat[:S, :, j] += np.diag(N_vec, S-(s+2))
 
-        for t in xrange(1, T-1):
-            solutions = opt.fsolve(Euler_Error, list(.9*Kssmat.reshape(S-1, J)[:, j]) + list(.9*Nssmat.reshape(S, J)[:, j]), args=(winit, rinit, t))
+        for t in xrange(1, T+1):
+            solutions = opt.fsolve(Euler_Error, list(initial_K[:, j]) + list(initial_N[:, j]), args=(winit, rinit, t))
             K_vec = solutions[:S-1]
             K_mat[t:t+S-1, :, j] += np.diag(K_vec)
             N_vec = solutions[S-1:]
-            N_mat[t:t+S, :, j] += np.diag(N_vec)
+            N_mat[t-1:t+S-1, :, j] += np.diag(N_vec)
 
-    K_mat[0, :, :] = initial
+    K_mat[0, :, :] = initial_K
     K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
+    # N_mat[0, :, :] = initial_N
+    # N_mat[T-1, :, :] = Nssmat.reshape(S, J)
     Knew = K_mat[:T, :, :].mean(2).mean(1)
+    Nnew = N_mat[:T,:,:].mean(2).mean(1)
     TPIiter += 1
     Kinit = rho*Knew + (1-rho)*Kinit[:T]
+    Ninit = rho*Nnew + (1-rho)*Ninit[:T]
     TPIdist = (np.abs(Knew - Kinit[:T])).max()
     print 'Iteration:', TPIiter
     print '\tDistance:', TPIdist
-    Ninit = N_mat[:T,:,:].mean(2).mean(1)
     Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
     winit = np.array(list((1-alpha) * (Yinit/Ninit)) + list(np.ones(S)*wss))
     rinit = np.array(list(alpha * (Yinit/Kinit) - delta) + list(

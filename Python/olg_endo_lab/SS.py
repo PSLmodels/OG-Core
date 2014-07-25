@@ -53,8 +53,7 @@ e      = S x J matrix of age dependent possible working abilities e_s
 '''
 
 # Parameters
-starttime = time.time()
-S = 10
+S = 60
 J = 7
 beta = .96 ** (60.0 / S)
 sigma = 3.0
@@ -65,7 +64,7 @@ delta = 1 - (0.95 ** (60.0 / S))
 ctilde = .01
 ltilde = 1.0
 chi = 1.0
-eta = 2.0
+eta = 2.5
 e = income.get_e(S, J)
 
 print 'The following are the parameter values of the simulation:'
@@ -198,7 +197,7 @@ def Euler1(w, r, e, N_guess, K1, K2, K3):
     euler = MUc((1 + r)*K1 + w * e[:-1, :] * N_guess[:-1, :] - K2) - beta * (
         1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * N_guess[1:, :] - K3)
     return euler
- 
+
 
 def Euler2(w, r, e, N_guess, K1_2, K2_2):
     '''
@@ -314,6 +313,8 @@ def Utility(guesses):
         utils[i, :] *= beta ** i
     sum_utils = -utils.sum()
     return sum_utils
+
+starttime = time.time()
 
 K_guess_init = np.ones((S-1, J)) * .01
 N_guess_init = np.ones((S, J)) * .95
