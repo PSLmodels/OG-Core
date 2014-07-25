@@ -108,9 +108,9 @@ def borrowing_constraints(K_dist, w, r, e, n):
 
 T = 70
 # r = (np.random.rand(S-1,J) + .5) * .2
-initial_K = .9 * Kssmat
+initial_K = .9*Kssmat
 K0 = initial_K.mean()
-initial_N = .9 * Nssmat
+initial_N = .9*Nssmat
 N0 = initial_N.mean()
 
 problem = borrowing_constraints(initial_K, wss, rss, e, Nssmat)
@@ -254,6 +254,7 @@ Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
 winit = (1-alpha) * (Yinit/Ninit)
 rinit = alpha * (Yinit/Kinit) - delta
 
+
 TPIiter = 0
 TPImaxiter = 100
 TPIdist = 10
@@ -286,7 +287,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     TPIiter += 1
     Kinit = rho*Knew + (1-rho)*Kinit[:T]
     Ninit = rho*Nnew + (1-rho)*Ninit[:T]
-    TPIdist = (np.abs(Knew - Kinit[:T])).max() + (np.abs(Nnew - Ninit[:T])).max()
+    TPIdist = (np.abs(Knew - Kinit)).max() + (np.abs(Nnew - Ninit)).max()
     print 'Iteration:', TPIiter
     print '\tDistance:', TPIdist
     Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
