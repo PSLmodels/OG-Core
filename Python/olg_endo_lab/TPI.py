@@ -232,6 +232,7 @@ def Euler_Error(guesses, winit, rinit, t):
         K1_2 = np.array([0] + list(K_guess))
     else:
         K1_2 = np.array([(initial_K[-(s+2), j])] + list(K_guess))
+        
     K2_2 = np.array(list(K_guess) + [0])
     w = winit[t:t+length+1]
     r = rinit[t:t+length+1]
@@ -270,16 +271,16 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             N_mat[:S, :, j] += np.diag(N_vec, S-(s+2))
 
         for t in xrange(1, T+1):
-            solutions = opt.fsolve(Euler_Error, list(initial_K[:, j]) + list(initial_N[:, j]), args=(winit, rinit, t))
+            solutions = opt.fsolve(Euler_Error, list(initial_K[:, j]) + list(initial_N[:, j]), args=(winit, rinit, t-1))
             K_vec = solutions[:S-1]
             K_mat[t:t+S-1, :, j] += np.diag(K_vec)
             N_vec = solutions[S-1:]
             N_mat[t-1:t+S-1, :, j] += np.diag(N_vec)
 
     K_mat[0, :, :] = initial_K
-    K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
+    # K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
     # N_mat[0, :, :] = initial_N
-    N_mat[T-1, :, :] = Nssmat.reshape(S, J)
+    # N_mat[T-1, :, :] = Nssmat.reshape(S, J)
     Knew = K_mat[:T, :, :].mean(2).mean(1)
     Nnew = N_mat[:T,:,:].mean(2).mean(1)
     TPIiter += 1
