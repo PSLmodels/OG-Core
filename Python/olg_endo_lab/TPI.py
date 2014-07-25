@@ -292,6 +292,25 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     winit = np.array(list((1-alpha) * (Yinit/Ninit)) + list(np.ones(S)*wss))
     rinit = np.array(list(alpha * (Yinit/Kinit) - delta) + list(
         np.ones(S)*rss))
+    plt.figure(7)
+    plt.axhline(
+        y=Kss, color='black', linewidth=2, label="Steady State K", ls='--')
+    plt.plot(np.arange(
+        T), Kinit, 'b', linewidth=2, label=r"TPI time path K$_t$")
+    plt.xlabel("Time t")
+    plt.ylabel("Aggregate Capital K")
+    plt.title(r"Time Path of Capital Stock K$_t$")
+    plt.savefig("OUTPUT/TPI_K")
+
+    plt.figure(13)
+    plt.axhline(
+        y=Nss, color='black', linewidth=2, label="Steady State N", ls='--')
+    plt.plot(np.arange(
+        T), Ninit, 'b', linewidth=2, label=r"TPI time path N$_t$")
+    plt.xlabel("Time t")
+    plt.ylabel("Aggregate Labor N")
+    plt.title(r"Time Path of Labor Supply N$_t$")
+    plt.savefig("OUTPUT/TPI_N")
 
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
