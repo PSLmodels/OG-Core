@@ -322,7 +322,7 @@ Kinit = np.array(list(np.linspace(K0, Kss, T)) + list(np.ones(S)*Kss))
 Ninit = np.array(list(np.linspace(N0, Nss, T)) + list(np.ones(S)*Nss))
 Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
 winit = (1-alpha) * (Yinit/Ninit)
-rinit = alpha * (Yinit/Kinit) - delta
+rinit = (alpha * Yinit/Kinit) - delta
 
 
 TPIiter = 0
@@ -330,6 +330,7 @@ TPImaxiter = 100
 TPIdist = 10
 TPImindist = 3 * 1e-6
 print 'TPI has started.\n'
+
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat = np.zeros((T+S, S-1, J))
     N_mat = np.zeros((T+S, S, J))
