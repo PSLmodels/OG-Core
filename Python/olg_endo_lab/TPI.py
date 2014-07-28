@@ -341,17 +341,17 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             N_vec = solutions[len(solutions)/2:]
             N_mat[:S, :, j] += np.diag(N_vec, S-(s+2))
 
-        for t in xrange(1, T+1):
-            solutions = opt.fsolve(Euler_Error, list(initial_K[:, j]) + list(initial_N[:, j]), args=(winit, rinit, t-1))
+        for t in xrange(0, T):
+            solutions = opt.fsolve(Euler_Error, list(initial_K[:, j]) + list(initial_N[:, j]), args=(winit, rinit, t))
             K_vec = solutions[:S-1]
-            K_mat[t:t+S-1, :, j] += np.diag(K_vec)
+            K_mat[t+1:t+S, :, j] += np.diag(K_vec)
             N_vec = solutions[S-1:]
-            N_mat[t-1:t+S-1, :, j] += np.diag(N_vec)
+            N_mat[t:t+S, :, j] += np.diag(N_vec)
 
     K_mat[0, :, :] = initial_K
-    K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
-    # N_mat[0, :, :] = initial_N
-    N_mat[T-1, :, :] = Nssmat.reshape(S, J)
+    # K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
+    N_mat[0, :, :] = initial_N
+    # N_mat[T-1, :, :] = Nssmat.reshape(S, J)
     Knew = K_mat[:T, :, :].mean(2).mean(1)
     Nnew = N_mat[:T,:,:].mean(2).mean(1)
     TPIiter += 1
