@@ -170,7 +170,7 @@ def MUc(c):
     return output
 
 
-def MUl(n):
+def MUn(n):
     '''
     Parameters: Labor
 
@@ -212,7 +212,7 @@ def Euler2(w, r, e, N_guess, K1_2, K2_2):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1_2 + w * e * N_guess - K2_2) * w * e + MUl(N_guess)
+    euler = MUc((1 + r)*K1_2 + w * e * N_guess - K2_2) * w * e + MUn(N_guess)
     return euler
 
 

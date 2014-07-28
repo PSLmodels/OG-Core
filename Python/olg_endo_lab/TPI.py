@@ -350,9 +350,9 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             N_mat[t:t+S, :, j] += np.diag(N_vec)
 
     K_mat[0, :, :] = initial_K
-    # K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
+    K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
     N_mat[0, :, :] = initial_N
-    # N_mat[T-1, :, :] = Nssmat.reshape(S, J)
+    N_mat[T-1, :, :] = Nssmat.reshape(S, J)
     Knew = K_mat[:T, :, :].mean(2).mean(1)
     Nnew = N_mat[:T,:,:].mean(2).mean(1)
     TPIiter += 1
@@ -365,7 +365,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     winit = np.array(list((1-alpha) * Yinit / Ninit) + list(np.ones(S)*wss))
     rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
         np.ones(S)*rss))
-    plt.figure(7)
+    plt.figure(11)
     plt.axhline(
         y=Kss, color='black', linewidth=2)
     plt.plot(np.arange(
@@ -373,9 +373,9 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     plt.xlabel("Time t")
     plt.ylabel("Aggregate Capital K")
     plt.title(r"Time Path of Capital Stock K$_t$")
-    plt.savefig("OUTPUT/TPI_K")
+    plt.savefig("OUTPUT/TPI_K_oneatatime")
 
-    plt.figure(13)
+    plt.figure(12)
     plt.axhline(
         y=Nss, color='black', linewidth=2)
     plt.plot(np.arange(
@@ -383,7 +383,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     plt.xlabel("Time t")
     plt.ylabel("Aggregate Labor N")
     plt.title(r"Time Path of Labor Supply N$_t$")
-    plt.savefig("OUTPUT/TPI_N")
+    plt.savefig("OUTPUT/TPI_Noneatatime")
 
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
@@ -419,7 +419,7 @@ Plot Timepath for K and N
 ------------------------------------------------------------------------
 '''
 
-plt.figure(7)
+plt.figure(13)
 plt.axhline(
     y=Kss, color='black', linewidth=2, label="Steady State K", ls='--')
 plt.plot(np.arange(
@@ -430,7 +430,7 @@ plt.title(r"Time Path of Capital Stock K$_t$")
 plt.legend(loc=0)
 plt.savefig("OUTPUT/TPI_K")
 
-plt.figure(13)
+plt.figure(14)
 plt.axhline(
     y=Nss, color='black', linewidth=2, label="Steady State N", ls='--')
 plt.plot(np.arange(
@@ -467,7 +467,7 @@ for t in xrange(T):
             t, :, :], k3[t, :, :])
 
 domain = np.linspace(1, T, T)
-plt.figure(8)
+plt.figure(15)
 plt.plot(domain, np.abs(euler_mat).max(1).max(1))
 plt.ylabel('Error Value')
 plt.xlabel(r'Time $t$')
