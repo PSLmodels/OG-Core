@@ -320,9 +320,9 @@ def check_agg_K(K_matrix):
 
 Kinit = np.array(list(np.linspace(K0, Kss, T)) + list(np.ones(S)*Kss))
 Ninit = np.array(list(np.linspace(N0, Nss, T)) + list(np.ones(S)*Nss))
-Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
-winit = (1-alpha) * (Yinit/Ninit)
-rinit = (alpha * Yinit/Kinit) - delta
+Yinit = A*(Kinit**alpha) * (Ninit**(1-alpha))
+winit = (1-alpha) * Yinit / Ninit
+rinit = (alpha * Yinit / Kinit) - delta
 
 
 TPIiter = 0
@@ -361,9 +361,9 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     TPIdist = (np.abs(Knew - Kinit)).max() + (np.abs(Nnew - Ninit)).max()
     print 'Iteration:', TPIiter
     print '\tDistance:', TPIdist
-    Yinit = A*((Kinit**alpha) * (Ninit**(1-alpha)))
-    winit = np.array(list((1-alpha) * (Yinit/Ninit)) + list(np.ones(S)*wss))
-    rinit = np.array(list(alpha * (Yinit/Kinit) - delta) + list(
+    Yinit = A*(Kinit**alpha) * (Ninit**(1-alpha))
+    winit = np.array(list((1-alpha) * Yinit / Ninit) + list(np.ones(S)*wss))
+    rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
         np.ones(S)*rss))
     plt.figure(7)
     plt.axhline(
