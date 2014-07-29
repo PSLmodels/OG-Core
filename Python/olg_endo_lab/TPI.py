@@ -43,7 +43,7 @@ A        = total factor productivity parameter in firms' production
 delta    = decreciation rate of capital
 ltilde   = measure of time each individual is endowed with each period
 ctilde   = minimum value of consumption
-chi      = discount factor 
+chi      = discount factor
 eta      = Frisch elasticity of labor supply
 e        = S x J matrix of age dependent possible working abilities e_s
 J        = number of points in the support of e
@@ -115,9 +115,11 @@ def constraint_checker1(k_dist, n_dist, w, r, e, c_dist):
         flag2 = False if all labor constraints are met, true otherwise
 
     Returns:
-        Prints warnings for violations of capital, labor, and consumption constraints.
+        Prints warnings for violations of capital, labor, and
+            consumption constraints.
     '''
-    print 'Checking constraints on the initial distributions of capital, labor, and consumption for TPI.'
+    print 'Checking constraints on the initial distributions of' \
+        ' capital, labor, and consumption for TPI.'
     flag1 = False
     if k_dist.sum() <= 0:
         print '\tWARNING: Aggregate capital is less than or equal to zero.'
@@ -152,18 +154,24 @@ def constraint_checker2(k_dist, n_dist, w, r, e, c_dist, t):
         c_dist = distribution of consumption (SxJ array)
 
     Returns:
-        Prints warnings for violations of capital, labor, and consumption constraints.
+        Prints warnings for violations of capital, labor, and
+            consumption constraints.
     '''
     if k_dist.sum() <= 0:
-        print '\tWARNING: Aggregate capital is less than or equal to zero in period %.f.' % t
+        print '\tWARNING: Aggregate capital is less than or equal to ' \
+            'zero in period %.f.' % t
     if borrowing_constraints(k_dist, w, r, e, n_dist) is True:
-        print '\tWARNING: Borrowing constraints have been violated in period %.f.' % t
+        print '\tWARNING: Borrowing constraints have been violated in ' \
+            'period %.f.' % t
     if (n_dist < 0).any():
-        print '\tWARNING: Labor supply violates nonnegativity constraints in period %.f.' % t
+        print '\tWARNING: Labor supply violates nonnegativity constraints ' \
+            'in period %.f.' % t
     if (n_dist > ltilde).any():
-        print '\tWARNING: Labor suppy violates the ltilde constraint in period %.f.' % t
+        print '\tWARNING: Labor suppy violates the ltilde constraint in '\
+            'period %.f.' % t
     if (c_dist < 0).any():
-        print '\tWARNING: Conusmption volates nonnegativity constraints in period %.f.' % t
+        print '\tWARNING: Conusmption volates nonnegativity constraints in ' \
+            'period %.f.' % t
 
 
 def borrowing_constraints(K_dist, w, r, e, n):
@@ -182,7 +190,8 @@ def borrowing_constraints(K_dist, w, r, e, n):
     b_min = np.zeros((S-1, J))
     b_min[-1, :] = (ctilde - w * e[S-1, :] * n[S-1, :]) / (1 + r)
     for i in xrange(S-2):
-        b_min[-(i+2), :] = (ctilde + b_min[-(i+1), :] - w * e[-(i+2), :] * n[-(i+2), :]) / (1 + r)
+        b_min[-(i+2), :] = (ctilde + b_min[-(i+1), :] - w * e[
+            -(i+2), :] * n[-(i+2), :]) / (1 + r)
     difference = K_dist - b_min
     if (difference < 0).any():
         return True
@@ -340,9 +349,11 @@ def Euler1(w1, r1, w2, r2, e, n, K1, K2, K3):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r1)*K1 + w1 * e[:-1, :] * n[:-1, :] - K2) - beta * (1 + r2)*MUc(
+    euler = MUc(
+        (1 + r1)*K1 + w1 * e[:-1, :] * n[:-1, :] - K2) - beta * (1 + r2)*MUc(
         (1 + r2)*K2 + w2 * e[1:, :] * n[1:, :] - K3)
     return euler
+
 
 def Euler2(w, r, e, N_guess, K1_2, K2_2):
     '''
@@ -360,10 +371,12 @@ def Euler2(w, r, e, N_guess, K1_2, K2_2):
     euler = MUc((1 + r)*K1_2 + w * e * N_guess - K2_2) * w * e + MUn(N_guess)
     return euler
 
+
 def Euler_Error(guesses, winit, rinit, t):
     '''
     Parameters:
-        guesses = distribution of capital and labor in period t ((S-1)*S*J x 1 list)
+        guesses = distribution of capital and labor in period t
+                  ((S-1)*S*J x 1 list)
         winit   = wage rate (scalar)
         rinit   = rental rate (scalar)
         t       = time period
@@ -396,11 +409,13 @@ def Euler_Error(guesses, winit, rinit, t):
         K1_2 = np.array([0] + list(K_guess))
     else:
         K1_2 = np.array([(initial_K[-(s+2), j])] + list(K_guess))
-        
+
     K2_2 = np.array(list(K_guess) + [0])
     w = winit[t:t+length+1]
     r = rinit[t:t+length+1]
-    error2 = MUc((1 + r)*K1_2 + w * e[-(length+1):,j] * N_guess - K2_2) * w * e[-(length+1):,j] + MUn(N_guess)
+    error2 = MUc((1 + r)*K1_2 + w * e[
+        -(length+1):, j] * N_guess - K2_2) * w * e[
+        -(length+1):, j] + MUn(N_guess)
     # Check and punish constraing violations
     mask1 = N_guess < 0
     error2[mask1] += 1e9
@@ -408,7 +423,7 @@ def Euler_Error(guesses, winit, rinit, t):
     error2[mask2] += 1e9
     if K_guess.sum() <= 0:
         error1 += 1e9
-    cons = (1 + r) * K1_2 + w * e[-(length+1):,j] * N_guess - K2_2
+    cons = (1 + r) * K1_2 + w * e[-(length+1):, j] * N_guess - K2_2
     mask3 = cons < 0
     error2[mask3] += 1e9
     return list(error1.flatten()) + list(error2.flatten())
@@ -431,14 +446,18 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     N_mat = np.zeros((T+S, S, J))
     for j in xrange(J):
         for s in xrange(S-2):  # Upper triangle
-            solutions = opt.fsolve(Euler_Error, list(initial_K[-(s+1):, j]) + list(initial_N[-(s+2):, j]), args=(winit, rinit, 0))
+            solutions = opt.fsolve(Euler_Error, list(
+                initial_K[-(s+1):, j]) + list(initial_N[-(s+2):, j]), args=(
+                winit, rinit, 0))
             K_vec = solutions[:len(solutions)/2]
             K_mat[1:S, :, j] += np.diag(K_vec, S-(s+2))
             N_vec = solutions[len(solutions)/2:]
             N_mat[:S, :, j] += np.diag(N_vec, S-(s+2))
 
         for t in xrange(0, T):
-            solutions = opt.fsolve(Euler_Error, list(initial_K[:, j]) + list(initial_N[:, j]), args=(winit, rinit, t))
+            solutions = opt.fsolve(Euler_Error, list(
+                initial_K[:, j]) + list(initial_N[:, j]), args=(
+                winit, rinit, t))
             K_vec = solutions[:S-1]
             K_mat[t+1:t+S, :, j] += np.diag(K_vec)
             N_vec = solutions[S-1:]
@@ -446,10 +465,10 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
 
     K_mat[0, :, :] = initial_K
     # K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
-    N_mat[0, -1, :] = initial_N[-1,:]
+    N_mat[0, -1, :] = initial_N[-1, :]
     # N_mat[T-1, :, :] = Nssmat.reshape(S, J)
     Knew = K_mat[:T, :, :].mean(2).mean(1)
-    Nnew = (e.reshape(1,S,J) * N_mat[:T,:,:]).mean(2).mean(1)
+    Nnew = (e.reshape(1, S, J) * N_mat[:T, :, :]).mean(2).mean(1)
     TPIiter += 1
     Kinit = rho*Knew + (1-rho)*Kinit[:T]
     Ninit = rho*Nnew + (1-rho)*Ninit[:T]
@@ -458,7 +477,8 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     print '\t\tDistance:', TPIdist
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         Yinit = A*(Kinit**alpha) * (Ninit**(1-alpha))
-        winit = np.array(list((1-alpha) * Yinit / Ninit) + list(np.ones(S)*wss))
+        winit = np.array(
+            ist((1-alpha) * Yinit / Ninit) + list(np.ones(S)*wss))
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
             np.ones(S)*rss))
 
@@ -472,7 +492,8 @@ K1 = np.zeros((T, S, J))
 K1[:, 1:, :] = K_mat[:T, :, :]
 K3 = np.zeros((T, S, J))
 K3[:, :-1, :] = K_mat[:T, :, :]
-cinit = (1 + rinit[:T].reshape(T, 1, 1)) * K1 + winit[:T].reshape(T, 1, 1) * e.reshape(1, S, J) * N_mat[:T] - K3
+cinit = (1 + rinit[:T].reshape(T, 1, 1)) * K1 + winit[:T].reshape(
+    T, 1, 1) * e.reshape(1, S, J) * N_mat[:T] - K3
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
     constraint_checker2(K_mat[t], N_mat[t], winit[t], rinit[t], e, cinit[t], t)
@@ -540,7 +561,7 @@ k3[:, :-1, :] = K_mat[:T, 1:, :]
 k1_2 = np.zeros((T, S, J))
 k1_2[:, 1:, :] = K_mat[:T, :, :]
 k2_2 = np.zeros((T, S, J))
-k2_2[:, :-1, :]= K_mat[:T, :, :]
+k2_2[:, :-1, :] = K_mat[:T, :, :]
 euler_mat1 = np.zeros((T, S-1, J))
 euler_mat2 = np.zeros((T, S, J))
 

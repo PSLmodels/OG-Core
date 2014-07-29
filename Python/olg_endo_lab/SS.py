@@ -48,7 +48,7 @@ A      = total factor productivity parameter in firms' production
 delta  = depreciation rate of capital
 ctilde = minimum value amount of consumption
 ltilde = measure of time each individual is endowed with each period
-chi    = discount factor 
+chi    = discount factor
 eta    = Frisch elasticity of labor supply
 e      = S x J matrix of age dependent possible working abilities e_s
 ------------------------------------------------------------------------
@@ -225,9 +225,9 @@ def Steady_State(guesses):
 
     Returns:    Array of S-1 Euler equation errors
     '''
-    K_guess = guesses[0: (S-1) * J ].reshape((S-1, J))
+    K_guess = guesses[0: (S-1) * J].reshape((S-1, J))
     K = K_guess.mean()
-    N_guess = guesses[(S-1) * J :].reshape((S, J))
+    N_guess = guesses[(S-1) * J:].reshape((S, J))
     N = get_N(e, N_guess)
     Y = get_Y(K, N)
     w = get_w(Y, N)
@@ -260,7 +260,8 @@ def borrowing_constraints(K_dist, w, r, e, n):
     b_min = np.zeros((S-1, J))
     b_min[-1, :] = (ctilde - w * e[S-1, :] * n[S-1, :]) / (1 + r)
     for i in xrange(S-2):
-        b_min[-(i+2), :] = (ctilde + b_min[-(i+1), :] - w * e[-(i+2), :] * n[-(i+2), :]) / (1 + r)
+        b_min[-(i+2), :] = (ctilde + b_min[-(i+1), :] - w * e[
+            -(i+2), :] * n[-(i+2), :]) / (1 + r)
     difference = K_dist - b_min
     if (difference < 0).any():
         return True
@@ -284,7 +285,8 @@ def constraint_checker(Kssmat, Nssmat, wss, rss, e, cssmat):
         flag2 = False if all labor constraints are met, true otherwise
 
     Returns:
-        Prints warnings for violations of capital, labor, and consumption constraints.
+        Prints warnings for violations of capital, labor, and
+            consumption constraints.
     '''
     print 'Checking constraints on capital, labor, and consumption.'
     flag1 = False
@@ -328,7 +330,7 @@ seconds.' % (abs(hours - .5), abs(minutes - .5), seconds)
 
 Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
 Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
-Kssmat3 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)) )
+Kssmat3 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)))
 
 Kssvec = Kssmat.mean(1)
 Kss = Kssvec.mean()
