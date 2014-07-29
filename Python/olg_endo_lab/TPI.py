@@ -77,8 +77,6 @@ Set other parameters and objects
 T       = number of periods until the steady state
 initial = (S-1)xJ array of the initial distribution of capital for TPI
 K0      = initial aggregate capital stock
-problem = boolean, true if 'initial' does not fulfill the borrowing
-          constraints, true otherwise.
 ------------------------------------------------------------------------
 '''
 
@@ -105,6 +103,40 @@ def borrowing_constraints(K_dist, w, r, e, n):
         return True
     else:
         return False
+
+
+def constraint_checker(Kssmat, Nssmat, wss, rss, e, cssmat):
+    '''
+    Parameters:
+
+    Created Variables:
+        flag1 = False if all borrowing constraints are met, true
+               otherwise.
+
+    Returns:
+    '''
+    print 'Checking constraints on capital, labor, and consumption.'
+    flag1 = False
+    if Kssmat.sum() <= 0:
+        print '\tWARNING: Aggregate capital is less than or equal to zero.'
+        flag1 = True
+    if borrowing_constraints(Kssmat, wss, rss, e, Nssmat) is True:
+        print '\tWARNING: Borrowing constraints have been violated.'
+        flag1 = True
+    if flag1 is False:
+        print '\tThere were no violations of the borrowing constraints.'
+    flag2 = False
+    if (Nssmat < 0).any():
+        print '\tWARNING: Labor supply violates nonnegativity constraints.'
+        flag2 = True
+    if (Nssmat > ltilde).any():
+        print '\tWARNING: Labor suppy violates the ltilde constraint.'
+    if flag2 is False:
+        print '\tThere were no violations of the constraints on labor supply.'
+    if (cssmat < 0).any():
+        print '\tWARNING: Conusmption volates nonnegativity constraints.'
+    else:
+        print '\tThere were no violations of the constraints on consumption.'
 
 
 def get_Y(K_now, N_now):
@@ -192,9 +224,9 @@ def get_N_init(e, N_guess, K1_2, K2_2):
     return euler
 
 
-T = 70
+T = 80
 # r = (np.random.rand(S-1,J) + .5) * .2
-initial_K = .9*Kssmat
+initial_K = 1*Kssmat
 K0 = initial_K.mean()
 
 K1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_K))
@@ -203,13 +235,13 @@ initial_N_guess = .9*Nssmat.flatten()
 get_N_init_zero = lambda x: get_N_init(e, x, K1_2init, K2_2init)
 initial_N = opt.fsolve(get_N_init_zero, initial_N_guess).reshape(S, J)
 N0 = initial_N.mean()
+Y0 = get_Y(K0, N0)
+w0 = get_w(Y0, N0)
+r0 = get_r(Y0, K0)
 
-problem = borrowing_constraints(initial_K, wss, rss, e, Nssmat)
-if problem is True:
-    print 'The initial distribution does not fulfill the' \
-        ' borrowing constraints.'
-else:
-    print 'The initial distribution fulfills the borrowing constraints.'
+c0 = (1 + r0) * K1_2init + w0 * e * initial_N - K2_2init
+
+constraint_checker(initial_K, initial_N, w0, r0, e, c0)
 
 '''
 ------------------------------------------------------------------------
@@ -231,12 +263,6 @@ K_mat        = (T+S)x(S-1)xJ array of distribution of capital across
                time, age, and ability
 Knew         = 1 x T vector, new time path of aggregate capital stock
 Kpath_TPI    = 1 x T vector, final time path of aggregate capital stock
-flag         = boolean, false if no borrowing constraints are violated
-               and aggregate capital is positve, true otherwise
-problem      = boolean, true if borrowing constraints are violated,
-               false otherwise
-problem2     = boolean, true if aggregate capital is negative, false
-               otherwise
 elapsed_time = elapsed time of TPI
 hours        = Hours needed to find the steady state
 minutes      = Minutes needed to find the steady state, less the number
@@ -307,16 +333,18 @@ def Euler_Error(guesses, winit, rinit, t):
     w = winit[t:t+length+1]
     r = rinit[t:t+length+1]
     error2 = MUc((1 + r)*K1_2 + w * e[-(length+1):,j] * N_guess - K2_2) * w * e[-(length+1):,j] + MUn(N_guess)
-    mask = N_guess < 0
-    error2[mask] += 1e9
+    # Check and punish constraing violations
+    mask1 = N_guess < 0
+    error2[mask1] += 1e9
+    mask2 = N_guess > ltilde
+    error2[mask2] += 1e9
+    if K_guess.sum() <= 0:
+        error1 += 1e9
+    cons = (1 + r) * K1_2 + w * e[-(length+1):,j] * N_guess - K2_2
+    mask3 = cons < 0
+    error2[mask3] += 1e9
     return list(error1.flatten()) + list(error2.flatten())
- 
 
-def check_agg_K(K_matrix):
-    if (K_matrix.sum() <= 0).any():
-        return True
-    else:
-        return False
 
 Kinit = np.array(list(np.linspace(K0, Kss, T)) + list(np.ones(S)*Kss))
 Ninit = np.array(list(np.linspace(N0, Nss, T)) + list(np.ones(S)*Nss))
@@ -336,20 +364,20 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     N_mat = np.zeros((T+S, S, J))
     for j in xrange(J):
         for s in xrange(S-2):  # Upper triangle
-            solutions = opt.fsolve(Euler_Error, list(initial_K[-(s+1):, j]) + list(initial_N[-(s+2):, j]), args=(winit, rinit, 0))
+            solutions = opt.fsolve(Euler_Error, list(initial_K[-(s+1):, j]) + list(initial_N[-(s+2):, j]), args=(winit, rinit, 0), col_deriv=1)
             K_vec = solutions[:len(solutions)/2]
             K_mat[1:S, :, j] += np.diag(K_vec, S-(s+2))
             N_vec = solutions[len(solutions)/2:]
             N_mat[:S, :, j] += np.diag(N_vec, S-(s+2))
 
         for t in xrange(0, T):
-            solutions = opt.fsolve(Euler_Error, list(initial_K[:, j]) + list(initial_N[:, j]), args=(winit, rinit, t))
+            solutions = opt.fsolve(Euler_Error, list(initial_K[:, j]) + list(initial_N[:, j]), args=(winit, rinit, t), col_deriv=1)
             K_vec = solutions[:S-1]
             K_mat[t+1:t+S, :, j] += np.diag(K_vec)
             N_vec = solutions[S-1:]
             N_mat[t:t+S, :, j] += np.diag(N_vec)
 
-    K_mat[0, -1, :] = initial_K[-1,:]
+    K_mat[0, :, :] = initial_K[:,:]
     K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
     N_mat[0, :, :] = initial_N
     N_mat[T-1, :, :] = Nssmat.reshape(S, J)
@@ -361,10 +389,11 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     TPIdist = (np.abs(Knew - Kinit)).max() + (np.abs(Nnew - Ninit)).max()
     print 'Iteration:', TPIiter
     print '\tDistance:', TPIdist
-    Yinit = A*(Kinit**alpha) * (Ninit**(1-alpha))
-    winit = np.array(list((1-alpha) * Yinit / Ninit) + list(np.ones(S)*wss))
-    rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
-        np.ones(S)*rss))
+    if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
+        Yinit = A*(Kinit**alpha) * (Ninit**(1-alpha))
+        winit = np.array(list((1-alpha) * Yinit / Ninit) + list(np.ones(S)*wss))
+        rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
+            np.ones(S)*rss))
     plt.figure(11)
     plt.axhline(
         y=Kss, color='black', linewidth=2)
@@ -390,21 +419,15 @@ Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
 Npath_TPI = list(Ninit) + list(np.ones(10)*Nss)
 
 print '\nTPI is finished.'
-flag = False
+K1 = np.zeros((T, S, J))
+K1[:, 1:, :] = K_mat[:T, :, :]
+K3 = np.zeros((T, S, J))
+K3[:, :-1, :] = K_mat[:T, :, :]
+cinit = (1 + rinit[:T].reshape(T, 1, 1)) * K1 + winit[:T].reshape(T, 1, 1) * e.reshape(1, S, J) * N_mat[:T] - K3
+
 for t in xrange(T):
-    problem = borrowing_constraints(K_mat[t], winit[t], rinit[t], e, Nssmat)
-    if problem is True:
-        print 'There is a violation in the borrowing constraints' \
-            ' in period %.f.' % t
-        flag = True
-    problem2 = check_agg_K(K_mat[t])
-    if problem2 is True:
-        print 'WARNING: Aggregate capital stock is less than or' \
-            ' equal to zero in period %.f.' % t
-        flag = True
-if flag is False:
-    print 'There were no violations of the borrowing constraints' \
-        ' in any period.'
+    constraint_checker(K_mat[t], N_mat[t], winit[t], rinit[t], e, cinit[t])
+
 
 elapsed_time = time.time() - start_time
 hours = elapsed_time / 3600

@@ -53,7 +53,7 @@ e      = S x J matrix of age dependent possible working abilities e_s
 '''
 
 # Parameters
-S = 60
+S = 10
 J = 7
 beta = .96 ** (60.0 / S)
 sigma = 3.0
@@ -321,7 +321,7 @@ N_guess_init = np.ones((S, J)) * .95
 guesses = list(K_guess_init.flatten()) + list(N_guess_init.flatten())
 
 print 'Solving for steady state level distribution of capital and labor.'
-solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9)
+solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9, col_deriv=1)
 print '\tFinished.'
 
 runtime = time.time() - starttime
