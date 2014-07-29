@@ -202,7 +202,7 @@ K2_2init = np.array(list(initial_K) + list(np.zeros(J).reshape(1, J)))
 initial_N_guess = .9*Nssmat.flatten()
 get_N_init_zero = lambda x: get_N_init(e, x, K1_2init, K2_2init)
 initial_N = opt.fsolve(get_N_init_zero, initial_N_guess).reshape(S, J)
-N0 = initial_N.mean()
+N0 = get_N(e, initial_N)
 
 problem = borrowing_constraints(initial_K, wss, rss, e, Nssmat)
 if problem is True:
@@ -361,29 +361,11 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     TPIdist = (np.abs(Knew - Kinit)).max() + (np.abs(Nnew - Ninit)).max()
     print 'Iteration:', TPIiter
     print '\tDistance:', TPIdist
-    Yinit = A*(Kinit**alpha) * (Ninit**(1-alpha))
-    winit = np.array(list((1-alpha) * Yinit / Ninit) + list(np.ones(S)*wss))
-    rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
-        np.ones(S)*rss))
-    plt.figure(11)
-    plt.axhline(
-        y=Kss, color='black', linewidth=2)
-    plt.plot(np.arange(
-        T), Kinit, 'b', linewidth=2)
-    plt.xlabel("Time t")
-    plt.ylabel("Aggregate Capital K")
-    plt.title(r"Time Path of Capital Stock K$_t$")
-    plt.savefig("OUTPUT/TPI_K_oneatatime")
-
-    plt.figure(12)
-    plt.axhline(
-        y=Nss, color='black', linewidth=2)
-    plt.plot(np.arange(
-        T), Ninit, 'b', linewidth=2)
-    plt.xlabel("Time t")
-    plt.ylabel("Aggregate Labor N")
-    plt.title(r"Time Path of Labor Supply N$_t$")
-    plt.savefig("OUTPUT/TPI_Noneatatime")
+    if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
+        Yinit = A*(Kinit**alpha) * (Ninit**(1-alpha))
+        winit = np.array(list((1-alpha) * Yinit / Ninit) + list(np.ones(S)*wss))
+        rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
+            np.ones(S)*rss))
 
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)

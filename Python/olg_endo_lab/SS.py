@@ -53,7 +53,7 @@ e      = S x J matrix of age dependent possible working abilities e_s
 '''
 
 # Parameters
-S = 10
+S = 60
 J = 7
 beta = .96 ** (60.0 / S)
 sigma = 3.0
@@ -341,7 +341,7 @@ K_agg = Kssmat.sum()
 Kssvec = np.array([0]+list(Kssvec))
 Nssmat = solutions[(S-1) * J:].reshape(S, J)
 Nssvec = Nssmat.mean(1)
-Nss = Nssvec.mean()
+Nss = get_N(e, Nssmat)
 Yss = get_Y(Kss, Nss)
 wss = get_w(Yss, Nss)
 rss = get_r(Yss, Kss)
