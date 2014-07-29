@@ -349,7 +349,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             N_vec = solutions[S-1:]
             N_mat[t:t+S, :, j] += np.diag(N_vec)
 
-    K_mat[0, :, :] = initial_K
+    K_mat[0, -1, :] = initial_K[-1,:]
     K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
     N_mat[0, :, :] = initial_N
     N_mat[T-1, :, :] = Nssmat.reshape(S, J)
