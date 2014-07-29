@@ -53,7 +53,7 @@ e      = S x J matrix of age dependent possible working abilities e_s
 '''
 
 # Parameters
-S = 60
+S = 10
 J = 7
 beta = .96 ** (60.0 / S)
 sigma = 3.0
@@ -299,21 +299,6 @@ def constraint_checker(Kssmat, Nssmat, wss, rss, e, cssmat):
     else:
         print '\tThere were no violations of the constraints on consumption.'
 
-def Utility(guesses):
-    K = guesses[0: (S-1) * J ].mean()
-    K_guess = np.array([0] * J + list(guesses[0: (S-1) * J ]) + [0] * J).reshape((S+1, J))
-    N_guess = guesses[(S-1) * J :].reshape((S, J))
-    N = get_N(e, N_guess)
-    Y = get_Y(K, N)
-    w = get_w(Y, N)
-    r = get_r(Y, K)
-    c = (1 + r) * K_guess[:-1, :] + w * e * N_guess - K_guess[1:, :]
-    utils = (c**(1-sigma) - 1) / (1 - sigma) + chi * ((1 - N_guess)**(1-eta)) / (1-eta)
-    for i in xrange(S):
-        utils[i, :] *= beta ** i
-    sum_utils = -utils.sum()
-    return sum_utils
-
 starttime = time.time()
 
 K_guess_init = np.ones((S-1, J)) * .05
@@ -366,7 +351,7 @@ domain     = 1 x S vector of each age cohort
 ------------------------------------------------------------------------
 '''
 
-print 'Generating graphs.'
+print 'Generating steady state graphs.'
 domain = np.linspace(1, S, S)
 
 # 2D Graph
@@ -518,7 +503,7 @@ Save variables/values so they can be used in other modules
 ------------------------------------------------------------------------
 '''
 
-print 'Saving variable values.'
+print 'Saving steady state variable values.'
 var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'e',
              'J', 'Kss', 'Kssvec', 'Kssmat', 'Nss', 'Nssvec', 'Nssmat',
              'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes',

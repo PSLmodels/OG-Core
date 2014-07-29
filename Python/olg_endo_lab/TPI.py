@@ -77,10 +77,60 @@ Set other parameters and objects
 T       = number of periods until the steady state
 initial = (S-1)xJ array of the initial distribution of capital for TPI
 K0      = initial aggregate capital stock
-problem = boolean, true if 'initial' does not fulfill the borrowing
-          constraints, true otherwise.
 ------------------------------------------------------------------------
 '''
+
+
+def constraint_checker1(Kssmat, Nssmat, wss, rss, e, cssmat):
+    '''
+    Parameters:
+
+    Created Variables:
+        flag1 = False if all borrowing constraints are met, true
+               otherwise.
+
+    Returns:
+    '''
+    print 'Checking constraints on the initial distributions of capital, labor, and consumption for TPI.'
+    flag1 = False
+    if Kssmat.sum() <= 0:
+        print '\tWARNING: Aggregate capital is less than or equal to zero.'
+        flag1 = True
+    if borrowing_constraints(Kssmat, wss, rss, e, Nssmat) is True:
+        print '\tWARNING: Borrowing constraints have been violated.'
+        flag1 = True
+    if flag1 is False:
+        print '\tThere were no violations of the borrowing constraints.'
+    flag2 = False
+    if (Nssmat < 0).any():
+        print '\tWARNING: Labor supply violates nonnegativity constraints.'
+        flag2 = True
+    if (Nssmat > ltilde).any():
+        print '\tWARNING: Labor suppy violates the ltilde constraint.'
+    if flag2 is False:
+        print '\tThere were no violations of the constraints on labor supply.'
+    if (cssmat < 0).any():
+        print '\tWARNING: Conusmption volates nonnegativity constraints.'
+    else:
+        print '\tThere were no violations of the constraints on consumption.'
+
+
+def constraint_checker2(Kssmat, Nssmat, wss, rss, e, cssmat, t):
+    '''
+    Parameters:
+
+    Returns:
+    '''
+    if Kssmat.sum() <= 0:
+        print '\tWARNING: Aggregate capital is less than or equal to zero in period %.f.' % t
+    if borrowing_constraints(Kssmat, wss, rss, e, Nssmat) is True:
+        print '\tWARNING: Borrowing constraints have been violated in period %.f.' % t
+    if (Nssmat < 0).any():
+        print '\tWARNING: Labor supply violates nonnegativity constraints in period %.f.' % t
+    if (Nssmat > ltilde).any():
+        print '\tWARNING: Labor suppy violates the ltilde constraint in period %.f.' % t
+    if (cssmat < 0).any():
+        print '\tWARNING: Conusmption volates nonnegativity constraints in period %.f.' % t
 
 
 def borrowing_constraints(K_dist, w, r, e, n):
@@ -203,13 +253,11 @@ initial_N_guess = .9*Nssmat.flatten()
 get_N_init_zero = lambda x: get_N_init(e, x, K1_2init, K2_2init)
 initial_N = opt.fsolve(get_N_init_zero, initial_N_guess).reshape(S, J)
 N0 = get_N(e, initial_N)
-
-problem = borrowing_constraints(initial_K, wss, rss, e, Nssmat)
-if problem is True:
-    print 'The initial distribution does not fulfill the' \
-        ' borrowing constraints.'
-else:
-    print 'The initial distribution fulfills the borrowing constraints.'
+Y0 = get_Y(K0, N0)
+w0 = get_w(Y0, N0)
+r0 = get_r(Y0, K0)
+c0 = (1 + r0) * K1_2init + w0 * e * initial_N - K2_2init
+constraint_checker1(initial_K, initial_N, w0, r0, e, c0)
 
 '''
 ------------------------------------------------------------------------
@@ -231,12 +279,6 @@ K_mat        = (T+S)x(S-1)xJ array of distribution of capital across
                time, age, and ability
 Knew         = 1 x T vector, new time path of aggregate capital stock
 Kpath_TPI    = 1 x T vector, final time path of aggregate capital stock
-flag         = boolean, false if no borrowing constraints are violated
-               and aggregate capital is positve, true otherwise
-problem      = boolean, true if borrowing constraints are violated,
-               false otherwise
-problem2     = boolean, true if aggregate capital is negative, false
-               otherwise
 elapsed_time = elapsed time of TPI
 hours        = Hours needed to find the steady state
 minutes      = Minutes needed to find the steady state, less the number
@@ -307,16 +349,17 @@ def Euler_Error(guesses, winit, rinit, t):
     w = winit[t:t+length+1]
     r = rinit[t:t+length+1]
     error2 = MUc((1 + r)*K1_2 + w * e[-(length+1):,j] * N_guess - K2_2) * w * e[-(length+1):,j] + MUn(N_guess)
-    mask = N_guess < 0
-    error2[mask] += 1e9
+    # Check and punish constraing violations
+    mask1 = N_guess < 0
+    error2[mask1] += 1e9
+    mask2 = N_guess > ltilde
+    error2[mask2] += 1e9
+    if K_guess.sum() <= 0:
+        error1 += 1e9
+    cons = (1 + r) * K1_2 + w * e[-(length+1):,j] * N_guess - K2_2
+    mask3 = cons < 0
+    error2[mask3] += 1e9
     return list(error1.flatten()) + list(error2.flatten())
- 
-
-def check_agg_K(K_matrix):
-    if (K_matrix.sum() <= 0).any():
-        return True
-    else:
-        return False
 
 Kinit = np.array(list(np.linspace(K0, Kss, T)) + list(np.ones(S)*Kss))
 Ninit = np.array(list(np.linspace(N0, Nss, T)) + list(np.ones(S)*Nss))
@@ -329,7 +372,7 @@ TPIiter = 0
 TPImaxiter = 100
 TPIdist = 10
 TPImindist = 3 * 1e-6
-print 'TPI has started.\n'
+print 'Starting time path iteration.'
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat = np.zeros((T+S, S-1, J))
@@ -359,8 +402,8 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     Kinit = rho*Knew + (1-rho)*Kinit[:T]
     Ninit = rho*Nnew + (1-rho)*Ninit[:T]
     TPIdist = (np.abs(Knew - Kinit)).max() + (np.abs(Nnew - Ninit)).max()
-    print 'Iteration:', TPIiter
-    print '\tDistance:', TPIdist
+    print '\tIteration:', TPIiter
+    print '\t\tDistance:', TPIdist
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         Yinit = A*(Kinit**alpha) * (Ninit**(1-alpha))
         winit = np.array(list((1-alpha) * Yinit / Ninit) + list(np.ones(S)*wss))
@@ -371,22 +414,17 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
 Npath_TPI = list(Ninit) + list(np.ones(10)*Nss)
 
-print '\nTPI is finished.'
-flag = False
+print 'TPI is finished.'
+
+K1 = np.zeros((T, S, J))
+K1[:, 1:, :] = K_mat[:T, :, :]
+K3 = np.zeros((T, S, J))
+K3[:, :-1, :] = K_mat[:T, :, :]
+cinit = (1 + rinit[:T].reshape(T, 1, 1)) * K1 + winit[:T].reshape(T, 1, 1) * e.reshape(1, S, J) * N_mat[:T] - K3
+print'Checking time path for violations of constaints.'
 for t in xrange(T):
-    problem = borrowing_constraints(K_mat[t], winit[t], rinit[t], e, Nssmat)
-    if problem is True:
-        print 'There is a violation in the borrowing constraints' \
-            ' in period %.f.' % t
-        flag = True
-    problem2 = check_agg_K(K_mat[t])
-    if problem2 is True:
-        print 'WARNING: Aggregate capital stock is less than or' \
-            ' equal to zero in period %.f.' % t
-        flag = True
-if flag is False:
-    print 'There were no violations of the borrowing constraints' \
-        ' in any period.'
+    constraint_checker2(K_mat[t], N_mat[t], winit[t], rinit[t], e, cinit[t], t)
+print '\tFinished.'
 
 elapsed_time = time.time() - start_time
 hours = elapsed_time / 3600
@@ -400,6 +438,8 @@ print 'TPI took %.0f hours, %.0f minutes, and %.0f seconds.' % (
 Plot Timepath for K and N
 ------------------------------------------------------------------------
 '''
+
+print 'Generating TPI graphs.'
 
 plt.figure(13)
 plt.axhline(
@@ -456,15 +496,19 @@ plt.xlabel(r'Time $t$')
 plt.title('Maximum Euler Error for each period across S and J')
 plt.savefig('OUTPUT/euler_errors_TPI_2D')
 
+print '\tFinished.'
+
 '''
 ------------------------------------------------------------------------
 Save variables/values so they can be used in other modules
 ------------------------------------------------------------------------
 '''
 
+print 'Saving TPI variable values.'
 var_names = ['Kpath_TPI', 'TPIiter', 'TPIdist', 'elapsed_time',
              'hours', 'minutes', 'seconds', 'T', 'K_mat']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
 pickle.dump(dictionary, open("OUTPUT/TPI_vars.pkl", "w"))
+print '\tFinished.'
