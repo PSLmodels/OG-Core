@@ -1,7 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 7/18/2014
-Python version of Evans/Philips 2014 paper
+Last updated 7/29/2014
 
 This program solves for transition path of the distribution of wealth
 and the aggregate capital stock using the time path iteration (TPI)
@@ -12,10 +11,10 @@ This py-file calls the following other file(s):
 
 This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
+            OUTPUT/TPI_K.png
+            OUTPUT/TPI_N.png
             OUTPUT/euler_errors_TPI_2D.png
-            OUTPUT/euler_errors_TPI_3D.png
             OUTPUT/TPI_vars.pkl
-            OUTPUT/TPI.png
 ------------------------------------------------------------------------
 '''
 
@@ -43,17 +42,25 @@ rho      = contraction parameter in steady state iteration process
 A        = total factor productivity parameter in firms' production
            function
 delta    = decreciation rate of capital
-n        = 1 x S vector of inelastic labor supply for each age s
+ltilde   = measure of time each individual is endowed with each period
+ctilde   = minimum value of consumption
+chi      = discount factor 
+eta      = Frisch elasticity of labor supply
 e        = S x J matrix of age dependent possible working abilities e_s
 J        = number of points in the support of e
 Kss      = steady state aggregate capital stock: scalar
+Kssvec   = ((S-1) x 1) vector of the steady state level of capital
+           (averaged across ability types)
+Kssmat   = ((S-1) x J) array of the steady state distribution of
+           capital
 Nss      = steady state aggregate labor: scalar
+Nssvec   = (S x 1) vector of the steady state level of labor
+           (averaged across ability types)
+Nssmat   = (S x J) array of the steady state distribution of labor
 Yss      = steady state aggregate output: scalar
 wss      = steady state real wage: scalar
 rss      = steady state real rental rate: scalar
 K_agg    = Aggregate level of capital: scalar
-cssmat   = SxJ array of consumption across age and ability groups
-ctilde   = minimum value of consumption
 runtime  = total time (in seconds) that the steady state solver took to
             run
 hours    = total hours that the steady state solver took to run
@@ -72,64 +79,91 @@ start_time = time.time()  # Start timer
 
 '''
 ------------------------------------------------------------------------
-Set other parameters and objects
+Set other parameters, objects, and functions
 ------------------------------------------------------------------------
-T       = number of periods until the steady state
-initial = (S-1)xJ array of the initial distribution of capital for TPI
-K0      = initial aggregate capital stock
+T               = number of periods until the steady state
+initial_K       = (S-1)xJ array of the initial distribution of capital
+                  for TPI
+K0              = initial aggregate capital stock
+K1_2init        = (S-1)xJ array of the initial distribution of capital
+                  for TPI (period t+1)
+K2_2init        = (S-1)xJ array of the initial distribution of capital
+                  for TPI (period t+2)
+initial_N_guess = initial guess for SxJ distribution of labor supply
+initial_N       = SxJ arry of the initial distribution of labor for TPI
+N0              = initial aggregate labor supply (scalar)
+Y0              = initial aggregate output (scalar)
+w0              = initial wage (scalar)
+r0              = intitial rental rate (scalar)
+c0              = SxJ arry of the initial distribution of consumption
 ------------------------------------------------------------------------
 '''
 
 
-def constraint_checker1(Kssmat, Nssmat, wss, rss, e, cssmat):
+def constraint_checker1(k_dist, n_dist, w, r, e, c_dist):
     '''
     Parameters:
+        k_dist = distribution of capital ((S-1)xJ array)
+        n_dist = distribution of labor (SxJ array)
+        w      = wage rate (scalar)
+        r      = rental rate (scalar)
+        e      = distribution of abilities (SxJ array)
+        c_dist = distribution of consumption (SxJ array)
 
     Created Variables:
         flag1 = False if all borrowing constraints are met, true
                otherwise.
+        flag2 = False if all labor constraints are met, true otherwise
 
     Returns:
+        Prints warnings for violations of capital, labor, and consumption constraints.
     '''
     print 'Checking constraints on the initial distributions of capital, labor, and consumption for TPI.'
     flag1 = False
-    if Kssmat.sum() <= 0:
+    if k_dist.sum() <= 0:
         print '\tWARNING: Aggregate capital is less than or equal to zero.'
         flag1 = True
-    if borrowing_constraints(Kssmat, wss, rss, e, Nssmat) is True:
+    if borrowing_constraints(k_dist, w, r, e, n_dist) is True:
         print '\tWARNING: Borrowing constraints have been violated.'
         flag1 = True
     if flag1 is False:
         print '\tThere were no violations of the borrowing constraints.'
     flag2 = False
-    if (Nssmat < 0).any():
+    if (n_dist < 0).any():
         print '\tWARNING: Labor supply violates nonnegativity constraints.'
         flag2 = True
-    if (Nssmat > ltilde).any():
+    if (n_dist > ltilde).any():
         print '\tWARNING: Labor suppy violates the ltilde constraint.'
     if flag2 is False:
         print '\tThere were no violations of the constraints on labor supply.'
-    if (cssmat < 0).any():
+    if (c_dist < 0).any():
         print '\tWARNING: Conusmption volates nonnegativity constraints.'
     else:
         print '\tThere were no violations of the constraints on consumption.'
 
 
-def constraint_checker2(Kssmat, Nssmat, wss, rss, e, cssmat, t):
+def constraint_checker2(k_dist, n_dist, w, r, e, c_dist, t):
     '''
     Parameters:
+        k_dist = distribution of capital ((S-1)xJ array)
+        n_dist = distribution of labor (SxJ array)
+        w      = wage rate (scalar)
+        r      = rental rate (scalar)
+        e      = distribution of abilities (SxJ array)
+        c_dist = distribution of consumption (SxJ array)
 
     Returns:
+        Prints warnings for violations of capital, labor, and consumption constraints.
     '''
-    if Kssmat.sum() <= 0:
+    if k_dist.sum() <= 0:
         print '\tWARNING: Aggregate capital is less than or equal to zero in period %.f.' % t
-    if borrowing_constraints(Kssmat, wss, rss, e, Nssmat) is True:
+    if borrowing_constraints(k_dist, w, r, e, n_dist) is True:
         print '\tWARNING: Borrowing constraints have been violated in period %.f.' % t
-    if (Nssmat < 0).any():
+    if (n_dist < 0).any():
         print '\tWARNING: Labor supply violates nonnegativity constraints in period %.f.' % t
-    if (Nssmat > ltilde).any():
+    if (n_dist > ltilde).any():
         print '\tWARNING: Labor suppy violates the ltilde constraint in period %.f.' % t
-    if (cssmat < 0).any():
+    if (c_dist < 0).any():
         print '\tWARNING: Conusmption volates nonnegativity constraints in period %.f.' % t
 
 
@@ -278,7 +312,11 @@ TPImindist   = Cut-off distance between iterations for TPI
 K_mat        = (T+S)x(S-1)xJ array of distribution of capital across
                time, age, and ability
 Knew         = 1 x T vector, new time path of aggregate capital stock
+N_mat        = (T+S)xSxJ array of distribution of labor across
+               time, age, and ability
+Nnew         = 1 x T vector, new time path of aggregate labor supply
 Kpath_TPI    = 1 x T vector, final time path of aggregate capital stock
+Npath_TPI    = 1 x T vector, final time path of aggregate labor supply
 elapsed_time = elapsed time of TPI
 hours        = Hours needed to find the steady state
 minutes      = Minutes needed to find the steady state, less the number
@@ -326,13 +364,13 @@ def Euler2(w, r, e, N_guess, K1_2, K2_2):
 def Euler_Error(guesses, winit, rinit, t):
     '''
     Parameters:
-        K_guess = distribution of capital in period t ((S-1) x J array)
-        w  = wage rate (scalar)
-        r  = rental rate (scalar)
-        t  = time period
+        guesses = distribution of capital and labor in period t ((S-1)*S*J x 1 list)
+        winit   = wage rate (scalar)
+        rinit   = rental rate (scalar)
+        t       = time period
 
     Returns:
-        Value of Euler error.
+        Value of Euler error. (as an (S-1)*S*J x 1 list)
     '''
     length = len(guesses)/2
     K_guess = guesses[:length]
@@ -483,12 +521,16 @@ plt.savefig("OUTPUT/TPI_N")
 ------------------------------------------------------------------------
 Compute Plot Euler Errors
 ------------------------------------------------------------------------
-k1          = Tx(S-1)xJ array of Kssmat in period t-1
-k2          = copy of K_mat through period T-1
-k3          = Tx(S-1)xJ array of Kssmat in period t+1
-euler_mat   = Tx(S-1)xJ arry of euler errors across time, age, and
-              ability level
-domain      = 1 x S vector of each age cohort
+k1         = Tx(S-1)xJ array of Kssmat in period t-1
+k2         = copy of K_mat through period T-1
+k3         = Tx(S-1)xJ array of Kssmat in period t+1
+k1_2       = TxSxJ array of Kssmat in period t
+k2_2       = TxSxJ array of Kssmat in period t+1
+euler_mat1 = Tx(S-1)xJ arry of euler errors across time, age, and
+              ability level for first Euler equation
+euler_mat2 = TxSxJ arry of euler errors across time, age, and
+              ability level for second Euler equation
+domain     = 1 x S vector of each age cohort
 ------------------------------------------------------------------------
 '''
 k1 = np.zeros((T, S-1, J))

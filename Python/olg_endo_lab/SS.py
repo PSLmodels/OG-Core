@@ -1,6 +1,7 @@
 '''
 ------------------------------------------------------------------------
-Last updated: 7/22/2014
+Last updated: 7/29/2014
+
 Calculates steady state of OLG model with S age cohorts
 
 This py-file calls the following other file(s):
@@ -15,7 +16,8 @@ This py-file creates the following other file(s):
             OUTPUT/consumption_2D.png
             OUTPUT/consumption_3D.png
             OUTPUT/euler_errors_SS_2D.png
-            OUTPUT/euler_errors_SS_3D.png
+            OUTPUT/euler_errors_euler1_SS_3D.png
+            OUTPUT/euler_errors_euler2_SS_3D.png
 ------------------------------------------------------------------------
 '''
 
@@ -46,7 +48,7 @@ A      = total factor productivity parameter in firms' production
 delta  = depreciation rate of capital
 ctilde = minimum value amount of consumption
 ltilde = measure of time each individual is endowed with each period
-xi     = ...
+chi    = discount factor 
 eta    = Frisch elasticity of labor supply
 e      = S x J matrix of age dependent possible working abilities e_s
 ------------------------------------------------------------------------
@@ -269,12 +271,20 @@ def borrowing_constraints(K_dist, w, r, e, n):
 def constraint_checker(Kssmat, Nssmat, wss, rss, e, cssmat):
     '''
     Parameters:
+        Kssmat = steady state distribution of capital ((S-1)xJ array)
+        Nssmat = steady state distribution of labor (SxJ array)
+        wss    = steady state wage rate (scalar)
+        rss    = steady state rental rate (scalar)
+        e      = distribution of abilities (SxJ array)
+        cssmat = steady state distribution of consumption (SxJ array)
 
     Created Variables:
         flag1 = False if all borrowing constraints are met, true
                otherwise.
+        flag2 = False if all labor constraints are met, true otherwise
 
     Returns:
+        Prints warnings for violations of capital, labor, and consumption constraints.
     '''
     print 'Checking constraints on capital, labor, and consumption.'
     flag1 = False
@@ -454,6 +464,10 @@ Check Euler Equations
 k1          = (S-1)xJ array of Kssmat in period t-1
 k2          = copy of Kssmat
 k3          = (S-1)xJ array of Kssmat in period t+1
+k1_2        = SxJ array of Kssmat in period t
+k2_2        = SxJ array of Kssmat in period t+1
+euler1      = euler errors from first euler equation
+euler2      = euler errors from second euler equation
 ------------------------------------------------------------------------
 '''
 
