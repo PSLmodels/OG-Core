@@ -289,7 +289,7 @@ seconds      = Seconds needed to find the steady state, less the number
 '''
 
 
-def Euler_justcapital(w1, r1, w2, r2, e, n, K1, K2, K3):
+def Euler1(w1, r1, w2, r2, e, n, K1, K2, K3):
     '''
     Parameters:
         w  = wage rate (scalar)
@@ -307,6 +307,21 @@ def Euler_justcapital(w1, r1, w2, r2, e, n, K1, K2, K3):
         (1 + r2)*K2 + w2 * e[1:, :] * n[1:, :] - K3)
     return euler
 
+def Euler2(w, r, e, N_guess, K1_2, K2_2):
+    '''
+    Parameters:
+        w        = wage rate (scalar)
+        r        = rental rate (scalar)
+        e        = distribution of abilities (SxJ array)
+        N_guess  = distribution of labor (SxJ array)
+        K1_2     = distribution of capital in period t (S x J array)
+        K2_2     = distribution of capital in period t+1 (S x J array)
+
+    Returns:
+        Value of Euler error.
+    '''
+    euler = MUc((1 + r)*K1_2 + w * e * N_guess - K2_2) * w * e + MUn(N_guess)
+    return euler
 
 def Euler_Error(guesses, winit, rinit, t):
     '''
@@ -481,18 +496,26 @@ k1[:, 1:, :] = K_mat[:T, :-1, :]
 k2 = K_mat[:T, :, :]
 k3 = np.zeros((T, S-1, J))
 k3[:, :-1, :] = K_mat[:T, 1:, :]
-euler_mat = np.zeros((T, S-1, J))
+k1_2 = np.zeros((T, S, J))
+k1_2[:, 1:, :] = K_mat[:T, :, :]
+k2_2 = np.zeros((T, S, J))
+k2_2[:, :-1, :]= K_mat[:T, :, :]
+euler_mat1 = np.zeros((T, S-1, J))
+euler_mat2 = np.zeros((T, S, J))
 
 for t in xrange(T):
-    euler_mat[t, :, :] = Euler_justcapital(
-        winit[t], rinit[t], winit[t+1], rinit[t+1], e, Nssmat, k1[t, :, :], k2[
-            t, :, :], k3[t, :, :])
+    euler_mat1[t, :, :] = Euler1(
+        winit[t], rinit[t], winit[t+1], rinit[t+1], e, N_mat[t], k1[t], k2[
+            t], k3[t])
+    euler_mat2[t] = Euler2(winit[t], rinit[t], e, N_mat[t], k1_2[t], k2_2[t])
 
 domain = np.linspace(1, T, T)
 plt.figure(15)
-plt.plot(domain, np.abs(euler_mat).max(1).max(1))
+plt.plot(domain, np.abs(euler_mat1).max(1).max(1), label='Euler1')
+plt.plot(domain, np.abs(euler_mat2).max(1).max(1), label='Euler2')
 plt.ylabel('Error Value')
 plt.xlabel(r'Time $t$')
+plt.legend(loc=0)
 plt.title('Maximum Euler Error for each period across S and J')
 plt.savefig('OUTPUT/euler_errors_TPI_2D')
 

@@ -53,7 +53,7 @@ e      = S x J matrix of age dependent possible working abilities e_s
 '''
 
 # Parameters
-S = 10
+S = 60
 J = 7
 beta = .96 ** (60.0 / S)
 sigma = 3.0
@@ -380,7 +380,7 @@ plt.savefig('OUTPUT/capital_dist_3D')
 
 '''
 ------------------------------------------------------------------------
- Generate graphs of the steady-state distribution of wealth
+ Generate graphs of the steady-state distribution of labor
 ------------------------------------------------------------------------
 '''
 
@@ -472,7 +472,7 @@ plt.plot(domain[1:], np.abs(euler1).max(1), label='Euler1')
 plt.plot(domain, np.abs(euler2).max(1), label='Euler2')
 plt.legend(loc=0)
 plt.title('Euler Errors')
-plt.savefig('OUTPUT/euler_errors_2D')
+plt.savefig('OUTPUT/euler_errors_SS_2D')
 
 # 3D Graph
 X2, Y2 = np.meshgrid(Sgrid[1:], Jgrid)
