@@ -277,7 +277,9 @@ def get_N_init(e, N_guess, K1_2, K2_2):
 
 
 T = 70
-# r = (np.random.rand(S-1,J) + .5) * .2
+# r = (np.random.rand(S-1,J) + .6) * .2
+# initial_K = r * Kssmat
+# initial_K = np.ones((S-1,J)) * Kss * .01
 initial_K = .9*Kssmat
 K0 = initial_K.mean()
 
@@ -446,9 +448,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             N_mat[t:t+S, :, j] += np.diag(N_vec)
 
     K_mat[0, :, :] = initial_K
-    # K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
     N_mat[0, -1, :] = initial_N[-1,:]
-    # N_mat[T-1, :, :] = Nssmat.reshape(S, J)
     Knew = K_mat[:T, :, :].mean(2).mean(1)
     Nnew = (e.reshape(1,S,J) * N_mat[:T,:,:]).mean(2).mean(1)
     TPIiter += 1
