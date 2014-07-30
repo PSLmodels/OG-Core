@@ -239,8 +239,16 @@ def Steady_State(guesses):
     K2_2 = np.array(list(K_guess) + list(np.zeros(J).reshape(1, J)))
     error1 = Euler1(w, r, e, N_guess, K1, K2, K3)
     error2 = Euler2(w, r, e, N_guess, K1_2, K2_2)
-    mask = N_guess < 0
-    error2[mask] += 1e9
+    # Check and punish constraing violations
+    mask1 = N_guess < 0
+    error2[mask1] += 1e9
+    mask2 = N_guess > ltilde
+    error2[mask2] += 1e9
+    if K_guess.sum() <= 0:
+        error1 += 1e9
+    cons = (1 + r) * K1_2 + w * e * N_guess - K2_2
+    mask3 = cons < 0
+    error2[mask3] += 1e9
     return list(error1.flatten()) + list(error2.flatten())
 
 

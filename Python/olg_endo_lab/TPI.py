@@ -466,13 +466,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             N_mat[t:t+S, :, j] += np.diag(N_vec)
 
     K_mat[0, :, :] = initial_K
-<<<<<<< HEAD
     N_mat[0, -1, :] = initial_N[-1,:]
-=======
-    # K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
-    N_mat[0, -1, :] = initial_N[-1, :]
-    # N_mat[T-1, :, :] = Nssmat.reshape(S, J)
->>>>>>> 47f69b436f488c121d13b8ce061fedfb72a1b1f4
     Knew = K_mat[:T, :, :].mean(2).mean(1)
     Nnew = (e.reshape(1, S, J) * N_mat[:T, :, :]).mean(2).mean(1)
     TPIiter += 1
@@ -484,7 +478,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         Yinit = A*(Kinit**alpha) * (Ninit**(1-alpha))
         winit = np.array(
-            ist((1-alpha) * Yinit / Ninit) + list(np.ones(S)*wss))
+            list((1-alpha) * Yinit / Ninit) + list(np.ones(S)*wss))
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
             np.ones(S)*rss))
 
