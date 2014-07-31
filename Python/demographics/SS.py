@@ -52,12 +52,14 @@ ltilde = measure of time each individual is endowed with each period
 chi    = discount factor
 eta    = Frisch elasticity of labor supply
 e      = S x J matrix of age dependent possible working abilities e_s
+T      = number of periods until the steady state
 ------------------------------------------------------------------------
 '''
 
 # Parameters
 S = 10
 J = 7
+T = 70
 beta = .96 ** (60.0 / S)
 sigma = 3.0
 alpha = .35
@@ -69,11 +71,12 @@ ltilde = 1.0
 chi = 1.0
 eta = 2.5
 e = income.get_e(S, J)
-omega = demographics.get_omega(S, J)
+omega = demographics.get_omega(S, J, T)
 
 print 'The following are the parameter values of the simulation:'
 print '\tS:\t\t\t', S
 print '\tJ:\t\t\t', J
+print '\tT:\t\t\t', T
 print '\tBeta:\t\t', beta
 print '\tSigma:\t\t', sigma
 print '\tAlpha:\t\t', alpha
@@ -160,7 +163,7 @@ def get_N(e, n):
 
     Returns:    Aggregate labor
     '''
-    N_now = np.sum(e * omega * n)
+    N_now = np.sum(e * omega[-1, :, :] * n)
     return N_now
 
 
@@ -228,7 +231,7 @@ def Steady_State(guesses):
     Returns:    Array of S-1 Euler equation errors
     '''
     K_guess = guesses[0: (S-1) * J].reshape((S-1, J))
-    K = (omega[1:, :] * K_guess).sum()
+    K = (omega[-1, 1:, :] * K_guess).sum()
     N_guess = guesses[(S-1) * J:].reshape((S, J))
     N = get_N(e, N_guess)
     Y = get_Y(K, N)
@@ -343,7 +346,7 @@ Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
 Kssmat3 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)))
 
 Kssvec = Kssmat.sum(1)
-Kss = (omega[1:, :] * Kssmat).sum()
+Kss = (omega[-1, 1:, :] * Kssmat).sum()
 Kssavg = Kssvec.mean()
 K_agg = Kssmat.sum()
 Kssvec = np.array([0]+list(Kssvec))
@@ -535,7 +538,7 @@ print 'Saving steady state variable values.'
 var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'e',
              'J', 'Kss', 'Kssvec', 'Kssmat', 'Nss', 'Nssvec', 'Nssmat',
              'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes', 'omega',
-             'seconds', 'eta', 'chi', 'K_agg', 'ltilde', 'ctilde']
+             'seconds', 'eta', 'chi', 'K_agg', 'ltilde', 'ctilde', 'T']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]

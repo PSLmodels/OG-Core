@@ -67,6 +67,7 @@ minutes  = total minutes (minus the total hours) that the steady state
             solver took to run
 seconds  = total seconds (minus the total hours and minutes) that the
             steady state solver took to run
+T        = number of periods until the steady state
 ------------------------------------------------------------------------
 '''
 
@@ -80,7 +81,6 @@ start_time = time.time()  # Start timer
 ------------------------------------------------------------------------
 Set other parameters, objects, and functions
 ------------------------------------------------------------------------
-T               = number of periods until the steady state
 initial_K       = (S-1)xJ array of the initial distribution of capital
                   for TPI
 K0              = initial aggregate capital stock
@@ -235,7 +235,7 @@ def get_N(e, n):
 
     Returns:    Aggregate labor
     '''
-    N_now = np.sum(e * omega * n)
+    N_now = np.sum(e * omega[0, :, :] * n)
     return N_now
 
 
@@ -274,7 +274,7 @@ def get_N_init(e, N_guess, K1_2, K2_2):
         Value of Euler error.
     '''
     N_guess = N_guess.reshape(S, J)
-    K = (omega[1:,:] * K2_2[:-1, :]).sum()
+    K = (omega[0, 1:,:] * K2_2[:-1, :]).sum()
     N = get_N(e, N_guess)
     Y = get_Y(K, N)
     w = get_w(Y, N)
@@ -284,12 +284,11 @@ def get_N_init(e, N_guess, K1_2, K2_2):
     return euler
 
 
-T = 70
 # r = (np.random.rand(S-1,J) + .6) * .2
 # initial_K = r * Kssmat
 # initial_K = np.ones((S-1,J)) * Kss * .01
 initial_K = .9*Kssmat
-K0 = (omega[1:,:] * initial_K).sum()
+K0 = (omega[0, 1:,:] * initial_K).sum()
 
 K1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_K))
 K2_2init = np.array(list(initial_K) + list(np.zeros(J).reshape(1, J)))
@@ -467,8 +466,8 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
 
     K_mat[0, :, :] = initial_K
     N_mat[0, -1, :] = initial_N[-1,:]
-    Knew = (omega[1:,:].reshape(1, S-1, J) * K_mat[:T, :, :]).sum(2).sum(1)
-    Nnew = (omega[:,:].reshape(1, S, J) * e.reshape(1, S, J) * N_mat[:T, :, :]).sum(2).sum(1)
+    Knew = (omega[:, 1:,:] * K_mat[:T, :, :]).sum(2).sum(1)
+    Nnew = (omega[:, :,:] * e.reshape(1, S, J) * N_mat[:T, :, :]).sum(2).sum(1)
     TPIiter += 1
     Kinit = rho*Knew + (1-rho)*Kinit[:T]
     Ninit = rho*Nnew + (1-rho)*Ninit[:T]
