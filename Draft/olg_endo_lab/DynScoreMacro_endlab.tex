@@ -68,7 +68,7 @@
   \and
   Isaac Swift\footnote{Brigham Young University, Department of Economics, 163 FOB, Provo, Utah 84602, \href{mailto:isaacdswift@gmail.com}{isaacdswift@gmail.com}.} \\[-2pt]}
 \date{July 2014 \\
-  \scriptsize{(version 14.07.d)}}
+  \scriptsize{(version 14.07.e)}}
 \maketitle
 \begin{abstract}
 \normalsize{Put abstract here.
@@ -99,14 +99,14 @@
 
   \subsection{Individual problem}\label{SecIndProb}
 
-    A measure $1/S$ of individuals with heterogeneous working ability $e \in\mathcal{E}\subset\mathbb{R}_{++}$ is born in each period $t$ and live for $S\geq 3$ periods. Their working ability evolves over their lifetime according to an age-dependent deterministic process. At birth, a fraction $1/J$ of the $1/S$ measure of new agents are randomly assigned to one of $J$ ability types indexed by $j=1,2,...J$. Once ability type is determined, that measure $1/(SJ)$ of individuals' ability evolves deterministically according to $e_j(s)$. We calibrate the matrix of lifetime ability paths $e_j(s)$ for all types $j$ using CPS hourly wage by age distribution data.\footnote{Appendix \ref{AppAbilCalib} gives a detailed description of the calibration of the deterministic ability process by age $s$ and type $j$, as well as alternative specifications and calibrations.}
+    A measure $\omega_{1,t}$ of individuals with heterogeneous working ability $e \in\mathcal{E}\subset\mathbb{R}_{++}$ is born in each period $t$ and live for $S\geq 3$ periods. The population of age-$s$ individuals in any period $t$ is $\omega_{s,t}$. Their working ability evolves over their lifetime according to an age-dependent deterministic process. At birth, an equal fraction $1/J$ of the $\omega_{s,t}$ measure of new agents are randomly assigned to each of the $J$ ability types indexed by $j=1,2,...J$. Once ability type is determined, that measure $\omega_{s,t}/(J)$ of individuals' ability evolves deterministically according to $e_j(s)$. The process for the evolution of the population weights $\omega_{s,t}$ is an exogenous input to the model. We calibrate the matrix of lifetime ability paths $e_j(s)$ for all types $j$ using CPS hourly wage by age distribution data.\footnote{Appendix \ref{AppAbilCalib} gives a detailed description of the calibration of the deterministic ability process by age $s$ and type $j$, as well as alternative specifications and calibrations.}
 
     Individuals are endowed with a measure of time $\tilde{l}$ in each period $t$, and they choose each period how much of that time to allocate between labor $n_{j,s,t}$ and leisure $l_{j,s,t}$.
     \begin{equation}\label{EqLabConstr}
       n_{j,s,t} + l_{j,s,t} = \tilde{l}
     \end{equation}
 
-    At time $t$, all generation $s$ agents with ability $e_j(s)$ know the real wage rate $w_t$ and know the one-period real net interest rate $r_t$ on bond holdings $b_{j,s,t}$ that mature at the beginning of period $t$. In each period $t$, age-$s$ agents with working ability $e$ choose how much to consume $c_{j,s,t}$, how much to save for the next period by loaning capital to firms in the form of a one-period bond $b_{j,s+1,t+1}$, and how much to work $n_{j,s,t}$ in order to maximize expected lifetime utility of the following form,
+    \noindent At time $t$, all generation $s$ agents with ability $e_j(s)$ know the real wage rate $w_t$ and know the one-period real net interest rate $r_t$ on bond holdings $b_{j,s,t}$ that mature at the beginning of period $t$. In each period $t$, age-$s$ agents with working ability $e$ choose how much to consume $c_{j,s,t}$, how much to save for the next period by loaning capital to firms in the form of a one-period bond $b_{j,s+1,t+1}$, and how much to work $n_{j,s,t}$ in order to maximize expected lifetime utility of the following form,
     \begin{equation}\label{EqUtilMax}
       \begin{split}
         &U_{j,s,t} = \sum_{v=0}^{S-s}\beta^u u\left(c_{j,s+u,t+u},n_{j,s+u,t+u}\right) \\
@@ -188,11 +188,11 @@
 
     Labor market clearing requires that aggregate labor demand $L_t$ measured in efficiency units equal the sum of individual efficiency labor supplied $e_j(s)n_{j,s,t}$. Capital market clearing requires that aggregate capital demand $K_t$ equal the sum of capital investment by households $b_{j,s,t}$. Aggregate consumption $C_t$ is defined as the sum of all individual consumptions, and investment is defined by the standard $Y = C + I$ constraint as shown in \eqref{EqMktClrGoods}.
     \begin{align}
-      L_t &= \frac{1}{SJ}\sum_{s=1}^S\sum_{j=1}^{J} e_j(s)n_{j,s,t} \quad\quad \forall t \label{EqMktClrLab} \\
-      K_t &= \frac{1}{SJ}\sum_{s=1}^{S}\sum_{j=1}^{J}b_{j,s,t} \quad\quad\quad\quad \forall t \label{EqMktClrCap} \\
+      L_t &= \frac{1}{J}\sum_{s=1}^S\sum_{j=1}^{J} \omega_{s,t}e_j(s)n_{j,s,t} \quad\quad \forall t \label{EqMktClrLab} \\
+      K_t &= \frac{1}{J}\sum_{s=1}^{S}\sum_{j=1}^{J}\omega_{s,t}b_{j,s,t} \quad\quad\quad\quad \forall t \label{EqMktClrCap} \\
       \begin{split}
         Y_t &= C_t + K_{t+1} - (1-\delta)K_t \quad\forall t \\
-        &\quad\text{where}\quad C_t \equiv \frac{1}{SJ}\sum_{s=1}^{S}\sum_{j=1}^{J}c_{j,s,t}
+        &\quad\text{where}\quad C_t \equiv \frac{1}{J}\sum_{s=1}^{S}\sum_{j=1}^{J}\omega_{s,t}c_{j,s,t}
       \end{split} \label{EqMktClrGoods}
     \end{align}
     The steady-state equilibrium for this economy is defined as follows.
