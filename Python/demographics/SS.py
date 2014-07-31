@@ -57,7 +57,7 @@ T      = number of periods until the steady state
 '''
 
 # Parameters
-S = 10
+S = 60
 J = 7
 T = 70
 beta = .96 ** (60.0 / S)
