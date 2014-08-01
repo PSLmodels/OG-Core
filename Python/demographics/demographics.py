@@ -77,7 +77,7 @@ def get_fert(S, J):
     fert_rate = fert_rate[ 60%S : : 60/S ]
     fert_rate = np.tile(fert_rate.reshape(S,1), (1,J))
     children = np.zeros((15, J))
-    return fert_rate, children
+    return fert_rate/2.0, children
 
 
 # # x = np.arange(35) + 15
