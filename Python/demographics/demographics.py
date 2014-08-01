@@ -32,43 +32,84 @@ def get_survival(S, J):
     surv_array = np.tile(surv_rate_condensed.reshape(S, 1), (1, J))
     return surv_array
 
-# x = np.arange(35) + 15
-# y = np.array([43.7]*5 + [104.0]*5 + [114.5]*5 + [93.5]*5 + [42.8]*5 + [8.5]*5 + [0.5]*5)
-x = np.array([17.5, 22.5, 27.5, 32.5, 37.5, 42.5, 27.5])
-y = np.array([43.7, 104.0, 114.5, 93.5, 42.8, 8.5, 0.5]) / 2000.0
-b = y.var()/y.mean()
-a = y.mean()/b
-params = [a, b]
-# params = [3.0, 1.0]
+# fert_data = pd.read_table('data\\fertility_data.asc', sep=',')
+# del fert_data['HRHHID'], fert_data['HRHHID2'], fert_data['OCCURNUM'], fert_data['YYYYMM']
+# fert_data = fert_data[(15 <= fert_data.PRTAGE) & (fert_data.PRTAGE <= 44)]
+# group = fert_data.groupby('PRTAGE')
+# a = np.array(group.mean()).flatten()
+# fert_data2 = pd.read_table('data\\fertility_data2.asc', sep=',')
+# del fert_data2['HRHHID'], fert_data2['HRHHID2'], fert_data2['OCCURNUM'], fert_data2['YYYYMM']
+# fert_data2 = fert_data2[(15 <= fert_data2.PRTAGE) & (fert_data.PRTAGE <= 44)]
+# group2 = fert_data2.groupby('PRTAGE')
+# b = np.array(group2.mean()).flatten()
+# c = (a+b)/2
+# print np.diff(c)
+# domain = np.linspace(15, 44, 29)
+# plt.plot(domain, np.diff(c))
+# plt.savefig('plot')
 
-def GB2(x, params):
-    a, b, p, q = params[0], params[1], params[2], params[3]
-    return a*x**(a*p-1) / ( b**(a*p) * bt(p,q) * (1+(x/b)**a)**(p+q) )
 
-def GA(x, params):
-    a, b = params.flatten()
-    part1 = 1.0/((b**a) * gamma(a))
-    part2 = (x**(a-1)) * (np.exp(-x/b))
-    return part1 * part2
 
-def GMM(params, x, y):
-    size = len(y)
-    e = (GA(x, params) - y)/y
-    W = np.identity(size)
-    return np.linalg.norm(e)**2
-    # return (e.reshape(1,size)).dot(W.dot(e.reshape(size,1)))
+# 15-19, ...,45-49
+fert_data = np.array([43.7, 104.0, 114.5, 93.5, 92.8, 8.5, .5]) / 1000
+# 12.5 - 17.5
+ln1 = np.linspace(0, fert_data[0], 11)
+# 17.5 - 22.5
+ln2 = np.linspace(fert_data[0], fert_data[1], 11)
+# 22.5 - 27.5
+ln3 = np.linspace(fert_data[1], fert_data[2], 11)
+# 27.5 - 32.5
+ln4 = np.linspace(fert_data[2], fert_data[3], 11)
+# 32.5 - 37.5
+ln5 = np.linspace(fert_data[3], fert_data[4], 11)
+# 37.5 - 42.5
+ln6 = np.linspace(fert_data[4], fert_data[5], 11)
+# 42.5 - 47.5
+ln7 = np.linspace(fert_data[5], fert_data[6], 11)
+# 47.5 - 52.5
+ln8 = np.linspace(fert_data[6], 0, 11)
+# 12.5-52.5
+everything = np.array(list(ln1) + list(ln2[1:]) + list(ln3[1:]) + list(ln4[1:]) + list(ln5[1:]) + list(ln6[1:]) + list(ln7[1:]) + list(ln8[1:]))
+sixteen_to_52 = everything[7::2]
+fert_rate = np.array(list(sixteen_to_52) + list(np.zeros(23)))
 
-def get_fertility(S, J):
-    ages = np.linspace(16+(S/120.0), 76-(S/120.0), S)
-    answer = opt.minimize(GMM, params, args=(x,y), method='Nelder-Mead', bounds=((0,None),(0,None)))
-    opt_params = answer.x
-    print answer.success
-    print opt_params
-    plt.plot(np.arange(50), GA(np.arange(50), opt_params))
-    plt.plot(x, y)
-    plt.show()
-    fert_array = GA(ages, opt_params)
-    return ages, fert_array
+# # x = np.arange(35) + 15
+# # y = np.array([43.7]*5 + [104.0]*5 + [114.5]*5 + [93.5]*5 + [42.8]*5 + [8.5]*5 + [0.5]*5)
+# x = np.array([17.5, 22.5, 27.5, 32.5, 37.5, 42.5, 27.5])
+# y = np.array([43.7, 104.0, 114.5, 93.5, 42.8, 8.5, 0.5]) / 2000.0
+# b = y.var()/y.mean()
+# a = y.mean()/b
+# params = [a, b]
+# # params = [3.0, 1.0]
+
+# def GB2(x, params):
+#     a, b, p, q = params[0], params[1], params[2], params[3]
+#     return a*x**(a*p-1) / ( b**(a*p) * bt(p,q) * (1+(x/b)**a)**(p+q) )
+
+# def GA(x, params):
+#     a, b = params.flatten()
+#     part1 = 1.0/((b**a) * gamma(a))
+#     part2 = (x**(a-1)) * (np.exp(-x/b))
+#     return part1 * part2
+
+# def GMM(params, x, y):
+#     size = len(y)
+#     e = (GA(x, params) - y)/y
+#     W = np.identity(size)
+#     return np.linalg.norm(e)**2
+#     # return (e.reshape(1,size)).dot(W.dot(e.reshape(size,1)))
+
+# def get_fertility(S, J):
+#     ages = np.linspace(16+(S/120.0), 76-(S/120.0), S)
+#     answer = opt.minimize(GMM, params, args=(x,y), method='Nelder-Mead', bounds=((0,None),(0,None)))
+#     opt_params = answer.x
+#     print answer.success
+#     print opt_params
+#     plt.plot(np.arange(50), GA(np.arange(50), opt_params))
+#     plt.plot(x, y)
+#     plt.show()
+#     fert_array = GA(ages, opt_params)
+#     return ages, fert_array
 
 # get_fertility(60,7)
 

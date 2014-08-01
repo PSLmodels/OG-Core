@@ -1,0 +1,42 @@
+DataFerrett Codebook - Created 
+
+
+Dataset: CPS//Fertility/Jun 2012
+Topic: Demographic Variables
+PRTAGE
+Demographics - age topcoded at 85, 90 or 80 (see full description)
+
+With the following Ranges:
+0:90  Range
+
+
+
+Topic: Fertility Supplement Variables
+PESF1
+Live births, ever
+
+With the following Ranges:
+-1  Not in Universe
+0  None
+1  One birth
+2  Two births
+3  Three births
+4  Four births
+5  Five births
+6  Six births
+7  Seven births
+8  Eight births
+9  Nine births
+10  Ten births
+11  Eleven births
+12  Twelve births
+13  Thirteen births
+14  Fourteen births
+15  Fifteen births
+16  Sixteen births
+17  Seventeen births
+18  Eighteen births
+19  Nineteen births
+20  Twenty births
+
+
