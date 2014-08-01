@@ -20,6 +20,7 @@ mort_data = pd.read_table('data\mortality_rates.csv', sep=',')
 mort_data['mort_rate'] = (mort_data.prob_live_next_male + mort_data.prob_live_next_female) / 2
 del mort_data['prob_live_next_female'], mort_data['prob_live_next_male']
 mort_data['surv_rate'] = 1 - mort_data.mort_rate
+children_rate = np.array(mort_data[(mort_data.age < 15)].surv_rate)
 mort_data = mort_data[(mort_data.age < 76) & (mort_data.age >= 15)]
 
 
@@ -68,10 +69,16 @@ ln6 = np.linspace(fert_data[4], fert_data[5], 11)
 ln7 = np.linspace(fert_data[5], fert_data[6], 11)
 # 47.5 - 52.5
 ln8 = np.linspace(fert_data[6], 0, 11)
-# 12.5-52.5
-everything = np.array(list(ln1) + list(ln2[1:]) + list(ln3[1:]) + list(ln4[1:]) + list(ln5[1:]) + list(ln6[1:]) + list(ln7[1:]) + list(ln8[1:]))
-sixteen_to_52 = everything[7::2]
-fert_rate = np.array(list(sixteen_to_52) + list(np.zeros(23)))
+
+def get_fert(S, J):
+    everything = np.array(list(ln1) + list(ln2[1:]) + list(ln3[1:]) + list(ln4[1:]) + list(ln5[1:]) + list(ln6[1:]) + list(ln7[1:]) + list(ln8[1:]))
+    sixteen_to_52 = everything[7::2]
+    fert_rate = np.array(list(sixteen_to_52) + list(np.zeros(23)))
+    fert_rate = fert_rate[ 60%S : : 60/S ]
+    fert_rate = np.tile(fert_rate.reshape(S,1), (1,J))
+    children = np.zeros((15, J))
+    return fert_rate, children
+
 
 # # x = np.arange(35) + 15
 # # y = np.array([43.7]*5 + [104.0]*5 + [114.5]*5 + [93.5]*5 + [42.8]*5 + [8.5]*5 + [0.5]*5)
@@ -128,8 +135,22 @@ def get_omega(S, J, T):
     new_omega /= J
     surv_array = get_survival(S, J)
     omega_big = np.tile(new_omega.reshape(1, S, J), (T, 1, 1))
+    fert_rate, children = get_fert(S, J)
+    for ind in xrange(15):
+        children[ind, :] = (omega_big[0,:,:] * fert_rate).sum(0) * np.prod(children_rate[:ind])
     for t in xrange(1, T):
+        # omega_big[t,0,:] = children[-1,:] * children_rate[-1]
         omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * surv_array[:-1].reshape(1, S-1, J)
+        children[1:,:] = children[:-1,:] * children_rate[:-1].reshape(14,1)
+        children[0,:] = (omega_big[t,:,:] * fert_rate).sum(0)
     return omega_big
+
+
+x = get_omega(60,7,70).sum(1).sum(1)
+# print np.diff(x)/x[:-1]
+plt.axhline(y=x[-1], color='r', linewidth=2)
+plt.plot(np.arange(70), x, 'b', linewidth=2)
+plt.title('Population Size (as a percent of the 2010 population)')
+plt.savefig('OUTPUT\Population')
 
 
