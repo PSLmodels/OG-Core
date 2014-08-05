@@ -476,6 +476,19 @@ plt.savefig('OUTPUT/ability_3D')
 
 '''
 ------------------------------------------------------------------------
+Graph of Population
+------------------------------------------------------------------------
+'''
+
+x = omega.sum(1).sum(1)
+plt.figure(8)
+plt.axhline(y=x[-1], color='r', linewidth=2)
+plt.plot(np.arange(70), x, 'b', linewidth=2)
+plt.title('Population Size (as a percent of the 2010 population)')
+plt.savefig('OUTPUT\Population')
+
+'''
+------------------------------------------------------------------------
 Check Euler Equations
 ------------------------------------------------------------------------
 k1          = (S-1)xJ array of Kssmat in period t-1
@@ -498,7 +511,7 @@ euler1 = Euler1(wss, rss, e, Nssmat, k1, k2, k3)
 euler2 = Euler2(wss, rss, e, Nssmat, k1_2, k2_2)
 
 # 2D Graph
-plt.figure(8)
+plt.figure(9)
 plt.plot(domain[1:], np.abs(euler1).max(1), label='Euler1')
 plt.plot(domain, np.abs(euler2).max(1), label='Euler2')
 plt.legend(loc=0)
@@ -508,7 +521,7 @@ plt.savefig('OUTPUT/euler_errors_SS_2D')
 # 3D Graph
 X2, Y2 = np.meshgrid(Sgrid[1:], Jgrid)
 
-fig9 = plt.figure(9)
+fig9 = plt.figure(10)
 ax9 = fig9.gca(projection='3d')
 ax9.plot_surface(X2, Y2, euler1.T, rstride=1, cstride=2, cmap=cmap2)
 ax9.set_xlabel(r'Age Cohorts $S$')
@@ -517,13 +530,13 @@ ax9.set_zlabel('Error Level')
 ax9.set_title('Euler Errors')
 plt.savefig('OUTPUT/euler_errors_euler1_SS_3D')
 
-fig10 = plt.figure(10)
-ax10 = fig10.gca(projection='3d')
-ax10.plot_surface(X, Y, euler2.T, rstride=1, cstride=2, cmap=cmap2)
-ax10.set_xlabel(r'Age Cohorts $S$')
-ax10.set_ylabel(r'Ability Types $J$')
-ax10.set_zlabel('Error Level')
-ax10.set_title('Euler Errors')
+fig11 = plt.figure(11)
+ax11 = fig11.gca(projection='3d')
+ax11.plot_surface(X, Y, euler2.T, rstride=1, cstride=2, cmap=cmap2)
+ax11.set_xlabel(r'Age Cohorts $S$')
+ax11.set_ylabel(r'Ability Types $J$')
+ax11.set_zlabel('Error Level')
+ax11.set_title('Euler Errors')
 plt.savefig('OUTPUT/euler_errors_euler2_SS_3D')
 
 print '\tFinished.'
