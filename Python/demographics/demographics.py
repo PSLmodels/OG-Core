@@ -246,3 +246,7 @@ def get_omega(S, J, T):
         children[1:, :] = children[:-1, :] * children_rate[:-1].reshape(14, 1)
         children[0, :] = (omega_big[t, :, :] * fert_rate).sum(0)
     return omega_big
+
+# print 'surv\n', get_survival(60, 1)
+# print 'im\n', get_immigration(60, 1)
+# print 'fert\n', get_fert(60, 1)[0]
