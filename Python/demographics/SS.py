@@ -39,6 +39,7 @@ Setting up the Model
 ------------------------------------------------------------------------
 S      = number of periods an individual lives
 J      = number of different ability groups
+T      = number of time periods until steady state is reached
 beta   = discount factor
 sigma  = coefficient of relative risk aversion
 alpha  = capital share of income
@@ -53,6 +54,7 @@ chi    = discount factor
 eta    = Frisch elasticity of labor supply
 e      = S x J matrix of age dependent possible working abilities e_s
 T      = number of periods until the steady state
+omega  = T x S x J array of demographics
 ------------------------------------------------------------------------
 '''
 
