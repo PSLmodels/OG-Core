@@ -71,7 +71,7 @@ delta = 1 - (0.95 ** (60.0 / S))
 ctilde = .01
 ltilde = 1.0
 chi = 1.0
-eta = 2.5
+eta = 3.0
 e = income.get_e(S, J)
 omega = demographics.get_omega(S, J, T)
 
