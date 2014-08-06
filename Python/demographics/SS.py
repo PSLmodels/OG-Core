@@ -6,6 +6,7 @@ Calculates steady state of OLG model with S age cohorts
 
 This py-file calls the following other file(s):
             income.py
+            demographics.py
 
 This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
