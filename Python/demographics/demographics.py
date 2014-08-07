@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 8/5/2014
+Last updated 8/7/2014
 
 Functions for generating omega, the T x S x J array which describes the
 demographics of the population
@@ -103,6 +103,9 @@ def get_survival(S, J):
     poly_surv = poly.polyfit(mort_data.age, mort_data.surv_rate, deg=10)
     # Evaluate the polynomial every year for individuals 15 to 75
     survival_rate = poly.polyval(np.linspace(15, 75, 60), poly_surv)
+    for i in xrange(survival_rate.shape[0]):
+        if survival_rate[i] > 1.0:
+            survival_rate[i] = 1.0
     surv_rate_condensed = np.zeros(S)
     # If S < 60, then group years together
     for s in xrange(S):
@@ -134,25 +137,28 @@ def get_immigration(S, J):
         data_raw['2011'], dtype='f')
     # Get survival rates for the S age groups
     surv_array = get_survival(S, J)[:, 0]
+    surv_array = np.array(list(children_rate) + list(surv_array))
     # Only keep track of individuals in 2010 that don't die
-    pop_2010 = pop_2010[16:76] * surv_array
+    pop_2010 = pop_2010[1:76] * surv_array
     # In 2011, individuals will have aged one year
-    pop_2011 = pop_2011[17:77]
+    pop_2011 = pop_2011[2:77]
     # The immigration rate will be 1 plus the percent change in
     # population (since death has already been accounted for)
     perc_change = ((pop_2011 - pop_2010) / pop_2010) + 1.0
     # Remove the last entry, since individuals in the last period will die
     perc_change = perc_change[:-1]
     # Fit a polynomial to the immigration rates
-    poly_imm = poly.polyfit(np.linspace(15, 75, 59), perc_change, deg=10)
-    im_array = poly.polyval(np.linspace(15, 75, 59), poly_imm)
+    poly_imm = poly.polyfit(np.linspace(1, 75, 74), perc_change, deg=10)
+    im_array = poly.polyval(np.linspace(1, 75, 74), poly_imm)
+    im_array2 = im_array[15:76]
     imm_rate_condensed = np.zeros(S-1)
     # If S < 60, then group years together
     for s in xrange(S-1):
         imm_rate_condensed[s] = np.product(
-            im_array[s*(60/S):(s+1)*(60/S)])
-    im_array = np.tile(imm_rate_condensed.reshape(S-1, 1), (1, J))
-    return im_array
+            im_array2[s*(60/S):(s+1)*(60/S)])
+    im_array2 = np.tile(imm_rate_condensed.reshape(S-1, 1), (1, J))
+    children_im = im_array[0:14]
+    return im_array2, children_im
 
 '''
 ------------------------------------------------------------------------
@@ -229,7 +235,7 @@ def get_omega(S, J, T):
     # Each ability group contains 1/J fraction of age group
     new_omega /= J
     surv_array = get_survival(S, J)
-    imm_array = get_immigration(S, J)
+    imm_array, children_im = get_immigration(S, J)
     omega_big = np.tile(new_omega.reshape(1, S, J), (T, 1, 1))
     fert_rate, children = get_fert(S, J)
     # Keep track of how many individuals have been born and their survival
@@ -237,16 +243,15 @@ def get_omega(S, J, T):
     for ind in xrange(15):
         children[ind, :] = (
             omega_big[0, :, :] * fert_rate).sum(0) * np.prod(
-            children_rate[:ind])
+            children_rate[:ind]) * np.prod(children_im[:ind])
     # Generate the time path for each age/abilty group
     for t in xrange(1, T):
-        omega_big[t, 0, :] = children[-1, :] * children_rate[-1]
+        # omega_big[t, 0, :] = children[-1, :] * children_rate[-1]
         omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * surv_array[
             :-1].reshape(1, S-1, J) * imm_array.reshape(1, S-1, J)
         children[1:, :] = children[:-1, :] * children_rate[:-1].reshape(14, 1)
         children[0, :] = (omega_big[t, :, :] * fert_rate).sum(0)
     return omega_big
 
-# print 'surv\n', get_survival(60, 1)
-# print 'im\n', get_immigration(60, 1)
-# print 'fert\n', get_fert(60, 1)[0]
+# Known problems
+# Fitted polynomial on survival rates creates some entries that are greater than 1

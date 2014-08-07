@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated: 7/29/2014
+Last updated: 8/6/2014
 
 Calculates steady state of OLG model with S age cohorts
 
@@ -62,7 +62,7 @@ omega  = T x S x J array of demographics
 # Parameters
 S = 60
 J = 7
-T = 70
+T = 100
 beta = .96 ** (60.0 / S)
 sigma = 3.0
 alpha = .35
@@ -486,7 +486,7 @@ Graph of Population
 x = omega.sum(1).sum(1)
 plt.figure(8)
 plt.axhline(y=x[-1], color='r', linewidth=2)
-plt.plot(np.arange(70), x, 'b', linewidth=2)
+plt.plot(np.arange(T), x, 'b', linewidth=2)
 plt.title('Population Size (as a percent of the 2010 population)')
 plt.savefig('OUTPUT\Population')
 
