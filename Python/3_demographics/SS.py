@@ -62,7 +62,7 @@ omega  = T x S x J array of demographics
 # Parameters
 S = 60
 J = 7
-T = 100
+T = 70
 beta = .96 ** (60.0 / S)
 sigma = 3.0
 alpha = .35
@@ -72,7 +72,7 @@ delta = 1 - (0.95 ** (60.0 / S))
 ctilde = .01
 ltilde = 1.0
 chi = 1.0
-eta = 3.0
+eta = 2.5
 e = income.get_e(S, J)
 omega = demographics.get_omega(S, J, T)
 
