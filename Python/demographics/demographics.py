@@ -60,7 +60,7 @@ for index, value in enumerate(data['2012']):
     data['2012'][index] = int(value.replace(',', ''))
 for index, value in enumerate(data['2013']):
     data['2013'][index] = int(value.replace(',', ''))
-data_raw = data
+data_raw = data.copy(deep=True)
 data = data[16:76]
 
 # Mortality rates data
@@ -136,7 +136,7 @@ def get_immigration(S, J):
     pop_2010, pop_2011 = np.array(data_raw['2010'], dtype='f'), np.array(
         data_raw['2011'], dtype='f')
     # Get survival rates for the S age groups
-    surv_array = get_survival(60, 1)[:, 0]
+    surv_array = get_survival(60, 1)
     surv_array = np.array(list(children_rate) + list(surv_array))
     # Only keep track of individuals in 2010 that don't die
     pop_2010 = pop_2010[1:76] * surv_array
@@ -159,6 +159,7 @@ def get_immigration(S, J):
     im_array2 = np.tile(imm_rate_condensed.reshape(S-1, 1), (1, J))
     children_im = im_array[0:14]
     return im_array2, children_im
+
 
 '''
 ------------------------------------------------------------------------
@@ -246,10 +247,11 @@ def get_omega(S, J, T):
             children_rate[:ind]) * np.prod(children_im[:ind])
     # Generate the time path for each age/abilty group
     for t in xrange(1, T):
-        # omega_big[t, 0, :] = children[-1, :] * children_rate[-1]
+        omega_big[t, 0, :] = children[-1, :] * children_rate[-1] * imm_array[0]
         omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * surv_array[
             :-1].reshape(1, S-1, J) * imm_array.reshape(1, S-1, J)
-        children[1:, :] = children[:-1, :] * children_rate[:-1].reshape(14, 1)
+        children[1:, :] = children[:-1, :] * children_rate[:-1].reshape(
+            14, 1) * children_im.reshape(14, 1)
         children[0, :] = (omega_big[t, :, :] * fert_rate).sum(0)
     return omega_big
 
