@@ -136,7 +136,7 @@ def get_immigration(S, J):
     pop_2010, pop_2011 = np.array(data_raw['2010'], dtype='f'), np.array(
         data_raw['2011'], dtype='f')
     # Get survival rates for the S age groups
-    surv_array = get_survival(S, J)[:, 0]
+    surv_array = get_survival(60, 1)[:, 0]
     surv_array = np.array(list(children_rate) + list(surv_array))
     # Only keep track of individuals in 2010 that don't die
     pop_2010 = pop_2010[1:76] * surv_array
@@ -182,8 +182,8 @@ def get_fert(S, J):
     fert_rate = poly.polyval(np.linspace(15, 75, 60), poly_fert)
     # Do not allow negative fertility rates, or nonzero rates outside of
     # a certain age range
-    for i in xrange(S):
-        if np.linspace(15, 75, S)[i] > 50 or np.linspace(15, 75, S)[i] < 10:
+    for i in xrange(60):
+        if np.linspace(15, 75, 60)[i] > 50 or np.linspace(15, 75, 60)[i] < 10:
             fert_rate[i] = 0
         if fert_rate[i] < 0:
             fert_rate[i] = 0
@@ -192,7 +192,7 @@ def get_fert(S, J):
     for s in xrange(S):
         fert_rate_condensed[s] = np.mean(
             fert_rate[s*(60/S):(s+1)*(60/S)])
-    fert_rate = np.tile(fert_rate.reshape(S, 1), (1, J))
+    fert_rate = np.tile(fert_rate_condensed.reshape(S, 1), (1, J))
     # Divide the fertility rate by 2, since it will be used for men and women
     fert_rate /= 2.0
     children = np.zeros((15, J))
