@@ -82,8 +82,8 @@ def get_e_indiv(S, J, data):
     '''
     age_groups = np.linspace(16, 76, S+1)
     e = np.zeros((S, J))
+    data = data[(15 < data.age) & (data.age < 77)]
     for i in xrange(S):
-        data = data[(15 < data.age) & (data.age < 77)]
         incomes = data[(age_groups[i] <= data.age) & (
             data.age < age_groups[i+1])]
         incomes = incomes.sort(['wage'])
