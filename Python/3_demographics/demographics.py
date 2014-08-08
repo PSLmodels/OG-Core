@@ -49,7 +49,7 @@ Fertility rates data:
 '''
 
 # Population data
-data = pd.read_table('data\demographic\demographic_data.csv', sep=',')
+data = pd.read_table('data/demographic/demographic_data.csv', sep=',')
 data = data.set_index('Age')
 # Remove commas in the data
 for index, value in enumerate(data['2010']):
@@ -64,7 +64,7 @@ data_raw = data.copy(deep=True)
 data = data[16:76]
 
 # Mortality rates data
-mort_data = pd.read_table('data\demographic\mortality_rates.csv', sep=',')
+mort_data = pd.read_table('data/demographic/mortality_rates.csv', sep=',')
 # Average male and female death rates
 mort_data['mort_rate'] = (
     mort_data.prob_live_next_male + mort_data.prob_live_next_female) / 2
