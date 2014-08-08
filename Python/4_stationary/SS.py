@@ -488,7 +488,7 @@ plt.figure(8)
 plt.axhline(y=x[-1], color='r', linewidth=2)
 plt.plot(np.arange(T), x, 'b', linewidth=2)
 plt.title('Population Size (as a percent of the 2010 population)')
-plt.savefig('OUTPUT\Population')
+plt.savefig('OUTPUT/Population')
 
 '''
 ------------------------------------------------------------------------
