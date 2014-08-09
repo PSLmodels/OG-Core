@@ -38,31 +38,35 @@ import demographics
 ------------------------------------------------------------------------
 Setting up the Model
 ------------------------------------------------------------------------
-S      = number of periods an individual lives
-J      = number of different ability groups
-T      = number of time periods until steady state is reached
-beta   = discount factor
-sigma  = coefficient of relative risk aversion
-alpha  = capital share of income
-rho    = contraction parameter in steady state iteration process
-         representing the weight on the new distribution gamma_new
-A      = total factor productivity parameter in firms' production
-         function
-delta  = depreciation rate of capital
-ctilde = minimum value amount of consumption
-ltilde = measure of time each individual is endowed with each period
-chi    = discount factor
-eta    = Frisch elasticity of labor supply
-e      = S x J matrix of age dependent possible working abilities e_s
-T      = number of periods until the steady state
-omega  = T x S x J array of demographics
+S            = number of periods an individual lives
+J            = number of different ability groups
+T            = number of time periods until steady state is reached
+starting_age = age of first members of cohort
+beta         = discount factor
+sigma        = coefficient of relative risk aversion
+alpha        = capital share of income
+rho          = contraction parameter in steady state iteration process
+               representing the weight on the new distribution gamma_new
+A            = total factor productivity parameter in firms' production
+               function
+delta        = depreciation rate of capital
+ctilde       = minimum value amount of consumption
+ltilde       = measure of time each individual is endowed with each
+               period
+chi          = discount factor
+eta          = Frisch elasticity of labor supply
+e            = S x J matrix of age dependent possible working abilities
+               e_s
+T            = number of periods until the steady state
+omega        = T x S x J array of demographics
 ------------------------------------------------------------------------
 '''
 
 # Parameters
 S = 60
 J = 7
-T = 70
+T = 200
+starting_age = 20
 beta = .96 ** (60.0 / S)
 sigma = 3.0
 alpha = .35
@@ -73,22 +77,23 @@ ctilde = .01
 ltilde = 1.0
 chi = 1.0
 eta = 2.5
-e = income.get_e(S, J)
-omega = demographics.get_omega(S, J, T)
+e = income.get_e(S, J, starting_age)
+omega = demographics.get_omega(S, J, T, starting_age)
 
 print 'The following are the parameter values of the simulation:'
-print '\tS:\t\t\t', S
-print '\tJ:\t\t\t', J
-print '\tT:\t\t\t', T
-print '\tBeta:\t\t', beta
-print '\tSigma:\t\t', sigma
-print '\tAlpha:\t\t', alpha
-print '\tRho:\t\t', rho
-print '\tA:\t\t\t', A
-print '\tDelta:\t\t', delta
-print '\tl-tilde:\t', ltilde
-print '\tChi:\t\t', chi
-print '\tEta:\t\t', eta
+print '\tS:\t\t\t\t', S
+print '\tJ:\t\t\t\t', J
+print '\tT:\t\t\t\t', T
+print '\tStarting Age:\t', starting_age
+print '\tBeta:\t\t\t', beta
+print '\tSigma:\t\t\t', sigma
+print '\tAlpha:\t\t\t', alpha
+print '\tRho:\t\t\t', rho
+print '\tA:\t\t\t\t', A
+print '\tDelta:\t\t\t', delta
+print '\tl-tilde:\t\t', ltilde
+print '\tChi:\t\t\t', chi
+print '\tEta:\t\t\t', eta
 
 '''
 ------------------------------------------------------------------------

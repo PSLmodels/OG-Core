@@ -71,7 +71,7 @@ del may_dat['HRHHID'], may_dat['OCCURNUM'], may_dat['YYYYMM'], may_dat[
     'HRHHID2'], may_dat['PRTAGE'], may_dat['PTERNHLY'], may_dat['PWCMPWGT']
 
 
-def get_e_indiv(S, J, data):
+def get_e_indiv(S, J, data, starting_age):
     '''
     Parameters: S - Number of age cohorts
                 J - Number of ability levels by age
@@ -80,9 +80,10 @@ def get_e_indiv(S, J, data):
                     age cohort measured by hourly wage, normalized so
                     the mean is one
     '''
-    age_groups = np.linspace(16, 76, S+1)
+    ending_age = starting_age + S
+    age_groups = np.linspace(starting_age, ending_age, S+1)
     e = np.zeros((S, J))
-    data = data[(15 < data.age) & (data.age < 77)]
+    data = data[(starting_age <= data.age) & (data.age <= ending_age)]
     for i in xrange(S):
         incomes = data[(age_groups[i] <= data.age) & (
             data.age < age_groups[i+1])]
@@ -105,13 +106,13 @@ def get_e_indiv(S, J, data):
     return e
 
 
-def get_e(S, J):
+def get_e(S, J, starting_age):
     e = np.zeros((S, J))
-    e += get_e_indiv(S, J, jan_dat)
-    e += get_e_indiv(S, J, feb_dat)
-    e += get_e_indiv(S, J, mar_dat)
-    e += get_e_indiv(S, J, apr_dat)
-    e += get_e_indiv(S, J, may_dat)
+    e += get_e_indiv(S, J, jan_dat, starting_age)
+    e += get_e_indiv(S, J, feb_dat, starting_age)
+    e += get_e_indiv(S, J, mar_dat, starting_age)
+    e += get_e_indiv(S, J, apr_dat, starting_age)
+    e += get_e_indiv(S, J, may_dat, starting_age)
     e /= 5
     return e
 
