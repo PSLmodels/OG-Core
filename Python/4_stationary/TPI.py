@@ -52,10 +52,10 @@ Kssvec   = ((S-1) x 1) vector of the steady state level of capital
            (averaged across ability types)
 Kssmat   = ((S-1) x J) array of the steady state distribution of
            capital
-Nss      = steady state aggregate labor: scalar
-Nssvec   = (S x 1) vector of the steady state level of labor
+Lss      = steady state aggregate labor: scalar
+Lssvec   = (S x 1) vector of the steady state level of labor
            (averaged across ability types)
-Nssmat   = (S x J) array of the steady state distribution of labor
+Lssmat   = (S x J) array of the steady state distribution of labor
 Yss      = steady state aggregate output: scalar
 wss      = steady state real wage: scalar
 rss      = steady state real rental rate: scalar
@@ -88,9 +88,9 @@ K1_2init        = (S-1)xJ array of the initial distribution of capital
                   for TPI (period t+1)
 K2_2init        = (S-1)xJ array of the initial distribution of capital
                   for TPI (period t+2)
-initial_N_guess = initial guess for SxJ distribution of labor supply
-initial_N       = SxJ arry of the initial distribution of labor for TPI
-N0              = initial aggregate labor supply (scalar)
+initial_L_guess = initial guess for SxJ distribution of labor supply
+initial_L       = SxJ arry of the initial distribution of labor for TPI
+L0              = initial aggregate labor supply (scalar)
 Y0              = initial aggregate output (scalar)
 w0              = initial wage (scalar)
 r0              = intitial rental rate (scalar)
@@ -99,11 +99,11 @@ c0              = SxJ arry of the initial distribution of consumption
 '''
 
 
-def constraint_checker1(k_dist, n_dist, w, r, e, c_dist):
+def constraint_checker1(k_dist, l_dist, w, r, e, c_dist):
     '''
     Parameters:
         k_dist = distribution of capital ((S-1)xJ array)
-        n_dist = distribution of labor (SxJ array)
+        l_dist = distribution of labor (SxJ array)
         w      = wage rate (scalar)
         r      = rental rate (scalar)
         e      = distribution of abilities (SxJ array)
@@ -124,16 +124,16 @@ def constraint_checker1(k_dist, n_dist, w, r, e, c_dist):
     if k_dist.sum() <= 0:
         print '\tWARNING: Aggregate capital is less than or equal to zero.'
         flag1 = True
-    if borrowing_constraints(k_dist, w, r, e, n_dist) is True:
+    if borrowing_constraints(k_dist, w, r, e, l_dist) is True:
         print '\tWARNING: Borrowing constraints have been violated.'
         flag1 = True
     if flag1 is False:
         print '\tThere were no violations of the borrowing constraints.'
     flag2 = False
-    if (n_dist < 0).any():
+    if (l_dist < 0).any():
         print '\tWARNING: Labor supply violates nonnegativity constraints.'
         flag2 = True
-    if (n_dist > ltilde).any():
+    if (l_dist > ltilde).any():
         print '\tWARNING: Labor suppy violates the ltilde constraint.'
     if flag2 is False:
         print '\tThere were no violations of the constraints on labor supply.'
@@ -143,11 +143,11 @@ def constraint_checker1(k_dist, n_dist, w, r, e, c_dist):
         print '\tThere were no violations of the constraints on consumption.'
 
 
-def constraint_checker2(k_dist, n_dist, w, r, e, c_dist, t):
+def constraint_checker2(k_dist, l_dist, w, r, e, c_dist, t):
     '''
     Parameters:
         k_dist = distribution of capital ((S-1)xJ array)
-        n_dist = distribution of labor (SxJ array)
+        l_dist = distribution of labor (SxJ array)
         w      = wage rate (scalar)
         r      = rental rate (scalar)
         e      = distribution of abilities (SxJ array)
@@ -160,13 +160,13 @@ def constraint_checker2(k_dist, n_dist, w, r, e, c_dist, t):
     if k_dist.sum() <= 0:
         print '\tWARNING: Aggregate capital is less than or equal to ' \
             'zero in period %.f.' % t
-    if borrowing_constraints(k_dist, w, r, e, n_dist) is True:
+    if borrowing_constraints(k_dist, w, r, e, l_dist) is True:
         print '\tWARNING: Borrowing constraints have been violated in ' \
             'period %.f.' % t
-    if (n_dist < 0).any():
+    if (l_dist < 0).any():
         print '\tWARNING: Labor supply violates nonnegativity constraints ' \
             'in period %.f.' % t
-    if (n_dist > ltilde).any():
+    if (l_dist > ltilde).any():
         print '\tWARNING: Labor suppy violates the ltilde constraint in '\
             'period %.f.' % t
     if (c_dist < 0).any():
@@ -174,24 +174,24 @@ def constraint_checker2(k_dist, n_dist, w, r, e, c_dist, t):
             'period %.f.' % t
 
 
-def borrowing_constraints(K_dist, w, r, e, n):
+def borrowing_constraints(K_dist, w, r, e, l):
     '''
     Parameters:
         K_dist = Distribution of capital ((S-1)xJ array)
         w      = wage rate (scalar)
         r      = rental rate (scalar)
         e      = distribution of abilities (SxJ array)
-        n      = distribution of labor (SxJ array)
+        l      = distribution of labor (SxJ array)
 
     Returns:
         False value if all the borrowing constraints are met, True
             if there are violations.
     '''
     b_min = np.zeros((S-1, J))
-    b_min[-1, :] = (ctilde - w * e[S-1, :] * n[S-1, :]) / (1 + r)
+    b_min[-1, :] = (ctilde - w * e[S-1, :] * l[S-1, :]) / (1 + r)
     for i in xrange(S-2):
         b_min[-(i+2), :] = (ctilde + b_min[-(i+1), :] - w * e[
-            -(i+2), :] * n[-(i+2), :]) / (1 + r)
+            -(i+2), :] * l[-(i+2), :]) / (1 + r)
     difference = K_dist - b_min
     if (difference < 0).any():
         return True
@@ -199,23 +199,23 @@ def borrowing_constraints(K_dist, w, r, e, n):
         return False
 
 
-def get_Y(K_now, N_now):
+def get_Y(K_now, L_now):
     '''
     Parameters: Aggregate capital, Aggregate labor
 
     Returns:    Aggregate output
     '''
-    Y_now = A * (K_now ** alpha) * (N_now ** (1 - alpha))
+    Y_now = A * (K_now ** alpha) * (np.exp(g_y_SS) * L_now ** (1 - alpha))
     return Y_now
 
 
-def get_w(Y_now, N_now):
+def get_w(Y_now, L_now):
     '''
     Parameters: Aggregate output, Aggregate labor
 
     Returns:    Returns to labor
     '''
-    w_now = (1 - alpha) * Y_now / N_now
+    w_now = (1 - alpha) * Y_now / L_now
     return w_now
 
 
@@ -229,57 +229,56 @@ def get_r(Y_now, K_now):
     return r_now
 
 
-def get_N(e, n):
+def get_L(e, l):
     '''
-    Parameters: e, n
+    Parameters: e, l
 
     Returns:    Aggregate labor
     '''
-    N_now = np.sum(e * omega[0, :, :] * n)
-    return N_now
+    L_now = np.sum(e * omega[0, :, :] * l)
+    return L_now
 
 
 def MUc(c):
-
-    """
+    '''
     Parameters: Consumption
 
     Returns:    Marginal Utility of Consumption
-    """
+    '''
 
     return c**(-sigma)
 
 
-def MUn(n):
+def MUl(l, g_n):
     '''
     Parameters: Labor
 
     Returns:    Marginal Utility of Labor
     '''
-    output = - chi * ((ltilde-n) ** (-eta))
+    output = - chi * np.exp(g_n * (1-sigma)) * ((ltilde-l) ** (-eta))
     return output
 
 
-def get_N_init(e, N_guess, K1_2, K2_2):
+def get_L_init(e, L_guess, K1_2, K2_2):
     '''
     Parameters:
         w        = wage rate (scalar)
         r        = rental rate (scalar)
         e        = distribution of abilities (SxJ array)
-        N_guess  = distribution of labor (SxJ array)
+        L_guess  = distribution of labor (SxJ array)
         K1_2     = distribution of capital in period t (S x J array)
         K2_2     = distribution of capital in period t+1 (S x J array)
 
     Returns:
         Value of Euler error.
     '''
-    N_guess = N_guess.reshape(S, J)
+    L_guess = L_guess.reshape(S, J)
     K = (omega[0, 1:,:] * K2_2[:-1, :]).sum()
-    N = get_N(e, N_guess)
-    Y = get_Y(K, N)
-    w = get_w(Y, N)
+    L = get_L(e, L_guess)
+    Y = get_Y(K, L)
+    w = get_w(Y, L)
     r = get_r(Y, K)
-    euler = MUc((1 + r)*K1_2 + w * e * N_guess - K2_2) * w * e + MUn(N_guess)
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess - K2_2) * w * e + MUl(L_guess, g_n_SS)
     euler = euler.flatten()
     return euler
 
@@ -292,15 +291,15 @@ K0 = (omega[0, 1:,:] * initial_K).sum()
 
 K1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_K))
 K2_2init = np.array(list(initial_K) + list(np.zeros(J).reshape(1, J)))
-initial_N_guess = .9*Nssmat.flatten()
-get_N_init_zero = lambda x: get_N_init(e, x, K1_2init, K2_2init)
-initial_N = opt.fsolve(get_N_init_zero, initial_N_guess).reshape(S, J)
-N0 = get_N(e, initial_N)
-Y0 = get_Y(K0, N0)
-w0 = get_w(Y0, N0)
+initial_L_guess = .9*Lssmat.flatten()
+get_L_init_zero = lambda x: get_L_init(e, x, K1_2init, K2_2init)
+initial_L = opt.fsolve(get_L_init_zero, initial_L_guess).reshape(S, J)
+L0 = get_L(e, initial_L)
+Y0 = get_Y(K0, L0)
+w0 = get_w(Y0, L0)
 r0 = get_r(Y0, K0)
-c0 = (1 + r0) * K1_2init + w0 * e * initial_N - K2_2init
-constraint_checker1(initial_K, initial_N, w0, r0, e, c0)
+c0 = (1 + r0) * K1_2init + w0 * e * initial_L - K2_2init
+constraint_checker1(initial_K, initial_L, w0, r0, e, c0)
 
 '''
 ------------------------------------------------------------------------
@@ -308,8 +307,8 @@ Solve for equilibrium transition path by TPI
 ------------------------------------------------------------------------
 Kinit        = 1 x T vector, initial time path of aggregate capital
                stock
-Ninit        = 1 x T vector, initial time path of aggregate labor
-               demand. This is just equal to a 1 x T vector of Nss
+Linit        = 1 x T vector, initial time path of aggregate labor
+               demand. This is just equal to a 1 x T vector of Lss
                because labor is supplied inelastically
 Yinit        = 1 x T vector, initial time path of aggregate output
 winit        = 1 x T vector, initial time path of real wage
@@ -321,11 +320,11 @@ TPImindist   = Cut-off distance between iterations for TPI
 K_mat        = (T+S)x(S-1)xJ array of distribution of capital across
                time, age, and ability
 Knew         = 1 x T vector, new time path of aggregate capital stock
-N_mat        = (T+S)xSxJ array of distribution of labor across
+L_mat        = (T+S)xSxJ array of distribution of labor across
                time, age, and ability
-Nnew         = 1 x T vector, new time path of aggregate labor supply
+Lnew         = 1 x T vector, new time path of aggregate labor supply
 Kpath_TPI    = 1 x T vector, final time path of aggregate capital stock
-Npath_TPI    = 1 x T vector, final time path of aggregate labor supply
+Lpath_TPI    = 1 x T vector, final time path of aggregate labor supply
 elapsed_time = elapsed time of TPI
 hours        = Hours needed to find the steady state
 minutes      = Minutes needed to find the steady state, less the number
@@ -336,13 +335,13 @@ seconds      = Seconds needed to find the steady state, less the number
 '''
 
 
-def Euler1(w1, r1, w2, r2, e, n, K1, K2, K3):
+def Euler1(w1, r1, w2, r2, e, l, K1, K2, K3):
     '''
     Parameters:
         w  = wage rate (scalar)
         r  = rental rate (scalar)
         e  = distribution of abilities (SxJ array)
-        n  = distribution of labor (Sx1 vector)
+        l  = distribution of labor (Sx1 vector)
         K1 = distribution of capital in period t ((S-1) x J array)
         K2 = distribution of capital in period t+1 ((S-1) x J array)
         K3 = distribution of capital in period t+2 ((S-1) x J array)
@@ -351,25 +350,25 @@ def Euler1(w1, r1, w2, r2, e, n, K1, K2, K3):
         Value of Euler error.
     '''
     euler = MUc(
-        (1 + r1)*K1 + w1 * e[:-1, :] * n[:-1, :] - K2) - beta * (1 + r2)*MUc(
-        (1 + r2)*K2 + w2 * e[1:, :] * n[1:, :] - K3)
+        (1 + r1)*K1 + w1 * e[:-1, :] * l[:-1, :] - K2) - beta * (1 + r2)*MUc(
+        (1 + r2)*K2 + w2 * e[1:, :] * l[1:, :] - K3)
     return euler
 
 
-def Euler2(w, r, e, N_guess, K1_2, K2_2):
+def Euler2(w, r, e, L_guess, K1_2, K2_2):
     '''
     Parameters:
         w        = wage rate (scalar)
         r        = rental rate (scalar)
         e        = distribution of abilities (SxJ array)
-        N_guess  = distribution of labor (SxJ array)
+        L_guess  = distribution of labor (SxJ array)
         K1_2     = distribution of capital in period t (S x J array)
         K2_2     = distribution of capital in period t+1 (S x J array)
 
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1_2 + w * e * N_guess - K2_2) * w * e + MUn(N_guess)
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess - K2_2) * w * e + MUl(L_guess, g_n_SS)
     return euler
 
 
@@ -387,7 +386,7 @@ def Euler_Error(guesses, winit, rinit, t):
     '''
     length = len(guesses)/2
     K_guess = guesses[:length]
-    N_guess = guesses[length:]
+    L_guess = guesses[length:]
 
     if length == S-1:
         K1 = np.array([0] + list(K_guess[:-1]))
@@ -399,12 +398,12 @@ def Euler_Error(guesses, winit, rinit, t):
     w2 = winit[t+1:t+1+length]
     r1 = rinit[t:t+length]
     r2 = rinit[t+1:t+1+length]
-    n1 = N_guess[:-1]
-    n2 = N_guess[1:]
+    l1 = L_guess[:-1]
+    l2 = L_guess[1:]
     e1 = e[-(length+1):-1, j]
     e2 = e[-length:, j]
-    error1 = MUc((1 + r1)*K1 + w1 * e1 * n1 - K2) \
-        - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*n2 - K3)
+    error1 = MUc((1 + r1)*K1 + w1 * e1 * l1 - K2) \
+        - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*l2 - K3)
 
     if length == S-1:
         K1_2 = np.array([0] + list(K_guess))
@@ -415,24 +414,24 @@ def Euler_Error(guesses, winit, rinit, t):
     w = winit[t:t+length+1]
     r = rinit[t:t+length+1]
     error2 = MUc((1 + r)*K1_2 + w * e[
-        -(length+1):, j] * N_guess - K2_2) * w * e[
-        -(length+1):, j] + MUn(N_guess)
+        -(length+1):, j] * L_guess - K2_2) * w * e[
+        -(length+1):, j] + MUl(L_guess, g_n_SS)
     # Check and punish constraing violations
-    mask1 = N_guess < 0
+    mask1 = L_guess < 0
     error2[mask1] += 1e9
-    mask2 = N_guess > ltilde
+    mask2 = L_guess > ltilde
     error2[mask2] += 1e9
     if K_guess.sum() <= 0:
         error1 += 1e9
-    cons = (1 + r) * K1_2 + w * e[-(length+1):, j] * N_guess - K2_2
+    cons = (1 + r) * K1_2 + w * e[-(length+1):, j] * L_guess - K2_2
     mask3 = cons < 0
     error2[mask3] += 1e9
     return list(error1.flatten()) + list(error2.flatten())
 
 Kinit = np.array(list(np.linspace(K0, Kss, T)) + list(np.ones(S)*Kss))
-Ninit = np.array(list(np.linspace(N0, Nss, T)) + list(np.ones(S)*Nss))
-Yinit = A*(Kinit**alpha) * (Ninit**(1-alpha))
-winit = (1-alpha) * Yinit / Ninit
+Linit = np.array(list(np.linspace(L0, Lss, T)) + list(np.ones(S)*Lss))
+Yinit = A*(Kinit**alpha) * (Linit**(1-alpha))
+winit = (1-alpha) * Yinit / Linit
 rinit = (alpha * Yinit / Kinit) - delta
 
 
@@ -444,46 +443,46 @@ print 'Starting time path iteration.'
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat = np.zeros((T+S, S-1, J))
-    N_mat = np.zeros((T+S, S, J))
+    L_mat = np.zeros((T+S, S, J))
     for j in xrange(J):
         for s in xrange(S-2):  # Upper triangle
             solutions = opt.fsolve(Euler_Error, list(
-                initial_K[-(s+1):, j]) + list(initial_N[-(s+2):, j]), args=(
+                initial_K[-(s+1):, j]) + list(initial_L[-(s+2):, j]), args=(
                 winit, rinit, 0))
             K_vec = solutions[:len(solutions)/2]
             K_mat[1:S, :, j] += np.diag(K_vec, S-(s+2))
-            N_vec = solutions[len(solutions)/2:]
-            N_mat[:S, :, j] += np.diag(N_vec, S-(s+2))
+            L_vec = solutions[len(solutions)/2:]
+            L_mat[:S, :, j] += np.diag(L_vec, S-(s+2))
 
         for t in xrange(0, T):
             solutions = opt.fsolve(Euler_Error, list(
-                initial_K[:, j]) + list(initial_N[:, j]), args=(
+                initial_K[:, j]) + list(initial_L[:, j]), args=(
                 winit, rinit, t))
             K_vec = solutions[:S-1]
             K_mat[t+1:t+S, :, j] += np.diag(K_vec)
-            N_vec = solutions[S-1:]
-            N_mat[t:t+S, :, j] += np.diag(N_vec)
+            L_vec = solutions[S-1:]
+            L_mat[t:t+S, :, j] += np.diag(L_vec)
 
     K_mat[0, :, :] = initial_K
-    N_mat[0, -1, :] = initial_N[-1,:]
+    L_mat[0, -1, :] = initial_L[-1,:]
     Knew = (omega[:, 1:,:] * K_mat[:T, :, :]).sum(2).sum(1)
-    Nnew = (omega[:, :,:] * e.reshape(1, S, J) * N_mat[:T, :, :]).sum(2).sum(1)
+    Lnew = (omega[:, :,:] * e.reshape(1, S, J) * L_mat[:T, :, :]).sum(2).sum(1)
     TPIiter += 1
     Kinit = rho*Knew + (1-rho)*Kinit[:T]
-    Ninit = rho*Nnew + (1-rho)*Ninit[:T]
-    TPIdist = (np.abs(Knew - Kinit)).max() + (np.abs(Nnew - Ninit)).max()
+    Linit = rho*Lnew + (1-rho)*Linit[:T]
+    TPIdist = (np.abs(Knew - Kinit)).max() + (np.abs(Lnew - Linit)).max()
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-        Yinit = A*(Kinit**alpha) * (Ninit**(1-alpha))
+        Yinit = A*(Kinit**alpha) * (Linit**(1-alpha))
         winit = np.array(
-            list((1-alpha) * Yinit / Ninit) + list(np.ones(S)*wss))
+            list((1-alpha) * Yinit / Linit) + list(np.ones(S)*wss))
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
             np.ones(S)*rss))
 
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
-Npath_TPI = list(Ninit) + list(np.ones(10)*Nss)
+Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
 
 print 'TPI is finished.'
 
@@ -492,10 +491,10 @@ K1[:, 1:, :] = K_mat[:T, :, :]
 K3 = np.zeros((T, S, J))
 K3[:, :-1, :] = K_mat[:T, :, :]
 cinit = (1 + rinit[:T].reshape(T, 1, 1)) * K1 + winit[:T].reshape(
-    T, 1, 1) * e.reshape(1, S, J) * N_mat[:T] - K3
+    T, 1, 1) * e.reshape(1, S, J) * L_mat[:T] - K3
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
-    constraint_checker2(K_mat[t], N_mat[t], winit[t], rinit[t], e, cinit[t], t)
+    constraint_checker2(K_mat[t], L_mat[t], winit[t], rinit[t], e, cinit[t], t)
 print '\tFinished.'
 
 elapsed_time = time.time() - start_time
@@ -526,14 +525,14 @@ plt.savefig("OUTPUT/TPI_K")
 
 plt.figure(15)
 plt.axhline(
-    y=Nss, color='black', linewidth=2, label="Steady State N", ls='--')
+    y=Lss, color='black', linewidth=2, label="Steady State L", ls='--')
 plt.plot(np.arange(
-    T+10), Npath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path N$_t$")
+    T+10), Lpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path L$_t$")
 plt.xlabel("Time t")
-plt.ylabel("Aggregate Labor N")
-plt.title(r"Time Path of Labor Supply N$_t$")
+plt.ylabel("Aggregate Labor L")
+plt.title(r"Time Path of Labor Supply L$_t$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI_N")
+plt.savefig("OUTPUT/TPI_L")
 
 
 '''
@@ -566,9 +565,9 @@ euler_mat2 = np.zeros((T, S, J))
 
 for t in xrange(T):
     euler_mat1[t, :, :] = Euler1(
-        winit[t], rinit[t], winit[t+1], rinit[t+1], e, N_mat[t], k1[t], k2[
+        winit[t], rinit[t], winit[t+1], rinit[t+1], e, L_mat[t], k1[t], k2[
             t], k3[t])
-    euler_mat2[t] = Euler2(winit[t], rinit[t], e, N_mat[t], k1_2[t], k2_2[t])
+    euler_mat2[t] = Euler2(winit[t], rinit[t], e, L_mat[t], k1_2[t], k2_2[t])
 
 domain = np.linspace(1, T, T)
 plt.figure(16)

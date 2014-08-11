@@ -271,7 +271,7 @@ def get_omega(S, J, T, starting_age):
         # Children are born and then have to wait 20 years to enter the model
         # omega_big[t, 0, :] = children[-1, :] * (children_rate[-1] + imm_array[0])
         # Children are born immediately:
-        omega_big[t, 0, :] = (omega_big[t-1, :, :] * fert_rate).sum(0) * (children_rate[-1] + imm_array[0])
+        omega_big[t, 0, :] = (omega_big[t-1, :, :] * fert_rate).sum(0) # * (children_rate[-1] + imm_array[0])
         omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * (surv_array[
             :-1].reshape(1, S-1, J) + imm_array.reshape(1, S-1, J))
         children[1:, :] = children[:-1, :] * (children_rate[1:-1].reshape(
@@ -281,9 +281,12 @@ def get_omega(S, J, T, starting_age):
     OMEGA[0, :] = fert_rate[:, 0]
     OMEGA += np.diag(surv_array[:-1][:, 0] + imm_array[:, 0], -1)
     eigvalues = np.linalg.eig(OMEGA)[0]
-    return omega_big, eigvalues
-
-print get_omega(60, 1, 150, 20)[1]
+    mask = eigvalues.real != 0
+    eigvalues = eigvalues[mask]
+    mask2 = eigvalues.imag == 0
+    eigvalues = eigvalues[mask2].real
+    g_n_SS = eigvalues - 1
+    return omega_big, g_n_SS
 
 # Known problems:
 # Fitted polynomial on survival rates creates some entries that are greater than 1
