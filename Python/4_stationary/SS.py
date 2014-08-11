@@ -155,7 +155,7 @@ def get_Y(K_now, L_now):
     Returns:    Aggregate output
     '''
     Y_now = A * (K_now ** alpha) * (np.exp(g_y_SS) * L_now ** (1 - alpha))
-    Y_now /= (N * np.exp(g_y_SS))
+    Y_now /= (np.exp(g_y_SS) ** (1-alpha))
     return Y_now
 
 
@@ -187,7 +187,7 @@ def get_L(e, n):
     Returns:    Aggregate labor
     '''
     L_now = np.sum(e * omega_hat * n)
-    L_now /= N
+    # L_now /= N
     return L_now
 
 
@@ -207,7 +207,7 @@ def MUl(n):
 
     Returns:    Marginal Utility of Labor
     '''
-    output = - chi * np.exp(g_y_SS * (1-sigma)) * ((ltilde-n) ** (-eta))
+    output = - chi * ((ltilde-n) ** (-eta))
     return output
 
 
@@ -226,7 +226,7 @@ def Euler1(w, r, e, L_guess, K1, K2, K3):
         Value of Euler error.
     '''
     euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] - K2 * np.exp(g_y_SS)) - beta * (
-        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] - K3 * np.exp(g_y_SS))
+        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] - K3 * np.exp(g_y_SS)) * np.exp(-sigma * g_y_SS)
     return euler
 
 
@@ -255,7 +255,7 @@ def Steady_State(guesses):
     Returns:    Array of S-1 Euler equation errors
     '''
     K_guess = guesses[0: (S-1) * J].reshape((S-1, J)) / np.exp(g_y_SS)
-    K = (omega_hat[1:, :] * K_guess).sum() / N
+    K = (omega_hat[1:, :] * K_guess).sum() #/ N
     L_guess = guesses[(S-1) * J:].reshape((S, J))
     L = get_L(e, L_guess)
     Y = get_Y(K, L)
@@ -273,7 +273,7 @@ def Steady_State(guesses):
     error2[mask1] += 1e9
     mask2 = L_guess > ltilde
     error2[mask2] += 1e9
-    if K_guess.sum()/N <= 0:
+    if K_guess.sum() <= 0:
         error1 += 1e9
     cons = (1 + r) * K1_2 + w * e * L_guess - K2_2
     mask3 = cons < 0
@@ -327,7 +327,7 @@ def constraint_checker(Kssmat, Lssmat, wss, rss, e, cssmat):
     '''
     print 'Checking constraints on capital, labor, and consumption.'
     flag1 = False
-    if Kssmat.sum()/N <= 0:
+    if Kssmat.sum() <= 0:
         print '\tWARNING: Aggregate capital is less than or equal to zero.'
         flag1 = True
     if borrowing_constraints(Kssmat, wss, rss, e, Lssmat) is True:
@@ -370,7 +370,7 @@ Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
 Kssmat3 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)))
 
 Kssvec = Kssmat.sum(1)
-Kss = (omega_hat[1:, :] * Kssmat).sum() / N
+Kss = (omega_hat[1:, :] * Kssmat).sum()# / N
 Kssavg = Kssvec.mean()
 Kssvec = np.array([0]+list(Kssvec))
 Lssmat = solutions[(S-1) * J:].reshape(S, J)
