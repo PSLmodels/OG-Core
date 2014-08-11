@@ -20,6 +20,7 @@ This py-file calls the following other file(s):
 import numpy as np
 import pandas as pd
 import numpy.polynomial.polynomial as poly
+import matplotlib.pyplot as plt
 
 '''
 ------------------------------------------------------------------------
@@ -99,9 +100,10 @@ def get_survival(S, J, starting_age):
     ending_age = starting_age + S
     # Fit a polynomial to the data of survival rates (so that we are not
     # bound to groups that span at least a year
-    poly_surv = poly.polyfit(mort_data.age, mort_data.surv_rate, deg=10)
+    # poly_surv = poly.polyfit(mort_data.age, mort_data.surv_rate, deg=10)
     # Evaluate the polynomial every year for individuals 15 to 75
-    survival_rate = poly.polyval(np.linspace(starting_age, ending_age-1, 60), poly_surv)
+    # survival_rate = poly.polyval(np.linspace(starting_age, ending_age-1, 60), poly_surv)
+    survival_rate = np.array(mort_data.surv_rate)[starting_age: ending_age]
     for i in xrange(survival_rate.shape[0]):
         if survival_rate[i] > 1.0:
             survival_rate[i] = 1.0
@@ -149,8 +151,9 @@ def get_immigration(S, J, starting_age):
     # Remove the last entry, since individuals in the last period will die
     perc_change = perc_change[:-1]
     # Fit a polynomial to the immigration rates
-    poly_imm = poly.polyfit(np.linspace(0, ending_age-1, ending_age-1), perc_change, deg=10)
-    im_array = poly.polyval(np.linspace(0, ending_age-1, ending_age-1), poly_imm)
+    # poly_imm = poly.polyfit(np.linspace(0, ending_age-1, ending_age-1), perc_change, deg=10)
+    # im_array = poly.polyval(np.linspace(0, ending_age-1, ending_age-1), poly_imm)
+    im_array = perc_change
     im_array2 = im_array[starting_age:ending_age-1]
     imm_rate_condensed = np.zeros(S-1)
     # If S < 60, then group years together
@@ -185,8 +188,10 @@ def get_fert(S, J, starting_age):
     fert_rate = poly.polyval(np.linspace(starting_age, ending_age-1, 60), poly_fert)
     # Do not allow negative fertility rates, or nonzero rates outside of
     # a certain age range
+    new_end = np.linspace(fert_rate[42-starting_age], fert_data[-1], 8)
+    fert_rate[42-starting_age:50-starting_age] = new_end
     for i in xrange(60):
-        if np.linspace(starting_age, ending_age-1, 60)[i] > 50 or np.linspace(starting_age, ending_age-1, 60)[i] < 10:
+        if np.linspace(starting_age, ending_age-1, 60)[i] >= 51 or np.linspace(starting_age, ending_age-1, 60)[i] < 10:
             fert_rate[i] = 0
         if fert_rate[i] < 0:
             fert_rate[i] = 0
@@ -195,11 +200,20 @@ def get_fert(S, J, starting_age):
     for s in xrange(S):
         fert_rate_condensed[s] = np.mean(
             fert_rate[s*(60/S):(s+1)*(60/S)])
+    # plt.scatter(age_midpoint, fert_data)
+    # plt.axhline(y=0, color='red')
+    # plt.plot(np.linspace(starting_age, ending_age-1, 60), fert_rate)
+    # plt.savefig('OUTPUT/fert_dist')
     fert_rate = np.tile(fert_rate_condensed.reshape(S, 1), (1, J))
     # Divide the fertility rate by 2, since it will be used for men and women
     fert_rate /= 2.0
-    children = np.zeros((starting_age, J))
-    return fert_rate, children
+    children_fertrate = poly.polyval(np.linspace(0, starting_age-1, starting_age), poly_fert)
+    for i in xrange(starting_age):
+        if np.linspace(0, starting_age-1, starting_age)[i] <= 10:
+            children_fertrate[i] = 0
+        if children_fertrate[i] < 0:
+            children_fertrate[i] = 0
+    return fert_rate, children_fertrate
 
 '''
 ------------------------------------------------------------------------
@@ -243,28 +257,28 @@ def get_omega(S, J, T, starting_age):
     surv_array, children_rate = get_survival(S, J, starting_age)
     imm_array, children_im = get_immigration(S, J, starting_age)
     omega_big = np.tile(new_omega.reshape(1, S, J), (T, 1, 1))
-    fert_rate, children = get_fert(S, J, starting_age)
+    fert_rate, children_fertrate = get_fert(S, J, starting_age)
+    children = np.zeros((starting_age, J))
     # Keep track of how many individuals have been born and their survival
     # until they enter the working population
     children_rate = np.array([1] + list(children_rate))
     for ind in xrange(starting_age):
         children[ind, :] = (
             omega_big[0, :, :] * fert_rate).sum(0) * np.prod(
-            children_rate[:ind]) * np.prod(children_im[:ind])
+            children_rate[:ind] + children_im[:ind])
     # Generate the time path for each age/abilty group
     for t in xrange(1, T):
         # Children are born and then have to wait 20 years to enter the model
-        # omega_big[t, 0, :] = children[-1, :] * children_rate[-1] * imm_array[0]
+        omega_big[t, 0, :] = children[-1, :] * (children_rate[-1] + imm_array[0])
         # Children are born immediately:
-        omega_big[t, 0, :] = (omega_big[t, :, :] * fert_rate).sum(0) * (children_rate[-1] + imm_array[0])
+        # omega_big[t, 0, :] = (omega_big[t-1, :, :] * fert_rate).sum(0) * (children_rate[-1] + imm_array[0])
         omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * (surv_array[
             :-1].reshape(1, S-1, J) + imm_array.reshape(1, S-1, J))
-        children[1:, :] = children[:-1, :] * children_rate[1:-1].reshape(
-            starting_age-1, 1) * children_im[1:].reshape(starting_age-1, 1)
-        children[0, :] = (omega_big[t, :, :] * fert_rate).sum(0) * children_im[0]
+        children[1:, :] = children[:-1, :] * (children_rate[1:-1].reshape(
+            starting_age-1, 1) + children_im[1:].reshape(starting_age-1, 1))
+        children[0, :] = ((omega_big[t, :, :] * fert_rate).sum(0) + (children * children_fertrate.reshape(starting_age, 1)).sum(0))* (1 + children_im[0])
     return omega_big
 
 # Known problems
 # Fitted polynomial on survival rates creates some entries that are greater than 1
-
-print (get_fert(60, 1, 16)[0] - get_fert(60, 1, 20)[0]).sum()
+# If children are not born immediately, and S < 60, then they must age 60/S years...

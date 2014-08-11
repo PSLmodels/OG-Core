@@ -513,7 +513,7 @@ Plot Timepath for K and N
 
 print 'Generating TPI graphs.'
 
-plt.figure(13)
+plt.figure(14)
 plt.axhline(
     y=Kss, color='black', linewidth=2, label="Steady State K", ls='--')
 plt.plot(np.arange(
@@ -524,7 +524,7 @@ plt.title(r"Time Path of Capital Stock K$_t$")
 plt.legend(loc=0)
 plt.savefig("OUTPUT/TPI_K")
 
-plt.figure(14)
+plt.figure(15)
 plt.axhline(
     y=Nss, color='black', linewidth=2, label="Steady State N", ls='--')
 plt.plot(np.arange(
@@ -571,7 +571,7 @@ for t in xrange(T):
     euler_mat2[t] = Euler2(winit[t], rinit[t], e, N_mat[t], k1_2[t], k2_2[t])
 
 domain = np.linspace(1, T, T)
-plt.figure(15)
+plt.figure(16)
 plt.plot(domain, np.abs(euler_mat1).max(1).max(1), label='Euler1')
 plt.plot(domain, np.abs(euler_mat2).max(1).max(1), label='Euler2')
 plt.ylabel('Error Value')
