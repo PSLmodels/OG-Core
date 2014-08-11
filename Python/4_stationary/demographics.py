@@ -145,7 +145,7 @@ def get_immigration(S, J, starting_age):
     pop_2011 = pop_2011[1:ending_age+1]
     # The immigration rate will be 1 plus the percent change in
     # population (since death has already been accounted for)
-    perc_change = ((pop_2011 - pop_2010) / pop_2010) + 1.0
+    perc_change = ((pop_2011 - pop_2010) / pop_2010)
     # Remove the last entry, since individuals in the last period will die
     perc_change = perc_change[:-1]
     # Fit a polynomial to the immigration rates
@@ -182,7 +182,7 @@ def get_fert(S, J, starting_age):
     ending_age = starting_age + S
     # Fit a polynomial to the fertility rates
     poly_fert = poly.polyfit(age_midpoint, fert_data, deg=4)
-    fert_rate = poly.polyval(np.linspace(starting_age, ending_age, 60), poly_fert)
+    fert_rate = poly.polyval(np.linspace(starting_age, ending_age-1, 60), poly_fert)
     # Do not allow negative fertility rates, or nonzero rates outside of
     # a certain age range
     for i in xrange(60):
@@ -253,10 +253,12 @@ def get_omega(S, J, T, starting_age):
             children_rate[:ind]) * np.prod(children_im[:ind])
     # Generate the time path for each age/abilty group
     for t in xrange(1, T):
+        # Children are born and then have to wait 20 years to enter the model
         # omega_big[t, 0, :] = children[-1, :] * children_rate[-1] * imm_array[0]
-        print children[-1]
-        omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * surv_array[
-            :-1].reshape(1, S-1, J) * imm_array.reshape(1, S-1, J)
+        # Children are born immediately:
+        omega_big[t, 0, :] = (omega_big[t, :, :] * fert_rate).sum(0) * (children_rate[-1] + imm_array[0])
+        omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * (surv_array[
+            :-1].reshape(1, S-1, J) + imm_array.reshape(1, S-1, J))
         children[1:, :] = children[:-1, :] * children_rate[1:-1].reshape(
             starting_age-1, 1) * children_im[1:].reshape(starting_age-1, 1)
         children[0, :] = (omega_big[t, :, :] * fert_rate).sum(0) * children_im[0]
@@ -264,3 +266,5 @@ def get_omega(S, J, T, starting_age):
 
 # Known problems
 # Fitted polynomial on survival rates creates some entries that are greater than 1
+
+print (get_fert(60, 1, 16)[0] - get_fert(60, 1, 20)[0]).sum()
