@@ -174,24 +174,24 @@ def constraint_checker2(k_dist, l_dist, w, r, e, c_dist, t):
             'period %.f.' % t
 
 
-def borrowing_constraints(K_dist, w, r, e, l):
+def borrowing_constraints(K_dist, w, r, e, n):
     '''
     Parameters:
         K_dist = Distribution of capital ((S-1)xJ array)
         w      = wage rate (scalar)
         r      = rental rate (scalar)
         e      = distribution of abilities (SxJ array)
-        l      = distribution of labor (SxJ array)
+        n      = distribution of labor (SxJ array)
 
     Returns:
         False value if all the borrowing constraints are met, True
             if there are violations.
     '''
     b_min = np.zeros((S-1, J))
-    b_min[-1, :] = (ctilde - w * e[S-1, :] * l[S-1, :]) / (1 + r)
+    b_min[-1, :] = (ctilde - w * e[S-1, :] * n[S-1, :]) / (1 + r)
     for i in xrange(S-2):
         b_min[-(i+2), :] = (ctilde + b_min[-(i+1), :] - w * e[
-            -(i+2), :] * l[-(i+2), :]) / (1 + r)
+            -(i+2), :] * n[-(i+2), :]) / (1 + r)
     difference = K_dist - b_min
     if (difference < 0).any():
         return True
@@ -229,13 +229,13 @@ def get_r(Y_now, K_now):
     return r_now
 
 
-def get_L(e, l):
+def get_L(e, n):
     '''
-    Parameters: e, l
+    Parameters: e, n
 
     Returns:    Aggregate labor
     '''
-    L_now = np.sum(e * omega[0, :, :] * l)
+    L_now = np.sum(e * omega[0, :, :] * n)
     return L_now
 
 
@@ -249,13 +249,13 @@ def MUc(c):
     return c**(-sigma)
 
 
-def MUl(l, g_n):
+def MUl(n, g_y):
     '''
     Parameters: Labor
 
     Returns:    Marginal Utility of Labor
     '''
-    output = - chi * np.exp(g_n * (1-sigma)) * ((ltilde-l) ** (-eta))
+    output = - chi * np.exp(g_y * (1-sigma)) * ((ltilde-n) ** (-eta))
     return output
 
 
@@ -278,7 +278,7 @@ def get_L_init(e, L_guess, K1_2, K2_2):
     Y = get_Y(K, L)
     w = get_w(Y, L)
     r = get_r(Y, K)
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess - K2_2) * w * e + MUl(L_guess, g_n_SS)
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess - K2_2) * w * e + MUl(L_guess, g_y_SS)
     euler = euler.flatten()
     return euler
 
@@ -335,13 +335,13 @@ seconds      = Seconds needed to find the steady state, less the number
 '''
 
 
-def Euler1(w1, r1, w2, r2, e, l, K1, K2, K3):
+def Euler1(w1, r1, w2, r2, e, n, K1, K2, K3):
     '''
     Parameters:
         w  = wage rate (scalar)
         r  = rental rate (scalar)
         e  = distribution of abilities (SxJ array)
-        l  = distribution of labor (Sx1 vector)
+        n  = distribution of labor (Sx1 vector)
         K1 = distribution of capital in period t ((S-1) x J array)
         K2 = distribution of capital in period t+1 ((S-1) x J array)
         K3 = distribution of capital in period t+2 ((S-1) x J array)
@@ -350,8 +350,8 @@ def Euler1(w1, r1, w2, r2, e, l, K1, K2, K3):
         Value of Euler error.
     '''
     euler = MUc(
-        (1 + r1)*K1 + w1 * e[:-1, :] * l[:-1, :] - K2) - beta * (1 + r2)*MUc(
-        (1 + r2)*K2 + w2 * e[1:, :] * l[1:, :] - K3)
+        (1 + r1)*K1 + w1 * e[:-1, :] * n[:-1, :] - K2) - beta * (1 + r2)*MUc(
+        (1 + r2)*K2 + w2 * e[1:, :] * n[1:, :] - K3)
     return euler
 
 
@@ -368,7 +368,7 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess - K2_2) * w * e + MUl(L_guess, g_n_SS)
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess - K2_2) * w * e + MUl(L_guess, g_y_SS)
     return euler
 
 
@@ -415,7 +415,7 @@ def Euler_Error(guesses, winit, rinit, t):
     r = rinit[t:t+length+1]
     error2 = MUc((1 + r)*K1_2 + w * e[
         -(length+1):, j] * L_guess - K2_2) * w * e[
-        -(length+1):, j] + MUl(L_guess, g_n_SS)
+        -(length+1):, j] + MUl(L_guess, g_y_SS)
     # Check and punish constraing violations
     mask1 = L_guess < 0
     error2[mask1] += 1e9
