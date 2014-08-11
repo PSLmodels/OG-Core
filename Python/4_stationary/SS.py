@@ -66,7 +66,7 @@ omega        = T x S x J array of demographics
 S = 60
 J = 7
 T = 200
-starting_age = 16
+starting_age = 20
 beta = .96 ** (60.0 / S)
 sigma = 3.0
 alpha = .35
@@ -78,7 +78,7 @@ ltilde = 1.0
 chi = 1.0
 eta = 2.5
 e = income.get_e(S, J, starting_age)
-omega = demographics.get_omega(S, J, T, starting_age)
+omega = demographics.get_omega(S, J, T, starting_age)[0]
 
 print 'The following are the parameter values of the simulation:'
 print '\tS:\t\t\t\t', S

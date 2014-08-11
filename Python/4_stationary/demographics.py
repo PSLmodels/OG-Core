@@ -269,16 +269,22 @@ def get_omega(S, J, T, starting_age):
     # Generate the time path for each age/abilty group
     for t in xrange(1, T):
         # Children are born and then have to wait 20 years to enter the model
-        omega_big[t, 0, :] = children[-1, :] * (children_rate[-1] + imm_array[0])
+        # omega_big[t, 0, :] = children[-1, :] * (children_rate[-1] + imm_array[0])
         # Children are born immediately:
-        # omega_big[t, 0, :] = (omega_big[t-1, :, :] * fert_rate).sum(0) * (children_rate[-1] + imm_array[0])
+        omega_big[t, 0, :] = (omega_big[t-1, :, :] * fert_rate).sum(0) * (children_rate[-1] + imm_array[0])
         omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * (surv_array[
             :-1].reshape(1, S-1, J) + imm_array.reshape(1, S-1, J))
         children[1:, :] = children[:-1, :] * (children_rate[1:-1].reshape(
             starting_age-1, 1) + children_im[1:].reshape(starting_age-1, 1))
         children[0, :] = ((omega_big[t, :, :] * fert_rate).sum(0) + (children * children_fertrate.reshape(starting_age, 1)).sum(0))* (1 + children_im[0])
-    return omega_big
+    OMEGA = np.zeros((S, S))
+    OMEGA[0, :] = fert_rate[:, 0]
+    OMEGA += np.diag(surv_array[:-1][:, 0] + imm_array[:, 0], -1)
+    eigvalues = np.linalg.eig(OMEGA)[0]
+    return omega_big, eigvalues
 
-# Known problems
+print get_omega(60, 1, 150, 20)[1]
+
+# Known problems:
 # Fitted polynomial on survival rates creates some entries that are greater than 1
 # If children are not born immediately, and S < 60, then they must age 60/S years...
