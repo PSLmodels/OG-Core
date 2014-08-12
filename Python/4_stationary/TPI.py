@@ -88,7 +88,6 @@ K1_2init        = (S-1)xJ array of the initial distribution of capital
                   for TPI (period t+1)
 K2_2init        = (S-1)xJ array of the initial distribution of capital
                   for TPI (period t+2)
-initial_L_guess = initial guess for SxJ distribution of labor supply
 initial_L       = SxJ arry of the initial distribution of labor for TPI
 L0              = initial aggregate labor supply (scalar)
 Y0              = initial aggregate output (scalar)
@@ -259,41 +258,19 @@ def MUl(n):
     return output
 
 
-def get_L_init(e, L_guess, K1_2, K2_2):
-    '''
-    Parameters:
-        w        = wage rate (scalar)
-        r        = rental rate (scalar)
-        e        = distribution of abilities (SxJ array)
-        L_guess  = distribution of labor (SxJ array)
-        K1_2     = distribution of capital in period t (S x J array)
-        K2_2     = distribution of capital in period t+1 (S x J array)
+def get_N(omega):
+    N = omega.sum(1).sum(1)
+    return N
 
-    Returns:
-        Value of Euler error.
-    '''
-    L_guess = L_guess.reshape(S, J)
-    K = (omega[0, 1:,:] * K2_2[:-1, :]).sum()
-    L = get_L(e, L_guess)
-    Y = get_Y(K, L)
-    w = get_w(Y, L)
-    r = get_r(Y, K)
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess - K2_2) * w * e + MUl(L_guess)
-    euler = euler.flatten()
-    return euler
+N = get_N(omega)
+omega_stationary = omega / N
 
-
-# r = (np.random.rand(S-1,J) + .6) * .2
-# initial_K = r * Kssmat
-# initial_K = np.ones((S-1,J)) * Kss * .01
 initial_K = .9*Kssmat
-K0 = (omega[0, 1:,:] * initial_K).sum()
+K0 = (omega_stationary[0, 1:, :] * initial_K).sum()
 
 K1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_K))
 K2_2init = np.array(list(initial_K) + list(np.zeros(J).reshape(1, J)))
-initial_L_guess = .9*Lssmat.flatten()
-get_L_init_zero = lambda x: get_L_init(e, x, K1_2init, K2_2init)
-initial_L = opt.fsolve(get_L_init_zero, initial_L_guess).reshape(S, J)
+initial_L = Lssmat / N[0]
 L0 = get_L(e, initial_L)
 Y0 = get_Y(K0, L0)
 w0 = get_w(Y0, L0)
