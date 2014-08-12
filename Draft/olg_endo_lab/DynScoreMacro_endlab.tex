@@ -373,28 +373,28 @@
 
 
 \newpage
-\section{Constraints on individual borrowing}\label{AppBorConstr}
+\section{Stationary constraints on individual borrowing}\label{AppBorConstr}
 
   \setcounter{equation}{0}
 
-  As described in Section \ref{SecIndProb}, individuals are allowed to borrow $b_{j,s,t}$ for some $j$ and $s$ in period $t$. However, two constraints must hold. First, the individual must be able to pay back the balance with interest $r_{t+1}$ in the next period without driving consumption in the next period $c_{j,s+1,t+1}$ to be nonpositive. Let $\tilde{b}_{j,s,t}$ be the minimum value of savings in a period.
+  As described in Section \ref{SecIndProb}, individuals are allowed to borrow $b_{j,s,t}$ for some $j$ and $s$ in period $t$. However, two constraints must hold. First, the individual must be able to pay back the balance with interest $r_{t+1}$ in the next period without driving consumption in the next period $c_{j,s+1,t+1}$ to be nonpositive. Let $\tilde{b}_{j,s,t}$ be the minimum stationary value of savings in a period.
   \begin{equation}\label{EqSavMin}
-    b_{j,s,t}\geq\tilde{b}_{j,s,t} \quad\forall j,s,t
+    \hat{b}_{j,s,t}\geq\tilde{b}_{j,s,t} \quad\forall j,s,t
   \end{equation}
-  Rearranging the bugdet constraints in \eqref{EqBC1}, \eqref{EqBC2}, and \eqref{EqBC3} and using backward induction gives the following expressions for $\bar{b}_{j,s,t}$,
+  Rearranging the stationary versions of the bugdet constraints in \eqref{EqBC1}, \eqref{EqBC2}, and \eqref{EqBC3} and using backward induction gives the following expressions for $\tilde{b}_{j,s,t}$,
   \begin{equation}\label{EqBorConsts}
     \begin{split}
-      \tilde{b}_{j,S,t} &= \frac{\tilde{c} - w_te_{j,S}\tilde{l}}{1+r_t}  \\
-      \tilde{b}_{j,S-1,t-1} &= \frac{\tilde{c} + \tilde{b}_{j,S,t} - w_{t-1}e_{j,S-1}\tilde{l}}{1+r_{t-1}} \\
+      \tilde{b}_{j,S,t} &= \frac{\tilde{c} - \hat{w}_t e_{j,S}\tilde{l}}{1+r_t}  \\
+      \tilde{b}_{j,S-1,t-1} &= \frac{\tilde{c} + e^{g_y}\tilde{b}_{j,S,t} - \hat{w}_{t-1}e_{j,S-1}\tilde{l}}{1+r_{t-1}} \\
       &\vdots \\
-      \tilde{b}_{j,2,t-S+2} &= \frac{\tilde{c} + \tilde{b}_{j,3,t-S+3} - w_{t-S+2}e_{j,2}\tilde{l}}{1+r_{t-S+2}}
+      \tilde{b}_{j,2,t-S+2} &= \frac{\tilde{c} + e^{g_y}\tilde{b}_{j,3,t-S+3} - \hat{w}_{t-S+2}e_{j,2}\tilde{l}}{1+r_{t-S+2}}
     \end{split}
   \end{equation}
-  where $\tilde{c}>0$ is some minimum amount of consumption and $\tilde{l}$ is the maximum amount an individual can work from the time constraint \eqref{EqLabConstr}. With endogenous labor supply $n_{j,s,t}$, it is less likely that the individual borrowing constraints every bind. This is because the disutility of labor increases exponentially according to $\eta>1$ in the period utility function \eqref{EqUtilMax}.
+  where $\tilde{c}>0$ is some minimum amount of stationary consumption and $\tilde{l}$ is the maximum amount an individual can work from the time constraint \eqref{EqLabConstr}. With endogenous labor supply $n_{j,s,t}$, it is less likely that the individual borrowing constraints ever bind. This is because the disutility of labor increases exponentially according to $\eta>1$ in the period utility function \eqref{EqUtilMax}.
 
-  In addition to the individual borrowing constraint \eqref{EqSavMin}, a strict aggregate borrowing constraint must be met. That is, the aggregate capital stock must be strictly positive.
+  In addition to the individual borrowing constraint \eqref{EqSavMin}, a strict aggregate borrowing constraint must be met. That is, the stationary aggregate capital stock must be strictly positive.
   \begin{equation}\label{EqAggrCapConstr}
-    K_t > 0 \quad\forall t
+    \hat{K}_t > 0 \quad\forall t
   \end{equation}
 
 
