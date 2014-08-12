@@ -145,7 +145,7 @@ def get_N(omega):
     return N
 
 N = get_N(omega[-1, :, :])
-omega_hat = omega[-1, :, :] / N
+omega_SS = omega[-1, :, :]
 
 
 def get_Y(K_now, L_now):
@@ -155,7 +155,6 @@ def get_Y(K_now, L_now):
     Returns:    Aggregate output
     '''
     Y_now = A * (K_now ** alpha) * (np.exp(g_y_SS) * L_now ** (1 - alpha))
-    Y_now /= (np.exp(g_y_SS) ** (1-alpha))
     return Y_now
 
 
@@ -166,7 +165,6 @@ def get_w(Y_now, L_now):
     Returns:    Returns to labor
     '''
     w_now = (1 - alpha) * Y_now / L_now
-    w_now /= np.exp(g_y_SS)
     return w_now
 
 
@@ -186,8 +184,7 @@ def get_L(e, n):
 
     Returns:    Aggregate labor
     '''
-    L_now = np.sum(e * omega_hat * n)
-    # L_now /= N
+    L_now = np.sum(e * omega_SS * n)
     return L_now
 
 
@@ -254,8 +251,8 @@ def Steady_State(guesses):
 
     Returns:    Array of S-1 Euler equation errors
     '''
-    K_guess = guesses[0: (S-1) * J].reshape((S-1, J)) / np.exp(g_y_SS)
-    K = (omega_hat[1:, :] * K_guess).sum() #/ N
+    K_guess = guesses[0: (S-1) * J].reshape((S-1, J))
+    K = (omega_SS[1:, :] * K_guess).sum()
     L_guess = guesses[(S-1) * J:].reshape((S, J))
     L = get_L(e, L_guess)
     Y = get_Y(K, L)
@@ -297,7 +294,7 @@ def borrowing_constraints(K_dist, w, r, e, n):
     b_min = np.zeros((S-1, J))
     b_min[-1, :] = (ctilde - w * e[S-1, :] * n[S-1, :]) / (1 + r)
     for i in xrange(S-2):
-        b_min[-(i+2), :] = (ctilde + b_min[-(i+1), :] - w * e[
+        b_min[-(i+2), :] = (ctilde + np.exp(g_y_SS) * b_min[-(i+1), :] - w * e[
             -(i+2), :] * n[-(i+2), :]) / (1 + r)
     difference = K_dist - b_min
     if (difference < 0).any():
@@ -327,7 +324,7 @@ def constraint_checker(Kssmat, Lssmat, wss, rss, e, cssmat):
     '''
     print 'Checking constraints on capital, labor, and consumption.'
     flag1 = False
-    if Kssmat.sum() <= 0:
+    if Kssmat.sum() / N <= 0:
         print '\tWARNING: Aggregate capital is less than or equal to zero.'
         flag1 = True
     if borrowing_constraints(Kssmat, wss, rss, e, Lssmat) is True:
@@ -365,17 +362,17 @@ seconds = runtime % 60
 print 'Finding the steady state took %.0f hours, %.0f minutes, and %.0f \
 seconds.' % (abs(hours - .5), abs(minutes - .5), seconds)
 
-Kssmat = solutions[0:(S-1) * J].reshape(S-1, J) / np.exp(g_y_SS)
+Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
 Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
 Kssmat3 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)))
 
 Kssvec = Kssmat.sum(1)
-Kss = (omega_hat[1:, :] * Kssmat).sum()# / N
+Kss = (omega_SS[1:, :] * Kssmat).sum() / N
 Kssavg = Kssvec.mean()
 Kssvec = np.array([0]+list(Kssvec))
 Lssmat = solutions[(S-1) * J:].reshape(S, J)
 Lssvec = Lssmat.sum(1)
-Lss = get_L(e, Lssmat)
+Lss = get_L(e, Lssmat) / N
 Lssavg = Lssvec.mean()
 Yss = get_Y(Kss, Lss)
 wss = get_w(Yss, Lss)
