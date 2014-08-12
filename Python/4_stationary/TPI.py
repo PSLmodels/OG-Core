@@ -36,7 +36,7 @@ S        = number of periods an individual lives
 beta     = discount factor (0.96 per year)
 sigma    = coefficient of relative risk aversion
 alpha    = capital share of income
-rho      = contraction parameter in steady state iteration process
+nu       = contraction parameter in steady state iteration process
            representing the weight on the new distribution gamma_new
 A        = total factor productivity parameter in firms' production
            function
@@ -98,6 +98,14 @@ c0              = SxJ arry of the initial distribution of consumption
 '''
 
 
+def get_N(omega):
+    N = omega.sum(1).sum(1)
+    return N
+
+N = get_N(omega)
+omega_stationary = omega / N.reshape(T, 1, 1)
+
+
 def constraint_checker1(k_dist, l_dist, w, r, e, c_dist):
     '''
     Parameters:
@@ -120,7 +128,7 @@ def constraint_checker1(k_dist, l_dist, w, r, e, c_dist):
     print 'Checking constraints on the initial distributions of' \
         ' capital, labor, and consumption for TPI.'
     flag1 = False
-    if k_dist.sum() <= 0:
+    if k_dist.sum() / N[-1] <= 0:
         print '\tWARNING: Aggregate capital is less than or equal to zero.'
         flag1 = True
     if borrowing_constraints(k_dist, w, r, e, l_dist) is True:
@@ -156,7 +164,7 @@ def constraint_checker2(k_dist, l_dist, w, r, e, c_dist, t):
         Prints warnings for violations of capital, labor, and
             consumption constraints.
     '''
-    if k_dist.sum() <= 0:
+    if k_dist.sum() / N[t] <= 0:
         print '\tWARNING: Aggregate capital is less than or equal to ' \
             'zero in period %.f.' % t
     if borrowing_constraints(k_dist, w, r, e, l_dist) is True:
@@ -189,7 +197,7 @@ def borrowing_constraints(K_dist, w, r, e, n):
     b_min = np.zeros((S-1, J))
     b_min[-1, :] = (ctilde - w * e[S-1, :] * n[S-1, :]) / (1 + r)
     for i in xrange(S-2):
-        b_min[-(i+2), :] = (ctilde + b_min[-(i+1), :] - w * e[
+        b_min[-(i+2), :] = (ctilde + np.exp(g_y_SS) * b_min[-(i+1), :] - w * e[
             -(i+2), :] * n[-(i+2), :]) / (1 + r)
     difference = K_dist - b_min
     if (difference < 0).any():
@@ -258,20 +266,12 @@ def MUl_2(n):
     return output
 
 
-def get_N(omega):
-    N = omega.sum(1).sum(1)
-    return N
-
-N = get_N(omega)
-omega_stationary = omega / N.reshape(T, 1, 1)
-
 initial_K = .9*Kssmat
-K0 = (omega_stationary[0, 1:, :] * initial_K).sum()
-
+K0 = (omega_stationary[-1, 1:, :] * initial_K).sum()
 K1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_K))
 K2_2init = np.array(list(initial_K) + list(np.zeros(J).reshape(1, J)))
-initial_L = Lssmat / N[0]
-L0 = get_L(e, initial_L)
+initial_L = Lssmat
+L0 = get_L(e, initial_L) / N[-1]
 Y0 = get_Y(K0, L0)
 w0 = get_w(Y0, L0)
 r0 = get_r(Y0, K0)
@@ -406,7 +406,7 @@ def Euler_Error(guesses, winit, rinit, t):
     return list(error1.flatten()) + list(error2.flatten())
 
 Kinit = np.array(list(np.linspace(K0, Kss, T)) + list(np.ones(S)*Kss))
-Linit = np.array(list(np.linspace(L0, Lss, T)) + list(np.ones(S)*Lss))
+Linit = np.ones(T+S) * Lss
 Yinit = A*(Kinit**alpha) * (Linit**(1-alpha))
 winit = (1-alpha) * Yinit / Linit
 rinit = (alpha * Yinit / Kinit) - delta
@@ -441,17 +441,18 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             L_mat[t:t+S, :, j] += np.diag(L_vec)
 
     K_mat[0, :, :] = initial_K
-    L_mat[0, -1, :] = initial_L[-1,:]
+    L_mat[0, -1, :] = initial_L[-1, :]
     Knew = (omega[:, 1:,:] * K_mat[:T, :, :]).sum(2).sum(1) / (N * np.exp(g_y_SS * np.arange(T)))
-    Lnew = (omega[:, :,:] * e.reshape(1, S, J) * L_mat[:T, :, :]).sum(2).sum(1) / N
+    Knew[0] = K0
+    Lnew = (omega[:, :, :] * e.reshape(1, S, J) * L_mat[:T, :, :]).sum(2).sum(1) / N
     TPIiter += 1
-    Kinit = rho*Knew + (1-rho)*Kinit[:T]
-    Linit = rho*Lnew + (1-rho)*Linit[:T]
+    Kinit = nu*Knew + (1-nu)*Kinit[:T]
+    Linit = nu*Lnew + (1-nu)*Linit[:T]
     TPIdist = (np.abs(Knew - Kinit)).max() + (np.abs(Lnew - Linit)).max()
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-        Yinit = A*(Kinit**alpha) * (Linit**(1-alpha)) 
+        Yinit = A*(Kinit**alpha) * (Linit**(1-alpha))
         winit = np.array(
             list((1-alpha) * Yinit / Linit) + list(np.ones(S)*wss))
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(

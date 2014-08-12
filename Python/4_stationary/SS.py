@@ -45,7 +45,7 @@ starting_age = age of first members of cohort
 beta         = discount factor
 sigma        = coefficient of relative risk aversion
 alpha        = capital share of income
-rho          = contraction parameter in steady state iteration process
+nu           = contraction parameter in steady state iteration process
                representing the weight on the new distribution gamma_new
 A            = total factor productivity parameter in firms' production
                function
@@ -64,13 +64,13 @@ omega        = T x S x J array of demographics
 
 # Parameters
 S = 60
-J = 7
-T = 120
+J = 1
+T = 63
 starting_age = 20
 beta = .96 ** (60.0 / S)
 sigma = 3.0
 alpha = .35
-rho = .20
+nu = .20
 A = 1.0
 delta = 1 - (0.95 ** (60.0 / S))
 ctilde = .01
@@ -81,7 +81,7 @@ e = income.get_e(S, J, starting_age)
 omega, g_n_SS = demographics.get_omega(S, J, T, starting_age)
 if g_n_SS.shape[0] != 1:
     print 'There are multiple steady state growth values of labor.'
-g_y_SS = 0
+g_y_SS = 0.03
 
 print 'The following are the parameter values of the simulation:'
 print '\tS:\t\t\t\t', S
@@ -91,7 +91,7 @@ print '\tStarting Age:\t', starting_age
 print '\tBeta:\t\t\t', beta
 print '\tSigma:\t\t\t', sigma
 print '\tAlpha:\t\t\t', alpha
-print '\tRho:\t\t\t', rho
+print '\tnu:\t\t\t\t', nu
 print '\tA:\t\t\t\t', A
 print '\tDelta:\t\t\t', delta
 print '\tl-tilde:\t\t', ltilde
@@ -154,7 +154,7 @@ def get_Y(K_now, L_now):
 
     Returns:    Aggregate output
     '''
-    Y_now = A * (K_now ** alpha) * (L_now ** (1 - alpha))
+    Y_now = A * (K_now ** alpha) * ((np.exp(g_y_SS) * L_now) ** (1 - alpha))
     return Y_now
 
 
@@ -511,7 +511,7 @@ plt.savefig('OUTPUT/Population')
 
 plt.figure(9)
 plt.plot(np.arange(T-1), x2, 'b', linewidth=2)
-plt.axhline(y=100 * g_n_SS, color='r')
+plt.axhline(y=100 * g_n_SS[0], color='r')
 plt.title('Population Growth rate over time')
 plt.savefig('OUTPUT/Population_growthrate')
 
@@ -578,7 +578,7 @@ Save variables/values so they can be used in other modules
 '''
 
 print 'Saving steady state variable values.'
-var_names = ['S', 'beta', 'sigma', 'alpha', 'rho', 'A', 'delta', 'e',
+var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'e',
              'J', 'Kss', 'Kssvec', 'Kssmat', 'Lss', 'Lssvec', 'Lssmat',
              'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes', 'omega',
              'seconds', 'eta', 'chi', 'ltilde', 'ctilde', 'T',
