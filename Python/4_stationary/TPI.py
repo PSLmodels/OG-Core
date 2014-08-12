@@ -249,13 +249,13 @@ def MUc(c):
     return c**(-sigma)
 
 
-def MUl(n, g_y):
+def MUl(n):
     '''
     Parameters: Labor
 
     Returns:    Marginal Utility of Labor
     '''
-    output = - chi * np.exp(g_y * (1-sigma)) * ((ltilde-n) ** (-eta))
+    output = - chi * ((ltilde-n) ** (-eta))
     return output
 
 
@@ -278,7 +278,7 @@ def get_L_init(e, L_guess, K1_2, K2_2):
     Y = get_Y(K, L)
     w = get_w(Y, L)
     r = get_r(Y, K)
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess - K2_2) * w * e + MUl(L_guess, g_y_SS)
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess - K2_2) * w * e + MUl(L_guess)
     euler = euler.flatten()
     return euler
 
@@ -368,7 +368,7 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess - K2_2) * w * e + MUl(L_guess, g_y_SS)
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess - K2_2) * w * e + MUl(L_guess)
     return euler
 
 
@@ -415,7 +415,7 @@ def Euler_Error(guesses, winit, rinit, t):
     r = rinit[t:t+length+1]
     error2 = MUc((1 + r)*K1_2 + w * e[
         -(length+1):, j] * L_guess - K2_2) * w * e[
-        -(length+1):, j] + MUl(L_guess, g_y_SS)
+        -(length+1):, j] + MUl(L_guess)
     # Check and punish constraing violations
     mask1 = L_guess < 0
     error2[mask1] += 1e9
