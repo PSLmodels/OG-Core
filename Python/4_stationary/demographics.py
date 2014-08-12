@@ -139,7 +139,7 @@ def get_immigration(S, J, starting_age):
     pop_2010, pop_2011 = np.array(data_raw['2010'], dtype='f'), np.array(
         data_raw['2011'], dtype='f')
     # Get survival rates for the S age groups
-    surv_array, children_rate = get_survival(60, 1, starting_age)
+    surv_array, children_rate = get_survival(S, 1, starting_age)
     surv_array = np.array(list(children_rate) + list(surv_array))
     # Only keep track of individuals in 2010 that don't die
     pop_2010 = pop_2010[:ending_age] * surv_array

@@ -248,7 +248,7 @@ def MUc(c):
     return c**(-sigma)
 
 
-def MUl(n):
+def MUl_2(n):
     '''
     Parameters: Labor
 
@@ -263,7 +263,7 @@ def get_N(omega):
     return N
 
 N = get_N(omega)
-omega_stationary = omega / N
+omega_stationary = omega / N.reshape(T, 1, 1)
 
 initial_K = .9*Kssmat
 K0 = (omega_stationary[0, 1:, :] * initial_K).sum()
@@ -327,8 +327,8 @@ def Euler1(w1, r1, w2, r2, e, n, K1, K2, K3):
         Value of Euler error.
     '''
     euler = MUc(
-        (1 + r1)*K1 + w1 * e[:-1, :] * n[:-1, :] - K2) - beta * (1 + r2)*MUc(
-        (1 + r2)*K2 + w2 * e[1:, :] * n[1:, :] - K3)
+        (1 + r1)*K1 + w1 * e[:-1, :] * n[:-1, :] - np.exp(g_y_SS) * K2) - beta * np.exp(-sigma * g_y_SS) * (1 + r2)*MUc(
+        (1 + r2)*K2 + w2 * e[1:, :] * n[1:, :] - np.exp(g_y_SS) * K3)
     return euler
 
 
@@ -345,7 +345,7 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess - K2_2) * w * e + MUl(L_guess)
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess - np.exp(g_y_SS) * K2_2) * w * e + MUl_2(L_guess)
     return euler
 
 
@@ -362,7 +362,7 @@ def Euler_Error(guesses, winit, rinit, t):
         Value of Euler error. (as an (S-1)*S*J x 1 list)
     '''
     length = len(guesses)/2
-    K_guess = guesses[:length]
+    K_guess = guesses[:length] / np.exp(g_y_SS * t)
     L_guess = guesses[length:]
 
     if length == S-1:
@@ -379,8 +379,8 @@ def Euler_Error(guesses, winit, rinit, t):
     l2 = L_guess[1:]
     e1 = e[-(length+1):-1, j]
     e2 = e[-length:, j]
-    error1 = MUc((1 + r1)*K1 + w1 * e1 * l1 - K2) \
-        - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*l2 - K3)
+    error1 = MUc((1 + r1)*K1 + w1 * e1 * l1 - np.exp(g_y_SS) * K2) \
+        - beta * np.exp(-sigma * g_y_SS) * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*l2 - np.exp(g_y_SS) * K3)
 
     if length == S-1:
         K1_2 = np.array([0] + list(K_guess))
@@ -391,8 +391,8 @@ def Euler_Error(guesses, winit, rinit, t):
     w = winit[t:t+length+1]
     r = rinit[t:t+length+1]
     error2 = MUc((1 + r)*K1_2 + w * e[
-        -(length+1):, j] * L_guess - K2_2) * w * e[
-        -(length+1):, j] + MUl(L_guess)
+        -(length+1):, j] * L_guess - np.exp(g_y_SS) * K2_2) * w * e[
+        -(length+1):, j] + MUl_2(L_guess)
     # Check and punish constraing violations
     mask1 = L_guess < 0
     error2[mask1] += 1e9
@@ -442,8 +442,8 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
 
     K_mat[0, :, :] = initial_K
     L_mat[0, -1, :] = initial_L[-1,:]
-    Knew = (omega[:, 1:,:] * K_mat[:T, :, :]).sum(2).sum(1)
-    Lnew = (omega[:, :,:] * e.reshape(1, S, J) * L_mat[:T, :, :]).sum(2).sum(1)
+    Knew = (omega[:, 1:,:] * K_mat[:T, :, :]).sum(2).sum(1) / (N * np.exp(g_y_SS * np.arange(T)))
+    Lnew = (omega[:, :,:] * e.reshape(1, S, J) * L_mat[:T, :, :]).sum(2).sum(1) / N
     TPIiter += 1
     Kinit = rho*Knew + (1-rho)*Kinit[:T]
     Linit = rho*Lnew + (1-rho)*Linit[:T]
@@ -451,7 +451,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-        Yinit = A*(Kinit**alpha) * (Linit**(1-alpha))
+        Yinit = A*(Kinit**alpha) * (Linit**(1-alpha)) 
         winit = np.array(
             list((1-alpha) * Yinit / Linit) + list(np.ones(S)*wss))
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
@@ -464,11 +464,11 @@ Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
 print 'TPI is finished.'
 
 K1 = np.zeros((T, S, J))
-K1[:, 1:, :] = K_mat[:T, :, :]
-K3 = np.zeros((T, S, J))
-K3[:, :-1, :] = K_mat[:T, :, :]
+K1[:, 1:, :] = K_mat[:T, :, :] / (np.exp(g_y_SS * np.arange(T).reshape(T, 1, 1)))
+K2 = np.zeros((T, S, J))
+K2[:, :-1, :] = K_mat[:T, :, :] / (np.exp(g_y_SS * np.arange(T).reshape(T, 1, 1)))
 cinit = (1 + rinit[:T].reshape(T, 1, 1)) * K1 + winit[:T].reshape(
-    T, 1, 1) * e.reshape(1, S, J) * L_mat[:T] - K3
+    T, 1, 1) * e.reshape(1, S, J) * L_mat[:T] - np.exp(g_y_SS) * K2
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
     constraint_checker2(K_mat[t], L_mat[t], winit[t], rinit[t], e, cinit[t], t)
@@ -529,14 +529,14 @@ domain     = 1 x S vector of each age cohort
 ------------------------------------------------------------------------
 '''
 k1 = np.zeros((T, S-1, J))
-k1[:, 1:, :] = K_mat[:T, :-1, :]
-k2 = K_mat[:T, :, :]
+k1[:, 1:, :] = K_mat[:T, :-1, :]  / (np.exp(g_y_SS * np.arange(T).reshape(T, 1, 1)))
+k2 = K_mat[:T, :, :] / (np.exp(g_y_SS * np.arange(T).reshape(T, 1, 1)))
 k3 = np.zeros((T, S-1, J))
-k3[:, :-1, :] = K_mat[:T, 1:, :]
+k3[:, :-1, :] = K_mat[:T, 1:, :] / (np.exp(g_y_SS * np.arange(T).reshape(T, 1, 1)))
 k1_2 = np.zeros((T, S, J))
-k1_2[:, 1:, :] = K_mat[:T, :, :]
+k1_2[:, 1:, :] = K_mat[:T, :, :] / (np.exp(g_y_SS * np.arange(T).reshape(T, 1, 1)))
 k2_2 = np.zeros((T, S, J))
-k2_2[:, :-1, :] = K_mat[:T, :, :]
+k2_2[:, :-1, :] = K_mat[:T, :, :] / (np.exp(g_y_SS * np.arange(T).reshape(T, 1, 1)))
 euler_mat1 = np.zeros((T, S-1, J))
 euler_mat2 = np.zeros((T, S, J))
 

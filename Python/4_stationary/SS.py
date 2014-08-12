@@ -65,7 +65,7 @@ omega        = T x S x J array of demographics
 # Parameters
 S = 60
 J = 7
-T = 200
+T = 120
 starting_age = 20
 beta = .96 ** (60.0 / S)
 sigma = 3.0
@@ -154,7 +154,7 @@ def get_Y(K_now, L_now):
 
     Returns:    Aggregate output
     '''
-    Y_now = A * (K_now ** alpha) * (np.exp(g_y_SS) * L_now ** (1 - alpha))
+    Y_now = A * (K_now ** alpha) * (L_now ** (1 - alpha))
     return Y_now
 
 
@@ -378,7 +378,7 @@ Yss = get_Y(Kss, Lss)
 wss = get_w(Yss, Lss)
 rss = get_r(Yss, Kss)
 
-cssmat = (1 + rss) * Kssmat2 + wss * e * Lssmat - Kssmat3
+cssmat = (1 + rss) * Kssmat2 + wss * e * Lssmat - np.exp(g_y_SS) * Kssmat3
 
 
 constraint_checker(Kssmat, Lssmat, wss, rss, e, cssmat)
