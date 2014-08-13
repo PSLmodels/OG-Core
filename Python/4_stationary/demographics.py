@@ -154,14 +154,14 @@ def get_immigration(S, J, starting_age):
     # poly_imm = poly.polyfit(np.linspace(0, ending_age-1, ending_age-1), perc_change, deg=10)
     # im_array = poly.polyval(np.linspace(0, ending_age-1, ending_age-1), poly_imm)
     im_array = perc_change
-    im_array2 = im_array[starting_age:ending_age-1]
-    imm_rate_condensed = np.zeros(S-1)
+    im_array2 = im_array[starting_age-1:ending_age]
+    imm_rate_condensed = np.zeros(S)
     # If S < 60, then group years together
-    for s in xrange(S-1):
-        imm_rate_condensed[s] = np.product(
-            im_array2[s*(60/S):(s+1)*(60/S)])
-    im_array2 = np.tile(imm_rate_condensed.reshape(S-1, 1), (1, J))
-    children_im = perc_change[:starting_age]
+    for s in xrange(S):
+        imm_rate_condensed[s] = np.product(1+
+            im_array2[s*(60/S):(s+1)*(60/S)]) - 1
+    im_array2 = np.tile(imm_rate_condensed.reshape(S, 1), (1, J))
+    children_im = np.array([im_array[0]] + list(im_array[:starting_age-1]))
     return im_array2, children_im
 
 
@@ -198,8 +198,8 @@ def get_fert(S, J, starting_age):
     fert_rate_condensed = np.zeros(S)
     # If S < 60, then group years together
     for s in xrange(S):
-        fert_rate_condensed[s] = np.mean(
-            fert_rate[s*(60/S):(s+1)*(60/S)])
+        fert_rate_condensed[s] = np.mean(1+
+            fert_rate[s*(60/S):(s+1)*(60/S)]) - 1
     # plt.scatter(age_midpoint, fert_data)
     # plt.axhline(y=0, color='red')
     # plt.plot(np.linspace(starting_age, ending_age-1, 60), fert_rate)
@@ -272,21 +272,26 @@ def get_omega(S, J, T, starting_age):
         # omega_big[t, 0, :] = children[-1, :] * (children_rate[-1] + imm_array[0])
         # Children are born immediately:
         omega_big[t, 0, :] = (omega_big[t-1, :, :] * fert_rate).sum(0) # * (children_rate[-1] + imm_array[0])
-        omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * (surv_array[
-            :-1].reshape(1, S-1, J) + imm_array.reshape(1, S-1, J))
+        omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * (surv_array[:-1].reshape(1, S-1, J) + imm_array[:-1].reshape(1, S-1, J))
         children[1:, :] = children[:-1, :] * (children_rate[1:-1].reshape(
             starting_age-1, 1) + children_im[1:].reshape(starting_age-1, 1))
         children[0, :] = ((omega_big[t, :, :] * fert_rate).sum(0) + (children * children_fertrate.reshape(starting_age, 1)).sum(0))* (1 + children_im[0])
     OMEGA = np.zeros((S, S))
     OMEGA[0, :] = fert_rate[:, 0]
-    OMEGA += np.diag(surv_array[:-1][:, 0] + imm_array[:, 0], -1)
-    eigvalues = np.linalg.eig(OMEGA)[0]
+    OMEGA += np.diag(surv_array[:-1][:, 0] + imm_array[:-1][:, 0], -1)
+    eigvalues, eigvectors = np.linalg.eig(OMEGA)
     mask = eigvalues.real != 0
     eigvalues = eigvalues[mask]
     mask2 = eigvalues.imag == 0
     eigvalues = eigvalues[mask2].real
+    if eigvalues.shape[0] != 1:
+        raise Exception ('There are multiple steady state growth rates.')
     g_n_SS = eigvalues - 1
-    return omega_big, g_n_SS
+    eigvectors = eigvectors.T
+    eigvectors = eigvectors[mask]
+    omega_SS = eigvectors[mask2].real
+    omega_SS = np.tile(omega_SS.reshape(S, 1), (1, J)) / J
+    return omega_big, g_n_SS, omega_SS
 
 # Known problems:
 # Fitted polynomial on survival rates creates some entries that are greater than 1

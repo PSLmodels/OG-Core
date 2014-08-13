@@ -212,7 +212,7 @@ def get_Y(K_now, L_now):
 
     Returns:    Aggregate output
     '''
-    Y_now = A * (K_now ** alpha) * (np.exp(g_y_SS) * L_now ** (1 - alpha))
+    Y_now = A * (K_now ** alpha) * (L_now ** (1 - alpha))
     return Y_now
 
 

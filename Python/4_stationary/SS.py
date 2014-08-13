@@ -63,9 +63,9 @@ omega        = T x S x J array of demographics
 '''
 
 # Parameters
-S = 60
+S = 20
 J = 1
-T = 60
+T = 120
 starting_age = 20
 beta = .96 ** (60.0 / S)
 sigma = 3.0
@@ -78,9 +78,7 @@ ltilde = 1.0
 chi = 1.0
 eta = 2.5
 e = income.get_e(S, J, starting_age)
-omega, g_n_SS = demographics.get_omega(S, J, T, starting_age)
-if g_n_SS.shape[0] != 1:
-    print 'There are multiple steady state growth values of labor.'
+omega, g_n_SS, omega_SS = demographics.get_omega(S, J, T, starting_age)
 g_y_SS = 0.03
 
 print 'The following are the parameter values of the simulation:'
@@ -144,8 +142,7 @@ def get_N(omega):
     N = omega.sum(0).sum(0)
     return N
 
-N = get_N(omega[-1, :, :])
-omega_SS = omega[-1, :, :]
+N = get_N(omega_SS)
 
 
 def get_Y(K_now, L_now):
@@ -154,7 +151,7 @@ def get_Y(K_now, L_now):
 
     Returns:    Aggregate output
     '''
-    Y_now = A * (K_now ** alpha) * ((np.exp(g_y_SS) * L_now) ** (1 - alpha))
+    Y_now = A * (K_now ** alpha) * ((L_now) ** (1 - alpha))
     return Y_now
 
 
@@ -511,7 +508,7 @@ plt.savefig('OUTPUT/Population')
 
 plt.figure(9)
 plt.plot(np.arange(T-1), x2, 'b', linewidth=2)
-plt.axhline(y=100 * g_n_SS[0], color='r')
+plt.axhline(y=100 * g_n_SS, color='r')
 plt.title('Population Growth rate over time')
 plt.savefig('OUTPUT/Population_growthrate')
 
@@ -582,7 +579,7 @@ var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'e',
              'J', 'Kss', 'Kssvec', 'Kssmat', 'Lss', 'Lssvec', 'Lssmat',
              'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes', 'omega',
              'seconds', 'eta', 'chi', 'ltilde', 'ctilde', 'T',
-             'g_n_SS', 'g_y_SS']
+             'g_n_SS', 'g_y_SS', 'omega_SS']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
