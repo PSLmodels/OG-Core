@@ -272,13 +272,13 @@ def get_omega(S, J, T, starting_age):
         # omega_big[t, 0, :] = children[-1, :] * (children_rate[-1] + imm_array[0])
         # Children are born immediately:
         omega_big[t, 0, :] = (omega_big[t-1, :, :] * fert_rate).sum(0) # * (children_rate[-1] + imm_array[0])
-        omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * (surv_array[:-1].reshape(1, S-1, J) + imm_array[:-1].reshape(1, S-1, J))
+        omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * (surv_array[:-1].reshape(1, S-1, J) + imm_array[1:].reshape(1, S-1, J))
         children[1:, :] = children[:-1, :] * (children_rate[1:-1].reshape(
             starting_age-1, 1) + children_im[1:].reshape(starting_age-1, 1))
         children[0, :] = ((omega_big[t, :, :] * fert_rate).sum(0) + (children * children_fertrate.reshape(starting_age, 1)).sum(0))* (1 + children_im[0])
     OMEGA = np.zeros((S, S))
     OMEGA[0, :] = fert_rate[:, 0]
-    OMEGA += np.diag(surv_array[:-1][:, 0] + imm_array[:-1][:, 0], -1)
+    OMEGA += np.diag(surv_array[:-1][:, 0] + imm_array[1:][:, 0], -1)
     eigvalues, eigvectors = np.linalg.eig(OMEGA)
     mask = eigvalues.real != 0
     eigvalues = eigvalues[mask]

@@ -63,7 +63,7 @@ omega        = T x S x J array of demographics
 '''
 
 # Parameters
-S = 20
+S = 60
 J = 1
 T = 120
 starting_age = 20
