@@ -79,7 +79,7 @@ chi = 1.0
 eta = 2.5
 e = income.get_e(S, J, starting_age)
 omega, g_n_SS, omega_SS = demographics.get_omega(S, J, T, starting_age)
-g_y_SS = 0.03
+g_y_SS = (1 + 0.03)**(60.0/S) - 1
 
 print 'The following are the parameter values of the simulation:'
 print '\tS:\t\t\t\t', S

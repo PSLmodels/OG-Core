@@ -80,7 +80,7 @@ def get_e_indiv(S, J, data, starting_age):
                     age cohort measured by hourly wage, normalized so
                     the mean is one
     '''
-    ending_age = starting_age + S
+    ending_age = starting_age + 60
     age_groups = np.linspace(starting_age, ending_age, S+1)
     e = np.zeros((S, J))
     data = data[(starting_age <= data.age) & (data.age <= ending_age)]
