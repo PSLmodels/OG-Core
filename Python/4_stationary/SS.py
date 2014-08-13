@@ -64,7 +64,7 @@ omega        = T x S x J array of demographics
 
 # Parameters
 S = 60
-J = 1
+J = 7
 T = 120
 starting_age = 20
 beta = .96 ** (60.0 / S)
@@ -399,7 +399,7 @@ print 'Generating steady state graphs.'
 domain = np.linspace(1, S, S)
 
 # 2D Graph
-plt.figure(1)
+plt.figure(4)
 plt.plot(domain, Kssvec, color='b', linewidth=2, label='Average capital stock')
 plt.axhline(y=Kssavg, color='r', label='Steady state capital stock')
 plt.title('Steady-state Distribution of Capital')
@@ -413,13 +413,13 @@ cmap1 = matplotlib.cm.get_cmap('summer')
 Sgrid = np.linspace(1, S, S)
 Jgrid = np.linspace(1, J, J)
 X, Y = np.meshgrid(Sgrid, Jgrid)
-fig2 = plt.figure(2)
-ax2 = fig2.gca(projection='3d')
-ax2.set_xlabel(r'age-$s$')
-ax2.set_ylabel(r'ability-$j$')
-ax2.set_zlabel(r'individual savings $\bar{b}_{j,s}$')
-# ax2.set_title(r'Steady State Distribution of Capital Stock $K$')
-ax2.plot_surface(X, Y, Kssmat2.T, rstride=1, cstride=1, cmap=cmap1)
+fig5 = plt.figure(5)
+ax5 = fig5.gca(projection='3d')
+ax5.set_xlabel(r'age-$s$')
+ax5.set_ylabel(r'ability-$j$')
+ax5.set_zlabel(r'individual savings $\bar{b}_{j,s}$')
+# ax5.set_title(r'Steady State Distribution of Capital Stock $K$')
+ax5.plot_surface(X, Y, Kssmat2.T, rstride=1, cstride=1, cmap=cmap1)
 plt.savefig('OUTPUT/capital_dist_3D')
 
 '''
@@ -429,7 +429,7 @@ plt.savefig('OUTPUT/capital_dist_3D')
 '''
 
 # 2D Graph
-plt.figure(3)
+plt.figure(6)
 plt.plot(domain, Lssvec, color='b', linewidth=2, label='Average Labor Supply')
 plt.axhline(y=Lssavg, color='r', label='Steady state labor supply')
 plt.title('Steady-state Distribution of Labor')
@@ -439,7 +439,7 @@ plt.ylabel('Labor')
 plt.savefig("OUTPUT/labor_dist_2D")
 
 # 3D Graph
-fig4 = plt.figure(4)
+fig4 = plt.figure(7)
 ax4 = fig4.gca(projection='3d')
 ax4.set_xlabel(r'age-$s$')
 ax4.set_ylabel(r'ability-$j$')
@@ -455,7 +455,7 @@ Generate graph of Consumption
 '''
 
 # 2D Graph
-plt.figure(5)
+plt.figure(8)
 plt.plot(domain, cssmat.mean(1), label='Consumption')
 plt.title('Consumption across cohorts: S = {}'.format(S))
 # plt.legend(loc=0)
@@ -465,13 +465,13 @@ plt.savefig("OUTPUT/consumption_2D")
 
 # 3D Graph
 cmap2 = matplotlib.cm.get_cmap('jet')
-fig6 = plt.figure(6)
-ax6 = fig6.gca(projection='3d')
-ax6.plot_surface(X, Y, cssmat.T, rstride=1, cstride=1, cmap=cmap2)
-ax6.set_xlabel(r'age-$s$')
-ax6.set_ylabel(r'ability-$j$')
-ax6.set_zlabel('Consumption')
-ax6.set_title('Steady State Distribution of Consumption')
+fig9 = plt.figure(9)
+ax9 = fig9.gca(projection='3d')
+ax9.plot_surface(X, Y, cssmat.T, rstride=1, cstride=1, cmap=cmap2)
+ax9.set_xlabel(r'age-$s$')
+ax9.set_ylabel(r'ability-$j$')
+ax9.set_zlabel('Consumption')
+ax9.set_title('Steady State Distribution of Consumption')
 plt.savefig('OUTPUT/consumption_3D')
 
 '''
@@ -482,13 +482,13 @@ Graph of Distribution of Income
 
 # 3D Graph
 cmap2 = matplotlib.cm.get_cmap('summer')
-fig7 = plt.figure(7)
-ax7 = fig7.gca(projection='3d')
-ax7.plot_surface(X, Y, e.T, rstride=1, cstride=2, cmap=cmap2)
-ax7.set_xlabel(r'age-$s$')
-ax7.set_ylabel(r'ability-$j$')
-ax7.set_zlabel(r'Income Level $e_j(s)$')
-# ax7.set_title('Income Levels')
+fig10 = plt.figure(10)
+ax10 = fig10.gca(projection='3d')
+ax10.plot_surface(X, Y, e.T, rstride=1, cstride=2, cmap=cmap2)
+ax10.set_xlabel(r'age-$s$')
+ax10.set_ylabel(r'ability-$j$')
+ax10.set_zlabel(r'Income Level $e_j(s)$')
+# ax10.set_title('Income Levels')
 plt.savefig('OUTPUT/ability_3D')
 
 '''
@@ -500,18 +500,32 @@ Graph of Population
 x = omega.sum(1).sum(1)
 x2 = 100 * np.diff(x)/x[:-1]
 
-plt.figure(8)
-plt.axhline(y=x[-1], color='r', linewidth=2)
+plt.figure(11)
 plt.plot(np.arange(T), x, 'b', linewidth=2)
 plt.title('Population Size (as a percent of the 2010 population)')
 plt.savefig('OUTPUT/Population')
 
-plt.figure(9)
+plt.figure(12)
 plt.plot(np.arange(T-1), x2, 'b', linewidth=2)
-plt.axhline(y=100 * g_n_SS, color='r')
-plt.title('Population Growth rate over time')
+plt.axhline(y=100 * g_n_SS, color='r', linestyle='--', label=r'$\bar{g}_n$')
+plt.legend(loc=0)
+plt.xlabel(r'Time $t$')
+plt.ylabel(r'Population growth rate $g_y$')
+# plt.title('Population Growth rate over time')
 plt.savefig('OUTPUT/Population_growthrate')
 
+
+plt.figure(13)
+plt.plot(np.arange(S), omega[0, :, 0], linewidth=2)
+plt.xlabel(r'age $s$')
+plt.ylabel(r'$\omega_{s,1}$')
+plt.savefig('OUTPUT/omega_init')
+
+plt.figure(14)
+plt.plot(np.arange(S), omega_SS, linewidth=2)
+plt.xlabel(r'age $s$')
+plt.ylabel(r'$\overline{\omega}$')
+plt.savefig('OUTPUT/omega_ss')
 
 
 '''
@@ -538,7 +552,7 @@ euler1 = Euler1(wss, rss, e, Lssmat, k1, k2, k3)
 euler2 = Euler2(wss, rss, e, Lssmat, k1_2, k2_2)
 
 # 2D Graph
-plt.figure(10)
+plt.figure(15)
 plt.plot(domain[1:], np.abs(euler1).max(1), label='Euler1')
 plt.plot(domain, np.abs(euler2).max(1), label='Euler2')
 plt.legend(loc=0)
@@ -548,22 +562,22 @@ plt.savefig('OUTPUT/euler_errors_SS_2D')
 # 3D Graph
 X2, Y2 = np.meshgrid(Sgrid[1:], Jgrid)
 
-fig10 = plt.figure(11)
-ax10 = fig10.gca(projection='3d')
-ax10.plot_surface(X2, Y2, euler1.T, rstride=1, cstride=2, cmap=cmap2)
-ax10.set_xlabel(r'Age Cohorts $S$')
-ax10.set_ylabel(r'Ability Types $J$')
-ax10.set_zlabel('Error Level')
-ax10.set_title('Euler Errors')
+fig16 = plt.figure(16)
+ax16 = fig16.gca(projection='3d')
+ax16.plot_surface(X2, Y2, euler1.T, rstride=1, cstride=2, cmap=cmap2)
+ax16.set_xlabel(r'Age Cohorts $S$')
+ax16.set_ylabel(r'Ability Types $J$')
+ax16.set_zlabel('Error Level')
+ax16.set_title('Euler Errors')
 plt.savefig('OUTPUT/euler_errors_euler1_SS_3D')
 
-fig12 = plt.figure(12)
-ax12 = fig12.gca(projection='3d')
-ax12.plot_surface(X, Y, euler2.T, rstride=1, cstride=2, cmap=cmap2)
-ax12.set_xlabel(r'Age Cohorts $S$')
-ax12.set_ylabel(r'Ability Types $J$')
-ax12.set_zlabel('Error Level')
-ax12.set_title('Euler Errors')
+fig17 = plt.figure(17)
+ax17 = fig17.gca(projection='3d')
+ax17.plot_surface(X, Y, euler2.T, rstride=1, cstride=2, cmap=cmap2)
+ax17.set_xlabel(r'Age Cohorts $S$')
+ax17.set_ylabel(r'Ability Types $J$')
+ax17.set_zlabel('Error Level')
+ax17.set_title('Euler Errors')
 plt.savefig('OUTPUT/euler_errors_euler2_SS_3D')
 
 print '\tFinished.'

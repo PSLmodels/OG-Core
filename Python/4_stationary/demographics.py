@@ -187,7 +187,7 @@ def get_fert(S, J, starting_age):
     fert_rate = poly.polyval(np.linspace(starting_age, ending_age-1, 60), poly_fert)
     # Do not allow negative fertility rates, or nonzero rates outside of
     # a certain age range
-    new_end = np.linspace(fert_rate[42-starting_age], fert_rate[50-starting_age], 9)
+    new_end = np.linspace(fert_rate[42-starting_age], fert_data[-1], 9)
     fert_rate[42-starting_age:51-starting_age] = new_end
     for i in xrange(60):
         if np.linspace(starting_age, ending_age-1, 60)[i] >= 51 or np.linspace(starting_age, ending_age-1, 60)[i] < 10:
@@ -216,6 +216,35 @@ def get_fert(S, J, starting_age):
 
 '''
 ------------------------------------------------------------------------
+    Generate graphs of mortality, fertility, and immigration rates
+------------------------------------------------------------------------
+'''
+
+
+def rate_graphs(S, starting_age, imm, fert):
+    domain = np.arange(S) + 1
+    mort = np.array(mort_data.mort_rate)[starting_age:100]
+    domain2 = np.arange(mort.shape[0]) + 1
+    plt.figure(1)
+    plt.plot(domain2[:60], mort[:60], color='blue', linewidth=2)
+    plt.plot(domain2[60:], mort[60:], color='blue', linestyle='--', linewidth=2)
+    plt.axvline(x=60, color='red', linestyle='-', linewidth=1)
+    plt.xlabel(r'age $s$')
+    plt.ylabel(r'mortality $\rho_s$')
+    plt.savefig('OUTPUT/mort_rates')
+    plt.figure(2)
+    plt.plot(domain, imm, linewidth=2, color='blue')
+    plt.xlabel(r'age $s$')
+    plt.ylabel(r'immigration $i_s$')
+    plt.savefig('OUTPUT/imm_rates')
+    plt.figure(3)
+    plt.plot(domain, fert, linewidth=2, color='blue')
+    plt.xlabel(r'age $s$')
+    plt.ylabel(r'fertility $f_s$')
+    plt.savefig('OUTPUT/fert_rates')
+
+'''
+------------------------------------------------------------------------
     Generate Omega array
 ------------------------------------------------------------------------
 '''
@@ -232,51 +261,46 @@ def get_omega(S, J, T, starting_age):
     '''
     ending_age = starting_age + 60
     data1 = data
-    data1 = data1[starting_age:ending_age]
-    age_groups = np.linspace(starting_age, ending_age, S+1)
+    data2 = data1[starting_age:ending_age]
     # Generate list of total population size for 2010, 2011, 2012 and 2013
-    sums = [sum2010, sum2011, sum2012, sum2013] = [
-        data1['2010'].values.sum(), data1['2011'].values.sum(), data1[
-            '2012'].values.sum(), data1['2013'].values.sum()]
+    sum2010 = data2['2010'].values.sum()
     # For each year of the data, transform each age group's population to
     # be a fraction of the total
-    data1['2010'] /= float(sum2010)
-    data1['2011'] /= float(sum2011)
-    data1['2012'] /= float(sum2012)
-    data1['2013'] /= float(sum2013)
-    omega = data1['2010'].values
+    pop_data = np.array(data1['2010'] / float(sum2010))
+    poly_pop = poly.polyfit(np.linspace(0, pop_data.shape[0]-1, pop_data.shape[0]), pop_data, deg=11)
+    poly_int_pop = poly.polyint(poly_pop)
+    pop_int = poly.polyval(np.linspace(starting_age, ending_age, S+1), poly_int_pop)
     new_omega = np.zeros(S)
-    for ind in xrange(S):
-        new_omega[ind] = (data1[
-            np.array((age_groups[ind] <= data1.index)) & np.array(
-                (data1.index < age_groups[ind+1]))])['2010'].values.sum()
-    new_omega = np.tile(new_omega.reshape(S, 1), (1, J))
+    for s in xrange(S):
+        new_omega[s] = pop_int[s+1] - pop_int[s]
     # Each ability group contains 1/J fraction of age group
+    new_omega = np.tile(new_omega.reshape(S, 1), (1, J))
     new_omega /= J
     surv_array, children_rate = get_survival(S, J, starting_age)
     imm_array, children_im = get_immigration(S, J, starting_age)
     omega_big = np.tile(new_omega.reshape(1, S, J), (T, 1, 1))
     fert_rate, children_fertrate = get_fert(S, J, starting_age)
-    children = np.zeros((starting_age, J))
+    rate_graphs(S, starting_age, imm_array, fert_rate)
+    # children = np.zeros((starting_age, J))
     # Keep track of how many individuals have been born and their survival
     # until they enter the working population
-    children_rate = np.array([1] + list(children_rate))
-    for ind in xrange(starting_age):
-        children[ind, :] = (
-            omega_big[0, :, :] * fert_rate).sum(0) * np.prod(
-            children_rate[:ind] + children_im[:ind])
+    # children_rate = np.array([1] + list(children_rate))
+    # for ind in xrange(starting_age):
+    #     children[ind, :] = (
+    #         omega_big[0, :, :] * fert_rate).sum(0) * np.prod(
+    #         children_rate[:ind] + children_im[:ind])
     # Generate the time path for each age/abilty group
     for t in xrange(1, T):
         # Children are born and then have to wait 20 years to enter the model
         # omega_big[t, 0, :] = children[-1, :] * (children_rate[-1] + imm_array[0])
         # Children are born immediately:
-        omega_big[t, 0, :] = (omega_big[t-1, :, :] * fert_rate).sum(0) # * (children_rate[-1] + imm_array[0])
+        omega_big[t, 0, :] = (omega_big[t-1, :, :] * fert_rate).sum(0) #* (children_rate[-1] + imm_array[0])
         omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * (surv_array[:-1].reshape(1, S-1, J) + imm_array[1:].reshape(1, S-1, J))
         # children[1:, :] = children[:-1, :] * (children_rate[1:-1].reshape(
         #     starting_age-1, 1) + children_im[1:].reshape(starting_age-1, 1))
         # children[0, :] = ((omega_big[t, :, :] * fert_rate).sum(0) + (children * children_fertrate.reshape(starting_age, 1)).sum(0))* (1 + children_im[0])
     OMEGA = np.zeros((S, S))
-    OMEGA[0, :] = fert_rate[:, 0]
+    OMEGA[0, :] = fert_rate[:, 0] # * (children_rate[-1] + imm_array[0])
     OMEGA += np.diag(surv_array[:-1][:, 0] + imm_array[1:][:, 0], -1)
     eigvalues, eigvectors = np.linalg.eig(OMEGA)
     mask = eigvalues.real != 0

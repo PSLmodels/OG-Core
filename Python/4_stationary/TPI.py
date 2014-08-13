@@ -266,7 +266,7 @@ def MUl_2(n):
     return output
 
 
-initial_K = .9*Kssmat
+initial_K = Kssmat
 K0 = (omega_stationary[0, 1:, :] * initial_K).sum()
 K1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_K))
 K2_2init = np.array(list(initial_K) + list(np.zeros(J).reshape(1, J)))
@@ -277,6 +277,7 @@ w0 = get_w(Y0, L0)
 r0 = get_r(Y0, K0)
 c0 = (1 + r0) * K1_2init + w0 * e * initial_L - K2_2init
 constraint_checker1(initial_K, initial_L, w0, r0, e, c0)
+print 'K0 divided by Kss =', K0/Kss
 
 '''
 ------------------------------------------------------------------------
@@ -490,25 +491,25 @@ Plot Timepath for K and N
 
 print 'Generating TPI graphs.'
 
-plt.figure(14)
+plt.figure(18)
 plt.axhline(
-    y=Kss, color='black', linewidth=2, label="Steady State K", ls='--')
+    y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
 plt.plot(np.arange(
-    T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path K$_t$")
-plt.xlabel("Time t")
-plt.ylabel("Aggregate Capital K")
-plt.title(r"Time Path of Capital Stock K$_t$")
+    T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
+plt.xlabel(r"Time $t$")
+plt.ylabel(r"Per-capita Capital $\hat{K}$")
+# plt.title(r"Time Path of Capital Stock K$_t$")
 plt.legend(loc=0)
 plt.savefig("OUTPUT/TPI_K")
 
-plt.figure(15)
+plt.figure(19)
 plt.axhline(
-    y=Lss, color='black', linewidth=2, label="Steady State L", ls='--')
+    y=Lss, color='black', linewidth=2, label=r"Steady State $\hat{L}$", ls='--')
 plt.plot(np.arange(
-    T+10), Lpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path L$_t$")
-plt.xlabel("Time t")
-plt.ylabel("Aggregate Labor L")
-plt.title(r"Time Path of Labor Supply L$_t$")
+    T+10), Lpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{L}_t$")
+plt.xlabel(r"Time $t$")
+plt.ylabel(r"Labor Participation Rate $\hat{L}$")
+# plt.title(r"Time Path of Labor Supply L$_t$")
 plt.legend(loc=0)
 plt.savefig("OUTPUT/TPI_L")
 
@@ -548,7 +549,7 @@ for t in xrange(T):
     euler_mat2[t] = Euler2(winit[t], rinit[t], e, L_mat[t], k1_2[t], k2_2[t])
 
 domain = np.linspace(1, T, T)
-plt.figure(16)
+plt.figure(20)
 plt.plot(domain, np.abs(euler_mat1).max(1).max(1), label='Euler1')
 plt.plot(domain, np.abs(euler_mat2).max(1).max(1), label='Euler2')
 plt.ylabel('Error Value')
