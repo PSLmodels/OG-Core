@@ -516,13 +516,13 @@ plt.savefig('OUTPUT/Population_growthrate')
 
 
 plt.figure(13)
-plt.plot(np.arange(S), omega[0, :, 0], linewidth=2)
+plt.plot(np.arange(S), omega[0, :, 0], linewidth=2, color='blue')
 plt.xlabel(r'age $s$')
 plt.ylabel(r'$\omega_{s,1}$')
 plt.savefig('OUTPUT/omega_init')
 
 plt.figure(14)
-plt.plot(np.arange(S), omega_SS, linewidth=2)
+plt.plot(np.arange(S), omega_SS, linewidth=2, color='blue')
 plt.xlabel(r'age $s$')
 plt.ylabel(r'$\overline{\omega}$')
 plt.savefig('OUTPUT/omega_ss')
