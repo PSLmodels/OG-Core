@@ -267,11 +267,11 @@ def MUl_2(n):
 
 
 initial_K = .9*Kssmat
-K0 = (omega_stationary[-1, 1:, :] * initial_K).sum()
+K0 = (omega_stationary[0, 1:, :] * initial_K).sum()
 K1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_K))
 K2_2init = np.array(list(initial_K) + list(np.zeros(J).reshape(1, J)))
 initial_L = Lssmat
-L0 = get_L(e, initial_L) / N[-1]
+L0 = get_L(e, initial_L) / N[0]
 Y0 = get_Y(K0, L0)
 w0 = get_w(Y0, L0)
 r0 = get_r(Y0, K0)
@@ -362,7 +362,7 @@ def Euler_Error(guesses, winit, rinit, t):
         Value of Euler error. (as an (S-1)*S*J x 1 list)
     '''
     length = len(guesses)/2
-    K_guess = guesses[:length] / np.exp(g_y_SS * t)
+    K_guess = guesses[:length] / np.exp(g_y_SS * (np.arange(length)+t+1))
     L_guess = guesses[length:]
 
     if length == S-1:
