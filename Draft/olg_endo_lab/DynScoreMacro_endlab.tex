@@ -315,7 +315,7 @@
         $S$ & Periods in individual life & 60 \\
         $J$ & Number of ability types & 7 \\
         $\tilde{l}$ & Maximum hours of labor supply & 1 \\
-        $\beta$ & Discount factor & 0.96 \\
+        $\beta$ & Discount factor & $(0.96)^\frac{60}{S}$ \\
         $\sigma$ & Coefficient of constant relative & 3 \\
         & \quad risk aversion & \\
         $\chi$ & Disutility of labor level parameter & 1 \\
@@ -325,8 +325,8 @@
         & \quad function & \\
         $\alpha$ & Capital share of income in & 0.35 \\
         & \quad production function & \\
-        $\delta$ & Capital depreciation rate & 0.05 \\
-        $g_y$ & Growth rate of labor augmenting & 0.03 \\
+        $\delta$ & Capital depreciation rate & $1-(1-0.05)^\frac{60}{S}$ \\
+        $g_y$ & Growth rate of labor augmenting & $(1+0.03)^\frac{60}{S}-1$ \\
         & \quad technological progress & \\
         $T$ & Number of periods to steady state & 120 \\
         $\nu$ & Dampening parameter for TPI & 0.2 \\
