@@ -64,8 +64,8 @@ omega        = T x S x J array of demographics
 
 # Parameters
 S = 60
-J = 2
-T = 100
+J = 1
+T = 120
 starting_age = 20
 beta = .96 ** (60.0 / S)
 sigma = 3.0
