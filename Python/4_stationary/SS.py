@@ -510,7 +510,7 @@ plt.plot(np.arange(T-1), x2, 'b', linewidth=2)
 plt.axhline(y=100 * g_n_SS, color='r', linestyle='--', label=r'$\bar{g}_n$')
 plt.legend(loc=0)
 plt.xlabel(r'Time $t$')
-plt.ylabel(r'Population growth rate $g_y$')
+plt.ylabel(r'Population growth rate $g_n$')
 # plt.title('Population Growth rate over time')
 plt.savefig('OUTPUT/Population_growthrate')
 
