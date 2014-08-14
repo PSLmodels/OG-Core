@@ -301,7 +301,7 @@ def get_omega(S, J, T, starting_age):
         # children[0, :] = ((omega_big[t, :, :] * fert_rate).sum(0) + (children * children_fertrate.reshape(starting_age, 1)).sum(0))* (1 + children_im[0])
     OMEGA = np.zeros((S, S))
     OMEGA[0, :] = fert_rate[:, 0] # * (children_rate[-1] + imm_array[0])
-    OMEGA += np.diag(surv_array[:-1][:, 0] + imm_array[1:][:, 0], -1)
+    OMEGA += np.diag(surv_array[:-1, 0] + imm_array[1:, 0], -1)
     eigvalues, eigvectors = np.linalg.eig(OMEGA)
     mask = eigvalues.real != 0
     eigvalues = eigvalues[mask]
@@ -313,7 +313,7 @@ def get_omega(S, J, T, starting_age):
     eigvectors = np.abs(eigvectors.T)
     eigvectors = eigvectors[mask]
     omega_SS = eigvectors[mask2].real
-    omega_SS = np.tile(omega_SS.reshape(S, 1), (1, J)) / J
+    omega_SS = np.tile(omega_SS.reshape(S, 1), (1, J)) / J # Divide by J here?
     return omega_big, g_n_SS, omega_SS
 
 # Known problems:

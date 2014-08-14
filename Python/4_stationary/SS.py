@@ -64,8 +64,8 @@ omega        = T x S x J array of demographics
 
 # Parameters
 S = 60
-J = 7
-T = 120
+J = 2
+T = 100
 starting_age = 20
 beta = .96 ** (60.0 / S)
 sigma = 3.0
@@ -269,7 +269,7 @@ def Steady_State(guesses):
     error2[mask2] += 1e9
     if K_guess.sum() <= 0:
         error1 += 1e9
-    cons = (1 + r) * K1_2 + w * e * L_guess - K2_2
+    cons = (1 + r) * K1_2 + w * e * L_guess - K2_2 * np.exp(g_y_SS)
     mask3 = cons < 0
     error2[mask3] += 1e9
     return list(error1.flatten()) + list(error2.flatten())
