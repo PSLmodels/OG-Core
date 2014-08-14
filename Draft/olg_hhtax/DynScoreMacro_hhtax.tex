@@ -1,0 +1,843 @@
+\documentclass[letterpaper,12pt]{article}
+
+\usepackage{threeparttable}
+\usepackage{geometry}
+\geometry{letterpaper,tmargin=1in,bmargin=1in,lmargin=1.25in,rmargin=1.25in}
+\usepackage[format=hang,font=normalsize,labelfont=bf]{caption}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{delarray}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{lscape}
+\usepackage{natbib}
+\usepackage{setspace}
+\usepackage{float,color}
+\usepackage[pdftex]{graphicx}
+\usepackage{pdfsync}
+\usepackage{verbatim}
+\synctex=1
+\usepackage{hyperref}
+\hypersetup{colorlinks,linkcolor=red,urlcolor=blue,citecolor=red}
+\usepackage{bm}
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}{Definition} % Number definitions on their own
+\newtheorem{derivation}{Derivation} % Number derivations on their own
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}{Proposition} % Number propositions on their own
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\bibliographystyle{aer}
+\newcommand\ve{\varepsilon}
+\renewcommand\theenumi{\roman{enumi}}
+\newcommand\norm[1]{\left\lVert#1\right\rVert}
+
+\begin{document}
+
+\begin{titlepage}
+\title{A Macroeconomic Model for \\
+       Dynamic Scoring of Tax Policy
+       \thanks{
+       Put thanks here.}
+       }
+\author{
+  Jason DeBacker\footnote{Middle Tennessee State University, Department of Economics and Finance, BAS N306, Murfreesboro, TN 37132, (615) 898-2528,\href{mailto:jason.debacker@mtsu.edu}{jason.debacker@mtsu.edu}.} \\[-2pt]
+  \and
+  Richard W. Evans\footnote{Brigham Young University, Department of Economics, 167 FOB, Provo, Utah 84602, (801) 422-8303, \href{mailto:revans@byu.edu}{revans@byu.edu}.} \\[-2pt]
+  \and
+  Evan Magnusson\footnote{Brigham Young University, Department of Economics, 163 FOB, Provo, Utah 84602, \href{mailto:evanmag42@gmail.com}{evanmag42@gmail.com}.} \\[-2pt]
+  \and
+  Kerk L. Phillips\footnote{Brigham Young University, Department of Economics, 166 FOB, Provo, Utah 84602, (801) 422-5928, \href{mailto:kerk_phillips@byu.edu}{kerk\_phillips@byu.edu}.} \\[-2pt]
+  \and
+  Isaac Swift\footnote{Brigham Young University, Department of Economics, 163 FOB, Provo, Utah 84602, \href{mailto:isaacdswift@gmail.com}{isaacdswift@gmail.com}.} \\[-2pt]}
+\date{August 2014 \\
+  \scriptsize{(version 14.08.c)}}
+\maketitle
+\begin{abstract}
+\normalsize{Put abstract here.
+
+\vspace{3mm}
+
+\noindent\textit{keywords:}\: Put keywords here.
+
+\vspace{3mm}
+
+\noindent\textit{JEL classification:} Put JEL codes here.}
+\end{abstract}
+\thispagestyle{empty}
+\end{titlepage}
+
+
+\begin{spacing}{1.5}
+
+\section{Introduction}\label{SecIntro}
+
+  Put introduction here.
+
+
+\section{Model with Household Taxes}\label{SecModel}
+
+  This is the deterministic OLG model with population growth and labor augmenting technological change in which households live $S$ periods and are one of $J$ ability types. The ability process is calibrated to match the wage distribution by age in the United States, and labor is endogenously supplied by individuals. The production side of the economy is characterized by a unit measure of identical, perfectly competitive firms. We carefully characterize the household tax structure of the economy.
+
+
+  \subsection{Individual problem}\label{SecIndProb}
+
+    A measure $\omega_{1,t}$ of individuals with heterogeneous working ability $e \in\mathcal{E}\subset\mathbb{R}_{++}$ is born in each period $t$ and live for $S\geq 3$ periods. The population of age-$s$ individuals in any period $t$ is $\omega_{s,t}$. The population of agents of each age in each period $\omega_{s,t}$ evolves according to the following function,
+    \begin{equation}\label{EqPopLawofmotion}
+      \begin{split}
+        \omega_{1,t+1} &= \sum_{s=1}^S f_s\omega_{s,t}\quad\forall t \\
+        \omega_{s+1,t+1} &= (1 + i_s - \rho_s)\omega_{s,t}\quad\forall t\quad\text{and}\quad 1\leq s \leq S-1
+      \end{split}
+    \end{equation}
+    where $f_s\geq 0$ is an age-specific fertility rate, $i_s$ is an age-specific immigration rate, $\rho_s$ is an age specific mortality rate, and $1+i_s-\rho_s$ is constrained to be nonnegative. The total population in the economy $N_t$ at any period is simply the sum of individuals in the economy and the population growth rate in any period $t$ from the previous period $t-1$ is $g_{n,t}$.\footnote{Appendix \ref{AppPopGrowth} describes in detail the exogenous population dynamics.}
+    \begin{equation}\label{EqPopDef}
+      N_t\equiv\sum_{s=1}^S \omega_{s,t} \quad\forall t
+    \end{equation}
+    \begin{equation}\label{EqPopGrowth}
+      g_{n,t+1} \equiv \frac{N_{t+1}}{N_t} - 1 \quad\forall t
+    \end{equation}
+
+    Their working ability evolves over their lifetime according to an age-dependent deterministic process. At birth, an equal fraction $1/J$ of the $\omega_{s,t}$ measure of new agents are randomly assigned to each of the $J$ ability types indexed by $j=1,2,...J$. Once ability type is determined, that measure $\omega_{s,t}/J$ of individuals' ability evolves deterministically according to $e_{j,s}$. The process for the evolution of the population weights $\omega_{s,t}$ is an exogenous input to the model. We calibrate the matrix of lifetime ability paths $e_{j,s}$ for all types $j$ using CPS hourly wage by age distribution data.\footnote{Appendix \ref{AppAbilCalib} gives a detailed description of the calibration of the deterministic ability process by age $s$ and type $j$, as well as alternative specifications and calibrations.}
+
+    Individuals are endowed with a measure of time $\tilde{l}$ in each period $t$, and they choose each period how much of that time to allocate between labor $n_{j,s,t}$ and leisure $l_{j,s,t}$.
+    \begin{equation}\label{EqLabConstr}
+      n_{j,s,t} + l_{j,s,t} = \tilde{l}
+    \end{equation}
+
+    \noindent At time $t$, all generation-$s$ agents with ability $e_{j,s}$ know the real wage rate $w_t$ and know the one-period real net interest rate $r_t$ on bond holdings $b_{j,s,t}$ that mature at the beginning of period $t$. In each period $t$, age-$s$ agents with working ability $e_{j,s}$ choose how much to consume $c_{j,s,t}$, how much to save for the next period by loaning capital to firms in the form of a one-period bond $b_{j,s+1,t+1}$, and how much to work $n_{j,s,t}$ in order to maximize expected lifetime utility of the following form,
+    \begin{equation}\label{EqUtilMax}
+      \begin{split}
+        &U_{j,s,t} = \sum_{v=0}^{S-s}\beta^u u\left(c_{j,s+u,t+u},n_{j,s+u,t+u}\right) \\
+        &\text{where} \quad u\left(c_{j,s,t},n_{j,s,t}\right) = \frac{\left(c_{j,s,t}\right)^{1-\sigma} - 1}{1-\sigma} + \chi e^{g_y t(1-\sigma)}\frac{(\tilde{l}-n_{j,s,t})^{1-\eta}}{1-\eta} \quad\forall j,s,t
+      \end{split}
+    \end{equation}
+    where $\sigma\geq 1$ is the coefficient of relative risk aversion on consumption, $\eta\geq 1$ is proportional to the Frisch elasticity of labor supply, $\beta\in(0,1)$ is the agent's discount factor, $\chi$ is a constant term influencing the disutility of labor, and $g_y$ is a constant growth rate of labor augmenting technological progress, which we explain in Section \ref{SecFirms}. \footnote{The term with the growth rate $e^{g_y t(1-\sigma)}$ must be included in the period utility function because consumption will be growing at rate $g_y$ and this term stationarizes the household Euler equation by making the marginal disutility of labor grow at the same rate as the marginal benefit of consumption.}
+
+    Because agents are born without any bonds maturing and because they purchase no bonds in the last period of life $s=S$, the per-period budget constraints for each agent normalized by the price of consumption are the following,
+    \begin{equation}\label{EqBC}
+      \begin{split}
+        c_{j,s,t} \leq (1-\tau_c)\Bigl[(1+r_t)b_{j,s,t} + w_t e_{j,s}n_{j,s,t} - b_{j,s+1,t+1} - T_{j,s,t}^P - T_{j,s,t}^I\Bigr] \\
+        \quad \forall j,s,t \quad\text{and}\quad b_{j,1,t},b_{j,S+1,t} = 0
+      \end{split}
+    \end{equation}
+    where $\tau_c$ is a consumption tax. The two final terms on the right-hand-side of \eqref{EqBC} are, respectively, payroll tax and income tax functions. Note that the price of consumption is normalized to one, so $w_t$ is the real wage and $r_t$ is the real net interest rate.
+
+    In addition to the budget constraints in each period, the utility function imposes nonnegative consumption through infinite marginal utility and individual labor and leisure must be nonnegative $n_{j,s,t},l_{j,s,t}\geq 0$. We allow the possibility for individual agents to borrow $b_{j,s,t}<0$ for some $j$ and $s$ in period $t$. However, the borrowing must satisfy a series of individual feasibility constraints as well as a strict constraint that the aggregate capital stock $K_t>0$ be positive in every period.\footnote{We describe these constraints in detail in Appendix \ref{AppBorConstr}.}
+
+    The payroll tax function $T_{j,s,t}^P$ is meant to mimic the funding of the U.S. Social Security system and has the following form,
+    \begin{equation}\label{EqTP}
+      T_{j,s,t}^P =
+        \begin{cases}
+          \tau_P w_t e_{j,s}n_{j,s,t} \quad\text{if}\quad w_t e_{j,s}n_{j,s,t} < e^{g_y t}\hat{y}_P \quad\text{and}\quad s<R \\
+          \tau_P e^{g_y t}\hat{y}_P \quad\quad\:\:\:\text{if}\quad w_t e_{j,s}n_{j,s,t} \geq e^{g_y t}\hat{y}_P \quad\text{and}\quad s<R \\
+          -\theta_P e^{g_y t}\hat{a}_{j,s,t} \quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\text{if}\quad s\geq R
+        \end{cases} \quad\forall j,s,t
+    \end{equation}
+    where $\tau_P$ is the payroll tax rate on all labor income up to the growing income level $e^{g_y t}\hat{y}_P$ for pre-retirment ages $s<R$ and $e^{g_y t}$ is the deterministic cummulative growth in the economy since $t=0$.\footnote{This growth rate is labor augmenting technological change and is introduced in Section \ref{SecFirms}.} We assume that all individuals retire at age $R\leq S$, but that age $R$ is only the age that the social security benefits start coming. Individuals age $s\geq R$ still endogenously choose how much labor to supply. $\theta_P$ is the replacement rate of the social security benefit, which is a percent of the growth-adjusted average index of monthly earnings (AIME) $e^{g_y t}\hat{a}_{j,s,t}$. The AIME is calculated as the lifetime average earnings in each period up to age $s=R-1$.
+    \begin{equation}\label{EqAIME}
+      e^{g_y(t+1)}\hat{a}_{j,s+1,t+1} =
+        \begin{cases}
+          w_t e_{j,s}n_{j,s,t} \quad\quad\quad\quad\quad\quad\quad\quad\quad\text{if}\quad s=1 \\
+          \left(\frac{s-1}{s}\right)e^{g_y t}\hat{a}_{j,s,t} + \frac{1}{s}w_t e_{j,s}n_{j,s,t} \quad 1<s<R \\
+          e^{g_y t}\hat{a}_{j,s,t} \quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\text{if}\quad s\geq R
+        \end{cases} \quad\forall j,s,t
+    \end{equation}
+
+    The labor income tax function $T_{j,s,t}^I$ is a piecewise linear step function of $M$ marginal tax rates $\{\tau_{I,m}\}_{m=1}^M$ on ascending income brackets defined by $M-1$ labor income brackets $\{\hat{y}_{I,m}\}_{m=1}^{M-1}$. The number of marginal income tax rates in the U.S. is currently $M=7$. Figure \ref{FigUSmargtaxrates} plots the marginal tax rates with cutoffs, for a married individual filing jointly. Table \ref{TabUSmargtaxrates} shows the U.S. marginal tax rates and cutoffs for the four different categories of filer types for the year 2013. If we define an individual's labor income as $y_{j,s,t}\equiv w_t e_{j,s}n_{j,s,t}$, the labor income tax function $T_{j,s,t}^I$ has the following form.
+    \begin{equation}\label{EqTI}
+      \begin{split}
+        T_{j,s,t}^I = &\tau_{I,1}\min\{e^{g_y t}\hat{y}_{I,1},y_{j,s,t}\} + \tau_{I,2}\max\Bigl\{0,\min\{e^{g_y t}\hat{y}_{I,2},y_{j,s,t}\} - e^{g_y t}\hat{y}_{I,1}\Bigr\} + ... \\
+        &\quad\quad\tau_{I,M-1}\max\Bigl\{0,\min\{e^{g_y t}\hat{y}_{I,M-1},y_{j,s,t}\} - e^{g_y t}\hat{y}_{I,M-2}\Bigr\} + \\
+        &\quad\quad\quad\quad\tau_{I,M}\max\{0, y_{j,s,t}-e^{g_y t}\hat{y}_{I,M-1}\} \quad\forall j,s,t
+      \end{split}
+    \end{equation}
+    The growth rate terms $e^{g_y t}$ in \eqref{EqTI} signify that the income bracket cutoffs are growing at the rate of the economy.
+
+    \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
+      \caption{\label{FigUSmargtaxrates}\textbf{U.S. marginal tax rate schedule for married filing jointly, 2013}}
+      \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/USmargtaxrates.pdf}}}
+    \end{figure}
+
+    \begin{table}[htbp] \centering \captionsetup{width=6.0in}
+    \caption{\label{TabUSmargtaxrates}\textbf{U.S. marginal tax rate schedule by filer type, 2013}}
+      \begin{threeparttable}
+      \begin{tabular}{>{\footnotesize}c |>{\footnotesize}c >{\footnotesize}c >{\footnotesize}c >{\footnotesize}c}
+        \hline\hline
+        Marginal & \multicolumn{4}{c}{\footnotesize{Income brackets by filer type}} \\
+        \cline{2-5}
+        tax &  & Married filing jointly & Married filing & Head of \\
+        rate & Single & or qualified widow(er) & separately & household \\
+        \hline
+        10\% & \$0--\$8,925 & \$0--\$17,850 & \$0--\$8,925 & \$0--\$12,750 \\
+        15\% & \$8,926--\$36,250 & \$17,851--\$72,500 & \$8,926--\$36,250 & \$12,751--\$48,600 \\
+        25\% & \$36,251--\$87,850 & \$72,501--\$146,400 & \$36,251--\$73,200 & \$48,601--\$125,450 \\
+        28\% & \$87,851--\$183,250 & \$146,401--\$223,050 & \$73,201--\$111,525 & \$125,451--\$203,150 \\
+        33\% & \$183,251--\$398,350 & \$223,051--\$398,350 & \$111,526--\$199,175 & \$203,151--\$398,350 \\
+        35\% & \$398,351--\$400,000 & \$398,351--\$450,000 & \$199,176--\$225,000 & \$398,351--\$425,000 \\
+        39.6\% & +\$400,001 & +\$450,001 & +\$225,001 & +\$425,001 \\
+        \hline\hline
+      \end{tabular}
+      \begin{tablenotes}
+        \scriptsize{\item[]Source: U.S. Internal Revenue Service.}
+      \end{tablenotes}
+      \end{threeparttable}
+    \end{table}
+
+    The labor income cutoff $\hat{y}_P$ and the change in tax structure at $s=R$ in the payroll tax \eqref{EqTP} as well as the discrete jumps in marginal tax rates in the income tax \eqref{EqTI} render the household's optimization problem every period highly nonconvex. And the kinks in the intertemporal budget constraint multiply for younger households with more periods until death. For this reason, a dynamic programming approach to the household optimization problem is necessary. We solve for optimal household decisions by backward induction from the last period of an individual's life to the first period.
+
+    In order to perform this functional analysis, we must stationarize the characterizing equations for household optimization. The individual (per-capita) endogenous variables in this section are growing at the rate of labor augmenting technological progress $e^{g_y}$, the role of which is described in Section \ref{SecFirms}. Table \ref{TabHHstatVars} defines the stationarized versions of the household variables.
+
+    \begin{table}[htbp] \centering \captionsetup{width=2.9in}
+    \caption{\label{TabHHstatVars}\textbf{Stationary household variable definitions}}
+      \begin{threeparttable}
+      \begin{tabular}{>{\small}c >{\small}c >{\small}c}
+        \hline\hline
+        & & \\[-4mm]
+        $\hat{c}_{j,s,t}\equiv \frac{c_{j,s,t}}{e^{g_y t}}$ & $\hat{b}_{j,s,t}\equiv\frac{b_{j,s,t}}{e^{g_y t}}$ & $\hat{w}_t\equiv\frac{w_t}{e^{g_y t}}$ \\[2mm]
+        $\hat{T}_{j,s,t}^P\equiv \frac{T_{j,s,t}^P}{e^{g_y t}}$ & $\hat{T}_{j,s,t}^I\equiv \frac{T_{j,s,t}^I}{e^{g_y t}}$ & $\hat{y}_{j,s,t}\equiv\frac{y_{j,s,t}}{e^{g_y t}}$ \\[2mm]
+        \hline\hline
+      \end{tabular}
+      \begin{tablenotes}
+        \scriptsize{\item[]Note: The interest rate $r_t$ in \eqref{EqFOCrate} is already stationary because $Y_t$ and $K_t$ grow at the same rate. Individual labor supply $n_{j,s,t}$ is stationary.}
+      \end{tablenotes}
+      \end{threeparttable}
+    \end{table}
+
+    \noindent The stationarized version of the household budget constraint \eqref{EqBC} is the following,
+    \begin{equation}\label{EqBCstat}
+      \begin{split}
+        \hat{c}_{j,s,t} \leq (1-\tau_c)\Bigl[(1+r_t)\hat{b}_{j,s,t} + \hat{w}_t e_{j,s}n_{j,s,t} - e^{g_y}\hat{b}_{j,s+1,t+1} - \hat{T}_{j,s,t}^P - \hat{T}_{j,s,t}^I\Bigr] \\
+        \quad \forall j,s,t \quad\text{and}\quad \hat{b}_{j,1,t},\hat{b}_{j,S+1,t} = 0
+      \end{split}
+    \end{equation}
+    where the stationary versions of the household tax policies \eqref{EqTP}, \eqref{EqAIME}, and \eqref{EqTI} are the following.
+    \begin{equation}\label{EqTPstat}
+      \hat{T}_{j,s,t}^P =
+        \begin{cases}
+          \tau_P\hat{w}_t e_{j,s}n_{j,s,t} \quad\text{if}\quad \hat{w}_t e_{j,s}n_{j,s,t} < \hat{y}_P \quad\text{and}\quad s<R \\
+          \tau_P\hat{y}_P \quad\quad\quad\quad\:\text{if}\quad \hat{w}_t e_{j,s}n_{j,s,t} \geq \hat{y}_P \quad\text{and}\quad s<R \\
+          -\theta_P \hat{a}_{j,s,t} \quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\text{if}\quad s\geq R
+        \end{cases} \quad\forall j,s,t
+    \end{equation}
+    \begin{equation}\label{EqAIMEstat}
+      e^{g_y}\hat{a}_{j,s+1,t+1} =
+        \begin{cases}
+          \hat{w}_t e_{j,s}n_{j,s,t} \quad\quad\quad\quad\quad\quad\quad\quad\:\:\text{if}\quad s=1 \\
+          \left(\frac{s-1}{s}\right)\hat{a}_{j,s,t} + \left(\frac{1}{s}\right)\hat{w}_t e_{j,s}n_{j,s,t} \quad 1<s<R \\
+          \hat{a}_{j,s,t} \quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\text{if}\quad s\geq R
+        \end{cases} \quad\forall j,s,t
+    \end{equation}
+    \begin{equation}\label{EqTIstat}
+      \begin{split}
+        \hat{T}_{j,s,t}^I = &\tau_{I,1}\min\{\hat{y}_{I,1},\hat{y}_{j,s,t}\} + \tau_{I,2}\max\Bigl\{0,\min\{\hat{y}_{I,2},\hat{y}_{j,s,t}\} - \hat{y}_{I,1}\Bigr\} + ... \\
+        &\quad\quad\tau_{I,M-1}\max\Bigl\{0,\min\{\hat{y}_{I,M-1},\hat{y}_{j,s,t}\} - \hat{y}_{I,M-2}\Bigr\} + \\
+        &\quad\quad\quad\quad\tau_{I,M}\max\{0, \hat{y}_{j,s,t}-\hat{y}_{I,M-1}\} \quad\forall j,s,t
+      \end{split}
+    \end{equation}
+
+    In the last period of an individual's life $s=S$, one simply chooses how much to work and then consumes all his after-tax income. The household optimization problem can be written as an age-dependent Bellman equation.
+    \begin{equation}\label{EqHHSmaxprob}
+      \begin{split}
+        &V_{j,S}\bigl(\hat{b}_{j,S,t},\hat{a}_{j,S,t},\hat{w}_t,r_t\bigr) = \\
+        &\max_{n_{j,S,t}}\quad\frac{\biggl((1-\tau_c)\Bigl[(1+r_t)b_{j,S,t} + w_t e_{j,S}n_{j,S,t} + \theta_P e^{g_y t}\hat{a}_{j,S,t} - T_{j,S,t}^I\bigr]\Biggr)^{1-\sigma} - 1}{1-\sigma} + \\
+        &\quad\quad\quad\quad\quad\chi e^{g_y t(1-\sigma)}\frac{(\tilde{l} - n_{j,S,t})^{1-\eta}}{1-\eta} \quad\forall j,t
+      \end{split}
+    \end{equation}
+    For the age-$S$ problem \eqref{EqHHSmaxprob}, the optimization is nonconvex due to the piecewise linear labor income tax $T_{j,S,t}^I$. Notice that the payroll tax has switched to a fixed benefit because $s\geq R$.
+
+
+    We next describe the Euler equations that govern the choices of consumption $c_{j,s,t}$ and savings $b_{j,s+1,t+1}$ by household of age $s$ and ability $e_{j,s}$ in each period $t$. We work backward from the last period of life $s = S$. Because households do not save in the last period of life $b_{j,s+1,t+1}=0$ due to our assumption of no bequest motive, the household's final-period maximization problem is given by the following.
+    \begin{equation}\label{EqSmaxprob}
+      \begin{split}
+        \max_{c_{j,S,t},n_{j,S,t},b_{j,s+1,t+1}} &\frac{\left(c_{j,S,t}\right)^{1-\sigma} - 1}{1 - \sigma} + \chi e^{g_y t(1-\sigma)}\frac{(\tilde{l}-n_{j,s,t})^{1-\eta}}{1-\eta} \\
+        &\text{s.t.} \quad \left(1+r_t\right)b_{j,S,t} + w_t e_{j,S}n_{j,S,t} \geq c_{j,S,t} \quad \forall t
+      \end{split}
+    \end{equation}
+    Because $u(c)$ is monotonically increasing in $c$, the $s=S$ consumption part of the maximization problem \eqref{EqSmaxprob} is simply to choose the maximum amount of consumption possible. The household trivially consumes all of its income in the last period of life. However, the household must choose labor to balance its benefits in extra consumption with its costs in disutility.
+    \begin{gather}
+      c_{j,S,t} = \left(1+r_t\right)b_{j,S,t} + w_t e_{j,S}n_{j,S,t} \quad \forall t \label{EqScons} \\
+      w_t e_{j,S}\Bigl[\left(1+r_t\right)b_{j,S,t} + w_t e_{j,S}n_{j,S,t}\Bigr]^{-\sigma} = \chi e^{g_y t(1-\sigma)}(\tilde{l} - n_{j,S,t})^{-\eta} \quad\forall t \label{EqEulerSlab}
+    \end{gather}
+
+    An individual in his second-to-last period of life $s=S-1$ must choose how much to consume and how much to save for the last period of life $b_{j,S,t+1}$ as well as how much to work in the current period $n_{j,S-1,t}$ and how much to work in the final period $n_{j,S,t+1}$. The $S-1$ individual optimization problem is governed by two static first order conditions for labor  $n_{j,S-1,t}$ and $n_{j,S,t+1}$ and an intertemporal Euler equation for the savings decision.
+    \begin{gather}
+      \begin{split}
+        w_t e_{j,S-1}\Bigl[\left(1+r_t\right)b_{j,S_1,t} + w_t e_{j,S-1}n_{j,S-1,t} - &b_{j,S,t+1}\Bigr]^{-\sigma} = ... \\
+        &\chi e^{g_y t(1-\sigma)}(\tilde{l} - n_{j,S-1,t})^{-\eta} \quad\forall t
+      \end{split} \label{EqEulerSm1lab} \\
+      \begin{split}
+        w_{t+1} e_{j,S}\Bigl[\left(1+r_{t+1}\right)b_{j,S,t+1} + w_{t+1} &e_{j,S}n_{j,S,t+1}\Bigr]^{-\sigma} = ... \\
+        &\chi e^{g_y (t+1)(1-\sigma)}(\tilde{l} - n_{j,S,t+1})^{-\eta} \quad\forall t \\
+      \end{split} \label{EqEulerSlab2} \\
+      \begin{split}
+        \Bigl[\left(1+r_t\right)b_{j,S_1,t} + w_t &e_{j,S-1}n_{j,S-1,t} - b_{j,S,t+1}\Bigr]^{-\sigma} = ... \\
+        &\beta(1+r_{t+1})\Bigl[\left(1+r_{t+1}\right)b_{j,S,t+1} + w_{t+1} e_{j,S}n_{j,S,t+1}\Bigr]^{-\sigma} \quad\forall t
+      \end{split} \label{EqEulerSm1Sav}
+    \end{gather}
+
+    In general, maximizing \eqref{EqUtilMax} with respect to \eqref{EqBC1}, \eqref{EqBC2}, \eqref{EqBC3}, and the implied individual and aggregate borrowing constraints gives the following set of $S-1$ intertemporal Euler equations and $S$ static first order conditions characterizing lifetime savings $b_{j,s,t}$ for all $j$ and $2\leq s\leq S$ and labor supply $n_{j,s,t}$ for all $j$ and $1\leq s\leq S$.
+    \begin{gather}
+      \begin{split}
+        w_t e_{j,s}\Bigl[\left(1+r_t\right)b_{j,s,t} + &w_t e_{j,s}n_{j,s,t} - b_{j,s+1,t+1}\Bigr]^{-\sigma} = \chi e^{g_y t(1-\sigma)}(\tilde{l} - n_{j,s,t})^{-\eta} \\
+        &\forall j,t \quad\text{and}\quad 1\leq s\leq S \quad\text{with}\quad b_{j,1,t},b_{j,S+1,t}=0
+      \end{split} \label{EqEulerLabGen} \\
+      \begin{split}
+        &\Bigl[\left(1+r_t\right)b_{j,s,t} + w_t e_{j,s}n_{j,s,t} - b_{j,s+1,t+1}\Bigr]^{-\sigma} = ... \\
+        &\quad \beta(1+r_{t+1})\Bigl[\left(1+r_{t+1}\right)b_{j,s+1,t+1} + w_{t+1} e_{j,s+1}n_{j,s+1,t+1} - b_{j,s+2,t+2}\Bigr]^{-\sigma} \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\forall j,t \quad\text{and}\quad 1\leq s\leq S-1 \quad\text{with}\quad b_{j,1,t},b_{j,S+1,t}=0
+      \end{split} \label{EqEulerSavGen}
+    \end{gather}
+
+
+  \subsection{Firm problem}\label{SecFirms}
+
+    A unit measure of identical, perfectly competitive firms exist in this economy. The representative firm is characterized by the following Cobb-Douglas production technology,
+    \begin{equation}\label{EqCobbDougProd}
+       Y_t = A K_t^\alpha\left(e^{g_y t}L_t\right)^{1-\alpha} \quad \forall t
+    \end{equation}
+    where $A$ is a constant level effect on the technology process, $\alpha\in(0,1)$ is the capital share of income, $g_y$ is the constant growth rate of labor augmenting technological change, and $L_t$ is measured in efficiency units of labor. The interest rate $r_t$ in the cost function is a net real interest rate because depreciation $\delta$ is paid by the firms. The real wage is $w_t$. The real profit function of the firm is the following.
+    \begin{equation}\label{EqFirmProfit}
+       \text{Real Profits} = A K_t^\alpha\left(e^{g_y t}L_t\right)^{1-\alpha} - (r_t + \delta)K_t - w_t L_t
+    \end{equation}
+    As in the budget constraints \eqref{EqBC1}, \eqref{EqBC2}, and \eqref{EqBC3}, note that the price of the good has been normalized to one.
+
+    Profit maximization results in the real wage $w_t$ and the real rental rate of capital $r_t$ being determined by the marginal products of labor and capital, respectively.
+    \begin{align}
+       w_t &= (1-\alpha)\frac{Y_t}{L_t} \quad \forall t \label{EqFOCwage}\\
+       r_t &= \alpha\frac{Y_t}{K_t} - \delta \quad\:\:\: \forall t \label{EqFOCrate}
+    \end{align}
+
+
+  \subsection{Market clearing and stationary equilibrium}\label{SecMCEqlbm}
+
+    Labor market clearing requires that aggregate labor demand $L_t$ measured in efficiency units equal the sum of individual efficiency labor supplied $e_{j,s}n_{j,s,t}$. Capital market clearing requires that aggregate capital demand $K_t$ equal the sum of capital investment by households $b_{j,s,t}$. Aggregate consumption $C_t$ is defined as the sum of all individual consumptions, and aggregate investment is defined by the standard $Y = C + I$ constraint as shown in \eqref{EqMktClrGoods}.
+    \begin{align}
+      L_t &= \frac{1}{J}\sum_{s=1}^S\sum_{j=1}^{J} \omega_{s,t}e_{j,s}n_{j,s,t} \quad\quad \forall t \label{EqMktClrLab} \\
+      K_t &= \frac{1}{J}\sum_{s=1}^{S}\sum_{j=1}^{J}\omega_{s,t}b_{j,s,t} \quad\quad\quad\quad \forall t \label{EqMktClrCap} \\
+      \begin{split}
+        Y_t &= C_t + K_{t+1} - (1-\delta)K_t \quad\forall t \\
+        &\quad\text{where}\quad C_t \equiv \frac{1}{J}\sum_{s=1}^{S}\sum_{j=1}^{J}\omega_{s,t}c_{j,s,t}
+      \end{split} \label{EqMktClrGoods}
+    \end{align}
+
+    The usual definition of equilibrium would be allocations and prices such that households optimize \eqref{EqEulerLabGen} and \eqref{EqEulerSavGen}, firms optimize \eqref{EqFOCwage} and \eqref{EqFOCrate}, and markets clear \eqref{EqMktClrLab} and \eqref{EqMktClrCap}. However, the variables in these characterizing equations are potentially not stationary due to the possible growth rate in the total population $g_{n,t}$ each period coming from the cohort growth rates in \eqref{EqPopLawofmotion} and from the deterministic growth rate of labor augmenting technological change $g_y$ in \eqref{EqCobbDougProd}.
+
+    Define the following stationary versions of the variables of the model in Table \ref{TabStatVars} in which the variables are represented in per-capita terms and in which the growth rate from labor augmenting technical change has been removed.
+
+    \begin{table}[htbp] \centering \captionsetup{width=3.3in}
+    \caption{\label{TabStatVars}\textbf{Stationary variable definitions}}
+      \begin{threeparttable}
+      \begin{tabular}{>{\small}c |>{\small}c >{\small}c}
+        \hline\hline
+        Individual variables & \multicolumn{2}{c}{Aggregate variables} \\
+        \hline
+        & & \\[-4mm]
+        $\hat{w}_t\equiv \frac{w_t}{e^{g_y t}}$ & $\hat{Y}_t\equiv\frac{Y_t}{N_t e^{g_y t}}$ & $\hat{K}_t\equiv\frac{K_t}{N_t e^{g_y t}}$ \\[2mm]
+        $\hat{b}_{j,s,t}\equiv \frac{b_{j,s,t}}{e^{g_y t}}$ & $\hat{L}_t\equiv\frac{L_t}{N_t}$ & $\hat{\omega}_{s,t}\equiv\frac{\omega_{s,t}}{N_t}$ \\[2mm]
+        \hline\hline
+      \end{tabular}
+      \begin{tablenotes}
+        \scriptsize{\item[]Note: The interest rate $r_t$ in \eqref{EqFOCrate} is already stationary because $Y_t$ and $K_t$ grow at the same rate. Individual labor supply $n_{j,s,t}$ is stationary.}
+      \end{tablenotes}
+      \end{threeparttable}
+    \end{table}
+
+    \noindent With the definitions in Table \ref{TabStatVars}, it can be shown that the equilibrium characterizing equations can be written in stationary form in the following way. The static and intertemporal Euler equations from the individual's optimization problem corresponding to \eqref{EqEulerLabGen} and \eqref{EqEulerSavGen} are the following.
+    \begin{gather}
+      \begin{split}
+        \hat{w}_t e_{j,s}\Bigl[\left(1+r_t\right)\hat{b}_{j,s,t} + &\hat{w}_t e_{j,s}n_{j,s,t} - e^{g_y}\hat{b}_{j,s+1,t+1}\Bigr]^{-\sigma} = \chi(\tilde{l} - n_{j,s,t})^{-\eta} \\
+        &\forall j,t \quad\text{and}\quad 1\leq s\leq S \quad\text{with}\quad \hat{b}_{j,1,t},\hat{b}_{j,S+1,t}=0
+      \end{split} \label{EqEulerLabStat} \\
+      \begin{split}
+        &\Bigl[\left(1+r_t\right)\hat{b}_{j,s,t} + \hat{w}_t e_{j,s}n_{j,s,t} - e^{g_y}b_{j,s+1,t+1}\Bigr]^{-\sigma} = ... \\
+        &\quad \beta(1+r_{t+1})e^{-\sigma g_y}\Bigl[\left(1+r_{t+1}\right)\hat{b}_{j,s+1,t+1} + \hat{w}_{t+1}e_{j,s+1}n_{j,s+1,t+1} - e^{g_y}\hat{b}_{j,s+2,t+2}\Bigr]^{-\sigma} \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\forall j,t \quad\text{and}\quad 1\leq s\leq S-1 \quad\text{with}\quad \hat{b}_{j,1,t},\hat{b}_{j,S+1,t}=0
+      \end{split} \label{EqEulerSavStat}
+    \end{gather}
+    The stationary firm first order conditions for optimal labor and capital demand corresponding to \eqref{EqFOCwage} and \eqref{EqFOCrate} are the following.
+    \begin{equation}\label{EqFOCwageStat}
+       \hat{w}_t = (1-\alpha)\frac{\hat{Y}_t}{\hat{L}_t} \quad \forall t
+    \end{equation}
+    \begin{equation}\tag{\ref{EqFOCrate}}
+       r_t = \alpha\frac{\hat{Y}_t}{\hat{K}_t} - \delta = \alpha\frac{Y_t}{K_t} - \delta \quad \forall t
+    \end{equation}
+    And the two stationary market clearing conditions corresponding to \eqref{EqMktClrLab} and \eqref{EqMktClrCap}---with the goods market clearing by Walras' Law---are the following.
+    \begin{align}
+      \hat{L}_t &= \frac{1}{J}\sum_{s=1}^S\sum_{j=1}^{J} \hat{\omega}_{s,t}e_{j,s}n_{j,s,t} \quad \forall t \label{EqMktClrLabStat} \\
+      \hat{K}_t &= \frac{1}{J}\sum_{s=1}^{S}\sum_{j=1}^{J}\hat{\omega}_{s,t}\hat{b}_{j,s,t} \quad\quad\:\: \forall t \label{EqMktClrCapStat} \\
+    \end{align}
+
+    We can now define the stationary steady-state equilibrium for this economy in the following way.
+
+    \vspace{7mm}
+    \end{spacing}
+    \hrule
+    \begin{definition}[\textbf{Stationary steady-state equilibrium}]\label{DefEquilSS}
+      A non-autarkic stationary steady-state equilibrium in the overlapping generations model with $S$-period lived agents and heterogeneous ability $e_{j,s}$ is defined as constant allocations $\hat{b}_{j,s+1,t+1}=\bar{b}_{j,s+1}$ and $\hat{n}_{j,s,t}=\bar{n}_{j,s}$ and constant prices $\hat{w}_t=\bar{w}$ and $\hat{r}_t=\bar{r}$ for all $j$, $s$, and $t$ such that the following conditions hold:
+       \begin{enumerate}
+          \item households optimize according to \eqref{EqEulerLabStat}, and \eqref{EqEulerSavStat},
+          \item firms optimize according to \eqref{EqFOCwageStat} and \eqref{EqFOCrate},
+          \item markets clear according to \eqref{EqMktClrLabStat} and \eqref{EqMktClrCapStat}, and
+          \item the population has reached its stationary steady state distribution $\bar{\omega}_s$ for all ages $s$, characterized in Appendix \ref{AppPopGrowth}.
+       \end{enumerate}
+    \end{definition}
+    \hrule
+    \begin{spacing}{1.5}
+    \vspace{10mm}
+
+    The steady-state equilibrium is characterized by the system of $J(2S-1)$ equations and $J(2S-1)$ unknowns $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ along with the individual borrowing constraints and aggregate borrowing constraint described in Appendix \ref{AppBorConstr}.
+
+    \begin{gather}
+      \begin{split}
+        \bar{w}e_{j,s}\Bigl[\left(1+\bar{r}\right)\bar{b}_{j,s} + &\bar{w} e_{j,s}\bar{n}_{j,s} - e^{g_y}\bar{b}_{j,s+1}\Bigr]^{-\sigma} = \chi(\tilde{l} - \bar{n}_{j,s})^{-\eta} \\
+        &\forall j \quad\text{and}\quad 1\leq s\leq S \quad\text{with}\quad \bar{b}_{j,1},\bar{b}_{j,S+1}=0
+      \end{split} \label{EqEulerLabSS} \\
+      \begin{split}
+        &\Bigl[\left(1+\bar{r}\right)\bar{b}_{j,s} + \bar{w}e_{j,s}\bar{n}_{j,s} - e^{g_y}\bar{b}_{j,s+1}\Bigr]^{-\sigma} = ... \\
+        &\quad\quad\quad \beta(1+\bar{r})e^{-\sigma g_y}\Bigl[\left(1+\bar{r}\right)\bar{b}_{j,s+1} + \bar{w}e_{j,s+1}\bar{n}_{j,s+1} - e^{g_y}\bar{b}_{j,s+2}\Bigr]^{-\sigma} \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\forall j \quad\text{and}\quad 1\leq s\leq S-1 \quad\text{with}\quad \bar{b}_{j,1},\bar{b}_{j,S+1}=0
+      \end{split} \label{EqEulerSavSS}
+    \end{gather}
+
+    Define $\bm{\hat{\Gamma}}_t$ as the distribution of stationary savings across individuals at time $t$.
+    \begin{equation}\label{EqSavDist}
+      \bm{\hat{\Gamma}}_t \equiv \{\hat{b}_{j,s,t}\}_{j=1,s=2}^{J,S} \quad\forall t
+    \end{equation}
+    In equilibrium, the steady-state individual labor supplies $\bar{n}_{j,s}$ for all $j$ and $s$, the steady-state real wage $\bar{w}$, and the steady-state real rental rate $\bar{r}$ are simply functions of the steady-state distribution of savings $\bar{\Gamma}$. This is clear from the steady-state version of the capital market clearing condition \eqref{EqMktClrCapStat} and the fact that aggregate labor supply is a function of the sum of exogenous efficiency units of labor in the labor market clearing condition \eqref{EqMktClrLabStat}. And the two firm first order conditions for the real wage $\hat{w}_t$ \eqref{EqFOCwageStat} and real rental rate $r_t$ \eqref{EqFOCrate} are only functions of the aggregate capital stock $\hat{K}_t$ and aggregate labor $\hat{L}_t$. Appendix \ref{AppSSsolve} details how to solve for the steady-state equilibrium.
+
+    \begin{table}[htbp] \centering \captionsetup{width=4.4in}
+    \caption{\label{TabExogVars}\textbf{List of exogenous variables and calibration values}}
+      \begin{threeparttable}
+      \begin{tabular}{>{\small}c |>{\small}l |>{\small}c}
+        \hline\hline
+        Symbol & \quad\quad\quad\quad Description & Value \\
+        \hline
+        $\bm{\hat{\Gamma}}_1$ & Initial distribution of savings & $0.9\bm{\bar{\Gamma}}$ \\
+        $\{\omega_{s,1}\}_{s=1}^S$ & Initial population by age & (see App. \ref{AppPopGrowth}) \\
+        $\{f_s\}_{s=1}^S$ & Fertility rates by age & (see App. \ref{AppPopGrowth}) \\
+        $\{i_s\}_{s=1}^S$ & Immigration rates by age & (see App. \ref{AppPopGrowth}) \\
+        $\{\rho_s\}_{s=1}^S$ & Mortality rates by age & (see App. \ref{AppPopGrowth}) \\
+        $\{e_{j,s}\}_{j,s=1}^{J,S}$ & Deterministic ability process & (see App. \ref{AppAbilCalib}) \\
+        $S$ & Periods in individual life & 60 \\
+        $J$ & Number of ability types & 7 \\
+        $\tilde{l}$ & Maximum hours of labor supply & 1 \\
+        $\beta$ & Discount factor & $(0.96)^\frac{60}{S}$ \\
+        $\sigma$ & Coefficient of constant relative & 3 \\
+        & \quad risk aversion & \\
+        $\chi$ & Disutility of labor level parameter & 1 \\
+        $\eta$ & Proportional to elasticity of labor & 2.5 \\
+        & \quad supply & \\
+        $A$ & Level parameter in production & 1 \\
+        & \quad function & \\
+        $\alpha$ & Capital share of income in & 0.35 \\
+        & \quad production function & \\
+        $\delta$ & Capital depreciation rate & $1-(1-0.05)^\frac{60}{S}$ \\
+        $g_y$ & Growth rate of labor augmenting & $(1+0.03)^\frac{60}{S}-1$ \\
+        & \quad technological progress & \\
+        $T$ & Number of periods to steady state & 120 \\
+        $\nu$ & Dampening parameter for TPI & 0.2 \\
+        \hline\hline
+      \end{tabular}
+      \begin{tablenotes}
+        \scriptsize{\item[]Note: Maybe put sources here.}
+      \end{tablenotes}
+      \end{threeparttable}
+    \end{table}
+
+    \begin{figure}[htb]\centering \captionsetup{width=4.0in}
+      \caption{\label{FigSavSS}\textbf{Stationary steady-state distribution of savings $\bar{\bm{\Gamma}}$ for $S=60$ and $J=7$}}
+      \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/SavSS.png}}}
+    \end{figure}
+
+    \begin{figure}[htb]\centering \captionsetup{width=4.0in}
+      \caption{\label{FigLabSS}\textbf{Stationary steady-state distribution of individual labor supply $\bar{n}_{j,s}$ for $S=60$ and $J=7$}}
+      \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/LabSS.png}}}
+    \end{figure}
+
+    Figure \ref{FigSavSS} shows the stationary steady-state distribution of individual savings $\bar{\bm{\Gamma}}$ and Figure \ref{FigLabSS} shows the stationary steady-state distribution of individual labor supply $\bar{n}_{j,s}$ for a particular calibration of the model described in Table \ref{TabExogVars}. Notice .... %that some intergenerational risk sharing is taking place. Young individuals of high ability, know that they will have high ability and borrow $b_{j,s,t}<0$ in their early years in the steady-state.
+
+    The definition of the stationary non-steady-state equilibrium is similar to Definition \ref{DefEquilSS}, with the stationary steady-state equilibrium definition being a special case of the stationary non-steady-state equilibrium.
+
+    \vspace{7mm}
+    \end{spacing}
+    \hrule
+    \begin{definition}[\textbf{Stationary non-steady-state equilibrium}]\label{DefEquilNonSS}
+      A non-autarkic stationary non-steady-state equilibrium in the overlapping generations model with $S$-period lived agents and heterogeneous ability $e_{j,s}$ is defined as allocations $n_{j,s,t}$ and $\hat{b}_{j,s+1,t+1}$ and prices $\hat{w}_t$ and $r_t$ for all $j$, $s$, and $t$ such that the following conditions hold:
+       \begin{enumerate}
+          \item households optimize according to \eqref{EqEulerLabStat}, and \eqref{EqEulerSavStat},
+          \item firms optimize according to \eqref{EqFOCwageStat} and \eqref{EqFOCrate}, and
+          \item markets clear according to \eqref{EqMktClrLabStat} and \eqref{EqMktClrCapStat}.
+       \end{enumerate}
+    \end{definition}
+    \hrule
+    \begin{spacing}{1.5}
+    \vspace{10mm}
+
+    \noindent The household labor-leisure decision in the last period of life shows that the optimal labor supply for age $s=S$ is a function of individual holdings of savings and the prices in that period $n_{j,S,t}=\phi\bigl(\hat{b}_{j,S,t},\hat{w}_t,r_t\bigr)$. This decision is characterized by final-age version of thet static Euler equation \eqref{EqEulerLabStat}. Households in their second-to-last period of life in period $t$ have three decisions to make. They must choose how much to work this period $n_{j,S-1,t}$ and next $n_{j,S,t+1}$ and how much to save this period for next period $\hat{b}_{j,S,t+1}$. The optimal responses for this individual are characterized by the $s=S-1$ and $s=S$ versions of the static Euler equations \eqref{EqEulerLabStat} and the $s=S-1$ version of the intertemporal Euler equation \eqref{EqEulerSavStat}, respectively.
+
+    Optimal savings in the second-to-last period of life $s=S-1$ is a function of the current savings and the prices in the current period and in the next period $\hat{b}_{j,S,t+1} = \psi\bigl(\hat{b}_{j,S-1,t},\hat{w}_t,r_t,\hat{w}_{t+1},r_{t+1}\bigr)$. As before, the optimal labor supply at age $s=S$ is a function of the next period's savings and prices $n_{j,S,t+1}=\phi\bigl(\hat{b}_{j,S,t+1},\hat{w}_{t+1},r_{t+1}\bigr)$. But the optimal labor supply at age $s=S-1$ is a function of the current savings and the current prices as well as the future prices because of the dependence on the savings decision in that same period $n_{j,S-1,t}=\phi\bigl(\hat{b}_{j,S-1,t},\hat{w}_t,r_t,\hat{w}_{t+1},r_{t+1}\bigr)$. By induction, we can show that the optimal labor supply and savings functions for any individual with ability $j$, age $s$, and in period $t$ is a function of current holdings of savings and the lifetime path of prices.
+    \begin{align}
+      n_{j,s,t} &= \phi\Bigl(\hat{b}_{j,s,t},(\hat{w}_v,r_v)_{v=t}^{t+S-s}\Bigr) \quad\forall j,s,t \label{EqLabPolFuncGen} \\
+      \hat{b}_{j,s+1,t+1} &= \psi\Bigl(\hat{b}_{j,s,t},(\hat{w}_v,r_v)_{v=t}^{t+S-s}\Bigr) \quad\forall j,t \quad\text{and}\quad 1\leq s\leq S-1
+    \end{align}
+
+    Each optimal saving decision for each household requires knowledge of at least todays prices and tomorrows prices and at most $S$ periods of prices. In equilibrium, one can see that the prices $(\hat{w}_t,r_t)$ in each period $t$ are functions of the entire distribution of savings $\bm{\Gamma}_t$. The requirement that individuals be able to forecast prices with perfect foresight over their lifetimes implies that each individual has correct information and beliefs about all the other individuals optimization problems and information. It also implies that the equilibrium allocations and prices are really just functions of the entire distribution of savings at a particular period, as well as a law of motion for that distribution of savings.
+
+    \begin{figure}[htb]\centering \captionsetup{width=4.0in}
+      \caption{\label{FigKpathTPI}\textbf{Equilibrium time path of $K_t$ for $S=60$ and $J=7$}}
+      \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/KpathTPI.png}}}
+    \end{figure}
+
+    To solve for any non-steady-state equilibrium time path of the economy from an arbitrary current state to the steady state, we follow the time path iteration (TPI) method of \citet{AuerbachKotlikoff:1987}. Appendix \ref{AppNonSSsolve} details how to solve for the non-steady-state equilibrium time path using the TPI method. Figure \ref{FigKpathTPI} shows the equilibrium time path of the aggregate capital stock for the calibration used in Figure \ref{FigKpathTPI} for $T=80$ periods starting from an initial distribution of savings in which $b_{j,s,1}=(0.9\bar{K})/[(S-1)J]$ for all $j$ and $s$. We used $\nu=0.2$ as our time-path updating dampening parameter (see Equation \eqref{EqTPInewpath} in Appendix \ref{AppNonSSsolve}.)
+
+
+\clearpage
+
+\end{spacing}
+
+\newpage
+\renewcommand{\theequation}{A.\arabic{section}.\arabic{equation}}
+                                                 % redefine the command that creates the section number
+\renewcommand{\thesection}{A-\arabic{section}}   % redefine the command that creates the equation number
+\setcounter{equation}{0}                         % reset counter
+\setcounter{section}{0}                          % reset section number
+\section*{APPENDIX}                              % use *-form to suppress numbering
+
+\section{Calibration of ability process}\label{AppAbilCalib}
+
+  The calibration of the ability process $e_{j,s}$ is as follows.  First, the ability types themselves must be calibrated. For each age group $s \in S$, the hourly wage rates are sorted into $J$ percentile groups.  The ability type for each percentile group is the median wage for the percentile group, divided by the average wage of all individuals in the data set.
+
+  The data used to calibrate the ability types were obtained from the Current Population Survey.\footnote{U.S. Census Bureau, Dataferret, Current Population Survey, 2014. The variables $PRTAGE$, $PTERNHLY$, and $PWCMPWGT$ were used for the age, hourly wage rate, and population weight of individuals, respectively. \\ [-2pt]} Individuals younger than 20 and older than 79 are dropped from the data. This is due to the extremely small amount of observations for ages outside of those bounds. Due to a limited number of observations in the survey who included their hourly wage, data was taken from the months of January, February, March, April, and May 2014.  Population weights were also used to obtain the correct percentile groups of individuals.  The income levels for the $J$ ability types were then calculated for each month, and then an average was taken of the five calibrations of the ability types in order to produce a final calibration to be used in the model. Figure \ref{FigIncome} shows this income distribution across age and ability type.
+
+    \begin{figure}[htb]\centering \captionsetup{width=4.0in}
+      \caption{\label{FigIncome}\textbf{Distribution of Income where $S=60$ and $J=7$}}
+      \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/income.png}}}
+    \end{figure}
+
+  In this paper, individuals are assigned ability types at the beginning of their life, and cannot change types later on.
+
+
+\newpage
+\section{Stationary constraints on individual borrowing}\label{AppBorConstr}
+
+  \setcounter{equation}{0}
+
+  As described in Section \ref{SecIndProb}, individuals are allowed to borrow $b_{j,s,t}$ for some $j$ and $s$ in period $t$. However, two constraints must hold. First, the individual must be able to pay back the balance with interest $r_{t+1}$ in the next period without driving consumption in the next period $c_{j,s+1,t+1}$ to be nonpositive. Let $\tilde{b}_{j,s,t}$ be the minimum stationary value of savings in a period.
+  \begin{equation}\label{EqSavMin}
+    \hat{b}_{j,s,t}\geq\tilde{b}_{j,s,t} \quad\forall j,s,t
+  \end{equation}
+  Rearranging the stationary versions of the bugdet constraints in \eqref{EqBC1}, \eqref{EqBC2}, and \eqref{EqBC3} and using backward induction gives the following expressions for $\tilde{b}_{j,s,t}$,
+  \begin{equation}\label{EqBorConsts}
+    \begin{split}
+      \tilde{b}_{j,S,t} &= \frac{\tilde{c} - \hat{w}_t e_{j,S}\tilde{l}}{1+r_t}  \\
+      \tilde{b}_{j,S-1,t-1} &= \frac{\tilde{c} + e^{g_y}\tilde{b}_{j,S,t} - \hat{w}_{t-1}e_{j,S-1}\tilde{l}}{1+r_{t-1}} \\
+      &\vdots \\
+      \tilde{b}_{j,2,t-S+2} &= \frac{\tilde{c} + e^{g_y}\tilde{b}_{j,3,t-S+3} - \hat{w}_{t-S+2}e_{j,2}\tilde{l}}{1+r_{t-S+2}}
+    \end{split}
+  \end{equation}
+  where $\tilde{c}>0$ is some minimum amount of stationary consumption and $\tilde{l}$ is the maximum amount an individual can work from the time constraint \eqref{EqLabConstr}. With endogenous labor supply $n_{j,s,t}$, it is less likely that the individual borrowing constraints ever bind. This is because the disutility of labor increases exponentially according to $\eta>1$ in the period utility function \eqref{EqUtilMax}.
+
+  In addition to the individual borrowing constraint \eqref{EqSavMin}, a strict aggregate borrowing constraint must be met. That is, the stationary aggregate capital stock must be strictly positive.
+  \begin{equation}\label{EqAggrCapConstr}
+    \hat{K}_t > 0 \quad\forall t
+  \end{equation}
+
+
+\newpage
+\section{Characteristics of exogenous population growth assumptions}\label{AppPopGrowth}
+
+  \setcounter{equation}{0}
+
+  In this appendix, we describe in detail the exogenous population growth assumptions in the model and their implications. In Section \ref{SecIndProb}, we define the laws of motion for the population of each cohort $\omega_{s,t}$ to be the following.
+  \begin{equation}\tag{\ref{EqPopLawofmotion}}
+    \begin{split}
+      \omega_{1,t+1} &= \sum_{s=1}^S f_s\omega_{s,t}\quad\forall t \\
+      \omega_{s+1,t+1} &= (1 + i_s - \rho_s)\omega_{s,t}\quad\forall t\quad\text{and}\quad 1\leq s \leq S-1
+    \end{split}
+  \end{equation}
+  We can transform the nonstationary equations in \eqref{EqPopLawofmotion} into stationary laws of motion by dividing both sides by the total populations $N_t$ and $N_{t+1}$ in both periods,
+  \begin{equation}\label{EqPopLawofmotionStat}
+    \begin{split}
+      \hat{\omega}_{1,t+1} &= \frac{\sum_{s=1}^S f_s\hat{\omega}_{s,t}}{1+g_{n,t+1}}\quad\forall t \\
+      \hat{\omega}_{s+1,t+1} &= \frac{(1 + \phi_s - \rho_s)\hat{\omega}_{s,t}}{1+g_{n,t+1}}\quad\forall t\quad\text{and}\quad 1\leq s \leq S-1
+    \end{split}
+  \end{equation}
+  where $\hat{\omega}_{s,t}$ is the percent of the total population in age cohort $s$ and the population growth rate $g_{n,t+1}$ between periods $t$ and $t+1$ is defined in \eqref{EqPopGrowth},
+  \begin{equation}\label{EqPopLOMbig}
+    \scriptsize{\begin{bmatrix}
+      \hat{\omega}_{1,t+1} \\ \hat{\omega}_{2,t+1} \\ \hat{\omega}_{2,t+1} \\ \vdots \\ \hat{\omega}_{S-1,t+1} \\ \hat{\omega}_{S,t+1}
+    \end{bmatrix} = \frac{1}{1 + g_{n,t+1}}
+    \begin{bmatrix}
+      f_1 & f_2 & f_3 & \hdots & f_{S-1} & f_S \\
+      1+i_1-\rho_1 & 0 & 0 & \hdots & 0 & 0 \\
+      0 & 1+i_2-\rho_2 & 0 & \hdots & 0 & 0 \\
+      0 & 0 & 1+i_3-\rho_3 & \hdots & 0 & 0 \\
+      \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+      0 & 0 & 0 & \hdots & 0 & 0 \\
+      0 & 0 & 0 & \hdots & 1+i_{S-1}-\rho_{S-1} & 0
+    \end{bmatrix}
+    \begin{bmatrix}
+      \hat{\omega}_{1,t} \\ \hat{\omega}_{2,t} \\ \hat{\omega}_{2,t} \\ \vdots \\ \hat{\omega}_{S-1,t} \\ \hat{\omega}_{S,t}
+    \end{bmatrix}}
+  \end{equation}
+  where we restrict $1+i_s-\rho_s\geq 0$ for all $s$.
+
+  We write \eqref{EqPopLOMbig} in matrix notation as the following.
+  \begin{equation}\label{EqPopLOMmat}
+    \bm{\hat{\omega}}_{t+1} = \frac{1}{1+g_{n,t+1}}\bm{\Omega}\bm{\hat{\omega}}_t \quad\forall t
+  \end{equation}
+  The stationary steady state population distribution $\bm{\bar{\omega}}$ is the eigenvector $\bm{\omega}$ with eigenvalue $(1+\bar{g}_n)$ of the matrix $\bm{\Omega}$ that satisfies the following version of \eqref{EqPopLOMmat}.
+  \begin{equation}\label{EqPopLOMss}
+    (1+\bar{g}_n)\bm{\bar{\omega}} = \bm{\Omega}\bm{\bar{\omega}}
+  \end{equation}
+
+  \noindent TODO:
+  \begin{itemize}
+    \item We need to show the conditions under which the matrix $\bm{\Omega}$ has only one eigenvector associated with one positive eigen value with no complex part.
+    \item Another approach is to simply simulate the problem from the initial population distribution $\bm{\omega}_0$ and what the steady state $\bm{\bar{\omega}}$ is and how many periods it takes to get there.
+      \begin{itemize}
+        \item We can use the number of periods to arrive at the steady state as a lower bound for $T$ in the time path iteration algorithm.
+      \end{itemize}
+  \end{itemize}
+
+  Our initial population distribution $\{\omega_{s,1}\}_{s=1}^S$ in Figure \ref{FigInitPopDist} comes from \citet{Census:2014} population estimates for both sexes for 2013. The fertility rates $\{f_s\}_{s=1}^S$ in Figure \ref{FigFertRates} come from \citet[Table 1]{NVSR:2014}. The mortality rates $\{\rho_s\}_{s=1}^S$ in Figure \ref{FigMortRates} come from the 2010 death probabilities in \citet{SocSec:2010}. The immigration rates $\{i_s\}_{s=1}^S$ in Figure \ref{FigImmigRates} come from [\textit{I don't know where}].
+
+  \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
+    \caption{\label{FigInitPopDist}\textbf{Initial population distribution $\omega_{s,1}$ for $S=60$}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/InitPopDist.pdf}}}
+  \end{figure}
+
+  \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
+    \caption{\label{FigFertRates}\textbf{Fertility rates $f_s$ for $S=60$}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/FertRates.pdf}}}
+  \end{figure}
+
+  \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
+    \caption{\label{FigMortRates}\textbf{Mortality rates $\rho_s$ for $S=60$}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/MortRates.pdf}}}
+  \end{figure}
+
+  \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
+    \caption{\label{FigImmigRates}\textbf{Immigration rates $i_s$ for $S=60$}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/ImmigRates.pdf}}}
+  \end{figure}
+
+  Figure \ref{FigPopPath} shows the predicted time path of the total population $N_t$ given $\omega_{s,1}$ $f_s$, $i_s$, and $\rho_s$. Notice that the population approaches a constant growth rate. This is a result of the stationary population percent distribution $\bm{\bar{\omega}}$ eventually being reached. Figure \ref{FigSSpopdist} shows the steady-state population percent distribution by age $\bm{\bar{\omega}}$.
+
+  \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
+    \caption{\label{FigPopPath}\textbf{Forecast time path of total population}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/PopPath.pdf}}}
+  \end{figure}
+
+  \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
+    \caption{\label{FigSSpopdist}\textbf{Steady-state population percent distribution by age $\bm{\bar{\omega}}$}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/SSpopdist.pdf}}}
+  \end{figure}
+  \clearpage
+
+
+\newpage
+\section{Solving for stationary steady-state equilibrium}\label{AppSSsolve}
+
+  \setcounter{equation}{0}
+  \renewcommand\theenumi{\arabic{enumi}}
+  \renewcommand\theenumii{\alph{enumii}}
+  \renewcommand\theenumiii{\roman{enumiii}}
+
+  This section describes the solution method for the stationary steady-state equilibrium described in Definition \ref{DefEquilSS}.
+
+  \begin{enumerate}
+    \item Use the techniques in Appendix \ref{AppPopGrowth} to solve for the steady-state population distribution vector $\bm{\bar{\omega}}$ of the exogenous population process.
+    \item Choose an initial guess for the stationary steady-state distribution of capital $\bar{b}_{j,s+1}$ for all $j$ and $s=1,2,...S-1$ and labor supply $\bar{n}_{j,s}$ for all $j$ and $s$.
+      \begin{itemize}
+        \item A good first guess is a large positive number for all the $\bar{n}_{j,s}$ that is slightly less than $\tilde{l}$ and to choose some small positive number that is small enough to be less than the minimum income that an individual might have $\bar{w}e_{j,s}\bar{n}_{j,s}$.
+      \end{itemize}
+    \item Perform a constrained root finder that chooses $\bar{b}_{j,s+1}$ and $\bar{n}_{j,s}$ that solves the $J(2S-1)$ stationary steady-state Euler equations \eqref{EqEulerLabSS} and \eqref{EqEulerSavSS}.
+    \item Make sure none of the implied steady-state consumptions $\bar{c}_{j,s}$ is less-than-or-equal-to zero.
+      \begin{itemize}
+        \item If one consumption is less-than-or-equal-to zero $\bar{c}_{j,s}\leq 0$, then try different starting values.
+      \end{itemize}
+    \item Make sure that none of the Euler errors is too large in absolute value for interior stationary steady-state values. A steady-state Euler error is the following, which is supposed to be close to zero for all $j$ and $s=1,2,...S-1$:
+      \begin{equation}\label{EqSSeulerr}
+        \frac{\beta \left(1+\bar{r}\right)\left(\bar{c}_{j,s+1}\right)^{-\sigma}}{\left(\bar{c}_{j,s}\right)^{-\sigma}} - 1
+      \end{equation}
+    \item Make sure that the unconstrained solution satisfies the individual borrowing constraints in \eqref{EqSavMin} and \eqref{EqBorConsts}.
+      \begin{itemize}
+        \item If any individual's borrowing constraint is not satisfied using the unconstrained root finding operation, rerun the root finding operation in step (3) as a constrained minimization problem with the borrowing constraints imposed on those individuals.
+        \item Repeat steps (3) through (6) until all the individual borrowing constraints are met.
+      \end{itemize}
+    \item Make sure that the solution satisfies the aggregate borrowing constraint \eqref{EqAggrCapConstr}.
+      \begin{itemize}
+        \item If it does not, what is the least distortionary upward adjustment to individual steady-state savings $\bar{b}_{j,s+1}$?
+      \end{itemize}
+  \end{enumerate}
+
+
+\newpage
+\section{Solving for stationary non-steady-state equilibrium by time path iteration}\label{AppNonSSsolve}
+
+  \setcounter{equation}{0}
+
+  This section outlines the benchmark time path iteration (TPI) method of \citet{AuerbachKotlikoff:1987} for solving the stationary non-steady-state equilibrium transition path of the distribution of savings. TPI finds a fixed point for the transition path of the distribution of capital for a given initial state of the distribution of capital. The idea is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see \citet[ch. 17]{StokeyLucas:1989}).
+
+  The key assumption is that the economy will reach the steady-state equilibrium described in Definition \ref{DefEquilSS} in a finite number of periods $T<\infty$ regardless of the initial state. Let $\bm{\hat{\Gamma}}_t$ represent the distribution of savings at time $t$.
+  \begin{equation}\tag{\ref{EqSavDist}}
+    \bm{\hat{\Gamma}}_t \equiv \{\hat{b}_{j,s,t}\}_{j=1,s=1}^{J,S} \quad\forall t
+  \end{equation}
+  In Section \ref{SecMCEqlbm}, we describe how the stationary non-steady-state equilibrium time path of allocations and price is described by functions of the state $\bm{\hat{\Gamma}}_t$ and its law of motion. TPI starts the economy at any initial distribution of savings $\bm{\hat{\Gamma}}_1$ and solves for its equilibrium time path over $T$ periods to the steady-state distribution $\bm{\bar{\Gamma}}_T$.
+
+  The first step is to assume an initial transition path for aggregate stationary capital $\bm{\hat{K}}^i = \left\{\hat{K}_1^i,\hat{K}_2^i,...\hat{K}_T^i\right\}$ and aggregate stationary labor $\bm{\hat{L}}^i = \left\{\hat{L}_1^i,\hat{L}_2^i,...\hat{L}_T^i\right\}$ such that $T$ is sufficiently large to ensure that $\bm{\hat{\Gamma}}_T = \bar{\bm{\Gamma}}$, $\hat{K}_T^i\left(\bm{\Gamma}_T\right)$, and $\hat{L}_T^i\left(\bm{\Gamma}_T\right) = \bar{L}\left(\bar{\bm{\Gamma}}\right)$ for all $t\geq T$. The superscript $i$ is an index for the iteration number. The transition paths for aggregate capital and aggregate labor determine the transition paths for both the real wage $\bm{\hat{w}}^i = \left\{\hat{w}_1^i,\hat{w}_2^i,...\hat{w}_T^i\right\}$ and the real return on investment $\bm{r}^i = \left\{r_1^i,r_2^i,...r_T^i\right\}$.
+
+  The exact initial distribution of capital in the first period $\bm{\hat{\Gamma}}_1$ can be arbitrarily chosen as long as it satisfies $\hat{K}_1^i = \frac{1}{J}\sum_{s=1}^{S}\sum_{j=1}^{J}\hat{\omega}_{s,1}\hat{b}_{j,s,1}$ according to market clearing condition \eqref{EqMktClrCapStat}. However, this is not the case with $\hat{L}_1^i$. Its value will be endogenously determined in the same way the $K_2^i$ is. For this reason, a logical initial guess for the time path of aggregate labor is the steady state in every period $L_t^1 = \bar{L}$ for all $1\leq t\leq T$. For the initial guess of the stationary aggregate capital stock in the first period, one could also first choose the initial distribution of savings $\bm{\hat{\Gamma}}_1$ and then choose an initial aggregate capital stock $\hat{K}_1^i$ that corresponds to that distribution. As mentioned earlier, the only other restriction on the initial transition path for aggregate capital is that it equal the steady-state level $\hat{K}_T^i = \bar{K}\left(\bm{\bar{\Gamma}}\right)$ by period $T$. \citet{EvansPhillips:2014} have shown that the initial guess for the aggregate capital stocks $\hat{K}_t^i$ for periods $1<t<T$ can take on almost any positive values.
+
+  Given the initial capital distribution $\bm{\hat{\Gamma}}_1$ and the transition paths of aggregate capital $\bm{\hat{K}}^i = \left\{\hat{K}_1^i,\hat{K}_2^i,...\hat{K}_T^i\right\}$ and aggregate labor $\bm{\hat{L}}^i = \left\{\hat{L}_1^i,\hat{L}_2^i,...\hat{L}_T^i\right\}$, the real wage $\bm{\hat{w}}^i = \left\{\hat{w}_1^i,\hat{w}_2^i,...\hat{w}_T^i\right\}$, and the real return to savings $\bm{r}^i = \left\{r_1^i,r_2^i,...r_T^i\right\}$, one can solve for the optimal labor supply for each type $j$ of $s=S$-aged agents in the last period of their lives $n_{j,S,1}=\phi_{j,S}(\hat{b}_{j,S,1},\hat{w}_1,r_1)$ using his one static Euler equation, which is the $s=S$ version of \eqref{EqEulerLabStat}.
+  \begin{equation}\label{EqEulerSlabt1}
+    \hat{w}^i_1 e_{j,S}\Bigl[\left(1+r^i_1\right)\hat{b}_{j,S,1} + \hat{w}^i_1 e_{j,S}n_{j,S,1}\Bigr]^{-\sigma} = \chi(\tilde{l} - n_{j,S,1})^{-\eta}
+  \end{equation}
+
+  We then solve the problem for all $j$ types of $S-1$-aged individuals in period $t=1$, each of which entails labor supply decisions in the current period $n_{j,S-1,1}$ and in the next period $n_{j,S,2}$ and a savings decision in the current period for the next period $b_{j,S,2}$. The labor supply decision in the initial period and the savings period in the initial period for the next period for each type $j$ of $S-1$-aged individuals are policy functions of the current savings and the prices in this period and the next $\hat{b}_{j,S,2} = \psi_{j,S-1}(\hat{b}_{j,S-1,1},\{\hat{w}_t,r_t\}_{t=1}^2)$ and $\hat{n}_{j,S-1,1} = \phi_{j,S-1}(\hat{b}_{j,S-1,1},\{\hat{w}_t,r_t\}_{t=1}^2)$. The labor supply decision in the next period is simply a function of the savings and prices in that period $\hat{n}_{j,S,2} = \phi_{j,S}(\hat{b}_{j,S,2},\hat{w}_2,r_2)$. These three functions are characterized by the following versions of equations \eqref{EqEulerLabStat} and \eqref{EqEulerSavStat}.
+  \begin{gather}
+    \begin{split}
+      \hat{w}^i_1 e_{j,S-1}\Bigl[\left(1+r^i_1\right)\hat{b}_{j,S-1,1} + \hat{w}^i_1 e_{j,S-1}n_{j,S-1,1} - e^{g_y}\hat{b}_{j,S,2}&\Bigr]^{-\sigma} = ... \\
+      &\chi(\tilde{l} - n_{j,S-1,1})^{-\eta}
+    \end{split} \label{EqEulerSm1labt1} \\
+    \hat{w}^i_2 e_{j,S}\Bigl[\left(1+r^i_2\right)\hat{b}_{j,S,2} + \hat{w}^i_2 e_{j,S}n_{j,S,2}\Bigr]^{-\sigma} = \chi(\tilde{l} - n_{j,S,2})^{-\eta} \label{EqEulerSlabt2} \\
+    \begin{split}
+      \Bigl[\left(1+r^i_1\right)\hat{b}_{j,S-1,1} + &\hat{w}^i_1 e_{j,S-1}n_{j,S-1,1} - e^{g_y}b_{j,S,2}\Bigr]^{-\sigma} = ... \\
+      &\beta(1+r^i_2)e^{-\sigma g_y}\Bigl[\left(1+r^i_2\right)\hat{b}_{j,S,2} + \hat{w}^i_2 e_{j,S}n_{j,S,2}\Bigr]^{-\sigma} \quad\forall j
+    \end{split}\label{EqEulerSm1savt1}
+  \end{gather}
+
+  This process is repeated for every age of household alive in $t=1$ down to the age $s=1$ household at time $t=1$. Each of these households $j$ solve the full set of $S-1$ savings decisions and $S$ labor supply decisions characterized by the following full set of Euler equations analogous to \eqref{EqEulerLabStat} and \eqref{EqEulerSavStat}.
+  \begin{gather}
+    \begin{split}
+      \hat{w}^i_t e_{j,s}\Bigl[\left(1+r^i_t\right)\hat{b}_{j,s,t} + &\hat{w}^i_t e_{j,s}n_{j,s,t} - e^{g_y}\hat{b}_{j,s+1,t+1}\Bigr]^{-\sigma} = \chi(\tilde{l} - n_{j,s,t})^{-\eta} \\
+      &\forall j \quad\text{and}\quad 1\leq s=t\leq S \quad\text{with}\quad \hat{b}_{j,1,1},\hat{b}_{j,S+1,S+1}=0
+    \end{split} \label{EqEulerFulllabt1} \\
+    \begin{split}
+      &\Bigl[\left(1+r^i_t\right)\hat{b}_{j,s,t} + \hat{w}^i_t e_{j,s}n_{j,s,t} - e^{g_y}b_{j,s+1,t+1}\Bigr]^{-\sigma} = ... \\
+      &\beta(1+r^i_{t+1})e^{-\sigma g_y}\Bigl[\left(1+r^i_{t+1}\right)\hat{b}_{j,s+1,t+1} + \hat{w}^i_{t+1}e_{j,s+1}n_{j,s+1,t+1} - e^{g_y}\hat{b}_{j,s+2,t+2}\Bigr]^{-\sigma} \\
+      &\quad\quad\quad\quad\quad\quad\quad\quad\forall j \quad\text{and}\quad 1\leq s=t\leq S-1 \quad\text{with}\quad \hat{b}_{j,1,1},\hat{b}_{j,S+1,S+1}=0
+    \end{split} \label{EqEulerFullsavt1}
+  \end{gather}
+
+  We can then solve for the entire lifetime of savings decisions for each age $s=1$ individual in periods $t=2,3,...T$. The central part of the schematic diagram in Figure \ref{FigTPIdiag} shows how this process is done in order to solve for the equilibrium time path of the economy from period $t=1$ to $T$. Note that for each full lifetime savings path solved for an individual born in period $t\geq 2$, we can solve for the aggregate capital stock implied by those savings decisions $\hat{K}_t^{i'}=\frac{1}{J}\sum_{s=1}^{S}\sum_{j=1}^{J}\hat{\omega}_{s,t}\hat{b}_{j,s,t}$ and the aggregate labor implied by those labor supply decisions $\hat{L}_t^{i'} = \frac{1}{J}\sum_{s=1}^S\sum_{j=1}^{J} \hat{\omega}_{s,t}e_{j,s}n_{j,s,t}$.
+
+  \begin{figure}[p]\centering \captionsetup{width=4.0in}
+    \caption{\label{FigTPIdiag}\textbf{Diagram of TPI solution method within each iteration for $S=4$ and $J=1$}}
+    \fbox{\resizebox{4.0in}{6.0in}{\includegraphics{images/TPIdiag.pdf}}}
+  \end{figure}
+
+
+  % THIS IS THE CODE FOR THE TABLE UNDERLYING THE FIGURE ABOVE
+  % \begin{tabular}{>{\normalsize}l| >{\normalsize}c >{\normalsize}c >{\normalsize}c >{\normalsize}c >{\normalsize}c >{\normalsize}c >{\normalsize}c >{\normalsize}c}
+  %          & Initial & & & & & & & Implied \\
+  %          & Aggr. & & \multicolumn{4}{c}{Implied distribution of savings $\bm{\hat{\Gamma}}_t$} & & Aggr. \\
+  %   Period & Paths    & & \multicolumn{4}{c}{and labor supply}   & & Paths    \\
+  %   \hline
+  %   & & & & & & & & \\
+  %   $t=1$ & $\begin{matrix}\hat{K}_1^i \\ \hat{L}_1^i\end{matrix}$ & $\begin{matrix}= \\ \rightarrow\end{matrix}$ & $\begin{matrix}\: \\ n_{1,1}\end{matrix}$ & $\begin{matrix}\hat{b}_{2,1} \\ n_{2,1}\end{matrix}$ & $\begin{matrix}\hat{b}_{3,1} \\ n_{3,1}\end{matrix}$ & $\begin{matrix}\hat{b}_{4,1} \\ n_{4,1}\end{matrix}$ & $\begin{matrix}= \\ \rightarrow\end{matrix}$ & $\begin{matrix}\hat{K}_1^i \\ \hat{L}^{i'}_1\end{matrix}$ \\[10mm]
+  %   $t=2$ & $\begin{matrix}\hat{K}_2^i \\ \hat{L}^i_2\end{matrix}$ & $\rightarrow$ & $\begin{matrix}\: \\ n_{1,2}\end{matrix}$ & $\begin{matrix}\hat{b}_{2,2} \\ n_{2,2}\end{matrix}$ & $\begin{matrix}\hat{b}_{3,2} \\ n_{3,2}\end{matrix}$ & $\begin{matrix}\hat{b}_{4,2} \\ n_{4,2}\end{matrix}$ & $\rightarrow$ & $\begin{matrix}\hat{K}_2^{i'} \\ \hat{L}^{i'}_2\end{matrix}$ \\[10mm]
+  %   $t=3$ & $\begin{matrix}\hat{K}_3^i \\ \hat{L}^i_3\end{matrix}$ & $\rightarrow$ & $\begin{matrix}\: \\ n_{1,3}\end{matrix}$ & $\begin{matrix}\hat{b}_{2,3} \\ n_{2,3}\end{matrix}$ & $\begin{matrix}\hat{b}_{3,3} \\ n_{3,3}\end{matrix}$ & $\begin{matrix}\hat{b}_{4,3} \\ n_{4,3}\end{matrix}$ & $\rightarrow$ & $\begin{matrix}\hat{K}_3^{i'} \\ \hat{L}^{i'}_3\end{matrix}$ \\[10mm]
+  %   $t=4$ & $\begin{matrix}\hat{K}_4^i \\ \hat{L}^i_4\end{matrix}$ & $\rightarrow$ & $\begin{matrix}\: \\ n_{1,4}\end{matrix}$ & $\begin{matrix}\hat{b}_{2,4} \\ n_{2,4}\end{matrix}$ & $\begin{matrix}\hat{b}_{3,4} \\ n_{3,4}\end{matrix}$ & $\begin{matrix}\hat{b}_{4,4} \\ n_{4,4}\end{matrix}$ & $\rightarrow$ & $\begin{matrix}\hat{K}_4^{i'} \\ \hat{L}^{i'}_4\end{matrix}$ \\[10mm]
+  %   $\quad\vdots$ & $\vdots$ & & $\vdots$ & $\vdots$ & $\vdots$ & $\vdots$ & & $\vdots$ \\[10mm]
+  %   $t=T-2$ & $\begin{matrix}\hat{K}_{T-2}^i \\ \hat{L}^i_{T-2}\end{matrix}$ & $\rightarrow$ & $\begin{matrix}\: \\ n_{1,T-2}\end{matrix}$ & $\begin{matrix}\hat{b}_{2,T-2} \\ n_{2,T-2}\end{matrix}$ & $\begin{matrix}\hat{b}_{3,T-2} \\ n_{3,T-2}\end{matrix}$ & $\begin{matrix}\hat{b}_{4,T-2} \\ n_{4,T-2}\end{matrix}$ & $\rightarrow$ & $\begin{matrix}\hat{K}_{T-2}^{i'} \\ \hat{L}^{i'}_{T-2}\end{matrix}$ \\[10mm]
+  %   $t=T-1$ & $\begin{matrix}\hat{K}_{T-1}^i \\ \hat{L}^i_{T-1}\end{matrix}$ & $\rightarrow$ & $\begin{matrix}\: \\ n_{1,T-1}\end{matrix}$ & $\begin{matrix}\hat{b}_{2,T-1} \\ n_{2,T-1}\end{matrix}$ & $\begin{matrix}\hat{b}_{3,T-1} \\ n_{3,T-1}\end{matrix}$ & $\begin{matrix}\hat{b}_{4,T-1} \\ n_{4,T-1}\end{matrix}$ & $\rightarrow$ & $\begin{matrix}\hat{K}_{T-1}^{i'} \\ \hat{L}^{i'}_{T-1}\end{matrix}$ \\[10mm]
+  %   $t=T$ & $\begin{matrix}\hat{K}_{T}^i \\ \hat{L}^i_{T}\end{matrix}$ & $\rightarrow$ & $\begin{matrix}\: \\ n_{1,T}\end{matrix}$ & $\begin{matrix}\hat{b}_{2,T} \\ n_{2,T}\end{matrix}$ & $\begin{matrix}\hat{b}_{3,T} \\ n_{3,T}\end{matrix}$ & $\begin{matrix}\hat{b}_{4,T} \\ n_{4,T}\end{matrix}$ & $\rightarrow$ & $\begin{matrix}\hat{K}_{T}^{i'} \\ \hat{L}^{i'}_{T}\end{matrix}$ \\[10mm]
+  %   $t=T+1$ & $\begin{matrix}\hat{K}_{T+1}^i \\ \hat{L}^i_{T+1}\end{matrix}$ & $\rightarrow$ & $\bullet$ & $\begin{matrix}\hat{b}_{2,T+1} \\ n_{2,T+1}\end{matrix}$ & $\begin{matrix}\hat{b}_{3,T+1} \\ n_{3,T+1}\end{matrix}$ & $\begin{matrix}\hat{b}_{4,T+1} \\ n_{4,T+1}\end{matrix}$ & $\rightarrow$ & $\begin{matrix}\hat{K}_{T+1}^{i'} \\ \:\end{matrix}$ \\[10mm]
+  %   $t=T+2$ & $\begin{matrix}\hat{K}_{T+2}^i \\ \hat{L}^i_{T+2}\end{matrix}$ & $\rightarrow$ & $\bullet$ & $\bullet$ & $\begin{matrix}\hat{b}_{3,T+2} \\ n_{3,T+2}\end{matrix}$ & $\begin{matrix}\hat{b}_{4,T+2} \\ n_{4,T+2}\end{matrix}$ & & \\[10mm]
+  %   $t=T+3$ & $\begin{matrix}\hat{K}_{T+3}^i \\ \hat{L}^i_{T+3}\end{matrix}$ & $\rightarrow$ & $\bullet$ & $\bullet$ & $\bullet$ & $\begin{matrix}\hat{b}_{4,T+3} \\ n_{4,T+3}\end{matrix}$ & & \\
+  % \end{tabular}
+  % \clearpage
+
+  Once the set of lifetime saving and labor supply decisions has been computed for all individuals alive in $1\leq t\leq T$, we use the household decisions to compute a new implied time path of the aggregate capital stock and aggregate labor. The implied paths of the aggregate capital stock $\bm{\hat{K}}^{i'}=\{\hat{K}_1^i,\hat{K}_2^{i'},...\hat{K}_T^{i'}\}$ and aggregate labor $\bm{\hat{L}}^{i'}=\{\hat{L}_1^i,\hat{L}_2^{i'},...\hat{L}_T^{i'}\}$ in general do not equal the initial guessed paths $\bm{\hat{K}}^{i}=\{\hat{K}_1^i,\hat{K}_2^{i},...\hat{K}_T^{i}\}$ and $\bm{\hat{L}}^{i}=\{\hat{L}_1^i,\hat{L}_2^{i},...\hat{L}_T^{i}\}$ used to compute the household savings and labor supply decisions $\bm{\hat{K}}^{i'}\neq\bm{\hat{K}}^i$ and $\bm{\hat{L}}^{i'}\neq\bm{\hat{L}}^i$.
+
+  Let $\norm{\:\cdot\:}$ be a norm on the space of time paths of the aggregate capital stock $\bm{\hat{K}}\in\mathcal{K}\subset\mathbb{R}_{++}^T$ and aggregate labor supply $\bm{\hat{L}}\in\mathcal{L}\subset\mathbb{R}_{++}^T$. Then the fixed point necessary for the equilibrium transition path from Definition \ref{DefEquilNonSS} has been found when the distance between $\bm{\hat{K}}^{i'}$ and $\bm{\hat{K}}^{i}$ is arbitrarily close to zero.
+  \begin{equation}\label{EqTPIconverge}
+    \norm{\bigl[\bm{\hat{K}}^{i'}, \bm{\hat{L}}^{i'}\bigr] - \bigl[\bm{\hat{K}}^{i},\bm{\hat{L}}^{i}\bigr]} \leq \ve \quad\text{for}\quad \ve>0
+  \end{equation}
+  If the fixed point has not been found $\norm{\bigl[\bm{\hat{K}}^{i'}, \bm{\hat{L}}^{i'}\bigr] - \bigl[\bm{\hat{K}}^{i},\bm{\hat{L}}^{i}\bigr]} > \ve$, then new transition paths for the aggregate capital stock and aggregate labor are generated as a convex combination of $\bigl[\bm{\hat{K}}^{i'},\bm{\hat{L}}^{i'}\bigr]$ and $\bigl[\bm{\hat{K}}^{i},\bm{\hat{L}}^{i}\bigr]$.
+  \begin{equation}\label{EqTPInewpath}
+    \begin{split}
+      \bm{\hat{K}}^{i+1} &= \nu\bm{\hat{K}}^{i'} + (1-\nu)\bm{\hat{K}}^{i} \\
+      \bm{\hat{L}}^{i+1} &= \nu\bm{\hat{L}}^{i'} + (1-\nu)\bm{\hat{L}}^{i}
+    \end{split} \quad\quad\text{for}\quad \nu\in(0,1]
+  \end{equation}
+  This process is repeated until the initial transition paths for the aggregate capital stock and aggregate labor are consistent with the transition paths implied by those beliefs and household and firm optimization.
+
+  In essence, the TPI method iterates on individual beliefs about the time path of prices represented by a time paths for the aggregate capital stock $\bm{\hat{K}}^i$ and aggregate labor $\bm{\hat{L}}^i$ until a fixed point in beliefs is found that are consistent with the transition paths implied by optimization based on those beliefs.
+
+  The following are the steps for computing a stationary non-steady-state equilibrium time path for the economy.
+  \begin{enumerate}
+    \item Input all initial parameters. See Table \ref{TabExogVars}.
+      \begin{enumerate}
+        \item The value for $T$ at which the non-steady-state transition path should have converged to the steady state should be at least as large as the number of periods it takes the population to reach its steady state $\bm{\bar{\omega}}$ as described in Appendix \ref{AppPopGrowth}.
+      \end{enumerate}
+
+    \item Choose an initial state of the stationarized aggregate capital stock $\hat{K}_1$. Choose an initial distribution of savings $\bm{\hat{\Gamma}}_1$ consistent with $\hat{K}_1$ according to \eqref{EqMktClrCapStat}.
+    \item Conjecture transition paths for the stationarized aggregate capital stock $\bm{\hat{K}}^1=\{\hat{K}^1_t\}_{t=1}^\infty$ and stationarized aggregate labor $\bm{\hat{L}}^1=\{\hat{L}^1_t\}_{t=1}^\infty$ where the only requirements are that $\hat{K}^i_1=\frac{1}{J}\sum_{s=1}^{S}\sum_{j=1}^{J}\hat{\omega}_{s,1}\hat{b}_{j,s,1}$ for all $i$ is your initial state and that $\hat{K}^i_t=\bar{K}$ and $\hat{L}^i_t=\bar{L}$ for all $t\geq T$. The conjectured transition paths of the aggregate capital stock $\bm{\hat{K}}^i$ and aggregate labor $\bm{\hat{L}}^i$ imply specific transition paths for the real wage $\bm{\hat{w}}^i=\{\hat{w}^i_t\}_{t=1}^\infty$ and the real interest rate $\bm{r}^i=\{r^i_t\}_{t=1}^\infty$ through expressions \eqref{EqFOCwageStat} and \eqref{EqFOCrate}.
+      \begin{enumerate}
+        \item An intuitive choice for the time path of aggregate labor is the steady-state in every period $\hat{L}^1_t = \bar{L}$ for all $t$.
+      \end{enumerate}
+    \item With the conjectured transition paths $\bm{w}^i$ and $\bm{r}^i$, one can solve for the lifetime policy functions of each household alive at time $1\leq t\leq T$ using the systems of Euler equations of the form \eqref{EqEulerSlabt1} through \eqref{EqEulerFullsavt1} and following the diagram in Figure \ref{FigTPIdiag}.
+      \begin{enumerate}
+        \item Make sure that the individual borrowing constraints \eqref{EqSavMin} are satisfied for each individual in every period.
+        \item Increase any individual savings to the minimum $\tilde{b}_{j,s,t}$ if the borrowing constraint is not satisfied.
+      \end{enumerate}
+    \item Use the implied distribution of savings and labor supply in each period (each row of $\hat{b}_{j,s,t}$ and $n_{j,s,t}$ in Figure \ref{FigTPIdiag}) to compute the new implied time paths for the aggregate capital stock $\bm{\hat{K}}^{i'} = \{\hat{K}_1^i,\hat{K}_2^{i'},...\hat{K}_T^{i'}\}$ and aggregate labor supply $\bm{\hat{L}}^{i'} = \{\hat{L}_1^i,\hat{L}_2^{i'},...\hat{L}_T^{i'}\}$.
+      \begin{enumerate}
+        \item Make sure that the aggregate borrowing constraint \eqref{EqAggrCapConstr} is satisfied in each period $t$.
+        \item If the aggregate borrowing constraint is not satisfied, increase every individual's savings by the fraction that makes the aggregate capital stock slightly greater than zero.
+      \end{enumerate}
+    \item Check the distance between the two sets time paths $\norm{\bigl[\bm{\hat{K}}^{i'}, \bm{\hat{L}}^{i'}\bigr] - \bigl[\bm{\hat{K}}^{i},\bm{\hat{L}}^{i}\bigr]}$.
+      \begin{enumerate}
+        \item If the distance between the initial time paths and the implied time paths is less-than-or-equal-to some convergence criterion $\ve>0$, then the fixed point has been achieved and the equilibrium time path has been found \eqref{EqTPIconverge}.
+        \item If the distance between the initial time paths and the implied time paths is greater than some convergence criterion $\norm{\cdot}>\ve$, then update the guess for the time path of the aggregate capital stock according to \eqref{EqTPInewpath} and repeat steps (4) through (6) until a fixed point is reached.
+      \end{enumerate}
+  \end{enumerate}
+
+  \clearpage
+
+
+\newpage
+\bibliography{DynScoreMacro_hhtax}
+
+
+
+\newpage
+\renewcommand{\theequation}{T.\arabic{section}.\arabic{equation}}
+                                                 % redefine the command that creates the section number
+\renewcommand{\thesection}{T-\arabic{section}}   % redefine the command that creates the equation number
+\setcounter{equation}{0}                         % reset counter
+\setcounter{section}{0}                          % reset section number
+\section*{TECHNICAL APPENDIX}
+
+
+\section{Comments and Notes}\label{TAppComments}
+
+  \noindent Structures to add to the model and order
+  \begin{enumerate}
+    \item Add household tax structures
+    \item Add firm structures
+    \item Add small open economy feature
+  \end{enumerate}
+
+
+\end{document}
