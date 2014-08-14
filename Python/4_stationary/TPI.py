@@ -195,10 +195,10 @@ def borrowing_constraints(K_dist, w, r, e, n):
             if there are violations.
     '''
     b_min = np.zeros((S-1, J))
-    b_min[-1, :] = (ctilde - w * e[S-1, :] * n[S-1, :]) / (1 + r)
+    b_min[-1, :] = (ctilde - w * e[S-1, :] * ltilde) / (1 + r)
     for i in xrange(S-2):
         b_min[-(i+2), :] = (ctilde + np.exp(g_y_SS) * b_min[-(i+1), :] - w * e[
-            -(i+2), :] * n[-(i+2), :]) / (1 + r)
+            -(i+2), :] * ltilde) / (1 + r)
     difference = K_dist - b_min
     if (difference < 0).any():
         return True
