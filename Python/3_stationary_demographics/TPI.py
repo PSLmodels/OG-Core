@@ -68,6 +68,8 @@ minutes  = total minutes (minus the total hours) that the steady state
 seconds  = total seconds (minus the total hours and minutes) that the
             steady state solver took to run
 T        = number of periods until the steady state
+TPImaxiter   = Maximum number of iterations that TPI will undergo
+TPImindist   = Cut-off distance between iterations for TPI
 ------------------------------------------------------------------------
 '''
 
@@ -292,9 +294,7 @@ Yinit        = 1 x T vector, initial time path of aggregate output
 winit        = 1 x T vector, initial time path of real wage
 rinit        = 1 x T vector, initial time path of real interest rate
 TPIiter      = Iterations of TPI
-TPImaxiter   = Maximum number of iterations that TPI will undergo
 TPIdist      = Current distance between iterations of TPI
-TPImindist   = Cut-off distance between iterations for TPI
 K_mat        = (T+S)x(S-1)xJ array of distribution of capital across
                time, age, and ability
 Knew         = 1 x T vector, new time path of aggregate capital stock
@@ -414,9 +414,7 @@ rinit = (alpha * Yinit / Kinit) - delta
 
 
 TPIiter = 0
-TPImaxiter = 100
 TPIdist = 10
-TPImindist = 3 * 1e-6
 print 'Starting time path iteration.'
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):

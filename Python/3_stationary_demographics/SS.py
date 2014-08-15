@@ -24,7 +24,6 @@ This py-file creates the following other file(s):
 
 # Packages
 import numpy as np
-import income
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -32,11 +31,17 @@ from mpl_toolkits.mplot3d import Axes3D
 import time
 import scipy.optimize as opt
 import pickle
+
+print 'Generating income distribution.'
+import income
+print '\tFinished.'
+print 'Generating demographics.'
 import demographics
+print '\tFinished.'
 
 '''
 ------------------------------------------------------------------------
-Setting up the Model
+Imported user given values
 ------------------------------------------------------------------------
 S            = number of periods an individual lives
 J            = number of different ability groups
@@ -55,28 +60,26 @@ ltilde       = measure of time each individual is endowed with each
                period
 chi          = discount factor
 eta          = Frisch elasticity of labor supply
+T            = number of periods until the steady state
+TPImaxiter   = Maximum number of iterations that TPI will undergo
+TPImindist   = Cut-off distance between iterations for TPI
+------------------------------------------------------------------------
+'''
+
+variables = pickle.load(open("OUTPUT/given_params.pkl", "r"))
+for key in variables:
+    globals()[key] = variables[key]
+
+'''
+------------------------------------------------------------------------
+Generate income and demographic parameters
+------------------------------------------------------------------------
 e            = S x J matrix of age dependent possible working abilities
                e_s
-T            = number of periods until the steady state
 omega        = T x S x J array of demographics
 ------------------------------------------------------------------------
 '''
 
-# Parameters
-S = 60
-J = 2
-T = 120
-starting_age = 20
-beta = .96 ** (60.0 / S)
-sigma = 3.0
-alpha = .35
-nu = .2
-A = 1.0
-delta = 1 - (0.95 ** (60.0 / S))
-ctilde = .01
-ltilde = 1.0
-chi = 1.0
-eta = 2.5
 e = income.get_e(S, J, starting_age)
 omega, g_n_SS, omega_SS = demographics.get_omega(S, J, T, starting_age)
 if g_n_SS.shape[0] != 1:
@@ -597,7 +600,7 @@ var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'e',
              'J', 'Kss', 'Kssvec', 'Kssmat', 'Lss', 'Lssvec', 'Lssmat',
              'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes', 'omega',
              'seconds', 'eta', 'chi', 'ltilde', 'ctilde', 'T',
-             'g_n_SS', 'g_y_SS', 'omega_SS']
+             'g_n_SS', 'g_y_SS', 'omega_SS', 'TPImaxiter', 'TPImindist']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
