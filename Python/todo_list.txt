@@ -1,0 +1,41 @@
+Stationary Folder:
+
+Income file:
+-change ability matrix:
+	-get data from IRS (jason)
+	-if that doesn't happen:
+		-add samples to the data
+		-use glob to import all data at once
+	-either way, extrapolate age 80-100 values
+
+Demographic file:
+-what year are the fertility rates? can we get 2010?
+-solve the multiple eigenvector problem (if 2, just use the last entry ofomega, and find the closest one)
+-add children
+	-add changes it S<60
+-allow for S=80 (people die at 100)
+-fit the fertility distribution at the lower end
+-since we'll always be dealing with 1 yr or fewer increments, ditch the polyfits if mortality/immigration data extends to age 100 (otherwise, we'll need it)(but if we use it, know that sur_rate can be greater than 1 on occasion)
+
+SS file:
+
+TPI file:
+-error when J!=1
+-initial guess of time path should resemble a log function (or -log for L)
+-K0 is really low once omega_0 is involved
+
+run_SS_TPI file:
+-put all parameters that people mess with in this file, to be imported from a pickle for the other files
+
+Documentation:
+-document ability, demographic, SS, TPI, and run_SS_TPI file changes in python
+-once everything is working, update the draft pictures
+	-make sure the parameter values are correct (especially T)
+	-say  that rho=1 for s>=60
+	-Lpath_TPI graph?
+-add documentation to draft about demographics
+
+Other Problems:
+-model doesn't converge if S<4 or S>60 (or in increments of less than one years length)
+
+
