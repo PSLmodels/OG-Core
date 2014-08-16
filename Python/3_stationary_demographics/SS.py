@@ -81,12 +81,11 @@ omega        = T x S x J array of demographics
 '''
 
 e = income.get_e(S, J, starting_age)
-omega, g_n_SS, omega_SS = demographics.get_omega(S, J, T, starting_age)
-if g_n_SS.shape[0] != 1:
+omega, g_n, omega_SS = demographics.get_omega(S, J, T, starting_age)
+if g_n.shape[0] != 1:
         print 'There are multiple steady state growth rates.'
         omega_SS = omega[-1, :, :]
-        g_n_SS = g_n_SS[0]
-g_y_SS = (1 + 0.03)**(60.0/S) - 1
+        g_n = g_n[0]
 
 print 'The following are the parameter values of the simulation:'
 print '\tS:\t\t\t\t', S
@@ -102,8 +101,8 @@ print '\tDelta:\t\t\t', delta
 print '\tl-tilde:\t\t', ltilde
 print '\tChi:\t\t\t', chi
 print '\tEta:\t\t\t', eta
-print '\tg_n:\t\t\t', g_n_SS
-print '\tg_y:\t\t\t', g_y_SS
+print '\tg_n:\t\t\t', g_n
+print '\tg_y:\t\t\t', g_y
 
 '''
 ------------------------------------------------------------------------
@@ -226,8 +225,8 @@ def Euler1(w, r, e, L_guess, K1, K2, K3):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] - K2 * np.exp(g_y_SS)) - beta * (
-        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] - K3 * np.exp(g_y_SS)) * np.exp(-sigma * g_y_SS)
+    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] - K2 * np.exp(g_y)) - beta * (
+        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] - K3 * np.exp(g_y)) * np.exp(-sigma * g_y)
     return euler
 
 
@@ -244,7 +243,7 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess - K2_2 * np.exp(g_y_SS)) * w * e + MUl(L_guess)
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess - K2_2 * np.exp(g_y)) * w * e + MUl(L_guess)
     return euler
 
 
@@ -276,7 +275,7 @@ def Steady_State(guesses):
     error2[mask2] += 1e9
     if K_guess.sum() <= 0:
         error1 += 1e9
-    cons = (1 + r) * K1_2 + w * e * L_guess - K2_2 * np.exp(g_y_SS)
+    cons = (1 + r) * K1_2 + w * e * L_guess - K2_2 * np.exp(g_y)
     mask3 = cons < 0
     error2[mask3] += 1e9
     return list(error1.flatten()) + list(error2.flatten())
@@ -298,7 +297,7 @@ def borrowing_constraints(K_dist, w, r, e, n):
     b_min = np.zeros((S-1, J))
     b_min[-1, :] = (ctilde - w * e[S-1, :] * ltilde) / (1 + r)
     for i in xrange(S-2):
-        b_min[-(i+2), :] = (ctilde + np.exp(g_y_SS) * b_min[-(i+1), :] - w * e[
+        b_min[-(i+2), :] = (ctilde + np.exp(g_y) * b_min[-(i+1), :] - w * e[
             -(i+2), :] * ltilde) / (1 + r)
     difference = K_dist - b_min
     if (difference < 0).any():
@@ -382,7 +381,7 @@ Yss = get_Y(Kss, Lss)
 wss = get_w(Yss, Lss)
 rss = get_r(Yss, Kss)
 
-cssmat = (1 + rss) * Kssmat2 + wss * e * Lssmat - np.exp(g_y_SS) * Kssmat3
+cssmat = (1 + rss) * Kssmat2 + wss * e * Lssmat - np.exp(g_y) * Kssmat3
 
 
 constraint_checker(Kssmat, Lssmat, wss, rss, e, cssmat)
@@ -514,7 +513,7 @@ plt.savefig('OUTPUT/Population')
 
 plt.figure(12)
 plt.plot(np.arange(T-1), x2, 'b', linewidth=2)
-plt.axhline(y=100 * g_n_SS, color='r', linestyle='--', label=r'$\bar{g}_n$')
+plt.axhline(y=100 * g_n, color='r', linestyle='--', label=r'$\bar{g}_n$')
 plt.legend(loc=0)
 plt.xlabel(r'Time $t$')
 plt.ylabel(r'Population growth rate $g_n$')
@@ -600,7 +599,7 @@ var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'e',
              'J', 'Kss', 'Kssvec', 'Kssmat', 'Lss', 'Lssvec', 'Lssmat',
              'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes', 'omega',
              'seconds', 'eta', 'chi', 'ltilde', 'ctilde', 'T',
-             'g_n_SS', 'g_y_SS', 'omega_SS', 'TPImaxiter', 'TPImindist']
+             'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]

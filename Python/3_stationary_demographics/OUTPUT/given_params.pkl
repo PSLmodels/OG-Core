@@ -2,9 +2,9 @@
 S'A'
 p1
 F1.0
-sS'TPImindist'
+sS'g_y'
 p2
-F3e-06
+F0.030000000000000027
 sS'chi'
 p3
 F1.0
@@ -34,7 +34,7 @@ p11
 I20
 sS'T'
 p12
-I90
+I120
 sS'delta'
 p13
 F0.050000000000000044
@@ -47,4 +47,7 @@ F3.0
 sS'nu'
 p16
 F0.2
+sS'TPImindist'
+p17
+F3e-06
 s.

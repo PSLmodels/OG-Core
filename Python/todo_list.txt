@@ -10,9 +10,9 @@ Income file:
 
 Demographic file:
 -what year are the fertility rates? can we get 2010?
--solve the multiple eigenvector problem (if 2, just use the last entry ofomega, and find the closest one)
+-solve the multiple eigenvector problem (if 2, just use the last entry of omega, and find the closest one)
 -add children
-	-add changes it S<60
+	-add changes if S<60
 -allow for S=80 (people die at 100)
 -fit the fertility distribution at the lower end
 -since we'll always be dealing with 1 yr or fewer increments, ditch the polyfits if mortality/immigration data extends to age 100 (otherwise, we'll need it)(but if we use it, know that sur_rate can be greater than 1 on occasion)

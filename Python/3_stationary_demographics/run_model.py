@@ -43,25 +43,26 @@ TPImindist   = Cut-off distance between iterations for TPI
 # Parameters
 S = 60
 J = 1
-T = 90
+T = 2 * S
 starting_age = 20
 beta = .96 ** (60.0 / S)
 sigma = 3.0
 alpha = .35
 nu = .2
 A = 1.0
-delta = 1 - (0.95 ** (60.0 / S))
+delta = 1 - ((1-.05) ** (60.0 / S))
 ctilde = .01
 ltilde = 1.0
 chi = 1.0
 eta = 2.5
+g_y = (1 + 0.03)**(60.0/S) - 1
 TPImaxiter = 100
 TPImindist = 3 * 1e-6
 
 print 'Saving user given parameter values.'
 var_names = ['S', 'J', 'T', 'starting_age', 'beta', 'sigma',
              'alpha', 'nu', 'A', 'delta', 'ctilde', 'ltilde',
-             'chi', 'eta', 'TPImaxiter', 'TPImindist']
+             'chi', 'eta', 'g_y', 'TPImaxiter', 'TPImindist']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
@@ -69,11 +70,10 @@ pickle.dump(dictionary, open("OUTPUT/given_params.pkl", "w"))
 print '\tFinished.'
 
 
-if run_SS is True:
+if run_SS:
     import SS
-    if run_TPI is True:
-        import TPI
-else:
+
+if run_TPI:
     import TPI
 
 '''
