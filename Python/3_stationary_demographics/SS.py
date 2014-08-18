@@ -82,10 +82,6 @@ omega        = T x S x J array of demographics
 
 e = income.get_e(S, J, starting_age)
 omega, g_n, omega_SS = demographics.get_omega(S, J, T, starting_age)
-# if g_n.shape[0] != 1:
-#         print 'There are multiple steady state growth rates.'
-#         omega_SS = omega[-1, :, :]
-#         g_n = g_n[0]
 
 print 'The following are the parameter values of the simulation:'
 print '\tS:\t\t\t\t', S
@@ -145,7 +141,7 @@ seconds      = Seconds needed to find the steady state, less the number
 
 
 def get_N(omega):
-    N = omega.sum(0).sum(0)
+    N = omega.sum()
     return N
 
 N = get_N(omega_SS)
@@ -370,12 +366,12 @@ Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
 Kssmat3 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)))
 
 Kssvec = Kssmat.sum(1)
-Kss = (omega_SS[1:, :] * Kssmat).sum() / N
+Kss = (omega_SS[1:, :] * Kssmat).sum()
 Kssavg = Kssvec.mean()
 Kssvec = np.array([0]+list(Kssvec))
 Lssmat = solutions[(S-1) * J:].reshape(S, J)
 Lssvec = Lssmat.sum(1)
-Lss = get_L(e, Lssmat) / N
+Lss = get_L(e, Lssmat)
 Lssavg = Lssvec.mean()
 Yss = get_Y(Kss, Lss)
 wss = get_w(Yss, Lss)

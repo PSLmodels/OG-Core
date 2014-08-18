@@ -257,12 +257,12 @@ def rate_graphs(S, starting_age, imm, fert):
     plt.ylabel(r'mortality $\rho_s$')
     plt.savefig('OUTPUT/mort_rates')
     plt.figure(2)
-    plt.plot(domain, imm, linewidth=2, color='blue')
+    plt.plot(domain, imm[:, 0], linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
     plt.ylabel(r'immigration $i_s$')
     plt.savefig('OUTPUT/imm_rates')
     plt.figure(3)
-    plt.plot(domain, fert, linewidth=2, color='blue')
+    plt.plot(domain, fert[:, 0], linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
     plt.ylabel(r'fertility $f_s$')
     plt.savefig('OUTPUT/fert_rates')
@@ -287,7 +287,7 @@ def get_omega(S, J, T, starting_age):
     data1 = data
     data2 = data1[starting_age:ending_age]
     # Generate list of total population size for 2010, 2011, 2012 and 2013
-    sum2010 = data2['2010'].values.sum()
+    sum2010 = data1['2010'].values.sum()
     # For each year of the data, transform each age group's population to
     # be a fraction of the total
     pop_data = np.array(data1['2010'] / float(sum2010))

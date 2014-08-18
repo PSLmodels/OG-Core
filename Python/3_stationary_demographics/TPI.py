@@ -401,12 +401,16 @@ def Euler_Error(guesses, winit, rinit, t):
     error2[mask2] += 1e9
     if K_guess.sum() <= 0:
         error1 += 1e9
-    cons = (1 + r) * K1_2 + w * e[-(length+1):, j] * L_guess - K2_2
+    cons = (1 + r) * K1_2 + w * e[-(length+1):, j] * L_guess - K2_2 * np.exp(g_y)
     mask3 = cons < 0
     error2[mask3] += 1e9
     return list(error1.flatten()) + list(error2.flatten())
 
-Kinit = np.array(list(np.linspace(K0, Kss, T)) + list(np.ones(S)*Kss))
+
+domain = np.linspace(0, T, T)
+Kinit = (-1/(domain + 1)) * (Kss-K0) + Kss
+Kinit[-1] = Kss
+Kinit = np.array(list(Kinit) + list(np.ones(S)*Kss))
 Linit = np.ones(T+S) * Lss
 Yinit = A*(Kinit**alpha) * (Linit**(1-alpha))
 winit = (1-alpha) * Yinit / Linit
@@ -456,6 +460,13 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             list((1-alpha) * Yinit / Linit) + list(np.ones(S)*wss))
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
             np.ones(S)*rss))
+    Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
+    plt.figure(18)
+    plt.axhline(
+        y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
+    plt.plot(np.arange(
+        T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
+    plt.savefig("OUTPUT/TPI_K")
 
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
