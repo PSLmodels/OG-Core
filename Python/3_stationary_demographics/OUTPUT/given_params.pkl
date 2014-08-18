@@ -10,7 +10,7 @@ p3
 F1.0
 sS'J'
 p4
-I2
+I1
 sS'S'
 p5
 I60
@@ -28,7 +28,7 @@ p9
 F0.96
 sS'eta'
 p10
-F2.5
+F2.0
 sS'starting_age'
 p11
 I16

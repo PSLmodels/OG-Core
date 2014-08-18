@@ -287,16 +287,17 @@ def get_omega(S, J, T, starting_age):
     data1 = data
     data2 = data1[starting_age:ending_age]
     # Generate list of total population size for 2010, 2011, 2012 and 2013
-    sum2010 = data2['2010'].values.sum()
     # For each year of the data, transform each age group's population to
     # be a fraction of the total
-    pop_data = np.array(data1['2010'] / float(sum2010))
+    pop_data = np.array(data1['2010'])
     poly_pop = poly.polyfit(np.linspace(0, pop_data.shape[0]-1, pop_data.shape[0]), pop_data, deg=11)
     poly_int_pop = poly.polyint(poly_pop)
     pop_int = poly.polyval(np.linspace(starting_age, ending_age, S+1), poly_int_pop)
     new_omega = np.zeros(S)
     for s in xrange(S):
         new_omega[s] = pop_int[s+1] - pop_int[s]
+    sum2010 = pop_int[-1] - pop_int[0]
+    new_omega /= sum2010
     # Each ability group contains 1/J fraction of age group
     new_omega = np.tile(new_omega.reshape(S, 1), (1, J))
     new_omega /= J
