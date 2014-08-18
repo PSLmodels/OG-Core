@@ -21,6 +21,7 @@ import numpy as np
 import pandas as pd
 import numpy.polynomial.polynomial as poly
 import matplotlib.pyplot as plt
+import scipy.optimize as opt
 
 '''
 ------------------------------------------------------------------------
@@ -80,6 +81,25 @@ fert_data = np.array(
 # Fertility rates are given in age groups of 5 years, so the following
 # are the midpoints of those groups
 age_midpoint = np.array([12, 17, 16, 18.5, 22, 27, 32, 37, 42, 49.5])
+
+#Fit exponentials to two points for right tail of distributions
+def fit_exp_right(params, point1, point2):
+    a, b = params
+    x1, y1 = point1
+    x2, y2 = point2
+    error1 = a*b**(-x1) - y1
+    error2 = a*b**(-x2) - y2
+    return [error1, error2]
+
+#Fit exponentials to two points for left tail of distributions
+def fit_exp_left(params, point1, point2):
+    a, b = params
+    x1, y1 = point1
+    x2, y2 = point2
+    error1 = a*b**(x1) - y1
+    error2 = a*b**(x2) - y2
+    return [error1, error2]
+
 
 '''
 ------------------------------------------------------------------------
@@ -187,7 +207,11 @@ def get_fert(S, J, starting_age):
     fert_rate = poly.polyval(np.linspace(starting_age, ending_age-1, 60), poly_fert)
     # Do not allow negative fertility rates, or nonzero rates outside of
     # a certain age range
-    new_end = np.linspace(fert_rate[42-starting_age], fert_data[-1], 9)
+    params = [1,1]
+    params = opt.fsolve(fit_exp_right, params, args=([42,.0108], [49.5,.0008]))
+    domain = np.arange(9) + 42
+    new_end = params[0] * params[1]**(-domain)
+    # new_end = np.linspace(fert_rate[42-starting_age], fert_data[-1], 9)
     fert_rate[42-starting_age:51-starting_age] = new_end
     for i in xrange(60):
         if np.linspace(starting_age, ending_age-1, 60)[i] >= 51 or np.linspace(starting_age, ending_age-1, 60)[i] < 10:
