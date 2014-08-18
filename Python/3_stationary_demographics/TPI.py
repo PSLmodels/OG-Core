@@ -169,9 +169,6 @@ def constraint_checker2(k_dist, l_dist, w, r, e, c_dist, t):
     if k_dist.sum() / N[t] <= 0:
         print '\tWARNING: Aggregate capital is less than or equal to ' \
             'zero in period %.f.' % t
-    if borrowing_constraints(k_dist, w, r, e, l_dist) is True:
-        print '\tWARNING: Borrowing constraints have been violated in ' \
-            'period %.f.' % t
     if (l_dist < 0).any():
         print '\tWARNING: Labor supply violates nonnegativity constraints ' \
             'in period %.f.' % t
@@ -404,6 +401,16 @@ def Euler_Error(guesses, winit, rinit, t):
     cons = (1 + r) * K1_2 + w * e[-(length+1):, j] * L_guess - K2_2 * np.exp(g_y)
     mask3 = cons < 0
     error2[mask3] += 1e9
+
+    b_min = np.zeros(length)
+    b_min[-1] = (ctilde - w1[-1] * e1[-1] * ltilde) / (1 + r1[-1])
+    for i in xrange(length - 1):
+        b_min[-(i+2)] = (ctilde + np.exp(g_y) * b_min[-(i+1)] - w1[-(i+2)] * e1[
+            -(i+2)] * ltilde) / (1 + r1[-(i+2)])
+    difference = K_guess - b_min
+    mask4 = difference < 0
+    error1[mask4] += 1e9
+
     return list(error1.flatten()) + list(error2.flatten())
 
 
@@ -415,7 +422,6 @@ Linit = np.ones(T+S) * Lss
 Yinit = A*(Kinit**alpha) * (Linit**(1-alpha))
 winit = (1-alpha) * Yinit / Linit
 rinit = (alpha * Yinit / Kinit) - delta
-
 
 TPIiter = 0
 TPIdist = 10
@@ -460,7 +466,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
             np.ones(S)*rss))
     Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
-    plt.figure(18)
+    plt.figure(18+TPIiter)
     plt.axhline(
         y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
     plt.plot(np.arange(
@@ -473,6 +479,31 @@ Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
 
 print 'TPI is finished.'
 
+
+def borrowing_constraints2(K_dist, w, r, e):
+    '''
+    Parameters:
+        K_dist = Distribution of capital ((S-1)xJ array)
+        w      = wage rate (scalar)
+        r      = rental rate (scalar)
+        e      = distribution of abilities (SxJ array)
+        n      = distribution of labor (SxJ array)
+
+    Returns:
+        False value if all the borrowing constraints are met, True
+            if there are violations.
+    '''
+    b_min = np.zeros((T, S-1, J))
+    for t in xrange(T):
+        b_min[t, -1, :] = (ctilde - w[S-1+t] * e[S-1, :] * ltilde) / (1 + r[S-1+t])
+        for i in xrange(S-2):
+            b_min[t, -(i+2), :] = (ctilde + np.exp(g_y) * b_min[t, -(i+1), :] - w[S+t-(i+2)] * e[
+                -(i+2), :] * ltilde) / (1 + r[S+t-(i+2)])
+    difference = K_mat[:T, :, :] - b_min
+    for t in xrange(T):
+        if (difference[t, :, :] < 0).any():
+            print 'There has been a borrowing constraint violation in period %.f.' % t
+
 K1 = np.zeros((T, S, J))
 K1[:, 1:, :] = K_mat[:T, :, :] / (np.exp(g_y * np.arange(T).reshape(T, 1, 1)))
 K2 = np.zeros((T, S, J))
@@ -482,6 +513,7 @@ cinit = (1 + rinit[:T].reshape(T, 1, 1)) * K1 + winit[:T].reshape(
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
     constraint_checker2(K_mat[t], L_mat[t], winit[t], rinit[t], e, cinit[t], t)
+print borrowing_constraints2(K_mat, winit, rinit, e)
 print '\tFinished.'
 
 elapsed_time = time.time() - start_time

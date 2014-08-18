@@ -287,7 +287,7 @@ def get_omega(S, J, T, starting_age):
     data1 = data
     data2 = data1[starting_age:ending_age]
     # Generate list of total population size for 2010, 2011, 2012 and 2013
-    sum2010 = data1['2010'].values.sum()
+    sum2010 = data2['2010'].values.sum()
     # For each year of the data, transform each age group's population to
     # be a fraction of the total
     pop_data = np.array(data1['2010'] / float(sum2010))
@@ -337,9 +337,10 @@ def get_omega(S, J, T, starting_age):
     omega_SS = eigvectors[mask2].real
     if eigvalues.shape[0] != 1:
         ind = ((abs(omega_SS.T/omega_SS.T.sum(0) - omega_big[-1,:,0].reshape(S,1)*J)).sum(0)).argmin()
-        # omega_SS = omega_SS[ind]
-        omega_SS = omega_big[-1,:,:].sum(1)
+        omega_SS = omega_SS[ind]
+        # omega_SS = omega_big[-1,:,:].sum(1)
         g_n_SS = g_n_SS[ind]
+    omega_SS /= omega_SS.sum()
     omega_SS = np.tile(omega_SS.reshape(S, 1), (1, J)) / J
     return omega_big, g_n_SS, omega_SS
 
