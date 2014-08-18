@@ -82,10 +82,10 @@ omega        = T x S x J array of demographics
 
 e = income.get_e(S, J, starting_age)
 omega, g_n, omega_SS = demographics.get_omega(S, J, T, starting_age)
-if g_n.shape[0] != 1:
-        print 'There are multiple steady state growth rates.'
-        omega_SS = omega[-1, :, :]
-        g_n = g_n[0]
+# if g_n.shape[0] != 1:
+#         print 'There are multiple steady state growth rates.'
+#         omega_SS = omega[-1, :, :]
+#         g_n = g_n[0]
 
 print 'The following are the parameter values of the simulation:'
 print '\tS:\t\t\t\t', S
