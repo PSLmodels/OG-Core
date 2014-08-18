@@ -342,6 +342,9 @@ def get_omega(S, J, T, starting_age):
         g_n_SS = g_n_SS[ind]
     omega_SS /= omega_SS.sum()
     omega_SS = np.tile(omega_SS.reshape(S, 1), (1, J)) / J
+    # for t in xrange(1,T):
+    #     omega_big[0,0,:] = new_omega[0,:]
+    #     omega_big[t,1:,:] = (1+g_n_SS) * omega_big[t-1,1:,:]
     return omega_big, g_n_SS, omega_SS
 
 # Known problems:
