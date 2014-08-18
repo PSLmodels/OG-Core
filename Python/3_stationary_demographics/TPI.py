@@ -446,7 +446,6 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat[0, :, :] = initial_K
     L_mat[0, -1, :] = initial_L[-1, :]
     Knew = (omega_stationary[:, 1:,:] * K_mat[:T, :, :]).sum(2).sum(1) / (np.exp(g_y * np.arange(T)))
-    Knew[0] = K0
     Lnew = (omega_stationary[:, :, :] * e.reshape(1, S, J) * L_mat[:T, :, :]).sum(2).sum(1)
     TPIiter += 1
     Kinit = nu*Knew + (1-nu)*Kinit[:T]
@@ -517,7 +516,7 @@ plt.axhline(
 plt.plot(np.arange(
     T+10), Lpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{L}_t$")
 plt.xlabel(r"Time $t$")
-plt.ylabel(r"Labor Participation Rate $\hat{L}$")
+plt.ylabel(r"Per-capita Effective Labor Supply $\hat{L}$")
 # plt.title(r"Time Path of Labor Supply L$_t$")
 plt.legend(loc=0)
 plt.savefig("OUTPUT/TPI_L")

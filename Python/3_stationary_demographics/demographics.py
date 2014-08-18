@@ -337,7 +337,8 @@ def get_omega(S, J, T, starting_age):
     omega_SS = eigvectors[mask2].real
     if eigvalues.shape[0] != 1:
         ind = ((abs(omega_SS.T/omega_SS.T.sum(0) - omega_big[-1,:,0].reshape(S,1)*J)).sum(0)).argmin()
-        omega_SS = omega_SS[ind]
+        # omega_SS = omega_SS[ind]
+        omega_SS = omega_big[-1,:,:].sum(1)
         g_n_SS = g_n_SS[ind]
     omega_SS = np.tile(omega_SS.reshape(S, 1), (1, J)) / J
     return omega_big, g_n_SS, omega_SS
