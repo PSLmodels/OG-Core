@@ -82,7 +82,7 @@ omega        = T x S x J array of demographics
 '''
 
 e = income.get_e(S, J, starting_age)
-omega, g_n, omega_SS = demographics.get_omega(S, J, T, starting_age)
+omega, g_n, omega_SS, children = demographics.get_omega(S, J, T, starting_age)
 
 print 'The following are the parameter values of the simulation:'
 print '\tS:\t\t\t\t', S
@@ -511,7 +511,7 @@ plt.ylabel(r'Population growth rate $g_n$')
 plt.savefig('OUTPUT/Population_growthrate')
 
 plt.figure()
-plt.plot(np.arange(S), omega[0, :, 0], linewidth=2, color='blue')
+plt.plot(np.arange(S+starting_age), list(children) + list(omega[0, :, 0]), linewidth=2, color='blue')
 plt.xlabel(r'age $s$')
 plt.ylabel(r'$\omega_{s,1}$')
 plt.savefig('OUTPUT/omega_init')
