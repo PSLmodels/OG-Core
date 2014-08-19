@@ -219,6 +219,7 @@ def get_fert(S, J, starting_age):
     # Divide the fertility rate by 2, since it will be used for men and women
     fert_rate /= 2.0
     children_fertrate = poly.polyval(np.linspace(0, starting_age-1, starting_age), poly_fert)
+    children_fertrate /= 2.0
     for i in xrange(starting_age):
         if np.linspace(0, starting_age-1, starting_age)[i] <= 10:
             children_fertrate[i] = 0
@@ -306,7 +307,7 @@ def get_omega(S, J, T, starting_age):
     children = np.zeros((starting_age, J))
     # Keep track of how many individuals have been born and their survival
     # until they enter the working population
-    children_rate = np.array([1] + list(children_rate))
+    # children_rate = np.array([1] + list(children_rate))
     for ind in xrange(starting_age):
         children[ind, :] = (
             omega_big[0, :, :] * fert_rate).sum(0) * np.prod(
@@ -319,12 +320,13 @@ def get_omega(S, J, T, starting_age):
         omega_big[t,0,:] = children[-1,:] * (children_rate[-1] + imm_array[0])
         # omega_big[t, 0, :] = (omega_big[t-1, :, :] * fert_rate).sum(0) #* (children_rate[-1] + imm_array[0])
         omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * (surv_array[:-1].reshape(1, S-1, J) + imm_array[1:].reshape(1, S-1, J))
-        children[1:, :] = children[:-1, :] * (children_rate[:-2].reshape(
+        children[1:, :] = children[:-1, :] * (children_rate[:-1].reshape(
             starting_age-1, 1) + children_im[1:].reshape(starting_age-1, 1))
         children[0, :] = ((omega_big[t, :, :] * fert_rate).sum(0) + (children * children_fertrate.reshape(starting_age, 1)).sum(0))* (1 + children_im[0])
+    print children_rate.shape
     OMEGA = np.zeros((S + starting_age, S+starting_age))
     OMEGA[0, :] = np.array(list(children_fertrate) + list(fert_rate[:, 0])) * (1 + children_im[0])
-    OMEGA += np.diag(np.array(list(children_rate[:]) + list(surv_array[:-2, 0])) + np.array(list(children_im[1:]) + list(imm_array[:, 0])), -1)
+    OMEGA += np.diag(np.array(list(children_rate[:]) + list(surv_array[:-1, 0])) + np.array(list(children_im[1:]) + list(imm_array[:, 0])), -1)
     eigvalues, eigvectors = np.linalg.eig(OMEGA)
     mask = eigvalues.real != 0
     eigvalues = eigvalues[mask]
