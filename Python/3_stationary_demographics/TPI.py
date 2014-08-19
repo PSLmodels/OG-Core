@@ -466,7 +466,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
             np.ones(S)*rss))
     Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
-    plt.figure(21+TPIiter)
+    plt.figure()
     plt.axhline(
         y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
     plt.plot(np.arange(
@@ -513,7 +513,7 @@ cinit = (1 + rinit[:T].reshape(T, 1, 1)) * K1 + winit[:T].reshape(
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
     constraint_checker2(K_mat[t], L_mat[t], winit[t], rinit[t], e, cinit[t], t)
-print borrowing_constraints2(K_mat, winit, rinit, e)
+borrowing_constraints2(K_mat, winit, rinit, e)
 print '\tFinished.'
 
 elapsed_time = time.time() - start_time
@@ -531,7 +531,7 @@ Plot Timepath for K and N
 
 print 'Generating TPI graphs.'
 
-plt.figure(18)
+plt.figure()
 plt.axhline(
     y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
 plt.plot(np.arange(
@@ -542,7 +542,7 @@ plt.ylabel(r"Per-capita Capital $\hat{K}$")
 plt.legend(loc=0)
 plt.savefig("OUTPUT/TPI_K")
 
-plt.figure(19)
+plt.figure()
 plt.axhline(
     y=Lss, color='black', linewidth=2, label=r"Steady State $\hat{L}$", ls='--')
 plt.plot(np.arange(
@@ -589,7 +589,7 @@ for t in xrange(T):
     euler_mat2[t] = Euler2(winit[t], rinit[t], e, L_mat[t], k1_2[t], k2_2[t])
 
 domain = np.linspace(1, T, T)
-plt.figure(20)
+plt.figure()
 plt.plot(domain, np.abs(euler_mat1).max(1).max(1), label='Euler1')
 plt.plot(domain, np.abs(euler_mat2).max(1).max(1), label='Euler2')
 plt.ylabel('Error Value')

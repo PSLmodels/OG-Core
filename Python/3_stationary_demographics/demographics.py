@@ -237,7 +237,7 @@ def rate_graphs(S, starting_age, imm, fert):
     domain = np.arange(S) + 1
     mort = np.array(mort_data.mort_rate)[starting_age:100]
     domain2 = np.arange(mort.shape[0]) + 1
-    plt.figure(1)
+    plt.figure()
     plt.plot(domain2[:60], mort[:60], color='blue', linewidth=2)
     plt.plot(domain2[60:], mort[60:], color='blue', linestyle='--', linewidth=2)
     plt.axvline(x=60, color='red', linestyle='-', linewidth=1)
@@ -250,19 +250,19 @@ def rate_graphs(S, starting_age, imm, fert):
     for i in xrange(len(mort)):
         cum_surv_arr[i] = np.prod(surv_arr[:i])
     domain3 = np.arange(mort.shape[0]) + 1
-    plt.figure(700)
+    plt.figure()
     plt.plot(domain3, cum_surv_arr)
     plt.savefig('OUTPUT/survival_rate')
     cum_mort_rate = 1-cum_surv_arr
-    plt.figure(701)
+    plt.figure()
     plt.plot(domain3, cum_mort_rate)
     plt.savefig('OUTPUT/cum_mort_rate')
-    plt.figure(2)
+    plt.figure()
     plt.plot(domain, imm[:, 0], linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
     plt.ylabel(r'immigration $i_s$')
     plt.savefig('OUTPUT/imm_rates')
-    plt.figure(3)
+    plt.figure()
     plt.plot(domain, fert[:, 0], linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
     plt.ylabel(r'fertility $f_s$')
