@@ -17,8 +17,7 @@ Demographic file:
 SS file:
 
 TPI file:
--error when J!=1
--initial guess of time path should resemble a log function (or -log for L)
+-error
 -K0 is really low once omega_0 is involved
 
 run_model file:

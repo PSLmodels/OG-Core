@@ -265,7 +265,7 @@ def MUl_2(n):
     return output
 
 
-initial_K = Kssmat * .9
+initial_K = Kssmat
 K0 = (omega_stationary[0, 1:, :] * initial_K).sum()
 K1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_K))
 K2_2init = np.array(list(initial_K) + list(np.zeros(J).reshape(1, J)))
