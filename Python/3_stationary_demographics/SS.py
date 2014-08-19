@@ -322,7 +322,7 @@ def constraint_checker(Kssmat, Lssmat, wss, rss, e, cssmat):
     '''
     print 'Checking constraints on capital, labor, and consumption.'
     flag1 = False
-    if Kssmat.sum() / N <= 0:
+    if Kssmat.sum() <= 0:
         print '\tWARNING: Aggregate capital is less than or equal to zero.'
         flag1 = True
     if borrowing_constraints(Kssmat, wss, rss, e, Lssmat) is True:

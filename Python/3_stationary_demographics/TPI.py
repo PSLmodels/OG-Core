@@ -466,7 +466,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
             np.ones(S)*rss))
     Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
-    plt.figure(18+TPIiter)
+    plt.figure(21+TPIiter)
     plt.axhline(
         y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
     plt.plot(np.arange(

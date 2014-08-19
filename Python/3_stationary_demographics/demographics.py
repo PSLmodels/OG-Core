@@ -244,6 +244,19 @@ def rate_graphs(S, starting_age, imm, fert):
     plt.xlabel(r'age $s$')
     plt.ylabel(r'mortality $\rho_s$')
     plt.savefig('OUTPUT/mort_rates')
+    mort = np.array(mort_data.mort_rate)
+    surv_arr = 1-mort
+    cum_surv_arr = np.zeros(len(mort))
+    for i in xrange(len(mort)):
+        cum_surv_arr[i] = np.prod(surv_arr[:i])
+    domain3 = np.arange(mort.shape[0]) + 1
+    plt.figure(700)
+    plt.plot(domain3, cum_surv_arr)
+    plt.savefig('OUTPUT/survival_rate')
+    cum_mort_rate = 1-cum_surv_arr
+    plt.figure(701)
+    plt.plot(domain3, cum_mort_rate)
+    plt.savefig('OUTPUT/cum_mort_rate')
     plt.figure(2)
     plt.plot(domain, imm[:, 0], linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
