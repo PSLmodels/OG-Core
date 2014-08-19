@@ -307,7 +307,6 @@ def get_omega(S, J, T, starting_age):
     children = np.zeros((starting_age, J))
     # Keep track of how many individuals have been born and their survival
     # until they enter the working population
-    # children_rate = np.array([1] + list(children_rate))
     for ind in xrange(starting_age):
         children[ind, :] = (
             omega_big[0, :, :] * fert_rate).sum(0) * np.prod(
@@ -315,10 +314,8 @@ def get_omega(S, J, T, starting_age):
     # Generate the time path for each age/abilty group
     for t in xrange(1, T):
         # Children are born and then have to wait 20 years to enter the model
-        # omega_big[t, 0, :] = children[-1, :] * (children_rate[-1] + imm_array[0])
-        # Children are born immediately:
         omega_big[t,0,:] = children[-1,:] * (children_rate[-1] + imm_array[0])
-        # omega_big[t, 0, :] = (omega_big[t-1, :, :] * fert_rate).sum(0) #* (children_rate[-1] + imm_array[0])
+        # omega_big[t, 0, :] = (omega_big[t-1, :, :] * fert_rate).sum(0)
         omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * (surv_array[:-1].reshape(1, S-1, J) + imm_array[1:].reshape(1, S-1, J))
         children[1:, :] = children[:-1, :] * (children_rate[:-1].reshape(
             starting_age-1, 1) + children_im[1:].reshape(starting_age-1, 1))
