@@ -456,7 +456,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     TPIiter += 1
     Kinit = nu*Knew + (1-nu)*Kinit[:T]
     Linit = nu*Lnew + (1-nu)*Linit[:T]
-    TPIdist = (np.abs(Knew - Kinit)).max() + (np.abs(Lnew - Linit)).max()
+    TPIdist = max(np.abs(Knew - Kinit).max(), np.abs(Lnew - Linit))
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
@@ -465,13 +465,6 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             list((1-alpha) * Yinit / Linit) + list(np.ones(S)*wss))
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
             np.ones(S)*rss))
-    Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
-    plt.figure()
-    plt.axhline(
-        y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
-    plt.plot(np.arange(
-        T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
-    plt.savefig("OUTPUT/TPI_K")
 
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
