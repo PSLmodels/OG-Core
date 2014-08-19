@@ -233,14 +233,14 @@ def get_fert(S, J, starting_age):
 '''
 
 
-def rate_graphs(S, starting_age, imm, fert):
-    domain = np.arange(S) + 1
-    mort = np.array(mort_data.mort_rate)[starting_age:100]
+def rate_graphs(S, starting_age, imm, fert, child_imm, child_fert):
+    domain = np.arange(S+starting_age) + 1
+    mort = np.array(mort_data.mort_rate)[:100]
     domain2 = np.arange(mort.shape[0]) + 1
     plt.figure()
-    plt.plot(domain2[:60], mort[:60], color='blue', linewidth=2)
-    plt.plot(domain2[60:], mort[60:], color='blue', linestyle='--', linewidth=2)
-    plt.axvline(x=60, color='red', linestyle='-', linewidth=1)
+    plt.plot(domain2[:60+starting_age], mort[:60+starting_age], color='blue', linewidth=2)
+    plt.plot(domain2[60+starting_age:], mort[60+starting_age:], color='blue', linestyle='--', linewidth=2)
+    plt.axvline(x=60+starting_age, color='red', linestyle='-', linewidth=1)
     plt.xlabel(r'age $s$')
     plt.ylabel(r'mortality $\rho_s$')
     plt.savefig('OUTPUT/mort_rates')
@@ -258,12 +258,12 @@ def rate_graphs(S, starting_age, imm, fert):
     plt.plot(domain3, cum_mort_rate)
     plt.savefig('OUTPUT/cum_mort_rate')
     plt.figure()
-    plt.plot(domain, imm[:, 0], linewidth=2, color='blue')
+    plt.plot(domain, list(child_imm)+list(imm[:, 0]), linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
     plt.ylabel(r'immigration $i_s$')
     plt.savefig('OUTPUT/imm_rates')
     plt.figure()
-    plt.plot(domain, fert[:, 0], linewidth=2, color='blue')
+    plt.plot(domain, list(child_fert)+list(fert[:, 0]), linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
     plt.ylabel(r'fertility $f_s$')
     plt.savefig('OUTPUT/fert_rates')
@@ -302,25 +302,26 @@ def get_omega(S, J, T, starting_age):
     imm_array, children_im = get_immigration(S, J, starting_age)
     omega_big = np.tile(new_omega.reshape(1, S, J), (T, 1, 1))
     fert_rate, children_fertrate = get_fert(S, J, starting_age)
-    rate_graphs(S, starting_age, imm_array, fert_rate)
+    rate_graphs(S, starting_age, imm_array, fert_rate, children_im, children_fertrate)
     children = np.zeros((starting_age, J))
     # Keep track of how many individuals have been born and their survival
     # until they enter the working population
-    # children_rate = np.array([1] + list(children_rate))
-    # for ind in xrange(starting_age):
-    #     children[ind, :] = (
-    #         omega_big[0, :, :] * fert_rate).sum(0) * np.prod(
-    #         children_rate[:ind] + children_im[:ind])
+    children_rate = np.array([1] + list(children_rate))
+    for ind in xrange(starting_age):
+        children[ind, :] = (
+            omega_big[0, :, :] * fert_rate).sum(0) * np.prod(
+            children_rate[:ind] + children_im[:ind])
     # Generate the time path for each age/abilty group
     for t in xrange(1, T):
         # Children are born and then have to wait 20 years to enter the model
         # omega_big[t, 0, :] = children[-1, :] * (children_rate[-1] + imm_array[0])
         # Children are born immediately:
-        omega_big[t, 0, :] = (omega_big[t-1, :, :] * fert_rate).sum(0) #* (children_rate[-1] + imm_array[0])
+        omega_big[t,0,:] = children[-1,:] * (children_rate[-1] + imm_array[0])
+        # omega_big[t, 0, :] = (omega_big[t-1, :, :] * fert_rate).sum(0) #* (children_rate[-1] + imm_array[0])
         omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * (surv_array[:-1].reshape(1, S-1, J) + imm_array[1:].reshape(1, S-1, J))
-        # children[1:, :] = children[:-1, :] * (children_rate[1:-1].reshape(
-        #     starting_age-1, 1) + children_im[1:].reshape(starting_age-1, 1))
-        # children[0, :] = ((omega_big[t, :, :] * fert_rate).sum(0) + (children * children_fertrate.reshape(starting_age, 1)).sum(0))* (1 + children_im[0])
+        children[1:, :] = children[:-1, :] * (children_rate[1:-1].reshape(
+            starting_age-1, 1) + children_im[1:].reshape(starting_age-1, 1))
+        children[0, :] = ((omega_big[t, :, :] * fert_rate).sum(0) + (children * children_fertrate.reshape(starting_age, 1)).sum(0))* (1 + children_im[0])
     OMEGA = np.zeros((S, S))
     OMEGA[0, :] = fert_rate[:, 0] # * (children_rate[-1] + imm_array[0])
     OMEGA += np.diag(surv_array[:-1, 0] + imm_array[1:, 0], -1)
