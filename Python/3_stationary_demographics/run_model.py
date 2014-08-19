@@ -4,6 +4,8 @@ This will run the steady state solver as well as time path iteration.
 
 import numpy as np
 import pickle
+import os
+from glob import glob
 
 # Run steady state
 run_SS = True
@@ -43,7 +45,7 @@ TPImindist   = Cut-off distance between iterations for TPI
 # Parameters
 S = 60
 J = 1
-T = 2 * S
+T = 3 * S
 starting_age = 16
 beta = .96 ** (60.0 / S)
 sigma = 3.0
@@ -79,3 +81,11 @@ if run_TPI:
 '''
 See the pickles for results.
 '''
+
+'''
+Delete all .pyc files that have been generated
+'''
+
+files = glob('*.pyc')
+for i in files:
+    os.remove(i)

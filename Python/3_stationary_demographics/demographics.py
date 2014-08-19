@@ -82,7 +82,9 @@ fert_data = np.array(
 # are the midpoints of those groups
 age_midpoint = np.array([12, 17, 16, 18.5, 22, 27, 32, 37, 42, 49.5])
 
-#Fit exponentials to two points for right tail of distributions
+# Fit exponentials to two points for right tail of distributions
+
+
 def fit_exp_right(params, point1, point2):
     a, b = params
     x1, y1 = point1
@@ -91,7 +93,9 @@ def fit_exp_right(params, point1, point2):
     error2 = a*b**(-x2) - y2
     return [error1, error2]
 
-#Fit exponentials to two points for left tail of distributions
+# Fit exponentials to two points for left tail of distributions
+
+
 def fit_exp_left(params, point1, point2):
     a, b = params
     x1, y1 = point1
@@ -118,15 +122,7 @@ def get_survival(S, J, starting_age):
         surv_array - S x J array of survival rates for each age cohort
     '''
     ending_age = starting_age + 60
-    # Fit a polynomial to the data of survival rates (so that we are not
-    # bound to groups that span at least a year
-    # poly_surv = poly.polyfit(mort_data.age, mort_data.surv_rate, deg=10)
-    # Evaluate the polynomial every year for individuals 15 to 75
-    # survival_rate = poly.polyval(np.linspace(starting_age, ending_age-1, 60), poly_surv)
     survival_rate = np.array(mort_data.surv_rate)[starting_age: ending_age]
-    # for i in xrange(survival_rate.shape[0]):
-    #     if survival_rate[i] > 1.0:
-    #         survival_rate[i] = 1.0
     surv_rate_condensed = np.zeros(S)
     # If S < 60, then group years together
     for s in xrange(S):
@@ -169,9 +165,6 @@ def get_immigration(S, J, starting_age):
     # population (since death has already been accounted for)
     perc_change = ((pop_2011 - pop_2010) / pop_2010)
     # Remove the last entry, since individuals in the last period will die
-    # Fit a polynomial to the immigration rates
-    # poly_imm = poly.polyfit(np.linspace(0, ending_age-1, ending_age-1), perc_change, deg=10)
-    # im_array = poly.polyval(np.linspace(0, ending_age-1, ending_age-1), poly_imm)
     im_array = perc_change
     im_array2 = im_array[starting_age-1:ending_age-1]
     imm_rate_condensed = np.zeros(S)
@@ -211,7 +204,6 @@ def get_fert(S, J, starting_age):
     params = opt.fsolve(fit_exp_right, params, args=([42,.0108], [49.5,.0008]))
     domain = np.arange(9) + 42
     new_end = params[0] * params[1]**(-domain)
-    # new_end = np.linspace(fert_rate[42-starting_age], fert_data[-1], 9)
     fert_rate[42-starting_age:51-starting_age] = new_end
     for i in xrange(60):
         if np.linspace(starting_age, ending_age-1, 60)[i] >= 51 or np.linspace(starting_age, ending_age-1, 60)[i] < 10:
@@ -223,10 +215,6 @@ def get_fert(S, J, starting_age):
     for s in xrange(S):
         fert_rate_condensed[s] = np.prod(1+
             fert_rate[s*(60/S):(s+1)*(60/S)]) - 1
-    # plt.scatter(age_midpoint, fert_data)
-    # plt.axhline(y=0, color='red')
-    # plt.plot(np.linspace(starting_age, ending_age-1, 60), fert_rate)
-    # plt.savefig('OUTPUT/fert_dist')
     fert_rate = np.tile(fert_rate_condensed.reshape(S, 1), (1, J))
     # Divide the fertility rate by 2, since it will be used for men and women
     fert_rate /= 2.0
@@ -285,10 +273,6 @@ def get_omega(S, J, T, starting_age):
     '''
     ending_age = starting_age + 60
     data1 = data
-    data2 = data1[starting_age:ending_age]
-    # Generate list of total population size for 2010, 2011, 2012 and 2013
-    # For each year of the data, transform each age group's population to
-    # be a fraction of the total
     pop_data = np.array(data1['2010'])
     poly_pop = poly.polyfit(np.linspace(0, pop_data.shape[0]-1, pop_data.shape[0]), pop_data, deg=11)
     poly_int_pop = poly.polyint(poly_pop)
@@ -306,14 +290,14 @@ def get_omega(S, J, T, starting_age):
     omega_big = np.tile(new_omega.reshape(1, S, J), (T, 1, 1))
     fert_rate, children_fertrate = get_fert(S, J, starting_age)
     rate_graphs(S, starting_age, imm_array, fert_rate)
-    # children = np.zeros((starting_age, J))
+    children = np.zeros((starting_age, J))
     # Keep track of how many individuals have been born and their survival
     # until they enter the working population
-    # children_rate = np.array([1] + list(children_rate))
-    # for ind in xrange(starting_age):
-    #     children[ind, :] = (
-    #         omega_big[0, :, :] * fert_rate).sum(0) * np.prod(
-    #         children_rate[:ind] + children_im[:ind])
+    children_rate = np.array([1] + list(children_rate))
+    for ind in xrange(starting_age):
+        children[ind, :] = (
+            omega_big[0, :, :] * fert_rate).sum(0) * np.prod(
+            children_rate[:ind] + children_im[:ind])
     # Generate the time path for each age/abilty group
     for t in xrange(1, T):
         # Children are born and then have to wait 20 years to enter the model
@@ -321,9 +305,9 @@ def get_omega(S, J, T, starting_age):
         # Children are born immediately:
         omega_big[t, 0, :] = (omega_big[t-1, :, :] * fert_rate).sum(0) #* (children_rate[-1] + imm_array[0])
         omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * (surv_array[:-1].reshape(1, S-1, J) + imm_array[1:].reshape(1, S-1, J))
-        # children[1:, :] = children[:-1, :] * (children_rate[1:-1].reshape(
-        #     starting_age-1, 1) + children_im[1:].reshape(starting_age-1, 1))
-        # children[0, :] = ((omega_big[t, :, :] * fert_rate).sum(0) + (children * children_fertrate.reshape(starting_age, 1)).sum(0))* (1 + children_im[0])
+        children[1:, :] = children[:-1, :] * (children_rate[1:-1].reshape(
+            starting_age-1, 1) + children_im[1:].reshape(starting_age-1, 1))
+        children[0, :] = ((omega_big[t, :, :] * fert_rate).sum(0) + (children * children_fertrate.reshape(starting_age, 1)).sum(0))* (1 + children_im[0])
     OMEGA = np.zeros((S, S))
     OMEGA[0, :] = fert_rate[:, 0] # * (children_rate[-1] + imm_array[0])
     OMEGA += np.diag(surv_array[:-1, 0] + imm_array[1:, 0], -1)
@@ -349,5 +333,4 @@ def get_omega(S, J, T, starting_age):
     return omega_big, g_n_SS, omega_SS
 
 # Known problems:
-# Fitted polynomial on survival rates creates some entries that are greater than 1
 # If children are not born immediately, and S < 60, then they must age 60/S years...

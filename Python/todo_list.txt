@@ -13,7 +13,6 @@ Demographic file:
 -add children
 	-add changes if S<60
 -allow for S=80 (people die at 100)
--since we'll always be dealing with 1 yr or fewer increments, ditch the polyfits if mortality/immigration data extends to age 100 (otherwise, we'll need it)(but if we use it, know that sur_rate can be greater than 1 on occasion)
 
 SS file:
 
@@ -23,7 +22,6 @@ TPI file:
 -K0 is really low once omega_0 is involved
 
 run_model file:
--delete pyc files after completion
 
 Documentation:
 -document ability, demographic, SS, TPI, and run_SS_TPI file changes in python

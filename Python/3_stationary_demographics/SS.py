@@ -7,6 +7,7 @@ Calculates steady state of OLG model with S age cohorts
 This py-file calls the following other file(s):
             income.py
             demographics.py
+            OUTPUT/given_params.pkl
 
 This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
@@ -143,8 +144,6 @@ seconds      = Seconds needed to find the steady state, less the number
 def get_N(omega):
     N = omega.sum()
     return N
-
-N = get_N(omega_SS)
 
 
 def get_Y(K_now, L_now):
