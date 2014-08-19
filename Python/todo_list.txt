@@ -15,10 +15,13 @@ Demographic file:
 -allow for S=80 (people die at 100)
 
 SS file:
+-accidental bequests
+-end of life bequests
 
 TPI file:
--error
 -K0 is really low once omega_0 is involved
+-accidental bequests
+-end of life bequests
 
 run_model file:
 
