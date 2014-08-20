@@ -32,13 +32,9 @@ from mpl_toolkits.mplot3d import Axes3D
 import time
 import scipy.optimize as opt
 import pickle
-
-print 'Generating income distribution.'
 import income
-print '\tFinished.'
-print 'Generating demographics.'
 import demographics
-print '\tFinished.'
+
 
 '''
 ------------------------------------------------------------------------
@@ -81,8 +77,12 @@ omega        = T x S x J array of demographics
 ------------------------------------------------------------------------
 '''
 
+print 'Generating income distribution.'
 e = income.get_e(S, J, starting_age)
+print '\tFinished.'
+print 'Generating demographics.'
 omega, g_n, omega_SS, children = demographics.get_omega(S, J, T, starting_age)
+print '\tFinished.'
 
 print 'The following are the parameter values of the simulation:'
 print '\tS:\t\t\t\t', S
@@ -215,8 +215,10 @@ def Euler1(w, r, e, L_guess, K1, K2, K3):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] - K2 * np.exp(g_y)) - beta * (
-        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] - K3 * np.exp(g_y)) * np.exp(-sigma * g_y)
+    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] - K2 * np.exp(
+        g_y)) - beta * (
+        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] - K3 * np.exp(
+            g_y)) * np.exp(-sigma * g_y)
     return euler
 
 
@@ -233,7 +235,8 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess - K2_2 * np.exp(g_y)) * w * e + MUl(L_guess)
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess - K2_2 * np.exp(
+        g_y)) * w * e + MUl(L_guess)
     return euler
 
 
@@ -511,7 +514,8 @@ plt.ylabel(r'Population growth rate $g_n$')
 plt.savefig('OUTPUT/Population_growthrate')
 
 plt.figure()
-plt.plot(np.arange(S+starting_age), list(children[0, :, 0]) + list(omega[0, :, 0]), linewidth=2, color='blue')
+plt.plot(np.arange(S+starting_age), list(children[0, :, 0]) + list(
+    omega[0, :, 0]), linewidth=2, color='blue')
 plt.xlabel(r'age $s$')
 plt.ylabel(r'$\omega_{s,1}$')
 plt.savefig('OUTPUT/omega_init')
