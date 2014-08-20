@@ -498,9 +498,9 @@ def borrowing_constraints2(K_dist, w, r, e):
             print 'There has been a borrowing constraint violation in period %.f.' % t
 
 K1 = np.zeros((T, S, J))
-K1[:, 1:, :] = K_mat[:T, :, :] / (np.exp(g_y * np.arange(T).reshape(T, 1, 1)))
+K1[:, 1:, :] = K_mat[:T, :, :]
 K2 = np.zeros((T, S, J))
-K2[:, :-1, :] = K_mat[:T, :, :] / (np.exp(g_y * np.arange(T).reshape(T, 1, 1)))
+K2[:, :-1, :] = K_mat[:T, :, :]
 cinit = (1 + rinit[:T].reshape(T, 1, 1)) * K1 + winit[:T].reshape(
     T, 1, 1) * e.reshape(1, S, J) * L_mat[:T] - np.exp(g_y) * K2
 print'Checking time path for violations of constaints.'
@@ -564,14 +564,14 @@ domain     = 1 x S vector of each age cohort
 ------------------------------------------------------------------------
 '''
 k1 = np.zeros((T, S-1, J))
-k1[:, 1:, :] = K_mat[:T, :-1, :]  / (np.exp(g_y * np.arange(T).reshape(T, 1, 1)))
-k2 = K_mat[:T, :, :] / (np.exp(g_y * np.arange(T).reshape(T, 1, 1)))
+k1[:, 1:, :] = K_mat[:T, :-1, :]
+k2 = K_mat[:T, :, :]
 k3 = np.zeros((T, S-1, J))
-k3[:, :-1, :] = K_mat[:T, 1:, :] / (np.exp(g_y * np.arange(T).reshape(T, 1, 1)))
+k3[:, :-1, :] = K_mat[:T, 1:, :]
 k1_2 = np.zeros((T, S, J))
-k1_2[:, 1:, :] = K_mat[:T, :, :] / (np.exp(g_y * np.arange(T).reshape(T, 1, 1)))
+k1_2[:, 1:, :] = K_mat[:T, :, :]
 k2_2 = np.zeros((T, S, J))
-k2_2[:, :-1, :] = K_mat[:T, :, :] / (np.exp(g_y * np.arange(T).reshape(T, 1, 1)))
+k2_2[:, :-1, :] = K_mat[:T, :, :]
 euler_mat1 = np.zeros((T, S-1, J))
 euler_mat2 = np.zeros((T, S, J))
 
