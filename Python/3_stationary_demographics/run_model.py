@@ -10,7 +10,7 @@ from glob import glob
 # Run steady state
 run_SS = True
 # Run TPI
-run_TPI = False
+run_TPI = True
 
 '''
 ------------------------------------------------------------------------

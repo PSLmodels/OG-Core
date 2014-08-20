@@ -15,16 +15,18 @@ Demographic file:
 -unequal bin sizes
 
 SS file:
+-unequal bin sizes
 -mortality risk
 -accidental bequests
 -incidental bequests
--unequal bin sizes
 
 TPI file:
+-not working for J=7
+-unequal bin sizes
 -mortality risk
 -accidental bequests
 -incidental bequests
--unequal bin sizes
+
 
 run_model file:
 
