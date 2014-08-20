@@ -9,7 +9,7 @@ from glob import glob
 
 # Run steady state
 run_SS = True
-run_TPI = True
+run_TPI = False
 
 '''
 ------------------------------------------------------------------------
@@ -46,6 +46,7 @@ TPImindist   = Cut-off distance between iterations for TPI
 S = 60
 J = 1
 T = int(1.5 * S)
+T = 300
 starting_age = 20
 beta_annual = .96
 beta = beta_annual ** (60.0 / S)
