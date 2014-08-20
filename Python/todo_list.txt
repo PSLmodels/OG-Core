@@ -13,20 +13,27 @@ Demographic file:
 -add children
 	-add changes if S<60
 -allow for S=80 (people die at 100)
+-unequal bin sizes
 
 SS file:
+-mortality risk
 -accidental bequests
--end of life bequests
+-incidental bequests
+-unequal bin sizes
 
 TPI file:
 -K0 is really low once omega_0 is involved
+-change initial guess of L
+-mortality risk
 -accidental bequests
--end of life bequests
+-incidental bequests
+-unequal bin sizes
 
 run_model file:
 
 Documentation:
 -document ability, demographic, SS, TPI, and run_SS_TPI file changes in python
+-change source for fertility data
 -once everything is working, update the draft pictures
 	-make sure the parameter values are correct (especially T)
 	-say  that rho=1 for s>=60

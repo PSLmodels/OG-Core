@@ -493,7 +493,7 @@ Graph of Population
 ------------------------------------------------------------------------
 '''
 
-x = omega.sum(1).sum(1)
+x = children.sum(1).sum(1) + omega.sum(1).sum(1)
 x2 = 100 * np.diff(x)/x[:-1]
 
 plt.figure()
@@ -511,7 +511,7 @@ plt.ylabel(r'Population growth rate $g_n$')
 plt.savefig('OUTPUT/Population_growthrate')
 
 plt.figure()
-plt.plot(np.arange(S+starting_age), list(children) + list(omega[0, :, 0]), linewidth=2, color='blue')
+plt.plot(np.arange(S+starting_age), list(children[0, :, 0]) + list(omega[0, :, 0]), linewidth=2, color='blue')
 plt.xlabel(r'age $s$')
 plt.ylabel(r'$\omega_{s,1}$')
 plt.savefig('OUTPUT/omega_init')
@@ -588,7 +588,8 @@ var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'e',
              'J', 'Kss', 'Kssvec', 'Kssmat', 'Lss', 'Lssvec', 'Lssmat',
              'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes', 'omega',
              'seconds', 'eta', 'chi', 'ltilde', 'ctilde', 'T',
-             'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist']
+             'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist',
+             'children']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]

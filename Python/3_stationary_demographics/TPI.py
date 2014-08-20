@@ -100,11 +100,11 @@ c0              = SxJ arry of the initial distribution of consumption
 '''
 
 
-def get_N(omega):
-    N = omega.sum(1).sum(1)
+def get_N(children, omega):
+    N = children.sum(1).sum(1) + omega.sum(1).sum(1)
     return N
 
-N = get_N(omega)
+N = get_N(children, omega)
 omega_stationary = omega / N.reshape(T, 1, 1)
 
 
@@ -456,7 +456,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     TPIiter += 1
     Kinit = nu*Knew + (1-nu)*Kinit[:T]
     Linit = nu*Lnew + (1-nu)*Linit[:T]
-    TPIdist = max(np.abs(Knew - Kinit).max(), np.abs(Lnew - Linit))
+    TPIdist = np.array(list(np.abs(Knew - Kinit)) + list(np.abs(Lnew - Linit))).max()
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):

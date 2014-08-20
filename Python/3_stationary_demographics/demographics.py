@@ -43,9 +43,9 @@ Mortality rates data:
         http://www.ssa.gov/oact/STATS/table4c6.html
 Fertility rates data:
     Obtained from:
-        Births and birth rates, by age of mother, US, 2012
+        Births and birth rates, by age of mother, US, 2010
         National Vital Statistics Reports, CDC
-        http://www.cdc.gov/nchs/data/nvsr/nvsr63/nvsr63_02.pdf
+        http://www.cdc.gov/nchs/data/nvsr/nvsr60/nvsr60_02.pdf
         Since rates are per 1000 women, the data is divided by 1000
 ------------------------------------------------------------------------
 '''
@@ -298,34 +298,27 @@ def get_omega(S, J, T, starting_age):
     imm_array, children_im = get_immigration(S, J, starting_age)
     fert_rate, children_fertrate = get_fert(S, J, starting_age)
     rate_graphs(S, starting_age, imm_array, fert_rate, children_im, children_fertrate)
-    children_int = poly.polyval(np.linspace(0,starting_age,starting_age+1), poly_int_pop)
+    children_int = poly.polyval(np.linspace(0, starting_age, starting_age+1), poly_int_pop)
     sum2010 = pop_int[-1] - children_int[0]
     new_omega /= sum2010
     # Each ability group contains 1/J fraction of age group
     new_omega = np.tile(new_omega.reshape(S, 1), (1, J))
     new_omega /= J
     children = np.diff(children_int)
-    children = np.tile(children.reshape(starting_age,1), (1,J))
+    children = np.tile(children.reshape(starting_age, 1), (1, J))
     children /= sum2010
     children /= J
+    children = np.tile(children.reshape(1, starting_age, J), (T, 1, 1))
     omega_big = np.tile(new_omega.reshape(1, S, J), (T, 1, 1))
-    # children = np.zeros((starting_age, J))
-    # Keep track of how many individuals have been born and their survival
-    # until they enter the working population
-    # for ind in xrange(starting_age):
-    #     children[ind, :] = (
-    #         omega_big[0, :, :] * fert_rate).sum(0) * np.prod(
-    #         children_rate[:ind] + children_im[:ind])
     # Generate the time path for each age/abilty group
     for t in xrange(1, T):
         # Children are born and then have to wait 20 years to enter the model
-        omega_big[t,0,:] = children[-1,:] * (children_rate[-1] + imm_array[0])
+        omega_big[t,0,:] = children[t-1, -1,:] * (children_rate[-1] + imm_array[0])
         # omega_big[t, 0, :] = (omega_big[t-1, :, :] * fert_rate).sum(0)
         omega_big[t, 1:, :] = omega_big[t-1, :-1, :] * (surv_array[:-1].reshape(1, S-1, J) + imm_array[1:].reshape(1, S-1, J))
-        children[1:, :] = children[:-1, :] * (children_rate[:-1].reshape(
+        children[t, 1:, :] = children[t-1, :-1, :] * (children_rate[:-1].reshape(
             starting_age-1, 1) + children_im[1:].reshape(starting_age-1, 1))
-        children[0, :] = ((omega_big[t, :, :] * fert_rate).sum(0) + (children * children_fertrate.reshape(starting_age, 1)).sum(0))* (1 + children_im[0])
-    print children_rate.shape
+        children[t, 0, :] = ((omega_big[t, :, :] * fert_rate).sum(0) + (children[t-1] * children_fertrate.reshape(starting_age, 1)).sum(0))* (1 + children_im[0])
     OMEGA = np.zeros((S + starting_age, S+starting_age))
     OMEGA[0, :] = np.array(list(children_fertrate) + list(fert_rate[:, 0])) * (1 + children_im[0])
     OMEGA += np.diag(np.array(list(children_rate[:]) + list(surv_array[:-1, 0])) + np.array(list(children_im[1:]) + list(imm_array[:, 0])), -1)
@@ -348,7 +341,7 @@ def get_omega(S, J, T, starting_age):
     # for t in xrange(1,T):
     #     omega_big[0,0,:] = new_omega[0,:]
     #     omega_big[t,1:,:] = (1+g_n_SS) * omega_big[t-1,1:,:]
-    return omega_big, g_n_SS, omega_SS, children[:,0]
+    return omega_big, g_n_SS, omega_SS, children
 
 # Known problems:
 # If children are not born immediately, and S < 60, then they must age 60/S years...
