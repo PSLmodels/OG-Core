@@ -98,7 +98,7 @@ print '\tDelta:\t\t\t', delta
 print '\tl-tilde:\t\t', ltilde
 print '\tChi:\t\t\t', chi
 print '\tEta:\t\t\t', eta
-print '\tg_n:\t\t\t', g_n
+print '\tg_n:\t\t\t', g_n[0]
 print '\tg_y:\t\t\t', g_y
 
 '''
@@ -177,7 +177,7 @@ def get_L(e, n):
 
     Returns:    Aggregate labor
     '''
-    L_now = np.sum(e * omega_SS[starting_age:] * n)
+    L_now = np.sum(e * omega_SS[int(starting_age * S / 60.0):] * n)
     return L_now
 
 
@@ -248,7 +248,7 @@ def Steady_State(guesses):
     Returns:    Array of S-1 Euler equation errors
     '''
     K_guess = guesses[0: (S-1) * J].reshape((S-1, J))
-    K = (omega_SS[starting_age + 1:, :] * K_guess).sum()
+    K = (omega_SS[int(starting_age * S / 60.0) + 1:, :] * K_guess).sum()
     L_guess = guesses[(S-1) * J:].reshape((S, J))
     L = get_L(e, L_guess)
     Y = get_Y(K, L)
@@ -363,7 +363,7 @@ Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
 Kssmat3 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)))
 
 Kssvec = Kssmat.sum(1)
-Kss = (omega_SS[starting_age + 1:, :] * Kssmat).sum()
+Kss = (omega_SS[int(starting_age * S / 60.0) + 1:, :] * Kssmat).sum()
 Kssavg = Kssvec.mean()
 Kssvec = np.array([0]+list(Kssvec))
 Lssmat = solutions[(S-1) * J:].reshape(S, J)
@@ -514,14 +514,14 @@ plt.ylabel(r'Population growth rate $g_n$')
 plt.savefig('OUTPUT/Population_growthrate')
 
 plt.figure()
-plt.plot(np.arange(S+starting_age), list(children[0, :, 0]) + list(
+plt.plot(np.arange(S+int(starting_age * S / 60.0)), list(children[0, :, 0]) + list(
     omega[0, :, 0]), linewidth=2, color='blue')
 plt.xlabel(r'age $s$')
 plt.ylabel(r'$\omega_{s,1}$')
 plt.savefig('OUTPUT/omega_init')
 
 plt.figure()
-plt.plot(np.arange(S+starting_age), omega_SS, linewidth=2, color='blue')
+plt.plot(np.arange(S+int(starting_age * S / 60.0)), omega_SS, linewidth=2, color='blue')
 plt.xlabel(r'age $s$')
 plt.ylabel(r'$\overline{\omega}$')
 plt.savefig('OUTPUT/omega_ss')
