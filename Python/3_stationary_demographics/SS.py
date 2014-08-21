@@ -81,7 +81,7 @@ print 'Generating income distribution.'
 e = income.get_e(S, J, starting_age)
 print '\tFinished.'
 print 'Generating demographics.'
-omega, g_n, omega_SS, children = demographics.get_omega(S, J, T, starting_age)
+omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(S, J, T, starting_age)
 print '\tFinished.'
 
 print 'The following are the parameter values of the simulation:'
@@ -216,7 +216,7 @@ def Euler1(w, r, e, L_guess, K1, K2, K3):
         Value of Euler error.
     '''
     euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] - K2 * np.exp(
-        g_y)) - beta * (
+        g_y)) - beta * surv_rate[:-1].reshape(S-1,1) * (
         1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] - K3 * np.exp(
             g_y)) * np.exp(-sigma * g_y)
     return euler
@@ -506,7 +506,7 @@ plt.savefig('OUTPUT/Population')
 
 plt.figure()
 plt.plot(np.arange(T-1), x2, 'b', linewidth=2)
-plt.axhline(y=100 * g_n, color='r', linestyle='--', label=r'$\bar{g}_n$')
+plt.axhline(y=100 * g_n[0], color='r', linestyle='--', label=r'$\bar{g}_n$')
 plt.legend(loc=0)
 plt.xlabel(r'Time $t$')
 plt.ylabel(r'Population growth rate $g_n$')
@@ -593,7 +593,7 @@ var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'e',
              'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes', 'omega',
              'seconds', 'eta', 'chi', 'ltilde', 'ctilde', 'T',
              'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist',
-             'children']
+             'children', 'surv_rate']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]

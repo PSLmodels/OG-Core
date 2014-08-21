@@ -9,8 +9,6 @@ Income file:
 	-either way, extrapolate age 80-100 values
 
 Demographic file:
--eigvalue not working
--add children changes if S<60
 -allow for S=80 (people die at 100)
 -unequal bin sizes
 

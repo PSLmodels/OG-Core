@@ -266,6 +266,10 @@ def MUl_2(n):
 
 
 initial_K = Kssmat * .95
+# Trying to get a cool time path
+# initial_K = np.ones((S-1,J)) * .95 * Kss 
+# for i in xrange(10):
+#     initial_K[i] *= i/10.0
 K0 = (omega_stationary[0, 1:, :] * initial_K).sum()
 K1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_K))
 K2_2init = np.array(list(initial_K) + list(np.zeros(J).reshape(1, J)))
@@ -325,7 +329,7 @@ def Euler1(w1, r1, w2, r2, e, n, K1, K2, K3):
         Value of Euler error.
     '''
     euler = MUc(
-        (1 + r1)*K1 + w1 * e[:-1, :] * n[:-1, :] - np.exp(g_y) * K2) - beta * np.exp(-sigma * g_y) * (1 + r2)*MUc(
+        (1 + r1)*K1 + w1 * e[:-1, :] * n[:-1, :] - np.exp(g_y) * K2) - beta * np.exp(-sigma * g_y) * surv_rate[:-1].reshape(S-1,1) * (1 + r2)*MUc(
         (1 + r2)*K2 + w2 * e[1:, :] * n[1:, :] - np.exp(g_y) * K3)
     return euler
 
@@ -378,7 +382,7 @@ def Euler_Error(guesses, winit, rinit, t):
     e1 = e[-(length+1):-1, j]
     e2 = e[-length:, j]
     error1 = MUc((1 + r1)*K1 + w1 * e1 * l1 - np.exp(g_y) * K2) \
-        - beta * np.exp(-sigma * g_y) * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*l2 - np.exp(g_y) * K3)
+        - beta * surv_rate[-(length+1):-1] * np.exp(-sigma * g_y) * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*l2 - np.exp(g_y) * K3)
 
     if length == S-1:
         K1_2 = np.array([0] + list(K_guess))

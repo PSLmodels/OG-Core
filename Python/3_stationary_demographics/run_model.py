@@ -45,14 +45,14 @@ TPImindist   = Cut-off distance between iterations for TPI
 
 # Parameters
 S = 60
-J = 7
+J = 6
 T = 3 * S
 starting_age = 20
 beta_annual = .96
 beta = beta_annual ** (60.0 / S)
 sigma = 3.0
 alpha = .35
-nu = .10
+nu = .20
 A = 1.0
 delta_annual = .05
 delta = 1 - ((1-delta_annual) ** (60.0 / S))

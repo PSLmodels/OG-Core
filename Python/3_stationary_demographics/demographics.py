@@ -323,6 +323,9 @@ def get_omega(S, J, T, starting_age):
     surv_array, children_rate = get_survival(S, starting_age)
     imm_array, children_im = get_immigration(S, starting_age)
     fert_rate, children_fertrate = get_fert(S, starting_age)
+    cum_surv_rate = np.zeros(S)
+    for i in xrange(S):
+        cum_surv_rate[i] = np.prod(surv_array[:i])
     rate_graphs(
         S, starting_age, imm_array, fert_rate, children_im, children_fertrate)
     children_int = poly.polyval(
@@ -365,7 +368,7 @@ def get_omega(S, J, T, starting_age):
             list(children[-1, :]) + list(omega_big[-1, :])).reshape(
             S+int(starting_age * S / 60.0), 1))).sum(0)).argmin()
         omega_SS = omega_SS[ind]
-        g_n_SS = g_n_SS[ind]
+        g_n_SS = [g_n_SS[ind]]
     omega_SS /= omega_SS.sum()
     # Creating the different ability level bins
     bin_weights = np.ones(J) * (1.0/J)
@@ -373,4 +376,4 @@ def get_omega(S, J, T, starting_age):
     omega_big = np.tile(omega_big.reshape(T,S,1), (1,1,J)) * bin_weights.reshape(1,1,J)
     children = np.tile(children.reshape(T, int(starting_age * S / 60.0), 1), (1, 1, J)) * bin_weights.reshape(1,1,J)
 
-    return omega_big, g_n_SS, omega_SS, children
+    return omega_big, g_n_SS, omega_SS, children, surv_array

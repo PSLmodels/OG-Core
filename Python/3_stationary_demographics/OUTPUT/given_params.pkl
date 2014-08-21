@@ -10,7 +10,7 @@ p3
 F1.0
 sS'J'
 p4
-I7
+I6
 sS'S'
 p5
 I60
@@ -46,7 +46,7 @@ p15
 F3.0
 sS'nu'
 p16
-F0.1
+F0.2
 sS'TPImindist'
 p17
 F3e-06
