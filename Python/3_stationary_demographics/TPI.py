@@ -102,6 +102,7 @@ c0              = SxJ arry of the initial distribution of consumption
 
 def get_N(children, omega):
     N = children.sum(1).sum(1) + omega.sum(1).sum(1)
+    # N = omega.sum(1).sum(1)
     return N
 
 N = get_N(children, omega)
@@ -280,8 +281,7 @@ w0 = get_w(Y0, L0)
 r0 = get_r(Y0, K0)
 c0 = (1 + r0) * K1_2init + w0 * e * initial_L - K2_2init * np.exp(g_y)
 constraint_checker1(initial_K, initial_L, w0, r0, e, c0)
-B0 = (initial_K * mort_rate[:-1].reshape(S-1,1)).sum(0)
-Bss = (Kssmat * mort_rate[:-1].reshape(S-1,1)).sum(0)
+B0 = (initial_K * omega_stationary[0,-(S-1):, :] * mort_rate[:-1].reshape(S-1,1)).sum(0)
 print 'K0 divided by Kss =', K0/Kss
 
 '''
@@ -384,9 +384,9 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     e1 = e[-(length+1):-1, j]
     e2 = e[-length:, j]
     B1 = Binit[t:t+length]
-    B2 = winit[t+1:t+1+length]
-    omega1 = np.diag(omega_stationary[t:t+length,-(length+1):-1,j])
-    omega2 = np.diag(omega_stationary[t+1:t+length+1,-length:,j])
+    B2 = Binit[t+1:t+1+length]
+    omega1 = np.diag(omega_stationary[t:t+length,-(length+1):-1,j] * J)
+    omega2 = np.diag(omega_stationary[t+1:t+length+1,-length:,j] * J)
 
     error1 = MUc((1 + r1)*K1 + w1 * e1 * l1 + B1 * omega1 - np.exp(g_y) * K2) \
         - beta * surv_rate[-(length+1):-1] * np.exp(-sigma * g_y) * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*l2 + B2 * omega2 - np.exp(g_y) * K3)
@@ -400,7 +400,7 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     w = winit[t:t+length+1]
     r = rinit[t:t+length+1]
     B = Binit[t:t+length+1]
-    omeg = np.diag(omega_stationary[t:t+length+1,:,j])
+    omeg = np.diag(omega_stationary[t:t+length+1,:,j] * J)
     error2 = MUc((1 + r)*K1_2 + w * e[
         -(length+1):, j] * L_guess + B * omeg - np.exp(g_y) * K2_2) * w * e[
         -(length+1):, j] + MUl_2(L_guess)
@@ -477,7 +477,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-        Binit = np.array(list((K_mat[:T,:,:] * mort_rate[:-1].reshape(1,S-1,1)).sum(1).reshape(T,J)) + list(Bss.reshape(1,J))*S)
+        Binit = np.array(list((K_mat[:T,:,:] * omega_stationary[:T,-(S-1):, :] * mort_rate[:-1].reshape(1,S-1,1)).sum(1).reshape(T,J)) + list(np.tile(Bss.reshape(1,J),(S,1))))
         Yinit = A*(Kinit**alpha) * (Linit**(1-alpha))
         winit = np.array(
             list((1-alpha) * Yinit / Linit) + list(np.ones(S)*wss))

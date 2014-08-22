@@ -32,7 +32,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import time
 import scipy.optimize as opt
 import pickle
-import income
+import income2
 import demographics
 
 
@@ -78,10 +78,10 @@ omega        = T x S x J array of demographics
 '''
 
 print 'Generating income distribution.'
-e = income.get_e(S, J, starting_age)
+e = income2.get_e(S, J, bin_weights, starting_age)
 print '\tFinished.'
 print 'Generating demographics.'
-omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(S, J, T, starting_age)
+omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(S, J, T, bin_weights, starting_age)
 mort_rate = 1-surv_rate
 print '\tFinished.'
 
@@ -178,7 +178,7 @@ def get_L(e, n):
 
     Returns:    Aggregate labor
     '''
-    L_now = np.sum(e * omega_SS[int(starting_age * S / 60.0):] * n)
+    L_now = np.sum(e * omega_SS[-S:] * n)
     return L_now
 
 
@@ -216,9 +216,9 @@ def Euler1(w, r, e, L_guess, K1, K2, K3, B):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] + omega_SS[int(starting_age * S / 60.0) + 1:] * B.reshape(1,J) - K2 * np.exp(
+    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] + omega_SS[-(S - 1):] * J * B.reshape(1,J) - K2 * np.exp(
         g_y)) - beta * surv_rate[:-1].reshape(S-1,1) * (
-        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] + omega_SS[int(starting_age * S / 60.0) + 1:] * B.reshape(1,J) - K3 * np.exp(
+        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] + omega_SS[-(S - 1):] * J * B.reshape(1,J) - K3 * np.exp(
             g_y)) * np.exp(-sigma * g_y)
     return euler
 
@@ -236,7 +236,7 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2, B):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess + omega_SS[int(starting_age * S / 60.0):] * B.reshape(1,J) - K2_2 * np.exp(
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess + omega_SS[-S:] * J * B.reshape(1,J) - K2_2 * np.exp(
         g_y)) * w * e + MUl(L_guess)
     return euler
 
@@ -249,8 +249,8 @@ def Steady_State(guesses):
     Returns:    Array of S-1 Euler equation errors
     '''
     K_guess = guesses[0: (S-1) * J].reshape((S-1, J))
-    K = (omega_SS[int(starting_age * S / 60.0) + 1:, :] * K_guess).sum()
-    B = (K_guess * mort_rate[:-1].reshape(S-1,1)).sum(0)
+    K = (omega_SS[-(S-1):, :] * K_guess).sum()
+    B = (K_guess * omega_SS[-(S-1):, :] * mort_rate[:-1].reshape(S-1,1)).sum(0)
     L_guess = guesses[(S-1) * J:].reshape((S, J))
     L = get_L(e, L_guess)
     Y = get_Y(K, L)
@@ -270,7 +270,7 @@ def Steady_State(guesses):
     error2[mask2] += 1e9
     if K_guess.sum() <= 0:
         error1 += 1e9
-    cons = (1 + r) * K1_2 + w * e * L_guess + omega_SS[int(starting_age * S / 60.0):] * B.reshape(1,J) - K2_2 * np.exp(g_y)
+    cons = (1 + r) * K1_2 + w * e * L_guess + omega_SS[-S:] * J * B.reshape(1,J) - K2_2 * np.exp(g_y)
     mask3 = cons < 0
     error2[mask3] += 1e9
     return list(error1.flatten()) + list(error2.flatten())
@@ -365,7 +365,7 @@ Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
 Kssmat3 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)))
 
 Kssvec = Kssmat.sum(1)
-Kss = (omega_SS[int(starting_age * S / 60.0) + 1:, :] * Kssmat).sum()
+Kss = (omega_SS[-(S-1):, :] * Kssmat).sum()
 Kssavg = Kssvec.mean()
 Kssvec = np.array([0]+list(Kssvec))
 Lssmat = solutions[(S-1) * J:].reshape(S, J)
@@ -375,8 +375,9 @@ Lssavg = Lssvec.mean()
 Yss = get_Y(Kss, Lss)
 wss = get_w(Yss, Lss)
 rss = get_r(Yss, Kss)
+Bss = (Kssmat * omega_SS[-(S-1):, :] * mort_rate[:-1].reshape(S-1,1)).sum(0)
 
-cssmat = (1 + rss) * Kssmat2 + wss * e * Lssmat - np.exp(g_y) * Kssmat3
+cssmat = (1 + rss) * Kssmat2 + wss * e * Lssmat + omega_SS[-S:] * J * Bss.reshape(1,J) - np.exp(g_y) * Kssmat3
 
 
 constraint_checker(Kssmat, Lssmat, wss, rss, e, cssmat)
@@ -502,12 +503,12 @@ x = children.sum(1).sum(1) + omega.sum(1).sum(1)
 x2 = 100 * np.diff(x)/x[:-1]
 
 plt.figure()
-plt.plot(np.arange(T+S), x, 'b', linewidth=2)
+plt.plot(np.arange(T+S)+1, x, 'b', linewidth=2)
 plt.title('Population Size (as a percent of the 2010 population)')
 plt.savefig('OUTPUT/Population')
 
 plt.figure()
-plt.plot(np.arange(T-1+S), x2, 'b', linewidth=2)
+plt.plot(np.arange(T-1+S)+1, x2, 'b', linewidth=2)
 plt.axhline(y=100 * g_n[0], color='r', linestyle='--', label=r'$\bar{g}_n$')
 plt.legend(loc=0)
 plt.xlabel(r'Time $t$')
@@ -516,14 +517,14 @@ plt.ylabel(r'Population growth rate $g_n$')
 plt.savefig('OUTPUT/Population_growthrate')
 
 plt.figure()
-plt.plot(np.arange(S+int(starting_age * S / 60.0)), list(children[0, :, 0]) + list(
-    omega[0, :, 0]), linewidth=2, color='blue')
+plt.plot(np.arange(S+int(starting_age * S / 60.0))+1, list(children[0, :, :].sum(1)) + list(
+    omega[0, :, :].sum(1)), linewidth=2, color='blue')
 plt.xlabel(r'age $s$')
 plt.ylabel(r'$\omega_{s,1}$')
 plt.savefig('OUTPUT/omega_init')
 
 plt.figure()
-plt.plot(np.arange(S+int(starting_age * S / 60.0)), omega_SS, linewidth=2, color='blue')
+plt.plot(np.arange(S+int(starting_age * S / 60.0))+1, omega_SS, linewidth=2, color='blue')
 plt.xlabel(r'age $s$')
 plt.ylabel(r'$\overline{\omega}$')
 plt.savefig('OUTPUT/omega_ss')
@@ -596,7 +597,7 @@ var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'e',
              'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes', 'omega',
              'seconds', 'eta', 'chi', 'ltilde', 'ctilde', 'T',
              'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist',
-             'children', 'surv_rate', 'mort_rate']
+             'children', 'surv_rate', 'mort_rate', 'Bss']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]

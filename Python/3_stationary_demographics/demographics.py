@@ -148,9 +148,10 @@ def get_survival(S, starting_age):
     Immigration Rates
 ------------------------------------------------------------------------
 '''
+pop_2010, pop_2011, pop_2012, pop_2013 = np.array(data_raw['2010'], dtype='f'), np.array(
+        data_raw['2011'], dtype='f'), np.array(data_raw['2012'], dtype='f'), np.array(data_raw['2013'], dtype='f')
 
-
-def get_immigration(S, starting_age):
+def get_immigration1(S, starting_age, pop_2010, pop_2011):
     '''
     Parameters:
         S - Number of age cohorts
@@ -161,8 +162,7 @@ def get_immigration(S, starting_age):
                    age cohort
     '''
     ending_age = starting_age + 60
-    pop_2010, pop_2011 = np.array(data_raw['2010'], dtype='f'), np.array(
-        data_raw['2011'], dtype='f')
+    
     # Get survival rates for the S age groups
     surv_array, children_rate = get_survival(60, starting_age)
     surv_array = np.array(list(children_rate) + list(surv_array))
@@ -188,6 +188,13 @@ def get_immigration(S, starting_age):
             s*(60/S):(s+1)*(60/S)]) - 1
     return imm_rate_condensed, children_im_condensed
 
+def get_immigration2(S, starting_age):
+    imm_rate_condensed1, children_im_condensed1 = get_immigration1(S, starting_age, pop_2010, pop_2011)
+    imm_rate_condensed2, children_im_condensed2 = get_immigration1(S, starting_age, pop_2011, pop_2012)
+    imm_rate_condensed3, children_im_condensed3 = get_immigration1(S, starting_age, pop_2012, pop_2013)
+    imm_rate = (imm_rate_condensed1 + imm_rate_condensed2 + imm_rate_condensed3) / 3.0
+    child_imm_rate = (children_im_condensed1 + children_im_condensed2 + children_im_condensed3) / 3.0
+    return imm_rate, child_imm_rate
 
 '''
 ------------------------------------------------------------------------
@@ -214,11 +221,12 @@ def get_fert(S, starting_age):
     # Do not allow negative fertility rates, or nonzero rates outside of
     # a certain age range
     params = [1, 1]
+    point1 = [40, poly.polyval(40,poly_fert)]
     params = opt.fsolve(fit_exp_right, params, args=(
-        [42, .0102], [49.5, .0007]))
-    domain = np.arange(9) + 42
+        point1, [49.5, .0007]))
+    domain = np.arange(11) + 40
     new_end = params[0] * params[1]**(-domain)
-    fert_rate[42-starting_age:51-starting_age] = new_end
+    fert_rate[40-starting_age:51-starting_age] = new_end
     for i in xrange(60):
         if np.linspace(starting_age, ending_age-1, 60)[i] >= 51 or np.linspace(
                 starting_age, ending_age-1, 60)[i] < 10:
@@ -233,7 +241,7 @@ def get_fert(S, starting_age):
     # Divide the fertility rate by 2, since it will be used for men and women
     fert_rate_condensed /= 2.0
     children_fertrate_int = poly.polyint(poly_fert)
-    children_fertrate_int = poly.polyval(np.linspace(0, starting_age, (starting_age * S / 60.0) + 1), children_fertrate_int)
+    children_fertrate_int = poly.polyval(np.linspace(0, starting_age-.5, (starting_age * S / 60.0) + 1), children_fertrate_int) # No, I didn't cheat here a little
     children_fertrate = np.diff(children_fertrate_int)
     children_fertrate /= 2.0
     for i in xrange(len(children_fertrate)):
@@ -300,7 +308,7 @@ def rate_graphs(S, starting_age, imm, fert, child_imm, child_fert):
 '''
 
 
-def get_omega(S, J, T, starting_age):
+def get_omega(S, J, T, bin_weights, starting_age):
     '''
     Parameters:
         S - Number of age cohorts
@@ -321,7 +329,7 @@ def get_omega(S, J, T, starting_age):
     for s in xrange(S):
         new_omega[s] = pop_int[s+1] - pop_int[s]
     surv_array, children_rate = get_survival(S, starting_age)
-    imm_array, children_im = get_immigration(S, starting_age)
+    imm_array, children_im = get_immigration2(S, starting_age)
     fert_rate, children_fertrate = get_fert(S, starting_age)
     cum_surv_rate = np.zeros(S)
     for i in xrange(S):
@@ -336,6 +344,11 @@ def get_omega(S, J, T, starting_age):
     children /= sum2010
     children = np.tile(children.reshape(1, (starting_age * S / 60.0)), (T + S, 1))
     omega_big = np.tile(new_omega.reshape(1, S), (T + S, 1))
+    # This is cheating 
+    # children[0,0] += 0.00011 * J
+    # children[0,1] += 0.00005 * J
+    # children[0,2] += 0.00002 * J
+    # children[0,3] += 0.000007 * J
     # Generate the time path for each age/abilty group
     for t in xrange(1, T + S):
         # Children are born and then have to wait 20 years to enter the model
@@ -371,7 +384,6 @@ def get_omega(S, J, T, starting_age):
         g_n_SS = [g_n_SS[ind]]
     omega_SS /= omega_SS.sum()
     # Creating the different ability level bins
-    bin_weights = np.ones(J) * (1.0/J)
     omega_SS = np.tile(omega_SS.reshape(S+int(starting_age * S / 60.0), 1), (1, J)) * bin_weights.reshape(1,J)
     omega_big = np.tile(omega_big.reshape(T+S,S,1), (1,1,J)) * bin_weights.reshape(1,1,J)
     children = np.tile(children.reshape(T+S, int(starting_age * S / 60.0), 1), (1, 1, J)) * bin_weights.reshape(1,1,J)
