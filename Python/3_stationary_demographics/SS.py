@@ -82,6 +82,7 @@ e = income.get_e(S, J, starting_age)
 print '\tFinished.'
 print 'Generating demographics.'
 omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(S, J, T, starting_age)
+mort_rate = 1-surv_rate
 print '\tFinished.'
 
 print 'The following are the parameter values of the simulation:'
@@ -201,7 +202,7 @@ def MUl(n):
     return output
 
 
-def Euler1(w, r, e, L_guess, K1, K2, K3):
+def Euler1(w, r, e, L_guess, K1, K2, K3, B):
     '''
     Parameters:
         w        = wage rate (scalar)
@@ -215,14 +216,14 @@ def Euler1(w, r, e, L_guess, K1, K2, K3):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] - K2 * np.exp(
+    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] + omega_SS[int(starting_age * S / 60.0) + 1:] * B.reshape(1,J) - K2 * np.exp(
         g_y)) - beta * surv_rate[:-1].reshape(S-1,1) * (
-        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] - K3 * np.exp(
+        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] + omega_SS[int(starting_age * S / 60.0) + 1:] * B.reshape(1,J) - K3 * np.exp(
             g_y)) * np.exp(-sigma * g_y)
     return euler
 
 
-def Euler2(w, r, e, L_guess, K1_2, K2_2):
+def Euler2(w, r, e, L_guess, K1_2, K2_2, B):
     '''
     Parameters:
         w        = wage rate (scalar)
@@ -235,7 +236,7 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess - K2_2 * np.exp(
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess + omega_SS[int(starting_age * S / 60.0):] * B.reshape(1,J) - K2_2 * np.exp(
         g_y)) * w * e + MUl(L_guess)
     return euler
 
@@ -249,6 +250,7 @@ def Steady_State(guesses):
     '''
     K_guess = guesses[0: (S-1) * J].reshape((S-1, J))
     K = (omega_SS[int(starting_age * S / 60.0) + 1:, :] * K_guess).sum()
+    B = (K_guess * mort_rate[:-1].reshape(S-1,1)).sum(0)
     L_guess = guesses[(S-1) * J:].reshape((S, J))
     L = get_L(e, L_guess)
     Y = get_Y(K, L)
@@ -259,8 +261,8 @@ def Steady_State(guesses):
     K3 = np.array(list(K_guess[1:, :]) + list(np.zeros(J).reshape(1, J)))
     K1_2 = np.array(list(np.zeros(J).reshape(1, J)) + list(K_guess))
     K2_2 = np.array(list(K_guess) + list(np.zeros(J).reshape(1, J)))
-    error1 = Euler1(w, r, e, L_guess, K1, K2, K3)
-    error2 = Euler2(w, r, e, L_guess, K1_2, K2_2)
+    error1 = Euler1(w, r, e, L_guess, K1, K2, K3, B)
+    error2 = Euler2(w, r, e, L_guess, K1_2, K2_2, B)
     # Check and punish constraing violations
     mask1 = L_guess < 0
     error2[mask1] += 1e9
@@ -268,7 +270,7 @@ def Steady_State(guesses):
     error2[mask2] += 1e9
     if K_guess.sum() <= 0:
         error1 += 1e9
-    cons = (1 + r) * K1_2 + w * e * L_guess - K2_2 * np.exp(g_y)
+    cons = (1 + r) * K1_2 + w * e * L_guess + omega_SS[int(starting_age * S / 60.0):] * B.reshape(1,J) - K2_2 * np.exp(g_y)
     mask3 = cons < 0
     error2[mask3] += 1e9
     return list(error1.flatten()) + list(error2.flatten())
@@ -500,12 +502,12 @@ x = children.sum(1).sum(1) + omega.sum(1).sum(1)
 x2 = 100 * np.diff(x)/x[:-1]
 
 plt.figure()
-plt.plot(np.arange(T), x, 'b', linewidth=2)
+plt.plot(np.arange(T+S), x, 'b', linewidth=2)
 plt.title('Population Size (as a percent of the 2010 population)')
 plt.savefig('OUTPUT/Population')
 
 plt.figure()
-plt.plot(np.arange(T-1), x2, 'b', linewidth=2)
+plt.plot(np.arange(T-1+S), x2, 'b', linewidth=2)
 plt.axhline(y=100 * g_n[0], color='r', linestyle='--', label=r'$\bar{g}_n$')
 plt.legend(loc=0)
 plt.xlabel(r'Time $t$')
@@ -546,9 +548,10 @@ k2 = Kssmat
 k3 = np.array(list(Kssmat[1:, :]) + list(np.zeros(J).reshape((1, J))))
 k1_2 = np.array(list(np.zeros(J).reshape((1, J))) + list(Kssmat))
 k2_2 = np.array(list(Kssmat) + list(np.zeros(J).reshape((1, J))))
+B = (Kssmat * mort_rate[:-1].reshape(S-1,1)).sum(0)
 
-euler1 = Euler1(wss, rss, e, Lssmat, k1, k2, k3)
-euler2 = Euler2(wss, rss, e, Lssmat, k1_2, k2_2)
+euler1 = Euler1(wss, rss, e, Lssmat, k1, k2, k3, B)
+euler2 = Euler2(wss, rss, e, Lssmat, k1_2, k2_2, B)
 
 # 2D Graph
 plt.figure()
@@ -593,7 +596,7 @@ var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'e',
              'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes', 'omega',
              'seconds', 'eta', 'chi', 'ltilde', 'ctilde', 'T',
              'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist',
-             'children', 'surv_rate']
+             'children', 'surv_rate', 'mort_rate']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]

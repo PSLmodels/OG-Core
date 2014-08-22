@@ -66,10 +66,15 @@ data_raw = data.copy(deep=True)
 
 # Mortality rates data
 mort_data = pd.read_table('data/demographic/mortality_rates.csv', sep=',')
+for index, value in enumerate(mort_data['male_weight']):
+    mort_data['male_weight'][index] = float(value.replace(',', ''))
+for index, value in enumerate(mort_data['female_weight']):
+    mort_data['female_weight'][index] = float(value.replace(',', ''))
 # Average male and female death rates
 mort_data['mort_rate'] = (
-    mort_data.prob_live_next_male + mort_data.prob_live_next_female) / 2
-del mort_data['prob_live_next_female'], mort_data['prob_live_next_male']
+    (np.array(mort_data.male_death.values).astype(float) * np.array(mort_data.male_weight.values).astype(float)) + (np.array(mort_data.female_death.values).astype(float) * np.array(mort_data.female_weight.values).astype(float))) / (np.array(mort_data.male_weight.values).astype(float) + np.array(mort_data.female_weight.values).astype(float))
+mort_data = mort_data[mort_data.mort_rate.values < 1]
+del mort_data['male_death'], mort_data['female_death'], mort_data['male_weight'], mort_data['female_weight'], mort_data['male_expectancy'], mort_data['female_expectancy']
 # As the data gives the probability of death, one minus the rate will
 # give the survial rate
 mort_data['surv_rate'] = 1 - mort_data.mort_rate
@@ -231,11 +236,6 @@ def get_fert(S, starting_age):
     children_fertrate_int = poly.polyval(np.linspace(0, starting_age, (starting_age * S / 60.0) + 1), children_fertrate_int)
     children_fertrate = np.diff(children_fertrate_int)
     children_fertrate /= 2.0
-    # for i in xrange(starting_age):
-    #     if np.linspace(0, starting_age-1, starting_age)[i] <= 10:
-    #         children_fertrate[i] = 0
-    #     if children_fertrate[i] < 0:
-    #         children_fertrate[i] = 0
     for i in xrange(len(children_fertrate)):
         if (children_fertrate[i] < 0.0) or (i < (10.0 * S / 60.0)):
             children_fertrate[i] = 0.0
@@ -334,10 +334,10 @@ def get_omega(S, J, T, starting_age):
     new_omega /= sum2010
     children = np.diff(children_int)
     children /= sum2010
-    children = np.tile(children.reshape(1, (starting_age * S / 60.0)), (T, 1))
-    omega_big = np.tile(new_omega.reshape(1, S), (T, 1))
+    children = np.tile(children.reshape(1, (starting_age * S / 60.0)), (T + S, 1))
+    omega_big = np.tile(new_omega.reshape(1, S), (T + S, 1))
     # Generate the time path for each age/abilty group
-    for t in xrange(1, T):
+    for t in xrange(1, T + S):
         # Children are born and then have to wait 20 years to enter the model
         omega_big[t, 0] = children[t-1, -1] * (
             children_rate[-1] + children_im[-1])
@@ -373,7 +373,7 @@ def get_omega(S, J, T, starting_age):
     # Creating the different ability level bins
     bin_weights = np.ones(J) * (1.0/J)
     omega_SS = np.tile(omega_SS.reshape(S+int(starting_age * S / 60.0), 1), (1, J)) * bin_weights.reshape(1,J)
-    omega_big = np.tile(omega_big.reshape(T,S,1), (1,1,J)) * bin_weights.reshape(1,1,J)
-    children = np.tile(children.reshape(T, int(starting_age * S / 60.0), 1), (1, 1, J)) * bin_weights.reshape(1,1,J)
+    omega_big = np.tile(omega_big.reshape(T+S,S,1), (1,1,J)) * bin_weights.reshape(1,1,J)
+    children = np.tile(children.reshape(T+S, int(starting_age * S / 60.0), 1), (1, 1, J)) * bin_weights.reshape(1,1,J)
 
     return omega_big, g_n_SS, omega_SS, children, surv_array
