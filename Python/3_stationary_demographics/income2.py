@@ -59,7 +59,12 @@ def get_e_indiv(S, J, data, bin_weights, starting_age):
         for j in xrange(J):
             e[i, j] = np.mean(inc[indicies[j]:indicies[j+1]])
     e /= e.mean()
-
+    polynomials = []
+    ints = []
+    for j in xrange(J):
+        polynomials.append(poly.polyfit(np.arange(50), e[:50,j], deg=2))
+        ints.append(poly.poly)
+    
     return e
 
 def get_e(S, J, starting_age, bin_weights):
@@ -71,4 +76,4 @@ def get_e(S, J, starting_age, bin_weights):
     e += get_e_indiv(S, J, may_dat, starting_age, bin_weights)
     e /= 5
     return e
-
+get_e_indiv(60,7,may_dat,[1.0/7]*7, 20)
