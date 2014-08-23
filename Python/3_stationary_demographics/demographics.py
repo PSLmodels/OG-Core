@@ -126,21 +126,21 @@ def get_survival(S, starting_age):
     Returns:
         surv_array - S x J array of survival rates for each age cohort
     '''
-    ending_age = starting_age + 60
+    ending_age = starting_age + 80
     survival_rate = np.array(mort_data.surv_rate)[starting_age: ending_age]
     surv_rate_condensed = np.zeros(S)
-    # If S < 60, then group years together
+    # If S < 80, then group years together
     for s in xrange(S):
         surv_rate_condensed[s] = np.product(
-            survival_rate[s*(60/S):(s+1)*(60/S)])
+            survival_rate[s*(80/S):(s+1)*(80/S)])
     # All individuals must die if they reach the last age group
     surv_rate_condensed[-1] = 0
     children_rate = np.array(mort_data[(
         mort_data.age < starting_age)].surv_rate)
-    children_rate_condensed = np.zeros(starting_age * S / 60.0)
-    for s in xrange(int(starting_age * S / 60.0)):
+    children_rate_condensed = np.zeros(starting_age * S / 80.0)
+    for s in xrange(int(starting_age * S / 80.0)):
         children_rate_condensed[s] = np.product(
-            children_rate[s*(60/S):(s+1)*(60/S)])
+            children_rate[s*(80/S):(s+1)*(80/S)])
     return surv_rate_condensed, children_rate_condensed
 
 '''
@@ -161,10 +161,10 @@ def get_immigration1(S, starting_age, pop_2010, pop_2011):
         im_array - (S-1) x J array of immigration rates for each
                    age cohort
     '''
-    ending_age = starting_age + 60
+    ending_age = starting_age + 80
     
     # Get survival rates for the S age groups
-    surv_array, children_rate = get_survival(60, starting_age)
+    surv_array, children_rate = get_survival(80, starting_age)
     surv_array = np.array(list(children_rate) + list(surv_array))
     # Only keep track of individuals in 2010 that don't die
     pop_2010 = pop_2010[:ending_age]
@@ -177,15 +177,15 @@ def get_immigration1(S, starting_age, pop_2010, pop_2011):
     im_array = perc_change - (surv_array - 1)
     im_array2 = im_array[starting_age:]
     imm_rate_condensed = np.zeros(S)
-    # If S < 60, then group years together
+    # If S < 80, then group years together
     for s in xrange(S):
         imm_rate_condensed[s] = np.product(1 + im_array2[
-            s*(60/S):(s+1)*(60/S)]) - 1
+            s*(80/S):(s+1)*(80/S)]) - 1
     children_im = im_array[:starting_age]
-    children_im_condensed = np.zeros(starting_age * S / 60.0)
-    for s in xrange(int(starting_age * S / 60.0)):
+    children_im_condensed = np.zeros(starting_age * S / 80.0)
+    for s in xrange(int(starting_age * S / 80.0)):
         children_im_condensed[s] = np.product(1 + children_im[
-            s*(60/S):(s+1)*(60/S)]) - 1
+            s*(80/S):(s+1)*(80/S)]) - 1
     return imm_rate_condensed, children_im_condensed
 
 def get_immigration2(S, starting_age):
@@ -213,11 +213,11 @@ def get_fert(S, starting_age):
         fert_rate - S x J array of fertility rates for each age cohort
         children  - 15 x J array of zeros, to be used in get_omega()
     '''
-    ending_age = starting_age + 60
+    ending_age = starting_age + 80
     # Fit a polynomial to the fertility rates
     poly_fert = poly.polyfit(age_midpoint, fert_data, deg=4)
     fert_rate = poly.polyval(
-        np.linspace(starting_age, ending_age-1, 60), poly_fert)
+        np.linspace(starting_age, ending_age-1, 80), poly_fert)
     # Do not allow negative fertility rates, or nonzero rates outside of
     # a certain age range
     params = [1, 1]
@@ -227,25 +227,25 @@ def get_fert(S, starting_age):
     domain = np.arange(11) + 40
     new_end = params[0] * params[1]**(-domain)
     fert_rate[40-starting_age:51-starting_age] = new_end
-    for i in xrange(60):
-        if np.linspace(starting_age, ending_age-1, 60)[i] >= 51 or np.linspace(
-                starting_age, ending_age-1, 60)[i] < 10:
+    for i in xrange(80):
+        if np.linspace(starting_age, ending_age-1, 80)[i] >= 51 or np.linspace(
+                starting_age, ending_age-1, 80)[i] < 10:
             fert_rate[i] = 0
         if fert_rate[i] < 0:
             fert_rate[i] = 0
     fert_rate_condensed = np.zeros(S)
-    # If S < 60, then group years together
+    # If S < 80, then group years together
     for s in xrange(S):
         fert_rate_condensed[s] = np.prod(1 + fert_rate[
-            s*(60/S):(s+1)*(60/S)]) - 1
+            s*(80/S):(s+1)*(80/S)]) - 1
     # Divide the fertility rate by 2, since it will be used for men and women
     fert_rate_condensed /= 2.0
     children_fertrate_int = poly.polyint(poly_fert)
-    children_fertrate_int = poly.polyval(np.linspace(0, starting_age-.5, (starting_age * S / 60.0) + 1), children_fertrate_int) # No, I didn't cheat here a little
+    children_fertrate_int = poly.polyval(np.linspace(0, starting_age-.5, (starting_age * S / 80.0) + 1), children_fertrate_int) # No, I didn't cheat here a little
     children_fertrate = np.diff(children_fertrate_int)
     children_fertrate /= 2.0
     children_fertrate[children_fertrate < 0] = 0
-    children_fertrate[:10*S/60.0] = 0
+    children_fertrate[:10*S/80.0] = 0
     return fert_rate_condensed, children_fertrate
 
 '''
@@ -257,7 +257,7 @@ def get_fert(S, starting_age):
 
 def rate_graphs(S, starting_age, imm, fert, child_imm, child_fert):
     domain = np.arange(child_fert.shape[0] + S) + 1
-    mort = np.array(mort_data.mort_rate)[:100]
+    mort = np.array(mort_data.mort_rate)
     domain2 = np.arange(mort.shape[0]) + 1
     domain4 = np.arange(child_imm.shape[0] + imm.shape[0]) + 1
 
@@ -269,11 +269,11 @@ def rate_graphs(S, starting_age, imm, fert, child_imm, child_fert):
     plt.savefig('OUTPUT/fert_rates')
 
     plt.figure()
-    plt.plot(domain2[:60+starting_age], mort[
-        :60+starting_age], color='blue', linewidth=2)
-    plt.plot(domain2[60+starting_age:], mort[
-        60+starting_age:], color='blue', linestyle='--', linewidth=2)
-    plt.axvline(x=60+starting_age, color='red', linestyle='-', linewidth=1)
+    plt.plot(domain2[:80+starting_age], mort[
+        :80+starting_age], color='blue', linewidth=2)
+    plt.plot(domain2[80+starting_age:], mort[
+        80+starting_age:], color='blue', linestyle='--', linewidth=2)
+    plt.axvline(x=80+starting_age, color='red', linestyle='-', linewidth=1)
     plt.xlabel(r'age $s$')
     plt.ylabel(r'mortality $\rho_s$')
     plt.savefig('OUTPUT/mort_rates')
@@ -316,7 +316,7 @@ def get_omega(S, J, T, bin_weights, starting_age):
     Returns:
 
     '''
-    ending_age = starting_age + 60
+    ending_age = starting_age + 80
     data1 = data
     pop_data = np.array(data1['2010'])
     poly_pop = poly.polyfit(np.linspace(
@@ -336,12 +336,12 @@ def get_omega(S, J, T, bin_weights, starting_age):
     rate_graphs(
         S, starting_age, imm_array, fert_rate, children_im, children_fertrate)
     children_int = poly.polyval(
-        np.linspace(0, starting_age, (starting_age * S / 60.0) + 1), poly_int_pop)
+        np.linspace(0, starting_age, (starting_age * S / 80.0) + 1), poly_int_pop)
     sum2010 = pop_int[-1] - children_int[0]
     new_omega /= sum2010
     children = np.diff(children_int)
     children /= sum2010
-    children = np.tile(children.reshape(1, (starting_age * S / 60.0)), (T + S, 1))
+    children = np.tile(children.reshape(1, (starting_age * S / 80.0)), (T + S, 1))
     omega_big = np.tile(new_omega.reshape(1, S), (T + S, 1))
     # This is cheating 
     # children[0,0] += 0.00011 * J
@@ -360,7 +360,7 @@ def get_omega(S, J, T, bin_weights, starting_age):
             children_rate[:-1] + children_im[:-1])
         children[t, 0] = ((omega_big[t-1, :] * fert_rate).sum(0) + (
             children[t-1] * children_fertrate).sum(0)) * (1 + children_im[0])
-    OMEGA = np.zeros((S + int(starting_age * S / 60.0), S + int(starting_age * S / 60.0)))
+    OMEGA = np.zeros((S + int(starting_age * S / 80.0), S + int(starting_age * S / 80.0)))
     OMEGA[0, :] = np.array(list(children_fertrate) + list(
         fert_rate)) * (1 + children_im[0])
     OMEGA += np.diag(np.array(list(children_rate[:]) + list(
@@ -378,13 +378,13 @@ def get_omega(S, J, T, bin_weights, starting_age):
     if eigvalues.shape[0] != 1:
         ind = ((abs(omega_SS.T/omega_SS.T.sum(0) - np.array(
             list(children[-1, :]) + list(omega_big[-1, :])).reshape(
-            S+int(starting_age * S / 60.0), 1))).sum(0)).argmin()
+            S+int(starting_age * S / 80.0), 1))).sum(0)).argmin()
         omega_SS = omega_SS[ind]
         g_n_SS = [g_n_SS[ind]]
     omega_SS /= omega_SS.sum()
     # Creating the different ability level bins
-    omega_SS = np.tile(omega_SS.reshape(S+int(starting_age * S / 60.0), 1), (1, J)) * bin_weights.reshape(1,J)
+    omega_SS = np.tile(omega_SS.reshape(S+int(starting_age * S / 80.0), 1), (1, J)) * bin_weights.reshape(1,J)
     omega_big = np.tile(omega_big.reshape(T+S,S,1), (1,1,J)) * bin_weights.reshape(1,1,J)
-    children = np.tile(children.reshape(T+S, int(starting_age * S / 60.0), 1), (1, 1, J)) * bin_weights.reshape(1,1,J)
+    children = np.tile(children.reshape(T+S, int(starting_age * S / 80.0), 1), (1, 1, J)) * bin_weights.reshape(1,1,J)
 
     return omega_big, g_n_SS, omega_SS, children, surv_array

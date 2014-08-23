@@ -44,26 +44,26 @@ TPImindist   = Cut-off distance between iterations for TPI
 
 
 # Parameters
-S = 60
+S = 80
 J = 7
 T = 3 * S
 bin_weights = np.array([1.0/J] * J)
 starting_age = 20
-ending_age = starting_age + 60
+ending_age = starting_age + 80
 beta_annual = .96
-beta = beta_annual ** (60.0 / S)
+beta = beta_annual ** (80.0 / S)
 sigma = 3.0
 alpha = .35
 nu = .20
 A = 1.0
 delta_annual = .05
-delta = 1 - ((1-delta_annual) ** (60.0 / S))
+delta = 1 - ((1-delta_annual) ** (80.0 / S))
 ctilde = .001
 ltilde = 1.0
 chi = 1.0
 eta = 2.0
 g_y_annual = 0.03
-g_y = (1 + g_y_annual)**(60.0/S) - 1
+g_y = (1 + g_y_annual)**(80.0/S) - 1
 TPImaxiter = 100
 TPImindist = 3 * 1e-6
 

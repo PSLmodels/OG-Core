@@ -398,7 +398,7 @@ domain     = 1 x S vector of each age cohort
 '''
 
 print 'Generating steady state graphs.'
-domain = np.linspace(1, S, S)
+domain = np.linspace(starting_age, ending_age, S)
 
 # 2D Graph
 plt.figure()
@@ -412,9 +412,8 @@ plt.savefig("OUTPUT/capital_dist_2D")
 
 # 3D Graph
 cmap1 = matplotlib.cm.get_cmap('summer')
-Sgrid = np.linspace(1, S, S)
 Jgrid = np.linspace(1, J, J)
-X, Y = np.meshgrid(Sgrid, Jgrid)
+X, Y = np.meshgrid(domain, Jgrid)
 fig5 = plt.figure()
 ax5 = fig5.gca(projection='3d')
 ax5.set_xlabel(r'age-$s$')
@@ -517,14 +516,14 @@ plt.ylabel(r'Population growth rate $g_n$')
 plt.savefig('OUTPUT/Population_growthrate')
 
 plt.figure()
-plt.plot(np.arange(S+int(starting_age * S / 60.0))+1, list(children[0, :, :].sum(1)) + list(
+plt.plot(np.arange(S+int(starting_age * S / 80.0))+1, list(children[0, :, :].sum(1)) + list(
     omega[0, :, :].sum(1)), linewidth=2, color='blue')
 plt.xlabel(r'age $s$')
 plt.ylabel(r'$\omega_{s,1}$')
 plt.savefig('OUTPUT/omega_init')
 
 plt.figure()
-plt.plot(np.arange(S+int(starting_age * S / 60.0))+1, omega_SS, linewidth=2, color='blue')
+plt.plot(np.arange(S+int(starting_age * S / 80.0))+1, omega_SS, linewidth=2, color='blue')
 plt.xlabel(r'age $s$')
 plt.ylabel(r'$\overline{\omega}$')
 plt.savefig('OUTPUT/omega_ss')
@@ -563,7 +562,7 @@ plt.title('Euler Errors')
 plt.savefig('OUTPUT/euler_errors_SS_2D')
 
 # 3D Graph
-X2, Y2 = np.meshgrid(Sgrid[1:], Jgrid)
+X2, Y2 = np.meshgrid(domain[1:], Jgrid)
 
 fig16 = plt.figure()
 ax16 = fig16.gca(projection='3d')

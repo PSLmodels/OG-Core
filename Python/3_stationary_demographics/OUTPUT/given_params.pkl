@@ -19,10 +19,10 @@ p6
 I7
 sS'S'
 p7
-I60
+I80
 sS'ending_age'
 p8
-I80
+I100
 sS'ltilde'
 p9
 F1.0
@@ -74,7 +74,7 @@ p28
 I20
 sS'T'
 p29
-I180
+I240
 sS'delta'
 p30
 F0.050000000000000044
