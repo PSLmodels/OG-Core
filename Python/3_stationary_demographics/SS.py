@@ -78,7 +78,7 @@ omega        = T x S x J array of demographics
 '''
 
 print 'Generating income distribution.'
-e = income2.get_e(S, J, bin_weights, starting_age)
+e = income2.get_e(S, J, starting_age, ending_age, bin_weights)
 print '\tFinished.'
 print 'Generating demographics.'
 omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(S, J, T, bin_weights, starting_age)

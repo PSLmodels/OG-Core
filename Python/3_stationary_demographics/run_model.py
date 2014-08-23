@@ -10,7 +10,7 @@ from glob import glob
 # Run steady state
 run_SS = True
 # Run TPI
-run_TPI = True
+run_TPI = False
 
 '''
 ------------------------------------------------------------------------
@@ -49,6 +49,7 @@ J = 7
 T = 3 * S
 bin_weights = np.array([1.0/J] * J)
 starting_age = 20
+ending_age = starting_age + 60
 beta_annual = .96
 beta = beta_annual ** (60.0 / S)
 sigma = 3.0
@@ -67,7 +68,7 @@ TPImaxiter = 100
 TPImindist = 3 * 1e-6
 
 print 'Saving user given parameter values.'
-var_names = ['S', 'J', 'T', 'bin_weights', 'starting_age', 'beta', 'sigma',
+var_names = ['S', 'J', 'T', 'bin_weights', 'starting_age', 'ending_age', 'beta', 'sigma',
              'alpha', 'nu', 'A', 'delta', 'ctilde', 'ltilde',
              'chi', 'eta', 'g_y', 'TPImaxiter', 'TPImindist']
 dictionary = {}

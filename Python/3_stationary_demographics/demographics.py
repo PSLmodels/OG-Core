@@ -244,6 +244,8 @@ def get_fert(S, starting_age):
     children_fertrate_int = poly.polyval(np.linspace(0, starting_age-.5, (starting_age * S / 60.0) + 1), children_fertrate_int) # No, I didn't cheat here a little
     children_fertrate = np.diff(children_fertrate_int)
     children_fertrate /= 2.0
+    children_fertrate[children_fertrate < 0] = 0
+    children_fertrate[:10*S/60.0] = 0
     return fert_rate_condensed, children_fertrate
 
 '''

@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import numpy.polynomial.polynomial as poly
+import scipy.optimize as opt
 
 jan_dat = pd.read_table("data/e_vec_data/jan2014.asc", sep=',', header=0)
 jan_dat['wgt'] = jan_dat['PWCMPWGT']
@@ -32,7 +33,29 @@ may_dat['wgt'] = may_dat['PWCMPWGT']
 del may_dat['HRHHID'], may_dat['OCCURNUM'], may_dat['YYYYMM'], may_dat[
     'HRHHID2'], may_dat['PRTAGE'], may_dat['PTERNHLY'], may_dat['PWCMPWGT']
 
-def get_e_indiv(S, J, data, bin_weights, starting_age):
+def fit_exp_right(params, point1, point2):
+    a, b = params
+    x1, y1 = point1
+    x2, y2 = point2
+    error1 = a*b**(-x1) - y1
+    error2 = a*b**(-x2) - y2
+    return [error1, error2]
+
+def exp_int(points, a, b):
+    top = a * ((1.0/(b**70)) - b**(-points))
+    bottom = np.log(b)
+    return top / bottom
+
+def integrate(func, points, j):
+    params_guess = [1,1]
+    a, b = opt.fsolve(fit_exp_right, params_guess, args=([70,poly.polyval(70, func)], [100, .15*(j+1)]))
+    func_int = poly.polyint(func)
+    integral = np.empty(points.shape)
+    integral[points<=70] = poly.polyval(points[points<=70], func_int)
+    integral[points>70] = poly.polyval(70, func_int) + exp_int(points[points>70], a, b)
+    return np.diff(integral)
+
+def get_e_indiv(S, J, data, starting_age, ending_age, bin_weights):
     temp_ending_age = starting_age + 50
     age_groups = np.linspace(starting_age, temp_ending_age, 51)
     e = np.zeros((S, J))
@@ -59,21 +82,20 @@ def get_e_indiv(S, J, data, bin_weights, starting_age):
         for j in xrange(J):
             e[i, j] = np.mean(inc[indicies[j]:indicies[j+1]])
     e /= e.mean()
-    polynomials = []
-    ints = []
-    for j in xrange(J):
-        polynomials.append(poly.polyfit(np.arange(50), e[:50,j], deg=2))
-        ints.append(poly.poly)
-    
-    return e
 
-def get_e(S, J, starting_age, bin_weights):
+    new_e = np.empty((S,J))
+    for j in xrange(J):
+        func = poly.polyfit(np.arange(50)+starting_age, e[:50,j], deg=2)
+        new_e[:,j] = integrate(func, np.linspace(starting_age,ending_age, S+1), j)
+    
+    return new_e
+
+def get_e(S, J, starting_age, ending_age, bin_weights):
     e = np.zeros((S, J))
-    e += get_e_indiv(S, J, jan_dat, starting_age, bin_weights)
-    e += get_e_indiv(S, J, feb_dat, starting_age, bin_weights)
-    e += get_e_indiv(S, J, mar_dat, starting_age, bin_weights)
-    e += get_e_indiv(S, J, apr_dat, starting_age, bin_weights)
-    e += get_e_indiv(S, J, may_dat, starting_age, bin_weights)
+    e += get_e_indiv(S, J, jan_dat, starting_age, ending_age, bin_weights)
+    e += get_e_indiv(S, J, feb_dat, starting_age, ending_age, bin_weights)
+    e += get_e_indiv(S, J, mar_dat, starting_age, ending_age, bin_weights)
+    e += get_e_indiv(S, J, apr_dat, starting_age, ending_age, bin_weights)
+    e += get_e_indiv(S, J, may_dat, starting_age, ending_age, bin_weights)
     e /= 5
     return e
-get_e_indiv(60,7,may_dat,[1.0/7]*7, 20)
