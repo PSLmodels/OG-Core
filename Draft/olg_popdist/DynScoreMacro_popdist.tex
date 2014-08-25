@@ -52,8 +52,8 @@
 \begin{document}
 
 \begin{titlepage}
-\title{A Macroeconomic Model for \\
-       Dynamic Scoring of Tax Policy
+\title{An Open Source Macroeconomic Model \\
+       for Dynamic Scoring of Tax Policy
        \thanks{
        Put thanks here.}
        }
@@ -68,7 +68,7 @@
   \and
   Isaac Swift\footnote{Brigham Young University, Department of Economics, 163 FOB, Provo, Utah 84602, \href{mailto:isaacdswift@gmail.com}{isaacdswift@gmail.com}.} \\[-2pt]}
 \date{August 2014 \\
-  \scriptsize{(version 14.08.a)}}
+  \scriptsize{(version 14.08.b)}}
 \maketitle
 \begin{abstract}
 \normalsize{Put abstract here.
@@ -118,29 +118,45 @@
       g_{n,t+1} \equiv \frac{N_{t+1}}{N_t} - 1 \quad\forall t
     \end{equation}
 
-    Their working ability evolves over their lifetime according to an age-dependent deterministic process. At birth, an equal fraction $1/J$ of the $\omega_{s,t}$ measure of new agents are randomly assigned to each of the $J$ ability types indexed by $j=1,2,...J$. Once ability type is determined, that measure $\omega_{s,t}/J$ of individuals' ability evolves deterministically according to $e_{j,s}$. The process for the evolution of the population weights $\omega_{s,t}$ is an exogenous input to the model. We calibrate the matrix of lifetime ability paths $e_{j,s}$ for all types $j$ using CPS hourly wage by age distribution data.\footnote{Appendix \ref{AppAbilCalib} gives a detailed description of the calibration of the deterministic ability process by age $s$ and type $j$, as well as alternative specifications and calibrations.}
+    A household's working ability evolves over his lifetime according to an age-dependent deterministic process. At birth, a set fraction $\lambda_j$ of the $\omega_{1,t}$ measure of new agents are randomly assigned to each of the $J$ ability types indexed by $j=1,2,...J$ such that $\sum_{j=1}^J\lambda_j=1$. Once ability type is determined, that measure $\lambda_j\omega_{s,t}$ of individuals' ability evolves deterministically according to $e_{j,s}$. The process for the evolution of the population weights $\omega_{s,t}$ is an exogenous input to the model. We calibrate the matrix of lifetime ability paths $e_{j,s}$ for all types $j$ using CPS hourly wage by age distribution data.\footnote{Appendix \ref{AppAbilCalib} gives a detailed description of the calibration of the deterministic ability process by age $s$ and type $j$, as well as alternative specifications and calibrations.}
 
     Individuals are endowed with a measure of time $\tilde{l}$ in each period $t$, and they choose each period how much of that time to allocate between labor $n_{j,s,t}$ and leisure $l_{j,s,t}$.
     \begin{equation}\label{EqLabConstr}
       n_{j,s,t} + l_{j,s,t} = \tilde{l}
     \end{equation}
 
-    \noindent At time $t$, all generation-$s$ agents with ability $e_{j,s}$ know the real wage rate $w_t$ and know the one-period real net interest rate $r_t$ on bond holdings $b_{j,s,t}$ that mature at the beginning of period $t$. In each period $t$, age-$s$ agents with working ability $e_{j,s}$ choose how much to consume $c_{j,s,t}$, how much to save for the next period by loaning capital to firms in the form of a one-period bond $b_{j,s+1,t+1}$, and how much to work $n_{j,s,t}$ in order to maximize expected lifetime utility of the following form,
+    \noindent At time $t$, all generation-$s$ agents with ability $e_{j,s}$ know the real wage rate $w_t$ and know the one-period real net interest rate $r_t$ on bond holdings $b_{j,s,t}$ that mature at the beginning of period $t$. They also receive accidental and intentional bequestsIn each period $t$, age-$s$ agents with working ability $e_{j,s}$ choose how much to consume $c_{j,s,t}$, how much to save for the next period by loaning capital to firms in the form of a one-period bond $b_{j,s+1,t+1}$, and how much to work $n_{j,s,t}$ in order to maximize expected lifetime utility of the following form,
     \begin{equation}\label{EqUtilMax}
       \begin{split}
-        &U_{j,s,t} = \sum_{v=0}^{S-s}\beta^u u\left(c_{j,s+u,t+u},n_{j,s+u,t+u}\right) \\
-        &\text{where} \quad u\left(c_{j,s,t},n_{j,s,t}\right) = \frac{\left(c_{j,s,t}\right)^{1-\sigma} - 1}{1-\sigma} + \chi e^{g_y t(1-\sigma)}\frac{(\tilde{l}-n_{j,s,t})^{1-\eta}}{1-\eta} \quad\forall j,s,t
+        &U_{j,s,t} = \sum_{u=0}^{S-s}\beta^u\left[\prod_{v=s}^{s+u-1}(1-\rho_v)\right] u\left(c_{j,s+u,t+u},n_{j,s+u,t+u}\right) \quad\text{where}\quad \rho_{s-1}=0 \\
+        &\quad\text{and} \quad u\left(c_{j,s,t},n_{j,s,t}\right) = \frac{\left(c_{j,s,t}\right)^{1-\sigma} - 1}{1-\sigma} + \chi_n e^{g_y t(1-\sigma)}\frac{(\tilde{l}-n_{j,s,t})^{1-\eta}}{1-\eta} \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\forall j,t\quad\text{and}\:E+1\leq s< E+S \\
+        &\quad\text{and}\quad u\left(c_{j,s,t},n_{j,s,t}\right) = \frac{\left(c_{j,s,t}\right)^{1-\sigma} - 1}{1-\sigma} + \chi_n e^{g_y t(1-\sigma)}\frac{(\tilde{l}-n_{j,s,t})^{1-\eta}}{1-\eta} + ... \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad \chi_b\frac{\left(bq_{j,s+1,t+1}\right)^{1-\sigma} - 1}{1-\sigma} \quad\forall j,t\quad\text{and}\quad s=E+S
       \end{split}
     \end{equation}
-    where $\sigma\geq 1$ is the coefficient of relative risk aversion on consumption, $\eta\geq 1$ is proportional to the Frisch elasticity of labor supply, $\beta\in(0,1)$ is the agent's discount factor, $\chi$ is a constant term influencing the disutility of labor, and $g_y$ is a constant growth rate of labor augmenting technological progress, which we explain in Section \ref{SecFirms}. \footnote{The term with the growth rate $e^{g_y t(1-\sigma)}$ must be included in the period utility function because consumption will be growing at rate $g_y$ and this term stationarizes the household Euler equation by making the marginal disutility of labor grow at the same rate as the marginal benefit of consumption.}
+    where $\sigma\geq 1$ is the coefficient of relative risk aversion on consumption, $\eta\geq 1$ is proportional to the Frisch elasticity of labor supply, $\beta\in(0,1)$ is the agent's discount factor, and the term in brackets depreciates the household's discount factor by the cummulative mortality rate.\footnote{The initial period mortality rate $\rho_{s-1}$ is forced to be zero because the household knows it has survived to that point.} The term $\chi_n$ is a constant term influencing the disutility of labor, and $g_y$ is a constant growth rate of labor augmenting technological progress, which we explain in Section \ref{SecFirms}.\footnote{The term with the growth rate $e^{g_y t(1-\sigma)}$ must be included in the period utility function because consumption and bequests will be growing at rate $g_y$ and this term stationarizes the household Euler equation by making the marginal disutility of labor grow at the same rate as the marginal benefits of consumption and bequests.} The term $\chi_b$ is a constant term influencing the marginal utility of intentional bequests $bq_{j,s,t}$ relative to the marginal utility of consumption
 
-    Because agents are born without any bonds maturing and because they purchase no bonds in the last period of life $s=S$, the per-period budget constraints for each agent normalized by the price of consumption are the following.
-    \begin{align}
-      w_t e_{j,s}n_{j,s,t} &\geq c_{j,s,t} + b_{j,s+1,t+1} \quad \text{for} \quad s = 1 \quad\quad\quad\quad\:\:\: \forall j,t \label{EqBC1} \\
-      \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}n_{j,s,t} &\geq c_{j,s,t} + b_{j,s+1,t+1} \quad \text{for} \quad 2\leq s \leq S-1 \quad \forall j,t \label{EqBC2} \\
-      \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}n_{j,s,t} &\geq c_{j,s,t} \quad\quad\quad\quad\quad\quad \text{for} \quad s = S \quad\quad\quad\quad\:\:\, \forall j,t \label{EqBC3}
-    \end{align}
-    Note that the price of consumption is normalized to one, so $w_t$ is the real wage and $r_t$ is the real net interest rate.
+    Because agents are born without any bonds maturing and because they purchase no bonds in the last period of life $s=E+S$, the per-period budget constraints for each agent normalized by the price of consumption are the following.
+    \begin{equation}\label{EqBC1}
+      c_{j,s,t} + b_{j,s+1,t+1} \leq w_t e_{j,s}n_{j,s,t} + \frac{BQ_{j,t}}{\omega_{s,t}\lambda_j} \quad \text{for} \quad s = E+1 \quad \forall j,t
+    \end{equation}
+    \begin{equation}\label{EqBC2}
+      \begin{split}
+        c_{j,s,t} + b_{j,s+1,t+1} &\leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{BQ_{j,t}}{\omega_{s,t}\lambda_j} \\
+        &\quad \text{for} \quad E+2\leq s \leq E+S-1 \quad \forall j,t
+      \end{split}
+    \end{equation}
+    \begin{equation}\label{EqBC3}
+      c_{j,s,t} + bq_{j,s+1,t+1} \leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{BQ_{j,t}}{\omega_{s,t}\lambda_j} \quad \text{for} \quad s = E+S \quad \forall j,t
+    \end{equation}
+    Note that the price of consumption is normalized to one, so $w_t$ is the real wage and $r_t$ is the real net interest rate. The term $BQ_{j,t}$ represents the ability-$j$ age-$s$ household's total bequests received at the end of the last period $t-1$ from both accidental bequests of those who died unexpectedly and intended bequests from those who died at age $s=S$.
+
+    We first assume the symmetry that individual accidental bequests $(1+r_{t+1})b_{j,s+1,t+1}$ for $s<E+S$ can be both positive and negative. This means that households that die before age $s=E+S$ can bequeath either savings or debt. However, the functional form for the utility of intended bequests in period $s=E+S$ in \eqref{EqUtilMax} ensures that intended bequests will always be positive $bq_{j,E+S+1,t}>0$ for all $j$ and $t$. We also impose the constraint, similar to the aggregate capital stock, that aggregate bequests be nonnegative $BQ_{j,t}\geq 0$ for all $j$ and $t$.
+    \begin{equation}\label{EqTotBeq}
+      BQ_{j,t+1} = (1+r_{t+1})\lambda_j\left(\omega_{E+S,t}bq_{j,E+S+1,t+1} + \sum_{s=E+1}^{E+S-1}\rho_s\omega_{s,t}b_{j,s+1,t+1}\right) \quad\forall j,t
+    \end{equation}
+    We assume the total accidental and intentional bequests from ability-$j$ households are equally divided among surviving type-$j$ households.\footnote{Another allocation rule at the other extreme would be to equally divide all bequests among all surviving households. An intermediate rule would be some kind of distribution of bequests with most going to ones own type and a declining proportion going to the other types.}
 
     In addition to the budget constraints in each period, the utility function imposes nonnegative consumption through inifinite marginal utility and individual labor and leisure must be nonnegative $n_{j,s,t},l_{j,s,t}\geq 0$. We allow the possibility for individual agents to borrow $b_{j,s,t}<0$ for some $j$ and $s$ in period $t$. However, the borrowing must satisfy a series of individual feasibility constraints as well as a strict constraint that the aggregate capital stock $K_t>0$ be positive in every period.\footnote{We describe these constraints in detail in Appendix \ref{AppBorConstr}.}
 
@@ -472,36 +488,36 @@
 
   \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
     \caption{\label{FigInitPopDist}\textbf{Initial population distribution $\omega_{s,1}$ by year, $1\leq s\leq 100$}}
-    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/InitPopDist.png}}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/omega_init.png}}}
   \end{figure}
 
   \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
     \caption{\label{FigFertRates}\textbf{Fertility rates $f_s$ by year, $1\leq s\leq 100$}}
-    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/FertRates.png}}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/fert_rates.png}}}
   \end{figure}
 
   \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
     \caption{\label{FigMortRates}\textbf{Mortality rates $\rho_s$ by year, $1\leq s\leq 100$}}
-    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/MortRates.png}}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/mort_rates.png}}}
   \end{figure}
 
   The immigration rates $\{i_s\}_{s=1}^{99}$ in Figure \ref{FigImmigRates} are essentially residuals. We take total population for two consecutive years $N_t$ and $N_{t+1}$ and the population distribution by age in both of those years $\bm{\omega}_{t}$ and $\bm{\omega}_{t+1}$from the \citet{Census:2014} data. We then deduce the immigration rates $\{i_s\}_{s=1}^{99}$ using equation \eqref{EqPopLawofmotionStat}. We do this for three consecutive sets of years, so that our calibrated immigration rates by age are the average of our three years of deduced rates from the data for each age.
 
   \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
     \caption{\label{FigImmigRates}\textbf{Immigration rates $i_s$ by year, $1\leq s\leq 100$}}
-    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/ImmigRates.png}}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/imm_rates.png}}}
   \end{figure}
 
   Figure \ref{FigPopPath} shows the predicted time path of the total population $N_t$ given $\omega_{s,1}$ $f_s$, $i_s$, and $\rho_s$. Notice that the population approaches a constant growth rate. This is a result of the stationary population percent distribution $\bm{\bar{\omega}}$ eventually being reached. Figure \ref{FigSSpopdist} shows the steady-state population percent distribution by age $\bm{\bar{\omega}}$.
 
   \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
     \caption{\label{FigPopPath}\textbf{Forecast time path of population growth rate $g_{n,t}$}}
-    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/PopPath.png}}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/PopGrowthPath.png}}}
   \end{figure}
 
   \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
     \caption{\label{FigSSpopdist}\textbf{Steady-state population percent distribution by age $\bm{\bar{\omega}}$}}
-    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/SSpopdist.png}}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/omega_ss.png}}}
   \end{figure}
   \clearpage
 
