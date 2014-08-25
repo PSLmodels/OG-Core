@@ -48,7 +48,7 @@ def exp_int(points, a, b):
 
 def integrate(func, points, j):
     params_guess = [1,1]
-    a, b = opt.fsolve(fit_exp_right, params_guess, args=([70,poly.polyval(70, func)], [100, .1*(j+1)]))
+    a, b = opt.fsolve(fit_exp_right, params_guess, args=([70,poly.polyval(70, func)], [100, j]))
     func_int = poly.polyint(func)
     integral = np.empty(points.shape)
     integral[points<=70] = poly.polyval(points[points<=70], func_int)
@@ -71,12 +71,12 @@ def get_e_indiv(S, J, data, starting_age, ending_age, bin_weights):
             cum_weight_scalar += wgt_ar[k]
             wgt_cum[k] = cum_weight_scalar
         total_wgts = wgt_cum[-1]
-        percentile = 0
+        percentile = np.zeros(J)
         indicies  = np.zeros(J+1)
         for j, weight in enumerate(bin_weights):
-            percentile += weight
+            percentile[j:] += weight
             ind = 0
-            while wgt_cum[ind] < total_wgts * percentile:
+            while (ind < len(wgt_cum)) and (wgt_cum[ind] < total_wgts * percentile[j]):
                 ind += 1
             indicies[j+1] = ind
         for j in xrange(J):
@@ -86,7 +86,7 @@ def get_e_indiv(S, J, data, starting_age, ending_age, bin_weights):
     new_e = np.empty((S,J))
     for j in xrange(J):
         func = poly.polyfit(np.arange(50)+starting_age, e[:50,j], deg=2)
-        new_e[:,j] = integrate(func, np.linspace(starting_age,ending_age, S+1), j)
+        new_e[:,j] = integrate(func, np.linspace(starting_age,ending_age, S+1), percentile[j])
     
     return new_e
 
