@@ -510,7 +510,7 @@ plt.title('Population Size (as a percent of the 2010 population)')
 plt.savefig('OUTPUT/Population')
 
 plt.figure()
-plt.plot(np.arange(175)+1, x2[:175], 'b', linewidth=2)
+plt.plot(np.arange(T+S-1)+1, x2, 'b', linewidth=2)
 plt.axhline(y=100 * g_n[0], color='r', linestyle='--', label=r'$\bar{g}_n$')
 plt.legend(loc=0)
 plt.xlabel(r'Time $t$')
