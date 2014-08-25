@@ -343,12 +343,7 @@ def get_omega(S, J, T, bin_weights, starting_age):
     children /= sum2010
     children = np.tile(children.reshape(1, (starting_age * S / 80.0)), (T + S, 1))
     omega_big = np.tile(new_omega.reshape(1, S), (T + S, 1))
-    # This is cheating 
-    # children[0,0] += 0.00011 * J
-    # children[0,1] += 0.00005 * J
-    # children[0,2] += 0.00002 * J
-    # children[0,3] += 0.000007 * J
-    # Generate the time path for each age/abilty group
+    # Generate the time path for each age group
     for t in xrange(1, T + S):
         # Children are born and then have to wait 20 years to enter the model
         omega_big[t, 0] = children[t-1, -1] * (

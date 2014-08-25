@@ -6,23 +6,13 @@ Income file:
 	-if that doesn't happen:
 		-add samples to the data
 		-use glob to import all data at once
-	-either way, extrapolate age 80-100 values
 
 Demographic file:
--allow for S=80 (people die at 100)
--unequal bin sizes
 
 SS file:
--unequal bin sizes
--mortality risk
--accidental bequests
 -incidental bequests
 
 TPI file:
--not working for J=7
--unequal bin sizes
--mortality risk
--accidental bequests
 -incidental bequests
 
 
@@ -33,11 +23,11 @@ Documentation:
 -change source for fertility data
 -once everything is working, update the draft pictures
 	-make sure the parameter values are correct (especially T)
-	-say  that rho=1 for s>=60
+	-say  that rho=1 for s>=80
 	-Lpath_TPI graph?
 -add documentation to draft about demographics
 
 Other Problems:
--model doesn't converge if S<4 or S>60 (or in increments of less than one years length)
+-model doesn't converge if S<4 or S>80 (or in increments of less than one years length)
 
 

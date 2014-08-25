@@ -399,6 +399,9 @@ domain     = 1 x S vector of each age cohort
 
 print 'Generating steady state graphs.'
 domain = np.linspace(starting_age, ending_age, S)
+Jgrid = np.zeros(J)
+for j in xrange(J):
+    Jgrid[j:] += bin_weights[j]
 
 # 2D Graph
 plt.figure()
@@ -412,7 +415,7 @@ plt.savefig("OUTPUT/capital_dist_2D")
 
 # 3D Graph
 cmap1 = matplotlib.cm.get_cmap('summer')
-Jgrid = np.linspace(1, J, J)
+# Jgrid = np.linspace(1, J, J)
 X, Y = np.meshgrid(domain, Jgrid)
 fig5 = plt.figure()
 ax5 = fig5.gca(projection='3d')

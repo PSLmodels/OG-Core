@@ -48,7 +48,7 @@ def exp_int(points, a, b):
 
 def integrate(func, points, j):
     params_guess = [1,1]
-    a, b = opt.fsolve(fit_exp_right, params_guess, args=([70,poly.polyval(70, func)], [100, .15*(j+1)]))
+    a, b = opt.fsolve(fit_exp_right, params_guess, args=([70,poly.polyval(70, func)], [100, .1*(j+1)]))
     func_int = poly.polyint(func)
     integral = np.empty(points.shape)
     integral[points<=70] = poly.polyval(points[points<=70], func_int)
@@ -58,7 +58,7 @@ def integrate(func, points, j):
 def get_e_indiv(S, J, data, starting_age, ending_age, bin_weights):
     temp_ending_age = starting_age + 50
     age_groups = np.linspace(starting_age, temp_ending_age, 51)
-    e = np.zeros((S, J))
+    e = np.zeros((50, J))
     data = data[(starting_age <= data.age) & (data.age <= temp_ending_age)]
     for i in xrange(50):
         incomes = data[(age_groups[i] <= data.age) & (data.age < age_groups[i+1])]
