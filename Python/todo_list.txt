@@ -20,7 +20,6 @@ run_model file:
 
 Documentation:
 -document ability, demographic, SS, TPI, and run_SS_TPI file changes in python
--change source for fertility data
 -once everything is working, update the draft pictures
 	-make sure the parameter values are correct (especially T)
 	-say  that rho=1 for s>=80
@@ -30,4 +29,5 @@ Documentation:
 Other Problems:
 -model doesn't converge if S<4 or S>80 (or in increments of less than one years length)
 
-
+HHTAX:
+-change fertility data source documentation in draft

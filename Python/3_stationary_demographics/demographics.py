@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 8/20/2014
+Last updated 8/22/2014
 
 Functions for generating omega, the T x S x J array which describes the
 demographics of the population
@@ -62,10 +62,13 @@ for index, value in enumerate(data['2012']):
     data['2012'][index] = int(value.replace(',', ''))
 for index, value in enumerate(data['2013']):
     data['2013'][index] = int(value.replace(',', ''))
+# Create a copy of the data to be used elsewhere, without changing the
+# main data
 data_raw = data.copy(deep=True)
 
 # Mortality rates data
 mort_data = pd.read_table('data/demographic/mortality_rates.csv', sep=',')
+# Remove commas in the data
 for index, value in enumerate(mort_data['male_weight']):
     mort_data['male_weight'][index] = float(value.replace(',', ''))
 for index, value in enumerate(mort_data['female_weight']):
@@ -87,10 +90,9 @@ fert_data = np.array(
 # are the midpoints of those groups
 age_midpoint = np.array([12, 17, 16, 18.5, 22, 27, 32, 37, 42, 49.5])
 
-# Fit exponentials to two points for right tail of distributions
-
 
 def fit_exp_right(params, point1, point2):
+    # Fit exponentials to two points for right tail of distributions
     a, b = params
     x1, y1 = point1
     x2, y2 = point2
@@ -98,10 +100,9 @@ def fit_exp_right(params, point1, point2):
     error2 = a*b**(-x2) - y2
     return [error1, error2]
 
-# Fit exponentials to two points for left tail of distributions
-
 
 def fit_exp_left(params, point1, point2):
+    # Fit exponentials to two points for left tail of distributions
     a, b = params
     x1, y1 = point1
     x2, y2 = point2
@@ -121,10 +122,12 @@ def get_survival(S, starting_age):
     '''
     Parameters:
         S - Number of age cohorts
-        J - Number of ability types
+        starting age - initial age of cohorts
 
     Returns:
-        surv_array - S x J array of survival rates for each age cohort
+        surv_array - S x 1 array of survival rates for each age cohort
+        children_rate_condensed - starting_age x 1 array of surrvival
+            rates for children
     '''
     ending_age = starting_age + 80
     survival_rate = np.array(mort_data.surv_rate)[starting_age: ending_age]
@@ -148,21 +151,28 @@ def get_survival(S, starting_age):
     Immigration Rates
 ------------------------------------------------------------------------
 '''
-pop_2010, pop_2011, pop_2012, pop_2013 = np.array(data_raw['2010'], dtype='f'), np.array(
-        data_raw['2011'], dtype='f'), np.array(data_raw['2012'], dtype='f'), np.array(data_raw['2013'], dtype='f')
+pop_2010, pop_2011, pop_2012, pop_2013 = np.array(
+    data_raw['2010'], dtype='f'), np.array(
+        data_raw['2011'], dtype='f'), np.array(
+        data_raw['2012'], dtype='f'), np.array(
+        data_raw['2013'], dtype='f')
+
 
 def get_immigration1(S, starting_age, pop_2010, pop_2011):
     '''
     Parameters:
         S - Number of age cohorts
-        J - Number of ability types
+        starting age - initial age of cohorts
+        pop1 - initial population
+        pop2 - population one year later
 
     Returns:
-        im_array - (S-1) x J array of immigration rates for each
+        im_array - S x 1 array of immigration rates for each
                    age cohort
+        children_im_condensed - starting_age x 1 array of immigration
+            rates for children
     '''
     ending_age = starting_age + 80
-    
     # Get survival rates for the S age groups
     surv_array, children_rate = get_survival(80, starting_age)
     surv_array = np.array(list(children_rate) + list(surv_array))
@@ -189,6 +199,17 @@ def get_immigration1(S, starting_age, pop_2010, pop_2011):
     return imm_rate_condensed, children_im_condensed
 
 def get_immigration2(S, starting_age):
+    '''
+    Parameters:
+        S - Number of age cohorts
+        starting age - initial age of cohorts
+
+    Returns:
+        im_array - S x 1 array of immigration rates for each
+                   age cohort
+        child_imm_rate - starting_age x 1 array of immigration
+            rates for children
+    '''
     imm_rate_condensed1, children_im_condensed1 = get_immigration1(S, starting_age, pop_2010, pop_2011)
     imm_rate_condensed2, children_im_condensed2 = get_immigration1(S, starting_age, pop_2011, pop_2012)
     imm_rate_condensed3, children_im_condensed3 = get_immigration1(S, starting_age, pop_2012, pop_2013)
@@ -207,11 +228,11 @@ def get_fert(S, starting_age):
     '''
     Parameters:
         S - Number of age cohorts
-        J - Number of ability types
+        starting age - initial age of cohorts
 
     Returns:
-        fert_rate - S x J array of fertility rates for each age cohort
-        children  - 15 x J array of zeros, to be used in get_omega()
+        fert_rate_condensed - S x J array of fertility rates for each age cohort
+        children_fertrate  - starting_age x J array of zeros, to be used in get_omega()
     '''
     ending_age = starting_age + 80
     # Fit a polynomial to the fertility rates
@@ -261,6 +282,7 @@ def rate_graphs(S, starting_age, imm, fert, child_imm, child_fert):
     domain2 = np.arange(mort.shape[0]) + 1
     domain4 = np.arange(child_imm.shape[0] + imm.shape[0]) + 1
 
+    # Graph of fertility rates
     plt.figure()
     plt.plot(
         domain, list(child_fert)+list(fert), linewidth=2, color='blue')
@@ -268,6 +290,7 @@ def rate_graphs(S, starting_age, imm, fert, child_imm, child_fert):
     plt.ylabel(r'fertility $f_s$')
     plt.savefig('OUTPUT/fert_rates')
 
+    # Graph of mortality rates
     plt.figure()
     plt.plot(domain2[:80+starting_age], mort[
         :80+starting_age], color='blue', linewidth=2)
@@ -285,6 +308,7 @@ def rate_graphs(S, starting_age, imm, fert, child_imm, child_fert):
         cum_surv_arr[i] = np.prod(surv_arr[:i])
     domain3 = np.arange(mort.shape[0]) + 1
 
+    # Graph of cumulative mortality rates
     plt.figure()
     plt.plot(domain3, cum_surv_arr)
     plt.savefig('OUTPUT/survival_rate')
@@ -293,6 +317,7 @@ def rate_graphs(S, starting_age, imm, fert, child_imm, child_fert):
     plt.plot(domain3, cum_mort_rate)
     plt.savefig('OUTPUT/cum_mort_rate')
 
+    # Graph of immigration rates
     plt.figure()
     plt.plot(domain4, [child_imm[0]] + list(
         child_imm)+list(imm[:-1]), linewidth=2, color='blue')
@@ -312,6 +337,9 @@ def get_omega(S, J, T, bin_weights, starting_age):
     Parameters:
         S - Number of age cohorts
         J - Number of ability types
+        T - number of time periods in TPI
+        starting age - initial age of cohorts
+        bin_weights - weights for each ability type in each age cohort
 
     Returns:
 

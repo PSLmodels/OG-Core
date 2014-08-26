@@ -74,6 +74,11 @@ Generate income and demographic parameters
 e            = S x J matrix of age dependent possible working abilities
                e_s
 omega        = T x S x J array of demographics
+g_n          = steady state population growth rate
+omega_SS     = steady state population distribution
+children     = T x starting_age x J array of children demographics
+surv_rate    = S x 1 array of survival rates
+mort_rate    = S x 1 array of mortality rates
 ------------------------------------------------------------------------
 '''
 
