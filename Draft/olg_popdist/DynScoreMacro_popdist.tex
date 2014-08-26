@@ -110,13 +110,20 @@
         \omega_{s+1,t+1} &= (1 + i_s - \rho_s)\omega_{s,t}\quad\forall t\quad\text{and}\quad 1\leq s \leq E+S-1
       \end{split}
     \end{equation}
-    where $f_s\geq 0$ is an age-specific fertility rate, $i_s$ is an age-specific immigration rate, $\rho_s$ is an age specific mortality hazard rate,\footnote{The parameter $\rho_s$ is the probability that a household of age $s$ dies before age $s+1$.} and $1+i_s-\rho_s$ is constrained to be nonnegative. The total population in the economy $N_t$ at any period is simply the sum of individuals in the economy and the population growth rate in any period $t$ from the previous period $t-1$ is $g_{n,t}$.\footnote{Appendix \ref{AppPopGrowth} describes in detail the exogenous population dynamics.}
+    where $f_s\geq 0$ is an age-specific fertility rate, $i_s$ is an age-specific immigration rate, $\rho_s$ is an age specific mortality hazard rate,\footnote{The parameter $\rho_s$ is the probability that a household of age $s$ dies before age $s+1$.} and $1+i_s-\rho_s$ is constrained to be nonnegative. The total population in the economy $N_t$ at any period is simply the sum of individuals in the economy, the population growth rate in any period $t$ from the previous period $t-1$ is $g_{n,t}$, $\tilde{N}_t$ is the working age population, and $\tilde{g}_{n,t}$ is the working age population growth rate in any period $t$ from the previous period $t-1$.\footnote{Appendix \ref{AppPopGrowth} describes in detail the exogenous population dynamics.}
     \begin{equation}\label{EqPopDef}
       N_t\equiv\sum_{s=1}^{E+S} \omega_{s,t} \quad\forall t
     \end{equation}
     \begin{equation}\label{EqPopGrowth}
       g_{n,t+1} \equiv \frac{N_{t+1}}{N_t} - 1 \quad\forall t
     \end{equation}
+    \begin{equation}\label{EqPopWkDef}
+      \tilde{N}_t\equiv\sum_{s=E+1}^{E+S} \omega_{s,t} \quad\forall t
+    \end{equation}
+    \begin{equation}\label{EqPopWkGrowth}
+      \tilde{g}_{n,t+1} \equiv \frac{\tilde{N}_{t+1}}{\tilde{N}_t} - 1 \quad\forall t
+    \end{equation}
+
 
     A household's working ability evolves over his working-age lifetime $E+1\leq s \leq E+S$ according to an age-dependent deterministic process. At birth, a set fraction $\lambda_j$ of the $\omega_{1,t}$ measure of new agents are randomly assigned to each of the $J$ ability types indexed by $j=1,2,...J$ such that $\sum_{j=1}^J\lambda_j=1$. Once ability type is determined, that measure $\lambda_j\omega_{s,t}$ of individuals' ability evolves deterministically according to $e_{j,s}$. The process for the evolution of the population weights $\omega_{s,t}$ is an exogenous input to the model. We calibrate the matrix of lifetime ability paths $e_{j,s}$ for all types $j$ using CPS hourly wage by age distribution data.\footnote{Appendix \ref{AppAbilCalib} gives a detailed description of the calibration of the deterministic ability process by age $s$ and type $j$, as well as alternative specifications and calibrations.}
 
@@ -135,22 +142,22 @@
         &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad \chi_b\frac{\left(bq_{j,s+1,t+1}\right)^{1-\sigma} - 1}{1-\sigma} \quad\forall j,t\quad\text{and}\quad s=E+S
       \end{split}
     \end{equation}
-    where $\sigma\geq 1$ is the coefficient of relative risk aversion on consumption, $\eta\geq 1$ is proportional to the Frisch elasticity of labor supply, $\beta\in(0,1)$ is the agent's discount factor, and the term in brackets depreciates the household's discount factor by the cummulative mortality rate.\footnote{The initial period mortality rate $\rho_{s-1}$ is forced to be zero because the household knows it has survived to that point.} The term $\chi_n$ is a constant term influencing the disutility of labor, and $g_y$ is a constant growth rate of labor augmenting technological progress, which we explain in Section \ref{SecFirms}.\footnote{The term with the growth rate $e^{g_y t(1-\sigma)}$ must be included in the period utility function because consumption and bequests will be growing at rate $g_y$ and this term stationarizes the household Euler equation by making the marginal disutility of labor grow at the same rate as the marginal benefits of consumption and bequests.} The term $\chi_b$ is a constant term influencing the marginal utility of intentional bequests $bq_{j,s,t}$ relative to the marginal utility of consumption
+    where $\sigma\geq 1$ is the coefficient of relative risk aversion on consumption, $\eta\geq 1$ is proportional to the Frisch elasticity of labor supply, $\beta\in(0,1)$ is the agent's discount factor, and the term in brackets depreciates the household's discount factor by the cummulative mortality rate.\footnote{The initial period mortality rate $\rho_{s-1}$ is forced to be zero because the household knows it has survived to that point.} The term $\chi_n$ is a constant term influencing the disutility of labor, and $g_y$ is a constant growth rate of labor augmenting technological progress, which we explain in Section \ref{SecFirms}.\footnote{The term with the growth rate $e^{g_y t(1-\sigma)}$ must be included in the period utility function because consumption and bequests will be growing at rate $g_y$ and this term stationarizes the household Euler equation by making the marginal disutility of labor grow at the same rate as the marginal benefits of consumption and bequests.} The term $\chi_b$ is a constant term influencing the marginal utility of intentional bequests $bq_{j,s+1,t+1}$ relative to the marginal utility of consumption.
 
-    Because agents are born without any bonds maturing and because they purchase no bonds in the last period of life $s=E+S$, the per-period budget constraints for each agent normalized by the price of consumption are the following.
+    Because agents are born without any bonds maturing and because they purchase no bonds in the last period of life $s=E+S$, the per-period budget constraints for each agent normalized by the price of consumption are the following,
     \begin{equation}\label{EqBC1}
-      c_{j,s,t} + b_{j,s+1,t+1} \leq w_t e_{j,s}n_{j,s,t} + \frac{\omega_{s,t}}{N_t}BQ_{j,t} \quad \text{for} \quad s = E+1 \quad \forall j,t
+      c_{j,s,t} + b_{j,s+1,t+1} \leq w_t e_{j,s}n_{j,s,t} + \frac{BQ_{j,t}}{\lambda_j\tilde{N}_t} \quad \text{for} \quad s = E+1 \quad \forall j,t
     \end{equation}
     \begin{equation}\label{EqBC2}
       \begin{split}
-        c_{j,s,t} + b_{j,s+1,t+1} &\leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{\omega_{s,t}}{N_t}BQ_{j,t} \\
+        c_{j,s,t} + b_{j,s+1,t+1} &\leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{BQ_{j,t}}{\lambda_j\tilde{N}_t} \\
         &\quad\quad\quad \text{for} \quad E+2\leq s \leq E+S-1 \quad \forall j,t
       \end{split}
     \end{equation}
     \begin{equation}\label{EqBC3}
-      c_{j,s,t} + bq_{j,s+1,t+1} \leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{\omega_{s,t}}{N_t}BQ_{j,t} \quad \text{for} \quad s = E+S \quad \forall j,t
+      c_{j,s,t} + bq_{j,s+1,t+1} \leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{BQ_{j,t}}{\lambda_j\tilde{N}_t} \quad \text{for} \quad s = E+S \quad \forall j,t
     \end{equation}
-    Note that the price of consumption is normalized to one, so $w_t$ is the real wage and $r_t$ is the real net interest rate. The term $BQ_{j,t}$ represents the ability-$j$ age-$s$ household's total bequests received at the end of the last period $t-1$ from both accidental bequests of those who died unexpectedly and intended bequests from those who died at age $s=S$.
+    where $\tilde{N}_t$ is the total working age population at time $t$ defined in \eqref{EqPopWkDef} and $\lambda_j\tilde{N}_t$ is the number of the total working households of type $j$. Note that the price of consumption is normalized to one, so $w_t$ is the real wage and $r_t$ is the real net interest rate. The term $BQ_{j,t}$ represents the ability-$j$ age-$s$ household's total bequests received at the end of the last period $t-1$ from both accidental bequests of those who died unexpectedly and intended bequests from those who died at age $s=E+S$.
 
     We first assume the symmetry that individual accidental bequests $(1+r_{t+1})b_{j,s+1,t+1}$ for $s<E+S$ can be both positive and negative. This means that households that die before age $s=E+S$ can bequeath either savings or debt. However, the functional form for the utility of intended bequests in period $s=E+S$ in \eqref{EqUtilMax} ensures that intended bequests will always be positive $bq_{j,E+S+1,t}>0$ for all $j$ and $t$. We also impose the constraint, similar to the aggregate capital stock, that aggregate bequests be nonnegative $BQ_{j,t}\geq 0$ for all $j$ and $t$.
     \begin{equation}\label{EqTotBeq}
@@ -164,12 +171,12 @@
     \begin{equation}\label{EqSmaxprob}
       \footnotesize{\begin{split}
         &\max_{n_{j,E+S,t},bq_{j,E+S+1,t+1}} \frac{\left(c_{j,E+S,t}\right)^{1-\sigma} - 1}{1 - \sigma} + \chi_n e^{g_y t(1-\sigma)}\frac{(\tilde{l}-n_{j,E+S,t})^{1-\eta}}{1-\eta} + \chi_b\frac{\left(bq_{j,E+S+1,t+1}\right)^{1-\sigma} - 1}{1 - \sigma} \\
-        &\text{s.t.} \quad c_{j,E+S,t} = \left(1 + r_t\right) b_{j,E+S,t} + w_t e_{j,E+S}n_{j,E+S,t} + \frac{\omega_{E+S,t}}{N_t}BQ_{j,t} - bq_{j,E+S+1,t+1} \quad \forall j,t
+        &\text{s.t.} \quad c_{j,E+S,t} = \left(1 + r_t\right) b_{j,E+S,t} + w_t e_{j,E+S}n_{j,E+S,t} + \frac{BQ_{j,t}}{\lambda_j\tilde{N}_t} - bq_{j,E+S+1,t+1} \quad \forall j,t
       \end{split}}
     \end{equation}
     Because $u(c)$ is monotonically increasing in $c$, the $s=E+S$ consumption part of the maximization problem \eqref{EqSmaxprob} is simply to choose the maximum amount of consumption possible. The household trivially consumes all of its income in the last period of life. However, the household must choose labor and bequests to balance its benefits in extra consumption with its costs in disutility for labor and its benefits giving for bequests.
     \small{\begin{gather}
-      c_{j,E+S,t} = \left(1 + r_t\right) b_{j,E+S,t} + w_t e_{j,E+S}n_{j,E+S,t} + \frac{\omega_{E+S,t}}{N_t}BQ_{j,t} - bq_{j,E+S+1,t+1} \quad \forall j,t \label{EqScons} \\
+      c_{j,E+S,t} = \left(1 + r_t\right) b_{j,E+S,t} + w_t e_{j,E+S}n_{j,E+S,t} + \frac{BQ_{j,t}}{\lambda_j\tilde{N}_t} - bq_{j,E+S+1,t+1} \quad \forall j,t \label{EqScons} \\
       w_t e_{j,E+S}\bigl(c_{j,E+S,t}\bigr)^{-\sigma} = \chi_n e^{g_y t(1-\sigma)}(\tilde{l} - n_{j,E+S,t})^{-\eta} \quad\forall j,t \label{EqEulerSlab} \\
       \bigl(c_{j,E+S,t}\bigr)^{-\sigma} = \chi_b\bigl(bq_{j,E+S+1,t+1}\bigr)^{-\sigma} \quad\forall j,t \label{EqEulerSbeq}
     \end{gather}}
@@ -179,7 +186,7 @@
       \begin{split}
         &w_t e_{j,E+S-1}\bigl(c_{j,E+S-1,t}\bigr)^{-\sigma} = \chi_n e^{g_y t(1-\sigma)}(\tilde{l} - n_{j,E+S-1,t})^{-\eta} \quad\forall j,t \\
         &\quad\quad\text{where}\:\: c_{j,E+S-1,t} = \left(1+r_t\right)b_{j,E+S-1,t} + w_t e_{j,E+S-1}n_{j,E+S-1,t} + ... \\
-        &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad \frac{\omega_{E+S-1,t}}{N_t}BQ_{j,t} - b_{j,E+S,t+1}
+        &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad \frac{BQ_{j,t}}{\lambda_j\tilde{N}_t} - b_{j,E+S,t+1}
       \end{split}
     \end{equation}
     \begin{equation}\label{EqEulerSm1Sav}
@@ -189,7 +196,7 @@
       \begin{split}
         &w_{t+1}e_{j,E+S}\bigl(c_{j,E+S,t+1}\bigr)^{-\sigma} = \chi_n e^{g_y(t+1)(1-\sigma)}(\tilde{l} - n_{j,E+S,t+1})^{-\eta} \quad\forall j,t \\
         &\quad\quad\text{where}\:\: c_{j,E+S,t+1} = \left(1+r_{t+1}\right)b_{j,E+S,t+1} + w_{t+1} e_{j,E+S}n_{j,E+S,t+1} + ... \\
-        &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad \frac{\omega_{E+S,t+1}}{N_{t+1}}BQ_{j,t+1} - bq_{j,E+S+1,t+2}
+        &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad \frac{BQ_{j,t+1}}{\lambda_j\tilde{N}_{t+1}} - bq_{j,E+S+1,t+2}
       \end{split}
     \end{equation}
     \begin{equation}\label{EqEulerSm1beq}
@@ -201,9 +208,9 @@
       \begin{split}
         &w_t e_{j,s}\bigl(c_{j,s,t}\bigr)^{-\sigma} = \chi_n e^{g_y t(1-\sigma)}(\tilde{l} - n_{j,s,t})^{-\eta} \\
         &\quad\quad\quad\quad\quad\quad\quad\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S \quad\text{with}\quad b_{j,E+1,t},b_{j,E+S+1,t}=0 \\
-        &\quad\text{where}\quad c_{j,s,t} = \left(1+r_t\right)b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{\omega_{s,t}}{N_t}BQ_{j,t} - b_{j,s+1,t+1} \\
+        &\quad\text{where}\quad c_{j,s,t} = \left(1+r_t\right)b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{BQ_{j,t}}{\lambda_j\tilde{N}_t} - b_{j,s+1,t+1} \\
         &\quad\quad\quad\quad\quad\quad\quad\quad\quad\text{for}\quad E+1\leq s\leq E+S-1 \\
-        &\quad\quad\text{and}\quad c_{j,s,t} = \left(1+r_t\right)b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{\omega_{s,t}}{N_t}BQ_{j,t} - bq_{j,s+1,t+1} \\
+        &\quad\quad\text{and}\quad c_{j,s,t} = \left(1+r_t\right)b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{BQ_{j,t}}{\lambda_j\tilde{N}_t} - bq_{j,s+1,t+1} \\
         &\quad\quad\quad\quad\quad\quad\quad\quad\quad\text{for}\quad s=E+S
       \end{split}
     \end{equation}
@@ -253,33 +260,42 @@
     \begin{table}[htbp] \centering \captionsetup{width=3.3in}
     \caption{\label{TabStatVars}\textbf{Stationary variable definitions}}
       \begin{threeparttable}
-      \begin{tabular}{>{\small}c |>{\small}c >{\small}c}
+      \begin{tabular}{>{\small}c >{\small}c >{\small}c |>{\small}c}
         \hline\hline
-        Individual variables & \multicolumn{2}{c}{Aggregate variables} \\
+        \multicolumn{3}{c}{Sources of growth} & Not \\
+        & & & \\[-4mm]
+        $e^{g_y t}$ & $\tilde{N}_t$ & $e^{g_y t}\tilde{N}_t$ & growing\tnote{a} \\
         \hline
         & & \\[-4mm]
-        $\hat{w}_t\equiv \frac{w_t}{e^{g_y t}}$ & $\hat{Y}_t\equiv\frac{Y_t}{N_t e^{g_y t}}$ & $\hat{K}_t\equiv\frac{K_t}{N_t e^{g_y t}}$ \\[2mm]
-        $\hat{b}_{j,s,t}\equiv \frac{b_{j,s,t}}{e^{g_y t}}$ & $\hat{L}_t\equiv\frac{L_t}{N_t}$ & $\hat{\omega}_{s,t}\equiv\frac{\omega_{s,t}}{N_t}$ \\[2mm]
+        $\hat{c}_{j,s,t}\equiv\frac{c_{j,s,t}}{e^{g_y t}}$ & $\hat{\omega}_{s,t}\equiv\frac{\omega_{s,t}}{\tilde{N}_t}$ & $\hat{Y}_t\equiv\frac{Y_t}{e^{g_y t}\tilde{N}_t}$ & $n_{j,s,t}$ \\[2mm]
+        $\hat{b}_{j,s,t}\equiv\frac{b_{j,s,t}}{e^{g_y t}}$ & $\hat{L}_t\equiv\frac{L_t}{\tilde{N}_t}$ & $\hat{K}_t\equiv\frac{K_t}{e^{g_y t}\tilde{N}_t}$ & $r_t$ \\[2mm]
+        $\hat{bq}_{j,s,t}\equiv\frac{bq_{j,s,t}}{e^{g_y t}}$ &  & $\hat{BQ}_{j,t}\equiv\frac{BQ_{j,t}}{e^{g_y t}\tilde{N}_t}$ &  \\[2mm]
+        $\hat{w}_t\equiv\frac{w_t}{e^{g_y t}}$ &  &  &  \\[2mm]
         \hline\hline
       \end{tabular}
       \begin{tablenotes}
-        \scriptsize{\item[]Note: The interest rate $r_t$ in \eqref{EqFOCrate} is already stationary because $Y_t$ and $K_t$ grow at the same rate. Individual labor supply $n_{j,s,t}$ is stationary.}
+        \scriptsize{\item[a]The interest rate $r_t$ in \eqref{EqFOCrate} is already stationary because $Y_t$ and $K_t$ grow at the same rate. Individual labor supply $n_{j,s,t}$ is stationary.}
       \end{tablenotes}
       \end{threeparttable}
     \end{table}
 
-    \noindent With the definitions in Table \ref{TabStatVars}, it can be shown that the equilibrium characterizing equations can be written in stationary form in the following way. The static and intertemporal Euler equations from the individual's optimization problem corresponding to \eqref{EqEulerLabGen} and \eqref{EqEulerSavGen} are the following.
-    \begin{gather}
+    \noindent With the definitions in Table \ref{TabStatVars}, it can be shown that the equilibrium characterizing equations can be written in stationary form in the following way. The static and intertemporal Euler equations from the individual's optimization problem corresponding to \eqref{EqEulerLabGen}, \eqref{EqEulerSavGen}, and \eqref{EqEulerBeqGen} are the following.
+    \begin{equation}\label{EqEulerLabStat}
       \begin{split}
-        \hat{w}_t e_{j,s}\Bigl[\left(1+r_t\right)\hat{b}_{j,s,t} + &\hat{w}_t e_{j,s}n_{j,s,t} - e^{g_y}\hat{b}_{j,s+1,t+1}\Bigr]^{-\sigma} = \chi(\tilde{l} - n_{j,s,t})^{-\eta} \\
-        &\forall j,t \quad\text{and}\quad 1\leq s\leq S \quad\text{with}\quad \hat{b}_{j,1,t},\hat{b}_{j,S+1,t}=0
-      \end{split} \label{EqEulerLabStat} \\
-      \begin{split}
-        &\Bigl[\left(1+r_t\right)\hat{b}_{j,s,t} + \hat{w}_t e_{j,s}n_{j,s,t} - e^{g_y}b_{j,s+1,t+1}\Bigr]^{-\sigma} = ... \\
-        &\quad \beta(1+r_{t+1})e^{-\sigma g_y}\Bigl[\left(1+r_{t+1}\right)\hat{b}_{j,s+1,t+1} + \hat{w}_{t+1}e_{j,s+1}n_{j,s+1,t+1} - e^{g_y}\hat{b}_{j,s+2,t+2}\Bigr]^{-\sigma} \\
-        &\quad\quad\quad\quad\quad\quad\quad\quad\forall j,t \quad\text{and}\quad 1\leq s\leq S-1 \quad\text{with}\quad \hat{b}_{j,1,t},\hat{b}_{j,S+1,t}=0
-      \end{split} \label{EqEulerSavStat}
-    \end{gather}
+        &\hat{w}_t e_{j,s}\bigl(\hat{c}_{j,s,t}\bigr)^{-\sigma} = \chi_n (\tilde{l} - n_{j,s,t})^{-\eta} \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S \quad\text{with}\quad \hat{b}_{j,E+1,t},\hat{b}_{j,E+S+1,t}=0 \\
+        &\quad\text{where}\quad \hat{c}_{j,s,t} = \left(1+r_t\right)\hat{b}_{j,s,t} + \hat{w}_t e_{j,s}n_{j,s,t} + \frac{\hat{BQ}_{j,t}}{\lambda_j} - e^{g_y}\hat{b}_{j,s+1,t+1} \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\quad\text{for}\quad E+1\leq s\leq E+S-1 \\
+        &\quad\quad\text{and}\quad \hat{c}_{j,s,t} = \left(1+r_t\right)\hat{b}_{j,s,t} + \hat{w}_t e_{j,s}n_{j,s,t} + \frac{\hat{BQ}_{j,t}}{\lambda_j} - e^{g_y}\hat{bq}_{j,s+1,t+1} \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\quad\text{for}\quad s=E+S
+      \end{split}
+    \end{equation}
+    \begin{equation}\label{EqEulerSavStat}
+      \bigl(\hat{c}_{j,s,t}\bigr)^{-\sigma} = \beta(1-\rho_s)(1+r_{t+1})e^{-\sigma g_y}\bigl(\hat{c}_{j,s+1,t+1}\bigr)^{-\sigma}\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S-1
+    \end{equation}
+    \begin{equation}\label{EqEulerBeqStat}
+      \bigl(\hat{c}_{j,E+S,t}\bigr)^{-\sigma} = \chi_b e^{-\sigma g_y}\bigl(\hat{bq}_{j,E+S+1,t+1}\bigr)^{-\sigma} \quad\forall j,t
+    \end{equation}
     The stationary firm first order conditions for optimal labor and capital demand corresponding to \eqref{EqFOCwage} and \eqref{EqFOCrate} are the following.
     \begin{equation}\label{EqFOCwageStat}
        \hat{w}_t = (1-\alpha)\frac{\hat{Y}_t}{\hat{L}_t} \quad \forall t
@@ -289,9 +305,10 @@
     \end{equation}
     And the two stationary market clearing conditions corresponding to \eqref{EqMktClrLab} and \eqref{EqMktClrCap}---with the goods market clearing by Walras' Law---are the following.
     \begin{align}
-      \hat{L}_t &= \frac{1}{J}\sum_{s=1}^S\sum_{j=1}^{J} \hat{\omega}_{s,t}e_{j,s}n_{j,s,t} \quad \forall t \label{EqMktClrLabStat} \\
-      \hat{K}_t &= \frac{1}{J}\sum_{s=1}^{S}\sum_{j=1}^{J}\hat{\omega}_{s,t}\hat{b}_{j,s,t} \quad\quad\:\: \forall t \label{EqMktClrCapStat} \\
+      \hat{L}_t &= \sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \hat{\omega}_{s,t}\lambda_j e_{j,s}n_{j,s,t} \quad \forall t \label{EqMktClrLabStat} \\
+      \hat{K}_t &= \frac{1}{1 + \tilde{g}_{n,t}}\left(\sum_{s=E+2}^{E+S}\sum_{j=1}^{J}\hat{\omega}_{s-1,t-1}\lambda_j \hat{b}_{j,s,t} + \sum_{j=1}^{J}\hat{\omega}_{E+S,t-1}\lambda_j \hat{bq}_{j,E+S+1,t}\right) \quad \forall t \label{EqMktClrCapStat}
     \end{align}
+    where $\tilde{g}_{n,t}$ is the growth rate in the working age population between periods $t-1$ and $t$ described in \eqref{EqPopWkGrowth}.
 
     We can now define the stationary steady-state equilibrium for this economy in the following way.
 
