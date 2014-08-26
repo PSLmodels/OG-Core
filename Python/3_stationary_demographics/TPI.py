@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 7/29/2014
+Last updated 8/20/2014
 
 This program solves for transition path of the distribution of wealth
 and the aggregate capital stock using the time path iteration (TPI)
@@ -331,7 +331,9 @@ def Euler1(w1, r1, w2, r2, e, n, K1, K2, K3):
         Value of Euler error.
     '''
     euler = MUc(
-        (1 + r1)*K1 + w1 * e[:-1, :] * n[:-1, :] - np.exp(g_y) * K2) - beta * np.exp(-sigma * g_y) * surv_rate[:-1].reshape(S-1,1) * (1 + r2)*MUc(
+        (1 + r1)*K1 + w1 * e[:-1, :] * n[:-1, :] - np.exp(
+            g_y) * K2) - beta * np.exp(-sigma * g_y) * surv_rate[
+                :-1].reshape(S-1, 1) * (1 + r2)*MUc(
         (1 + r2)*K2 + w2 * e[1:, :] * n[1:, :] - np.exp(g_y) * K3)
     return euler
 
@@ -349,7 +351,8 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess - np.exp(g_y) * K2_2) * w * e + MUl_2(L_guess)
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess - np.exp(
+        g_y) * K2_2) * w * e + MUl_2(L_guess)
     return euler
 
 
@@ -385,11 +388,13 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     e2 = e[-length:, j]
     B1 = Binit[t:t+length]
     B2 = Binit[t+1:t+1+length]
-    omega1 = np.diag(omega_stationary[t:t+length,-(length+1):-1,j] * J)
-    omega2 = np.diag(omega_stationary[t+1:t+length+1,-length:,j] * J)
+    omega1 = np.diag(omega_stationary[t:t+length, -(length+1):-1, j] * J)
+    omega2 = np.diag(omega_stationary[t+1:t+length+1, -length:, j] * J)
 
     error1 = MUc((1 + r1)*K1 + w1 * e1 * l1 + B1 * omega1 - np.exp(g_y) * K2) \
-        - beta * surv_rate[-(length+1):-1] * np.exp(-sigma * g_y) * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*l2 + B2 * omega2 - np.exp(g_y) * K3)
+        - beta * surv_rate[-(length+1):-1] * np.exp(
+            -sigma * g_y) * (1 + r2)*MUc(
+            (1 + r2)*K2 + w2*e2*l2 + B2 * omega2 - np.exp(g_y) * K3)
 
     if length == S-1:
         K1_2 = np.array([0] + list(K_guess))
@@ -400,7 +405,7 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     w = winit[t:t+length+1]
     r = rinit[t:t+length+1]
     B = Binit[t:t+length+1]
-    omeg = np.diag(omega_stationary[t:t+length+1,:,j] * J)
+    omeg = np.diag(omega_stationary[t:t+length+1, :, j] * J)
     error2 = MUc((1 + r)*K1_2 + w * e[
         -(length+1):, j] * L_guess + B * omeg - np.exp(g_y) * K2_2) * w * e[
         -(length+1):, j] + MUl_2(L_guess)
@@ -411,14 +416,16 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     error2[mask2] += 1e9
     if K_guess.sum() <= 0:
         error1 += 1e9
-    cons = (1 + r) * K1_2 + w * e[-(length+1):, j] * L_guess + B * omeg - K2_2 * np.exp(g_y)
+    cons = (1 + r) * K1_2 + w * e[
+        -(length+1):, j] * L_guess + B * omeg - K2_2 * np.exp(g_y)
     mask3 = cons < 0
     error2[mask3] += 1e9
 
     b_min = np.zeros(length)
     b_min[-1] = (ctilde - w1[-1] * e1[-1] * ltilde) / (1 + r1[-1])
     for i in xrange(length - 1):
-        b_min[-(i+2)] = (ctilde + np.exp(g_y) * b_min[-(i+1)] - w1[-(i+2)] * e1[
+        b_min[-(i+2)] = (ctilde + np.exp(
+            g_y) * b_min[-(i+1)] - w1[-(i+2)] * e1[
             -(i+2)] * ltilde) / (1 + r1[-(i+2)])
     difference = K_guess - b_min
     mask4 = difference < 0
@@ -435,9 +442,9 @@ Linit = np.ones(T + S) * Lss
 Yinit = A*(Kinit**alpha) * (Linit**(1-alpha))
 winit = (1-alpha) * Yinit / Linit
 rinit = (alpha * Yinit / Kinit) - delta
-Binit = np.zeros((T+S,J))
+Binit = np.zeros((T+S, J))
 for j in xrange(J):
-    Binit[:,j] = list(np.linspace(B0[j], Bss[j], T)) + [Bss[j]]*S
+    Binit[:, j] = list(np.linspace(B0[j], Bss[j], T)) + [Bss[j]]*S
 Binit = np.array(Binit)
 
 TPIiter = 0
@@ -451,7 +458,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         for s in xrange(S-2):  # Upper triangle
             solutions = opt.fsolve(Euler_Error, list(
                 initial_K[-(s+1):, j]) + list(initial_L[-(s+2):, j]), args=(
-                winit, rinit, Binit[:,j], 0))
+                winit, rinit, Binit[:, j], 0))
             K_vec = solutions[:len(solutions)/2]
             K_mat[1:S, :, j] += np.diag(K_vec, S-(s+2))
             L_vec = solutions[len(solutions)/2:]
@@ -460,7 +467,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         for t in xrange(0, T):
             solutions = opt.fsolve(Euler_Error, list(
                 initial_K[:, j]) + list(initial_L[:, j]), args=(
-                winit, rinit, Binit[:,j], t))
+                winit, rinit, Binit[:, j], t))
             K_vec = solutions[:S-1]
             K_mat[t+1:t+S, :, j] += np.diag(K_vec)
             L_vec = solutions[S-1:]
@@ -468,16 +475,21 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
 
     K_mat[0, :, :] = initial_K
     L_mat[0, -1, :] = initial_L[-1, :]
-    Knew = (omega_stationary[:T, 1:,:] * K_mat[:T, :, :]).sum(2).sum(1)
-    Lnew = (omega_stationary[:T, :, :] * e.reshape(1, S, J) * L_mat[:T, :, :]).sum(2).sum(1)
+    Knew = (omega_stationary[:T, 1:, :] * K_mat[:T, :, :]).sum(2).sum(1)
+    Lnew = (omega_stationary[:T, :, :] * e.reshape(
+        1, S, J) * L_mat[:T, :, :]).sum(2).sum(1)
     TPIiter += 1
     Kinit = nu*Knew + (1-nu)*Kinit[:T]
     Linit = nu*Lnew + (1-nu)*Linit[:T]
-    TPIdist = np.array(list(np.abs(Knew - Kinit)) + list(np.abs(Lnew - Linit))).max()
+    TPIdist = np.array(list(
+        np.abs(Knew - Kinit)) + list(np.abs(Lnew - Linit))).max()
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-        Binit = np.array(list((K_mat[:T,:,:] * omega_stationary[:T,-(S-1):, :] * mort_rate[:-1].reshape(1,S-1,1)).sum(1).reshape(T,J)) + list(np.tile(Bss.reshape(1,J),(S,1))))
+        Binit = np.array(list(
+            (K_mat[:T, :, :] * omega_stationary[:T, -(S-1):, :] * mort_rate[
+                :-1].reshape(1, S-1, 1)).sum(1).reshape(T, J)) + list(
+                    np.tile(Bss.reshape(1, J), (S, 1))))
         Yinit = A*(Kinit**alpha) * (Linit**(1-alpha))
         winit = np.array(
             list((1-alpha) * Yinit / Linit) + list(np.ones(S)*wss))
@@ -506,10 +518,12 @@ def borrowing_constraints2(K_dist, w, r, e):
     '''
     b_min = np.zeros((T, S-1, J))
     for t in xrange(T):
-        b_min[t, -1, :] = (ctilde - w[S-1+t] * e[S-1, :] * ltilde) / (1 + r[S-1+t])
+        b_min[t, -1, :] = (
+            ctilde - w[S-1+t] * e[S-1, :] * ltilde) / (1 + r[S-1+t])
         for i in xrange(S-2):
-            b_min[t, -(i+2), :] = (ctilde + np.exp(g_y) * b_min[t, -(i+1), :] - w[S+t-(i+2)] * e[
-                -(i+2), :] * ltilde) / (1 + r[S+t-(i+2)])
+            b_min[t, -(i+2), :] = (
+                ctilde + np.exp(g_y) * b_min[t, -(i+1), :] - w[S+t-(i+2)] * e[
+                    -(i+2), :] * ltilde) / (1 + r[S+t-(i+2)])
     difference = K_mat[:T, :, :] - b_min
     for t in xrange(T):
         if (difference[t, :, :] < 0).any():

@@ -75,9 +75,17 @@ for index, value in enumerate(mort_data['female_weight']):
     mort_data['female_weight'][index] = float(value.replace(',', ''))
 # Average male and female death rates
 mort_data['mort_rate'] = (
-    (np.array(mort_data.male_death.values).astype(float) * np.array(mort_data.male_weight.values).astype(float)) + (np.array(mort_data.female_death.values).astype(float) * np.array(mort_data.female_weight.values).astype(float))) / (np.array(mort_data.male_weight.values).astype(float) + np.array(mort_data.female_weight.values).astype(float))
+    (np.array(mort_data.male_death.values).astype(float) * np.array(
+        mort_data.male_weight.values).astype(float)) + (np.array(
+            mort_data.female_death.values).astype(float) * np.array(
+            mort_data.female_weight.values).astype(float))) / (
+    np.array(mort_data.male_weight.values).astype(float) + np.array(
+        mort_data.female_weight.values).astype(float))
 mort_data = mort_data[mort_data.mort_rate.values < 1]
-del mort_data['male_death'], mort_data['female_death'], mort_data['male_weight'], mort_data['female_weight'], mort_data['male_expectancy'], mort_data['female_expectancy']
+del mort_data['male_death'], mort_data[
+    'female_death'], mort_data['male_weight'], mort_data[
+    'female_weight'], mort_data['male_expectancy'], mort_data[
+    'female_expectancy']
 # As the data gives the probability of death, one minus the rate will
 # give the survial rate
 mort_data['surv_rate'] = 1 - mort_data.mort_rate
@@ -210,11 +218,16 @@ def get_immigration2(S, starting_age):
         child_imm_rate - starting_age x 1 array of immigration
             rates for children
     '''
-    imm_rate_condensed1, children_im_condensed1 = get_immigration1(S, starting_age, pop_2010, pop_2011)
-    imm_rate_condensed2, children_im_condensed2 = get_immigration1(S, starting_age, pop_2011, pop_2012)
-    imm_rate_condensed3, children_im_condensed3 = get_immigration1(S, starting_age, pop_2012, pop_2013)
-    imm_rate = (imm_rate_condensed1 + imm_rate_condensed2 + imm_rate_condensed3) / 3.0
-    child_imm_rate = (children_im_condensed1 + children_im_condensed2 + children_im_condensed3) / 3.0
+    imm_rate_condensed1, children_im_condensed1 = get_immigration1(
+        S, starting_age, pop_2010, pop_2011)
+    imm_rate_condensed2, children_im_condensed2 = get_immigration1(
+        S, starting_age, pop_2011, pop_2012)
+    imm_rate_condensed3, children_im_condensed3 = get_immigration1(
+        S, starting_age, pop_2012, pop_2013)
+    imm_rate = (
+        imm_rate_condensed1 + imm_rate_condensed2 + imm_rate_condensed3) / 3.0
+    child_imm_rate = (
+        children_im_condensed1 + children_im_condensed2 + children_im_condensed3) / 3.0
     return imm_rate, child_imm_rate
 
 '''
@@ -231,8 +244,10 @@ def get_fert(S, starting_age):
         starting age - initial age of cohorts
 
     Returns:
-        fert_rate_condensed - S x J array of fertility rates for each age cohort
-        children_fertrate  - starting_age x J array of zeros, to be used in get_omega()
+        fert_rate_condensed - S x J array of fertility rates for each
+            age cohort
+        children_fertrate  - starting_age x J array of zeros, to be
+            used in get_omega()
     '''
     ending_age = starting_age + 80
     # Fit a polynomial to the fertility rates
@@ -262,7 +277,8 @@ def get_fert(S, starting_age):
     # Divide the fertility rate by 2, since it will be used for men and women
     fert_rate_condensed /= 2.0
     children_fertrate_int = poly.polyint(poly_fert)
-    children_fertrate_int = poly.polyval(np.linspace(0, starting_age-.5, (starting_age * S / 80.0) + 1), children_fertrate_int) # No, I didn't cheat here a little
+    children_fertrate_int = poly.polyval(np.linspace(0, starting_age-.5, (
+        starting_age * S / 80.0) + 1), children_fertrate_int) # No, I didn't cheat here a little
     children_fertrate = np.diff(children_fertrate_int)
     children_fertrate /= 2.0
     children_fertrate[children_fertrate < 0] = 0
@@ -364,12 +380,14 @@ def get_omega(S, J, T, bin_weights, starting_age):
     rate_graphs(
         S, starting_age, imm_array, fert_rate, children_im, children_fertrate)
     children_int = poly.polyval(
-        np.linspace(0, starting_age, (starting_age * S / 80.0) + 1), poly_int_pop)
+        np.linspace(
+            0, starting_age, (starting_age * S / 80.0) + 1), poly_int_pop)
     sum2010 = pop_int[-1] - children_int[0]
     new_omega /= sum2010
     children = np.diff(children_int)
     children /= sum2010
-    children = np.tile(children.reshape(1, (starting_age * S / 80.0)), (T + S, 1))
+    children = np.tile(
+        children.reshape(1, (starting_age * S / 80.0)), (T + S, 1))
     omega_big = np.tile(new_omega.reshape(1, S), (T + S, 1))
     # Generate the time path for each age group
     for t in xrange(1, T + S):
@@ -383,7 +401,8 @@ def get_omega(S, J, T, bin_weights, starting_age):
             children_rate[:-1] + children_im[:-1])
         children[t, 0] = ((omega_big[t-1, :] * fert_rate).sum(0) + (
             children[t-1] * children_fertrate).sum(0)) * (1 + children_im[0])
-    OMEGA = np.zeros((S + int(starting_age * S / 80.0), S + int(starting_age * S / 80.0)))
+    OMEGA = np.zeros((S + int(starting_age * S / 80.0), S + int(
+        starting_age * S / 80.0)))
     OMEGA[0, :] = np.array(list(children_fertrate) + list(
         fert_rate)) * (1 + children_im[0])
     OMEGA += np.diag(np.array(list(children_rate[:]) + list(
@@ -406,8 +425,13 @@ def get_omega(S, J, T, bin_weights, starting_age):
         g_n_SS = [g_n_SS[ind]]
     omega_SS /= omega_SS.sum()
     # Creating the different ability level bins
-    omega_SS = np.tile(omega_SS.reshape(S+int(starting_age * S / 80.0), 1), (1, J)) * bin_weights.reshape(1,J)
-    omega_big = np.tile(omega_big.reshape(T+S,S,1), (1,1,J)) * bin_weights.reshape(1,1,J)
-    children = np.tile(children.reshape(T+S, int(starting_age * S / 80.0), 1), (1, 1, J)) * bin_weights.reshape(1,1,J)
+    omega_SS = np.tile(
+        omega_SS.reshape(S+int(
+            starting_age * S / 80.0), 1), (1, J)) * bin_weights.reshape(1, J)
+    omega_big = np.tile(
+        omega_big.reshape(T+S, S, 1), (1, 1, J)) * bin_weights.reshape(1, 1, J)
+    children = np.tile(children.reshape(
+        T+S, int(starting_age * S / 80.0), 1), (
+        1, 1, J)) * bin_weights.reshape(1, 1, J)
 
     return omega_big, g_n_SS, omega_SS, children, surv_array

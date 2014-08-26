@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated: 8/6/2014
+Last updated: 8/25/2014
 
 Calculates steady state of OLG model with S age cohorts
 
@@ -86,7 +86,8 @@ print 'Generating income distribution.'
 e = income2.get_e(S, J, starting_age, ending_age, bin_weights)
 print '\tFinished.'
 print 'Generating demographics.'
-omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(S, J, T, bin_weights, starting_age)
+omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
+    S, J, T, bin_weights, starting_age)
 mort_rate = 1-surv_rate
 print '\tFinished.'
 
@@ -221,9 +222,11 @@ def Euler1(w, r, e, L_guess, K1, K2, K3, B):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] + omega_SS[-(S - 1):] * J * B.reshape(1,J) - K2 * np.exp(
-        g_y)) - beta * surv_rate[:-1].reshape(S-1,1) * (
-        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] + omega_SS[-(S - 1):] * J * B.reshape(1,J) - K3 * np.exp(
+    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] + omega_SS[
+        -(S - 1):] * J * B.reshape(1, J) - K2 * np.exp(
+        g_y)) - beta * surv_rate[:-1].reshape(S-1, 1) * (
+        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] + omega_SS[
+            -(S - 1):] * J * B.reshape(1, J) - K3 * np.exp(
             g_y)) * np.exp(-sigma * g_y)
     return euler
 
@@ -241,7 +244,8 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2, B):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess + omega_SS[-S:] * J * B.reshape(1,J) - K2_2 * np.exp(
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess + omega_SS[
+        -S:] * J * B.reshape(1, J) - K2_2 * np.exp(
         g_y)) * w * e + MUl(L_guess)
     return euler
 
@@ -255,7 +259,8 @@ def Steady_State(guesses):
     '''
     K_guess = guesses[0: (S-1) * J].reshape((S-1, J))
     K = (omega_SS[-(S-1):, :] * K_guess).sum()
-    B = (K_guess * omega_SS[-(S-1):, :] * mort_rate[:-1].reshape(S-1,1)).sum(0)
+    B = (K_guess * omega_SS[-(S-1):, :] * mort_rate[
+        :-1].reshape(S-1, 1)).sum(0)
     L_guess = guesses[(S-1) * J:].reshape((S, J))
     L = get_L(e, L_guess)
     Y = get_Y(K, L)
@@ -275,7 +280,8 @@ def Steady_State(guesses):
     error2[mask2] += 1e9
     if K_guess.sum() <= 0:
         error1 += 1e9
-    cons = (1 + r) * K1_2 + w * e * L_guess + omega_SS[-S:] * J * B.reshape(1,J) - K2_2 * np.exp(g_y)
+    cons = (1 + r) * K1_2 + w * e * L_guess + omega_SS[
+        -S:] * J * B.reshape(1, J) - K2_2 * np.exp(g_y)
     mask3 = cons < 0
     error2[mask3] += 1e9
     return list(error1.flatten()) + list(error2.flatten())
@@ -380,9 +386,10 @@ Lssavg = Lssvec.mean()
 Yss = get_Y(Kss, Lss)
 wss = get_w(Yss, Lss)
 rss = get_r(Yss, Kss)
-Bss = (Kssmat * omega_SS[-(S-1):, :] * mort_rate[:-1].reshape(S-1,1)).sum(0)
+Bss = (Kssmat * omega_SS[-(S-1):, :] * mort_rate[:-1].reshape(S-1, 1)).sum(0)
 
-cssmat = (1 + rss) * Kssmat2 + wss * e * Lssmat + omega_SS[-S:] * J * Bss.reshape(1,J) - np.exp(g_y) * Kssmat3
+cssmat = (1 + rss) * Kssmat2 + wss * e * Lssmat + omega_SS[
+    -S:] * J * Bss.reshape(1, J) - np.exp(g_y) * Kssmat3
 
 
 constraint_checker(Kssmat, Lssmat, wss, rss, e, cssmat)
@@ -524,14 +531,16 @@ plt.ylabel(r'Population growth rate $g_n$')
 plt.savefig('OUTPUT/Population_growthrate')
 
 plt.figure()
-plt.plot(np.arange(S+int(starting_age * S / 80.0))+1, list(children[0, :, :].sum(1)) + list(
+plt.plot(np.arange(S+int(starting_age * S / 80.0))+1, list(
+    children[0, :, :].sum(1)) + list(
     omega[0, :, :].sum(1)), linewidth=2, color='blue')
 plt.xlabel(r'age $s$')
 plt.ylabel(r'$\omega_{s,1}$')
 plt.savefig('OUTPUT/omega_init')
 
 plt.figure()
-plt.plot(np.arange(S+int(starting_age * S / 80.0))+1, omega_SS, linewidth=2, color='blue')
+plt.plot(np.arange(S+int(
+    starting_age * S / 80.0))+1, omega_SS, linewidth=2, color='blue')
 plt.xlabel(r'age $s$')
 plt.ylabel(r'$\overline{\omega}$')
 plt.savefig('OUTPUT/omega_ss')
@@ -556,7 +565,7 @@ k2 = Kssmat
 k3 = np.array(list(Kssmat[1:, :]) + list(np.zeros(J).reshape((1, J))))
 k1_2 = np.array(list(np.zeros(J).reshape((1, J))) + list(Kssmat))
 k2_2 = np.array(list(Kssmat) + list(np.zeros(J).reshape((1, J))))
-B = (Kssmat * mort_rate[:-1].reshape(S-1,1)).sum(0)
+B = (Kssmat * mort_rate[:-1].reshape(S-1, 1)).sum(0)
 
 euler1 = Euler1(wss, rss, e, Lssmat, k1, k2, k3, B)
 euler2 = Euler2(wss, rss, e, Lssmat, k1_2, k2_2, B)

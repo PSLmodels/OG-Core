@@ -18,7 +18,7 @@ from glob import glob
 # Run steady state
 run_SS = True
 # Run TPI
-run_TPI = False 
+run_TPI = False
 
 '''
 ------------------------------------------------------------------------
@@ -86,9 +86,9 @@ Pickle parameter values
 '''
 
 print 'Saving user given parameter values.'
-var_names = ['S', 'J', 'T', 'bin_weights', 'starting_age', 'ending_age', 'beta', 'sigma',
-             'alpha', 'nu', 'A', 'delta', 'ctilde', 'ltilde',
-             'chi', 'eta', 'g_y', 'TPImaxiter', 'TPImindist']
+var_names = ['S', 'J', 'T', 'bin_weights', 'starting_age', 'ending_age',
+             'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'ctilde',
+             'ltilde', 'chi', 'eta', 'g_y', 'TPImaxiter', 'TPImindist']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
