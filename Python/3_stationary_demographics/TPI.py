@@ -278,11 +278,7 @@ def MUb(bq):
 
 
 initial_K = np.array(list(Kssmat) + list(BQ.reshape(1, J))) * .95
-# Trying to get a cool time path
-# initial_K = np.ones((S-1,J)) * .95 * Kss 
-# for i in xrange(10):
-#     initial_K[i] *= i/10.0
-K0 = (omega_stationary[0, 1:, :] * initial_K[:-1, :]).sum() + (omega_stationary[0,-1,:] * initial_K[-1, :]).sum()
+K0 = (omega_stationary[0, 1:, :] * initial_K[:-1, :]).sum() + (omega_stationary[0,-1,:] * initial_K[-1, :]).sum() + (initial_K[:-1, :] * omega_stationary[0, :-1, :] * mort_rate[:-1].reshape(S-1,1)).sum()
 K1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_K[:-1]))
 K2_2init = initial_K
 initial_L = Lssmat
@@ -429,7 +425,7 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     if K_guess.sum() <= 0:
         error1 += 1e9
     cons = (1 + r) * K1_2 + w * e[
-        -(length):, j] * L_guess + B/(N_tilde[t:t+length]*bin_weights[j]) - K2_2 * np.exp(g_y)
+        -(length):, j] * L_guess + (1+r)*B/(N_tilde[t:t+length]*bin_weights[j]) - K2_2 * np.exp(g_y)
     mask3 = cons < 0
     error2[mask3] += 1e9
 
@@ -463,6 +459,14 @@ TPIdist = 10
 print 'Starting time path iteration.'
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
+    plt.figure()
+    plt.axhline(
+        y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
+    plt.plot(np.arange(
+        T), Kinit[:T], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
+    plt.xlabel(r"Time $t$")
+    plt.ylabel(r"Per-capita Capital $\hat{K}$")
+    plt.savefig("OUTPUT/TPI_K")
     K_mat = np.zeros((T+S, S, J))
     L_mat = np.zeros((T+S, S, J))
     for j in xrange(J):
@@ -487,11 +491,11 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat[0, :, :] = initial_K
     L_mat[0, -1, :] = initial_L[-1, :]
     Binit = np.array(list(
-        (K_mat[:T, :-1, :] * omega_stationary[:T, -(S-1):, :] * mort_rate[
+        (K_mat[:T, :-1, :] * omega_stationary[:T, 1:, :] * mort_rate[
         :-1].reshape(1, S-1, 1)).sum(1).reshape(T, J) + K_mat[:T, -1, :] * omega_stationary[:T, -1, :]) + list(
         np.tile(Bss.reshape(1, J), (S, 1))))
-    Binit = (1 + rinit.reshape(T+S, 1)) * Binit
-    Knew = (omega_stationary[:T, 1:, :] * K_mat[:T, :-1, :]).sum(2).sum(1) + Binit[:T,:].sum()
+    # Binit = (1 + rinit.reshape(T+S, 1)) * Binit
+    Knew = (omega_stationary[:T, 1:, :] * K_mat[:T, :-1, :]).sum(2).sum(1) + Binit[:T,:].sum(1)
     Lnew = (omega_stationary[:T, :, :] * e.reshape(
         1, S, J) * L_mat[:T, :, :]).sum(2).sum(1)
     TPIiter += 1
@@ -502,12 +506,13 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-        
         Yinit = A*(Kinit**alpha) * (Linit**(1-alpha))
         winit = np.array(
             list((1-alpha) * Yinit / Linit) + list(np.ones(S)*wss))
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
             np.ones(S)*rss))
+        # Binit = (1 + rinit.reshape(T+S, 1)) * Binit
+    
         
 
 
@@ -538,15 +543,15 @@ def borrowing_constraints2(K_dist, w, r, e):
             b_min[t, -(i+2), :] = (
                 ctilde + np.exp(g_y) * b_min[t, -(i+1), :] - w[S+t-(i+2)] * e[
                     -(i+2), :] * ltilde) / (1 + r[S+t-(i+2)])
-    difference = K_mat[:T, :, :] - b_min
+    difference = K_mat[:T, :-1, :] - b_min
     for t in xrange(T):
         if (difference[t, :, :] < 0).any():
             print 'There has been a borrowing constraint violation in period %.f.' % t
 
 K1 = np.zeros((T, S, J))
-K1[:, 1:, :] = K_mat[:T, :, :]
+K1[:, 1:, :] = K_mat[:T, :-1, :]
 K2 = np.zeros((T, S, J))
-K2[:, :-1, :] = K_mat[:T, :, :]
+K2[:, :, :] = K_mat[:T, :, :]
 cinit = (1 + rinit[:T].reshape(T, 1, 1)) * K1 + winit[:T].reshape(
     T, 1, 1) * e.reshape(1, S, J) * L_mat[:T] - np.exp(g_y) * K2
 print'Checking time path for violations of constaints.'
@@ -610,14 +615,14 @@ domain     = 1 x S vector of each age cohort
 ------------------------------------------------------------------------
 '''
 k1 = np.zeros((T, S-1, J))
-k1[:, 1:, :] = K_mat[:T, :-1, :]
-k2 = K_mat[:T, :, :]
+k1[:, 1:, :] = K_mat[:T, :-2, :]
+k2 = K_mat[:T, :-1, :]
 k3 = np.zeros((T, S-1, J))
-k3[:, :-1, :] = K_mat[:T, 1:, :]
+k3[:, :, :] = K_mat[:T, 1:, :]
 k1_2 = np.zeros((T, S, J))
-k1_2[:, 1:, :] = K_mat[:T, :, :]
+k1_2[:, 1:, :] = K_mat[:T, :-1, :]
 k2_2 = np.zeros((T, S, J))
-k2_2[:, :-1, :] = K_mat[:T, :, :]
+k2_2[:, :, :] = K_mat[:T, :, :]
 euler_mat1 = np.zeros((T, S-1, J))
 euler_mat2 = np.zeros((T, S, J))
 

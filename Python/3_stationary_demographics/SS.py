@@ -87,7 +87,7 @@ e = income2.get_e(S, J, starting_age, ending_age, bin_weights)
 print '\tFinished.'
 print 'Generating demographics.'
 omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
-    S, J, T, bin_weights, starting_age)
+    S, J, T, bin_weights, starting_age, ending_age)
 N_tilde = omega[-1].sum()
 mort_rate = 1-surv_rate
 print '\tFinished.'
@@ -390,7 +390,7 @@ seconds.' % (abs(hours - .5), abs(minutes - .5), seconds)
 
 Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
 BQ = solutions[(S-1)*J:S*J]
-Bss = (Kssmat * omega_SS[-(S-1):, :] * mort_rate[:-1].reshape(S-1, 1)).sum(0) + omega[-1,-1,:]*BQ
+Bss = (Kssmat * omega_SS[-(S-1):, :] * mort_rate[:-1].reshape(S-1, 1)).sum(0) + omega_SS[-1,:]*BQ
 Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
 Kssmat3 = np.array(list(Kssmat) + list(BQ.reshape(1, J)))
 
@@ -550,7 +550,7 @@ plt.ylabel(r'Population growth rate $g_n$')
 plt.savefig('OUTPUT/Population_growthrate')
 
 plt.figure()
-plt.plot(np.arange(S+int(starting_age * S / 80.0))+1, list(
+plt.plot(np.arange(S+int(starting_age * S / (ending_age-starting_age)))+1, list(
     children[0, :, :].sum(1)) + list(
     omega[0, :, :].sum(1)), linewidth=2, color='blue')
 plt.xlabel(r'age $s$')
@@ -559,7 +559,7 @@ plt.savefig('OUTPUT/omega_init')
 
 plt.figure()
 plt.plot(np.arange(S+int(
-    starting_age * S / 80.0))+1, omega_SS.sum(1), linewidth=2, color='blue')
+    starting_age * S / (ending_age-starting_age)))+1, omega_SS.sum(1), linewidth=2, color='blue')
 plt.xlabel(r'age $s$')
 plt.ylabel(r'$\overline{\omega}$')
 plt.savefig('OUTPUT/omega_ss')

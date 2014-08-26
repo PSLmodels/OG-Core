@@ -63,7 +63,7 @@ cnumpy.core.multiarray
 scalar
 p26
 (g12
-S'\x1a\x8dVG\xe8\xe8\xe6?'
+S'\xa2?L\xcb\xdc\xe7\xe6?'
 p27
 tp28
 Rp29
@@ -172,7 +172,7 @@ Rp69
 tp70
 g12
 I00
-S'\x96}\x11`\xee\xb5]?\xe9\x8f\xeb\xe8@\xdf`?\x172\xb1\x0b\x15@`?\n\xaf\x17\x14\xfd\x8b`?\xa7\xe0\xda\x15\xa2ha?\xc7o\x13\xe6\x00\x85d?d\xf5\xe6\x01\x13\xa9q?'
+S'\xd4\xd6\x0c\x80\xef\x84]?\xda"\x9cF`\xc1`?\xbd!x\x8fa\x1f`?a(\xda\xea\xf2g`?\xd5:.\xb4\xb7@a?\x87\x9f\xfa\xd7sWd?\xf8\x1f\x87\x90\x9f\x8bq?'
 p71
 tp72
 bsS'chi_n'
@@ -189,7 +189,7 @@ p76
 F1.0
 sS'seconds'
 p77
-F8.069162845611572
+F8.257508993148804
 sS'bin_weights'
 p78
 g2
@@ -242,7 +242,7 @@ p96
 tp97
 bsS'hours'
 p98
-F0.0022414341237809924
+F0.0022937524980968897
 sS'beta'
 p99
 F0.96
@@ -274,7 +274,7 @@ sS'Yss'
 p109
 g26
 (g12
-S'\xe1\xba\x9f\xf79\xef\xdd?'
+S'\x8fuw\xa2\xbf\xee\xdd?'
 p110
 tp111
 Rp112
@@ -302,12 +302,12 @@ p119
 tp120
 bsS'TPImaxiter'
 p121
-I100
+I10
 sS'rss'
 p122
 g26
 (g12
-S'bfInM\xde\xc6?'
+S'\xfb{\x96\x95+\xdf\xc6?'
 p123
 tp124
 Rp125
@@ -354,7 +354,7 @@ p141
 I80
 sS'TPImindist'
 p142
-F0.003
+F3e-06
 sS'ltilde'
 p143
 F1.0
@@ -362,7 +362,7 @@ sS'wss'
 p144
 g26
 (g12
-S'\x9e\xd7Aa\x97(\xea?'
+S'B\xbbmz,(\xea?'
 p145
 tp146
 Rp147
@@ -379,8 +379,8 @@ tp151
 Rp152
 sS'runtime'
 p153
-F8.069162845611572
+F8.257508993148804
 sS'minutes'
 p154
-F0.13448604742685955
+F0.1376251498858134
 s.
