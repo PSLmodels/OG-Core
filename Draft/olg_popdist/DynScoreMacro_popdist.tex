@@ -118,7 +118,7 @@
       g_{n,t+1} \equiv \frac{N_{t+1}}{N_t} - 1 \quad\forall t
     \end{equation}
 
-    A household's working ability evolves over his lifetime according to an age-dependent deterministic process. At birth, a set fraction $\lambda_j$ of the $\omega_{1,t}$ measure of new agents are randomly assigned to each of the $J$ ability types indexed by $j=1,2,...J$ such that $\sum_{j=1}^J\lambda_j=1$. Once ability type is determined, that measure $\lambda_j\omega_{s,t}$ of individuals' ability evolves deterministically according to $e_{j,s}$. The process for the evolution of the population weights $\omega_{s,t}$ is an exogenous input to the model. We calibrate the matrix of lifetime ability paths $e_{j,s}$ for all types $j$ using CPS hourly wage by age distribution data.\footnote{Appendix \ref{AppAbilCalib} gives a detailed description of the calibration of the deterministic ability process by age $s$ and type $j$, as well as alternative specifications and calibrations.}
+    A household's working ability evolves over his working-age lifetime $E+1\leq s \leq E+S$ according to an age-dependent deterministic process. At birth, a set fraction $\lambda_j$ of the $\omega_{1,t}$ measure of new agents are randomly assigned to each of the $J$ ability types indexed by $j=1,2,...J$ such that $\sum_{j=1}^J\lambda_j=1$. Once ability type is determined, that measure $\lambda_j\omega_{s,t}$ of individuals' ability evolves deterministically according to $e_{j,s}$. The process for the evolution of the population weights $\omega_{s,t}$ is an exogenous input to the model. We calibrate the matrix of lifetime ability paths $e_{j,s}$ for all types $j$ using CPS hourly wage by age distribution data.\footnote{Appendix \ref{AppAbilCalib} gives a detailed description of the calibration of the deterministic ability process by age $s$ and type $j$, as well as alternative specifications and calibrations.}
 
     Individuals are endowed with a measure of time $\tilde{l}$ in each period $t$, and they choose each period how much of that time to allocate between labor $n_{j,s,t}$ and leisure $l_{j,s,t}$.
     \begin{equation}\label{EqLabConstr}
@@ -128,7 +128,7 @@
     \noindent At time $t$, all generation-$s$ agents with ability $e_{j,s}$ know the real wage rate $w_t$ and know the one-period real net interest rate $r_t$ on bond holdings $b_{j,s,t}$ that mature at the beginning of period $t$. They also receive accidental and intentional bequestsIn each period $t$, age-$s$ agents with working ability $e_{j,s}$ choose how much to consume $c_{j,s,t}$, how much to save for the next period by loaning capital to firms in the form of a one-period bond $b_{j,s+1,t+1}$, and how much to work $n_{j,s,t}$ in order to maximize expected lifetime utility of the following form,
     \begin{equation}\label{EqUtilMax}
       \begin{split}
-        &U_{j,s,t} = \sum_{u=0}^{S-s}\beta^u\left[\prod_{v=s}^{s+u-1}(1-\rho_v)\right] u\left(c_{j,s+u,t+u},n_{j,s+u,t+u}\right) \quad\text{where}\quad \rho_{s-1}=0 \\
+        &U_{j,s,t} = \sum_{u=0}^{E+S-s}\beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right] u\left(c_{j,s+u,t+u},n_{j,s+u,t+u}\right) \quad\text{where}\quad \rho_{s-1}=0 \\
         &\quad\text{and} \quad u\left(c_{j,s,t},n_{j,s,t}\right) = \frac{\left(c_{j,s,t}\right)^{1-\sigma} - 1}{1-\sigma} + \chi_n e^{g_y t(1-\sigma)}\frac{(\tilde{l}-n_{j,s,t})^{1-\eta}}{1-\eta} \\
         &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\forall j,t\quad\text{and}\:E+1\leq s< E+S \\
         &\quad\text{and}\quad u\left(c_{j,s,t},n_{j,s,t}\right) = \frac{\left(c_{j,s,t}\right)^{1-\sigma} - 1}{1-\sigma} + \chi_n e^{g_y t(1-\sigma)}\frac{(\tilde{l}-n_{j,s,t})^{1-\eta}}{1-\eta} + ... \\
@@ -162,45 +162,57 @@
 
     We next describe the Euler equations that govern the choices of consumption $c_{j,s,t}$, savings $b_{j,s+1,t+1}$, and labor supply $n_{j,s,t}$ by household of age $s$ and ability $e_{j,s}$ in each period $t$ as well as their choice of intended bequests $bq_{j,E+S+1,t}$ at age $s=E+S$. We work backward from the last period of life $s=E+S$. For households that reach age $s=E+S$, they do not save for themselves. They simply choose how much to work $n_{j,E+S,t}$ and how much to bequeath to their posterity $bq_{j,E+S+1,t+1}$. The household's final-period maximization problem is given by the following.
     \begin{equation}\label{EqSmaxprob}
+      \footnotesize{\begin{split}
+        &\max_{n_{j,E+S,t},bq_{j,E+S+1,t+1}} \frac{\left(c_{j,E+S,t}\right)^{1-\sigma} - 1}{1 - \sigma} + \chi_n e^{g_y t(1-\sigma)}\frac{(\tilde{l}-n_{j,E+S,t})^{1-\eta}}{1-\eta} + \chi_b\frac{\left(bq_{j,E+S+1,t+1}\right)^{1-\sigma} - 1}{1 - \sigma} \\
+        &\text{s.t.} \quad c_{j,E+S,t} = \left(1 + r_t\right) b_{j,E+S,t} + w_t e_{j,E+S}n_{j,E+S,t} + \frac{\omega_{E+S,t}}{N_t}BQ_{j,t} - bq_{j,E+S+1,t+1} \quad \forall j,t
+      \end{split}}
+    \end{equation}
+    Because $u(c)$ is monotonically increasing in $c$, the $s=E+S$ consumption part of the maximization problem \eqref{EqSmaxprob} is simply to choose the maximum amount of consumption possible. The household trivially consumes all of its income in the last period of life. However, the household must choose labor and bequests to balance its benefits in extra consumption with its costs in disutility for labor and its benefits giving for bequests.
+    \small{\begin{gather}
+      c_{j,E+S,t} = \left(1 + r_t\right) b_{j,E+S,t} + w_t e_{j,E+S}n_{j,E+S,t} + \frac{\omega_{E+S,t}}{N_t}BQ_{j,t} - bq_{j,E+S+1,t+1} \quad \forall j,t \label{EqScons} \\
+      w_t e_{j,E+S}\bigl(c_{j,E+S,t}\bigr)^{-\sigma} = \chi_n e^{g_y t(1-\sigma)}(\tilde{l} - n_{j,E+S,t})^{-\eta} \quad\forall j,t \label{EqEulerSlab} \\
+      \bigl(c_{j,E+S,t}\bigr)^{-\sigma} = \chi_b\bigl(bq_{j,E+S+1,t+1}\bigr)^{-\sigma} \quad\forall j,t \label{EqEulerSbeq}
+    \end{gather}}
+
+    A household in his second-to-last period of life $s=E+S-1$ must choose how much to consume and how much to save for the last period of life $b_{j,E+S,t+1}$ as well as how much to work in the current period $n_{j,E+S-1,t}$ and how much to work in the final period $n_{j,E+S,t+1}$ as well as how much to bequeath in the final period $bq_{j,E+S+1,t+2}$. The $s=E+S-1$ household optimization problem is governed by two static first order conditions \eqref{EqEulerSm1lab} and \eqref{EqEulerSlab2} for labor  $n_{j,E+S-1,t}$ and $n_{j,E+S,t+1}$, an intertemporal Euler equation \eqref{EqEulerSm1Sav} for the savings decision $b_{j,E+S,t+1}$, and a static Euler equation \eqref{EqEulerSm1beq} for bequests in the final period $bq_{j,E+S+1,t+2}$.
+    \begin{equation}\label{EqEulerSm1lab}
       \begin{split}
-        \max_{c_{j,S,t},n_{j,S,t},b_{j,s+1,t+1}} &\frac{\left(c_{j,S,t}\right)^{1-\sigma} - 1}{1 - \sigma} + \chi e^{g_y t(1-\sigma)}\frac{(\tilde{l}-n_{j,s,t})^{1-\eta}}{1-\eta} \\
-        &\text{s.t.} \quad \left(1+r_t\right)b_{j,S,t} + w_t e_{j,S}n_{j,S,t} \geq c_{j,S,t} \quad \forall t
+        &w_t e_{j,E+S-1}\bigl(c_{j,E+S-1,t}\bigr)^{-\sigma} = \chi_n e^{g_y t(1-\sigma)}(\tilde{l} - n_{j,E+S-1,t})^{-\eta} \quad\forall j,t \\
+        &\quad\quad\text{where}\:\: c_{j,E+S-1,t} = \left(1+r_t\right)b_{j,E+S-1,t} + w_t e_{j,E+S-1}n_{j,E+S-1,t} + ... \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad \frac{\omega_{E+S-1,t}}{N_t}BQ_{j,t} - b_{j,E+S,t+1}
       \end{split}
     \end{equation}
-    Because $u(c)$ is monotonically increasing in $c$, the $s=S$ consumption part of the maximization problem \eqref{EqSmaxprob} is simply to choose the maximum amount of consumption possible. The household trivially consumes all of its income in the last period of life. However, the household must choose labor to balance its benefits in extra consumption with its costs in disutility.
-    \begin{gather}
-      c_{j,S,t} = \left(1+r_t\right)b_{j,S,t} + w_t e_{j,S}n_{j,S,t} \quad \forall t \label{EqScons} \\
-      w_t e_{j,S}\Bigl[\left(1+r_t\right)b_{j,S,t} + w_t e_{j,S}n_{j,S,t}\Bigr]^{-\sigma} = \chi e^{g_y t(1-\sigma)}(\tilde{l} - n_{j,S,t})^{-\eta} \quad\forall t \label{EqEulerSlab}
-    \end{gather}
+    \begin{equation}\label{EqEulerSm1Sav}
+      \bigl(c_{j,E+S-1,t}\bigr)^{-\sigma} = \beta(1-\rho_{E+S-1})(1+r_{t+1})\bigl(c_{j,E+S,t+1}\bigr)^{-\sigma} \quad\forall j,t
+    \end{equation}
+    \begin{equation}\label{EqEulerSlab2}
+      \begin{split}
+        &w_{t+1}e_{j,E+S}\bigl(c_{j,E+S,t+1}\bigr)^{-\sigma} = \chi_n e^{g_y(t+1)(1-\sigma)}(\tilde{l} - n_{j,E+S,t+1})^{-\eta} \quad\forall j,t \\
+        &\quad\quad\text{where}\:\: c_{j,E+S,t+1} = \left(1+r_{t+1}\right)b_{j,E+S,t+1} + w_{t+1} e_{j,E+S}n_{j,E+S,t+1} + ... \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad \frac{\omega_{E+S,t+1}}{N_{t+1}}BQ_{j,t+1} - bq_{j,E+S+1,t+2}
+      \end{split}
+    \end{equation}
+    \begin{equation}\label{EqEulerSm1beq}
+      \bigl(c_{j,E+S,t+1}\bigr)^{-\sigma} = \chi_b\bigl(bq_{j,E+S+1,t+2}\bigr)^{-\sigma} \quad\forall j,t
+    \end{equation}
 
-    An individual in his second-to-last period of life $s=S-1$ must choose how much to consume and how much to save for the last period of life $b_{j,S,t+1}$ as well as how much to work in the current period $n_{j,S-1,t}$ and how much to work in the final period $n_{j,S,t+1}$. The $S-1$ individual optimization problem is governed by two static first order conditions for labor  $n_{j,S-1,t}$ and $n_{j,S,t+1}$ and an intertemporal Euler equation for the savings decision.
-    \begin{gather}
+    In general for a household of type $j$, maximizing \eqref{EqUtilMax} with respect to \eqref{EqBC1}, \eqref{EqBC2}, \eqref{EqBC3}, and the implied individual and aggregate borrowing constraints gives the following set of $S-1$ intertemporal Euler equations for savings $b_{j,s+1,t+1}$ in \eqref{EqEulerSavGen}, $S$ static first order conditions characterizing lifetime labor supply $n_{j,s,t}$ in \eqref{EqEulerLabGen}, and one static first order condition characterizing intended bequests $bq_{j,E+S+1,t+1}$ in age $s=E+S$ in \eqref{EqEulerBeqGen}.
+    \begin{equation}\label{EqEulerLabGen}
       \begin{split}
-        w_t e_{j,S-1}\Bigl[\left(1+r_t\right)b_{j,S_1,t} + w_t e_{j,S-1}n_{j,S-1,t} - &b_{j,S,t+1}\Bigr]^{-\sigma} = ... \\
-        &\chi e^{g_y t(1-\sigma)}(\tilde{l} - n_{j,S-1,t})^{-\eta} \quad\forall t
-      \end{split} \label{EqEulerSm1lab} \\
-      \begin{split}
-        w_{t+1} e_{j,S}\Bigl[\left(1+r_{t+1}\right)b_{j,S,t+1} + w_{t+1} &e_{j,S}n_{j,S,t+1}\Bigr]^{-\sigma} = ... \\
-        &\chi e^{g_y (t+1)(1-\sigma)}(\tilde{l} - n_{j,S,t+1})^{-\eta} \quad\forall t \\
-      \end{split} \label{EqEulerSlab2} \\
-      \begin{split}
-        \Bigl[\left(1+r_t\right)b_{j,S_1,t} + w_t &e_{j,S-1}n_{j,S-1,t} - b_{j,S,t+1}\Bigr]^{-\sigma} = ... \\
-        &\beta(1+r_{t+1})\Bigl[\left(1+r_{t+1}\right)b_{j,S,t+1} + w_{t+1} e_{j,S}n_{j,S,t+1}\Bigr]^{-\sigma} \quad\forall t
-      \end{split} \label{EqEulerSm1Sav}
-    \end{gather}
-
-    In general, maximizing \eqref{EqUtilMax} with respect to \eqref{EqBC1}, \eqref{EqBC2}, \eqref{EqBC3}, and the implied individual and aggregate borrowing constraints gives the following set of $S-1$ intertemporal Euler equations and $S$ static first order conditions characterizing lifetime savings $b_{j,s,t}$ for all $j$ and $2\leq s\leq S$ and labor supply $n_{j,s,t}$ for all $j$ and $1\leq s\leq S$.
-    \begin{gather}
-      \begin{split}
-        w_t e_{j,s}\Bigl[\left(1+r_t\right)b_{j,s,t} + &w_t e_{j,s}n_{j,s,t} - b_{j,s+1,t+1}\Bigr]^{-\sigma} = \chi e^{g_y t(1-\sigma)}(\tilde{l} - n_{j,s,t})^{-\eta} \\
-        &\forall j,t \quad\text{and}\quad 1\leq s\leq S \quad\text{with}\quad b_{j,1,t},b_{j,S+1,t}=0
-      \end{split} \label{EqEulerLabGen} \\
-      \begin{split}
-        &\Bigl[\left(1+r_t\right)b_{j,s,t} + w_t e_{j,s}n_{j,s,t} - b_{j,s+1,t+1}\Bigr]^{-\sigma} = ... \\
-        &\quad \beta(1+r_{t+1})\Bigl[\left(1+r_{t+1}\right)b_{j,s+1,t+1} + w_{t+1} e_{j,s+1}n_{j,s+1,t+1} - b_{j,s+2,t+2}\Bigr]^{-\sigma} \\
-        &\quad\quad\quad\quad\quad\quad\quad\quad\forall j,t \quad\text{and}\quad 1\leq s\leq S-1 \quad\text{with}\quad b_{j,1,t},b_{j,S+1,t}=0
-      \end{split} \label{EqEulerSavGen}
-    \end{gather}
+        &w_t e_{j,s}\bigl(c_{j,s,t}\bigr)^{-\sigma} = \chi_n e^{g_y t(1-\sigma)}(\tilde{l} - n_{j,s,t})^{-\eta} \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S \quad\text{with}\quad b_{j,E+1,t},b_{j,E+S+1,t}=0 \\
+        &\quad\text{where}\quad c_{j,s,t} = \left(1+r_t\right)b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{\omega_{s,t}}{N_t}BQ_{j,t} - b_{j,s+1,t+1} \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\quad\text{for}\quad E+1\leq s\leq E+S-1 \\
+        &\quad\quad\text{and}\quad c_{j,s,t} = \left(1+r_t\right)b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{\omega_{s,t}}{N_t}BQ_{j,t} - bq_{j,s+1,t+1} \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\quad\text{for}\quad s=E+S
+      \end{split}
+    \end{equation}
+    \begin{equation}\label{EqEulerSavGen}
+      \bigl(c_{j,s,t}\bigr)^{-\sigma} = \beta(1-\rho_s)(1+r_{t+1})\bigl(c_{j,s+1,t+1}\bigr)^{-\sigma}\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S-1
+    \end{equation}
+    \begin{equation}\label{EqEulerBeqGen}
+      \bigl(c_{j,E+S,t}\bigr)^{-\sigma} = \chi_b\bigl(bq_{j,E+S+1,t+1}\bigr)^{-\sigma} \quad\forall j,t
+    \end{equation}
 
 
   \subsection{Firm problem}\label{SecFirms}
@@ -226,15 +238,15 @@
 
     Labor market clearing requires that aggregate labor demand $L_t$ measured in efficiency units equal the sum of individual efficiency labor supplied $e_{j,s}n_{j,s,t}$. Capital market clearing requires that aggregate capital demand $K_t$ equal the sum of capital investment by households $b_{j,s,t}$. Aggregate consumption $C_t$ is defined as the sum of all individual consumptions, and aggregate investment is defined by the standard $Y = C + I$ constraint as shown in \eqref{EqMktClrGoods}.
     \begin{align}
-      L_t &= \frac{1}{J}\sum_{s=1}^S\sum_{j=1}^{J} \omega_{s,t}e_{j,s}n_{j,s,t} \quad\quad \forall t \label{EqMktClrLab} \\
-      K_t &= \frac{1}{J}\sum_{s=1}^{S}\sum_{j=1}^{J}\omega_{s,t}b_{j,s,t} \quad\quad\quad\quad \forall t \label{EqMktClrCap} \\
+      L_t &= \sum_{s=E+1}^{E+S}\sum_{j=1}^{J} \omega_{s,t}\lambda_j e_{j,s}n_{j,s,t} \quad \forall t \label{EqMktClrLab} \\
+      K_t &= \sum_{s=E+2}^{E+S}\sum_{j=1}^{J}\omega_{s-1,t-1}\lambda_j b_{j,s,t} + \sum_{j=1}^{J}\omega_{E+S,t-1}\lambda_j bq_{j,E+S+1,t} \quad \forall t \label{EqMktClrCap} \\
       \begin{split}
         Y_t &= C_t + K_{t+1} - (1-\delta)K_t \quad\forall t \\
-        &\quad\text{where}\quad C_t \equiv \frac{1}{J}\sum_{s=1}^{S}\sum_{j=1}^{J}\omega_{s,t}c_{j,s,t}
+        &\quad\text{where}\quad C_t \equiv \sum_{s=E+1}^{E+S}\sum_{j=1}^{J}\omega_{s,t}\lambda_j c_{j,s,t}
       \end{split} \label{EqMktClrGoods}
     \end{align}
 
-    The usual definition of equilibrium would be allocations and prices such that households optimize \eqref{EqEulerLabGen} and \eqref{EqEulerSavGen}, firms optimize \eqref{EqFOCwage} and \eqref{EqFOCrate}, and markets clear \eqref{EqMktClrLab} and \eqref{EqMktClrCap}. However, the variables in these characterizing equations are potentially not stationary due to the possible growth rate in the total population $g_{n,t}$ each period coming from the cohort growth rates in \eqref{EqPopLawofmotion} and from the deterministic growth rate of labor augmenting technological change $g_y$ in \eqref{EqCobbDougProd}.
+    The usual definition of equilibrium would be allocations and prices such that households optimize \eqref{EqEulerLabGen}, \eqref{EqEulerSavGen}, and \eqref{EqEulerBeqGen}, firms optimize \eqref{EqFOCwage} and \eqref{EqFOCrate}, and markets clear \eqref{EqMktClrLab} and \eqref{EqMktClrCap}. However, the variables in these characterizing equations are potentially not stationary due to the possible growth rate in the total population $g_{n,t}$ each period coming from the cohort growth rates in \eqref{EqPopLawofmotion} and from the deterministic growth rate of labor augmenting technological change $g_y$ in \eqref{EqCobbDougProd}.
 
     Define the following stationary versions of the variables of the model in Table \ref{TabStatVars} in which the variables are represented in per-capita terms and in which the growth rate from labor augmenting technical change has been removed.
 
