@@ -10,11 +10,9 @@ Income file:
 Demographic file:
 
 SS file:
--incidental bequests
 
 TPI file:
 -incidental bequests
-
 
 run_model file:
 
@@ -30,4 +28,3 @@ Other Problems:
 -model doesn't converge if S<4 or S>80 (or in increments of less than one years length)
 
 HHTAX:
--change fertility data source documentation in draft

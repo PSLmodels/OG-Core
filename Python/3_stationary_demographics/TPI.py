@@ -106,6 +106,7 @@ def get_N(children, omega):
     return N
 
 N = get_N(children, omega)
+N_tilde = omega.sum(1).sum(1)
 omega_stationary = omega / N.reshape(T+S, 1, 1)
 
 
@@ -388,8 +389,8 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     e2 = e[-length:, j]
     B1 = Binit[t:t+length]
     B2 = Binit[t+1:t+1+length]
-    omega1 = np.diag(omega_stationary[t:t+length, -(length+1):-1, j] * J)
-    omega2 = np.diag(omega_stationary[t+1:t+length+1, -length:, j] * J)
+    omega1 = np.diag(omega[t:t+length, -(length+1):-1, j]/(N_tilde[t:t+length].reshape(length, 1)*bin_weights[j]))
+    omega2 = np.diag(omega[t+1:t+length+1, -length:, j]/(N_tilde[t+1:t+length+1].reshape(length, 1)*bin_weights[j]))
 
     error1 = MUc((1 + r1)*K1 + w1 * e1 * l1 + B1 * omega1 - np.exp(g_y) * K2) \
         - beta * surv_rate[-(length+1):-1] * np.exp(
@@ -405,7 +406,7 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     w = winit[t:t+length+1]
     r = rinit[t:t+length+1]
     B = Binit[t:t+length+1]
-    omeg = np.diag(omega_stationary[t:t+length+1, :, j] * J)
+    omeg = np.diag(omega[t:t+length+1, :, j]/(N_tilde[t:t+length+1].reshape(length+1, 1)*bin_weights[j]))
     error2 = MUc((1 + r)*K1_2 + w * e[
         -(length+1):, j] * L_guess + B * omeg - np.exp(g_y) * K2_2) * w * e[
         -(length+1):, j] + MUl_2(L_guess)
