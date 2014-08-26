@@ -263,26 +263,36 @@ def MUl_2(n):
 
     Returns:    Marginal Utility of Labor
     '''
-    output = - chi * ((ltilde-n) ** (-eta))
+    output = - chi_n * ((ltilde-n) ** (-eta))
     return output
 
 
-initial_K = Kssmat * .95
+def MUb(bq):
+    '''
+    Parameters: Intentional bequests
+
+    Returns:    Marginal Utility of Bequest
+    '''
+    output = chi_b * (bq ** (-sigma))
+    return output
+
+
+initial_K = np.array(list(Kssmat) + list(BQ.reshape(1, J))) * .95
 # Trying to get a cool time path
 # initial_K = np.ones((S-1,J)) * .95 * Kss 
 # for i in xrange(10):
 #     initial_K[i] *= i/10.0
-K0 = (omega_stationary[0, 1:, :] * initial_K).sum()
-K1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_K))
-K2_2init = np.array(list(initial_K) + list(np.zeros(J).reshape(1, J)))
+K0 = (omega_stationary[0, 1:, :] * initial_K[:-1, :]).sum() + (omega_stationary[0,-1,:] * initial_K[-1, :]).sum()
+K1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_K[:-1]))
+K2_2init = initial_K
 initial_L = Lssmat
 L0 = get_L(e, initial_L)
 Y0 = get_Y(K0, L0)
 w0 = get_w(Y0, L0)
 r0 = get_r(Y0, K0)
 c0 = (1 + r0) * K1_2init + w0 * e * initial_L - K2_2init * np.exp(g_y)
-constraint_checker1(initial_K, initial_L, w0, r0, e, c0)
-B0 = (initial_K * omega_stationary[0,-(S-1):, :] * mort_rate[:-1].reshape(S-1,1)).sum(0)
+constraint_checker1(initial_K[:-1], initial_L, w0, r0, e, c0)
+B0 = (initial_K[:-1] * omega_stationary[0,-(S-1):, :] * mort_rate[:-1].reshape(S-1,1)).sum(0) + omega_stationary[0,-1,:] * initial_K[-1, :]
 print 'K0 divided by Kss =', K0/Kss
 
 '''
@@ -374,42 +384,43 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     L_guess = guesses[length:]
 
     if length == S-1:
-        K1 = np.array([0] + list(K_guess[:-1]))
+        K1 = np.array([0] + list(K_guess[:-2]))
     else:
-        K1 = np.array([(initial_K[-(s+2), j])] + list(K_guess[:-1]))
-    K2 = K_guess
-    K3 = np.array(list(K_guess[1:]) + [0])
-    w1 = winit[t:t+length]
-    w2 = winit[t+1:t+1+length]
-    r1 = rinit[t:t+length]
-    r2 = rinit[t+1:t+1+length]
+        K1 = np.array([(initial_K[-(s+2), j])] + list(K_guess[:-2]))
+    K2 = K_guess[:-1]
+    K3 = K_guess[1:]
+    w1 = winit[t:t+length-1]
+    w2 = winit[t+1:t+length]
+    r1 = rinit[t:t+length-1]
+    r2 = rinit[t+1:t+length]
     l1 = L_guess[:-1]
     l2 = L_guess[1:]
-    e1 = e[-(length+1):-1, j]
-    e2 = e[-length:, j]
-    B1 = Binit[t:t+length]
-    B2 = Binit[t+1:t+1+length]
-    omega1 = np.diag(omega[t:t+length, -(length+1):-1, j]/(N_tilde[t:t+length].reshape(length, 1)*bin_weights[j]))
-    omega2 = np.diag(omega[t+1:t+length+1, -length:, j]/(N_tilde[t+1:t+length+1].reshape(length, 1)*bin_weights[j]))
+    e1 = e[-length:-1, j]
+    e2 = e[-length+1:, j]
+    B1 = Binit[t:t+length-1]
+    B2 = Binit[t+1:t+length]
 
-    error1 = MUc((1 + r1)*K1 + w1 * e1 * l1 + B1 * omega1 - np.exp(g_y) * K2) \
-        - beta * surv_rate[-(length+1):-1] * np.exp(
+    error1 = MUc((1 + r1)*K1 + w1 * e1 * l1 + B1/(N_tilde[t:t+length-1]*bin_weights[j]) - np.exp(g_y) * K2) \
+        - beta * surv_rate[-(length-1+1):-1] * np.exp(
             -sigma * g_y) * (1 + r2)*MUc(
-            (1 + r2)*K2 + w2*e2*l2 + B2 * omega2 - np.exp(g_y) * K3)
+            (1 + r2)*K2 + w2*e2*l2 + B2/(N_tilde[t+1:t+length-1+1]*bin_weights[j]) - np.exp(g_y) * K3)
 
-    if length == S-1:
-        K1_2 = np.array([0] + list(K_guess))
+    if length == S:
+        K1_2 = np.array([0] + list(K_guess[:-1]))
     else:
-        K1_2 = np.array([(initial_K[-(s+2), j])] + list(K_guess))
+        K1_2 = np.array([(initial_K[-(s+2), j])] + list(K_guess[:-1]))
 
-    K2_2 = np.array(list(K_guess) + [0])
-    w = winit[t:t+length+1]
-    r = rinit[t:t+length+1]
-    B = Binit[t:t+length+1]
-    omeg = np.diag(omega[t:t+length+1, :, j]/(N_tilde[t:t+length+1].reshape(length+1, 1)*bin_weights[j]))
+    K2_2 = K_guess
+    w = winit[t:t+length]
+    r = rinit[t:t+length]
+    B = Binit[t:t+length]
     error2 = MUc((1 + r)*K1_2 + w * e[
-        -(length+1):, j] * L_guess + B * omeg - np.exp(g_y) * K2_2) * w * e[
-        -(length+1):, j] + MUl_2(L_guess)
+        -(length):, j] * L_guess + B/(N_tilde[t:t+length]*bin_weights[j]) - np.exp(g_y) * K2_2) * w * e[
+        -(length):, j] + MUl_2(L_guess)
+
+    error3 = MUc((1 + r[-1])*K_guess[-2] + w[-1] * e[-1, j] * L_guess[-1] + B[-1]/(N_tilde[t+length]*bin_weights[j]) - K_guess[-1] * 
+        np.exp(g_y)) - MUb(K_guess[-1])
+
     # Check and punish constraing violations
     mask1 = L_guess < 0
     error2[mask1] += 1e9
@@ -418,21 +429,20 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     if K_guess.sum() <= 0:
         error1 += 1e9
     cons = (1 + r) * K1_2 + w * e[
-        -(length+1):, j] * L_guess + B * omeg - K2_2 * np.exp(g_y)
+        -(length):, j] * L_guess + B/(N_tilde[t:t+length]*bin_weights[j]) - K2_2 * np.exp(g_y)
     mask3 = cons < 0
     error2[mask3] += 1e9
 
-    b_min = np.zeros(length)
+    b_min = np.zeros(length-1)
     b_min[-1] = (ctilde - w1[-1] * e1[-1] * ltilde) / (1 + r1[-1])
-    for i in xrange(length - 1):
+    for i in xrange(length - 2):
         b_min[-(i+2)] = (ctilde + np.exp(
             g_y) * b_min[-(i+1)] - w1[-(i+2)] * e1[
             -(i+2)] * ltilde) / (1 + r1[-(i+2)])
-    difference = K_guess - b_min
+    difference = K_guess[:-1] - b_min
     mask4 = difference < 0
     error1[mask4] += 1e9
-
-    return list(error1.flatten()) + list(error2.flatten())
+    return list(error1.flatten()) + list(error2.flatten()) + list(error3.flatten())
 
 
 domain = np.linspace(0, T, T)
@@ -453,15 +463,15 @@ TPIdist = 10
 print 'Starting time path iteration.'
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-    K_mat = np.zeros((T+S, S-1, J))
+    K_mat = np.zeros((T+S, S, J))
     L_mat = np.zeros((T+S, S, J))
     for j in xrange(J):
         for s in xrange(S-2):  # Upper triangle
             solutions = opt.fsolve(Euler_Error, list(
-                initial_K[-(s+1):, j]) + list(initial_L[-(s+2):, j]), args=(
+                initial_K[-(s+2):, j]) + list(initial_L[-(s+2):, j]), args=(
                 winit, rinit, Binit[:, j], 0))
             K_vec = solutions[:len(solutions)/2]
-            K_mat[1:S, :, j] += np.diag(K_vec, S-(s+2))
+            K_mat[1:S+1, :, j] += np.diag(K_vec, S-(s+2))
             L_vec = solutions[len(solutions)/2:]
             L_mat[:S, :, j] += np.diag(L_vec, S-(s+2))
 
@@ -469,14 +479,19 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             solutions = opt.fsolve(Euler_Error, list(
                 initial_K[:, j]) + list(initial_L[:, j]), args=(
                 winit, rinit, Binit[:, j], t))
-            K_vec = solutions[:S-1]
-            K_mat[t+1:t+S, :, j] += np.diag(K_vec)
-            L_vec = solutions[S-1:]
+            K_vec = solutions[:S]
+            K_mat[t+1:t+S+1, :, j] += np.diag(K_vec)
+            L_vec = solutions[S:]
             L_mat[t:t+S, :, j] += np.diag(L_vec)
 
     K_mat[0, :, :] = initial_K
     L_mat[0, -1, :] = initial_L[-1, :]
-    Knew = (omega_stationary[:T, 1:, :] * K_mat[:T, :, :]).sum(2).sum(1)
+    Binit = np.array(list(
+        (K_mat[:T, :-1, :] * omega_stationary[:T, -(S-1):, :] * mort_rate[
+        :-1].reshape(1, S-1, 1)).sum(1).reshape(T, J) + K_mat[:T, -1, :] * omega_stationary[:T, -1, :]) + list(
+        np.tile(Bss.reshape(1, J), (S, 1))))
+    Binit = (1 + rinit.reshape(T+S, 1)) * Binit
+    Knew = (omega_stationary[:T, 1:, :] * K_mat[:T, :-1, :]).sum(2).sum(1) + Binit[:T,:].sum()
     Lnew = (omega_stationary[:T, :, :] * e.reshape(
         1, S, J) * L_mat[:T, :, :]).sum(2).sum(1)
     TPIiter += 1
@@ -487,15 +502,13 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-        Binit = np.array(list(
-            (K_mat[:T, :, :] * omega_stationary[:T, -(S-1):, :] * mort_rate[
-                :-1].reshape(1, S-1, 1)).sum(1).reshape(T, J)) + list(
-                    np.tile(Bss.reshape(1, J), (S, 1))))
+        
         Yinit = A*(Kinit**alpha) * (Linit**(1-alpha))
         winit = np.array(
             list((1-alpha) * Yinit / Linit) + list(np.ones(S)*wss))
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
             np.ones(S)*rss))
+        
 
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
@@ -538,7 +551,7 @@ cinit = (1 + rinit[:T].reshape(T, 1, 1)) * K1 + winit[:T].reshape(
     T, 1, 1) * e.reshape(1, S, J) * L_mat[:T] - np.exp(g_y) * K2
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
-    constraint_checker2(K_mat[t], L_mat[t], winit[t], rinit[t], e, cinit[t], t)
+    constraint_checker2(K_mat[t, :-1, :], L_mat[t], winit[t], rinit[t], e, cinit[t], t)
 borrowing_constraints2(K_mat, winit, rinit, e)
 print '\tFinished.'
 

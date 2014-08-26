@@ -234,11 +234,9 @@ def Euler1(w, r, e, L_guess, K1, K2, K3, B):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] + ((omega[-1,
-                -S:-1, :]/N_tilde) / bin_weights) * B.reshape(1, J) - K2 * np.exp(
+    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] + B.reshape(1, J) / (N_tilde*bin_weights) - K2 * np.exp(
         g_y)) - beta * surv_rate[:-1].reshape(S-1, 1) * (
-        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] + ((omega[-1,
-                    -(S - 1):, :]/N_tilde) / bin_weights) * B.reshape(1, J) - K3 * np.exp(
+        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] + B.reshape(1, J) / (N_tilde*bin_weights) - K3 * np.exp(
             g_y)) * np.exp(-sigma * g_y)
     return euler
 
@@ -256,15 +254,13 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2, B):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess + ((omega[-1,
-                -S:, :]/N_tilde) / bin_weights) * B.reshape(1, J) - K2_2 * 
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess + B.reshape(1, J) / (N_tilde*bin_weights) - K2_2 * 
         np.exp(g_y)) * w * e + MUl(L_guess)
     return euler
 
 
 def Euler3(w, r, e, L_guess, K_guess, B):
-    euler = MUc((1 + r)*K_guess[-2, :] + w * e[-1, :] * L_guess[-1, :] + ((omega[-1,
-                -1, :]/N_tilde) / bin_weights) * B.reshape(1, J) - K_guess[-1, :] * 
+    euler = MUc((1 + r)*K_guess[-2, :] + w * e[-1, :] * L_guess[-1, :] + B.reshape(1, J) / (N_tilde*bin_weights) - K_guess[-1, :] * 
         np.exp(g_y)) - MUb(K_guess[-1, :])
     return euler
 
@@ -301,8 +297,7 @@ def Steady_State(guesses):
     error2[mask2] += 1e9
     if K_guess.sum() <= 0:
         error1 += 1e9
-    cons = (1 + r) * K1_2 + w * e * L_guess + ((omega[-1,
-                -S:, :]/N_tilde) / bin_weights) * B.reshape(1, J) - K2_2 * np.exp(g_y)
+    cons = (1 + r) * K1_2 + w * e * L_guess + B.reshape(1, J) / (N_tilde*bin_weights) - K2_2 * np.exp(g_y)
     mask3 = cons < 0
     error2[mask3] += 1e9
     
@@ -394,13 +389,13 @@ print 'Finding the steady state took %.0f hours, %.0f minutes, and %.0f \
 seconds.' % (abs(hours - .5), abs(minutes - .5), seconds)
 
 Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
-BQ = omega_SS[-1, :] * solutions[(S-1)*J:S*J]
-Bss = (Kssmat * omega_SS[-(S-1):, :] * mort_rate[:-1].reshape(S-1, 1)).sum(0)
+BQ = solutions[(S-1)*J:S*J]
+Bss = (Kssmat * omega_SS[-(S-1):, :] * mort_rate[:-1].reshape(S-1, 1)).sum(0) + omega[-1,-1,:]*BQ
 Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
-Kssmat3 = np.array(list(Kssmat) + list(np.zeros(J).reshape(1, J)))
+Kssmat3 = np.array(list(Kssmat) + list(BQ.reshape(1, J)))
 
 Kssvec = Kssmat.sum(1)
-Kss = (omega_SS[-(S-1):, :] * Kssmat).sum() + Bss.sum() + BQ.sum()
+Kss = (omega_SS[-(S-1):, :] * Kssmat).sum() + Bss.sum()
 Kssavg = Kssvec.mean()
 Kssvec = np.array([0]+list(Kssvec))
 Lssmat = solutions[S * J:].reshape(S, J)
@@ -410,7 +405,6 @@ Lssavg = Lssvec.mean()
 Yss = get_Y(Kss, Lss)
 wss = get_w(Yss, Lss)
 rss = get_r(Yss, Kss)
-Bss = (Kssmat * omega_SS[-(S-1):, :] * mort_rate[:-1].reshape(S-1, 1)).sum(0)
 
 cssmat = (1 + rss) * Kssmat2 + wss * e * Lssmat + ((omega[-1,
         -S:, :]/N_tilde) / bin_weights) * Bss.reshape(1, J) - np.exp(g_y) * Kssmat3
@@ -424,7 +418,7 @@ print "\tLabor:\t\t\t", Lss
 print "\tOutput:\t\t\t", Yss
 print "\tWage:\t\t\t", wss
 print "\tRental Rate:\t", rss
-print "\tBequest:\t\t", Bss.sum() + BQ.sum()
+print "\tBequest:\t\t", Bss.sum()
 
 '''
 ------------------------------------------------------------------------
@@ -637,7 +631,7 @@ var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'e',
              'J', 'Kss', 'Kssvec', 'Kssmat', 'Lss', 'Lssvec', 'Lssmat',
              'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes', 'omega',
              'seconds', 'eta', 'chi_n', 'chi_b', 'ltilde', 'ctilde', 'T',
-             'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist',
+             'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist', 'BQ',
              'children', 'surv_rate', 'mort_rate', 'Bss', 'bin_weights']
 dictionary = {}
 for key in var_names:
