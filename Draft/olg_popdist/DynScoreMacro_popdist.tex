@@ -139,16 +139,16 @@
 
     Because agents are born without any bonds maturing and because they purchase no bonds in the last period of life $s=E+S$, the per-period budget constraints for each agent normalized by the price of consumption are the following.
     \begin{equation}\label{EqBC1}
-      c_{j,s,t} + b_{j,s+1,t+1} \leq w_t e_{j,s}n_{j,s,t} + \frac{BQ_{j,t}}{\omega_{s,t}\lambda_j} \quad \text{for} \quad s = E+1 \quad \forall j,t
+      c_{j,s,t} + b_{j,s+1,t+1} \leq w_t e_{j,s}n_{j,s,t} + \frac{\omega_{s,t}}{N_t}BQ_{j,t} \quad \text{for} \quad s = E+1 \quad \forall j,t
     \end{equation}
     \begin{equation}\label{EqBC2}
       \begin{split}
-        c_{j,s,t} + b_{j,s+1,t+1} &\leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{BQ_{j,t}}{\omega_{s,t}\lambda_j} \\
-        &\quad \text{for} \quad E+2\leq s \leq E+S-1 \quad \forall j,t
+        c_{j,s,t} + b_{j,s+1,t+1} &\leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{\omega_{s,t}}{N_t}BQ_{j,t} \\
+        &\quad\quad\quad \text{for} \quad E+2\leq s \leq E+S-1 \quad \forall j,t
       \end{split}
     \end{equation}
     \begin{equation}\label{EqBC3}
-      c_{j,s,t} + bq_{j,s+1,t+1} \leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{BQ_{j,t}}{\omega_{s,t}\lambda_j} \quad \text{for} \quad s = E+S \quad \forall j,t
+      c_{j,s,t} + bq_{j,s+1,t+1} \leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{\omega_{s,t}}{N_t}BQ_{j,t} \quad \text{for} \quad s = E+S \quad \forall j,t
     \end{equation}
     Note that the price of consumption is normalized to one, so $w_t$ is the real wage and $r_t$ is the real net interest rate. The term $BQ_{j,t}$ represents the ability-$j$ age-$s$ household's total bequests received at the end of the last period $t-1$ from both accidental bequests of those who died unexpectedly and intended bequests from those who died at age $s=S$.
 
@@ -158,9 +158,9 @@
     \end{equation}
     We assume the total accidental and intentional bequests from ability-$j$ households are equally divided among surviving type-$j$ households.\footnote{Another allocation rule at the other extreme would be to equally divide all bequests among all surviving households. An intermediate rule would be some kind of distribution of bequests with most going to ones own type and a declining proportion going to the other types.}
 
-    In addition to the budget constraints in each period, the utility function imposes nonnegative consumption through inifinite marginal utility and individual labor and leisure must be nonnegative $n_{j,s,t},l_{j,s,t}\geq 0$. We allow the possibility for individual agents to borrow $b_{j,s,t}<0$ for some $j$ and $s$ in period $t$. However, the borrowing must satisfy a series of individual feasibility constraints as well as a strict constraint that the aggregate capital stock $K_t>0$ be positive in every period.\footnote{We describe these constraints in detail in Appendix \ref{AppBorConstr}.}
+    In addition to the budget constraints in each period, the utility function imposes nonnegative consumption through inifinite marginal utility and individual labor and leisure must be nonnegative $n_{j,s,t},l_{j,s,t}\geq 0$. We allow the possibility for individual agents to borrow $b_{j,s,t}<0$ for some $j$ and $s$ in period $t$. However, the borrowing must satisfy a series of individual feasibility constraints as well as a strict constraint that the aggregate capital stock be positive $K_t>0$ in every period $t$.\footnote{We describe these constraints in detail in Appendix \ref{AppBorConstr}.}
 
-    We next describe the Euler equations that govern the choices of consumption $c_{j,s,t}$ and savings $b_{j,s+1,t+1}$ by household of age $s$ and ability $e_{j,s}$ in each period $t$. We work backward from the last period of life $s = S$. Because households do not save in the last period of life $b_{j,s+1,t+1}=0$ due to our assumption of no bequest motive, the household's final-period maximization problem is given by the following.
+    We next describe the Euler equations that govern the choices of consumption $c_{j,s,t}$, savings $b_{j,s+1,t+1}$, and labor supply $n_{j,s,t}$ by household of age $s$ and ability $e_{j,s}$ in each period $t$ as well as their choice of intended bequests $bq_{j,E+S+1,t}$ at age $s=E+S$. We work backward from the last period of life $s=E+S$. For households that reach age $s=E+S$, they do not save for themselves. They simply choose how much to work $n_{j,E+S,t}$ and how much to bequeath to their posterity $bq_{j,E+S+1,t+1}$. The household's final-period maximization problem is given by the following.
     \begin{equation}\label{EqSmaxprob}
       \begin{split}
         \max_{c_{j,S,t},n_{j,S,t},b_{j,s+1,t+1}} &\frac{\left(c_{j,S,t}\right)^{1-\sigma} - 1}{1 - \sigma} + \chi e^{g_y t(1-\sigma)}\frac{(\tilde{l}-n_{j,s,t})^{1-\eta}}{1-\eta} \\
