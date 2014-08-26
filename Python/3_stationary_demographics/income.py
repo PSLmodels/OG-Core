@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 7/11/2014
+Last updated 8/19/2014
 
 Functions for created the matrix of ability levels, e, and the
 probabilities, f, to be used in OLG_fastversion.py
