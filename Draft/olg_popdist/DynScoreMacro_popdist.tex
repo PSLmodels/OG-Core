@@ -316,9 +316,9 @@
     \end{spacing}
     \hrule
     \begin{definition}[\textbf{Stationary steady-state equilibrium}]\label{DefEquilSS}
-      A non-autarkic stationary steady-state equilibrium in the overlapping generations model with $S$-period lived agents and heterogeneous ability $e_{j,s}$ is defined as constant allocations $\hat{b}_{j,s+1,t+1}=\bar{b}_{j,s+1}$ and $\hat{n}_{j,s,t}=\bar{n}_{j,s}$ and constant prices $\hat{w}_t=\bar{w}$ and $\hat{r}_t=\bar{r}$ for all $j$, $s$, and $t$ such that the following conditions hold:
+      A non-autarkic stationary steady-state equilibrium in the overlapping generations model with $S$-period lived agents and heterogeneous ability $e_{j,s}$ is defined as constant allocations $\hat{n}_{j,s,t}=\bar{n}_{j,s}$, $\hat{b}_{j,s+1,t+1}=\bar{b}_{j,s+1}$, and $\hat{bq}_{j,E+S+1,t+1}=\bar{bq}_{j,E+S+1}$ and constant prices $\hat{w}_t=\bar{w}$ and $\hat{r}_t=\bar{r}$ for all $j$, $s$, and $t$ such that the following conditions hold:
        \begin{enumerate}
-          \item households optimize according to \eqref{EqEulerLabStat}, and \eqref{EqEulerSavStat},
+          \item households optimize according to \eqref{EqEulerLabStat}, \eqref{EqEulerSavStat}, and \eqref{EqEulerBeqStat},
           \item firms optimize according to \eqref{EqFOCwageStat} and \eqref{EqFOCrate},
           \item markets clear according to \eqref{EqMktClrLabStat} and \eqref{EqMktClrCapStat}, and
           \item the population has reached its stationary steady state distribution $\bar{\omega}_s$ for all ages $s$, characterized in Appendix \ref{AppPopGrowth}.
@@ -328,25 +328,30 @@
     \begin{spacing}{1.5}
     \vspace{10mm}
 
-    The steady-state equilibrium is characterized by the system of $J(2S-1)$ equations and $J(2S-1)$ unknowns $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ along with the individual borrowing constraints and aggregate borrowing constraint described in Appendix \ref{AppBorConstr}.
+    The steady-state equilibrium is characterized by the system of $2JS$ equations and $2JS$ unknowns $\bar{n}_{j,s}$, $\bar{b}_{j,s+1}$, and $\bar{bq}_{j,E+S+1}$ along with the individual borrowing constraints and aggregate borrowing constraint described in Appendix \ref{AppBorConstr}.
 
-    \begin{gather}
+    \begin{equation}\label{EqEulerLabSS}
       \begin{split}
-        \bar{w}e_{j,s}\Bigl[\left(1+\bar{r}\right)\bar{b}_{j,s} + &\bar{w} e_{j,s}\bar{n}_{j,s} - e^{g_y}\bar{b}_{j,s+1}\Bigr]^{-\sigma} = \chi(\tilde{l} - \bar{n}_{j,s})^{-\eta} \\
-        &\forall j \quad\text{and}\quad 1\leq s\leq S \quad\text{with}\quad \bar{b}_{j,1},\bar{b}_{j,S+1}=0
-      \end{split} \label{EqEulerLabSS} \\
-      \begin{split}
-        &\Bigl[\left(1+\bar{r}\right)\bar{b}_{j,s} + \bar{w}e_{j,s}\bar{n}_{j,s} - e^{g_y}\bar{b}_{j,s+1}\Bigr]^{-\sigma} = ... \\
-        &\quad\quad\quad \beta(1+\bar{r})e^{-\sigma g_y}\Bigl[\left(1+\bar{r}\right)\bar{b}_{j,s+1} + \bar{w}e_{j,s+1}\bar{n}_{j,s+1} - e^{g_y}\bar{b}_{j,s+2}\Bigr]^{-\sigma} \\
-        &\quad\quad\quad\quad\quad\quad\quad\quad\forall j \quad\text{and}\quad 1\leq s\leq S-1 \quad\text{with}\quad \bar{b}_{j,1},\bar{b}_{j,S+1}=0
-      \end{split} \label{EqEulerSavSS}
-    \end{gather}
+        &\bar{w}e_{j,s}\bigl(\bar{c}_{j,s}\bigr)^{-\sigma} = \chi_n (\tilde{l} - \bar{n}_{j,s})^{-\eta} \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\forall j \quad\text{and}\quad E+1\leq s\leq E+S \quad\text{with}\quad \bar{b}_{j,E+1},\bar{b}_{j,E+S+1}=0 \\
+        &\quad\text{where}\quad \bar{c}_{j,s} = \left(1+\bar{r}\right)\bar{b}_{j,s} + \bar{w}e_{j,s}\bar{n}_{j,s} + \frac{\bar{BQ}_{j}}{\lambda_j} - e^{g_y}\bar{b}_{j,s+1} \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\quad\text{for}\quad E+1\leq s\leq E+S-1 \\
+        &\quad\quad\text{and}\quad \bar{c}_{j,s} = \left(1+\bar{r}\right)\bar{b}_{j,s} + \bar{w}e_{j,s}\bar{n}_{j,s} + \frac{\bar{BQ}_{j}}{\lambda_j} - e^{g_y}\bar{bq}_{j,s+1} \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\quad\text{for}\quad s=E+S
+      \end{split}
+    \end{equation}
+    \begin{equation}\label{EqEulerSavSS}
+      \bigl(\bar{c}_{j,s}\bigr)^{-\sigma} = \beta(1-\rho_s)(1+\bar{r})e^{-\sigma g_y}\bigl(\bar{c}_{j,s+1}\bigr)^{-\sigma}\quad\forall j \quad\text{and}\quad E+1\leq s\leq E+S-1
+    \end{equation}
+    \begin{equation}\label{EqEulerBeqSS}
+      \bigl(\bar{c}_{j,E+S}\bigr)^{-\sigma} = \chi_b e^{-\sigma g_y}\bigl(\bar{bq}_{j,E+S+1}\bigr)^{-\sigma} \quad\forall j
+    \end{equation}
 
     Define $\bm{\hat{\Gamma}}_t$ as the distribution of stationary savings across individuals at time $t$.
     \begin{equation}\label{EqSavDist}
-      \bm{\hat{\Gamma}}_t \equiv \{\hat{b}_{j,s,t}\}_{j=1,s=2}^{J,S} \quad\forall t
+      \bm{\hat{\Gamma}}_t \equiv \{\hat{b}_{j,s,t}\}_{j=1,s=E+2}^{J,E+S} \quad\forall t
     \end{equation}
-    In equilibrium, the steady-state individual labor supplies $\bar{n}_{j,s}$ for all $j$ and $s$, the steady-state real wage $\bar{w}$, and the steady-state real rental rate $\bar{r}$ are simply functions of the steady-state distribution of savings $\bar{\Gamma}$. This is clear from the steady-state version of the capital market clearing condition \eqref{EqMktClrCapStat} and the fact that aggregate labor supply is a function of the sum of exogenous efficiency units of labor in the labor market clearing condition \eqref{EqMktClrLabStat}. And the two firm first order conditions for the real wage $\hat{w}_t$ \eqref{EqFOCwageStat} and real rental rate $r_t$ \eqref{EqFOCrate} are only functions of the aggregate capital stock $\hat{K}_t$ and aggregate labor $\hat{L}_t$. Appendix \ref{AppSSsolve} details how to solve for the steady-state equilibrium.
+    In equilibrium, the steady-state household labor supplies $\bar{n}_{j,s}$ for all $j$ and $s$, the steady-state intended bequests $\bar{bq}_{j,E+S+1}$, the steady-state real wage $\bar{w}$, and the steady-state real rental rate $\bar{r}$ are simply functions of the steady-state distribution of savings $\bar{\Gamma}$. This is clear from the steady-state version of the capital market clearing condition \eqref{EqMktClrCapStat} and the fact that aggregate labor supply is a function of the sum of exogenous efficiency units of labor in the labor market clearing condition \eqref{EqMktClrLabStat}. And the two firm first order conditions for the real wage $\hat{w}_t$ \eqref{EqFOCwageStat} and real rental rate $r_t$ \eqref{EqFOCrate} are only functions of the aggregate capital stock $\hat{K}_t$ and aggregate labor $\hat{L}_t$. Appendix \ref{AppSSsolve} details how to solve for the steady-state equilibrium.
 
     \begin{table}[htbp] \centering \captionsetup{width=4.4in}
     \caption{\label{TabExogVars}\textbf{List of exogenous variables and calibration values}}
@@ -361,21 +366,23 @@
         $\{i_s\}_{s=1}^S$ & Immigration rates by age & (see App. \ref{AppPopGrowth}) \\
         $\{\rho_s\}_{s=1}^S$ & Mortality rates by age & (see App. \ref{AppPopGrowth}) \\
         $\{e_{j,s}\}_{j,s=1}^{J,S}$ & Deterministic ability process & (see App. \ref{AppAbilCalib}) \\
-        $S$ & Periods in individual life & 60 \\
+        $S$ & Periods in individual life & 80 \\
         $J$ & Number of ability types & 7 \\
         $\tilde{l}$ & Maximum hours of labor supply & 1 \\
-        $\beta$ & Discount factor & $(0.96)^\frac{60}{S}$ \\
+        $\beta$ & Discount factor & $(0.96)^\frac{80}{S}$ \\
         $\sigma$ & Coefficient of constant relative & 3 \\
         & \quad risk aversion & \\
-        $\chi$ & Disutility of labor level parameter & 1 \\
+        $\chi_n$ & Utility of leisure level parameter & 1 \\
         $\eta$ & Proportional to elasticity of labor & 2.5 \\
         & \quad supply & \\
+        $\chi_b$ & Utility of intended bequests level & 1 \\
+        & \quad parameter & \\
         $A$ & Level parameter in production & 1 \\
         & \quad function & \\
         $\alpha$ & Capital share of income in & 0.35 \\
         & \quad production function & \\
-        $\delta$ & Capital depreciation rate & $1-(1-0.05)^\frac{60}{S}$ \\
-        $g_y$ & Growth rate of labor augmenting & $(1+0.03)^\frac{60}{S}-1$ \\
+        $\delta$ & Capital depreciation rate & $1-(1-0.05)^\frac{80}{S}$ \\
+        $g_y$ & Growth rate of labor augmenting & $(1+0.03)^\frac{80}{S}-1$ \\
         & \quad technological progress & \\
         $T$ & Number of periods to steady state & 120 \\
         $\nu$ & Dampening parameter for TPI & 0.2 \\
@@ -388,16 +395,21 @@
     \end{table}
 
     \begin{figure}[htb]\centering \captionsetup{width=4.0in}
-      \caption{\label{FigSavSS}\textbf{Stationary steady-state distribution of savings $\bar{\bm{\Gamma}}$ for $S=60$ and $J=7$}}
+      \caption{\label{FigSavSS}\textbf{Stationary steady-state distribution of savings $\bar{\bm{\Gamma}}$ for $S=80$ and $J=7$}}
       \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/SavSS.png}}}
     \end{figure}
 
     \begin{figure}[htb]\centering \captionsetup{width=4.0in}
-      \caption{\label{FigLabSS}\textbf{Stationary steady-state distribution of individual labor supply $\bar{n}_{j,s}$ for $S=60$ and $J=7$}}
+      \caption{\label{FigLabSS}\textbf{Stationary steady-state distribution of individual labor supply $\bar{n}_{j,s}$ for $S=80$ and $J=7$}}
       \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/LabSS.png}}}
     \end{figure}
 
-    Figure \ref{FigSavSS} shows the stationary steady-state distribution of individual savings $\bar{\bm{\Gamma}}$ and Figure \ref{FigLabSS} shows the stationary steady-state distribution of individual labor supply $\bar{n}_{j,s}$ for a particular calibration of the model described in Table \ref{TabExogVars}. Notice .... %that some intergenerational risk sharing is taking place. Young individuals of high ability, know that they will have high ability and borrow $b_{j,s,t}<0$ in their early years in the steady-state.
+    \begin{figure}[htb]\centering \captionsetup{width=4.0in}
+      \caption{\label{FigBeqSS}\textbf{Stationary steady-state distribution of intended bequests $\bar{bq}_{j,E+S+1}$ for $S=80$ and $J=7$}}
+      \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/BeqSS.pdf}}}
+    \end{figure}
+
+    Figure \ref{FigSavSS} shows the stationary steady-state distribution of individual savings $\bar{\bm{\Gamma}}$, Figure \ref{FigLabSS} shows the stationary steady-state distribution of individual labor supply $\bar{n}_{j,s}$, and Figure \ref{FigBeqSS} shows the steady state distribution of intended bequests for a particular calibration of the model described in Table \ref{TabExogVars}. Notice .... %that some intergenerational risk sharing is taking place. Young individuals of high ability, know that they will have high ability and borrow $b_{j,s,t}<0$ in their early years in the steady-state.
 
     The definition of the stationary non-steady-state equilibrium is similar to Definition \ref{DefEquilSS}, with the stationary steady-state equilibrium definition being a special case of the stationary non-steady-state equilibrium.
 
@@ -405,9 +417,9 @@
     \end{spacing}
     \hrule
     \begin{definition}[\textbf{Stationary non-steady-state equilibrium}]\label{DefEquilNonSS}
-      A non-autarkic stationary non-steady-state equilibrium in the overlapping generations model with $S$-period lived agents and heterogeneous ability $e_{j,s}$ is defined as allocations $n_{j,s,t}$ and $\hat{b}_{j,s+1,t+1}$ and prices $\hat{w}_t$ and $r_t$ for all $j$, $s$, and $t$ such that the following conditions hold:
+      A non-autarkic stationary non-steady-state equilibrium in the overlapping generations model with $S$-period lived agents and heterogeneous ability $e_{j,s}$ is defined as allocations $n_{j,s,t}$, $\hat{b}_{j,s+1,t+1}$, and $\hat{bq}_{j,E+S+1,t+1}$ and prices $\hat{w}_t$ and $r_t$ for all $j$, $s$, and $t$ such that the following conditions hold:
        \begin{enumerate}
-          \item households optimize according to \eqref{EqEulerLabStat}, and \eqref{EqEulerSavStat},
+          \item households optimize according to \eqref{EqEulerLabStat}, \eqref{EqEulerSavStat}, and \eqref{EqEulerBeqStat}
           \item firms optimize according to \eqref{EqFOCwageStat} and \eqref{EqFOCrate}, and
           \item markets clear according to \eqref{EqMktClrLabStat} and \eqref{EqMktClrCapStat}.
        \end{enumerate}
@@ -416,7 +428,7 @@
     \begin{spacing}{1.5}
     \vspace{10mm}
 
-    \noindent The household labor-leisure decision in the last period of life shows that the optimal labor supply for age $s=S$ is a function of individual holdings of savings and the prices in that period $n_{j,S,t}=\phi\bigl(\hat{b}_{j,S,t},\hat{w}_t,r_t\bigr)$. This decision is characterized by final-age version of thet static Euler equation \eqref{EqEulerLabStat}. Households in their second-to-last period of life in period $t$ have three decisions to make. They must choose how much to work this period $n_{j,S-1,t}$ and next $n_{j,S,t+1}$ and how much to save this period for next period $\hat{b}_{j,S,t+1}$. The optimal responses for this individual are characterized by the $s=S-1$ and $s=S$ versions of the static Euler equations \eqref{EqEulerLabStat} and the $s=S-1$ version of the intertemporal Euler equation \eqref{EqEulerSavStat}, respectively.
+    \noindent Taken together, the household labor-leisure and intended bequest decisions in the last period of life show that the optimal labor supply and optimal intended bequests for age $s=E+S$ are each functions of individual holdings of savings and the prices in that period $n_{j,E+S,t}=\phi\bigl(\hat{b}_{j,E+S,t},\hat{w}_t,r_t\bigr)$ and $\hat{bq}_{j,E+S+1,t+1}=\psi\bigl(\hat{b}_{j,E+S,t},\hat{w}_t,r_t\bigr)$. These two decisions are characterized by final-age version of the static labor supply Euler equation \eqref{EqEulerLabStat} and the static intended bequests Euler equation \eqref{EqEulerBeqStat}. Households in their second-to-last period of life in period $t$ have four decisions to make. They must choose how much to work this period $n_{j,E+S-1,t}$ and next period $n_{j,E+S,t+1}$, how much to save this period for next period $\hat{b}_{j,E+S,t+1}$, and how much to bequeath next period $\hat{bq}_{j,E+S+1,t+2}$. The optimal responses for this individual are characterized by the $s=E+S-1$ and $s=E+S$ versions of the static Euler equations \eqref{EqEulerLabStat}, the $s=E+S-1$ version of the intertemporal Euler equation \eqref{EqEulerSavStat}, and the $s=E+S$ static bequest Euler equation \eqref{EqEulerBeqStat}, respectively.
 
     Optimal savings in the second-to-last period of life $s=S-1$ is a function of the current savings and the prices in the current period and in the next period $\hat{b}_{j,S,t+1} = \psi\bigl(\hat{b}_{j,S-1,t},\hat{w}_t,r_t,\hat{w}_{t+1},r_{t+1}\bigr)$. As before, the optimal labor supply at age $s=S$ is a function of the next period's savings and prices $n_{j,S,t+1}=\phi\bigl(\hat{b}_{j,S,t+1},\hat{w}_{t+1},r_{t+1}\bigr)$. But the optimal labor supply at age $s=S-1$ is a function of the current savings and the current prices as well as the future prices because of the dependence on the savings decision in that same period $n_{j,S-1,t}=\phi\bigl(\hat{b}_{j,S-1,t},\hat{w}_t,r_t,\hat{w}_{t+1},r_{t+1}\bigr)$. By induction, we can show that the optimal labor supply and savings functions for any individual with ability $j$, age $s$, and in period $t$ is a function of current holdings of savings and the lifetime path of prices.
     \begin{align}
@@ -573,25 +585,27 @@
 
   \setcounter{equation}{0}
 
-  As described in Section \ref{SecIndProb}, individuals are allowed to borrow $b_{j,s,t}$ for some $j$ and $s$ in period $t$. However, two constraints must hold. First, the individual must be able to pay back the balance with interest $r_{t+1}$ in the next period without driving consumption in the next period $c_{j,s+1,t+1}$ to be nonpositive. Let $\tilde{b}_{j,s,t}$ be the minimum stationary value of savings in a period.
+  As described in Section \ref{SecIndProb}, individuals are allowed to borrow $b_{j,s,t}<0$ for some $j$ and $s$ in period $t$. However, two constraints must hold. First, the individual must be able to pay back the balance with interest $r_{t+1}$ in the next period without driving consumption in the next period $c_{j,s+1,t+1}$ to be nonpositive. Let $\tilde{b}_{j,s,t}$ be the minimum stationary value of savings in a period.
   \begin{equation}\label{EqSavMin}
     \hat{b}_{j,s,t}\geq\tilde{b}_{j,s,t} \quad\forall j,s,t
   \end{equation}
   Rearranging the stationary versions of the bugdet constraints in \eqref{EqBC1}, \eqref{EqBC2}, and \eqref{EqBC3} and using backward induction gives the following expressions for $\tilde{b}_{j,s,t}$,
   \begin{equation}\label{EqBorConsts}
     \begin{split}
-      \tilde{b}_{j,S,t} &= \frac{\tilde{c} - \hat{w}_t e_{j,S}\tilde{l}}{1+r_t}  \\
-      \tilde{b}_{j,S-1,t-1} &= \frac{\tilde{c} + e^{g_y}\tilde{b}_{j,S,t} - \hat{w}_{t-1}e_{j,S-1}\tilde{l}}{1+r_{t-1}} \\
+      \tilde{b}_{j,E+S,t} &= \frac{\tilde{c} + \tilde{bq} - \hat{w}_t e_{j,E+S}\tilde{l} - \frac{\hat{BQ}_{j,t}}{\lambda_j}}{1+r_t}  \\
+      \tilde{b}_{j,E+S-1,t-1} &= \frac{\tilde{c} + e^{g_y}\tilde{b}_{j,E+S,t} - \hat{w}_{t-1}e_{j,E+S-1}\tilde{l} - \frac{\hat{BQ}_{j,t-1}}{\lambda_j}}{1+r_{t-1}} \\
       &\vdots \\
-      \tilde{b}_{j,2,t-S+2} &= \frac{\tilde{c} + e^{g_y}\tilde{b}_{j,3,t-S+3} - \hat{w}_{t-S+2}e_{j,2}\tilde{l}}{1+r_{t-S+2}}
+      \tilde{b}_{j,E+2,t-S+2} &= \frac{\tilde{c} + e^{g_y}\tilde{b}_{j,E+3,t-S+3} - \hat{w}_{t-S+2}e_{j,E+2}\tilde{l} - \frac{\hat{BQ}_{j,t-S+2}}{\lambda_j}}{1+r_{t-S+2}}
     \end{split}
   \end{equation}
-  where $\tilde{c}>0$ is some minimum amount of stationary consumption and $\tilde{l}$ is the maximum amount an individual can work from the time constraint \eqref{EqLabConstr}. With endogenous labor supply $n_{j,s,t}$, it is less likely that the individual borrowing constraints ever bind. This is because the disutility of labor increases exponentially according to $\eta>1$ in the period utility function \eqref{EqUtilMax}.
+  where $\tilde{c}>0$ and $\tilde{bq}>0$ are some minimum amount of stationary consumption and stationary intended bequests, respectively, and $\tilde{l}$ is the maximum amount an individual can work from the time constraint \eqref{EqLabConstr}. With endogenous labor supply $n_{j,s,t}$, it is less likely that the individual borrowing constraints ever bind. This is because the disutility of labor increases exponentially according to $\eta>1$ in the period utility function \eqref{EqUtilMax}.
 
   In addition to the individual borrowing constraint \eqref{EqSavMin}, a strict aggregate borrowing constraint must be met. That is, the stationary aggregate capital stock must be strictly positive.
   \begin{equation}\label{EqAggrCapConstr}
     \hat{K}_t > 0 \quad\forall t
   \end{equation}
+
+  Lastly, because households can borrow, some individual unintended bequests in a given period can be negative. That is, households can bequeath debt as well as savings. We require that total unintended and intended bequests for all types $j$ in all periods $t$ characterized in \eqref{EqTotBeq} must be nonegative $BQ_{j,t}\geq 0$. However, this constraint will never bind if the aggregate capital constraint $K_t>0$ in \eqref{EqAggrCapConstr} holds.
 
 
 \newpage
@@ -606,18 +620,24 @@
 
   \begin{enumerate}
     \item Use the techniques in Appendix \ref{AppPopGrowth} to solve for the steady-state population distribution vector $\bm{\bar{\omega}}$ of the exogenous population process.
-    \item Choose an initial guess for the stationary steady-state distribution of capital $\bar{b}_{j,s+1}$ for all $j$ and $s=1,2,...S-1$ and labor supply $\bar{n}_{j,s}$ for all $j$ and $s$.
+    \item Choose an initial guess for the stationary steady-state distribution of capital $\bar{b}_{j,s+1}$ for all $j$ and $s=E+2,E+3,...E+S$, labor supply $\bar{n}_{j,s}$ for all $j$ and $s$, and intended bequests $\bar{bq}_{j,E+S+1}$ for all $j$.
       \begin{itemize}
-        \item A good first guess is a large positive number for all the $\bar{n}_{j,s}$ that is slightly less than $\tilde{l}$ and to choose some small positive number that is small enough to be less than the minimum income that an individual might have $\bar{w}e_{j,s}\bar{n}_{j,s}$.
+        \item A good first guess is a large positive number for all the $\bar{n}_{j,s}$ that is slightly less than $\tilde{l}$ and to choose some small positive number for $\bar{b}_{j,s+1}$ and $\bar{bq}_{j,E+S+1}$ that is small enough to be less than the minimum income that an individual might have $\bar{w}e_{j,s}\bar{n}_{j,s}$.
       \end{itemize}
-    \item Perform a constrained root finder that chooses $\bar{b}_{j,s+1}$ and $\bar{n}_{j,s}$ that solves the $J(2S-1)$ stationary steady-state Euler equations \eqref{EqEulerLabSS} and \eqref{EqEulerSavSS}.
+    \item Perform a constrained root finder that chooses $\bar{b}_{j,s+1}$, $\bar{n}_{j,s}$, and $\bar{bq}_{j,E+S+1}$ that solves the $2JS$ stationary steady-state Euler equations \eqref{EqEulerLabSS}, \eqref{EqEulerSavSS}, and \eqref{EqEulerBeqSS}.
     \item Make sure none of the implied steady-state consumptions $\bar{c}_{j,s}$ is less-than-or-equal-to zero.
       \begin{itemize}
         \item If one consumption is less-than-or-equal-to zero $\bar{c}_{j,s}\leq 0$, then try different starting values.
       \end{itemize}
-    \item Make sure that none of the Euler errors is too large in absolute value for interior stationary steady-state values. A steady-state Euler error is the following, which is supposed to be close to zero for all $j$ and $s=1,2,...S-1$:
-      \begin{equation}\label{EqSSeulerr}
-        \frac{\beta \left(1+\bar{r}\right)\left(\bar{c}_{j,s+1}\right)^{-\sigma}}{\left(\bar{c}_{j,s}\right)^{-\sigma}} - 1
+    \item Make sure that none of the Euler errors is too large in absolute value for interior stationary steady-state values. A steady-state Euler error is the following, which is supposed to be close to zero for all $j$ and $s$:
+      \begin{equation}\label{EqSSeulerrLab}
+        \frac{\chi_n\left(\tilde{l}-\bar{n}_{j,s}\right)^{-\eta}}{\bar{w}e_{j,s}\left(\bar{c}_{j,s}\right)^{-\sigma}} - 1 \quad\quad\quad\quad\quad\quad\quad\forall j\quad\text{and}\quad E+1\leq s\leq E+S
+      \end{equation}
+      \begin{equation}\label{EqSSeulerrSav}
+        \frac{\beta\left(1-\rho_s\right)\left(1+\bar{r}\right)e^{-\sigma g_y}\left(\bar{c}_{j,s+1}\right)^{-\sigma}}{\left(\bar{c}_{j,s}\right)^{-\sigma}} - 1 \quad\forall j\quad\text{and}\quad E+1\leq s\leq E+S-1
+      \end{equation}
+      \begin{equation}\label{EqSSeulerrBeq}
+        \frac{\chi_b e^{-\sigma g_y}\left(\bar{bq}_{j,E+S+1}\right)^{-\sigma}}{\left(\bar{c}_{j,E+S}\right)^{-\sigma}} - 1 \quad\quad\quad\forall j\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad
       \end{equation}
     \item Make sure that the unconstrained solution satisfies the individual borrowing constraints in \eqref{EqSavMin} and \eqref{EqBorConsts}.
       \begin{itemize}
@@ -626,7 +646,7 @@
       \end{itemize}
     \item Make sure that the solution satisfies the aggregate borrowing constraint \eqref{EqAggrCapConstr}.
       \begin{itemize}
-        \item If it does not, what is the least distortionary upward adjustment to individual steady-state savings $\bar{b}_{j,s+1}$?
+        \item If it does not, use the least distortionary upward adjustment to individual steady-state savings $\bar{b}_{j,s+1}$?
       \end{itemize}
   \end{enumerate}
 
