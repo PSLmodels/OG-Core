@@ -584,10 +584,14 @@ k2 = Kssmat
 k3 = np.array(list(Kssmat[1:, :]) + list(np.zeros(J).reshape((1, J))))
 k1_2 = np.array(list(np.zeros(J).reshape((1, J))) + list(Kssmat))
 k2_2 = np.array(list(Kssmat) + list(np.zeros(J).reshape((1, J))))
-B = (Kssmat * mort_rate[:-1].reshape(S-1, 1)).sum(0)
+# B = (Kssmat * mort_rate[:-1].reshape(S-1, 1)).sum(0)
+B = Bss * (1+rss)
 
 euler1 = Euler1(wss, rss, e, Lssmat, k1, k2, k3, B)
 euler2 = Euler2(wss, rss, e, Lssmat, k1_2, k2_2, B)
+euler3 = Euler3(wss, rss, e, Lssmat, k2, B)
+
+print 'Euler errors for euler3:\n\t', euler3
 
 # 2D Graph
 plt.figure()
