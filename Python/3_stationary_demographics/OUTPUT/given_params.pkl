@@ -10,7 +10,7 @@ p3
 F1.0
 sS'TPImaxiter'
 p4
-I10
+I100
 sS'g_y'
 p5
 F0.030000000000000027

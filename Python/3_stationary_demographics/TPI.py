@@ -108,6 +108,7 @@ def get_N(children, omega):
 N = get_N(children, omega)
 N_tilde = omega.sum(1).sum(1)
 omega_stationary = omega / N.reshape(T+S, 1, 1)
+# omega_stationary = omega / N_tilde.reshape(T+S, 1, 1)
 
 
 def constraint_checker1(k_dist, l_dist, w, r, e, c_dist):
@@ -277,7 +278,7 @@ def MUb(bq):
     return output
 
 
-initial_K = np.array(list(Kssmat) + list(BQ.reshape(1, J))) * .95
+initial_K = np.array(list(Kssmat) + list(BQ.reshape(1, J)))
 K0 = (omega_stationary[0, 1:, :] * initial_K[:-1, :]).sum() + (omega_stationary[0,-1,:] * initial_K[-1, :]).sum() + (initial_K[:-1, :] * omega_stationary[0, :-1, :] * mort_rate[:-1].reshape(S-1,1)).sum()
 K1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_K[:-1]))
 K2_2init = initial_K
@@ -289,6 +290,7 @@ r0 = get_r(Y0, K0)
 c0 = (1 + r0) * K1_2init + w0 * e * initial_L - K2_2init * np.exp(g_y)
 constraint_checker1(initial_K[:-1], initial_L, w0, r0, e, c0)
 B0 = (initial_K[:-1] * omega_stationary[0,-(S-1):, :] * mort_rate[:-1].reshape(S-1,1)).sum(0) + omega_stationary[0,-1,:] * initial_K[-1, :]
+# B0 *= (1 + r0)
 print 'K0 divided by Kss =', K0/Kss
 
 '''
@@ -396,10 +398,10 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     B1 = Binit[t:t+length-1]
     B2 = Binit[t+1:t+length]
 
-    error1 = MUc((1 + r1)*K1 + w1 * e1 * l1 + B1/(N_tilde[t:t+length-1]*bin_weights[j]) - np.exp(g_y) * K2) \
+    error1 = MUc((1 + r1)*K1 + w1 * e1 * l1 + (1 + r1)*B1/(N_tilde[t:t+length-1]*bin_weights[j]) - np.exp(g_y) * K2) \
         - beta * surv_rate[-(length-1+1):-1] * np.exp(
             -sigma * g_y) * (1 + r2)*MUc(
-            (1 + r2)*K2 + w2*e2*l2 + B2/(N_tilde[t+1:t+length-1+1]*bin_weights[j]) - np.exp(g_y) * K3)
+            (1 + r2)*K2 + w2*e2*l2 + (1 + r2)*B2/(N_tilde[t+1:t+length-1+1]*bin_weights[j]) - np.exp(g_y) * K3)
 
     if length == S:
         K1_2 = np.array([0] + list(K_guess[:-1]))
@@ -411,10 +413,10 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     r = rinit[t:t+length]
     B = Binit[t:t+length]
     error2 = MUc((1 + r)*K1_2 + w * e[
-        -(length):, j] * L_guess + B/(N_tilde[t:t+length]*bin_weights[j]) - np.exp(g_y) * K2_2) * w * e[
+        -(length):, j] * L_guess + (1 + r)*B/(N_tilde[t:t+length]*bin_weights[j]) - np.exp(g_y) * K2_2) * w * e[
         -(length):, j] + MUl_2(L_guess)
 
-    error3 = MUc((1 + r[-1])*K_guess[-2] + w[-1] * e[-1, j] * L_guess[-1] + B[-1]/(N_tilde[t+length]*bin_weights[j]) - K_guess[-1] * 
+    error3 = MUc((1 + r[-1])*K_guess[-2] + w[-1] * e[-1, j] * L_guess[-1] + (1 + r[-1])*B[-1]/(N_tilde[t+length]*bin_weights[j]) - K_guess[-1] * 
         np.exp(g_y)) - MUb(K_guess[-1])
 
     # Check and punish constraing violations

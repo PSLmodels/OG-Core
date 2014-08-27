@@ -18,7 +18,7 @@ from glob import glob
 # Run steady state
 run_SS = True
 # Run TPI
-run_TPI = False
+run_TPI = True
 
 '''
 ------------------------------------------------------------------------
@@ -79,7 +79,7 @@ chi_b = 1.0
 eta = 2.0
 g_y_annual = 0.03
 g_y = (1 + g_y_annual)**((ending_age-starting_age)/S) - 1
-TPImaxiter = 10
+TPImaxiter = 100
 TPImindist = 3 * 1e-6
 
 '''
