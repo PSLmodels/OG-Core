@@ -213,19 +213,7 @@ def get_immigration1(S, starting_age, ending_age, pop_2010, pop_2011, E):
     perc_change = ((pop_2011 - pop_2010) / pop_2010)
     # Remove the last entry, since individuals in the last period will die
     im_array = perc_change - (surv_array - 1)
-    im_array2 = im_array[starting_age:]
-    # Change everything from here down to be a polynomial fit and integration
-    imm_rate_condensed = np.zeros(S)
-    # If S < 80, then group years together
-    for s in xrange(S):
-        imm_rate_condensed[s] = np.product(1 + im_array2[
-            s*((ending_age-starting_age)/S):(s+1)*((ending_age-starting_age)/S)]) - 1
-    children_im = im_array[:starting_age]
-    children_im_condensed = np.zeros(starting_age * S / (ending_age-starting_age))
-    for s in xrange(int(starting_age * S / (ending_age-starting_age))):
-        children_im_condensed[s] = np.product(1 + children_im[
-            s*((ending_age-starting_age)/S):(s+1)*((ending_age-starting_age)/S)]) - 1
-    return imm_rate_condensed, children_im_condensed
+    return im_array
 
 
 def get_immigration2(S, starting_age, ending_age, E):
@@ -240,17 +228,15 @@ def get_immigration2(S, starting_age, ending_age, E):
         child_imm_rate - starting_age x 1 array of immigration
             rates for children
     '''
-    imm_rate_condensed1, children_im_condensed1 = get_immigration1(
+    imm_rate_condensed1 = get_immigration1(
         S, starting_age, ending_age, pop_2010, pop_2011, E)
-    imm_rate_condensed2, children_im_condensed2 = get_immigration1(
+    imm_rate_condensed2 = get_immigration1(
         S, starting_age, ending_age, pop_2011, pop_2012, E)
-    imm_rate_condensed3, children_im_condensed3 = get_immigration1(
+    imm_rate_condensed3 = get_immigration1(
         S, starting_age, ending_age, pop_2012, pop_2013, E)
-    imm_rate = (
+    im_array = (
         imm_rate_condensed1 + imm_rate_condensed2 + imm_rate_condensed3) / 3.0
-    child_imm_rate = (
-        children_im_condensed1 + children_im_condensed2 + children_im_condensed3) / 3.0
-    poly_imm = poly.polyfit(np.linspace(1, ending_age, S+E), np.array([child_imm_rate[0]] + list(child_imm_rate) + list(imm_rate[:-1])), deg=7)
+    poly_imm = poly.polyfit(np.linspace(1, ending_age, ending_age), np.array([im_array[0]] + list(im_array[:-1])), deg=18)
     poly_imm_int = poly.polyint(poly_imm)
     child_imm_rate = poly.polyval(np.linspace(0, starting_age, E+1), poly_imm_int)
     imm_rate = poly.polyval(np.linspace(starting_age, ending_age, S+1), poly_imm_int)
