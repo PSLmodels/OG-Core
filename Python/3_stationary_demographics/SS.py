@@ -217,7 +217,7 @@ def MUb(bq):
 
     Returns:    Marginal Utility of Bequest
     '''
-    output = chi_b * (bq ** (-sigma))
+    output = chi_b * (bq ** (-sigma)) * np.exp(-sigma * g_y)
     return output
 
 

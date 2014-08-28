@@ -250,9 +250,9 @@ def get_immigration2(S, starting_age, ending_age, E):
         imm_rate_condensed1 + imm_rate_condensed2 + imm_rate_condensed3) / 3.0
     child_imm_rate = (
         children_im_condensed1 + children_im_condensed2 + children_im_condensed3) / 3.0
-    poly_imm = poly.polyfit(np.linspace(1, ending_age, ending_age), np.array([child_imm_rate[0]] + list(child_imm_rate) + list(imm_rate[:-1])), deg=7)
-    child_imm_rate = poly.polyval(np.linspace(1, starting_age, starting_age), poly_imm)
-    imm_rate = poly.polyval(np.linspace(starting_age+1, ending_age, S), poly_imm)
+    poly_imm = poly.polyfit(np.linspace(1, ending_age, S+E), np.array([child_imm_rate[0]] + list(child_imm_rate) + list(imm_rate[:-1])), deg=7)
+    child_imm_rate = poly.polyval(np.linspace(0, starting_age-1, E), poly_imm)
+    imm_rate = poly.polyval(np.linspace(starting_age, ending_age, S), poly_imm)
     return imm_rate, child_imm_rate
 
 '''
