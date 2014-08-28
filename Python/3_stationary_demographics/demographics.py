@@ -119,17 +119,17 @@ def fit_exp_left(params, point1, point2):
     return [error1, error2]
 
 def exp_int(points, a, b):
-    top = a * ((1.0/(b**42)) - b**(-points))
+    top = a * ((1.0/(b**40)) - b**(-points))
     bottom = np.log(b)
     return top / bottom
 
 def integrate(func, points):
     params_guess = [1,1]
-    a, b = opt.fsolve(fit_exp_right, params_guess, args=([42,poly.polyval(42, func)], [49.5, .0007]))
+    a, b = opt.fsolve(fit_exp_right, params_guess, args=([40,poly.polyval(40, func)], [49.5, .0007]))
     func_int = poly.polyint(func)
     integral = np.empty(points.shape)
-    integral[points<=42] = poly.polyval(points[points<=42], func_int)
-    integral[points>42] = poly.polyval(42, func_int) + exp_int(points[points>42], a, b)
+    integral[points<=40] = poly.polyval(points[points<=40], func_int)
+    integral[points>40] = poly.polyval(40, func_int) + exp_int(points[points>40], a, b)
     return np.diff(integral)
 
 '''
@@ -150,21 +150,30 @@ def get_survival(S, starting_age, ending_age, E):
         children_rate_condensed - starting_age x 1 array of surrvival
             rates for children
     '''
-    survival_rate = np.array(mort_data.surv_rate)[starting_age: ending_age]
-    surv_rate_condensed = np.zeros(S)
-    # If S < 80, then group years together
-    for s in xrange(S):
-        surv_rate_condensed[s] = np.product(
-            survival_rate[s*((ending_age-starting_age)/S):(s+1)*((ending_age-starting_age)/S)])
-    # All individuals must die if they reach the last age group
-    surv_rate_condensed[-1] = 0
-    children_rate = np.array(mort_data[(
-        mort_data.age < starting_age)].surv_rate)
-    children_rate_condensed = np.zeros(starting_age * S / (ending_age-starting_age))
-    for s in xrange(E):
-        children_rate_condensed[s] = np.product(
-            children_rate[s*((ending_age-starting_age)/S):(s+1)*((ending_age-starting_age)/S)])
-    return surv_rate_condensed, children_rate_condensed
+    mort_rate = np.array(mort_data.mort_rate)
+    mort_poly = poly.polyfit(np.arange(mort_rate.shape[0]), mort_rate, deg=18)
+    mort_int = poly.polyint(mort_poly)
+    child_rate = poly.polyval(np.linspace(0, starting_age, E+1), mort_int)
+    child_rate = np.diff(child_rate)
+    mort_rate = poly.polyval(np.linspace(starting_age, ending_age, S+1), mort_int)
+    mort_rate = np.diff(mort_rate)
+    child_rate[child_rate < 0] = 0.0
+    mort_rate[mort_rate < 0] = 0.0
+    # survival_rate = np.array(mort_data.surv_rate)[starting_age: ending_age]
+    # surv_rate_condensed = np.zeros(S)
+    # # If S < 80, then group years together
+    # for s in xrange(S):
+    #     surv_rate_condensed[s] = np.product(
+    #         survival_rate[s*((ending_age-starting_age)/S):(s+1)*((ending_age-starting_age)/S)])
+    # # All individuals must die if they reach the last age group
+    # surv_rate_condensed[-1] = 0
+    # children_rate = np.array(mort_data[(
+    #     mort_data.age < starting_age)].surv_rate)
+    # children_rate_condensed = np.zeros(starting_age * S / (ending_age-starting_age))
+    # for s in xrange(E):
+    #     children_rate_condensed[s] = np.product(
+    #         children_rate[s*((ending_age-starting_age)/S):(s+1)*((ending_age-starting_age)/S)])
+    return 1.0 - mort_rate, 1.0 - child_rate
 
 '''
 ------------------------------------------------------------------------
@@ -193,7 +202,7 @@ def get_immigration1(S, starting_age, ending_age, pop_2010, pop_2011, E):
             rates for children
     '''
     # Get survival rates for the S age groups
-    surv_array, children_rate = get_survival((ending_age-starting_age), starting_age, ending_age, E)
+    surv_array, children_rate = get_survival(ending_age-starting_age, starting_age, ending_age, starting_age)
     surv_array = np.array(list(children_rate) + list(surv_array))
     # Only keep track of individuals in 2010 that don't die
     pop_2010 = pop_2010[:ending_age]
@@ -205,6 +214,7 @@ def get_immigration1(S, starting_age, ending_age, pop_2010, pop_2011, E):
     # Remove the last entry, since individuals in the last period will die
     im_array = perc_change - (surv_array - 1)
     im_array2 = im_array[starting_age:]
+    # Change everything from here down to be a polynomial fit and integration
     imm_rate_condensed = np.zeros(S)
     # If S < 80, then group years together
     for s in xrange(S):
@@ -263,29 +273,6 @@ def get_fert(S, starting_age, ending_age, E):
     # Fit a polynomial to the fertility rates
     poly_fert = poly.polyfit(age_midpoint, fert_data, deg=4)
     fert_rate = integrate(poly_fert, np.linspace(starting_age, ending_age, S+1))
-    # fert_rate = poly.polyval(
-    #     np.linspace(starting_age, ending_age-1, (ending_age-starting_age)), poly_fert)
-    # # Do not allow negative fertility rates, or nonzero rates outside of
-    # # a certain age range
-    # params = [1, 1]
-    # point1 = [40, poly.polyval(40,poly_fert)]
-    # params = opt.fsolve(fit_exp_right, params, args=(
-    #     point1, [49.5, .0007]))
-    # domain = np.arange(11) + 40
-    # new_end = params[0] * params[1]**(-domain)
-    # fert_rate[40-starting_age:51-starting_age] = new_end
-    # for i in xrange((ending_age-starting_age)):
-    #     if np.linspace(starting_age, ending_age-1, (ending_age-starting_age))[i] >= 51 or np.linspace(
-    #             starting_age, ending_age-1, (ending_age-starting_age))[i] < 10:
-    #         fert_rate[i] = 0
-    #     if fert_rate[i] < 0:
-    #         fert_rate[i] = 0
-    # fert_rate_condensed = np.zeros(S)
-    # # If S < 80, then group years together
-    # for s in xrange(S):
-    #     fert_rate_condensed[s] = np.prod(1 + fert_rate[
-    #         s*((ending_age-starting_age)/S):(s+1)*((ending_age-starting_age)/S)]) - 1
-    # Divide the fertility rate by 2, since it will be used for men and women
     fert_rate /= 2.0
     children_fertrate_int = poly.polyint(poly_fert)
     children_fertrate_int = poly.polyval(np.linspace(0, starting_age, E + 1), children_fertrate_int)
@@ -302,9 +289,10 @@ def get_fert(S, starting_age, ending_age, E):
 '''
 
 
-def rate_graphs(S, starting_age, ending_age, imm, fert, child_imm, child_fert):
+def rate_graphs(S, starting_age, ending_age, imm, fert, mort, child_imm, child_fert, child_mort):
     domain = np.arange(child_fert.shape[0] + S) + 1
-    mort = np.array(mort_data.mort_rate)
+    # mort = 1.0 - np.array(list(child_mort) + list(mort))
+    mort = mort_data.mort_rate
     domain2 = np.arange(mort.shape[0]) + 1
     domain4 = np.arange(child_imm.shape[0] + imm.shape[0]) + 1
 
@@ -327,7 +315,6 @@ def rate_graphs(S, starting_age, ending_age, imm, fert, child_imm, child_fert):
     plt.ylabel(r'mortality $\rho_s$')
     plt.savefig('OUTPUT/mort_rates')
 
-    mort = np.array(mort_data.mort_rate)
     surv_arr = 1-mort
     cum_surv_arr = np.zeros(len(mort))
     for i in xrange(len(mort)):
@@ -387,7 +374,7 @@ def get_omega(S, J, T, bin_weights, starting_age, ending_age, E):
     for i in xrange(S):
         cum_surv_rate[i] = np.prod(surv_array[:i])
     rate_graphs(
-        S, starting_age, ending_age, imm_array, fert_rate, children_im, children_fertrate)
+        S, starting_age, ending_age, imm_array, fert_rate, surv_array, children_im, children_fertrate, children_rate)
     children_int = poly.polyval(
         np.linspace(
             0, starting_age, E + 1), poly_int_pop)
