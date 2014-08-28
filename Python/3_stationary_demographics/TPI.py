@@ -279,7 +279,7 @@ def MUb(bq):
 
 
 initial_K = np.array(list(Kssmat) + list(BQ.reshape(1, J)))
-K0 = (omega_stationary[0, 1:, :] * initial_K[:-1, :]).sum() + (omega_stationary[0,-1,:] * initial_K[-1, :]).sum()
+K0 = (omega_stationary[0] * initial_K[:, :]).sum()
 K1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_K[:-1]))
 K2_2init = initial_K
 initial_L = Lssmat
@@ -289,8 +289,7 @@ w0 = get_w(Y0, L0)
 r0 = get_r(Y0, K0)
 c0 = (1 + r0) * K1_2init + w0 * e * initial_L - K2_2init * np.exp(g_y)
 constraint_checker1(initial_K[:-1], initial_L, w0, r0, e, c0)
-B0 = (initial_K[:-1] * omega_stationary[0,-(S-1):, :] * mort_rate[:-1].reshape(S-1,1)).sum(0) + omega_stationary[0,-1,:] * initial_K[-1, :]
-# B0 *= (1 + r0)
+B0 = (initial_K * omega_stationary[0] * mort_rate.reshape(S,1)).sum(0)
 print 'K0 divided by Kss =', K0/Kss
 
 '''
@@ -417,7 +416,7 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
         -(length):, j] + MUl_2(L_guess)
 
     error3 = MUc((1 + r[-1])*K_guess[-2] + w[-1] * e[-1, j] * L_guess[-1] + (1 + r[-1])*B[-1]/bin_weights[j] - K_guess[-1] * 
-        np.exp(g_y)) - MUb(K_guess[-1])
+        np.exp(g_y)) - np.exp(-sigma * g_y) * MUb(K_guess[-1])
 
     # Check and punish constraing violations
     mask1 = L_guess < 0
@@ -492,21 +491,19 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
 
     K_mat[0, :, :] = initial_K
     L_mat[0, -1, :] = initial_L[-1, :]
-    Knew = (omega_stationary[:T, 1:, :] * K_mat[:T, :-1, :]).sum(2).sum(1) + (omega_stationary[:T, -1, :] * K_mat[:T, -1, :]).sum(1)
+    Knew = (omega_stationary[:T, :, :] * K_mat[:T, :, :]).sum(2).sum(1)
     Lnew = (omega_stationary[1:T+1, :, :] * e.reshape(
         1, S, J) * L_mat[:T, :, :]).sum(2).sum(1)
-    Bnew = (K_mat[:T, :-1, :] * omega_stationary[:T, 1:, :] * mort_rate[
-        :-1].reshape(1, S-1, 1)).sum(1).reshape(T, J) + K_mat[:T, -1, :] * omega_stationary[:T, -1, :]
+    Bnew = (K_mat[:T, :, :] * omega_stationary[:T, :, :] * mort_rate.reshape(1, S, 1)).sum(1)
     TPIiter += 1
     Kinit = nu*Knew + (1-nu)*Kinit[:T]
     Linit = nu*Lnew + (1-nu)*Linit[:T]
-    Binit = nu*Bnew + (1-nu)*Binit[:T]
+    Binit[:T] = nu*Bnew + (1-nu)*Binit[:T]
     TPIdist = np.array(list(
         np.abs(Knew - Kinit)) + list(np.abs(Lnew - Linit))).max()
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-        Binit = np.array(list(Binit) + list(np.tile(Bss.reshape(1,J), (S,1))))
         Yinit = A*(Kinit**alpha) * (Linit**(1-alpha))
         winit = np.array(
             list((1-alpha) * Yinit / Linit) + list(np.ones(S)*wss))

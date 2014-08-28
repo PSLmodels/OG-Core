@@ -88,8 +88,6 @@ print '\tFinished.'
 print 'Generating demographics.'
 omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
     S, J, T, bin_weights, starting_age, ending_age, E)
-N_tilde = omega[T].sum()
-N = omega[T].sum() + children[T].sum()
 mort_rate = 1-surv_rate
 print '\tFinished.'
 
@@ -217,7 +215,7 @@ def MUb(bq):
 
     Returns:    Marginal Utility of Bequest
     '''
-    output = chi_b * (bq ** (-sigma)) * np.exp(-sigma * g_y)
+    output = chi_b * (bq ** (-sigma))
     return output
 
 
@@ -262,7 +260,7 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2, B):
 
 def Euler3(w, r, e, L_guess, K_guess, B):
     euler = MUc((1 + r)*K_guess[-2, :] + w * e[-1, :] * L_guess[-1, :] + B.reshape(1, J) / bin_weights - K_guess[-1, :] * 
-        np.exp(g_y)) - MUb(K_guess[-1, :])
+        np.exp(g_y)) - np.exp(-sigma * g_y) * MUb(K_guess[-1, :])
     return euler
 
 
@@ -274,9 +272,8 @@ def Steady_State(guesses):
     Returns:    Array of S-1 Euler equation errors
     '''
     K_guess = guesses[0: S * J].reshape((S, J))
-    B = (K_guess[:-1, :] * omega_SS[1:, :] * mort_rate[
-        :-1].reshape(S-1, 1)).sum(0) + omega_SS[-1, :] * K_guess[-1, :]
-    K = (omega_SS[1:, :] * K_guess[:-1, :]).sum() + (omega_SS[-1, :] * K_guess[-1, :]).sum()
+    B = (K_guess * omega_SS * mort_rate.reshape(S, 1)).sum(0)
+    K = (omega_SS * K_guess).sum()
     L_guess = guesses[S * J:].reshape((S, J))
     L = get_L(e, L_guess)
     Y = get_Y(K, L)
@@ -391,12 +388,12 @@ seconds.' % (abs(hours - .5), abs(minutes - .5), seconds)
 
 Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
 BQ = solutions[(S-1)*J:S*J]
-Bss = (Kssmat * omega_SS[1:, :] * mort_rate[:-1].reshape(S-1, 1)).sum(0) + omega_SS[-1,:]*BQ
+Bss = (Kssmat * omega_SS[:-1, :] * mort_rate[:-1].reshape(S-1, 1)).sum(0) + omega_SS[-1,:]*BQ
 Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
 Kssmat3 = np.array(list(Kssmat) + list(BQ.reshape(1, J)))
 
 Kssvec = Kssmat.sum(1)
-Kss = (omega_SS[1:, :] * Kssmat).sum() + (omega_SS[-1,:]*BQ).sum()
+Kss = (omega_SS[:-1, :] * Kssmat).sum() + (omega_SS[-1,:]*BQ).sum()
 Kssavg = Kssvec.mean()
 Kssvec = np.array([0]+list(Kssvec))
 Lssmat = solutions[S * J:].reshape(S, J)
