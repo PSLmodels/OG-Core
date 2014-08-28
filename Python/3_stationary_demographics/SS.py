@@ -442,6 +442,7 @@ plt.savefig("OUTPUT/capital_dist_2D")
 
 # 3D Graph
 cmap1 = matplotlib.cm.get_cmap('summer')
+cmap2 = matplotlib.cm.get_cmap('jet')
 # Jgrid = np.linspace(1, J, J)
 X, Y = np.meshgrid(domain, Jgrid)
 fig5 = plt.figure()
@@ -450,7 +451,7 @@ ax5.set_xlabel(r'age-$s$')
 ax5.set_ylabel(r'ability-$j$')
 ax5.set_zlabel(r'individual savings $\bar{b}_{j,s}$')
 # ax5.set_title(r'Steady State Distribution of Capital Stock $K$')
-ax5.plot_surface(X, Y, Kssmat2.T, rstride=1, cstride=1, cmap=cmap1)
+ax5.plot_surface(X, Y, Kssmat2.T, rstride=1, cstride=1, cmap=cmap2)
 plt.savefig('OUTPUT/capital_dist_3D')
 
 '''
@@ -488,7 +489,7 @@ ax4.set_xlabel(r'age-$s$')
 ax4.set_ylabel(r'ability-$j$')
 ax4.set_zlabel(r'individual labor supply $\bar{l}_{j,s}$')
 # ax4.set_title(r'Steady State Distribution of Labor Supply $K$')
-ax4.plot_surface(X, Y, Lssmat.T, rstride=1, cstride=1, cmap=cmap1)
+ax4.plot_surface(X, Y, (Lssmat).T, rstride=1, cstride=1, cmap=cmap1)
 plt.savefig('OUTPUT/labor_dist_3D')
 
 '''
@@ -507,7 +508,6 @@ plt.ylabel('Consumption')
 plt.savefig("OUTPUT/consumption_2D")
 
 # 3D Graph
-cmap2 = matplotlib.cm.get_cmap('jet')
 fig9 = plt.figure()
 ax9 = fig9.gca(projection='3d')
 ax9.plot_surface(X, Y, cssmat.T, rstride=1, cstride=1, cmap=cmap2)
