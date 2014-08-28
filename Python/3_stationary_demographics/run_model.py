@@ -74,6 +74,7 @@ A = 1.0
 delta_annual = .05
 delta = 1 - ((1-delta_annual) ** (float(ending_age-starting_age) / S))
 ctilde = .001
+bqtilde = .001
 ltilde = 1.0
 chi_n = 1.0
 chi_b = 1.0
@@ -89,7 +90,7 @@ Pickle parameter values
 
 print 'Saving user given parameter values.'
 var_names = ['S', 'J', 'T', 'bin_weights', 'starting_age', 'ending_age',
-             'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'ctilde', 'E', 
+             'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'ctilde', 'E', 'bqtilde',
              'ltilde', 'chi_n', 'chi_b', 'eta', 'g_y', 'TPImaxiter', 'TPImindist']
 dictionary = {}
 for key in var_names:

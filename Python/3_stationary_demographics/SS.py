@@ -298,11 +298,10 @@ def Steady_State(guesses):
     cons = (1 + r) * K1_2 + w * e * L_guess + BQ.reshape(1, J) / bin_weights - K2_2 * np.exp(g_y)
     mask3 = cons < 0
     error2[mask3] += 1e9
-    
     return list(error1.flatten()) + list(error2.flatten()) + list(error3.flatten())
 
 
-def borrowing_constraints(K_dist, w, r, e, n):
+def borrowing_constraints(K_dist, w, r, e, n, BQ):
     '''
     Parameters:
         K_dist = Distribution of capital ((S-1)xJ array)
@@ -316,10 +315,10 @@ def borrowing_constraints(K_dist, w, r, e, n):
             if there are violations.
     '''
     b_min = np.zeros((S-1, J))
-    b_min[-1, :] = (ctilde - w * e[S-1, :] * ltilde) / (1 + r)
+    b_min[-1, :] = (ctilde + bqtilde - w * e[S-1, :] * ltilde - BQ.reshape(1, J) / bin_weights) / (1 + r)
     for i in xrange(S-2):
         b_min[-(i+2), :] = (ctilde + np.exp(g_y) * b_min[-(i+1), :] - w * e[
-            -(i+2), :] * ltilde) / (1 + r)
+            -(i+2), :] * ltilde - BQ.reshape(1, J) / bin_weights) / (1 + r)
     difference = K_dist - b_min
     if (difference < 0).any():
         return True
@@ -327,7 +326,7 @@ def borrowing_constraints(K_dist, w, r, e, n):
         return False
 
 
-def constraint_checker(Kssmat, Lssmat, wss, rss, e, cssmat):
+def constraint_checker(Kssmat, Lssmat, wss, rss, e, cssmat, BQ):
     '''
     Parameters:
         Kssmat = steady state distribution of capital ((S-1)xJ array)
@@ -351,7 +350,7 @@ def constraint_checker(Kssmat, Lssmat, wss, rss, e, cssmat):
     if Kssmat.sum() <= 0:
         print '\tWARNING: Aggregate capital is less than or equal to zero.'
         flag1 = True
-    if borrowing_constraints(Kssmat, wss, rss, e, Lssmat) is True:
+    if borrowing_constraints(Kssmat, wss, rss, e, Lssmat, BQ) is True:
         print '\tWARNING: Borrowing constraints have been violated.'
         flag1 = True
     if flag1 is False:
@@ -407,7 +406,7 @@ rss = get_r(Yss, Kss)
 cssmat = (1 + rss) * Kssmat2 + wss * e * Lssmat + (1 + rss) * Bss.reshape(1, J)/bin_weights.reshape(1,J) - np.exp(g_y) * Kssmat3
 
 
-constraint_checker(Kssmat, Lssmat, wss, rss, e, cssmat)
+constraint_checker(Kssmat, Lssmat, wss, rss, e, cssmat, BQ)
 
 print 'The steady state values for:'
 print "\tCapital:\t\t", Kss
