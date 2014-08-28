@@ -98,16 +98,16 @@ print '\tS:\t\t\t\t', S
 print '\tJ:\t\t\t\t', J
 print '\tT:\t\t\t\t', T
 print '\tStarting Age:\t', starting_age
-print '\tBeta:\t\t\t', beta
-print '\tSigma:\t\t\t', sigma
-print '\tAlpha:\t\t\t', alpha
+print '\tbeta:\t\t\t', beta
+print '\tsigma:\t\t\t', sigma
+print '\talpha:\t\t\t', alpha
 print '\tnu:\t\t\t\t', nu
 print '\tA:\t\t\t\t', A
-print '\tDelta:\t\t\t', delta
+print '\tdelta:\t\t\t', delta
 print '\tl-tilde:\t\t', ltilde
 print '\tChi_n:\t\t\t', chi_n
 print '\tChi_b:\t\t\t', chi_b
-print '\tEta:\t\t\t', eta
+print '\teta:\t\t\t', eta
 print '\tg_n:\t\t\t', g_n
 print '\tg_y:\t\t\t', g_y
 
@@ -540,46 +540,6 @@ plt.savefig('OUTPUT/ability_3D')
 
 '''
 ------------------------------------------------------------------------
-Graph of Population
-------------------------------------------------------------------------
-'''
-
-x = children.sum(1).sum(1) + omega.sum(1).sum(1)
-x2 = 100 * np.diff(x)/x[:-1]
-
-plt.figure()
-plt.plot(np.arange(T+S)+1, x, 'b', linewidth=2)
-plt.title('Population Size (as a percent of the 2010 population)')
-plt.savefig('OUTPUT/Population')
-
-plt.figure()
-plt.plot(np.arange(T+S-1)+1, x2, 'b', linewidth=2)
-plt.axhline(y=100 * g_n, color='r', linestyle='--', label=r'$\bar{g}_n$')
-plt.legend(loc=0)
-plt.xlabel(r'Time $t$')
-plt.ylabel(r'Population growth rate $g_n$')
-# plt.title('Population Growth rate over time')
-plt.savefig('OUTPUT/Population_growthrate')
-
-plt.figure()
-plt.plot(np.arange(S+int(starting_age * S / (ending_age-starting_age)))+1, list(
-    children[0, :, :].sum(1)) + list(
-    omega[0, :, :].sum(1)), linewidth=2, color='blue')
-plt.xlabel(r'age $s$')
-plt.ylabel(r'$\omega_{s,1}$')
-plt.savefig('OUTPUT/omega_init')
-
-plt.figure()
-plt.plot(np.arange(S+int(starting_age * S / (ending_age-starting_age)))+1, list(
-    children[T, :, :].sum(1)/N) + list(
-    omega[T, :, :].sum(1)/N), linewidth=2, color='blue')
-plt.xlabel(r'age $s$')
-plt.ylabel(r'$\overline{\omega}$')
-plt.savefig('OUTPUT/omega_ss')
-
-
-'''
-------------------------------------------------------------------------
 Check Euler Equations
 ------------------------------------------------------------------------
 k1          = (S-1)xJ array of Kssmat in period t-1
@@ -597,14 +557,17 @@ k2 = Kssmat
 k3 = np.array(list(Kssmat[1:, :]) + list(BQ.reshape(1, J)))
 k1_2 = np.array(list(np.zeros(J).reshape((1, J))) + list(Kssmat))
 k2_2 = np.array(list(Kssmat) + list(BQ.reshape(1, J)))
-B = (Kssmat * mort_rate[:-1].reshape(S-1, 1)).sum(0) + omega_SS[-1, :] * BQ
 B = Bss * (1+rss)
+
+K_eul3 = np.zeros((S, J))
+K_eul3[:S-1, :] = Kssmat
+K_eul3[-1, :] = BQ
 
 euler1 = Euler1(wss, rss, e, Lssmat, k1, k2, k3, B)
 euler2 = Euler2(wss, rss, e, Lssmat, k1_2, k2_2, B)
-euler3 = Euler3(wss, rss, e, Lssmat, k2, B)
+euler3 = Euler3(wss, rss, e, Lssmat, K_eul3, B)
 
-print 'Euler errors for euler3:\n\t', euler3
+print '\tMax absolute euler error for euler3:', euler3.max()
 
 # 2D Graph
 plt.figure()

@@ -227,6 +227,7 @@ def get_immigration1(S, starting_age, ending_age, pop_2010, pop_2011, E):
             s*((ending_age-starting_age)/S):(s+1)*((ending_age-starting_age)/S)]) - 1
     return imm_rate_condensed, children_im_condensed
 
+
 def get_immigration2(S, starting_age, ending_age, E):
     '''
     Parameters:
@@ -249,6 +250,9 @@ def get_immigration2(S, starting_age, ending_age, E):
         imm_rate_condensed1 + imm_rate_condensed2 + imm_rate_condensed3) / 3.0
     child_imm_rate = (
         children_im_condensed1 + children_im_condensed2 + children_im_condensed3) / 3.0
+    poly_imm = poly.polyfit(np.linspace(1, ending_age, ending_age), np.array([child_imm_rate[0]] + list(child_imm_rate) + list(imm_rate[:-1])), deg=7)
+    child_imm_rate = poly.polyval(np.linspace(1, starting_age, starting_age), poly_imm)
+    imm_rate = poly.polyval(np.linspace(starting_age+1, ending_age, S), poly_imm)
     return imm_rate, child_imm_rate
 
 '''
@@ -340,6 +344,48 @@ def rate_graphs(S, starting_age, ending_age, imm, fert, mort, child_imm, child_f
 
 '''
 ------------------------------------------------------------------------
+Generate graphs of Population
+------------------------------------------------------------------------
+'''
+
+
+def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
+    N = omega[T].sum() + children[T].sum()
+    x = children.sum(1).sum(1) + omega.sum(1).sum(1)
+    x2 = 100 * np.diff(x)/x[:-1]
+
+    plt.figure()
+    plt.plot(np.arange(T+S)+1, x, 'b', linewidth=2)
+    plt.title('Population Size (as a percent of the 2010 population)')
+    plt.savefig('OUTPUT/Population')
+
+    plt.figure()
+    plt.plot(np.arange(T+S-1)+1, x2, 'b', linewidth=2)
+    plt.axhline(y=100 * g_n, color='r', linestyle='--', label=r'$\bar{g}_n$')
+    plt.legend(loc=0)
+    plt.xlabel(r'Time $t$')
+    plt.ylabel(r'Population growth rate $g_n$')
+    # plt.title('Population Growth rate over time')
+    plt.savefig('OUTPUT/Population_growthrate')
+
+    plt.figure()
+    plt.plot(np.arange(S+int(starting_age * S / (ending_age-starting_age)))+1, list(
+        children[0, :, :].sum(1)) + list(
+        omega[0, :, :].sum(1)), linewidth=2, color='blue')
+    plt.xlabel(r'age $s$')
+    plt.ylabel(r'$\omega_{s,1}$')
+    plt.savefig('OUTPUT/omega_init')
+
+    plt.figure()
+    plt.plot(np.arange(S+int(starting_age * S / (ending_age-starting_age)))+1, list(
+        children[T, :, :].sum(1)/N) + list(
+        omega[T, :, :].sum(1)/N), linewidth=2, color='blue')
+    plt.xlabel(r'age $s$')
+    plt.ylabel(r'$\overline{\omega}$')
+    plt.savefig('OUTPUT/omega_ss')
+
+'''
+------------------------------------------------------------------------
     Generate Omega array
 ------------------------------------------------------------------------
 '''
@@ -424,5 +470,5 @@ def get_omega(S, J, T, bin_weights, starting_age, ending_age, E):
     omega_big = np.tile(
         omega_big.reshape(T+S, S, 1), (1, 1, J)) * bin_weights.reshape(1, 1, J)
     children = np.tile(children.reshape(T+S, E, 1), (1, 1, J)) * bin_weights.reshape(1, 1, J)
-
+    pop_graphs(S, T, starting_age, ending_age, children, g_n_SS[0], omega_big)
     return omega_big, g_n_SS[0], omega_SS, children, surv_array
