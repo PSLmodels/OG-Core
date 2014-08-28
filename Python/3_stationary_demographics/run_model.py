@@ -64,21 +64,22 @@ T = 2 * S
 bin_weights = np.array([1.0/J] * J)
 starting_age = 20
 ending_age = 100
+E = int(starting_age * (S / float(ending_age-starting_age)))
 beta_annual = .96
-beta = beta_annual ** ((ending_age-starting_age) / S)
+beta = beta_annual ** (float(ending_age-starting_age) / S)
 sigma = 3.0
 alpha = .35
 nu = .20
 A = 1.0
 delta_annual = .05
-delta = 1 - ((1-delta_annual) ** ((ending_age-starting_age) / S))
+delta = 1 - ((1-delta_annual) ** (float(ending_age-starting_age) / S))
 ctilde = .001
 ltilde = 1.0
 chi_n = 1.0
 chi_b = 1.0
 eta = 2.0
 g_y_annual = 0.03
-g_y = (1 + g_y_annual)**((ending_age-starting_age)/S) - 1
+g_y = (1 + g_y_annual)**(float(ending_age-starting_age)/S) - 1
 TPImaxiter = 100
 TPImindist = 3 * 1e-6
 
@@ -88,7 +89,7 @@ Pickle parameter values
 
 print 'Saving user given parameter values.'
 var_names = ['S', 'J', 'T', 'bin_weights', 'starting_age', 'ending_age',
-             'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'ctilde',
+             'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'ctilde', 'E', 
              'ltilde', 'chi_n', 'chi_b', 'eta', 'g_y', 'TPImaxiter', 'TPImindist']
 dictionary = {}
 for key in var_names:

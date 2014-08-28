@@ -8,11 +8,11 @@ Income file:
 		-use glob to import all data at once
 
 Demographic file:
+-fix demographics
 
 SS file:
 
 TPI file:
--incidental bequests
 
 run_model file:
 

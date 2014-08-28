@@ -87,9 +87,9 @@ e = income2.get_e(S, J, starting_age, ending_age, bin_weights)
 print '\tFinished.'
 print 'Generating demographics.'
 omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
-    S, J, T, bin_weights, starting_age, ending_age)
-N_tilde = omega[-1].sum()
-# omega_SS = np.array(list(children[-1]/N_tilde) + list(omega[-1]/N_tilde))
+    S, J, T, bin_weights, starting_age, ending_age, E)
+N_tilde = omega[T].sum()
+N = omega[T].sum() + children[T].sum()
 mort_rate = 1-surv_rate
 print '\tFinished.'
 
@@ -108,7 +108,7 @@ print '\tl-tilde:\t\t', ltilde
 print '\tChi_n:\t\t\t', chi_n
 print '\tChi_b:\t\t\t', chi_b
 print '\tEta:\t\t\t', eta
-print '\tg_n:\t\t\t', g_n[0]
+print '\tg_n:\t\t\t', g_n
 print '\tg_y:\t\t\t', g_y
 
 '''
@@ -187,7 +187,7 @@ def get_L(e, n):
 
     Returns:    Aggregate labor
     '''
-    L_now = np.sum(e * omega_SS[-S:] * n)
+    L_now = np.sum(e * omega_SS * n)
     return L_now
 
 
@@ -235,9 +235,9 @@ def Euler1(w, r, e, L_guess, K1, K2, K3, B):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] + B.reshape(1, J) / (N_tilde*bin_weights) - K2 * np.exp(
+    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] + B.reshape(1, J) / bin_weights - K2 * np.exp(
         g_y)) - beta * surv_rate[:-1].reshape(S-1, 1) * (
-        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] + B.reshape(1, J) / (N_tilde*bin_weights) - K3 * np.exp(
+        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] + B.reshape(1, J) / bin_weights - K3 * np.exp(
             g_y)) * np.exp(-sigma * g_y)
     return euler
 
@@ -255,13 +255,13 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2, B):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess + B.reshape(1, J) / (N_tilde*bin_weights) - K2_2 * 
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess + B.reshape(1, J) / bin_weights - K2_2 * 
         np.exp(g_y)) * w * e + MUl(L_guess)
     return euler
 
 
 def Euler3(w, r, e, L_guess, K_guess, B):
-    euler = MUc((1 + r)*K_guess[-2, :] + w * e[-1, :] * L_guess[-1, :] + B.reshape(1, J) / (N_tilde*bin_weights) - K_guess[-1, :] * 
+    euler = MUc((1 + r)*K_guess[-2, :] + w * e[-1, :] * L_guess[-1, :] + B.reshape(1, J) / bin_weights - K_guess[-1, :] * 
         np.exp(g_y)) - MUb(K_guess[-1, :])
     return euler
 
@@ -274,9 +274,9 @@ def Steady_State(guesses):
     Returns:    Array of S-1 Euler equation errors
     '''
     K_guess = guesses[0: S * J].reshape((S, J))
-    B = (K_guess[:-1, :] * omega_SS[-S:-1, :] * mort_rate[
+    B = (K_guess[:-1, :] * omega_SS[1:, :] * mort_rate[
         :-1].reshape(S-1, 1)).sum(0) + omega_SS[-1, :] * K_guess[-1, :]
-    K = (omega_SS[-(S-1):, :] * K_guess[:-1, :]).sum() + omega_SS[-1, :] * K_guess[-1, :] + B.sum()
+    K = (omega_SS[1:, :] * K_guess[:-1, :]).sum() + (omega_SS[-1, :] * K_guess[-1, :]).sum()
     L_guess = guesses[S * J:].reshape((S, J))
     L = get_L(e, L_guess)
     Y = get_Y(K, L)
@@ -298,7 +298,7 @@ def Steady_State(guesses):
     error2[mask2] += 1e9
     if K_guess.sum() <= 0:
         error1 += 1e9
-    cons = (1 + r) * K1_2 + w * e * L_guess + BQ.reshape(1, J) / (N_tilde*bin_weights) - K2_2 * np.exp(g_y)
+    cons = (1 + r) * K1_2 + w * e * L_guess + BQ.reshape(1, J) / bin_weights - K2_2 * np.exp(g_y)
     mask3 = cons < 0
     error2[mask3] += 1e9
     
@@ -391,12 +391,12 @@ seconds.' % (abs(hours - .5), abs(minutes - .5), seconds)
 
 Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
 BQ = solutions[(S-1)*J:S*J]
-Bss = (Kssmat * omega_SS[-(S-1):, :] * mort_rate[:-1].reshape(S-1, 1)).sum(0) + omega_SS[-1,:]*BQ
+Bss = (Kssmat * omega_SS[1:, :] * mort_rate[:-1].reshape(S-1, 1)).sum(0) + omega_SS[-1,:]*BQ
 Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
 Kssmat3 = np.array(list(Kssmat) + list(BQ.reshape(1, J)))
 
 Kssvec = Kssmat.sum(1)
-Kss = (omega_SS[-(S-1):, :] * Kssmat).sum() + Bss.sum()
+Kss = (omega_SS[1:, :] * Kssmat).sum() + (omega_SS[-1,:]*BQ).sum()
 Kssavg = Kssvec.mean()
 Kssvec = np.array([0]+list(Kssvec))
 Lssmat = solutions[S * J:].reshape(S, J)
@@ -407,7 +407,7 @@ Yss = get_Y(Kss, Lss)
 wss = get_w(Yss, Lss)
 rss = get_r(Yss, Kss)
 
-cssmat = (1 + rss) * Kssmat2 + wss * e * Lssmat + (1 + rss) * Bss.reshape(1, J)/(N_tilde*bin_weights.reshape(1,J)) - np.exp(g_y) * Kssmat3
+cssmat = (1 + rss) * Kssmat2 + wss * e * Lssmat + (1 + rss) * Bss.reshape(1, J)/bin_weights.reshape(1,J) - np.exp(g_y) * Kssmat3
 
 
 constraint_checker(Kssmat, Lssmat, wss, rss, e, cssmat)
@@ -456,6 +456,18 @@ ax5.set_zlabel(r'individual savings $\bar{b}_{j,s}$')
 # ax5.set_title(r'Steady State Distribution of Capital Stock $K$')
 ax5.plot_surface(X, Y, Kssmat2.T, rstride=1, cstride=1, cmap=cmap1)
 plt.savefig('OUTPUT/capital_dist_3D')
+
+'''
+------------------------------------------------------------------------
+ Generate graph of the steady-state distribution of intentional bequests
+------------------------------------------------------------------------
+'''
+
+plt.figure()
+plt.plot(np.arange(J)+1, BQ)
+plt.xlabel(r'ability-$j$')
+plt.ylabel(r'bequests $\overline{bq}_{j,E+S+1}$')
+plt.savefig('OUTPUT/intentional_bequests')
 
 '''
 ------------------------------------------------------------------------
@@ -542,7 +554,7 @@ plt.savefig('OUTPUT/Population')
 
 plt.figure()
 plt.plot(np.arange(T+S-1)+1, x2, 'b', linewidth=2)
-plt.axhline(y=100 * g_n[0], color='r', linestyle='--', label=r'$\bar{g}_n$')
+plt.axhline(y=100 * g_n, color='r', linestyle='--', label=r'$\bar{g}_n$')
 plt.legend(loc=0)
 plt.xlabel(r'Time $t$')
 plt.ylabel(r'Population growth rate $g_n$')
@@ -558,8 +570,9 @@ plt.ylabel(r'$\omega_{s,1}$')
 plt.savefig('OUTPUT/omega_init')
 
 plt.figure()
-plt.plot(np.arange(S+int(
-    starting_age * S / (ending_age-starting_age)))+1, omega_SS.sum(1), linewidth=2, color='blue')
+plt.plot(np.arange(S+int(starting_age * S / (ending_age-starting_age)))+1, list(
+    children[T, :, :].sum(1)/N) + list(
+    omega[T, :, :].sum(1)/N), linewidth=2, color='blue')
 plt.xlabel(r'age $s$')
 plt.ylabel(r'$\overline{\omega}$')
 plt.savefig('OUTPUT/omega_ss')
@@ -631,7 +644,7 @@ Save variables/values so they can be used in other modules
 '''
 
 print 'Saving steady state variable values.'
-var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'e',
+var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'e', 'E',
              'J', 'Kss', 'Kssvec', 'Kssmat', 'Lss', 'Lssvec', 'Lssmat',
              'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes', 'omega',
              'seconds', 'eta', 'chi_n', 'chi_b', 'ltilde', 'ctilde', 'T',
