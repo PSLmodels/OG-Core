@@ -166,7 +166,7 @@ Rp67
 tp68
 g12
 I00
-S'\xe7{A\xbd\xb4Ce?\xc7\x02\x93\x8b$\xb6g?\xd3L\x97\xbe\xbdWf?:\r\x1b\x01uNf?\n%P\xe7\xea\x11g?2~\x8f\xdcY\x14k?\xc5\xb7\xfeTC\x00x?'
+S'e\xedq~\xfb4e?\xe8f\xe26F\xa4g?\xbc\xbe\xf6\xf8EDf?\xf8\x87\r\xcc\x109f?\xd6r}\x10G\xfaf?,\xbe\xba\x04e\xf9j?\xd3N)\xaa\xca\xeew?'
 p69
 tp70
 bsS'chi_n'
@@ -183,7 +183,7 @@ p74
 I20
 sS'seconds'
 p75
-F21.55299997329712
+F23.407999992370605
 sS'bin_weights'
 p76
 g2
@@ -236,7 +236,7 @@ p94
 tp95
 bsS'hours'
 p96
-F0.005986944437026977
+F0.006502222220102946
 sS'beta'
 p97
 F0.96
@@ -373,8 +373,8 @@ tp149
 Rp150
 sS'runtime'
 p151
-F21.55299997329712
+F23.407999992370605
 sS'minutes'
 p152
-F0.35921666622161863
+F0.39013333320617677
 s.

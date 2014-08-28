@@ -388,7 +388,7 @@ seconds.' % (abs(hours - .5), abs(minutes - .5), seconds)
 
 Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
 BQ = solutions[(S-1)*J:S*J]
-Bss = (Kssmat * omega_SS[:-1, :] * mort_rate[:-1].reshape(S-1, 1)).sum(0) + omega_SS[-1,:]*BQ
+Bss = (np.array(list(Kssmat) + list(BQ.reshape(1, J))).reshape(S, J) * omega_SS * mort_rate.reshape(S, 1)).sum(0)
 Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
 Kssmat3 = np.array(list(Kssmat) + list(BQ.reshape(1, J)))
 
@@ -564,7 +564,7 @@ euler1 = Euler1(wss, rss, e, Lssmat, k1, k2, k3, B)
 euler2 = Euler2(wss, rss, e, Lssmat, k1_2, k2_2, B)
 euler3 = Euler3(wss, rss, e, Lssmat, K_eul3, B)
 
-print '\tMax absolute euler error for euler3:', euler3.max()
+print '\tMax absolute euler error for euler3:', np.abs(euler3).max()
 
 # 2D Graph
 plt.figure()
