@@ -1,9 +1,8 @@
 '''
 ------------------------------------------------------------------------
-Last updated 8/19/2014
+Last updated 8/29/2014
 
-Functions for created the matrix of ability levels, e, and the
-probabilities, f, to be used in OLG_fastversion.py
+Functions for created the matrix of ability levels, e.
 
 This py-file calls the following other file(s):
             data/e_vec_data/jan2014.asc
@@ -23,9 +22,9 @@ This py-file calls the following other file(s):
 import numpy as np
 import pandas as pd
 import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+import numpy.polynomial.polynomial as poly
+import scipy.optimize as opt
 
 '''
 ------------------------------------------------------------------------
@@ -71,7 +70,36 @@ del may_dat['HRHHID'], may_dat['OCCURNUM'], may_dat['YYYYMM'], may_dat[
     'HRHHID2'], may_dat['PRTAGE'], may_dat['PTERNHLY'], may_dat['PWCMPWGT']
 
 
-def get_e_indiv(S, J, data, starting_age):
+def fit_exp_right(params, point1, point2):
+    a, b = params
+    x1, y1 = point1
+    x2, y2 = point2
+    error1 = a*b**(-x1) - y1
+    error2 = a*b**(-x2) - y2
+    return [error1, error2]
+
+
+def exp_int(points, a, b):
+    top = a * ((1.0/(b**70)) - b**(-points))
+    bottom = np.log(b)
+    return top / bottom
+
+
+def integrate(func, points, j):
+    params_guess = [1, 1]
+    # fit_to = j/2.0
+    fit_to = poly.polyval(70, func) * .5
+    a, b = opt.fsolve(fit_exp_right, params_guess, args=([70,poly.polyval(70, func)], [100, fit_to]))
+    func_int = poly.polyint(func)
+    integral = np.empty(points.shape)
+    integral[points <= 70] = poly.polyval(points[points <= 70], func_int)
+    integral[points > 70] = poly.polyval(70, func_int) + exp_int(points[points>70], a, b)
+    vals = np.diff(integral)
+    # vals[50:] = np.ones(30) * vals[50]
+    return vals
+
+
+def get_e_indiv(S, J, data, starting_age, ending_age, bin_weights):
     '''
     Parameters: S - Number of age cohorts
                 J - Number of ability levels by age
@@ -80,13 +108,12 @@ def get_e_indiv(S, J, data, starting_age):
                     age cohort measured by hourly wage, normalized so
                     the mean is one
     '''
-    ending_age = starting_age + 60
-    age_groups = np.linspace(starting_age, ending_age, S+1)
-    e = np.zeros((S, J))
-    data = data[(starting_age <= data.age) & (data.age <= ending_age)]
-    for i in xrange(S):
-        incomes = data[(age_groups[i] <= data.age) & (
-            data.age < age_groups[i+1])]
+    temp_ending_age = starting_age + 50
+    age_groups = np.linspace(starting_age, temp_ending_age, 51)
+    e = np.zeros((50, J))
+    data = data[(starting_age <= data.age) & (data.age <= temp_ending_age)]
+    for i in xrange(50):
+        incomes = data[(age_groups[i] <= data.age) & (data.age < age_groups[i+1])]
         incomes = incomes.sort(['wage'])
         inc = np.array(incomes.wage)
         wgt_ar = np.array(incomes.wgt)
@@ -96,24 +123,50 @@ def get_e_indiv(S, J, data, starting_age):
             cum_weight_scalar += wgt_ar[k]
             wgt_cum[k] = cum_weight_scalar
         total_wgts = wgt_cum[-1]
-        for j in xrange(J):
-            percentile = total_wgts*(j+.5)/J
+        percentile = np.zeros(J)
+        indicies = np.zeros(J+1)
+        for j, weight in enumerate(bin_weights):
+            percentile[j:] += weight
             ind = 0
-            while wgt_cum[ind] < percentile:
+            while (ind < len(wgt_cum)) and (wgt_cum[ind] < total_wgts * percentile[j]):
                 ind += 1
-            e[i, j] = inc[ind]
+            indicies[j+1] = ind
+        for j in xrange(J):
+            e[i, j] = np.mean(inc[indicies[j]:indicies[j+1]])
     e /= e.mean()
-    return e
+
+    new_e = np.empty((S, J))
+    for j in xrange(J):
+        func = poly.polyfit(np.arange(50)+starting_age, e[:50, j], deg=2)
+        new_e[:,j] = integrate(func, np.linspace(starting_age, ending_age, S+1), percentile[j])
+
+    return new_e
 
 
-def get_e(S, J, starting_age):
+def graph_income(S, J, e, starting_age, ending_age, bin_weights):
+    domain = np.linspace(starting_age, ending_age, S)
+    Jgrid = np.zeros(J)
+    for j in xrange(J):
+        Jgrid[j:] += bin_weights[j]
+    X, Y = np.meshgrid(domain, Jgrid)
+    # 3D Graph
+    cmap2 = matplotlib.cm.get_cmap('summer')
+    fig10 = plt.figure()
+    ax10 = fig10.gca(projection='3d')
+    ax10.plot_surface(X, Y, e.T, rstride=1, cstride=2, cmap=cmap2)
+    ax10.set_xlabel(r'age-$s$')
+    ax10.set_ylabel(r'ability-$j$')
+    ax10.set_zlabel(r'Income Level $e_j(s)$')
+    # ax10.set_title('Income Levels')
+    plt.savefig('OUTPUT/ability_3D')
+
+def get_e(S, J, starting_age, ending_age, bin_weights):
     e = np.zeros((S, J))
-    e += get_e_indiv(S, J, jan_dat, starting_age)
-    e += get_e_indiv(S, J, feb_dat, starting_age)
-    e += get_e_indiv(S, J, mar_dat, starting_age)
-    e += get_e_indiv(S, J, apr_dat, starting_age)
-    e += get_e_indiv(S, J, may_dat, starting_age)
+    e += get_e_indiv(S, J, jan_dat, starting_age, ending_age, bin_weights)
+    e += get_e_indiv(S, J, feb_dat, starting_age, ending_age, bin_weights)
+    e += get_e_indiv(S, J, mar_dat, starting_age, ending_age, bin_weights)
+    e += get_e_indiv(S, J, apr_dat, starting_age, ending_age, bin_weights)
+    e += get_e_indiv(S, J, may_dat, starting_age, ending_age, bin_weights)
     e /= 5
+    graph_income(S, J, e, starting_age, ending_age, bin_weights)
     return e
-
-

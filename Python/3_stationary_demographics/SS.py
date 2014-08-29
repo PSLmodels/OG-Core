@@ -12,7 +12,6 @@ This py-file calls the following other file(s):
 This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
             OUTPUT/ss_vars.pkl
-            OUTPUT/ability_3D.png
             OUTPUT/capital_dist_2D.png
             OUTPUT/capital_dist_3D.png
             OUTPUT/consumption_2D.png
@@ -32,7 +31,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import time
 import scipy.optimize as opt
 import pickle
-import income2
+import income
 import demographics
 
 
@@ -83,7 +82,7 @@ mort_rate    = S x 1 array of mortality rates
 '''
 
 print 'Generating income distribution.'
-e = income2.get_e(S, J, starting_age, ending_age, bin_weights)
+e = income.get_e(S, J, starting_age, ending_age, bin_weights)
 print '\tFinished.'
 print 'Generating demographics.'
 omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
@@ -516,23 +515,6 @@ ax9.set_ylabel(r'ability-$j$')
 ax9.set_zlabel('Consumption')
 ax9.set_title('Steady State Distribution of Consumption')
 plt.savefig('OUTPUT/consumption_3D')
-
-'''
-------------------------------------------------------------------------
-Graph of Distribution of Income
-------------------------------------------------------------------------
-'''
-
-# 3D Graph
-cmap2 = matplotlib.cm.get_cmap('summer')
-fig10 = plt.figure()
-ax10 = fig10.gca(projection='3d')
-ax10.plot_surface(X, Y, e.T, rstride=1, cstride=2, cmap=cmap2)
-ax10.set_xlabel(r'age-$s$')
-ax10.set_ylabel(r'ability-$j$')
-ax10.set_zlabel(r'Income Level $e_j(s)$')
-# ax10.set_title('Income Levels')
-plt.savefig('OUTPUT/ability_3D')
 
 '''
 ------------------------------------------------------------------------

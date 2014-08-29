@@ -18,7 +18,7 @@ from glob import glob
 # Run steady state
 run_SS = True
 # Run TPI
-run_TPI = True
+run_TPI = False
 
 '''
 ------------------------------------------------------------------------
@@ -58,8 +58,8 @@ TPImindist   = Cut-off distance between iterations for TPI
 
 
 # Parameters
-S = 40
-J = 2
+S = 80
+J = 7
 T = 2 * S
 bin_weights = np.array([1.0/J] * J)
 starting_age = 20

@@ -8,6 +8,8 @@ Demographic file:
 
 SS file:
 -change incidental bequests
+-Chi_n : array: 1 until 65, then it is a quadratic
+	[S - round(E+9S/16)]^2
 
 TPI file:
 
