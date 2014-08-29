@@ -48,7 +48,7 @@ def exp_int(points, a, b):
 
 def integrate(func, points, j):
     params_guess = [1,1]
-    a, b = opt.fsolve(fit_exp_right, params_guess, args=([70,poly.polyval(70, func)], [100, j]))
+    a, b = opt.fsolve(fit_exp_right, params_guess, args=([70,poly.polyval(70, func)], [100, j/2.0]))
     func_int = poly.polyint(func)
     integral = np.empty(points.shape)
     integral[points<=70] = poly.polyval(points[points<=70], func_int)
