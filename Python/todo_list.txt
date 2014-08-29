@@ -3,14 +3,11 @@ Stationary Folder:
 Income file:
 -change ability matrix:
 	-get data from IRS (jason)
-	-if that doesn't happen:
-		-add samples to the data
-		-use glob to import all data at once
 
 Demographic file:
--fix demographics
 
 SS file:
+-change incidental bequests
 
 TPI file:
 
@@ -19,12 +16,8 @@ run_model file:
 Documentation:
 -document ability, demographic, SS, TPI, and run_SS_TPI file changes in python
 -once everything is working, update the draft pictures
-	-make sure the parameter values are correct (especially T)
-	-say  that rho=1 for s>=80
-	-Lpath_TPI graph?
--add documentation to draft about demographics
 
 Other Problems:
--model doesn't converge if S<4 or S>80 (or in increments of less than one years length)
+-model doesn't converge if S<20
 
 HHTAX:

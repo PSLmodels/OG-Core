@@ -608,7 +608,8 @@ var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'e', 'E',
              'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes', 'omega',
              'seconds', 'eta', 'chi_n', 'chi_b', 'ltilde', 'ctilde', 'T',
              'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist', 'BQ',
-             'children', 'surv_rate', 'mort_rate', 'Bss', 'bin_weights']
+             'children', 'surv_rate', 'mort_rate', 'Bss', 'bin_weights',
+             'bqtilde']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]

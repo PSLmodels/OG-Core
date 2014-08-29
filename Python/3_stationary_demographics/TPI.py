@@ -111,7 +111,7 @@ N_tilde = omega.sum(1).sum(1)
 omega_stationary = omega / N_tilde.reshape(T+S, 1, 1)
 
 
-def constraint_checker1(k_dist, l_dist, w, r, e, c_dist):
+def constraint_checker1(k_dist, l_dist, w, r, e, c_dist, BQ):
     '''
     Parameters:
         k_dist = distribution of capital ((S-1)xJ array)
@@ -136,7 +136,7 @@ def constraint_checker1(k_dist, l_dist, w, r, e, c_dist):
     if k_dist.sum() / N[-1] <= 0:
         print '\tWARNING: Aggregate capital is less than or equal to zero.'
         flag1 = True
-    if borrowing_constraints(k_dist, w, r, e, l_dist) is True:
+    if borrowing_constraints(k_dist, w, r, e, l_dist, BQ) is True:
         print '\tWARNING: Borrowing constraints have been violated.'
         flag1 = True
     if flag1 is False:
@@ -183,7 +183,7 @@ def constraint_checker2(k_dist, l_dist, w, r, e, c_dist, t):
             'period %.f.' % t
 
 
-def borrowing_constraints(K_dist, w, r, e, n):
+def borrowing_constraints(K_dist, w, r, e, n, BQ):
     '''
     Parameters:
         K_dist = Distribution of capital ((S-1)xJ array)
@@ -197,10 +197,10 @@ def borrowing_constraints(K_dist, w, r, e, n):
             if there are violations.
     '''
     b_min = np.zeros((S-1, J))
-    b_min[-1, :] = (ctilde - w * e[S-1, :] * ltilde) / (1 + r)
+    b_min[-1, :] = (ctilde + bqtilde - w * e[S-1, :] * ltilde - BQ.reshape(1, J) / bin_weights) / (1 + r)
     for i in xrange(S-2):
         b_min[-(i+2), :] = (ctilde + np.exp(g_y) * b_min[-(i+1), :] - w * e[
-            -(i+2), :] * ltilde) / (1 + r)
+            -(i+2), :] * ltilde - BQ.reshape(1, J) / bin_weights) / (1 + r)
     difference = K_dist - b_min
     if (difference < 0).any():
         return True
@@ -288,8 +288,8 @@ Y0 = get_Y(K0, L0)
 w0 = get_w(Y0, L0)
 r0 = get_r(Y0, K0)
 c0 = (1 + r0) * K1_2init + w0 * e * initial_L - K2_2init * np.exp(g_y)
-constraint_checker1(initial_K[:-1], initial_L, w0, r0, e, c0)
 B0 = (initial_K * omega_stationary[0] * mort_rate.reshape(S,1)).sum(0)
+constraint_checker1(initial_K[:-1], initial_L, w0, r0, e, c0, B0)
 print 'K0 divided by Kss =', K0/Kss
 
 '''
@@ -429,13 +429,13 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
         -(length):, j] * L_guess + (1+r)*B/bin_weights[j] - K2_2 * np.exp(g_y)
     mask3 = cons < 0
     error2[mask3] += 1e9
-
+    bin1 = bin_weights[j]
     b_min = np.zeros(length-1)
-    b_min[-1] = (ctilde - w1[-1] * e1[-1] * ltilde) / (1 + r1[-1])
+    b_min[-1] = (ctilde + bqtilde - w1[-1] * e1[-1] * ltilde - B1[-1] / bin1) / (1 + r1[-1])
     for i in xrange(length - 2):
         b_min[-(i+2)] = (ctilde + np.exp(
             g_y) * b_min[-(i+1)] - w1[-(i+2)] * e1[
-            -(i+2)] * ltilde) / (1 + r1[-(i+2)])
+            -(i+2)] * ltilde - B1[-(i+2)] / bin1) / (1 + r1[-(i+2)])
     difference = K_guess[:-1] - b_min
     mask4 = difference < 0
     error1[mask4] += 1e9
@@ -468,6 +468,22 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     plt.xlabel(r"Time $t$")
     plt.ylabel(r"Per-capita Capital $\hat{K}$")
     plt.savefig("OUTPUT/TPI_K")
+    plt.figure()
+    plt.axhline(
+        y=Lss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
+    plt.plot(np.arange(
+        T), Linit[:T], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
+    plt.xlabel(r"Time $t$")
+    plt.ylabel(r"Per-capita Capital $\hat{L}$")
+    plt.savefig("OUTPUT/TPI_L")
+    plt.figure()
+    plt.axhline(
+        y=Bss.sum(), color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
+    plt.plot(np.arange(
+        T), Binit[:T].sum(1), 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
+    plt.xlabel(r"Time $t$")
+    plt.ylabel(r"Per-capita Capital $\hat{K}$")
+    plt.savefig("OUTPUT/TPI_bq")
     K_mat = np.zeros((T+S, S, J))
     L_mat = np.zeros((T+S, S, J))
     for j in xrange(J):
@@ -500,7 +516,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     Linit = nu*Lnew + (1-nu)*Linit[:T]
     Binit[:T] = nu*Bnew + (1-nu)*Binit[:T]
     TPIdist = np.array(list(
-        np.abs(Knew - Kinit)) + list(np.abs(Lnew - Linit))).max()
+        np.abs(Knew - Kinit)) + list(np.abs(Bnew - Binit[:T]).flatten()) + list(np.abs(Lnew - Linit))).max()
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
@@ -518,7 +534,7 @@ Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
 print 'TPI is finished.'
 
 
-def borrowing_constraints2(K_dist, w, r, e):
+def borrowing_constraints2(K_dist, w, r, e, B):
     '''
     Parameters:
         K_dist = Distribution of capital ((S-1)xJ array)
@@ -534,11 +550,11 @@ def borrowing_constraints2(K_dist, w, r, e):
     b_min = np.zeros((T, S-1, J))
     for t in xrange(T):
         b_min[t, -1, :] = (
-            ctilde - w[S-1+t] * e[S-1, :] * ltilde) / (1 + r[S-1+t])
+            ctilde + bqtilde - w[S-1+t] * e[S-1, :] * ltilde - B[S-1+t] / bin_weights) / (1 + r[S-1+t])
         for i in xrange(S-2):
             b_min[t, -(i+2), :] = (
                 ctilde + np.exp(g_y) * b_min[t, -(i+1), :] - w[S+t-(i+2)] * e[
-                    -(i+2), :] * ltilde) / (1 + r[S+t-(i+2)])
+                    -(i+2), :] * ltilde - B[S+t-(i+2)] / bin_weights) / (1 + r[S+t-(i+2)])
     difference = K_mat[:T, :-1, :] - b_min
     for t in xrange(T):
         if (difference[t, :, :] < 0).any():
@@ -553,7 +569,7 @@ cinit = (1 + rinit[:T].reshape(T, 1, 1)) * K1 + winit[:T].reshape(
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
     constraint_checker2(K_mat[t, :-1, :], L_mat[t], winit[t], rinit[t], e, cinit[t], t)
-borrowing_constraints2(K_mat, winit, rinit, e)
+borrowing_constraints2(K_mat, winit, rinit, e, Binit)
 print '\tFinished.'
 
 elapsed_time = time.time() - start_time
