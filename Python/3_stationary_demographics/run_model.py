@@ -77,6 +77,11 @@ ctilde = .001
 bqtilde = .001
 ltilde = 1.0
 chi_n = 1.0
+# Make chi_n change once people retire
+chi_n = np.ones(S) * 1.0
+retire = np.round(9 * S / 16)
+chi_n[retire:] += ((np.linspace(retire, S-1, S-retire) - retire)/20)**2
+
 chi_b = 1.0
 eta = 2.0
 g_y_annual = 0.03

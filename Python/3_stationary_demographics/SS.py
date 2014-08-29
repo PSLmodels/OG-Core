@@ -204,7 +204,7 @@ def MUl(n):
 
     Returns:    Marginal Utility of Labor
     '''
-    output = - chi_n * ((ltilde-n) ** (-eta))
+    output = - chi_n.reshape(S, 1) * ((ltilde-n) ** (-eta))
     return output
 
 
