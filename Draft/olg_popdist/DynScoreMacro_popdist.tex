@@ -221,6 +221,16 @@
       \bigl(c_{j,E+S,t}\bigr)^{-\sigma} = \chi_b\bigl(bq_{j,E+S+1,t+1}\bigr)^{-\sigma} \quad\forall j,t
     \end{equation}
 
+    Define $\bm{\hat{\Gamma}}_t$ as the distribution of stationary household savings across individuals at time $t$, including the intentional bequests of the oldest cohort.
+    \begin{equation}\label{EqSavDist}
+      \bm{\hat{\Gamma}}_t \equiv \biggl[\Bigl\{\bigl\{\hat{b}_{j,s,t}\bigr\}_{j=1}^J\Bigr\}_{s=E+2}^{E+S},\bigl\{\hat{bq}_{j,E+S+1,t}\bigr\}_{j=1}^J\biggr] \quad\forall t
+    \end{equation}
+    As will be shown in Section \ref{SecMCEqlbm}, she state in every period $t$ for the entire equilibrium system described in the stationary non-steady-state equilibrium characterized in Definition \ref{DefEquilNonSS} is this distribution of individual savings$\bm{\hat{\Gamma}}_t$ from \eqref{EqSavDist}. Because households must forecast wages, interest rate, and aggregate bequests received in every period in order to solve their optimal decisions and because each of those future variables depends on the entire distribution of savings in the future, we must assume some household beliefs about how the entire distribution will evolve over time. Let general beliefs about the future distribution of capital in period $t+u$ be characterized by the operator $\Omega(\cdot)$ such that:
+    \begin{equation}\label{EqBeliefs}
+      \bm{\hat{\Gamma}^e_{t+u}} = \Omega^u\left(\bm{\hat{\Gamma}_t}\right) \quad \forall t, \quad u\geq 1
+    \end{equation}
+    where the $e$ superscript signifies that $\Gamma^e_{t+u}$ is the expected distribution of wealth at time $t+u$ based on general beliefs $\Omega(\cdot)$ that are not constrained to be correct.\footnote{In Section \ref{SecMCEqlbm} we will assume that beliefs are correct (rational expectations) for the stationary non-steady-state equilibrium in Definition \ref{DefEquilNonSS}.}
+
 
   \subsection{Firm problem}\label{SecFirms}
 
@@ -255,8 +265,6 @@
 
     The usual definition of equilibrium would be allocations and prices such that households optimize \eqref{EqEulerLabGen}, \eqref{EqEulerSavGen}, and \eqref{EqEulerBeqGen}, firms optimize \eqref{EqFOCwage} and \eqref{EqFOCrate}, and markets clear \eqref{EqMktClrLab} and \eqref{EqMktClrCap}. However, the variables in these characterizing equations are potentially not stationary due to the possible growth rate in the total population $g_{n,t}$ each period coming from the cohort growth rates in \eqref{EqPopLawofmotion} and from the deterministic growth rate of labor augmenting technological change $g_y$ in \eqref{EqCobbDougProd}.
 
-    Define the following stationary versions of the variables of the model in Table \ref{TabStatVars} in which the variables are represented in per-capita terms and in which the growth rate from labor augmenting technical change has been removed.
-
     \begin{table}[htbp] \centering \captionsetup{width=3.3in}
     \caption{\label{TabStatVars}\textbf{Stationary variable definitions}}
       \begin{threeparttable}
@@ -279,7 +287,7 @@
       \end{threeparttable}
     \end{table}
 
-    \noindent With the definitions in Table \ref{TabStatVars}, it can be shown that the equilibrium characterizing equations can be written in stationary form in the following way. The static and intertemporal Euler equations from the individual's optimization problem corresponding to \eqref{EqEulerLabGen}, \eqref{EqEulerSavGen}, and \eqref{EqEulerBeqGen} are the following.
+    Table \ref{TabStatVars} characterizes the stationary versions of the variables of the model in terms of the variables that grow because of labor augmenting technological change, population growth, both, or none. With the definitions in Table \ref{TabStatVars}, it can be shown that the equilibrium characterizing equations can be written in stationary form in the following way. The static and intertemporal Euler equations from the individual's optimization problem corresponding to \eqref{EqEulerLabGen}, \eqref{EqEulerSavGen}, and \eqref{EqEulerBeqGen} are the following.
     \begin{equation}\label{EqEulerLabStat}
       \begin{split}
         &\hat{w}_t e_{j,s}\bigl(\hat{c}_{j,s,t}\bigr)^{-\sigma} = \chi_n (\tilde{l} - n_{j,s,t})^{-\eta} \\
@@ -328,7 +336,7 @@
     \begin{spacing}{1.5}
     \vspace{10mm}
 
-    The steady-state equilibrium is characterized by the system of $2JS$ equations and $2JS$ unknowns $\bar{n}_{j,s}$, $\bar{b}_{j,s+1}$, and $\bar{bq}_{j,E+S+1}$ along with the individual borrowing constraints and aggregate borrowing constraint described in Appendix \ref{AppBorConstr}.
+    The steady-state equilibrium is characterized by the system of $2JS$ equations and $2JS$ unknowns $\bar{n}_{j,s}$, $\bar{b}_{j,s+1}$, and $\bar{bq}_{j,E+S+1}$ along with the individual borrowing constraints and aggregate borrowing constraint described in Appendix \ref{AppBorConstr}. Appendix \ref{AppSSsolve} details how to solve for the steady-state equilibrium.
 
     \begin{equation}\label{EqEulerLabSS}
       \begin{split}
@@ -346,12 +354,6 @@
     \begin{equation}\label{EqEulerBeqSS}
       \bigl(\bar{c}_{j,E+S}\bigr)^{-\sigma} = \chi_b e^{-\sigma g_y}\bigl(\bar{bq}_{j,E+S+1}\bigr)^{-\sigma} \quad\forall j
     \end{equation}
-
-    Define $\bm{\hat{\Gamma}}_t$ as the distribution of stationary savings across individuals at time $t$.
-    \begin{equation}\label{EqSavDist}
-      \bm{\hat{\Gamma}}_t \equiv \{\hat{b}_{j,s,t}\}_{j=1,s=E+2}^{J,E+S} \quad\forall t
-    \end{equation}
-    In equilibrium, the steady-state household labor supplies $\bar{n}_{j,s}$ for all $j$ and $s$, the steady-state intended bequests $\bar{bq}_{j,E+S+1}$, the steady-state real wage $\bar{w}$, and the steady-state real rental rate $\bar{r}$ are simply functions of the steady-state distribution of savings $\bar{\Gamma}$. This is clear from the steady-state version of the capital market clearing condition \eqref{EqMktClrCapStat} and the fact that aggregate labor supply is a function of the sum of exogenous efficiency units of labor in the labor market clearing condition \eqref{EqMktClrLabStat}. And the two firm first order conditions for the real wage $\hat{w}_t$ \eqref{EqFOCwageStat} and real rental rate $r_t$ \eqref{EqFOCrate} are only functions of the aggregate capital stock $\hat{K}_t$ and aggregate labor $\hat{L}_t$. Appendix \ref{AppSSsolve} details how to solve for the steady-state equilibrium.
 
     \begin{table}[htbp] \centering \captionsetup{width=4.4in}
     \caption{\label{TabExogVars}\textbf{List of exogenous variables and calibration values}}
@@ -409,7 +411,7 @@
       \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/BeqSS.pdf}}}
     \end{figure}
 
-    Figure \ref{FigSavSS} shows the stationary steady-state distribution of individual savings $\bar{\bm{\Gamma}}$, Figure \ref{FigLabSS} shows the stationary steady-state distribution of individual labor supply $\bar{n}_{j,s}$, and Figure \ref{FigBeqSS} shows the steady state distribution of intended bequests for a particular calibration of the model described in Table \ref{TabExogVars}. Notice .... %that some intergenerational risk sharing is taking place. Young individuals of high ability, know that they will have high ability and borrow $b_{j,s,t}<0$ in their early years in the steady-state.
+    Figure \ref{FigSavSS} shows the stationary steady-state distribution of individual savings $\bar{b}_{j,s}$, Figure \ref{FigLabSS} shows the stationary steady-state distribution of individual labor supply $\bar{n}_{j,s}$, and Figure \ref{FigBeqSS} shows the steady state distribution of intended bequests $\bar{bq}_{j,E+S+1}$ for a particular calibration of the model described in Table \ref{TabExogVars}. Notice .... %that some intergenerational risk sharing is taking place. Young individuals of high ability, know that they will have high ability and borrow $b_{j,s,t}<0$ in their early years in the steady-state.
 
     The definition of the stationary non-steady-state equilibrium is similar to Definition \ref{DefEquilSS}, with the stationary steady-state equilibrium definition being a special case of the stationary non-steady-state equilibrium.
 
@@ -419,6 +421,10 @@
     \begin{definition}[\textbf{Stationary non-steady-state equilibrium}]\label{DefEquilNonSS}
       A non-autarkic stationary non-steady-state equilibrium in the overlapping generations model with $S$-period lived agents and heterogeneous ability $e_{j,s}$ is defined as allocations $n_{j,s,t}$, $\hat{b}_{j,s+1,t+1}$, and $\hat{bq}_{j,E+S+1,t+1}$ and prices $\hat{w}_t$ and $r_t$ for all $j$, $s$, and $t$ such that the following conditions hold:
        \begin{enumerate}
+          \item households have symmetric beliefs $\Omega(\cdot)$ about the evolution of the distribution of savings, and those beliefs about the future distribution of savings equal the realized outcome (rational expectations),
+            \begin{equation*}
+              \bm{\hat{\Gamma}}_{t+u} = \bm{\hat{\Gamma}}^e_{t+u} = \Omega^u\left( \bm{\hat{\Gamma}}_t\right) \quad\forall t, \quad u\geq 1
+            \end{equation*}
           \item households optimize according to \eqref{EqEulerLabStat}, \eqref{EqEulerSavStat}, and \eqref{EqEulerBeqStat}
           \item firms optimize according to \eqref{EqFOCwageStat} and \eqref{EqFOCrate}, and
           \item markets clear according to \eqref{EqMktClrLabStat} and \eqref{EqMktClrCapStat}.
@@ -428,17 +434,18 @@
     \begin{spacing}{1.5}
     \vspace{10mm}
 
-    \noindent Taken together, the household labor-leisure and intended bequest decisions in the last period of life show that the optimal labor supply and optimal intended bequests for age $s=E+S$ are each functions of individual holdings of savings and the prices in that period $n_{j,E+S,t}=\phi\bigl(\hat{b}_{j,E+S,t},\hat{w}_t,r_t\bigr)$ and $\hat{bq}_{j,E+S+1,t+1}=\psi\bigl(\hat{b}_{j,E+S,t},\hat{w}_t,r_t\bigr)$. These two decisions are characterized by final-age version of the static labor supply Euler equation \eqref{EqEulerLabStat} and the static intended bequests Euler equation \eqref{EqEulerBeqStat}. Households in their second-to-last period of life in period $t$ have four decisions to make. They must choose how much to work this period $n_{j,E+S-1,t}$ and next period $n_{j,E+S,t+1}$, how much to save this period for next period $\hat{b}_{j,E+S,t+1}$, and how much to bequeath next period $\hat{bq}_{j,E+S+1,t+2}$. The optimal responses for this individual are characterized by the $s=E+S-1$ and $s=E+S$ versions of the static Euler equations \eqref{EqEulerLabStat}, the $s=E+S-1$ version of the intertemporal Euler equation \eqref{EqEulerSavStat}, and the $s=E+S$ static bequest Euler equation \eqref{EqEulerBeqStat}, respectively.
+    \noindent Taken together, the household labor-leisure and intended bequest decisions in the last period of life show that the optimal labor supply and optimal intended bequests for age $s=E+S$ are each functions of individual holdings of savings, total bequests received, and the prices in that period $n_{j,E+S,t}=\phi\bigl(\hat{b}_{j,E+S,t},\hat{BQ}_{j,t},\hat{w}_t,r_t\bigr)$ and $\hat{bq}_{j,E+S+1,t+1}=\varphi\bigl(\hat{b}_{j,E+S,t},\hat{BQ}_{j,t},\hat{w}_t,r_t\bigr)$. These two decisions are characterized by final-age version of the static labor supply Euler equation \eqref{EqEulerLabStat} and the static intended bequests Euler equation \eqref{EqEulerBeqStat}. Households in their second-to-last period of life in period $t$ have four decisions to make. They must choose how much to work this period $n_{j,E+S-1,t}$ and next period $n_{j,E+S,t+1}$, how much to save this period for next period $\hat{b}_{j,E+S,t+1}$, and how much to bequeath next period $\hat{bq}_{j,E+S+1,t+2}$. The optimal responses for this individual are characterized by the $s=E+S-1$ and $s=E+S$ versions of the static Euler equations \eqref{EqEulerLabStat}, the $s=E+S-1$ version of the intertemporal Euler equation \eqref{EqEulerSavStat}, and the $s=E+S$ static bequest Euler equation \eqref{EqEulerBeqStat}, respectively.
 
-    \noindent[\textit{***STILL NEED TO UPDATE FROM HERE DOWN***}]
-
-    Optimal savings in the second-to-last period of life $s=S-1$ is a function of the current savings and the prices in the current period and in the next period $\hat{b}_{j,S,t+1} = \psi\bigl(\hat{b}_{j,S-1,t},\hat{w}_t,r_t,\hat{w}_{t+1},r_{t+1}\bigr)$. As before, the optimal labor supply at age $s=S$ is a function of the next period's savings and prices $n_{j,S,t+1}=\phi\bigl(\hat{b}_{j,S,t+1},\hat{w}_{t+1},r_{t+1}\bigr)$. But the optimal labor supply at age $s=S-1$ is a function of the current savings and the current prices as well as the future prices because of the dependence on the savings decision in that same period $n_{j,S-1,t}=\phi\bigl(\hat{b}_{j,S-1,t},\hat{w}_t,r_t,\hat{w}_{t+1},r_{t+1}\bigr)$. By induction, we can show that the optimal labor supply and savings functions for any individual with ability $j$, age $s$, and in period $t$ is a function of current holdings of savings and the lifetime path of prices.
+    Optimal savings in the second-to-last period of life $s=E+S-1$ is a function of the current savings as well as the total bequests received and prices in the current period and in the next period $\hat{b}_{j,E+S,t+1} = \psi\bigl(\hat{b}_{j,E+S-1,t},\hat{BQ}_{j,t},\hat{w}_t,r_t,\hat{BQ}_{j,t+1},\hat{w}_{t+1},r_{t+1}|\Omega\bigr)$ given beliefs $\Omega$. As before, the optimal labor supply at age $s=E+S$ is a function of the next period's savings, bequests received, and prices $n_{j,E+S,t+1}=\phi\bigl(\hat{b}_{j,E+S,t+1},\hat{BQ}_{j,t+1},\hat{w}_{t+1},r_{t+1}\bigr)$. But the optimal labor supply at age $s=E+S-1$ is a function of the current savings, current bequests received, and the current prices as well as the future bequests received and future prices because of the dependence on the savings decision in that same period $n_{j,E+S-1,t}=\phi\bigl(\hat{b}_{j,E+S-1,t},\hat{BQ}_{j,t},\hat{w}_t,r_t,\hat{BQ}_{j,t+1},\hat{w}_{t+1},r_{t+1}|\Omega\bigr)$ given beliefs $\Omega$. By induction, we can show that the optimal labor supply, savings, and intended bequests functions for any individual with ability $j$, age $s$, and in period $t$ is a function of current holdings of savings and the lifetime path of total bequests received and prices given beliefs $\Omega$.
     \begin{align}
-      n_{j,s,t} &= \phi\Bigl(\hat{b}_{j,s,t},(\hat{w}_v,r_v)_{v=t}^{t+S-s}\Bigr) \quad\forall j,s,t \label{EqLabPolFuncGen} \\
-      \hat{b}_{j,s+1,t+1} &= \psi\Bigl(\hat{b}_{j,s,t},(\hat{w}_v,r_v)_{v=t}^{t+S-s}\Bigr) \quad\forall j,t \quad\text{and}\quad 1\leq s\leq S-1
+      n_{j,s,t} &= \phi\Bigl(\hat{b}_{j,s,t},\bigl(\hat{BQ}_{j,v},\hat{w}_v,r_v\bigr)_{v=t}^{t+S-s}|\Omega\Bigr) \quad\forall j,s,t \label{EqLabPolFuncGen} \\
+      \hat{b}_{j,s+1,t+1} &= \psi\Bigl(\hat{b}_{j,s,t},\bigl(\hat{BQ}_{j,v},\hat{w}_v,r_v\bigr)_{v=t}^{t+S-s}|\Omega\Bigr) \quad\forall j,t \quad\text{and}\quad 1\leq s\leq S-1 \label{EqSavPolFuncGen} \\
+      \hat{bq}_{j,E+S+1,t+1} &= \varphi\Bigl(\hat{b}_{j,s,t},\hat{BQ}_{j,t},\hat{w}_t,r_t\Bigr) \quad\quad\quad\quad\:\:\:\forall j,t \label{EqBeqPolFuncGen}
     \end{align}
 
-    Each optimal saving decision for each household requires knowledge of at least todays prices and tomorrows prices and at most $S$ periods of prices. In equilibrium, one can see that the prices $(\hat{w}_t,r_t)$ in each period $t$ are functions of the entire distribution of savings $\bm{\Gamma}_t$. The requirement that individuals be able to forecast prices with perfect foresight over their lifetimes implies that each individual has correct information and beliefs about all the other individuals optimization problems and information. It also implies that the equilibrium allocations and prices are really just functions of the entire distribution of savings at a particular period, as well as a law of motion for that distribution of savings.
+    If one knows the current distribution of households savings and intended bequests $\bm{\hat{\Gamma}}_t$ and has a beliefs function that predicts the law of motion over time for $\bm{\hat{\Gamma}}_t$, then one can predict time series for total bequests received $\hat{BQ}_{j,t}$, real wages $\hat{w}_t$ and real interest rates $r_t$ necessary for solving each household's optimal decisions. Characteristic (i) in equilibrium definition \ref{DefEquilNonSS} that individuals be able to forecast prices with perfect foresight over their lifetimes implies that each individual has correct information and beliefs about all the other individuals optimization problems and information. It also implies that the equilibrium allocations and prices are really just functions of the entire distribution of savings at a particular period, as well as a law of motion for that distribution of savings.
+
+    In equilibrium, the steady-state household labor supplies $\bar{n}_{j,s}$ for all $j$ and $s$, the steady-state intended bequests $\bar{bq}_{j,E+S+1}$, the steady-state real wage $\bar{w}$, and the steady-state real rental rate $\bar{r}$ are simply functions of the steady-state distribution of savings $\bar{\Gamma}$. This is clear from the steady-state version of the capital market clearing condition \eqref{EqMktClrCapStat} and the fact that aggregate labor supply is a function of the sum of exogenous efficiency units of labor in the labor market clearing condition \eqref{EqMktClrLabStat}. And the two firm first order conditions for the real wage $\hat{w}_t$ \eqref{EqFOCwageStat} and real rental rate $r_t$ \eqref{EqFOCrate} are only functions of the aggregate capital stock $\hat{K}_t$ and aggregate labor $\hat{L}_t$.
 
     \begin{figure}[htb]\centering \captionsetup{width=4.0in}
       \caption{\label{FigKpathTPI}\textbf{Equilibrium time path of $K_t$ for $S=60$ and $J=7$}}
@@ -450,7 +457,7 @@
       \fbox{\resizebox{4.0in}{3.0in}{\includegraphics{images/LpathTPI.png}}}
     \end{figure}
 
-    To solve for any non-steady-state equilibrium time path of the economy from an arbitrary current state to the steady state, we follow the time path iteration (TPI) method of \citet{AuerbachKotlikoff:1987}. Appendix \ref{AppNonSSsolve} details how to solve for the non-steady-state equilibrium time path using the TPI method. Figure \ref{FigKpathTPI} shows the equilibrium time path of the aggregate capital stock for the calibration used in Figure \ref{FigKpathTPI} for $T=80$ periods starting from an initial distribution of savings in which $b_{j,s,1}=(0.9\bar{K})/[(S-1)J]$ for all $j$ and $s$. We used $\nu=0.2$ as our time-path updating dampening parameter (see Equation \eqref{EqTPInewpath} in Appendix \ref{AppNonSSsolve}.)
+    To solve for any stationary non-steady-state equilibrium time path of the economy from an arbitrary current state to the steady state, we follow the time path iteration (TPI) method of \citet{AuerbachKotlikoff:1987}. Appendix \ref{AppNonSSsolve} details how to solve for the non-steady-state equilibrium time path using the TPI method. The approach is to choose an arbitrary time path for the stationary aggregate capital stock $\hat{K}_t$, stationary aggregate labor $\hat{L}_t$, and total bequests received $\hat{BQ}_{j,t}$ for each type $j$. This initial guess of a path implies arbitrary beliefs that violate the rational expectations requirement. We then solve for households' optimal decisions given the time paths of those variables, which decisions imply new time paths of those variables. We then update the time path as a convex combination of the initial guess and the new implied path. Figure \ref{FigKpathTPI} shows the equilibrium time path of the aggregate capital stock for the calibration used in Figure \ref{FigKpathTPI} for $T=80$ periods starting from an initial distribution of savings in which $b_{j,s,1}=(0.9\bar{K})/[(S-1)J]$ for all $j$ and $s$. We used $\nu=0.2$ as our time-path updating dampening parameter (see Equation \eqref{EqTPInewpath} in Appendix \ref{AppNonSSsolve}.)
 
 
 \clearpage
@@ -660,22 +667,44 @@
 
   This section outlines the benchmark time path iteration (TPI) method of \citet{AuerbachKotlikoff:1987} for solving the stationary non-steady-state equilibrium transition path of the distribution of savings. TPI finds a fixed point for the transition path of the distribution of capital for a given initial state of the distribution of capital. The idea is that the economy is infinitely lived, even though the agents that make up the economy are not. Rather than recursively solving for equilibrium policy functions by iterating on individual value functions, one must recursively solve for the policy functions by iterating on the entire transition path of the endogenous objects in the economy (see \citet[ch. 17]{StokeyLucas:1989}).
 
-  The key assumption is that the economy will reach the steady-state equilibrium described in Definition \ref{DefEquilSS} in a finite number of periods $T<\infty$ regardless of the initial state. Let $\bm{\hat{\Gamma}}_t$ represent the distribution of savings at time $t$.
+  The key assumption is that the economy will reach the steady-state equilibrium described in Definition \ref{DefEquilSS} in a finite number of periods $T<\infty$ regardless of the initial state. Let $\bm{\hat{\Gamma}}_t$ represent the distribution of savings at time $t$, including intended bequests.
   \begin{equation}\tag{\ref{EqSavDist}}
-    \bm{\hat{\Gamma}}_t \equiv \{\hat{b}_{j,s,t}\}_{j=1,s=1}^{J,S} \quad\forall t
+    \bm{\hat{\Gamma}}_t \equiv \biggl[\Bigl\{\bigl\{\hat{b}_{j,s,t}\bigr\}_{j=1}^J\Bigr\}_{s=E+2}^{E+S},\bigl\{\hat{bq}_{j,E+S+1,t}\bigr\}_{j=1}^J\biggr] \quad\forall t
   \end{equation}
   In Section \ref{SecMCEqlbm}, we describe how the stationary non-steady-state equilibrium time path of allocations and price is described by functions of the state $\bm{\hat{\Gamma}}_t$ and its law of motion. TPI starts the economy at any initial distribution of savings $\bm{\hat{\Gamma}}_1$ and solves for its equilibrium time path over $T$ periods to the steady-state distribution $\bm{\bar{\Gamma}}_T$.
 
-  The first step is to assume an initial transition path for aggregate stationary capital $\bm{\hat{K}}^i = \left\{\hat{K}_1^i,\hat{K}_2^i,...\hat{K}_T^i\right\}$ and aggregate stationary labor $\bm{\hat{L}}^i = \left\{\hat{L}_1^i,\hat{L}_2^i,...\hat{L}_T^i\right\}$ such that $T$ is sufficiently large to ensure that $\bm{\hat{\Gamma}}_T = \bar{\bm{\Gamma}}$, $\hat{K}_T^i\left(\bm{\Gamma}_T\right)$, and $\hat{L}_T^i\left(\bm{\Gamma}_T\right) = \bar{L}\left(\bar{\bm{\Gamma}}\right)$ for all $t\geq T$. The superscript $i$ is an index for the iteration number. The transition paths for aggregate capital and aggregate labor determine the transition paths for both the real wage $\bm{\hat{w}}^i = \left\{\hat{w}_1^i,\hat{w}_2^i,...\hat{w}_T^i\right\}$ and the real return on investment $\bm{r}^i = \left\{r_1^i,r_2^i,...r_T^i\right\}$.
+  The first step is to assume an initial transition path for aggregate stationary capital $\bm{\hat{K}}^i = \left\{\hat{K}_1^i,\hat{K}_2^i,...\hat{K}_T^i\right\}$, aggregate stationary labor $\bm{\hat{L}}^i = \left\{\hat{L}_1^i,\hat{L}_2^i,...\hat{L}_T^i\right\}$, and total bequests received $\bm{\hat{BQ}}_{j,t}^i=\{\hat{BQ}_{j,1}^i,\hat{BQ}_{j,2}^i,...\hat{BQ}_{j,T}^i\}$ for each ability type $j$ such that $T$ is sufficiently large to ensure that $\bm{\hat{\Gamma}}_T = \bar{\bm{\Gamma}}$, $\hat{K}_T^i\left(\bm{\Gamma}_T\right)$, $\hat{L}_T^i\left(\bm{\Gamma}_T\right) = \bar{L}\left(\bar{\bm{\Gamma}}\right)$, and $\hat{BQ}_{j,T}^i\left(\bm{\Gamma}_T\right) = \bar{BQ}_j\left(\bar{\bm{\Gamma}}\right)$ for all $t\geq T$. The superscript $i$ is an index for the iteration number. The transition paths for aggregate capital and aggregate labor determine the transition paths for both the real wage $\bm{\hat{w}}^i = \left\{\hat{w}_1^i,\hat{w}_2^i,...\hat{w}_T^i\right\}$ and the real return on investment $\bm{r}^i = \left\{r_1^i,r_2^i,...r_T^i\right\}$. The time paths for the total bequests received also figure in each period's budget constraint and are determined by the distribution of savings and intended bequests.
 
-  The exact initial distribution of capital in the first period $\bm{\hat{\Gamma}}_1$ can be arbitrarily chosen as long as it satisfies $\hat{K}_1^i = \frac{1}{J}\sum_{s=1}^{S}\sum_{j=1}^{J}\hat{\omega}_{s,1}\hat{b}_{j,s,1}$ according to market clearing condition \eqref{EqMktClrCapStat}. However, this is not the case with $\hat{L}_1^i$. Its value will be endogenously determined in the same way the $K_2^i$ is. For this reason, a logical initial guess for the time path of aggregate labor is the steady state in every period $L_t^1 = \bar{L}$ for all $1\leq t\leq T$. For the initial guess of the stationary aggregate capital stock in the first period, one could also first choose the initial distribution of savings $\bm{\hat{\Gamma}}_1$ and then choose an initial aggregate capital stock $\hat{K}_1^i$ that corresponds to that distribution. As mentioned earlier, the only other restriction on the initial transition path for aggregate capital is that it equal the steady-state level $\hat{K}_T^i = \bar{K}\left(\bm{\bar{\Gamma}}\right)$ by period $T$. \citet{EvansPhillips:2014} have shown that the initial guess for the aggregate capital stocks $\hat{K}_t^i$ for periods $1<t<T$ can take on almost any positive values.
-
-  Given the initial capital distribution $\bm{\hat{\Gamma}}_1$ and the transition paths of aggregate capital $\bm{\hat{K}}^i = \left\{\hat{K}_1^i,\hat{K}_2^i,...\hat{K}_T^i\right\}$ and aggregate labor $\bm{\hat{L}}^i = \left\{\hat{L}_1^i,\hat{L}_2^i,...\hat{L}_T^i\right\}$, the real wage $\bm{\hat{w}}^i = \left\{\hat{w}_1^i,\hat{w}_2^i,...\hat{w}_T^i\right\}$, and the real return to savings $\bm{r}^i = \left\{r_1^i,r_2^i,...r_T^i\right\}$, one can solve for the optimal labor supply for each type $j$ of $s=S$-aged agents in the last period of their lives $n_{j,S,1}=\phi_{j,S}(\hat{b}_{j,S,1},\hat{w}_1,r_1)$ using his one static Euler equation, which is the $s=S$ version of \eqref{EqEulerLabStat}.
-  \begin{equation}\label{EqEulerSlabt1}
-    \hat{w}^i_1 e_{j,S}\Bigl[\left(1+r^i_1\right)\hat{b}_{j,S,1} + \hat{w}^i_1 e_{j,S}n_{j,S,1}\Bigr]^{-\sigma} = \chi(\tilde{l} - n_{j,S,1})^{-\eta}
+  The exact initial distribution of capital in the first period $\bm{\hat{\Gamma}}_1$ can be arbitrarily chosen as long as it satisfies the stationary capital market clearing condition \eqref{EqMktClrCapStat}.
+  \begin{equation}\label{EqMktClrCapStat1}
+    \hat{K}_1 = \frac{1}{1 + \tilde{g}_{n,1}}\left(\sum_{s=E+2}^{E+S}\sum_{j=1}^{J}\hat{\omega}_{s-1,0}\lambda_j \hat{b}_{j,s,1} + \sum_{j=1}^{J}\hat{\omega}_{E+S,0}\lambda_j \hat{bq}_{j,E+S+1,1}\right)
   \end{equation}
+  Simiilarly, each initial value of total bequests received $\hat{BQ}_{j,1}^i$ must be consistent with the initial distribution of capital through the stationary version of \eqref{EqTotBeq}.
+  \begin{equation}\label{EqTotBeqStat1}
+    \hat{BQ}_{j,1} = \frac{(1+r_1)\lambda_j}{1+\tilde{g}_{n,1}}\left(\hat{\omega}_{E+S,0}\hat{bq}_{j,E+S+1,1} + \sum_{s=E+1}^{E+S-1}\rho_s\hat{\omega}_{s,0}\hat{b}_{j,s+1,1}\right) \quad\forall j
+  \end{equation}
+  However, this is not the case with $\hat{L}_1^i$. Its value will be endogenously determined in the same way the $K_2^i$ is. For this reason, a logical initial guess for the time path of aggregate labor is the steady state in every period $L_t^1 = \bar{L}$ for all $1\leq t\leq T$.
 
-  We then solve the problem for all $j$ types of $S-1$-aged individuals in period $t=1$, each of which entails labor supply decisions in the current period $n_{j,S-1,1}$ and in the next period $n_{j,S,2}$ and a savings decision in the current period for the next period $b_{j,S,2}$. The labor supply decision in the initial period and the savings period in the initial period for the next period for each type $j$ of $S-1$-aged individuals are policy functions of the current savings and the prices in this period and the next $\hat{b}_{j,S,2} = \psi_{j,S-1}(\hat{b}_{j,S-1,1},\{\hat{w}_t,r_t\}_{t=1}^2)$ and $\hat{n}_{j,S-1,1} = \phi_{j,S-1}(\hat{b}_{j,S-1,1},\{\hat{w}_t,r_t\}_{t=1}^2)$. The labor supply decision in the next period is simply a function of the savings and prices in that period $\hat{n}_{j,S,2} = \phi_{j,S}(\hat{b}_{j,S,2},\hat{w}_2,r_2)$. These three functions are characterized by the following versions of equations \eqref{EqEulerLabStat} and \eqref{EqEulerSavStat}.
+  It is easiest to first choose the initial distribution of savings $\bm{\hat{\Gamma}}_1$ and then choose an initial aggregate capital stock $\hat{K}_1^i$ and initial total bequests received $\hat{BQ}_{j,1}^i$ that correspond to that distribution. As mentioned earlier, the only other restrictions on the initial transition paths for aggregate capital, aggregate labor, and total bequests received is that they equal their steady-state levels $\hat{K}_T^i = \bar{K}\left(\bm{\bar{\Gamma}}\right)$, $\hat{L}_T^i = \bar{L}\left(\bm{\bar{\Gamma}}\right)$, and $\hat{BQ}_{j,T}^i = \bar{BQ}_j\left(\bm{\bar{\Gamma}}\right)$ by period $T$. \citet{EvansPhillips:2014} have shown that the initial guess for the aggregate capital stocks $\hat{K}_t^i$ for periods $1<t<T$ can take on almost any positive values satisfying the constraints above and still have the time path iteration converge.
+
+  Given the initial savings distribution $\bm{\hat{\Gamma}}_1$ and the transition paths of aggregate capital $\bm{\hat{K}}^i = \left\{\hat{K}_1^i,\hat{K}_2^i,...\hat{K}_T^i\right\}$, aggregate labor $\bm{\hat{L}}^i = \left\{\hat{L}_1^i,\hat{L}_2^i,...\hat{L}_T^i\right\}$, and total bequests received $\bm{\hat{BQ}}_j^i = \left\{\hat{BQ}_{j,1}^i,\hat{BQ}_{j,2}^i,...\hat{BQ}_{j,T}^i\right\}$, as well as the resulting real wage $\bm{\hat{w}}^i = \left\{\hat{w}_1^i,\hat{w}_2^i,...\hat{w}_T^i\right\}$, and real return to savings $\bm{r}^i = \left\{r_1^i,r_2^i,...r_T^i\right\}$, one can solve for the period-1 optimal labor supply and intended bequests for each type $j$ of $s=E+S$-aged agents in the last period of their lives $n_{j,E+S,1}=\phi_{j,E+S}(\hat{b}_{j,E+S,1},\hat{BQ}_{j,E+S,1},\hat{w}_1,r_1)$ and $\hat{bq}_{j,E+S+1,2}=\varphi_{j,E+S}(\hat{b}_{j,E+S,1},\hat{BQ}_{j,E+S,1},\hat{w}_1,r_1)$ using his two $s=E+S$ static Euler equations \eqref{EqEulerLabStat} and \eqref{EqEulerBeqStat}.
+  \begin{equation}\label{EqEulerSlabt1}
+    \begin{split}
+      \hat{w}_1^i e_{j,E+S}\biggl(\left(1+r_1^i\right)\hat{b}_{j,E+S,1} + \hat{w}_1^i e_{j,E+S}n_{j,E+S,1} + \frac{\hat{BQ}_{j,1}^i}{\lambda_j} - &e^{g_y}\hat{bq}_{j,E+S+1,2}\biggr)^{-\sigma} = ... \\
+      &\chi_n(\tilde{l} - n_{j,E+S,t})^{-\eta} \quad\forall j
+    \end{split}
+  \end{equation}
+  \begin{equation}\label{EqEulerSbeqt1}
+    \begin{split}
+      \biggl(\left(1+r_1^i\right)\hat{b}_{j,E+S,1} + \hat{w}_1^i e_{j,E+S}n_{j,E+S,1} + \frac{\hat{BQ}_{j,1}^i}{\lambda_j} - &e^{g_y}\hat{bq}_{j,E+S+1,2}\biggr)^{-\sigma} = ... \\
+      &\chi_b e^{-\sigma g_y}\bigl(\hat{bq}_{j,E+S+1,2}\bigr)^{-\sigma} \quad\forall j
+    \end{split}
+  \end{equation}
+  Note that this is simply two equations \eqref{EqEulerSlabt1} and \eqref{EqEulerSbeqt1} and two unknowns $n_{j,E+S,t}$ and $\hat{bq}_{j,E+S+1,2}$.
+
+  [I HAVE UPDATED EVERYTHING UP TO HERE.]
+
+  We then solve the problem for all $j$ types of $E+S-1$-aged individuals in period $t=1$, each of which entails labor supply decisions in the current period $n_{j,S-1,1}$ and in the next period $n_{j,S,2}$ and a savings decision in the current period for the next period $b_{j,S,2}$. The labor supply decision in the initial period and the savings period in the initial period for the next period for each type $j$ of $S-1$-aged individuals are policy functions of the current savings and the prices in this period and the next $\hat{b}_{j,S,2} = \psi_{j,S-1}(\hat{b}_{j,S-1,1},\{\hat{w}_t,r_t\}_{t=1}^2)$ and $\hat{n}_{j,S-1,1} = \phi_{j,S-1}(\hat{b}_{j,S-1,1},\{\hat{w}_t,r_t\}_{t=1}^2)$. The labor supply decision in the next period is simply a function of the savings and prices in that period $\hat{n}_{j,S,2} = \phi_{j,S}(\hat{b}_{j,S,2},\hat{w}_2,r_2)$. These three functions are characterized by the following versions of equations \eqref{EqEulerLabStat} and \eqref{EqEulerSavStat}.
   \begin{gather}
     \begin{split}
       \hat{w}^i_1 e_{j,S-1}\Bigl[\left(1+r^i_1\right)\hat{b}_{j,S-1,1} + \hat{w}^i_1 e_{j,S-1}n_{j,S-1,1} - e^{g_y}\hat{b}_{j,S,2}&\Bigr]^{-\sigma} = ... \\
