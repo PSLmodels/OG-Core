@@ -103,7 +103,7 @@
 
   \subsection{Individual problem}\label{SecIndProb}
 
-    A measure $\omega_{1,t}$ of individuals with heterogeneous working ability $e \in\mathcal{E}\subset\mathbb{R}_{++}$ is born in each period $t$ and live for $E+S$ periods, with $S\geq 3$. The population of age-$s$ individuals in any period $t$ is $\omega_{s,t}$. Households are termed ``youth'' and out of the market during ages $1\leq s\leq E$. The households enter the workforce and economy in period $E+1$ and remain in the workforce until they unexpectedly die or live until age $s=E+S$.\footnote{We model the population with households age $s\leq E$ outside of the workforce and economy in order to get the actual population dynamics correct. Appendix \ref{AppPopGrowth} gives more detail on the population process and its calibration.} The population of agents of each age in each period $\omega_{s,t}$ evolves according to the following function,
+    A measure $\omega_{1,t}$ of individuals with heterogeneous working ability $e \in\mathcal{E}\subset\mathbb{R}_{++}$ is born in each period $t$ and live for $E+S$ periods, with $S\geq 4$.\footnote{Theoretically, the model exposition of the model works without loss of generality for $S\geq 3$. However, because we are calibrating the ages outside of the economy to be one-fourth of $S$ (e.g., ages 21 to 100 in the economy, and ages 1 to 20 outside of the economy), we need $S$ to be at least 4.} The population of age-$s$ individuals in any period $t$ is $\omega_{s,t}$. Households are termed ``youth'' and out of the market during ages $1\leq s\leq E$. The households enter the workforce and economy in period $E+1$ and remain in the workforce until they unexpectedly die or live until age $s=E+S$.\footnote{We model the population with households age $s\leq E$ outside of the workforce and economy in order to get the actual population dynamics correct. Appendix \ref{AppPopGrowth} gives more detail on the population process and its calibration.} The population of agents of each age in each period $\omega_{s,t}$ evolves according to the following function,
     \begin{equation}\label{EqPopLawofmotion}
       \begin{split}
         \omega_{1,t+1} &= \sum_{s=1}^{E+S} f_s\omega_{s,t}\quad\forall t \\
@@ -371,7 +371,7 @@
         $J$ & Number of ability types & 7 \\
         $S$ & Maximum periods in economically & 80 \\
         &\quad active household life & \\
-        $E$ & Number of periods of youth & 20 \\
+        $E$ & Number of periods of youth & $\text{round}\left(\frac{S}{4}\right)$ \\
         & \quad economically outside the model & \\
         $\tilde{l}$ & Maximum hours of labor supply & 1 \\
         $\beta$ & Discount factor & $(0.96)^\frac{80}{S}$ \\
