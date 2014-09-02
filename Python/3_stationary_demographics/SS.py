@@ -88,7 +88,7 @@ print 'Generating demographics.'
 omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
     S, J, T, bin_weights, starting_age, ending_age, E)
 mort_rate = 1-surv_rate
-retire = np.round(9.0 * S / 16.0)
+retire = np.round(12.0 * S / 16.0)
 # chi_n_multiplier = 10.0
 # retire = np.round(90 * S / 100)
 # chi_n[retire:] = (chi_n_multiplier*mort_rate[retire:] + 1 - chi_n_multiplier*mort_rate[retire])
@@ -282,6 +282,10 @@ def Steady_State(guesses):
     B = (K_guess * omega_SS * mort_rate.reshape(S, 1)).sum(0)
     K = (omega_SS * K_guess).sum()
     L_guess = guesses[S * J:].reshape((S, J))
+    # L_guess_init[retire:] = np.ones((S-retire, J)) * 0.1
+    # for j in xrange(J):
+    #     L_guess_init[retire-5:retire, j] = np.linspace(L_guess_init[retire-5, j], 0.1, 5)
+
     L = get_L(e, L_guess)
     Y = get_Y(K, L)
     w = get_w(Y, L)
@@ -379,6 +383,7 @@ starttime = time.time()
 
 K_guess_init = np.ones((S, J)) * .05
 L_guess_init = np.ones((S, J)) * .95
+# L_guess_init[retire:] = np.ones((S-retire, J)) * 0.1
 guesses = list(K_guess_init.flatten()) + list(L_guess_init.flatten())
 
 print 'Solving for steady state level distribution of capital and labor.'
