@@ -94,7 +94,8 @@ retire = np.round(9.0 * S / 16.0)
 # chi_n[retire:] = (chi_n_multiplier*mort_rate[retire:] + 1 - chi_n_multiplier*mort_rate[retire])
 # chi_n *= .5
 # chi_n = (chi_n_multiplier*mort_rate + 1)
-# chi_n[retire:] *= (1.0 + mort_rate[retire:]-mort_rate[retire])**5.0
+chi_n[retire:] *= (1.0 + mort_rate[retire:]-mort_rate[retire])**10.0
+# chi_n[retire:] = (np.arange(S-retire)+2.0)**2.0
 print '\tFinished.'
 
 print 'The following are the parameter values of the simulation:'
