@@ -89,8 +89,11 @@ omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
     S, J, T, bin_weights, starting_age, ending_age, E)
 mort_rate = 1-surv_rate
 retire = np.round(9 * S / 16)
-# multiply the following line by 8, 9, or 10
-chi_n[retire:] = (mort_rate[retire:] + 1 - mort_rate[retire])**2
+chi_n_multiplier = 10.0
+retire = np.round(90 * S / 100)
+chi_n[retire:] = (chi_n_multiplier*mort_rate[retire:] + 1 - chi_n_multiplier*mort_rate[retire])
+chi_n *= .5
+# chi_n = (chi_n_multiplier*mort_rate + 1)
 print '\tFinished.'
 
 print 'The following are the parameter values of the simulation:'
@@ -105,7 +108,7 @@ print '\tnu:\t\t\t\t', nu
 print '\tA:\t\t\t\t', A
 print '\tdelta:\t\t\t', delta
 print '\tl-tilde:\t\t', ltilde
-print '\tChi_n:\t\t\tSee Graph'
+print '\tChi_n:\t\t\tSee graph'
 print '\tChi_b:\t\t\t', chi_b
 print '\teta:\t\t\t', eta
 print '\tg_n:\t\t\t', g_n
