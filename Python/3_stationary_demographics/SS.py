@@ -88,13 +88,13 @@ print 'Generating demographics.'
 omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
     S, J, T, bin_weights, starting_age, ending_age, E)
 mort_rate = 1-surv_rate
-retire = np.round(12.0 * S / 16.0)
-# chi_n_multiplier = 10.0
+retire = np.round(13.0 * S / 16.0)
+chi_n_multiplier = 50.0
 # retire = np.round(90 * S / 100)
 # chi_n[retire:] = (chi_n_multiplier*mort_rate[retire:] + 1 - chi_n_multiplier*mort_rate[retire])
 # chi_n *= .5
 # chi_n = (chi_n_multiplier*mort_rate + 1)
-chi_n[retire:] *= (1.0 + mort_rate[retire:]-mort_rate[retire])**10.0
+# chi_n[retire:] *= (1.0 + mort_rate[retire:]-mort_rate[retire])**10.0
 # chi_n[retire:] = (np.arange(S-retire)+2.0)**2.0
 print '\tFinished.'
 
@@ -282,9 +282,9 @@ def Steady_State(guesses):
     B = (K_guess * omega_SS * mort_rate.reshape(S, 1)).sum(0)
     K = (omega_SS * K_guess).sum()
     L_guess = guesses[S * J:].reshape((S, J))
-    L_guess_init[retire:] = np.ones((S-retire, J)) * 0.1
-    for j in xrange(J):
-        L_guess_init[retire-5:retire, j] = np.linspace(L_guess_init[retire-5, j], 0.1, 5)
+    # L_guess_init[retire:] = np.ones((S-retire, J)) * 0.1
+    # for j in xrange(J):
+    #     L_guess_init[retire-5:retire, j] = np.linspace(L_guess_init[retire-5, j], 0.1, 5)
 
     L = get_L(e, L_guess)
     Y = get_Y(K, L)
@@ -309,6 +309,8 @@ def Steady_State(guesses):
     cons = (1 + r) * K1_2 + w * e * L_guess + BQ.reshape(1, J) / bin_weights - K2_2 * np.exp(g_y)
     mask3 = cons < 0
     error2[mask3] += 1e9
+    # mask4 = np.diff(L_guess) > 0
+    # error2[mask4] += 1e9
     return list(error1.flatten()) + list(error2.flatten()) + list(error3.flatten())
 
 
@@ -383,7 +385,7 @@ starttime = time.time()
 
 K_guess_init = np.ones((S, J)) * .05
 L_guess_init = np.ones((S, J)) * .95
-L_guess_init[retire:] = np.ones((S-retire, J)) * 0.1
+# L_guess_init[retire:] = np.ones((S-retire, J)) * 0.1
 guesses = list(K_guess_init.flatten()) + list(L_guess_init.flatten())
 
 print 'Solving for steady state level distribution of capital and labor.'
