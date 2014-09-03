@@ -99,15 +99,7 @@ c0              = SxJ arry of the initial distribution of consumption
 ------------------------------------------------------------------------
 '''
 
-
-def get_N(children, omega):
-    N = children.sum(1).sum(1) + omega.sum(1).sum(1)
-    # N = omega.sum(1).sum(1)
-    return N
-
-N = get_N(children, omega)
 N_tilde = omega.sum(1).sum(1)
-# omega_stationary = omega / N.reshape(T+S, 1, 1)
 omega_stationary = omega / N_tilde.reshape(T+S, 1, 1)
 
 
@@ -133,7 +125,7 @@ def constraint_checker1(k_dist, l_dist, w, r, e, c_dist, BQ):
     print 'Checking constraints on the initial distributions of' \
         ' capital, labor, and consumption for TPI.'
     flag1 = False
-    if k_dist.sum() / N[-1] <= 0:
+    if k_dist.sum() / N_tilde[-1] <= 0:
         print '\tWARNING: Aggregate capital is less than or equal to zero.'
         flag1 = True
     if borrowing_constraints(k_dist, w, r, e, l_dist, BQ) is True:
@@ -169,7 +161,7 @@ def constraint_checker2(k_dist, l_dist, w, r, e, c_dist, t):
         Prints warnings for violations of capital, labor, and
             consumption constraints.
     '''
-    if k_dist.sum() / N[t] <= 0:
+    if k_dist.sum() / N_tilde[t] <= 0:
         print '\tWARNING: Aggregate capital is less than or equal to ' \
             'zero in period %.f.' % t
     if (l_dist < 0).any():
@@ -264,7 +256,7 @@ def MUl_2(n):
 
     Returns:    Marginal Utility of Labor
     '''
-    output = - chi_n * ((ltilde-n) ** (-eta))
+    output = - chi_n[0] * ((ltilde-n) ** (-eta))
     return output
 
 
@@ -277,7 +269,7 @@ def MUb(bq):
     output = chi_b * (bq ** (-sigma))
     return output
 
-
+# Bss *= (1 + rss)
 initial_K = np.array(list(Kssmat) + list(BQ.reshape(1, J)))
 K0 = (omega_stationary[0] * initial_K[:, :]).sum()
 K1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_K[:-1]))
@@ -525,7 +517,6 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             list((1-alpha) * Yinit / Linit) + list(np.ones(S)*wss))
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
             np.ones(S)*rss))
-        
 
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)

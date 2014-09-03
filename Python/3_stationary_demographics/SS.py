@@ -87,8 +87,9 @@ print '\tFinished.'
 print 'Generating demographics.'
 omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
     S, J, T, bin_weights, starting_age, ending_age, E)
+surv_rate[-1] = 0.0
 mort_rate = 1-surv_rate
-retire = np.round(13.0 * S / 16.0)
+retire = np.round(9.0 * S / 16.0)
 chi_n_multiplier = 50.0
 # retire = np.round(90 * S / 100)
 # chi_n[retire:] = (chi_n_multiplier*mort_rate[retire:] + 1 - chi_n_multiplier*mort_rate[retire])
