@@ -90,7 +90,9 @@ omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
 mort_rate = 1-surv_rate
 retire = np.round(7.0 * S / 16.0)
 chi_n_multiplier = 1.0
-chi_n[retire:] = (chi_n_multiplier*mort_rate[retire:] + 1 - chi_n_multiplier*mort_rate[retire])
+# This is how to do it, but need to generalize TPI version
+# chi_n[retire:] = (chi_n_multiplier*mort_rate[retire:] + 1 - chi_n_multiplier*mort_rate[retire])
+
 # chi_n = (chi_n_multiplier*mort_rate + 1)
 # chi_n[-1] = chi_n[-2]
 # later = np.round(12.0 * S / 16.0)
@@ -576,7 +578,6 @@ euler1 = Euler1(wss, rss, e, Lssmat, k1, k2, k3, B)
 euler2 = Euler2(wss, rss, e, Lssmat, k1_2, k2_2, B)
 euler3 = Euler3(wss, rss, e, Lssmat, K_eul3, B)
 
-print '\tMax absolute euler error for euler3:', np.abs(euler3).max()
 
 # 2D Graph
 plt.figure()
@@ -584,7 +585,15 @@ plt.plot(domain[1:], np.abs(euler1).max(1), label='Euler1')
 plt.plot(domain, np.abs(euler2).max(1), label='Euler2')
 plt.legend(loc=0)
 plt.title('Euler Errors')
-plt.savefig('OUTPUT/euler_errors_SS_2D')
+plt.xlabel(r'age cohort-$s$')
+plt.savefig('OUTPUT/euler_errors1and2_SS_2D')
+
+plt.figure()
+plt.plot(domain[:J], np.abs(euler3.flatten()), label='Euler3')
+plt.legend(loc=0)
+plt.title('Euler Errors')
+plt.xlabel(r'ability-$j$')
+plt.savefig('OUTPUT/euler_errors_euler3_SS_2D')
 
 # 3D Graph
 X2, Y2 = np.meshgrid(domain[1:], Jgrid)

@@ -236,7 +236,7 @@ def get_L(e, n):
 
     Returns:    Aggregate labor
     '''
-    L_now = np.sum(e * omega_stationary[1, :, :] * n)
+    L_now = np.sum(e * omega_stationary[0, :, :] * n)
     return L_now
 
 
@@ -269,7 +269,6 @@ def MUb(bq):
     output = chi_b * (bq ** (-sigma))
     return output
 
-# Bss *= (1 + rss)
 initial_K = np.array(list(Kssmat) + list(BQ.reshape(1, J)))
 K0 = (omega_stationary[0] * initial_K[:, :]).sum()
 K1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_K[:-1]))
