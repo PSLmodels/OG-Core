@@ -67,8 +67,8 @@
   Kerk L. Phillips\footnote{Brigham Young University, Department of Economics, 166 FOB, Provo, Utah 84602, (801) 422-5928, \href{mailto:kerk_phillips@byu.edu}{kerk\_phillips@byu.edu}.} \\[-2pt]
   \and
   Isaac Swift\footnote{Brigham Young University, Department of Economics, 163 FOB, Provo, Utah 84602, \href{mailto:isaacdswift@gmail.com}{isaacdswift@gmail.com}.} \\[-2pt]}
-\date{August 2014 \\
-  \scriptsize{(version 14.08.c)}}
+\date{September 2014 \\
+  \scriptsize{(version 14.09.a)}}
 \maketitle
 \begin{abstract}
 \normalsize{Put abstract here.
@@ -893,6 +893,52 @@
 \section*{TECHNICAL APPENDIX}
 
 
+\section{Constrained minimization version of the unconstrained maximization problem}\label{TAppConstrMin}
+
+  \setcounter{equation}{0}
+
+  The unconstrained lifetime maximization problem of the individual described in Section \ref{SecIndProb} is to choose labor supply $\{n_{j,s,t+s}\}_{s=1}^S$, savings $\{\hat{b}_{j,s+1,t+s+1}\}_{s=1}^{S-1}$, and intended bequests $\hat{bq}_{j,E+S+1,t+E+S+1}$ to solve the following system of $2S$ Euler equations.
+  \begin{equation}\tag{\ref{EqEulerLabStat}}
+    \begin{split}
+      &\hat{w}_t e_{j,s}\bigl(\hat{c}_{j,s,t}\bigr)^{-\sigma} = \chi_{n,s}(\tilde{l} - n_{j,s,t})^{-\eta} \\
+      &\quad\quad\quad\quad\quad\quad\quad\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S \quad\text{with}\quad \hat{b}_{j,E+1,t},\hat{b}_{j,E+S+1,t}=0 \\
+      &\quad\text{where}\quad \hat{c}_{j,s,t} = \left(1+r_t\right)\hat{b}_{j,s,t} + \hat{w}_t e_{j,s}n_{j,s,t} + \frac{\hat{BQ}_{j,t}}{\lambda_j} - e^{g_y}\hat{b}_{j,s+1,t+1} \\
+      &\quad\quad\quad\quad\quad\quad\quad\quad\quad\text{for}\quad E+1\leq s\leq E+S-1 \\
+      &\quad\quad\text{and}\quad \hat{c}_{j,s,t} = \left(1+r_t\right)\hat{b}_{j,s,t} + \hat{w}_t e_{j,s}n_{j,s,t} + \frac{\hat{BQ}_{j,t}}{\lambda_j} - e^{g_y}\hat{bq}_{j,s+1,t+1} \\
+      &\quad\quad\quad\quad\quad\quad\quad\quad\quad\text{for}\quad s=E+S
+    \end{split}
+  \end{equation}
+  \begin{equation}\tag{\ref{EqEulerSavStat}}
+    \bigl(\hat{c}_{j,s,t}\bigr)^{-\sigma} = \beta(1-\rho_s)(1+r_{t+1})e^{-\sigma g_y}\bigl(\hat{c}_{j,s+1,t+1}\bigr)^{-\sigma}\quad\forall j,t \quad\text{and}\quad E+1\leq s\leq E+S-1
+  \end{equation}
+  \begin{equation}\tag{\ref{EqEulerBeqStat}}
+    \bigl(\hat{c}_{j,E+S,t}\bigr)^{-\sigma} = \chi_b e^{-\sigma g_y}\bigl(\hat{bq}_{j,E+S+1,t+1}\bigr)^{-\sigma} \quad\forall j,t
+  \end{equation}
+
+  Using the Euler equations to solve for the $2S$ unknowns is very efficient as long as none of the choice variables is constrained. However, if any constraints do bind on those variables then the Euler equations no longer hold with equality. One solution is to introduce multipliers on those variables. The drawback to this approach is that it increases the dimensionality of the problem.
+
+  The alternative to using multipliers is to directly solve the constrained maximization of total discounted lifetime utility. Because savings above or below its natural bounds described in Appendix \ref{AppBorConstr} implies negative consumption and because negative consumption is not defined by the utility function and zero consumption has infinite negative utility. The bounds on saving will not bind. For the same reason, the upper bound on labor supply $n_{j,s,t}<\tilde{l}$ will not bind. The only constraint that we must enforce in a constrained optimization routine is the nonnegativity of labor supply $n_{j,s,t}\geq 0$. The expression for lifetime discounted utility is given in \eqref{EqUtilMax}. The stationarized constrained maximization problem for household $j$ born at the beginning of period $t$ is the following.
+  \begin{equation}\label{EqLifeUtilConstrMax}
+    \begin{split}
+      &\max_{\{n_{j,s,t+s}\geq 0\}_{s=E+1}^{E+S},\:\{\hat{b}_{j,s+1,t+s+1}\}_{s=E+1}^{E+S-1},\:\hat{bq}_{j,E+S+1,t+E+S+1}} \\
+      &\hat{U}_{j,s,t} = \sum_{u=0}^{E+S-s}\beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right]e^{g_y(t+u)(1-\sigma)}u\left(\hat{c}_{j,s+u,t+u},n_{j,s+u,t+u}\right) \\
+      &\quad\text{where}\quad \rho_{s-1}=0, \\
+      &\quad\text{and} \quad u\left(\hat{c}_{j,s,t},n_{j,s,t}\right) = \frac{\left(\hat{c}_{j,s,t}\right)^{1-\sigma} - 1}{1-\sigma} + \chi_{n,s}\frac{(\tilde{l}-n_{j,s,t})^{1-\eta}}{1-\eta} \\
+      &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\forall j,t\quad\text{and}\:E+1\leq s< E+S \\
+      &\quad\text{and}\quad u\left(\hat{c}_{j,s,t},n_{j,s,t}\right) = \frac{\left(\hat{c}_{j,s,t}\right)^{1-\sigma} - 1}{1-\sigma} + \chi_{n,s}\frac{(\tilde{l}-n_{j,s,t})^{1-\eta}}{1-\eta} + ... \\
+      &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad \chi_b e^{g_y(1-\sigma)}\frac{\left(\hat{bq}_{j,s+1,t+1}\right)^{1-\sigma} - 1}{1-\sigma} \quad\forall j,t\quad\text{and}\quad s=E+S \\
+      &\quad\text{and where}\quad \hat{c}_{j,s,t} = (1+r_t)\hat{b}_{j,s,t} + \hat{w}_t e_{j,s}n_{j,s,t} - e^{g_y}\hat{b}_{j,s+1,t+1} \quad\text{for}\quad s<E+S \\
+      &\quad\text{and}\quad \hat{c}_{j,s,t} = (1+r_t)\hat{b}_{j,s,t} + \hat{w}_t e_{j,s}n_{j,s,t} - e^{g_y}\hat{bq}_{j,s+1,t+1} \quad\text{for}\quad s=E+S
+    \end{split}
+  \end{equation}
+
+  The first order conditions of the unconstrained problem are exactly the ones described in \eqref{EqEulerLabStat}, \eqref{EqEulerSavStat}, and \eqref{EqEulerBeqStat}. However, as mentioned before, adding the nonnegativity constraint on labor supply either requires us to not use the simple first order conditions. Instead, we use a constrained minimization routine that chooses household labor supply, savings, and intended bequests over the entire lifetime to minimize the negative of lifetime utility $-\hat{U}_{j,s,t}$ from \eqref{EqLifeUtilConstrMax}.
+
+
+
+
+
+\newpage
 \section{Comments and Notes}\label{TAppComments}
 
   \noindent Structures to add to the model and order
