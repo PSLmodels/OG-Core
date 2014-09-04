@@ -89,19 +89,17 @@ omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
     S, J, T, bin_weights, starting_age, ending_age, E)
 mort_rate = 1-surv_rate
 retire = np.round(7.0 * S / 16.0)
-chi_n_multiplier = 48.0
-# This is how to do it, but need to generalize TPI version
-# chi_n[retire:] = (chi_n_multiplier*mort_rate[retire:] + 1 - chi_n_multiplier*mort_rate[retire])
+chi_n_multiplier = 1
 
-# chi_n = (chi_n_multiplier*mort_rate + 1)
-# chi_n[-1] = chi_n[-2]
-# later = np.round(12.0 * S / 16.0)
-# exp = np.linspace(1, 9, 20)
-# chi_n[later:] = chi_n[later:] ** exp - chi_n[later] ** exp + chi_n[later]
-# chi_n[retire:] *= (1.0 + mort_rate[retire:]-mort_rate[retire])**10.0
-# chi_n[retire:] = (np.arange(S-retire)+2.0)**2.0
+# multiply it by something
+# chi_n[retire:] = (chi_n_multiplier*mort_rate[retire:] + 1 - chi_n_multiplier*mort_rate[retire])
+# increase expentially
+chi_n[retire:] = (mort_rate[retire:] + 1 - mort_rate[retire])**chi_n_multiplier
+
 surv_rate[-1] = 0.0
 mort_rate[-1] = 1
+lambdy_scalar = chi_n * 50
+# lambdy_scalar = np.ones(S) * 50.0
 print '\tFinished.'
 
 print 'The following are the parameter values of the simulation:'
@@ -267,7 +265,7 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2, B, lambdy):
         Value of Euler error.
     '''
     euler = MUc((1 + r)*K1_2 + w * e * L_guess + B.reshape(1, J) / bin_weights - K2_2 * 
-        np.exp(g_y)) * w * e + MUl(L_guess) - lambdy
+        np.exp(g_y)) * w * e + MUl(L_guess) + lambdy
     return euler
 
 
@@ -305,8 +303,16 @@ def Steady_State(guesses):
     error2 = Euler2(w, r, e, L_guess, K1_2, K2_2, BQ, lambdy)
     error3 = Euler3(w, r, e, L_guess, K_guess, BQ)
     error4 = lambdy * L_guess
-    mask = L_guess > ltilde
-    error2[mask] += 1e9
+    # Check and punish constraing violations
+    mask1 = L_guess < 0
+    error2[mask1] += 1e9
+    mask2 = L_guess > ltilde
+    error2[mask2] += 1e9
+    if K_guess.sum() <= 0:
+        error1 += 1e9
+    cons = (1 + r) * K1_2 + w * e * L_guess + BQ.reshape(1, J) / bin_weights - K2_2 * np.exp(g_y)
+    mask3 = cons < 0
+    error2[mask3] += 1e9
     return list(error1.flatten()) + list(error2.flatten()) + list(error3.flatten()) + list(error4.flatten())
 
 
@@ -381,7 +387,7 @@ starttime = time.time()
 
 K_guess_init = np.ones((S, J)) * .05
 L_guess_init = np.ones((S, J)) * .95
-lambdy = np.ones((S, J)) * .5
+lambdy = np.ones((S, J)) * lambdy_scalar.reshape(S, 1)
 guesses = list(K_guess_init.flatten()) + list(L_guess_init.flatten()) + list(lambdy.flatten())
 
 print 'Solving for steady state level distribution of capital and labor.'
