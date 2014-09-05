@@ -326,39 +326,32 @@ def Steady_State(guesses):
 
 def consumption(b_guess, n_guess, BQ, r, w):
 
-    b1 = np.array(list(np.zeros(J).reshape(1, J)) + list(b_guess[:-1]))
+    b1 = np.array([0] + list(b_guess[:-1]))
     b2 = b_guess
-    consumption = (1+r) * b1 + e * w * n_guess - np.exp(g_y) * b2 
+    consumption = (1+r) * b1 + e[:, j] * w * n_guess  +  (1 + r) * BQ - np.exp(g_y) * b2 
 
     return consumption
 
 
 def Period_Utility(b_guess, n_guess, BQ, r, w):
 
-    utility = np.empty((S,J))
-    utility[:-1, :] = ( (consumption(b_guess, n_guess, BQ, r, w)[:-1]**(1-sigma) - 1)/(1-sigma) ) + \
-        chi_n[:-1].reshape(S-1, 1) * ( ((ltilde - n_guess[:-1])**(1 - eta)) / (1 - eta) )
-    utility[-1, :] = ( (consumption(b_guess, n_guess, BQ, r, w)[-1]**(1-sigma) - 1)/(1-sigma) ) + \
+    utility = np.empty(S)
+    utility[:-1] = ( (consumption(b_guess, n_guess, BQ, r, w)[:-1]**(1-sigma) - 1)/(1-sigma) ) + \
+        chi_n[:-1] * ( ((ltilde - n_guess[:-1])**(1 - eta)) / (1 - eta) )
+    utility[-1] = ( (consumption(b_guess, n_guess, BQ, r, w)[-1]**(1-sigma) - 1)/(1-sigma) ) + \
         chi_n[-1] * ( ((ltilde - n_guess[-1])**(1 - eta)) / (1 - eta) ) + \
         chi_b * np.exp(g_y * (1-sigma)) * ( (b_guess[-1]**(1-sigma)) / (1-sigma) )
 
     return utility
 
 
-def Lifetime_Utility(guesses):
+def Lifetime_Utility(guesses, w, r, BQ):
 
-    b_guess = guesses[: S*J].reshape(S, J)
-    n_guess = guesses[S*J: ].reshape(S, J)
+    b_guess = guesses[: S]
+    n_guess = guesses[S: ]
 
-    K = (omega_SS * b_guess).sum()
-    L = (omega_SS * n_guess).sum()
-    BQ = (mort_rate.reshape(S, 1) * omega_SS * b_guess).sum(0)
-    Y = get_Y(K, L)
-    r = get_r(Y, K)
-    w = get_w(Y, L)
-
-    utility = ( beta**(np.arange(S)+1.0).reshape(S, 1) * cum_surv_rate.reshape(S, 1) * \
-            np.exp(g_y * (np.arange(S)+1.0) * (1.0-sigma)).reshape(S, 1) * \
+    utility = ( beta**(np.arange(S)+1.0) * cum_surv_rate * \
+            np.exp(g_y * (np.arange(S)+1.0) * (1.0-sigma)) * \
             Period_Utility(b_guess, n_guess, BQ, r, w) ).sum()
 
     return -utility
@@ -433,16 +426,51 @@ def constraint_checker(Kssmat, Lssmat, wss, rss, e, cssmat, BQ):
 
 starttime = time.time()
 
-K_guess_init = np.ones((S, J)) * .01
-L_guess_init = np.ones((S, J)) * .8
-# L_guess_init[retire:] = np.ones((S-retire, J)) * 0.1
-guesses = list(K_guess_init.flatten()) + list(L_guess_init.flatten())
+K_init = np.ones((S, J)) * .01
+L_init = np.ones((S, J)) * .95
+K = (omega_SS * K_init).sum()
+L = (omega_SS * L_init).sum()
+Y = get_Y(K, L)
+w = get_w(Y, L)
+r = get_w(Y, K)
+BQ = (mort_rate.reshape(S, 1) * omega_SS * K_init).sum(0) / bin_weights
+# L_init[retire:] = np.ones((S-retire, J)) * 0.1
+guesses = np.array(list(K_init) + list(L_init))
 
+SS_dist = 10.0
+SS_min_dist = 3e-6
+SS_iter = 0
+SS_max_iter = 100
 print 'Solving for steady state level distribution of capital and labor.'
-bounds = [(None, None)] * (S*J) + [(0.001, None)] * (S*J)
-solutions = opt.minimize(Lifetime_Utility, guesses, bounds=bounds, method='Nelder-Mead')
-print "It was successful: ", solutions.success
-solutions = solutions.x
+bounds = [(None, None)] * S + [(0.0, None)] * S
+
+while (SS_dist > SS_min_dist) and (SS_iter < SS_max_iter):
+    
+    solutions = np.empty((2*S, J))
+    for j in xrange(J):
+        answer = opt.minimize(Lifetime_Utility, guesses[:,j], args=(w, r, BQ[j]), bounds=bounds)
+        print answer.success
+        solutions[:, j] = answer.x
+    
+    K_new = solutions[:S].reshape(S, J)
+    L_new = solutions[S:].reshape(S, J)
+    K_init = nu * K_new + (1-nu) * K_init
+    L_init = nu * L_new + (1-nu) * L_init
+
+    K = (omega_SS * K_init).sum()
+    L = (omega_SS * L_init).sum()
+    Y = get_Y(K, L)
+    w = get_w(Y, L)
+    r = get_w(Y, K)
+    BQ = (mort_rate.reshape(S, 1) * omega_SS * K_init).sum(0) / bin_weights
+
+    SS_dist = np.max(abs(K_init - K_new))
+    SS_iter += 1
+    print SS_iter
+    print SS_dist
+
+
+
 print '\tFinished.'
 
 runtime = time.time() - starttime
