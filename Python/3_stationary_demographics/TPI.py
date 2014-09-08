@@ -142,7 +142,7 @@ def constraint_checker1(k_dist, l_dist, w, r, e, c_dist, BQ):
     if flag2 is False:
         print '\tThere were no violations of the constraints on labor supply.'
     if (c_dist < 0).any():
-        print '\tWARNING: Conusmption volates nonnegativity constraints.'
+        print '\tWARNING: Consumption volates nonnegativity constraints.'
     else:
         print '\tThere were no violations of the constraints on consumption.'
 
@@ -171,7 +171,7 @@ def constraint_checker2(k_dist, l_dist, w, r, e, c_dist, t):
         print '\tWARNING: Labor suppy violates the ltilde constraint in '\
             'period %.f.' % t
     if (c_dist < 0).any():
-        print '\tWARNING: Conusmption volates nonnegativity constraints in ' \
+        print '\tWARNING: Consumption volates nonnegativity constraints in ' \
             'period %.f.' % t
 
 
@@ -409,7 +409,7 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     error3 = MUc((1 + r[-1])*K_guess[-2] + w[-1] * e[-1, j] * L_guess[-1] + (1 + r[-1])*B[-1]/bin_weights[j] - K_guess[-1] * 
         np.exp(g_y)) - np.exp(-sigma * g_y) * MUb(K_guess[-1])
 
-    # Check and punish constraing violations
+    # Check and punish constraint violations
     mask1 = L_guess < 0
     error2[mask1] += 1e9
     mask2 = L_guess > ltilde

@@ -297,6 +297,7 @@ def Steady_State(guesses):
     w = get_w(Y, L)
     r = get_r(Y, K)
     BQ = (1 + r) * B
+    # BQ = B
     K1 = np.array(list(np.zeros(J).reshape(1, J)) + list(K_guess[:-2, :]))
     K2 = K_guess[:-1, :]
     K3 = K_guess[1:, :]
