@@ -88,8 +88,8 @@ print 'Generating demographics.'
 omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
     S, J, T, bin_weights, starting_age, ending_age, E)
 mort_rate = 1-surv_rate
-retire = np.round(7.0 * S / 16.0)
-chi_n_multiplier = 1
+retire = np.round(9.0 * S / 16.0)
+chi_n_multiplier = 10
 
 # multiply it by something
 # chi_n[retire:] = (chi_n_multiplier*mort_rate[retire:] + 1 - chi_n_multiplier*mort_rate[retire])
@@ -98,8 +98,8 @@ chi_n[retire:] = (mort_rate[retire:] + 1 - mort_rate[retire])**chi_n_multiplier
 
 surv_rate[-1] = 0.0
 mort_rate[-1] = 1
-lambdy_scalar = chi_n * 50
-# lambdy_scalar = np.ones(S) * 50.0
+# lambdy_scalar = chi_n * 50
+lambdy_scalar = np.ones(S) * 1e-20
 print '\tFinished.'
 
 print 'The following are the parameter values of the simulation:'
