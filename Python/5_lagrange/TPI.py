@@ -327,9 +327,10 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     Returns:
         Value of Euler error. (as an (S-1)*S*J x 1 list)
     '''
-    length = len(guesses)/2
+    length = len(guesses)/3
     K_guess = guesses[:length]
-    L_guess = guesses[length:]
+    L_guess = np.array(guesses[length:2*length]) ** 2
+    lam_guess = np.array(guesses[2*length:]) ** 2
 
     if length == S:
         K1 = np.array([0] + list(K_guess[:-2]))
@@ -364,14 +365,14 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     B = Binit[t:t+length]
     error2 = MUc((1 + r)*K1_2 + w * e[
         -(length):, j] * L_guess + (1 + r)*B/bin_weights[j] - np.exp(g_y) * K2_2) * w * e[
-        -(length):, j] + MUl(L_guess)
+        -(length):, j] + MUl(L_guess) + lam_guess
 
     error3 = MUc((1 + r[-1])*K_guess[-2] + w[-1] * e[-1, j] * L_guess[-1] + (1 + r[-1])*B[-1]/bin_weights[j] - K_guess[-1] * 
         np.exp(g_y)) - np.exp(-sigma * g_y) * MUb(K_guess[-1])
 
+    error4 = lam_guess * L_guess
+
     # Check and punish constraint violations
-    mask1 = L_guess < 0
-    error2[mask1] += 1e9
     mask2 = L_guess > ltilde
     error2[mask2] += 1e9
     if K_guess.sum() <= 0:
@@ -390,7 +391,7 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     difference = K_guess[:-1] - b_min
     mask4 = difference < 0
     error1[mask4] += 1e9
-    return list(error1.flatten()) + list(error2.flatten()) + list(error3.flatten())
+    return list(error1.flatten()) + list(error2.flatten()) + list(error3.flatten()) + list(error4.flatten())
 
 
 domain = np.linspace(0, T, T)
@@ -412,7 +413,6 @@ print 'Starting time path iteration.'
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     plt.figure()
-    Add a comment to this line
     plt.axhline(
         y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
     plt.plot(np.arange(
@@ -420,42 +420,32 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     plt.xlabel(r"Time $t$")
     plt.ylabel(r"Per-capita Capital $\hat{K}$")
     plt.savefig("OUTPUT/TPI_K")
-    plt.figure()
-    plt.axhline(
-        y=Lss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
-    plt.plot(np.arange(
-        T), Linit[:T], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
-    plt.xlabel(r"Time $t$")
-    plt.ylabel(r"Per-capita Capital $\hat{L}$")
-    plt.savefig("OUTPUT/TPI_L")
-    plt.figure()
-    plt.axhline(
-        y=Bss.sum(), color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
-    plt.plot(np.arange(
-        T), Binit[:T].sum(1), 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
-    plt.xlabel(r"Time $t$")
-    plt.ylabel(r"Per-capita Capital $\hat{K}$")
-    plt.savefig("OUTPUT/TPI_bq")
     K_mat = np.zeros((T+S, S, J))
     L_mat = np.zeros((T+S, S, J))
+    lam_mat = np.zeros((T+S, S, J))
     for j in xrange(J):
         for s in xrange(S-2):  # Upper triangle
             solutions = opt.fsolve(Euler_Error, list(
-                initial_K[-(s+2):, j]) + list(initial_L[-(s+2):, j]), args=(
+                initial_K[-(s+2):, j]) + list(initial_L[-(s+2):, j]) + list(
+                lambdy[-(s+2):, j] ** .5), args=(
                 winit, rinit, Binit[:, j], 0))
-            K_vec = solutions[:len(solutions)/2]
+            K_vec = solutions[:len(solutions)/3]
             K_mat[1:S+1, :, j] += np.diag(K_vec, S-(s+2))
-            L_vec = solutions[len(solutions)/2:]
+            L_vec = solutions[len(solutions)/3:2*len(solutions)/3] ** 2
             L_mat[:S, :, j] += np.diag(L_vec, S-(s+2))
+            lam_vec = solutions[2*len(solutions)/3:] ** 2
+            lam_mat[:S, :, j] += np.diag(lam_vec, S-(s+2))
 
         for t in xrange(0, T):
             solutions = opt.fsolve(Euler_Error, list(
-                initial_K[:, j]) + list(initial_L[:, j]), args=(
+                initial_K[:, j]) + list(initial_L[:, j] ** .5) + list(lambdy[:, j] ** .5), args=(
                 winit, rinit, Binit[:, j], t))
             K_vec = solutions[:S]
             K_mat[t+1:t+S+1, :, j] += np.diag(K_vec)
-            L_vec = solutions[S:]
+            L_vec = solutions[S:2*S] ** 2
             L_mat[t:t+S, :, j] += np.diag(L_vec)
+            lam_vec = solutions[2*S:] ** 2
+            lam_mat[t:t+S, :, j] += np.diag(lam_vec)
 
     K_mat[0, :, :] = initial_K
     L_mat[0, -1, :] = initial_L[-1, :]
@@ -600,7 +590,7 @@ def Euler1(w, r, wnext, rnext, e, L_guess, K1, K2, K3, B):
     return euler
 
 
-def Euler2(w, r, e, L_guess, K1_2, K2_2, B):
+def Euler2(w, r, e, L_guess, K1_2, K2_2, B, lam):
     '''
     Parameters:
         w        = wage rate (scalar)
@@ -614,7 +604,7 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2, B):
         Value of Euler error.
     '''
     euler = MUc((1 + r)*K1_2 + w * e * L_guess + B.reshape(1, J) / bin_weights - K2_2 * 
-        np.exp(g_y)) * w * e + MUl(L_guess)
+        np.exp(g_y)) * w * e + MUl(L_guess) + lam
     return euler
 
 
@@ -640,7 +630,7 @@ for t in xrange(T):
     euler_mat1[t, :, :] = Euler1(
         winit[t], rinit[t], winit[t+1], rinit[t+1], e, L_mat[t], k1[t], k2[
             t], k3[t], Binit[t])
-    euler_mat2[t] = Euler2(winit[t], rinit[t], e, L_mat[t], k1_2[t], k2_2[t], Binit[t])
+    euler_mat2[t] = Euler2(winit[t], rinit[t], e, L_mat[t], k1_2[t], k2_2[t], Binit[t], lam_mat[t])
     euler_mat3[t] = Euler3(winit[t], rinit[t], e, L_mat[t], k2[t], Binit[t])
 
 domain = np.linspace(1, T, T)

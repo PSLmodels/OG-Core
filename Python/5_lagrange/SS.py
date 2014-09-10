@@ -89,7 +89,7 @@ omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
     S, J, T, bin_weights, starting_age, ending_age, E)
 mort_rate = 1-surv_rate
 retire = np.round(7.0 * S / 16.0)
-chi_n_multiplier = 16
+chi_n_multiplier = 1
 
 # multiply it by something
 # chi_n[retire:] = (chi_n_multiplier*mort_rate[retire:] + 1 - chi_n_multiplier*mort_rate[retire])
@@ -100,8 +100,9 @@ surv_rate[-1] = 0.0
 mort_rate[-1] = 1
 # lambdy_scalar = chi_n * 250
 lambdy_scalar = np.ones(S) * 1e-13
-lambdy_scalar[retire:] = np.ones(S-retire) * chi_n_multiplier * 1.5
-# lambdy_scalar[retire:] = chi_n[retire:] * chi_n_multiplier
+# lambdy_scalar[retire:] = np.ones(S-retire) * chi_n_multiplier * 1.5
+lambdy_scalar[retire:] = np.ones(S-retire) * chi_n_multiplier * 2.9
+
 
 print '\tFinished.'
 
@@ -650,7 +651,7 @@ var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'e', 'E',
              'seconds', 'eta', 'chi_n', 'chi_b', 'ltilde', 'ctilde', 'T',
              'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist', 'BQ',
              'children', 'surv_rate', 'mort_rate', 'Bss', 'bin_weights',
-             'bqtilde']
+             'bqtilde', 'lambdy']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
