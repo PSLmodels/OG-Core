@@ -411,6 +411,31 @@ TPIdist = 10
 print 'Starting time path iteration.'
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
+    plt.figure()
+    Add a comment to this line
+    plt.axhline(
+        y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
+    plt.plot(np.arange(
+        T), Kinit[:T], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
+    plt.xlabel(r"Time $t$")
+    plt.ylabel(r"Per-capita Capital $\hat{K}$")
+    plt.savefig("OUTPUT/TPI_K")
+    plt.figure()
+    plt.axhline(
+        y=Lss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
+    plt.plot(np.arange(
+        T), Linit[:T], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
+    plt.xlabel(r"Time $t$")
+    plt.ylabel(r"Per-capita Capital $\hat{L}$")
+    plt.savefig("OUTPUT/TPI_L")
+    plt.figure()
+    plt.axhline(
+        y=Bss.sum(), color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
+    plt.plot(np.arange(
+        T), Binit[:T].sum(1), 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
+    plt.xlabel(r"Time $t$")
+    plt.ylabel(r"Per-capita Capital $\hat{K}$")
+    plt.savefig("OUTPUT/TPI_bq")
     K_mat = np.zeros((T+S, S, J))
     L_mat = np.zeros((T+S, S, J))
     for j in xrange(J):
@@ -452,7 +477,6 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             list((1-alpha) * Yinit / Linit) + list(np.ones(S)*wss))
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
             np.ones(S)*rss))
-    TPIdist = TPImindist - 1e-9
 
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)

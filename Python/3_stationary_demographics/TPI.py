@@ -452,7 +452,6 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             list((1-alpha) * Yinit / Linit) + list(np.ones(S)*wss))
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
             np.ones(S)*rss))
-    TPIdist = TPImindist - 1e-9
 
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
