@@ -297,7 +297,6 @@ def Steady_State(guesses):
     w = get_w(Y, L)
     r = get_r(Y, K)
     BQ = (1 + r) * B
-    # BQ = B
     K1 = np.array(list(np.zeros(J).reshape(1, J)) + list(K_guess[:-2, :]))
     K2 = K_guess[:-1, :]
     K3 = K_guess[1:, :]
@@ -590,7 +589,7 @@ plt.xlabel(r'age cohort-$s$')
 plt.savefig('OUTPUT/euler_errors1and2_SS_2D')
 
 plt.figure()
-plt.plot(domain[:J], np.abs(euler3.flatten()), label='Euler3')
+plt.plot(domain[:J]-E, np.abs(euler3.flatten()), label='Euler3')
 plt.legend(loc=0)
 plt.title('Euler Errors')
 plt.xlabel(r'ability-$j$')

@@ -142,7 +142,7 @@ def constraint_checker1(k_dist, l_dist, w, r, e, c_dist, BQ):
     if flag2 is False:
         print '\tThere were no violations of the constraints on labor supply.'
     if (c_dist < 0).any():
-        print '\tWARNING: Conusmption volates nonnegativity constraints.'
+        print '\tWARNING: Consumption volates nonnegativity constraints.'
     else:
         print '\tThere were no violations of the constraints on consumption.'
 
@@ -171,7 +171,7 @@ def constraint_checker2(k_dist, l_dist, w, r, e, c_dist, t):
         print '\tWARNING: Labor suppy violates the ltilde constraint in '\
             'period %.f.' % t
     if (c_dist < 0).any():
-        print '\tWARNING: Conusmption volates nonnegativity constraints in ' \
+        print '\tWARNING: Consumption volates nonnegativity constraints in ' \
             'period %.f.' % t
 
 
@@ -250,7 +250,7 @@ def MUc(c):
     return c**(-sigma)
 
 
-def MUl_2(n):
+def MUl(n):
     '''
     Parameters: Labor
 
@@ -278,8 +278,8 @@ L0 = get_L(e, initial_L)
 Y0 = get_Y(K0, L0)
 w0 = get_w(Y0, L0)
 r0 = get_r(Y0, K0)
-c0 = (1 + r0) * K1_2init + w0 * e * initial_L - K2_2init * np.exp(g_y)
 B0 = (initial_K * omega_stationary[0] * mort_rate.reshape(S,1)).sum(0)
+c0 = (1 + r0) * K1_2init + w0 * e * initial_L - K2_2init * np.exp(g_y) + (1 + rss) * Bss.reshape(1, J)/bin_weights.reshape(1,J)
 constraint_checker1(initial_K[:-1], initial_L, w0, r0, e, c0, B0)
 print 'K0 divided by Kss =', K0/Kss
 
@@ -315,46 +315,6 @@ seconds      = Seconds needed to find the steady state, less the number
 '''
 
 
-def Euler1(w1, r1, w2, r2, e, n, K1, K2, K3):
-    '''
-    Parameters:
-        w  = wage rate (scalar)
-        r  = rental rate (scalar)
-        e  = distribution of abilities (SxJ array)
-        n  = distribution of labor (Sx1 vector)
-        K1 = distribution of capital in period t ((S-1) x J array)
-        K2 = distribution of capital in period t+1 ((S-1) x J array)
-        K3 = distribution of capital in period t+2 ((S-1) x J array)
-
-    Returns:
-        Value of Euler error.
-    '''
-    euler = MUc(
-        (1 + r1)*K1 + w1 * e[:-1, :] * n[:-1, :] - np.exp(
-            g_y) * K2) - beta * np.exp(-sigma * g_y) * surv_rate[
-                :-1].reshape(S-1, 1) * (1 + r2)*MUc(
-        (1 + r2)*K2 + w2 * e[1:, :] * n[1:, :] - np.exp(g_y) * K3)
-    return euler
-
-
-def Euler2(w, r, e, L_guess, K1_2, K2_2):
-    '''
-    Parameters:
-        w        = wage rate (scalar)
-        r        = rental rate (scalar)
-        e        = distribution of abilities (SxJ array)
-        L_guess  = distribution of labor (SxJ array)
-        K1_2     = distribution of capital in period t (S x J array)
-        K2_2     = distribution of capital in period t+1 (S x J array)
-
-    Returns:
-        Value of Euler error.
-    '''
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess - np.exp(
-        g_y) * K2_2) * w * e + MUl_2(L_guess)
-    return euler
-
-
 def Euler_Error(guesses, winit, rinit, Binit, t):
     '''
     Parameters:
@@ -371,7 +331,7 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     K_guess = guesses[:length]
     L_guess = guesses[length:]
 
-    if length == S-1:
+    if length == S:
         K1 = np.array([0] + list(K_guess[:-2]))
     else:
         K1 = np.array([(initial_K[-(s+2), j])] + list(K_guess[:-2]))
@@ -404,12 +364,12 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     B = Binit[t:t+length]
     error2 = MUc((1 + r)*K1_2 + w * e[
         -(length):, j] * L_guess + (1 + r)*B/bin_weights[j] - np.exp(g_y) * K2_2) * w * e[
-        -(length):, j] + MUl_2(L_guess)
+        -(length):, j] + MUl(L_guess)
 
     error3 = MUc((1 + r[-1])*K_guess[-2] + w[-1] * e[-1, j] * L_guess[-1] + (1 + r[-1])*B[-1]/bin_weights[j] - K_guess[-1] * 
         np.exp(g_y)) - np.exp(-sigma * g_y) * MUb(K_guess[-1])
 
-    # Check and punish constraing violations
+    # Check and punish constraint violations
     mask1 = L_guess < 0
     error2[mask1] += 1e9
     mask2 = L_guess > ltilde
@@ -451,30 +411,6 @@ TPIdist = 10
 print 'Starting time path iteration.'
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-    plt.figure()
-    plt.axhline(
-        y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
-    plt.plot(np.arange(
-        T), Kinit[:T], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
-    plt.xlabel(r"Time $t$")
-    plt.ylabel(r"Per-capita Capital $\hat{K}$")
-    plt.savefig("OUTPUT/TPI_K")
-    plt.figure()
-    plt.axhline(
-        y=Lss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
-    plt.plot(np.arange(
-        T), Linit[:T], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
-    plt.xlabel(r"Time $t$")
-    plt.ylabel(r"Per-capita Capital $\hat{L}$")
-    plt.savefig("OUTPUT/TPI_L")
-    plt.figure()
-    plt.axhline(
-        y=Bss.sum(), color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
-    plt.plot(np.arange(
-        T), Binit[:T].sum(1), 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
-    plt.xlabel(r"Time $t$")
-    plt.ylabel(r"Per-capita Capital $\hat{K}$")
-    plt.savefig("OUTPUT/TPI_bq")
     K_mat = np.zeros((T+S, S, J))
     L_mat = np.zeros((T+S, S, J))
     for j in xrange(J):
@@ -516,6 +452,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             list((1-alpha) * Yinit / Linit) + list(np.ones(S)*wss))
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
             np.ones(S)*rss))
+    TPIdist = TPImindist - 1e-9
 
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
@@ -616,6 +553,52 @@ euler_mat2 = TxSxJ arry of euler errors across time, age, and
 domain     = 1 x S vector of each age cohort
 ------------------------------------------------------------------------
 '''
+
+
+def Euler1(w, r, wnext, rnext, e, L_guess, K1, K2, K3, B):
+    '''
+    Parameters:
+        w        = wage rate (scalar)
+        r        = rental rate (scalar)
+        e        = distribution of abilities (SxJ array)
+        L_guess  = distribution of labor (SxJ array)
+        K1       = distribution of capital in period t ((S-1) x J array)
+        K2       = distribution of capital in period t+1 ((S-1) x J array)
+        K3       = distribution of capital in period t+2 ((S-1) x J array)
+
+    Returns:
+        Value of Euler error.
+    '''
+    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] + B.reshape(1, J) / bin_weights - K2 * np.exp(
+        g_y)) - beta * surv_rate[:-1].reshape(S-1, 1) * (
+        1 + rnext)*MUc((1 + rnext)*K2 + wnext * e[1:, :] * L_guess[1:, :] + B.reshape(1, J) / bin_weights - K3 * np.exp(
+            g_y)) * np.exp(-sigma * g_y)
+    return euler
+
+
+def Euler2(w, r, e, L_guess, K1_2, K2_2, B):
+    '''
+    Parameters:
+        w        = wage rate (scalar)
+        r        = rental rate (scalar)
+        e        = distribution of abilities (SxJ array)
+        L_guess  = distribution of labor (SxJ array)
+        K1_2     = distribution of capital in period t (S x J array)
+        K2_2     = distribution of capital in period t+1 (S x J array)
+
+    Returns:
+        Value of Euler error.
+    '''
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess + B.reshape(1, J) / bin_weights - K2_2 * 
+        np.exp(g_y)) * w * e + MUl(L_guess)
+    return euler
+
+
+def Euler3(w, r, e, L_guess, K_guess, B):
+    euler = MUc((1 + r)*K_guess[-2, :] + w * e[-1, :] * L_guess[-1, :] + B.reshape(1, J) / bin_weights - K_guess[-1, :] * 
+        np.exp(g_y)) - np.exp(-sigma * g_y) * MUb(K_guess[-1, :])
+    return euler
+
 k1 = np.zeros((T, S-1, J))
 k1[:, 1:, :] = K_mat[:T, :-2, :]
 k2 = K_mat[:T, :-1, :]
@@ -627,17 +610,20 @@ k2_2 = np.zeros((T, S, J))
 k2_2[:, :, :] = K_mat[:T, :, :]
 euler_mat1 = np.zeros((T, S-1, J))
 euler_mat2 = np.zeros((T, S, J))
+euler_mat3 = np.zeros((T, J))
 
 for t in xrange(T):
     euler_mat1[t, :, :] = Euler1(
         winit[t], rinit[t], winit[t+1], rinit[t+1], e, L_mat[t], k1[t], k2[
-            t], k3[t])
-    euler_mat2[t] = Euler2(winit[t], rinit[t], e, L_mat[t], k1_2[t], k2_2[t])
+            t], k3[t], Binit[t])
+    euler_mat2[t] = Euler2(winit[t], rinit[t], e, L_mat[t], k1_2[t], k2_2[t], Binit[t])
+    euler_mat3[t] = Euler3(winit[t], rinit[t], e, L_mat[t], k2[t], Binit[t])
 
 domain = np.linspace(1, T, T)
 plt.figure()
 plt.plot(domain, np.abs(euler_mat1).max(1).max(1), label='Euler1')
 plt.plot(domain, np.abs(euler_mat2).max(1).max(1), label='Euler2')
+plt.plot(domain, np.abs(euler_mat3).max(1), label='Euler3')
 plt.ylabel('Error Value')
 plt.xlabel(r'Time $t$')
 plt.legend(loc=0)

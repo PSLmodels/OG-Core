@@ -371,7 +371,7 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     K_guess = guesses[:length]
     L_guess = guesses[length:]
 
-    if length == S-1:
+    if length == S:
         K1 = np.array([0] + list(K_guess[:-2]))
     else:
         K1 = np.array([(initial_K[-(s+2), j])] + list(K_guess[:-2]))
