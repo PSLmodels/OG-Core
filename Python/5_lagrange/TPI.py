@@ -256,7 +256,7 @@ def MUl(n):
 
     Returns:    Marginal Utility of Labor
     '''
-    output = - chi_n[0] * ((ltilde-n) ** (-eta))
+    output = - chi_n.reshape(S, 1) * ((ltilde-n) ** (-eta))
     return output
 
 
@@ -315,6 +315,16 @@ seconds      = Seconds needed to find the steady state, less the number
 '''
 
 
+def MUl2(n, chi_n1):
+    '''
+    Parameters: Labor
+
+    Returns:    Marginal Utility of Labor
+    '''
+    output = - chi_n1 * ((ltilde-n) ** (-eta))
+    return output
+
+
 def Euler_Error(guesses, winit, rinit, Binit, t):
     '''
     Parameters:
@@ -328,7 +338,7 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
         Value of Euler error. (as an (S-1)*S*J x 1 list)
     '''
     length = len(guesses)/3
-    K_guess = guesses[:length]
+    K_guess = np.array(guesses[:length])
     L_guess = np.array(guesses[length:2*length]) ** 2
     lam_guess = np.array(guesses[2*length:]) ** 2
 
@@ -363,9 +373,14 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     w = winit[t:t+length]
     r = rinit[t:t+length]
     B = Binit[t:t+length]
-    error2 = MUc((1 + r)*K1_2 + w * e[
-        -(length):, j] * L_guess + (1 + r)*B/bin_weights[j] - np.exp(g_y) * K2_2) * w * e[
-        -(length):, j] + MUl(L_guess) + lam_guess
+    if length == S:
+        error2 = MUc((1 + r)*K1_2 + w * e[
+            -(length):, j] * L_guess + (1 + r)*B/bin_weights[j] - np.exp(g_y) * K2_2) * w * e[
+            -(length):, j] + MUl2(L_guess, chi_n) + lam_guess
+    else:
+        error2 = MUc((1 + r)*K1_2 + w * e[
+            -(length):, j] * L_guess + (1 + r)*B/bin_weights[j] - np.exp(g_y) * K2_2) * w * e[
+            -(length):, j] + MUl2(L_guess, chi_n[-length:]) + lam_guess
 
     error3 = MUc((1 + r[-1])*K_guess[-2] + w[-1] * e[-1, j] * L_guess[-1] + (1 + r[-1])*B[-1]/bin_weights[j] - K_guess[-1] * 
         np.exp(g_y)) - np.exp(-sigma * g_y) * MUb(K_guess[-1])
@@ -420,6 +435,14 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     plt.xlabel(r"Time $t$")
     plt.ylabel(r"Per-capita Capital $\hat{K}$")
     plt.savefig("OUTPUT/TPI_K")
+    plt.figure()
+    plt.axhline(
+        y=Lss, color='black', linewidth=2, label=r"Steady State $\hat{L}$", ls='--')
+    plt.plot(np.arange(
+        T), Linit[:T], 'b', linewidth=2, label=r"TPI time path $\hat{L}_t$")
+    plt.xlabel(r"Time $t$")
+    plt.ylabel(r"Per-capita Effective Labor Supply $\hat{L}$")
+    plt.savefig("OUTPUT/TPI_L")
     K_mat = np.zeros((T+S, S, J))
     L_mat = np.zeros((T+S, S, J))
     lam_mat = np.zeros((T+S, S, J))
@@ -583,9 +606,9 @@ def Euler1(w, r, wnext, rnext, e, L_guess, K1, K2, K3, B):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] + B.reshape(1, J) / bin_weights - K2 * np.exp(
+    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] + (1+r)*B.reshape(1, J) / bin_weights - K2 * np.exp(
         g_y)) - beta * surv_rate[:-1].reshape(S-1, 1) * (
-        1 + rnext)*MUc((1 + rnext)*K2 + wnext * e[1:, :] * L_guess[1:, :] + B.reshape(1, J) / bin_weights - K3 * np.exp(
+        1 + rnext)*MUc((1 + rnext)*K2 + wnext * e[1:, :] * L_guess[1:, :] + (1+rnext)*B.reshape(1, J) / bin_weights - K3 * np.exp(
             g_y)) * np.exp(-sigma * g_y)
     return euler
 
@@ -603,13 +626,13 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2, B, lam):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess + B.reshape(1, J) / bin_weights - K2_2 * 
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess + (1+r)*B.reshape(1, J) / bin_weights - K2_2 * 
         np.exp(g_y)) * w * e + MUl(L_guess) + lam
     return euler
 
 
 def Euler3(w, r, e, L_guess, K_guess, B):
-    euler = MUc((1 + r)*K_guess[-2, :] + w * e[-1, :] * L_guess[-1, :] + B.reshape(1, J) / bin_weights - K_guess[-1, :] * 
+    euler = MUc((1 + r)*K_guess[-2, :] + w * e[-1, :] * L_guess[-1, :] + (1+r)*B.reshape(1, J) / bin_weights - K_guess[-1, :] * 
         np.exp(g_y)) - np.exp(-sigma * g_y) * MUb(K_guess[-1, :])
     return euler
 
@@ -620,8 +643,7 @@ k3 = np.zeros((T, S-1, J))
 k3[:, :, :] = K_mat[:T, 1:, :]
 k1_2 = np.zeros((T, S, J))
 k1_2[:, 1:, :] = K_mat[:T, :-1, :]
-k2_2 = np.zeros((T, S, J))
-k2_2[:, :, :] = K_mat[:T, :, :]
+k2_2 = K_mat[:T, :, :]
 euler_mat1 = np.zeros((T, S-1, J))
 euler_mat2 = np.zeros((T, S, J))
 euler_mat3 = np.zeros((T, J))
@@ -631,7 +653,7 @@ for t in xrange(T):
         winit[t], rinit[t], winit[t+1], rinit[t+1], e, L_mat[t], k1[t], k2[
             t], k3[t], Binit[t])
     euler_mat2[t] = Euler2(winit[t], rinit[t], e, L_mat[t], k1_2[t], k2_2[t], Binit[t], lam_mat[t])
-    euler_mat3[t] = Euler3(winit[t], rinit[t], e, L_mat[t], k2[t], Binit[t])
+    euler_mat3[t] = Euler3(winit[t], rinit[t], e, L_mat[t], K_mat[t], Binit[t])
 
 domain = np.linspace(1, T, T)
 plt.figure()

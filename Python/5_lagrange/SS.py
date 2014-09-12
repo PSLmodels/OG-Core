@@ -101,7 +101,7 @@ mort_rate[-1] = 1
 # lambdy_scalar = chi_n * 250
 lambdy_scalar = np.ones(S) * 1e-13
 # lambdy_scalar[retire:] = np.ones(S-retire) * chi_n_multiplier * 1.5
-lambdy_scalar[retire:] = np.ones(S-retire) * chi_n_multiplier * 2.9
+lambdy_scalar[retire:] = np.ones(S-retire) * chi_n_multiplier * 50
 
 
 print '\tFinished.'

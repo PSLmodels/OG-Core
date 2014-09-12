@@ -88,18 +88,6 @@ print 'Generating demographics.'
 omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
     S, J, T, bin_weights, starting_age, ending_age, E)
 mort_rate = 1-surv_rate
-retire = np.round(7.0 * S / 16.0)
-chi_n_multiplier = 1.0
-# This is how to do it, but need to generalize TPI version
-# chi_n[retire:] = (chi_n_multiplier*mort_rate[retire:] + 1 - chi_n_multiplier*mort_rate[retire])
-
-# chi_n = (chi_n_multiplier*mort_rate + 1)
-# chi_n[-1] = chi_n[-2]
-# later = np.round(12.0 * S / 16.0)
-# exp = np.linspace(1, 9, 20)
-# chi_n[later:] = chi_n[later:] ** exp - chi_n[later] ** exp + chi_n[later]
-# chi_n[retire:] *= (1.0 + mort_rate[retire:]-mort_rate[retire])**10.0
-# chi_n[retire:] = (np.arange(S-retire)+2.0)**2.0
 surv_rate[-1] = 0.0
 mort_rate[-1] = 1
 print '\tFinished.'
@@ -116,7 +104,7 @@ print '\tnu:\t\t\t\t', nu
 print '\tA:\t\t\t\t', A
 print '\tdelta:\t\t\t', delta
 print '\tl-tilde:\t\t', ltilde
-print '\tchi_n:\t\t\tSee graph'
+print '\tchi_n:\t\t\t', chi_n
 print '\tchi_b:\t\t\t', chi_b
 print '\teta:\t\t\t', eta
 print '\tg_n:\t\t\t', g_n
@@ -218,7 +206,7 @@ def MUl(n):
 
     Returns:    Marginal Utility of Labor
     '''
-    output = - chi_n.reshape(S, 1) * ((ltilde-n) ** (-eta))
+    output = - chi_n * ((ltilde-n) ** (-eta))
     return output
 
 
@@ -436,17 +424,6 @@ print "\tWage:\t\t\t", wss
 print "\tRental Rate:\t", rss
 print "\tBequest:\t\t", Bss.sum()
 
-'''
-------------------------------------------------------------------------
-Graph of Chi_n
-------------------------------------------------------------------------
-'''
-
-plt.figure()
-plt.plot(np.arange(S)+21, chi_n)
-plt.xlabel(r'Age cohort - $s$')
-plt.ylabel(r'$\chi _n$')
-plt.savefig('OUTPUT/chi_n')
 
 '''
 ------------------------------------------------------------------------

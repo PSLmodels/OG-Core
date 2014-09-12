@@ -60,7 +60,7 @@ TPImindist   = Cut-off distance between iterations for TPI
 # Parameters
 S = 80
 J = 1
-T = 2 * S
+T = int(1.5 * S)
 bin_weights = np.array([1.0/J] * J)
 starting_age = 20
 ending_age = 100
