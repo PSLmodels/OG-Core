@@ -38,7 +38,7 @@ p13
 tp14
 Rp15
 (I1
-(L1L
+(L2L
 tp16
 cnumpy
 dtype
@@ -57,12 +57,12 @@ I-1
 I0
 tp22
 bI00
-S'\x00\x00\x00\x00\x00\x00\xf0?'
+S'\x00\x00\x00\x00\x00\x00\xe0?\x00\x00\x00\x00\x00\x00\xe0?'
 p23
 tp24
 bsS'J'
 p25
-I1
+I2
 sS'ending_age'
 p26
 I100

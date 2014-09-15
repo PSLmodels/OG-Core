@@ -417,7 +417,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         for s in xrange(S-2):  # Upper triangle
             solutions = opt.fsolve(Euler_Error, list(
                 initial_K[-(s+2):, j]) + list(initial_L[-(s+2):, j]), args=(
-                winit, rinit, Binit[:, j], 0), xtol=1e-13)
+                winit, rinit, Binit[:, j], 0), xtol=1e-10)
             K_vec = solutions[:len(solutions)/2]
             K_mat[1:S+1, :, j] += np.diag(K_vec, S-(s+2))
             L_vec = solutions[len(solutions)/2:]
@@ -426,7 +426,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         for t in xrange(0, T):
             solutions = opt.fsolve(Euler_Error, list(
                 initial_K[:, j]) + list(initial_L[:, j]), args=(
-                winit, rinit, Binit[:, j], t), xtol=1e-13)
+                winit, rinit, Binit[:, j], t), xtol=1e-10)
             K_vec = solutions[:S]
             K_mat[t+1:t+S+1, :, j] += np.diag(K_vec)
             L_vec = solutions[S:]
@@ -458,7 +458,6 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
 Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
-Bpath_TPI = list(Binit) + list(np.ones(10)*Bss)
 
 print 'TPI is finished.'
 
@@ -537,15 +536,6 @@ plt.ylabel(r"Per-capita Effective Labor Supply $\hat{L}$")
 # plt.title(r"Time Path of Labor Supply L$_t$")
 plt.legend(loc=0)
 plt.savefig("OUTPUT/TPI_L")
-
-plt.figure()
-plt.axhline(
-    y=Bss, color='black', linewidth=2, label=r"Steady State $\hat{B}$", ls='--')
-plt.plot(np.arange(
-    T+10), Bpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{B}_t$")
-plt.xlabel(r"Time $t$")
-plt.ylabel("Bequests")
-plt.savefig("OUTPUT/TPI_BQ")
 
 '''
 ------------------------------------------------------------------------

@@ -73,8 +73,8 @@ nu = .20
 A = 1.0
 delta_annual = .05
 delta = 1 - ((1-delta_annual) ** (float(ending_age-starting_age) / S))
-ctilde = .001
-bqtilde = .001
+ctilde = .00001
+bqtilde = .00001
 ltilde = 1.0
 chi_n = 1.0
 # Make chi_n change once people retire
