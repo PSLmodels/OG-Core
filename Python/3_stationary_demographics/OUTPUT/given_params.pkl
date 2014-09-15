@@ -4,10 +4,10 @@ p1
 F0.030000000000000027
 sS'ctilde'
 p2
-F0.001
+F1e-06
 sS'bqtilde'
 p3
-F0.001
+F1e-06
 sS'chi_b'
 p4
 F1.0

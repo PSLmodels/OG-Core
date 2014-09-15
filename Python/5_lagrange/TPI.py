@@ -388,24 +388,24 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     error4 = lam_guess * L_guess
 
     # Check and punish constraint violations
-    mask2 = L_guess > ltilde
-    error2[mask2] += 1e9
-    if K_guess.sum() <= 0:
-        error1 += 1e9
-    cons = (1 + r) * K1_2 + w * e[
-        -(length):, j] * L_guess + (1+r)*B/bin_weights[j] - K2_2 * np.exp(g_y)
-    mask3 = cons < 0
-    error2[mask3] += 1e9
-    bin1 = bin_weights[j]
-    b_min = np.zeros(length-1)
-    b_min[-1] = (ctilde + bqtilde - w1[-1] * e1[-1] * ltilde - B1[-1] / bin1) / (1 + r1[-1])
-    for i in xrange(length - 2):
-        b_min[-(i+2)] = (ctilde + np.exp(
-            g_y) * b_min[-(i+1)] - w1[-(i+2)] * e1[
-            -(i+2)] * ltilde - B1[-(i+2)] / bin1) / (1 + r1[-(i+2)])
-    difference = K_guess[:-1] - b_min
-    mask4 = difference < 0
-    error1[mask4] += 1e9
+    # mask2 = L_guess > ltilde
+    # error2[mask2] += 1e9
+    # if K_guess.sum() <= 0:
+    #     error1 += 1e9
+    # cons = (1 + r) * K1_2 + w * e[
+    #     -(length):, j] * L_guess + (1+r)*B/bin_weights[j] - K2_2 * np.exp(g_y)
+    # mask3 = cons < 0
+    # error2[mask3] += 1e9
+    # bin1 = bin_weights[j]
+    # b_min = np.zeros(length-1)
+    # b_min[-1] = (ctilde + bqtilde - w1[-1] * e1[-1] * ltilde - B1[-1] / bin1) / (1 + r1[-1])
+    # for i in xrange(length - 2):
+    #     b_min[-(i+2)] = (ctilde + np.exp(
+    #         g_y) * b_min[-(i+1)] - w1[-(i+2)] * e1[
+    #         -(i+2)] * ltilde - B1[-(i+2)] / bin1) / (1 + r1[-(i+2)])
+    # difference = K_guess[:-1] - b_min
+    # mask4 = difference < 0
+    # error1[mask4] += 1e9
     return list(error1.flatten()) + list(error2.flatten()) + list(error3.flatten()) + list(error4.flatten())
 
 
@@ -425,6 +425,8 @@ Binit = np.array(Binit)
 TPIiter = 0
 TPIdist = 10
 print 'Starting time path iteration.'
+euler_errors = np.zeros((T, 3*S, J))
+
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     plt.figure()
@@ -451,7 +453,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             solutions = opt.fsolve(Euler_Error, list(
                 initial_K[-(s+2):, j]) + list(initial_L[-(s+2):, j]) + list(
                 lambdy[-(s+2):, j] ** .5), args=(
-                winit, rinit, Binit[:, j], 0))
+                winit, rinit, Binit[:, j], 0), xtol=1e-13)
             K_vec = solutions[:len(solutions)/3]
             K_mat[1:S+1, :, j] += np.diag(K_vec, S-(s+2))
             L_vec = solutions[len(solutions)/3:2*len(solutions)/3] ** 2
@@ -462,13 +464,15 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         for t in xrange(0, T):
             solutions = opt.fsolve(Euler_Error, list(
                 initial_K[:, j]) + list(initial_L[:, j] ** .5) + list(lambdy[:, j] ** .5), args=(
-                winit, rinit, Binit[:, j], t))
+                winit, rinit, Binit[:, j], t), xtol=1e-13)
             K_vec = solutions[:S]
             K_mat[t+1:t+S+1, :, j] += np.diag(K_vec)
             L_vec = solutions[S:2*S] ** 2
             L_mat[t:t+S, :, j] += np.diag(L_vec)
             lam_vec = solutions[2*S:] ** 2
             lam_mat[t:t+S, :, j] += np.diag(lam_vec)
+            inputs = list(solutions)
+            euler_errors[t, :, j] = np.abs(Euler_Error(inputs, winit, rinit, Binit[:, j], t))
 
     K_mat[0, :, :] = initial_K
     L_mat[0, -1, :] = initial_L[-1, :]
@@ -494,6 +498,8 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
 Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
+Bpath_TPI = list(Binit) + list(np.ones(10)*Bss)
+
 
 print 'TPI is finished.'
 
@@ -573,6 +579,15 @@ plt.ylabel(r"Per-capita Effective Labor Supply $\hat{L}$")
 plt.legend(loc=0)
 plt.savefig("OUTPUT/TPI_L")
 
+plt.figure()
+plt.axhline(
+    y=Bss, color='black', linewidth=2, label=r"Steady State $\hat{B}$", ls='--')
+plt.plot(np.arange(
+    T+10), Bpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{B}_t$")
+plt.xlabel(r"Time $t$")
+plt.ylabel("Bequests")
+plt.savefig("OUTPUT/TPI_BQ")
+
 
 '''
 ------------------------------------------------------------------------
@@ -591,75 +606,17 @@ domain     = 1 x S vector of each age cohort
 ------------------------------------------------------------------------
 '''
 
-
-def Euler1(w, r, wnext, rnext, e, L_guess, K1, K2, K3, B):
-    '''
-    Parameters:
-        w        = wage rate (scalar)
-        r        = rental rate (scalar)
-        e        = distribution of abilities (SxJ array)
-        L_guess  = distribution of labor (SxJ array)
-        K1       = distribution of capital in period t ((S-1) x J array)
-        K2       = distribution of capital in period t+1 ((S-1) x J array)
-        K3       = distribution of capital in period t+2 ((S-1) x J array)
-
-    Returns:
-        Value of Euler error.
-    '''
-    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] + (1+r)*B.reshape(1, J) / bin_weights - K2 * np.exp(
-        g_y)) - beta * surv_rate[:-1].reshape(S-1, 1) * (
-        1 + rnext)*MUc((1 + rnext)*K2 + wnext * e[1:, :] * L_guess[1:, :] + (1+rnext)*B.reshape(1, J) / bin_weights - K3 * np.exp(
-            g_y)) * np.exp(-sigma * g_y)
-    return euler
-
-
-def Euler2(w, r, e, L_guess, K1_2, K2_2, B, lam):
-    '''
-    Parameters:
-        w        = wage rate (scalar)
-        r        = rental rate (scalar)
-        e        = distribution of abilities (SxJ array)
-        L_guess  = distribution of labor (SxJ array)
-        K1_2     = distribution of capital in period t (S x J array)
-        K2_2     = distribution of capital in period t+1 (S x J array)
-
-    Returns:
-        Value of Euler error.
-    '''
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess + (1+r)*B.reshape(1, J) / bin_weights - K2_2 * 
-        np.exp(g_y)) * w * e + MUl(L_guess) + lam
-    return euler
-
-
-def Euler3(w, r, e, L_guess, K_guess, B):
-    euler = MUc((1 + r)*K_guess[-2, :] + w * e[-1, :] * L_guess[-1, :] + (1+r)*B.reshape(1, J) / bin_weights - K_guess[-1, :] * 
-        np.exp(g_y)) - np.exp(-sigma * g_y) * MUb(K_guess[-1, :])
-    return euler
-
-k1 = np.zeros((T, S-1, J))
-k1[:, 1:, :] = K_mat[:T, :-2, :]
-k2 = K_mat[:T, :-1, :]
-k3 = np.zeros((T, S-1, J))
-k3[:, :, :] = K_mat[:T, 1:, :]
-k1_2 = np.zeros((T, S, J))
-k1_2[:, 1:, :] = K_mat[:T, :-1, :]
-k2_2 = K_mat[:T, :, :]
-euler_mat1 = np.zeros((T, S-1, J))
-euler_mat2 = np.zeros((T, S, J))
-euler_mat3 = np.zeros((T, J))
-
-for t in xrange(T):
-    euler_mat1[t, :, :] = Euler1(
-        winit[t], rinit[t], winit[t+1], rinit[t+1], e, L_mat[t], k1[t], k2[
-            t], k3[t], Binit[t])
-    euler_mat2[t] = Euler2(winit[t], rinit[t], e, L_mat[t], k1_2[t], k2_2[t], Binit[t], lam_mat[t])
-    euler_mat3[t] = Euler3(winit[t], rinit[t], e, L_mat[t], K_mat[t], Binit[t])
+eul1 = euler_errors[:, :S-1, :].max(1).max(1)
+eul2 = euler_errors[:, S-1:2*S, :].max(1).max(1)
+eul3 = euler_errors[:, S-1, :].max(1)
+eul4 = euler_errors[:, 2*S:, :].max(1).max(1)
 
 domain = np.linspace(1, T, T)
 plt.figure()
-plt.plot(domain, np.abs(euler_mat1).max(1).max(1), label='Euler1')
-plt.plot(domain, np.abs(euler_mat2).max(1).max(1), label='Euler2')
-plt.plot(domain, np.abs(euler_mat3).max(1), label='Euler3')
+plt.plot(domain, eul1, label='Euler1')
+plt.plot(domain, eul2, label='Euler2')
+plt.plot(domain, eul3, label='Euler3')
+plt.plot(domain, eul4, label='Euler4')
 plt.ylabel('Error Value')
 plt.xlabel(r'Time $t$')
 plt.legend(loc=0)

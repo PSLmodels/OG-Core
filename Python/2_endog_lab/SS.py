@@ -56,7 +56,7 @@ e      = S x J matrix of age dependent possible working abilities e_s
 
 # Parameters
 S = 60
-J = 7
+J = 1
 beta = .96 ** (60.0 / S)
 sigma = 3.0
 alpha = .35

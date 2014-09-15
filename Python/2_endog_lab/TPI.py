@@ -387,8 +387,8 @@ def Euler_Error(guesses, winit, rinit, t):
         Value of Euler error. (as an (S-1)*S*J x 1 list)
     '''
     length = len(guesses)/2
-    K_guess = guesses[:length]
-    N_guess = guesses[length:]
+    K_guess = np.array(guesses[:length])
+    N_guess = np.array(guesses[length:])
 
     if length == S-1:
         K1 = np.array([0] + list(K_guess[:-1]))
@@ -443,6 +443,8 @@ TPIdist = 10
 TPImindist = 3 * 1e-6
 print 'Starting time path iteration.'
 
+euler_errors = np.zeros((T, S+S-1, J))
+
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat = np.zeros((T+S, S-1, J))
     N_mat = np.zeros((T+S, S, J))
@@ -464,6 +466,9 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             K_mat[t+1:t+S, :, j] += np.diag(K_vec)
             N_vec = solutions[S-1:]
             N_mat[t:t+S, :, j] += np.diag(N_vec)
+            inputs = list(solutions)
+            euler_errors[t, :, j] = np.abs(Euler_Error(inputs, winit, rinit, t))
+
 
     K_mat[0, :, :] = initial_K
     N_mat[0, -1, :] = initial_N[-1,:]
@@ -553,28 +558,15 @@ euler_mat2 = TxSxJ arry of euler errors across time, age, and
 domain     = 1 x S vector of each age cohort
 ------------------------------------------------------------------------
 '''
-k1 = np.zeros((T, S-1, J))
-k1[:, 1:, :] = K_mat[:T, :-1, :]
-k2 = K_mat[:T, :, :]
-k3 = np.zeros((T, S-1, J))
-k3[:, :-1, :] = K_mat[:T, 1:, :]
-k1_2 = np.zeros((T, S, J))
-k1_2[:, 1:, :] = K_mat[:T, :, :]
-k2_2 = np.zeros((T, S, J))
-k2_2[:, :-1, :] = K_mat[:T, :, :]
-euler_mat1 = np.zeros((T, S-1, J))
-euler_mat2 = np.zeros((T, S, J))
 
-for t in xrange(T):
-    euler_mat1[t, :, :] = Euler1(
-        winit[t], rinit[t], winit[t+1], rinit[t+1], e, N_mat[t], k1[t], k2[
-            t], k3[t])
-    euler_mat2[t] = Euler2(winit[t], rinit[t], e, N_mat[t], k1_2[t], k2_2[t])
+
+eul1 = np.abs(euler_errors[:, :S-1, :]).max(1).max(1)
+eul2 = np.abs(euler_errors[:, S-1:, :]).max(1).max(1)
 
 domain = np.linspace(1, T, T)
 plt.figure(15)
-plt.plot(domain, np.abs(euler_mat1).max(1).max(1), label='Euler1')
-plt.plot(domain, np.abs(euler_mat2).max(1).max(1), label='Euler2')
+plt.plot(domain, eul1, label='Euler1')
+plt.plot(domain, eul2, label='Euler2')
 plt.ylabel('Error Value')
 plt.xlabel(r'Time $t$')
 plt.legend(loc=0)

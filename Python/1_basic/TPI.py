@@ -197,6 +197,7 @@ def Euler_Error(K_guess, winit, rinit, t):
         Value of Euler error.
     '''
     length = len(K_guess)
+    K_guess = np.array(K_guess)
     if length == S-1:
         K1 = np.array([0] + list(K_guess[:-1]))
     else:
@@ -213,6 +214,7 @@ def Euler_Error(K_guess, winit, rinit, t):
     e2 = e[-length:, j]
     error = MUc((1 + r1)*K1 + w1 * e1 * n1 - K2) \
         - beta * (1 + r2)*MUc((1 + r2)*K2 + w2*e2*n2 - K3)
+    
     return error.flatten()
 
 
@@ -233,6 +235,8 @@ TPImaxiter = 100
 TPIdist = 10
 TPImindist = 3 * 1e-6
 print 'TPI has started.\n'
+euler_errors = np.zeros((T, S-1, J))
+
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat = np.zeros((T+S, S-1, J))
     for j in xrange(J):
@@ -245,6 +249,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             K_vec = opt.fsolve(Euler_Error, .9 * Kssmat.reshape(S-1, J)[
                 :, j], args=(winit, rinit, t))
             K_mat[t:t+S-1, :, j] += np.diag(K_vec)
+            euler_errors[t, :, j] = np.abs(Euler_Error(K_vec, winit, rinit, t))
 
     K_mat[0, :, :] = initial
     K_mat[T-1, :, :] = Kssmat.reshape(S-1, J)
@@ -318,41 +323,14 @@ euler_mat   = Tx(S-1)xJ arry of euler errors across time, age, and
 domain      = 1 x S vector of each age cohort
 ------------------------------------------------------------------------
 '''
-k1 = np.zeros((T, S-1, J))
-k1[:, 1:, :] = K_mat[:T, :-1, :]
-k2 = K_mat[:T, :, :]
-k3 = np.zeros((T, S-1, J))
-k3[:, :-1, :] = K_mat[:T, 1:, :]
-euler_mat = np.zeros((T, S-1, J))
-
-for t in xrange(T):
-    euler_mat[t, :, :] = Euler_justcapital(
-        winit[t], rinit[t], winit[t+1], rinit[t+1], e, n, k1[t, :, :], k2[
-            t, :, :], k3[t, :, :])
 
 domain = np.linspace(1, T, T)
 plt.figure(8)
-plt.plot(domain, np.abs(euler_mat).max(1).max(1))
+plt.plot(domain, euler_errors.max(1).max(1))
 plt.ylabel('Error Value')
 plt.xlabel(r'Time $t$')
 plt.title('Maximum Euler Error for each period across S and J')
 plt.savefig('OUTPUT/euler_errors_TPI_2D')
-
-# 3D Graph
-Sgrid = np.linspace(1, S, S)
-Jgrid = np.linspace(1, J, J)
-X2, Y2 = np.meshgrid(Sgrid[1:], Jgrid)
-
-fig9 = plt.figure(9)
-cmap2 = matplotlib.cm.get_cmap('winter')
-ax9 = fig9.gca(projection='3d')
-ax9.plot_surface(
-    X2, Y2, euler_mat[T-2, :, :].T, rstride=1, cstride=2, cmap=cmap2)
-ax9.set_xlabel(r'Age Cohorts $S$')
-ax9.set_ylabel(r'Ability Types $J$')
-ax9.set_zlabel('Error Level')
-ax9.set_title('Euler Errors')
-plt.savefig('OUTPUT/euler_errors_TPI_3D')
 
 
 '''

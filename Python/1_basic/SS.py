@@ -55,14 +55,14 @@ e         = S x J matrix of age dependent possible working abilities e_s
 # Parameters
 starttime = time.time()
 S = 60
-J = 7
+J = 1
 beta = .96 ** (60.0 / S)
 sigma = 3.0
 alpha = .35
 rho = .20
 A = 1.0
 delta = 1 - (0.95 ** (60.0 / S))
-ctilde = .01
+ctilde = .000001
 
 if S >= 12:
     n = np.ones(S)
