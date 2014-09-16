@@ -388,24 +388,24 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     error4 = lam_guess * L_guess
 
     # Check and punish constraint violations
-    # mask2 = L_guess > ltilde
-    # error2[mask2] += 1e9
-    # if K_guess.sum() <= 0:
-    #     error1 += 1e9
-    # cons = (1 + r) * K1_2 + w * e[
-    #     -(length):, j] * L_guess + (1+r)*B/bin_weights[j] - K2_2 * np.exp(g_y)
-    # mask3 = cons < 0
-    # error2[mask3] += 1e9
-    # bin1 = bin_weights[j]
-    # b_min = np.zeros(length-1)
-    # b_min[-1] = (ctilde + bqtilde - w1[-1] * e1[-1] * ltilde - B1[-1] / bin1) / (1 + r1[-1])
-    # for i in xrange(length - 2):
-    #     b_min[-(i+2)] = (ctilde + np.exp(
-    #         g_y) * b_min[-(i+1)] - w1[-(i+2)] * e1[
-    #         -(i+2)] * ltilde - B1[-(i+2)] / bin1) / (1 + r1[-(i+2)])
-    # difference = K_guess[:-1] - b_min
-    # mask4 = difference < 0
-    # error1[mask4] += 1e9
+    mask2 = L_guess > ltilde
+    error2[mask2] += 1e9
+    if K_guess.sum() <= 0:
+        error1 += 1e9
+    cons = (1 + r) * K1_2 + w * e[
+        -(length):, j] * L_guess + (1+r)*B/bin_weights[j] - K2_2 * np.exp(g_y)
+    mask3 = cons < 0
+    error2[mask3] += 1e9
+    bin1 = bin_weights[j]
+    b_min = np.zeros(length-1)
+    b_min[-1] = (ctilde + bqtilde - w1[-1] * e1[-1] * ltilde - B1[-1] / bin1) / (1 + r1[-1])
+    for i in xrange(length - 2):
+        b_min[-(i+2)] = (ctilde + np.exp(
+            g_y) * b_min[-(i+1)] - w1[-(i+2)] * e1[
+            -(i+2)] * ltilde - B1[-(i+2)] / bin1) / (1 + r1[-(i+2)])
+    difference = K_guess[:-1] - b_min
+    mask4 = difference < 0
+    error1[mask4] += 1e9
     return list(error1.flatten()) + list(error2.flatten()) + list(error3.flatten()) + list(error4.flatten())
 
 

@@ -60,7 +60,7 @@ TPImindist   = Cut-off distance between iterations for TPI
 # Parameters
 S = 80
 J = 1
-T = int(1.5 * S)
+T = 2 * S
 bin_weights = np.array([1.0/J] * J)
 starting_age = 20
 ending_age = 100
@@ -73,8 +73,8 @@ nu = .20
 A = 1.0
 delta_annual = .05
 delta = 1 - ((1-delta_annual) ** (float(ending_age-starting_age) / S))
-ctilde = .00001
-bqtilde = .00001
+ctilde = .001
+bqtilde = .001
 ltilde = 1.0
 chi_n = 1.0
 # Make chi_n change once people retire
@@ -83,7 +83,7 @@ chi_b = 1.0
 eta = 2.0
 g_y_annual = 0.03
 g_y = (1 + g_y_annual)**(float(ending_age-starting_age)/S) - 1
-TPImaxiter = 100
+TPImaxiter = 50
 TPImindist = 3 * 1e-6
 
 '''

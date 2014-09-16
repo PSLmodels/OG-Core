@@ -89,7 +89,7 @@ omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
     S, J, T, bin_weights, starting_age, ending_age, E)
 mort_rate = 1-surv_rate
 retire = np.round(7.0 * S / 16.0)
-chi_n_multiplier = 1
+chi_n_multiplier = 15
 
 # multiply it by something
 # chi_n[retire:] = (chi_n_multiplier*mort_rate[retire:] + 1 - chi_n_multiplier*mort_rate[retire])
@@ -100,8 +100,8 @@ surv_rate[-1] = 0.0
 mort_rate[-1] = 1
 # lambdy_scalar = chi_n * 250
 lambdy_scalar = np.ones(S) * 1e-13
-# lambdy_scalar[retire:] = np.ones(S-retire) * chi_n_multiplier * 1.5
-lambdy_scalar[retire:] = np.ones(S-retire) * chi_n_multiplier * 50
+lambdy_scalar[retire:] = np.ones(S-retire) * chi_n_multiplier ** 2
+# lambdy_scalar[retire:] = np.ones(S-retire) * chi_n_multiplier * 50
 
 
 print '\tFinished.'
@@ -395,7 +395,7 @@ lambdy = np.ones((S, J)) * lambdy_scalar.reshape(S, 1)
 guesses = list(K_guess_init.flatten()) + list(L_guess_init.flatten()) + list(lambdy.flatten())
 
 print 'Solving for steady state level distribution of capital and labor.'
-solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9, col_deriv=1)
+solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9)
 print '\tFinished.'
 
 runtime = time.time() - starttime
