@@ -37,7 +37,7 @@ Households
 
 - Households optimally choose their labor supply, consumption, and savings each period.
 
-    - We will likely allow for consumption of 12 goods (DZ have 4 goods), including health care, energy, and housing, which have special treatment in the tax code.
+  - We will likely allow for consumption of 12 goods (DZ have 4 goods), including health care, energy, and housing, which have special treatment in the tax code.
 
 - They are subject to:
 
