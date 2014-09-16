@@ -26,11 +26,9 @@ Households
 + Unintentional bequest are distributed to other agents of the same ability type at the beginning of the next period. (ZD have no mortality risk and thus no unintentional bequests)
 + Households that live to the final age will leave an intentional bequest which is modelled as an additional term in their utility function. (Same as ZD)
 + Households optimally choose their labor supply, consumption, and savings each period.
-
     + We will likely allow for consumption of 12 goods (DZ have 4 goods), including health care, energy, and housing, which have special treatment in the tax code.
 
 + They are subject to:
-
     + an income tax
     + a payroll tax on wage income only which funds a social security benefit for retired households
     + a consumption tax
