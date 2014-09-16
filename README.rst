@@ -41,13 +41,13 @@ Households
 
 - They are subject to:
 
-    - an income tax
+  - an income tax
 
-    - a payroll tax on wage income only which funds a social security benefit for retired households
+  - a payroll tax on wage income only which funds a social security benefit for retired households
 
-    - a consumption tax
+  - a consumption tax
 
-    - potentially a wealth tax
+  - potentially a wealth tax
 
 - Household statutory marginal income tax rates are based on current income (ZD base tax rates on life-time income)
 
@@ -56,7 +56,7 @@ Firms
 
 - Maximize the discounted present value of all future profit streams.
 
-    - Firm value and thus investment incentives are affected by tax policy.
+  - Firm value and thus investment incentives are affected by tax policy.
 
 - Firms acquire capital via investment and hire labor.
 
@@ -64,13 +64,13 @@ Firms
 
 - Likely more about 12 different sectors (a sector is represented by an industry-business entity type (corp/non-corp) combination) (ZD have four sectors)
 
-    - Will include corporate and non-corporate sectors
+  - Will include corporate and non-corporate sectors
 
-    - Will include a multinational sector.  These will be corporate businesses and will probably separately model the manufacturing and services industries.
+  - Will include a multinational sector.  These will be corporate businesses and will probably separately model the manufacturing and services industries.
 
-    - Industries not yet determined, but likely to include manufacturing, services (ex health care), health care, energy, housing industries.
+  - Industries not yet determined, but likely to include manufacturing, services (ex health care), health care, energy, housing industries.
 
-    - Likely have with corporate and non-corporate sectors in each industry.
+  - Likely have with corporate and non-corporate sectors in each industry.
 
 Government
 ----------
@@ -86,7 +86,7 @@ Market Clearing
 
 - The economy is closed to the rest of the world (same as ZD’s simple model).
 
-    - The exception to this are multinational businesses, who can use the rest of the world to shift profits overseas.
+  - The exception to this are multinational businesses, who can use the rest of the world to shift profits overseas.
 
 Contributors
 ============
