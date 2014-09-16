@@ -89,7 +89,7 @@ omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
     S, J, T, bin_weights, starting_age, ending_age, E)
 mort_rate = 1-surv_rate
 retire = np.round(7.0 * S / 16.0)
-chi_n_multiplier = 15
+chi_n_multiplier = 1
 
 # multiply it by something
 # chi_n[retire:] = (chi_n_multiplier*mort_rate[retire:] + 1 - chi_n_multiplier*mort_rate[retire])
@@ -100,7 +100,7 @@ surv_rate[-1] = 0.0
 mort_rate[-1] = 1
 # lambdy_scalar = chi_n * 250
 lambdy_scalar = np.ones(S) * 1e-13
-lambdy_scalar[retire:] = np.ones(S-retire) * chi_n_multiplier ** 2
+# lambdy_scalar[retire:] = np.ones(S-retire) * chi_n_multiplier * 13
 # lambdy_scalar[retire:] = np.ones(S-retire) * chi_n_multiplier * 50
 
 
@@ -293,6 +293,7 @@ def Steady_State(guesses):
     lambdy = guesses[2*S*J:].reshape((S, J))
     L_guess = L_guess ** 2
     lambdy = lambdy ** 2
+    # lambdy *= 0
     L = get_L(e, L_guess)
     Y = get_Y(K, L)
     w = get_w(Y, L)
@@ -395,8 +396,9 @@ lambdy = np.ones((S, J)) * lambdy_scalar.reshape(S, 1)
 guesses = list(K_guess_init.flatten()) + list(L_guess_init.flatten()) + list(lambdy.flatten())
 
 print 'Solving for steady state level distribution of capital and labor.'
-solutions = opt.fsolve(Steady_State, guesses, xtol=1e-9)
+solutions = opt.fsolve(Steady_State, guesses)
 print '\tFinished.'
+print np.abs(np.array(Steady_State(solutions))).max()
 
 runtime = time.time() - starttime
 hours = runtime / 3600
@@ -463,30 +465,31 @@ domain = np.linspace(starting_age, ending_age, S)
 Jgrid = np.zeros(J)
 for j in xrange(J):
     Jgrid[j:] += bin_weights[j]
-
-# 2D Graph
-plt.figure()
-plt.plot(domain, Kssvec, color='b', linewidth=2, label='Average capital stock')
-plt.axhline(y=Kssavg, color='r', label='Steady state capital stock')
-plt.title('Steady-state Distribution of Capital')
-plt.legend(loc=0)
-plt.xlabel(r'Age Cohorts $S$')
-plt.ylabel('Capital')
-plt.savefig("OUTPUT/capital_dist_2D")
-
-# 3D Graph
 cmap1 = matplotlib.cm.get_cmap('summer')
 cmap2 = matplotlib.cm.get_cmap('jet')
-# Jgrid = np.linspace(1, J, J)
 X, Y = np.meshgrid(domain, Jgrid)
-fig5 = plt.figure()
-ax5 = fig5.gca(projection='3d')
-ax5.set_xlabel(r'age-$s$')
-ax5.set_ylabel(r'ability-$j$')
-ax5.set_zlabel(r'individual savings $\bar{b}_{j,s}$')
-# ax5.set_title(r'Steady State Distribution of Capital Stock $K$')
-ax5.plot_surface(X, Y, Kssmat2.T, rstride=1, cstride=1, cmap=cmap2)
-plt.savefig('OUTPUT/capital_dist_3D')
+
+if J==1:
+    # 2D Graph
+    plt.figure()
+    plt.plot(domain, Kssvec, color='b', linewidth=2, label='Average capital stock')
+    plt.axhline(y=Kssavg, color='r', label='Steady state capital stock')
+    plt.title('Steady-state Distribution of Capital')
+    plt.legend(loc=0)
+    plt.xlabel(r'Age Cohorts $S$')
+    plt.ylabel('Capital')
+    plt.savefig("OUTPUT/capital_dist")
+else:
+    # 3D Graph
+    # Jgrid = np.linspace(1, J, J)
+    fig5 = plt.figure()
+    ax5 = fig5.gca(projection='3d')
+    ax5.set_xlabel(r'age-$s$')
+    ax5.set_ylabel(r'ability-$j$')
+    ax5.set_zlabel(r'individual savings $\bar{b}_{j,s}$')
+    # ax5.set_title(r'Steady State Distribution of Capital Stock $K$')
+    ax5.plot_surface(X, Y, Kssmat2.T, rstride=1, cstride=1, cmap=cmap2)
+    plt.savefig('OUTPUT/capital_dist')
 
 '''
 ------------------------------------------------------------------------
@@ -505,60 +508,65 @@ plt.savefig('OUTPUT/intentional_bequests')
  Generate graphs of the steady-state distribution of labor
 ------------------------------------------------------------------------
 '''
-
-# 2D Graph
-plt.figure()
-plt.plot(domain, Lssvec, color='b', linewidth=2, label='Average Labor Supply')
-plt.axhline(y=Lssavg, color='r', label='Steady state labor supply')
-plt.title('Steady-state Distribution of Labor')
-plt.legend(loc=0)
-plt.xlabel(r'Age Cohorts $S$')
-plt.ylabel('Labor')
-plt.savefig("OUTPUT/labor_dist_2D")
-
-# 3D Graph
-fig4 = plt.figure()
-ax4 = fig4.gca(projection='3d')
-ax4.set_xlabel(r'age-$s$')
-ax4.set_ylabel(r'ability-$j$')
-ax4.set_zlabel(r'individual labor supply $\bar{l}_{j,s}$')
-# ax4.set_title(r'Steady State Distribution of Labor Supply $K$')
-ax4.plot_surface(X, Y, (Lssmat).T, rstride=1, cstride=1, cmap=cmap1)
-plt.savefig('OUTPUT/labor_dist_3D')
+if J==1:
+    # 2D Graph
+    plt.figure()
+    plt.plot(domain, Lssvec, color='b', linewidth=2, label='Average Labor Supply')
+    plt.axhline(y=Lssavg, color='r', label='Steady state labor supply')
+    plt.title('Steady-state Distribution of Labor')
+    plt.legend(loc=0)
+    plt.xlabel(r'Age Cohorts $S$')
+    plt.ylabel('Labor')
+    plt.savefig("OUTPUT/labor_dist")
+else:
+    # 3D Graph
+    fig4 = plt.figure()
+    ax4 = fig4.gca(projection='3d')
+    ax4.set_xlabel(r'age-$s$')
+    ax4.set_ylabel(r'ability-$j$')
+    ax4.set_zlabel(r'individual labor supply $\bar{l}_{j,s}$')
+    # ax4.set_title(r'Steady State Distribution of Labor Supply $K$')
+    ax4.plot_surface(X, Y, (Lssmat).T, rstride=1, cstride=1, cmap=cmap1)
+    plt.savefig('OUTPUT/labor_dist')
 
 '''
 ------------------------------------------------------------------------
 Generate graph of Consumption
 ------------------------------------------------------------------------
 '''
+if J==1:
+    # 2D Graph
+    plt.figure()
+    plt.plot(domain, cssmat.mean(1), label='Consumption')
+    plt.title('Consumption across cohorts: S = {}'.format(S))
+    # plt.legend(loc=0)
+    plt.xlabel('Age cohorts')
+    plt.ylabel('Consumption')
+    plt.savefig("OUTPUT/consumption")
+else:
+    # 3D Graph
+    fig9 = plt.figure()
+    ax9 = fig9.gca(projection='3d')
+    ax9.plot_surface(X, Y, cssmat.T, rstride=1, cstride=1, cmap=cmap2)
+    ax9.set_xlabel(r'age-$s$')
+    ax9.set_ylabel(r'ability-$j$')
+    ax9.set_zlabel('Consumption')
+    ax9.set_title('Steady State Distribution of Consumption')
+    plt.savefig('OUTPUT/consumption')
 
-# 2D Graph
-plt.figure()
-plt.plot(domain, cssmat.mean(1), label='Consumption')
-plt.title('Consumption across cohorts: S = {}'.format(S))
-# plt.legend(loc=0)
-plt.xlabel('Age cohorts')
-plt.ylabel('Consumption')
-plt.savefig("OUTPUT/consumption_2D")
-
-# 3D Graph
-fig9 = plt.figure()
-ax9 = fig9.gca(projection='3d')
-ax9.plot_surface(X, Y, cssmat.T, rstride=1, cstride=1, cmap=cmap2)
-ax9.set_xlabel(r'age-$s$')
-ax9.set_ylabel(r'ability-$j$')
-ax9.set_zlabel('Consumption')
-ax9.set_title('Steady State Distribution of Consumption')
-plt.savefig('OUTPUT/consumption_3D')
-
-fig99 = plt.figure()
-ax99 = fig99.gca(projection='3d')
-ax99.plot_surface(X, Y, lambdy.T, rstride=1, cstride=1, cmap=cmap2)
-ax99.set_xlabel(r'age-$s$')
-ax99.set_ylabel(r'ability-$j$')
-ax99.set_zlabel('Lambda')
-ax99.set_title('Steady State Distribution of Multipliers')
-plt.savefig('OUTPUT/lamdamultiplier_3D')
+if J>1:
+    fig99 = plt.figure()
+    ax99 = fig99.gca(projection='3d')
+    ax99.plot_surface(X, Y, lambdy.T, rstride=1, cstride=1, cmap=cmap2)
+    ax99.set_xlabel(r'age-$s$')
+    ax99.set_ylabel(r'ability-$j$')
+    ax99.set_zlabel('Lambda')
+    ax99.set_title('Steady State Distribution of Multipliers')
+    plt.savefig('OUTPUT/lamdamultiplier')
+else:
+    plt.figure()
+    plt.plot(domain, lambdy)
+    plt.savefig('OUTPUT/lamdamultiplier')
 
 '''
 ------------------------------------------------------------------------
@@ -588,53 +596,50 @@ K_eul3[-1, :] = BQ
 euler1 = Euler1(wss, rss, e, Lssmat, k1, k2, k3, B)
 euler2 = Euler2(wss, rss, e, Lssmat, k1_2, k2_2, B, lambdy)
 euler3 = Euler3(wss, rss, e, Lssmat, K_eul3, B)
+euler4 = lambdy * Lssmat
 
-
-# 2D Graph
-plt.figure()
-plt.plot(domain[1:], np.abs(euler1).max(1), label='Euler1')
-plt.plot(domain, np.abs(euler2).max(1), label='Euler2')
-plt.legend(loc=0)
-plt.title('Euler Errors')
-plt.xlabel(r'age cohort-$s$')
-plt.savefig('OUTPUT/euler_errors1and2_SS_2D')
-
-plt.figure()
-plt.plot(domain[:J]-E, np.abs(euler3.flatten()), label='Euler3')
-plt.legend(loc=0)
-plt.title('Euler Errors')
-plt.xlabel(r'ability-$j$')
-plt.savefig('OUTPUT/euler_errors_euler3_SS_2D')
 
 # 3D Graph
 X2, Y2 = np.meshgrid(domain[1:], Jgrid)
 
-fig16 = plt.figure()
-ax16 = fig16.gca(projection='3d')
-ax16.plot_surface(X2, Y2, euler1.T, rstride=1, cstride=2, cmap=cmap2)
-ax16.set_xlabel(r'Age Cohorts $S$')
-ax16.set_ylabel(r'Ability Types $J$')
-ax16.set_zlabel('Error Level')
-ax16.set_title('Euler Errors')
-plt.savefig('OUTPUT/euler_errors_euler1_SS_3D')
+if J==1:
+    # 2D Graph
+    plt.figure()
+    plt.plot(domain[1:], np.abs(euler1), label='Euler1')
+    plt.plot(domain, np.abs(euler2), label='Euler2')
+    plt.plot(domain, np.abs(euler4), label='Euler4')
+    plt.legend(loc=0)
+    plt.title('Euler Errors')
+    plt.xlabel(r'age cohort-$s$')
+    plt.savefig('OUTPUT/euler_errors1and2and4_SS')
+    print '\tEuler3=', euler3
+else:
+    fig16 = plt.figure()
+    ax16 = fig16.gca(projection='3d')
+    ax16.plot_surface(X2, Y2, euler1.T, rstride=1, cstride=2, cmap=cmap2)
+    ax16.set_xlabel(r'Age Cohorts $S$')
+    ax16.set_ylabel(r'Ability Types $J$')
+    ax16.set_zlabel('Error Level')
+    ax16.set_title('Euler Errors')
+    plt.savefig('OUTPUT/euler_errors_euler1_SS')
 
-fig17 = plt.figure()
-ax17 = fig17.gca(projection='3d')
-ax17.plot_surface(X, Y, euler2.T, rstride=1, cstride=2, cmap=cmap2)
-ax17.set_xlabel(r'Age Cohorts $S$')
-ax17.set_ylabel(r'Ability Types $J$')
-ax17.set_zlabel('Error Level')
-ax17.set_title('Euler Errors')
-plt.savefig('OUTPUT/euler_errors_euler2_SS_3D')
+    fig17 = plt.figure()
+    ax17 = fig17.gca(projection='3d')
+    ax17.plot_surface(X, Y, euler2.T, rstride=1, cstride=2, cmap=cmap2)
+    ax17.set_xlabel(r'Age Cohorts $S$')
+    ax17.set_ylabel(r'Ability Types $J$')
+    ax17.set_zlabel('Error Level')
+    ax17.set_title('Euler Errors')
+    plt.savefig('OUTPUT/euler_errors_euler2_SS')
 
-fig18 = plt.figure()
-ax18 = fig18.gca(projection='3d')
-ax18.plot_surface(X, Y, (lambdy * Lssmat).T, rstride=1, cstride=2, cmap=cmap2)
-ax18.set_xlabel(r'Age Cohorts $S$')
-ax18.set_ylabel(r'Ability Types $J$')
-ax18.set_zlabel('Error Level')
-ax18.set_title('Euler Errors')
-plt.savefig('OUTPUT/euler_errors_euler4_SS_3D')
+    fig18 = plt.figure()
+    ax18 = fig18.gca(projection='3d')
+    ax18.plot_surface(X, Y, euler4.T, rstride=1, cstride=2, cmap=cmap2)
+    ax18.set_xlabel(r'Age Cohorts $S$')
+    ax18.set_ylabel(r'Ability Types $J$')
+    ax18.set_zlabel('Error Level')
+    ax18.set_title('Euler Errors')
+    plt.savefig('OUTPUT/euler_errors_euler4_SS')
 
 print '\tFinished.'
 

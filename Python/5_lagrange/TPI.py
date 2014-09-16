@@ -453,7 +453,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             solutions = opt.fsolve(Euler_Error, list(
                 initial_K[-(s+2):, j]) + list(initial_L[-(s+2):, j]) + list(
                 lambdy[-(s+2):, j] ** .5), args=(
-                winit, rinit, Binit[:, j], 0), xtol=1e-10)
+                winit, rinit, Binit[:, j], 0))
             K_vec = solutions[:len(solutions)/3]
             K_mat[1:S+1, :, j] += np.diag(K_vec, S-(s+2))
             L_vec = solutions[len(solutions)/3:2*len(solutions)/3] ** 2
@@ -464,7 +464,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         for t in xrange(0, T):
             solutions = opt.fsolve(Euler_Error, list(
                 initial_K[:, j]) + list(initial_L[:, j] ** .5) + list(lambdy[:, j] ** .5), args=(
-                winit, rinit, Binit[:, j], t), xtol=1e-10)
+                winit, rinit, Binit[:, j], t))
             K_vec = solutions[:S]
             K_mat[t+1:t+S+1, :, j] += np.diag(K_vec)
             L_vec = solutions[S:2*S] ** 2
@@ -476,6 +476,18 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
 
     K_mat[0, :, :] = initial_K
     L_mat[0, -1, :] = initial_L[-1, :]
+    plt.figure()
+    plt.plot(domain, L_mat[1, :, :].sum(1), color='b')
+    plt.axhline(y=L_mat[1, :, :].sum(1).mean(), color='r')
+    plt.savefig("OUTPUT/zzzlabor_t1")
+    plt.figure()
+    plt.plot(domain, L_mat[2, :, :].sum(1), color='b')
+    plt.axhline(y=L_mat[2, :, :].sum(1).mean(), color='r')
+    plt.savefig("OUTPUT/zzzlabor_t2")
+    plt.figure()
+    plt.plot(domain, L_mat[3, :, :].sum(1), color='b')
+    plt.axhline(y=L_mat[3, :, :].sum(1).mean(), color='r')
+    plt.savefig("OUTPUT/zzzlabor_t3")
     Knew = (omega_stationary[:T, :, :] * K_mat[:T, :, :]).sum(2).sum(1)
     Lnew = (omega_stationary[1:T+1, :, :] * e.reshape(
         1, S, J) * L_mat[:T, :, :]).sum(2).sum(1)
