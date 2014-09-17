@@ -344,8 +344,11 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
 
     if length == S:
         K1 = np.array([0] + list(K_guess[:-2]))
+        lam_guess[:slow_work] *= 0
     else:
         K1 = np.array([(initial_K[-(s+2), j])] + list(K_guess[:-2]))
+        if length > S - slow_work:
+            lam_guess[:length - slow_work] *= 0
     K2 = K_guess[:-1]
     K3 = K_guess[1:]
     w1 = winit[t:t+length-1]
@@ -451,7 +454,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     for j in xrange(J):
         for s in xrange(S-2):  # Upper triangle
             solutions = opt.fsolve(Euler_Error, list(
-                initial_K[-(s+2):, j]) + list(initial_L[-(s+2):, j]) + list(
+                initial_K[-(s+2):, j]) + list(initial_L[-(s+2):, j]**.5) + list(
                 lambdy[-(s+2):, j] ** .5), args=(
                 winit, rinit, Binit[:, j], 0))
             K_vec = solutions[:len(solutions)/3]
@@ -476,18 +479,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
 
     K_mat[0, :, :] = initial_K
     L_mat[0, -1, :] = initial_L[-1, :]
-    plt.figure()
-    plt.plot(domain, L_mat[1, :, :].sum(1), color='b')
-    plt.axhline(y=L_mat[1, :, :].sum(1).mean(), color='r')
-    plt.savefig("OUTPUT/zzzlabor_t1")
-    plt.figure()
-    plt.plot(domain, L_mat[2, :, :].sum(1), color='b')
-    plt.axhline(y=L_mat[2, :, :].sum(1).mean(), color='r')
-    plt.savefig("OUTPUT/zzzlabor_t2")
-    plt.figure()
-    plt.plot(domain, L_mat[3, :, :].sum(1), color='b')
-    plt.axhline(y=L_mat[3, :, :].sum(1).mean(), color='r')
-    plt.savefig("OUTPUT/zzzlabor_t3")
+    lam_mat[:, :slow_work, :] *= 0
     Knew = (omega_stationary[:T, :, :] * K_mat[:T, :, :]).sum(2).sum(1)
     Lnew = (omega_stationary[1:T+1, :, :] * e.reshape(
         1, S, J) * L_mat[:T, :, :]).sum(2).sum(1)

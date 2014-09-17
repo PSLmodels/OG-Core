@@ -88,20 +88,22 @@ print 'Generating demographics.'
 omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
     S, J, T, bin_weights, starting_age, ending_age, E)
 mort_rate = 1-surv_rate
-retire = np.round(7.0 * S / 16.0)
-chi_n_multiplier = 1
+slow_work = np.round(7.0 * S / 16.0)
+retire = np.round(14.0 * S / 16.0)
+chi_n_multiplier = 14
+# chi_n_multiplier = 1
 
 # multiply it by something
-# chi_n[retire:] = (chi_n_multiplier*mort_rate[retire:] + 1 - chi_n_multiplier*mort_rate[retire])
+# chi_n[slow_work:] = (chi_n_multiplier*mort_rate[slow_work:] + 1 - chi_n_multiplier*mort_rate[slow_work])
 # increase expentially
-chi_n[retire:] = (mort_rate[retire:] + 1 - mort_rate[retire])**chi_n_multiplier
+chi_n[slow_work:] = (mort_rate[slow_work:] + 1 - mort_rate[slow_work])**chi_n_multiplier
 
 surv_rate[-1] = 0.0
 mort_rate[-1] = 1
 # lambdy_scalar = chi_n * 250
-lambdy_scalar = np.ones(S) * 1e-13
-# lambdy_scalar[retire:] = np.ones(S-retire) * chi_n_multiplier * 13
-# lambdy_scalar[retire:] = np.ones(S-retire) * chi_n_multiplier * 50
+lambdy_scalar = np.ones(S) * 1e-6
+# lambdy_scalar[slow_work:] = np.ones(S-slow_work) * chi_n_multiplier * 13
+lambdy_scalar[slow_work:] = np.ones(S-slow_work) * chi_n_multiplier * 5
 
 
 print '\tFinished.'
@@ -293,7 +295,7 @@ def Steady_State(guesses):
     lambdy = guesses[2*S*J:].reshape((S, J))
     L_guess = L_guess ** 2
     lambdy = lambdy ** 2
-    # lambdy *= 0
+    lambdy[:slow_work] *= 0
     L = get_L(e, L_guess)
     Y = get_Y(K, L)
     w = get_w(Y, L)
@@ -426,6 +428,7 @@ wss = get_w(Yss, Lss)
 rss = get_r(Yss, Kss)
 
 lambdy = solutions[2*S*J:].reshape(S, J) ** 2
+lambdy[:slow_work] *= 0
 
 cssmat = (1 + rss) * Kssmat2 + wss * e * Lssmat + (1 + rss) * Bss.reshape(1, J)/bin_weights.reshape(1,J) - np.exp(g_y) * Kssmat3
 
@@ -656,7 +659,7 @@ var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'e', 'E',
              'seconds', 'eta', 'chi_n', 'chi_b', 'ltilde', 'ctilde', 'T',
              'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist', 'BQ',
              'children', 'surv_rate', 'mort_rate', 'Bss', 'bin_weights',
-             'bqtilde', 'lambdy']
+             'bqtilde', 'lambdy', 'slow_work', 'retire']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
