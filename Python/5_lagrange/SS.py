@@ -116,7 +116,7 @@ print '\tStarting Age:\t', starting_age
 print '\tbeta:\t\t\t', beta
 print '\tsigma:\t\t\t', sigma
 print '\talpha:\t\t\t', alpha
-print '\tnu:\t\t\t\t', nu
+print '\tnu:\t\t\t\t', nu_init
 print '\tA:\t\t\t\t', A
 print '\tdelta:\t\t\t', delta
 print '\tl-tilde:\t\t', ltilde
@@ -653,7 +653,7 @@ Save variables/values so they can be used in other modules
 '''
 
 print 'Saving steady state variable values.'
-var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'e', 'E',
+var_names = ['S', 'beta', 'sigma', 'alpha', 'nu_init', 'A', 'delta', 'e', 'E',
              'J', 'Kss', 'Kssvec', 'Kssmat', 'Lss', 'Lssvec', 'Lssmat',
              'Yss', 'wss', 'rss', 'runtime', 'hours', 'minutes', 'omega',
              'seconds', 'eta', 'chi_n', 'chi_b', 'ltilde', 'ctilde', 'T',

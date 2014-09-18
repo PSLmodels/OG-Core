@@ -429,7 +429,11 @@ TPIiter = 0
 TPIdist = 10
 print 'Starting time path iteration.'
 euler_errors = np.zeros((T, 3*S, J))
-
+TPIdist_vec = np.zeros(TPImaxiter)
+nu_current = nu_init
+L_guesses = np.tile(initial_L.reshape(1, S, J), (T, 1, 1))
+K_guesses = np.tile(initial_K.reshape(1, S, J), (T, 1, 1))
+lambda_guesses = np.tile(lambdy.reshape(1, S, J), (T, 1, 1))
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     plt.figure()
@@ -454,8 +458,8 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     for j in xrange(J):
         for s in xrange(S-2):  # Upper triangle
             solutions = opt.fsolve(Euler_Error, list(
-                initial_K[-(s+2):, j]) + list(initial_L[-(s+2):, j]**.5) + list(
-                lambdy[-(s+2):, j] ** .5), args=(
+                K_guesses[0, -(s+2):, j]) + list(L_guesses[0, -(s+2):, j]**.5) + list(
+                lambda_guesses[0, -(s+2):, j] ** .5), args=(
                 winit, rinit, Binit[:, j], 0))
             K_vec = solutions[:len(solutions)/3]
             K_mat[1:S+1, :, j] += np.diag(K_vec, S-(s+2))
@@ -466,7 +470,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
 
         for t in xrange(0, T):
             solutions = opt.fsolve(Euler_Error, list(
-                initial_K[:, j]) + list(initial_L[:, j] ** .5) + list(lambdy[:, j] ** .5), args=(
+                K_guesses[t, :, j]) + list(L_guesses[t, :, j] ** .5) + list(lambda_guesses[t, :, j] ** .5), args=(
                 winit, rinit, Binit[:, j], t))
             K_vec = solutions[:S]
             K_mat[t+1:t+S+1, :, j] += np.diag(K_vec)
@@ -480,18 +484,24 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat[0, :, :] = initial_K
     L_mat[0, -1, :] = initial_L[-1, :]
     lam_mat[:, :slow_work, :] *= 0
+    L_guesses, K_guesses, lambda_guesses = L_mat, K_mat, lam_mat
     Knew = (omega_stationary[:T, :, :] * K_mat[:T, :, :]).sum(2).sum(1)
     Lnew = (omega_stationary[1:T+1, :, :] * e.reshape(
         1, S, J) * L_mat[:T, :, :]).sum(2).sum(1)
     Bnew = (K_mat[:T, :, :] * omega_stationary[:T, :, :] * mort_rate.reshape(1, S, 1)).sum(1)
-    TPIiter += 1
-    Kinit = nu*Knew + (1-nu)*Kinit[:T]
-    Linit = nu*Lnew + (1-nu)*Linit[:T]
-    Binit[:T] = nu*Bnew + (1-nu)*Binit[:T]
+    Kinit = nu_current *Knew + (1-nu_current)*Kinit[:T]
+    Linit = nu_current *Lnew + (1-nu_current)*Linit[:T]
+    Binit[:T] = nu_current *Bnew + (1-nu_current)*Binit[:T]
     TPIdist = np.array(list(
         np.abs(Knew - Kinit)) + list(np.abs(Bnew - Binit[:T]).flatten()) + list(np.abs(Lnew - Linit))).max()
+    TPIdist_vec[TPIiter] = TPIdist
+    if TPIiter > 7:
+        if TPIdist_vec[TPIiter] - TPIdist_vec[TPIiter-1] > 0:
+            nu_current /= 2
+            print 'New Value of nu:', nu_current
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist
+    TPIiter += 1
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         Yinit = A*(Kinit**alpha) * (Linit**(1-alpha))
         winit = np.array(
