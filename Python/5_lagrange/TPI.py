@@ -393,22 +393,22 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     # Check and punish constraint violations
     mask2 = L_guess > ltilde
     error2[mask2] += 1e9
-    if K_guess.sum() <= 0:
-        error1 += 1e9
-    cons = (1 + r) * K1_2 + w * e[
-        -(length):, j] * L_guess + (1+r)*B/bin_weights[j] - K2_2 * np.exp(g_y)
-    mask3 = cons < 0
-    error2[mask3] += 1e9
-    bin1 = bin_weights[j]
-    b_min = np.zeros(length-1)
-    b_min[-1] = (ctilde + bqtilde - w1[-1] * e1[-1] * ltilde - B1[-1] / bin1) / (1 + r1[-1])
-    for i in xrange(length - 2):
-        b_min[-(i+2)] = (ctilde + np.exp(
-            g_y) * b_min[-(i+1)] - w1[-(i+2)] * e1[
-            -(i+2)] * ltilde - B1[-(i+2)] / bin1) / (1 + r1[-(i+2)])
-    difference = K_guess[:-1] - b_min
-    mask4 = difference < 0
-    error1[mask4] += 1e9
+    # if K_guess.sum() <= 0:
+    #     error1 += 1e9
+    # cons = (1 + r) * K1_2 + w * e[
+    #     -(length):, j] * L_guess + (1+r)*B/bin_weights[j] - K2_2 * np.exp(g_y)
+    # mask3 = cons < 0
+    # error2[mask3] += 1e9
+    # bin1 = bin_weights[j]
+    # b_min = np.zeros(length-1)
+    # b_min[-1] = (ctilde + bqtilde - w1[-1] * e1[-1] * ltilde - B1[-1] / bin1) / (1 + r1[-1])
+    # for i in xrange(length - 2):
+    #     b_min[-(i+2)] = (ctilde + np.exp(
+    #         g_y) * b_min[-(i+1)] - w1[-(i+2)] * e1[
+    #         -(i+2)] * ltilde - B1[-(i+2)] / bin1) / (1 + r1[-(i+2)])
+    # difference = K_guess[:-1] - b_min
+    # mask4 = difference < 0
+    # error1[mask4] += 1e9
     return list(error1.flatten()) + list(error2.flatten()) + list(error3.flatten()) + list(error4.flatten())
 
 
@@ -431,9 +431,9 @@ print 'Starting time path iteration.'
 euler_errors = np.zeros((T, 3*S, J))
 TPIdist_vec = np.zeros(TPImaxiter)
 nu_current = nu_init
-L_guesses = np.tile(initial_L.reshape(1, S, J), (T, 1, 1))
-K_guesses = np.tile(initial_K.reshape(1, S, J), (T, 1, 1))
-lambda_guesses = np.tile(lambdy.reshape(1, S, J), (T, 1, 1))
+L_guesses = np.tile(initial_L.reshape(1, S, J), (T+S, 1, 1))
+K_guesses = np.tile(initial_K.reshape(1, S, J), (T+S, 1, 1))
+lambda_guesses = np.tile(lambdy.reshape(1, S, J), (T+S, 1, 1))
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     plt.figure()
@@ -484,7 +484,9 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat[0, :, :] = initial_K
     L_mat[0, -1, :] = initial_L[-1, :]
     lam_mat[:, :slow_work, :] *= 0
-    L_guesses, K_guesses, lambda_guesses = L_mat, K_mat, lam_mat
+    L_guesses = (nu_current * L_mat) + (1-nu_current)*L_guesses
+    K_guesses = (nu_current * K_mat) + (1-nu_current)*K_guesses
+    lambda_guesses = (nu_current * lam_mat) + (1-nu_current)*lambda_guesses
     Knew = (omega_stationary[:T, :, :] * K_mat[:T, :, :]).sum(2).sum(1)
     Lnew = (omega_stationary[1:T+1, :, :] * e.reshape(
         1, S, J) * L_mat[:T, :, :]).sum(2).sum(1)
