@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 8/20/2014
+Last updated 9/19/2014
 
 This program solves for transition path of the distribution of wealth
 and the aggregate capital stock using the time path iteration (TPI)
@@ -40,10 +40,12 @@ nu       = contraction parameter in steady state iteration process
            representing the weight on the new distribution gamma_new
 A        = total factor productivity parameter in firms' production
            function
+bqtilde  = minimum bequest value
 delta    = decreciation rate of capital
 ltilde   = measure of time each individual is endowed with each period
 ctilde   = minimum value of consumption
-chi      = discount factor
+chi_n    = discount factor of labor
+chi_b    = discount factor of incidental bequests
 eta      = Frisch elasticity of labor supply
 e        = S x J matrix of age dependent possible working abilities e_s
 J        = number of points in the support of e
@@ -287,14 +289,15 @@ print 'K0 divided by Kss =', K0/Kss
 ------------------------------------------------------------------------
 Solve for equilibrium transition path by TPI
 ------------------------------------------------------------------------
-Kinit        = 1 x T vector, initial time path of aggregate capital
+Kinit        = 1 x T+S vector, initial time path of aggregate capital
                stock
-Linit        = 1 x T vector, initial time path of aggregate labor
-               demand. This is just equal to a 1 x T vector of Lss
+Linit        = 1 x T+S vector, initial time path of aggregate labor
+               demand. This is just equal to a 1 x T+S vector of Lss
                because labor is supplied inelastically
-Yinit        = 1 x T vector, initial time path of aggregate output
-winit        = 1 x T vector, initial time path of real wage
-rinit        = 1 x T vector, initial time path of real interest rate
+Yinit        = 1 x T+S vector, initial time path of aggregate output
+winit        = 1 x T+S vector, initial time path of real wage
+rinit        = 1 x T+S vector, initial time path of real interest rate
+Binit        = T+S x J array, time paths for incidental bequests
 TPIiter      = Iterations of TPI
 TPIdist      = Current distance between iterations of TPI
 K_mat        = (T+S)x(S-1)xJ array of distribution of capital across
@@ -311,6 +314,7 @@ minutes      = Minutes needed to find the steady state, less the number
                of hours
 seconds      = Seconds needed to find the steady state, less the number
                of hours and minutes
+euler_errors = TxSxJ array of euler errors
 ------------------------------------------------------------------------
 '''
 
@@ -541,15 +545,9 @@ plt.savefig("OUTPUT/TPI_L")
 ------------------------------------------------------------------------
 Compute Plot Euler Errors
 ------------------------------------------------------------------------
-k1         = Tx(S-1)xJ array of Kssmat in period t-1
-k2         = copy of K_mat through period T-1
-k3         = Tx(S-1)xJ array of Kssmat in period t+1
-k1_2       = TxSxJ array of Kssmat in period t
-k2_2       = TxSxJ array of Kssmat in period t+1
-euler_mat1 = Tx(S-1)xJ arry of euler errors across time, age, and
-              ability level for first Euler equation
-euler_mat2 = TxSxJ arry of euler errors across time, age, and
-              ability level for second Euler equation
+eul1   = results of euler 1
+eul2   = results of euler 2
+eul3   = results of euler 3
 domain     = 1 x S vector of each age cohort
 ------------------------------------------------------------------------
 '''

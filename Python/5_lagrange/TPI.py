@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 8/20/2014
+Last updated 9/219/2014
 
 This program solves for transition path of the distribution of wealth
 and the aggregate capital stock using the time path iteration (TPI)

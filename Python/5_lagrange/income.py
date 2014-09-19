@@ -10,6 +10,10 @@ This py-file calls the following other file(s):
             data/e_vec_data/march2014.asc
             data/e_vec_data/april2014.asc
             data/e_vec_data/may2014.asc
+
+This py-file creates the following other file(s):
+    (make sure that an OUTPUT folder exists)
+            OUTPUT/ability.png
 ------------------------------------------------------------------------
 '''
 

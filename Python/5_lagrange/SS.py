@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated: 8/25/2014
+Last updated: 9/19/2014
 
 Calculates steady state of OLG model with S age cohorts
 
@@ -12,13 +12,18 @@ This py-file calls the following other file(s):
 This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
             OUTPUT/ss_vars.pkl
-            OUTPUT/capital_dist_2D.png
-            OUTPUT/capital_dist_3D.png
-            OUTPUT/consumption_2D.png
-            OUTPUT/consumption_3D.png
-            OUTPUT/euler_errors_SS_2D.png
-            OUTPUT/euler_errors_euler1_SS_3D.png
-            OUTPUT/euler_errors_euler2_SS_3D.png
+            OUTPUT/capital_dist.png
+            OUTPUT/consumption.png
+            OUTPUT/labor_dist.png
+            OUTPUT/lambdamultiplier.png
+            OUTPUT/chi_n.png
+            OUTPUT/intentional_bequests.png
+            OUTPUT/euler_errors_euler1_SS.png
+            OUTPUT/euler_errors_euler2_SS.png
+            OUTPUT/euler_errors_euler3_SS.png (if J != 1, otherwise, it
+                is printed to the screen)
+            OUTPUT/euler_errors_euler4_SS.png
+            OUTPUT/euler_errors1and2and4_SS.png
 ------------------------------------------------------------------------
 '''
 
@@ -248,6 +253,7 @@ def Euler1(w, r, e, L_guess, K1, K2, K3, B):
         K1       = distribution of capital in period t ((S-1) x J array)
         K2       = distribution of capital in period t+1 ((S-1) x J array)
         K3       = distribution of capital in period t+2 ((S-1) x J array)
+        B        = distribution of incidental bequests (1 x J array)
 
     Returns:
         Value of Euler error.
@@ -269,6 +275,7 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2, B, lambdy):
         K1_2     = distribution of capital in period t (S x J array)
         K2_2     = distribution of capital in period t+1 (S x J array)
         lambdy   = distribution of lambda multipliers (S x J array)
+        B        = distribution of incidental bequests (1 x J array)
 
     Returns:
         Value of Euler error.

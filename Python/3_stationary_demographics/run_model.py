@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 8/22/2014
+Last updated 9/19/2014
 
 This will run the steady state solver as well as time path iteration.
 ------------------------------------------------------------------------
@@ -26,29 +26,28 @@ Setting up the Model
 ------------------------------------------------------------------------
 S            = number of periods an individual lives
 J            = number of different ability groups
-bin_weights  = percent of each age cohort in each ability group
 T            = number of time periods until steady state is reached
+bin_weights  = percent of each age cohort in each ability group
 starting_age = age of first members of cohort
 ending age   = age of the last members of cohort
+E            = number of cohorts before S=1
 beta_annual  = discount factor for one year
 beta         = discount factor for each age cohort
 sigma        = coefficient of relative risk aversion
 alpha        = capital share of income
-nu           = contraction parameter in steady state iteration process
+nu_init      = contraction parameter in steady state iteration process
                representing the weight on the new distribution gamma_new
 A            = total factor productivity parameter in firms' production
                function
 delta_annual = depreciation rate of capital for one year
 delta        = depreciation rate of capital for each cohort
 ctilde       = minimum value amount of consumption
+bqtilde      = minimum bequest value
 ltilde       = measure of time each individual is endowed with each
                period
-chi          = discount factor
+chi_n        = discount factor of labor
+chi_b        = discount factor of incidental bequests
 eta          = Frisch elasticity of labor supply
-e            = S x J matrix of age dependent possible working abilities
-               e_s
-T            = number of periods until the steady state
-omega        = T x S x J array of demographics
 g_y_annual   = annual growth rate of technology
 g_y          = growth rate of technology for one cohort
 TPImaxiter   = Maximum number of iterations that TPI will undergo

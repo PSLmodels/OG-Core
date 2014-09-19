@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated: 8/25/2014
+Last updated: 9/19/2014
 
 Calculates steady state of OLG model with S age cohorts
 
@@ -16,9 +16,14 @@ This py-file creates the following other file(s):
             OUTPUT/capital_dist_3D.png
             OUTPUT/consumption_2D.png
             OUTPUT/consumption_3D.png
+            OUTPUT/labor_dist_2D.png
+            OUTPUT/labor_dist_3D.png
+            OUTPUT/intentional_bequests.png
             OUTPUT/euler_errors_SS_2D.png
             OUTPUT/euler_errors_euler1_SS_3D.png
             OUTPUT/euler_errors_euler2_SS_3D.png
+            OUTPUT/euler_errors_euler3_SS_2D.png
+            OUTPUT/euler_errors_1and2_SS_2D.png
 ------------------------------------------------------------------------
 '''
 
@@ -42,21 +47,26 @@ Imported user given values
 S            = number of periods an individual lives
 J            = number of different ability groups
 T            = number of time periods until steady state is reached
+bin_weights  = percent of each age cohort in each ability group
 starting_age = age of first members of cohort
-beta         = discount factor
+ending age   = age of the last members of cohort
+E            = number of cohorts before S=1
+beta         = discount factor for each age cohort
 sigma        = coefficient of relative risk aversion
 alpha        = capital share of income
-nu           = contraction parameter in steady state iteration process
+nu_init      = contraction parameter in steady state iteration process
                representing the weight on the new distribution gamma_new
 A            = total factor productivity parameter in firms' production
                function
-delta        = depreciation rate of capital
+delta        = depreciation rate of capital for each cohort
 ctilde       = minimum value amount of consumption
+bqtilde      = minimum bequest value
 ltilde       = measure of time each individual is endowed with each
                period
-chi          = discount factor
+chi_n        = discount factor of labor
+chi_b        = discount factor of incidental bequests
 eta          = Frisch elasticity of labor supply
-T            = number of periods until the steady state
+g_y          = growth rate of technology for one cohort
 TPImaxiter   = Maximum number of iterations that TPI will undergo
 TPImindist   = Cut-off distance between iterations for TPI
 ------------------------------------------------------------------------
@@ -230,6 +240,7 @@ def Euler1(w, r, e, L_guess, K1, K2, K3, B):
         K1       = distribution of capital in period t ((S-1) x J array)
         K2       = distribution of capital in period t+1 ((S-1) x J array)
         K3       = distribution of capital in period t+2 ((S-1) x J array)
+        B        = distribution of incidental bequests (1 x J array)
 
     Returns:
         Value of Euler error.
@@ -250,6 +261,7 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2, B):
         L_guess  = distribution of labor (SxJ array)
         K1_2     = distribution of capital in period t (S x J array)
         K2_2     = distribution of capital in period t+1 (S x J array)
+        B        = distribution of incidental bequests (1 x J array)
 
     Returns:
         Value of Euler error.
@@ -260,6 +272,18 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2, B):
 
 
 def Euler3(w, r, e, L_guess, K_guess, B):
+    '''
+    Parameters:
+        w        = wage rate (scalar)
+        r        = rental rate (scalar)
+        e        = distribution of abilities (SxJ array)
+        L_guess  = distribution of labor (SxJ array)
+        K_guess  = distribution of capital in period t (S-1 x J array)
+        B        = distribution of incidental bequests (1 x J array)
+
+    Returns:
+        Value of Euler error.
+    '''
     euler = MUc((1 + r)*K_guess[-2, :] + w * e[-1, :] * L_guess[-1, :] + B.reshape(1, J) / bin_weights - K_guess[-1, :] * 
         np.exp(g_y)) - np.exp(-sigma * g_y) * MUb(K_guess[-1, :])
     return euler
@@ -276,10 +300,6 @@ def Steady_State(guesses):
     B = (K_guess * omega_SS * mort_rate.reshape(S, 1)).sum(0)
     K = (omega_SS * K_guess).sum()
     L_guess = guesses[S * J:].reshape((S, J))
-    # L_guess_init[retire:] = np.ones((S-retire, J)) * 0.1
-    # for j in xrange(J):
-    #     L_guess_init[retire-5:retire, j] = np.linspace(L_guess_init[retire-5, j], 0.1, 5)
-
     L = get_L(e, L_guess)
     Y = get_Y(K, L)
     w = get_w(Y, L)
@@ -379,7 +399,6 @@ starttime = time.time()
 
 K_guess_init = np.ones((S, J)) * .05
 L_guess_init = np.ones((S, J)) * .95
-# L_guess_init[retire:] = np.ones((S-retire, J)) * 0.1
 guesses = list(K_guess_init.flatten()) + list(L_guess_init.flatten())
 
 print 'Solving for steady state level distribution of capital and labor.'
