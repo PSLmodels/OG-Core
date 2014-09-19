@@ -96,20 +96,16 @@ omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
 mort_rate = 1-surv_rate
 slow_work = np.round(7.0 * S / 16.0)
 chi_n_multiplier = 14
-# chi_n_multiplier = 1
 
-# multiply it by something
-# chi_n[slow_work:] = (chi_n_multiplier*mort_rate[slow_work:] + 1 - chi_n_multiplier*mort_rate[slow_work])
 # increase expentially
 chi_n[slow_work:] = (mort_rate[slow_work:] + 1 - mort_rate[slow_work])**chi_n_multiplier
-
-surv_rate[-1] = 0.0
-mort_rate[-1] = 1
-# lambdy_scalar = chi_n * 250
+# develop an initial guess for the lambda multipliers
 lambdy_scalar = np.ones(S) * 1e-6
-# lambdy_scalar[slow_work:] = np.ones(S-slow_work) * chi_n_multiplier * 13
 lambdy_scalar[slow_work:] = np.ones(S-slow_work) * chi_n_multiplier * 6
 
+# Force individuals to die in the last period
+surv_rate[-1] = 0.0
+mort_rate[-1] = 1
 
 print '\tFinished.'
 
@@ -139,6 +135,7 @@ K_guess_init = (S-1 x J) array for the initial guess of the distribution
                of capital
 L_guess_init = (S x J) array for the initial guess of the distribution
                of labor
+lambdy       = (S x J) array of lambda multipliers
 solutions    = ((S * (S-1) * J * J) x 1) array of solutions of the
                steady state distributions of capital and labor
 Kssmat       = ((S-1) x J) array of the steady state distribution of
@@ -313,7 +310,6 @@ def Steady_State(guesses):
     lambdy = guesses[2*S*J:].reshape((S, J))
     L_guess = L_guess ** 2
     lambdy = lambdy ** 2
-    # lambdy[:slow_work] *= 0
     L = get_L(e, L_guess)
     Y = get_Y(K, L)
     w = get_w(Y, L)
@@ -446,7 +442,6 @@ wss = get_w(Yss, Lss)
 rss = get_r(Yss, Kss)
 
 lambdy = solutions[2*S*J:].reshape(S, J) ** 2
-# lambdy[:slow_work] *= 0
 
 cssmat = (1 + rss) * Kssmat2 + wss * e * Lssmat + (1 + rss) * Bss.reshape(1, J)/bin_weights.reshape(1,J) - np.exp(g_y) * Kssmat3
 
@@ -490,7 +485,7 @@ cmap1 = matplotlib.cm.get_cmap('summer')
 cmap2 = matplotlib.cm.get_cmap('jet')
 X, Y = np.meshgrid(domain, Jgrid)
 
-if J==1:
+if J == 1:
     # 2D Graph
     plt.figure()
     plt.plot(domain, Kssvec, color='b', linewidth=2, label='Average capital stock')
@@ -529,7 +524,7 @@ plt.savefig('OUTPUT/intentional_bequests')
  Generate graphs of the steady-state distribution of labor
 ------------------------------------------------------------------------
 '''
-if J==1:
+if J == 1:
     # 2D Graph
     plt.figure()
     plt.plot(domain, Lssvec, color='b', linewidth=2, label='Average Labor Supply')
@@ -555,7 +550,7 @@ else:
 Generate graph of Consumption
 ------------------------------------------------------------------------
 '''
-if J==1:
+if J == 1:
     # 2D Graph
     plt.figure()
     plt.plot(domain, cssmat.mean(1), label='Consumption')
@@ -623,7 +618,7 @@ euler4 = lambdy * Lssmat
 # 3D Graph
 X2, Y2 = np.meshgrid(domain[1:], Jgrid)
 
-if J==1:
+if J == 1:
     # 2D Graph
     plt.figure()
     plt.plot(domain[1:], np.abs(euler1), label='Euler1')
@@ -677,7 +672,7 @@ var_names = ['S', 'beta', 'sigma', 'alpha', 'nu_init', 'A', 'delta', 'e', 'E',
              'seconds', 'eta', 'chi_n', 'chi_b', 'ltilde', 'ctilde', 'T',
              'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist', 'BQ',
              'children', 'surv_rate', 'mort_rate', 'Bss', 'bin_weights',
-             'bqtilde', 'lambdy', 'slow_work', 'retire']
+             'bqtilde', 'lambdy', 'slow_work']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]

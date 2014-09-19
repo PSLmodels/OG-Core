@@ -36,14 +36,16 @@ S        = number of periods an individual lives
 beta     = discount factor (0.96 per year)
 sigma    = coefficient of relative risk aversion
 alpha    = capital share of income
-nu       = contraction parameter in steady state iteration process
+nu_init  = contraction parameter in steady state iteration process
            representing the weight on the new distribution gamma_new
 A        = total factor productivity parameter in firms' production
            function
 delta    = decreciation rate of capital
+bqtilde  = minimum bequest value
 ltilde   = measure of time each individual is endowed with each period
 ctilde   = minimum value of consumption
-chi      = discount factor
+chi_n    = discount factor of labor that changes with S (Sx1 array)
+chi_b    = discount factor of incidental bequests
 eta      = Frisch elasticity of labor supply
 e        = S x J matrix of age dependent possible working abilities e_s
 J        = number of points in the support of e
@@ -287,22 +289,28 @@ print 'K0 divided by Kss =', K0/Kss
 ------------------------------------------------------------------------
 Solve for equilibrium transition path by TPI
 ------------------------------------------------------------------------
-Kinit        = 1 x T vector, initial time path of aggregate capital
+Kinit        = 1 x T+S vector, initial time path of aggregate capital
                stock
-Linit        = 1 x T vector, initial time path of aggregate labor
-               demand. This is just equal to a 1 x T vector of Lss
+Linit        = 1 x T+S vector, initial time path of aggregate labor
+               demand. This is just equal to a 1 x T+S vector of Lss
                because labor is supplied inelastically
-Yinit        = 1 x T vector, initial time path of aggregate output
-winit        = 1 x T vector, initial time path of real wage
-rinit        = 1 x T vector, initial time path of real interest rate
+Yinit        = 1 x T+S vector, initial time path of aggregate output
+winit        = 1 x T+S vector, initial time path of real wage
+rinit        = 1 x T+S vector, initial time path of real interest rate
+Binit        = T+S x J array, time paths for incidental bequests
 TPIiter      = Iterations of TPI
 TPIdist      = Current distance between iterations of TPI
+L_guesses    = guess for (T+S)x(S-1)xJ array of distribution of labor
+K_guesses    = guess for (T+S)x(S-1)xJ array of distribution of capital
+lambda_guesses = guess for (T+S)x(S-1)xJ array of distribution of lambda
+                    multipliers
 K_mat        = (T+S)x(S-1)xJ array of distribution of capital across
                time, age, and ability
 Knew         = 1 x T vector, new time path of aggregate capital stock
 L_mat        = (T+S)xSxJ array of distribution of labor across
                time, age, and ability
 Lnew         = 1 x T vector, new time path of aggregate labor supply
+lam_mat      = (T+S)xSxJ array of distribution of lambda multipliers
 Kpath_TPI    = 1 x T vector, final time path of aggregate capital stock
 Lpath_TPI    = 1 x T vector, final time path of aggregate labor supply
 elapsed_time = elapsed time of TPI
@@ -311,6 +319,8 @@ minutes      = Minutes needed to find the steady state, less the number
                of hours
 seconds      = Seconds needed to find the steady state, less the number
                of hours and minutes
+euler_errors = TxSxJ array of euler errors
+nu_current   = current value of nu
 ------------------------------------------------------------------------
 '''
 
@@ -318,6 +328,8 @@ seconds      = Seconds needed to find the steady state, less the number
 def MUl2(n, chi_n1):
     '''
     Parameters: Labor
+    This alternate function allows for different
+    sizes of chi_n
 
     Returns:    Marginal Utility of Labor
     '''
@@ -332,6 +344,7 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
                   ((S-1)*S*J x 1 list)
         winit   = wage rate (scalar)
         rinit   = rental rate (scalar)
+        Binit   = incidental bequests (T+S x 1 array)
         t       = time period
 
     Returns:
@@ -341,14 +354,10 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     K_guess = np.array(guesses[:length])
     L_guess = np.array(guesses[length:2*length]) ** 2
     lam_guess = np.array(guesses[2*length:]) ** 2
-
     if length == S:
         K1 = np.array([0] + list(K_guess[:-2]))
-        # lam_guess[:slow_work] *= 0
     else:
         K1 = np.array([(initial_K[-(s+2), j])] + list(K_guess[:-2]))
-        # if length > S - slow_work:
-        #     lam_guess[:length - slow_work] *= 0
     K2 = K_guess[:-1]
     K3 = K_guess[1:]
     w1 = winit[t:t+length-1]
@@ -361,17 +370,14 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     e2 = e[-length+1:, j]
     B1 = Binit[t:t+length-1]
     B2 = Binit[t+1:t+length]
-
     error1 = MUc((1 + r1)*K1 + w1 * e1 * l1 + (1 + r1)*B1/bin_weights[j] - np.exp(g_y) * K2) \
         - beta * surv_rate[-(length):-1] * np.exp(
             -sigma * g_y) * (1 + r2)*MUc(
             (1 + r2)*K2 + w2*e2*l2 + (1 + r2)*B2/bin_weights[j] - np.exp(g_y) * K3)
-
     if length == S:
         K1_2 = np.array([0] + list(K_guess[:-1]))
     else:
         K1_2 = np.array([(initial_K[-(s+2), j])] + list(K_guess[:-1]))
-
     K2_2 = K_guess
     w = winit[t:t+length]
     r = rinit[t:t+length]
@@ -386,10 +392,8 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
             -(length):, j] + MUl2(L_guess, chi_n[-length:]) + lam_guess
 
     error3 = MUc((1 + r[-1])*K_guess[-2] + w[-1] * e[-1, j] * L_guess[-1] + (1 + r[-1])*B[-1]/bin_weights[j] - K_guess[-1] * 
-        np.exp(g_y)) - np.exp(-sigma * g_y) * MUb(K_guess[-1])
-
+                 np.exp(g_y)) - np.exp(-sigma * g_y) * MUb(K_guess[-1])
     error4 = lam_guess * L_guess
-
     # Check and punish constraint violations
     mask2 = L_guess > ltilde
     error2[mask2] += 1e9
@@ -411,7 +415,7 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     error1[mask4] += 1e9
     return list(error1.flatten()) + list(error2.flatten()) + list(error3.flatten()) + list(error4.flatten())
 
-
+# Get initial guesses for aggregate time paths
 domain = np.linspace(0, T, T)
 Kinit = (-1/(domain + 1)) * (Kss-K0) + Kss
 Kinit[-1] = Kss
@@ -436,6 +440,7 @@ K_guesses = np.tile(initial_K.reshape(1, S, J), (T+S, 1, 1))
 lambda_guesses = np.tile(lambdy.reshape(1, S, J), (T+S, 1, 1))
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
+    # Plot graphs in each iteration, for debugging purposes only
     plt.figure()
     plt.axhline(
         y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
@@ -452,6 +457,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     plt.xlabel(r"Time $t$")
     plt.ylabel(r"Per-capita Effective Labor Supply $\hat{L}$")
     plt.savefig("OUTPUT/TPI_L")
+    # these graphs will soon be deleted
     K_mat = np.zeros((T+S, S, J))
     L_mat = np.zeros((T+S, S, J))
     lam_mat = np.zeros((T+S, S, J))
@@ -482,11 +488,13 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             euler_errors[t, :, j] = np.abs(Euler_Error(inputs, winit, rinit, Binit[:, j], t))
 
     K_mat[0, :, :] = initial_K
+    # Isaac: this could be one of our problems...we might have to sit down and explicitly solve for this
+    # instead of just plugging in the steady state value (line below)
     L_mat[0, -1, :] = initial_L[-1, :]
-    # lam_mat[:, :slow_work, :] *= 0
-    # L_guesses = (nu_current * L_mat) + (1-nu_current)*L_guesses
-    # K_guesses = (nu_current * K_mat) + (1-nu_current)*K_guesses
-    # lambda_guesses = (nu_current * lam_mat) + (1-nu_current)*lambda_guesses
+    # Update the guesses for the fsolve in each iteration. Doesn't work too well - stops converging.
+    # L_guesses = L_mat
+    # K_guesses = K_mat
+    # lambda_guesses = lam_mat
     Knew = (omega_stationary[:T, :, :] * K_mat[:T, :, :]).sum(2).sum(1)
     Lnew = (omega_stationary[1:T+1, :, :] * e.reshape(
         1, S, J) * L_mat[:T, :, :]).sum(2).sum(1)
@@ -497,6 +505,8 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     TPIdist = np.array(list(
         np.abs(Knew - Kinit)) + list(np.abs(Bnew - Binit[:T]).flatten()) + list(np.abs(Lnew - Linit))).max()
     TPIdist_vec[TPIiter] = TPIdist
+    # After T=7, if cycling occurs, drop the value of nu
+    # wait til after T=7 or so, because sometimes there is a jump up in the first couple iterations
     if TPIiter > 7:
         if TPIdist_vec[TPIiter] - TPIdist_vec[TPIiter-1] > 0:
             nu_current /= 2
@@ -598,16 +608,11 @@ plt.savefig("OUTPUT/TPI_L")
 ------------------------------------------------------------------------
 Compute Plot Euler Errors
 ------------------------------------------------------------------------
-k1         = Tx(S-1)xJ array of Kssmat in period t-1
-k2         = copy of K_mat through period T-1
-k3         = Tx(S-1)xJ array of Kssmat in period t+1
-k1_2       = TxSxJ array of Kssmat in period t
-k2_2       = TxSxJ array of Kssmat in period t+1
-euler_mat1 = Tx(S-1)xJ arry of euler errors across time, age, and
-              ability level for first Euler equation
-euler_mat2 = TxSxJ arry of euler errors across time, age, and
-              ability level for second Euler equation
-domain     = 1 x S vector of each age cohort
+eul1   = results of euler 1
+eul2   = results of euler 1
+eul3   = results of euler 1
+eul4   = results of euler 1
+domain = 1 x S vector of each age cohort
 ------------------------------------------------------------------------
 '''
 
