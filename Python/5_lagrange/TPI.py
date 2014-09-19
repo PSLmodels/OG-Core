@@ -609,9 +609,9 @@ plt.savefig("OUTPUT/TPI_L")
 Compute Plot Euler Errors
 ------------------------------------------------------------------------
 eul1   = results of euler 1
-eul2   = results of euler 1
-eul3   = results of euler 1
-eul4   = results of euler 1
+eul2   = results of euler 2
+eul3   = results of euler 3
+eul4   = results of euler 4
 domain = 1 x S vector of each age cohort
 ------------------------------------------------------------------------
 '''
