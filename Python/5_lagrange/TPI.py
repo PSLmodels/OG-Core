@@ -344,11 +344,11 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
 
     if length == S:
         K1 = np.array([0] + list(K_guess[:-2]))
-        lam_guess[:slow_work] *= 0
+        # lam_guess[:slow_work] *= 0
     else:
         K1 = np.array([(initial_K[-(s+2), j])] + list(K_guess[:-2]))
-        if length > S - slow_work:
-            lam_guess[:length - slow_work] *= 0
+        # if length > S - slow_work:
+        #     lam_guess[:length - slow_work] *= 0
     K2 = K_guess[:-1]
     K3 = K_guess[1:]
     w1 = winit[t:t+length-1]
@@ -393,22 +393,22 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     # Check and punish constraint violations
     mask2 = L_guess > ltilde
     error2[mask2] += 1e9
-    # if K_guess.sum() <= 0:
-    #     error1 += 1e9
-    # cons = (1 + r) * K1_2 + w * e[
-    #     -(length):, j] * L_guess + (1+r)*B/bin_weights[j] - K2_2 * np.exp(g_y)
-    # mask3 = cons < 0
-    # error2[mask3] += 1e9
-    # bin1 = bin_weights[j]
-    # b_min = np.zeros(length-1)
-    # b_min[-1] = (ctilde + bqtilde - w1[-1] * e1[-1] * ltilde - B1[-1] / bin1) / (1 + r1[-1])
-    # for i in xrange(length - 2):
-    #     b_min[-(i+2)] = (ctilde + np.exp(
-    #         g_y) * b_min[-(i+1)] - w1[-(i+2)] * e1[
-    #         -(i+2)] * ltilde - B1[-(i+2)] / bin1) / (1 + r1[-(i+2)])
-    # difference = K_guess[:-1] - b_min
-    # mask4 = difference < 0
-    # error1[mask4] += 1e9
+    if K_guess.sum() <= 0:
+        error1 += 1e9
+    cons = (1 + r) * K1_2 + w * e[
+        -(length):, j] * L_guess + (1+r)*B/bin_weights[j] - K2_2 * np.exp(g_y)
+    mask3 = cons < 0
+    error2[mask3] += 1e9
+    bin1 = bin_weights[j]
+    b_min = np.zeros(length-1)
+    b_min[-1] = (ctilde + bqtilde - w1[-1] * e1[-1] * ltilde - B1[-1] / bin1) / (1 + r1[-1])
+    for i in xrange(length - 2):
+        b_min[-(i+2)] = (ctilde + np.exp(
+            g_y) * b_min[-(i+1)] - w1[-(i+2)] * e1[
+            -(i+2)] * ltilde - B1[-(i+2)] / bin1) / (1 + r1[-(i+2)])
+    difference = K_guess[:-1] - b_min
+    mask4 = difference < 0
+    error1[mask4] += 1e9
     return list(error1.flatten()) + list(error2.flatten()) + list(error3.flatten()) + list(error4.flatten())
 
 
@@ -460,7 +460,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             solutions = opt.fsolve(Euler_Error, list(
                 K_guesses[0, -(s+2):, j]) + list(L_guesses[0, -(s+2):, j]**.5) + list(
                 lambda_guesses[0, -(s+2):, j] ** .5), args=(
-                winit, rinit, Binit[:, j], 0))
+                winit, rinit, Binit[:, j], 0), xtol=1e-11)
             K_vec = solutions[:len(solutions)/3]
             K_mat[1:S+1, :, j] += np.diag(K_vec, S-(s+2))
             L_vec = solutions[len(solutions)/3:2*len(solutions)/3] ** 2
@@ -471,7 +471,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         for t in xrange(0, T):
             solutions = opt.fsolve(Euler_Error, list(
                 K_guesses[t, :, j]) + list(L_guesses[t, :, j] ** .5) + list(lambda_guesses[t, :, j] ** .5), args=(
-                winit, rinit, Binit[:, j], t))
+                winit, rinit, Binit[:, j], t), xtol=1e-11)
             K_vec = solutions[:S]
             K_mat[t+1:t+S+1, :, j] += np.diag(K_vec)
             L_vec = solutions[S:2*S] ** 2
@@ -483,10 +483,10 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
 
     K_mat[0, :, :] = initial_K
     L_mat[0, -1, :] = initial_L[-1, :]
-    lam_mat[:, :slow_work, :] *= 0
-    L_guesses = (nu_current * L_mat) + (1-nu_current)*L_guesses
-    K_guesses = (nu_current * K_mat) + (1-nu_current)*K_guesses
-    lambda_guesses = (nu_current * lam_mat) + (1-nu_current)*lambda_guesses
+    # lam_mat[:, :slow_work, :] *= 0
+    # L_guesses = (nu_current * L_mat) + (1-nu_current)*L_guesses
+    # K_guesses = (nu_current * K_mat) + (1-nu_current)*K_guesses
+    # lambda_guesses = (nu_current * lam_mat) + (1-nu_current)*lambda_guesses
     Knew = (omega_stationary[:T, :, :] * K_mat[:T, :, :]).sum(2).sum(1)
     Lnew = (omega_stationary[1:T+1, :, :] * e.reshape(
         1, S, J) * L_mat[:T, :, :]).sum(2).sum(1)

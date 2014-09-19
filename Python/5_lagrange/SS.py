@@ -42,21 +42,26 @@ Imported user given values
 S            = number of periods an individual lives
 J            = number of different ability groups
 T            = number of time periods until steady state is reached
+bin_weights  = percent of each age cohort in each ability group
 starting_age = age of first members of cohort
-beta         = discount factor
+ending age   = age of the last members of cohort
+E            = number of cohorts before S=1
+beta         = discount factor for each age cohort
 sigma        = coefficient of relative risk aversion
 alpha        = capital share of income
-nu           = contraction parameter in steady state iteration process
+nu_init      = contraction parameter in steady state iteration process
                representing the weight on the new distribution gamma_new
 A            = total factor productivity parameter in firms' production
                function
-delta        = depreciation rate of capital
+delta        = depreciation rate of capital for each cohort
 ctilde       = minimum value amount of consumption
+bqtilde      = minimum bequest value
 ltilde       = measure of time each individual is endowed with each
                period
-chi          = discount factor
+chi_n        = discount factor of labor that changes with S (Sx1 array)
+chi_b        = discount factor of incidental bequests
 eta          = Frisch elasticity of labor supply
-T            = number of periods until the steady state
+g_y          = growth rate of technology for one cohort
 TPImaxiter   = Maximum number of iterations that TPI will undergo
 TPImindist   = Cut-off distance between iterations for TPI
 ------------------------------------------------------------------------
@@ -78,6 +83,7 @@ omega_SS     = steady state population distribution
 children     = T x starting_age x J array of children demographics
 surv_rate    = S x 1 array of survival rates
 mort_rate    = S x 1 array of mortality rates
+slow_work    = time at which chi_n starts increasing from 1
 ------------------------------------------------------------------------
 '''
 
@@ -89,7 +95,6 @@ omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
     S, J, T, bin_weights, starting_age, ending_age, E)
 mort_rate = 1-surv_rate
 slow_work = np.round(7.0 * S / 16.0)
-retire = np.round(14.0 * S / 16.0)
 chi_n_multiplier = 14
 # chi_n_multiplier = 1
 
@@ -103,7 +108,7 @@ mort_rate[-1] = 1
 # lambdy_scalar = chi_n * 250
 lambdy_scalar = np.ones(S) * 1e-6
 # lambdy_scalar[slow_work:] = np.ones(S-slow_work) * chi_n_multiplier * 13
-lambdy_scalar[slow_work:] = np.ones(S-slow_work) * chi_n_multiplier * 5
+lambdy_scalar[slow_work:] = np.ones(S-slow_work) * chi_n_multiplier * 6
 
 
 print '\tFinished.'
@@ -266,6 +271,7 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2, B, lambdy):
         L_guess  = distribution of labor (SxJ array)
         K1_2     = distribution of capital in period t (S x J array)
         K2_2     = distribution of capital in period t+1 (S x J array)
+        lambdy   = distribution of lambda multipliers (S x J array)
 
     Returns:
         Value of Euler error.
@@ -276,6 +282,18 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2, B, lambdy):
 
 
 def Euler3(w, r, e, L_guess, K_guess, B):
+    '''
+    Parameters:
+        w        = wage rate (scalar)
+        r        = rental rate (scalar)
+        e        = distribution of abilities (SxJ array)
+        L_guess  = distribution of labor (SxJ array)
+        K_guess  = distribution of capital in period t (S-1 x J array)
+        B        = distribution of incidental bequests (1 x J array)
+
+    Returns:
+        Value of Euler error.
+    '''
     euler = MUc((1 + r)*K_guess[-2, :] + w * e[-1, :] * L_guess[-1, :] + B.reshape(1, J) / bin_weights - K_guess[-1, :] * 
         np.exp(g_y)) - np.exp(-sigma * g_y) * MUb(K_guess[-1, :])
     return euler
@@ -295,7 +313,7 @@ def Steady_State(guesses):
     lambdy = guesses[2*S*J:].reshape((S, J))
     L_guess = L_guess ** 2
     lambdy = lambdy ** 2
-    lambdy[:slow_work] *= 0
+    # lambdy[:slow_work] *= 0
     L = get_L(e, L_guess)
     Y = get_Y(K, L)
     w = get_w(Y, L)
@@ -398,7 +416,7 @@ lambdy = np.ones((S, J)) * lambdy_scalar.reshape(S, 1)
 guesses = list(K_guess_init.flatten()) + list(L_guess_init.flatten()) + list(lambdy.flatten())
 
 print 'Solving for steady state level distribution of capital and labor.'
-solutions = opt.fsolve(Steady_State, guesses)
+solutions = opt.fsolve(Steady_State, guesses, xtol=1e-11)
 print '\tFinished.'
 print np.abs(np.array(Steady_State(solutions))).max()
 
@@ -428,7 +446,7 @@ wss = get_w(Yss, Lss)
 rss = get_r(Yss, Kss)
 
 lambdy = solutions[2*S*J:].reshape(S, J) ** 2
-lambdy[:slow_work] *= 0
+# lambdy[:slow_work] *= 0
 
 cssmat = (1 + rss) * Kssmat2 + wss * e * Lssmat + (1 + rss) * Bss.reshape(1, J)/bin_weights.reshape(1,J) - np.exp(g_y) * Kssmat3
 
