@@ -519,12 +519,14 @@ else:
  Generate graph of the steady-state distribution of intentional bequests
 ------------------------------------------------------------------------
 '''
-
-plt.figure()
-plt.plot(np.arange(J)+1, BQ)
-plt.xlabel(r'ability-$j$')
-plt.ylabel(r'bequests $\overline{bq}_{j,E+S+1}$')
-plt.savefig('OUTPUT/intentional_bequests')
+if J == 1:
+    print '\tIntentional bequests:', BQ
+else:
+    plt.figure()
+    plt.plot(np.arange(J)+1, BQ)
+    plt.xlabel(r'ability-$j$')
+    plt.ylabel(r'bequests $\overline{bq}_{j,E+S+1}$')
+    plt.savefig('OUTPUT/intentional_bequests')
 
 '''
 ------------------------------------------------------------------------
