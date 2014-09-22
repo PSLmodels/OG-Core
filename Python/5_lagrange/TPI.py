@@ -457,6 +457,22 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     plt.xlabel(r"Time $t$")
     plt.ylabel(r"Per-capita Effective Labor Supply $\hat{L}$")
     plt.savefig("OUTPUT/TPI_L")
+    eul1 = euler_errors[:, :S-1, :].max(1).max(1)
+    eul2 = euler_errors[:, S-1:2*S, :].max(1).max(1)
+    eul3 = euler_errors[:, S-1, :].max(1)
+    eul4 = euler_errors[:, 2*S:, :].max(1).max(1)
+
+    domain = np.linspace(1, T, T)
+    plt.figure()
+    plt.plot(domain, eul1, label='Euler1')
+    plt.plot(domain, eul2, label='Euler2')
+    plt.plot(domain, eul3, label='Euler3')
+    plt.plot(domain, eul4, label='Euler4')
+    plt.ylabel('Error Value')
+    plt.xlabel(r'Time $t$')
+    plt.legend(loc=0)
+    plt.title('Maximum Euler Error for each period across S and J')
+    plt.savefig('OUTPUT/euler_errors_TPI_2D')
     # these graphs will soon be deleted
     K_mat = np.zeros((T+S, S, J))
     L_mat = np.zeros((T+S, S, J))
@@ -490,9 +506,9 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     K_mat[0, :, :] = initial_K
     L_mat[0, -1, :] = initial_L[-1, :]
     # Update the guesses for the fsolve in each iteration. Doesn't work too well - stops converging.
-    # L_guesses = L_mat
-    # K_guesses = K_mat
-    # lambda_guesses = lam_mat
+    # L_guesses = np.copy(L_mat)
+    # K_guesses = np.copy(K_mat)
+    # lambda_guesses = np.copy(lam_mat)
     Knew = (omega_stationary[:T, :, :] * K_mat[:T, :, :]).sum(2).sum(1)
     Lnew = (omega_stationary[1:T+1, :, :] * e.reshape(
         1, S, J) * L_mat[:T, :, :]).sum(2).sum(1)
@@ -558,7 +574,7 @@ K1[:, 1:, :] = K_mat[:T, :-1, :]
 K2 = np.zeros((T, S, J))
 K2[:, :, :] = K_mat[:T, :, :]
 cinit = (1 + rinit[:T].reshape(T, 1, 1)) * K1 + winit[:T].reshape(
-    T, 1, 1) * e.reshape(1, S, J) * L_mat[:T] - np.exp(g_y) * K2
+    T, 1, 1) * e.reshape(1, S, J) * L_mat[:T] - np.exp(g_y) * K2 + (1 + rinit[:T].reshape(T, 1, 1)) * Binit[:T].reshape(T, 1, J) / bin_weights.reshape(1, 1, J)
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
     constraint_checker2(K_mat[t, :-1, :], L_mat[t], winit[t], rinit[t], e, cinit[t], t)
