@@ -97,7 +97,7 @@ p37
 F0.35
 sS'TPImaxiter'
 p38
-I150
+I50
 sS'S'
 p39
 I80

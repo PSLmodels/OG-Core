@@ -82,7 +82,7 @@ chi_b = 1.0
 eta = 2.0
 g_y_annual = 0.03
 g_y = (1 + g_y_annual)**(float(ending_age-starting_age)/S) - 1
-TPImaxiter = 150
+TPImaxiter = 50
 TPImindist = 3 * 1e-6
 
 '''

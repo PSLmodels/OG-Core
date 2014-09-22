@@ -106,7 +106,7 @@ chi_n_multiplier = 14
 chi_n[slow_work:] = (mort_rate[slow_work:] + 1 - mort_rate[slow_work])**chi_n_multiplier
 # develop an initial guess for the lambda multipliers
 lambdy_scalar = np.ones(S) * 1e-6
-lambdy_scalar[slow_work:] = np.ones(S-slow_work) * chi_n_multiplier * 6
+lambdy_scalar[slow_work:] = np.ones(S-slow_work) * chi_n_multiplier * 5
 
 # Force individuals to die in the last period
 surv_rate[-1] = 0.0

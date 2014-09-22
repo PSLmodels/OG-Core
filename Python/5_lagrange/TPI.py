@@ -488,8 +488,6 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             euler_errors[t, :, j] = np.abs(Euler_Error(inputs, winit, rinit, Binit[:, j], t))
 
     K_mat[0, :, :] = initial_K
-    # Isaac: this could be one of our problems...we might have to sit down and explicitly solve for this
-    # instead of just plugging in the steady state value (line below)
     L_mat[0, -1, :] = initial_L[-1, :]
     # Update the guesses for the fsolve in each iteration. Doesn't work too well - stops converging.
     # L_guesses = L_mat
