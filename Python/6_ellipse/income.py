@@ -10,6 +10,10 @@ This py-file calls the following other file(s):
             data/e_vec_data/march2014.asc
             data/e_vec_data/april2014.asc
             data/e_vec_data/may2014.asc
+
+This py-file creates the following other file(s):
+    (make sure that an OUTPUT folder exists)
+            OUTPUT/ability.png
 ------------------------------------------------------------------------
 '''
 
@@ -149,16 +153,21 @@ def graph_income(S, J, e, starting_age, ending_age, bin_weights):
     for j in xrange(J):
         Jgrid[j:] += bin_weights[j]
     X, Y = np.meshgrid(domain, Jgrid)
-    # 3D Graph
-    cmap2 = matplotlib.cm.get_cmap('summer')
-    fig10 = plt.figure()
-    ax10 = fig10.gca(projection='3d')
-    ax10.plot_surface(X, Y, e.T, rstride=1, cstride=2, cmap=cmap2)
-    ax10.set_xlabel(r'age-$s$')
-    ax10.set_ylabel(r'ability-$j$')
-    ax10.set_zlabel(r'Income Level $e_j(s)$')
-    # ax10.set_title('Income Levels')
-    plt.savefig('OUTPUT/ability_3D')
+    if J==1:
+        plt.figure()
+        plt.plot(domain, e)
+        plt.savefig('OUTPUT/ability')
+    else:
+        # 3D Graph
+        cmap2 = matplotlib.cm.get_cmap('summer')
+        fig10 = plt.figure()
+        ax10 = fig10.gca(projection='3d')
+        ax10.plot_surface(X, Y, e.T, rstride=1, cstride=2, cmap=cmap2)
+        ax10.set_xlabel(r'age-$s$')
+        ax10.set_ylabel(r'ability-$j$')
+        ax10.set_zlabel(r'Income Level $e_j(s)$')
+        # ax10.set_title('Income Levels')
+        plt.savefig('OUTPUT/ability')
 
 def get_e(S, J, starting_age, ending_age, bin_weights):
     e = np.zeros((S, J))

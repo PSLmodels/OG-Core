@@ -258,7 +258,8 @@ def MUl(n):
 
     Returns:    Marginal Utility of Labor
     '''
-    output = - chi_n * ((ltilde-n) ** (-eta))
+    deriv = -b_ellipse * ((1 - (n / ltilde) ** omega_ellipse) ** ((1/omega_ellipse)-1)) * (n / ltilde) ** (omega_ellipse - 1)
+    output = chi_n.reshape(S, 1) * deriv
     return output
 
 
@@ -319,6 +320,17 @@ euler_errors = TxSxJ array of euler errors
 '''
 
 
+def MUl2(n, chi_n1):
+    '''
+    Parameters: Labor
+
+    Returns:    Marginal Utility of Labor
+    '''
+    deriv = -b_ellipse * ((1 - (n / ltilde) ** omega_ellipse) ** ((1/omega_ellipse)-1)) * (n / ltilde) ** (omega_ellipse - 1)
+    output = chi_n1 * deriv
+    return output
+
+
 def Euler_Error(guesses, winit, rinit, Binit, t):
     '''
     Parameters:
@@ -366,9 +378,14 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     w = winit[t:t+length]
     r = rinit[t:t+length]
     B = Binit[t:t+length]
-    error2 = MUc((1 + r)*K1_2 + w * e[
-        -(length):, j] * L_guess + (1 + r)*B/bin_weights[j] - np.exp(g_y) * K2_2) * w * e[
-        -(length):, j] + MUl(L_guess)
+    if length == S:
+        error2 = MUc((1 + r)*K1_2 + w * e[
+            -(length):, j] * L_guess + (1 + r)*B/bin_weights[j] - np.exp(g_y) * K2_2) * w * e[
+            -(length):, j] + MUl2(L_guess, chi_n)
+    else:
+        error2 = MUc((1 + r)*K1_2 + w * e[
+            -(length):, j] * L_guess + (1 + r)*B/bin_weights[j] - np.exp(g_y) * K2_2) * w * e[
+            -(length):, j] + MUl2(L_guess, chi_n[-length:])
 
     error3 = MUc((1 + r[-1])*K_guess[-2] + w[-1] * e[-1, j] * L_guess[-1] + (1 + r[-1])*B[-1]/bin_weights[j] - K_guess[-1] * 
         np.exp(g_y)) - np.exp(-sigma * g_y) * MUb(K_guess[-1])
@@ -413,8 +430,31 @@ TPIdist = 10
 print 'Starting time path iteration.'
 
 euler_errors = np.zeros((T, 2*S, J))
+TPIdist_vec = np.zeros(TPImaxiter)
+nu_current = nu
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
+    # to be deleted starts
+    Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
+    Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
+    plt.figure()
+    plt.axhline(
+        y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
+    plt.plot(np.arange(
+        T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
+    plt.xlabel(r"Time $t$")
+    plt.ylabel(r"Per-capita Capital $\hat{K}$")
+    plt.savefig("OUTPUT/TPI_K")
+
+    plt.figure()
+    plt.axhline(
+        y=Lss, color='black', linewidth=2, label=r"Steady State $\hat{L}$", ls='--')
+    plt.plot(np.arange(
+        T+10), Lpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{L}_t$")
+    plt.xlabel(r"Time $t$")
+    plt.ylabel(r"Per-capita Effective Labor Supply $\hat{L}$")
+    plt.savefig("OUTPUT/TPI_L")
+    # to be deleted ends
     K_mat = np.zeros((T+S, S, J))
     L_mat = np.zeros((T+S, S, J))
     for j in xrange(J):
@@ -450,6 +490,13 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     Binit[:T] = nu*Bnew + (1-nu)*Binit[:T]
     TPIdist = np.array(list(
         np.abs(Knew - Kinit)) + list(np.abs(Bnew - Binit[:T]).flatten()) + list(np.abs(Lnew - Linit))).max()
+    TPIdist_vec[TPIiter] = TPIdist
+    # After T=7, if cycling occurs, drop the value of nu
+    # wait til after T=7 or so, because sometimes there is a jump up in the first couple iterations
+    if TPIiter > 7:
+        if TPIdist_vec[TPIiter] - TPIdist_vec[TPIiter-1] > 0:
+            nu_current /= 2
+            print 'New Value of nu:', nu_current
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
