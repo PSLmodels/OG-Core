@@ -18,7 +18,7 @@ from glob import glob
 # Run steady state
 run_SS = True
 # Run TPI
-run_TPI = False
+run_TPI = True
 
 '''
 Delete all .png and .pkl files that have been generated
@@ -74,8 +74,8 @@ chi_n_multiplier = scalar which is increased to force the labor
 
 # Parameters
 S = 80
-J = 1
-T = 2 * S
+J = 7
+T = 90
 bin_weights = np.array([1.0/J] * J)
 starting_age = 20
 ending_age = 100
@@ -98,7 +98,7 @@ g_y = (1 + g_y_annual)**(float(ending_age-starting_age)/S) - 1
 TPImaxiter = 100
 TPImindist = 3 * 1e-6
 slow_work = np.round(7.0 * S / 16.0)
-chi_n_multiplier = 40
+chi_n_multiplier = 30
 #ellipse stuff
 b_ellipse = 25.0
 k_ellipse = -25.0

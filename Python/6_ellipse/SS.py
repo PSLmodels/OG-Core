@@ -334,7 +334,7 @@ def Steady_State(guesses):
     cons = (1 + r) * K1_2 + w * e * L_guess + BQ.reshape(1, J) / bin_weights - K2_2 * np.exp(g_y)
     mask3 = cons < 0
     error2[mask3] += 1e9
-    print max(list(error1.flatten()) + list(error2.flatten()) + list(error3.flatten()))
+    # print max(list(error1.flatten()) + list(error2.flatten()) + list(error3.flatten()))
     return list(error1.flatten()) + list(error2.flatten()) + list(error3.flatten())
 
 
@@ -407,13 +407,13 @@ def constraint_checker(Kssmat, Lssmat, wss, rss, e, cssmat, BQ):
 
 starttime = time.time()
 
-K_guess_init = np.ones((S, J)) * .05
-L_guess_init = np.ones((S, J)) * .95
+K_guess_init = np.ones((S, J)) * .01
+L_guess_init = np.ones((S, J)) * .99
 guesses = list(K_guess_init.flatten()) + list(L_guess_init.flatten())
 
 print 'Solving for steady state level distribution of capital and labor.'
 # solutions, info, ier, msg = opt.fsolve(Steady_State, guesses, xtol=1e-10, full_output=True)
-solutions = opt.fsolve(Steady_State, guesses, xtol=1e-10)
+solutions = opt.fsolve(Steady_State, guesses)
 print '\tFinished.'
 
 runtime = time.time() - starttime

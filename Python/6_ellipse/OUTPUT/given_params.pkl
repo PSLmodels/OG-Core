@@ -13,7 +13,7 @@ p4
 F25.0
 sS'chi_n_multiplier'
 p5
-I40
+I30
 sS'bqtilde'
 p6
 F1e-06
@@ -47,7 +47,7 @@ p16
 tp17
 Rp18
 (I1
-(L80L
+(I80
 tp19
 cnumpy
 dtype
@@ -79,16 +79,16 @@ g16
 tp30
 Rp31
 (I1
-(L1L
+(I7
 tp32
 g23
 I00
-S'\x00\x00\x00\x00\x00\x00\xf0?'
+S'\x92$I\x92$I\xc2?\x92$I\x92$I\xc2?\x92$I\x92$I\xc2?\x92$I\x92$I\xc2?\x92$I\x92$I\xc2?\x92$I\x92$I\xc2?\x92$I\x92$I\xc2?'
 p33
 tp34
 bsS'J'
 p35
-I1
+I7
 sS'ending_age'
 p36
 I100
@@ -97,7 +97,7 @@ p37
 F0.96
 sS'T'
 p38
-I160
+I90
 sS'delta'
 p39
 F0.050000000000000044
