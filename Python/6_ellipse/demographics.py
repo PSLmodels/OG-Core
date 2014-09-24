@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 8/22/2014
+Last updated 9/24/2014
 
 Functions for generating omega, the T x S x J array which describes the
 demographics of the population
@@ -8,6 +8,18 @@ demographics of the population
 This py-file calls the following other file(s):
             data\demographic\demographic_data.csv
             data\demographic\mortality_rates.csv
+
+This py-file creates the following other file(s):
+    (make sure that an OUTPUT folder exists)
+            OUTPUT/fert_rates.png
+            OUTPUT/mort_rates.png
+            OUTPUT/survival_rate.png
+            OUTPUT/cum_mort_rate.png
+            OUTPUT/imm_rates.png
+            OUTPUT/Population.png
+            OUTPUT/Population_growthrate.png
+            OUTPUT/omega_init.png
+            OUTPUT/omega_ss.png
 ------------------------------------------------------------------------
 '''
 
@@ -118,18 +130,22 @@ def fit_exp_left(params, point1, point2):
     error2 = a*b**(x2) - y2
     return [error1, error2]
 
+
 def exp_int(points, a, b):
     top = a * ((1.0/(b**40)) - b**(-points))
     bottom = np.log(b)
     return top / bottom
 
+
 def integrate(func, points):
-    params_guess = [1,1]
-    a, b = opt.fsolve(fit_exp_right, params_guess, args=([40,poly.polyval(40, func)], [49.5, .0007]))
+    params_guess = [1, 1]
+    a, b = opt.fsolve(fit_exp_right, params_guess, args=(
+        [40, poly.polyval(40, func)], [49.5, .0007]))
     func_int = poly.polyint(func)
     integral = np.empty(points.shape)
-    integral[points<=40] = poly.polyval(points[points<=40], func_int)
-    integral[points>40] = poly.polyval(40, func_int) + exp_int(points[points>40], a, b)
+    integral[points <= 40] = poly.polyval(points[points <= 40], func_int)
+    integral[points > 40] = poly.polyval(40, func_int) + exp_int(
+        points[points > 40], a, b)
     return np.diff(integral)
 
 '''
@@ -155,24 +171,11 @@ def get_survival(S, starting_age, ending_age, E):
     mort_int = poly.polyint(mort_poly)
     child_rate = poly.polyval(np.linspace(0, starting_age, E+1), mort_int)
     child_rate = np.diff(child_rate)
-    mort_rate = poly.polyval(np.linspace(starting_age, ending_age, S+1), mort_int)
+    mort_rate = poly.polyval(
+        np.linspace(starting_age, ending_age, S+1), mort_int)
     mort_rate = np.diff(mort_rate)
     child_rate[child_rate < 0] = 0.0
     mort_rate[mort_rate < 0] = 0.0
-    # survival_rate = np.array(mort_data.surv_rate)[starting_age: ending_age]
-    # surv_rate_condensed = np.zeros(S)
-    # # If S < 80, then group years together
-    # for s in xrange(S):
-    #     surv_rate_condensed[s] = np.product(
-    #         survival_rate[s*((ending_age-starting_age)/S):(s+1)*((ending_age-starting_age)/S)])
-    # # All individuals must die if they reach the last age group
-    # surv_rate_condensed[-1] = 0
-    # children_rate = np.array(mort_data[(
-    #     mort_data.age < starting_age)].surv_rate)
-    # children_rate_condensed = np.zeros(starting_age * S / (ending_age-starting_age))
-    # for s in xrange(E):
-    #     children_rate_condensed[s] = np.product(
-    #         children_rate[s*((ending_age-starting_age)/S):(s+1)*((ending_age-starting_age)/S)])
     return 1.0 - mort_rate, 1.0 - child_rate
 
 '''
@@ -202,7 +205,8 @@ def get_immigration1(S, starting_age, ending_age, pop_2010, pop_2011, E):
             rates for children
     '''
     # Get survival rates for the S age groups
-    surv_array, children_rate = get_survival(ending_age-starting_age, starting_age, ending_age, starting_age)
+    surv_array, children_rate = get_survival(
+        ending_age-starting_age, starting_age, ending_age, starting_age)
     surv_array = np.array(list(children_rate) + list(surv_array))
     # Only keep track of individuals in 2010 that don't die
     pop_2010 = pop_2010[:ending_age]
@@ -236,10 +240,13 @@ def get_immigration2(S, starting_age, ending_age, E):
         S, starting_age, ending_age, pop_2012, pop_2013, E)
     im_array = (
         imm_rate_condensed1 + imm_rate_condensed2 + imm_rate_condensed3) / 3.0
-    poly_imm = poly.polyfit(np.linspace(1, ending_age, ending_age-1), im_array[:-1], deg=18)
+    poly_imm = poly.polyfit(np.linspace(
+        1, ending_age, ending_age-1), im_array[:-1], deg=18)
     poly_imm_int = poly.polyint(poly_imm)
-    child_imm_rate = poly.polyval(np.linspace(0, starting_age, E+1), poly_imm_int)
-    imm_rate = poly.polyval(np.linspace(starting_age, ending_age, S+1), poly_imm_int)
+    child_imm_rate = poly.polyval(np.linspace(
+        0, starting_age, E+1), poly_imm_int)
+    imm_rate = poly.polyval(np.linspace(
+        starting_age, ending_age, S+1), poly_imm_int)
     child_imm_rate = np.diff(child_imm_rate)
     imm_rate = np.diff(imm_rate)
     return imm_rate, child_imm_rate
@@ -265,10 +272,12 @@ def get_fert(S, starting_age, ending_age, E):
     '''
     # Fit a polynomial to the fertility rates
     poly_fert = poly.polyfit(age_midpoint, fert_data, deg=4)
-    fert_rate = integrate(poly_fert, np.linspace(starting_age, ending_age, S+1))
+    fert_rate = integrate(poly_fert, np.linspace(
+        starting_age, ending_age, S+1))
     fert_rate /= 2.0
     children_fertrate_int = poly.polyint(poly_fert)
-    children_fertrate_int = poly.polyval(np.linspace(0, starting_age, E + 1), children_fertrate_int)
+    children_fertrate_int = poly.polyval(np.linspace(
+        0, starting_age, E + 1), children_fertrate_int)
     children_fertrate = np.diff(children_fertrate_int)
     children_fertrate /= 2.0
     children_fertrate[children_fertrate < 0] = 0
@@ -317,10 +326,14 @@ def rate_graphs(S, starting_age, ending_age, imm, fert, mort, child_imm, child_f
     # Graph of cumulative mortality rates
     plt.figure()
     plt.plot(domain3, cum_surv_arr)
+    plt.xlabel(r'age $s$')
+    plt.ylabel(r'survival rate $1-\rho_s$')
     plt.savefig('OUTPUT/survival_rate')
     cum_mort_rate = 1-cum_surv_arr
     plt.figure()
     plt.plot(domain3, cum_mort_rate)
+    plt.xlabel(r'age $s$')
+    plt.ylabel(r'cumulative mortality rate')
     plt.savefig('OUTPUT/cum_mort_rate')
 
     # Graph of immigration rates
@@ -345,7 +358,9 @@ def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
 
     plt.figure()
     plt.plot(np.arange(T+S)+1, x, 'b', linewidth=2)
-    plt.title('Population Size (as a percent of the 2010 population)')
+    plt.title('Population Size (as a percent of the initial population)')
+    plt.xlabel(r'Time $t$')
+    # plt.ylabel('Population size, as a percent of initial population')
     plt.savefig('OUTPUT/Population')
 
     plt.figure()
@@ -358,7 +373,8 @@ def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
     plt.savefig('OUTPUT/Population_growthrate')
 
     plt.figure()
-    plt.plot(np.arange(S+int(starting_age * S / (ending_age-starting_age)))+1, list(
+    plt.plot(np.arange(S+int(starting_age * S / (
+        ending_age-starting_age)))+1, list(
         children[0, :, :].sum(1)) + list(
         omega[0, :, :].sum(1)), linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
@@ -366,7 +382,8 @@ def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
     plt.savefig('OUTPUT/omega_init')
 
     plt.figure()
-    plt.plot(np.arange(S+int(starting_age * S / (ending_age-starting_age)))+1, list(
+    plt.plot(np.arange(S+int(starting_age * S / (
+        ending_age-starting_age)))+1, list(
         children[T, :, :].sum(1)/N) + list(
         omega[T, :, :].sum(1)/N), linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
@@ -408,8 +425,7 @@ def get_omega(S, J, T, bin_weights, starting_age, ending_age, E):
     cum_surv_rate = np.zeros(S)
     for i in xrange(S):
         cum_surv_rate[i] = np.prod(surv_array[:i])
-    rate_graphs(
-        S, starting_age, ending_age, imm_array, fert_rate, surv_array, children_im, children_fertrate, children_rate)
+    rate_graphs(S, starting_age, ending_age, imm_array, fert_rate, surv_array, children_im, children_fertrate, children_rate)
     children_int = poly.polyval(
         np.linspace(
             0, starting_age, E + 1), poly_int_pop)
@@ -455,9 +471,11 @@ def get_omega(S, J, T, bin_weights, starting_age, ending_age, E):
     omega_SS = omega_SS.reshape(S+E, 1)[E:, :]
     omega_SS /= omega_SS.sum()
     # Creating the different ability level bins
-    omega_SS = np.tile(omega_SS.reshape(S, 1), (1, J)) * bin_weights.reshape(1, J)
+    omega_SS = np.tile(
+        omega_SS.reshape(S, 1), (1, J)) * bin_weights.reshape(1, J)
     omega_big = np.tile(
         omega_big.reshape(T+S, S, 1), (1, 1, J)) * bin_weights.reshape(1, 1, J)
-    children = np.tile(children.reshape(T+S, E, 1), (1, 1, J)) * bin_weights.reshape(1, 1, J)
+    children = np.tile(children.reshape(
+        T+S, E, 1), (1, 1, J)) * bin_weights.reshape(1, 1, J)
     pop_graphs(S, T, starting_age, ending_age, children, g_n_SS[0], omega_big)
     return omega_big, g_n_SS[0], omega_SS, children, surv_array

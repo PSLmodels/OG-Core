@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 9/23/2014
+Last updated 9/24/2014
 
 This will run the steady state solver as well as time path iteration.
 ------------------------------------------------------------------------
@@ -56,7 +56,7 @@ ctilde       = minimum value amount of consumption
 bqtilde      = minimum bequest value
 ltilde       = measure of time each individual is endowed with each
                period
-chi_n        = discount factor of labor
+chi_n        = discount factor of labor that changes with S (Sx1 array)
 chi_b        = discount factor of incidental bequests
 g_y_annual   = annual growth rate of technology
 g_y          = growth rate of technology for one cohort
@@ -75,7 +75,7 @@ chi_n_multiplier = scalar which is increased to force the labor
 # Parameters
 S = 80
 J = 7
-T = 90
+T = int(1.5 * S)
 bin_weights = np.array([1.0/J] * J)
 starting_age = 20
 ending_age = 100
@@ -99,7 +99,6 @@ TPImaxiter = 100
 TPImindist = 3 * 1e-6
 slow_work = np.round(7.0 * S / 16.0)
 chi_n_multiplier = 30
-#ellipse stuff
 b_ellipse = 25.0
 k_ellipse = -25.0
 omega_ellipse = 3.0
@@ -110,9 +109,10 @@ Pickle parameter values
 
 print 'Saving user given parameter values.'
 var_names = ['S', 'J', 'T', 'bin_weights', 'starting_age', 'ending_age',
-             'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'ctilde', 'E', 'bqtilde',
-             'ltilde', 'chi_n', 'chi_b', 'g_y', 'TPImaxiter', 'TPImindist',
-             'b_ellipse', 'k_ellipse', 'omega_ellipse', 'slow_work', 'chi_n_multiplier']
+             'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'ctilde', 'E',
+             'bqtilde', 'ltilde', 'chi_n', 'chi_b', 'g_y', 'TPImaxiter',
+             'TPImindist', 'b_ellipse', 'k_ellipse', 'omega_ellipse',
+             'slow_work', 'chi_n_multiplier']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]

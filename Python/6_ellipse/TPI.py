@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 9/19/2014
+Last updated 9/24/2014
 
 This program solves for transition path of the distribution of wealth
 and the aggregate capital stock using the time path iteration (TPI)
@@ -13,7 +13,7 @@ This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
             OUTPUT/TPI_K.png
             OUTPUT/TPI_N.png
-            OUTPUT/euler_errors_TPI_2D.png
+            OUTPUT/euler_errors_TPI.png
             OUTPUT/TPI_vars.pkl
 ------------------------------------------------------------------------
 '''
@@ -191,7 +191,8 @@ def borrowing_constraints(K_dist, w, r, e, n, BQ):
             if there are violations.
     '''
     b_min = np.zeros((S-1, J))
-    b_min[-1, :] = (ctilde + bqtilde - w * e[S-1, :] * ltilde - BQ.reshape(1, J) / bin_weights) / (1 + r)
+    b_min[-1, :] = (ctilde + bqtilde - w * e[S-1, :] * ltilde - BQ.reshape(
+        1, J) / bin_weights) / (1 + r)
     for i in xrange(S-2):
         b_min[-(i+2), :] = (ctilde + np.exp(g_y) * b_min[-(i+1), :] - w * e[
             -(i+2), :] * ltilde - BQ.reshape(1, J) / bin_weights) / (1 + r)
@@ -258,7 +259,8 @@ def MUl(n):
 
     Returns:    Marginal Utility of Labor
     '''
-    deriv = -b_ellipse * ((1 - (n / ltilde) ** omega_ellipse) ** ((1/omega_ellipse)-1)) * (n / ltilde) ** (omega_ellipse - 1)
+    deriv = -b_ellipse * ((1 - (n / ltilde) ** omega_ellipse) ** (
+        (1/omega_ellipse)-1)) * (n / ltilde) ** (omega_ellipse - 1)
     output = chi_n.reshape(S, 1) * deriv
     return output
 
@@ -281,8 +283,9 @@ L0 = get_L(e, initial_L)
 Y0 = get_Y(K0, L0)
 w0 = get_w(Y0, L0)
 r0 = get_r(Y0, K0)
-B0 = (initial_K * omega_stationary[0] * mort_rate.reshape(S,1)).sum(0)
-c0 = (1 + r0) * K1_2init + w0 * e * initial_L - K2_2init * np.exp(g_y) + (1 + rss) * Bss.reshape(1, J)/bin_weights.reshape(1,J)
+B0 = (initial_K * omega_stationary[0] * mort_rate.reshape(S, 1)).sum(0)
+c0 = (1 + r0) * K1_2init + w0 * e * initial_L - K2_2init * np.exp(g_y) + (
+    1 + rss) * Bss.reshape(1, J)/bin_weights.reshape(1, J)
 constraint_checker1(initial_K[:-1], initial_L, w0, r0, e, c0, B0)
 print 'K0 divided by Kss =', K0/Kss
 
@@ -309,6 +312,7 @@ L_mat        = (T+S)xSxJ array of distribution of labor across
 Lnew         = 1 x T vector, new time path of aggregate labor supply
 Kpath_TPI    = 1 x T vector, final time path of aggregate capital stock
 Lpath_TPI    = 1 x T vector, final time path of aggregate labor supply
+Bpath_TPI    = T x J vector, final time path of aggregate bequests
 elapsed_time = elapsed time of TPI
 hours        = Hours needed to find the steady state
 minutes      = Minutes needed to find the steady state, less the number
@@ -316,6 +320,7 @@ minutes      = Minutes needed to find the steady state, less the number
 seconds      = Seconds needed to find the steady state, less the number
                of hours and minutes
 euler_errors = TxSxJ array of euler errors
+nu_current   = current value of nu
 ------------------------------------------------------------------------
 '''
 
@@ -323,10 +328,13 @@ euler_errors = TxSxJ array of euler errors
 def MUl2(n, chi_n1):
     '''
     Parameters: Labor
+    This alternate function allows for different
+    sizes of chi_n
 
     Returns:    Marginal Utility of Labor
     '''
-    deriv = -b_ellipse * ((1 - (n / ltilde) ** omega_ellipse) ** ((1/omega_ellipse)-1)) * (n / ltilde) ** (omega_ellipse - 1)
+    deriv = -b_ellipse * ((1 - (n / ltilde) ** omega_ellipse) ** (
+        (1/omega_ellipse)-1)) * (n / ltilde) ** (omega_ellipse - 1)
     output = chi_n1 * deriv
     return output
 
@@ -364,10 +372,11 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     B1 = Binit[t:t+length-1]
     B2 = Binit[t+1:t+length]
 
-    error1 = MUc((1 + r1)*K1 + w1 * e1 * l1 + (1 + r1)*B1/bin_weights[j] - np.exp(g_y) * K2) \
-        - beta * surv_rate[-(length):-1] * np.exp(
+    error1 = MUc((1 + r1)*K1 + w1 * e1 * l1 + (1 + r1)*B1/bin_weights[
+        j] - np.exp(g_y) * K2) - beta * surv_rate[-(length):-1] * np.exp(
             -sigma * g_y) * (1 + r2)*MUc(
-            (1 + r2)*K2 + w2*e2*l2 + (1 + r2)*B2/bin_weights[j] - np.exp(g_y) * K3)
+            (1 + r2)*K2 + w2*e2*l2 + (1 + r2)*B2/bin_weights[
+                j] - np.exp(g_y) * K3)
 
     if length == S:
         K1_2 = np.array([0] + list(K_guess[:-1]))
@@ -380,15 +389,18 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     B = Binit[t:t+length]
     if length == S:
         error2 = MUc((1 + r)*K1_2 + w * e[
-            -(length):, j] * L_guess + (1 + r)*B/bin_weights[j] - np.exp(g_y) * K2_2) * w * e[
-            -(length):, j] + MUl2(L_guess, chi_n)
+            -(length):, j] * L_guess + (1 + r)*B/bin_weights[
+            j] - np.exp(g_y) * K2_2) * w * e[-(length):, j] + MUl2(
+            L_guess, chi_n)
     else:
         error2 = MUc((1 + r)*K1_2 + w * e[
-            -(length):, j] * L_guess + (1 + r)*B/bin_weights[j] - np.exp(g_y) * K2_2) * w * e[
-            -(length):, j] + MUl2(L_guess, chi_n[-length:])
+            -(length):, j] * L_guess + (1 + r)*B/bin_weights[
+            j] - np.exp(g_y) * K2_2) * w * e[-(length):, j] + MUl2(
+            L_guess, chi_n[-length:])
 
-    error3 = MUc((1 + r[-1])*K_guess[-2] + w[-1] * e[-1, j] * L_guess[-1] + (1 + r[-1])*B[-1]/bin_weights[j] - K_guess[-1] * 
-        np.exp(g_y)) - np.exp(-sigma * g_y) * MUb(K_guess[-1])
+    error3 = MUc((1 + r[-1])*K_guess[-2] + w[-1] * e[-1, j] * L_guess[
+        -1] + (1 + r[-1])*B[-1]/bin_weights[j] - K_guess[-1] * np.exp(
+            g_y)) - np.exp(-sigma * g_y) * MUb(K_guess[-1])
 
     # Check and punish constraint violations
     # mask1 = L_guess < 0
@@ -409,7 +421,8 @@ def Euler_Error(guesses, winit, rinit, Binit, t):
     # difference = K_guess[:-1] - b_min
     # mask4 = difference < 0
     # error1[mask4] += 1e9
-    return list(error1.flatten()) + list(error2.flatten()) + list(error3.flatten())
+    return list(error1.flatten()) + list(
+        error2.flatten()) + list(error3.flatten())
 
 
 domain = np.linspace(0, T, T)
@@ -434,27 +447,6 @@ TPIdist_vec = np.zeros(TPImaxiter)
 nu_current = nu
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-    # to be deleted starts
-    Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
-    Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
-    plt.figure()
-    plt.axhline(
-        y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
-    plt.plot(np.arange(
-        T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
-    plt.xlabel(r"Time $t$")
-    plt.ylabel(r"Per-capita Capital $\hat{K}$")
-    plt.savefig("OUTPUT/TPI_K")
-
-    plt.figure()
-    plt.axhline(
-        y=Lss, color='black', linewidth=2, label=r"Steady State $\hat{L}$", ls='--')
-    plt.plot(np.arange(
-        T+10), Lpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{L}_t$")
-    plt.xlabel(r"Time $t$")
-    plt.ylabel(r"Per-capita Effective Labor Supply $\hat{L}$")
-    plt.savefig("OUTPUT/TPI_L")
-    # to be deleted ends
     K_mat = np.zeros((T+S, S, J))
     L_mat = np.zeros((T+S, S, J))
     for j in xrange(J):
@@ -476,27 +468,31 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             L_vec = solutions[S:]
             L_mat[t:t+S, :, j] += np.diag(L_vec)
             inputs = list(solutions)
-            euler_errors[t, :, j] = np.abs(Euler_Error(inputs, winit, rinit, Binit[:, j], t))
+            euler_errors[t, :, j] = np.abs(Euler_Error(
+                inputs, winit, rinit, Binit[:, j], t))
 
     K_mat[0, :, :] = initial_K
     L_mat[0, -1, :] = initial_L[-1, :]
     Knew = (omega_stationary[:T, :, :] * K_mat[:T, :, :]).sum(2).sum(1)
     Lnew = (omega_stationary[1:T+1, :, :] * e.reshape(
         1, S, J) * L_mat[:T, :, :]).sum(2).sum(1)
-    Bnew = (K_mat[:T, :, :] * omega_stationary[:T, :, :] * mort_rate.reshape(1, S, 1)).sum(1)
-    TPIiter += 1
+    Bnew = (K_mat[:T, :, :] * omega_stationary[:T, :, :] * mort_rate.reshape(
+        1, S, 1)).sum(1)
     Kinit = nu*Knew + (1-nu)*Kinit[:T]
     Linit = nu*Lnew + (1-nu)*Linit[:T]
     Binit[:T] = nu*Bnew + (1-nu)*Binit[:T]
     TPIdist = np.array(list(
-        np.abs(Knew - Kinit)) + list(np.abs(Bnew - Binit[:T]).flatten()) + list(np.abs(Lnew - Linit))).max()
+        np.abs(Knew - Kinit)) + list(np.abs(Bnew - Binit[
+            :T]).flatten()) + list(np.abs(Lnew - Linit))).max()
     TPIdist_vec[TPIiter] = TPIdist
     # After T=7, if cycling occurs, drop the value of nu
-    # wait til after T=7 or so, because sometimes there is a jump up in the first couple iterations
+    # wait til after T=7 or so, because sometimes there is a jump up
+    # in the first couple iterations
     if TPIiter > 7:
         if TPIdist_vec[TPIiter] - TPIdist_vec[TPIiter-1] > 0:
             nu_current /= 2
             print 'New Value of nu:', nu_current
+    TPIiter += 1
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
@@ -506,9 +502,9 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
             np.ones(S)*rss))
 
-
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
 Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
+Bpath_TPI = np.array(list(Binit) + list(np.ones((10, J))*Bss))
 
 print 'TPI is finished.'
 
@@ -544,10 +540,13 @@ K1[:, 1:, :] = K_mat[:T, :-1, :]
 K2 = np.zeros((T, S, J))
 K2[:, :, :] = K_mat[:T, :, :]
 cinit = (1 + rinit[:T].reshape(T, 1, 1)) * K1 + winit[:T].reshape(
-    T, 1, 1) * e.reshape(1, S, J) * L_mat[:T] - np.exp(g_y) * K2 + (1 + rinit[:T].reshape(T, 1, 1)) * Binit[:T].reshape(T, 1, J) / bin_weights.reshape(1, 1, J)
+    T, 1, 1) * e.reshape(1, S, J) * L_mat[:T] - np.exp(g_y) * K2 + (
+    1 + rinit[:T].reshape(T, 1, 1)) * Binit[:T].reshape(
+    T, 1, J) / bin_weights.reshape(1, 1, J)
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
-    constraint_checker2(K_mat[t, :-1, :], L_mat[t], winit[t], rinit[t], e, cinit[t], t)
+    constraint_checker2(K_mat[t, :-1, :], L_mat[
+        t], winit[t], rinit[t], e, cinit[t], t)
 borrowing_constraints2(K_mat, winit, rinit, e, Binit)
 print '\tFinished.'
 
@@ -572,8 +571,7 @@ plt.axhline(
 plt.plot(np.arange(
     T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
 plt.xlabel(r"Time $t$")
-plt.ylabel(r"Per-capita Capital $\hat{K}$")
-# plt.title(r"Time Path of Capital Stock K$_t$")
+plt.ylabel(r"Aggregate Capital Stock $\hat{K}$")
 plt.legend(loc=0)
 plt.savefig("OUTPUT/TPI_K")
 
@@ -583,10 +581,26 @@ plt.axhline(
 plt.plot(np.arange(
     T+10), Lpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{L}_t$")
 plt.xlabel(r"Time $t$")
-plt.ylabel(r"Per-capita Effective Labor Supply $\hat{L}$")
-# plt.title(r"Time Path of Labor Supply L$_t$")
+plt.ylabel(r"Aggregate Labor Supply $\hat{L}$")
 plt.legend(loc=0)
 plt.savefig("OUTPUT/TPI_L")
+
+'''
+------------------------------------------------------------------------
+Plot Timepath for B
+------------------------------------------------------------------------
+'''
+
+plt.figure()
+for i in xrange(J):
+    plt.axhline(
+        y=Bss[i], linewidth=2, label="Steady State for j={}".format(i), ls='--')
+    plt.plot(np.arange(
+        T+10), Bpath_TPI[:T+10, i], linewidth=2, label="TPI time path for group j={}".format(i) )
+plt.xlabel(r"Time $t$")
+plt.ylabel(r"Aggregate $\hat{BQ_{j,t}}$")
+# plt.legend(loc=0)
+plt.savefig("OUTPUT/TPI_B")
 
 '''
 ------------------------------------------------------------------------
@@ -613,7 +627,7 @@ plt.ylabel('Error Value')
 plt.xlabel(r'Time $t$')
 plt.legend(loc=0)
 plt.title('Maximum Euler Error for each period across S and J')
-plt.savefig('OUTPUT/euler_errors_TPI_2D')
+plt.savefig('OUTPUT/euler_errors_TPI')
 
 print '\tFinished.'
 

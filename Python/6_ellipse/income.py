@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 8/29/2014
+Last updated 9/24/2014
 
 Functions for created the matrix of ability levels, e.
 
@@ -93,11 +93,13 @@ def integrate(func, points, j):
     params_guess = [1, 1]
     # fit_to = j/2.0
     fit_to = poly.polyval(70, func) * .5
-    a, b = opt.fsolve(fit_exp_right, params_guess, args=([70,poly.polyval(70, func)], [100, fit_to]))
+    a, b = opt.fsolve(fit_exp_right, params_guess, args=(
+        [70, poly.polyval(70, func)], [100, fit_to]))
     func_int = poly.polyint(func)
     integral = np.empty(points.shape)
     integral[points <= 70] = poly.polyval(points[points <= 70], func_int)
-    integral[points > 70] = poly.polyval(70, func_int) + exp_int(points[points>70], a, b)
+    integral[points > 70] = poly.polyval(70, func_int) + exp_int(
+        points[points > 70], a, b)
     vals = np.diff(integral)
     # vals[50:] = np.ones(30) * vals[50]
     return vals
@@ -117,7 +119,8 @@ def get_e_indiv(S, J, data, starting_age, ending_age, bin_weights):
     e = np.zeros((50, J))
     data = data[(starting_age <= data.age) & (data.age <= temp_ending_age)]
     for i in xrange(50):
-        incomes = data[(age_groups[i] <= data.age) & (data.age < age_groups[i+1])]
+        incomes = data[(age_groups[i] <= data.age) & (
+            data.age < age_groups[i+1])]
         incomes = incomes.sort(['wage'])
         inc = np.array(incomes.wage)
         wgt_ar = np.array(incomes.wgt)
@@ -132,7 +135,8 @@ def get_e_indiv(S, J, data, starting_age, ending_age, bin_weights):
         for j, weight in enumerate(bin_weights):
             percentile[j:] += weight
             ind = 0
-            while (ind < len(wgt_cum)) and (wgt_cum[ind] < total_wgts * percentile[j]):
+            while (ind < len(wgt_cum)) and (
+                    wgt_cum[ind] < total_wgts * percentile[j]):
                 ind += 1
             indicies[j+1] = ind
         for j in xrange(J):
@@ -142,8 +146,8 @@ def get_e_indiv(S, J, data, starting_age, ending_age, bin_weights):
     new_e = np.empty((S, J))
     for j in xrange(J):
         func = poly.polyfit(np.arange(50)+starting_age, e[:50, j], deg=2)
-        new_e[:,j] = integrate(func, np.linspace(starting_age, ending_age, S+1), percentile[j])
-
+        new_e[:, j] = integrate(func, np.linspace(
+            starting_age, ending_age, S+1), percentile[j])
     return new_e
 
 
@@ -153,7 +157,7 @@ def graph_income(S, J, e, starting_age, ending_age, bin_weights):
     for j in xrange(J):
         Jgrid[j:] += bin_weights[j]
     X, Y = np.meshgrid(domain, Jgrid)
-    if J==1:
+    if J == 1:
         plt.figure()
         plt.plot(domain, e)
         plt.savefig('OUTPUT/ability')
@@ -168,6 +172,7 @@ def graph_income(S, J, e, starting_age, ending_age, bin_weights):
         ax10.set_zlabel(r'Income Level $e_j(s)$')
         # ax10.set_title('Income Levels')
         plt.savefig('OUTPUT/ability')
+
 
 def get_e(S, J, starting_age, ending_age, bin_weights):
     e = np.zeros((S, J))

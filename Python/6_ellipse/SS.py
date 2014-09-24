@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated: 9/19/2014
+Last updated: 9/24/2014
 
 Calculates steady state of OLG model with S age cohorts
 
@@ -12,18 +12,18 @@ This py-file calls the following other file(s):
 This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
             OUTPUT/ss_vars.pkl
-            OUTPUT/capital_dist_2D.png
-            OUTPUT/capital_dist_3D.png
-            OUTPUT/consumption_2D.png
-            OUTPUT/consumption_3D.png
-            OUTPUT/labor_dist_2D.png
-            OUTPUT/labor_dist_3D.png
-            OUTPUT/intentional_bequests.png
-            OUTPUT/euler_errors_SS_2D.png
-            OUTPUT/euler_errors_euler1_SS_3D.png
-            OUTPUT/euler_errors_euler2_SS_3D.png
-            OUTPUT/euler_errors_euler3_SS_2D.png
-            OUTPUT/euler_errors_1and2_SS_2D.png
+            OUTPUT/capital_dist.png
+            OUTPUT/consumption.png
+            OUTPUT/labor_dist.png
+            OUTPUT/lambdamultiplier.png
+            OUTPUT/chi_n.png
+            OUTPUT/intentional_bequests.png (if J != 1, otherwise, it
+                is printed to the screen)
+            OUTPUT/euler_errors_euler1_SS.png
+            OUTPUT/euler_errors_euler2_SS.png
+            OUTPUT/euler_errors_euler3_SS.png (if J != 1, otherwise, it
+                is printed to the screen)
+            OUTPUT/euler_errors1and2_SS.png
 ------------------------------------------------------------------------
 '''
 
@@ -63,7 +63,7 @@ ctilde       = minimum value amount of consumption
 bqtilde      = minimum bequest value
 ltilde       = measure of time each individual is endowed with each
                period
-chi_n        = discount factor of labor
+chi_n        = discount factor of labor that changes with S (Sx1 array)
 chi_b        = discount factor of incidental bequests
 eta          = Frisch elasticity of labor supply
 g_y          = growth rate of technology for one cohort
@@ -104,7 +104,8 @@ omega, g_n, omega_SS, children, surv_rate = demographics.get_omega(
 mort_rate = 1-surv_rate
 
 # increase expentially
-chi_n[slow_work:] = (mort_rate[slow_work:] + 1 - mort_rate[slow_work])**chi_n_multiplier
+chi_n[slow_work:] = (
+    mort_rate[slow_work:] + 1 - mort_rate[slow_work])**chi_n_multiplier
 
 surv_rate[-1] = 0.0
 mort_rate[-1] = 1
@@ -226,7 +227,8 @@ def MUl(n):
 
     Returns:    Marginal Utility of Labor
     '''
-    deriv = -b_ellipse * ((1 - (n / ltilde) ** omega_ellipse) ** ((1/omega_ellipse)-1)) * (n / ltilde) ** (omega_ellipse - 1)
+    deriv = -b_ellipse * ((1 - (n / ltilde) ** omega_ellipse) ** (
+        (1/omega_ellipse)-1)) * (n / ltilde) ** (omega_ellipse - 1)
     output = chi_n.reshape(S, 1) * deriv
     return output
 
@@ -256,9 +258,11 @@ def Euler1(w, r, e, L_guess, K1, K2, K3, B):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] + B.reshape(1, J) / bin_weights - K2 * np.exp(
+    euler = MUc((1 + r)*K1 + w * e[:-1, :] * L_guess[:-1, :] + B.reshape(
+        1, J) / bin_weights - K2 * np.exp(
         g_y)) - beta * surv_rate[:-1].reshape(S-1, 1) * (
-        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] + B.reshape(1, J) / bin_weights - K3 * np.exp(
+        1 + r)*MUc((1 + r)*K2 + w * e[1:, :] * L_guess[1:, :] + B.reshape(
+            1, J) / bin_weights - K3 * np.exp(
             g_y)) * np.exp(-sigma * g_y)
     return euler
 
@@ -277,7 +281,8 @@ def Euler2(w, r, e, L_guess, K1_2, K2_2, B):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K1_2 + w * e * L_guess + B.reshape(1, J) / bin_weights - K2_2 * 
+    euler = MUc((1 + r)*K1_2 + w * e * L_guess + B.reshape(
+        1, J) / bin_weights - K2_2 *
         np.exp(g_y)) * w * e + MUl(L_guess)
     return euler
 
@@ -295,7 +300,8 @@ def Euler3(w, r, e, L_guess, K_guess, B):
     Returns:
         Value of Euler error.
     '''
-    euler = MUc((1 + r)*K_guess[-2, :] + w * e[-1, :] * L_guess[-1, :] + B.reshape(1, J) / bin_weights - K_guess[-1, :] * 
+    euler = MUc((1 + r)*K_guess[-2, :] + w * e[-1, :] * L_guess[
+        -1, :] + B.reshape(1, J) / bin_weights - K_guess[-1, :] *
         np.exp(g_y)) - np.exp(-sigma * g_y) * MUb(K_guess[-1, :])
     return euler
 
@@ -331,11 +337,12 @@ def Steady_State(guesses):
     error2[mask2] += 1e9
     if K_guess.sum() <= 0:
         error1 += 1e9
-    cons = (1 + r) * K1_2 + w * e * L_guess + BQ.reshape(1, J) / bin_weights - K2_2 * np.exp(g_y)
+    cons = (1 + r) * K1_2 + w * e * L_guess + BQ.reshape(
+        1, J) / bin_weights - K2_2 * np.exp(g_y)
     mask3 = cons < 0
     error2[mask3] += 1e9
-    # print max(list(error1.flatten()) + list(error2.flatten()) + list(error3.flatten()))
-    return list(error1.flatten()) + list(error2.flatten()) + list(error3.flatten())
+    return list(error1.flatten()) + list(
+        error2.flatten()) + list(error3.flatten())
 
 
 def borrowing_constraints(K_dist, w, r, e, n, BQ):
@@ -352,7 +359,8 @@ def borrowing_constraints(K_dist, w, r, e, n, BQ):
             if there are violations.
     '''
     b_min = np.zeros((S-1, J))
-    b_min[-1, :] = (ctilde + bqtilde - w * e[S-1, :] * ltilde - BQ.reshape(1, J) / bin_weights) / (1 + r)
+    b_min[-1, :] = (ctilde + bqtilde - w * e[S-1, :] * ltilde - BQ.reshape(
+        1, J) / bin_weights) / (1 + r)
     for i in xrange(S-2):
         b_min[-(i+2), :] = (ctilde + np.exp(g_y) * b_min[-(i+1), :] - w * e[
             -(i+2), :] * ltilde - BQ.reshape(1, J) / bin_weights) / (1 + r)
@@ -412,7 +420,6 @@ L_guess_init = np.ones((S, J)) * .99
 guesses = list(K_guess_init.flatten()) + list(L_guess_init.flatten())
 
 print 'Solving for steady state level distribution of capital and labor.'
-# solutions, info, ier, msg = opt.fsolve(Steady_State, guesses, xtol=1e-10, full_output=True)
 solutions = opt.fsolve(Steady_State, guesses)
 print '\tFinished.'
 
@@ -425,12 +432,13 @@ seconds.' % (abs(hours - .5), abs(minutes - .5), seconds)
 
 Kssmat = solutions[0:(S-1) * J].reshape(S-1, J)
 BQ = solutions[(S-1)*J:S*J]
-Bss = (np.array(list(Kssmat) + list(BQ.reshape(1, J))).reshape(S, J) * omega_SS * mort_rate.reshape(S, 1)).sum(0)
+Bss = (np.array(list(Kssmat) + list(BQ.reshape(1, J))).reshape(
+    S, J) * omega_SS * mort_rate.reshape(S, 1)).sum(0)
 Kssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(Kssmat))
 Kssmat3 = np.array(list(Kssmat) + list(BQ.reshape(1, J)))
 
 Kssvec = Kssmat.sum(1)
-Kss = (omega_SS[:-1, :] * Kssmat).sum() + (omega_SS[-1,:]*BQ).sum()
+Kss = (omega_SS[:-1, :] * Kssmat).sum() + (omega_SS[-1, :]*BQ).sum()
 Kssavg = Kssvec.mean()
 Kssvec = np.array([0]+list(Kssvec))
 Lssmat = solutions[S * J:].reshape(S, J)
@@ -441,7 +449,8 @@ Yss = get_Y(Kss, Lss)
 wss = get_w(Yss, Lss)
 rss = get_r(Yss, Kss)
 
-cssmat = (1 + rss) * Kssmat2 + wss * e * Lssmat + (1 + rss) * Bss.reshape(1, J)/bin_weights.reshape(1,J) - np.exp(g_y) * Kssmat3
+cssmat = (1 + rss) * Kssmat2 + wss * e * Lssmat + (1 + rss) * Bss.reshape(
+    1, J)/bin_weights.reshape(1, J) - np.exp(g_y) * Kssmat3
 
 
 constraint_checker(Kssmat, Lssmat, wss, rss, e, cssmat, BQ)
@@ -475,7 +484,8 @@ X, Y = np.meshgrid(domain, Jgrid)
 if J == 1:
     # 2D Graph
     plt.figure()
-    plt.plot(domain, Kssvec, color='b', linewidth=2, label='Average capital stock')
+    plt.plot(
+        domain, Kssvec, color='b', linewidth=2, label='Average capital stock')
     plt.axhline(y=Kssavg, color='r', label='Steady state capital stock')
     plt.title('Steady-state Distribution of Capital')
     plt.legend(loc=0)
@@ -518,7 +528,8 @@ else:
 if J == 1:
     # 2D Graph
     plt.figure()
-    plt.plot(domain, Lssvec, color='b', linewidth=2, label='Average Labor Supply')
+    plt.plot(
+        domain, Lssvec, color='b', linewidth=2, label='Average Labor Supply')
     plt.axhline(y=Lssavg, color='r', label='Steady state labor supply')
     plt.title('Steady-state Distribution of Labor')
     plt.legend(loc=0)
