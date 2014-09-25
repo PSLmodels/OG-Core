@@ -7,17 +7,13 @@ Income file:
 Demographic file:
 
 SS file:
--change incidental bequests
--Chi_n : array: 1 until 65, then it is a quadratic
-	[S - round(E+9S/16)]^2
+-add income taxes
 
 TPI file:
 
 run_model file:
 
 Documentation:
--document ability, demographic, SS, TPI, and run_SS_TPI file changes in python
--once everything is working, update the draft pictures
 
 Other Problems:
 -model doesn't converge if S<20
