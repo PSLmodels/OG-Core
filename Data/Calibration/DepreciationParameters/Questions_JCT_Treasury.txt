@@ -1,0 +1,2 @@
+
+1) This document (http://www.treasury.gov/resource-center/tax-policy/Documents/Analysis-and-Research-Effective-Rate-Methodology-2015.pdf) looks quite new, but Treasury folks in early October 2014 (Alex Yuskavage, Ralph Rector, Tracy Foertsch, Craig Johnson) suggested that the mapping between BEA and IRS assets hadn't been updated in the depreciation model since the 90s.
