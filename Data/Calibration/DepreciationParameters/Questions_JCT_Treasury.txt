@@ -1,2 +1,13 @@
 
 1) This document (http://www.treasury.gov/resource-center/tax-policy/Documents/Analysis-and-Research-Effective-Rate-Methodology-2015.pdf) looks quite new, but Treasury folks in early October 2014 (Alex Yuskavage, Ralph Rector, Tracy Foertsch, Craig Johnson) suggested that the mapping between BEA and IRS assets hadn't been updated in the depreciation model since the 90s.
+
+From Tracy about Intellectual Property Products in Tax data:
+Hi Jason,
+
+Sorry to take so long getting back to you.
+
+Using published SOI data, I'm not sure how else to do the tax split for BEA's R&D and artistic originals other than using intangibles less accumulated amortization in Table 6 and Table 12 of SOI's Corporation Complete Report.  SOI does publish data (by industrial sector) from Form 6765 which you could use to calculate QREs (for R&D) for C-corporations (see http://www.irs.gov/uac/SOI-Tax-Stats-Corporation-Research-Credit).  However, given the data that is available publically, I'm not sure how you would then do an imputation to get anything other than an aggregate QRE for pass throughs.
+
+I'm currently revisiting how I've included BEA's IPP in the cost of capital model.  I'm working with Craig to use data from Form 6765 to get a tax split for R&D.  For the artistic originals, I still haven't come up with anything better than intangibles on Schedule L.
+
+Tracy

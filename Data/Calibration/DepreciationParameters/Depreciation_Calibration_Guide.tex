@@ -19,6 +19,7 @@ pdftex}
 \usepackage{amssymb}
 \usepackage{amsthm}
 \usepackage{harvard}
+\usepackage{tikz}
 \usepackage{setspace}
 \usepackage{float,graphicx,color}
 \usepackage{appendix}
@@ -118,9 +119,120 @@ We have found the \href{http://www.cbo.gov/sites/default/files/12-18-taxrates.pd
 
 To calculate the rates of economic depreciation by production industry and sector, $\delta_{i,C}$, we use a weighted average of the rates of economic depreciation across capital types, by industry and sector.  Thus, to calibrate the depreciation parameters, we need data on the capital stock by asset type, industry, and sector, $K_{i,m,C}$.  The capital stock can be decomposed into three categories: fixed assets (equipment, structures, and intellectual property products), inventories, and land.  Thus we have,  $K_{i,m,C}={FA}_{i,m,C}+{INV}_{i,m,C}+{LAND}_{i,m,C}$.
 
-Our main sources for these data are the BEA's \href{http://www.bea.gov/national/FA2004/Details/Index.html}{Detailed Data for Fixed Assets and Consumer Durable Goods} and the BEA's \href{(http://www.bea.gov/iTable/index_FA.cfm}{Standard Fixed Asset Tables}.  From the former, we pull the net stock, current cost for all fixed asset and industry categories for calendar year 2012.  From the later, we gather the stock of fixed assets by industry and sector by drawing upon the current-cost of the net capital stock by industry and form of legal organization, using Tables 4.1, 5.1, and 6.1.  We further draw upon data on the stock of inventories by industry from the \href{http://www.bea.gov/iTable/index_nipa.cfm}{BEA's NIPA Tables}, using Table 5.8.5A (\textcolor{red}{or do we want 5.8.5B?}).  
+%\begin{tikzpicture}
+%    \tikzstyle{every node}=[font=\footnotesize]
+%    \node {$K$} [sibling distance=4cm]
+%        child { 
+%             node {${FA}$}[sibling distance=0.5cm]	
+%	   child { 
+%	   	node {${FA}_{i,m},i=1,...,I,m=1,...,M$} [sibling distance=1.5cm]	
+%		child{ node {${FA}_{i,m,C}$}}
+%		child{node {${FA}_{i,m,NC}$}}
+%		}
+%		child{node{}}
+%		child{node{}} 
+%        }
+%        child { 
+%             node {${INV}$} [sibling distance=0.5cm]
+%	   child { 
+%	   	node {${INV}_{m,C}$ } [sibling distance=0.5cm]
+%		} 
+%            child { 
+%	   	node {${INV}_{m,NC}$ } [sibling distance=0.5cm]
+%		} 
+%        }
+%       child { 
+%             node {${LAND}$}[sibling distance=1.5cm]
+%	   child { 
+%	   	node {${LAND}_{m,C}$ } [sibling distance=0.5cm]
+%		child{node{}}		
+%		child{node{}}
+%		} 
+%            child { 
+%	   	node {${LAND}_{m,NC}$ } [sibling distance=0.5cm]
+%		child{node{}}		
+%		child{node{}}
+%		} 
+%        }
+%    ;
+%\end{tikzpicture}
+%
+%
+%\begin{tikzpicture}[level/.style={sibling distance=60mm/#1}]
+%\node [circle,draw] (z){$K$}
+%  child {node [circle,draw] (a) {$\frac{n}{2}$}
+%    child {node [circle,draw] (b) {$\frac{n}{2^2}$}
+%      child {node {$\vdots$}
+%        child {node [circle,draw] (d) {$\frac{n}{2^k}$}}
+%        child {node [circle,draw] (e) {$\frac{n}{2^k}$}}
+%      } 
+%      child {node {$\vdots$}}
+%    }
+%    child {node [circle,draw] (g) {$\frac{n}{2^2}$}
+%      child {node {$\vdots$}}
+%      child {node {$\vdots$}}
+%    }
+%  }
+%  child {node [circle,draw] (j) {$\frac{n}{2}$}
+%    child {node [circle,draw] (k) {$\frac{n}{2^2}$}
+%      child {node {$\vdots$}}
+%      child {node {$\vdots$}}
+%    }
+%  child {node [circle,draw] (l) {$\frac{n}{2^2}$}
+%    child {node {$\vdots$}}
+%    child {node (c){$\vdots$}
+%      child {node [circle,draw] (o) {$\frac{n}{2^k}$}}
+%      child {node [circle,draw] (p) {$\frac{n}{2^k}$}
+%        child [grow=right] {node (q) {$=$} edge from parent[draw=none]
+%          child [grow=right] {node (q) {$O_{k = \lg n}(n)$} edge from parent[draw=none]
+%            child [grow=up] {node (r) {$\vdots$} edge from parent[draw=none]
+%              child [grow=up] {node (s) {$O_2(n)$} edge from parent[draw=none]
+%                child [grow=up] {node (t) {$O_1(n)$} edge from parent[draw=none]
+%                  child [grow=up] {node (u) {$O_0(n)$} edge from parent[draw=none]}
+%                }
+%              }
+%            }
+%            child [grow=down] {node (v) {$O(n \cdot \lg n)$}edge from parent[draw=none]}
+%          }
+%        }
+%      }
+%    }
+%  }
+%};
+%\path (a) -- (j) node [midway] {+};
+%\path (b) -- (g) node [midway] {+};
+%\path (k) -- (l) node [midway] {+};
+%\path (k) -- (g) node [midway] {+};
+%\path (d) -- (e) node [midway] {+};
+%\path (o) -- (p) node [midway] {+};
+%\path (o) -- (e) node (x) [midway] {$\cdots$}
+%  child [grow=down] {
+%    node (y) {$O\left(\displaystyle\sum_{i = 0}^k 2^i \cdot \frac{n}{2^i}\right)$}
+%    edge from parent[draw=none]
+%  };
+%\path (q) -- (r) node [midway] {+};
+%\path (s) -- (r) node [midway] {+};
+%\path (s) -- (t) node [midway] {+};
+%\path (s) -- (l) node [midway] {=};
+%\path (t) -- (u) node [midway] {+};
+%\path (z) -- (u) node [midway] {=};
+%\path (j) -- (t) node [midway] {=};
+%\path (y) -- (x) node [midway] {$\Downarrow$};
+%\path (v) -- (y)
+%  node (w) [midway] {$O\left(\displaystyle\sum_{i = 0}^k n\right) = O(k \cdot n)$};
+%\path (q) -- (v) node [midway] {=};
+%\path (e) -- (x) node [midway] {+};
+%\path (o) -- (x) node [midway] {+};
+%\path (y) -- (w) node [midway] {$=$};
+%\path (v) -- (w) node [midway] {$\Leftrightarrow$};
+%\path (r) -- (c) node [midway] {$\cdots$};
+%\end{tikzpicture}
+%
+
+
+Our main sources for these data are the BEA's \href{http://www.bea.gov/national/FA2004/Details/Index.html}{Detailed Data for Fixed Assets and Consumer Durable Goods} and the BEA's \href{(http://www.bea.gov/iTable/index_FA.cfm}{Standard Fixed Asset Tables}.  From the former, we pull the net stock, current cost for all fixed asset and industry categories for calendar year 2012.  From the later, we gather the stock of fixed assets by industry and sector by drawing upon the current-cost of the net capital stock by industry and form of legal organization, using Tables 4.1, 5.1, and 6.1.  We further draw upon data on the stock of inventories by industry from the \href{http://www.bea.gov/iTable/index_nipa.cfm}{BEA's NIPA Tables}, using Table 5.8.5A.  
 \ \\
-\textcolor{red}{Does BEA estimate the value of the stock of land?  Any source for land value data other than tax?}
+The BEA does not produce an estimate for the value of the stock of land.  For these data, we turn to the Federal Reserve's \href{http://www.federalreserve.gov/apps/fof/FOFTables.aspx}{Financial Accounts of the United States Data}.  Tables B.100, B.102, and B.103 give us the value for land for households and nonprofit organizations, non-financial corporate businesses, and non-financial non-corporate businesses, respectively.   To derive the value of land from these balance sheet data, we take the difference between the value of real estate and the value of residential structures.  For households, this is the difference between series FL155035015 (Line 4, ``Households; owner-occupied real estate including vacant land and mobile homes at market value") and series FL155012665 (Line 44, ``Households; residential structures, current cost basis"). For nonprofits, the is the difference between FL165035005 (Line 5, ``Nonprofit organizations; real estate at market value").  For non-financial corporate businesses, we find the value of land to be the difference between FL105035005 (Line 3, ``Nonfinancial corporate business; real estate at market value") and FL105012665 (Line 37 , ``Nonfinancial corporate business; residential structures, current cost basis") and FL105013665 (Line 38, ``Nonfinancial corporate business; nonresidential structures, current cost basis").  And for non-financial non-corporate businesses, we use Table B.103 to find the value of land as the difference between FL1150350055 (Line 3, ``Nonfinancial noncorporate business; real estate at market value") and FL115012665 (Line 35, ``Nonfinancial noncorporate business; residential structures, current cost basis") and FL115013665 (Line 36, ``Nonfinancial noncorporate business; nonresidential structures, current cost basis").
 \ \\
 Because the BEA's decomposition into corporate and non-corporate does not align with tax treatment, we must supplement the BEA data using Internal Revenue Service (IRS) data that allow us identify the share of corporate assets attributable to C and S corporations, as well as the fraction of partnership assets that face corporate tax treatment.  Thus we supplement the BEA data with IRS data.  The next section details how we use these IRS data to measure the capital stock held by different tax entity types.
 
@@ -179,7 +291,15 @@ We use tax data to find values for the capital stock by taxable entity type.  We
 
 \subsubsection{C Corporations}
 
-Tax data on subchapter C corporations come from the data files for the \emph{SOI Tax Stats - Corporation Source Book} for 2011.  The link to those files is \href{http://www.irs.gov/uac/SOI-Tax-Stats-Corporation-Source-Book:-Data-File}{here}.  Specifically, we use the 2011sb1.csv and 2011sb3.csv files to find the aggregate amounts by industry for the following variables from Form 1120 and associated schedules: depreciable assets, accumulated depreciation, land, beginning-of-year inventories, interest paid, capital stock, additional paid-in capital, retained earnings (appropriated and unappropriated), and cost of treasury stock.  Note that the 2011sb1.csv file contains data form all Form 1120 returns (which includes both C and S corporations).  Thus, in calculating aggregates for subchapter C corporations only, we net out the totals by industry and line item for S corporations using the 2011sb3.csv data.
+Tax data on subchapter C corporations come from the data files for the \emph{SOI Tax Stats - Corporation Source Book} for 2011.  The link to those files is \href{http://www.irs.gov/uac/SOI-Tax-Stats-Corporation-Source-Book:-Data-File}{here}.  Specifically, we use the 2011sb1.csv and 2011sb3.csv files to find the aggregate amounts by industry for the following variables from Form 1120 and associated schedules: depreciable assets, accumulated depreciation, land, beginning-of-year inventories, interest paid, capital stock, additional paid-in capital, retained earnings (appropriated and unappropriated), and cost of treasury stock.  Note that the 2011sb1.csv file contains data from all Form 1120 returns (which includes both C and S corporations).  Thus, in calculating aggregates for subchapter C corporations only, we net out the totals by industry and line item for S corporations using the 2011sb3.csv data.
+
+Note that the level of industry detail in 2011sb1.csv and 2011sb3.csv differ, with the former reporting variables as fine as the 6-digit NAICS level and the latter reporting variables at the 2-digit level.  In order to infer S corporation data at a finer level of industry detail, we make the assumption that the each variable is distributed across minor industries within a major industry in the same way for all corporations as it they are for S corporations.  Letting $x_{m1}$ be a variable of interest reported for all corporations in detailed industry $m1$ (e.g., detailed may be a 6-digit NAICS code) from 2011sb1.csv and $x_{m2}$ be the same variable reported for all corporations at the less detailed industry level (e.g., 2-digit NAICS).  We thus assume that the variable $x$ for S corporations can be allocated across detailed industry categories $m1$ as:
+
+\begin{equation}
+x_{m1,s}=\frac{x_{m1}}{x_{m2}}\times x_{m2,s},
+\end{equation}
+
+\noindent\noindent where $m1\in m2$.  Variables allocated in this way are then used when differencing out data from 2011sb1.csv and 2011sb3.csv to find the amounts for C corporations.
 
 Using these data, we calculate the stock of fixed assets for C corporations in industry $m$ as reported on tax returns as: ${FA}^{\tau}_{m,c}$ as the difference between the aggregate amounts of depreciable assets and accumulated depreciation for that industry.  ${INV}^{\tau}_{m,c}$ and ${LAND}^{\tau}_{m,c}$ and taken from the aggregate values of beginning-of-year inventories and land, as reported on Schedule L of Form 1120.
 
@@ -201,11 +321,23 @@ NOTE THAT FOR THESE DATA, INDUSTRY CODES ARE NOT GIVEN, SO WE'LL NEED TO MAP THE
  
 \textbf{\emph{Allocating Partnership Capital Across Types of Partners}}: Partners in partnerships may be corporations, individuals, partnerships, tax-exempts, or other organizations.  Because these partners face different tax treatment, we need to allocate shares of partnership assets to each of these entity types.  We do this by using ratios of depreciable assets to net income/loss by industry.  We then use these ratios to distribute the share of total assets across partner type using the net income/loss going to partners of a given type in each industry.  The assumption here is that the ratio of assets to income/loss is the same across types of partners within a given industry.  This certainly misses some of the variation in the ownership structure of partnership assets and in the distribution of partnership income, but is a method that allows us to attribute partnership assets across partner types.
 
-File 12pa03.xls provides data on depreciable assets and net income/loss by industry.  We use these data to calculate the ratios $\frac{\text{Depreciable assets}_{m}}{\text{Net Income}_{m}}$ and $\frac{\text{Depreciable assets}_{m}}{\text{Net Loss}_{m}}$, for each industry $m$.  Then, using 12pa05.xls, we gather the aggregate amounts of net income or losses distributed to partners by partner type and industry (\textcolor{red}{Note that the industry classifications are pretty coarse in this case -- MAY LOSE SOME INFO HERE, BUT MIGHT WANT TO THINK ABOUT USING FRACTION OF INDUSTRY LOSSES FOR EACH MINOR INDUSTRY TO HELP SAVE SOME INFO}).  Using these two pieces of information together, we find the total amount of fixed assets by industry and partner type as:  ${FA}^{\tau}_{m,p,t}= \frac{\text{Depreciable assets}_{m}}{\text{Net Income(Loss)}_{m}} \times \text{Net Income(Loss)}_{m,t}$, where $t$ denotes partner type (individual, corporate, partnership, tax-exempt, other). We use the same methodology to allocation inventories and land to find ${INV}^{\tau}_{m,p,t}$ and ${LAND}^{\tau}_{m,p,t}$.
+File 12pa03.xls provides data on depreciable assets by net income/loss by industry.  These data give totals for all partnerships and then totals separately for partnerships with net profits.  We determine the total from partnerships with net losses as the difference between the total for all partnerships and the total from partnerships with positive net income.  We use these data to find the amount of fixed assets by industry, $\text{FA}^{\tau}_{m,p}$, and calculate the ratios $\frac{\text{FA}^{\tau}_{m,p}}{\text{Net Income}_{m}}$ and $\frac{\text{FA}^{\tau}_{m,p}}{\text{Net Loss}_{m}}$, for each industry $m$.  Then, using 12pa05.xls, we gather the aggregate amounts of net income or losses distributed to partners by partner type and industry.  Note that the data from 12pa05.xls differ in the level of industry detail from the data in 12pa01.xls and 12pa03.xls.  For notational clarity, let $m1$ be the more detailed classifications and $m2$ be the less detailed classifications.  Using these two pieces of information together, we find the total amount of fixed assets by industry and partner type as:  
 
-\ \\
-\textcolor{red}{THINK A BIT ABOUT WHAT TO DO NEXT, BUT I THINK WE WANT TO JUST SUBTRACT THE CORP SHARE FROM PARTNERSHIPS AND ATTRIBUTE TO CORPS AND KEEP THE REST IN THE NONCORP SECTOR - BUT ALSO MIGHT WANT TO KEEP THEM AROUND SEPARATELY FOR COMPARING TO BEA CONTROL TOTALS.}
-\ \\
+\begin{equation}
+\text{FA}^{\tau}_{m2,p,t}=  \frac{\text{FA}^{\tau}_{m1,p}}{\text{Net Income(Loss)}_{m1}} \times \text{Net Income(Loss)}_{m2,t},
+\end{equation}
+
+\noindent\noindent where $m1\in m2$ and $t$ denotes partner type (individual, corporate, partnership, tax-exempt, other).  To identify the amount of fixed assets by more detailed industry classifications, we make the assumption that the distribution of assets by partner type is the same for all minor industries within a major industry:
+
+\begin{equation}
+\text{FA}^{\tau}_{m,p,t}=  \frac{\text{FA}^{\tau}_{m2,p,t}}{\text{FA}^{\tau}_{m2,p}} \times \text{FA}^{\tau}_{m1}
+\end{equation}
+
+We use the same methodology to allocation inventories and land to find ${INV}^{\tau}_{m,p,t}$ and ${LAND}^{\tau}_{m,p,t}$. 
+
+When allocating capital across tax treatment, we will attribute the capital owned by corporate partners to the corporate sector and the remainder to the non-corporate sector.
+
+
 \subsubsection{Sole Proprietorships}
 
 We divide sole proprietorships into two groups: non-farm sole proprietors, who file a Schedule C of Form 1040, and farm sole proprietorships, who file Schedule F of Form 1040.  
@@ -328,7 +460,33 @@ Put table here with $\frac{{INV}^{\tau}_{m,C}}{{INV}^{\tau}_{m}}$ ratios - perce
 
 \subsubsection{Land}
 
-\textcolor{red}{For land, I'm not sure what to do.  I don't think there is a BEA number we need to hit, but I'll research this more.  If there isn't, we just use the land totals from the SOI data by industry/tax treatment.  If there is a BEA land total, we use that, but allocation it by the ratios from the SOI data as we do for inventories.}
+Financial Accounts of the United States data give us the total value of land held by households, nonprofits, non-corporate, and corporate businesses.  The definition of non-corporate here includes sole proprietorships, partnerships, and individuals with rental income. The definition of corporate in the Financial Accounts include both subchapter S and subchapter C corporations.  Thus we allocate land across the the two type of corporations and across industry as:
+
+\begin{equation}
+{LAND}_{m,c}={LAND}_{c}\times \frac{{LAND}^{\tau}_{m,c}}{{LAND}^{\tau}_{m,s}+{LAND}^{\tau}_{m,c}}
+\end{equation}
+
+\begin{equation}
+{LAND}_{m,s}={LAND}_{c}\times \frac{{LAND}^{\tau}_{m,s}}{{LAND}^{\tau}_{m,s}+{LAND}^{\tau}_{m,c}}
+\end{equation}
+
+\noindent\noindent We use a similar methodology to allocate land across partnerships and sole proprietorships:
+
+\begin{equation}
+{LAND}_{m,p}={LAND}_{nc}\times \frac{{LAND}^{\tau}_{m,p}}{{LAND}^{\tau}_{m,p}+{LAND}^{\tau}_{m,sp}}
+\end{equation}
+
+\begin{equation}
+{LAND}_{m,sp}={LAND}_{nc}\times \frac{{LAND}^{\tau}_{m,sp}}{{LAND}^{\tau}_{m,p}+{LAND}^{\tau}_{m,sp}}
+\end{equation}
+
+\ \\
+\textcolor{red}{Do we have to net out Sch E stuff from the Financial Account data since we don't know the value of the land for Sch E in our tax data?  If so, how?  Probably easiest to just ignore since Sch E and Sch C filer basically very similar - plus we had to use the partnership to impute sch c land anyway...}
+\ \\
+
+\ \\
+\textcolor{red}{I think we just ignore that going to HHs and nonprofits, but not sure...}
+\ \\
 
 \ \\
 \begin{center}
@@ -336,6 +494,7 @@ Put tables with ratios as for other types of capital here.
 \end{center}
 \ \\
 
+Check that total land equals the total from the Financial Account data (it should)...
 
 \section{Depreciation Rates by Asset Type}
 \label{sec:depr_rates}
@@ -381,7 +540,7 @@ To determine when it is advantageous for a filer to switch from the declining ba
 
 \ \\
 \begin{center}
-Do we want a nice figure like CBO shows where the two curves (for DB and SL) intersect?
+Do we want a figure like CBO shows where the two curves (for DB and SL) intersect?
 \end{center}
 \ \\
 
@@ -424,18 +583,20 @@ z_{dbsl}=\frac{\beta}{\beta+r}\left[1-e^{-(\beta+r)Y^{*}}\right]+\frac{e^{-\beta
 \section{Economic Depreciation Rates by Industry and Sector}
 \label{sec:econ_rates_sector}
 
-To get the economic deprecation rate by industry and sector, we use a weighted average of the economics depreciation rates for each asset type in that industry/sector.  Assume there are $I$ types of capital.  We use the depreciation rate for each of those $I$ types find the weighted average where the weights are determined by the amount of capital of each type.  Thus the economic depreciation rate for capital in sector $C$ in industry $m$ can be give by:
+\ \\
+\textcolor{red}{We almost certainly want to calculate the capital stock for several years and create find the average shares of capital by type over those years - so that things the current point in the business cycle doesn't affect the depreciation parameter estimates (e.g. inventories fluctuate a lot over the business cycle).  Note that we'll still use a single base year for other parts of the calibration (e.g. the starting point of the US economy).}
+\ \\
+
+To get the economic deprecation rate by industry and sector, we use a weighted average of the economics depreciation rates for each asset type in that industry/sector.  Assume there are $I$ types of fixed assets.  We use the depreciation rate for each of those $I$ types find the weighted average where the weights are determined by the amount of capital of each type.  Following CBO's ``Computing Effective Tax Rates on Capital Income", we assign a economic and tax depreciation rates of zero to inventories and land. Thus the economic depreciation rate for capital in sector $C$ in industry $m$ can be give by:
 
 \begin{equation}
 \label{eqn:econ_deprec}
-\delta_{m,C}=\sum_{i=1}^{I}\delta_{i}\frac{K_{i,m,C}}{K_{m,C}},
+\delta_{m,C}=\frac{\sum_{i=1}^{I}\delta_{i}{FA}_{i,m,C}+{INV}_{m,C}+{LAND}_{m,C}}{K_{m,C}} 
 \end{equation}
 
-\noindent\noindent where $K^{C}_{i,m}$ is the amount of capital of type $i$ in sector $C$ in industry $m$ and $K^{C}_{m}$ is the total amount of capital in sector $C$ in industry $m$.  Economic depreciation rates, $\delta_{i}$ will be found through the BEA's estimated depreciation rates by asset type.
 
-\ \\
-\textcolor{red}{Note that I'm not sure what to do with inventories and land.  I think we'll just sum over them as if they are different asset types, but I'm not yet sure of the economic rate of depreciation on each.  I think tax allows for 100\% expensing of inventories (since changes in inventories are deductible above the line - when calculating the COGS) and I think there is zero deduction for land (but this is less clear since you can have depletion deductions).}
-\ \\
+
+ 
 
 \ \\
 \begin{center}
@@ -447,14 +608,14 @@ Table of econ deprec rates by industry/sector.
 \section{Tax Depreciation Rates by Industry and Sector}
 \label{sec:tax_rates_sector}
 
- To get the  tax rate of depreciation by industry and sector: 
+ To get the tax rate of depreciation by industry and sector: 
 
 \begin{equation}
 \label{eqn:tax_deprec}
-\delta^{\tau}_{m,C}=\sum_{i=1}^{I}\delta^{\tau}_{i}\frac{K_{i,m,C}}{K_{m,C}},
+\delta^{\tau}_{m,C}=\frac{\sum_{i=1}^{I}\delta^{\tau}_{i}{FA}_{i,m,C}+{INV}_{m,C}+{LAND}_{m,C}}{K_{m,C}},
 \end{equation}
 
-\noindent\noindent where $\delta^{\tau C}_{i}$ is the tax depreciation rate  of capital of type $i$ and is given by tax law.
+\noindent\noindent where $\delta^{\tau C}_{i}$ is the tax depreciation rate of fixed asset of type $i$ and is given by tax law and our geometric rate approximation described in Section \ref{sec:approx_tax_depr_rates}.
 
 \ \\
 \begin{center}

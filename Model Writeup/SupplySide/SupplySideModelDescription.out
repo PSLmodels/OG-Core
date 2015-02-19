@@ -1,9 +1,0 @@
-\BOOKMARK [1][-]{section.1}{Model Components: Variables and Parameters}{}% 1
-\BOOKMARK [2][-]{subsection.1.1}{Variables}{section.1}% 2
-\BOOKMARK [2][-]{subsection.1.2}{Parameters}{section.1}% 3
-\BOOKMARK [1][-]{section.2}{Necessary equations}{}% 4
-\BOOKMARK [1][-]{section.3}{Solving the model}{}% 5
-\BOOKMARK [2][-]{subsection.3.1}{Solving for the steady state}{section.3}% 6
-\BOOKMARK [2][-]{subsection.3.2}{Solving for the transition path}{section.3}% 7
-\BOOKMARK [1][-]{section.4}{Features model has and those it is lacking}{}% 8
-\BOOKMARK [1][-]{section.5}{Roadmap for extensions}{}% 9
