@@ -1,0 +1,29 @@
+DataFerrett Codebook - Created 
+
+
+Dataset: CPS//Basic/May 2014
+Topic: Demographic Variables
+PRTAGE
+Demographics - age topcoded at 85, 90 or 80 (see full description)
+
+With the following Ranges:
+0:90  Range
+
+
+
+Topic: Earnings Variables
+PTERNHLY
+Earnings-hourly pay rate,amount-recode
+
+With the following Ranges:
+-1  In Universe, Met No Conditions To Assign
+0.0:99.99  Range
+
+
+
+Topic: Weighting Variables
+PWCMPWGT
+Weight-composited final weight
+
+
+
