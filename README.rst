@@ -4,6 +4,8 @@ AEI/BYU Dynamic Tax Scoring Model
 
 A Brigham Young University Macroeconomics and Computational Laboratory project in conjunction with the Open Source Policy Center at the American Enterprise Institute.
 
+This repository includes the data used to calibrate the model along with all the necessary Python code to solve and simulate.
+
 Abstract
 ========
 This project builds, calibrates and simulates the effects of changes in various taxes on the U.S. economy in the contect of a large macro OLG model.  Our particular emphasis is on how the stream of tax revenues changes over time.
@@ -97,5 +99,7 @@ Contributors
 - Kerk Phillips
 
 - Evan Magnusson
+
+- Shanthi Ramnath
 
 - Isaac Swift
