@@ -1,0 +1,70 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{threeparttable}
+\usepackage{geometry}
+\geometry{letterpaper,tmargin=1in,bmargin=1in,lmargin=1.25in,rmargin=1.25in}
+\usepackage[format=hang,font=normalsize,labelfont=bf]{caption}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{delarray}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumerate}
+\usepackage{lscape}
+\usepackage{natbib}
+\usepackage{setspace}
+\usepackage{float,color}
+\usepackage[pdftex]{graphicx}
+\usepackage{pdfsync}
+\usepackage{verbatim}
+\usepackage{placeins}
+\synctex=1
+\usepackage{hyperref}
+\hypersetup{colorlinks,linkcolor=red,urlcolor=blue,citecolor=red}
+\usepackage{bm}
+
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}{Definition} % Number definitions on their own
+\newtheorem{derivation}{Derivation} % Number derivations on their own
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}{Proposition} % Number propositions on their own
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\bibliographystyle{aer}
+\newcommand\ve{\varepsilon}
+\renewcommand\theenumi{\roman{enumi}}
+\newcommand\norm[1]{\left\lVert#1\right\rVert}
+
+\begin{document}
+
+\title{Firms Problem with CES Production and Ownership of Capital}
+\maketitle
+
+Firm $i$'s maximization problem is:
+\begin{equation}\label{EqProfMax}
+  \begin{split}
+   V_i(k_{it},\Omega_t) & = \max_{k_{i,t+1},n_{it}} \left[ p_{it} f(z_t,k_{it},n_{it}) - w_tn_{it} + (1-\delta)k_{it} - k_{i,t+1} \right] + \frac{1}{1+r_{t+1}} V_i(k_{i,t+1},\Omega_{t+1});\\
+   & f(z_t,k_{it},n_{it}) = z_t \left[ \alpha k_{it}^\eta + (1-\alpha)n_{it}^\eta \right]^{\frac{1}{\eta}}
+  \end{split}
+\end{equation}
+
+
+\end{document}

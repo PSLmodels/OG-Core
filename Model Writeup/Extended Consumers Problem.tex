@@ -1,0 +1,141 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{threeparttable}
+\usepackage{geometry}
+\geometry{letterpaper,tmargin=1in,bmargin=1in,lmargin=1.25in,rmargin=1.25in}
+\usepackage[format=hang,font=normalsize,labelfont=bf]{caption}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{delarray}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumerate}
+\usepackage{lscape}
+\usepackage{natbib}
+\usepackage{setspace}
+\usepackage{float,color}
+\usepackage[pdftex]{graphicx}
+\usepackage{pdfsync}
+\usepackage{verbatim}
+\usepackage{placeins}
+\synctex=1
+\usepackage{hyperref}
+\hypersetup{colorlinks,linkcolor=red,urlcolor=blue,citecolor=red}
+\usepackage{bm}
+
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}{Definition} % Number definitions on their own
+\newtheorem{derivation}{Derivation} % Number derivations on their own
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}{Proposition} % Number propositions on their own
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\bibliographystyle{aer}
+\newcommand\ve{\varepsilon}
+\renewcommand\theenumi{\roman{enumi}}
+\newcommand\norm[1]{\left\lVert#1\right\rVert}
+
+\begin{document}
+
+\title{Consumers Problem with Many Goods}
+\maketitle
+The consumer's maximization problem is:
+\begin{equation}\label{EqUtilMax}
+  \begin{split}
+    &U_{j,s,t} = \sum_{u=0}^{E+S-s}\beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right] u\left(c_{j,s+u,t+u},n_{j,s+u,t+u},b_{j,s+u+1,t+u+1}\right) \\
+    &\text{where}\quad \rho_{s-1}=0 \\
+    &\text{and} \quad u\left(c_{j,s,t},n_{j,s,t},b_{j,s+1,t+1}\right) = \frac{\left(c_{j,s,t}\right)^{1-\sigma} - 1}{1-\sigma} ... \\
+    &\qquad\qquad + e^{g_y t(1-\sigma)}\chi^n_s\left(b\left[1 - \left(\frac{n_{j,s,t}}{\tilde{l}}\right)^\upsilon\right]^\frac{1}{\upsilon} + k\right) + \rho_s\chi^b\frac{\left(b_{j,s+1,t+1}\right)^{1-\sigma} - 1}{1-\sigma} \\
+    &\text{and} \quad c_{j,s,t} = \prod_{i=1}^I \left( c_{i,j,s,t} - \bar c_{i,j,s} \right) ^{\alpha_i}; \quad \sum_{i=1}^I \alpha_i = 1 \\
+    &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\forall j,t\quad\text{and}\:E+1\leq s\leq E+S
+  \end{split}
+\end{equation}
+
+They maximize subject to the following budget constraint.
+\begin{equation}\label{EqBC}
+  \begin{split}
+    \sum_{i=1}^I p_{i,t}c_{i,j,s,t} + b_{j,s+1,t+1} \leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}&n_{j,s,t} + \frac{BQ_{j,t}}{\lambda_j\tilde{N}_t} - T_{j,s,t} \\
+    \quad\text{where}\quad b_{j,s,1} = 0 \\
+    &\text{for} \quad E+1\leq s \leq E+S \quad \forall j,t
+  \end{split}
+\end{equation}
+
+We set up a Lagrangian and solve by taking derivatives with respect to $\{c_{i,j,s,t},n_{j,s,t+u},b_{j,s,t+1}\}$ for all $i,j,s$ and $t$.
+
+\begin{equation}\label{Eqcfoc}
+  \begin{split}
+  \frac{\partial U}{\partial c_{i,j,s+u,t+u}} & = \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right] \left[ \prod_{i=1}^I \left( c_{i,j,s,t} - \bar c_{i,j,s} \right) ^{\alpha_i} \right]^{-\sigma}\alpha_i \left( c_{i,j,s,t} - \bar c_{i,j,s} \right)^{\alpha_i-1} \\
+   & - \lambda_{t+u} \left( p_{i,t+u} + \frac{\partial T_{j,s+u,t+u}}{\partial c_{i,j,s+u,t+u}} \right)= 0
+    \end{split}
+\end{equation}
+
+\begin{equation}\label{Eqnfoc}
+  \begin{split}
+  \frac{\partial U}{\partial n_{j,s+u,t+u}} & = \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right] e^{g_y (t+u)(1-\sigma)}\chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s+u,t+u}}{\tilde{l}}\biggr)^{v-1}\Biggl[1 - \biggl(\frac{n_{j,s+u,t+u}}{\tilde{l}}\biggr)\Biggr]^{\frac{1-v}{v}} \\
+  & - \lambda_{t+u} \left( w_{+u} e_{j,s+u} - \frac{\partial T_{j,s+u,t+u}}{\partial n_{j,s+u,t+u}} \right)= 0
+    \end{split}
+\end{equation}
+
+\begin{equation}\label{Eqbfoc}
+  \begin{split}
+  \frac{\partial U}{\partial b_{j,s+u+1,t+u+1}} & = \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right] \rho_s\chi^b\bigl(b_{j,s+U+1,t+U+1}\bigr)^{-\sigma} \\
+  & - \lambda_{t+u} - \lambda_{t+u+1} \left( 1 + r_{t+u+1}) - \frac{\partial T_{j,s+U+1,t+U+1}}{\partial b_{j,s+U+1,t+u+1}} \right)= 0
+  \end{split}
+\end{equation}
+
+We can solve for $\lambda_{t+u}$:
+
+\begin{equation}
+  \begin{split}
+  \lambda_{t+u} = \frac{ \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right] \left[ \prod_{i=1}^I \left( c_{i,j,s,t} - \bar c_{i,j,s} \right) ^{\alpha_i} \right]^{-\sigma}\alpha_i \left( c_{i,j,s,t} - \bar c_{i,j,s} \right)^{\alpha_i-1} } { p_{i,t+u} + \frac{\partial T_{j,s+u,t+u}}{\partial c_{i,j,s+u,t+u}} } \nonumber
+  \end{split}
+\end{equation}
+
+\begin{equation}
+  \begin{split}
+  \lambda_{t+u} = \frac{ \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right] e^{g_y (t+u)(1-\sigma)}\chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s+u,t+u}}{\tilde{l}}\biggr)^{v-1}\Biggl[1 - \biggl(\frac{n_{j,s+u,t+u}}{\tilde{l}}\biggr)\Biggr]^{\frac{1-v}{v}} } { w_{+u} e_{j,s+u} - \frac{\partial T_{j,s+u,t+u}}{\partial n_{j,s+u,t+u}} }  \nonumber
+  \end{split}
+\end{equation}
+
+\begin{equation}
+  \begin{split}
+  \lambda_{t+u} = \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right] \rho_s\chi^b\bigl(b_{j,s+U+1,t+U+1}\bigr)^{-\sigma} - \lambda_{t+u+1} \left( 1 + r_{t+u+1}) - \frac{\partial T_{j,s+U+1,t+U+1}}{\partial b_{j,s+U+1,t+u+1}} \right)
+    \end{split}  \nonumber
+\end{equation}
+
+These then reduce to the following $I+1$ Euler equations for each $j,s$ and $t$:
+
+\begin{equation}\label{EqcEuler}
+  \begin{split}
+  & \frac{ \left[ \prod_{i=1}^I \left( c_{i,j,s,t} - \bar c_{i,j,s} \right) ^{\alpha_i} \right]^{-\sigma}\alpha_i \left( c_{i,j,s,t} - \bar c_{i,j,s} \right)^{\alpha_i-1} } { p_{i,t+u} + \frac{\partial T_{j,s+u,t+u}}{\partial c_{i,j,s+u,t+u}} } \\
+  & = \frac{ e^{g_y (t+u)(1-\sigma)}\chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s+u,t+u}}{\tilde{l}}\biggr)^{v-1}\Biggl[1 - \biggl(\frac{n_{j,s+u,t+u}}{\tilde{l}}\biggr)\Biggr]^{\frac{1-v}{v}} } { w_{t+u} e_{j,s+u} - \frac{\partial T_{j,s+u,t+u}}{\partial n_{j,s+u,t+u}} }
+   \end{split}
+\end{equation}
+
+\begin{equation}\label{EqbEuler}
+  \begin{split}
+  & \frac{ e^{g_y (t+u)(1-\sigma)}\chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s+u,t+u}}{\tilde{l}}\biggr)^{v-1}\Biggl[1 - \biggl(\frac{n_{j,s+u,t+u}}{\tilde{l}}\biggr)\Biggr]^{\frac{1-v}{v}} } { w_{t+u} e_{j,s+u} - \frac{\partial T_{j,s+u,t+u}}{\partial n_{j,s+u,t+u}} } = \rho_s\chi^b\bigl(b_{j,s+U+1,t+U+1}\bigr)^{-\sigma}\\ 
+  &  - \frac{ \beta(1-\rho_{s+u}) e^{g_y (t+u+1)(1-\sigma)}\chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s+u+1,t+u+1}}{\tilde{l}}\biggr)^{v-1}\Biggl[1 - \biggl(\frac{n_{j,s+u+1,t+u+1}}{\tilde{l}}\biggr)\Biggr]^{\frac{1-v}{v}} } { w_{t+u+1} e_{j,s+u+1} - \frac{\partial T_{j,s+u+1,t+u+1}}{\partial n_{j,s+u+1,t+u+1}} } \times \\
+  & \left( 1 + r_{t+u+1}) - \frac{\partial T_{j,s+U+1,t+U+1}}{\partial b_{j,s+U+1,t+u+1}} \right)
+  \end{split}
+\end{equation}
+
+\end{document}
