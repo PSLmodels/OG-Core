@@ -92,13 +92,14 @@ Market Clearing
 
 Contributors
 ============
-- Richard W. Evans
 
 - Jason DeBacker
 
-- Kerk Phillips
+- Richard W. Evans
 
 - Evan Magnusson
+
+- Kerk Phillips
 
 - Shanthi Ramnath
 
