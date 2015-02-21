@@ -142,36 +142,43 @@ Intertemporal Euler equation for savings, including the utility effects of beque
   \end{split}
 \end{equation}
 
-The aggrgeate consumption good is defined as follows.
-\begin{equation} \label{Eqcagg}
-    c_{j,s,t}  = \prod_{i=1}^I \left( c_{i,j,s,t} - \bar c_{i,s} \right) ^{\alpha_i} 
-\end{equation}
+% The aggrgeate consumption good is defined as follows.
+% \begin{equation} \label{Eqcagg}
+%     c_{j,s,t}  = \prod_{i=1}^I \left( c_{i,j,s,t} - \bar c_{i,s} \right) ^{\alpha_i} 
+% \end{equation}
 
-The price of this aggregate good is given by the following.
-\begin{equation} \label{Eqpagg}
-    p_{j,s,t}  = \sum_{i=1}^I p_{i,t} c_{i,j,s,t} 
-\end{equation}
+% The price of this aggregate good is given by the following.
+% \begin{equation} \label{Eqpagg}
+%     p_{j,s,t}  = \sum_{i=1}^I p_{i,t} c_{i,j,s,t} 
+% \end{equation}
 
-An Euler equation that compares marginal utilities of two goods ($n \& m$) is given below.
+An Euler equation that compares marginal utilities of two arbitrary goods ($n$ \& $m$) is given below.
 \begin{equation}\label{EqcEuler2}
-  \frac{ \alpha_n \left( c_{n,j,s,t} - \bar c_{n,s} \right)^{\alpha_n-1} } { p_{n,t+u} + \frac{\partial T_{j,s+u,t+u}}{\partial c_{n,j,s+u,t+u}} } = \frac{ \alpha_m \left( c_{m,j,s,t} - \bar c_{m,s} \right)^{\alpha_m-1} } { p_{m,t+u} + \frac{\partial T_{j,s+u,t+u}}{\partial c_{m,j,s+u,t+u}} }
+  \frac{ \alpha_n \left( c_{n,j,s,t} - \bar c_{n,s} \right)^{\alpha_n-1} } { p_{n,t+u} + \frac{\partial T_{j,s,t}}{\partial c_{n,j,s,t}} } = \frac{ \alpha_m \left( c_{m,j,s,t} - \bar c_{m,s} \right)^{\alpha_m-1} } { p_{m,t+u} + \frac{\partial T_{j,s,t}}{\partial c_{m,j,s,t}} }
 \end{equation}
 
 We can use this equation for $m \in \{1,2,...,I\}$ solving for $c_{m,j,s,t} - \bar c_{m,s}$.
-\begin{equation}
-    c_{m,j,s,t} - \bar c_{m,s} = \left(c_{n,j,s,t} - \bar c_{n,s} \right)^{\frac{1-\alpha_n}{1-\alpha_m}} \left(\frac{\alpha_m}{\alpha_n} \frac{ p_{n,t+u} + \frac{\partial T_{j,s+u,t+u}}{\partial c_{n,j,s+u,t+u}} } { p_{m,t+u} + \frac{\partial T_{j,s+u,t+u}}{\partial c_{m,j,s+u,t+u}} } \right)^{\frac{1}{1-\alpha_m}}  \nonumber
-\end{equation}
+\begin{align}
+    c_{m,j,s,t} - \bar c_{m,s} & = \left[ \left(c_{n,j,s,t} - \bar c_{n,s} \right)^{1-\alpha_n} \frac{\Gamma_m}{\Gamma_n} \right]^{\frac{1}{1-\alpha_m}}  \label{Eqcmdef} \\
+    \Gamma_m & \equiv \frac{ \alpha_m } { p_{m,t} + \frac{\partial T_{j,s,t}}{\partial c_{m,j,s,t}} } \nonumber
+\end{align}
 
-We then substitute this into equations \eqref{Eqcagg} and \eqref{Eqpagg} to get:
+% We then substitute this into equations \eqref{Eqcagg} and \eqref{Eqpagg} to get:
 
-The aggrgeate consumption good is defined as follows.
-\begin{equation} \label{Eqcagg2}
-    c_{j,s,t}  = \prod_{i=1}^I \left[ \left(c_{n,j,s,t} - \bar c_{n,s} \right)^{\frac{1-\alpha_n}{1-\alpha_i}} \left(\frac{\alpha_i}{\alpha_n} \frac{ p_{n,t+u} + \frac{\partial T_{j,s+u,t+u}}{\partial c_{n,j,s+u,t+u}} } { p_{i,t+u} + \frac{\partial T_{j,s+u,t+u}}{\partial c_{i,j,s+u,t+u}} } \right)^{\frac{1}{1-\alpha_i}} \right] ^{\alpha_i} 
-\end{equation}
+% \begin{equation} \label{Eqcagg2}
+%   \begin{split}
+%     c_{j,s,t} & \equiv \prod_{i=1}^I \left[ \left(c_{1,j,s,t} - \bar c_{1,s} \right)^{1-\alpha_1} \frac{\Gamma_i}{\Gamma_1} \right]^{\frac{\alpha_i}{1-\alpha_i}}  \\
+%   \end{split}  
+% \end{equation}
 
-The price of this aggregate good is given by the following.
-\begin{equation} \label{Eqpagg2}
-    p_{j,s,t}  = \sum_{i=1}^I p_{i,t} \left[ \left(c_{n,j,s,t} - \bar c_{n,s} \right)^{\frac{1-\alpha_n}{1-\alpha_i}} \left(\frac{\alpha_i}{\alpha_n} \frac{ p_{n,t+u} + \frac{\partial T_{j,s+u,t+u}}{\partial c_{n,j,s+u,t+u}} } { p_{i,t+u} + \frac{\partial T_{j,s+u,t+u}}{\partial c_{i,j,s+u,t+u}} } \right)^{\frac{1}{1-\alpha_i}} + \bar c_{i,s} \right] 
-\end{equation}
+% \begin{equation} \label{Eqpagg2}
+%     p_{j,s,t}  = \sum_{i=1}^I p_{i,t} \left( \left[ \left(c_{1,j,s,t} - \bar c_{1,s} \right)^{1-\alpha_1} \frac{\Gamma_i}{\Gamma_1} \right]^{\frac{1}{1-\alpha_i}} + \bar c_{i,s} \right) 
+% \end{equation}
+
+We can solve the household's problem fairly rapidly, if the values of $\frac{\partial T_{j,s,t}}{\partial c_{i,j,s,t}}$ are just constants, as they would be with a typical sales tax.
+\begin{itemize}
+\item First, given $\{p_{i,t}\}_{i=1}^I$ use Euler equation \eqref{EqcEuler} to find the value for $c_{1,j,s,t}$.
+\item Then use equation \eqref{Eqcmdef} to get the rest of the $c_{i,j,s,t}$'s.
+\end{itemize}
 
 \end{document}
