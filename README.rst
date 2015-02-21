@@ -1,8 +1,8 @@
 =================================
-AEI/BYU Dynamic Tax Scoring Model
+BYU/OSPC Dynamic Tax Scoring Model
 =================================
 
-A Brigham Young University Macroeconomics and Computational Laboratory project in conjunction with the Open Source Policy Center at the American Enterprise Institute.
+A Brigham Young University Macroeconomics and Computational Laboratory project in conjunction with the Open Source Policy Center.
 
 This repository includes the data used to calibrate the model along with all the necessary Python code to solve and simulate.
 
@@ -10,7 +10,7 @@ Abstract
 ========
 This project builds, calibrates and simulates the effects of changes in various taxes on the U.S. economy in the contect of a large macro OLG model.  Our particular emphasis is on how the stream of tax revenues changes over time.
 
-The BYU-AEI model is similar to the Zodrow-Diamond (ZD) model in being a computable CGE-OLG model.  We solve as ZD do using the Auerbach-Kolikoff time-path iteration method.
+The BYU-OSPC model is similar to the Zodrow-Diamond (ZD) model in being a computable CGE-OLG model.  We solve as ZD do using the Auerbach-Kolikoff time-path iteration method.
 
 Demographics
 ------------
