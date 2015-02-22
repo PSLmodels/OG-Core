@@ -1,70 +1,13 @@
-\documentclass[a4paper]{article}
-
-%\usepackage[left=1.25in,top=1in,right=1.25in,nohead,nofoot]{geometry}
-
-\oddsidemargin 0.0in \textwidth 6.5in \topmargin -0.1in \textheight
-9.0in
+\chapter{Government}
+\index{Government%
+@\emph{Government}}%
 
 
-\usepackage{tabularx}
-
-% symbols like \Telefon, \Mobilefone, \Letter and \Email
-\usepackage{marvosym}
-
-% package to have clickable website links
-%\usepackage[pdftex]{hyperref}
-\usepackage{hyperref}
-\hypersetup{colorlinks,%
-citecolor=red,%
-filecolor=red,%
-linkcolor=red,%
-urlcolor=blue,%
-pdftex}
-
-% page numbers
-\pagenumbering{arabic}
-\usepackage{amsmath}
-
-% multicolumns
-\usepackage{palatino, url, multicol}
-% setting up links to email
-%\renewcommand\UrlLeft{<url: }
-%\renewcommand\UrlRight{>}
-%\DeclareUrlCommand\email{\urlstyle{rm}%
-% \renewcommanad\UrlLeft{e-mail: \  }%
-% \renewcommand\UrlRight{}}
-\newcommand\email{\begingroup \urlstyle{rm}\Url}
-
-
-%\usepackage{doublespace}
-%\setstretch{1.2}
-
-\usepackage{ae}
-\usepackage[T1]{fontenc}
-%Define how sections should be laid out
-\makeatletter
-\renewcommand{\section}{\@startsection{section}{12}
-{0mm} % Einzug
-{.5\baselineskip} % Vorabstand
-{0.2\baselineskip} % Nachabstand
-{\large \scshape{\vspace{0.3\baselineskip}}}}
-%{\bfseries \scshape \large{\vspace{0.3\baselineskip}}}}
-\makeatother
-
-\begin{document}
 
 %\pagestyle{empty}
 
 
-%Ueberschrift
-\begin{center}
-\large  \textsc {Description of government for dynamic scoring model} \\
-\small{Version 1.0}\\
-\end{center}
-\vspace{.5\baselineskip}
-
-
-\section{Overview}
+\section{Overview of Government in the Model}
 
 Government will have four functions in our model:
 \begin{enumerate}
@@ -77,18 +20,90 @@ Government will have four functions in our model:
 \item The government purchases capital and hires labor to produced a non-rival public good (e.g., national defense)
 \end{enumerate}
 
-\section{Government budgeting}
 
-\begin{equation}
-\label{eqn:gbc}
-D_{t+1} + T^{\tau}_{t} = (1+r_{t})D_{t} + T^{H}_{t} + G^{subs}_{t} + G^{emp}_{t} + I^{G}_{t}
-\end{equation}
+    \section{Government budgeting}
+      \begin{equation}
+      \label{eqn:gbc}
+      D_{t+1} + T^{\tau}_{t} = (1+r_{t})D_{t} + T^{H}_{t} + G^{subs}_{t} + G^{emp}_{t} + I^{G}_{t}
+      \end{equation}
 
-\subsection{Rule for long-term fiscal stability}
+    \subsection{Rule for long-term fiscal stability}
+      Let $D_t$ denote the government's outstanding real debt.  $T_t$ is total tax revenue, $T^H_t$ is total household transfers, $G_t$ is government purchases of goods, $L_t$ is the real value of purchases of labor services, and $S_t$ is subsidies to government run firms.
 
-\section{Transfer system}
+      \begin{equation}
+        D_{t+1} = D_t(1+r_t) - T_t + T^H_t + G_t + L_t + S_t
+      \end{equation}
 
-We'll need to estimate this.  Probably following \cn{FR1993}.  Or perhaps the micro simulation model calculates some of these.  Or ideally we get something like \cn{KotlikoffXXXX}.
+      Letting a carat denote the ratio of a variable to GDP, we can rewrite this as follows:
+
+      \begin{equation} \label{EqDhatlom}
+        (1+g_{Yt}) \hat D_{t+1} = \hat D_t(1+r_t) - \hat T_t + \hat T^H_t + \hat G_t + \hat L_t + \hat S_t
+      \end{equation}
+
+      We need to adopt a government fiscal rule that determines how our residual expenditure $\hat G_t$ evolves over time.
+
+      One way is to adopt a balanced budget rule which keeps the debt-to-GDP ratio constant at it's initial value of $\hat D_0$.
+
+      \begin{align}
+        (1+g_{Yt}) \hat D_0 & = \hat D_0(1+r_t) - \hat T_t + \hat T^H_t + \hat G_t + \hat L_t + \hat S_t \nonumber \\
+        \hat G_t & = \hat D_0(g_{Yt}-r_t) + \hat T_t - \hat T^H_t -\hat L_t - \hat S_t \label{EqBalBudRule}
+      \end{align}
+
+      Another rule is to hold govenrment spending constant and let debt evolve as it will for several period.  Then in period $T$ impose fiscal austerity which forces $\hat G_t$ to adjust over time so that $\hat D_t$ goes to a steady value.
+
+      \begin{equation}
+        \hat G_t - \bar G = \rho_t (\hat D_t - \bar D);\quad \rho_t<0 \label{EqAdjRule}
+      \end{equation}
+
+      Substituting this into \eqref{EqDhatlom} gives:
+      \begin{align}
+        (1+g_{Yt}) \hat D_{t+1} & = \hat D_t(1+r_t) - \hat T_t + \hat T^H_t + \rho_t (\hat D_t - \bar D) + \bar G + \hat L_t + \hat S_t \nonumber \\
+        \hat D_{t+1} & = \frac{\hat D_t(1+r_t) - \hat T_t + \hat T^H_t + \rho_t (\hat D_t - \bar D) + \bar G + \hat L_t + \hat S_t }{1+g_{Yt}} \label{EqDhatlom2}
+      \end{align}
+
+      Consider the steady state version of this.
+      \begin{align}
+        (1+\bar g_{Y}) \bar D & = \bar D(1+\bar r) + \bar T - \bar T^H + \rho_t (\bar D - \bar D) + \bar G + \bar L + \bar S_t  \nonumber \\
+        \bar G & = \bar D(\bar g_{Y} -\bar r) + \bar T - \bar T^H - \bar L - \bar S  \label{EqGbardef}
+      \end{align}
+
+      This tells us the long-run value of government spending to GDP that will maintain the debt to GDP target.
+
+      In order for \eqref{EqDhatlom2} to be a contraction mapping over $\hat D$ and thus converge to a steady state, we must put bounds on $\rho_t$.  Rearranging \eqref{EqDhatlom2} and using \eqref{EqGbardef}:
+
+      \begin{align}
+        \begin{split}
+        (1+g_{Yt}) \hat D_{t+1} & = \hat D_t (1+r_t) - \hat T_t + \hat T^H_t + \rho_t (\hat D_t - \bar D) + \hat L_t + \hat S_t \\
+        & + \bar D(\bar g_{Y} - \bar r) + \bar T - \bar T^H - \bar L - \bar S
+        \end{split} \nonumber \\
+        \begin{split}
+        (1+g_{Yt}) \hat D_{t+1} & = \hat D_t (1+r_t) - \hat T_t + \hat T^H_t + \rho_t \hat D_t - \rho_t \bar D + \hat L_t + \hat S_t \\
+        & + \bar g_Y \bar D - \bar r \bar D + \bar T - \bar T^H - \bar L - \bar S
+        \end{split} \nonumber \\
+        \begin{split}
+        (1+g_{Yt}) \hat D_{t+1} & =  \hat D_t (1+r_t) + \rho_t (\hat D_t -\bar D) + (\bar g_Y - \bar r ) \bar D \\
+        & - (\hat T_t - \bar T) + (\hat T^H_t -\bar T^H) + (\hat L_t -\bar L) + (\hat S_t -\bar S)
+        \end{split} \nonumber \\
+        \begin{split}
+        \hat D_{t+1} - \bar D & = \hat D_t \frac{1+r_t}{1+g_{Yt}} + \frac{\rho_t}{1+g_{Yt}} (\hat D_t -\bar D) + \left( \frac{\bar g_Y - \bar r}{1+g_{Yt}} - 1 \right) \bar D \\
+        & + \frac{-(\hat T_t - \bar T) + (\hat T^H_t -\bar T^H) + (\hat L_t -\bar L) + (\hat S_t -\bar S)}{1+g_{Yt}}
+        \end{split}  \nonumber \\
+        \begin{split} 
+        \hat D_{t+1} - \bar D & = \frac{1+r_t+\rho_t}{1+g_{Yt}} (\hat D_t -\bar D) \\
+        & + \frac{-(\hat T_t - \bar T) + (\hat T^H_t -\bar T^H) + (\hat L_t -\bar L) + (\hat S_t -\bar S)}{1+g_{Yt}}
+        \end{split} 
+        \label{EqStab}
+      \end{align}
+
+      We need $\frac{\hat D_{t+1} - \bar D}{\hat D_{t} - \bar D} < 1$ for stability.  Equation \eqref{EqStab} gives:
+      \begin{align} 
+        \frac{\hat D_{t+1} - \bar D}{\hat D_t -\bar D} & = \frac{1+r_t+\rho_t}{1+g_{Yt}}  + \frac{-(\hat T_t - \bar T) + (\hat T^H_t -\bar T^H) + (\hat L_t -\bar L) + (\hat S_t -\bar S)}{(1+g_{Yt})(\hat D_t -\bar D)} < 1 \nonumber \\
+        & \frac{1+r_t+\rho_t}{1+g_{Yt}}  < \frac{(\hat T_t - \bar T) - (\hat T^H_t -\bar T^H) - (\hat L_t -\bar L) - (\hat S_t -\bar S)}{(1+g_{Yt})(\hat D_t -\bar D)} \nonumber \\
+        & \rho_t  < (1+r_t)\frac{(\hat T_t - \bar T) - (\hat T^H_t -\bar T^H) - (\hat L_t -\bar L) - (\hat S_t -\bar S)}{\hat D_t -\bar D}
+      \end{align} 
+
+    \subsection{Transfer system}
+      We'll need to estimate this.  Probably following \citet{FR1993}.  Or perhaps the micro simulation model calculates some of these.  Or ideally we get something like \citet{KotlikoffXXXX}.
 
 \section{Government production of private goods}
 
@@ -103,5 +118,3 @@ We'll need to estimate this.  Probably following \cn{FR1993}.  Or perhaps the mi
 \item tax 2 firms + gov't
 \item N firms with taxes + gov't
 \end{enumerate}
-
-\end{document}

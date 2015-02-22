@@ -3,4 +3,30 @@
 \fi
 \begin{thebibliography}{xx}
 
+\harvarditem[Auerbach and Kotlikoff]{Auerbach and
+  Kotlikoff}{1987}{AuerbachKotlikoff:1987}
+{\bf Auerbach, Alan~J. and Lawrence~J. Kotlikoff}, {\it Dynamic Fiscal Policy},
+  Cambridge University Press, 1987.
+
+\harvarditem[Evans and Phillips]{Evans and Phillips}{2014}{EvansPhillips:2014}
+{\bf Evans, Richard~W. and Kerk~L. Phillips}, ``OLG Life Cycle Model Transition
+  Paths: Alternate Model Forecast Method,'' {\it Computational Economics},
+  January 2014, {\it 43} (1), 105--131.
+
+\harvarditem[Fullerton and Rogers]{Fullerton and Rogers}{1993}{FG1993}
+{\bf Fullerton, Don and Diane~Lim Rogers}, {\it Who Bears the Lifetime Tax
+  Burden?}, The Brookings Institution, 1993.
+
+\harvarditem[Hayashi]{Hayashi}{1982}{Hayashi1982}
+{\bf Hayashi, Fumio}, ``{Tobin's Marginal q and Average q: A Neoclassical
+  Interpretation},'' {\it Econometrica}, January 1982, {\it 50} (1), 213--24.
+
+\harvarditem[Stokey and Lucas]{Stokey and Lucas}{1989}{StokeyLucas:1989}
+{\bf Stokey, Nancy~L. and Robert~E.~Lucas Jr.}, {\it Recursive Methods in
+  Economic Dynamics}, Harvard University Press, 1989.
+
+\harvarditem[Zodrow and Diamond]{Zodrow and Diamond}{2013}{DZ2013}
+{\bf Zodrow, George~R. and John~W. Diamond}, Vol.~1 of {\em Handbook of
+  Computable General Equilibrium Modeling}, Elsevier, December
+
 \end{thebibliography}

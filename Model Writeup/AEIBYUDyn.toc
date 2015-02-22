@@ -1,0 +1,29 @@
+\contentsline {chapter}{\numberline {1}Households}{4}{chapter.1}
+\contentsline {section}{\numberline {1.1}Demographics}{4}{section.1.1}
+\contentsline {section}{\numberline {1.2}Households}{5}{section.1.2}
+\contentsline {chapter}{\numberline {2}Firms}{8}{chapter.2}
+\contentsline {section}{\numberline {2.1}Supply Side Model Components: Variables and Parameters}{8}{section.2.1}
+\contentsline {subsection}{\numberline {2.1.1}Variables}{8}{subsection.2.1.1}
+\contentsline {subsection}{\numberline {2.1.2}Parameters}{8}{subsection.2.1.2}
+\contentsline {section}{\numberline {2.2}Necessary equations}{10}{section.2.2}
+\contentsline {section}{\numberline {2.3}Solving the model}{15}{section.2.3}
+\contentsline {subsection}{\numberline {2.3.1}Solving for the steady state}{15}{subsection.2.3.1}
+\contentsline {subsection}{\numberline {2.3.2}Solving for the transition path}{17}{subsection.2.3.2}
+\contentsline {section}{\numberline {2.4}Features model has and those it is lacking}{17}{section.2.4}
+\contentsline {section}{\numberline {2.5}Roadmap for extensions}{17}{section.2.5}
+\contentsline {chapter}{\numberline {3}Government}{21}{chapter.3}
+\contentsline {section}{\numberline {3.1}Overview of Government in the Model}{21}{section.3.1}
+\contentsline {section}{\numberline {3.2}Government budgeting}{21}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}Rule for long-term fiscal stability}{21}{subsection.3.2.1}
+\contentsline {subsection}{\numberline {3.2.2}Transfer system}{23}{subsection.3.2.2}
+\contentsline {section}{\numberline {3.3}Government production of private goods}{23}{section.3.3}
+\contentsline {section}{\numberline {3.4}Government production of public goods}{23}{section.3.4}
+\contentsline {section}{\numberline {3.5}Steps for adding government to the dynamic model}{23}{section.3.5}
+\contentsline {chapter}{\numberline {4}Equilibrium}{25}{chapter.4}
+\contentsline {section}{\numberline {4.1}Market clearing and stationary equilibrium}{25}{section.4.1}
+\contentsline {chapter}{\numberline {5}Numerical Solution}{35}{chapter.5}
+\contentsline {section}{\numberline {5.1}Solving for stationary steady-state equilibrium}{35}{section.5.1}
+\contentsline {section}{\numberline {5.2}Solving for stationary non-steady-state equilibrium by time path iteration}{37}{section.5.2}
+\contentsline {section}{\numberline {5.3}Incorporating Feedbacks with Micro Tax Simulations}{44}{section.5.3}
+\contentsline {section}{\numberline {5.4}Calibration}{44}{section.5.4}
+\contentsline {subsection}{\numberline {5.4.1}Tax Bend Points}{44}{subsection.5.4.1}
