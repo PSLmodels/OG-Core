@@ -24,6 +24,7 @@
 \BOOKMARK [0][-]{chapter.5}{Numerical Solution}{}% 24
 \BOOKMARK [1][-]{section.5.1}{Solving for stationary steady-state equilibrium}{chapter.5}% 25
 \BOOKMARK [1][-]{section.5.2}{Solving for stationary non-steady-state equilibrium by time path iteration}{chapter.5}% 26
-\BOOKMARK [1][-]{section.5.3}{Incorporating Feedbacks with Micro Tax Simulations}{chapter.5}% 27
-\BOOKMARK [1][-]{section.5.4}{Calibration}{chapter.5}% 28
-\BOOKMARK [2][-]{subsection.5.4.1}{Tax Bend Points}{section.5.4}% 29
+\BOOKMARK [0][-]{chapter.6}{Miscellaneous}{}% 27
+\BOOKMARK [1][-]{section.6.1}{Incorporating Feedbacks with Micro Tax Simulations}{chapter.6}% 28
+\BOOKMARK [1][-]{section.6.2}{Calibration}{chapter.6}% 29
+\BOOKMARK [2][-]{subsection.6.2.1}{Tax Bend Points}{section.6.2}% 30

@@ -24,6 +24,7 @@
 \contentsline {chapter}{\numberline {5}Numerical Solution}{35}{chapter.5}
 \contentsline {section}{\numberline {5.1}Solving for stationary steady-state equilibrium}{35}{section.5.1}
 \contentsline {section}{\numberline {5.2}Solving for stationary non-steady-state equilibrium by time path iteration}{37}{section.5.2}
-\contentsline {section}{\numberline {5.3}Incorporating Feedbacks with Micro Tax Simulations}{44}{section.5.3}
-\contentsline {section}{\numberline {5.4}Calibration}{44}{section.5.4}
-\contentsline {subsection}{\numberline {5.4.1}Tax Bend Points}{44}{subsection.5.4.1}
+\contentsline {chapter}{\numberline {6}Miscellaneous}{44}{chapter.6}
+\contentsline {section}{\numberline {6.1}Incorporating Feedbacks with Micro Tax Simulations}{44}{section.6.1}
+\contentsline {section}{\numberline {6.2}Calibration}{44}{section.6.2}
+\contentsline {subsection}{\numberline {6.2.1}Tax Bend Points}{44}{subsection.6.2.1}

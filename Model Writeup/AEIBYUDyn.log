@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  22 FEB 2015 16:22
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  22 FEB 2015 16:26
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -833,19 +833,19 @@ LaTeX Warning: Reference `AppIncTaxRate' on page 28 undefined on input line 149
 
 LaTeX Warning: Reference `AppReplRate' on page 28 undefined on input line 151.
 
-<images/SavSS_log.png, id=517, 578.16pt x 433.62pt>
+<images/SavSS_log.png, id=522, 578.16pt x 433.62pt>
 File: images/SavSS_log.png Graphic file (type png)
  <use images/SavSS_log.png>
 Package pdftex.def Info: images/SavSS_log.png used on input line 169.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-<images/LabSS.png, id=519, 465.99094pt x 365.11406pt>
+<images/LabSS.png, id=524, 465.99094pt x 365.11406pt>
 File: images/LabSS.png Graphic file (type png)
  <use images/LabSS.png>
 Package pdftex.def Info: images/LabSS.png used on input line 174.
 (pdftex.def)             Requested size: 465.98979pt x 365.11316pt.
 
-<images/ConsSS_log.png, id=520, 578.16pt x 433.62pt>
+<images/ConsSS_log.png, id=525, 578.16pt x 433.62pt>
 File: images/ConsSS_log.png Graphic file (type png)
 
 <use images/ConsSS_log.png>
@@ -866,13 +866,13 @@ Overfull \hbox (72.20467pt too wide) in paragraph at lines 207--208
 
 LaTeX Warning: Reference `EqFOCrate' on page 33 undefined on input line 215.
 
-<images/KpathTPI.png, id=584, 578.16pt x 433.62pt>
+<images/KpathTPI.png, id=589, 578.16pt x 433.62pt>
 File: images/KpathTPI.png Graphic file (type png)
  <use images/KpathTPI.png>
 Package pdftex.def Info: images/KpathTPI.png used on input line 219.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-<images/LpathTPI.png, id=585, 578.16pt x 433.62pt>
+<images/LpathTPI.png, id=590, 578.16pt x 433.62pt>
 File: images/LpathTPI.png Graphic file (type png)
  <use images/LpathTPI.png>
 Package pdftex.def Info: images/LpathTPI.png used on input line 224.
@@ -908,7 +908,7 @@ Underfull \hbox (badness 2088) in paragraph at lines 141--141
 [][][][]|[]\OT1/cmr/bx/n/12 Di-a-gram of TPI so-lu-tion method
  []
 
-<images/TPIdiag.pdf, id=673, 513.57974pt x 675.72452pt>
+<images/TPIdiag.pdf, id=678, 513.57974pt x 675.72452pt>
 File: images/TPIdiag.pdf Graphic file (type pdf)
 
 <use images/TPIdiag.pdf>
@@ -935,41 +935,43 @@ LaTeX Warning: Reference `AppPopGrowth' on page 42 undefined on input line 192.
 LaTeX Warning: Reference `EqFOCrate' on page 42 undefined on input line 199.
 
 [42]) [43]
+Chapter 6.
 Missing character: There is no â in font cmr12!
 Missing character: There is no € in font cmr12!
 Missing character: There is no œ in font cmr12!
 Missing character: There is no â in font cmr12!
 Missing character: There is no € in font cmr12!
 Missing character: There is no  in font cmr12!
- [44
+[44
+
 
 ] [45] (./AEIBYUDyn.bbl)
 
 Package natbib Warning: There were undefined citations.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 192.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 196.
 [46
 
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 192.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 196.
  (./AEIBYUDyn.aux (./Household_description.aux) (./Firms_description.aux)
 (./Government_description.aux) (./Eqm_description.aux) (./Model_soln.aux))
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 192.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 192.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 196.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 196.
 Package rerunfilecheck Info: File `AEIBYUDyn.out' has not changed.
-(rerunfilecheck)             Checksum: 0ECAA7052A71062E59062E813A7EF7E0;2123.
+(rerunfilecheck)             Checksum: FB3234B2641299870496189268A4C464;2172.
 
 
 LaTeX Warning: There were undefined references.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 192.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 196.
  ) 
 Here is how much of TeX's memory you used:
- 8558 strings out of 493488
- 125910 string characters out of 3141326
+ 8560 strings out of 493488
+ 125930 string characters out of 3141326
  237734 words of memory out of 3000000
- 11432 multiletter control sequences out of 15000+200000
+ 11433 multiletter control sequences out of 15000+200000
  24815 words of font info for 91 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
  36i,34n,41p,1430b,676s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -997,10 +999,10 @@ t/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2012/texmf-dist/
 fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2012/texmf-dist/f
 onts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2012/texmf-dist/fo
 nts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on AEIBYUDyn.pdf (48 pages, 1298290 bytes).
+Output written on AEIBYUDyn.pdf (48 pages, 1298820 bytes).
 PDF statistics:
- 868 PDF objects out of 1000 (max. 8388607)
- 774 compressed objects within 8 object streams
- 247 named destinations out of 1000 (max. 500000)
- 263 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 873 PDF objects out of 1000 (max. 8388607)
+ 779 compressed objects within 8 object streams
+ 248 named destinations out of 1000 (max. 500000)
+ 271 words of extra memory for PDF output out of 10000 (max. 10000000)
 
