@@ -2,10 +2,21 @@
 \BOOKMARK [1][-]{section.2}{Details of the Macro Model}{}% 2
 \BOOKMARK [2][-]{subsection.2.1}{Deomgraphics}{section.2}% 3
 \BOOKMARK [2][-]{subsection.2.2}{Households}{section.2}% 4
-\BOOKMARK [2][-]{subsection.2.3}{Firms}{section.2}% 5
-\BOOKMARK [2][-]{subsection.2.4}{Market Clearing}{section.2}% 6
-\BOOKMARK [2][-]{subsection.2.5}{Solution and Simulation}{section.2}% 7
-\BOOKMARK [1][-]{section.3}{Incorporating Feedbacks with Micro Tax Simulations}{}% 8
-\BOOKMARK [1][-]{section.4}{Calibration}{}% 9
-\BOOKMARK [2][-]{subsection.4.1}{Tax Bend Points}{section.4}% 10
-\BOOKMARK [1][-]{section.5}{Conclusion}{}% 11
+\BOOKMARK [2][-]{subsection.2.3}{Production Goods Firms}{section.2}% 5
+\BOOKMARK [3][-]{subsubsection.2.3.1}{Jason's Notes}{subsection.2.3}% 6
+\BOOKMARK [3][-]{subsubsection.2.3.2}{Parameterization}{subsection.2.3}% 7
+\BOOKMARK [3][-]{subsubsection.2.3.3}{Kerk's Notes}{subsection.2.3}% 8
+\BOOKMARK [2][-]{subsection.2.4}{Consumption Goods Firms}{section.2}% 9
+\BOOKMARK [2][-]{subsection.2.5}{Government}{section.2}% 10
+\BOOKMARK [3][-]{subsubsection.2.5.1}{Government budgeting}{subsection.2.5}% 11
+\BOOKMARK [3][-]{subsubsection.2.5.2}{Rule for long-term fiscal stability}{subsection.2.5}% 12
+\BOOKMARK [3][-]{subsubsection.2.5.3}{Transfer system}{subsection.2.5}% 13
+\BOOKMARK [3][-]{subsubsection.2.5.4}{Government production of private goods}{subsection.2.5}% 14
+\BOOKMARK [3][-]{subsubsection.2.5.5}{Government production of public goods}{subsection.2.5}% 15
+\BOOKMARK [3][-]{subsubsection.2.5.6}{Steps for adding government to the dynamic model}{subsection.2.5}% 16
+\BOOKMARK [2][-]{subsection.2.6}{Market Clearing}{section.2}% 17
+\BOOKMARK [2][-]{subsection.2.7}{Solution and Simulation}{section.2}% 18
+\BOOKMARK [1][-]{section.3}{Incorporating Feedbacks with Micro Tax Simulations}{}% 19
+\BOOKMARK [1][-]{section.4}{Calibration}{}% 20
+\BOOKMARK [2][-]{subsection.4.1}{Tax Bend Points}{section.4}% 21
+\BOOKMARK [1][-]{section.5}{Conclusion}{}% 22
