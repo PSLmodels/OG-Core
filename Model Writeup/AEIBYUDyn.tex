@@ -21,6 +21,7 @@
   \usepackage{hyperref}
   \hypersetup{colorlinks,linkcolor=red,urlcolor=blue,citecolor=red}
   \usepackage{bm}
+  \usepackage{makeidx}       % Package to make an index.
 
   \theoremstyle{definition}
   \newtheorem{theorem}{Theorem}
@@ -50,6 +51,8 @@
   \newcommand{\cn}{\citeasnoun} % shortens command to cite as noun
   \renewcommand\theenumi{\roman{enumi}}
   \newcommand\norm[1]{\left\lVert#1\right\rVert}
+  
+  \makeindex    % Make the index
 
 \begin{document}
 
@@ -191,6 +194,8 @@
 % Bibliography:
 \clearpage
 \bibliography{AEIBYUDyn}
+\index{Bibliography@\emph{Bibliography}}%  
 
+\printindex
 
 \end{document}

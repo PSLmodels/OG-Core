@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  22 FEB 2015 16:26
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  22 FEB 2015 16:42
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -363,29 +363,36 @@ Package: bm 2004/02/26 v1.1c Bold Symbol Support (DPC/FMi)
 LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 138.
 LaTeX Info: Redefining \bm on input line 204.
 )
+(/usr/local/texlive/2012/texmf-dist/tex/latex/base/makeidx.sty
+Package: makeidx 2000/03/29 v1.0m Standard LaTeX package
+)
 \c@theorem=\count117
 \c@definition=\count118
 \c@derivation=\count119
 \c@proposition=\count120
- (./AEIBYUDyn.aux
-(./Household_description.aux) (./Firms_description.aux)
+\@indexfile=\write3
+\openout3 = `AEIBYUDyn.idx'.
+
+
+Writing index file AEIBYUDyn.idx
+(./AEIBYUDyn.aux (./Household_description.aux) (./Firms_description.aux)
 (./Government_description.aux) (./Eqm_description.aux) (./Model_soln.aux))
 \openout1 = `AEIBYUDyn.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 54.
-LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -454,8 +461,8 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 Configuring pdfsync
-\PDFSYNC@ut=\write3
-\openout3 = `AEIBYUDyn.pdfsync'.
+\PDFSYNC@ut=\write4
+\openout4 = `AEIBYUDyn.pdfsync'.
 
 \PDFSYNCf@li@=\count127
 \PDFSYNC@rder=\count128
@@ -469,7 +476,7 @@ Configuring pdfsync
 \PDFSYNCeveryvb@x=\toks37
 **** pdfsync.sty: started
 \AtBeginShipoutBox=\box32
-Package hyperref Info: Link coloring ON on input line 54.
+Package hyperref Info: Link coloring ON on input line 57.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2010/04/30 v2.40 Cross-referencing by name of section
@@ -479,20 +486,20 @@ Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
 \c@section@level=\count129
 )
-LaTeX Info: Redefining \ref on input line 54.
-LaTeX Info: Redefining \pageref on input line 54.
-LaTeX Info: Redefining \nameref on input line 54.
+LaTeX Info: Redefining \ref on input line 57.
+LaTeX Info: Redefining \pageref on input line 57.
+LaTeX Info: Redefining \nameref on input line 57.
 
 (./AEIBYUDyn.out) (./AEIBYUDyn.out)
-\@outlinefile=\write4
-\openout4 = `AEIBYUDyn.out'.
+\@outlinefile=\write5
+\openout5 = `AEIBYUDyn.out'.
 
-LaTeX Font Info:    Try loading font information for U+msa on input line 74.
+LaTeX Font Info:    Try loading font information for U+msa on input line 77.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2009/06/22 v3.00 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 74.
+LaTeX Font Info:    Try loading font information for U+msb on input line 77.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2009/06/22 v3.00 AMS symbols B
@@ -503,28 +510,28 @@ arning (ext4): destination with the same identifier (name{page.1}) has been alr
 eady used, duplicate ignored
 <to be read again> 
                    \relax 
-l.84   \end{abstract}
+l.87   \end{abstract}
                       [1] (./AEIBYUDyn.toc)
-\tf@toc=\write5
-\openout5 = `AEIBYUDyn.toc'.
+\tf@toc=\write6
+\openout6 = `AEIBYUDyn.toc'.
 
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.94 \listoftables
+l.97 \listoftables
                         % List of Tables and List of Figures will be placed
 [1
 
 ] (./AEIBYUDyn.lot)
-\tf@lot=\write6
-\openout6 = `AEIBYUDyn.lot'.
+\tf@lot=\write7
+\openout7 = `AEIBYUDyn.lot'.
 
  [2
 
 ] (./AEIBYUDyn.lof)
-\tf@lof=\write7
-\openout7 = `AEIBYUDyn.lof'.
+\tf@lof=\write8
+\openout8 = `AEIBYUDyn.lof'.
 
  [3
 
@@ -946,32 +953,33 @@ Missing character: There is no ù in font cmr12!
 
 
 ] [45] (./AEIBYUDyn.bbl)
+No file AEIBYUDyn.ind.
 
 Package natbib Warning: There were undefined citations.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 196.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 201.
 [46
 
 
 ]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 196.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 201.
  (./AEIBYUDyn.aux (./Household_description.aux) (./Firms_description.aux)
 (./Government_description.aux) (./Eqm_description.aux) (./Model_soln.aux))
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 196.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 196.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 201.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 201.
 Package rerunfilecheck Info: File `AEIBYUDyn.out' has not changed.
 (rerunfilecheck)             Checksum: FB3234B2641299870496189268A4C464;2172.
 
 
 LaTeX Warning: There were undefined references.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 196.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 201.
  ) 
 Here is how much of TeX's memory you used:
- 8560 strings out of 493488
- 125930 string characters out of 3141326
- 237734 words of memory out of 3000000
- 11433 multiletter control sequences out of 15000+200000
+ 8573 strings out of 493488
+ 126148 string characters out of 3141326
+ 237832 words of memory out of 3000000
+ 11441 multiletter control sequences out of 15000+200000
  24815 words of font info for 91 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
  36i,34n,41p,1430b,676s stack positions out of 5000i,500n,10000p,200000b,50000s
