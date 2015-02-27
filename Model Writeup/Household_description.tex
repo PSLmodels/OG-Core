@@ -158,17 +158,17 @@ The consumer chooses $c_{i,j,s,t}$ to maximize Equation \ref{Eqcagg} subject to 
        \end{split}
     \end{equation}
     
-    Therefore, consumption of each good $i$, $c_{i,j,s,t}$ is given by the the amount of minimum consumption plus the share of total expenditures remaining after making the minimum expenditures on all goods.  To solve the model for the amount of each consumption good we use the amount of composite consumption for the household from the solution to the intertemporal utility maximization problem in \ref{EqUtilMax}, which gives us $c_{j,s,t}$. We then take the $p_{i,t}$ (which falls out of the the firms' problems, the zero profit condition on firms, and the the bridge between production and consumption goods) and the estimated parameters $\{\alpha_{i,s}\}$ and $\{bar{c}_{i,s}\}$ (we discuss calibration of consumption parameters in Chapter \ref{}).  Finally, we derive the prices of the age $s$ composite consumption good in period $t$, $p_{s,t}$ as: 
+    Thus, consumption of each good $i$, $c_{i,j,s,t}$ is given by the the amount of minimum consumption plus the share of total expenditures remaining after making the minimum expenditures on all goods.  To solve the model for the amount of each consumption good we use the amount of composite consumption for the household from the solution to the intertemporal utility maximization problem in \ref{EqUtilMax}, which gives us $c_{j,s,t}$. We then take the $p_{i,t}$ (which falls out of the the firms' problems, the zero profit condition on firms, and the the bridge between production and consumption goods) and the estimated parameters $\{\alpha_{i,s}\}$ and $\{bar{c}_{i,s}\}$ (we discuss calibration of consumption parameters in Chapter \ref{}).  Finally, we derive the prices of the age $s$ composite consumption good in period $t$, $p_{s,t}$ as: 
     
               \begin{equation} \label{eqn:composite_price}
       \begin{split}
-      & c_{s,t} = \prod_{i=1}^{I}(c_{i,j,s,t}-\bar{c}_{i,s})^{\alpha_{i,s}} \\
-      &\implies c_{s,t} = \prod_{i=1}^{I}\left( \frac{\alpha_{i,s} \left(p_{s,t}c_{j,s,t} - \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}\right)}{p_{i,t}} + \bar{c}_{i,s}-\bar{c}_{i,s}\right)^{\alpha_{i,s}} \\
-      &\implies c_{s,t} = \prod_{i=1}^{I}\left( \frac{\alpha_{i,s} \left(p_{s,t}c_{j,s,t} - \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}\right)}{p_{i,t}} \right)^{\alpha_{i,s}} \\
-      &\implies c_{s,t} =  \left(p_{s,t}c_{j,s,t} - \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}\right) \prod_{i=1}^{I}\left( \frac{\alpha_{i,s}}{p_{i,t}} \right)^{\alpha_{i,s}} \\
-      &\implies \frac{ \left(p_{s,t}c_{j,s,t} - \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}\right)}{c_{s,t}} =  \prod_{i=1}^{I}\left( \frac{p_{i,t}}{\alpha_{i,s}} \right)^{\alpha_{i,s}} \\
-       &\implies p_{s,t} -  \frac{\sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}}{c_{s,t}} =  \prod_{i=1}^{I}\left( \frac{p_{i,t}}{\alpha_{i,s}} \right)^{\alpha_{i,s}} \\
-        &\implies p_{s,t}  =  \prod_{i=1}^{I}\left( \frac{p_{i,t}}{\alpha_{i,s}} \right)^{\alpha_{i,s}} + \frac{\sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}}{c_{s,t}}\\
+      & c_{j,s,t} = \prod_{i=1}^{I}(c_{i,j,s,t}-\bar{c}_{i,s})^{\alpha_{i,s}} \\
+      &\implies c_{j,s,t} = \prod_{i=1}^{I}\left( \frac{\alpha_{i,s} \left(p_{s,t}c_{j,s,t} - \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}\right)}{p_{i,t}} + \bar{c}_{i,s}-\bar{c}_{i,s}\right)^{\alpha_{i,s}} \\
+      &\implies c_{j,s,t} = \prod_{i=1}^{I}\left( \frac{\alpha_{i,s} \left(p_{s,t}c_{j,s,t} - \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}\right)}{p_{i,t}} \right)^{\alpha_{i,s}} \\
+      &\implies c_{j,s,t} =  \left(p_{s,t}c_{j,s,t} - \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}\right) \prod_{i=1}^{I}\left( \frac{\alpha_{i,s}}{p_{i,t}} \right)^{\alpha_{i,s}} \\
+      &\implies \frac{ \left(p_{s,t}c_{j,s,t} - \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}\right)}{c_{j,s,t}} =  \prod_{i=1}^{I}\left( \frac{p_{i,t}}{\alpha_{i,s}} \right)^{\alpha_{i,s}} \\
+       &\implies p_{s,t} -  \frac{\sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}}{c_{j,s,t}} =  \prod_{i=1}^{I}\left( \frac{p_{i,t}}{\alpha_{i,s}} \right)^{\alpha_{i,s}} \\
+        &\implies p_{s,t}  =  \prod_{i=1}^{I}\left( \frac{p_{i,t}}{\alpha_{i,s}} \right)^{\alpha_{i,s}} + \frac{\sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}}{c_{j,s,t}}\\
         & \text{Is this right?  Fullerton and Rogers get:} \\
        &  p_{s,t}= \prod_{i=1}^{I}\left(\frac{p_{i,t}}{\alpha_{i,s}}\right)^{\alpha_{i,s}}\\
        \end{split}
