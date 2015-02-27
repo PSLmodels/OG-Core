@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  27 FEB 2015 15:16
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  27 FEB 2015 16:23
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -798,9 +798,9 @@ File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 LaTeX Warning: No \author given.
 
 
-Overfull \hbox (47.986pt too wide) in paragraph at lines 73--74
-\OT1/cmr/m/n/10.95 dwelling size (ROOMSQ+BATHRMQ+HLFBATHQ), num-ber of earn-ers
- in house-hold (NO[]EARNR),
+Overfull \hbox (6.31512pt too wide) in paragraph at lines 73--74
+\OT1/cmr/m/n/10.95 size (ROOMSQ+BATHRMQ+HLFBATHQ), num-ber of earn-ers in house
+-hold (NO[]EARNR),
  []
 
 [1
@@ -833,10 +833,6 @@ Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 388.
 Package rerunfilecheck Info: File `Consumption_Calibration_Guide.out' has not c
 hanged.
 (rerunfilecheck)             Checksum: 33FD65E00BADC03E97730F24947B67FC;686.
-
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 388.
  ) 
 Here is how much of TeX's memory you used:
@@ -865,7 +861,7 @@ ive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texlive
 12/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2012/
 texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2012/t
 exmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb>
-Output written on Consumption_Calibration_Guide.pdf (7 pages, 198340 bytes).
+Output written on Consumption_Calibration_Guide.pdf (7 pages, 198349 bytes).
 PDF statistics:
  176 PDF objects out of 1000 (max. 8388607)
  150 compressed objects within 2 object streams
