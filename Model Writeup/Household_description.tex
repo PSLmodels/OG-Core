@@ -37,23 +37,22 @@
       \end{split}
     \end{equation}
 
-    Households choose consumption of the composite consumption good, $c_{j,s+u,t+u}$, labor supply, $n_{j,s+u,t+u},$ and asset holdings, $b_{j,s+u+1,t+u+1}$ to maximize the expected, discounted, lifetime utility subject to the following per-period budget constraint:
+    Households choose consumption of the composite consumption good, $c_{j,s+u,t+u}$, labor supply, $n_{j,s+u,t+u},$ and asset holdings, $b_{j,s+u+1,t+u+1}$ to maximize the expected, discounted, lifetime utility subject to their per-period budget constraint.  Total consumption of the composite good is made up of discretionary consumption, $\tilde{c}_{j,s,t}$ and minimum required purchases of each consumption good, $\bar{c}_{i,s}$.  Thus the consumer's choice is over $\tilde{c}_{j,s,t}$, which together with the minimum required purchases equal determine total composite consumption: $c_{j,s,t}=\tilde{c}_{j,s,t}+\sum_{i=1}^{I}c_{i,s}$.  It is therefore the case that there minimum required purchases affect the household's ability to smooth consumption over time.  We discuss the composite consumption good in more detail in Section \ref{sec:subutil}.  This composite good is age dependent, thus each the price of the composite consumption good varies with age $s$.  We denote the gross-of-tax price of the composite consumption good for households of age $s$ in period $t$ as $p_{s,t}$ and the gross-of-tax price for good $i$ at time $t$ as $p_{i,t}$. Thus the households' per period budget constraint can be given by the following:
+    
     \begin{equation}\label{EqBC}
       \begin{split}
-        \sum_{i=1}^I p_{s,t}c_{j,s,t} + b_{j,s+1,t+1} \leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}&n_{j,s,t} + \frac{BQ_{j,t}}{\lambda_j\tilde{N}_t} - T_{j,s,t} \\
+        \sum_{i=1}^{I} p_{i,t}c_{i,j,s,t} + p_{s,t}\tilde{c}_{s,t} + b_{j,s+1,t+1} \leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}&n_{j,s,t} + \frac{BQ_{j,t}}{\lambda_j\tilde{N}_t} - T_{j,s,t} \\
         \quad\text{where}\quad b_{j,s,1} = 0 \\
         &\text{for} \quad E+1\leq s \leq E+S \quad \forall j,t
       \end{split}
     \end{equation}
 
-We will discuss the composite consumption good in Section \ref{sec:subutil}, but suffice it to say that it is age dependent, thus each the price of the composite consumption good varies with age $s$.  We denote the gross-of-tax price of the composite consumption good for households of age $s$ in period $t$ as $p_{s,t}$.
-
     We set up a Lagrangian and solve by taking derivatives with respect to $\{c_{j,s,t},n_{j,s,t+u},b_{j,s,t+1}\}$ for all $j,s$ and $t$.
 
-      The necessary condition with respect to the composite consumption good $c_{j,s,t}$ is:
+      The necessary condition with respect to the discretionary consumption of the composite consumption good $\tilde{c}_{j,s,t}$ is:
     \begin{equation}\label{Eqcfoc}
       \begin{split}
-      \frac{\partial U}{\partial c_{j,s+u,t+u}}  = \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right] c_{j,s+u,t+u}^{-\sigma} - \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right]  \lambda_{t+u} p_{s+u,t+u} = 0
+      \frac{\partial U}{\partial \tilde{c}_{j,s+u,t+u}}  = \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right] c_{j,s+u,t+u}^{-\sigma} - \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right]  \lambda_{t+u} p_{s+u,t+u} = 0
         \end{split}
     \end{equation}
 
@@ -111,23 +110,23 @@ We will discuss the composite consumption good in Section \ref{sec:subutil}, but
        
     \subsection{Household's Subutility Function}\label{sec:subutil}
     
-    Household preferences over the composite consumption good are modeled as a Stone-Geary function. The aggregate consumption good is defined as follows.
+    Household preferences over the composite consumption good are modeled as a Stone-Geary function. The aggregate discretionary consumption of the composite good is defined as follows.
     \begin{equation} \label{Eqcagg}
-        c_{j,s,t}  = \prod_{i=1}^I \left( c_{i,j,s,t} - \bar c_{i,s} \right) ^{\alpha_{i,s}} 
+        \tilde{c}_{j,s,t}  = \prod_{i=1}^I \left( c_{i,j,s,t} - \bar c_{i,s} \right) ^{\alpha_{i,s}} 
     \end{equation}
 
-Where, $c_{i,j,s,t}$ are consumption of good $i$ by household of type $j$, age $s$, at time $t$.  There are $I$ total goods and $\bar{c}_{i,s}$ represents the minimum consumption amount for each good at each age.  The parameters $\alpha_{i,s}$ are the share parameters (and $\sum_{i=1}^{I} \alpha_{i,s}=1$).  They correspond to the share of income, after minimum expenditure amounts, that are spend on each good at each age.  Allowing the minimum consumption amounts and the share parameters to vary by age helps to incorporate life-cyles profiles of consumption into the model.  For example, we do not explicitly model household formation decisions, but they will be some of the effects of changes in household composition over the life-cycle are obtained through the parameters of the Stone-Geary function.  For example, the minimum required expenditure on shelter may be higher in the middle of the life-cycle when household size is larger.  The minimum consumption amounts also mean that the composition of consumption will vary with income, even though all households have the same utility function.
+Where, $c_{i,j,s,t}$ are consumption of good $i$ by household of type $j$, age $s$, at time $t$.  There are $I$ total goods and $\bar{c}_{i,s}$ represents the minimum consumption amount for each good at each age.  The parameters $\alpha_{i,s}$ are the share parameters (and $\sum_{i=1}^{I} \alpha_{i,s}=1$).  They correspond to the share of income, after minimum expenditure amounts, that are spent on each good at each age.  Allowing the minimum consumption amounts and the share parameters to vary by age helps to incorporate life-cyle profiles of consumption into the model.  For example, we do not explicitly model household formation decisions, but they will be some of the effects of changes in household composition over the life-cycle are obtained through the parameters of the Stone-Geary function.  For example, the minimum required expenditure on shelter may be higher in the middle of the life-cycle when household size is larger.  The minimum consumption amounts also mean that the composition of consumption will vary with income, even though all households have the same utility function.
 
 The consumer chooses $c_{i,j,s,t}$ to maximize Equation \ref{Eqcagg} subject to the budget constraint:
 
     \begin{equation} \label{eqn:cons_budgetcons}
-        \sum_{i=1}^{I} p_{i,t}c_{i,j,s,t}  = p_{s,t}c_{j,s,t}
+        \sum_{i=1}^{I} p_{i,t}(c_{i,j,s,t}-\bar{c}_{i,s})  = p_{s,t}\tilde{c}_{j,s,t}
     \end{equation}
 
-\noindent where $p_{i,t}$ is the gross of tax price of good $i$ at time $t$ and $p_{s,t}$ is the gross of tax price of the composite consumption good of those of age $s$ at time $t$.  Maximization of \ref{Eqcagg} subject to \ref{eqn:cons_budgetcons} yields:
+\noindent where $p_{i,t}$ is the gross of tax price of good $i$ at time $t$ and $p_{s,t}$ is the gross of tax price of the the discretionary component of the composite consumption good consumed by those of age $s$ at time $t$.  Maximization of \ref{Eqcagg} subject to \ref{eqn:cons_budgetcons} yields:
 
     \begin{equation} \label{eqn:cons_lagrangian}
-       \mathcal{L} =  \max_{\{c_{i,j,s,t}\}_{i=1}^{I}}  \prod_{i=1}^I \left( c_{i,j,s,t} - \bar c_{i,s} \right) ^{\alpha_{i,s}}  + \lambda \left(p_{s,t}c_{j,s,t} - \sum_{i=1}^{I} p_{i,t}c_{i,j,s,t}\right)
+       \mathcal{L} =  \max_{\{c_{i,j,s,t}\}_{i=1}^{I}}  \prod_{i=1}^I \left( c_{i,j,s,t} - \bar c_{i,s} \right) ^{\alpha_{i,s}}  + \lambda \left(p_{s,t}\tilde{c}_{j,s,t} - \sum_{i=1}^{I} p_{i,t}(c_{i,j,s,t}-\bar{c}_{i,j,s,t})\right)
     \end{equation}
     
     Which as $I$ FOCs (for each $j$, $s$, $t$):
@@ -146,31 +145,26 @@ The consumer chooses $c_{i,j,s,t}$ to maximize Equation \ref{Eqcagg} subject to 
     
           \begin{equation} \label{eqn:cons_solve}
       \begin{split}
-       & p_{s,t}c_{j,s,t} = \sum_{i=1}^{I}p_{i,t}c_{i,j,s,t} \\
-       & \implies  p_{s,t}c_{j,s,t} = \sum_{i=1}^{I}p_{i,t}\left[ \frac{\alpha_{i,s} p_{k,t}(c_{k,j,s,t}-\bar{c}_{k,s})}{\alpha_{k,s} p_{i,t}} + \bar{c}_{i,s}\right] \\
-       & \implies  p_{s,t}c_{j,s,t} = \sum_{i=1}^{I}\left[ \frac{\alpha_{i,s} p_{k,t}(c_{k,s}-\bar{c}_{k,s})}{\alpha_{k,s}} + p_{i,t}\bar{c}_{i,s}\right] \\
-       & \implies  p_{s,t}c_{j,s,t} = \sum_{i=1}^{I} \frac{\alpha_{i,s} p_{k,t}(c_{k,j,s,t}-\bar{c}_{k,s})}{\alpha_{k,s}} + \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}\\	
-       & \implies  p_{s,t}c_{j,s,t} = \frac{ p_{k,t}(c_{k,j,s,t}-\bar{c}_{k,s})}{\alpha_{k,s}} \underbrace{\sum_{i=1}^{I}\alpha_{i,s}}_{=1}  + \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}\\	
-        & \implies  p_{s,t}c_{j,s,t} = \frac{ p_{k,t}(c_{k,j,s,t}-\bar{c}_{k,s})}{\alpha_{k,s}} + \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}\\
-        & \implies  p_{s,t}c_{j,s,t} - \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s} = \frac{ p_{k,t}(c_{k,j,s,t}-\bar{c}_{k,s})}{\alpha_{k,s}}  \\	
-        & \implies  \frac{ p_{k,t}(c_{k,j,s,t}-\bar{c}_{k,s})}{\alpha_{k,s}}  = p_{s,t}c_{j,s,t} - \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}   \\	
-        & \implies  c_{k,j,s,t}  = \frac{\alpha_{k,s} \left(p_{s,t}c_{j,s,t} - \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}\right)}{p_{k,t}} + \bar{c}_{k,s},  \forall \ k  \\	
+       & p_{s,t}\tilde{c}_{j,s,t} = \sum_{i=1}^{I}p_{i,t}(c_{i,j,s,t}-\bar{c}_{i,s}) \\
+       & \implies  p_{s,t}\tilde{c}_{j,s,t} = \sum_{i=1}^{I}p_{i,t}\left[ \frac{\alpha_{i,s} p_{k,t}(c_{k,j,s,t}-\bar{c}_{k,s})}{\alpha_{k,s} p_{i,t}} + \bar{c}_{i,s}- \bar{c}_{i,s}\right] \\
+       & \implies  p_{s,t}\tilde{c}_{j,s,t} = \sum_{i=1}^{I}\left[ \frac{\alpha_{i,s} p_{k,t}(c_{k,s}-\bar{c}_{k,s})}{\alpha_{k,s}}\right] \\
+       & \implies  p_{s,t}\tilde{c}_{j,s,t} = \frac{ p_{k,t}(c_{k,j,s,t}-\bar{c}_{k,s})}{\alpha_{k,s}} \underbrace{\sum_{i=1}^{I}\alpha_{i,s}}_{=1} \\	
+        & \implies  p_{s,t}\tilde{c}_{j,s,t} = \frac{ p_{k,t}(c_{k,j,s,t}-\bar{c}_{k,s})}{\alpha_{k,s}} \\
+        & \implies  \frac{ p_{k,t}(c_{k,j,s,t}-\bar{c}_{k,s})}{\alpha_{k,s}}  = p_{s,t}\tilde{c}_{j,s,t}   \\	
+        & \implies  c_{k,j,s,t}  = \frac{\alpha_{k,s} p_{s,t}\tilde{c}_{j,s,t}}{p_{k,t}} + \bar{c}_{k,s},  \forall \ k  \\	
        \end{split}
     \end{equation}
     
-    Thus, consumption of each good $i$, $c_{i,j,s,t}$ is given by the the amount of minimum consumption plus the share of total expenditures remaining after making the minimum expenditures on all goods.  To solve the model for the amount of each consumption good we use the amount of composite consumption for the household from the solution to the intertemporal utility maximization problem in \ref{EqUtilMax}, which gives us $c_{j,s,t}$. We then take the $p_{i,t}$ (which falls out of the the firms' problems, the zero profit condition on firms, and the the bridge between production and consumption goods) and the estimated parameters $\{\alpha_{i,s}\}$ and $\{bar{c}_{i,s}\}$ (we discuss calibration of consumption parameters in Chapter \ref{}).  Finally, we derive the prices of the age $s$ composite consumption good in period $t$, $p_{s,t}$ as: 
+    Thus, consumption of each good $i$, $c_{i,j,s,t}$ is given by the the amount of minimum consumption plus the share of total expenditures remaining after making the minimum expenditures on all goods (this is called the ``supernumerary" expenditure).  To solve the model for the amount of each consumption good we use the amount of composite consumption for the household from the solution to the intertemporal utility maximization problem in \ref{EqUtilMax}, which gives us $\tilde{c}_{j,s,t}$. We then take the $p_{i,t}$ (which is derived from the solution to the firms' problems, the zero profit condition on firms, and the the bridge between production and consumption goods) and the estimated parameters $\{\alpha_{i,s}\}$ and $\{bar{c}_{i,s}\}$ (we discuss calibration of consumption parameters in Chapter \ref{}).  Finally, we derive the prices of the age $s$ composite consumption good in period $t$, $p_{s,t}$ as: 
     
               \begin{equation} \label{eqn:composite_price}
       \begin{split}
-      & c_{j,s,t} = \prod_{i=1}^{I}(c_{i,j,s,t}-\bar{c}_{i,s})^{\alpha_{i,s}} \\
-      &\implies c_{j,s,t} = \prod_{i=1}^{I}\left( \frac{\alpha_{i,s} \left(p_{s,t}c_{j,s,t} - \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}\right)}{p_{i,t}} + \bar{c}_{i,s}-\bar{c}_{i,s}\right)^{\alpha_{i,s}} \\
-      &\implies c_{j,s,t} = \prod_{i=1}^{I}\left( \frac{\alpha_{i,s} \left(p_{s,t}c_{j,s,t} - \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}\right)}{p_{i,t}} \right)^{\alpha_{i,s}} \\
-      &\implies c_{j,s,t} =  \left(p_{s,t}c_{j,s,t} - \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}\right) \prod_{i=1}^{I}\left( \frac{\alpha_{i,s}}{p_{i,t}} \right)^{\alpha_{i,s}} \\
-      &\implies \frac{ \left(p_{s,t}c_{j,s,t} - \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}\right)}{c_{j,s,t}} =  \prod_{i=1}^{I}\left( \frac{p_{i,t}}{\alpha_{i,s}} \right)^{\alpha_{i,s}} \\
-       &\implies p_{s,t} -  \frac{\sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}}{c_{j,s,t}} =  \prod_{i=1}^{I}\left( \frac{p_{i,t}}{\alpha_{i,s}} \right)^{\alpha_{i,s}} \\
-        &\implies p_{s,t}  =  \prod_{i=1}^{I}\left( \frac{p_{i,t}}{\alpha_{i,s}} \right)^{\alpha_{i,s}} + \frac{\sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s}}{c_{j,s,t}}\\
-        & \text{Is this right?  Fullerton and Rogers get:} \\
-       &  p_{s,t}= \prod_{i=1}^{I}\left(\frac{p_{i,t}}{\alpha_{i,s}}\right)^{\alpha_{i,s}}\\
+      & \tilde{c}_{j,s,t} = \prod_{i=1}^{I}(c_{i,j,s,t}-\bar{c}_{i,s})^{\alpha_{i,s}} \\
+      &\implies \tilde{c}_{j,s,t} = \prod_{i=1}^{I}\left( \frac{\alpha_{i,s} p_{s,t}\tilde{c}_{j,s,t}}{p_{i,t}} + \bar{c}_{i,s}-\bar{c}_{i,s}\right)^{\alpha_{i,s}} \\
+      &\implies \tilde{c}_{j,s,t} = \prod_{i=1}^{I} \left( \frac{\alpha_{i,s} p_{s,t}\tilde{c}_{j,s,t}}{p_{i,t}} \right)^{\alpha_{i,s}} \\
+      &\implies \tilde{c}_{j,s,t} =  p_{s,t}\tilde{c}_{j,s,t} \prod_{i=1}^{I}\left( \frac{\alpha_{i,s}}{p_{i,t}} \right)^{\alpha_{i,s}} \\
+      &\implies \frac{p_{s,t}\tilde{c}_{j,s,t}}{\tilde{c}_{j,s,t}} =  \prod_{i=1}^{I}\left( \frac{p_{i,t}}{\alpha_{i,s}} \right)^{\alpha_{i,s}} \\
+       &\implies p_{s,t} =  \prod_{i=1}^{I}\left( \frac{p_{i,t}}{\alpha_{i,s}} \right)^{\alpha_{i,s}} \\
        \end{split}
     \end{equation}
     
@@ -240,7 +234,7 @@ The consumer chooses $c_{i,j,s,t}$ to maximize Equation \ref{Eqcagg} subject to 
     
     and 
     
-    \begin{equation} \label{eqn:demand_XmtC}
+    \begin{equation} \label{eqn:demand_XmtNC}
 	X_{m,t,NC} = \frac{(1-\gamma_{m})p_{m,t}X_{m,t}}{p_{m,t,NC}^{\ve_{3}}\left[\gamma_{m}p_{m,t,C}^{1-\ve_{3}}+(1-\gamma_{m})p_{m,t,NC}^{1-\ve_{3}}\right]}
 \end{equation}
 
@@ -278,9 +272,15 @@ V(p_{m,t,C},p_{m,t,NC}, X_{m,t}) = \frac{p_{m,t}X_{m,t}}{e(p_{m,t,C},p_{m,t,NC})
 
 We can try to draw some nice tree structures as in \citet{FR1993}, but here's how the consumer side of the problem is solved;
 \begin{enumerate}
-\item the firm's problem determines prices of output from each sector and industry in a given year: $p_{m,t,C}$ and $p_{m.t,NC}$.
-\item Given these, \ref{eqn:price_comp} determines $p_{m,t}$, the price of composite output.
-\item 
+\item The firm's problem determines prices of output from each sector and industry in a given year: $p_{m,t,C}$ and $p_{m,t,NC}$.
+\item Given these, Equation \ref{eqn:price_comp} determines $p_{m,t}$, the price of composite output for sector $m$.
+\item The price of composite output in each sector $m$ is related to the prices of the $I$ consumption goods through the matrix $Z$ as described in Equation \ref{eqn:mix_cons_price}.
+\item Equation \ref{eqn:composite_price} describes how the composite consumption good price is determined from these individual consumption good prices, for each age $s$ composite consumption bundle.
+\item With all prices in hand, we can solve for quantities demanded.  Using $p_{s,t}$ and $p_{i,t}$ in Equation \ref{EqBC}, we can then solve the consumers problem for the choice of $\tilde{c}_{j,s,t}$. 
+\item These $\tilde{c}_{j,s,t}$ then determine demand for each individual consumption good, $c_{i,j,s,t}$ by Equation \ref{eqn:cons_solve}.
+\item Demands for consumption goods are then translated into demands for output from each industry $m$ by Equation \ref{eqn:mix_cons}.
+\item Demand for output from each sector (corporate or non-corporate) in industry $m$ are then determined by Equations \ref{eqn:demand_XmtC} and \ref{eqn:demand_XmtNC}.
+\item These demands are then checked against the supply determined in (1).  If they match, we've found an eq'm. If not, we update the guess of $r$, $w$, $BQ$ and work from (1)-(8) again.
 \end{enumerate}
     
     

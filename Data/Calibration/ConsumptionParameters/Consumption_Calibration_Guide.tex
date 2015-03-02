@@ -273,35 +273,35 @@ To find these shares, we first calculate aggregate expenditure amounts for each 
 
 \section{Estimating the Consumption Parameters}
 
-Given the Stone-Geary preferences over different consumption goods, demand for good $i$ by an individual of age $t$ can be written as:
+Given the Stone-Geary preferences over different consumption goods, demand for good $i$ by an individual of age $s$ can be written as:
 
 \begin{equation}
 \label{eqn:c_demand}
-c_{it}=b_{it} + \frac{\beta_{it}}{p_{i}}\left(\tilde{p}_{t}\tilde{c}_{t}\sum_{j=1}^{N}p_{i}b_{it}\right),
+c_{i,s}=\bar{c}_{i,s} + \frac{\alpha_{i,s}}{p_{i}}\left(p_{s}c_{s}-\sum_{j=1}^{I}p_{i}\bar{c}_{i,s}\right),
 \end{equation}
 
-\noindent\noindent where $c_{it}$ is consumption of good $i$ at age $t$, $b_{it}$ is the minimum required consumption of good $i$ at age $t$, $\beta_{it}$ is the share parameter for good $i$ at age $t$, $p_{i}$ is the price of good $i$, $\tilde{c}_{t}$ is the amount of composite consumption good consumed at age $t$, and $\tilde{p}_{t}$ is the price of the age $t$ composite consumption good.  Note that in the CEX, we only observe total expenditures (i.e., price times quantity) and not prices of consumption goods.  Thus, we multiply both sides of Equation \ref{eqn:c_demand} by $p_{i}$ to obtain an equation defining expenditures across consumption categories:
+\noindent\noindent where $c_{i,s}$ is consumption of good $i$ at age $s$, $\bar{c}_{i,s}$ is the minimum required consumption of good $i$ at age $s$, $\alpha_{i,s}$ is the share parameter for good $i$ at age $s$, $p_{i}$ is the price of good $i$, $c_{s}$ is the amount of composite consumption good consumed at age $s$, and $p_{s}$ is the price of the age $s$ composite consumption good.\footnote{If there are married and single households in the model, we may want to estimate a model where the minimum and share parameters vary across household type.}  Note that in the CEX, we only observe total expenditures (i.e., price times quantity) and not prices of consumption goods.  Thus, we multiply both sides of Equation \ref{eqn:c_demand} by $p_{i}$ to obtain an equation defining expenditures across consumption categories:
 
 \begin{equation}
 \label{eqn:cp_demand}
-p_{i}c_{it}=exp_{it}=p_{i}b_{it} + \beta_{it}\left(m_{t}\sum_{j=1}^{N}p_{i}b_{it}\right)
+p_{i}c_{i,s}=exp_{i,s}=p_{i}\bar{c}_{i,s} + \alpha_{i,s}\left(m_{s}-\sum_{j=1}^{I}p_{i}\bar{c}_{i,s}\right)
 \end{equation}
 
-\noindent\noindent Here, $exp_{it}$ is the total expenditure on good $i$ at age $t$ and $m_{t}=\tilde{p}_{t}\tilde{c}_{t}$ is defined as total consumption expenditures at age $t$.  Note that we observe both $exp_{it}$ and $m_{t}$ in the CEX.  However, we do not observe $p_{i}b_{it}$.  We thus further rearrange the equation to find: 
+\noindent\noindent Here, $exp_{i,s}$ is the total expenditure on good $i$ at age $s$ and $m_{s}=p_{s}c_{s}$ is defined as total consumption expenditures at age $s$.  Note that we observe both $exp_{i,s}$ and $m_{s}$ in the CEX.  However, we do not observe $p_{i}\bar{c}_{i,s}$.  We thus further rearrange the equation to find the linear expenditure system: 
 
 \begin{equation}
 \label{eqn:exp_eqn}
-exp_{it}=\kappa_{it} + \beta_{it}m_{t}+\varepsilon_{it}, \ \ \varepsilon_{it}\sim N(0,\sigma^{2}),
+exp_{i,s}=\kappa_{i,s} + \alpha_{i,s}m_{s}+\varepsilon_{i,s}, \ \ \varepsilon_{i,s}\sim N(0,\sigma^{2}),
 \end{equation}
 
-\noindent\noindent where $\kappa_{it}$ is given by:
+\noindent\noindent where $\kappa_{i,s}$ is given by:
 
 \begin{equation}
 \label{eqn:kappa}
-\kappa_{it}=p_{i}b_{it} - \beta_{it}\sum_{j=1}^{N}p_{i}b_{it}
+\kappa_{i,s}=p_{i}\bar{c}_{i,s} - \alpha_{i,s}\sum_{j=1}^{I}p_{i}\bar{c}_{i,s}
 \end{equation}
 
-\noindent\noindent  We estimate Equation \ref{eqn:exp_eqn} by ordinary least squares (OLS), run separately for each of the 17 consumption good categories and 12 age groups (given in Table \ref{tab:ages}).  Regressions are run using the population weights for each observation.  With the parameter estimates in hand, we then use the intercept terms, $\kappa_{it}$, the share parameters, $\beta_{it}$, and Equation \ref{eqn:kappa} to solve for the $p_{t}b_{it}$.  In doing this, note that we have $17\times 12$ equations (the 17 consumption categories times the 12 age groups).  However, since the share parameters $\beta_{it}$ must sum to one (i.e., $\sum_{t=1}^{T}\beta_{it}=1$), we only have $16\times 12$ unique equations.  Thus we need an additional identifying equation for each age group.  \cn{King1979} tries several and finds similar results for each. Thus we follow \cn{King1979} and \cn{FR1993} and  use the identifying assumption that $\sum_{j=1}^{N}p_{i}b_{it}=\$32,000$.  The amount of total minimum required purchases across each age group is found by taking the value of \$8,000 from \cn{FR1993} and adjusting it for growth and inflation by multiplying it by the ratio of nominal GDP in 2012 (\$16,163.2 billion) to nominal GDP in 1984 (\$4,040.7 billion). \textcolor{red}{This minimum amount seems high, so we might want to try some other assumptions like assuming that the minimum required expenditures on alcohol are zero.}
+\noindent\noindent  We estimate Equation \ref{eqn:exp_eqn} by ordinary least squares (OLS), run separately for each of the 17 consumption good categories and 12 age groups (given in Table \ref{tab:ages}).  Regressions are run using the population weights for each observation.  With the parameter estimates in hand, we then use the intercept terms, $\kappa_{i,s}$, the share parameters, $\alpha_{i,s}$, and Equation \ref{eqn:kappa} to solve for the $p_{s}\bar{c}_{i,s}$.  In doing this, note that we have $17\times 12$ equations (the 17 consumption categories times the 12 age groups).  However, since the share parameters $\alpha_{i,s}$ must sum to one (i.e., $\sum_{i=1}^{I}\alpha_{i,s}=1$), we only have $16\times 12$ unique equations.  Thus we need an additional identifying equation for each age group.  \cn{King1979} tries several and finds similar results for each. Thus we follow \cn{King1979} and \cn{FR1993} and  use the identifying assumption that $\sum_{j=1}^{I}p_{i}\bar{c}_{i,s}=\$32,000$.  The amount of total minimum required purchases across each age group is found by taking the value of \$8,000 from \cn{FR1993} and adjusting it for growth and inflation by multiplying it by the ratio of nominal GDP in 2012 (\$16,163.2 billion) to nominal GDP in 1984 (\$4,040.7 billion). \textcolor{red}{This minimum amount seems high, so we might want to try some other assumptions like assuming that the minimum required expenditures on alcohol are zero.}
 
 % Table generated by Excel2LaTeX from sheet 'Age Groups'
 \begin{table}[h!]
@@ -331,9 +331,9 @@ exp_{it}=\kappa_{it} + \beta_{it}m_{t}+\varepsilon_{it}, \ \ \varepsilon_{it}\si
 \end{table}%
 
 
-Note that the solution to Equation \ref{eqn:kappa} gives us $p_{i}b_{it}$, not the parameter we are interested in, $b_{it}$.  To uncover $b_{it}$ we normalize the units of each consumption good to be the amount of good that can be purchased with one dollar.  Thus $p_{i}=1, \ \ \forall i=1,...,N$ and $p_{i}b_{it}=b_{it}$.  This normalization is consistent with our benchmark equilibrium where we normalize the prices of each consumption good to be one.
+Note that the solution to Equation \ref{eqn:kappa} gives us $p_{i}\bar{c}_{i,s}$, not the parameter we are interested in, $\bar{c}_{i,s}$.  To uncover $\bar{c}_{i,s}$ we normalize the units of each consumption good to be the amount of good that can be purchased with one dollar.  Thus $p_{i}=1, \ \ \forall i=1,...,N$ and $p_{i}\bar{c}_{i,s}=\bar{c}_{i,s}$.  This normalization is consistent with our benchmark equilibrium where we normalize the prices of each consumption good to be one.
 
-This exercise yields us estimates for $17\times12\times2$ parameter estimates (i.e., $\{\beta_{it},b_{it}\}_{i=1,t=1}^{N,T}$).
+This exercise yields us estimates for $17\times12\times2$ parameter estimates (i.e., $\{\alpha_{i,s},\bar{c}_{i,s}\}_{i=1,t=1}^{N,T}$).
 
 
 
@@ -353,7 +353,7 @@ Tables with estimates?  Maybe too many to present...  Could separate by age grou
     \begin{tabular}{rlrrrrrrrr}
     \hline
     \hline
-          &       & \multicolumn{3}{c}{Share ($\beta_{it}$)} & \multicolumn{5}{c}{Minimum expenditure ($p_{i}b_{it}$)} \\
+          &       & \multicolumn{3}{c}{Share ($\alpha_{i,s}$)} & \multicolumn{5}{c}{Minimum expenditure ($p_{i}\bar{c}_{i,s}$)} \\
     \hline
        &  & & & &Adjusted,  & Actual, & Adjusted, & Actual,  \\
     Category & Description & 1972-73 & 1984-85 & 2012-13 & 1972-73 & 1984-85 & 1984-85 &  2012-13 & 2012-13 \\
