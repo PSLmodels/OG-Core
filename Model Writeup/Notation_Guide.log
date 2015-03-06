@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  2 MAR 2015 10:56
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  6 MAR 2015 11:41
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -492,17 +492,17 @@ LaTeX Info: Redefining \nameref on input line 54.
 \@outlinefile=\write4
 \openout4 = `Notation_Guide.out'.
 
-LaTeX Font Info:    Try loading font information for U+msa on input line 58.
+LaTeX Font Info:    Try loading font information for U+msa on input line 61.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2009/06/22 v3.00 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 58.
+LaTeX Font Info:    Try loading font information for U+msb on input line 61.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 )
-Overfull \hbox (198.34251pt too wide) in paragraph at lines 66--125
+Overfull \hbox (198.34251pt too wide) in paragraph at lines 77--136
  [][][][][][] 
  []
 
@@ -513,38 +513,54 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 
-Overfull \hbox (45.59299pt too wide) in paragraph at lines 159--242
+Overfull \hbox (45.59299pt too wide) in paragraph at lines 170--253
  [][][][][] 
  []
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 244.
 [1
 
 {/usr/local/texlive/2012/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-[2] [3] [4]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 244.
+Missing character: There is no É in font cmr12!
+Missing character: There is no É in font cmr12!
+Missing character: There is no É in font cmr12!
+
+Overfull \hbox (125.40392pt too wide) in paragraph at lines 263--288
+ [][][][][] 
+ []
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+LaTeX Font Info:    Try loading font information for U+euf on input line 296.
+(/usr/local/texlive/2012/texmf-dist/tex/latex/amsfonts/ueuf.fd
+File: ueuf.fd 2009/06/22 v3.00 Euler Fraktur
+)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 298.
+ [2] [3]
+[4] [5] [6]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 298.
  (./Notation_Guide.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 244.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 244.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 298.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 298.
 Package rerunfilecheck Info: File `Notation_Guide.out' has not changed.
-(rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
+(rerunfilecheck)             Checksum: A771CC200B9E62D4A131A2A7F44C5BA5;155.
 
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 244.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 298.
  ) 
 Here is how much of TeX's memory you used:
- 8009 strings out of 493488
- 118596 string characters out of 3141326
- 236977 words of memory out of 3000000
- 11183 multiletter control sequences out of 15000+200000
- 15510 words of font info for 58 fonts, out of 3000000 for 9000
+ 8043 strings out of 493488
+ 119052 string characters out of 3141326
+ 241038 words of memory out of 3000000
+ 11199 multiletter control sequences out of 15000+200000
+ 17429 words of font info for 65 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
- 36i,21n,38p,689b,411s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 36i,21n,38p,763b,412s stack positions out of 5000i,500n,10000p,200000b,50000s
 </usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb
 ></usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb>
 </usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb><
@@ -556,11 +572,13 @@ al/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local
 /texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/t
 exlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texl
 ive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive
-/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb>
-Output written on Notation_Guide.pdf (4 pages, 158505 bytes).
+/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/
+2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/20
+12/texmf-dist/fonts/type1/public/amsfonts/euler/eufm10.pfb>
+Output written on Notation_Guide.pdf (6 pages, 183590 bytes).
 PDF statistics:
- 78 PDF objects out of 1000 (max. 8388607)
- 59 compressed objects within 1 object stream
- 8 named destinations out of 1000 (max. 500000)
- 1 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 113 PDF objects out of 1000 (max. 8388607)
+ 90 compressed objects within 1 object stream
+ 20 named destinations out of 1000 (max. 500000)
+ 17 words of extra memory for PDF output out of 10000 (max. 10000000)
 
