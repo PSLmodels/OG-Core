@@ -11,3 +11,8 @@ Using published SOI data, I'm not sure how else to do the tax split for BEA's R&
 I'm currently revisiting how I've included BEA's IPP in the cost of capital model.  I'm working with Craig to use data from Form 6765 to get a tax split for R&D.  For the artistic originals, I still haven't come up with anything better than intangibles on Schedule L.
 
 Tracy
+
+
+- How account for state and local taxes?  State and local gov't budgets?
+- How handle trade?
+- How adjust to get from NIPA income to taxable income?  
