@@ -270,17 +270,6 @@ V(p_{m,t,C},p_{m,t,NC}, X_{m,t}) = \frac{p_{m,t}X_{m,t}}{e(p_{m,t,C},p_{m,t,NC})
 
 \textcolor{red}{I'm not sure, but I think we then have  $e(p_{m,t,C},p_{m,t,NC})=p_{m,t}$ since the unit of ``utility" is really a unit of output of the composite production good, $X_{m,t}$}.
 
-We can try to draw some nice tree structures as in \citet{FR1993}, but here's how the consumer side of the problem is solved;
-\begin{enumerate}
-\item The firm's problem determines prices of output from each sector and industry in a given year: $p_{m,t,C}$ and $p_{m,t,NC}$.
-\item Given these, Equation \ref{eqn:price_comp} determines $p_{m,t}$, the price of composite output for sector $m$.
-\item The price of composite output in each sector $m$ is related to the prices of the $I$ consumption goods through the matrix $Z$ as described in Equation \ref{eqn:mix_cons_price}.
-\item Equation \ref{eqn:composite_price} describes how the composite consumption good price is determined from these individual consumption good prices, for each age $s$ composite consumption bundle.
-\item With all prices in hand, we can solve for quantities demanded.  Using $p_{s,t}$ and $p_{i,t}$ in Equation \ref{EqBC}, we can then solve the consumers problem for the choice of $\tilde{c}_{j,s,t}$. 
-\item These $\tilde{c}_{j,s,t}$ then determine demand for each individual consumption good, $c_{i,j,s,t}$ by Equation \ref{eqn:cons_solve}.
-\item Demands for consumption goods are then translated into demands for output from each industry $m$ by Equation \ref{eqn:mix_cons}.
-\item Demand for output from each sector (corporate or non-corporate) in industry $m$ are then determined by Equations \ref{eqn:demand_XmtC} and \ref{eqn:demand_XmtNC}.
-\item These demands are then checked against the supply determined in (1).  If they match, we've found an eq'm. If not, we update the guess of $r$, $w$, $BQ$ and work from (1)-(8) again.
-\end{enumerate}
+
     
     

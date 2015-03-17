@@ -1,33 +1,37 @@
-\contentsline {chapter}{\numberline {1}Households}{5}{chapter.1}
-\contentsline {section}{\numberline {1.1}Demographics}{5}{section.1.1}
-\contentsline {section}{\numberline {1.2}Households}{6}{section.1.2}
-\contentsline {subsection}{\numberline {1.2.1}Household's Subutility Function}{8}{subsection.1.2.1}
-\contentsline {subsection}{\numberline {1.2.2}Relating Consumption and Production Goods}{10}{subsection.1.2.2}
-\contentsline {subsection}{\numberline {1.2.3}Preferences for Corporate vs. Noncorporate Goods}{11}{subsection.1.2.3}
-\contentsline {chapter}{\numberline {2}Firms}{15}{chapter.2}
-\contentsline {section}{\numberline {2.1}Supply Side Model Components: Variables and Parameters}{15}{section.2.1}
-\contentsline {subsection}{\numberline {2.1.1}Variables}{15}{subsection.2.1.1}
-\contentsline {subsection}{\numberline {2.1.2}Parameters}{15}{subsection.2.1.2}
-\contentsline {section}{\numberline {2.2}Necessary equations}{17}{section.2.2}
-\contentsline {section}{\numberline {2.3}Solving the model}{22}{section.2.3}
-\contentsline {subsection}{\numberline {2.3.1}Solving for the steady state}{22}{subsection.2.3.1}
-\contentsline {subsection}{\numberline {2.3.2}Solving for the transition path}{24}{subsection.2.3.2}
-\contentsline {section}{\numberline {2.4}Features model has and those it is lacking}{24}{section.2.4}
-\contentsline {section}{\numberline {2.5}Roadmap for extensions}{24}{section.2.5}
-\contentsline {chapter}{\numberline {3}Government}{28}{chapter.3}
-\contentsline {section}{\numberline {3.1}Overview of Government in the Model}{28}{section.3.1}
-\contentsline {section}{\numberline {3.2}Government budgeting}{28}{section.3.2}
-\contentsline {subsection}{\numberline {3.2.1}Rule for long-term fiscal stability}{28}{subsection.3.2.1}
-\contentsline {subsection}{\numberline {3.2.2}Transfer system}{30}{subsection.3.2.2}
-\contentsline {section}{\numberline {3.3}Government production of private goods}{30}{section.3.3}
-\contentsline {section}{\numberline {3.4}Government production of public goods}{30}{section.3.4}
-\contentsline {section}{\numberline {3.5}Steps for adding government to the dynamic model}{30}{section.3.5}
-\contentsline {chapter}{\numberline {4}Equilibrium}{32}{chapter.4}
-\contentsline {section}{\numberline {4.1}Market clearing and stationary equilibrium}{32}{section.4.1}
-\contentsline {chapter}{\numberline {5}Numerical Solution}{42}{chapter.5}
-\contentsline {section}{\numberline {5.1}Solving for stationary steady-state equilibrium}{42}{section.5.1}
-\contentsline {section}{\numberline {5.2}Solving for stationary non-steady-state equilibrium by time path iteration}{44}{section.5.2}
-\contentsline {chapter}{\numberline {6}Miscellaneous}{51}{chapter.6}
-\contentsline {section}{\numberline {6.1}Incorporating Feedbacks with Micro Tax Simulations}{51}{section.6.1}
-\contentsline {section}{\numberline {6.2}Calibration}{51}{section.6.2}
-\contentsline {subsection}{\numberline {6.2.1}Tax Bend Points}{51}{subsection.6.2.1}
+\contentsline {chapter}{\numberline {1}Introduction}{5}{chapter.1}
+\contentsline {chapter}{\numberline {2}Households}{7}{chapter.2}
+\contentsline {section}{\numberline {2.1}Demographics}{7}{section.2.1}
+\contentsline {section}{\numberline {2.2}Households}{8}{section.2.2}
+\contentsline {subsection}{\numberline {2.2.1}Household's Subutility Function}{10}{subsection.2.2.1}
+\contentsline {subsection}{\numberline {2.2.2}Relating Consumption and Production Goods}{12}{subsection.2.2.2}
+\contentsline {subsection}{\numberline {2.2.3}Preferences for Corporate vs. Noncorporate Goods}{13}{subsection.2.2.3}
+\contentsline {chapter}{\numberline {3}Firms}{16}{chapter.3}
+\contentsline {section}{\numberline {3.1}The Firm's Problem}{16}{section.3.1}
+\contentsline {subsection}{\numberline {3.1.1}The Value of the Firm}{16}{subsection.3.1.1}
+\contentsline {subsection}{\numberline {3.1.2}The Firm's Bellman Equation}{17}{subsection.3.1.2}
+\contentsline {section}{\numberline {3.2}Supply Side Model Components: Variables and Parameters}{21}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}Variables}{21}{subsection.3.2.1}
+\contentsline {subsection}{\numberline {3.2.2}Parameters}{22}{subsection.3.2.2}
+\contentsline {section}{\numberline {3.3}Necessary equations}{24}{section.3.3}
+\contentsline {section}{\numberline {3.4}Solving the model}{24}{section.3.4}
+\contentsline {subsection}{\numberline {3.4.1}Solving for the steady state}{24}{subsection.3.4.1}
+\contentsline {subsection}{\numberline {3.4.2}Solving for the transition path}{26}{subsection.3.4.2}
+\contentsline {section}{\numberline {3.5}Features model has and those it is lacking}{26}{section.3.5}
+\contentsline {section}{\numberline {3.6}Roadmap for extensions}{27}{section.3.6}
+\contentsline {chapter}{\numberline {4}Government}{30}{chapter.4}
+\contentsline {section}{\numberline {4.1}Overview of Government in the Model}{30}{section.4.1}
+\contentsline {section}{\numberline {4.2}Government budgeting}{30}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Rule for long-term fiscal stability}{30}{subsection.4.2.1}
+\contentsline {subsection}{\numberline {4.2.2}Transfer system}{32}{subsection.4.2.2}
+\contentsline {section}{\numberline {4.3}Government production of private goods}{32}{section.4.3}
+\contentsline {section}{\numberline {4.4}Government production of public goods}{32}{section.4.4}
+\contentsline {section}{\numberline {4.5}Steps for adding government to the dynamic model}{32}{section.4.5}
+\contentsline {chapter}{\numberline {5}Equilibrium}{34}{chapter.5}
+\contentsline {section}{\numberline {5.1}Market clearing and stationary equilibrium}{34}{section.5.1}
+\contentsline {chapter}{\numberline {6}Numerical Solution}{44}{chapter.6}
+\contentsline {section}{\numberline {6.1}Solving for stationary steady-state equilibrium}{44}{section.6.1}
+\contentsline {section}{\numberline {6.2}Solving for stationary non-steady-state equilibrium by time path iteration}{47}{section.6.2}
+\contentsline {chapter}{\numberline {7}Miscellaneous}{54}{chapter.7}
+\contentsline {section}{\numberline {7.1}Incorporating Feedbacks with Micro Tax Simulations}{54}{section.7.1}
+\contentsline {section}{\numberline {7.2}Calibration}{54}{section.7.2}
+\contentsline {subsection}{\numberline {7.2.1}Tax Bend Points}{54}{subsection.7.2.1}

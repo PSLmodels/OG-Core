@@ -13,6 +13,11 @@ I'm currently revisiting how I've included BEA's IPP in the cost of capital mode
 Tracy
 
 
+- Households (filing units) or individuals as the model unit?
 - How account for state and local taxes?  State and local gov't budgets?
 - How handle trade?
 - How adjust to get from NIPA income to taxable income?  
+- How should we extrapolate the model to get to the current state?  E.g., we have 2012 data.  We need to think about extrapolating that to 2015.  Transition matrices can stay the same, but need to inflate:
+	- amounts of capital (grow by NIPA invest rates)
+	- income (grow by wage growth)
+	- financial assets (grow by asset price increases)
