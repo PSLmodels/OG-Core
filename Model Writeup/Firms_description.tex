@@ -67,7 +67,7 @@ where $EARN^{C}_{t}$ are earnings before depreciation, corporate income taxes, a
 EARN^{C}_{t}=p^{C}_{t}X^{C}_{t}-w_{u}EL^{C}_{t}-i_{t}B^{C}_{t}-\tau^{PC}_{t}K^{C}_{t},
 \end{equation}
 
-\noindent\noindent where output, $X^{C}_{u}$, is determined by a constant elasticity of substitution production function:
+\noindent\noindent where output, $X^{C}_{t}$, is determined by a constant elasticity of substitution production function:
 
 \begin{equation}
 \label{eqn:prod_fun}
@@ -89,47 +89,48 @@ K^{C}_{t+1}=(1-\delta^{C})K^{C}_{t} + I^{C}_{t}
 Adjustment costs are assumed to be a quadratic function of deviations from the steady-state investment rate:
 \begin{equation}
 \label{eqn:adj_cost}
-\Phi^{C}_{u}=\frac{p^{C}_{u}\left(\frac{\beta^{C}}{2}\right)\left(\frac{I^{C}_{u}}{K^{C}_{u}}-\mu^{C}\right)^{2}}{\left(\frac{I^{C}_{u}}{K^{C}_{u}}\right)}
+\Phi^{C}_{t}=\frac{p^{C}_{t}\left(\frac{\beta^{C}}{2}\right)\left(\frac{I^{C}_{t}}{K^{C}_{t}}-\mu^{C}\right)^{2}}{\left(\frac{I^{C}_{t}}{K^{C}_{t}}\right)}
 \end{equation}
 
-Corporate income taxes:
+Corporate income taxes are given by:
 \begin{equation}
 \label{eqn:corp_tax}
 \begin{split}
-TE^{C}_{u}= & \tau^{b}_{u}\left[p^{C}_{u}X^{C}_{u}-w_{u}EL^{C}_{u}-f_{e}I^{C}_{u}-\Phi^{c}_{u}I^{C}_{u}-f_{i}i_{u}B^{C}_{u}-f_{p}\delta^{C}b^{C}K^{C}_{u}+f_{b}b^{C}I^{C}_{u}-f_{d}\delta^{\tau C}K^{\tau C}_{u}-\tau^{pC}_{u}K^{C}_{u}\right] \\
-& +\underbrace{\tau^{icC}_{u}I^{C}_{u}}_{\text{not in DZ (2013), added to account for investment tax credits as policy}},
+TE^{C}_{t}= & \tau^{b}_{t}\left[p^{C}_{t}X^{C}_{t}-w_{u}EL^{C}_{t}-f_{e}I^{C}_{t}-\Phi^{c}_{t}I^{C}_{t}-f_{i}i_{t}B^{C}_{t}-f_{p}\delta^{C}b^{C}K^{C}_{t}+f_{b}b^{C}I^{C}_{t}-f_{d}\delta^{\tau C}K^{\tau C}_{t}-\tau^{pC}_{t}K^{C}_{t}\right] \\
+& +\underbrace{\tau^{icC}_{t}I^{C}_{t}}_{\text{not in Zodrow and Diamond (2013), added to account for investment tax credits as policy}}.
 \end{split}
 \end{equation}
 
-\noindent\noindent  Note that we are assuming that investment may or may not be deductible (depending upon the dummy variable $f_{e}$), but that investment adjustment costs are always deductible (i.e., they are not preceded by $f_{e}$).  Under a pre-pay consumption tax system, investments are not deductible.  Whether or not adjustment costs are deductible under a pre-pay consumption tax depends upon what you think these costs derive from.  For example, if adjustment costs are from retraining employees to use new equipment, then these costs may be deductible under a consumption tax system (pre or post-pay) because they would likely be in the form of wage/labor costs. It's not clear how best to handle this and I believe the notion in \citet{DZ2013} is inconsistent on this point.
+\noindent\noindent  Note that we are assuming that investment may or may not be deductible (depending upon the dummy variable $f_{e}$), but that investment adjustment costs are always deductible (i.e., they are not preceded by $f_{e}$).  Under a pre-pay consumption tax system, investments are not deductible from the tax base.  Whether or not adjustment costs are deductible under a pre-pay consumption tax depends upon what you think these costs derive from.  For example, if adjustment costs are from retraining employees to use new equipment, then these costs may be deductible under a consumption tax system (pre or post-pay) because they would likely be in the form of wage/labor costs. It's not clear how best to handle this and I believe \citet{DZ2013} are inconsistent on this point.  The other indicator variables, $f_{i}$, $f_{p}$, $f_{b}$, and $f_{d}$, allow for various consumption tax policies to be incorporated into the model.  The parameter $f_{i}=1$ if interest on debt is deductible and 0 if not.  The parameter $f_{p}$ is equal to one the principle on corporate borrowing is deductible from the corporate income tax based.  Principle on loans would be deductible in a post-pay consumption tax system.  The parameter $f_{b}$ is equal to one if the proceeds from firm borrowing is included in the corporate tax base.  Such proceeds would be included in a pre-pay consumption tax system.  The parameter $f_{d}$ is equal to one if capital can be depreciated and zero if not.  For example, in a post-pay consumption tax framework, $f_{e}=1$ and $f_{d}=0$.  
 
-\noindent\noindent where the tax basis of the capital stock evolves according to:
+The tax basis of the capital stock is given by $K^{\tau C}_{t}$.  The law of motion for the tax basis of the capital stock is given by:
+
 \begin{equation}
 \label{eqn:lom_taxcapital}
-K^{\tau C}_{u+1}=(1-\delta^{\tau C})(K^{\tau C}_{u} + (1-f_{e})I^{C}_{u})
+K^{\tau C}_{t+1}=(1-\delta^{\tau C})(K^{\tau C}_{t} + (1-f_{e})I^{C}_{t})
 \end{equation}
 
-Note how we form the law of motion for the tax basis.  \citet{DZ2013} do not specify this, but the above formulation accounts for the fact that investment in year $t$ receives a depreciation deduction in year $t$.\footnote{What is actually used is a ``half year rule", where you deduct the value of investment based on the assumption that it was put in place half-way through the year (so you get one half the annual deprecation rate on this new investment).}  We can think about modifying this so that you get no deduction in the year the investment is made, which may or may not be more consistent with the ``time to build" built into the law of motion for the physical capital stock.
+\noindent\noindent Note how we form the law of motion for the tax basis.  The above formulation accounts for the fact that investment in year $t$ receives a depreciation deduction in year $t$.\footnote{What is actually used is a partial year rule, where one deducts the value of investment proportional to the amount of the year in which the asset was in place.}  We can think about modifying this so that you get no deduction in the year the investment is made, which may or may not be more consistent with the ``time to build" built into the law of motion for the physical capital stock.
 
-Dividends are determined by the assumption that dividends are a constant fraction of pre-tax earnings.
+Dividends are determined by the assumption that dividends are a constant fraction of pre-tax earnings.  In particular, 
 \begin{equation}
 \label{eqn:div}
-DIV^{C}_{u}=\zeta^{C}(EARN^{C}_{u}-TE^{C}_{u}-p^{C}_{u}\delta^{C}K^{C}_{u})
+DIV^{C}_{t}=\zeta^{C}(EARN^{C}_{t}-TE^{C}_{t}-p^{C}_{t}\delta^{C}K^{C}_{t})
 \end{equation}
 
-We will return to how investment, $I^{C}_{u}$, is determined, but first let us write the value of the firm as function of the states and the control variables $I^{C}_{s}$ and $EL^{C}_{s}$.  Substituting Equations \ref{eqn:vn} - \ref{eqn:div} into Equation \ref{eqn:solve_vs}  (and letting $\Omega^{C}_{u}=1 - \zeta^{C} + \zeta^{C}\left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right) = \left[\zeta^{C}(1-\tau^{d}_{u}) + (1-\zeta^{C})(1-\tau^{g}_{u})\right]/(1-\tau^{g}_{u})$) we get:
+Substituting Equations \ref{eqn:vn} - \ref{eqn:div} into Equation \ref{eqn:solve_vs}  (and letting $\Omega^{C}_{t}=1 - \zeta^{C} + \zeta^{C}\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right) = \left[\zeta^{C}(1-\tau^{d}_{t}) + (1-\zeta^{C})(1-\tau^{g}_{t})\right]/(1-\tau^{g}_{t})$), one can write the value of the firm at time $t$ as:
 
 \begin{equation}
 \label{eqn:vs}
 \begin{split}
-V^{C}_{s} = &  \sum_{u=s}^{\infty} \prod_{\nu=s}^{u}\left(\frac{1}{1+\theta{\nu}}\right) (1-\tau^{b}_{u})\Omega^{C}_{u}(p^{C}_{u}X^{C}_{u}-w_{s}EL^{C}_{s})  \\ 
- & - K^{C}_{s} \left\{(1-\tau^{b}_{u})\Omega^{C}_{u}\tau^{pC}_{u}+(1-f_{i}\tau^{i}_{u})i_{u}\Omega^{C}_{u}b^{C}-\delta^{C}(p^{C}_{u}-b^{C}-\Omega^{C}_{u}(p^{C}_{u}-f_{p}\tau^{b}_{u}b^{C}))\right\}  \\
+V^{C}_{t} = &  \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta{\nu}}\right) (1-\tau^{b}_{u})\Omega^{C}_{u}(p^{C}_{u}X^{C}_{u}-w_{s}EL^{C}_{s})  \\ 
+ & - K^{C}_{t} \left\{(1-\tau^{b}_{u})\Omega^{C}_{u}\tau^{pC}_{u}+(1-f_{i}\tau^{i}_{u})i_{u}\Omega^{C}_{u}b^{C}-\delta^{C}(p^{C}_{u}-b^{C}-\Omega^{C}_{u}(p^{C}_{u}-f_{p}\tau^{b}_{u}b^{C}))\right\}  \\
  & - I^{C}_{u}\left\{1-b^{C}+\Omega^{C}_{u}f_{b}\tau^{b}_{u}b^{C}-\Omega^{C}_{u}f_{e}\tau^{b}_{u} + (1-\Omega^{C}_{u}\tau^{b}_{u})\Phi^{C}_{u}\right\} \\
  & - \Omega^{C}_{u}f_{d}\tau^{b}_{u}\delta^{\tau C}K^{\tau C}_{u}
 \end{split}
 \end{equation}
 
-Note that $K^{\tau C}_{u}$ tracks depreciation deductions in in all periods $u=s,...,\infty$.  Future depreciation deductions on the tax basis of the capital stock in existence at time $u$ do not affect investment decisions at time $u$ (or forward) since the tax basis is predetermined.\footnote{Note that if there were financial frictions (e.g. a borrowing constraint or costly external finance), then investment would be dependent on cash flow and would then be affected by changes in the value of deductions for the existing capital basis.}  However, future depreciation deductions for investments made at time $u$ do affect investment decisions (since they lower the after-tax cost of investments).  Therefore it's useful to distinguish between old and new capital. 
+\noindent\noindent Note that $K^{\tau C}_{u}$ tracks depreciation deductions in in all periods $u=t,...,\infty$.  Future depreciation deductions on the tax basis of the capital stock in existence at time $u$ do not affect investment decisions at time $u$ (or forward) since the tax basis is predetermined.\footnote{Note that if there were financial frictions (e.g. a borrowing constraint or costly external finance), then investment would be dependent on cash flow and would then be affected by changes in the value of deductions for the existing capital basis.}  However, future depreciation deductions for investments made at time $u$ do affect investment decisions (since they lower the after-tax cost of investments).  Therefore it's useful to distinguish between old and new capital. 
 
 The time $u$ value of future depreciation deductions on the capital stock existing at the beginning of period $u$, $K^{\tau C}_{u-1}$, is given by: 
 
