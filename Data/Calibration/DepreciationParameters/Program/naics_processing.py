@@ -89,7 +89,7 @@ def load_naics(path):
 
 '''
 -------------------------------------------------------------------------------
-def find_naics: Defines a function that finds 
+def find_naics: Defines a function that finds a naics code in a tree.
 -------------------------------------------------------------------------------
 '''
 def find_naics(tree, term):
@@ -99,7 +99,49 @@ def find_naics(tree, term):
                 return i
     return None
     
+'''
+-------------------------------------------------------------------------------
+def find_naics: Defines a function that searches through an excel file for
+    a specified term.
+-------------------------------------------------------------------------------
+'''
+def search_ws(sheet, search_term, distance, warnings = True, origin = [0,0], exact = False):
+    '''
+    Parameters: sheet - The worksheet to be searched through.
+                entry - What is being searched for in the worksheet.
+                        Numbers must be written with at least one decimal 
+                        place, e.g. 15.0, 0.0, 21.74.
+                distance - Search up to and through this diagonal.
 
+    Returns:    A vector of the position of the first entry found.
+                If not found then [-1,-1] is returned.
+    '''
+    final_search = ((distance+1)*distance)/2
+    current_diagonal = 1
+    total_columns  = sheet.ncols
+    total_rows  = sheet.nrows
+    for n in xrange(0, final_search):
+        if ((current_diagonal+1)*current_diagonal)/2 < n+1:
+            current_diagonal += 1
+        
+        i = ((current_diagonal+1)*current_diagonal)/2 - (n+1)
+        j = current_diagonal - i - 1
+        
+        if j + origin[1] >= total_columns:
+            continue
+        if i + origin[0] >= total_rows:
+            continue
+        if(exact):
+            if str(search_term).lower() == str(sheet.cell_value(i+origin[0],j+origin[1])).lower():
+                return [i+origin[0],j+origin[1]]
+        elif(not exact):
+            if str(search_term).lower() in str(sheet.cell_value(i+origin[0],j+origin[1])).lower():
+                return [i+origin[0],j+origin[1]]
+    if warnings:
+        print "Warning: No such search entry found in the specified search space."
+        print "Check sample worksheet and consider changing distance input."
+    
+    return [-1,-1]
 
 
 
