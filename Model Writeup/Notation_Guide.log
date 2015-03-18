@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  6 MAR 2015 11:41
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  18 MAR 2015 12:21
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -554,8 +554,8 @@ LaTeX Warning: There were multiply-defined labels.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 298.
  ) 
 Here is how much of TeX's memory you used:
- 8043 strings out of 493488
- 119052 string characters out of 3141326
+ 8041 strings out of 493488
+ 119040 string characters out of 3141326
  241038 words of memory out of 3000000
  11199 multiletter control sequences out of 15000+200000
  17429 words of font info for 65 fonts, out of 3000000 for 9000
@@ -575,10 +575,10 @@ ive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive
 /2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/
 2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/20
 12/texmf-dist/fonts/type1/public/amsfonts/euler/eufm10.pfb>
-Output written on Notation_Guide.pdf (6 pages, 183590 bytes).
+Output written on Notation_Guide.pdf (6 pages, 182474 bytes).
 PDF statistics:
- 113 PDF objects out of 1000 (max. 8388607)
- 90 compressed objects within 1 object stream
- 20 named destinations out of 1000 (max. 500000)
+ 110 PDF objects out of 1000 (max. 8388607)
+ 87 compressed objects within 1 object stream
+ 18 named destinations out of 1000 (max. 500000)
  17 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -57,11 +57,14 @@ This document and the associated file Notation\_Guide.xlsx will serve as the off
 
 The notation will be grouped into three tables: endogenous variables, exogenous variables, and parameters.  Note that other versions of the variables used here will exist.  Throughout, we will try to adhear to the following rules:
 
-\begin{enumerate}\item Use ``tilde" (e.g., $\tilde{c}$) to denote stationarized versions of variables\item Use ``hats" (e.g., $\hat{c}$) to denote percent deviations from steady state (or percent changes?) for a variable
-\item Use ``bars" over variables (e.g., $\bar{c}$) to denote variables in per unit of output (e.g., $\bar{c}=\frac{C}{Y}$)\item Use capital letters for aggregate values, lower case for per capita values (e.g., $c_{t}=$ per capital consumption in period $t$, $C_{t}=$ aggregate consumption in period $t$).
+\begin{enumerate}
+\item Use ``tilde" (e.g., $\tilde{c}$) to denote ``special" versions of variables (these may have various meanings depending upon variable)
+\item Use ``hats" (e.g., $\hat{c}$) to denote stationarized variables
+\item Use ``bars" over variables (e.g., $\bar{c}$) to denote steady-state values of variables
+%\item Use capital letters for aggregate values, lower case for per capita values (e.g., $c_{t}=$ per capital consumption in period $t$, $C_{t}=$ aggregate consumption in period $t$).
 \item The English alphabet is used for variables
 \item The Greek alphabet is used for parameters
-\item When possible, keep variables to one letter (\textcolor{red}{Should we worry about this? Or should we make readability key?})
+%\item When possible, keep variables to one letter (\textcolor{red}{Should we worry about this? Or should we make readability key?})
 \end{enumerate}
 
 \textcolor{red}{Note that we might think about what assigned letters we can use in our Python code and it there are conflicts with that.  Because it would be nice for users of the code to be able to use the same notation as in the text.}
@@ -83,7 +86,7 @@ The notation will be grouped into three tables: endogenous variables, exogenous 
     \ \ \ $c_{i,j,s,t}$ & Consumption of consumption good $i$ by household of lifetime income group $j$, age $s$, at time $t$ \\
     \ \ \ $n_{j,s,t}$ & Labor supply of household of lifetime income group $j$, age $s$, at time $t$ \\
     \ \ \ $b_{j,s,t}$ & Asset holdings of household of lifetime income group $j$, age $s$, at time $t$ \\
-    \ \ \ $p_{s,t}$ & Price of composite consumption good for household of age $s$ \\
+    \ \ \ $\tilde{p}_{s,t}$ & Price of discretionary composite consumption good for household of age $s$ \\
     \ \ \ $p_{i,t}$ & Price of consumption good $i$ at time $t$ \\
     \ \ \ $\Omega$ & Household beliefs about the distribution of assets \\
           &  \\

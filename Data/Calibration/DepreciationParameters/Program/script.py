@@ -37,8 +37,8 @@ The main script of the program:
 # Working directory:
 path = os.getcwd()
 # Relevant path and file names:
-data_folder = path + "\data"
-output_folder = path + "\OUTPUT"
+data_folder = path + "/data"
+output_folder = path + "/OUTPUT"
 
 '''
 -------------------------------------------------------------------------------

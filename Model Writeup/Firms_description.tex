@@ -6,7 +6,7 @@
 
 \section{The Firm's Problem}
 
-The objective of the firm is to maximize firm value.  Firms do this by choosing investment and labor demand and well as financial policies such as new equity issues, dividend distributions, and borrowing.  The problem of the firm is the same in each industry, $m$, and in each sector, $C\in\{\text{corporate},\text{non-corporate}\}$, though the parameters defining the problem vary across industry and sector.  Finally, we assume that each industry and sector is competitive, meaning that firms earn zero economic profits.
+The objective of the firm is to maximize firm value.  Firms do this by choosing investment and labor demand and well as financial policies such as new equity issues, dividend distributions, and borrowing.  The problem of the firm is the same in each industry, $m$, and in each sector, $C\in\{\text{corporate},\text{non-corporate}\}$, though the parameters defining the problem vary across industry and sector.  Finally, we assume that each industry and sector is competitive, meaning that firms earn zero economic profits.  Since the problem of the first is the same in each industry, we omit the subscripts $m$, and $C$ that accompany each variable and parameter for the description of the firm's problem.
 
 \subsection{The Value of the Firm}
 
@@ -21,192 +21,202 @@ r_{t}=(1-\tau^{i}_{t})i_{t},
 
 \begin{equation}
 \label{eqn:equity_eqm}
-r_{t}=(1-\tau^{i}_{t})i_{t}=\frac{(1-\tau^{d}_{t})DIV^{C}_{t}+(1-\tau^{g}_{t})(V^{C}_{t+1}-V^{C}_{t}-VN^{C}_{t})}{V^{C}_{t}}
+r_{t}=(1-\tau^{i}_{t})i_{t}=\frac{(1-\tau^{d}_{t})DIV_{t}+(1-\tau^{g}_{t})(V_{t+1}-V_{t}-VN_{t})}{V_{t}}
 \end{equation}
 
-The first part of the numerator are the dividends from holding equity shares in the firm.  The second part are the capital gains from holding equity, which are diluted by the issuance of new shares, $VN^{C}_{t}$.  We can rearrange this equation \ref{eqn:equity_eqm} to solve for $V^{C}_{t+1}$:
+The first part of the numerator are the dividends from holding equity shares in the firm.  The second part are the capital gains from holding equity, which are diluted by the issuance of new shares, $VN_{t}$.  We can rearrange this equation \ref{eqn:equity_eqm} to solve for $V_{t+1}$:
 
 \begin{equation}
 \label{eqn:v_t1}
 \begin{split}
-V^{C}_{t+1}&=\frac{V^{C}_{t}(1-\tau^{i}_{t})i_{t}-(1-\tau^{d}_{t})DIV^{C}_{t}}{(1-\tau^{g}_{t})}+V^{C}_{t}+VN^{C}_{t} \\
- & = V^{C}_{t}\underbrace{\left(1+\frac{(1-\tau^{i}_{t})i_{t}}{(1-\tau^{g}_{t})}\right)}_{\text{Let this be }1+\theta_{t}} + VN^{C}_{t} - \frac{(1-\tau^{d}_{t})}{(1-\tau^{g}_{t})}DIV^{C}_{t} \\
+V_{t+1}&=\frac{V_{t}(1-\tau^{i}_{t})i_{t}-(1-\tau^{d}_{t})DIV_{t}}{(1-\tau^{g}_{t})}+V_{t}+VN_{t} \\
+ & = V_{t}\underbrace{\left(1+\frac{(1-\tau^{i}_{t})i_{t}}{(1-\tau^{g}_{t})}\right)}_{\text{Let this be }1+\theta_{t}} + VN_{t} - \frac{(1-\tau^{d}_{t})}{(1-\tau^{g}_{t})}DIV_{t} \\
 \end{split}
 \end{equation}
 
-\noindent\noindent Now we then solve for $V^{c}_{t}$ by repeatedly substituting for $V^{C}_{t+1}$ and applying the transversality condition ($\lim_{T \to \infty} \prod_{t=1}^{T}(1+\theta_{t})V^{C}_{T}=0$):
+\noindent\noindent Now we then solve for $V_{t}$ by repeatedly substituting for $V_{t+1}$ and applying the transversality condition ($\lim_{T \to \infty} \prod_{t=1}^{T}(1+\theta_{t})V_{T}=0$):
 
 \begin{equation}
 \label{eqn:solve_vs}
 \begin{split}
-& V^{C}_{t}=\frac{V^{C}_{t+1}}{(1+\theta_{t})} - \frac{VN^{C}_{t}}{(1+\theta_{t})}  + \frac{\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right)DIV^{C}_{t}}{(1+\theta_{t})} \\
-\implies &  V^{C}_{t}=\frac{V^{C}_{t+2}}{(1+\theta_{t})(1+\theta_{t+1})} - \frac{VN^{C}_{t+1}}{(1+\theta_{t})(1+\theta_{t+1})}  + \frac{\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right)DIV^{C}_{t+1}}{(1+\theta_{t})(1+\theta_{t+1})} - \frac{VN^{C}_{t}}{(1+\theta_{t})}  + \frac{\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right)DIV^{C}_{t}}{(1+\theta_{t})} \\
-\implies &  V^{C}_{t}= \frac{V^{C}_{t+3}}{(1+\theta_{t})(1+\theta_{t+1})(1+\theta_{t+2})} - \frac{VN^{C}_{t+2}}{(1+\theta_{t})(1+\theta_{t+1})(1+\theta_{t+2})}  + \frac{\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right)DIV^{C}_{t+2}}{(1+\theta_{t})(1+\theta_{t+1})(1+\theta_{t+2})} \\
-& - \frac{VN^{C}_{t+1}}{(1+\theta_{t})(1+\theta_{t+1})}  + \frac{\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right)DIV^{C}_{t+1}}{(1+\theta_{t})(1+\theta_{t+1})} - \frac{VN^{C}_{t}}{(1+\theta_{t})}  + \frac{\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right)DIV^{C}_{t}}{(1+\theta_{t})} \\
+& V_{t}=\frac{V_{t+1}}{(1+\theta_{t})} - \frac{VN_{t}}{(1+\theta_{t})}  + \frac{\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right)DIV_{t}}{(1+\theta_{t})} \\
+\implies &  V_{t}=\frac{V_{t+2}}{(1+\theta_{t})(1+\theta_{t+1})} - \frac{VN_{t+1}}{(1+\theta_{t})(1+\theta_{t+1})}  + \frac{\left(\frac{1-\tau^{d}_{t+1}}{1-\tau^{g}_{t+1}}\right)DIV_{t+1}}{(1+\theta_{t})(1+\theta_{t+1})} - \frac{VN_{t}}{(1+\theta_{t})}  + \frac{\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right)DIV_{t}}{(1+\theta_{t})} \\
+\implies &  V_{t}= \frac{V_{t+3}}{(1+\theta_{t})(1+\theta_{t+1})(1+\theta_{t+2})} - \frac{VN_{t+2}}{(1+\theta_{t})(1+\theta_{t+1})(1+\theta_{t+2})}  + \frac{\left(\frac{1-\tau^{d}_{t+2}}{1-\tau^{g}_{t+2}}\right)DIV_{t+2}}{(1+\theta_{t})(1+\theta_{t+1})(1+\theta_{t+2})} \\
+& - \frac{VN_{t+1}}{(1+\theta_{t})(1+\theta_{t+1})}  + \frac{\left(\frac{1-\tau^{d}_{t+1}}{1-\tau^{g}_{t+1}}\right)DIV_{t+1}}{(1+\theta_{t})(1+\theta_{t+1})} - \frac{VN_{t}}{(1+\theta_{t})}  + \frac{\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right)DIV_{t}}{(1+\theta_{t})} \\
 & \text{and so on...} \\
-\implies & V^{C}_{t}=\underbrace{\prod_{\nu=t}^{\infty}\left(\frac{1}{1+\theta{\nu}}\right)V^{C}_{\infty}}_{=0 \text{ by transversality condition}} - \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta{\nu}}\right)\left[VN^{C}_{u} - \left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right)DIV^{C}_{u}\right]\\
-\implies & V^{C}_{t}= \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta{\nu}}\right)\left[ \left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right)DIV^{C}_{u}-VN^{C}_{u}\right]\\
+\implies & V_{t}=\underbrace{\prod_{\nu=t}^{\infty}\left(\frac{1}{1+\theta_{\nu}}\right)V_{\infty}}_{=0 \text{ by transversality condition}} - \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[VN_{u} - \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)DIV_{u}\right]\\
+\implies & V_{t}= \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[ \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)DIV_{u}-VN_{u}\right]\\
 \end{split}
 \end{equation}
 
 Thus, firm value is a function of the discounted, after-tax value of dividends, less the discounted value of new share issuance, which dilutes the value of the shares held at time $t$. 
 
-\subsection{The Firm's Bellman Equation}
+\subsection{The Sequence Problem of the Firm}
 
-To solve for the Bellman equation defining the dynamic optimization problem of the firm, we first solve for $VN^{C}_{t}$, the value of shares issued in period $t$.  To do this, we use the cash flow identity of the firm: 
+To solve for the Bellman equation defining the dynamic optimization problem of the firm, we first solve for $VN_{t}$, the value of shares issued in period $t$.  To do this, we use the cash flow identity of the firm: 
 
 \begin{equation}
 \label{eqn:vn}
-EARN^{C}_{t}+BN^{C}_{t}+VN^{C}_{t}=DIV^{C}_{t}+I^{C}_{t}(1+\Phi^{C}_{t})+TE^{C}_{t}, 
+EARN_{t}+BN_{t}+VN_{t}=DIV_{t}+I_{t}(p^{K}_{t}+\Phi_{t})+TE_{t}, 
 \end{equation}
 
-where $EARN^{C}_{t}$ are earnings before depreciation, corporate income taxes, and adjustment costs, but after property taxes; $BN^{C}_{t}$ are new bond issues, $I^{C}_{t}$ is investment, $\Phi^{C}_{t}$ are adjustment costs, and $TE^{C}_{t}$ are total corporate income taxes (all in period $t$).  Earnings are the difference between the revenues from selling firm output, $X^{C}_{t}$, and the costs of labor, debt, and property taxes.  Specifically:    
+\noindent\noindent where $EARN_{t}$ are earnings before depreciation, corporate income taxes, and adjustment costs, but after property taxes; $BN_{t}$ are new bond issues, $I_{t}$ is investment, $p^{K}_{t}$ is the price of capital, $\Phi_{t}$ are adjustment costs, and $TE_{t}$ are total corporate income taxes (all in period $t$).  Earnings are the difference between the revenues from selling firm output, $X_{t}$, and the costs of labor, debt, and property taxes.  Specifically:    
 
 \begin{equation}
 \label{eqn:earn}
-EARN^{C}_{t}=p^{C}_{t}X^{C}_{t}-w_{u}EL^{C}_{t}-i_{t}B^{C}_{t}-\tau^{PC}_{t}K^{C}_{t},
+EARN_{t}=p_{t}X_{t}-w_{t}EL_{t}-i_{t}B_{t}-\tau^{P}_{t}K_{t},
 \end{equation}
 
-\noindent\noindent where output, $X^{C}_{t}$, is determined by a constant elasticity of substitution production function:
+\noindent\noindent where output, $X_{t}$, is determined by a constant elasticity of substitution (CES) production function. Note that we notate the capital stock that is determined when period $t$ begins at $K_{t}$.  The CES production function for the firm is:
 
 \begin{equation}
 \label{eqn:prod_fun}
-F(K^{C}_{t},EL^{C}_{t})=X^{C}_{t} = \left[(\gamma_{C})^{1/\epsilon_{C}}(K^{C}_{t})^{(\epsilon^{C}-1)/\epsilon_{C}}+(1-\gamma_{C})^{1/\epsilon_{C}}(EL^{C}_{t})^{(\epsilon_{C}-1)/\epsilon_{C}}\right]^{(\epsilon_{C}/(\epsilon_{C}-1))}
+F(K_{t},EL_{t})=X_{t} = \left[(\gamma_{C})^{1/\epsilon_{C}}(K_{t})^{(\epsilon-1)/\epsilon_{C}}+(1-\gamma_{C})^{1/\epsilon_{C}}(EL_{t})^{(\epsilon_{C}-1)/\epsilon_{C}}\right]^{(\epsilon_{C}/(\epsilon_{C}-1))}
 \end{equation}
 
 New debt issues are solved for by the assumption of a constant debt-to-capital ratio (and the law of motion for the capital stock):
 \begin{equation}
 \label{eqn:debt}
-BN^{C}_{t}=B^{C}_{t+1} - B^{C}_{t} \text{ and } B^{C}_{t}=b^{C}K^{C}_{t} \text{ by assumption} 
+BN_{t}=B_{t+1} - B_{t} \text{ and } B_{t}=bK_{t} \text{ by assumption} 
 \end{equation}
 
 The law of motion of the capital stock is given by:
 \begin{equation}
 \label{eqn:lom_capital}
-K^{C}_{t+1}=(1-\delta^{C})K^{C}_{t} + I^{C}_{t}
+K_{t+1}=(1-\delta)K_{t} + I_{t}
 \end{equation}
 
 Adjustment costs are assumed to be a quadratic function of deviations from the steady-state investment rate:
 \begin{equation}
 \label{eqn:adj_cost}
-\Phi^{C}_{t}=\frac{p^{C}_{t}\left(\frac{\beta^{C}}{2}\right)\left(\frac{I^{C}_{t}}{K^{C}_{t}}-\mu^{C}\right)^{2}}{\left(\frac{I^{C}_{t}}{K^{C}_{t}}\right)}
+\Phi_{t}=\frac{p_{t}\left(\frac{\beta}{2}\right)\left(\frac{I_{t}}{K_{t}}-\mu\right)^{2}}{\left(\frac{I_{t}}{K_{t}}\right)}
 \end{equation}
 
 Corporate income taxes are given by:
 \begin{equation}
 \label{eqn:corp_tax}
 \begin{split}
-TE^{C}_{t}= & \tau^{b}_{t}\left[p^{C}_{t}X^{C}_{t}-w_{u}EL^{C}_{t}-f_{e}I^{C}_{t}-\Phi^{c}_{t}I^{C}_{t}-f_{i}i_{t}B^{C}_{t}-f_{p}\delta^{C}b^{C}K^{C}_{t}+f_{b}b^{C}I^{C}_{t}-f_{d}\delta^{\tau C}K^{\tau C}_{t}-\tau^{pC}_{t}K^{C}_{t}\right] \\
-& +\underbrace{\tau^{icC}_{t}I^{C}_{t}}_{\text{not in Zodrow and Diamond (2013), added to account for investment tax credits as policy}}.
+TE_{t}= & \tau^{b}_{t}\left[p_{t}X_{t}-w_{t}EL_{t}-f_{e}p^{K}_{t}I_{t}-\Phi_{t}I_{t}-f_{i}i_{t}B_{t}-f_{p}\delta b K_{t}+f_{b}bp^{K}_{t}I_{t}-f_{d}\delta^{\tau}K^{\tau}_{t}-\tau^{p}_{t}K_{t}\right] \\
+& +\underbrace{\tau^{ic}_{t}p^{K}_{t}I_{t}}_{\text{not in Zodrow and Diamond (2013), added to account for investment tax credits as policy}}.
 \end{split}
 \end{equation}
 
 \noindent\noindent  Note that we are assuming that investment may or may not be deductible (depending upon the dummy variable $f_{e}$), but that investment adjustment costs are always deductible (i.e., they are not preceded by $f_{e}$).  Under a pre-pay consumption tax system, investments are not deductible from the tax base.  Whether or not adjustment costs are deductible under a pre-pay consumption tax depends upon what you think these costs derive from.  For example, if adjustment costs are from retraining employees to use new equipment, then these costs may be deductible under a consumption tax system (pre or post-pay) because they would likely be in the form of wage/labor costs. It's not clear how best to handle this and I believe \citet{DZ2013} are inconsistent on this point.  The other indicator variables, $f_{i}$, $f_{p}$, $f_{b}$, and $f_{d}$, allow for various consumption tax policies to be incorporated into the model.  The parameter $f_{i}=1$ if interest on debt is deductible and 0 if not.  The parameter $f_{p}$ is equal to one the principle on corporate borrowing is deductible from the corporate income tax based.  Principle on loans would be deductible in a post-pay consumption tax system.  The parameter $f_{b}$ is equal to one if the proceeds from firm borrowing is included in the corporate tax base.  Such proceeds would be included in a pre-pay consumption tax system.  The parameter $f_{d}$ is equal to one if capital can be depreciated and zero if not.  For example, in a post-pay consumption tax framework, $f_{e}=1$ and $f_{d}=0$.  
 
-The tax basis of the capital stock is given by $K^{\tau C}_{t}$.  The law of motion for the tax basis of the capital stock is given by:
+The tax basis of the capital stock is given by $K^{\tau}_{t}$.  The law of motion for the tax basis of the capital stock is given by:
 
 \begin{equation}
 \label{eqn:lom_taxcapital}
-K^{\tau C}_{t+1}=(1-\delta^{\tau C})(K^{\tau C}_{t} + (1-f_{e})I^{C}_{t})
+K^{\tau}_{t+1}=(1-\delta^{\tau})(K^{\tau}_{t} + (1-f_{e})p^{K}_{t}I_{t})
 \end{equation}
 
-\noindent\noindent Note how we form the law of motion for the tax basis.  The above formulation accounts for the fact that investment in year $t$ receives a depreciation deduction in year $t$.\footnote{What is actually used is a partial year rule, where one deducts the value of investment proportional to the amount of the year in which the asset was in place.}  We can think about modifying this so that you get no deduction in the year the investment is made, which may or may not be more consistent with the ``time to build" built into the law of motion for the physical capital stock.
+\noindent\noindent Note how we form the law of motion for the tax basis.  The above formulation accounts for the fact that investment in year $t$ receives a depreciation deduction in year $t$.\footnote{The IRS specifies a partial year rule, where one deducts the value of investment proportional to the amount of the year in which the asset was in place.  We ignore this detail and assume all assets are in place for the entire year.}  We can think about modifying this so that you get no deduction in the year the investment is made, which may or may not be more consistent with the ``time to build" built into the law of motion for the physical capital stock.
 
 Dividends are determined by the assumption that dividends are a constant fraction of pre-tax earnings.  In particular, 
 \begin{equation}
 \label{eqn:div}
-DIV^{C}_{t}=\zeta^{C}(EARN^{C}_{t}-TE^{C}_{t}-p^{C}_{t}\delta^{C}K^{C}_{t})
+DIV_{t}=\zeta(EARN_{t}-TE_{t}-p_{t}\delta K_{t})
 \end{equation}
 
-Substituting Equations \ref{eqn:vn} - \ref{eqn:div} into Equation \ref{eqn:solve_vs}  (and letting $\Omega^{C}_{t}=1 - \zeta^{C} + \zeta^{C}\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right) = \left[\zeta^{C}(1-\tau^{d}_{t}) + (1-\zeta^{C})(1-\tau^{g}_{t})\right]/(1-\tau^{g}_{t})$), one can write the value of the firm at time $t$ as:
+Substituting Equations \ref{eqn:vn} - \ref{eqn:div} into Equation \ref{eqn:solve_vs}  (and letting $\Omega_{t}=1 - \zeta + \zeta\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right) = \left[\zeta(1-\tau^{d}_{t}) + (1-\zeta)(1-\tau^{g}_{t})\right]/(1-\tau^{g}_{t})$), one can write the value of the firm at time $t$ as:
 
 \begin{equation}
 \label{eqn:vs}
 \begin{split}
-V^{C}_{t} = &  \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta{\nu}}\right) (1-\tau^{b}_{u})\Omega^{C}_{u}(p^{C}_{u}X^{C}_{u}-w_{s}EL^{C}_{s})  \\ 
- & - K^{C}_{t} \left\{(1-\tau^{b}_{u})\Omega^{C}_{u}\tau^{pC}_{u}+(1-f_{i}\tau^{i}_{u})i_{u}\Omega^{C}_{u}b^{C}-\delta^{C}(p^{C}_{u}-b^{C}-\Omega^{C}_{u}(p^{C}_{u}-f_{p}\tau^{b}_{u}b^{C}))\right\}  \\
- & - I^{C}_{u}\left\{1-b^{C}+\Omega^{C}_{u}f_{b}\tau^{b}_{u}b^{C}-\Omega^{C}_{u}f_{e}\tau^{b}_{u} + (1-\Omega^{C}_{u}\tau^{b}_{u})\Phi^{C}_{u}\right\} \\
- & - \Omega^{C}_{u}f_{d}\tau^{b}_{u}\delta^{\tau C}K^{\tau C}_{u}
+V_{t} = &  \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right) (1-\tau^{b}_{u})\Omega_{u}(p_{u}X_{u}-w_{s}EL_{s})  \\ 
+ & - K_{t} \left\{(1-\tau^{b}_{u})\Omega_{u}\tau^{p}_{u}+(1-f_{i}\tau^{i}_{u})i_{u}\Omega_{u}b-\delta(p_{u}-b-\Omega_{u}(p_{u}-f_{p}\tau^{b}_{u}b))\right\}  \\
+ & - I_{u}\left\{p^{K}_{t}-b+\Omega_{u}f_{b}\tau^{b}_{u}b-\Omega_{u}f_{e}\tau^{b}_{u} + (1-\Omega_{u}\tau^{b}_{u})\Phi_{u}\right\} \\
+ & - \Omega_{u}f_{d}\tau^{b}_{u}\delta^{\tau}K^{\tau}_{u}
 \end{split}
 \end{equation}
 
-\noindent\noindent Note that $K^{\tau C}_{u}$ tracks depreciation deductions in in all periods $u=t,...,\infty$.  Future depreciation deductions on the tax basis of the capital stock in existence at time $u$ do not affect investment decisions at time $u$ (or forward) since the tax basis is predetermined.\footnote{Note that if there were financial frictions (e.g. a borrowing constraint or costly external finance), then investment would be dependent on cash flow and would then be affected by changes in the value of deductions for the existing capital basis.}  However, future depreciation deductions for investments made at time $u$ do affect investment decisions (since they lower the after-tax cost of investments).  Therefore it's useful to distinguish between old and new capital. 
+\noindent\noindent Note that $K^{\tau}_{u}$ tracks depreciation deductions in in all periods $u=t,...,\infty$.  Future depreciation deductions on the tax basis of the capital stock in existence at time $u$ do not affect investment decisions at time $u$ (or forward) since the tax basis is predetermined.\footnote{Note that if there were financial frictions (e.g. a borrowing constraint or costly external finance), then investment would be dependent on cash flow and would then be affected by changes in the value of deductions for the existing capital basis.}  However, future depreciation deductions for investments made at time $u$ do affect investment decisions (since they lower the after-tax cost of investment).  Therefore it's useful to distinguish between old and new capital. 
 
-The time $u$ value of future depreciation deductions on the capital stock existing at the beginning of period $u$, $K^{\tau C}_{u-1}$, is given by: 
+The time $u$ value of future depreciation deductions on the capital stock existing at the beginning of period $u$ is given by $K^{\tau}_{u-1}$.  We can determine this value as:
 
 \begin{equation}
 \label{eqn:z}
 \begin{split}
-f_{d}Z^{C}_{u}K^{\tau C}_{u-1} &=  \sum^{\infty}_{j=u} \prod_{\nu=u}^{j} \left(\frac{1}{1+\theta_{\nu})}\right)f_{d}\Omega^{c}_{j}\tau^{b}_{j}\delta^{\tau C}(1-\delta^{\tau C})^{j-u}K^{\tau C}_{u} \\
-&= f_{d} K^{\tau C}_{u-1} \underbrace{\sum^{\infty}_{j=u} \prod_{\nu=u}^{j} \left(\frac{1}{1+\theta_{\nu})}\right)f_{d}\Omega^{c}_{j}\tau^{b}_{j}\delta^{\tau C}(1-\delta^{\tau C})^{j-u}}_{Z^{C}_{u}} \\
+f_{d}Z_{u}K^{\tau}_{u-1} &=  \sum^{\infty}_{j=u} \prod_{\nu=u}^{j} \left(\frac{1}{1+\theta_{\nu})}\right)f_{d}\Omega_{j}\tau^{b}_{j}\delta^{\tau}(1-\delta^{\tau})^{j-u}K^{\tau}_{u} \\
+&= f_{d} K^{\tau}_{u-1} \underbrace{\sum^{\infty}_{j=u} \prod_{\nu=u}^{j} \left(\frac{1}{1+\theta_{\nu})}\right)f_{d}\Omega_{j}\tau^{b}_{j}\delta^{\tau}(1-\delta^{\tau})^{j-u}}_{Z_{u}} \\
+& = f_{d} K^{\tau}_{u-1} Z_{u},
 \end{split}
 \end{equation}
 
-We can derive the time $u$ value of future depreciation deductions on investments made at time $u$, $I^{\tau C}_{u}$, similarly.  These are given by $f_{d}(1-f_{e})Z^{C}_{u}I^{C}_{u}$.
-
-Thus we can rewrite Equation \ref{eqn:vs} as: 
+\noindent\noindent where $Z_{u}$ is the net present value of future depreciation deductions per dollar of investment.  With this, we derive the time $u$ value of future depreciation deductions on investments made at time $u$, $I^{\tau}_{u}$.  These are given by $f_{d}(1-f_{e})Z_{u}I_{u}$.  Now we can rewrite Equation \ref{eqn:vs} describing the value of the firm at time $t$ as: 
 
  \begin{equation}
 \label{eqn:vs_w_z}
 \begin{split}
-V^{C}_{s} = &  \sum_{u=s}^{\infty} \prod_{\nu=s}^{u}\left(\frac{1}{1+\theta{\nu}}\right) (1-\tau^{b}_{u})\Omega^{C}_{u}(p^{C}_{u}X^{C}_{u}-w_{s}EL^{C}_{s})  \\ 
- & - K^{C}_{s} \left\{(1-\tau^{b}_{u})\Omega^{C}_{u}\tau^{pC}_{u}+(1-f_{i}\tau^{i}_{u})i_{u}\Omega^{C}_{u}b^{C}-\delta^{C}(p^{C}_{u}-b^{C}-\Omega^{C}_{u}(p^{C}_{u}-f_{p}\tau^{b}_{u}b^{C}))\right\}  \\
- & - I^{C}_{u}\left\{1-b^{C}+\Omega^{C}_{u}f_{b}\tau^{b}_{u}b^{C}-\Omega^{C}_{u}f_{e}\tau^{b}_{u} - f_{d}(1-f_{e})Z^{C}_{u} + (1-\Omega^{C}_{u}\tau^{b}_{u})\Phi^{C}_{u}\right\} \\
- &  + f_{d}Z^{C}_{s}K^{\tau C}_{s-1} \\
+V_{t} = &  \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right) (1-\tau^{b}_{u})\Omega_{u}(p_{u}X_{u}-w_{u}EL_{u})  \\ 
+ & - K_{t} \left\{(1-\tau^{b}_{u})\Omega_{u}\tau^{p}_{u}+(1-f_{i}\tau^{i}_{u})i_{u}\Omega_{u}b-\delta(p_{u}-b-\Omega_{u}(p_{u}-f_{p}\tau^{b}_{u}b))\right\}  \\
+ & - I_{u}\left\{1-b+\Omega_{u}f_{b}\tau^{b}_{u}b-\Omega_{u}f_{e}\tau^{b}_{u} - f_{d}(1-f_{e})Z_{u} + (1-\Omega_{u}\tau^{b}_{u})\Phi_{u}\right\} \\
+ &  + f_{d}Z_{t}K^{\tau}_{t-1} \\
 \end{split}
 \end{equation}
 
+Using the above equations, we see all endogenous variables determining the value of the firm result from the firm's investment and effective labor demand.The sequence problem of the firm is thus: 
 
-The Lagrangian to the firm's problem at time $s$ can be written as:
+ \begin{equation}
+\label{eqn:firm_seq_prob}
+\begin{split}
+V_{t} = &   \max_{\{I_{u},K_{u+1}\}^{\infty}_{u=t}}   \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right) (1-\tau^{b}_{u})\Omega_{u}(p_{u}X_{u}-w_{u}EL_{u})  \\ 
+ & - K_{t} \left\{(1-\tau^{b}_{u})\Omega_{u}\tau^{p}_{u}+(1-f_{i}\tau^{i}_{u})i_{u}\Omega_{u}b-\delta(p_{u}-b-\Omega_{u}(p_{u}-f_{p}\tau^{b}_{u}b))\right\}  \\
+ & - I_{u}\left\{1-b+\Omega_{u}f_{b}\tau^{b}_{u}b-\Omega_{u}f_{e}\tau^{b}_{u} - f_{d}(1-f_{e})Z_{u} + (1-\Omega_{u}\tau^{b}_{u})\Phi_{u}\right\} \\
+ &  + f_{d}Z_{t}K^{\tau}_{t-1} \\
+\end{split}
+\end{equation}
+
+The Lagrangian to the firm's problem at time $t$ can be written as:
 
  \begin{equation}
 \label{eqn:lagrangian}
 \begin{split}
-\mathcal{L}_{s} = \max_{\{I^{c}_{u},K^{C}_{u+1}\}^{\infty}_{u=s}} &  \sum_{u=s}^{\infty} \prod_{\nu=s}^{u}\left(\frac{1}{1+\theta{\nu}}\right) (1-\tau^{b}_{u})\Omega^{C}_{u}(p^{C}_{u}X^{C}_{u}-w_{s}EL^{C}_{s})  \\ 
- & - K^{C}_{s} \left\{(1-\tau^{b}_{u})\Omega^{C}_{u}\tau^{pC}_{u}+(1-f_{i}\tau^{i}_{u})i_{u}\Omega^{C}_{u}b^{C}-\delta^{C}(p^{C}_{u}-b^{C}-\Omega^{C}_{u}(p^{C}_{u}-f_{p}\tau^{b}_{u}b^{C}))\right\}  \\
- & - I^{C}_{u}\left\{1-b^{C}+\Omega^{C}_{u}f_{b}\tau^{b}_{u}b^{C}-\Omega^{C}_{u}f_{e}\tau^{b}_{u} - f_{d}(1-f_{e})Z^{C}_{u} + (1-\Omega^{C}_{u}\tau^{b}_{u})\Phi^{C}_{u}\right\} \\
- &  + f_{d}Z^{C}_{s}K^{\tau C}_{s-1} + q^{C}_{u}((1-\delta^{C})K^{C}_{u} + I^{C}_{u}-K^{C}_{u+1})\\
+\mathcal{L}_{t} = \max_{\{I_{u},K_{u+1}\}^{\infty}_{u=t}} &  \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right) (1-\tau^{b}_{u})\Omega_{u}(p_{u}X_{u}-w_{s}EL_{s})  \\ 
+ & - K_{s} \left\{(1-\tau^{b}_{u})\Omega_{u}\tau^{pC}_{u}+(1-f_{i}\tau^{i}_{u})i_{u}\Omega_{u}b-\delta(p_{u}-b-\Omega_{u}(p_{u}-f_{p}\tau^{b}_{u}b))\right\}  \\
+ & - I_{u}\left\{1-b+\Omega_{u}f_{b}\tau^{b}_{u}b-\Omega_{u}f_{e}\tau^{b}_{u} - f_{d}(1-f_{e})Z_{u} + (1-\Omega_{u}\tau^{b}_{u})\Phi_{u}\right\} \\
+ &  + f_{d}Z_{s}K^{\tau}_{s-1} + q_{u}((1-\delta)K_{u} + I_{u}-K_{u+1})\\
 \end{split}
 \end{equation}
 
-The FOCs w.r.t. investment are given by:
+The FOCs w.r.t. investment (which hold $\forall \ u$) are given by:
  \begin{equation}
 \label{eqn:foc_i}
 \begin{split}
-\frac{\partial \mathcal{L}_{s}}{\partial I^{C}_{u}} & = -\left\{1-b^{C}+\Omega^{C}_{u}f_{b}\tau^{b}_{u}b^{C}-\Omega^{C}_{u}f_{e}\tau^{b}_{u} - f_{d}(1-f_{e})Z^{C}_{u} + (1-\Omega^{C}_{u}\tau^{b}_{u})\Phi^{C}_{u}\right\} - I^{C}_{u}(1-\Omega^{C}_{u}\tau^{b}_{u})\frac{\partial \Phi^{C}_{u}}{\partial I^{C}_{u}} + q^{C}_{u} = 0 \\
-\implies & q^{C}_{u}  = 1-b^{C}+\Omega^{C}_{u}f_{b}\tau^{b}_{u}b^{C}-\Omega^{C}_{u}f_{e}\tau^{b}_{u} - f_{d}(1-f_{e})Z^{C}_{u} + (1-\Omega^{C}_{u}\tau^{b}_{u})\Phi^{C}_{u} +  I^{C}_{u}(1-\Omega^{C}_{u}\tau^{b}_{u})\frac{\partial \Phi^{C}_{u}}{\partial I^{C}_{u}} \\
-\implies & q^{C}_{u}  = 1-b^{C}-\Omega^{C}_{u}\tau^{b}_{u}(f_{e}-f_{b}b^{C}) - f_{d}(1-f_{e})Z^{C}_{u} + (1-\Omega^{C}_{u}\tau^{b}_{u})\Phi^{C}_{u} +  I^{C}_{u}(1-\Omega^{C}_{u}\tau^{b}_{u})\frac{\partial \Phi^{C}_{u}}{\partial I^{C}_{u}} 
+\frac{\partial \mathcal{L}_{t}}{\partial I_{u}} & = -\left\{1-b+\Omega_{u}f_{b}\tau^{b}_{u}b-\Omega_{u}f_{e}\tau^{b}_{u} - f_{d}(1-f_{e})Z_{u} + (1-\Omega_{u}\tau^{b}_{u})\Phi_{u}\right\} - I_{u}(1-\Omega_{u}\tau^{b}_{u})\frac{\partial \Phi_{u}}{\partial I_{u}} + q_{u} = 0 \\
+\implies & q_{u}  = 1-b+\Omega_{u}f_{b}\tau^{b}_{u}b-\Omega_{u}f_{e}\tau^{b}_{u} - f_{d}(1-f_{e})Z_{u} + (1-\Omega_{u}\tau^{b}_{u})\Phi_{u} +  I_{u}(1-\Omega_{u}\tau^{b}_{u})\frac{\partial \Phi_{u}}{\partial I_{u}} \\
+\implies & q_{u}  = 1-b-\Omega_{u}\tau^{b}_{u}(f_{e}-f_{b}b) - f_{d}(1-f_{e})Z_{u} + (1-\Omega_{u}\tau^{b}_{u})\Phi_{u} +  I_{u}(1-\Omega_{u}\tau^{b}_{u})\frac{\partial \Phi_{u}}{\partial I_{u}} 
 \end{split}
 \end{equation}
 
- \begin{equation}
-\label{eqn:opt_i}
-\begin{split}
- q^{C}_{u}  = 1-b^{C}-\Omega^{C}_{u}\tau^{b}_{u}(f_{e}-f_{b}b^{C}) - f_{d}(1-f_{e})Z^{C}_{u} + (1-\Omega^{C}_{u}\tau^{b}_{u})\Phi^{C}_{u} +  I^{C}_{u}(1-\Omega^{C}_{u}\tau^{b}_{u})\frac{\partial \Phi^{C}_{u}}{\partial I^{C}_{u}} 
-\end{split}
-\end{equation}
+\noindent\noindent The Euler equation described in Equation \ref{eqn:foci} relates Tobin's $q$, given by $q_{u}$, to the marginal costs of investment.  Tobin's $q$ defines the marginal change in firm value for a dollar of investment. The FOC for investment says that the firm invests until the marginal benefit (the LHS of Equation \ref{eqn:foc_i}) is equal to the marginal cost of investment (the RHS of Equation \ref{eqn:foc_i}).  The cost of investment in the absence of taxes and frictions is equal to 1 (the first term on the RHS of Equation \ref{eqn:foc_i}) since investment goods are the numeraire.  The second term reflects the reduction in the cost of capital due to debt financing.  The third term on the RHS of Equation \ref{eqn:foc_i} is the change in the cost of capital due to debt being included or excluded from business entity-level income taxes.  The fourth term reflects the reduction in the cost of capital due to depreciation deductions.  The last term reflects the component of the cost of capital that is due to adjustment costs (net of the expensing of adjustment costs for tax purposes).
+% \begin{equation}
+%\label{eqn:opt_i}
+%\begin{split}
+% q_{u}  = 1-b-\Omega_{u}\tau^{b}_{u}(f_{e}-f_{b}b) - f_{d}(1-f_{e})Z_{u} + (1-\Omega_{u}\tau^{b}_{u})\Phi_{u} +  I_{u}(1-\Omega_{u}\tau^{b}_{u})\frac{\partial \Phi_{u}}{\partial I_{u}} 
+%\end{split}
+%\end{equation}
 
-$q^{C}_{u}$ is Tobin's $q$ or the marginal change in firm value for a dollar of investment (which is to say it's the shadow price of investment).  The FOC for investment says that the firm invests until the marginal benefit (the LHS of Equation \ref{eqn:opt_i}) is equal to the marginal cost of investment (the RHS of Equation \ref{eqn:opt_i}).  The cost of investment in the absence of taxes and frictions is equal to 1 (the first term on the RHS of Equation \ref{eqn:opt_i}) since investment goods are the numeraire.  The second term reflects the reduction in the cost of debt due to debt financing.  The third term on the RHS of Equation \ref{eqn:opt_i} is the change in the cost of capital due to debt being included or excluded from corporate income taxes.  The fourth term reflects the reduction in the cost of debt due to depreciation deductions.  The last term reflects the costs of capital that are due to adjustment costs (net of the expensing of adjustment costs for tax purposes).
 
 
 The FOCs w.r.t. capital one period ahead are given by:
  \begin{equation}
 \label{eqn:foc_k}
 \begin{split}
-& \frac{\partial \mathcal{L}_{s}}{\partial K^{C}_{u+1}}  =  \prod_{\nu=s}^{u}\left(\frac{1}{1+\theta{\nu}}\right)\left[-q^{C}_{u}\right] \\
- & +  \prod_{\nu=s}^{u+1}\left(\frac{1}{1+\theta{\nu}}\right)\left[(1-\delta^{C})q^{C}_{u+1} +p^{C}_{u+1} \frac{\partial X^{C}_{u+1}}{\partial K^{C}_{u+1}}- \{(1-\tau^{b}_{u+1})\Omega^{C}_{u+1}\tau^{pC}_{u+1}+(1-f_{i}\tau^{i}_{u+1})i_{u+1}\Omega^{C}_{u+1}b^{C}-\delta^{C}(p^{C}_{u+1}-b^{C}-\Omega^{C}_{u+1}(p^{C}_{u+1}-f_{p}\tau^{b}_{u+1}b^{C}))\}   \right] = 0 \\
-& \implies  q^{C}_{u}  = \left(\frac{1}{1+\theta_{u+1}}\right)\\
-& \left[(1-\delta^{C})q^{C}_{u+1} +p^{C}_{u+1} \frac{\partial X^{C}_{u+1}}{\partial K^{C}_{u+1}}- \{(1-\tau^{b}_{u+1})\Omega^{C}_{u+1}\tau^{pC}_{u+1}+(1-f_{i}\tau^{i}_{u+1})i_{u}\Omega^{C}_{u+1}b^{C}-\delta^{C}(p^{C}_{u+1}-b^{C}-\Omega^{C}_{u+1}(p^{C}_{u+1}-f_{p}\tau^{b}_{u+1}b^{C}))\}   \right]  \\
+& \frac{\partial \mathcal{L}_{s}}{\partial K_{u+1}}  =  \prod_{\nu=s}^{u}\left(\frac{1}{1+\theta{\nu}}\right)\left[-q_{u}\right] \\
+ & +  \prod_{\nu=s}^{u+1}\left(\frac{1}{1+\theta{\nu}}\right)\left[(1-\delta)q_{u+1} +p_{u+1} \frac{\partial X_{u+1}}{\partial K_{u+1}}- \{(1-\tau^{b}_{u+1})\Omega_{u+1}\tau^{pC}_{u+1}+(1-f_{i}\tau^{i}_{u+1})i_{u+1}\Omega_{u+1}b-\delta(p_{u+1}-b-\Omega_{u+1}(p_{u+1}-f_{p}\tau^{b}_{u+1}b))\}   \right] = 0 \\
+& \implies  q_{u}  = \left(\frac{1}{1+\theta_{u+1}}\right)\\
+& \left[(1-\delta)q_{u+1} +p_{u+1} \frac{\partial X_{u+1}}{\partial K_{u+1}}- \{(1-\tau^{b}_{u+1})\Omega_{u+1}\tau^{pC}_{u+1}+(1-f_{i}\tau^{i}_{u+1})i_{u}\Omega_{u+1}b-\delta(p_{u+1}-b-\Omega_{u+1}(p_{u+1}-f_{p}\tau^{b}_{u+1}b))\}   \right]  \\
 \end{split}
 \end{equation}
 
-We should be able to solve for $I^{C}_{u}$, $K^{C}_{u+1}$, and $q^{C}_{u}$ with Equations \ref{eqn:lom_capital}, \ref{eqn:opt_i},  and \ref{eqn:foc_k}.  We can then use  $q^{C}_{u}$ to solve for $V^{C}_{u}$ as we show next.
+We should be able to solve for $I_{u}$, $K_{u+1}$, and $q_{u}$ with Equations \ref{eqn:lom_capital}, \ref{eqn:opt_i},  and \ref{eqn:foc_k}.  We can then use  $q_{u}$ to solve for $V_{u}$ as we show next.
 
-As \citet{Hayashi1982} shows,  with a constant returns to scale production function and quadratic adjustment costs, we can device that marginal $q$ is equal to average $q$.  Note that in our case, we must make an adjustment for the value of depreciation deductions on the tax basis of the capital stock.  Relation between marginal $q$, $q^{C}_{u}$, and average $q$, $Q^{C}_{u}$:
+As \citet{Hayashi1982} shows,  with a constant returns to scale production function and quadratic adjustment costs, we can device that marginal $q$ is equal to average $q$.  Note that in our case, we must make an adjustment for the value of depreciation deductions on the tax basis of the capital stock.  Relation between marginal $q$, $q_{u}$, and average $q$, $Q_{u}$:
  \begin{equation}
 \label{eqn:avg_q}
 \begin{split}
-q^{C}_{u}=\frac{[V^{C}_{u}-f_{d}Z^{C}_{u}K^{\tau C}_{u-1}]}{K^{C}_{u}} \text{ and } Q^{C}_{u}=\frac{V^{C}_{u}}{K^{C}_{u}}
+q_{u}=\frac{[V_{u}-f_{d}Z_{u}K^{\tau}_{u-1}]}{K_{u}} \text{ and } Q_{u}=\frac{V_{u}}{K_{u}}
 \end{split}
 \end{equation}
 
@@ -230,7 +240,7 @@ There are six unique state variables, all of which are exogenous.  Note that $r_
     Variable & Description \\
     \hline
     $K^{C}_{s}$ & Capital stock at the beginning of period $s$ \\
-    $K^{\tau C}_{s-1}$ & Tax basis of the capital stock at the beginning of period $s$\\
+    $K^{\tau}_{s-1}$ & Tax basis of the capital stock at the beginning of period $s$\\
     $B^{C}_{s}$ & Debt at the beginning of period $s$ \\
     $p^{C}_{s}$ & Price of corporate good in period $s$ \\
     $w_{s}$ & Wage rate in period $s$ \\
@@ -242,7 +252,7 @@ There are six unique state variables, all of which are exogenous.  Note that $r_
   \label{tab:state_vars}%
 \end{table}%
 
-Note in $K^{\tau C}_{s-1}$ the $s-1$ subscript - depreciation in period $s$ will be based on this and investment in period $s$.
+Note in $K^{\tau}_{s-1}$ the $s-1$ subscript - depreciation in period $s$ will be based on this and investment in period $s$.
 
 There are 14 control variables, although all of these are trivial after the determination of $I^{C}_{s}$ and $EL^{C}_{s}$.
 
@@ -264,7 +274,7 @@ There are 14 control variables, although all of these are trivial after the dete
     $TE^{C}_{s}$ & Total corporate income taxes in period $s$ & \ref{eqn:corp_tax} \\
     $\Phi^{C}_{s}$ & Investment adjustment costs in period $s$ & \ref{eqn:adj_cost} \\
     $B^{C}_{s+1}$ & Corp debt at the end of period $s$ (start of period $s+1$) & \ref{eqn:debt} \\
-    $K^{\tau C}_{s}$ & Tax basis of capital under corp income tax at end of period $s$ (beginning of $s+1$) & \ref{eqn:lom_taxcapital} \\
+    $K^{\tau}_{s}$ & Tax basis of capital under corp income tax at end of period $s$ (beginning of $s+1$) & \ref{eqn:lom_taxcapital} \\
     $VN^{C}_{s}$ & New equity issued by the corp sector in period $s$ & \ref{eqn:vn} \\
     $V^{C}_{s}$ & Firm value in period $s$ & \ref{eqn:avg_q} \\
     $q^{C}_{s}$ & Marginal $q$ (change in firm value per dollar of investment) & \ref{eqn:foc_k} \\
@@ -303,7 +313,7 @@ The model has 19 parameters.  Of these, 7 relate to the firm's production functi
     \ \ \ $b^{C}$ & Debt/Capital ratio \\
     Tax Policy &  \\
     \ \ \ $\tau^{b}_{s}$ & Corporate business income tax rate \\
-    \ \ \ $\delta^{\tau C}_{s}$ & Rate of tax depreciation on corporate capital \\
+    \ \ \ $\delta^{\tau}_{s}$ & Rate of tax depreciation on corporate capital \\
     \ \ \ $\tau^{pC}_{s}$ & Property tax rate on corporate capital \\
     \ \ \ $\tau^{i}_{s}$ & Individual income tax rate on interest income \\
     \ \ \ $\tau^{g}_{s}$ & Individual income tax rate on capital gains \\
@@ -334,14 +344,14 @@ To derive the necessary conditions for investment, we need to first solve for th
 %FOC for choice of labor: p^{C}_{s}\frac{\partial F(K^{C}_{s},EL^{C}_{s})}{\partial \partial EL^{C}_{s}}}=w_{s}
 %CES production function: X^{C}_{s} = \left[(\gamma_{C})^{1/\epsilon_{C}}(K^{C}_{s})^{(\epsilon^{C}-1)/\epsilon_{C}}+(1-\gamma_{C})^{1/\epsilon_{C}}(EL^{C}_{s})^{(\epsilon_{C}-1)/\epsilon_{C}}\right]^{(\epsilon_{C}/(\epsilon_{C}-1)
 %Law of motion for capital: K^{C}_{s+1}=(1-\delta^{C})K^{C}_{s}+I^{C}_{s}
-%Accounting identity: EARN^{C}_{s}=p^{C}_{s}X^{C}_{s}-w_{s}EL^{C}_{s}-i_{s}B^{C}_{s}-\tau^{PC}_{s}K^{C}_{s}
+%Accounting identity: EARN^{C}_{s}=p^{C}_{s}X^{C}_{s}-w_{s}EL^{C}_{s}-i_{s}B^{C}_{s}-\tau^{P}_{s}K^{C}_{s}
 %Determined by assumption that dividends are a constant fraction of after-tax earnings net of depreciaiton: DIV^{C}_{s}=\zeta^{C}(EARN^{C}_{s}-TE^{C}_{s}-p^{C}_{s}\delta^{C}K^{C}_{s})
-%Accounting identity: \tau^{b}_{s}\[p^{C}_{s}X^{C}_{s}-w_{s}EL^{C}_{s}-f_{e}I^{C}_{s}-\Phi^{c}_{s}I^{C}_{s}-f_{i}i_{s}B^{C}_{s}-f_{p}\delta^{C}b^{C}K^{C}_{s}+f_{b}b^{C}I^{C}_{s}-f_{d}\delta^{\tau C}K^{\tau C}_{s}-\tau^{pC}_{s}K^{C}_{s}]+\tau^{icC}_{s}I^{C}_{s} (the last term is invetment tax credits- not in DZ model
+%Accounting identity: \tau^{b}_{s}\[p^{C}_{s}X^{C}_{s}-w_{s}EL^{C}_{s}-f_{e}I^{C}_{s}-\Phi^{c}_{s}I^{C}_{s}-f_{i}i_{s}B^{C}_{s}-f_{p}\delta^{C}b^{C}K^{C}_{s}+f_{b}b^{C}I^{C}_{s}-f_{d}\delta^{\tau}K^{\tau}_{s}-\tau^{pC}_{s}K^{C}_{s}]+\tau^{icC}_{s}I^{C}_{s} (the last term is invetment tax credits- not in DZ model
 %Adjust cost function: \Phi^{C}_{s}=\frac{p^{C}_{s}\left\frac{\beta^{C}}{2}\right)\left(\frac{I^{C}_{s}}{K^{C}_{s}}-\mu^{C}\right)^{2}}{\left(\frac{I^{C}_{s}}{K^{C}_{s}}\right)}
 %Determined by assumption that firm maintains constant debt/capital ratio: B^{C}_{s}=b^{c}K^{C}_{s}, thus B^{C}_{s+1}=b^{c}I^{C}_{s}-\delta^{C}b^{C}K^{C}_{s}+B^{C}_{s}
-%Law of motion for the tax basis of the capital stock: K^{\tau C}_{s}=(1-\delta^{\tau C})K^{\tau C}_{s-1} + (1-f_{e})I^{C}_{s}
+%Law of motion for the tax basis of the capital stock: K^{\tau}_{s}=(1-\delta^{\tau})K^{\tau}_{s-1} + (1-f_{e})I^{C}_{s}
 %Cash flow identity: EARN^{C}_{s}+BN^{C}_{s}+VN^{C}_{s}=DIV^{C}_{s}+I^{C}_{s}(1+\Phi^{C}_{s})+TE^{C}_{s}
-%Equation relating marginal q and average q: q^{C}_{s}=\frac{[V^{C}_{s}-f_{d}Z^{C}_{s}K^{\tau C}_{s-1}]}{K^{C}_{s}}
+%Equation relating marginal q and average q: q^{C}_{s}=\frac{[V^{C}_{s}-f_{d}Z^{C}_{s}K^{\tau}_{s-1}]}{K^{C}_{s}}
 %FOC for investment
 %Q^{C}_{s}=\frac{V^{C}_{s}}{K^{C}_{s}} (as shown by Hayashi (1982), avg q = marginal q when CRS pruction function and quadratic adjustment costs)
 %(1-\tau_{is})i_{s}

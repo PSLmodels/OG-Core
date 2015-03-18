@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  17 MAR 2015 14:20
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  18 MAR 2015 17:21
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -560,8 +560,8 @@ Overfull \hbox (5.1552pt too wide) in paragraph at lines 48--48
 
 Overfull \hbox (46.83253pt too wide) in paragraph at lines 50--51
 [][][]\OT1/cmr/m/n/12 We set up a La-grangian and solve by tak-ing deriva-tives
- with re-spect to $[][]\OMS/cmsy/m/n/12 f\OML/cmm/m/it/12 c[]; n[]; b[]\OMS/cms
-y/m/n/12 g$
+ with re-spect to $[][]\OMS/cmsy/m/n/12 f[]\OML/cmm/m/it/12 ; n[]; b[]\OMS/cmsy
+/m/n/12 g$
  []
 
 [8]
@@ -626,93 +626,104 @@ Chapter 3.
 
 
 ]
-Overfull \hbox (72.85953pt too wide) in paragraph at lines 50--50
+Overfull \hbox (66.69452pt too wide) in paragraph at lines 50--50
 [][][] 
  []
 
 [17]
-Overfull \hbox (2.29778pt too wide) detected at line 75
-[]\OML/cmm/m/it/12 F\OT1/cmr/m/n/12 (\OML/cmm/m/it/12 K[]; EL[]\OT1/cmr/m/n/12 
-) = \OML/cmm/m/it/12 X[] \OT1/cmr/m/n/12 = [][]
- []
-
-
-Overfull \hbox (72.33197pt too wide) in paragraph at lines 102--102
+Overfull \hbox (13.20996pt too wide) in paragraph at lines 102--102
 [][][] 
  []
 
 [18] [19]
-Overfull \hbox (49.91687pt too wide) in paragraph at lines 170--170
+Overfull \hbox (7.85136pt too wide) in paragraph at lines 180--180
 [][][] 
  []
 
 
-Overfull \hbox (104.5729pt too wide) in paragraph at lines 180--180
-[][][] 
- []
-
-
-Overfull \hbox (0.23193pt too wide) in paragraph at lines 187--187
+Overfull \hbox (72.77182pt too wide) in paragraph at lines 190--190
 [][][] 
  []
 
 [20]
-Overfull \hbox (294.7286pt too wide) in paragraph at lines 201--201
+
+LaTeX Warning: Reference `eqn:foci' on page 21 undefined on input line 192.
+
+
+Overfull \hbox (259.11154pt too wide) in paragraph at lines 211--211
 [][][] 
  []
 
 
-Overfull \hbox (4.66571pt too wide) in paragraph at lines 215--215
+LaTeX Warning: Reference `eqn:opt_i' on page 21 undefined on input line 213.
+
+
+Overfull \hbox (4.66571pt too wide) in paragraph at lines 225--225
 [][][]\OT1/cmr/bx/n/17.28 Supply Side Model Com-po-nents: Vari-ables and
  []
 
 [21]
-Overfull \hbox (214.49243pt too wide) in paragraph at lines 253--276
+
+LaTeX Warning: Reference `eqn:opt_i' on page 22 undefined on input line 268.
+
+
+Overfull \hbox (214.49243pt too wide) in paragraph at lines 263--286
  [][][][][] 
  []
 
 
-Overfull \hbox (75.41528pt too wide) in paragraph at lines 287--319
+Overfull \hbox (75.41528pt too wide) in paragraph at lines 297--329
  [][][][][] 
  []
 
 [22] [23]
-Overfull \hbox (92.85677pt too wide) detected at line 378
+
+LaTeX Warning: Reference `eqn:opt_i' on page 24 undefined on input line 374.
+
+
+LaTeX Warning: Reference `eqn:opt_i' on page 24 undefined on input line 374.
+
+
+Overfull \hbox (92.85677pt too wide) detected at line 388
 [][] \OT1/cmr/m/n/12 = [] []
  []
 
 [24]
-Overfull \hbox (11.81746pt too wide) detected at line 404
+Overfull \hbox (11.81746pt too wide) detected at line 414
 [][] \OT1/cmr/m/n/12 = [][] (\OML/cmm/m/it/12 ^^M[]\OT1/cmr/m/n/12 )[](\OML/cmm
 /m/it/12 K[]\OT1/cmr/m/n/12 )[]
  []
 
 
-Overfull \hbox (40.10062pt too wide) detected at line 411
+Overfull \hbox (40.10062pt too wide) detected at line 421
 [][] \OT1/cmr/m/n/12 = [][] (1 \OMS/cmsy/m/n/12 ^^@ \OML/cmm/m/it/12 ^^M[]\OT1/
 cmr/m/n/12 )[](\OML/cmm/m/it/12 EL[]\OT1/cmr/m/n/12 )[]
  []
 
 [25]
-Overfull \hbox (137.7549pt too wide) in paragraph at lines 448--468
+
+LaTeX Warning: Reference `eqn:opt_i' on page 26 undefined on input line 444.
+
+
+Overfull \hbox (137.7549pt too wide) in paragraph at lines 458--478
  [][][][][] 
  []
 
 
-Overfull \hbox (217.22798pt too wide) in paragraph at lines 478--501
+Overfull \hbox (217.22798pt too wide) in paragraph at lines 488--511
  [][][][][] 
  []
 
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 511.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 521.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 511.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 521.
  [26] [27]
 
-Package natbib Warning: Citation `BM1983' on page 28 undefined on input line 56
+Package natbib Warning: Citation `BM1983' on page 28 undefined on input line 57
 3.
 
 ) [28]
@@ -875,19 +886,19 @@ LaTeX Warning: Reference `AppIncTaxRate' on page 36 undefined on input line 149
 
 LaTeX Warning: Reference `AppReplRate' on page 36 undefined on input line 151.
 
-<images/SavSS_log.png, id=615, 578.16pt x 433.62pt>
+<images/SavSS_log.png, id=610, 578.16pt x 433.62pt>
 File: images/SavSS_log.png Graphic file (type png)
  <use images/SavSS_log.png>
 Package pdftex.def Info: images/SavSS_log.png used on input line 169.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-<images/LabSS.png, id=617, 465.99094pt x 365.11406pt>
+<images/LabSS.png, id=612, 465.99094pt x 365.11406pt>
 File: images/LabSS.png Graphic file (type png)
  <use images/LabSS.png>
 Package pdftex.def Info: images/LabSS.png used on input line 174.
 (pdftex.def)             Requested size: 465.98979pt x 365.11316pt.
 
-<images/ConsSS_log.png, id=618, 578.16pt x 433.62pt>
+<images/ConsSS_log.png, id=613, 578.16pt x 433.62pt>
 File: images/ConsSS_log.png Graphic file (type png)
 
 <use images/ConsSS_log.png>
@@ -908,13 +919,13 @@ Overfull \hbox (72.20467pt too wide) in paragraph at lines 207--208
 
 LaTeX Warning: Reference `EqFOCrate' on page 41 undefined on input line 215.
 
-<images/KpathTPI.png, id=682, 578.16pt x 433.62pt>
+<images/KpathTPI.png, id=677, 578.16pt x 433.62pt>
 File: images/KpathTPI.png Graphic file (type png)
  <use images/KpathTPI.png>
 Package pdftex.def Info: images/KpathTPI.png used on input line 219.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-<images/LpathTPI.png, id=683, 578.16pt x 433.62pt>
+<images/LpathTPI.png, id=678, 578.16pt x 433.62pt>
 File: images/LpathTPI.png Graphic file (type png)
  <use images/LpathTPI.png>
 Package pdftex.def Info: images/LpathTPI.png used on input line 224.
@@ -955,7 +966,7 @@ Underfull \hbox (badness 2088) in paragraph at lines 155--155
 [][][][]|[]\OT1/cmr/bx/n/12 Di-a-gram of TPI so-lu-tion method
  []
 
-<images/TPIdiag.pdf, id=793, 513.57974pt x 675.72452pt>
+<images/TPIdiag.pdf, id=788, 513.57974pt x 675.72452pt>
 File: images/TPIdiag.pdf Graphic file (type pdf)
 
 <use images/TPIdiag.pdf>
@@ -1008,7 +1019,7 @@ Package atveryend Info: Empty hook `AfterLastShipout' on input line 219.
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 219.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 219.
 Package rerunfilecheck Info: File `AEIBYUDyn.out' has not changed.
-(rerunfilecheck)             Checksum: A2EA505F34FBC065FBB2C7AD4E3D4ABC;2723.
+(rerunfilecheck)             Checksum: 3FE3C3F1E5D709595F245F52A0B6D135;2728.
 
 
 LaTeX Warning: There were undefined references.
@@ -1016,10 +1027,10 @@ LaTeX Warning: There were undefined references.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 219.
  ) 
 Here is how much of TeX's memory you used:
- 8640 strings out of 493488
- 127069 string characters out of 3141326
- 238384 words of memory out of 3000000
- 11467 multiletter control sequences out of 15000+200000
+ 8642 strings out of 493488
+ 127098 string characters out of 3141326
+ 238469 words of memory out of 3000000
+ 11469 multiletter control sequences out of 15000+200000
  24815 words of font info for 91 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
  36i,34n,41p,1631b,676s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1047,10 +1058,10 @@ t/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2012/texmf-dist/
 fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2012/texmf-dist/f
 onts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2012/texmf-dist/fo
 nts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on AEIBYUDyn.pdf (57 pages, 1326794 bytes).
+Output written on AEIBYUDyn.pdf (57 pages, 1327014 bytes).
 PDF statistics:
- 997 PDF objects out of 1000 (max. 8388607)
- 893 compressed objects within 9 object streams
+ 992 PDF objects out of 1000 (max. 8388607)
+ 888 compressed objects within 9 object streams
  289 named destinations out of 1000 (max. 500000)
  327 words of extra memory for PDF output out of 10000 (max. 10000000)
 
