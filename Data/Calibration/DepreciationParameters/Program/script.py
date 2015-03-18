@@ -420,14 +420,25 @@ for i in xrange(pos1[0],cur_ws.nrows):
 '''
 
 '''
+'''
+farm_cols = ["Land","Fixed Assets"]
+for i in data_tree.enum_inds:
+    i.append_dfs(("farm_prop", pd.DataFrame(np.zeros((1,len(farm_cols))), columns=farm_cols)))
+
+farm_data = pd.read_csv(prop_folder + "\\Farm_Data.csv")
+land_mult = (farm_data.iloc[0,1] + farm_data.iloc[0,3]) * (farm_data.iloc[0,5]/farm_data.iloc[0,4])
+for i in data_tree.enum_inds:
+     = land_mult * i.data.dfs["PA_assets"]["Land (Net)"][0]/(i.data.dfs["PA_assets"]["Land (Net)"][0] + i.data.dfs["PA_assets"]["Depreciable assets (Net)"][0])
+'''
+
 
 '''
 Many industries are not listed in the SOI datasets. The data for these missing
     industries are interpolated.
 '''
-'''
+
 #for corps in data_tree.enum_inds[0].data.dfs:
-for corps in ["soi_prop"]:
+for corps in data_tree.enum_inds[0].data.dfs:
     if corps == "Codes:":
         continue
     cur_dfs = None
@@ -444,23 +455,19 @@ for corps in ["soi_prop"]:
         else:
             cur_dfs_filled = True
         if sum((par_dfs != pd.DataFrame(np.zeros((1,len(header))), columns = header)).iloc[0]) == 0:
-            was_empty[data_tree.par[i]] = True   
-        print par_dfs
-        print data_tree.par[count]
-        print count
+            was_empty[data_tree.par[count]] = True
         if cur_dfs_filled and was_empty[data_tree.par[count]]:
             data_tree.enum_inds[data_tree.par[count]].data.dfs[corps] += cur_dfs
         count = count - 1
 
     # Working forwards through the tree:
-    for i in range(0, 1): #len(data_tree.enum_inds)):
+    for i in range(0, len(data_tree.enum_inds)):
         if data_tree.enum_inds[i].sub_ind != []:
             cur_ind = data_tree.enum_inds[i]
             cur_dfs = cur_ind.data.dfs[corps]
             sum_dfs = pd.DataFrame(np.zeros((1,len(header))), columns = header)
             proportion = 1
             for j in cur_ind.sub_ind:
-                print j.data.dfs[corps]
                 sum_dfs += j.data.dfs[corps]
             for j in range(0, len(header)):
                 if sum_dfs.iloc[0,j] == 0:
@@ -470,7 +477,7 @@ for corps in ["soi_prop"]:
                     proportion = cur_dfs.iloc[0,j]/sum_dfs.iloc[0,j]
                     for k in cur_ind.sub_ind:
                         k.data.dfs[corps].iloc[0,j] *= proportion
-'''
+
 
 
 
