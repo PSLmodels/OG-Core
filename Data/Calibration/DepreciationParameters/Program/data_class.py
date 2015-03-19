@@ -1,6 +1,6 @@
 '''
 -------------------------------------------------------------------------------
-Last updated 3/6/2015
+Last updated 3/19/2015
 -------------------------------------------------------------------------------
 This py-file defines objects that will be used to keep track of all the data
     pertinent to depreciation rates. Specifically, these objects will address
@@ -29,30 +29,13 @@ class pd_dfs: This Defines an object that contains a list of pandas dataframes.
 -------------------------------------------------------------------------------
 '''
 class pd_dfs:
-    '''
-    Constructor function.
-    Input: A sequence of pandas dataframes.
-    '''
     def __init__(self, *args):
-        #
-        #while len(args) == 1 and isinstance(args[0],tuple) and isinstance(args[0][0],tuple):
-        #    args = args[0]
-        '''
-        #Handling invalid inputs:
-        for i in xrange(0, len(args)):
-            if isinstance(args[i], pd.DataFrame):
-                self.n += 1
-            else:
-                print "Invalid input"
-        '''
         self.dfs = {}
         self.append(args)
     
     def append(self, *args):
-        #print args
         while len(args) == 1 and isinstance(args[0], (list,tuple)):
             args = args[0]
-        #print args
         for i in xrange(len(args)):
             if isinstance(args[i], (list,tuple)):
                 self.dfs[args[i][0]] = args[i][1]

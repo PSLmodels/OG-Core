@@ -1,6 +1,6 @@
 '''
 -------------------------------------------------------------------------------
-Last updated 3/6/2015
+Last updated 3/19/2015
 -------------------------------------------------------------------------------
 This py-file defines a functions that processes a list NAICS codes by creating
     a tree of NAICS industries and ancillary functions.
@@ -143,6 +143,74 @@ def search_ws(sheet, search_term, distance, warnings = True, origin = [0,0], exa
     
     return [-1,-1]
 
+def pop_back(tree, pd_list):
+    for corps in pd_list:
+        cur_dfs = None
+        was_empty = [False]*len(tree.enum_inds)
+        count = len(tree.enum_inds)-1
+        header = tree.enum_inds[0].data.dfs[corps].columns.values.tolist()
+        # Working backwards through the tree
+        for i in range(1, len(tree.enum_inds)):
+            cur_dfs = tree.enum_inds[count].data.dfs[corps]
+            par_dfs = tree.enum_inds[tree.par[count]].data.dfs[corps]
+            cur_dfs_filled = False
+            if sum((cur_dfs != pd.DataFrame(np.zeros((1,len(header))), columns = header)).iloc[0]) == 0:
+                cur_dfs_filled = False
+            else:
+                cur_dfs_filled = True
+            if sum((par_dfs != pd.DataFrame(np.zeros((1,len(header))), columns = header)).iloc[0]) == 0:
+                was_empty[tree.par[count]] = True
+            if cur_dfs_filled and was_empty[tree.par[count]]:
+                tree.enum_inds[tree.par[count]].data.dfs[corps] += cur_dfs
+            count = count - 1
+
+
+def pop_forward(tree, pd_list, blueprint = None):
+    if blueprint == None:
+        for corps in pd_list:
+            cur_dfs = None
+            header = tree.enum_inds[0].data.dfs[corps].columns.values.tolist()
+            for i in range(0, len(tree.enum_inds)):
+                if tree.enum_inds[i].sub_ind != []:
+                    cur_ind = tree.enum_inds[i]
+                    cur_dfs = cur_ind.data.dfs[corps]
+                    sum_dfs = pd.DataFrame(np.zeros((1,len(header))), columns = header)
+                    proportion = 1
+                    for j in cur_ind.sub_ind:
+                        sum_dfs += j.data.dfs[corps]
+                    for j in range(0, len(header)):
+                        if sum_dfs.iloc[0,j] == 0:
+                            for k in cur_ind.sub_ind:
+                                k.data.dfs[corps].iloc[0,j] = cur_dfs.iloc[0,j]/len(cur_ind.sub_ind)
+                        else:
+                            proportion = cur_dfs.iloc[0,j]/sum_dfs.iloc[0,j]
+                            for k in cur_ind.sub_ind:
+                                k.data.dfs[corps].iloc[0,j] *= proportion
+    else:
+        for corps in pd_list:
+            cur_dfs = None
+            header1 = tree.enum_inds[0].data.dfs[corps].columns.values.tolist()
+            header2 = tree.enum_inds[0].data.dfs[blueprint].columns.values.tolist()
+            for i in range(0, len(tree.enum_inds)):
+                if tree.enum_inds[i].sub_ind != []:
+                    cur_ind = tree.enum_inds[i]
+                    cur_dfs = cur_ind.data.dfs[corps]
+                    sum_dfs = pd.DataFrame(np.zeros((1,len(header1))), columns = header1)
+                    proportions = np.zeros(len(tree.enum_inds[i].sub_ind))
+                    for j in range(0, len(cur_ind.sub_ind)):
+                        sum_dfs += cur_ind.sub_ind[j].data.dfs[corps]
+                        for k in range(0, len(header2)):
+                            proportions[j] += cur_ind.sub_ind[j].data.dfs[blueprint].iloc[0,k]
+                    if sum(proportions) != 0:
+                        proportions = proportions/sum(proportions)
+                    else:
+                        for k in range(0, len(proportions)):
+                            proportions[k] = 1/len(proportions)
+                        
+                    for j in range(0, len(cur_ind.sub_ind)):
+                        for k in range(0, len(header1)):
+                            change = proportions[j] * (cur_dfs.iloc[0,k]-sum_dfs.iloc[0,k])
+                            cur_ind.sub_ind[j].data.dfs[corps].iloc[0,k] += change
 
 
 
