@@ -1,6 +1,6 @@
 '''
 -------------------------------------------------------------------------------
-Last updated 3/10/2015
+Last updated 3/19/2015
 -------------------------------------------------------------------------------
 This py-file calls the following file(s):
         Raw input files:
@@ -146,6 +146,7 @@ for code_num in np.unique(tot_corp_data["INDY_CD"]):
     cur_dfs["Cost of Treasury Stock"][0] = sum(
             indicators * tot_corp_data["CST_TRSRY_STCK"]
             )
+            
 
 # Loading s-corporation data:
 enum_index = 0
@@ -204,6 +205,7 @@ for code_num in np.unique(s_corp_data["INDY_CD"]):
 # Inferring the c-corporation data from the 
 for i in range(0, len(data_tree.enum_inds)):
     data_tree.enum_inds[i].data.dfs["c_corps"] = data_tree.enum_inds[i].data.dfs["tot_corps"] - data_tree.enum_inds[i].data.dfs["s_corps"]
+
 # Deleting variables:
 sbflt_year = None
 sbflt_folder = None
@@ -436,54 +438,16 @@ for i in data_tree.enum_inds:
 Many industries are not listed in the SOI datasets. The data for these missing
     industries are interpolated.
 '''
-
-#for corps in data_tree.enum_inds[0].data.dfs:
-for corps in data_tree.enum_inds[0].data.dfs:
-    if corps == "Codes:":
-        continue
-    cur_dfs = None
-    was_empty = [False]*len(data_tree.enum_inds)
-    count = len(data_tree.enum_inds)-1
-    header = data_tree.enum_inds[0].data.dfs[corps].columns.values.tolist()
-    # Working backwards through the tree
-    for i in range(1, len(data_tree.enum_inds)):
-        cur_dfs = data_tree.enum_inds[count].data.dfs[corps]
-        par_dfs = data_tree.enum_inds[data_tree.par[count]].data.dfs[corps]
-        cur_dfs_filled = False
-        if sum((cur_dfs != pd.DataFrame(np.zeros((1,len(header))), columns = header)).iloc[0]) == 0:
-            cur_dfs_filled = False
-        else:
-            cur_dfs_filled = True
-        if sum((par_dfs != pd.DataFrame(np.zeros((1,len(header))), columns = header)).iloc[0]) == 0:
-            was_empty[data_tree.par[count]] = True
-        if cur_dfs_filled and was_empty[data_tree.par[count]]:
-            data_tree.enum_inds[data_tree.par[count]].data.dfs[corps] += cur_dfs
-        count = count - 1
-
-    # Working forwards through the tree:
-    for i in range(0, len(data_tree.enum_inds)):
-        if data_tree.enum_inds[i].sub_ind != []:
-            cur_ind = data_tree.enum_inds[i]
-            cur_dfs = cur_ind.data.dfs[corps]
-            sum_dfs = pd.DataFrame(np.zeros((1,len(header))), columns = header)
-            proportion = 1
-            for j in cur_ind.sub_ind:
-                sum_dfs += j.data.dfs[corps]
-            for j in range(0, len(header)):
-                if sum_dfs.iloc[0,j] == 0:
-                    for k in cur_ind.sub_ind:
-                        k.data.dfs[corps].iloc[0,j] = cur_dfs.iloc[0,j]/len(cur_ind.sub_ind)
-                else:
-                    proportion = cur_dfs.iloc[0,j]/sum_dfs.iloc[0,j]
-                    for k in cur_ind.sub_ind:
-                        k.data.dfs[corps].iloc[0,j] *= proportion
-
-
-
-
-
-
-
+# Get a list of the names of all the pd dfs besides the list of codes:
+a = data_tree.enum_inds[0].data.dfs.keys()
+a.remove("Codes:")
+# Populate missing industry data backwards throught the tree:
+naics.pop_back(data_tree, a)
+# Populate the missing total corporate data forwards through the tree:
+naics.pop_forward(data_tree, ["tot_corps"])
+# Populate all other missing data using tot_corps as a "blueprint":
+a.remove("tot_corps")
+naics.pop_forward(data_tree, a, "tot_corps")
 
 
 
