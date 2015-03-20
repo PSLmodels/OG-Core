@@ -205,7 +205,7 @@ def pop_forward(tree, pd_list, blueprint = None):
                         proportions = proportions/sum(proportions)
                     else:
                         for k in range(0, len(proportions)):
-                            proportions[k] = 1/len(proportions)
+                            proportions[k] = 1.0/len(proportions)
                         
                     for j in range(0, len(cur_ind.sub_ind)):
                         for k in range(0, len(header1)):

@@ -288,11 +288,11 @@ inc_data_03 = [None]*len(gen_cols_03)
 for i in xrange(0, len(gen_cols_03)):
     for row1 in xrange(0, cur_rows):
         if(gen_cols_03[i].lower() in str(sheet_03.cell_value(row1,0)).lower()):
-            tot_data_03[i] = sheet_03.row_values(row1,2)
+            tot_data_03[i] = sheet_03.row_values(row1,1)
             for row2 in xrange(row1+1, cur_rows):
                 cur_cell = str(sheet_03.cell_value(row2,0)).lower()
                 if(gen_cols_03[i].lower() in cur_cell):
-                    inc_data_03[i] = sheet_03.row_values(row2,2)
+                    inc_data_03[i] = sheet_03.row_values(row2,1)
                     break
             break
 # Reformatting the data:
@@ -419,38 +419,146 @@ for i in xrange(pos1[0],cur_ws.nrows):
             break
         count1 = (count1+1) % cur_cross.shape[0]
         
-'''
-
-'''
-'''
-farm_cols = ["Land","Fixed Assets"]
-for i in data_tree.enum_inds:
-    i.append_dfs(("farm_prop", pd.DataFrame(np.zeros((1,len(farm_cols))), columns=farm_cols)))
-
-farm_data = pd.read_csv(prop_folder + "\\Farm_Data.csv")
-land_mult = (farm_data.iloc[0,1] + farm_data.iloc[0,3]) * (farm_data.iloc[0,5]/farm_data.iloc[0,4])
-for i in data_tree.enum_inds:
-     = land_mult * i.data.dfs["PA_assets"]["Land (Net)"][0]/(i.data.dfs["PA_assets"]["Land (Net)"][0] + i.data.dfs["PA_assets"]["Depreciable assets (Net)"][0])
-'''
-
 
 '''
 Many industries are not listed in the SOI datasets. The data for these missing
     industries are interpolated.
 '''
 # Get a list of the names of all the pd dfs besides the list of codes:
-a = data_tree.enum_inds[0].data.dfs.keys()
-a.remove("Codes:")
+cur_names = data_tree.enum_inds[0].data.dfs.keys()
+cur_names.remove("Codes:")
 # Populate missing industry data backwards throught the tree:
-naics.pop_back(data_tree, a)
+naics.pop_back(data_tree, cur_names)
 # Populate the missing total corporate data forwards through the tree:
 naics.pop_forward(data_tree, ["tot_corps"])
-# Populate all other missing data using tot_corps as a "blueprint":
-a.remove("tot_corps")
-naics.pop_forward(data_tree, a, "tot_corps")
+# Populate other missing data using tot_corps as a "blueprint":
+cur_names = ["c_corps", "s_corps", "PA_inc/loss", "PA_assets", "soi_prop"]
+naics.pop_forward(data_tree, cur_names, "tot_corps")
+# Populate pa05 using pa01:
+naics.pop_forward(data_tree, ["PA_types"], "PA_inc/loss")
 
 
 
 
 
-    
+
+
+
+
+
+
+
+
+
+
+
+'''
+Load Farm Proprietorship data:
+'''
+#
+farm_cols = ["R_p", "R_sp", "Q_p", "Q_sp", "A_p", "A_sp"]
+farm_data = pd.read_csv(prop_folder + "\\Farm_Data.csv")
+new_farm_cols = ["Land", "FA"]
+#
+for i in data_tree.enum_inds:
+    i.append_dfs(("farm_prop", pd.DataFrame(np.zeros((1,len(new_farm_cols))), columns=new_farm_cols)))
+#
+land_mult = (farm_data["R_sp"][0] + farm_data["Q_sp"][0]) * (float(farm_data["A_sp"][0])/farm_data["A_p"][0])
+total = farm_data.iloc[0,0] + farm_data.iloc[0,2]
+total_pa_land = 0
+total_pa = 0
+cur_codes = [111,112]
+proportions = np.zeros(len(cur_codes))
+for i in xrange(0, len(cur_codes)):
+    cur_ind = naics.find_naics(data_tree, cur_codes[i])
+    total_pa_land += cur_ind.data.dfs["PA_assets"]["Land (Net)"][0]
+    total_pa += cur_ind.data.dfs["PA_assets"]["Land (Net)"][0] + cur_ind.data.dfs["PA_assets"]["Depreciable assets (Net)"][0]
+    proportions[i] = cur_ind.data.dfs["PA_assets"]["Land (Net)"][0] + cur_ind.data.dfs["PA_assets"]["Depreciable assets (Net)"][0]
+#
+if sum(proportions) != 0:
+    proportions = proportions/sum(proportions)
+else:
+    for i in len(proportions):
+        proportions[i] = 1.0/len(proportions)
+#
+total_prop_land = land_mult * total_pa_land/total_pa
+total_prop_fa = farm_data.iloc[0,0] + farm_data.iloc[0,2] - total_prop_land
+#
+for i in xrange(0,len(cur_codes)):
+    cur_ind = naics.find_naics(data_tree, cur_codes[i])
+    cur_ind.data.dfs["farm_prop"]["Land"][0] = land_mult * cur_ind.data.dfs["PA_assets"]["Land (Net)"][0]/total_pa
+    cur_ind.data.dfs["farm_prop"]["FA"][0] = (proportions[i]*total) - cur_ind.data.dfs["farm_prop"]["Land"][0]
+#
+naics.pop_back(data_tree, ["farm_prop"])
+naics.pop_forward(data_tree, ["farm_prop"], "tot_corps")
+
+'''
+Create an output tree containing only the final data on FA, INV, and LAND.
+'''
+#
+all_sectors = ["C Corporations", "S Corporations", "Corporate general partners", 
+               "Corporate limited partners",
+               "Individual general partners", "Individual limited partners",
+               "Partnership general partners", "Partnership limited partners",
+               "Tax-exempt organization general partners",
+               "Tax-exempt organization limited partners",
+               "Nominee and other general partners", 
+               "Nominee and other limited partners", "Sole Proprietors"]
+#
+output_tree = naics.load_naics(data_folder + "\\2012_NAICS_Codes.csv")
+
+for i in output_tree.enum_inds:
+    i.append_dfs(("FA",pd.DataFrame(np.zeros((1, len(all_sectors))),columns = all_sectors)))
+    i.append_dfs(("INV",pd.DataFrame(np.zeros((1, len(all_sectors))),columns = all_sectors)))
+    i.append_dfs(("LAND",pd.DataFrame(np.zeros((1, len(all_sectors))),columns = all_sectors)))
+
+for i in range(0, len(output_tree.enum_inds)):
+    for j in range(0, len(all_sectors)):
+        sector = all_sectors[j]
+        if sector == "C Corporations":
+            output_tree.enum_inds[i].data.dfs["FA"][sector][0] = data_tree.enum_inds[i].data.dfs["c_corps"]["Depreciable Assets"][0]
+            output_tree.enum_inds[i].data.dfs["INV"][sector][0] = data_tree.enum_inds[i].data.dfs["c_corps"]["Inventories"][0]
+            output_tree.enum_inds[i].data.dfs["LAND"][sector][0] = data_tree.enum_inds[i].data.dfs["c_corps"]["Land"][0]
+        elif sector == "S Corporations":
+            output_tree.enum_inds[i].data.dfs["FA"][sector][0] = data_tree.enum_inds[i].data.dfs["c_corps"]["Depreciable Assets"][0]
+            output_tree.enum_inds[i].data.dfs["INV"][sector][0] = data_tree.enum_inds[i].data.dfs["c_corps"]["Inventories"][0]
+            output_tree.enum_inds[i].data.dfs["LAND"][sector][0] = data_tree.enum_inds[i].data.dfs["c_corps"]["Land"][0]
+        elif sector == "Corporate general partners":
+            pass
+            #output_tree.enum_inds[i].data.dfs["FA"][sector][0] = data_tree.enum_inds[i].data.dfs["PA_types"]["Depreciable Assets"][0]
+        elif sector == "Corporate limited partners":
+            pass
+        elif sector == "Individual general partners":
+            a = 5
+        elif sector == "Individual limited partners":
+            a = 5
+        elif sector == "Partnership general partners":
+            a = 5
+        elif sector == "Partnership limited partners":
+            a = 5
+        elif sector == "Tax-exempt organization general partners":
+            a = 5
+        elif sector == "Tax-exempt organization limited partners":
+            a = 5
+        elif sector == "Nominee and other general partners":
+            a = 5
+        elif sector == "Nominee and other limited partners":
+            a = 5
+        elif sector == "Sole Proprietors":
+            a = 5
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
