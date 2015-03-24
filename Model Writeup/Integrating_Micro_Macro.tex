@@ -23,6 +23,7 @@
 \usepackage{hyperref}
 \hypersetup{colorlinks,linkcolor=red,urlcolor=blue,citecolor=red}
 \usepackage{bm}
+\usepackage{soul}
 
 
 \theoremstyle{definition}
@@ -65,20 +66,20 @@
 \ \\
 \ \\
 
-OSPC is developing both a microsimulation model and a general equilibrium macroeconomic model to forecast tax policy changes.  The strength of the former is that is accounts for details of the tax code and forms revenue estimates based on the economic behavior of a large number of individuals represented in the IRS public use files.  The strength of the later is to account for supply side tax policies and general equilibrium effects.  A large contribution of OSPC's tax scoring projects will be the integration of the two models.  To the best of our knowledge, no organization has successfully wed a micro-founded dynamic general equilibrium model to a microsimulation model to evaluate tax policy.  
+OSPC is developing both a microsimulation model and a general equilibrium macroeconomic model to forecast tax policy changes.  The strength of the former is that is accounts for details of the tax code and forms revenue estimates based on the economic behavior of a large number of individuals represented in the IRS public use files.  The strength of the later is to account for supply side tax policies and general equilibrium effects.  A large contribution of OSPC's tax scoring projects will be the integration of the two models.  To the best of our knowledge, no organization has successfully wed a micro-founded dynamic general equilibrium model to a microsimulation model to evaluate tax policy.
 
 \section{Arguments to pass from the micro to the macro model}
 
-The dynamic scoring model posits a two tax functions that are smooth and dependent upon the state variables in the macro model; a payroll tax function and an individual income tax function .  The state variables that are arguments in these functions include age, labor income, and capital income.  The calendar year (or model period) is also a state variable and the tax functions will differ across calendar year as current law or the policy proposal dictate.  
+The dynamic scoring model posits \textcolor{red}{multiple} \st{a two tax} functions that are smooth and dependent upon \textcolor{red}{various} \st{the} state variables in the macro model; \textcolor{red}{e.g.,} a payroll tax function and an individual income tax function. The state variables that are arguments in these functions include age, labor income, and capital income. The calendar year (or model period) is also a state variable and the tax functions will differ across calendar year as current law or the policy proposal dictate.
 
-To fit these tax functions, the macro model needs data on payroll and income taxes paid by filer age, labor income, capital income, and calendar year.  Note that the macro model does not currently account for the structure of the filing unit, so in the case of a filing unit with primary and secondary filers, we determine age by that of the primary filer.  Thus, the relevant output from the micro model would be the payroll and income tax burdens (in dollars), age, earned income (which equates to labor income in our model), capital income for each individual and each year used in the microsimulation model.  With these data, we can then fit the functions for total payroll and income taxes paid that are used in the macro model.
+To fit these tax functions, the macro model needs data on payroll and income taxes paid by filer age, labor income, capital income, and calendar year. Note that the macro model does not currently account for the structure of the filing unit, so in the case of a filing unit with primary and secondary filers, we determine age by that of the primary filer. Thus, the relevant output from the micro model would be the payroll and income tax burdens (in dollars), age, earned income (which equates to labor income in our model), capital income for each individual and each year used in the microsimulation model. With these data, we can then fit the functions for total payroll and income taxes paid that are used in the macro model.
 
 \section{Arguments to pass from the macro model to the micro model}
 
-The microsimulation model relies on a set of extrapolators to forecast the future revenue consequences of tax policy.  These are generally based on growth rates of macroeconomic aggregates.  Our microeconomic model will produce annual forecasts for GDP, labor income, real interest rates.  It also produces forecasts of corporate profits, although firms in the model earn zero economic profits.  
+The microsimulation model relies on a set of extrapolators to forecast the future revenue consequences of tax policy.  These are generally based on growth rates of macroeconomic aggregates.  Our microeconomic model will produce annual forecasts for GDP, labor income, real interest rates.  It also produces forecasts of corporate profits, although firms in the model earn zero economic profits.
 
 The model does lack some key extrapolators for the micro model, namely the nominal variables such as the evolution of the price index and nominal interest rates.  The model does produce a forecast of hours worked the may be used for the micro model, but there is no unemployment in the macro model so a forecast of unemployment rates will not be available.
-% Not sure how we include these (or if we do) as of yet.  
+% Not sure how we include these (or if we do) as of yet.
 
 
 \begin{table}[htbp]
@@ -106,7 +107,7 @@ The model does lack some key extrapolators for the micro model, namely the nomin
 
 \section{Determining the macro forecast}
 
-The goal for the interaction between the two models is for the revenue estimates from each to be consistent with each other.  In particular, that the data used to calibrate the tax functions of the macro model be the result of the microsimulation model taking as inputs the macro forecast that uses those same data in order to calibrate the tax function.  This represents a fixed point in the process (I don't think we can prove that one exists, but it seems plausible).  
+The goal for the interaction between the two models is for the revenue estimates from each to be consistent with each other.  In particular, that the data used to calibrate the tax functions of the macro model be the result of the microsimulation model taking as inputs the macro forecast that uses those same data in order to calibrate the tax function.  This represents a fixed point in the process (I don't think we can prove that one exists, but it seems plausible).
 
 To find this fixed point, we use an iterative process.  The algorithm is as follows:
 \begin{enumerate}
