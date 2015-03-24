@@ -1,55 +1,67 @@
 '''
 -------------------------------------------------------------------------------
-Last updated 3/19/2015
+Last updated 3/24/2015
 -------------------------------------------------------------------------------
-This py-file defines a functions that processes a list NAICS codes by creating
-    a tree of NAICS industries and ancillary functions.
+This py-file defines functions that process an NAICS tree. The tree contains
+    data related to depreciation rates for each industry in the tree. These
+    functions initialize and load data into the tree as well as interpolate
+    missing values.
 -------------------------------------------------------------------------------
     Packages
 -------------------------------------------------------------------------------
 '''
-import pandas as pd
+import os.path
 import numpy as np
-#
+import pandas as pd
+import xlrd
+# A class containing predefined data structures such as trees:
 import data_class as dc
 '''
 -------------------------------------------------------------------------------
 Functions created:
     load_naics
+    load_soi_corporate_data
+    load_soi_partner_data
+    load_soi_proprietor_data
+    summary_tree
+    pop_back
+    pop_forward
     find_naics
+    search_ws
 -------------------------------------------------------------------------------
-
--------------------------------------------------------------------------------
-def load_naics: Reads a csv file list of NAICS codes and creates a tree.
-    path: the path + /filename 
+def load_naics: This reads in a csv list of naics codes and creates a tree.
 -------------------------------------------------------------------------------
 '''
 def load_naics(path):
-    # Reading table describing the tree:
+    # Reading in a list of naics codes:
     enum = pd.read_csv(path).fillna(0)
     rows = enum.shape[0]
     # Initializing the corresponding naics tree:
-    naics = dc.tree()
-    naics.enum_codes = enum
-    naics.enum_inds = [dc.industry([]) for i in xrange(0,rows)]
-    naics.root = naics.enum_inds[0]
-    naics.par = [0]*rows
-    #
+    naics_tree = dc.tree()
+    naics_tree.enum_codes = enum
+    naics_tree.enum_inds = [dc.industry([]) for i in xrange(0,rows)]
+    naics_tree.root = naics_tree.enum_inds[0]
+    naics_tree.par = [0]*rows
+    # Read the naics codes into the tree:
     for i in xrange(0, rows):
         cur_codes = pd.DataFrame(enum.iloc[i,0].split("-"))
         if(cur_codes.shape[0] == 2):
-            cur_codes = pd.DataFrame(range(int(cur_codes.iloc[0,0]),int(cur_codes.iloc[1,0])+1))
-        naics.enum_inds[i].append_dfs(("Codes:", cur_codes))
-        for j in xrange(0, naics.enum_inds[i].data.dfs["Codes:"].shape[0]):
-            naics.enum_inds[i].data.dfs["Codes:"].iloc[j,0] = int(naics.enum_inds[i].data.dfs["Codes:"].iloc[j,0])
-    # Keeps track of the path from the root to the current industry.
+            cur_codes = pd.DataFrame(range(int(cur_codes.iloc[0,0]),
+                                           int(cur_codes.iloc[1,0])+1))
+        naics_tree.enum_inds[i].append_dfs(("Codes:", cur_codes))
+        cur_rows = naics_tree.enum_inds[i].data.dfs["Codes:"].shape[0]
+        for j in xrange(0, cur_rows):
+            code = int(naics_tree.enum_inds[i].data.dfs["Codes:"].iloc[j,0])
+            naics_tree.enum_inds[i].data.dfs["Codes:"].iloc[j,0] = code
+    # Creating the tree structure:
+    # "levels" keeps track of the path from the root to the current industry.
     levels = [None]
-    levels[0] = naics.enum_inds[0]
+    levels[0] = naics_tree.enum_inds[0]
     levels_index = [0]
     cur_lvl = 0
-    # Go through every code and find the parent industry
+    # Going through every industry in the tree and finding the parent/children:
     for i in xrange(1,rows):
-        cur_ind = naics.enum_inds[i]
+        cur_ind = naics_tree.enum_inds[i]
         cur_codes = cur_ind.data.dfs["Codes:"]
         cur_rows = cur_codes.shape[0]
         par_found = False
@@ -57,25 +69,25 @@ def load_naics(path):
             prev_ind = levels[cur_lvl]
             prev_codes = prev_ind.data.dfs["Codes:"]
             prev_rows = prev_codes.shape[0]
-            
             for j in xrange(0, cur_rows):
                 for k in xrange(0, prev_rows):
-                    
                     if cur_lvl == 0:
+                        # The industry's parent is the root.
                         par_found = True
                         cur_lvl += 1
                         levels.append(cur_ind)
                         levels_index.append(i)
                         levels[0].sub_ind.append(cur_ind)
-                        naics.par[i] = levels_index[cur_lvl-1]
+                        naics_tree.par[i] = levels_index[cur_lvl-1]
                         break
-                    elif (str(prev_codes.iloc[k,0]) in str(cur_codes.iloc[j,0])):
+                    elif str(prev_codes.iloc[k,0]) in str(cur_codes.iloc[j,0]):
+                        # "levels[cur_lvl]" is the parent of "cur_ind":
                         par_found = True
                         cur_lvl += 1
                         levels.append(cur_ind)
                         levels_index.append(i)
                         prev_ind.sub_ind.append(cur_ind)
-                        naics.par[i] = levels_index[cur_lvl-1]
+                        naics_tree.par[i] = levels_index[cur_lvl-1]
                         break
                 if(par_found):
                     break
@@ -83,9 +95,406 @@ def load_naics(path):
                 del levels[cur_lvl]
                 del levels_index[cur_lvl]
                 cur_lvl -= 1
-                
-    return naics
+    return naics_tree
+
+
+'''
+-------------------------------------------------------------------------------
+Reading in the SOI Tax Stats-Corporation Data:
+(Note: SOI gives data for all corporations as well as for just s-corporations.
+    The c-corporation data is inferred from this.)
+-------------------------------------------------------------------------------
+'''
+def load_soi_corporate_data(data_tree, data_folder):
+    # Finding the "\**sbfltfile" file in the data_folder (contains corp data):
+    for i in os.listdir(data_folder):
+        if(i[2:] == "sbfltfile"):
+            sbflt_year = "20" + i[:2]
+            sbflt_folder = os.path.abspath(
+                              data_folder + "\\" + sbflt_year[2:] + "sbfltfile"
+                              )
+    # The aggregate 1120 filings data for all corporations:
+    tot_corp_file = sbflt_folder + "\\" + sbflt_year + "sb1.csv"
+    tot_corp_file = os.path.abspath(tot_corp_file)
+    tot_corp_data = pd.read_csv(tot_corp_file).fillna(0)
+    # The aggregate 1120 filings data for all S corporations:
+    s_corp_file = sbflt_folder + "\\" + sbflt_year + "sb3.csv"
+    s_corp_file = os.path.abspath(s_corp_file)
+    s_corp_data = pd.read_csv(s_corp_file).fillna(0)
+    '''
+    Note on the column names used in the SOI-corporation files:
+        --"INDY_CD":                SOI industry code.
+        --"AC":                     Asset class.
+        --"DPRCBL_ASSTS":           Depreciable assets.
+        --"ACCUM_DPR":              Accumulated Depreciation.
+        --"LAND":                   Land.
+        --"INVNTRY":                Inventories.
+        --"INTRST_PD":              Interest paid.
+        --"CAP_STCK":               Capital stock.
+        --"PD_CAP_SRPLS":           Additional paid-in Capital.
+        --"RTND_ERNGS_APPR":        Retained earnings, appropiated.
+        --"COMP_RTND_ERNGS_UNAPPR": Retained earnings, unappropiated.
+        --"CST_TRSRY_STCK":         Cost of treasury stock.
+    '''
+    # Listing the relevant columns that are being extracted from the dataset:
+    cols_dict = dict([("Depreciable Assets","DPRCBL_ASSTS"),
+                      ("Accumulated Depreciation", "ACCUM_DPR"),
+                      ("Land", "LAND"),
+                      ("Inventories", "INVNTRY"),
+                      ("Interest Paid", "INTRST_PD"), 
+                      ("Capital Stock", "CAP_STCK"),
+                      ("Additional paid-in Capital", "PD_CAP_SRPLS"),
+                      ("Earnings (rtnd appr)", "RTND_ERNGS_APPR"),
+                      ("Earnings (rtnd unappr.)", "COMP_RTND_ERNGS_UNAPPR"),
+                      ("Cost of Treasury Stock", "CST_TRSRY_STCK")])
+    data_cols = cols_dict.keys()
+    # Initializing data on all corporations:
+    for i in data_tree.enum_inds:
+        i.append_dfs(("tot_corps", pd.DataFrame(np.zeros((1,len(data_cols))),
+                                                columns = data_cols)))
+        i.append_dfs(("s_corps", pd.DataFrame(np.zeros((1,len(data_cols))),
+                                                columns = data_cols)))
+        i.append_dfs(("c_corps", pd.DataFrame(np.zeros((1,len(data_cols))),
+                                                columns = data_cols)))
+    # Loading total-corporation data:
+    enum_index = 0
+    for code_num in np.unique(tot_corp_data["INDY_CD"]):
+        # Find the industry with a code that matches "code_num":
+        ind_found = False
+        for i in range(0, len(data_tree.enum_inds)):
+            enum_index = (enum_index + 1) % len(data_tree.enum_inds)
+            cur_dfs = data_tree.enum_inds[i].data.dfs["Codes:"]
+            for j in range(0, cur_dfs.shape[0]):
+                if(cur_dfs.iloc[j,0] == code_num):
+                    # Industry with the matching code has been found:
+                    ind_found = True
+                    cur_dfs = data_tree.enum_inds[i].data.dfs["tot_corps"]
+                    break
+            # If the matching industry has been found stop searching for it.
+            if ind_found:
+                break
+        # If no match was found, then ignore data.
+        if not ind_found:
+            continue
+        # Indicators for if rows in tot_corp_data match current industry code:
+        indicators = (tot_corp_data["INDY_CD"] == code_num)
+        # Filling in every column in the dataframe:
+        for j in cols_dict:
+            cur_dfs[j][0] = sum(indicators * tot_corp_data[cols_dict[j]])
+    # Loading s-corporation data:
+    enum_index = 0
+    for code_num in np.unique(s_corp_data["INDY_CD"]):
+        # Find the industry with a code that matches "code_num":
+        ind_found = False
+        for i in range(0, len(data_tree.enum_inds)):
+            enum_index = (enum_index + 1) % len(data_tree.enum_inds)
+            cur_dfs = data_tree.enum_inds[i].data.dfs["Codes:"]
+            for j in range(0, cur_dfs.shape[0]):
+                if(cur_dfs.iloc[j,0] == code_num):
+                    # Industry with the matching code has been found:
+                    ind_found = True
+                    cur_dfs = data_tree.enum_inds[i].data.dfs["s_corps"]
+                    break
+            # If the matching industry has been found stop searching for it.
+            if ind_found:
+                break
+        # If no match was found, then ignore data.
+        if not ind_found:
+            continue
+        # Indicators for if rows in s_corp_data match current industry code:
+        indicators = (s_corp_data["INDY_CD"] == code_num)
+        # Filling in every column in the dataframe:
+        for j in cols_dict:
+            # "Earnings (rtnd appr)" are not reported for S Corporations.
+            if j == "Earnings (rtnd appr)":
+                cur_dfs[j] = 0
+                continue
+            cur_dfs[j][0] = sum(indicators * s_corp_data[cols_dict[j]])
+    # Inferring the c-corporation data from the total and S corporation data:
+    for i in range(0, len(data_tree.enum_inds)):
+        cur_tot = data_tree.enum_inds[i].data.dfs["tot_corps"]
+        cur_s = data_tree.enum_inds[i].data.dfs["s_corps"]
+        data_tree.enum_inds[i].data.dfs["c_corps"] = cur_tot - cur_s
+
+
+'''
+-------------------------------------------------------------------------------
+Reading in the SOI Tax Stats-Partnership Data:
+-------------------------------------------------------------------------------
+'''
+def load_soi_partner_data(data_tree, data_folder):
+    soi_pa_folder = os.path.abspath(data_folder + "\\SOI_Partner")
+    # Find the year corresponding to the 'partnership' data files:
+    for i in os.listdir(soi_pa_folder):
+        if(i[2:] == "pa01.xls"):
+            pa_year = "20" + i[:2]
+    # Names of the files with the partnership data:
+    pa_01_file = "\\" + pa_year[2:] + "pa01.xls"
+    pa_01_file = os.path.abspath(soi_pa_folder + pa_01_file)
+    pa_03_file = "\\" + pa_year[2:] + "pa03.xlsx"
+    pa_03_file = os.path.abspath(soi_pa_folder + pa_03_file)
+    pa_05_file = "\\" + pa_year[2:] + "pa05.xls"
+    pa_05_file = os.path.abspath(soi_pa_folder + pa_05_file)
+    # Names of the files mapping the data to NAICS Codes:
+    pa_01_cross_file = "\\" + pa_year[2:] + "pa01_Crosswalk.csv"
+    pa_01_cross_file = os.path.abspath(soi_pa_folder + pa_01_cross_file)
+    pa_03_cross_file = "\\" + pa_year[2:] + "pa03_Crosswalk.csv"
+    pa_03_cross_file = os.path.abspath(soi_pa_folder + pa_03_cross_file)
+    pa_05_cross_file = "\\" + pa_year[2:] + "pa05_Crosswalk.csv"
+    pa_05_cross_file = os.path.abspath(soi_pa_folder + pa_05_cross_file)
+    # Inputting data on net income/loss by industry from "**pa01.xls":
+    book_01 = xlrd.open_workbook(pa_01_file)
+    sheet_01 = book_01.sheet_by_index(0)
+    num_rows = sheet_01.nrows
+    # The data to be extracted:
+    cols_01 = ["Total net income", "Total net loss", "Depreciation"]
+    num_cols = sheet_01.ncols
+    start_col = search_ws(sheet_01, "All\nindustries", 20)[1]
+    data_01 = pd.DataFrame(np.zeros((num_cols-start_col,3)), columns = cols_01)
+    # Extracting the data:
+    for i in xrange(0, num_rows):
+        if("total net income" in str(sheet_01.cell_value(i,0)).lower()):
+            data_01["Total net income"] = sheet_01.row_values(i+1,start_col)
+            data_01["Total net loss"] = sheet_01.row_values(i+2,start_col)
+            break
+        if("depreciation" in str(sheet_01.cell_value(i,0)).lower()):
+            data_01["Depreciation"] = sheet_01.row_values(i,start_col)
+    # Inputting data on depreciable fixed assets, inventories, and land:
+    book_03 = xlrd.open_workbook(pa_03_file)
+    sheet_03 = book_03.sheet_by_index(0)
+    # Finding the relevant details about the table, e.g. dimensions:
+    cur_rows = sheet_03.nrows
+    # The following categories of data to be extracted:
+    cols_03 = ["Depreciable assets (Net)", "Accumulated depreciation (Net)", 
+               "Inventories (Net)", "Land (Net)", 
+               "Depreciable assets (Income)", 
+               "Accumulated depreciation (Income)", "Inventories (Income)",
+               "Land (Income)"]
+    # The more general column names that are used in the input file:
+    gen_03 = ["Depreciable assets", "Accumulated depreciation", 
+                    "Inventories", "Land"]
+    # The data to be extracted on partnerships as a whole:
+    tot_data_03 = [None]*len(gen_03)
+    # The data to be extracted on partnerships with income:
+    inc_data_03 = [None]*len(gen_03)
+    # Extracting the data (note that the rows with total data appear first):
+    for i in xrange(0, len(gen_03)):
+        for row1 in xrange(0, cur_rows):
+            if(gen_03[i].lower() in str(sheet_03.cell_value(row1,0)).lower()):
+                tot_data_03[i] = sheet_03.row_values(row1,1)
+                for row2 in xrange(row1+1, cur_rows):
+                    cur_cell = str(sheet_03.cell_value(row2,0)).lower()
+                    if(gen_03[i].lower() in cur_cell):
+                        inc_data_03[i] = sheet_03.row_values(row2,1)
+                        break
+                break
+    # Reformatting the data:
+    data_03 = pd.concat([pd.DataFrame(tot_data_03).T,
+                         pd.DataFrame(inc_data_03).T], axis = 1)
+    # Inputting data on income/loss by industry and sector.
+    book_05 = xlrd.open_workbook(pa_05_file)
+    sheet_05 = book_05.sheet_by_index(0)
+    cur_rows = sheet_05.nrows
+    '''
+    Note on the names of the sectors used in this file:
+    Corporate general partners                  CG
+    Corporate limited partners                  CL
+    Individual general partners                 IG
+    Individual limited partners                 IL
+    Partnership general partners                PG
+    Partnership limited partners                PL
+    Tax-exempt organization general partners    TOG
+    Tax-exempt organization limited partners    TOL
+    Nominee and other general partners          NOG
+    Nominee and other limited partners          NOL
+    '''
+    cols_05 = ["Corporate general partners", 
+               "Corporate limited partners",
+               "Individual general partners",
+               "Individual limited partners",
+               "Partnership general partners",
+               "Partnership limited partners",
+               "Tax-exempt organization general partners",
+               "Tax-exempt organization limited partners",
+               "Nominee and other general partners", 
+               "Nominee and other limited partners"]
+    # Extracting the relevant data:
+    data_05 = [None]*len(cols_05)
+    for i in xrange(0, len(cols_05)):
+        for row in xrange(0, cur_rows):
+            if(cols_05[i].lower() in str(sheet_05.cell_value(row,0)).lower()):
+                data_05[i] = sheet_05.row_values(row,2)
+                break
+    # Reformatting the data:
+    data_05 = pd.DataFrame(data_05).T
+    # Reading in the crosswalks between the columns and the NAICS codes:
+    pa01cross = pd.read_csv(pa_01_cross_file)
+    pa03cross = pd.read_csv(pa_03_cross_file)
+    pa05cross = pd.read_csv(pa_05_cross_file)
+    # Processing the three dataframes into the tree
+    for index in xrange(0,3):
+        cur_name = ["PA_inc/loss","PA_assets","PA_types"][index]
+        cur_data = [data_01, data_03, data_05][index]
+        cur_cols = [cols_01, cols_03, cols_05][index]
+        cur_cross = [pa01cross, pa03cross, pa05cross][index]
+        enum_index = 0
+        # Append empty dataframes to the tree:
+        for i in data_tree.enum_inds:
+            i.append_dfs((cur_name, pd.DataFrame(np.zeros((1,len(cur_cols))),
+                                                 columns = cur_cols)))
+        # Add data to industries in the tree based on fraction of codes shared:
+        for i in xrange(0, len(cur_cross["NAICS Code:"])):
+            if pd.isnull(cur_cross["NAICS Code:"][i]):
+                continue
+            cur_codes = str(cur_cross["NAICS Code:"][i]).split(".")
+            num_found = 0
+            for k in xrange(0, len(cur_codes)):
+                cur_codes[k] = int(cur_codes[k])
+            for j in xrange(0, len(data_tree.enum_inds)):
+                cur_ind = data_tree.enum_inds[enum_index]
+                for k in cur_codes:
+                    for l in cur_ind.data.dfs["Codes:"][0]:
+                        if(k == l):
+                            cur_ind.data.dfs[cur_name] += np.array(
+                                            cur_data.iloc[i,:])/len(cur_codes
+                                            )
+                            num_found += 1
+                enum_index = (enum_index+1) % len(data_tree.enum_inds)
+                if(num_found == len(cur_codes)):
+                        break
+
+'''
+Reading in the SOI Tax Stats-Proprietorship Data:
+'''
+def load_soi_proprietor_data(data_tree, data_folder):
+    prop_folder = os.path.abspath(data_folder + "\\SOI_Proprietorships")
+    # Finding the "\**sp01br" file in the proprietorships folder:
+    for i in os.listdir(prop_folder):
+        if(i[2:] == "sp01br.xls"):
+            prop_year = "20" + i[:2]
+            sp01brfile = "\\" + prop_year[2:] + "sp01br.xls"
+            sp01brfile = os.path.abspath(prop_folder + sp01brfile)
+            sp01brfile_cross = "\\" + prop_year[2:] + "sp01br_Crosswalk.csv"
+            sp01brfile_cross = os.path.abspath(prop_folder + sp01brfile_cross)
+    # Opening nonfarm proprietor data:
+    cur_wb = xlrd.open_workbook(sp01brfile)
+    cur_ws = cur_wb.sheet_by_index(0)
+    cur_cross = pd.read_csv(sp01brfile_cross)
+    # Finding the relevant positions in worksheet:
+    pos1 = search_ws(cur_ws,"Industrial sector",20, True, [0,0], True)
+    pos2 = search_ws(cur_ws,"Depreciation\ndeduction",20)
+    pos3 = search_ws(cur_ws,"Depreciation\ndeduction",20, True, np.array(pos2) + np.array([0,1]))
+    #
+    for i in data_tree.enum_inds:
+        i.append_dfs(("soi_prop", pd.DataFrame(np.zeros((1,1)),
+                                    columns = ["Depreciation Deductions"])))
+    #
+    count1 = 0
+    count2 = 0
+    for i in xrange(pos1[0],cur_ws.nrows):
+        cur_cell = str(cur_ws.cell_value(i,pos1[1]))
+        for j in xrange(0, cur_cross.shape[0]):
+            if(cur_cell.lower().strip() == str(cur_cross.iloc[count1,0]).lower().strip()):
+                cur_codes = str(cur_cross.iloc[count1,1]).split(".")
+                for k in xrange(0, len(data_tree.enum_inds)):
+                    for l in data_tree.enum_inds[count2].data.dfs["Codes:"].iloc[:,0]:
+                        for m in cur_codes:
+                            if str(l) == str(m):
+                                data_tree.enum_inds[count2].data.dfs["soi_prop"]["Depreciation Deductions"][0] += (cur_ws.cell_value(i,pos2[1]) + cur_ws.cell_value(i,pos3[1]))/len(cur_codes)
+                    count2 = (count2+1) % len(data_tree.enum_inds)
+                break
+            count1 = (count1+1) % cur_cross.shape[0]
     
+    #Load Farm Proprietorship data:
+    #farm_cols = ["R_p", "R_sp", "Q_p", "Q_sp", "A_p", "A_sp"]
+    farm_data = pd.read_csv(os.path.abspath(prop_folder + "\\Farm_Data.csv"))
+    new_farm_cols = ["Land", "FA"]
+    #
+    for i in data_tree.enum_inds:
+        i.append_dfs(("farm_prop", pd.DataFrame(np.zeros((1,len(new_farm_cols))), columns=new_farm_cols)))
+    #
+    land_mult = (farm_data["R_sp"][0] + farm_data["Q_sp"][0]) * (float(farm_data["A_sp"][0])/farm_data["A_p"][0])
+    total = farm_data.iloc[0,0] + farm_data.iloc[0,2]
+    total_pa_land = 0
+    total_pa = 0
+    cur_codes = [111,112]
+    proportions = np.zeros(len(cur_codes))
+    for i in xrange(0, len(cur_codes)):
+        cur_ind = find_naics(data_tree, cur_codes[i])
+        total_pa_land += cur_ind.data.dfs["PA_assets"]["Land (Net)"][0]
+        total_pa += cur_ind.data.dfs["PA_assets"]["Land (Net)"][0] + cur_ind.data.dfs["PA_assets"]["Depreciable assets (Net)"][0]
+        proportions[i] = cur_ind.data.dfs["PA_assets"]["Land (Net)"][0] + cur_ind.data.dfs["PA_assets"]["Depreciable assets (Net)"][0]
+    #
+    if sum(proportions) != 0:
+        proportions = proportions/sum(proportions)
+    else:
+        for i in len(proportions):
+            proportions[i] = 1.0/len(proportions)
+    #
+    for i in xrange(0,len(cur_codes)):
+        cur_ind = find_naics(data_tree, cur_codes[i])
+        cur_ind.data.dfs["farm_prop"]["Land"][0] = land_mult * cur_ind.data.dfs["PA_assets"]["Land (Net)"][0]/total_pa
+        cur_ind.data.dfs["farm_prop"]["FA"][0] = (proportions[i]*total) - cur_ind.data.dfs["farm_prop"]["Land"][0]
+
+
+'''
+Create an output tree containing only the final data on FA, INV, and LAND.
+'''
+def summary_tree(data_tree, data_folder):
+    all_sectors = ["C Corporations", "S Corporations", "Corporate general partners", 
+                   "Corporate limited partners",
+                   "Individual general partners", "Individual limited partners",
+                   "Partnership general partners", "Partnership limited partners",
+                   "Tax-exempt organization general partners",
+                   "Tax-exempt organization limited partners",
+                   "Nominee and other general partners", 
+                   "Nominee and other limited partners", "Sole Proprietors"]
+    
+    pa_types = data_tree.enum_inds[0].data.dfs["PA_types"].columns.values.tolist()
+    
+    #
+    output_tree = load_naics(data_folder + "\\2012_NAICS_Codes.csv")
+    
+    for i in output_tree.enum_inds:
+        i.append_dfs(("FA",pd.DataFrame(np.zeros((1, len(all_sectors))),columns = all_sectors)))
+        i.append_dfs(("INV",pd.DataFrame(np.zeros((1, len(all_sectors))),columns = all_sectors)))
+        i.append_dfs(("LAND",pd.DataFrame(np.zeros((1, len(all_sectors))),columns = all_sectors)))
+    
+    for i in range(0, len(output_tree.enum_inds)):
+        #
+        cur_data = data_tree.enum_inds[i].data
+        out_data = output_tree.enum_inds[i].data
+        #
+        partner_sum = sum(data_tree.enum_inds[i].data.dfs["PA_types"].iloc[0,:])
+        #
+        for j in range(0, len(all_sectors)):
+            sector = all_sectors[j]
+            #
+            if sector == "C Corporations":
+                out_data.dfs["FA"][sector][0] = data_tree.enum_inds[i].data.dfs["c_corps"]["Depreciable Assets"][0]
+                out_data.dfs["INV"][sector][0] = data_tree.enum_inds[i].data.dfs["c_corps"]["Inventories"][0]
+                out_data.dfs["LAND"][sector][0] = data_tree.enum_inds[i].data.dfs["c_corps"]["Land"][0]
+            elif sector == "S Corporations":
+                out_data.dfs["FA"][sector][0] = data_tree.enum_inds[i].data.dfs["s_corps"]["Depreciable Assets"][0]
+                out_data.dfs["INV"][sector][0] = data_tree.enum_inds[i].data.dfs["s_corps"]["Inventories"][0]
+                out_data.dfs["LAND"][sector][0] = data_tree.enum_inds[i].data.dfs["s_corps"]["Land"][0]
+            elif sector in pa_types:
+                if partner_sum != 0:
+                    ratio = abs(cur_data.dfs["PA_types"][sector][0])/partner_sum
+                else:
+                    ratio = 1.0/cur_data.dfs["PA_types"].shape[0]
+                out_data.dfs["FA"][sector][0] = ratio*cur_data.dfs["PA_assets"]["Depreciable assets (Net)"][0]
+                out_data.dfs["INV"][sector][0] = ratio*cur_data.dfs["PA_assets"]["Inventories (Net)"][0]
+                out_data.dfs["LAND"][sector][0] = ratio*cur_data.dfs["PA_assets"]["Land (Net)"][0]
+            elif sector == "Sole Proprietors":
+                if cur_data.dfs["PA_inc/loss"]["Depreciation"][0] != 0:
+                    ratio = cur_data.dfs["soi_prop"]["Depreciation Deductions"][0]/cur_data.dfs["PA_inc/loss"]["Depreciation"][0]
+                else:
+                    ratio = 0.0
+                out_data.dfs["FA"][sector][0] = ratio*cur_data.dfs["PA_assets"]["Depreciable assets (Net)"][0] + cur_data.dfs["farm_prop"]["FA"][0]
+                out_data.dfs["INV"][sector][0] = ratio*cur_data.dfs["PA_assets"]["Inventories (Net)"][0] + cur_data.dfs["farm_prop"]["Land"][0]
+                out_data.dfs["LAND"][sector][0] = ratio*cur_data.dfs["PA_assets"]["Land (Net)"][0]
+    return output_tree
 
 '''
 -------------------------------------------------------------------------------
