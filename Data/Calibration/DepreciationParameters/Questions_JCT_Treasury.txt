@@ -21,3 +21,5 @@ Tracy
 	- amounts of capital (grow by NIPA invest rates)
 	- income (grow by wage growth)
 	- financial assets (grow by asset price increases)
+- Do you worry about fiscal vs calendar year in the macro model?  Do we need quarterly?
+- Do you have inflation/money in macro model?  What is mechanism for changes in aggregate price level?
