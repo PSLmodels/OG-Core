@@ -18,12 +18,7 @@ Repeated entry---line 694 of file AEIBYUDyn_Bib.bib
  : @article{Hayashi1982
  :                     ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 709 of file AEIBYUDyn_Bib.bib
- : @book{ FG1993
- :              ,
-I'm skipping whatever remains of this entry
 Warning--I didn't find a database entry for "FR1993"
-Warning--I didn't find a database entry for "BM1983"
 Warning--I didn't find a database entry for "KotlikoffXXXX"
 Warning--empty title in DZ2013
 "chapter~0, pp.~743--813" is a string literal, not an integer, for entry DZ2013
@@ -36,45 +31,45 @@ You can't pop an empty literal stack for entry DZ2013
 while executing---line 1215 of file aer.bst
 You can't pop an empty literal stack for entry DZ2013
 while executing---line 1215 of file aer.bst
-You've used 7 entries,
+You've used 6 entries,
             2984 wiz_defined-function locations,
-            710 strings with 5493 characters,
-and the built_in function-call counts, 5853 in all, are:
-= -- 925
-> -- 312
-< -- 90
-+ -- 91
-- -- 52
-* -- 353
-:= -- 1318
-add.period$ -- 7
-call.type$ -- 7
-change.case$ -- 49
-chr.to.int$ -- 7
-cite$ -- 8
-duplicate$ -- 92
-empty$ -- 197
-format.name$ -- 171
-if$ -- 1470
+            702 strings with 5372 characters,
+and the built_in function-call counts, 5128 in all, are:
+= -- 820
+> -- 265
+< -- 79
++ -- 77
+- -- 44
+* -- 311
+:= -- 1150
+add.period$ -- 6
+call.type$ -- 6
+change.case$ -- 42
+chr.to.int$ -- 6
+cite$ -- 7
+duplicate$ -- 80
+empty$ -- 174
+format.name$ -- 145
+if$ -- 1294
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 11
-newline$ -- 27
-num.names$ -- 84
-pop$ -- 117
+missing$ -- 9
+newline$ -- 24
+num.names$ -- 72
+pop$ -- 99
 preamble$ -- 1
-purify$ -- 56
+purify$ -- 48
 quote$ -- 0
 skip$ -- 0
 stack$ -- 0
-substring$ -- 162
-swap$ -- 30
+substring$ -- 151
+swap$ -- 28
 text.length$ -- 2
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 20
+type$ -- 18
 warning$ -- 1
-while$ -- 75
+while$ -- 65
 width$ -- 0
-write$ -- 117
-(There were 8 error messages)
+write$ -- 103
+(There were 7 error messages)

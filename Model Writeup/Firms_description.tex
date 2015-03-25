@@ -179,7 +179,7 @@ The Lagrangian to the firm's problem at time $t$ can be written as:
 \end{split}
 \end{equation}
 
-The FOCs w.r.t. investment (which hold $\forall \ u$) are given by:
+The first order conditions of the firm with respect to investment (which hold $\forall \ u$) are given by:
  \begin{equation}
 \label{eqn:foc_i}
 \begin{split}
@@ -189,7 +189,7 @@ The FOCs w.r.t. investment (which hold $\forall \ u$) are given by:
 \end{split}
 \end{equation}
 
-\noindent\noindent The Euler equation described in Equation \ref{eqn:foci} relates Tobin's $q$, given by $q_{u}$, to the marginal costs of investment.  Tobin's $q$ defines the marginal change in firm value for a dollar of investment. The FOC for investment says that the firm invests until the marginal benefit (the LHS of Equation \ref{eqn:foc_i}) is equal to the marginal cost of investment (the RHS of Equation \ref{eqn:foc_i}).  The cost of investment in the absence of taxes and frictions is equal to 1 (the first term on the RHS of Equation \ref{eqn:foc_i}) since investment goods are the numeraire.  The second term reflects the reduction in the cost of capital due to debt financing.  The third term on the RHS of Equation \ref{eqn:foc_i} is the change in the cost of capital due to debt being included or excluded from business entity-level income taxes.  The fourth term reflects the reduction in the cost of capital due to depreciation deductions.  The last term reflects the component of the cost of capital that is due to adjustment costs (net of the expensing of adjustment costs for tax purposes).
+\noindent\noindent The Euler equation described in Equation \ref{eqn:foc_i} relates Tobin's $q$, given by $q_{u}$, to the marginal costs of investment.  Tobin's $q$ defines the marginal change in firm value for a dollar of investment. The FOC for investment says that the firm invests until the marginal benefit (the LHS of Equation \ref{eqn:foc_i}) is equal to the marginal cost of investment (the RHS of Equation \ref{eqn:foc_i}).  The cost of investment in the absence of taxes and frictions is equal to 1 (the first term on the RHS of Equation \ref{eqn:foc_i}) since investment goods are the numeraire.  The second term reflects the reduction in the cost of capital due to debt financing.  The third term on the RHS of Equation \ref{eqn:foc_i} is the change in the cost of capital due to debt being included or excluded from business entity-level income taxes.  The fourth term reflects the reduction in the cost of capital due to depreciation deductions.  The last term reflects the component of the cost of capital that is due to adjustment costs (net of the expensing of adjustment costs for tax purposes).
 % \begin{equation}
 %\label{eqn:opt_i}
 %\begin{split}
@@ -199,20 +199,29 @@ The FOCs w.r.t. investment (which hold $\forall \ u$) are given by:
 
 
 
-The FOCs w.r.t. capital one period ahead are given by:
+At times it is helpful to write this choice in terms of capital one period ahead rather than investment.  In this case, the first order conditions are given by:
  \begin{equation}
 \label{eqn:foc_k}
 \begin{split}
-& \frac{\partial \mathcal{L}_{s}}{\partial K_{u+1}}  =  \prod_{\nu=s}^{u}\left(\frac{1}{1+\theta{\nu}}\right)\left[-q_{u}\right] \\
- & +  \prod_{\nu=s}^{u+1}\left(\frac{1}{1+\theta{\nu}}\right)\left[(1-\delta)q_{u+1} +p_{u+1} \frac{\partial X_{u+1}}{\partial K_{u+1}}- \{(1-\tau^{b}_{u+1})\Omega_{u+1}\tau^{pC}_{u+1}+(1-f_{i}\tau^{i}_{u+1})i_{u+1}\Omega_{u+1}b-\delta(p_{u+1}-b-\Omega_{u+1}(p_{u+1}-f_{p}\tau^{b}_{u+1}b))\}   \right] = 0 \\
-& \implies  q_{u}  = \left(\frac{1}{1+\theta_{u+1}}\right)\\
-& \left[(1-\delta)q_{u+1} +p_{u+1} \frac{\partial X_{u+1}}{\partial K_{u+1}}- \{(1-\tau^{b}_{u+1})\Omega_{u+1}\tau^{pC}_{u+1}+(1-f_{i}\tau^{i}_{u+1})i_{u}\Omega_{u+1}b-\delta(p_{u+1}-b-\Omega_{u+1}(p_{u+1}-f_{p}\tau^{b}_{u+1}b))\}   \right]  \\
+& \frac{\partial \mathcal{L}_{s}}{\partial K_{u+1}}  =  \prod_{\nu=s}^{u}\left(\frac{1}{1+\theta{\nu}}\right)\left[-q_{u}\right]  +  \prod_{\nu=s}^{u+1} \left(\frac{1}{1+\theta{\nu}}\right)\left[(1-\delta)q_{u+1} +p_{u+1} \frac{\partial X_{u+1}}{\partial K_{u+1}}- \left\{(1-\tau^{b}_{u+1})\Omega_{u+1}\tau^{p}_{u+1} \right.\right. \\
+ &\left.\left.+(1-f_{i}\tau^{i}_{u+1})i_{u+1}\Omega_{u+1}b-\delta(p_{u+1}-b-\Omega_{u+1}(p_{u+1}-f_{p}\tau^{b}_{u+1}b))\right\}   \right] = 0 \\
+& \implies  q_{u}  = \left(\frac{1}{1+\theta_{u+1}}\right) \left[(1-\delta)q_{u+1} +p_{u+1} \frac{\partial X_{u+1}}{\partial K_{u+1}}- \left\{(1-\tau^{b}_{u+1})\Omega_{u+1}\tau^{p}_{u+1} \right.\right. \\
+&\left.\left.+(1-f_{i}\tau^{i}_{u+1})i_{u}\Omega_{u+1}b-\delta(p_{u+1}-b-\Omega_{u+1}(p_{u+1}-f_{p}\tau^{b}_{u+1}b))\right\}   \right]  \\
 \end{split}
 \end{equation}
 
-We should be able to solve for $I_{u}$, $K_{u+1}$, and $q_{u}$ with Equations \ref{eqn:lom_capital}, \ref{eqn:opt_i},  and \ref{eqn:foc_k}.  We can then use  $q_{u}$ to solve for $V_{u}$ as we show next.
+Finally, the firm also chooses its demand for effective labor units.  The necessary condition for this choice is give by:
 
-As \citet{Hayashi1982} shows,  with a constant returns to scale production function and quadratic adjustment costs, we can device that marginal $q$ is equal to average $q$.  Note that in our case, we must make an adjustment for the value of depreciation deductions on the tax basis of the capital stock.  Relation between marginal $q$, $q_{u}$, and average $q$, $Q_{u}$:
+\begin{equation}
+\label{eqn:foc_l}
+p^{C}_{u}\frac{\partial F(K^{C}_{u},EL^{C}_{u})}{\partial EL^{C}_{u}}=w_{u}, \forall \ u
+\end{equation}
+
+\noindent\noindent Labor demand is determined through this intratemporal trade off between the costs and benefits of employing additional labor in the production process.  The left hand side gives the marginal revenue, or benefits from employing more labor, and the right hand save gives the costs, which are the wages paid to the additional labor.
+
+The choice of capital and labor much satisfy Equations \ref{eqn:foc_i} and \ref{eqn:foc_l}.  Together, capital and labor imply the output of front the production process through Equation \ref{eqn:prod_fun}.  The other endogenous variables in the firm's problem are then determined through the relationships given in Equations \ref{eqn:vn} to \ref{eqn:div}.
+
+The final endogenous variable to solve for is the value of the firm at any point in time, $V_{u}$.  As \citet{Hayashi1982} shows, with a constant returns to scale production function and quadratic adjustment costs, there is an equivalence between marginal $q$ and average $q$.  Note that in our case, we must make an adjustment for the value of depreciation deductions on the tax basis of the capital stock already in place at time $u$.  The relation between marginal $q$, given by $q_{u}$, and average $q$, given by $Q_{u}$ is:
  \begin{equation}
 \label{eqn:avg_q}
 \begin{split}
@@ -220,362 +229,14 @@ q_{u}=\frac{[V_{u}-f_{d}Z_{u}K^{\tau}_{u-1}]}{K_{u}} \text{ and } Q_{u}=\frac{V_
 \end{split}
 \end{equation}
 
+\noindent\noindent This relationship thus allows use to determine the value of the firm as:
 
-
- \section{Supply Side Model Components: Variables and Parameters}
-\label{sec:components}
-
-
-\subsection{Variables}
-
-There are six unique state variables, all of which are exogenous.  Note that $r_{s}$ is directly determined by $i_{s}$ and the tax rate on interest income.
-
-% Table generated by Excel2LaTeX from sheet 'State Variables'
-\begin{table}[htbp]
-  \centering
-  \caption{State Variables}
-    \begin{tabular}{ll}
-    \hline
-    \hline
-    Variable & Description \\
-    \hline
-    $K^{C}_{s}$ & Capital stock at the beginning of period $s$ \\
-    $K^{\tau}_{s-1}$ & Tax basis of the capital stock at the beginning of period $s$\\
-    $B^{C}_{s}$ & Debt at the beginning of period $s$ \\
-    $p^{C}_{s}$ & Price of corporate good in period $s$ \\
-    $w_{s}$ & Wage rate in period $s$ \\
-    $i_{s}$ & Nominal interest rate in period $s$ \\
-    $r_{s}$ & After tax nominal rate of return in period $s$ \\
-    \hline
-    \hline
-    \end{tabular}%
-  \label{tab:state_vars}%
-\end{table}%
-
-Note in $K^{\tau}_{s-1}$ the $s-1$ subscript - depreciation in period $s$ will be based on this and investment in period $s$.
-
-There are 14 control variables, although all of these are trivial after the determination of $I^{C}_{s}$ and $EL^{C}_{s}$.
-
-% Table generated by Excel2LaTeX from sheet 'Control Variables'
-\begin{table}[htbp]
-  \centering
-  \caption{Control Variables}
-    \begin{tabular}{lll}
-    \hline
-    \hline
-    Variable & Description & Identifying Equation \\
-    \hline
-    $I^{C}_{s}$ & Firm investment in period $s$ & \ref{eqn:opt_i} \\
-    $EL^{C}_{s}$ & Firm effective labor demand in period $s$ & \ref{eqn:foc_l} \\
-    $X^{C}_{s}$ & Corp goods produced & \ref{eqn:prod_fun} \\
-    $K^{C}_{s+1}$ & Firm's capital stock at the end of period $s$ (beginning of period $s+1$) & \ref{eqn:lom_capital} \\
-    $EARN^{C}_{s}$ & Corp earnbefore deprec, corp taxes, and adjust costs, but after property taxes in period $s$ & \ref{eqn:earn} \\
-    $DIV^{C}_{s}$ & Corporate dividends in period $s$ & \ref{eqn:div} \\
-    $TE^{C}_{s}$ & Total corporate income taxes in period $s$ & \ref{eqn:corp_tax} \\
-    $\Phi^{C}_{s}$ & Investment adjustment costs in period $s$ & \ref{eqn:adj_cost} \\
-    $B^{C}_{s+1}$ & Corp debt at the end of period $s$ (start of period $s+1$) & \ref{eqn:debt} \\
-    $K^{\tau}_{s}$ & Tax basis of capital under corp income tax at end of period $s$ (beginning of $s+1$) & \ref{eqn:lom_taxcapital} \\
-    $VN^{C}_{s}$ & New equity issued by the corp sector in period $s$ & \ref{eqn:vn} \\
-    $V^{C}_{s}$ & Firm value in period $s$ & \ref{eqn:avg_q} \\
-    $q^{C}_{s}$ & Marginal $q$ (change in firm value per dollar of investment) & \ref{eqn:foc_k} \\
-    $Q^{C}_{s}$ & Average $Q$ & \ref{eqn:avg_q} \\
-    \hline
-    \hline
-    \end{tabular}%
-  \label{tab:control_vars}%
-\end{table}%
-
-
-\subsection{Parameters}
-
-The model has 19 parameters.  Of these, 7 relate to the firm's production function, 2 to economic growth, 2 to firm financial policy, and 10 to tax policy.
-
-% Table generated by Excel2LaTeX from sheet 'Parameters'
-\begin{table}[htbp]
-  \centering
-  \caption{Model Parameters}
-    \begin{tabular}{ll}
-    \hline
-    \hline
-    Parameter & Description \\
-    \hline
-    Production Function &  \\
-    \ \ \ $\gamma_{C}$ & Capital weighting in CES production function \\
-    \ \ \ $\epsilon_{C}$ & Elasticity of substitution of capital for labor in CES production function \\
-    \ \ \ $\delta^{C}$ & Rate of economic depreciation on capital stock in the corporate sector \\
-    \ \ \ $\beta^{C}$ & Scaling parameter for quadratic investment adjustment costs \\
-    \ \ \ $\mu_{C}$ & Steady-state investment rate \\
-    Economic Growth &  \\
-    \ \ \ $n$ & Rate of population growth (exogenous) \\
-    \ \ \ $g$ & Rate of productivity growth (exogenous) \\
-    Financial Policy &  \\
-    \ \ \ $\zeta^{C}$ & Fraction of earnings paid out in dividends \\
-    \ \ \ $b^{C}$ & Debt/Capital ratio \\
-    Tax Policy &  \\
-    \ \ \ $\tau^{b}_{s}$ & Corporate business income tax rate \\
-    \ \ \ $\delta^{\tau}_{s}$ & Rate of tax depreciation on corporate capital \\
-    \ \ \ $\tau^{pC}_{s}$ & Property tax rate on corporate capital \\
-    \ \ \ $\tau^{i}_{s}$ & Individual income tax rate on interest income \\
-    \ \ \ $\tau^{g}_{s}$ & Individual income tax rate on capital gains \\
-    \ \ \ $f_{e}$ & Dummy variable for full expensing of investment  \\
-    \ \ \ $f_{i}$ & Dummy variable for deductibility of corporate interest paid \\
-    \ \ \ $f_{p}$ & Dummy variable for deductibility of repayment of principle on loans \\
-    \ \ \ $f_{b}$ & Dummy variable for inclusion of proceeds of loan in corp income tax base \\
-    \ \ \ $f_{d}$ & Dummy variable for deductibility of depreciation expenses \\
-    \hline
-    \hline
-    \end{tabular}%
-  \label{tab:parameters}%
-\end{table}%
-
-\section{Necessary equations}
-To solve the model, we want to get the optimal choices of labor and investment demand by firms.  Labor demand is determined through an intratemporal trade off between the costs and benefits of labor.  The necessary condition for the optimal choice of labor is: 
-
-\begin{equation}
-\label{eqn:foc_l}
-p^{C}_{s}\frac{\partial F(K^{C}_{s},EL^{C}_{s})}{\partial EL^{C}_{s}}=w_{s}
-\end{equation}
-
-Investment is more complicated, as it presents an intertemporal tradeoff between the costs of investment today and the benefits of a higher capital stock tomorrow.  Once we have investment, all other endogenous variables follow from various accounting identities and assumptions on financial policies.
-
-To derive the necessary conditions for investment, we need to first solve for the value of the firm as a function of the state variables (noted above) and the choice of investment. We do this by substituting in the various accounting identities to our equation for firm value.
-%\end{equation}
-%FOC for choice of K^{C}_{s+1}
-%FOC for choice of labor: p^{C}_{s}\frac{\partial F(K^{C}_{s},EL^{C}_{s})}{\partial \partial EL^{C}_{s}}}=w_{s}
-%CES production function: X^{C}_{s} = \left[(\gamma_{C})^{1/\epsilon_{C}}(K^{C}_{s})^{(\epsilon^{C}-1)/\epsilon_{C}}+(1-\gamma_{C})^{1/\epsilon_{C}}(EL^{C}_{s})^{(\epsilon_{C}-1)/\epsilon_{C}}\right]^{(\epsilon_{C}/(\epsilon_{C}-1)
-%Law of motion for capital: K^{C}_{s+1}=(1-\delta^{C})K^{C}_{s}+I^{C}_{s}
-%Accounting identity: EARN^{C}_{s}=p^{C}_{s}X^{C}_{s}-w_{s}EL^{C}_{s}-i_{s}B^{C}_{s}-\tau^{P}_{s}K^{C}_{s}
-%Determined by assumption that dividends are a constant fraction of after-tax earnings net of depreciaiton: DIV^{C}_{s}=\zeta^{C}(EARN^{C}_{s}-TE^{C}_{s}-p^{C}_{s}\delta^{C}K^{C}_{s})
-%Accounting identity: \tau^{b}_{s}\[p^{C}_{s}X^{C}_{s}-w_{s}EL^{C}_{s}-f_{e}I^{C}_{s}-\Phi^{c}_{s}I^{C}_{s}-f_{i}i_{s}B^{C}_{s}-f_{p}\delta^{C}b^{C}K^{C}_{s}+f_{b}b^{C}I^{C}_{s}-f_{d}\delta^{\tau}K^{\tau}_{s}-\tau^{pC}_{s}K^{C}_{s}]+\tau^{icC}_{s}I^{C}_{s} (the last term is invetment tax credits- not in DZ model
-%Adjust cost function: \Phi^{C}_{s}=\frac{p^{C}_{s}\left\frac{\beta^{C}}{2}\right)\left(\frac{I^{C}_{s}}{K^{C}_{s}}-\mu^{C}\right)^{2}}{\left(\frac{I^{C}_{s}}{K^{C}_{s}}\right)}
-%Determined by assumption that firm maintains constant debt/capital ratio: B^{C}_{s}=b^{c}K^{C}_{s}, thus B^{C}_{s+1}=b^{c}I^{C}_{s}-\delta^{C}b^{C}K^{C}_{s}+B^{C}_{s}
-%Law of motion for the tax basis of the capital stock: K^{\tau}_{s}=(1-\delta^{\tau})K^{\tau}_{s-1} + (1-f_{e})I^{C}_{s}
-%Cash flow identity: EARN^{C}_{s}+BN^{C}_{s}+VN^{C}_{s}=DIV^{C}_{s}+I^{C}_{s}(1+\Phi^{C}_{s})+TE^{C}_{s}
-%Equation relating marginal q and average q: q^{C}_{s}=\frac{[V^{C}_{s}-f_{d}Z^{C}_{s}K^{\tau}_{s-1}]}{K^{C}_{s}}
-%FOC for investment
-%Q^{C}_{s}=\frac{V^{C}_{s}}{K^{C}_{s}} (as shown by Hayashi (1982), avg q = marginal q when CRS pruction function and quadratic adjustment costs)
-%(1-\tau_{is})i_{s}
-%Market clearing in bond market (Demand from HH, firms, gov't equals supply from HH, firms, gov't)
-%Numeraire good: p^{C}_{s}=1
-%Market clearing in labor market (Firm labor demand equals household labor supply)
-%
-%\begin{equation}
-%
-%\end{equation}
-
-\section{Solving the model}
-
-We'll solve the model in two steps.  First, we solve for the steady state prices and allocations.  Next, we iterate backwards solving for prices and allocations along the transition path to the steady state.
-
-\subsection{Solving for the steady state}
-
-On the supply side (with one sector), we have to solve for the factor prices, $\bar{i}$ and $bar{w}$ (the price of output $\bar{p}^{C}$ is normalized to one), the shadow price of capital, $\bar{q}^{C}$, and the allocations $\bar{EL}^{C}$, $\bar{K}^{C}$, $\bar{I}^{C}$.  From these all the other variables follow trivially.  
-
-Start by solving for the steady-states of Equations \ref{eqn:opt_i} and \ref{eqn:foc_k}.  Equation \ref{eqn:opt_i} becomes:
-
-\begin{equation}
-\label{eqn:opt_i_ss}
-\bar{q}^{C}=\underbrace{1-b^{C}-\bar{\Omega}^{C}\bar{\tau}^{b}(f_{e}-f_{b}b^{C})-f_{d}(1-f_{e})\bar{Z}^{C}}_{\text{function of only parameters}}
-\end{equation}
-
-This yields the solution to $\bar{q}^{C}$.
-
-Next, consider the steady-state of Equation \ref{eqn:foc_k}:
-
-\begin{equation}
-\label{eqn:foc_k_ss}
-\bar{q}^{C}=\frac{1}{1+\bar{\theta}}\left[(1-\delta^{C})\bar{q}^{C} + \frac{\partial \bar{X}^{C}}{\partial \bar{K}^{C}} - \{(1-\bar{\tau}^{b})\bar{\Omega}^{C}\bar{\tau}^{pC} + (1-f_{i}\bar{\tau}^{i})\bar{i}\bar{\Omega}^{C}b^{C} - \delta^{C}(1-b^{C}-\bar{\Omega}^{C}(1-f_{p}\bar{\tau}^{b}b^{C}))\}\right]
-\end{equation}
-
-We can rearrange this and solve for the steady-state marginal product of capital in sector $C$:
-
-\begin{equation}
-\label{eqn:mpk_ss}
-\frac{\partial \bar{X}^{C}}{\partial \bar{K}^{C}} = (\bar{\theta}+\delta^{C})\bar{q}^{C} + (1-\bar{\tau}^{b})\bar{\Omega}^{C}\bar{\tau}^{pC} + (1-f_{i}\bar{\tau}^{i})\bar{i}\bar{\Omega}^{C}b^{C} - \delta^{C}(1-b^{C}-\bar{\Omega}^{C}(1-f_{p}\bar{\tau}^{b}b^{C}))
-\end{equation}
-
-Notice that given Equation \ref{eqn:opt_i_ss}, the RHS to the above equation is function of parameters and the steady state nominal interest rate, $\bar{i}$.  The LHS of the equation is a function of $\bar{K}^{C}$ and $\bar{EL}^{C}$.
-
-I think we can use the following to identify the SS values of the variables of interest:
-\begin{enumerate}
-\item $\bar{i}$ will be determined by the SS of the household's Euler equations (I think this can be done as described in the HH sol'n method)
-\item $\bar{w}$ will be determined by the SS of the household's FOCs for labor supply ((I think this can be done as described in the HH sol'n method)
-\item $\bar{q}^{C}$ is determined by Equation \ref{eqn:opt_i_ss}
-\item $\bar{EL}^{C}$ is determined by the SS version of Equation \ref{eqn:foc_l}, plus $\bar{w}$
-\item $\bar{K}^{C}$ is determined by Equation \ref{eqn:mpk_ss} and $\bar{i}$
-\item $\bar{I}^{C}$ is then solved for using the steady state law of motion for capital $\implies \bar{I}^{C}=\delta^{C}\bar{K}^{C}$
-\end{enumerate}
-
-In solving for $\bar{EL}^{C}$ and $\bar{K}^{C}$, note that we'll have use the MPK and the MPL simultaneously.  Given our production function, we have:
-
-\begin{equation}
-\label{eqn:mpk}
-\frac{\partial X^{C}_{u}}{\partial K^{C}_{u}} = \left[(\gamma_{C})^{1/\epsilon_{C}}(K^{C}_{u})^{(\epsilon_{C}-1)/\epsilon_{C}}+(1-\gamma_{C})^{1/\epsilon_{C}}(EL^{C}_{u})^{(\epsilon_{C}-1)/\epsilon_{C}}\right]^{1/(\epsilon_{C}-1)}(\gamma_{C})^{1/\epsilon_{C}}(K^{C}_{u})^{-1/\epsilon_{C}}
-\end{equation}
-
-and 
-
-\begin{equation}
-\label{eqn:mpl}
-\frac{\partial X^{C}_{u}}{\partial EL^{C}_{u}} = \left[(\gamma_{C})^{1/\epsilon_{C}}(K^{C}_{u})^{(\epsilon_{C}-1)/\epsilon_{C}}+(1-\gamma_{C})^{1/\epsilon_{C}}(EL^{C}_{u})^{(\epsilon_{C}-1)/\epsilon_{C}}\right]^{1/(\epsilon_{C}-1)}(1-\gamma_{C})^{1/\epsilon_{C}}(EL^{C}_{u})^{-1/\epsilon_{C}}
-\end{equation}
-
-We know that, at an optimum, the marginal revenue product of labor equals the wage rate, and the marginal revenue product of capital equals a function of the interest rate, marginal $q$, and the model parameters.  Call this function $g(i_{u},q^{C}_{u},q^{C}_{u-1},\Theta)$.  We thus have $p^{C}_{u}\frac{\partial X^{C}_{u}}{\partial EL^{C}_{u}} =w_{u}$ and $p^{C}_{u}\frac{\partial X^{C}_{u}}{\partial K^{C}_{u}}=g(i_{u},q^{C}_{u},q^{C}_{u-1},\Theta)$.  Dividing these two equations, we have:
-
-\begin{equation}
-\label{eqn:cap_lab_ratio}
+ \begin{equation}
+\label{eqn:solve_firmvalue}
 \begin{split}
-& \frac{\frac{\partial X^{C}_{u}}{\partial K^{C}_{u}}}{\frac{\partial X^{C}_{u}}{\partial EL^{C}_{u}}} =\frac{(\gamma_{C})^{1/\epsilon_{C}}(K^{C}_{u})^{-1/\epsilon_{C}}}{(1-\gamma_{C})^{1/\epsilon_{C}}(EL^{C}_{u})^{-1/\epsilon_{C}}}-=\frac{g(i_{u},q^{C}_{u},q^{C}_{u-1},\Theta)}{w_{u}} \\
-& \implies \frac{K^{C}_{u}}{EL^{C}_{u}} =\frac{(1-\gamma_{C})}{\gamma_{C}}\left(\frac{w_{u}} {g(i_{u},q^{C}_{u},q^{C}_{u-1},\Theta)}\right)^{\epsilon_{C}} \\
+ V_{u}=q_{u}K_{u}+f_{d}Z_{u}K^{\tau}_{u-1}
 \end{split}
 \end{equation}
 
-We can use the SS version of Equation \ref{eqn:cap_lab_ratio} to solve for capital as function of labor (and $\bar{q}, \bar{i}, \bar{w}$), and then use that in the SS version of Equation \ref{eqn:mpl} to solve for labor as s function of $\bar{q}, \bar{i}, \bar{w}$.  We then go back to the SS version of Equation \ref{eqn:cap_lab_ratio} to get the SS choice of capital as a function of $\bar{q}, \bar{i}, \bar{w}$.
 
-All of the above will work for each sector in a model with any number of sectors (though care has to be taken to include the prices of output and capital in those other sectors, since only one sector's output can be the numeraire).
-
-\subsection{Solving for the transition path}
-
-I believe we can just use the Euler equations to go backwards in time, from the SS back along the transition path to $t=0$.  Assume period $T$ is the SS,  The solution would look like the following:
-
-\begin{enumerate}
-\item Use Equation \ref{eqn:foc_k} to solve for the for $q^{C}_{T-1}$ since we have the solution to the RHS of the equation after we've solved for the SS.
-\item Use the law of motion for capital to find: $K^{C}_{T-1}=\frac{K^{C}_{T}-I^{C}_{T-1}}{(1-\delta^{C})}=\frac{\bar{K}^{C}-I^{C}_{T-1}}{(1-\delta^{C})}$
-\item Use Equation \ref{eqn:opt_i} and the value of $q^{C}_{T-1}$ to find $I^{C}_{T-1}$ (and $K^{C}_{T-1}$ given the law of motion relationship.
-\item Given $w_{T-1}$ we can use the FOC for labor demand to find $EL^{C}_{T-1}$
-\item Given $i_{T-1}$ we can use Equation \ref{eqn:foc_k} to solve for $q^{C}_{T-2}$ 
-\item We then repeat the above steps until we work back to $t=0$.
-\end{enumerate}
-
-
-\section{Features model has and those it is lacking}
-
-
-% Table generated by Excel2LaTeX from sheet 'Tax Distortions'
-\begin{table}[htbp]
-  \centering
-  \caption{Tax Distortions in DZ Model}
-    \begin{tabular}{ll}
-    \hline
-    \hline
-    Distortion & Accounted for in DZ model? \\
-    \hline
-    Amount of investment & Mostly accounted for \\
-    Entity form & Not directly accounted for.  \\
-    Location of capital & Not in baseline model. \\
-    Type of investment (equip/structures/intangible) & No - just aggregate capital stock \\
-    Bias towards certain industries (because of type of capital or income risk) & No \\
-    Bias towards non-risky projects (due to tax loss asymmetry) & No \\
-    Bias towards non-risky businesses (due to tax loss asymmetry) & No \\
-    Double tax of profits (affects several distortions) & Yes, partially. \\
-    Dividend distribution policy & Not really.   \\
-    Where recognize income (US or abroad) & No \\
-    Repatriate income (and when) & No \\
-     \hline
-    \hline
-    \end{tabular}%
-  \label{tab:tax_distortions}%
-\end{table}%
-
-
-
-%\begin{landscape}
-
-% Table generated by Excel2LaTeX from sheet 'Tax Policy Instruments'
-\begin{table}[htbp]
-  \centering
-  \caption{Tax Policy Instruments in DZ Model}
-    \begin{tabular}{llll}
-    \hline
-    \hline
-    Instrument & In DZ? & Large macro effects & Likely corp reform candidate \\
-    \hline
-    Corporate income tax top rate & Yes   &   Yes   & Yes \\
-    Corporate income tax rate structure & No     & No    & Yes \\
-    Capital gains tax rate & Yes   & Yes   &  \\
-    Dividend income tax rate & Yes   & Yes   & Yes \\
-    Depreciation rate structure & Yes   &   Yes   &  \\
-    Bonus deprecation/expensing & No    & Yes   &  \\
-    Investment tax credits & No   & Yes   & Yes \\
-    General business credits & No  & Prob not after above & Yes \\
-    Cap/Deny/Index for inflation interest expenses & No        & Yes   & Yes \\
-    Carry back/forward window & No    &  Maybe &  \\
-    Inventory accounting rules (LIFO/FIFO) & No   & Probably not & Yes \\
-    Repatriation holidays & No   & Maybe & Yes \\
-    International tax system (Territorial vs Worldwide, deferral) & No   & Yes   & Yes \\
-    Consumption tax system (w/ pre and post pay)  & Yes & Yes & No \\
-    \hline
-    \hline
-    \end{tabular}%
-  \label{tab:tax_instruments}%
-\end{table}%
-
-%\end{landscape}
-
-\section{Roadmap for extensions}
-
-Possible order or model extensions:
-\begin{enumerate}
-\item Add industries/goods	
-	\begin{itemize}
-	\item Try to do this along the lines of \citet{FG1993} with composite consumption and production goods.  Important additions might include health care and a carbon intensive sector (e.g. utilities, transport).  Important goods would be health services, large excise items (gasoline, alcohol, cigarettes), carbon intensive goods (e.g. utilities, transport), food 	
-	\item Maybe be costly to solve firm problem for many sectors.  GE price vector may be large too, but \citet{FG1993}) suggest that still just w and r (for each year) that need
-	\end{itemize}
-\item Add types of capital	
-	\begin{itemize}
-	\item Try to do this along the lines of \citet{FG1993} with composite capital in firm production function, but where capital can change type costlessly.	
-	\item Not sure how/if this works in dynamic model where keep track of old capital.
-	\end{itemize}
-\item Add profits via some markup	
-	\begin{itemize}
-	\item Want this so have supranormal returns, which are differentially affected by taxes. 
-	\item See macro models of the markup, but want to just get markup that is a function of the elasticity of substitution.	
-	\end{itemize}
-\item Endogenize debt finance.
-	\begin{itemize}
-	\item Have a cost to bankruptcy - use debt until this cost negates the tax advantage.
-	\end{itemize}	
-\item Endogenize payout policy	
-	\begin{itemize}
-	\item Want to at have dividends respond to dividend tax rate (e.g. by at least being done cash after investment made - since invest a function of div tax rate). This is easy.  Harder I think is to fully endogenize so that firm considers the value of dividends to owners after tax vs the value of the dollar inside the firm.
-	\end{itemize}	
-\item Open economy	
-	\begin{itemize}
-	\item First thing to do here is to have some capital mobility in the model.	
-	\end{itemize}
-\item Have multiple types of labor (skilled/unskilled) in production function	
-	\begin{itemize}
-	\item Only if have endogenous human capital accumulation.  
-	\item Would like to see how taxes on capital affect capital/labor mix to uncover distribution of incidence of taxes by industry and individuals.	
-	\end{itemize}
-\end{enumerate}
-
-
-Some features that might be interesting, but may not pass a cost-benefit test to adding into the model:	
-\begin{enumerate}
-\item Stochastic profitability shocks	
-	\begin{itemize}
-	\item So can account for loss carry forward/back.
-	\item Would need to have idiosyncratic shocks over firms in an industry.   
-	\item Think we'd have to solve the firm problem a lot more times and not sure how this interacts in GE with different type of capital etc.
-	\end{itemize}
-\item Have a more serious model of income shifting by having some behavior where move profits offshore	
-	\begin{itemize}
-	\item Not sure how to do even in open economy model.	
-	\end{itemize}
-\item Endogenize entity choice.		
-	\begin{itemize}
-	\item Makes firm problem much harder.  
-	\item Not sure how to calibrate elasticities, but Prisinzano and Pearce at OTA might have some estimates to help.
-	\end{itemize}
-\item Pollution externalities	
-	\begin{itemize}
-	\item It'd be cool to be able to do some policy experiments with Pigouvian taxes like \citet{BM1983}
-	\end{itemize}.	
-\item Model evasion and avoidance	
-	\begin{itemize}
-	\item Perhaps just have some elasticity for reported income with respect to the marginal tax rate that scales actual income.	
-	\item DeBacker, Heim, Tran, and Yuskavage can measure with audit data.
-	\end{itemize}
-\end{enumerate}
 

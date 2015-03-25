@@ -9,29 +9,23 @@
 \BOOKMARK [1][-]{section.3.1}{The Firm's Problem}{chapter.3}% 9
 \BOOKMARK [2][-]{subsection.3.1.1}{The Value of the Firm}{section.3.1}% 10
 \BOOKMARK [2][-]{subsection.3.1.2}{The Sequence Problem of the Firm}{section.3.1}% 11
-\BOOKMARK [1][-]{section.3.2}{Supply Side Model Components: Variables and Parameters}{chapter.3}% 12
-\BOOKMARK [2][-]{subsection.3.2.1}{Variables}{section.3.2}% 13
-\BOOKMARK [2][-]{subsection.3.2.2}{Parameters}{section.3.2}% 14
-\BOOKMARK [1][-]{section.3.3}{Necessary equations}{chapter.3}% 15
-\BOOKMARK [1][-]{section.3.4}{Solving the model}{chapter.3}% 16
-\BOOKMARK [2][-]{subsection.3.4.1}{Solving for the steady state}{section.3.4}% 17
-\BOOKMARK [2][-]{subsection.3.4.2}{Solving for the transition path}{section.3.4}% 18
-\BOOKMARK [1][-]{section.3.5}{Features model has and those it is lacking}{chapter.3}% 19
-\BOOKMARK [1][-]{section.3.6}{Roadmap for extensions}{chapter.3}% 20
-\BOOKMARK [0][-]{chapter.4}{Government}{}% 21
-\BOOKMARK [1][-]{section.4.1}{Overview of Government in the Model}{chapter.4}% 22
-\BOOKMARK [1][-]{section.4.2}{Government budgeting}{chapter.4}% 23
-\BOOKMARK [2][-]{subsection.4.2.1}{Rule for long-term fiscal stability}{section.4.2}% 24
-\BOOKMARK [2][-]{subsection.4.2.2}{Transfer system}{section.4.2}% 25
-\BOOKMARK [1][-]{section.4.3}{Government production of private goods}{chapter.4}% 26
-\BOOKMARK [1][-]{section.4.4}{Government production of public goods}{chapter.4}% 27
-\BOOKMARK [1][-]{section.4.5}{Steps for adding government to the dynamic model}{chapter.4}% 28
-\BOOKMARK [0][-]{chapter.5}{Equilibrium}{}% 29
-\BOOKMARK [1][-]{section.5.1}{Market clearing and stationary equilibrium}{chapter.5}% 30
-\BOOKMARK [0][-]{chapter.6}{Numerical Solution}{}% 31
-\BOOKMARK [1][-]{section.6.1}{Solving for stationary steady-state equilibrium}{chapter.6}% 32
-\BOOKMARK [1][-]{section.6.2}{Solving for stationary non-steady-state equilibrium by time path iteration}{chapter.6}% 33
-\BOOKMARK [0][-]{chapter.7}{Miscellaneous}{}% 34
-\BOOKMARK [1][-]{section.7.1}{Incorporating Feedbacks with Micro Tax Simulations}{chapter.7}% 35
-\BOOKMARK [1][-]{section.7.2}{Calibration}{chapter.7}% 36
-\BOOKMARK [2][-]{subsection.7.2.1}{Tax Bend Points}{section.7.2}% 37
+\BOOKMARK [0][-]{chapter.4}{Government}{}% 12
+\BOOKMARK [1][-]{section.4.1}{Overview of Government in the Model}{chapter.4}% 13
+\BOOKMARK [1][-]{section.4.2}{Government budgeting}{chapter.4}% 14
+\BOOKMARK [2][-]{subsection.4.2.1}{Rule for long-term fiscal stability}{section.4.2}% 15
+\BOOKMARK [2][-]{subsection.4.2.2}{Transfer system}{section.4.2}% 16
+\BOOKMARK [1][-]{section.4.3}{Government production of private goods}{chapter.4}% 17
+\BOOKMARK [1][-]{section.4.4}{Government production of public goods}{chapter.4}% 18
+\BOOKMARK [1][-]{section.4.5}{Steps for adding government to the dynamic model}{chapter.4}% 19
+\BOOKMARK [0][-]{chapter.5}{Equilibrium}{}% 20
+\BOOKMARK [1][-]{section.5.1}{Market clearing and stationary equilibrium}{chapter.5}% 21
+\BOOKMARK [0][-]{chapter.6}{Numerical Solution}{}% 22
+\BOOKMARK [1][-]{section.6.1}{Solving the model}{chapter.6}% 23
+\BOOKMARK [2][-]{subsection.6.1.1}{Solving for the steady state}{section.6.1}% 24
+\BOOKMARK [2][-]{subsection.6.1.2}{Solving for the transition path}{section.6.1}% 25
+\BOOKMARK [1][-]{section.6.2}{Solving for stationary steady-state equilibrium}{chapter.6}% 26
+\BOOKMARK [1][-]{section.6.3}{Solving for stationary non-steady-state equilibrium by time path iteration}{chapter.6}% 27
+\BOOKMARK [0][-]{chapter.7}{Miscellaneous}{}% 28
+\BOOKMARK [1][-]{section.7.1}{Incorporating Feedbacks with Micro Tax Simulations}{chapter.7}% 29
+\BOOKMARK [1][-]{section.7.2}{Calibration}{chapter.7}% 30
+\BOOKMARK [2][-]{subsection.7.2.1}{Tax Bend Points}{section.7.2}% 31
