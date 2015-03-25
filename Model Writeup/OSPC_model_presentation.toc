@@ -1,0 +1,8 @@
+\beamer@endinputifotherversion {3.20pt}
+\select@language {english}
+\beamer@sectionintoc {1}{Overview}{2}{0}{1}
+\beamer@sectionintoc {2}{Households}{9}{0}{2}
+\beamer@sectionintoc {3}{Firms}{18}{0}{3}
+\beamer@sectionintoc {4}{Government}{19}{0}{4}
+\beamer@sectionintoc {5}{Solution and Simulation}{20}{0}{5}
+\beamer@sectionintoc {6}{Summary}{23}{0}{6}
