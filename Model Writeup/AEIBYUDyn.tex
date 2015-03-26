@@ -58,7 +58,7 @@
 
 %titlepage
 \begin{titlepage}
-  \title{A Dynamic General Equilibrium Tax Scoring Model
+  \title{OSPC's Dynamic General Equilibrium Tax Scoring Model
     \thanks{We are grateful to Kevin Hassett, Alan Viard, Alex Brill, Matt Jensen, Aspen Gorry, Frank Caliendo, and Richard W. Evans, Sr. for helpful comments and suggestions. This research benefited from support from Brigham Young University Macroeconomics and Computational Laboratory, Middle Tennessee State University, and the Open Source Policy Center at the American Enterprise Institute. Sherwin Lott and Tatenda Mabikacheche have provided excellent research assistance.  This document, and all data and Python code for the computational model and calibration are available at \href{https://github.com/OpenSourcePolicyCenter/dynamic}{https://github.com/OpenSourcePolicyCenter/dynamic}.} }
 
   \author{
@@ -151,6 +151,7 @@ A future extension to this document will detail how the model is calibrated.
 %	Rest of world
 %		Import/export elasticities
 %		Other???
+% Some measure(s) of model fit/validation
 % Summary of model (maybe simple example of change in tax policy evaluated with model)
 % Python code documentation (where to find, what to run to do what)
 %	To calibrate
@@ -180,7 +181,7 @@ A future extension to this document will detail how the model is calibrated.
 
 \section{Incorporating Feedbacks with Micro Tax Simulations}\label{SecMicro}
 
-  Follow this algorthim:
+  Follow this algorithm:
   \begin{itemize}
     \item Period 1
     \begin{itemize}
@@ -231,7 +232,7 @@ A future extension to this document will detail how the model is calibrated.
         \end{tabular}
       \end{table}
 
-      We then fit a bivariate probabililty density function over income and filing type from the data.  For each bendpoint we calculate the probability density at that bendpoint and use these as weights in a weighted average over filing types to generate an aggregate bendpoint.
+      We then fit a bivariate probability density function over income and filing type from the data.  For each bendpoint we calculate the probability density at that bendpoint and use these as weights in a weighted average over filing types to generate an aggregate bendpoint.
       \begin{table}[ht]
         \caption{Aggregated Bend Points}
         \label{Calib_Bend_Tab2}

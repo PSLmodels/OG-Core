@@ -23,3 +23,5 @@ Tracy
 	- financial assets (grow by asset price increases)
 - Do you worry about fiscal vs calendar year in the macro model?  Do we need quarterly?
 - Do you have inflation/money in macro model?  What is mechanism for changes in aggregate price level?
+- How handle economic growth? Std model with general growth rate means that growth same across industries.  Should we do industry specific tech growth?
+- Want tax function to include state and local taxes, but also want to separate our federal and state and local revenues.  How handle this?  Related to budget questions above.

@@ -37,65 +37,75 @@
       \end{split}
     \end{equation}
 
-\noindent\noindent The parameter $\beta\in(0,1)$ represents the individual's rate of time preference.  The quantities $c_{j,s+u,t+u}$, $n_{j,s+u,t+u},$ and $b_{j,s+u+1,t+u+1}$ are total consumption of a composite consumption good, labor supply, and asset holdings, respectively.  The parameter $\sigma \geq 1$ is the coefficient of relative risk aversion, $\upsilon$ is a measure of the elasticity of labor supply, and $\tilde{l}$ is the total time endowment of the individual.  The disutility of labor term in the utility function looks nonstandard, but is simply the upper quadrant of an ellipse that closely approximates the standard constant relative risk aversion utility of leisure functional form.\footnote{Appendix \ref{AppEllipseUtil} describes how the elliptical function closely matches the more standard utility of leisure of the form $\frac{(\tilde{l}-n_{j,s,t})^{1-\eta} - 1}{1-\eta}$. The parameters $b$ and $k$ are the scale and shift parameters of describing the elliptical form.  This elliptical utility function forces an interior solution that automatically respects both the upper and lower bound of labor supply, which greatly simplifies the computation of equilibrium.  For a more in-depth discussion see \citet{EvanPhillips:2015}} The term $\chi^n_s$ is a constant term influencing the disutility of labor and $g_y$ is a constant growth rate of labor augmenting technological progress, which we explain in more detail in the firm's problem .\footnote{The term with the growth rate $e^{g_y t(1-\sigma)}$ must be included in the period utility function because consumption and bequests will be growing at rate $g_y$ and this term stationarizes the individual Euler equation by making the marginal disutility of labor grow at the same rate as the marginal benefits of consumption and bequests.  This is the same balanced growth technique as that used in \citet{MertensRavn:2011}.}  The utility weight on bequests (both intentional and accidental) is given by $\chi^{b}$.
+\noindent\noindent The parameter $\beta\in(0,1)$ represents the individual's rate of time preference.  The quantities $c_{j,s,t}$, $n_{j,s,t},$ and $b_{j,s,t}$ are total consumption of a composite consumption good, labor supply, and asset holdings, respectively.  The parameter $\sigma \geq 1$ is the coefficient of relative risk aversion, $\upsilon$ is a measure of the elasticity of labor supply, and $\tilde{l}$ is the total time endowment of the individual.  The utility weight for the disutility of labor is given by the age-dependent parameters $\chi^{n}_{s}$.  The parameter $g_y$ is a constant growth rate of labor augmenting technological progress, which we explain in more detail in the firm's problem .\footnote{The term with the growth rate $e^{g_y t(1-\sigma)}$ must be included in the period utility function because consumption and bequests will be growing at rate $g_y$ and this term stationarizes the individual Euler equation by making the marginal disutility of labor grow at the same rate as the marginal benefits of consumption and bequests.  This is the same balanced growth technique as that used in \citet{MertensRavn:2011}.}  The disutility of labor term in the utility function looks nonstandard, but is simply the upper quadrant of an ellipse that closely approximates the standard constant relative risk aversion utility of leisure functional form.\footnote{Appendix \ref{AppEllipseUtil} describes how the elliptical function closely matches the more standard utility of leisure of the form $\frac{(\tilde{l}-n_{j,s,t})^{1-\eta} - 1}{1-\eta}$. The parameters $b$ and $k$ are the scale and shift parameters of describing the elliptical form.  This elliptical utility function forces an interior solution that automatically respects both the upper and lower bound of labor supply, which greatly simplifies the computation of equilibrium.  For a more in-depth discussion see \citet{EvanPhillips:2015}} The utility weight on bequests (both intentional and accidental) is given by $\chi^{b}$.
 
 
-    Households choose consumption of the composite consumption good, $c_{j,s+u,t+u}$, labor supply, $n_{j,s+u,t+u},$ and asset holdings, $b_{j,s+u+1,t+u+1}$ to maximize the expected, discounted, lifetime utility subject to their per-period budget constraint.  Total consumption of the composite good is made up of discretionary consumption, $\tilde{c}_{j,s,t}$ and minimum required purchases of each consumption good, $\bar{c}_{i,s}$.  Thus the consumer's choice is over $\tilde{c}_{j,s,t}$, which together with the minimum required purchases equal determine total composite consumption: $c_{j,s,t}=\tilde{c}_{j,s,t}+\sum_{i=1}^{I}c_{i,s}$.  It is therefore the case that there minimum required purchases affect the household's ability to smooth consumption over time.  We discuss the composite consumption good in more detail in Section \ref{sec:subutil}.  This composite good is age dependent, thus each the price of the composite consumption good varies with age $s$.  We denote the gross-of-tax price of the composite consumption good for households of age $s$ in period $t$ as $\tilde{p}_{s,t}$ and the gross-of-tax price for good $i$ at time $t$ as $p_{i,t}$. Thus the households' per period budget constraint can be given by the following:
+    Households choose consumption of a composite consumption good, $c_{j,s+u,t+u}$, labor supply, $n_{j,s+u,t+u},$ and asset holdings, $b_{j,s+u+1,t+u+1}$, to maximize the expected, discounted, lifetime utility subject to their per-period budget constraint.  Total consumption of the composite good is made up of discretionary consumption, $\tilde{c}_{j,s,t}$, and minimum required purchases of each consumption good, $\bar{c}_{i,s}$.  Thus the consumer's choice is over $\tilde{c}_{j,s,t}$, which together with the minimum required purchases equal determine total composite consumption: $c_{j,s,t}=\tilde{c}_{j,s,t}+\sum_{i=1}^{I}c_{i,s}$.  It is therefore the case that there minimum required purchases affect the household's ability to smooth consumption over time.  We discuss the composite consumption good in more detail in Section \ref{sec:subutil}.  This composite good is age dependent, thus the price of the composite consumption good varies with age $s$.  We denote the gross-of-tax price of the composite consumption good for households of age $s$ in period $t$ as $\tilde{p}_{s,t}$ and the gross-of-tax price for good $i$ at time $t$ as $p_{i,t}$. The households' per period budget constraint is:
     
     \begin{equation}\label{EqBC}
       \begin{split}
-        \sum_{i=1}^{I} p_{i,t}c_{i,j,s,t} + \tilde{p}_{s,t}\tilde{c}_{s,t} + b_{j,s+1,t+1} \leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}&n_{j,s,t} + \frac{BQ_{j,t}}{\lambda_j\tilde{N}_t} - T_{j,s,t} \\
+        \sum_{i=1}^{I} p_{i,t}\bar{c}_{i,s} + \tilde{p}_{s,t}\tilde{c}_{s,t} + b_{j,s+1,t+1} \leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}&n_{j,s,t} + \frac{BQ_{j,t}}{\lambda_j\tilde{N}_t} - T_{j,s,t} \\
         \quad\text{where}\quad b_{j,s,1} = 0 \\
         &\text{for} \quad E+1\leq s \leq E+S \quad \forall j,t
       \end{split}
     \end{equation}
 
-    We set up a Lagrangian and solve by taking derivatives with respect to $\{\tilde{c}_{j,s,t},n_{j,s,t+u},b_{j,s,t+1}\}$ for all $j,s$ and $t$.
+\noindent\noindent Here, $r_{t}$ and $w_{t}$ are the real interest rate and the wages rate on a unit of effective labor.  The variable $e_{j,s}$ denotes the effective labor units of an individual from lifetime income group $s$ and age $j$.  An individual's labor income is thus determined by her choice of $n_{j,s,t}$ units of labor times her measure of effective labor units, $e_{j,s}$, times the wage per unit of effect labor.  An individuals effective labor units vary over the life-cycle, as the age subscript implies.  $BQ_{j,t}$ denote aggregate bequests left from those in lifetime income group {j} at time {t}.  We divide this number by the number of individuals in lifetime income group $j$ at time $t$, given by $\lambda_{j}\tilde{N}_{t}$, to determine the amount of bequests received by each household in lifetime income group $j$.\footnote{This distribution of bequests is just place holder. The goal is to find suitable data to calibrate the process describing the transmission of bequests between individuals of different ages and lifetime income groups.}  The last term in the budget constraint, $T_{j,s,t}$ are total taxes paid by the individual.  These include all non-consumption taxes and are based on tax functions for separate tax sources that we estimate based on a microsimulation model.  We discuss the parameterization and calibration of these functions below. 
 
-      The necessary condition with respect to the discretionary consumption of the composite consumption good $\tilde{c}_{j,s,t}$ is:
+    The Lagrangian for the individual's problem can be written as:
+     \begin{equation}\label{eqn:hh_prob_lagrangian}
+      \begin{split}
+     \mathcal{L} =  \max_{\left\{ \substack{\tilde{c}_{j,s+u,t+u},\\\ {n}_{j,s+u,t+u},\\\ {b}_{j,s+u,t+u}}\right\}_{u=0}^{E+S-s}}  &  \sum_{u=0}^{E+S-s}\beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right]  \frac{\left(c_{j,s+u,t+u}\right)^{1-\sigma} - 1}{1-\sigma} + ...\\
+  &   e^{g_y t(1-\sigma)}\chi^n_s+u\left(b\left[1 - \left(\frac{n_{j,s+u,t+u}}{\tilde{l}}\right)^\upsilon\right]^\frac{1}{\upsilon} + k\right) + \rho_s\chi^b\frac{\left(b_{j,s+u+1,t+u+1}\right)^{1-\sigma} - 1}{1-\sigma}  +... \\
+       & \lambda_{j,s+u,t+u}\left\{ (1+r_{t+u})b_{j,s+u,t+u} + w_{t+u}e_{j,s+u}n_{j,s+u,t+u}+\frac{BQ_{j,t+u}}{\lambda_{j}\tilde{N}_{t+u}}-T_{j,s+u,t+u} -.... \right.\\
+       & \left. \sum_{i=1}^{I}p_{i,t+u}\bar{c}_{i,s+u}-\tilde{p}_{s+u,t+u}\tilde{c}_{j,s+u,t+u} -b_{j,s+u+1,t+u+1} \right\}
+        \end{split}
+    \end{equation}
+    
+    
+    
+\noindent\noindent taking derivatives with respect to $\{\tilde{c}_{j,s,t},n_{j,s,t+u},b_{j,s,t+1}\}$ gives us the necessary conditions for each $j,s$ and $t$.  The necessary condition with respect to the discretionary consumption of the composite consumption good, $\tilde{c}_{j,s+u,t+u}$, labor supply, $n_{j,s+u,t+u}$, and asset holdings, $b_{j,s+u+1,t+u+1}$, are:
+  
     \begin{equation}\label{Eqcfoc}
       \begin{split}
-      \frac{\partial U}{\partial \tilde{c}_{j,s+u,t+u}}  = \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right] c_{j,s+u,t+u}^{-\sigma} - \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right]  \lambda_{t+u} \tilde{p}_{s+u,t+u} = 0
+     \frac{\partial U}{\partial \tilde{c}_{j,s+u,t+u}}  = \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right] c_{j,s+u,t+u}^{-\sigma} - \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right]  \lambda_{j,s+u,t+u} \tilde{p}_{s+u,t+u} = 0, \forall u
         \end{split}
     \end{equation}
 
-    With respect to labor:
     \begin{equation}\label{Eqnfoc}
       \begin{split}
       \frac{\partial U}{\partial n_{j,s+u,t+u}} & = \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right] e^{g_y (t+u)(1-\sigma)}\chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s+u,t+u}}{\tilde{l}}\biggr)^{v-1}\Biggl[1 - \biggl(\frac{n_{j,s+u,t+u}}{\tilde{l}}\biggr)\Biggr]^{\frac{1-v}{v}} \\
-      & -  \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right]\lambda_{t+u} \left( w_{+u} e_{j,s+u} - \frac{\partial T_{j,s+u,t+u}}{\partial n_{j,s+u,t+u}} \right)= 0
+      & -  \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right]\lambda_{j,s+u,t+u} \left( w_{t+u} e_{j,s+u} - \frac{\partial T_{j,s+u,t+u}}{\partial n_{j,s+u,t+u}} \right)= 0, \forall u
         \end{split}
     \end{equation}
 
-    With respect to savings:
     \begin{equation}\label{Eqbfoc}
       \begin{split}
-      \frac{\partial U}{\partial b_{j,s+u+1,t+u+1}} & = \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right] \rho_s\chi^b\bigl(b_{j,s+u+1,t+u+1}\bigr)^{-\sigma} - \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right] \lambda_{t+u}  \\\ & - \beta^{u+1}\left[\prod_{v=s-1}^{s+u}(1-\rho_v)\right] \lambda_{t+u+1} \left( 1 + r_{t+u+1} - \frac{\partial T_{j,s+u+1,t+u+1}}{\partial b_{j,s+U+1,t+u+1}} \right)= 0
+      \frac{\partial U}{\partial b_{j,s+u+1,t+u+1}} & = \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right] \rho_s\chi^b\bigl(b_{j,s+u+1,t+u+1}\bigr)^{-\sigma} - \beta^u\left[\prod_{v=s-1}^{s+u-1}(1-\rho_v)\right] \lambda_{j,s+ut+u}  \\\ 
+      & + \beta^{u+1}\left[\prod_{v=s-1}^{s+u}(1-\rho_v)\right] \lambda_{j,s+u+1,t+u+1} \left( 1 + r_{t+u+1} - \frac{\partial T_{j,s+u+1,t+u+1}}{\partial b_{j,s+u+1,t+u+1}} \right)= 0, \forall u
       \end{split}
     \end{equation}
 
-    We can solve each of these for $\lambda_{t+u}$ to get the following.
+ Note that the term $\frac{\partial T_{j,s+u+1,t+u+1}}{\partial n_{j,s+U+1,t+u+1}}$ give the change in total taxes for additional labor supply $\frac{\partial T_{j,s+u+1,t+u+1}}{\partial b_{j,s+U+1,t+u+1}}$ gives the change in total taxes for additional savings.  The tax functions that define the total taxes paid will take into account the interactions, for example how increasing capital income by saving more impacts the marginal tax rate on labor income in a system that progressively taxes labor income.  Rearranging the equations above to solve each for $\lambda_{t+u}$, we get the following:
     \begin{equation}
       \begin{split}
-      \lambda_{t+u} = \frac{c_{j,s+u,t+u}^{-\sigma}}{\tilde{p}_{s,t+u}} \nonumber
-      \end{split}
-    \end{equation}
-
-    \begin{equation}
-      \begin{split}
-      \lambda_{t+u} = \frac{e^{g_y (t+u)(1-\sigma)}\chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s+u,t+u}}{\tilde{l}}\biggr)^{v-1}\Biggl[1 - \biggl(\frac{n_{j,s+u,t+u}}{\tilde{l}}\biggr)\Biggr]^{\frac{1-v}{v}}}{ w_{+u} e_{j,s+u} - \frac{\partial T_{j,s+u,t+u}}{\partial n_{j,s+u,t+u}} }  \nonumber
+      \lambda_{j,s+u,t+u} = \frac{c_{j,s+u,t+u}^{-\sigma}}{\tilde{p}_{s,t+u}} \nonumber
       \end{split}
     \end{equation}
 
     \begin{equation}
       \begin{split}
-      \lambda_{t+u} = \rho_s\chi^b\bigl(b_{j,s+u+1,t+u+1}\bigr)^{-\sigma} - \beta (1-\rho_{s+u}) \lambda_{t+u+1} \left( 1 + r_{t+u+1} - \frac{\partial T_{j,s+u+1,t+u+1}}{\partial b_{j,s+u+1,t+u+1}} \right)
+      \lambda_{j,s+u,t+u} = \frac{e^{g_y (t+u)(1-\sigma)}\chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s+u,t+u}}{\tilde{l}}\biggr)^{v-1}\Biggl[1 - \biggl(\frac{n_{j,s+u,t+u}}{\tilde{l}}\biggr)\Biggr]^{\frac{1-v}{v}}}{ w_{+u} e_{j,s+u} - \frac{\partial T_{j,s+u,t+u}}{\partial n_{j,s+u,t+u}} }  \nonumber
+      \end{split}
+    \end{equation}
+
+    \begin{equation}
+      \begin{split}
+      \lambda_{j,s+u,t+u} = \rho_s\chi^b\bigl(b_{j,s+u+1,t+u+1}\bigr)^{-\sigma} - \beta (1-\rho_{s+u}) \lambda_{t+u+1} \left( 1 + r_{t+u+1} - \frac{\partial T_{j,s+u+1,t+u+1}}{\partial b_{j,s+u+1,t+u+1}} \right)
         \end{split}  \nonumber
     \end{equation}
 
-    These then reduce to the following 2 Euler equations for each $j,s,$ and $t$:
-
-    Marginal utility of consumption of the composite good $i$ is compared to the marginal utility of labor:
+    These three equations can then be reduced to just two equations that must hold for all $j,s,$ and $t$.  The first relates the marginal utility of consumption of the composite good to the marginal utility of labor:
     \begin{equation}\label{EqcEuler}
       \begin{split}
       & \frac{ c_{j,s+u,t+u}^{-\sigma}}{\tilde{p}_{s+u,t+u}} \\
@@ -103,10 +113,10 @@
        \end{split}
     \end{equation}
 
-    Intertemporal Euler equation for savings, including the utility effects of bequests:
+    \noindent\noindent The second equation is the intertemporal Euler equation for savings, including the utility effects of bequests:
     \begin{equation}\label{EqbEuler}
       \begin{split}
-      & \frac{ c_{j,s+u,t+u}^{-\sigma}}{\tilde{p}_{s+u,t+u}} = \rho_s\chi^b\bigl(b_{j,s+U+1,t+U+1}\bigr)^{-\sigma}  - \frac{ \beta(1-\rho_{s+u}) c_{j,s+u+1,t+u+1}^{-\sigma}} {\tilde{p}_{s+u+1,t+u+1}} \times \left( 1 + r_{t+u+1} - \frac{\partial T_{j,s+U+1,t+U+1}}{\partial b_{j,s+U+1,t+u+1}} \right)
+      & \frac{ c_{j,s+u,t+u}^{-\sigma}}{\tilde{p}_{s+u,t+u}} = \rho_s\chi^b\bigl(b_{j,s+U+1,t+U+1}\bigr)^{-\sigma}  + \frac{ \beta(1-\rho_{s+u}) c_{j,s+u+1,t+u+1}^{-\sigma}} {\tilde{p}_{s+u+1,t+u+1}} \times \left( 1 + r_{t+u+1} - \frac{\partial T_{j,s+u+1,t+U+1}}{\partial b_{j,s+u+1,t+u+1}} \right)
       \end{split}
     \end{equation}
 
