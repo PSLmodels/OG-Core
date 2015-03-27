@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  24 MAR 2015 22:32
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  26 MAR 2015 22:28
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1368,27 +1368,27 @@ LaTeX Font Info:    Font shape `OMS/phv/m/n' in size <10> not available
 
 ]
 LaTeX Font Info:    Font shape `OMS/phv/m/n' in size <9> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 138.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 139.
  [6
 
 ]
-LaTeX Font Info:    Try loading font information for U+msa on input line 174.
+LaTeX Font Info:    Try loading font information for U+msa on input line 175.
  (/usr/local/texlive/2012/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2009/06/22 v3.00 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 174.
+LaTeX Font Info:    Try loading font information for U+msb on input line 175.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 )
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <9> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 174.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 175.
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <6> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 174.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 175.
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <5> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 174.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 175.
 
-Overfull \vbox (3.89313pt too high) detected at line 174
+Overfull \vbox (3.89313pt too high) detected at line 175
  []
 
 [7
@@ -1397,37 +1397,37 @@ Overfull \vbox (3.89313pt too high) detected at line 174
 }) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.217 \end{frame}
+l.218 \end{frame}
                   [8
 
 ]
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10.95> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 231.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 232.
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <8> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 231.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 232.
  [9
 
 ] <images/omega_init.png, id=360, 578.16pt x 433.62pt>
 File: images/omega_init.png Graphic file (type png)
 
 <use images/omega_init.png>
-Package pdftex.def Info: images/omega_init.png used on input line 237.
+Package pdftex.def Info: images/omega_init.png used on input line 238.
 (pdftex.def)             Requested size: 158.99008pt x 119.24255pt.
  <images/omega_ss.png, id=362, 578.16pt x 433.62pt>
 File: images/omega_ss.png Graphic file (type png)
 
 <use images/omega_ss.png>
-Package pdftex.def Info: images/omega_ss.png used on input line 237.
+Package pdftex.def Info: images/omega_ss.png used on input line 238.
 (pdftex.def)             Requested size: 158.99008pt x 119.24255pt.
 
-Overfull \hbox (10.69029pt too wide) in paragraph at lines 237--237
+Overfull \hbox (10.69029pt too wide) in paragraph at lines 238--238
 [][]  
  []
 
 [10
 
  <./images/omega_init.png> <./images/omega_ss.png>]
-Overfull \hbox (23.58337pt too wide) in paragraph at lines 256--256
+Overfull \hbox (23.58337pt too wide) in paragraph at lines 257--257
 []  
  []
 
@@ -1439,15 +1439,15 @@ Overfull \hbox (23.58337pt too wide) in paragraph at lines 256--256
 
 ]
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 292.
- <images/ability.png, id=498, 578.16pt x 433.62pt>
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 296.
+ <images/ability.png, id=497, 578.16pt x 433.62pt>
 File: images/ability.png Graphic file (type png)
 
 <use images/ability.png>
-Package pdftex.def Info: images/ability.png used on input line 292.
+Package pdftex.def Info: images/ability.png used on input line 296.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-Overfull \vbox (2.43619pt too high) detected at line 292
+Overfull \vbox (2.43619pt too high) detected at line 296
  []
 
 [14
@@ -1457,11 +1457,11 @@ Overfull \vbox (2.43619pt too high) detected at line 292
 ] [16
 
 ]
-<images/EffTaxNoLog.pdf, id=595, 548.37851pt x 417.85309pt>
+<images/EffTaxNoLog.pdf, id=593, 548.37851pt x 417.85309pt>
 File: images/EffTaxNoLog.pdf Graphic file (type pdf)
 
 <use images/EffTaxNoLog.pdf>
-Package pdftex.def Info: images/EffTaxNoLog.pdf used on input line 320.
+Package pdftex.def Info: images/EffTaxNoLog.pdf used on input line 324.
 (pdftex.def)             Requested size: 548.37717pt x 417.85205pt.
  [17
 
@@ -1471,14 +1471,14 @@ Package pdftex.def Info: images/EffTaxNoLog.pdf used on input line 320.
 
 ]
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 365.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 369.
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <7> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 365.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 369.
  [20
 
 ]
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <14.4> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 378.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 382.
 
 [21
 
@@ -1496,11 +1496,11 @@ LaTeX Font Info:    Font shape `T1/phv/m/it' in size <14.4> not available
 \tf@snm=\write8
 \openout8 = `OSPC_model_presentation.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 428.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 428.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 432.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 432.
  (./OSPC_model_presentation.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 428.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 428.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 432.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 432.
 Package rerunfilecheck Info: File `OSPC_model_presentation.out' has not changed
 .
 (rerunfilecheck)             Checksum: 1C48A9F622641DFF728D6FDD3FFD4AE7;273.
@@ -1508,13 +1508,13 @@ Package rerunfilecheck Info: File `OSPC_model_presentation.out' has not changed
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 428.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 432.
  ) 
 Here is how much of TeX's memory you used:
- 20021 strings out of 493488
- 360833 string characters out of 3141326
+ 20006 strings out of 493488
+ 360701 string characters out of 3141326
  470369 words of memory out of 3000000
- 22745 multiletter control sequences out of 15000+200000
+ 22733 multiletter control sequences out of 15000+200000
  64419 words of font info for 90 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
  49i,21n,53p,478b,825s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1525,15 +1525,6 @@ pdfTeX warning (dest): name{elliptic} has been referenced but does not exist, r
 eplaced by a fixed one
 
 pdfTeX warning (dest): name{demographics} has been referenced but does not exis
-t, replaced by a fixed one
-
-pdfTeX warning (dest): name{Navigation28} has been referenced but does not exis
-t, replaced by a fixed one
-
-pdfTeX warning (dest): name{Navigation24} has been referenced but does not exis
-t, replaced by a fixed one
-
-pdfTeX warning (dest): name{Navigation29} has been referenced but does not exis
 t, replaced by a fixed one
 
 {/usr/local/texlive/2012/texmf-dist/fonts/enc/dvips/base/8r.enc}</usr/local/tex
@@ -1551,10 +1542,10 @@ dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2012/texmf-di
 st/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2012/texmf-dist/font
 s/type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1
 /urw/helvetic/uhvro8a.pfb>
-Output written on OSPC_model_presentation.pdf (23 pages, 365795 bytes).
+Output written on OSPC_model_presentation.pdf (23 pages, 365807 bytes).
 PDF statistics:
- 909 PDF objects out of 1000 (max. 8388607)
- 832 compressed objects within 9 object streams
- 65 named destinations out of 1000 (max. 500000)
+ 906 PDF objects out of 1000 (max. 8388607)
+ 829 compressed objects within 9 object streams
+ 62 named destinations out of 1000 (max. 500000)
  165 words of extra memory for PDF output out of 10000 (max. 10000000)
 

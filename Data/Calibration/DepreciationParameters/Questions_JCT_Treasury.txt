@@ -25,3 +25,4 @@ Tracy
 - Do you have inflation/money in macro model?  What is mechanism for changes in aggregate price level?
 - How handle economic growth? Std model with general growth rate means that growth same across industries.  Should we do industry specific tech growth?
 - Want tax function to include state and local taxes, but also want to separate our federal and state and local revenues.  How handle this?  Related to budget questions above.
+- I'm getting super confused about the units of all things.  I want to write everything on the firms side in real terms, but taxes are based on nominal values.  What to do?
