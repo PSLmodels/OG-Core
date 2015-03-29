@@ -124,7 +124,7 @@
     \subsection{Household's Subutility Function}\label{sec:subutil}
     
     Household preferences over the composite consumption good are modeled as a Stone-Geary function. The aggregate discretionary consumption of the composite good is defined as follows.
-    \begin{equation} \label{Eqcagg}
+    \begin{equation} \label{eqn:comp_cons}
         \tilde{c}_{j,s,t}  = \prod_{i=1}^I \left( c_{i,j,s,t} - \bar c_{i,s} \right) ^{\alpha_{i,s}} 
     \end{equation}
 
@@ -150,7 +150,7 @@ The consumer chooses $c_{i,j,s,t}$ to maximize Equation \ref{Eqcagg} subject to 
        & \implies  \frac{\alpha_{i,s} \prod_{i=1}^I \left( c_{i,j,s,t} - \bar c_{i,s} \right) ^{\alpha_{i,s}}}{(c_{i,j,s,t}-\bar{c}_{i,s})} = \lambda p_{i,t}, \forall \ i \\
        & \implies  \frac{\alpha_{i,s} \prod_{i=1}^I \left( c_{i,j,s,t} - \bar c_{i,s} \right) ^{\alpha_{i,s}}}{ p_{i,t}(c_{i,j,s,t}-\bar{c}_{i,s})} = \lambda, \forall \ i \\
        & \implies \frac{\alpha_{i,s}}{p_{i,t}(c_{i,j,s,t}-\bar{c}_{i,s})}=\frac{\alpha_{j,s}}{p_{k,t}(c_{k,j,s,t}-\bar{c}_{k,s})}, \forall \ i,k \\
-       & \implies c_{i,j,s,t}= \frac{\alpha_{i,s} p_{k,t}(c_{k,j,s,t}-\bar{c}_{k,s})}{\alpha_{k,s} p_{i,t}} + \bar{c}_{i,s}
+       & \implies c_{i,j,s,t}= \frac{\alpha_{i,s} p_{k,t}(c_{k,j,s,t}-\bar{c}_{k,s})}{\alpha_{k,s} p_{i,t}} + \bar{c}_{i,s} \forall i,k 
        \end{split}
     \end{equation}
     
@@ -168,7 +168,7 @@ The consumer chooses $c_{i,j,s,t}$ to maximize Equation \ref{Eqcagg} subject to 
        \end{split}
     \end{equation}
     
-    Thus, consumption of each good $i$, $c_{i,j,s,t}$ is given by the the amount of minimum consumption plus the share of total expenditures remaining after making the minimum expenditures on all goods (this is called the ``supernumerary" expenditure).  To solve the model for the amount of each consumption good we use the amount of composite consumption for the household from the solution to the intertemporal utility maximization problem in \ref{EqUtilMax}, which gives us $\tilde{c}_{j,s,t}$. We then take the $p_{i,t}$ (which is derived from the solution to the firms' problems, the zero profit condition on firms, and the the bridge between production and consumption goods) and the estimated parameters $\{\alpha_{i,s}\}$ and $\{bar{c}_{i,s}\}$ (we discuss calibration of consumption parameters in Chapter \ref{}).  Finally, we derive the prices of the age $s$ composite consumption good in period $t$, $\tilde{p}_{s,t}$ as: 
+    Thus, total consumption of each good $i$, $c_{i,j,s,t}$, is given by the the amount of minimum consumption plus the share of total expenditures remaining after making the minimum expenditures on all goods (this is called the ``supernumerary" expenditure).  We derive the prices of the age $s$ composite consumption good in period $t$, $\tilde{p}_{s,t}$ by using the demand for good $i$ provided in Equation \ref{cons_solve} in the function defining aggregate discretionary consumption, Equation \ref{eqn:comp_cons}: 
     
               \begin{equation} \label{eqn:composite_price}
       \begin{split}
@@ -181,33 +181,33 @@ The consumer chooses $c_{i,j,s,t}$ to maximize Equation \ref{Eqcagg} subject to 
        \end{split}
     \end{equation}
     
-    With these parameters and endogenous variables, we then use \ref{eqn:cons_solve} to find the $c_{i,j,s,t}$.
+    This composite good price is then used in the household's intertemporal optimization problem described in Equation \ref{eqn:hh_prob_lagrangian}.  With the parameters and endogenous variables, we then use \ref{eqn:cons_solve} to find the $c_{i,j,s,t}$.
     
     \subsection{Relating Consumption and Production Goods}\label{sec:prod_cons_map}
     
-    Our model contains $I$ consumption goods and $M$ production goods.  We denote the quantity of production good $m$ in period $t$ as $X_{m,t}$.  We relate the output of the production sectors and the consumption goods using a fixed coefficient model. That is, each consumption good is made up of a mix of the outputs of different production sectors.  This means that the composition of these consumption goods do not respond to prices. The weights that determine the mix for each consumption goods are given in the matrix $\Pi$.  Element $\pi_{i,m}$ of the matrix $\Pi$ corresponds to the percentage contribute of the output of sector $m$ in the production of good $i$.  The total supply of good $i$ in the economy at time $t$ is thus given by: 
+    Our model contains $I$ consumption goods and $M$ production goods.  We denote the quantity of production good $m$ in period $t$ as $X_{m,t}$.  We relate the output of the production sectors and the consumption goods using a fixed coefficient model. That is, we assume each consumption good is made up of a mix of the outputs of different production sectors.  This means that the composition of these consumption goods do not respond to prices. The weights that determine the mix for each consumption goods are given in the matrix $\Pi$.  Element $\pi_{i,m}$ of the matrix $\Pi$ corresponds to the percentage contribute of the output of sector $m$ in the production of good $i$.  The total supply of good $i$ in the economy at time $t$ is thus given by: 
     
              \begin{equation} \label{eqn:mix_cons}
              c_{i,t} = \sum_{m=1}^{M}\pi_{i,m}X_{m,t} 
     	\end{equation}
 	
-	And thus the price of a unit of consumption good $i$ at time $t$ is:
+ \noindent\noindent And the price of a unit of consumption good $i$ at time $t$ is:
 	
              \begin{equation} \label{eqn:mix_cons_price}
              p_{i,t} = \sum_{m=1}^{M}\pi_{i,m}p_{m,t}, 
     	\end{equation}
     
-    Where $p_{m}$ is the price of output of production sector $m$ at time $t$.
+    \noindent\noindent Where $p_{m}$ is the price of output of production sector $m$ at time $t$.
     
     \subsection{Preferences for Corporate vs. Noncorporate Goods}\label{sec:pref_corp_noncorp}
     
-    Production sectors may contain corporate and non-corporate producers, each facing different tax treatment.  If the output from corporate and non-corporate entities are perfect substitutes, then if the producers have the same production technology, consumers will end up consuming only the output from the sector with lowest after tax cost of producing.  \citet{GK1989} propose a model where different production sectors face different technologies, which can give rise to an equilibrium where both the corporate and non-corporate sector produce the same good.  We take a different track, following \citet{FR1993} we allow production technologies to vary across industry, but not across sectors within industry.  To have both sectors produce output in equilibrium, we proposed that output across sectors are not perfect substitutes.  For example, food outside the home from a corporate, chain restaurant chain is not the same as food outside the home from a small, family-owned restaurant.  Specifically, we define consumer preferences such that demand for the composite production good (combing output from the corporate and non-corporate sector) for production sector $m$ at time $t$, $X_{m,t}$, is a constant elasticity of substitution (CES) function of the output from the corporate and non-corporate sectors, $X_{m,t,C}$ and $X_{m,t,NC}$, respectively:
+    Production sectors may contain corporate and non-corporate producers, each facing different tax treatment.  If the output from corporate and non-corporate entities are perfect substitutes, then if the producers have the same production technology, consumers will end up consuming only the output from the sector with lowest after tax cost of producing.  \citet{GK1989} propose a model where different production sectors use different technologies, which can give rise to an equilibrium where both the corporate and non-corporate sector produce the same good.  We take a different track, following \citet{FR1993} we allow production technologies to vary across industry, but not across sectors within industry.  Both sectors produce output in equilibrium, because output across sectors are not perfect substitutes.  For example, food outside the home from a corporate, chain restaurant chain is not the same as food outside the home from a small, family-owned restaurant.  Specifically, we define consumer preferences such that demand for the composite production good (combing output from the corporate and non-corporate sector) for production sector $m$ at time $t$, $X_{m,t}$, is a constant elasticity of substitution (CES) function of the output from the corporate and non-corporate sectors, $X_{m,t,C}$ and $X_{m,t,NC}$, respectively:
     
                   \begin{equation} \label{eqn:comp_output}
              X_{m,t} = \left[\gamma_{m}^{\frac{1}{\ve_{3}}}X_{m,t,C}^{\frac{(\ve_{3}-1)}{\ve_{3}}}+(1-\gamma_{m})^{\frac{1}{\ve_{3}}}X_{m,t,NC}^{\frac{(\ve_{3}-1)}{\ve_{3}}}+\right]^{\frac{\ve_{3}}{(\ve_{3}-1)}}, 
     	\end{equation}
 	
-	\noindent where $\ve_{3}$ is the elasticity of substitution between corporate and non-corporate output and is assumed to be constant across industries.  The share parameter in the CES function, $\gamma_{m}$ is allowed to vary across industry and will be identified by the fraction of corporate produced output across industries.  The CES function thus explains the existence of corporate and non-corporate production within each industry as well as the different shares out corporate output across industries.  Because of these preferences, changes in corporate and non-corproate tax treatment will have differential impacts across consumers of different ages and income levels.  
+	\noindent where $\ve_{3}$ is the elasticity of substitution between corporate and non-corporate output and is assumed to be constant across industries.  The share parameter in the CES function, $\gamma_{m}$ is allowed to vary across industry and will be identified by the fraction of corporate produced output across industries.  The CES function thus explains the existence of corporate and non-corporate production within each industry as well as the different shares of corporate output across industries.  Because of these preferences, changes in corporate and non-corproate tax treatment will have differential impacts across consumers of different ages and income levels.  
 	Consumers choose $X_{m,t,C}$ and $X_{m,t,NC}$ to maximize \ref{eqn:comp_output} subject to:
 	
 	 \begin{equation} \label{eqn:comp_output_cons}
@@ -219,7 +219,7 @@ The consumer chooses $c_{i,j,s,t}$ to maximize Equation \ref{Eqcagg} subject to 
     
  \begin{equation} \label{eqn:comp_output_lagrangian}
 	\begin{split}
-	 \mathcal{L} = \left[\gamma_{m}^{\frac{1}{\ve_{3}}}X_{m,t,C}^{\frac{(\ve_{3}-1)}{\ve_{3}}}+(1-\gamma_{m})^{\frac{1}{\ve_{3}}}X_{m,t,NC}^{\frac{(\ve_{3}-1)}{\ve_{3}}}+\right]^{\frac{\ve_{3}}{(\ve_{3}-1)}} + \lambda\left(p_{m,t}X_{m,t} - p_{m,t,C}X_{m,t,C}+p_{m,t,NC}X_{m,t,NC}\right)
+	 \mathcal{L} = \left[\gamma_{m}^{\frac{1}{\ve_{3}}}X_{m,t,C}^{\frac{(\ve_{3}-1)}{\ve_{3}}}+(1-\gamma_{m})^{\frac{1}{\ve_{3}}}X_{m,t,NC}^{\frac{(\ve_{3}-1)}{\ve_{3}}}+\right]^{\frac{\ve_{3}}{(\ve_{3}-1)}} + \lambda_{m,t,C}\left(p_{m,t}X_{m,t} - p_{m,t,C}X_{m,t,C}+p_{m,t,NC}X_{m,t,NC}\right)
   	\end{split}
 \end{equation}
     
@@ -227,7 +227,7 @@ The consumer chooses $c_{i,j,s,t}$ to maximize Equation \ref{Eqcagg} subject to 
     
 \begin{equation} \label{eqn:comp_output_foc_C}
 	\begin{split}
-       	&  \frac{\partial \mathcal{L}}{\partial X_{m,t,C}} = \gamma_{m}^{\frac{1}{\ve_{3}}} X_{m,t,C}^{\frac{-1}{\ve_{3}}} \left[\gamma_{m}^{\frac{1}{\ve_{3}}}X_{m,t,C}^{\frac{(\ve_{3}-1)}{\ve_{3}}}+(1-\gamma_{m})^{\frac{1}{\ve_{3}}}X_{m,t,NC}^{\frac{(\ve_{3}-1)}{\ve_{3}}}+\right]^{\frac{1}{(\ve_{3}-1)}} - \lambda p_{m,t,C} = 0
+       	&  \frac{\partial \mathcal{L}}{\partial X_{m,t,C}} = \gamma_{m}^{\frac{1}{\ve_{3}}} X_{m,t,C}^{\frac{-1}{\ve_{3}}} \left[\gamma_{m}^{\frac{1}{\ve_{3}}}X_{m,t,C}^{\frac{(\ve_{3}-1)}{\ve_{3}}}+(1-\gamma_{m})^{\frac{1}{\ve_{3}}}X_{m,t,NC}^{\frac{(\ve_{3}-1)}{\ve_{3}}}+\right]^{\frac{1}{(\ve_{3}-1)}} - \lambda_{m,t,C} p_{m,t,C} = 0
       	 \end{split}
 \end{equation}
     
@@ -235,7 +235,7 @@ The consumer chooses $c_{i,j,s,t}$ to maximize Equation \ref{Eqcagg} subject to 
    
 \begin{equation} \label{eqn:comp_output_foc_NC}
 	\begin{split}
-       	&  \frac{\partial \mathcal{L}}{\partial X_{m,t,NC}} = (1-\gamma_{m})^{\frac{1}{\ve_{3}}} X_{m,t,NC}^{\frac{-1}{\ve_{3}}} \left[\gamma_{m}^{\frac{1}{\ve_{3}}}X_{m,t,C}^{\frac{(\ve_{3}-1)}{\ve_{3}}}+(1-\gamma_{m})^{\frac{1}{\ve_{3}}}X_{m,t,NC}^{\frac{(\ve_{3}-1)}{\ve_{3}}}+\right]^{\frac{1}{(\ve_{3}-1)}} - \lambda p_{m,t,NC} = 0
+       	&  \frac{\partial \mathcal{L}}{\partial X_{m,t,NC}} = (1-\gamma_{m})^{\frac{1}{\ve_{3}}} X_{m,t,NC}^{\frac{-1}{\ve_{3}}} \left[\gamma_{m}^{\frac{1}{\ve_{3}}}X_{m,t,C}^{\frac{(\ve_{3}-1)}{\ve_{3}}}+(1-\gamma_{m})^{\frac{1}{\ve_{3}}}X_{m,t,NC}^{\frac{(\ve_{3}-1)}{\ve_{3}}}+\right]^{\frac{1}{(\ve_{3}-1)}} - \lambda_{m,t,C} p_{m,t,NC} = 0
 	\end{split}
 \end{equation}
     
@@ -281,7 +281,7 @@ V(p_{m,t,C},p_{m,t,NC}, X_{m,t}) = \frac{p_{m,t}X_{m,t}}{e(p_{m,t,C},p_{m,t,NC})
 \end{split}
 \end{equation}   
 
-Thus we have the price of the corporate-non-corporate composite good from production industry $m$ at time $t$ as:
+\noindent\noindent Thus we have the price of the corporate-non-corporate composite good from production industry $m$ at time $t$ as:
 \begin{equation}
  e(p_{m,t,C},p_{m,t,NC})=p_{m,t}=\left[\gamma_{m}p_{m,t,C}^{1-\ve_{3}}+(1-\gamma_{m})p_{m,t,NC}^{1-\ve_{3}}\right]^{\frac{1}{(1-\ve_{3})}}
  \end{equation}

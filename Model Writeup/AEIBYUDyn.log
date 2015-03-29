@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  29 MAR 2015 06:33
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  29 MAR 2015 06:47
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -528,7 +528,7 @@ l.87   \end{abstract}
 th the same identifier (name{page.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.32 ...2.1}Tax Bend Points}{51}{subsection.7.2.1}
+l.32 ...2.1}Tax Bend Points}{52}{subsection.7.2.1}
                                                    [1
 
 ])
@@ -617,26 +617,28 @@ n.2.2.12}) has been already used, duplicate ignored
 \PDFSYNC@@utput ...\PDFSYNCship@ut@ld \box \@cclv 
                                                   
 l.132 
-      ] [12]
+      ]
 
-LaTeX Warning: Reference `' on page 13 undefined on input line 171.
+LaTeX Warning: Reference `Eqcagg' on page 12 undefined on input line 133.
 
-[13]
 
-Package natbib Warning: Citation `FR1993' on page 14 undefined on input line 20
-4.
+LaTeX Warning: Reference `Eqcagg' on page 12 undefined on input line 139.
 
-[14]
-Overfull \hbox (40.93195pt too wide) in paragraph at lines 224--224
+[12]
+
+LaTeX Warning: Reference `cons_solve' on page 13 undefined on input line 171.
+
+[13] [14]
+Overfull \hbox (63.36575pt too wide) in paragraph at lines 224--224
+[][][] 
+ []
+
+
+Overfull \hbox (39.04268pt too wide) in paragraph at lines 240--240
 [][][] 
  []
 
 [15]
-Overfull \hbox (16.60887pt too wide) in paragraph at lines 240--240
-[][][] 
- []
-
-
 Overfull \hbox (210.0188pt too wide) in paragraph at lines 282--282
 [][][] 
  []
@@ -697,10 +699,6 @@ LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
 
 
 ] [27]
-
-Package natbib Warning: Citation `FR1993' on page 28 undefined on input line 10
-6.
-
 
 Package natbib Warning: Citation `KotlikoffXXXX' on page 28 undefined on input 
 line 106.
@@ -847,19 +845,19 @@ LaTeX Warning: Reference `AppIncTaxRate' on page 33 undefined on input line 149
 
 LaTeX Warning: Reference `AppReplRate' on page 33 undefined on input line 151.
 
-<images/SavSS_log.png, id=530, 578.16pt x 433.62pt>
+<images/SavSS_log.png, id=535, 578.16pt x 433.62pt>
 File: images/SavSS_log.png Graphic file (type png)
  <use images/SavSS_log.png>
 Package pdftex.def Info: images/SavSS_log.png used on input line 169.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-<images/LabSS.png, id=532, 465.99094pt x 365.11406pt>
+<images/LabSS.png, id=537, 465.99094pt x 365.11406pt>
 File: images/LabSS.png Graphic file (type png)
  <use images/LabSS.png>
 Package pdftex.def Info: images/LabSS.png used on input line 174.
 (pdftex.def)             Requested size: 465.98979pt x 365.11316pt.
 
-<images/ConsSS_log.png, id=533, 578.16pt x 433.62pt>
+<images/ConsSS_log.png, id=538, 578.16pt x 433.62pt>
 File: images/ConsSS_log.png Graphic file (type png)
 
 <use images/ConsSS_log.png>
@@ -880,13 +878,13 @@ Overfull \hbox (72.20467pt too wide) in paragraph at lines 207--208
 
 LaTeX Warning: Reference `EqFOCrate' on page 38 undefined on input line 215.
 
-<images/KpathTPI.png, id=595, 578.16pt x 433.62pt>
+<images/KpathTPI.png, id=599, 578.16pt x 433.62pt>
 File: images/KpathTPI.png Graphic file (type png)
  <use images/KpathTPI.png>
 Package pdftex.def Info: images/KpathTPI.png used on input line 219.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-<images/LpathTPI.png, id=596, 578.16pt x 433.62pt>
+<images/LpathTPI.png, id=600, 578.16pt x 433.62pt>
 File: images/LpathTPI.png Graphic file (type png)
  <use images/LpathTPI.png>
 Package pdftex.def Info: images/LpathTPI.png used on input line 224.
@@ -928,10 +926,6 @@ cmr/m/n/12 )[](\OML/cmm/m/it/12 EL[]\OT1/cmr/m/n/12 )[]
 
 LaTeX Warning: Reference `eqn:opt_i' on page 42 undefined on input line 89.
 
-
-Package natbib Warning: Citation `FR1993' on page 42 undefined on input line 10
-9.
-
 [42]
 
 LaTeX Warning: Reference `AppPopGrowth' on page 43 undefined on input line 123.
@@ -955,7 +949,7 @@ Underfull \hbox (badness 2088) in paragraph at lines 243--243
 [][][][]|[]\OT1/cmr/bx/n/12 Di-a-gram of TPI so-lu-tion method
  []
 
-<images/TPIdiag.pdf, id=743, 513.57974pt x 675.72452pt>
+<images/TPIdiag.pdf, id=749, 513.57974pt x 675.72452pt>
 File: images/TPIdiag.pdf Graphic file (type pdf)
 
 <use images/TPIdiag.pdf>
@@ -1019,10 +1013,10 @@ LaTeX Warning: There were multiply-defined labels.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 258.
  ) 
 Here is how much of TeX's memory you used:
- 8620 strings out of 493488
- 126910 string characters out of 3141326
- 238333 words of memory out of 3000000
- 11459 multiletter control sequences out of 15000+200000
+ 8622 strings out of 493488
+ 126946 string characters out of 3141326
+ 238396 words of memory out of 3000000
+ 11460 multiletter control sequences out of 15000+200000
  24469 words of font info for 90 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
  36i,35n,41p,2083b,676s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1052,10 +1046,10 @@ st/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2012/texmf-dist
 /fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2012/texmf-dist/f
 onts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2012/texmf-dist/fo
 nts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on AEIBYUDyn.pdf (56 pages, 1341582 bytes).
+Output written on AEIBYUDyn.pdf (56 pages, 1343246 bytes).
 PDF statistics:
- 951 PDF objects out of 1000 (max. 8388607)
- 846 compressed objects within 9 object streams
- 278 named destinations out of 1000 (max. 500000)
+ 957 PDF objects out of 1000 (max. 8388607)
+ 852 compressed objects within 9 object streams
+ 279 named destinations out of 1000 (max. 500000)
  287 words of extra memory for PDF output out of 10000 (max. 10000000)
 
