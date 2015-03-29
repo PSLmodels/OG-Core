@@ -6,92 +6,20 @@ A Brigham Young University Macroeconomics and Computational Laboratory project i
 
 This repository includes the data used to calibrate the model along with all the necessary Python code to solve and simulate.
 
-Abstract
-========
-This project builds, calibrates and simulates the effects of changes in various taxes on the U.S. economy in the contect of a large macro OLG model.  Our particular emphasis is on how the stream of tax revenues changes over time.
+The Model
+=========
+This project builds, calibrates and simulates the effects of changes in various taxes on the U.S. economy in the context of a dynamic general equilibrium model.  Our particular emphasis is on how the stream of tax revenues changes over time.
 
-The BYU-OSPC model is similar to the Zodrow-Diamond (ZD) model in being a computable CGE-OLG model.  We solve as ZD do using the Auerbach-Kolikoff time-path iteration method.
+Disclaimer
+==========
+The model is currently under development. Users should be forewarned that the model componenents could change significantly. Therefore, there is NO GUARANTEE OF ACCURACY. THE CODE SHOULD NOT CURRENTLY BE USED FOR PUBLICATIONS, JOURNAL ARTICLES, OR RESEARCH PURPOSES. Essentially, you should assume the calculations are unreliable until we finish the code re-architecture and have checked the results against other existing implementations of the tax code. The package will have released versions, which will be checked against existing code prior to release. Stay tuned for an upcoming release!
 
-Demographics
-------------
-- Households live for a maximum of 100 years. (ZD use 55-year-lived agents)
+Using the Dynamic Scoring Model
+===============================
 
-- They become economically active at age 20, retire at age 65, and die by age 100.
 
-- We explicitly consider mortality risk in our model.  (ZD have no mortality risk)
-
-- The law of large numbers guarantees that the number of households in each cohort is perfectly predictable.
-
-- We control for new births and immigration. (ZD use a fixed population growth rate)
-
-- We include both accidental and intended bequests
-
-Households
-----------
-
-- N different ability levels which are fixed at birth. (ZD use 12 ability levels)
-
-- Different ability types have different age profiles for their labor productivity.  (Same as ZD)
-
-- Unintentional bequest are distributed to other agents of the same ability type at the beginning of the next period. (ZD have no mortality risk and thus no unintentional bequests)
-
-- Households that live to the final age will leave an intentional bequest which is modelled as an additional term in their utility function. (Same as ZD)
-
-- Households optimally choose their labor supply, consumption, and savings each period.
-
-  - We will likely allow for consumption of 12 goods (DZ have 4 goods), including health care, energy, and housing, which have special treatment in the tax code.
-
-- They are subject to:
-
-  - an income tax
-
-  - a payroll tax on wage income only which funds a social security benefit for retired households
-
-  - a consumption tax
-
-  - potentially a wealth tax
-
-- Household statutory marginal income tax rates are based on current income (ZD base tax rates on life-time income)
-
-Firms
------
-
-- Maximize the discounted present value of all future profit streams.
-
-  - Firm value and thus investment incentives are affected by tax policy.
-
-- Firms acquire capital via investment and hire labor.
-
-- Firms finance investment with retained earnings, debt, and new equity issuance.
-
-- Likely more about 12 different sectors (a sector is represented by an industry-business entity type (corp/non-corp) combination) (ZD have four sectors)
-
-  - Will include corporate and non-corporate sectors
-
-  - Will include a multinational sector.  These will be corporate businesses and will probably separately model the manufacturing and services industries.
-
-  - Industries not yet determined, but likely to include manufacturing, services (ex health care), health care, energy, housing industries.
-
-  - Likely have with corporate and non-corporate sectors in each industry.
-
-Government
-----------
-
-- For 10 years the government collects whatever tax revenue is implied by the chosen tax structure.
-
-- After 10 years spending cuts are imposed so that the debt to GDP ratio stabilizes in the long run. 
-
-Market Clearing
----------------
-
-- Markets are perfectly competitive. (Same as ZD)
-
-- The economy is closed to the rest of the world (same as ZD’s simple model).
-
-  - The exception to this are multinational businesses, who can use the rest of the world to shift profits overseas.
-
-Contributors
-============
+Dynamic Scoring Model Contributors
+==================================
 
 - Jason DeBacker
 
@@ -101,6 +29,12 @@ Contributors
 
 - Kerk Phillips
 
-- Shanthi Ramnath
-
 - Isaac Swift
+
+
+About OSPC
+==========
+The Open-Source Policy Center (OSPC) seeks to make policy analysis more transparent, trustworthy, and collaborative by harnessing open-source methods to build cutting-edge economic models.
+
+
+
