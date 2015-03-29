@@ -185,16 +185,16 @@ The consumer chooses $c_{i,j,s,t}$ to maximize Equation \ref{Eqcagg} subject to 
     
     \subsection{Relating Consumption and Production Goods}\label{sec:prod_cons_map}
     
-    Our model contains $I$ consumption goods and $M$ production goods.  We denote the quantity of production good $m$ in period $t$ as $X_{m,t}$.  We related the output of the production sectors and the consumption goods using a fixed coefficient model. That is, each consumption good is made up of a mix of the outputs of different production sectors.  The weights that determine the mix for each consumption goods are given in the matrix $Z$.  Element $z_{i,m}$ of the matrix $Z$ corresponds to the percentage contribute of the output of sector $m$ in the production of good $i$.  The total supply of good $i$ in the economy at time $t$ is thus given by: 
+    Our model contains $I$ consumption goods and $M$ production goods.  We denote the quantity of production good $m$ in period $t$ as $X_{m,t}$.  We relate the output of the production sectors and the consumption goods using a fixed coefficient model. That is, each consumption good is made up of a mix of the outputs of different production sectors.  This means that the composition of these consumption goods do not respond to prices. The weights that determine the mix for each consumption goods are given in the matrix $\Pi$.  Element $\pi_{i,m}$ of the matrix $\Pi$ corresponds to the percentage contribute of the output of sector $m$ in the production of good $i$.  The total supply of good $i$ in the economy at time $t$ is thus given by: 
     
              \begin{equation} \label{eqn:mix_cons}
-             c_{i,t} = \sum_{m=1}^{M}z_{i,m}X_{m,t} 
+             c_{i,t} = \sum_{m=1}^{M}\pi_{i,m}X_{m,t} 
     	\end{equation}
 	
 	And thus the price of a unit of consumption good $i$ at time $t$ is:
 	
              \begin{equation} \label{eqn:mix_cons_price}
-             p_{i,t} = \sum_{m=1}^{M}z_{i,m}p_{m,t}, 
+             p_{i,t} = \sum_{m=1}^{M}\pi_{i,m}p_{m,t}, 
     	\end{equation}
     
     Where $p_{m}$ is the price of output of production sector $m$ at time $t$.
