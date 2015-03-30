@@ -337,7 +337,17 @@ An Open Source Model \\ for Dynamic Revenue Estimates}
 
     \begin{frame}
     \frametitle{Households -- Tax Structure}
-      Say something about how tax functions estimated from microsimulation output...
+      \begin{itemize}
+      \item These functions are fit using micro data on tax burden
+      \item Micro data come from the OSPC microsimulation model
+      \item We integrate the two
+      	\begin{itemize}
+	\item Micro output results of macro forecast
+	\item The macro forecast a result of tax functions
+	\item Tax functions estimated from micro output
+	\item A fixed point
+	\end{itemize}
+      \end{itemize}
   \end{frame}
 
   \begin{frame}{Households -- Income Tax}\label{Income Tax}
@@ -347,21 +357,30 @@ An Open Source Model \\ for Dynamic Revenue Estimates}
   \end{frame}
 
 \section{Firms}
-  \begin{frame}{Firms -- Solutions}
-  Perfectly Competitive CRS Firms \\
-  Labor-augmenting Technology
-  \begin{align}
-         Y_t & = A K_t^\alpha\left(e^{g_y t}L_t\right)^{1-\alpha} \quad \forall t \nonumber \\
-         w_t &= (1-\alpha)\frac{Y_t}{L_t} \quad \forall t \nonumber \\
-         r_t &= \alpha\frac{Y_t}{K_t} - \delta \quad\:\:\: \forall t  \nonumber
-      \end{align}
+  \begin{frame}{Firms -- Objective}
+  Maximize Firm Value: \\
+  \begin{equation}
+         V_{t}= \max_{\{I_{u},EL_{u}\}^{\infty}_{u=t}}  \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[ \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)DIV_{u}-VN_{u}\right]\
+  \end{equation}
   \end{frame}
+  
+    \begin{frame}{Firms -- Taxes}
+  \begin{equation}
+\label{eqn:corp_tax}
+\begin{split}
+TE_{t}=  \tau^{b}_{t} & \left[  p_{t}X_{t}-w_{t}EL_{t}-f_{e}p^{K}_{t}I_{t}-\Phi_{t}I_{t}-f_{i}i_{t}B_{t}-f_{p}\delta b K_{t}+... \right. \\
+ &  \left.  f_{b}bp^{K}_{t}I_{t}-f_{d}\delta^{\tau}K^{\tau}_{t}-\tau^{p}_{t}K_{t}\right] +\tau^{ic}_{t}p^{K}_{t}I_{t}
+\end{split}
+\end{equation}
+ \end{frame}
+
+
 
 \section{Government}
-  \begin{frame}{Government}
-  Government collects income, payroll, bequest and wealth taxes and refunds them lump-sum.
+  \begin{frame}{Government Budget:}
   \begin{equation}
-        T^L_t = \frac{1}{\tilde N_t} \sum_s \sum_j \left(T^I_{j,s,t} + T^P_{j,s,t} + T^{BQ}_{j,s,t} + T^W_{j,s,t}\right) \nonumber
+ \label{eqn:gbc}
+      D_{t+1} + T^{\tau}_{t} = (1+r_{t})D_{t} + T^{H}_{t} + G^{subs}_{t} + G^{emp}_{t} + I^{G}_{t}
       \end{equation}
   \end{frame}
 
@@ -441,7 +460,17 @@ An Open Source Model \\ for Dynamic Revenue Estimates}
 
 
 
+
+
+
 \section{Summary}
+
+  \begin{frame}{The GitHub Repo}
+  The open, online repository houses all model code, data, and documentation: \\
+  \ \\
+\href{https://github.com/OpenSourcePolicyCenter/dynamic}{https://github.com/OpenSourcePolicyCenter/dynamic}
+  \end{frame}
+
   \begin{frame}{Summary}
   \begin{itemize}
       \item Big model

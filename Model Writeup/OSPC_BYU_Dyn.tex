@@ -1,0 +1,258 @@
+\documentclass[12pt]{report} 
+  \usepackage{threeparttable}
+  \usepackage{geometry}
+  \geometry{letterpaper,tmargin=1in,bmargin=1in,lmargin=1.25in,rmargin=1.25in}
+  \usepackage[format=hang,font=normalsize,labelfont=bf]{caption}
+  \usepackage{amsmath}
+  \usepackage{multirow}
+  \usepackage{array}
+  \usepackage{delarray}
+  \usepackage{amssymb}
+  \usepackage{amsthm}
+  \usepackage{lscape}
+  \usepackage{natbib}
+  \usepackage{setspace}
+  \usepackage{float,color}
+  \usepackage[pdftex]{graphicx}
+  \usepackage{pdfsync}
+  \usepackage{verbatim}
+  \usepackage{placeins}
+  \synctex=1
+  \usepackage{hyperref}
+  \hypersetup{colorlinks,linkcolor=red,urlcolor=blue,citecolor=red}
+  \usepackage{bm}
+  \usepackage{makeidx}       % Package to make an index.
+
+  \theoremstyle{definition}
+  \newtheorem{theorem}{Theorem}
+  \newtheorem{acknowledgement}[theorem]{Acknowledgement}
+  \newtheorem{algorithm}[theorem]{Algorithm}
+  \newtheorem{axiom}[theorem]{Axiom}
+  \newtheorem{case}[theorem]{Case}
+  \newtheorem{claim}[theorem]{Claim}
+  \newtheorem{conclusion}[theorem]{Conclusion}
+  \newtheorem{condition}[theorem]{Condition}
+  \newtheorem{conjecture}[theorem]{Conjecture}
+  \newtheorem{corollary}[theorem]{Corollary}
+  \newtheorem{criterion}[theorem]{Criterion}
+  \newtheorem{definition}{Definition} % Number definitions on their own
+  \newtheorem{derivation}{Derivation} % Number derivations on their own
+  \newtheorem{example}[theorem]{Example}
+  \newtheorem{exercise}[theorem]{Exercise}
+  \newtheorem{lemma}[theorem]{Lemma}
+  \newtheorem{notation}[theorem]{Notation}
+  \newtheorem{problem}[theorem]{Problem}
+  \newtheorem{proposition}{Proposition} % Number propositions on their own
+  \newtheorem{remark}[theorem]{Remark}
+  \newtheorem{solution}[theorem]{Solution}
+  \newtheorem{summary}[theorem]{Summary}
+  \bibliographystyle{aer}
+  \newcommand\ve{\varepsilon}
+  \newcommand{\cn}{\citeasnoun} % shortens command to cite as noun
+  \renewcommand\theenumi{\roman{enumi}}
+  \newcommand\norm[1]{\left\lVert#1\right\rVert}
+  
+  \makeindex    % Make the index
+
+\begin{document}
+
+%titlepage
+\begin{titlepage}
+  \title{OSPC's Dynamic General Equilibrium Tax Scoring Model
+    \thanks{We are grateful to Kevin Hassett, Alan Viard, Alex Brill, Matt Jensen, Aspen Gorry, Frank Caliendo, and Richard W. Evans, Sr. for helpful comments and suggestions. This research benefited from support from Brigham Young University Macroeconomics and Computational Laboratory, Middle Tennessee State University, and the Open Source Policy Center at the American Enterprise Institute. Sherwin Lott and Tatenda Mabikacheche have provided excellent research assistance.  This document, and all data and Python code for the computational model and calibration are available at \href{https://github.com/OpenSourcePolicyCenter/dynamic}{https://github.com/OpenSourcePolicyCenter/dynamic}.} }
+
+  \author{
+  Jason DeBacker\footnote{Middle Tennessee State University, Department of Economics and Finance, BAS N306, Murfreesboro, TN 37132, (615) 898-2528, \href{mailto:jason.debacker@mtsu.edu}{jason.debacker@mtsu.edu}.} \\[-2pt]
+  \and
+  Richard W. Evans\footnote{Brigham Young University, Department of Economics, 167 FOB, Provo, Utah 84602, (801) 422-8303, \href{mailto:revans@byu.edu}{revans@byu.edu}.} \\[-2pt]
+  \and
+  Evan Magnusson\footnote{Brigham Young University, Department of Economics, 163 FOB, Provo, Utah 84602, \href{mailto:evanmag42@gmail.com}{evanmag42@gmail.com}.} \\[-2pt]
+  \and
+  Kerk L. Phillips\footnote{Brigham Young University, Department of Economics, 166 FOB, Provo, Utah 84602, (801) 422-5928, \href{mailto:kerk_phillips@byu.edu}{kerk\_phillips@byu.edu}.} \\[-2pt]
+  \and
+  Isaac Swift\footnote{Brigham Young University, Department of Economics, 163 FOB, Provo, Utah 84602, \href{mailto:isaacdswift@gmail.com}{isaacdswift@gmail.com}.} \\[-2pt]}
+  \date{February 2015 \\
+  \scriptsize{(version 15.02.a)}}
+  \maketitle
+  \begin{abstract}
+  \small{This document details the large scale, overlapping-generations model developed by the Open Source Policy Center (OSPC).  The model allows for dynamic scoring of federal tax policy.  In particular, the model specifies the fundamental parameters defining the preferences and technologies of heterogenous individuals and firms and links them together in a dynamic, general equilibrium framework.  This framework allows for detailed evaluation of tax policy, including revenue, distributional, and macroeconomic impacts.  The model is open source, meaning that all documentation and files needed to reproduce and execute the model are available freely.  This documents and other supporting files are available at \href{https://github.com/OpenSourcePolicyCenter/dynamic}{https://github.com/OpenSourcePolicyCenter/dynamic}.  We encourage other interested parties to use and contribute to the model.}
+
+ % \vspace{0.3in}
+
+  %\textit{keywords:} dynamic general equilibrium, taxation, numerical simulation, computational techniques, simulation modeling.
+
+  %\vspace{0.3in}
+
+  %\textit{JEL classifications:} C63, C68, E62, H24, H25, H68}
+  \end{abstract}
+  \thispagestyle{empty}
+\end{titlepage}
+
+%%% 
+% Table of Contents and Lists of Tables and Figures %
+%%%
+
+\tableofcontents   % Table of Contents will be automatically
+                   % generated and placed here.
+\listoftables      % List of Tables and List of Figures will be placed
+\listoffigures     % here, if applicable.
+
+
+%%% 
+% Including files for different sections of handbook %
+%%%
+
+%% Intro %%
+\chapter{Introduction}
+\index{Introduction%
+@\emph{Introduction}}%
+
+This document details the large scale, overlapping-generations model developed by the Open Source Policy Center (OSPC).  The model allows for dynamic scoring of federal tax policy.  In particular, the model specifies the  fundamental parameters defining the preferences and technologies of heterogenous individuals and firms and links them together in a dynamic, general equilibrium framework.  This framework allows for detailed evaluation of tax policy, including revenue, distributional, and macroeconomic impacts. 
+
+The household sector consists of individuals of seven lifetime income groups, each of which has a different life-cycle earnings profiles.  This allow us to consider the lifetime incidence of taxation on households.  These individuals are intertemporal optimizers who allocate income between investment in financial assets and the consumption of 17 private consumption goods.  The consumption goods are produced by 48 different production sectors, which include 24 production industries with corporate and non-corporate firms in each.  In this way we can see the distributional impacts of consumption taxes and capital taxes levied on business entities as the taxes pass through to the individuals of different ages and income levels through changes in relative prices.  Finally, we specify a government sector that derives revenue from taxes and government enterprise and uses those revenues to subsidize government produced private and public goods and fund transfers.  The government is not bound by a balanced budget any particular period, but we do impose sustainable fiscal policy in the long run through a government reaction function that adjusts government purchases to maintain a specified debt-to-GDP ratio in the steady-state.
+
+Our model is a general equilibrium model, meaning the taxes in one area of the economy result in effects on other sectors through changes in relative prices.  For example, the simulation of a policy that slows the rate of depreciation allowed under tax law would increase the cost of capital in capital intensive industries to a greater extent than it would in other industries.  This would have the effect of pushing up prices for goods produced from capital intensive industries and in turn move the economy back along the demand curve for those goods.  This happens as individuals substitute towards other goods that are relatively cheaper.  Thus demand for those goods produced from less capital intensive production increase.  Capturing general equilibrium feedback effects such as these can be very important for the evaluation of the distributional, revenue, and macroeconomic impacts of policies and is why dynamic scoring is important.  
+
+Our model is intended to provide year-by-year revenue estimates for the budget window.  To do this, we solve for not only the model's steady-state equilibrium, but also the entire transition path from the current state to the steady-state.  It's in this way that we are able to see the revenue and macroeconomic impacts over the budget window.
+
+The remainder of this document provides a detailed description of the model.  We start by specifying households and then outline the firm's problem.  We next turn to the specification of the government.  Finally we define the equilibrium concept used to close the model and the numerical solution methods used to solve for this equilibrium.
+
+A future extension to this document will detail how the model is calibrated.
+
+
+%%% How we might layout this document:
+% Households
+% Firms
+% Government
+% Rest of world
+% Eq'm Definition
+% Model Solution
+% Model Dimensions
+% Calibration
+%	Household
+%		Population dynamics
+%		Lifetime income groups and earnings profiles
+%		Consumption subutility
+%		Preferences over corp and noncorp goods
+%		Fixed coefficient matrix relating cons and prod goods
+%		Social security system
+%		Bequests
+%		Government transfers to households function
+%		Tax function -with interaction between micro model
+%	Firms
+%		Economic depreciation rates
+%		Tax depreciation rates
+%		Production function
+%		Fixed coefficient matrix relating industry inputs and outputs
+%		Financial policy parameters
+%	Government
+%		Public goods production function
+%		Debt reaction function
+%	Rest of world
+%		Import/export elasticities
+%		Other???
+% Some measure(s) of model fit/validation
+% Summary of model (maybe simple example of change in tax policy evaluated with model)
+% Python code documentation (where to find, what to run to do what)
+%	To calibrate
+%	To solve model
+% Web interface (website, how to use, how inputs relate to model, etc)
+
+\include{Household_description}
+
+\include{Firms_description}
+
+\include{Government_description}
+
+\include{Eqm_description}
+
+\include{Model_soln}
+
+
+
+
+
+
+\chapter{Miscellaneous}
+\index{Miscellaneous%
+@\emph{Miscellaneous}}%
+
+
+
+\section{Incorporating Feedbacks with Micro Tax Simulations}\label{SecMicro}
+
+  Follow this algorithm:
+  \begin{itemize}
+    \item Period 1
+    \begin{itemize}
+      \item Use current IRS public use sample.
+      \item Run the following within-period routine
+      \begin{itemize}
+        \item Do the static tax analysis of this sample, save the results
+        \item Summarize the public use sample by aggregating into bins over age and earnings ability
+        \item Use this as a starting point for the dynamic macro model
+        \item Get values for fundamental interest rates and effective wages for next period
+      \end{itemize}
+    \end{itemize}
+  \item Period 2
+    \begin{itemize}
+      \item “Age” the public use data demographically by one year.
+      \item Let wages and interest rates rise by the amounts predicted in the macro model.
+      \item Rerun the within-period routine
+    \end{itemize}
+  \item Iterate over periods until end of forecast period is reached.
+  \end{itemize}
+
+\section{Calibration}
+  \subsection{Tax Bend Points}
+      We use IRS data which summarizes individual tax returns for 2011 by 19 income categories and 4 filing statuses.  For each filing status we fit the mapping from reported income into adjusted gross income (AGI) using a sufficiently high-order polynomial.  We then use this function to solve for the income level which corresponds to each of the five bend points in the tax code for each filing type.
+      \begin{table}[ht]
+        \caption{AGI and Income Bend Points}
+        \label{Calib_Bend_Tab1}
+        \centering
+        AGI Bend Points
+        \begin{tabular}{|r|r|r|r|r|} \hline 
+          Tax rate & Married Joint & Married Separate & Head of Household & Single \\ \hline 
+          10\% & 17,400 & 8700 & 12,400 & 8700 \\ \hline 
+          15\% & 70,700 & 35,350 & 47,350 & 35,350 \\ \hline 
+          25\% & 142,700 & 71,350 & 122,300 & 85,650 \\ \hline 
+          28\% & 217,450 & 108,725 & 198,050 & 178,650 \\ \hline 
+          33\% & 388,350 & 194,175 & 388,350 & 388,350 \\ \hline 
+        \end{tabular}
+        \\
+        Corresponding Reported Income Bendpoints
+        \begin{tabular}{|r|r|r|r|r|} \hline 
+          Tax rate & Married Joint & Married Separate & Head of Household & Single \\ \hline 
+          0\%  & 5850  & 91 & 756 & 1435 \\ \hline 
+          10\% & 22,932 & 8591 & 12,911 & 9956 \\ \hline 
+          15\% & 75,181 & 34,592 & 47,023 & 36,021 \\ \hline 
+          25\% & 145,866 & 69,768 & 120,200 & 85,244 \\ \hline 
+          28\% & 219,162 & 106,245 & 194,176 & 176,270 \\ \hline 
+          33\% & 386,798 & 189,674 & 380,043 & 381,524 \\ \hline 
+        \end{tabular}
+      \end{table}
+
+      We then fit a bivariate probability density function over income and filing type from the data.  For each bendpoint we calculate the probability density at that bendpoint and use these as weights in a weighted average over filing types to generate an aggregate bendpoint.
+      \begin{table}[ht]
+        \caption{Aggregated Bend Points}
+        \label{Calib_Bend_Tab2}
+        \centering
+        \begin{tabular}{|r|r|} \hline 
+          Tax rate & Bend Point \\ \hline 
+          0\% & 2889 \\ \hline 
+          10\% & 15,116 \\ \hline 
+          15\% & 52,580 \\ \hline 
+          25\% & 114,552 \\ \hline 
+          28\% & 196,201 \\ \hline 
+          33\% & 380,657 \\ \hline 
+        \end{tabular}
+      \end{table}
+
+% Bibliography:
+\clearpage
+\bibliography{OSPC_BYU_Dyn_Bib}
+\index{Bibliography@\emph{Bibliography}}%  
+
+\printindex
+
+\end{document}

@@ -163,7 +163,7 @@ Using the above equations, we see all endogenous variables determining the value
  \begin{equation}
 \label{eqn:firm_seq_prob}
 \begin{split}
-V_{t} = &   \max_{\{I_{u},K_{u+1}\}^{\infty}_{u=t}}   \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right) (1-\tau^{b}_{u})\Omega_{u}(p_{u}X_{u}-w_{u}EL_{u})  \\ 
+V_{t} = &   \max_{\{I_{u},EL_{u}\}^{\infty}_{u=t}}   \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right) (1-\tau^{b}_{u})\Omega_{u}(p_{u}X_{u}-w_{u}EL_{u})  \\ 
  & - K_{t} \left\{(1-\tau^{b}_{u})\Omega_{u}\tau^{p}_{u}+(1-f_{i}\tau^{i}_{u})i_{u}\Omega_{u}b-\delta(p_{u}-b-\Omega_{u}(p_{u}-f_{p}\tau^{b}_{u}b))\right\}  \\
  & - I_{u}\left\{1-b+\Omega_{u}f_{b}\tau^{b}_{u}b-\Omega_{u}f_{e}\tau^{b}_{u} - f_{d}(1-f_{e})Z_{u} + (1-\Omega_{u}\tau^{b}_{u})\Phi_{u}\right\} \\
  &  + f_{d}Z_{t}K^{\tau}_{t-1} \\
@@ -175,7 +175,7 @@ The Lagrangian to the firm's problem at time $t$ can be written as:
  \begin{equation}
 \label{eqn:lagrangian}
 \begin{split}
-\mathcal{L}_{t} = \max_{\{I_{u},K_{u+1}\}^{\infty}_{u=t}} &  \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right) (1-\tau^{b}_{u})\Omega_{u}(p_{u}X_{u}-w_{s}EL_{s})  \\ 
+\mathcal{L}_{t} = \max_{\{I_{u},EL_{u}\}^{\infty}_{u=t}} &  \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right) (1-\tau^{b}_{u})\Omega_{u}(p_{u}X_{u}-w_{s}EL_{s})  \\ 
  & - K_{s} \left\{(1-\tau^{b}_{u})\Omega_{u}\tau^{pC}_{u}+(1-f_{i}\tau^{i}_{u})i_{u}\Omega_{u}b-\delta(p_{u}-b-\Omega_{u}(p_{u}-f_{p}\tau^{b}_{u}b))\right\}  \\
  & - I_{u}\left\{1-b+\Omega_{u}f_{b}\tau^{b}_{u}b-\Omega_{u}f_{e}\tau^{b}_{u} - f_{d}(1-f_{e})Z_{u} + (1-\Omega_{u}\tau^{b}_{u})\Phi_{u}\right\} \\
  &  + f_{d}Z_{s}K^{\tau}_{s-1} + q_{u}((1-\delta)K_{u} + I_{u}-K_{u+1})\\
