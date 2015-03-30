@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  30 MAR 2015 10:55
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  30 MAR 2015 11:59
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1180,8 +1180,11 @@ Package: animfp 2009/07/23 fixed point addition for animate.sty
 \@anim@curfield=\count205
 \@anim@begin=\toks49
 \@anim@end=\toks50
+) (./OSPC_model_presentation.aux
+
+LaTeX Warning: Label `tab:addlabel' multiply defined.
+
 )
-No file OSPC_model_presentation.aux.
 \openout1 = `OSPC_model_presentation.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 76.
@@ -1199,7 +1202,7 @@ LaTeX Font Info:    ... okay on input line 76.
 LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 76.
 LaTeX Font Info:    ... okay on input line 76.
 LaTeX Font Info:    Try loading font information for T1+phv on input line 76.
-(/usr/local/texlive/2012/texmf-dist/tex/latex/psnfss/t1phv.fd
+ (/usr/local/texlive/2012/texmf-dist/tex/latex/psnfss/t1phv.fd
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
 *geometry* driver: auto-detecting
@@ -1266,6 +1269,8 @@ Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 76.
 LaTeX Info: Redefining \pageref on input line 76.
 LaTeX Info: Redefining \nameref on input line 76.
+
+(./OSPC_model_presentation.out) (./OSPC_model_presentation.out)
 \@outlinefile=\write5
 \openout5 = `OSPC_model_presentation.out'.
 
@@ -1402,13 +1407,13 @@ LaTeX Font Info:    Font shape `T1/phv/m/it' in size <8> not available
 (Font)              Font shape `T1/phv/m/sl' tried instead on input line 260.
  [9
 
-] <images/omega_init.png, id=339, 578.16pt x 433.62pt>
+] <images/omega_init.png, id=361, 578.16pt x 433.62pt>
 File: images/omega_init.png Graphic file (type png)
 
 <use images/omega_init.png>
 Package pdftex.def Info: images/omega_init.png used on input line 266.
 (pdftex.def)             Requested size: 158.99008pt x 119.24255pt.
- <images/omega_ss.png, id=341, 578.16pt x 433.62pt>
+ <images/omega_ss.png, id=363, 578.16pt x 433.62pt>
 File: images/omega_ss.png Graphic file (type png)
 
 <use images/omega_ss.png>
@@ -1435,7 +1440,7 @@ Overfull \hbox (23.58337pt too wide) in paragraph at lines 285--285
 ]
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <10.95> not available
 (Font)              Font shape `T1/phv/b/n' tried instead on input line 321.
- <images/ability_log_2D.png, id=476, 578.16pt x 433.62pt>
+ <images/ability_log_2D.png, id=498, 578.16pt x 433.62pt>
 File: images/ability_log_2D.png Graphic file (type png)
 
 <use images/ability_log_2D.png>
@@ -1452,14 +1457,14 @@ Overfull \vbox (2.43619pt too high) detected at line 321
 ] [16
 
 ]
-<images/EffTaxLog.pdf, id=571, 531.73436pt x 414.35pt>
+<images/EffTaxLog.pdf, id=594, 531.73436pt x 414.35pt>
 File: images/EffTaxLog.pdf Graphic file (type pdf)
 
 <use images/EffTaxLog.pdf>
 Package pdftex.def Info: images/EffTaxLog.pdf used on input line 357.
 (pdftex.def)             Requested size: 146.22334pt x 113.94344pt.
 
-<images/EffTaxNoLog.pdf, id=572, 548.37851pt x 417.85309pt>
+<images/EffTaxNoLog.pdf, id=595, 548.37851pt x 417.85309pt>
 File: images/EffTaxNoLog.pdf Graphic file (type pdf)
 
 <use images/EffTaxNoLog.pdf>
@@ -1501,31 +1506,25 @@ LaTeX Font Info:    Font shape `T1/phv/m/it' in size <14.4> not available
 \tf@snm=\write8
 \openout8 = `OSPC_model_presentation.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 484.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 484.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 461.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 461.
  (./OSPC_model_presentation.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 484.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 484.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 461.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 461.
+Package rerunfilecheck Info: File `OSPC_model_presentation.out' has not changed
+.
+(rerunfilecheck)             Checksum: 1C48A9F622641DFF728D6FDD3FFD4AE7;273.
 
 
-Package rerunfilecheck Warning: File `OSPC_model_presentation.out' has changed.
+LaTeX Warning: There were multiply-defined labels.
 
-(rerunfilecheck)                Rerun to get outlines right
-(rerunfilecheck)                or use package `bookmark'.
-
-Package rerunfilecheck Info: Checksums for `OSPC_model_presentation.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  1C48A9F622641DFF728D6FDD3FFD4AE7;273.
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 484.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 461.
  ) 
 Here is how much of TeX's memory you used:
- 20009 strings out of 493488
- 360712 string characters out of 3141326
- 470032 words of memory out of 3000000
- 22736 multiletter control sequences out of 15000+200000
+ 20022 strings out of 493488
+ 360954 string characters out of 3141326
+ 470383 words of memory out of 3000000
+ 22743 multiletter control sequences out of 15000+200000
  64419 words of font info for 90 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
  49i,21n,53p,478b,825s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -1551,10 +1550,10 @@ st/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2012/texmf-dist
 /fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2012/texmf-dist/fonts/
 type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/u
 rw/helvetic/uhvro8a.pfb>
-Output written on OSPC_model_presentation.pdf (25 pages, 291706 bytes).
+Output written on OSPC_model_presentation.pdf (25 pages, 291670 bytes).
 PDF statistics:
- 982 PDF objects out of 1000 (max. 8388607)
- 898 compressed objects within 9 object streams
+ 1002 PDF objects out of 1200 (max. 8388607)
+ 917 compressed objects within 10 object streams
  67 named destinations out of 1000 (max. 500000)
- 122 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 170 words of extra memory for PDF output out of 10000 (max. 10000000)
 

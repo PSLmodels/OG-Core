@@ -278,7 +278,7 @@ An Open Source Model \\ for Dynamic Revenue Estimates}
       \begin{split}
         & u\left(c_{j,s,t},n_{j,s,t},b_{j,s+1,t+1}\right) = \frac{\left(c_{j,s,t}\right)^{1-\sigma} - 1}{1-\sigma} \\
         + & e^{g_y t(1-\sigma)}\chi^n_s\left(b\left[1 - \left(\frac{n_{j,s,t}}{\tilde{l}}\right)^\upsilon\right]^\frac{1}{\upsilon} + k\right) \\
-        + & \rho_s\chi^b\frac{\left(b_{j,s+1,t+1}\right)^{1-\xi} - 1}{1-\xi} \nonumber \\
+        + & \rho_s\chi^b\frac{\left(b_{j,s+1,t+1}\right)^{1-\sigma} - 1}{1-\sigma} \nonumber \\
       \end{split}
     \end{equation}
     \hyperlink{elliptic}{\beamergotobutton{elliptic}}
@@ -416,51 +416,28 @@ TE_{t}=  \tau^{b}_{t} & \left[  p_{t}X_{t}-w_{t}EL_{t}-f_{e}p^{K}_{t}I_{t}-\Phi_
           A non-autarkic stationary steady-state equilibrium in the overlapping generations model with $S$-period lived agents and heterogeneous ability $e_{j,s}$ is defined as constant allocations $\hat{n}_{j,s,t}=\bar{n}_{j,s}$, $\hat{b}_{j,s+1,t+1}=\bar{b}_{j,s+1}$, and $\hat{bq}_{j,E+S+1,t+1}=\bar{bq}_{j,E+S+1}$ and constant prices $\hat{w}_t=\bar{w}$ and $\hat{r}_t=\bar{r}$ for all $j$, $s$, and $t$ such that the following conditions hold:
           \begin{enumerate}
             \item households $J$ optimize according to $2S$ Euler equations,
-            \item firms optimize according to 2 FOCs,
-            \item markets clear according to 2 market clearing conditions, and
+            \item firms $M\times 2$ optimize according to 2 FOCs,
+            \item markets clear according to 3 market clearing conditions, and
             \item the population has reached its stationary steady state distribution $\bar{\omega}_s$ for all ages $s$.
           \end{enumerate}
         \end{definition}
       }
 
-%  \begin{frame}{Data -- Stocks of Wealth}
-%%      \begin{figure}[htb]\centering
-%%         \caption{Selected Wealth Profiles by Age and Earnings Type}
-%%         \fbox{\resizebox{3.0in}{2.25in}{\includegraphics{images/LCP_wealth_scf.pdf}}} \\
-%%         \tiny{Data: 2013 IRS data}
-%%      \end{figure}
-%  \end{frame}
-
-%  \begin{frame}{Steady State -- Capital}
-%    \begin{figure}[htb]\centering
-%       \caption{Steady State Distribution of Capital Holdings}
-%       \fbox{\resizebox{3.0in}{2.25in}{\includegraphics{images/capital_dist.png}}} \\
-%    \end{figure}
-%  \end{frame}
-%
-%  \begin{frame}{Steady State -- Labor}
-%    \begin{figure}[htb]\centering
-%       \caption{Steady State Distribution of Labor Supply}
-%       \fbox{\resizebox{3.0in}{2.25in}{\includegraphics{images/labor_dist.png}}} \\
-%    \end{figure}
-%  \end{frame}
 
   \begin{frame}{Transition Path Solution Method}\label{TPI Solution}
     \frametitle{Stationary non-steady-state equilibrium}
       \begin{definition}[\textbf{Stationary non-steady-state equilibrium}]
         A non-autarkic stationary non-steady-state equilibrium in the overlapping generations model with $S$-period lived agents and heterogeneous ability $e_{j,s}$ is defined as allocations $n_{j,s,t}$, $\hat{b}_{j,s+1,t+1}$, and $\hat{bq}_{j,E+S+1,t+1}$ and prices $\hat{w}_t$ and $r_t$ for all $j$, $s$, and $t$ such that the following conditions hold:
         \begin{enumerate}
-          \item households have symmetric beliefs $\Omega(\cdot)$ about the evolution of the distribution of savings, and those beliefs about the future distribution of savings equal the realized outcome (rational expectations),
-          \item households $j$ optimize according to $2S$
-          \item firms optimize according to 2 FOCs, and
-          \item markets clear according to 2 market clearing conditions.
+          \item households and firms have symmetric beliefs, $\Omega(\cdot)$, about the evolution of the distribution of savings, and those beliefs about the future distribution of savings equal the realized outcome (rational expectations),
+          \item households $J$ optimize according to $2S$
+          \item firms $M\times 2$ optimize according to 2 FOCs, and
+          \item markets clear according to 3 market clearing conditions.
         \end{enumerate}
       \end{definition}
   \end{frame}
 
-
-
-
+ 
 
 
 \section{Summary}
@@ -473,10 +450,10 @@ TE_{t}=  \tau^{b}_{t} & \left[  p_{t}X_{t}-w_{t}EL_{t}-f_{e}p^{K}_{t}I_{t}-\Phi_
 
   \begin{frame}{Summary}
   \begin{itemize}
-      \item Big model
+      \item Detailed macro model
       \item Efficient code
       \item Year by year effects
-      \item Integration with micro model
+      \item Integration with microsimulation model
   \end{itemize}
   \end{frame}
 
