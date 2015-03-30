@@ -1,4 +1,4 @@
-\beamer@endinputifotherversion {3.20pt}
+\beamer@endinputifotherversion {3.26pt}
 \select@language {english}
 \beamer@sectionintoc {1}{Overview}{2}{0}{1}
 \beamer@sectionintoc {2}{Households}{9}{0}{2}
