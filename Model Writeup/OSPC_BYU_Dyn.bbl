@@ -8,10 +8,26 @@
 {\bf Auerbach, Alan~J. and Lawrence~J. Kotlikoff}, {\it Dynamic Fiscal Policy},
   Cambridge University Press, 1987.
 
+\harvarditem[{Census Bureau}]{{Census Bureau}}{2014}{Census:2014}
+{\bf {Census Bureau}}, ``Annual Estimates of the Resident Population for
+  Selected Age Groups by Sex for the United States, States, Counties, and
+  Puerto Rico Commonwealth and Municipios: April 1, 2010 to July 1, 2013,''
+  Technical Report, U.S. Census Bureau, Population Division June 2014.
+
+\harvarditem[{Center for Disease Control}]{{Center for Disease
+  Control}}{2010}{NVSR:2010}
+{\bf {Center for Disease Control}}, ``National Vital Statistics Reports,''
+  Technical Report, Center for Disease Control 2010.
+
 \harvarditem[Evans and Phillips]{Evans and Phillips}{2014}{EvansPhillips:2014}
 {\bf Evans, Richard~W. and Kerk~L. Phillips}, ``OLG Life Cycle Model Transition
   Paths: Alternate Model Forecast Method,'' {\it Computational Economics},
   January 2014, {\it 43} (1), 105--131.
+
+\harvarditem[Evans and Phillips]{Evans and Phillips}{2015}{EvanPhillips:2015}
+{\bf \bysame{} and \bysame{}}, ``Advantages of an Ellipse when Modeling Leisure
+  Utility,'' Technical Report 2015-01, Brigham Young University Macroeconomics
+  and Computational Laboratory March 2015.
 
 \harvarditem[Fullerton and Rogers]{Fullerton and Rogers}{1993}{FR1993}
 {\bf Fullerton, Don and Diane~Lim Rogers}, {\it Who Bears the Lifetime Tax
@@ -32,9 +48,19 @@
   of anticipated and unanticipated tax policy shocks,'' {\it Review of Economic
   Dynamics}, 2011, {\it 14.}
 
+\harvarditem[{Social Security Administration}]{{Social Security
+  Administration}}{2010}{SocSec:2010}
+{\bf {Social Security Administration}}, ``Actuarial Life Table,'' Technical
+  Report, U.S. Social Security Administration 2010.
+
 \harvarditem[Stokey and Lucas]{Stokey and Lucas}{1989}{StokeyLucas:1989}
 {\bf Stokey, Nancy~L. and Robert~E.~Lucas Jr.}, {\it Recursive Methods in
   Economic Dynamics}, Harvard University Press, 1989.
+
+\harvarditem[Suzumura]{Suzumura}{1983}{Suzumura:1983}
+{\bf Suzumura, Kotaro}, ``Perron-Frobenius Theorm on Non-Negative Square
+  Matrices: An Elementary Proof,'' {\it Hitotsubashi Journal of Economics},
+  1983, {\it 24}, 137--141.
 
 \harvarditem[Zodrow and Diamond]{Zodrow and Diamond}{2013}{DZ2013}
 {\bf Zodrow, George~R. and John~W. Diamond}, Vol.~1 of {\em Handbook of

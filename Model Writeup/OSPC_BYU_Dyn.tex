@@ -177,6 +177,148 @@ A future extension to this document will detail how the model is calibrated.
 \index{Miscellaneous%
 @\emph{Miscellaneous}}%
 
+\section{Characteristics of exogenous population growth assumptions}\label{AppPopGrowth}
+
+  In this appendix, we describe in detail the exogenous population growth assumptions in the model and their implications. In Section \ref{SecPopDyn}, we define the laws of motion for the population of each cohort $\omega_{s,t}$ to be the following.
+  \begin{equation}\tag{\ref{EqPopLawofmotion}}
+    \begin{split}
+      \omega_{1,t+1} &= \sum_{s=1}^{E+S} f_s\omega_{s,t}\quad\forall t \\
+        \omega_{s+1,t+1} &= (1 + i_s - \rho_s)\omega_{s,t}\quad\forall t\quad\text{and}\quad 1\leq s \leq E+S-1
+    \end{split}
+  \end{equation}
+  We can transform the nonstationary equations in \eqref{EqPopLawofmotion} into stationary laws of motion by dividing both sides by the total populations $N_t$ and $N_{t+1}$ in both periods,
+  \begin{equation}\label{EqPopLawofmotionStat}
+    \begin{split}
+      \hat{\omega}_{1,t+1} &= \frac{\sum_{s=1}^{E+S} f_s\hat{\omega}_{s,t}}{1+g_{n,t+1}}\quad\forall t \\
+      \hat{\omega}_{s+1,t+1} &= \frac{(1 + \phi_s - \rho_s)\hat{\omega}_{s,t}}{1+g_{n,t+1}}\quad\forall t\quad\text{and}\quad 1\leq s \leq E+S-1
+    \end{split}
+  \end{equation}
+  where $\hat{\omega}_{s,t}$ is the percent of the total population in age cohort $s$ and the population growth rate $g_{n,t+1}$ between periods $t$ and $t+1$ is defined in \eqref{EqPopGrowth},
+  \begin{equation}\label{EqPopLOMbig}
+  \begin{split}
+    & \begin{bmatrix}
+      \hat{\omega}_{1,t+1} \\ \hat{\omega}_{2,t+1} \\ \hat{\omega}_{2,t+1} \\ \vdots \\ \hat{\omega}_{E+S-1,t+1} \\ \hat{\omega}_{E+S,t+1}
+    \end{bmatrix}= \frac{1}{1 + g_{n,t+1}} \times ... \\
+    & \begin{bmatrix}
+      f_1 & f_2 & f_3 & \hdots & f_{E+S-1} & f_{E+S} \\
+      1+i_1-\rho_1 & 0 & 0 & \hdots & 0 & 0 \\
+      0 & 1+i_2-\rho_2 & 0 & \hdots & 0 & 0 \\
+      0 & 0 & 1+i_3-\rho_3 & \hdots & 0 & 0 \\
+      \vdots & \vdots & \vdots & \ddots & \vdots & \vdots \\
+      0 & 0 & 0 & \hdots & 0 & 0 \\
+      0 & 0 & 0 & \hdots & 1+i_{E+S-1}-\rho_{E+S-1} & 0
+    \end{bmatrix}
+    \begin{bmatrix}
+      \hat{\omega}_{1,t} \\ \hat{\omega}_{2,t} \\ \hat{\omega}_{2,t} \\ \vdots \\ \hat{\omega}_{E+S-1,t} \\ \hat{\omega}_{E+S,t}
+    \end{bmatrix}
+  \end{split}
+  \end{equation}
+  where we restrict $1+i_s-\rho_s\geq 0$ for all $s$.
+
+  We write \eqref{EqPopLOMbig} in matrix notation as the following.
+  \begin{equation}\label{EqPopLOMmat}
+    \bm{\hat{\omega}}_{t+1} = \frac{1}{1+g_{n,t+1}}\bm{\Omega}\bm{\hat{\omega}}_t \quad\forall t
+  \end{equation}
+  The stationary steady state population distribution $\bm{\bar{\omega}}$ is the eigenvector $\bm{\omega}$ with eigenvalue $(1+\bar{g}_n)$ of the matrix $\bm{\Omega}$ that satisfies the following version of \eqref{EqPopLOMmat}.
+  \begin{equation}\label{EqPopLOMss}
+    (1+\bar{g}_n)\bm{\bar{\omega}} = \bm{\Omega}\bm{\bar{\omega}}
+  \end{equation}
+
+  \begin{proposition}
+    There exists a unique positive real eigenvector $\bf\bar\omega$ of the matrix $\bf\Omega$, and it is a stable equilibrium.
+  \end{proposition}
+
+  \begin{proof}
+    First, note that the matrix $\bf\Omega$ is square and non-negative.  This is enough for a general version of the Perron-Frobenius Theorem to state that a positive real eigenvector exists with a positive real eigenvalue.  This is not yet enough for uniqueness.  For it to be unique by a version of the Perron-Fobenius Theorem, we need to know that the matrix is irreducible.  This can be easily shown.  The matrix is of the form
+    $$\bf\Omega =
+    \begin{bmatrix}
+    	* & *  & * & \hdots & * & * & *\\
+    	* & 0 & 0 & \hdots & 0 & 0 & 0 \\
+    	0 & * & 0 & \hdots & 0 & 0 & 0 \\
+    	\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
+    	0 & 0 & 0 & \hdots & *  & 0 & 0 \\
+    	0 & 0 & 0 & \hdots & 0 & * & 0
+    \end{bmatrix}
+    $$
+    Where each * is strictly positive.  It is clear to see that taking powers of the matrix causes the sub-diagonal positive elements to be moved down a row and another row of positive entries is added at the top.  None of these go to zero since the elements were all non-negative to begin with.
+    $$\bf\Omega^2 =
+    \begin{bmatrix}
+    	* & *  & * & \hdots & * & * & *\\
+    	* & * & * & \hdots & * & * & * \\
+    	* & 0 & 0 & \hdots & 0 & 0 & 0 \\
+    	\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
+    	0 & 0 & 0 & \hdots & 0  & 0 & 0 \\
+    	0 & 0 & 0 & \hdots & * & 0 & 0
+    \end{bmatrix}; ~~~
+    \bf\Omega^{S+E-1} =
+    \begin{bmatrix}
+    	* & *  & * & \hdots & * & * & *\\
+    	* & * & * & \hdots & * & * & * \\
+    	* & * & * & \hdots & * & * & * \\
+    	\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
+    	* & * & * & \hdots & * & * & * \\
+    	* & 0 & 0 & \hdots & 0 & 0 & 0
+    \end{bmatrix}
+    $$
+    $$\bf\Omega^{S+E} =
+    \begin{bmatrix}
+    	* & *  & * & \hdots & * & * & *\\
+    	* & * & * & \hdots & * & * & * \\
+    	* & * & * & \hdots & * & * & * \\
+    	\vdots & \vdots & \vdots & \ddots & \vdots & \vdots & \vdots \\
+    	* & * & * & \hdots & * & * & * \\
+    	* & * & * & \hdots & * & * & *
+    \end{bmatrix}
+    $$
+    Existence of an $m \in \mathbb N $ such that $\left(\bf\Omega^m\right)_{ij} \neq 0 ~~ ( > 0)$ is one of the definitions of an irreducible (primitive) matrix.  It is equivalent to saying that the directed graph associated with the matrix is strongly connected.  Now the Perron-Frobenius Theorem for irreducible matrices gives us that the equilibrium vector is unique.
+
+    We also know from that theorem that the eigenvalue associated with the positive real eigenvector will be real and positive.  This eigenvalue, $p$, is the Perron eigenvalue and it is the steady state population growth rate of the model.  By the PF Theorem for irreducible matrices, $| \lambda_i | \leq p$ for all eigenvalues $\lambda_i$ and there will be exactly $h$ eigenvalues that are equal, where $h$ is the period of the matrix.  Since our matrix $\bf\Omega$ is aperiodic, the steady state growth rate is the unique largest eigenvalue in magnitude.  This implies that almost all initial vectors will converge to this eigenvector under iteration.
+  \end{proof}
+
+  For a full treatment and proof of the Perron-Frobenius Theorem, see \citet{Suzumura:1983}. Because the population growth process is exogenous to the model, we calibrate it to annual age data for age years $s=1$ to $s=100$. As is shown in Figure \ref{FigPerTime}, period $s=1$ corresponds to the first year of life between birth and when an individual turns one year old.
+
+  \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
+    \caption{\label{FigPerTime}\textbf{Correspondence of model timing to data timing for model periods of one year}}
+    \fbox{\resizebox{4.0in}{2.0in}{\includegraphics{images/FigPerTime.pdf}}}
+  \end{figure}
+
+  Our initial population distribution $\{\omega_{s,1}\}_{s=1}^{100}$ in Figure \ref{FigInitPopDist} comes from \citet{Census:2014} population estimates for both sexes for 2013. The fertility rates $\{f_s\}_{s=1}^{100}$ in Figure \ref{FigFertRates} come from \citet[Table 1]{NVSR:2010}. The mortality rates $\{\rho_s\}_{s=1}^{99}$ in Figure \ref{FigMortRates} come from the 2010 death probabilities in \citet{SocSec:2010}. We enforce a strict maximum age mortality rate of $\rho_{100}=1$ in our model.
+
+  \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
+    \caption{\label{FigInitPopDist}\textbf{Initial population distribution $\omega_{s,1}$ by year, $1\leq s\leq 100$}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/omega_init.png}}}
+  \end{figure}
+
+  \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
+    \caption{\label{FigFertRates}\textbf{Fertility rates $f_s$ by year, $1\leq s\leq 100$}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/fert_rates.png}}}
+  \end{figure}
+
+  \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
+    \caption{\label{FigMortRates}\textbf{Mortality rates $\rho_s$ by year, $1\leq s\leq 100$}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/mort_rates.png}}}
+  \end{figure}
+
+  The immigration rates $\{i_s\}_{s=1}^{99}$ in Figure \ref{FigImmigRates} are essentially residuals. We take total population for two consecutive years $N_t$ and $N_{t+1}$ and the population distribution by age in both of those years $\bm{\omega}_{t}$ and $\bm{\omega}_{t+1}$from the \citet{Census:2014} data. We then deduce the immigration rates $\{i_s\}_{s=1}^{99}$ using equation \eqref{EqPopLawofmotionStat}. We do this for three consecutive sets of years, so that our calibrated immigration rates by age are the average of our three years of deduced rates from the data for each age.
+
+  \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
+    \caption{\label{FigImmigRates}\textbf{Immigration rates $i_s$ by year, $1\leq s\leq 100$}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/imm_rates.png}}}
+  \end{figure}
+
+  Figure \ref{FigPopPath} shows the predicted time path of the total population $N_t$ given $\omega_{s,1}$ $f_s$, $i_s$, and $\rho_s$. Notice that the population approaches a constant growth rate. This is a result of the stationary population percent distribution $\bm{\bar{\omega}}$ eventually being reached. Figure \ref{FigSSpopdist} shows the steady-state population percent distribution by age $\bm{\bar{\omega}}$.
+
+  \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
+    \caption{\label{FigPopPath}\textbf{Forecast time path of population growth rate $g_{n,t}$}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/Population_growthrate.png}}}
+  \end{figure}
+
+  \begin{figure}[htbp]\centering \captionsetup{width=4.0in}
+    \caption{\label{FigSSpopdist}\textbf{Steady-state population percent distribution by age $\bm{\bar{\omega}}$}}
+    \fbox{\resizebox{4.0in}{2.8in}{\includegraphics{images/omega_ss.png}}}
+  \end{figure}
+  \clearpage
+
 
 
 \section{Incorporating Feedbacks with Micro Tax Simulations}\label{SecMicro}

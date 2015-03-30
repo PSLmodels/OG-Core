@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  30 MAR 2015 09:13
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  30 MAR 2015 16:52
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -385,11 +385,7 @@ LaTeX Warning: Label `eqn:mix_cons' multiply defined.
 
 LaTeX Warning: Label `eqn:mix_cons_price' multiply defined.
 
-) (./Government_description.aux) (./Eqm_description.aux) (./Model_soln.aux
-
-LaTeX Warning: Label `eqn:mpk' multiply defined.
-
-))
+) (./Government_description.aux) (./Eqm_description.aux) (./Model_soln.aux))
 \openout1 = `OSPC_BYU_Dyn.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 57.
@@ -524,57 +520,53 @@ eady used, duplicate ignored
 <to be read again> 
                    \relax 
 l.87   \end{abstract}
-                      [1] (./OSPC_BYU_Dyn.tocpdfTeX warning (ext4): destination
- with the same identifier (name{page.1}) has been already used, duplicate ignor
-ed
-<to be read again> 
-                   \relax 
-l.32 ...2.1}Tax Bend Points}{52}{subsection.7.2.1}
-                                                   [1
-
-])
+                      [1] (./OSPC_BYU_Dyn.toc)
 \tf@toc=\write6
 \openout6 = `OSPC_BYU_Dyn.toc'.
 
- [2] (./OSPC_BYU_Dyn.lot)
+pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
+been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.97 \listoftables
+                        % List of Tables and List of Figures will be placed
+[1
+
+] (./OSPC_BYU_Dyn.lot)
 \tf@lot=\write7
 \openout7 = `OSPC_BYU_Dyn.lot'.
 
- [3
+ [2
 
 ] (./OSPC_BYU_Dyn.lof)
 \tf@lof=\write8
 \openout8 = `OSPC_BYU_Dyn.lof'.
 
- [4
+ [3
 
 ]
 Chapter 1.
-[5
+[4
 
-] [6]
+] [5]
 \openout2 = `Household_description.aux'.
 
  (./Household_description.tex
 Chapter 2.
-[7
+[6
 
 
 ]
 
-LaTeX Warning: Reference `AppEllipseUtil' on page 8 undefined on input line 40.
+LaTeX Warning: Reference `AppEllipseUtil' on page 7 undefined on input line 40.
 
 
-
-Package natbib Warning: Citation `EvanPhillips:2015' on page 8 undefined on inp
-ut line 40.
-
-[8]
+[7]
 Overfull \hbox (85.83458pt too wide) in paragraph at lines 63--63
 [][][] 
  []
 
-[9]
+[8]
 Overfull \hbox (13.76065pt too wide) in paragraph at lines 73--73
 [][][] 
  []
@@ -589,7 +581,7 @@ Overfull \hbox (33.72261pt too wide) in paragraph at lines 87--87
 [][][] 
  []
 
-[10]
+[9]
 Overfull \hbox (7.4332pt too wide) in paragraph at lines 106--106
 [][][] 
  []
@@ -599,7 +591,7 @@ Overfull \hbox (60.62753pt too wide) in paragraph at lines 121--121
 [][][] 
  []
 
-[11pdfTeX warning (ext4): destination with the same identifier (name{equation.2
+[10pdfTeX warning (ext4): destination with the same identifier (name{equation.2
 .2.12}) has been already used, duplicate ignored
 
 \PDFSYNC@@utput ...\PDFSYNCship@ut@ld \box \@cclv 
@@ -619,16 +611,16 @@ n.2.2.12}) has been already used, duplicate ignored
 l.132 
       ]
 
-LaTeX Warning: Reference `Eqcagg' on page 12 undefined on input line 133.
+LaTeX Warning: Reference `Eqcagg' on page 11 undefined on input line 133.
 
 
-LaTeX Warning: Reference `Eqcagg' on page 12 undefined on input line 139.
+LaTeX Warning: Reference `Eqcagg' on page 11 undefined on input line 139.
 
-[12]
+[11]
 
-LaTeX Warning: Reference `cons_solve' on page 13 undefined on input line 171.
+LaTeX Warning: Reference `cons_solve' on page 12 undefined on input line 171.
 
-[13] [14]
+[12] [13]
 Overfull \hbox (63.36575pt too wide) in paragraph at lines 224--224
 [][][] 
  []
@@ -638,371 +630,444 @@ Overfull \hbox (39.04268pt too wide) in paragraph at lines 240--240
 [][][] 
  []
 
-[15]
+[14]
 Overfull \hbox (210.0188pt too wide) in paragraph at lines 282--282
 [][][] 
  []
 
-[16]) [17]
+[15]) [16]
 \openout2 = `Firms_description.aux'.
 
  (./Firms_description.tex
 Chapter 3.
-[18
+[17
 
 
 
 ]
-Overfull \hbox (66.69452pt too wide) in paragraph at lines 51--51
+Overfull \hbox (66.69452pt too wide) in paragraph at lines 52--52
 [][][] 
  []
 
-[19]
-Overfull \hbox (13.20996pt too wide) in paragraph at lines 103--103
+[18]
+Overfull \hbox (13.20996pt too wide) in paragraph at lines 104--104
 [][][] 
  []
 
-[20] [21] [22]
-Overfull \hbox (7.85136pt too wide) in paragraph at lines 183--183
-[][][] 
- []
-
-
-Overfull \hbox (72.77182pt too wide) in paragraph at lines 193--193
+[19] [20] [21]
+Overfull \hbox (3.86404pt too wide) in paragraph at lines 184--184
 [][][] 
  []
 
 
-Overfull \hbox (59.98904pt too wide) in paragraph at lines 214--214
+Overfull \hbox (72.77182pt too wide) in paragraph at lines 194--194
 [][][] 
  []
 
-[23]
-Overfull \hbox (11.05524pt too wide) detected at line 236
+
+Overfull \hbox (59.98904pt too wide) in paragraph at lines 215--215
+[][][] 
+ []
+
+[22]
+Overfull \hbox (11.05524pt too wide) detected at line 237
 [][] \OT1/cmr/m/n/12 = (1 \OMS/cmsy/m/n/12 ^^@ \OML/cmm/m/it/12 ^^M\OT1/cmr/m/n
 /12 )[][] [][]
  []
 
-[24]) [25]
+[23]) [24]
 \openout2 = `Government_description.aux'.
 
  (./Government_description.tex
 Chapter 4.
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 16.
-(/usr/local/texlive/2012/texmf-dist/tex/latex/base/omscmr.fd
-File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
-)
-LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 16.
- [26
+[25
 
 
 
-] [27]
-
-Package natbib Warning: Citation `KotlikoffXXXX' on page 28 undefined on input 
-line 106.
-
-[28]) [29]
+] [26]) [27]
 \openout2 = `Eqm_description.aux'.
 
  (./Eqm_description.tex
 Chapter 5.
 
-LaTeX Warning: Reference `EqEulerLabGen' on page 30 undefined on input line 22.
-
-
-
-LaTeX Warning: Reference `EqEulerSavGen' on page 30 undefined on input line 22.
-
-
-
-LaTeX Warning: Reference `EqEulerSavEpS' on page 30 undefined on input line 22.
-
-
-
-LaTeX Warning: Reference `EqFOCwage' on page 30 undefined on input line 22.
-
-
-LaTeX Warning: Reference `EqFOCrate' on page 30 undefined on input line 22.
-
-
-LaTeX Warning: Reference `EqCobbDougProd' on page 30 undefined on input line 22
-.
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 25--25
-[][][][]|[][]\OT1/cmr/bx/n/12 Sta-tion-ary vari-able def-i-ni-
+Overfull \hbox (0.7908pt too wide) in paragraph at lines 18--18
+[][][] 
  []
 
 
-LaTeX Warning: Reference `EqFOCrate' on page 30 undefined on input line 42.
+Underfull \hbox (badness 10000) in paragraph at lines 23--23
+[][][][]|[][]\OT1/cmr/bx/n/12 Sta-tion-ary vari-able def-i-ni-
+ []
 
-[30
+[28
 
 
 
 ]
+Underfull \hbox (badness 10000) in paragraph at lines 94--95
 
-LaTeX Warning: Reference `EqEulerLabGen' on page 31 undefined on input line 47.
-
-
-
-LaTeX Warning: Reference `EqEulerSavGen' on page 31 undefined on input line 47.
+ []
 
 
-
-LaTeX Warning: Reference `EqEulerSavEpS' on page 31 undefined on input line 47.
-
-
-[31]
-
-LaTeX Warning: Reference `EqFOCwage' on page 32 undefined on input line 74.
+LaTeX Warning: Reference `EqEulerLabStat' on page 29 undefined on input line 10
+0.
 
 
-LaTeX Warning: Reference `EqFOCrate' on page 32 undefined on input line 74.
+LaTeX Warning: Reference `EqEulerSavStat' on page 29 undefined on input line 10
+0.
 
 
-LaTeX Warning: Reference `EqFOCrate' on page 32 undefined on input line 80.
-
-[32pdfTeX warning (ext4): destination with the same identifier (name{equation.5
-.1.8}) has been already used, duplicate ignored
-
-\PDFSYNC@@utput ...\PDFSYNCship@ut@ld \box \@cclv 
-                                                  
-l.91     \end{spacing}
-                      ]
-
-LaTeX Warning: Reference `EqFOCrate' on page 33 undefined on input line 97.
+LaTeX Warning: Reference `EqEulerSavEpSstat' on page 29 undefined on input line
+ 100.
 
 
-LaTeX Warning: Reference `AppPopGrowth' on page 33 undefined on input line 99.
+LaTeX Warning: Reference `EqFOCwageStat' on page 29 undefined on input line 101
+.
 
 
-LaTeX Warning: Reference `AppPopGrowth' on page 33 undefined on input line 117.
+LaTeX Warning: Reference `EqFOCrate' on page 29 undefined on input line 101.
 
 
+Underfull \hbox (badness 10000) in paragraph at lines 108--109
 
-LaTeX Warning: Reference `AppPopGrowth' on page 33 undefined on input line 118.
+ []
 
-
-
-LaTeX Warning: Reference `AppPopGrowth' on page 33 undefined on input line 119.
-
-
-
-LaTeX Warning: Reference `AppPopGrowth' on page 33 undefined on input line 120.
-
+[29]
+Overfull \hbox (8.83057pt too wide) in paragraph at lines 190--192
+\OT1/cmr/m/n/12 WHAT FOL-LOWS NEEDS UP-DAT-ING TO IN-CLUDE RICHER FIRM AND GOV'
+T,
+ []
 
 
-LaTeX Warning: Reference `AppAbilCalib' on page 33 undefined on input line 121.
+Underfull \hbox (badness 10000) in paragraph at lines 193--194
+
+ []
 
 
-
-LaTeX Warning: Reference `AppAbilCalib' on page 33 undefined on input line 122.
-
-
-
-LaTeX Warning: Reference `AppEllipseUtil' on page 33 undefined on input line 13
+LaTeX Warning: Reference `EqEulerLabStat' on page 30 undefined on input line 20
 3.
 
 
-LaTeX Warning: Reference `AppEllipseUtil' on page 33 undefined on input line 13
-4.
+LaTeX Warning: Reference `EqEulerSavStat' on page 30 undefined on input line 20
+3.
 
 
-LaTeX Warning: Reference `AppEllipseUtil' on page 33 undefined on input line 13
-5.
+LaTeX Warning: Reference `EqEulerSavEpSstat' on page 30 undefined on input line
+ 203.
 
 
-LaTeX Warning: Reference `AppChinsChib' on page 33 undefined on input line 136.
-
-
-
-LaTeX Warning: Reference `AppChinsChib' on page 33 undefined on input line 137.
-
-
-
-LaTeX Warning: Reference `AppIncTaxRate' on page 33 undefined on input line 145
+LaTeX Warning: Reference `EqFOCwageStat' on page 30 undefined on input line 204
 .
 
 
-LaTeX Warning: Reference `AppIncTaxRate' on page 33 undefined on input line 146
-.
+LaTeX Warning: Reference `EqFOCrate' on page 30 undefined on input line 204.
 
 
-LaTeX Warning: Reference `AppIncTaxRate' on page 33 undefined on input line 147
-.
+LaTeX Warning: Reference `EqMktClrLabStat' on page 30 undefined on input line 2
+05.
 
 
-LaTeX Warning: Reference `AppIncTaxRate' on page 33 undefined on input line 148
-.
+LaTeX Warning: Reference `EqMktClrCapStat' on page 30 undefined on input line 2
+05.
 
 
-LaTeX Warning: Reference `AppIncTaxRate' on page 33 undefined on input line 149
-.
+Underfull \hbox (badness 10000) in paragraph at lines 210--211
+
+ []
 
 
-LaTeX Warning: Reference `AppReplRate' on page 33 undefined on input line 151.
+LaTeX Warning: Reference `EqEulerLabStat' on page 30 undefined on input line 21
+2.
 
-<images/SavSS_log.png, id=535, 578.16pt x 433.62pt>
-File: images/SavSS_log.png Graphic file (type png)
- <use images/SavSS_log.png>
-Package pdftex.def Info: images/SavSS_log.png used on input line 169.
-(pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-<images/LabSS.png, id=537, 465.99094pt x 365.11406pt>
-File: images/LabSS.png Graphic file (type png)
- <use images/LabSS.png>
-Package pdftex.def Info: images/LabSS.png used on input line 174.
-(pdftex.def)             Requested size: 465.98979pt x 365.11316pt.
+LaTeX Warning: Reference `EqEulerSavEpSstat' on page 30 undefined on input line
+ 212.
 
-<images/ConsSS_log.png, id=538, 578.16pt x 433.62pt>
-File: images/ConsSS_log.png Graphic file (type png)
 
-<use images/ConsSS_log.png>
-Package pdftex.def Info: images/ConsSS_log.png used on input line 179.
-(pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
- [33 <./images/SavSS_log.png>] [34] [35 <./images/LabSS.png>]
+LaTeX Warning: Reference `EqEulerLabStat' on page 30 undefined on input line 21
+2.
 
-LaTeX Warning: Reference `EqFOCrate' on page 36 undefined on input line 197.
 
-[36 <./images/ConsSS_log.png>]
-Overfull \hbox (72.20467pt too wide) in paragraph at lines 207--208
+LaTeX Warning: Reference `EqEulerSavStat' on page 30 undefined on input line 21
+2.
+
+
+LaTeX Warning: Reference `EqEulerSavEpSstat' on page 30 undefined on input line
+ 212.
+
+
+Overfull \hbox (72.20467pt too wide) in paragraph at lines 214--215
 \OT1/cmr/m/n/12 the next pe-riod's sav-ings, be-quests re-ceived, and prices $[
 ][]\OML/cmm/m/it/12 n[] \OT1/cmr/m/n/12 = \OML/cmm/m/it/12 ^^^[][]; [][]; []; r
 [][]$\OT1/cmr/m/n/12 .
  []
 
-[37]
+[30]
 
-LaTeX Warning: Reference `EqFOCrate' on page 38 undefined on input line 215.
+LaTeX Warning: Reference `EqMktClrCapStat' on page 31 undefined on input line 2
+22.
 
-<images/KpathTPI.png, id=599, 578.16pt x 433.62pt>
+
+LaTeX Warning: Reference `EqMktClrLabStat' on page 31 undefined on input line 2
+22.
+
+
+LaTeX Warning: Reference `EqFOCwageStat' on page 31 undefined on input line 222
+.
+
+
+LaTeX Warning: Reference `EqFOCrate' on page 31 undefined on input line 222.
+
+<images/KpathTPI.png, id=511, 578.16pt x 433.62pt>
 File: images/KpathTPI.png Graphic file (type png)
  <use images/KpathTPI.png>
-Package pdftex.def Info: images/KpathTPI.png used on input line 219.
+Package pdftex.def Info: images/KpathTPI.png used on input line 226.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-<images/LpathTPI.png, id=600, 578.16pt x 433.62pt>
+<images/LpathTPI.png, id=513, 578.16pt x 433.62pt>
 File: images/LpathTPI.png Graphic file (type png)
  <use images/LpathTPI.png>
-Package pdftex.def Info: images/LpathTPI.png used on input line 224.
+Package pdftex.def Info: images/LpathTPI.png used on input line 231.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 )
-[38 <./images/KpathTPI.png>] [39 <./images/LpathTPI.png>]
+[31] [32 <./images/KpathTPI.png> <./images/LpathTPI.png>]
 \openout2 = `Model_soln.aux'.
 
  (./Model_soln.tex
 Chapter 6.
-
-LaTeX Warning: Reference `eqn:opt_i' on page 40 undefined on input line 19.
-
-
-LaTeX Warning: Reference `eqn:opt_i' on page 40 undefined on input line 19.
-
-
-Overfull \hbox (92.85677pt too wide) detected at line 33
-[][] \OT1/cmr/m/n/12 = [] []
- []
-
-[40
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 31.
+(/usr/local/texlive/2012/texmf-dist/tex/latex/base/omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 31.
+ [33
 
 
 
 ]
-Overfull \hbox (11.81746pt too wide) detected at line 59
-[][] \OT1/cmr/m/n/12 = [][] (\OML/cmm/m/it/12 ^^M[]\OT1/cmr/m/n/12 )[](\OML/cmm
-/m/it/12 K[]\OT1/cmr/m/n/12 )[]
- []
+
+LaTeX Warning: Reference `EqSavDist' on page 34 undefined on input line 153.
+
+[34]
+
+LaTeX Warning: Reference `EqMktClrCapStat' on page 35 undefined on input line 1
+58.
+
+pdfTeX warning (ext4): destination with the same identifier (name{equation.6.2.
+1}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.159   \begin{equation}
+                        \label{EqMktClrCapStat1}pdfTeX warning (ext4): destinat
+ion with the same identifier (name{equation.6.2.1}) has been already used, dupl
+icate ignored
+<to be read again> 
+                   \relax 
+l.159   \begin{equation}
+                        \label{EqMktClrCapStat1}pdfTeX warning (ext4): destinat
+ion with the same identifier (name{equation.6.2.1}) has been already used, dupl
+icate ignored
+<to be read again> 
+                   \relax 
+l.159   \begin{equation}
+                        \label{EqMktClrCapStat1}pdfTeX warning (ext4): destinat
+ion with the same identifier (name{equation.6.2.1}) has been already used, dupl
+icate ignored
+<to be read again> 
+                   \relax 
+l.159   \begin{equation}
+                        \label{EqMktClrCapStat1}
+
+LaTeX Warning: Reference `EqTotBeq' on page 35 undefined on input line 162.
 
 
-Overfull \hbox (40.10062pt too wide) detected at line 66
-[][] \OT1/cmr/m/n/12 = [][] (1 \OMS/cmsy/m/n/12 ^^@ \OML/cmm/m/it/12 ^^M[]\OT1/
-cmr/m/n/12 )[](\OML/cmm/m/it/12 EL[]\OT1/cmr/m/n/12 )[]
- []
-
-[41]
-
-LaTeX Warning: Reference `eqn:opt_i' on page 42 undefined on input line 89.
-
-[42]
-
-LaTeX Warning: Reference `AppPopGrowth' on page 43 undefined on input line 123.
+LaTeX Warning: Reference `EqEulerLabStat' on page 35 undefined on input line 17
+0.
 
 
-[43] [44]
+LaTeX Warning: Reference `EqEulerSavEpSstat' on page 35 undefined on input line
+ 170.
 
-LaTeX Warning: Reference `EqSavDist' on page 45 undefined on input line 158.
+[35]
+
+LaTeX Warning: Reference `EqEulerLabStat' on page 36 undefined on input line 18
+6.
 
 
-LaTeX Warning: Reference `EqTotBeq' on page 45 undefined on input line 167.
+LaTeX Warning: Reference `EqEulerSavStat' on page 36 undefined on input line 18
+6.
 
-[45pdfTeX warning (ext4): destination with the same identifier (name{equation.6
-.3.1}) has been already used, duplicate ignored
 
-\PDFSYNC@@utput ...\PDFSYNCship@ut@ld \box \@cclv 
-                                                  
-l.172 
-      ] [46] [47]
-Underfull \hbox (badness 2088) in paragraph at lines 243--243
+LaTeX Warning: Reference `EqEulerSavEpSstat' on page 36 undefined on input line
+ 186.
+
+[36]
+
+LaTeX Warning: Reference `EqEulerLabStat' on page 37 undefined on input line 21
+4.
+
+
+LaTeX Warning: Reference `EqEulerSavStat' on page 37 undefined on input line 21
+4.
+
+
+LaTeX Warning: Reference `EqEulerSavEpSstat' on page 37 undefined on input line
+ 214.
+
+[37]
+Underfull \hbox (badness 2088) in paragraph at lines 238--238
 [][][][]|[]\OT1/cmr/bx/n/12 Di-a-gram of TPI so-lu-tion method
  []
 
-<images/TPIdiag.pdf, id=749, 513.57974pt x 675.72452pt>
+<images/TPIdiag.pdf, id=598, 513.57974pt x 675.72452pt>
 File: images/TPIdiag.pdf Graphic file (type pdf)
 
 <use images/TPIdiag.pdf>
-Package pdftex.def Info: images/TPIdiag.pdf used on input line 244.
+Package pdftex.def Info: images/TPIdiag.pdf used on input line 239.
 (pdftex.def)             Requested size: 513.57848pt x 675.72287pt.
- [48] [49 <./images/TPIdiag.pdf>]
-Overfull \hbox (7.62604pt too wide) in paragraph at lines 275--277
+
+Overfull \hbox (7.62604pt too wide) in paragraph at lines 270--272
 \OT1/cmr/m/n/12 If the fixed point has not been found $[][][] \OML/cmm/m/it/12 
 >
  []
 
 
-Overfull \hbox (0.12308pt too wide) in paragraph at lines 275--277
+Overfull \hbox (0.12308pt too wide) in paragraph at lines 270--272
 \OT1/cmr/m/n/12 gen-er-ated as a con-vex com-bi-na-tion of $[][][][]\OML/cmm/m/
 it/12 ; []; [][][][][][]$ \OT1/cmr/m/n/12 and $[][][][]\OML/cmm/m/it/12 ; []; [
 ][][][][][]$\OT1/cmr/m/n/12 . 
  []
 
+[38] [39 <./images/TPIdiag.pdf>]
 
-LaTeX Warning: Reference `AppPopGrowth' on page 50 undefined on input line 294.
+LaTeX Warning: Reference `TabExogVars' on page 40 undefined on input line 287.
 
 
+LaTeX Warning: Reference `EqMktClrCapStat' on page 40 undefined on input line 2
+92.
 
-LaTeX Warning: Reference `EqFOCrate' on page 50 undefined on input line 301.
 
-[50]) [51]
+LaTeX Warning: Reference `EqFOCwageStat' on page 40 undefined on input line 296
+.
+
+
+LaTeX Warning: Reference `EqFOCrate' on page 40 undefined on input line 296.
+
+
+LaTeX Warning: Reference `EqEulerLabStat' on page 40 undefined on input line 30
+0.
+
+
+LaTeX Warning: Reference `EqEulerSavStat' on page 40 undefined on input line 30
+0.
+
+
+LaTeX Warning: Reference `EqEulerSavEpSstat' on page 40 undefined on input line
+ 300.
+
+[40]) [41]
 Chapter 7.
+
+Overfull \hbox (7.2837pt too wide) in paragraph at lines 180--180
+[][][]\OT1/cmr/bx/n/17.28 Characteristics of ex-oge-nous pop-u-la-tion growth
+ []
+
+
+LaTeX Warning: Reference `SecPopDyn' on page 42 undefined on input line 182.
+
+
+Overfull \hbox (3.74713pt too wide) in paragraph at lines 215--215
+[][][] 
+ []
+
+[42
+
+
+pdfTeX warning (ext4): destination with the same identifier (name{equation.7.1.
+1}) has been already used, duplicate ignored
+
+\PDFSYNC@@utput ...\PDFSYNCship@ut@ld \box \@cclv 
+                                                  
+l.215   \end{equation}
+                      ] [43]
+<images/FigPerTime.pdf, id=663, 618.18048pt x 338.08908pt>
+File: images/FigPerTime.pdf Graphic file (type pdf)
+
+<use images/FigPerTime.pdf>
+Package pdftex.def Info: images/FigPerTime.pdf used on input line 282.
+(pdftex.def)             Requested size: 618.17897pt x 338.08826pt.
+
+<images/omega_init.png, id=673, 578.16pt x 433.62pt>
+File: images/omega_init.png Graphic file (type png)
+
+<use images/omega_init.png>
+Package pdftex.def Info: images/omega_init.png used on input line 289.
+(pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
+
+<images/fert_rates.png, id=674, 578.16pt x 433.62pt>
+File: images/fert_rates.png Graphic file (type png)
+
+<use images/fert_rates.png>
+Package pdftex.def Info: images/fert_rates.png used on input line 294.
+(pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
+
+<images/mort_rates.png, id=675, 578.16pt x 433.62pt>
+File: images/mort_rates.png Graphic file (type png)
+
+<use images/mort_rates.png>
+Package pdftex.def Info: images/mort_rates.png used on input line 299.
+(pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
+ [44] [45 <./images/FigPerTime.pdf> <./images/omega_init.png>] [46 <./images/fe
+rt_rates.png> <./images/mort_rates.png>]
+<images/imm_rates.png, id=725, 578.16pt x 433.62pt>
+File: images/imm_rates.png Graphic file (type png)
+ <use images/imm_rates.png>
+Package pdftex.def Info: images/imm_rates.png used on input line 306.
+(pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
+
+Underfull \hbox (badness 2197) in paragraph at lines 312--312
+[][][][]|[]\OT1/cmr/bx/n/12 Fore-cast time path of pop-u-la-tion
+ []
+
+<images/Population_growthrate.png, id=728, 578.16pt x 433.62pt>
+File: images/Population_growthrate.png Graphic file (type png)
+
+<use images/Population_growthrate.png>
+Package pdftex.def Info: images/Population_growthrate.png used on input line 31
+3.
+(pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
+
+<images/omega_ss.png, id=729, 578.16pt x 433.62pt>
+File: images/omega_ss.png Graphic file (type png)
+ <use images/omega_ss.png>
+Package pdftex.def Info: images/omega_ss.png used on input line 318.
+(pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
+
+[47 <./images/imm_rates.png>] [48 <./images/Population_growthrate.png> <./image
+s/omega_ss.png>]
 Missing character: There is no ‚ in font cmr12!
 Missing character: There is no Ä in font cmr12!
 Missing character: There is no ú in font cmr12!
 Missing character: There is no ‚ in font cmr12!
 Missing character: There is no Ä in font cmr12!
 Missing character: There is no ù in font cmr12!
-[52
+ [49
+
+] [50] (./OSPC_BYU_Dyn.bbl [51
 
 
-] [53] (./OSPC_BYU_Dyn.bbl)
+])
 No file OSPC_BYU_Dyn.ind.
-
-Package natbib Warning: There were undefined citations.
-
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 258.
-[54
-
-
-]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 258.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 400.
+[52]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 400.
  (./OSPC_BYU_Dyn.aux (./Household_description.aux) (./Firms_description.aux) (.
 /Government_description.aux) (./Eqm_description.aux) (./Model_soln.aux))
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 258.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 258.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 400.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 400.
 Package rerunfilecheck Info: File `OSPC_BYU_Dyn.out' has not changed.
-(rerunfilecheck)             Checksum: B053BC7D625D2AF85AB1E4842C6EE02A;2375.
+(rerunfilecheck)             Checksum: 7F801F4255BE84E47759592D27B50306;2148.
 
 
 LaTeX Warning: There were undefined references.
@@ -1010,16 +1075,16 @@ LaTeX Warning: There were undefined references.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 258.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 400.
  ) 
 Here is how much of TeX's memory you used:
- 8622 strings out of 493488
- 127009 string characters out of 3141326
- 238396 words of memory out of 3000000
- 11460 multiletter control sequences out of 15000+200000
+ 8605 strings out of 493488
+ 127234 string characters out of 3141326
+ 243420 words of memory out of 3000000
+ 11468 multiletter control sequences out of 15000+200000
  24469 words of font info for 90 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
- 36i,35n,41p,2086b,676s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 36i,37n,41p,2086b,602s stack positions out of 5000i,500n,10000p,200000b,50000s
 </usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
 </usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></
@@ -1046,10 +1111,10 @@ st/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2012/texmf-dist
 /fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2012/texmf-dist/f
 onts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2012/texmf-dist/fo
 nts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on OSPC_BYU_Dyn.pdf (56 pages, 1343246 bytes).
+Output written on OSPC_BYU_Dyn.pdf (54 pages, 1306731 bytes).
 PDF statistics:
- 957 PDF objects out of 1000 (max. 8388607)
- 852 compressed objects within 9 object streams
- 279 named destinations out of 1000 (max. 500000)
- 287 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 898 PDF objects out of 1000 (max. 8388607)
+ 772 compressed objects within 8 object streams
+ 250 named destinations out of 1000 (max. 500000)
+ 283 words of extra memory for PDF output out of 10000 (max. 10000000)
 

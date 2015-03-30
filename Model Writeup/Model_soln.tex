@@ -1,4 +1,5 @@
 \chapter{Numerical Solution}
+\label{chap:model_soln}
 \index{Numerical Solution%
 @\emph{Numerical Solution}}%
 
@@ -7,129 +8,31 @@
 %\pagestyle{empty}
 
 
-FIRMS STUFF:
-\section{Solving the model}
+When solving for the full transition path, we solve the model in two steps.  First, we solve for the steady state prices and allocations.  Next, we iterate backwards solving for prices and allocations along the transition path to the steady state.  Here we define the solution to the model, starting with the steady-state solution.
 
-We'll solve the model in two steps.  First, we solve for the steady state prices and allocations.  Next, we iterate backwards solving for prices and allocations along the transition path to the steady state.
-
-\subsection{Solving for the steady state}
-
-On the supply side (with one sector), we have to solve for the factor prices, $\bar{i}$ and $bar{w}$ (the price of output $\bar{p}^{C}$ is normalized to one), the shadow price of capital, $\bar{q}^{C}$, and the allocations $\bar{EL}^{C}$, $\bar{K}^{C}$, $\bar{I}^{C}$.  From these all the other variables follow trivially.  
-
-Start by solving for the steady-states of Equations \ref{eqn:opt_i} and \ref{eqn:foc_k}.  Equation \ref{eqn:opt_i} becomes:
-
-\begin{equation}
-\label{eqn:opt_i_ss}
-\bar{q}^{C}=\underbrace{1-b^{C}-\bar{\Omega}^{C}\bar{\tau}^{b}(f_{e}-f_{b}b^{C})-f_{d}(1-f_{e})\bar{Z}^{C}}_{\text{function of only parameters}}
-\end{equation}
-
-This yields the solution to $\bar{q}^{C}$.
-
-Next, consider the steady-state of Equation \ref{eqn:foc_k}:
-
-\begin{equation}
-\label{eqn:foc_k_ss}
-\bar{q}^{C}=\frac{1}{1+\bar{\theta}}\left[(1-\delta^{C})\bar{q}^{C} + \frac{\partial \bar{X}^{C}}{\partial \bar{K}^{C}} - \{(1-\bar{\tau}^{b})\bar{\Omega}^{C}\bar{\tau}^{pC} + (1-f_{i}\bar{\tau}^{i})\bar{i}\bar{\Omega}^{C}b^{C} - \delta^{C}(1-b^{C}-\bar{\Omega}^{C}(1-f_{p}\bar{\tau}^{b}b^{C}))\}\right]
-\end{equation}
-
-We can rearrange this and solve for the steady-state marginal product of capital in sector $C$:
-
-\begin{equation}
-\label{eqn:mpk_ss}
-\frac{\partial \bar{X}^{C}}{\partial \bar{K}^{C}} = (\bar{\theta}+\delta^{C})\bar{q}^{C} + (1-\bar{\tau}^{b})\bar{\Omega}^{C}\bar{\tau}^{pC} + (1-f_{i}\bar{\tau}^{i})\bar{i}\bar{\Omega}^{C}b^{C} - \delta^{C}(1-b^{C}-\bar{\Omega}^{C}(1-f_{p}\bar{\tau}^{b}b^{C}))
-\end{equation}
-
-Notice that given Equation \ref{eqn:opt_i_ss}, the RHS to the above equation is function of parameters and the steady state nominal interest rate, $\bar{i}$.  The LHS of the equation is a function of $\bar{K}^{C}$ and $\bar{EL}^{C}$.
-
-I think we can use the following to identify the SS values of the variables of interest:
-\begin{enumerate}
-\item $\bar{i}$ will be determined by the SS of the household's Euler equations (I think this can be done as described in the HH sol'n method)
-\item $\bar{w}$ will be determined by the SS of the household's FOCs for labor supply ((I think this can be done as described in the HH sol'n method)
-\item $\bar{q}^{C}$ is determined by Equation \ref{eqn:opt_i_ss}
-\item $\bar{EL}^{C}$ is determined by the SS version of Equation \ref{eqn:foc_l}, plus $\bar{w}$
-\item $\bar{K}^{C}$ is determined by Equation \ref{eqn:mpk_ss} and $\bar{i}$
-\item $\bar{I}^{C}$ is then solved for using the steady state law of motion for capital $\implies \bar{I}^{C}=\delta^{C}\bar{K}^{C}$
-\end{enumerate}
-
-In solving for $\bar{EL}^{C}$ and $\bar{K}^{C}$, note that we'll have use the MPK and the MPL simultaneously.  Given our production function, we have:
-
-\begin{equation}
-\label{eqn:mpk}
-\frac{\partial X^{C}_{u}}{\partial K^{C}_{u}} = \left[(\gamma_{C})^{1/\epsilon_{C}}(K^{C}_{u})^{(\epsilon_{C}-1)/\epsilon_{C}}+(1-\gamma_{C})^{1/\epsilon_{C}}(EL^{C}_{u})^{(\epsilon_{C}-1)/\epsilon_{C}}\right]^{1/(\epsilon_{C}-1)}(\gamma_{C})^{1/\epsilon_{C}}(K^{C}_{u})^{-1/\epsilon_{C}}
-\end{equation}
-
-and 
-
-\begin{equation}
-\label{eqn:mpl}
-\frac{\partial X^{C}_{u}}{\partial EL^{C}_{u}} = \left[(\gamma_{C})^{1/\epsilon_{C}}(K^{C}_{u})^{(\epsilon_{C}-1)/\epsilon_{C}}+(1-\gamma_{C})^{1/\epsilon_{C}}(EL^{C}_{u})^{(\epsilon_{C}-1)/\epsilon_{C}}\right]^{1/(\epsilon_{C}-1)}(1-\gamma_{C})^{1/\epsilon_{C}}(EL^{C}_{u})^{-1/\epsilon_{C}}
-\end{equation}
-
-We know that, at an optimum, the marginal revenue product of labor equals the wage rate, and the marginal revenue product of capital equals a function of the interest rate, marginal $q$, and the model parameters.  Call this function $g(i_{u},q^{C}_{u},q^{C}_{u-1},\Theta)$.  We thus have $p^{C}_{u}\frac{\partial X^{C}_{u}}{\partial EL^{C}_{u}} =w_{u}$ and $p^{C}_{u}\frac{\partial X^{C}_{u}}{\partial K^{C}_{u}}=g(i_{u},q^{C}_{u},q^{C}_{u-1},\Theta)$.  Dividing these two equations, we have:
-
-\begin{equation}
-\label{eqn:cap_lab_ratio}
-\begin{split}
-& \frac{\frac{\partial X^{C}_{u}}{\partial K^{C}_{u}}}{\frac{\partial X^{C}_{u}}{\partial EL^{C}_{u}}} =\frac{(\gamma_{C})^{1/\epsilon_{C}}(K^{C}_{u})^{-1/\epsilon_{C}}}{(1-\gamma_{C})^{1/\epsilon_{C}}(EL^{C}_{u})^{-1/\epsilon_{C}}}-=\frac{g(i_{u},q^{C}_{u},q^{C}_{u-1},\Theta)}{w_{u}} \\
-& \implies \frac{K^{C}_{u}}{EL^{C}_{u}} =\frac{(1-\gamma_{C})}{\gamma_{C}}\left(\frac{w_{u}} {g(i_{u},q^{C}_{u},q^{C}_{u-1},\Theta)}\right)^{\epsilon_{C}} \\
-\end{split}
-\end{equation}
-
-We can use the SS version of Equation \ref{eqn:cap_lab_ratio} to solve for capital as function of labor (and $\bar{q}, \bar{i}, \bar{w}$), and then use that in the SS version of Equation \ref{eqn:mpl} to solve for labor as s function of $\bar{q}, \bar{i}, \bar{w}$.  We then go back to the SS version of Equation \ref{eqn:cap_lab_ratio} to get the SS choice of capital as a function of $\bar{q}, \bar{i}, \bar{w}$.
-
-All of the above will work for each sector in a model with any number of sectors (though care has to be taken to include the prices of output and capital in those other sectors, since only one sector's output can be the numeraire).
-
-\subsection{Solving for the transition path}
-
-I believe we can just use the Euler equations to go backwards in time, from the SS back along the transition path to $t=0$.  Assume period $T$ is the SS,  The solution would look like the following:
-
-\begin{enumerate}
-\item Use Equation \ref{eqn:foc_k} to solve for the for $q^{C}_{T-1}$ since we have the solution to the RHS of the equation after we've solved for the SS.
-\item Use the law of motion for capital to find: $K^{C}_{T-1}=\frac{K^{C}_{T}-I^{C}_{T-1}}{(1-\delta^{C})}=\frac{\bar{K}^{C}-I^{C}_{T-1}}{(1-\delta^{C})}$
-\item Use Equation \ref{eqn:opt_i} and the value of $q^{C}_{T-1}$ to find $I^{C}_{T-1}$ (and $K^{C}_{T-1}$ given the law of motion relationship.
-\item Given $w_{T-1}$ we can use the FOC for labor demand to find $EL^{C}_{T-1}$
-\item Given $i_{T-1}$ we can use Equation \ref{eqn:foc_k} to solve for $q^{C}_{T-2}$ 
-\item We then repeat the above steps until we work back to $t=0$.
-\end{enumerate}
-
-
-
-To solve for any stationary non-steady-state equilibrium time path of the economy from an arbitrary current state to the steady state, we follow the time path iteration (TPI) method of \citet{AuerbachKotlikoff:1987}. Appendix \ref{AppNonSSsolve} details how to solve for the non-steady-state equilibrium time path using the TPI method. The approach is to choose an arbitrary time path for the stationary aggregate capital stock $\hat{K}_t$, stationary aggregate labor $\hat{L}_t$, and total bequests received $\hat{BQ}_{j,t}$ for each type $j$. This initial guess of a path implies arbitrary beliefs that violate the rational expectations requirement. We then solve for households' optimal decisions given the time paths of those variables, which decisions imply new time paths of those variables. We then update the time path as a convex combination of the initial guess and the new implied path. Figure \ref{FigKpathTPI} shows the equilibrium time path of the aggregate capital stock for the calibration described in Table \ref{TabExogVars} for $T=160$ periods starting from an initial distribution of savings in which $b_{j,s,1}=\bm{\bar{\Gamma}}$ for all $j$ and $s$ in the case that no policy experiment takes place. The initial capital stock $\hat{K}_1$ is not at the steady state $\bar{K}$ because the initial population distribution is not at the steady-state.
 
 \section{Solving for stationary steady-state equilibrium}\label{AppSSsolve}
 
-  \setcounter{equation}{0}
-  \renewcommand\theenumi{\arabic{enumi}}
-  \renewcommand\theenumii{\alph{enumii}}
-  \renewcommand\theenumiii{\roman{enumiii}}
-
-  This section describes the solution method for the stationary steady-state equilibrium described in Definition \ref{DefEquilSS}.
+  This section describes the solution method for the stationary steady-state equilibrium described in Definition \ref{DefEquilSS}.  To obtain the steady-state equilibrium, we do the following:
   
-  
-  We can try to draw some nice tree structures as in \citet{FR1993}, but here's how the consumer side of the problem is solved;
-\begin{enumerate}
-\item The firm's problem determines prices of output from each sector and industry in a given year: $p_{m,t,C}$ and $p_{m,t,NC}$.
-\item Given these, Equation \ref{eqn:price_comp} determines $p_{m,t}$, the price of composite output for sector $m$.
-\item The price of composite output in each sector $m$ is related to the prices of the $I$ consumption goods through the matrix $Z$ as described in Equation \ref{eqn:mix_cons_price}.
-\item Equation \ref{eqn:composite_price} describes how the composite consumption good price is determined from these individual consumption good prices, for each age $s$ composite consumption bundle.
-\item With all prices in hand, we can solve for quantities demanded.  Using $p_{s,t}$ and $p_{i,t}$ in Equation \ref{EqBC}, we can then solve the consumers problem for the choice of $\tilde{c}_{j,s,t}$. 
-\item These $\tilde{c}_{j,s,t}$ then determine demand for each individual consumption good, $c_{i,j,s,t}$ by Equation \ref{eqn:cons_solve}.
-\item Demands for consumption goods are then translated into demands for output from each industry $m$ by Equation \ref{eqn:mix_cons}.
-\item Demand for output from each sector (corporate or non-corporate) in industry $m$ are then determined by Equations \ref{eqn:demand_XmtC} and \ref{eqn:demand_XmtNC}.
-\item These demands are then checked against the supply determined in (1).  If they match, we've found an eq'm. If not, we update the guess of $r$, $w$, $BQ$ and work from (1)-(8) again.
-\end{enumerate}
-
-  \begin{enumerate}
-    \item Use the techniques in Appendix \ref{AppPopGrowth} to solve for the steady-state population distribution vector $\bm{\bar{\omega}}$ of the exogenous population process.
-    \item Choose an initial guess for the stationary steady-state distribution of capital $\bar{b}_{j,s+1}$ for all $j$ and $s=E+2,E+3,...E+S+1$ and labor supply $\bar{n}_{j,s}$ for all $j$ and $s$.
+ 
+   \begin{enumerate}
+    \item Use the techniques in Chapter \ref{AppPopGrowth} to solve for the steady-state population distribution vector $\bm{\bar{\omega}}$ of the exogenous population process.
+    \item Choose an initial guess for the stationary steady-state wage rate, $\bar{w}$ and real interest rate, $\bar{r}$.
+%      \begin{itemize}
+%        \item A good first guess is a large positive number for all the $\bar{n}_{j,s}$ that is slightly less than $\tilde{l}$ and to choose some small positive number for $\bar{b}_{j,s+1}$ that is small enough to be less than the minimum income that an individual might have $\bar{w}e_{j,s}\bar{n}_{j,s}$.
+%      \end{itemize}
+   \item With $\bar{w}$ and $\bar{r}$, use an unconstrained root finder to solve the $4\times 2 \times M$ equations defining the steady-state version of the firms' problem.  This will yield $\bar{I}_{m,c}$, $\bar{EL}_{m,c}$, $\bar{V}_{m,c}$, $\bar{p}_{m,c}$.
+   \item Using $\bar{p}_{m,c}$ and the fixed coefficient matrix $\Pi$, we can determine $\bar{p}_{i}$, the price of consumption goods.
+   \item $\bar{p}_{i}$ and maximization of the consumer's subutility function imply $\bar{p}_{s}$, the price of the composite consumption good.
+    \item Perform an unconstrained root finder that chooses $\bar{c}_{j,s}$ and $\bar{b}_{j,s+1}$ that solves the $2JS$ stationary steady-state Euler equations.
+    \item Make sure none of the implied steady-state consumptions $\bar{c}_{j,s}+\sum_{i=1}^{I}c_{i,s}$ exceeds income.
       \begin{itemize}
-        \item A good first guess is a large positive number for all the $\bar{n}_{j,s}$ that is slightly less than $\tilde{l}$ and to choose some small positive number for $\bar{b}_{j,s+1}$ that is small enough to be less than the minimum income that an individual might have $\bar{w}e_{j,s}\bar{n}_{j,s}$.
+        \item If consumption exceeds income, the individual can not afford the minimum required consumption amounts.  We then...
       \end{itemize}
-    \item Perform an unconstrained root finder that chooses $\bar{n}_{j,s}$ and $\bar{b}_{j,s+1}$ that solves the $2JS$ stationary steady-state Euler equations.
-    \item Make sure none of the implied steady-state consumptions $\bar{c}_{j,s}$ is less-than-or-equal-to zero.
-      \begin{itemize}
-        \item If one consumption is less-than-or-equal-to zero $\bar{c}_{j,s}\leq 0$, then try different starting values.
-      \end{itemize}
+    \item Given consumption demand and the fixed coefficient matrix $\Xi$, find the implied demand for output, $X_{m}$.
+    \item Use the consumer's subutility function over corporate and non-corporate goods to determine demand for corporate and non-corporate production goods to get $X_{m,n}$ and $X_{m,nc}$.
+    \item Make sure that demand for these production goods matches the supply given firm's decisions in (iii).
     \item Make sure that none of the Euler errors is too large in absolute value for interior stationary steady-state values. A steady-state Euler error is the following, which is supposed to be close to zero for all $j$ and $s$:
       \begin{align}
         \begin{split}
@@ -143,9 +46,101 @@ To solve for any stationary non-steady-state equilibrium time path of the econom
         &\frac{\chi^b e^{-g_y\sigma}(\bar{b}_{j,E+S+1})^{-\sigma}}{\left(\bar{c}_{j,E+S}\right)^{-\sigma}} - 1 \quad\forall j \label{EqSSeulerrBeq}
       \end{align}
   \end{enumerate}
+  
+   
 
+%FIRMS STUFF:
+%\section{Solving the model}
+%
+%
+%\subsection{Solving for the steady state}
+%
+%On the supply side (with one sector), we have to solve for the factor prices, $\bar{i}$ and $bar{w}$ (the price of output $\bar{p}^{C}$ is normalized to one), the shadow price of capital, $\bar{q}^{C}$, and the allocations $\bar{EL}^{C}$, $\bar{K}^{C}$, $\bar{I}^{C}$.  From these all the other variables follow trivially.  
+%
+%Start by solving for the steady-states of Equations \ref{eqn:opt_i} and \ref{eqn:foc_k}.  Equation \ref{eqn:opt_i} becomes:
+%
+%\begin{equation}
+%\label{eqn:opt_i_ss}
+%\bar{q}^{C}=\underbrace{1-b^{C}-\bar{\Omega}^{C}\bar{\tau}^{b}(f_{e}-f_{b}b^{C})-f_{d}(1-f_{e})\bar{Z}^{C}}_{\text{function of only parameters}}
+%\end{equation}
+%
+%This yields the solution to $\bar{q}^{C}$.
+%
+%Next, consider the steady-state of Equation \ref{eqn:foc_k}:
+%
+%\begin{equation}
+%\label{eqn:foc_k_ss}
+%\bar{q}^{C}=\frac{1}{1+\bar{\theta}}\left[(1-\delta^{C})\bar{q}^{C} + \frac{\partial \bar{X}^{C}}{\partial \bar{K}^{C}} - \{(1-\bar{\tau}^{b})\bar{\Omega}^{C}\bar{\tau}^{pC} + (1-f_{i}\bar{\tau}^{i})\bar{i}\bar{\Omega}^{C}b^{C} - \delta^{C}(1-b^{C}-\bar{\Omega}^{C}(1-f_{p}\bar{\tau}^{b}b^{C}))\}\right]
+%\end{equation}
+%
+%We can rearrange this and solve for the steady-state marginal product of capital in sector $C$:
+%
+%\begin{equation}
+%\label{eqn:mpk_ss}
+%\frac{\partial \bar{X}^{C}}{\partial \bar{K}^{C}} = (\bar{\theta}+\delta^{C})\bar{q}^{C} + (1-\bar{\tau}^{b})\bar{\Omega}^{C}\bar{\tau}^{pC} + (1-f_{i}\bar{\tau}^{i})\bar{i}\bar{\Omega}^{C}b^{C} - \delta^{C}(1-b^{C}-\bar{\Omega}^{C}(1-f_{p}\bar{\tau}^{b}b^{C}))
+%\end{equation}
+%
+%Notice that given Equation \ref{eqn:opt_i_ss}, the RHS to the above equation is function of parameters and the steady state nominal interest rate, $\bar{i}$.  The LHS of the equation is a function of $\bar{K}^{C}$ and $\bar{EL}^{C}$.
+%
+%I think we can use the following to identify the SS values of the variables of interest:
+%\begin{enumerate}
+%\item $\bar{i}$ will be determined by the SS of the household's Euler equations (I think this can be done as described in the HH sol'n method)
+%\item $\bar{w}$ will be determined by the SS of the household's FOCs for labor supply ((I think this can be done as described in the HH sol'n method)
+%\item $\bar{q}^{C}$ is determined by Equation \ref{eqn:opt_i_ss}
+%\item $\bar{EL}^{C}$ is determined by the SS version of Equation \ref{eqn:foc_l}, plus $\bar{w}$
+%\item $\bar{K}^{C}$ is determined by Equation \ref{eqn:mpk_ss} and $\bar{i}$
+%\item $\bar{I}^{C}$ is then solved for using the steady state law of motion for capital $\implies \bar{I}^{C}=\delta^{C}\bar{K}^{C}$
+%\end{enumerate}
+%
+%In solving for $\bar{EL}^{C}$ and $\bar{K}^{C}$, note that we'll have use the MPK and the MPL simultaneously.  Given our production function, we have:
+%
+%\begin{equation}
+%\label{eqn:mpk}
+%\frac{\partial X^{C}_{u}}{\partial K^{C}_{u}} = \left[(\gamma_{C})^{1/\epsilon_{C}}(K^{C}_{u})^{(\epsilon_{C}-1)/\epsilon_{C}}+(1-\gamma_{C})^{1/\epsilon_{C}}(EL^{C}_{u})^{(\epsilon_{C}-1)/\epsilon_{C}}\right]^{1/(\epsilon_{C}-1)}(\gamma_{C})^{1/\epsilon_{C}}(K^{C}_{u})^{-1/\epsilon_{C}}
+%\end{equation}
+%
+%and 
+%
+%\begin{equation}
+%\label{eqn:mpl}
+%\frac{\partial X^{C}_{u}}{\partial EL^{C}_{u}} = \left[(\gamma_{C})^{1/\epsilon_{C}}(K^{C}_{u})^{(\epsilon_{C}-1)/\epsilon_{C}}+(1-\gamma_{C})^{1/\epsilon_{C}}(EL^{C}_{u})^{(\epsilon_{C}-1)/\epsilon_{C}}\right]^{1/(\epsilon_{C}-1)}(1-\gamma_{C})^{1/\epsilon_{C}}(EL^{C}_{u})^{-1/\epsilon_{C}}
+%\end{equation}
+%
+%We know that, at an optimum, the marginal revenue product of labor equals the wage rate, and the marginal revenue product of capital equals a function of the interest rate, marginal $q$, and the model parameters.  Call this function $g(i_{u},q^{C}_{u},q^{C}_{u-1},\Theta)$.  We thus have $p^{C}_{u}\frac{\partial X^{C}_{u}}{\partial EL^{C}_{u}} =w_{u}$ and $p^{C}_{u}\frac{\partial X^{C}_{u}}{\partial K^{C}_{u}}=g(i_{u},q^{C}_{u},q^{C}_{u-1},\Theta)$.  Dividing these two equations, we have:
+%
+%\begin{equation}
+%\label{eqn:cap_lab_ratio}
+%\begin{split}
+%& \frac{\frac{\partial X^{C}_{u}}{\partial K^{C}_{u}}}{\frac{\partial X^{C}_{u}}{\partial EL^{C}_{u}}} =\frac{(\gamma_{C})^{1/\epsilon_{C}}(K^{C}_{u})^{-1/\epsilon_{C}}}{(1-\gamma_{C})^{1/\epsilon_{C}}(EL^{C}_{u})^{-1/\epsilon_{C}}}-=\frac{g(i_{u},q^{C}_{u},q^{C}_{u-1},\Theta)}{w_{u}} \\
+%& \implies \frac{K^{C}_{u}}{EL^{C}_{u}} =\frac{(1-\gamma_{C})}{\gamma_{C}}\left(\frac{w_{u}} {g(i_{u},q^{C}_{u},q^{C}_{u-1},\Theta)}\right)^{\epsilon_{C}} \\
+%\end{split}
+%\end{equation}
+%
+%We can use the SS version of Equation \ref{eqn:cap_lab_ratio} to solve for capital as function of labor (and $\bar{q}, \bar{i}, \bar{w}$), and then use that in the SS version of Equation \ref{eqn:mpl} to solve for labor as s function of $\bar{q}, \bar{i}, \bar{w}$.  We then go back to the SS version of Equation \ref{eqn:cap_lab_ratio} to get the SS choice of capital as a function of $\bar{q}, \bar{i}, \bar{w}$.
+%
+%All of the above will work for each sector in a model with any number of sectors (though care has to be taken to include the prices of output and capital in those other sectors, since only one sector's output can be the numeraire).
+%
+%\subsection{Solving for the transition path}
+%
+%I believe we can just use the Euler equations to go backwards in time, from the SS back along the transition path to $t=0$.  Assume period $T$ is the SS,  The solution would look like the following:
+%
+%\begin{enumerate}
+%\item Use Equation \ref{eqn:foc_k} to solve for the for $q^{C}_{T-1}$ since we have the solution to the RHS of the equation after we've solved for the SS.
+%\item Use the law of motion for capital to find: $K^{C}_{T-1}=\frac{K^{C}_{T}-I^{C}_{T-1}}{(1-\delta^{C})}=\frac{\bar{K}^{C}-I^{C}_{T-1}}{(1-\delta^{C})}$
+%\item Use Equation \ref{eqn:opt_i} and the value of $q^{C}_{T-1}$ to find $I^{C}_{T-1}$ (and $K^{C}_{T-1}$ given the law of motion relationship.
+%\item Given $w_{T-1}$ we can use the FOC for labor demand to find $EL^{C}_{T-1}$
+%\item Given $i_{T-1}$ we can use Equation \ref{eqn:foc_k} to solve for $q^{C}_{T-2}$ 
+%\item We then repeat the above steps until we work back to $t=0$.
+%\end{enumerate}
+%
+%
+%
+%To solve for any stationary non-steady-state equilibrium time path of the economy from an arbitrary current state to the steady state, we follow the time path iteration (TPI) method of \citet{AuerbachKotlikoff:1987}. Appendix \ref{AppNonSSsolve} details how to solve for the non-steady-state equilibrium time path using the TPI method. The approach is to choose an arbitrary time path for the stationary aggregate capital stock $\hat{K}_t$, stationary aggregate labor $\hat{L}_t$, and total bequests received $\hat{BQ}_{j,t}$ for each type $j$. This initial guess of a path implies arbitrary beliefs that violate the rational expectations requirement. We then solve for households' optimal decisions given the time paths of those variables, which decisions imply new time paths of those variables. We then update the time path as a convex combination of the initial guess and the new implied path. Figure \ref{FigKpathTPI} shows the equilibrium time path of the aggregate capital stock for the calibration described in Table \ref{TabExogVars} for $T=160$ periods starting from an initial distribution of savings in which $b_{j,s,1}=\bm{\bar{\Gamma}}$ for all $j$ and $s$ in the case that no policy experiment takes place. The initial capital stock $\hat{K}_1$ is not at the steady state $\bar{K}$ because the initial population distribution is not at the steady-state.
+%
+%
+%
+%
 
-\newpage
 \section{Solving for stationary non-steady-state equilibrium by time path iteration}\label{AppNonSSsolve}
 
   \setcounter{equation}{0}
