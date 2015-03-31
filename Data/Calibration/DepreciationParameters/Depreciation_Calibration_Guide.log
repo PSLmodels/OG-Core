@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  31 JAN 2015 16:20
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  30 MAR 2015 21:55
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -807,34 +807,29 @@ LaTeX Warning: No \author given.
 
 {/usr/local/texlive/2012/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
 [2]
-Overfull \hbox (66.05838pt too wide) in paragraph at lines 229--230
-[][] 
- []
-
-[3]
-Overfull \hbox (18.04654pt too wide) in paragraph at lines 247--280
+Overfull \hbox (18.04654pt too wide) in paragraph at lines 249--282
  [][][] 
  []
 
-[4] [5]
-Underfull \hbox (badness 10000) in paragraph at lines 318--321
+[3] [4] [5]
+Underfull \hbox (badness 10000) in paragraph at lines 320--323
 
  []
 
-[6] [7]
-Overfull \hbox (1.97893pt too wide) in paragraph at lines 359--360
+[6]
+Overfull \hbox (1.97893pt too wide) in paragraph at lines 361--362
 []\OT1/cmr/m/n/10.95 NOTE THAT FOR THESE DATA, IN-DUS-TRY CODES ARE NOT GIVEN, 
 SO WE'LL
  []
 
-[8]
-Overfull \hbox (11.54941pt too wide) in paragraph at lines 382--382
+[7]
+Overfull \hbox (11.54941pt too wide) in paragraph at lines 384--384
 []\OT1/cmr/bx/n/12 Allocating the BEA Cap-i-tal Stock Across Cor-po-rate and No
 n-corporate
  []
 
 
-Overfull \hbox (67.07407pt too wide) in paragraph at lines 389--390
+Overfull \hbox (67.07407pt too wide) in paragraph at lines 391--392
 \OT1/cmr/m/n/10.95 We ap-por-tion fixed as-sets of type $\OML/cmm/m/it/10.95 i$
  \OT1/cmr/m/n/10.95 held in in-dus-try $\OML/cmm/m/it/10.95 m$ \OT1/cmr/m/n/10.
 95 across tax treat-ment, $\OML/cmm/m/it/10.95 C \OMS/cmsy/m/n/10.95 2 \OT1/cmr
@@ -842,129 +837,133 @@ Overfull \hbox (67.07407pt too wide) in paragraph at lines 389--390
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 397--398
+Underfull \hbox (badness 10000) in paragraph at lines 399--400
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 401--402
+Underfull \hbox (badness 10000) in paragraph at lines 403--404
 
  []
 
-[9]
-Underfull \hbox (badness 10000) in paragraph at lines 414--415
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 418--419
+[8]
+Underfull \hbox (badness 10000) in paragraph at lines 416--417
 
  []
 
 
-Overfull \hbox (0.11246pt too wide) in paragraph at lines 422--423
+Underfull \hbox (badness 10000) in paragraph at lines 420--421
+
+ []
+
+
+Overfull \hbox (0.11246pt too wide) in paragraph at lines 424--425
 \OT1/cmr/m/n/10.95 NOR IN-DUS-TRY HAS THE SAME DIS-TRI-BU-TION OF CAP-I-TAL TYP
 E/OWNERSHIP
  []
 
 
-Overfull \hbox (15.29921pt too wide) in paragraph at lines 424--427
+Overfull \hbox (15.29921pt too wide) in paragraph at lines 426--429
 \OT1/cmr/m/n/10.95 mea-sured by the BEA (e.g. in Stan-dard Fixed As-set Ta-ble 
 4.1). That is, $[][] [][] [][] [][] =
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 424--427
+Underfull \hbox (badness 10000) in paragraph at lines 426--429
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 437--438
+Underfull \hbox (badness 10000) in paragraph at lines 439--440
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 441--442
+Overfull \vbox (1.37257pt too high) has occurred while \output is active []
+
+
+[9]
+Underfull \hbox (badness 10000) in paragraph at lines 443--444
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 449--450
+Underfull \hbox (badness 10000) in paragraph at lines 451--452
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 455--456
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 459--462
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 485--488
 
  []
 
 [10]
-Underfull \hbox (badness 10000) in paragraph at lines 453--454
+Underfull \hbox (badness 10000) in paragraph at lines 489--492
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 457--460
+Underfull \hbox (badness 10000) in paragraph at lines 493--494
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 483--486
+Underfull \hbox (badness 10000) in paragraph at lines 497--498
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 487--490
+Underfull \hbox (badness 10000) in paragraph at lines 515--516
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 519--520
 
  []
 
 [11]
-Underfull \hbox (badness 10000) in paragraph at lines 491--492
+Underfull \hbox (badness 10000) in paragraph at lines 543--544
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 495--496
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 513--514
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 517--518
+Underfull \hbox (badness 10000) in paragraph at lines 547--548
 
  []
 
 [12]
-Underfull \hbox (badness 10000) in paragraph at lines 541--542
+Underfull \hbox (badness 10000) in paragraph at lines 588--591
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 545--546
+Underfull \hbox (badness 10000) in paragraph at lines 603--604
 
  []
 
 [13]
-Underfull \hbox (badness 10000) in paragraph at lines 586--589
+Underfull \hbox (badness 10000) in paragraph at lines 607--608
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 601--602
-
- []
-
-[14]
-Underfull \hbox (badness 10000) in paragraph at lines 605--606
+Underfull \hbox (badness 10000) in paragraph at lines 622--623
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 620--621
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 624--625
+Underfull \hbox (badness 10000) in paragraph at lines 626--627
 
  []
 
@@ -973,12 +972,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 624--625
 LaTeX Warning: Empty `thebibliography' environment on input line 6.
 
 )
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 629.
- [15]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 629.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 631.
+ [14]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 631.
  (./Depreciation_Calibration_Guide.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 629.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 629.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 631.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 631.
 Package rerunfilecheck Info: File `Depreciation_Calibration_Guide.out' has not 
 changed.
 (rerunfilecheck)             Checksum: 821E143D0F98CA70E15AD42FBC32C454;1437.
@@ -986,16 +985,16 @@ changed.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 629.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 631.
  ) 
 Here is how much of TeX's memory you used:
- 16737 strings out of 493488
- 293651 string characters out of 3141326
- 399750 words of memory out of 3000000
- 19651 multiletter control sequences out of 15000+200000
+ 16384 strings out of 493488
+ 287422 string characters out of 3141326
+ 368557 words of memory out of 3000000
+ 19298 multiletter control sequences out of 15000+200000
  14555 words of font info for 55 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
- 62i,26n,57p,1864b,2812s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 56i,9n,55p,1864b,370s stack positions out of 5000i,500n,10000p,200000b,50000s
 pdfTeX warning (dest): name{Hfootnote.4} has been referenced but does not exi
 st, replaced by a fixed one
 
@@ -1004,6 +1003,9 @@ pdfTeX warning (dest): name{Hfootnote.3} has been referenced but does not exist
 
 pdfTeX warning (dest): name{Hfootnote.2} has been referenced but does not exist
 , replaced by a fixed one
+
+pdfTeX warning (dest): name{table.caption.3} has been referenced but does not e
+xist, replaced by a fixed one
 
 pdfTeX warning (dest): name{Hfootnote.1} has been referenced but does not exist
 , replaced by a fixed one
@@ -1015,22 +1017,21 @@ usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmbxti10.pfb><
 usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></u
 sr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr
 /local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/l
-ocal/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi9.pfb></usr/loc
-al/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/local
-/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/t
-exlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/tex
-live/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texliv
-e/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/2
-012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/2012
-/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2012/
-texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2012/te
-xmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2012/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2012/texmf
--dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on Depreciation_Calibration_Guide.pdf (15 pages, 274796 bytes).
+ocal/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/loc
+al/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local
+/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/t
+exlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texl
+ive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive
+/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/20
+12/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/201
+2/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2012/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2012/te
+xmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2012/tex
+mf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+Output written on Depreciation_Calibration_Guide.pdf (14 pages, 256622 bytes).
 PDF statistics:
- 296 PDF objects out of 1000 (max. 8388607)
- 257 compressed objects within 3 object streams
+ 289 PDF objects out of 1000 (max. 8388607)
+ 252 compressed objects within 3 object streams
  68 named destinations out of 1000 (max. 500000)
  157 words of extra memory for PDF output out of 10000 (max. 10000000)
 

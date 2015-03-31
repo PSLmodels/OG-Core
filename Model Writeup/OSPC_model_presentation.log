@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  30 MAR 2015 11:59
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  30 MAR 2015 22:10
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1005,45 +1005,111 @@ File: listings.cfg 2007/02/22 1.4 listings configuration
 ))
 Package: listings 2007/02/22 1.4 (Carsten Heinz)
 
+(/usr/local/texlive/2012/texmf/tex/latex/tikz.sty
+(/usr/local/texlive/2012/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
+Package: pgf 2008/01/15 v2.10 (rcs-revision 1.12)
+
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/modules/pgfmoduleshapes.cod
+e.tex
+File: pgfmoduleshapes.code.tex 2010/09/09  (rcs-revision 1.13)
+\pgfnodeparttextbox=\box55
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/modules/pgfmoduleplot.code.
+tex
+File: pgfmoduleplot.code.tex 2010/10/22  (rcs-revision 1.8)
+)
+(/usr/local/texlive/2012/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
+-0-65.sty
+Package: pgfcomp-version-0-65 2007/07/03 v2.10 (rcs-revision 1.7)
+\pgf@nodesepstart=\dimen190
+\pgf@nodesepend=\dimen191
+)
+(/usr/local/texlive/2012/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
+-1-18.sty
+Package: pgfcomp-version-1-18 2007/07/23 v2.10 (rcs-revision 1.1)
+))
+(/usr/local/texlive/2012/texmf-dist/tex/latex/pgf/utilities/pgffor.sty
+(/usr/local/texlive/2012/texmf-dist/tex/latex/pgf/utilities/pgfkeys.sty
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex)
+) (/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex
+Package: pgffor 2010/03/23 v2.10 (rcs-revision 1.18)
+\pgffor@iter=\dimen192
+\pgffor@skip=\dimen193
+\pgffor@stack=\toks45
+\pgffor@toks=\toks46
+))
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tikz.cod
+e.tex
+Package: tikz 2010/10/13 v2.10 (rcs-revision 1.76)
+
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/libraries/pgflibraryplothan
+dlers.code.tex
+File: pgflibraryplothandlers.code.tex 2010/05/31 v2.10 (rcs-revision 1.15)
+\pgf@plot@mark@count=\count162
+\pgfplotmarksize=\dimen194
+)
+\tikz@lastx=\dimen195
+\tikz@lasty=\dimen196
+\tikz@lastxsaved=\dimen197
+\tikz@lastysaved=\dimen198
+\tikzleveldistance=\dimen199
+\tikzsiblingdistance=\dimen200
+\tikz@figbox=\box56
+\tikz@tempbox=\box57
+\tikztreelevel=\count163
+\tikznumberofchildren=\count164
+\tikznumberofcurrentchild=\count165
+\tikz@fig@count=\count166
+
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/modules/pgfmodulematrix.cod
+e.tex
+File: pgfmodulematrix.code.tex 2010/08/24  (rcs-revision 1.4)
+\pgfmatrixcurrentrow=\count167
+\pgfmatrixcurrentcolumn=\count168
+\pgf@matrix@numberofcolumns=\count169
+)
+\tikz@expandcount=\count170
+
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibrarytopaths.code.tex
+File: tikzlibrarytopaths.code.tex 2008/06/17 v2.10 (rcs-revision 1.2)
+)))
 (/usr/local/texlive/2012/texmf-dist/tex/latex/threeparttable/threeparttable.sty
 Package: threeparttable 2003/06/13  v 3.0
-\@tempboxb=\box55
+\@tempboxb=\box58
 ) (/usr/local/texlive/2012/texmf-dist/tex/latex/multirow/multirow.sty
-\bigstrutjot=\dimen190
+\bigstrutjot=\dimen201
 )
 (/usr/local/texlive/2012/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count162
-\float@exts=\toks45
-\float@box=\box56
-\@float@everytoks=\toks46
-\@floatcapt=\box57
+\c@float@type=\count171
+\float@exts=\toks47
+\float@box=\box59
+\@float@everytoks=\toks48
+\@floatcapt=\box60
 )
 (/usr/local/texlive/2012/texmf/tex/latex/multicol.sty
 Package: multicol 2004/02/14 v1.6e multicolumn formatting (FMi)
-\c@tracingmulticols=\count163
-\mult@box=\box58
-\multicol@leftmargin=\dimen191
-\c@unbalance=\count164
-\c@collectmore=\count165
-\doublecol@number=\count166
-\multicoltolerance=\count167
-\multicolpretolerance=\count168
-\full@width=\dimen192
-\page@free=\dimen193
-\premulticols=\dimen194
-\postmulticols=\dimen195
+\c@tracingmulticols=\count172
+\mult@box=\box61
+\multicol@leftmargin=\dimen202
+\c@unbalance=\count173
+\c@collectmore=\count174
+\doublecol@number=\count175
+\multicoltolerance=\count176
+\multicolpretolerance=\count177
+\full@width=\dimen203
+\page@free=\dimen204
+\premulticols=\dimen205
+\postmulticols=\dimen206
 \multicolsep=\skip60
 \multicolbaselineskip=\skip61
-\partial@page=\box59
-\last@line=\box60
-\mult@rightbox=\box61
-\mult@grightbox=\box62
-\mult@gfirstbox=\box63
-\mult@firstbox=\box64
-\@tempa=\box65
-\@tempa=\box66
-\@tempa=\box67
+\partial@page=\box62
+\last@line=\box63
+\mult@rightbox=\box64
+\mult@grightbox=\box65
+\mult@gfirstbox=\box66
+\mult@firstbox=\box67
 \@tempa=\box68
 \@tempa=\box69
 \@tempa=\box70
@@ -1058,20 +1124,23 @@ Package: multicol 2004/02/14 v1.6e multicolumn formatting (FMi)
 \@tempa=\box79
 \@tempa=\box80
 \@tempa=\box81
-\c@columnbadness=\count169
-\c@finalcolumnbadness=\count170
-\last@try=\dimen196
-\multicolovershoot=\dimen197
-\multicolundershoot=\dimen198
-\mult@nat@firstbox=\box82
-\colbreak@box=\box83
+\@tempa=\box82
+\@tempa=\box83
+\@tempa=\box84
+\c@columnbadness=\count178
+\c@finalcolumnbadness=\count179
+\last@try=\dimen207
+\multicolovershoot=\dimen208
+\multicolundershoot=\dimen209
+\mult@nat@firstbox=\box85
+\colbreak@box=\box86
 )
 (/usr/local/texlive/2012/texmf/tex/latex/natbib.sty
 Package: natbib 1998/07/14 6.8c (PWD)
 \bibhang=\skip62
 \bibsep=\skip63
 LaTeX Info: Redefining \cite on input line 467.
-\c@NAT@ctr=\count171
+\c@NAT@ctr=\count180
 
 
 Package natbib Warning: If you use both babel and natbib
@@ -1082,14 +1151,14 @@ Package: caption 2012/02/19 v3.2f Customizing captions (AR)
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/caption/caption3.sty
 Package: caption3 2012/01/12 v1.4b caption3 kernel (AR)
-\captionmargin=\dimen199
-\captionmargin@=\dimen200
-\captionwidth=\dimen201
-\caption@indent=\dimen202
-\caption@parindent=\dimen203
-\caption@hangindent=\dimen204
+\captionmargin=\dimen210
+\captionmargin@=\dimen211
+\captionwidth=\dimen212
+\caption@indent=\dimen213
+\caption@parindent=\dimen214
+\caption@hangindent=\dimen215
 )
-\c@ContinuedFloat=\count172
+\c@ContinuedFloat=\count181
 Package caption Info: beamer document class.
 Package caption Info: float package is loaded.
 Package caption Info: hyperref package is loaded.
@@ -1100,8 +1169,8 @@ Package caption Info: threeparttable package is loaded.
 )
 (/usr/local/texlive/2012/texmf-dist/tex/latex/caption/subcaption.sty
 Package: subcaption 2012/01/12 v1.1d Sub-captions (AR)
-\c@subfigure=\count173
-\c@subtable=\count174
+\c@subfigure=\count182
+\c@subtable=\count183
 )
 (/usr/local/texlive/2012/texmf-dist/tex/latex/tools/delarray.sty
 Package: delarray 1994/03/14 v1.01 array delimiter package (DPC)
@@ -1124,62 +1193,62 @@ Package: ifdraft 2008/08/11 v1.3 Detect class options draft and final (HO)
 )
 (/usr/local/texlive/2012/texmf-dist/tex/latex/tools/calc.sty
 Package: calc 2007/08/22 v4.3 Infix arithmetic (KKT,FJ)
-\calc@Acount=\count175
-\calc@Bcount=\count176
-\calc@Adimen=\dimen205
-\calc@Bdimen=\dimen206
+\calc@Acount=\count184
+\calc@Bcount=\count185
+\calc@Adimen=\dimen216
+\calc@Bdimen=\dimen217
 \calc@Askip=\skip64
 \calc@Bskip=\skip65
 LaTeX Info: Redefining \setlength on input line 76.
 LaTeX Info: Redefining \addtolength on input line 77.
-\calc@Ccount=\count177
+\calc@Ccount=\count186
 \calc@Cskip=\skip66
 )
 (/usr/local/texlive/2012/texmf-dist/tex/latex/animate/animfp.sty
 Package: animfp 2009/07/23 fixed point addition for animate.sty
-\afp@xs=\count178
-\afp@xia=\count179
-\afp@xib=\count180
-\afp@xfa=\count181
-\afp@xfb=\count182
-\afp@rega=\count183
-\afp@regb=\count184
-\afp@regs=\count185
+\afp@xs=\count187
+\afp@xia=\count188
+\afp@xib=\count189
+\afp@xfa=\count190
+\afp@xfb=\count191
+\afp@rega=\count192
+\afp@regb=\count193
+\afp@regs=\count194
 )
 (/usr/local/texlive/2012/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count186
-\scratchdimen=\dimen207
-\scratchbox=\box84
-\nofMPsegments=\count187
-\nofMParguments=\count188
-\everyMPshowfont=\toks47
-\MPscratchCnt=\count189
-\MPscratchDim=\dimen208
-\MPnumerator=\count190
-\makeMPintoPDFobject=\count191
-\everyMPtoPDFconversion=\toks48
+\scratchcounter=\count195
+\scratchdimen=\dimen218
+\scratchbox=\box87
+\nofMPsegments=\count196
+\nofMParguments=\count197
+\everyMPshowfont=\toks49
+\MPscratchCnt=\count198
+\MPscratchDim=\dimen219
+\MPnumerator=\count199
+\makeMPintoPDFobject=\count200
+\everyMPtoPDFconversion=\toks50
 )
-\@anim@@fields=\count192
-\@anim@@ocgs=\count193
-\@anim@@posterocgs=\count194
-\@anim@box=\box85
-\@anim@tmpdima=\dimen209
-\@anim@tmpdimb=\dimen210
-\@anim@num=\count195
-\@anim@curframe=\count196
-\@anim@curframe@zb=\count197
-\@anim@resize=\count198
-\@anim@skipfram=\count199
-\@anim@mulframecnt=\count200
+\@anim@@fields=\count201
+\@anim@@ocgs=\count202
+\@anim@@posterocgs=\count203
+\@anim@box=\box88
+\@anim@tmpdima=\dimen220
+\@anim@tmpdimb=\dimen221
+\@anim@num=\count204
+\@anim@curframe=\count205
+\@anim@curframe@zb=\count206
+\@anim@resize=\count207
+\@anim@skipfram=\count208
+\@anim@mulframecnt=\count209
 \@anim@@tmlnfile=\read2
-\@anim@tmpcnt=\count201
-\c@@anim@ltxcnt=\count202
-\@anim@curlayer=\count203
-\@anim@lineno=\count204
-\@anim@curfield=\count205
-\@anim@begin=\toks49
-\@anim@end=\toks50
+\@anim@tmpcnt=\count210
+\c@@anim@ltxcnt=\count211
+\@anim@curlayer=\count212
+\@anim@lineno=\count213
+\@anim@curfield=\count214
+\@anim@begin=\toks51
+\@anim@end=\toks52
 ) (./OSPC_model_presentation.aux
 
 LaTeX Warning: Label `tab:addlabel' multiply defined.
@@ -1187,21 +1256,21 @@ LaTeX Warning: Label `tab:addlabel' multiply defined.
 )
 \openout1 = `OSPC_model_presentation.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 76.
-LaTeX Font Info:    ... okay on input line 76.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 76.
-LaTeX Font Info:    ... okay on input line 76.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 76.
-LaTeX Font Info:    ... okay on input line 76.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 76.
-LaTeX Font Info:    ... okay on input line 76.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 76.
-LaTeX Font Info:    ... okay on input line 76.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 76.
-LaTeX Font Info:    ... okay on input line 76.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 76.
-LaTeX Font Info:    ... okay on input line 76.
-LaTeX Font Info:    Try loading font information for T1+phv on input line 76.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 77.
+LaTeX Font Info:    ... okay on input line 77.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 77.
+LaTeX Font Info:    ... okay on input line 77.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 77.
+LaTeX Font Info:    ... okay on input line 77.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 77.
+LaTeX Font Info:    ... okay on input line 77.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 77.
+LaTeX Font Info:    ... okay on input line 77.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 77.
+LaTeX Font Info:    ... okay on input line 77.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 77.
+LaTeX Font Info:    ... okay on input line 77.
+LaTeX Font Info:    Try loading font information for T1+phv on input line 77.
  (/usr/local/texlive/2012/texmf-dist/tex/latex/psnfss/t1phv.fd
 File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
 )
@@ -1255,8 +1324,8 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 ABD: EveryShipout initializing macros
-\AtBeginShipoutBox=\box86
-Package hyperref Info: Link coloring OFF on input line 76.
+\AtBeginShipoutBox=\box89
+Package hyperref Info: Link coloring OFF on input line 77.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2010/04/30 v2.40 Cross-referencing by name of section
@@ -1264,58 +1333,58 @@ Package: nameref 2010/04/30 v2.40 Cross-referencing by name of section
 (/usr/local/texlive/2012/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
-\c@section@level=\count206
+\c@section@level=\count215
 )
-LaTeX Info: Redefining \ref on input line 76.
-LaTeX Info: Redefining \pageref on input line 76.
-LaTeX Info: Redefining \nameref on input line 76.
+LaTeX Info: Redefining \ref on input line 77.
+LaTeX Info: Redefining \pageref on input line 77.
+LaTeX Info: Redefining \nameref on input line 77.
 
 (./OSPC_model_presentation.out) (./OSPC_model_presentation.out)
 \@outlinefile=\write5
 \openout5 = `OSPC_model_presentation.out'.
 
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
-(Font)                  OT1/cmr/m/n --> OT1/cmss/m/n on input line 76.
+(Font)                  OT1/cmr/m/n --> OT1/cmss/m/n on input line 77.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
-(Font)                  OT1/cmr/bx/n --> OT1/cmss/bx/n on input line 76.
+(Font)                  OT1/cmr/bx/n --> OT1/cmss/bx/n on input line 77.
 \symnumbers=\mathgroup6
 \sympureletters=\mathgroup7
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `normal'
-(Font)                  OT1/cmss/m/n --> T1/ptm/m/n on input line 76.
-LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 76.
+(Font)                  OT1/cmss/m/n --> T1/ptm/m/n on input line 77.
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 77.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
-(Font)                  OT1/cmr/bx/n --> T1/phv/bx/n on input line 76.
+(Font)                  OT1/cmr/bx/n --> T1/phv/bx/n on input line 77.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
-(Font)                  OT1/cmr/bx/n --> T1/phv/bx/n on input line 76.
-LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 76.
+(Font)                  OT1/cmr/bx/n --> T1/phv/bx/n on input line 77.
+LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 77.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
-(Font)                  OT1/cmss/m/n --> T1/phv/m/n on input line 76.
+(Font)                  OT1/cmss/m/n --> T1/phv/m/n on input line 77.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/cmss/bx/n --> T1/phv/m/n on input line 76.
-LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 76.
+(Font)                  OT1/cmss/bx/n --> T1/phv/m/n on input line 77.
+LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 77.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
-(Font)                  OT1/cmr/m/it --> T1/phv/m/it on input line 76.
+(Font)                  OT1/cmr/m/it --> T1/phv/m/it on input line 77.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
-(Font)                  OT1/cmr/bx/it --> T1/phv/m/it on input line 76.
-LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 76.
+(Font)                  OT1/cmr/bx/it --> T1/phv/m/it on input line 77.
+LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 77.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
-(Font)                  OT1/cmtt/m/n --> T1/pcr/m/n on input line 76.
+(Font)                  OT1/cmtt/m/n --> T1/pcr/m/n on input line 77.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/cmtt/m/n --> T1/pcr/m/n on input line 76.
+(Font)                  OT1/cmtt/m/n --> T1/pcr/m/n on input line 77.
 LaTeX Font Info:    Overwriting symbol font `numbers' in version `bold'
-(Font)                  T1/phv/m/n --> T1/phv/bx/n on input line 76.
+(Font)                  T1/phv/m/n --> T1/phv/bx/n on input line 77.
 LaTeX Font Info:    Overwriting symbol font `pureletters' in version `bold'
-(Font)                  T1/phv/m/it --> T1/phv/bx/it on input line 76.
+(Font)                  T1/phv/m/it --> T1/phv/bx/it on input line 77.
 LaTeX Font Info:    Overwriting math alphabet `\mathrm' in version `bold'
-(Font)                  OT1/cmss/bx/n --> T1/ptm/bx/n on input line 76.
+(Font)                  OT1/cmss/bx/n --> T1/ptm/bx/n on input line 77.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
-(Font)                  T1/phv/bx/n --> T1/phv/bx/n on input line 76.
+(Font)                  T1/phv/bx/n --> T1/phv/bx/n on input line 77.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  T1/phv/m/n --> T1/phv/bx/n on input line 76.
+(Font)                  T1/phv/m/n --> T1/phv/bx/n on input line 77.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
-(Font)                  T1/phv/m/it --> T1/phv/bx/it on input line 76.
+(Font)                  T1/phv/m/it --> T1/phv/bx/it on input line 77.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  T1/pcr/m/n --> T1/pcr/bx/n on input line 76.
+(Font)                  T1/pcr/m/n --> T1/pcr/bx/n on input line 77.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/beamer/translator/dicts/translato
 r-basic-dictionary/translator-basic-dictionary-English.dict
@@ -1341,8 +1410,8 @@ Dictionary: translator-numbers-dictionary, Language: English
 r-theorem-dictionary/translator-theorem-dictionary-English.dict
 Dictionary: translator-theorem-dictionary, Language: English 
 )
-LaTeX Info: Redefining \includegraphics on input line 76.
-\c@lstlisting=\count207
+LaTeX Info: Redefining \includegraphics on input line 77.
+\c@lstlisting=\count216
 Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: End \AtBeginDocument code.
 
@@ -1350,16 +1419,16 @@ Package caption Info: End \AtBeginDocument code.
 pdftex/updmap/pdftex.map}
 
 ]
-LaTeX Font Info:    Try loading font information for OMS+phv on input line 108.
+LaTeX Font Info:    Try loading font information for OMS+phv on input line 109.
 
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/psnfss/omsphv.fd
 File: omsphv.fd 
 )
 LaTeX Font Info:    Font shape `OMS/phv/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 108.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 109.
 LaTeX Font Info:    Font shape `OMS/phv/m/n' in size <9> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 108.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 109.
  [2
 
 ] [3
@@ -1372,23 +1441,23 @@ LaTeX Font Info:    Font shape `OMS/phv/m/n' in size <9> not available
 ] [6
 
 ]
-LaTeX Font Info:    Try loading font information for U+msa on input line 203.
+LaTeX Font Info:    Try loading font information for U+msa on input line 204.
  (/usr/local/texlive/2012/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2009/06/22 v3.00 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 203.
+LaTeX Font Info:    Try loading font information for U+msb on input line 204.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 )
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <9> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 203.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 204.
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <6> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 203.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 204.
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <5> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 203.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 204.
 
-Overfull \vbox (3.89313pt too high) detected at line 203
+Overfull \vbox (3.89313pt too high) detected at line 204
  []
 
 [7
@@ -1397,104 +1466,106 @@ Overfull \vbox (3.89313pt too high) detected at line 203
 }) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.246 \end{frame}
+l.247 \end{frame}
                   [8
 
 ]
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10.95> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 260.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 261.
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <8> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 260.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 261.
  [9
 
 ] <images/omega_init.png, id=361, 578.16pt x 433.62pt>
 File: images/omega_init.png Graphic file (type png)
 
 <use images/omega_init.png>
-Package pdftex.def Info: images/omega_init.png used on input line 266.
+Package pdftex.def Info: images/omega_init.png used on input line 267.
 (pdftex.def)             Requested size: 158.99008pt x 119.24255pt.
  <images/omega_ss.png, id=363, 578.16pt x 433.62pt>
 File: images/omega_ss.png Graphic file (type png)
 
 <use images/omega_ss.png>
-Package pdftex.def Info: images/omega_ss.png used on input line 266.
+Package pdftex.def Info: images/omega_ss.png used on input line 267.
 (pdftex.def)             Requested size: 158.99008pt x 119.24255pt.
 
-Overfull \hbox (10.69029pt too wide) in paragraph at lines 266--266
+Overfull \hbox (10.69029pt too wide) in paragraph at lines 267--267
 [][]  
  []
 
 [10
 
- <./images/omega_init.png> <./images/omega_ss.png>]
-Overfull \hbox (23.58337pt too wide) in paragraph at lines 285--285
+ <./images/omega_init.png> <./images/omega_ss.png>] [11
+
+]
+Overfull \hbox (23.58337pt too wide) in paragraph at lines 322--322
 []  
  []
 
-[11
-
-] [12
+[12
 
 ] [13
 
+] [14
+
 ]
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <10.95> not available
-(Font)              Font shape `T1/phv/b/n' tried instead on input line 321.
- <images/ability_log_2D.png, id=498, 578.16pt x 433.62pt>
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 358.
+ <images/ability_log_2D.png, id=531, 578.16pt x 433.62pt>
 File: images/ability_log_2D.png Graphic file (type png)
 
 <use images/ability_log_2D.png>
-Package pdftex.def Info: images/ability_log_2D.png used on input line 321.
+Package pdftex.def Info: images/ability_log_2D.png used on input line 358.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-Overfull \vbox (2.43619pt too high) detected at line 321
+Overfull \vbox (2.43619pt too high) detected at line 358
  []
 
-[14
+[15
 
- <./images/ability_log_2D.png>] [15
+ <./images/ability_log_2D.png>] [16
 
-] [16
+] [17
 
 ]
-<images/EffTaxLog.pdf, id=594, 531.73436pt x 414.35pt>
+<images/EffTaxLog.pdf, id=627, 531.73436pt x 414.35pt>
 File: images/EffTaxLog.pdf Graphic file (type pdf)
 
 <use images/EffTaxLog.pdf>
-Package pdftex.def Info: images/EffTaxLog.pdf used on input line 357.
+Package pdftex.def Info: images/EffTaxLog.pdf used on input line 394.
 (pdftex.def)             Requested size: 146.22334pt x 113.94344pt.
 
-<images/EffTaxNoLog.pdf, id=595, 548.37851pt x 417.85309pt>
+<images/EffTaxNoLog.pdf, id=628, 548.37851pt x 417.85309pt>
 File: images/EffTaxNoLog.pdf Graphic file (type pdf)
 
 <use images/EffTaxNoLog.pdf>
-Package pdftex.def Info: images/EffTaxNoLog.pdf used on input line 357.
+Package pdftex.def Info: images/EffTaxNoLog.pdf used on input line 394.
 (pdftex.def)             Requested size: 150.80037pt x 114.90675pt.
- [17
+ [18
 
- <./images/EffTaxLog.pdf> <./images/EffTaxNoLog.pdf>] [18
-
-] [19
+ <./images/EffTaxLog.pdf> <./images/EffTaxNoLog.pdf>] [19
 
 ] [20
 
+] [21
+
 ]
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <10> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 411.
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 448.
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <7> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 411.
- [21
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 448.
+ [22
 
 ]
 LaTeX Font Info:    Font shape `T1/phv/m/it' in size <14.4> not available
-(Font)              Font shape `T1/phv/m/sl' tried instead on input line 424.
- [22
-
-] [23
+(Font)              Font shape `T1/phv/m/sl' tried instead on input line 461.
+ [23
 
 ] [24
 
 ] [25
+
+] [26
 
 ]
 \tf@nav=\write6
@@ -1506,11 +1577,11 @@ LaTeX Font Info:    Font shape `T1/phv/m/it' in size <14.4> not available
 \tf@snm=\write8
 \openout8 = `OSPC_model_presentation.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 461.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 461.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 498.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 498.
  (./OSPC_model_presentation.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 461.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 461.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 498.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 498.
 Package rerunfilecheck Info: File `OSPC_model_presentation.out' has not changed
 .
 (rerunfilecheck)             Checksum: 1C48A9F622641DFF728D6FDD3FFD4AE7;273.
@@ -1518,16 +1589,16 @@ Package rerunfilecheck Info: File `OSPC_model_presentation.out' has not changed
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 461.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 498.
  ) 
 Here is how much of TeX's memory you used:
- 20022 strings out of 493488
- 360954 string characters out of 3141326
- 470383 words of memory out of 3000000
- 22743 multiletter control sequences out of 15000+200000
- 64419 words of font info for 90 fonts, out of 3000000 for 9000
+ 22315 strings out of 493488
+ 410254 string characters out of 3141326
+ 516447 words of memory out of 3000000
+ 24988 multiletter control sequences out of 15000+200000
+ 65636 words of font info for 91 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
- 49i,21n,53p,478b,825s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 50i,21n,60p,478b,1384s stack positions out of 5000i,500n,10000p,200000b,50000s
 pdfTeX warning (dest): name{elliptic} has been referenced but does not exist,
  replaced by a fixed one
 
@@ -1543,17 +1614,18 @@ ve/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/local/texlive
 2/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/local/texlive/2012/
 texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/local/texlive/2012/t
 exmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/local/texlive/2012/tex
-mf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2012/texm
-f-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2012/texmf-
-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2012/texmf-di
-st/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2012/texmf-dist
-/fonts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2012/texmf-dist/fonts/
-type1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/u
-rw/helvetic/uhvro8a.pfb>
-Output written on OSPC_model_presentation.pdf (25 pages, 291670 bytes).
+mf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/local/texlive/2012/texmf
+-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2012/texmf-
+dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texlive/2012/texmf-di
+st/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2012/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmsy9.pfb></usr/local/texlive/2012/texmf-dist/f
+onts/type1/urw/helvetic/uhvb8a.pfb></usr/local/texlive/2012/texmf-dist/fonts/ty
+pe1/urw/helvetic/uhvr8a.pfb></usr/local/texlive/2012/texmf-dist/fonts/type1/urw
+/helvetic/uhvro8a.pfb>
+Output written on OSPC_model_presentation.pdf (26 pages, 301748 bytes).
 PDF statistics:
- 1002 PDF objects out of 1200 (max. 8388607)
- 917 compressed objects within 10 object streams
- 67 named destinations out of 1000 (max. 500000)
+ 1038 PDF objects out of 1200 (max. 8388607)
+ 951 compressed objects within 10 object streams
+ 70 named destinations out of 1000 (max. 500000)
  170 words of extra memory for PDF output out of 10000 (max. 10000000)
 

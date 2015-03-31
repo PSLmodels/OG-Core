@@ -39,6 +39,40 @@
 
 \noindent\noindent The parameter $\beta\in(0,1)$ represents the individual's rate of time preference.  The quantities $c_{j,s,t}$, $n_{j,s,t},$ and $b_{j,s,t}$ are total consumption of a composite consumption good, labor supply, and asset holdings, respectively.  The parameter $\sigma \geq 1$ is the coefficient of relative risk aversion, $\upsilon$ is a measure of the elasticity of labor supply, and $\tilde{l}$ is the total time endowment of the individual.  The utility weight for the disutility of labor is given by the age-dependent parameters $\chi^{n}_{s}$.  The parameter $g_y$ is a constant growth rate of labor augmenting technological progress, which we explain in more detail in the firm's problem .\footnote{The term with the growth rate $e^{g_y t(1-\sigma)}$ must be included in the period utility function because consumption and bequests will be growing at rate $g_y$ and this term stationarizes the individual Euler equation by making the marginal disutility of labor grow at the same rate as the marginal benefits of consumption and bequests.  This is the same balanced growth technique as that used in \citet{MertensRavn:2011}.}  The disutility of labor term in the utility function looks nonstandard, but is simply the upper quadrant of an ellipse that closely approximates the standard constant relative risk aversion utility of leisure functional form.\footnote{Appendix \ref{AppEllipseUtil} describes how the elliptical function closely matches the more standard utility of leisure of the form $\frac{(\tilde{l}-n_{j,s,t})^{1-\eta} - 1}{1-\eta}$. The parameters $b$ and $k$ are the scale and shift parameters of describing the elliptical form.  This elliptical utility function forces an interior solution that automatically respects both the upper and lower bound of labor supply, which greatly simplifies the computation of equilibrium.  For a more in-depth discussion see \citet{EvanPhillips:2015}} The utility weight on bequests (both intentional and accidental) is given by $\chi^{b}$.
 
+ \begin{figure}[htb]\centering \captionsetup{width=4.0in}
+\caption{\label{fig:hh_tree}\textbf{Summary of the Individual Problem}}
+\begin{tikzpicture}
+\tikzstyle{every node}=[auto,every node/.style={rectangle,draw, text centered, text width=1.3cm,minimum height=0.8cm },node distance=3cm]
+\tikzset{%
+level 1/.style={sibling distance = 2cm, level distance=3cm,edge from parent path={(\tikzparentnode.south) -- (\tikzchildnode.north)}},
+level 2/.style={sibling distance = 1cm,level distance=3cm}
+%level 4/.style={sibling distance = 1.1cm,level distance=3cm}
+}
+  \node (0){$U_{j,s,t}$}
+    child {node (1) {$\tilde{c}_{j,s,t}$}
+    child {node {}}
+    child {node {}}
+    child {node {}}
+    child {node (2){$c_{i,j,s,t}, i=1,...,I$}   
+child {node (3) {}}
+            child {node {}}
+            child {node {}}
+            child {node {$X_{m,t}, m=1,..,M$}       
+             child {node {$X_{m,c,t} \ \ $}}
+             child {node {$\ \ X_{m,nc,t}$}}}
+             child {node {}}
+                        }
+                  }
+child {node {$n_{j,s,t}$}}
+child {node {$bq_{j,s,t}$}} ;
+
+\node at (0) [xshift=+2.6cm,right,draw=none, text width=6cm]{Utility, $U_{j,s,t}$, is a CRRA function of consumption, leisure, and bequests};
+\node at (1) [xshift=+4.5cm, right,draw=none, text width=6cm]{Composite consumption, $\tilde{c}_{j,s,t}$, is a Stone-Geary function of distinct consumption goods};
+\node at (2) [xshift=+3.0cm, right,draw=none, text width=6cm]{Consumption goods, $c_{i,j,s,t}$, are determined by a fixed coefficient mix of production goods };
+\node at (3) [xshift=+5.0cm, right,draw=none, text width=6cm]{Production goods for each industry, $X_{m,t}$, are determined by a CES function of production goods from each sector};
+\end{tikzpicture}
+\end{figure}
+
 
     Households choose consumption of a composite consumption good, $c_{j,s+u,t+u}$, labor supply, $n_{j,s+u,t+u},$ and asset holdings, $b_{j,s+u+1,t+u+1}$, to maximize the expected, discounted, lifetime utility subject to their per-period budget constraint.  Total consumption of the composite good is made up of discretionary consumption, $\tilde{c}_{j,s,t}$, and minimum required purchases of each consumption good, $\bar{c}_{i,s}$.  Thus the consumer's choice is over $\tilde{c}_{j,s,t}$, which together with the minimum required purchases equal determine total composite consumption: $c_{j,s,t}=\tilde{c}_{j,s,t}+\sum_{i=1}^{I}c_{i,s}$.  It is therefore the case that there minimum required purchases affect the household's ability to smooth consumption over time.  We discuss the composite consumption good in more detail in Section \ref{sec:subutil}.  This composite good is age dependent, thus the price of the composite consumption good varies with age $s$.  We denote the gross-of-tax price of the composite consumption good for households of age $s$ in period $t$ as $\tilde{p}_{s,t}$ and the gross-of-tax price for good $i$ at time $t$ as $p_{i,t}$. The households' per period budget constraint is:
     

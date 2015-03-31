@@ -24,6 +24,7 @@
 \usepackage{amsmath,amssymb}
 \usepackage{colortbl}
 \usepackage{listings}
+\usepackage{tikz}
 \usepackage{array}
 \usepackage{threeparttable}
 \usepackage{multirow}
@@ -264,6 +265,42 @@ An Open Source Model \\ for Dynamic Revenue Estimates}
   \includegraphics[scale=.275]{images/omega_init.png}
   \includegraphics[scale=.275]{images/omega_ss.png}
   \end{frame}
+
+
+ \begin{frame}{Summary of the Consumer's Problem}
+ \label{hh_summary}
+%\caption{\label{fig:hh_tree}\textbf{Summary of the Individual Problem}}
+\begin{tikzpicture}
+\tikzstyle{every node}=[auto,every node/.style={rectangle,draw,text centered, text width=1.3cm,minimum height=0.8cm },node distance=3cm]
+\tikzset{%
+level 1/.style={sibling distance = 1cm, level distance=1.5cm,edge from parent path={(\tikzparentnode.south) -- (\tikzchildnode.north)}},
+level 2/.style={sibling distance = 1cm,level distance=1.5cm}
+}
+  \node (0){$U_{j,s,t}$}
+    child {node (1) {$\tilde{c}_{j,s,t}$}
+    child {node {}}
+    child {node {}}
+    child {node {}}
+    child {node (2){$c_{i,j,s,t}, i=1,...,I$}   
+child {node (3) {}}
+            child {node {}}
+            child {node {}}
+            child {node {$X_{m,t}, m=1,..,M$}       
+             child {node {$X_{m,c,t} \ \ $}}
+             child {node {$\ \ X_{m,nc,t}$}}}
+             child {node {}}
+                        }
+                  }
+child {node {$n_{j,s,t}$}}
+child {node {$bq_{j,s,t}$}} ;
+
+\node at (0) [xshift=+3.5cm,right,draw=none, text width=4cm]{\footnotesize $U$, is a CRRA function };
+\node at (1) [xshift=+4.5cm, right,draw=none, text width=4cm]{\footnotesize $\tilde{c}_{j,s,t}$ is a Stone-Geary function};
+\node at (2) [xshift=+3.0cm, right,draw=none, text width=4cm]{\footnotesize $c_{i,j,s,t}$, determined by a fixed coefficient function };
+\node at (3) [xshift=+5.0cm, right,draw=none, text width=4cm]{\footnotesize $X_{m,t}$, are determined by a CES function};
+\end{tikzpicture}
+\end{frame}
+ 
 
   \begin{frame}{Households -- Utility Function}\label{Utility Function}
     Utility from Consumption, Leisure and Bequests \\

@@ -2,9 +2,9 @@
 \contentsline {chapter}{\numberline {2}Households}{6}{chapter.2}
 \contentsline {section}{\numberline {2.1}Demographics}{6}{section.2.1}
 \contentsline {section}{\numberline {2.2}Households}{7}{section.2.2}
-\contentsline {subsection}{\numberline {2.2.1}Household's Subutility Function}{10}{subsection.2.2.1}
+\contentsline {subsection}{\numberline {2.2.1}Household's Subutility Function}{11}{subsection.2.2.1}
 \contentsline {subsection}{\numberline {2.2.2}Relating Consumption and Production Goods}{13}{subsection.2.2.2}
-\contentsline {subsection}{\numberline {2.2.3}Preferences for Corporate vs. Noncorporate Goods}{13}{subsection.2.2.3}
+\contentsline {subsection}{\numberline {2.2.3}Preferences for Corporate vs. Noncorporate Goods}{14}{subsection.2.2.3}
 \contentsline {chapter}{\numberline {3}Firms}{17}{chapter.3}
 \contentsline {section}{\numberline {3.1}The Firm's Problem}{17}{section.3.1}
 \contentsline {subsection}{\numberline {3.1.1}The Value of the Firm}{17}{subsection.3.1.1}

@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  30 MAR 2015 16:52
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  30 MAR 2015 22:11
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -244,6 +244,279 @@ Package: verbatim 2003/08/22 v1.5q LaTeX2e package for verbatim enhancements
 \verbatim@line=\toks31
 \verbatim@in@stream=\read1
 )
+(/usr/local/texlive/2012/texmf/tex/latex/tikz.sty
+(/usr/local/texlive/2012/texmf-dist/tex/latex/pgf/basiclayer/pgf.sty
+(/usr/local/texlive/2012/texmf-dist/tex/latex/pgf/utilities/pgfrcs.sty
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/utilities/pgfutil-common.te
+x
+\pgfutil@everybye=\toks32
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/utilities/pgfutil-latex.def
+\pgfutil@abb=\box31
+(/usr/local/texlive/2012/texmf-dist/tex/latex/ms/everyshi.sty
+Package: everyshi 2001/05/15 v3.00 EveryShipout Package (MS)
+))
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/utilities/pgfrcs.code.tex
+Package: pgfrcs 2010/10/25 v2.10 (rcs-revision 1.24)
+))
+Package: pgf 2008/01/15 v2.10 (rcs-revision 1.12)
+(/usr/local/texlive/2012/texmf-dist/tex/latex/pgf/basiclayer/pgfcore.sty
+(/usr/local/texlive/2012/texmf-dist/tex/latex/pgf/systemlayer/pgfsys.sty
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/systemlayer/pgfsys.code.tex
+Package: pgfsys 2010/06/30 v2.10 (rcs-revision 1.37)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex
+\pgfkeys@pathtoks=\toks33
+\pgfkeys@temptoks=\toks34
+
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/utilities/pgfkeysfiltered.c
+ode.tex
+\pgfkeys@tmptoks=\toks35
+))
+\pgf@x=\dimen131
+\pgf@y=\dimen132
+\pgf@xa=\dimen133
+\pgf@ya=\dimen134
+\pgf@xb=\dimen135
+\pgf@yb=\dimen136
+\pgf@xc=\dimen137
+\pgf@yc=\dimen138
+\w@pgf@writea=\write3
+\r@pgf@reada=\read2
+\c@pgf@counta=\count107
+\c@pgf@countb=\count108
+\c@pgf@countc=\count109
+\c@pgf@countd=\count110
+
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/systemlayer/pgf.cfg
+File: pgf.cfg 2008/05/14  (rcs-revision 1.7)
+)
+Package pgfsys Info: Driver file for pgf: pgfsys-pdftex.def on input line 900.
+
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-pdftex.d
+ef
+File: pgfsys-pdftex.def 2009/05/22  (rcs-revision 1.26)
+
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/systemlayer/pgfsys-common-p
+df.def
+File: pgfsys-common-pdf.def 2008/05/19  (rcs-revision 1.10)
+)))
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/systemlayer/pgfsyssoftpath.
+code.tex
+File: pgfsyssoftpath.code.tex 2008/07/18  (rcs-revision 1.7)
+\pgfsyssoftpath@smallbuffer@items=\count111
+\pgfsyssoftpath@bigbuffer@items=\count112
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/systemlayer/pgfsysprotocol.
+code.tex
+File: pgfsysprotocol.code.tex 2006/10/16  (rcs-revision 1.4)
+)) (/usr/local/texlive/2012/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2007/01/21 v2.11 LaTeX color extensions (UK)
+
+(/usr/local/texlive/2012/texmf-dist/tex/latex/latexconfig/color.cfg
+File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
+)
+Package xcolor Info: Driver file: pdftex.def on input line 225.
+LaTeX Info: Redefining \color on input line 702.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1337.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1341.
+Package xcolor Info: Model `RGB' extended on input line 1353.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1355.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1356.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1357.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1358.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1359.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1360.
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/basiclayer/pgfcore.code.tex
+Package: pgfcore 2010/04/11 v2.10 (rcs-revision 1.7)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/math/pgfmath.code.tex
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/math/pgfmathcalc.code.tex
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/math/pgfmathutil.code.tex)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/math/pgfmathparser.code.tex
+\pgfmath@dimen=\dimen139
+\pgfmath@count=\count113
+\pgfmath@box=\box32
+\pgfmath@toks=\toks36
+\pgfmath@stack@operand=\toks37
+\pgfmath@stack@operation=\toks38
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.code.
+tex
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.basic
+.code.tex)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.trigo
+nometric.code.tex)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.rando
+m.code.tex)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.compa
+rison.code.tex)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.base.
+code.tex)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.round
+.code.tex)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/math/pgfmathfunctions.misc.
+code.tex)))
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/math/pgfmathfloat.code.tex
+\c@pgfmathroundto@lastzeros=\count114
+))
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepoints.co
+de.tex
+File: pgfcorepoints.code.tex 2010/04/09  (rcs-revision 1.20)
+\pgf@picminx=\dimen140
+\pgf@picmaxx=\dimen141
+\pgf@picminy=\dimen142
+\pgf@picmaxy=\dimen143
+\pgf@pathminx=\dimen144
+\pgf@pathmaxx=\dimen145
+\pgf@pathminy=\dimen146
+\pgf@pathmaxy=\dimen147
+\pgf@xx=\dimen148
+\pgf@xy=\dimen149
+\pgf@yx=\dimen150
+\pgf@yy=\dimen151
+\pgf@zx=\dimen152
+\pgf@zy=\dimen153
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathconst
+ruct.code.tex
+File: pgfcorepathconstruct.code.tex 2010/08/03  (rcs-revision 1.24)
+\pgf@path@lastx=\dimen154
+\pgf@path@lasty=\dimen155
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathusage
+.code.tex
+File: pgfcorepathusage.code.tex 2008/04/22  (rcs-revision 1.12)
+\pgf@shorten@end@additional=\dimen156
+\pgf@shorten@start@additional=\dimen157
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/basiclayer/pgfcorescopes.co
+de.tex
+File: pgfcorescopes.code.tex 2010/09/08  (rcs-revision 1.34)
+\pgfpic=\box33
+\pgf@hbox=\box34
+\pgf@layerbox@main=\box35
+\pgf@picture@serial@count=\count115
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/basiclayer/pgfcoregraphicst
+ate.code.tex
+File: pgfcoregraphicstate.code.tex 2008/04/22  (rcs-revision 1.9)
+\pgflinewidth=\dimen158
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretransform
+ations.code.tex
+File: pgfcoretransformations.code.tex 2009/06/10  (rcs-revision 1.11)
+\pgf@pt@x=\dimen159
+\pgf@pt@y=\dimen160
+\pgf@pt@temp=\dimen161
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/basiclayer/pgfcorequick.cod
+e.tex
+File: pgfcorequick.code.tex 2008/10/09  (rcs-revision 1.3)
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreobjects.c
+ode.tex
+File: pgfcoreobjects.code.tex 2006/10/11  (rcs-revision 1.2)
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepathproce
+ssing.code.tex
+File: pgfcorepathprocessing.code.tex 2008/10/09  (rcs-revision 1.8)
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/basiclayer/pgfcorearrows.co
+de.tex
+File: pgfcorearrows.code.tex 2008/04/23  (rcs-revision 1.11)
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreshade.cod
+e.tex
+File: pgfcoreshade.code.tex 2008/11/23  (rcs-revision 1.13)
+\pgf@max=\dimen162
+\pgf@sys@shading@range@num=\count116
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreimage.cod
+e.tex
+File: pgfcoreimage.code.tex 2010/03/25  (rcs-revision 1.16)
+
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/basiclayer/pgfcoreexternal.
+code.tex
+File: pgfcoreexternal.code.tex 2010/09/01  (rcs-revision 1.17)
+\pgfexternal@startupbox=\box36
+))
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/basiclayer/pgfcorelayers.co
+de.tex
+File: pgfcorelayers.code.tex 2010/08/27  (rcs-revision 1.2)
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/basiclayer/pgfcoretranspare
+ncy.code.tex
+File: pgfcoretransparency.code.tex 2008/01/17  (rcs-revision 1.2)
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/basiclayer/pgfcorepatterns.
+code.tex
+File: pgfcorepatterns.code.tex 2009/07/02  (rcs-revision 1.3)
+)))
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/modules/pgfmoduleshapes.cod
+e.tex
+File: pgfmoduleshapes.code.tex 2010/09/09  (rcs-revision 1.13)
+\pgfnodeparttextbox=\box37
+)
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/modules/pgfmoduleplot.code.
+tex
+File: pgfmoduleplot.code.tex 2010/10/22  (rcs-revision 1.8)
+)
+(/usr/local/texlive/2012/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
+-0-65.sty
+Package: pgfcomp-version-0-65 2007/07/03 v2.10 (rcs-revision 1.7)
+\pgf@nodesepstart=\dimen163
+\pgf@nodesepend=\dimen164
+)
+(/usr/local/texlive/2012/texmf-dist/tex/latex/pgf/compatibility/pgfcomp-version
+-1-18.sty
+Package: pgfcomp-version-1-18 2007/07/23 v2.10 (rcs-revision 1.1)
+))
+(/usr/local/texlive/2012/texmf-dist/tex/latex/pgf/utilities/pgffor.sty
+(/usr/local/texlive/2012/texmf-dist/tex/latex/pgf/utilities/pgfkeys.sty
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/utilities/pgfkeys.code.tex)
+) (/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/utilities/pgffor.code.tex
+Package: pgffor 2010/03/23 v2.10 (rcs-revision 1.18)
+\pgffor@iter=\dimen165
+\pgffor@skip=\dimen166
+\pgffor@stack=\toks39
+\pgffor@toks=\toks40
+))
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/frontendlayer/tikz/tikz.cod
+e.tex
+Package: tikz 2010/10/13 v2.10 (rcs-revision 1.76)
+
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/libraries/pgflibraryplothan
+dlers.code.tex
+File: pgflibraryplothandlers.code.tex 2010/05/31 v2.10 (rcs-revision 1.15)
+\pgf@plot@mark@count=\count117
+\pgfplotmarksize=\dimen167
+)
+\tikz@lastx=\dimen168
+\tikz@lasty=\dimen169
+\tikz@lastxsaved=\dimen170
+\tikz@lastysaved=\dimen171
+\tikzleveldistance=\dimen172
+\tikzsiblingdistance=\dimen173
+\tikz@figbox=\box38
+\tikz@tempbox=\box39
+\tikztreelevel=\count118
+\tikznumberofchildren=\count119
+\tikznumberofcurrentchild=\count120
+\tikz@fig@count=\count121
+
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/modules/pgfmodulematrix.cod
+e.tex
+File: pgfmodulematrix.code.tex 2010/08/24  (rcs-revision 1.4)
+\pgfmatrixcurrentrow=\count122
+\pgfmatrixcurrentcolumn=\count123
+\pgf@matrix@numberofcolumns=\count124
+)
+\tikz@expandcount=\count125
+
+(/usr/local/texlive/2012/texmf-dist/tex/generic/pgf/frontendlayer/tikz/librarie
+s/tikzlibrarytopaths.code.tex
+File: tikzlibrarytopaths.code.tex 2008/06/17 v2.10 (rcs-revision 1.2)
+)))
 (/usr/local/texlive/2012/texmf-dist/tex/latex/placeins/placeins.sty
 Package: placeins 2005/04/18  v 2.2
 )
@@ -296,14 +569,14 @@ Package: hycolor 2011/01/30 v1.7 Color options for hyperref/bookmark (HO)
 (/usr/local/texlive/2012/texmf-dist/tex/latex/oberdiek/kvoptions.sty
 Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
 )
-\@linkdim=\dimen131
-\Hy@linkcounter=\count107
-\Hy@pagecounter=\count108
+\@linkdim=\dimen174
+\Hy@linkcounter=\count126
+\Hy@pagecounter=\count127
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/hyperref/pd1enc.def
 File: pd1enc.def 2012/05/13 v6.82q Hyperref: PDFDocEncoding definition (HO)
 )
-\Hy@SavedSpaceFactor=\count109
+\Hy@SavedSpaceFactor=\count128
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/latexconfig/hyperref.cfg
 File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
@@ -315,16 +588,16 @@ Package hyperref Info: Plain pages OFF on input line 4077.
 Package hyperref Info: Backreferencing OFF on input line 4082.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4300.
-\c@Hy@tempcnt=\count110
+\c@Hy@tempcnt=\count129
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/url/url.sty
 \Urlmuskip=\muskip11
 Package: url 2006/04/12  ver 3.3  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 4653.
-\Fld@menulength=\count111
-\Field@Width=\dimen132
-\Fld@charsize=\dimen133
+\Fld@menulength=\count130
+\Field@Width=\dimen175
+\Fld@charsize=\dimen176
 Package hyperref Info: Hyper figures OFF on input line 5773.
 Package hyperref Info: Link nesting OFF on input line 5778.
 Package hyperref Info: Hyper index ON on input line 5781.
@@ -334,17 +607,17 @@ Package hyperref Info: Link coloring with OCG OFF on input line 5798.
 Package hyperref Info: PDF/A mode OFF on input line 5803.
 LaTeX Info: Redefining \ref on input line 5843.
 LaTeX Info: Redefining \pageref on input line 5847.
-\Hy@abspage=\count112
-\c@Item=\count113
-\c@Hfootnote=\count114
+\Hy@abspage=\count131
+\c@Item=\count132
+\c@Hfootnote=\count133
 )
 
 Package hyperref Message: Driver (autodetected): hpdftex.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/hyperref/hpdftex.def
 File: hpdftex.def 2012/05/13 v6.82q Hyperref driver for pdfTeX
-\Fld@listcount=\count115
-\c@bookmark@seq@number=\count116
+\Fld@listcount=\count134
+\c@bookmark@seq@number=\count135
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty
 Package: rerunfilecheck 2011/04/15 v1.7 Rerun checks for auxiliary files (HO)
@@ -353,7 +626,7 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 )
 \Hy@SectionHShift=\skip53
 )
-Package hyperref Info: Option `colorlinks' set `true' on input line 22.
+Package hyperref Info: Option `colorlinks' set `true' on input line 23.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/tools/bm.sty
 Package: bm 2004/02/26 v1.1c Bold Symbol Support (DPC/FMi)
@@ -366,12 +639,12 @@ LaTeX Info: Redefining \bm on input line 204.
 (/usr/local/texlive/2012/texmf-dist/tex/latex/base/makeidx.sty
 Package: makeidx 2000/03/29 v1.0m Standard LaTeX package
 )
-\c@theorem=\count117
-\c@definition=\count118
-\c@derivation=\count119
-\c@proposition=\count120
-\@indexfile=\write3
-\openout3 = `OSPC_BYU_Dyn.idx'.
+\c@theorem=\count136
+\c@definition=\count137
+\c@derivation=\count138
+\c@proposition=\count139
+\@indexfile=\write4
+\openout4 = `OSPC_BYU_Dyn.idx'.
 
 
 Writing index file OSPC_BYU_Dyn.idx
@@ -388,20 +661,20 @@ LaTeX Warning: Label `eqn:mix_cons_price' multiply defined.
 ) (./Government_description.aux) (./Eqm_description.aux) (./Model_soln.aux))
 \openout1 = `OSPC_BYU_Dyn.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 57.
-LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
 
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
@@ -443,17 +716,17 @@ Package caption Info: hyperref package is loaded.
 Package caption Info: End \AtBeginDocument code.
 (/usr/local/texlive/2012/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count121
-\scratchdimen=\dimen134
-\scratchbox=\box31
-\nofMPsegments=\count122
-\nofMParguments=\count123
-\everyMPshowfont=\toks32
-\MPscratchCnt=\count124
-\MPscratchDim=\dimen135
-\MPnumerator=\count125
-\makeMPintoPDFobject=\count126
-\everyMPtoPDFconversion=\toks33
+\scratchcounter=\count140
+\scratchdimen=\dimen177
+\scratchbox=\box40
+\nofMPsegments=\count141
+\nofMParguments=\count142
+\everyMPshowfont=\toks41
+\MPscratchCnt=\count143
+\MPscratchDim=\dimen178
+\MPnumerator=\count144
+\makeMPintoPDFobject=\count145
+\everyMPtoPDFconversion=\toks42
 ) (/usr/local/texlive/2012/texmf-dist/tex/latex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
 
@@ -470,22 +743,24 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 Configuring pdfsync
-\PDFSYNC@ut=\write4
-\openout4 = `OSPC_BYU_Dyn.pdfsync'.
+\PDFSYNC@ut=\write5
+\openout5 = `OSPC_BYU_Dyn.pdfsync'.
 
-\PDFSYNCf@li@=\count127
-\PDFSYNC@rder=\count128
+\PDFSYNCf@li@=\count146
+\PDFSYNC@rder=\count147
 **** pdfsync.sty: Synchronizing at \everypar
-\PDFSYNCeveryp@r=\toks34
+\PDFSYNCeveryp@r=\toks43
 **** pdfsync.sty: Synchronizing at \everymath
-\PDFSYNCeverym@th=\toks35
+\PDFSYNCeverym@th=\toks44
 **** pdfsync.sty: Synchronizing at \everyhbox
-\PDFSYNCeveryhb@x=\toks36
+\PDFSYNCeveryhb@x=\toks45
 **** pdfsync.sty: Synchronizing at \everyvbox
-\PDFSYNCeveryvb@x=\toks37
+\PDFSYNCeveryvb@x=\toks46
 **** pdfsync.sty: started
-\AtBeginShipoutBox=\box32
-Package hyperref Info: Link coloring ON on input line 57.
+
+ABD: EveryShipout initializing macros
+\AtBeginShipoutBox=\box41
+Package hyperref Info: Link coloring ON on input line 58.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/hyperref/nameref.sty
 Package: nameref 2010/04/30 v2.40 Cross-referencing by name of section
@@ -493,22 +768,22 @@ Package: nameref 2010/04/30 v2.40 Cross-referencing by name of section
 (/usr/local/texlive/2012/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
-\c@section@level=\count129
+\c@section@level=\count148
 )
-LaTeX Info: Redefining \ref on input line 57.
-LaTeX Info: Redefining \pageref on input line 57.
-LaTeX Info: Redefining \nameref on input line 57.
+LaTeX Info: Redefining \ref on input line 58.
+LaTeX Info: Redefining \pageref on input line 58.
+LaTeX Info: Redefining \nameref on input line 58.
 
 (./OSPC_BYU_Dyn.out) (./OSPC_BYU_Dyn.out)
-\@outlinefile=\write5
-\openout5 = `OSPC_BYU_Dyn.out'.
+\@outlinefile=\write6
+\openout6 = `OSPC_BYU_Dyn.out'.
 
-LaTeX Font Info:    Try loading font information for U+msa on input line 77.
+LaTeX Font Info:    Try loading font information for U+msa on input line 78.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2009/06/22 v3.00 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 77.
+LaTeX Font Info:    Try loading font information for U+msb on input line 78.
 
 (/usr/local/texlive/2012/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2009/06/22 v3.00 AMS symbols B
@@ -519,40 +794,74 @@ arning (ext4): destination with the same identifier (name{page.1}) has been alr
 eady used, duplicate ignored
 <to be read again> 
                    \relax 
-l.87   \end{abstract}
-                      [1] (./OSPC_BYU_Dyn.toc)
-\tf@toc=\write6
-\openout6 = `OSPC_BYU_Dyn.toc'.
+l.88   \end{abstract}
+                     
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[1] (./OSPC_BYU_Dyn.toc)
+\tf@toc=\write7
+\openout7 = `OSPC_BYU_Dyn.toc'.
 
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has 
 been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.97 \listoftables
+l.98 \listoftables
                         % List of Tables and List of Figures will be placed
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
 [1
 
 ] (./OSPC_BYU_Dyn.lot)
-\tf@lot=\write7
-\openout7 = `OSPC_BYU_Dyn.lot'.
+\tf@lot=\write8
+\openout8 = `OSPC_BYU_Dyn.lot'.
 
- [2
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[2
 
 ] (./OSPC_BYU_Dyn.lof)
-\tf@lof=\write8
-\openout8 = `OSPC_BYU_Dyn.lof'.
+\tf@lof=\write9
+\openout9 = `OSPC_BYU_Dyn.lof'.
 
- [3
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[3
 
 ]
 Chapter 1.
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
 [4
 
-] [5]
+]
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[5]
 \openout2 = `Household_description.aux'.
 
  (./Household_description.tex
 Chapter 2.
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
 [6
 
 
@@ -561,34 +870,49 @@ Chapter 2.
 LaTeX Warning: Reference `AppEllipseUtil' on page 7 undefined on input line 40.
 
 
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
 [7]
-Overfull \hbox (85.83458pt too wide) in paragraph at lines 63--63
-[][][] 
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
  []
 
 [8]
-Overfull \hbox (13.76065pt too wide) in paragraph at lines 73--73
+Overfull \hbox (85.83458pt too wide) in paragraph at lines 97--97
 [][][] 
  []
 
 
-Overfull \hbox (29.52264pt too wide) in paragraph at lines 80--80
-[][][] 
- []
-
-
-Overfull \hbox (33.72261pt too wide) in paragraph at lines 87--87
-[][][] 
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
  []
 
 [9]
-Overfull \hbox (7.4332pt too wide) in paragraph at lines 106--106
+Overfull \hbox (13.76065pt too wide) in paragraph at lines 107--107
 [][][] 
  []
 
 
-Overfull \hbox (60.62753pt too wide) in paragraph at lines 121--121
+Overfull \hbox (29.52264pt too wide) in paragraph at lines 114--114
 [][][] 
+ []
+
+
+Overfull \hbox (33.72261pt too wide) in paragraph at lines 121--121
+[][][] 
+ []
+
+
+Overfull \hbox (7.4332pt too wide) in paragraph at lines 140--140
+[][][] 
+ []
+
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
  []
 
 [10pdfTeX warning (ext4): destination with the same identifier (name{equation.2
@@ -596,50 +920,89 @@ Overfull \hbox (60.62753pt too wide) in paragraph at lines 121--121
 
 \PDFSYNC@@utput ...\PDFSYNCship@ut@ld \box \@cclv 
                                                   
-l.132 
-      pdfTeX warning (ext4): destination with the same identifier (name{equatio
-n.2.2.12}) has been already used, duplicate ignored
+l.148     \end{equation}
+                        pdfTeX warning (ext4): destination with the same identi
+fier (name{equation.2.2.12}) has been already used, duplicate ignored
 
 \PDFSYNC@@utput ...\PDFSYNCship@ut@ld \box \@cclv 
                                                   
-l.132 
-      pdfTeX warning (ext4): destination with the same identifier (name{equatio
-n.2.2.12}) has been already used, duplicate ignored
-
-\PDFSYNC@@utput ...\PDFSYNCship@ut@ld \box \@cclv 
-                                                  
-l.132 
-      ]
-
-LaTeX Warning: Reference `Eqcagg' on page 11 undefined on input line 133.
-
-
-LaTeX Warning: Reference `Eqcagg' on page 11 undefined on input line 139.
-
-[11]
-
-LaTeX Warning: Reference `cons_solve' on page 12 undefined on input line 171.
-
-[12] [13]
-Overfull \hbox (63.36575pt too wide) in paragraph at lines 224--224
+l.148     \end{equation}
+                        ]
+Overfull \hbox (60.62753pt too wide) in paragraph at lines 155--155
 [][][] 
  []
 
 
-Overfull \hbox (39.04268pt too wide) in paragraph at lines 240--240
+LaTeX Warning: Reference `Eqcagg' on page 11 undefined on input line 167.
+
+
+LaTeX Warning: Reference `Eqcagg' on page 11 undefined on input line 173.
+
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[11pdfTeX warning (ext4): destination with the same identifier (name{equation.2
+.2.12}) has been already used, duplicate ignored
+
+\PDFSYNC@@utput ...\PDFSYNCship@ut@ld \box \@cclv 
+                                                  
+l.175     \begin{equation}
+                           \label{eqn:cons_lagrangian}]
+
+LaTeX Warning: Reference `cons_solve' on page 12 undefined on input line 205.
+
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[12]
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[13]
+Overfull \hbox (63.36575pt too wide) in paragraph at lines 258--258
 [][][] 
+ []
+
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
  []
 
 [14]
-Overfull \hbox (210.0188pt too wide) in paragraph at lines 282--282
+Overfull \hbox (39.04268pt too wide) in paragraph at lines 274--274
 [][][] 
  []
 
-[15]) [16]
+
+Overfull \hbox (210.0188pt too wide) in paragraph at lines 316--316
+[][][] 
+ []
+
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[15])
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[16]
 \openout2 = `Firms_description.aux'.
 
  (./Firms_description.tex
 Chapter 3.
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
 [17
 
 
@@ -649,12 +1012,32 @@ Overfull \hbox (66.69452pt too wide) in paragraph at lines 52--52
 [][][] 
  []
 
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
 [18]
 Overfull \hbox (13.20996pt too wide) in paragraph at lines 104--104
 [][][] 
  []
 
-[19] [20] [21]
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[19]
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[20]
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[21]
 Overfull \hbox (3.86404pt too wide) in paragraph at lines 184--184
 [][][] 
  []
@@ -669,22 +1052,52 @@ Overfull \hbox (59.98904pt too wide) in paragraph at lines 215--215
 [][][] 
  []
 
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
 [22]
 Overfull \hbox (11.05524pt too wide) detected at line 237
 [][] \OT1/cmr/m/n/12 = (1 \OMS/cmsy/m/n/12 ^^@ \OML/cmm/m/it/12 ^^M\OT1/cmr/m/n
 /12 )[][] [][]
  []
 
-[23]) [24]
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[23])
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[24]
 \openout2 = `Government_description.aux'.
 
  (./Government_description.tex
 Chapter 4.
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
 [25
 
 
 
-] [26]) [27]
+]
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[26])
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[27]
 \openout2 = `Eqm_description.aux'.
 
  (./Eqm_description.tex
@@ -696,7 +1109,12 @@ Overfull \hbox (0.7908pt too wide) in paragraph at lines 18--18
 
 
 Underfull \hbox (badness 10000) in paragraph at lines 23--23
-[][][][]|[][]\OT1/cmr/bx/n/12 Sta-tion-ary vari-able def-i-ni-
+[][][][]|[]\OT1/cmr/bx/n/12 Sta-tion-ary vari-able def-i-ni-
+ []
+
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
  []
 
 [28
@@ -730,6 +1148,11 @@ LaTeX Warning: Reference `EqFOCrate' on page 29 undefined on input line 101.
 
 Underfull \hbox (badness 10000) in paragraph at lines 108--109
 
+ []
+
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
  []
 
 [29]
@@ -802,6 +1225,11 @@ Overfull \hbox (72.20467pt too wide) in paragraph at lines 214--215
 [][]$\OT1/cmr/m/n/12 .
  []
 
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
 [30]
 
 LaTeX Warning: Reference `EqMktClrCapStat' on page 31 undefined on input line 2
@@ -818,19 +1246,28 @@ LaTeX Warning: Reference `EqFOCwageStat' on page 31 undefined on input line 222
 
 LaTeX Warning: Reference `EqFOCrate' on page 31 undefined on input line 222.
 
-<images/KpathTPI.png, id=511, 578.16pt x 433.62pt>
+<images/KpathTPI.png, id=529, 578.16pt x 433.62pt>
 File: images/KpathTPI.png Graphic file (type png)
  <use images/KpathTPI.png>
 Package pdftex.def Info: images/KpathTPI.png used on input line 226.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-<images/LpathTPI.png, id=513, 578.16pt x 433.62pt>
+<images/LpathTPI.png, id=531, 578.16pt x 433.62pt>
 File: images/LpathTPI.png Graphic file (type png)
  <use images/LpathTPI.png>
 Package pdftex.def Info: images/LpathTPI.png used on input line 231.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 )
-[31] [32 <./images/KpathTPI.png> <./images/LpathTPI.png>]
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[31]
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[32 <./images/KpathTPI.png> <./images/LpathTPI.png>]
 \openout2 = `Model_soln.aux'.
 
  (./Model_soln.tex
@@ -841,13 +1278,23 @@ File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <12> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 31.
- [33
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[33
 
 
 
 ]
 
 LaTeX Warning: Reference `EqSavDist' on page 34 undefined on input line 153.
+
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
 
 [34]
 
@@ -889,6 +1336,11 @@ LaTeX Warning: Reference `EqEulerLabStat' on page 35 undefined on input line 17
 LaTeX Warning: Reference `EqEulerSavEpSstat' on page 35 undefined on input line
  170.
 
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
 [35]
 
 LaTeX Warning: Reference `EqEulerLabStat' on page 36 undefined on input line 18
@@ -901,6 +1353,11 @@ LaTeX Warning: Reference `EqEulerSavStat' on page 36 undefined on input line 18
 
 LaTeX Warning: Reference `EqEulerSavEpSstat' on page 36 undefined on input line
  186.
+
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
 
 [36]
 
@@ -915,12 +1372,17 @@ LaTeX Warning: Reference `EqEulerSavStat' on page 37 undefined on input line 21
 LaTeX Warning: Reference `EqEulerSavEpSstat' on page 37 undefined on input line
  214.
 
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
 [37]
 Underfull \hbox (badness 2088) in paragraph at lines 238--238
 [][][][]|[]\OT1/cmr/bx/n/12 Di-a-gram of TPI so-lu-tion method
  []
 
-<images/TPIdiag.pdf, id=598, 513.57974pt x 675.72452pt>
+<images/TPIdiag.pdf, id=615, 513.57974pt x 675.72452pt>
 File: images/TPIdiag.pdf Graphic file (type pdf)
 
 <use images/TPIdiag.pdf>
@@ -939,7 +1401,17 @@ it/12 ; []; [][][][][][]$ \OT1/cmr/m/n/12 and $[][][][]\OML/cmm/m/it/12 ; []; [
 ][][][][][]$\OT1/cmr/m/n/12 . 
  []
 
-[38] [39 <./images/TPIdiag.pdf>]
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[38]
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[39 <./images/TPIdiag.pdf>]
 
 LaTeX Warning: Reference `TabExogVars' on page 40 undefined on input line 287.
 
@@ -966,19 +1438,34 @@ LaTeX Warning: Reference `EqEulerSavStat' on page 40 undefined on input line 30
 LaTeX Warning: Reference `EqEulerSavEpSstat' on page 40 undefined on input line
  300.
 
-[40]) [41]
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[40])
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[41]
 Chapter 7.
 
-Overfull \hbox (7.2837pt too wide) in paragraph at lines 180--180
+Overfull \hbox (7.2837pt too wide) in paragraph at lines 181--181
 [][][]\OT1/cmr/bx/n/17.28 Characteristics of ex-oge-nous pop-u-la-tion growth
  []
 
 
-LaTeX Warning: Reference `SecPopDyn' on page 42 undefined on input line 182.
+LaTeX Warning: Reference `SecPopDyn' on page 42 undefined on input line 183.
 
 
-Overfull \hbox (3.74713pt too wide) in paragraph at lines 215--215
+Overfull \hbox (3.74713pt too wide) in paragraph at lines 216--216
 [][][] 
+ []
+
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
  []
 
 [42
@@ -989,83 +1476,129 @@ pdfTeX warning (ext4): destination with the same identifier (name{equation.7.1.
 
 \PDFSYNC@@utput ...\PDFSYNCship@ut@ld \box \@cclv 
                                                   
-l.215   \end{equation}
-                      ] [43]
-<images/FigPerTime.pdf, id=663, 618.18048pt x 338.08908pt>
+l.216   \end{equation}
+                      ]
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[43] <images/FigPerTime.pdf, id=680, 618.18048pt x 338.08908pt>
 File: images/FigPerTime.pdf Graphic file (type pdf)
 
 <use images/FigPerTime.pdf>
-Package pdftex.def Info: images/FigPerTime.pdf used on input line 282.
+Package pdftex.def Info: images/FigPerTime.pdf used on input line 283.
 (pdftex.def)             Requested size: 618.17897pt x 338.08826pt.
 
-<images/omega_init.png, id=673, 578.16pt x 433.62pt>
+<images/omega_init.png, id=690, 578.16pt x 433.62pt>
 File: images/omega_init.png Graphic file (type png)
 
 <use images/omega_init.png>
-Package pdftex.def Info: images/omega_init.png used on input line 289.
+Package pdftex.def Info: images/omega_init.png used on input line 290.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-<images/fert_rates.png, id=674, 578.16pt x 433.62pt>
+<images/fert_rates.png, id=691, 578.16pt x 433.62pt>
 File: images/fert_rates.png Graphic file (type png)
 
 <use images/fert_rates.png>
-Package pdftex.def Info: images/fert_rates.png used on input line 294.
+Package pdftex.def Info: images/fert_rates.png used on input line 295.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-<images/mort_rates.png, id=675, 578.16pt x 433.62pt>
+<images/mort_rates.png, id=692, 578.16pt x 433.62pt>
 File: images/mort_rates.png Graphic file (type png)
 
 <use images/mort_rates.png>
-Package pdftex.def Info: images/mort_rates.png used on input line 299.
-(pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
- [44] [45 <./images/FigPerTime.pdf> <./images/omega_init.png>] [46 <./images/fe
-rt_rates.png> <./images/mort_rates.png>]
-<images/imm_rates.png, id=725, 578.16pt x 433.62pt>
-File: images/imm_rates.png Graphic file (type png)
- <use images/imm_rates.png>
-Package pdftex.def Info: images/imm_rates.png used on input line 306.
+Package pdftex.def Info: images/mort_rates.png used on input line 300.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-Underfull \hbox (badness 2197) in paragraph at lines 312--312
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[44]
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[45 <./images/FigPerTime.pdf> <./images/omega_init.png>]
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[46 <./images/fert_rates.png> <./images/mort_rates.png>]
+<images/imm_rates.png, id=742, 578.16pt x 433.62pt>
+File: images/imm_rates.png Graphic file (type png)
+ <use images/imm_rates.png>
+Package pdftex.def Info: images/imm_rates.png used on input line 307.
+(pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
+
+Underfull \hbox (badness 2197) in paragraph at lines 313--313
 [][][][]|[]\OT1/cmr/bx/n/12 Fore-cast time path of pop-u-la-tion
  []
 
-<images/Population_growthrate.png, id=728, 578.16pt x 433.62pt>
+<images/Population_growthrate.png, id=745, 578.16pt x 433.62pt>
 File: images/Population_growthrate.png Graphic file (type png)
 
 <use images/Population_growthrate.png>
 Package pdftex.def Info: images/Population_growthrate.png used on input line 31
-3.
+4.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-<images/omega_ss.png, id=729, 578.16pt x 433.62pt>
+<images/omega_ss.png, id=746, 578.16pt x 433.62pt>
 File: images/omega_ss.png Graphic file (type png)
  <use images/omega_ss.png>
-Package pdftex.def Info: images/omega_ss.png used on input line 318.
+Package pdftex.def Info: images/omega_ss.png used on input line 319.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-[47 <./images/imm_rates.png>] [48 <./images/Population_growthrate.png> <./image
-s/omega_ss.png>]
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[47 <./images/imm_rates.png>]
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[48 <./images/Population_growthrate.png> <./images/omega_ss.png>]
 Missing character: There is no ‚ in font cmr12!
 Missing character: There is no Ä in font cmr12!
 Missing character: There is no ú in font cmr12!
 Missing character: There is no ‚ in font cmr12!
 Missing character: There is no Ä in font cmr12!
 Missing character: There is no ù in font cmr12!
- [49
 
-] [50] (./OSPC_BYU_Dyn.bbl [51
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[49
+
+]
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[50] (./OSPC_BYU_Dyn.bbl
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[51
 
 
 ])
 No file OSPC_BYU_Dyn.ind.
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 400.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 401.
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
 [52]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 400.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 401.
  (./OSPC_BYU_Dyn.aux (./Household_description.aux) (./Firms_description.aux) (.
 /Government_description.aux) (./Eqm_description.aux) (./Model_soln.aux))
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 400.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 400.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 401.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 401.
 Package rerunfilecheck Info: File `OSPC_BYU_Dyn.out' has not changed.
 (rerunfilecheck)             Checksum: 7F801F4255BE84E47759592D27B50306;2148.
 
@@ -1075,16 +1608,16 @@ LaTeX Warning: There were undefined references.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 400.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 401.
  ) 
 Here is how much of TeX's memory you used:
- 8605 strings out of 493488
- 127234 string characters out of 3141326
- 243420 words of memory out of 3000000
- 11468 multiletter control sequences out of 15000+200000
+ 16924 strings out of 493488
+ 295272 string characters out of 3141326
+ 390450 words of memory out of 3000000
+ 19593 multiletter control sequences out of 15000+200000
  24469 words of font info for 90 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
- 36i,37n,41p,2086b,602s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 56i,50n,63p,2086b,1831s stack positions out of 5000i,500n,10000p,200000b,50000s
 </usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
 ></usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
 </usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></
@@ -1111,10 +1644,10 @@ st/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2012/texmf-dist
 /fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2012/texmf-dist/f
 onts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2012/texmf-dist/fo
 nts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on OSPC_BYU_Dyn.pdf (54 pages, 1306731 bytes).
+Output written on OSPC_BYU_Dyn.pdf (54 pages, 1309314 bytes).
 PDF statistics:
- 898 PDF objects out of 1000 (max. 8388607)
- 772 compressed objects within 8 object streams
- 250 named destinations out of 1000 (max. 500000)
- 283 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 915 PDF objects out of 1000 (max. 8388607)
+ 789 compressed objects within 8 object streams
+ 251 named destinations out of 1000 (max. 500000)
+ 295 words of extra memory for PDF output out of 10000 (max. 10000000)
 
