@@ -83,6 +83,37 @@ An Open Source Model \\ for Dynamic Revenue Estimates}
 
 \section{Overview}
 
+\begin{frame}
+\frametitle{Objectives of the model}
+\begin{itemize}
+\item Produce year-by-year macro forecasts for current law and policy baselines
+\item Produce year-by-year dynamic revenue estimates for a wide array of tax policies
+\item Provide distributional analysis
+	\begin{itemize}
+	\item Individuals: 
+		\begin{itemize}
+		\item Across age and income groups
+		\item Annual and lifetime incidence 
+		\end{itemize}
+	\item Firms: across tax treatment and production industry 
+	\end{itemize}
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Philosophy behind OSPC's dynamics scoring model}
+\begin{itemize}
+\item Transparency
+\item Freely available and useful
+	\begin{itemize}
+	\item To policy community experts
+	\item To academics
+	\item To others through web interface
+	\end{itemize}
+\item Open dialogue about this class of model
+\end{itemize}
+\end{frame}
+
   \begin{frame}
     \frametitle{Overview of the Model}
     \begin{itemize}
@@ -124,7 +155,7 @@ An Open Source Model \\ for Dynamic Revenue Estimates}
       \vspace{2mm}
       \item Nonlinear solution of steady-state and transition path
       \vspace{2mm}
-      \item Integration of the microsimulation model
+      \item Integration of the microsimulation model for individual taxes
       \vspace{2mm}
       \item Open source
     \end{itemize}
@@ -327,7 +358,7 @@ child {node {$bq_{j,s,t}$}} ;
     Uses: Consumption, Savings and Taxes
     \begin{equation}
       \begin{split}
-        & c_{j,s,t} + b_{j,s+1,t+1} + T_{j,s,t} \leq  w_t e_{j,s}n_{j,s,t} + \left(1 + r_t\right) b_{j,s,t} + \frac{BQ_{j,t}}{\lambda_jN_t}  \\
+        & \sum_{i=1}^{I}p_{i,t}\bar{c}_{i,s} + \tilde{p}_{s,t}\tilde{c}_{j,s,t} + b_{j,s+1,t+1} + T_{j,s,t} \leq  w_t e_{j,s}n_{j,s,t} + \left(1 + r_t\right) b_{j,s,t} + \frac{BQ_{j,t}}{\lambda_jN_t}  \\
         & b_{j,1,t} = 0  \nonumber
       \end{split}
     \end{equation}
@@ -336,8 +367,8 @@ child {node {$bq_{j,s,t}$}} ;
     \end{equation}
   \end{frame}
 
-  \begin{frame}{Households -- Earnings Abilities}
-      Seven ability groups:
+  \begin{frame}{Households -- Lifetime Income Groups}
+      Seven lifetime income groups:
       \begin{itemize}
       \item Top 1\%
       \item Top 2-10\%
@@ -355,6 +386,17 @@ child {node {$bq_{j,s,t}$}} ;
          \fbox{\resizebox{3.0in}{2.25in}{\includegraphics{images/ability_log_2D.png}}} \\
          \tiny{Data: 2013 IRS data fitted}
       \end{figure}
+  \end{frame}
+
+  \begin{frame}{Households -- Tax Structure}
+    Households pay the following taxes:
+    \begin{itemize}
+    \item Income taxes on capital and labor income
+    \item Payroll taxes on labor income
+    \item Estate taxes on bequests
+    \item (Potentially) a wealth tax on the stock of assets they own
+    \item Ad valorem consumption taxes
+    \end{itemize}
   \end{frame}
 
   \begin{frame}{Households -- Tax Structure}
@@ -400,8 +442,21 @@ child {node {$bq_{j,s,t}$}} ;
          V_{t}= \max_{\{I_{u},EL_{u}\}^{\infty}_{u=t}}  \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[ \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)DIV_{u}-VN_{u}\right]\
   \end{equation}
   \end{frame}
+
+    \begin{frame}{Firms -- Taxes}
+    Firm-level taxes allow for changes to:
+\begin{itemize}
+\item Income tax rates
+\item Property tax rates
+\item Tax depreciation allowances and expensing
+\item Investment tax credits
+\item Interest deductibility
+\item Pre-pay and post-pay consumption tax systems
+\end{itemize}
+ \end{frame}
   
     \begin{frame}{Firms -- Taxes}
+    Total income taxes on the firms are given by:
   \begin{equation}
 \label{eqn:corp_tax}
 \begin{split}
@@ -410,7 +465,6 @@ TE_{t}=  \tau^{b}_{t} & \left[  p_{t}X_{t}-w_{t}EL_{t}-f_{e}p^{K}_{t}I_{t}-\Phi_
 \end{split}
 \end{equation}
  \end{frame}
-
 
 
 \section{Government}
@@ -424,26 +478,28 @@ TE_{t}=  \tau^{b}_{t} & \left[  p_{t}X_{t}-w_{t}EL_{t}-f_{e}p^{K}_{t}I_{t}-\Phi_
 \section{Solution and Simulation}
   \begin{frame}{Stationarizing the Model}
     \begin{table}[htbp] \centering \captionsetup{width=3.3in}
-      \caption{\label{TabStatVars}\textbf{Stationary variable definitions}}
-        \begin{threeparttable}
-        \begin{tabular}{>{\small}c >{\small}c >{\small}c |>{\small}c}
-          \hline\hline
-          \multicolumn{3}{c}{Sources of growth} & Not \\
-          & & & \\[-4mm]
-          $e^{g_y t}$ & $\tilde{N}_t$ & $e^{g_y t}\tilde{N}_t$ & growing\tnote{a} \\
-          \hline
-          & & \\[-4mm]
-          $\hat{c}_{j,s,t}\equiv\frac{c_{j,s,t}}{e^{g_y t}}$ & $\hat{\omega}_{s,t}\equiv\frac{\omega_{s,t}}{\tilde{N}_t}$ & $\hat{Y}_t\equiv\frac{Y_t}{e^{g_y t}\tilde{N}_t}$ & $n_{j,s,t}$ \\[2mm]
-          $\hat{b}_{j,s,t}\equiv\frac{b_{j,s,t}}{e^{g_y t}}$ & $\hat{L}_t\equiv\frac{L_t}{\tilde{N}_t}$ & $\hat{K}_t\equiv\frac{K_t}{e^{g_y t}\tilde{N}_t}$ & $r_t$ \\[2mm]
-          $\hat{bq}_{j,s,t}\equiv\frac{bq_{j,s,t}}{e^{g_y t}}$ &  & $\hat{BQ}_{j,t}\equiv\frac{BQ_{j,t}}{e^{g_y t}\tilde{N}_t}$ &  \\[2mm]
-          $\hat{w}_t\equiv\frac{w_t}{e^{g_y t}}$ &  &  &  \\[2mm]
-          $\hat{y}_{j,s,t}\equiv\frac{y_{j,s,t}}{e^{g_y t}}$ &  &  &  \\[2mm]
-          \hline\hline
-        \end{tabular}
-        \begin{tablenotes}
-          \scriptsize{\item[a]The interest rate $r_t$ is already stationary because $Y_t$ and $K_t$ grow at the same rate. Individual labor supply $n_{j,s,t}$ is stationary.}
-        \end{tablenotes}
-        \end{threeparttable}
+    %\caption{\label{TabStatVars}\textbf{Stationary variable definitions}}
+      \begin{threeparttable}
+      \begin{tabular}{>{\small}c >{\small}c >{\small}c |>{\small}c}
+        \hline\hline
+        \multicolumn{3}{c}{Sources of growth} & Not \\
+        & & & \\[-4mm]
+        $e^{g_y t}$ & $\tilde{N}_t$ & $e^{g_y t}\tilde{N}_t$ & growing\tnote{a} \\
+        \hline
+        & & \\[-4mm]
+        $\hat{c}_{j,s,t}\equiv\frac{\tilde{c}_{j,s,t}}{e^{g_y t}}$ & $\hat{\omega}_{s,t}\equiv\frac{\omega_{s,t}}{\tilde{N}_t}$ & $\hat{X}_t\equiv\frac{X_t}{e^{g_y t}\tilde{N}_t}$ & $n_{j,s,t}$ \\[2mm]
+        $\hat{b}_{j,s,t}\equiv\frac{b_{j,s,t}}{e^{g_y t}}$ & $\hat{EL}_t\equiv\frac{EL_t}{\tilde{N}_t}$ & $\hat{K}_t\equiv\frac{K_t}{e^{g_y t}\tilde{N}_t}$ & $r_t$ \\[2mm]
+        $\hat{w}_t\equiv\frac{w_t}{e^{g_y t}}$ &  & $\hat{BQ}_{j,t}\equiv\frac{BQ_{j,t}}{e^{g_y t}\tilde{N}_t}$ &  \\[2mm]
+        $\hat{y}_{j,s,t}\equiv \frac{y_{j,s,t}}{e^{g_y t}}$ &  & $\hat{I}_{t}\equiv \frac{I_{t}}{e^{g_{y} t}\tilde{N}_t}$ &  \\[2mm]
+        $\hat{T}_{j,s,t}\equiv\frac{T_{j,s,t}}{e^{g_y t}}$ &  &  &  \\[2mm]
+        $\hat{p}_{s,t}\equiv\frac{\tilde{p}_{s,t}}{e^{g_y t}}$ &  &  &  \\[2mm]
+        $\hat{p}_{i,t}\equiv\frac{p_{i,t}}{e^{g_y t}}$ &  &  &  \\[2mm]
+        \hline\hline
+      \end{tabular}
+      \begin{tablenotes}
+        \scriptsize{\item[a]The interest rate $r_t$ is already stationary because $X_t$ and $K_t$ grow at the same rate. Individual labor supply, $n_{j,s,t}$, is stationary.}
+      \end{tablenotes}
+      \end{threeparttable}
     \end{table}
   \end{frame}
 
@@ -474,8 +530,64 @@ TE_{t}=  \tau^{b}_{t} & \left[  p_{t}X_{t}-w_{t}EL_{t}-f_{e}p^{K}_{t}I_{t}-\Phi_
       \end{definition}
   \end{frame}
 
- 
 
+\section{Calibration}
+
+
+\begin{frame}{Calibrating population dynamics}
+\begin{itemize}
+\item Initial population: Census, 2014
+\item Fertility rates by age: CDC 2010
+\item Mortality rates by age: SSA 2010
+\end{itemize}
+\end{frame}
+
+
+\begin{frame}{Calibrating individual subutility}
+Stone-Geary preferences $\implies$ linear expenditure system
+\begin{itemize}
+\item Estimate min consumption and share parameters
+\item Consumer Expenditure Survey, 2012-2013
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Calibrating life-cycle profiles}
+Need hourly earnings rates in panel data:
+\begin{itemize}
+\item Estimate wage profiles by lifetime income group
+\item Define lifetime income group by value of labor endowment (not income!)
+\item Data: PSID, 1980-2011
+\end{itemize}
+\end{frame}
+ 
+\begin{frame}{Calibrating economic depreciation rates}
+Rates vary by industry and sector
+\begin{itemize}
+\item Rates represent weighted average of economic depreciation rates
+\item BEA data on capital stock by asset type and industry (2012)
+\item IRS data on capital stock by industry and tax treatment (2012)
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Calibrating inputs and outputs}
+Relation between production goods, consumption goods, and capital
+\begin{itemize}
+\item BEA PCE Bridge Table 2007 relates consumption and production goods
+\item BEA Input-Output Table 2007 relates production goods and capital by industry
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Other calibration}
+\begin{itemize}
+\item Firm financial policy parameters: Fed Flow of Funds
+\item Production function: BEA NIPA accounts, by industry 
+\item Utility weights:
+	\begin{itemize}
+	\item Disutility of labor: PSID hours worked by age
+	\item Utility of bequests: Estate tax return data (?)
+	\end{itemize}
+\end{itemize}
+\end{frame}
 
 \section{Summary}
 
@@ -484,8 +596,13 @@ TE_{t}=  \tau^{b}_{t} & \left[  p_{t}X_{t}-w_{t}EL_{t}-f_{e}p^{K}_{t}I_{t}-\Phi_
   \ \\
 \href{https://github.com/OpenSourcePolicyCenter/dynamic}{https://github.com/OpenSourcePolicyCenter/dynamic}
   \end{frame}
+  
+  
+    \begin{frame}{The GitHub Repo}
+  \includegraphics[scale=.25]{images/GitHub_mainscreen.pdf}
+  \end{frame}
 
-  \begin{frame}{Summary}
+  \begin{frame}{Summary of Model}
   \begin{itemize}
       \item Detailed macro model
       \item Efficient code
@@ -493,6 +610,45 @@ TE_{t}=  \tau^{b}_{t} & \left[  p_{t}X_{t}-w_{t}EL_{t}-f_{e}p^{K}_{t}I_{t}-\Phi_
       \item Integration with microsimulation model
   \end{itemize}
   \end{frame}
-
+  
+  
+    \begin{frame}{Going forward}
+  \begin{itemize}
+  \item Where we are:
+  	\begin{itemize}
+      	\item Closed economy model specified
+	\item Solution in place for households and simple firms
+      	\item Calibration in process
+  	\end{itemize}
+ \item What needs to be done:
+ 	\begin{itemize}
+	\item Add more detail on supply side and government to code
+	\item International sector
+	\item Finish calibration
+	\item Lots of validation/targeting!
+	\end{itemize}
+ \end{itemize}
+  \end{frame}
+  
+      \begin{frame}{Big questions}
+  \begin{itemize}
+\item Best way to incorporate an open economy?
+	\begin{itemize}
+	\item Trade flows and international goods
+	\item Multinational firms and location of capital
+	\end{itemize}
+\item Monetary policy and inflation
+\item Household heterogeneity
+	\begin{itemize}
+	\item Single vs. dual earners
+	\item Ricardian vs. non-Ricardian
+	\end{itemize}
+\item Calibration of bequests?
+	\begin{itemize}
+	\item Utility weight
+	\item Transmission process
+	\end{itemize}
+\end{itemize}
+\end{frame}
 
 \end{document}
