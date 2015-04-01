@@ -1,9 +1,9 @@
-\beamer@endinputifotherversion {3.20pt}
+\beamer@endinputifotherversion {3.26pt}
 \select@language {english}
 \beamer@sectionintoc {1}{Overview}{2}{0}{1}
-\beamer@sectionintoc {2}{Households}{12}{0}{2}
-\beamer@sectionintoc {3}{Firms}{23}{0}{3}
-\beamer@sectionintoc {4}{Government}{26}{0}{4}
-\beamer@sectionintoc {5}{Solution and Simulation}{27}{0}{5}
-\beamer@sectionintoc {6}{Calibration}{30}{0}{6}
-\beamer@sectionintoc {7}{Summary}{36}{0}{7}
+\beamer@sectionintoc {2}{Households}{13}{0}{2}
+\beamer@sectionintoc {3}{Firms}{24}{0}{3}
+\beamer@sectionintoc {4}{Government}{27}{0}{4}
+\beamer@sectionintoc {5}{Solution and Simulation}{28}{0}{5}
+\beamer@sectionintoc {6}{Calibration}{31}{0}{6}
+\beamer@sectionintoc {7}{Summary}{37}{0}{7}
