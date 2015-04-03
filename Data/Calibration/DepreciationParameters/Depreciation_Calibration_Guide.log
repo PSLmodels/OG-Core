@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  30 MAR 2015 21:55
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  3 APR 2015 10:15
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -847,123 +847,119 @@ Underfull \hbox (badness 10000) in paragraph at lines 403--404
  []
 
 [8]
-Underfull \hbox (badness 10000) in paragraph at lines 416--417
+Underfull \hbox (badness 10000) in paragraph at lines 415--416
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 420--421
+Underfull \hbox (badness 10000) in paragraph at lines 419--420
 
  []
 
 
-Overfull \hbox (0.11246pt too wide) in paragraph at lines 424--425
+Overfull \hbox (0.11246pt too wide) in paragraph at lines 423--424
 \OT1/cmr/m/n/10.95 NOR IN-DUS-TRY HAS THE SAME DIS-TRI-BU-TION OF CAP-I-TAL TYP
 E/OWNERSHIP
  []
 
 
-Overfull \hbox (15.29921pt too wide) in paragraph at lines 426--429
+Overfull \hbox (15.29921pt too wide) in paragraph at lines 425--428
 \OT1/cmr/m/n/10.95 mea-sured by the BEA (e.g. in Stan-dard Fixed As-set Ta-ble 
 4.1). That is, $[][] [][] [][] [][] =
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 426--429
+Underfull \hbox (badness 10000) in paragraph at lines 425--428
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 439--440
+Underfull \hbox (badness 10000) in paragraph at lines 438--439
 
  []
-
-
-Overfull \vbox (1.37257pt too high) has occurred while \output is active []
-
 
 [9]
-Underfull \hbox (badness 10000) in paragraph at lines 443--444
+Underfull \hbox (badness 10000) in paragraph at lines 442--443
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 451--452
+Underfull \hbox (badness 10000) in paragraph at lines 452--453
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 455--456
+Underfull \hbox (badness 10000) in paragraph at lines 456--457
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 459--462
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 485--488
+Underfull \hbox (badness 10000) in paragraph at lines 460--463
 
  []
 
 [10]
-Underfull \hbox (badness 10000) in paragraph at lines 489--492
+Underfull \hbox (badness 10000) in paragraph at lines 486--489
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 493--494
+Underfull \hbox (badness 10000) in paragraph at lines 490--493
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 497--498
+Underfull \hbox (badness 10000) in paragraph at lines 494--495
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 515--516
+Underfull \hbox (badness 10000) in paragraph at lines 498--499
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 519--520
+Underfull \hbox (badness 10000) in paragraph at lines 516--517
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 520--521
 
  []
 
 [11]
-Underfull \hbox (badness 10000) in paragraph at lines 543--544
+Underfull \hbox (badness 10000) in paragraph at lines 544--545
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 547--548
+Underfull \hbox (badness 10000) in paragraph at lines 548--549
 
  []
 
 [12]
-Underfull \hbox (badness 10000) in paragraph at lines 588--591
+Underfull \hbox (badness 10000) in paragraph at lines 589--592
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 603--604
+Underfull \hbox (badness 10000) in paragraph at lines 604--605
 
  []
 
 [13]
-Underfull \hbox (badness 10000) in paragraph at lines 607--608
+Underfull \hbox (badness 10000) in paragraph at lines 608--609
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 622--623
+Underfull \hbox (badness 10000) in paragraph at lines 623--624
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 626--627
+Underfull \hbox (badness 10000) in paragraph at lines 627--628
 
  []
 
@@ -972,12 +968,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 626--627
 LaTeX Warning: Empty `thebibliography' environment on input line 6.
 
 )
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 631.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 632.
  [14]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 631.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 632.
  (./Depreciation_Calibration_Guide.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 631.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 631.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 632.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 632.
 Package rerunfilecheck Info: File `Depreciation_Calibration_Guide.out' has not 
 changed.
 (rerunfilecheck)             Checksum: 821E143D0F98CA70E15AD42FBC32C454;1437.
@@ -985,16 +981,16 @@ changed.
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 631.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 632.
  ) 
 Here is how much of TeX's memory you used:
  16384 strings out of 493488
- 287422 string characters out of 3141326
- 368557 words of memory out of 3000000
- 19298 multiletter control sequences out of 15000+200000
+ 287420 string characters out of 3141326
+ 368489 words of memory out of 3000000
+ 19297 multiletter control sequences out of 15000+200000
  14555 words of font info for 55 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
- 56i,9n,55p,1864b,370s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 56i,10n,55p,1864b,370s stack positions out of 5000i,500n,10000p,200000b,50000s
 pdfTeX warning (dest): name{Hfootnote.4} has been referenced but does not exi
 st, replaced by a fixed one
 
@@ -1003,9 +999,6 @@ pdfTeX warning (dest): name{Hfootnote.3} has been referenced but does not exist
 
 pdfTeX warning (dest): name{Hfootnote.2} has been referenced but does not exist
 , replaced by a fixed one
-
-pdfTeX warning (dest): name{table.caption.3} has been referenced but does not e
-xist, replaced by a fixed one
 
 pdfTeX warning (dest): name{Hfootnote.1} has been referenced but does not exist
 , replaced by a fixed one
@@ -1028,10 +1021,10 @@ ive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive
 texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2012/te
 xmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb></usr/local/texlive/2012/tex
 mf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on Depreciation_Calibration_Guide.pdf (14 pages, 256622 bytes).
+Output written on Depreciation_Calibration_Guide.pdf (14 pages, 256549 bytes).
 PDF statistics:
- 289 PDF objects out of 1000 (max. 8388607)
- 252 compressed objects within 3 object streams
- 68 named destinations out of 1000 (max. 500000)
+ 290 PDF objects out of 1000 (max. 8388607)
+ 253 compressed objects within 3 object streams
+ 69 named destinations out of 1000 (max. 500000)
  157 words of extra memory for PDF output out of 10000 (max. 10000000)
 

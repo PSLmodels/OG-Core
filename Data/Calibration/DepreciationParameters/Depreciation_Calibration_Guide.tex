@@ -390,10 +390,10 @@ Since IRS data will differ from BEA data for a number of reasons (e.g., due meas
 \subsubsection{Fixed Assets}
 We apportion fixed assets of type $i$ held in industry $m$ across tax treatment, $C\in(\text{corporate},\text{non-corporate})$ by the following methodology.
 
-First, while the BEA provides estimates of the total value of fixed assets owned by nonprofits, households, and non-tax entities, the BEA does not split out the ownership by entity type at the industry or asset type level.  We thus us the ratio of assets reported on tax returns to the value of total BEA assets by industry to come up with a measure of the fraction of assets by industry that are owned by an entity that does not file a business entity tax return (i.e., a Form 1120, 1120S, 1065, 1040 Schedule C, or 1040 Schedule F).  We denote the value of assets of type $i$ held by entities in industry $m$ that file a business tax return as $\widetilde{FA}_{i,m}$, where:
+First, while the BEA provides estimates of the total value of fixed assets owned by nonprofits, households, and non-tax entities, the BEA does not split out the ownership by entity type at the industry or asset type level.  We thus us the ratio of assets reported on tax returns to the value of total BEA assets by industry to come up with a measure of the fraction of assets by industry that are owned by an entity that does not file a business entity tax return (i.e., a Form 1120, 1120S, 1065, 1040 Schedule C, or 1040 Schedule F).  We denote the value of assets of type $i$ held by entities in industry $m$, and tax entity type $j$, that file a business tax return as $\widetilde{FA}_{i,m,j}$, where:
 
 \begin{equation}
-\widetilde{FA}_{i,m}={FA}_{i,m}\times \frac{{FA}^{\tau}_{m}}{{FA}_{m}}
+\widetilde{FA}_{i,m,j}={FA}_{i,m}\times \frac{{FA}^{\tau}_{m,j}}{{FA}^{\tau}_{m}}
 \end{equation}
 
 \ \\
@@ -402,16 +402,15 @@ Put table here with $\frac{{FA}^{\tau}_{m}}{{FA}_{m}}$ ratios.
 \end{center}
 \ \\
 
-\noindent\noindent  ${FA}_{i,m}$ come from the BEA's Detailed Fixed Asset Tables and ${FA}_{m}=\sum_{i}{FA}_{i,m}$.  ${FA}^{\tau}_{m}=\sum_{j}{FA}^{\tau}_{j}$, where $j\in\{c,s,p,sp\}$ is the tax entity type.  The assumption underlining the imputation is that the distribution of asset types across taxable and non-taxable business entities is the same within an industry.
+\noindent\noindent  ${FA}_{i,m}$ come from the BEA's Detailed Fixed Asset Tables and ${FA}_{m}=\sum_{i}{FA}_{i,m}$.  ${FA}^{\tau}_{m}=\sum_{j}{FA}^{\tau}_{j}$, where $j\in\{c,s,p,sp\}$ is the tax entity type.  The assumption underlining the imputation is that the distribution of asset types across tax entity type is the same within an industry.
 
-Next, we impute the value of fixed assets by asset type, industry, and tax entity type for taxable business entities.  We denote the amount of fixed asset $i$ held by entities with corporate tax treatment in industry $m$ as $\widehat{FA}_{i,m,C}$, and the fraction of that asset type in industry $m$ held by taxable entities with non-corporate tax treatment as $\widehat{FA}_{i,m,NC}$.  Our assumption for this imputation is that the distribution of asset types within an industry is the same across each type of tax entity.  Therefore we have: 
+Next, we impute the value of fixed assets by asset type, industry, and sector.  We denote the amount of fixed asset $i$ held by entities with corporate tax treatment in industry $m$ as $\widehat{FA}_{i,m,C}$, and the fraction of that asset type in industry $m$ held by taxable entities with non-corporate tax treatment as $\widehat{FA}_{i,m,NC}$.  Our assumption for this imputation is that the distribution of asset types within an industry is the same across each type of tax entity.  Therefore we have: 
 
-\begin{equation}
-\widehat{FA}_{i,m,C}=\widetilde{FA}_{i,m} \times \frac{{FA}^{\tau}_{m,C}}{{FA}^{\tau}_{m}},
-\end{equation} 
+\begin{align}
+& \widehat{FA}_{i,m,C}=\widetilde{FA}_{m,C}=\widetilde{FA}_{m,c}+\widetilde{FA}_{m,p,corp}, \ \text{and} \\
+& \widehat{FA}^{\tau}_{m,NC}=\widetilde{FA}_{m,s}+\widetilde{FA}_{m,p}+\widetilde{FA}_{m,sp}-\widetilde{FA}_{m,p,corp}
+\end{align} 
 
-
-\noindent\noindent where ${FA}^{\tau}_{m,C}={FA}^{\tau}_{m,c}+{FA}^{\tau}_{m,p,corp}$, ${FA}^{\tau}_{m,NC}={FA}^{\tau}_{m,s}+{FA}^{\tau}_{m,p}+{FA}^{\tau}_{m,sp}-{FA}^{\tau}_{m,p,corp}$, and ${FA}^{\tau}_{m}={FA}^{\tau}_{m,c}+{FA}^{\tau}_{m,s}+{FA}^{\tau}_{m,p}+{FA}^{\tau}_{m,sp}$.
 
 \ \\
 \begin{center}
@@ -433,7 +432,7 @@ NOTE THAT THERE ARE SOME DIFFERENCES IN THE BEA AND SOI INDUSTRY CLASSIFICATIONS
 A similar methodology allocates inventories across industry and tax treatment:  
 
 \begin{equation}
-\widetilde{INV}_{m}={INV}_{m}\times \frac{{INV}^{\tau}_{m}}{{INV}_{m}}
+\widetilde{INV}_{m,j}={INV}_{m}\times \frac{{INV}^{\tau}_{m,j}}{{INV}^{\tau}_{m}}
 \end{equation}
 
 \ \\
@@ -444,9 +443,11 @@ Put table here with $\frac{{INV}^{\tau}_{m}}{{INV}_{m}}$ ratios
 
 \noindent\noindent and 
 
-\begin{equation}
-\widehat{INV}_{m,C}=\widetilde{INV}_{m} \times \frac{{INV}^{\tau}_{m,C}}{{INV}^{\tau}_{m}},
-\end{equation} 
+
+\begin{align}
+& \widehat{INV}_{i,m,C}=\widetilde{INV}_{m,C}=\widetilde{INV}_{m,c}+\widetilde{INV}_{m,p,corp}, \ \text{and} \\
+& \widehat{INV}^{\tau}_{m,NC}=\widetilde{INV}_{m,s}+\widetilde{INV}_{m,p}+\widetilde{INV}_{m,sp}-\widetilde{INV}_{m,p,corp}
+\end{align} 
 
 \ \\
 \begin{center}
