@@ -72,10 +72,28 @@ naics.pop_forward(data_tree, ["farm_prop"], "tot_corps")
 #Create an output tree containing only the final data on FA, INV, and LAND.
 output_tree = naics.summary_tree(data_tree, data_folder)
 
-
-
-
-
+# Create a tree with all the FA's broken down by type of asset:
+asset_tree = naics.read_bea(output_tree, data_folder)
+naics.pop_back(asset_tree, ["All", "Corp", "Non-Corp"])
+#
+corp_types = ["C Corporations",
+              "Corporate general partners", 
+              "Corporate limited partners"]
+non_corp_types = ["S Corporations",
+                  "Individual general partners",
+                  "Individual limited partners",
+                  "Partnership general partners",
+                  "Partnership limited partners",
+                  "Tax-exempt organization general partners",
+                  "Tax-exempt organization limited partners",
+                  "Nominee and other general partners", 
+                  "Nominee and other limited partners",
+                  "Sole Proprietors"]
+naics.pop_forward(asset_tree, ["All"], "FA", output_tree)
+naics.pop_forward(asset_tree, ["Corp"], "FA", output_tree, corp_types)
+naics.pop_forward(asset_tree, ["Non-Corp"], "FA", output_tree, non_corp_types)
+#
+depr_tree = naics.calc_depr_rates(asset_tree, data_folder)
 
 
 
