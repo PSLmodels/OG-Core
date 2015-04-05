@@ -84,40 +84,72 @@ An Open Source Model \\ for Dynamic Revenue Estimates}
 \section{Overview}
 
 \begin{frame}
-\frametitle{Objectives of the model}
-\begin{itemize}
-\item Produce year-by-year macro forecasts for current law and policy baselines
-\item Produce year-by-year dynamic revenue estimates for a wide array of tax policies
-\item Provide distributional analysis
-	\begin{itemize}
-	\item Individuals: 
-		\begin{itemize}
-		\item Across age and income groups
-		\item Annual and lifetime incidence 
-		\end{itemize}
-	\item Firms: across tax treatment and production industry 
-	\end{itemize}
-\end{itemize}
+\frametitle{Goals of the meeting}
+  \begin{enumerate}
+    \item OSPC dynamic scoring model
+    \vspace{5mm}
+    \item Code is open source
+    \vspace{5mm}
+    \item Describe our approach
+    \vspace{5mm}
+    \item Learn from you
+    \vspace{5mm}
+    \item How can we benefit you?
+  \end{enumerate}
 \end{frame}
 
-    \begin{frame}{State of the model}
+\begin{frame}
+\frametitle{Objectives of the model}
   \begin{itemize}
-  \item Where we are:
-  	\begin{itemize}
+    \item Produce year-by-year macro forecasts for current law and policy baselines
+    \vspace{3mm}
+    \item Produce year-by-year dynamic revenue estimates for a wide array of tax policies
+    \vspace{3mm}
+    \item Provide distributional analysis
+      \vspace{2mm}
+    	\begin{itemize}
+        \item Individuals:
+    		  \begin{itemize}
+    		    \item Across age and income groups
+    		    \vspace{1mm}
+            \item Annual and lifetime incidence
+    		  \end{itemize}
+        \vspace{2mm}
+    	  \item Firms:
+          \vspace{2mm}
+          \begin{itemize}
+            \item across tax treatment and production industry
+          \end{itemize}
+    	\end{itemize}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{State of our model}
+  \begin{itemize}
+    \item Where we are:
+      \vspace{4mm}
+  	  \begin{itemize}
       	\item Closed economy model specified
-	\item Solution in place for households and simple firms
-      	\item Calibration in process
-  	\end{itemize}
- \item What needs to be done:
- 	\begin{itemize}
-	\item Add more detail on supply side and government to code
-	\item International sector
-	\item Finish calibration
-	\item Lots of validation/targeting!
-	\end{itemize}
- \end{itemize}
-  \end{frame}
-  
+	      \vspace{2mm}
+        \item Solution in place for households and simple firms
+      	\vspace{2mm}
+        \item Calibration in process
+  	  \end{itemize}
+    \vspace{6mm}
+    \item What needs to be done:
+      \vspace{4mm}
+ 	    \begin{itemize}
+	      \item Add more detail on supply side and government to code
+	      \vspace{2mm}
+        \item International sector
+	      \vspace{2mm}
+        \item Finish calibration
+	      \vspace{2mm}
+        \item Validation/targeting!
+	    \end{itemize}
+  \end{itemize}
+\end{frame}
+
       \begin{frame}{Big questions}
   \begin{itemize}
 \item Best way to incorporate an open economy?
@@ -337,11 +369,11 @@ level 2/.style={sibling distance = 1cm,level distance=1.5cm}
     child {node {}}
     child {node {}}
     child {node {}}
-    child {node (2){$c_{i,j,s,t}, i=1,...,I$}   
+    child {node (2){$c_{i,j,s,t}, i=1,...,I$}
 child {node (3) {}}
             child {node {}}
             child {node {}}
-            child {node {$X_{m,t}, m=1,..,M$}       
+            child {node {$X_{m,t}, m=1,..,M$}
              child {node {$X_{m,c,t} \ \ $}}
              child {node {$\ \ X_{m,nc,t}$}}}
              child {node {}}
@@ -356,7 +388,7 @@ child {node {$bq_{j,s,t}$}} ;
 \node at (3) [xshift=+5.0cm, right,draw=none, text width=4cm]{\footnotesize $X_{m,t}$, are determined by a CES function};
 \end{tikzpicture}
 \end{frame}
- 
+
 
   \begin{frame}{Households -- Utility Function}\label{Utility Function}
     Utility from Consumption, Leisure and Bequests \\
@@ -479,7 +511,7 @@ child {node {$bq_{j,s,t}$}} ;
 \item Pre-pay and post-pay consumption tax systems
 \end{itemize}
  \end{frame}
-  
+
     \begin{frame}{Firms -- Taxes}
     Total income taxes on the firms are given by:
   \begin{equation}
@@ -584,7 +616,7 @@ Need hourly earnings rates in panel data:
 \item Data: PSID, 1980-2011
 \end{itemize}
 \end{frame}
- 
+
 \begin{frame}{Calibrating economic depreciation rates}
 Rates vary by industry and sector
 \begin{itemize}
@@ -605,7 +637,7 @@ Relation between production goods, consumption goods, and capital
 \begin{frame}{Other calibration}
 \begin{itemize}
 \item Firm financial policy parameters: Fed Flow of Funds
-\item Production function: BEA NIPA accounts, by industry 
+\item Production function: BEA NIPA accounts, by industry
 \item Utility weights:
 	\begin{itemize}
 	\item Disutility of labor: PSID hours worked by age
@@ -621,8 +653,8 @@ Relation between production goods, consumption goods, and capital
   \ \\
 \href{https://github.com/OpenSourcePolicyCenter/dynamic}{https://github.com/OpenSourcePolicyCenter/dynamic}
   \end{frame}
-  
-  
+
+
     \begin{frame}{The GitHub Repo}
   \includegraphics[scale=.25]{images/GitHub_mainscreen.pdf}
   \end{frame}
@@ -635,8 +667,8 @@ Relation between production goods, consumption goods, and capital
       \item Integration with microsimulation model
   \end{itemize}
   \end{frame}
-  
-  
+
+
     \begin{frame}{Going forward}
   \begin{itemize}
   \item Where we are:
@@ -654,7 +686,7 @@ Relation between production goods, consumption goods, and capital
 	\end{itemize}
  \end{itemize}
   \end{frame}
-  
+
       \begin{frame}{Big questions}
   \begin{itemize}
 \item Best way to incorporate an open economy?
