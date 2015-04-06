@@ -90,7 +90,6 @@ class tree:
     #
     def __init__(self, root = None, enumeration = pd.DataFrame(np.zeros((0,0)))):
         self.root = root
-        self.enum_codes = enumeration
         self.enum_inds = [industry([]) for i in xrange(0,len(enumeration))]
         self.par = None
         
