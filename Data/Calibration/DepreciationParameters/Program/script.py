@@ -93,10 +93,14 @@ naics.pop_forward(asset_tree, ["All"], "FA", output_tree)
 naics.pop_forward(asset_tree, ["Corp"], "FA", output_tree, corp_types)
 naics.pop_forward(asset_tree, ["Non-Corp"], "FA", output_tree, non_corp_types)
 #
-depr_tree = naics.calc_depr_rates(asset_tree, data_folder)
-
-
-
+inv_tree = naics.read_inventories(output_tree, data_folder)
+naics.pop_back(inv_tree, ["Inventories"])
+naics.pop_forward(inv_tree, ["Inventories"])
+#
+land_tree = naics.read_land(output_tree, data_folder)
+naics.pop_forward(land_tree, ["Land"], "LAND", output_tree)
+#
+depr_tree = naics.calc_depr_rates(asset_tree, inv_tree, land_tree, data_folder)
 
 
 

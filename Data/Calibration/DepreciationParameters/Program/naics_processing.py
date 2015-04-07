@@ -1,6 +1,6 @@
 '''
 -------------------------------------------------------------------------------
-Last updated 3/24/2015
+Last updated 4/7/2015
 -------------------------------------------------------------------------------
 This py-file defines functions that process an NAICS tree. The tree contains
     data related to depreciation rates for each industry in the tree. These
@@ -634,12 +634,13 @@ def pop_forward(tree, pd_list, blueprint = None, blue_tree = None, sub_print = N
 
 def get_proportions(codes, tree, df_name, sub_df = None):
     proportions = np.zeros(len(codes))
+    indexes = np.zeros(len(codes))
     enum_index = len(tree.enum_inds) - 1
     for i in xrange(0, len(codes)):
         cur_code = codes[i]
         for j in xrange(0, len(tree.enum_inds)):
             enum_index = (enum_index+1) % len(tree.enum_inds)
-            cur_ind = tree.enum_inds[j]
+            cur_ind = tree.enum_inds[enum_index]
             if(compare_codes([cur_code], cur_ind.data.dfs["Codes:"].iloc[:,0]) != 0):
                 cur_sum = 0
                 if sub_df != None:
@@ -648,14 +649,16 @@ def get_proportions(codes, tree, df_name, sub_df = None):
                 else:
                     cur_sum = sum(cur_ind.data.dfs[df_name].iloc[0,:])
                 proportions[i] = cur_sum
+                indexes[i] = enum_index
                 break
     #
-    if(sum(proportions == 0)):
-        proportions = np.array([1]*len(proportions))/len(proportions)
-        return proportions
+    if(sum(proportions) == 0):
+        proportions = np.array([1.0]*len(proportions))/len(proportions)
+        print "BOO"
+        return pd.DataFrame(np.vstack((indexes, proportions)))
     #
     proportions = proportions/sum(proportions)
-    return proportions
+    return pd.DataFrame(np.vstack((indexes, proportions)))
 
 
 '''
@@ -817,7 +820,7 @@ def read_bea(output_tree, data_folder):
                 break
     return asset_tree
 
-'''
+
 def read_inventories(output_tree, data_folder):
     # The directory with inventory data:
     inv_folder = os.path.abspath(data_folder + "\\Inventories")
@@ -827,13 +830,11 @@ def read_inventories(output_tree, data_folder):
     sht0 = inv_book.sheet_by_index(0)
     num_rows = sht0.nrows
     num_cols = sht0.ncols
-    #Finding 
-    cur_index = search_ws(sht0, "line", 20)
-    for i in xrange(cur_index[0]+1, num_rows):
-        cur_value = str(sht0.cell_value(i, cur_index[1]))
-        if(cur_value == '1'):
-            break
-        cur_index[0] = i
+    #Find the starting index in worksheet.
+    cur_index = search_ws(sht0, 1, 25, True, [0,0], True)
+    check_index = search_ws(sht0, "line", 20)
+    if(cur_index[1] != check_index[1]):
+        print "ERROR"
     # Breaking down by corporate tax status:
     corp_types = ["C Corporations",
                   "Corporate general partners", 
@@ -856,35 +857,83 @@ def read_inventories(output_tree, data_folder):
     #
     data_cols = ["All", "Corp", "Non-Corp"]
     for i in inv_tree.enum_inds:
-        i.data.append(("All", pd.DataFrame(np.zeros((1, data_cols.shape[0])), columns = data_cols)))
+        i.data.append(("Inventories", pd.DataFrame(np.zeros((1, len(data_cols))), columns = data_cols)))
     #
     inv_data = np.zeros(inv_cross.shape[0])
-    
+    #
     cross_index = 0
-    #enum_index = 0
     for i in xrange(cur_index[0], num_rows):
+        if(cross_index >= inv_cross.shape[0]):
+            break
         cur_list = str(sht0.cell_value(i, cur_index[1])).strip()
         cur_name = str(sht0.cell_value(i, cur_index[1]+1)).strip()
-        cur_value = float(sht0.cell_value(i, num_cols))
-        checks = (cur_list == inv_cross["List"][cross_index]) and (cur_name == inv_cross["Industry"][cross_index])
+        checks = (str(cur_list) == str(inv_cross["List"][cross_index])) and (str(cur_name) == str(inv_cross["Industry"][cross_index]))
         if(checks):
-            cur_codes = inv_cross["NAICS"][cross_index].split(".")
-            tot_share = 0
-            
-            
-            for j in inv_tree.enum_inds:
-                share = compare_codes(cur_codes,j.data.dfs["Codes:"])
-                if share == 0:
-                    continue
-                tot_share += share
-                
-                
-                #enum_index = (enum_index+1) % len(inv_tree.enum_inds)
-                if tot_share == 1:
-                    break
-'''
+            cross_index += 1
+            try:
+                cur_value = float(sht0.cell_value(i, num_cols-1))
+            except ValueError:
+                continue
+            inv_data[cross_index-1] = cur_value
+            # Data is in billions:
+            inv_data[cross_index-1] = (10**9) * inv_data[cross_index-1]
+    #
+    for i in xrange(0, inv_cross.shape[0]):
+        cur_codes = inv_cross["NAICS"][i].strip().split(".")
+        proportions = get_proportions(cur_codes, output_tree, "INV")
+        for j in xrange(0, proportions.shape[1]):
+            cur_ind = inv_tree.enum_inds[int(proportions.iloc[0,j])]
+            prev_data = output_tree.enum_inds[int(proportions.iloc[0,j])].data.dfs["INV"]
+            if(sum(prev_data.iloc[0, :]) != 0):
+                cur_dfs = (prev_data/sum(prev_data.iloc[0,:])) * (inv_data[i] * proportions.iloc[1,j])
+                cur_ind.data.dfs["Inventories"]["All"] += sum(cur_dfs.iloc[0,:])
+                for k in corp_types:
+                    cur_ind.data.dfs["Inventories"]["Corp"] += cur_dfs[k][0]
+                for k in non_corp_types:
+                    cur_ind.data.dfs["Inventories"]["Non-Corp"] += cur_dfs[k][0]
+    #
+    return inv_tree
 
-def calc_depr_rates(asset_tree, data_folder):
+
+def read_land(output_tree, data_folder):
+    land_folder = os.path.abspath(data_folder + "\\Land")
+    land_file = os.path.abspath(land_folder + "\\Fin_Accounts-Land.csv")
+    land_data = pd.read_csv(land_file)
+    # Data is in billions:
+    land_data = (10**9) * land_data
+    corp_types = ["C Corporations",
+                  "Corporate general partners", 
+                  "Corporate limited partners"]
+    non_corp_types = ["S Corporations",
+                      "Individual general partners",
+                      "Individual limited partners",
+                      "Partnership general partners",
+                      "Partnership limited partners",
+                      "Tax-exempt organization general partners",
+                      "Tax-exempt organization limited partners",
+                      "Nominee and other general partners", 
+                      "Nominee and other limited partners",
+                      "Sole Proprietors"]
+    land_tree = load_naics(data_folder + "\\2012_NAICS_Codes.csv")
+    df_cols = ["All", "Corp", "Non-Corp"]
+    for i in land_tree.enum_inds:
+        i.data.append(("Land", pd.DataFrame(np.zeros((1,len(df_cols))), columns = df_cols)))
+    corp_sum = 0.0
+    non_corp_sum = 0.0
+    for i in corp_types:
+        corp_sum += output_tree.enum_inds[0].data.dfs["LAND"][i][0]
+    for i in non_corp_types:
+        non_corp_sum += output_tree.enum_inds[0].data.dfs["LAND"][i][0]
+    if corp_sum + non_corp_sum == 0:
+        return land_tree
+    #corp_proportion = corp_sum / (corp_sum + non_corp_sum)
+    #non_corp_proportion = non_corp_sum / (corp_sum + non_corp_sum)
+    land_tree.enum_inds[0].data.dfs["Land"]["Corp"][0] = land_data["Corporate"][0]
+    land_tree.enum_inds[0].data.dfs["Land"]["Non-Corp"][0] = land_data["Non-Corporate"][0]
+    land_tree.enum_inds[0].data.dfs["Land"]["All"][0] = land_data["Corporate"][0] + land_data["Non-Corporate"][0]
+    return land_tree
+
+def calc_depr_rates(asset_tree, inv_tree, land_tree, data_folder):
     # The directory with depreciation rates data:
     depr_folder = os.path.abspath(data_folder + "\\Depreciation Rates")
     # Opening file containing depreciation rates by asset type:
@@ -918,6 +967,19 @@ def calc_depr_rates(asset_tree, data_folder):
                 depr_tree.enum_inds[j].data.dfs["Economic"][i][0] = cur_sum/sum(asset_tree.enum_inds[j].data.dfs[i].iloc[0,:])
             else:
                 depr_tree.enum_inds[j].data.dfs["Economic"][i][0] = 0
+        # Inventories and land have an approximately zero depreciation rate:
+        for j in xrange(0, len(depr_tree.enum_inds)):
+            tot_assets = sum(asset_tree.enum_inds[j].data.dfs["All"].iloc[0,:])
+            tot_inv = inv_tree.enum_inds[j].data.dfs["Inventories"]["All"][0]
+            tot_land = land_tree.enum_inds[j].data.dfs["Land"]["All"][0]
+            if(tot_assets+tot_inv+tot_land == 0):
+                continue
+            ratio = tot_assets / (tot_assets + tot_inv + tot_land)
+            #
+            cur_df = depr_tree.enum_inds[j].data.dfs["Economic"]
+            for k in cur_df:
+                cur_df[k][0] = ratio * cur_df[k][0]
+            
     return depr_tree
 
 def compare_codes(codes1, codes2):
