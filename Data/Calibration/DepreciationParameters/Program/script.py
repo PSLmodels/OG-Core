@@ -100,7 +100,8 @@ naics.pop_forward(inv_tree, ["Inventories"])
 land_tree = naics.read_land(output_tree, data_folder)
 naics.pop_forward(land_tree, ["Land"], "LAND", output_tree)
 #
-depr_tree = naics.calc_depr_rates(asset_tree, inv_tree, land_tree, data_folder)
+econ_depr_tree = naics.calc_depr_rates(asset_tree, inv_tree, land_tree, data_folder)
+tax_depr_tree = naics.calc_tax_depr_rates(asset_tree, inv_tree, land_tree, data_folder)
 
 
 
