@@ -790,9 +790,9 @@ def read_bea(output_tree, data_folder):
     for i in xrange(0, bea_table.shape[1]):
         cur_codes = bea_chart["NAICS Code"][i].split(".")
         tot_share = 0
-        all_proportions = get_proportions(cur_codes, output_tree, "FA")
-        corp_proportions = get_proportions(cur_codes, output_tree, "FA", corp_types)
-        non_corp_proportions = get_proportions(cur_codes, output_tree, "FA", non_corp_types)
+        all_proportions = get_proportions(cur_codes, output_tree, "FA").iloc[1,:]
+        corp_proportions = get_proportions(cur_codes, output_tree, "FA", corp_types).iloc[1,:]
+        non_corp_proportions = get_proportions(cur_codes, output_tree, "FA", non_corp_types).iloc[1,:]
         for code_index in xrange(0, len(cur_codes)):
             for j in xrange(0, len(asset_tree.enum_inds)):
                 enum_index = (enum_index+1) % len(asset_tree.enum_inds)
@@ -947,7 +947,7 @@ def calc_depr_rates(asset_tree, inv_tree, land_tree, data_folder):
     depr_tree = load_naics(data_folder + "\\2012_NAICS_Codes.csv")
     for i in depr_tree.enum_inds:
         i.data.append(("Economic", pd.DataFrame(np.zeros((1,3)), columns = types)))
-        i.data.append(("Tax", pd.DataFrame(np.zeros((1,3)), columns = types)))
+        #i.data.append(("Tax", pd.DataFrame(np.zeros((1,3)), columns = types)))
     
     for i in types:
         asset_list = asset_tree.enum_inds[0].data.dfs[i].columns.values.tolist()
@@ -979,8 +979,81 @@ def calc_depr_rates(asset_tree, inv_tree, land_tree, data_folder):
             cur_df = depr_tree.enum_inds[j].data.dfs["Economic"]
             for k in cur_df:
                 cur_df[k][0] = ratio * cur_df[k][0]
-            
     return depr_tree
+
+
+def calc_tax_depr_rates(asset_tree, inv_tree, land_tree, data_folder):
+    # The directory with depreciation rates data:
+    depr_folder = os.path.abspath(data_folder + "\\Depreciation Rates")
+    #
+    tax_file = os.path.abspath(depr_folder + "\\BEA_IRS_Crosswalk.csv")
+    tax_data = pd.read_csv(tax_file).fillna(0)
+    tax_assets = tax_data["Asset Type"]
+    for i in xrange(0, len(tax_assets)):
+        tax_assets[i] = str(tax_assets[i]).replace("\xa0", " ").strip()
+    #
+    r = .05
+    #
+    #tax_cols = {"GDS 200%": 2, "GDS 150%": 1.5, "GDS SL": 1.0, "ADS SL": 1.0}
+    tax_gds_mthds = {"GDS 200%": 2.0, "GDS 150%": 1.5, "GDS SL": 1.0}
+    tax_ads_mthds = {"ADS SL": 1.0}
+    tax_cols = tax_gds_mthds.keys() + tax_ads_mthds.keys()
+    tax_systems = {"GDS": tax_gds_mthds, "ADS": tax_ads_mthds}
+    tax_rates = pd.DataFrame(np.zeros((len(tax_assets),len(tax_cols))), columns = tax_cols)
+    tax_rates["Asset"] = tax_assets
+    # Compute the tax rates:
+    for i in tax_systems:
+        tax_yrs = tax_data[i]
+        for j in tax_systems[i]:
+            tax_b = tax_systems[i][j]
+            tax_beta = tax_b/tax_yrs
+            tax_star = tax_yrs * (1 - (1/tax_b))
+            tax_z = ((tax_beta/(tax_beta+r))* (1-np.exp(-1*(tax_beta+r)*tax_star)))+ ((np.exp(-1*tax_beta*tax_star)* np.exp(-1*r*tax_star)-np.exp(-1*r*tax_yrs))/ ((tax_yrs-tax_star)*r))
+            tax_z = (((tax_beta/(tax_beta+r))*
+                      (1-np.exp(-1*(tax_beta+r)*tax_star))) 
+                      + ((np.exp(-1*tax_beta*tax_star)/
+                      ((tax_yrs-tax_star)*r))*
+                      (np.exp(-1*r*tax_star)-np.exp(-1*r*tax_yrs))))
+            tax_rates[j] = r/((1/tax_z)-1)
+    tax_rates = tax_rates.fillna(0)
+    #
+    types = ["All", "Corp", "Non-Corp"]
+    # Initialize tree for depreciation rates:
+    depr_tree = load_naics(data_folder + "\\2012_NAICS_Codes.csv")
+    for i in depr_tree.enum_inds:
+        for j in tax_systems:
+            for k in tax_systems[j]:
+                i.data.append((k, pd.DataFrame(np.zeros((1,3)), columns = types)))
+    for i in depr_tree.enum_inds:
+        i.data.append(("True Values", pd.DataFrame(np.zeros((1,3)), columns = types)))
+    #
+    for i in types:
+        asset_list = asset_tree.enum_inds[0].data.dfs[i].columns.values.tolist()
+        match = np.array([-1] * len(asset_list))
+        for j in xrange(0, asset_tree.enum_inds[0].data.dfs[i].shape[1]):
+            for k in xrange(0, len(tax_assets)):
+                if str(asset_list[j]).strip() == str(tax_assets[k]).strip():
+                    match[j] = k
+        for j in xrange(0, len(depr_tree.enum_inds)):
+            cur_ind = depr_tree.enum_inds[j]
+            for k in tax_cols:
+                cur_tax = cur_ind.data.dfs[k][i]
+                cur_sum = 0.0
+                for l in xrange(0, len(asset_list)):
+                    if(match[l] == -1):
+                        continue
+                    cur_sum += asset_tree.enum_inds[j].data.dfs[i].iloc[0,l] * tax_rates[k][match[l]]        
+                cur_tax[0] = cur_sum/sum(asset_tree.enum_inds[j].data.dfs[i].iloc[0,:])
+                
+                tot_assets = sum(asset_tree.enum_inds[j].data.dfs["All"].iloc[0,:])
+                tot_inv = inv_tree.enum_inds[j].data.dfs["Inventories"]["All"][0]
+                tot_land = land_tree.enum_inds[j].data.dfs["Land"]["All"][0]
+                if(tot_assets+tot_inv+tot_land == 0):
+                    continue
+                ratio = tot_assets / (tot_assets + tot_inv + tot_land)
+                cur_tax[0] = cur_tax[0] * ratio
+    return depr_tree
+    
 
 def compare_codes(codes1, codes2):
     if(len(codes2) == 0):
