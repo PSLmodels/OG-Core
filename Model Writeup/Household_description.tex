@@ -154,6 +154,107 @@ child {node {$bq_{j,s,t}$}} ;
       \end{split}
     \end{equation}
 
+   
+    \subsection{Household's Portfolio Problem}\label{sec:portfolio}
+    
+Household's are assumed to have constant elasticity of substitution (CES) preferences over debt and equity in their portfolio.  These preferences allows for investor portfolios that are a mix of debt and equity despsite the two assets having differential returns.  Thus, while our model does not include idiosyncratic or aggregate uncertainty, these CES preferences account for the premium paid to the more risky assets through the preference parameters. To match lifecycle portfolio changes, we may consider allowing to the CES preference parameters to vary by age.  Given the CES preferences, the household's total assets, $a_{j,s,t}$ are given by (\textcolor{red}{NOTE that if we include these notations we should change our notation for assets from $b$ to $a$. We need to also think about the notion for equity - I use $e$ below, but we are already using that for effective labor units.}): 
+
+\begin{equation}
+\label{eqn:ces_port}
+a_{j,s,t}= \left[\gamma_{a,s}^{\frac{-1}{\ve_{a,s}}}b_{j,s,t}^{\frac{1+\ve_{a.s}}{\ve_{a,s}}}+(1-\gamma_{a,s})^{\frac{-1}{\ve_{a,s}}}e_{j,s,t}^{\frac{1+\ve_{a,s}}{\ve_{a,s}}}\right]^{\frac{\ve_{a,s}}{1+\ve_{a,s}}}
+\end{equation}
+    
+The parameter $\ve_{a,s}$ is the elasticity of substitution between bonds and stocks in the asset portfolio of an age $s$ household.  $\gamma_{a,s}$ is the taste parameter in these preferences (\textcolor{red}{I've written this in the most flexible way, where both parameters depend upon age, but perhaps we just want the taste parameter to vary by age the rate of substitution is constant.}).
+
+Since neither firms of governments default in our model, the rate of return on bonds issued by firms and government will all have the same pretax rate of return, $r_{b,t}$.  
+
+It's not clear whether firm equity will all have the same return.  It seems that multinationals, with the ability to shift profits, may have higher returns than domestic corporations.  In general, firms will earn economic profits and thus have a rate of return in excess of the risk free return, $r_{b,t}$.  If it is the case that some firms earn greater returns than others, I think we may just assume that households own an diversified equity portfolio of all firms and thus earn the average return on equity.  Thus we'll have either a market return for equity that is the average of the heterogeneous returns across firms or the return that is the same for all firms.  We will denote the pretax market turn on equity as $r_{e,t}$.
+
+We introduce further notation that is the after-tax gross return on the each asset composite.  The after-tax gross return on bonds for a household of age $s$, lifetime income group $j$, and in year $t$ is given by:
+
+\begin{equation}
+\rho_{b,j,s,t}=(1+r_{b,t}(1-\tau^{int}(y_{j,s,t})))
+\end{equation}
+
+\textcolor{red}{Note that I've again shifted some notation.  We had used $a$ to denote total income for tax purposes, while I use $y$ above (since I've used $a$ for total assets).  Also, I'm writing the marginal tax rate on interest income as a function of total income, $\tau^{int}(y_{j,s,t})$, rather than using the total tax function.  I think this is helpful for expository purposes.  Is it ok to use the marginal rather than the average tax function?  Seems like we could use either interchangeably.  But if we want to use the total tax function, the notation for the above would be: } 
+
+\begin{equation}
+\rho_{b,j,s,t}=(1+r_{b,t}) - \frac{\partial T_{j,s,t}}{\partial b_{j,s,t}}
+\end{equation}
+
+\textcolor{red}{Either way, we'll want to be sure that when we calibrate this functions we account for the mix of tax exempt and taxable interests realized by household and how that changes across age and income group.  The micro simulation model should be able to help us here.}
+
+
+The after-tax gross return on equity for a household of age $s$, lifetime income group $j$, and in year $t$ is given by:
+
+\begin{equation}
+\rho_{e,j,s,t}=(1+r_{e,t}(1-\tau^{cap}(y_{j,s,t})))
+\end{equation}
+
+Here, $\tau^{cap}$ will be the tax rate on capital income - some mix of the tax on dividends and capital gains from corporate and non-corporate entities.  Recall that we do not explicitly model capital gains realizations nor do we track dividend issues from each representative firm.  Instead, the return to the firms (both from dividends and capital gains) is put into the per period return on equity, $r_{e,t}$.  Thus the tax rate on these returns must be a weighted average of the taxes on dividends and capital gains, where the weighting is given by data on the share of income from capital gains and dividends by age and income group in the data.
+
+We can now write the gross after-tax return on the households total portfolio:
+
+\begin{equation}
+\label{eqn:port_return}
+\rho_{a,j,s,t}a_{j,s,t}=\rho_{b,j,s,t}b_{j,s,t}+\rho_{e,j,s,t}e_{j,s,t}
+\end{equation}
+
+The optimal portfolio is given by the household choosing bonds and stocks to maximize Equation \ref{eqn:port_return} subject to Equation \ref{eqn:ces_port}.  The Lagrangian for this problem is:
+
+\begin{equation}
+\mathcal{L} =  \max_{b_{j,s,t},e_{j,s,t}} \rho_{b,j,s,t}b_{j,s,t} + \rho_{e,j,s,t}e_{j,s,t} + \lambda_{j,s,t}\left(a_{j,s,t} -  \left[\gamma_{a,s}^{\frac{-1}{\ve_{a,s}}}b_{j,s,t}^{\frac{1+\ve_{a.s}}{\ve_{a,s}}}+(1-\gamma_{a,s})^{\frac{-1}{\ve_{a,s}}}e_{j,s,t}^{\frac{1+\ve_{a,s}}{\ve_{a,s}}}\right]^{\frac{\ve_{a,s}}{1+\ve_{a,s}}}\right)
+\end{equation}
+
+Since every variable is subscripted by $j,s,t$ we drop these and write the necessary conditions as:
+
+\begin{equation}
+\label{eqn:port_foc_b}
+\frac{\partial \mathcal{L}}{\partial b}: \rho_{b} = \lambda \gamma_{a,s}^{\frac{-1}{\ve_{a,s}}}b^{\frac{1}{\ve_{a,s}}}\left[\gamma_{a,s}^{\frac{-1}{\ve_{a,s}}}b^{\frac{1+\ve_{a.s}}{\ve_{a,s}}}+(1-\gamma_{a,s})^{\frac{-1}{\ve_{a,s}}}e^{\frac{1+\ve_{a,s}}{\ve_{a,s}}}\right]^{\frac{-1}{1+\ve_{a,s}}}
+\end{equation}
+
+\begin{equation}
+\label{eqn:port_foc_e}
+\frac{\partial \mathcal{L}}{\partial e}: \rho_{e} = \lambda (1- \gamma_{a,s})^{\frac{-1}{\ve_{a,s}}}e^{\frac{1}{\ve_{a,s}}}\left[\gamma_{a,s}^{\frac{-1}{\ve_{a,s}}}b^{\frac{1+\ve_{a.s}}{\ve_{a,s}}}+(1-\gamma_{a,s})^{\frac{-1}{\ve_{a,s}}}e^{\frac{1+\ve_{a,s}}{\ve_{a,s}}}\right]^{\frac{-1}{1+\ve_{a,s}}}
+\end{equation}
+       
+\begin{equation}
+\label{eqn:port_foc_lambda}
+\frac{\partial \mathcal{L}}{\partial \lambda}: a = \left[\gamma_{a,s}^{\frac{-1}{\ve_{a,s}}}b^{\frac{1+\ve_{a.s}}{\ve_{a,s}}}+(1-\gamma_{a,s})^{\frac{-1}{\ve_{a,s}}}e^{\frac{1+\ve_{a,s}}{\ve_{a,s}}}\right]^{\frac{\ve_{a,s}}{1+\ve_{a,s}}}
+\end{equation}
+              
+We can use Equations \ref{eqn:port_foc_b} and \ref{eqn:port_foc_e} to find the ratio of bonds to stocks as (again, suppressing the subscripts):
+
+\begin{equation}
+\label{eqn:port_ratio}
+\frac{b}{e}= \left(\frac{\rho_{b}}{\rho_{e}}\right)^{\ve_{a,s}}\frac{\gamma_{a,s}}{(1-\gamma_{a,s})}
+\end{equation}
+     
+Using Equation \ref{eqn:port_ratio} can then be used with \ref{eqn:port_foc_lambda} to find demand for bonds and stocks separately.  The solution should yield (\textcolor{red}{We should work this out here, I had some trouble, but we know what the solution should be...}):
+
+\begin{equation}
+\label{eqn:bond_demand}
+b_{j,s,t} = \left(\frac{\rho_{b,j,s,t}}{\rho_{e,j,s,t}}\right)^{\ve_{a,s}}\gamma_{a,s}a_{j,s,t}
+\end{equation}     
+
+\begin{equation}
+\label{eqn:equity_demand}
+e_{j,s,t} = \left(\frac{\rho_{e,j,s,t}}{\rho_{b,j,s,t}}\right)^{\ve_{a,s}}(1-\gamma_{a,s})a_{j,s,t}
+\end{equation}     
+
+We can thus find the return to the portfolio as:
+
+\begin{equation}
+\label{eqn:port_return}
+\rho_{a,j,s,t} = \left(\gamma_{a,s}\rho_{b,j,s,t}^{\ve_{a,s}}+(1-\gamma_{a,s})\rho_{e,j,s,t}^{\ve_{a,s}}\right)^{\frac{1}{1+\ve_{a,s}}}
+\end{equation}     
+
+\subsubsection{After-tax return differentials}
+
+I don't think we have any problem in that household have different after tax returns.  Each will hold a different portfolio because of this, but none will have corner solutions because of the CES preferences.  So it's not problem if, for example, the after-tax return to stocks exceed the return to bonds.  This just means households hold relatively more stocks.  
+
+When considering the firms' problems we do need to think about different household having different after-tax returns to equity.  The solution there will be that the firms just chooses a representative household when thinking about maximizing firm value.  The household will be termed the ``marginal investor".  However, we will need to think a bit about which household in the microsimulation model represents this investor.
+       
        
     \subsection{Household's Subutility Function}\label{sec:subutil}
     
