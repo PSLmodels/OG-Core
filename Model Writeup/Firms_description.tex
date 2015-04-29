@@ -5,6 +5,87 @@
 
 
 
+\section{Firms}
+
+There at least one representative firm for each production industry.  Most industries will have a both corporate and non-corporate firms.  Corporate firms may be as many as three - with a domestic corporation, a multi-national parent corporation, and a multi-national subsidiary corporation (the follows the structure of the CORTAX model in terms of the types of corporations).  However, for computational and calibration issues, we will simplify and have just a single multinational corporation for each production industry.  The extent of overseas operations will be a an element of calibration - therefore the degree to which each industries firm is multinational will vary across industry.  
+
+The costs of making this simplification is that it would be more difficult to handle legislation about corporate inversion (but even that isn't handled well in the CORTAX structure).  It also makes it more difficult to do multi-country interactions of tax policy, which is what CORTAX is designed for.  I think out other features, such as a diverse set of industries and corporate and non-corporate firms, are more relevant for US tax policy and are difficult to fit in the CORTAX framework due to computational and calibration issues.
+
+We start by describing a fully domestic corporate firm and it's optimal investment, employment, and financial policies.  We then add the international components that describe the multinational nature of this firm.  Next, we discuss the problem of the non-corporate firm.   The functional forms describing the technologies and constraints of the firms are the same across industry, but the parameter values (of both the policy variant and policy invariant) parameters may vary across sector.  In the notation below, we drop the industry subscripts for clarify of exposition.
+
+\section{The Problem of the Domestic Corporation}
+
+The objective of the firm is to maximize firm value.  Firms do this by choosing investment and labor demand, as well as financial policies such as new equity issues, dividend distributions, and borrowing.  There are a total of six endogenous variables in the domestic corporation's problem: investment demand ($I$), demand of effective labor units ($EL$), the stock of corporate debt ($B$), the amount of new equity issues ($VN$), dividend distributions, $DIV$, and the price of output ($p$).  The firm makes choices over the first five of these variables.  The last is determined by an assumption about market structure.  In particular, we assume that firms have a decreasing returns to scale production function and thus realize economic profits.  \textcolor{red}{We pin down the price of output by assuming that there is free entry into the market.  Thus, firms must set price at marginal cost.  With a decreasing returns to scale function, such a price still produces economic profits.  This condition then provides the final equation to identify our six exogenous variables.} 
+
+
+
+\textcolor{red}{One issue to be resolved is how we handle differential returns on equity across industry and corporate/non-corporate status.  For example, the returns to some firms might differ because they have more overseas profits and/or more ability to shift income overseas to avoid US taxation.}
+
+\subsection{The Value of the Firm}
+
+The household's portfolio problem described in Section \ref{sec:portfolio} allows for differential returns on debt and equity.  It also makes clear that after tax returns differ across savers as they face different tax treatment.  In the formulation of the value of the firm, we use the tax rate on the marginal investor.  \textcolor{red}{It is an open question as to who this investor is, but we will take it to be the domestic investor with the median amount of savings.}  Noting that all individual level tax rates represent those on this marginal investor, we can derive the value of the firm in period $t$, $V_{t}$ in the following way.  The after-tax return on firm equity in period $t$ is given by:
+
+\begin{equation}
+\label{eqn:equity_return}
+r_{e,t} = \frac{(1-\tau^{d}_{t})DIV_{t}+(1-\tau^{g}_{t})(V_{t+1}-V_{t}-VN_{t})}{V_{t}},
+\end{equation} 
+
+\noindent\noindent where $\tau^{d}_{t}$ and $\tau^{g}$ are the period $t$ marginal tax rates on dividends and capital gains for the marginal investor.
+
+\subsubsection{An aside on after-tax rates of return}
+
+\textcolor{red}{Note that the notation for the return on equity differs from that in Section \ref{sec:portfolio}, where $r_{e,t}$ is the before tax return.  In the current section, $r_{e,t}$ denotes the after-tax return for the marginal investor.  To the after-tax return for all investors, we have two options.  First, we can use the decision rules of firms (which imply dividend distributions an firm value) to find the pre-tax rate of return, call it $r^{pre}_{e,t}$:}
+
+\begin{equation}
+r^{pre}_{e,t}=\frac{DIV_{t}+V_{t+1}-V_{t}-VN_{t}}{V_{t}}
+\end{equation}
+
+\noindent\noindent \textcolor{red}{We then define the gross, after-tax return for a individual of lifetime income group $j$, age $s$, in period $t$ as in Section \ref{sec:portfolio}: $\rho_{e,s,j,t}=(1+r^{pre}_{e,t}(1-\tau^{cap}(y_{j,s,t})))$.}
+
+\textcolor{red}{A second way to do this would be to use the firms decision rules to find the after tax return for each investor:}
+
+\begin{equation}
+r_{e,j,s,t} = \frac{(1-\tau^{d}_{j,s,t})DIV_{t}+(1-\tau^{g}_{j,s,t})(V_{t+1}-V_{t}-VN_{t})}{V_{t}},
+\end{equation} 
+
+\noindent\noindent \textcolor{red}{where the gross, after-tax return would be described by $\rho_{e,s,j,t}=1+r_{e,j,s,t}$.}
+
+\textcolor{red}{The main difference between the two methods is that the first allows for the model to include some elements of the dividend clientele hypothesis (depending on the detail on asset holdings imputed to the micro simulation model).  In particular, the tax rate, $\tau^{cap}(y_{j,s,t})$ would be calibrated from the microsimulation model and therefore would be a weighted average of the tax rates on dividends and capital gains for filers in a particular age-income group, where the weighting depends on the amount of capital gains versus dividend income for those filers.  In contract, the second method assumed that all households get the same mix of dividends and capital gain income.  However, the second method benefits from using the model's endogenous split between dividend and capital gains income, rather than assuming that the split is the same over time (but varies in the cross-section).  So, to summarize, the first method allows for cross-sectional variation in the split between dividend and capital gains income (but no variation over time within a filer type), while the second method allows for variation over time (but not across filer types).}
+
+\subsection{The Value of the Firm, cont'd}
+We can rearrange Equation \ref{eqn:equity_return} to solve for $V_{t}$:
+
+\begin{equation}
+\begin{split}
+(1-\tau^{g}_{t})V_{t+1} &=V_{t}r_{e,t}-(1-\tau^{d}_{t})DIV_{t}+(1-\tau^{g}_{t})V_{t}+(1-\tau^{g}_{t})VN_{t}\\
+\implies  V_{t+1} & = \frac{r_{e,t}V{t}-(1-\tau^{d}_{t})DIV_{t}}{(1-\tau^{g}_{t})}+V_{t}+VN_{t} \\
+\implies  V_{t+1} & = V_{t}\left(\frac{r_{e,t}}{(1-\tau^{g}_{t})}+1\right)+VN_{t} - \left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right)DIV_{t} \\
+\implies V_{t} &= \left(\frac{1}{1+\frac{r_{e,t}}{(1-\tau^{g}_{t})}}\right)\left[V_{t+1} - VN_{t} + \left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right)DIV_{t}\right]  \\
+\end{split}
+\end{equation}
+
+\noindent\noindent Letting $ \left(\frac{1}{1+\frac{r_{e,t}}{(1-\tau^{g}_{t})}}\right) = 1+\theta_{t}$, we can solve for $V_{t}$ by repeatedly substituting for $V_{t+1}$ and applying the transversality condition ($\lim_{T \to \infty} \prod_{t=1}^{T}(1+\theta_{t})V_{T}=0$):
+
+\begin{equation}
+\label{eqn:solve_vs}
+\begin{split}
+& V_{t}=\frac{V_{t+1}}{(1+\theta_{t})} - \frac{VN_{t}}{(1+\theta_{t})}  + \frac{\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right)DIV_{t}}{(1+\theta_{t})} \\
+\implies &  V_{t}=\frac{V_{t+2}}{(1+\theta_{t})(1+\theta_{t+1})} - \frac{VN_{t+1}}{(1+\theta_{t})(1+\theta_{t+1})}  + \frac{\left(\frac{1-\tau^{d}_{t+1}}{1-\tau^{g}_{t+1}}\right)DIV_{t+1}}{(1+\theta_{t})(1+\theta_{t+1})} - \frac{VN_{t}}{(1+\theta_{t})}  + \frac{\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right)DIV_{t}}{(1+\theta_{t})} \\
+\implies &  V_{t}= \frac{V_{t+3}}{(1+\theta_{t})(1+\theta_{t+1})(1+\theta_{t+2})} - \frac{VN_{t+2}}{(1+\theta_{t})(1+\theta_{t+1})(1+\theta_{t+2})}  + \frac{\left(\frac{1-\tau^{d}_{t+2}}{1-\tau^{g}_{t+2}}\right)DIV_{t+2}}{(1+\theta_{t})(1+\theta_{t+1})(1+\theta_{t+2})} \\
+& - \frac{VN_{t+1}}{(1+\theta_{t})(1+\theta_{t+1})}  + \frac{\left(\frac{1-\tau^{d}_{t+1}}{1-\tau^{g}_{t+1}}\right)DIV_{t+1}}{(1+\theta_{t})(1+\theta_{t+1})} - \frac{VN_{t}}{(1+\theta_{t})}  + \frac{\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}}\right)DIV_{t}}{(1+\theta_{t})} \\
+& \text{and so on...} \\
+\implies & V_{t}=\underbrace{\prod_{\nu=t}^{\infty}\left(\frac{1}{1+\theta_{\nu}}\right)V_{\infty}}_{=0 \text{ by transversality condition}} - \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[VN_{u} - \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)DIV_{u}\right]\\
+\implies & V_{t}= \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[ \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)DIV_{u}-VN_{u}\right]\\
+\end{split}
+\end{equation}
+
+\subsection{Firm Production}
+
+
+
+***** OLDER MODEL *****
+***** OLDER MODEL *****
+
 \section{The Firm's Problem}
 
 The objective of the firm is to maximize firm value.  Firms do this by choosing investment and labor demand, as well as financial policies such as new equity issues, dividend distributions, and borrowing.  The problem of the firm is the same in each industry, $m$, and in each sector, $C\in\{\text{corporate},\text{non-corporate}\}$, though the parameters defining the problem vary across industry and sector.  Finally, we assume that each industry and sector is competitive, meaning that firms earn zero economic profits.  Since the problem of the firm is the same in each sector and industry, we omit the subscripts $m$, and $C$ that accompany each variable and parameter for the description of the firm's problem.

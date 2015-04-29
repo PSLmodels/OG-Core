@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  23 APR 2015 12:32
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  29 APR 2015 15:51
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -648,7 +648,7 @@ Package: makeidx 2000/03/29 v1.0m Standard LaTeX package
 
 
 Writing index file OSPC_BYU_Dyn.idx
-No file OSPC_BYU_Dyn.aux.
+(./OSPC_BYU_Dyn.aux)
 \openout1 = `OSPC_BYU_Dyn.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
@@ -665,6 +665,7 @@ LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 58.
 LaTeX Font Info:    ... okay on input line 58.
 LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 58.
 LaTeX Font Info:    ... okay on input line 58.
+
 *geometry* driver: auto-detecting
 *geometry* detected driver: pdftex
 *geometry* verbose mode - [ preamble ] result:
@@ -762,6 +763,8 @@ Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 LaTeX Info: Redefining \ref on input line 58.
 LaTeX Info: Redefining \pageref on input line 58.
 LaTeX Info: Redefining \nameref on input line 58.
+
+(./OSPC_BYU_Dyn.out) (./OSPC_BYU_Dyn.out)
 \@outlinefile=\write6
 \openout6 = `OSPC_BYU_Dyn.out'.
 
@@ -788,6 +791,9 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
  []
 
 [1]
+
+Package hyperref Warning: old toc file detected, not used; run LaTeX again.
+
 \tf@toc=\write7
 \openout7 = `OSPC_BYU_Dyn.toc'.
 
@@ -804,6 +810,9 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [1
 
 ]
+
+Package hyperref Warning: old lot file detected, not used; run LaTeX again.
+
 \tf@lot=\write8
 \openout8 = `OSPC_BYU_Dyn.lot'.
 
@@ -815,6 +824,9 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [2
 
 ]
+
+Package hyperref Warning: old lof file detected, not used; run LaTeX again.
+
 \tf@lof=\write9
 \openout9 = `OSPC_BYU_Dyn.lof'.
 
@@ -1083,14 +1095,6 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
  (./Firms_description.tex
 Chapter 3.
 
-LaTeX Warning: Reference `eqn:equity_eqm' on page 20 undefined on input line 28
-.
-
-
-LaTeX Warning: Reference `eqn:equity_eqm' on page 20 undefined on input line 28
-.
-
-
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
@@ -1100,9 +1104,17 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 
 
 ]
-Overfull \hbox (66.69452pt too wide) in paragraph at lines 52--52
-[][][] 
- []
+
+LaTeX Warning: Reference `sec:portfolio' on page 21 undefined on input line 26.
+
+
+
+LaTeX Warning: Reference `sec:portfolio' on page 21 undefined on input line 37.
+
+
+
+LaTeX Warning: Reference `sec:portfolio' on page 21 undefined on input line 43.
+
 
 
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
@@ -1110,13 +1122,14 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
  []
 
 [21]
-Overfull \hbox (13.20996pt too wide) in paragraph at lines 104--104
+
+LaTeX Warning: Reference `eqn:equity_return' on page 22 undefined on input line
+ 56.
+
+
+Overfull \hbox (66.69452pt too wide) in paragraph at lines 80--80
 [][][] 
  []
-
-
-Package natbib Warning: Citation `DZ2013' on page 22 undefined on input line 10
-6.
 
 
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
@@ -1124,24 +1137,23 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
  []
 
 [22]
-
-LaTeX Warning: Reference `eqn:vn' on page 23 undefined on input line 125.
-
-
-LaTeX Warning: Reference `eqn:div' on page 23 undefined on input line 125.
-
-
-LaTeX Warning: Reference `eqn:solve_vs' on page 23 undefined on input line 125.
-
-
-
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
 [23]
 
-LaTeX Warning: Reference `eqn:vs' on page 24 undefined on input line 150.
+LaTeX Warning: Reference `eqn:equity_eqm' on page 24 undefined on input line 10
+5.
+
+
+LaTeX Warning: Reference `eqn:equity_eqm' on page 24 undefined on input line 10
+5.
+
+
+Overfull \hbox (66.69452pt too wide) in paragraph at lines 129--129
+[][][] 
+ []
 
 
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
@@ -1149,32 +1161,7 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
  []
 
 [24]
-Overfull \hbox (3.86404pt too wide) in paragraph at lines 184--184
-[][][] 
- []
-
-
-Overfull \hbox (72.77182pt too wide) in paragraph at lines 194--194
-[][][] 
- []
-
-
-LaTeX Warning: Reference `eqn:foc_i' on page 25 undefined on input line 196.
-
-
-LaTeX Warning: Reference `eqn:foc_i' on page 25 undefined on input line 196.
-
-
-LaTeX Warning: Reference `eqn:foc_i' on page 25 undefined on input line 196.
-
-
-LaTeX Warning: Reference `eqn:foc_i' on page 25 undefined on input line 196.
-
-
-LaTeX Warning: Reference `eqn:foc_i' on page 25 undefined on input line 196.
-
-
-Overfull \hbox (59.98904pt too wide) in paragraph at lines 215--215
+Overfull \hbox (13.20996pt too wide) in paragraph at lines 181--181
 [][][] 
  []
 
@@ -1184,129 +1171,110 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
  []
 
 [25]
-Overfull \hbox (11.05524pt too wide) detected at line 237
-[][] \OT1/cmr/m/n/12 = (1 \OMS/cmsy/m/n/12 ^^@ \OML/cmm/m/it/12 ^^M\OT1/cmr/m/n
-/12 )[][] [][]
- []
+
+Package natbib Warning: Citation `DZ2013' on page 26 undefined on input line 18
+3.
 
 
-LaTeX Warning: Reference `eqn:foc_i' on page 26 undefined on input line 239.
+LaTeX Warning: Reference `eqn:vn' on page 26 undefined on input line 202.
 
 
-LaTeX Warning: Reference `eqn:foc_l' on page 26 undefined on input line 239.
+LaTeX Warning: Reference `eqn:div' on page 26 undefined on input line 202.
 
 
-LaTeX Warning: Reference `eqn:prod_fun' on page 26 undefined on input line 239.
+LaTeX Warning: Reference `eqn:solve_vs' on page 26 undefined on input line 202.
 
-
-
-LaTeX Warning: Reference `eqn:vn' on page 26 undefined on input line 239.
-
-
-LaTeX Warning: Reference `eqn:div' on page 26 undefined on input line 239.
-
-
-Package natbib Warning: Citation `Hayashi1982' on page 26 undefined on input li
-ne 247.
 
 
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[26])
+[26]
+
+LaTeX Warning: Reference `eqn:vs' on page 27 undefined on input line 227.
+
+
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
 [27]
-\openout2 = `Government_description.aux'.
+Overfull \hbox (3.86404pt too wide) in paragraph at lines 261--261
+[][][] 
+ []
 
- (./Government_description.tex
-Chapter 4.
+
+Overfull \hbox (72.77182pt too wide) in paragraph at lines 271--271
+[][][] 
+ []
+
+
+LaTeX Warning: Reference `eqn:foc_i' on page 28 undefined on input line 273.
+
+
+LaTeX Warning: Reference `eqn:foc_i' on page 28 undefined on input line 273.
+
+
+LaTeX Warning: Reference `eqn:foc_i' on page 28 undefined on input line 273.
+
+
+LaTeX Warning: Reference `eqn:foc_i' on page 28 undefined on input line 273.
+
+
+LaTeX Warning: Reference `eqn:foc_i' on page 28 undefined on input line 273.
+
+
+Overfull \hbox (59.98904pt too wide) in paragraph at lines 292--292
+[][][] 
+ []
+
 
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[28
+[28]
+Overfull \hbox (11.05524pt too wide) detected at line 314
+[][] \OT1/cmr/m/n/12 = (1 \OMS/cmsy/m/n/12 ^^@ \OML/cmm/m/it/12 ^^M\OT1/cmr/m/n
+/12 )[][] [][]
+ []
+
+
+LaTeX Warning: Reference `eqn:foc_i' on page 29 undefined on input line 316.
+
+
+LaTeX Warning: Reference `eqn:foc_l' on page 29 undefined on input line 316.
+
+
+LaTeX Warning: Reference `eqn:prod_fun' on page 29 undefined on input line 316.
 
 
 
-]
+LaTeX Warning: Reference `eqn:vn' on page 29 undefined on input line 316.
+
+
+LaTeX Warning: Reference `eqn:div' on page 29 undefined on input line 316.
+
+
+Package natbib Warning: Citation `Hayashi1982' on page 29 undefined on input li
+ne 324.
+
+
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[29]
-
-LaTeX Warning: Reference `chap:firms' on page 30 undefined on input line 142.
-
-)
+[29])
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
 [30]
-\openout2 = `Eqm_description.aux'.
+\openout2 = `Government_description.aux'.
 
- (./Eqm_description.tex
-Chapter 5.
-
-Overfull \hbox (0.7908pt too wide) in paragraph at lines 18--18
-[][][] 
- []
-
-
-LaTeX Warning: Reference `Eqcfoc' on page 31 undefined on input line 20.
-
-
-LaTeX Warning: Reference `Eqnfoc' on page 31 undefined on input line 20.
-
-
-LaTeX Warning: Reference `Eqbfoc' on page 31 undefined on input line 20.
-
-
-LaTeX Warning: Reference `eqn:foc_i' on page 31 undefined on input line 20.
-
-
-LaTeX Warning: Reference `eqn:foc_l' on page 31 undefined on input line 20.
-
-
-LaTeX Warning: Reference `EqMktClrLab' on page 31 undefined on input line 20.
-
-
-LaTeX Warning: Reference `EqMktClrAsset' on page 31 undefined on input line 20.
-
-
-
-LaTeX Warning: Reference `EqMktClrGoods' on page 31 undefined on input line 20.
-
-
-
-LaTeX Warning: Reference `EqPopLawofmotion' on page 31 undefined on input line 
-20.
-
-
-LaTeX Warning: Reference `eqn:prod_fun' on page 31 undefined on input line 20.
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 23--23
-[][][][]|[]\OT1/cmr/bx/n/12 Sta-tion-ary vari-able def-i-ni-
- []
-
-
-LaTeX Warning: Reference `TabStatVars' on page 31 undefined on input line 49.
-
-
-LaTeX Warning: Reference `TabStatVars' on page 31 undefined on input line 49.
-
-
-LaTeX Warning: Reference `Eqnfoc' on page 31 undefined on input line 49.
-
-
-LaTeX Warning: Reference `Eqbfoc' on page 31 undefined on input line 49.
-
+ (./Government_description.tex
+Chapter 4.
 
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
@@ -1317,42 +1285,125 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 
 
 ]
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[32]
+
+LaTeX Warning: Reference `chap:firms' on page 33 undefined on input line 142.
+
+)
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[33]
+\openout2 = `Eqm_description.aux'.
+
+ (./Eqm_description.tex
+Chapter 5.
+
+Overfull \hbox (0.7908pt too wide) in paragraph at lines 18--18
+[][][] 
+ []
+
+
+LaTeX Warning: Reference `Eqcfoc' on page 34 undefined on input line 20.
+
+
+LaTeX Warning: Reference `Eqnfoc' on page 34 undefined on input line 20.
+
+
+LaTeX Warning: Reference `Eqbfoc' on page 34 undefined on input line 20.
+
+
+LaTeX Warning: Reference `eqn:foc_i' on page 34 undefined on input line 20.
+
+
+LaTeX Warning: Reference `eqn:foc_l' on page 34 undefined on input line 20.
+
+
+LaTeX Warning: Reference `EqMktClrLab' on page 34 undefined on input line 20.
+
+
+LaTeX Warning: Reference `EqMktClrAsset' on page 34 undefined on input line 20.
+
+
+
+LaTeX Warning: Reference `EqMktClrGoods' on page 34 undefined on input line 20.
+
+
+
+LaTeX Warning: Reference `EqPopLawofmotion' on page 34 undefined on input line 
+20.
+
+
+LaTeX Warning: Reference `eqn:prod_fun' on page 34 undefined on input line 20.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 23--23
+[][][][]|[]\OT1/cmr/bx/n/12 Sta-tion-ary vari-able def-i-ni-
+ []
+
+
+LaTeX Warning: Reference `TabStatVars' on page 34 undefined on input line 49.
+
+
+LaTeX Warning: Reference `TabStatVars' on page 34 undefined on input line 49.
+
+
+LaTeX Warning: Reference `Eqnfoc' on page 34 undefined on input line 49.
+
+
+LaTeX Warning: Reference `Eqbfoc' on page 34 undefined on input line 49.
+
+
+Overfull \hbox (18.0675pt too wide) has occurred while \output is active
+[][][][][][] 
+ []
+
+[34
+
+
+
+]
 Underfull \hbox (badness 10000) in paragraph at lines 94--95
 
  []
 
 
-LaTeX Warning: Reference `EqEulerLabStat' on page 32 undefined on input line 10
+LaTeX Warning: Reference `EqEulerLabStat' on page 35 undefined on input line 10
 0.
 
 
-LaTeX Warning: Reference `EqEulerSavStat' on page 32 undefined on input line 10
+LaTeX Warning: Reference `EqEulerSavStat' on page 35 undefined on input line 10
 0.
 
 
-LaTeX Warning: Reference `EqEulerSavEpSstat' on page 32 undefined on input line
+LaTeX Warning: Reference `EqEulerSavEpSstat' on page 35 undefined on input line
  100.
 
 
-LaTeX Warning: Reference `EqFOCwageStat' on page 32 undefined on input line 101
+LaTeX Warning: Reference `EqFOCwageStat' on page 35 undefined on input line 101
 .
 
 
-LaTeX Warning: Reference `EqFOCrate' on page 32 undefined on input line 101.
+LaTeX Warning: Reference `EqFOCrate' on page 35 undefined on input line 101.
 
 
-LaTeX Warning: Reference `EqMktClrLab' on page 32 undefined on input line 102.
+LaTeX Warning: Reference `EqMktClrLab' on page 35 undefined on input line 102.
 
 
-LaTeX Warning: Reference `EqMktClrAsset' on page 32 undefined on input line 102
+LaTeX Warning: Reference `EqMktClrAsset' on page 35 undefined on input line 102
 .
 
 
-LaTeX Warning: Reference `EqMktClrGoods' on page 32 undefined on input line 102
+LaTeX Warning: Reference `EqMktClrGoods' on page 35 undefined on input line 102
 .
 
 
-LaTeX Warning: Reference `AppPopGrowth' on page 32 undefined on input line 103.
+LaTeX Warning: Reference `AppPopGrowth' on page 35 undefined on input line 103.
 
 
 
@@ -1361,7 +1412,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 108--109
  []
 
 
-LaTeX Warning: Reference `chap:model_soln' on page 32 undefined on input line 1
+LaTeX Warning: Reference `chap:model_soln' on page 35 undefined on input line 1
 10.
 
 
@@ -1369,9 +1420,9 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[32]
+[35]
 
-LaTeX Warning: Reference `DefEquilSS' on page 33 undefined on input line 188.
+LaTeX Warning: Reference `DefEquilSS' on page 36 undefined on input line 188.
 
 
 Overfull \hbox (8.83057pt too wide) in paragraph at lines 190--192
@@ -1385,30 +1436,30 @@ Underfull \hbox (badness 10000) in paragraph at lines 193--194
  []
 
 
-LaTeX Warning: Reference `EqEulerLabStat' on page 33 undefined on input line 20
+LaTeX Warning: Reference `EqEulerLabStat' on page 36 undefined on input line 20
 3.
 
 
-LaTeX Warning: Reference `EqEulerSavStat' on page 33 undefined on input line 20
+LaTeX Warning: Reference `EqEulerSavStat' on page 36 undefined on input line 20
 3.
 
 
-LaTeX Warning: Reference `EqEulerSavEpSstat' on page 33 undefined on input line
+LaTeX Warning: Reference `EqEulerSavEpSstat' on page 36 undefined on input line
  203.
 
 
-LaTeX Warning: Reference `EqFOCwageStat' on page 33 undefined on input line 204
+LaTeX Warning: Reference `EqFOCwageStat' on page 36 undefined on input line 204
 .
 
 
-LaTeX Warning: Reference `EqFOCrate' on page 33 undefined on input line 204.
+LaTeX Warning: Reference `EqFOCrate' on page 36 undefined on input line 204.
 
 
-LaTeX Warning: Reference `EqMktClrLabStat' on page 33 undefined on input line 2
+LaTeX Warning: Reference `EqMktClrLabStat' on page 36 undefined on input line 2
 05.
 
 
-LaTeX Warning: Reference `EqMktClrCapStat' on page 33 undefined on input line 2
+LaTeX Warning: Reference `EqMktClrCapStat' on page 36 undefined on input line 2
 05.
 
 
@@ -1417,23 +1468,23 @@ Underfull \hbox (badness 10000) in paragraph at lines 210--211
  []
 
 
-LaTeX Warning: Reference `EqEulerLabStat' on page 33 undefined on input line 21
+LaTeX Warning: Reference `EqEulerLabStat' on page 36 undefined on input line 21
 2.
 
 
-LaTeX Warning: Reference `EqEulerSavEpSstat' on page 33 undefined on input line
+LaTeX Warning: Reference `EqEulerSavEpSstat' on page 36 undefined on input line
  212.
 
 
-LaTeX Warning: Reference `EqEulerLabStat' on page 33 undefined on input line 21
+LaTeX Warning: Reference `EqEulerLabStat' on page 36 undefined on input line 21
 2.
 
 
-LaTeX Warning: Reference `EqEulerSavStat' on page 33 undefined on input line 21
+LaTeX Warning: Reference `EqEulerSavStat' on page 36 undefined on input line 21
 2.
 
 
-LaTeX Warning: Reference `EqEulerSavEpSstat' on page 33 undefined on input line
+LaTeX Warning: Reference `EqEulerSavEpSstat' on page 36 undefined on input line
  212.
 
 
@@ -1448,33 +1499,33 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[33]
+[36]
 
-LaTeX Warning: Reference `DefEquilNonSS' on page 34 undefined on input line 220
+LaTeX Warning: Reference `DefEquilNonSS' on page 37 undefined on input line 220
 .
 
 
-LaTeX Warning: Reference `EqMktClrCapStat' on page 34 undefined on input line 2
+LaTeX Warning: Reference `EqMktClrCapStat' on page 37 undefined on input line 2
 22.
 
 
-LaTeX Warning: Reference `EqMktClrLabStat' on page 34 undefined on input line 2
+LaTeX Warning: Reference `EqMktClrLabStat' on page 37 undefined on input line 2
 22.
 
 
-LaTeX Warning: Reference `EqFOCwageStat' on page 34 undefined on input line 222
+LaTeX Warning: Reference `EqFOCwageStat' on page 37 undefined on input line 222
 .
 
 
-LaTeX Warning: Reference `EqFOCrate' on page 34 undefined on input line 222.
+LaTeX Warning: Reference `EqFOCrate' on page 37 undefined on input line 222.
 
-<images/KpathTPI.png, id=324, 578.16pt x 433.62pt>
+<images/KpathTPI.png, id=347, 578.16pt x 433.62pt>
 File: images/KpathTPI.png Graphic file (type png)
  <use images/KpathTPI.png>
 Package pdftex.def Info: images/KpathTPI.png used on input line 226.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-<images/LpathTPI.png, id=326, 578.16pt x 433.62pt>
+<images/LpathTPI.png, id=349, 578.16pt x 433.62pt>
 File: images/LpathTPI.png Graphic file (type png)
  <use images/LpathTPI.png>
 Package pdftex.def Info: images/LpathTPI.png used on input line 231.
@@ -1484,21 +1535,21 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[34]
+[37]
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[35 <./images/KpathTPI.png> <./images/LpathTPI.png>]
+[38 <./images/KpathTPI.png> <./images/LpathTPI.png>]
 \openout2 = `Model_soln.aux'.
 
  (./Model_soln.tex
 Chapter 6.
 
-LaTeX Warning: Reference `DefEquilSS' on page 36 undefined on input line 16.
+LaTeX Warning: Reference `DefEquilSS' on page 39 undefined on input line 16.
 
 
-LaTeX Warning: Reference `AppPopGrowth' on page 36 undefined on input line 20.
+LaTeX Warning: Reference `AppPopGrowth' on page 39 undefined on input line 20.
 
 LaTeX Font Info:    Try loading font information for OMS+cmr on input line 31.
 (/usr/local/texlive/2012/texmf-dist/tex/latex/base/omscmr.fd
@@ -1511,36 +1562,36 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[36
+[39
 
 
 
 ]
 
-Package natbib Warning: Citation `AuerbachKotlikoff:1987' on page 37 undefined 
+Package natbib Warning: Citation `AuerbachKotlikoff:1987' on page 40 undefined 
 on input line 148.
 
 
-Package natbib Warning: Citation `StokeyLucas:1989' on page 37 undefined on inp
+Package natbib Warning: Citation `StokeyLucas:1989' on page 40 undefined on inp
 ut line 148.
 
 
-LaTeX Warning: Reference `DefEquilSS' on page 37 undefined on input line 150.
+LaTeX Warning: Reference `DefEquilSS' on page 40 undefined on input line 150.
 
 
-LaTeX Warning: Reference `EqSavDist' on page 37 undefined on input line 153.
+LaTeX Warning: Reference `EqSavDist' on page 40 undefined on input line 153.
 
 
-LaTeX Warning: Reference `SecMCEqlbm' on page 37 undefined on input line 154.
+LaTeX Warning: Reference `SecMCEqlbm' on page 40 undefined on input line 154.
 
 
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[37]
+[40]
 
-LaTeX Warning: Reference `EqMktClrCapStat' on page 38 undefined on input line 1
+LaTeX Warning: Reference `EqMktClrCapStat' on page 41 undefined on input line 1
 58.
 
 pdfTeX warning (ext4): destination with the same identifier (name{equation.6.2.
@@ -1568,18 +1619,18 @@ icate ignored
 l.159   \begin{equation}
                         \label{EqMktClrCapStat1}
 
-LaTeX Warning: Reference `EqTotBeq' on page 38 undefined on input line 162.
+LaTeX Warning: Reference `EqTotBeq' on page 41 undefined on input line 162.
 
 
-Package natbib Warning: Citation `EvansPhillips:2014' on page 38 undefined on i
+Package natbib Warning: Citation `EvansPhillips:2014' on page 41 undefined on i
 nput line 168.
 
 
-LaTeX Warning: Reference `EqEulerLabStat' on page 38 undefined on input line 17
+LaTeX Warning: Reference `EqEulerLabStat' on page 41 undefined on input line 17
 0.
 
 
-LaTeX Warning: Reference `EqEulerSavEpSstat' on page 38 undefined on input line
+LaTeX Warning: Reference `EqEulerSavEpSstat' on page 41 undefined on input line
  170.
 
 
@@ -1587,25 +1638,25 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[38]
+[41]
 
-LaTeX Warning: Reference `EqEulerSlabt1' on page 39 undefined on input line 184
+LaTeX Warning: Reference `EqEulerSlabt1' on page 42 undefined on input line 184
 .
 
 
-LaTeX Warning: Reference `EqEulerSbeqt1' on page 39 undefined on input line 184
+LaTeX Warning: Reference `EqEulerSbeqt1' on page 42 undefined on input line 184
 .
 
 
-LaTeX Warning: Reference `EqEulerLabStat' on page 39 undefined on input line 18
+LaTeX Warning: Reference `EqEulerLabStat' on page 42 undefined on input line 18
 6.
 
 
-LaTeX Warning: Reference `EqEulerSavStat' on page 39 undefined on input line 18
+LaTeX Warning: Reference `EqEulerSavStat' on page 42 undefined on input line 18
 6.
 
 
-LaTeX Warning: Reference `EqEulerSavEpSstat' on page 39 undefined on input line
+LaTeX Warning: Reference `EqEulerSavEpSstat' on page 42 undefined on input line
  186.
 
 
@@ -1613,45 +1664,45 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[39]
+[42]
 
-LaTeX Warning: Reference `EqEulerSm1labt1' on page 40 undefined on input line 2
+LaTeX Warning: Reference `EqEulerSm1labt1' on page 43 undefined on input line 2
 12.
 
 
-LaTeX Warning: Reference `EqEulerSm1savt1' on page 40 undefined on input line 2
+LaTeX Warning: Reference `EqEulerSm1savt1' on page 43 undefined on input line 2
 12.
 
 
-LaTeX Warning: Reference `EqEulerSlabt2' on page 40 undefined on input line 212
+LaTeX Warning: Reference `EqEulerSlabt2' on page 43 undefined on input line 212
 .
 
 
-LaTeX Warning: Reference `EqEulerSsavt2' on page 40 undefined on input line 212
+LaTeX Warning: Reference `EqEulerSsavt2' on page 43 undefined on input line 212
 .
 
 
-LaTeX Warning: Reference `EqEulerLabStat' on page 40 undefined on input line 21
+LaTeX Warning: Reference `EqEulerLabStat' on page 43 undefined on input line 21
 4.
 
 
-LaTeX Warning: Reference `EqEulerSavStat' on page 40 undefined on input line 21
+LaTeX Warning: Reference `EqEulerSavStat' on page 43 undefined on input line 21
 4.
 
 
-LaTeX Warning: Reference `EqEulerSavEpSstat' on page 40 undefined on input line
+LaTeX Warning: Reference `EqEulerSavEpSstat' on page 43 undefined on input line
  214.
 
 
-LaTeX Warning: Reference `EqEulerslabt' on page 40 undefined on input line 233.
+LaTeX Warning: Reference `EqEulerslabt' on page 43 undefined on input line 233.
 
 
 
-LaTeX Warning: Reference `EqEulersSavt' on page 40 undefined on input line 233.
+LaTeX Warning: Reference `EqEulersSavt' on page 43 undefined on input line 233.
 
 
 
-LaTeX Warning: Reference `EqEulerSsavt' on page 40 undefined on input line 233.
+LaTeX Warning: Reference `EqEulerSsavt' on page 43 undefined on input line 233.
 
 
 
@@ -1659,16 +1710,16 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[40]
+[43]
 
-LaTeX Warning: Reference `FigTPIdiag' on page 41 undefined on input line 235.
+LaTeX Warning: Reference `FigTPIdiag' on page 44 undefined on input line 235.
 
 
 Underfull \hbox (badness 2088) in paragraph at lines 238--238
 [][][][]|[]\OT1/cmr/bx/n/12 Di-a-gram of TPI so-lu-tion method
  []
 
-<images/TPIdiag.pdf, id=393, 513.57974pt x 675.72452pt>
+<images/TPIdiag.pdf, id=416, 513.57974pt x 675.72452pt>
 File: images/TPIdiag.pdf Graphic file (type pdf)
 
 <use images/TPIdiag.pdf>
@@ -1676,7 +1727,7 @@ Package pdftex.def Info: images/TPIdiag.pdf used on input line 239.
 (pdftex.def)             Requested size: 513.57848pt x 675.72287pt.
 
 
-LaTeX Warning: Reference `DefEquilNonSS' on page 41 undefined on input line 267
+LaTeX Warning: Reference `DefEquilNonSS' on page 44 undefined on input line 267
 .
 
 
@@ -1697,54 +1748,54 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[41]
+[44]
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[42 <./images/TPIdiag.pdf>]
+[45 <./images/TPIdiag.pdf>]
 
-LaTeX Warning: Reference `TabExogVars' on page 43 undefined on input line 287.
-
-
-LaTeX Warning: Reference `AppPopGrowth' on page 43 undefined on input line 289.
+LaTeX Warning: Reference `TabExogVars' on page 46 undefined on input line 287.
 
 
+LaTeX Warning: Reference `AppPopGrowth' on page 46 undefined on input line 289.
 
-LaTeX Warning: Reference `EqMktClrCapStat' on page 43 undefined on input line 2
+
+
+LaTeX Warning: Reference `EqMktClrCapStat' on page 46 undefined on input line 2
 92.
 
 
-LaTeX Warning: Reference `EqTotBeqStat1' on page 43 undefined on input line 292
+LaTeX Warning: Reference `EqTotBeqStat1' on page 46 undefined on input line 292
 .
 
 
-LaTeX Warning: Reference `EqFOCwageStat' on page 43 undefined on input line 296
+LaTeX Warning: Reference `EqFOCwageStat' on page 46 undefined on input line 296
 .
 
 
-LaTeX Warning: Reference `EqFOCrate' on page 43 undefined on input line 296.
+LaTeX Warning: Reference `EqFOCrate' on page 46 undefined on input line 296.
 
 
-LaTeX Warning: Reference `EqEulerLabStat' on page 43 undefined on input line 30
+LaTeX Warning: Reference `EqEulerLabStat' on page 46 undefined on input line 30
 0.
 
 
-LaTeX Warning: Reference `EqEulerSavStat' on page 43 undefined on input line 30
+LaTeX Warning: Reference `EqEulerSavStat' on page 46 undefined on input line 30
 0.
 
 
-LaTeX Warning: Reference `EqEulerSavEpSstat' on page 43 undefined on input line
+LaTeX Warning: Reference `EqEulerSavEpSstat' on page 46 undefined on input line
  300.
 
 
-LaTeX Warning: Reference `FigTPIdiag' on page 43 undefined on input line 300.
+LaTeX Warning: Reference `FigTPIdiag' on page 46 undefined on input line 300.
 
 
-LaTeX Warning: Reference `FigTPIdiag' on page 43 undefined on input line 301.
+LaTeX Warning: Reference `FigTPIdiag' on page 46 undefined on input line 301.
 
 
-LaTeX Warning: Reference `EqTPIconverge' on page 43 undefined on input line 307
+LaTeX Warning: Reference `EqTPIconverge' on page 46 undefined on input line 307
 .
 
 
@@ -1752,9 +1803,9 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[43]
+[46]
 
-LaTeX Warning: Reference `EqTPInewpath' on page 44 undefined on input line 308.
+LaTeX Warning: Reference `EqTPInewpath' on page 47 undefined on input line 308.
 
 
 )
@@ -1762,7 +1813,7 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[44]
+[47]
 Chapter 7.
 
 Overfull \hbox (7.2837pt too wide) in paragraph at lines 181--181
@@ -1770,22 +1821,22 @@ Overfull \hbox (7.2837pt too wide) in paragraph at lines 181--181
  []
 
 
-LaTeX Warning: Reference `SecPopDyn' on page 45 undefined on input line 183.
+LaTeX Warning: Reference `SecPopDyn' on page 48 undefined on input line 183.
 
 
-LaTeX Warning: Reference `EqPopLawofmotion' on page 45 undefined on input line 
+LaTeX Warning: Reference `EqPopLawofmotion' on page 48 undefined on input line 
 188.
 
 
-LaTeX Warning: Reference `EqPopLawofmotion' on page 45 undefined on input line 
+LaTeX Warning: Reference `EqPopLawofmotion' on page 48 undefined on input line 
 189.
 
 
-LaTeX Warning: Reference `EqPopLawofmotion' on page 45 undefined on input line 
+LaTeX Warning: Reference `EqPopLawofmotion' on page 48 undefined on input line 
 190.
 
 
-LaTeX Warning: Reference `EqPopGrowth' on page 45 undefined on input line 197.
+LaTeX Warning: Reference `EqPopGrowth' on page 48 undefined on input line 197.
 
 
 Overfull \hbox (3.74713pt too wide) in paragraph at lines 216--216
@@ -1797,7 +1848,7 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[45
+[48
 
 
 pdfTeX warning (ext4): destination with the same identifier (name{equation.7.1.
@@ -1808,25 +1859,25 @@ pdfTeX warning (ext4): destination with the same identifier (name{equation.7.1.
 l.216   \end{equation}
                       ]
 
-LaTeX Warning: Reference `EqPopLOMbig' on page 46 undefined on input line 219.
+LaTeX Warning: Reference `EqPopLOMbig' on page 49 undefined on input line 219.
 
 
-LaTeX Warning: Reference `EqPopLOMmat' on page 46 undefined on input line 223.
+LaTeX Warning: Reference `EqPopLOMmat' on page 49 undefined on input line 223.
 
 
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[46]
+[49]
 
-Package natbib Warning: Citation `Suzumura:1983' on page 47 undefined on input 
+Package natbib Warning: Citation `Suzumura:1983' on page 50 undefined on input 
 line 279.
 
 
-LaTeX Warning: Reference `FigPerTime' on page 47 undefined on input line 279.
+LaTeX Warning: Reference `FigPerTime' on page 50 undefined on input line 279.
 
-<images/FigPerTime.pdf, id=444, 618.18048pt x 338.08908pt>
+<images/FigPerTime.pdf, id=467, 618.18048pt x 338.08908pt>
 File: images/FigPerTime.pdf Graphic file (type pdf)
 
 <use images/FigPerTime.pdf>
@@ -1834,44 +1885,44 @@ Package pdftex.def Info: images/FigPerTime.pdf used on input line 283.
 (pdftex.def)             Requested size: 618.17897pt x 338.08826pt.
 
 
-LaTeX Warning: Reference `FigInitPopDist' on page 47 undefined on input line 28
+LaTeX Warning: Reference `FigInitPopDist' on page 50 undefined on input line 28
 6.
 
 
-Package natbib Warning: Citation `Census:2014' on page 47 undefined on input li
+Package natbib Warning: Citation `Census:2014' on page 50 undefined on input li
 ne 286.
 
 
-LaTeX Warning: Reference `FigFertRates' on page 47 undefined on input line 286.
+LaTeX Warning: Reference `FigFertRates' on page 50 undefined on input line 286.
 
 
 
-Package natbib Warning: Citation `NVSR:2010' on page 47 undefined on input line
+Package natbib Warning: Citation `NVSR:2010' on page 50 undefined on input line
  286.
 
 
-LaTeX Warning: Reference `FigMortRates' on page 47 undefined on input line 286.
+LaTeX Warning: Reference `FigMortRates' on page 50 undefined on input line 286.
 
 
 
-Package natbib Warning: Citation `SocSec:2010' on page 47 undefined on input li
+Package natbib Warning: Citation `SocSec:2010' on page 50 undefined on input li
 ne 286.
 
-<images/omega_init.png, id=445, 578.16pt x 433.62pt>
+<images/omega_init.png, id=468, 578.16pt x 433.62pt>
 File: images/omega_init.png Graphic file (type png)
 
 <use images/omega_init.png>
 Package pdftex.def Info: images/omega_init.png used on input line 290.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-<images/fert_rates.png, id=446, 578.16pt x 433.62pt>
+<images/fert_rates.png, id=469, 578.16pt x 433.62pt>
 File: images/fert_rates.png Graphic file (type png)
 
 <use images/fert_rates.png>
 Package pdftex.def Info: images/fert_rates.png used on input line 295.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-<images/mort_rates.png, id=447, 578.16pt x 433.62pt>
+<images/mort_rates.png, id=470, 578.16pt x 433.62pt>
 File: images/mort_rates.png Graphic file (type png)
 
 <use images/mort_rates.png>
@@ -1879,15 +1930,15 @@ Package pdftex.def Info: images/mort_rates.png used on input line 300.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
 
-LaTeX Warning: Reference `FigImmigRates' on page 47 undefined on input line 303
+LaTeX Warning: Reference `FigImmigRates' on page 50 undefined on input line 303
 .
 
 
-Package natbib Warning: Citation `Census:2014' on page 47 undefined on input li
+Package natbib Warning: Citation `Census:2014' on page 50 undefined on input li
 ne 303.
 
 
-LaTeX Warning: Reference `EqPopLawofmotionStat' on page 47 undefined on input l
+LaTeX Warning: Reference `EqPopLawofmotionStat' on page 50 undefined on input l
 ine 303.
 
 
@@ -1895,28 +1946,28 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[47]
+[50]
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[48 <./images/FigPerTime.pdf> <./images/omega_init.png>]
+[51 <./images/FigPerTime.pdf> <./images/omega_init.png>]
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[49 <./images/fert_rates.png> <./images/mort_rates.png>]
-<images/imm_rates.png, id=492, 578.16pt x 433.62pt>
+[52 <./images/fert_rates.png> <./images/mort_rates.png>]
+<images/imm_rates.png, id=514, 578.16pt x 433.62pt>
 File: images/imm_rates.png Graphic file (type png)
  <use images/imm_rates.png>
 Package pdftex.def Info: images/imm_rates.png used on input line 307.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
 
-LaTeX Warning: Reference `FigPopPath' on page 50 undefined on input line 310.
+LaTeX Warning: Reference `FigPopPath' on page 53 undefined on input line 310.
 
 
-LaTeX Warning: Reference `FigSSpopdist' on page 50 undefined on input line 310.
+LaTeX Warning: Reference `FigSSpopdist' on page 53 undefined on input line 310.
 
 
 
@@ -1924,7 +1975,7 @@ Underfull \hbox (badness 2197) in paragraph at lines 313--313
 [][][][]|[]\OT1/cmr/bx/n/12 Fore-cast time path of pop-u-la-tion
  []
 
-<images/Population_growthrate.png, id=493, 578.16pt x 433.62pt>
+<images/Population_growthrate.png, id=515, 578.16pt x 433.62pt>
 File: images/Population_growthrate.png Graphic file (type png)
 
 <use images/Population_growthrate.png>
@@ -1932,7 +1983,7 @@ Package pdftex.def Info: images/Population_growthrate.png used on input line 31
 4.
 (pdftex.def)             Requested size: 578.15858pt x 433.61894pt.
 
-<images/omega_ss.png, id=494, 578.16pt x 433.62pt>
+<images/omega_ss.png, id=516, 578.16pt x 433.62pt>
 File: images/omega_ss.png Graphic file (type png)
  <use images/omega_ss.png>
 Package pdftex.def Info: images/omega_ss.png used on input line 319.
@@ -1942,12 +1993,12 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[50 <./images/imm_rates.png>]
+[53 <./images/imm_rates.png>]
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[51 <./images/Population_growthrate.png> <./images/omega_ss.png>]
+[54 <./images/Population_growthrate.png> <./images/omega_ss.png>]
 Missing character: There is no â in font cmr12!
 Missing character: There is no € in font cmr12!
 Missing character: There is no œ in font cmr12!
@@ -1959,14 +2010,14 @@ Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[52
+[55
 
 ]
 Overfull \hbox (18.0675pt too wide) has occurred while \output is active
 [][][][][][] 
  []
 
-[53]
+[56]
 No file OSPC_BYU_Dyn.bbl.
 No file OSPC_BYU_Dyn.ind.
 
@@ -1985,8 +2036,8 @@ Package rerunfilecheck Warning: File `OSPC_BYU_Dyn.out' has changed.
 (rerunfilecheck)                or use package `bookmark'.
 
 Package rerunfilecheck Info: Checksums for `OSPC_BYU_Dyn.out':
-(rerunfilecheck)             Before: <no file>
-(rerunfilecheck)             After:  0AD4DC8AE1284B7B49B365A8D5EDADF9;2231.
+(rerunfilecheck)             Before: D41D8CD98F00B204E9800998ECF8427E;0
+(rerunfilecheck)             After:  1755BDA40B0374EF67CD4CC75C1EAAC2;2527.
 
 LaTeX Warning: There were undefined references.
 
@@ -1996,10 +2047,10 @@ LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 401.
  ) 
 Here is how much of TeX's memory you used:
- 16874 strings out of 493488
- 294433 string characters out of 3141326
+ 16894 strings out of 493488
+ 294715 string characters out of 3141326
  378322 words of memory out of 3000000
- 19565 multiletter control sequences out of 15000+200000
+ 19566 multiletter control sequences out of 15000+200000
  24469 words of font info for 90 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
  56i,50n,63p,2086b,1831s stack positions out of 5000i,500n,10000p,200000b,50000s
@@ -2029,10 +2080,10 @@ st/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/local/texlive/2012/texmf-dist
 /fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2012/texmf-dist/f
 onts/type1/public/amsfonts/cm/cmti12.pfb></usr/local/texlive/2012/texmf-dist/fo
 nts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on OSPC_BYU_Dyn.pdf (55 pages, 1294211 bytes).
+Output written on OSPC_BYU_Dyn.pdf (58 pages, 1305677 bytes).
 PDF statistics:
- 663 PDF objects out of 1000 (max. 8388607)
- 539 compressed objects within 6 object streams
- 253 named destinations out of 1000 (max. 500000)
+ 687 PDF objects out of 1000 (max. 8388607)
+ 560 compressed objects within 6 object streams
+ 266 named destinations out of 1000 (max. 500000)
  63 words of extra memory for PDF output out of 10000 (max. 10000000)
 
