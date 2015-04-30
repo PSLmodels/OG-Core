@@ -30,14 +30,14 @@ The household's portfolio problem described in Section \ref{sec:portfolio} allow
 r_{e,t} = \frac{(1-\tau^{d}_{t})DIV_{t}+(1-\tau^{g}_{t})(V_{t+1}-V_{t}-VN_{t})}{V_{t}},
 \end{equation} 
 
-\noindent\noindent where $\tau^{d}_{t}$ and $\tau^{g}$ are the period $t$ marginal tax rates on dividends and capital gains for the marginal investor.
+\noindent\noindent where  $VN_{t}$ are new equity issues in period $t$ (that dilute the value of period $t$ shareholders) and $DIV_{t}$ are dividends distributed in period $t$. The policy parameters $\tau^{d}_{t}$ and $\tau^{g}$ are the period $t$ marginal tax rates on dividends and capital gains for the marginal investor.
 
 \subsubsection{An aside on after-tax rates of return}
 
 \textcolor{red}{Note that the notation for the return on equity differs from that in Section \ref{sec:portfolio}, where $r_{e,t}$ is the before tax return.  In the current section, $r_{e,t}$ denotes the after-tax return for the marginal investor.  To the after-tax return for all investors, we have two options.  First, we can use the decision rules of firms (which imply dividend distributions an firm value) to find the pre-tax rate of return, call it $r^{pre}_{e,t}$:}
 
 \begin{equation}
-r^{pre}_{e,t}=\frac{DIV_{t}+V_{t+1}-V_{t}-VN_{t}}{V_{t}}
+r^{pre}_{e,t}=\frac{DIV_{t}+V_{t+1}-V_{t}-VN_{t}}{V_{t}},
 \end{equation}
 
 \noindent\noindent \textcolor{red}{We then define the gross, after-tax return for a individual of lifetime income group $j$, age $s$, in period $t$ as in Section \ref{sec:portfolio}: $\rho_{e,s,j,t}=(1+r^{pre}_{e,t}(1-\tau^{cap}(y_{j,s,t})))$.}
@@ -81,10 +81,236 @@ We can rearrange Equation \ref{eqn:equity_return} to solve for $V_{t}$:
 
 \subsection{Firm Production}
 
+Firm's combine capital, $K$, and effective labor, $EL$, with a fixed factor of production, $A$ to produce output, $X$.  We can think of the fixed factor of production as ``location specific capital".  It is fixed in the sense that its supply is perfectly inelastic.  It is location specific in the sense that it is proportional to the size of the population in the firm's home country at time $t$. \textcolor{red}{CORTAX documentation at first suggests this factor is chosen optimally by the firm, but there is not first order condition for this choice shown.  The documentation does state that this factor is paid its marginal product.  So there are only economic profits before you account for the return to this factor of production.  I'm also not sure if we need this fixed factor of production to be proportional to the population.  CORTAX says yes so that you don't have productivity differential arising from differences in country size.  They consider multi-country model, but only steady state.  Do we need something similar so productivity doesn't depend upon population at time $t$?}  We write the amount of output produced as a function of this fixed factor and the value added, $VA$, from the input of capital and labor:
+
+\begin{equation}
+X_{t} = A_{t}(VA_{t})^{\alpha_{v}},
+\end{equation} 
+
+\noindent\noindent where $\alpha_{v}$ is the share of output attributable to the firm's value added and the fixed factor of production is given by:
+
+\begin{equation}
+A_{t} = (A_{0,t}\omega_{t}N_{t})^{1-\alpha_{v}}
+\end{equation}
+
+\noindent\noindent  So the input from fixed factor of production used by the firm is given by the level of total factor productivity (TFP), $A_{0,t}$, and a exogenous share of the population, $N_{t}$ where the share is given by the parameter $\omega_{t}$ (\textcolor{red}{Not sure if we want this to vary by time, or just across production industry.}).  The share parameters must sum to one.  That is, $\sum_{m=1}^{M} \omega_{m,t} = 1$.     We assume that TFP grows at the same rate across industry, with the growth rate given by $g_{a}$.  The value added is given by a CES function:
+
+\begin{equation}
+\label{eqn:prod_fun}
+F(A_{0,t},K_{t},EL_{t})=VA_{t} =A_{0,t} \left[(\gamma_{})^{1/\epsilon_{}}(K_{t})^{(\epsilon-1)/\epsilon_{}}+(1-\gamma_{})^{1/\epsilon_{}}(e^{g_{y}t}EL_{t})^{(\epsilon_{}-1)/\epsilon_{}}\right]^{(\epsilon_{}/(\epsilon_{}-1))},
+\end{equation}
+
+\noindent\noindent where $\epsilon$ gives the elasticity of substitution between capital and labor and $\gamma$ is the share parameter in the CES production function.  Effective labor units are affected by labor augmenting technological change.  The growth rate of this technology is give by $g_{y}$.  If $\alpha_{v}<1$, then the production function exhibits decreasing returns to scale with respect the firm's inputs of capital and labor.
+
+We can derive the marginal products of capital and labor as:
+
+\begin{equation}
+\label{eqn:mpk}
+MPK_{t}=\frac{\partial X_{t}}{\partial K_{t}}=A_{0,t}^{\frac{\epsilon-1}{\epsilon}} \left(\frac{\alpha_{v}X_{t}}{VA_{t}}\right)\left(\frac{\gamma VA_{t}}{K_{t}}\right)^{\frac{1}{\epsilon}}
+\end{equation}
+
+\begin{equation}
+\label{eqn:mpl}
+MPL_{t}=\frac{\partial X_{t}}{\partial EL_{t}}=A_{0,t}^{\frac{\epsilon-1}{\epsilon}} \left(\frac{\alpha_{v}X_{t}}{VA_{t}}\right)\left(\frac{(1-\gamma_ VA_{t}}{EL_{t}}\right)^{\frac{1}{\epsilon}}
+\end{equation}
 
 
-***** OLDER MODEL *****
-***** OLDER MODEL *****
+\subsection{Firm Accounting}
+
+Here we define a few accounting concepts and constraints relevant to the firm's problem.
+
+\subsubsection{Cash Flow Constraint}
+The firm's choices of investment and labor demand, as well as financial policies to finance these expenditures must satisfy the firm's cash flow constraint, which is given by:
+
+\begin{equation}
+\label{eqn:cash_flow}
+\begin{split}
+& \underbrace{p_{t}X_{t}+B_{t+1}+VN_{t}}_{\text{financial inflows}} =\\
+ & \underbrace{w_{t}EL_{t} + (1+r_{b,t})B_{t} + c(B_{t+1},K_{t}) + p^{k}_{t}I_{t}(1+\Phi_{t}) + DIV_{t} + \tau^{p}_{t}p^{k}_{t}K_{t} + TE_{t} + \Psi(VN_{t})}_{\text{financial outflows}}
+\end{split}
+\end{equation}
+
+\noindent\noindent Here, $p_{t}$ is the price of output, $B_{t+1}$ is the stock of debt at the beginning of period $t+1$ (so that new debt issues in period $t$ are equal to $B_{t+1}-B_{t}$), $VN_{t}$ are new equity issues (as noted above).  Labor costs are given by the wage rate times the number of effective labor units employed, $w_{t}EL_{t}$.  The interest rate of bond holdings is given by $r_{b,t}$ and the costs of holding debt are given by $c(B_{t+1},K_{t+1})$.  These costs might represent bankruptcy costs and other frictions in the debt markets.  The variable $p^{k}_{t}$ denotes the price of capital, $I_{t}$ represents investment, and $\Phi_{t}$ are the costs to adjusting the capital stock through new investment.  The firm also pays dividends, $DIV_{t}$, property taxes at a marginal rate of $\tau^{p}$ on the nominal value of its capital stock, income taxes $TE_{t}$, and costs to new equity issues, $\Psi(VN_{t})$.  Costs to new equity issues represent frictions in the equity markets such as those arising from information asymmetries. 
+
+We impose to constraints on variables in the cash flow constraint: $DIV_{t}\geq0$ and $VN_{t}\geq0$.  In practice, firm's can and do buy back shares, but we restrict share repurchases in the model since the IRS treats share repurchases as dividends if they are done on a regular basis.  Our model therefore restricts the distribution of firm value to shareholders to be through dividend issues.  Note that we do not impose a constraint debt.  Positive values of $B$ indicate firm borrowing, while negative values represent firm saving.  Thus, retained earnings are held in the form of bonds that earn a rate of return $r_{b,t}$.
+
+The law of motion of the capital stock is given by:
+\begin{equation}
+\label{eqn:lom_capital}
+K_{t+1}=(1-\delta)K_{t} + I_{t},
+\end{equation}
+
+It is assumed that costs of debt take the following form:
+
+\begin{equation}
+\label{eqn:debt_cost}
+c(B_{t+1},K_{t}) = \chi_{bk}\left(\frac{B_{t+1}}{K_{t}}\right)^{\ve_{bk}},
+\end{equation}
+
+\noindent\noindent where $\chi_{bk}$ is a scaling parameter and $\ve_{bk}$ is the curvature parameter. \textcolor{red}{Note the timing convention used here.  Leverage is determined by the current capital stock, not the one-period ahead capital stock.  While the investment made with the loan may be used as collateral for the loan, we assume that the costs of debt depend upon the ratio the loan to the current capital stock. This seems realistic if there is uncertainty about the potential value of the investments.  We will need to adjust this cost function in a way so that savings (i.e., $B<0$) result in no cost.}
+
+Adjustment costs are assumed to be a quadratic function of deviations from the steady-state investment rate:
+\begin{equation}
+\label{eqn:adj_cost}
+\Phi_{t}=\frac{p^{K}_{t}\left(\frac{\beta}{2}\right)\left(\frac{I_{t}}{K_{t}}-\mu\right)^{2}}{\left(\frac{I_{t}}{K_{t}}\right)}
+\end{equation}
+
+\noindent\noindent The parameter $\beta$ is the scaling parameter for the adjustment cost function and $\mu$ is the steady-state investment rate, which is determined as $\mu=\delta+g_{y}+g_{n}$
+
+Costs to new equity issues are assumed to be of the form:
+
+\begin{equation}
+\label{eqn:equity_cost}
+\Psi(VN_{t})= \psi_{1}VN_{t} + \psi_{2}VN_{t}^{2}
+\end{equation}
+
+\textcolor{red}{We can play around with these function forms.  The key points are that we have increasing marginal costs in each. It's also very convenient for the steady state costs of adjusting the capital stock to equal zero.  We also need to think about forms that are easy to calibrate and want to avoid fixed costs (and other non-convexities) that may make computation difficult.}
+
+If the firm has a net financial surplus before choosing it's financial policy (dividends, new equity, bond holdings), then it will either save the excess, earning a rate of return $r_{b,t}$ or will distribute the excess as dividends.  In making this choice it will consider the corporate income tax rate to the gains return on retained earnings as well as the capital gains taxes on the marginal investor in the benefits to the retained earnings.  It will consider taxes on dividend income in the benefits to dividend distributions.  If the firm has net financial deficit, then it will use new equity and/or bond issues to satisfy the cash flow constraint. In making this choice, it will consider the costs of debt and equity as well as the tax implications of each.  In particular, that interest payments on debt may be tax deductible and that the after-tax dilution of shareholder value is affected by the capital gains tax rate.
+
+
+
+\subsubsection{Accounting Concepts}
+
+It is useful to define some accounting concepts.  We define firm profits from a financial accounting perspective as:
+
+\begin{equation}
+\label{eqn:profit_book}
+\Pi^{book}_{t} = p_{t}X_{t}-w_{t}EL_{t}-\delta K_{t} -\Phi_{t}p^{k}_{t}I_{t}-(1+r_{b,t})B_{t}- c(B_{t+1},K_{t})-\tau^{p}_{t}K_{t}-TE_{t}
+\end{equation}
+
+We define firm profits from a tax accounting perspective as:
+\begin{equation}
+\label{eqn:profit_tax}
+\begin{split}
+\Pi^{tax}_{t}= & p_{t}X_{t}-w_{t}EL_{t}-f_{e,t}p^{K}_{t}I_{t}-\Phi_{t}I_{t}-f_{i,t}r_{b,t}B_{t}-f_{c,t}c(B_{t+1},K_{t})+f_{p,t}\delta B_{t}+...\\
+& f_{b,t}B_{t+1}-f_{d,t}\delta^{\tau}_{t}K^{\tau}_{t}-f_{ace,t}r_{ace,t}K^{\tau}_{t}-\tau^{p}_{t}p^{k}_{t}K_{t}
+\end{split}
+\end{equation}
+
+\noindent\noindent Note that we are assuming that investment may or may not be deductible (depending upon the dummy variable $f_{e,t}$), but that investment adjustment costs are always deductible (i.e., they are not preceded by $f_{e,t}$).  Under a pre-pay consumption tax system, investments are not deductible from the tax base.  Whether or not adjustment costs are deductible under a pre-pay consumption tax depends upon what you think these costs derive from.  For example, if adjustment costs are from retraining employees to use new equipment, then these costs may be deductible under a consumption tax system (pre or post-pay) because they would likely be in the form of wage/labor costs.\footnote{It's not clear how best to handle this and \citet{DZ2013} are vague on this point.}  The other indicator variables, $f_{i,t}$, $f_{c,t}$,$f_{p,t}$, $f_{b,t}$, $f_{d}$, and $f_{ace,t}$, allow for various consumption tax policies to be incorporated into the model.  The parameter $f_{i,t}=1$ if interest on debt is deductible and 0 if not.  The indicator $f_{c,t}$ equals one if debt costs are deductible (\textcolor{red}{Not sure if we want this - maybe just assume they are deductible are capital adjustment costs are.}).  The parameter $f_{p,t}$ is equal to one the principle on corporate borrowing is deductible from the corporate income tax based.  Principle on loans would be deductible in a post-pay consumption tax system.  The parameter $f_{b,t}$ is equal to one if the proceeds from firm borrowing is included in the corporate tax base.  Such proceeds would be included in a pre-pay consumption tax system.  The parameter $f_{d,t}$ is equal to one if capital can be depreciated and zero if not.  For example, in a post-pay consumption tax framework, $f_{e,t}=1$ and $f_{d,t}=0$. We allow for allowance of corporate equity (ACE) policies through the $f_{ace,t}$ indicator variable, which equals one if there is an allowance for corporate equity.  We use the notation $r_{ace,t}$ for the rate of return use for the corporate equity allowance.  In practice, this maybe set to $r_{b,t}$ or $r_{e,t}$ or another rate of return. 
+
+The tax basis of the capital stock is given by $K^{\tau}_{t}$.  The law of motion for the tax basis of the capital stock is given by:
+
+\begin{equation}
+\label{eqn:lom_taxcapital}
+K^{\tau}_{t+1}=(1-\delta^{\tau}_{t})(K^{\tau}_{t} + (1-f_{e})p^{K}_{t}I_{t}),
+\end{equation}
+
+\noindent\noindent where $\delta^{\tau}$ is the rate if depreciation for tax purposes.  Note how we form the law of motion for the tax basis.  The above formulation accounts for the fact that investment in year $t$ receives a depreciation deduction in year $t$.\footnote{The IRS specifies a partial year rule, where one deducts the value of investment proportional to the amount of the year in which the asset was in place.  We ignore this detail and assume all assets are in place for the entire year.}  We can think about modifying this so that you get no deduction in the year the investment is made, which may or may not be more consistent with the ``time to build" built into the law of motion for the physical capital stock.
+
+
+Total income taxes on the firm are thus given by:
+
+\begin{equation}
+\label{eqn:corp_tax}
+\begin{split}
+TE_{t}= \tau^{b}_{t}\Pi^{tax}_{t} +\tau^{ic}_{t}p^{K}_{t}I_{t},
+\end{split}
+\end{equation}
+
+\noindent\noindent  where $\tau^{b}_{t}$ is the tax rate on business income will be used to represent either an entity level tax or the tax rate on the distributions of income to owners for those firms not subject to an entity level tax.  
+
+\subsection{Optimal Firm Policy}
+
+Using the cash flow constraint, we can solve for dividends as a function of the other endogenous variables, exogenous variables, and parameters:
+
+\begin{equation}
+\label{eqn:div}
+\begin{split}
+DIV_{t}&=\Pi^{book}_{t} + B_{t+1} + VN_{t}\\
+ & = p_{t}X_{t}+ B_{t+1} + VN_{t}-w_{t}EL_{t}-\delta K_{t} -\Phi_{t}p^{k}_{t}I_{t}-(1+r_{b,t})B_{t} - c(B_{t+1},K_{t})-\tau^{p}_{t}K_{t}-TE_{t}
+\end{split}
+\end{equation}
+
+The problem of the firm is maximize firm value, $V_{t}$, to the constraints on dividends and equity issues, and the laws of motion for the economic and fiscal capital stock.  That is, it solves:
+
+\begin{equation}
+\label{eqn:V_max}
+\begin{split}
+        &V_{t}= \max_{\{DIV_{u},VN_{u}, I_{u}, K_{u+1}, EL_{u}, B_{u+1}, K^{\tau}_{u+1},p_{u}\}^{\infty}_{u=t}} \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[ \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)DIV_{u}-VN_{u}\right]\\
+        &\text{subject to:} \\
+        &DIV_{u}\geq 0\\
+        &VN_{u}\geq 0\\
+        &K{u+1}=(1-\delta)K_{u}+ I_{u} \\
+        &K^{\tau}_{t+1}=(1-\delta^{\tau}_{t})(K^{\tau}_{t} + (1-f_{e})p^{K}_{t}I_{t})
+      \end{split}
+    \end{equation}
+
+We can substitute in Equation \ref{eqn:div} for $DIV_{t}$ in the above and write the Lagrangian of the firm's problem as:
+
+ \begin{equation}
+\label{eqn:lagrangian}
+\begin{split}
+\mathcal{L}_{t} =& \max_{\{VN_{u}, I_{u}, K_{u+1}, EL_{u}, B_{u+1}, K^{\tau}_{u+1},p_{u}\}^{\infty}_{u=t}}   \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right) \left[ \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right) \left(p_{u}X_{t}+ B_{u+1}... \right. \right. \\
+& \left. \left.  + VN_{u}-w_{u}EL_{u}-\delta K_{u} -\Phi_{u}p^{k}_{u}I_{t}-(1+r_{b,u})B_{u} - c(B_{t+1},K_{t})-\tau^{p}_{u}K_{u}-TE_{u}\right)  - VN_{u} ...\right. \\
+&\left. + q_{u}\left((1-\delta)K_{u}+I_{u}-K_{u+1}\right) + \lambda^{\tau}\left((1-\delta^{\tau}_{u})(K^{\tau}_{u}+(1-f_{e,u})p^{k}_{u}I_{u})-K^{\tau}_{u+1}\right) ...\right. \\
+& \left.+ \lambda^{v}_{t}VN_{u} ... \right. \\
+& \left. + \lambda^{d}\left(p_{u}X_{u}+ B_{u+1} + VN_{u} - w_{u}EL_{u} - (1+r_{b,u})B_{u} - c(B_{u+1},K_{u+1})... \right.\right.\\
+& \left.\left. - p^{k}_{u}I_{u}(1+\Phi_{u}) - \tau^{p}_{u}p^{k}_{u} - TE_{u} -\Psi(VN_{u})\right) \right]
+\end{split}
+\end{equation}
+
+The maximization problem yields the following first order conditions:
+
+With respect to labor:
+\begin{equation}
+\label{eqn:foc_l}
+\begin{split}
+&\frac{\partial \mathcal{L}_{t}}{\partial EL_{u}} = \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[ \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)\left[p_{u}MPL_{u} - w_{u} - \frac{\partial TE_{u}}{\partial EL_{u}}\right] - \lambda^{d}_{u}w_{u} \right] = 0  \\
+& \implies  p_{u}MPL_{u} = w_{u} + \frac{\partial TE_{u}}{\partial EL_{u}} + \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)^{-1}\lambda^{d}_{u}w_{u}
+\end{split}
+\end{equation}
+
+
+With respect to investment:
+ \begin{equation}
+\label{eqn:foc_i}
+\begin{split}
+\frac{\partial \mathcal{L}_{t}}{\partial I_{u}} & =  \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right) \left[ q_{u} + \lambda^{\tau}_{u}(1-\delta^{\tau}_{u})(1-f_{e,u})p^{k}_{u} -  \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right) \left[p^{k}_{u}(1+ \frac{\partial \Phi_{u}}{\partial I_{u}}I_{u} + \Phi_{u}) + \frac{\partial TE_{u}}{\partial I_{u}} \right] - \right. \\
+& \left. \lambda^{d}_{u}\left[p^{k}_{u}(1+ \frac{\partial \Phi_{u}}{\partial I_{u}}I_{u} + \Phi_{u}) + \frac{\partial TE_{u}}{\partial I_{u}} \right]\right]= 0 \\
+& \implies q_{u} + \lambda^{\tau}_{u}(1-\delta^{\tau}_{u})(1-f_{e,u})p^{k}_{u} =  \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}} + \lambda^{d}_{u}\right)\left[p^{k}_{u}(1+ \frac{\partial \Phi_{u}}{\partial I_{u}}I_{u} + \Phi_{u}) + \frac{\partial TE_{u}}{\partial I_{u}}\right]
+\end{split}
+\end{equation}
+
+With respect to the one-period ahead capital stock:
+
+ \begin{equation}
+\label{eqn:foc_k}
+\begin{split}
+ \frac{\partial \mathcal{L}_{t}}{\partial K_{u+1}}  &=  - \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta{\nu}}\right)q_{u}  + \prod_{\nu=t}^{u+1}\left(\frac{1}{1+\theta{\nu}}\right)\left[(1-
+\delta)q_{u+1} ... \right. \\
+&\left. +    \left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}}\right)\left[p_{u+1}MPK_{u+1} - \frac{\partial c(B_{u+2},K_{u+1})}{\partial K_{u+1}}-\tau^{p}_{u+1}p^{k}_{u+1}+\frac{\partial TE_{u+1}}{\partial K_{u+1}} \right] \right. \\
+& \left. - \lambda^{d}_{u}\left[p_{u+1}MPK_{u+1} - \frac{\partial c(B_{u+2},K_{u+1})}{\partial K_{u+1}}-\tau^{p}_{u+1}p^{k}_{u+1}+\frac{\partial TE_{u+1}}{\partial K_{u+1}} \right] \right] = 0 \\
+&\implies q_{u} = \left(\frac{1}{1+\theta{u+1}}\right)\left[(1-\delta)q_{u+1} ... \right. \\
+& \left. +  \left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}} + \lambda^{d}_{u+1} \right)\left[p_{u+1}MPK_{u+1} - \frac{\partial c(B_{u+2},K_{u+1})}{\partial K_{u+1}}-\tau^{p}_{u+1}p^{k}_{u+1}+\frac{\partial TE_{u+1}}{\partial K_{u+1}} \right] \right]
+\end{split}
+\end{equation}
+
+\noindent\noindent The Euler equation described in Equation \ref{eqn:foc_i} relates Tobin's $q$, given by $q_{u}$, to the marginal costs of investment.  Tobin's $q$ defines the marginal change in firm value for a dollar of investment. It is the shadow price of additional capital.  The FOC for investment says that the firm invests until the marginal benefit (the LHS of Equation \ref{eqn:foc_i}) is equal to the marginal cost of investment (the RHS of Equation \ref{eqn:foc_i}).  The cost of investment in the absence of taxes and frictions is equal to 1 (the first term on the RHS of Equation \ref{eqn:foc_i}) since investment goods are the numeraire.  The second term reflects the reduction in the cost of capital due to debt financing.  The third term on the RHS of Equation \ref{eqn:foc_i} is the change in the cost of capital due to debt being included or excluded from business entity-level income taxes.  The fourth term reflects the reduction in the cost of capital due to depreciation deductions.  The last term reflects the component of the cost of capital that is due to adjustment costs (net of the expensing of adjustment costs for tax purposes).
+% \begin{equation}
+%\label{eqn:opt_i}
+%\begin{split}
+% q_{u}  = 1-b-\Omega_{u}\tau^{b}_{u}(f_{e}-f_{b}b) - f_{d}(1-f_{e})Z_{u} + (1-\Omega_{u}\tau^{b}_{u})\Phi_{u} +  I_{u}(1-\Omega_{u}\tau^{b}_{u})\frac{\partial \Phi_{u}}{\partial I_{u}} 
+%\end{split}
+%\end{equation}
+
+
+
+Finally, the firm also chooses its demand for effective labor units.  The necessary condition for this choice is give by:
+
+\begin{equation}
+\label{eqn:foc_l}
+p^{C}_{u}\frac{\partial F(K^{C}_{u},EL^{C}_{u})}{\partial EL^{C}_{u}}=w_{u}, \forall \ u
+\end{equation}
+
+
+\ \\
+\ \\
+***** OLDER MODEL *****\\
+***** OLDER MODEL *****\\
+\ \\
+\ \\
 
 \section{The Firm's Problem}
 
@@ -184,7 +410,7 @@ TE_{t}= & \tau^{b}_{t}\left[p_{t}X_{t}-w_{t}EL_{t}-f_{e}p^{K}_{t}I_{t}-\Phi_{t}I
 \end{split}
 \end{equation}
 
-\noindent\noindent  where $\tau^{b}_{t}$ is the tax rate on business income will be used to represent either an entity level tax or the tax rate on the distributions of income to owners for those firms not subject to an entity level tax.  Note that we are assuming that investment may or may not be deductible (depending upon the dummy variable $f_{e}$), but that investment adjustment costs are always deductible (i.e., they are not preceded by $f_{e}$).  Under a pre-pay consumption tax system, investments are not deductible from the tax base.  Whether or not adjustment costs are deductible under a pre-pay consumption tax depends upon what you think these costs derive from.  For example, if adjustment costs are from retraining employees to use new equipment, then these costs may be deductible under a consumption tax system (pre or post-pay) because they would likely be in the form of wage/labor costs.\footnote{It's not clear how best to handle this and \citet{DZ2013} are vague on this point.}  The other indicator variables, $f_{i}$, $f_{p}$, $f_{b}$, and $f_{d}$, allow for various consumption tax policies to be incorporated into the model.  The parameter $f_{i}=1$ if interest on debt is deductible and 0 if not.  The parameter $f_{p}$ is equal to one the principle on corporate borrowing is deductible from the corporate income tax based.  Principle on loans would be deductible in a post-pay consumption tax system.  The parameter $f_{b}$ is equal to one if the proceeds from firm borrowing is included in the corporate tax base.  Such proceeds would be included in a pre-pay consumption tax system.  The parameter $f_{d}$ is equal to one if capital can be depreciated and zero if not.  For example, in a post-pay consumption tax framework, $f_{e}=1$ and $f_{d}=0$.  
+\noindent\noindent  where $\tau^{b}_{t}$ is the tax rate on business income will be used to represent either an entity level tax or the tax rate on the distributions of income to owners for those firms not subject to an entity level tax.  Note that we are assuming that investment may or may not be deductible (depending upon the dummy variable $f_{e}$), but that investment adjustment costs are always deductible (i.e., they are not preceded by $f_{e}$).  Under a pre-pay consumption tax system, investments are not deductible from the tax base.  Whether or not adjustment costs are deductible under a pre-pay consumption tax depends upon what you think these costs derive from.  For example, if adjustment costs are from retraining employees to use new equipment, then these costs may be deductible under a consumption tax system (pre or post-pay) because they would likely be in the form of wage/labor costs.\footnote{It's not clear how best to handle this and \citet{DZ2013} are vague on this point.}  The other indicator variables, $f_{i}$, $f_{p}$, $f_{b}$, and $f_{d}$, allow for various consumption tax policies to be incorporated into the model.  The parameter $f_{i}=1$ if interest on debt is deductible and 0 if not.  The parameter $f_{p}$ is equal to one the principle on corporate borrowing is deductible from the corporate income tax based.  Principle on loans would be deductible in a post-pay consumption tax system.  The parameter $f_{b}$ is equal to one if the proceeds from firm borrowing is included in the corporate tax base.  Such proceeds would be included in a pre-pay consumption tax system.  The parameter $f_{d}$ is equal to one if capital can be depreciated and zero if not.  For example, in a post-pay consumption tax framework, $f_{e}=1$ and $f_{d}=0$.  The policy parameter $\tau^{ic}_{t}$ is the investment tax credit rate in year $t$.
 
 The tax basis of the capital stock is given by $K^{\tau}_{t}$.  The law of motion for the tax basis of the capital stock is given by:
 
@@ -295,7 +521,7 @@ At times it is helpful to write this choice in terms of capital one period ahead
 \end{split}
 \end{equation}
 
-\noindent\noindent The marginal product of labor is given by:
+\noindent\noindent The marginal product of capital is given by:
 \begin{equation}
 \label{eqn:mpk}
 \frac{\partial X_{u+1}}{\partial K_{u+1}} =  \gamma^{1/\epsilon}K_{u+1}^{-1/\epsilon}\left[(\gamma_{})^{1/\epsilon_{}}(K_{u+1})^{(\epsilon-1)/\epsilon_{}}+(1-\gamma_{})^{1/\epsilon_{}}(e^{g_{y}(u+1)}EL_{u+1})^{(\epsilon_{}-1)/\epsilon_{}}\right]^{1/(\epsilon_{}-1)}

@@ -1,36 +1,41 @@
-\contentsline {chapter}{\numberline {1}Introduction}{4}{chapter.1}
-\contentsline {chapter}{\numberline {2}Households}{6}{chapter.2}
-\contentsline {section}{\numberline {2.1}Demographics}{6}{section.2.1}
-\contentsline {section}{\numberline {2.2}Households}{7}{section.2.2}
-\contentsline {subsection}{\numberline {2.2.1}Household's Portfolio Problem}{11}{subsection.2.2.1}
-\contentsline {subsubsection}{After-tax return differentials}{13}{section*.5}
-\contentsline {subsection}{\numberline {2.2.2}Household's Subutility Function}{14}{subsection.2.2.2}
-\contentsline {subsection}{\numberline {2.2.3}Relating Consumption and Production Goods}{16}{subsection.2.2.3}
-\contentsline {subsection}{\numberline {2.2.4}Preferences for Corporate vs. Noncorporate Goods}{17}{subsection.2.2.4}
-\contentsline {chapter}{\numberline {3}Firms}{20}{chapter.3}
-\contentsline {section}{\numberline {3.1}Firms}{20}{section.3.1}
-\contentsline {section}{\numberline {3.2}The Problem of the Domestic Corporation}{20}{section.3.2}
-\contentsline {subsection}{\numberline {3.2.1}The Value of the Firm}{21}{subsection.3.2.1}
-\contentsline {subsubsection}{An aside on after-tax rates of return}{21}{section*.6}
-\contentsline {subsection}{\numberline {3.2.2}The Value of the Firm, cont'd}{22}{subsection.3.2.2}
-\contentsline {section}{\numberline {3.3}The Firm's Problem}{23}{section.3.3}
-\contentsline {subsection}{\numberline {3.3.1}The Value of the Firm}{23}{subsection.3.3.1}
-\contentsline {subsection}{\numberline {3.3.2}The Sequence Problem of the Firm}{25}{subsection.3.3.2}
-\contentsline {subsection}{\numberline {3.3.3}Relating Firm Investment and Production Goods}{30}{subsection.3.3.3}
-\contentsline {chapter}{\numberline {4}Government}{31}{chapter.4}
-\contentsline {section}{\numberline {4.1}Overview of government in the model}{31}{section.4.1}
-\contentsline {section}{\numberline {4.2}Government budgeting}{31}{section.4.2}
-\contentsline {subsection}{\numberline {4.2.1}Rule for long-term fiscal stability}{32}{subsection.4.2.1}
-\contentsline {section}{\numberline {4.3}Direct transfers}{32}{section.4.3}
-\contentsline {section}{\numberline {4.4}Government production of public goods}{32}{section.4.4}
-\contentsline {section}{\numberline {4.5}Government production of private goods}{33}{section.4.5}
-\contentsline {chapter}{\numberline {5}Equilibrium}{34}{chapter.5}
-\contentsline {section}{\numberline {5.1}Market clearing and stationary equilibrium}{34}{section.5.1}
-\contentsline {chapter}{\numberline {6}Numerical Solution}{39}{chapter.6}
-\contentsline {section}{\numberline {6.1}Solving for stationary steady-state equilibrium}{39}{section.6.1}
-\contentsline {section}{\numberline {6.2}Solving for stationary non-steady-state equilibrium by time path iteration}{40}{section.6.2}
-\contentsline {chapter}{\numberline {7}Miscellaneous}{48}{chapter.7}
-\contentsline {section}{\numberline {7.1}Characteristics of exogenous population growth assumptions}{48}{section.7.1}
-\contentsline {section}{\numberline {7.2}Incorporating Feedbacks with Micro Tax Simulations}{55}{section.7.2}
-\contentsline {section}{\numberline {7.3}Calibration}{55}{section.7.3}
-\contentsline {subsection}{\numberline {7.3.1}Tax Bend Points}{55}{subsection.7.3.1}
+\contentsline {chapter}{\numberline {1}Introduction}{5}{chapter.1}
+\contentsline {chapter}{\numberline {2}Households}{7}{chapter.2}
+\contentsline {section}{\numberline {2.1}Demographics}{7}{section.2.1}
+\contentsline {section}{\numberline {2.2}Households}{8}{section.2.2}
+\contentsline {subsection}{\numberline {2.2.1}Household's Portfolio Problem}{12}{subsection.2.2.1}
+\contentsline {subsubsection}{After-tax return differentials}{14}{section*.5}
+\contentsline {subsection}{\numberline {2.2.2}Household's Subutility Function}{15}{subsection.2.2.2}
+\contentsline {subsection}{\numberline {2.2.3}Relating Consumption and Production Goods}{17}{subsection.2.2.3}
+\contentsline {subsection}{\numberline {2.2.4}Preferences for Corporate vs. Noncorporate Goods}{18}{subsection.2.2.4}
+\contentsline {chapter}{\numberline {3}Firms}{21}{chapter.3}
+\contentsline {section}{\numberline {3.1}Firms}{21}{section.3.1}
+\contentsline {section}{\numberline {3.2}The Problem of the Domestic Corporation}{21}{section.3.2}
+\contentsline {subsection}{\numberline {3.2.1}The Value of the Firm}{22}{subsection.3.2.1}
+\contentsline {subsubsection}{An aside on after-tax rates of return}{22}{section*.6}
+\contentsline {subsection}{\numberline {3.2.2}The Value of the Firm, cont'd}{23}{subsection.3.2.2}
+\contentsline {subsection}{\numberline {3.2.3}Firm Production}{24}{subsection.3.2.3}
+\contentsline {subsection}{\numberline {3.2.4}Firm Accounting}{25}{subsection.3.2.4}
+\contentsline {subsubsection}{Cash Flow Constraint}{25}{section*.7}
+\contentsline {subsubsection}{Accounting Concepts}{27}{section*.8}
+\contentsline {subsection}{\numberline {3.2.5}Optimal Firm Policy}{28}{subsection.3.2.5}
+\contentsline {section}{\numberline {3.3}The Firm's Problem}{30}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}The Value of the Firm}{31}{subsection.3.3.1}
+\contentsline {subsection}{\numberline {3.3.2}The Sequence Problem of the Firm}{32}{subsection.3.3.2}
+\contentsline {subsection}{\numberline {3.3.3}Relating Firm Investment and Production Goods}{37}{subsection.3.3.3}
+\contentsline {chapter}{\numberline {4}Government}{39}{chapter.4}
+\contentsline {section}{\numberline {4.1}Overview of government in the model}{39}{section.4.1}
+\contentsline {section}{\numberline {4.2}Government budgeting}{39}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Rule for long-term fiscal stability}{40}{subsection.4.2.1}
+\contentsline {section}{\numberline {4.3}Direct transfers}{40}{section.4.3}
+\contentsline {section}{\numberline {4.4}Government production of public goods}{40}{section.4.4}
+\contentsline {section}{\numberline {4.5}Government production of private goods}{41}{section.4.5}
+\contentsline {chapter}{\numberline {5}Equilibrium}{42}{chapter.5}
+\contentsline {section}{\numberline {5.1}Market clearing and stationary equilibrium}{42}{section.5.1}
+\contentsline {chapter}{\numberline {6}Numerical Solution}{47}{chapter.6}
+\contentsline {section}{\numberline {6.1}Solving for stationary steady-state equilibrium}{47}{section.6.1}
+\contentsline {section}{\numberline {6.2}Solving for stationary non-steady-state equilibrium by time path iteration}{48}{section.6.2}
+\contentsline {chapter}{\numberline {7}Miscellaneous}{56}{chapter.7}
+\contentsline {section}{\numberline {7.1}Characteristics of exogenous population growth assumptions}{56}{section.7.1}
+\contentsline {section}{\numberline {7.2}Incorporating Feedbacks with Micro Tax Simulations}{63}{section.7.2}
+\contentsline {section}{\numberline {7.3}Calibration}{63}{section.7.3}
+\contentsline {subsection}{\numberline {7.3.1}Tax Bend Points}{63}{subsection.7.3.1}
