@@ -4,15 +4,15 @@
 \addvspace {10\p@ }
 \addvspace {10\p@ }
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {5.1}{\ignorespaces \textbf {Equilibrium time path of $K_t$ for $S=80$ and $J=7$}\relax }}{46}{figure.caption.11}
-\contentsline {figure}{\numberline {5.2}{\ignorespaces \textbf {Equilibrium time path of $L_t$ for $S=80$ and $J=7$}\relax }}{46}{figure.caption.12}
+\contentsline {figure}{\numberline {5.1}{\ignorespaces \textbf {Equilibrium time path of $K_t$ for $S=80$ and $J=7$}\relax }}{50}{figure.caption.13}
+\contentsline {figure}{\numberline {5.2}{\ignorespaces \textbf {Equilibrium time path of $L_t$ for $S=80$ and $J=7$}\relax }}{50}{figure.caption.14}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {6.1}{\ignorespaces \textbf {Diagram of TPI solution method within each iteration for $S=4$ and $J=1$}\relax }}{53}{figure.caption.14}
+\contentsline {figure}{\numberline {6.1}{\ignorespaces \textbf {Diagram of TPI solution method within each iteration for $S=4$ and $J=1$}\relax }}{57}{figure.caption.16}
 \addvspace {10\p@ }
-\contentsline {figure}{\numberline {7.1}{\ignorespaces \textbf {Correspondence of model timing to data timing for model periods of one year}\relax }}{59}{figure.caption.17}
-\contentsline {figure}{\numberline {7.2}{\ignorespaces \textbf {Initial population distribution $\omega _{s,1}$ by year, $1\leq s\leq 100$}\relax }}{59}{figure.caption.18}
-\contentsline {figure}{\numberline {7.3}{\ignorespaces \textbf {Fertility rates $f_s$ by year, $1\leq s\leq 100$}\relax }}{60}{figure.caption.19}
-\contentsline {figure}{\numberline {7.4}{\ignorespaces \textbf {Mortality rates $\rho _s$ by year, $1\leq s\leq 100$}\relax }}{60}{figure.caption.20}
-\contentsline {figure}{\numberline {7.5}{\ignorespaces \textbf {Immigration rates $i_s$ by year, $1\leq s\leq 100$}\relax }}{61}{figure.caption.21}
-\contentsline {figure}{\numberline {7.6}{\ignorespaces \textbf {Forecast time path of population growth rate $g_{n,t}$}\relax }}{62}{figure.caption.22}
-\contentsline {figure}{\numberline {7.7}{\ignorespaces \textbf {Steady-state population percent distribution by age $\bm {\mathaccentV {bar}016{\omega }}$}\relax }}{62}{figure.caption.23}
+\contentsline {figure}{\numberline {7.1}{\ignorespaces \textbf {Correspondence of model timing to data timing for model periods of one year}\relax }}{63}{figure.caption.19}
+\contentsline {figure}{\numberline {7.2}{\ignorespaces \textbf {Initial population distribution $\omega _{s,1}$ by year, $1\leq s\leq 100$}\relax }}{63}{figure.caption.20}
+\contentsline {figure}{\numberline {7.3}{\ignorespaces \textbf {Fertility rates $f_s$ by year, $1\leq s\leq 100$}\relax }}{64}{figure.caption.21}
+\contentsline {figure}{\numberline {7.4}{\ignorespaces \textbf {Mortality rates $\rho _s$ by year, $1\leq s\leq 100$}\relax }}{64}{figure.caption.22}
+\contentsline {figure}{\numberline {7.5}{\ignorespaces \textbf {Immigration rates $i_s$ by year, $1\leq s\leq 100$}\relax }}{65}{figure.caption.23}
+\contentsline {figure}{\numberline {7.6}{\ignorespaces \textbf {Forecast time path of population growth rate $g_{n,t}$}\relax }}{66}{figure.caption.24}
+\contentsline {figure}{\numberline {7.7}{\ignorespaces \textbf {Steady-state population percent distribution by age $\bm {\mathaccentV {bar}016{\omega }}$}\relax }}{66}{figure.caption.25}

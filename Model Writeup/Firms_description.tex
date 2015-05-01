@@ -111,7 +111,7 @@ MPK_{t}=\frac{\partial X_{t}}{\partial K_{t}}=A_{0,t}^{\frac{\epsilon-1}{\epsilo
 
 \begin{equation}
 \label{eqn:mpl}
-MPL_{t}=\frac{\partial X_{t}}{\partial EL_{t}}=A_{0,t}^{\frac{\epsilon-1}{\epsilon}} \left(\frac{\alpha_{v}X_{t}}{VA_{t}}\right)\left(\frac{(1-\gamma_ VA_{t}}{EL_{t}}\right)^{\frac{1}{\epsilon}}
+MPL_{t}=\frac{\partial X_{t}}{\partial EL_{t}}=A_{0,t}^{\frac{\epsilon-1}{\epsilon}} \left(\frac{\alpha_{v}X_{t}}{VA_{t}}\right)\left(\frac{(1-\gamma) VA_{t}}{EL_{t}}\right)^{\frac{1}{\epsilon}}
 \end{equation}
 
 
@@ -152,7 +152,7 @@ c(B_{t+1},K_{t}) = \chi_{bk}\left(\frac{B_{t+1}}{K_{t}}\right)^{\ve_{bk}},
 Adjustment costs are assumed to be a quadratic function of deviations from the steady-state investment rate:
 \begin{equation}
 \label{eqn:adj_cost}
-\Phi_{t}=\frac{p^{K}_{t}\left(\frac{\beta}{2}\right)\left(\frac{I_{t}}{K_{t}}-\mu\right)^{2}}{\left(\frac{I_{t}}{K_{t}}\right)}
+\Phi_{t}=\frac{\left(\frac{\beta}{2}\right)\left(\frac{I_{t}}{K_{t}}-\mu\right)^{2}}{\left(\frac{I_{t}}{K_{t}}\right)}
 \end{equation}
 
 \noindent\noindent The parameter $\beta$ is the scaling parameter for the adjustment cost function and $\mu$ is the steady-state investment rate, which is determined as $\mu=\delta+g_{y}+g_{n}$
@@ -257,8 +257,9 @@ With respect to labor:
 \begin{equation}
 \label{eqn:foc_l}
 \begin{split}
-&\frac{\partial \mathcal{L}_{t}}{\partial EL_{u}} = \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[ \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)\left[p_{u}MPL_{u} - w_{u} - \frac{\partial TE_{u}}{\partial EL_{u}}\right] - \lambda^{d}_{u}w_{u} \right] = 0  \\
-& \implies  p_{u}MPL_{u} = w_{u} + \frac{\partial TE_{u}}{\partial EL_{u}} + \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)^{-1}\lambda^{d}_{u}w_{u}
+&\frac{\partial \mathcal{L}_{t}}{\partial EL_{u}} = \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[ \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)\left[p_{u}MPL_{u} - w_{u} - \frac{\partial TE_{u}}{\partial EL_{u}}\right] ... \right. \\
+& \left. - \lambda^{d}_{u}\left[p_{u}MPL_{u} - w_{u} - \frac{\partial TE_{u}}{\partial EL_{u}}\right] \right] = 0  \\
+& \implies  p_{u}MPL_{u}- \frac{\partial TE_{u}}{\partial EL_{u}} = w_{u}
 \end{split}
 \end{equation}
 
@@ -278,32 +279,227 @@ With respect to the one-period ahead capital stock:
  \begin{equation}
 \label{eqn:foc_k}
 \begin{split}
- \frac{\partial \mathcal{L}_{t}}{\partial K_{u+1}}  &=  - \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta{\nu}}\right)q_{u}  + \prod_{\nu=t}^{u+1}\left(\frac{1}{1+\theta{\nu}}\right)\left[(1-
+ \frac{\partial \mathcal{L}_{t}}{\partial K_{u+1}}  &=  - \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)q_{u}  + \prod_{\nu=t}^{u+1}\left(\frac{1}{1+\theta{\nu}}\right)\left[(1-
 \delta)q_{u+1} ... \right. \\
-&\left. +    \left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}}\right)\left[p_{u+1}MPK_{u+1} - \frac{\partial c(B_{u+2},K_{u+1})}{\partial K_{u+1}}-\tau^{p}_{u+1}p^{k}_{u+1}+\frac{\partial TE_{u+1}}{\partial K_{u+1}} \right] \right. \\
-& \left. - \lambda^{d}_{u}\left[p_{u+1}MPK_{u+1} - \frac{\partial c(B_{u+2},K_{u+1})}{\partial K_{u+1}}-\tau^{p}_{u+1}p^{k}_{u+1}+\frac{\partial TE_{u+1}}{\partial K_{u+1}} \right] \right] = 0 \\
-&\implies q_{u} = \left(\frac{1}{1+\theta{u+1}}\right)\left[(1-\delta)q_{u+1} ... \right. \\
-& \left. +  \left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}} + \lambda^{d}_{u+1} \right)\left[p_{u+1}MPK_{u+1} - \frac{\partial c(B_{u+2},K_{u+1})}{\partial K_{u+1}}-\tau^{p}_{u+1}p^{k}_{u+1}+\frac{\partial TE_{u+1}}{\partial K_{u+1}} \right] \right]
+&\left. +    \left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}}\right)\left[p_{u+1}MPK_{u+1} - p^{k}_{u+1}\frac{\partial \Phi_{u+1}}{\partial K_{u+1}}I_{u+1} - \frac{\partial c(B_{u+2},K_{u+1})}{\partial K_{u+1}}-\tau^{p}_{u+1}p^{k}_{u+1}-\frac{\partial TE_{u+1}}{\partial K_{u+1}} \right] \right. \\
+& \left. - \lambda^{d}_{u}\left[p_{u+1}MPK_{u+1} - p^{k}_{u+1}\frac{\partial \Phi_{u+1}}{\partial K_{u+1}}I_{u+1} - \frac{\partial c(B_{u+2},K_{u+1})}{\partial K_{u+1}}-\tau^{p}_{u+1}p^{k}_{u+1}-\frac{\partial TE_{u+1}}{\partial K_{u+1}} \right] \right] = 0 \\
+&\implies q_{u} = \left(\frac{1}{1+\theta_{u+1}}\right)\left[(1-\delta)q_{u+1} ... \right. \\
+& \left. +  \left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}} + \lambda^{d}_{u+1} \right)\left[p_{u+1}MPK_{u+1}- p^{k}_{u+1}\frac{\partial \Phi_{u+1}}{\partial K_{u+1}}I_{u+1}  ... \right.\right. \\
+& \left.\left.- \frac{\partial c(B_{u+2},K_{u+1})}{\partial K_{u+1}}-\tau^{p}_{u+1}p^{k}_{u+1}-\frac{\partial TE_{u+1}}{\partial K_{u+1}} \right] \right]
 \end{split}
 \end{equation}
 
 \noindent\noindent The Euler equation described in Equation \ref{eqn:foc_i} relates Tobin's $q$, given by $q_{u}$, to the marginal costs of investment.  Tobin's $q$ defines the marginal change in firm value for a dollar of investment. It is the shadow price of additional capital.  The FOC for investment says that the firm invests until the marginal benefit (the LHS of Equation \ref{eqn:foc_i}) is equal to the marginal cost of investment (the RHS of Equation \ref{eqn:foc_i}).  The cost of investment in the absence of taxes and frictions is equal to 1 (the first term on the RHS of Equation \ref{eqn:foc_i}) since investment goods are the numeraire.  The second term reflects the reduction in the cost of capital due to debt financing.  The third term on the RHS of Equation \ref{eqn:foc_i} is the change in the cost of capital due to debt being included or excluded from business entity-level income taxes.  The fourth term reflects the reduction in the cost of capital due to depreciation deductions.  The last term reflects the component of the cost of capital that is due to adjustment costs (net of the expensing of adjustment costs for tax purposes).
-% \begin{equation}
-%\label{eqn:opt_i}
-%\begin{split}
-% q_{u}  = 1-b-\Omega_{u}\tau^{b}_{u}(f_{e}-f_{b}b) - f_{d}(1-f_{e})Z_{u} + (1-\Omega_{u}\tau^{b}_{u})\Phi_{u} +  I_{u}(1-\Omega_{u}\tau^{b}_{u})\frac{\partial \Phi_{u}}{\partial I_{u}} 
-%\end{split}
-%\end{equation}
 
-
-
-Finally, the firm also chooses its demand for effective labor units.  The necessary condition for this choice is give by:
-
-\begin{equation}
-\label{eqn:foc_l}
-p^{C}_{u}\frac{\partial F(K^{C}_{u},EL^{C}_{u})}{\partial EL^{C}_{u}}=w_{u}, \forall \ u
+With respect to one-period ahead bond holdings:
+ \begin{equation}
+\label{eqn:foc_b}
+\begin{split}
+ \frac{\partial \mathcal{L}_{t}}{\partial B_{u+1}}  &=  \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta{\nu}}\right)\left[\left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)\left(1-\frac{\partial c(B_{u+1},K_{u}}{\partial B_{u+1}}-\frac{\partial TE_{u}}{\partial B_{u+1}}\right) ... \right. \\
+ & \left. +  \lambda^{d}_{u}\left(1-\frac{\partial c(B_{u+1},K_{u})}{\partial B_{u+1}}-\frac{\partial TE_{u}}{\partial B_{u+1}}\right) \right] ... \\
+ & -  \prod_{\nu=t}^{u+1}\left(\frac{1}{1+\theta{\nu}}\right)\left[\left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}}\right)\left((1+r_{b,u+1})+\frac{\partial TE_{u+1}}{\partial B_{u+1}}\right)... \right. \\
+ & \left. + \lambda^{d}_{u+1}\left((1+r_{b,u+1})+\frac{\partial TE_{u+1}}{\partial B_{u+1}}\right)\right] = 0 \\
+& \implies \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}} + \lambda^{d}_{u} \right)\left(1-\frac{\partial c(B_{u+1},K_{u})}{\partial B_{u+1}}-\frac{\partial TE_{u}}{\partial B_{u+1}}\right)= \\
+&  \left(\frac{1}{1+\theta_{u+1}}\right) \left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}} + \lambda^{d}_{u} \right) \left((1+r_{b,u+1})+\frac{\partial TE_{u+1}}{\partial B_{u+1}}\right)
+ \end{split}
 \end{equation}
 
+With respect to new equity issues:
+ \begin{equation}
+\label{eqn:foc_vn}
+\begin{split}
+ \frac{\partial \mathcal{L}_{t}}{\partial VN_{u}}  &=  \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta{\nu}}\right)\left[\left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)\left(1-\frac{\partial \Psi(VN_{u})}{\partial VN_{u}}\right) - 1 + \lambda^{v}_{u} + \lambda^{d}_{u}\left(1-\frac{\partial \Psi(VN_{u})}{\partial VN_{u}}\right) \right] = 0 \\
+ & \implies 1 = \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}} + \lambda^{d}_{u}\right)\left(1-\frac{\partial \Psi(VN_{u})}{\partial VN_{u}}\right) + \lambda^{v}_{u}
+ \end{split}
+\end{equation}
+
+With respect to the one-period ahead fiscal capital stock:
+ \begin{equation}
+\label{eqn:foc_ktau}
+\begin{split}
+ \frac{\partial \mathcal{L}_{t}}{\partial K^{\tau}_{u+1}}  &=  - \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta{\nu}}\right)\lambda^{\tau}_{u} -  \\
+ & \prod_{\nu=t}^{u+1}\left(\frac{1}{1+\theta{\nu}}\right)\left[\left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}}\right)\frac{\partial TE_{u+1}}{\partial K^{\tau}_{u+1}} - \lambda^{\tau}_{u+1}(1-\delta^{\tau}_{u+1}) + \lambda^{d}_{u+1}\frac{\partial TE_{u+1}}{\partial K^{\tau}_{u+1}} \right] = 0 \\
+& \implies \lambda^{\tau}_{u} = \left(\frac{1}{1+\theta_{u+1}}\right)\left[\left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}} + \lambda^{d}_{u+1} \right)\frac{- \partial TE_{u+1}}{\partial K^{\tau}_{u+1}} + \lambda^{\tau}_{u+1}(1-\delta^{\tau}_{u+1})\right] 
+ \end{split}
+\end{equation}
+
+
+\textcolor{red}{Note that price is endogenous, but there is no first order condition for this choice that makes sense here since we don't have a demand function.  To pin down this endogenous variable we'll use the condition that with free entry, the equilibrium price will equal the firm's marginal cost. To do this, we need to write the marginal cost of producing a unit of output.  And for price to be determined, we need this to be constant over all amounts of output (which is not the case with a DRS production function).  Or, can we set price equal to marginal cost then solve for the output price as a function of the factor prices (r,w)? }
+
+We can write the derivatives of the tax function with respect to the endogenous variables as:
+
+\begin{equation}
+\label{eqn:d_te_l}
+\frac{\partial TE_{u}}{\partial EL_{u}}= \tau^{b}_{u}\left(p_{u}MPL_{u}- w_{u} \right)
+\end{equation}
+
+\begin{equation}
+\label{eqn:d_te_i}
+\frac{\partial TE_{u}}{\partial I_{u}}= -\tau^{b}_{u}\left(f_{e,u}p^{k}_{u} + p^{k}_{u}\left(\frac{\partial \Phi_{u}}{\partial I_{u}} + \Phi_{u}\right)\right)
+\end{equation}
+
+\begin{equation}
+\label{eqn:d_te_kp1}
+\frac{\partial TE_{u}}{\partial K_{u+1}}= 0
+\end{equation}
+
+\begin{equation}
+\label{eqn:d_te_k}
+\frac{\partial TE_{u}}{\partial K_{u}}= \tau^{b}_{u}\left( p_{u}MPK_{u} - p^{k}_{u}\frac{\partial \Phi_{u}}{\partial K_{u}}I_{u} - f_{c,u}\frac{\partial c(B_{u+1},K_{u})}{\partial K_{u}}- \tau^{p}_{u}p^{k}_{u}\right)
+\end{equation}
+
+\begin{equation}
+\label{eqn:d_te_bp1}
+\frac{\partial TE_{u}}{\partial B_{u+1}}= -\tau^{b}_{u}\left( f_{c,u}\frac{\partial c(B_{u+1},K_{u})}{\partial B_{u+1}} + f_{b,u}\right)
+\end{equation}
+
+\begin{equation}
+\label{eqn:d_te_b}
+\frac{\partial TE_{u}}{\partial B_{u}}= -\tau^{b}_{u}\left(f_{i,u}r_{b,u} + f_{p,u} \right)
+\end{equation}
+
+\begin{equation}
+\label{eqn:d_te_b}
+\frac{\partial TE_{u}}{\partial K^{\tau}_{u}}= -\tau^{b}_{u}\left(f_{d,u}\delta^{\tau}_{u}+f_{ace,u}r_{ace,u} \right)
+\end{equation}
+
+
+Using these partial derivatives of the tax function with respect to the endogenous variables, we can rewrite the FOCs as:
+
+
+\begin{equation}
+\label{eqn:foc_l_tax}
+\begin{split}
+ p_{u}MPL_{u} = w_{u} 
+ \end{split}
+\end{equation}
+
+ \begin{equation}
+\label{eqn:foc_i_tax}
+\begin{split}
+ & q_{u} + \lambda^{\tau}_{u}(1-\delta^{\tau}_{u})(1-f_{e,u})p^{k}_{u} =  \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}} + \lambda^{d}_{u}\right)\left[(1-f_{e,u}\tau^{b}_{u})p^{k}_{u}+ (1-\tau^{b}_{u})p^{k}_{u}\left(\frac{\partial \Phi_{u}}{\partial I_{u}} + \Phi_{u}\right)\right]
+\end{split}
+\end{equation}
+
+
+ \begin{equation}
+\label{eqn:foc_k_tax}
+\begin{split}
+ q_{u} = \left(\frac{1}{1+\theta_{u+1}}\right)\left[(1-\delta)q_{u+1} ... \right. \\
+& \left. +  \left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}} + \lambda^{d}_{u+1} \right)\left[p_{u+1}MPK_{u+1}- p^{k}_{u+1}\frac{\partial \Phi_{u+1}}{\partial K_{u+1}}I_{u+1}  ... \right.\right. \\
+& \left.\left.- \frac{\partial c(B_{u+2},K_{u+1})}{\partial K_{u+1}}-\tau^{p}_{u+1}p^{k}_{u+1}-\frac{\partial TE_{u+1}}{\partial K_{u+1}} \right] \right]
+\end{split}
+\end{equation}
+
+ \begin{equation}
+\label{eqn:foc_b_tax}
+\begin{split}
+ \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}} + \lambda^{d}_{u} \right)\left(1-\frac{\partial c(B_{u+1},K_{u})}{\partial B_{u+1}}-\frac{\partial TE_{u}}{\partial B_{u+1}}\right)= \\
+&  \left(\frac{1}{1+\theta_{u+1}}\right) \left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}} + \lambda^{d}_{u} \right) \left((1+r_{b,u+1})+\frac{\partial TE_{u+1}}{\partial B_{u+1}}\right)
+ \end{split}
+\end{equation}
+
+ \begin{equation}
+\label{eqn:foc_vn_tax}
+\begin{split}
+1 = \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}} + \lambda^{d}_{u}\right)\left(1-\frac{\partial \Psi(VN_{u})}{\partial VN_{u}}\right) + \lambda^{v}_{u}
+ \end{split}
+\end{equation}
+
+ \begin{equation}
+\label{eqn:foc_ktau_tax}
+\begin{split}
+ \lambda^{\tau}_{u} = \left(\frac{1}{1+\theta_{u+1}}\right)\left[\left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}} + \lambda^{d}_{u+1} \right)\frac{- \partial TE_{u+1}}{\partial K^{\tau}_{u+1}} + \lambda^{\tau}_{u+1}(1-\delta^{\tau}_{u+1})\right] 
+ \end{split}
+\end{equation}
+
+
+
+\subsubsection{Optimal Investment Policy}
+
+WRITE THE USER COST OF CAPITAL and the condition for optimal investment here
+
+
+\subsubsection{Optimal Financial Policy}
+
+\begin{proposition}
+\label{prop:vn_div}
+New equity issues and dividend distributions will not both be positive if the capital gains tax rate is less than the dividends tax rate (i.e., if $\tau^{g}_{u}<\tau^{d}_{u}$).
+\end{proposition}
+
+\begin{proof}
+Suppose that $DIV_{u}>0$ and $VN_{u}>0$, then Equation \ref{eqn:foc_vn} simplifies to:
+ \begin{equation}
+\label{eqn:foc_vn_pos}
+ 1 = \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)\left(1-\frac{\partial \Psi(VN_{u})}{\partial VN_{u}}\right) 
+ \end{equation}
+ 
+Which implies that :
+  \begin{equation}
+  \label{eqn:foc_vn_pos2}
+ 1-\tau^{g}_{u} = (1-\tau^{d}_{u})\left(1-\frac{\partial \Psi(VN_{u})}{\partial VN_{u}}\right) 
+ \end{equation}
+
+
+But Equation \ref{eqn:foc_vn_pos2} can't hold if $\tau^{g}_{u}<\tau^{d}_{u}$, because so long as $\frac{\partial \Psi(VN_{u})}{\partial VN_{u}}\geq0$, then the left hand side of the equality exceeds the right hand side.  Thus, firms will never both issue equity and distribute dividends in the same period.
+\end{proof}
+
+In fact, we do observe firms in the data do both, and the behavior has been terms the ``dividend puzzle".  To model this, you need to suppose some capital market imperfections that our model abstracts from.  
+
+Note that if $\tau^{g}_{u}>\tau^{d}_{u}$, firms may issue new equity and distribute dividends.  If the marginal costs of new equity issues is increase, firms will issue new equity up to the point that the marginal cost of new equity (through dilution of after-tax capital gains to current share holders) is equal to the marginal benefit (the after-tax dividend income to current shareholders).  If marginal costs to new equity issues are flat or constant, we are in one of two cases.  The first is where costs are relatively high (relative to the differential in capital gains and dividend taxes) and firms never issues dividends and new equity in the same period.  The second is where costs are relatively low and no equilibrium exists.  In this case, the marginal benefits of new equity issues always exceed the marginal costs and so they firm issues infinite amounts of new equity to finance dividend distributions.
+
+
+
+
+\subsection{Firm Policy in the Steady State}
+
+In the steady state, the first order conditions of the firm look like the following:
+
+\begin{equation}
+\label{eqn:foc_l_ss}
+ \bar{p}\overline{MPL} - \frac{\partial \overline{TE}}{\partial \overline{EL}}= \bar{w}
+\end{equation}
+
+ \begin{equation}
+\label{eqn:foc_i_ss}
+\bar{q} + \bar{\lambda}^{\tau}(1-\bar{\delta}^{\tau})(1-\bar{f}_{e})\bar{p}^{k} =  \left(\frac{1-\bar{\tau}^{d}}{1-\bar{\tau}^{g}} + \bar{\lambda}^{d}\right)\left[\bar{p}^{k}(1 + \frac{\partial \overline{TE}}{\partial \bar{I}}\right]
+\end{equation}
+
+ \begin{equation}
+\label{eqn:foc_k_ss}
+\bar{q}_{u} = \left(\frac{1}{\bar{\theta}+\delta}\right) \left(\frac{1-\bar{\tau}^{d}}{1-\bar{\tau}^{g}} + \bar{\lambda}^{d} \right)\left[\bar{p}\overline{MPK} - \frac{\partial c(\bar{B},\bar{K})}{\partial \bar{K}}-\bar{\tau}^{p}\bar{p}^{k}-\frac{\partial \overline{TE}}{\partial \bar{K}} \right]
+\end{equation}
+
+
+ \begin{equation}
+\label{eqn:foc_b_ss}
+\left(1-\frac{\partial c(\bar{B},\bar{K})}{\partial \bar{B}}-\frac{\partial \overline{TE}}{\partial \bar{B}}\right)=   \left(\frac{1}{1+\bar{\theta}}\right) \left((1+\bar{r}_{b})+\frac{\partial \overline{TE}}{\partial \bar{B}}\right)
+\end{equation}
+
+
+ \begin{equation}
+\label{eqn:foc_vn_ss}
+ 1 = \left(\frac{1-\bar{\tau}^{d}}{1-\bar{\tau}^{g}} + \bar{\lambda}^{d}\right)\left(1-\frac{\partial \Psi(\overline{VN})}{\partial \overline{VN}}\right) + \bar{\lambda}^{v}
+\end{equation}
+
+ \begin{equation}
+\label{eqn:foc_ktau_ss}
+ \bar{\lambda}^{\tau} = -  \left(\frac{1}{\bar{\theta}+\bar{\delta}^{\tau}}\right)\left(\frac{1-\bar{\tau}^{d}}{1-\bar{\tau}^{g}} + \bar{\lambda}^{d} \right)\frac{\partial \overline{TE}}{\partial \bar{K}^{\tau}} 
+\end{equation}
+
+We also can write the laws of motion for the physical and fiscal capital stocks in the steady state as:
+
+\begin{equation}
+\label{eqn:lom_k_ss}
+\bar{I}=\delta\bar{K}
+\end{equation}
+
+\begin{equation}
+\label{eqn:lom_ktau_ss}
+\bar{K}^{\tau}=(1-\bar{f}_{e})\bar{p}^{k}\bar{K}
+\end{equation}
+
+In equilibrium, firm value must be positive.  This implies that $\overline{DIV}>\overline{VN}$.  As shown in Proposition \ref{prop:vn_div}, if $\bar{\tau}^{g}<\bar{\tau}^{d}$, the firm will not both issue new equity and distribute dividends.  Therefore, if $\bar{\tau}^{g}<\bar{\tau}^{d}$ we know that $\overline{DIV}>0$ and $\overline{VN}=0$.  The means that $\bar{\lambda}^{v}>0$ and $\bar{\lambda}^{d}=0$.  
 
 \ \\
 \ \\
