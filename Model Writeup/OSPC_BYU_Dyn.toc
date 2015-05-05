@@ -19,26 +19,27 @@
 \contentsline {subsubsection}{Accounting Concepts}{27}{section*.8}
 \contentsline {subsection}{\numberline {3.2.5}Optimal Firm Policy}{28}{subsection.3.2.5}
 \contentsline {subsubsection}{Optimal Investment Policy}{33}{section*.9}
-\contentsline {subsubsection}{Optimal Financial Policy}{33}{section*.10}
-\contentsline {subsection}{\numberline {3.2.6}Firm Policy in the Steady State}{34}{subsection.3.2.6}
-\contentsline {section}{\numberline {3.3}The Firm's Problem}{35}{section.3.3}
-\contentsline {subsection}{\numberline {3.3.1}The Value of the Firm}{35}{subsection.3.3.1}
-\contentsline {subsection}{\numberline {3.3.2}The Sequence Problem of the Firm}{36}{subsection.3.3.2}
-\contentsline {subsection}{\numberline {3.3.3}Relating Firm Investment and Production Goods}{41}{subsection.3.3.3}
-\contentsline {chapter}{\numberline {4}Government}{43}{chapter.4}
-\contentsline {section}{\numberline {4.1}Overview of government in the model}{43}{section.4.1}
-\contentsline {section}{\numberline {4.2}Government budgeting}{43}{section.4.2}
-\contentsline {subsection}{\numberline {4.2.1}Rule for long-term fiscal stability}{44}{subsection.4.2.1}
-\contentsline {section}{\numberline {4.3}Direct transfers}{44}{section.4.3}
-\contentsline {section}{\numberline {4.4}Government production of public goods}{44}{section.4.4}
-\contentsline {section}{\numberline {4.5}Government production of private goods}{45}{section.4.5}
-\contentsline {chapter}{\numberline {5}Equilibrium}{46}{chapter.5}
-\contentsline {section}{\numberline {5.1}Market clearing and stationary equilibrium}{46}{section.5.1}
-\contentsline {chapter}{\numberline {6}Numerical Solution}{51}{chapter.6}
-\contentsline {section}{\numberline {6.1}Solving for stationary steady-state equilibrium}{51}{section.6.1}
-\contentsline {section}{\numberline {6.2}Solving for stationary non-steady-state equilibrium by time path iteration}{52}{section.6.2}
-\contentsline {chapter}{\numberline {7}Miscellaneous}{60}{chapter.7}
-\contentsline {section}{\numberline {7.1}Characteristics of exogenous population growth assumptions}{60}{section.7.1}
-\contentsline {section}{\numberline {7.2}Incorporating Feedbacks with Micro Tax Simulations}{67}{section.7.2}
-\contentsline {section}{\numberline {7.3}Calibration}{67}{section.7.3}
-\contentsline {subsection}{\numberline {7.3.1}Tax Bend Points}{67}{subsection.7.3.1}
+\contentsline {subsubsection}{Optimal Financial Policy}{34}{section*.10}
+\contentsline {subsection}{\numberline {3.2.6}Firm Policy in the Steady State}{35}{subsection.3.2.6}
+\contentsline {subsubsection}{Solving for the Steady State}{36}{section*.11}
+\contentsline {section}{\numberline {3.3}The Firm's Problem}{37}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}The Value of the Firm}{37}{subsection.3.3.1}
+\contentsline {subsection}{\numberline {3.3.2}The Sequence Problem of the Firm}{38}{subsection.3.3.2}
+\contentsline {subsection}{\numberline {3.3.3}Relating Firm Investment and Production Goods}{43}{subsection.3.3.3}
+\contentsline {chapter}{\numberline {4}Government}{45}{chapter.4}
+\contentsline {section}{\numberline {4.1}Overview of government in the model}{45}{section.4.1}
+\contentsline {section}{\numberline {4.2}Government budgeting}{45}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Rule for long-term fiscal stability}{46}{subsection.4.2.1}
+\contentsline {section}{\numberline {4.3}Direct transfers}{46}{section.4.3}
+\contentsline {section}{\numberline {4.4}Government production of public goods}{46}{section.4.4}
+\contentsline {section}{\numberline {4.5}Government production of private goods}{47}{section.4.5}
+\contentsline {chapter}{\numberline {5}Equilibrium}{48}{chapter.5}
+\contentsline {section}{\numberline {5.1}Market clearing and stationary equilibrium}{48}{section.5.1}
+\contentsline {chapter}{\numberline {6}Numerical Solution}{53}{chapter.6}
+\contentsline {section}{\numberline {6.1}Solving for stationary steady-state equilibrium}{53}{section.6.1}
+\contentsline {section}{\numberline {6.2}Solving for stationary non-steady-state equilibrium by time path iteration}{54}{section.6.2}
+\contentsline {chapter}{\numberline {7}Miscellaneous}{62}{chapter.7}
+\contentsline {section}{\numberline {7.1}Characteristics of exogenous population growth assumptions}{62}{section.7.1}
+\contentsline {section}{\numberline {7.2}Incorporating Feedbacks with Micro Tax Simulations}{69}{section.7.2}
+\contentsline {section}{\numberline {7.3}Calibration}{69}{section.7.3}
+\contentsline {subsection}{\numberline {7.3.1}Tax Bend Points}{69}{subsection.7.3.1}

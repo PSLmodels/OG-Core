@@ -188,7 +188,7 @@ We define firm profits from a tax accounting perspective as:
 \end{split}
 \end{equation}
 
-\noindent\noindent Note that we are assuming that investment may or may not be deductible (depending upon the dummy variable $f_{e,t}$), but that investment adjustment costs are always deductible (i.e., they are not preceded by $f_{e,t}$).  Under a pre-pay consumption tax system, investments are not deductible from the tax base.  Whether or not adjustment costs are deductible under a pre-pay consumption tax depends upon what you think these costs derive from.  For example, if adjustment costs are from retraining employees to use new equipment, then these costs may be deductible under a consumption tax system (pre or post-pay) because they would likely be in the form of wage/labor costs.\footnote{It's not clear how best to handle this and \citet{DZ2013} are vague on this point.}  The other indicator variables, $f_{i,t}$, $f_{c,t}$,$f_{p,t}$, $f_{b,t}$, $f_{d}$, and $f_{ace,t}$, allow for various consumption tax policies to be incorporated into the model.  The parameter $f_{i,t}=1$ if interest on debt is deductible and 0 if not.  The indicator $f_{c,t}$ equals one if debt costs are deductible (\textcolor{red}{Not sure if we want this - maybe just assume they are deductible are capital adjustment costs are.}).  The parameter $f_{p,t}$ is equal to one the principle on corporate borrowing is deductible from the corporate income tax based.  Principle on loans would be deductible in a post-pay consumption tax system.  The parameter $f_{b,t}$ is equal to one if the proceeds from firm borrowing is included in the corporate tax base.  Such proceeds would be included in a pre-pay consumption tax system.  The parameter $f_{d,t}$ is equal to one if capital can be depreciated and zero if not.  For example, in a post-pay consumption tax framework, $f_{e,t}=1$ and $f_{d,t}=0$. We allow for allowance of corporate equity (ACE) policies through the $f_{ace,t}$ indicator variable, which equals one if there is an allowance for corporate equity.  We use the notation $r_{ace,t}$ for the rate of return use for the corporate equity allowance.  In practice, this maybe set to $r_{b,t}$ or $r_{e,t}$ or another rate of return. 
+\noindent\noindent Note that we are assuming that investment may or may not be deductible (depending upon the dummy variable $f_{e,t}$), but that investment adjustment costs are always deductible (i.e., they are not preceded by $f_{e,t}$).  Under a pre-pay consumption tax system, investments are not deductible from the tax base.  Whether or not adjustment costs are deductible under a pre-pay consumption tax depends upon what you think these costs derive from.  For example, if adjustment costs are from retraining employees to use new equipment, then these costs may be deductible under a consumption tax system (pre or post-pay) because they would likely be in the form of wage/labor costs.\footnote{It's not clear how best to handle this and \citet{DZ2013} are vague on this point.}  The other indicator variables, $f_{i,t}$, $f_{c,t}$,$f_{p,t}$, $f_{b,t}$, $f_{d}$, and $f_{ace,t}$, allow for various consumption tax policies to be incorporated into the model.  The parameter $f_{i,t}=1$ if interest on debt is deductible and 0 if not.  The indicator $f_{c,t}$ equals one if debt costs are deductible (\textcolor{red}{Not sure if we want this - maybe just assume they are deductible are capital adjustment costs are.}).  The parameter $f_{p,t}$ is equal to one the principle on corporate borrowing is deductible from the corporate income tax based.  Principle on loans would be deductible in a post-pay consumption tax system.  The parameter $f_{b,t}$ is equal to one if the proceeds from firm borrowing is included in the corporate tax base.  Such proceeds would be included in a pre-pay consumption tax system.  The parameter $f_{d,t}$ is equal to one if capital can be depreciated and zero if not.  For example, in a post-pay consumption tax framework, $f_{e,t}=1$ and $f_{d,t}=0$. We allow for allowance of corporate equity (ACE) policies through the $f_{ace,t}$ indicator variable, which equals one if there is an allowance for corporate equity.  We use the notation $r_{ace,t}$ for the rate of return use for the corporate equity allowance.  In practice, this maybe set to $r_{b,t}$ or $r_{e,t}$ or another rate of return. \textcolor{red}{The fiscal capital stock is currently used as the basis for the ACE system.  I think this needs to be adjusted for the fraction of the capital stock that is supported by equity, but I'm not totally sure.}
 
 The tax basis of the capital stock is given by $K^{\tau}_{t}$.  The law of motion for the tax basis of the capital stock is given by:
 
@@ -385,17 +385,17 @@ Using these partial derivatives of the tax function with respect to the endogeno
  \begin{equation}
 \label{eqn:foc_k_tax}
 \begin{split}
- q_{u} = \left(\frac{1}{1+\theta_{u+1}}\right)\left[(1-\delta)q_{u+1} ... \right. \\
-& \left. +  \left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}} + \lambda^{d}_{u+1} \right)\left[p_{u+1}MPK_{u+1}- p^{k}_{u+1}\frac{\partial \Phi_{u+1}}{\partial K_{u+1}}I_{u+1}  ... \right.\right. \\
-& \left.\left.- \frac{\partial c(B_{u+2},K_{u+1})}{\partial K_{u+1}}-\tau^{p}_{u+1}p^{k}_{u+1}-\frac{\partial TE_{u+1}}{\partial K_{u+1}} \right] \right]
+ q_{u} & = \left(\frac{1}{1+\theta_{u+1}}\right)\left[(1-\delta)q_{u+1} ... \right. \\
+& \left. +  \left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}} + \lambda^{d}_{u+1} \right)\left[(1-\tau^{b}_{u+1})\left(p_{u+1}MPK_{u+1}- p^{k}_{u+1}\frac{\partial \Phi_{u+1}}{\partial K_{u+1}}I_{u+1}\right)  ... \right.\right. \\
+& \left.\left.-(1-f_{c,u+1}\tau^{b}_{u+1}) \frac{\partial c(B_{u+2},K_{u+1})}{\partial K_{u+1}} \right] \right]
 \end{split}
 \end{equation}
 
  \begin{equation}
 \label{eqn:foc_b_tax}
 \begin{split}
- \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}} + \lambda^{d}_{u} \right)\left(1-\frac{\partial c(B_{u+1},K_{u})}{\partial B_{u+1}}-\frac{\partial TE_{u}}{\partial B_{u+1}}\right)= \\
-&  \left(\frac{1}{1+\theta_{u+1}}\right) \left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}} + \lambda^{d}_{u} \right) \left((1+r_{b,u+1})+\frac{\partial TE_{u+1}}{\partial B_{u+1}}\right)
+&  \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}} + \lambda^{d}_{u} \right)\left((1-\tau^{b}_{u}f_{b,u})-(1-\tau^{b}_{u}f_{c,u})\frac{\partial c(B_{u+1},K_{u})}{\partial B_{u+1}}\right)= \\
+&  \left(\frac{1}{1+\theta_{u+1}}\right) \left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}} + \lambda^{d}_{u} \right) \left((1+\tau^{b}_{u+1}f_{p,u+1})+(1-\tau^{b}_{u+1}f_{i,u+1})r_{b,u+1}\right)
  \end{split}
 \end{equation}
 
@@ -409,7 +409,7 @@ Using these partial derivatives of the tax function with respect to the endogeno
  \begin{equation}
 \label{eqn:foc_ktau_tax}
 \begin{split}
- \lambda^{\tau}_{u} = \left(\frac{1}{1+\theta_{u+1}}\right)\left[\left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}} + \lambda^{d}_{u+1} \right)\frac{- \partial TE_{u+1}}{\partial K^{\tau}_{u+1}} + \lambda^{\tau}_{u+1}(1-\delta^{\tau}_{u+1})\right] 
+ \lambda^{\tau}_{u} = \left(\frac{1}{1+\theta_{u+1}}\right)\left[\left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}} + \lambda^{d}_{u+1} \right)\left(f_{d,u+1}\delta^{\tau}_{u+1}+f_{ace,u+1}r_{ace,u+1}\right)\tau^{b}_{u+1} + \lambda^{\tau}_{u+1}(1-\delta^{\tau}_{u+1})\right] 
  \end{split}
 \end{equation}
 
@@ -417,7 +417,60 @@ Using these partial derivatives of the tax function with respect to the endogeno
 
 \subsubsection{Optimal Investment Policy}
 
-WRITE THE USER COST OF CAPITAL and the condition for optimal investment here
+
+\noindent\noindent \emph{User cost of capital}
+
+Let $ucc_{t}$ denote the user cost of capital of the firm in period $t$.  We define $ucc_{t}$ such that it is equal to the entity-level-tax marginal cash flow from an additional dollar of investment:
+
+\begin{equation}
+ucc_{t} = (1-\tau^{b}_{t+1})\left(p_{t+1}MPK_{t+1}-\tau^{p}_{t+1}p^{k}_{t+1}\right)- (1-\tau^{b}_{t+1}) \frac{\partial c(B_{t+2},K_{t+1})}{\partial K_{t+1}}
+\end{equation}
+
+
+We can use Equation \ref{eqn:foc_k_tax} to rewrite the LHS:
+
+\begin{equation}
+ucc_{t} =  \left[\left({1+\theta_{u+1}}\right)q_{t} - (1-\delta)q_{u+1}\right] \left(\frac{1-\tau^{d}_{u+1}}{1-\tau^{g}_{u+1}} + \lambda^{d}_{u+1} \right)^{-1}
+\end{equation}
+
+Using Equation \ref{eqn:foc_i_tax} we have:
+
+\begin{equation}
+\begin{split}
+ucc_{t} &=  \left[\left({1+\theta_{u+1}}\right)\left[\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}} + \lambda^{d}_{t}\right)\left[(1-f_{e,t}\tau^{b}_{t})p^{k}_{t}+ (1-\tau^{b}_{t})p^{k}_{t}\left(\frac{\partial \Phi_{t}}{\partial I_{t}} + \Phi_{t}\right)\right]... \right.\right. \\
+& \left.\left. -\lambda^{\tau}_{t}(1-\delta^{\tau}_{t})(1-f_{e,t})p^{k}_{t}\right] - (1-\delta)\left[\left(\frac{1-\tau^{d}_{t+1}}{1-\tau^{g}_{t+1}} + \lambda^{d}_{t+1}\right)... \right.\right. \\
+& \left.\left. \times \left[(1-f_{e,t+1}\tau^{b}_{t+1})p^{k}_{t+1}+ (1-\tau^{b}_{t+1})p^{k}_{t+1}\left(\frac{\partial \Phi_{t+1}}{\partial I_{t+1}} + \Phi_{t}\right)\right]... \right.\right. \\
+& \left.\left. -\lambda^{\tau}_{t+1}(1-\delta^{\tau}_{t+1})(1-f_{e,t})p^{k}_{t+1}\right]\right] \left(\frac{1-\tau^{d}_{t+1}}{1-\tau^{g}_{t+1}} + \lambda^{d}_{t+1} \right)^{-1}
+\end{split}
+\end{equation}
+
+
+Using Equation \ref{eqn:foc_ktau_tax} and iterating forward, we can find the value of $\lambda^{\tau}$ as:
+\begin{equation}
+\begin{split}
+& \lambda^{\tau}_{t}=\underbrace{\prod_{\nu=t+!}^{\infty}\left(\frac{1}{1+\theta_{\nu}}\right)\lambda^{\tau}_{\infty}}_{=0 \text{ by transversality condition}} + \sum_{u=t+1}^{\infty} \prod_{\nu=t+1}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[\left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}+\lambda^{d}_{u}\right)\left( f_{d,u}\delta^{\tau}_{u}+f_{ace,u}r_{ace,u} \right)\tau^{b}_{u}\right]\\
+&\implies  \lambda^{\tau}_{t}= \sum_{u=t+1}^{\infty} \prod_{\nu=t+1}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[\left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}+\lambda^{d}_{u}\right)\left( f_{d,u}\delta^{\tau}_{u}+f_{ace,u}r_{ace,u} \right)\tau^{b}_{u}\right]
+\end{split}
+\end{equation}
+
+Substituting in for $\lambda^{\tau}$ and multiplying through we have:
+
+\begin{equation}
+\begin{split}
+ucc_{t} &=  \left({1+\theta_{u+1}}\right)\left[\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}} + \lambda^{d}_{t}\right) \left(\frac{1-\tau^{d}_{t+1}}{1-\tau^{g}_{t+1}} + \lambda^{d}_{t+1} \right)^{-1}\left[(1-f_{e,t}\tau^{b}_{t})p^{k}_{t}+ (1-\tau^{b}_{t})p^{k}_{t}\left(\frac{\partial \Phi_{t}}{\partial I_{t}} + \Phi_{t}\right)\right]... \right. \\
+& \left. -  \left( \sum_{u=t+1}^{\infty} \prod_{\nu=t+1}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[\left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}+\lambda^{d}_{u}\right)\left( f_{d,u}\delta^{\tau}_{u}+f_{ace,u}r_{ace,u} \right)\tau^{b}_{u}\right]\right) (1-\delta^{\tau}_{t})(1-f_{e,t})p^{k}_{t}\right] ...   \\
+& - (1-\delta)\left[ \left((1-f_{e,t+1}\tau^{b}_{t+1})p^{k}_{t+1}+ (1-\tau^{b}_{t+1})p^{k}_{t+1}\left(\frac{\partial \Phi_{t+1}}{\partial I_{t+1}} + \Phi_{t}\right)\right] ... \right. \\
+& \left. - \left(  \sum_{u=t+2}^{\infty} \prod_{\nu=t+2}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[\left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}+\lambda^{d}_{u}\right)\left( f_{d,u}\delta^{\tau}_{u}+f_{ace,u}r_{ace,u} \right)\tau^{b}_{u}\right] \right)(1-\delta^{\tau}_{t+1})(1-f_{e,t})p^{k}_{t+1}\right]
+\end{split}
+\end{equation}
+
+If taxes are equal to zero, adjustment costs are zero, and the dividend constraint is not binding then this simplifies to:
+
+\begin{equation}
+ucc_{t}= (r_{e,t}+ \delta)p^{k}_{t} - (p^{k}_{t}-p^{k}_{t})
+\end{equation}
+
+Which is the familiar user cost of capital.  Where the cost of capital is equal to the market rental rate for capital  plus the rate of depreciation, less capital gains from holding capital.
 
 
 \subsubsection{Optimal Financial Policy}
@@ -487,6 +540,53 @@ In the steady state, the first order conditions of the firm look like the follow
  \bar{\lambda}^{\tau} = -  \left(\frac{1}{\bar{\theta}+\bar{\delta}^{\tau}}\right)\left(\frac{1-\bar{\tau}^{d}}{1-\bar{\tau}^{g}} + \bar{\lambda}^{d} \right)\frac{\partial \overline{TE}}{\partial \bar{K}^{\tau}} 
 \end{equation}
 
+Using these partial derivatives of the tax function with respect to the endogenous variables in the SS, we can rewrite the FOCs as:
+
+
+\begin{equation}
+\label{eqn:foc_l_tax_ss}
+\begin{split}
+ \bar{p}\overline{MPL} = \bar{w} 
+ \end{split}
+\end{equation}
+
+ \begin{equation}
+\label{eqn:foc_i_tax_ss}
+\begin{split}
+ & \bar{q} + \bar{\lambda}^{\tau}(1-\bar{\delta}^{\tau})(1-\bar{f}_{e})\bar{p}^{k} =  \left(\frac{1-\bar{\tau}^{d}}{1-\bar{\tau}^{g}} + \bar{\lambda}^{d}\right)\left[(1-\bar{f}_{e}\bar{\tau}^{b})\bar{p}^{k}\right]
+\end{split}
+\end{equation}
+
+
+ \begin{equation}
+\label{eqn:foc_k_tax_ss}
+\begin{split}
+\bar{q}_{u} = \left(\frac{1}{\bar{\theta}+\delta}\right) \left(\frac{1-\bar{\tau}^{d}}{1-\bar{\tau}^{g}} + \bar{\lambda}^{d} \right)\left[(1-\bar{\tau}^{b})\left(\bar{p}\overline{MPK}\right)-(1-\bar{f}_{c}\bar{\tau}^{b}) \frac{\partial c(\bar{B},\bar{K})}{\partial \bar{K}} \right]
+\end{split}
+\end{equation}
+
+ \begin{equation}
+\label{eqn:foc_b_tax}
+\begin{split}
+ \left((1-\bar{\tau}^{b}\bar{f}_{b})-(1-\bar{\tau}^{b}\bar{f}_{c})\frac{\partial c(\bar{B}_{u},\bar{K})}{\partial \bar{B}}\right)=  \left(\frac{1}{1+\bar{\theta}}\right) \left((1+\bar{\tau}^{b}\bar{f}_{p})+(1-\bar{\tau}^{b}\bar{f}_{i})\bar{r}_{b}\right)
+ \end{split}
+\end{equation}
+
+ \begin{equation}
+\label{eqn:foc_vn_tax_ss}
+\begin{split}
+ 1 = \left(\frac{1-\bar{\tau}^{d}}{1-\bar{\tau}^{g}} + \bar{\lambda}^{d}\right)\left(1-\frac{\partial \Psi(\overline{VN})}{\partial \overline{VN}}\right) + \bar{\lambda}^{v}
+ \end{split}
+\end{equation}
+
+ \begin{equation}
+\label{eqn:foc_ktau_tax_ss}
+\begin{split}
+ \bar{\lambda}^{\tau} =  \left(\frac{1}{\bar{\theta}+\bar{\delta}^{\tau}}\right)\left(\frac{1-\bar{\tau}^{d}}{1-\bar{\tau}^{g}} + \bar{\lambda}^{d} \right)\bar{\tau}^{b}\left(\bar{f}_{d}\bar{\delta}^{\tau}+\bar{f}_{ace}\bar{r}_{ace}\right)
+ \end{split}
+\end{equation}
+
+
 We also can write the laws of motion for the physical and fiscal capital stocks in the steady state as:
 
 \begin{equation}
@@ -500,6 +600,10 @@ We also can write the laws of motion for the physical and fiscal capital stocks 
 \end{equation}
 
 In equilibrium, firm value must be positive.  This implies that $\overline{DIV}>\overline{VN}$.  As shown in Proposition \ref{prop:vn_div}, if $\bar{\tau}^{g}<\bar{\tau}^{d}$, the firm will not both issue new equity and distribute dividends.  Therefore, if $\bar{\tau}^{g}<\bar{\tau}^{d}$ we know that $\overline{DIV}>0$ and $\overline{VN}=0$.  The means that $\bar{\lambda}^{v}>0$ and $\bar{\lambda}^{d}=0$.  
+
+\subsubsection{Solving for the Steady State}
+
+By the above argument, we know that $\overline{DIV}>0$ and $\overline{VN}=0$.  Therefore $\bar{\lambda}^{d}=0$ .  We can thus solve for $\bar{\lambda}^{v}$ by Equation \ref{eqn:foc_vn_tax_ss} and $\bar{\lambda}^{\tau}$ by Equation \ref{eqn:foc_ktau_tax_ss}.  With these in hand, we can then solve for $\bar{q}(\bar{p}^{k})$ from Equation \ref{eqn:foc_i_tax_ss}.  Equations \ref{eqn:foc_l_tax_ss}, \ref{eqn:foc_k_tax_ss}, and \ref{eqn:foc_b_tax_ss} then imply $\bar{EL}$, $\bar{K}$, $\bar{B}$ as functions of $\bar{p}^{k}$ and $\bar{p}$.    We can then use the laws of motion (Equations \ref{eqn:lom_k_ss} and \ref{eqn:lom_ktau_ss}) to get $\bar{I}$ and $\bar{K}^{\tau}$ as functions of the input and output prices.  \textcolor{red}{The key is then to solve for the output prices as a function of the parameters and factor input prices ($\bar{r}_{b}$, $\bar{r}_{e}$ and $\bar{w}$).  To do this, we need to use the assumption of free entry and that prices equals marginal cost in equilibrium???}.  With the output price in hand, we use the fixed coefficient matrix relating industry outputs to industry inputs to find $\bar{p}^{k}$.  We are then able so solve the system of equations for given factor prices.  
 
 \ \\
 \ \\
