@@ -22,21 +22,28 @@
 \contentsline {subsubsection}{Optimal Financial Policy}{36}{section*.10}
 \contentsline {subsection}{\numberline {3.2.6}Firm Policy in the Steady State}{38}{subsection.3.2.6}
 \contentsline {subsubsection}{Solving for the Steady State}{39}{section*.11}
-\contentsline {subsection}{\numberline {3.2.7}Relating Firm Investment and Production Goods}{40}{subsection.3.2.7}
-\contentsline {chapter}{\numberline {4}Government}{41}{chapter.4}
-\contentsline {section}{\numberline {4.1}Overview of government in the model}{41}{section.4.1}
-\contentsline {section}{\numberline {4.2}Government budgeting}{41}{section.4.2}
-\contentsline {subsection}{\numberline {4.2.1}Rule for long-term fiscal stability}{42}{subsection.4.2.1}
-\contentsline {section}{\numberline {4.3}Direct transfers}{42}{section.4.3}
-\contentsline {section}{\numberline {4.4}Government production of public goods}{42}{section.4.4}
-\contentsline {section}{\numberline {4.5}Government production of private goods}{43}{section.4.5}
-\contentsline {chapter}{\numberline {5}Equilibrium}{44}{chapter.5}
-\contentsline {section}{\numberline {5.1}Market clearing and stationary equilibrium}{44}{section.5.1}
-\contentsline {chapter}{\numberline {6}Numerical Solution}{49}{chapter.6}
-\contentsline {section}{\numberline {6.1}Solving for stationary steady-state equilibrium}{49}{section.6.1}
-\contentsline {section}{\numberline {6.2}Solving for stationary non-steady-state equilibrium by time path iteration}{50}{section.6.2}
-\contentsline {chapter}{\numberline {7}Miscellaneous}{58}{chapter.7}
-\contentsline {section}{\numberline {7.1}Characteristics of exogenous population growth assumptions}{58}{section.7.1}
-\contentsline {section}{\numberline {7.2}Incorporating Feedbacks with Micro Tax Simulations}{65}{section.7.2}
-\contentsline {section}{\numberline {7.3}Calibration}{65}{section.7.3}
-\contentsline {subsection}{\numberline {7.3.1}Tax Bend Points}{65}{subsection.7.3.1}
+\contentsline {section}{\numberline {3.3}The Problem of the Multinational Parent Corporation}{40}{section.3.3}
+\contentsline {subsection}{\numberline {3.3.1}Firm Production}{40}{subsection.3.3.1}
+\contentsline {subsection}{\numberline {3.3.2}Firm Accounting}{41}{subsection.3.3.2}
+\contentsline {subsubsection}{Domestic Profits}{41}{section*.12}
+\contentsline {subsubsection}{Foreign Profits}{42}{section*.13}
+\contentsline {subsubsection}{Multinational Cash Flow}{42}{section*.14}
+\contentsline {subsubsection}{Why 3 ways to shift profits?}{43}{section*.15}
+\contentsline {section}{\numberline {3.4}Relating Firm Investment and Production Goods}{44}{section.3.4}
+\contentsline {chapter}{\numberline {4}Government}{45}{chapter.4}
+\contentsline {section}{\numberline {4.1}Overview of government in the model}{45}{section.4.1}
+\contentsline {section}{\numberline {4.2}Government budgeting}{45}{section.4.2}
+\contentsline {subsection}{\numberline {4.2.1}Rule for long-term fiscal stability}{46}{subsection.4.2.1}
+\contentsline {section}{\numberline {4.3}Direct transfers}{46}{section.4.3}
+\contentsline {section}{\numberline {4.4}Government production of public goods}{46}{section.4.4}
+\contentsline {section}{\numberline {4.5}Government production of private goods}{47}{section.4.5}
+\contentsline {chapter}{\numberline {5}Equilibrium}{48}{chapter.5}
+\contentsline {section}{\numberline {5.1}Market clearing and stationary equilibrium}{48}{section.5.1}
+\contentsline {chapter}{\numberline {6}Numerical Solution}{53}{chapter.6}
+\contentsline {section}{\numberline {6.1}Solving for stationary steady-state equilibrium}{53}{section.6.1}
+\contentsline {section}{\numberline {6.2}Solving for stationary non-steady-state equilibrium by time path iteration}{54}{section.6.2}
+\contentsline {chapter}{\numberline {7}Miscellaneous}{62}{chapter.7}
+\contentsline {section}{\numberline {7.1}Characteristics of exogenous population growth assumptions}{62}{section.7.1}
+\contentsline {section}{\numberline {7.2}Incorporating Feedbacks with Micro Tax Simulations}{69}{section.7.2}
+\contentsline {section}{\numberline {7.3}Calibration}{69}{section.7.3}
+\contentsline {subsection}{\numberline {7.3.1}Tax Bend Points}{69}{subsection.7.3.1}

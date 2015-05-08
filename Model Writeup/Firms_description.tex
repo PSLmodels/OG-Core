@@ -382,7 +382,7 @@ We can write the derivatives of the tax function with respect to the endogenous 
 
 \begin{equation}
 \label{eqn:d_te_i}
-\frac{\partial TE_{u}}{\partial I_{u}}= -\tau^{b}_{u}\left(f_{e,u}p^{k}_{u} + p^{k}_{u}\left(\frac{\partial \Phi_{u}}{\partial I_{u}} + \Phi_{u}\right)\right)
+\frac{\partial TE_{u}}{\partial I_{u}}= -\tau^{b}_{u}\left(f_{e,u}p^{k}_{u} + p^{k}_{u}\left(\frac{\partial \Phi_{u}}{\partial I_{u}} + \Phi_{u}\right)\right) + \tau^{ic}_{t}p^{k}_{t}
 \end{equation}
 
 \begin{equation}
@@ -424,7 +424,7 @@ Using these partial derivatives of the tax function with respect to the endogeno
  \begin{equation}
 \label{eqn:foc_i_tax}
 \begin{split}
- & q_{u} + \lambda^{\tau}_{u}(1-\delta^{\tau}_{u})(1-f_{e,u})p^{k}_{u} =  \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}} + \lambda^{d}_{u}\right)\left[(1-f_{e,u}\tau^{b}_{u})p^{k}_{u}+ (1-\tau^{b}_{u})p^{k}_{u}\left(\frac{\partial \Phi_{u}}{\partial I_{u}} + \Phi_{u}\right)\right]
+ & q_{u} + \lambda^{\tau}_{u}(1-\delta^{\tau}_{u})(1-f_{e,u})p^{k}_{u} =  \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}} + \lambda^{d}_{u}\right)\left[(1-f_{e,u}\tau^{b}_{u} - \tau^{ic}_{t})p^{k}_{u}+ (1-\tau^{b}_{u})p^{k}_{u}\left(\frac{\partial \Phi_{u}}{\partial I_{u}} + \Phi_{u}\right) \right]
 \end{split}
 \end{equation}
 
@@ -484,9 +484,9 @@ Using Equation \ref{eqn:foc_i_tax} we have:
 
 \begin{equation}
 \begin{split}
-ucc_{t} &=  \left[\left({1+\theta_{u+1}}\right)\left[\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}} + \lambda^{d}_{t}\right)\left[(1-f_{e,t}\tau^{b}_{t})p^{k}_{t}+ (1-\tau^{b}_{t})p^{k}_{t}\left(\frac{\partial \Phi_{t}}{\partial I_{t}} + \Phi_{t}\right)\right]... \right.\right. \\
+ucc_{t} &=  \left[\left({1+\theta_{u+1}}\right)\left[\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}} + \lambda^{d}_{t}\right)\left[(1-f_{e,t}\tau^{b}_{t}-\tau^{ic}_{t})p^{k}_{t}+ (1-\tau^{b}_{t})p^{k}_{t}\left(\frac{\partial \Phi_{t}}{\partial I_{t}} + \Phi_{t}\right)\right]... \right.\right. \\
 & \left.\left. -\lambda^{\tau}_{t}(1-\delta^{\tau}_{t})(1-f_{e,t})p^{k}_{t}\right] - (1-\delta)\left[\left(\frac{1-\tau^{d}_{t+1}}{1-\tau^{g}_{t+1}} + \lambda^{d}_{t+1}\right)... \right.\right. \\
-& \left.\left. \times \left[(1-f_{e,t+1}\tau^{b}_{t+1})p^{k}_{t+1}+ (1-\tau^{b}_{t+1})p^{k}_{t+1}\left(\frac{\partial \Phi_{t+1}}{\partial I_{t+1}} + \Phi_{t}\right)\right]... \right.\right. \\
+& \left.\left. \times \left[(1-f_{e,t+1}\tau^{b}_{t+1}-\tau^{ic}_{t+1})p^{k}_{t+1}+ (1-\tau^{b}_{t+1})p^{k}_{t+1}\left(\frac{\partial \Phi_{t+1}}{\partial I_{t+1}} + \Phi_{t}\right)\right]... \right.\right. \\
 & \left.\left. -\lambda^{\tau}_{t+1}(1-\delta^{\tau}_{t+1})(1-f_{e,t})p^{k}_{t+1}\right]\right] \left(\frac{1-\tau^{d}_{t+1}}{1-\tau^{g}_{t+1}} + \lambda^{d}_{t+1} \right)^{-1}
 \end{split}
 \end{equation}
@@ -504,9 +504,9 @@ Substituting in for $\lambda^{\tau}$ and multiplying through we have:
 
 \begin{equation}
 \begin{split}
-ucc_{t} &=  \left({1+\theta_{u+1}}\right)\left[\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}} + \lambda^{d}_{t}\right) \left(\frac{1-\tau^{d}_{t+1}}{1-\tau^{g}_{t+1}} + \lambda^{d}_{t+1} \right)^{-1}\left[(1-f_{e,t}\tau^{b}_{t})p^{k}_{t}+ (1-\tau^{b}_{t})p^{k}_{t}\left(\frac{\partial \Phi_{t}}{\partial I_{t}} + \Phi_{t}\right)\right]... \right. \\
+ucc_{t} &=  \left({1+\theta_{u+1}}\right)\left[\left(\frac{\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}} + \lambda^{d}_{t}}{\frac{1-\tau^{d}_{t+1}}{1-\tau^{g}_{t+1}} + \lambda^{d}_{t+1}}\right)\left[(1-f_{e,t}\tau^{b}_{t}-\tau^{ic}_{t})p^{k}_{t}+ (1-\tau^{b}_{t})p^{k}_{t}\left(\frac{\partial \Phi_{t}}{\partial I_{t}} + \Phi_{t}\right)\right]... \right. \\
 & \left. -  \left( \sum_{u=t+1}^{\infty} \prod_{\nu=t+1}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[\left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}+\lambda^{d}_{u}\right)\left( f_{d,u}\delta^{\tau}_{u}+f_{ace,u}r_{ace,u} \right)\tau^{b}_{u}\right]\right) (1-\delta^{\tau}_{t})(1-f_{e,t})p^{k}_{t}\right] ...   \\
-& - (1-\delta)\left[ \left((1-f_{e,t+1}\tau^{b}_{t+1})p^{k}_{t+1}+ (1-\tau^{b}_{t+1})p^{k}_{t+1}\left(\frac{\partial \Phi_{t+1}}{\partial I_{t+1}} + \Phi_{t}\right)\right] ... \right. \\
+& - (1-\delta)\left[ \left((1-f_{e,t+1}\tau^{b}_{t+1}-\tau^{ic}_{t+1})p^{k}_{t+1}+ (1-\tau^{b}_{t+1})p^{k}_{t+1}\left(\frac{\partial \Phi_{t+1}}{\partial I_{t+1}} + \Phi_{t}\right)\right] ... \right. \\
 & \left. - \left(  \sum_{u=t+2}^{\infty} \prod_{\nu=t+2}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[\left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}+\lambda^{d}_{u}\right)\left( f_{d,u}\delta^{\tau}_{u}+f_{ace,u}r_{ace,u} \right)\tau^{b}_{u}\right] \right)(1-\delta^{\tau}_{t+1})(1-f_{e,t})p^{k}_{t+1}\right]
 \end{split}
 \end{equation}
@@ -526,7 +526,7 @@ We can use Equations \ref{eqn:foc_i_tax}, \ref{eqn:foc_k_tax}, and \ref{eqn:foc_
 
 \begin{equation}
 \begin{split}
-&\underbrace{ \left[(1-\tau^{b}_{t}f_{e,t})p^{k}_{t} + \left(\frac{\partial \Phi_{t}}{\partial I_{t}} + \Phi_{t}\right)(1-\tau^{b}_{t})\right]\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}} + \lambda^{d}_{t}\right)}_{\text{MC of investment}} = \\
+&\underbrace{ \left[(1-\tau^{b}_{t}f_{e,t}-\tau^{ic}_{t})p^{k}_{t} + \left(\frac{\partial \Phi_{t}}{\partial I_{t}} + \Phi_{t}\right)(1-\tau^{b}_{t})\right]\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}} + \lambda^{d}_{t}\right)}_{\text{MC of investment}} = \\
 & \left(\frac{1}{1+\theta_{t+1}}\right)\left[(1-\delta)q_{t+1}  +  \left(\frac{1-\tau^{d}_{t+1}}{1-\tau^{g}_{t+1}} + \lambda^{d}_{t+1} \right)\left[(1-\tau^{b}_{t+1})\left(p_{t+1}MPK_{t+1}- p^{k}_{t+1}\frac{\partial \Phi_{t+1}}{\partial K_{t+1}}I_{t+1}\right)  ... \right.\right. \\
 & \left.\left.-(1-f_{c,t+1}\tau^{b}_{t+1}) \frac{\partial c(B_{t+2},K_{t+1})}{\partial K_{t+1}} \right] \right] ...\\
 &  + (1-\delta^{\tau}_{t})(1-f_{e,t})p^{k}_{t}\left(\sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[\left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}+\lambda^{d}_{u}\right)\left( f_{d,u}\delta^{\tau}_{u}+f_{ace,u}r_{ace,u} \right)\tau^{b}_{u}\right]\right)
@@ -537,7 +537,7 @@ We can solve for $q_{t}$ using Equation \ref{eqn:foc_i_tax} and repeated iterati
 
 \begin{equation}
 \begin{split}
-q_{t+1} & =  \left(\frac{1-\tau^{d}_{t+1}}{1-\tau^{g}_{t+1}} + \lambda^{d}_{t+1}\right)\left[(1-f_{e,t+1}\tau^{b}_{t+1})p^{k}_{t+1}+ (1-\tau^{b}_{t+1})p^{k}_{t+1}\left(\frac{\partial \Phi_{t+1}}{\partial I_{t+1}} + \Phi_{t+1}\right)\right]... \\
+q_{t+1} & =  \left(\frac{1-\tau^{d}_{t+1}}{1-\tau^{g}_{t+1}} + \lambda^{d}_{t+1}\right)\left[(1-f_{e,t+1}\tau^{b}_{t+1}-\tau^{ic}_{t+1})p^{k}_{t+1}+ (1-\tau^{b}_{t+1})p^{k}_{t+1}\left(\frac{\partial \Phi_{t+1}}{\partial I_{t+1}} + \Phi_{t+1}\right)\right]... \\
 &  -  (1-\delta^{\tau}_{t+1})(1-f_{e,t+1})p^{k}_{t+1}\left(\sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[\left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}+\lambda^{d}_{u}\right)\left( f_{d,u}\delta^{\tau}_{u}+f_{ace,u}r_{ace,u} \right)\tau^{b}_{u}\right]\right)
 \end{split}
 \end{equation}
@@ -546,8 +546,8 @@ With this, we rewrite the condition for optimal investment as:
 
 \begin{equation}
 \begin{split}
-&\underbrace{ \left[(1-\tau^{b}_{t}f_{e,t})p^{k}_{t} + \left(\frac{\partial \Phi_{t}}{\partial I_{t}} + \Phi_{t}\right)(1-\tau^{b}_{t})\right]\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}} + \lambda^{d}_{t}\right)}_{\text{MC of investment}} = \\
-& \left(\frac{1}{1+\theta_{t+1}}\right)\left[(1-\delta)\left[\left(\frac{1-\tau^{d}_{t+1}}{1-\tau^{g}_{t+1}} + \lambda^{d}_{t+1}\right)\left[(1-f_{e,t+1}\tau^{b}_{t+1})p^{k}_{t+1}+ (1-\tau^{b}_{t+1})p^{k}_{t+1}\left(\frac{\partial \Phi_{t+1}}{\partial I_{t+1}} + \Phi_{t+1}\right)\right]...\right.\right. \\
+&\underbrace{ \left[(1-\tau^{b}_{t}f_{e,t}-\tau^{ic}_{t})p^{k}_{t} + \left(\frac{\partial \Phi_{t}}{\partial I_{t}} + \Phi_{t}\right)(1-\tau^{b}_{t})\right]\left(\frac{1-\tau^{d}_{t}}{1-\tau^{g}_{t}} + \lambda^{d}_{t}\right)}_{\text{MC of investment}} = \\
+& \left(\frac{1}{1+\theta_{t+1}}\right)\left[(1-\delta)\left[\left(\frac{1-\tau^{d}_{t+1}}{1-\tau^{g}_{t+1}} + \lambda^{d}_{t+1}\right)\left[(1-f_{e,t+1}\tau^{b}_{t+1}-\tau^{ic}_{t+1})p^{k}_{t+1}+ (1-\tau^{b}_{t+1})p^{k}_{t+1}\left(\frac{\partial \Phi_{t+1}}{\partial I_{t+1}} + \Phi_{t+1}\right)\right]...\right.\right. \\
 & \left.\left.  -  (1-\delta^{\tau}_{t+1})(1-f_{e,t+1})p^{k}_{t+1}\left(\sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\theta_{\nu}}\right)\left[\left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}+\lambda^{d}_{u}\right)\left( f_{d,u}\delta^{\tau}_{u}+f_{ace,u}r_{ace,u} \right)\tau^{b}_{u}\right]\right)\right]... \right. \\
 & \left. +  \left(\frac{1-\tau^{d}_{t+1}}{1-\tau^{g}_{t+1}} + \lambda^{d}_{t+1} \right)\left[(1-\tau^{b}_{t+1})\left(p_{t+1}MPK_{t+1}- p^{k}_{t+1}\frac{\partial \Phi_{t+1}}{\partial K_{t+1}}I_{t+1}\right)  ... \right.\right. \\
 & \left.\left.-(1-f_{c,t+1}\tau^{b}_{t+1}) \frac{\partial c(B_{t+2},K_{t+1})}{\partial K_{t+1}} \right] \right] ...\\
@@ -668,7 +668,7 @@ Using these partial derivatives of the tax function with respect to the endogeno
  \begin{equation}
 \label{eqn:foc_i_tax_ss}
 \begin{split}
- & \bar{q} + \bar{\lambda}^{\tau}(1-\bar{\delta}^{\tau})(1-\bar{f}_{e})\bar{p}^{k} =  \left(\frac{1-\bar{\tau}^{d}}{1-\bar{\tau}^{g}} + \bar{\lambda}^{d}\right)\left[(1-\bar{f}_{e}\bar{\tau}^{b})\bar{p}^{k}\right]
+ & \bar{q} + \bar{\lambda}^{\tau}(1-\bar{\delta}^{\tau})(1-\bar{f}_{e})\bar{p}^{k} =  \left(\frac{1-\bar{\tau}^{d}}{1-\bar{\tau}^{g}} + \bar{\lambda}^{d}\right)\left[(1-\bar{f}_{e}\bar{\tau}^{b}-\bar{\tau}^{ic})\bar{p}^{k}\right]
 \end{split}
 \end{equation}
 
@@ -722,12 +722,148 @@ By the above argument, we know that $\overline{DIV}>0$ and $\overline{VN}=0$.  T
 
 
 
+\section{The Problem of the Multinational Parent Corporation}
+
+The problem of the multinational parent corporation will be defined similarly to that of the domestic corporation.  In particular, the functional forms for the production function and financial frictions will remain the same, though parameter values may differ.  What differs for the multinational parent is it's relations with foreign subsidiaries.  The parent provides intermediate inputs to the foreign subsidiaries and can choose the price at which these transactions occur.  This ability to engage in transfer pricing allows the multinational to lower it's worldwide tax liability by shifting net income to low tax jurisdictions.  Second, the parent can engage in more general income shifting by moving profits to tax havens.  The ability to shift income in this way captures the ability of corporations to shift income through other mechanisms that we do not explicitly model.  Finally, multinational corporations face a discrete location choice with respect to a firm-specific fixed factor of production.  
+
+\subsection{Firm Production}
+
+Firm's combine capital, $K$, and effective labor, $EL$, with a location-specific fixed factor of production, $A$, and firm-specific fixed-factor of production, $H$, to produce output, $X$.  We can think of the location-specific fixed factor of production as ``location specific capital".  It is fixed in the sense that its supply is perfectly inelastic.  It is location specific in the sense that it is proportional to the size of the population in the firm's home country at time $t$. \textcolor{red}{CORTAX documentation at first suggests this factor is chosen optimally by the firm, but there is not first order condition for this choice shown.  The documentation does state that this factor is paid its marginal product.  So there are only economic profits before you account for the return to this factor of production.  I'm also not sure if we need this fixed factor of production to be proportional to the population.  CORTAX says yes so that you don't have productivity differential arising from differences in country size.  They consider multi-country model, but only steady state.  Do we need something similar so productivity doesn't depend upon population at time $t$?}  The firm-specific fixed factor of production can be thought of as intangibles, such as patents or trade secrets the firms has.  These intangibles earn economic rents and can easily be transfered to different tax jurisdictions (\textcolor{red}{Is this what we want to think of it as?  Then you'd think it could affect productivity not just in the country is is located.  Also, we need to be very careful about how to enter this into the model.  In particular, we don't want to have to keep track of the capital and labor entering into production functions in other counties as CORTAX does.}).  We write the amount of output produced in the home country as a function of this fixed factor and the value added, $VA$, from the input of capital and labor:
+
+\begin{equation}
+X_{t} = A_{t}H_{t}^{\alpha_{H}}(VA_{t})^{\alpha_{v}},
+\end{equation} 
+
+\noindent\noindent where $\alpha_{v}$ is the share of output attributable to the firm's value added and $\alpha_{H}$ is the share of output attributable to the firm-specific capital. The location-specific fixed factor of production is given by:
+
+\begin{equation}
+A_{t} = (A_{0,t}\omega_{t}N_{t})^{1-\alpha_{H}-\alpha_{v}}
+\end{equation}
+
+\noindent\noindent Thus the input from fixed factor of production used by the firm is given by the level of total factor productivity (TFP), $A_{0,t}$, and a exogenous share of the population, $N_{t}$ where the share is given by the parameter $\omega_{t}$ (\textcolor{red}{Not sure if we want this to vary by time, or just across production industry.}).  The share parameters must sum to one.  That is, $\sum_{m=1}^{M} \omega_{m,t} = 1$.     We assume that TFP grows at the same rate across industry, with the growth rate given by $g_{a}$.  The value added is given by a CES function:
+
+\begin{equation}
+\label{eqn:prod_fun}
+F(A_{0,t},K_{t},EL_{t})=VA_{t} =A_{0,t} \left[(\gamma_{})^{1/\epsilon_{}}(K_{t})^{(\epsilon-1)/\epsilon_{}}+(1-\gamma_{})^{1/\epsilon_{}}(e^{g_{y}t}EL_{t})^{(\epsilon_{}-1)/\epsilon_{}}\right]^{(\epsilon_{}/(\epsilon_{}-1))},
+\end{equation}
+
+\subsection{Firm Accounting}
+
+The multinational corporation is going to maximize firm value, which is determined by its worldwide after-tax profit.  Thus we' will need to define domestic and foreign profits.
+
+\subsubsection{Domestic Profits}
+
+After-tax US profits from a financial accounting perspective are:
+
+\begin{equation}
+\label{eqn:profit_book_mnc_us}
+\begin{split}
+\Pi^{US,book}_{t} = & p_{t}X_{t}+\underbrace{(p_{row,t}-1)Q_{row,t}-c^{q}(Q_{row,t})}_{\text{Transfer pricing}}-w_{t}EL_{t}-\delta K_{t} -\Phi_{t}p^{k}_{t}I_{t}-(1+r_{b,t})B_{t}- c(B_{t+1},K_{t})...\\
+& -\tau^{p}_{t}K_{t}-TE(\tilde{\Pi}^{US, tax}_{t})
+\end{split}
+\end{equation}
+
+Transfer pricing operates through the multinational charging its subsidiaries in the rest of the world a price $p_{row,t}$ for one dollar of intermediate good.  The variable $Q_{row,t}$ denotes the quantity of intermediate goods (in dollars) that the firm sells/buys from its subsidiaries in the rest of the world.  There is a cost to transfer pricing, given by the function $c^{q}(Q_{row,t})$.  
+
+Note that total taxes, $TE$ are a function of taxable income after profit shifting, $\tilde{\Pi}^{US, tax}_{t}$. We define the firm's US profits from a tax accounting perspective as:
+\begin{equation}
+\label{eqn:profit_tax}
+\begin{split}
+\Pi^{US, tax}_{t}= & p_{t}X_{t}+\underbrace{(p_{row,t}-1)Q_{row,t}-c^{q}(Q_{row,t})}_{\text{Transfer pricing}}-w_{t}EL_{t}-f_{e,t}p^{K}_{t}I_{t}-\Phi_{t}I_{t}-f_{i,t}r_{b,t}B_{t}...\\
+& -f_{c,t}c(B_{t+1},K_{t})+f_{p,t}\delta B_{t}+ f_{b,t}B_{t+1}-f_{d,t}\delta^{\tau}_{t}K^{\tau}_{t}-f_{ace,t}r_{ace,t}K^{\tau}_{t}-\tau^{p}_{t}p^{k}_{t}K_{t}
+\end{split}
+\end{equation}
+
+We let $\theta$ be the amount of profits shifted overseas.  Thus, $\tilde{\Pi}^{US, tax}_{t}=\theta \Pi^{US, tax}_{t}$.  Shifting profits comes a a cost, $c^{ps}(\theta)$.  This cost function is a convex function so that the marginal cost of shifting income is increasing and will make it infinitely expensive to shift 100\% of profits.
+
+\subsubsection{Foreign Profits}
+
+Our model does not capture the the rich detail of production in each country.  Instead, we take the component of foreign profits due to foreign economic activity as exogenous.  We define two foreign jurisdictions.  The ``rest of the world" refers to non-tax haven countries.  Thus we bifurcate foreign economies into tax havens and non-tax havens.  We assume that transfer pricing activities tax place with corporate subsidiaries in the ``rest of the world", which we think of as trading partners.  Profit shifting activities represent interactions with tax havens.  We let pre-tax foreign earnings in period $t$ be defined as $EARN^{row}_{t}$ and $EARN^{h}_{t}$ for the rest of the world and tax haven jurisdictions, repsectively.  Foreign after-tax profits from an accounting perspective are thus defined as:
+
+\begin{equation}
+\label{eqn:profit_book_mnc_row}
+\begin{split}
+&\Pi^{row,book}_{t} =EARN^{row}_{t} - (p_{row,t}-1)Q_{row,t} - TE^{row}_{t}(\Pi^{row, tax}_{t})\\
+&\text{and} \\
+&\Pi^{h,book}_{t} EARN^{h}_{t} +  \theta\Pi^{US,book}_{t} - TE^{h}_{t}(\tilde{\Pi}^{h, tax}_{t}),
+\end{split}
+\end{equation}
+
+where
+\begin{equation}
+\label{eqn:profit_tax_mnc_row}
+\begin{split}
+&\Pi^{row, tax}_{t} = EARN^{row}_{t} - (p_{row,t}-1)Q_{row,t}\\
+&\text{and} \\
+&\Pi^{h, tax}_{t} = EARN^{h}_{t} \\
+&\text{and} \\
+&\tilde{\Pi}^{h, tax}_{t}=   EARN^{h}_{t} + (1-\theta)\Pi^{US,tax}_{t},
+\end{split}
+\end{equation}
 
 
 
+\subsubsection{Multinational Cash Flow}
+
+The multinational's cash flow is defined by the sum of its profits at home and abroad:
 
 
-    \subsection{Relating Firm Investment and Production Goods}\label{sec:prod_invest_map}
+\begin{equation}
+\label{eqn:cash_flow_mnc}
+\begin{split}
+DIV_{t} = &  \underbrace{(1-\theta)\Pi^{US,book}_{t}}_{\text{After tax domestic profits}} + \underbrace{\Pi^{row,book}_{t}  + \Pi^{h,book}_{t}}_{\text{After tax foreign profits}} + B_{t+1} + VN_{t}
+\end{split}
+\end{equation}
+
+Note that the above formulation makes some implicit assumptions about accounting rules.  The most relevant of which is that a dollar of taxable income shifted from the US equals one dollar of taxable income abroad.
+
+The foreign tax functions are:
+
+\begin{equation}
+\label{eqn:foreign_tax_row}
+TE^{row}_{t}(EARN^{row}_{t}- (p_{row,t}-1)Q_{row,t}) = \tau^{b,row}_{t}(EARN^{row}_{t} -  (p_{row,t}-1)Q_{row,t}),
+\end{equation}
+
+\begin{equation}
+\label{eqn:foreign_tax_h}
+TE^{h}_{t}(EARN^{h}_{t} + \theta\Pi^{US,tax}_{t}) = \tau^{b,h}_{t}(EARN^{h}_{t}  + \theta\Pi^{US,tax}_{t}),
+\end{equation}
+
+\noindent\noindent where $\tau^{b,row}_{t}$ and $\tau^{b,h}_{t}$ is the marginal effective tax rate on foreign profits in the non-tax haven and tax haven jurisdictions.  \textcolor{red}{Note about calibration: We likely calculate these as a weighted average of the corporate income tax rate on trading partners for firms in a given industry (for the rest of world) and to a rate amongst tax havens (probably zero).}
+
+Letting $\Pi^{x,pre}_{t}$ denote pre-tax (and pre-transfer pricing) accounting profits in jurisdiction $x$ in period $t$, we can rewrite the firm's cash flow constraint as:
+
+\begin{equation}
+\label{eqn:cash_flow_mnc2}
+\begin{split}
+DIV_{t} = &  (1-\theta)\Pi^{US,pre}_{t} + (p_{row,t}-1)Q_{row,t}  - \tau^{b,US}_{t}((1-\theta)\Pi^{US,tax}_{t}) + \tau^{ic}_{t}p^{k}_{t}I_{t} ... \\
+& + \Pi^{row,pre}_{t}- (p_{row,t}-1)Q_{row,t} - \tau^{b,row}_{t}\Pi^{row,tax}_{t} ...\\
+& + \Pi^{h,pre}_{t}- \tau^{b,row}_{t}(\Pi^{h,tax}_{t} + \theta\Pi^{US,tax}_{t}) + B_{t+1} + VN_{t} \\
+     = & \Pi^{US,pre}_{t} + EARN^{row}_{t} + EARN^{h}_{t} - ((1-\theta)\tau^{b,US}_{t} + \theta\tau^{b,h}_{t})\Pi^{US,tax}_{t} ...\\
+     & + \tau^{b,row}(p_{row,t}-1)Q_{row,t} + \tau^{ic}_{t}p^{k}_{t}I_{t}   - \tau^{b,row}_{t}(EARN^{row}_{t}) - \tau^{b,h}_{t}(EARN^{h}_{t})  + B_{t+1} + VN_{t}
+\end{split}
+\end{equation}
+
+\textcolor{red}{What about repatriation?  Do we need to wall off foreign profits from domestic dividends (or for use for domestic investment) unless they are subjected to the US tax?  Or should we assume they are freely available since the firm can use intracompany debt to move them?  If the latter, there should be some cost of this - a cost which is affected by policies on intracompany debt.  If the former, we'll need to keep track of the stock of foreign earnings.}
+
+\textcolor{red}{Also, should we think about foreign tax credits in the above?  If repatriation, yes.  Then need to think about stock of earnings in tax havens and not...}
+
+
+\subsubsection{Why 3 ways to shift profits?}
+
+There are three ways that multinational firms can shift income across tax jurisdictions:
+\begin{enumerate}
+\item Transfer pricing
+\item Shifting of profits
+\item Location of firm-specific capital
+\end{enumerate}
+
+There three all differ in how they affect the firm.  Transfer pricing and profit shifting affect firm profits in very similar ways.  The fundamental difference between the two in the model is the effective tax rate the shifted income faces.  We assume that transfer pricing is done with trading partners and therefore faces the tax rate $\tau^{b,row}$.  On the other hand, profit shifting is doing to a particularly low tax jurisdiction and faces a rate that applies to tax havens, $\tau^{b,h}$.  If the US corporate rate would drop, this relieves pressure on transfer pricing to a greater degree than profit shifting because of the differences in rates between tax haven and non-tax haven countries (the tax haven's having very low rates).
+
+The third channel through which firms can shift profits is by locating firm-specific capital abroad.  The movement of this capital not only affects income, but affects firm productivity in domestic and foreign jurisdictions.  That is to say that this form of profit shifting will have direct equilibrium effects on the pre-tax returns to labor and capital.  
+
+
+    \section{Relating Firm Investment and Production Goods}\label{sec:prod_invest_map}
     
     Our model contains $M$ production industries, each of which chooses investment that is a composite good from these production processes.  We denote the quantity of production good $m$ in period $t$ as $X_{m,t}$.  We relate the output of the production sectors to their inputs using a fixed coefficient model. That is, each investment good is made up of a mix of the outputs of different production sectors.  This means that the composition of these investment goods do not respond to prices.  The weights that determine the mix for each consumption goods are given in the matrix $\Xi$.  Element $\xi_{j,m}$ of the matrix $\Xi$ corresponds to the percentage contribute of the output of industry $m$ in the production of the investment good for industry $j$.  The total supply of investment good $j$ in the economy at time $t$ is thus given by: 
     
