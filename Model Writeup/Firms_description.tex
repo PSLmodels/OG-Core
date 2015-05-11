@@ -849,6 +849,38 @@ DIV_{t} = &  (1-\theta)\Pi^{US,pre}_{t} + (p_{row,t}-1)Q_{row,t}  - \tau^{b,US}_
 \textcolor{red}{Also, should we think about foreign tax credits in the above?  If repatriation, yes.  Then need to think about stock of earnings in tax havens and not...}
 
 
+\subsubsection{Discrete Location Choice}
+
+Recall the production function:
+
+\begin{equation}
+X_{i,t} = (A_{0,i,t}\omega_{i,t}N_{i,t})^{1-\alpha_{v}-\alpha_{H}}H_{i,t}^{\alpha_{H}}VA_{i,t}^{\alpha_{v}},
+\end{equation}
+
+\noindent\noindent where $i$ denotes the country and $H$ is the firm-specific capital that is mobile across countries.  We will assume that there are no adjustment costs associated with moving $H$.  This is helpful so that we do not need to keep track on the amount of firm-specific capital in the various tax jurisdictions.  It may therefore be best to think of this capital as firm-specific intangible capital like patents, brandnames, and managerial talent that may be relocated at relatively low cost. \textcolor{red}{One problem with this interpretation is that it would seem that the effect of $H$ could affect the firm's subsidiaries in all countries - regardless of where is was located.}
+
+\textcolor{red}{\citet{DD2009} separate this decision from all others by showing that $H$ will be distributed in a way that is proportional to the tax rates and amount of capital and labor employed across countries.  Can we do this?  Seems like you need to choose $H$ jointly with $K$, and $EL$ since $H$ affects marginal productivities of these... But can you separate given the functional form of the production function?} 
+
+Note that we don't want to have to track the capital and labor employed abroad.  But with the functional form of this production function, we don't have to.  Consider:
+
+\begin{equation}
+\begin{split}
+ EARN_{i,t}=p_{i,t}X_{i,t} = p_{i,t}(A_{0,i,t}\omega_{i,t}N_{i,t})^{1-\alpha_{v}-\alpha_{H}}H_{i,t}^{\alpha_{H}}VA_{i,t}^{\alpha_{v}} \\
+\end{split}
+\end{equation}
+
+If we increase $H$ by a factor of $\lambda$ we increase earnings by $\lambda^{\alpha_{H}}$:
+\begin{equation}
+\begin{split}
+X2_{i,t} = (A_{0,i,t}\omega_{i,t}N_{i,t})^{1-\alpha_{v}-\alpha_{H}}(\lambda H_{i,t})^{\alpha_{H}}VA_{i,t}^{\alpha_{v}} \\
+X2_{i,t} = (A_{0,i,t}\omega_{i,t}N_{i,t})^{1-\alpha_{v}-\alpha_{H}}\lambda^{\alpha_{H}} H_{i,t}^{\alpha_{H}}VA_{i,t}^{\alpha_{v}} \\
+X2_{i,t} = \lambda^{\alpha_{H}}(A_{0,i,t}\omega_{i,t}N_{i,t})^{1-\alpha_{v}-\alpha_{H}} H_{i,t}^{\alpha_{H}}VA_{i,t}^{\alpha_{v}} \\
+X2_{i,t} = \lambda^{\alpha_{H}}X_{i,t}
+\end{split}
+\end{equation}
+
+Thus, we can just increase foreign pre-tax earnings by the amount that $H$ is shifted to that jurisdiction.
+
 \subsubsection{Why 3 ways to shift profits?}
 
 There are three ways that multinational firms can shift income across tax jurisdictions:
@@ -860,8 +892,11 @@ There are three ways that multinational firms can shift income across tax jurisd
 
 There three all differ in how they affect the firm.  Transfer pricing and profit shifting affect firm profits in very similar ways.  The fundamental difference between the two in the model is the effective tax rate the shifted income faces.  We assume that transfer pricing is done with trading partners and therefore faces the tax rate $\tau^{b,row}$.  On the other hand, profit shifting is doing to a particularly low tax jurisdiction and faces a rate that applies to tax havens, $\tau^{b,h}$.  If the US corporate rate would drop, this relieves pressure on transfer pricing to a greater degree than profit shifting because of the differences in rates between tax haven and non-tax haven countries (the tax haven's having very low rates).
 
-The third channel through which firms can shift profits is by locating firm-specific capital abroad.  The movement of this capital not only affects income, but affects firm productivity in domestic and foreign jurisdictions.  That is to say that this form of profit shifting will have direct equilibrium effects on the pre-tax returns to labor and capital.  
+The third channel through which firms can shift profits is by locating firm-specific capital abroad.  The movement of this capital not only affects income, but affects firm productivity in domestic and foreign jurisdictions.  That is to say that this form of profit shifting will have direct equilibrium effects on the pre-tax returns to labor and capital.  It should also be the cast that this discrete locational choice is based on average tax rates, rather than marginal tax rates.  \textcolor{red}{Not sure if the model has is set up this way.}
 
+\section{Multinational Subsidiaries}
+
+I think we can get away with the exogenous foreign pre-tax earnings as noted above and we do not need to model foreign subs.  We can also probably get away with just one firm per production industry with a level of exogenous foreign activity that varies across industry.  We can also have the parameters of income shifting vary across industry to match observed income shifting activity across sectors.
 
     \section{Relating Firm Investment and Production Goods}\label{sec:prod_invest_map}
     

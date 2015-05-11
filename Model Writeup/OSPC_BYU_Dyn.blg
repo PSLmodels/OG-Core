@@ -10,23 +10,23 @@ A level-1 auxiliary file: Model_soln.aux
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Database file #1: OSPC_BYU_Dyn_Bib.bib
-Repeated entry---line 125 of file OSPC_BYU_Dyn_Bib.bib
+Repeated entry---line 139 of file OSPC_BYU_Dyn_Bib.bib
  : @techreport{Census:2014
  :                        ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 132 of file OSPC_BYU_Dyn_Bib.bib
+Repeated entry---line 146 of file OSPC_BYU_Dyn_Bib.bib
  : @techreport{NVSR:2010
  :                      ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 560 of file OSPC_BYU_Dyn_Bib.bib
+Repeated entry---line 574 of file OSPC_BYU_Dyn_Bib.bib
  : @techreport{SocSec:2010
  :                        ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 697 of file OSPC_BYU_Dyn_Bib.bib
+Repeated entry---line 711 of file OSPC_BYU_Dyn_Bib.bib
  : @inbook{DZ2013
  :               ,
 I'm skipping whatever remains of this entry
-Repeated entry---line 731 of file OSPC_BYU_Dyn_Bib.bib
+Repeated entry---line 745 of file OSPC_BYU_Dyn_Bib.bib
  : @article{Hayashi1982
  :                     ,
 I'm skipping whatever remains of this entry
@@ -41,45 +41,45 @@ You can't pop an empty literal stack for entry DZ2013
 while executing---line 1215 of file aer.bst
 You can't pop an empty literal stack for entry DZ2013
 while executing---line 1215 of file aer.bst
-You've used 13 entries,
+You've used 14 entries,
             2984 wiz_defined-function locations,
-            741 strings with 6451 characters,
-and the built_in function-call counts, 10050 in all, are:
-= -- 1627
-> -- 525
-< -- 154
-+ -- 147
-- -- 84
-* -- 562
-:= -- 2336
-add.period$ -- 13
-call.type$ -- 13
-change.case$ -- 91
-chr.to.int$ -- 13
-cite$ -- 14
-duplicate$ -- 154
-empty$ -- 314
-format.name$ -- 283
-if$ -- 2513
+            749 strings with 6683 characters,
+and the built_in function-call counts, 10831 in all, are:
+= -- 1756
+> -- 572
+< -- 168
++ -- 161
+- -- 92
+* -- 608
+:= -- 2516
+add.period$ -- 14
+call.type$ -- 14
+change.case$ -- 98
+chr.to.int$ -- 14
+cite$ -- 15
+duplicate$ -- 165
+empty$ -- 332
+format.name$ -- 309
+if$ -- 2709
 int.to.chr$ -- 1
 int.to.str$ -- 0
 missing$ -- 13
-newline$ -- 45
-num.names$ -- 156
-pop$ -- 197
+newline$ -- 48
+num.names$ -- 168
+pop$ -- 210
 preamble$ -- 1
-purify$ -- 104
+purify$ -- 112
 quote$ -- 0
 skip$ -- 0
 stack$ -- 0
-substring$ -- 249
-swap$ -- 47
-text.length$ -- 3
+substring$ -- 260
+swap$ -- 50
+text.length$ -- 4
 text.prefix$ -- 0
 top$ -- 0
-type$ -- 44
+type$ -- 48
 warning$ -- 1
-while$ -- 136
+while$ -- 146
 width$ -- 0
-write$ -- 210
+write$ -- 226
 (There were 10 error messages)
