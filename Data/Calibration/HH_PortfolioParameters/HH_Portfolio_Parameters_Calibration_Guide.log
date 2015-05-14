@@ -1,10 +1,10 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  14 MAY 2015 11:39
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012) (format=pdflatex 2012.6.30)  14 MAY 2015 11:18
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
  %&-line parsing enabled.
-**ProductionFunction_Calibration_Guide.tex
-(./ProductionFunction_Calibration_Guide.tex
+**HH_Portfolio_Parameters_Calibration_Guide.tex
+(./HH_Portfolio_Parameters_Calibration_Guide.tex
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for english, dumylang, nohyphenation, ge
 rman-x-2012-05-30, ngerman-x-2012-05-30, afrikaans, ancientgreek, ibycus, arabi
@@ -673,21 +673,12 @@ Package: lscape 2000/10/22 v3.01 Landscape Pages (DPC)
 LaTeX Warning: Unused global option(s):
     [article].
 
-(./ProductionFunction_Calibration_Guide.aux
-
-LaTeX Warning: Label `sec:step3' multiply defined.
-
-
-LaTeX Warning: Label `sec:step3' multiply defined.
-
-
-LaTeX Warning: Label `sec:step3' multiply defined.
-
+(./HH_Portfolio_Parameters_Calibration_Guide.aux
 
 LaTeX Warning: Label `sec:step3' multiply defined.
 
 )
-\openout1 = `ProductionFunction_Calibration_Guide.aux'.
+\openout1 = `HH_Portfolio_Parameters_Calibration_Guide.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 55.
 LaTeX Font Info:    ... okay on input line 55.
@@ -790,10 +781,10 @@ LaTeX Info: Redefining \ref on input line 55.
 LaTeX Info: Redefining \pageref on input line 55.
 LaTeX Info: Redefining \nameref on input line 55.
 
-(./ProductionFunction_Calibration_Guide.out)
-(./ProductionFunction_Calibration_Guide.out)
+(./HH_Portfolio_Parameters_Calibration_Guide.out)
+(./HH_Portfolio_Parameters_Calibration_Guide.out)
 \@outlinefile=\write4
-\openout4 = `ProductionFunction_Calibration_Guide.out'.
+\openout4 = `HH_Portfolio_Parameters_Calibration_Guide.out'.
 
 
 ABD: EveryShipout initializing macros
@@ -810,81 +801,73 @@ File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 
 LaTeX Warning: No \author given.
 
-
-Overfull \hbox (118.85654pt too wide) detected at line 84
- $\OML/cmm/m/it/10.95 F\OT1/cmr/m/n/10.95 (\OML/cmm/m/it/10.95 A[]; K[]; EL[]\O
-T1/cmr/m/n/10.95 ) = \OML/cmm/m/it/10.95 VA[] \OT1/cmr/m/n/10.95 = \OML/cmm/m/i
-t/10.95 A[] [][] ;$  
- []
-
 [1
 
 {/usr/local/texlive/2012/texmf-var/fonts/map/pdftex/updmap/pdftex.map}]
-[2] [3]
-Overfull \hbox (18.04654pt too wide) in paragraph at lines 183--216
- [][][] 
+Missing character: There is no Ò in font cmr10!
+Missing character: There is no Ó in font cmr10!
+Missing character: There is no Ð in font cmr10!
+
+Overfull \hbox (2.30202pt too wide) in paragraph at lines 105--123
+\OT1/cmr/m/n/10.95 tem,FlowofFundsAccountsoftheUnited States (March 10, 2005), 
+Ta-bles B.100.e. and L.100.a,
  []
 
+[2]
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 137.
 
-Overfull \hbox (59.84724pt too wide) in paragraph at lines 222--223
-\OT1/cmr/m/n/10.95 Check out the NIPA primer to be sure of def-i-ni-tions: [][]
-http://www.bea.gov/national/pdf/nipa[]primer.pdf[][].
- []
+ (/usr/local/texlive/2012/texmf-dist/tex/latex/base/omscmr.fd
+File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10.95> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 137.
+ [3]
+(./HH_Portfolio_Parameters_Calibration_Guide.bbl
 
-[4]
-Overfull \hbox (45.65186pt too wide) in paragraph at lines 224--225
-[]\OT1/cmr/m/n/10.95 This JCT doc-u-ment might be help-ful, but doesn't have a 
-lot on cal-i-bra-tion: [][]http://www.jct.gov/x-
- []
+LaTeX Warning: Empty `thebibliography' environment on input line 6.
 
-(./ProductionFunction_Calibration_Guide.bbl)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 229.
- [5]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 229.
-
-(./ProductionFunction_Calibration_Guide.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 229.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 229.
-Package rerunfilecheck Info: File `ProductionFunction_Calibration_Guide.out' ha
-s not changed.
-(rerunfilecheck)             Checksum: 97FE57288DC433B1A3542EECC11C9087;655.
+)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 154.
+ [4]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 154.
+ (./HH_Portfolio_Parameters_Calibration_Guide.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 154.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 154.
+Package rerunfilecheck Info: File `HH_Portfolio_Parameters_Calibration_Guide.ou
+t' has not changed.
+(rerunfilecheck)             Checksum: D7EBF9E3CB7B31C17DB6E4F133BEEA4D;237.
 
 
 LaTeX Warning: There were multiply-defined labels.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 229.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 154.
  ) 
 Here is how much of TeX's memory you used:
- 16334 strings out of 493488
- 286687 string characters out of 3141326
- 365148 words of memory out of 3000000
- 19285 multiletter control sequences out of 15000+200000
- 14196 words of font info for 54 fonts, out of 3000000 for 9000
+ 16298 strings out of 493488
+ 286535 string characters out of 3141326
+ 362142 words of memory out of 3000000
+ 19272 multiletter control sequences out of 15000+200000
+ 11391 words of font info for 43 fonts, out of 3000000 for 9000
  957 hyphenation exceptions out of 8191
- 56i,9n,55p,883b,370s stack positions out of 5000i,500n,10000p,200000b,50000s
-pdfTeX warning (dest): name{Hfootnote.1} has been referenced but does not exi
-st, replaced by a fixed one
-
-</usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb><
-/usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></
-usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></u
-sr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></us
-r/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/
-local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/lo
-cal/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/loca
-l/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/local/
-texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/te
-xlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/texli
-ve/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/local/texlive/
-2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/local/texlive/201
-2/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texlive/2012
-/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/local/texlive/2012/t
-exmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb>
-Output written on ProductionFunction_Calibration_Guide.pdf (5 pages, 184283 byt
-es).
+ 56i,7n,55p,1741b,343s stack positions out of 5000i,500n,10000p,200000b,50000s
+</usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb
+></usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb>
+</usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb><
+/usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></
+usr/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></us
+r/local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/
+local/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/lo
+cal/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/loca
+l/texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/local/
+texlive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/local/tex
+live/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/local/texl
+ive/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy6.pfb></usr/local/texliv
+e/2012/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10.pfb>
+Output written on HH_Portfolio_Parameters_Calibration_Guide.pdf (4 pages, 14841
+7 bytes).
 PDF statistics:
- 160 PDF objects out of 1000 (max. 8388607)
- 136 compressed objects within 2 object streams
- 32 named destinations out of 1000 (max. 500000)
- 85 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 101 PDF objects out of 1000 (max. 8388607)
+ 81 compressed objects within 1 object stream
+ 12 named destinations out of 1000 (max. 500000)
+ 37 words of extra memory for PDF output out of 10000 (max. 10000000)
 
