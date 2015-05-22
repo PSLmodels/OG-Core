@@ -57,25 +57,68 @@ CEX_file_name = 'categorizedcex.dta'
 
 year_list = ('12','13')
 qtr_list = ('1x','2','3','4','1')
-
+ucc_inc_list = ('980000','900150','980230','980240','980260')
+#ucc_inc 980000 is income before tax and 900150 is annual value of food stamps
+	#ucc_inc 980230 , 980240 & 980260 are Homeowner variables  distinguishing whether 
+	#the consumer unit owns (with or without mortgage) or rents the home.
+	
 for t in year_list:
     for q in qtr_list:
 	# Clean up income data files			
 	temp_df = pd.io.stata.read_stata(CEXpath+'intrvw'+t+'/'+'itbi'+t+q+'.dta')
 	temp_df = temp_df.rename(columns=lambda x: x+'_inc')
 	temp_df = temp_df.rename(columns={'refmo_inc': 'ref_mo', 'refyr_inc': 'ref_yr', 'newid_inc': 'newid'})
-        temp_df['newid'].apply(str)
         temp_df['newid'] = temp_df['newid'].astype(str)
-        temp_df['cu'] = temp_df['newid'] 
-        temp_df['cu'] = temp_df.newid.map( lambda x: temp_df['newid'].str[0:len(str(x))-2])
-        temp_df['cu'] = temp_df['newid'].str[0:(temp_df['newid'].str.len()-2)]
-        temp_df['cu'] = temp_df.newid.map( lambda x: temp_df['newid'].str[0:4] if len(str(x)) == 6 else temp_df['newid'].str[0:5])
-        temp_df['cu'] = np.where(temp_df['newid'].str.len()==6, temp_df['newid'].str[0:4], temp_df['newid'].str[0:5])
-        temp_df['cu']= max(temp_df['newid'][0:4]*(temp_df['newid'].str.len() == 6),temp_df['newid'][0:5]*(temp_df['newid'].str.len() == 7)
+        temp_df['cu'] = temp_df['newid'].str[:-1].astype(str) # remove last character to get consumer unit
+        temp_df['no_intrvw'] = temp_df['newid'].str[-1:].astype(str) # get number of interview
+        # keep just certain ucc codes
+        temp_df = temp_df[temp_df['ucc_inc'].isin(ucc_inc_list)]
+        # drop value__inc
+        temp_df = temp_df.drop('value__inc', axis=1, inplace=True)
+        reshape wide value_inc, i(cu ref_mo) j(ucc_inc) string
         
-         df['Prediction'] = ((df['Sex']=='female') | ((df['Pclass']==1) & (df['Age']<18))).astype('int')
- 
-				tostring newid, replace
+        temp_df['value_ucc'] = 'value_inc' + temp_df.ucc_inc.astype(str)
+        
+        value_ucc = temp_df.pivot(index='cu',columns='value_ucc',values='value_inc')
+
+        reshape = pd.concat([product,prc],axis=1)
+        value_ucc['ref_mo'] = temp_df.set_index('cu')['ref_mo'].drop_duplicates()
+        print reshape
+        
+        data_wide = pd.pivot_table(temp_df, values=['variable', 'species', 'value'],
+                           rows=['id', 'variable']).unstack()
+        
+        
+        
+        
+        idx = []
+        data = []
+df_grpd = temp_df.groupby(['cu', 'ref_mo'])
+for name, group in df_grpd:
+    idx.append(name)
+    data.append(np.column_stack(([group['value'],group['lsc'],
+                                 group['pop']])).flatten().tolist())
+
+ages = map(str, group["agefrom"])
+cols = ",".join([",".join(['ls' + age] + ['lsc' + age] + ['pop' + age]) for age in ages]).split(",")
+
+new_df = pandas.DataFrame(data, index=idx, columns=cols)
+        
+        
+        
+        
+        
+        pivoted = temp_df.pivot('salesman', 'product', 'price')
+        if `counter' == 0 {
+						save "${path}/Intermediate/income.dta", replace
+						}
+					else {
+						append using "${path}/Intermediate/income.dta"
+						save "${path}/Intermediate/income.dta", replace
+						}
+						
+						
+			tostring newid, replace
 				gen cu = substr(newid,1,5) if length(newid) == 6
 				replace cu = substr(newid,1,6) if length(newid) == 7
 				gen no_intrvw = substr(newid,-1,1)
