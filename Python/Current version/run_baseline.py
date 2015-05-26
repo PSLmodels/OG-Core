@@ -14,7 +14,7 @@ This py-file calls the following other file(s):
 This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
             OUTPUT/given_params.pkl
-            OUTPUT/Nothing/tpi_var.pkl
+            OUTPUT/Saved_moments/tpi_var.pkl
 ------------------------------------------------------------------------
 '''
 
@@ -187,7 +187,7 @@ i = 1
 dictionary = {}
 
 while keep_changing.any() and i < 2300:
-    variables = pickle.load(open("OUTPUT/Nothing/chi_b_fits.pkl", "r"))
+    variables = pickle.load(open("OUTPUT/Saved_moments/chi_b_fits.pkl", "r"))
     for key in variables:
         locals()[key] = variables[key]
     print chi_fits_old
@@ -213,7 +213,7 @@ while keep_changing.any() and i < 2300:
 ------------------------------------------------------------------------
 '''
 
-os.remove("OUTPUT/Nothing/chi_b_fits.pkl")
+os.remove("OUTPUT/Saved_moments/chi_b_fits.pkl")
 
 # This is the simulation to get the replacement rate values
 
@@ -288,7 +288,7 @@ var_names = ['TPI_initial_run']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
-pickle.dump(dictionary, open("OUTPUT/Nothing/tpi_var.pkl", "w"))
+pickle.dump(dictionary, open("OUTPUT/Saved_moments/tpi_var.pkl", "w"))
 call(['python', 'TPI.py'])
 
 '''

@@ -41,44 +41,44 @@ for key in variables:
 
 
 
-variables = pickle.load(open("Nothing/wealth_data_moments_fit_25.pkl", "r"))
+variables = pickle.load(open("Saved_moments/wealth_data_moments_fit_25.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 domain = np.linspace(20, 95, 76)
 
 pct_25_data = highest_wealth_data_new[2:]/1000000
 
-variables = pickle.load(open("Nothing/wealth_data_moments_fit_50.pkl", "r"))
+variables = pickle.load(open("Saved_moments/wealth_data_moments_fit_50.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 
 pct_50_data = highest_wealth_data_new[2:]/1000000
 
-variables = pickle.load(open("Nothing/wealth_data_moments_fit_70.pkl", "r"))
+variables = pickle.load(open("Saved_moments/wealth_data_moments_fit_70.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 
 pct_70_data = highest_wealth_data_new[2:]/1000000
 
-variables = pickle.load(open("Nothing/wealth_data_moments_fit_80.pkl", "r"))
+variables = pickle.load(open("Saved_moments/wealth_data_moments_fit_80.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 
 pct_80_data = highest_wealth_data_new[2:]/1000000
 
-variables = pickle.load(open("Nothing/wealth_data_moments_fit_90.pkl", "r"))
+variables = pickle.load(open("Saved_moments/wealth_data_moments_fit_90.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 
 pct_90_data = highest_wealth_data_new[2:]/1000000
 
-variables = pickle.load(open("Nothing/wealth_data_moments_fit_99.pkl", "r"))
+variables = pickle.load(open("Saved_moments/wealth_data_moments_fit_99.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 
 pct_99_data = highest_wealth_data_new[2:]/1000000
 
-variables = pickle.load(open("Nothing/wealth_data_moments_fit_100.pkl", "r"))
+variables = pickle.load(open("Saved_moments/wealth_data_moments_fit_100.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 
@@ -105,7 +105,7 @@ plt.plot(domain, pct_25_model, label='Model', linestyle='--')
 plt.xlabel(r'age-$s$')
 plt.ylabel(r'Individual savings, in millions of dollars')
 plt.legend(loc=0)
-plt.savefig('Nothing/wealth_fit_graph_25')
+plt.savefig('Saved_moments/wealth_fit_graph_25')
 
 plt.figure()
 plt.plot(domain, pct_50_data, label='Data')
@@ -113,7 +113,7 @@ plt.plot(domain, pct_50_model, label='Model', linestyle='--')
 plt.xlabel(r'age-$s$')
 plt.ylabel(r'Individual savings, in millions of dollars')
 plt.legend(loc=0)
-plt.savefig('Nothing/wealth_fit_graph_50')
+plt.savefig('Saved_moments/wealth_fit_graph_50')
 
 plt.figure()
 plt.plot(domain, pct_70_data, label='Data')
@@ -121,7 +121,7 @@ plt.plot(domain, pct_70_model, label='Model', linestyle='--')
 plt.xlabel(r'age-$s$')
 plt.ylabel(r'Individual savings, in millions of dollars')
 plt.legend(loc=0)
-plt.savefig('Nothing/wealth_fit_graph_70')
+plt.savefig('Saved_moments/wealth_fit_graph_70')
 
 plt.figure()
 plt.plot(domain, pct_80_data, label='Data')
@@ -129,7 +129,7 @@ plt.plot(domain, pct_80_model, label='Model', linestyle='--')
 plt.xlabel(r'age-$s$')
 plt.ylabel(r'Individual savings, in millions of dollars')
 plt.legend(loc=0)
-plt.savefig('Nothing/wealth_fit_graph_80')
+plt.savefig('Saved_moments/wealth_fit_graph_80')
 
 plt.figure()
 plt.plot(domain, pct_90_data, label='Data')
@@ -137,7 +137,7 @@ plt.plot(domain, pct_90_model, label='Model', linestyle='--')
 plt.xlabel(r'age-$s$')
 plt.ylabel(r'Individual savings, in millions of dollars')
 plt.legend(loc=0)
-plt.savefig('Nothing/wealth_fit_graph_90')
+plt.savefig('Saved_moments/wealth_fit_graph_90')
 
 plt.figure()
 plt.plot(domain, pct_99_data, label='Data')
@@ -145,7 +145,7 @@ plt.plot(domain, pct_99_model, label='Model', linestyle='--')
 plt.xlabel(r'age-$s$')
 plt.ylabel(r'Individual savings, in millions of dollars')
 plt.legend(loc=0)
-plt.savefig('Nothing/wealth_fit_graph_99')
+plt.savefig('Saved_moments/wealth_fit_graph_99')
 
 plt.figure()
 plt.plot(domain, pct_100_data, label='Data')
@@ -153,7 +153,7 @@ plt.plot(domain, pct_100_model, label='Model', linestyle='--')
 plt.xlabel(r'age-$s$')
 plt.ylabel(r'Individual savings, in millions of dollars')
 plt.legend(loc=0)
-plt.savefig('Nothing/wealth_fit_graph_100')
+plt.savefig('Saved_moments/wealth_fit_graph_100')
 
 # all 7 together
 
@@ -221,7 +221,7 @@ ax8.set_ylim([-.05, .25])
 ax8.set_title(r'$0-24^{th}$ Percentile')
 
 
-plt.savefig('Nothing/wealth_fits_all.png')
+plt.savefig('Saved_moments/wealth_fits_all.png')
 
 '''
 ------------------------------------------------------------------------
@@ -241,7 +241,7 @@ plt.plot(domain, factor_ss * cssmat[:, 6], label='100%')
 plt.xlabel(r'age-$s$')
 plt.ylabel(r'Individual consumption, in dollars')
 plt.legend(loc=0)
-plt.savefig('Nothing/css_fit')
+plt.savefig('Saved_moments/css_fit')
 
 Kssmat3 = np.array(list(Kssmat) + list(BQ.reshape(1, J)))
 income_ss = cssmat + delta * Kssmat3
@@ -257,7 +257,7 @@ plt.plot(domain, factor_ss * income_ss[:, 6], label='100%')
 plt.xlabel(r'age-$s$')
 plt.ylabel(r'Individual income, in dollars')
 plt.legend(loc=0)
-plt.savefig('Nothing/income_fit')
+plt.savefig('Saved_moments/income_fit')
 
 '''
 ------------------------------------------------------------------------

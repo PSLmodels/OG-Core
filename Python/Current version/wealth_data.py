@@ -12,15 +12,15 @@ This py-file creates the following other file(s):
             OUTPUT/Demographics/distribution_of_wealth_data.png
             OUTPUT/Demographics/distribution_of_wealth_data_log.png
             Temporarily:
-            OUTPUT/Nothing/wealth_data_moments_fit_25.pkl
-            OUTPUT/Nothing/wealth_data_moments_fit_50.pkl
-            OUTPUT/Nothing/wealth_data_moments_fit_70.pkl
-            OUTPUT/Nothing/wealth_data_moments_fit_80.pkl
-            OUTPUT/Nothing/wealth_data_moments_fit_90.pkl
-            OUTPUT/Nothing/wealth_data_moments_fit_99.pkl
-            OUTPUT/Nothing/wealth_data_moments_fit_100.pkl
+            OUTPUT/Saved_moments/wealth_data_moments_fit_25.pkl
+            OUTPUT/Saved_moments/wealth_data_moments_fit_50.pkl
+            OUTPUT/Saved_moments/wealth_data_moments_fit_70.pkl
+            OUTPUT/Saved_moments/wealth_data_moments_fit_80.pkl
+            OUTPUT/Saved_moments/wealth_data_moments_fit_90.pkl
+            OUTPUT/Saved_moments/wealth_data_moments_fit_99.pkl
+            OUTPUT/Saved_moments/wealth_data_moments_fit_100.pkl
             Eventually:
-            OUTPUT/Nothing/wealth_data_moments.pkl
+            OUTPUT/Saved_moments/wealth_data_moments.pkl
 ------------------------------------------------------------------------
 '''
 
@@ -92,7 +92,7 @@ def get_highest_wealth_data(bin_weights):
     dictionary = {}
     for key in var_names:
         dictionary[key] = locals()[key]
-    pickle.dump(dictionary, open("OUTPUT/Nothing/wealth_data_moments.pkl", "w"))
+    pickle.dump(dictionary, open("OUTPUT/Saved_moments/wealth_data_moments.pkl", "w"))
 
 
 '''
@@ -113,7 +113,7 @@ var_names = ['highest_wealth_data_new']
 dictionary = {}
 for key in var_names:
     dictionary[key] = locals()[key]
-pickle.dump(dictionary, open("OUTPUT/Nothing/wealth_data_moments_fit_25.pkl", "w"))
+pickle.dump(dictionary, open("OUTPUT/Saved_moments/wealth_data_moments_fit_25.pkl", "w"))
 
 ar25 = np.ones((78, 25))
 for i in xrange(25, 50):
@@ -123,7 +123,7 @@ var_names = ['highest_wealth_data_new']
 dictionary = {}
 for key in var_names:
     dictionary[key] = locals()[key]
-pickle.dump(dictionary, open("OUTPUT/Nothing/wealth_data_moments_fit_50.pkl", "w"))
+pickle.dump(dictionary, open("OUTPUT/Saved_moments/wealth_data_moments_fit_50.pkl", "w"))
 
 ar20 = np.ones((78, 20))
 for i in xrange(50, 70):
@@ -133,7 +133,7 @@ var_names = ['highest_wealth_data_new']
 dictionary = {}
 for key in var_names:
     dictionary[key] = locals()[key]
-pickle.dump(dictionary, open("OUTPUT/Nothing/wealth_data_moments_fit_70.pkl", "w"))
+pickle.dump(dictionary, open("OUTPUT/Saved_moments/wealth_data_moments_fit_70.pkl", "w"))
 
 ar10 = np.ones((78, 10))
 for i in xrange(70, 80):
@@ -143,7 +143,7 @@ var_names = ['highest_wealth_data_new']
 dictionary = {}
 for key in var_names:
     dictionary[key] = locals()[key]
-pickle.dump(dictionary, open("OUTPUT/Nothing/wealth_data_moments_fit_80.pkl", "w"))
+pickle.dump(dictionary, open("OUTPUT/Saved_moments/wealth_data_moments_fit_80.pkl", "w"))
 
 ar10 = np.ones((78, 10))
 for i in xrange(80, 90):
@@ -153,7 +153,7 @@ var_names = ['highest_wealth_data_new']
 dictionary = {}
 for key in var_names:
     dictionary[key] = locals()[key]
-pickle.dump(dictionary, open("OUTPUT/Nothing/wealth_data_moments_fit_90.pkl", "w"))
+pickle.dump(dictionary, open("OUTPUT/Saved_moments/wealth_data_moments_fit_90.pkl", "w"))
 
 ar09 = np.ones((78, 9))
 for i in xrange(90, 99):
@@ -163,11 +163,11 @@ var_names = ['highest_wealth_data_new']
 dictionary = {}
 for key in var_names:
     dictionary[key] = locals()[key]
-pickle.dump(dictionary, open("OUTPUT/Nothing/wealth_data_moments_fit_99.pkl", "w"))
+pickle.dump(dictionary, open("OUTPUT/Saved_moments/wealth_data_moments_fit_99.pkl", "w"))
 
 highest_wealth_data_new = np.array(data['p99_wealth'.format(i)])
 var_names = ['highest_wealth_data_new']
 dictionary = {}
 for key in var_names:
     dictionary[key] = locals()[key]
-pickle.dump(dictionary, open("OUTPUT/Nothing/wealth_data_moments_fit_100.pkl", "w"))
+pickle.dump(dictionary, open("OUTPUT/Saved_moments/wealth_data_moments_fit_100.pkl", "w"))

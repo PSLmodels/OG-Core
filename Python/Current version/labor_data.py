@@ -11,7 +11,7 @@ This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
             OUTPUT/Demographics/labor_dist_data_withfit.png
             OUTPUT/Demographics/data_labor_dist.png
-            OUTPUT/Nothing/labor_data_moments.pkl
+            OUTPUT/Saved_moments/labor_data_moments.pkl
 ------------------------------------------------------------------------
 '''
 
@@ -101,4 +101,4 @@ var_names = ['labor_dist_data']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
-pickle.dump(dictionary, open("OUTPUT/Nothing/labor_data_moments.pkl", "w"))
+pickle.dump(dictionary, open("OUTPUT/Saved_moments/labor_data_moments.pkl", "w"))

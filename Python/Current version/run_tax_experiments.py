@@ -14,7 +14,7 @@ This py-file calls the following other file(s):
 This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
             OUTPUT/given_params.pkl
-            OUTPUT/Nothing/tpi_var.pkl
+            OUTPUT/Saved_moments/tpi_var.pkl
             
 
 ------------------------------------------------------------------------
@@ -94,7 +94,7 @@ var_names = ['TPI_initial_run']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
-pickle.dump(dictionary, open("OUTPUT/Nothing/tpi_var.pkl", "w"))
+pickle.dump(dictionary, open("OUTPUT/Saved_moments/tpi_var.pkl", "w"))
 
 call(['python', 'TPI.py'])
 

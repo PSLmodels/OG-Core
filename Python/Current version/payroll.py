@@ -5,7 +5,7 @@ Last updated 5/21/2015
 Gives the reimbursement rates for the payroll tax.
 
 This py-file calls the following other file(s):
-            OUTPUT/Nothing/payroll_inputs.pkl
+            OUTPUT/Saved_moments/payroll_inputs.pkl
 ------------------------------------------------------------------------
 '''
 
@@ -24,7 +24,7 @@ import numpy as np
 ------------------------------------------------------------------------
 '''
 
-variables = pickle.load(open("OUTPUT/Nothing/payroll_inputs.pkl", "r"))
+variables = pickle.load(open("OUTPUT/Saved_moments/payroll_inputs.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 

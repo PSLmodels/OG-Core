@@ -8,7 +8,7 @@ method, where labor in inelastically supplied.
 
 This py-file calls the following other file(s):
             tax_funcs.py
-            OUTPUT/Nothing/tpi_var.pkl
+            OUTPUT/Saved_moments/tpi_var.pkl
             OUTPUT/SSinit/ss_init.pkl
             OUTPUT/SS/ss_vars.pkl
             OUTPUT/SSinit/ss_init_tpi.pkl
@@ -86,7 +86,7 @@ TPI_initial_run = whether this is the baseline TPI or not
 ------------------------------------------------------------------------
 '''
 
-variables = pickle.load(open("OUTPUT/Nothing/tpi_var.pkl", "r"))
+variables = pickle.load(open("OUTPUT/Saved_moments/tpi_var.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 
