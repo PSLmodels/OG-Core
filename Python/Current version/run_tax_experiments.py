@@ -98,89 +98,94 @@ pickle.dump(dictionary, open("OUTPUT/Saved_moments/tpi_var.pkl", "w"))
 
 call(['python', 'TPI.py'])
 
+# The below code which has been commented out is only used if comparing
+# 2 tax experiments -- in this case a calibrated income tax.  It requires
+# that the folders 'OUTPUT_wealth_tax' and 'OUTPUT_income_tax' are found
+# in the directory.
+
 # Save entire output colder as OUTPUT_wealth_tax so that
 # the income tax experiment does not overwrite the pickles
-shutil.rmtree('OUTPUT_wealth_tax')
-shutil.copytree('OUTPUT', 'OUTPUT_wealth_tax')
+# shutil.rmtree('OUTPUT_wealth_tax')
+# shutil.copytree('OUTPUT', 'OUTPUT_wealth_tax')
 
-'''
-------------------------------------------------------------------------
-    Calibrate the new income tax to match the wealth tax
-------------------------------------------------------------------------
-'''
+# '''
+# ------------------------------------------------------------------------
+#     Calibrate the new income tax to match the wealth tax
+# ------------------------------------------------------------------------
+# '''
 
-p_wealth = 0.0
+# p_wealth = 0.0
 
-var_names = ['S', 'J', 'T', 'bin_weights', 'starting_age', 'ending_age',
-             'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'ctilde', 'E',
-             'bqtilde', 'ltilde', 'g_y', 'TPImaxiter',
-             'TPImindist', 'b_ellipse', 'k_ellipse', 'upsilon',
-             'a_tax_income', 'scal',
-             'b_tax_income', 'c_tax_income', 'd_tax_income', 'tau_sales',
-             'tau_payroll', 'tau_bq',
-             'theta_tax', 'retire', 'mean_income',
-             'h_wealth', 'p_wealth', 'm_wealth', 'chi_b_scal', 'SS_stage']
+# var_names = ['S', 'J', 'T', 'bin_weights', 'starting_age', 'ending_age',
+#              'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'ctilde', 'E',
+#              'bqtilde', 'ltilde', 'g_y', 'TPImaxiter',
+#              'TPImindist', 'b_ellipse', 'k_ellipse', 'upsilon',
+#              'a_tax_income', 'scal',
+#              'b_tax_income', 'c_tax_income', 'd_tax_income', 'tau_sales',
+#              'tau_payroll', 'tau_bq',
+#              'theta_tax', 'retire', 'mean_income',
+#              'h_wealth', 'p_wealth', 'm_wealth', 'chi_b_scal', 'SS_stage']
 
-dictionary = {}
-for key in var_names:
-    dictionary[key] = globals()[key]
-pickle.dump(dictionary, open("OUTPUT/given_params.pkl", "w"))
+# dictionary = {}
+# for key in var_names:
+#     dictionary[key] = globals()[key]
+# pickle.dump(dictionary, open("OUTPUT/given_params.pkl", "w"))
 
-lump_to_match = pickle.load(open("OUTPUT/SS/Tss_var.pkl", "r"))
+# lump_to_match = pickle.load(open("OUTPUT/SS/Tss_var.pkl", "r"))
 
 
-def matcher(d_inc_guess):
-    pickle.dump(d_inc_guess, open("OUTPUT/SS/d_inc_guess.pkl", "w"))
-    call(['python', 'SS.py'])
-    lump_new = pickle.load(open("OUTPUT/SS/Tss_var.pkl", "r"))
-    error = abs(lump_to_match - lump_new)
-    print 'Error in taxes:', error
-    return error
+# def matcher(d_inc_guess):
+#     pickle.dump(d_inc_guess, open("OUTPUT/SS/d_inc_guess.pkl", "w"))
+#     call(['python', 'SS.py'])
+#     lump_new = pickle.load(open("OUTPUT/SS/Tss_var.pkl", "r"))
+#     error = abs(lump_to_match - lump_new)
+#     print 'Error in taxes:', error
+#     return error
 
-print 'Computing new income tax to match wealth tax'
-new_d_inc = opt.fsolve(matcher, d_tax_income, xtol=1e-13)
-print '\tOld income tax:', d_tax_income
-print '\tNew income tax:', new_d_inc
+# print 'Computing new income tax to match wealth tax'
+# new_d_inc = opt.fsolve(matcher, d_tax_income, xtol=1e-13)
+# print '\tOld income tax:', d_tax_income
+# print '\tNew income tax:', new_d_inc
 
-os.remove("OUTPUT/SS/d_inc_guess.pkl")
-os.remove("OUTPUT/SS/Tss_var.pkl")
+# os.remove("OUTPUT/SS/d_inc_guess.pkl")
+# os.remove("OUTPUT/SS/Tss_var.pkl")
 
-d_tax_income = new_d_inc
+# d_tax_income = new_d_inc
 
-'''
-------------------------------------------------------------------------
-    Run SS for income tax
-------------------------------------------------------------------------
-'''
+# '''
+# ------------------------------------------------------------------------
+#     Run SS for income tax
+# ------------------------------------------------------------------------
+# '''
 
-var_names = ['S', 'J', 'T', 'bin_weights', 'starting_age', 'ending_age',
-             'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'ctilde', 'E',
-             'bqtilde', 'ltilde', 'g_y', 'TPImaxiter',
-             'TPImindist', 'b_ellipse', 'k_ellipse', 'upsilon',
-             'a_tax_income', 'scal',
-             'b_tax_income', 'c_tax_income', 'd_tax_income', 'tau_sales',
-             'tau_payroll', 'tau_bq',
-             'theta_tax', 'retire', 'mean_income',
-             'h_wealth', 'p_wealth', 'm_wealth', 'chi_b_scal', 'SS_stage']
+# var_names = ['S', 'J', 'T', 'bin_weights', 'starting_age', 'ending_age',
+#              'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'ctilde', 'E',
+#              'bqtilde', 'ltilde', 'g_y', 'TPImaxiter',
+#              'TPImindist', 'b_ellipse', 'k_ellipse', 'upsilon',
+#              'a_tax_income', 'scal',
+#              'b_tax_income', 'c_tax_income', 'd_tax_income', 'tau_sales',
+#              'tau_payroll', 'tau_bq',
+#              'theta_tax', 'retire', 'mean_income',
+#              'h_wealth', 'p_wealth', 'm_wealth', 'chi_b_scal', 'SS_stage']
 
-dictionary = {}
-for key in var_names:
-    dictionary[key] = globals()[key]
-pickle.dump(dictionary, open("OUTPUT/given_params.pkl", "w"))
-print 'Getting SS distribution for income tax.'
-call(['python', 'SS.py'])
+# dictionary = {}
+# for key in var_names:
+#     dictionary[key] = globals()[key]
+# pickle.dump(dictionary, open("OUTPUT/given_params.pkl", "w"))
+# print 'Getting SS distribution for income tax.'
+# call(['python', 'SS.py'])
 
-'''
-------------------------------------------------------------------------
-    Run TPI for income tax
-------------------------------------------------------------------------
-'''
+# '''
+# ------------------------------------------------------------------------
+#     Run TPI for income tax
+# ------------------------------------------------------------------------
+# '''
 
-call(['python', 'TPI.py'])
+# call(['python', 'TPI.py'])
 
-# Save entire output colder as OUTPUT_income_tax
-shutil.rmtree('OUTPUT_income_tax')
-shutil.copytree('OUTPUT', 'OUTPUT_income_tax')
+# # Save entire output colder as OUTPUT_income_tax
+# shutil.rmtree('OUTPUT_income_tax')
+# shutil.copytree('OUTPUT', 'OUTPUT_income_tax')
 
 '''
 ------------------------------------------------------------------------
