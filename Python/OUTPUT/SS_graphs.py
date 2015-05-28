@@ -31,15 +31,14 @@ import pickle
 variables = pickle.load(open("SSinit/ss_init.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
+
 bssmatinit = bssmat
 bssmat2_init = bssmat2
 BQ_init = BQ
 nssmat_init = nssmat
 cssmat_init = cssmat
 
-savings = np.zeros((S, J))
-savings[:-1, :] = bssmat2_init[1:, :]
-savings[-1, :] = BQ_init
+savings = np.copy(bssmat3)
 
 beq_ut = chi_b.reshape(S, J) * (rho.reshape(S, 1)) * (savings**(1-sigma) -1)/(1-sigma)
 utility = ((cssmat_init ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(S, 1) * (b_ellipse * (1-(nssmat_init/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
@@ -48,7 +47,6 @@ utility_init = utility.sum(0)
 
 
 Css = (cssmat * omega_SS).sum()
-bssmat3 = np.array(list(bssmat) + list(BQ.reshape(1, J)))
 income_init = cssmat + delta * bssmat3
 print (income_init*omega_SS).sum()
 # print Css + delta * Kss
@@ -217,9 +215,7 @@ variables = pickle.load(open("SS/ss_vars.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 
-savings = np.zeros((S, J))
-savings[:-1, :] = bssmat2[1:, :]
-savings[-1, :] = BQ
+savings = np.copy(bssmat3)
 beq_ut = chi_b.reshape(S, J) * (rho.reshape(S, 1)) * (savings**(1-sigma)-1)/(1-sigma)
 utility = ((cssmat ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(S, 1) * (b_ellipse * (1-(nssmat/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
 utility += beq_ut 
@@ -227,7 +223,6 @@ utility = utility.sum(0)
 
 
 Css = (cssmat * omega_SS).sum()
-bssmat3 = np.array(list(bssmat) + list(BQ.reshape(1, J)))
 income = cssmat + delta * bssmat3
 print (income*omega_SS).sum()
 # print Css + delta * Kss

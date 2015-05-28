@@ -187,7 +187,6 @@ chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 , 
  , 34.27919965 , 35.57195873 , 36.95045988 , 38.62308152])
 
 
-surv_rate[-1] = 0.0
 rho[-1] = 1
 
 
@@ -312,7 +311,7 @@ def Euler1(w, r, e, n_guess, b1, b2, b3, BQ, factor, T_H, chi_b):
         1 + r*(1-tax.tau_income(r, b1, w, e[1:, :], n_guess[1:, :], factor)-tax.tau_income_deriv(
             r, b1, w, e[1:, :], n_guess[1:, :], factor)*income)-tax.tau_w_prime(b2)*b2-tax.tau_wealth(b2))
     bequest_ut = rho[:-1].reshape(S-1, 1) * np.exp(-sigma * g_y) * chi_b[:-1].reshape(S-1, J) * b2 ** (-sigma)
-    euler = MUc(cons1) - beta * surv_rate[:-1].reshape(S-1, 1) * deriv * MUc(
+    euler = MUc(cons1) - beta * (1-rho[:-1].reshape(S-1, 1)) * deriv * MUc(
         cons2) * np.exp(-sigma * g_y) - bequest_ut
     return euler
 
@@ -701,24 +700,18 @@ if SS_stage != 'first_run_for_guesses' and SS_stage != 'loop_calibration':
         S, J) * omega_SS * rho.reshape(S, 1)).sum(0)
     bssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat))
     bssmat3 = np.array(list(bssmat) + list(BQ.reshape(1, J)))
-
-    bssvec = bssmat.sum(1)
     Kss = (omega_SS[:-1, :] * bssmat).sum() + (omega_SS[-1, :]*BQ).sum()
-    bssavg = bssvec.mean()
-    bssvec = np.array([0]+list(bssvec))
     nssmat = solutions[S * J:-1].reshape(S, J)
-    nssvec = nssmat.sum(1)
     Lss = get_L(e, nssmat)
-    nssavg = nssvec.mean()
     Yss = get_Y(Kss, Lss)
     wss = get_w(Yss, Lss)
     rss = get_r(Yss, Kss)
     b1_2 = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
     factor_ss = solutions[-1]
-    B = Bss * (1+rss)
-    T_Hss = tax.tax_lump(rss, bssmat2, wss, e, nssmat, B, lambdas, factor_ss, omega_SS)
-    taxss = tax.total_taxes_SS(rss, bssmat2, wss, e, nssmat, B, lambdas, factor_ss, T_Hss)
-    cssmat = get_cons(rss, bssmat2, wss, e, nssmat, B.reshape(1, J), lambdas.reshape(1, J), bssmat3, g_y, taxss)
+    BQ = Bss * (1+rss)
+    T_Hss = tax.tax_lump(rss, bssmat2, wss, e, nssmat, BQ, lambdas, factor_ss, omega_SS)
+    taxss = tax.total_taxes_SS(rss, bssmat2, wss, e, nssmat, BQ, lambdas, factor_ss, T_Hss)
+    cssmat = get_cons(rss, bssmat2, wss, e, nssmat, BQ.reshape(1, J), lambdas.reshape(1, J), bssmat3, g_y, taxss)
 
     constraint_checker(bssmat, nssmat, cssmat)
 
@@ -742,14 +735,11 @@ if SS_stage != 'first_run_for_guesses' and SS_stage != 'loop_calibration':
     b1_2 = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
     b2_2 = np.array(list(bssmat) + list(BQ.reshape(1, J)))
 
-    b_eul3 = np.zeros((S, J))
-    b_eul3[:S-1, :] = bssmat
-    b_eul3[-1, :] = BQ
     chi_b = np.tile(final_chi_b_params[:J].reshape(1, J), (S, 1))
     chi_n = np.array(final_chi_b_params[J:])
-    euler1 = Euler1(wss, rss, e, nssmat, b1, b2, b3, B, factor_ss, T_Hss, chi_b)
-    euler2 = Euler2(wss, rss, e, nssmat, b1_2, b2_2, B, factor_ss, T_Hss, chi_n)
-    euler3 = Euler3(wss, rss, e, nssmat, b_eul3, B, factor_ss, chi_b, T_Hss)
+    euler1 = Euler1(wss, rss, e, nssmat, b1, b2, b3, BQ, factor_ss, T_Hss, chi_b)
+    euler2 = Euler2(wss, rss, e, nssmat, b1_2, b2_2, BQ, factor_ss, T_Hss, chi_n)
+    euler3 = Euler3(wss, rss, e, nssmat, bssmat3, BQ, factor_ss, chi_b, T_Hss)
 
 '''
 ------------------------------------------------------------------------
@@ -777,16 +767,16 @@ elif SS_stage == 'SS_init':
     pickle.dump(dictionary, open("OUTPUT/SSinit/ss_init_tpi.pkl", "w"))
 
     var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'e', 'E',
-                 'J', 'Kss', 'Kssvec', 'bssmat', 'Lss', 'nssvec', 'nssmat',
+                 'J', 'Kss', 'bssmat', 'Lss', 'nssmat',
                  'Yss', 'wss', 'rss', 'omega', 'chi_n', 'chi_b', 'ltilde', 'T',
                  'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist', 'BQ',
-                 'surv_rate', 'rho', 'Bss', 'lambdas',
+                 'rho', 'Bss', 'lambdas',
                  'b_ellipse', 'k_ellipse', 'upsilon',
                  'factor_ss',  'a_tax_income', 'b_tax_income',
                  'c_tax_income', 'd_tax_income', 'tau_payroll',
                  'tau_bq', 'theta', 'retire',
-                 'mean_income_data', 'bssavg', 'bssmat2', 'nssavg', 'cssmat',
-                 'starting_age',
+                 'mean_income_data', 'bssmat2', 'cssmat',
+                 'starting_age', 'bssmat3',
                  'ending_age', 'T_Hss', 'euler1', 'euler2', 'euler3',
                  'h_wealth', 'p_wealth', 'm_wealth']
     dictionary = {}
@@ -795,17 +785,17 @@ elif SS_stage == 'SS_init':
     pickle.dump(dictionary, open("OUTPUT/SSinit/ss_init.pkl", "w"))
 elif SS_stage == 'SS_tax':
     var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'e', 'E',
-                 'J', 'Kss', 'Kssvec', 'bssmat', 'Lss', 'nssvec', 'nssmat',
+                 'J', 'Kss', 'bssmat', 'Lss', 'nssmat',
                  'Yss', 'wss', 'rss', 'omega',
                  'chi_n', 'chi_b', 'ltilde', 'T',
                  'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist', 'BQ',
-                 'surv_rate', 'rho', 'Bss', 'lambdas',
+                 'rho', 'Bss', 'lambdas',
                  'b_ellipse', 'k_ellipse', 'upsilon',
                  'factor_ss',  'a_tax_income', 'b_tax_income',
                  'c_tax_income', 'd_tax_income', 'tau_payroll',
                  'tau_bq', 'theta', 'retire',
-                 'mean_income_data', 'bssavg', 'bssmat2', 'nssavg', 'cssmat',
-                 'starting_age',
+                 'mean_income_data', 'bssmat2', 'cssmat',
+                 'starting_age', 'bssmat3',
                  'ending_age', 'euler1', 'euler2', 'euler3', 'T_Hss',
                  'h_wealth', 'p_wealth', 'm_wealth']
     dictionary = {}

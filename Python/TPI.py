@@ -37,7 +37,7 @@ Import steady state distribution, parameters and other objects from
 steady state computation in ss_vars.pkl
 ------------------------------------------------------------------------
 S        = number of periods an individual lives
-beta     = discount factor (0.96 per year)
+beta     = discount factor
 sigma    = coefficient of relative risk aversion
 alpha    = capital share of income
 nu       = contraction parameter in steady state iteration process
@@ -295,8 +295,8 @@ Y0 = get_Y(K0, L0)
 w0 = get_w(Y0, L0)
 r0 = get_r(Y0, K0)
 B0 = (initial_b * omega_stationary[0] * rho.reshape(S, 1)).sum(0)
-T_H_0 = tax.tax_lump(r0, b1_2init, w0, e, initial_n, B0, lambdas, factor_ss, omega_stationary[0])
-tax0 = tax.total_taxes_SS(r0, b1_2init, w0, e, initial_n, B0, lambdas, factor_ss, T_H_0)
+T_H_0 = tax.tax_lump(r0, b1_2init, w0, e, initial_n, (1+r0)*B0, lambdas, factor_ss, omega_stationary[0])
+tax0 = tax.total_taxes_SS(r0, b1_2init, w0, e, initial_n, (1+r0)*B0, lambdas, factor_ss, T_H_0)
 c0 = get_cons(r0, b1_2init, w0, e, initial_n, (1+r0)*B0.reshape(1, J), lambdas.reshape(1, J), b2_2init, g_y, tax0)
 constraint_checker1(initial_b[:-1], initial_n, c0)
 
@@ -331,18 +331,18 @@ def MUb2(bequest, chi_b):
     return output
 
 
-def Euler_Error_firstgroup(guesses, winit, rinit, Binit, T_H_init):
+def Euler_Error_firstgroup(guesses, winit, rinit, BQinit, T_H_init):
     b2 = float(guesses[0])
     n1 = float(guesses[1])
     b1 = float(initial_b[-2, j])
     # Euler 1 equations
-    tax11 = tax.total_taxes_eul3_TPI(rinit, b1, winit, e[-1, j], n1, (1+rinit)*Binit, lambdas[j], factor_ss, T_H_init, j)
-    cons11 = get_cons(rinit, b1, winit, e[-1, j], n1, (1+rinit)*Binit, lambdas[j], b2, g_y, tax11)
-    bequest_ut = (1-surv_rate[-1]) * np.exp(-sigma * g_y) * chi_b[-1, j] * b2 ** (-sigma)
+    tax11 = tax.total_taxes_eul3_TPI(rinit, b1, winit, e[-1, j], n1, BQinit, lambdas[j], factor_ss, T_H_init, j)
+    cons11 = get_cons(rinit, b1, winit, e[-1, j], n1, BQinit, lambdas[j], b2, g_y, tax11)
+    bequest_ut = rho * np.exp(-sigma * g_y) * chi_b[-1, j] * b2 ** (-sigma)
     error1 = MUc(cons11) - bequest_ut
     # Euler 2 equations
-    tax2 = tax.total_taxes_eul3_TPI(rinit, b1, winit, e[-1, j], n1, (1+rinit)*Binit, lambdas[j], factor_ss, T_H_init, j)
-    cons2 = get_cons(rinit, b1, winit, e[-1, j], n1, (1+rinit)*Binit, lambdas[j], b2, g_y, tax2)
+    tax2 = tax.total_taxes_eul3_TPI(rinit, b1, winit, e[-1, j], n1, BQinit, lambdas[j], factor_ss, T_H_init, j)
+    cons2 = get_cons(rinit, b1, winit, e[-1, j], n1, BQinit, lambdas[j], b2, g_y, tax2)
     income2 = (rinit * b1 + winit * e[-1, j] * n1) * factor_ss
     deriv2 = 1 - tau_payroll - tax.tau_income(rinit, b1, winit, e[
         -1, j], n1, factor_ss) - tax.tau_income_deriv(
@@ -353,7 +353,7 @@ def Euler_Error_firstgroup(guesses, winit, rinit, Binit, T_H_init):
     return [error1] + [error2]
 
 
-def Euler_Error(guesses, winit, rinit, Binit, T_H_init, t):
+def Euler_Error(guesses, winit, rinit, BQinit, T_H_init, t):
     '''
     Parameters:
         guesses = distribution of capital and labor in period t
@@ -383,8 +383,8 @@ def Euler_Error(guesses, winit, rinit, Binit, T_H_init, t):
     n2 = n_guess[1:]
     e1 = e[-length:-1, j]
     e2 = e[-length+1:, j]
-    B1 = Binit[t:t+length-1]
-    B2 = Binit[t+1:t+length]
+    B1 = BQinit[t:t+length-1]
+    B2 = BQinit[t+1:t+length]
     T_H1 = T_H_init[t:t+length-1]
     T_H2 = T_H_init[t+1:t+length]
     # Euler 1 equations
@@ -393,13 +393,12 @@ def Euler_Error(guesses, winit, rinit, Binit, T_H_init, t):
     cons11 = get_cons(r1, b1, w1, e1, n1, B1, lambdas[j], b2, g_y, tax11)
     cons12 = get_cons(r2, b2, w2, e2, n2, B2, lambdas[j], b3, g_y, tax12)
     income1 = (r2 * b2 + w2 * e2 * n2) * factor_ss
-    bequest_ut = (
-        1-surv_rate[-(length):-1]) * np.exp(-sigma * g_y) * chi_b[-(length):-1, j] * b2 ** (-sigma)
+    bequest_ut = rho[-(length):-1] * np.exp(-sigma * g_y) * chi_b[-(length):-1, j] * b2 ** (-sigma)
     deriv1 = 1 + r2 * (1 - tax.tau_income(
         r2, b2, w2, e2, n2, factor_ss) - tax.tau_income_deriv(
         r2, b2, w2, e2, n2, factor_ss) * income1) - tax.tau_w_prime(
         b2)*b2 - tax.tau_wealth(b2)
-    error1 = MUc(cons11) - beta * surv_rate[-(length):-1] * np.exp(-sigma * g_y) * deriv1*MUc(
+    error1 = MUc(cons11) - beta * (1-rho[-(length):-1]) * np.exp(-sigma * g_y) * deriv1 * MUc(
         cons12) - bequest_ut
     # Euler 2 equations
     if length == S:
@@ -410,7 +409,7 @@ def Euler_Error(guesses, winit, rinit, Binit, T_H_init, t):
     b2_2 = b_guess
     w = winit[t:t+length]
     r = rinit[t:t+length]
-    B = Binit[t:t+length]
+    B = BQinit[t:t+length]
     T_H = T_H_init[t:t+length]
     tax2 = tax.total_taxes_TPI2(r, b1_2, w, e[-(length):, j], n_guess, B, lambdas[j], factor_ss, T_H, j)
     cons2 = get_cons(r, b1_2, w, e[-(length):, j], n_guess, B, lambdas[j], b2_2, g_y, tax2)
@@ -445,10 +444,10 @@ Linit = np.ones(T+S) * Lss
 Yinit = A*(Kinit**alpha) * (Linit**(1-alpha))
 winit = (1-alpha) * Yinit / Linit
 rinit = (alpha * Yinit / Kinit) - delta
-Binit = np.zeros((T+S, J))
+BQinit = np.zeros((T+S, J))
 for j in xrange(J):
-    Binit[:, j] = list(np.linspace(B0[j], Bss[j], T)) + [Bss[j]]*S
-Binit = np.array(Binit)
+    BQinit[:, j] = list(np.linspace((1+r0)*B0[j], BQ[j], T)) + [BQ[j]]*S
+BQinit = np.array(BQinit)
 T_H_init = np.ones(T+S) * Tss
 
 # Make array of initial guesses
@@ -489,7 +488,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             n_guesses_to_use = np.diag(guesses_n[:S, :, j], S-(s+2))
             solutions = opt.fsolve(Euler_Error, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
-                winit, rinit, (1+rinit) * Binit[:, j], T_H_init, 0), xtol=1e-13)
+                winit, rinit, BQinit[:, j], T_H_init, 0), xtol=1e-13)
             b_vec = solutions[:len(solutions)/2]
             b_mat[1:S+1, :, j] += np.diag(b_vec, S-(s+2))
             n_vec = solutions[len(solutions)/2:]
@@ -500,16 +499,16 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             n_guesses_to_use = np.diag(guesses_n[t:t+S, :, j])
             solutions = opt.fsolve(Euler_Error, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
-                winit, rinit, (1+rinit) * Binit[:, j], T_H_init, t), xtol=1e-13)
+                winit, rinit, BQinit[:, j], T_H_init, t), xtol=1e-13)
             b_vec = solutions[:S]
             b_mat[t+1:t+S+1, :, j] += np.diag(b_vec)
             n_vec = solutions[S:]
             n_mat[t:t+S, :, j] += np.diag(n_vec)
             inputs = list(solutions)
             euler_errors[t, :, j] = np.abs(Euler_Error(
-                inputs, winit, rinit, Binit[:, j], T_H_init, t))
+                inputs, winit, rinit, BQinit[:, j], T_H_init, t))
         # b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(Euler_Error_firstgroup, [b_mat[1, -2, j], n_mat[0, -2, j]],
-        #     args=(winit[1], rinit[1], Binit[1, j], T_H_init[1])))
+        #     args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1])))
     
     b_mat[0, :, :] = initial_b
     b_mat[1, -1, :]= b_mat[1, -2, :]
@@ -521,11 +520,11 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         1, S, 1)).sum(1)
     Kinit = nu*Knew + (1-nu)*Kinit[:T]
     Linit = nu*Lnew + (1-nu)*Linit[:T]
-    Binit[:T] = nu*Bnew + (1-nu)*Binit[:T]
+    BQinit[:T] = nu*Bnew + (1-nu)*BQinit[:T]
     guesses_b = nu * b_mat + (1-nu) * guesses_b
     guesses_n = nu * n_mat + (1-nu) * guesses_n
     TPIdist = np.array(list(
-        np.abs(Knew - Kinit)) + list(np.abs(Bnew - Binit[
+        np.abs(Knew - Kinit)) + list(np.abs(Bnew - BQinit[
             :T]).flatten()) + list(np.abs(Lnew - Linit))).max()
     TPIdist_vec[TPIiter] = TPIdist
     # After T=10, if cycling occurs, drop the value of nu
@@ -542,7 +541,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         bmat2 = np.zeros((T, S, J))
         bmat2[:, 1:, :] = b_mat[:T, :-1, :]
         T_H_init = np.array(list(tax.tax_lumpTPI(rinit[:T].reshape(T, 1, 1), bmat2, winit[:T].reshape(
-            T, 1, 1), e.reshape(1, S, J), n_mat[:T], Binit[:T].reshape(T, 1, J), lambdas.reshape(
+            T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(
             1, 1, J), factor_ss, omega_stationary[:T])) + [Tss]*S)
         Yinit = Z*(Kinit**alpha) * (Linit**(1-alpha))
         winit = np.array(
@@ -550,14 +549,14 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
             np.ones(S)*rss))
     if TPIdist < TPImindist:
-        Binit[:T] = Bnew
+        BQinit[:T] = Bnew
         Kinit[:T] = Knew
         Linit[:T] = Lnew
     
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
 Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
-Bpath_TPI = np.array(list(Binit) + list(np.ones((10, J))*Bss))
+BQpath_TPI = np.array(list(BQinit) + list(np.ones((10, J))*Bss))
 
 print 'TPI is finished.'
 
@@ -569,14 +568,12 @@ b2 = np.zeros((T, S, J))
 b2[:, :, :] = b_mat[:T, :, :]
 if TPI_initial_run:
     taxinit = tax.total_taxes_path(rinit[:T], b1, winit[:T], e.reshape(
-        1, S, J), n_mat[:T], Binit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T])
-    cinit = get_cons(rinit[:T].reshape(T, 1, 1), b1, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], (
-        1 + rinit[:T].reshape(T, 1, 1)) * Binit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b2, g_y, taxinit)
+        1, S, J), n_mat[:T], BQinit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T])
+    cinit = get_cons(rinit[:T].reshape(T, 1, 1), b1, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b2, g_y, taxinit)
 else:
     taxinit2 = tax.total_taxes_path(rinit[:T], b1, winit[:T], e.reshape(
-        1, S, J), n_mat[:T], Binit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T])
-    cinit = get_cons(rinit[:T].reshape(T, 1, 1), b1, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], (
-        1 + rinit[:T].reshape(T, 1, 1)) * Binit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b2, g_y, taxinit2)
+        1, S, J), n_mat[:T], BQinit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T])
+    cinit = get_cons(rinit[:T].reshape(T, 1, 1), b1, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b2, g_y, taxinit2)
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
     constraint_checker2(b_mat[t, :-1, :], n_mat[
@@ -606,7 +603,7 @@ print 'Saving TPI variable values.'
 
 if TPI_initial_run:
     var_names = ['Kpath_TPI', 'TPIiter', 'TPIdist', 'T', 'b_mat',
-                 'eul1', 'eul2', 'eul3', 'Lpath_TPI', 'Bpath_TPI',
+                 'eul1', 'eul2', 'eul3', 'Lpath_TPI', 'BQpath_TPI',
                  'n_mat', 'rinit', 'winit', 'Yinit', 'T_H_init', 'taxinit',
                  'cinit']
     dictionary = {}
@@ -615,7 +612,7 @@ if TPI_initial_run:
     pickle.dump(dictionary, open("OUTPUT/TPIinit/TPIinit_vars.pkl", "w"))
 else:
     var_names = ['Kpath_TPI', 'TPIiter', 'TPIdist', 'T', 'b_mat',
-                 'eul1', 'eul2', 'eul3', 'Lpath_TPI', 'Bpath_TPI',
+                 'eul1', 'eul2', 'eul3', 'Lpath_TPI', 'BQpath_TPI',
                  'n_mat', 'rinit', 'winit', 'Yinit', 'T_H_init', 'taxinit2',
                  'cinit']
     dictionary = {}
