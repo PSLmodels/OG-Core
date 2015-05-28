@@ -23,7 +23,7 @@ Imported user given values
 S            = number of periods an individual lives
 J            = number of different ability groups
 T            = number of time periods until steady state is reached
-bin_weights  = percent of each age cohort in each ability group
+lambdas  = percent of each age cohort in each ability group
 starting_age = age of first members of cohort
 ending age   = age of the last members of cohort
 E            = number of cohorts before S=1
@@ -32,11 +32,9 @@ sigma        = coefficient of relative risk aversion
 alpha        = capital share of income
 nu_init      = contraction parameter in steady state iteration process
                representing the weight on the new distribution gamma_new
-A            = total factor productivity parameter in firms' production
+Z            = total factor productivity parameter in firms' production
                function
 delta        = depreciation rate of capital for each cohort
-ctilde       = minimum value amount of consumption
-bqtilde      = minimum bequest value
 ltilde       = measure of time each individual is endowed with each
                period
 eta          = Frisch elasticity of labor supply
@@ -52,10 +50,9 @@ a_tax_income = used to calibrate income tax (scalar)
 b_tax_income = used to calibrate income tax (scalar)
 c_tax_income = used to calibrate income tax (scalar)
 d_tax_income = used to calibrate income tax (scalar)
-tau_sales    = sales tax (scalar)
 tau_bq       = bequest tax (scalar)
 tau_payroll  = payroll tax (scalar)
-theta_tax    = payback value for payroll tax (scalar)
+theta    = payback value for payroll tax (scalar)
 retire       = age in which individuals retire(scalar)
 h_wealth     = wealth tax parameter h
 p_wealth     = wealth tax parameter p
@@ -137,87 +134,83 @@ def tau_income_deriv(r, b, w, e, n, factor):
     return tau
 
 
-def total_taxes_SS(r, b, w, e, n, BQ, bins, factor, taulump):
+def total_taxes_SS(r, b, w, e, n, BQ, lambdas, factor, T_H):
     '''
     Gives the total amount of taxes in the steady state
     '''
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor) * I
     T_P = tau_payroll * w * e * n
-    T_P[retire:] -= theta_tax * w
-    T_BQ = tau_bq * BQ / bins
+    T_P[retire:] -= theta * w
+    T_BQ = tau_bq * BQ / lambdas
     T_W = tau_wealth(b) * b
-    T_L = taulump
-    tot = T_I + T_P + T_BQ + T_W - T_L
+    tot = T_I + T_P + T_BQ + T_W - T_H
     return tot
 
 
-def total_taxes_SS2(r, b, w, e, n, BQ, bins, factor, taulump):
+def total_taxes_SS2(r, b, w, e, n, BQ, lambdas, factor, T_H):
     '''
     Gives the total amount of taxes in the steady state
     '''
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor) * I
     T_P = tau_payroll * w * e * n
-    T_P[retire-1:] -= theta_tax * w
-    T_BQ = tau_bq * BQ / bins
+    T_P[retire-1:] -= theta * w
+    T_BQ = tau_bq * BQ / lambdas
     T_W = tau_wealth(b) * b
-    T_L = taulump
-    tot = T_I + T_P + T_BQ + T_W - T_L
+    tot = T_I + T_P + T_BQ + T_W - T_H
     return tot
 
 
-def tax_lump(r, b, w, e, n, BQ, bins, factor, omega_SS):
+def tax_lump(r, b, w, e, n, BQ, lambdas, factor, omega_SS):
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor) * I
     T_P = tau_payroll * w * e * n
-    T_P[retire:] -= theta_tax * w
-    T_BQ = tau_bq * BQ / bins
+    T_P[retire:] -= theta * w
+    T_BQ = tau_bq * BQ / lambdas
     T_W = tau_wealth(b) * b
-    T_L = (omega_SS * (T_I + T_P + T_BQ + T_W)).sum()
-    return T_L
+    T_H = (omega_SS * (T_I + T_P + T_BQ + T_W)).sum()
+    return T_H
 
 
-def tax_lumpTPI(r, b, w, e, n, BQ, bins, factor, omega_stationary):
+def tax_lumpTPI(r, b, w, e, n, BQ, lambdas, factor, omega_stationary):
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor) * I
     T_P = tau_payroll * w * e * n
-    T_P[:, retire:, :] -= theta_tax.reshape(1, 1, J) * w
-    T_BQ = tau_bq.reshape(1, 1, J) * BQ / bins
+    T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w
+    T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
     T_W = tau_wealth(b) * b
-    T_L = (omega_stationary * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1)
-    return T_L
+    T_H = (omega_stationary * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1)
+    return T_H
 
 
-def total_taxes_eul3_SS(r, b, w, e, n, BQ, bins, factor, taulump):
+def total_taxes_eul3_SS(r, b, w, e, n, BQ, lambdas, factor, T_H):
     '''
     Gives the total amount of taxes for euler 3
     '''
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor) * I
-    T_P = tau_payroll * w * e * n - theta_tax * w
-    T_BQ = tau_bq * BQ / bins
+    T_P = tau_payroll * w * e * n - theta * w
+    T_BQ = tau_bq * BQ / lambdas
     T_W = tau_wealth(b) * b
-    T_L = taulump
-    tot = T_I + T_P + T_BQ + T_W - T_L
+    tot = T_I + T_P + T_BQ + T_W - T_H
     return tot
 
 
-def total_taxes_eul3_TPI(r, b, w, e, n, BQ, bins, factor, Tinit, j):
+def total_taxes_eul3_TPI(r, b, w, e, n, BQ, lambdas, factor, T_H, j):
     '''
     Gives the total amount of taxes for euler 3
     '''
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor) * I
-    T_P = tau_payroll * w * e * n - theta_tax[j] * w
-    T_BQ = tau_bq[j] * BQ / bins
+    T_P = tau_payroll * w * e * n - theta[j] * w
+    T_BQ = tau_bq[j] * BQ / lambdas
     T_W = tau_wealth(b) * b
-    T_L = Tinit
-    tot = T_I + T_P + T_BQ + T_W - T_L
+    tot = T_I + T_P + T_BQ + T_W - T_H
     return tot
 
 
-def total_taxes_TPI1(r, b, w, e, n, BQ, bins, factor, Tinit, j):
+def total_taxes_TPI1(r, b, w, e, n, BQ, lambdas, factor, T_H, j):
     '''
     Gives the total amount of taxes in TPI
     '''
@@ -225,15 +218,14 @@ def total_taxes_TPI1(r, b, w, e, n, BQ, bins, factor, Tinit, j):
     T_I = tau_income(r, b, w, e, n, factor) * I
     T_P = tau_payroll * w * e * n
     retireTPI = (retire - (S-1))
-    T_P[retireTPI:] -= theta_tax[j] * w[retireTPI:]
-    T_BQ = tau_bq[j] * BQ / bins
+    T_P[retireTPI:] -= theta[j] * w[retireTPI:]
+    T_BQ = tau_bq[j] * BQ / lambdas
     T_W = tau_wealth(b) * b
-    T_L = Tinit
-    tot = T_I + T_P + T_BQ + T_W - T_L
+    tot = T_I + T_P + T_BQ + T_W - T_H
     return tot
 
 
-def total_taxes_TPI1_2(r, b, w, e, n, BQ, bins, factor, Tinit, j):
+def total_taxes_TPI1_2(r, b, w, e, n, BQ, lambdas, factor, T_H, j):
     '''
     Gives the total amount of taxes in TPI
     '''
@@ -241,15 +233,14 @@ def total_taxes_TPI1_2(r, b, w, e, n, BQ, bins, factor, Tinit, j):
     T_I = tau_income(r, b, w, e, n, factor) * I
     T_P = tau_payroll * w * e * n
     retireTPI = (retire-1 - (S-1))
-    T_P[retireTPI:] -= theta_tax[j] * w[retireTPI:]
-    T_BQ = tau_bq[j] * BQ / bins
+    T_P[retireTPI:] -= theta[j] * w[retireTPI:]
+    T_BQ = tau_bq[j] * BQ / lambdas
     T_W = tau_wealth(b) * b
-    T_L = Tinit
-    tot = T_I + T_P + T_BQ + T_W - T_L
+    tot = T_I + T_P + T_BQ + T_W - T_H
     return tot
 
 
-def total_taxes_TPI2(r, b, w, e, n, BQ, bins, factor, Tinit,  j):
+def total_taxes_TPI2(r, b, w, e, n, BQ, lambdas, factor, T_H,  j):
     '''
     Gives the total amount of taxes in TPI
     '''
@@ -257,15 +248,14 @@ def total_taxes_TPI2(r, b, w, e, n, BQ, bins, factor, Tinit,  j):
     T_I = tau_income(r, b, w, e, n, factor) * I
     T_P = tau_payroll * w * e * n
     retireTPI = (retire - S)
-    T_P[retireTPI:] -= theta_tax[j] * w[retireTPI:]
-    T_BQ = tau_bq[j] * BQ / bins
+    T_P[retireTPI:] -= theta[j] * w[retireTPI:]
+    T_BQ = tau_bq[j] * BQ / lambdas
     T_W = tau_wealth(b) * b
-    T_L = Tinit
-    tot = T_I + T_P + T_BQ + T_W - T_L
+    tot = T_I + T_P + T_BQ + T_W - T_H
     return tot
 
 
-def total_taxes_path(r, b, w, e, n, BQ, bins, factor, Tinit):
+def total_taxes_path(r, b, w, e, n, BQ, lambdas, factor, T_H):
     '''
     Gives the total amount of taxes for an entire
     timepath.
@@ -275,9 +265,9 @@ def total_taxes_path(r, b, w, e, n, BQ, bins, factor, Tinit):
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor) * I
     T_P = tau_payroll * w * e * n
-    T_P[:, retire:, :] -= theta_tax.reshape(1, 1, J) * w
-    T_BQ = tau_bq.reshape(1, 1, J) * BQ / bins
+    T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w
+    T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
     T_W = tau_wealth(b) * b
-    T_L = Tinit.reshape(T, 1, 1)
-    tot = T_I + T_P + T_BQ + T_W - T_L
+    T_H = T_H.reshape(T, 1, 1)
+    tot = T_I + T_P + T_BQ + T_W - T_H
     return tot

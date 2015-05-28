@@ -63,14 +63,14 @@ d_tax_income = .219
 SS_stage = 'SS_tax'
 
 print 'Getting SS distribution for wealth tax.'
-var_names = ['S', 'J', 'T', 'bin_weights', 'starting_age', 'ending_age',
-             'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'ctilde', 'E',
-             'bqtilde', 'ltilde', 'g_y', 'TPImaxiter',
+var_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
+             'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
+             'ltilde', 'g_y', 'TPImaxiter',
              'TPImindist', 'b_ellipse', 'k_ellipse', 'upsilon',
              'a_tax_income', 'scal',
-             'b_tax_income', 'c_tax_income', 'd_tax_income', 'tau_sales',
+             'b_tax_income', 'c_tax_income', 'd_tax_income',
              'tau_payroll', 'tau_bq',
-             'theta_tax', 'retire', 'mean_income',
+             'theta', 'retire', 'mean_income_data',
              'h_wealth', 'p_wealth', 'm_wealth', 'chi_b_scal', 'SS_stage']
 dictionary = {}
 for key in var_names:

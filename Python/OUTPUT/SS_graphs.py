@@ -31,25 +31,25 @@ import pickle
 variables = pickle.load(open("SSinit/ss_init.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
-kssmatinit = Kssmat
-Kssmat2_init = Kssmat2
+bssmatinit = bssmat
+bssmat2_init = bssmat2
 BQ_init = BQ
-Lssmat_init = Lssmat
+nssmat_init = nssmat
 cssmat_init = cssmat
 
 savings = np.zeros((S, J))
-savings[:-1, :] = Kssmat2_init[1:, :]
+savings[:-1, :] = bssmat2_init[1:, :]
 savings[-1, :] = BQ_init
 
-beq_ut = chi_b.reshape(S, J) * (mort_rate.reshape(S, 1)) * (savings**(1-sigma) -1)/(1-sigma)
-utility = ((cssmat_init ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(S, 1) * (b_ellipse * (1-(Lssmat_init/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
+beq_ut = chi_b.reshape(S, J) * (rho.reshape(S, 1)) * (savings**(1-sigma) -1)/(1-sigma)
+utility = ((cssmat_init ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(S, 1) * (b_ellipse * (1-(nssmat_init/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
 utility += beq_ut 
 utility_init = utility.sum(0)
 
 
 Css = (cssmat * omega_SS).sum()
-Kssmat3 = np.array(list(Kssmat) + list(BQ.reshape(1, J)))
-income_init = cssmat + delta * Kssmat3
+bssmat3 = np.array(list(bssmat) + list(BQ.reshape(1, J)))
+income_init = cssmat + delta * bssmat3
 print (income_init*omega_SS).sum()
 # print Css + delta * Kss
 # print Kss
@@ -67,7 +67,7 @@ print (income_init*omega_SS).sum()
 domain = np.linspace(starting_age, ending_age, S)
 Jgrid = np.zeros(J)
 for j in xrange(J):
-    Jgrid[j:] += bin_weights[j]
+    Jgrid[j:] += lambdas[j]
 cmap1 = matplotlib.cm.get_cmap('summer')
 cmap2 = matplotlib.cm.get_cmap('jet')
 X, Y = np.meshgrid(domain, Jgrid)
@@ -82,19 +82,19 @@ ax5 = fig5.gca(projection='3d')
 ax5.set_xlabel(r'age-$s$')
 ax5.set_ylabel(r'ability type-$j$')
 ax5.set_zlabel(r'individual savings $\bar{b}_{j,s}$')
-ax5.plot_surface(X, Y, Kssmat2.T, rstride=1, cstride=1, cmap=cmap2)
+ax5.plot_surface(X, Y, bssmat2.T, rstride=1, cstride=1, cmap=cmap2)
 plt.savefig('SSinit/capital_dist')
 # plt.show()
 
 fig112 = plt.figure()
 ax = plt.subplot(111)
-ax.plot(domain, Kssmat2[:, 0], label='0 - 24%', linestyle='-', color='black')
-ax.plot(domain, Kssmat2[:, 1], label='25 - 49%', linestyle='--', color='black')
-ax.plot(domain, Kssmat2[:, 2], label='50 - 69%', linestyle='-.', color='black')
-ax.plot(domain, Kssmat2[:, 3], label='70 - 79%', linestyle=':', color='black')
-ax.plot(domain, Kssmat2[:, 4], label='80 - 89%', marker='x', color='black')
-ax.plot(domain, Kssmat2[:, 5], label='90 - 99%', marker='v', color='black')
-ax.plot(domain, Kssmat2[:, 6], label='99 - 100%', marker='1', color='black')
+ax.plot(domain, bssmat2[:, 0], label='0 - 24%', linestyle='-', color='black')
+ax.plot(domain, bssmat2[:, 1], label='25 - 49%', linestyle='--', color='black')
+ax.plot(domain, bssmat2[:, 2], label='50 - 69%', linestyle='-.', color='black')
+ax.plot(domain, bssmat2[:, 3], label='70 - 79%', linestyle=':', color='black')
+ax.plot(domain, bssmat2[:, 4], label='80 - 89%', marker='x', color='black')
+ax.plot(domain, bssmat2[:, 5], label='90 - 99%', marker='v', color='black')
+ax.plot(domain, bssmat2[:, 6], label='99 - 100%', marker='1', color='black')
 box = ax.get_position()
 ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
@@ -107,7 +107,7 @@ ax53 = fig53.gca(projection='3d')
 ax53.set_xlabel(r'age-$s$')
 ax53.set_ylabel(r'ability type-$j$')
 ax53.set_zlabel(r'log individual savings $log(\bar{b}_{j,s})$')
-ax53.plot_surface(X, Y, np.log(Kssmat2).T, rstride=1, cstride=1, cmap=cmap1)
+ax53.plot_surface(X, Y, np.log(bssmat2).T, rstride=1, cstride=1, cmap=cmap1)
 plt.savefig('SSinit/capital_dist_log')
 
 plt.figure()
@@ -121,19 +121,19 @@ ax4 = fig4.gca(projection='3d')
 ax4.set_xlabel(r'age-$s$')
 ax4.set_ylabel(r'ability-$j$')
 ax4.set_zlabel(r'individual labor supply $\bar{l}_{j,s}$')
-ax4.plot_surface(X, Y, (Lssmat).T, rstride=1, cstride=1, cmap=cmap1)
+ax4.plot_surface(X, Y, (nssmat).T, rstride=1, cstride=1, cmap=cmap1)
 plt.savefig('SSinit/labor_dist')
 # plt.show()
 
 fig113 = plt.figure()
 ax = plt.subplot(111)
-ax.plot(domain, Lssmat[:, 0], label='0 - 24%', linestyle='-', color='black')
-ax.plot(domain, Lssmat[:, 1], label='25 - 49%', linestyle='--', color='black')
-ax.plot(domain, Lssmat[:, 2], label='50 - 69%', linestyle='-.', color='black')
-ax.plot(domain, Lssmat[:, 3], label='70 - 79%', linestyle=':', color='black')
-ax.plot(domain, Lssmat[:, 4], label='80 - 89%', marker='x', color='black')
-ax.plot(domain, Lssmat[:, 5], label='90 - 99%', marker='v', color='black')
-ax.plot(domain, Lssmat[:, 6], label='99 - 100%', marker='1', color='black')
+ax.plot(domain, nssmat[:, 0], label='0 - 24%', linestyle='-', color='black')
+ax.plot(domain, nssmat[:, 1], label='25 - 49%', linestyle='--', color='black')
+ax.plot(domain, nssmat[:, 2], label='50 - 69%', linestyle='-.', color='black')
+ax.plot(domain, nssmat[:, 3], label='70 - 79%', linestyle=':', color='black')
+ax.plot(domain, nssmat[:, 4], label='80 - 89%', marker='x', color='black')
+ax.plot(domain, nssmat[:, 5], label='90 - 99%', marker='v', color='black')
+ax.plot(domain, nssmat[:, 6], label='99 - 100%', marker='1', color='black')
 box = ax.get_position()
 ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
@@ -218,17 +218,17 @@ for key in variables:
     globals()[key] = variables[key]
 
 savings = np.zeros((S, J))
-savings[:-1, :] = Kssmat2[1:, :]
+savings[:-1, :] = bssmat2[1:, :]
 savings[-1, :] = BQ
-beq_ut = chi_b.reshape(S, J) * (mort_rate.reshape(S, 1)) * (savings**(1-sigma)-1)/(1-sigma)
-utility = ((cssmat ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(S, 1) * (b_ellipse * (1-(Lssmat/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
+beq_ut = chi_b.reshape(S, J) * (rho.reshape(S, 1)) * (savings**(1-sigma)-1)/(1-sigma)
+utility = ((cssmat ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(S, 1) * (b_ellipse * (1-(nssmat/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
 utility += beq_ut 
 utility = utility.sum(0)
 
 
 Css = (cssmat * omega_SS).sum()
-Kssmat3 = np.array(list(Kssmat) + list(BQ.reshape(1, J)))
-income = cssmat + delta * Kssmat3
+bssmat3 = np.array(list(bssmat) + list(BQ.reshape(1, J)))
+income = cssmat + delta * bssmat3
 print (income*omega_SS).sum()
 # print Css + delta * Kss
 # print Kss
@@ -252,7 +252,7 @@ ax15 = fig15.gca(projection='3d')
 ax15.set_xlabel(r'age-$s$')
 ax15.set_ylabel(r'ability-$j$')
 ax15.set_zlabel(r'individual savings $\bar{b}_{j,s}$')
-ax15.plot_surface(X, Y, Kssmat2.T, rstride=1, cstride=1, cmap=cmap2)
+ax15.plot_surface(X, Y, bssmat2.T, rstride=1, cstride=1, cmap=cmap2)
 plt.savefig('SS/capital_dist')
 
 plt.figure()
@@ -266,7 +266,7 @@ ax14 = fig14.gca(projection='3d')
 ax14.set_xlabel(r'age-$s$')
 ax14.set_ylabel(r'ability-$j$')
 ax14.set_zlabel(r'individual labor supply $\bar{l}_{j,s}$')
-ax14.plot_surface(X, Y, (Lssmat).T, rstride=1, cstride=1, cmap=cmap1)
+ax14.plot_surface(X, Y, (nssmat).T, rstride=1, cstride=1, cmap=cmap1)
 plt.savefig('SS/labor_dist')
 
 fig19 = plt.figure()
@@ -315,9 +315,9 @@ plt.savefig('SS/euler_errors_euler2_SS')
 ------------------------------------------------------------------------
 '''
 
-Kssmat_percdif = (Kssmat - kssmatinit)/ kssmatinit
+bssmat_percdif = (bssmat - bssmatinit)/ bssmatinit
 BQ_percdif = (BQ - BQ_init)/ BQ_init
-Lssmat_percdif = (Lssmat - Lssmat_init)/ Lssmat_init 
+nssmat_percdif = (nssmat - nssmat_init)/ nssmat_init 
 cssmat_percdif = (cssmat - cssmat_init)/ cssmat_init
 utility_dif = (utility - utility_init) / np.abs(utility_init)
 income_dif = (income - income_init) / income_init
@@ -332,7 +332,7 @@ ax25 = fig25.gca(projection='3d')
 ax25.set_xlabel(r'age-$s$')
 ax25.set_ylabel(r'ability-$j$')
 ax25.set_zlabel(r'individual savings $\bar{b}_{j,s}$')
-ax25.plot_surface(X2, Y2, Kssmat_percdif.T, rstride=1, cstride=1, cmap=cmap2)
+ax25.plot_surface(X2, Y2, bssmat_percdif.T, rstride=1, cstride=1, cmap=cmap2)
 plt.savefig('SS/capital_dist_percdif')
 
 plt.figure()
@@ -346,7 +346,7 @@ ax24 = fig24.gca(projection='3d')
 ax24.set_xlabel(r'age-$s$')
 ax24.set_ylabel(r'ability-$j$')
 ax24.set_zlabel(r'individual labor supply $\bar{l}_{j,s}$')
-ax24.plot_surface(X, Y, (Lssmat_percdif).T, rstride=1, cstride=1, cmap=cmap1)
+ax24.plot_surface(X, Y, (nssmat_percdif).T, rstride=1, cstride=1, cmap=cmap1)
 plt.savefig('SS/labor_dist_percdif')
 
 fig29 = plt.figure()
@@ -372,13 +372,13 @@ domain2 = np.linspace(starting_age, ending_age, S-1)
 
 fig999 = plt.figure()
 ax = plt.subplot(311)
-ax.plot(domain2, Kssmat_percdif[:, 0], label='0 - 24%', linestyle='-', color='black')
-ax.plot(domain2, Kssmat_percdif[:, 1], label='25 - 49%', linestyle='--', color='black')
-ax.plot(domain2, Kssmat_percdif[:, 2], label='50 - 69%', linestyle='-.', color='black')
-ax.plot(domain2, Kssmat_percdif[:, 3], label='70 - 79%', linestyle=':', color='black')
-ax.plot(domain2, Kssmat_percdif[:, 4], label='80 - 89%', marker='x', color='black')
-ax.plot(domain2, Kssmat_percdif[:, 5], label='90 - 99%', marker='v', color='black')
-ax.plot(domain2, Kssmat_percdif[:, 6], label='99 - 100%', marker='1', color='black')
+ax.plot(domain2, bssmat_percdif[:, 0], label='0 - 24%', linestyle='-', color='black')
+ax.plot(domain2, bssmat_percdif[:, 1], label='25 - 49%', linestyle='--', color='black')
+ax.plot(domain2, bssmat_percdif[:, 2], label='50 - 69%', linestyle='-.', color='black')
+ax.plot(domain2, bssmat_percdif[:, 3], label='70 - 79%', linestyle=':', color='black')
+ax.plot(domain2, bssmat_percdif[:, 4], label='80 - 89%', marker='x', color='black')
+ax.plot(domain2, bssmat_percdif[:, 5], label='90 - 99%', marker='v', color='black')
+ax.plot(domain2, bssmat_percdif[:, 6], label='99 - 100%', marker='1', color='black')
 box = ax.get_position()
 ax.set_position([box.x0, box.y0, box.width * .4, box.height])
 # ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
@@ -401,13 +401,13 @@ ax.set_position([box.x0, box.y0, box.width * .4, box.height])
 ax.set_ylabel(r'% change in $\bar{c}_{j,s}$')
 
 ax = plt.subplot(313)
-ax.plot(domain, Lssmat_percdif[:, 0], label='0 - 24%', linestyle='-', color='black')
-ax.plot(domain, Lssmat_percdif[:, 1], label='25 - 49%', linestyle='--', color='black')
-ax.plot(domain, Lssmat_percdif[:, 2], label='50 - 69%', linestyle='-.', color='black')
-ax.plot(domain, Lssmat_percdif[:, 3], label='70 - 79%', linestyle=':', color='black')
-ax.plot(domain, Lssmat_percdif[:, 4], label='80 - 89%', marker='x', color='black')
-ax.plot(domain, Lssmat_percdif[:, 5], label='90 - 99%', marker='v', color='black')
-ax.plot(domain, Lssmat_percdif[:, 6], label='99 - 100%', marker='1', color='black')
+ax.plot(domain, nssmat_percdif[:, 0], label='0 - 24%', linestyle='-', color='black')
+ax.plot(domain, nssmat_percdif[:, 1], label='25 - 49%', linestyle='--', color='black')
+ax.plot(domain, nssmat_percdif[:, 2], label='50 - 69%', linestyle='-.', color='black')
+ax.plot(domain, nssmat_percdif[:, 3], label='70 - 79%', linestyle=':', color='black')
+ax.plot(domain, nssmat_percdif[:, 4], label='80 - 89%', marker='x', color='black')
+ax.plot(domain, nssmat_percdif[:, 5], label='90 - 99%', marker='v', color='black')
+ax.plot(domain, nssmat_percdif[:, 6], label='99 - 100%', marker='1', color='black')
 box = ax.get_position()
 ax.set_position([box.x0, box.y0, box.width * .4, box.height])
 # ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))

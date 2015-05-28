@@ -35,7 +35,7 @@ for key in variables:
 
 # If you want to see the average capital stock levels to calibrate the
 # wealth tax, uncomment the following:
-# print (Kssmat2*omega_SS).sum(0)/bin_weights
+# print (bssmat2*omega_SS).sum(0)/lambdas
 # print factor_ss
 
 
@@ -85,13 +85,13 @@ for key in variables:
 pct_100_data = highest_wealth_data_new[2:]/1000000
 
 
-pct_25_model = factor_ss * Kssmat[:76, 0]/1000000
-pct_50_model = factor_ss * Kssmat[:76, 1]/1000000
-pct_70_model = factor_ss * Kssmat[:76, 2]/1000000
-pct_80_model = factor_ss * Kssmat[:76, 3]/1000000
-pct_90_model = factor_ss * Kssmat[:76, 4]/1000000
-pct_99_model = factor_ss * Kssmat[:76, 5]/1000000
-pct_100_model = factor_ss * Kssmat[:76, 6]/1000000
+pct_25_model = factor_ss * bssmat[:76, 0]/1000000
+pct_50_model = factor_ss * bssmat[:76, 1]/1000000
+pct_70_model = factor_ss * bssmat[:76, 2]/1000000
+pct_80_model = factor_ss * bssmat[:76, 3]/1000000
+pct_90_model = factor_ss * bssmat[:76, 4]/1000000
+pct_99_model = factor_ss * bssmat[:76, 5]/1000000
+pct_100_model = factor_ss * bssmat[:76, 6]/1000000
 
 '''
 ------------------------------------------------------------------------
@@ -243,8 +243,8 @@ plt.ylabel(r'Individual consumption, in dollars')
 plt.legend(loc=0)
 plt.savefig('Saved_moments/css_fit')
 
-Kssmat3 = np.array(list(Kssmat) + list(BQ.reshape(1, J)))
-income_ss = cssmat + delta * Kssmat3
+bssmat3 = np.array(list(bssmat) + list(BQ.reshape(1, J)))
+income_ss = cssmat + delta * bssmat3
 
 plt.figure()
 plt.plot(domain, factor_ss * income_ss[:, 0], label='25%')

@@ -43,7 +43,7 @@ Setting up the Model
 S            = number of periods an individual lives
 J            = number of different ability groups
 T            = number of time periods until steady state is reached
-bin_weights  = desired percentiles of ability groups
+lambdas  = desired percentiles of ability groups
 scal         = scalar multiplier used in SS files to make the initial value work
 starting_age = age of first members of cohort
 ending age   = age of the last members of cohort
@@ -52,7 +52,7 @@ beta_annual  = discount factor for one year
 beta         = discount factor for each age cohort
 sigma        = coefficient of relative risk aversion
 alpha        = capital share of income
-A            = total factor productivity parameter in firms' production
+Z            = total factor productivity parameter in firms' production
                function
 delta_annual = depreciation rate of capital for one year
 delta        = depreciation rate of capital for each cohort
@@ -60,8 +60,6 @@ ltilde       = measure of time each individual is endowed with each
                period
 g_y_annual   = annual growth rate of technology
 g_y          = growth rate of technology for one cohort
-ctilde       = minimum value amount of consumption
-bqtilde      = minimum bequest value
 slow_work    = time at which chi_n starts increasing from 1
 chi_n_multiplier = scalar which is increased to force the labor
                distribution to 0
@@ -72,7 +70,7 @@ nu           = contraction parameter in steady state iteration process
 b_ellipse    = value of b for elliptical fit of utility function
 k_ellipse    = value of k for elliptical fit of utility function
 upsilon      = value of omega for elliptical fit of utility function
-mean_income  = mean income from IRS data file used to calibrate income tax
+mean_income_data  = mean income from IRS data file used to calibrate income tax
                (scalar)
 a_tax_income = used to calibrate income tax (scalar)
 b_tax_income = used to calibrate income tax (scalar)
@@ -82,10 +80,9 @@ retire       = age in which individuals retire(scalar)
 h_wealth     = wealth tax parameter h
 m_wealth     = wealth tax parameter m
 p_wealth     = wealth tax parameter p
-tau_sales    = sales tax (scalar)
 tau_bq       = bequest tax (scalar)
 tau_payroll  = payroll tax (scalar)
-theta_tax    = payback value for payroll tax (scalar)
+theta    = payback value for payroll tax (scalar)
 ------------------------------------------------------------------------
 '''
 
@@ -93,7 +90,7 @@ theta_tax    = payback value for payroll tax (scalar)
 S = 80
 J = 7
 T = int(2 * S)
-bin_weights = np.array([.25, .25, .2, .1, .1, .09, .01])
+lambdas = np.array([.25, .25, .2, .1, .1, .09, .01])
 starting_age = 20
 ending_age = 100
 E = int(starting_age * (S / float(ending_age-starting_age)))
@@ -101,15 +98,12 @@ beta_annual = .96
 beta = beta_annual ** (float(ending_age-starting_age) / S)
 sigma = 3.0
 alpha = .35
-A = 1.0
+Z = 1.0
 delta_annual = .05
 delta = 1 - ((1-delta_annual) ** (float(ending_age-starting_age) / S))
 ltilde = 1.0
 g_y_annual = 0.03
 g_y = (1 + g_y_annual)**(float(ending_age-starting_age)/S) - 1
-# Constraint parameters
-ctilde = .000001
-bqtilde = .000001
 # TPI parameters
 TPImaxiter = 100
 TPImindist = 3 * 1e-6
@@ -119,7 +113,7 @@ b_ellipse = 25.6594
 k_ellipse = -26.4902
 upsilon = 3.0542
 # Tax parameters:
-mean_income = 84377.0
+mean_income_data = 84377.0
 a_tax_income = 3.03452713268985e-06
 b_tax_income = .222
 c_tax_income = 133261.0
@@ -133,10 +127,9 @@ m_wealth = 1.0
 p_wealth = 0.0
 # Tax parameters that are zeroed out for SS
 # Initial taxes below
-tau_sales = 0.0
 tau_bq = np.zeros(J)
 tau_payroll = 0.15
-theta_tax = np.zeros(J)
+theta = np.zeros(J)
 # Other parameters
 chi_b_scal = np.zeros(J)
 scal = np.ones(J)
@@ -152,14 +145,14 @@ SS_stage = 'first_run_for_guesses'
 
 print 'Getting initial SS distribution, not calibrating bequests, to speed up SS.'
 
-var_names = ['S', 'J', 'T', 'bin_weights', 'starting_age', 'ending_age',
-             'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'ctilde', 'E',
-             'bqtilde', 'ltilde', 'g_y', 'TPImaxiter',
+var_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
+             'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
+             'ltilde', 'g_y', 'TPImaxiter',
              'TPImindist', 'b_ellipse', 'k_ellipse', 'upsilon',
              'a_tax_income',
-             'b_tax_income', 'c_tax_income', 'd_tax_income', 'tau_sales',
+             'b_tax_income', 'c_tax_income', 'd_tax_income',
              'tau_payroll', 'tau_bq',
-             'theta_tax', 'retire', 'mean_income',
+             'theta', 'retire', 'mean_income_data',
              'h_wealth', 'p_wealth', 'm_wealth', 'scal',
              'chi_b_scal', 'SS_stage']
 dictionary = {}
@@ -220,14 +213,14 @@ os.remove("OUTPUT/Saved_moments/chi_b_fits.pkl")
 SS_stage = 'constrained_minimization'
 
 thetas_simulation = True
-var_names = ['S', 'J', 'T', 'bin_weights', 'starting_age', 'ending_age',
-             'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'ctilde', 'E',
-             'bqtilde', 'ltilde', 'g_y', 'TPImaxiter',
+var_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
+             'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
+             'ltilde', 'g_y', 'TPImaxiter',
              'TPImindist', 'b_ellipse', 'k_ellipse', 'upsilon',
              'a_tax_income',
-             'b_tax_income', 'c_tax_income', 'd_tax_income', 'tau_sales',
+             'b_tax_income', 'c_tax_income', 'd_tax_income',
              'tau_payroll', 'tau_bq',
-             'theta_tax', 'retire', 'mean_income',
+             'theta', 'retire', 'mean_income_data',
              'h_wealth', 'p_wealth', 'm_wealth', 'scal',
              'chi_b_scal', 'SS_stage']
 dictionary = {}
@@ -245,7 +238,7 @@ call(['python', 'SS.py'])
 '''
 
 import payroll
-theta_tax = payroll.vals()
+theta = payroll.vals()
 del sys.modules['payroll']
 print '\tFinished.'
 
@@ -259,14 +252,14 @@ print 'Getting initial distribution.'
 
 SS_stage = 'SS_init'
 
-var_names = ['S', 'J', 'T', 'bin_weights', 'starting_age', 'ending_age',
-             'beta', 'sigma', 'alpha', 'nu', 'A', 'delta', 'ctilde', 'E',
-             'bqtilde', 'ltilde', 'g_y', 'TPImaxiter',
+var_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
+             'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
+             'ltilde', 'g_y', 'TPImaxiter',
              'TPImindist', 'b_ellipse', 'k_ellipse', 'upsilon',
              'a_tax_income',
-             'b_tax_income', 'c_tax_income', 'd_tax_income', 'tau_sales',
+             'b_tax_income', 'c_tax_income', 'd_tax_income',
              'tau_payroll', 'tau_bq',
-             'theta_tax', 'retire', 'mean_income',
+             'theta', 'retire', 'mean_income_data',
              'h_wealth', 'p_wealth', 'm_wealth', 'scal',
              'chi_b_scal', 'SS_stage']
 dictionary = {}

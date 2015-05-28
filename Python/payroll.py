@@ -34,20 +34,19 @@ for key in variables:
 ------------------------------------------------------------------------
 '''
 
+
 def vals():
-    A = ((wss * factor_ss * e * Lssmat_init)*omega_SS).sum(0) / 12.0
-    P = np.zeros(J)
-    rep_rate = np.zeros(J)
+    AIME = ((wss * factor_ss * e * nssmat_init)*omega_SS).sum(0) / 12.0
+    PIA = np.zeros(J)
     # Bins from data for each level of replacement
     for j in xrange(J):
-        if A[j] < 749.0:
-            P[j] = .9 * A[j]
-        elif A[j] < 4517.0:
-            P[j] = 674.1+.32*(A[j] - 749.0)
+        if AIME[j] < 749.0:
+            PIA[j] = .9 * AIME[j]
+        elif AIME[j] < 4517.0:
+            PIA[j] = 674.1+.32*(AIME[j] - 749.0)
         else:
-            P[j] = 1879.86 + .15*(A[j] - 4517.0)
-    rep_rate = P / A
-    theta = rep_rate * (e * Lssmat_init).mean(0)
+            PIA[j] = 1879.86 + .15*(AIME[j] - 4517.0)
+    theta = PIA * (e * nssmat_init).mean(0) / AIME
     # Set the maximum replacment rate to be $30,000
     maxpayment = 30000.0/(factor_ss * wss)
     theta[theta > maxpayment] = maxpayment

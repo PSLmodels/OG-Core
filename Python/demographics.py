@@ -484,4 +484,4 @@ def get_omega(S, J, T, bin_weights, starting_age, ending_age, E):
     children = np.tile(children.reshape(
         T+S, E, 1), (1, 1, J)) * bin_weights.reshape(1, 1, J)
     pop_graphs(S, T, starting_age, ending_age, children, g_n_SS[0], omega_big)
-    return omega_big, g_n_SS[0], omega_SS, children, surv_array
+    return omega_big, g_n_SS[0], omega_SS, surv_array

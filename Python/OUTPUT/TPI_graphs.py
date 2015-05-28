@@ -50,18 +50,18 @@ Bpath_TPIbase = Bpath_TPI
 eul1_init = eul1
 eul2_init = eul2
 eul3_init = eul3
-K_mat_init = K_mat
-L_mat_init = L_mat
-Tinitbase = Tinit
+b_mat_init = b_mat
+n_mat_init = n_mat
+T_H_initbase = T_H_init
 
 
-K1 = np.zeros((T, S, J))
-K1[:, 1:, :] = K_mat_init[:T, :-1, :]
-K2 = np.zeros((T, S, J))
-K2[:, :, :] = K_mat_init[:T, :, :]
+b1 = np.zeros((T, S, J))
+b1[:, 1:, :] = b_mat_init[:T, :-1, :]
+b2 = np.zeros((T, S, J))
+b2[:, :, :] = b_mat_init[:T, :, :]
 cinitbase = cinit
 
-Y_mat_init = cinitbase + K_mat_init[1:T+1] - (1-delta)*K_mat_init[:T]
+y_mat_init = cinitbase + b_mat_init[1:T+1] - (1-delta)*b_mat_init[:T]
 
 # Lifetime Utility Graphs:
 c_ut_init = np.zeros((S, S, J))
@@ -70,14 +70,14 @@ for s in xrange(S-1):
 c_ut_init[:, 0, :] = cinitbase[:S, 0, :]
 L_ut_init = np.zeros((S, S, J))
 for s in xrange(S-1):
-    L_ut_init[:, s+1, :] = L_mat_init[s+1:s+1+S, s+1, :]
-L_ut_init[:, 0, :] = L_mat_init[:S, 0, :]
+    L_ut_init[:, s+1, :] = n_mat_init[s+1:s+1+S, s+1, :]
+L_ut_init[:, 0, :] = n_mat_init[:S, 0, :]
 B_ut_init = Bpath_TPIbase[S:T]
-K_ut_init = np.zeros((S, S, J))
+b_ut_init = np.zeros((S, S, J))
 for s in xrange(S):
-    K_ut_init[:, s, :] = K_mat_init[s:s+S, s, :]
+    b_ut_init[:, s, :] = b_mat_init[s:s+S, s, :]
 
-beq_ut = chi_b.reshape(1, S, J) * (mort_rate.reshape(1, S, 1)) * (K_ut_init[:S]**(1-sigma)-1)/(1-sigma)
+beq_ut = chi_b.reshape(1, S, J) * (rho.reshape(1, S, 1)) * (b_ut_init[:S]**(1-sigma)-1)/(1-sigma)
 utility = ((c_ut_init ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(1, S, 1) * (
     b_ellipse * (1-(L_ut_init/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
 utility += beq_ut 
@@ -87,14 +87,14 @@ for i in xrange(S):
 utility *= beta_string.reshape(1, S, 1)
 cum_morts = np.zeros(S)
 for i in xrange(S):
-    cum_morts[i] = np.prod(1-mort_rate[:i])
+    cum_morts[i] = np.prod(1-rho[:i])
 utility *= cum_morts.reshape(1, S, 1)
 utility_lifetime_init = utility.sum(1)
 
 # Period Utility Graphs
-beq_ut_period = chi_b.reshape(1, S, J) * (mort_rate.reshape(1, S, 1)) * (K_mat_init[:S]**(1-sigma)-1)/(1-sigma)
+beq_ut_period = chi_b.reshape(1, S, J) * (rho.reshape(1, S, 1)) * (b_mat_init[:S]**(1-sigma)-1)/(1-sigma)
 utility_period = ((cinitbase[:S] ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(1, S, 1) * (
-    b_ellipse * (1-(L_mat_init[:S]/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
+    b_ellipse * (1-(n_mat_init[:S]/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
 utility_period += beq_ut_period
 utility_period *= beta_string.reshape(1, S, 1)
 utility_period *= cum_morts.reshape(1, S, 1)
@@ -118,13 +118,13 @@ N_tilde = omega.sum(1).sum(1)
 omega_stationary = omega / N_tilde.reshape(T+S, 1, 1)
 omega_stationary = omega_stationary[:T]
 
-K1 = np.zeros((T, S, J))
-K1[:, 1:, :] = K_mat[:T, :-1, :]
-K2 = np.zeros((T, S, J))
-K2[:, :, :] = K_mat[:T, :, :]
+b1 = np.zeros((T, S, J))
+b1[:, 1:, :] = b_mat[:T, :-1, :]
+b2 = np.zeros((T, S, J))
+b2[:, :, :] = b_mat[:T, :, :]
 
 
-Y_mat = cinit + K_mat[1:T+1] - (1-delta)*K_mat[:T]
+y_mat = cinit + b_mat[1:T+1] - (1-delta)*b_mat[:T]
 
 # Lifetime Utility
 c_ut = np.zeros((S, S, J))
@@ -133,14 +133,14 @@ for s in xrange(S-1):
 c_ut[:, 0, :] = cinit[:S, 0, :]
 L_ut = np.zeros((S, S, J))
 for s in xrange(S-1):
-    L_ut[:, s+1, :] = L_mat[s+1:s+1+S, s+1, :]
-L_ut[:, 0, :] = L_mat[:S, 0, :]
+    L_ut[:, s+1, :] = n_mat[s+1:s+1+S, s+1, :]
+L_ut[:, 0, :] = n_mat[:S, 0, :]
 B_ut = Bpath_TPI[S:T]
-K_ut = np.zeros((S, S, J))
+b_ut = np.zeros((S, S, J))
 for s in xrange(S):
-    K_ut[:, s, :] = K_mat[s:s+S, s, :]
+    b_ut[:, s, :] = b_mat[s:s+S, s, :]
 
-beq_ut = chi_b.reshape(1, S, J) * (mort_rate.reshape(1, S, 1)) * (K_ut[:S]**(1-sigma)-1)/(1-sigma)
+beq_ut = chi_b.reshape(1, S, J) * (rho.reshape(1, S, 1)) * (b_ut[:S]**(1-sigma)-1)/(1-sigma)
 utility = ((c_ut ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(1, S, 1) * (
     b_ellipse * (1-(L_ut/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
 utility += beq_ut 
@@ -150,14 +150,14 @@ for i in xrange(S):
 utility *= beta_string.reshape(1, S, 1)
 cum_morts = np.zeros(S)
 for i in xrange(S):
-    cum_morts[i] = np.prod(1-mort_rate[:i])
+    cum_morts[i] = np.prod(1-rho[:i])
 utility *= cum_morts.reshape(1, S, 1)
 utility_lifetime = utility.sum(1)
 
 # Period Utility
-beq_ut_period = chi_b.reshape(1, S, J) * (mort_rate.reshape(1, S, 1)) * (K_mat[:S]**(1-sigma)-1)/(1-sigma)
+beq_ut_period = chi_b.reshape(1, S, J) * (rho.reshape(1, S, 1)) * (b_mat[:S]**(1-sigma)-1)/(1-sigma)
 utility_period = ((cinit[:S] ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(1, S, 1) * (
-    b_ellipse * (1-(L_mat[:S]/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
+    b_ellipse * (1-(n_mat[:S]/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
 utility_period += beq_ut_period
 utility_period *= beta_string.reshape(1, S, 1)
 utility_period *= cum_morts.reshape(1, S, 1)
@@ -201,15 +201,15 @@ plt.legend(loc=0)
 plt.savefig("TPIinit/TPI_L")
 
 plt.figure()
-plt.plot(np.arange(T), (Y_mat_init*omega_stationary).sum(1).sum(1)[:T], 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), (Y_mat*omega_stationary).sum(1).sum(1)[:T], 'g--', linewidth=2, label="Tax")
+plt.plot(np.arange(T), (y_mat_init*omega_stationary).sum(1).sum(1)[:T], 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), (y_mat*omega_stationary).sum(1).sum(1)[:T], 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Aggregate Output $\hat{Y}$")
 plt.legend(loc=0)
 plt.savefig("TPI/TPI_Y")
 
 plt.figure()
-plt.plot(np.arange(T), (Y_mat_init*omega_stationary).sum(1).sum(1)[:T], 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), (y_mat_init*omega_stationary).sum(1).sum(1)[:T], 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Aggregate Output $\hat{Y}$")
 plt.legend(loc=0)
@@ -439,24 +439,24 @@ def gini_nocol(path, omega):
 
 
 plt.figure()
-plt.plot(np.arange(T), gini_cols(K_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), gini_cols(K_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
+plt.plot(np.arange(T), gini_cols(b_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_cols(b_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{b}$")
 plt.legend(loc=0)
 plt.savefig("TPI/gini_b_cols")
 
 plt.figure()
-plt.plot(np.arange(T), gini_cols(L_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), gini_cols(L_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
+plt.plot(np.arange(T), gini_cols(n_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_cols(n_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{l}$")
 plt.legend(loc=0)
 plt.savefig("TPI/gini_l_cols")
 
 plt.figure()
-plt.plot(np.arange(T), gini_cols(Y_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), gini_cols(Y_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
+plt.plot(np.arange(T), gini_cols(y_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_cols(y_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{y}$")
 plt.legend(loc=0)
@@ -472,24 +472,24 @@ plt.savefig("TPI/gini_c_cols")
 
 
 plt.figure()
-plt.plot(np.arange(T), gini_colj(K_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), gini_colj(K_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
+plt.plot(np.arange(T), gini_colj(b_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_colj(b_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{b}$")
 plt.legend(loc=0)
 plt.savefig("TPI/gini_b_colj")
 
 plt.figure()
-plt.plot(np.arange(T), gini_colj(L_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), gini_colj(L_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
+plt.plot(np.arange(T), gini_colj(n_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_colj(n_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{l}$")
 plt.legend(loc=0)
 plt.savefig("TPI/gini_l_colj")
 
 plt.figure()
-plt.plot(np.arange(T), gini_colj(Y_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), gini_colj(Y_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
+plt.plot(np.arange(T), gini_colj(y_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_colj(y_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{y}$")
 plt.legend(loc=0)
@@ -504,24 +504,24 @@ plt.legend(loc=0)
 plt.savefig("TPI/gini_c_colj")
 
 plt.figure()
-plt.plot(np.arange(T), gini_nocol(K_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), gini_nocol(K_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
+plt.plot(np.arange(T), gini_nocol(b_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_nocol(b_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{b}$")
 plt.legend(loc=0)
 plt.savefig("TPI/gini_b_nocol")
 
 plt.figure()
-plt.plot(np.arange(T), gini_nocol(L_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), gini_nocol(L_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
+plt.plot(np.arange(T), gini_nocol(n_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_nocol(n_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{l}$")
 plt.legend(loc=0)
 plt.savefig("TPI/gini_l_nocol")
 
 plt.figure()
-plt.plot(np.arange(T), gini_nocol(Y_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), gini_nocol(Y_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
+plt.plot(np.arange(T), gini_nocol(y_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_nocol(y_mat[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{y}$")
 plt.legend(loc=0)
@@ -542,21 +542,21 @@ plt.savefig("TPI/gini_c_nocol")
 '''
 
 plt.figure()
-plt.plot(np.arange(T), gini_cols(K_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_cols(b_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{b}$")
 plt.legend(loc=0)
 plt.savefig("TPIinit/gini_b_cols")
 
 plt.figure()
-plt.plot(np.arange(T), gini_cols(L_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_cols(n_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{l}$")
 plt.legend(loc=0)
 plt.savefig("TPIinit/gini_l_cols")
 
 plt.figure()
-plt.plot(np.arange(T), gini_cols(Y_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_cols(y_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{y}$")
 plt.legend(loc=0)
@@ -570,21 +570,21 @@ plt.legend(loc=0)
 plt.savefig("TPIinit/gini_c_cols")
 
 plt.figure()
-plt.plot(np.arange(T), gini_colj(K_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_colj(b_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{b}$")
 plt.legend(loc=0)
 plt.savefig("TPIinit/gini_b_colj")
 
 plt.figure()
-plt.plot(np.arange(T), gini_colj(L_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_colj(n_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{l}$")
 plt.legend(loc=0)
 plt.savefig("TPIinit/gini_l_colj")
 
 plt.figure()
-plt.plot(np.arange(T), gini_colj(Y_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_colj(y_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{y}$")
 plt.legend(loc=0)
@@ -598,21 +598,21 @@ plt.legend(loc=0)
 plt.savefig("TPIinit/gini_c_colj")
 
 plt.figure()
-plt.plot(np.arange(T), gini_nocol(K_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_nocol(b_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{b}$")
 plt.legend(loc=0)
 plt.savefig("TPIinit/gini_b_nocol")
 
 plt.figure()
-plt.plot(np.arange(T), gini_nocol(L_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_nocol(n_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{l}$")
 plt.legend(loc=0)
 plt.savefig("TPIinit/gini_l_nocol")
 
 plt.figure()
-plt.plot(np.arange(T), gini_nocol(Y_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_nocol(y_mat_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{y}$")
 plt.legend(loc=0)
@@ -635,14 +635,14 @@ plt.savefig("TPIinit/gini_c_nocol")
 ------------------------------------------------------------------------
 '''
 
-wealth_baseline = gini_nocol(K_mat_init[:T], omega_stationary_init)
-wealth_wealth = gini_nocol(K_mat[:T], omega_stationary)
-income_baseline = gini_nocol(Y_mat_init[:T], omega_stationary_init)
-income_wealth = gini_nocol(Y_mat[:T], omega_stationary)
+wealth_baseline = gini_nocol(b_mat_init[:T], omega_stationary_init)
+wealth_wealth = gini_nocol(b_mat[:T], omega_stationary)
+income_baseline = gini_nocol(y_mat_init[:T], omega_stationary_init)
+income_wealth = gini_nocol(y_mat[:T], omega_stationary)
 cons_baseline = gini_nocol(cinitbase[:T], omega_stationary_init)
 cons_wealth = gini_nocol(cinit[:T], omega_stationary)
-lab_baseline = gini_nocol(L_mat_init[:T], omega_stationary_init)
-lab_wealth = gini_nocol(L_mat[:T], omega_stationary)
+lab_baseline = gini_nocol(n_mat_init[:T], omega_stationary_init)
+lab_wealth = gini_nocol(n_mat[:T], omega_stationary)
 
 vars_to_pickle = ['wealth_baseline', 'wealth_wealth',
                   'income_baseline', 'income_wealth',
@@ -663,7 +663,7 @@ pickle.dump(dictionary, open("TPI/gini_vectors.pkl", "w"))
 domain = np.linspace(starting_age, ending_age, S)
 Jgrid = np.zeros(J)
 for j in xrange(J):
-    Jgrid[j:] += bin_weights[j]
+    Jgrid[j:] += lambdas[j]
 cmap1 = matplotlib.cm.get_cmap('summer')
 cmap2 = matplotlib.cm.get_cmap('jet')
 X, Y = np.meshgrid(domain, Jgrid)
@@ -683,7 +683,7 @@ for t in xrange(60):
     # ax5.set_zlim([-.30, .05])
     ax5.set_zlim([-.30, .20])
     ax5.set_title('T = {}'.format(t))
-    ax5.plot_surface(X, Y, ((K_mat[t] - K_mat_init[t])/K_mat_init[t]).T, rstride=1, cstride=1, cmap=cmap2)
+    ax5.plot_surface(X, Y, ((b_mat[t] - b_mat_init[t])/b_mat_init[t]).T, rstride=1, cstride=1, cmap=cmap2)
     name = "%03d" % t
     plt.savefig('TPI/movies/b_dif/b_dif_T{}'.format(name))
 
@@ -695,7 +695,7 @@ for t in xrange(60):
     # ax5.set_zlim([-.15, .15])
     ax5.set_zlim([-.5, .2])
     ax5.set_title('T = {}'.format(t))
-    ax5.plot_surface(X, Y, ((L_mat[t] - L_mat_init[t])/L_mat_init[t]).T, rstride=1, cstride=1, cmap=cmap2)
+    ax5.plot_surface(X, Y, ((n_mat[t] - n_mat_init[t])/n_mat_init[t]).T, rstride=1, cstride=1, cmap=cmap2)
     name = "%03d" % t
     plt.savefig('TPI/movies/l_dif/l_dif_T{}'.format(name))
 
@@ -719,7 +719,7 @@ for t in xrange(60):
     # ax5.set_zlim([-.2, .15])
     ax5.set_zlim([-.3, .3])
     ax5.set_title('T = {}'.format(t))
-    ax5.plot_surface(X, Y, ((Y_mat[t] - Y_mat_init[t])/Y_mat_init[t]).T, rstride=1, cstride=1, cmap=cmap2)
+    ax5.plot_surface(X, Y, ((y_mat[t] - y_mat_init[t])/y_mat_init[t]).T, rstride=1, cstride=1, cmap=cmap2)
     name = "%03d" % t
     plt.savefig('TPI/movies/y_dif/y_dif_T{}'.format(name))
 
