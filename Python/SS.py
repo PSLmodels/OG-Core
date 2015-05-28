@@ -360,7 +360,7 @@ def Euler3(w, r, e, n_guess, b_guess, BQ, factor, chi_b, T_H):
     '''
     BQ = BQ.reshape(1, J)
     tax1 = tax.total_taxes_eul3_SS(r, b_guess[-2, :], w, e[-1, :], n_guess[-1, :], BQ, lambdas, factor, T_H)
-    cons = get_cons(r, b_guess[-2, :], w, e[-1, :], n_guess[-1, :], B, lambdas, b_guess[-1, :], g_y, tax1)
+    cons = get_cons(r, b_guess[-2, :], w, e[-1, :], n_guess[-1, :], BQ, lambdas, b_guess[-1, :], g_y, tax1)
     euler = MUc(cons) - np.exp(-sigma * g_y) * MUb(
         chi_b, b_guess[-1, :])
     return euler
@@ -587,9 +587,11 @@ elif SS_stage == 'constrained_minimization':
         solutions[S*J:-1].reshape(S, J).flatten()) + [solutions[-1]]
     chi_b_guesses = final_chi_b_params
     func_to_min_X = lambda x: func_to_min(x, guesses)
-    final_chi_b_params = opt.minimize(func_to_min_X, chi_b_guesses, method='TNC', tol=1e-7, bounds=bnds).x
-    print 'The final bequest parameter values:', final_chi_b_params
+    # final_chi_b_params = opt.minimize(func_to_min_X, chi_b_guesses, method='TNC', tol=1e-7, bounds=bnds).x
+    # print 'The final bequest parameter values:', final_chi_b_params
     Steady_State_X2 = lambda x: Steady_State(x, final_chi_b_params)
+    solutions_pre = np.copy(solutions)
+    # delete the preceding line
     solutions = opt.fsolve(Steady_State_X2, solutions_pre, xtol=1e-13)
     print np.array(Steady_State_X2(solutions)).max()
 elif SS_stage == 'SS_init':

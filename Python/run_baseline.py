@@ -105,7 +105,8 @@ ltilde = 1.0
 g_y_annual = 0.03
 g_y = (1 + g_y_annual)**(float(ending_age-starting_age)/S) - 1
 # TPI parameters
-TPImaxiter = 100
+TPImaxiter = 2
+# usually 100
 TPImindist = 3 * 1e-6
 nu = .20
 # Ellipse parameters
@@ -179,7 +180,10 @@ i = 1
 
 dictionary = {}
 
-while keep_changing.any() and i < 2300:
+max_iter_loop_calibration = 3
+# usually 2300
+
+while keep_changing.any() and i < max_iter_loop_calibration:
     variables = pickle.load(open("OUTPUT/Saved_moments/chi_b_fits.pkl", "r"))
     for key in variables:
         locals()[key] = variables[key]
