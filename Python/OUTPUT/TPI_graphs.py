@@ -46,7 +46,7 @@ Lpath_TPIbase = Lpath_TPI
 w_base = winit
 r_base = rinit
 Y_base = Yinit
-Bpath_TPIbase = Bpath_TPI
+BQpath_TPIbase = BQpath_TPI
 eul1_init = eul1
 eul2_init = eul2
 eul3_init = eul3
@@ -72,7 +72,7 @@ L_ut_init = np.zeros((S, S, J))
 for s in xrange(S-1):
     L_ut_init[:, s+1, :] = n_mat_init[s+1:s+1+S, s+1, :]
 L_ut_init[:, 0, :] = n_mat_init[:S, 0, :]
-B_ut_init = Bpath_TPIbase[S:T]
+B_ut_init = BQpath_TPIbase[S:T]
 b_ut_init = np.zeros((S, S, J))
 for s in xrange(S):
     b_ut_init[:, s, :] = b_mat_init[s:s+S, s, :]
@@ -135,7 +135,7 @@ L_ut = np.zeros((S, S, J))
 for s in xrange(S-1):
     L_ut[:, s+1, :] = n_mat[s+1:s+1+S, s+1, :]
 L_ut[:, 0, :] = n_mat[:S, 0, :]
-B_ut = Bpath_TPI[S:T]
+B_ut = BQpath_TPI[S:T]
 b_ut = np.zeros((S, S, J))
 for s in xrange(S):
     b_ut[:, s, :] = b_mat[s:s+S, s, :]
@@ -305,9 +305,9 @@ Plot Timepath for B
 for i in xrange(J):
     plt.figure()
     plt.plot(np.arange(
-        T), Bpath_TPIbase[:T, i], linewidth=2, color='b', label="Base TPI time path for group j={}".format(i+1) )
+        T), BQpath_TPIbase[:T, i], linewidth=2, color='b', label="Base TPI time path for group j={}".format(i+1) )
     plt.plot(np.arange(
-        T), Bpath_TPI[:T, i], linewidth=2, linestyle='--', color='g', label="TPI time path for group j={}".format(i+1) )
+        T), BQpath_TPI[:T, i], linewidth=2, linestyle='--', color='g', label="TPI time path for group j={}".format(i+1) )
     plt.xlabel(r"Time $t$")
     plt.ylabel(r"Aggregate $\hat{BQ_{j,t}}$")
     plt.legend(loc=0)

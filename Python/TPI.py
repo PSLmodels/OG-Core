@@ -441,14 +441,14 @@ Kinit = (-1/(domain + 1)) * (Kss-K0) + Kss
 Kinit[-1] = Kss
 Kinit = np.array(list(Kinit) + list(np.ones(S)*Kss))
 Linit = np.ones(T+S) * Lss
-Yinit = A*(Kinit**alpha) * (Linit**(1-alpha))
+Yinit = Z*(Kinit**alpha) * (Linit**(1-alpha))
 winit = (1-alpha) * Yinit / Linit
 rinit = (alpha * Yinit / Kinit) - delta
 BQinit = np.zeros((T+S, J))
 for j in xrange(J):
     BQinit[:, j] = list(np.linspace((1+r0)*B0[j], BQ[j], T)) + [BQ[j]]*S
 BQinit = np.array(BQinit)
-T_H_init = np.ones(T+S) * Tss
+T_H_init = np.ones(T+S) * T_Hss
 
 # Make array of initial guesses
 domain2 = np.tile(domain.reshape(T, 1, 1), (1, S, J))
@@ -542,7 +542,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         bmat2[:, 1:, :] = b_mat[:T, :-1, :]
         T_H_init = np.array(list(tax.tax_lumpTPI(rinit[:T].reshape(T, 1, 1), bmat2, winit[:T].reshape(
             T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(
-            1, 1, J), factor_ss, omega_stationary[:T])) + [Tss]*S)
+            1, 1, J), factor_ss, omega_stationary[:T])) + [T_Hss]*S)
         Yinit = Z*(Kinit**alpha) * (Linit**(1-alpha))
         winit = np.array(
             list((1-alpha) * Yinit / Linit) + list(np.ones(S)*wss))

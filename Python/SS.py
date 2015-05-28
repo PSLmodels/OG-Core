@@ -587,11 +587,9 @@ elif SS_stage == 'constrained_minimization':
         solutions[S*J:-1].reshape(S, J).flatten()) + [solutions[-1]]
     chi_b_guesses = final_chi_b_params
     func_to_min_X = lambda x: func_to_min(x, guesses)
-    # final_chi_b_params = opt.minimize(func_to_min_X, chi_b_guesses, method='TNC', tol=1e-7, bounds=bnds).x
-    # print 'The final bequest parameter values:', final_chi_b_params
+    final_chi_b_params = opt.minimize(func_to_min_X, chi_b_guesses, method='TNC', tol=1e-7, bounds=bnds).x
+    print 'The final bequest parameter values:', final_chi_b_params
     Steady_State_X2 = lambda x: Steady_State(x, final_chi_b_params)
-    solutions_pre = np.copy(solutions)
-    # delete the preceding line
     solutions = opt.fsolve(Steady_State_X2, solutions_pre, xtol=1e-13)
     print np.array(Steady_State_X2(solutions)).max()
 elif SS_stage == 'SS_init':
