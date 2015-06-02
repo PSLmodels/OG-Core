@@ -134,29 +134,37 @@ def tau_income_deriv(r, b, w, e, n, factor):
     return tau
 
 
-def total_taxes_SS(r, b, w, e, n, BQ, lambdas, factor, T_H):
+def total_taxes_SS(r, b, w, e, n, BQ, lambdas, factor, T_H, j=None):
     '''
     Gives the total amount of taxes in the steady state
     '''
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor) * I
     T_P = tau_payroll * w * e * n
-    T_P[retire:] -= theta * w
-    T_BQ = tau_bq * BQ / lambdas
+    if j != None:
+        T_P[retire:] -= theta[j] * w
+        T_BQ = tau_bq[j] * BQ / lambdas
+    else:
+        T_P[retire:] -= theta * w
+        T_BQ = tau_bq * BQ / lambdas
     T_W = tau_wealth(b) * b
     tot = T_I + T_P + T_BQ + T_W - T_H
     return tot
 
 
-def total_taxes_SS2(r, b, w, e, n, BQ, lambdas, factor, T_H):
+def total_taxes_SS2(r, b, w, e, n, BQ, lambdas, factor, T_H, j=None):
     '''
     Gives the total amount of taxes in the steady state
     '''
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor) * I
     T_P = tau_payroll * w * e * n
-    T_P[retire-1:] -= theta * w
-    T_BQ = tau_bq * BQ / lambdas
+    if j != None:
+        T_P[retire-1:] -= theta[j] * w
+        T_BQ = tau_bq[j] * BQ / lambdas
+    else:
+        T_P[retire-1:] -= theta * w
+        T_BQ = tau_bq * BQ / lambdas
     T_W = tau_wealth(b) * b
     tot = T_I + T_P + T_BQ + T_W - T_H
     return tot
@@ -184,14 +192,18 @@ def tax_lumpTPI(r, b, w, e, n, BQ, lambdas, factor, omega_stationary):
     return T_H
 
 
-def total_taxes_eul3_SS(r, b, w, e, n, BQ, lambdas, factor, T_H):
+def total_taxes_eul3_SS(r, b, w, e, n, BQ, lambdas, factor, T_H, j=None):
     '''
     Gives the total amount of taxes for euler 3
     '''
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor) * I
-    T_P = tau_payroll * w * e * n - theta * w
-    T_BQ = tau_bq * BQ / lambdas
+    if j != None:
+        T_BQ = tau_bq[j] * BQ / lambdas
+        T_P = tau_payroll * w * e * n - theta[j] * w
+    else:
+        T_BQ = tau_bq * BQ / lambdas
+        T_P = tau_payroll * w * e * n - theta * w
     T_W = tau_wealth(b) * b
     tot = T_I + T_P + T_BQ + T_W - T_H
     return tot

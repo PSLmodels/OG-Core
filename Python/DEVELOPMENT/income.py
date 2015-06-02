@@ -26,6 +26,8 @@ import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import scipy.optimize as opt
+import warnings
+warnings.filterwarnings("ignore")
 
 
 '''
@@ -227,4 +229,6 @@ def get_e(S, J, starting_age, ending_age, bin_weights, omega_SS):
     graph_income(S, J, e_final, starting_age, ending_age, bin_weights)
     e_final /= (e_final * omega_SS).sum()
     return e_final
+
+warnings.filterwarnings("default")
   
