@@ -95,6 +95,7 @@ variables = pickle.load(open("OUTPUT/Saved_moments/wealth_data_moments_fit_25.pk
 for key in variables:
     globals()[key] = variables[key]
 top25 = highest_wealth_data_new
+# Set lowest ability group's wealth to be a positive, not negative, number for the calibration
 top25[2:26] = 500.0
 
 variables = pickle.load(open("OUTPUT/Saved_moments/wealth_data_moments_fit_50.pkl", "r"))
@@ -158,6 +159,7 @@ if SS_stage == 'first_run_for_guesses':
         S, J, T, lambdas, starting_age, ending_age, E)
     e = income.get_e(S, J, starting_age, ending_age, lambdas, omega_SS)
     rho = 1-surv_rate
+    rho[-1] = 1.0
     var_names = ['omega', 'g_n', 'omega_SS', 'surv_rate', 'e', 'rho']
     dictionary = {}
     for key in var_names:
@@ -185,9 +187,6 @@ chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 , 
  , 24.38166073 , 25.22395387 , 26.21419653 , 27.05246704 , 27.86896121
  , 28.90029708 , 29.83586775 , 30.87563699 , 31.91207845 , 33.07449767
  , 34.27919965 , 35.57195873 , 36.95045988 , 38.62308152])
-
-
-rho[-1] = 1
 
 
 '''
@@ -271,37 +270,27 @@ def marg_ut_labor(n, chi_n):
     return output
 
 
-def marg_ut_sav(chi_b, bequest):
-    '''
-    Parameters: Intentional bequests
-
-    Returns:    Marginal Utility of Bequest
-    '''
-    output = chi_b[-1, :].reshape(1, J) * (bequest ** (-sigma))
-    return output
-
-
-def get_cons(r, b1, w, e, n, BQ, lambdas, b2, g_y, net_tax):
+def get_cons(r, b_s, w, e, n, BQ, lambdas, b_splus1, g_y, net_tax):
     '''
     Parameters: rental rate, capital stock (t-1), wage, e, labor stock,
                 bequests, lambdas, capital stock (t), growth rate y, taxes
 
     Returns:    Consumption
     '''
-    cons = (1 + r)*b1 + w*e*n + BQ / lambdas - b2*np.exp(g_y) - net_tax
+    cons = (1 + r)*b_s + w*e*n + BQ / lambdas - b_splus1*np.exp(g_y) - net_tax
     return cons
 
 
-def euler_savings_1_func(w, r, e, n_guess, b1, b2, b3, BQ, factor, T_H, chi_b):
+def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_H, chi_b):
     '''
     Parameters:
         w        = wage rate (scalar)
         r        = rental rate (scalar)
         e        = distribution of abilities (SxJ array)
         n_guess  = distribution of labor (SxJ array)
-        b1       = distribution of capital in period t ((S-1) x J array)
-        b2       = distribution of capital in period t+1 ((S-1) x J array)
-        b3       = distribution of capital in period t+2 ((S-1) x J array)
+        b_s       = distribution of capital in period t ((S-1) x J array)
+        b_splus1       = distribution of capital in period t+1 ((S-1) x J array)
+        b_splus2       = distribution of capital in period t+2 ((S-1) x J array)
         B        = distribution of incidental bequests (1 x J array)
         factor   = scaling value to make average income match data
         T_H  = lump sum transfer from the government to the households
@@ -311,30 +300,31 @@ def euler_savings_1_func(w, r, e, n_guess, b1, b2, b3, BQ, factor, T_H, chi_b):
     Returns:
         Value of Euler error.
     '''
-    BQ_euler = BQ.reshape(1, J)
-    tax1 = tax.total_taxes_SS(r, b1, w, e[:-1, :], n_guess[:-1, :], BQ_euler, lambdas, factor, T_H)
-    tax2 = tax.total_taxes_SS2(r, b2, w, e[1:, :], n_guess[1:, :], BQ_euler, lambdas, factor, T_H)
-    cons1 = get_cons(r, b1, w, e[:-1, :], n_guess[:-1, :], BQ_euler, lambdas, b2, g_y, tax1)
-    cons2 = get_cons(r, b2, w, e[1:, :], n_guess[1:, :], BQ_euler, lambdas, b3, g_y, tax2)
-    income = (r * b2 + w * e[1:, :] * n_guess[1:, :]) * factor
+    e_extended = np.array(list(e) + list(np.zeros(J).reshape(1, J)))
+    n_extended = np.array(list(n_guess) + list(np.zeros(J).reshape(1, J)))
+    tax1 = tax.total_taxes_SS(r, b_s, w, e, n_guess, BQ, lambdas, factor, T_H)
+    tax2 = tax.total_taxes_SS2(r, b_splus1, w, e_extended[1:], n_extended[1:], BQ, lambdas, factor, T_H)
+    cons1 = get_cons(r, b_s, w, e, n_guess, BQ, lambdas, b_splus1, g_y, tax1)
+    cons2 = get_cons(r, b_splus1, w, e_extended[1:], n_extended[1:], BQ, lambdas, b_splus2, g_y, tax2)
+    income = (r * b_splus1 + w * e_extended[1:] * n_extended[1:]) * factor
     deriv = (
-        1 + r*(1-tax.tau_income(r, b1, w, e[1:, :], n_guess[1:, :], factor)-tax.tau_income_deriv(
-            r, b1, w, e[1:, :], n_guess[1:, :], factor)*income)-tax.tau_w_prime(b2)*b2-tax.tau_wealth(b2))
-    bequest_ut = rho[:-1].reshape(S-1, 1) * np.exp(-sigma * g_y) * chi_b[:-1].reshape(S-1, J) * b2 ** (-sigma)
-    euler = marg_ut_cons(cons1) - beta * (1-rho[:-1].reshape(S-1, 1)) * deriv * marg_ut_cons(
-        cons2) * np.exp(-sigma * g_y) - bequest_ut
+        1 + r*(1-tax.tau_income(r, b_s, w, e_extended[1:], n_extended[1:], factor)-tax.tau_income_deriv(
+            r, b_s, w, e_extended[1:], n_extended[1:], factor)*income)-tax.tau_w_prime(b_splus1)*b_splus1-tax.tau_wealth(b_splus1))
+    savings_ut = rho.reshape(S, 1) * np.exp(-sigma * g_y) * chi_b.reshape(S, J) * b_splus1 ** (-sigma)
+    euler = marg_ut_cons(cons1) - beta * (1-rho.reshape(S, 1)) * deriv * marg_ut_cons(
+        cons2) * np.exp(-sigma * g_y) - savings_ut
     return euler
 
 
-def euler_labor_leisure_func(w, r, e, n_guess, b1_2, b2_2, BQ, factor, T_H, chi_n):
+def euler_labor_leisure_func(w, r, e, n_guess, b_s, b_splus1, BQ, factor, T_H, chi_n):
     '''
     Parameters:
         w        = wage rate (scalar)
         r        = rental rate (scalar)
         e        = distribution of abilities (SxJ array)
         n_guess  = distribution of labor (SxJ array)
-        b1_2     = distribution of capital in period t (S x J array)
-        b2_2     = distribution of capital in period t+1 (S x J array)
+        b_s     = distribution of capital in period t (S x J array)
+        b_splus1     = distribution of capital in period t+1 (S x J array)
         B        = distribution of incidental bequests (1 x J array)
         factor   = scaling value to make average income match data
         T_H  = lump sum transfer from the government to the households
@@ -342,37 +332,12 @@ def euler_labor_leisure_func(w, r, e, n_guess, b1_2, b2_2, BQ, factor, T_H, chi_
     Returns:
         Value of Euler error.
     '''
-    BQ = BQ.reshape(1, J)
-    tax1 = tax.total_taxes_SS(r, b1_2, w, e, n_guess, BQ, lambdas, factor, T_H)
-    cons = get_cons(r, b1_2, w, e, n_guess, BQ, lambdas, b2_2, g_y, tax1)
-    income = (r * b1_2 + w * e * n_guess) * factor
-    deriv = 1 - tau_payroll - tax.tau_income(r, b1_2, w, e, n_guess, factor) - tax.tau_income_deriv(
-        r, b1_2, w, e, n_guess, factor) * income
+    tax1 = tax.total_taxes_SS(r, b_s, w, e, n_guess, BQ, lambdas, factor, T_H)
+    cons = get_cons(r, b_s, w, e, n_guess, BQ, lambdas, b_splus1, g_y, tax1)
+    income = (r * b_s + w * e * n_guess) * factor
+    deriv = 1 - tau_payroll - tax.tau_income(r, b_s, w, e, n_guess, factor) - tax.tau_income_deriv(
+        r, b_s, w, e, n_guess, factor) * income
     euler = marg_ut_cons(cons) * w * deriv * e - marg_ut_labor(n_guess, chi_n)
-    return euler
-
-
-def euler_savings_2_func(w, r, e, n_guess, b_guess, BQ, factor, chi_b, T_H):
-    '''
-    Parameters:
-        w        = wage rate (scalar)
-        r        = rental rate (scalar)
-        e        = distribution of abilities (SxJ array)
-        n_guess  = distribution of labor (SxJ array)
-        b_guess  = distribution of capital in period t (S-1 x J array)
-        B        = distribution of incidental bequests (1 x J array)
-        factor   = scaling value to make average income match data
-        chi_b    = discount factor of savings
-        T_H  = lump sum transfer from the government to the households
-
-    Returns:
-        Value of Euler error.
-    '''
-    BQ = BQ.reshape(1, J)
-    tax1 = tax.total_taxes_eul3_SS(r, b_guess[-2, :], w, e[-1, :], n_guess[-1, :], BQ, lambdas, factor, T_H)
-    cons = get_cons(r, b_guess[-2, :], w, e[-1, :], n_guess[-1, :], BQ, lambdas, b_guess[-1, :], g_y, tax1)
-    euler = marg_ut_cons(cons) - np.exp(-sigma * g_y) * marg_ut_sav(
-        chi_b, b_guess[-1, :])
     return euler
 
 
@@ -403,18 +368,15 @@ def Steady_State(guesses, params):
     w = get_w(Y, L)
     r = get_r(Y, K)
     BQ = (1 + r) * (b_guess * omega_SS * rho.reshape(S, 1)).sum(0)
-    b1 = np.array(list(np.zeros(J).reshape(1, J)) + list(b_guess[:-2, :]))
-    b2 = b_guess[:-1, :]
-    b3 = b_guess[1:, :]
-    b1_2 = np.array(list(np.zeros(J).reshape(1, J)) + list(b_guess[:-1, :]))
-    b2_2 = b_guess
+    b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(b_guess[:-1, :]))
+    b_splus1 = b_guess
+    b_splus2 = np.array(list(b_guess[1:]) + list(np.zeros(J).reshape(1, J)))
     factor = guesses[-1]
-    T_H = tax.tax_lump(r, b1_2, w, e, n_guess, BQ, lambdas, factor, omega_SS)
-    error1 = euler_savings_1_func(w, r, e, n_guess, b1, b2, b3, BQ, factor, T_H, chi_b)
-    error2 = euler_labor_leisure_func(w, r, e, n_guess, b1_2, b2_2, BQ, factor, T_H, chi_n)
-    error3 = euler_savings_2_func(w, r, e, n_guess, b_guess, BQ, factor, chi_b, T_H)
-    average_income_model = ((r * b1_2 + w * e * n_guess) * omega_SS).sum()
-    error4 = [mean_income_data - factor * average_income_model]
+    T_H = tax.tax_lump(r, b_s, w, e, n_guess, BQ, lambdas, factor, omega_SS)
+    error1 = euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ.reshape(1, J), factor, T_H, chi_b)
+    error2 = euler_labor_leisure_func(w, r, e, n_guess, b_s, b_splus1, BQ.reshape(1, J), factor, T_H, chi_n)
+    average_income_model = ((r * b_s + w * e * n_guess) * omega_SS).sum()
+    error3 = [mean_income_data - factor * average_income_model]
     # Check and punish constraint violations
     mask1 = n_guess < 0
     error2[mask1] += 1e9
@@ -422,16 +384,16 @@ def Steady_State(guesses, params):
     error2[mask2] += 1e9
     if b_guess.sum() <= 0:
         error1 += 1e9
-    tax1 = tax.total_taxes_SS(r, b1_2, w, e, n_guess, BQ, lambdas, factor, T_H)
-    cons = get_cons(r, b1_2, w, e, n_guess, BQ.reshape(1, J), lambdas, b2_2, g_y, tax1)
+    tax1 = tax.total_taxes_SS(r, b_s, w, e, n_guess, BQ, lambdas, factor, T_H)
+    cons = get_cons(r, b_s, w, e, n_guess, BQ.reshape(1, J), lambdas, b_splus1, g_y, tax1)
     mask3 = cons < 0
     error2[mask3] += 1e9
     mask4 = b_guess[:-1] <= 0
     error1[mask4] += 1e9
     # print np.abs(np.array(list(error1.flatten()) + list(
-    #     error2.flatten()) + list(error3.flatten()) + error4)).max()
+    #     error2.flatten()) + error3)).max()
     return list(error1.flatten()) + list(
-        error2.flatten()) + list(error3.flatten()) + error4
+        error2.flatten()) + error3
 
 
 def constraint_checker(bssmat, nssmat, cssmat):
@@ -494,16 +456,16 @@ def func_to_min(chi_b_guesses_init, other_guesses_init):
         globals()[key+'_pre'] = variables[key]
     solutions = opt.fsolve(Steady_State_X, solutions_pre, xtol=1e-13)
     b_guess = solutions[0: S * J].reshape((S, J))
-    b2 = b_guess[:-1, :]
+    b_s = b_guess[:-1, :]
     factor = solutions[-1]
     # Wealth Calibration Euler
-    p25_sim = b2[:, 0] * factor
-    p50_sim = b2[:, 1] * factor
-    p70_sim = b2[:, 2] * factor
-    p80_sim = b2[:, 3] * factor
-    p90_sim = b2[:, 4] * factor
-    p99_sim = b2[:, 5] * factor
-    p100_sim = b2[:, 6] * factor
+    p25_sim = b_s[:, 0] * factor
+    p50_sim = b_s[:, 1] * factor
+    p70_sim = b_s[:, 2] * factor
+    p80_sim = b_s[:, 3] * factor
+    p90_sim = b_s[:, 4] * factor
+    p99_sim = b_s[:, 5] * factor
+    p100_sim = b_s[:, 6] * factor
     b_perc_diff_25 = [perc_dif_func(np.mean(p25_sim[:24]), np.mean(top25[2:26]))] + [perc_dif_func(np.mean(p25_sim[24:45]), np.mean(top25[26:47]))]
     b_perc_diff_50 = [perc_dif_func(np.mean(p50_sim[:24]), np.mean(top50[2:26]))] + [perc_dif_func(np.mean(p50_sim[24:45]), np.mean(top50[26:47]))]
     b_perc_diff_70 = [perc_dif_func(np.mean(p70_sim[:24]), np.mean(top70[2:26]))] + [perc_dif_func(np.mean(p70_sim[24:45]), np.mean(top70[26:47]))]
@@ -596,7 +558,7 @@ elif SS_stage == 'constrained_minimization':
         solutions[S*J:-1].reshape(S, J).flatten()) + [solutions[-1]]
     chi_b_guesses = final_chi_b_params
     func_to_min_X = lambda x: func_to_min(x, guesses)
-    final_chi_b_params = opt.minimize(func_to_min_X, chi_b_guesses, method='TNC', tol=1e-7, bounds=bnds).x
+    final_chi_b_params = opt.minimize(func_to_min_X, chi_b_guesses, method='TNC', tol=1e-7, bounds=bnds, options={'maxiter': 1}).x
     print 'The final bequest parameter values:', final_chi_b_params
     Steady_State_X2 = lambda x: Steady_State(x, final_chi_b_params)
     solutions = opt.fsolve(Steady_State_X2, solutions_pre, xtol=1e-13)
@@ -704,23 +666,22 @@ elif SS_stage == 'SS_tax':
 
 if SS_stage != 'first_run_for_guesses' and SS_stage != 'loop_calibration':
     bssmat = solutions[0:(S-1) * J].reshape(S-1, J)
-    BQ = solutions[(S-1)*J:S*J]
-    Bss = (np.array(list(bssmat) + list(BQ.reshape(1, J))).reshape(
-        S, J) * omega_SS * rho.reshape(S, 1)).sum(0)
-    bssmat2 = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat))
-    bssmat3 = np.array(list(bssmat) + list(BQ.reshape(1, J)))
-    Kss = get_K(bssmat3, omega_SS)
+    bq = solutions[(S-1)*J:S*J]
+    bssmat_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat))
+    bssmat_splus1 = np.array(list(bssmat) + list(bq.reshape(1, J)))
+    Kss = get_K(bssmat_splus1, omega_SS)
     nssmat = solutions[S * J:-1].reshape(S, J)
     Lss = get_L(e, nssmat)
     Yss = get_Y(Kss, Lss)
     wss = get_w(Yss, Lss)
     rss = get_r(Yss, Kss)
-    b1_2 = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
+    BQss = (1+rss)*(np.array(list(bssmat) + list(bq.reshape(1, J))).reshape(
+        S, J) * omega_SS * rho.reshape(S, 1)).sum(0)
+    b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
     factor_ss = solutions[-1]
-    BQ = Bss * (1+rss)
-    T_Hss = tax.tax_lump(rss, bssmat2, wss, e, nssmat, BQ, lambdas, factor_ss, omega_SS)
-    taxss = tax.total_taxes_SS(rss, bssmat2, wss, e, nssmat, BQ, lambdas, factor_ss, T_Hss)
-    cssmat = get_cons(rss, bssmat2, wss, e, nssmat, BQ.reshape(1, J), lambdas.reshape(1, J), bssmat3, g_y, taxss)
+    T_Hss = tax.tax_lump(rss, bssmat_s, wss, e, nssmat, BQss, lambdas, factor_ss, omega_SS)
+    taxss = tax.total_taxes_SS(rss, bssmat_s, wss, e, nssmat, BQss, lambdas, factor_ss, T_Hss)
+    cssmat = get_cons(rss, bssmat_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.reshape(1, J), bssmat_splus1, g_y, taxss)
 
     constraint_checker(bssmat, nssmat, cssmat)
 
@@ -728,28 +689,22 @@ if SS_stage != 'first_run_for_guesses' and SS_stage != 'loop_calibration':
     ------------------------------------------------------------------------
     Generate variables for graphs
     ------------------------------------------------------------------------
-    b1          = (S-1)xJ array of bssmat in period t-1
-    b2          = copy of bssmat
-    b3          = (S-1)xJ array of bssmat in period t+1
-    b1_2        = SxJ array of bssmat in period t
-    b2_2        = SxJ array of bssmat in period t+1
+    b_s        = SxJ array of bssmat in period t
+    b_splus1        = SxJ array of bssmat in period t+1
+    b_splus2        = SxJ array of bssmat in period t+2
     euler_savings_1      = euler errors from first euler equation
     euler_labor_leisure      = euler errors from second euler equation
     euler_savings_2      = euler errors from third euler equation
     ------------------------------------------------------------------------
     '''
-    b1 = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat[:-1, :]))
-    b2 = bssmat
-    b3 = np.array(list(bssmat[1:, :]) + list(BQ.reshape(1, J)))
-    b1_2 = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
-    b2_2 = np.array(list(bssmat) + list(BQ.reshape(1, J)))
+    b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
+    b_splus1 = bssmat_splus1
+    b_splus2 = np.array(list(bssmat_splus1[1:]) + list(np.zeros(J).reshape((1, J))))
 
     chi_b = np.tile(final_chi_b_params[:J].reshape(1, J), (S, 1))
     chi_n = np.array(final_chi_b_params[J:])
-    euler_savings_1 = euler_savings_1_func(wss, rss, e, nssmat, b1, b2, b3, BQ, factor_ss, T_Hss, chi_b)
-    euler_labor_leisure = euler_labor_leisure_func(wss, rss, e, nssmat, b1_2, b2_2, BQ, factor_ss, T_Hss, chi_n)
-    euler_savings_2 = euler_savings_2_func(wss, rss, e, nssmat, bssmat3, BQ, factor_ss, chi_b, T_Hss)
-
+    euler_savings = euler_savings_func(wss, rss, e, nssmat, b_s, b_splus1, b_splus2, BQss.reshape(1, J), factor_ss, T_Hss, chi_b)
+    euler_labor_leisure = euler_labor_leisure_func(wss, rss, e, nssmat, b_s, b_splus1, BQss.reshape(1, J), factor_ss, T_Hss, chi_n)
 '''
 ------------------------------------------------------------------------
     Save the values in various ways, depending on the stage of
@@ -757,7 +712,7 @@ if SS_stage != 'first_run_for_guesses' and SS_stage != 'loop_calibration':
 ------------------------------------------------------------------------
 '''
 if SS_stage == 'constrained_minimization':
-    bssmat_init = np.array(list(bssmat) + list(BQ.reshape(1, J)))
+    bssmat_init = np.array(list(bssmat) + list(BQss.reshape(1, J)))
     nssmat_init = nssmat
     var_names = ['retire', 'nssmat_init', 'wss', 'factor_ss', 'e',
                  'J', 'omega_SS']
@@ -766,7 +721,7 @@ if SS_stage == 'constrained_minimization':
         dictionary[key] = globals()[key]
     pickle.dump(dictionary, open("OUTPUT/Saved_moments/payroll_inputs.pkl", "w"))
 elif SS_stage == 'SS_init':
-    bssmat_init = np.array(list(bssmat) + list(BQ.reshape(1, J)))
+    bssmat_init = np.array(list(bssmat) + list(BQss.reshape(1, J)))
     nssmat_init = nssmat
 
     var_names = ['bssmat_init', 'nssmat_init']
@@ -778,15 +733,15 @@ elif SS_stage == 'SS_init':
     var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'e', 'E',
                  'J', 'Kss', 'bssmat', 'Lss', 'nssmat',
                  'Yss', 'wss', 'rss', 'omega', 'chi_n', 'chi_b', 'ltilde', 'T',
-                 'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist', 'BQ',
-                 'rho', 'Bss', 'lambdas',
+                 'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist', 'BQss',
+                 'rho', 'lambdas',
                  'b_ellipse', 'k_ellipse', 'upsilon',
                  'factor_ss',  'a_tax_income', 'b_tax_income',
                  'c_tax_income', 'd_tax_income', 'tau_payroll',
                  'tau_bq', 'theta', 'retire',
-                 'mean_income_data', 'bssmat2', 'cssmat',
-                 'starting_age', 'bssmat3',
-                 'ending_age', 'T_Hss', 'euler_savings_1', 'euler_labor_leisure', 'euler_savings_2',
+                 'mean_income_data', 'bssmat_s', 'cssmat',
+                 'starting_age', 'bssmat_splus1',
+                 'ending_age', 'T_Hss', 'euler_savings', 'euler_labor_leisure',
                  'h_wealth', 'p_wealth', 'm_wealth']
     dictionary = {}
     for key in var_names:
@@ -797,15 +752,15 @@ elif SS_stage == 'SS_tax':
                  'J', 'Kss', 'bssmat', 'Lss', 'nssmat',
                  'Yss', 'wss', 'rss', 'omega',
                  'chi_n', 'chi_b', 'ltilde', 'T',
-                 'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist', 'BQ',
-                 'rho', 'Bss', 'lambdas',
+                 'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist', 'BQss',
+                 'rho', 'lambdas',
                  'b_ellipse', 'k_ellipse', 'upsilon',
                  'factor_ss',  'a_tax_income', 'b_tax_income',
                  'c_tax_income', 'd_tax_income', 'tau_payroll',
                  'tau_bq', 'theta', 'retire',
-                 'mean_income_data', 'bssmat2', 'cssmat',
-                 'starting_age', 'bssmat3',
-                 'ending_age', 'euler_savings_1', 'euler_labor_leisure', 'euler_savings_2', 'T_Hss',
+                 'mean_income_data', 'bssmat_s', 'cssmat',
+                 'starting_age', 'bssmat_splus1',
+                 'ending_age', 'euler_savings', 'euler_labor_leisure', 'T_Hss',
                  'h_wealth', 'p_wealth', 'm_wealth']
     dictionary = {}
     for key in var_names:

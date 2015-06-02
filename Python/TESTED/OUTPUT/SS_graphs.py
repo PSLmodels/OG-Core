@@ -33,12 +33,12 @@ for key in variables:
     globals()[key] = variables[key]
 
 bssmatinit = bssmat
-bssmat2_init = bssmat2
-BQ_init = BQ
+bssmat_s_init = bssmat_s
+BQss_init = BQss
 nssmat_init = nssmat
 cssmat_init = cssmat
 
-savings = np.copy(bssmat3)
+savings = np.copy(bssmat_splus1)
 
 beq_ut = chi_b.reshape(S, J) * (rho.reshape(S, 1)) * (savings**(1-sigma) -1)/(1-sigma)
 utility = ((cssmat_init ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(S, 1) * (b_ellipse * (1-(nssmat_init/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
@@ -47,7 +47,7 @@ utility_init = utility.sum(0)
 
 
 Css = (cssmat * omega_SS).sum()
-income_init = cssmat + delta * bssmat3
+income_init = cssmat + delta * bssmat_splus1
 print (income_init*omega_SS).sum()
 # print Css + delta * Kss
 # print Kss
@@ -80,19 +80,19 @@ ax5 = fig5.gca(projection='3d')
 ax5.set_xlabel(r'age-$s$')
 ax5.set_ylabel(r'ability type-$j$')
 ax5.set_zlabel(r'individual savings $\bar{b}_{j,s}$')
-ax5.plot_surface(X, Y, bssmat2.T, rstride=1, cstride=1, cmap=cmap2)
+ax5.plot_surface(X, Y, bssmat_s.T, rstride=1, cstride=1, cmap=cmap2)
 plt.savefig('SSinit/capital_dist')
 # plt.show()
 
 fig112 = plt.figure()
 ax = plt.subplot(111)
-ax.plot(domain, bssmat2[:, 0], label='0 - 24%', linestyle='-', color='black')
-ax.plot(domain, bssmat2[:, 1], label='25 - 49%', linestyle='--', color='black')
-ax.plot(domain, bssmat2[:, 2], label='50 - 69%', linestyle='-.', color='black')
-ax.plot(domain, bssmat2[:, 3], label='70 - 79%', linestyle=':', color='black')
-ax.plot(domain, bssmat2[:, 4], label='80 - 89%', marker='x', color='black')
-ax.plot(domain, bssmat2[:, 5], label='90 - 99%', marker='v', color='black')
-ax.plot(domain, bssmat2[:, 6], label='99 - 100%', marker='1', color='black')
+ax.plot(domain, bssmat_s[:, 0], label='0 - 24%', linestyle='-', color='black')
+ax.plot(domain, bssmat_s[:, 1], label='25 - 49%', linestyle='--', color='black')
+ax.plot(domain, bssmat_s[:, 2], label='50 - 69%', linestyle='-.', color='black')
+ax.plot(domain, bssmat_s[:, 3], label='70 - 79%', linestyle=':', color='black')
+ax.plot(domain, bssmat_s[:, 4], label='80 - 89%', marker='x', color='black')
+ax.plot(domain, bssmat_s[:, 5], label='90 - 99%', marker='v', color='black')
+ax.plot(domain, bssmat_s[:, 6], label='99 - 100%', marker='1', color='black')
 box = ax.get_position()
 ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
@@ -105,11 +105,11 @@ ax53 = fig53.gca(projection='3d')
 ax53.set_xlabel(r'age-$s$')
 ax53.set_ylabel(r'ability type-$j$')
 ax53.set_zlabel(r'log individual savings $log(\bar{b}_{j,s})$')
-ax53.plot_surface(X, Y, np.log(bssmat2).T, rstride=1, cstride=1, cmap=cmap1)
+ax53.plot_surface(X, Y, np.log(bssmat_s).T, rstride=1, cstride=1, cmap=cmap1)
 plt.savefig('SSinit/capital_dist_log')
 
 plt.figure()
-plt.plot(np.arange(J)+1, BQ)
+plt.plot(np.arange(J)+1, BQss)
 plt.xlabel(r'ability-$j$')
 plt.ylabel(r'bequests $\overline{bq}_{j,E+S+1}$')
 plt.savefig('SSinit/intentional_bequests')
@@ -189,7 +189,7 @@ plt.savefig('SSinit/chi_n')
 
 fig16 = plt.figure()
 ax16 = fig16.gca(projection='3d')
-ax16.plot_surface(X2, Y2, euler_savings1.T, rstride=1, cstride=2, cmap=cmap2)
+ax16.plot_surface(X, Y, euler_savings.T, rstride=1, cstride=2, cmap=cmap2)
 ax16.set_xlabel(r'Age Cohorts $S$')
 ax16.set_ylabel(r'Ability Types $J$')
 ax16.set_zlabel('Error Level')
@@ -215,7 +215,7 @@ variables = pickle.load(open("SS/ss_vars.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 
-savings = np.copy(bssmat3)
+savings = np.copy(bssmat_splus1)
 beq_ut = chi_b.reshape(S, J) * (rho.reshape(S, 1)) * (savings**(1-sigma)-1)/(1-sigma)
 utility = ((cssmat ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(S, 1) * (b_ellipse * (1-(nssmat/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
 utility += beq_ut 
@@ -223,7 +223,7 @@ utility = utility.sum(0)
 
 
 Css = (cssmat * omega_SS).sum()
-income = cssmat + delta * bssmat3
+income = cssmat + delta * bssmat_splus1
 print (income*omega_SS).sum()
 # print Css + delta * Kss
 # print Kss
@@ -247,11 +247,11 @@ ax15 = fig15.gca(projection='3d')
 ax15.set_xlabel(r'age-$s$')
 ax15.set_ylabel(r'ability-$j$')
 ax15.set_zlabel(r'individual savings $\bar{b}_{j,s}$')
-ax15.plot_surface(X, Y, bssmat2.T, rstride=1, cstride=1, cmap=cmap2)
+ax15.plot_surface(X, Y, bssmat_s.T, rstride=1, cstride=1, cmap=cmap2)
 plt.savefig('SS/capital_dist')
 
 plt.figure()
-plt.plot(np.arange(J)+1, BQ)
+plt.plot(np.arange(J)+1, BQss)
 plt.xlabel(r'ability-$j$')
 plt.ylabel(r'bequests $\overline{bq}_{j,E+S+1}$')
 plt.savefig('SS/intentional_bequests')
@@ -311,7 +311,7 @@ plt.savefig('SS/euler_errors_euler2_SS')
 '''
 
 bssmat_percdif = (bssmat - bssmatinit)/ bssmatinit
-BQ_percdif = (BQ - BQ_init)/ BQ_init
+BQss_percdif = (BQss - BQss_init)/ BQss_init
 nssmat_percdif = (nssmat - nssmat_init)/ nssmat_init 
 cssmat_percdif = (cssmat - cssmat_init)/ cssmat_init
 utility_dif = (utility - utility_init) / np.abs(utility_init)
@@ -331,7 +331,7 @@ ax25.plot_surface(X2, Y2, bssmat_percdif.T, rstride=1, cstride=1, cmap=cmap2)
 plt.savefig('SS/capital_dist_percdif')
 
 plt.figure()
-plt.plot(np.arange(J)+1, BQ_percdif)
+plt.plot(np.arange(J)+1, BQss_percdif)
 plt.xlabel(r'ability-$j$')
 plt.ylabel(r'bequests $\overline{bq}_{j,E+S+1}$')
 plt.savefig('SS/intentional_bequests_percdif')

@@ -106,9 +106,9 @@ Set other parameters, objects, and functions
 initial_b       = (S-1)xJ array of the initial distribution of capital
                   for TPI
 K0              = initial aggregate capital stock
-b1_2init        = (S-1)xJ array of the initial distribution of capital
+b_sinit        = (S-1)xJ array of the initial distribution of capital
                   for TPI (period t+1)
-b2_2init        = (S-1)xJ array of the initial distribution of capital
+b_splus1init        = (S-1)xJ array of the initial distribution of capital
                   for TPI (period t+2)
 initial_n       = SxJ arry of the initial distribution of labor for TPI
 L0              = initial aggregate labor supply (scalar)
@@ -192,7 +192,6 @@ def constraint_checker_TPI(b_dist, n_dist, c_dist, t):
             'period %.f.' % t
 
 
-
 def get_Y(K_now, L_now):
     '''
     Parameters: Aggregate capital, Aggregate labor
@@ -225,7 +224,7 @@ def get_r(Y_now, K_now):
 
 def get_L(e, n, omega):
     '''
-    Parameters: e, n
+    Parameters: e, n, omega
 
     Returns:    Aggregate labor
     '''
@@ -239,8 +238,8 @@ def get_K(b, omega):
 
     Returns:    Aggregate labor
     '''
-    L_now = np.sum(b * omega)
-    return L_now
+    K_now = np.sum(b * omega)
+    return K_now
 
 
 def marg_ut_cons(c):
@@ -277,14 +276,14 @@ def marg_ut_sav(bequest, chi_b):
     return output
 
 
-def get_cons(r, b1, w, e, n, bq, lambdas, b2, g_y, net_tax):
+def get_cons(r, b_s, w, e, n, bq, lambdas, b_splus1, g_y, net_tax):
     '''
     Parameters: rental rate, capital stock (t-1), wage, e, labor stock,
                 bequests, lambdas, capital stock (t), growth rate y, taxes
 
     Returns:    Consumption
     '''
-    cons = (1 + r)*b1 + w*e*n + bq / lambdas - b2*np.exp(g_y) - net_tax
+    cons = (1 + r)*b_s + w*e*n + bq / lambdas - b_splus1*np.exp(g_y) - net_tax
     return cons
 
 
@@ -299,22 +298,22 @@ def convex_combo(var1, var2, scalar):
 '''
 
 if TPI_initial_run:
-    initial_b = np.array(list(bssmat) + list(BQ.reshape(1, J)))
+    initial_b = np.array(list(bssmat) + list(bssmat_splus1.reshape(1, J)))
     initial_n = nssmat
 else:
     initial_b = bssmat_init
     initial_n = nssmat_init
 K0 = get_K(initial_b, omega_stationary[0])
-b1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_b[:-1]))
-b2_2init = initial_b
+b_sinit = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_b[:-1]))
+b_splus1init = initial_b
 L0 = get_L(e, initial_n, omega_stationary[1])
 Y0 = get_Y(K0, L0)
 w0 = get_w(Y0, L0)
 r0 = get_r(Y0, K0)
-B0 = (initial_b * omega_stationary[0] * rho.reshape(S, 1)).sum(0)
-T_H_0 = tax.tax_lump(r0, b1_2init, w0, e, initial_n, (1+r0)*B0, lambdas, factor_ss, omega_stationary[0])
-tax0 = tax.total_taxes_SS(r0, b1_2init, w0, e, initial_n, (1+r0)*B0, lambdas, factor_ss, T_H_0)
-c0 = get_cons(r0, b1_2init, w0, e, initial_n, (1+r0)*B0.reshape(1, J), lambdas.reshape(1, J), b2_2init, g_y, tax0)
+BQ0 = (1+r0)*(initial_b * omega_stationary[0] * rho.reshape(S, 1)).sum(0)
+T_H_0 = tax.tax_lump(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, omega_stationary[0])
+tax0 = tax.total_taxes_SS(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, T_H_0)
+c0 = get_cons(r0, b_sinit, w0, e, initial_n, BQ0.reshape(1, J), lambdas.reshape(1, J), b_splus1init, g_y, tax0)
 constraint_checker_SS(initial_b[:-1], initial_n, c0)
 
 '''
@@ -363,70 +362,52 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, t):
     n_guess = np.array(guesses[length:])
 
     if length == S:
-        b1 = np.array([0] + list(b_guess[:-2]))
+        b_s = np.array([0] + list(b_guess[:-1]))
     else:
-        b1 = np.array([(initial_b[-(s+2), j])] + list(b_guess[:-2]))
-    b2 = b_guess[:-1]
-    b3 = b_guess[1:]
-    w1 = winit[t:t+length-1]
-    w2 = winit[t+1:t+length]
-    r1 = rinit[t:t+length-1]
-    r2 = rinit[t+1:t+length]
-    n1 = n_guess[:-1]
-    n2 = n_guess[1:]
-    e1 = e[-length:-1, j]
-    e2 = e[-length+1:, j]
-    B1 = BQinit[t:t+length-1]
-    B2 = BQinit[t+1:t+length]
-    T_H1 = T_H_init[t:t+length-1]
-    T_H2 = T_H_init[t+1:t+length]
-    # Euler 1 equations
-    tax11 = tax.total_taxes_TPI1(r1, b1, w1, e1, n1, B1, lambdas[j], factor_ss, T_H1, j)
-    tax12 = tax.total_taxes_TPI1_2(r2, b2, w2, e2, n2, B2, lambdas[j], factor_ss, T_H2, j)
-    cons11 = get_cons(r1, b1, w1, e1, n1, B1, lambdas[j], b2, g_y, tax11)
-    cons12 = get_cons(r2, b2, w2, e2, n2, B2, lambdas[j], b3, g_y, tax12)
-    income1 = (r2 * b2 + w2 * e2 * n2) * factor_ss
-    bequest_ut = rho[-(length):-1] * np.exp(-sigma * g_y) * chi_b[-(length):-1, j] * b2 ** (-sigma)
-    deriv1 = 1 + r2 * (1 - tax.tau_income(
-        r2, b2, w2, e2, n2, factor_ss) - tax.tau_income_deriv(
-        r2, b2, w2, e2, n2, factor_ss) * income1) - tax.tau_w_prime(
-        b2)*b2 - tax.tau_wealth(b2)
-    error1 = marg_ut_cons(cons11) - beta * (1-rho[-(length):-1]) * np.exp(-sigma * g_y) * deriv1 * marg_ut_cons(
-        cons12) - bequest_ut
-    # Euler 2 equations
-    if length == S:
-        b1_2 = np.array([0] + list(b_guess[:-1]))
-    else:
-        b1_2 = np.array([(initial_b[-(s+2), j])] + list(b_guess[:-1]))
-
-    b2_2 = b_guess
-    w = winit[t:t+length]
-    r = rinit[t:t+length]
-    B = BQinit[t:t+length]
-    T_H = T_H_init[t:t+length]
-    tax2 = tax.total_taxes_TPI2(r, b1_2, w, e[-(length):, j], n_guess, B, lambdas[j], factor_ss, T_H, j)
-    cons2 = get_cons(r, b1_2, w, e[-(length):, j], n_guess, B, lambdas[j], b2_2, g_y, tax2)
-    income2 = (r * b1_2 + w * e[-(length):, j] * n_guess) * factor_ss
-    deriv2 = 1 - tau_payroll - tax.tau_income(r, b1_2, w, e[
-        -(length):, j], n_guess, factor_ss) - tax.tau_income_deriv(
-        r, b1_2, w, e[-(length):, j], n_guess, factor_ss) * income2
-    error2 = marg_ut_cons(cons2) * w * e[-(length):, j] * deriv2 - marg_ut_labor(n_guess, chi_n[-length:])
-    # Euler 3 equations
-    tax3 = tax.total_taxes_eul3_TPI(r[-1], b_guess[-2], w[-1], e[-1, j], n_guess[-1], B[-1], lambdas[j], factor_ss, T_H[-1], j)
-    cons3 = get_cons(r[-1], b_guess[-2], w[-1], e[-1, j], n_guess[-1], B[-1], lambdas[j], b_guess[-1], g_y, tax3)
-    error3 = marg_ut_cons(cons3) - np.exp(
-        -sigma * g_y) * marg_ut_sav(b_guess[-1], chi_b[:, j])
+        b_s = np.array([(initial_b[-(s+2), j])] + list(b_guess[:-1]))
+    b_splus1 = b_guess
+    b_splus2 = np.array(list(b_guess[1:]) + [0])
+    w_s = winit[t:t+length]
+    w_splus1 = winit[t+1:t+length+1]
+    r_s = rinit[t:t+length]
+    r_splus1 = rinit[t+1:t+length+1]
+    n_s = n_guess
+    n_extended = np.array(list(n_guess[1:]) + [0])
+    e_s = e[-length:, j]
+    e_extended = np.array(list(e[-length+1:, j]) + [0])
+    BQ_s = BQinit[t:t+length]
+    BQ_splus1 = BQinit[t+1:t+length+1]
+    T_H_s = T_H_init[t:t+length]
+    T_H_splus1 = T_H_init[t+1:t+length+1]
+    # Savings euler equations
+    tax_s = tax.total_taxes_TPI1(r_s, b_s, w_s, e_s, n_s, BQ_s, lambdas[j], factor_ss, T_H_s, j)
+    tax_splus1 = tax.total_taxes_TPI1_2(r_splus1, b_splus1, w_splus1, e_extended, n_extended, BQ_splus1, lambdas[j], factor_ss, T_H_splus1, j)
+    cons_s = get_cons(r_s, b_s, w_s, e_s, n_s, BQ_s, lambdas[j], b_splus1, g_y, tax_s)
+    cons_splus1 = get_cons(r_splus1, b_splus1, w_splus1, e_extended, n_extended, BQ_splus1, lambdas[j], b_splus2, g_y, tax_splus1)
+    income_splus1 = (r_splus1 * b_splus1 + w_splus1 * e_extended * n_extended) * factor_ss
+    savings_ut = rho[-(length):] * np.exp(-sigma * g_y) * chi_b[-(length):, j] * b_splus1 ** (-sigma)
+    deriv_savings = 1 + r_splus1 * (1 - tax.tau_income(
+        r_splus1, b_splus1, w_splus1, e_extended, n_extended, factor_ss) - tax.tau_income_deriv(
+        r_splus1, b_splus1, w_splus1, e_extended, n_extended, factor_ss) * income_splus1) - tax.tau_w_prime(
+        b_splus1)*b_splus1 - tax.tau_wealth(b_splus1)
+    error1 = marg_ut_cons(cons_s) - beta * (1-rho[-(length):]) * np.exp(-sigma * g_y) * deriv_savings * marg_ut_cons(
+        cons_splus1) - savings_ut
+    # Labor leisure euler equations
+    income_s = (r_s * b_s + w_s * e_s * n_s) * factor_ss
+    deriv_laborleisure = 1 - tau_payroll - tax.tau_income(r_s, b_s, w_s, e_s, n_s, factor_ss) - tax.tau_income_deriv(
+        r_s, b_s, w_s, e_s, n_s, factor_ss) * income_s
+    error2 = marg_ut_cons(cons_s) * w_s * e[-(length):, j] * deriv_laborleisure - marg_ut_labor(n_s, chi_n[-length:])
     # Check and punish constraint violations
     mask1 = n_guess < 0
     error2[mask1] += 1e12
     mask2 = n_guess > ltilde
     error2[mask2] += 1e12
-    mask3 = cons2 < 0
+    mask3 = cons_s < 0
     error2[mask3] += 1e12
     mask4 = b_guess <= 0
     error2[mask4] += 1e12
     return list(error1.flatten()) + list(
-        error2.flatten()) + list(error3.flatten())
+        error2.flatten())
 
 
 domain = np.linspace(0, T, T)
@@ -439,13 +420,13 @@ winit = get_w(Yinit, Linit)
 rinit = get_r(Yinit, Kinit)
 BQinit = np.zeros((T+S, J))
 for j in xrange(J):
-    BQinit[:, j] = list(np.linspace((1+r0)*B0[j], BQ[j], T)) + [BQ[j]]*S
+    BQinit[:, j] = list(np.linspace(BQ0[j], BQss[j], T)) + [BQss[j]]*S
 BQinit = np.array(BQinit)
 T_H_init = np.ones(T+S) * T_Hss
 
 # Make array of initial guesses
 domain2 = np.tile(domain.reshape(T, 1, 1), (1, S, J))
-ending_b = np.array(list(bssmat) + list(BQ.reshape(1, J)))
+ending_b = bssmat_splus1
 guesses_b = (-1/(domain2 + 1)) * (ending_b-initial_b) + ending_b
 ending_b_tail = np.tile(ending_b.reshape(1, S, J), (S, 1, 1))
 guesses_b = np.append(guesses_b, ending_b_tail, axis=0)
@@ -506,16 +487,17 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     b_mat[0, :, :] = initial_b
     b_mat[1, -1, :]= b_mat[1, -2, :]
     n_mat[0, -1, :] = n_mat[0, -2, :]
-    Knew = get_K(b_mat[:T], omega_stationary[:T])
-    Lnew = get_L(e.reshape(1, S, J), n_mat[:T], omega_stationary[1:T+1])
-    Bnew = (b_mat[:T, :, :] * omega_stationary[:T, :, :] * rho.reshape(1, S, 1)).sum(1)
+    Knew = (omega_stationary[:T, :, :] * b_mat[:T, :, :]).sum(2).sum(1)
+    Lnew = (omega_stationary[1:T+1, :, :] * e.reshape(
+        1, S, J) * n_mat[:T, :, :]).sum(2).sum(1)
+    BQnew = (1+rinit[:T].reshape(T, 1))*(b_mat[:T, :, :] * omega_stationary[:T, :, :] * rho.reshape(1, S, 1)).sum(1)
     Kinit = convex_combo(Knew, Kinit[:T], nu)
     Linit = convex_combo(Lnew, Linit[:T], nu)
-    BQinit[:T] = convex_combo(Bnew, BQinit[:T], nu)
+    BQinit[:T] = convex_combo(BQnew, BQinit[:T], nu)
     guesses_b = convex_combo(b_mat, guesses_b, nu)
     guesses_n = convex_combo(n_mat, guesses_n, nu)
     TPIdist = np.array(list(
-        np.abs(Knew - Kinit)) + list(np.abs(Bnew - BQinit[
+        np.abs(Knew - Kinit)) + list(np.abs(BQnew - BQinit[
             :T]).flatten()) + list(np.abs(Lnew - Linit))).max()
     TPIdist_vec[TPIiter] = TPIdist
     # After T=10, if cycling occurs, drop the value of nu
@@ -529,40 +511,40 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
-        bmat2 = np.zeros((T, S, J))
-        bmat2[:, 1:, :] = b_mat[:T, :-1, :]
-        T_H_init = np.array(list(tax.tax_lumpTPI(rinit[:T].reshape(T, 1, 1), bmat2, winit[:T].reshape(
+        bmat_plus1 = np.zeros((T, S, J))
+        bmat_plus1[:, 1:, :] = b_mat[:T, :-1, :]
+        T_H_init = np.array(list(tax.tax_lumpTPI(rinit[:T].reshape(T, 1, 1), bmat_plus1, winit[:T].reshape(
             T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(
             1, 1, J), factor_ss, omega_stationary[:T])) + [T_Hss]*S)
         Yinit = get_Y(Kinit, Linit)
         winit = np.array(list(get_w(Yinit, Linit)) + list(np.ones(S)*wss))
         rinit = np.array(list(get_r(Yinit, Kinit)) + list(np.ones(S)*rss))
     if TPIdist < TPImindist:
-        BQinit[:T] = Bnew
+        BQinit[:T] = BQnew
         Kinit[:T] = Knew
         Linit[:T] = Lnew
     
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
 Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
-BQpath_TPI = np.array(list(BQinit) + list(np.ones((10, J))*Bss))
+BQpath_TPI = np.array(list(BQinit) + list(np.ones((10, J))*BQss))
 
 print 'TPI is finished.'
 
 
 
-b1 = np.zeros((T, S, J))
-b1[:, 1:, :] = b_mat[:T, :-1, :]
-b2 = np.zeros((T, S, J))
-b2[:, :, :] = b_mat[:T, :, :]
+b_s = np.zeros((T, S, J))
+b_s[:, 1:, :] = b_mat[:T, :-1, :]
+b_splus1 = np.zeros((T, S, J))
+b_splus1[:, :, :] = b_mat[:T, :, :]
 if TPI_initial_run:
-    taxinit = tax.total_taxes_path(rinit[:T], b1, winit[:T], e.reshape(
+    taxinit = tax.total_taxes_path(rinit[:T], b_s, winit[:T], e.reshape(
         1, S, J), n_mat[:T], BQinit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T])
-    cinit = get_cons(rinit[:T].reshape(T, 1, 1), b1, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b2, g_y, taxinit)
+    cinit = get_cons(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b_splus1, g_y, taxinit)
 else:
-    taxinit2 = tax.total_taxes_path(rinit[:T], b1, winit[:T], e.reshape(
+    taxinit2 = tax.total_taxes_path(rinit[:T], b_s, winit[:T], e.reshape(
         1, S, J), n_mat[:T], BQinit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T])
-    cinit = get_cons(rinit[:T].reshape(T, 1, 1), b1, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b2, g_y, taxinit2)
+    cinit = get_cons(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b_splus1, g_y, taxinit2)
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
     constraint_checker_TPI(b_mat[t, :-1, :], n_mat[
@@ -573,14 +555,9 @@ print '\tFinished.'
 ------------------------------------------------------------------------
 Generate values for TPI graphs
 ------------------------------------------------------------------------
-eul1   = results of euler 1
-eul2   = results of euler 2
-eul3   = results of euler 3
-------------------------------------------------------------------------
 '''
-eul1 = euler_errors[:, :S-1, :].max(1).max(1)
-eul2 = euler_errors[:, S-1:, :].max(1).max(1)
-eul3 = euler_errors[:, S-1, :].max(1)
+eul_savings = euler_errors[:, :S, :].max(1).max(1)
+eul_laborleisure = euler_errors[:, S:, :].max(1).max(1)
 
 '''
 ------------------------------------------------------------------------
@@ -592,7 +569,7 @@ print 'Saving TPI variable values.'
 
 if TPI_initial_run:
     var_names = ['Kpath_TPI', 'TPIiter', 'TPIdist', 'T', 'b_mat',
-                 'eul1', 'eul2', 'eul3', 'Lpath_TPI', 'BQpath_TPI',
+                 'eul_savings', 'eul_laborleisure', 'eul3', 'Lpath_TPI', 'BQpath_TPI',
                  'n_mat', 'rinit', 'winit', 'Yinit', 'T_H_init', 'taxinit',
                  'cinit']
     dictionary = {}
@@ -601,7 +578,7 @@ if TPI_initial_run:
     pickle.dump(dictionary, open("OUTPUT/TPIinit/TPIinit_vars.pkl", "w"))
 else:
     var_names = ['Kpath_TPI', 'TPIiter', 'TPIdist', 'T', 'b_mat',
-                 'eul1', 'eul2', 'eul3', 'Lpath_TPI', 'BQpath_TPI',
+                 'eul1', 'eul_laborleisure', 'eul3', 'Lpath_TPI', 'BQpath_TPI',
                  'n_mat', 'rinit', 'winit', 'Yinit', 'T_H_init', 'taxinit2',
                  'cinit']
     dictionary = {}

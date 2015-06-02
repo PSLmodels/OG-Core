@@ -179,7 +179,7 @@ i = 1
 
 dictionary = {}
 
-max_iter_loop_calibration = 2300
+max_iter_loop_calibration = 2 #2300
 
 while keep_changing.any() and i < max_iter_loop_calibration:
     variables = pickle.load(open("OUTPUT/Saved_moments/chi_b_fits.pkl", "r"))
@@ -240,7 +240,7 @@ call(['python', 'SS.py'])
 '''
 
 import payroll
-theta = payroll.vals()
+theta = payroll.replacement_rate_vals()
 del sys.modules['payroll']
 print '\tFinished.'
 
@@ -284,7 +284,8 @@ dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
 pickle.dump(dictionary, open("OUTPUT/Saved_moments/tpi_var.pkl", "w"))
-call(['python', 'TPI.py'])
+# call(['python', 'TPI.py'])
+import TPI
 
 '''
 ------------------------------------------------------------------------

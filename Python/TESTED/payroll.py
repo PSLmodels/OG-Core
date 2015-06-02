@@ -35,7 +35,7 @@ for key in variables:
 '''
 
 
-def vals():
+def replacement_rate_vals():
     AIME = ((wss * factor_ss * e * nssmat_init)*omega_SS).sum(0) / 12.0
     PIA = np.zeros(J)
     # Bins from data for each level of replacement

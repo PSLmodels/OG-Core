@@ -47,8 +47,8 @@ w_base = winit
 r_base = rinit
 Y_base = Yinit
 BQpath_TPIbase = BQpath_TPI
-eul1_init = eul1
-eul2_init = eul2
+eul_savings_init = eul_savings
+eul_laborleisure_init = eul_laborleisure
 eul3_init = eul3
 b_mat_init = b_mat
 n_mat_init = n_mat
@@ -323,9 +323,8 @@ domain     = 1 x S vector of each age cohort
 
 domain = np.linspace(1, T, T)
 plt.figure()
-plt.plot(domain, eul1_init, label='Euler1')
-plt.plot(domain, eul2_init, label='Euler2')
-plt.plot(domain, eul3_init, label='Euler3')
+plt.plot(domain, eul_savings_init, label='Euler1')
+plt.plot(domain, eul_laborleisure_init, label='Euler2')
 plt.ylabel('Error Value')
 plt.xlabel(r'Time $t$')
 plt.legend(loc=0)
@@ -334,9 +333,8 @@ plt.savefig('TPIinit/euler_errors_TPI')
 
 domain = np.linspace(1, T, T)
 plt.figure()
-plt.plot(domain, eul1, label='Euler1')
-plt.plot(domain, eul2, label='Euler2')
-plt.plot(domain, eul3, label='Euler3')
+plt.plot(domain, eul_savings, label='Euler1')
+plt.plot(domain, eul_laborleisure, label='Euler2')
 plt.ylabel('Error Value')
 plt.xlabel(r'Time $t$')
 plt.legend(loc=0)
