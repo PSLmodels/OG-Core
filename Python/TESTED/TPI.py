@@ -123,7 +123,7 @@ N_tilde = omega.sum(1).sum(1)
 omega_stationary = omega / N_tilde.reshape(T+S, 1, 1)
 
 
-def constraint_checker1(b_dist, n_dist, c_dist):
+def constraint_checker_SS(b_dist, n_dist, c_dist):
     '''
     Parameters:
         b_dist = distribution of capital ((S-1)xJ array)
@@ -164,7 +164,7 @@ def constraint_checker1(b_dist, n_dist, c_dist):
         print '\tThere were no violations of the constraints on consumption.'
 
 
-def constraint_checker2(b_dist, n_dist, c_dist, t):
+def constraint_checker_TPI(b_dist, n_dist, c_dist, t):
     '''
     Parameters:
         b_dist = distribution of capital ((S-1)xJ array)
@@ -223,17 +223,27 @@ def get_r(Y_now, K_now):
     return r_now
 
 
-def get_L(e, n):
+def get_L(e, n, omega):
     '''
     Parameters: e, n
 
     Returns:    Aggregate labor
     '''
-    L_now = np.sum(e * omega_stationary[1, :, :] * n)
+    L_now = np.sum(e * omega * n)
     return L_now
 
 
-def MUc(c):
+def get_K(b, omega):
+    '''
+    Parameters: b, omega
+
+    Returns:    Aggregate labor
+    '''
+    L_now = np.sum(b * omega)
+    return L_now
+
+
+def marg_ut_cons(c):
     '''
     Parameters: Consumption
 
@@ -243,25 +253,27 @@ def MUc(c):
     return c**(-sigma)
 
 
-def MUl(n):
+def marg_ut_labor(n, chi_n1):
     '''
     Parameters: Labor
+    This function allows for different
+    sizes of chi_n
 
     Returns:    Marginal Utility of Labor
     '''
-    deriv = -b_ellipse * (1/ltilde) * ((1 - (n / ltilde) ** upsilon) ** (
+    deriv = b_ellipse * (1/ltilde) * ((1 - (n / ltilde) ** upsilon) ** (
         (1/upsilon)-1)) * (n / ltilde) ** (upsilon - 1)
-    output = chi_n.reshape(S, 1) * deriv
+    output = chi_n1 * deriv
     return output
 
 
-def MUb(bequest):
+def marg_ut_sav(bequest, chi_b):
     '''
     Parameters: Intentional bequests
 
     Returns:    Marginal Utility of Bequest
     '''
-    output = chi_b[-1].reshape(1, J) * (bequest ** (-sigma))
+    output = chi_b[-1] * (bequest ** (-sigma))
     return output
 
 
@@ -275,6 +287,11 @@ def get_cons(r, b1, w, e, n, bq, lambdas, b2, g_y, net_tax):
     cons = (1 + r)*b1 + w*e*n + bq / lambdas - b2*np.exp(g_y) - net_tax
     return cons
 
+
+def convex_combo(var1, var2, scalar):
+    combo = scalar * var1 + (1-scalar)*var2
+    return combo
+
 '''
 ------------------------------------------------------------------------
     Set initial values
@@ -287,10 +304,10 @@ if TPI_initial_run:
 else:
     initial_b = bssmat_init
     initial_n = nssmat_init
-K0 = (omega_stationary[0] * initial_b[:, :]).sum()
+K0 = get_K(initial_b, omega_stationary[0])
 b1_2init = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_b[:-1]))
 b2_2init = initial_b
-L0 = get_L(e, initial_n)
+L0 = get_L(e, initial_n, omega_stationary[1])
 Y0 = get_Y(K0, L0)
 w0 = get_w(Y0, L0)
 r0 = get_r(Y0, K0)
@@ -298,7 +315,7 @@ B0 = (initial_b * omega_stationary[0] * rho.reshape(S, 1)).sum(0)
 T_H_0 = tax.tax_lump(r0, b1_2init, w0, e, initial_n, (1+r0)*B0, lambdas, factor_ss, omega_stationary[0])
 tax0 = tax.total_taxes_SS(r0, b1_2init, w0, e, initial_n, (1+r0)*B0, lambdas, factor_ss, T_H_0)
 c0 = get_cons(r0, b1_2init, w0, e, initial_n, (1+r0)*B0.reshape(1, J), lambdas.reshape(1, J), b2_2init, g_y, tax0)
-constraint_checker1(initial_b[:-1], initial_n, c0)
+constraint_checker_SS(initial_b[:-1], initial_n, c0)
 
 '''
 ------------------------------------------------------------------------
@@ -307,31 +324,7 @@ Solve for equilibrium transition path by TPI
 '''
 
 
-def MUl2(n, chi_n1):
-    '''
-    Parameters: Labor
-    This alternate function allows for different
-    sizes of chi_n
-
-    Returns:    Marginal Utility of Labor
-    '''
-    deriv = b_ellipse * (1/ltilde) * ((1 - (n / ltilde) ** upsilon) ** (
-        (1/upsilon)-1)) * (n / ltilde) ** (upsilon - 1)
-    output = chi_n1 * deriv
-    return output
-
-
-def MUb2(bequest, chi_b):
-    '''
-    Parameters: Intentional bequests
-
-    Returns:    Marginal Utility of Bequest
-    '''
-    output = chi_b[-1] * (bequest ** (-sigma))
-    return output
-
-
-def Euler_Error_firstgroup(guesses, winit, rinit, BQinit, T_H_init):
+def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init):
     b2 = float(guesses[0])
     n1 = float(guesses[1])
     b1 = float(initial_b[-2, j])
@@ -339,7 +332,7 @@ def Euler_Error_firstgroup(guesses, winit, rinit, BQinit, T_H_init):
     tax11 = tax.total_taxes_eul3_TPI(rinit, b1, winit, e[-1, j], n1, BQinit, lambdas[j], factor_ss, T_H_init, j)
     cons11 = get_cons(rinit, b1, winit, e[-1, j], n1, BQinit, lambdas[j], b2, g_y, tax11)
     bequest_ut = rho * np.exp(-sigma * g_y) * chi_b[-1, j] * b2 ** (-sigma)
-    error1 = MUc(cons11) - bequest_ut
+    error1 = marg_ut_cons(cons11) - bequest_ut
     # Euler 2 equations
     tax2 = tax.total_taxes_eul3_TPI(rinit, b1, winit, e[-1, j], n1, BQinit, lambdas[j], factor_ss, T_H_init, j)
     cons2 = get_cons(rinit, b1, winit, e[-1, j], n1, BQinit, lambdas[j], b2, g_y, tax2)
@@ -347,13 +340,13 @@ def Euler_Error_firstgroup(guesses, winit, rinit, BQinit, T_H_init):
     deriv2 = 1 - tau_payroll - tax.tau_income(rinit, b1, winit, e[
         -1, j], n1, factor_ss) - tax.tau_income_deriv(
         rinit, b1, winit, e[-1, j], n1, factor_ss) * income2
-    error2 = MUc(cons2) * winit * e[-1, j] * deriv2 - MUl2(n1, chi_n[-1])
+    error2 = marg_ut_cons(cons2) * winit * e[-1, j] * deriv2 - marg_ut_labor(n1, chi_n[-1])
     if n1 <= 0:
         error2 += 1e12
     return [error1] + [error2]
 
 
-def Euler_Error(guesses, winit, rinit, BQinit, T_H_init, t):
+def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, t):
     '''
     Parameters:
         guesses = distribution of capital and labor in period t
@@ -398,7 +391,7 @@ def Euler_Error(guesses, winit, rinit, BQinit, T_H_init, t):
         r2, b2, w2, e2, n2, factor_ss) - tax.tau_income_deriv(
         r2, b2, w2, e2, n2, factor_ss) * income1) - tax.tau_w_prime(
         b2)*b2 - tax.tau_wealth(b2)
-    error1 = MUc(cons11) - beta * (1-rho[-(length):-1]) * np.exp(-sigma * g_y) * deriv1 * MUc(
+    error1 = marg_ut_cons(cons11) - beta * (1-rho[-(length):-1]) * np.exp(-sigma * g_y) * deriv1 * marg_ut_cons(
         cons12) - bequest_ut
     # Euler 2 equations
     if length == S:
@@ -417,12 +410,12 @@ def Euler_Error(guesses, winit, rinit, BQinit, T_H_init, t):
     deriv2 = 1 - tau_payroll - tax.tau_income(r, b1_2, w, e[
         -(length):, j], n_guess, factor_ss) - tax.tau_income_deriv(
         r, b1_2, w, e[-(length):, j], n_guess, factor_ss) * income2
-    error2 = MUc(cons2) * w * e[-(length):, j] * deriv2 - MUl2(n_guess, chi_n[-length:])
+    error2 = marg_ut_cons(cons2) * w * e[-(length):, j] * deriv2 - marg_ut_labor(n_guess, chi_n[-length:])
     # Euler 3 equations
     tax3 = tax.total_taxes_eul3_TPI(r[-1], b_guess[-2], w[-1], e[-1, j], n_guess[-1], B[-1], lambdas[j], factor_ss, T_H[-1], j)
     cons3 = get_cons(r[-1], b_guess[-2], w[-1], e[-1, j], n_guess[-1], B[-1], lambdas[j], b_guess[-1], g_y, tax3)
-    error3 = MUc(cons3) - np.exp(
-        -sigma * g_y) * MUb2(b_guess[-1], chi_b[:, j])
+    error3 = marg_ut_cons(cons3) - np.exp(
+        -sigma * g_y) * marg_ut_sav(b_guess[-1], chi_b[:, j])
     # Check and punish constraint violations
     mask1 = n_guess < 0
     error2[mask1] += 1e12
@@ -441,9 +434,9 @@ Kinit = (-1/(domain + 1)) * (Kss-K0) + Kss
 Kinit[-1] = Kss
 Kinit = np.array(list(Kinit) + list(np.ones(S)*Kss))
 Linit = np.ones(T+S) * Lss
-Yinit = Z*(Kinit**alpha) * (Linit**(1-alpha))
-winit = (1-alpha) * Yinit / Linit
-rinit = (alpha * Yinit / Kinit) - delta
+Yinit = get_Y(Kinit, Linit)
+winit = get_w(Yinit, Linit)
+rinit = get_r(Yinit, Kinit)
 BQinit = np.zeros((T+S, J))
 for j in xrange(J):
     BQinit[:, j] = list(np.linspace((1+r0)*B0[j], BQ[j], T)) + [BQ[j]]*S
@@ -486,7 +479,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         for s in xrange(S-2):  # Upper triangle
             b_guesses_to_use = np.diag(guesses_b[1:S+1, :, j], S-(s+2))
             n_guesses_to_use = np.diag(guesses_n[:S, :, j], S-(s+2))
-            solutions = opt.fsolve(Euler_Error, list(
+            solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
                 winit, rinit, BQinit[:, j], T_H_init, 0), xtol=1e-13)
             b_vec = solutions[:len(solutions)/2]
@@ -497,7 +490,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         for t in xrange(0, T):
             b_guesses_to_use = np.diag(guesses_b[t+1:t+S+1, :, j])
             n_guesses_to_use = np.diag(guesses_n[t:t+S, :, j])
-            solutions = opt.fsolve(Euler_Error, list(
+            solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
                 winit, rinit, BQinit[:, j], T_H_init, t), xtol=1e-13)
             b_vec = solutions[:S]
@@ -505,24 +498,22 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             n_vec = solutions[S:]
             n_mat[t:t+S, :, j] += np.diag(n_vec)
             inputs = list(solutions)
-            euler_errors[t, :, j] = np.abs(Euler_Error(
+            euler_errors[t, :, j] = np.abs(Steady_state_TPI_solver(
                 inputs, winit, rinit, BQinit[:, j], T_H_init, t))
-        # b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(Euler_Error_firstgroup, [b_mat[1, -2, j], n_mat[0, -2, j]],
+        # b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [b_mat[1, -2, j], n_mat[0, -2, j]],
         #     args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1])))
     
     b_mat[0, :, :] = initial_b
     b_mat[1, -1, :]= b_mat[1, -2, :]
     n_mat[0, -1, :] = n_mat[0, -2, :]
-    Knew = (omega_stationary[:T, :, :] * b_mat[:T, :, :]).sum(2).sum(1)
-    Lnew = (omega_stationary[1:T+1, :, :] * e.reshape(
-        1, S, J) * n_mat[:T, :, :]).sum(2).sum(1)
-    Bnew = (b_mat[:T, :, :] * omega_stationary[:T, :, :] * rho.reshape(
-        1, S, 1)).sum(1)
-    Kinit = nu*Knew + (1-nu)*Kinit[:T]
-    Linit = nu*Lnew + (1-nu)*Linit[:T]
-    BQinit[:T] = nu*Bnew + (1-nu)*BQinit[:T]
-    guesses_b = nu * b_mat + (1-nu) * guesses_b
-    guesses_n = nu * n_mat + (1-nu) * guesses_n
+    Knew = get_K(b_mat[:T], omega_stationary[:T])
+    Lnew = get_L(e.reshape(1, S, J), n_mat[:T], omega_stationary[1:T+1])
+    Bnew = (b_mat[:T, :, :] * omega_stationary[:T, :, :] * rho.reshape(1, S, 1)).sum(1)
+    Kinit = convex_combo(Knew, Kinit[:T], nu)
+    Linit = convex_combo(Lnew, Linit[:T], nu)
+    BQinit[:T] = convex_combo(Bnew, BQinit[:T], nu)
+    guesses_b = convex_combo(b_mat, guesses_b, nu)
+    guesses_n = convex_combo(n_mat, guesses_n, nu)
     TPIdist = np.array(list(
         np.abs(Knew - Kinit)) + list(np.abs(Bnew - BQinit[
             :T]).flatten()) + list(np.abs(Lnew - Linit))).max()
@@ -543,11 +534,9 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         T_H_init = np.array(list(tax.tax_lumpTPI(rinit[:T].reshape(T, 1, 1), bmat2, winit[:T].reshape(
             T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(
             1, 1, J), factor_ss, omega_stationary[:T])) + [T_Hss]*S)
-        Yinit = Z*(Kinit**alpha) * (Linit**(1-alpha))
-        winit = np.array(
-            list((1-alpha) * Yinit / Linit) + list(np.ones(S)*wss))
-        rinit = np.array(list((alpha * Yinit / Kinit) - delta) + list(
-            np.ones(S)*rss))
+        Yinit = get_Y(Kinit, Linit)
+        winit = np.array(list(get_w(Yinit, Linit)) + list(np.ones(S)*wss))
+        rinit = np.array(list(get_r(Yinit, Kinit)) + list(np.ones(S)*rss))
     if TPIdist < TPImindist:
         BQinit[:T] = Bnew
         Kinit[:T] = Knew
@@ -576,7 +565,7 @@ else:
     cinit = get_cons(rinit[:T].reshape(T, 1, 1), b1, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b2, g_y, taxinit2)
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
-    constraint_checker2(b_mat[t, :-1, :], n_mat[
+    constraint_checker_TPI(b_mat[t, :-1, :], n_mat[
         t], cinit[t], t)
 print '\tFinished.'
 
