@@ -1,19 +1,19 @@
 '''
 ------------------------------------------------------------------------
-Last updated 5/21/2015
+Last updated 6/2/2015
 
 Functions for taxes in SS and TPI.
 
 This py-file calls the following other file(s):
             OUTPUT/given_params.pkl
             OUTPUT/SS/d_inc_guess.pkl
+            OUTPUT/Saved_moments/payroll_inputs.pkl
 ------------------------------------------------------------------------
 '''
 
 # Packages
 import numpy as np
 import pickle
-import os
 
 
 '''
@@ -64,14 +64,12 @@ variables = pickle.load(open("OUTPUT/given_params.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 
-if os.path.isfile("OUTPUT/SS/d_inc_guess.pkl"):
-    d_tax_income = pickle.load(open("OUTPUT/SS/d_inc_guess.pkl", "r"))
-
 '''
 ------------------------------------------------------------------------
 Tax functions
 ------------------------------------------------------------------------
-    The first 4 functions are the wealth and income tax functions,
+    The first function gets the replacement rate values for the payroll
+        tax.  The next 4 functions are the wealth and income tax functions,
         with their derivative functions.  The remaining functions
         are used to get the total amount of taxes.  There are many
         different versions because different euler equations (either
@@ -82,6 +80,29 @@ Tax functions
         consolidated to one function, with different methods.
 ------------------------------------------------------------------------
 '''
+
+
+def replacement_rate_vals():
+    # Import data need to compute replacement rates, outputed from SS.py
+    variables = pickle.load(open("OUTPUT/Saved_moments/payroll_inputs.pkl", "r"))
+    for key in variables:
+        globals()[key] = variables[key]
+    AIME = ((wss * factor_ss * e * nssmat_init)*omega_SS).sum(0) / 12.0
+    PIA = np.zeros(J)
+    # Bins from data for each level of replacement
+    for j in xrange(J):
+        if AIME[j] < 749.0:
+            PIA[j] = .9 * AIME[j]
+        elif AIME[j] < 4517.0:
+            PIA[j] = 674.1+.32*(AIME[j] - 749.0)
+        else:
+            PIA[j] = 1879.86 + .15*(AIME[j] - 4517.0)
+    theta = PIA * (e * nssmat_init).mean(0) / AIME
+    # Set the maximum replacment rate to be $30,000
+    maxpayment = 30000.0/(factor_ss * wss)
+    theta[theta > maxpayment] = maxpayment
+    print theta
+    return theta
 
 
 def tau_wealth(b):

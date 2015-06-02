@@ -239,9 +239,9 @@ call(['python', 'SS.py'])
 ------------------------------------------------------------------------
 '''
 
-import payroll
-theta = payroll.replacement_rate_vals()
-del sys.modules['payroll']
+import tax_funcs
+theta = tax_funcs.replacement_rate_vals()
+del sys.modules['tax_funcs']
 print '\tFinished.'
 
 '''
