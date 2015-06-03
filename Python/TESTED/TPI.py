@@ -298,7 +298,7 @@ def convex_combo(var1, var2, scalar):
 '''
 
 if TPI_initial_run:
-    initial_b = np.array(list(bssmat) + list(bssmat_splus1.reshape(1, J)))
+    initial_b = bssmat_splus1
     initial_n = nssmat
 else:
     initial_b = bssmat_init
@@ -569,7 +569,7 @@ print 'Saving TPI variable values.'
 
 if TPI_initial_run:
     var_names = ['Kpath_TPI', 'TPIiter', 'TPIdist', 'T', 'b_mat',
-                 'eul_savings', 'eul_laborleisure', 'eul3', 'Lpath_TPI', 'BQpath_TPI',
+                 'eul_savings', 'eul_laborleisure', 'Lpath_TPI', 'BQpath_TPI',
                  'n_mat', 'rinit', 'winit', 'Yinit', 'T_H_init', 'taxinit',
                  'cinit']
     dictionary = {}
@@ -578,7 +578,7 @@ if TPI_initial_run:
     pickle.dump(dictionary, open("OUTPUT/TPIinit/TPIinit_vars.pkl", "w"))
 else:
     var_names = ['Kpath_TPI', 'TPIiter', 'TPIdist', 'T', 'b_mat',
-                 'eul1', 'eul_laborleisure', 'eul3', 'Lpath_TPI', 'BQpath_TPI',
+                 'eul_savings', 'eul_laborleisure', 'Lpath_TPI', 'BQpath_TPI',
                  'n_mat', 'rinit', 'winit', 'Yinit', 'T_H_init', 'taxinit2',
                  'cinit']
     dictionary = {}

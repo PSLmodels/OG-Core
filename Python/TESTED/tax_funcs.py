@@ -191,11 +191,11 @@ def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, omega, method):
     if method == 'SS':
         T_P[retire:] -= theta * w
         T_BQ = tau_bq * BQ / lambdas
-        T_H = (omega_SS * (T_I + T_P + T_BQ + T_W)).sum()
-    else if method == 'TPI':
+        T_H = (omega * (T_I + T_P + T_BQ + T_W)).sum()
+    elif method == 'TPI':
         T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w
         T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
-        T_H = (omega_stationary * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1)
+        T_H = (omega * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1)
     return T_H
 
 
