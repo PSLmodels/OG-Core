@@ -183,26 +183,22 @@ def total_taxes_SS2(r, b, w, e, n, BQ, lambdas, factor, T_H):
     return tot
 
 
-def tax_lump(r, b, w, e, n, BQ, lambdas, factor, omega_SS):
+def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, omega, method):
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor) * I
     T_P = tau_payroll * w * e * n
-    T_P[retire:] -= theta * w
-    T_BQ = tau_bq * BQ / lambdas
     T_W = tau_wealth(b) * b
-    T_H = (omega_SS * (T_I + T_P + T_BQ + T_W)).sum()
+    if method == 'SS':
+        T_P[retire:] -= theta * w
+        T_BQ = tau_bq * BQ / lambdas
+        T_H = (omega_SS * (T_I + T_P + T_BQ + T_W)).sum()
+    else if method == 'TPI':
+        T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w
+        T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
+        T_H = (omega_stationary * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1)
     return T_H
 
 
-def tax_lumpTPI(r, b, w, e, n, BQ, lambdas, factor, omega_stationary):
-    I = r * b + w * e * n
-    T_I = tau_income(r, b, w, e, n, factor) * I
-    T_P = tau_payroll * w * e * n
-    T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w
-    T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
-    T_W = tau_wealth(b) * b
-    T_H = (omega_stationary * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1)
-    return T_H
 
 
 def total_taxes_TPI1(r, b, w, e, n, BQ, lambdas, factor, T_H, j):

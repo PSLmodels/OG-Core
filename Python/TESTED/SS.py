@@ -372,7 +372,7 @@ def Steady_State(guesses, params):
     b_splus1 = b_guess
     b_splus2 = np.array(list(b_guess[1:]) + list(np.zeros(J).reshape(1, J)))
     factor = guesses[-1]
-    T_H = tax.tax_lump(r, b_s, w, e, n_guess, BQ, lambdas, factor, omega_SS)
+    T_H = tax.get_lump_sum(r, b_s, w, e, n_guess, BQ, lambdas, factor, omega_SS, method='SS')
     error1 = euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ.reshape(1, J), factor, T_H, chi_b)
     error2 = euler_labor_leisure_func(w, r, e, n_guess, b_s, b_splus1, BQ.reshape(1, J), factor, T_H, chi_n)
     average_income_model = ((r * b_s + w * e * n_guess) * omega_SS).sum()
@@ -679,7 +679,7 @@ if SS_stage != 'first_run_for_guesses' and SS_stage != 'loop_calibration':
         S, J) * omega_SS * rho.reshape(S, 1)).sum(0)
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
     factor_ss = solutions[-1]
-    T_Hss = tax.tax_lump(rss, bssmat_s, wss, e, nssmat, BQss, lambdas, factor_ss, omega_SS)
+    T_Hss = tax.get_lump_sum(rss, bssmat_s, wss, e, nssmat, BQss, lambdas, factor_ss, omega_SS, method='SS')
     taxss = tax.total_taxes_SS(rss, bssmat_s, wss, e, nssmat, BQss, lambdas, factor_ss, T_Hss)
     cssmat = get_cons(rss, bssmat_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.reshape(1, J), bssmat_splus1, g_y, taxss)
 

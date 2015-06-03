@@ -311,7 +311,7 @@ Y0 = get_Y(K0, L0)
 w0 = get_w(Y0, L0)
 r0 = get_r(Y0, K0)
 BQ0 = (1+r0)*(initial_b * omega_stationary[0] * rho.reshape(S, 1)).sum(0)
-T_H_0 = tax.tax_lump(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, omega_stationary[0])
+T_H_0 = tax.get_lump_sum(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, omega_stationary[0], method='SS')
 tax0 = tax.total_taxes_SS(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, T_H_0)
 c0 = get_cons(r0, b_sinit, w0, e, initial_n, BQ0.reshape(1, J), lambdas.reshape(1, J), b_splus1init, g_y, tax0)
 constraint_checker_SS(initial_b[:-1], initial_n, c0)
@@ -513,9 +513,9 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         bmat_plus1 = np.zeros((T, S, J))
         bmat_plus1[:, 1:, :] = b_mat[:T, :-1, :]
-        T_H_init = np.array(list(tax.tax_lumpTPI(rinit[:T].reshape(T, 1, 1), bmat_plus1, winit[:T].reshape(
+        T_H_init = np.array(list(tax.get_lump_sum(rinit[:T].reshape(T, 1, 1), bmat_plus1, winit[:T].reshape(
             T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(
-            1, 1, J), factor_ss, omega_stationary[:T])) + [T_Hss]*S)
+            1, 1, J), factor_ss, omega_stationary[:T], method='TPI')) + [T_Hss]*S)
         Yinit = get_Y(Kinit, Linit)
         winit = np.array(list(get_w(Yinit, Linit)) + list(np.ones(S)*wss))
         rinit = np.array(list(get_r(Yinit, Kinit)) + list(np.ones(S)*rss))
