@@ -155,34 +155,6 @@ def tau_income_deriv(r, b, w, e, n, factor):
     return tau
 
 
-def total_taxes_SS(r, b, w, e, n, BQ, lambdas, factor, T_H):
-    '''
-    Gives the total amount of taxes in the steady state
-    '''
-    I = r * b + w * e * n
-    T_I = tau_income(r, b, w, e, n, factor) * I
-    T_P = tau_payroll * w * e * n
-    T_P[retire:] -= theta * w
-    T_BQ = tau_bq * BQ / lambdas
-    T_W = tau_wealth(b) * b
-    tot = T_I + T_P + T_BQ + T_W - T_H
-    return tot
-
-
-def total_taxes_SS2(r, b, w, e, n, BQ, lambdas, factor, T_H):
-    '''
-    Gives the total amount of taxes in the steady state
-    '''
-    I = r * b + w * e * n
-    T_I = tau_income(r, b, w, e, n, factor) * I
-    T_P = tau_payroll * w * e * n
-    T_P[retire-1:] -= theta * w
-    T_BQ = tau_bq * BQ / lambdas
-    T_W = tau_wealth(b) * b
-    tot = T_I + T_P + T_BQ + T_W - T_H
-    return tot
-
-
 def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, omega, method):
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor) * I
@@ -199,36 +171,30 @@ def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, omega, method):
     return T_H
 
 
-
-
-def total_taxes_TPI1(r, b, w, e, n, BQ, lambdas, factor, T_H, j):
-    '''
-    Gives the total amount of taxes in TPI
-    '''
+def total_taxes(r, b, w, e, n, BQ, lambdas, factor, T_H, j, method, shift):
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor) * I
     T_P = tau_payroll * w * e * n
-    retireTPI = (retire - S)
-    T_P[retireTPI:] -= theta[j] * w[retireTPI:]
-    T_BQ = tau_bq[j] * BQ / lambdas
+    if method == 'SS':
+        if shift is False:
+            T_P[retire:] -= theta * w
+        else:
+            T_P[retire-1:] -= theta * w
+        T_BQ = tau_bq * BQ / lambdas
+    elif method == 'TPI':
+        if shift is False:
+            retireTPI = (retire - S)
+        else:
+            retireTPI = (retire-1 - S)
+        if len(b.shape) != 3:
+            T_P[retireTPI:] -= theta[j] * w[retireTPI:]
+            T_BQ = tau_bq[j] * BQ / lambdas
+        else:
+            T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w
+            T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
     T_W = tau_wealth(b) * b
-    tot = T_I + T_P + T_BQ + T_W - T_H
-    return tot
-
-
-def total_taxes_TPI1_2(r, b, w, e, n, BQ, lambdas, factor, T_H, j):
-    '''
-    Gives the total amount of taxes in TPI
-    '''
-    I = r * b + w * e * n
-    T_I = tau_income(r, b, w, e, n, factor) * I
-    T_P = tau_payroll * w * e * n
-    retireTPI = (retire-1 - S)
-    T_P[retireTPI:] -= theta[j] * w[retireTPI:]
-    T_BQ = tau_bq[j] * BQ / lambdas
-    T_W = tau_wealth(b) * b
-    tot = T_I + T_P + T_BQ + T_W - T_H
-    return tot
+    total_taxes = T_I + T_P + T_BQ + T_W - T_H
+    return total_taxes
 
 
 def total_taxes_path(r, b, w, e, n, BQ, lambdas, factor, T_H):

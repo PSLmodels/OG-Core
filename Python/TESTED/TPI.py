@@ -312,7 +312,7 @@ w0 = get_w(Y0, L0)
 r0 = get_r(Y0, K0)
 BQ0 = (1+r0)*(initial_b * omega_stationary[0] * rho.reshape(S, 1)).sum(0)
 T_H_0 = tax.get_lump_sum(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, omega_stationary[0], method='SS')
-tax0 = tax.total_taxes_SS(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, T_H_0)
+tax0 = tax.total_taxes(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, T_H_0, None, method='SS', shift=False)
 c0 = get_cons(r0, b_sinit, w0, e, initial_n, BQ0.reshape(1, J), lambdas.reshape(1, J), b_splus1init, g_y, tax0)
 constraint_checker_SS(initial_b[:-1], initial_n, c0)
 
@@ -324,6 +324,7 @@ Solve for equilibrium transition path by TPI
 
 
 def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init):
+    # This function does not work.  The tax functions need to be changed.
     b2 = float(guesses[0])
     n1 = float(guesses[1])
     b1 = float(initial_b[-2, j])
@@ -380,8 +381,8 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, t):
     T_H_s = T_H_init[t:t+length]
     T_H_splus1 = T_H_init[t+1:t+length+1]
     # Savings euler equations
-    tax_s = tax.total_taxes_TPI1(r_s, b_s, w_s, e_s, n_s, BQ_s, lambdas[j], factor_ss, T_H_s, j)
-    tax_splus1 = tax.total_taxes_TPI1_2(r_splus1, b_splus1, w_splus1, e_extended, n_extended, BQ_splus1, lambdas[j], factor_ss, T_H_splus1, j)
+    tax_s = tax.total_taxes(r_s, b_s, w_s, e_s, n_s, BQ_s, lambdas[j], factor_ss, T_H_s, j, method='TPI', shift=False)
+    tax_splus1 = tax.total_taxes(r_splus1, b_splus1, w_splus1, e_extended, n_extended, BQ_splus1, lambdas[j], factor_ss, T_H_splus1, j, method='TPI', shift=True)
     cons_s = get_cons(r_s, b_s, w_s, e_s, n_s, BQ_s, lambdas[j], b_splus1, g_y, tax_s)
     cons_splus1 = get_cons(r_splus1, b_splus1, w_splus1, e_extended, n_extended, BQ_splus1, lambdas[j], b_splus2, g_y, tax_splus1)
     income_splus1 = (r_splus1 * b_splus1 + w_splus1 * e_extended * n_extended) * factor_ss
@@ -538,12 +539,12 @@ b_s[:, 1:, :] = b_mat[:T, :-1, :]
 b_splus1 = np.zeros((T, S, J))
 b_splus1[:, :, :] = b_mat[:T, :, :]
 if TPI_initial_run:
-    taxinit = tax.total_taxes_path(rinit[:T], b_s, winit[:T], e.reshape(
-        1, S, J), n_mat[:T], BQinit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T])
+    taxinit = tax.total_taxes(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(
+        1, S, J), n_mat[:T], BQinit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T].reshape(T, 1, 1))
     cinit = get_cons(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b_splus1, g_y, taxinit)
 else:
-    taxinit2 = tax.total_taxes_path(rinit[:T], b_s, winit[:T], e.reshape(
-        1, S, J), n_mat[:T], BQinit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T])
+    taxinit2 = tax.total_taxes(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(
+        1, S, J), n_mat[:T], BQinit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T].reshape(T, 1, 1))
     cinit = get_cons(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b_splus1, g_y, taxinit2)
 print'Checking time path for violations of constaints.'
 for t in xrange(T):

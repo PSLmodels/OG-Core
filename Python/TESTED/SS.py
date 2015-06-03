@@ -302,8 +302,8 @@ def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_
     '''
     e_extended = np.array(list(e) + list(np.zeros(J).reshape(1, J)))
     n_extended = np.array(list(n_guess) + list(np.zeros(J).reshape(1, J)))
-    tax1 = tax.total_taxes_SS(r, b_s, w, e, n_guess, BQ, lambdas, factor, T_H)
-    tax2 = tax.total_taxes_SS2(r, b_splus1, w, e_extended[1:], n_extended[1:], BQ, lambdas, factor, T_H)
+    tax1 = tax.total_taxes(r, b_s, w, e, n_guess, BQ, lambdas, factor, T_H, None, method='SS', shift=False)
+    tax2 = tax.total_taxes(r, b_splus1, w, e_extended[1:], n_extended[1:], BQ, lambdas, factor, T_H, None, method='SS', shift=True)
     cons1 = get_cons(r, b_s, w, e, n_guess, BQ, lambdas, b_splus1, g_y, tax1)
     cons2 = get_cons(r, b_splus1, w, e_extended[1:], n_extended[1:], BQ, lambdas, b_splus2, g_y, tax2)
     income = (r * b_splus1 + w * e_extended[1:] * n_extended[1:]) * factor
@@ -332,7 +332,7 @@ def euler_labor_leisure_func(w, r, e, n_guess, b_s, b_splus1, BQ, factor, T_H, c
     Returns:
         Value of Euler error.
     '''
-    tax1 = tax.total_taxes_SS(r, b_s, w, e, n_guess, BQ, lambdas, factor, T_H)
+    tax1 = tax.total_taxes(r, b_s, w, e, n_guess, BQ, lambdas, factor, T_H, None, method='SS', shift=False)
     cons = get_cons(r, b_s, w, e, n_guess, BQ, lambdas, b_splus1, g_y, tax1)
     income = (r * b_s + w * e * n_guess) * factor
     deriv = 1 - tau_payroll - tax.tau_income(r, b_s, w, e, n_guess, factor) - tax.tau_income_deriv(
@@ -384,7 +384,7 @@ def Steady_State(guesses, params):
     error2[mask2] += 1e9
     if b_guess.sum() <= 0:
         error1 += 1e9
-    tax1 = tax.total_taxes_SS(r, b_s, w, e, n_guess, BQ, lambdas, factor, T_H)
+    tax1 = tax.total_taxes(r, b_s, w, e, n_guess, BQ, lambdas, factor, T_H, None, method='SS', shift=False)
     cons = get_cons(r, b_s, w, e, n_guess, BQ.reshape(1, J), lambdas, b_splus1, g_y, tax1)
     mask3 = cons < 0
     error2[mask3] += 1e9
@@ -680,7 +680,7 @@ if SS_stage != 'first_run_for_guesses' and SS_stage != 'loop_calibration':
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
     factor_ss = solutions[-1]
     T_Hss = tax.get_lump_sum(rss, bssmat_s, wss, e, nssmat, BQss, lambdas, factor_ss, omega_SS, method='SS')
-    taxss = tax.total_taxes_SS(rss, bssmat_s, wss, e, nssmat, BQss, lambdas, factor_ss, T_Hss)
+    taxss = tax.total_taxes(rss, bssmat_s, wss, e, nssmat, BQss, lambdas, factor_ss, T_Hss, None, method='SS', shift=False)
     cssmat = get_cons(rss, bssmat_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.reshape(1, J), bssmat_splus1, g_y, taxss)
 
     constraint_checker(bssmat, nssmat, cssmat)
