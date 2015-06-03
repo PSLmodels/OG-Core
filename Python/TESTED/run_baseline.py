@@ -13,8 +13,7 @@ This py-file calls the following other file(s):
 
 This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
-            OUTPUT/given_params.pkl
-            OUTPUT/Saved_moments/tpi_var.pkl
+            OUTPUT/Saved_moments/params_given.pkl
 ------------------------------------------------------------------------
 '''
 
@@ -108,6 +107,7 @@ g_y = (1 + g_y_annual)**(float(ending_age-starting_age)/S) - 1
 TPImaxiter = 100
 TPImindist = 3 * 1e-6
 nu = .20
+TPI_initial_run = True
 # Ellipse parameters
 b_ellipse = 25.6594
 k_ellipse = -26.4902
@@ -134,6 +134,10 @@ theta = np.zeros(J)
 chi_b_scal = np.zeros(J)
 scal = np.ones(J)
 
+# Remove pickle of altered parameters -- reset the experiment
+if os.path.isfile("OUTPUT/Saved_moments/params_changed.pkl"):
+    os.remove("OUTPUT/Saved_moments/params_changed.pkl")
+
 '''
 ------------------------------------------------------------------------
     Run SS without calibration, to get initial values
@@ -154,11 +158,11 @@ var_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
              'tau_payroll', 'tau_bq',
              'theta', 'retire', 'mean_income_data',
              'h_wealth', 'p_wealth', 'm_wealth', 'scal',
-             'chi_b_scal', 'SS_stage']
+             'chi_b_scal', 'SS_stage', 'TPI_initial_run']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
-pickle.dump(dictionary, open("OUTPUT/given_params.pkl", "w"))
+pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
 call(['python', 'SS.py'])
 
 print '\tFinished'
@@ -195,10 +199,10 @@ while keep_changing.any() and i < max_iter_loop_calibration:
                 chi_b_scal[b] -= bumps[b]
             keep_changing[b] = False
     i += 1
-    os.remove("OUTPUT/given_params.pkl")
+    os.remove("OUTPUT/Saved_moments/params_given.pkl")
     for key in var_names:
         dictionary[key] = globals()[key]
-    pickle.dump(dictionary, open("OUTPUT/given_params.pkl", "w"))
+    pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
     call(['python', 'SS.py'])
 
 
@@ -224,11 +228,11 @@ var_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
              'tau_payroll', 'tau_bq',
              'theta', 'retire', 'mean_income_data',
              'h_wealth', 'p_wealth', 'm_wealth', 'scal',
-             'chi_b_scal', 'SS_stage']
+             'chi_b_scal', 'SS_stage', 'TPI_initial_run']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
-pickle.dump(dictionary, open("OUTPUT/given_params.pkl", "w"))
+pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
 
 print 'Getting Thetas'
 call(['python', 'SS.py'])
@@ -263,11 +267,11 @@ var_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
              'tau_payroll', 'tau_bq',
              'theta', 'retire', 'mean_income_data',
              'h_wealth', 'p_wealth', 'm_wealth', 'scal',
-             'chi_b_scal', 'SS_stage']
+             'chi_b_scal', 'SS_stage', 'TPI_initial_run']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
-pickle.dump(dictionary, open("OUTPUT/given_params.pkl", "w"))
+pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
 call(['python', 'SS.py'])
 print '\tFinished'
 
@@ -278,12 +282,6 @@ print '\tFinished'
 ------------------------------------------------------------------------
 '''
 
-TPI_initial_run = True
-var_names = ['TPI_initial_run']
-dictionary = {}
-for key in var_names:
-    dictionary[key] = globals()[key]
-pickle.dump(dictionary, open("OUTPUT/Saved_moments/tpi_var.pkl", "w"))
 # call(['python', 'TPI.py'])
 import TPI
 

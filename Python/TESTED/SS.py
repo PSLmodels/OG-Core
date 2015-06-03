@@ -134,10 +134,13 @@ variables = pickle.load(open("OUTPUT/Saved_moments/labor_data_moments.pkl", "r")
 for key in variables:
     globals()[key] = variables[key]
 
-variables = pickle.load(open("OUTPUT/given_params.pkl", "r"))
+variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
-
+if os.path.isfile("OUTPUT/Saved_moments/params_changed.pkl"):
+    variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "r"))
+    for key in variables:
+        globals()[key] = variables[key]
 
 '''
 ------------------------------------------------------------------------
@@ -164,9 +167,9 @@ if SS_stage == 'first_run_for_guesses':
     dictionary = {}
     for key in var_names:
         dictionary[key] = globals()[key]
-    pickle.dump(dictionary, open("OUTPUT/income_demo_vars.pkl", "w"))
+    pickle.dump(dictionary, open("OUTPUT/Saved_moments/income_demo_vars.pkl", "w"))
 else:
-    variables = pickle.load(open("OUTPUT/income_demo_vars.pkl", "r"))
+    variables = pickle.load(open("OUTPUT/Saved_moments/income_demo_vars.pkl", "r"))
     for key in variables:
         globals()[key] = variables[key]
 
@@ -723,45 +726,25 @@ if SS_stage == 'constrained_minimization':
 elif SS_stage == 'SS_init':
     bssmat_init = np.array(list(bssmat) + list(BQss.reshape(1, J)))
     nssmat_init = nssmat
-
+    # Pickle variables for TPI initial values
     var_names = ['bssmat_init', 'nssmat_init']
     dictionary = {}
     for key in var_names:
         dictionary[key] = globals()[key]
-    pickle.dump(dictionary, open("OUTPUT/SSinit/ss_init_tpi.pkl", "w"))
-
-    var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'e', 'E',
-                 'J', 'Kss', 'bssmat', 'Lss', 'nssmat',
-                 'Yss', 'wss', 'rss', 'omega', 'chi_n', 'chi_b', 'ltilde', 'T',
-                 'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist', 'BQss',
-                 'rho', 'lambdas',
-                 'b_ellipse', 'k_ellipse', 'upsilon',
-                 'factor_ss',  'a_tax_income', 'b_tax_income',
-                 'c_tax_income', 'd_tax_income', 'tau_payroll',
-                 'tau_bq', 'theta', 'retire',
-                 'mean_income_data', 'bssmat_s', 'cssmat',
-                 'starting_age', 'bssmat_splus1',
-                 'ending_age', 'T_Hss', 'euler_savings', 'euler_labor_leisure',
-                 'h_wealth', 'p_wealth', 'm_wealth']
+    pickle.dump(dictionary, open("OUTPUT/SSinit/ss_init_tpi_vars.pkl", "w"))
+    # Pickle variables
+    var_names = ['Kss', 'bssmat', 'Lss', 'nssmat', 'Yss', 'wss', 'rss',
+                 'BQss', 'factor_ss', 'bssmat_s', 'cssmat', 'bssmat_splus1',
+                 'T_Hss', 'euler_savings', 'euler_labor_leisure', 'chi_n', 'chi_b']
     dictionary = {}
     for key in var_names:
         dictionary[key] = globals()[key]
-    pickle.dump(dictionary, open("OUTPUT/SSinit/ss_init.pkl", "w"))
+    pickle.dump(dictionary, open("OUTPUT/SSinit/ss_init_vars.pkl", "w"))
 elif SS_stage == 'SS_tax':
-    var_names = ['S', 'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'e', 'E',
-                 'J', 'Kss', 'bssmat', 'Lss', 'nssmat',
-                 'Yss', 'wss', 'rss', 'omega',
-                 'chi_n', 'chi_b', 'ltilde', 'T',
-                 'g_n', 'g_y', 'omega_SS', 'TPImaxiter', 'TPImindist', 'BQss',
-                 'rho', 'lambdas',
-                 'b_ellipse', 'k_ellipse', 'upsilon',
-                 'factor_ss',  'a_tax_income', 'b_tax_income',
-                 'c_tax_income', 'd_tax_income', 'tau_payroll',
-                 'tau_bq', 'theta', 'retire',
-                 'mean_income_data', 'bssmat_s', 'cssmat',
-                 'starting_age', 'bssmat_splus1',
-                 'ending_age', 'euler_savings', 'euler_labor_leisure', 'T_Hss',
-                 'h_wealth', 'p_wealth', 'm_wealth']
+    # Pickle Variables
+    var_names = ['Kss', 'bssmat', 'Lss', 'nssmat', 'Yss', 'wss', 'rss',
+                 'chi_n', 'chi_b', 'BQss', 'factor_ss', 'bssmat_s', 'cssmat',
+                 'euler_savings', 'euler_labor_leisure', 'T_Hss']
     dictionary = {}
     for key in var_names:
         dictionary[key] = globals()[key]

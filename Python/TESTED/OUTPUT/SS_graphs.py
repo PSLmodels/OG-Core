@@ -57,7 +57,13 @@ def the_inequalizer(dist, weights):
 ------------------------------------------------------------------------
 '''
 
-variables = pickle.load(open("SSinit/ss_init.pkl", "r"))
+variables = pickle.load(open("SSinit/ss_init_vars.pkl", "r"))
+for key in variables:
+    globals()[key] = variables[key]
+variables = pickle.load(open("Saved_moments/params_given.pkl", "r"))
+for key in variables:
+    globals()[key] = variables[key]
+variables = pickle.load(open("Saved_moments/income_demo_vars.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 
@@ -156,12 +162,12 @@ plt.savefig('SSinit/labor_dist')
 
 # Plot 2d comparison of labor distribution to data
 # First import the labor data
-variables = pickle.load(open("labor_data_moments.pkl", "r"))
+variables = pickle.load(open("Saved_moments/labor_data_moments.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 
 plt.figure()
-plt.plot(np.arange(80)+20, (Lssmat * bin_weights).sum(1), label='Model', color='black', linestyle='--')
+plt.plot(np.arange(80)+20, (nssmat * lambdas).sum(1), label='Model', color='black', linestyle='--')
 plt.plot(np.arange(80)+20, labor_dist_data, label='Data', color='black', linestyle='-')
 plt.legend()
 plt.ylabel(r'individual labor supply $\bar{l}_{s}$')
@@ -257,6 +263,9 @@ plt.savefig('SSinit/euler_errors_laborleisure_SS')
 '''
 
 variables = pickle.load(open("SS/ss_vars.pkl", "r"))
+for key in variables:
+    globals()[key] = variables[key]
+variables = pickle.load(open("Saved_moments/params_changed.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 

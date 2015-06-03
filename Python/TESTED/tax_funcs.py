@@ -14,6 +14,7 @@ This py-file calls the following other file(s):
 # Packages
 import numpy as np
 import pickle
+import os
 
 
 '''
@@ -60,9 +61,13 @@ m_wealth     = wealth tax parameter m
 ------------------------------------------------------------------------
 '''
 
-variables = pickle.load(open("OUTPUT/given_params.pkl", "r"))
+variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
+if os.path.isfile("OUTPUT/Saved_moments/params_changed.pkl"):
+    variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "r"))
+    for key in variables:
+        globals()[key] = variables[key]
 
 '''
 ------------------------------------------------------------------------

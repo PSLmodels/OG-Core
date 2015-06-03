@@ -27,6 +27,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import time
 import pickle
+import os
 import scipy.optimize as opt
 
 import tax_funcs as tax
@@ -83,19 +84,26 @@ TPI_initial_run = whether this is the baseline TPI or not
 ------------------------------------------------------------------------
 '''
 
-variables = pickle.load(open("OUTPUT/Saved_moments/tpi_var.pkl", "r"))
+variables = pickle.load(open("OUTPUT/Saved_moments/income_demo_vars.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
+variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "r"))
+for key in variables:
+    globals()[key] = variables[key]
+if os.path.isfile("OUTPUT/Saved_moments/params_changed.pkl"):
+    variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "r"))
+    for key in variables:
+        globals()[key] = variables[key]
 
 if TPI_initial_run:
-    variables = pickle.load(open("OUTPUT/SSinit/ss_init.pkl", "r"))
+    variables = pickle.load(open("OUTPUT/SSinit/ss_init_vars.pkl", "r"))
     for key in variables:
         globals()[key] = variables[key]
 else:
     variables = pickle.load(open("OUTPUT/SS/ss_vars.pkl", "r"))
     for key in variables:
         globals()[key] = variables[key]
-    variables = pickle.load(open("OUTPUT/SSinit/ss_init_tpi.pkl", "r"))
+    variables = pickle.load(open("OUTPUT/SSinit/ss_init_tpi_vars.pkl", "r"))
     for key in variables:
         globals()[key] = variables[key]
 
@@ -569,19 +577,17 @@ Save variables/values so they can be used in other modules
 print 'Saving TPI variable values.'
 
 if TPI_initial_run:
-    var_names = ['Kpath_TPI', 'TPIiter', 'TPIdist', 'T', 'b_mat',
+    var_names = ['Kpath_TPI', 'b_mat', 'cinit',
                  'eul_savings', 'eul_laborleisure', 'Lpath_TPI', 'BQpath_TPI',
-                 'n_mat', 'rinit', 'winit', 'Yinit', 'T_H_init', 'taxinit',
-                 'cinit']
+                 'n_mat', 'rinit', 'winit', 'Yinit', 'T_H_init', 'taxinit']
     dictionary = {}
     for key in var_names:
         dictionary[key] = globals()[key]
     pickle.dump(dictionary, open("OUTPUT/TPIinit/TPIinit_vars.pkl", "w"))
 else:
-    var_names = ['Kpath_TPI', 'TPIiter', 'TPIdist', 'T', 'b_mat',
+    var_names = ['Kpath_TPI', 'b_mat', 'cinit'
                  'eul_savings', 'eul_laborleisure', 'Lpath_TPI', 'BQpath_TPI',
-                 'n_mat', 'rinit', 'winit', 'Yinit', 'T_H_init', 'taxinit2',
-                 'cinit']
+                 'n_mat', 'rinit', 'winit', 'Yinit', 'T_H_init', 'taxinit2']
     dictionary = {}
     for key in var_names:
         dictionary[key] = globals()[key]
