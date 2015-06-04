@@ -192,17 +192,65 @@ chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 , 
 rho[-1] = 1
 
 
+def HH_solve(guesses, r, w, bq, T_H, params):
+    '''
+    Parameters: Steady state interest rate, wage rate, distribution of bequests
+                government transfers  
+
+    Returns:    1) Array of 2*S*J Euler equation errors
+                2) Values for asset holdings, labor supply, and consumption from
+                   FOCS
+    '''
+    chi_b = np.tile(np.array(params[:J]).reshape(1, J), (S, 1))
+    chi_n = np.array(params[J:])
+    chi_b = np.tile(np.array(params[:J]).reshape(1, J), (S, 1))
+    chi_n = np.array(params[J:])
+       
+    BQ = (bq * omega_SS).sum(0)
+  
+    b_guess = guesses[0: S * J].reshape((S, J))
+    n_guess = guesses[S * J:-1].reshape((S, J))  
+    
+    error1 = hh_focs.Euler1(w, r, e, n_guess, BQ, T_H, chi_b, rho)
+    error2 = hh_focs.Euler2(w, r, e, n_guess, BQ, T_H, chi_n)
+    error3 = hh_focs.Euler3(w, r, e, n_guess, b_guess, BQ, chi_b, T_H)
+    return list(error1.flatten()) + list(
+        error2.flatten()) + list(error3.flatten())     
 
 
 def Steady_State(guesses, params):
     '''
-    Parameters: Steady state distribution of capital guess as array
-                size 2*S*J
+    Parameters: Steady state interest rate, wage rate, distribution of bequests
+                government transfers  
 
     Returns:    Array of 2*S*J Euler equation errors
     '''
+    
+    
+    b_guess_init = np.ones((S, J)) * .01 # should be better way to update these after run for first time...
+    n_guess_init = np.ones((S, J)) * .99 * ltilde
+    
+    r = guesses[0]
+    w = guesses[1]
+    bq =guesses[2: 1 * J].reshape((1, J))
+    T_H = guesses[-1]
+    
+    guesses =  list(b_guess_init.flatten()) + list(n_guess_init.flatten())  
+    
+    HH_solve_X2 = lambda x: HH_solve(x, r, w, bq, T_H, final_chi_b_params)
+    b, n , c = opt.fsolve(HH_solve_X2, guesses, xtol=1e-13)
+    
+    Steady_State_X2 = lambda x: Steady_State(x, final_chi_b_params)
+    
+    solutions = opt.fsolve(Steady_State_X2, guesses, xtol=1e-13)
+    
     chi_b = np.tile(np.array(params[:J]).reshape(1, J), (S, 1))
     chi_n = np.array(params[J:])
+    r_guess = guesses[0]
+    w_guess = guesses[1]
+    bq_guess =guesses[2: 1 * J].reshape((1, J))
+    T_H_guess = guesses[-1]
+    
     b_guess = guesses[0: S * J].reshape((S, J))
     B = (b_guess * omega_SS * rho.reshape(S, 1)).sum(0)
     K = (omega_SS * b_guess).sum()
@@ -294,17 +342,16 @@ def constraint_checker(bssmat, nssmat, cssmat):
 bnds = tuple([(1e-6, None)] * (S + J))
 
 if SS_stage == 'first_run_for_guesses':
-    b_guess_init = np.ones((S, J)) * .01
-    n_guess_init = np.ones((S, J)) * .99 * ltilde
-    Kg = (omega_SS * b_guess_init).sum()
-    Lg = hh_focs.get_L(e, n_guess_init, omega_SS)
-    Yg = hh_focs.get_Y(Kg, Lg)
-    wguess = hh_focs.get_w(Yg, Lg)
-    rguess = hh_focs.get_r(Yg, Kg)
-    avIguess = ((rguess * b_guess_init + wguess * e * n_guess_init) * omega_SS).sum()
-    factor_guess = [mean_income_data / avIguess]
-    guesses = list(b_guess_init.flatten()) + list(n_guess_init.flatten()) + factor_guess
-
+    #b_guess_init = np.ones((S, J)) * .01
+    #n_guess_init = np.ones((S, J)) * .99 * ltilde
+    r_guess_init = 0.04 
+    w_guess_init = 0.1
+    bq_guess_init = np.ones((1, J)) * 0.001
+    T_H_guess_init = 0.05
+    #avIguess = ((rguess * b_guess_init + wguess * e * n_guess_init) * omega_SS).sum()
+    #factor_guess = [mean_income_data / avIguess]
+    guesses = r_guess_init + w_guess_init + list(bq_guess_init.flatten()) + 
+              T_H_guess_init 
     chi_b_guesses = np.ones(S+J)
     chi_b_guesses[0:J] = np.array([5, 10, 90, 250, 250, 250, 250]) + chi_b_scal
     print 'Chi_b:', chi_b_guesses[0:J]
