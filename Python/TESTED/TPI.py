@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 5/21/2015
+Last updated 6/4/2015
 
 This program solves for transition path of the distribution of wealth
 and the aggregate capital stock using the time path iteration (TPI)
@@ -140,9 +140,9 @@ else:
 K0 = house.get_K(initial_b, omega_stationary[0])
 b_sinit = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_b[:-1]))
 b_splus1init = initial_b
-L0 = house.get_L(e, initial_n, omega_stationary[1])
-Y0 = house.get_Y(K0, L0, parameters)
-w0 = house.get_w(Y0, L0, parameters)
+L0 = firm.get_L(e, initial_n, omega_stationary[1])
+Y0 = firm.get_Y(K0, L0, parameters)
+w0 = firm.get_w(Y0, L0, parameters)
 r0 = firm.get_r(Y0, K0, parameters)
 BQ0 = (1+r0)*(initial_b * omega_stationary[0] * rho.reshape(S, 1)).sum(0)
 T_H_0 = tax.get_lump_sum(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, omega_stationary[0], 'SS', parameters, theta, tau_bq)
@@ -250,8 +250,8 @@ Kinit = (-1/(domain + 1)) * (Kss-K0) + Kss
 Kinit[-1] = Kss
 Kinit = np.array(list(Kinit) + list(np.ones(S)*Kss))
 Linit = np.ones(T+S) * Lss
-Yinit = house.get_Y(Kinit, Linit, parameters)
-winit = house.get_w(Yinit, Linit, parameters)
+Yinit = firm.get_Y(Kinit, Linit, parameters)
+winit = firm.get_w(Yinit, Linit, parameters)
 rinit = firm.get_r(Yinit, Kinit, parameters)
 BQinit = np.zeros((T+S, J))
 for j in xrange(J):
@@ -351,8 +351,8 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         T_H_init = np.array(list(tax.get_lump_sum(rinit[:T].reshape(T, 1, 1), bmat_plus1, winit[:T].reshape(
             T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(
             1, 1, J), factor_ss, omega_stationary[:T], 'TPI', parameters, theta, tau_bq)) + [T_Hss]*S)
-        Yinit = house.get_Y(Kinit, Linit, parameters)
-        winit = np.array(list(house.get_w(Yinit, Linit, parameters)) + list(np.ones(S)*wss))
+        Yinit = firm.get_Y(Kinit, Linit, parameters)
+        winit = np.array(list(firm.get_w(Yinit, Linit, parameters)) + list(np.ones(S)*wss))
         rinit = np.array(list(firm.get_r(Yinit, Kinit, parameters)) + list(np.ones(S)*rss))
     if TPIdist < TPImindist:
         BQinit[:T] = BQnew

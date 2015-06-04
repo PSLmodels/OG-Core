@@ -157,7 +157,7 @@ p62
 F1.0
 sS'TPImaxiter'
 p63
-I4
+I100
 sS'lambdas'
 p64
 g4

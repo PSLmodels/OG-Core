@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated: 5/21/2015
+Last updated: 6/4/2015
 
 Calculates steady state of OLG model with S age cohorts.
 
@@ -40,7 +40,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from scipy import stats
 
-import income
+import income_polynomials as income
 import demographics
 import tax_funcs as tax
 import household_funcs as house
@@ -94,44 +94,11 @@ scal         = value to scale the initial guesses by in order to get the
 ------------------------------------------------------------------------
 '''
 
-variables = pickle.load(open("OUTPUT/Saved_moments/wealth_data_moments_fit_25.pkl", "r"))
+variables = pickle.load(open("OUTPUT/Saved_moments/wealth_data_moments.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
-top25 = highest_wealth_data_new
 # Set lowest ability group's wealth to be a positive, not negative, number for the calibration
-top25[2:26] = 500.0
-
-variables = pickle.load(open("OUTPUT/Saved_moments/wealth_data_moments_fit_50.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
-top50 = highest_wealth_data_new
-
-variables = pickle.load(open("OUTPUT/Saved_moments/wealth_data_moments_fit_70.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
-top70 = highest_wealth_data_new
-
-variables = pickle.load(open("OUTPUT/Saved_moments/wealth_data_moments_fit_80.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
-top80 = highest_wealth_data_new
-
-variables = pickle.load(open("OUTPUT/Saved_moments/wealth_data_moments_fit_90.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
-top90 = highest_wealth_data_new
-
-variables = pickle.load(open("OUTPUT/Saved_moments/wealth_data_moments_fit_99.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
-top99 = highest_wealth_data_new
-
-variables = pickle.load(open("OUTPUT/Saved_moments/wealth_data_moments_fit_100.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
-top100 = highest_wealth_data_new
-
-
+wealth_data_array[2:26, 0] = 500.0
 
 variables = pickle.load(open("OUTPUT/Saved_moments/labor_data_moments.pkl", "r"))
 for key in variables:
@@ -204,9 +171,9 @@ def Steady_State(guesses, params):
     b_guess = guesses[0: S * J].reshape((S, J))
     K = house.get_K(b_guess, omega_SS)
     n_guess = guesses[S * J:-1].reshape((S, J))
-    L = house.get_L(e, n_guess, omega_SS)
-    Y = house.get_Y(K, L, parameters)
-    w = house.get_w(Y, L, parameters)
+    L = firm.get_L(e, n_guess, omega_SS)
+    Y = firm.get_Y(K, L, parameters)
+    w = firm.get_w(Y, L, parameters)
     r = firm.get_r(Y, K, parameters)
     BQ = (1 + r) * (b_guess * omega_SS * rho.reshape(S, 1)).sum(0)
     b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(b_guess[:-1, :]))
@@ -259,21 +226,8 @@ def func_to_min(chi_guesses_init, other_guesses_init):
     b_s = b_guess[:-1, :]
     factor = solutions[-1]
     # Wealth Calibration Euler
-    p25_sim = b_s[:, 0] * factor
-    p50_sim = b_s[:, 1] * factor
-    p70_sim = b_s[:, 2] * factor
-    p80_sim = b_s[:, 3] * factor
-    p90_sim = b_s[:, 4] * factor
-    p99_sim = b_s[:, 5] * factor
-    p100_sim = b_s[:, 6] * factor
-    b_perc_diff_25 = [misc_funcs.perc_dif_func(np.mean(p25_sim[:24]), np.mean(top25[2:26]))] + [misc_funcs.perc_dif_func(np.mean(p25_sim[24:45]), np.mean(top25[26:47]))]
-    b_perc_diff_50 = [misc_funcs.perc_dif_func(np.mean(p50_sim[:24]), np.mean(top50[2:26]))] + [misc_funcs.perc_dif_func(np.mean(p50_sim[24:45]), np.mean(top50[26:47]))]
-    b_perc_diff_70 = [misc_funcs.perc_dif_func(np.mean(p70_sim[:24]), np.mean(top70[2:26]))] + [misc_funcs.perc_dif_func(np.mean(p70_sim[24:45]), np.mean(top70[26:47]))]
-    b_perc_diff_80 = [misc_funcs.perc_dif_func(np.mean(p80_sim[:24]), np.mean(top80[2:26]))] + [misc_funcs.perc_dif_func(np.mean(p80_sim[24:45]), np.mean(top80[26:47]))]
-    b_perc_diff_90 = [misc_funcs.perc_dif_func(np.mean(p90_sim[:24]), np.mean(top90[2:26]))] + [misc_funcs.perc_dif_func(np.mean(p90_sim[24:45]), np.mean(top90[26:47]))]
-    b_perc_diff_99 = [misc_funcs.perc_dif_func(np.mean(p99_sim[:24]), np.mean(top99[2:26]))] + [misc_funcs.perc_dif_func(np.mean(p99_sim[24:45]), np.mean(top99[26:47]))]
-    b_perc_diff_100 = [misc_funcs.perc_dif_func(np.mean(p100_sim[:24]), np.mean(top100[2:26]))] + [misc_funcs.perc_dif_func(np.mean(p100_sim[24:45]), np.mean(top100[26:47]))]
-    error5 = b_perc_diff_25 + b_perc_diff_50 + b_perc_diff_70 + b_perc_diff_80 + b_perc_diff_90 + b_perc_diff_99 + b_perc_diff_100
+    wealth_sim = b_s * factor
+    error5 = list(misc_funcs.perc_dif_func(np.mean(wealth_sim[:24], axis=0), np.mean(wealth_data_array[2:26], axis=0))) + list(misc_funcs.perc_dif_func(np.mean(wealth_sim[24:45], axis=0), np.mean(wealth_data_array[26:47], axis=0)))
     print error5
     # labor calibration euler
     labor_sim = ((solutions[S*J:2*S*J]).reshape(S, J)*lambdas.reshape(1, J)).sum(axis=1)
@@ -294,10 +248,6 @@ def func_to_min(chi_guesses_init, other_guesses_init):
     if (chi_guesses_init <= 0.0).any():
         output += 1e9
     weighting_mat = np.eye(2*J + S)
-    # weighting_mat[10:10] = 10.0
-    # weighting_mat[11:11] = 10.0
-    # weighting_mat[12:12] = 10.0
-    # weighting_mat[13:13] = 10.0
     scaling_val = 100.0
     value = np.dot(scaling_val * np.dot(output.reshape(1, 2*J+S), weighting_mat), scaling_val * output.reshape(2*J+S, 1))
     print value.sum()
@@ -331,9 +281,9 @@ if SS_stage == 'first_run_for_guesses':
     b_guess_init = np.ones((S, J)) * .01
     n_guess_init = np.ones((S, J)) * .99 * ltilde
     Kg = house.get_K(b_guess_init, omega_SS)
-    Lg = house.get_L(e, n_guess_init, omega_SS)
-    Yg = house.get_Y(Kg, Lg, parameters)
-    wguess = house.get_w(Yg, Lg, parameters)
+    Lg = firm.get_L(e, n_guess_init, omega_SS)
+    Yg = firm.get_Y(Kg, Lg, parameters)
+    wguess = firm.get_w(Yg, Lg, parameters)
     rguess = firm.get_r(Yg, Kg, parameters)
     avIguess = ((rguess * b_guess_init + wguess * e * n_guess_init) * omega_SS).sum()
     factor_guess = [mean_income_data / avIguess]
@@ -410,21 +360,8 @@ b_seefit = solutions[0: S * J].reshape((S, J))
 b_see_fit = b_seefit[:-1, :]
 factor_see_fit = solutions[-1]
 # Wealth Calibration Euler
-p25_sim = b_see_fit[:, 0] * factor_see_fit
-p50_sim = b_see_fit[:, 1] * factor_see_fit
-p70_sim = b_see_fit[:, 2] * factor_see_fit
-p80_sim = b_see_fit[:, 3] * factor_see_fit
-p90_sim = b_see_fit[:, 4] * factor_see_fit
-p99_sim = b_see_fit[:, 5] * factor_see_fit
-p100_sim = b_see_fit[:, 6] * factor_see_fit
-b_perc_diff_25 = [misc_funcs.perc_dif_func(np.mean(p25_sim[:24]), np.mean(top25[2:26]))] + [misc_funcs.perc_dif_func(np.mean(p25_sim[24:45]), np.mean(top25[26:47]))]
-b_perc_diff_50 = [misc_funcs.perc_dif_func(np.mean(p50_sim[:24]), np.mean(top50[2:26]))] + [misc_funcs.perc_dif_func(np.mean(p50_sim[24:45]), np.mean(top50[26:47]))]
-b_perc_diff_70 = [misc_funcs.perc_dif_func(np.mean(p70_sim[:24]), np.mean(top70[2:26]))] + [misc_funcs.perc_dif_func(np.mean(p70_sim[24:45]), np.mean(top70[26:47]))]
-b_perc_diff_80 = [misc_funcs.perc_dif_func(np.mean(p80_sim[:24]), np.mean(top80[2:26]))] + [misc_funcs.perc_dif_func(np.mean(p80_sim[24:45]), np.mean(top80[26:47]))]
-b_perc_diff_90 = [misc_funcs.perc_dif_func(np.mean(p90_sim[:24]), np.mean(top90[2:26]))] + [misc_funcs.perc_dif_func(np.mean(p90_sim[24:45]), np.mean(top90[26:47]))]
-b_perc_diff_99 = [misc_funcs.perc_dif_func(np.mean(p99_sim[:24]), np.mean(top99[2:26]))] + [misc_funcs.perc_dif_func(np.mean(p99_sim[24:45]), np.mean(top99[26:47]))]
-b_perc_diff_100 = [misc_funcs.perc_dif_func(np.mean(p100_sim[:24]), np.mean(top100[2:26]))] + [misc_funcs.perc_dif_func(np.mean(p100_sim[24:45]), np.mean(top100[26:47]))]
-chi_fits = b_perc_diff_25 + b_perc_diff_50 + b_perc_diff_70 + b_perc_diff_80 + b_perc_diff_90 + b_perc_diff_99 + b_perc_diff_100
+b_sim = b_see_fit * factor_see_fit
+chi_fits = list(misc_funcs.perc_dif_func(np.mean(b_sim[:24], axis=0), np.mean(wealth_data_array[2:26, 0], axis=0))) + list(misc_funcs.perc_dif_func(np.mean(b_sim[24:45], axis=0), np.mean(wealth_data_array[26:47, 0], axis=0)))
 if os.path.isfile("OUTPUT/Saved_moments/chi_b_fits.pkl"):
     variables = pickle.load(open("OUTPUT/Saved_moments/chi_b_fits.pkl", "r"))
     for key in variables:
@@ -487,9 +424,9 @@ if SS_stage != 'first_run_for_guesses' and SS_stage != 'loop_calibration':
     bssmat_splus1 = np.array(list(bssmat) + list(bq.reshape(1, J)))
     Kss = house.get_K(bssmat_splus1, omega_SS)
     nssmat = solutions[S * J:-1].reshape(S, J)
-    Lss = house.get_L(e, nssmat, omega_SS)
-    Yss = house.get_Y(Kss, Lss, parameters)
-    wss = house.get_w(Yss, Lss, parameters)
+    Lss = firm.get_L(e, nssmat, omega_SS)
+    Yss = firm.get_Y(Kss, Lss, parameters)
+    wss = firm.get_w(Yss, Lss, parameters)
     rss = firm.get_r(Yss, Kss, parameters)
     BQss = (1+rss)*(np.array(list(bssmat) + list(bq.reshape(1, J))).reshape(
         S, J) * omega_SS * rho.reshape(S, 1)).sum(0)

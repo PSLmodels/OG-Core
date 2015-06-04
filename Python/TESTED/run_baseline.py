@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 5/21/2015
+Last updated 6/4/2015
 
 This will run the steady state solver as well as time path iteration.
 
@@ -133,6 +133,9 @@ theta = np.zeros(J)
 # Other parameters
 chi_b_scal = np.zeros(J)
 scal = np.ones(J)
+
+# Generate Wealth data moments
+wealth_data.get_wealth_data(lambdas, J)
 
 # Remove pickle of altered parameters -- reset the experiment
 if os.path.isfile("OUTPUT/Saved_moments/params_changed.pkl"):

@@ -478,58 +478,15 @@ plt.savefig('SS/combograph')
     Import wealth moments
 ------------------------------------------------------------------------
 '''
-
-variables = pickle.load(open("Saved_moments/wealth_data_moments_fit_25.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
 domain = np.linspace(20, 95, 76)
 
-pct_25_data = highest_wealth_data_new[2:]/1000000
-
-variables = pickle.load(open("Saved_moments/wealth_data_moments_fit_50.pkl", "r"))
+variables = pickle.load(open("Saved_moments/wealth_data_moments.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 
-pct_50_data = highest_wealth_data_new[2:]/1000000
+wealth_data_tograph = wealth_data_array[2:]/1000000
+wealth_model_tograph = factor_ss_init * bssmatinit[:76]/1000000
 
-variables = pickle.load(open("Saved_moments/wealth_data_moments_fit_70.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
-
-pct_70_data = highest_wealth_data_new[2:]/1000000
-
-variables = pickle.load(open("Saved_moments/wealth_data_moments_fit_80.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
-
-pct_80_data = highest_wealth_data_new[2:]/1000000
-
-variables = pickle.load(open("Saved_moments/wealth_data_moments_fit_90.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
-
-pct_90_data = highest_wealth_data_new[2:]/1000000
-
-variables = pickle.load(open("Saved_moments/wealth_data_moments_fit_99.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
-
-pct_99_data = highest_wealth_data_new[2:]/1000000
-
-variables = pickle.load(open("Saved_moments/wealth_data_moments_fit_100.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
-
-pct_100_data = highest_wealth_data_new[2:]/1000000
-
-
-pct_25_model = factor_ss_init * bssmatinit[:76, 0]/1000000
-pct_50_model = factor_ss_init * bssmatinit[:76, 1]/1000000
-pct_70_model = factor_ss_init * bssmatinit[:76, 2]/1000000
-pct_80_model = factor_ss_init * bssmatinit[:76, 3]/1000000
-pct_90_model = factor_ss_init * bssmatinit[:76, 4]/1000000
-pct_99_model = factor_ss_init * bssmatinit[:76, 5]/1000000
-pct_100_model = factor_ss_init * bssmatinit[:76, 6]/1000000
 
 '''
 ------------------------------------------------------------------------
@@ -537,68 +494,23 @@ pct_100_model = factor_ss_init * bssmatinit[:76, 6]/1000000
 ------------------------------------------------------------------------
 '''
 
-plt.figure()
-plt.plot(domain, pct_25_data, label='Data')
-plt.plot(domain, pct_25_model, label='Model', linestyle='--')
-plt.xlabel(r'age-$s$')
-plt.ylabel(r'Individual savings, in millions of dollars')
-plt.legend(loc=0)
-plt.savefig('SSinit/wealth_fit_graph_25')
+whichpercentile = [25, 50, 70, 80, 90, 99, 100]
 
-plt.figure()
-plt.plot(domain, pct_50_data, label='Data')
-plt.plot(domain, pct_50_model, label='Model', linestyle='--')
-plt.xlabel(r'age-$s$')
-plt.ylabel(r'Individual savings, in millions of dollars')
-plt.legend(loc=0)
-plt.savefig('SSinit/wealth_fit_graph_50')
-
-plt.figure()
-plt.plot(domain, pct_70_data, label='Data')
-plt.plot(domain, pct_70_model, label='Model', linestyle='--')
-plt.xlabel(r'age-$s$')
-plt.ylabel(r'Individual savings, in millions of dollars')
-plt.legend(loc=0)
-plt.savefig('SSinit/wealth_fit_graph_70')
-
-plt.figure()
-plt.plot(domain, pct_80_data, label='Data')
-plt.plot(domain, pct_80_model, label='Model', linestyle='--')
-plt.xlabel(r'age-$s$')
-plt.ylabel(r'Individual savings, in millions of dollars')
-plt.legend(loc=0)
-plt.savefig('SSinit/wealth_fit_graph_80')
-
-plt.figure()
-plt.plot(domain, pct_90_data, label='Data')
-plt.plot(domain, pct_90_model, label='Model', linestyle='--')
-plt.xlabel(r'age-$s$')
-plt.ylabel(r'Individual savings, in millions of dollars')
-plt.legend(loc=0)
-plt.savefig('SSinit/wealth_fit_graph_90')
-
-plt.figure()
-plt.plot(domain, pct_99_data, label='Data')
-plt.plot(domain, pct_99_model, label='Model', linestyle='--')
-plt.xlabel(r'age-$s$')
-plt.ylabel(r'Individual savings, in millions of dollars')
-plt.legend(loc=0)
-plt.savefig('SSinit/wealth_fit_graph_99')
-
-plt.figure()
-plt.plot(domain, pct_100_data, label='Data')
-plt.plot(domain, pct_100_model, label='Model', linestyle='--')
-plt.xlabel(r'age-$s$')
-plt.ylabel(r'Individual savings, in millions of dollars')
-plt.legend(loc=0)
-plt.savefig('SSinit/wealth_fit_graph_100')
+for j in xrange(J):
+    plt.figure()
+    plt.plot(domain, wealth_data_tograph[:, j], label='Data')
+    plt.plot(domain, wealth_model_tograph[:, j], label='Model', linestyle='--')
+    plt.xlabel(r'age-$s$')
+    plt.ylabel(r'Individual savings, in millions of dollars')
+    plt.legend(loc=0)
+    plt.savefig('SSinit/wealth_fit_graph_{}'.format(whichpercentile[j]))
 
 # all 7 together
 
 f, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, sharex=True, sharey='row', figsize=(9, 9))
 
-ax1.plot(domain, pct_100_data, color='black', label='Data')
-ax1.plot(domain, pct_100_model, color='black', label='Model', linestyle='--')
+ax1.plot(domain, wealth_data_tograph[:, 6], color='black', label='Data')
+ax1.plot(domain, wealth_model_tograph[:, 6], color='black', label='Model', linestyle='--')
 # ax1.set_xlabel(r'age-$s$')
 # ax1.set_ylabel(r'$b_s$, in millions of dollars')
 # ax1.set_ylim([0, 6])
@@ -609,43 +521,43 @@ ax1.set_title(r'$100^{th}$ Percentile')
 
 ax2.axis('off')
 
-ax3.plot(domain, pct_99_data, color='black', label='Data')
-ax3.plot(domain, pct_99_model, color='black', label='Model', linestyle='--')
+ax3.plot(domain, wealth_data_tograph[:, 5], color='black', label='Data')
+ax3.plot(domain, wealth_model_tograph[:, 5], color='black', label='Model', linestyle='--')
 # ax3.set_xlabel(r'age-$s$')
 # ax3.set_ylabel(r'$b_s$, in millions of dollars')
 # ax3.set_ylim([0, 6])
 ax3.set_title(r'$90-99^{th}$ Percentile')
 
-ax4.plot(domain, pct_90_data, color='black', label='Data')
-ax4.plot(domain, pct_90_model, color='black', label='Model', linestyle='--')
+ax4.plot(domain, wealth_data_tograph[:, 4], color='black', label='Data')
+ax4.plot(domain, wealth_model_tograph[:, 4], color='black', label='Model', linestyle='--')
 # ax4.set_xlabel(r'age-$s$')
 # ax4.set_ylabel(r'$b_s$, in millions of dollars')
 ax4.set_ylim([0, 6])
 ax4.set_title(r'$80-89^{th}$ Percentile')
 
-ax5.plot(domain, pct_80_data, color='black', label='Data')
-ax5.plot(domain, pct_80_model, color='black', label='Model', linestyle='--')
+ax5.plot(domain, wealth_data_tograph[:, 3], color='black', label='Data')
+ax5.plot(domain, wealth_model_tograph[:, 3], color='black', label='Model', linestyle='--')
 # ax5.set_xlabel(r'age-$s$')
 # ax5.set_ylabel(r'$b_s$, in millions of dollars')
 # ax5.set_ylim([0, 6])
 ax5.set_title(r'$70-79^{th}$ Percentile')
 
-ax6.plot(domain, pct_70_data, color='black', label='Data')
-ax6.plot(domain, pct_70_model, color='black', label='Model', linestyle='--')
+ax6.plot(domain, wealth_data_tograph[:, 2], color='black', label='Data')
+ax6.plot(domain, wealth_model_tograph[:, 2], color='black', label='Model', linestyle='--')
 # ax6.set_xlabel(r'age-$s$')
 # ax6.set_ylabel(r'$b_s$, in millions of dollars')
 ax6.set_ylim([0, 1])
 ax6.set_title(r'$50-69^{th}$ Percentile')
 
-ax7.plot(domain, pct_50_data, color='black', label='Data')
-ax7.plot(domain, pct_50_model, color='black', label='Model', linestyle='--')
+ax7.plot(domain, wealth_data_tograph[:, 1], color='black', label='Data')
+ax7.plot(domain, wealth_model_tograph[:, 1], color='black', label='Model', linestyle='--')
 ax7.set_xlabel(r'age-$s$')
 ax7.set_ylabel(r'$b_s$, in millions of dollars')
 # ax7.set_ylim([0, 6])
 ax7.set_title(r'$25-49^{th}$ Percentile')
 
-ax8.plot(domain, pct_25_data, color='black', label='Data')
-ax8.plot(domain, pct_25_model, color='black', label='Model', linestyle='--')
+ax8.plot(domain, wealth_data_tograph[:, 0], color='black', label='Data')
+ax8.plot(domain, wealth_model_tograph[:, 0], color='black', label='Model', linestyle='--')
 # ax8.set_xlabel(r'age-$s$')
 # ax8.set_ylabel(r'$b_s$, in millions of dollars')
 ax8.set_ylim([-.05, .25])
@@ -661,6 +573,7 @@ plt.savefig('SSinit/wealth_fits_all.png')
 '''
 
 domain = np.linspace(20, 100, 80)
+
 plt.figure()
 plt.plot(domain, factor_ss_init * cssmat_init[:, 0], label='25%')
 plt.plot(domain, factor_ss_init * cssmat_init[:, 1], label='50%')
