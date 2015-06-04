@@ -143,7 +143,7 @@ ax53 = fig53.gca(projection='3d')
 ax53.set_xlabel(r'age-$s$')
 ax53.set_ylabel(r'ability type-$j$')
 ax53.set_zlabel(r'log individual savings $log(\bar{b}_{j,s})$')
-ax53.plot_surface(X, Y, np.log(bssmat_s).T, rstride=1, cstride=1, cmap=cmap1)
+ax53.plot_surface(X2, Y2, np.log(bssmat_s[1:]).T, rstride=1, cstride=1, cmap=cmap1)
 plt.savefig('SSinit/capital_dist_log')
 
 plt.figure()
@@ -349,24 +349,24 @@ plt.savefig('SS/chi_n')
 
 fig116 = plt.figure()
 ax116 = fig116.gca(projection='3d')
-ax116.plot_surface(X2, Y2, euler1.T, rstride=1, cstride=2, cmap=cmap2)
+ax116.plot_surface(X, Y, euler_savings.T, rstride=1, cstride=2, cmap=cmap2)
 ax116.set_xlabel(r'Age Cohorts $S$')
 ax116.set_ylabel(r'Ability Types $J$')
 ax116.set_zlabel('Error Level')
 ax116.set_title('Euler Errors')
-plt.savefig('SS/euler_errors_euler1_SS')
+plt.savefig('SS/euler_errors_savings_SS')
 fig117 = plt.figure()
 ax117 = fig117.gca(projection='3d')
-ax117.plot_surface(X, Y, euler2.T, rstride=1, cstride=2, cmap=cmap2)
+ax117.plot_surface(X, Y, euler_labor_leisure.T, rstride=1, cstride=2, cmap=cmap2)
 ax117.set_xlabel(r'Age Cohorts $S$')
 ax117.set_ylabel(r'Ability Types $J$')
 ax117.set_zlabel('Error Level')
 ax117.set_title('Euler Errors')
-plt.savefig('SS/euler_errors_euler2_SS')
+plt.savefig('SS/euler_errors_laborleisure_SS')
 
 '''
 ------------------------------------------------------------------------
-    Graphs comparing tax experments to the basline
+    Graphs comparing tax experments to the baseline
 ------------------------------------------------------------------------
 '''
 

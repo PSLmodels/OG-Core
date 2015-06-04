@@ -34,21 +34,11 @@ from subprocess import call
 '''
 
 # New Tax Parameters
-p_wealth = 0.025
-h_wealth = 0.305509008443123
-m_wealth = 2.16050687852062
-
-scal = np.ones(J) * 1.1
-scal[-1] = .5
-scal[-2] = .7
-chi_b_scal = np.zeros(J)
-d_tax_income = .219
 
 SS_stage = 'SS_tax'
 TPI_initial_run = False
 
-var_names = ['p_wealth', 'h_wealth', 'm_wealth', 'scal', 'chi_b_scal',
-             'd_tax_income', 'TPI_initial_run']
+var_names = ['SS_stage', 'TPI_initial_run']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
@@ -70,7 +60,8 @@ call(['python', 'SS.py'])
 ------------------------------------------------------------------------
 '''
 
-call(['python', 'TPI.py'])
+# call(['python', 'TPI.py'])
+import TPI
 
 
 '''

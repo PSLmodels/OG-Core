@@ -51,13 +51,13 @@ def get_L(e, n, weights):
     return L_now
 
 
-def get_K(b, omega):
+def get_K(b, weights):
     '''
-    Parameters: b, omega
+    Parameters: b, weights
 
     Returns:    Aggregate labor
     '''
-    K_now = np.sum(b * omega)
+    K_now = np.sum(b * weights)
     return K_now
 
 
@@ -81,7 +81,7 @@ def marg_ut_labor(n, chi_n, params):
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     deriv = b_ellipse * (1/ltilde) * ((1 - (n / ltilde) ** upsilon) ** (
         (1/upsilon)-1)) * (n / ltilde) ** (upsilon - 1)
-    output = chi_n.reshape(S, 1) * deriv
+    output = chi_n * deriv
     return output
 
 
@@ -154,11 +154,11 @@ def euler_labor_leisure_func(w, r, e, n_guess, b_s, b_splus1, BQ, factor, T_H, c
     income = (r * b_s + w * e * n_guess) * factor
     deriv = 1 - tau_payroll - tax.tau_income(r, b_s, w, e, n_guess, factor, params) - tax.tau_income_deriv(
         r, b_s, w, e, n_guess, factor, params) * income
-    euler = marg_ut_cons(cons, params) * w * deriv * e - marg_ut_labor(n_guess, chi_n, params)
+    euler = marg_ut_cons(cons, params) * w * deriv * e - marg_ut_labor(n_guess, chi_n.reshape(S, 1), params)
     return euler
 
 
-def constraint_checker(bssmat, nssmat, cssmat, params):
+def constraint_checker_SS(bssmat, nssmat, cssmat, params):
     '''
     Parameters:
         bssmat = steady state distribution of capital ((S-1)xJ array)
@@ -174,7 +174,7 @@ def constraint_checker(bssmat, nssmat, cssmat, params):
         # Prints warnings for violations of capital, labor, and
             consumption constraints.
     '''
-    # print 'Checking constraints on capital, labor, and consumption.'
+    print 'Checking constraints on capital, labor, and consumption.'
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     flag1 = False
     if bssmat.sum() <= 0:
@@ -197,3 +197,31 @@ def constraint_checker(bssmat, nssmat, cssmat, params):
     else:
         print '\tThere were no violations of the constraints on consumption.'
 
+
+def constraint_checker_TPI(b_dist, n_dist, c_dist, t, params, N_tilde):
+    '''
+    Parameters:
+        b_dist = distribution of capital ((S-1)xJ array)
+        n_dist = distribution of labor (SxJ array)
+        w      = wage rate (scalar)
+        r      = rental rate (scalar)
+        e      = distribution of abilities (SxJ array)
+        c_dist = distribution of consumption (SxJ array)
+
+    Returns:
+        Prints warnings for violations of capital, labor, and
+            consumption constraints.
+    '''
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    if b_dist.sum() / N_tilde[t] <= 0:
+        print '\tWARNING: Aggregate capital is less than or equal to ' \
+            'zero in period %.f.' % t
+    if (n_dist < 0).any():
+        print '\tWARNING: Labor supply violates nonnegativity constraints ' \
+            'in period %.f.' % t
+    if (n_dist > ltilde).any():
+        print '\tWARNING: Labor suppy violates the ltilde constraint in '\
+            'period %.f.' % t
+    if (c_dist < 0).any():
+        print '\tWARNING: Consumption violates nonnegativity constraints in ' \
+            'period %.f.' % t

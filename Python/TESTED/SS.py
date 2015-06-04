@@ -499,7 +499,7 @@ if SS_stage != 'first_run_for_guesses' and SS_stage != 'loop_calibration':
     taxss = tax.total_taxes(rss, bssmat_s, wss, e, nssmat, BQss, lambdas, factor_ss, T_Hss, None, 'SS', False, parameters, theta, tau_bq)
     cssmat = house.get_cons(rss, bssmat_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.reshape(1, J), bssmat_splus1, parameters, taxss)
 
-    house.constraint_checker(bssmat, nssmat, cssmat, parameters)
+    house.constraint_checker_SS(bssmat, nssmat, cssmat, parameters)
 
     '''
     ------------------------------------------------------------------------
@@ -557,7 +557,7 @@ elif SS_stage == 'SS_tax':
     # Pickle Variables
     var_names = ['Kss', 'bssmat', 'Lss', 'nssmat', 'Yss', 'wss', 'rss',
                  'chi_n', 'chi_b', 'BQss', 'factor_ss', 'bssmat_s', 'cssmat',
-                 'euler_savings', 'euler_labor_leisure', 'T_Hss']
+                 'euler_savings', 'euler_labor_leisure', 'T_Hss', 'bssmat_splus1']
     dictionary = {}
     for key in var_names:
         dictionary[key] = globals()[key]
