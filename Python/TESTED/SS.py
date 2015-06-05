@@ -227,7 +227,10 @@ def func_to_min(chi_guesses_init, other_guesses_init):
     factor = solutions[-1]
     # Wealth Calibration Euler
     wealth_sim = b_s * factor
-    error5 = list(misc_funcs.perc_dif_func(np.mean(wealth_sim[:24], axis=0), np.mean(wealth_data_array[2:26], axis=0))) + list(misc_funcs.perc_dif_func(np.mean(wealth_sim[24:45], axis=0), np.mean(wealth_data_array[26:47], axis=0)))
+    error5 = np.zeros(2*J)
+    error5[0::2] = misc_funcs.perc_dif_func(np.mean(wealth_sim[:24], axis=0), np.mean(wealth_data_array[2:26], axis=0))
+    error5[1::2] = misc_funcs.perc_dif_func(np.mean(wealth_sim[24:45], axis=0), np.mean(wealth_data_array[26:47], axis=0))
+    error5 = list(error5)
     print error5
     # labor calibration euler
     labor_sim = ((solutions[S*J:2*S*J]).reshape(S, J)*lambdas.reshape(1, J)).sum(axis=1)
@@ -324,7 +327,7 @@ elif SS_stage == 'constrained_minimization':
     chi_guesses = final_chi_params
     func_to_min_X = lambda x: func_to_min(x, guesses)
     bnds = tuple([(1e-6, None)] * (S + J))
-    final_chi_params = opt.minimize(func_to_min_X, chi_guesses, method='TNC', tol=1e-7, bounds=bnds, options={'maxiter': 1}).x
+    final_chi_params = opt.minimize(func_to_min_X, chi_guesses, method='TNC', tol=1e-7, bounds=bnds, options={'maxiter': 10}).x
     print 'The final bequest parameter values:', final_chi_params
     Steady_State_X2 = lambda x: Steady_State(x, final_chi_params)
     solutions = opt.fsolve(Steady_State_X2, solutions_pre, xtol=1e-13)
@@ -356,12 +359,13 @@ elif SS_stage == 'SS_tax':
 ------------------------------------------------------------------------
 '''
 
-b_seefit = solutions[0: S * J].reshape((S, J))
-b_see_fit = b_seefit[:-1, :]
+b_seefit = solutions[0: (S-1) * J].reshape((S-1, J))
 factor_see_fit = solutions[-1]
 # Wealth Calibration Euler
-b_sim = b_see_fit * factor_see_fit
-chi_fits = list(misc_funcs.perc_dif_func(np.mean(b_sim[:24], axis=0), np.mean(wealth_data_array[2:26, 0], axis=0))) + list(misc_funcs.perc_dif_func(np.mean(b_sim[24:45], axis=0), np.mean(wealth_data_array[26:47, 0], axis=0)))
+b_sim = b_seefit * factor_see_fit
+chi_fits = np.zeros(2*J)
+chi_fits[0::2] = misc_funcs.perc_dif_func(np.mean(b_sim[:24], axis=0), np.mean(wealth_data_array[2:26], axis=0))
+chi_fits[1::2] = misc_funcs.perc_dif_func(np.mean(b_sim[24:45], axis=0), np.mean(wealth_data_array[26:47], axis=0))
 if os.path.isfile("OUTPUT/Saved_moments/chi_b_fits.pkl"):
     variables = pickle.load(open("OUTPUT/Saved_moments/chi_b_fits.pkl", "r"))
     for key in variables:

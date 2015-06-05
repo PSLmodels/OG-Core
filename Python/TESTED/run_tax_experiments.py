@@ -38,6 +38,8 @@ from subprocess import call
 SS_stage = 'SS_tax'
 TPI_initial_run = False
 
+d_tax_income = .9 * .219
+
 var_names = ['SS_stage', 'TPI_initial_run']
 dictionary = {}
 for key in var_names:

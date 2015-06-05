@@ -607,15 +607,17 @@ plt.savefig('SSinit/income_dollars')
 '''
 
 # change percentile, as needed
+for j in xrange(J):
+    print 'j=', j
+    # For age 20-44:
+    print np.mean(wealth_data_tograph[:24, j])
+    print np.mean(wealth_model_tograph[2:26, j])
 
-# For age 20-44:
-# print np.mean(pct_100_model[:24] * 1000000)
-# print np.mean(pct_100_data[2:26] * 1000000)
+    # For age 45-65:
+    print np.mean(wealth_data_tograph[24:45, j])
+    print np.mean(wealth_model_tograph[26:47, j])
 
-# For age 45-65:
-# print np.mean(pct_100_model[24:45] * 1000000)
-# print np.mean(pct_100_data[26:47] * 1000000)
+    # Percent differences
+    print (np.mean(wealth_model_tograph[:24, j]) - np.mean(wealth_data_tograph[2:26, j])) / np.mean(wealth_data_tograph[2:26, j])
+    print (np.mean(wealth_model_tograph[24:45, j]) - np.mean(wealth_data_tograph[26:47, j])) / np.mean(wealth_data_tograph[26:47, j])
 
-# Percent differences
-# print (np.mean(pct_100_model[:24] * 1000000) - np.mean(pct_100_data[2:26] * 1000000)) / np.mean(pct_100_data[2:26] * 1000000)
-# print (np.mean(pct_100_model[24:45] * 1000000) - np.mean(pct_100_data[26:47] * 1000000)) / np.mean(pct_100_data[26:47] * 1000000)
