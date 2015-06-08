@@ -82,16 +82,21 @@ utility = ((cssmat_init ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(S, 1) * (b
 utility += beq_ut 
 utility_init = utility.sum(0)
 
+T_Hss_init = T_Hss
+Kss_init = Kss
+Lss_init = Lss
 
 Css = (cssmat * omega_SS).sum()
+Css_init = Css
 income_init = cssmat + delta * bssmat_splus1
-print (income_init*omega_SS).sum()
+# print (income_init*omega_SS).sum()
 # print Css + delta * Kss
 # print Kss
 # print Lss
-# print Css
+# print Css_init
 # print (utility_init * omega_SS).sum()
 # the_inequalizer(income_init, omega_SS)
+
 
 
 '''
@@ -281,15 +286,18 @@ utility += beq_ut
 utility = utility.sum(0)
 
 
+
 Css = (cssmat * omega_SS).sum()
 income = cssmat + delta * bssmat_splus1
-print (income*omega_SS).sum()
+# print (income*omega_SS).sum()
 # print Css + delta * Kss
 # print Kss
 # print Lss
 # print Css
 # print (utility * omega_SS).sum()
 # the_inequalizer(yss, omega_SS)
+
+print (Lss - Lss_init)/Lss_init
 
 '''
 ------------------------------------------------------------------------
@@ -607,17 +615,17 @@ plt.savefig('SSinit/income_dollars')
 '''
 
 # change percentile, as needed
-for j in xrange(J):
-    print 'j=', j
-    # For age 20-44:
-    print np.mean(wealth_data_tograph[:24, j])
-    print np.mean(wealth_model_tograph[2:26, j])
+# for j in xrange(J):
+#     print 'j=', j
+#     # For age 20-44:
+#     print np.mean(wealth_data_tograph[:24, j])
+#     print np.mean(wealth_model_tograph[2:26, j])
 
-    # For age 45-65:
-    print np.mean(wealth_data_tograph[24:45, j])
-    print np.mean(wealth_model_tograph[26:47, j])
+#     # For age 45-65:
+#     print np.mean(wealth_data_tograph[24:45, j])
+#     print np.mean(wealth_model_tograph[26:47, j])
 
-    # Percent differences
-    print (np.mean(wealth_model_tograph[:24, j]) - np.mean(wealth_data_tograph[2:26, j])) / np.mean(wealth_data_tograph[2:26, j])
-    print (np.mean(wealth_model_tograph[24:45, j]) - np.mean(wealth_data_tograph[26:47, j])) / np.mean(wealth_data_tograph[26:47, j])
+#     # Percent differences
+#     print (np.mean(wealth_model_tograph[:24, j]) - np.mean(wealth_data_tograph[2:26, j])) / np.mean(wealth_data_tograph[2:26, j])
+#     print (np.mean(wealth_model_tograph[24:45, j]) - np.mean(wealth_data_tograph[26:47, j])) / np.mean(wealth_data_tograph[26:47, j])
 
