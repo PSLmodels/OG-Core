@@ -327,7 +327,7 @@ elif SS_stage == 'constrained_minimization':
     chi_guesses = final_chi_params
     func_to_min_X = lambda x: func_to_min(x, guesses)
     bnds = tuple([(1e-6, None)] * (S + J))
-    final_chi_params = opt.minimize(func_to_min_X, chi_guesses, method='TNC', tol=1e-7, bounds=bnds, options={'maxiter': 10}).x
+    final_chi_params = opt.minimize(func_to_min_X, chi_guesses, method='TNC', tol=1e-7, bounds=bnds, options={'maxiter': 1}).x
     print 'The final bequest parameter values:', final_chi_params
     Steady_State_X2 = lambda x: Steady_State(x, final_chi_params)
     solutions = opt.fsolve(Steady_State_X2, solutions_pre, xtol=1e-13)
