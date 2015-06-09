@@ -84,8 +84,8 @@ def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_
         Value of Euler error.
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    e_extended = np.array(list(e) + list(np.zeros(J).reshape(1, J)))
-    n_extended = np.array(list(n_guess) + list(np.zeros(J).reshape(1, J)))
+    e_extended = np.array(list(e) + [0])
+    n_extended = np.array(list(n_guess) + [0])
     tax1 = tax.total_taxes(r, b_s, w, e, n_guess, BQ, lambdas, factor, T_H, None, 'SS', False, params, theta, tau_bq)
     tax2 = tax.total_taxes(r, b_splus1, w, e_extended[1:], n_extended[1:], BQ, lambdas, factor, T_H, None, 'SS', True, params, theta, tau_bq)
     cons1 = get_cons(r, b_s, w, e, n_guess, BQ, lambdas, b_splus1, params, tax1)
@@ -94,8 +94,8 @@ def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_
     deriv = (
         1 + r*(1-tax.tau_income(r, b_s, w, e_extended[1:], n_extended[1:], factor, params)-tax.tau_income_deriv(
             r, b_s, w, e_extended[1:], n_extended[1:], factor, params)*income)-tax.tau_w_prime(b_splus1, params)*b_splus1-tax.tau_wealth(b_splus1, params))
-    savings_ut = rho.reshape(S, 1) * np.exp(-sigma * g_y) * chi_b.reshape(S, J) * b_splus1 ** (-sigma)
-    euler = marg_ut_cons(cons1, params) - beta * (1-rho.reshape(S, 1)) * deriv * marg_ut_cons(
+    savings_ut = rho * np.exp(-sigma * g_y) * chi_b * b_splus1 ** (-sigma)
+    euler = marg_ut_cons(cons1, params) - beta * (1-rho) * deriv * marg_ut_cons(
         cons2, params) * np.exp(-sigma * g_y) - savings_ut
     return euler
 
@@ -122,7 +122,7 @@ def euler_labor_leisure_func(w, r, e, n_guess, b_s, b_splus1, BQ, factor, T_H, c
     income = (r * b_s + w * e * n_guess) * factor
     deriv = 1 - tau_payroll - tax.tau_income(r, b_s, w, e, n_guess, factor, params) - tax.tau_income_deriv(
         r, b_s, w, e, n_guess, factor, params) * income
-    euler = marg_ut_cons(cons, params) * w * deriv * e - marg_ut_labor(n_guess, chi_n.reshape(S, 1), params)
+    euler = marg_ut_cons(cons, params) * w * deriv * e - marg_ut_labor(n_guess, chi_n, params)
     return euler
 
 

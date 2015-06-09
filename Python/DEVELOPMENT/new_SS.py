@@ -18,12 +18,6 @@ import tax_funcs as tax
 variables = pickle.load(open("OUTPUT/given_params.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
-print S
-print J
-print T
-print starting_age
-print ending_age
-print E
 
 omega, g_n, omega_SS, surv_rate = demographics.get_omega(
         S, J, T, lambdas, starting_age, ending_age, E)

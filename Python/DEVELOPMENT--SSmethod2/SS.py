@@ -153,6 +153,65 @@ parameters = [J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payrol
 # Functions
 
 
+def Euler_equation_solver(guesses, r, w, BQ, T_H, factor, j, params, chi_b, chi_n):
+    b_guess = np.array(guesses[:S])
+    n_guess = np.array(guesses[S:])
+    b_s = np.array([0] + list(b_guess[:-1]))
+    b_splus1 = b_guess
+    b_splus2 = np.array(list(b_guess[1:]) + [0])
+
+    error1 = house.euler_savings_func(w, r, e[:, j], n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_H, chi_b[j], params, theta[j], tau_bq[j], rho, lambdas[j])
+    error2 = house.euler_labor_leisure_func(w, r, e[:, j], n_guess, b_s, b_splus1, BQ, factor, T_H, chi_n, params, theta[j], tau_bq[j], lambdas[j])
+    # Put in constraints
+    return list(error1.flatten()) + list(error2.flatten())
+
+
+def new_SS_Solver(b_guess_init, n_guess_init, w_guess, r_guess, factor_guess, chi_n, chi_b):
+    w = w_guess
+    r = r_guess
+    T_H = 0
+    BQ = np.ones(J) * .5
+    nu_SS = .2
+    max_it = 100
+    factor = factor_guess
+    dist = 10
+    dist_tol = 1e-5
+    iteration = 0
+    bssmat = b_guess_init
+    nssmat = n_guess_init
+
+    while (dist > dist_tol) and (iteration < max_it):
+        for j in xrange(J):
+            # Solve the euler equations
+            guesses = np.append(bssmat[:, j], nssmat[:, j])
+            solutions = opt.fsolve(Euler_equation_solver, guesses * .5, args=(r, w, BQ[j], T_H, factor, j, parameters, chi_b, chi_n))
+            bssmat[:,j] = solutions[:S]
+            nssmat[:,j] = solutions[S:]
+
+        K = house.get_K(bssmat, omega_SS)
+        L = firm.get_L(e, nssmat, omega_SS)
+        Y = firm.get_Y(K, L, parameters)
+        new_r = firm.get_r(Y, K, parameters)
+        new_w = firm.get_w(Y, L, parameters)
+        b1_2 = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
+        average_income_model = ((new_r * b1_2 + new_w * e * nssmat) * omega_SS).sum()
+        new_factor = mean_income_data / average_income_model 
+        new_BQ = (1+new_r)*(bssmat * omega_SS * rho.reshape(S, 1)).sum(0)
+        new_T_H = tax.get_lump_sum(new_r, b1_2, new_w, e, nssmat, new_BQ, lambdas, factor, omega_SS, 'SS', parameters, theta, tau_bq)
+
+        r = nu_SS*new_r + (1-nu_SS)*r
+        w = nu_SS*new_w + (1-nu_SS)*w
+        factor = nu_SS*new_factor + (1-nu_SS)*factor 
+        BQ = nu_SS*new_BQ + (1-nu_SS)*BQ 
+        T_H = nu_SS*new_T_H + (1-nu_SS)*T_H 
+        
+        dist = (abs(r-new_r) + abs(w-new_w))
+        iteration += 1
+        print "Iteration: ", iteration
+        print "Distance: ", dist 
+
+
+
 def Steady_State_SS(guesses, chi_params, params, weights_SS, rho_vec, lambdas, theta, tau_bq, e):
     '''
     Parameters: Steady state distribution of capital guess as array
@@ -280,17 +339,18 @@ if SS_stage == 'first_run_for_guesses':
     wguess = firm.get_w(Yg, Lg, parameters)
     rguess = firm.get_r(Yg, Kg, parameters)
     avIguess = ((rguess * b_guess_init + wguess * e * n_guess_init) * omega_SS).sum()
-    factor_guess = [mean_income_data / avIguess]
-    guesses = list(b_guess_init.flatten()) + list(n_guess_init.flatten()) + factor_guess
-    chi_guesses = np.ones(S+J)
-    chi_guesses[0:J] = np.array([5, 10, 90, 250, 250, 250, 250]) + chi_b_scal
-    print 'Chi_b:', chi_guesses[0:J]
-    chi_guesses[J:] = chi_n_guess
-    chi_guesses = list(chi_guesses)
-    final_chi_params = chi_guesses
-    Steady_State_SS_X2 = lambda x: Steady_State_SS(x, final_chi_params, parameters, omega_SS, rho, lambdas, theta, tau_bq, e)
-    solutions = opt.fsolve(Steady_State_SS_X2, guesses, xtol=1e-13)
-    print np.array(Steady_State_SS_X2(solutions)).max()
+    factor_guess = mean_income_data / avIguess
+    # guesses = list(b_guess_init.flatten()) + list(n_guess_init.flatten()) + factor_guess
+    # chi_guesses = np.ones(S+J)
+    # chi_guesses[0:J] = np.array([5, 10, 90, 250, 250, 250, 250]) + chi_b_scal
+    # print 'Chi_b:', chi_guesses[0:J]
+    # chi_guesses[J:] = chi_n_guess
+    # chi_guesses = list(chi_guesses)
+    # final_chi_params = chi_guesses
+    # Steady_State_SS_X2 = lambda x: Steady_State_SS(x, final_chi_params, parameters, omega_SS, rho, lambdas, theta, tau_bq, e)
+    # solutions = opt.fsolve(Steady_State_SS_X2, guesses, xtol=1e-13)
+    # print np.array(Steady_State_SS_X2(solutions)).max()
+    new_SS_Solver(b_guess_init, n_guess_init, wguess, rguess, factor_guess, chi_n_guess, np.array([5, 10, 90, 250, 250, 250, 250]))
 elif SS_stage == 'loop_calibration':
     variables = pickle.load(open("OUTPUT/Saved_moments/loop_calibration_solutions.pkl", "r"))
     for key in variables:
