@@ -13,7 +13,7 @@ This py-file calls the following other file(s):
 
 # Packages
 import numpy as np
-import pickle
+import cPickle as pickle
 
 '''
 ------------------------------------------------------------------------

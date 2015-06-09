@@ -19,7 +19,7 @@ This py-file creates the following other file(s):
 '''
 
 import numpy as np
-import pickle
+import cPickle as pickle
 from glob import glob
 import os
 import sys

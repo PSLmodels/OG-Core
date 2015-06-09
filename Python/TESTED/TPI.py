@@ -26,7 +26,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import time
-import pickle
+import cPickle as pickle
 import os
 import scipy.optimize as opt
 

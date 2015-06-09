@@ -33,7 +33,7 @@ import numpy as np
 import time
 import os
 import scipy.optimize as opt
-import pickle
+import cPickle as pickle
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt

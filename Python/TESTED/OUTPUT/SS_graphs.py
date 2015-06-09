@@ -20,7 +20,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-import pickle
+import cPickle as pickle
 
 '''
 ------------------------------------------------------------------------
