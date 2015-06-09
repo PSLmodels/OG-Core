@@ -34,8 +34,6 @@ import os
 import scipy.optimize as opt
 import cPickle as pickle
 
-import income_polynomials as income
-import demographics
 import tax_funcs as tax
 import household_funcs as house
 import firm_funcs as firm
@@ -121,6 +119,8 @@ rho    = S x 1 array of mortality rates
 '''
 
 if SS_stage == 'first_run_for_guesses':
+    import income_polynomials as income
+    import demographics
     # These values never change, so only run it once
     omega, g_n, omega_SS, surv_rate = demographics.get_omega(
         S, J, T, lambdas, starting_age, ending_age, E)

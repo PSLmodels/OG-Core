@@ -5,7 +5,6 @@ import os
 import scipy.optimize as opt
 import pickle
 import matplotlib
-matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from scipy import stats
@@ -19,6 +18,12 @@ import tax_funcs as tax
 variables = pickle.load(open("OUTPUT/given_params.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
+print S
+print J
+print T
+print starting_age
+print ending_age
+print E
 
 omega, g_n, omega_SS, surv_rate = demographics.get_omega(
         S, J, T, lambdas, starting_age, ending_age, E)
@@ -178,14 +183,14 @@ chi_b = np.ones(J)
 w = 1.2
 r = .06
 T_H = 0
-BQ = np.ones(J)
+BQ = np.ones(J) * .01
 factor = 100000
 temp_xi = .5
 max_it = 100
 dist = 10
 dist_tol = .0001
 it = 0
-bssmat = np.ones((S,J))
+bssmat = np.ones((S,J)) * .01
 nssmat = np.ones((S,J)) * .5
 
 while (dist > dist_tol) and (it < max_it):
@@ -229,6 +234,22 @@ Kss = (omega_SS*bssmat).sum()
 Yss = get_Y(Kss, Lss)
 factor_ss = factor 
 
+domain = np.linspace(starting_age, ending_age, S)
+Jgrid = np.zeros(J)
+for j in xrange(J):
+    Jgrid[j:] += lambdas[j]
+cmap1 = matplotlib.cm.get_cmap('summer')
+cmap2 = matplotlib.cm.get_cmap('jet')
+X, Y = np.meshgrid(domain, Jgrid)
+X2, Y2 = np.meshgrid(domain[1:], Jgrid)
+
+fig5 = plt.figure()
+ax5 = fig5.gca(projection='3d')
+ax5.set_xlabel(r'age-$s$')
+ax5.set_ylabel(r'ability type-$j$')
+ax5.set_zlabel(r'individual savings $\bar{b}_{j,s}$')
+ax5.plot_surface(X, Y, bssmat.T, rstride=1, cstride=1, cmap=cmap2)
+plt.show()
 
 # Save the results
 bssmat_init = np.array(list(bssmat) + list(BQ.reshape(1, J)))
