@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 5/21/2015
+Last updated 6/4/2015
 
 Returns the wealth for all ages of a certain percentile.
 
@@ -11,15 +11,6 @@ This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
             OUTPUT/Demographics/distribution_of_wealth_data.png
             OUTPUT/Demographics/distribution_of_wealth_data_log.png
-            Temporarily:
-            OUTPUT/Saved_moments/wealth_data_moments_fit_25.pkl
-            OUTPUT/Saved_moments/wealth_data_moments_fit_50.pkl
-            OUTPUT/Saved_moments/wealth_data_moments_fit_70.pkl
-            OUTPUT/Saved_moments/wealth_data_moments_fit_80.pkl
-            OUTPUT/Saved_moments/wealth_data_moments_fit_90.pkl
-            OUTPUT/Saved_moments/wealth_data_moments_fit_99.pkl
-            OUTPUT/Saved_moments/wealth_data_moments_fit_100.pkl
-            Eventually:
             OUTPUT/Saved_moments/wealth_data_moments.pkl
 ------------------------------------------------------------------------
 '''
@@ -33,7 +24,7 @@ This py-file creates the following other file(s):
 import numpy as np
 import pandas as pd
 from scipy import stats
-import pickle
+import cPickle as pickle
 import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -80,94 +71,22 @@ plt.savefig('OUTPUT/Demographics/distribution_of_wealth_data_log')
 ------------------------------------------------------------------------
 '''
 
+data2 = np.array(data)[:, 1:-1]
 
-def get_highest_wealth_data(bin_weights):
-    # To do: make this function fully generalized
-    # The purpose of this function is to return an array of the desired
-    # wealth moments for each percentile group
-    last_ability_size = bin_weights[-1]
-    percentile = 100 - int(last_ability_size * 100)
-    highest_wealth_data = np.array(data['p{}_wealth'.format(percentile)])
-    var_names = ['highest_wealth_data']
+
+def get_wealth_data(bin_weights, J):
+    perc_array = np.zeros(J)
+    bins2 = (bin_weights * 100).astype(int)
+    perc_array[0] = bins2[0]
+    for i in xrange(J-1):
+        perc_array[i+1] = bins2[i+1] + perc_array[i]
+    perc_array -= 1
+    wealth_data_array = np.zeros((78, J))
+    wealth_data_array[:, 0] = data2[:, :perc_array[0]].mean(axis=1)
+    for j in xrange(1, J):
+        wealth_data_array[:, j] = data2[:, perc_array[j-1]:perc_array[j]].mean(axis=1)
+    var_names = ['wealth_data_array']
     dictionary = {}
     for key in var_names:
         dictionary[key] = locals()[key]
     pickle.dump(dictionary, open("OUTPUT/Saved_moments/wealth_data_moments.pkl", "w"))
-
-
-'''
-------------------------------------------------------------------------
-    Pickle the wealth moments for the 25, 50, 70, 80, 90, 99, and 100th
-        percentiles by hand, since the previous function is not yet fully
-        generalized.  Each pickle is an Sx1 vector.
-------------------------------------------------------------------------
-'''
-
-perc_array = np.array([25, 50, 70, 80, 90, 99, 100])
-
-ar25 = np.ones((78, 24))
-for i in xrange(1, 25):
-    ar25[:, i-1] = np.array(data['p{}_wealth'.format(i)])
-highest_wealth_data_new = np.mean(ar25, axis=1)
-var_names = ['highest_wealth_data_new']
-dictionary = {}
-for key in var_names:
-    dictionary[key] = locals()[key]
-pickle.dump(dictionary, open("OUTPUT/Saved_moments/wealth_data_moments_fit_25.pkl", "w"))
-
-ar25 = np.ones((78, 25))
-for i in xrange(25, 50):
-    ar25[:, i-25] = np.array(data['p{}_wealth'.format(i)])
-highest_wealth_data_new = np.mean(ar25, axis=1)
-var_names = ['highest_wealth_data_new']
-dictionary = {}
-for key in var_names:
-    dictionary[key] = locals()[key]
-pickle.dump(dictionary, open("OUTPUT/Saved_moments/wealth_data_moments_fit_50.pkl", "w"))
-
-ar20 = np.ones((78, 20))
-for i in xrange(50, 70):
-    ar20[:, i-50] = np.array(data['p{}_wealth'.format(i)])
-highest_wealth_data_new = np.mean(ar20, axis=1)
-var_names = ['highest_wealth_data_new']
-dictionary = {}
-for key in var_names:
-    dictionary[key] = locals()[key]
-pickle.dump(dictionary, open("OUTPUT/Saved_moments/wealth_data_moments_fit_70.pkl", "w"))
-
-ar10 = np.ones((78, 10))
-for i in xrange(70, 80):
-    ar10[:, i-70] = np.array(data['p{}_wealth'.format(i)])
-highest_wealth_data_new = np.mean(ar10, axis=1)
-var_names = ['highest_wealth_data_new']
-dictionary = {}
-for key in var_names:
-    dictionary[key] = locals()[key]
-pickle.dump(dictionary, open("OUTPUT/Saved_moments/wealth_data_moments_fit_80.pkl", "w"))
-
-ar10 = np.ones((78, 10))
-for i in xrange(80, 90):
-    ar10[:, i-80] = np.array(data['p{}_wealth'.format(i)])
-highest_wealth_data_new = np.mean(ar10, axis=1)
-var_names = ['highest_wealth_data_new']
-dictionary = {}
-for key in var_names:
-    dictionary[key] = locals()[key]
-pickle.dump(dictionary, open("OUTPUT/Saved_moments/wealth_data_moments_fit_90.pkl", "w"))
-
-ar09 = np.ones((78, 9))
-for i in xrange(90, 99):
-    ar09[:, i-90] = np.array(data['p{}_wealth'.format(i)])
-highest_wealth_data_new = np.mean(ar09, axis=1)
-var_names = ['highest_wealth_data_new']
-dictionary = {}
-for key in var_names:
-    dictionary[key] = locals()[key]
-pickle.dump(dictionary, open("OUTPUT/Saved_moments/wealth_data_moments_fit_99.pkl", "w"))
-
-highest_wealth_data_new = np.array(data['p99_wealth'.format(i)])
-var_names = ['highest_wealth_data_new']
-dictionary = {}
-for key in var_names:
-    dictionary[key] = locals()[key]
-pickle.dump(dictionary, open("OUTPUT/Saved_moments/wealth_data_moments_fit_100.pkl", "w"))

@@ -22,7 +22,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-import pickle
+import cPickle as pickle
 
 '''
 ------------------------------------------------------------------------
@@ -30,10 +30,16 @@ import pickle
 ------------------------------------------------------------------------
 '''
 
-variables = pickle.load(open("SSinit/ss_init.pkl", "r"))
+variables = pickle.load(open("SSinit/ss_init_vars.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 variables = pickle.load(open("TPIinit/TPIinit_vars.pkl", "r"))
+for key in variables:
+    globals()[key] = variables[key]
+variables = pickle.load(open("Saved_moments/params_given.pkl", "r"))
+for key in variables:
+    globals()[key] = variables[key]
+variables = pickle.load(open("Saved_moments/income_demo_vars.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 
@@ -47,9 +53,8 @@ w_base = winit
 r_base = rinit
 Y_base = Yinit
 BQpath_TPIbase = BQpath_TPI
-eul1_init = eul1
-eul2_init = eul2
-eul3_init = eul3
+eul_savings_init = eul_savings
+eul_laborleisure_init = eul_laborleisure
 b_mat_init = b_mat
 n_mat_init = n_mat
 T_H_initbase = T_H_init
@@ -111,6 +116,9 @@ variables = pickle.load(open("SS/ss_vars.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 variables = pickle.load(open("TPI/TPI_vars.pkl", "r"))
+for key in variables:
+    globals()[key] = variables[key]
+variables = pickle.load(open("Saved_moments/params_changed.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 
@@ -323,9 +331,8 @@ domain     = 1 x S vector of each age cohort
 
 domain = np.linspace(1, T, T)
 plt.figure()
-plt.plot(domain, eul1_init, label='Euler1')
-plt.plot(domain, eul2_init, label='Euler2')
-plt.plot(domain, eul3_init, label='Euler3')
+plt.plot(domain, eul_savings_init, label='Euler1')
+plt.plot(domain, eul_laborleisure_init, label='Euler2')
 plt.ylabel('Error Value')
 plt.xlabel(r'Time $t$')
 plt.legend(loc=0)
@@ -334,9 +341,8 @@ plt.savefig('TPIinit/euler_errors_TPI')
 
 domain = np.linspace(1, T, T)
 plt.figure()
-plt.plot(domain, eul1, label='Euler1')
-plt.plot(domain, eul2, label='Euler2')
-plt.plot(domain, eul3, label='Euler3')
+plt.plot(domain, eul_savings, label='Euler1')
+plt.plot(domain, eul_laborleisure, label='Euler2')
 plt.ylabel('Error Value')
 plt.xlabel(r'Time $t$')
 plt.legend(loc=0)
@@ -626,34 +632,6 @@ plt.legend(loc=0)
 plt.savefig("TPIinit/gini_c_nocol")
 
 
-
-'''
-------------------------------------------------------------------------
-    Pickle gini timepaths, to be used by gini_grapher.py
-    (change names to be _income or _wealth, depending on whether
-        this is the income and wealth tax experiment)
-------------------------------------------------------------------------
-'''
-
-wealth_baseline = gini_nocol(b_mat_init[:T], omega_stationary_init)
-wealth_wealth = gini_nocol(b_mat[:T], omega_stationary)
-income_baseline = gini_nocol(y_mat_init[:T], omega_stationary_init)
-income_wealth = gini_nocol(y_mat[:T], omega_stationary)
-cons_baseline = gini_nocol(cinitbase[:T], omega_stationary_init)
-cons_wealth = gini_nocol(cinit[:T], omega_stationary)
-lab_baseline = gini_nocol(n_mat_init[:T], omega_stationary_init)
-lab_wealth = gini_nocol(n_mat[:T], omega_stationary)
-
-vars_to_pickle = ['wealth_baseline', 'wealth_wealth',
-                  'income_baseline', 'income_wealth',
-                  'cons_baseline', 'cons_wealth',
-                  'lab_baseline', 'lab_wealth',
-                  'T', 'S', 'J']
-dictionary = {}
-for key in vars_to_pickle:
-    dictionary[key] = globals()[key]
-pickle.dump(dictionary, open("TPI/gini_vectors.pkl", "w"))
-
 '''
 ------------------------------------------------------------------------
     GIF graphs
@@ -673,65 +651,65 @@ print 'Starting movies'
 # top zlim is for the income tax, bottom zlim is for the wealth tax
 
 
-for t in xrange(60):
+# for t in xrange(60):
 
-    fig5 = plt.figure()
-    ax5 = fig5.gca(projection='3d')
-    ax5.set_xlabel(r'age-$s$')
-    ax5.set_ylabel(r'ability-$j$')
-    ax5.set_zlabel(r'individual savings $\bar{b}_{j,s}$')
-    # ax5.set_zlim([-.30, .05])
-    ax5.set_zlim([-.30, .20])
-    ax5.set_title('T = {}'.format(t))
-    ax5.plot_surface(X, Y, ((b_mat[t] - b_mat_init[t])/b_mat_init[t]).T, rstride=1, cstride=1, cmap=cmap2)
-    name = "%03d" % t
-    plt.savefig('TPI/movies/b_dif/b_dif_T{}'.format(name))
+#     fig5 = plt.figure()
+#     ax5 = fig5.gca(projection='3d')
+#     ax5.set_xlabel(r'age-$s$')
+#     ax5.set_ylabel(r'ability-$j$')
+#     ax5.set_zlabel(r'individual savings $\bar{b}_{j,s}$')
+#     # ax5.set_zlim([-.30, .05])
+#     ax5.set_zlim([-.30, .20])
+#     ax5.set_title('T = {}'.format(t))
+#     ax5.plot_surface(X, Y, ((b_mat[t] - b_mat_init[t])/b_mat_init[t]).T, rstride=1, cstride=1, cmap=cmap2)
+#     name = "%03d" % t
+#     plt.savefig('TPI/movies/b_dif/b_dif_T{}'.format(name))
 
-    fig5 = plt.figure()
-    ax5 = fig5.gca(projection='3d')
-    ax5.set_xlabel(r'age-$s$')
-    ax5.set_ylabel(r'ability-$j$')
-    ax5.set_zlabel(r'individual labor supply $l_{j,s}$')
-    # ax5.set_zlim([-.15, .15])
-    ax5.set_zlim([-.5, .2])
-    ax5.set_title('T = {}'.format(t))
-    ax5.plot_surface(X, Y, ((n_mat[t] - n_mat_init[t])/n_mat_init[t]).T, rstride=1, cstride=1, cmap=cmap2)
-    name = "%03d" % t
-    plt.savefig('TPI/movies/l_dif/l_dif_T{}'.format(name))
+#     fig5 = plt.figure()
+#     ax5 = fig5.gca(projection='3d')
+#     ax5.set_xlabel(r'age-$s$')
+#     ax5.set_ylabel(r'ability-$j$')
+#     ax5.set_zlabel(r'individual labor supply $l_{j,s}$')
+#     # ax5.set_zlim([-.15, .15])
+#     ax5.set_zlim([-.5, .2])
+#     ax5.set_title('T = {}'.format(t))
+#     ax5.plot_surface(X, Y, ((n_mat[t] - n_mat_init[t])/n_mat_init[t]).T, rstride=1, cstride=1, cmap=cmap2)
+#     name = "%03d" % t
+#     plt.savefig('TPI/movies/l_dif/l_dif_T{}'.format(name))
 
-    fig5 = plt.figure()
-    ax5 = fig5.gca(projection='3d')
-    ax5.set_xlabel(r'age-$s$')
-    ax5.set_ylabel(r'ability-$j$')
-    ax5.set_zlabel(r'Consumption $c_{j,s}$')
-    # ax5.set_zlim([-.20, .15])
-    ax5.set_zlim([-.30, .30])
-    ax5.set_title('T = {}'.format(t))
-    ax5.plot_surface(X, Y, ((cinit[t] - cinitbase[t])/cinitbase[t]).T, rstride=1, cstride=1, cmap=cmap2)
-    name = "%03d" % t
-    plt.savefig('TPI/movies/c_dif/c_dif_T{}'.format(name))
+#     fig5 = plt.figure()
+#     ax5 = fig5.gca(projection='3d')
+#     ax5.set_xlabel(r'age-$s$')
+#     ax5.set_ylabel(r'ability-$j$')
+#     ax5.set_zlabel(r'Consumption $c_{j,s}$')
+#     # ax5.set_zlim([-.20, .15])
+#     ax5.set_zlim([-.30, .30])
+#     ax5.set_title('T = {}'.format(t))
+#     ax5.plot_surface(X, Y, ((cinit[t] - cinitbase[t])/cinitbase[t]).T, rstride=1, cstride=1, cmap=cmap2)
+#     name = "%03d" % t
+#     plt.savefig('TPI/movies/c_dif/c_dif_T{}'.format(name))
 
-    fig5 = plt.figure()
-    ax5 = fig5.gca(projection='3d')
-    ax5.set_xlabel(r'age-$s$')
-    ax5.set_ylabel(r'ability-$j$')
-    ax5.set_zlabel(r'Income $y_{j,s}$')
-    # ax5.set_zlim([-.2, .15])
-    ax5.set_zlim([-.3, .3])
-    ax5.set_title('T = {}'.format(t))
-    ax5.plot_surface(X, Y, ((y_mat[t] - y_mat_init[t])/y_mat_init[t]).T, rstride=1, cstride=1, cmap=cmap2)
-    name = "%03d" % t
-    plt.savefig('TPI/movies/y_dif/y_dif_T{}'.format(name))
+#     fig5 = plt.figure()
+#     ax5 = fig5.gca(projection='3d')
+#     ax5.set_xlabel(r'age-$s$')
+#     ax5.set_ylabel(r'ability-$j$')
+#     ax5.set_zlabel(r'Income $y_{j,s}$')
+#     # ax5.set_zlim([-.2, .15])
+#     ax5.set_zlim([-.3, .3])
+#     ax5.set_title('T = {}'.format(t))
+#     ax5.plot_surface(X, Y, ((y_mat[t] - y_mat_init[t])/y_mat_init[t]).T, rstride=1, cstride=1, cmap=cmap2)
+#     name = "%03d" % t
+#     plt.savefig('TPI/movies/y_dif/y_dif_T{}'.format(name))
 
-    fig5 = plt.figure()
-    ax5 = fig5.gca(projection='3d')
-    ax5.set_xlabel(r'age-$s$')
-    ax5.set_ylabel(r'ability-$j$')
-    ax5.set_zlabel(r'Consumption $c_{j,s}$')
-    # ax5.set_zlim([-2.5, 1.1])
-    # ax5.set_zlim([0, 2])
-    ax5.set_title('T = {}'.format(t))
-    ax5.plot_surface(X, Y, cinitbase[t].T, rstride=1, cstride=1, cmap=cmap2)
-    name = "%03d" % t
-    plt.savefig('TPI/movies/cons_base/c_base_T{}'.format(name))
+#     fig5 = plt.figure()
+#     ax5 = fig5.gca(projection='3d')
+#     ax5.set_xlabel(r'age-$s$')
+#     ax5.set_ylabel(r'ability-$j$')
+#     ax5.set_zlabel(r'Consumption $c_{j,s}$')
+#     # ax5.set_zlim([-2.5, 1.1])
+#     # ax5.set_zlim([0, 2])
+#     ax5.set_title('T = {}'.format(t))
+#     ax5.plot_surface(X, Y, cinitbase[t].T, rstride=1, cstride=1, cmap=cmap2)
+#     name = "%03d" % t
+#     plt.savefig('TPI/movies/cons_base/c_base_T{}'.format(name))
 

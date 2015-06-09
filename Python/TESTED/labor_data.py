@@ -23,8 +23,7 @@ This py-file creates the following other file(s):
 
 import numpy as np
 import pandas as pd
-from scipy import stats
-import pickle
+import cPickle as pickle
 import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D

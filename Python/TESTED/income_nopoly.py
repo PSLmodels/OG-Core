@@ -27,7 +27,6 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy.polynomial.polynomial as poly
 import scipy.optimize as opt
-from scipy import interpolate
 
 
 '''
