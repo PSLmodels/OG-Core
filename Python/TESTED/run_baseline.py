@@ -192,21 +192,21 @@ while keep_changing.any() and i < max_iter_loop_calibration:
     variables = pickle.load(open("OUTPUT/Saved_moments/chi_b_fits.pkl", "r"))
     for key in variables:
         locals()[key] = variables[key]
-    print chi_fits_old
+    print wealth_fits
     chi_b_scal[keep_changing] = bumps[keep_changing] * i
     print "Iteration: ", i
     for b in xrange(J):
-        if (chi_fits_old[2*b] + chi_fits_old[2*b + 1])/2.0 < .2:
+        if (wealth_fits[2*b] + wealth_fits[2*b + 1])/2.0 < .2:
             chi_b_scal[b] = chi_b_vals_for_fit[b] - chi_b_init_guesses[b]
             if keep_changing[b] is True:
                 chi_b_scal[b] -= bumps[b]
             keep_changing[b] = False
     i += 1
-    os.remove("OUTPUT/Saved_moments/params_given.pkl")
-    for key in var_names:
-        dictionary[key] = globals()[key]
-    pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
-    call(['python', 'SS.py'])
+    if keep_changing.any():
+        for key in var_names:
+            dictionary[key] = globals()[key]
+        pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
+        call(['python', 'SS.py'])
 
 
 '''

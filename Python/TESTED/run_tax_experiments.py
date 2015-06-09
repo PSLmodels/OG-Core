@@ -22,9 +22,6 @@ import numpy as np
 import cPickle as pickle
 from glob import glob
 import os
-import sys
-import scipy.optimize as opt
-import shutil
 from subprocess import call
 
 '''

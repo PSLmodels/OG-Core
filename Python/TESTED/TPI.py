@@ -25,7 +25,6 @@ This py-file creates the following other file(s):
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-import time
 import cPickle as pickle
 import os
 import scipy.optimize as opt
@@ -112,7 +111,7 @@ else:
 
 '''
 ------------------------------------------------------------------------
-Set other parameters
+Set other parameters and initial values
 ------------------------------------------------------------------------
 '''
 
@@ -124,12 +123,6 @@ parameters = [J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payrol
 
 N_tilde = omega.sum(1).sum(1)
 omega_stationary = omega / N_tilde.reshape(T+S, 1, 1)
-
-'''
-------------------------------------------------------------------------
-    Set initial values
-------------------------------------------------------------------------
-'''
 
 if TPI_initial_run:
     initial_b = bssmat_splus1
@@ -180,7 +173,7 @@ def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init):
     return [error1] + [error2]
 
 
-def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, t):
+def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, s, t, params, theta, tau_bq, rho, lambdas, e, initial_b, chi_b, chi_n):
     '''
     Parameters:
         guesses = distribution of capital and labor in period t
@@ -192,6 +185,8 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, t):
     Returns:
         Value of Euler error. (as an 2*S*J x 1 list)
     '''
+
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     length = len(guesses)/2
     b_guess = np.array(guesses[:length])
     n_guess = np.array(guesses[length:])
@@ -215,23 +210,23 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, t):
     T_H_s = T_H_init[t:t+length]
     T_H_splus1 = T_H_init[t+1:t+length+1]
     # Savings euler equations
-    tax_s = tax.total_taxes(r_s, b_s, w_s, e_s, n_s, BQ_s, lambdas[j], factor_ss, T_H_s, j, 'TPI', False, parameters, theta, tau_bq)
-    tax_splus1 = tax.total_taxes(r_splus1, b_splus1, w_splus1, e_extended, n_extended, BQ_splus1, lambdas[j], factor_ss, T_H_splus1, j, 'TPI', True, parameters, theta, tau_bq)
-    cons_s = house.get_cons(r_s, b_s, w_s, e_s, n_s, BQ_s, lambdas[j], b_splus1, parameters, tax_s)
-    cons_splus1 = house.get_cons(r_splus1, b_splus1, w_splus1, e_extended, n_extended, BQ_splus1, lambdas[j], b_splus2, parameters, tax_splus1)
-    income_splus1 = (r_splus1 * b_splus1 + w_splus1 * e_extended * n_extended) * factor_ss
+    tax_s = tax.total_taxes(r_s, b_s, w_s, e_s, n_s, BQ_s, lambdas[j], factor, T_H_s, j, 'TPI', False, params, theta, tau_bq)
+    tax_splus1 = tax.total_taxes(r_splus1, b_splus1, w_splus1, e_extended, n_extended, BQ_splus1, lambdas[j], factor, T_H_splus1, j, 'TPI', True, params, theta, tau_bq)
+    cons_s = house.get_cons(r_s, b_s, w_s, e_s, n_s, BQ_s, lambdas[j], b_splus1, params, tax_s)
+    cons_splus1 = house.get_cons(r_splus1, b_splus1, w_splus1, e_extended, n_extended, BQ_splus1, lambdas[j], b_splus2, params, tax_splus1)
+    income_splus1 = (r_splus1 * b_splus1 + w_splus1 * e_extended * n_extended) * factor
     savings_ut = rho[-(length):] * np.exp(-sigma * g_y) * chi_b[-(length):, j] * b_splus1 ** (-sigma)
     deriv_savings = 1 + r_splus1 * (1 - tax.tau_income(
-        r_splus1, b_splus1, w_splus1, e_extended, n_extended, factor_ss, parameters) - tax.tau_income_deriv(
-        r_splus1, b_splus1, w_splus1, e_extended, n_extended, factor_ss, parameters) * income_splus1) - tax.tau_w_prime(
-        b_splus1, parameters)*b_splus1 - tax.tau_wealth(b_splus1, parameters)
-    error1 = house.marg_ut_cons(cons_s, parameters) - beta * (1-rho[-(length):]) * np.exp(-sigma * g_y) * deriv_savings * house.marg_ut_cons(
-        cons_splus1, parameters) - savings_ut
+        r_splus1, b_splus1, w_splus1, e_extended, n_extended, factor, params) - tax.tau_income_deriv(
+        r_splus1, b_splus1, w_splus1, e_extended, n_extended, factor, params) * income_splus1) - tax.tau_w_prime(
+        b_splus1, params)*b_splus1 - tax.tau_wealth(b_splus1, params)
+    error1 = house.marg_ut_cons(cons_s, params) - beta * (1-rho[-(length):]) * np.exp(-sigma * g_y) * deriv_savings * house.marg_ut_cons(
+        cons_splus1, params) - savings_ut
     # Labor leisure euler equations
-    income_s = (r_s * b_s + w_s * e_s * n_s) * factor_ss
-    deriv_laborleisure = 1 - tau_payroll - tax.tau_income(r_s, b_s, w_s, e_s, n_s, factor_ss, parameters) - tax.tau_income_deriv(
-        r_s, b_s, w_s, e_s, n_s, factor_ss, parameters) * income_s
-    error2 = house.marg_ut_cons(cons_s, parameters) * w_s * e[-(length):, j] * deriv_laborleisure - house.marg_ut_labor(n_s, chi_n[-length:], parameters)
+    income_s = (r_s * b_s + w_s * e_s * n_s) * factor
+    deriv_laborleisure = 1 - tau_payroll - tax.tau_income(r_s, b_s, w_s, e_s, n_s, factor, params) - tax.tau_income_deriv(
+        r_s, b_s, w_s, e_s, n_s, factor, params) * income_s
+    error2 = house.marg_ut_cons(cons_s, params) * w_s * e[-(length):, j] * deriv_laborleisure - house.marg_ut_labor(n_s, chi_n[-length:], params)
     # Check and punish constraint violations
     mask1 = n_guess < 0
     error2[mask1] += 1e12
@@ -243,7 +238,6 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, t):
     error2[mask4] += 1e12
     return list(error1.flatten()) + list(
         error2.flatten())
-
 
 domain = np.linspace(0, T, T)
 Kinit = (-1/(domain + 1)) * (Kss-K0) + Kss
@@ -297,7 +291,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             n_guesses_to_use = np.diag(guesses_n[:S, :, j], S-(s+2))
             solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
-                winit, rinit, BQinit[:, j], T_H_init, 0), xtol=1e-13)
+                winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, s, 0, parameters, theta, tau_bq, rho, lambdas, e, initial_b, chi_b, chi_n), xtol=1e-13)
             b_vec = solutions[:len(solutions)/2]
             b_mat[1:S+1, :, j] += np.diag(b_vec, S-(s+2))
             n_vec = solutions[len(solutions)/2:]
@@ -308,14 +302,14 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
             n_guesses_to_use = np.diag(guesses_n[t:t+S, :, j])
             solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
-                winit, rinit, BQinit[:, j], T_H_init, t), xtol=1e-13)
+                winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n), xtol=1e-13)
             b_vec = solutions[:S]
             b_mat[t+1:t+S+1, :, j] += np.diag(b_vec)
             n_vec = solutions[S:]
             n_mat[t:t+S, :, j] += np.diag(n_vec)
             inputs = list(solutions)
             euler_errors[t, :, j] = np.abs(Steady_state_TPI_solver(
-                inputs, winit, rinit, BQinit[:, j], T_H_init, t))
+                inputs, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n))
         # b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [b_mat[1, -2, j], n_mat[0, -2, j]],
         #     args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1])))
     
