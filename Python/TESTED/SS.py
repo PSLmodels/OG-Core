@@ -199,7 +199,7 @@ def Steady_State_SS(guesses, chi_params, params, weights_SS, rho_vec, lambdas, t
         error2.flatten()) + error3
 
 
-def function_to_minimize(chi_guesses_init, other_guesses_init, params, weights_SS, rho_vec, lambdas, theta, tau_bq, e, wealth_data_array):
+def function_to_minimize(chi_guesses_init, params, weights_SS, rho_vec, lambdas, theta, tau_bq, e, wealth_data_array):
     '''
     Parameters:
         chi_guesses_init = guesses for chi_b
@@ -313,10 +313,8 @@ elif SS_stage == 'constrained_minimization':
         globals()[key] = variables[key]
         dictionary[key] = globals()[key]
     pickle.dump(dictionary, open("OUTPUT/Saved_moments/minimization_solutions.pkl", "w"))
-    guesses = list((solutions[:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()) + list(
-        solutions[S*J:-1].reshape(S, J).flatten()) + [solutions[-1]]
     chi_guesses = final_chi_params
-    function_to_minimize_X = lambda x: function_to_minimize(x, guesses, parameters, omega_SS, rho, lambdas, theta, tau_bq, e, wealth_data_array)
+    function_to_minimize_X = lambda x: function_to_minimize(x, parameters, omega_SS, rho, lambdas, theta, tau_bq, e, wealth_data_array)
     bnds = tuple([(1e-6, None)] * (S + J))
     final_chi_params = opt.minimize(function_to_minimize_X, chi_guesses, method='TNC', tol=1e-7, bounds=bnds, options={'maxiter': 1}).x
     print 'The final bequest parameter values:', final_chi_params
@@ -415,9 +413,9 @@ if SS_stage != 'first_run_for_guesses' and SS_stage != 'loop_calibration':
         S, J) * omega_SS * rho.reshape(S, 1)).sum(0)
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
     factor_ss = solutions[-1]
-    T_Hss = tax.get_lump_sum(rss, bssmat_s, wss, e, nssmat, BQss, lambdas, factor_ss, omega_SS, 'SS', parameters, theta, tau_bq)
-    taxss = tax.total_taxes(rss, bssmat_s, wss, e, nssmat, BQss, lambdas, factor_ss, T_Hss, None, 'SS', False, parameters, theta, tau_bq)
-    cssmat = house.get_cons(rss, bssmat_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.reshape(1, J), bssmat_splus1, parameters, taxss)
+    T_Hss = tax.get_lump_sum(rss, b_s, wss, e, nssmat, BQss, lambdas, factor_ss, omega_SS, 'SS', parameters, theta, tau_bq)
+    taxss = tax.total_taxes(rss, b_s, wss, e, nssmat, BQss, lambdas, factor_ss, T_Hss, None, 'SS', False, parameters, theta, tau_bq)
+    cssmat = house.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.reshape(1, J), bssmat_splus1, parameters, taxss)
 
     house.constraint_checker_SS(bssmat, nssmat, cssmat, parameters)
 

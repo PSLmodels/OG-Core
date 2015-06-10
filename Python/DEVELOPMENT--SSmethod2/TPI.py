@@ -66,8 +66,8 @@ wss      = steady state real wage: scalar
 rss      = steady state real rental rate: scalar
 K_agg    = Aggregate level of capital: scalar
 T        = number of periods until the steady state
-TPImaxiter   = Maximum number of iterations that TPI will undergo
-TPImindist   = Cut-off distance between iterations for TPI
+maxiter   = Maximum number of iterations that TPI will undergo
+mindist   = Cut-off distance between iterations for TPI
 mean_income_data  = mean income from IRS data file used to calibrate income tax
                (scalar)
 a_tax_income = used to calibrate income tax (scalar)
@@ -270,10 +270,10 @@ TPIdist = 10
 print 'Starting time path iteration.'
 
 euler_errors = np.zeros((T, 2*S, J))
-TPIdist_vec = np.zeros(TPImaxiter)
+TPIdist_vec = np.zeros(maxiter)
 nu_current = nu
 
-while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
+while (TPIiter < maxiter) and (TPIdist >= mindist):
     b_mat = np.zeros((T+S, S, J))
     n_mat = np.zeros((T+S, S, J))
     Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
@@ -339,7 +339,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     TPIiter += 1
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist
-    if (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
+    if (TPIiter < maxiter) and (TPIdist >= mindist):
         bmat_plus1 = np.zeros((T, S, J))
         bmat_plus1[:, 1:, :] = b_mat[:T, :-1, :]
         T_H_init = np.array(list(tax.get_lump_sum(rinit[:T].reshape(T, 1, 1), bmat_plus1, winit[:T].reshape(
@@ -348,7 +348,7 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
         Yinit = firm.get_Y(Kinit, Linit, parameters)
         winit = np.array(list(firm.get_w(Yinit, Linit, parameters)) + list(np.ones(S)*wss))
         rinit = np.array(list(firm.get_r(Yinit, Kinit, parameters)) + list(np.ones(S)*rss))
-    if TPIdist < TPImindist:
+    if TPIdist < mindist:
         BQinit[:T] = BQnew
         Kinit[:T] = Knew
         Linit[:T] = Lnew

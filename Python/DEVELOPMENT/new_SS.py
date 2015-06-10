@@ -81,10 +81,10 @@ def get_cons(r, b1, w, e, n, BQ, lambdas, b2, g_y, net_tax):
 
 
 # Euler Equations
-def Solver(guesses, r, w, BQ, T_H, e, chi_b, j):
+def Solver(guesses, r, w, T_H, e, chi_b, j):
     b = np.array(guesses[:len(guesses)/2])
     n = np.array(guesses[len(guesses)/2:])
-
+    BQ = (1+r) * (b * omega_SS[:, j] * rho).sum()
     error1 = Euler1(w, r, e, n, np.append([0],b[:-2]), b[:-1], b[1:], BQ, factor, T_H, chi_b, j)
 
     error2 = Euler2(w, r, e, n, np.append([0],b[:-1]), b, BQ, factor, T_H, chi_n, j)
@@ -177,9 +177,8 @@ chi_b = np.ones(J)
 w = 1.2
 r = .06
 T_H = 0
-BQ = np.ones(J) * .01
 factor = 100000
-temp_xi = .5
+temp_xi = .2
 max_it = 500
 dist = 10
 dist_tol = .0001
@@ -193,9 +192,10 @@ while (dist > dist_tol) and (it < max_it):
     for j in xrange(J):
         # Solve the Euler equations
         guesses = np.append(bssmat[:,j], nssmat[:,j])
-        solutions = opt.fsolve(Solver, guesses*.5, args=(r, w, BQ[j], T_H, e[:,j], chi_b[j], j))
+        solutions = opt.fsolve(Solver, guesses*.5, args=(r, w, T_H, e[:,j], chi_b[j], j))
         bssmat[:,j] = solutions[:S]
         nssmat[:,j] = solutions[S:]
+        print np.array(Solver(np.append(bssmat[:,j], nssmat[:,j]), r, w, T_H, e[:, j], chi_b[j], j)).max()
     
     K = (omega_SS * bssmat).sum()
     L = get_L(e, nssmat)
@@ -211,7 +211,6 @@ while (dist > dist_tol) and (it < max_it):
     r = temp_xi*new_r + (1-temp_xi)*r
     w = temp_xi*new_w + (1-temp_xi)*w
     factor = temp_xi*new_factor + (1-temp_xi)*factor 
-    BQ = temp_xi*new_BQ + (1-temp_xi)*BQ 
     T_H = temp_xi*new_T_H + (1-temp_xi)*T_H 
     
     dist = (abs(r-new_r) + abs(w-new_w))
