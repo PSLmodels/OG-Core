@@ -271,7 +271,6 @@ print 'Starting time path iteration.'
 
 euler_errors = np.zeros((T, 2*S, J))
 TPIdist_vec = np.zeros(TPImaxiter)
-nu_current = nu
 
 while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     b_mat = np.zeros((T+S, S, J))
@@ -334,8 +333,8 @@ while (TPIiter < TPImaxiter) and (TPIdist >= TPImindist):
     # in the first couple iterations
     if TPIiter > 10:
         if TPIdist_vec[TPIiter] - TPIdist_vec[TPIiter-1] > 0:
-            nu_current /= 2
-            print 'New Value of nu:', nu_current
+            nu /= 2
+            print 'New Value of nu:', nu
     TPIiter += 1
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist

@@ -154,14 +154,14 @@ iterative_params = [maxiter, mindist]
 # Functions
 
 
-def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas):
+def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, weights):
     b_guess = np.array(guesses[:S])
     n_guess = np.array(guesses[S:])
     b_s = np.array([0] + list(b_guess[:-1]))
     b_splus1 = b_guess
     b_splus2 = np.array(list(b_guess[1:]) + [0])
 
-    BQ = (1+r) * (b_guess * omega_SS[:, j] * rho).sum()
+    BQ = (1+r) * (b_guess * weights[:, j] * rho).sum()
 
     error1 = house.euler_savings_func(w, r, e[:, j], n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_H, chi_b[j], params, theta[j], tau_bq[j], rho, lambdas[j])
     error2 = house.euler_labor_leisure_func(w, r, e[:, j], n_guess, b_s, b_splus1, BQ, factor, T_H, chi_n, params, theta[j], tau_bq[j], lambdas[j])
@@ -191,12 +191,13 @@ def new_SS_Solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorgu
 
     dist = 10
     iteration = 0
+    dist_vec = np.zeros(maxiter)
     
     while (dist > mindist) and (iteration < maxiter):
         for j in xrange(J):
             # Solve the euler equations
             guesses = np.append(bssmat[:, j], nssmat[:, j])
-            solutions = opt.fsolve(Euler_equation_solver, guesses * .5, args=(r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas))
+            solutions = opt.fsolve(Euler_equation_solver, guesses * .9, args=(r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, weights))
             bssmat[:,j] = solutions[:S]
             nssmat[:,j] = solutions[S:]
             # print np.array(Euler_equation_solver(np.append(bssmat[:, j], nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas)).max()
@@ -218,6 +219,11 @@ def new_SS_Solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorgu
         T_H = misc_funcs.convex_combo(new_T_H, T_H, params)
         
         dist = np.array([abs(r-new_r)] + [abs(w-new_w)] + [abs(T_H-new_T_H)]).max()
+        dist_vec[iteration] = dist
+        if iteration > 10:
+            if dist_vec[iteration] - dist_vec[iteration-1] > 0:
+                nu /= 2.0
+                print 'New value of nu:', nu
         iteration += 1
         print "Iteration: %02d" % iteration, " Distance: ", dist
 
@@ -225,12 +231,25 @@ def new_SS_Solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorgu
     b_mat = np.zeros((S, J))
     n_mat = np.zeros((S, J))
     for j in xrange(J):
-        solutions1 = opt.fsolve(Euler_equation_solver, np.append(bssmat[:, j], nssmat[:, j])*.5, args=(r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas), xtol=1e-13)
-        eul_errors[j] = np.array(Euler_equation_solver(solutions1, r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas)).max()
+        solutions1 = opt.fsolve(Euler_equation_solver, np.append(bssmat[:, j], nssmat[:, j])* .9, args=(r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, weights), xtol=1e-13)
+        eul_errors[j] = np.array(Euler_equation_solver(solutions1, r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, weights)).max()
         b_mat[:, j] = solutions1[:S]
         n_mat[:, j] = solutions1[S:]
     print eul_errors.max()
     solutions = np.append(b_mat.flatten(), n_mat.flatten())
+
+    # K = house.get_K(b_mat, weights)
+    # L = firm.get_L(e, n_mat, weights)
+    # Y = firm.get_Y(K, L, params)
+    # w = firm.get_w(Y, L, params)
+    # r = firm.get_r(Y, K, params)
+    # BQ = (1+r)*(b_mat * weights * rho.reshape(S, 1)).sum(0)
+    # b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(b_mat[:-1]))
+    # average_income = ((r * b_s + w * e * n_mat) * weights).sum()
+    # factor = mean_income_data/average_income
+    # T_Hguess = tax.get_lump_sum(r, b_s, w, e, n_mat, BQ, lambdas, factor, weights, 'SS', params, theta, tau_bq)
+    other_vars = np.array([w, r, factor, T_H])
+    solutions = np.append(solutions, other_vars)
     return solutions
 
 
@@ -250,44 +269,26 @@ def function_to_minimize(chi_guesses_init, params, weights_SS, rho_vec, lambdas,
         globals()[key+'_pre'] = variables[key]
 
     b_guess = solutions_pre[:S*J]
-    n_guess = solutions_pre[S*J:]
-    K = house.get_K(b_guess.reshape(S, J), omega_SS)
-    L = firm.get_L(e, n_guess.reshape(S, J), omega_SS)
-    Y = firm.get_Y(K, L, params)
-    wguess = firm.get_w(Y, L, params)
-    rguess = firm.get_r(Y, K, params)
-    BQ = (1+rguess)*(b_guess.reshape(S, J) * omega_SS * rho.reshape(S, 1)).sum(0)
-    b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(b_guess.reshape(S, J)[:-1]))
-    average_income = ((rguess * b_s + wguess * e * n_guess.reshape(S, J)) * omega_SS).sum()
-    factorguess = mean_income_data/average_income
-    T_Hguess = tax.get_lump_sum(rguess, b_s, wguess, e, n_guess.reshape(S, J), BQ, lambdas, factorguess, omega_SS, 'SS', params, theta, tau_bq)
-    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_guesses_init[J:], chi_guesses_init[:J], params, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
+    n_guess = solutions_pre[S*J:2*S*J]
+    wguess, rguess, factorguess, T_Hguess = solutions_pre[2*S*J:]
+    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_guesses_init[J:], chi_guesses_init[:J], params, iterative_params, theta, tau_bq, rho, lambdas, weights_SS)
 
-    b_guess = solutions[:S*J]
-    n_guess = solutions[S*J:]
-    K = house.get_K(b_guess.reshape(S, J), omega_SS)
-    L = firm.get_L(e, n_guess.reshape(S, J), omega_SS)
-    Y = firm.get_Y(K, L, params)
-    wguess = firm.get_w(Y, L, params)
-    rguess = firm.get_r(Y, K, params)
-    BQ = (1+rguess)*(b_guess.reshape(S, J) * omega_SS * rho.reshape(S, 1)).sum(0)
-    b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(b_guess.reshape(S, J)[:-1]))
-    average_income = ((rguess * b_s + wguess * e * n_guess.reshape(S, J)) * omega_SS).sum()
-    factor = mean_income_data/average_income
+    b_new = solutions[:S*J]
+    n_new = solutions[S*J:2*S*J]
+    w_new, r_new, factor_new, T_H_new = solutions[2*S*J:]
     # Wealth Calibration Euler
-    error5 = list(misc_funcs.check_wealth_calibration(b_guess.reshape(S, J)[:-1, :], factor, wealth_data_array, params))
+    error5 = list(misc_funcs.check_wealth_calibration(b_new.reshape(S, J)[:-1, :], factor_new, wealth_data_array, params))
     print error5
     # labor calibration euler
-    labor_sim = (n_guess.reshape(S, J)*lambdas.reshape(1, J)).sum(axis=1)
+    labor_sim = (n_new.reshape(S, J)*lambdas.reshape(1, J)).sum(axis=1)
     error6 = list(misc_funcs.perc_dif_func(labor_sim, labor_dist_data))
     # combine eulers
     output = np.array(error5 + error6)
     # Constraints
     eul_error = np.ones(J)
     for j in xrange(J):
-        eul_error[j] = np.abs(Euler_equation_solver(np.append(b_guess.reshape(S, J)[:, j], n_guess.reshape(S, J)[:, j]), rguess, wguess, T_Hguess, factor, j, params, chi_guesses_init[:J], chi_guesses_init[J:], theta, tau_bq, rho, lambdas)).max()
+        eul_error[j] = np.abs(Euler_equation_solver(np.append(b_new.reshape(S, J)[:, j], n_new.reshape(S, J)[:, j]), r_new, w_new, T_H_new, factor_new, j, params, chi_guesses_init[:J], chi_guesses_init[J:], theta, tau_bq, rho, lambdas, weights_SS)).max()
     fsolve_no_converg = eul_error.max()
-    print 'ECCOLO: ', fsolve_no_converg
     if np.isnan(fsolve_no_converg):
         fsolve_no_converg = 1e6
     if fsolve_no_converg > 1e-4:
@@ -349,17 +350,8 @@ elif SS_stage == 'loop_calibration':
     for key in variables:
         globals()[key] = variables[key]
     b_guess = (solutions[:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
-    n_guess = solutions[S*J:]
-    K = house.get_K(b_guess.reshape(S, J), omega_SS)
-    L = firm.get_L(e, n_guess.reshape(S, J), omega_SS)
-    Y = firm.get_Y(K, L, parameters)
-    wguess = firm.get_w(Y, L, parameters)
-    rguess = firm.get_r(Y, K, parameters)
-    BQ = (1+rguess)*(b_guess.reshape(S, J) * omega_SS * rho.reshape(S, 1)).sum(0)
-    b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(b_guess.reshape(S, J)[:-1]))
-    average_income = ((rguess * b_s + wguess * e * n_guess.reshape(S, J)) * omega_SS).sum()
-    factorguess = mean_income_data/average_income
-    T_Hguess = tax.get_lump_sum(rguess, b_s, wguess, e, n_guess.reshape(S, J), BQ, lambdas, factorguess, omega_SS, 'SS', parameters, theta, tau_bq)
+    n_guess = solutions[S*J:2*S*J]
+    wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
 
     chi_guesses = np.ones(S+J)
     chi_guesses[0:J] = np.array([5, 10, 90, 250, 250, 250, 250]) + chi_b_scal
@@ -383,17 +375,8 @@ elif SS_stage == 'constrained_minimization':
     print 'The final bequest parameter values:', final_chi_params
 
     b_guess = (solutions_pre[:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
-    n_guess = solutions_pre[S*J:]
-    K = house.get_K(b_guess.reshape(S, J), omega_SS)
-    L = firm.get_L(e, n_guess.reshape(S, J), omega_SS)
-    Y = firm.get_Y(K, L, parameters)
-    wguess = firm.get_w(Y, L, parameters)
-    rguess = firm.get_r(Y, K, parameters)
-    BQ = (1+rguess)*(b_guess.reshape(S, J) * omega_SS * rho.reshape(S, 1)).sum(0)
-    b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(b_guess.reshape(S, J)[:-1]))
-    average_income = ((rguess * b_s + wguess * e * n_guess.reshape(S, J)) * omega_SS).sum()
-    factorguess = mean_income_data/average_income
-    T_Hguess = tax.get_lump_sum(rguess, b_s, wguess, e, n_guess.reshape(S, J), BQ, lambdas, factorguess, omega_SS, 'SS', parameters, theta, tau_bq)
+    n_guess = solutions_pre[S*J:2*S*J]
+    wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
 
     solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, final_chi_params[J:], final_chi_params[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
 elif SS_stage == 'SS_init':
@@ -401,17 +384,8 @@ elif SS_stage == 'SS_init':
     for key in variables:
         globals()[key] = variables[key]
     b_guess = (solutions[:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
-    n_guess = solutions[S*J:]
-    K = house.get_K(b_guess.reshape(S, J), omega_SS)
-    L = firm.get_L(e, n_guess.reshape(S, J), omega_SS)
-    Y = firm.get_Y(K, L, parameters)
-    wguess = firm.get_w(Y, L, parameters)
-    rguess = firm.get_r(Y, K, parameters)
-    BQ = (1+rguess)*(b_guess.reshape(S, J) * omega_SS * rho.reshape(S, 1)).sum(0)
-    b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(b_guess.reshape(S, J)[:-1]))
-    average_income = ((rguess * b_s + wguess * e * n_guess.reshape(S, J)) * omega_SS).sum()
-    factorguess = mean_income_data/average_income
-    T_Hguess = tax.get_lump_sum(rguess, b_s, wguess, e, n_guess.reshape(S, J), BQ, lambdas, factorguess, omega_SS, 'SS', parameters, theta, tau_bq)
+    n_guess = solutions[S*J:2*S*J]
+    wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
 
     chi_guesses = final_chi_params
     solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_guesses[J:], chi_guesses[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
@@ -420,17 +394,8 @@ elif SS_stage == 'SS_tax':
     for key in variables:
         globals()[key] = variables[key]
     b_guess = (solutions[:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
-    n_guess = solutions[S*J:]
-    K = house.get_K(b_guess.reshape(S, J), omega_SS)
-    L = firm.get_L(e, n_guess.reshape(S, J), omega_SS)
-    Y = firm.get_Y(K, L, parameters)
-    wguess = firm.get_w(Y, L, parameters)
-    rguess = firm.get_r(Y, K, parameters)
-    BQ = (1+rguess)*(b_guess.reshape(S, J) * omega_SS * rho.reshape(S, 1)).sum(0)
-    b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(b_guess.reshape(S, J)[:-1]))
-    average_income = ((rguess * b_s + wguess * e * n_guess.reshape(S, J)) * omega_SS).sum()
-    factorguess = mean_income_data/average_income
-    T_Hguess = tax.get_lump_sum(rguess, b_s, wguess, e, n_guess.reshape(S, J), BQ, lambdas, factorguess, omega_SS, 'SS', parameters, theta, tau_bq)
+    n_guess = solutions[S*J:2*S*J]
+    wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
 
     chi_guesses = final_chi_params
     solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_guesses[J:], chi_guesses[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
@@ -441,20 +406,10 @@ elif SS_stage == 'SS_tax':
 ------------------------------------------------------------------------
 '''
 
-b_guess = (solutions[:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
-n_guess = solutions[S*J:]
-K = house.get_K(b_guess.reshape(S, J), omega_SS)
-L = firm.get_L(e, n_guess.reshape(S, J), omega_SS)
-Y = firm.get_Y(K, L, parameters)
-wguess = firm.get_w(Y, L, parameters)
-rguess = firm.get_r(Y, K, parameters)
-BQ = (1+rguess)*(b_guess.reshape(S, J) * omega_SS * rho.reshape(S, 1)).sum(0)
-b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(b_guess.reshape(S, J)[:-1]))
-average_income = ((rguess * b_s + wguess * e * n_guess.reshape(S, J)) * omega_SS).sum()
-factorguess = mean_income_data/average_income
-T_Hguess = tax.get_lump_sum(rguess, b_s, wguess, e, n_guess.reshape(S, J), BQ, lambdas, factorguess, omega_SS, 'SS', parameters, theta, tau_bq)
+b_sim = (solutions[:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
+w_sim, r_sim, factor_sim, T_H_sim = solutions[2*S*J:]
 
-wealth_fits = misc_funcs.check_wealth_calibration(b_guess.reshape(S, J)[:-1], factorguess, wealth_data_array, parameters)
+wealth_fits = misc_funcs.check_wealth_calibration(b_sim.reshape(S, J)[:-1], factor_sim, wealth_data_array, parameters)
 
 chi_b_vals_for_fit = chi_guesses[0:J]
 var_names = ['wealth_fits', 'chi_b_vals_for_fit']
@@ -509,18 +464,16 @@ if SS_stage != 'first_run_for_guesses' and SS_stage != 'loop_calibration':
     bq = solutions[(S-1)*J:S*J]
     bssmat_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat))
     bssmat_splus1 = np.array(list(bssmat) + list(bq.reshape(1, J)))
+    nssmat = solutions[S * J:2*S*J].reshape(S, J)
+    wss, rss, factor_ss, T_Hss = solutions[2*S*J:]
+
     Kss = house.get_K(bssmat_splus1, omega_SS)
-    nssmat = solutions[S * J:].reshape(S, J)
     Lss = firm.get_L(e, nssmat, omega_SS)
     Yss = firm.get_Y(Kss, Lss, parameters)
-    wss = firm.get_w(Yss, Lss, parameters)
-    rss = firm.get_r(Yss, Kss, parameters)
+
     BQss = (1+rss)*(np.array(list(bssmat) + list(bq.reshape(1, J))).reshape(
         S, J) * omega_SS * rho.reshape(S, 1)).sum(0)
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
-    average_income = ((rss * b_s + wss * e * nssmat) * omega_SS).sum()
-    factor_ss = mean_income_data/average_income
-    T_Hss = tax.get_lump_sum(rss, b_s, wss, e, nssmat, BQss, lambdas, factor_ss, omega_SS, 'SS', parameters, theta, tau_bq)
     taxss = tax.total_taxes(rss, b_s, wss, e, nssmat, BQss, lambdas, factor_ss, T_Hss, None, 'SS', False, parameters, theta, tau_bq)
     cssmat = house.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.reshape(1, J), bssmat_splus1, parameters, taxss)
 
@@ -533,9 +486,8 @@ if SS_stage != 'first_run_for_guesses' and SS_stage != 'loop_calibration':
     b_s        = SxJ array of bssmat in period t
     b_splus1        = SxJ array of bssmat in period t+1
     b_splus2        = SxJ array of bssmat in period t+2
-    euler_savings_1      = euler errors from first euler equation
-    euler_labor_leisure      = euler errors from second euler equation
-    euler_savings_2      = euler errors from third euler equation
+    euler_savings      = euler errors from savings euler equation
+    euler_labor_leisure      = euler errors from labor leisure euler equation
     ------------------------------------------------------------------------
     '''
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
@@ -544,8 +496,11 @@ if SS_stage != 'first_run_for_guesses' and SS_stage != 'loop_calibration':
 
     chi_b = np.tile(final_chi_params[:J].reshape(1, J), (S, 1))
     chi_n = np.array(final_chi_params[J:])
-    euler_savings = house.euler_savings_func(wss, rss, e, nssmat, b_s, b_splus1, b_splus2, BQss.reshape(1, J), factor_ss, T_Hss, chi_b, parameters, theta, tau_bq, rho, lambdas)
-    euler_labor_leisure = house.euler_labor_leisure_func(wss, rss, e, nssmat, b_s, b_splus1, BQss.reshape(1, J), factor_ss, T_Hss, chi_n, parameters, theta, tau_bq, lambdas)
+    euler_savings = np.zeros((S, J))
+    euler_labor_leisure = np.zeros((S, J))
+    for j in xrange(J):
+        euler_savings[:, j] = house.euler_savings_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], b_splus1[:, j], b_splus2[:, j], BQss[j], factor_ss, T_Hss, chi_b[:, j], parameters, theta[j], tau_bq[j], rho, lambdas[j])
+        euler_labor_leisure[:, j] = house.euler_labor_leisure_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], b_splus1[:, j], BQss[j], factor_ss, T_Hss, chi_n, parameters, theta[j], tau_bq[j], lambdas[j])
 '''
 ------------------------------------------------------------------------
     Save the values in various ways, depending on the stage of
@@ -553,7 +508,7 @@ if SS_stage != 'first_run_for_guesses' and SS_stage != 'loop_calibration':
 ------------------------------------------------------------------------
 '''
 if SS_stage == 'constrained_minimization':
-    bssmat_init = np.array(list(bssmat) + list(BQss.reshape(1, J)))
+    bssmat_init = bssmat_splus1
     nssmat_init = nssmat
     var_names = ['retire', 'nssmat_init', 'wss', 'factor_ss', 'e',
                  'J', 'omega_SS']
@@ -562,7 +517,7 @@ if SS_stage == 'constrained_minimization':
         dictionary[key] = globals()[key]
     pickle.dump(dictionary, open("OUTPUT/Saved_moments/payroll_inputs.pkl", "w"))
 elif SS_stage == 'SS_init':
-    bssmat_init = np.array(list(bssmat) + list(BQss.reshape(1, J)))
+    bssmat_init = bssmat_splus1
     nssmat_init = nssmat
     # Pickle variables for TPI initial values
     var_names = ['bssmat_init', 'nssmat_init']

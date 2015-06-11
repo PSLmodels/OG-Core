@@ -186,7 +186,7 @@ i = 1
 
 dictionary = {}
 
-max_iter_loop_calibration = 2 #2300
+max_iter_loop_calibration = 10 #2300
 
 while keep_changing.any() and i < max_iter_loop_calibration:
     variables = pickle.load(open("OUTPUT/Saved_moments/chi_b_fits.pkl", "r"))
@@ -286,7 +286,7 @@ print '\tFinished'
 '''
 
 # call(['python', 'TPI.py'])
-import TPI
+# import TPI
 
 '''
 ------------------------------------------------------------------------

@@ -446,7 +446,7 @@ if SS_stage != 'first_run_for_guesses' and SS_stage != 'loop_calibration':
 ------------------------------------------------------------------------
 '''
 if SS_stage == 'constrained_minimization':
-    bssmat_init = np.array(list(bssmat) + list(BQss.reshape(1, J)))
+    bssmat_init = bssmat_splus1
     nssmat_init = nssmat
     var_names = ['retire', 'nssmat_init', 'wss', 'factor_ss', 'e',
                  'J', 'omega_SS']
@@ -455,7 +455,7 @@ if SS_stage == 'constrained_minimization':
         dictionary[key] = globals()[key]
     pickle.dump(dictionary, open("OUTPUT/Saved_moments/payroll_inputs.pkl", "w"))
 elif SS_stage == 'SS_init':
-    bssmat_init = np.array(list(bssmat) + list(BQss.reshape(1, J)))
+    bssmat_init = bssmat_splus1
     nssmat_init = nssmat
     # Pickle variables for TPI initial values
     var_names = ['bssmat_init', 'nssmat_init']
