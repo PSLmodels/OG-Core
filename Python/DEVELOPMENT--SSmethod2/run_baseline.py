@@ -28,6 +28,7 @@ import os
 from glob import glob
 import sys
 from subprocess import call
+import time
 
 import numpy as np
 
@@ -106,7 +107,7 @@ g_y = (1 + g_y_annual)**(float(ending_age-starting_age)/S) - 1
 # TPI parameters
 maxiter = 100
 mindist = 3 * 1e-6
-nu = .20
+nu = .40
 TPI_initial_run = True
 # Ellipse parameters
 b_ellipse = 25.6594
@@ -147,6 +148,8 @@ if os.path.isfile("OUTPUT/Saved_moments/params_changed.pkl"):
 ------------------------------------------------------------------------
 '''
 
+start_time = time.time()
+
 SS_stage = 'first_run_for_guesses'
 
 
@@ -169,6 +172,8 @@ pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
 call(['python', 'SS.py'])
 
 print '\tFinished'
+
+initialrun_end = time.time()
 
 '''
 ------------------------------------------------------------------------
@@ -208,6 +213,7 @@ while keep_changing.any() and i < max_iter_loop_calibration:
         pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
         call(['python', 'SS.py'])
 
+loopcal_end = time.time()
 
 '''
 ------------------------------------------------------------------------
@@ -240,6 +246,7 @@ pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
 print 'Getting Thetas'
 call(['python', 'SS.py'])
 
+minend = time.time()
 '''
 ------------------------------------------------------------------------
     Get replacement rates
@@ -297,3 +304,12 @@ Delete all .pyc files that have been generated
 files = glob('*.pyc')
 for i in files:
     os.remove(i)
+
+final_end = time.time()
+
+print 'SS method 2 times:'
+print 'intialtime = ', initialrun_end - start_time
+print 'looptime = ', loopcal_end - initialrun_end
+print 'minimize time = ', minend - loopcal_end
+print 'SSinit time = ', final_end - minend
+print 'overall time = ', final_end - start_time

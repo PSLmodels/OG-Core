@@ -371,7 +371,7 @@ elif SS_stage == 'constrained_minimization':
     chi_guesses = final_chi_params
     function_to_minimize_X = lambda x: function_to_minimize(x, parameters, omega_SS, rho, lambdas, theta, tau_bq, e, wealth_data_array)
     bnds = tuple([(1e-6, None)] * (S + J))
-    final_chi_params = opt.minimize(function_to_minimize_X, chi_guesses, method='TNC', tol=1e-7, bounds=bnds, options={'maxiter': 1}).x
+    final_chi_params = opt.minimize(function_to_minimize_X, chi_guesses, method='TNC', tol=1e-7, bounds=bnds, options={'maxiter': 3}).x
     print 'The final bequest parameter values:', final_chi_params
 
     b_guess = (solutions_pre[:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
