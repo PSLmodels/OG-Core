@@ -105,7 +105,7 @@ ltilde = 1.0
 g_y_annual = 0.03
 g_y = (1 + g_y_annual)**(float(ending_age-starting_age)/S) - 1
 # TPI parameters
-maxiter = 100
+maxiter = 150
 mindist = 3 * 1e-6
 nu = .40
 TPI_initial_run = True
@@ -132,7 +132,6 @@ tau_bq = np.zeros(J)
 tau_payroll = 0.15
 theta = np.zeros(J)
 # Other parameters
-chi_b_scal = np.zeros(J)
 scal = np.ones(J)
 
 # Generate Wealth data moments
@@ -164,7 +163,7 @@ var_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
              'tau_payroll', 'tau_bq',
              'theta', 'retire', 'mean_income_data',
              'h_wealth', 'p_wealth', 'm_wealth', 'scal',
-             'chi_b_scal', 'SS_stage', 'TPI_initial_run']
+             'SS_stage', 'TPI_initial_run']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
@@ -175,45 +174,6 @@ print '\tFinished'
 
 initialrun_end = time.time()
 
-'''
-------------------------------------------------------------------------
-    Run loop calibration to fit chi_b values
-------------------------------------------------------------------------
-'''
-SS_stage = 'loop_calibration'
-
-
-bumps = np.array([0, 0, 0, 10, 20, 50, 50])
-chi_b_init_guesses = np.array([5, 10, 90, 250, 250, 250, 250])
-keep_changing = np.array([False, False, False, True, True, True, True])
-
-i = 1
-
-dictionary = {}
-
-max_iter_loop_calibration = 10 #2300
-
-while keep_changing.any() and i < max_iter_loop_calibration:
-    variables = pickle.load(open("OUTPUT/Saved_moments/chi_b_fits.pkl", "r"))
-    for key in variables:
-        locals()[key] = variables[key]
-    print wealth_fits
-    chi_b_scal[keep_changing] = bumps[keep_changing] * i
-    print "Iteration: ", i
-    for b in xrange(J):
-        if (wealth_fits[2*b] + wealth_fits[2*b + 1])/2.0 < .2:
-            chi_b_scal[b] = chi_b_vals_for_fit[b] - chi_b_init_guesses[b]
-            if keep_changing[b] is True:
-                chi_b_scal[b] -= bumps[b]
-            keep_changing[b] = False
-    i += 1
-    if keep_changing.any():
-        for key in var_names:
-            dictionary[key] = globals()[key]
-        pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
-        call(['python', 'SS.py'])
-
-loopcal_end = time.time()
 
 '''
 ------------------------------------------------------------------------
@@ -237,7 +197,7 @@ var_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
              'tau_payroll', 'tau_bq',
              'theta', 'retire', 'mean_income_data',
              'h_wealth', 'p_wealth', 'm_wealth', 'scal',
-             'chi_b_scal', 'SS_stage', 'TPI_initial_run']
+             'SS_stage', 'TPI_initial_run']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
@@ -277,7 +237,7 @@ var_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
              'tau_payroll', 'tau_bq',
              'theta', 'retire', 'mean_income_data',
              'h_wealth', 'p_wealth', 'm_wealth', 'scal',
-             'chi_b_scal', 'SS_stage', 'TPI_initial_run']
+             'SS_stage', 'TPI_initial_run']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
@@ -293,7 +253,7 @@ print '\tFinished'
 '''
 
 # call(['python', 'TPI.py'])
-# import TPI
+import TPI
 
 '''
 ------------------------------------------------------------------------
@@ -309,7 +269,6 @@ final_end = time.time()
 
 print 'SS method 2 times:'
 print 'intialtime = ', initialrun_end - start_time
-print 'looptime = ', loopcal_end - initialrun_end
-print 'minimize time = ', minend - loopcal_end
+print 'minimize time = ', minend - initialrun_end
 print 'SSinit time = ', final_end - minend
 print 'overall time = ', final_end - start_time

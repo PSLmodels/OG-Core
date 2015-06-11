@@ -235,7 +235,7 @@ def new_SS_Solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorgu
         eul_errors[j] = np.array(Euler_equation_solver(solutions1, r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, weights)).max()
         b_mat[:, j] = solutions1[:S]
         n_mat[:, j] = solutions1[S:]
-    print eul_errors.max()
+    print 'SS fsolve euler error:', eul_errors.max()
     solutions = np.append(b_mat.flatten(), n_mat.flatten())
 
     # K = house.get_K(b_mat, weights)
@@ -263,7 +263,7 @@ def function_to_minimize(chi_guesses_init, params, weights_SS, rho_vec, lambdas,
             wealth moments
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    print chi_guesses_init
+    print 'Print Chi_b: ', chi_guesses_init[:J]
     variables = pickle.load(open("OUTPUT/Saved_moments/minimization_solutions.pkl", "r"))
     for key in variables:
         globals()[key+'_pre'] = variables[key]
@@ -278,7 +278,7 @@ def function_to_minimize(chi_guesses_init, params, weights_SS, rho_vec, lambdas,
     w_new, r_new, factor_new, T_H_new = solutions[2*S*J:]
     # Wealth Calibration Euler
     error5 = list(misc_funcs.check_wealth_calibration(b_new.reshape(S, J)[:-1, :], factor_new, wealth_data_array, params))
-    print error5
+    # print error5
     # labor calibration euler
     labor_sim = (n_new.reshape(S, J)*lambdas.reshape(1, J)).sum(axis=1)
     error6 = list(misc_funcs.perc_dif_func(labor_sim, labor_dist_data))
@@ -304,7 +304,7 @@ def function_to_minimize(chi_guesses_init, params, weights_SS, rho_vec, lambdas,
     weighting_mat = np.eye(2*J + S)
     scaling_val = 100.0
     value = np.dot(scaling_val * np.dot(output.reshape(1, 2*J+S), weighting_mat), scaling_val * output.reshape(2*J+S, 1))
-    print value.sum()
+    print 'Value of criterion function: ', value.sum()
     return value.sum()
 
 '''
@@ -314,28 +314,29 @@ def function_to_minimize(chi_guesses_init, params, weights_SS, rho_vec, lambdas,
 '''
 
 
-chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 ,  8.41097278
- ,  7.15059004 ,  6.46771332 ,  5.85495452 ,  5.46242013 ,  5.00364263
- ,  4.57322063 ,  4.53371545 ,  4.29828515 ,  4.10144524 ,  3.8617942  ,  3.57282
- ,  3.47473172 ,  3.31111347 ,  3.04137299 ,  2.92616951 ,  2.58517969
- ,  2.48761429 ,  2.21744847 ,  1.9577682  ,  1.66931057 ,  1.6878927
- ,  1.63107201 ,  1.63390543 ,  1.5901486  ,  1.58143606 ,  1.58005578
- ,  1.59073213 ,  1.60190899 ,  1.60001831 ,  1.67763741 ,  1.70451784
- ,  1.85430468 ,  1.97291208 ,  1.97017228 ,  2.25518398 ,  2.43969757
- ,  3.21870602 ,  4.18334822 ,  4.97772026 ,  6.37663164 ,  8.65075992
- ,  9.46944758 , 10.51634777 , 12.13353793 , 11.89186997 , 12.07083882
- , 13.2992811  , 14.07987878 , 14.19951571 , 14.97943562 , 16.05601334
- , 16.42979341 , 16.91576867 , 17.62775142 , 18.4885405  , 19.10609921
- , 20.03988031 , 20.86564363 , 21.73645892 , 22.6208256  , 23.37786072
- , 24.38166073 , 25.22395387 , 26.21419653 , 27.05246704 , 27.86896121
- , 28.90029708 , 29.83586775 , 30.87563699 , 31.91207845 , 33.07449767
- , 34.27919965 , 35.57195873 , 36.95045988 , 38.62308152])
+
 
 if SS_stage == 'first_run_for_guesses':
     b_guess = np.ones((S, J)).flatten() * .01
     n_guess = np.ones((S, J)).flatten() * .5 * ltilde
     chi_guesses = np.ones(S+J)
-    chi_guesses[0:J] = np.array([5, 10, 90, 250, 250, 250, 250]) + chi_b_scal
+    chi_guesses[0:J] = np.array([2, 10, 90, 350, 1700, 22000, 120000])
+    chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 ,  8.41097278
+                             ,  7.15059004 ,  6.46771332 ,  5.85495452 ,  5.46242013 ,  5.00364263
+                             ,  4.57322063 ,  4.53371545 ,  4.29828515 ,  4.10144524 ,  3.8617942  ,  3.57282
+                             ,  3.47473172 ,  3.31111347 ,  3.04137299 ,  2.92616951 ,  2.58517969
+                             ,  2.48761429 ,  2.21744847 ,  1.9577682  ,  1.66931057 ,  1.6878927
+                             ,  1.63107201 ,  1.63390543 ,  1.5901486  ,  1.58143606 ,  1.58005578
+                             ,  1.59073213 ,  1.60190899 ,  1.60001831 ,  1.67763741 ,  1.70451784
+                             ,  1.85430468 ,  1.97291208 ,  1.97017228 ,  2.25518398 ,  2.43969757
+                             ,  3.21870602 ,  4.18334822 ,  4.97772026 ,  6.37663164 ,  8.65075992
+                             ,  9.46944758 , 10.51634777 , 12.13353793 , 11.89186997 , 12.07083882
+                             , 13.2992811  , 14.07987878 , 14.19951571 , 14.97943562 , 16.05601334
+                             , 16.42979341 , 16.91576867 , 17.62775142 , 18.4885405  , 19.10609921
+                             , 20.03988031 , 20.86564363 , 21.73645892 , 22.6208256  , 23.37786072
+                             , 24.38166073 , 25.22395387 , 26.21419653 , 27.05246704 , 27.86896121
+                             , 28.90029708 , 29.83586775 , 30.87563699 , 31.91207845 , 33.07449767
+                             , 34.27919965 , 35.57195873 , 36.95045988 , 38.62308152])
     print 'Chi_b:', chi_guesses[0:J]
     chi_guesses[J:] = chi_n_guess
     chi_guesses = list(chi_guesses)
@@ -345,23 +346,8 @@ if SS_stage == 'first_run_for_guesses':
     T_Hguess = 0
     factorguess = 100000
     solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_guesses[J:], chi_guesses[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
-elif SS_stage == 'loop_calibration':
-    variables = pickle.load(open("OUTPUT/Saved_moments/loop_calibration_solutions.pkl", "r"))
-    for key in variables:
-        globals()[key] = variables[key]
-    b_guess = (solutions[:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
-    n_guess = solutions[S*J:2*S*J]
-    wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
-
-    chi_guesses = np.ones(S+J)
-    chi_guesses[0:J] = np.array([5, 10, 90, 250, 250, 250, 250]) + chi_b_scal
-    print 'Chi_b:', chi_guesses[0:J]
-    chi_guesses[J:] = chi_n_guess
-    chi_guesses = list(chi_guesses)
-    final_chi_params = chi_guesses
-    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_guesses[J:], chi_guesses[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
 elif SS_stage == 'constrained_minimization':
-    variables = pickle.load(open("OUTPUT/Saved_moments/loop_calibration_solutions.pkl", "r"))
+    variables = pickle.load(open("OUTPUT/Saved_moments/first_run_solutions.pkl", "r"))
     dictionary = {}
     for key in variables:
         globals()[key] = variables[key]
@@ -371,7 +357,7 @@ elif SS_stage == 'constrained_minimization':
     chi_guesses = final_chi_params
     function_to_minimize_X = lambda x: function_to_minimize(x, parameters, omega_SS, rho, lambdas, theta, tau_bq, e, wealth_data_array)
     bnds = tuple([(1e-6, None)] * (S + J))
-    final_chi_params = opt.minimize(function_to_minimize_X, chi_guesses, method='TNC', tol=1e-7, bounds=bnds, options={'maxiter': 3}).x
+    final_chi_params = opt.minimize(function_to_minimize_X, chi_guesses, method='TNC', tol=1e-9, bounds=bnds).x
     print 'The final bequest parameter values:', final_chi_params
 
     b_guess = (solutions_pre[:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
@@ -432,13 +418,6 @@ if SS_stage == 'first_run_for_guesses':
     for key in var_names:
         dictionary[key] = globals()[key]
     pickle.dump(dictionary, open("OUTPUT/Saved_moments/first_run_solutions.pkl", "w"))
-    pickle.dump(dictionary, open("OUTPUT/Saved_moments/loop_calibration_solutions.pkl", "w"))
-elif SS_stage == 'loop_calibration':
-    var_names = ['solutions', 'final_chi_params']
-    dictionary = {}
-    for key in var_names:
-        dictionary[key] = globals()[key]
-    pickle.dump(dictionary, open("OUTPUT/Saved_moments/loop_calibration_solutions.pkl", "w"))
 elif SS_stage == 'constrained_minimization':
     var_names = ['solutions', 'final_chi_params']
     dictionary = {}
@@ -459,7 +438,7 @@ elif SS_stage == 'SS_tax':
     pickle.dump(dictionary, open("OUTPUT/Saved_moments/SS_tax_solutions.pkl", "w"))
 
 
-if SS_stage != 'first_run_for_guesses' and SS_stage != 'loop_calibration':
+if SS_stage != 'first_run_for_guesses':
     bssmat = solutions[0:(S-1) * J].reshape(S-1, J)
     bq = solutions[(S-1)*J:S*J]
     bssmat_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat))
