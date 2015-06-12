@@ -199,32 +199,30 @@ def new_SS_Solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorgu
     return solutions
 
 
-def function_to_minimize(chi_guesses_init, params, weights_SS, rho_vec, lambdas, theta, tau_bq, e):
+def function_to_minimize(chi_params_init, params, weights_SS, rho_vec, lambdas, theta, tau_bq, e):
     '''
     Parameters:
-        chi_guesses_init = guesses for chi_b
+        chi_params_init = guesses for chi_b
 
     Returns:
         The max absolute deviation between the actual and simulated
             wealth moments
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    print 'Print Chi_b: ', chi_guesses_init[:J]
-    variables = pickle.load(open("OUTPUT/Saved_moments/minimization_solutions.pkl", "r"))
-    for key in variables:
-        globals()[key+'_pre'] = variables[key]
+    print 'Print Chi_b: ', chi_params_init[:J]
+    solutions_dict = pickle.load(open("OUTPUT/Saved_moments/minimization_solutions.pkl", "r"))
+    solutions = solutions_dict['solutions']
 
-    b_guess = solutions_pre[:S*J]
-    n_guess = solutions_pre[S*J:2*S*J]
-    wguess, rguess, factorguess, T_Hguess = solutions_pre[2*S*J:]
-    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_guesses_init[J:], chi_guesses_init[:J], params, iterative_params, theta, tau_bq, rho, lambdas, weights_SS)
+    b_guess = solutions[:S*J]
+    n_guess = solutions[S*J:2*S*J]
+    wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
+    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params_init[J:], chi_params_init[:J], params, iterative_params, theta, tau_bq, rho, lambdas, weights_SS)
 
     b_new = solutions[:S*J]
     n_new = solutions[S*J:2*S*J]
     w_new, r_new, factor_new, T_H_new = solutions[2*S*J:]
     # Wealth Calibration Euler
     error5 = list(misc_funcs.check_wealth_calibration(b_new.reshape(S, J)[:-1, :], factor_new, params))
-    # print error5
     # labor calibration euler
     lab_data_dict = pickle.load(open("OUTPUT/Saved_moments/labor_data_moments.pkl", "r"))
     labor_sim = (n_new.reshape(S, J)*lambdas.reshape(1, J)).sum(axis=1)
@@ -234,7 +232,7 @@ def function_to_minimize(chi_guesses_init, params, weights_SS, rho_vec, lambdas,
     # Constraints
     eul_error = np.ones(J)
     for j in xrange(J):
-        eul_error[j] = np.abs(Euler_equation_solver(np.append(b_new.reshape(S, J)[:, j], n_new.reshape(S, J)[:, j]), r_new, w_new, T_H_new, factor_new, j, params, chi_guesses_init[:J], chi_guesses_init[J:], theta, tau_bq, rho, lambdas, weights_SS)).max()
+        eul_error[j] = np.abs(Euler_equation_solver(np.append(b_new.reshape(S, J)[:, j], n_new.reshape(S, J)[:, j]), r_new, w_new, T_H_new, factor_new, j, params, chi_params_init[:J], chi_params_init[J:], theta, tau_bq, rho, lambdas, weights_SS)).max()
     fsolve_no_converg = eul_error.max()
     if np.isnan(fsolve_no_converg):
         fsolve_no_converg = 1e6
@@ -246,7 +244,7 @@ def function_to_minimize(chi_guesses_init, params, weights_SS, rho_vec, lambdas,
         for key in var_names:
             dictionary[key] = locals()[key]
         pickle.dump(dictionary, open("OUTPUT/Saved_moments/minimization_solutions.pkl", "w"))
-    if (chi_guesses_init <= 0.0).any():
+    if (chi_params_init <= 0.0).any():
         output += 1e9
     weighting_mat = np.eye(2*J + S)
     scaling_val = 100.0
@@ -261,10 +259,9 @@ def function_to_minimize(chi_guesses_init, params, weights_SS, rho_vec, lambdas,
 '''
 
 if SS_stage == 'constrained_minimization':
-    b_guess = np.ones((S, J)).flatten() * .01
-    n_guess = np.ones((S, J)).flatten() * .5 * ltilde
-    chi_guesses = np.ones(S+J)
-    chi_guesses[0:J] = np.array([2, 10, 90, 350, 1700, 22000, 120000])
+    # Generate initial guesses for chi^b_j and chi^n_s
+    chi_params = np.ones(S+J)
+    chi_params[0:J] = np.array([2, 10, 90, 350, 1700, 22000, 120000])
     chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 ,  8.41097278
                              ,  7.15059004 ,  6.46771332 ,  5.85495452 ,  5.46242013 ,  5.00364263
                              ,  4.57322063 ,  4.53371545 ,  4.29828515 ,  4.10144524 ,  3.8617942  ,  3.57282
@@ -281,32 +278,33 @@ if SS_stage == 'constrained_minimization':
                              , 24.38166073 , 25.22395387 , 26.21419653 , 27.05246704 , 27.86896121
                              , 28.90029708 , 29.83586775 , 30.87563699 , 31.91207845 , 33.07449767
                              , 34.27919965 , 35.57195873 , 36.95045988 , 38.62308152])
-    print 'Chi_b:', chi_guesses[0:J]
-    chi_guesses[J:] = chi_n_guess
-    chi_guesses = list(chi_guesses)
-    final_chi_params = chi_guesses
+    chi_params[J:] = chi_n_guess
+    chi_params = list(chi_params)
+    # First run SS simulation with guesses at initial values for b, n, w, r, etc
+    b_guess = np.ones((S, J)).flatten() * .01
+    n_guess = np.ones((S, J)).flatten() * .5 * ltilde
     wguess = 1.2
     rguess = .06
     T_Hguess = 0
     factorguess = 100000
-    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_guesses[J:], chi_guesses[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
-    variables = ['solutions', 'final_chi_params']
+    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
+    variables = ['solutions', 'chi_params']
     dictionary = {}
     for key in variables:
         dictionary[key] = globals()[key]
     pickle.dump(dictionary, open("OUTPUT/Saved_moments/minimization_solutions.pkl", "w"))
-    
-    chi_guesses = final_chi_params
+
     function_to_minimize_X = lambda x: function_to_minimize(x, parameters, omega_SS, rho, lambdas, theta, tau_bq, e)
     bnds = tuple([(1e-6, None)] * (S + J))
-    final_chi_params = opt.minimize(function_to_minimize_X, chi_guesses, method='TNC', tol=1e-14, bounds=bnds).x
-    print 'The final bequest parameter values:', final_chi_params
+    chi_params = opt.minimize(function_to_minimize_X, chi_params, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
+    print 'The final bequest parameter values:', chi_params
 
-    b_guess = (solutions_pre[:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
-    n_guess = solutions_pre[S*J:2*S*J]
+    solutions_dict = pickle.load(open("OUTPUT/Saved_moments/minimization_solutions.pkl", "r"))
+    b_guess = (solutions_dict['solutions'][:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
+    n_guess = solutions_dict['solutions'][S*J:2*S*J]
     wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
 
-    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, final_chi_params[J:], final_chi_params[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
+    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
 elif SS_stage == 'SS_init':
     variables = pickle.load(open("OUTPUT/Saved_moments/minimization_solutions.pkl", "r"))
     for key in variables:
@@ -314,9 +312,7 @@ elif SS_stage == 'SS_init':
     b_guess = (solutions[:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
     n_guess = solutions[S*J:2*S*J]
     wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
-
-    chi_guesses = final_chi_params
-    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_guesses[J:], chi_guesses[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
+    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
 elif SS_stage == 'SS_tax':
     variables = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "r"))
     for key in variables:
@@ -324,9 +320,7 @@ elif SS_stage == 'SS_tax':
     b_guess = (solutions[:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
     n_guess = solutions[S*J:2*S*J]
     wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
-
-    chi_guesses = final_chi_params
-    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_guesses[J:], chi_guesses[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
+    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
 
 
 '''
@@ -337,19 +331,19 @@ elif SS_stage == 'SS_tax':
 '''
 
 if SS_stage == 'constrained_minimization':
-    var_names = ['solutions', 'final_chi_params']
+    var_names = ['solutions', 'chi_params']
     dictionary = {}
     for key in var_names:
         dictionary[key] = globals()[key]
     pickle.dump(dictionary, open("OUTPUT/Saved_moments/minimization_solutions.pkl", "w"))
 elif SS_stage == 'SS_init':
-    var_names = ['solutions', 'final_chi_params']
+    var_names = ['solutions', 'chi_params']
     dictionary = {}
     for key in var_names:
         dictionary[key] = globals()[key]
     pickle.dump(dictionary, open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "w"))
 elif SS_stage == 'SS_tax':
-    var_names = ['solutions', 'final_chi_params']
+    var_names = ['solutions', 'chi_params']
     dictionary = {}
     for key in var_names:
         dictionary[key] = globals()[key]
@@ -390,8 +384,8 @@ b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
 b_splus1 = bssmat_splus1
 b_splus2 = np.array(list(bssmat_splus1[1:]) + list(np.zeros(J).reshape((1, J))))
 
-chi_b = np.tile(final_chi_params[:J].reshape(1, J), (S, 1))
-chi_n = np.array(final_chi_params[J:])
+chi_b = np.tile(chi_params[:J].reshape(1, J), (S, 1))
+chi_n = np.array(chi_params[J:])
 euler_savings = np.zeros((S, J))
 euler_labor_leisure = np.zeros((S, J))
 for j in xrange(J):
@@ -410,29 +404,23 @@ if SS_stage == 'constrained_minimization':
     for key in var_names:
         dictionary[key] = globals()[key]
     pickle.dump(dictionary, open("OUTPUT/Saved_moments/payroll_inputs.pkl", "w"))
-elif SS_stage == 'SS_init':
-    bssmat_init = bssmat_splus1
-    nssmat_init = nssmat
-    # Pickle variables for TPI initial values
-    var_names = ['bssmat_init', 'nssmat_init']
-    dictionary = {}
-    for key in var_names:
-        dictionary[key] = globals()[key]
-    pickle.dump(dictionary, open("OUTPUT/SSinit/ss_init_tpi_vars.pkl", "w"))
+if SS_stage == 'SS_init' or SS_stage == 'SS_tax':
     # Pickle variables
     var_names = ['Kss', 'bssmat', 'Lss', 'nssmat', 'Yss', 'wss', 'rss',
                  'BQss', 'factor_ss', 'bssmat_s', 'cssmat', 'bssmat_splus1',
                  'T_Hss', 'euler_savings', 'euler_labor_leisure', 'chi_n', 'chi_b']
-    dictionary = {}
+    dictionary1 = {}
     for key in var_names:
-        dictionary[key] = globals()[key]
-    pickle.dump(dictionary, open("OUTPUT/SSinit/ss_init_vars.pkl", "w"))
-elif SS_stage == 'SS_tax':
-    # Pickle Variables
-    var_names = ['Kss', 'bssmat', 'Lss', 'nssmat', 'Yss', 'wss', 'rss',
-                 'chi_n', 'chi_b', 'BQss', 'factor_ss', 'bssmat_s', 'cssmat',
-                 'euler_savings', 'euler_labor_leisure', 'T_Hss', 'bssmat_splus1']
-    dictionary = {}
-    for key in var_names:
-        dictionary[key] = globals()[key]
-    pickle.dump(dictionary, open("OUTPUT/SS/ss_vars.pkl", "w"))
+        dictionary1[key] = globals()[key]
+    if SS_stage == 'SS_init':
+        pickle.dump(dictionary1, open("OUTPUT/SSinit/ss_init_vars.pkl", "w"))
+        bssmat_init = bssmat_splus1
+        nssmat_init = nssmat
+        # Pickle variables for TPI initial values
+        var_names = ['bssmat_init', 'nssmat_init']
+        dictionary2 = {}
+        for key in var_names:
+            dictionary2[key] = globals()[key]
+        pickle.dump(dictionary2, open("OUTPUT/SSinit/ss_init_tpi_vars.pkl", "w"))
+    elif SS_stage == 'SS_tax':
+        pickle.dump(dictionary1, open("OUTPUT/SS/ss_vars.pkl", "w"))

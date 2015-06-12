@@ -185,7 +185,6 @@ for key in param_names:
     dictionary[key] = globals()[key]
 pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
 
-print 'Getting Thetas'
 call(['python', 'SS.py'])
 
 '''
@@ -197,15 +196,12 @@ call(['python', 'SS.py'])
 import tax_funcs
 theta = tax_funcs.replacement_rate_vals()
 del sys.modules['tax_funcs']
-print '\tFinished.'
 
 '''
 ------------------------------------------------------------------------
     Run SS with replacement rates, and baseline taxes
 ------------------------------------------------------------------------
 '''
-
-print 'Getting initial distribution.'
 
 SS_stage = 'SS_init'
 
@@ -214,7 +210,6 @@ for key in param_names:
     dictionary[key] = globals()[key]
 pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
 call(['python', 'SS.py'])
-print '\tFinished'
 
 
 '''

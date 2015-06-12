@@ -236,6 +236,7 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
     return list(error1.flatten()) + list(
         error2.flatten())
 
+# Initialize Time paths
 domain = np.linspace(0, T, T)
 Kinit = (-1/(domain + 1)) * (Kss-K0) + Kss
 Kinit[-1] = Kss
@@ -264,7 +265,6 @@ guesses_n = np.append(guesses_n, ending_n_tail, axis=0)
 
 TPIiter = 0
 TPIdist = 10
-print 'Starting time path iteration.'
 
 euler_errors = np.zeros((T, 2*S, J))
 TPIdist_vec = np.zeros(maxiter)
@@ -354,7 +354,6 @@ Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
 Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
 BQpath_TPI = np.array(list(BQinit) + list(np.ones((10, J))*BQss))
 
-print 'TPI is finished.'
 
 
 
@@ -363,18 +362,13 @@ b_s[:, 1:, :] = b_mat[:T, :-1, :]
 b_splus1 = np.zeros((T, S, J))
 b_splus1[:, :, :] = b_mat[:T, :, :]
 if TPI_initial_run:
-    taxinit = tax.total_taxes(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(
+    tax_path = tax.total_taxes(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(
         1, S, J), n_mat[:T], BQinit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T].reshape(T, 1, 1), None, 'TPI', False, parameters, theta, tau_bq)
-    cinit = house.get_cons(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b_splus1, parameters, taxinit)
-else:
-    taxinit2 = tax.total_taxes(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(
-        1, S, J), n_mat[:T], BQinit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T].reshape(T, 1, 1), None, 'TPI', False, parameters, theta, tau_bq)
-    cinit = house.get_cons(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b_splus1, parameters, taxinit2)
+    cinit = house.get_cons(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b_splus1, parameters, tax_path)
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
     house.constraint_checker_TPI(b_mat[t, :-1, :], n_mat[
         t], cinit[t], t, parameters, N_tilde)
-print '\tFinished.'
 
 '''
 ------------------------------------------------------------------------
@@ -390,22 +384,14 @@ Save variables/values so they can be used in other modules
 ------------------------------------------------------------------------
 '''
 
-print 'Saving TPI variable values.'
+var_names = ['Kpath_TPI', 'b_mat', 'cinit',
+             'eul_savings', 'eul_laborleisure', 'Lpath_TPI', 'BQpath_TPI',
+             'n_mat', 'rinit', 'winit', 'Yinit', 'T_H_init', 'tax_path']
+dictionary = {}
+for key in var_names:
+    dictionary[key] = globals()[key]
 
 if TPI_initial_run:
-    var_names = ['Kpath_TPI', 'b_mat', 'cinit',
-                 'eul_savings', 'eul_laborleisure', 'Lpath_TPI', 'BQpath_TPI',
-                 'n_mat', 'rinit', 'winit', 'Yinit', 'T_H_init', 'taxinit']
-    dictionary = {}
-    for key in var_names:
-        dictionary[key] = globals()[key]
     pickle.dump(dictionary, open("OUTPUT/TPIinit/TPIinit_vars.pkl", "w"))
 else:
-    var_names = ['Kpath_TPI', 'b_mat', 'cinit',
-                 'eul_savings', 'eul_laborleisure', 'Lpath_TPI', 'BQpath_TPI',
-                 'n_mat', 'rinit', 'winit', 'Yinit', 'T_H_init', 'taxinit2']
-    dictionary = {}
-    for key in var_names:
-        dictionary[key] = globals()[key]
     pickle.dump(dictionary, open("OUTPUT/TPI/TPI_vars.pkl", "w"))
-print '\tFinished.'
