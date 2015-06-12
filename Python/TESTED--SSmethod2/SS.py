@@ -86,54 +86,11 @@ scal         = value to scale the initial guesses by in order to get the
 ------------------------------------------------------------------------
 '''
 
-variables = pickle.load(open("OUTPUT/Saved_moments/wealth_data_moments.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
-# Set lowest ability group's wealth to be a positive, not negative, number for the calibration
-wealth_data_array[2:26, 0] = 500.0
-
-variables = pickle.load(open("OUTPUT/Saved_moments/labor_data_moments.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
-
 variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 if os.path.isfile("OUTPUT/Saved_moments/params_changed.pkl"):
     variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "r"))
-    for key in variables:
-        globals()[key] = variables[key]
-
-'''
-------------------------------------------------------------------------
-Generate income and demographic parameters
-------------------------------------------------------------------------
-e            = S x J matrix of age dependent possible working abilities
-               e_s
-omega        = T x S x J array of demographics
-g_n          = steady state population growth rate
-omega_SS     = steady state population distribution
-surv_rate    = S x 1 array of survival rates
-rho    = S x 1 array of mortality rates
-------------------------------------------------------------------------
-'''
-
-if SS_stage == 'first_run_for_guesses':
-    import income_polynomials as income
-    import demographics
-    # These values never change, so only run it once
-    omega, g_n, omega_SS, surv_rate = demographics.get_omega(
-        S, J, T, lambdas, starting_age, ending_age, E)
-    e = income.get_e(S, J, starting_age, ending_age, lambdas, omega_SS)
-    rho = 1-surv_rate
-    rho[-1] = 1.0
-    var_names = ['omega', 'g_n', 'omega_SS', 'surv_rate', 'e', 'rho']
-    dictionary = {}
-    for key in var_names:
-        dictionary[key] = globals()[key]
-    pickle.dump(dictionary, open("OUTPUT/Saved_moments/income_demo_vars.pkl", "w"))
-else:
-    variables = pickle.load(open("OUTPUT/Saved_moments/income_demo_vars.pkl", "r"))
     for key in variables:
         globals()[key] = variables[key]
 
@@ -237,23 +194,12 @@ def new_SS_Solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorgu
         n_mat[:, j] = solutions1[S:]
     print 'SS fsolve euler error:', eul_errors.max()
     solutions = np.append(b_mat.flatten(), n_mat.flatten())
-
-    # K = house.get_K(b_mat, weights)
-    # L = firm.get_L(e, n_mat, weights)
-    # Y = firm.get_Y(K, L, params)
-    # w = firm.get_w(Y, L, params)
-    # r = firm.get_r(Y, K, params)
-    # BQ = (1+r)*(b_mat * weights * rho.reshape(S, 1)).sum(0)
-    # b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(b_mat[:-1]))
-    # average_income = ((r * b_s + w * e * n_mat) * weights).sum()
-    # factor = mean_income_data/average_income
-    # T_Hguess = tax.get_lump_sum(r, b_s, w, e, n_mat, BQ, lambdas, factor, weights, 'SS', params, theta, tau_bq)
     other_vars = np.array([w, r, factor, T_H])
     solutions = np.append(solutions, other_vars)
     return solutions
 
 
-def function_to_minimize(chi_guesses_init, params, weights_SS, rho_vec, lambdas, theta, tau_bq, e, wealth_data_array):
+def function_to_minimize(chi_guesses_init, params, weights_SS, rho_vec, lambdas, theta, tau_bq, e):
     '''
     Parameters:
         chi_guesses_init = guesses for chi_b
@@ -277,11 +223,12 @@ def function_to_minimize(chi_guesses_init, params, weights_SS, rho_vec, lambdas,
     n_new = solutions[S*J:2*S*J]
     w_new, r_new, factor_new, T_H_new = solutions[2*S*J:]
     # Wealth Calibration Euler
-    error5 = list(misc_funcs.check_wealth_calibration(b_new.reshape(S, J)[:-1, :], factor_new, wealth_data_array, params))
+    error5 = list(misc_funcs.check_wealth_calibration(b_new.reshape(S, J)[:-1, :], factor_new, params))
     # print error5
     # labor calibration euler
+    lab_data_dict = pickle.load(open("OUTPUT/Saved_moments/labor_data_moments.pkl", "r"))
     labor_sim = (n_new.reshape(S, J)*lambdas.reshape(1, J)).sum(axis=1)
-    error6 = list(misc_funcs.perc_dif_func(labor_sim, labor_dist_data))
+    error6 = list(misc_funcs.perc_dif_func(labor_sim, lab_data_dict['labor_dist_data']))
     # combine eulers
     output = np.array(error5 + error6)
     # Constraints
@@ -313,10 +260,7 @@ def function_to_minimize(chi_guesses_init, params, weights_SS, rho_vec, lambdas,
 ------------------------------------------------------------------------
 '''
 
-
-
-
-if SS_stage == 'first_run_for_guesses':
+if SS_stage == 'constrained_minimization':
     b_guess = np.ones((S, J)).flatten() * .01
     n_guess = np.ones((S, J)).flatten() * .5 * ltilde
     chi_guesses = np.ones(S+J)
@@ -346,18 +290,16 @@ if SS_stage == 'first_run_for_guesses':
     T_Hguess = 0
     factorguess = 100000
     solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_guesses[J:], chi_guesses[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
-elif SS_stage == 'constrained_minimization':
-    variables = pickle.load(open("OUTPUT/Saved_moments/first_run_solutions.pkl", "r"))
+    variables = ['solutions', 'final_chi_params']
     dictionary = {}
     for key in variables:
-        globals()[key] = variables[key]
         dictionary[key] = globals()[key]
     pickle.dump(dictionary, open("OUTPUT/Saved_moments/minimization_solutions.pkl", "w"))
     
     chi_guesses = final_chi_params
-    function_to_minimize_X = lambda x: function_to_minimize(x, parameters, omega_SS, rho, lambdas, theta, tau_bq, e, wealth_data_array)
+    function_to_minimize_X = lambda x: function_to_minimize(x, parameters, omega_SS, rho, lambdas, theta, tau_bq, e)
     bnds = tuple([(1e-6, None)] * (S + J))
-    final_chi_params = opt.minimize(function_to_minimize_X, chi_guesses, method='TNC', tol=1e-9, bounds=bnds).x
+    final_chi_params = opt.minimize(function_to_minimize_X, chi_guesses, method='TNC', tol=1e-14, bounds=bnds).x
     print 'The final bequest parameter values:', final_chi_params
 
     b_guess = (solutions_pre[:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
@@ -386,24 +328,6 @@ elif SS_stage == 'SS_tax':
     chi_guesses = final_chi_params
     solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_guesses[J:], chi_guesses[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
 
-'''
-------------------------------------------------------------------------
-    Calculate the fits of the wealth tax
-------------------------------------------------------------------------
-'''
-
-b_sim = (solutions[:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
-w_sim, r_sim, factor_sim, T_H_sim = solutions[2*S*J:]
-
-wealth_fits = misc_funcs.check_wealth_calibration(b_sim.reshape(S, J)[:-1], factor_sim, wealth_data_array, parameters)
-
-chi_b_vals_for_fit = chi_guesses[0:J]
-var_names = ['wealth_fits', 'chi_b_vals_for_fit']
-
-dictionary = {}
-for key in var_names:
-    dictionary[key] = globals()[key]
-pickle.dump(dictionary, open("OUTPUT/Saved_moments/chi_b_fits.pkl", "w"))
 
 '''
 ------------------------------------------------------------------------
@@ -412,13 +336,7 @@ pickle.dump(dictionary, open("OUTPUT/Saved_moments/chi_b_fits.pkl", "w"))
 ------------------------------------------------------------------------
 '''
 
-if SS_stage == 'first_run_for_guesses':
-    var_names = ['solutions', 'final_chi_params']
-    dictionary = {}
-    for key in var_names:
-        dictionary[key] = globals()[key]
-    pickle.dump(dictionary, open("OUTPUT/Saved_moments/first_run_solutions.pkl", "w"))
-elif SS_stage == 'constrained_minimization':
+if SS_stage == 'constrained_minimization':
     var_names = ['solutions', 'final_chi_params']
     dictionary = {}
     for key in var_names:
@@ -438,48 +356,47 @@ elif SS_stage == 'SS_tax':
     pickle.dump(dictionary, open("OUTPUT/Saved_moments/SS_tax_solutions.pkl", "w"))
 
 
-if SS_stage != 'first_run_for_guesses':
-    bssmat = solutions[0:(S-1) * J].reshape(S-1, J)
-    bq = solutions[(S-1)*J:S*J]
-    bssmat_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat))
-    bssmat_splus1 = np.array(list(bssmat) + list(bq.reshape(1, J)))
-    nssmat = solutions[S * J:2*S*J].reshape(S, J)
-    wss, rss, factor_ss, T_Hss = solutions[2*S*J:]
+bssmat = solutions[0:(S-1) * J].reshape(S-1, J)
+bq = solutions[(S-1)*J:S*J]
+bssmat_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat))
+bssmat_splus1 = np.array(list(bssmat) + list(bq.reshape(1, J)))
+nssmat = solutions[S * J:2*S*J].reshape(S, J)
+wss, rss, factor_ss, T_Hss = solutions[2*S*J:]
 
-    Kss = house.get_K(bssmat_splus1, omega_SS)
-    Lss = firm.get_L(e, nssmat, omega_SS)
-    Yss = firm.get_Y(Kss, Lss, parameters)
+Kss = house.get_K(bssmat_splus1, omega_SS)
+Lss = firm.get_L(e, nssmat, omega_SS)
+Yss = firm.get_Y(Kss, Lss, parameters)
 
-    BQss = (1+rss)*(np.array(list(bssmat) + list(bq.reshape(1, J))).reshape(
-        S, J) * omega_SS * rho.reshape(S, 1)).sum(0)
-    b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
-    taxss = tax.total_taxes(rss, b_s, wss, e, nssmat, BQss, lambdas, factor_ss, T_Hss, None, 'SS', False, parameters, theta, tau_bq)
-    cssmat = house.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.reshape(1, J), bssmat_splus1, parameters, taxss)
+BQss = (1+rss)*(np.array(list(bssmat) + list(bq.reshape(1, J))).reshape(
+    S, J) * omega_SS * rho.reshape(S, 1)).sum(0)
+b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
+taxss = tax.total_taxes(rss, b_s, wss, e, nssmat, BQss, lambdas, factor_ss, T_Hss, None, 'SS', False, parameters, theta, tau_bq)
+cssmat = house.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.reshape(1, J), bssmat_splus1, parameters, taxss)
 
-    house.constraint_checker_SS(bssmat, nssmat, cssmat, parameters)
+house.constraint_checker_SS(bssmat, nssmat, cssmat, parameters)
 
-    '''
-    ------------------------------------------------------------------------
-    Generate variables for graphs
-    ------------------------------------------------------------------------
-    b_s        = SxJ array of bssmat in period t
-    b_splus1        = SxJ array of bssmat in period t+1
-    b_splus2        = SxJ array of bssmat in period t+2
-    euler_savings      = euler errors from savings euler equation
-    euler_labor_leisure      = euler errors from labor leisure euler equation
-    ------------------------------------------------------------------------
-    '''
-    b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
-    b_splus1 = bssmat_splus1
-    b_splus2 = np.array(list(bssmat_splus1[1:]) + list(np.zeros(J).reshape((1, J))))
+'''
+------------------------------------------------------------------------
+Generate variables for graphs
+------------------------------------------------------------------------
+b_s        = SxJ array of bssmat in period t
+b_splus1        = SxJ array of bssmat in period t+1
+b_splus2        = SxJ array of bssmat in period t+2
+euler_savings      = euler errors from savings euler equation
+euler_labor_leisure      = euler errors from labor leisure euler equation
+------------------------------------------------------------------------
+'''
+b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
+b_splus1 = bssmat_splus1
+b_splus2 = np.array(list(bssmat_splus1[1:]) + list(np.zeros(J).reshape((1, J))))
 
-    chi_b = np.tile(final_chi_params[:J].reshape(1, J), (S, 1))
-    chi_n = np.array(final_chi_params[J:])
-    euler_savings = np.zeros((S, J))
-    euler_labor_leisure = np.zeros((S, J))
-    for j in xrange(J):
-        euler_savings[:, j] = house.euler_savings_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], b_splus1[:, j], b_splus2[:, j], BQss[j], factor_ss, T_Hss, chi_b[:, j], parameters, theta[j], tau_bq[j], rho, lambdas[j])
-        euler_labor_leisure[:, j] = house.euler_labor_leisure_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], b_splus1[:, j], BQss[j], factor_ss, T_Hss, chi_n, parameters, theta[j], tau_bq[j], lambdas[j])
+chi_b = np.tile(final_chi_params[:J].reshape(1, J), (S, 1))
+chi_n = np.array(final_chi_params[J:])
+euler_savings = np.zeros((S, J))
+euler_labor_leisure = np.zeros((S, J))
+for j in xrange(J):
+    euler_savings[:, j] = house.euler_savings_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], b_splus1[:, j], b_splus2[:, j], BQss[j], factor_ss, T_Hss, chi_b[:, j], parameters, theta[j], tau_bq[j], rho, lambdas[j])
+    euler_labor_leisure[:, j] = house.euler_labor_leisure_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], b_splus1[:, j], BQss[j], factor_ss, T_Hss, chi_n, parameters, theta[j], tau_bq[j], lambdas[j])
 '''
 ------------------------------------------------------------------------
     Save the values in various ways, depending on the stage of
@@ -487,9 +404,7 @@ if SS_stage != 'first_run_for_guesses':
 ------------------------------------------------------------------------
 '''
 if SS_stage == 'constrained_minimization':
-    bssmat_init = bssmat_splus1
-    nssmat_init = nssmat
-    var_names = ['retire', 'nssmat_init', 'wss', 'factor_ss', 'e',
+    var_names = ['retire', 'nssmat', 'wss', 'factor_ss', 'e',
                  'J', 'omega_SS']
     dictionary = {}
     for key in var_names:

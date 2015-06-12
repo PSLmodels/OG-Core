@@ -422,19 +422,13 @@ def get_omega(S, J, T, bin_weights, starting_age, ending_age, E):
     poly_int_pop = poly.polyint(poly_pop)
     pop_int = poly.polyval(np.linspace(
         starting_age, ending_age, S+1), poly_int_pop)
-    new_omega = np.zeros(S)
-    for s in xrange(S):
-        new_omega[s] = pop_int[s+1] - pop_int[s]
+    new_omega = pop_int[1:]-pop_int[:-1]
     surv_array, children_rate = get_survival(S, starting_age, ending_age, E)
     imm_array, children_im = get_immigration2(S, starting_age, ending_age, E)
     fert_rate, children_fertrate = get_fert(S, starting_age, ending_age, E)
-    cum_surv_rate = np.zeros(S)
-    for i in xrange(S):
-        cum_surv_rate[i] = np.prod(surv_array[:i])
+    cum_surv_rate = np.cumprod(surv_array)
     rate_graphs(S, starting_age, ending_age, imm_array, fert_rate, surv_array, children_im, children_fertrate, children_rate)
-    children_int = poly.polyval(
-        np.linspace(
-            0, starting_age, E + 1), poly_int_pop)
+    children_int = poly.polyval(np.linspace(0, starting_age, E + 1), poly_int_pop)
     sum2010 = pop_int[-1] - children_int[0]
     new_omega /= sum2010
     children = np.diff(children_int)

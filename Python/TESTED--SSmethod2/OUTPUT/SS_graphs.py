@@ -35,10 +35,7 @@ def the_inequalizer(dist, weights):
     idx = np.argsort(flattened_dist)
     sort_dist = flattened_dist[idx]
     sort_weights = flattened_weights[idx]
-    cum_weights = np.zeros(S*J)
-    cum_weights[0] = sort_weights[0]
-    for i in xrange(1, S*J):
-        cum_weights[i] = sort_weights[i] + cum_weights[i-1]
+    cum_weights = np.cumsum(sort_weights)
     # variance
     print np.var(np.log(dist * weights))
     # 90/10 ratio
@@ -61,9 +58,6 @@ variables = pickle.load(open("SSinit/ss_init_vars.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 variables = pickle.load(open("Saved_moments/params_given.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
-variables = pickle.load(open("Saved_moments/income_demo_vars.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 
@@ -95,7 +89,7 @@ income_init = cssmat + delta * bssmat_splus1
 # print Lss
 # print Css_init
 # print (utility_init * omega_SS).sum()
-# the_inequalizer(income_init, omega_SS)
+the_inequalizer(income_init, omega_SS)
 
 
 

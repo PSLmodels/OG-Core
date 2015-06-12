@@ -38,7 +38,7 @@ def replacement_rate_vals():
     variables = pickle.load(open("OUTPUT/Saved_moments/payroll_inputs.pkl", "r"))
     for key in variables:
         globals()[key] = variables[key]
-    AIME = ((wss * factor_ss * e * nssmat_init)*omega_SS).sum(0) / 12.0
+    AIME = ((wss * factor_ss * e * nssmat)*omega_SS).sum(0) / 12.0
     PIA = np.zeros(J)
     # Bins from data for each level of replacement
     for j in xrange(J):
@@ -48,7 +48,7 @@ def replacement_rate_vals():
             PIA[j] = 674.1+.32*(AIME[j] - 749.0)
         else:
             PIA[j] = 1879.86 + .15*(AIME[j] - 4517.0)
-    theta = PIA * (e * nssmat_init).mean(0) / AIME
+    theta = PIA * (e * nssmat).mean(0) / AIME
     # Set the maximum replacment rate to be $30,000
     maxpayment = 30000.0/(factor_ss * wss)
     theta[theta > maxpayment] = maxpayment

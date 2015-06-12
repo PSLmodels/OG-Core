@@ -86,9 +86,6 @@ TPI_initial_run = whether this is the baseline TPI or not
 ------------------------------------------------------------------------
 '''
 
-variables = pickle.load(open("OUTPUT/Saved_moments/income_demo_vars.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
 variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]

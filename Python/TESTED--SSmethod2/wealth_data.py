@@ -77,9 +77,7 @@ data2 = np.array(data)[:, 1:-1]
 def get_wealth_data(bin_weights, J):
     perc_array = np.zeros(J)
     bins2 = (bin_weights * 100).astype(int)
-    perc_array[0] = bins2[0]
-    for i in xrange(J-1):
-        perc_array[i+1] = bins2[i+1] + perc_array[i]
+    perc_array = np.cumsum(bins2)
     perc_array -= 1
     wealth_data_array = np.zeros((78, J))
     wealth_data_array[:, 0] = data2[:, :perc_array[0]].mean(axis=1)

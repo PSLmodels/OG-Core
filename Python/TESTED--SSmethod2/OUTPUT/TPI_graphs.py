@@ -39,9 +39,6 @@ for key in variables:
 variables = pickle.load(open("Saved_moments/params_given.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
-variables = pickle.load(open("Saved_moments/income_demo_vars.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
 
 N_tilde = omega.sum(1).sum(1)
 omega_stationary_init = omega / N_tilde.reshape(T+S, 1, 1)
@@ -90,9 +87,7 @@ beta_string = np.ones(S) * beta
 for i in xrange(S):
     beta_string[i] = beta_string[i] ** i
 utility *= beta_string.reshape(1, S, 1)
-cum_morts = np.zeros(S)
-for i in xrange(S):
-    cum_morts[i] = np.prod(1-rho[:i])
+cum_morts = np.cumprod(1-rho)
 utility *= cum_morts.reshape(1, S, 1)
 utility_lifetime_init = utility.sum(1)
 
@@ -156,9 +151,6 @@ beta_string = np.ones(S) * beta
 for i in xrange(S):
     beta_string[i] = beta_string[i] ** i
 utility *= beta_string.reshape(1, S, 1)
-cum_morts = np.zeros(S)
-for i in xrange(S):
-    cum_morts[i] = np.prod(1-rho[:i])
 utility *= cum_morts.reshape(1, S, 1)
 utility_lifetime = utility.sum(1)
 
@@ -368,13 +360,8 @@ def gini_cols(path, omega):
     idx = np.argsort(collapseS-omega1, axis=1)
     collapseS2 = collapseS[:, idx][np.eye(T,T, dtype=bool)]
     omega_sorted = omega1[:, idx][np.eye(T, T, dtype=bool)]
-    cum_omega = np.zeros((T, J))
-    cum_levels = np.zeros((T, J))
-    cum_levels[:, 0] = collapseS2[:, 0]
-    cum_omega[:, 0] = omega_sorted[:, 0]
-    for j in xrange(1, J):
-        cum_levels[:, j] = collapseS2[:, j] + cum_levels[:, j-1]
-        cum_omega[:, j] = omega_sorted[:, j] + cum_omega[:, j-1]
+    cum_levels = np.cumsum(collapseS2, axis=1)
+    cum_omega = np.cumsum(omega_sorted, axis=1)
     # plt.figure()
     # plt.plot(cum_omega[10], cum_levels[10])
     # plt.plot(cum_omega[10], cum_omega[10])
@@ -398,13 +385,8 @@ def gini_colj(path, omega):
     idx = np.argsort(collapseJ-omega1, axis=1)
     collapseJ2 = collapseJ[:, idx][np.eye(T,T, dtype=bool)]
     omega_sorted = omega1[:, idx][np.eye(T, T, dtype=bool)]
-    cum_levels = np.zeros((T, S))
-    cum_omega = np.zeros((T, S))
-    cum_levels[:, 0] = collapseJ2[:, 0]
-    cum_omega[:, 0] = omega_sorted[:, 0]
-    for s in xrange(1, S):
-        cum_levels[:, s] = collapseJ2[:, s] + cum_levels[:, s-1]
-        cum_omega[:, s] = omega_sorted[:, s] + cum_omega[:, s-1]
+    cum_levels = np.cumsum(collapseJ2, axis=1)
+    cum_omega = np.cumsum(omega_sorted, axis=1)
     cum_levels[:, 1:] = cum_levels[:, :-1]
     cum_levels[:, 0] = 0
     G = 2 * (.5-(cum_levels * omega_sorted).sum(1))
@@ -424,13 +406,8 @@ def gini_nocol(path, omega):
     idx = np.argsort(pathx-omega, axis=1)
     path2 = pathx[:, idx][np.eye(T,T, dtype=bool)]
     omega_sorted = omega[:, idx][np.eye(T,T, dtype=bool)]
-    cum_levels = np.zeros((T, S*J))
-    cum_omega = np.zeros((T, S*J))
-    cum_omega[:, 0] = omega_sorted[:, 0]
-    cum_levels[:, 0] = path2[:, 0]
-    for i in xrange(1, S*J):
-        cum_levels[:, i] = path2[:, i] + cum_levels[:, i-1]
-        cum_omega[:, i] = omega_sorted[:, i] + cum_omega[:, i-1]
+    cum_levels = np.cumsum(path2, axis=1)
+    cum_omega = np.cumsum(omega_sorted, axis=1)
     cum_levels[:, 1:] = cum_levels[:, :-1]
     cum_levels[:, 0] = 0
     G = 2 * (.5-(cum_levels * omega_sorted).sum(1))
