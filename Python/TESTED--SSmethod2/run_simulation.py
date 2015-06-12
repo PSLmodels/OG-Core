@@ -140,8 +140,6 @@ p_wealth = 0.0
 tau_bq = np.zeros(J)
 tau_payroll = 0.15
 theta = np.zeros(J)
-# Other parameters
-scal = np.ones(J)
 # Generate Income and Demographic parameters
 omega, g_n, omega_SS, surv_rate = demographics.get_omega(
     S, J, T, lambdas, starting_age, ending_age, E)
@@ -164,7 +162,7 @@ param_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
              'b_tax_income', 'c_tax_income', 'd_tax_income',
              'tau_payroll', 'tau_bq',
              'theta', 'retire', 'mean_income_data',
-             'h_wealth', 'p_wealth', 'm_wealth', 'scal',
+             'h_wealth', 'p_wealth', 'm_wealth',
              'SS_stage', 'TPI_initial_run',
              'omega', 'g_n', 'omega_SS', 'surv_rate', 'e', 'rho']
 
@@ -219,7 +217,7 @@ call(['python', 'SS.py'])
 '''
 
 # call(['python', 'TPI.py'])
-import TPI
+# import TPI
 
 '''
 ------------------------------------------------------------------------
@@ -232,8 +230,10 @@ import TPI
 SS_stage = 'SS_tax'
 TPI_initial_run = False
 
+d_tax_income = .42
 
-var_names = ['SS_stage', 'TPI_initial_run']
+
+var_names = ['SS_stage', 'TPI_initial_run', 'd_tax_income']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
@@ -247,7 +247,7 @@ pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_changed.pkl", "w"))
 
 
 # print 'Getting SS distribution for wealth tax.'
-# call(['python', 'SS.py'])
+call(['python', 'SS.py'])
 
 '''
 ------------------------------------------------------------------------

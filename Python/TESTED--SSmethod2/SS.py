@@ -81,8 +81,6 @@ retire       = age in which individuals retire(scalar)
 h_wealth     = wealth tax parameter h
 p_wealth     = wealth tax parameter p
 m_wealth     = wealth tax parameter m
-scal         = value to scale the initial guesses by in order to get the
-               fsolve to converge
 ------------------------------------------------------------------------
 '''
 
@@ -300,7 +298,7 @@ if SS_stage == 'constrained_minimization':
     print 'The final bequest parameter values:', chi_params
 
     solutions_dict = pickle.load(open("OUTPUT/Saved_moments/minimization_solutions.pkl", "r"))
-    b_guess = (solutions_dict['solutions'][:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
+    b_guess = solutions_dict['solutions'][:S*J]
     n_guess = solutions_dict['solutions'][S*J:2*S*J]
     wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
 
@@ -309,7 +307,7 @@ elif SS_stage == 'SS_init':
     variables = pickle.load(open("OUTPUT/Saved_moments/minimization_solutions.pkl", "r"))
     for key in variables:
         globals()[key] = variables[key]
-    b_guess = (solutions[:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
+    b_guess = solutions[:S*J]
     n_guess = solutions[S*J:2*S*J]
     wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
     solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
@@ -317,7 +315,7 @@ elif SS_stage == 'SS_tax':
     variables = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "r"))
     for key in variables:
         globals()[key] = variables[key]
-    b_guess = (solutions[:S*J].reshape(S, J) * scal.reshape(1, J)).flatten()
+    b_guess = solutions[:S*J]
     n_guess = solutions[S*J:2*S*J]
     wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
     solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
