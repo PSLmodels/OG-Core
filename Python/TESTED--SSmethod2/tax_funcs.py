@@ -35,9 +35,8 @@ Tax functions
 
 def replacement_rate_vals():
     # Import data need to compute replacement rates, outputed from SS.py
-    variables = pickle.load(open("OUTPUT/Saved_moments/payroll_inputs.pkl", "r"))
-    for key in variables:
-        globals()[key] = variables[key]
+    payroll_dict = pickle.load(open("OUTPUT/Saved_moments/payroll_inputs.pkl", "r"))
+    retire, nssmat, wss, factor_ss, e, J, omega_SS = [payroll_dict[x] for x in ['retire', 'nssmat', 'wss', 'factor_ss', 'e', 'J', 'omega_SS']]
     AIME = ((wss * factor_ss * e * nssmat)*omega_SS).sum(0) / 12.0
     PIA = np.zeros(J)
     # Bins from data for each level of replacement

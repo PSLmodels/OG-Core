@@ -232,9 +232,8 @@ import TPI
 SS_stage = 'SS_tax'
 TPI_initial_run = False
 
-d_tax_income = .9 * .219
 
-var_names = ['SS_stage', 'TPI_initial_run', 'd_tax_income']
+var_names = ['SS_stage', 'TPI_initial_run']
 dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
