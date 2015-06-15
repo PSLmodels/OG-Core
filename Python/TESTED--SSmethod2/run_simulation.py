@@ -176,8 +176,6 @@ param_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
 
 SS_stage = 'constrained_minimization'
 
-thetas_simulation = True
-
 dictionary = {}
 for key in param_names:
     dictionary[key] = globals()[key]
@@ -247,7 +245,7 @@ pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_changed.pkl", "w"))
 
 
 # print 'Getting SS distribution for wealth tax.'
-call(['python', 'SS.py'])
+# call(['python', 'SS.py'])
 
 '''
 ------------------------------------------------------------------------

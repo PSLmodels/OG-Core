@@ -258,8 +258,8 @@ def function_to_minimize(chi_params_init, params, weights_SS, rho_vec, lambdas, 
 
 if SS_stage == 'constrained_minimization':
     # Generate initial guesses for chi^b_j and chi^n_s
-    chi_params = np.ones(S+J)
     chi_params[0:J] = np.array([2, 10, 90, 350, 1700, 22000, 120000])
+    chi_params[:J] = np.ones(J)
     chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 ,  8.41097278
                              ,  7.15059004 ,  6.46771332 ,  5.85495452 ,  5.46242013 ,  5.00364263
                              ,  4.57322063 ,  4.53371545 ,  4.29828515 ,  4.10144524 ,  3.8617942  ,  3.57282
@@ -294,7 +294,7 @@ if SS_stage == 'constrained_minimization':
 
     function_to_minimize_X = lambda x: function_to_minimize(x, parameters, omega_SS, rho, lambdas, theta, tau_bq, e)
     bnds = tuple([(1e-6, None)] * (S + J))
-    chi_params = opt.minimize(function_to_minimize_X, chi_params, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
+    chi_params = opt.minimize(function_to_minimize_X, chi_params, method='TNC', tol=1e-14, bounds=bnds).x
     print 'The final bequest parameter values:', chi_params
 
     solutions_dict = pickle.load(open("OUTPUT/Saved_moments/minimization_solutions.pkl", "r"))
