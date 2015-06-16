@@ -360,10 +360,11 @@ b_s = np.zeros((T, S, J))
 b_s[:, 1:, :] = b_mat[:T, :-1, :]
 b_splus1 = np.zeros((T, S, J))
 b_splus1[:, :, :] = b_mat[:T, :, :]
-if TPI_initial_run:
-    tax_path = tax.total_taxes(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(
-        1, S, J), n_mat[:T], BQinit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T].reshape(T, 1, 1), None, 'TPI', False, parameters, theta, tau_bq)
-    cinit = house.get_cons(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b_splus1, parameters, tax_path)
+
+tax_path = tax.total_taxes(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(
+    1, S, J), n_mat[:T], BQinit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T].reshape(T, 1, 1), None, 'TPI', False, parameters, theta, tau_bq)
+cinit = house.get_cons(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b_splus1, parameters, tax_path)
+
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
     house.constraint_checker_TPI(b_mat[t, :-1, :], n_mat[

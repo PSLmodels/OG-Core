@@ -36,8 +36,8 @@ from mpl_toolkits.mplot3d import Axes3D
 
 # Create variables for number of age groups in data (S) and number
 # of percentiles (J)
-S = 60
-J = 99
+S_labor = 60
+J_labor = 99
 
 data = pd.read_table(
     "data/labor/cps_hours_by_age_hourspct.txt", header=0)
@@ -48,12 +48,12 @@ lab_mat_basic /= np.nanmax(lab_mat_basic)
 
 piv2 = data.pivot(index='age', columns='hours_pct', values='num_obs')
 weights = np.array(piv2)
-weights /= np.nansum(weights, axis=1).reshape(S, 1)
+weights /= np.nansum(weights, axis=1).reshape(S_labor, 1)
 weighted = np.nansum((lab_mat_basic * weights), axis=1)
 
 '''
 ------------------------------------------------------------------------
-    Fit a line to ages 80-100
+    Fit a line to extrapolate ages 80-100
 ------------------------------------------------------------------------
 '''
 
@@ -73,8 +73,8 @@ labor_dist_data[57:] = extension
 ------------------------------------------------------------------------
 '''
 
-domain = np.linspace(20, 80, S)
-Jgrid = np.linspace(1, 100, J)
+domain = np.linspace(20, 80, S_labor)
+Jgrid = np.linspace(1, 100, J_labor)
 X, Y = np.meshgrid(domain, Jgrid)
 cmap2 = matplotlib.cm.get_cmap('summer')
 

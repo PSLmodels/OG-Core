@@ -177,7 +177,7 @@ def new_SS_Solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorgu
         factor = misc_funcs.convex_combo(new_factor, factor, params)
         T_H = misc_funcs.convex_combo(new_T_H, T_H, params)
         
-        dist = np.array([misc_funcs.perc_dif_func(new_r, r)] + [misc_funcs.perc_dif_func(new_w, w)] + [misc_funcs.perc_dif_func(new_T_H, T_H)]).max()
+        dist = np.array([misc_funcs.perc_dif_func(new_r, r)] + [misc_funcs.perc_dif_func(new_w, w)] + [misc_funcs.perc_dif_func(new_T_H, T_H)] + [misc_funcs.perc_dif_func(new_factor, factor)]).max()
         dist_vec[iteration] = dist
         if iteration > 10:
             if dist_vec[iteration] - dist_vec[iteration-1] > 0:
