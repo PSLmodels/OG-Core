@@ -1,0 +1,124 @@
+\documentclass[letterpaper,12pt]{article}
+
+\usepackage{threeparttable}
+\usepackage{geometry}
+\geometry{letterpaper,tmargin=1in,bmargin=1in,lmargin=1.25in,rmargin=1.25in}
+\usepackage[format=hang,font=normalsize,labelfont=bf]{caption}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{delarray}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{lscape}
+\usepackage{natbib}
+\usepackage{setspace}
+\usepackage{float,color}
+\usepackage[pdftex]{graphicx}
+\usepackage{pdfsync}
+\usepackage{verbatim}
+\usepackage{placeins}
+\usepackage{geometry}
+\usepackage{pdflscape}
+\synctex=1
+\usepackage{hyperref}
+\hypersetup{colorlinks,linkcolor=red,urlcolor=blue,citecolor=red}
+\usepackage{bm}
+
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}{Definition} % Number definitions on their own
+\newtheorem{derivation}{Derivation} % Number derivations on their own
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}{Proposition} % Number propositions on their own
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\bibliographystyle{aer}
+\newcommand\ve{\varepsilon}
+\renewcommand\theenumi{\roman{enumi}}
+\newcommand\norm[1]{\left\lVert#1\right\rVert}
+
+\begin{document}
+
+We have the following five conditions that must hold in equilibrium:
+
+    \begin{equation}\label{EqEulerSavEpS}
+      (c_{j,E+S,t})^{-\sigma} = \chi^b_j(b_{j,E+S+1,t+1})^{-\sigma} \quad\forall j,t
+    \end{equation}
+
+        \begin{equation}\label{EqEulerLabGen}
+      \begin{split}
+        &(c_{j,s,t})^{-\sigma}\Biggl(w_t e_{j,s} - \frac{\partial T_{j,s,t}}{\partial n_{j,s,t}}\Biggr) = e^{g_y t(1-\sigma)}\chi^n_{s}\biggl(\frac{b}{\tilde{l}}\biggr)\biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)^{v-1}\Biggl[1 - \biggl(\frac{n_{j,s,t}}{\tilde{l}}\biggr)\Biggr]^{\frac{1-v}{v}} \\
+        &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t, \quad\text{and}\quad E+1\leq s\leq E+S \\
+        &\qquad\text{where}\quad c_{j,s,t} = \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{BQ_{j,t}}{\lambda_j\tilde{N}_t} - b_{j,s+1,t+1} - T_{j,s,t} \\
+        &\qquad\text{and}\quad \frac{\partial T_{j,s,t}}{\partial n_{j,s,t}} = w_t e_{j,s}\biggl[\tau^I\bigl(F\hat{a}_{j,s,t}\bigr) + \frac{F\hat{a}_{j,s,t}CD\bigl[2A(F\hat{a}_{j,s,t})+B\bigr]}{\bigl[A(F\hat{a}_{j,s,t})^2+B(F \hat{a}_{j,s,t})+C\bigr]^2} + \tau^P\Biggr] 
+      \end{split}
+    \end{equation}
+
+
+    \begin{equation}\label{EqEulerSavGen}
+      \begin{split}
+        &(c_{j,s,t})^{-\sigma} = \rho_s\chi^b_j\bigl(b_{j,s+1,t+1}\bigr)^{-\sigma} + \beta(1-\rho_s)(c_{j,s+1,t+1})^{-\sigma}\Biggl[(1 + r_{t+1}) - \frac{\partial T_{j,s+1,t+1}}{\partial b_{j,s+1,t+1}}\Biggr] \\
+        &\qquad\qquad\qquad\qquad\qquad\qquad\qquad\qquad\forall j,t,\quad\text{and}\quad E+1\leq s \leq E+S-1 \\
+        &\qquad\text{where}\quad \frac{\partial T_{j,s+1,t+1}}{\partial b_{j,s+1,t+1}} = ...\\
+        &\qquad\qquad r_{t+1}\Biggl(\tau^I(F\hat{a}_{j,s+1,t+1}) + \frac{F\hat{a}_{j,s+1,t+1}CD\left[2A(F\hat{a}_{j,s+1,t+1}) + B\right]}{\left[A(F\hat{a}_{j,s+1,t+1})^2 + B(F\hat{a}_{j,s+1,t+1}) + C\right]^2}\Biggr) ... \\
+        &\qquad\qquad \tau^W(\hat{b}_{j,s+1,t+1}) + \frac{\hat{b}_{j,s+1,t+1}PHM}{\left(H\hat{b}_{j,s+1,t+1} + M\right)^2}
+      \end{split}
+    \end{equation}
+    
+
+    
+        \begin{equation}\label{EqBC}
+      \begin{split}
+        &c_{j,s,t} + b_{j,s+1,t+1} \leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}n_{j,s,t} + \frac{BQ_{j,t}}{\lambda_j\tilde{N}_t} - T_{j,s,t} \\
+        &\qquad\qquad\text{where}\quad\text{for} \quad E+1\leq s \leq E+S \quad \forall j,t
+      \end{split}
+    \end{equation}
+    
+    \begin{equation}\label{InitialWealth}
+     b_{j,E+1,t} = 0 \quad\forall j,t
+    \end{equation}
+    
+   
+   To solve the model by backwards induction is a little more complicated with the the warm glow bequests since it is not the case that $b_{j,E+S+1,t}=0$.  The amount of bequests are endogenous.  So to backwards induct, we need to start with a guess a $b_{j,E+S+1,t}$ and then check that this guess is consistent with our initial conditions.  
+   
+   Here is the algorithm for the solution to the household's problem (things should work the same way for the TPI and SS solution - so we will already be positing guesses at $r_{t}, w_{t}, BQ_{j,t}$, and $T^{H}_{t}$ as part of the ``outer loop"):
+   \begin{enumerate}
+   \item Guess $b_{j,E+S+1,t}$.  A good guess will make $b_{j,E+S+1,t}$ a function of the guess at $BQ_{j,t}$.
+   \item Use Equation \ref{EqEulerSavEpS} to find $c_{j,E+S,t-1}$: $c_{j,E+S,t-1}=(\chi^{b}_{j})^{\frac{-1}{\sigma}}b_{j,E+S+1,t}$
+   \item With $c_{j,S+E,t-1}$ in hand, use Equation \ref{EqEulerLabGen} to solve for $n_{j,E+S,t-1}$.  
+   	\begin{itemize}
+	\item \textcolor{red}{With many standard labor utility functions, this would be trivial since you could isolate $n_{j,E+S,t-1}$ on one side.  With the elliptical utility, one can't do this, so it root finder will need to be used for this step.  This is probably worth the trade off of having to check for corner solutions.}
+	\end{itemize}
+  \item With $c_{j,S+E,t-1}$ and $n_{j,S+E,t-1}$ in hand, use Equation \ref{EqBC} to find $b_{j,E+S,t-1}$:  $b_{j,E+S,t-1}=\left(\frac{1}{1+r_{t}}\right)\left[c_{j,S+E,t-1}+b_{j,E+S+1,t} - w_{t-1}e_{j,S+E}n_{j,S+E,t-1} + \frac{BQ_{j,t-1}}{\lambda_{j}\tilde{N}_{t-1}}-T_{j,S+E,t-1}\right]$
+  	\begin{itemize}
+	\item \textcolor{red}{Note that $T_{j,S+E,t-1}$ has $b_{j,S+E,t-1}$ in it.  Thus the solution is a little more complicated than the above and depends on the specification of the tax function.  For some functional forms, one can solve analytically for $b_{j,S+E,t-1}$, while for others a root finder will need to be employed.  For our specification, we'd need a root finder.}
+	\end{itemize}
+  \item With  $c_{j,S+E,t-1}$ and $b_{j,S+E,t-1}$ in hand, use Equation \ref{EqEulerSavGen} to solve for $c_{j,E+S-1,t-2}$: 
+         \begin{equation*}
+	c_{j,E+S-1,t-2}=\left[\rho_{S+E-1}\chi^{b}_{j}b_{j,S+E,t-1}^{-\sigma} + \beta(1-\rho_{S+E-1})c_{j,S+E,t-1}^{-\sigma}\left((1+r_{t})-\frac{\partial T_{j,S+E,t-1}}{\partial b_{j,S+E,t-1}}\right)\right]^{\frac{-1}{\sigma}}
+	\end{equation*}
+   \item We can then repeat steps (iii)-(v) as we work backwards through the lifetime of the agent.
+   \item Once we've worked back to the initial period of economic life, we get $c_{j,E+1,t-S+1}$, $n_{j,E+1,t-S+1}$, and $b_{j,E+1,t-S+1}$.  We will then check that $b_{j,E+1,t-S+1}=0$.  If not, we updated our guess of $b_{j,E+S+1,t}$ and start over at (i).  We use the direction of the miss to update the guess (e.g., if we get $b_{j,E+1,t}>0 (<0)$, then we reduce (increase) the prior guess.
+   \end{enumerate}
+    
+    
+
+
+\end{document}
