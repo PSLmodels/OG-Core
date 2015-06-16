@@ -84,10 +84,14 @@ m_wealth     = wealth tax parameter m
 ------------------------------------------------------------------------
 '''
 
+# Since none of these parameters ever change, they are imported as globals
+# We might want to change this eventually, but this is the easiest way
+# we've found to import huge lists of variables, without explicitly saying
+# what is in there.
 variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
-if os.path.isfile("OUTPUT/Saved_moments/params_changed.pkl"):
+if os.path.exists("OUTPUT/Saved_moments/params_changed.pkl"):
     variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "r"))
     for key in variables:
         globals()[key] = variables[key]
@@ -173,7 +177,7 @@ def new_SS_Solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorgu
         factor = misc_funcs.convex_combo(new_factor, factor, params)
         T_H = misc_funcs.convex_combo(new_T_H, T_H, params)
         
-        dist = np.array([abs(r-new_r)] + [abs(w-new_w)] + [abs(T_H-new_T_H)]).max()
+        dist = np.array([misc_funcs.perc_dif_func(new_r, r)] + [misc_funcs.perc_dif_func(new_w, w)] + [misc_funcs.perc_dif_func(new_T_H, T_H)]).max()
         dist_vec[iteration] = dist
         if iteration > 10:
             if dist_vec[iteration] - dist_vec[iteration-1] > 0:
@@ -258,8 +262,8 @@ def function_to_minimize(chi_params_init, params, weights_SS, rho_vec, lambdas, 
 
 if SS_stage == 'constrained_minimization':
     # Generate initial guesses for chi^b_j and chi^n_s
+    chi_params = np.zeros(S+J)
     chi_params[0:J] = np.array([2, 10, 90, 350, 1700, 22000, 120000])
-    chi_params[:J] = np.ones(J)
     chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 ,  8.41097278
                              ,  7.15059004 ,  6.46771332 ,  5.85495452 ,  5.46242013 ,  5.00364263
                              ,  4.57322063 ,  4.53371545 ,  4.29828515 ,  4.10144524 ,  3.8617942  ,  3.57282
@@ -294,7 +298,7 @@ if SS_stage == 'constrained_minimization':
 
     function_to_minimize_X = lambda x: function_to_minimize(x, parameters, omega_SS, rho, lambdas, theta, tau_bq, e)
     bnds = tuple([(1e-6, None)] * (S + J))
-    chi_params = opt.minimize(function_to_minimize_X, chi_params, method='TNC', tol=1e-14, bounds=bnds).x
+    chi_params = opt.minimize(function_to_minimize_X, chi_params, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
     print 'The final bequest parameter values:', chi_params
 
     solutions_dict = pickle.load(open("OUTPUT/Saved_moments/minimization_solutions.pkl", "r"))

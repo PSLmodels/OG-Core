@@ -89,7 +89,7 @@ TPI_initial_run = whether this is the baseline TPI or not
 variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
-if os.path.isfile("OUTPUT/Saved_moments/params_changed.pkl"):
+if os.path.exists("OUTPUT/Saved_moments/params_changed.pkl"):
     variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "r"))
     for key in variables:
         globals()[key] = variables[key]
@@ -321,9 +321,8 @@ while (TPIiter < maxiter) and (TPIdist >= mindist):
     BQinit[:T] = misc_funcs.convex_combo(BQnew, BQinit[:T], parameters)
     guesses_b = misc_funcs.convex_combo(b_mat, guesses_b, parameters)
     guesses_n = misc_funcs.convex_combo(n_mat, guesses_n, parameters)
-    TPIdist = np.array(list(
-        np.abs(Knew - Kinit)) + list(np.abs(BQnew - BQinit[
-            :T]).flatten()) + list(np.abs(Lnew - Linit))).max()
+    TPIdist = np.array(list(misc_funcs.perc_dif_func(Knew, Kinit))+list(misc_funcs.perc_dif_func(BQnew, BQinit[:T]).flatten())+list(misc_funcs.perc_dif_func(Lnew, Linit))).max()
+    TPIdist = np.array(list(np.abs(Knew - Kinit)) + list(np.abs(BQnew - BQinit[:T]).flatten()) + list(np.abs(Lnew - Linit))).max()
     TPIdist_vec[TPIiter] = TPIdist
     # After T=10, if cycling occurs, drop the value of nu
     # wait til after T=10 or so, because sometimes there is a jump up

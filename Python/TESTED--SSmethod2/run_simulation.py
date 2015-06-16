@@ -151,9 +151,11 @@ rho[-1] = 1.0
 wealth_data.get_wealth_data(lambdas, J)
 
 # Remove pickle of altered parameters -- reset the experiment
-if os.path.isfile("OUTPUT/Saved_moments/params_changed.pkl"):
+if os.path.exists("OUTPUT/Saved_moments/params_changed.pkl"):
     os.remove("OUTPUT/Saved_moments/params_changed.pkl")
 
+# List of parameter names that will not be changing (unless we decide to
+# change them for a tax experiment.
 param_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
              'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
              'ltilde', 'g_y', 'maxiter',
@@ -191,7 +193,6 @@ call(['python', 'SS.py'])
 
 import tax_funcs
 theta = tax_funcs.replacement_rate_vals()
-del sys.modules['tax_funcs']
 
 '''
 ------------------------------------------------------------------------

@@ -1,0 +1,12 @@
+(dp1
+S'd_tax_income'
+p2
+F0.41999999999999998
+sS'SS_stage'
+p3
+S'SS_tax'
+p4
+sS'TPI_initial_run'
+p5
+I00
+s.

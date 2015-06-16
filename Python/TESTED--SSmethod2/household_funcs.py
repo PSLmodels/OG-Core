@@ -161,7 +161,7 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, params):
     if flag2 is False:
         print '\tThere were no violations of the constraints on labor supply.'
     if (cssmat < 0).any():
-        print '\tWARNING: Consumption volates nonnegativity constraints.'
+        print '\tWARNING: Consumption violates nonnegativity constraints.'
     else:
         print '\tThere were no violations of the constraints on consumption.'
 
