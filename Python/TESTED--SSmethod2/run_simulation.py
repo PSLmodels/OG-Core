@@ -27,7 +27,6 @@ Import Packages
 import cPickle as pickle
 import os
 from glob import glob
-import sys
 from subprocess import call
 
 import numpy as np
