@@ -180,27 +180,13 @@ param_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
 
 # This is the simulation before getting the replacement rate values
 
-SS_stage = 'constrained_minimization'
-
-dictionary = {}
-for key in param_names:
-    dictionary[key] = globals()[key]
-pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
-
-call(['python', 'SS.py'])
-
-'''
-------------------------------------------------------------------------
-    Run SS and baseline taxes
-------------------------------------------------------------------------
-'''
-
 SS_stage = 'SS_init'
 
 dictionary = {}
 for key in param_names:
     dictionary[key] = globals()[key]
 pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
+
 call(['python', 'SS.py'])
 
 
@@ -221,17 +207,17 @@ call(['python', 'SS.py'])
 
 # New Tax Parameters
 
-SS_stage = 'SS_tax'
-TPI_initial_run = False
+# SS_stage = 'SS_tax'
+# TPI_initial_run = False
 
-d_tax_income = .42
+# d_tax_income = .42
 
 
-var_names = ['SS_stage', 'TPI_initial_run', 'd_tax_income']
-dictionary = {}
-for key in var_names:
-    dictionary[key] = globals()[key]
-pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_changed.pkl", "w"))
+# var_names = ['SS_stage', 'TPI_initial_run', 'd_tax_income']
+# dictionary = {}
+# for key in var_names:
+#     dictionary[key] = globals()[key]
+# pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_changed.pkl", "w"))
 
 '''
 ------------------------------------------------------------------------
