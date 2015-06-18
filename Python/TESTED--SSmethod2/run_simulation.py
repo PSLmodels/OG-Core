@@ -138,15 +138,21 @@ p_wealth = 0.0
 # Initial taxes below
 tau_bq = np.zeros(J)
 tau_payroll = 0.15
+# Flag to prevent graphing from occuring in demographic, income, wealth, and labor files
+flag_graphs = False
 # Generate Income and Demographic parameters
 omega, g_n, omega_SS, surv_rate = demographics.get_omega(
-    S, J, T, lambdas, starting_age, ending_age, E)
-e = income.get_e(S, J, starting_age, ending_age, lambdas, omega_SS)
+    S, J, T, lambdas, starting_age, ending_age, E, flag_graphs)
+e = income.get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
 rho = 1-surv_rate
 rho[-1] = 1.0
 
 # Generate Wealth data moments
-wealth_data.get_wealth_data(lambdas, J)
+wealth_data.get_wealth_data(lambdas, J, flag_graphs)
+
+# Generate labor data moments
+
+labor_data.labor_data_moments(flag_graphs)
 
 # Remove pickle of altered parameters -- reset the experiment
 if os.path.exists("OUTPUT/Saved_moments/params_changed.pkl"):

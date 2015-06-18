@@ -403,7 +403,7 @@ def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
 '''
 
 
-def get_omega(S, J, T, bin_weights, starting_age, ending_age, E):
+def get_omega(S, J, T, bin_weights, starting_age, ending_age, E, flag_graphs):
     '''
     Parameters:
         S - Number of age cohorts
@@ -427,7 +427,8 @@ def get_omega(S, J, T, bin_weights, starting_age, ending_age, E):
     imm_array, children_im = get_immigration2(S, starting_age, ending_age, E)
     fert_rate, children_fertrate = get_fert(S, starting_age, ending_age, E)
     cum_surv_rate = np.cumprod(surv_array)
-    rate_graphs(S, starting_age, ending_age, imm_array, fert_rate, surv_array, children_im, children_fertrate, children_rate)
+    if flag_graphs:
+        rate_graphs(S, starting_age, ending_age, imm_array, fert_rate, surv_array, children_im, children_fertrate, children_rate)
     children_int = poly.polyval(np.linspace(0, starting_age, E + 1), poly_int_pop)
     sum2010 = pop_int[-1] - children_int[0]
     new_omega /= sum2010
