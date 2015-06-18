@@ -67,7 +67,7 @@ rss      = steady state real rental rate: scalar
 K_agg    = Aggregate level of capital: scalar
 T        = number of periods until the steady state
 maxiter   = Maximum number of iterations that TPI will undergo
-mindist   = Cut-off distance between iterations for TPI
+mindist_TPI   = Cut-off distance between iterations for TPI
 mean_income_data  = mean income from IRS data file used to calibrate income tax
                (scalar)
 a_tax_income = used to calibrate income tax (scalar)
@@ -82,19 +82,19 @@ h_wealth     = wealth tax parameter h
 p_wealth     = wealth tax parameter p
 m_wealth     = wealth tax parameter m
 chi_b        = discount factor of incidental bequests
-TPI_initial_run = whether this is the baseline TPI or not
+get_baseline = whether this is the baseline TPI or not
 ------------------------------------------------------------------------
 '''
 
 variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
-if os.path.exists("OUTPUT/Saved_moments/params_changed.pkl"):
+if get_baseline is False:
     variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "r"))
     for key in variables:
         globals()[key] = variables[key]
 
-if TPI_initial_run:
+if get_baseline:
     variables = pickle.load(open("OUTPUT/SSinit/ss_init_vars.pkl", "r"))
     for key in variables:
         globals()[key] = variables[key]
@@ -121,7 +121,7 @@ parameters = [J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payrol
 N_tilde = omega.sum(1).sum(1)
 omega_stationary = omega / N_tilde.reshape(T+S, 1, 1)
 
-if TPI_initial_run:
+if get_baseline:
     initial_b = bssmat_splus1
     initial_n = nssmat
 else:
@@ -269,7 +269,7 @@ TPIdist = 10
 euler_errors = np.zeros((T, 2*S, J))
 TPIdist_vec = np.zeros(maxiter)
 
-while (TPIiter < maxiter) and (TPIdist >= mindist):
+while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
     b_mat = np.zeros((T+S, S, J))
     n_mat = np.zeros((T+S, S, J))
     Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
@@ -334,7 +334,7 @@ while (TPIiter < maxiter) and (TPIdist >= mindist):
     TPIiter += 1
     print '\tIteration:', TPIiter
     print '\t\tDistance:', TPIdist
-    if (TPIiter < maxiter) and (TPIdist >= mindist):
+    if (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
         bmat_plus1 = np.zeros((T, S, J))
         bmat_plus1[:, 1:, :] = b_mat[:T, :-1, :]
         T_H_init = np.array(list(tax.get_lump_sum(rinit[:T].reshape(T, 1, 1), bmat_plus1, winit[:T].reshape(
@@ -343,7 +343,7 @@ while (TPIiter < maxiter) and (TPIdist >= mindist):
         Yinit = firm.get_Y(Kinit, Linit, parameters)
         winit = np.array(list(firm.get_w(Yinit, Linit, parameters)) + list(np.ones(S)*wss))
         rinit = np.array(list(firm.get_r(Yinit, Kinit, parameters)) + list(np.ones(S)*rss))
-    if TPIdist < mindist:
+    if TPIdist < mindist_TPI:
         BQinit[:T] = BQnew
         Kinit[:T] = Knew
         Linit[:T] = Lnew
@@ -391,7 +391,7 @@ dictionary = {}
 for key in var_names:
     dictionary[key] = globals()[key]
 
-if TPI_initial_run:
+if get_baseline:
     pickle.dump(dictionary, open("OUTPUT/TPIinit/TPIinit_vars.pkl", "w"))
 else:
     pickle.dump(dictionary, open("OUTPUT/TPI/TPI_vars.pkl", "w"))

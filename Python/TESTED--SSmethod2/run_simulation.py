@@ -65,7 +65,8 @@ slow_work    = time at which chi_n starts increasing from 1
 chi_n_multiplier = scalar which is increased to force the labor
                distribution to 0
 maxiter   = Maximum number of iterations that TPI will undergo
-mindist   = Cut-off distance between iterations for TPI
+mindist_SS   = Cut-off distance between iterations for SS
+mindist_TPI   = Cut-off distance between iterations for TPI
 nu           = contraction parameter in steady state iteration process
                representing the weight on the new distribution gamma_nu
 b_ellipse    = value of b for elliptical fit of utility function
@@ -114,9 +115,9 @@ g_y_annual = 0.03
 g_y = (1 + g_y_annual)**(float(ending_age-starting_age)/S) - 1
 # TPI parameters
 maxiter = 250
-mindist = 1e-9
+mindist_SS = 1e-9
+mindist_TPI = 3 * 1e-6
 nu = .40
-TPI_initial_run = True
 # Ellipse parameters
 b_ellipse = 25.6594
 k_ellipse = -26.4902
@@ -158,18 +159,19 @@ labor_data.labor_data_moments(flag_graphs)
 if os.path.exists("OUTPUT/Saved_moments/params_changed.pkl"):
     os.remove("OUTPUT/Saved_moments/params_changed.pkl")
 
+get_baseline = True
+
 # List of parameter names that will not be changing (unless we decide to
 # change them for a tax experiment.
 param_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
              'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
-             'ltilde', 'g_y', 'maxiter',
-             'mindist', 'b_ellipse', 'k_ellipse', 'upsilon',
+             'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
+             'b_ellipse', 'k_ellipse', 'upsilon',
              'a_tax_income',
              'b_tax_income', 'c_tax_income', 'd_tax_income',
              'tau_payroll', 'tau_bq',
              'retire', 'mean_income_data',
-             'h_wealth', 'p_wealth', 'm_wealth',
-             'SS_stage', 'TPI_initial_run',
+             'h_wealth', 'p_wealth', 'm_wealth', 'get_baseline',
              'omega', 'g_n', 'omega_SS', 'surv_rate', 'e', 'rho']
 
 '''
@@ -179,8 +181,6 @@ param_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
 '''
 
 # This is the simulation before getting the replacement rate values
-
-SS_stage = 'SS_init'
 
 dictionary = {}
 for key in param_names:
@@ -196,13 +196,6 @@ call(['python', 'SS.py'])
 ------------------------------------------------------------------------
 '''
 
-# mindist = 3 * 1e-6
-# var_names = ['mindist']
-# dictionary = {}
-# for key in var_names:
-#     dictionary[key] = globals()[key]
-
-
 # call(['python', 'TPI.py'])
 # import TPI
 
@@ -214,15 +207,11 @@ call(['python', 'SS.py'])
 
 # New Tax Parameters
 
-# SS_stage = 'SS_tax'
-# TPI_initial_run = False
-# mindist = 1e-9
-
-
+# get_baseline = False
 # d_tax_income = .42
 
 
-# var_names = ['SS_stage', 'TPI_initial_run', 'd_tax_income', 'mindist']
+# var_names = ['get_baseline', 'd_tax_income']
 # dictionary = {}
 # for key in var_names:
 #     dictionary[key] = globals()[key]
@@ -243,12 +232,6 @@ call(['python', 'SS.py'])
     Run TPI for tax experiment
 ------------------------------------------------------------------------
 '''
-
-# mindist = 3 * 1e-6
-# var_names = ['SS_stage', 'TPI_initial_run', 'd_tax_income', 'mindist']
-# dictionary = {}
-# for key in var_names:
-#     dictionary[key] = globals()[key]
 
 # call(['python', 'TPI.py'])
 # import TPI

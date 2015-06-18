@@ -64,7 +64,7 @@ ltilde       = measure of time each individual is endowed with each
 eta          = Frisch elasticity of labor supply
 g_y          = growth rate of technology for one cohort
 maxiter   = Maximum number of iterations that TPI will undergo
-mindist   = Cut-off distance between iterations for TPI
+mindist_SS   = Cut-off distance between iterations for TPI
 b_ellipse    = value of b for elliptical fit of utility function
 k_ellipse    = value of k for elliptical fit of utility function
 slow_work    = time at which chi_n starts increasing from 1
@@ -91,7 +91,7 @@ m_wealth     = wealth tax parameter m
 variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
-if os.path.exists("OUTPUT/Saved_moments/params_changed.pkl"):
+if get_baseline is False:
     variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "r"))
     for key in variables:
         globals()[key] = variables[key]
@@ -108,7 +108,7 @@ income_tax_params = [a_tax_income, b_tax_income, c_tax_income, d_tax_income]
 wealth_tax_params = [h_wealth, p_wealth, m_wealth]
 ellipse_params = [b_ellipse, upsilon]
 parameters = [J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data] + income_tax_params + wealth_tax_params + ellipse_params
-iterative_params = [maxiter, mindist]
+iterative_params = [maxiter, mindist_SS]
 
 # Functions
 
@@ -144,7 +144,7 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n, t
 
 def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess, chi_n, chi_b, params, iterative_params, tau_bq, rho, lambdas, weights, e):
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    maxiter, mindist = iterative_params
+    maxiter, mindist_SS = iterative_params
     w = wguess
     r = rguess
     T_H = T_Hguess
@@ -156,7 +156,7 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
     iteration = 0
     dist_vec = np.zeros(maxiter)
     
-    while (dist > mindist) and (iteration < maxiter):
+    while (dist > mindist_SS) and (iteration < maxiter):
         for j in xrange(J):
             # Solve the euler equations
             guesses = np.append(bssmat[:, j], nssmat[:, j])
@@ -267,7 +267,7 @@ def function_to_minimize(chi_params_scalars, chi_params_init, params, weights_SS
 ------------------------------------------------------------------------
 '''
 
-if SS_stage == 'SS_init':
+if get_baseline:
     # Generate initial guesses for chi^b_j and chi^n_s
     chi_params = np.zeros(S+J)
     chi_params[0:J] = np.array([2, 10, 90, 350, 1700, 22000, 120000])
@@ -310,21 +310,20 @@ if SS_stage == 'SS_init':
     # minimizer peturbs that value by 1e-8, the % difference will be extremely small, outside of the tolerance of the
     # minimizer, and it will not change that parameter.
     chi_params_scalars = np.ones(S+J)
-    # chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
-    chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds).x
+    chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
+    # chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds).x
     chi_params *= chi_params_scalars
     print 'The final scaling params', chi_params_scalars
     print 'The final bequest parameter values:', chi_params
 
     solutions_dict = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "r"))
     solutions = solutions_dict['solutions']
-    chi_params = solutions_dict['chi_params']
     b_guess = solutions[:S*J]
     n_guess = solutions[S*J:2*S*J]
     wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
 
     solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
-elif SS_stage == 'SS_tax':
+else:
     variables = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "r"))
     solutions = solutions_dict['solutions']
     chi_params = solutions_dict['chi_params']
@@ -342,18 +341,18 @@ elif SS_stage == 'SS_tax':
 '''
 
 
-if SS_stage == 'SS_init':
+if get_baseline:
     var_names = ['solutions', 'chi_params']
     dictionary = {}
     for key in var_names:
         dictionary[key] = globals()[key]
     pickle.dump(dictionary, open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "w"))
-elif SS_stage == 'SS_tax':
+else:
     var_names = ['solutions', 'chi_params']
     dictionary = {}
     for key in var_names:
         dictionary[key] = globals()[key]
-    pickle.dump(dictionary, open("OUTPUT/Saved_moments/SS_tax_solutions.pkl", "w"))
+    pickle.dump(dictionary, open("OUTPUT/Saved_moments/SS_experiment_solutions.pkl", "w"))
 
 
 bssmat = solutions[0:(S-1) * J].reshape(S-1, J)
@@ -412,7 +411,7 @@ var_names = ['Kss', 'bssmat', 'Lss', 'nssmat', 'Yss', 'wss', 'rss', 'theta',
 dictionary1 = {}
 for key in var_names:
     dictionary1[key] = globals()[key]
-if SS_stage == 'SS_init':
+if get_baseline:
     pickle.dump(dictionary1, open("OUTPUT/SSinit/ss_init_vars.pkl", "w"))
     bssmat_init = bssmat_splus1
     nssmat_init = nssmat
@@ -422,5 +421,5 @@ if SS_stage == 'SS_init':
     for key in var_names:
         dictionary2[key] = globals()[key]
     pickle.dump(dictionary2, open("OUTPUT/SSinit/ss_init_tpi_vars.pkl", "w"))
-elif SS_stage == 'SS_tax':
+else:
     pickle.dump(dictionary1, open("OUTPUT/SS/ss_vars.pkl", "w"))
