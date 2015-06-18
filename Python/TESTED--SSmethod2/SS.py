@@ -206,7 +206,7 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
     return solutions
 
 
-def function_to_minimize(chi_params_init, params, weights_SS, rho_vec, lambdas, tau_bq, e):
+def function_to_minimize(chi_params_scalars, chi_params_init, params, weights_SS, rho_vec, lambdas, tau_bq, e):
     '''
     Parameters:
         chi_params_init = guesses for chi_b
@@ -216,7 +216,9 @@ def function_to_minimize(chi_params_init, params, weights_SS, rho_vec, lambdas, 
             wealth moments
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    print 'Print Chi_b: ', chi_params_init[:J]
+    chi_params_init *= chi_params_scalars
+    # print 'Print Chi_b: ', chi_params_init[:J]
+    print 'Scaling vals:', chi_params_scalars[:J]
     solutions_dict = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "r"))
     solutions = solutions_dict['solutions']
 
@@ -301,9 +303,13 @@ if SS_stage == 'SS_init':
         dictionary[key] = globals()[key]
     pickle.dump(dictionary, open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "w"))
 
-    function_to_minimize_X = lambda x: function_to_minimize(x, parameters, omega_SS, rho, lambdas, tau_bq, e)
+    function_to_minimize_X = lambda x: function_to_minimize(x, chi_params, parameters, omega_SS, rho, lambdas, tau_bq, e)
     bnds = tuple([(1e-6, None)] * (S + J))
-    chi_params = opt.minimize(function_to_minimize_X, chi_params, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
+    chi_params_scalars = np.ones(S+J)
+    # chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
+    chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds).x
+    chi_params *= chi_params_scalars
+    print 'The final scaling params', chi_params_scalars
     print 'The final bequest parameter values:', chi_params
 
     solutions_dict = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "r"))
