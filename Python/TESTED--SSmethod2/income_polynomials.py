@@ -156,7 +156,7 @@ def arc_tan_fit(first_point, coef1, coef2, coef3, ability_depreciation, init_gue
     return arc_tan_func(old_ages, a, b, c)
 
 
-def get_e(S, J, starting_age, ending_age, bin_weights, omega_SS):
+def get_e(S, J, starting_age, ending_age, bin_weights, omega_SS, flag_graphs):
     '''
     Parameters: S - Number of age cohorts
                 J - Number of ability levels by age
@@ -184,7 +184,8 @@ def get_e(S, J, starting_age, ending_age, bin_weights, omega_SS):
                              [35, .06, -5]])
     for j in xrange(J):
         e_final[60:, j] = arc_tan_fit(e_final[59, j], one[j], two[j], three[j], ability_depreciation[j], init_guesses[j])
-    graph_income(S, J, e_final, starting_age, ending_age, bin_weights)
+    if flag_graphs:
+        graph_income(S, J, e_final, starting_age, ending_age, bin_weights)
     e_final /= (e_final * omega_SS).sum()
     return e_final
   
