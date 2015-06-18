@@ -114,7 +114,7 @@ g_y_annual = 0.03
 g_y = (1 + g_y_annual)**(float(ending_age-starting_age)/S) - 1
 # TPI parameters
 maxiter = 150
-mindist = 3 * 1e-6
+mindist = 1e-12
 nu = .40
 TPI_initial_run = True
 # Ellipse parameters
@@ -196,6 +196,13 @@ call(['python', 'SS.py'])
 ------------------------------------------------------------------------
 '''
 
+# mindist = 3 * 1e-6
+# var_names = ['mindist']
+# dictionary = {}
+# for key in var_names:
+#     dictionary[key] = globals()[key]
+
+
 # call(['python', 'TPI.py'])
 # import TPI
 
@@ -209,11 +216,13 @@ call(['python', 'SS.py'])
 
 # SS_stage = 'SS_tax'
 # TPI_initial_run = False
+# mindist = 1e-12
+
 
 # d_tax_income = .42
 
 
-# var_names = ['SS_stage', 'TPI_initial_run', 'd_tax_income']
+# var_names = ['SS_stage', 'TPI_initial_run', 'd_tax_income', 'mindist']
 # dictionary = {}
 # for key in var_names:
 #     dictionary[key] = globals()[key]
@@ -234,6 +243,12 @@ call(['python', 'SS.py'])
     Run TPI for tax experiment
 ------------------------------------------------------------------------
 '''
+
+# mindist = 3 * 1e-6
+# var_names = ['SS_stage', 'TPI_initial_run', 'd_tax_income', 'mindist']
+# dictionary = {}
+# for key in var_names:
+#     dictionary[key] = globals()[key]
 
 # call(['python', 'TPI.py'])
 # import TPI
