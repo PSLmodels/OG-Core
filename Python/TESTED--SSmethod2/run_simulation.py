@@ -138,7 +138,6 @@ p_wealth = 0.0
 # Initial taxes below
 tau_bq = np.zeros(J)
 tau_payroll = 0.15
-theta = np.zeros(J)
 # Generate Income and Demographic parameters
 omega, g_n, omega_SS, surv_rate = demographics.get_omega(
     S, J, T, lambdas, starting_age, ending_age, E)
@@ -162,7 +161,7 @@ param_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
              'a_tax_income',
              'b_tax_income', 'c_tax_income', 'd_tax_income',
              'tau_payroll', 'tau_bq',
-             'theta', 'retire', 'mean_income_data',
+             'retire', 'mean_income_data',
              'h_wealth', 'p_wealth', 'm_wealth',
              'SS_stage', 'TPI_initial_run',
              'omega', 'g_n', 'omega_SS', 'surv_rate', 'e', 'rho']
@@ -186,16 +185,7 @@ call(['python', 'SS.py'])
 
 '''
 ------------------------------------------------------------------------
-    Get replacement rates
-------------------------------------------------------------------------
-'''
-
-import tax_funcs
-theta = tax_funcs.replacement_rate_vals()
-
-'''
-------------------------------------------------------------------------
-    Run SS with replacement rates, and baseline taxes
+    Run SS and baseline taxes
 ------------------------------------------------------------------------
 '''
 

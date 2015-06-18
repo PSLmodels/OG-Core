@@ -33,25 +33,38 @@ Tax functions
 '''
 
 
-def replacement_rate_vals():
+def replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS):
     # Import data need to compute replacement rates, outputed from SS.py
-    payroll_dict = pickle.load(open("OUTPUT/Saved_moments/payroll_inputs.pkl", "r"))
-    retire, nssmat, wss, factor_ss, e, J, omega_SS = [payroll_dict[x] for x in ['retire', 'nssmat', 'wss', 'factor_ss', 'e', 'J', 'omega_SS']]
+    # payroll_dict = pickle.load(open("OUTPUT/Saved_moments/payroll_inputs.pkl", "r"))
+    # retire, nssmat, wss, factor_ss, e, J, omega_SS = [payroll_dict[x] for x in ['retire', 'nssmat', 'wss', 'factor_ss', 'e', 'J', 'omega_SS']]
     AIME = ((wss * factor_ss * e * nssmat)*omega_SS).sum(0) / 12.0
-    PIA = np.zeros(J)
-    # Bins from data for each level of replacement
-    for j in xrange(J):
-        if AIME[j] < 749.0:
-            PIA[j] = .9 * AIME[j]
-        elif AIME[j] < 4517.0:
-            PIA[j] = 674.1+.32*(AIME[j] - 749.0)
+    try:
+        PIA = np.zeros(J)
+        # Bins from data for each level of replacement
+        for j in xrange(J):
+            if AIME[j] < 749.0:
+                PIA[j] = .9 * AIME[j]
+            elif AIME[j] < 4517.0:
+                PIA[j] = 674.1+.32*(AIME[j] - 749.0)
+            else:
+                PIA[j] = 1879.86 + .15*(AIME[j] - 4517.0)
+        theta = PIA * (e * nssmat).mean(0) / AIME
+        # Set the maximum replacment rate to be $30,000
+        maxpayment = 30000.0/(factor_ss * wss)
+        theta[theta > maxpayment] = maxpayment
+    except:
+        PIA = 0
+        if AIME < 749.0:
+            PIA = .9 * AIME
+        elif AIME < 4517.0:
+            PIA = 674.1+.32*(AIME - 749.0)
         else:
-            PIA[j] = 1879.86 + .15*(AIME[j] - 4517.0)
-    theta = PIA * (e * nssmat).mean(0) / AIME
-    # Set the maximum replacment rate to be $30,000
-    maxpayment = 30000.0/(factor_ss * wss)
-    theta[theta > maxpayment] = maxpayment
-    print theta
+            PIA = 1879.86 + .15*(AIME - 4517.0)
+        theta = PIA * (e * nssmat).mean(0) / AIME
+        # Set the maximum replacment rate to be $30,000
+        maxpayment = 30000.0/(factor_ss * wss)
+        if theta > maxpayment:
+            theta = maxpayment
     return theta
 
 

@@ -113,7 +113,7 @@ iterative_params = [maxiter, mindist]
 # Functions
 
 
-def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, weights):
+def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights):
     b_guess = np.array(guesses[:S])
     n_guess = np.array(guesses[S:])
     b_s = np.array([0] + list(b_guess[:-1]))
@@ -121,9 +121,10 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n, t
     b_splus2 = np.array(list(b_guess[1:]) + [0])
 
     BQ = (1+r) * (b_guess * weights[:, j] * rho).sum()
+    theta = tax.replacement_rate_vals(n_guess, w, factor, e[:,j], J, weights[:, j])
 
-    error1 = house.euler_savings_func(w, r, e[:, j], n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_H, chi_b[j], params, theta[j], tau_bq[j], rho, lambdas[j])
-    error2 = house.euler_labor_leisure_func(w, r, e[:, j], n_guess, b_s, b_splus1, BQ, factor, T_H, chi_n, params, theta[j], tau_bq[j], lambdas[j])
+    error1 = house.euler_savings_func(w, r, e[:, j], n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_H, chi_b[j], params, theta, tau_bq[j], rho, lambdas[j])
+    error2 = house.euler_labor_leisure_func(w, r, e[:, j], n_guess, b_s, b_splus1, BQ, factor, T_H, chi_n, params, theta, tau_bq[j], lambdas[j])
     # Put in constraints for consumption and savings.  According to the euler equations, they can be negative.  When
     # Chi_b is large, they will be.  This prevents that from happening.
     # I'm not sure if the constraints are needed for labor.  But we might as well put them in for now.
@@ -133,14 +134,14 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n, t
     error2[mask1] += 1e14
     error2[mask2] += 1e14
     error1[mask3] += 1e14
-    tax1 = tax.total_taxes(r, b_s, w, e[:, j], n_guess, BQ, lambdas[j], factor, T_H, None, 'SS', False, params, theta[j], tau_bq[j])
+    tax1 = tax.total_taxes(r, b_s, w, e[:, j], n_guess, BQ, lambdas[j], factor, T_H, None, 'SS', False, params, theta, tau_bq[j])
     cons = house.get_cons(r, b_s, w, e[:, j], n_guess, BQ, lambdas[j], b_splus1, params, tax1)
     mask4 = cons < 0
     error1[mask4] += 1e14
     return list(error1.flatten()) + list(error2.flatten())
 
 
-def new_SS_Solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess, chi_n, chi_b, params, iterative_params, theta, tau_bq, rho, lambdas, weights):
+def new_SS_Solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess, chi_n, chi_b, params, iterative_params, tau_bq, rho, lambdas, weights):
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     maxiter, mindist = iterative_params
     w = wguess
@@ -158,7 +159,7 @@ def new_SS_Solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorgu
         for j in xrange(J):
             # Solve the euler equations
             guesses = np.append(bssmat[:, j], nssmat[:, j])
-            solutions = opt.fsolve(Euler_equation_solver, guesses * .9, args=(r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, weights))
+            solutions = opt.fsolve(Euler_equation_solver, guesses * .9, args=(r, w, T_H, factor, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights))
             bssmat[:,j] = solutions[:S]
             nssmat[:,j] = solutions[S:]
             # print np.array(Euler_equation_solver(np.append(bssmat[:, j], nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas)).max()
@@ -172,6 +173,7 @@ def new_SS_Solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorgu
         average_income_model = ((new_r * b_s + new_w * e * nssmat) * weights).sum()
         new_factor = mean_income_data / average_income_model 
         new_BQ = (1+new_r)*(bssmat * weights * rho.reshape(S, 1)).sum(0)
+        theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, e, J, weights)
         new_T_H = tax.get_lump_sum(new_r, b_s, new_w, e, nssmat, new_BQ, lambdas, factor, weights, 'SS', params, theta, tau_bq)
 
         r = misc_funcs.convex_combo(new_r, r, params)
@@ -192,8 +194,8 @@ def new_SS_Solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorgu
     b_mat = np.zeros((S, J))
     n_mat = np.zeros((S, J))
     for j in xrange(J):
-        solutions1 = opt.fsolve(Euler_equation_solver, np.append(bssmat[:, j], nssmat[:, j])* .9, args=(r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, weights), xtol=1e-13)
-        eul_errors[j] = np.array(Euler_equation_solver(solutions1, r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, weights)).max()
+        solutions1 = opt.fsolve(Euler_equation_solver, np.append(bssmat[:, j], nssmat[:, j])* .9, args=(r, w, T_H, factor, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights), xtol=1e-13)
+        eul_errors[j] = np.array(Euler_equation_solver(solutions1, r, w, T_H, factor, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights)).max()
         b_mat[:, j] = solutions1[:S]
         n_mat[:, j] = solutions1[S:]
     print 'SS fsolve euler error:', eul_errors.max()
@@ -203,7 +205,7 @@ def new_SS_Solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorgu
     return solutions
 
 
-def function_to_minimize(chi_params_init, params, weights_SS, rho_vec, lambdas, theta, tau_bq, e):
+def function_to_minimize(chi_params_init, params, weights_SS, rho_vec, lambdas, tau_bq, e):
     '''
     Parameters:
         chi_params_init = guesses for chi_b
@@ -220,7 +222,7 @@ def function_to_minimize(chi_params_init, params, weights_SS, rho_vec, lambdas, 
     b_guess = solutions[:S*J]
     n_guess = solutions[S*J:2*S*J]
     wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
-    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params_init[J:], chi_params_init[:J], params, iterative_params, theta, tau_bq, rho, lambdas, weights_SS)
+    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params_init[J:], chi_params_init[:J], params, iterative_params, tau_bq, rho, lambdas, weights_SS)
 
     b_new = solutions[:S*J]
     n_new = solutions[S*J:2*S*J]
@@ -236,7 +238,7 @@ def function_to_minimize(chi_params_init, params, weights_SS, rho_vec, lambdas, 
     # Constraints
     eul_error = np.ones(J)
     for j in xrange(J):
-        eul_error[j] = np.abs(Euler_equation_solver(np.append(b_new.reshape(S, J)[:, j], n_new.reshape(S, J)[:, j]), r_new, w_new, T_H_new, factor_new, j, params, chi_params_init[:J], chi_params_init[J:], theta, tau_bq, rho, lambdas, weights_SS)).max()
+        eul_error[j] = np.abs(Euler_equation_solver(np.append(b_new.reshape(S, J)[:, j], n_new.reshape(S, J)[:, j]), r_new, w_new, T_H_new, factor_new, j, params, chi_params_init[:J], chi_params_init[J:], tau_bq, rho, lambdas, weights_SS)).max()
     fsolve_no_converg = eul_error.max()
     if np.isnan(fsolve_no_converg):
         fsolve_no_converg = 1e6
@@ -291,14 +293,14 @@ if SS_stage == 'constrained_minimization':
     rguess = .06
     T_Hguess = 0
     factorguess = 100000
-    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
+    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, tau_bq, rho, lambdas, omega_SS)
     variables = ['solutions', 'chi_params']
     dictionary = {}
     for key in variables:
         dictionary[key] = globals()[key]
     pickle.dump(dictionary, open("OUTPUT/Saved_moments/minimization_solutions.pkl", "w"))
 
-    function_to_minimize_X = lambda x: function_to_minimize(x, parameters, omega_SS, rho, lambdas, theta, tau_bq, e)
+    function_to_minimize_X = lambda x: function_to_minimize(x, parameters, omega_SS, rho, lambdas, tau_bq, e)
     bnds = tuple([(1e-6, None)] * (S + J))
     chi_params = opt.minimize(function_to_minimize_X, chi_params, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
     print 'The final bequest parameter values:', chi_params
@@ -308,7 +310,7 @@ if SS_stage == 'constrained_minimization':
     n_guess = solutions_dict['solutions'][S*J:2*S*J]
     wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
 
-    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
+    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, tau_bq, rho, lambdas, omega_SS)
 elif SS_stage == 'SS_init':
     variables = pickle.load(open("OUTPUT/Saved_moments/minimization_solutions.pkl", "r"))
     for key in variables:
@@ -316,7 +318,7 @@ elif SS_stage == 'SS_init':
     b_guess = solutions[:S*J]
     n_guess = solutions[S*J:2*S*J]
     wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
-    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
+    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, tau_bq, rho, lambdas, omega_SS)
 elif SS_stage == 'SS_tax':
     variables = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "r"))
     for key in variables:
@@ -324,7 +326,7 @@ elif SS_stage == 'SS_tax':
     b_guess = solutions[:S*J]
     n_guess = solutions[S*J:2*S*J]
     wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
-    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, theta, tau_bq, rho, lambdas, omega_SS)
+    solutions = new_SS_Solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, tau_bq, rho, lambdas, omega_SS)
 
 
 '''
@@ -365,6 +367,7 @@ Kss = house.get_K(bssmat_splus1, omega_SS)
 Lss = firm.get_L(e, nssmat, omega_SS)
 Yss = firm.get_Y(Kss, Lss, parameters)
 
+theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS)
 BQss = (1+rss)*(np.array(list(bssmat) + list(bq.reshape(1, J))).reshape(
     S, J) * omega_SS * rho.reshape(S, 1)).sum(0)
 b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
@@ -401,16 +404,9 @@ for j in xrange(J):
         the simulation, to be used in TPI or graphing functions
 ------------------------------------------------------------------------
 '''
-if SS_stage == 'constrained_minimization':
-    var_names = ['retire', 'nssmat', 'wss', 'factor_ss', 'e',
-                 'J', 'omega_SS']
-    dictionary = {}
-    for key in var_names:
-        dictionary[key] = globals()[key]
-    pickle.dump(dictionary, open("OUTPUT/Saved_moments/payroll_inputs.pkl", "w"))
 if SS_stage == 'SS_init' or SS_stage == 'SS_tax':
     # Pickle variables
-    var_names = ['Kss', 'bssmat', 'Lss', 'nssmat', 'Yss', 'wss', 'rss',
+    var_names = ['Kss', 'bssmat', 'Lss', 'nssmat', 'Yss', 'wss', 'rss', 'theta',
                  'BQss', 'factor_ss', 'bssmat_s', 'cssmat', 'bssmat_splus1',
                  'T_Hss', 'euler_savings', 'euler_labor_leisure', 'chi_n', 'chi_b']
     dictionary1 = {}

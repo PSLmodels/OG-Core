@@ -3,7 +3,8 @@ MANIFEST
 MANIFEST.in
 build/*
 dist/*
-OUTPUT/*
+Python/TESTED--SSmethod1/OUTPUT/*
+Python/TESTED--SSmethod2/OUTPUT/*
 *.aux
 *.asv
 *.fdb_latexmk
