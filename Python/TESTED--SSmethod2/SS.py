@@ -160,7 +160,7 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
         for j in xrange(J):
             # Solve the euler equations
             guesses = np.append(bssmat[:, j], nssmat[:, j])
-            solutions = opt.fsolve(Euler_equation_solver, guesses * .9, args=(r, w, T_H, factor, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e))
+            solutions = opt.fsolve(Euler_equation_solver, guesses * .9, args=(r, w, T_H, factor, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e), xtol=1e-13)
             bssmat[:,j] = solutions[:S]
             nssmat[:,j] = solutions[S:]
             # print np.array(Euler_equation_solver(np.append(bssmat[:, j], nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, e)).max()
