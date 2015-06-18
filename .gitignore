@@ -3,7 +3,7 @@ MANIFEST
 MANIFEST.in
 build/*
 dist/*
-OUTPUT/
+OUTPUT/*
 *.aux
 *.asv
 *.fdb_latexmk
