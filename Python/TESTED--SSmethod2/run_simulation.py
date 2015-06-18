@@ -113,8 +113,8 @@ ltilde = 1.0
 g_y_annual = 0.03
 g_y = (1 + g_y_annual)**(float(ending_age-starting_age)/S) - 1
 # TPI parameters
-maxiter = 150
-mindist = 1e-12
+maxiter = 250
+mindist = 1e-9
 nu = .40
 TPI_initial_run = True
 # Ellipse parameters
@@ -216,7 +216,7 @@ call(['python', 'SS.py'])
 
 # SS_stage = 'SS_tax'
 # TPI_initial_run = False
-# mindist = 1e-12
+# mindist = 1e-9
 
 
 # d_tax_income = .42

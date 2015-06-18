@@ -209,7 +209,7 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
 def function_to_minimize(chi_params_scalars, chi_params_init, params, weights_SS, rho_vec, lambdas, tau_bq, e):
     '''
     Parameters:
-        chi_params_init = guesses for chi_b
+        chi_params_scalars = guesses for multipliers for chi parameters
 
     Returns:
         The max absolute deviation between the actual and simulated
@@ -305,6 +305,10 @@ if SS_stage == 'SS_init':
 
     function_to_minimize_X = lambda x: function_to_minimize(x, chi_params, parameters, omega_SS, rho, lambdas, tau_bq, e)
     bnds = tuple([(1e-6, None)] * (S + J))
+    # In order to scale all the parameters to estimate in the minimizer, we have the minimizer fit a vector of ones that
+    # will be multiplied by the chi initial guesses inside the function.  Otherwise, if chi^b_j=1e5 for some j, and the
+    # minimizer peturbs that value by 1e-8, the % difference will be extremely small, outside of the tolerance of the
+    # minimizer, and it will not change that parameter.
     chi_params_scalars = np.ones(S+J)
     # chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
     chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds).x
