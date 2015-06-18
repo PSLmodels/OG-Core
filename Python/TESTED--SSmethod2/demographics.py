@@ -287,7 +287,7 @@ def get_fert(S, starting_age, ending_age, E):
     children_fertrate = np.diff(children_fertrate_int)
     children_fertrate /= 2.0
     children_fertrate[children_fertrate < 0] = 0
-    children_fertrate[:10*S/float(ending_age-starting_age)] = 0
+    children_fertrate[:int(10*S/float(ending_age-starting_age))] = 0
     return fert_rate, children_fertrate
 
 '''

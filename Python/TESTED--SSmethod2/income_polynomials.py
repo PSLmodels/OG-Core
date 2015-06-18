@@ -131,63 +131,29 @@ def arc_tan_deriv_func(points, a, b, c):
     return y
 
 
-def exp_func(points, a, b, c):
-    y = a + np.exp(points * b + c)
-    # y = a * points ** 2 + b * points + c
-    return y
-
-
-def exp_deriv_func(points, a, b, c):
-    y = b*np.exp(points * b + c)
-    # y = 2 * a * points + b
-    return y
-
-
 def arc_error(guesses, params):
     a, b, c = guesses
-    first_point, coef1, coef2, coef3, towhat = params
+    first_point, coef1, coef2, coef3, ability_depreciation = params
     error1 = first_point - arc_tan_func(80, a, b, c)
     if (3 * coef3 * 80 ** 2 + 2 * coef2 * 80 + coef1) < 0:
         error2 = (3 * coef3 * 80 ** 2 + 2 * coef2 * 80 + coef1)*first_point - arc_tan_deriv_func(80, a, b, c)
     else:
         error2 = -.02 * first_point - arc_tan_deriv_func(80, a, b, c)
     # print (3 * coef3 * 80 ** 2 + 2 * coef2 * 80 + coef1) * first_point
-    error3 = towhat * first_point - arc_tan_func(100, a, b, c)
+    error3 = ability_depreciation * first_point - arc_tan_func(100, a, b, c)
     error = [np.abs(error1)] + [np.abs(error2)] + [np.abs(error3)]
     # print np.array(error).max()
     return error
 
-def exp_error(guesses, params):
-    a, b, c = guesses
-    first_point, coef1, coef2, coef3, towhat = params
-    error1 = first_point - exp_func(80, a, b, c)
-    if (3 * coef3 * 80 ** 2 + 2 * coef2 * 80 + coef1) < 0:
-        error2 = (3 * coef3 * 80 ** 2 + 2 * coef2 * 80 + coef1)*first_point - exp_deriv_func(80, a, b, c)
-    else:
-        error2 = -.02 * first_point - exp_deriv_func(80, a, b, c)
-    # print (3 * coef3 * 80 ** 2 + 2 * coef2 * 80 + coef1) * first_point
-    error3 = towhat * first_point - exp_func(100, a, b, c)
-    error = [np.abs(error1)] + [np.abs(error2)] + [np.abs(error3)]
-    # print np.array(error).max()
-    return error
 
-def arc_tan_fit(first_point, coef1, coef2, coef3, towhat, init_guesses):
+def arc_tan_fit(first_point, coef1, coef2, coef3, ability_depreciation, init_guesses):
     guesses = init_guesses
-    params = [first_point, coef1, coef2, coef3, towhat]
+    params = [first_point, coef1, coef2, coef3, ability_depreciation]
     a, b, c = opt.fsolve(arc_error, guesses, params)
     # print a, b, c
     # print np.array(arc_error([a, b, c], params)).max()
     old_ages = np.linspace(81, 100, 20)
     return arc_tan_func(old_ages, a, b, c)
-
-def exp_fit(first_point, coef1, coef2, coef3, towhat, init_guesses):
-    guesses = init_guesses
-    params = [first_point, coef1, coef2, coef3, towhat]
-    a, b, c = opt.fsolve(exp_error, guesses, params)
-    # print a, b, c
-    # print np.array(exp_error([a, b, c], params)).max()
-    old_ages = np.linspace(81, 100, 20)
-    return exp_func(old_ages, a, b, c)
 
 
 def get_e(S, J, starting_age, ending_age, bin_weights, omega_SS):
@@ -207,11 +173,8 @@ def get_e(S, J, starting_age, ending_age, bin_weights, omega_SS):
     e_final = np.ones((S, J))
     e_final[:60, :] = e_short
     e_final[60:, :] = 0.0
-    # towhat = np.ones(J) * .7
-    towhat = np.array([.47, .5, .5, .5, .5, .7, .5])
-    # towhat = np.array([.1, .1, .1, .1, .1, .1, .1])
-    # init_guesses = np.array([[3, .5, -40], [3, .5, -40], [3, .5, -40], [3, .5, -40], [
-    #                         3, .5, -40], [3, .5, -40], [3, .5, -40]])
+    # This following variable is what percentage of ability at age 80 ability falls to at age 100
+    ability_depreciation = np.array([.47, .5, .5, .5, .5, .7, .5])
     init_guesses = np.array([[58, 0.0756438545595, -5.6940142786],
                              [27, 0.069, -5],
                              [35, .06, -5],
@@ -220,10 +183,7 @@ def get_e(S, J, starting_age, ending_age, bin_weights, omega_SS):
                              [35, .06, -5],
                              [35, .06, -5]])
     for j in xrange(J):
-        e_final[60:, j] = arc_tan_fit(e_final[59, j], one[j], two[j], three[j], towhat[j], init_guesses[j])
-    # for j in xrange(2):
-    #     j += 5
-    #     e_final[60:, j] = exp_fit(e_final[59, j], one[j], two[j], three[j], towhat[j], init_guesses[j])
+        e_final[60:, j] = arc_tan_fit(e_final[59, j], one[j], two[j], three[j], ability_depreciation[j], init_guesses[j])
     graph_income(S, J, e_final, starting_age, ending_age, bin_weights)
     e_final /= (e_final * omega_SS).sum()
     return e_final

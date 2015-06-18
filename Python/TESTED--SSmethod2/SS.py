@@ -124,17 +124,19 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n, t
 
     error1 = house.euler_savings_func(w, r, e[:, j], n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_H, chi_b[j], params, theta[j], tau_bq[j], rho, lambdas[j])
     error2 = house.euler_labor_leisure_func(w, r, e[:, j], n_guess, b_s, b_splus1, BQ, factor, T_H, chi_n, params, theta[j], tau_bq[j], lambdas[j])
-    # Put in constraints
+    # Put in constraints for consumption and savings.  According to the euler equations, they can be negative.  When
+    # Chi_b is large, they will be.  This prevents that from happening.
+    # I'm not sure if the constraints are needed for labor.  But we might as well put them in for now.
     mask1 = n_guess < 0
     mask2 = n_guess > ltilde
     mask3 = b_guess <= 0
-    error2[mask1] += 1e9
-    error2[mask2] += 1e9
-    error1[mask3] += 1e9
+    error2[mask1] += 1e14
+    error2[mask2] += 1e14
+    error1[mask3] += 1e14
     tax1 = tax.total_taxes(r, b_s, w, e[:, j], n_guess, BQ, lambdas[j], factor, T_H, None, 'SS', False, params, theta[j], tau_bq[j])
     cons = house.get_cons(r, b_s, w, e[:, j], n_guess, BQ, lambdas[j], b_splus1, params, tax1)
     mask4 = cons < 0
-    error1[mask4] += 1e9
+    error1[mask4] += 1e14
     return list(error1.flatten()) + list(error2.flatten())
 
 
@@ -239,7 +241,7 @@ def function_to_minimize(chi_params_init, params, weights_SS, rho_vec, lambdas, 
     if np.isnan(fsolve_no_converg):
         fsolve_no_converg = 1e6
     if fsolve_no_converg > 1e-4:
-        output += 1e9
+        output += 1e14
     else:
         var_names = ['solutions']
         dictionary = {}
@@ -247,7 +249,7 @@ def function_to_minimize(chi_params_init, params, weights_SS, rho_vec, lambdas, 
             dictionary[key] = locals()[key]
         pickle.dump(dictionary, open("OUTPUT/Saved_moments/minimization_solutions.pkl", "w"))
     if (chi_params_init <= 0.0).any():
-        output += 1e9
+        output += 1e14
     weighting_mat = np.eye(2*J + S)
     scaling_val = 100.0
     value = np.dot(scaling_val * np.dot(output.reshape(1, 2*J+S), weighting_mat), scaling_val * output.reshape(2*J+S, 1))
