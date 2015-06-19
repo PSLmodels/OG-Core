@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 6/3/2015
+Last updated 6/19/2015
 
 Firm functions for taxes in SS and TPI.
 
@@ -9,8 +9,6 @@ Firm functions for taxes in SS and TPI.
 
 # Packages
 import numpy as np
-
-import tax_funcs as tax
 
 '''
 ------------------------------------------------------------------------
@@ -21,9 +19,9 @@ import tax_funcs as tax
 
 def get_r(Y_now, K_now, params):
     '''
-    Parameters: Aggregate output, Aggregate capital
+    Inputs: Aggregate output, Aggregate capital, parameters
 
-    Returns:    Returns to capital
+    Returns:   Rental rate
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     r_now = (alpha * Y_now / K_now) - delta
@@ -32,7 +30,7 @@ def get_r(Y_now, K_now, params):
 
 def get_Y(K_now, L_now, params):
     '''
-    Parameters: Aggregate capital, Aggregate labor
+    Inputs: Aggregate capital, Aggregate labor, parameters
 
     Returns:    Aggregate output
     '''
@@ -43,9 +41,9 @@ def get_Y(K_now, L_now, params):
 
 def get_w(Y_now, L_now, params):
     '''
-    Parameters: Aggregate output, Aggregate labor
+    Inputs: Aggregate output, Aggregate labor, parameters
 
-    Returns:    Returns to labor
+    Returns:    Wage
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     w_now = (1 - alpha) * Y_now / L_now
@@ -54,7 +52,7 @@ def get_w(Y_now, L_now, params):
 
 def get_L(e, n, weights):
     '''
-    Parameters: e, n
+    Inputs: e, n, population weights
 
     Returns:    Aggregate labor
     '''

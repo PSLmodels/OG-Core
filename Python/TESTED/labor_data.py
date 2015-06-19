@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 5/21/2015
+Last updated 6/19/2015
 
 Computes the average labor participation rate for each age cohort.
 
@@ -24,9 +24,7 @@ This py-file creates the following other file(s):
 import numpy as np
 import pandas as pd
 import cPickle as pickle
-import matplotlib
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+
 
 '''
 ------------------------------------------------------------------------
@@ -68,6 +66,11 @@ def labor_data_moments(flag_graphs):
     labor_dist_data[:57] = weighted[:57]
     labor_dist_data[57:] = extension
     if flag_graphs:
+
+        import matplotlib
+        import matplotlib.pyplot as plt
+        from mpl_toolkits.mplot3d import Axes3D
+        
         domain = np.linspace(20, 80, S_labor)
         Jgrid = np.linspace(1, 100, J_labor)
         X, Y = np.meshgrid(domain, Jgrid)

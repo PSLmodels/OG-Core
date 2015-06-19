@@ -1,14 +1,16 @@
 '''
 ------------------------------------------------------------------------
-Last updated 5/21/2015
+Last updated 6/19/2015
 
 Creates graphs for TPI values.
 
 This py-file calls the following other file(s):
-            SSinit/ss_init.pkl
+            SSinit/ss_init_vars.pkl
             TPIinit/TPIinit_vars.pkl
             SS/ss_vars.pkl
-            TPI/TPI_vars.pkl          
+            TPI/TPI_vars.pkl
+            OUTPUT/Saved_moments/params_given.pkl
+            OUTPUT/Saved_moments/params_changed.pkl          
 ------------------------------------------------------------------------
 '''
 

@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 6/4/2015
+Last updated 6/19/2015
 
 Returns the wealth for all ages of a certain percentile.
 
@@ -25,9 +25,7 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 import cPickle as pickle
-import matplotlib
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+
 
 '''
 ------------------------------------------------------------------------
@@ -45,6 +43,9 @@ data = pd.read_table("data/wealth/scf2007to2013_wealth_age_all_percentiles.csv",
 
 
 def wealth_data_graphs():
+    import matplotlib
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
     to_graph = np.array(data)[:, 1:-1]
 
     domain = np.linspace(18, 95, 78)
