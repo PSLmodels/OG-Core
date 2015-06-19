@@ -1,12 +1,16 @@
 '''
 ------------------------------------------------------------------------
-Last updated 5/21/2015
+Last updated 6/19/2015
 
 Creates graphs for steady state values.
 
 This py-file calls the following other file(s):
-            SSinit/ss_init.pkl
+            SSinit/ss_init_vars.pkl
             SS/ss_vars.pkl
+            OUTPUT/Saved_moments/params_given.pkl
+            OUTPUT/Saved_moments/params_changed.pkl
+            OUTPUT/Saved_moments/labor_data_moments
+            OUTPUT/Saved_moments/wealth_data_moments.pkl
 ------------------------------------------------------------------------
 '''
 

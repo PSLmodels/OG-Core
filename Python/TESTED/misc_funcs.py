@@ -1,8 +1,8 @@
 '''
 ------------------------------------------------------------------------
-Last updated 6/4/2015
+Last updated 6/19/2015
 
-Miscellaneous functions for taxes in SS and TPI.
+Miscellaneous functions for SS and TPI.
 
 ------------------------------------------------------------------------
 '''
