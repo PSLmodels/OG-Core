@@ -4,6 +4,7 @@ MANIFEST.in
 build/*
 dist/*
 *.aux
+*.swp
 *.asv
 *.fdb_latexmk
 *.nav
