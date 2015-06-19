@@ -30,7 +30,6 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import cPickle as pickle
-import os
 import scipy.optimize as opt
 
 import tax_funcs as tax

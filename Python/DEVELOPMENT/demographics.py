@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 5/21/2015
+Last updated 6/19/2015
 
 Functions for generating omega, the T x S x J array which describes the
 demographics of the population
@@ -32,8 +32,6 @@ This py-file creates the following other file(s):
 import numpy as np
 import pandas as pd
 import numpy.polynomial.polynomial as poly
-import matplotlib
-import matplotlib.pyplot as plt
 import scipy.optimize as opt
 
 '''
@@ -428,6 +426,8 @@ def get_omega(S, J, T, bin_weights, starting_age, ending_age, E, flag_graphs):
     fert_rate, children_fertrate = get_fert(S, starting_age, ending_age, E)
     cum_surv_rate = np.cumprod(surv_array)
     if flag_graphs:
+        import matplotlib
+        import matplotlib.pyplot as plt
         rate_graphs(S, starting_age, ending_age, imm_array, fert_rate, surv_array, children_im, children_fertrate, children_rate)
     children_int = poly.polyval(np.linspace(0, starting_age, E + 1), poly_int_pop)
     sum2010 = pop_int[-1] - children_int[0]
@@ -478,5 +478,6 @@ def get_omega(S, J, T, bin_weights, starting_age, ending_age, E, flag_graphs):
         omega_big.reshape(T+S, S, 1), (1, 1, J)) * bin_weights.reshape(1, 1, J)
     children = np.tile(children.reshape(
         T+S, E, 1), (1, 1, J)) * bin_weights.reshape(1, 1, J)
-    pop_graphs(S, T, starting_age, ending_age, children, g_n_SS[0], omega_big)
+    if flag_graphs:
+        pop_graphs(S, T, starting_age, ending_age, children, g_n_SS[0], omega_big)
     return omega_big, g_n_SS[0], omega_SS, surv_array

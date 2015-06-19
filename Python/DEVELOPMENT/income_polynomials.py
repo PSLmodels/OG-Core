@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 5/21/2015
+Last updated 6/19/2015
 
 Functions for created the matrix of ability levels, e.  This can
     only be used for looking at the 25, 50, 70, 80, 90, 99, and 100th
@@ -22,9 +22,6 @@ This py-file creates the following other file(s):
 '''
 
 import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 import scipy.optimize as opt
 
 
@@ -69,6 +66,10 @@ def graph_income(S, J, e, starting_age, ending_age, bin_weights):
     '''
     Graphs the log of the ability matrix.
     '''
+    import matplotlib
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.mplot3d import Axes3D
+
     domain = np.linspace(starting_age, ending_age, S)
     Jgrid = np.zeros(J)
     for j in xrange(J):

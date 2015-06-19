@@ -5,32 +5,29 @@ Last updated: 6/4/2015
 Calculates steady state of OLG model with S age cohorts.
 
 This py-file calls the following other file(s):
-            income.py
-            demographics.py
             tax_funcs.py
-            OUTPUT/given_params.pkl
+            household_funcs.py
+            firm_funcs.py
+            misc_funcs.py
+            OUTPUT/Saved_moments/params_given.pkl
+            OUTPUT/Saved_moments/params_changed.pkl
             OUTPUT/Saved_moments/wealth_data_moments_fit_{}.pkl
                 name depends on which percentile
             OUTPUT/Saved_moments/labor_data_moments.pkl
-            OUTPUT/income_demo_vars.pkl
-            OUTPUT/Saved_moments/{}.pkl
-                name depends on what iteration just ran
-            OUTPUT/SS/d_inc_guess.pkl
-                if calibrating the income tax to match the wealth tax
+            OUTPUT/Saved_moments/SS_init_solutions.pkl
+            OUTPUT/Saved_moments/SS_experiment_solutions.pkl
 
 This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
-            OUTPUT/income_demo_vars.pkl
-            OUTPUT/Saved_moments/{}.pkl
-                name depends on what iteration is being run
-            OUTPUT/Saved_moments/payroll_inputs.pkl
-            OUTPUT/SSinit/ss_init.pkl
+            OUTPUT/Saved_moments/SS_init_solutions.pkl
+            OUTPUT/Saved_moments/SS_experiment_solutions.pkl
+            OUTPUT/SSinit/ss_init_vars.pkl
+            OUTPUT/SS/ss_vars.pkl
 ------------------------------------------------------------------------
 '''
 
 # Packages
 import numpy as np
-import os
 import scipy.optimize as opt
 import cPickle as pickle
 

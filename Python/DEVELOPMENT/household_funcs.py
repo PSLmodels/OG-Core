@@ -21,9 +21,9 @@ import tax_funcs as tax
 
 def get_K(b, weights):
     '''
-    Parameters: b, weights
+    Inputs: b, weights
 
-    Returns:    Aggregate labor
+    Returns:    Aggregate Capital
     '''
     K_now = np.sum(b * weights)
     return K_now
@@ -31,7 +31,7 @@ def get_K(b, weights):
 
 def marg_ut_cons(c, params):
     '''
-    Parameters: Consumption
+    Inputs: Consumption, parameters
 
     Returns:    Marginal Utility of Consumption
     '''
@@ -42,7 +42,7 @@ def marg_ut_cons(c, params):
 
 def marg_ut_labor(n, chi_n, params):
     '''
-    Parameters: Labor
+    Inputs: Labor, chi^n_s, parameters
 
     Returns:    Marginal Utility of Labor
     '''
@@ -55,8 +55,8 @@ def marg_ut_labor(n, chi_n, params):
 
 def get_cons(r, b_s, w, e, n, BQ, lambdas, b_splus1, params, net_tax):
     '''
-    Parameters: rental rate, capital stock (t-1), wage, e, labor stock,
-                bequests, lambdas, capital stock (t), growth rate y, taxes
+    Inputs: rental rate, capital stock (s), wage, e, labor stock,
+                bequests, lambdas, capital stock (s+1), parameters, taxes
 
     Returns:    Consumption
     '''
@@ -67,18 +67,23 @@ def get_cons(r, b_s, w, e, n, BQ, lambdas, b_splus1, params, net_tax):
 
 def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_H, chi_b, params, theta, tau_bq, rho, lambdas):
     '''
-    Parameters:
+    Inputs:
         w        = wage rate (scalar)
         r        = rental rate (scalar)
         e        = distribution of abilities (SxJ array)
         n_guess  = distribution of labor (SxJ array)
-        b_s       = distribution of capital in period t ((S-1) x J array)
-        b_splus1       = distribution of capital in period t+1 ((S-1) x J array)
-        b_splus2       = distribution of capital in period t+2 ((S-1) x J array)
-        B        = distribution of incidental bequests (1 x J array)
+        b_s       = distribution of capital in period t (S x J array)
+        b_splus1       = distribution of capital in period t+1 (S x J array)
+        b_splus2       = distribution of capital in period t+2 (S x J array)
+        BQ        = distribution of incidental bequests (1 x J array)
         factor   = scaling value to make average income match data
         T_H  = lump sum transfer from the government to the households
         chi_b    = discount factor of savings
+        params = parameters
+        theta = replacement rates
+        tau_bq = bequest tax parameters
+        rho = mortality rates
+        lambdas = bin weights
 
     Returns:
         Value of Euler error.
@@ -102,16 +107,21 @@ def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_
 
 def euler_labor_leisure_func(w, r, e, n_guess, b_s, b_splus1, BQ, factor, T_H, chi_n, params, theta, tau_bq, lambdas):
     '''
-    Parameters:
+    Inputs:
         w        = wage rate (scalar)
         r        = rental rate (scalar)
         e        = distribution of abilities (SxJ array)
         n_guess  = distribution of labor (SxJ array)
-        b_s     = distribution of capital in period t (S x J array)
-        b_splus1     = distribution of capital in period t+1 (S x J array)
-        B        = distribution of incidental bequests (1 x J array)
+        b_s       = distribution of capital in period t (S x J array)
+        b_splus1       = distribution of capital in period t+1 (S x J array)
+        BQ        = distribution of incidental bequests (1 x J array)
         factor   = scaling value to make average income match data
         T_H  = lump sum transfer from the government to the households
+        chi_n    = discount factor of labor
+        params = parameters
+        theta = replacement rates
+        tau_bq = bequest tax parameters
+        lambdas = bin weights
 
     Returns:
         Value of Euler error.
@@ -128,7 +138,7 @@ def euler_labor_leisure_func(w, r, e, n_guess, b_s, b_splus1, BQ, factor, T_H, c
 
 def constraint_checker_SS(bssmat, nssmat, cssmat, params):
     '''
-    Parameters:
+    Inputs:
         bssmat = steady state distribution of capital ((S-1)xJ array)
         nssmat = steady state distribution of labor (SxJ array)
         cssmat = steady state distribution of consumption (SxJ array)
@@ -168,7 +178,7 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, params):
 
 def constraint_checker_TPI(b_dist, n_dist, c_dist, t, params, N_tilde):
     '''
-    Parameters:
+    Inputs:
         b_dist = distribution of capital ((S-1)xJ array)
         n_dist = distribution of labor (SxJ array)
         w      = wage rate (scalar)
