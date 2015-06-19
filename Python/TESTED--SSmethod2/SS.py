@@ -310,8 +310,8 @@ if get_baseline:
     # minimizer peturbs that value by 1e-8, the % difference will be extremely small, outside of the tolerance of the
     # minimizer, and it will not change that parameter.
     chi_params_scalars = np.ones(S+J)
-    chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
-    # chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds).x
+    # chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
+    chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds).x
     chi_params *= chi_params_scalars
     print 'The final scaling params', chi_params_scalars
     print 'The final bequest parameter values:', chi_params
