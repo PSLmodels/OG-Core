@@ -28,7 +28,6 @@ This py-file creates the following other file(s):
 
 # Packages
 import numpy as np
-import os
 import scipy.optimize as opt
 import cPickle as pickle
 

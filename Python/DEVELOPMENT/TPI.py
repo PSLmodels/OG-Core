@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 6/4/2015
+Last updated 6/19/2015
 
 This program solves for transition path of the distribution of wealth
 and the aggregate capital stock using the time path iteration (TPI)
@@ -8,10 +8,14 @@ method, where labor in inelastically supplied.
 
 This py-file calls the following other file(s):
             tax_funcs.py
-            OUTPUT/Saved_moments/tpi_var.pkl
-            OUTPUT/SSinit/ss_init.pkl
+            misc_funcs.py
+            household_funcs.py
+            firm_funcs.py
+            OUTPUT/SSinit/ss_init_vars.pkl
             OUTPUT/SS/ss_vars.pkl
             OUTPUT/SSinit/ss_init_tpi.pkl
+            OUTPUT/Saved_moments/params_given.pkl
+            OUTPUT/Saved_moments/params_changed.pkl
 
 
 This py-file creates the following other file(s):
@@ -26,7 +30,6 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 import cPickle as pickle
-import os
 import scipy.optimize as opt
 
 import tax_funcs as tax
