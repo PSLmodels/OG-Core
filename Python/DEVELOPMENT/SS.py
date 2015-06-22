@@ -138,10 +138,50 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n, t
     error1[mask4] += 1e14
     return list(error1.flatten()) + list(error2.flatten())
 
+def wrguess(X, bssmat, nssmat, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e):
+    
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+
+    w, r, T_H, factor = X
+
+    for j in xrange(J):
+        # Solve the euler equations
+        guesses = np.append(bssmat[:, j], nssmat[:, j])
+        solutions = opt.fsolve(Euler_equation_solver, guesses * .9, args=(r, w, T_H, factor, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e), xtol=1e-13)
+        bssmat[:,j] = solutions[:S]
+        nssmat[:,j] = solutions[S:]
+        # print np.array(Euler_equation_solver(np.append(bssmat[:, j], nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, e)).max()
+
+    #Calculate demand for C, I, and Y
+    BQ = (weights * rho*bssmat).sum(0)
+    theta = tax.replacement_rate_vals(nssmat, w, factor, e, J, weights)
+    net_tax = tax.total_taxes(r, bssmat, w, e, nssmat, BQ, lambdas, factor, T_H, 'SS', False, params, theta, tau_bq)
+    b_s = np.append(np.zeros(J).reshape(1,J), bssmat[:-1])
+    cons = house.get_cons(r, b_s, w, e, n, BQ, lambdas, bssmat, params, net_tax)
+    C = (weights*cons).sum()
+    B = (weights*bssmat).sum()
+    I = delta*B
+    Y = C + I
+
+    #Get demand for K and L
+    K_demand = alpha*Y / (r+delta)
+    L_demand = (1-alpha)*Y / w
+
+    #Get the 2 errors from difference between supply and demand of K and L
+    error1 = K_demand - B
+    error2 = L_demand - firm.get_L(e, nssmat, weights)
+
+    #Get other 2 errors from the factor equation and government constraint
+    revenue = tax.total_taxes(r, bssmat, w, e, nssmat, BQ, lambdas, factor, 0, 'SS', False, params, theta, tau_bq)
+    error3 = T_H - (weights*revenue).sum()
+    mean_income_model = ((r * b_s + w * e * nssmat) * weights).sum()
+    error4 = factor - mean_income_data / mean_income_model
+
+    return [error1, error2, error3, error4]
+
 
 def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess, chi_n, chi_b, params, iterative_params, tau_bq, rho, lambdas, weights, e):
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    maxiter, mindist_SS = iterative_params
     w = wguess
     r = rguess
     T_H = T_Hguess
@@ -149,44 +189,7 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
     bssmat = b_guess_init
     nssmat = n_guess_init
 
-    dist = 10
-    iteration = 0
-    dist_vec = np.zeros(maxiter)
-    
-    while (dist > mindist_SS) and (iteration < maxiter):
-        for j in xrange(J):
-            # Solve the euler equations
-            guesses = np.append(bssmat[:, j], nssmat[:, j])
-            solutions = opt.fsolve(Euler_equation_solver, guesses * .9, args=(r, w, T_H, factor, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e), xtol=1e-13)
-            bssmat[:,j] = solutions[:S]
-            nssmat[:,j] = solutions[S:]
-            # print np.array(Euler_equation_solver(np.append(bssmat[:, j], nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, e)).max()
-
-        K = house.get_K(bssmat, weights)
-        L = firm.get_L(e, nssmat, weights)
-        Y = firm.get_Y(K, L, params)
-        new_r = firm.get_r(Y, K, params)
-        new_w = firm.get_w(Y, L, params)
-        b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
-        average_income_model = ((new_r * b_s + new_w * e * nssmat) * weights).sum()
-        new_factor = mean_income_data / average_income_model 
-        new_BQ = (1+new_r)*(bssmat * weights * rho.reshape(S, 1)).sum(0)
-        theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, e, J, weights)
-        new_T_H = tax.get_lump_sum(new_r, b_s, new_w, e, nssmat, new_BQ, lambdas, factor, weights, 'SS', params, theta, tau_bq)
-
-        r = misc_funcs.convex_combo(new_r, r, params)
-        w = misc_funcs.convex_combo(new_w, w, params)
-        factor = misc_funcs.convex_combo(new_factor, factor, params)
-        T_H = misc_funcs.convex_combo(new_T_H, T_H, params)
-        
-        dist = np.array([misc_funcs.perc_dif_func(new_r, r)] + [misc_funcs.perc_dif_func(new_w, w)] + [misc_funcs.perc_dif_func(new_T_H, T_H)] + [misc_funcs.perc_dif_func(new_factor, factor)]).max()
-        dist_vec[iteration] = dist
-        if iteration > 10:
-            if dist_vec[iteration] - dist_vec[iteration-1] > 0:
-                nu /= 2.0
-                print 'New value of nu:', nu
-        iteration += 1
-        print "Iteration: %02d" % iteration, " Distance: ", dist
+    w, r, T_H, factor = opt.fsolve(wrguess, [w,r,T_H,factor], args=(bssmat, nssmat, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e))
 
     eul_errors = np.ones(J)
     b_mat = np.zeros((S, J))
