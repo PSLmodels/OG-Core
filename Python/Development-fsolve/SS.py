@@ -161,8 +161,7 @@ def wrguess(X, bssmat, nssmat, params, chi_b, chi_n, tau_bq, rho, lambdas, weigh
     cons = house.get_cons(r, b_s, w, e, nssmat, BQ, lambdas, bssmat, params, net_tax)
     C = (weights*cons).sum()
     B = house.get_K(bssmat, weights)
-    I = delta*B
-    Y = C + I
+    Y = C / (1-(delta*alpha/(r+delta)))
 
     #Get demand for K and L
     K_demand = alpha*Y / (r+delta)
