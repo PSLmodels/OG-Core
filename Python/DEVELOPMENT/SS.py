@@ -138,10 +138,9 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n, t
     error1[mask4] += 1e14
     return list(error1.flatten()) + list(error2.flatten())
 
-def wrguess(X, bssmat, nssmat, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e):
+def wrguess(X, bssmat, nssmat, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e):
     
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-
     w, r, T_H, factor = X
 
     for j in xrange(J):
@@ -153,11 +152,11 @@ def wrguess(X, bssmat, nssmat, j, params, chi_b, chi_n, tau_bq, rho, lambdas, we
         # print np.array(Euler_equation_solver(np.append(bssmat[:, j], nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, e)).max()
 
     #Calculate demand for C, I, and Y
-    BQ = (weights * rho*bssmat).sum(0)
+    BQ = (weights * rho.reshape(S,1)*bssmat).sum(0).reshape(1,J)
     theta = tax.replacement_rate_vals(nssmat, w, factor, e, J, weights)
-    net_tax = tax.total_taxes(r, bssmat, w, e, nssmat, BQ, lambdas, factor, T_H, 'SS', False, params, theta, tau_bq)
-    b_s = np.append(np.zeros(J).reshape(1,J), bssmat[:-1])
-    cons = house.get_cons(r, b_s, w, e, n, BQ, lambdas, bssmat, params, net_tax)
+    net_tax = tax.total_taxes(r, bssmat, w, e, nssmat, BQ, lambdas, factor, T_H, 0, 'SS', False, params, theta, tau_bq)
+    b_s = np.array(list(np.zeros(J).reshape(1,J)) + list(bssmat[:-1]))
+    cons = house.get_cons(r, b_s, w, e, nssmat, BQ, lambdas.reshape(1,J), bssmat, params, net_tax)
     C = (weights*cons).sum()
     B = (weights*bssmat).sum()
     I = delta*B
@@ -172,12 +171,14 @@ def wrguess(X, bssmat, nssmat, j, params, chi_b, chi_n, tau_bq, rho, lambdas, we
     error2 = L_demand - firm.get_L(e, nssmat, weights)
 
     #Get other 2 errors from the factor equation and government constraint
-    revenue = tax.total_taxes(r, bssmat, w, e, nssmat, BQ, lambdas, factor, 0, 'SS', False, params, theta, tau_bq)
+    error3 = tax.total_taxes(r, bssmat, w, e, nssmat, BQ, lambdas, factor, 0, 0, 'SS', False, params, theta, tau_bq)
     error3 = T_H - (weights*revenue).sum()
     mean_income_model = ((r * b_s + w * e * nssmat) * weights).sum()
     error4 = factor - mean_income_data / mean_income_model
 
-    return [error1, error2, error3, error4]
+    error = [error1, error2, error3, error4]
+    print error
+    return error
 
 
 def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess, chi_n, chi_b, params, iterative_params, tau_bq, rho, lambdas, weights, e):
@@ -189,7 +190,7 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
     bssmat = b_guess_init
     nssmat = n_guess_init
 
-    w, r, T_H, factor = opt.fsolve(wrguess, [w,r,T_H,factor], args=(bssmat, nssmat, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e))
+    w, r, T_H, factor = opt.fsolve(wrguess, [w,r,T_H,factor], args=(bssmat, nssmat, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e))
 
     eul_errors = np.ones(J)
     b_mat = np.zeros((S, J))
@@ -288,7 +289,7 @@ if get_baseline:
                              , 28.90029708 , 29.83586775 , 30.87563699 , 31.91207845 , 33.07449767
                              , 34.27919965 , 35.57195873 , 36.95045988 , 38.62308152])
     chi_params[J:] = chi_n_guess
-    chi_params = list(chi_params)
+    # chi_params = list(chi_params)
     # First run SS simulation with guesses at initial values for b, n, w, r, etc
     b_guess = np.ones((S, J)).flatten() * .01
     n_guess = np.ones((S, J)).flatten() * .5 * ltilde
@@ -296,7 +297,7 @@ if get_baseline:
     rguess = .06
     T_Hguess = 0
     factorguess = 100000
-    solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
+    solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess*.9, rguess*.9, T_Hguess*.9, factorguess*.9, chi_params[J:], chi_params[:J], parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
     variables = ['solutions', 'chi_params']
     dictionary = {}
     for key in variables:
@@ -309,12 +310,12 @@ if get_baseline:
     # will be multiplied by the chi initial guesses inside the function.  Otherwise, if chi^b_j=1e5 for some j, and the
     # minimizer peturbs that value by 1e-8, the % difference will be extremely small, outside of the tolerance of the
     # minimizer, and it will not change that parameter.
-    chi_params_scalars = np.ones(S+J)
-    chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
+    # chi_params_scalars = np.ones(S+J)
+    # chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
     # chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds).x
-    chi_params *= chi_params_scalars
-    print 'The final scaling params', chi_params_scalars
-    print 'The final bequest parameter values:', chi_params
+    # chi_params *= chi_params_scalars
+    # print 'The final scaling params', chi_params_scalars
+    # print 'The final bequest parameter values:', chi_params
 
     solutions_dict = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "r"))
     solutions = solutions_dict['solutions']
