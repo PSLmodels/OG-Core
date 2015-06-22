@@ -136,6 +136,7 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n, t
     cons = house.get_cons(r, b_s, w, e[:, j], n_guess, BQ, lambdas[j], b_splus1, params, tax1)
     mask4 = cons < 0
     error1[mask4] += 1e14
+    # print np.append(error1.flatten(), error2.flatten()).max()
     return list(error1.flatten()) + list(error2.flatten())
 
 def wrguess(X, bssmat, nssmat, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e):
@@ -152,13 +153,13 @@ def wrguess(X, bssmat, nssmat, params, chi_b, chi_n, tau_bq, rho, lambdas, weigh
         # print np.array(Euler_equation_solver(np.append(bssmat[:, j], nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, e)).max()
 
     #Calculate demand for C, I, and Y
-    BQ = (weights * rho.reshape(S,1)*bssmat).sum(0).reshape(1,J)
+    BQ = (1+r) * (weights * rho.reshape(S,1)*bssmat).sum(0)
     theta = tax.replacement_rate_vals(nssmat, w, factor, e, J, weights)
     net_tax = tax.total_taxes(r, bssmat, w, e, nssmat, BQ, lambdas, factor, T_H, 0, 'SS', False, params, theta, tau_bq)
     b_s = np.array(list(np.zeros(J).reshape(1,J)) + list(bssmat[:-1]))
-    cons = house.get_cons(r, b_s, w, e, nssmat, BQ, lambdas.reshape(1,J), bssmat, params, net_tax)
+    cons = house.get_cons(r, b_s, w, e, nssmat, BQ, lambdas, bssmat, params, net_tax)
     C = (weights*cons).sum()
-    B = (weights*bssmat).sum()
+    B = house.get_K(bssmat, weights)
     I = delta*B
     Y = C + I
 
@@ -171,13 +172,13 @@ def wrguess(X, bssmat, nssmat, params, chi_b, chi_n, tau_bq, rho, lambdas, weigh
     error2 = L_demand - firm.get_L(e, nssmat, weights)
 
     #Get other 2 errors from the factor equation and government constraint
-    error3 = tax.total_taxes(r, bssmat, w, e, nssmat, BQ, lambdas, factor, 0, 0, 'SS', False, params, theta, tau_bq)
-    error3 = T_H - (weights*revenue).sum()
+    error3 = (tax.total_taxes(r, bssmat, w, e, nssmat, BQ, lambdas, factor, T_H, None, 'SS', False, params, theta, tau_bq) * weights).sum()
+    # error3 = T_H - (weights*revenue).sum()
     mean_income_model = ((r * b_s + w * e * nssmat) * weights).sum()
     error4 = factor - mean_income_data / mean_income_model
 
     error = [error1, error2, error3, error4]
-    print error
+    print max([abs(error1), abs(error2), abs(error3), abs(error4)])
     return error
 
 
@@ -190,8 +191,8 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
     bssmat = b_guess_init
     nssmat = n_guess_init
 
-    w, r, T_H, factor = opt.fsolve(wrguess, [w,r,T_H,factor], args=(bssmat, nssmat, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e))
-
+    w, r, T_H, factor = opt.fsolve(wrguess, [w,r,T_H,factor], args=(bssmat, nssmat, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e), xtol=1e-13)
+    print 'vals are:', w, r, T_H, factor
     eul_errors = np.ones(J)
     b_mat = np.zeros((S, J))
     n_mat = np.zeros((S, J))
@@ -293,10 +294,10 @@ if get_baseline:
     # First run SS simulation with guesses at initial values for b, n, w, r, etc
     b_guess = np.ones((S, J)).flatten() * .01
     n_guess = np.ones((S, J)).flatten() * .5 * ltilde
-    wguess = 1.2
-    rguess = .06
-    T_Hguess = 0
-    factorguess = 100000
+    wguess = 1.2111
+    rguess = .061828
+    T_Hguess = 0.036225
+    factorguess = 179322
     solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess*.9, rguess*.9, T_Hguess*.9, factorguess*.9, chi_params[J:], chi_params[:J], parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
     variables = ['solutions', 'chi_params']
     dictionary = {}
