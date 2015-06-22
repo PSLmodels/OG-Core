@@ -198,7 +198,7 @@ call(['python', 'SS.py'])
 '''
 
 # call(['python', 'TPI.py'])
-import TPI
+# import TPI
 
 '''
 ------------------------------------------------------------------------
@@ -224,6 +224,8 @@ import TPI
 ------------------------------------------------------------------------
 '''
 
+
+# print 'Getting SS distribution for wealth tax.'
 # call(['python', 'SS.py'])
 
 '''
