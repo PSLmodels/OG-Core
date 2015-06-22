@@ -141,7 +141,6 @@ BQ0 = (1+r0)*(initial_b * omega_stationary[0] * rho.reshape(S, 1)).sum(0)
 T_H_0 = tax.get_lump_sum(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, omega_stationary[0], 'SS', parameters, theta, tau_bq)
 tax0 = tax.total_taxes(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, T_H_0, None, 'SS', False, parameters, theta, tau_bq)
 c0 = house.get_cons(r0, b_sinit, w0, e, initial_n, BQ0.reshape(1, J), lambdas.reshape(1, J), b_splus1init, parameters, tax0)
-house.constraint_checker_SS(initial_b[:-1], initial_n, c0, parameters)
 
 '''
 ------------------------------------------------------------------------
@@ -362,7 +361,7 @@ BQpath_TPI = np.array(list(BQinit) + list(np.ones((10, J))*BQss))
 b_s = np.zeros((T, S, J))
 b_s[:, 1:, :] = b_mat[:T, :-1, :]
 b_splus1 = np.zeros((T, S, J))
-b_splus1[:, :, :] = b_mat[:T, :, :]
+b_splus1[:, :, :] = b_mat[1:T+1, :, :]
 
 tax_path = tax.total_taxes(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(
     1, S, J), n_mat[:T], BQinit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T].reshape(T, 1, 1), None, 'TPI', False, parameters, theta, tau_bq)
