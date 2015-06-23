@@ -152,6 +152,11 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
     dist = 10
     iteration = 0
     dist_vec = np.zeros(maxiter)
+
+    w_step = .05
+    r_step = .005
+    w_down = True
+    r_down = True
     
     while (dist > mindist_SS) and (iteration < maxiter):
         for j in xrange(J):
@@ -162,24 +167,49 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
             nssmat[:,j] = solutions[S:]
             # print np.array(Euler_equation_solver(np.append(bssmat[:, j], nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, e)).max()
 
-        K = house.get_K(bssmat, weights)
-        L = firm.get_L(e, nssmat, weights)
-        Y = firm.get_Y(K, L, params)
-        new_r = firm.get_r(Y, K, params)
-        new_w = firm.get_w(Y, L, params)
+        # Update factor, T_H
         b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
-        average_income_model = ((new_r * b_s + new_w * e * nssmat) * weights).sum()
+        average_income_model = ((r * b_s + w * e * nssmat) * weights).sum()
         new_factor = mean_income_data / average_income_model 
-        new_BQ = (1+new_r)*(bssmat * weights * rho.reshape(S, 1)).sum(0)
-        theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, e, J, weights)
-        new_T_H = tax.get_lump_sum(new_r, b_s, new_w, e, nssmat, new_BQ, lambdas, factor, weights, 'SS', params, theta, tau_bq)
+        BQ = (1+r)*(bssmat * weights * rho.reshape(S, 1)).sum(0)
+        theta = tax.replacement_rate_vals(nssmat, w, factor, e, J, weights)
+        new_T_H = tax.get_lump_sum(r, b_s, w, e, nssmat, BQ, lambdas, new_factor, weights, 'SS', params, theta, tau_bq)
 
-        r = misc_funcs.convex_combo(new_r, r, params)
-        w = misc_funcs.convex_combo(new_w, w, params)
+        # Update w, r
+        B_supply = house.get_K(bssmat, weights)
+        L_supply = firm.get_L(e, nssmat, weights)
+        I = delta * B_supply
+        total_tax = tax.total_taxes(r, b_s, w, e, nssmat, BQ, lambdas, new_factor, new_T_H, None, 'SS', False, params, theta, tau_bq)
+        c_mat = house.get_cons(r, b_s, w, e, nssmat, BQ, lambdas, bssmat, params, total_tax)
+        C = (c_mat*weights).sum()
+        Y = C + I
+        B_demand = alpha * Y / (r + delta)
+        L_demand = (1-alpha) * Y / w
+        if B_demand - B_supply > mindist_SS:
+            if r_down:
+                r_step /= 2.0
+                r_down = False
+            r += r_step
+        else:
+            if not(r_down):
+                r_step /= 2.0
+                r_down = True
+            r -= r_step
+        if L_demand - L_supply > mindist_SS:
+            if w_down:
+                w_step /=2.0
+                w_down = False
+            w += w_step
+        else:
+            if not(w_down):
+                w_step /= 2.0
+                w_down = True
+            w -= w_step
+
+        
         factor = misc_funcs.convex_combo(new_factor, factor, params)
         T_H = misc_funcs.convex_combo(new_T_H, T_H, params)
-        
-        dist = np.array([misc_funcs.perc_dif_func(new_r, r)] + [misc_funcs.perc_dif_func(new_w, w)] + [misc_funcs.perc_dif_func(new_T_H, T_H)] + [misc_funcs.perc_dif_func(new_factor, factor)]).max()
+        dist = np.array([misc_funcs.perc_dif_func(new_T_H, T_H)] + [misc_funcs.perc_dif_func(new_factor, factor)] + [misc_funcs.perc_dif_func(B_demand, B_supply)] + [misc_funcs.perc_dif_func(L_demand, L_supply)]).max()
         dist_vec[iteration] = dist
         if iteration > 10:
             if dist_vec[iteration] - dist_vec[iteration-1] > 0:

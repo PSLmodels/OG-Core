@@ -117,7 +117,7 @@ g_y = (1 + g_y_annual)**(float(ending_age-starting_age)/S) - 1
 # TPI parameters
 maxiter = 250
 mindist_SS = 1e-9
-mindist_TPI = 3 * 1e-6
+mindist_TPI = 1e-6
 nu = .40
 # Ellipse parameters
 b_ellipse = 25.6594
@@ -198,7 +198,7 @@ call(['python', 'SS.py'])
 '''
 
 # call(['python', 'TPI.py'])
-# import TPI
+import TPI
 
 '''
 ------------------------------------------------------------------------
@@ -224,8 +224,6 @@ call(['python', 'SS.py'])
 ------------------------------------------------------------------------
 '''
 
-
-# print 'Getting SS distribution for wealth tax.'
 # call(['python', 'SS.py'])
 
 '''
