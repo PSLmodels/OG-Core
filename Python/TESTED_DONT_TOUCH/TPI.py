@@ -164,11 +164,11 @@ def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init):
         -1, j], n1, factor_ss, parameters) - tax.tau_income_deriv(
         rinit, b1, winit, e[-1, j], n1, factor_ss, parameters) * income2
     error2 = house.marg_ut_cons(cons1, parameters) * winit * e[-1, j] * deriv2 - house.marg_ut_labor(n1, chi_n[-1], parameters)
-    if n1 <= 0 or n1 > 1:
+    if n1 <= 0 or n1 >= 1:
         error2 += 1e12
-    if b1 <=0:
+    if b2 <=0:
         error1 += 1e12
-    if cons1 < 0:
+    if cons1 <= 0:
         error1 += 1e12
     return [error1] + [error2]
 
@@ -256,16 +256,8 @@ BQinit = np.array(BQinit)
 T_H_init = np.ones(T+S) * T_Hss
 
 # Make array of initial guesses
-domain2 = np.tile(domain.reshape(T, 1, 1), (1, S, J))
-ending_b = bssmat_splus1
-guesses_b = (-1/(domain2 + 1)) * (ending_b-initial_b) + ending_b
-ending_b_tail = np.tile(ending_b.reshape(1, S, J), (S, 1, 1))
-guesses_b = np.append(guesses_b, ending_b_tail, axis=0)
-
-domain3 = np.tile(np.linspace(0, 1, T).reshape(T, 1, 1), (1, S, J))
-guesses_n = domain3 * (nssmat - initial_n) + initial_n
-ending_n_tail = np.tile(nssmat.reshape(1, S, J), (S, 1, 1))
-guesses_n = np.append(guesses_n, ending_n_tail, axis=0)
+guesses_b = np.tile(bssmat_splus1.reshape(1, S, J), (T+S, 1, 1))
+guesses_n = np.tile(nssmat.reshape(1, S, J), (T+S, 1, 1))
 
 TPIiter = 0
 TPIdist = 10
@@ -286,10 +278,12 @@ while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
         T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
     plt.savefig("OUTPUT/TPI_K")
     for j in xrange(J):
-        b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -2, j], guesses_n[0, -2, j]],
-            args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1])))
+        print j
+        b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],
+            args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1]), xtol=1e-13))
+        print SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1, j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1])
         for s in xrange(S-2):  # Upper triangle
-            b_guesses_to_use = np.diag(guesses_b[1:S+1, :, j], S-(s+2))
+            b_guesses_to_use = .5 * np.diag(guesses_b[1:S+1, :, j], S-(s+2))
             n_guesses_to_use = np.diag(guesses_n[:S, :, j], S-(s+2))
             solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
@@ -298,9 +292,10 @@ while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
             b_mat[1:S+1, :, j] += np.diag(b_vec, S-(s+2))
             n_vec = solutions[len(solutions)/2:]
             n_mat[:S, :, j] += np.diag(n_vec, S-(s+2))
+            print abs(np.array(Steady_state_TPI_solver(solutions, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, s, 0, parameters, theta, tau_bq, rho, lambdas, e, initial_b, chi_b, chi_n))).max()
 
         for t in xrange(0, T):
-            b_guesses_to_use = np.diag(guesses_b[t+1:t+S+1, :, j])
+            b_guesses_to_use = .75 * np.diag(guesses_b[t+1:t+S+1, :, j])
             n_guesses_to_use = np.diag(guesses_n[t:t+S, :, j])
             solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
@@ -312,6 +307,7 @@ while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
             inputs = list(solutions)
             euler_errors[t, :, j] = np.abs(Steady_state_TPI_solver(
                 inputs, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n))
+    # print euler_errors
     
     b_mat[0, :, :] = initial_b
     Kinit = (omega_stationary[:T, :, :] * b_mat[:T, :, :]).sum(2).sum(1)
@@ -335,6 +331,8 @@ while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
     T_H_init[:T] = misc_funcs.convex_combo(T_H_new[:T], T_H_init[:T], parameters)
     guesses_b = misc_funcs.convex_combo(b_mat, guesses_b, parameters)
     guesses_n = misc_funcs.convex_combo(n_mat, guesses_n, parameters)
+    # guesses_b = b_mat
+    # guesses_n = n_mat
 
     TPIdist = np.array(list(misc_funcs.perc_dif_func(rnew, rinit[:T]))+list(misc_funcs.perc_dif_func(BQnew, BQinit[:T]).flatten())+list(
         misc_funcs.perc_dif_func(wnew, winit[:T]))+list(misc_funcs.perc_dif_func(T_H_new, T_H_init))).max()
@@ -356,11 +354,11 @@ b_mat = np.zeros((T+S, S, J))
 n_mat = np.zeros((T+S, S, J))
 
 for j in xrange(J):
-    b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -2, j], guesses_n[0, -2, j]],
+    b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [.75 * guesses_b[1, -1, j], .75 * guesses_n[0, -1, j]],
         args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1])))
     for s in xrange(S-2):  # Upper triangle
-        b_guesses_to_use = np.diag(guesses_b[1:S+1, :, j], S-(s+2))
-        n_guesses_to_use = np.diag(guesses_n[:S, :, j], S-(s+2))
+        b_guesses_to_use = .75 * np.diag(guesses_b[1:S+1, :, j], S-(s+2))
+        n_guesses_to_use = .75 * np.diag(guesses_n[:S, :, j], S-(s+2))
         solutions = opt.fsolve(Steady_state_TPI_solver, list(
             b_guesses_to_use) + list(n_guesses_to_use), args=(
             winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, s, 0, parameters, theta, tau_bq, rho, lambdas, e, initial_b, chi_b, chi_n), xtol=1e-13)
@@ -370,8 +368,8 @@ for j in xrange(J):
         n_mat[:S, :, j] += np.diag(n_vec, S-(s+2))
 
     for t in xrange(0, T):
-        b_guesses_to_use = np.diag(guesses_b[t+1:t+S+1, :, j])
-        n_guesses_to_use = np.diag(guesses_n[t:t+S, :, j])
+        b_guesses_to_use = .75 * np.diag(guesses_b[t+1:t+S+1, :, j])
+        n_guesses_to_use = .75 * np.diag(guesses_n[t:t+S, :, j])
         solutions = opt.fsolve(Steady_state_TPI_solver, list(
             b_guesses_to_use) + list(n_guesses_to_use), args=(
             winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n), xtol=1e-13)
