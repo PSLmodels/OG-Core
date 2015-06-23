@@ -153,8 +153,8 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
     iteration = 0
     dist_vec = np.zeros(maxiter)
 
-    w_step = .05
-    r_step = .005
+    w_step = .1
+    r_step = .01
     w_down = True
     r_down = True
     
@@ -178,11 +178,10 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
         # Update w, r
         B_supply = house.get_K(bssmat, weights)
         L_supply = firm.get_L(e, nssmat, weights)
-        I = delta * B_supply
         total_tax = tax.total_taxes(r, b_s, w, e, nssmat, BQ, lambdas, new_factor, new_T_H, None, 'SS', False, params, theta, tau_bq)
         c_mat = house.get_cons(r, b_s, w, e, nssmat, BQ, lambdas, bssmat, params, total_tax)
         C = (c_mat*weights).sum()
-        Y = C + I
+        Y = C / (1-(delta*alpha/(r+delta)))
         B_demand = alpha * Y / (r + delta)
         L_demand = (1-alpha) * Y / w
         if B_demand - B_supply > mindist_SS:
