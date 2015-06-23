@@ -152,5 +152,8 @@ def total_taxes(r, b, w, e, n, BQ, lambdas, factor, T_H, j, method, shift, param
         else:
             T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w
             T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
+    elif method == 'TPI_scalar':
+        T_P -= theta[j] * w
+        T_BQ = tau_bq[j] * BQ / lambdas
     total_taxes = T_I + T_P + T_BQ + T_W - T_H
     return total_taxes

@@ -150,25 +150,26 @@ Solve for equilibrium transition path by TPI
 
 
 def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init):
-    # This function does not work.  The tax functions need to be changed.
     b2 = float(guesses[0])
     n1 = float(guesses[1])
     b1 = float(initial_b[-2, j])
     # Euler 1 equations
-    tax11 = tax.total_taxes(rinit, b1, winit, e[-1, j], n1, BQinit, lambdas[j], factor_ss, T_H_init, j, 'TPI', False, parameters, theta, tau_bq)
-    cons11 = house.get_cons(rinit, b1, winit, e[-1, j], n1, BQinit, lambdas[j], b2, parameters, tax11)
-    bequest_ut = rho * np.exp(-sigma * g_y) * chi_b[-1, j] * b2 ** (-sigma)
-    error1 = house.marg_ut_cons(cons11, parameters) - bequest_ut
+    tax1 = tax.total_taxes(rinit, b1, winit, e[-1, j], n1, BQinit, lambdas[j], factor_ss, T_H_init, j, 'TPI_scalar', False, parameters, theta, tau_bq)
+    cons1 = house.get_cons(rinit, b1, winit, e[-1, j], n1, BQinit, lambdas[j], b2, parameters, tax1)
+    bequest_ut = rho[-1] * np.exp(-sigma * g_y) * chi_b[-1, j] * b2 ** (-sigma)
+    error1 = house.marg_ut_cons(cons1, parameters) - bequest_ut
     # Euler 2 equations
-    tax2 = tax.total_taxes(rinit, b1, winit, e[-1, j], n1, BQinit, lambdas[j], factor_ss, T_H_init, j, 'TPI', True, parameters, theta, tau_bq)
-    cons2 = house.get_cons(rinit, b1, winit, e[-1, j], n1, BQinit, lambdas[j], b2, parameters, tax2)
     income2 = (rinit * b1 + winit * e[-1, j] * n1) * factor_ss
     deriv2 = 1 - tau_payroll - tax.tau_income(rinit, b1, winit, e[
         -1, j], n1, factor_ss, parameters) - tax.tau_income_deriv(
         rinit, b1, winit, e[-1, j], n1, factor_ss, parameters) * income2
-    error2 = house.marg_ut_cons(cons2, parameters) * winit * e[-1, j] * deriv2 - house.marg_ut_labor(n1, chi_n[-1], parameters)
-    if n1 <= 0:
+    error2 = house.marg_ut_cons(cons1, parameters) * winit * e[-1, j] * deriv2 - house.marg_ut_labor(n1, chi_n[-1], parameters)
+    if n1 <= 0 or n1 > 1:
         error2 += 1e12
+    if b1 <=0:
+        error1 += 1e12
+    if cons1 < 0:
+        error1 += 1e12
     return [error1] + [error2]
 
 
@@ -235,6 +236,8 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
     error2[mask3] += 1e12
     mask4 = b_guess <= 0
     error2[mask4] += 1e12
+    mask5 = cons_splus1 < 0
+    error2[mask5] += 1e12
     return list(error1.flatten()) + list(error2.flatten())
 
 # Initialize Time paths
@@ -283,8 +286,8 @@ while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
         T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
     plt.savefig("OUTPUT/TPI_K")
     for j in xrange(J):
-        # b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -2, j], guesses_n[0, -2, j]],
-        #     args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1])))
+        b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -2, j], guesses_n[0, -2, j]],
+            args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1])))
         for s in xrange(S-2):  # Upper triangle
             b_guesses_to_use = np.diag(guesses_b[1:S+1, :, j], S-(s+2))
             n_guesses_to_use = np.diag(guesses_n[:S, :, j], S-(s+2))
@@ -311,8 +314,6 @@ while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
                 inputs, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n))
     
     b_mat[0, :, :] = initial_b
-    b_mat[1, -1, :]= b_mat[1, -2, :]
-    n_mat[0, -1, :] = n_mat[0, -2, :]
     Kinit = (omega_stationary[:T, :, :] * b_mat[:T, :, :]).sum(2).sum(1)
     Linit = (omega_stationary[:T, :, :] * e.reshape(
         1, S, J) * n_mat[:T, :, :]).sum(2).sum(1)
@@ -355,6 +356,8 @@ b_mat = np.zeros((T+S, S, J))
 n_mat = np.zeros((T+S, S, J))
 
 for j in xrange(J):
+    b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -2, j], guesses_n[0, -2, j]],
+        args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1])))
     for s in xrange(S-2):  # Upper triangle
         b_guesses_to_use = np.diag(guesses_b[1:S+1, :, j], S-(s+2))
         n_guesses_to_use = np.diag(guesses_n[:S, :, j], S-(s+2))
@@ -379,12 +382,8 @@ for j in xrange(J):
         inputs = list(solutions)
         euler_errors[t, :, j] = np.abs(Steady_state_TPI_solver(
             inputs, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n))
-    # b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [b_mat[1, -2, j], n_mat[0, -2, j]],
-    #     args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1])))
 
 b_mat[0, :, :] = initial_b
-b_mat[1, -1, :]= b_mat[1, -2, :]
-n_mat[0, -1, :] = n_mat[0, -2, :]
 
 Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
 Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
