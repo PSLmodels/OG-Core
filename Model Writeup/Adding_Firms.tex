@@ -1,0 +1,296 @@
+\documentclass[letterpaper,12pt]{article}
+
+\usepackage{threeparttable}
+\usepackage{geometry}
+\geometry{letterpaper,tmargin=1in,bmargin=1in,lmargin=1.25in,rmargin=1.25in}
+\usepackage[format=hang,font=normalsize,labelfont=bf]{caption}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{delarray}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{lscape}
+\usepackage{natbib}
+\usepackage{setspace}
+\usepackage{float,color}
+\usepackage[pdftex]{graphicx}
+\usepackage{pdfsync}
+\usepackage{verbatim}
+\usepackage{placeins}
+\usepackage{geometry}
+\usepackage{pdflscape}
+\synctex=1
+\usepackage{hyperref}
+\hypersetup{colorlinks,linkcolor=red,urlcolor=blue,citecolor=red}
+\usepackage{bm}
+
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}{Definition} % Number definitions on their own
+\newtheorem{derivation}{Derivation} % Number derivations on their own
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}{Proposition} % Number propositions on their own
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\bibliographystyle{aer}
+\newcommand\ve{\epsilon}
+%\renewcommand\theenumi{\roman{enumi}}
+\newcommand\norm[1]{\left\lVert#1\right\rVert}
+
+\begin{document}
+
+This document will outline the step by step addition of firms into our model.
+
+\section*{The Big Picture}
+
+What we are working towards is having two representative firms (one who faces corporate tax treatment and the other with non-corporate tax treatment) for each of $M$ production industries.  Each firm will produce an unique output that is part of the household's consumption bundle.  There will exist a firm in each sector (corporate/noncorporate) and each industry in equilibrium because households will have preferences such that they want to consume a strictly positive amount of the good from each sector and industry.  The equilibrium shares of the households' composite good will vary as the prices of those goods vary.  The prices of these goods varies as factor prices and taxes change, which impact production sectors/industries differentially.
+
+What are are doing is unique in that we have many production industries \emph{and} have forward looking, truly dynamically optimizing firms.  \href{https://github.com/OpenSourcePolicyCenter/dynamic/blob/master/Papers/ZodrowDiamond2013.pdf}{Zodrow and Diamond (2013)} have dynamic firms, but only four representative firms.  \href{https://github.com/OpenSourcePolicyCenter/dynamic/blob/master/Papers/FullertonRogers1993.pdf}{Fullerton and Rogers (1993)} have many production industries, but static firms.  \href{https://github.com/OpenSourcePolicyCenter/dynamic/blob/master/Papers/memo161.pdf}{The CORTAX model} has dynamic firms with a medium number of representative firms (2-3 per country in a model of maybe 9 countries).  These papers/models represent our main sources of inspiration and are the starting point for the model we are trying to build.
+
+I think the key to making this model feasible is a structure like in Fullerton and Rogers (1993), where factor prices can be used to determine all other prices in the model.  In particular, given $r$ and $w$, their model allows one to derive the price of capital, the price of producer outputs, the price of consumption goods, the price of the composite consumption good.  With all these prices, they then start with the consumers problem and figure out labor supply and demand for each consumption good.  The demand for consumption goods can then be put in terms of demand for producer goods.  The demand for producer goods (output) then implies the amount of capital and labor the firm will employ.  This means all the endogenous prices and quantities in the household and production sectors fall out of the factor prices $r$ and $w$.  Other methods would involve guessing a lot more prices than just $r$ and $w$ (e.g., guessing prices for each of the $Mx2$ production outputs).
+
+We want to structure our model in the way Fullerton and Rogers (1993) do in term of how all the within period endogenous variables unravel, but will have the firm as a dynamic optimizer (as in Zodrow and Diamond (2013) and CORTAX).  We'll also want to have firms with economic profits so that 1) they have profits to shift to other tax jurisdictions and 2) we can analyze the impact of taxes on normal and supranormal returns.  Of the above papers, only the CORTAX model has economic profits.  
+
+\section*{Step 1: Modifying the SS solution algorithm}
+
+The first step is to take our current code for solving for the steady state and adjust it just slightly so that it is setup to add the additional pieces.  Currently, the steady state is found by iterating on guesses or $r$ and $w$ (and $T^{H}$ and $f$ - but lets ignore these for the exposition here since they aren't relevant here and will stay unchanged as we add firms).  For each guess, the household problem is solved and the aggregate supply of labor and capital are found.  The market clearing conditions are then used to put these amounts supplied into the FOCs from the firm's problem.  Given $K$ and $L$ these FOCs then imply and $r$ and $w$.  These implied prices are then compared against the initial guess. If they match, we've found and equilibrium and if not, we update the guess.
+
+The adjustment will do the following.  The solution will guess $r$ and $w$ and solve the household's problem for $B$, $L$, and $C$.  We'll then use the resource constraint: $C+I=Y$, to find $Y$.  With $Y$ (and $r$ and $w$), we are then able to determine the steady state demand for capital, $K$, and labor $L$.  We then check the market clearing conditions for the capital and labor markets.  We'll iterate on our guesses of $r$ and $w$ until these clear.
+
+Equations to add/edit to the code:
+\begin{enumerate}
+\item Firm function: $I = \delta K$
+\item Miscellaneous Function: $C + I = Y$
+\item Firm function: $K = \frac{\alpha Y}{r+\delta}$ (writing FOC w.r.t. capital in terms of the amount of capital demanded for a given amount of output)
+\item Firm function: add $\delta$ to the FOC for the firm - i.e., $r+\delta = MPK$ since they'll own capital, the rental rate won't include the cost of depreciation.
+\end{enumerate}
+
+To do: edit the code such that after the household problem is solved, the aggregate amount of consumption is found.  Next, use (1) and (3) above to find investment demand: $I=\delta K = \delta \frac{\alpha Y}{r+\delta}$.  Then use (2),  $C+ I = Y$,  to find total demand for output, $Y$.  Plug this $Y$ into the firm FOCs and find capital and labor demand.  Check them agains the supply of capital and labor from the households ($B$ and $L$).  These errors will replace the $r$ and $w$ errors currently in the code.
+
+
+\section*{Step 2: Make the production function a more general CES production function}
+
+The current firms have a Cobb-Douglas production function. To allow for the model user to more easily change the elasticity of substitution between capital and labor. Let's write the production function as a more general CES production function.  In particular, let the production function be given by:
+
+\begin{equation}
+X_{t}  = F(Z_{t},K_{t},EL_{t})= Z_{t} \left[(\gamma_{})^{1/\epsilon_{}}(K_{t})^{(\epsilon-1)/\epsilon_{}}+(1-\gamma_{})^{1/\epsilon_{}}(e^{g_{y}t}EL_{t})^{(\epsilon_{}-1)/\epsilon_{}}\right]^{(\epsilon_{}/(\epsilon_{}-1))},
+\end{equation}
+
+\noindent\noindent where $Z_{t}$ is total factor productivity, $EL$ is effective labor units (same as our $L$ in the current write up of the firm problem) and the parameters $\gamma$ and $\epsilon$ are the share share parameter and the elasticity of substitution parameters.  Note the labor augmenting technological growth. Also note that we've update the notation so that $X_{t}$ denotes the output of the firm in period $t$.  As we expand the model, $Y$ will represent aggregate household income and $X$ will represent firm output.
+
+The marginal products of capital and labor are thus given by:
+
+\begin{equation}
+\label{eqn:mpk}
+\begin{split}
+MPK_{t}=\frac{\partial X_{t}}{\partial K_{t}}&= Z_{t}\left(\gamma^{\frac{1}{\epsilon}}K_{t}^{\frac{\epsilon-1}{\epsilon}} + (1-\gamma)^{\frac{1}{\epsilon}}(e^{g_{y}t}EL_{t})^{\frac{\epsilon-1}{\epsilon}}\right)^{\frac{1}{\epsilon-1}}\gamma^{\frac{1}{\epsilon}}K_{t}^{\frac{-1}{\epsilon}}\\
+& = Z_{t}^{\frac{\epsilon-1}{\epsilon}}\left(X_{t}\frac{\gamma}{K_{t}}\right)^{\frac{1}{\epsilon}}
+\end{split}
+\end{equation}
+
+\begin{equation}
+\label{eqn:mpl}
+\begin{split}
+MPL_{t}=\frac{\partial X_{t}}{\partial EL_{t}}&=Z_{t}\left(\gamma^{\frac{1}{\epsilon}}K^{\frac{\epsilon-1}{\epsilon}} + (1-\gamma)^{\frac{1}{\epsilon}}(e^{g_{y}t}EL_{t})^{\frac{\epsilon-1}{\epsilon}}\right)^{\frac{1}{\epsilon-1}}(1-\gamma)^{\frac{1}{\epsilon}}(e^{g_{y}t}EL_{t})^{\frac{-1}{\epsilon}}e^{g_{y}t}\\
+& = (e^{g_{y}t}Z_{t})^{\frac{\epsilon-1}{\epsilon}}\left(X_{t}\frac{1-\gamma}{EL_{t}}\right)^{\frac{1}{\epsilon}}
+\end{split}
+\end{equation}
+
+We thus need to go into the code and edit the equations for the MPK and MPL to use those above.  This includes the equation that puts the capital stock in terms of output added in Step 1.  This equation should now be: 
+
+\begin{equation}
+\label{eqn:cap_demand}
+K_{t} = \frac{\gamma X_{t}}{\left(r_{t}+\delta\right)^{\epsilon}Z_{t}^{1-\epsilon}}
+\end{equation}
+
+Note that when $\epsilon = 1$, the function becomes the Cobb-Douglas Production Function.  We should probably put an ``if" statement in the code such that if $\epsilon =1$ then the production function is $X_{t}  = F(Z_{t},K_{t},EL_{t})= Z_{t}K_{t}^{\gamma}L_{t}^{(1-\gamma)}$.  Marginal products would have to be change accordingly for this case.
+
+
+\section*{Step 3: Adding a second static firm}
+
+In this step, we will add a representative firm for a second production industry.  This comes with several substantive changes and we'll try to keep things general enough that we can add $M$ firms easily.
+
+A few remarks about the economy with multiple firms.  The multiple firms will produce differentiated output.  These outputs contribute to distinct consumption goods and these various consumption goods go into a composite consumption good of each household.  In addition, the output of the firms will contribute to the capital stock.  The capital stock for each representative firm is make up of a different mix out output from the various industries.
+
+Many parameters governing the firm's problem will vary across production industry, $m$.  These are noted in the equations below.  Specifically, the rate of economic depreciation, $\delta$, the elasticity of substitution between capital and labor, $\epsilon$, the share of labor and capital in output, $\gamma$ will be vectors of length $M$.  We may also want TFP to vary across sectors, but let's ignore that for now.
+
+In the remainder of this section, we'll work through how we begin with our guesses of the factor prices ($r$ and $w$) and work through the producer and consumer problems to end with the equations for the market supply and demand of labor and capital.  It is from these markets that we'll check for market clearing and update the guesses of $r$ and $w$ to find a general equilibrium.
+
+\subsection*{From factor prices to industry output prices}
+
+Given the guess of the equilibrium interest rate and wage rate, we can use the first order conditions of the firm and the zero profit condition to determine the price of the output of the firms.  In particular, we can use the firm FOCs to find $K(r,w,X)$ and $EL(r,w,X)$.  The cost function is given by $C(r,w,X) = w*L(r,w,X) + (r+\delta)*K(r,w,X)$.  With CRS production technology, we have the marginal cost being constant over all levels of output.  The firm's profit maximization of the firm results in price equal marginal cost.  Thus we'll find $p_{m} = \frac{\partial C(r,w,X)}{\partial X} = mc(r,w)$, where $p_{m}$ is the price of output from industry $m$.
+
+With CES production, we'll want to solve for $\frac{EL(r,w,Y)}{X}$ and $\frac{K(r,w,Y)}{X}$.  These are given by:
+
+\begin{equation}
+\frac{EL_{m,t}(r_{t},w_{t},X_{m,t})}{X_{m,t}}= \frac{(1-\gamma_{m})}{Z_{t}e^{g_{y}t}}\left(\frac{r_{t}+\delta_{m}}{\hat{w}_{t}}\right)^{\epsilon_{m}}\left[\gamma_{m} + (1-\gamma_{m})\left(\frac{r_{t}+\delta_{m}}{\hat{w}_{t}}\right)^{\epsilon_{m}-1}\right]^{\frac{\epsilon_{m}}{1-\epsilon_{m}}}
+\end{equation}
+
+\begin{equation}
+\frac{K_{m,t}(r_{t},w_{t},X_{m,t})}{X_{m}}= \frac{\gamma_{m}}{Z_{t}}\left[\gamma_{m} + (1-\gamma_{m})\left(\frac{r_{t}+\delta_{m}}{\hat{w}_{t}}\right)^{\epsilon_{m}-1}\right]^{\frac{\epsilon_{m}}{1-\epsilon_{m}}}
+\end{equation}
+
+The price of output is thus determined by the condition that price equal marginal cost:
+
+\begin{equation}
+\label{eqn:output_price}
+p_{m,t}(r_{t},w_{t}) = \hat{w}_{t}\frac{EL_{m,t}(r_{t},w_{t},X_{m,t})}{X_{m,t}} + (r_{t}+\delta_{m})\frac{K_{m,t}(r_{t},w_{t},X_{m,t})}{X_{m}}
+\end{equation}
+
+\subsection*{From industry output prices to prices of consumption goods}
+
+We use a fixed-coefficient matrix to map the output of production goods to consumption goods.  This captures the fact that a good is made up of the output from a number of production sectors.  E.g. Your purchase of a hamburger combines output from the agriculture, transportation, and retail industries, among others.  This fixed coefficient matrix will be calibrated using the BEA's Personal Consumption Expenditure Bridge Tables.  There are $I$ consumption goods.  The fixed-coefficient matrix will be an $M\times I$ matrix, which we will call $\Pi$.  The elements of $\Pi$, $\pi_{m,i}$ give the share consumption good $m$ the comes from the output of industry $m$.  If $\boldsymbol{p^{c}_{t}}$ is the $I$-length vector of consumption good prices in period $t$, then this vector is determined as:
+
+\begin{equation}
+\label{eqn:cons_price}
+\underbrace{\boldsymbol{p^{c}_{t}}}_{1 \times I} = \underbrace{\boldsymbol{p_{m,t}}}_{1 \times M} \times \underbrace{\Pi}_{M \times I}
+\end{equation}
+
+\subsection*{From prices of individual consumption goods to the price of the composite consumption good}
+
+The household's dynamic problem with multiple consumption goods will look much the same as the household's problem with a single good, thanks to an aggregator function.  Specifically, we are going to assume that the composite of discretionary (above the minimum amount) consumption is given by:
+
+\begin{equation} \label{eqn:comp_cons}
+\tilde{c}_{j,s,t}  = \prod_{i=1}^I \left( c_{i,j,s,t} - \bar{c}_{i,s} \right) ^{\alpha_{i,s}}, 
+ \end{equation}
+ 
+ \noindent\noindent where $\bar{c}_{i,s}$ are the minimum consumption requirements of good $i$ for households of age $s$, and $\alpha_{i,s}$ are the shares of total consumption expenditures (beyond the minimum amounts) that are spent on each good.  These preferences lead to demands for consumption of good $i$ of the form:
+ 
+\begin{equation} \label{eqn:cons_solve}
+c_{i,j,s,t}  = \frac{\alpha_{i,s} \tilde{p}_{s,t}\tilde{c}_{j,s,t}}{p^{c}_{i,t}} + \bar{c}_{i,s},  	
+\end{equation}
+
+\noindent\noindent where $\tilde{p}_{s,t}$ are the prices of the composite discretionary consumption goods of households of age $s$ at time $t$.  This price can be solved for analytically and is given by:
+
+\begin{equation} \label{eqn:composite_price}
+\tilde{p}_{s,t} =  \prod_{i=1}^{I}\left( \frac{p^{c}_{i,t}}{\alpha_{i,s}} \right)^{\alpha_{i,s}} \\
+\end{equation}
+
+It is this composite price that enters the household's intertemporal optimization problem where is chooses the amount of discretionary consumption, labor supply, and savings for each period.  The budget constraint will contain a term for the cost of require consumption and discretionary consumption.  
+
+Let's now walk through the relevant equations to add/change in the code from this subsection:
+
+We'll need to take result of Equation \ref{eqn:cons_price} and put that in Equation \ref{eqn:composite_price} to find the price of the composite consumption good.  The price will then feed into the household's utility maximization problem because we can write total consumption as:
+
+\begin{equation}
+\label{eqn:total_cons}
+c_{j,s,t}=\tilde{c}_{j,s,t}+\sum_{i=1}^{I}c_{i,s} 
+\end{equation}
+
+\noindent\noindent Thus the budget constraint of the household becomes:
+
+\begin{equation}\label{EqBC}
+\begin{split}
+\sum_{i=1}^{I} p^{c}_{i,t}\bar{c}_{i,s} + \tilde{p}_{s,t}\tilde{c}_{s,t} + b_{j,s+1,t+1} \leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}&n_{j,s,t} + \frac{BQ_{j,t}}{\lambda_j\tilde{N}_t} - T_{j,s,t} \\
+\quad\text{where}\quad b_{j,s,1} = 0 \\
+&\text{for} \quad E+1\leq s \leq E+S \quad \forall j,t
+\end{split}
+\end{equation} 
+
+The household FOC's will look similar to what we currently have. We'll use the choice of total consumption and Equation \ref{eqn:total_cons} to solve for $\tilde{c}_{j,s,t}$.  We then use $\tilde{c}_{j,s,t}$ in Equation \ref{eqn:cons_solve} to find the demand for consumption good $i$, by household with ability $j$ and of age $s$ at time $t$.  Summing this over $J$ and $S$ gives of the aggregate demand for consumption good $i$ at time $t$, $c_{i,t}$. 
+
+The aggregate supplies of capital and labor are determined as before.
+
+\subsection*{Finding total demand for the output from industry $m$}
+
+Given the CRS production function, we need to find total output to determine the demands for capital and labor by the firm.  To find the total demand for output, we'll use the resource constraint.  In particular, the demand for output from each sector is determined by the demand for output from that sector for consumption and investment.
+
+From the solution to the household's problem, we have the demands for each consumption good, $c_{i,t}$.  We then use these demands, with the matrix $\Pi$ to find the demands for output from each production sector that stem from demand for consumption.  Let $X^{c}_{m,t}$ be the demand for output from production industry $m$ for consumption goods.  We find $X^{c}_{m,t}$ as:
+
+\begin{equation}
+X^{c}_{m,t}= \sum_{i=1}^{I} c_{i,t}\pi_{m,i}
+\end{equation} 
+
+To find investment demand, we need to know what capital stock is required to produce output.  But we are trying to find output. Hence, we'll write the demand for capital in terms of output, using Equation \ref{eqn:cap_demand}.  Since each industry has it's own capital stock, which requires a different mix of outputs to create, there will be one of these equations for each of the $M$ industries.  We also need to specify the mix of outputs that make up the capital stock in each industry.  Here we again assume a fixed relationship between inputs and outputs. This matrix of fixed coefficients we name $\Xi$.  This is an $M\times M$ matrix, with elements $\xi_{m,n}$.  Element $\xi_{m,n}$ specifies the fraction of investment in the capital stock of industry $m$ that comes from the output of industry $m$. We will calibrate this matrix using the BEA's Input-Output Tables.  Using this matrix, we can find the demand for output from industry $m$ for investment as:
+
+\begin{equation}
+X^{I}_{m,t}= \sum_{n=1}^{M} I_{n,t}\xi_{n,m}
+\end{equation} 
+
+To find $I_{m,t}$, investment demand from each industry, we'll use the the condition on the amount of capital needed to produced a given output level in two periods (i.e., Equation \ref{eqn:cap_demand}).  Let's focus on the steady state for now since we're just updating that at this time (this method will extend to the transition path and we'll add that in a coupel steps).
+
+In the steady state, investment is given by, $\bar{I}_{m}=\delta_{m}\bar{K}_{m}$ and $\bar{K}_{m}(\bar{X}_{m}) =  \frac{\gamma \bar{X}_{m}}{\left(\bar{r}+\delta_{m}\right)^{\epsilon_{m}}\bar{Z}^{1-\epsilon_{m}}}$.
+
+We can thus write the demand for output from industry $m$ in the steady state as:
+
+\begin{equation}
+\begin{split}
+\bar{X}_{m} &= \bar{X}^{c}_{m} + \bar{X}^{I}_{m} \\
+\implies \bar{X}_{m} & = \bar{X}^{c}_{m} +  \sum_{n=1}^{M} \bar{I}_{n}\xi_{n,m} \\
+\implies \bar{X}_{m} & = \bar{X}^{c}_{m} +  \sum_{n=1}^{M} \delta_{n}\bar{K}_{n}(\bar{X}_{n})\xi_{n,m} \\
+\implies \bar{X}_{m} & = \bar{X}^{c}_{m} +  \sum_{n=1}^{M} \delta_{n} \frac{\gamma \bar{X}_{n}}{\left(\bar{r}+\delta_{n}\right)^{\epsilon_{n}}\bar{Z}^{1-\epsilon_{n}}}\xi_{n,m} \\
+\end{split}
+\end{equation}
+
+This equation holds for each $m$.  We've solved for $\bar{X}^{c}$ once we've solved the household problem.  Thus, to find $\bar{X}_{m}$ we need to solve the system of equations above.  This system represents $M$ linear equations with $M$ unknowns, so it should be simple to solve.  In matrix notation we have:
+
+\begin{equation}
+\underbrace{\boldsymbol{\bar{X}}}_{1\times M}= \underbrace{\boldsymbol{\bar{c}}}_{1 \times I} \times \underbrace{\Pi'}_{I\times M} + \underbrace{\boldsymbol{\bar{I}}}_{1 \times M} \times \underbrace{\Xi'}_{M\times M}
+\end{equation}
+
+\subsection*{Finding factor demands}
+
+With the demand for output from each industry in hand, we can use the FOCs of the firm for capital and labor to determine the demands for capital and and labor.  These are given above and are functions of only the parameters, the interest rate, the wage rate, and ouptut.
+
+\subsection*{Market clearing}
+
+The market clearing conditions with multiple firms become:
+
+\begin{equation}
+\sum_{M} K_{m,t} = \sum_{J}\sum_{S}b_{j,s,t}
+\end{equation}
+
+\noindent\noindent and 
+
+\begin{equation}
+\sum_{M} EL_{m,t} = \sum_{J}\sum_{S}e_{j,s}*n_{j,s,t}
+\end{equation}
+
+\noindent\noindent for the capital and labor markets respectively.
+
+
+\subsection*{Some notes and unclear issues on this set up}
+Note that it does seem odd to sum up the heterogenous capital stocks like this to find the market clearing condition.  But I think we are ok.  All capital rents at the same rate.  So the household is indifferent to the type of capital it rents. Therefore, we are just assuming that the household rents capital to the firms of the type they demand to fulfill the total demand for capital. 
+
+With multiple goods and capital stocks, we need to think about the unit of account.  In this setup, we are using a unit of capital as the numeraire - a unit of capital (of any industry) has a price of 1.  We see this from the household budget constraint - each unit income not spent on consumption goes to savings.  Each unit of savings can be converted into one unit of capital to be rented.  I think this seems ok?
+
+Both of the above questionable points will not really be relevant when we make the firm's problem dynamic since households will not longer rent capital to firms.  Rather there will be a price of capital and firms will purchase capital directly.
+
+\section*{Future steps}
+
+\begin{enumerate}
+\item Make firm problem dynamic. This means firms own capital, not rent it from the household.  The capital market clearing condition will be replaced by an asset market clearing condition.  In particular, that the household demand for equities equal the value of the firms in the economy.
+\item Add solution for firms along the time path
+\item Add simple taxes
+\item Add endogenous financial policy
+\item Add more complex taxes
+\item Add more firms (M industries)
+\item Add government that purchase capital and labor to make public good.  Don't need to change consumer utility function to account for this, but we could.
+\item Add government production firm
+\item Add a fixed factor of production so that there are economic profits (this will necessitate a transfer of profits back to the household) (????)
+\item Add a noncorporate sector
+\item Add income shifting.  This involves adding multinational firms.
+\end{enumerate}
+
+
+
+
+
+\end{document}
