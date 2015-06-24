@@ -109,15 +109,15 @@ utility_period_init = utility_period.sum(1)
 '''
 
 
-# variables = pickle.load(open("OUTPUT/SS/ss_vars.pkl", "r"))
-# for key in variables:
-#     globals()[key] = variables[key]
-# variables = pickle.load(open("OUTPUT/TPI/TPI_vars.pkl", "r"))
-# for key in variables:
-#     globals()[key] = variables[key]
-# variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "r"))
-# for key in variables:
-#     globals()[key] = variables[key]
+variables = pickle.load(open("OUTPUT/SS/ss_vars.pkl", "r"))
+for key in variables:
+    globals()[key] = variables[key]
+variables = pickle.load(open("OUTPUT/TPI/TPI_vars.pkl", "r"))
+for key in variables:
+    globals()[key] = variables[key]
+variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "r"))
+for key in variables:
+    globals()[key] = variables[key]
 
 N_tilde = omega.sum(1).sum(1)
 omega_stationary = omega / N_tilde.reshape(T+S, 1, 1)
