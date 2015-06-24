@@ -164,11 +164,11 @@ def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init):
         -1, j], n1, factor_ss, parameters) - tax.tau_income_deriv(
         rinit, b1, winit, e[-1, j], n1, factor_ss, parameters) * income2
     error2 = house.marg_ut_cons(cons1, parameters) * winit * e[-1, j] * deriv2 - house.marg_ut_labor(n1, chi_n[-1], parameters)
-    if n1 <= 0 or n1 > 1:
+    if n1 <= 0 or n1 >= 1:
         error2 += 1e12
-    if b1 <=0:
+    if b2 <=0:
         error1 += 1e12
-    if cons1 < 0:
+    if cons1 <= 0:
         error1 += 1e12
     return [error1] + [error2]
 
@@ -285,9 +285,12 @@ while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
     plt.plot(np.arange(
         T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
     plt.savefig("OUTPUT/TPI_K")
+    # Uncomment the following print statements to make sure all euler equations are converging
     for j in xrange(J):
-        b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -2, j], guesses_n[0, -2, j]],
-            args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1])))
+        b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],
+            args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1]), xtol=1e-13))
+        # if np.array(SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1, j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1])).max() > 1e-6:
+        #     print 'minidoughnut:', np.array(SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1, j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1])).max()
         for s in xrange(S-2):  # Upper triangle
             b_guesses_to_use = np.diag(guesses_b[1:S+1, :, j], S-(s+2))
             n_guesses_to_use = np.diag(guesses_n[:S, :, j], S-(s+2))
@@ -298,9 +301,10 @@ while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
             b_mat[1:S+1, :, j] += np.diag(b_vec, S-(s+2))
             n_vec = solutions[len(solutions)/2:]
             n_mat[:S, :, j] += np.diag(n_vec, S-(s+2))
-
+            # if abs(np.array(Steady_state_TPI_solver(solutions, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, s, 0, parameters, theta, tau_bq, rho, lambdas, e, initial_b, chi_b, chi_n))).max() > 1e-6:
+            #     print 's-loop:', abs(np.array(Steady_state_TPI_solver(solutions, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, s, 0, parameters, theta, tau_bq, rho, lambdas, e, initial_b, chi_b, chi_n))).max()
         for t in xrange(0, T):
-            b_guesses_to_use = np.diag(guesses_b[t+1:t+S+1, :, j])
+            b_guesses_to_use = .75 * np.diag(guesses_b[t+1:t+S+1, :, j])
             n_guesses_to_use = np.diag(guesses_n[t:t+S, :, j])
             solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
@@ -312,6 +316,8 @@ while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
             inputs = list(solutions)
             euler_errors[t, :, j] = np.abs(Steady_state_TPI_solver(
                 inputs, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n))
+    # if euler_errors.max() > 1e-6:
+    #     print 't-loop:', euler_errors.max()
     
     b_mat[0, :, :] = initial_b
     Kinit = (omega_stationary[:T, :, :] * b_mat[:T, :, :]).sum(2).sum(1)
@@ -356,8 +362,8 @@ b_mat = np.zeros((T+S, S, J))
 n_mat = np.zeros((T+S, S, J))
 
 for j in xrange(J):
-    b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -2, j], guesses_n[0, -2, j]],
-        args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1])))
+    b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],
+        args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1]), xtol=1e-13))
     for s in xrange(S-2):  # Upper triangle
         b_guesses_to_use = np.diag(guesses_b[1:S+1, :, j], S-(s+2))
         n_guesses_to_use = np.diag(guesses_n[:S, :, j], S-(s+2))
@@ -368,9 +374,8 @@ for j in xrange(J):
         b_mat[1:S+1, :, j] += np.diag(b_vec, S-(s+2))
         n_vec = solutions[len(solutions)/2:]
         n_mat[:S, :, j] += np.diag(n_vec, S-(s+2))
-
     for t in xrange(0, T):
-        b_guesses_to_use = np.diag(guesses_b[t+1:t+S+1, :, j])
+        b_guesses_to_use = .75 * np.diag(guesses_b[t+1:t+S+1, :, j])
         n_guesses_to_use = np.diag(guesses_n[t:t+S, :, j])
         solutions = opt.fsolve(Steady_state_TPI_solver, list(
             b_guesses_to_use) + list(n_guesses_to_use), args=(
