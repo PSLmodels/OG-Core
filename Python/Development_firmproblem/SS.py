@@ -359,11 +359,10 @@ nssmat = solutions[S * J:2*S*J].reshape(S, J)
 wss, rss, factor_ss, T_Hss = solutions[2*S*J:]
 
 Kss = house.get_K(bssmat_splus1, omega_SS)
-print g_n
 Lss = firm.get_L(e, nssmat, omega_SS)
 Yss = firm.get_Y(Kss, Lss, parameters)
 
-Iss = delta * Kss
+Iss = delta*Kss
 
 theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS)
 BQss = (1+rss)*(np.array(list(bssmat) + list(bq.reshape(1, J))).reshape(
