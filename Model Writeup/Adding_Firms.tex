@@ -273,20 +273,158 @@ With multiple goods and capital stocks, we need to think about the unit of accou
 
 Both of the above questionable points will not really be relevant when we make the firm's problem dynamic since households will not longer rent capital to firms.  Rather there will be a price of capital and firms will purchase capital directly.
 
+\section*{Step 4: Making the firm's problem dynamic}
+
+In this step, we'll make the firm's problem dynamic. This means firms own capital, not rent it from the household.  This doesn't in itself have a large effect on the equations governing the firm in the steady state, but it will certainly change the solution along the time path and requires us to redefine the ``zero profit" condition of the firm. One major effect here is that the capital market clearing condition will be replaced by an asset market clearing condition.  In particular, that the household demand for equities equal the value of the firms in the economy.
+
+\subsection*{Finding the price of producer output}
+
+In the dynamic firm problem, households hold shares in firms, earning a rate of return that depends on the dividends distributed by the firm and the change in firm value (i.e., capital gains).  For households to hold shares in all firms, they need to have the same rate of return.  Specifically, the rate of return of a share of the firm is given by:
+
+\begin{equation}
+\label{eqn:equity_return}
+r_{t} = \frac{DIV_{t}+(V_{t+1}-V_{t}-VN_{t})}{V_{t}},
+\end{equation} 
+
+\noindent\noindent where $V_{t}$ is the value of the firm at time $t$, $DIV$ are dividend distributions, and $VN$ are new equity issues.  We restrict $VN>0$ - while in reality firms can buy back shares, in practice the IRS typically treats recurrent share repurchases as dividend distributions.  In the steady state, this becomes:
+
+\begin{equation}
+\label{eqn:equity_return}
+\bar{r} = \frac{\overline{DIV}+(\bar{V}-\bar{V}-\bar{VN})}{\bar{V}}=\frac{\overline{DIV}-\bar{VN}}{\bar{V}}
+\end{equation} 
+
+\noindent\noindent  In this simple case, without taxes or costly external finance, the amount of new equity issues are indeterminate.  That is, the firm can issue a dollar of new equity and use that to pay a dollar of dividends.  The shareholders are indifferent - they lose one dollar from the dilution of the shares they hold to the new equity issued, but gain one dollar of dividends.  When we add financial frictions (e.g. a dollar of new equity issued doesn't bring one dollar into the firm) and taxes (specifically when we have dividend taxes that are at least as high as capital gains taxes) then firms will never distribute dividend and issue equity together.  Since the sum/difference between $DIV$ and $VN$ is indeterminate, we'll just make the assume that firms never distribute dividends and issue equity at the same time (which is what will hold in the more general specification of the model).  
+
+If firms never distribute dividend and issue new equity at the same time, then $\overline{DIV}=0$ \emph{or} $\bar{VN}=0$.  If $\overline{DIV}=0$ and $\bar{VN}>0$, then this would imply the steady state rate of return on equity in the firm is negative, which can't be an equilibrium.  Thus it must be the case that $\overline{DIV}>0$ and $\bar{VN}=0$.  So we can write the steady state return on equity as:
+
+\begin{equation}
+\label{eqn:equity_return}
+\bar{r} = \frac{\overline{DIV}}{\bar{V}}
+\end{equation} 
+
+We can rewrite this in terms of the value of the firm:
+
+\begin{equation}
+\label{eqn:firm_val_ss}
+\bar{V} = \frac{\overline{DIV}}{\bar{r}}
+\end{equation} 
+
+
+Dividends are given by:
+
+\begin{equation}
+DIV_{t} = p_{t}X_{t} - w_{t}EL_{t} - p^{k}_{t}I_{t},
+\end{equation}
+
+\noindent\noindent where $p^{k}_{t}$ is the price of capital and $I_{t}$ is investment, which is given by the law of motion for capital:
+
+\begin{equation}
+I_{t} = K_{t+1}-(1-\delta)K_{t}
+\end{equation}
+
+In the steady state, we have:
+
+\begin{equation}
+\label{eqn:ssDIV}
+\overline{DIV} = \bar{p}\bar{X} - \bar{w}\bar{EL} - \bar{p}^{k}\bar{K},
+\end{equation}
+
+\noindent\noindent Note that with constant returns to scale, the the factor demands $K(r,w,p^{k},X)$ and $EL(r,w,p^{k},X)$ are proportional to output, $X$.  Letting $k=\frac{K}{X}$ and $l=\frac{EL}{X}$ we can rewrite the SS equation for dividends:
+
+\begin{equation}
+\begin{split}
+\label{eqn:ssDIV_decomposed}
+\overline{DIV} & = \bar{p}\bar{X} - \bar{w}\bar{EL} - \bar{p}^{k}\bar{K} \\
+&  = \bar{p}\bar{X} - \bar{w}\bar{EL}(\bar{r},\bar{w},\bar{p}^{k},\bar{X}) - \bar{p}^{k}\bar{K}(\bar{r},\bar{w},\bar{p}^{k},\bar{X}) \\
+& = \bar{p}\bar{X} - \bar{w}\bar{X}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{X}\bar{k}(\bar{r},\bar{w},\bar{p}^{k}) \\
+& = \bar{X}\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right) \\
+\end{split}
+\end{equation}
+
+Hayashi (1982) shows that with quadratic adjustment costs (which is what we'll use - here they are zero), the marginal change in firm value for a change in the capital stock (called Tobin's $q$ and given by $\frac{\partial V_{t}}{\partial K_{t}}$) is equivalent to value of the firm per unit of the capital stock (called average $q$ and given by $\frac{V_{t}}{K_{t}}$).  We thus have:
+
+\begin{equation}
+\begin{split}
+\label{eqn:marg_q_avg_q}
+\frac{\partial V_{t}}{\partial{K_{t}}}=\frac{V_{t}}{K_{t}} \\
+\end{split}
+\end{equation}
+
+From the FOC for capital one period ahead, we have:
+
+\begin{equation}
+\begin{split}
+p^{k}_{t} &= \frac{1}{1+r_{t}}\frac{\partial V(Z_{t+1},K_{t+1})}{\partial K_{t+1}} \\
+p^{k}_{t} &= \frac{1}{1+r_{t}}\left(MPK_{t+1} + (1-\delta)p^{k}_{t+1}\right), \\
+\end{split}
+\end{equation}
+
+\noindent\noindent Where the second line follows from the Envelope Condition, which gives the value for Tobin's q; 
+
+\begin{equation}
+\label{eqn:q}
+\begin{split}
+\frac{\partial V(Z_{t+1},K_{t+1})}{\partial K_{t+1}} = \left(MPK_{t+1} + (1-\delta)p^{k}_{t+1}\right)\\
+\end{split}
+\end{equation}
+
+Using Equation \ref{eqn:q} in Equation \ref{eqn:marg_q_avg_q} we have:
+
+\begin{equation}
+\label{eqn:q}
+\begin{split}
+\left(MPK_{t} + (1-\delta)p^{k}_{t}\right) = \frac{V_{t}}{K_{t}}
+\end{split}
+\end{equation}
+
+We can then use the steady state version of this equality in Equation \ref{eqn:firm_val_ss} to find:
+
+\begin{equation}
+\label{eqn:firm_val_ss}
+\begin{split}
+& \bar{V} = \frac{\overline{DIV}}{\bar{r}} \\
+& \implies \left(\overline{MPK} + (1-\delta)\bar{p}^{k}\right)\bar{K} =  \frac{\overline{DIV}}{\bar{r}} \\
+\end{split}
+\end{equation} 
+
+Substituting in for $\overline{DIV}$ with Equation \ref{eqn:ssDIV_decomposed} we have:
+
+\begin{equation}
+\left(\overline{MPK} + (1-\delta)\bar{p}^{k}\right)\bar{K} =  \frac{\bar{X}\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}}
+\end{equation} 
+
+Dividing both side by $\bar{X}$ we get:
+
+
+\begin{equation}
+\label{eqn:pricing}
+\frac{\overline{MPK} \times \bar{K}}{\bar{X}} + (1-\delta)\bar{p}^{k}\frac{\bar{K}}{\bar{X}} =  \frac{\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}}
+\end{equation} 
+
+With constant returns to scale, we can write the left hand side of the above as a function of just parameters, $\bar{r}$, $\bar{w}$, and $\bar{p}^{k}$.
+
+Note that there is one an equation like \ref{eqn:pricing} for each industry, $m$.  The price of capital is determined by the price of output and the fixed-coefficient matrix $\Xi$.
+
+In particular, if we let $\boldsymbol{p_{t}}$ be the $1\times M$ vector of output prices, we can determine the capital prices as:
+
+\begin{equation}
+\underbrace{\boldsymbol{p^{k}_{t}}}_{1\times M} =\underbrace{\boldsymbol{p_{t}}}_{1\times M} \times  \underbrace{\Xi}_{M\times M}
+\end{equation}
+
 \section*{Future steps}
 
 \begin{enumerate}
-\item Make firm problem dynamic. This means firms own capital, not rent it from the household.  The capital market clearing condition will be replaced by an asset market clearing condition.  In particular, that the household demand for equities equal the value of the firms in the economy.
 \item Add solution for firms along the time path
-\item Add simple taxes
-\item Add endogenous financial policy
-\item Add more complex taxes
+\item Add simple taxes (div, cap gain, corp inc tax on accouting profits)
+\item Add endogenous financial policy (it's at this step that we'll add the feature that households invest their savings in two assets - bonds and equities - which have potentially different returns).
+\item Add more complex taxes (parameters for various consumption tax/income tax systems, invest tax credits, tax depreciation)
 \item Add more firms (M industries)
-\item Add government that purchase capital and labor to make public good.  Don't need to change consumer utility function to account for this, but we could.
+\item Add government that purchases capital and labor to make public good.  Don't need to change consumer utility function to account for this, but we could.
 \item Add government production firm
 \item Add a fixed factor of production so that there are economic profits (this will necessitate a transfer of profits back to the household) (????)
 \item Add a noncorporate sector
 \item Add income shifting.  This involves adding multinational firms.
+\item Add government debt????
 \end{enumerate}
 
 
