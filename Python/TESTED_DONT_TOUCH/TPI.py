@@ -365,6 +365,7 @@ for j in xrange(J):
     b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],
         args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1]), xtol=1e-13))
     for s in xrange(S-2):  # Upper triangle
+        ind2 = np.arange(s+2)
         b_guesses_to_use = np.diag(guesses_b[1:S+1, :, j], S-(s+2))
         n_guesses_to_use = np.diag(guesses_n[:S, :, j], S-(s+2))
         solutions = opt.fsolve(Steady_state_TPI_solver, list(
