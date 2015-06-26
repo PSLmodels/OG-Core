@@ -118,7 +118,7 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n, t
     b_splus1 = b_guess
     b_splus2 = np.array(list(b_guess[1:]) + [0])
 
-    BQ = (1+r) * (b_guess * weights[:, j] * rho).sum()
+    BQ = (1+r) * (b_splus1 * weights[:, j] * rho).sum()
     theta = tax.replacement_rate_vals(n_guess, w, factor, e[:,j], J, weights[:, j])
 
     error1 = house.euler_savings_func(w, r, e[:, j], n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_H, chi_b[j], params, theta, tau_bq[j], rho, lambdas[j])
@@ -178,8 +178,10 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
         w = misc_funcs.convex_combo(new_w, w, params)
         factor = misc_funcs.convex_combo(new_factor, factor, params)
         T_H = misc_funcs.convex_combo(new_T_H, T_H, params)
-        
-        dist = np.array([misc_funcs.perc_dif_func(new_r, r)] + [misc_funcs.perc_dif_func(new_w, w)] + [misc_funcs.perc_dif_func(new_T_H, T_H)] + [misc_funcs.perc_dif_func(new_factor, factor)]).max()
+        if T_H != 0:
+            dist = np.array([misc_funcs.perc_dif_func(new_r, r)] + [misc_funcs.perc_dif_func(new_w, w)] + [misc_funcs.perc_dif_func(new_T_H, T_H)] + [misc_funcs.perc_dif_func(new_factor, factor)]).max()
+        else:
+            dist = np.array([misc_funcs.perc_dif_func(new_r, r)] + [misc_funcs.perc_dif_func(new_w, w)] + [abs(new_T_H - T_H)] + [misc_funcs.perc_dif_func(new_factor, factor)]).max()
         dist_vec[iteration] = dist
         if iteration > 10:
             if dist_vec[iteration] - dist_vec[iteration-1] > 0:
@@ -267,23 +269,7 @@ def function_to_minimize(chi_params_scalars, chi_params_init, params, weights_SS
 if get_baseline:
     # Generate initial guesses for chi^b_j and chi^n_s
     chi_params = np.zeros(S+J)
-    chi_params[0:J] = np.array([2, 10, 90, 350, 1700, 22000, 120000])
-    chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 ,  8.41097278
-                             ,  7.15059004 ,  6.46771332 ,  5.85495452 ,  5.46242013 ,  5.00364263
-                             ,  4.57322063 ,  4.53371545 ,  4.29828515 ,  4.10144524 ,  3.8617942  ,  3.57282
-                             ,  3.47473172 ,  3.31111347 ,  3.04137299 ,  2.92616951 ,  2.58517969
-                             ,  2.48761429 ,  2.21744847 ,  1.9577682  ,  1.66931057 ,  1.6878927
-                             ,  1.63107201 ,  1.63390543 ,  1.5901486  ,  1.58143606 ,  1.58005578
-                             ,  1.59073213 ,  1.60190899 ,  1.60001831 ,  1.67763741 ,  1.70451784
-                             ,  1.85430468 ,  1.97291208 ,  1.97017228 ,  2.25518398 ,  2.43969757
-                             ,  3.21870602 ,  4.18334822 ,  4.97772026 ,  6.37663164 ,  8.65075992
-                             ,  9.46944758 , 10.51634777 , 12.13353793 , 11.89186997 , 12.07083882
-                             , 13.2992811  , 14.07987878 , 14.19951571 , 14.97943562 , 16.05601334
-                             , 16.42979341 , 16.91576867 , 17.62775142 , 18.4885405  , 19.10609921
-                             , 20.03988031 , 20.86564363 , 21.73645892 , 22.6208256  , 23.37786072
-                             , 24.38166073 , 25.22395387 , 26.21419653 , 27.05246704 , 27.86896121
-                             , 28.90029708 , 29.83586775 , 30.87563699 , 31.91207845 , 33.07449767
-                             , 34.27919965 , 35.57195873 , 36.95045988 , 38.62308152])
+    chi_params[:J] = chi_b_guess
     chi_params[J:] = chi_n_guess
     # First run SS simulation with guesses at initial values for b, n, w, r, etc
     b_guess = np.ones((S, J)).flatten() * .01
@@ -299,18 +285,19 @@ if get_baseline:
         dictionary[key] = globals()[key]
     pickle.dump(dictionary, open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "w"))
 
-    # function_to_minimize_X = lambda x: function_to_minimize(x, chi_params, parameters, omega_SS, rho, lambdas, tau_bq, e)
-    # bnds = tuple([(1e-6, None)] * (S + J))
-    # # In order to scale all the parameters to estimate in the minimizer, we have the minimizer fit a vector of ones that
-    # # will be multiplied by the chi initial guesses inside the function.  Otherwise, if chi^b_j=1e5 for some j, and the
-    # # minimizer peturbs that value by 1e-8, the % difference will be extremely small, outside of the tolerance of the
-    # # minimizer, and it will not change that parameter.
-    # chi_params_scalars = np.ones(S+J)
-    # chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
-    # # chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds).x
-    # chi_params *= chi_params_scalars
-    # print 'The final scaling params', chi_params_scalars
-    # print 'The final bequest parameter values:', chi_params
+    if calibrate_model:
+        function_to_minimize_X = lambda x: function_to_minimize(x, chi_params, parameters, omega_SS, rho, lambdas, tau_bq, e)
+        bnds = tuple([(1e-6, None)] * (S + J))
+        # In order to scale all the parameters to estimate in the minimizer, we have the minimizer fit a vector of ones that
+        # will be multiplied by the chi initial guesses inside the function.  Otherwise, if chi^b_j=1e5 for some j, and the
+        # minimizer peturbs that value by 1e-8, the % difference will be extremely small, outside of the tolerance of the
+        # minimizer, and it will not change that parameter.
+        chi_params_scalars = np.ones(S+J)
+        chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
+        # chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds).x
+        chi_params *= chi_params_scalars
+        print 'The final scaling params', chi_params_scalars
+        print 'The final bequest parameter values:', chi_params
 
     solutions_dict = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "r"))
     solutions = solutions_dict['solutions']
