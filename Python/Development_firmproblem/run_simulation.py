@@ -149,7 +149,7 @@ e = income.get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
 rho = 1-surv_rate
 rho[-1] = 1.0
 # Calibration parameters
-calibrate_model = True
+calibrate_model = False
 chi_b_guess = np.array([2, 10, 90, 350, 1700, 22000, 120000])
 chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 ,  8.41097278
                          ,  7.15059004 ,  6.46771332 ,  5.85495452 ,  5.46242013 ,  5.00364263
