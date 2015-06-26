@@ -148,6 +148,25 @@ omega, g_n, omega_SS, surv_rate = demographics.get_omega(
 e = income.get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
 rho = 1-surv_rate
 rho[-1] = 1.0
+# Calibration parameters
+calibrate_model = True
+chi_b_guess = np.array([2, 10, 90, 350, 1700, 22000, 120000])
+chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 ,  8.41097278
+                         ,  7.15059004 ,  6.46771332 ,  5.85495452 ,  5.46242013 ,  5.00364263
+                         ,  4.57322063 ,  4.53371545 ,  4.29828515 ,  4.10144524 ,  3.8617942  ,  3.57282
+                         ,  3.47473172 ,  3.31111347 ,  3.04137299 ,  2.92616951 ,  2.58517969
+                         ,  2.48761429 ,  2.21744847 ,  1.9577682  ,  1.66931057 ,  1.6878927
+                         ,  1.63107201 ,  1.63390543 ,  1.5901486  ,  1.58143606 ,  1.58005578
+                         ,  1.59073213 ,  1.60190899 ,  1.60001831 ,  1.67763741 ,  1.70451784
+                         ,  1.85430468 ,  1.97291208 ,  1.97017228 ,  2.25518398 ,  2.43969757
+                         ,  3.21870602 ,  4.18334822 ,  4.97772026 ,  6.37663164 ,  8.65075992
+                         ,  9.46944758 , 10.51634777 , 12.13353793 , 11.89186997 , 12.07083882
+                         , 13.2992811  , 14.07987878 , 14.19951571 , 14.97943562 , 16.05601334
+                         , 16.42979341 , 16.91576867 , 17.62775142 , 18.4885405  , 19.10609921
+                         , 20.03988031 , 20.86564363 , 21.73645892 , 22.6208256  , 23.37786072
+                         , 24.38166073 , 25.22395387 , 26.21419653 , 27.05246704 , 27.86896121
+                         , 28.90029708 , 29.83586775 , 30.87563699 , 31.91207845 , 33.07449767
+                         , 34.27919965 , 35.57195873 , 36.95045988 , 38.62308152])
 
 # Generate Wealth data moments
 wealth_data.get_wealth_data(lambdas, J, flag_graphs)
@@ -168,9 +187,9 @@ param_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
              'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
              'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
              'b_ellipse', 'k_ellipse', 'upsilon',
-             'a_tax_income',
+             'a_tax_income', 'chi_b_guess', 'chi_n_guess',
              'b_tax_income', 'c_tax_income', 'd_tax_income',
-             'tau_payroll', 'tau_bq',
+             'tau_payroll', 'tau_bq', 'calibrate_model',
              'retire', 'mean_income_data',
              'h_wealth', 'p_wealth', 'm_wealth', 'get_baseline',
              'omega', 'g_n', 'omega_SS', 'surv_rate', 'e', 'rho']
@@ -224,8 +243,6 @@ call(['python', 'SS.py'])
 ------------------------------------------------------------------------
 '''
 
-
-# print 'Getting SS distribution for wealth tax.'
 # call(['python', 'SS.py'])
 
 '''
