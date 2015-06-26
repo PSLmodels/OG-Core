@@ -408,12 +408,103 @@ Note that there is one an equation like \ref{eqn:pricing} for each industry, $m$
 In particular, if we let $\boldsymbol{p_{t}}$ be the $1\times M$ vector of output prices, we can determine the capital prices as:
 
 \begin{equation}
+\label{eqn:capital_prices}
 \underbrace{\boldsymbol{p^{k}_{t}}}_{1\times M} =\underbrace{\boldsymbol{p_{t}}}_{1\times M} \times  \underbrace{\Xi}_{M\times M}
 \end{equation}
+
+We can see that $\frac{\bar{K}}{\bar{X}}$ is only a function of $\bar{r}$, $\bar{w}$, and $\bar{p}^{k}$ from by using the firms FOCs and production function to solve for $\bar{K}(\bar{r},\bar{w},\bar{p}^{k},\bar{X})$.
+
+\begin{equation}
+\begin{split}
+\text{FOC for $K$}& \implies MPK_{t} = \frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\\
+& \implies Z_{t}^{\frac{\epsilon-1}{\epsilon}}\left(X_{t}\frac{\gamma}{K_{t}}\right)^{\frac{1}{\epsilon}} = \frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\\
+& \implies\left(X_{t}\frac{\gamma}{K_{t}}\right)^{\frac{1}{\epsilon}} =  Z_{t}^{\frac{1-\epsilon}{\epsilon}}\frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta) \\
+& \implies\left(X_{t}\frac{\gamma}{K_{t}}\right) =  Z_{t}^{1-\epsilon}\left(\frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\right)^{\epsilon} \\
+& \implies K_{t} = \frac{X_{t}\gamma}{Z_{t}^{1-\epsilon}\left(\frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\right)^{\epsilon}} \\
+\end{split}
+\end{equation}
+
+With this, we can see that $\frac{K_{t}}{X_{t}}$ is not a function of $X_{t}$. In particular, with CES production we have: 
+
+\begin{equation}
+\frac{K_{t}}{X_{t}} = \frac{\gamma}{Z_{t}^{1-\epsilon}\left(\frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\right)^{\epsilon}}
+\end{equation} 
+
+We can do the same for $EL_{t}$:
+
+\begin{equation}
+\begin{split}
+\text{FOC for $EL$}& \implies MPL_{t} = \frac{w_{t}}{p_{t}}\\
+& \implies \left(e^{g_{y}t}Z_{t}\right)^{\frac{\epsilon-1}{\epsilon}}\left(X_{t}\frac{(1-\gamma)}{EL_{t}}\right)^{\frac{1}{\epsilon}} = \frac{w_{t}}{p_{t}} \\
+& \implies \left(X_{t}\frac{(1-\gamma)}{EL_{t}}\right)^{\frac{1}{\epsilon}} =  \left(e^{g_{y}t}Z_{t}\right)^{\frac{1-\epsilon}{\epsilon}}\frac{w_{t}}{p_{t}} \\
+& \implies \left(X_{t}\frac{(1-\gamma)}{EL_{t}}\right)=  \left(e^{g_{y}t}Z_{t}\right)^{1-\epsilon}\left(\frac{w_{t}}{p_{t}}\right)^{\epsilon} \\
+& EL_{t}=  \frac{X_{t}(1-\gamma)}{\left(e^{g_{y}t}Z_{t}\right)^{1-\epsilon}\left(\frac{w_{t}}{p_{t}}\right)^{\epsilon}} \\
+\end{split}
+\end{equation}
+
+
+We can take these results to rewrite Equation \ref{eqn:pricing}:
+
+\begin{equation}
+\label{eqn:pricing_final}
+\begin{split}
+ \frac{\overline{MPK} \times \bar{K}}{\bar{X}} + (1-\delta)\bar{p}^{k}\frac{\bar{K}}{\bar{X}} & =  \frac{\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}} \\
+ \implies \frac{ \bar{p}^{k}(1+\bar{r})\gamma}{\bar{Z}^{1-\epsilon}\left(\frac{\bar{p}^{k}}{\bar{p}}(\bar{r}+\delta)\right)^{\epsilon}} & = \frac{\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}}  \\
+  \implies \frac{ \bar{p}^{k}(1+\bar{r})\gamma}{\bar{Z}^{1-\epsilon}\left(\frac{\bar{p}^{k}}{\bar{p}}(\bar{r}+\delta)\right)^{\epsilon}} & = \frac{\bar{p} - \bar{w} \frac{(1-\gamma)}{\left(e^{g_{y}}\bar{Z}\right)^{1-\epsilon}\left(\frac{\bar{w}}{\bar{p}}\right)^{\epsilon}}  - \bar{p}^{k}\frac{\gamma}{\bar{Z}^{1-\epsilon}\left(\frac{\bar{p}^{k}}{p_{k}}(\bar{r}+\delta)\right)^{\epsilon}}}{\bar{r}} \\
+  \implies \bar{r}\bar{p}^{k}(1+\bar{r})\gamma & = p^{1-\epsilon}\left(\bar{p}^{k}\right)^{\epsilon}\bar{Z}^{1-\epsilon}(\bar{r}+\delta)^{\epsilon} - \frac{\bar{w}^{1-\epsilon}(1-\gamma)\bar{p}^{k}(\bar{r}+\delta)^{\epsilon}}{\left(e^{g_{y}}\right)^{1-\epsilon}} - p^{k}\gamma
+  \end{split}
+\end{equation} 
+
+In the end, to solve for prices in the steady state ($\bar{p}^{k}$ and $\bar{p}$) we have to solve $2\times M$ equations for the $2\times M$ unknowns.\footnote{With Cobb-Douglas production functions, these will be all linear equations and thus more easily solved.  They don't appear to be linear in $\bar{p}$ and $\bar{p}^{k}$ with CES production, making the solution to the system a big more computationally intensive.}  The equations will need are:
+
+\begin{enumerate}
+\item Equation \ref{eqn:pricing_final} (for each $m$):  $ \bar{r}\bar{p}^{k}_{m}(1+\bar{r})\gamma_{m}  = p^{1-\epsilon_{m}}\left(\bar{p}^{k}_{m}\right)^{\epsilon_{m}}\bar{Z}^{1-\epsilon_{m}}(\bar{r}+\delta_{m})^{\epsilon_{m}} - \frac{\bar{w}^{1-\epsilon}(1-\gamma_{m})\bar{p}^{k}_{m}(\bar{r}+\delta_{m})^{\epsilon_{m}}}{\left(e^{g_{y}}\right)^{1-\epsilon_{m}}} - p^{k}_{m}\gamma_{m}$ ($M$ equations)
+\item Equation \ref{eqn:capital_prices}: $\boldsymbol{\bar{p}^{k}} =\boldsymbol{\bar{p}} \times \Xi$ ($M$ equations)
+\end{enumerate} 
+
+Note that the in non-steady state solution we'll be working backwards from the steady state, which will help to pin down investmet, $I_{t}$.  Otherwise the solution will look much like the above, where we find what dividends much be in period $t$ to give the shareholder their require rate of return, $r_{t}$.  We'll discuss the solution along the time path in the next step.  Thus in the dynamic context, the required rate of return is like the zero profit condition.  If the required rate of return owning equities is higher than that on holding bonds, then we firms much have earnings that given them an above market rate of return.  Taxes on the firm will be passed through by higher prices and, in general equilibrium, lower rates of return and wages.
+
+\subsection*{Changes to the household's problem}
+
+Finding the consumer's demand for consumption will be the same as the static problem.  And the consumer's problem will look the same.  However, now savings, $b$, will be interpreted as the value of shares of the firms owned.  Since all firms will give the rate of return, households will hold a diversified portfolio of firms.  
+
+\subsection*{Finding total demand for output from industry $m$}
+
+Same as in the static problem.
+
+\subsection*{Finding factor demands}
+
+Same as in the static problem, updated to use the FOCs from the static firm's problem:
+
+\begin{equation}
+MPK_{t} = \frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)
+\end{equation}
+
+and
+
+\begin{equation}
+MPL_{t} = \frac{w_{t}}{p_{t}}
+\end{equation}
+
+\subsection*{Market clearing}
+
+There are three markets - the labor market, the asset market, and the goods market.  By Walras' Law we only need to check two and we'll use the labor and capital markets:
+
+\begin{equation}
+\sum_{M} V_{m,t} = \sum_{J}\sum_{S}b_{j,s,t}
+\end{equation}
+
+\noindent\noindent This says that the total value of assets held by the households must equal the total value of the firms in which they own shares. The condition for the labor market is: 
+
+\begin{equation}
+\sum_{M} EL_{m,t} = \sum_{J}\sum_{S}e_{j,s}*n_{j,s,t}
+\end{equation}
+
 
 \section*{Future steps}
 
 \begin{enumerate}
+\setcounter{enumi}{3}
 \item Add solution for firms along the time path
 \item Add simple taxes (div, cap gain, corp inc tax on accouting profits)
 \item Add endogenous financial policy (it's at this step that we'll add the feature that households invest their savings in two assets - bonds and equities - which have potentially different returns).
