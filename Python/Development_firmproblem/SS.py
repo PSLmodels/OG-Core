@@ -354,7 +354,10 @@ cssmat = house.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.re
 
 Css = (cssmat * omega_SS).sum()
 
-print Yss - (Css + Iss)
+diffe = Yss - (Css + Iss)
+
+print diffe
+print diffe / Yss
 
 house.constraint_checker_SS(bssmat, nssmat, cssmat, parameters)
 

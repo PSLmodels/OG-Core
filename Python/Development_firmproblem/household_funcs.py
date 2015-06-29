@@ -97,8 +97,8 @@ def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_
     cons2 = get_cons(r, b_splus1, w, e_extended[1:], n_extended[1:], BQ, lambdas, b_splus2, params, tax2)
     income = (r * b_splus1 + w * e_extended[1:] * n_extended[1:]) * factor
     deriv = (
-        1 + r*(1-tax.tau_income(r, b_s, w, e_extended[1:], n_extended[1:], factor, params)-tax.tau_income_deriv(
-            r, b_s, w, e_extended[1:], n_extended[1:], factor, params)*income)-tax.tau_w_prime(b_splus1, params)*b_splus1-tax.tau_wealth(b_splus1, params))
+        1 + r*(1-tax.tau_income(r, b_splus1, w, e_extended[1:], n_extended[1:], factor, params)-tax.tau_income_deriv(
+            r, b_splus1, w, e_extended[1:], n_extended[1:], factor, params)*income)-tax.tau_w_prime(b_splus1, params)*b_splus1-tax.tau_wealth(b_splus1, params))
     savings_ut = rho * np.exp(-sigma * g_y) * chi_b * b_splus1 ** (-sigma)
     euler = marg_ut_cons(cons1, params) - beta * (1-rho) * deriv * marg_ut_cons(
         cons2, params) * np.exp(-sigma * g_y) - savings_ut

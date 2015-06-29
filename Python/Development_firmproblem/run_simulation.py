@@ -148,6 +148,7 @@ omega, g_n, omega_SS, surv_rate = demographics.get_omega(
 e = income.get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
 rho = 1-surv_rate
 rho[-1] = 1.0
+surv_rate[-1] = 0.0
 # Calibration parameters
 calibrate_model = False
 chi_b_guess = np.array([2, 10, 90, 350, 1700, 22000, 120000])
@@ -175,9 +176,6 @@ wealth_data.get_wealth_data(lambdas, J, flag_graphs)
 
 labor_data.labor_data_moments(flag_graphs)
 
-# Remove pickle of altered parameters -- reset the experiment
-if os.path.exists("OUTPUT/Saved_moments/params_changed.pkl"):
-    os.remove("OUTPUT/Saved_moments/params_changed.pkl")
 
 get_baseline = True
 
@@ -207,8 +205,7 @@ for key in param_names:
     dictionary[key] = globals()[key]
 pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
 
-call(['python', 'SS.py'])
-
+import SS
 
 '''
 ------------------------------------------------------------------------
@@ -216,7 +213,6 @@ call(['python', 'SS.py'])
 ------------------------------------------------------------------------
 '''
 
-# call(['python', 'TPI.py'])
 # import TPI
 
 '''
@@ -243,7 +239,7 @@ call(['python', 'SS.py'])
 ------------------------------------------------------------------------
 '''
 
-# call(['python', 'SS.py'])
+# import SS
 
 '''
 ------------------------------------------------------------------------
@@ -251,7 +247,6 @@ call(['python', 'SS.py'])
 ------------------------------------------------------------------------
 '''
 
-# call(['python', 'TPI.py'])
 # import TPI
 
 
