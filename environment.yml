@@ -1,0 +1,12 @@
+name: ospcdyn
+dependencies:
+- ipython
+- ipython-notebook
+- setuptools
+- scipy
+- matplotlib
+- numba
+- numpy
+- pandas=0.16.1
+- pytest
+- python=2.7
