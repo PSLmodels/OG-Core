@@ -293,19 +293,23 @@ if get_baseline:
         # minimizer peturbs that value by 1e-8, the % difference will be extremely small, outside of the tolerance of the
         # minimizer, and it will not change that parameter.
         chi_params_scalars = np.ones(S+J)
-        chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
-        # chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds).x
+        # chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
+        chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds).x
         chi_params *= chi_params_scalars
         print 'The final scaling params', chi_params_scalars
         print 'The final bequest parameter values:', chi_params
 
-    solutions_dict = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "r"))
-    solutions = solutions_dict['solutions']
-    b_guess = solutions[:S*J]
-    n_guess = solutions[S*J:2*S*J]
-    wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
-
-    solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
+        solutions_dict = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "r"))
+        solutions = solutions_dict['solutions']
+        b_guess = solutions[:S*J]
+        n_guess = solutions[S*J:2*S*J]
+        wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
+        solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
+        var_names = ['solutions', 'chi_params']
+        dictionary = {}
+        for key in var_names:
+            dictionary[key] = globals()[key]
+        pickle.dump(dictionary, open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "w"))
 else:
     variables = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "r"))
     solutions = solutions_dict['solutions']
@@ -314,6 +318,11 @@ else:
     n_guess = solutions[S*J:2*S*J]
     wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
     solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
+    var_names = ['solutions', 'chi_params']
+    dictionary = {}
+    for key in var_names:
+        dictionary[key] = globals()[key]
+    pickle.dump(dictionary, open("OUTPUT/Saved_moments/SS_experiment_solutions.pkl", "w"))
 
 
 '''
@@ -322,21 +331,6 @@ else:
         the simulation
 ------------------------------------------------------------------------
 '''
-
-
-if get_baseline:
-    var_names = ['solutions', 'chi_params']
-    dictionary = {}
-    for key in var_names:
-        dictionary[key] = globals()[key]
-    pickle.dump(dictionary, open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "w"))
-else:
-    var_names = ['solutions', 'chi_params']
-    dictionary = {}
-    for key in var_names:
-        dictionary[key] = globals()[key]
-    pickle.dump(dictionary, open("OUTPUT/Saved_moments/SS_experiment_solutions.pkl", "w"))
-
 
 bssmat = solutions[0:(S-1) * J].reshape(S-1, J)
 bq = solutions[(S-1)*J:S*J]

@@ -344,9 +344,12 @@ while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
     T_H_init[:T] = misc_funcs.convex_combo(T_H_new[:T], T_H_init[:T], parameters)
     guesses_b = misc_funcs.convex_combo(b_mat, guesses_b, parameters)
     guesses_n = misc_funcs.convex_combo(n_mat, guesses_n, parameters)
-
-    TPIdist = np.array(list(misc_funcs.perc_dif_func(rnew, rinit[:T]))+list(misc_funcs.perc_dif_func(BQnew, BQinit[:T]).flatten())+list(
-        misc_funcs.perc_dif_func(wnew, winit[:T]))+list(misc_funcs.perc_dif_func(T_H_new, T_H_init))).max()
+    if T_H_init.all() != 0:
+        TPIdist = np.array(list(misc_funcs.perc_dif_func(rnew, rinit[:T]))+list(misc_funcs.perc_dif_func(BQnew, BQinit[:T]).flatten())+list(
+            misc_funcs.perc_dif_func(wnew, winit[:T]))+list(misc_funcs.perc_dif_func(T_H_new, T_H_init))).max()
+    else:
+        TPIdist = np.array(list(misc_funcs.perc_dif_func(rnew, rinit[:T]))+list(misc_funcs.perc_dif_func(BQnew, BQinit[:T]).flatten())+list(
+            misc_funcs.perc_dif_func(wnew, winit[:T]))+list(np.abs(T_H_new, T_H_init))).max()
     TPIdist_vec[TPIiter] = TPIdist
     # After T=10, if cycling occurs, drop the value of nu
     # wait til after T=10 or so, because sometimes there is a jump up
