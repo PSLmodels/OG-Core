@@ -64,7 +64,6 @@ def read_file(path, fname):
     Read the contents of 'path'. If it does not exist, assume the file
     is installed in a .egg file, and adjust accordingly
     '''
-    import pdb;pdb.set_trace()
     if not os.path.exists(os.path.join(path, fname)):
         path_in_egg = os.path.join("dynamic", fname)
         buf = resource_stream(Requirement.parse("dynamic"), path_in_egg)
