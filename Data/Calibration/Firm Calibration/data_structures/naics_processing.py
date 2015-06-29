@@ -348,7 +348,7 @@ def load_tree_dfs(input_path, dfs_name=None, tree=generate_tree()):
 
 def load_data_with_cross(data_df, cross_df,
                          data_tree=generate_tree(),
-                         df_nm = "", df_cols=None, 
+                         df_nm="", df_cols=None, 
                          bluetree=None, blueprint=None):
     """ Given a a dataset and a mapping of rows in the data set to NAICS codes,
     the function reads all the data into the tree.
@@ -366,7 +366,8 @@ def load_data_with_cross(data_df, cross_df,
     """
     # The default value of the columns in the dataframe are what is specified
     # in the data set.
-    if df_cols == None: df_cols = data_df.columns.values.tolist()
+    if df_cols == None:
+        df_cols = data_df.columns.values.tolist()
     # Append empty dataframes to the tree:
     data_tree.append_all(df_nm=df_nm, df_cols=df_cols)
     # Add data to industries in the tree based on fraction of codes shared:

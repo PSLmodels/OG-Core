@@ -17,10 +17,11 @@ import pandas as pd
 _CUR_DIR = os.path.dirname(__file__)
 _MAIN_DIR = os.path.dirname(_CUR_DIR)
 _DATA_DIR = os.path.abspath(_MAIN_DIR + "\\data")
+_DATA_STRCT_DIR = os.path.abspath(_MAIN_DIR + "\\data_structures")
 _PARAM_DIR = os.path.abspath(_MAIN_DIR + "\\parameters")
 _OUT_DIR = os.path.abspath(_MAIN_DIR + "\\output")
 # Importing custom modules:
-sys.path.append(os.path.abspath(_MAIN_DIR + "\\data_structures"))
+sys.path.append(_DATA_STRCT_DIR)
 import naics_processing as naics
 import file_processing as fp
 
@@ -74,7 +75,7 @@ def calibrate_depr_rates(data_tree=naics.generate_tree(), get_all=False,
     :param get_tax_ads: Get the depreciation rates under the assumption that
            assets are depreciated under the ADS method.
     :param soi_from_out: Whether to recalibrate the relevant soi tax data.
-    :param output_data: Whether to output the depreciation rates
+    :param output_data: Whether to output the depreciation rates.
     """
     # The depreciation rate directory:
     depr_dir = os.path.abspath(_PARAM_DIR +"\\depreciation")
@@ -82,9 +83,6 @@ def calibrate_depr_rates(data_tree=naics.generate_tree(), get_all=False,
     rate data: '''
     sys.path.append(depr_dir)
     import depreciation_calibration as depr
-    #
-    if data_tree == None:
-        data_tree = naics.generate_tree()
     #
     if get_all:
         get_econ = True
@@ -94,14 +92,15 @@ def calibrate_depr_rates(data_tree=naics.generate_tree(), get_all=False,
         get_tax_150 = True
         get_tax_200 = True
         get_tax_sl = True
-        get_ads = True
+        get_tax_ads = True
         get_tax_est = True
     #
     depr_tree = depr.init_depr_rates(data_tree=data_tree, get_econ=get_econ,
-                            get_tax_est=get_tax_est, get_tax_150=get_tax_150)
+                            get_tax_est=get_tax_est, get_tax_150=get_tax_150,
                             get_tax_200=get_tax_200, get_tax_sl=get_tax_sl,
                             get_tax_ads=get_tax_ads, soi_from_out=soi_from_out,
                             output_data=output_data)
+    return depr_tree
     #if soi_from_out:
     #    soi_tree = pull_soi_data(get_all=True, from_out=True)
     #else:
@@ -143,15 +142,13 @@ def calibrate_debt(debt_tree=None, soi_tree=None, from_out=False,
     return debt_tree
     
 
-def pull_soi_data(soi_tree=None, from_out=False, get_all=False, 
-                  get_corp=False, get_tot=False, get_s=False,
-                  get_c=False, get_prt=False, get_prop=False,
-                  get_farm_prop=False, output_data=False,
-                  out_path=None):
-    #
-    if soi_tree == None:
-        soi_tree = naics.generate_tree()
-    #
+def pull_soi_data(soi_tree=naics.generate_tree(), from_out=False, 
+                  get_all=False, get_corp=False,
+                  get_tot=False, get_s=False,
+                  get_c=False, get_prt=False,
+                  get_prop=False, get_farm_prop=False,
+                  output_data=False, out_path=None):
+    # If get_all, set all booleans to true:
     if get_all:
         get_corp = True
         get_tot = True
@@ -160,42 +157,24 @@ def pull_soi_data(soi_tree=None, from_out=False, get_all=False,
         get_prt = True
         get_prop = True
         get_farm = True
-    #
+    # Import the soi_processing custom module:
     soi_dir = os.path.join(_DATA_DIR, "soi")
     sys.path.append(soi_dir)
     import soi_processing as soi
-    #
-    #soi_tree = soi.pull_soi_data(soi_tree=soi_tree, from_out=from_out, get_all=get_all, 
-    #                             get_corp=get_corp, get_tots=get_tots, get_s=get_s,
-    #                             get_c=get_c, get_prt=get_prt, get_prop=get_prop,
-    #                             get_farm_prop=get_farm_prop, output_data=output_data)
+    # Loading the soi corporate data into the NAICS tree:
     soi_tree = soi.load_corporate(soi_tree=soi_tree, from_out=from_out,
                                   get_all=get_corp, get_tot=get_tot,
                                   get_s=get_s, get_c=get_c,
                                   output_data=output_data, out_path=out_path)
+    # Loading the soi partnership data into the NAICS tree:
     if get_prt:
         soi_tree = soi.load_partner(soi_tree=soi_tree, from_out=from_out,
                                     output_data=output_data, out_path=out_path)
-    if get_prop:
-        soi_tree = soi.load_proprietor(soi_tree=soi_tree, from_out=from_out,
-                                       )
-    #
+    # Loading the soi proprietorship data into the NAICS tree:
+    soi_tree = soi.load_proprietorship(
+                            soi_tree=soi_tree, from_out=from_out,
+                            get_nonfarm=get_prop, get_farm=get_farm_prop,
+                            output_data=output_data, out_path=out_path
+                            )
     return soi_tree
-
-
-
-def idk(data_tree = None):
-    if data_tree  == None:
-        data_tree = naics.generate_tree()
-    soi_dir = os.path.abspath(_DATA_DIR + "\\soi")
-    sys.path.append(soi_dir)
-    import pull_soi as soi
-    soi_tree = soi.load_soi_prop_data(data_tree)
-    return soi_tree
-
-
-        
-    
-
-
 

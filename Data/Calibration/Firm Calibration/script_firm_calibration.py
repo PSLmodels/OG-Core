@@ -18,24 +18,26 @@ import os.path
 import sys
 #import numpy as np
 #import pandas as pd
-
 # Relevant directories:
 _CUR_DIR = os.path.dirname(__file__)
 _PROC_DIR = os.path.join(_CUR_DIR, "processing")
 _OUT_DIR = os.path.join(_CUR_DIR, "output")
+_DATA_DIR = os.path.join(_CUR_DIR, "data")
+_SOI_DIR = os.path.join(_DATA_DIR, "soi")
 _DATA_STRUCT_DIR = os.path.join(_CUR_DIR, "data_structures")
 _CST_DIR = os.path.join(_CUR_DIR, "constants")
-
 # Appending directories of custom modules to list of system paths (sys.path):
 sys.path.append(_PROC_DIR)
 sys.path.append(_DATA_STRUCT_DIR)
 sys.path.append(_CST_DIR)
+sys.path.append(_SOI_DIR)
 
 # Importing custom modules:
 import naics_processing as naics
+import soi_processing as soi
 import constants as cst
-#import parameter_calibrations as clbr
-#import file_processing as fp
+import parameter_calibrations as clbr
+import file_processing as fp
 
 """
 Creating NAICS trees with all the relevant firm parameters calibrated using

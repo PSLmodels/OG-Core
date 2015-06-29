@@ -1,25 +1,25 @@
 '''
+SOI Partner Tax Data (pull_soi_partner.py):
 -------------------------------------------------------------------------------
-Last updated 6/9/2015
--------------------------------------------------------------------------------
+Last updated: 6/29/2015.
 
--------------------------------------------------------------------------------
-    Packages
--------------------------------------------------------------------------------
+This module creates functions for pulling the partnership soi tax data into
+NAICS trees.
 '''
+# Packages:
 import os.path
 import numpy as np
 import pandas as pd
 import xlrd
-#
-import naics_processing as naics
-import file_processing as fp
-import constants as cst
 # Directories:
 _CUR_DIR = os.path.dirname(__file__)
 _OUT_DIR = os.path.join(os.path.dirname(_CUR_DIR), "output")
 _DATA_DIR = os.path.join(os.path.dirname(_CUR_DIR), "data")
 _PRT_DIR = os.path.join(_DATA_DIR, "soi_partner")
+# Importing custom modules:
+import naics_processing as naics
+import file_processing as fp
+import constants as cst
 # Dataframe names:
 _INC_DF_NM = cst.INC_PRT_DF_NM
 _AST_DF_NM = cst.AST_PRT_DF_NM
@@ -55,7 +55,7 @@ _TYP_OUT_PATH = os.path.join(_OUT_DIR, _TYP_OUT_FILE)
 _INC_FILE_FCTR = 10**3
 _AST_FILE_FCTR = 10**3
 _TYP_FILE_FCTR = 10**3
-# 
+#  Dataframe column names:
 _INC_PRT_COLS_DICT = cst.DFLT_PRT_INC_DF_COL_NMS_DICT
 _INC_NET_INC_COL_NM = _INC_PRT_COLS_DICT["NET_INC"]
 _INC_NET_LOSS_COL_NM = _INC_PRT_COLS_DICT["NET_LOSS"]
@@ -97,27 +97,35 @@ _TYP_IN_ROWS_DF_DICT = dict([
                     ])
 _TYP_IN_ROW_NMS = _TYP_IN_ROWS_DF_DICT.keys()
 _TYP_DF_DICT = cst.DFLT_PRT_TYP_DF_COL_NMS_DICT
-'''
--------------------------------------------------------------------------------
 
--------------------------------------------------------------------------------
-'''
-def load_income(data_tree=naics.generate_tree(), blue_tree=None,
-                blueprint=None, from_out=False):
-    # 
+
+def load_income(data_tree=naics.generate_tree(),
+                blue_tree=None, blueprint=None,
+                from_out=False):
+    """ This function loads the soi partnership income data.
+    
+    :param data_tree: The NAICS tree to read the data into.
+    :param blueprint: The key corresponding to a dataframe in a tree to be
+           used as a "blueprint" for populating the df_list dataframes forward.
+    :param blue_tree: A NAICS tree with the "blueprint" dataframe. The default
+           is the original NAICS tree.
+    :param from_out: Whether to read in the data from output.
+    """
+    # If from_out, load the data tree from output:
     if from_out:
         data_tree = naics.load_tree_dfs(input_file=_INC_OUT_PATH, 
                                         tree=data_tree)
         return data_tree
-    # Inputting data on net income/loss:
+    # Opening data on net income/loss:
     wb = xlrd.open_workbook(_INC_IN_PATH)
     ws = wb.sheet_by_index(0)
-    #
     start_col = naics.search_ws(ws, _INC_STRT_COL_NM, 20)[1]
+    # Initializing dataframe to hold pertinent income/loss data:
     data_df = pd.DataFrame(np.zeros((ws.ncols-start_col,3)), 
                            columns = _INC_PRT_DF_COL_NMS)
-    # Extracting the data:
+    # Extracting the data from the worksheet:
     for row in xrange(0, ws.nrows):
+        # Going through each row of excel file, looking for input rows:
         if(_INC_NET_INC_ROW_NM in str(ws.cell_value(row,0)).lower()):
             data_df[_INC_NET_INC_COL_NM] = ws.row_values(row+1, start_col)
             data_df[_INC_NET_LOSS_COL_NM] = ws.row_values(row+2, start_col)
@@ -128,14 +136,16 @@ def load_income(data_tree=naics.generate_tree(), blue_tree=None,
     data_df = data_df * _INC_FILE_FCTR
     # Reading in the crosswalks between the columns and the NAICS codes:
     pa01cross = pd.read_csv(_INC_IN_CROSS_PATH)
-    #
+    # Processing the inc/loss data into the NAICS tree:
     data_tree = naics.load_data_with_cross(
                     data_tree=data_tree, data_df=data_df,
-                    cross_df=pa01cross, df_name=_INC_DF_NM
+                    cross_df=pa01cross, df_nm=_INC_DF_NM
                     )
-    #
-    if blueprint == None and _TOT_CORP_DF_NM in data_tree.enum_inds[0].data.dfs.keys():
+    # Default blueprint is tot_corps:
+    has_tot_df = _TOT_CORP_DF_NM in data_tree.enum_inds[0].data.dfs.keys()
+    if blueprint == None and has_tot_df:
         blueprint = _TOT_CORP_DF_NM
+    # Populate all levels of specificity in the NAICS tree:
     naics.pop_back(tree=data_tree, df_list=[_INC_DF_NM])
     naics.pop_forward(tree=data_tree, df_list=[_INC_DF_NM],
                       blueprint=blueprint, blue_tree=blue_tree)
@@ -145,71 +155,101 @@ def load_income(data_tree=naics.generate_tree(), blue_tree=None,
     
 def load_asset(data_tree=naics.generate_tree(),
              blue_tree=None, blueprint=None,
-             from_out=False, output_data=False):
-    #
+             from_out=False):
+    """ This function loads the soi partnership asset data.
+    
+    :param data_tree: The NAICS tree to read the data into.
+    :param blueprint: The key corresponding to a dataframe in a tree to be
+           used as a "blueprint" for populating the df_list dataframes forward.
+    :param blue_tree: A NAICS tree with the "blueprint" dataframe. The default
+           is the original NAICS tree.
+    :param from_out: Whether to read in the data from output.
+    """
+    # If from_out, load the data tree from output:
     if from_out:
         data_tree = naics.load_tree_dfs(input_file=_AST_OUT_PATH,
                                         tree=data_tree)
         return data_tree
-    # Inputting data on depreciable fixed assets, inventories, and land:
+    # Opening data on depreciable fixed assets, inventories, and land:
     wb = xlrd.open_workbook(_AST_IN_PATH)
     ws = wb.sheet_by_index(0)
     num_rows = ws.nrows
-    #
+    # Columns of the asset dataframe:
     df_cols = _AST_DF_DICT.values()
-    #
+    # Initializing dataframe to hold pertinent asset data:
     ast_df = pd.DataFrame(np.zeros((ws.ncols-1,len(df_cols))), columns=df_cols)
-    # Extracting the data (note that the rows with total data appear first):
+    ''' Extracting the data (note that the rows with total data appear first).
+    For each input row:'''
     for in_row_nm in _AST_IN_ROW_NMS:
+        # Key corresponding to total asset column:
         df_net_col_key = _AST_IN_ROWS_DF_NET_DICT[in_row_nm]
+        # Asset dataframes net income column name:
         df_net_col_nm = _AST_DF_DICT[df_net_col_key]
+        # Key corresponding to assets of net income partnerships column:
         df_inc_col_key = _AST_IN_ROWS_DF_INC_DICT[in_row_nm]
+        # Asset dataframes total income column name:
         df_inc_col_nm = _AST_DF_DICT[df_inc_col_key]
         in_row_nm = in_row_nm.lower()
+        # Finding the first input row with in_row_nm:
         for in_row1 in xrange(0, num_rows):
             in_net_row_nm = str(ws.cell_value(in_row1,0)).lower()
             if(in_row_nm in in_net_row_nm):
+                # Total asset data:
                 ast_df[df_net_col_nm] = ws.row_values(in_row1, 1)
+                # Finding the second input row with in_row_nm:
                 for in_row2 in xrange(in_row1+1, num_rows):
                     in_inc_row_nm = str(ws.cell_value(in_row2,0)).lower()
                     if(in_row_nm in in_inc_row_nm):
+                        # Asset data for companies with net income:
                         ast_df[df_inc_col_nm] = ws.row_values(in_row2,1)
                         break
                 break
-    # Data is in the thousands:
+    # Scaling the data to the correct units:
     ast_df = ast_df * _AST_FILE_FCTR
     # Reading in the crosswalks between the columns and the NAICS codes:
     ast_cross = pd.read_csv(_AST_IN_CROSS_PATH)
-    #
+    # Processing the asset data into the NAICS tree:
     data_tree = naics.load_data_with_cross(
                     data_tree=data_tree, data_df=ast_df,
-                    cross_df=ast_cross, data_cols=df_cols,
-                    df_name=_AST_DF_NM
+                    cross_df=ast_cross, df_nm=_AST_DF_NM
                     )
-    #
-    if blueprint == None and _TOT_CORP_DF_NM in data_tree.enum_inds[0].data.dfs.keys():
+    # Default blueprint is tot_corps:
+    has_tot_df = _TOT_CORP_DF_NM in data_tree.enum_inds[0].data.dfs.keys()
+    if blueprint == None and has_tot_df:
         blueprint = _TOT_CORP_DF_NM
+    # Populate all levels of specificity in the NAICS tree:
     naics.pop_back(tree=data_tree, df_list=[_AST_DF_NM])
     naics.pop_forward(tree=data_tree, df_list=[_AST_DF_NM],
                       blueprint=blueprint, blue_tree=blue_tree)
-    #
     return data_tree
 
-def load_types(data_tree=naics.generate_tree(),
+
+def load_type(data_tree=naics.generate_tree(),
                blue_tree = None, blueprint = None,
-               from_out=False, output_data=False):
-    #
+               from_out=False):
+    """ This function loads the soi partnership asset data.
+    
+    :param data_tree: The NAICS tree to read the data into.
+    :param blueprint: The key corresponding to a dataframe in a tree to be
+           used as a "blueprint" for populating the df_list dataframes forward.
+    :param blue_tree: A NAICS tree with the "blueprint" dataframe. The default
+           is the original NAICS tree.
+    :param from_out: Whether to read in the data from output.
+    """
+    # If from_out, load the data tree from output:
     if from_out:
         data_tree = naics.load_tree_dfs(input_file=_TYP_OUT_PATH,
                                         tree=data_tree)
-    #
+    # Opening data on income by partner type:
     wb = xlrd.open_workbook(_TYP_IN_PATH)
     ws = wb.sheet_by_index(0)
     num_rows = ws.nrows
-    # Extracting the relevant data:
-    typ_df = pd.DataFrame(np.zeros((1, len(_TYP_IN_ROW_NMS))),
-                          columns=_TYP_IN_ROW_NMS)
+    # Initializing dataframe to hold pertinent type income data:
+    typ_df = pd.DataFrame(np.zeros((ws.ncols-1, len(_TYP_IN_ROW_NMS))),
+                          columns=_TYP_DF_DICT.values())
+    # Extracting the data. For each input row:
     for in_row_nm in _TYP_IN_ROW_NMS:
+        
         df_col_key = _TYP_IN_ROWS_DF_DICT[in_row_nm]
         df_col_nm = _TYP_DF_DICT[df_col_key]
         in_row_nm = in_row_nm.lower()
@@ -218,26 +258,25 @@ def load_types(data_tree=naics.generate_tree(),
             if(in_row_nm in ws_row_nm):
                 typ_df[df_col_nm] = ws.row_values(ws_row_index,1)
                 break
-    # Data is in thousands of dollars:
+    # Scaling the data to the correct units:
     typ_df = typ_df * _TYP_FILE_FCTR
     # Reading in the crosswalks between the columns and the NAICS codes:
-    typ_cross = pd.read_csv(_TYP_OUT_PATH)
+    typ_cross = pd.read_csv(_TYP_IN_CROSS_PATH)
     #
     data_tree = naics.load_data_with_cross(
-                    data_tree = data_tree, data_df = typ_df,
-                    cross_df = typ_cross, data_cols = _TYP_IN_ROW_NMS,
-                    df_name = _TYP_DF_NM
+                    data_tree=data_tree, data_df=typ_df,
+                    cross_df=typ_cross, df_nm=_TYP_DF_NM
                     )
-    # Defaults:
-    if blueprint == None and _INC_DF_NM in data_tree.enum_inds[0].data.dfs.keys():
+    # Default blueprint is partner income, and, if not, then tot_corps:
+    has_inc_df = _INC_DF_NM in data_tree.enum_inds[0].data.dfs.keys()
+    has_tot_df = _TOT_CORP_DF_NM in data_tree.enum_inds[0].data.dfs.keys()
+    if blueprint == None and has_inc_df:
         blueprint = _INC_DF_NM
-    elif blueprint == None and _TOT_CORP_DF_NM in data_tree.enum_inds[0].data.dfs.keys():
+    elif blueprint == None and has_tot_df:
         blueprint = _TOT_CORP_DF_NM
+    # Populate all levels of specificity in the NAICS tree:
     naics.pop_back(tree=data_tree, df_list=[_TYP_DF_NM])
     naics.pop_forward(tree=data_tree, df_list=[_TYP_DF_NM],
                       blueprint=blueprint, blue_tree=blue_tree)
-    #
     return data_tree
-
-
 

@@ -1,25 +1,25 @@
 '''
+SOI Proprietorship Tax Data (pull_soi_proprietorship.py):
 -------------------------------------------------------------------------------
-Last updated 6/9/2015
--------------------------------------------------------------------------------
+Last updated: 6/29/2015.
 
--------------------------------------------------------------------------------
-    Packages
--------------------------------------------------------------------------------
+This module creates functions for pulling the proprietorship soi tax data into
+NAICS trees.
 '''
+# Packages:
 import os.path
 import numpy as np
 import pandas as pd
 import xlrd
-#
-import naics_processing as naics
-import file_processing as fp
-import constants as cst
 # Directories:
 _CUR_DIR = os.path.dirname(__file__)
 _OUT_DIR = os.path.join(os.path.dirname(_CUR_DIR), "output")
 _DATA_DIR = os.path.join(os.path.dirname(_CUR_DIR), "data")
 _PROP_DIR = os.path.join(_DATA_DIR, "soi_proprietorship")
+# Importing custom packages:
+import naics_processing as naics
+import file_processing as fp
+import constants as cst
 # Dataframe names:
 _FARM_DF_NM = cst.FARM_PROP_DF_NM
 _NFARM_DF_NM = cst.NON_FARM_PROP_DF_NM
@@ -37,10 +37,12 @@ _DDCT_IN_CROSS_FILE = fp.get_file(dirct=_PROP_DIR,
 _DDCT_IN_PATH = os.path.join(_PROP_DIR, _DDCT_IN_FILE)
 _FARM_IN_PATH = os.path.join(_PROP_DIR, _FARM_IN_FILE)
 _DDCT_IN_CROSS_PATH = os.path.join(_PROP_DIR, _DDCT_IN_CROSS_FILE)
+_NFARM_PROP_OUT_PATH = os.path.join(_OUT_DIR, _NFARM_DF_NM+".csv")
+_FARM_PROP_OUT_PATH = os.path.join(_OUT_DIR, _FARM_DF_NM+".csv")
 # Constant factors:
 _DDCT_FILE_FCTR = 10**3
 # Dataframe columns:
-_NFARM_DF_COL_NMS = cst.DFLT_PROP_NFARM_DF_COL_NMS
+_NFARM_DF_COL_NMS = cst.DFLT_PROP_NFARM_DF_COL_NMS_DICT
 # Input--relevant row/column names in the nonfarm prop types excel worksheet:
 _IN_COL_DF_DICT = dict([
                     ("Depreciation\ndeduction", "DEPR_DDCT")
@@ -50,14 +52,26 @@ _DDCT_COL1 = "Depreciation\ndeduction"
 _DDCT_COL2 = "Depreciation\ndeduction"
 NFARM_DF_COL_NMS_DICT = cst.DFLT_PROP_NFARM_DF_COL_NMS_DICT
 
-'''
--------------------------------------------------------------------------------
 
--------------------------------------------------------------------------------
-'''
 def load_soi_nonfarm_prop(data_tree=naics.generate_tree(), 
                           blue_tree=None, blueprint=None, 
-                          from_out=False, out_path=_OUT_DIR):
+                          from_out=False, out_path=_NFARM_PROP_OUT_PATH):
+    """ This function loads the soi nonfarm proprietorship data:
+    
+    :param data_tree: The NAICS tree to read the data into.
+    :param cols_dict: A dictionary mapping dataframe columns to the name of
+           the column names in the input file
+    :param blueprint: The key corresponding to a dataframe in a tree to be
+           used as a "blueprint" for populating the df_list dataframes forward.
+    :param blue_tree: A NAICS tree with the "blueprint" dataframe. The default
+           is the original NAICS tree.
+    :param from_out: Whether to read in the data from output.
+    :param output_path: The path of the output file.
+    """
+    # If from_out, load the data tree from output:
+    if from_out:
+        data_tree = naics.load_tree_dfs(input_path=out_path, tree=data_tree)
+        return data_tree
     # Opening nonfarm proprietor data:
     wb = xlrd.open_workbook(_DDCT_IN_FILE)
     ws = wb.sheet_by_index(0)
@@ -109,8 +123,24 @@ def load_soi_nonfarm_prop(data_tree=naics.generate_tree(),
 
 def load_soi_farm_prop(data_tree = naics.generate_tree(),
                        blue_tree = None, blueprint = None,
-                       from_out=False, out_path=_OUT_DIR):
-    #Load Farm Proprietorship data:
+                       from_out=False, out_path=_FARM_PROP_OUT_PATH):
+    """ This function loads the soi nonfarm proprietorship data:
+    
+    :param data_tree: The NAICS tree to read the data into.
+    :param cols_dict: A dictionary mapping dataframe columns to the name of
+           the column names in the input file
+    :param blueprint: The key corresponding to a dataframe in a tree to be
+           used as a "blueprint" for populating the df_list dataframes forward.
+    :param blue_tree: A NAICS tree with the "blueprint" dataframe. The default
+           is the original NAICS tree.
+    :param from_out: Whether to read in the data from output.
+    :param output_path: The path of the output file.
+    """
+    # If from_out, load the data tree from output:
+    if from_out:
+        data_tree = naics.load_tree_dfs(input_path=out_path, tree=data_tree)
+        return data_tree
+    # Load Farm Proprietorship data:
     farm_data = pd.read_csv(_FARM_IN_PATH)
     new_farm_cols = ["Land", "FA"]
     #
