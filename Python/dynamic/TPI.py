@@ -286,6 +286,9 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
     guesses_n = domain3 * (nssmat - initial_n) + initial_n
     ending_n_tail = np.tile(nssmat.reshape(1, S, J), (S, 1, 1))
     guesses_n = np.append(guesses_n, ending_n_tail, axis=0)
+    b_mat = np.zeros((T+S, S, J))
+    n_mat = np.zeros((T+S, S, J))
+    ind = np.arange(S)
 
     TPIiter = 0
     TPIdist = 10
@@ -294,8 +297,7 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
     TPIdist_vec = np.zeros(maxiter)
 
     while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
-        b_mat = np.zeros((T+S, S, J))
-        n_mat = np.zeros((T+S, S, J))
+
         Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
         Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
         # Plot TPI for K for each iteration, so we can see if there is a problem
@@ -313,15 +315,16 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
             #    print 'minidoughnut:', np.array(SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1, j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1])).max()
                                  for s in xrange(S-2):  # Upper triangle
             for s in xrange(S-2):  # Upper triangle
+                ind2 = np.arange(s+2)
                 b_guesses_to_use = np.diag(guesses_b[1:S+1, :, j], S-(s+2))
                 n_guesses_to_use = np.diag(guesses_n[:S, :, j], S-(s+2))
                 solutions = opt.fsolve(Steady_state_TPI_solver, list(
                     b_guesses_to_use) + list(n_guesses_to_use), args=(
                     winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, s, 0, parameters, theta, tau_bq, rho, lambdas, e, initial_b, chi_b, chi_n), xtol=1e-13)
                 b_vec = solutions[:len(solutions)/2]
-                b_mat[1:S+1, :, j] += np.diag(b_vec, S-(s+2))
+                b_mat[1+ind2, S-(s+2)+ind2, j] = b_vec
                 n_vec = solutions[len(solutions)/2:]
-                n_mat[:S, :, j] += np.diag(n_vec, S-(s+2))
+                n_mat[ind2, S-(s+2)+ind2, j] = n_vec
                 #if abs(np.array(Steady_state_TPI_solver(solutions, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, s, 0, parameters, theta, tau_bq, rho, lambdas, e, initial_b, chi_b, chi_n))).max() > 1e-6:
                 #    print 's-loop:', abs(np.array(Steady_state_TPI_solver(solutions, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, s, 0, parameters, theta, tau_bq, rho, lambdas, e, initial_b, chi_b, chi_n))).max()
 
@@ -332,9 +335,9 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
                     b_guesses_to_use) + list(n_guesses_to_use), args=(
                     winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n), xtol=1e-13)
                 b_vec = solutions[:S]
-                b_mat[t+1:t+S+1, :, j] += np.diag(b_vec)
+                b_mat[t+1+ind, ind, j] = b_vec
                 n_vec = solutions[S:]
-                n_mat[t:t+S, :, j] += np.diag(n_vec)
+                n_mat[t+ind, ind, j] = n_vec
                 inputs = list(solutions)
                 euler_errors[t, :, j] = np.abs(Steady_state_TPI_solver(
                     inputs, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n))
@@ -381,8 +384,6 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
 
     print 'Computing final solutions'
 
-    b_mat = np.zeros((T+S, S, J))
-    n_mat = np.zeros((T+S, S, J))
 
     for j in xrange(J):
         b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],
@@ -394,9 +395,9 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
                 winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, s, 0, parameters, theta, tau_bq, rho, lambdas, e, initial_b, chi_b, chi_n), xtol=1e-13)
             b_vec = solutions[:len(solutions)/2]
-            b_mat[1:S+1, :, j] += np.diag(b_vec, S-(s+2))
+            b_mat[1+ind2, S-(s+2)+ind2, j] = b_vec
             n_vec = solutions[len(solutions)/2:]
-            n_mat[:S, :, j] += np.diag(n_vec, S-(s+2))
+            n_mat[ind2, S-(s+2)+ind2, j] = n_vec
 
         for t in xrange(0, T):
             b_guesses_to_use = 0.75 * np.diag(guesses_b[t+1:t+S+1, :, j])
@@ -405,9 +406,9 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
                 winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n), xtol=1e-13)
             b_vec = solutions[:S]
-            b_mat[t+1:t+S+1, :, j] += np.diag(b_vec)
+            b_mat[t+1+ind, ind, j] = b_vec 
             n_vec = solutions[S:]
-            n_mat[t:t+S, :, j] += np.diag(n_vec)
+            n_mat[t+ind, ind, j] = n_vec
             inputs = list(solutions)
             euler_errors[t, :, j] = np.abs(Steady_state_TPI_solver(
                 inputs, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n))
