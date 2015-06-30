@@ -389,8 +389,9 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
         b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],
             args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1], initial_b, factor_ss, j, parameters, theta, tau_bq), xtol=1e-13))
         for s in xrange(S-2):  # Upper triangle
-            b_guesses_to_use = 0.75 * np.diag(guesses_b[1:S+1, :, j], S-(s+2))
-            n_guesses_to_use = 0.75 * np.diag(guesses_n[:S, :, j], S-(s+2))
+            ind2 = np.arange(s+2)
+            b_guesses_to_use = np.diag(guesses_b[1:S+1, :, j], S-(s+2))
+            n_guesses_to_use = np.diag(guesses_n[:S, :, j], S-(s+2))
             solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
                 winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, s, 0, parameters, theta, tau_bq, rho, lambdas, e, initial_b, chi_b, chi_n), xtol=1e-13)
