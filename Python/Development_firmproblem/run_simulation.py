@@ -89,7 +89,7 @@ theta    = payback value for payroll tax (scalar)
 e            = S x J matrix of age dependent possible working abilities
                e_s
 omega        = T x S x J array of demographics
-g_n          = steady state population growth rate
+g_n_ss          = steady state population growth rate
 omega_SS     = steady state population distribution
 surv_rate    = S x 1 array of survival rates
 rho    = S x 1 array of mortality rates
@@ -143,8 +143,9 @@ tau_payroll = 0.15
 # Flag to prevent graphing from occuring in demographic, income, wealth, and labor files
 flag_graphs = False
 # Generate Income and Demographic parameters
-omega, g_n, omega_SS, surv_rate = demographics.get_omega(
+omega, g_n_ss, omega_SS, surv_rate, g_n_vector = demographics.get_omega(
     S, J, T, lambdas, starting_age, ending_age, E, flag_graphs)
+
 e = income.get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
 rho = 1-surv_rate
 rho[-1] = 1.0
@@ -190,7 +191,7 @@ param_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
              'tau_payroll', 'tau_bq', 'calibrate_model',
              'retire', 'mean_income_data',
              'h_wealth', 'p_wealth', 'm_wealth', 'get_baseline',
-             'omega', 'g_n', 'omega_SS', 'surv_rate', 'e', 'rho']
+             'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'e', 'rho']
 
 '''
 ------------------------------------------------------------------------
