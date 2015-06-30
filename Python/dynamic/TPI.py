@@ -313,7 +313,7 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
                 args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1], initial_b, factor_ss, j, parameters, theta, tau_bq), xtol=1e-13))
             #if np.array(SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1, j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1])).max() > 1e-6:
             #    print 'minidoughnut:', np.array(SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1, j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1])).max()
-                                 for s in xrange(S-2):  # Upper triangle
+
             for s in xrange(S-2):  # Upper triangle
                 ind2 = np.arange(s+2)
                 b_guesses_to_use = np.diag(guesses_b[1:S+1, :, j], S-(s+2))
