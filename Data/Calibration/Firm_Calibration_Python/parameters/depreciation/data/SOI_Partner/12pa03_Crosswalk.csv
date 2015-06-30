@@ -1,0 +1,135 @@
+Industry:,NAICS Code:
+All industries,1
+"Agriculture, forestry, fishing, and hunting",11
+Crop production,111
+Animal production,112
+Forestry and logging,113
+"Fishing, hunting, and trapping",114
+Support activities for agriculture and forestry,115
+Mining,21
+Oil and gas extraction,211
+Other mining,212
+Support activities for mining,213
+Utilities,22
+Construction,23
+Construction of buildings,236
+Heavy and civil engineering construction,237
+Utility system construction,2371
+Land subdivision,2372
+Other heavy and civil engineering construction,2379
+Special trade contractors,238
+"Foundation, structure, and building exterior contractors",2381
+Electrical contractors,23821
+"Plumbing, heating and air-conditioning contractors",23822
+Building finishing contractors,2383
+Other specialty trade contractors,2389
+Manufacturing,31.33
+Food manufacturing,311
+Beverage and tobacco product manufacturing,312
+Textile mills and textile product mills,313.314
+Apparel manufacturing,315
+Leather and allied product manufacturing,316
+Wood product manufacturing,321
+Paper manufacturing,322
+Printing and related support activities,323
+Petroleum and coal products manufacturing,324
+Chemical manufacturing,325
+Plastics and rubber products manufacturing,326
+Nonmetallic mineral products manufacturing,327
+Primary metal manufacturing,331
+Fabricated metal products manufacturing,332
+Machinery manufacturing,333
+Computer and electrical product manufacturing,334
+"Electrical equipment, appliance and component manufacturing",335
+Transportation equipment manufacturing,336
+Furniture and related product manufacturing,337
+Miscellaneous manufacturing,339
+Wholesale trade,42
+"Merchant wholesalers, durable goods",423
+"Merchant wholesalers, nondurable goods",424
+Wholesale electronic markets and agents and brokers,425
+Retail trade,44.45
+Motor vehicle and parts dealers,441
+Furniture and home furnishing stores,442
+Electronics and appliance stores,443
+Building materials and garden equipment and supplies dealers,444
+Food and beverage stores,445
+Health and personal care stores,446
+Gasoline stations,447
+Clothing and clothing accessories stores,448
+"Sporting goods, hobby, book, and music stores",451
+General merchandise stores,452
+Miscellaneous store retailers,453
+Nonstore retailers,454
+Transportation and warehousing,48.49
+Air and rail transportation,481.482
+Water transportation,483
+Truck transportation,484
+Other transit and ground passenger transportation,485
+Pipeline transportation,486
+Scenic and sightseeing transportation,487
+Support activities for transportation,488
+Couriers and messengers,492
+Warehousing and storage,493
+Information,51
+Publishing industries (except internet),511
+Motion picture and sound recording industries,512
+Broadcasting (except internet),515
+Tele-communications,517
+Data processing services,518
+Other information services,519
+Finance and insurance,52
+Depository credit intermediation,5221
+Nondepository credit intermediation,5222
+Activities related to credit intermediation,5223
+"Securities, commodity contracts and other financial investments and related activities",523
+Securities and commodity contracts and exchanges,5231
+Other financial investment activities,5239
+Insurance carriers and related activities,524
+"Funds, trusts, and other financial vehicles",525
+Real estate and rental and leasing,53
+Real estate,531
+Lessors of residential buildings and dwellings and cooperative housing,53111
+Lessors of nonresidential buildings (except mini-warehouses),53112
+Lessors of miniwarehouses and self-storage units,53113
+Lessors of other real estate property,53119
+Rental and leasing services,532
+Lessors of nonfinancial intangible assets (except copyrighted works),533
+"Professional, scientific, and technical services",54
+Legal services,5411
+"Accounting, tax preparation, bookkeeping and payroll services",5412
+"Architectural, engineering and related services",5413
+Specialized design services,5414
+Computer systems design and related services,5415
+"Management, scientific, and technical consulting services",5416
+Advertising and related services,5418
+"Other professional, scientific, and technical services",5419
+Management of companies (holding companies),55
+Administrative and support and waste management and remediation services,56
+Administrative and support services,561
+Waste management and remediation services,562
+Educational services,61
+Health care and social assistance,62
+Offices of physicians and dentists,6211.6212
+Offices of other health practitioners,6213
+Outpatient care centers,6214
+Medical and diagnostic laboratories,6215
+Home health care services,6216
+Other ambulatory health care services,6219
+Hospitals,622
+Nursing and residential care facilities,623
+Social assistance,624
+"Arts, entertainment, and recreation",71
+"Performing arts, spectator sports and related industries",711
+"Museums, historical sites, and similar institutions",712
+"Amusement, gambling, and recreation industries",713
+Accommodation and food services,72
+Accommodation,721
+Food services and drinking places,722
+Other services,81
+Repair and maintenance,811
+Automotive repair and maintenance,8111
+Other repair and maintenance,8112.8113.8114
+Personal and laundry services,812
+"Religious, grantmaking, civic, professional, and similar organizations",813
+Nature of business not allocable,
