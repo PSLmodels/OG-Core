@@ -11,8 +11,6 @@ This py-file calls the following other file(s):
             misc_funcs.py
             OUTPUT/Saved_moments/params_given.pkl
             OUTPUT/Saved_moments/params_changed.pkl
-            OUTPUT/Saved_moments/wealth_data_moments_fit_{}.pkl
-                name depends on which percentile
             OUTPUT/Saved_moments/labor_data_moments.pkl
             OUTPUT/Saved_moments/SS_init_solutions.pkl
             OUTPUT/Saved_moments/SS_experiment_solutions.pkl
