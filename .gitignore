@@ -1,6 +1,5 @@
 *.pyc
 MANIFEST
-MANIFEST.in
 build/*
 dist/*
 *.aux
