@@ -89,7 +89,7 @@ theta    = payback value for payroll tax (scalar)
 e            = S x J matrix of age dependent possible working abilities
                e_s
 omega        = T x S x J array of demographics
-g_n          = steady state population growth rate
+g_n_ss          = steady state population growth rate
 omega_SS     = steady state population distribution
 surv_rate    = S x 1 array of survival rates
 rho    = S x 1 array of mortality rates
@@ -143,13 +143,15 @@ tau_payroll = 0.15
 # Flag to prevent graphing from occuring in demographic, income, wealth, and labor files
 flag_graphs = False
 # Generate Income and Demographic parameters
-omega, g_n, omega_SS, surv_rate = demographics.get_omega(
+omega, g_n_ss, omega_SS, surv_rate, g_n_vector = demographics.get_omega(
     S, J, T, lambdas, starting_age, ending_age, E, flag_graphs)
+
 e = income.get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
 rho = 1-surv_rate
 rho[-1] = 1.0
+surv_rate[-1] = 0.0
 # Calibration parameters
-calibrate_model = True
+calibrate_model = False
 chi_b_guess = np.array([2, 10, 90, 350, 1700, 22000, 120000])
 chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 ,  8.41097278
                          ,  7.15059004 ,  6.46771332 ,  5.85495452 ,  5.46242013 ,  5.00364263
@@ -175,9 +177,6 @@ wealth_data.get_wealth_data(lambdas, J, flag_graphs)
 
 labor_data.labor_data_moments(flag_graphs)
 
-# Remove pickle of altered parameters -- reset the experiment
-if os.path.exists("OUTPUT/Saved_moments/params_changed.pkl"):
-    os.remove("OUTPUT/Saved_moments/params_changed.pkl")
 
 get_baseline = True
 
@@ -192,7 +191,7 @@ param_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
              'tau_payroll', 'tau_bq', 'calibrate_model',
              'retire', 'mean_income_data',
              'h_wealth', 'p_wealth', 'm_wealth', 'get_baseline',
-             'omega', 'g_n', 'omega_SS', 'surv_rate', 'e', 'rho']
+             'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'e', 'rho']
 
 '''
 ------------------------------------------------------------------------
@@ -207,8 +206,7 @@ for key in param_names:
     dictionary[key] = globals()[key]
 pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
 
-call(['python', 'SS.py'])
-
+import SS
 
 '''
 ------------------------------------------------------------------------
@@ -216,7 +214,6 @@ call(['python', 'SS.py'])
 ------------------------------------------------------------------------
 '''
 
-# call(['python', 'TPI.py'])
 # import TPI
 
 '''
@@ -243,7 +240,7 @@ call(['python', 'SS.py'])
 ------------------------------------------------------------------------
 '''
 
-# call(['python', 'SS.py'])
+# import SS
 
 '''
 ------------------------------------------------------------------------
@@ -251,7 +248,6 @@ call(['python', 'SS.py'])
 ------------------------------------------------------------------------
 '''
 
-# call(['python', 'TPI.py'])
 # import TPI
 
 

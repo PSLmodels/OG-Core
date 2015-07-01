@@ -130,6 +130,7 @@ if get_baseline:
 else:
     initial_b = bssmat_init
     initial_n = nssmat_init
+# the following needs a g_n term
 K0 = house.get_K(initial_b, omega_stationary[0])
 b_sinit = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_b[:-1]))
 b_splus1init = initial_b
@@ -137,7 +138,8 @@ L0 = firm.get_L(e, initial_n, omega_stationary[0])
 Y0 = firm.get_Y(K0, L0, parameters)
 w0 = firm.get_w(Y0, L0, parameters)
 r0 = firm.get_r(Y0, K0, parameters)
-BQ0 = (1+r0)*(initial_b * omega_stationary[0] * rho.reshape(S, 1)).sum(0)
+# the following needs a g_n term
+BQ0 = house.get_BQ(r0, initial_b, omega_stationary[0], rho.reshape(S, 1))
 T_H_0 = tax.get_lump_sum(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, omega_stationary[0], 'SS', parameters, theta, tau_bq)
 tax0 = tax.total_taxes(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, T_H_0, None, 'SS', False, parameters, theta, tau_bq)
 c0 = house.get_cons(r0, b_sinit, w0, e, initial_n, BQ0.reshape(1, J), lambdas.reshape(1, J), b_splus1init, parameters, tax0)
@@ -330,7 +332,7 @@ while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
     Ynew = firm.get_Y(Kinit, Linit, parameters)
     wnew = firm.get_w(Ynew, Linit, parameters)
     rnew = firm.get_r(Ynew, Kinit, parameters)
-
+    # the following needs a g_n term
     BQnew = (1+rnew.reshape(T, 1))*(b_mat[:T] * omega_stationary[:T] * rho.reshape(1, S, 1)).sum(1)
     bmat_s = np.zeros((T, S, J))
     bmat_s[:, 1:, :] = b_mat[:T, :-1, :]
@@ -344,9 +346,12 @@ while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
     T_H_init[:T] = misc_funcs.convex_combo(T_H_new[:T], T_H_init[:T], parameters)
     guesses_b = misc_funcs.convex_combo(b_mat, guesses_b, parameters)
     guesses_n = misc_funcs.convex_combo(n_mat, guesses_n, parameters)
-
-    TPIdist = np.array(list(misc_funcs.perc_dif_func(rnew, rinit[:T]))+list(misc_funcs.perc_dif_func(BQnew, BQinit[:T]).flatten())+list(
-        misc_funcs.perc_dif_func(wnew, winit[:T]))+list(misc_funcs.perc_dif_func(T_H_new, T_H_init))).max()
+    if T_H_init.all() != 0:
+        TPIdist = np.array(list(misc_funcs.perc_dif_func(rnew, rinit[:T]))+list(misc_funcs.perc_dif_func(BQnew, BQinit[:T]).flatten())+list(
+            misc_funcs.perc_dif_func(wnew, winit[:T]))+list(misc_funcs.perc_dif_func(T_H_new, T_H_init))).max()
+    else:
+        TPIdist = np.array(list(misc_funcs.perc_dif_func(rnew, rinit[:T]))+list(misc_funcs.perc_dif_func(BQnew, BQinit[:T]).flatten())+list(
+            misc_funcs.perc_dif_func(wnew, winit[:T]))+list(np.abs(T_H_new, T_H_init))).max()
     TPIdist_vec[TPIiter] = TPIdist
     # After T=10, if cycling occurs, drop the value of nu
     # wait til after T=10 or so, because sometimes there is a jump up

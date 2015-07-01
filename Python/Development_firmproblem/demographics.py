@@ -480,4 +480,6 @@ def get_omega(S, J, T, bin_weights, starting_age, ending_age, E, flag_graphs):
         T+S, E, 1), (1, 1, J)) * bin_weights.reshape(1, 1, J)
     if flag_graphs:
         pop_graphs(S, T, starting_age, ending_age, children, g_n_SS[0], omega_big)
-    return omega_big, g_n_SS[0], omega_SS, surv_array
+    N_vector = omega_big.sum(1).sum(1)
+    g_n_vec = N_vector[1:] / N_vector[:-1] -1
+    return omega_big, g_n_SS[0], omega_SS, surv_array, g_n_vec
