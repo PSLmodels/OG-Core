@@ -66,7 +66,7 @@ def get_cons(r, b_s, w, e, n, BQ, lambdas, b_splus1, params, net_tax):
     Returns:    Consumption
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    cons = (1 + r)*b_s + w*e*n + BQ - b_splus1*np.exp(g_y) - net_tax
+    cons = (1 + r)*b_s + w*e*n + BQ / lambdas - b_splus1*np.exp(g_y) - net_tax
     return cons
 
 
