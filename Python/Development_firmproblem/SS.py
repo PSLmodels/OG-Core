@@ -342,6 +342,7 @@ Lss = firm.get_L(e, nssmat, omega_SS)
 Yss = firm.get_Y(Kss, Lss, parameters)
 
 Iss = delta*Kss
+Iss = (np.exp(g_y) + g_n_ss*np.exp(g_y) -1 + delta) * Kss
 
 theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS)
 BQss = (1.0/(1+g_n_ss))*house.get_BQ(rss, bssmat_s, omega_SS, rho.reshape(S, 1))
