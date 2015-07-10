@@ -91,7 +91,8 @@ get_baseline = whether this is the baseline TPI or not
 ------------------------------------------------------------------------
 '''
 
-from dynamic.parameters import *
+from .parameters import get_parameters
+globals().update(get_parameters())
 
 def create_tpi_params(a_tax_income, b_tax_income, c_tax_income,
                       d_tax_income,

@@ -81,7 +81,9 @@ m_wealth     = wealth tax parameter m
 ------------------------------------------------------------------------
 '''
 
-from dynamic.parameters import *
+import pdb;pdb.set_trace()
+from .parameters import get_parameters
+globals().update(get_parameters())
 
 '''
 ------------------------------------------------------------------------
@@ -108,6 +110,7 @@ def create_steady_state_parameters(a_tax_income, b_tax_income, c_tax_income,
     # Make a vector of all one dimensional parameters, to be used in the following functions
     income_tax_params = [a_tax_income, b_tax_income, c_tax_income,
                          d_tax_income]
+    import pdb;pdb.set_trace()
     wealth_tax_params = [h_wealth, p_wealth, m_wealth]
     ellipse_params = [b_ellipse, upsilon]
     parameters = ([J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,
@@ -248,7 +251,8 @@ def function_to_minimize(chi_params_scalars, chi_params_init, params, iterative_
     # labor calibration euler
     lab_data_dict = pickle.load(open("OUTPUT/Saved_moments/labor_data_moments.pkl", "r"))
     labor_sim = (n_new.reshape(S, J)*lambdas.reshape(1, J)).sum(axis=1)
-    error6 = list(utils.perc_dif_func(labor_sim, lab_data_dict['labor_dist_data']))
+    lab_dist_data = lab_data_dict['labor_dist_data'][:S]
+    error6 = list(utils.perc_dif_func(labor_sim, lab_dist_data))
     # combine eulers
     output = np.array(error5 + error6)
     # Constraints
@@ -284,8 +288,10 @@ def run_steady_state(ss_parameters, iterative_params, get_baseline=False):
     if get_baseline:
         # Generate initial guesses for chi^b_j and chi^n_s
         chi_params = np.zeros(S+J)
-        chi_params[0:J] = np.array([2, 10, 90, 350, 1700, 22000, 120000])
-        chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 ,  8.41097278
+        #chi_params[0:J] = np.array([2, 10, 90, 350, 1700, 22000, 120000])
+        chi_params[0:J] = np.array([1, 100000])
+        chi_n_guess = np.array([5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
+        """chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 ,  8.41097278
                                 ,  7.15059004 ,  6.46771332 ,  5.85495452 ,  5.46242013 ,  5.00364263
                                 ,  4.57322063 ,  4.53371545 ,  4.29828515 ,  4.10144524 ,  3.8617942  ,  3.57282
                                 ,  3.47473172 ,  3.31111347 ,  3.04137299 ,  2.92616951 ,  2.58517969
@@ -300,7 +306,7 @@ def run_steady_state(ss_parameters, iterative_params, get_baseline=False):
                                 , 20.03988031 , 20.86564363 , 21.73645892 , 22.6208256  , 23.37786072
                                 , 24.38166073 , 25.22395387 , 26.21419653 , 27.05246704 , 27.86896121
                                 , 28.90029708 , 29.83586775 , 30.87563699 , 31.91207845 , 33.07449767
-                                , 34.27919965 , 35.57195873 , 36.95045988 , 38.62308152])
+                                , 34.27919965 , 35.57195873 , 36.95045988 , 38.62308152])"""
         chi_params[J:] = chi_n_guess
         chi_params = list(chi_params)
         # First run SS simulation with guesses at initial values for b, n, w, r, etc
@@ -322,7 +328,7 @@ def run_steady_state(ss_parameters, iterative_params, get_baseline=False):
         # minimizer peturbs that value by 1e-8, the % difference will be extremely small, outside of the tolerance of the
         # minimizer, and it will not change that parameter.
         chi_params_scalars = np.ones(S+J)
-        chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds, options={'maxiter': 1}).x
+        chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-3, bounds=bnds, options={'maxiter': 1}).x
         # chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=1e-14, bounds=bnds).x
         chi_params *= chi_params_scalars
         print 'The final scaling params', chi_params_scalars

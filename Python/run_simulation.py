@@ -95,7 +95,6 @@ flag_graphs = False
 # Generate Income and Demographic parameters
 omega, g_n, omega_SS, surv_rate = demographics.get_omega(S, J, T, lambdas, starting_age, ending_age, E, flag_graphs)
 #      S, J, T, lambdas, starting_age, ending_age, E, flag_graphs)
-#e = income.get_e()
 e = income.get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
 rho = 1-surv_rate
 rho[-1] = 1.0

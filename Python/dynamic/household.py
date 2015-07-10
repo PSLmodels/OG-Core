@@ -47,8 +47,12 @@ def marg_ut_labor(n, chi_n, params):
     Returns:    Marginal Utility of Labor
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    deriv = b_ellipse * (1/ltilde) * ((1 - (n / ltilde) ** upsilon) ** (
-        (1/upsilon)-1)) * (n / ltilde) ** (upsilon - 1)
+    try:
+        deriv = b_ellipse * (1/ltilde) * ((1 - (n / ltilde) ** upsilon) ** (
+            (1/upsilon)-1)) * (n / ltilde) ** (upsilon - 1)
+    except Exception as e:
+        deriv = 1e-5
+
     output = chi_n * deriv
     return output
 
