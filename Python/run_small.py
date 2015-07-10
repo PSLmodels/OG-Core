@@ -22,7 +22,7 @@ globals().update(dynamic.parameters.get_parameters())
 def runner():
 
     #Create output directory structure
-    dirs = ["./OUTPUT/Saved_moments", "./OUTPUT/SSinit"]
+    dirs = ["./OUTPUT/Saved_moments", "./OUTPUT/SSinit", "./OUTPUT/TPIinit"]
     for _dir in dirs:
         try:
             os.makedirs(_dir)
