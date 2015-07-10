@@ -33,7 +33,7 @@ def runner():
     rho[-1] = 1.0
 
     # Generate Wealth data moments
-    output_dir = "./OUTPUT"
+    output_dir = "./TESTED_DONT_TOUCH/REF/"
     wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir)
 
     # Generate labor data moments
