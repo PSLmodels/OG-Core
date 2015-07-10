@@ -131,7 +131,7 @@ def get_e(S, J, starting_age, ending_age, bin_weights, omega_SS):
 
     Returns:    e - S x J matrix of ability levels for each
                     age cohort, normalized so
-                    the mean is one
+                    the weighted sum is one
     '''
     emat_trunc = emat_basic[:50, :]
     cum_bins = 100 * np.array(bin_weights)

@@ -143,13 +143,11 @@ tau_payroll = 0.15
 # Flag to prevent graphing from occuring in demographic, income, wealth, and labor files
 flag_graphs = False
 # Generate Income and Demographic parameters
-omega, g_n_ss, omega_SS, surv_rate, g_n_vector = demographics.get_omega(
+omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = demographics.get_omega(
     S, J, T, lambdas, starting_age, ending_age, E, flag_graphs)
 
 e = income.get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
-rho = 1-surv_rate
-rho[-1] = 1.0
-surv_rate[-1] = 0.0
+
 # Calibration parameters
 calibrate_model = False
 chi_b_guess = np.array([2, 10, 90, 350, 1700, 22000, 120000])

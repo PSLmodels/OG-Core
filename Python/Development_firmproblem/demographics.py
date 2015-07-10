@@ -420,6 +420,7 @@ def get_omega(S, J, T, bin_weights, starting_age, ending_age, E, flag_graphs):
         starting_age, ending_age, S+1), poly_int_pop)
     new_omega = pop_int[1:]-pop_int[:-1]
     surv_array, children_rate = get_survival(S, starting_age, ending_age, E)
+    surv_array[-1] = 0.0
     imm_array, children_im = get_immigration2(S, starting_age, ending_age, E)
     imm_array *= 0.0
     fert_rate, children_fertrate = get_fert(S, starting_age, ending_age, E)
@@ -481,4 +482,5 @@ def get_omega(S, J, T, bin_weights, starting_age, ending_age, E, flag_graphs):
         pop_graphs(S, T, starting_age, ending_age, children, g_n_SS[0], omega_big)
     N_vector = omega_big.sum(1).sum(1)
     g_n_vec = N_vector[1:] / N_vector[:-1] -1
-    return omega_big, g_n_SS[0], omega_SS, surv_array, g_n_vec
+    rho = 1.0 - surv_array
+    return omega_big, g_n_SS[0], omega_SS, surv_array, rho, g_n_vec

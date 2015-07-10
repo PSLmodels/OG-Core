@@ -352,6 +352,8 @@ Css = (cssmat * omega_SS).sum()
 
 resource_constraint = Yss - (Css + Iss)
 
+print resource_constraint
+
 house.constraint_checker_SS(bssmat, nssmat, cssmat, parameters)
 
 '''

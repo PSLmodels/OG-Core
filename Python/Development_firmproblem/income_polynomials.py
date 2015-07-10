@@ -168,7 +168,7 @@ def get_e(S, J, starting_age, ending_age, bin_weights, omega_SS, flag_graphs):
 
     Returns:    e - S x J matrix of ability levels for each
                     age cohort, normalized so
-                    the mean is one
+                    the weighted sum is one
     '''
     e_short = income_profiles
     e_final = np.ones((S, J))
