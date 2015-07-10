@@ -190,11 +190,3 @@ def get_e(S, J, starting_age, ending_age, bin_weights, omega_SS, flag_graphs):
         graph_income(S, J, e_final, starting_age, ending_age, bin_weights)
     e_final /= (e_final * omega_SS).sum()
     return e_final
-
-def get_e_trivial(S, J, starting_age, ending_age, bin_weights, omega_SS, flag_graphs):
-    e_final = [[0.25, 1.25]] * 10
-    e_final = np.array(e_final)
-    return e_final
-
-get_e = get_e_trivial
-  

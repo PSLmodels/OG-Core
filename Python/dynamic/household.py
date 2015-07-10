@@ -50,7 +50,7 @@ def marg_ut_labor(n, chi_n, params):
     try:
         deriv = b_ellipse * (1/ltilde) * ((1 - (n / ltilde) ** upsilon) ** (
             (1/upsilon)-1)) * (n / ltilde) ** (upsilon - 1)
-    except Exception as e:
+    except ValueError as ve:
         deriv = 1e-5
 
     output = chi_n * deriv
