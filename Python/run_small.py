@@ -21,6 +21,12 @@ globals().update(dynamic.parameters.get_parameters())
 
 def runner():
 
+    #Create output directory structure
+    try:
+        os.makedirs("./OUTPUT/Saved_moments")
+    except OSError as oe:
+        pass
+
     # Flag to prevent graphing from occuring in demographic, income, wealth, and labor files
     flag_graphs = False
     # Generate Income and Demographic parameters
@@ -33,11 +39,11 @@ def runner():
     rho[-1] = 1.0
 
     # Generate Wealth data moments
-    output_dir = "./TESTED_DONT_TOUCH/REF/"
+    output_dir = "./OUTPUT"
     wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir)
 
     # Generate labor data moments
-    labor.labor_data_moments(flag_graphs)
+    labor.labor_data_moments(flag_graphs, output_dir)
 
     # Remove pickle of altered parameters -- reset the experiment
     if os.path.exists("OUTPUT/Saved_moments/params_changed.pkl"):
