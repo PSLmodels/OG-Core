@@ -16,6 +16,7 @@ def get_parameters():
 def get_reduced_parameters():
     # Parameters
     MINIMIZER_TOL = 1e-3
+    PLOT_TPI = False
     S = 10
     J = 2
     T = int(2 * S)
@@ -74,6 +75,7 @@ def get_reduced_parameters():
 def get_full_parameters():
     # Parameters
     MINIMIZER_TOL = 1e-14
+    PLOT_TPI = True
     S = 80
     J = 7
     T = int(2 * S)
