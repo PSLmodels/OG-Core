@@ -22,10 +22,12 @@ globals().update(dynamic.parameters.get_parameters())
 def runner():
 
     #Create output directory structure
-    try:
-        os.makedirs("./OUTPUT/Saved_moments")
-    except OSError as oe:
-        pass
+    dirs = ["./OUTPUT/Saved_moments", "./OUTPUT/SSinit"]
+    for _dir in dirs:
+        try:
+            os.makedirs(_dir)
+        except OSError as oe:
+            pass
 
     # Flag to prevent graphing from occuring in demographic, income, wealth, and labor files
     flag_graphs = False
