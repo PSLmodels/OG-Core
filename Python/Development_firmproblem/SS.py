@@ -91,7 +91,6 @@ if get_baseline is False:
     for key in variables:
         globals()[key] = variables[key]
 
-
 '''
 ------------------------------------------------------------------------
     Define Functions
@@ -116,7 +115,7 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n, t
     b_splus1 = b_guess
     b_splus2 = np.array(list(b_guess[1:]) + [0])
 
-    BQ = (1.0/(1+g_n_ss))*house.get_BQ(r, b_splus1, weights[:, j], rho)
+    BQ = house.get_BQ(r, b_splus1, weights[:, j], rho)/ (1.0 + g_n_ss)
     theta = tax.replacement_rate_vals(n_guess, w, factor, e[:,j], J, weights[:, j])
 
     error1 = house.euler_savings_func(w, r, e[:, j], n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_H, chi_b[j], params, theta, tau_bq[j], rho, lambdas[j])
@@ -160,7 +159,7 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
             nssmat[:,j] = solutions[S:]
             # print np.array(Euler_equation_solver(np.append(bssmat[:, j], nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, e)).max()
 
-        K = (1.0/(1+g_n_ss)) * house.get_K(bssmat, weights)
+        K = house.get_K(bssmat, weights)/ (1+g_n_ss)
         L = firm.get_L(e, nssmat, weights)
         Y = firm.get_Y(K, L, params)
         new_r = firm.get_r(Y, K, params)
@@ -168,7 +167,7 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
         b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
         average_income_model = ((new_r * b_s + new_w * e * nssmat) * weights).sum()
         new_factor = mean_income_data / average_income_model 
-        new_BQ = (1.0/(1+g_n_ss))*house.get_BQ(new_r, bssmat, weights, rho.reshape(S, 1))
+        new_BQ = house.get_BQ(new_r, bssmat, weights, rho.reshape(S, 1)) / (1.0 + g_n_ss)
         theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, e, J, weights)
         new_T_H = tax.get_lump_sum(new_r, b_s, new_w, e, nssmat, new_BQ, lambdas, factor, weights, 'SS', params, theta, tau_bq)
 
@@ -337,25 +336,21 @@ bssmat_splus1 = np.array(list(bssmat) + list(bq.reshape(1, J)))
 nssmat = solutions[S * J:2*S*J].reshape(S, J)
 wss, rss, factor_ss, T_Hss = solutions[2*S*J:]
 
-Kss = (1.0/(1+g_n_ss)) * house.get_K(bssmat_splus1, omega_SS)
+Kss = house.get_K(bssmat_splus1, omega_SS) / (1.0 + g_n_ss)
 Lss = firm.get_L(e, nssmat, omega_SS)
 Yss = firm.get_Y(Kss, Lss, parameters)
 
-Iss = delta*Kss
-Iss = (np.exp(g_y) + g_n_ss*np.exp(g_y) -1 + delta) * Kss
+Iss = (np.exp(g_y) + g_n_ss*np.exp(g_y) -1.0 + delta) * Kss
 
 theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS)
-BQss = (1.0/(1+g_n_ss))*house.get_BQ(rss, bssmat_s, omega_SS, rho.reshape(S, 1))
+BQss = house.get_BQ(rss, bssmat_splus1, omega_SS, rho.reshape(S, 1)) / (1.0 + g_n_ss)
 b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
 taxss = tax.total_taxes(rss, b_s, wss, e, nssmat, BQss, lambdas, factor_ss, T_Hss, None, 'SS', False, parameters, theta, tau_bq)
 cssmat = house.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.reshape(1, J), bssmat_splus1, parameters, taxss)
 
 Css = (cssmat * omega_SS).sum()
 
-diffe = Yss - (Css + Iss)
-
-print diffe
-print diffe / Yss
+resource_constraint = Yss - (Css + Iss)
 
 house.constraint_checker_SS(bssmat, nssmat, cssmat, parameters)
 

@@ -143,13 +143,11 @@ def exp_int(points, a, b):
 
 def integrate(func, points):
     params_guess = [1, 1]
-    a, b = opt.fsolve(fit_exp_right, params_guess, args=(
-        [40, poly.polyval(40, func)], [49.5, .0007]))
+    a, b = opt.fsolve(fit_exp_right, params_guess, args=([40, poly.polyval(40, func)], [49.5, .0007]))
     func_int = poly.polyint(func)
     integral = np.empty(points.shape)
     integral[points <= 40] = poly.polyval(points[points <= 40], func_int)
-    integral[points > 40] = poly.polyval(40, func_int) + exp_int(
-        points[points > 40], a, b)
+    integral[points > 40] = poly.polyval(40, func_int) + exp_int(points[points > 40], a, b)
     return np.diff(integral)
 
 '''
@@ -423,6 +421,7 @@ def get_omega(S, J, T, bin_weights, starting_age, ending_age, E, flag_graphs):
     new_omega = pop_int[1:]-pop_int[:-1]
     surv_array, children_rate = get_survival(S, starting_age, ending_age, E)
     imm_array, children_im = get_immigration2(S, starting_age, ending_age, E)
+    imm_array *= 0.0
     fert_rate, children_fertrate = get_fert(S, starting_age, ending_age, E)
     cum_surv_rate = np.cumprod(surv_array)
     if flag_graphs:
