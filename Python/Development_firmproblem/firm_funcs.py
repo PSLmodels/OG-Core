@@ -50,13 +50,13 @@ def get_w(Y_now, L_now, params):
     return w_now
 
 
-def get_L(e, n, weights):
+def get_L(e, n, pop_weights, ability_weights):
     '''
     Inputs: e, n, population weights
 
     Returns:    Aggregate labor
     '''
-    L_now = np.sum(e * weights * n)
+    L_now = np.sum(e * pop_weights * ability_weights * n)
     return L_now
 
 

@@ -19,19 +19,19 @@ import tax_funcs as tax
 '''
 
 
-def get_K(b, weights, g_n):
+def get_K(b, pop_weights, ability_weights, g_n):
     '''
     Inputs: b, weights
 
     Returns:    Aggregate Capital
     '''
-    K_now = np.sum(b * weights)
+    K_now = np.sum(b * pop_weights * ability_weights)
     K_now /= 1.0 + g_n
     return K_now
 
 
-def get_BQ(r, b_splus1, weights, rho, g_n):
-    BQ = (1+r) * (b_splus1 * weights * rho).sum(0)
+def get_BQ(r, b_splus1, pop_weights, ability_weights, rho, g_n):
+    BQ = (1+r) * (b_splus1 * pop_weights * rho).sum(0) * ability_weights
     BQ /= 1.0 + g_n
     return BQ
 
@@ -72,8 +72,8 @@ def get_cons(r, b_s, w, e, n, BQ, lambdas, b_splus1, params, net_tax):
     return cons
 
 
-def get_C(individ_cons, weights):
-    aggC = (individ_cons * weights).sum()
+def get_C(individ_cons, pop_weights, ability_weights):
+    aggC = (individ_cons * pop_weights * ability_weights).sum()
     return aggC
 
 

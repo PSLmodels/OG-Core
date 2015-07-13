@@ -144,7 +144,7 @@ tau_payroll = 0.15
 flag_graphs = False
 # Generate Income and Demographic parameters
 omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = demographics.get_omega(
-    S, J, T, lambdas, starting_age, ending_age, E, flag_graphs)
+    S, T, starting_age, ending_age, E, flag_graphs)
 
 e = income.get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
 
@@ -212,7 +212,7 @@ import SS
 ------------------------------------------------------------------------
 '''
 
-import TPI
+# import TPI
 
 '''
 ------------------------------------------------------------------------

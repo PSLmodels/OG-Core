@@ -36,7 +36,8 @@ import household_funcs as house
 '''
 
 
-def the_inequalizer(dist, weights):
+def the_inequalizer(dist, pop_weights, ability_weights, S, J):
+    weights = np.tile(pop_weights.reshape(S, 1), (1, J)) * ability_weights.reshape(1, J)
     flattened_dist = dist.flatten()
     flattened_weights = weights.flatten()
     idx = np.argsort(flattened_dist)
@@ -87,7 +88,7 @@ T_Hss_init = T_Hss
 Kss_init = Kss
 Lss_init = Lss
 
-Css_init = house.get_C(cssmat, omega_SS)
+Css_init = house.get_C(cssmat, omega_SS, lambdas)
 iss_init = firm.get_I(bssmat_splus1, bssmat_splus1, delta, g_y, g_n_ss)
 income_init = cssmat + iss_init
 # print (income_init*omega_SS).sum()
@@ -96,7 +97,7 @@ income_init = cssmat + iss_init
 # print Lss
 # print Css_init
 # print (utility_init * omega_SS).sum()
-the_inequalizer(income_init, omega_SS)
+the_inequalizer(income_init, omega_SS, lambdas)
 
 
 
@@ -297,7 +298,7 @@ income = cssmat + iss
 # print Lss
 # print Css
 # print (utility * omega_SS).sum()
-# the_inequalizer(yss, omega_SS)
+# the_inequalizer(yss, omega_SS, lambdas, S, J)
 
 print (Lss - Lss_init)/Lss_init
 

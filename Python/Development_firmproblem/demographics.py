@@ -1,8 +1,8 @@
 '''
 ------------------------------------------------------------------------
-Last updated 6/19/2015
+Last updated 7/13/2015
 
-Functions for generating omega, the T x S x J array which describes the
+Functions for generating omega, the T x S array which describes the
 demographics of the population
 
 This py-file calls the following other file(s):
@@ -267,9 +267,9 @@ def get_fert(S, starting_age, ending_age, E):
         starting age - initial age of cohorts
 
     Returns:
-        fert_rate_condensed - S x J array of fertility rates for each
+        fert_rate - Sx1 array of fertility rates for each
             age cohort
-        children_fertrate  - starting_age x J array of zeros, to be
+        children_fertrate  - starting_age x 1 array of zeros, to be
             used in get_omega()
     '''
     # Fit a polynomial to the fertility rates
@@ -355,7 +355,7 @@ Generate graphs of Population
 
 def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
     N = omega[T].sum() + children[T].sum()
-    x = children.sum(1).sum(1) + omega.sum(1).sum(1)
+    x = children.sum(1) + omega.sum(1)
     x2 = 100 * np.diff(x)/x[:-1]
 
     plt.figure()
@@ -377,8 +377,8 @@ def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
     plt.figure()
     plt.plot(np.arange(S+int(starting_age * S / (
         ending_age-starting_age)))+1, list(
-        children[0, :, :].sum(1)) + list(
-        omega[0, :, :].sum(1)), linewidth=2, color='blue')
+        children[0, :]) + list(
+        omega[0, :]), linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
     plt.ylabel(r'$\omega_{s,1}$')
     plt.savefig('OUTPUT/Demographics/omega_init')
@@ -386,8 +386,8 @@ def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
     plt.figure()
     plt.plot(np.arange(S+int(starting_age * S / (
         ending_age-starting_age)))+1, list(
-        children[T, :, :].sum(1)/N) + list(
-        omega[T, :, :].sum(1)/N), linewidth=2, color='blue')
+        children[T, :]/N) + list(
+        omega[T, :]/N), linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
     plt.ylabel(r'$\overline{\omega}$')
     plt.savefig('OUTPUT/Demographics/omega_ss')
@@ -399,14 +399,13 @@ def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
 '''
 
 
-def get_omega(S, J, T, bin_weights, starting_age, ending_age, E, flag_graphs):
+def get_omega(S, T, starting_age, ending_age, E, flag_graphs):
     '''
     Parameters:
         S - Number of age cohorts
         J - Number of ability types
         T - number of time periods in TPI
         starting age - initial age of cohorts
-        bin_weights - weights for each ability type in each age cohort
 
     Returns:
 
@@ -469,18 +468,12 @@ def get_omega(S, J, T, bin_weights, starting_age, ending_age, E, flag_graphs):
             S+E, 1)).sum(0))).argmin()
         omega_SS = omega_SS[ind]
         g_n_SS = [g_n_SS[ind]]
-    omega_SS = omega_SS.reshape(S+E, 1)[E:, :]
+    omega_SS = omega_SS[E:]
     omega_SS /= omega_SS.sum()
     # Creating the different ability level bins
-    omega_SS = np.tile(
-        omega_SS.reshape(S, 1), (1, J)) * bin_weights.reshape(1, J)
-    omega_big = np.tile(
-        omega_big.reshape(T+S, S, 1), (1, 1, J)) * bin_weights.reshape(1, 1, J)
-    children = np.tile(children.reshape(
-        T+S, E, 1), (1, 1, J)) * bin_weights.reshape(1, 1, J)
     if flag_graphs:
         pop_graphs(S, T, starting_age, ending_age, children, g_n_SS[0], omega_big)
-    N_vector = omega_big.sum(1).sum(1)
+    N_vector = omega_big.sum(1)
     g_n_vec = N_vector[1:] / N_vector[:-1] -1
     g_n_vec = np.append(g_n_vec, g_n_SS[0])
     rho = 1.0 - surv_array

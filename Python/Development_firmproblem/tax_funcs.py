@@ -23,12 +23,10 @@ Tax functions
 '''
 
 
-def replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS):
+def replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS, lambdas):
     # Import data need to compute replacement rates, outputed from SS.py
-    # payroll_dict = pickle.load(open("OUTPUT/Saved_moments/payroll_inputs.pkl", "r"))
-    # retire, nssmat, wss, factor_ss, e, J, omega_SS = [payroll_dict[x] for x in ['retire', 'nssmat', 'wss', 'factor_ss', 'e', 'J', 'omega_SS']]
-    AIME = ((wss * factor_ss * e * nssmat)*omega_SS).sum(0) / 12.0
     try:
+        AIME = ((wss * factor_ss * e * nssmat)*omega_SS).sum(0) * lambdas / 12.0
         PIA = np.zeros(J)
         # Bins from data for each level of replacement
         for j in xrange(J):
@@ -43,6 +41,7 @@ def replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS):
         maxpayment = 30000.0/(factor_ss * wss)
         theta[theta > maxpayment] = maxpayment
     except:
+        AIME = ((wss * factor_ss * e * nssmat)*omega_SS).sum() * lambdas / 12.0
         PIA = 0
         if AIME < 749.0:
             PIA = .9 * AIME
@@ -121,11 +120,11 @@ def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, weights, method, params, th
     if method == 'SS':
         T_P[retire:] -= theta * w
         T_BQ = tau_bq * BQ / lambdas
-        T_H = (weights * (T_I + T_P + T_BQ + T_W)).sum()
+        T_H = (weights * lambdas * (T_I + T_P + T_BQ + T_W)).sum()
     elif method == 'TPI':
         T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w
         T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
-        T_H = (weights * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1)
+        T_H = (weights * lambdas * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1)
     return T_H
 
 
