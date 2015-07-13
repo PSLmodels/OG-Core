@@ -58,3 +58,8 @@ def get_L(e, n, weights):
     '''
     L_now = np.sum(e * weights * n)
     return L_now
+
+
+def get_I(Knext, Know, delta, g_y, g_n):
+    aggI = (np.exp(g_y) + g_n*np.exp(g_y))*Knext - (1.0 - delta) * Know
+    return aggI

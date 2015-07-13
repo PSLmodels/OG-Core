@@ -26,6 +26,9 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import cPickle as pickle
 
+import firm_funcs as firm
+import household_funcs as house
+
 '''
 ------------------------------------------------------------------------
     Functions
@@ -84,9 +87,9 @@ T_Hss_init = T_Hss
 Kss_init = Kss
 Lss_init = Lss
 
-Css = (cssmat * omega_SS).sum()
-Css_init = Css
-income_init = cssmat + delta * bssmat_splus1
+Css_init = house.get_C(cssmat, omega_SS)
+iss_init = firm.get_I(bssmat_splus1, bssmat_splus1, delta, g_y, g_n_ss)
+income_init = cssmat + iss_init
 # print (income_init*omega_SS).sum()
 # print Css + delta * Kss
 # print Kss
@@ -285,8 +288,9 @@ utility = utility.sum(0)
 
 
 
-Css = (cssmat * omega_SS).sum()
-income = cssmat + delta * bssmat_splus1
+Css = house.get_C(cssmat, omega_SS)
+iss = firm.get_I(bssmat_splus1, bssmat_splus1, delta, g_y, g_n_ss)
+income = cssmat + iss
 # print (income*omega_SS).sum()
 # print Css + delta * Kss
 # print Kss

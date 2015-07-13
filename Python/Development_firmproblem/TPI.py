@@ -408,12 +408,17 @@ b_splus1[:, :, :] = b_mat[1:T+1, :, :]
 
 tax_path = tax.total_taxes(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(
     1, S, J), n_mat[:T], BQinit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T].reshape(T, 1, 1), None, 'TPI', False, parameters, theta, tau_bq)
-cinit = house.get_cons(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b_splus1, parameters, tax_path)
+c_path = house.get_cons(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b_splus1, parameters, tax_path)
+
+Y_path = firm.get_Y(Kpath_TPI[:T], Lpath_TPI[:T], parameters)
+C_path = (c_path * omega_stationary).sum(1).sum(1)
+I_path = firm.get_I(Kpath_TPI[1:T+1], Kpath_TPI[:T], delta, g_y, g_n_vector[:T])
+print 'Resource Constraint Difference:', Ypath - C_path - I_path
 
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
     house.constraint_checker_TPI(b_mat[t, :-1, :], n_mat[
-        t], cinit[t], t, parameters, N_tilde)
+        t], c_path[t], t, parameters, N_tilde)
 
 '''
 ------------------------------------------------------------------------
@@ -429,7 +434,7 @@ Save variables/values so they can be used in other modules
 ------------------------------------------------------------------------
 '''
 
-var_names = ['Kpath_TPI', 'b_mat', 'cinit',
+var_names = ['Kpath_TPI', 'b_mat', 'c_path',
              'eul_savings', 'eul_laborleisure', 'Lpath_TPI', 'BQpath_TPI',
              'n_mat', 'rinit', 'winit', 'Yinit', 'T_H_init', 'tax_path']
 dictionary = {}

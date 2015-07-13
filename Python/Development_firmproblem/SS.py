@@ -340,7 +340,7 @@ Kss = house.get_K(bssmat_splus1, omega_SS, g_n_ss)
 Lss = firm.get_L(e, nssmat, omega_SS)
 Yss = firm.get_Y(Kss, Lss, parameters)
 
-Iss = (np.exp(g_y) + g_n_ss*np.exp(g_y) -1.0 + delta) * Kss
+Iss = firm.get_I(Kss, Kss, delta, g_y, g_n_ss)
 
 theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS)
 BQss = house.get_BQ(rss, bssmat_splus1, omega_SS, rho.reshape(S, 1), g_n_ss)
@@ -348,7 +348,7 @@ b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
 taxss = tax.total_taxes(rss, b_s, wss, e, nssmat, BQss, lambdas, factor_ss, T_Hss, None, 'SS', False, parameters, theta, tau_bq)
 cssmat = house.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.reshape(1, J), bssmat_splus1, parameters, taxss)
 
-Css = (cssmat * omega_SS).sum()
+Css = house.get_C(cssmat, omega_SS)
 
 resource_constraint = Yss - (Css + Iss)
 

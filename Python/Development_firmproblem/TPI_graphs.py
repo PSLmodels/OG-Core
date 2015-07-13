@@ -26,6 +26,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import cPickle as pickle
 
+import firm_funcs as firm
+
 '''
 ------------------------------------------------------------------------
     Create variables for baseline TPI graphs
@@ -63,15 +65,16 @@ b1 = np.zeros((T, S, J))
 b1[:, 1:, :] = b_mat_init[:T, :-1, :]
 b2 = np.zeros((T, S, J))
 b2[:, :, :] = b_mat_init[:T, :, :]
-cinitbase = cinit
+c_path_init = c_path
 
-y_mat_init = cinitbase + b_mat_init[1:T+1] - (1-delta)*b_mat_init[:T]
+inv_mat_init = firm.get_I(b_mat_init[1:T+1], b_mat_init[:T], delta, g_y, g_n_vector[:T])
+y_mat_init = c_path_init + inv_mat_init
 
 # Lifetime Utility Graphs:
 c_ut_init = np.zeros((S, S, J))
 for s in xrange(S-1):
-    c_ut_init[:, s+1, :] = cinitbase[s+1:s+1+S, s+1, :]
-c_ut_init[:, 0, :] = cinitbase[:S, 0, :]
+    c_ut_init[:, s+1, :] = c_path_init[s+1:s+1+S, s+1, :]
+c_ut_init[:, 0, :] = c_path_init[:S, 0, :]
 L_ut_init = np.zeros((S, S, J))
 for s in xrange(S-1):
     L_ut_init[:, s+1, :] = n_mat_init[s+1:s+1+S, s+1, :]
@@ -95,7 +98,7 @@ utility_lifetime_init = utility.sum(1)
 
 # Period Utility Graphs
 beq_ut_period = chi_b.reshape(1, S, J) * (rho.reshape(1, S, 1)) * (b_mat_init[:S]**(1-sigma)-1)/(1-sigma)
-utility_period = ((cinitbase[:S] ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(1, S, 1) * (
+utility_period = ((c_path_init[:S] ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(1, S, 1) * (
     b_ellipse * (1-(n_mat_init[:S]/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
 utility_period += beq_ut_period
 utility_period *= beta_string.reshape(1, S, 1)
@@ -128,14 +131,14 @@ b1[:, 1:, :] = b_mat[:T, :-1, :]
 b2 = np.zeros((T, S, J))
 b2[:, :, :] = b_mat[:T, :, :]
 
-
-y_mat = cinit + b_mat[1:T+1] - (1-delta)*b_mat[:T]
+inv_mat = firm.get_I(b_mat[1:T+1], b_mat[:T], delta, g_y, g_n_vector[:T])
+y_mat = c_path + inv_mat
 
 # Lifetime Utility
 c_ut = np.zeros((S, S, J))
 for s in xrange(S-1):
-    c_ut[:, s+1, :] = cinit[s+1:s+1+S, s+1, :]
-c_ut[:, 0, :] = cinit[:S, 0, :]
+    c_ut[:, s+1, :] = c_path[s+1:s+1+S, s+1, :]
+c_ut[:, 0, :] = c_path[:S, 0, :]
 L_ut = np.zeros((S, S, J))
 for s in xrange(S-1):
     L_ut[:, s+1, :] = n_mat[s+1:s+1+S, s+1, :]
@@ -158,7 +161,7 @@ utility_lifetime = utility.sum(1)
 
 # Period Utility
 beq_ut_period = chi_b.reshape(1, S, J) * (rho.reshape(1, S, 1)) * (b_mat[:S]**(1-sigma)-1)/(1-sigma)
-utility_period = ((cinit[:S] ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(1, S, 1) * (
+utility_period = ((c_path[:S] ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(1, S, 1) * (
     b_ellipse * (1-(n_mat[:S]/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
 utility_period += beq_ut_period
 utility_period *= beta_string.reshape(1, S, 1)
@@ -448,8 +451,8 @@ plt.legend(loc=0)
 plt.savefig("OUTPUT/TPI/gini_y_cols")
 
 plt.figure()
-plt.plot(np.arange(T), gini_cols(cinitbase[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), gini_cols(cinit[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
+plt.plot(np.arange(T), gini_cols(c_path_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_cols(c_path[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{c}$")
 plt.legend(loc=0)
@@ -481,8 +484,8 @@ plt.legend(loc=0)
 plt.savefig("OUTPUT/TPI/gini_y_colj")
 
 plt.figure()
-plt.plot(np.arange(T), gini_colj(cinitbase[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), gini_colj(cinit[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
+plt.plot(np.arange(T), gini_colj(c_path_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_colj(c_path[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{c}$")
 plt.legend(loc=0)
@@ -513,8 +516,8 @@ plt.legend(loc=0)
 plt.savefig("OUTPUT/TPI/gini_y_nocol")
 
 plt.figure()
-plt.plot(np.arange(T), gini_nocol(cinitbase[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), gini_nocol(cinit[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
+plt.plot(np.arange(T), gini_nocol(c_path_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_nocol(c_path[:T], omega_stationary), 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{c}$")
 plt.legend(loc=0)
@@ -548,7 +551,7 @@ plt.legend(loc=0)
 plt.savefig("OUTPUT/TPIinit/gini_y_cols")
 
 plt.figure()
-plt.plot(np.arange(T), gini_cols(cinitbase[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_cols(c_path_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{c}$")
 plt.legend(loc=0)
@@ -576,7 +579,7 @@ plt.legend(loc=0)
 plt.savefig("OUTPUT/TPIinit/gini_y_colj")
 
 plt.figure()
-plt.plot(np.arange(T), gini_colj(cinitbase[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_colj(c_path_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{c}$")
 plt.legend(loc=0)
@@ -604,7 +607,7 @@ plt.legend(loc=0)
 plt.savefig("OUTPUT/TPIinit/gini_y_nocol")
 
 plt.figure()
-plt.plot(np.arange(T), gini_nocol(cinitbase[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), gini_nocol(c_path_init[:T], omega_stationary_init), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{c}$")
 plt.legend(loc=0)
@@ -664,7 +667,7 @@ print 'Starting movies'
 #     # ax5.set_zlim([-.20, .15])
 #     ax5.set_zlim([-.30, .30])
 #     ax5.set_title('T = {}'.format(t))
-#     ax5.plot_surface(X, Y, ((cinit[t] - cinitbase[t])/cinitbase[t]).T, rstride=1, cstride=1, cmap=cmap2)
+#     ax5.plot_surface(X, Y, ((c_path[t] - c_path_init[t])/c_path_init[t]).T, rstride=1, cstride=1, cmap=cmap2)
 #     name = "%03d" % t
 #     plt.savefig('OUTPUT/TPI/movies/c_dif/c_dif_T{}'.format(name))
 
@@ -688,7 +691,7 @@ print 'Starting movies'
 #     # ax5.set_zlim([-2.5, 1.1])
 #     # ax5.set_zlim([0, 2])
 #     ax5.set_title('T = {}'.format(t))
-#     ax5.plot_surface(X, Y, cinitbase[t].T, rstride=1, cstride=1, cmap=cmap2)
+#     ax5.plot_surface(X, Y, c_path_init[t].T, rstride=1, cstride=1, cmap=cmap2)
 #     name = "%03d" % t
 #     plt.savefig('OUTPUT/TPI/movies/cons_base/c_base_T{}'.format(name))
 
