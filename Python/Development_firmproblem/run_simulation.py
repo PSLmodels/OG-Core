@@ -141,7 +141,7 @@ p_wealth = 0.0
 tau_bq = np.zeros(J)
 tau_payroll = 0.15
 # Flag to prevent graphing from occuring in demographic, income, wealth, and labor files
-flag_graphs = False
+flag_graphs = True
 # Generate Income and Demographic parameters
 omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = demographics.get_omega(
     S, T, starting_age, ending_age, E, flag_graphs)

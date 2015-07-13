@@ -31,6 +31,7 @@ This py-file creates the following other file(s):
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import numpy.polynomial.polynomial as poly
 import scipy.optimize as opt
 
@@ -251,6 +252,7 @@ def get_immigration2(S, starting_age, ending_age, E):
         starting_age, ending_age, S+1), poly_imm_int)
     child_imm_rate = np.diff(child_imm_rate)
     imm_rate = np.diff(imm_rate)
+    imm_rate[-1] = 0.0
     return imm_rate, child_imm_rate
 
 '''
@@ -340,8 +342,8 @@ def rate_graphs(S, starting_age, ending_age, imm, fert, mort, child_imm, child_f
 
     # Graph of immigration rates
     plt.figure()
-    plt.plot(domain4, [child_imm[0]] + list(
-        child_imm)+list(imm[:-1]), linewidth=2, color='blue')
+    plt.plot(domain4, list(
+        child_imm)+list(imm), linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
     plt.ylabel(r'immigration $i_s$')
     plt.savefig('OUTPUT/Demographics/imm_rates')
@@ -421,7 +423,7 @@ def get_omega(S, T, starting_age, ending_age, E, flag_graphs):
     surv_array, children_rate = get_survival(S, starting_age, ending_age, E)
     surv_array[-1] = 0.0
     imm_array, children_im = get_immigration2(S, starting_age, ending_age, E)
-    imm_array *= 0.0
+    # imm_array *= 0.0
     fert_rate, children_fertrate = get_fert(S, starting_age, ending_age, E)
     cum_surv_rate = np.cumprod(surv_array)
     if flag_graphs:
@@ -441,8 +443,7 @@ def get_omega(S, T, starting_age, ending_age, E, flag_graphs):
         omega_big[t, 0] = children[t-1, -1] * (
             children_rate[-1] + children_im[-1])
         omega_big[t, 1:] = omega_big[t-1, :-1] * (
-            surv_array[:-1] + imm_array[
-                :-1])
+            surv_array[:-1] + imm_array[:-1])
         children[t, 1:] = children[t-1, :-1] * (
             children_rate[:-1] + children_im[:-1])
         children[t, 0] = ((omega_big[t-1, :] * fert_rate).sum(0) + (
@@ -474,7 +475,7 @@ def get_omega(S, T, starting_age, ending_age, E, flag_graphs):
     if flag_graphs:
         pop_graphs(S, T, starting_age, ending_age, children, g_n_SS[0], omega_big)
     N_vector = omega_big.sum(1)
-    g_n_vec = N_vector[1:] / N_vector[:-1] -1
+    g_n_vec = N_vector[1:] / N_vector[:-1] -1.0
     g_n_vec = np.append(g_n_vec, g_n_SS[0])
     rho = 1.0 - surv_array
     return omega_big, g_n_SS[0], omega_SS, surv_array, rho, g_n_vec
