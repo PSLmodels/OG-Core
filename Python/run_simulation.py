@@ -17,18 +17,18 @@ Import Packages
 ------------------------------------------------------------------------
 '''
 
+import numpy as np
 import cPickle as pickle
 import os
 from glob import glob
 from subprocess import call
+
+import dynamic
+dynamic.parameters.DATASET = 'REAL'
+
+import dynamic.SS
+import dynamic.TPI
 from dynamic import parameters, wealth, labor, demographics, income, SS, TPI
-import numpy as np
-
-#import income_polynomials as income
-#import demographics
-#import wealth_data
-#import labor_data
-
 
 '''
 ------------------------------------------------------------------------
@@ -88,14 +88,13 @@ rho    = S x 1 array of mortality rates
 ------------------------------------------------------------------------
 '''
 
-from dynamic.parameters import *
+globals().update(dynamic.parameters.get_parameters())
 
 # Flag to prevent graphing from occuring in demographic, income, wealth, and labor files
 flag_graphs = False
 # Generate Income and Demographic parameters
 omega, g_n, omega_SS, surv_rate = demographics.get_omega(S, J, T, lambdas, starting_age, ending_age, E, flag_graphs)
 #      S, J, T, lambdas, starting_age, ending_age, E, flag_graphs)
-#e = income.get_e()
 e = income.get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
 rho = 1-surv_rate
 rho[-1] = 1.0

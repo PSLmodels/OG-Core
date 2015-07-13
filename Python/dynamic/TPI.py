@@ -91,7 +91,8 @@ get_baseline = whether this is the baseline TPI or not
 ------------------------------------------------------------------------
 '''
 
-from dynamic.parameters import *
+from .parameters import get_parameters
+globals().update(get_parameters())
 
 def create_tpi_params(a_tax_income, b_tax_income, c_tax_income,
                       d_tax_income,
@@ -301,12 +302,13 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
         Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
         Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
         # Plot TPI for K for each iteration, so we can see if there is a problem
-        plt.figure()
-        plt.axhline(
-            y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
-        plt.plot(np.arange(
-            T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
-        plt.savefig("OUTPUT/TPI_K")
+        if PLOT_TPI == True:
+            plt.figure()
+            plt.axhline(
+                y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
+            plt.plot(np.arange(
+                T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
+            plt.savefig("OUTPUT/TPI_K")
         # Uncomment the following print statements to make sure all euler equations are converging
         for j in xrange(J):
             b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],

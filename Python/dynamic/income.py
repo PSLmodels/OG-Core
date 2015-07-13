@@ -190,4 +190,3 @@ def get_e(S, J, starting_age, ending_age, bin_weights, omega_SS, flag_graphs):
         graph_income(S, J, e_final, starting_age, ending_age, bin_weights)
     e_final /= (e_final * omega_SS).sum()
     return e_final
-  
