@@ -187,7 +187,7 @@ param_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
              'a_tax_income', 'chi_b_guess', 'chi_n_guess',
              'b_tax_income', 'c_tax_income', 'd_tax_income',
              'tau_payroll', 'tau_bq', 'calibrate_model',
-             'retire', 'mean_income_data',
+             'retire', 'mean_income_data', 'g_n_vector',
              'h_wealth', 'p_wealth', 'm_wealth', 'get_baseline',
              'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'e', 'rho']
 
@@ -212,7 +212,7 @@ import SS
 ------------------------------------------------------------------------
 '''
 
-# import TPI
+import TPI
 
 '''
 ------------------------------------------------------------------------

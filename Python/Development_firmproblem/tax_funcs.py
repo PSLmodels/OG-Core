@@ -59,7 +59,7 @@ def replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS):
 
 
 def tau_wealth(b, params):
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     h = h_wealth
     m = m_wealth
     p = p_wealth
@@ -68,7 +68,7 @@ def tau_wealth(b, params):
 
 
 def tau_w_prime(b, params):
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     h = h_wealth
     m = m_wealth
     p = p_wealth
@@ -81,7 +81,7 @@ def tau_income(r, b, w, e, n, factor, params):
     Gives income tax value at a
     certain income level
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     a = a_tax_income
     b = b_tax_income
     c = c_tax_income
@@ -99,7 +99,7 @@ def tau_income_deriv(r, b, w, e, n, factor, params):
     Gives derivative of income tax value at a
     certain income level
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     a = a_tax_income
     b = b_tax_income
     c = c_tax_income
@@ -113,7 +113,7 @@ def tau_income_deriv(r, b, w, e, n, factor, params):
 
 
 def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, weights, method, params, theta, tau_bq):
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor, params) * I
     T_P = tau_payroll * w * e * n
@@ -130,7 +130,7 @@ def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, weights, method, params, th
 
 
 def total_taxes(r, b, w, e, n, BQ, lambdas, factor, T_H, j, method, shift, params, theta, tau_bq):
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor, params) * I
     T_P = tau_payroll * w * e * n

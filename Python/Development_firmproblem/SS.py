@@ -101,21 +101,21 @@ if get_baseline is False:
 income_tax_params = [a_tax_income, b_tax_income, c_tax_income, d_tax_income]
 wealth_tax_params = [h_wealth, p_wealth, m_wealth]
 ellipse_params = [b_ellipse, upsilon]
-parameters = [J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data] + income_tax_params + wealth_tax_params + ellipse_params
+parameters = [J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data] + income_tax_params + wealth_tax_params + ellipse_params
 iterative_params = [maxiter, mindist_SS]
 
 # Functions
 
 
 def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e):
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     b_guess = np.array(guesses[:S])
     n_guess = np.array(guesses[S:])
     b_s = np.array([0] + list(b_guess[:-1]))
     b_splus1 = b_guess
     b_splus2 = np.array(list(b_guess[1:]) + [0])
 
-    BQ = house.get_BQ(r, b_splus1, weights[:, j], rho)/ (1.0 + g_n_ss)
+    BQ = house.get_BQ(r, b_splus1, weights[:, j], rho, g_n_ss)
     theta = tax.replacement_rate_vals(n_guess, w, factor, e[:,j], J, weights[:, j])
 
     error1 = house.euler_savings_func(w, r, e[:, j], n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_H, chi_b[j], params, theta, tau_bq[j], rho, lambdas[j])
@@ -137,7 +137,7 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n, t
 
 
 def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess, chi_n, chi_b, params, iterative_params, tau_bq, rho, lambdas, weights, e):
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     maxiter, mindist_SS = iterative_params
     w = wguess
     r = rguess
@@ -159,7 +159,7 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
             nssmat[:,j] = solutions[S:]
             # print np.array(Euler_equation_solver(np.append(bssmat[:, j], nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, e)).max()
 
-        K = house.get_K(bssmat, weights)/ (1+g_n_ss)
+        K = house.get_K(bssmat, weights, g_n_ss)
         L = firm.get_L(e, nssmat, weights)
         Y = firm.get_Y(K, L, params)
         new_r = firm.get_r(Y, K, params)
@@ -167,7 +167,7 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
         b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
         average_income_model = ((new_r * b_s + new_w * e * nssmat) * weights).sum()
         new_factor = mean_income_data / average_income_model 
-        new_BQ = house.get_BQ(new_r, bssmat, weights, rho.reshape(S, 1)) / (1.0 + g_n_ss)
+        new_BQ = house.get_BQ(new_r, bssmat, weights, rho.reshape(S, 1), g_n_ss)
         theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, e, J, weights)
         new_T_H = tax.get_lump_sum(new_r, b_s, new_w, e, nssmat, new_BQ, lambdas, factor, weights, 'SS', params, theta, tau_bq)
 
@@ -211,7 +211,7 @@ def function_to_minimize(chi_params_scalars, chi_params_init, params, weights_SS
         The max absolute deviation between the actual and simulated
             wealth moments
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     chi_params_init *= chi_params_scalars
     # print 'Print Chi_b: ', chi_params_init[:J]
     # print 'Scaling vals:', chi_params_scalars[:J]
@@ -336,14 +336,14 @@ bssmat_splus1 = np.array(list(bssmat) + list(bq.reshape(1, J)))
 nssmat = solutions[S * J:2*S*J].reshape(S, J)
 wss, rss, factor_ss, T_Hss = solutions[2*S*J:]
 
-Kss = house.get_K(bssmat_splus1, omega_SS) / (1.0 + g_n_ss)
+Kss = house.get_K(bssmat_splus1, omega_SS, g_n_ss)
 Lss = firm.get_L(e, nssmat, omega_SS)
 Yss = firm.get_Y(Kss, Lss, parameters)
 
 Iss = (np.exp(g_y) + g_n_ss*np.exp(g_y) -1.0 + delta) * Kss
 
 theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS)
-BQss = house.get_BQ(rss, bssmat_splus1, omega_SS, rho.reshape(S, 1)) / (1.0 + g_n_ss)
+BQss = house.get_BQ(rss, bssmat_splus1, omega_SS, rho.reshape(S, 1), g_n_ss)
 b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
 taxss = tax.total_taxes(rss, b_s, wss, e, nssmat, BQss, lambdas, factor_ss, T_Hss, None, 'SS', False, parameters, theta, tau_bq)
 cssmat = house.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.reshape(1, J), bssmat_splus1, parameters, taxss)

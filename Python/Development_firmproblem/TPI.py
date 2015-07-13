@@ -119,7 +119,7 @@ Set other parameters and initial values
 income_tax_params = [a_tax_income, b_tax_income, c_tax_income, d_tax_income]
 wealth_tax_params = [h_wealth, p_wealth, m_wealth]
 ellipse_params = [b_ellipse, upsilon]
-parameters = [J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data] + income_tax_params + wealth_tax_params + ellipse_params
+parameters = [J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data] + income_tax_params + wealth_tax_params + ellipse_params
 
 N_tilde = omega.sum(1).sum(1)
 omega_stationary = omega / N_tilde.reshape(T+S, 1, 1)
@@ -131,7 +131,7 @@ else:
     initial_b = bssmat_init
     initial_n = nssmat_init
 # the following needs a g_n term
-K0 = house.get_K(initial_b, omega_stationary[0])
+K0 = house.get_K(initial_b, omega_stationary[0], g_n_vector[0])
 b_sinit = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_b[:-1]))
 b_splus1init = initial_b
 L0 = firm.get_L(e, initial_n, omega_stationary[0])
@@ -139,7 +139,7 @@ Y0 = firm.get_Y(K0, L0, parameters)
 w0 = firm.get_w(Y0, L0, parameters)
 r0 = firm.get_r(Y0, K0, parameters)
 # the following needs a g_n term
-BQ0 = house.get_BQ(r0, initial_b, omega_stationary[0], rho.reshape(S, 1))
+BQ0 = house.get_BQ(r0, initial_b, omega_stationary[0], rho.reshape(S, 1), g_n_vector[0])
 T_H_0 = tax.get_lump_sum(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, omega_stationary[0], 'SS', parameters, theta, tau_bq)
 tax0 = tax.total_taxes(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, T_H_0, None, 'SS', False, parameters, theta, tau_bq)
 c0 = house.get_cons(r0, b_sinit, w0, e, initial_n, BQ0.reshape(1, J), lambdas.reshape(1, J), b_splus1init, parameters, tax0)
@@ -188,7 +188,7 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
         Value of Euler error. (as an 2*S*J x 1 list)
     '''
 
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     length = len(guesses)/2
     b_guess = np.array(guesses[:length])
     n_guess = np.array(guesses[length:])
@@ -325,7 +325,7 @@ while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
     #     print 't-loop:', euler_errors.max()
     
     b_mat[0, :, :] = initial_b
-    Kinit = (omega_stationary[:T, :, :] * b_mat[:T, :, :]).sum(2).sum(1)
+    Kinit = (omega_stationary[:T, :, :] * b_mat[:T, :, :]).sum(2).sum(1) / (1.0 + g_n_vector[:T])
     Linit = (omega_stationary[:T, :, :] * e.reshape(
         1, S, J) * n_mat[:T, :, :]).sum(2).sum(1)
 
@@ -333,7 +333,7 @@ while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
     wnew = firm.get_w(Ynew, Linit, parameters)
     rnew = firm.get_r(Ynew, Kinit, parameters)
     # the following needs a g_n term
-    BQnew = (1+rnew.reshape(T, 1))*(b_mat[:T] * omega_stationary[:T] * rho.reshape(1, S, 1)).sum(1)
+    BQnew = (1+rnew.reshape(T, 1))*(b_mat[:T] * omega_stationary[:T] * rho.reshape(1, S, 1)).sum(1) / (1.0 + g_n_vector[:T].reshape(T, 1))
     bmat_s = np.zeros((T, S, J))
     bmat_s[:, 1:, :] = b_mat[:T, :-1, :]
     T_H_new = np.array(list(tax.get_lump_sum(rnew.reshape(T, 1, 1), bmat_s, wnew.reshape(

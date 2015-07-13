@@ -19,18 +19,20 @@ import tax_funcs as tax
 '''
 
 
-def get_K(b, weights):
+def get_K(b, weights, g_n):
     '''
     Inputs: b, weights
 
     Returns:    Aggregate Capital
     '''
     K_now = np.sum(b * weights)
+    K_now /= 1.0 + g_n
     return K_now
 
 
-def get_BQ(r, b_splus1, weights, rho):
+def get_BQ(r, b_splus1, weights, rho, g_n):
     BQ = (1+r) * (b_splus1 * weights * rho).sum(0)
+    BQ /= 1.0 + g_n
     return BQ
 
 
@@ -40,7 +42,7 @@ def marg_ut_cons(c, params):
 
     Returns:    Marginal Utility of Consumption
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     output = c**(-sigma)
     return output
 
@@ -51,7 +53,7 @@ def marg_ut_labor(n, chi_n, params):
 
     Returns:    Marginal Utility of Labor
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     deriv = b_ellipse * (1.0/ltilde) * ((1.0 - (n / ltilde) ** upsilon) ** (
         (1.0/upsilon)-1.0)) * (n / ltilde) ** (upsilon - 1.0)
     output = chi_n * deriv
@@ -65,9 +67,14 @@ def get_cons(r, b_s, w, e, n, BQ, lambdas, b_splus1, params, net_tax):
 
     Returns:    Consumption
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     cons = (1 + r)*b_s + w*e*n + BQ / lambdas - b_splus1*np.exp(g_y) - net_tax
     return cons
+
+
+def get_C(individ_cons, weights):
+    aggC = (individ_cons * weights).sum()
+    return aggC
 
 
 def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_H, chi_b, params, theta, tau_bq, rho, lambdas):
@@ -93,7 +100,7 @@ def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_
     Returns:
         Value of Euler error.
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     e_extended = np.array(list(e) + [0])
     n_extended = np.array(list(n_guess) + [0])
     tax1 = tax.total_taxes(r, b_s, w, e, n_guess, BQ, lambdas, factor, T_H, None, 'SS', False, params, theta, tau_bq)
@@ -131,7 +138,7 @@ def euler_labor_leisure_func(w, r, e, n_guess, b_s, b_splus1, BQ, factor, T_H, c
     Returns:
         Value of Euler error.
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     tax1 = tax.total_taxes(r, b_s, w, e, n_guess, BQ, lambdas, factor, T_H, None, 'SS', False, params, theta, tau_bq)
     cons = get_cons(r, b_s, w, e, n_guess, BQ, lambdas, b_splus1, params, tax1)
     income = (r * b_s + w * e * n_guess) * factor
@@ -158,7 +165,7 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, params):
             consumption constraints.
     '''
     print 'Checking constraints on capital, labor, and consumption.'
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     flag1 = False
     if bssmat.sum() <= 0:
         print '\tWARNING: Aggregate capital is less than or equal to zero.'
@@ -195,7 +202,7 @@ def constraint_checker_TPI(b_dist, n_dist, c_dist, t, params, N_tilde):
         Prints warnings for violations of capital, labor, and
             consumption constraints.
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     if b_dist.sum() / N_tilde[t] <= 0:
         print '\tWARNING: Aggregate capital is less than or equal to ' \
             'zero in period %.f.' % t
