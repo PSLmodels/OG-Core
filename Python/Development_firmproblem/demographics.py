@@ -295,9 +295,8 @@ def get_fert(S, starting_age, ending_age, E):
 '''
 
 
-def rate_graphs(S, starting_age, ending_age, imm, fert, mort, child_imm, child_fert, child_mort):
+def rate_graphs(S, starting_age, ending_age, imm, fert, surv, child_imm, child_fert, child_mort):
     domain = np.arange(child_fert.shape[0] + S) + 1
-    # mort = 1.0 - np.array(list(child_mort) + list(mort))
     mort = mort_data.mort_rate
     domain2 = np.arange(mort.shape[0]) + 1
     domain4 = np.arange(child_imm.shape[0] + imm.shape[0]) + 1
@@ -312,8 +311,7 @@ def rate_graphs(S, starting_age, ending_age, imm, fert, mort, child_imm, child_f
 
     # Graph of mortality rates
     plt.figure()
-    plt.plot(domain2[:ending_age], mort[
-        :ending_age], color='blue', linewidth=2)
+    plt.plot(domain2[:ending_age-1], (1-np.array(list(child_mort)+list(surv)))[:-1], color='blue', linewidth=2)
     plt.plot(domain2[ending_age:], mort[
         ending_age:], color='blue', linestyle='--', linewidth=2)
     plt.axvline(x=ending_age, color='red', linestyle='-', linewidth=1)
@@ -321,11 +319,8 @@ def rate_graphs(S, starting_age, ending_age, imm, fert, mort, child_imm, child_f
     plt.ylabel(r'mortality $\rho_s$')
     plt.savefig('OUTPUT/Demographics/mort_rates')
 
-    surv_arr = 1-mort
-    cum_surv_arr = np.zeros(len(mort))
-    for i in xrange(len(mort)):
-        cum_surv_arr[i] = np.prod(surv_arr[:i])
-    domain3 = np.arange(mort.shape[0]) + 1
+    cum_surv_arr = np.cumprod(surv)
+    domain3 = np.arange(surv.shape[0]) + 1
 
     # Graph of cumulative mortality rates
     plt.figure()
@@ -427,8 +422,6 @@ def get_omega(S, T, starting_age, ending_age, E, flag_graphs):
     fert_rate, children_fertrate = get_fert(S, starting_age, ending_age, E)
     cum_surv_rate = np.cumprod(surv_array)
     if flag_graphs:
-        import matplotlib
-        import matplotlib.pyplot as plt
         rate_graphs(S, starting_age, ending_age, imm_array, fert_rate, surv_array, children_im, children_fertrate, children_rate)
     children_int = poly.polyval(np.linspace(0, starting_age, E + 1), poly_int_pop)
     sum2010 = pop_int[-1] - children_int[0]
@@ -440,20 +433,13 @@ def get_omega(S, T, starting_age, ending_age, E, flag_graphs):
     # Generate the time path for each age group
     for t in xrange(1, T + S):
         # Children are born and then have to wait 20 years to enter the model
-        omega_big[t, 0] = children[t-1, -1] * (
-            children_rate[-1] + children_im[-1])
-        omega_big[t, 1:] = omega_big[t-1, :-1] * (
-            surv_array[:-1] + imm_array[:-1])
-        children[t, 1:] = children[t-1, :-1] * (
-            children_rate[:-1] + children_im[:-1])
-        children[t, 0] = ((omega_big[t-1, :] * fert_rate).sum(0) + (
-            children[t-1] * children_fertrate).sum(0)) * (1 + children_im[0])
+        omega_big[t, 0] = children[t-1, -1] * (children_rate[-1] + children_im[-1])
+        omega_big[t, 1:] = omega_big[t-1, :-1] * (surv_array[:-1] + imm_array[:-1])
+        children[t, 1:] = children[t-1, :-1] * (children_rate[:-1] + children_im[:-1])
+        children[t, 0] = (omega_big[t-1, :] * fert_rate).sum(0) + (children[t-1] * children_fertrate).sum(0)
     OMEGA = np.zeros(((S + E), (S + E)))
-    OMEGA[0, :] = np.array(list(children_fertrate) + list(
-        fert_rate)) * (1 + children_im[0])
-    OMEGA += np.diag(np.array(list(children_rate[:]) + list(
-        surv_array[:-1])) + np.array(list(children_im) + list(
-            imm_array[:-1])), -1)
+    OMEGA[0, :] = np.array(list(children_fertrate) + list(fert_rate))
+    OMEGA += np.diag(np.array(list(children_rate[:]) + list(surv_array[:-1])) + np.array(list(children_im) + list(imm_array[:-1])), -1)
     eigvalues, eigvectors = np.linalg.eig(OMEGA)
     mask = eigvalues.real != 0
     eigvalues = eigvalues[mask]
@@ -464,9 +450,7 @@ def get_omega(S, T, starting_age, ending_age, E, flag_graphs):
     eigvectors = eigvectors[mask]
     omega_SS = eigvectors[mask2].real
     if eigvalues.shape[0] != 1:
-        ind = ((abs(omega_SS.T/omega_SS.T.sum(0) - np.array(
-            list(children[-1, :]) + list(omega_big[-1, :])).reshape(
-            S+E, 1)).sum(0))).argmin()
+        ind = ((abs(omega_SS.T/omega_SS.T.sum(0) - np.array(list(children[-1, :]) + list(omega_big[-1, :])).reshape(S+E, 1)).sum(0))).argmin()
         omega_SS = omega_SS[ind]
         g_n_SS = [g_n_SS[ind]]
     omega_SS = omega_SS[E:]
@@ -477,5 +461,7 @@ def get_omega(S, T, starting_age, ending_age, E, flag_graphs):
     N_vector = omega_big.sum(1)
     g_n_vec = N_vector[1:] / N_vector[:-1] -1.0
     g_n_vec = np.append(g_n_vec, g_n_SS[0])
+    print imm_array
+    print children_im
     rho = 1.0 - surv_array
     return omega_big, g_n_SS[0], omega_SS, surv_array, rho, g_n_vec

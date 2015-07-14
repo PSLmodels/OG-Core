@@ -141,7 +141,7 @@ p_wealth = 0.0
 tau_bq = np.zeros(J)
 tau_payroll = 0.15
 # Flag to prevent graphing from occuring in demographic, income, wealth, and labor files
-flag_graphs = True
+flag_graphs = False
 # Generate Income and Demographic parameters
 omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = demographics.get_omega(
     S, T, starting_age, ending_age, E, flag_graphs)
@@ -204,7 +204,7 @@ for key in param_names:
     dictionary[key] = globals()[key]
 pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
 
-import SS
+# import SS
 
 '''
 ------------------------------------------------------------------------
