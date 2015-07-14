@@ -67,7 +67,7 @@ b2 = np.zeros((T, S, J))
 b2[:, :, :] = b_mat_init[:T, :, :]
 c_path_init = c_path
 
-inv_mat_init = firm.get_I(b_mat_init[1:T+1], b_mat_init[:T], delta, g_y, g_n_vector[:T])
+inv_mat_init = firm.get_I(b_mat_init[1:T+1], b_mat_init[:T], delta, g_y, g_n_vector[:T].reshape(T, 1, 1))
 y_mat_init = c_path_init + inv_mat_init
 
 # Lifetime Utility Graphs:
@@ -112,15 +112,15 @@ utility_period_init = utility_period.sum(1)
 '''
 
 
-variables = pickle.load(open("OUTPUT/SS/ss_vars.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
-variables = pickle.load(open("OUTPUT/TPI/TPI_vars.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
-variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "r"))
-for key in variables:
-    globals()[key] = variables[key]
+# variables = pickle.load(open("OUTPUT/SS/ss_vars.pkl", "r"))
+# for key in variables:
+#     globals()[key] = variables[key]
+# variables = pickle.load(open("OUTPUT/TPI/TPI_vars.pkl", "r"))
+# for key in variables:
+#     globals()[key] = variables[key]
+# variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "r"))
+# for key in variables:
+#     globals()[key] = variables[key]
 
 N_tilde = omega.sum(1)
 omega_stationary = omega / N_tilde.reshape(T+S, 1)
@@ -131,7 +131,7 @@ b1[:, 1:, :] = b_mat[:T, :-1, :]
 b2 = np.zeros((T, S, J))
 b2[:, :, :] = b_mat[:T, :, :]
 
-inv_mat = firm.get_I(b_mat[1:T+1], b_mat[:T], delta, g_y, g_n_vector[:T])
+inv_mat = firm.get_I(b_mat[1:T+1], b_mat[:T], delta, g_y, g_n_vector[:T].reshape(T, 1, 1))
 y_mat = c_path + inv_mat
 
 # Lifetime Utility
@@ -206,15 +206,15 @@ plt.legend(loc=0)
 plt.savefig("OUTPUT/TPIinit/TPI_L")
 
 plt.figure()
-plt.plot(np.arange(T), (y_mat_init*omega_stationary_gini).sum(1).sum(1)[:T], 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), (y_mat*omega_stationary_gini).sum(1).sum(1)[:T], 'g--', linewidth=2, label="Tax")
+plt.plot(np.arange(T), (y_mat_init*omega_stationary.reshape(T, S, 1)*lambdas).sum(1).sum(1)[:T], 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), (y_mat*omega_stationary.reshape(T, S, 1)*lambdas).sum(1).sum(1)[:T], 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Aggregate Output $\hat{Y}$")
 plt.legend(loc=0)
 plt.savefig("OUTPUT/TPI/TPI_Y")
 
 plt.figure()
-plt.plot(np.arange(T), (y_mat_init*omega_stationary_gini).sum(1).sum(1)[:T], 'b', linewidth=2, label='Baseline')
+plt.plot(np.arange(T), (y_mat_init*omega_stationary.reshape(T, S, 1)*lambdas).sum(1).sum(1)[:T], 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Aggregate Output $\hat{Y}$")
 plt.legend(loc=0)
@@ -425,8 +425,8 @@ def gini_nocol(path, omega):
 ------------------------------------------------------------------------
 '''
 
-omega_stationary_init_gini = np.tile(omega_stationary_init.reshape(T, 1, 1), (1, 1, J))
-omega_stationary_gini = np.ile(omega_stationary.reshape(T, 1, 1), (1, 1, J))
+omega_stationary_init_gini = np.tile(omega_stationary_init.reshape(T, S, 1), (1, 1, J)) * lambdas
+omega_stationary_gini = np.tile(omega_stationary.reshape(T, S, 1), (1, 1, J)) * lambdas
 
 
 plt.figure()

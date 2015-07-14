@@ -418,7 +418,7 @@ def get_omega(S, T, starting_age, ending_age, E, flag_graphs):
     surv_array, children_rate = get_survival(S, starting_age, ending_age, E)
     surv_array[-1] = 0.0
     imm_array, children_im = get_immigration2(S, starting_age, ending_age, E)
-    # imm_array *= 0.0
+    imm_array *= 0.0
     fert_rate, children_fertrate = get_fert(S, starting_age, ending_age, E)
     cum_surv_rate = np.cumprod(surv_array)
     if flag_graphs:
@@ -439,7 +439,7 @@ def get_omega(S, T, starting_age, ending_age, E, flag_graphs):
         children[t, 0] = (omega_big[t-1, :] * fert_rate).sum(0) + (children[t-1] * children_fertrate).sum(0)
     OMEGA = np.zeros(((S + E), (S + E)))
     OMEGA[0, :] = np.array(list(children_fertrate) + list(fert_rate))
-    OMEGA += np.diag(np.array(list(children_rate[:]) + list(surv_array[:-1])) + np.array(list(children_im) + list(imm_array[:-1])), -1)
+    OMEGA += np.diag(np.array(list(children_rate) + list(surv_array[:-1])) + np.array(list(children_im) + list(imm_array[:-1])), -1)
     eigvalues, eigvectors = np.linalg.eig(OMEGA)
     mask = eigvalues.real != 0
     eigvalues = eigvalues[mask]
@@ -461,7 +461,5 @@ def get_omega(S, T, starting_age, ending_age, E, flag_graphs):
     N_vector = omega_big.sum(1)
     g_n_vec = N_vector[1:] / N_vector[:-1] -1.0
     g_n_vec = np.append(g_n_vec, g_n_SS[0])
-    print imm_array
-    print children_im
     rho = 1.0 - surv_array
     return omega_big, g_n_SS[0], omega_SS, surv_array, rho, g_n_vec

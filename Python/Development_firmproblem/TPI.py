@@ -109,6 +109,8 @@ else:
     for key in variables:
         globals()[key] = variables[key]
 
+maxiter = 3
+
 '''
 ------------------------------------------------------------------------
 Set other parameters and initial values
@@ -396,8 +398,8 @@ for j in xrange(J):
 
 b_mat[0, :, :] = initial_b
 
-Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
-Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
+Kpath_TPI = np.array(list(Kinit) + list(np.ones(10)*Kss))
+Lpath_TPI = np.array(list(Linit) + list(np.ones(10)*Lss))
 BQpath_TPI = np.array(list(BQinit) + list(np.ones((10, J))*BQss))
 
 
@@ -411,9 +413,9 @@ tax_path = tax.total_taxes(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T,
 c_path = house.get_cons(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b_splus1, parameters, tax_path)
 
 Y_path = firm.get_Y(Kpath_TPI[:T], Lpath_TPI[:T], parameters)
-C_path = (c_path * omega_stationary * lambdas).sum(1).sum(1)
+C_path = (c_path * omega_stationary[:T].reshape(T, S, 1) * lambdas).sum(1).sum(1)
 I_path = firm.get_I(Kpath_TPI[1:T+1], Kpath_TPI[:T], delta, g_y, g_n_vector[:T])
-print 'Resource Constraint Difference:', Ypath - C_path - I_path
+print 'Resource Constraint Difference:', Y_path - C_path - I_path
 
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
