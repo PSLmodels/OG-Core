@@ -109,8 +109,6 @@ else:
     for key in variables:
         globals()[key] = variables[key]
 
-maxiter = 3
-
 '''
 ------------------------------------------------------------------------
 Set other parameters and initial values
