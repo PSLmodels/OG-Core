@@ -1,8 +1,8 @@
 '''
 ------------------------------------------------------------------------
-Last updated 6/19/2015
+Last updated 7/13/2015
 
-Functions for generating omega, the T x S x J array which describes the
+Functions for generating omega, the T x S array which describes the
 demographics of the population
 
 This py-file calls the following other file(s):
@@ -31,6 +31,7 @@ This py-file creates the following other file(s):
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import numpy.polynomial.polynomial as poly
 import scipy.optimize as opt
 
@@ -143,13 +144,11 @@ def exp_int(points, a, b):
 
 def integrate(func, points):
     params_guess = [1, 1]
-    a, b = opt.fsolve(fit_exp_right, params_guess, args=(
-        [40, poly.polyval(40, func)], [49.5, .0007]))
+    a, b = opt.fsolve(fit_exp_right, params_guess, args=([40, poly.polyval(40, func)], [49.5, .0007]))
     func_int = poly.polyint(func)
     integral = np.empty(points.shape)
     integral[points <= 40] = poly.polyval(points[points <= 40], func_int)
-    integral[points > 40] = poly.polyval(40, func_int) + exp_int(
-        points[points > 40], a, b)
+    integral[points > 40] = poly.polyval(40, func_int) + exp_int(points[points > 40], a, b)
     return np.diff(integral)
 
 '''
@@ -253,6 +252,7 @@ def get_immigration2(S, starting_age, ending_age, E):
         starting_age, ending_age, S+1), poly_imm_int)
     child_imm_rate = np.diff(child_imm_rate)
     imm_rate = np.diff(imm_rate)
+    imm_rate[-1] = 0.0
     return imm_rate, child_imm_rate
 
 '''
@@ -269,9 +269,9 @@ def get_fert(S, starting_age, ending_age, E):
         starting age - initial age of cohorts
 
     Returns:
-        fert_rate_condensed - S x J array of fertility rates for each
+        fert_rate - Sx1 array of fertility rates for each
             age cohort
-        children_fertrate  - starting_age x J array of zeros, to be
+        children_fertrate  - starting_age x 1 array of zeros, to be
             used in get_omega()
     '''
     # Fit a polynomial to the fertility rates
@@ -295,9 +295,8 @@ def get_fert(S, starting_age, ending_age, E):
 '''
 
 
-def rate_graphs(S, starting_age, ending_age, imm, fert, mort, child_imm, child_fert, child_mort):
+def rate_graphs(S, starting_age, ending_age, imm, fert, surv, child_imm, child_fert, child_mort):
     domain = np.arange(child_fert.shape[0] + S) + 1
-    # mort = 1.0 - np.array(list(child_mort) + list(mort))
     mort = mort_data.mort_rate
     domain2 = np.arange(mort.shape[0]) + 1
     domain4 = np.arange(child_imm.shape[0] + imm.shape[0]) + 1
@@ -312,8 +311,7 @@ def rate_graphs(S, starting_age, ending_age, imm, fert, mort, child_imm, child_f
 
     # Graph of mortality rates
     plt.figure()
-    plt.plot(domain2[:ending_age], mort[
-        :ending_age], color='blue', linewidth=2)
+    plt.plot(domain2[:ending_age-1], (1-np.array(list(child_mort)+list(surv)))[:-1], color='blue', linewidth=2)
     plt.plot(domain2[ending_age:], mort[
         ending_age:], color='blue', linestyle='--', linewidth=2)
     plt.axvline(x=ending_age, color='red', linestyle='-', linewidth=1)
@@ -321,11 +319,8 @@ def rate_graphs(S, starting_age, ending_age, imm, fert, mort, child_imm, child_f
     plt.ylabel(r'mortality $\rho_s$')
     plt.savefig('OUTPUT/Demographics/mort_rates')
 
-    surv_arr = 1-mort
-    cum_surv_arr = np.zeros(len(mort))
-    for i in xrange(len(mort)):
-        cum_surv_arr[i] = np.prod(surv_arr[:i])
-    domain3 = np.arange(mort.shape[0]) + 1
+    cum_surv_arr = np.cumprod(surv)
+    domain3 = np.arange(surv.shape[0]) + 1
 
     # Graph of cumulative mortality rates
     plt.figure()
@@ -342,8 +337,8 @@ def rate_graphs(S, starting_age, ending_age, imm, fert, mort, child_imm, child_f
 
     # Graph of immigration rates
     plt.figure()
-    plt.plot(domain4, [child_imm[0]] + list(
-        child_imm)+list(imm[:-1]), linewidth=2, color='blue')
+    plt.plot(domain4, list(
+        child_imm)+list(imm), linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
     plt.ylabel(r'immigration $i_s$')
     plt.savefig('OUTPUT/Demographics/imm_rates')
@@ -357,7 +352,7 @@ Generate graphs of Population
 
 def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
     N = omega[T].sum() + children[T].sum()
-    x = children.sum(1).sum(1) + omega.sum(1).sum(1)
+    x = children.sum(1) + omega.sum(1)
     x2 = 100 * np.diff(x)/x[:-1]
 
     plt.figure()
@@ -379,8 +374,8 @@ def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
     plt.figure()
     plt.plot(np.arange(S+int(starting_age * S / (
         ending_age-starting_age)))+1, list(
-        children[0, :, :].sum(1)) + list(
-        omega[0, :, :].sum(1)), linewidth=2, color='blue')
+        children[0, :]) + list(
+        omega[0, :]), linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
     plt.ylabel(r'$\omega_{s,1}$')
     plt.savefig('OUTPUT/Demographics/omega_init')
@@ -388,8 +383,8 @@ def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
     plt.figure()
     plt.plot(np.arange(S+int(starting_age * S / (
         ending_age-starting_age)))+1, list(
-        children[T, :, :].sum(1)/N) + list(
-        omega[T, :, :].sum(1)/N), linewidth=2, color='blue')
+        children[T, :]/N) + list(
+        omega[T, :]/N), linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
     plt.ylabel(r'$\overline{\omega}$')
     plt.savefig('OUTPUT/Demographics/omega_ss')
@@ -401,14 +396,13 @@ def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
 '''
 
 
-def get_omega(S, J, T, bin_weights, starting_age, ending_age, E, flag_graphs):
+def get_omega(S, T, starting_age, ending_age, E, flag_graphs):
     '''
     Parameters:
         S - Number of age cohorts
         J - Number of ability types
         T - number of time periods in TPI
         starting age - initial age of cohorts
-        bin_weights - weights for each ability type in each age cohort
 
     Returns:
 
@@ -422,12 +416,12 @@ def get_omega(S, J, T, bin_weights, starting_age, ending_age, E, flag_graphs):
         starting_age, ending_age, S+1), poly_int_pop)
     new_omega = pop_int[1:]-pop_int[:-1]
     surv_array, children_rate = get_survival(S, starting_age, ending_age, E)
+    surv_array[-1] = 0.0
     imm_array, children_im = get_immigration2(S, starting_age, ending_age, E)
+    imm_array *= 0.0
     fert_rate, children_fertrate = get_fert(S, starting_age, ending_age, E)
     cum_surv_rate = np.cumprod(surv_array)
     if flag_graphs:
-        import matplotlib
-        import matplotlib.pyplot as plt
         rate_graphs(S, starting_age, ending_age, imm_array, fert_rate, surv_array, children_im, children_fertrate, children_rate)
     children_int = poly.polyval(np.linspace(0, starting_age, E + 1), poly_int_pop)
     sum2010 = pop_int[-1] - children_int[0]
@@ -439,21 +433,13 @@ def get_omega(S, J, T, bin_weights, starting_age, ending_age, E, flag_graphs):
     # Generate the time path for each age group
     for t in xrange(1, T + S):
         # Children are born and then have to wait 20 years to enter the model
-        omega_big[t, 0] = children[t-1, -1] * (
-            children_rate[-1] + children_im[-1])
-        omega_big[t, 1:] = omega_big[t-1, :-1] * (
-            surv_array[:-1] + imm_array[
-                :-1])
-        children[t, 1:] = children[t-1, :-1] * (
-            children_rate[:-1] + children_im[:-1])
-        children[t, 0] = ((omega_big[t-1, :] * fert_rate).sum(0) + (
-            children[t-1] * children_fertrate).sum(0)) * (1 + children_im[0])
+        omega_big[t, 0] = children[t-1, -1] * (children_rate[-1] + children_im[-1])
+        omega_big[t, 1:] = omega_big[t-1, :-1] * (surv_array[:-1] + imm_array[:-1])
+        children[t, 1:] = children[t-1, :-1] * (children_rate[:-1] + children_im[:-1])
+        children[t, 0] = (omega_big[t-1, :] * fert_rate).sum(0) + (children[t-1] * children_fertrate).sum(0)
     OMEGA = np.zeros(((S + E), (S + E)))
-    OMEGA[0, :] = np.array(list(children_fertrate) + list(
-        fert_rate)) * (1 + children_im[0])
-    OMEGA += np.diag(np.array(list(children_rate[:]) + list(
-        surv_array[:-1])) + np.array(list(children_im) + list(
-            imm_array[:-1])), -1)
+    OMEGA[0, :] = np.array(list(children_fertrate) + list(fert_rate))
+    OMEGA += np.diag(np.array(list(children_rate) + list(surv_array[:-1])) + np.array(list(children_im) + list(imm_array[:-1])), -1)
     eigvalues, eigvectors = np.linalg.eig(OMEGA)
     mask = eigvalues.real != 0
     eigvalues = eigvalues[mask]
@@ -464,22 +450,16 @@ def get_omega(S, J, T, bin_weights, starting_age, ending_age, E, flag_graphs):
     eigvectors = eigvectors[mask]
     omega_SS = eigvectors[mask2].real
     if eigvalues.shape[0] != 1:
-        ind = ((abs(omega_SS.T/omega_SS.T.sum(0) - np.array(
-            list(children[-1, :]) + list(omega_big[-1, :])).reshape(
-            S+E, 1)).sum(0))).argmin()
+        ind = ((abs(omega_SS.T/omega_SS.T.sum(0) - np.array(list(children[-1, :]) + list(omega_big[-1, :])).reshape(S+E, 1)).sum(0))).argmin()
         omega_SS = omega_SS[ind]
         g_n_SS = [g_n_SS[ind]]
-    omega_SS = omega_SS.reshape(S+E, 1)[E:, :]
+    omega_SS = omega_SS[E:]
     omega_SS /= omega_SS.sum()
     # Creating the different ability level bins
-    omega_SS = np.tile(
-        omega_SS.reshape(S, 1), (1, J)) * bin_weights.reshape(1, J)
-    omega_big = np.tile(
-        omega_big.reshape(T+S, S, 1), (1, 1, J)) * bin_weights.reshape(1, 1, J)
-    children = np.tile(children.reshape(
-        T+S, E, 1), (1, 1, J)) * bin_weights.reshape(1, 1, J)
     if flag_graphs:
         pop_graphs(S, T, starting_age, ending_age, children, g_n_SS[0], omega_big)
-    N_vector = omega_big.sum(1).sum(1)
-    g_n_vec = N_vector[1:] / N_vector[:-1] -1
-    return omega_big, g_n_SS[0], omega_SS, surv_array, g_n_vec
+    N_vector = omega_big.sum(1)
+    g_n_vec = N_vector[1:] / N_vector[:-1] -1.0
+    g_n_vec = np.append(g_n_vec, g_n_SS[0])
+    rho = 1.0 - surv_array
+    return omega_big, g_n_SS[0], omega_SS, surv_array, rho, g_n_vec

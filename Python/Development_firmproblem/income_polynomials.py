@@ -168,7 +168,7 @@ def get_e(S, J, starting_age, ending_age, bin_weights, omega_SS, flag_graphs):
 
     Returns:    e - S x J matrix of ability levels for each
                     age cohort, normalized so
-                    the mean is one
+                    the weighted sum is one
     '''
     e_short = income_profiles
     e_final = np.ones((S, J))
@@ -187,6 +187,6 @@ def get_e(S, J, starting_age, ending_age, bin_weights, omega_SS, flag_graphs):
         e_final[60:, j] = arc_tan_fit(e_final[59, j], one[j], two[j], three[j], ability_depreciation[j], init_guesses[j])
     if flag_graphs:
         graph_income(S, J, e_final, starting_age, ending_age, bin_weights)
-    e_final /= (e_final * omega_SS).sum()
+    e_final /= (e_final * omega_SS.reshape(S, 1) * bin_weights.reshape(1, J)).sum()
     return e_final
   
