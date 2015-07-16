@@ -1,9 +1,11 @@
 '''
 ------------------------------------------------------------------------
-Last updated 6/4/2015
+Last updated 7/16/2015
 
 Household functions for taxes in SS and TPI.
 
+This file calls the following files:
+    tax_funcs.py
 ------------------------------------------------------------------------
 '''
 
@@ -21,9 +23,13 @@ import tax_funcs as tax
 
 def get_K(b, pop_weights, ability_weights, g_n):
     '''
-    Inputs: b, weights
-
-    Returns:    Aggregate Capital
+    Inputs:
+        b = distribution of capital (SxJ array)
+        pop_weights = population weights (Sx1 array)
+        ability_weights = ability percentile groups (Jx1 array)
+        g_n = population growth rate (scalar)
+    Output:
+        K_now = Aggregate Capital (scalar)
     '''
     K_now = np.sum(b * pop_weights * ability_weights)
     K_now /= 1.0 + g_n
@@ -31,6 +37,17 @@ def get_K(b, pop_weights, ability_weights, g_n):
 
 
 def get_BQ(r, b_splus1, pop_weights, ability_weights, rho, g_n):
+    '''
+    Inputs:
+        r = interest rate (scalar)
+        b_splus1 = wealth holdings for the next period (SxJ array)
+        pop_weights = population weights by age (Sx1 array)
+        ability_weights = ability weights (Jx1 array)
+        rho = mortality rates (Sx1 array)
+        g_n = population growth rate (scalar)
+    Output:
+        BQ = aggregate BQ (Jx1 array)
+    '''
     BQ = (1+r) * (b_splus1 * pop_weights * rho).sum(0) * ability_weights
     BQ /= 1.0 + g_n
     return BQ
@@ -38,9 +55,11 @@ def get_BQ(r, b_splus1, pop_weights, ability_weights, rho, g_n):
 
 def marg_ut_cons(c, params):
     '''
-    Inputs: Consumption, parameters
-
-    Returns:    Marginal Utility of Consumption
+    Inputs:
+        c = Consumption (any array or scalar)
+        params = list of parameters (list)
+    Outputs:
+        output = Marginal Utility of Consumption (same shape as c)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     output = c**(-sigma)
@@ -49,9 +68,12 @@ def marg_ut_cons(c, params):
 
 def marg_ut_labor(n, chi_n, params):
     '''
-    Inputs: Labor, chi^n_s, parameters
-
-    Returns:    Marginal Utility of Labor
+    Inputs:
+        n = labor particpation distribution (various length array or scalar)
+        chi_n = chi^n_s (various length array or scalar)
+        params = list of parameters (list)
+    Output:
+        output = Marginal Utility of Labor (same shape as n)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     deriv = b_ellipse * (1.0/ltilde) * ((1.0 - (n / ltilde) ** upsilon) ** (
@@ -62,10 +84,19 @@ def marg_ut_labor(n, chi_n, params):
 
 def get_cons(r, b_s, w, e, n, BQ, lambdas, b_splus1, params, net_tax):
     '''
-    Inputs: rental rate, capital stock (s), wage, e, labor stock,
-                bequests, lambdas, capital stock (s+1), parameters, taxes
-
-    Returns:    Consumption
+    Inputs:
+        r = interest rate (scalar)
+        b_s = wealth holdings at the start of a period (SxJ array or Sx1 array)
+        w = wage rate (scalar)
+        e = ability levels (SxJ array or Sx1 array)
+        n = labor rate distribution (SxJ array or Sx1 array)
+        BQ = aggregate bequests (Jx1 array)
+        lambdas = ability weights (Jx1 array)
+        b_splus1 = wealth holdings for the next period (SxJ or Sx1 array)
+        params = list of paramters (list)
+        net_tax = net tax (SxJ array or Sx1 array)
+    Output:
+        cons = Consumption (SxJ or Sx1 array)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     cons = (1 + r)*b_s + w*e*n + BQ / lambdas - b_splus1*np.exp(g_y) - net_tax
@@ -73,6 +104,14 @@ def get_cons(r, b_s, w, e, n, BQ, lambdas, b_splus1, params, net_tax):
 
 
 def get_C(individ_cons, pop_weights, ability_weights):
+    '''
+    Inputs:
+        individ_cons = distribution of consumption (SxJ array)
+        pop_weights = population weights by age (Sx1 array)
+        ability_weights = ability weights (Jx1 array)
+    Output:
+        aggC = aggregate consumption (scalar)
+    '''
     aggC = (individ_cons * pop_weights * ability_weights).sum()
     return aggC
 
