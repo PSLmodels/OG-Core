@@ -3,6 +3,12 @@
 Last updated 7/16/2015
 
 This will run the steady state solver as well as time path iteration.
+First this file generates demographic and ability variables, then it saves
+the needed labor and wealth data moments, and then it saves all the
+baseline parameters.  After this, it runs the SS and TPI simulations.
+If tax experiments are desired, the changed parameters are saved,
+and then SS and TPI simulations are repeated.  Finally, all .pyc files
+are deleted.
 
 This py-file calls the following other file(s):
             income_polynomials.py
@@ -40,59 +46,77 @@ import labor_data
 
 '''
 ------------------------------------------------------------------------
-Setting up the Model
+Parameters
 ------------------------------------------------------------------------
-S            = number of periods an individual lives
-J            = number of different ability groups
-T            = number of time periods until steady state is reached
-lambdas  = desired percentiles of ability groups
-starting_age = age of first members of cohort
-ending age   = age of the last members of cohort
-E            = number of cohorts before S=1
-beta_annual  = discount factor for one year
-beta         = discount factor for each age cohort
-sigma        = coefficient of relative risk aversion
-alpha        = capital share of income
+Model Parameters:
+------------------------------------------------------------------------
+S            = number of periods an individual lives (scalar)
+J            = number of different ability groups (scalar)
+T            = number of time periods until steady state is reached (scalar)
+lambdas      = percentiles for ability groups (Jx1 array)
+starting_age = age of first members of cohort (scalar)
+ending age   = age of the last members of cohort (scalar)
+E            = number of cohorts before S=1 (scalar)
+beta_annual  = discount factor for one year (scalar)
+beta         = discount factor for each age cohort (scalar)
+sigma        = coefficient of relative risk aversion (scalar)
+alpha        = capital share of income (scalar)
 Z            = total factor productivity parameter in firms' production
-               function
-delta_annual = depreciation rate of capital for one year
-delta        = depreciation rate of capital for each cohort
+               function (scalar)
+delta_annual = depreciation rate of capital for one year (scalar)
+delta        = depreciation rate of capital for each cohort (scalar)
 ltilde       = measure of time each individual is endowed with each
-               period
-g_y_annual   = annual growth rate of technology
-g_y          = growth rate of technology for one cohort
-maxiter   = Maximum number of iterations that TPI will undergo
-mindist_SS   = Cut-off distance between iterations for SS
-mindist_TPI   = Cut-off distance between iterations for TPI
-nu           = contraction parameter in steady state iteration process
-               representing the weight on the new distribution gamma_nu
-b_ellipse    = value of b for elliptical fit of utility function
-k_ellipse    = value of k for elliptical fit of utility function
-upsilon      = value of omega for elliptical fit of utility function
+               period (scalar)
+g_y_annual   = annual growth rate of technology (scalar)
+g_y          = growth rate of technology for one cohort (scalar)
+b_ellipse    = value of b for elliptical fit of utility function (scalar)
+k_ellipse    = value of k for elliptical fit of utility function (scalar)
+upsilon      = value of omega for elliptical fit of utility function (scalar)
+------------------------------------------------------------------------
+Tax Parameters:
+------------------------------------------------------------------------
 mean_income_data  = mean income from IRS data file used to calibrate income tax
                (scalar)
 a_tax_income = used to calibrate income tax (scalar)
 b_tax_income = used to calibrate income tax (scalar)
 c_tax_income = used to calibrate income tax (scalar)
 d_tax_income = used to calibrate income tax (scalar)
-retire       = age in which individuals retire(scalar)
-h_wealth     = wealth tax parameter h
-m_wealth     = wealth tax parameter m
-p_wealth     = wealth tax parameter p
-tau_bq       = bequest tax (scalar)
+h_wealth     = wealth tax parameter h (scalar)
+m_wealth     = wealth tax parameter m (scalar)
+p_wealth     = wealth tax parameter p (scalar)
+tau_bq       = bequest tax (Jx1 array)
 tau_payroll  = payroll tax (scalar)
-theta    = payback value for payroll tax (scalar)
-e            = S x J matrix of age dependent possible working abilities
-               e_s
-omega        = T x S x J array of demographics
-g_n_ss          = steady state population growth rate
-omega_SS     = steady state population distribution
-surv_rate    = S x 1 array of survival rates
-rho    = S x 1 array of mortality rates
+retire       = age at which individuals retire (scalar)
+------------------------------------------------------------------------
+Simulation Parameters:
+------------------------------------------------------------------------
+maxiter      = Maximum number of iterations that SS and TPI will undergo (scalar)
+mindist_SS   = Cut-off distance between iterations for SS (scalar)
+mindist_TPI  = Cut-off distance between iterations for TPI (scalar)
+nu           = contraction parameter in SS and TPI iteration process
+               representing the weight on the new distribution (scalar)
+flag_graphs  = Flag to prevent graphing from occuring in demographic, income,
+               wealth, and labor files (True=graph) (bool)
+get_baseline = Flag to run baseline or tax experiments (bool)
+calibrate_model = Flag to run calibration of chi values or not (bool)
+chi_b_guess  = Chi^b_j initial guess for model (Jx1 array)
+               (if no calibration occurs, these are the values that will be used for chi^b_j)
+chi_n_guess  = Chi^n_s initial guess for model (Sx1 array)
+               (if no calibration occurs, these are the values that will be used for chi^n_s)
+------------------------------------------------------------------------
+Demographics and Ability variables:
+------------------------------------------------------------------------
+omega        =  Time path of of population size for each age across T ((T+S)xS array)
+g_n_ss       = steady state population growth rate (scalar)
+omega_SS     = stationarized steady state population distribution (Sx1 array)
+surv_rate    = survival rates (Sx1 array)
+rho          = mortality rates (Sx1 array)
+g_n_vector   = population size for each T ((T+S)x1 array)
+e            = age dependent possible working abilities (SxJ array)
 ------------------------------------------------------------------------
 '''
 
-# Parameters
+# Model Parameters
 S = 80
 J = 7
 T = int(2 * S)
@@ -110,41 +134,37 @@ delta = 1 - ((1-delta_annual) ** (float(ending_age-starting_age) / S))
 ltilde = 1.0
 g_y_annual = 0.03
 g_y = (1 + g_y_annual)**(float(ending_age-starting_age)/S) - 1
-# TPI parameters
-maxiter = 250
-mindist_SS = 1e-9
-mindist_TPI = 1e-6
-nu = .40
-# Ellipse parameters
+#   Ellipse parameters
 b_ellipse = 25.6594
 k_ellipse = -26.4902
 upsilon = 3.0542
+
 # Tax parameters:
+#   Income Tax Parameters
 mean_income_data = 84377.0
 a_tax_income = 3.03452713268985e-06
 b_tax_income = .222
 c_tax_income = 133261.0
 d_tax_income = .219
-retire = np.round(9.0 * S / 16.0) - 1
-# Wealth tax params
-# These won't be used for the wealth tax, h and m just need
-# need to be nonzero to avoid errors
+#   Wealth tax params
+#       These are non-calibrated values, h and m just need
+#       need to be nonzero to avoid errors
 h_wealth = 0.1
 m_wealth = 1.0
 p_wealth = 0.0
-# Tax parameters that are zeroed out for SS
-# Initial taxes below
+#   Bequest and Payroll Taxes
 tau_bq = np.zeros(J)
 tau_payroll = 0.15
-# Flag to prevent graphing from occuring in demographic, income, wealth, and labor files
+retire = np.round(9.0 * S / 16.0) - 1
+
+# Simulation Parameters
+maxiter = 250
+mindist_SS = 1e-9
+mindist_TPI = 1e-6
+nu = .40
 flag_graphs = False
-# Generate Income and Demographic parameters
-omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = demographics.get_omega(
-    S, T, starting_age, ending_age, E, flag_graphs)
-
-e = income.get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
-
-# Calibration parameters
+get_baseline = True
+#   Calibration parameters
 calibrate_model = False
 chi_b_guess = np.array([2, 10, 90, 350, 1700, 22000, 120000])
 chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 ,  8.41097278
@@ -164,18 +184,14 @@ chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 , 
                          , 28.90029708 , 29.83586775 , 30.87563699 , 31.91207845 , 33.07449767
                          , 34.27919965 , 35.57195873 , 36.95045988 , 38.62308152])
 
-# Generate Wealth data moments
-wealth_data.get_wealth_data(lambdas, J, flag_graphs)
+# Demographic and Ability variables
+omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = demographics.get_omega(
+    S, T, starting_age, ending_age, E, flag_graphs)
+e = income.get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
 
-# Generate labor data moments
-
-labor_data.labor_data_moments(flag_graphs)
-
-
-get_baseline = True
 
 # List of parameter names that will not be changing (unless we decide to
-# change them for a tax experiment.
+# change them for a tax experiment)
 param_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
              'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
              'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
@@ -189,11 +205,20 @@ param_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
 
 '''
 ------------------------------------------------------------------------
-    Run SS with minimization to fit chi_b and chi_n
+    Obtain wealth and labor distributions from data
 ------------------------------------------------------------------------
 '''
 
-# This is the simulation before getting the replacement rate values
+# Generate Wealth data moments
+wealth_data.get_wealth_data(lambdas, J, flag_graphs)
+# Generate labor data moments
+labor_data.labor_data_moments(flag_graphs)
+
+'''
+------------------------------------------------------------------------
+    Run baseline SS
+------------------------------------------------------------------------
+'''
 
 dictionary = {}
 for key in param_names:
@@ -204,7 +229,7 @@ import SS
 
 '''
 ------------------------------------------------------------------------
-    Run the baseline TPI simulation
+    Run baseline TPI
 ------------------------------------------------------------------------
 '''
 
@@ -216,17 +241,16 @@ import SS
 ------------------------------------------------------------------------
 '''
 
-# New Tax Parameters
+get_baseline = False
+# Altered parameters
+d_tax_income = .42
 
-# get_baseline = False
-# d_tax_income = .42
-
-
-# var_names = ['get_baseline', 'd_tax_income']
-# dictionary = {}
-# for key in var_names:
-#     dictionary[key] = globals()[key]
-# pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_changed.pkl", "w"))
+# List of all parameters that have been changed for the tax experiment
+var_names = ['get_baseline', 'd_tax_income']
+dictionary = {}
+for key in var_names:
+    dictionary[key] = globals()[key]
+pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_changed.pkl", "w"))
 
 '''
 ------------------------------------------------------------------------
