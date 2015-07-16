@@ -13,11 +13,7 @@ import cPickle as pickle
 
 '''
 ------------------------------------------------------------------------
-Tax functions
-------------------------------------------------------------------------
-    The next 4 functions are the wealth and income tax functions,
-        with their derivative functions.  The remaining functions
-        are used to get the total amount of taxes and lump sum taxes.
+    Functions
 ------------------------------------------------------------------------
 '''
 
