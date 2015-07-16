@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 6/19/2015
+Last updated 7/16/2015
 
 This will run the steady state solver as well as time path iteration.
 
@@ -46,7 +46,6 @@ S            = number of periods an individual lives
 J            = number of different ability groups
 T            = number of time periods until steady state is reached
 lambdas  = desired percentiles of ability groups
-scal         = scalar multiplier used in SS files to make the initial value work
 starting_age = age of first members of cohort
 ending age   = age of the last members of cohort
 E            = number of cohorts before S=1
@@ -62,9 +61,6 @@ ltilde       = measure of time each individual is endowed with each
                period
 g_y_annual   = annual growth rate of technology
 g_y          = growth rate of technology for one cohort
-slow_work    = time at which chi_n starts increasing from 1
-chi_n_multiplier = scalar which is increased to force the labor
-               distribution to 0
 maxiter   = Maximum number of iterations that TPI will undergo
 mindist_SS   = Cut-off distance between iterations for SS
 mindist_TPI   = Cut-off distance between iterations for TPI
