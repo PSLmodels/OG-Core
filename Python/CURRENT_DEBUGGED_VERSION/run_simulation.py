@@ -148,7 +148,8 @@ c_tax_income = 133261.0
 d_tax_income = .219
 #   Wealth tax params
 #       These are non-calibrated values, h and m just need
-#       need to be nonzero to avoid errors
+#       need to be nonzero to avoid errors. When p_wealth
+#       is zero, there is no wealth tax.
 h_wealth = 0.1
 m_wealth = 1.0
 p_wealth = 0.0
@@ -161,11 +162,12 @@ retire = np.round(9.0 * S / 16.0) - 1
 maxiter = 250
 mindist_SS = 1e-9
 mindist_TPI = 1e-6
-nu = .40
+nu = .4
 flag_graphs = False
 get_baseline = True
 #   Calibration parameters
 calibrate_model = False
+# These guesses are close to the calibrated values
 chi_b_guess = np.array([2, 10, 90, 350, 1700, 22000, 120000])
 chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 ,  8.41097278
                          ,  7.15059004 ,  6.46771332 ,  5.85495452 ,  5.46242013 ,  5.00364263
