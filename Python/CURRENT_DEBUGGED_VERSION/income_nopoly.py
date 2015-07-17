@@ -1,6 +1,11 @@
+# We don't use this code any longer.  We're just saving it in case we decide to use this
+# method to calibrate ability instead of the polynomials (which is unlikely).  The polynomials
+# are only for specific bin_weights, this is general to any bin_weights.  But the data is not
+# as good for the top percentile.  Once income_polynomials is generalized, we can delete this.
+
 '''
 ------------------------------------------------------------------------
-Last updated 2/16/2014
+Last updated 2/16/2015
 
 Functions for created the matrix of ability levels, e.
 
