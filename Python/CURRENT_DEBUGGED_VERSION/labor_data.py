@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 6/19/2015
+Last updated 7/17/2015
 
 Computes the average labor participation rate for each age cohort.
 
@@ -32,8 +32,8 @@ import cPickle as pickle
 ------------------------------------------------------------------------
 '''
 
-# Create variables for number of age groups in data (S) and number
-# of percentiles (J)
+# Create variables for number of age groups in data (S_labor) and number
+# of percentiles (J_labor)
 S_labor = 60
 J_labor = 99
 
@@ -57,6 +57,12 @@ weighted = np.nansum((lab_mat_basic * weights), axis=1)
 
 
 def labor_data_moments(flag_graphs):
+    '''
+    Pickles the labor particpation rates for the data (Sx1 array) and generates graphs,
+    depending on if flag_graphs is True or False (True means it graphs).
+    '''
+    # Fit a line to the last few years of the average labor participation which extends from
+    # ages 76 to 100.
     slope = (weighted[56] - weighted[49])/(56-49)
     intercept = weighted[56] - slope * 56
     extension = slope * (np.linspace(56, 80, 23)) + intercept
@@ -66,7 +72,6 @@ def labor_data_moments(flag_graphs):
     labor_dist_data[:57] = weighted[:57]
     labor_dist_data[57:] = extension
     if flag_graphs:
-
         import matplotlib
         import matplotlib.pyplot as plt
         from mpl_toolkits.mplot3d import Axes3D
