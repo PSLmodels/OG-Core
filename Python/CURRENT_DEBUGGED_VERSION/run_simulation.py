@@ -244,13 +244,18 @@ import SS
 '''
 
 get_baseline = False
+dictionary = {}
+for key in param_names:
+    dictionary[key] = globals()[key]
+pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_given.pkl", "w"))
+
 # Altered parameters
 d_tax_income = .42
 
 # List of all parameters that have been changed for the tax experiment
-var_names = ['get_baseline', 'd_tax_income']
+params_changed_names = ['d_tax_income']
 dictionary = {}
-for key in var_names:
+for key in params_changed_names:
     dictionary[key] = globals()[key]
 pickle.dump(dictionary, open("OUTPUT/Saved_moments/params_changed.pkl", "w"))
 
