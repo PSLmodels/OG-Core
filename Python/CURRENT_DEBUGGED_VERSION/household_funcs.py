@@ -118,28 +118,32 @@ def get_C(individ_cons, pop_weights, ability_weights):
 
 def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_H, chi_b, params, theta, tau_bq, rho, lambdas):
     '''
+    This function is usually looped through over J, so it does one ability group at a time.
     Inputs:
-        w        = wage rate (scalar)
-        r        = rental rate (scalar)
-        e        = distribution of abilities (SxJ array)
-        n_guess  = distribution of labor (SxJ array)
-        b_s       = distribution of capital in period t (S x J array)
-        b_splus1       = distribution of capital in period t+1 (S x J array)
-        b_splus2       = distribution of capital in period t+2 (S x J array)
-        BQ        = distribution of incidental bequests (1 x J array)
-        factor   = scaling value to make average income match data
-        T_H  = lump sum transfer from the government to the households
-        chi_b    = discount factor of savings
-        params = parameters
-        theta = replacement rates
-        tau_bq = bequest tax parameters
-        rho = mortality rates
-        lambdas = bin weights
-
-    Returns:
-        Value of Euler error.
+        w = wage rate (scalar)
+        r = rental rate (scalar)
+        e = ability levels (Sx1 array)
+        n_guess = labor distribution (Sx1 array)
+        b_s = wealth holdings at the start of a period (Sx1 array)
+        b_splus1 = wealth holdings for the next period (Sx1 array)
+        b_splus2 = wealth holdings for 2 periods ahead (Sx1 array)
+        BQ = aggregate bequests for a certain ability (scalar)
+        factor = scaling factor to convert to dollars (scalar)
+        T_H = lump sum tax (scalar)
+        chi_b = chi^b_j for a certain ability (scalar)
+        params = parameter list (list)
+        theta = replacement rate for a certain ability (scalar)
+        tau_bq = bequest tax rate (scalar)
+        rho = mortality rate (Sx1 array)
+        lambdas = ability weight (scalar)
+    Output:
+        euler = Value of savings euler error (Sx1 array)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    # In order to not have 2 savings euler equations (one that solves the first S-1 equations, and one that solves the last one),
+    # we combine them.  In order to do this, we have to compute a consumption term in period t+1, which requires us to have a shifted
+    # e and n matrix.  We append a zero on the end of both of these so they will be the right size.  We could append any value to them,
+    # since in the euler equation, the coefficient on the marginal utility of consumption for this term will be zero (since rho is one).
     e_extended = np.array(list(e) + [0])
     n_extended = np.array(list(n_guess) + [0])
     tax1 = tax.total_taxes(r, b_s, w, e, n_guess, BQ, lambdas, factor, T_H, None, 'SS', False, params, theta, tau_bq)
@@ -151,6 +155,8 @@ def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_
         1 + r*(1-tax.tau_income(r, b_splus1, w, e_extended[1:], n_extended[1:], factor, params)-tax.tau_income_deriv(
             r, b_splus1, w, e_extended[1:], n_extended[1:], factor, params)*income)-tax.tau_w_prime(b_splus1, params)*b_splus1-tax.tau_wealth(b_splus1, params))
     savings_ut = rho * np.exp(-sigma * g_y) * chi_b * b_splus1 ** (-sigma)
+    # Again, not who in this equation, the (1-rho) term will zero out in the last period, so the last entry of cons2 can be complete
+    # gibberish (which it is).  It just has to exist so cons2 is the right size to match all other arrays in the equation.
     euler = marg_ut_cons(cons1, params) - beta * (1-rho) * deriv * marg_ut_cons(
         cons2, params) * np.exp(-sigma * g_y) - savings_ut
     return euler
@@ -158,24 +164,24 @@ def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_
 
 def euler_labor_leisure_func(w, r, e, n_guess, b_s, b_splus1, BQ, factor, T_H, chi_n, params, theta, tau_bq, lambdas):
     '''
+    This function is usually looped through over J, so it does one ability group at a time.
     Inputs:
-        w        = wage rate (scalar)
-        r        = rental rate (scalar)
-        e        = distribution of abilities (SxJ array)
-        n_guess  = distribution of labor (SxJ array)
-        b_s       = distribution of capital in period t (S x J array)
-        b_splus1       = distribution of capital in period t+1 (S x J array)
-        BQ        = distribution of incidental bequests (1 x J array)
-        factor   = scaling value to make average income match data
-        T_H  = lump sum transfer from the government to the households
-        chi_n    = discount factor of labor
-        params = parameters
-        theta = replacement rates
-        tau_bq = bequest tax parameters
-        lambdas = bin weights
-
-    Returns:
-        Value of Euler error.
+        w = wage rate (scalar)
+        r = rental rate (scalar)
+        e = ability levels (Sx1 array)
+        n_guess = labor distribution (Sx1 array)
+        b_s = wealth holdings at the start of a period (Sx1 array)
+        b_splus1 = wealth holdings for the next period (Sx1 array)
+        BQ = aggregate bequests for a certain ability (scalar)
+        factor = scaling factor to convert to dollars (scalar)
+        T_H = lump sum tax (scalar)
+        chi_n = chi^n_s (Sx1 array)
+        params = parameter list (list)
+        theta = replacement rate for a certain ability (scalar)
+        tau_bq = bequest tax rate (scalar)
+        lambdas = ability weight (scalar)
+    Output:
+        euler = Value of labor leisure euler error (Sx1 array)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     tax1 = tax.total_taxes(r, b_s, w, e, n_guess, BQ, lambdas, factor, T_H, None, 'SS', False, params, theta, tau_bq)
@@ -193,13 +199,8 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, params):
         bssmat = steady state distribution of capital ((S-1)xJ array)
         nssmat = steady state distribution of labor (SxJ array)
         cssmat = steady state distribution of consumption (SxJ array)
-
-    Created Variables:
-        flag1 = False if all borrowing constraints are met, true
-               otherwise.
-        flag2 = False if all labor constraints are met, true otherwise
-
-    Returns:
+        params = list of parameters (list)
+    Output:
         # Prints warnings for violations of capital, labor, and
             consumption constraints.
     '''
@@ -230,14 +231,13 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, params):
 def constraint_checker_TPI(b_dist, n_dist, c_dist, t, params, N_tilde):
     '''
     Inputs:
-        b_dist = distribution of capital ((S-1)xJ array)
+        b_dist = distribution of capital (SxJ array)
         n_dist = distribution of labor (SxJ array)
-        w      = wage rate (scalar)
-        r      = rental rate (scalar)
-        e      = distribution of abilities (SxJ array)
         c_dist = distribution of consumption (SxJ array)
-
-    Returns:
+        t = time period (scalar)
+        params = list of parameters (list)
+        N_tilde = population size in time period (Tx1 array)
+    Output:
         Prints warnings for violations of capital, labor, and
             consumption constraints.
     '''
