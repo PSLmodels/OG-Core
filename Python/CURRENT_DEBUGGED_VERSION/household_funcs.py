@@ -206,14 +206,8 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, params):
     '''
     print 'Checking constraints on capital, labor, and consumption.'
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    flag1 = False
-    if bssmat.sum() <= 0:
-        print '\tWARNING: Aggregate capital is less than or equal to zero.'
-        flag1 = True
     if (bssmat < 0).any():
         print '\tWARNING: There is negative capital stock'
-    if flag1 is False:
-        print '\tThere were no violations of the borrowing constraints.'
     flag2 = False
     if (nssmat < 0).any():
         print '\tWARNING: Labor supply violates nonnegativity constraints.'
@@ -228,7 +222,7 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, params):
         print '\tThere were no violations of the constraints on consumption.'
 
 
-def constraint_checker_TPI(b_dist, n_dist, c_dist, t, params, N_tilde):
+def constraint_checker_TPI(b_dist, n_dist, c_dist, t, params):
     '''
     Inputs:
         b_dist = distribution of capital (SxJ array)
@@ -236,13 +230,12 @@ def constraint_checker_TPI(b_dist, n_dist, c_dist, t, params, N_tilde):
         c_dist = distribution of consumption (SxJ array)
         t = time period (scalar)
         params = list of parameters (list)
-        N_tilde = population size in time period (Tx1 array)
     Output:
         Prints warnings for violations of capital, labor, and
             consumption constraints.
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    if b_dist.sum() / N_tilde[t] <= 0:
+    if (b_dist <= 0).any():
         print '\tWARNING: Aggregate capital is less than or equal to ' \
             'zero in period %.f.' % t
     if (n_dist < 0).any():

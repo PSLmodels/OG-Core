@@ -406,8 +406,7 @@ print 'Resource Constraint Difference:', Y_path - C_path - I_path
 
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
-    house.constraint_checker_TPI(b_mat[t, :-1, :], n_mat[
-        t], c_path[t], t, parameters, N_tilde)
+    house.constraint_checker_TPI(b_mat[t], n_mat[t], c_path[t], t, parameters)
 
 eul_savings = euler_errors[:, :S, :].max(1).max(1)
 eul_laborleisure = euler_errors[:, S:, :].max(1).max(1)
