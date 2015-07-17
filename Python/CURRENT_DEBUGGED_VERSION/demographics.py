@@ -161,12 +161,14 @@ def integrate(func, points):
 def get_survival(S, starting_age, ending_age, E):
     '''
     Parameters:
-        S - Number of age cohorts
-        starting age - initial age of cohorts
+        S - Number of age cohorts (scalar)
+        starting_age = initial age of cohorts (scalar)
+        ending_age = ending age of cohorts (scalar)
+        E = number of children (scalar)
 
     Returns:
         surv_array - S x 1 array of survival rates for each age cohort
-        children_rate_condensed - starting_age x 1 array of surrvival
+        children_rate - starting_age x 1 array of survival
             rates for children
     '''
     mort_rate = np.array(mort_data.mort_rate)
@@ -197,15 +199,13 @@ def get_immigration1(S, starting_age, ending_age, pop_2010, pop_2011, E):
     '''
     Parameters:
         S - Number of age cohorts
-        starting age - initial age of cohorts
+        starting_age - initial age of cohorts
         pop1 - initial population
         pop2 - population one year later
 
     Returns:
-        im_array - S x 1 array of immigration rates for each
+        im_array - S+E x 1 array of immigration rates for each
                    age cohort
-        children_im_condensed - starting_age x 1 array of immigration
-            rates for children
     '''
     # Get survival rates for the S age groups
     surv_array, children_rate = get_survival(
@@ -398,14 +398,20 @@ def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
 
 def get_omega(S, T, starting_age, ending_age, E, flag_graphs):
     '''
-    Parameters:
-        S - Number of age cohorts
-        J - Number of ability types
-        T - number of time periods in TPI
-        starting age - initial age of cohorts
-
-    Returns:
-
+    Inputs:
+        S - Number of age cohorts (scalar)
+        T - number of time periods in TPI (scalar)
+        starting_age - initial age of cohorts (scalar)
+        ending_age = ending age of cohorts (scalar)
+        E = number of children (scalar)
+        flag_graphs = graph variables or not (bool)
+    Outputs:
+        omega_big = array of all population weights over time ((T+S)x1 array)
+        g_n_SS = steady state growth rate (scalar)
+        omega_SS = steady state population weights (Sx1 array)
+        surv_array = survival rates (Sx1 array)
+        rho = mortality rates (Sx1 array)
+        g_n_vec = population growth rate over time ((T+S)x1 array)
     '''
     data1 = data
     pop_data = np.array(data1['2010'])

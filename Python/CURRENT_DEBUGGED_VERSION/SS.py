@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated: 7/13/2015
+Last updated: 7/17/2015
 
 Calculates steady state of OLG model with S age cohorts.
 
@@ -39,44 +39,6 @@ import misc_funcs
 ------------------------------------------------------------------------
 Imported user given values
 ------------------------------------------------------------------------
-S            = number of periods an individual lives
-J            = number of different ability groups
-T            = number of time periods until steady state is reached
-lambdas  = percent of each age cohort in each ability group
-starting_age = age of first members of cohort
-ending age   = age of the last members of cohort
-E            = number of cohorts before S=1
-beta         = discount factor for each age cohort
-sigma        = coefficient of relative risk aversion
-alpha        = capital share of income
-nu_init      = contraction parameter in steady state iteration process
-               representing the weight on the new distribution gamma_new
-Z            = total factor productivity parameter in firms' production
-               function
-delta        = depreciation rate of capital for each cohort
-ltilde       = measure of time each individual is endowed with each
-               period
-eta          = Frisch elasticity of labor supply
-g_y          = growth rate of technology for one cohort
-maxiter   = Maximum number of iterations that TPI will undergo
-mindist_SS   = Cut-off distance between iterations for TPI
-b_ellipse    = value of b for elliptical fit of utility function
-k_ellipse    = value of k for elliptical fit of utility function
-slow_work    = time at which chi_n starts increasing from 1
-mean_income_data  = mean income from IRS data file used to calibrate income tax
-               (scalar)
-a_tax_income = used to calibrate income tax (scalar)
-b_tax_income = used to calibrate income tax (scalar)
-c_tax_income = used to calibrate income tax (scalar)
-d_tax_income = used to calibrate income tax (scalar)
-tau_bq       = bequest tax (scalar)
-tau_payroll  = payroll tax (scalar)
-theta    = payback value for payroll tax (scalar)
-retire       = age in which individuals retire(scalar)
-h_wealth     = wealth tax parameter h
-p_wealth     = wealth tax parameter p
-m_wealth     = wealth tax parameter m
-------------------------------------------------------------------------
 '''
 
 # Since none of these parameters ever change, they are imported as globals
@@ -87,6 +49,7 @@ variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "r"))
 for key in variables:
     globals()[key] = variables[key]
 if get_baseline is False:
+    # If this is a tax experiment, also import the changed tax variables
     variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "r"))
     for key in variables:
         globals()[key] = variables[key]
@@ -104,10 +67,28 @@ ellipse_params = [b_ellipse, upsilon]
 parameters = [J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data] + income_tax_params + wealth_tax_params + ellipse_params
 iterative_params = [maxiter, mindist_SS]
 
-# Functions
-
 
 def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e):
+    '''
+    Finds the euler error for certain b and n, one ability type at a time.
+    Inputs:
+        guesses = guesses for b and n (2Sx1 list)
+        r = rental rate (scalar)
+        w = wage rate (scalar)
+        T_H = lump sum tax (scalar)
+        factor = scaling factor to dollars (scalar)
+        j = which ability group is being solved for (scalar)
+        params = list of parameters (list)
+        chi_b = chi^b_j (scalar)
+        chi_n = chi^n_s (Sx1 array)
+        tau_bq = bequest tax rate (scalar)
+        rho = mortality rates (Sx1 array)
+        lambdas = ability weights (scalar)
+        weights = population weights (Sx1 array)
+        e = ability levels (Sx1 array)
+    Outputs:
+        2Sx1 list of euler errors
+    '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     b_guess = np.array(guesses[:S])
     n_guess = np.array(guesses[S:])
@@ -137,8 +118,30 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n, t
 
 
 def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess, chi_n, chi_b, params, iterative_params, tau_bq, rho, lambdas, weights, e):
+    '''
+    Solves for the steady state distribution of capital, labor, as well as w, r, T_H and the scaling factor, using an iterative method similar to TPI.
+    Inputs:
+        b_guess_init = guesses for b (SxJ array)
+        n_guess_init = guesses for n (SxJ array)
+        wguess = guess for wage rate (scalar)
+        rguess = guess for rental rate (scalar)
+        T_Hguess = guess for lump sum tax (scalar)
+        factorguess = guess for scaling factor to dollars (scalar)
+        chi_n = chi^n_s (Sx1 array)
+        chi_b = chi^b_j (Jx1 array)
+        params = list of parameters (list)
+        iterative_params = list of parameters that determine the convergence of the while loop (list)
+        tau_bq = bequest tax rate (Jx1 array)
+        rho = mortality rates (Sx1 array)
+        lambdas = ability weights (Jx1 array)
+        weights = population weights (Sx1 array)
+        e = ability levels (SxJ array)
+    Outputs:
+        solutions = steady state values of b, n, w, r, factor, T_H ((2*S*J+4)x1 array)
+    '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     maxiter, mindist_SS = iterative_params
+    # Rename the inputs
     w = wguess
     r = rguess
     T_H = T_Hguess
@@ -151,6 +154,7 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
     dist_vec = np.zeros(maxiter)
     
     while (dist > mindist_SS) and (iteration < maxiter):
+        # Solve for the steady state levels of b and n, given w, r, T_H and factor
         for j in xrange(J):
             # Solve the euler equations
             guesses = np.append(bssmat[:, j], nssmat[:, j])
@@ -178,8 +182,10 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
         if T_H != 0:
             dist = np.array([misc_funcs.perc_dif_func(new_r, r)] + [misc_funcs.perc_dif_func(new_w, w)] + [misc_funcs.perc_dif_func(new_T_H, T_H)] + [misc_funcs.perc_dif_func(new_factor, factor)]).max()
         else:
+            # If T_H is zero (if there are no taxes), a percent difference will throw NaN's, so we use an absoluate difference
             dist = np.array([misc_funcs.perc_dif_func(new_r, r)] + [misc_funcs.perc_dif_func(new_w, w)] + [abs(new_T_H - T_H)] + [misc_funcs.perc_dif_func(new_factor, factor)]).max()
         dist_vec[iteration] = dist
+        # Similar to TPI: if the distance between iterations increases, then decrease the value of nu to prevent cycling
         if iteration > 10:
             if dist_vec[iteration] - dist_vec[iteration-1] > 0:
                 nu /= 2.0
@@ -190,6 +196,7 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
     eul_errors = np.ones(J)
     b_mat = np.zeros((S, J))
     n_mat = np.zeros((S, J))
+    # Given the final w, r, T_H and factor, solve for the SS b and n (if you don't do a final fsolve, there will be a slight mismatch, with high euler errors)
     for j in xrange(J):
         solutions1 = opt.fsolve(Euler_equation_solver, np.append(bssmat[:, j], nssmat[:, j])* .9, args=(r, w, T_H, factor, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e), xtol=1e-13)
         eul_errors[j] = np.array(Euler_equation_solver(solutions1, r, w, T_H, factor, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e)).max()
@@ -204,12 +211,17 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
 
 def function_to_minimize(chi_params_scalars, chi_params_init, params, weights_SS, rho_vec, lambdas, tau_bq, e):
     '''
-    Parameters:
-        chi_params_scalars = guesses for multipliers for chi parameters
-
-    Returns:
-        The max absolute deviation between the actual and simulated
-            wealth moments
+    Inputs:
+        chi_params_scalars = guesses for multipliers for chi parameters ((S+J)x1 array)
+        chi_params_init = chi parameters that will be multiplied ((S+J)x1 array)
+        params = list of parameters (list)
+        weights_SS = steady state population weights (Sx1 array)
+        rho_vec = mortality rates (Sx1 array)
+        lambdas = ability weights (Jx1 array)
+        tau_bq = bequest tax rates (Jx1 array)
+        e = ability levels (Jx1 array)
+    Output:
+        The sum of absolute percent deviations between the actual and simulated wealth moments
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     chi_params_init *= chi_params_scalars
@@ -242,6 +254,8 @@ def function_to_minimize(chi_params_scalars, chi_params_init, params, weights_SS
     if np.isnan(fsolve_no_converg):
         fsolve_no_converg = 1e6
     if fsolve_no_converg > 1e-4:
+        # If the fsovle didn't converge (was NaN or above the tolerance), then tell the minimizer that this is a bad place to be
+        # and don't save the solutions as initial guesses (since they might be gibberish)
         output += 1e14
     else:
         var_names = ['solutions']
@@ -250,7 +264,9 @@ def function_to_minimize(chi_params_scalars, chi_params_init, params, weights_SS
             dictionary[key] = locals()[key]
         pickle.dump(dictionary, open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "w"))
     if (chi_params_init <= 0.0).any():
+        # In case the minimizer doesn't respect the bounds given
         output += 1e14
+    # Use generalized method of moments to fit the chi's
     weighting_mat = np.eye(2*J + S)
     scaling_val = 100.0
     value = np.dot(scaling_val * np.dot(output.reshape(1, 2*J+S), weighting_mat), scaling_val * output.reshape(2*J+S, 1))
@@ -259,7 +275,7 @@ def function_to_minimize(chi_params_scalars, chi_params_init, params, weights_SS
 
 '''
 ------------------------------------------------------------------------
-    Run SS in various ways, depending on the stage of the simulation
+    Run SS
 ------------------------------------------------------------------------
 '''
 
@@ -269,8 +285,11 @@ if get_baseline:
     chi_params[:J] = chi_b_guess
     chi_params[J:] = chi_n_guess
     # First run SS simulation with guesses at initial values for b, n, w, r, etc
+    # For inital guesses of b and n, we choose very small b, and medium n
     b_guess = np.ones((S, J)).flatten() * .01
     n_guess = np.ones((S, J)).flatten() * .5 * ltilde
+    # For initial guesses of w, r, T_H, and factor, we use values that are close
+    # to some steady state values.
     wguess = 1.2
     rguess = .06
     T_Hguess = 0
@@ -324,8 +343,7 @@ else:
 
 '''
 ------------------------------------------------------------------------
-    Save the initial values in various ways, depending on the stage of
-        the simulation
+    Generate the SS values of variables, including euler errors
 ------------------------------------------------------------------------
 '''
 
@@ -356,17 +374,6 @@ print 'Resource Constraint Difference:', resource_constraint
 
 house.constraint_checker_SS(bssmat, nssmat, cssmat, parameters)
 
-'''
-------------------------------------------------------------------------
-Generate variables for graphs
-------------------------------------------------------------------------
-b_s        = SxJ array of bssmat in period t
-b_splus1        = SxJ array of bssmat in period t+1
-b_splus2        = SxJ array of bssmat in period t+2
-euler_savings      = euler errors from savings euler equation
-euler_labor_leisure      = euler errors from labor leisure euler equation
-------------------------------------------------------------------------
-'''
 b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
 b_splus1 = bssmat_splus1
 b_splus2 = np.array(list(bssmat_splus1[1:]) + list(np.zeros(J).reshape((1, J))))

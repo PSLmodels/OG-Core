@@ -37,6 +37,9 @@ import household_funcs as house
 
 
 def the_inequalizer(dist, pop_weights, ability_weights, S, J):
+    '''
+    Generates 3 inequality measures
+    '''
     weights = np.tile(pop_weights.reshape(S, 1), (1, J)) * ability_weights.reshape(1, J)
     flattened_dist = dist.flatten()
     flattened_weights = weights.flatten()

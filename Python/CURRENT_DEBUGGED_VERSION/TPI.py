@@ -42,51 +42,6 @@ import firm_funcs as firm
 Import steady state distribution, parameters and other objects from
 steady state computation in ss_vars.pkl
 ------------------------------------------------------------------------
-S        = number of periods an individual lives
-beta     = discount factor
-sigma    = coefficient of relative risk aversion
-alpha    = capital share of income
-nu       = contraction parameter in steady state iteration process
-           representing the weight on the new distribution gamma_new
-Z        = total factor productivity parameter in firms' production
-           function
-delta    = decreciation rate of capital
-ltilde   = measure of time each individual is endowed with each period
-eta      = Frisch elasticity of labor supply
-e        = S x J matrix of age dependent possible working abilities e_s
-J        = number of points in the support of e
-Kss      = steady state aggregate capital stock: scalar
-nssvec   = ((S-1) x 1) vector of the steady state level of capital
-           (averaged across ability types)
-bssmat   = ((S-1) x J) array of the steady state distribution of
-           capital
-Lss      = steady state aggregate labor: scalar
-nssvec   = (S x 1) vector of the steady state level of labor
-           (averaged across ability types)
-nssmat   = (S x J) array of the steady state distribution of labor
-Yss      = steady state aggregate output: scalar
-wss      = steady state real wage: scalar
-rss      = steady state real rental rate: scalar
-K_agg    = Aggregate level of capital: scalar
-T        = number of periods until the steady state
-maxiter   = Maximum number of iterations that TPI will undergo
-mindist_TPI   = Cut-off distance between iterations for TPI
-mean_income_data  = mean income from IRS data file used to calibrate income tax
-               (scalar)
-a_tax_income = used to calibrate income tax (scalar)
-b_tax_income = used to calibrate income tax (scalar)
-c_tax_income = used to calibrate income tax (scalar)
-d_tax_income = used to calibrate income tax (scalar)
-tau_bq       = bequest tax (scalar)
-tau_payroll  = payroll tax (scalar)
-theta    = payback value for payroll tax (scalar)
-retire       = age in which individuals retire(scalar)
-h_wealth     = wealth tax parameter h
-p_wealth     = wealth tax parameter p
-m_wealth     = wealth tax parameter m
-chi_b        = discount factor of incidental bequests
-get_baseline = whether this is the baseline TPI or not
-------------------------------------------------------------------------
 '''
 
 variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "r"))
@@ -130,7 +85,8 @@ if get_baseline:
 else:
     initial_b = bssmat_init
     initial_n = nssmat_init
-# the following needs a g_n term
+
+# Get an initial distribution of capital with the initial population distribution
 K0 = house.get_K(initial_b, omega_stationary[0].reshape(S, 1), lambdas, g_n_vector[0])
 b_sinit = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_b[:-1]))
 b_splus1init = initial_b
@@ -138,7 +94,6 @@ L0 = firm.get_L(e, initial_n, omega_stationary[0].reshape(S, 1), lambdas)
 Y0 = firm.get_Y(K0, L0, parameters)
 w0 = firm.get_w(Y0, L0, parameters)
 r0 = firm.get_r(Y0, K0, parameters)
-# the following needs a g_n term
 BQ0 = house.get_BQ(r0, initial_b, omega_stationary[0].reshape(S, 1), lambdas, rho.reshape(S, 1), g_n_vector[0])
 T_H_0 = tax.get_lump_sum(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, omega_stationary[0].reshape(S, 1), 'SS', parameters, theta, tau_bq)
 tax0 = tax.total_taxes(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, T_H_0, None, 'SS', False, parameters, theta, tau_bq)
@@ -151,7 +106,21 @@ Solve for equilibrium transition path by TPI
 '''
 
 
-def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init):
+def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init, j):
+    '''
+    Solves the first entries of the upper triangle of the twist doughnut.  This is
+    separate from the main TPI function because the the values of b and n are scalars,
+    so it is easier to just have a separate function for these cases.
+    Inputs:
+        guesses = guess for b and n (2x1 list)
+        winit = initial wage rate (scalar)
+        rinit = initial rental rate (scalar)
+        BQinit = initial aggregate bequest (scalar)
+        T_H_init = initial lump sum tax (scalar)
+        j = which ability type is being solved for (scalar)
+    Output:
+        euler errors (2x1 list)
+    '''
     b2 = float(guesses[0])
     n1 = float(guesses[1])
     b1 = float(initial_b[-2, j])
@@ -178,14 +147,26 @@ def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init):
 def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, s, t, params, theta, tau_bq, rho, lambdas, e, initial_b, chi_b, chi_n):
     '''
     Parameters:
-        guesses = distribution of capital and labor in period t
-                  ((S-1)*S*J x 1 list)
-        winit   = wage rate (scalar)
-        rinit   = rental rate (scalar)
-        t       = time period
-
-    Returns:
-        Value of Euler error. (as an 2*S*J x 1 list)
+        guesses = distribution of capital and labor (various length list)
+        winit   = wage rate ((T+S)x1 array)
+        rinit   = rental rate ((T+S)x1 array)
+        BQinit = aggregate bequests ((T+S)x1 array)
+        T_H_init = lump sum tax over time ((T+S)x1 array)
+        factor = scaling factor (scalar)
+        j = which ability type is being solved for (scalar)
+        s = which upper triangle loop is being solved for (scalar)
+        t = which diagonal is being solved for (scalar)
+        params = list of parameters (list)
+        theta = replacement rates (Jx1 array)
+        tau_bq = bequest tax rate (Jx1 array)
+        rho = mortalit rate (Sx1 array)
+        lambdas = ability weights (Jx1 array)
+        e = ability type (SxJ array)
+        initial_b = capital stock distribution in period 0 (SxJ array)
+        chi_b = chi^b_j (Jx1 array)
+        chi_n = chi^n_s (Sx1 array)
+    Output:
+        Value of Euler error (various length list)
     '''
 
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
@@ -279,7 +260,6 @@ euler_errors = np.zeros((T, 2*S, J))
 TPIdist_vec = np.zeros(maxiter)
 
 while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
-    
     Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
     Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
     # Plot TPI for K for each iteration, so we can see if there is a problem
@@ -289,10 +269,13 @@ while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
     plt.plot(np.arange(
         T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
     plt.savefig("OUTPUT/TPI_K")
-    # Uncomment the following print statements to make sure all euler equations are converging
+    # Uncomment the following print statements to make sure all euler equations are converging.
+    # If they don't, then you'll have negative consumption or consumption spikes.  If they don't,
+    # it is the initial guesses.  You might need to scale them differently.  It is rather delicate for the first 
+    # few periods and high ability groups.
     for j in xrange(J):
         b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],
-            args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1]), xtol=1e-13))
+            args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1], j), xtol=1e-13))
         # if np.array(SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1, j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1])).max() > 1e-6:
         #     print 'minidoughnut:', np.array(SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1, j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1])).max()
         for s in xrange(S-2):  # Upper triangle
@@ -323,7 +306,7 @@ while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
                 inputs, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n))
     # if euler_errors.max() > 1e-6:
     #     print 't-loop:', euler_errors.max()
-    
+    # Force the initial distribution of capital to be as given above.
     b_mat[0, :, :] = initial_b
     Kinit = (omega_stationary[:T, :].reshape(T, S, 1) * b_mat[:T, :, :] * lambdas.reshape(1, 1, J)).sum(2).sum(1) / (1.0 + g_n_vector[:T])
     Linit = (omega_stationary[:T, :].reshape(T, S, 1) * lambdas.reshape(1, 1, J) * e.reshape(
@@ -365,10 +348,10 @@ while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
     print '\t\tDistance:', TPIdist
 
 print 'Computing final solutions'
-
+# As in SS, you need the final distributions of b and n to match the final w, r, BQ, etc.  Otherwise the euler errors are large.  You need one more fsolve.
 for j in xrange(J):
     b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],
-        args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1]), xtol=1e-13))
+        args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1], j), xtol=1e-13))
     for s in xrange(S-2):  # Upper triangle
         ind2 = np.arange(s+2)
         b_guesses_to_use = np.diag(guesses_b[1:S+1, :, j], S-(s+2))
@@ -396,6 +379,12 @@ for j in xrange(J):
 
 b_mat[0, :, :] = initial_b
 
+'''
+------------------------------------------------------------------------
+Generate variables/values so they can be used in other modules
+------------------------------------------------------------------------
+'''
+
 Kpath_TPI = np.array(list(Kinit) + list(np.ones(10)*Kss))
 Lpath_TPI = np.array(list(Linit) + list(np.ones(10)*Lss))
 BQpath_TPI = np.array(list(BQinit) + list(np.ones((10, J))*BQss))
@@ -417,14 +406,8 @@ print 'Resource Constraint Difference:', Y_path - C_path - I_path
 
 print'Checking time path for violations of constaints.'
 for t in xrange(T):
-    house.constraint_checker_TPI(b_mat[t, :-1, :], n_mat[
-        t], c_path[t], t, parameters, N_tilde)
+    house.constraint_checker_TPI(b_mat[t], n_mat[t], c_path[t], t, parameters)
 
-'''
-------------------------------------------------------------------------
-Generate values for TPI graphs
-------------------------------------------------------------------------
-'''
 eul_savings = euler_errors[:, :S, :].max(1).max(1)
 eul_laborleisure = euler_errors[:, S:, :].max(1).max(1)
 

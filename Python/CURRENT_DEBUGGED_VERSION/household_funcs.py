@@ -1,9 +1,11 @@
 '''
 ------------------------------------------------------------------------
-Last updated 6/4/2015
+Last updated 7/16/2015
 
 Household functions for taxes in SS and TPI.
 
+This file calls the following files:
+    tax_funcs.py
 ------------------------------------------------------------------------
 '''
 
@@ -21,9 +23,13 @@ import tax_funcs as tax
 
 def get_K(b, pop_weights, ability_weights, g_n):
     '''
-    Inputs: b, weights
-
-    Returns:    Aggregate Capital
+    Inputs:
+        b = distribution of capital (SxJ array)
+        pop_weights = population weights (Sx1 array)
+        ability_weights = ability percentile groups (Jx1 array)
+        g_n = population growth rate (scalar)
+    Output:
+        K_now = Aggregate Capital (scalar)
     '''
     K_now = np.sum(b * pop_weights * ability_weights)
     K_now /= 1.0 + g_n
@@ -31,6 +37,17 @@ def get_K(b, pop_weights, ability_weights, g_n):
 
 
 def get_BQ(r, b_splus1, pop_weights, ability_weights, rho, g_n):
+    '''
+    Inputs:
+        r = interest rate (scalar)
+        b_splus1 = wealth holdings for the next period (SxJ array)
+        pop_weights = population weights by age (Sx1 array)
+        ability_weights = ability weights (Jx1 array)
+        rho = mortality rates (Sx1 array)
+        g_n = population growth rate (scalar)
+    Output:
+        BQ = aggregate BQ (Jx1 array)
+    '''
     BQ = (1+r) * (b_splus1 * pop_weights * rho).sum(0) * ability_weights
     BQ /= 1.0 + g_n
     return BQ
@@ -38,9 +55,11 @@ def get_BQ(r, b_splus1, pop_weights, ability_weights, rho, g_n):
 
 def marg_ut_cons(c, params):
     '''
-    Inputs: Consumption, parameters
-
-    Returns:    Marginal Utility of Consumption
+    Inputs:
+        c = Consumption (any array or scalar)
+        params = list of parameters (list)
+    Outputs:
+        output = Marginal Utility of Consumption (same shape as c)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     output = c**(-sigma)
@@ -49,9 +68,12 @@ def marg_ut_cons(c, params):
 
 def marg_ut_labor(n, chi_n, params):
     '''
-    Inputs: Labor, chi^n_s, parameters
-
-    Returns:    Marginal Utility of Labor
+    Inputs:
+        n = labor particpation distribution (various length array or scalar)
+        chi_n = chi^n_s (various length array or scalar)
+        params = list of parameters (list)
+    Output:
+        output = Marginal Utility of Labor (same shape as n)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     deriv = b_ellipse * (1.0/ltilde) * ((1.0 - (n / ltilde) ** upsilon) ** (
@@ -62,10 +84,19 @@ def marg_ut_labor(n, chi_n, params):
 
 def get_cons(r, b_s, w, e, n, BQ, lambdas, b_splus1, params, net_tax):
     '''
-    Inputs: rental rate, capital stock (s), wage, e, labor stock,
-                bequests, lambdas, capital stock (s+1), parameters, taxes
-
-    Returns:    Consumption
+    Inputs:
+        r = interest rate (scalar)
+        b_s = wealth holdings at the start of a period (SxJ array or Sx1 array)
+        w = wage rate (scalar)
+        e = ability levels (SxJ array or Sx1 array)
+        n = labor rate distribution (SxJ array or Sx1 array)
+        BQ = aggregate bequests (Jx1 array)
+        lambdas = ability weights (Jx1 array)
+        b_splus1 = wealth holdings for the next period (SxJ or Sx1 array)
+        params = list of paramters (list)
+        net_tax = net tax (SxJ array or Sx1 array)
+    Output:
+        cons = Consumption (SxJ or Sx1 array)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     cons = (1 + r)*b_s + w*e*n + BQ / lambdas - b_splus1*np.exp(g_y) - net_tax
@@ -73,34 +104,46 @@ def get_cons(r, b_s, w, e, n, BQ, lambdas, b_splus1, params, net_tax):
 
 
 def get_C(individ_cons, pop_weights, ability_weights):
+    '''
+    Inputs:
+        individ_cons = distribution of consumption (SxJ array)
+        pop_weights = population weights by age (Sx1 array)
+        ability_weights = ability weights (Jx1 array)
+    Output:
+        aggC = aggregate consumption (scalar)
+    '''
     aggC = (individ_cons * pop_weights * ability_weights).sum()
     return aggC
 
 
 def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_H, chi_b, params, theta, tau_bq, rho, lambdas):
     '''
+    This function is usually looped through over J, so it does one ability group at a time.
     Inputs:
-        w        = wage rate (scalar)
-        r        = rental rate (scalar)
-        e        = distribution of abilities (SxJ array)
-        n_guess  = distribution of labor (SxJ array)
-        b_s       = distribution of capital in period t (S x J array)
-        b_splus1       = distribution of capital in period t+1 (S x J array)
-        b_splus2       = distribution of capital in period t+2 (S x J array)
-        BQ        = distribution of incidental bequests (1 x J array)
-        factor   = scaling value to make average income match data
-        T_H  = lump sum transfer from the government to the households
-        chi_b    = discount factor of savings
-        params = parameters
-        theta = replacement rates
-        tau_bq = bequest tax parameters
-        rho = mortality rates
-        lambdas = bin weights
-
-    Returns:
-        Value of Euler error.
+        w = wage rate (scalar)
+        r = rental rate (scalar)
+        e = ability levels (Sx1 array)
+        n_guess = labor distribution (Sx1 array)
+        b_s = wealth holdings at the start of a period (Sx1 array)
+        b_splus1 = wealth holdings for the next period (Sx1 array)
+        b_splus2 = wealth holdings for 2 periods ahead (Sx1 array)
+        BQ = aggregate bequests for a certain ability (scalar)
+        factor = scaling factor to convert to dollars (scalar)
+        T_H = lump sum tax (scalar)
+        chi_b = chi^b_j for a certain ability (scalar)
+        params = parameter list (list)
+        theta = replacement rate for a certain ability (scalar)
+        tau_bq = bequest tax rate (scalar)
+        rho = mortality rate (Sx1 array)
+        lambdas = ability weight (scalar)
+    Output:
+        euler = Value of savings euler error (Sx1 array)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    # In order to not have 2 savings euler equations (one that solves the first S-1 equations, and one that solves the last one),
+    # we combine them.  In order to do this, we have to compute a consumption term in period t+1, which requires us to have a shifted
+    # e and n matrix.  We append a zero on the end of both of these so they will be the right size.  We could append any value to them,
+    # since in the euler equation, the coefficient on the marginal utility of consumption for this term will be zero (since rho is one).
     e_extended = np.array(list(e) + [0])
     n_extended = np.array(list(n_guess) + [0])
     tax1 = tax.total_taxes(r, b_s, w, e, n_guess, BQ, lambdas, factor, T_H, None, 'SS', False, params, theta, tau_bq)
@@ -112,6 +155,8 @@ def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_
         1 + r*(1-tax.tau_income(r, b_splus1, w, e_extended[1:], n_extended[1:], factor, params)-tax.tau_income_deriv(
             r, b_splus1, w, e_extended[1:], n_extended[1:], factor, params)*income)-tax.tau_w_prime(b_splus1, params)*b_splus1-tax.tau_wealth(b_splus1, params))
     savings_ut = rho * np.exp(-sigma * g_y) * chi_b * b_splus1 ** (-sigma)
+    # Again, not who in this equation, the (1-rho) term will zero out in the last period, so the last entry of cons2 can be complete
+    # gibberish (which it is).  It just has to exist so cons2 is the right size to match all other arrays in the equation.
     euler = marg_ut_cons(cons1, params) - beta * (1-rho) * deriv * marg_ut_cons(
         cons2, params) * np.exp(-sigma * g_y) - savings_ut
     return euler
@@ -119,24 +164,24 @@ def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_
 
 def euler_labor_leisure_func(w, r, e, n_guess, b_s, b_splus1, BQ, factor, T_H, chi_n, params, theta, tau_bq, lambdas):
     '''
+    This function is usually looped through over J, so it does one ability group at a time.
     Inputs:
-        w        = wage rate (scalar)
-        r        = rental rate (scalar)
-        e        = distribution of abilities (SxJ array)
-        n_guess  = distribution of labor (SxJ array)
-        b_s       = distribution of capital in period t (S x J array)
-        b_splus1       = distribution of capital in period t+1 (S x J array)
-        BQ        = distribution of incidental bequests (1 x J array)
-        factor   = scaling value to make average income match data
-        T_H  = lump sum transfer from the government to the households
-        chi_n    = discount factor of labor
-        params = parameters
-        theta = replacement rates
-        tau_bq = bequest tax parameters
-        lambdas = bin weights
-
-    Returns:
-        Value of Euler error.
+        w = wage rate (scalar)
+        r = rental rate (scalar)
+        e = ability levels (Sx1 array)
+        n_guess = labor distribution (Sx1 array)
+        b_s = wealth holdings at the start of a period (Sx1 array)
+        b_splus1 = wealth holdings for the next period (Sx1 array)
+        BQ = aggregate bequests for a certain ability (scalar)
+        factor = scaling factor to convert to dollars (scalar)
+        T_H = lump sum tax (scalar)
+        chi_n = chi^n_s (Sx1 array)
+        params = parameter list (list)
+        theta = replacement rate for a certain ability (scalar)
+        tau_bq = bequest tax rate (scalar)
+        lambdas = ability weight (scalar)
+    Output:
+        euler = Value of labor leisure euler error (Sx1 array)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     tax1 = tax.total_taxes(r, b_s, w, e, n_guess, BQ, lambdas, factor, T_H, None, 'SS', False, params, theta, tau_bq)
@@ -154,26 +199,15 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, params):
         bssmat = steady state distribution of capital ((S-1)xJ array)
         nssmat = steady state distribution of labor (SxJ array)
         cssmat = steady state distribution of consumption (SxJ array)
-
-    Created Variables:
-        flag1 = False if all borrowing constraints are met, true
-               otherwise.
-        flag2 = False if all labor constraints are met, true otherwise
-
-    Returns:
+        params = list of parameters (list)
+    Output:
         # Prints warnings for violations of capital, labor, and
             consumption constraints.
     '''
     print 'Checking constraints on capital, labor, and consumption.'
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    flag1 = False
-    if bssmat.sum() <= 0:
-        print '\tWARNING: Aggregate capital is less than or equal to zero.'
-        flag1 = True
     if (bssmat < 0).any():
         print '\tWARNING: There is negative capital stock'
-    if flag1 is False:
-        print '\tThere were no violations of the borrowing constraints.'
     flag2 = False
     if (nssmat < 0).any():
         print '\tWARNING: Labor supply violates nonnegativity constraints.'
@@ -188,22 +222,20 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, params):
         print '\tThere were no violations of the constraints on consumption.'
 
 
-def constraint_checker_TPI(b_dist, n_dist, c_dist, t, params, N_tilde):
+def constraint_checker_TPI(b_dist, n_dist, c_dist, t, params):
     '''
     Inputs:
-        b_dist = distribution of capital ((S-1)xJ array)
+        b_dist = distribution of capital (SxJ array)
         n_dist = distribution of labor (SxJ array)
-        w      = wage rate (scalar)
-        r      = rental rate (scalar)
-        e      = distribution of abilities (SxJ array)
         c_dist = distribution of consumption (SxJ array)
-
-    Returns:
+        t = time period (scalar)
+        params = list of parameters (list)
+    Output:
         Prints warnings for violations of capital, labor, and
             consumption constraints.
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    if b_dist.sum() / N_tilde[t] <= 0:
+    if (b_dist <= 0).any():
         print '\tWARNING: Aggregate capital is less than or equal to ' \
             'zero in period %.f.' % t
     if (n_dist < 0).any():

@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 6/19/2015
+Last updated 7/17/2015
 
 Returns the wealth for all ages of a certain percentile.
 
@@ -43,6 +43,9 @@ data = pd.read_table("data/wealth/scf2007to2013_wealth_age_all_percentiles.csv",
 
 
 def wealth_data_graphs():
+    '''
+    Graphs wealth distribution and its log
+    '''
     import matplotlib
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
@@ -73,19 +76,29 @@ def wealth_data_graphs():
     Get wealth moments of a desired percentile
 ------------------------------------------------------------------------
 '''
-
+# Restrict the data: it has other columns that give weights and indexes the age
 data2 = np.array(data)[:, 1:-1]
 
 
 def get_wealth_data(bin_weights, J, flag_graphs):
+    '''
+    Inputs:
+        bin_weights = ability weights (Jx1 array)
+        J = number of ability groups (scalar)
+        flag_graphs = whether or not to graph distribution (bool)
+    Output:
+        Saves a pickle of the desired wealth percentiles.  Graphs those levels.
+    '''
     if flag_graphs:
         wealth_data_graphs()
     perc_array = np.zeros(J)
+    # convert bin_weights to integers to index the array of data moments
     bins2 = (bin_weights * 100).astype(int)
     perc_array = np.cumsum(bins2)
     perc_array -= 1
     wealth_data_array = np.zeros((78, J))
     wealth_data_array[:, 0] = data2[:, :perc_array[0]].mean(axis=1)
+    # pull out the data moments for each percentile
     for j in xrange(1, J):
         wealth_data_array[:, j] = data2[:, perc_array[j-1]:perc_array[j]].mean(axis=1)
     var_names = ['wealth_data_array']
