@@ -106,7 +106,7 @@ Solve for equilibrium transition path by TPI
 '''
 
 
-def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init, , initial_b, j, parameters, theta, tau_bq):
+def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init, j):
     '''
     Solves the first entries of the upper triangle of the twist doughnut.  This is
     separate from the main TPI function because the the values of b and n are scalars,
