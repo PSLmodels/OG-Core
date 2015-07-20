@@ -366,25 +366,25 @@ def run_steady_state(ss_parameters, iterative_params, get_baseline=False):
     nssmat = solutions[S * J:2*S*J].reshape(S, J)
     wss, rss, factor_ss, T_Hss = solutions[2*S*J:]
 
-    Kss = house.get_K(bssmat_splus1, omega_SS.reshape(S, 1), lambdas, g_n_ss)
+    Kss = household.get_K(bssmat_splus1, omega_SS.reshape(S, 1), lambdas, g_n_ss)
     Lss = firm.get_L(e, nssmat, omega_SS.reshape(S, 1), lambdas)
     Yss = firm.get_Y(Kss, Lss, parameters)
 
     Iss = firm.get_I(Kss, Kss, delta, g_y, g_n_ss)
 
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS.reshape(S, 1), lambdas)
-    BQss = house.get_BQ(rss, bssmat_splus1, omega_SS.reshape(S, 1), lambdas, rho.reshape(S, 1), g_n_ss)
+    BQss = household.get_BQ(rss, bssmat_splus1, omega_SS.reshape(S, 1), lambdas, rho.reshape(S, 1), g_n_ss)
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
     taxss = tax.total_taxes(rss, b_s, wss, e, nssmat, BQss, lambdas, factor_ss, T_Hss, None, 'SS', False, parameters, theta, tau_bq)
-    cssmat = house.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.reshape(1, J), bssmat_splus1, parameters, taxss)
+    cssmat = household.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.reshape(1, J), bssmat_splus1, parameters, taxss)
 
-    Css = house.get_C(cssmat, omega_SS.reshape(S, 1), lambdas)
+    Css = household.get_C(cssmat, omega_SS.reshape(S, 1), lambdas)
 
     resource_constraint = Yss - (Css + Iss)
 
     print 'Resource Constraint Difference:', resource_constraint
 
-    house.constraint_checker_SS(bssmat, nssmat, cssmat, parameters)
+    household.constraint_checker_SS(bssmat, nssmat, cssmat, parameters)
 
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
     b_splus1 = bssmat_splus1
@@ -395,8 +395,8 @@ def run_steady_state(ss_parameters, iterative_params, get_baseline=False):
     euler_savings = np.zeros((S, J))
     euler_labor_leisure = np.zeros((S, J))
     for j in xrange(J):
-        euler_savings[:, j] = house.euler_savings_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], b_splus1[:, j], b_splus2[:, j], BQss[j], factor_ss, T_Hss, chi_b[:, j], parameters, theta[j], tau_bq[j], rho, lambdas[j])
-        euler_labor_leisure[:, j] = house.euler_labor_leisure_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], b_splus1[:, j], BQss[j], factor_ss, T_Hss, chi_n, parameters, theta[j], tau_bq[j], lambdas[j])
+        euler_savings[:, j] = household.euler_savings_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], b_splus1[:, j], b_splus2[:, j], BQss[j], factor_ss, T_Hss, chi_b[:, j], parameters, theta[j], tau_bq[j], rho, lambdas[j])
+        euler_labor_leisure[:, j] = household.euler_labor_leisure_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], b_splus1[:, j], BQss[j], factor_ss, T_Hss, chi_n, parameters, theta[j], tau_bq[j], lambdas[j])
     '''
     ------------------------------------------------------------------------
         Save the values in various ways, depending on the stage of
