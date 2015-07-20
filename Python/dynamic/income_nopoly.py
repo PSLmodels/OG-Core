@@ -1,6 +1,11 @@
+# We don't use this code any longer.  We're just saving it in case we decide to use this
+# method to calibrate ability instead of the polynomials (which is unlikely).  The polynomials
+# are only for specific bin_weights, this is general to any bin_weights.  But the data is not
+# as good for the top percentile.  Once income_polynomials is generalized, we can delete this.
+
 '''
 ------------------------------------------------------------------------
-Last updated 2/16/2014
+Last updated 2/16/2015
 
 Functions for created the matrix of ability levels, e.
 
@@ -131,7 +136,7 @@ def get_e(S, J, starting_age, ending_age, bin_weights, omega_SS):
 
     Returns:    e - S x J matrix of ability levels for each
                     age cohort, normalized so
-                    the mean is one
+                    the weighted sum is one
     '''
     emat_trunc = emat_basic[:50, :]
     cum_bins = 100 * np.array(bin_weights)
@@ -156,5 +161,5 @@ def get_e(S, J, starting_age, ending_age, bin_weights, omega_SS):
         emat_extended[:, j] = np.max(np.array(
             [emat_extended[:, j], emat_extended[:, j-1]]), axis=0)
     graph_income(S, J, emat_extended, starting_age, ending_age, bin_weights)
-    emat_normed = emat_extended/(omega_SS * emat_extended).sum()
+    emat_normed = emat_extended/(omega_SS * bin_weights * emat_extended).sum()
     return emat_normed
