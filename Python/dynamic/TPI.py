@@ -116,7 +116,7 @@ def create_tpi_params(a_tax_income, b_tax_income, c_tax_income,
 
 
 
-def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init, , initial_b, j, parameters, theta, tau_bq):
+def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init, initial_b, j, parameters, theta, tau_bq):
     '''
     Solves the first entries of the upper triangle of the twist doughnut.  This is
     separate from the main TPI function because the the values of b and n are scalars,
@@ -292,7 +292,7 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, parameters, N_tilde, ome
         # few periods and high ability groups.
         for j in xrange(J):
             b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],
-                args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1], j), xtol=1e-13))
+                args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1], initial_b, j, parameters, theta, tau_bq), xtol=1e-13))
             # if np.array(SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1, j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1])).max() > 1e-6:
             #     print 'minidoughnut:', np.array(SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1, j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1])).max()
             for s in xrange(S-2):  # Upper triangle
@@ -370,7 +370,7 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, parameters, N_tilde, ome
     # As in SS, you need the final distributions of b and n to match the final w, r, BQ, etc.  Otherwise the euler errors are large.  You need one more fsolve.
     for j in xrange(J):
         b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],
-            args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1], j), xtol=1e-13))
+            args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1], initial_b, j, parameters, theta, tau_bq), xtol=1e-13))
         for s in xrange(S-2):  # Upper triangle
             ind2 = np.arange(s+2)
             b_guesses_to_use = np.diag(guesses_b[1:S+1, :, j], S-(s+2))
