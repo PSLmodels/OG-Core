@@ -106,7 +106,7 @@ Solve for equilibrium transition path by TPI
 '''
 
 
-def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init, j):
+def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init, , initial_b, j, parameters, theta, tau_bq):
     '''
     Solves the first entries of the upper triangle of the twist doughnut.  This is
     separate from the main TPI function because the the values of b and n are scalars,
@@ -117,7 +117,11 @@ def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init, j):
         rinit = initial rental rate (scalar)
         BQinit = initial aggregate bequest (scalar)
         T_H_init = initial lump sum tax (scalar)
+        initial_b = initial distribution of capital (SxJ array)
         j = which ability type is being solved for (scalar)
+        parameters = list of parameters (list)
+        theta = replacement rates (Jx1 array)
+        tau_bq = bequest tax rates (Jx1 array)
     Output:
         euler errors (2x1 list)
     '''

@@ -6,6 +6,7 @@ Returns the wealth for all ages of a certain percentile.
 
 This py-file calls the following other file(s):
             data/wealth/scf2007to2013_wealth_age_all_percentiles.csv
+            utils.py
 
 This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)

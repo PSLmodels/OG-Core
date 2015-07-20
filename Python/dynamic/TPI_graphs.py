@@ -5,6 +5,7 @@ Last updated 6/19/2015
 Creates graphs for TPI values.
 
 This py-file calls the following other file(s):
+            firm.py
             SSinit/ss_init_vars.pkl
             TPIinit/TPIinit_vars.pkl
             SS/ss_vars.pkl
@@ -26,7 +27,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import cPickle as pickle
 
-import firm_funcs as firm
+import firm
 
 '''
 ------------------------------------------------------------------------

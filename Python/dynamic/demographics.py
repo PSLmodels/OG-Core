@@ -6,6 +6,7 @@ Functions for generating omega, the T x S array which describes the
 demographics of the population
 
 This py-file calls the following other file(s):
+            utils.py
             data\demographic\demographic_data.csv
             data\demographic\mortality_rates.csv
 

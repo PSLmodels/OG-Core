@@ -5,6 +5,8 @@ Last updated 6/19/2015
 Creates graphs for steady state values.
 
 This py-file calls the following other file(s):
+            firm.py
+            household.py
             SSinit/ss_init_vars.pkl
             SS/ss_vars.pkl
             OUTPUT/Saved_moments/params_given.pkl
@@ -26,8 +28,8 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import cPickle as pickle
 
-import firm_funcs as firm
-import household_funcs as house
+import firm
+import household
 
 '''
 ------------------------------------------------------------------------
@@ -91,7 +93,7 @@ T_Hss_init = T_Hss
 Kss_init = Kss
 Lss_init = Lss
 
-Css_init = house.get_C(cssmat, omega_SS.reshape(S, 1), lambdas)
+Css_init = household.get_C(cssmat, omega_SS.reshape(S, 1), lambdas)
 iss_init = firm.get_I(bssmat_splus1, bssmat_splus1, delta, g_y, g_n_ss)
 income_init = cssmat + iss_init
 # print (income_init*omega_SS).sum()
@@ -292,7 +294,7 @@ utility = utility.sum(0)
 
 
 
-Css = house.get_C(cssmat, omega_SS.reshape(S, 1), lambdas)
+Css = household.get_C(cssmat, omega_SS.reshape(S, 1), lambdas)
 iss = firm.get_I(bssmat_splus1, bssmat_splus1, delta, g_y, g_n_ss)
 income = cssmat + iss
 # print (income*omega_SS).sum()
