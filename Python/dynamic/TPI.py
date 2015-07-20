@@ -281,12 +281,13 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, parameters, N_tilde, ome
         Kpath_TPI = list(Kinit) + list(np.ones(10)*Kss)
         Lpath_TPI = list(Linit) + list(np.ones(10)*Lss)
         # Plot TPI for K for each iteration, so we can see if there is a problem
-        plt.figure()
-        plt.axhline(
-            y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
-        plt.plot(np.arange(
-            T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
-        plt.savefig("OUTPUT/TPI_K")
+        if PLOT_TPI == True:
+            plt.figure()
+            plt.axhline(
+                y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
+            plt.plot(np.arange(
+                T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
+            plt.savefig("OUTPUT/TPI_K")
         # Uncomment the following print statements to make sure all euler equations are converging.
         # If they don't, then you'll have negative consumption or consumption spikes.  If they don't,
         # it is the initial guesses.  You might need to scale them differently.  It is rather delicate for the first 
@@ -294,8 +295,8 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, parameters, N_tilde, ome
         for j in xrange(J):
             b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],
                 args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1], initial_b, factor_ss, j, parameters, theta, tau_bq), xtol=1e-13))
-            # if np.array(SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1, j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1])).max() > 1e-6:
-            #     print 'minidoughnut:', np.array(SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1, j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1])).max()
+            # if np.array(SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1, j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1], initial_b, factor_ss, j, parameters, theta, tau_bq)).max() > 1e-6:
+            #     print 'minidoughnut:', np.array(SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1, j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1], initial_b, factor_ss, j, parameters, theta, tau_bq)).max()
             for s in xrange(S-2):  # Upper triangle
                 ind2 = np.arange(s+2)
                 b_guesses_to_use = np.diag(guesses_b[1:S+1, :, j], S-(s+2))
