@@ -100,6 +100,8 @@ def runner():
     ss_outputs['initial_b'] = initial_b
     ss_outputs['initial_n'] = initial_n
     ss_outputs['tau_bq'] = tau_bq
+    ss_outputs['g_n_vector'] = g_n_vector
+
 
     with open("ss_outputs.pkl", 'wb') as fp:
         pickle.dump(ss_outputs, fp)

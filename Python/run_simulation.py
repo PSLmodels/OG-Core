@@ -47,7 +47,7 @@ wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir)
 labor.labor_data_moments(flag_graphs)
 
 get_baseline = True
-calibrate_model = True
+calibrate_model = False
 
 # List of parameter names that will not be changing (unless we decide to
 # change them for a tax experiment)
@@ -78,7 +78,7 @@ for key in param_names:
 income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
 
 
-ss_outputs = SS.run_steady_state(ss_parameters, iterative_params, get_baseline)
+ss_outputs = SS.run_steady_state(ss_parameters, iterative_params, get_baseline, calibrate_model)
 
 
 '''
@@ -108,6 +108,7 @@ ss_outputs['c0'] = c0
 ss_outputs['initial_b'] = initial_b
 ss_outputs['initial_n'] = initial_n
 ss_outputs['tau_bq'] = tau_bq
+ss_outputs['g_n_vector'] = g_n_vector
 TPI.run_time_path_iteration(**ss_outputs)
 
 '''

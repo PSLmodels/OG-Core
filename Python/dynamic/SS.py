@@ -289,7 +289,7 @@ def function_to_minimize(chi_params_scalars, chi_params_init, params, iterative_
     print 'Value of criterion function: ', value.sum()
     return value.sum()
 
-def run_steady_state(ss_parameters, iterative_params, get_baseline=False):
+def run_steady_state(ss_parameters, iterative_params, get_baseline=False, calibrate_model=False):
     '''
     ------------------------------------------------------------------------
         Run SS
@@ -301,7 +301,6 @@ def run_steady_state(ss_parameters, iterative_params, get_baseline=False):
         chi_params = np.zeros(S+J)
         chi_params[:J] = chi_b_guess
         chi_params[J:] = chi_n_guess
-        chi_params = list(chi_params)
         # First run SS simulation with guesses at initial values for b, n, w, r, etc
         # For inital guesses of b and n, we choose very small b, and medium n
         b_guess = np.ones((S, J)).flatten() * .01
@@ -324,7 +323,7 @@ def run_steady_state(ss_parameters, iterative_params, get_baseline=False):
             # minimizer peturbs that value by 1e-8, the % difference will be extremely small, outside of the tolerance of the
             # minimizer, and it will not change that parameter.
             chi_params_scalars = np.ones(S+J)
-            chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=MINIMIZER_TOL, bounds=bnds, options={'maxiter': 1}).x
+            chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars, method='TNC', tol=MINIMIZER_TOL, bounds=bnds, options=MINIMIZER_OPTIONS).x
             chi_params *= chi_params_scalars
             print 'The final scaling params', chi_params_scalars
             print 'The final bequest parameter values:', chi_params
@@ -368,15 +367,15 @@ def run_steady_state(ss_parameters, iterative_params, get_baseline=False):
 
     Kss = household.get_K(bssmat_splus1, omega_SS.reshape(S, 1), lambdas, g_n_ss)
     Lss = firm.get_L(e, nssmat, omega_SS.reshape(S, 1), lambdas)
-    Yss = firm.get_Y(Kss, Lss, parameters)
+    Yss = firm.get_Y(Kss, Lss, ss_parameters)
 
     Iss = firm.get_I(Kss, Kss, delta, g_y, g_n_ss)
 
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS.reshape(S, 1), lambdas)
     BQss = household.get_BQ(rss, bssmat_splus1, omega_SS.reshape(S, 1), lambdas, rho.reshape(S, 1), g_n_ss)
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
-    taxss = tax.total_taxes(rss, b_s, wss, e, nssmat, BQss, lambdas, factor_ss, T_Hss, None, 'SS', False, parameters, theta, tau_bq)
-    cssmat = household.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.reshape(1, J), bssmat_splus1, parameters, taxss)
+    taxss = tax.total_taxes(rss, b_s, wss, e, nssmat, BQss, lambdas, factor_ss, T_Hss, None, 'SS', False, ss_parameters, theta, tau_bq)
+    cssmat = household.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.reshape(1, J), bssmat_splus1, ss_parameters, taxss)
 
     Css = household.get_C(cssmat, omega_SS.reshape(S, 1), lambdas)
 
@@ -384,7 +383,7 @@ def run_steady_state(ss_parameters, iterative_params, get_baseline=False):
 
     print 'Resource Constraint Difference:', resource_constraint
 
-    household.constraint_checker_SS(bssmat, nssmat, cssmat, parameters)
+    household.constraint_checker_SS(bssmat, nssmat, cssmat, ss_parameters)
 
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
     b_splus1 = bssmat_splus1
@@ -395,8 +394,8 @@ def run_steady_state(ss_parameters, iterative_params, get_baseline=False):
     euler_savings = np.zeros((S, J))
     euler_labor_leisure = np.zeros((S, J))
     for j in xrange(J):
-        euler_savings[:, j] = household.euler_savings_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], b_splus1[:, j], b_splus2[:, j], BQss[j], factor_ss, T_Hss, chi_b[:, j], parameters, theta[j], tau_bq[j], rho, lambdas[j])
-        euler_labor_leisure[:, j] = household.euler_labor_leisure_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], b_splus1[:, j], BQss[j], factor_ss, T_Hss, chi_n, parameters, theta[j], tau_bq[j], lambdas[j])
+        euler_savings[:, j] = household.euler_savings_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], b_splus1[:, j], b_splus2[:, j], BQss[j], factor_ss, T_Hss, chi_b[:, j], ss_parameters, theta[j], tau_bq[j], rho, lambdas[j])
+        euler_labor_leisure[:, j] = household.euler_labor_leisure_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], b_splus1[:, j], BQss[j], factor_ss, T_Hss, chi_n, ss_parameters, theta[j], tau_bq[j], lambdas[j])
     '''
     ------------------------------------------------------------------------
         Save the values in various ways, depending on the stage of

@@ -239,7 +239,7 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
     return list(error1.flatten()) + list(error2.flatten())
 
 
-def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, parameters, N_tilde, omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, chi_n, get_baseline=False, **kwargs):
+def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, parameters, g_n_vector, omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, chi_n, get_baseline=False, **kwargs):
 
     # Initialize Time paths
     domain = np.linspace(0, T, T)

@@ -77,8 +77,10 @@ retire       = age at which individuals retire (scalar)
 ------------------------------------------------------------------------
 Simulation Parameters:
 ------------------------------------------------------------------------
-MINIMIZER_TOL= Tolerance level for the minimizer in the calibration of chi's
-PLOT_TPI     = Plot the path of K as TPI iterates (for debugging purposes)
+MINIMIZER_TOL= Tolerance level for the minimizer in the calibration of chi's (scalar)
+MINIMIZER_OPTIONS = dictionary for options to put into the minimizer, usually
+                    to set a max iteration (dict)
+PLOT_TPI     = Plot the path of K as TPI iterates (for debugging purposes) (bool)
 maxiter      = Maximum number of iterations that SS and TPI will undergo (scalar)
 mindist_SS   = Cut-off distance between iterations for SS (scalar)
 mindist_TPI  = Cut-off distance between iterations for TPI (scalar)
@@ -149,6 +151,7 @@ def get_reduced_parameters():
 
     # Simulation Parameters
     MINIMIZER_TOL = 1e-3
+    MINIMIZER_OPTIONS = {'maxiter': 1}
     PLOT_TPI = False
     maxiter = 10
     mindist_SS = 1e-3
@@ -161,7 +164,7 @@ def get_reduced_parameters():
     chi_n_guess = np.array([5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
     # Generate Income and Demographic parameters
-    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = demographics.get_omega(
+    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = get_omega(
         S, T, starting_age, ending_age, E, flag_graphs)
     e = np.array([[0.25, 1.25]] * 10)
     allvars = dict(locals())
@@ -212,6 +215,7 @@ def get_full_parameters():
 
     # Simulation Parameters
     MINIMIZER_TOL = 1e-14
+    MINIMIZER_OPTIONS = None
     PLOT_TPI = True
     maxiter = 250
     mindist_SS = 1e-9
@@ -238,9 +242,9 @@ def get_full_parameters():
                              , 28.90029708 , 29.83586775 , 30.87563699 , 31.91207845 , 33.07449767
                              , 34.27919965 , 35.57195873 , 36.95045988 , 38.62308152])
     # Generate Income and Demographic parameters
-    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = demographics.get_omega(
+    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = get_omega(
         S, T, starting_age, ending_age, E, flag_graphs)
-    e = income.get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
+    e = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
     allvars = dict(locals())
     return allvars
 

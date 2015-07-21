@@ -67,7 +67,7 @@ def marg_ut_cons(c, params):
 
 
 def marg_ut_labor(n, chi_n, params):
-   '''
+    '''
     Inputs:
         n = labor particpation distribution (various length array or scalar)
         chi_n = chi^n_s (various length array or scalar)
