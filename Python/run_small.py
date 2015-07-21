@@ -5,8 +5,6 @@ baseline
 
 import cPickle as pickle
 import os
-from glob import glob
-from subprocess import call
 import numpy as np
 import time
 
@@ -29,17 +27,6 @@ def runner():
         except OSError as oe:
             pass
 
-    # Flag to prevent graphing from occuring in demographic, income, wealth, and labor files
-    flag_graphs = False
-    # Generate Income and Demographic parameters
-    omega, g_n, omega_SS, surv_rate = demographics.get_omega(S, J, T, lambdas, starting_age, ending_age, E, flag_graphs)
-    #      S, J, T, lambdas, starting_age, ending_age, E, flag_graphs)
-    #e = income.get_test_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
-    # Create a fake 'e'
-    e = np.array([[0.25, 1.25]] * 10)
-    rho = 1-surv_rate
-    rho[-1] = 1.0
-
     # Generate Wealth data moments
     output_dir = "./OUTPUT"
     wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir)
@@ -47,24 +34,21 @@ def runner():
     # Generate labor data moments
     labor.labor_data_moments(flag_graphs, output_dir)
 
-    # Remove pickle of altered parameters -- reset the experiment
-    if os.path.exists("OUTPUT/Saved_moments/params_changed.pkl"):
-        os.remove("OUTPUT/Saved_moments/params_changed.pkl")
-
+    
     get_baseline = True
-
+    calibrate_model = True
     # List of parameter names that will not be changing (unless we decide to
-    # change them for a tax experiment.
+    # change them for a tax experiment)
     param_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
-                'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
-                'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
-                'b_ellipse', 'k_ellipse', 'upsilon',
-                'a_tax_income',
-                'b_tax_income', 'c_tax_income', 'd_tax_income',
-                'tau_payroll', 'tau_bq',
-                'retire', 'mean_income_data',
-                'h_wealth', 'p_wealth', 'm_wealth', 'get_baseline',
-                'omega', 'g_n', 'omega_SS', 'surv_rate', 'e', 'rho']
+                 'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
+                 'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
+                 'b_ellipse', 'k_ellipse', 'upsilon',
+                 'a_tax_income', 'chi_b_guess', 'chi_n_guess',
+                 'b_tax_income', 'c_tax_income', 'd_tax_income',
+                 'tau_payroll', 'tau_bq', 'calibrate_model',
+                 'retire', 'mean_income_data', 'g_n_vector',
+                 'h_wealth', 'p_wealth', 'm_wealth', 'get_baseline',
+                 'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'e', 'rho']
 
     '''
     ------------------------------------------------------------------------
