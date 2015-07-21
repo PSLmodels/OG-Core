@@ -56,7 +56,10 @@ def read_bea(asset_tree):
     # Finding the number of industries (includes those without bea codes):
     number_of_industries = 0
     while cur_row < bea_readme.nrows:
-        if(str(bea_readme.cell_value(cur_row, cur_col)) != ""):
+        #if(str(bea_readme.cell_value(cur_row, cur_col)) != ""):
+        if(unicode(bea_readme.cell_value(cur_row, cur_col)).encode('utf8') != ""):    
+       # for rownum in xrange(sh.nrows):
+    #wr.writerow([unicode(c).encode('utf8') for c in sh.row_values(rownum)])    
             number_of_industries += 1
         cur_row += 1
     # Making a list of BEA codes based on the names of the worksheets:
@@ -69,7 +72,7 @@ def read_bea(asset_tree):
     cur_col = sht_pos[1]
     bea_codes2 = np.zeros(number_of_industries, dtype=object)
     while cur_row < bea_readme.nrows:
-        if(str(bea_readme.cell_value(cur_row, cur_col)) != ""):
+        if(unicode(bea_readme.cell_value(cur_row, cur_col)).encode('utf8') != ""):
             cur_code = str(bea_readme.cell_value(cur_row, cur_col+1))
             cur_code = cur_code.replace("\xa0", " ").strip()
             bea_codes2[code_index] = cur_code
@@ -100,9 +103,9 @@ def read_bea(asset_tree):
     naics_counter = 0
     for i in range(0, num_shts-2):
         for cur_row in range(sht_pos[0]+1, bea_readme.nrows):
-            bea_code = str(bea_readme.cell_value(cur_row,cur_col+1))
+            bea_code = unicode(bea_readme.cell_value(cur_row,cur_col+1)).encode('utf8')
             if(str(bea_codes1[i]) == bea_code):
-                bea_ind = str(bea_readme.cell_value(cur_row,cur_col))
+                bea_ind = unicode(bea_readme.cell_value(cur_row,cur_col)).encode('utf8')
                 bea_ind = bea_ind.replace('\xa0', ' ').strip()
                 bea_inds[i] = bea_ind
                 bea_chart["BEA Code"][i] = bea_code
@@ -115,7 +118,7 @@ def read_bea(asset_tree):
             # If they match except one has ".0" at the end:
             elif(str(bea_codes1[i]) == 
                     str(bea_readme.cell_value(cur_row, cur_col+1))[:-2]):
-                bea_ind = str(bea_readme.cell_value(cur_row, cur_col))
+                bea_ind = unicode(bea_readme.cell_value(cur_row,cur_col)).encode('utf8')
                 bea_ind = bea_ind.replace('\xa0', ' ').strip()
                 bea_chart["Industry"][i] = bea_ind
                 cur_code = str(bea_readme.cell_value(cur_row, cur_col+1))[:-2]
@@ -139,7 +142,7 @@ def read_bea(asset_tree):
         for j in xrange(0, len(asset_list)): #xrange(sht_pos[0]+2, cur_sht.nrows):
             cur_asset = asset_list.iloc[j,0]
             for k in xrange(sht_pos[0]+2, cur_sht.nrows):
-                cur_cell = str(cur_sht.cell_value(k, sht_pos[1]+1))
+                cur_cell = unicode(cur_sht.cell_value(k, sht_pos[1]+1)).encode('utf8')
                 cur_cell = cur_cell.replace("\xa0", " ").strip()
                 if(cur_asset == cur_cell):
                     bea_table[i][j] = float(
