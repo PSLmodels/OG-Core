@@ -61,7 +61,8 @@ def marg_ut_cons(c, params):
     Outputs:
         output = Marginal Utility of Consumption (same shape as c)
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
+    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     output = c**(-sigma)
     return output
 
@@ -75,7 +76,8 @@ def marg_ut_labor(n, chi_n, params):
     Output:
         output = Marginal Utility of Labor (same shape as n)
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
+    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     try:
         deriv = b_ellipse * (1.0/ltilde) * ((1.0 - (n / ltilde) ** upsilon) ** (
             (1.0/upsilon)-1.0)) * (n / ltilde) ** (upsilon - 1.0)
@@ -108,7 +110,8 @@ def get_cons(r, b_s, w, e, n, BQ, lambdas, b_splus1, params, net_tax):
     Output:
         cons = Consumption (SxJ or Sx1 array)
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
+    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     cons = (1 + r)*b_s + w*e*n + BQ / lambdas - b_splus1*np.exp(g_y) - net_tax
     return cons
 
@@ -149,7 +152,8 @@ def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_
     Output:
         euler = Value of savings euler error (Sx1 array)
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
+    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     # In order to not have 2 savings euler equations (one that solves the first S-1 equations, and one that solves the last one),
     # we combine them.  In order to do this, we have to compute a consumption term in period t+1, which requires us to have a shifted
     # e and n matrix.  We append a zero on the end of both of these so they will be the right size.  We could append any value to them,
@@ -193,7 +197,8 @@ def euler_labor_leisure_func(w, r, e, n_guess, b_s, b_splus1, BQ, factor, T_H, c
     Output:
         euler = Value of labor leisure euler error (Sx1 array)
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
+    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     tax1 = tax.total_taxes(r, b_s, w, e, n_guess, BQ, lambdas, factor, T_H, None, 'SS', False, params, theta, tau_bq)
     cons = get_cons(r, b_s, w, e, n_guess, BQ, lambdas, b_splus1, params, tax1)
     income = (r * b_s + w * e * n_guess) * factor
@@ -215,7 +220,8 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, params):
             consumption constraints.
     '''
     print 'Checking constraints on capital, labor, and consumption.'
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
+    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     if (bssmat < 0).any():
         print '\tWARNING: There is negative capital stock'
     flag2 = False
@@ -244,7 +250,8 @@ def constraint_checker_TPI(b_dist, n_dist, c_dist, t, params):
         Prints warnings for violations of capital, labor, and
             consumption constraints.
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
+    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     if (b_dist <= 0).any():
         print '\tWARNING: Aggregate capital is less than or equal to ' \
             'zero in period %.f.' % t

@@ -72,7 +72,8 @@ def create_steady_state_parameters(a_tax_income, b_tax_income, c_tax_income,
     income_tax_params = [a_tax_income, b_tax_income, c_tax_income, d_tax_income]
     wealth_tax_params = [h_wealth, p_wealth, m_wealth]
     ellipse_params = [b_ellipse, upsilon]
-    parameters = [J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data] + income_tax_params + wealth_tax_params + ellipse_params
+    parameters = [J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, \
+    mean_income_data] + income_tax_params + wealth_tax_params + ellipse_params
     iterative_params = [maxiter, mindist_SS]
     return (income_tax_params, wealth_tax_params, ellipse_params,
             parameters, iterative_params)
@@ -100,7 +101,8 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n,
     Outputs:
         2Sx1 list of euler errors
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
+    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     b_guess = np.array(guesses[:S])
     n_guess = np.array(guesses[S:])
     b_s = np.array([0] + list(b_guess[:-1]))
@@ -150,7 +152,8 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
     Outputs:
         solutions = steady state values of b, n, w, r, factor, T_H ((2*S*J+4)x1 array)
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
+    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     maxiter, mindist_SS = iterative_params
     # Rename the inputs
     w = wguess
@@ -234,7 +237,8 @@ def function_to_minimize(chi_params_scalars, chi_params_init, params, iterative_
     Output:
         The sum of absolute percent deviations between the actual and simulated wealth moments
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
+    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     chi_params_init *= chi_params_scalars
     # print 'Print Chi_b: ', chi_params_init[:J]
     # print 'Scaling vals:', chi_params_scalars[:J]

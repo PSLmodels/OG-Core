@@ -88,7 +88,8 @@ ss_outputs = SS.run_steady_state(ss_parameters, iterative_params, get_baseline, 
 '''
 
 ss_outputs['get_baseline'] = get_baseline
-income_tax_params, wealth_tax_params, ellipse_params, parameters, N_tilde, omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, w0, r0, BQ0, T_H_0, tax0, c0, initial_b, initial_n = TPI.create_tpi_params(**sim_params)
+income_tax_params, wealth_tax_params, ellipse_params, parameters, N_tilde, omega_stationary, K0, b_sinit, \
+b_splus1init, L0, Y0, w0, r0, BQ0, T_H_0, tax0, c0, initial_b, initial_n = TPI.create_tpi_params(**sim_params)
 ss_outputs['income_tax_params'] = income_tax_params
 ss_outputs['wealth_tax_params'] = wealth_tax_params
 ss_outputs['ellipse_params'] = ellipse_params

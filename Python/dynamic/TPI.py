@@ -85,7 +85,8 @@ def create_tpi_params(a_tax_income, b_tax_income, c_tax_income,
     income_tax_params = [a_tax_income, b_tax_income, c_tax_income, d_tax_income]
     wealth_tax_params = [h_wealth, p_wealth, m_wealth]
     ellipse_params = [b_ellipse, upsilon]
-    parameters = [J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data] + income_tax_params + wealth_tax_params + ellipse_params
+    parameters = [J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, \
+    mean_income_data] + income_tax_params + wealth_tax_params + ellipse_params
 
     N_tilde = omega.sum(1)
     omega_stationary = omega / N_tilde.reshape(T+S, 1)
@@ -184,7 +185,8 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
         Value of Euler error (various length list)
     '''
 
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
+    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     length = len(guesses)/2
     b_guess = np.array(guesses[:length])
     n_guess = np.array(guesses[length:])
