@@ -56,7 +56,14 @@
 
 \begin{document}
 
-This document will outline the step by step addition of firms into our model.
+\title{Adding Multiple Goods/Production Sectors to the OLG Model}
+\date{\today}
+\author{}
+\maketitle
+
+\begin{spacing}{1.5}
+\pagenumbering{arabic}
+
 
 \section*{The Big Picture}
 
@@ -64,447 +71,702 @@ What we are working towards is having two representative firms (one who faces co
 
 What are are doing is unique in that we have many production industries \emph{and} have forward looking, truly dynamically optimizing firms.  \href{https://github.com/OpenSourcePolicyCenter/dynamic/blob/master/Papers/ZodrowDiamond2013.pdf}{Zodrow and Diamond (2013)} have dynamic firms, but only four representative firms.  \href{https://github.com/OpenSourcePolicyCenter/dynamic/blob/master/Papers/FullertonRogers1993.pdf}{Fullerton and Rogers (1993)} have many production industries, but static firms.  \href{https://github.com/OpenSourcePolicyCenter/dynamic/blob/master/Papers/memo161.pdf}{The CORTAX model} has dynamic firms with a medium number of representative firms (2-3 per country in a model of maybe 9 countries).  These papers/models represent our main sources of inspiration and are the starting point for the model we are trying to build.
 
-I think the key to making this model feasible is a structure like in Fullerton and Rogers (1993), where factor prices can be used to determine all other prices in the model.  In particular, given $r$ and $w$, their model allows one to derive the price of capital, the price of producer outputs, the price of consumption goods, the price of the composite consumption good.  With all these prices, they then start with the consumers problem and figure out labor supply and demand for each consumption good.  The demand for consumption goods can then be put in terms of demand for producer goods.  The demand for producer goods (output) then implies the amount of capital and labor the firm will employ.  This means all the endogenous prices and quantities in the household and production sectors fall out of the factor prices $r$ and $w$.  Other methods would involve guessing a lot more prices than just $r$ and $w$ (e.g., guessing prices for each of the $Mx2$ production outputs).
+I think the key to making this model feasible is a structure like in Fullerton and Rogers (1993), where factor prices can be used to determine all other prices in the model.  In particular, given $r$ and $w$, their model allows one to derive the price of capital, the price of producer outputs, the price of individual consumption goods, and the price of the composite consumption good.  With all these prices, they then start with the consumers problem and figure out labor supply and demand for each consumption good.  The demand for consumption goods can then be put in terms of demand for producer goods.  The demand for producer goods (output) then implies the amount of capital and labor the firm will employ.  This means all the endogenous prices and quantities in the household and production sectors fall out of the factor prices $r$ and $w$.  Other methods would involve guessing a lot more prices than just $r$ and $w$ (e.g., guessing prices for each of the $Mx2$ production outputs).
 
-We want to structure our model in the way Fullerton and Rogers (1993) do in term of how all the within period endogenous variables unravel, but will have the firm as a dynamic optimizer (as in Zodrow and Diamond (2013) and CORTAX).  We'll also want to have firms with economic profits so that 1) they have profits to shift to other tax jurisdictions and 2) we can analyze the impact of taxes on normal and supranormal returns.  Of the above papers, only the CORTAX model has economic profits.  
+We want to structure our model in the way Fullerton and Rogers (1993) do in terms of how all the within period endogenous variables unravel, but will have the firm as a dynamic optimizer (as in Zodrow and Diamond (2013) and CORTAX).  We'll also want to have firms with economic profits so that 1) they have profits to shift to other tax jurisdictions and 2) we can analyze the impact of taxes on normal and supranormal returns.  Of the above papers, only the CORTAX model has economic profits.  
+
+\section*{Starting point}
+
+This document assumes that you have written code that computes the steady-state equilibrium and transition path for an OLG model with households who live for $S$ periods and can be one of $J$ types (where the difference between types is in the amount of effective labor units they can provide).  Households choose labor supply, savings, and consumption.  Bequests are left when a household dies and they get a warm glow utility effect from this (at least for intentional bequests).  I'll be assuming the disutility of labor function is a CRRA function, but one can easily adapt this to the case of an elliptical utility function.  A single, representative firm rents capital and labor to produce output with a constant returns to scale, Cobb Douglas production function.  The codes solves for the model's steady state using a root finder (probably Scipy's \texttt{fsolve}) to simultaneously solve $S\times J \times 2$ equations (household FOCs) for the $S\times J \times 2$ unknowns ($n_{j,s}, b_{j,s}$ - these then determine $c_{j,s}$).  This solution results in Euler errors that are very small (e.g. 1e-10) and satisfies the aggregate resource constraint: $Y=C+I$ (where $I=\delta K$ in the SS).  These conditions are satisfied in both the SS and along the transition path.
 
 \section*{Step 1: Modifying the SS solution algorithm}
 
-The first step is to take our current code for solving for the steady state and adjust it just slightly so that it is setup to add the additional pieces.  Currently, the steady state is found by iterating on guesses or $r$ and $w$ (and $T^{H}$ and $f$ - but lets ignore these for the exposition here since they aren't relevant here and will stay unchanged as we add firms).  For each guess, the household problem is solved and the aggregate supply of labor and capital are found.  The market clearing conditions are then used to put these amounts supplied into the FOCs from the firm's problem.  Given $K$ and $L$ these FOCs then imply and $r$ and $w$.  These implied prices are then compared against the initial guess. If they match, we've found and equilibrium and if not, we update the guess.
+The first step is to take the code for solving for the steady state and adjust it just slightly so that it is setup to add the additional pieces in the next sections.  The ``one big fsolve" method used in your code is not robust to different initial values and becomes difficult to work with when multiple firms are added.  What we'll do instead is make a guess at the factor prices, $r$ and $w$.  The SS algorithm will look like:
 
-The adjustment will do the following.  The solution will guess $r$ and $w$ and solve the household's problem for $B$, $L$, and $C$.  We'll then use the resource constraint: $C+I=Y$, to find $Y$.  With $Y$ (and $r$ and $w$), we are then able to determine the steady state demand for capital, $K$, and labor $L$.  We then check the market clearing conditions for the capital and labor markets.  We'll iterate on our guesses of $r$ and $w$ until these clear.
-
-Equations to add/edit to the code:
 \begin{enumerate}
-\item Firm function: $I = \delta K$
-\item Miscellaneous Function: $C + I = Y$
-\item Firm function: $K = \frac{\alpha Y}{r+\delta}$ (writing FOC w.r.t. capital in terms of the amount of capital demanded for a given amount of output)
-\item Firm function: add $\delta$ to the FOC for the firm - i.e., $r+\delta = MPK$ since they'll own capital, the rental rate won't include the cost of depreciation.
+\item Make an initial guess at $\bar{r}$ and $\bar{w}$
+\item Taking $\bar{r}$ and $\bar{w}$ as given, solve the household's problem:
+	\begin{itemize}
+	\item For each $j$ type:
+		\begin{enumerate}
+		\item Make an initial guess at the household's optimal savings and labor supply decisions, $b_{j,s}$, $n_{j,s}$.
+		\item Use a root finder (e.g. \texttt{fsolve}) to determine the optimal allocations given $\bar{r}$ and $\bar{w}$.
+		\end{enumerate}
+	\end{itemize}
+\item Aggregate over $J$ and $S$ to determine aggregate supply of labor and capital (where savings=capital), $K$, $L$
+	\begin{itemize}
+	\item Remember to find $L$ as the aggregate amount of effective labor units supplied, so you not only want to sum over $J$ and $S$, but weight by the number of effective labor units each type/age supplies.
+	\end{itemize}
+\item Use the fact that supply=demand in eq'm and plug the aggregate factor supplies into the firm's problem
+\item Using the Firm's FOC for capital demand, find the interest rate implied by these factor supplies.  Call this interest rate $r_{new}$.  $r_{new}=MPK(K,L)-\delta$.
+\item Using the Firm's FOC for labor demand, find the wage rate implied by these factor supplies.  Call this interest rate $w_{new}$.  $w_{new}=MPL(K,L)$.
+\item Take differences between the guess at $\bar{r}$ and $\bar{w}$.  
+\item Use a root finder to determine the eq'm $\bar{r}$ and $\bar{w}$ (i.e. it'll find the $\bar{r}$ and $\bar{w}$ where $r_{new}-\bar{r}=0$ and $w_{new}-\bar{w}=0$).
 \end{enumerate}
 
-To do: edit the code such that after the household problem is solved, the aggregate amount of consumption is found.  Next, use (1) and (3) above to find investment demand: $I=\delta K = \delta \frac{\alpha Y}{r+\delta}$.  Then use (2),  $C+ I = Y$,  to find total demand for output, $Y$.  Plug this $Y$ into the firm FOCs and find capital and labor demand.  Check them agains the supply of capital and labor from the households ($B$ and $L$).  These errors will replace the $r$ and $w$ errors currently in the code.
+So in this algorithm, there is an outer \texttt{fsolve}, solving for $r$ and $w$.  Within that, there is a loop over the $J$ types and an \texttt{fsolve} at each iteration of that loop (each solving $S\times 2$ equations).
+
+You'll want to be sure to have separate functions for the inner and outer loops.  E.g. a \texttt{SS\_solve} function that takes the parameters and initial guesses of $r$ and $w$ as inputs and a \texttt{hh\_solve} that takes relevant parameters and the $b_{j,s}, n_{j,s}$ as inputs.  The \texttt{hh\_solve} function will be within the for loop within the \texttt{SS\_solve} function.  Make sure that all the functions called with in the \texttt{hh\_solve} function are compatible with the dimensions of the inputs (which will only be $S\times 1$ as opposed to $S\times J$ from the previous method.
+
+Note one trick that I've found really helps with the solution is to adjust your initial guesses for the household problem ($b_{j,s}, n_{j,s}$) for each type $j$.  In particular, assuming that ability changes monotonically along the $J$ dimension, then use the solution to the household problem from $j-1$ as the initial guess to solve the problem for the household of type $j$.
+
+To check that this all works as expected, makes sure:
+\begin{enumerate}
+\item Euler errors are very small
+\item The aggregate resource constraint is satisfied ($Y=C+\delta K$ in the SS).
+\item You get the same equilibrium from this algorithm as with the previous ``one big fsolve" method (i.e., $b_{j,s}, n_{j,s}, \bar{r}, \bar{w}$ are the same as before).
+\end{enumerate}
+
+One can do this same method along the time path.  But I'm thinking that we build up only the SS solution for now, then do the time path once we've got more of the multiple firm problem fleshed out and working in the the SS solution.
+
+
+%Currently, the steady state is found by iterating on guesses or $r$ and $w$ (and $T^{H}$ and $f$ - but lets ignore these for the exposition here since they aren't relevant here and will stay unchanged as we add firms).  For each guess, the household problem is solved and the aggregate supply of labor and capital are found.  The market clearing conditions are then used to put these amounts supplied into the FOCs from the firm's problem.  Given $K$ and $L$ these FOCs then imply and $r$ and $w$.  These implied prices are then compared against the initial guess. If they match, we've found and equilibrium and if not, we update the guess.
+%
+%The adjustment will do the following.  The solution will guess $r$ and $w$ and solve the household's problem for $B$, $L$, and $C$.  We'll then use the resource constraint: $C+I=Y$, to find $Y$.  With $Y$ (and $r$ and $w$), we are then able to determine the steady state demand for capital, $K$, and labor $L$.  We then check the market clearing conditions for the capital and labor markets.  We'll iterate on our guesses of $r$ and $w$ until these clear.
+%
+%Equations to add/edit to the code:
+%\begin{enumerate}
+%\item Firm function: $I = \delta K$
+%\item Miscellaneous Function: $C + I = Y$
+%\item Firm function: $K = \frac{\alpha Y}{r+\delta}$ (writing FOC w.r.t. capital in terms of the amount of capital demanded for a given amount of output)
+%\item Firm function: add $\delta$ to the FOC for the firm - i.e., $r+\delta = MPK$ since they'll own capital, the rental rate won't include the cost of depreciation.
+%\end{enumerate}
+%
+%To do: edit the code such that after the household problem is solved, the aggregate amount of consumption is found.  Next, use (1) and (3) above to find investment demand: $I=\delta K = \delta \frac{\alpha Y}{r+\delta}$.  Then use (2),  $C+ I = Y$,  to find total demand for output, $Y$.  Plug this $Y$ into the firm FOCs and find capital and labor demand.  Check them agains the supply of capital and labor from the households ($B$ and $L$).  These errors will replace the $r$ and $w$ errors currently in the code.
 
 
 \section*{Step 2: Make the production function a more general CES production function}
 
-The current firms have a Cobb-Douglas production function. To allow for the model user to more easily change the elasticity of substitution between capital and labor. Let's write the production function as a more general CES production function.  In particular, let the production function be given by:
+The initial set up, firms have a Cobb-Douglas production function. To allow for the model user to more easily change the elasticity of substitution between capital and labor. Let's write the production function as a more general CES production function.  In particular, let the production function be given by:
 
 \begin{equation}
-X_{t}  = F(Z_{t},K_{t},EL_{t})= Z_{t} \left[(\gamma_{})^{1/\epsilon_{}}(K_{t})^{(\epsilon-1)/\epsilon_{}}+(1-\gamma_{})^{1/\epsilon_{}}(e^{g_{y}t}EL_{t})^{(\epsilon_{}-1)/\epsilon_{}}\right]^{(\epsilon_{}/(\epsilon_{}-1))},
+X_{t}  = F(A_{t},K_{t},EL_{t})= A_{t} \left[(\gamma_{})^{1/\epsilon_{}}(K_{t})^{(\epsilon-1)/\epsilon_{}}+(1-\gamma_{})^{1/\epsilon_{}}EL_{t}^{(\epsilon_{}-1)/\epsilon_{}}\right]^{(\epsilon_{}/(\epsilon_{}-1))},
 \end{equation}
 
-\noindent\noindent where $Z_{t}$ is total factor productivity, $EL$ is effective labor units (same as our $L$ in the current write up of the firm problem) and the parameters $\gamma$ and $\epsilon$ are the share share parameter and the elasticity of substitution parameters.  Note the labor augmenting technological growth. Also note that we've update the notation so that $X_{t}$ denotes the output of the firm in period $t$.  As we expand the model, $Y$ will represent aggregate household income and $X$ will represent firm output.
+\noindent\noindent where $A_{t}$ is total factor productivity, $EL$ is effective labor units (same as our $L$ in the current write up of the firm problem - we'll change the notation so that we can keep track of both $L$, total hours worked, and $EL$ total effective labor units worked) and the parameters $\gamma$ and $\epsilon$ are the share share parameter and the elasticity of substitution parameters.  Note the labor augmenting technological growth. Also note that we've update the notation so that $X_{t}$ denotes the output of the firm in period $t$.  As we expand the model, $Y$ will represent aggregate household income and $X$ will represent firm output.
 
 The marginal products of capital and labor are thus given by:
 
 \begin{equation}
 \label{eqn:mpk}
 \begin{split}
-MPK_{t}=\frac{\partial X_{t}}{\partial K_{t}}&= Z_{t}\left(\gamma^{\frac{1}{\epsilon}}K_{t}^{\frac{\epsilon-1}{\epsilon}} + (1-\gamma)^{\frac{1}{\epsilon}}(e^{g_{y}t}EL_{t})^{\frac{\epsilon-1}{\epsilon}}\right)^{\frac{1}{\epsilon-1}}\gamma^{\frac{1}{\epsilon}}K_{t}^{\frac{-1}{\epsilon}}\\
-& = Z_{t}^{\frac{\epsilon-1}{\epsilon}}\left(X_{t}\frac{\gamma}{K_{t}}\right)^{\frac{1}{\epsilon}}
+MPK_{t}=\frac{\partial X_{t}}{\partial K_{t}}&= A_{t}\left(\gamma^{\frac{1}{\epsilon}}K_{t}^{\frac{\epsilon-1}{\epsilon}} + (1-\gamma)^{\frac{1}{\epsilon}}EL_{t}^{\frac{\epsilon-1}{\epsilon}}\right)^{\frac{1}{\epsilon-1}}\gamma^{\frac{1}{\epsilon}}K_{t}^{\frac{-1}{\epsilon}}\\
+& = A_{t}^{\frac{\epsilon-1}{\epsilon}}\left(X_{t}\frac{\gamma}{K_{t}}\right)^{\frac{1}{\epsilon}}
 \end{split}
 \end{equation}
 
 \begin{equation}
 \label{eqn:mpl}
 \begin{split}
-MPL_{t}=\frac{\partial X_{t}}{\partial EL_{t}}&=Z_{t}\left(\gamma^{\frac{1}{\epsilon}}K^{\frac{\epsilon-1}{\epsilon}} + (1-\gamma)^{\frac{1}{\epsilon}}(e^{g_{y}t}EL_{t})^{\frac{\epsilon-1}{\epsilon}}\right)^{\frac{1}{\epsilon-1}}(1-\gamma)^{\frac{1}{\epsilon}}(e^{g_{y}t}EL_{t})^{\frac{-1}{\epsilon}}e^{g_{y}t}\\
-& = (e^{g_{y}t}Z_{t})^{\frac{\epsilon-1}{\epsilon}}\left(X_{t}\frac{1-\gamma}{EL_{t}}\right)^{\frac{1}{\epsilon}}
+MPL_{t}=\frac{\partial X_{t}}{\partial EL_{t}}&=A_{t}\left(\gamma^{\frac{1}{\epsilon}}K^{\frac{\epsilon-1}{\epsilon}} + (1-\gamma)^{\frac{1}{\epsilon}}EL_{t}^{\frac{\epsilon-1}{\epsilon}}\right)^{\frac{1}{\epsilon-1}}(1-\gamma)^{\frac{1}{\epsilon}}EL_{t}^{\frac{-1}{\epsilon}}e^{g_{y}t}\\
+& = A_{t}^{\frac{\epsilon-1}{\epsilon}}\left(X_{t}\frac{1-\gamma}{EL_{t}}\right)^{\frac{1}{\epsilon}}
 \end{split}
 \end{equation}
 
-We thus need to go into the code and edit the equations for the MPK and MPL to use those above.  This includes the equation that puts the capital stock in terms of output added in Step 1.  This equation should now be: 
+We thus need to go into the code and edit the equations for the MPK and MPL to use those above.  These equations should be in just two functions in the code - one that determines the equilibrium wage rate and one that determines the equilibrium interest rate.  You will also need to update the production function in the function that determines firm output.  In addition, you'll need to change the notation for output from $Y$ to $X$ and for aggregate effective labor from $L$ to $EL$.
 
-\begin{equation}
-\label{eqn:cap_demand}
-K_{t} = \frac{\gamma X_{t}}{\left(r_{t}+\delta\right)^{\epsilon}Z_{t}^{1-\epsilon}}
-\end{equation}
+%This includes the equation that puts the capital stock in terms of output added in Step 1.  This equation should now be: 
+%
+%\begin{equation}
+%\label{eqn:cap_demand}
+%K_{t} = \frac{\gamma X_{t}}{\left(r_{t}+\delta\right)^{\epsilon}Z_{t}^{1-\epsilon}}
+%\end{equation}
 
-Note that when $\epsilon = 1$, the function becomes the Cobb-Douglas Production Function.  We should probably put an ``if" statement in the code such that if $\epsilon =1$ then the production function is $X_{t}  = F(Z_{t},K_{t},EL_{t})= Z_{t}K_{t}^{\gamma}L_{t}^{(1-\gamma)}$.  Marginal products would have to be change accordingly for this case.
+
+Note that when $\epsilon = 1$, the function becomes the Cobb-Douglas Production Function.  We should probably put an ``if" statement in the code such that if $\epsilon =1$ then the production function is $X_{t}  = F(A_{t},K_{t},EL_{t})= A_{t}K_{t}^{\gamma}EL_{t}^{(1-\gamma)}$.  Marginal products don't have to change, but when $\epsilon=1$, the production function is not defined.
+
+Go ahead and set $\gamma=0.36$ and $\epsilon=0.6$ and solve the model.  Check that:
+\begin{enumerate}
+\item Euler errors are very small
+\item The aggregate resource constraint is satisfied ($X=C+\delta K$ in the SS).
+\end{enumerate}
 
 
 \section*{Step 3: Adding a second static firm}
 
-In this step, we will add a representative firm for a second production industry.  This comes with several substantive changes and we'll try to keep things general enough that we can add $M$ firms easily.
+In this step, we will add a representative firm for a second production industry.  This comes with several substantive changes and so we'll just add one additional firm at this point, not making it a general $M$-firm problem until later steps.
 
-A few remarks about the economy with multiple firms.  The multiple firms will produce differentiated output.  These outputs contribute to distinct consumption goods and these various consumption goods go into a composite consumption good of each household.  In addition, the output of the firms will contribute to the capital stock.  The capital stock for each representative firm is make up of a different mix out output from the various industries.
+A few remarks about the economy with multiple firms.  The multiple firms will produce differentiated output.  These outputs contribute to distinct consumption goods and these various consumption goods go into a composite consumption good consumed each household.  In addition, the output of the firms will contribute to the capital stock.  The capital stock for each representative firm is made up of a different mix out output from the various industries.
 
-Many parameters governing the firm's problem will vary across production industry, $m$.  These are noted in the equations below.  Specifically, the rate of economic depreciation, $\delta$, the elasticity of substitution between capital and labor, $\epsilon$, the share of labor and capital in output, $\gamma$ will be vectors of length $M$.  We may also want TFP to vary across sectors, but let's ignore that for now.
+In the remainder of this section, we'll work through how we begin with our guesses of the factor prices ($r$ and $w$) and work through the producer and consumer problems.  I'll lay out the theory first, then discuss implementation into the existing code.  
 
-In the remainder of this section, we'll work through how we begin with our guesses of the factor prices ($r$ and $w$) and work through the producer and consumer problems to end with the equations for the market supply and demand of labor and capital.  It is from these markets that we'll check for market clearing and update the guesses of $r$ and $w$ to find a general equilibrium.
+The exposition here only deals with the SS solution, so the ``bars" on variables will be implicit rather than me typing them.  We'll adapt this to the time path solution in a future step.
 
-\subsection*{From factor prices to industry output prices}
+\subsection*{Theory}
 
-Given the guess of the equilibrium interest rate and wage rate, we can use the first order conditions of the firm and the zero profit condition to determine the price of the output of the firms.  In particular, we can use the firm FOCs to find $K(r,w,X)$ and $EL(r,w,X)$.  The cost function is given by $C(r,w,X) = w*L(r,w,X) + (r+\delta)*K(r,w,X)$.  With CRS production technology, we have the marginal cost being constant over all levels of output.  The firm's profit maximization of the firm results in price equal marginal cost.  Thus we'll find $p_{m} = \frac{\partial C(r,w,X)}{\partial X} = mc(r,w)$, where $p_{m}$ is the price of output from industry $m$.
+\subsubsection*{The household's optimization problem}
 
-With CES production, we'll want to solve for $\frac{EL(r,w,Y)}{X}$ and $\frac{K(r,w,Y)}{X}$.  These are given by:
+Consumers maximize the present discounted value of utility from consumption a composite consumption good, $\tilde{c}$, leisure, $\tilde{l}-n$, and from bequests:
 
-\begin{equation}
-\frac{EL_{m,t}(r_{t},w_{t},X_{m,t})}{X_{m,t}}= \frac{(1-\gamma_{m})}{Z_{t}e^{g_{y}t}}\left(\frac{r_{t}+\delta_{m}}{\hat{w}_{t}}\right)^{\epsilon_{m}}\left[\gamma_{m} + (1-\gamma_{m})\left(\frac{r_{t}+\delta_{m}}{\hat{w}_{t}}\right)^{\epsilon_{m}-1}\right]^{\frac{\epsilon_{m}}{1-\epsilon_{m}}}
-\end{equation}
+    \begin{equation}\label{EqUtilMax}
+      \begin{split}
+        &U_{j,s} = \sum_{s=1}^{S}\beta^u  u\left(\tilde{c}_{j,s},n_{j,s},b_{j,S+1}\right) \\
+        &\text{where} \quad u\left(\tilde{c}_{j,s},n_{j,s},b_{j,S+1}\right) = \frac{\left(c_{j,s}\right)^{1-\sigma} - 1}{1-\sigma} ... \\
+        &\qquad\qquad + \chi^n\left(\frac{\left(\tilde{l}-n_{j,s}\right)^{1-\nu} - 1}{1-\nu} \right) + \chi^b\frac{\left(b_{j,S+1,}\right)^{1-\sigma} - 1}{1-\sigma} \\
+        &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\forall j,1\leq s\leq S
+      \end{split}
+    \end{equation}
+    
+ Note that this formulation is written without mortality risk and with a warm glow motive for intentional bequests. $\chi^{n}$ and $\chi^{b}$ are the utility weights on the disutility of labor and the warm glow bequest motive, respectively.  The household chooses the optimal sequence of $\tilde{c}_{j,s}$, $n_{j,s}$, and $b_{j,s}$ to maximize lifetime utility subject to the per period budget constraint: 
+ 
+     \begin{equation}\label{EqBC}
+      \begin{split}
+        \sum_{i=1}^{I} p_{i}\bar{c}_{i} + \tilde{p}\tilde{c}_{s} + b_{j,s+1} \leq \left(1 + r\right) b_{j,s} + w_t e_{j}&n_{j,s} + \frac{BQ_{j}}{\lambda_j\tilde{N}} \\
+        \quad\text{where}\quad b_{j,1} = 0 \\
+        &\text{for} \quad 1\leq s \leq S 
+      \end{split}
+    \end{equation}
+    
+  Prices for individual consumption goods are given by $p_{i}$, whereas $\tilde{p}$ is the price of the composite consumption good.  The parameters $\bar{c}_{i}$ are the minimum consumption amounts for good $i$.  $BQ_{j}$ are aggregate bequests from those of type $j$, which are divided equally between the living households of type $j$.  $\tilde{N}$ is the total population, which can be normalized to one for the SS analysis.  Total bequests are given by:
+  
+  \begin{equation}
+  BQ_{j} = \sum_{J} \lambda_{j}b_{j,S+1}\tilde{N}
+  \end{equation}
+  
+ The first order necessary conditions that must be satisfied in the households optimization problem are:
+  
+      \begin{equation}\label{Eqbfoc}
+      \begin{split}
+     \frac{\partial U}{\partial \tilde{b}_{j,s+1}}  = \tilde{c}_{j,s}^{-\sigma} - \beta (1+r) \tilde{c}_{j,s+1}^{-\sigma}  = 0, \forall s, j
+        \end{split}
+    \end{equation}
 
-\begin{equation}
-\frac{K_{m,t}(r_{t},w_{t},X_{m,t})}{X_{m}}= \frac{\gamma_{m}}{Z_{t}}\left[\gamma_{m} + (1-\gamma_{m})\left(\frac{r_{t}+\delta_{m}}{\hat{w}_{t}}\right)^{\epsilon_{m}-1}\right]^{\frac{\epsilon_{m}}{1-\epsilon_{m}}}
-\end{equation}
+    \begin{equation}\label{Eqnfoc}
+      \begin{split}
+      \frac{\partial U}{\partial n_{j,s}} & =  \chi^n_{s}\left(\tilde{l}-n_{j,s}\right)^{-\nu} - we_{j}\tilde{c}_{j,s}^{-\sigma} = 0, \forall s, j       
+      \end{split}
+    \end{equation}
 
-The price of output is thus determined by the condition that price equal marginal cost:
-
-\begin{equation}
-\label{eqn:output_price}
-p_{m,t}(r_{t},w_{t}) = \hat{w}_{t}\frac{EL_{m,t}(r_{t},w_{t},X_{m,t})}{X_{m,t}} + (r_{t}+\delta_{m})\frac{K_{m,t}(r_{t},w_{t},X_{m,t})}{X_{m}}
-\end{equation}
-
-\subsection*{From industry output prices to prices of consumption goods}
-
-We use a fixed-coefficient matrix to map the output of production goods to consumption goods.  This captures the fact that a good is made up of the output from a number of production sectors.  E.g. Your purchase of a hamburger combines output from the agriculture, transportation, and retail industries, among others.  This fixed coefficient matrix will be calibrated using the BEA's Personal Consumption Expenditure Bridge Tables.  There are $I$ consumption goods.  The fixed-coefficient matrix will be an $M\times I$ matrix, which we will call $\Pi$.  The elements of $\Pi$, $\pi_{m,i}$ give the share consumption good $m$ the comes from the output of industry $m$.  If $\boldsymbol{p^{c}_{t}}$ is the $I$-length vector of consumption good prices in period $t$, then this vector is determined as:
-
-\begin{equation}
-\label{eqn:cons_price}
-\underbrace{\boldsymbol{p^{c}_{t}}}_{1 \times I} = \underbrace{\boldsymbol{p_{m,t}}}_{1 \times M} \times \underbrace{\Pi}_{M \times I}
-\end{equation}
-
-\subsection*{From prices of individual consumption goods to the price of the composite consumption good}
-
-The household's dynamic problem with multiple consumption goods will look much the same as the household's problem with a single good, thanks to an aggregator function.  Specifically, we are going to assume that the composite of discretionary (above the minimum amount) consumption is given by:
-
-\begin{equation} \label{eqn:comp_cons}
-\tilde{c}_{j,s,t}  = \prod_{i=1}^I \left( c_{i,j,s,t} - \bar{c}_{i,s} \right) ^{\alpha_{i,s}}, 
+    \begin{equation}\label{Eqbqfoc}
+      \begin{split}
+      \frac{\partial U}{\partial b_{j,S+1}} & = \tilde{c}_{j,S}^{-\sigma} - \beta (1+r) \chi^{b} b_{j,S+1}^{-\sigma}, \forall j
+      \end{split}
+    \end{equation}
+  
+  The composite consumption good is make up of the individual consumption goods, with the amounts determined by the consumer's consumption subutility function.  We assume a Stone-Geary utility function here, with the composite consumption good defined as: 
+  
+  \begin{equation} \label{eqn:comp_cons}
+\tilde{c}_{j,s}  = \prod_{i=1}^I \left( c_{i,j,s} - \bar{c}_{i} \right) ^{\alpha_{i}}, 
  \end{equation}
  
- \noindent\noindent where $\bar{c}_{i,s}$ are the minimum consumption requirements of good $i$ for households of age $s$, and $\alpha_{i,s}$ are the shares of total consumption expenditures (beyond the minimum amounts) that are spent on each good.  These preferences lead to demands for consumption of good $i$ of the form:
+ \noindent\noindent where $i$ denotes the particular consumption good.  $\bar{c}_{i}$ are the minimum consumption amounts for good $i$.  The composite consumption good is the composite of ``discretionary" consumption on all the goods (consumption above the minimum amounts).  The $\alpha_{i}$ parameters are the share parameters and define the share of discretionary consumption spending (called the ``supernumerary expenditure) that goes to each good $i$.  What this utility function is modeling is that there some basic requirements for sustenance.  For example, you need a certain amount of calories to live, giving you a minimum food expenditure, but you might choose to go above that.  This specification has a couple nice properties as far as our model is concerned.  First, it helps to get a more realistic tax incidence since it'll have the rich and poor spending different shares of their income on different goods (without resorting to preferences that depend upon ability type $j$).  Second, it'll give us more realistic responses of savings to interest rates.  Typically these models have responses that are much stronger than we see in the data.  The minimum consumption shares help to temper that because some may be close to those thresholds and therefore still have a high marginal utility of consumption for the composite good.
  
-\begin{equation} \label{eqn:cons_solve}
-c_{i,j,s,t}  = \frac{\alpha_{i,s} \tilde{p}_{s,t}\tilde{c}_{j,s,t}}{p^{c}_{i,t}} + \bar{c}_{i,s},  	
+The consumer chooses $c_{i,j,s}$ to maximize Equation \ref{eqn:comp_cons} subject to the budget constraint:
+
+    \begin{equation} \label{eqn:cons_budgetcons}
+        \sum_{i=1}^{I} p_{i}(c_{i,j,s}-\bar{c}_{i})  = \tilde{p}_{s}\tilde{c}_{j,s}
+    \end{equation}
+
+\noindent where $p_{i}$ is the gross of tax price of good $i$ at time $t$ and $\tilde{p}_{s}$ is the gross of tax price of the the discretionary component of the composite consumption good consumed by those of age $s$ at time $t$.  Maximization of \ref{Eqcagg} subject to \ref{eqn:cons_budgetcons} yields:
+
+    \begin{equation} \label{eqn:cons_lagrangian}
+       \mathcal{L} =  \max_{\{c_{i,j,s}\}_{i=1}^{I}}  \prod_{i=1}^I \left( c_{i,j,s} - \bar c_{i,s} \right) ^{\alpha_{i,s}}  + \lambda \left(\tilde{p}_{s}\tilde{c}_{j,s} - \sum_{i=1}^{I} p_{i}(c_{i,j,s}-\bar{c}_{i,j,s})\right)
+    \end{equation}
+    
+    Which as $I$ FOCs (for each $j$, $s$, $t$):
+    
+      \begin{equation} \label{eqn:cons_FOC}
+      \begin{split}
+       & \frac{\partial \mathcal{L}}{\partial c_{i,j,s}} = \frac{\alpha_{i,s} \prod_{i=1}^I \left( c_{i,j,s} - \bar c_{i,s} \right) ^{\alpha_{i,s}}}{(c_{i,j,s}-\bar{c}_{i,s})}-\lambda p_{i} = 0, \forall \ i  \\
+       & \implies  \frac{\alpha_{i,s} \prod_{i=1}^I \left( c_{i,j,s} - \bar c_{i,s} \right) ^{\alpha_{i,s}}}{(c_{i,j,s}-\bar{c}_{i,s})} = \lambda p_{i}, \forall \ i \\
+       & \implies  \frac{\alpha_{i,s} \prod_{i=1}^I \left( c_{i,j,s} - \bar c_{i,s} \right) ^{\alpha_{i,s}}}{ p_{i}(c_{i,j,s}-\bar{c}_{i,s})} = \lambda, \forall \ i \\
+       & \implies \frac{\alpha_{i,s}}{p_{i}(c_{i,j,s}-\bar{c}_{i,s})}=\frac{\alpha_{j,s}}{p_{k}(c_{k,j,s}-\bar{c}_{k,s})}, \forall \ i,k \\
+       & \implies c_{i,j,s}= \frac{\alpha_{i,s} p_{k}(c_{k,j,s}-\bar{c}_{k,s})}{\alpha_{k,s} p_{i}} + \bar{c}_{i,s} \forall i,k 
+       \end{split}
+    \end{equation}
+    
+    Now substitute the last line of \ref{eqn:cons_FOC} into the budget constraint (Equation \ref{eqn:cons_budgetcons}):
+    
+          \begin{equation} \label{eqn:cons_solve}
+      \begin{split}
+       & \tilde{p}_{s}\tilde{c}_{j,s} = \sum_{i=1}^{I}p_{i}(c_{i,j,s}-\bar{c}_{i,s}) \\
+       & \implies  \tilde{p}_{s}\tilde{c}_{j,s} = \sum_{i=1}^{I}p_{i}\left[ \frac{\alpha_{i,s} p_{k}(c_{k,j,s}-\bar{c}_{k,s})}{\alpha_{k,s} p_{i}} + \bar{c}_{i,s}- \bar{c}_{i,s}\right] \\
+       & \implies  \tilde{p}_{s}\tilde{c}_{j,s} = \sum_{i=1}^{I}\left[ \frac{\alpha_{i,s} p_{k}(c_{k,s}-\bar{c}_{k,s})}{\alpha_{k,s}}\right] \\
+       & \implies  \tilde{p}_{s}\tilde{c}_{j,s} = \frac{ p_{k}(c_{k,j,s}-\bar{c}_{k,s})}{\alpha_{k,s}} \underbrace{\sum_{i=1}^{I}\alpha_{i,s}}_{=1} \\	
+        & \implies  \tilde{p}_{s}\tilde{c}_{j,s} = \frac{ p_{k}(c_{k,j,s}-\bar{c}_{k,s})}{\alpha_{k,s}} \\
+        & \implies  \frac{ p_{k}(c_{k,j,s}-\bar{c}_{k,s})}{\alpha_{k,s}}  = \tilde{p}_{s}\tilde{c}_{j,s}   \\	
+        & \implies  c_{k,j,s}  = \frac{\alpha_{k,s} \tilde{p}_{s}\tilde{c}_{j,s}}{p_{k}} + \bar{c}_{k,s},  \forall \ k  \\	
+       \end{split}
+    \end{equation}
+    
+    Thus, total consumption of each good $i$, $c_{i,j,s}$, is given by the the amount of minimum consumption plus the share of total expenditures remaining after making the minimum expenditures on all goods (this is called the ``supernumerary" expenditure).  We derive the prices of the age $s$ composite consumption good in period $t$, $\tilde{p}_{s}$ by using the demand for good $i$ provided in Equation \ref{cons_solve} in the function defining aggregate discretionary consumption, Equation \ref{eqn:comp_cons}: 
+    
+              \begin{equation} \label{eqn:composite_price}
+      \begin{split}
+      & \tilde{c}_{j,s} = \prod_{i=1}^{I}(c_{i,j,s}-\bar{c}_{i,s})^{\alpha_{i,s}} \\
+      &\implies \tilde{c}_{j,s} = \prod_{i=1}^{I}\left( \frac{\alpha_{i,s} \tilde{p}_{s}\tilde{c}_{j,s}}{p_{i}} + \bar{c}_{i,s}-\bar{c}_{i,s}\right)^{\alpha_{i,s}} \\
+      &\implies \tilde{c}_{j,s} = \prod_{i=1}^{I} \left( \frac{\alpha_{i,s} \tilde{p}_{s}\tilde{c}_{j,s}}{p_{i}} \right)^{\alpha_{i,s}} \\
+      &\implies \tilde{c}_{j,s} =  \tilde{p}_{s}\tilde{c}_{j,s} \prod_{i=1}^{I}\left( \frac{\alpha_{i,s}}{p_{i}} \right)^{\alpha_{i,s}} \\
+      &\implies \frac{\tilde{p}_{s}\tilde{c}_{j,s}}{\tilde{c}_{j,s}} =  \prod_{i=1}^{I}\left( \frac{p_{i}}{\alpha_{i,s}} \right)^{\alpha_{i,s}} \\
+       &\implies \tilde{p}_{s} =  \prod_{i=1}^{I}\left( \frac{p_{i}}{\alpha_{i,s}} \right)^{\alpha_{i,s}} \\
+       \end{split}
+    \end{equation}
+    
+    This composite good price is then used in the household's intertemporal optimization problem described in Equation \ref{EqUtilMax}.  With the parameters and endogenous variables, we then use \ref{eqn:cons_solve} to find the $c_{i,j,s}$.
+ 
+\subsubsection*{The firm's optimization problem} 
+
+Each industry is represented by a competitive firm with a constant returns to scale (CRS) CES production function.  We will assume here that each industry output becomes a unique consumption good.  That is if there two production industries, the industry one produces output used for $c_{1}$ and industry two produces output used for $c_{2}$.  Thus we will denote each industry with the subscript $i$, which corresponds to the consumption good they produce.  We'll relax this in the future.  Also, at this point we'll assume that capital can be made from output from either sector.  One unit of output from each sector can be used to produce one unit of capital which can be used by either sector.\footnote{It may be helpful here to think about a financial intermediary that is implicitly sitting between the household and the firm.  This intermediary takes the dollars from the household and transforms them into capital for the firms.}  Because of the CRS and competitive assumptions, firms earn zero profits in equilibrium.  The capital and labor market equilibrium also imply that the wage and rental rates are the same across industry.  We thus have three equations that define the firm's problem, two from the firm's first order conditions for labor and capital demand, and the third from the zero profit condition.  These are:
+
+\begin{equation}
+r = MPK(K_{i},EL_{i}) - \delta, \forall i
 \end{equation}
 
-\noindent\noindent where $\tilde{p}_{s,t}$ are the prices of the composite discretionary consumption goods of households of age $s$ at time $t$.  This price can be solved for analytically and is given by:
+\begin{equation}
+w = MPL(K_{i},EL_{i}), \forall i
+\end{equation}
 
-\begin{equation} \label{eqn:composite_price}
-\tilde{p}_{s,t} =  \prod_{i=1}^{I}\left( \frac{p^{c}_{i,t}}{\alpha_{i,s}} \right)^{\alpha_{i,s}} \\
+\begin{equation}
+p_{i}X_{i}= w*EL_{i} + (r+\delta)K_{i}
+\end{equation}
+ 
+ 
+\subsubsection*{From factor prices to industry output prices}
+
+Given the guess of the equilibrium interest rate and wage rate, we can use the first order conditions of the firm and the zero profit condition to determine the price of the output of the firms.  In particular, we can use the firm FOCs to find $K(r,w,X)$ and $EL(r,w,X)$.  
+
+With CES production, we'll want to solve for $EL(r,w,X)$ and $K(r,w,X)$.  These can be solved for using the FOCs and are given by:
+
+\begin{equation}
+\label{eqn:l_demand}
+EL_{i}(r,w,X_{i})=\frac{(1-\gamma)X_{i}}{w^{\epsilon}A^{1-\epsilon}}
+\end{equation}
+
+\begin{equation}
+\label{eqn:k_demand}
+K_{i}(r,w,X_{i})=\frac{\gamma X_{i}}{(r+\delta)^{\epsilon}A^{1-\epsilon}}
+\end{equation}
+
+Plugging these factor demands into the zero profit condition, we get:
+
+\begin{equation}
+\label{eqn:prices}
+\begin{split}
+p_{i}X_{i} &= w EL_{i} + (r+\delta)K_{i} \\
+p_{i}X_{i} &= w \frac{(1-\gamma)X_{i}}{w^{\epsilon}A^{1-\epsilon}} + (r+\delta)\frac{\gamma X_{i}}{(r+\delta)^{\epsilon}A^{1-\epsilon}} \\
+\implies p_{i} & = (Aw)^{1-\epsilon}(1-\gamma) + (A(r+\delta))^{1-\epsilon} \gamma
+\end{split}
+\end{equation}
+
+
+%The cost function is given by $C(r,w,X) = w*L(r,w,X) + (r+\delta)*K(r,w,X)$.  With CRS production technology, we have the marginal cost being constant over all levels of output.  The firm's profit maximization of the firm results in price equal marginal cost.  Thus we'll find $p_{m} = \frac{\partial C(r,w,X)}{\partial X} = mc(r,w)$, where $p_{m}$ is the price of output from industry $m$.
+%
+%
+%The price of output is thus determined by the condition that price equal marginal cost:
+%
+%\begin{equation}
+%\label{eqn:output_price}
+%p_{m}(r_{t},w_{t}) = \hat{w}_{t}\frac{EL_{m}(r_{t},w_{t},X_{m})}{X_{m}} + (r_{t}+\delta_{m})\frac{K_{m}(r_{t},w_{t},X_{m})}{X_{m}}
+%\end{equation}
+%
+%\subsection*{From industry output prices to prices of consumption goods}
+%
+%We use a fixed-coefficient matrix to map the output of production goods to consumption goods.  This captures the fact that a good is made up of the output from a number of production sectors.  E.g. Your purchase of a hamburger combines output from the agriculture, transportation, and retail industries, among others.  This fixed coefficient matrix will be calibrated using the BEA's Personal Consumption Expenditure Bridge Tables.  There are $I$ consumption goods.  The fixed-coefficient matrix will be an $M\times I$ matrix, which we will call $\Pi$.  The elements of $\Pi$, $\pi_{m,i}$ give the share consumption good $m$ the comes from the output of industry $m$.  If $\boldsymbol{p^{c}_{t}}$ is the $I$-length vector of consumption good prices in period $t$, then this vector is determined as:
+%
+%\begin{equation}
+%\label{eqn:cons_price}
+%\underbrace{\boldsymbol{p^{c}_{t}}}_{1 \times I} = \underbrace{\boldsymbol{p_{m}}}_{1 \times M} \times \underbrace{\Pi}_{M \times I}
+%\end{equation}
+
+\subsubsection*{From prices of individual consumption goods to the price of the composite consumption good}
+
+We've got the prices of individual consumption goods from the zero profit condition of the firm's problem.  As noted above, the price of the composite consumption good can be derived from the prices of individual consumption goods and the solution to the consumer's subutility maximization problem.  The yields:
+
+\begin{equation} \label{eqn:composite_price2}
+\tilde{p}_{s} =  \prod_{i=1}^{I}\left( \frac{p^{c}_{i}}{\alpha_{i,s}} \right)^{\alpha_{i,s}} \\
 \end{equation}
 
 It is this composite price that enters the household's intertemporal optimization problem where is chooses the amount of discretionary consumption, labor supply, and savings for each period.  The budget constraint will contain a term for the cost of require consumption and discretionary consumption.  
 
-Let's now walk through the relevant equations to add/change in the code from this subsection:
 
-We'll need to take result of Equation \ref{eqn:cons_price} and put that in Equation \ref{eqn:composite_price} to find the price of the composite consumption good.  The price will then feed into the household's utility maximization problem because we can write total consumption as:
+%Let's now walk through the relevant equations to add/change in the code from this subsection:
+%
+%We'll need to take result of Equation \ref{eqn:cons_price} and put that in Equation \ref{eqn:composite_price} to find the price of the composite consumption good.  The price will then feed into the household's utility maximization problem because we can write total consumption as:
+%
+%\begin{equation}
+%\label{eqn:total_cons}
+%c_{j,s}=\tilde{c}_{j,s}+\sum_{i=1}^{I}c_{i,s} 
+%\end{equation}
+%
+%\noindent\noindent Thus the budget constraint of the household becomes:
+%
+%\begin{equation}\label{EqBC}
+%\begin{split}
+%\sum_{i=1}^{I} p^{c}_{i}\bar{c}_{i,s} + \tilde{p}_{s}\tilde{c}_{s} + b_{j,s+1,t+1} \leq \left(1 + r_t\right) b_{j,s} + w_t e_{j,s}&n_{j,s} + \frac{BQ_{j}}{\lambda_j\tilde{N}_t} - T_{j,s} \\
+%\quad\text{where}\quad b_{j,s,1} = 0 \\
+%&\text{for} \quad E+1\leq s \leq E+S \quad \forall j,t
+%\end{split}
+%\end{equation} 
+%
+%The household FOC's will look similar to what we currently have. We'll use the choice of total consumption and Equation \ref{eqn:total_cons} to solve for $\tilde{c}_{j,s}$.  We then use $\tilde{c}_{j,s}$ in Equation \ref{eqn:cons_solve} to find the demand for consumption good $i$, by household with ability $j$ and of age $s$ at time $t$.  Summing this over $J$ and $S$ gives of the aggregate demand for consumption good $i$ at time $t$, $c_{i}$. 
+%
+%The aggregate supplies of capital and labor are determined as before.
 
-\begin{equation}
-\label{eqn:total_cons}
-c_{j,s,t}=\tilde{c}_{j,s,t}+\sum_{i=1}^{I}c_{i,s} 
-\end{equation}
-
-\noindent\noindent Thus the budget constraint of the household becomes:
-
-\begin{equation}\label{EqBC}
-\begin{split}
-\sum_{i=1}^{I} p^{c}_{i,t}\bar{c}_{i,s} + \tilde{p}_{s,t}\tilde{c}_{s,t} + b_{j,s+1,t+1} \leq \left(1 + r_t\right) b_{j,s,t} + w_t e_{j,s}&n_{j,s,t} + \frac{BQ_{j,t}}{\lambda_j\tilde{N}_t} - T_{j,s,t} \\
-\quad\text{where}\quad b_{j,s,1} = 0 \\
-&\text{for} \quad E+1\leq s \leq E+S \quad \forall j,t
-\end{split}
-\end{equation} 
-
-The household FOC's will look similar to what we currently have. We'll use the choice of total consumption and Equation \ref{eqn:total_cons} to solve for $\tilde{c}_{j,s,t}$.  We then use $\tilde{c}_{j,s,t}$ in Equation \ref{eqn:cons_solve} to find the demand for consumption good $i$, by household with ability $j$ and of age $s$ at time $t$.  Summing this over $J$ and $S$ gives of the aggregate demand for consumption good $i$ at time $t$, $c_{i,t}$. 
-
-The aggregate supplies of capital and labor are determined as before.
-
-\subsection*{Finding total demand for the output from industry $m$}
+\subsubsection*{Finding total demand for the output from industry $i$}
 
 Given the CRS production function, we need to find total output to determine the demands for capital and labor by the firm.  To find the total demand for output, we'll use the resource constraint.  In particular, the demand for output from each sector is determined by the demand for output from that sector for consumption and investment.
 
-From the solution to the household's problem, we have the demands for each consumption good, $c_{i,t}$.  We then use these demands, with the matrix $\Pi$ to find the demands for output from each production sector that stem from demand for consumption.  Let $X^{c}_{m,t}$ be the demand for output from production industry $m$ for consumption goods.  We find $X^{c}_{m,t}$ as:
+From the solution to the household's problem, we have the demands for each consumption good, $c_{i}$.  We'll let the aggregate demand for consumption goods from industry $i$ (summing over $S$ and $J$), be given by $C_{i}$.  Total demand for output from industry $i$ is the sum of the demands from consumption and investment.
+
+To find the demands for investment, not that in the SS, $I_{i}=\delta K_{i}$.  Recall that from Equation \ref{eqn:k_demand}, we can write the demand for capital as a function of output.  We can use this to find the total demand for output from each industry:
 
 \begin{equation}
-X^{c}_{m,t}= \sum_{i=1}^{I} c_{i,t}\pi_{m,i}
-\end{equation} 
-
-To find investment demand, we need to know what capital stock is required to produce output.  But we are trying to find output. Hence, we'll write the demand for capital in terms of output, using Equation \ref{eqn:cap_demand}.  Since each industry has it's own capital stock, which requires a different mix of outputs to create, there will be one of these equations for each of the $M$ industries.  We also need to specify the mix of outputs that make up the capital stock in each industry.  Here we again assume a fixed relationship between inputs and outputs. This matrix of fixed coefficients we name $\Xi$.  This is an $M\times M$ matrix, with elements $\xi_{m,n}$.  Element $\xi_{m,n}$ specifies the fraction of investment in the capital stock of industry $m$ that comes from the output of industry $m$. We will calibrate this matrix using the BEA's Input-Output Tables.  Using this matrix, we can find the demand for output from industry $m$ for investment as:
-
-\begin{equation}
-X^{I}_{m,t}= \sum_{n=1}^{M} I_{n,t}\xi_{n,m}
-\end{equation} 
-
-To find $I_{m,t}$, investment demand from each industry, we'll use the the condition on the amount of capital needed to produced a given output level in two periods (i.e., Equation \ref{eqn:cap_demand}).  Let's focus on the steady state for now since we're just updating that at this time (this method will extend to the transition path and we'll add that in a coupel steps).
-
-In the steady state, investment is given by, $\bar{I}_{m}=\delta_{m}\bar{K}_{m}$ and $\bar{K}_{m}(\bar{X}_{m}) =  \frac{\gamma \bar{X}_{m}}{\left(\bar{r}+\delta_{m}\right)^{\epsilon_{m}}\bar{Z}^{1-\epsilon_{m}}}$.
-
-We can thus write the demand for output from industry $m$ in the steady state as:
-
-\begin{equation}
+\label{eqn:find_output}
 \begin{split}
-\bar{X}_{m} &= \bar{X}^{c}_{m} + \bar{X}^{I}_{m} \\
-\implies \bar{X}_{m} & = \bar{X}^{c}_{m} +  \sum_{n=1}^{M} \bar{I}_{n}\xi_{n,m} \\
-\implies \bar{X}_{m} & = \bar{X}^{c}_{m} +  \sum_{n=1}^{M} \delta_{n}\bar{K}_{n}(\bar{X}_{n})\xi_{n,m} \\
-\implies \bar{X}_{m} & = \bar{X}^{c}_{m} +  \sum_{n=1}^{M} \delta_{n} \frac{\gamma \bar{X}_{n}}{\left(\bar{r}+\delta_{n}\right)^{\epsilon_{n}}\bar{Z}^{1-\epsilon_{n}}}\xi_{n,m} \\
+X_{i} &= C_{i} + \delta K_{i} \\
+X_{i} &= C_{i} + \delta \left(\frac{\gamma X_{i}}{(r+\delta)^{\epsilon}A^{1-\epsilon}} \right)\\
+\implies X_{i} &= \frac{C_{i}}{1-\frac{\delta \gamma}{(r+\delta)^{\epsilon}A^{1-\epsilon}}}
 \end{split}
-\end{equation}
+\end{equation}  
 
-This equation holds for each $m$.  We've solved for $\bar{X}^{c}$ once we've solved the household problem.  Thus, to find $\bar{X}_{m}$ we need to solve the system of equations above.  This system represents $M$ linear equations with $M$ unknowns, so it should be simple to solve.  In matrix notation we have:
+With the demand for output from each industry, we can then from their factor demands from equations \ref{eqn:l_demand} and \ref{eqn:k_demand}.
+
+%We then use these demands, with the matrix $\Pi$ to find the demands for output from each production sector that stem from demand for consumption.  Let $X^{c}_{m}$ be the demand for output from production industry $m$ for consumption goods.  We find $X^{c}_{m}$ as:
+%
+%\begin{equation}
+%X^{c}_{m}= \sum_{i=1}^{I} c_{i}\pi_{m,i}
+%\end{equation} 
+%
+%To find investment demand, we need to know what capital stock is required to produce output.  But we are trying to find output. Hence, we'll write the demand for capital in terms of output, using Equation \ref{eqn:cap_demand}.  Since each industry has it's own capital stock, which requires a different mix of outputs to create, there will be one of these equations for each of the $M$ industries.  We also need to specify the mix of outputs that make up the capital stock in each industry.  Here we again assume a fixed relationship between inputs and outputs. This matrix of fixed coefficients we name $\Xi$.  This is an $M\times M$ matrix, with elements $\xi_{m,n}$.  Element $\xi_{m,n}$ specifies the fraction of investment in the capital stock of industry $m$ that comes from the output of industry $m$. We will calibrate this matrix using the BEA's Input-Output Tables.  Using this matrix, we can find the demand for output from industry $m$ for investment as:
+%
+%\begin{equation}
+%X^{I}_{m}= \sum_{n=1}^{M} I_{n}\xi_{n,m}
+%\end{equation} 
+%
+%To find $I_{m}$, investment demand from each industry, we'll use the the condition on the amount of capital needed to produced a given output level in two periods (i.e., Equation \ref{eqn:cap_demand}).  Let's focus on the steady state for now since we're just updating that at this time (this method will extend to the transition path and we'll add that in a coupel steps).
+%
+%In the steady state, investment is given by, $\bar{I}_{m}=\delta_{m}\bar{K}_{m}$ and $\bar{K}_{m}(\bar{X}_{m}) =  \frac{\gamma \bar{X}_{m}}{\left(\bar{r}+\delta_{m}\right)^{\epsilon_{m}}\bar{Z}^{1-\epsilon_{m}}}$.
+%
+%We can thus write the demand for output from industry $m$ in the steady state as:
+%
+%\begin{equation}
+%\begin{split}
+%\bar{X}_{m} &= \bar{X}^{c}_{m} + \bar{X}^{I}_{m} \\
+%\implies \bar{X}_{m} & = \bar{X}^{c}_{m} +  \sum_{n=1}^{M} \bar{I}_{n}\xi_{n,m} \\
+%\implies \bar{X}_{m} & = \bar{X}^{c}_{m} +  \sum_{n=1}^{M} \delta_{n}\bar{K}_{n}(\bar{X}_{n})\xi_{n,m} \\
+%\implies \bar{X}_{m} & = \bar{X}^{c}_{m} +  \sum_{n=1}^{M} \delta_{n} \frac{\gamma \bar{X}_{n}}{\left(\bar{r}+\delta_{n}\right)^{\epsilon_{n}}\bar{Z}^{1-\epsilon_{n}}}\xi_{n,m} \\
+%\end{split}
+%\end{equation}
+%
+%This equation holds for each $m$.  We've solved for $\bar{X}^{c}$ once we've solved the household problem.  Thus, to find $\bar{X}_{m}$ we need to solve the system of equations above.  This system represents $M$ linear equations with $M$ unknowns, so it should be simple to solve.  In matrix notation we have:
+%
+%\begin{equation}
+%\underbrace{\boldsymbol{\bar{X}}}_{1\times M}= \underbrace{\boldsymbol{\bar{c}}}_{1 \times I} \times \underbrace{\Pi'}_{I\times M} + \underbrace{\boldsymbol{\bar{I}}}_{1 \times M} \times \underbrace{\Xi'}_{M\times M}
+%\end{equation}
+
+%\subsection*{Finding factor demands}
+%
+%With the demand for output from each industry in hand, we can use the FOCs of the firm for capital and labor to determine the demands for capital and and labor.  These are given above and are functions of only the parameters, the interest rate, the wage rate, and ouptut.
+%
+%\subsection*{Market clearing}
+%
+%The market clearing conditions with multiple firms become:
+%
+%\begin{equation}
+%\sum_{M} K_{m} = \sum_{J}\sum_{S}b_{j,s}
+%\end{equation}
+%
+%\noindent\noindent and 
+%
+%\begin{equation}
+%\sum_{M} EL_{m} = \sum_{J}\sum_{S}e_{j,s}*n_{j,s}
+%\end{equation}
+%
+%\noindent\noindent for the capital and labor markets respectively.
+%
+%
+%\subsection*{Some notes and unclear issues on this set up}
+%Note that it does seem odd to sum up the heterogenous capital stocks like this to find the market clearing condition.  But I think we are ok.  All capital rents at the same rate.  So the household is indifferent to the type of capital it rents. Therefore, we are just assuming that the household rents capital to the firms of the type they demand to fulfill the total demand for capital. 
+%
+%With multiple goods and capital stocks, we need to think about the unit of account.  In this setup, we are using a unit of capital as the numeraire - a unit of capital (of any industry) has a price of 1.  We see this from the household budget constraint - each unit income not spent on consumption goes to savings.  Each unit of savings can be converted into one unit of capital to be rented.  I think this seems ok?
+%
+%Both of the above questionable points will not really be relevant when we make the firm's problem dynamic since households will not longer rent capital to firms.  Rather there will be a price of capital and firms will purchase capital directly.
+
+\subsubsection*{Closing up the model - finding an equilibrium}
+
+The SS equilibrium will be defined by prices and allocations such that the above equations are all satisfied and markets clear.  Walra's Law says that we need only check for market clearing in two of the three markets.\footnote{Note that we have a goods market, a capital market, and a labor market.}  The market clearing conditions with multiple firms become:
 
 \begin{equation}
-\underbrace{\boldsymbol{\bar{X}}}_{1\times M}= \underbrace{\boldsymbol{\bar{c}}}_{1 \times I} \times \underbrace{\Pi'}_{I\times M} + \underbrace{\boldsymbol{\bar{I}}}_{1 \times M} \times \underbrace{\Xi'}_{M\times M}
-\end{equation}
-
-\subsection*{Finding factor demands}
-
-With the demand for output from each industry in hand, we can use the FOCs of the firm for capital and labor to determine the demands for capital and and labor.  These are given above and are functions of only the parameters, the interest rate, the wage rate, and ouptut.
-
-\subsection*{Market clearing}
-
-The market clearing conditions with multiple firms become:
-
-\begin{equation}
-\sum_{M} K_{m,t} = \sum_{J}\sum_{S}b_{j,s,t}
+\sum_{i} K_{i} = \sum_{J}\sum_{S}b_{j,s}
 \end{equation}
 
 \noindent\noindent and 
 
 \begin{equation}
-\sum_{M} EL_{m,t} = \sum_{J}\sum_{S}e_{j,s}*n_{j,s,t}
+\sum_{i} EL_{i} = \sum_{J}\sum_{S}e_{j,s}*n_{j,s}
 \end{equation}
 
-\noindent\noindent for the capital and labor markets respectively.
 
+\subsection*{Computation}
 
-\subsection*{Some notes and unclear issues on this set up}
-Note that it does seem odd to sum up the heterogenous capital stocks like this to find the market clearing condition.  But I think we are ok.  All capital rents at the same rate.  So the household is indifferent to the type of capital it rents. Therefore, we are just assuming that the household rents capital to the firms of the type they demand to fulfill the total demand for capital. 
+To compute the solution to the SS of the model with two firms, we'll build off the algorithm set out in step one.  New steps/functions are highlighted in red:
 
-With multiple goods and capital stocks, we need to think about the unit of account.  In this setup, we are using a unit of capital as the numeraire - a unit of capital (of any industry) has a price of 1.  We see this from the household budget constraint - each unit income not spent on consumption goes to savings.  Each unit of savings can be converted into one unit of capital to be rented.  I think this seems ok?
+\begin{enumerate}
+\item Make an initial guess at $\bar{r}$ and $\bar{w}$
+\item \textcolor{red}{Use $r$ and $w$ and Equations \ref{eqn:prices} and \ref{eqn:composite_price2} to solve for the price of consumption goods 1 and 2 and the composite good price.}
+\item Taking $\bar{r}$, $\bar{w}$, $p_{1}$, $p_{2}$, and $\tilde{p}$ as given, solve the household's problem:
+	\begin{itemize}
+	\item For each $j$ type:
+		\begin{enumerate}
+		\item Make an initial guess at the household's optimal savings and labor supply decisions, $b_{j,s}$, $n_{j,s}$.
+		\item Use a root finder (e.g. \texttt{fsolve}) to determine the optimal allocations given $\bar{r}$ and $\bar{w}$.
+		\end{enumerate}
+	\end{itemize}
+\item \textcolor{red}{Aggregate over $J$ and $S$ to determine aggregate supply of labor and capital (where savings=capital), and aggregate consumption of each good; $K$, $EL$, $C_{1}$, $C_{2}$.}
+	\begin{itemize}
+	\item Remember to find $EL$ as the aggregate amount of effective labor units supplied, so you not only want to sum over $J$ and $S$, but weight by the number of effective labor units each type/age supplies.
+	\end{itemize}
+\item \textcolor{red}{Use the aggregate demands for each of the two consumption goods and Equation \ref{eqn:find_output} to solve for the output from each industry $i$.}
+\item \textcolor{red}{Use the aggregate demands for each of the two consumption goods and Equation \ref{eqn:find_output} to solve for the output from each industry $i$.}
+\item \textcolor{red}{Use Equations \ref{eqn:l_demand} and \ref{eqn:k_demand} to solve for the factor demands from each industry.}
+\item \textcolor{red}{Find the aggregate capital stock demanded: $K = K_{1}+K_{2}$.}
+\item \textcolor{red}{Find the aggregate effective labor demanded: $EL = EL_{1}+EL_{2}$.}
+\item \textcolor{red}{Take differences between aggregate amounts supplied and demanded.}
+\item \textcolor{red}{Use a root finder to determine the eq'm $\bar{r}$ and $\bar{w}$ (i.e. it'll find the $\bar{r}$ and $\bar{w}$ where $K_{demand}-K_{supply}=0$ and $EL_{demand}-EL_{supply}=0$).}
+\end{enumerate}
 
-Both of the above questionable points will not really be relevant when we make the firm's problem dynamic since households will not longer rent capital to firms.  Rather there will be a price of capital and firms will purchase capital directly.
+You might start by setting $\bar{c}_{1}=\bar{c}_{2}=0$ and $\alpha_{1}=\alpha_{2}=(1-\alpha_{1})=0.5$ (note that the $\alpha$'s have to sum to one).  Once you solve the model with this parameterization, try changing these parameters to make sure everything works out.  Note that you won't want to set the minimum consumption amounts too high since that may result in the consumer not being able to afford positive amounts of the composite consumption good.
+
+To check that this all works as expected, makes sure:
+\begin{enumerate}
+\item Euler errors are very small
+\item The aggregate resource constraint is satisfied ($X_{i}=C_{i}+\delta K_{i}$ for each industry $i$ in the SS).
+\item If you set $\alpha_{1}=1$ (so $\alpha_{2}=0$), that you get the same solution as with the one good/firm problem.
+\end{enumerate}
 
 \section*{Step 4: Making the firm's problem dynamic}
 
-In this step, we'll make the firm's problem dynamic. This means firms own capital, not rent it from the household.  This doesn't in itself have a large effect on the equations governing the firm in the steady state, but it will certainly change the solution along the time path and requires us to redefine the ``zero profit" condition of the firm. One major effect here is that the capital market clearing condition will be replaced by an asset market clearing condition.  In particular, that the household demand for equities equal the value of the firms in the economy.
-
-\subsection*{Finding the price of producer output}
-
-In the dynamic firm problem, households hold shares in firms, earning a rate of return that depends on the dividends distributed by the firm and the change in firm value (i.e., capital gains).  For households to hold shares in all firms, they need to have the same rate of return.  Specifically, the rate of return of a share of the firm is given by:
-
-\begin{equation}
-\label{eqn:equity_return}
-r_{t} = \frac{DIV_{t}+(V_{t+1}-V_{t}-VN_{t})}{V_{t}},
-\end{equation} 
-
-\noindent\noindent where $V_{t}$ is the value of the firm at time $t$, $DIV$ are dividend distributions, and $VN$ are new equity issues.  We restrict $VN>0$ - while in reality firms can buy back shares, in practice the IRS typically treats recurrent share repurchases as dividend distributions.  In the steady state, this becomes:
-
-\begin{equation}
-\label{eqn:equity_return}
-\bar{r} = \frac{\overline{DIV}+(\bar{V}-\bar{V}-\bar{VN})}{\bar{V}}=\frac{\overline{DIV}-\bar{VN}}{\bar{V}}
-\end{equation} 
-
-\noindent\noindent  In this simple case, without taxes or costly external finance, the amount of new equity issues are indeterminate.  That is, the firm can issue a dollar of new equity and use that to pay a dollar of dividends.  The shareholders are indifferent - they lose one dollar from the dilution of the shares they hold to the new equity issued, but gain one dollar of dividends.  When we add financial frictions (e.g. a dollar of new equity issued doesn't bring one dollar into the firm) and taxes (specifically when we have dividend taxes that are at least as high as capital gains taxes) then firms will never distribute dividend and issue equity together.  Since the sum/difference between $DIV$ and $VN$ is indeterminate, we'll just make the assume that firms never distribute dividends and issue equity at the same time (which is what will hold in the more general specification of the model).  
-
-If firms never distribute dividend and issue new equity at the same time, then $\overline{DIV}=0$ \emph{or} $\bar{VN}=0$.  If $\overline{DIV}=0$ and $\bar{VN}>0$, then this would imply the steady state rate of return on equity in the firm is negative, which can't be an equilibrium.  Thus it must be the case that $\overline{DIV}>0$ and $\bar{VN}=0$.  So we can write the steady state return on equity as:
-
-\begin{equation}
-\label{eqn:equity_return}
-\bar{r} = \frac{\overline{DIV}}{\bar{V}}
-\end{equation} 
-
-We can rewrite this in terms of the value of the firm:
-
-\begin{equation}
-\label{eqn:firm_val_ss}
-\bar{V} = \frac{\overline{DIV}}{\bar{r}}
-\end{equation} 
-
-
-Dividends are given by:
-
-\begin{equation}
-DIV_{t} = p_{t}X_{t} - w_{t}EL_{t} - p^{k}_{t}I_{t},
-\end{equation}
-
-\noindent\noindent where $p^{k}_{t}$ is the price of capital and $I_{t}$ is investment, which is given by the law of motion for capital:
-
-\begin{equation}
-I_{t} = K_{t+1}-(1-\delta)K_{t}
-\end{equation}
-
-In the steady state, we have:
-
-\begin{equation}
-\label{eqn:ssDIV}
-\overline{DIV} = \bar{p}\bar{X} - \bar{w}\bar{EL} - \bar{p}^{k}\bar{K},
-\end{equation}
-
-\noindent\noindent Note that with constant returns to scale, the the factor demands $K(r,w,p^{k},X)$ and $EL(r,w,p^{k},X)$ are proportional to output, $X$.  Letting $k=\frac{K}{X}$ and $l=\frac{EL}{X}$ we can rewrite the SS equation for dividends:
-
-\begin{equation}
-\begin{split}
-\label{eqn:ssDIV_decomposed}
-\overline{DIV} & = \bar{p}\bar{X} - \bar{w}\bar{EL} - \bar{p}^{k}\bar{K} \\
-&  = \bar{p}\bar{X} - \bar{w}\bar{EL}(\bar{r},\bar{w},\bar{p}^{k},\bar{X}) - \bar{p}^{k}\bar{K}(\bar{r},\bar{w},\bar{p}^{k},\bar{X}) \\
-& = \bar{p}\bar{X} - \bar{w}\bar{X}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{X}\bar{k}(\bar{r},\bar{w},\bar{p}^{k}) \\
-& = \bar{X}\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right) \\
-\end{split}
-\end{equation}
-
-Hayashi (1982) shows that with quadratic adjustment costs (which is what we'll use - here they are zero), the marginal change in firm value for a change in the capital stock (called Tobin's $q$ and given by $\frac{\partial V_{t}}{\partial K_{t}}$) is equivalent to value of the firm per unit of the capital stock (called average $q$ and given by $\frac{V_{t}}{K_{t}}$).  We thus have:
-
-\begin{equation}
-\begin{split}
-\label{eqn:marg_q_avg_q}
-\frac{\partial V_{t}}{\partial{K_{t}}}=\frac{V_{t}}{K_{t}} \\
-\end{split}
-\end{equation}
-
-From the FOC for capital one period ahead, we have:
-
-\begin{equation}
-\begin{split}
-p^{k}_{t} &= \frac{1}{1+r_{t}}\frac{\partial V(Z_{t+1},K_{t+1})}{\partial K_{t+1}} \\
-p^{k}_{t} &= \frac{1}{1+r_{t}}\left(MPK_{t+1} + (1-\delta)p^{k}_{t+1}\right), \\
-\end{split}
-\end{equation}
-
-\noindent\noindent Where the second line follows from the Envelope Condition, which gives the value for Tobin's q; 
-
-\begin{equation}
-\label{eqn:q}
-\begin{split}
-\frac{\partial V(Z_{t+1},K_{t+1})}{\partial K_{t+1}} = \left(MPK_{t+1} + (1-\delta)p^{k}_{t+1}\right)\\
-\end{split}
-\end{equation}
-
-Using Equation \ref{eqn:q} in Equation \ref{eqn:marg_q_avg_q} we have:
-
-\begin{equation}
-\label{eqn:q}
-\begin{split}
-\left(MPK_{t} + (1-\delta)p^{k}_{t}\right) = \frac{V_{t}}{K_{t}}
-\end{split}
-\end{equation}
-
-We can then use the steady state version of this equality in Equation \ref{eqn:firm_val_ss} to find:
-
-\begin{equation}
-\label{eqn:firm_val_ss}
-\begin{split}
-& \bar{V} = \frac{\overline{DIV}}{\bar{r}} \\
-& \implies \left(\overline{MPK} + (1-\delta)\bar{p}^{k}\right)\bar{K} =  \frac{\overline{DIV}}{\bar{r}} \\
-\end{split}
-\end{equation} 
-
-Substituting in for $\overline{DIV}$ with Equation \ref{eqn:ssDIV_decomposed} we have:
-
-\begin{equation}
-\left(\overline{MPK} + (1-\delta)\bar{p}^{k}\right)\bar{K} =  \frac{\bar{X}\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}}
-\end{equation} 
-
-Dividing both side by $\bar{X}$ we get:
-
-
-\begin{equation}
-\label{eqn:pricing}
-\frac{\overline{MPK} \times \bar{K}}{\bar{X}} + (1-\delta)\bar{p}^{k}\frac{\bar{K}}{\bar{X}} =  \frac{\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}}
-\end{equation} 
-
-With constant returns to scale, we can write the left hand side of the above as a function of just parameters, $\bar{r}$, $\bar{w}$, and $\bar{p}^{k}$.
-
-Note that there is one an equation like \ref{eqn:pricing} for each industry, $m$.  The price of capital is determined by the price of output and the fixed-coefficient matrix $\Xi$.
-
-In particular, if we let $\boldsymbol{p_{t}}$ be the $1\times M$ vector of output prices, we can determine the capital prices as:
-
-\begin{equation}
-\label{eqn:capital_prices}
-\underbrace{\boldsymbol{p^{k}_{t}}}_{1\times M} =\underbrace{\boldsymbol{p_{t}}}_{1\times M} \times  \underbrace{\Xi}_{M\times M}
-\end{equation}
-
-We can see that $\frac{\bar{K}}{\bar{X}}$ is only a function of $\bar{r}$, $\bar{w}$, and $\bar{p}^{k}$ from by using the firms FOCs and production function to solve for $\bar{K}(\bar{r},\bar{w},\bar{p}^{k},\bar{X})$.
-
-\begin{equation}
-\begin{split}
-\text{FOC for $K$}& \implies MPK_{t} = \frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\\
-& \implies Z_{t}^{\frac{\epsilon-1}{\epsilon}}\left(X_{t}\frac{\gamma}{K_{t}}\right)^{\frac{1}{\epsilon}} = \frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\\
-& \implies\left(X_{t}\frac{\gamma}{K_{t}}\right)^{\frac{1}{\epsilon}} =  Z_{t}^{\frac{1-\epsilon}{\epsilon}}\frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta) \\
-& \implies\left(X_{t}\frac{\gamma}{K_{t}}\right) =  Z_{t}^{1-\epsilon}\left(\frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\right)^{\epsilon} \\
-& \implies K_{t} = \frac{X_{t}\gamma}{Z_{t}^{1-\epsilon}\left(\frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\right)^{\epsilon}} \\
-\end{split}
-\end{equation}
-
-With this, we can see that $\frac{K_{t}}{X_{t}}$ is not a function of $X_{t}$. In particular, with CES production we have: 
-
-\begin{equation}
-\frac{K_{t}}{X_{t}} = \frac{\gamma}{Z_{t}^{1-\epsilon}\left(\frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\right)^{\epsilon}}
-\end{equation} 
-
-We can do the same for $EL_{t}$:
-
-\begin{equation}
-\begin{split}
-\text{FOC for $EL$}& \implies MPL_{t} = \frac{w_{t}}{p_{t}}\\
-& \implies \left(e^{g_{y}t}Z_{t}\right)^{\frac{\epsilon-1}{\epsilon}}\left(X_{t}\frac{(1-\gamma)}{EL_{t}}\right)^{\frac{1}{\epsilon}} = \frac{w_{t}}{p_{t}} \\
-& \implies \left(X_{t}\frac{(1-\gamma)}{EL_{t}}\right)^{\frac{1}{\epsilon}} =  \left(e^{g_{y}t}Z_{t}\right)^{\frac{1-\epsilon}{\epsilon}}\frac{w_{t}}{p_{t}} \\
-& \implies \left(X_{t}\frac{(1-\gamma)}{EL_{t}}\right)=  \left(e^{g_{y}t}Z_{t}\right)^{1-\epsilon}\left(\frac{w_{t}}{p_{t}}\right)^{\epsilon} \\
-& EL_{t}=  \frac{X_{t}(1-\gamma)}{\left(e^{g_{y}t}Z_{t}\right)^{1-\epsilon}\left(\frac{w_{t}}{p_{t}}\right)^{\epsilon}} \\
-\end{split}
-\end{equation}
-
-
-We can take these results to rewrite Equation \ref{eqn:pricing}:
-
-\begin{equation}
-\label{eqn:pricing_final}
-\begin{split}
- \frac{\overline{MPK} \times \bar{K}}{\bar{X}} + (1-\delta)\bar{p}^{k}\frac{\bar{K}}{\bar{X}} & =  \frac{\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}} \\
- \implies \frac{ \bar{p}^{k}(1+\bar{r})\gamma}{\bar{Z}^{1-\epsilon}\left(\frac{\bar{p}^{k}}{\bar{p}}(\bar{r}+\delta)\right)^{\epsilon}} & = \frac{\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}}  \\
-  \implies \frac{ \bar{p}^{k}(1+\bar{r})\gamma}{\bar{Z}^{1-\epsilon}\left(\frac{\bar{p}^{k}}{\bar{p}}(\bar{r}+\delta)\right)^{\epsilon}} & = \frac{\bar{p} - \bar{w} \frac{(1-\gamma)}{\left(e^{g_{y}}\bar{Z}\right)^{1-\epsilon}\left(\frac{\bar{w}}{\bar{p}}\right)^{\epsilon}}  - \bar{p}^{k}\frac{\gamma}{\bar{Z}^{1-\epsilon}\left(\frac{\bar{p}^{k}}{p_{k}}(\bar{r}+\delta)\right)^{\epsilon}}}{\bar{r}} \\
-  \implies \bar{r}\bar{p}^{k}(1+\bar{r})\gamma & = p^{1-\epsilon}\left(\bar{p}^{k}\right)^{\epsilon}\bar{Z}^{1-\epsilon}(\bar{r}+\delta)^{\epsilon} - \frac{\bar{w}^{1-\epsilon}(1-\gamma)\bar{p}^{k}(\bar{r}+\delta)^{\epsilon}}{\left(e^{g_{y}}\right)^{1-\epsilon}} - p^{k}\gamma
-  \end{split}
-\end{equation} 
-
-In the end, to solve for prices in the steady state ($\bar{p}^{k}$ and $\bar{p}$) we have to solve $2\times M$ equations for the $2\times M$ unknowns.\footnote{With Cobb-Douglas production functions, these will be all linear equations and thus more easily solved.  They don't appear to be linear in $\bar{p}$ and $\bar{p}^{k}$ with CES production, making the solution to the system a big more computationally intensive.}  The equations will need are:
-
-\begin{enumerate}
-\item Equation \ref{eqn:pricing_final} (for each $m$):  $ \bar{r}\bar{p}^{k}_{m}(1+\bar{r})\gamma_{m}  = p^{1-\epsilon_{m}}\left(\bar{p}^{k}_{m}\right)^{\epsilon_{m}}\bar{Z}^{1-\epsilon_{m}}(\bar{r}+\delta_{m})^{\epsilon_{m}} - \frac{\bar{w}^{1-\epsilon}(1-\gamma_{m})\bar{p}^{k}_{m}(\bar{r}+\delta_{m})^{\epsilon_{m}}}{\left(e^{g_{y}}\right)^{1-\epsilon_{m}}} - p^{k}_{m}\gamma_{m}$ ($M$ equations)
-\item Equation \ref{eqn:capital_prices}: $\boldsymbol{\bar{p}^{k}} =\boldsymbol{\bar{p}} \times \Xi$ ($M$ equations)
-\end{enumerate} 
-
-Note that the in non-steady state solution we'll be working backwards from the steady state, which will help to pin down investmet, $I_{t}$.  Otherwise the solution will look much like the above, where we find what dividends much be in period $t$ to give the shareholder their require rate of return, $r_{t}$.  We'll discuss the solution along the time path in the next step.  Thus in the dynamic context, the required rate of return is like the zero profit condition.  If the required rate of return owning equities is higher than that on holding bonds, then we firms much have earnings that given them an above market rate of return.  Taxes on the firm will be passed through by higher prices and, in general equilibrium, lower rates of return and wages.
-
-\subsection*{Changes to the household's problem}
-
-Finding the consumer's demand for consumption will be the same as the static problem.  And the consumer's problem will look the same.  However, now savings, $b$, will be interpreted as the value of shares of the firms owned.  Since all firms will give the rate of return, households will hold a diversified portfolio of firms.  
-
-\subsection*{Finding total demand for output from industry $m$}
-
-Same as in the static problem.
-
-\subsection*{Finding factor demands}
-
-Same as in the static problem, updated to use the FOCs from the static firm's problem:
-
-\begin{equation}
-MPK_{t} = \frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)
-\end{equation}
-
-and
-
-\begin{equation}
-MPL_{t} = \frac{w_{t}}{p_{t}}
-\end{equation}
-
-\subsection*{Market clearing}
-
-There are three markets - the labor market, the asset market, and the goods market.  By Walras' Law we only need to check two and we'll use the labor and capital markets:
-
-\begin{equation}
-\sum_{M} V_{m,t} = \sum_{J}\sum_{S}b_{j,s,t}
-\end{equation}
-
-\noindent\noindent This says that the total value of assets held by the households must equal the total value of the firms in which they own shares. The condition for the labor market is: 
-
-\begin{equation}
-\sum_{M} EL_{m,t} = \sum_{J}\sum_{S}e_{j,s}*n_{j,s,t}
-\end{equation}
-
+%In this step, we'll make the firm's problem dynamic. This means firms own capital, not rent it from the household.  This doesn't in itself have a large effect on the equations governing the firm in the steady state, but it will certainly change the solution along the time path and requires us to redefine the ``zero profit" condition of the firm. One major effect here is that the capital market clearing condition will be replaced by an asset market clearing condition.  In particular, that the household demand for equities equal the value of the firms in the economy.
+%
+%\subsection*{Finding the price of producer output}
+%
+%In the dynamic firm problem, households hold shares in firms, earning a rate of return that depends on the dividends distributed by the firm and the change in firm value (i.e., capital gains).  For households to hold shares in all firms, they need to have the same rate of return.  Specifically, the rate of return of a share of the firm is given by:
+%
+%\begin{equation}
+%\label{eqn:equity_return}
+%r_{t} = \frac{DIV_{t}+(V_{t+1}-V_{t}-VN_{t})}{V_{t}},
+%\end{equation} 
+%
+%\noindent\noindent where $V_{t}$ is the value of the firm at time $t$, $DIV$ are dividend distributions, and $VN$ are new equity issues.  We restrict $VN>0$ - while in reality firms can buy back shares, in practice the IRS typically treats recurrent share repurchases as dividend distributions.  In the steady state, this becomes:
+%
+%\begin{equation}
+%\label{eqn:equity_return}
+%\bar{r} = \frac{\overline{DIV}+(\bar{V}-\bar{V}-\bar{VN})}{\bar{V}}=\frac{\overline{DIV}-\bar{VN}}{\bar{V}}
+%\end{equation} 
+%
+%\noindent\noindent  In this simple case, without taxes or costly external finance, the amount of new equity issues are indeterminate.  That is, the firm can issue a dollar of new equity and use that to pay a dollar of dividends.  The shareholders are indifferent - they lose one dollar from the dilution of the shares they hold to the new equity issued, but gain one dollar of dividends.  When we add financial frictions (e.g. a dollar of new equity issued doesn't bring one dollar into the firm) and taxes (specifically when we have dividend taxes that are at least as high as capital gains taxes) then firms will never distribute dividend and issue equity together.  Since the sum/difference between $DIV$ and $VN$ is indeterminate, we'll just make the assume that firms never distribute dividends and issue equity at the same time (which is what will hold in the more general specification of the model).  
+%
+%If firms never distribute dividend and issue new equity at the same time, then $\overline{DIV}=0$ \emph{or} $\bar{VN}=0$.  If $\overline{DIV}=0$ and $\bar{VN}>0$, then this would imply the steady state rate of return on equity in the firm is negative, which can't be an equilibrium.  Thus it must be the case that $\overline{DIV}>0$ and $\bar{VN}=0$.  So we can write the steady state return on equity as:
+%
+%\begin{equation}
+%\label{eqn:equity_return}
+%\bar{r} = \frac{\overline{DIV}}{\bar{V}}
+%\end{equation} 
+%
+%We can rewrite this in terms of the value of the firm:
+%
+%\begin{equation}
+%\label{eqn:firm_val_ss}
+%\bar{V} = \frac{\overline{DIV}}{\bar{r}}
+%\end{equation} 
+%
+%
+%Dividends are given by:
+%
+%\begin{equation}
+%DIV_{t} = p_{t}X_{t} - w_{t}EL_{t} - p^{k}_{t}I_{t},
+%\end{equation}
+%
+%\noindent\noindent where $p^{k}_{t}$ is the price of capital and $I_{t}$ is investment, which is given by the law of motion for capital:
+%
+%\begin{equation}
+%I_{t} = K_{t+1}-(1-\delta)K_{t}
+%\end{equation}
+%
+%In the steady state, we have:
+%
+%\begin{equation}
+%\label{eqn:ssDIV}
+%\overline{DIV} = \bar{p}\bar{X} - \bar{w}\bar{EL} - \bar{p}^{k}\bar{K},
+%\end{equation}
+%
+%\noindent\noindent Note that with constant returns to scale, the the factor demands $K(r,w,p^{k},X)$ and $EL(r,w,p^{k},X)$ are proportional to output, $X$.  Letting $k=\frac{K}{X}$ and $l=\frac{EL}{X}$ we can rewrite the SS equation for dividends:
+%
+%\begin{equation}
+%\begin{split}
+%\label{eqn:ssDIV_decomposed}
+%\overline{DIV} & = \bar{p}\bar{X} - \bar{w}\bar{EL} - \bar{p}^{k}\bar{K} \\
+%&  = \bar{p}\bar{X} - \bar{w}\bar{EL}(\bar{r},\bar{w},\bar{p}^{k},\bar{X}) - \bar{p}^{k}\bar{K}(\bar{r},\bar{w},\bar{p}^{k},\bar{X}) \\
+%& = \bar{p}\bar{X} - \bar{w}\bar{X}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{X}\bar{k}(\bar{r},\bar{w},\bar{p}^{k}) \\
+%& = \bar{X}\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right) \\
+%\end{split}
+%\end{equation}
+%
+%Hayashi (1982) shows that with quadratic adjustment costs (which is what we'll use - here they are zero), the marginal change in firm value for a change in the capital stock (called Tobin's $q$ and given by $\frac{\partial V_{t}}{\partial K_{t}}$) is equivalent to value of the firm per unit of the capital stock (called average $q$ and given by $\frac{V_{t}}{K_{t}}$).  We thus have:
+%
+%\begin{equation}
+%\begin{split}
+%\label{eqn:marg_q_avg_q}
+%\frac{\partial V_{t}}{\partial{K_{t}}}=\frac{V_{t}}{K_{t}} \\
+%\end{split}
+%\end{equation}
+%
+%From the FOC for capital one period ahead, we have:
+%
+%\begin{equation}
+%\begin{split}
+%p^{k}_{t} &= \frac{1}{1+r_{t}}\frac{\partial V(Z_{t+1},K_{t+1})}{\partial K_{t+1}} \\
+%p^{k}_{t} &= \frac{1}{1+r_{t}}\left(MPK_{t+1} + (1-\delta)p^{k}_{t+1}\right), \\
+%\end{split}
+%\end{equation}
+%
+%\noindent\noindent Where the second line follows from the Envelope Condition, which gives the value for Tobin's q; 
+%
+%\begin{equation}
+%\label{eqn:q}
+%\begin{split}
+%\frac{\partial V(Z_{t+1},K_{t+1})}{\partial K_{t+1}} = \left(MPK_{t+1} + (1-\delta)p^{k}_{t+1}\right)\\
+%\end{split}
+%\end{equation}
+%
+%Using Equation \ref{eqn:q} in Equation \ref{eqn:marg_q_avg_q} we have:
+%
+%\begin{equation}
+%\label{eqn:q}
+%\begin{split}
+%\left(MPK_{t} + (1-\delta)p^{k}_{t}\right) = \frac{V_{t}}{K_{t}}
+%\end{split}
+%\end{equation}
+%
+%We can then use the steady state version of this equality in Equation \ref{eqn:firm_val_ss} to find:
+%
+%\begin{equation}
+%\label{eqn:firm_val_ss}
+%\begin{split}
+%& \bar{V} = \frac{\overline{DIV}}{\bar{r}} \\
+%& \implies \left(\overline{MPK} + (1-\delta)\bar{p}^{k}\right)\bar{K} =  \frac{\overline{DIV}}{\bar{r}} \\
+%\end{split}
+%\end{equation} 
+%
+%Substituting in for $\overline{DIV}$ with Equation \ref{eqn:ssDIV_decomposed} we have:
+%
+%\begin{equation}
+%\left(\overline{MPK} + (1-\delta)\bar{p}^{k}\right)\bar{K} =  \frac{\bar{X}\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}}
+%\end{equation} 
+%
+%Dividing both side by $\bar{X}$ we get:
+%
+%
+%\begin{equation}
+%\label{eqn:pricing}
+%\frac{\overline{MPK} \times \bar{K}}{\bar{X}} + (1-\delta)\bar{p}^{k}\frac{\bar{K}}{\bar{X}} =  \frac{\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}}
+%\end{equation} 
+%
+%With constant returns to scale, we can write the left hand side of the above as a function of just parameters, $\bar{r}$, $\bar{w}$, and $\bar{p}^{k}$.
+%
+%Note that there is one an equation like \ref{eqn:pricing} for each industry, $m$.  The price of capital is determined by the price of output and the fixed-coefficient matrix $\Xi$.
+%
+%In particular, if we let $\boldsymbol{p_{t}}$ be the $1\times M$ vector of output prices, we can determine the capital prices as:
+%
+%\begin{equation}
+%\label{eqn:capital_prices}
+%\underbrace{\boldsymbol{p^{k}_{t}}}_{1\times M} =\underbrace{\boldsymbol{p_{t}}}_{1\times M} \times  \underbrace{\Xi}_{M\times M}
+%\end{equation}
+%
+%We can see that $\frac{\bar{K}}{\bar{X}}$ is only a function of $\bar{r}$, $\bar{w}$, and $\bar{p}^{k}$ from by using the firms FOCs and production function to solve for $\bar{K}(\bar{r},\bar{w},\bar{p}^{k},\bar{X})$.
+%
+%\begin{equation}
+%\begin{split}
+%\text{FOC for $K$}& \implies MPK_{t} = \frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\\
+%& \implies Z_{t}^{\frac{\epsilon-1}{\epsilon}}\left(X_{t}\frac{\gamma}{K_{t}}\right)^{\frac{1}{\epsilon}} = \frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\\
+%& \implies\left(X_{t}\frac{\gamma}{K_{t}}\right)^{\frac{1}{\epsilon}} =  Z_{t}^{\frac{1-\epsilon}{\epsilon}}\frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta) \\
+%& \implies\left(X_{t}\frac{\gamma}{K_{t}}\right) =  Z_{t}^{1-\epsilon}\left(\frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\right)^{\epsilon} \\
+%& \implies K_{t} = \frac{X_{t}\gamma}{Z_{t}^{1-\epsilon}\left(\frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\right)^{\epsilon}} \\
+%\end{split}
+%\end{equation}
+%
+%With this, we can see that $\frac{K_{t}}{X_{t}}$ is not a function of $X_{t}$. In particular, with CES production we have: 
+%
+%\begin{equation}
+%\frac{K_{t}}{X_{t}} = \frac{\gamma}{Z_{t}^{1-\epsilon}\left(\frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\right)^{\epsilon}}
+%\end{equation} 
+%
+%We can do the same for $EL_{t}$:
+%
+%\begin{equation}
+%\begin{split}
+%\text{FOC for $EL$}& \implies MPL_{t} = \frac{w_{t}}{p_{t}}\\
+%& \implies \left(e^{g_{y}t}Z_{t}\right)^{\frac{\epsilon-1}{\epsilon}}\left(X_{t}\frac{(1-\gamma)}{EL_{t}}\right)^{\frac{1}{\epsilon}} = \frac{w_{t}}{p_{t}} \\
+%& \implies \left(X_{t}\frac{(1-\gamma)}{EL_{t}}\right)^{\frac{1}{\epsilon}} =  \left(e^{g_{y}t}Z_{t}\right)^{\frac{1-\epsilon}{\epsilon}}\frac{w_{t}}{p_{t}} \\
+%& \implies \left(X_{t}\frac{(1-\gamma)}{EL_{t}}\right)=  \left(e^{g_{y}t}Z_{t}\right)^{1-\epsilon}\left(\frac{w_{t}}{p_{t}}\right)^{\epsilon} \\
+%& EL_{t}=  \frac{X_{t}(1-\gamma)}{\left(e^{g_{y}t}Z_{t}\right)^{1-\epsilon}\left(\frac{w_{t}}{p_{t}}\right)^{\epsilon}} \\
+%\end{split}
+%\end{equation}
+%
+%
+%We can take these results to rewrite Equation \ref{eqn:pricing}:
+%
+%\begin{equation}
+%\label{eqn:pricing_final}
+%\begin{split}
+% \frac{\overline{MPK} \times \bar{K}}{\bar{X}} + (1-\delta)\bar{p}^{k}\frac{\bar{K}}{\bar{X}} & =  \frac{\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}} \\
+% \implies \frac{ \bar{p}^{k}(1+\bar{r})\gamma}{\bar{Z}^{1-\epsilon}\left(\frac{\bar{p}^{k}}{\bar{p}}(\bar{r}+\delta)\right)^{\epsilon}} & = \frac{\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}}  \\
+%  \implies \frac{ \bar{p}^{k}(1+\bar{r})\gamma}{\bar{Z}^{1-\epsilon}\left(\frac{\bar{p}^{k}}{\bar{p}}(\bar{r}+\delta)\right)^{\epsilon}} & = \frac{\bar{p} - \bar{w} \frac{(1-\gamma)}{\left(e^{g_{y}}\bar{Z}\right)^{1-\epsilon}\left(\frac{\bar{w}}{\bar{p}}\right)^{\epsilon}}  - \bar{p}^{k}\frac{\gamma}{\bar{Z}^{1-\epsilon}\left(\frac{\bar{p}^{k}}{p_{k}}(\bar{r}+\delta)\right)^{\epsilon}}}{\bar{r}} \\
+%  \implies \bar{r}\bar{p}^{k}(1+\bar{r})\gamma & = p^{1-\epsilon}\left(\bar{p}^{k}\right)^{\epsilon}\bar{Z}^{1-\epsilon}(\bar{r}+\delta)^{\epsilon} - \frac{\bar{w}^{1-\epsilon}(1-\gamma)\bar{p}^{k}(\bar{r}+\delta)^{\epsilon}}{\left(e^{g_{y}}\right)^{1-\epsilon}} - p^{k}\gamma
+%  \end{split}
+%\end{equation} 
+%
+%In the end, to solve for prices in the steady state ($\bar{p}^{k}$ and $\bar{p}$) we have to solve $2\times M$ equations for the $2\times M$ unknowns.\footnote{With Cobb-Douglas production functions, these will be all linear equations and thus more easily solved.  They don't appear to be linear in $\bar{p}$ and $\bar{p}^{k}$ with CES production, making the solution to the system a big more computationally intensive.}  The equations will need are:
+%
+%\begin{enumerate}
+%\item Equation \ref{eqn:pricing_final} (for each $m$):  $ \bar{r}\bar{p}^{k}_{m}(1+\bar{r})\gamma_{m}  = p^{1-\epsilon_{m}}\left(\bar{p}^{k}_{m}\right)^{\epsilon_{m}}\bar{Z}^{1-\epsilon_{m}}(\bar{r}+\delta_{m})^{\epsilon_{m}} - \frac{\bar{w}^{1-\epsilon}(1-\gamma_{m})\bar{p}^{k}_{m}(\bar{r}+\delta_{m})^{\epsilon_{m}}}{\left(e^{g_{y}}\right)^{1-\epsilon_{m}}} - p^{k}_{m}\gamma_{m}$ ($M$ equations)
+%\item Equation \ref{eqn:capital_prices}: $\boldsymbol{\bar{p}^{k}} =\boldsymbol{\bar{p}} \times \Xi$ ($M$ equations)
+%\end{enumerate} 
+%
+%Note that the in non-steady state solution we'll be working backwards from the steady state, which will help to pin down investmet, $I_{t}$.  Otherwise the solution will look much like the above, where we find what dividends much be in period $t$ to give the shareholder their require rate of return, $r_{t}$.  We'll discuss the solution along the time path in the next step.  Thus in the dynamic context, the required rate of return is like the zero profit condition.  If the required rate of return owning equities is higher than that on holding bonds, then we firms much have earnings that given them an above market rate of return.  Taxes on the firm will be passed through by higher prices and, in general equilibrium, lower rates of return and wages.
+%
+%\subsection*{Changes to the household's problem}
+%
+%Finding the consumer's demand for consumption will be the same as the static problem.  And the consumer's problem will look the same.  However, now savings, $b$, will be interpreted as the value of shares of the firms owned.  Since all firms will give the rate of return, households will hold a diversified portfolio of firms.  
+%
+%\subsection*{Finding total demand for output from industry $m$}
+%
+%Same as in the static problem.
+%
+%\subsection*{Finding factor demands}
+%
+%Same as in the static problem, updated to use the FOCs from the static firm's problem:
+%
+%\begin{equation}
+%MPK_{t} = \frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)
+%\end{equation}
+%
+%and
+%
+%\begin{equation}
+%MPL_{t} = \frac{w_{t}}{p_{t}}
+%\end{equation}
+%
+%\subsection*{Market clearing}
+%
+%There are three markets - the labor market, the asset market, and the goods market.  By Walras' Law we only need to check two and we'll use the labor and capital markets:
+%
+%\begin{equation}
+%\sum_{M} V_{m} = \sum_{J}\sum_{S}b_{j,s}
+%\end{equation}
+%
+%\noindent\noindent This says that the total value of assets held by the households must equal the total value of the firms in which they own shares. The condition for the labor market is: 
+%
+%\begin{equation}
+%\sum_{M} EL_{m} = \sum_{J}\sum_{S}e_{j,s}*n_{j,s}
+%\end{equation}
+%
 
 \section*{Future steps}
 
 \begin{enumerate}
 \setcounter{enumi}{3}
+\item Expand to $M$ firms
 \item Add solution for firms along the time path
 \item Add simple taxes (div, cap gain, corp inc tax on accouting profits)
 \item Add endogenous financial policy (it's at this step that we'll add the feature that households invest their savings in two assets - bonds and equities - which have potentially different returns).
@@ -519,6 +781,7 @@ There are three markets - the labor market, the asset market, and the goods mark
 \end{enumerate}
 
 
+\end{spacing}
 
 
 
