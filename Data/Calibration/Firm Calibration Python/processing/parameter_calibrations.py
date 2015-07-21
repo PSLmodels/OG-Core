@@ -14,12 +14,12 @@ import sys
 import numpy as np
 import pandas as pd
 # Relevant directories:
-_CUR_DIR = os.path.dirname(__file__)
+_CUR_DIR = os.path.dirname(os.path.abspath(__file__))
 _MAIN_DIR = os.path.dirname(_CUR_DIR)
-_DATA_DIR = os.path.abspath(_MAIN_DIR + "\\data")
-_DATA_STRCT_DIR = os.path.abspath(_MAIN_DIR + "\\data_structures")
-_PARAM_DIR = os.path.abspath(_MAIN_DIR + "\\parameters")
-_OUT_DIR = os.path.abspath(_MAIN_DIR + "\\output")
+_DATA_DIR = os.path.abspath(_MAIN_DIR + "//data")
+_DATA_STRCT_DIR = os.path.abspath(_MAIN_DIR + "//data_structures")
+_PARAM_DIR = os.path.abspath(_MAIN_DIR + "//parameters")
+_OUT_DIR = os.path.abspath(_MAIN_DIR + "//output")
 # Importing custom modules:
 sys.path.append(_DATA_STRCT_DIR)
 import naics_processing as naics
@@ -33,7 +33,7 @@ def calibrate_incomes(output_data=True):
            output file.
     """
     # The income directory:
-    inc_dir = os.path.abspath(_PARAM_DIR + "\\national_income")
+    inc_dir = os.path.abspath(_PARAM_DIR + "//national_income")
     # Importing the module for gathering and processing the income data:
     sys.path.append(inc_dir)
     import national_income as inc
@@ -41,7 +41,7 @@ def calibrate_incomes(output_data=True):
     inc_tree = inc.get_incs()
     # Output the data to the income folder inside the output folder:
     if output_data:
-        inc_out_dir = os.path.abspath(_OUT_DIR + "\\income")
+        inc_out_dir = os.path.abspath(_OUT_DIR + "//income")
         # Make income folder if there isn't one:
         if not os.path.isdir(inc_out_dir):
             os.mkdir(inc_out_dir)
@@ -79,7 +79,7 @@ def calibrate_depr_rates(data_tree=naics.generate_tree(), get_all=False,
     :param output_data: Whether to output the depreciation rates.
     """
     # The depreciation rate directory:
-    depr_dir = os.path.abspath(_PARAM_DIR +"\\depreciation")
+    depr_dir = os.path.abspath(_PARAM_DIR +"//depreciation")
     ''' Importing the module for gathering and processing the depreciation
     rate data: '''
     sys.path.append(depr_dir)
@@ -124,15 +124,15 @@ def calibrate_debt(debt_tree=naics.generate_tree(), soi_tree=None,
     if soi_tree == None:
         soi_tree = pull_soi_data(get_corp=True, from_out=soi_from_out)
     #
-    debt_dir = os.path.abspath(_PARAM_DIR + "\\debt")
-    debt_data_dir = os.path.abspath(debt_dir + "\\data")
+    debt_dir = os.path.abspath(_PARAM_DIR + "//debt")
+    debt_data_dir = os.path.abspath(debt_dir + "//data")
     sys.path.append(debt_dir)
     import debt_calibration as debt
     #
-    lblty_file = os.path.abspath(debt_data_dir + "\\liabilities.csv")
+    lblty_file = os.path.abspath(debt_data_dir + "//liabilities.csv")
     print lblty_file
     lblty_df = pd.read_csv(lblty_file)
-    eqty_file = os.path.abspath(debt_data_dir + "\\equity.csv")
+    eqty_file = os.path.abspath(debt_data_dir + "//equity.csv")
     eqty_df = pd.read_csv(eqty_file)
     debt_tree = naics.load_tree_dfs(input_file=lblty_file, dfs_name="liabilities", tree=debt_tree)
     debt_tree = naics.load_tree_dfs(input_file=eqty_file, dfs_name="equity", tree=debt_tree)

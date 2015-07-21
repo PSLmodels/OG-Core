@@ -13,11 +13,11 @@ import numpy as np
 import pandas as pd
 import xlrd
 # Relevant directories:
-_CUR_DIR = os.path.dirname(__file__)
+_CUR_DIR = os.path.dirname(os.path.abspath(__file__))
 _MAIN_DIR = os.path.dirname(_CUR_DIR)
-_DATA_DIR = os.path.abspath(_MAIN_DIR + "\\data")
-_NAICS_DIR = os.path.abspath(_DATA_DIR + "\\naics")
-_NAICS_CODE_PATH = os.path.abspath(_NAICS_DIR + "\\naics_codes.csv")
+_DATA_DIR = os.path.abspath(_MAIN_DIR + "//data")
+_NAICS_DIR = os.path.abspath(_DATA_DIR + "//naics")
+_NAICS_CODE_PATH = os.path.abspath(_NAICS_DIR + "//naics_codes.csv")
 # Importing custom modules:
 import data_class as dc
 import constants as cst
@@ -426,7 +426,7 @@ def search_ws(sheet, search_term, distance=20, warnings=True, origin=[0,0],
             continue
         if i + origin[0] >= total_rows:
             continue
-        cur_cell = str(sheet.cell_value(i+origin[0],j+origin[1])).lower()
+        cur_cell = str(unicode(sheet.cell_value(i+origin[0],j+origin[1])).encode('utf8')).lower()
         if(exact):
             if str(search_term).lower() == cur_cell:
                 return [i+origin[0],j+origin[1]]
