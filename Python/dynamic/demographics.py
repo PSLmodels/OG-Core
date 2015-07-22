@@ -40,6 +40,9 @@ import utils
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 DEMO_DIR = os.path.join(cur_path, "data", "demographic")
 
+pd.options.mode.chained_assignment = None
+
+
 '''
 ------------------------------------------------------------------------
     Import data sets
