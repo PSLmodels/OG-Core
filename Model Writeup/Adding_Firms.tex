@@ -289,7 +289,7 @@ The consumer chooses $c_{i,j,s}$ to maximize Equation \ref{eqn:comp_cons} subjec
        \end{split}
     \end{equation}
     
-    Thus, total consumption of each good $i$, $c_{i,j,s}$, is given by the the amount of minimum consumption plus the share of total expenditures remaining after making the minimum expenditures on all goods (this is called the ``supernumerary" expenditure).  We derive the prices of the age $s$ composite consumption good in period $t$, $\tilde{p}_{s}$ by using the demand for good $i$ provided in Equation \ref{cons_solve} in the function defining aggregate discretionary consumption, Equation \ref{eqn:comp_cons}: 
+    Thus, total consumption of each good $i$, $c_{i,j,s}$, is given by the the amount of minimum consumption plus the share of total expenditures remaining after making the minimum expenditures on all goods (this is called the ``supernumerary" expenditure).  We derive the prices of the age $s$ composite consumption good in period $t$, $\tilde{p}_{s}$ by using the demand for good $i$ provided in Equation \ref{eqn:cons_solve} in the function defining aggregate discretionary consumption, Equation \ref{eqn:comp_cons}: 
     
               \begin{equation} \label{eqn:composite_price}
       \begin{split}
@@ -325,19 +325,37 @@ p_{i}X_{i}= w*EL_{i} + (r+\delta)K_{i}
 
 Given the guess of the equilibrium interest rate and wage rate, we can use the first order conditions of the firm and the zero profit condition to determine the price of the output of the firms.  In particular, we can use the firm FOCs to find $K(r,w,X)$ and $EL(r,w,X)$.  
 
-With CES production, we'll want to solve for $EL(r,w,X)$ and $K(r,w,X)$.  These can be solved for using the FOCs and are given by:
+With CES production, we'll want to solve for $EL(r,w,X)$ and $K(r,w,X)$.  These can be solved for using the firm's FOCs and are given by:
 
 \begin{equation}
 \label{eqn:l_demand}
 EL_{i}(r,w,X_{i})=\frac{(1-\gamma)X_{i}}{w^{\epsilon}A^{1-\epsilon}}
 \end{equation}
 
+
+
 \begin{equation}
 \label{eqn:k_demand}
 K_{i}(r,w,X_{i})=\frac{\gamma X_{i}}{(r+\delta)^{\epsilon}A^{1-\epsilon}}
 \end{equation}
 
-Plugging these factor demands into the zero profit condition, we get:
+
+It'll also be useful to write factor demands as derived from the production function and FOCs together.  We'll use this when we derive the demand for capital that is required to produce a given amount of output.\footnote{I can't point to the theory as to why we need this, but without using this version the model won't solve.  I think it might have to do with not having enough unique equations if we use the first derivation of the demand for capital only - if we do that, we never end up using the equation describing the production function).} 
+
+\begin{equation}
+\label{eqn:k_demand2}
+K_{i} = X_{i}A^{\frac{1-\epsilon}{\epsilon}}\left[\gamma^{\frac{1}{\epsilon}}+(1-\gamma)^{\frac{1}{\epsilon}}\left(\frac{r+\delta}{w}\right)^{\epsilon-1}\left(\frac{1-\gamma}{\gamma}\right)^{\frac{\epsilon-1}{\epsilon}}\right]^{\frac{\epsilon}{1-\epsilon}}
+\end{equation}
+
+and
+
+\begin{equation}
+\label{eqn:l_demand2}
+EL_{i} =K_{i}\left(\frac{(1-\gamma)}{\gamma}\right)\left(\frac{(r+\delta)}{w}\right)^{\epsilon}
+\end{equation}
+
+
+Plugging these factor demands from equations \ref{eqn:l_demand} and \ref{eqn:k_demand} into the zero profit condition, we get:
 
 \begin{equation}
 \label{eqn:prices}
@@ -419,7 +437,7 @@ X_{i} &= C_{i} + \delta \left(\frac{\gamma X_{i}}{(r+\delta)^{\epsilon}A^{1-\eps
 \end{split}
 \end{equation}  
 
-With the demand for output from each industry, we can then from their factor demands from equations \ref{eqn:l_demand} and \ref{eqn:k_demand}.
+With the demand for output from each industry, $r$, and $w$, we can solve for each industry's factor demands from equations \ref{eqn:l_demand} and \ref{eqn:k_demand}.
 
 %We then use these demands, with the matrix $\Pi$ to find the demands for output from each production sector that stem from demand for consumption.  Let $X^{c}_{m}$ be the demand for output from production industry $m$ for consumption goods.  We find $X^{c}_{m}$ as:
 %
@@ -517,8 +535,7 @@ To compute the solution to the SS of the model with two firms, we'll build off t
 	\item Remember to find $EL$ as the aggregate amount of effective labor units supplied, so you not only want to sum over $J$ and $S$, but weight by the number of effective labor units each type/age supplies.
 	\end{itemize}
 \item \textcolor{red}{Use the aggregate demands for each of the two consumption goods and Equation \ref{eqn:find_output} to solve for the output from each industry $i$.}
-\item \textcolor{red}{Use the aggregate demands for each of the two consumption goods and Equation \ref{eqn:find_output} to solve for the output from each industry $i$.}
-\item \textcolor{red}{Use Equations \ref{eqn:l_demand} and \ref{eqn:k_demand} to solve for the factor demands from each industry.}
+\item \textcolor{red}{Use Equations \ref{eqn:l_demand2} and \ref{eqn:k_demand2} to solve for the factor demands from each industry.}
 \item \textcolor{red}{Find the aggregate capital stock demanded: $K = K_{1}+K_{2}$.}
 \item \textcolor{red}{Find the aggregate effective labor demanded: $EL = EL_{1}+EL_{2}$.}
 \item \textcolor{red}{Take differences between aggregate amounts supplied and demanded.}
