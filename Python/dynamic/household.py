@@ -21,22 +21,27 @@ import tax
 '''
 
 
-def get_K(b, pop_weights, ability_weights, g_n):
+def get_K(b, pop_weights, ability_weights, g_n, method):
     '''
     Inputs:
         b = distribution of capital (SxJ array)
         pop_weights = population weights (Sx1 array)
         ability_weights = ability percentile groups (Jx1 array)
         g_n = population growth rate (scalar)
+        method = 'SS' or 'TPI' (string)
     Output:
-        K_now = Aggregate Capital (scalar)
+        K_now = Aggregate Capital (scalar or array)
     '''
-    K_now = np.sum(b * pop_weights * ability_weights)
-    K_now /= 1.0 + g_n
+    K_presum = b * pop_weights * ability_weights
+    if method == 'SS':
+        K_now = K_presum.sum()
+    elif method == 'TPI':
+        K_now = K_presum.sum(1).sum(1)
+    K_now /= (1.0 + g_n)
     return K_now
 
 
-def get_BQ(r, b_splus1, pop_weights, ability_weights, rho, g_n):
+def get_BQ(r, b_splus1, pop_weights, ability_weights, rho, g_n, method):
     '''
     Inputs:
         r = interest rate (scalar)
@@ -45,11 +50,16 @@ def get_BQ(r, b_splus1, pop_weights, ability_weights, rho, g_n):
         ability_weights = ability weights (Jx1 array)
         rho = mortality rates (Sx1 array)
         g_n = population growth rate (scalar)
+        method = 'SS' or 'TPI' (string)
     Output:
-        BQ = aggregate BQ (Jx1 array)
+        BQ = aggregate BQ (Jx1 array or TxJ array)
     '''
-    BQ = (1+r) * (b_splus1 * pop_weights * rho).sum(0) * ability_weights
-    BQ /= 1.0 + g_n
+    BQ_presum = b_splus1 * pop_weights * rho * ability_weights
+    if method == 'SS':
+        BQ = BQ_presum.sum(0)
+    elif method == 'TPI':
+        BQ = BQ_presum.sum(1)
+    BQ *= (1.0 + r) / (1.0 + g_n) 
     return BQ
 
 
@@ -116,16 +126,21 @@ def get_cons(r, b_s, w, e, n, BQ, lambdas, b_splus1, params, net_tax):
     return cons
 
 
-def get_C(individ_cons, pop_weights, ability_weights):
+def get_C(individ_cons, pop_weights, ability_weights, method):
     '''
     Inputs:
         individ_cons = distribution of consumption (SxJ array)
         pop_weights = population weights by age (Sx1 array)
         ability_weights = ability weights (Jx1 array)
+        method = 'SS' or 'TPI' (string)
     Output:
-        aggC = aggregate consumption (scalar)
+        aggC = aggregate consumption (scalar or array)
     '''
-    aggC = (individ_cons * pop_weights * ability_weights).sum()
+    aggC_presum = individ_cons * pop_weights * ability_weights
+    if method == 'SS':
+        aggC = aggC_presum.sum()
+    elif method == 'TPI':
+        aggC = aggC_presum.sum(1).sum(1)
     return aggC
 
 

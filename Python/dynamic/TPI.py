@@ -98,14 +98,14 @@ def create_tpi_params(a_tax_income, b_tax_income, c_tax_income,
         initial_b = bssmat_init
         initial_n = nssmat_init
     # Get an initial distribution of capital with the initial population distribution
-    K0 = household.get_K(initial_b, omega_stationary[0].reshape(S, 1), lambdas, g_n_vector[0])
+    K0 = household.get_K(initial_b, omega_stationary[0].reshape(S, 1), lambdas, g_n_vector[0], 'SS')
     b_sinit = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_b[:-1]))
     b_splus1init = initial_b
-    L0 = firm.get_L(e, initial_n, omega_stationary[0].reshape(S, 1), lambdas)
+    L0 = firm.get_L(e, initial_n, omega_stationary[0].reshape(S, 1), lambdas, 'SS')
     Y0 = firm.get_Y(K0, L0, parameters)
     w0 = firm.get_w(Y0, L0, parameters)
     r0 = firm.get_r(Y0, K0, parameters)
-    BQ0 = household.get_BQ(r0, initial_b, omega_stationary[0].reshape(S, 1), lambdas, rho.reshape(S, 1), g_n_vector[0])
+    BQ0 = household.get_BQ(r0, initial_b, omega_stationary[0].reshape(S, 1), lambdas, rho.reshape(S, 1), g_n_vector[0], 'SS')
     T_H_0 = tax.get_lump_sum(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, omega_stationary[0].reshape(S, 1), 'SS', parameters, theta, tau_bq)
     tax0 = tax.total_taxes(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, T_H_0, None, 'SS', False, parameters, theta, tau_bq)
     c0 = household.get_cons(r0, b_sinit, w0, e, initial_n, BQ0.reshape(1, J), lambdas.reshape(1, J), b_splus1init, parameters, tax0)
@@ -329,15 +329,13 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, parameters, g_n_vector, 
         #     print 't-loop:', euler_errors.max()
         # Force the initial distribution of capital to be as given above.
         b_mat[0, :, :] = initial_b
-        Kinit = (omega_stationary[:T, :].reshape(T, S, 1) * b_mat[:T, :, :] * lambdas.reshape(1, 1, J)).sum(2).sum(1) / (1.0 + g_n_vector[:T])
-        Linit = (omega_stationary[:T, :].reshape(T, S, 1) * lambdas.reshape(1, 1, J) * e.reshape(
-            1, S, J) * n_mat[:T, :, :]).sum(2).sum(1)
-
+        Kinit = household.get_K(b_mat[:T], omega_stationary[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), g_n_vector[:T], 'TPI')
+        Linit = firm.get_L(e.reshape(1, S, J), n_mat[:T], omega_stationary[:T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI')
         Ynew = firm.get_Y(Kinit, Linit, parameters)
         wnew = firm.get_w(Ynew, Linit, parameters)
         rnew = firm.get_r(Ynew, Kinit, parameters)
         # the following needs a g_n term
-        BQnew = (1+rnew.reshape(T, 1))*(b_mat[:T] * omega_stationary[:T].reshape(T, S, 1) * lambdas.reshape(1, 1, J) * rho.reshape(1, S, 1)).sum(1) / (1.0 + g_n_vector[:T].reshape(T, 1))
+        BQnew = household.get_BQ(rnew.reshape(T, 1), b_mat[:T], omega_stationary[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1), g_n_vector[:T].reshape(T, 1), 'TPI')
         bmat_s = np.zeros((T, S, J))
         bmat_s[:, 1:, :] = b_mat[:T, :-1, :]
         T_H_new = np.array(list(tax.get_lump_sum(rnew.reshape(T, 1, 1), bmat_s, wnew.reshape(
@@ -423,7 +421,7 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, parameters, g_n_vector, 
     c_path = household.get_cons(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b_splus1, parameters, tax_path)
 
     Y_path = firm.get_Y(Kpath_TPI[:T], Lpath_TPI[:T], parameters)
-    C_path = (c_path * omega_stationary[:T].reshape(T, S, 1) * lambdas).sum(1).sum(1)
+    C_path = household.get_C(c_path, omega_stationary[:T].reshape(T, S, 1), lambdas, 'TPI')
     I_path = firm.get_I(Kpath_TPI[1:T+1], Kpath_TPI[:T], delta, g_y, g_n_vector[:T])
     print 'Resource Constraint Difference:', Y_path - C_path - I_path
 

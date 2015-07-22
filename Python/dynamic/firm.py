@@ -62,17 +62,22 @@ def get_w(Y_now, L_now, params):
     return w_now
 
 
-def get_L(e, n, pop_weights, ability_weights):
+def get_L(e, n, pop_weights, ability_weights, method):
     '''
     Inputs:
         e = ability levels (SxJ array)
         n = labor participation array (SxJ array)
         pop_weights = population weights (Sx1 array)
         ability_weights = ability weights (Jx1 array)
+        method = 'SS' or 'TPI'
     Output:
         L_now = Aggregate labor (scalar)
     '''
-    L_now = np.sum(e * pop_weights * ability_weights * n)
+    L_presum = e * pop_weights * ability_weights * n
+    if method == 'SS':
+        L_now = L_presum.sum()
+    elif method == 'TPI':
+        L_now = L_presum.sum(1).sum(1)
     return L_now
 
 

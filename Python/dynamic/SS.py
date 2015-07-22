@@ -109,7 +109,7 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n,
     b_splus1 = b_guess
     b_splus2 = np.array(list(b_guess[1:]) + [0])
 
-    BQ = household.get_BQ(r, b_splus1, weights, lambdas[j], rho, g_n_ss)
+    BQ = household.get_BQ(r, b_splus1, weights, lambdas[j], rho, g_n_ss, 'SS')
     theta = tax.replacement_rate_vals(n_guess, w, factor, e[:,j], J, weights, lambdas[j])
 
     error1 = household.euler_savings_func(w, r, e[:, j], n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_H, chi_b[j], params, theta, tau_bq[j], rho, lambdas[j])
@@ -177,15 +177,15 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
             nssmat[:,j] = solutions[S:]
             # print np.array(Euler_equation_solver(np.append(bssmat[:, j], nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, e)).max()
 
-        K = household.get_K(bssmat, weights.reshape(S, 1), lambdas.reshape(1, J), g_n_ss)
-        L = firm.get_L(e, nssmat, weights.reshape(S, 1), lambdas.reshape(1, J))
+        K = household.get_K(bssmat, weights.reshape(S, 1), lambdas.reshape(1, J), g_n_ss, 'SS')
+        L = firm.get_L(e, nssmat, weights.reshape(S, 1), lambdas.reshape(1, J), 'SS')
         Y = firm.get_Y(K, L, params)
         new_r = firm.get_r(Y, K, params)
         new_w = firm.get_w(Y, L, params)
         b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
         average_income_model = ((new_r * b_s + new_w * e * nssmat) * weights.reshape(S, 1) * lambdas.reshape(1, J)).sum()
         new_factor = mean_income_data / average_income_model 
-        new_BQ = household.get_BQ(new_r, bssmat, weights.reshape(S, 1), lambdas.reshape(1, J), rho.reshape(S, 1), g_n_ss)
+        new_BQ = household.get_BQ(new_r, bssmat, weights.reshape(S, 1), lambdas.reshape(1, J), rho.reshape(S, 1), g_n_ss, 'SS')
         theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, e, J, weights.reshape(S, 1), lambdas)
         new_T_H = tax.get_lump_sum(new_r, b_s, new_w, e, nssmat, new_BQ, lambdas.reshape(1, J), factor, weights.reshape(S, 1), 'SS', params, theta, tau_bq)
 
@@ -369,19 +369,19 @@ def run_steady_state(ss_parameters, iterative_params, get_baseline=False, calibr
     nssmat = solutions[S * J:2*S*J].reshape(S, J)
     wss, rss, factor_ss, T_Hss = solutions[2*S*J:]
 
-    Kss = household.get_K(bssmat_splus1, omega_SS.reshape(S, 1), lambdas, g_n_ss)
-    Lss = firm.get_L(e, nssmat, omega_SS.reshape(S, 1), lambdas)
+    Kss = household.get_K(bssmat_splus1, omega_SS.reshape(S, 1), lambdas, g_n_ss, 'SS')
+    Lss = firm.get_L(e, nssmat, omega_SS.reshape(S, 1), lambdas, 'SS')
     Yss = firm.get_Y(Kss, Lss, ss_parameters)
 
     Iss = firm.get_I(Kss, Kss, delta, g_y, g_n_ss)
 
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS.reshape(S, 1), lambdas)
-    BQss = household.get_BQ(rss, bssmat_splus1, omega_SS.reshape(S, 1), lambdas, rho.reshape(S, 1), g_n_ss)
+    BQss = household.get_BQ(rss, bssmat_splus1, omega_SS.reshape(S, 1), lambdas, rho.reshape(S, 1), g_n_ss, 'SS')
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
     taxss = tax.total_taxes(rss, b_s, wss, e, nssmat, BQss, lambdas, factor_ss, T_Hss, None, 'SS', False, ss_parameters, theta, tau_bq)
     cssmat = household.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(1, J), lambdas.reshape(1, J), bssmat_splus1, ss_parameters, taxss)
 
-    Css = household.get_C(cssmat, omega_SS.reshape(S, 1), lambdas)
+    Css = household.get_C(cssmat, omega_SS.reshape(S, 1), lambdas, 'SS')
 
     resource_constraint = Yss - (Css + Iss)
 

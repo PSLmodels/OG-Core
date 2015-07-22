@@ -93,7 +93,7 @@ T_Hss_init = T_Hss
 Kss_init = Kss
 Lss_init = Lss
 
-Css_init = household.get_C(cssmat, omega_SS.reshape(S, 1), lambdas)
+Css_init = household.get_C(cssmat, omega_SS.reshape(S, 1), lambdas, 'SS')
 iss_init = firm.get_I(bssmat_splus1, bssmat_splus1, delta, g_y, g_n_ss)
 income_init = cssmat + iss_init
 # print (income_init*omega_SS).sum()
@@ -294,7 +294,7 @@ utility = utility.sum(0)
 
 
 
-Css = household.get_C(cssmat, omega_SS.reshape(S, 1), lambdas)
+Css = household.get_C(cssmat, omega_SS.reshape(S, 1), lambdas, 'SS')
 iss = firm.get_I(bssmat_splus1, bssmat_splus1, delta, g_y, g_n_ss)
 income = cssmat + iss
 # print (income*omega_SS).sum()
