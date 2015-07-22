@@ -5,6 +5,8 @@ Last updated 6/19/2015
 Creates graphs for steady state values.
 
 This py-file calls the following other file(s):
+            firm.py
+            household.py
             SSinit/ss_init_vars.pkl
             SS/ss_vars.pkl
             OUTPUT/Saved_moments/params_given.pkl
@@ -26,6 +28,9 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import cPickle as pickle
 
+import firm
+import household
+
 '''
 ------------------------------------------------------------------------
     Functions
@@ -33,7 +38,11 @@ import cPickle as pickle
 '''
 
 
-def the_inequalizer(dist, weights):
+def the_inequalizer(dist, pop_weights, ability_weights, S, J):
+    '''
+    Generates 3 inequality measures
+    '''
+    weights = np.tile(pop_weights.reshape(S, 1), (1, J)) * ability_weights.reshape(1, J)
     flattened_dist = dist.flatten()
     flattened_weights = weights.flatten()
     idx = np.argsort(flattened_dist)
@@ -84,16 +93,16 @@ T_Hss_init = T_Hss
 Kss_init = Kss
 Lss_init = Lss
 
-Css = (cssmat * omega_SS).sum()
-Css_init = Css
-income_init = cssmat + delta * bssmat_splus1
+Css_init = household.get_C(cssmat, omega_SS.reshape(S, 1), lambdas, 'SS')
+iss_init = firm.get_I(bssmat_splus1, bssmat_splus1, delta, g_y, g_n_ss)
+income_init = cssmat + iss_init
 # print (income_init*omega_SS).sum()
 # print Css + delta * Kss
 # print Kss
 # print Lss
 # print Css_init
 # print (utility_init * omega_SS).sum()
-the_inequalizer(income_init, omega_SS)
+the_inequalizer(income_init, omega_SS, lambdas, S, J)
 
 
 
@@ -285,15 +294,16 @@ utility = utility.sum(0)
 
 
 
-Css = (cssmat * omega_SS).sum()
-income = cssmat + delta * bssmat_splus1
+Css = household.get_C(cssmat, omega_SS.reshape(S, 1), lambdas, 'SS')
+iss = firm.get_I(bssmat_splus1, bssmat_splus1, delta, g_y, g_n_ss)
+income = cssmat + iss
 # print (income*omega_SS).sum()
 # print Css + delta * Kss
 # print Kss
 # print Lss
 # print Css
 # print (utility * omega_SS).sum()
-# the_inequalizer(yss, omega_SS)
+# the_inequalizer(yss, omega_SS, lambdas, S, J)
 
 print (Lss - Lss_init)/Lss_init
 
