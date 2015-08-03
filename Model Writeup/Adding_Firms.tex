@@ -201,7 +201,7 @@ Consumers maximize the present discounted value of utility from consumption a co
     \begin{equation}\label{EqUtilMax}
       \begin{split}
         &U_{j,s} = \sum_{s=1}^{S}\beta^u  u\left(\tilde{c}_{j,s},n_{j,s},b_{j,S+1}\right) \\
-        &\text{where} \quad u\left(\tilde{c}_{j,s},n_{j,s},b_{j,S+1}\right) = \frac{\left(c_{j,s}\right)^{1-\sigma} - 1}{1-\sigma} ... \\
+        &\text{where} \quad u\left(\tilde{c}_{j,s},n_{j,s},b_{j,S+1}\right) = \frac{\left(\tilde{c}_{j,s}\right)^{1-\sigma} - 1}{1-\sigma} ... \\
         &\qquad\qquad + \chi^n\left(\frac{\left(\tilde{l}-n_{j,s}\right)^{1-\nu} - 1}{1-\nu} \right) + \chi^b\frac{\left(b_{j,S+1,}\right)^{1-\sigma} - 1}{1-\sigma} \\
         &\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\quad\forall j,1\leq s\leq S
       \end{split}
@@ -340,7 +340,7 @@ K_{i}(r,w,X_{i})=\frac{\gamma X_{i}}{\left(\frac{(r+\delta)}{p_{i}}\right)^{\eps
 \end{equation}
 
 
-It'll also be useful to write factor demands as derived from the production function and FOCs together.  We'll use this when we derive the demand for capital that is required to produce a given amount of output.\footnote{I can't point to the theory as to why we need this, but without using this version the model won't solve.  I think it might have to do with not having enough unique equations if we use the first derivation of the demand for capital only - if we do that, we never end up using the equation describing the production function).} 
+It'll also be useful to write factor demands as derived from the production function and FOCs together.  We'll use this when we derive the demand for capital that is required to produce a given amount of output.\footnote{Note that we need this equation because although we can solve for capital demand as a function of output demanded from Equation \ref{eqn:k_demand}, we will use this equation in determining demand for output (Equation \ref{eqn:find_output}).  In order to use the correct number of unique equations, we'll use these two different equations to solve for capital demand, one of which uses only the FOC for capital and the other, which uses the FOCs and the production function.} 
 
 \begin{equation}
 \label{eqn:k_demand2}
@@ -432,8 +432,8 @@ To find the demands for investment, not that in the SS, $I_{i}=\delta K_{i}$.  R
 \label{eqn:find_output}
 \begin{split}
 X_{i} &= C_{i} + \delta K_{i} \\
-X_{i} &= C_{i} + \delta \left(\frac{\gamma X_{i}}{(r+\delta)^{\epsilon}A^{1-\epsilon}} \right)\\
-\implies X_{i} &= \frac{C_{i}}{1-\frac{\delta \gamma}{(r+\delta)^{\epsilon}A^{1-\epsilon}}}
+X_{i} &= C_{i} + \delta \left(\frac{\gamma X_{i}}{\left(\frac{(r+\delta)}{p_{i}}\right)^{\epsilon}A^{1-\epsilon}} \right)\\
+\implies X_{i} &= \frac{C_{i}}{1-\frac{\delta \gamma}{\left(\frac{(r+\delta)}{p_{i}}\right)^{\epsilon}A^{1-\epsilon}}}
 \end{split}
 \end{equation}  
 
@@ -548,8 +548,30 @@ To check that this all works as expected, makes sure:
 \begin{enumerate}
 \item Euler errors are very small
 \item The aggregate resource constraint is satisfied ($X_{i}=C_{i}+\delta K_{i}$ for each industry $i$ in the SS).
+\item The labor and capital markets clear.
 \item If you set $\alpha_{1}=1$ (so $\alpha_{2}=0$), that you get the same solution as with the one good/firm problem.
 \end{enumerate}
+
+\subsection*{Alternative Computational Procedure}
+
+This section proposes and alternative computational procedure.  This method has the advantage that one can write code such that a while loop can replace the outer  \texttt{fsolve}, which is used above to determine $r$ and $w$.  The updating of $r$ and $w$ in this method can leverage differences between the current and prior iteration, speeding up the model's convergence.  The algorithm uses the same steps 1-6 as above.  The differences in the remainder are:
+
+\begin{enumerate}
+\setcounter{enumi}{6}
+\item With the factor demands in hand, use the firm FOCS to find the implied wage rate and interest rate for each firm. Call these $r_{new}$ and $w_{new}$.
+	\begin{itemize}
+	\item Note that the implies factor prices should be the same for each firm - so you only need to solve for one, but do a check to make sure they are the same.
+	\item Note that you'll need to rearrange Equations \ref{eqn:k_demand} and \ref{eqn:l_demand} to find $r$ and $w$ in terms of factor demands and output prices:
+	\item $r = p_{i} MPK(K_{i},EL_{i}) - \delta$
+	\item $w = p_{i} MPL(K_{i},EL_{i}) $
+	\end{itemize}
+\item Take differences between $r_{new}$ and $r$ and $w_{new}$ and $w$.
+\item Use a root finder to determine the eq'm $r$ and $w$ (i.e. it'll find the where $r_{new}-r=0$ and $w_{new}-w=0$).
+\end{enumerate}
+
+Be sure to run all the checks noted above to make sure the solution you find is actually the correct solution.
+
+Evan and Isaac were able to use a convex combination or the $r_{new}$ and $r$ (and $w_{new}$ and $w$) to update, but we can start by just getting this to work with a root finder to solve the outer loop.  Note that I have not been successful in computing this because, despite the resource constraint and Euler equations being satisfied and the factor prices converging, the market clearing conditions are not satisfied.  In this algorithm with a single firm, the factor supplies are plugged into the firm FOCs to get the new implied interest rate.  In the two firm problem, one can't do this since you need to figure out how to split those factor demands across the firms.  The necessitates solving for the factor demands from each firm and there so market clearing is not satisfied by construction as it was with this algorithm applied to the single firm problem.
 
 \section*{Step 4: Making the firm's problem dynamic}
 
