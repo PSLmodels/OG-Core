@@ -211,13 +211,13 @@ Consumers maximize the present discounted value of utility from consumption a co
  
      \begin{equation}\label{EqBC}
       \begin{split}
-        \sum_{i=1}^{I} p_{i}\bar{c}_{i} + \tilde{p}\tilde{c}_{s} + b_{j,s+1} \leq \left(1 + r\right) b_{j,s} + w_t e_{j}&n_{j,s} + \frac{BQ_{j}}{\lambda_j\tilde{N}} \\
+        \sum_{i=1}^{I} p_{i}\bar{c}_{i,s} + \tilde{p}_{s}\tilde{c}_{s} + b_{j,s+1} \leq \left(1 + r\right) b_{j,s} + w_t e_{j}&n_{j,s} + \frac{BQ_{j}}{\lambda_j\tilde{N}} \\
         \quad\text{where}\quad b_{j,1} = 0 \\
         &\text{for} \quad 1\leq s \leq S 
       \end{split}
     \end{equation}
     
-  Prices for individual consumption goods are given by $p_{i}$, whereas $\tilde{p}$ is the price of the composite consumption good.  The parameters $\bar{c}_{i}$ are the minimum consumption amounts for good $i$.  $BQ_{j}$ are aggregate bequests from those of type $j$, which are divided equally between the living households of type $j$.  $\tilde{N}$ is the total population, which can be normalized to one for the SS analysis.  Total bequests are given by:
+  Prices for individual consumption goods are given by $p_{i}$, whereas $\tilde{p}$ is the price of the composite consumption good.  The parameters $\bar{c}_{i,s}$ are the minimum consumption amounts for good $i$.  $BQ_{j}$ are aggregate bequests from those of type $j$, which are divided equally between the living households of type $j$.  $\tilde{N}$ is the total population, which can be normalized to one for the SS analysis.  Total bequests are given by:
   
   \begin{equation}
   BQ_{j} = \sum_{J} \lambda_{j}b_{j,S+1}\tilde{N}
@@ -227,40 +227,40 @@ Consumers maximize the present discounted value of utility from consumption a co
   
       \begin{equation}\label{Eqbfoc}
       \begin{split}
-     \frac{\partial U}{\partial \tilde{b}_{j,s+1}}  = \tilde{c}_{j,s}^{-\sigma} - \beta (1+r) \tilde{c}_{j,s+1}^{-\sigma}  = 0, \forall s, j
+     \frac{\partial U}{\partial \tilde{b}_{j,s+1}}  = \frac{\tilde{c}_{j,s}^{-\sigma}}{\tilde{p}_{s}} - \beta (1+r) \frac{\tilde{c}_{j,s+1}^{-\sigma}}{\tilde{p}_{s+1}}  = 0, \forall s, j
         \end{split}
     \end{equation}
 
     \begin{equation}\label{Eqnfoc}
       \begin{split}
-      \frac{\partial U}{\partial n_{j,s}} & =  \chi^n_{s}\left(\tilde{l}-n_{j,s}\right)^{-\nu} - we_{j}\tilde{c}_{j,s}^{-\sigma} = 0, \forall s, j       
+      \frac{\partial U}{\partial n_{j,s}} & =  \chi^n_{s}\left(\tilde{l}-n_{j,s}\right)^{-\nu} - \frac{we_{j}}{\tilde{p}_{s}}\tilde{c}_{j,s}^{-\sigma} = 0, \forall s, j       
       \end{split}
     \end{equation}
 
     \begin{equation}\label{Eqbqfoc}
       \begin{split}
-      \frac{\partial U}{\partial b_{j,S+1}} & = \tilde{c}_{j,S}^{-\sigma} - \beta (1+r) \chi^{b} b_{j,S+1}^{-\sigma}, \forall j
+      \frac{\partial U}{\partial b_{j,S+1}} & = \frac{\tilde{c}_{j,S}^{-\sigma}}{\tilde{p}_{S}} - \beta (1+r) \chi^{b} b_{j,S+1}^{-\sigma}, \forall j
       \end{split}
     \end{equation}
   
   The composite consumption good is make up of the individual consumption goods, with the amounts determined by the consumer's consumption subutility function.  We assume a Stone-Geary utility function here, with the composite consumption good defined as: 
   
   \begin{equation} \label{eqn:comp_cons}
-\tilde{c}_{j,s}  = \prod_{i=1}^I \left( c_{i,j,s} - \bar{c}_{i} \right) ^{\alpha_{i}}, 
+\tilde{c}_{j,s}  = \prod_{i=1}^I \left( c_{i,j,s} - \bar{c}_{i,s} \right) ^{\alpha_{i}}, 
  \end{equation}
  
- \noindent\noindent where $i$ denotes the particular consumption good.  $\bar{c}_{i}$ are the minimum consumption amounts for good $i$.  The composite consumption good is the composite of ``discretionary" consumption on all the goods (consumption above the minimum amounts).  The $\alpha_{i}$ parameters are the share parameters and define the share of discretionary consumption spending (called the ``supernumerary expenditure) that goes to each good $i$.  What this utility function is modeling is that there some basic requirements for sustenance.  For example, you need a certain amount of calories to live, giving you a minimum food expenditure, but you might choose to go above that.  This specification has a couple nice properties as far as our model is concerned.  First, it helps to get a more realistic tax incidence since it'll have the rich and poor spending different shares of their income on different goods (without resorting to preferences that depend upon ability type $j$).  Second, it'll give us more realistic responses of savings to interest rates.  Typically these models have responses that are much stronger than we see in the data.  The minimum consumption shares help to temper that because some may be close to those thresholds and therefore still have a high marginal utility of consumption for the composite good.
+ \noindent\noindent where $i$ denotes the particular consumption good.  $\bar{c}_{i,s}$ are the minimum consumption amounts for good $i$.  The composite consumption good is the composite of ``discretionary" consumption on all the goods (consumption above the minimum amounts).  The $\alpha_{i}$ parameters are the share parameters and define the share of discretionary consumption spending (called the ``supernumerary expenditure) that goes to each good $i$.  What this utility function is modeling is that there some basic requirements for sustenance.  For example, you need a certain amount of calories to live, giving you a minimum food expenditure, but you might choose to go above that.  This specification has a couple nice properties as far as our model is concerned.  First, it helps to get a more realistic tax incidence since it'll have the rich and poor spending different shares of their income on different goods (without resorting to preferences that depend upon ability type $j$).  Second, it'll give us more realistic responses of savings to interest rates.  Typically these models have responses that are much stronger than we see in the data.  The minimum consumption shares help to temper that because some may be close to those thresholds and therefore still have a high marginal utility of consumption for the composite good.
  
 The consumer chooses $c_{i,j,s}$ to maximize Equation \ref{eqn:comp_cons} subject to the budget constraint:
 
     \begin{equation} \label{eqn:cons_budgetcons}
-        \sum_{i=1}^{I} p_{i}(c_{i,j,s}-\bar{c}_{i})  = \tilde{p}_{s}\tilde{c}_{j,s}
+        \sum_{i=1}^{I} p_{i}(c_{i,j,s}-\bar{c}_{i,s})  = \tilde{p}_{s}\tilde{c}_{j,s}
     \end{equation}
 
 \noindent where $p_{i}$ is the gross of tax price of good $i$ at time $t$ and $\tilde{p}_{s}$ is the gross of tax price of the the discretionary component of the composite consumption good consumed by those of age $s$ at time $t$.  Maximization of \ref{Eqcagg} subject to \ref{eqn:cons_budgetcons} yields:
 
     \begin{equation} \label{eqn:cons_lagrangian}
-       \mathcal{L} =  \max_{\{c_{i,j,s}\}_{i=1}^{I}}  \prod_{i=1}^I \left( c_{i,j,s} - \bar c_{i,s} \right) ^{\alpha_{i,s}}  + \lambda \left(\tilde{p}_{s}\tilde{c}_{j,s} - \sum_{i=1}^{I} p_{i}(c_{i,j,s}-\bar{c}_{i,j,s})\right)
+       \mathcal{L} =  \max_{\{c_{i,j,s}\}_{i=1}^{I}}  \prod_{i=1}^I \left( c_{i,j,s} - \bar c_{i,s} \right) ^{\alpha_{i,s}}  + \lambda \left(\tilde{p}_{s}\tilde{c}_{j,s} - \sum_{i=1}^{I} p_{i}(c_{i,j,s}-\bar{c}_{i,s})\right)
     \end{equation}
     
     Which as $I$ FOCs (for each $j$, $s$, $t$):
@@ -270,7 +270,7 @@ The consumer chooses $c_{i,j,s}$ to maximize Equation \ref{eqn:comp_cons} subjec
        & \frac{\partial \mathcal{L}}{\partial c_{i,j,s}} = \frac{\alpha_{i,s} \prod_{i=1}^I \left( c_{i,j,s} - \bar c_{i,s} \right) ^{\alpha_{i,s}}}{(c_{i,j,s}-\bar{c}_{i,s})}-\lambda p_{i} = 0, \forall \ i  \\
        & \implies  \frac{\alpha_{i,s} \prod_{i=1}^I \left( c_{i,j,s} - \bar c_{i,s} \right) ^{\alpha_{i,s}}}{(c_{i,j,s}-\bar{c}_{i,s})} = \lambda p_{i}, \forall \ i \\
        & \implies  \frac{\alpha_{i,s} \prod_{i=1}^I \left( c_{i,j,s} - \bar c_{i,s} \right) ^{\alpha_{i,s}}}{ p_{i}(c_{i,j,s}-\bar{c}_{i,s})} = \lambda, \forall \ i \\
-       & \implies \frac{\alpha_{i,s}}{p_{i}(c_{i,j,s}-\bar{c}_{i,s})}=\frac{\alpha_{j,s}}{p_{k}(c_{k,j,s}-\bar{c}_{k,s})}, \forall \ i,k \\
+       & \implies \frac{\alpha_{i,s}}{p_{i}(c_{i,j,s}-\bar{c}_{i,s})}=\frac{\alpha_{k,s}}{p_{k}(c_{k,j,s}-\bar{c}_{k,s})}, \forall \ i,k \\
        & \implies c_{i,j,s}= \frac{\alpha_{i,s} p_{k}(c_{k,j,s}-\bar{c}_{k,s})}{\alpha_{k,s} p_{i}} + \bar{c}_{i,s} \forall i,k 
        \end{split}
     \end{equation}
@@ -309,11 +309,11 @@ The consumer chooses $c_{i,j,s}$ to maximize Equation \ref{eqn:comp_cons} subjec
 Each industry is represented by a competitive firm with a constant returns to scale (CRS) CES production function.  We will assume here that each industry output becomes a unique consumption good.  That is if there two production industries, the industry one produces output used for $c_{1}$ and industry two produces output used for $c_{2}$.  Thus we will denote each industry with the subscript $i$, which corresponds to the consumption good they produce.  We'll relax this in the future.  Also, at this point we'll assume that capital can be made from output from either sector.  One unit of output from each sector can be used to produce one unit of capital which can be used by either sector.\footnote{It may be helpful here to think about a financial intermediary that is implicitly sitting between the household and the firm.  This intermediary takes the dollars from the household and transforms them into capital for the firms.}  Because of the CRS and competitive assumptions, firms earn zero profits in equilibrium.  The capital and labor market equilibrium also imply that the wage and rental rates are the same across industry.  We thus have three equations that define the firm's problem, two from the firm's first order conditions for labor and capital demand, and the third from the zero profit condition.  These are:
 
 \begin{equation}
-r = MPK(K_{i},EL_{i}) - \delta, \forall i
+r = p_{i}*MPK(K_{i},EL_{i}) - \delta, \forall i
 \end{equation}
 
 \begin{equation}
-w = MPL(K_{i},EL_{i}), \forall i
+w = p_{i}*MPL(K_{i},EL_{i}), \forall i
 \end{equation}
 
 \begin{equation}
@@ -329,14 +329,14 @@ With CES production, we'll want to solve for $EL(r,w,X)$ and $K(r,w,X)$.  These 
 
 \begin{equation}
 \label{eqn:l_demand}
-EL_{i}(r,w,X_{i})=\frac{(1-\gamma)X_{i}}{w^{\epsilon}A^{1-\epsilon}}
+EL_{i}(r,w,X_{i})=\frac{(1-\gamma)X_{i}}{\left(\frac{w}{p_{i}}\right)^{\epsilon}A^{1-\epsilon}}
 \end{equation}
 
 
 
 \begin{equation}
 \label{eqn:k_demand}
-K_{i}(r,w,X_{i})=\frac{\gamma X_{i}}{(r+\delta)^{\epsilon}A^{1-\epsilon}}
+K_{i}(r,w,X_{i})=\frac{\gamma X_{i}}{\left(\frac{(r+\delta)}{p_{i}}\right)^{\epsilon}A^{1-\epsilon}}
 \end{equation}
 
 
@@ -344,7 +344,7 @@ It'll also be useful to write factor demands as derived from the production func
 
 \begin{equation}
 \label{eqn:k_demand2}
-K_{i} = X_{i}A^{\frac{1-\epsilon}{\epsilon}}\left[\gamma^{\frac{1}{\epsilon}}+(1-\gamma)^{\frac{1}{\epsilon}}\left(\frac{r+\delta}{w}\right)^{\epsilon-1}\left(\frac{1-\gamma}{\gamma}\right)^{\frac{\epsilon-1}{\epsilon}}\right]^{\frac{\epsilon}{1-\epsilon}}
+K_{i} = \frac{X_{i}}{A}\left[\gamma^{\frac{1}{\epsilon}}+(1-\gamma)^{\frac{1}{\epsilon}}\left(\frac{r+\delta}{w}\right)^{\epsilon-1}\left(\frac{1-\gamma}{\gamma}\right)^{\frac{\epsilon-1}{\epsilon}}\right]^{\frac{\epsilon}{1-\epsilon}}
 \end{equation}
 
 and
@@ -361,8 +361,8 @@ Plugging these factor demands from equations \ref{eqn:l_demand} and \ref{eqn:k_d
 \label{eqn:prices}
 \begin{split}
 p_{i}X_{i} &= w EL_{i} + (r+\delta)K_{i} \\
-p_{i}X_{i} &= w \frac{(1-\gamma)X_{i}}{w^{\epsilon}A^{1-\epsilon}} + (r+\delta)\frac{\gamma X_{i}}{(r+\delta)^{\epsilon}A^{1-\epsilon}} \\
-\implies p_{i} & = (Aw)^{1-\epsilon}(1-\gamma) + (A(r+\delta))^{1-\epsilon} \gamma
+p_{i}X_{i} &= w \frac{(1-\gamma)X_{i}}{\left(\frac{w}{p_{i}}\right)^{\epsilon}A^{1-\epsilon}} + (r+\delta)\frac{\gamma X_{i}}{\left(\frac{(r+\delta)}{p_{i}}\right)^{\epsilon}A^{1-\epsilon}} \\
+\implies p_{i} & = \left[(1-\gamma)\left(\frac{w}{A}\right)^{1-\epsilon} + \gamma\left(\frac{(r+\delta)}{A}\right)^{1-\epsilon} \right]^{\frac{1}{1-\epsilon}}
 \end{split}
 \end{equation}
 
@@ -733,7 +733,7 @@ r_{t} = \frac{DIV_{t}+(V_{t+1}-V_{t}-VN_{t})}{V_{t}},
 \bar{r} = \frac{\overline{DIV}+(\bar{V}-\bar{V}-\bar{VN})}{\bar{V}}=\frac{\overline{DIV}-\bar{VN}}{\bar{V}}
 \end{equation} 
 
-\noindent\noindent  In this simple case, without taxes or costly external finance, the amount of new equity issues are indeterminate.  That is, the firm can issue a dollar of new equity and use that to pay a dollar of dividends.  The shareholders are indifferent - they lose one dollar from the dilution of the shares they hold to the new equity issued, but gain one dollar of dividends.  When we add financial frictions (e.g. a dollar of new equity issued doesn't bring one dollar into the firm) and taxes (specifically when we have dividend taxes that are at least as high as capital gains taxes) then firms will never distribute dividend and issue equity together.  Since the sum/difference between $DIV$ and $VN$ is indeterminate, we'll just make the assumption that firms never distribute dividends and issue equity at the same time (which is what will hold in the more general specification of the model).  
+\noindent\noindent  In this simple case, without taxes or costly external finance, the amount of new equity issues are indeterminate.  That is, the firm can issue a dollar of new equity and use that to pay a dollar of dividends.  The shareholders are indifferent - they lose one dollar from the dilution of the shares they hold due to the new equity issued, but gain one dollar of dividends.  When we add financial frictions (e.g. a dollar of new equity issued doesn't bring one dollar into the firm) and taxes (specifically when we have dividend taxes that are at least as high as capital gains taxes) then firms will never distribute dividend and issue equity together.  Since the sum/difference between $DIV$ and $VN$ is indeterminate, we'll just make the assumption that firms never distribute dividends and issue equity at the same time (which is what will hold in the more general specification of the model).  
 
 If firms never distribute dividend and issue new equity at the same time, then $\overline{DIV}=0$ \emph{or} $\bar{VN}=0$.  If $\overline{DIV}=0$ and $\bar{VN}>0$, then this would imply the steady state rate of return on equity in the firm is negative, which can't be an equilibrium.  Thus it must be the case that $\overline{DIV}>0$ and $\bar{VN}=0$.  So we can write the steady state return on equity as:
 
@@ -766,18 +766,18 @@ In the steady state, we have:
 
 \begin{equation}
 \label{eqn:ssDIV}
-\overline{DIV} = \bar{p}\bar{X} - \bar{w}\bar{EL} - \bar{p}^{k}\bar{K},
+\overline{DIV} = \bar{p}\bar{X} - \bar{w}\bar{EL} - \bar{p}^{k}\delta\bar{K},
 \end{equation}
 
-\noindent\noindent Note that with constant returns to scale, the the factor demands $K(r,w,p^{k},X)$ and $EL(r,w,p^{k},X)$ are proportional to output, $X$.  Letting $k=\frac{K}{X}$ and $l=\frac{EL}{X}$ we can rewrite the SS equation for dividends:
+\noindent\noindent Note that with constant returns to scale, the the factor demands, $K(r,w,p^{k},X)$ and $EL(r,w,p^{k},X)$, are proportional to output, $X$.  Letting $k=\frac{K}{X}$ and $l=\frac{EL}{X}$ we can rewrite the SS equation for dividends:
 
 \begin{equation}
 \begin{split}
 \label{eqn:ssDIV_decomposed}
-\overline{DIV} & = \bar{p}\bar{X} - \bar{w}\bar{EL} - \bar{p}^{k}\bar{K} \\
-&  = \bar{p}\bar{X} - \bar{w}\bar{EL}(\bar{r},\bar{w},\bar{p}^{k},\bar{X}) - \bar{p}^{k}\bar{K}(\bar{r},\bar{w},\bar{p}^{k},\bar{X}) \\
-& = \bar{p}\bar{X} - \bar{w}\bar{X}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{X}\bar{k}(\bar{r},\bar{w},\bar{p}^{k}) \\
-& = \bar{X}\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right) \\
+\overline{DIV} & = \bar{p}\bar{X} - \bar{w}\bar{EL} - \bar{p}^{k}\delta\bar{K} \\
+&  = \bar{p}\bar{X} - \bar{w}\bar{EL}(\bar{r},\bar{w},\bar{p}^{k},\bar{X}) - \bar{p}^{k}\delta\bar{K}(\bar{r},\bar{w},\bar{p}^{k},\bar{X}) \\
+& = \bar{p}\bar{X} - \bar{w}\bar{X}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{X}\delta\bar{k}(\bar{r},\bar{w},\bar{p}^{k}) \\
+& = \bar{X}\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\delta\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right) \\
 \end{split}
 \end{equation}
 
@@ -795,7 +795,7 @@ From the FOC for capital one period ahead, we have:
 \begin{equation}
 \begin{split}
 p^{k}_{t} &= \frac{1}{1+r_{t}}\frac{\partial V(Z_{t+1},K_{t+1})}{\partial K_{t+1}} \\
-p^{k}_{t} &= \frac{1}{1+r_{t}}\left(MPK_{t+1} + (1-\delta)p^{k}_{t+1}\right), \\
+p^{k}_{t} &= \frac{1}{1+r_{t}}\left(p_{t+1}MPK_{t+1} + (1-\delta)p^{k}_{t+1}\right), \\
 \end{split}
 \end{equation}
 
@@ -804,16 +804,16 @@ p^{k}_{t} &= \frac{1}{1+r_{t}}\left(MPK_{t+1} + (1-\delta)p^{k}_{t+1}\right), \\
 \begin{equation}
 \label{eqn:q}
 \begin{split}
-\frac{\partial V(Z_{t+1},K_{t+1})}{\partial K_{t+1}} = \left(MPK_{t+1} + (1-\delta)p^{k}_{t+1}\right)\\
+\frac{\partial V(Z_{t+1},K_{t+1})}{\partial K_{t+1}} = \left(p_{t+1}MPK_{t+1} + (1-\delta)p^{k}_{t+1}\right)\\
 \end{split}
 \end{equation}
 
 Using Equation \ref{eqn:q} in Equation \ref{eqn:marg_q_avg_q} we have:
 
 \begin{equation}
-\label{eqn:q}
+\label{eqn:q2}
 \begin{split}
-\left(MPK_{t} + (1-\delta)p^{k}_{t}\right) = \frac{V_{t}}{K_{t}}
+\left(p_{t}MPK_{t} + (1-\delta)p^{k}_{t}\right) = \frac{V_{t}}{K_{t}}
 \end{split}
 \end{equation}
 
@@ -823,27 +823,27 @@ We can then use the steady state version of this equality in Equation \ref{eqn:f
 \label{eqn:firm_val_ss}
 \begin{split}
 & \bar{V} = \frac{\overline{DIV}}{\bar{r}} \\
-& \implies \left(\overline{MPK} + (1-\delta)\bar{p}^{k}\right)\bar{K} =  \frac{\overline{DIV}}{\bar{r}} \\
+& \implies \left(\bar{p}\overline{MPK} + (1-\delta)\bar{p}^{k}\right)\bar{K} =  \frac{\overline{DIV}}{\bar{r}} \\
 \end{split}
 \end{equation} 
 
 Substituting in for $\overline{DIV}$ with Equation \ref{eqn:ssDIV_decomposed} we have:
 
 \begin{equation}
-\left(\overline{MPK} + (1-\delta)\bar{p}^{k}\right)\bar{K} =  \frac{\bar{X}\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}}
+\left(\bar{p}\overline{MPK} + (1-\delta)\bar{p}^{k}\right)\bar{K} =  \frac{\bar{X}\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}}
 \end{equation} 
 
-Dividing both side by $\bar{X}$ we get:
+Dividing both sides by $\bar{X}$ we get:
 
 
 \begin{equation}
 \label{eqn:pricing}
-\frac{\overline{MPK} \times \bar{K}}{\bar{X}} + (1-\delta)\bar{p}^{k}\frac{\bar{K}}{\bar{X}} =  \frac{\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}}
+\frac{\bar{p}\overline{MPK} \times \bar{K}}{\bar{X}} + (1-\delta)\bar{p}^{k}\frac{\bar{K}}{\bar{X}} =  \frac{\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}}
 \end{equation} 
 
-With constant returns to scale, we can write the left hand side of the above as a function of just parameters, $\bar{r}$, $\bar{w}$, and $\bar{p}^{k}$.
+With constant returns to scale, we can write the left hand side of the above as a function of just parameters, $\bar{r}$, $\bar{w}$, $\bar{p}$, and $\bar{p}^{k}$.
 
-Note that there is one an equation like \ref{eqn:pricing} for each industry, $m$.  The price of capital is determined by the price of output and the fixed-coefficient matrix $\Xi$.
+Note that there is one an equation like \ref{eqn:pricing} for each industry, $m$.  The price of capital is determined by the price of output, $\bar{p}$, and the fixed-coefficient matrix $\Xi$.
 
 In particular, if we let $\boldsymbol{p_{t}}$ be the $1\times M$ vector of output prices, we can determine the capital prices as:
 
@@ -888,7 +888,7 @@ We can take these results to rewrite Equation \ref{eqn:pricing}:
 \begin{equation}
 \label{eqn:pricing_final}
 \begin{split}
- \frac{\overline{MPK} \times \bar{K}}{\bar{X}} + (1-\delta)\bar{p}^{k}\frac{\bar{K}}{\bar{X}} & =  \frac{\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}} \\
+ \frac{\bar{p}\overline{MPK} \times \bar{K}}{\bar{X}} + (1-\delta)\bar{p}^{k}\frac{\bar{K}}{\bar{X}} & =  \frac{\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}} \\
  \implies \frac{ \bar{p}^{k}(1+\bar{r})\gamma}{\bar{Z}^{1-\epsilon}\left(\frac{\bar{p}^{k}}{\bar{p}}(\bar{r}+\delta)\right)^{\epsilon}} & = \frac{\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}}  \\
   \implies \frac{ \bar{p}^{k}(1+\bar{r})\gamma}{\bar{Z}^{1-\epsilon}\left(\frac{\bar{p}^{k}}{\bar{p}}(\bar{r}+\delta)\right)^{\epsilon}} & = \frac{\bar{p} - \bar{w} \frac{(1-\gamma)}{\left(e^{g_{y}}\bar{Z}\right)^{1-\epsilon}\left(\frac{\bar{w}}{\bar{p}}\right)^{\epsilon}}  - \bar{p}^{k}\frac{\gamma}{\bar{Z}^{1-\epsilon}\left(\frac{\bar{p}^{k}}{p_{k}}(\bar{r}+\delta)\right)^{\epsilon}}}{\bar{r}} \\
   \implies \bar{r}\bar{p}^{k}(1+\bar{r})\gamma & = p^{1-\epsilon}\left(\bar{p}^{k}\right)^{\epsilon}\bar{Z}^{1-\epsilon}(\bar{r}+\delta)^{\epsilon} - \frac{\bar{w}^{1-\epsilon}(1-\gamma)\bar{p}^{k}(\bar{r}+\delta)^{\epsilon}}{\left(e^{g_{y}}\right)^{1-\epsilon}} - p^{k}\gamma
@@ -950,7 +950,7 @@ There are three markets - the labor market, the asset market, and the goods mark
 \item Add simple taxes (div, cap gain, corp inc tax on accouting profits)
 \item Add endogenous financial policy (it's at this step that we'll add the feature that households invest their savings in two assets - bonds and equities - which have potentially different returns).
 \item Add more complex taxes (parameters for various consumption tax/income tax systems, invest tax credits, tax depreciation)
-\item Add more firms (M industries)
+\item Allow consumer subutility preferences to be age dependent.
 \item Add government that purchases capital and labor to make public good.  Don't need to change consumer utility function to account for this, but we could.
 \item Add government production firm
 \item Add a fixed factor of production so that there are economic profits (this will necessitate a transfer of profits back to the household) (????)
