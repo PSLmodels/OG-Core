@@ -99,4 +99,65 @@ def read_file(path, fname):
     else:
         return open(os.path.join(path, fname))
 
+def pickle_file_compare(fname1, fname2):
+    '''
+    Read two pickle files and unpickle each. We assume that each resulting
+    object is a dictionary. The values of each dict are either numpy arrays
+    or else types that are comparable with the == operator.
+    '''
 
+    pkl1 = pickle.load(open(fname1, 'r'))
+    pkl2 = pickle.load(open(fname2, 'r'))
+
+    return dict_compare(fname1, pkl1, fname2, pkl2)
+
+
+def dict_compare(fname1, pkl1, fname2, pkl2):
+    '''
+    Compare two dictionaries. The values of each dict are either
+    numpy arrays
+    or else types that are comparable with the == operator.
+    '''
+
+    keys1 = set(pkl1.keys())
+    keys2 = set(pkl2.keys())
+    if keys1 != keys2:
+        if len(keys1) == len(keys2):
+            extra1 = keys1 - keys2
+            extra2 = keys2 - keys1
+            msg1 = "extra items in {0}: {1}"
+            print msg1.format(fname1, extra1)
+            print msg1.format(fname2, extra2)
+            return False
+        elif len(keys1) > len(keys2):
+            bigger = keys1
+            bigger_file = fname1
+            smaller = keys2
+        else:
+            bigger = keys2
+            bigger_file = fname2
+            smaller = keys1
+        res = bigger - smaller
+        msg = "more items in {0}: {1}"
+        print msg.format(bigger_file, res)
+        return False
+    else:
+        check = True
+        unequal_items = []
+        for k, v in pkl1.items():
+            if type(v) == np.ndarray:
+                if not v.shape == pkl2[k].shape:
+                    unequal_items.append((str(k), v, pkl2[k]))
+                elif not np.allclose(v, pkl2[k]):
+                    unequal_items.append((str(k), v, pkl2[k]))
+            else:
+                if not v == pkl2[k]:
+                    unequal_items.append((str(k), str(v), str(pkl2[k])))
+
+        if unequal_items:
+            frmt = "{0}: {1} {2}"
+            res = [ frmt.format(x[0], x[1], x[2]) for x in unequal_items]
+            print "Different arrays: ", res
+            return False
+
+    return True
