@@ -739,6 +739,177 @@ So the FOCs are the same as in the sequence problem, which they out to be (since
 %
 %\subsubsection*{Exercises with the Bellman equation formulation of the firm problem}
 
+
+\subsection*{Solving the firm's problem outside of the steady state}
+
+\subsubsection*{Deriving the value of the firm}
+
+The return on owning a share of firm $i$ is given by:
+
+\begin{equation}
+\label{eqn:r_firm_i}
+r_{i,t} = \frac{DIV_{it} + \underbrace{V_{i,t+1}-V_{i,t}-VN_{i,t}}_{\text{capital gains}}}{V_{i,t}}, 
+\end{equation}
+
+\noindent\noindent where $DIV_{i,t}$ are dividends distributed by firm $i$ at time $t$, $V_{i,t}$ is the value of the firm, and $VN_{i,t}$ are new equity issues by the firm.  New equity issued in period $t$ lower the return to the shareholders owning the firm at the beginning of period $t$ since they dilute those shareholders' fraction of ownership in the firm.  
+
+An asset market equilibrium requires that, without any uncertainty, if households are going to own shares in all firms $i$, then they must all have the same return.  Thus, $r_{i,t}=r_{t}, \forall \ i,t$.
+
+Dividends are given by:
+
+\begin{equation}
+\label{eqn:divs}
+DIV_{i,t} = p_{i,t}X_{i,t}-w_{t}EL_{i,t}-p^{k}_{i,t}I_{i,t}+VN_{i,t}
+\end{equation}
+
+This says that dividends can be paid by the surplus of revenue over expenses, plus new equity issues.  The latter says that money raised from new equity issues can be used to fund dividend distributions.  We don't usually see this happen in practice, where a firm raises money from one group to pay out to other shareholders.  The reason is that it is costly to raise equity and there are tax implications.  Note that in this simple model without taxes and frictions, we will not be able to determine the amount of equity raised since they can always raise more equity to distribute as dividends and keep the return on the firm constant.  I'll point this out several times as we further analyze this problem, but do keep that in the back of your head.
+
+We can solve for the value of the firm by rearranging Equation \ref{eqn:r_firm_i}:
+
+\begin{equation}
+\label{eqn:derive_v}
+\begin{split}
+&r_{t} = \frac{DIV_{it} + \overbrace{V_{i,t+1}-V_{i,t}-VN_{i,t}}^{\text{capital gains}}}{V_{i,t}}\\
+\implies & r_{t} V_{i,t} = DIV_{i,t} + V_{i,t+1} - V_{i,t} - VN_{i,t} \\
+\implies & (1+r_{t})V_{i,t} = DIV_{i,t} - VN_{i,t} + V_{i,t+1} \\
+\implies & V_{i,t} = \frac{1}{1+r_{t}}\left[DIV_{i,t}-VN_{i,t} + VN_{i,t+1}\right] \\
+\implies & V_{i,t} = \frac{1}{1+r_{t}}\left[DIV_{i,t}-VN_{i,t}\right]+ \frac{1}{1+r_{t}}\frac{1}{1+r_{t+1}}\left[DIV_{i,t+1}-VN_{i,t+1} + V_{i,t+2}\right] \\
+\implies & V_{i,t} =  \frac{1}{1+r_{t}}\left[DIV_{i,t}-VN_{i,t}\right]+ \frac{1}{1+r_{t}}\frac{1}{1+r_{t+1}}\left[DIV_{i,t+1}-VN_{i,t+1}\right] ... \\
+ & \quad\quad\quad + \frac{1}{1+r_{t}}\frac{1}{1+r_{t+1}}\frac{1}{1+r_{t+2}}\left[DIV_{i,t+2}-VN_{i,t+2}+ V_{i,t+3}\right] \\
+&... \\
+\implies & V_{i,t} = \sum_{u=t}^{\infty}\prod_{\nu=t}^{u} \left(\frac{1}{1+r_{\nu}}\right)\left[DIV_{i,u}-VN_{i,u}\right] + \underbrace{\prod_{\nu=t}^{u} \left(\frac{1}{1+r_{\nu}}\right)V_{i,\infty}}_{=0,\text{ by transversality condition}}\\
+\implies & V_{i,t} = \sum_{u=t}^{\infty}\prod_{\nu=t}^{u} \left(\frac{1}{1+r_{\nu}}\right)\left[DIV_{i,u}-VN_{i,u}\right] 
+\end{split}
+\end{equation}
+
+What this means is the the value of the firm is the present discounted value of the stream of dividends from that firm, less the value of new equity issues.  Note that the transversality condition is the restriction that the discounted value of the firm much converge to zero in the limit.  This is necessary to to bound the infinite horizon problem, and without it we would not be able find a solution.  Intuitively, what is means is that the value of the firm can't grow faster than the discount rate - which ensures the limiting value of the firm is not positive.  If the limiting value of the firm were allowed to be positive, the firm would be over-accumulating retained earnings/capital in the infinite horizon problem.  Another way to conceptualize the transversality condition is to think about a finite horizon household optimization problem.  In the last period of life, the household would like to have infinitely negative savings (i.e., it'd like to borrow from the periods beyond life to consume during life).  We need to put a restriction on this last period borrowing to constrain and solve the problem.  The transversality condition is the infinite horizon analogue to this.
+
+\subsubsection*{The sequence problem of the firm}
+
+Using the result above, we can write the problem of the firm as a sequence problem.  This formulation is particularly good at highlighting the constraints the firm faces.  The sequence problem of a given firm is:
+
+\begin{equation}
+\label{eqn:firm_seq_prob}
+\begin{split}
+&\max_{\left\{I_{i,u}, K_{i,u+1},EL_{i,u},VN_{i,t}\right\}_{u=t}^{\infty}} \sum_{u=t}^{\infty} \prod_{\nu=t}^{u} \left(\frac{1}{1+r_{v}}\right) DIV_{i,u}-VN_{i,u} \\
+&\quad\quad\quad \text{subject to: } DIV_{i,u}\geq0, VN_{i,t}\geq0, I_{i,u} = K_{i,u+1}-(1-\delta)K_{i,u} \\
+\end{split}
+\end{equation}
+
+The first constraint is the dividend distributions must be non-negative.  The second is the new equity issues need to be non-negative.  This constraint is maybe less necessary - firms often repurchase shares.  But in the context of our larger model of tax policy, it's useful to make this restriction since frequent share repurchases receive the same tax treatment as dividend distributions from the IRS.  Thus we'll only allow firms to return money to shareholders via dividend distributions and not share repurchases.   The final constraint is law of motion for the capital stock.
+
+The Lagrangian describing this constraint optimization problem is given by:
+
+\begin{equation}
+\label{eqn:firm_lagrange}
+\begin{split}
+\mathcal{L} = &  \max_{\left\{I_{i,u},K_{i,u+1},EL_{i,u},VN_{i,u}\right\}_{u=t}^{\infty}} \sum_{u=t}^{\infty} \prod_{\nu=t}^{u} \left(\frac{1}{1+r_{v}}\right) \left\{ p_{i,u}F(K_{i,u},EL_{i,u}) - w_{u}EL_{i,u} \right.\\
+       & \left. -p^{k}_{i,u}I_{i,u} +VN_{i,u} - VN_{i,u} \right. \\
+       &+\left. \lambda_{i,u}(p_{i,u}F(K_{i,u},EL_{i,u}) - w_{u}EL_{i,u} -p^{k}_{i,u}I_{i,u} +VN_{i,u}) \right. \\
+       &+ \left. \mu_{i,u}VN_{i,u} + q_{i,u}(I - K_{i,u+1} + (1-\delta)K_{i,u})\right\} \\
+\end{split}
+\end{equation}
+
+The FOCs for this problem, which must hold for all firms $i$ and at all periods $u$, are as follows:
+
+\begin{equation}
+\label{eqn:lagrange_foc_i}
+\begin{split}
+& \frac{\partial \mathcal{L}}{\partial I_{i,u}} = \prod_{\nu=t}^{u} \left(\frac{1}{1+r_{v}}\right) \left\{ -p^{k}_{i,u} - \lambda_{i,u}p^{k}_{i,u} + q_{i,u} \right\} = 0 \\
+\implies &   -p^{k}_{i,u} - \lambda_{i,u}p^{k}_{i,u} + q_{i,u} = 0 \\
+\implies & q_{i,u} = (1+\lambda_{i,u})p^{k}_{i,u} \\
+\end{split}
+\end{equation}
+
+
+\begin{equation}
+\label{eqn:lagrange_foc_k}
+\begin{split}
+& \frac{\partial \mathcal{L}}{\partial K_{i,u+1}} =   \prod_{\nu=t}^{u} \left(\frac{1}{1+r_{v}}\right) \left\{- q_{i,u} \right\} ... \\
+& \quad\quad\quad\quad + \prod_{\nu=t}^{u+1} \left(\frac{1}{1+r_{v}}\right) \left\{(1+\lambda_{i,u+1})p_{i,u+1}\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial K_{i,u+1}} + q_{i,u+1}(1-\delta) \right\} = 0 \\
+\implies &  - q_{i,u} + \frac{1}{1+r_{u+1}} \left\{(1+\lambda_{i,u+1})p_{i,u+1}\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial K_{i,u+1}}+ q_{i,u+1}(1-\delta)  \right\} = 0 \\
+\implies & q_{i,u} =  \frac{1}{1+r_{u+1}} \left\{(1+\lambda_{i,u+1})p_{i,u+1}\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial K_{i,u+1}}+ q_{i,u+1}(1-\delta)  \right\}  \\
+\end{split}
+\end{equation}
+
+\begin{equation}
+\label{eqn:lagrange_foc_l}
+\begin{split}
+& \frac{\partial \mathcal{L}}{\partial EL_{i,u}} =   \prod_{\nu=t}^{u} \left(\frac{1}{1+r_{v}}\right) \left\{(1+\lambda_{i,u})p_{i,u}\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial EL_{i,u+1}} - (1+\lambda_{i,u}w_{u} \right\} = 0 \\
+\implies & (1+\lambda_{i,u})p_{i,u}\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial EL_{i,u+1}} - (1+\lambda_{i,u}w_{u}  = 0 \\
+\implies & (1+\lambda_{i,u})p_{i,u}\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial EL_{i,u+1}} =  (1+\lambda_{i,u}w_{u}  \\
+\implies & p_{i,u}\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial EL_{i,u+1}} =  w_{u}  \\
+\implies &\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial EL_{i,u+1}} =  \frac{w_{u}}{ p_{i,u}}  \\
+\end{split}
+\end{equation}
+
+
+\begin{equation}
+\label{eqn:lagrange_foc_vn}
+\begin{split}
+& \frac{\partial \mathcal{L}}{\partial VN_{i,u}} =   \prod_{\nu=t}^{u} \left(\frac{1}{1+r_{v}}\right) \left\{(1+\lambda_{i,u})- 1 + \mu_{i,u} \right\} = 0 \\
+\implies & (1+\lambda_{i,u})- 1  +\mu_{i,u}  = 0 \\
+\implies & \lambda_{i,u} + \mu_{i,u}=0  \\
+\implies &\lambda_{i,u} = -\mu_{i,u} \\
+\implies &  \lambda_{i,u}= \mu_{i,u} =0 \implies  VN_{i,u}>0 \text{ and } DIV_{i,u} > 0
+\end{split}
+\end{equation}
+
+
+Note that this last FOC implies that both dividends and new equity issues are positive, since both Lagrangian multipliers must be zero to hold equality.  This result highlights the indeterminacy of dividends and new equity issues when there are no taxes and financial frictions.  It illustrates the Modigliani-Miller Theorem about the irrelevance of corporate finance. Their theorem states that in the absence of taxes and other frictions, the value of the firm is unaffected by how the firm is financed.  That is, the value of the firm is not affected by whether retained earnings or external finance (in this case, new equity issues) are used to finance investment since they both have the same cost to the firm.  You can see from the firm's problem above that raising one dollar from retained earnings only to distribute that as dividends in the same period has no effect on the firm problem.
+
+%\subsubsubsection*{Financial policy with taxes}
+To help illustrate how the result differs in the presence of taxes, let's consider a similar problem to that formulated above, but with taxes on capital gains and dividends.  These taxes will create a tax wedge between internal and external finance and we can see the result on the necessary condition for the firm's choice of new equity issues.
+
+With capital gains taxed at a rate $\tau^{g}$ and dividends taxed at rate $\tau^{d}$, the value of the firm is given by:
+
+
+\begin{equation}
+r_{t} = \frac{(1-\tau^{d}_{t})DIV_{i,t}+(1-\tau^{g}_{t})(V_{i,t+1}-V_{i,t}-VN_{i,t})}{V_{i,t}}
+\end{equation} 
+
+As before, we can rearrange this equation, iterate forward, and apply the transversality condition to solve for the value of the firm.  We get:
+
+\begin{equation}
+\label{eqn:v_firm_tax}
+\begin{split}
+ V_{i,t}= \sum_{u=t}^{\infty} \prod_{\nu=t}^{u}\left(\frac{1}{1+\frac{r_{\nu}}{(1+\tau^{g}_{\nu})}}\right)\left[ \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)DIV_{i,u}-VN_{i,u} \right] \\
+\end{split}
+\end{equation}
+
+The Lagrangian for the sequence problem is:
+
+\begin{equation}
+\label{eqn:firm_lagrange_tax}
+\begin{split}
+\mathcal{L} = &  \max_{\left\{I_{i,u},K_{i,u+1},EL_{i,u},VN_{i,u}\right\}_{u=t}^{\infty}} \sum_{u=t}^{\infty} \prod_{\nu=t}^{u} \left(\frac{1}{1+\frac{r_{v}}{(1+\tau^{g}_{\nu})}}\right)\left\{ \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right) \left[p_{i,u}F(K_{i,u},EL_{i,u}) - w_{u}EL_{i,u} \right. \right.\\
+       & \left. \left. -p^{k}_{i,u}I_{i,u} +VN_{i,u}\right] - VN_{i,u} \right. \\
+       &+\left. \lambda_{i,u}(p_{i,u}F(K_{i,u},EL_{i,u}) - w_{u}EL_{i,u} -p^{k}_{i,u}I_{i,u} +VN_{i,u}) \right. \\
+       &+ \left. \mu_{i,u}VN_{i,u} + q_{i,u}(I - K_{i,u+1} + (1-\delta)K_{i,u})\right\} \\
+\end{split}
+\end{equation}
+
+And the FOC for the firm's choice of new equity is:
+
+\begin{equation}
+\label{eqn:lagrange_foc_vn_tax}
+\begin{split}
+& \frac{\partial \mathcal{L}}{\partial VN_{i,u}} =   \prod_{\nu=t}^{u} \left(\frac{1}{1+r_{v}}\right) \left\{\left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right) - 1 +\lambda_{i,u}  + \mu_{i,u} \right\} = 0 \\
+\implies & \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right) +\lambda_{i,u}- 1  + \mu_{i,u}  = 0 \\
+\implies &   \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right) + \lambda_{i,u} + \mu_{i,u} = 1  \\
+\end{split}
+\end{equation}
+
+If $\tau^{g}_{u}=\tau^{d}_{u}$, then $ \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)=1$ and thus $\lambda_{i,u}= \mu_{i,u}=0$, and we are back to the result derived without taxes shown in Equation \ref{eqn:lagrange_foc_vn}.
+
+If $\tau^{g}_{u}<\tau^{d}_{u}$ (as it was in the U.S. prior to the 2003 tax cuts), then $ \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)<1$, which means $ \lambda_{i,u} + \mu_{i,u} >0$.  That is, at least one constraint is binding. This means that the firm will never be both distributing dividends and issuing new equity.  It may do neither ($DIV=VN=0$), but it won't do both.  
+
+If $\tau^{g}_{u}> \tau^{d}_{u}$, then $ \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)>1$, which means  $ \lambda_{i,u} + \mu_{i,u} <0$.  This can't happen since these Lagrangian multipliers are non-negative.  What this is illustrating is that no solutions exists to the firm's problem if capital gains taxes are greater than dividend taxes.  In this case, the firm will want to issue an infinite amount of new equity and use that to finance dividends.  This will drive firm value to infinity.  The reason is that issuing \$1 of new equity costs the shareholder $\$1\times(1-\tau^{g}_{u})$.  Distributing a dollar of as dividends benefits the shareholder by $\$1\times (1-\tau^{d}_{u})$.  If $\tau^{g}_{u}> \tau^{d}_{u}$, then $\$1\times (1-\tau^{d}_{u}) > \$1\times(1-\tau^{g}_{u})$, and the shareholder benefits from this transaction of using new equity to finance dividends.  Without additional frictions (e.g. increasing costs to issuing equity), this is true at any amount of new equity issued, and therefore the problem's solution is that the firm issues an infinite amount of new equity and uses that to finance and infinite about of dividend distributions and firm value goes to infinity.  Tax arbitrage produces an infinite, risk free return for the shareholder.
+
+\subsubsection*{Determining the prices of output and capital}
+
+Firms are competitive and so take the prices of output and capital as given.  Unlike the static firm model, there is not a per period zero profit condition.  The analogous condition for the dynamic firm's problem is that prices are such that the return to the firm's shareholders is the market rate of return.
+
 \subsection*{Finding the price of producer output in the steady state}
 
 In the dynamic firm problem, households hold shares in firms, earning a rate of return that depends on the dividends distributed by the firm and the change in firm value (i.e., capital gains).  For households to hold shares in all firms, they need to have the same rate of return.  Specifically, the rate of return of a share of the firm is given by:
@@ -968,8 +1139,9 @@ There are three markets - the labor market, the asset market, and the goods mark
 \begin{enumerate}
 \setcounter{enumi}{3}
 \item Expand to $M$ firms
+\item Add growth
 \item Add solution for firms along the time path
-\item Add simple taxes (div, cap gain, corp inc tax on accouting profits)
+\item Add simple taxes (div, cap gain, corp inc tax on accounting profits)
 \item Add endogenous financial policy (it's at this step that we'll add the feature that households invest their savings in two assets - bonds and equities - which have potentially different returns).
 \item Add more complex taxes (parameters for various consumption tax/income tax systems, invest tax credits, tax depreciation)
 \item Allow consumer subutility preferences to be age dependent.
