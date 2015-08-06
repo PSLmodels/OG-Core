@@ -715,25 +715,23 @@ Using this Envelope Condition, we can rewrite the FOC for $K'$ as:
 \implies & 1 = \beta \frac{\partial V(K';r',w')}{\partial K'}  \\
 \implies & 1 = \beta \left[ \frac{\partial F(K',L')}{\partial K'} + 1 - \delta \right] \\
 & \text{or, noting that } \beta = \frac{1}{1+r}: \\
-\implies & r+delta = \frac{\partial F(K',L')}{\partial K'}  \\
+\implies & r+\delta = \frac{\partial F(K',L')}{\partial K'}  \\
 \end{split}
 \end{equation}
 
 So the FOCs are the same as in the sequence problem, which they out to be (since it is just a different way to state the same problem).
 
-%\subsubsection*{An aside on Q-theory}
-%
-%Tobin's Q is a way to determine optimal investment policy.  Tobin's Q measures the marginal value of capital invested in the firm.  Using the Bellman Formulation, we can write marginal Tobin's q (also called just marginal q) as:
-%
-%\begin{equation}
-%\label{eqn:marginal_q}
-%q = \frac{\partial V(K;r,w)}{\partial K}
-%\end{equation}
-%
-%- Is this marginal q or is marginal q dV/dI?
-%- say how Q a sufficient stat for investment
-%Need to talk about average Q
-%Exercise is show marginal q = avg q with CRS and quad adj costs
+\subsubsection*{An aside on Q-theory}
+
+Tobin's Q is a way to determine optimal investment policy.  Tobin's Q measures the marginal value of capital invested in the firm.  Using the Bellman Formulation, we can write marginal Tobin's q (also called just ``marginal q") as:
+
+\begin{equation}
+\label{eqn:marginal_q}
+q = \frac{\partial V(K;r,w)}{\partial K}
+\end{equation}
+
+Thus $q$ gives the marginal change in firm value for another unit of capital invested in the firm.  $q$ thus provides a sufficient statistic for investment - if $q$ is greater than the price of capital, invest - else don't.  The Q-theory of investment is helpful in thinking about optimal investment behavior and in interpreting the necessary conditions of the firms problem.  We'll return to this view in our discussions below.
+
 %
 %
 %
@@ -748,7 +746,7 @@ The return on owning a share of firm $i$ is given by:
 
 \begin{equation}
 \label{eqn:r_firm_i}
-r_{i,t} = \frac{DIV_{it} + \underbrace{V_{i,t+1}-V_{i,t}-VN_{i,t}}_{\text{capital gains}}}{V_{i,t}}, 
+r_{i,t} = \frac{DIV_{it} + \overbrace{V_{i,t+1}-V_{i,t}-VN_{i,t}}^{\text{capital gains}}}{V_{i,t}}, 
 \end{equation}
 
 \noindent\noindent where $DIV_{i,t}$ are dividends distributed by firm $i$ at time $t$, $V_{i,t}$ is the value of the firm, and $VN_{i,t}$ are new equity issues by the firm.  New equity issued in period $t$ lower the return to the shareholders owning the firm at the beginning of period $t$ since they dilute those shareholders' fraction of ownership in the firm.  
@@ -835,9 +833,9 @@ The FOCs for this problem, which must hold for all firms $i$ and at all periods 
 \begin{equation}
 \label{eqn:lagrange_foc_l}
 \begin{split}
-& \frac{\partial \mathcal{L}}{\partial EL_{i,u}} =   \prod_{\nu=t}^{u} \left(\frac{1}{1+r_{v}}\right) \left\{(1+\lambda_{i,u})p_{i,u}\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial EL_{i,u+1}} - (1+\lambda_{i,u}w_{u} \right\} = 0 \\
-\implies & (1+\lambda_{i,u})p_{i,u}\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial EL_{i,u+1}} - (1+\lambda_{i,u}w_{u}  = 0 \\
-\implies & (1+\lambda_{i,u})p_{i,u}\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial EL_{i,u+1}} =  (1+\lambda_{i,u}w_{u}  \\
+& \frac{\partial \mathcal{L}}{\partial EL_{i,u}} =   \prod_{\nu=t}^{u} \left(\frac{1}{1+r_{v}}\right) \left\{(1+\lambda_{i,u})p_{i,u}\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial EL_{i,u+1}} - (1+\lambda_{i,u})w_{u} \right\} = 0 \\
+\implies & (1+\lambda_{i,u})p_{i,u}\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial EL_{i,u+1}} - (1+\lambda_{i,u})w_{u}  = 0 \\
+\implies & (1+\lambda_{i,u})p_{i,u}\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial EL_{i,u+1}} =  (1+\lambda_{i,u)}w_{u}  \\
 \implies & p_{i,u}\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial EL_{i,u+1}} =  w_{u}  \\
 \implies &\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial EL_{i,u+1}} =  \frac{w_{u}}{ p_{i,u}}  \\
 \end{split}
@@ -858,8 +856,78 @@ The FOCs for this problem, which must hold for all firms $i$ and at all periods 
 
 Note that this last FOC implies that both dividends and new equity issues are positive, since both Lagrangian multipliers must be zero to hold equality.  This result highlights the indeterminacy of dividends and new equity issues when there are no taxes and financial frictions.  It illustrates the Modigliani-Miller Theorem about the irrelevance of corporate finance. Their theorem states that in the absence of taxes and other frictions, the value of the firm is unaffected by how the firm is financed.  That is, the value of the firm is not affected by whether retained earnings or external finance (in this case, new equity issues) are used to finance investment since they both have the same cost to the firm.  You can see from the firm's problem above that raising one dollar from retained earnings only to distribute that as dividends in the same period has no effect on the firm problem.
 
-%\subsubsubsection*{Financial policy with taxes}
-To help illustrate how the result differs in the presence of taxes, let's consider a similar problem to that formulated above, but with taxes on capital gains and dividends.  These taxes will create a tax wedge between internal and external finance and we can see the result on the necessary condition for the firm's choice of new equity issues.
+These FOC's can be used to solve for the endogenous variables, $K_{i,u+1}, I_{i,u}, EL_{i,u}, VN_{i,u}$ as functions of the parameters and the factor and output prices that these competitive firms take as given.  Equation \ref{eqn:lagrange_foc_vn} and \ref{eqn:lagrange_foc_i} together imply that:
+
+\begin{equation}
+\label{eqn:q_p}
+q_{i,u} = p^{k}_{i,u}
+\end{equation}
+
+Note that $q_{i,u}$, the multiplier on the law of motion for capital constraint, represents the shadow price of capital in the firm.  Equation \ref{eqn:p_q} says that, along the optimal investment path, the marginal value of capital in the firm is equal to the price of capital.  This is a familiar result of Tobin's Q-theory; firms should invest until $\frac{q_{i,u}}{p_{i,u}}=1$. 
+
+Using Equation \ref{eqn:q_p}, together with Equation \ref{eqn:lagrange_foc_k}, we find that:
+
+\begin{equation}
+\label{eqn:opt_inv}
+p^{k}_{i,u} =  \frac{1}{1+r_{u+1}} \left\{p_{i,u+1}\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial K_{i,u+1}}+ p^{k}_{i,u+1}(1-\delta)  \right\} 
+\end{equation}
+
+The lefthand side of Equation \ref{eqn:opt_inv} gives the marginal cost of capital (which is the price of a unit of capital).  The righthand side gives the marginal benefit of capital; with an additional unit of capital tomorrow you get additional output (given by the marginal product of capital) and need less investment in the subsequent period ($u+1$) to have the same amount of capital going into period $u+2$.  This equation is also often written in the form:
+
+\begin{equation}
+\label{eqn:opt_inv2}
+\frac{p^{k}_{i,u}}{p_{i,u+1}}(1+r_{u+1}) - \frac{p^{k}_{i,u+1}}{p_{i,u+1}}(1-\delta) =\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial K_{i,u+1}} , 
+\end{equation}
+
+\noindent\noindent where the lefthand side is the familiar real user cost of capital, which equals the marginal product of capital along the optimal investment path.
+
+We can solve for the firm's endogenous variables using Equations \ref{eqn:lagrange_foc_l} and \ref{eqn:opt_inv}.  In particular, the FOC for labor can be used to solve for the firm's labor demand function:
+
+\begin{equation}
+\label{eqn:solve_dyn_l}
+\begin{split}
+ &\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial EL_{i,u+1}} =  \frac{w_{u}}{ p_{i,u}}  \\
+ \implies & A_{i,u}^{\frac{\epsilon_{i}-1}/{\epsilon_{i}}}\left( \frac{(1-\gamma_{i})X_{i,u}}{EL_{i,u}}\right)^{\frac{1}{\epsilon_{i}}} =   \frac{w_{u}}{ p_{i,u}} \\
+\implies & EL_{i,u} = \left( \frac{ p_{i,u}}{w_{u}}\right)^{\epsilon_{i}}A_{i,u}^{\epsilon_{i}-1}X_{i,u} = EL(p_{i,u},w_{u},X_{i,u})
+\end{split}
+\end{equation}
+
+Likewise, Equation \ref{eqn:opt_inv} can be used to solve for the capital demand function:
+
+\begin{equation}
+\label{eqn:solve_dyn_k}
+\begin{split}
+ &p^{k}_{i,u} =  \frac{1}{1+r_{u+1}} \left\{p_{i,u+1}\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial K_{i,u+1}}+ p^{k}_{i,u+1}(1-\delta)  \right\}  \\
+ \implies & \frac{p^{k}_{i,u}}{p_{i,u+1}}(1+r_{u+1}) - \frac{p^{k}_{i,u+1}}{p_{i,u+1}}(1-\delta) =\frac{\partial F(K_{i,u+1},EL_{i,u+1})}{\partial K_{i,u+1}} \\
+\implies & \frac{p^{k}_{i,u}}{p_{i,u+1}}(1+r_{u+1}) - \frac{p^{k}_{i,u+1}}{p_{i,u+1}}(1-\delta) =A_{i,u+1}^{\frac{\epsilon_{i}-1}/{\epsilon_{i}}} \left( \frac{\gamma_{i}X_{i,u+1}}{K_{i,u+1}}\right)^{\frac{1}{\epsilon_{i}}} \\
+\implies & K_{i,u+1} = \gamma_{i}X_{i,u+1}A_{i,u+1}^{1-\epsilon_{i}} \left(\frac{p_{i,u+1}}{p^{k}_{i,u}(1+r_{u+1}) - p^{k}_{i,u+1}(1-\delta)} \right)^{\epsilon_{i}} = K(p_{i,u+1},p^{k}_{i,u},p^{k}_{i,u+1},r_{u+1},X_{i,u+1})
+\end{split}
+\end{equation}
+
+We then can determine investment through the law of motion for capital:
+
+\begin{equation}
+\label{eqn:solve_dyn_i}
+\begin{split}
+ &I_{i,u} = K_{i,u+1} - (1-\delta)K_{i,u} \\
+\implies & I_{i,u} = K(p_{i,u+1},p^{k}_{i,u},p^{k}_{i,u+1},r_{u+1},X_{i,u+1}) - (1-\delta)K(p_{i,u},p^{k}_{i,u-1},p^{k}_{i,u},r_{u},X_{i,u}) 
+\end{split}
+\end{equation}
+
+Dividends follow from the firm's cash flow equation:
+
+\begin{equation}
+\label{eqn:solve_dyn_div}
+\begin{split}
+ &DIV_{i,u} = p_{i,u}X_{i,u} - w_{u}EL_{i,u}-p^{k}_{i,u}I_{i,u} \\
+\implies &DIV_{i,u} = p_{i,u}X_{i,u} - w_{u}EL(p_{i,u},w_{u},X_{i,u}) - p^{k}_{i,u}I_{i,u} \\
+\end{split}
+\end{equation}
+
+As noted above, new equity issues, $VN_{i,u}$ are indeterminate in this model without taxes and frictions.  Thus we have all the firm's endogenous variables solved for in terms of factor prices and output prices, which the firm takes as given, and total output.
+
+\subsubsection*{An aside: Financial policy with taxes}
+To help illustrate how the financial policy irrelevance result differs in the presence of taxes, let's consider a similar problem to that formulated above, but with taxes on capital gains and dividends.  These taxes will create a tax wedge between internal and external finance and we can see the result on the necessary condition for the firm's choice of new equity issues.
 
 With capital gains taxed at a rate $\tau^{g}$ and dividends taxed at rate $\tau^{d}$, the value of the firm is given by:
 
@@ -908,216 +976,195 @@ If $\tau^{g}_{u}> \tau^{d}_{u}$, then $ \left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{
 
 \subsubsection*{Determining the prices of output and capital}
 
-Firms are competitive and so take the prices of output and capital as given.  Unlike the static firm model, there is not a per period zero profit condition.  The analogous condition for the dynamic firm's problem is that prices are such that the return to the firm's shareholders is the market rate of return.
-
-\subsection*{Finding the price of producer output in the steady state}
-
-In the dynamic firm problem, households hold shares in firms, earning a rate of return that depends on the dividends distributed by the firm and the change in firm value (i.e., capital gains).  For households to hold shares in all firms, they need to have the same rate of return.  Specifically, the rate of return of a share of the firm is given by:
-
-\begin{equation}
-\label{eqn:equity_return}
-r_{t} = \frac{DIV_{t}+(V_{t+1}-V_{t}-VN_{t})}{V_{t}},
-\end{equation} 
-
-\noindent\noindent where $V_{t}$ is the value of the firm at time $t$, $DIV$ are dividend distributions, and $VN$ are new equity issues.  Dividends are the flows distributed to the shareholders.  They come from the profits the firms earns as well as from external financing - in this case new equity issues - that can be used to fund investment or dividend distributions.  Using our notation above, $DIV_{t}=\pi(K_{t},L_{t},K_{t+1})+VN_{t}$.  We'll restrict $VN>0$ because, while in reality firms can buy back shares, in practice the IRS typically treats recurrent share repurchases as dividend distributions.  In the steady state, this becomes:
-
-\begin{equation}
-\label{eqn:equity_return}
-\bar{r} = \frac{\overline{DIV}+(\bar{V}-\bar{V}-\bar{VN})}{\bar{V}}=\frac{\overline{DIV}-\bar{VN}}{\bar{V}}
-\end{equation} 
-
-\noindent\noindent  In this simple case, without taxes or costly external finance, the amount of new equity issues are indeterminate.  That is, the firm can issue a dollar of new equity and use that to pay a dollar of dividends.  The shareholders are indifferent - they lose one dollar from the dilution of the shares they hold due to the new equity issued, but gain one dollar of dividends.  When we add financial frictions (e.g. a dollar of new equity issued doesn't bring one dollar into the firm) and taxes (specifically when we have dividend taxes that are at least as high as capital gains taxes) then firms will never distribute dividend and issue equity together.  Since the sum/difference between $DIV$ and $VN$ is indeterminate, we'll just make the assumption that firms never distribute dividends and issue equity at the same time (which is what will hold in the more general specification of the model).  
-
-If firms never distribute dividend and issue new equity at the same time, then $\overline{DIV}=0$ \emph{or} $\bar{VN}=0$.  If $\overline{DIV}=0$ and $\bar{VN}>0$, then this would imply the steady state rate of return on equity in the firm is negative, which can't be an equilibrium.  Thus it must be the case that $\overline{DIV}>0$ and $\bar{VN}=0$.  So we can write the steady state return on equity as:
-
-\begin{equation}
-\label{eqn:equity_return}
-\bar{r} = \frac{\overline{DIV}}{\bar{V}}
-\end{equation} 
-
-We can rewrite this in terms of the value of the firm:
-
-\begin{equation}
-\label{eqn:firm_val_ss}
-\bar{V} = \frac{\overline{DIV}}{\bar{r}}
-\end{equation} 
-
-
-Dividends are given by:
-
-\begin{equation}
-DIV_{t} = p_{t}X_{t} - w_{t}EL_{t} - p^{k}_{t}I_{t},
-\end{equation}
-
-\noindent\noindent where $p^{k}_{t}$ is the price of capital and $I_{t}$ is investment, which is given by the law of motion for capital:
-
-\begin{equation}
-I_{t} = K_{t+1}-(1-\delta)K_{t}
-\end{equation}
-
-In the steady state, we have:
-
-\begin{equation}
-\label{eqn:ssDIV}
-\overline{DIV} = \bar{p}\bar{X} - \bar{w}\bar{EL} - \bar{p}^{k}\delta\bar{K},
-\end{equation}
-
-\noindent\noindent Note that with constant returns to scale, the the factor demands, $K(r,w,p^{k},X)$ and $EL(r,w,p^{k},X)$, are proportional to output, $X$.  Letting $k=\frac{K}{X}$ and $l=\frac{EL}{X}$ we can rewrite the SS equation for dividends:
+Firms are competitive and so take the prices of output and capital as given.  Unlike the static firm model, there is not a per period zero profit condition.  The analogous condition for the dynamic firm's problem is that prices are such that the return to the firm's shareholders is the market rate of return.  Recall that:
 
 \begin{equation}
 \begin{split}
-\label{eqn:ssDIV_decomposed}
-\overline{DIV} & = \bar{p}\bar{X} - \bar{w}\bar{EL} - \bar{p}^{k}\delta\bar{K} \\
-&  = \bar{p}\bar{X} - \bar{w}\bar{EL}(\bar{r},\bar{w},\bar{p}^{k},\bar{X}) - \bar{p}^{k}\delta\bar{K}(\bar{r},\bar{w},\bar{p}^{k},\bar{X}) \\
-& = \bar{p}\bar{X} - \bar{w}\bar{X}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{X}\delta\bar{k}(\bar{r},\bar{w},\bar{p}^{k}) \\
-& = \bar{X}\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\delta\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right) \\
+r_{t} &= \frac{DIV_{i,t}-V_{i,t+1}-V_{i,t}-VN_{i,t}}{V_{i,t}}\\
+\implies r_{t} &= \frac{DIV_{i,t} + \sum_{u=t}^{\infty}\prod_{\nu=t}^{u}\left(\frac{1}{1+r_{\nu}}\right)\left[DIV_{i,u}-VN_{i,u}\right] -\sum_{u=t+1}^{\infty}\prod_{\nu=t}^{u}\left(\frac{1}{1+r_{\nu}}\right)\left[DIV_{i,u}-VN_{i,u}\right]}{V_{i,t}} ...\\
+& \quad\quad\quad\quad\quad - \frac{VN_{i,t}}{V_{i,t}} \\
+\implies r_{t} & = \frac{DIV_{i,t} - \frac{1}{1+r_{t}}\left[DIV_{i,t} - VN_{i,t}\right] - VN_{i,t}}{V_{i,t}} \\
+\implies r_{t} & = \frac{\frac{r_{t}}{1+r_{t}}\left[DIV_{i,t}-VN_{i,t}\right]}{V_{i,t}} \\
+\implies 1+r_{t} &= \frac{DIV_{i,t}-VN_{i,t}}{V_{i,t}}
 \end{split}
 \end{equation}
 
-Hayashi (1982) shows that with quadratic adjustment costs (which is what we'll use - here they are zero), the marginal change in firm value for a change in the capital stock (called Tobin's $q$ and given by $\frac{\partial V_{t}}{\partial K_{t}}$) is equivalent to value of the firm per unit of the capital stock (called average $q$ and given by $\frac{V_{t}}{K_{t}}$).  We thus have:
+Recall from Equations \ref{eqn:solve_dyn_k} to \ref{eqn:solve_dyn_div}, we were able to solve for factor demand and dividends in terms of prices and output.  $VN_{i,u}$ were indeterminate, but let's just make it simple and assume they are zero (as might be the case in a world where dividend taxes exceed capital gains tax - or there are frictions making external finance costly) for all $i$ and $u$.\footnote{We can prove they will be zero in the steady state with taxes or frictions and without idiosyncratic firm productivity shocks.  They make no be zero along the transition path even with taxes and frictions - it'll depend upon the the firm's production function and their initial capital stock.}  When new equity issues are zero, we have:
 
 \begin{equation}
+\label{eqn:price_det}
 \begin{split}
-\label{eqn:marg_q_avg_q}
-\frac{\partial V_{t}}{\partial{K_{t}}}=\frac{V_{t}}{K_{t}} \\
+& 1+r_{t} = \frac{DIV_{i,t}}{V_{i,t}} \\
+\implies &  1+r_{t} = \frac{ p_{i,t}X_{i,u} - w_{t}EL(p_{i,t},w_{u},X_{i,t}) - p^{k}_{i,u}I_{i,t}}{V_{i,t}} \\
+\implies &  1+r_{t} = \frac{ p_{i,t}X_{i,u} - w_{t}EL(p_{i,t},w_{u},X_{i,t})}{V_{i,t}}... \\
+ & \quad\quad\quad\quad\quad\quad - \frac{p^{k}_{i,t}(K(p_{i,t+1},p^{k}_{i,t},p^{k}_{i,t+1},r_{t+1},X_{i,t+1}) - (1-\delta)K(p_{i,t},p^{k}_{i,t-1},p^{k}_{i,t},r_{t},X_{i,t}))}{V_{i,t}} \\
+ \implies &  1+r_{t} = \frac{p_{i,t}X_{i,t} - w_{u}\left( \frac{ p_{i,t}}{w_{t}}\right)^{\epsilon_{i}}A_{i,t}^{\epsilon_{i}-1}X_{i,t}}{V_{i,t}} ...\\ 
+ & \quad - \frac{p^{k}_{i,t}\left( \gamma_{i}X_{i,t+1}A_{i,t+1}^{1-\epsilon_{i}} \left(\frac{p_{i,t+1}}{p^{k}_{i,t}(1+r_{t+1}) - p^{k}_{i,t+1}(1-\delta)} \right)^{\epsilon_{i}} - (1-\delta) \gamma_{i}X_{i,t}A_{i,t}^{1-\epsilon_{i}} \left(\frac{p_{i,t}}{p^{k}_{i,t-1}(1+r_{t}) - p^{k}_{i,t}(1-\delta)} \right)^{\epsilon_{i}}\right)}{V_{i,t}} \\
 \end{split}
 \end{equation}
 
-From the FOC for capital one period ahead, we have:
 
-\begin{equation}
-\begin{split}
-p^{k}_{t} &= \frac{1}{1+r_{t}}\frac{\partial V(Z_{t+1},K_{t+1})}{\partial K_{t+1}} \\
-p^{k}_{t} &= \frac{1}{1+r_{t}}\left(p_{t+1}MPK_{t+1} + (1-\delta)p^{k}_{t+1}\right), \\
-\end{split}
-\end{equation}
+This means we have an equations written in terms of factor prices, output prices, capital prices, output, and parameters.  This will be the equation we use to solve for prices, but we need two more pieces. 
 
-\noindent\noindent Where the second line follows from the Envelope Condition, which gives the value for Tobin's q; 
-
-\begin{equation}
-\label{eqn:q}
-\begin{split}
-\frac{\partial V(Z_{t+1},K_{t+1})}{\partial K_{t+1}} = \left(p_{t+1}MPK_{t+1} + (1-\delta)p^{k}_{t+1}\right)\\
-\end{split}
-\end{equation}
-
-Using Equation \ref{eqn:q} in Equation \ref{eqn:marg_q_avg_q} we have:
-
-\begin{equation}
-\label{eqn:q2}
-\begin{split}
-\left(p_{t}MPK_{t} + (1-\delta)p^{k}_{t}\right) = \frac{V_{t}}{K_{t}}
-\end{split}
-\end{equation}
-
-We can then use the steady state version of this equality in Equation \ref{eqn:firm_val_ss} to find:
-
-\begin{equation}
-\label{eqn:firm_val_ss}
-\begin{split}
-& \bar{V} = \frac{\overline{DIV}}{\bar{r}} \\
-& \implies \left(\bar{p}\overline{MPK} + (1-\delta)\bar{p}^{k}\right)\bar{K} =  \frac{\overline{DIV}}{\bar{r}} \\
-\end{split}
-\end{equation} 
-
-Substituting in for $\overline{DIV}$ with Equation \ref{eqn:ssDIV_decomposed} we have:
-
-\begin{equation}
-\left(\bar{p}\overline{MPK} + (1-\delta)\bar{p}^{k}\right)\bar{K} =  \frac{\bar{X}\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}}
-\end{equation} 
-
-Dividing both sides by $\bar{X}$ we get:
-
-
-\begin{equation}
-\label{eqn:pricing}
-\frac{\bar{p}\overline{MPK} \times \bar{K}}{\bar{X}} + (1-\delta)\bar{p}^{k}\frac{\bar{K}}{\bar{X}} =  \frac{\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}}
-\end{equation} 
-
-With constant returns to scale, we can write the left hand side of the above as a function of just parameters, $\bar{r}$, $\bar{w}$, $\bar{p}$, and $\bar{p}^{k}$.
-
-Note that there is one an equation like \ref{eqn:pricing} for each industry, $m$.  The price of capital is determined by the price of output, $\bar{p}$, and the fixed-coefficient matrix $\Xi$.
-
-In particular, if we let $\boldsymbol{p_{t}}$ be the $1\times M$ vector of output prices, we can determine the capital prices as:
+First, we have that output prices determine capital prices, since capital is an output.  We'll assume a fixed-coefficient input-output matrix.  Call this matrix $\Xi$.  If we let $\boldsymbol{p_{t}}$ be the $1\times M$ vector of output prices, we can determine the capital prices as:
 
 \begin{equation}
 \label{eqn:capital_prices}
 \underbrace{\boldsymbol{p^{k}_{t}}}_{1\times M} =\underbrace{\boldsymbol{p_{t}}}_{1\times M} \times  \underbrace{\Xi}_{M\times M}
 \end{equation}
 
-We can see that $\frac{\bar{K}}{\bar{X}}$ is only a function of $\bar{r}$, $\bar{w}$, and $\bar{p}^{k}$ from by using the firms FOCs and production function to solve for $\bar{K}(\bar{r},\bar{w},\bar{p}^{k},\bar{X})$.
+Second, we need to solve for $V_{i,t}$ in terms of factor prices, output prices, capital prices, output, and parameters.  To do this, we will use the result of \citet{Hayashi1982}.  What Hayashi shows is that with quadratic adjustment costs to changing the capital stock (which we have hear - albeit the costs are zero in this simple model) and a production function that is proportional to the capital stock (which we have since we have a CRS production function), the the firm's marginal q, $q_{i,u}$, is related to the firms average q, $Q_{i,u}$ in the  following way:
 
 \begin{equation}
+q_{i,t} = \frac{V_{i,t}-p_{i,t}X-{i,t}}{K_{i,t}}, \quad Q_{i,t} = \frac{V_{i,t}}{K_{i,t}}
+\end{equation}
+
+We thus have:
+
+\begin{equation}
+\label{eqn:solve_v1}
+V_{i,t} = q_{i,t}K_{i,t} + p_{i,t}X_{i,t}
+\end{equation}
+
+Using Equations \ref{eqn:lagrange_foc_i} and \ref{eqn:lagrange_foc_k} (the first order conditions for investment and one period ahead capital), we can rewrite \ref{eqn:solve_v1} as
+
+\begin{equation}
+\label{eqn:solve_v2}
 \begin{split}
-\text{FOC for $K$}& \implies MPK_{t} = \frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\\
-& \implies Z_{t}^{\frac{\epsilon-1}{\epsilon}}\left(X_{t}\frac{\gamma}{K_{t}}\right)^{\frac{1}{\epsilon}} = \frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\\
-& \implies\left(X_{t}\frac{\gamma}{K_{t}}\right)^{\frac{1}{\epsilon}} =  Z_{t}^{\frac{1-\epsilon}{\epsilon}}\frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta) \\
-& \implies\left(X_{t}\frac{\gamma}{K_{t}}\right) =  Z_{t}^{1-\epsilon}\left(\frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\right)^{\epsilon} \\
-& \implies K_{t} = \frac{X_{t}\gamma}{Z_{t}^{1-\epsilon}\left(\frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\right)^{\epsilon}} \\
+& V_{i,t} = q_{i,t}K_{i,t} + p_{i,t}X_{i,t} \\
+\implies & V_{i,t} =  \left(\frac{1}{1+r_{t+1}}\right) \left[ p_{i,t+1}\frac{\partial F(K_{i,t+1},EL_{i,t+1})}{\partial K_{i,t+1}}+ p^{k}_{i,t+1}(1-\delta)\right]K_{i,t} + p_{i,t}X_{i,t} \\
+\implies & V_{i,t} =  \left(\frac{1}{1+r_{t+1}}\right) \left[ p_{i,t+1}\left(\frac{p^{k}_{i,t}}{p_{i,t+1}}(1+r_{t+1}) - \frac{p^{k}_{i,t+1}}{p_{i,t+1}}(1-\delta) \right)+ p^{k}_{i,t+1}(1-\delta)\right]K_{i,t} + p_{i,t}X_{i,t} \\
+\implies & V_{i,t} =   \left(\frac{1}{1+r_{t+1}}\right) \left[ p^{k}_{i,t}(1+r_{t+1}) - p^{k}_{i,t+1}(1-\delta)+ p^{k}_{i,t+1}(1-\delta)\right]K_{i,t} + p_{i,t}X_{i,t} \\
+\implies & V_{i,t} =   \left(\frac{1}{1+r_{t+1}}\right) \left[ p^{k}_{i,t}(1+r_{t+1})\right]K_{i,t} + p_{i,t}X_{i,t} \\
+\implies & V_{i,t} =   p^{k}_{i,t}K_{i,t} + p_{i,t}X_{i,t} \\
+\implies & V_{i,t} =   p^{k}_{i,t}\gamma X_{i,t}A_{i,t}^{1-\epsilon_{i}}\left(\frac{p_{i,t}}{p^{k}_{i,t-1}(1+r_{t})-p^{k}_{i,t}(1-\delta)} \right)^{\epsilon_{i}} + p_{i,t}X_{i,t}, \\
 \end{split}
 \end{equation}
 
-With this, we can see that $\frac{K_{t}}{X_{t}}$ is not a function of $X_{t}$. In particular, with CES production we have: 
+\noindent\noindent where the third step follows from Equation \ref{eqn:opt_inv2}.
+
+Using this result for the value of the firm in Equation \ref{eqn:price_det} we have:
 
 \begin{equation}
-\frac{K_{t}}{X_{t}} = \frac{\gamma}{Z_{t}^{1-\epsilon}\left(\frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)\right)^{\epsilon}}
-\end{equation} 
-
-We can do the same for $EL_{t}$:
-
-\begin{equation}
+\label{eqn:price_det2}
 \begin{split}
-\text{FOC for $EL$}& \implies MPL_{t} = \frac{w_{t}}{p_{t}}\\
-& \implies \left(e^{g_{y}t}Z_{t}\right)^{\frac{\epsilon-1}{\epsilon}}\left(X_{t}\frac{(1-\gamma)}{EL_{t}}\right)^{\frac{1}{\epsilon}} = \frac{w_{t}}{p_{t}} \\
-& \implies \left(X_{t}\frac{(1-\gamma)}{EL_{t}}\right)^{\frac{1}{\epsilon}} =  \left(e^{g_{y}t}Z_{t}\right)^{\frac{1-\epsilon}{\epsilon}}\frac{w_{t}}{p_{t}} \\
-& \implies \left(X_{t}\frac{(1-\gamma)}{EL_{t}}\right)=  \left(e^{g_{y}t}Z_{t}\right)^{1-\epsilon}\left(\frac{w_{t}}{p_{t}}\right)^{\epsilon} \\
-& EL_{t}=  \frac{X_{t}(1-\gamma)}{\left(e^{g_{y}t}Z_{t}\right)^{1-\epsilon}\left(\frac{w_{t}}{p_{t}}\right)^{\epsilon}} \\
+&  1+r_{t} = \frac{p_{i,t}X_{i,t} - w_{u}\left( \frac{ p_{i,t}}{w_{t}}\right)^{\epsilon_{i}}A_{i,t}^{\epsilon_{i}-1}X_{i,t}}{V_{i,t}} ...\\ 
+ & \quad - \frac{p^{k}_{i,t}\left( \gamma_{i}X_{i,t+1}A_{i,t+1}^{1-\epsilon_{i}} \left(\frac{p_{i,t+1}}{p^{k}_{i,t}(1+r_{t+1}) - p^{k}_{i,t+1}(1-\delta)} \right) - (1-\delta) \gamma_{i}X_{i,t}A_{i,t}^{1-\epsilon_{i}} \left(\frac{p_{i,t}}{p^{k}_{i,t-1}(1+r_{t}) - p^{k}_{i,t}(1-\delta)} \right)\right)}{V_{i,t}} \\
+ \implies & 1+r_{t} = \frac{p_{i,t}X_{i,t} - w_{u}\left( \frac{ p_{i,t}}{w_{t}}\right)^{\epsilon_{i}}A_{i,t}^{\epsilon_{i}-1}X_{i,t}}{p^{k}_{i,t}\gamma X_{i,t}A_{i,t}^{1-\epsilon_{i}}\left(\frac{p_{i,t}}{p^{k}_{i,t-1}(1+r_{t})-p^{k}_{i,t}(1-\delta)} \right)^{\epsilon_{i}} + p_{i,t}X_{i,t}} ...\\ 
+ & \quad - \frac{p^{k}_{i,t}\left( \gamma_{i}X_{i,t+1}A_{i,t+1}^{1-\epsilon_{i}} \left(\frac{p_{i,t+1}}{p^{k}_{i,t}(1+r_{t+1}) - p^{k}_{i,t+1}(1-\delta)} \right) - (1-\delta) \gamma_{i}X_{i,t}A_{i,t}^{1-\epsilon_{i}} \left(\frac{p_{i,t}}{p^{k}_{i,t-1}(1+r_{t}) - p^{k}_{i,t}(1-\delta)} \right)\right)}{p^{k}_{i,t}\gamma X_{i,t}A_{i,t}^{1-\epsilon_{i}}\left(\frac{p_{i,t}}{p^{k}_{i,t-1}(1+r_{t})-p^{k}_{i,t}(1-\delta)} \right)^{\epsilon_{i}} + p_{i,t}X_{i,t}} \\
 \end{split}
 \end{equation}
 
+Given demand for output, we can use Equations \ref{eqn:price_det2} and \ref{eqn:capital_prices} to solve for the prices of output and capital.  Solving for the time path of prices will utilize the ability to work backwards from the steady state that is fundamental to the Time Path Iteration solution method.  We'll go through this specifically in a future section.  We'll next discuss how to find the solution in the steady state.
 
-We can take these results to rewrite Equation \ref{eqn:pricing}:
+\subsection*{The firm's problem in the steady state}	
+
+Since the firm's problem is stationary, the steady-state solution is much simpler than the solution along the time path. The key equations describing the optimal investment, employment, and financial policies in the steady state are given by:
 
 \begin{equation}
-\label{eqn:pricing_final}
+\label{eqn:foc_l_ss}
+\frac{\partial F(\bar{K}_{i},\overline{EL}_{i})}{\partial \overline{EL}_{i}} = \frac{\bar{w}}{\bar{p}_{i}}
+\end{equation}
+
+\begin{equation}
+\label{eqn:foc_k_ss}
+\frac{\partial F(\bar{K}_{i},\overline{EL}_{i})}{\partial \bar{K}_{i}} = \frac{\bar{p}^{k}_{i}}{\bar{p}_{i}}(\bar{r}+\delta)
+\end{equation}
+
+\begin{equation}
+\label{eqn:i_ss}
+\bar{I}_{i} = \delta \bar{K}_{i}
+\end{equation}
+
+\begin{equation}
+\label{eqn:foc_vn_ss}
+\bar{\lambda}_{i}=\bar{\mu}_{i} = 0 \implies \overline{VN}_{i}\geq0, \overline{DIV}_{i}\geq0
+\end{equation}
+
+The steady state return on equity in the firm is given by:
+
+\begin{equation}
+\label{eqn:ss_return}
 \begin{split}
- \frac{\bar{p}\overline{MPK} \times \bar{K}}{\bar{X}} + (1-\delta)\bar{p}^{k}\frac{\bar{K}}{\bar{X}} & =  \frac{\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}} \\
- \implies \frac{ \bar{p}^{k}(1+\bar{r})\gamma}{\bar{Z}^{1-\epsilon}\left(\frac{\bar{p}^{k}}{\bar{p}}(\bar{r}+\delta)\right)^{\epsilon}} & = \frac{\left(\bar{p} - \bar{w}\bar{l}(\bar{r},\bar{w},\bar{p}^{k}) - \bar{p}^{k}\bar{k}(\bar{r},\bar{w},\bar{p}^{k})\right)}{\bar{r}}  \\
-  \implies \frac{ \bar{p}^{k}(1+\bar{r})\gamma}{\bar{Z}^{1-\epsilon}\left(\frac{\bar{p}^{k}}{\bar{p}}(\bar{r}+\delta)\right)^{\epsilon}} & = \frac{\bar{p} - \bar{w} \frac{(1-\gamma)}{\left(e^{g_{y}}\bar{Z}\right)^{1-\epsilon}\left(\frac{\bar{w}}{\bar{p}}\right)^{\epsilon}}  - \bar{p}^{k}\frac{\gamma}{\bar{Z}^{1-\epsilon}\left(\frac{\bar{p}^{k}}{p_{k}}(\bar{r}+\delta)\right)^{\epsilon}}}{\bar{r}} \\
-  \implies \bar{r}\bar{p}^{k}(1+\bar{r})\gamma & = p^{1-\epsilon}\left(\bar{p}^{k}\right)^{\epsilon}\bar{Z}^{1-\epsilon}(\bar{r}+\delta)^{\epsilon} - \frac{\bar{w}^{1-\epsilon}(1-\gamma)\bar{p}^{k}(\bar{r}+\delta)^{\epsilon}}{\left(e^{g_{y}}\right)^{1-\epsilon}} - p^{k}\gamma
-  \end{split}
-\end{equation} 
+& \bar{r} = \frac{\overline{DIV}_{i}+\bar{V}_{i}-\bar{V}_{i}-\overline{VN}_{i}}{\bar{V}_{i}}\\
+\implies & \bar{r} =  \frac{\overline{DIV}_{i}-\overline{VN}_{i}}{\bar{V}_{i}}\\
+\implies & \bar{r} =  \frac{\overline{DIV}_{i}}{\bar{V}},\\
+\end{split}
+\end{equation}
 
-In the end, to solve for prices in the steady state ($\bar{p}^{k}$ and $\bar{p}$) we have to solve $2\times M$ equations for the $2\times M$ unknowns.\footnote{With Cobb-Douglas production functions, these will be all linear equations and thus more easily solved.  They don't appear to be linear in $\bar{p}$ and $\bar{p}^{k}$ with CES production, making the solution to the system a big more computationally intensive.}  The equations will need are:
+\noindent\noindent where the last line follows from the assumption that the firm never issues new equity and distributes dividends at the same time.  As pointed out before (and as Equation \ref{eqn:foc_vn_ss} shows), the solution without taxes or frictions offers an indeterminate amount of dividends and new equity issues.  To close the model, we are making the assumption (as is the case with dividend taxes that exceed capital gains taxes - or with costly external finance) that a firm never distributed dividends and issues new equity at the same time.  In the SS, we know that the solution must then be that the firm distributes dividends.  If it were not, $\overline{DIV}_{i}=0$ and $\overline{VN}_{i}>0$ and thus firm value would be negative.  Therefore, it must be the case that $\overline{DIV}_{i}>0$ and $\overline{VN}_{i}=0$.
 
-\begin{enumerate}
-\item Equation \ref{eqn:pricing_final} (for each $m$):  $ \bar{r}\bar{p}^{k}_{m}(1+\bar{r})\gamma_{m}  = p^{1-\epsilon_{m}}\left(\bar{p}^{k}_{m}\right)^{\epsilon_{m}}\bar{Z}^{1-\epsilon_{m}}(\bar{r}+\delta_{m})^{\epsilon_{m}} - \frac{\bar{w}^{1-\epsilon}(1-\gamma_{m})\bar{p}^{k}_{m}(\bar{r}+\delta_{m})^{\epsilon_{m}}}{\left(e^{g_{y}}\right)^{1-\epsilon_{m}}} - p^{k}_{m}\gamma_{m}$ ($M$ equations)
-\item Equation \ref{eqn:capital_prices}: $\boldsymbol{\bar{p}^{k}} =\boldsymbol{\bar{p}} \times \Xi$ ($M$ equations)
-\end{enumerate} 
+Equations \ref{eqn:foc_l_ss} through \ref{eqn:i_ss} give us $\overline{EL}_{i}, \bar{K}_{i},$ and $\bar{I}_{i}$:
 
-Note that the in non-steady state solution we'll be working backwards from the steady state, which will help to pin down investmet, $I_{t}$.  Otherwise the solution will look much like the above, where we find what dividends much be in period $t$ to give the shareholder their require rate of return, $r_{t}$.  We'll discuss the solution along the time path in the next step.  Thus in the dynamic context, the required rate of return is like the zero profit condition.  If the required rate of return owning equities is higher than that on holding bonds, then we firms much have earnings that given them an above market rate of return.  Taxes on the firm will be passed through by higher prices and, in general equilibrium, lower rates of return and wages.
+\begin{equation}
+\label{eqn:l_ss}
+\overline{EL}_{i} = (1-\gamma_{i}) \left( \frac{ \bar{p}_{i}}{\bar{w}}\right)^{\epsilon_{i}}\bar{A}_{i}^{\epsilon_{i}-1}\bar{X}_{i} = EL(\bar{p}_{i},\bar{w},\bar{X}_{i})
+\end{equation}
+
+\begin{equation}
+\label{eqn:k_ss}
+\bar{K}_{i} = \gamma_{i}\bar{X}_{i}\bar{A}_{i}^{1-\epsilon_{i}} \left(\frac{\bar{p}_{i}}{\bar{p}^{k}_{i}(\bar{r}+\delta)} \right)^{\epsilon_{i}} = K(\bar{p}_{i},\bar{p}^{k}_{i},\bar{r},\bar{X}_{i})
+\end{equation}
+
+\begin{equation}
+\label{eqn:q_ss}
+\bar{q}_{i} = \frac{\bar{p}_{i}MPK(\bar{K}_{i},\overline{EL}_{i})}{\bar{r}+\delta}=\bar{p}^{k}
+\end{equation}
+
+\begin{equation}
+\label{eqn:i_ss2}
+\bar{I}_{i} = \delta \bar{K}_{i}
+\end{equation}
+
+\begin{equation}
+\label{eqn:div_ss}
+\overline{DIV}_{i} = \bar{p}_{i}\bar{X}_{i}-\bar{w}\overline{EL}_{i}-\bar{p}^{k}_{i}\delta \bar{K}_{i}
+\end{equation}
+
+The final equation we'll need is the \citet{Hayashi1982} result relating marginal and average q.  In the steady-state this implies:
+
+\begin{equation}
+\label{eqn:ss_marg_avg_q}
+\begin{split}
+& \bar{q}_{i} = \frac{\bar{V}_{i}-\bar{p}_{i}\bar{X}_{i}}{\bar{K}_{i}} \\
+\implies & V_{i} = \bar{q}_{i}\bar{K}_{i} + \bar{p}_{i}\bar{X}_{i} \\
+\implies & V_{i} = \bar{p}^{k}_{i}\bar{K}_{i} + \bar{p}_{i}\bar{X}_{i} \\
+\implies & V_{i} = \bar{p}^{k}_{i}\gamma_{i}\bar{X}_{i}\bar{A}_{i}^{1-\epsilon_{i}} \left(\frac{\bar{p}_{i}}{\bar{p}^{k}_{i}(\bar{r}+\delta)} \right)^{\epsilon_{i}} + \bar{p}_{i}\bar{X}_{i} \\
+\end{split}
+\end{equation}
+
+Putting this together with the steady state return on the firm we find:
+
+\begin{equation}
+\label{eqn:price_det_ss}
+\begin{split}
+&\bar{r} = \frac{\overline{DIV}_{i}}{\bar{V}_{i}} \\
+\implies & \bar{r} = \frac{ \bar{p}_{i}\bar{X}_{i}-\bar{w}\overline{EL}_{i}-\bar{p}^{k}_{i}\delta \bar{K}_{i}}{\bar{q}_{i}\bar{K}_{i} + \bar{p}_{i}\bar{X}_{i}} \\
+\implies & \bar{r} = \frac{ \bar{p}_{i}\bar{X}_{i}-\bar{w}(1-\gamma_{i})\left(\left( \frac{ \bar{p}_{i}}{\bar{w}}\right)^{\epsilon_{i}}\bar{A}_{i}^{\epsilon_{i}-1}\bar{X}_{i} \right)-\bar{p}^{k}_{i}\delta \left(\gamma_{i}\bar{X}_{i}\bar{A}_{i}^{1-\epsilon_{i}} \left(\frac{\bar{p}_{i}}{\bar{p}^{k}_{i}(\bar{r}+\delta)} \right)^{\epsilon_{i}}\right)}{\bar{p}^{k}_{i}\gamma_{i}\bar{X}_{i}\bar{A}_{i}^{1-\epsilon_{i}} \left(\frac{\bar{p}_{i}}{\bar{p}^{k}_{i}(\bar{r}+\delta)} \right)^{\epsilon_{i}} + \bar{p}_{i}\bar{X}_{i}} \\
+\implies & \bar{r} = \frac{ \bar{p}_{i}-\bar{w}(1-\gamma_{i})\left(\left( \frac{ \bar{p}_{i}}{\bar{w}}\right)^{\epsilon_{i}}\bar{A}_{i}^{\epsilon_{i}-1} \right)-\bar{p}^{k}_{i}\delta \left(\gamma_{i}\bar{A}_{i}^{1-\epsilon_{i}} \left(\frac{\bar{p}_{i}}{\bar{p}^{k}_{i}(\bar{r}+\delta)} \right)^{\epsilon_{i}}\right)}{\bar{p}^{k}_{i}\gamma_{i}\bar{A}_{i}^{1-\epsilon_{i}} \left(\frac{\bar{p}_{i}}{\bar{p}^{k}_{i}(\bar{r}+\delta)} \right)^{\epsilon_{i}} + \bar{p}_{i}} \\
+\end{split}
+\end{equation}
+
+The above equation, together with Equation \ref{eqn:capital_prices}, allow use to determine $\bar{p}_{i}$ and $\bar{p}^{k}_{i}$, for all $i$, as functions of parameters, exogenous variables ($\bar{A}_{i}$), and factor prices ($\bar{r}$ and $\bar{w}$).
+
 
 \subsection*{Changes to the household's problem}
 
-Finding the consumer's demand for consumption will be the same as the static problem.  And the consumer's problem will look the same.  However, now savings, $b$, will be interpreted as the value of shares of the firms owned.  Since all firms will give the rate of return, households will hold a diversified portfolio of firms.  
+Finding the consumer's demand for consumption will be the same as the static problem.  And the consumer's problem will look the same.  However, now savings, $b$, will be interpreted as the value of shares of the firms owned.  Since all firms will give the rate of return, households will be assumed to hold a diversified portfolio of firms (since all firms have the same return on equity, there is really no difference between this and any other portfolio assumption).  
 
 \subsection*{Finding total demand for output from industry $m$}
 
 Same as in the static problem.
 
+\begin{equation}
+\label{eqn:output_demand_dyn}
+X_{i,u} = C_{i,u} + \sum_{m=1}^{M}I_{m}*\xi{m,i}
+\end{equation}
+
 \subsection*{Finding factor demands}
 
-Same as in the static problem, updated to use the FOCs from the static firm's problem:
+Same as in the static problem, updated to use the FOCs from the dynamic firm's problem.  The resulting demands for the steady state are given in Equations \ref{eqn:k_ss} and \ref{eqn:l_ss}.  For the transition path, they are given by Equations \ref{eqn:solve_dyn_k} and \ref{eqn:solve_dyn_l}.
 
-\begin{equation}
-MPK_{t} = \frac{p^{k}_{t}}{p_{t}}(r_{t}+\delta)
-\end{equation}
-
-and
-
-\begin{equation}
-MPL_{t} = \frac{w_{t}}{p_{t}}
-\end{equation}
 
 \subsection*{Market clearing}
 
@@ -1133,6 +1180,9 @@ There are three markets - the labor market, the asset market, and the goods mark
 \sum_{M} EL_{m} = \sum_{J}\sum_{S}e_{j,s}*n_{j,s}
 \end{equation}
 
+\subsection*{Computational Procedure}
+
+TBD...
 
 \section*{Future steps}
 
@@ -1156,6 +1206,9 @@ There are three markets - the labor market, the asset market, and the goods mark
 
 \end{spacing}
 
-
+% Bibliography:
+\clearpage
+\bibliography{OSPC_BYU_Dyn_Bib}
+\index{Bibliography@\emph{Bibliography}}%  
 
 \end{document}
