@@ -71,7 +71,7 @@ def check_wealth_calibration(wealth_model, factor_model, params):
         wealth_fits = Fits for how well the model wealth levels match the data wealth levels ((2*J)x1 array)
     '''
     # Import the wealth data moments
-    wealth_dict = pickle.load(open("OUTPUT/Saved_moments/wealth_data_moments.pkl", "r"))
+    wealth_dict = pickle.load(open("OUTPUT/Saved_moments/wealth_data_moments.pkl", "rb"))
     # Set lowest ability group's wealth to be a positive, not negative, number for the calibration
     wealth_dict['wealth_data_array'][2:26, 0] = 500.0
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
@@ -106,8 +106,8 @@ def pickle_file_compare(fname1, fname2):
     or else types that are comparable with the == operator.
     '''
 
-    pkl1 = pickle.load(open(fname1, 'r'))
-    pkl2 = pickle.load(open(fname2, 'r'))
+    pkl1 = pickle.load(open(fname1, 'rb'))
+    pkl2 = pickle.load(open(fname2, 'rb'))
 
     return dict_compare(fname1, pkl1, fname2, pkl2)
 

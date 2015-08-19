@@ -64,7 +64,7 @@ def create_steady_state_parameters(a_tax_income, b_tax_income, c_tax_income,
     #    globals()[key] = variables[key]
     if get_baseline is False:
         # If this is a tax experiment, also import the changed tax variables
-        variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "r"))
+        variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "rb"))
         for key in variables:
             globals()[key] = variables[key]
 
@@ -242,7 +242,7 @@ def function_to_minimize(chi_params_scalars, chi_params_init, params, iterative_
     chi_params_init *= chi_params_scalars
     # print 'Print Chi_b: ', chi_params_init[:J]
     # print 'Scaling vals:', chi_params_scalars[:J]
-    solutions_dict = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "r"))
+    solutions_dict = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "rb"))
     solutions = solutions_dict['solutions']
 
     b_guess = solutions[:S*J]
@@ -256,7 +256,7 @@ def function_to_minimize(chi_params_scalars, chi_params_init, params, iterative_
     # Wealth Calibration Euler
     error5 = list(utils.check_wealth_calibration(b_new.reshape(S, J)[:-1, :], factor_new, params))
     # labor calibration euler
-    lab_data_dict = pickle.load(open("OUTPUT/Saved_moments/labor_data_moments.pkl", "r"))
+    lab_data_dict = pickle.load(open("OUTPUT/Saved_moments/labor_data_moments.pkl", "rb"))
     labor_sim = (n_new.reshape(S, J)*lambdas.reshape(1, J)).sum(axis=1)
     if DATASET == 'SMALL':
         lab_dist_data = lab_data_dict['labor_dist_data'][:S]
@@ -282,7 +282,7 @@ def function_to_minimize(chi_params_scalars, chi_params_init, params, iterative_
         dictionary = {}
         for key in var_names:
             dictionary[key] = locals()[key]
-        pickle.dump(dictionary, open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "w"))
+        pickle.dump(dictionary, open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "wb"))
     if (chi_params_init <= 0.0).any():
         # In case the minimizer doesn't respect the bounds given
         output += 1e14
@@ -319,7 +319,7 @@ def run_steady_state(ss_parameters, iterative_params, get_baseline=False, calibr
 
         if calibrate_model:
             outputs = {'solutions':solutions, 'chi_params':chi_params}
-            pickle.dump(outputs, open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "w"))
+            pickle.dump(outputs, open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "wb"))
             function_to_minimize_X = lambda x: function_to_minimize(x, chi_params, ss_parameters, iterative_params, omega_SS, rho, lambdas, tau_bq, e)
             bnds = tuple([(1e-6, None)] * (S + J))
             # In order to scale all the parameters to estimate in the minimizer, we have the minimizer fit a vector of ones that
@@ -332,14 +332,14 @@ def run_steady_state(ss_parameters, iterative_params, get_baseline=False, calibr
             print 'The final scaling params', chi_params_scalars
             print 'The final bequest parameter values:', chi_params
 
-            solutions_dict = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "r"))
+            solutions_dict = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "rb"))
             solutions = solutions_dict['solutions']
             b_guess = solutions[:S*J]
             n_guess = solutions[S*J:2*S*J]
             wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
             solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[J:], chi_params[:J], ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
     else:
-        variables = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "r"))
+        variables = pickle.load(open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "rb"))
         solutions = solutions_dict['solutions']
         chi_params = solutions_dict['chi_params']
         b_guess = solutions[:S*J]
@@ -357,10 +357,10 @@ def run_steady_state(ss_parameters, iterative_params, get_baseline=False, calibr
 
     if get_baseline:
         outputs = {'solutions':solutions, 'chi_params':chi_params}
-        pickle.dump(outputs, open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "w"))
+        pickle.dump(outputs, open("OUTPUT/Saved_moments/SS_init_solutions.pkl", "wb"))
     else:
         outputs = {'solutions':solutions, 'chi_params':chi_params}
-        pickle.dump(outputs, open("OUTPUT/Saved_moments/SS_experiment_solutions.pkl", "w"))
+        pickle.dump(outputs, open("OUTPUT/Saved_moments/SS_experiment_solutions.pkl", "wb"))
 
     bssmat = solutions[0:(S-1) * J].reshape(S-1, J)
     bq = solutions[(S-1)*J:S*J]
@@ -415,12 +415,12 @@ def run_steady_state(ss_parameters, iterative_params, get_baseline=False, calibr
               'euler_labor_leisure': euler_labor_leisure, 'chi_n':chi_n,
               'chi_b':chi_b}
     if get_baseline:
-        pickle.dump(output, open("OUTPUT/SSinit/ss_init_vars.pkl", "w"))
+        pickle.dump(output, open("OUTPUT/SSinit/ss_init_vars.pkl", "wb"))
         bssmat_init = bssmat_splus1
         nssmat_init = nssmat
         # Pickle variables for TPI initial values
         output2 = {'bssmat_init':bssmat_init, 'nssmat_init':nssmat_init}
-        pickle.dump(output2, open("OUTPUT/SSinit/ss_init_tpi_vars.pkl", "w"))
+        pickle.dump(output2, open("OUTPUT/SSinit/ss_init_tpi_vars.pkl", "wb"))
     else:
-        pickle.dump(output, open("OUTPUT/SS/ss_vars.pkl", "w"))
+        pickle.dump(output, open("OUTPUT/SS/ss_vars.pkl", "wb"))
     return output

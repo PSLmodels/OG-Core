@@ -35,13 +35,13 @@ import firm
 ------------------------------------------------------------------------
 '''
 
-variables = pickle.load(open("OUTPUT/SSinit/ss_init_vars.pkl", "r"))
+variables = pickle.load(open("OUTPUT/SSinit/ss_init_vars.pkl", "rb"))
 for key in variables:
     globals()[key] = variables[key]
-variables = pickle.load(open("OUTPUT/TPIinit/TPIinit_vars.pkl", "r"))
+variables = pickle.load(open("OUTPUT/TPIinit/TPIinit_vars.pkl", "rb"))
 for key in variables:
     globals()[key] = variables[key]
-variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "r"))
+variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "rb"))
 for key in variables:
     globals()[key] = variables[key]
 
@@ -113,13 +113,13 @@ utility_period_init = utility_period.sum(1)
 '''
 
 
-variables = pickle.load(open("OUTPUT/SS/ss_vars.pkl", "r"))
+variables = pickle.load(open("OUTPUT/SS/ss_vars.pkl", "rb"))
 for key in variables:
     globals()[key] = variables[key]
-variables = pickle.load(open("OUTPUT/TPI/TPI_vars.pkl", "r"))
+variables = pickle.load(open("OUTPUT/TPI/TPI_vars.pkl", "rb"))
 for key in variables:
     globals()[key] = variables[key]
-variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "r"))
+variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "rb"))
 for key in variables:
     globals()[key] = variables[key]
 

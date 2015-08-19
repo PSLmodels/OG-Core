@@ -67,10 +67,10 @@ def the_inequalizer(dist, pop_weights, ability_weights, S, J):
 ------------------------------------------------------------------------
 '''
 
-variables = pickle.load(open("OUTPUT/SSinit/ss_init_vars.pkl", "r"))
+variables = pickle.load(open("OUTPUT/SSinit/ss_init_vars.pkl", "rb"))
 for key in variables:
     globals()[key] = variables[key]
-variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "r"))
+variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "rb"))
 for key in variables:
     globals()[key] = variables[key]
 
@@ -174,7 +174,7 @@ plt.savefig('OUTPUT/SSinit/labor_dist')
 
 # Plot 2d comparison of labor distribution to data
 # First import the labor data
-variables = pickle.load(open("OUTPUT/Saved_moments/labor_data_moments.pkl", "r"))
+variables = pickle.load(open("OUTPUT/Saved_moments/labor_data_moments.pkl", "rb"))
 for key in variables:
     globals()[key] = variables[key]
 
@@ -274,10 +274,10 @@ plt.savefig('OUTPUT/SSinit/euler_errors_laborleisure_SS')
 ------------------------------------------------------------------------
 '''
 
-variables = pickle.load(open("OUTPUT/SS/ss_vars.pkl", "r"))
+variables = pickle.load(open("OUTPUT/SS/ss_vars.pkl", "rb"))
 for key in variables:
     globals()[key] = variables[key]
-variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "r"))
+variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "rb"))
 for key in variables:
     globals()[key] = variables[key]
 
@@ -496,7 +496,7 @@ plt.savefig('OUTPUT/SS/combograph')
 '''
 domain = np.linspace(20, 95, 76)
 
-variables = pickle.load(open("OUTPUT/Saved_moments/wealth_data_moments.pkl", "r"))
+variables = pickle.load(open("OUTPUT/Saved_moments/wealth_data_moments.pkl", "rb"))
 for key in variables:
     globals()[key] = variables[key]
 
