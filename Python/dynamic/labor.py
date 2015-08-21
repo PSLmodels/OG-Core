@@ -104,4 +104,4 @@ def labor_data_moments(flag_graphs, output_dir="./OUTPUT"):
     dictionary = {}
     for key in var_names:
         dictionary[key] = locals()[key]
-    pickle.dump(dictionary, open(os.path.join(output_dir, "Saved_moments/labor_data_moments.pkl"), "w"))
+    pickle.dump(dictionary, open(os.path.join(output_dir, "Saved_moments/labor_data_moments.pkl"), "wb"))

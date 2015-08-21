@@ -115,4 +115,4 @@ def get_wealth_data(bin_weights, J, flag_graphs, output_dir):
     for key in var_names:
         dictionary[key] = locals()[key]
     pkl_path = os.path.join(output_dir, "Saved_moments/wealth_data_moments.pkl")
-    pickle.dump(dictionary, open(pkl_path, "w"))
+    pickle.dump(dictionary, open(pkl_path, "wb"))

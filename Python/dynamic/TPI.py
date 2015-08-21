@@ -57,21 +57,21 @@ def create_tpi_params(a_tax_income, b_tax_income, c_tax_income,
 
 
 
-    #variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "r"))
+    #variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "rb"))
     #for key in variables:
     #    globals()[key] = variables[key]
     if get_baseline:
-        variables = pickle.load(open("OUTPUT/SSinit/ss_init_vars.pkl", "r"))
+        variables = pickle.load(open("OUTPUT/SSinit/ss_init_vars.pkl", "rb"))
         for key in variables:
             globals()[key] = variables[key]
     else:
-        variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "r"))
+        variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "rb"))
         for key in variables:
             globals()[key] = variables[key]
-        variables = pickle.load(open("OUTPUT/SS/ss_vars.pkl", "r"))
+        variables = pickle.load(open("OUTPUT/SS/ss_vars.pkl", "rb"))
         for key in variables:
             globals()[key] = variables[key]
-        variables = pickle.load(open("OUTPUT/SSinit/ss_init_tpi_vars.pkl", "r"))
+        variables = pickle.load(open("OUTPUT/SSinit/ss_init_tpi_vars.pkl", "rb"))
         for key in variables:
             globals()[key] = variables[key]
 
@@ -445,6 +445,6 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, parameters, g_n_vector, 
             'tax_path':tax_path, 'winit':winit}
 
     if get_baseline:
-        pickle.dump(output, open("OUTPUT/TPIinit/TPIinit_vars.pkl", "w"))
+        pickle.dump(output, open("OUTPUT/TPIinit/TPIinit_vars.pkl", "wb"))
     else:
-        pickle.dump(output, open("OUTPUT/TPI/TPI_vars.pkl", "w"))
+        pickle.dump(output, open("OUTPUT/TPI/TPI_vars.pkl", "wb"))
