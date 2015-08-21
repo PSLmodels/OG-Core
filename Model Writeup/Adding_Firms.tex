@@ -1106,6 +1106,43 @@ Equations \ref{eqn:foc_l_ss} through \ref{eqn:i_ss} give us $\overline{EL}_{i}, 
 \overline{DIV}_{i} = \bar{p}_{i}\bar{X}_{i}-\bar{w}\overline{EL}_{i}-\bar{p}^{k}_{i}\delta \bar{K}_{i}
 \end{equation}
 
+
+Alternatively, we can solve for factor demands using the firm FOC for capital and labor together with the production function.  This can be helpful in the computational solution.  To do this, note that dividing these two necessary conditions gives the optimal capital-labor ratio of the firm as a function of parameters and prices:
+
+\begin{equation}
+\frac{\bar{K}_{m}}{\overline{EL}_{m}} = \frac{\gamma_{m}}{1-\gamma_{m}}\left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{-\epsilon_{m}}\left( \bar{r}+ \delta_{m}\right)^{-\epsilon_{m}}
+\end{equation}
+
+This implies the demand for labor as a function of the demand for capital:
+\begin{equation}
+\label{eqn:l_demand2}
+\overline{EL}_{m} = \frac{1-\gamma_{m}}{\gamma_{m}}\left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}}\left( \bar{r}+ \delta_{m}\right)^{\epsilon_{m}}\bar{K}_{m}
+\end{equation}
+
+Substituting this into the CES production function, we have:
+
+\begin{equation}
+\begin{split}
+F(\bar{K}_{m},\overline{EL}_{m})=X_{m} & = \bar{A}_{m}\left[\gamma_{m}^{\frac{1}{\epsilon_{m}}}\bar{K}_{m}^{\frac{\epsilon_{m}-1}{\epsilon}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}}\overline{EL}_{m}^{\frac{\epsilon_{m}-1}{\epsilon}} \right]^{\frac{\epsilon_{m}}{\epsilon_{m}-1}} \\
+& = \bar{A}_{m}\left[\gamma_{m}^{\frac{1}{\epsilon_{m}}}\bar{K}_{m}^{\frac{\epsilon_{m}-1}{\epsilon}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}}.... \right. \\
+& \left. \times \left(\frac{1-\gamma_{m}}{\gamma_{m}}\left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}}\left( \bar{r}+ \delta_{m}\right)^{\epsilon_{m}}\bar{K}_{m}\right)^{\frac{\epsilon_{m}-1}{\epsilon}} \right]^{\frac{\epsilon_{m}}{\epsilon_{m}-1}}  \\
+& = \bar{A}_{m}\bar{K}_{m}\left[\gamma_{m}^{\frac{1}{\epsilon_{m}}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}} \left(\frac{1-\gamma_{m}}{\gamma_{m}}\right)^{\frac{\epsilon_{m}-1}{\epsilon_{m}}} \times \right. \\
+& \left.  \left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}-1}\left( \bar{r}+\delta_{m}\right)^{\epsilon_{m}-1}  \right]^{\frac{\epsilon_{m}}{\epsilon_{m}-1}}
+\end{split}
+\end{equation}
+
+We can then rearrange this to write the demand for capital as a function of output:
+
+\begin{equation}
+\begin{split}
+\bar{K}_{m} &= \frac{\bar{X}_{m}}{\bar{A}_{m}}\left[\gamma_{m}^{\frac{1}{\epsilon_{m}}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}} \left(\frac{1-\gamma_{m}}{\gamma_{m}}\right)^{\frac{\epsilon_{m}-1}{\epsilon_{m}}} \left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}-1}\left( \bar{r}+\delta_{m}\right)^{\epsilon_{m}-1}  \right]^{\frac{\epsilon_{m}}{1-\epsilon_{m}}}
+\end{split}
+\end{equation}
+
+We can us the above with Equation \ref{eqn:l_demand2} to find the demand for labor as a function of output, prices, and parameters.
+
+
+
 The final equation we'll need is the \citet{Hayashi1982} result relating marginal and average q.  In the steady-state this implies:
 
 \begin{equation}
@@ -1285,8 +1322,8 @@ And the FOC for the firm's choice of new equity is:
 \label{eqn:lagrange_foc_ktau_tax}
 \begin{split}
  \frac{\partial \mathcal{L}}{\partial K^{\tau}_{m,u+1}} &=    \prod_{\nu=t}^{u} \left(\frac{1}{1+\frac{r_{\nu}}{(1-\tau^{g}_{m,\nu})}}\right) \left\{-\lambda^{\tau}_{m,u} \right\} ... \\
- & +  \prod_{\nu=t}^{u+1} \left(\frac{1}{1+\frac{r_{\nu}}{(1-\tau^{g}_{m,\nu})}}\right) \left\{ \left(\frac{1-\tau^{d}_{m,u+1}}{1-\tau^{g}_{m,u+1}}+\lambda^{d}_{m,u+1}\right)\tau^{b}_{m,u+1}\delta^{\tau}_{m,u+1} \right\} \\
-\implies \lambda^{\tau}_{m,u} &=  \left(\frac{1}{1+\frac{r_{u+1}}{(1-\tau^{g}_{m,u+1})}}\right) \left[ \left(\frac{1-\tau^{d}_{m,u+1}}{1-\tau^{g}_{m,u+1}}+\lambda^{d}_{m,u+1}\right)\tau^{b}_{m,u+1}\delta^{\tau}_{m,u+1} \right]  \\
+ & +  \prod_{\nu=t}^{u+1} \left(\frac{1}{1+\frac{r_{\nu}}{(1-\tau^{g}_{m,\nu})}}\right) \left\{ \left(\frac{1-\tau^{d}_{m,u+1}}{1-\tau^{g}_{m,u+1}}+\lambda^{d}_{m,u+1}\right)\tau^{b}_{m,u+1}\delta^{\tau}_{m,u+1} + (1-\delta^{\tau}_{m,u+1})\lambda^{\tau}_{m,u+1} \right\} \\
+\implies \lambda^{\tau}_{m,u} &=  \left(\frac{1}{1+\frac{r_{u+1}}{(1-\tau^{g}_{m,u+1})}}\right) \left[ \left(\frac{1-\tau^{d}_{m,u+1}}{1-\tau^{g}_{m,u+1}}+\lambda^{d}_{m,u+1}\right)\tau^{b}_{m,u+1}\delta^{\tau}_{m,u+1} + (1-\delta^{\tau}_{m,u+1})\lambda^{\tau}_{m,u+1} \right]  \\
 \end{split}
 \end{equation}
 
@@ -1315,7 +1352,9 @@ If $\tau^{g}_{m,u}<\tau^{d}_{m,u}$ (as it was in the U.S. prior to the 2003 tax 
 
 If $\tau^{g}_{m,u}> \tau^{d}_{u}$, then $ \left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}\right)>1$, which means  $ \lambda^{d}_{m,u} + \lambda^{v}_{m,u} <0$.  This can't happen since these Lagrangian multipliers are non-negative.  What this is illustrating is that no solutions exists to the firm's problem if capital gains taxes are greater than dividend taxes.  In this case, the firm will want to issue an infinite amount of new equity and use that to finance dividends.  This will drive firm value to infinity.  The reason is that issuing \$1 of new equity costs the shareholder $\$1\times(1-\tau^{g}_{m,u})$.  Distributing a dollar of as dividends benefits the shareholder by $\$1\times (1-\tau^{d}_{m,u})$.  If $\tau^{g}_{m,u}> \tau^{d}_{m,u}$, then $\$1\times (1-\tau^{d}_{m,u}) > \$1\times(1-\tau^{g}_{m,u})$, and the shareholder benefits from this transaction of using new equity to finance dividends.  Without additional frictions (e.g. increasing costs to issuing equity), this is true at any amount of new equity issued, and therefore the problem's solution is that the firm issues an infinite amount of new equity and uses that to finance and infinite about of dividend distributions and firm value goes to infinity.  Tax arbitrage produces an infinite, risk free return for the shareholder.
 
-Using Equations \ref{eqn:lagrange_foc_i_tax} and \ref{eqn:lagrange_foc_ktau_tax}, we can solve for marginal q as a function of the price of capital, taxes, and the Lagrangian multiplier on the dividends non-negativity constraint.  We end up with:
+Using Equations \ref{eqn:lagrange_foc_i_tax} and \ref{eqn:lagrange_foc_ktau_tax}, we can solve for marginal q as a function of the price of capital, taxes, and the Lagrangian multiplier on the dividends non-negativity constraint.  To do this, we iterate on Equation \ref{eqn:lagrange_foc_ktau_tax}.  We end up with:
+
+\textcolor{red}{NON-SS EQUATIONS BELOW INVOLVING THE MULTIPLIER ON THE FISCAL CAPITAL STOCK LAW OF MOTION NEED TO BE FIXED}
 
 \begin{equation}
 \label{eqn:marg_q_tax}
@@ -1434,7 +1473,7 @@ The necessary conditions of the firm's problem in the steady state are:
 
 
 \begin{equation}
-\label{eqn:lagrange_foc_k_tax}
+\label{eqn:lagrange_foc_k_tax_ss}
 \begin{split}
  \bar{q}_{m} &=  \left(\frac{1}{1+\frac{\bar{r}}{(1-\bar{\tau}^{g}_{m})}}\right) \times  \\
 & \left[\left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right)\left((1-\bar{\tau}^{b}_{m})\bar{p}_{m}\frac{\partial F(\bar{K}_{m},\overline{EL}_{m})}{\partial \bar{K}_{m}}\right) + \bar{q}_{m}(1-\delta_{m}) \right]  \\
@@ -1442,14 +1481,15 @@ The necessary conditions of the firm's problem in the steady state are:
 \end{equation}
 
 \begin{equation}
-\label{eqn:lagrange_foc_ktau_tax}
+\label{eqn:lagrange_foc_ktau_tax_ss}
 \begin{split}
-\bar{\lambda}^{\tau}_{m} &=  \left(\frac{1}{1+\frac{\bar{r}}{(1-\bar{\tau}^{g}_{m})}}\right) \left[ \left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right)\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m} \right]  \\
+\bar{\lambda}^{\tau}_{m} &=  \left(\frac{1}{1+\frac{\bar{r}}{(1-\bar{\tau}^{g}_{m})}}\right) \left[ \left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right)\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m} + (1-\bar{\delta}^{\tau}_{m})\bar{\lambda}^{\tau}_{m}\right]  \\
+\implies \bar{\lambda}^{\tau}_{m} &=\left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right)\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\bar{r}+\bar{\delta}^{\tau}_{m}\right)^{-1}
 \end{split}
 \end{equation}
 
 \begin{equation}
-\label{eqn:lagrange_foc_l_tax}
+\label{eqn:lagrange_foc_l_tax_ss}
 \begin{split}
   \bar{p}_{m}\frac{\partial F(\bar{K}_{m},\overline{EL}_{m})}{\partial \overline{EL}_{m}} = \bar{w}  \\
 \end{split}
@@ -1457,9 +1497,9 @@ The necessary conditions of the firm's problem in the steady state are:
 
 
 \begin{equation}
-\label{eqn:lagrange_foc_vn_tax2}
+\label{eqn:lagrange_foc_vn_tax2_ss}
 \begin{split}
-  \lambda^{v}_{m,u} = 1 - \left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right)   \\
+ \bar{\lambda}^{v}_{m} = 1 - \left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right)   \\
 \end{split}
 \end{equation}
 
@@ -1468,7 +1508,7 @@ We can use these equations to solve for the endogenous variables.  In particular
 
 \begin{equation}
 \label{eqn:k_demand_tax_ss}
-\bar{K}_{m} = \bar{A}_{m}^{\epsilon_{m}-1}\gamma_{m}\bar{X}_{m}\left(\frac{\bar{p}^{k}_{m}}{\bar{p}}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-\left(\frac{1-\bar{\delta}^{\tau}}{1-\bar{\tau}^{g}_{m}}\right)\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\right)\right)^{-\epsilon_{m}}
+\bar{K}_{m} = \bar{A}_{m}^{\epsilon_{m}-1}\gamma_{m}\bar{X}_{m}\left(\frac{\bar{p}^{k}_{m}}{\bar{p}}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}\right)^{-1}\right)\right)^{-\epsilon_{m}}
 \end{equation}
 
 \begin{equation}
@@ -1491,7 +1531,59 @@ With this, we can find the other endogenous quantity variables as:
 \end{equation}
 
 \begin{equation}
+\label{eqn:inc_tax_firm_ss}
+\overline{TE}_{m} =\bar{\tau}^{b}_{m}\left(\bar{p}_{m}F(\bar{K}_{m},\overline{EL}_{m})-\bar{w}\overline{EL}_{m} \right) - \bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m})\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m} 
+\end{equation}
+
+\begin{equation}
 \overline{VN}_{m} = 0
+\end{equation}
+
+Alternatively, we can solve for factor demands using the firm FOC for capital and labor together with the production function.  This can be helpful in the computational solution.  To do this, note that dividing these two necessary conditions gives the optimal capital-labor ratio of the firm as a function of parameters and prices:
+
+\begin{equation}
+\frac{\bar{K}_{m}}{\overline{EL}_{m}} = \frac{\gamma_{m}}{1-\gamma_{m}}\left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{-\epsilon_{m}}\left(\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}\right)^{-1}\right)\right)^{-\epsilon_{m}}
+\end{equation}
+
+This implies the demand for labor as a function of the demand for capital:
+\begin{equation}
+\label{eqn:l_demand_tax2}
+\overline{EL}_{m} = \frac{1-\gamma_{m}}{\gamma_{m}}\left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}}\left(\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}\right)^{-1}\right)\right)^{\epsilon_{m}}\bar{K}_{m}
+\end{equation}
+
+Substituting this into the CES production function, we have:
+
+\begin{equation}
+\begin{split}
+F(\bar{K}_{m},\overline{EL}_{m})=X_{m} & = \bar{A}_{m}\left[\gamma_{m}^{\frac{1}{\epsilon_{m}}}\bar{K}_{m}^{\frac{\epsilon_{m}-1}{\epsilon}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}}\overline{EL}_{m}^{\frac{\epsilon_{m}-1}{\epsilon}} \right]^{\frac{\epsilon_{m}}{\epsilon_{m}-1}} \\
+& = \bar{A}_{m}\left[\gamma_{m}^{\frac{1}{\epsilon_{m}}}\bar{K}_{m}^{\frac{\epsilon_{m}-1}{\epsilon}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}}\left( \left(\frac{1-\gamma_{m}}{\gamma_{m}}\right)^{\frac{\epsilon_{m}-1}{\epsilon_{m}}}\left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}}  \times \right. \right. \\
+& \left.\left. \left(\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}\right)^{-1}\right)\right)^{\epsilon_{m}}\bar{K}_{m}\right)^{\frac{\epsilon_{m}-1}{\epsilon}} \right]^{\frac{\epsilon_{m}}{\epsilon_{m}-1}}  \\
+& = \bar{A}_{m}\bar{K}_{m}\left[\gamma_{m}^{\frac{1}{\epsilon_{m}}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}} \left(\frac{1-\gamma_{m}}{\gamma_{m}}\right)^{\frac{\epsilon_{m}-1}{\epsilon_{m}}} \times \right. \\
+& \left.  \left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}-1}\left(\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}\right)^{-1}\right)\right)^{\epsilon_{m}-1} \right]^{\frac{\epsilon_{m}}{\epsilon_{m}-1}}
+\end{split}
+\end{equation}
+
+We can then rearrange this to write the demand for capital as a function of output:
+
+\begin{equation}
+\begin{split}
+\bar{K}_{m} &= \frac{\bar{X}_{m}}{\bar{A}_{m}}\left[\gamma_{m}^{\frac{1}{\epsilon_{m}}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}} \left(\frac{1-\gamma_{m}}{\gamma_{m}}\right)^{\frac{\epsilon_{m}-1}{\epsilon_{m}}} \times \right. \\
+& \left.  \left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}-1}\left(\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}\right)^{-1}\right)\right)^{\epsilon_{m}-1} \right]^{\frac{\epsilon_{m}}{\epsilon_{m}-1}}
+\end{split}
+\end{equation}
+
+We can us the above with Equation \ref{eqn:l_demand_tax2} to find the demand for labor as a function of output, prices, and parameters.
+
+
+Factor prices can be written in terms of quantities.  Note that the real interest rate is a implicit function and we'll need to use a root finder to solve for the value of $\bar{r}$ that is implied given demands for capital, labor, and output.  The equation that determines $\bar{r}$ is:
+
+\begin{equation}
+%\bar{r} = \left[\bar{A}_{m}^{\frac{\epsilon_{m}-1}{\epsilon_{m}}}\left(\frac{\gamma_{m}\bar{X}_{m}}{\bar{K}_{m}} \right)^{\frac{1}{\epsilon_{m}}} \frac{\bar{p}_{m}}{\bar{p}^{k}_{m}}\left(1-\left(\frac{1-\bar{\delta}^{\tau}_{m}}{1-\bar{\tau}^{g}_{m}}\right)\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\right)^{-1} - \delta_{m}\right](1-\bar{\tau}^{g}_{m})
+(1-\bar{\tau}^{b}_{m})\frac{\bar{p}_{m}}{\bar{p}^{k}_{m}}MPK(\bar{K}_{m},\overline{EL}_{m}) - \delta_{m} = \frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}}{\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}}\right)
+\end{equation}
+
+\begin{equation}
+\bar{w} = \bar{p}_{m}\bar{A}_{m}^{\frac{\epsilon_{m}-1}{\epsilon_{m}}}\left(\frac{(1-\gamma_{m})\bar{X}_{m}}{\overline{EL}_{m}} \right)^{\frac{1}{\epsilon_{m}}} 
 \end{equation}
 
 To find the price of output and capital, note that the steady-state return is given by:
@@ -1518,16 +1610,8 @@ Using the relation between marginal q and average q in this model with CRS produ
 \implies &  \bar{r}  =  \frac{(1-\bar{\tau}^{d}_{m})\left[(1-\bar{\tau}^{b}_{m})\left(\bar{p}_{m}F(\bar{K}_{m},\overline{EL}_{m}) - \bar{w}\overline{EL}_{m}\right) - (1-\bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m}))\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m}\right]}{\bar{V}_{m}} \\
 \implies &  \bar{r}  =  \frac{(1-\bar{\tau}^{d}_{m})\left[(1-\bar{\tau}^{b}_{m})\left(\bar{p}_{m}\bar{X}_{m} - \bar{w}\overline{EL}_{m}\right) - (1-\bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m}))\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m}\right]}{\bar{q}_{m}\bar{K}_{m}} \\
 \implies &  \bar{r}\bar{q}_{m}\bar{K}_{m}  =  (1-\bar{\tau}^{d}_{m})\left[(1-\bar{\tau}^{b}_{m})\left(\bar{p}_{m}\bar{X}_{m} - \bar{w}\overline{EL}_{m}\right) - (1-\bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m}))\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m}\right] \\
-\implies &  \bar{r} \bar{p}^{k}_{m}\left[\left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right) - (1-\bar{\delta}^{\tau}_{m}) \left(\frac{1}{1+\frac{\bar{r}}{(1-\bar{\tau}^{g}_{m})}}\right) \left[ \left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right)\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m} \right] \right]\bar{K}_{m}  =  \\
-& \quad\quad\quad\quad\quad (1-\bar{\tau}^{d}_{m})\left[(1-\bar{\tau}^{b}_{m})\left(\bar{p}_{m}\bar{X}_{m} - \bar{w}\overline{EL}_{m}\right) - (1-\bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m}))\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m}\right] \\
-\implies &  \frac{\bar{r} \bar{p}^{k}_{m}}{1-\bar{\tau}^{g}_{m}}\left[1 - \left(\frac{1-\bar{\delta}^{\tau}_{m}}{1+\frac{\bar{r}}{(1-\bar{\tau}^{g}_{m})}}\right) \left[ \bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m} \right] \right]\bar{K}_{m}  =  \\
-& \quad\quad\quad\quad\quad \left[(1-\bar{\tau}^{b}_{m})\left(\bar{p}_{m}\bar{X}_{m} - \bar{w}\overline{EL}_{m}\right) - (1-\bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m}))\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m}\right] \\
-\implies & (1-\bar{\tau}^{b}_{m})\left(\bar{p}_{m}\bar{X}_{m} - \bar{w}\overline{EL}_{m}\right)   =  \\
-& \quad\quad\quad\quad\quad   \frac{\bar{r} \bar{p}^{k}_{m}}{1-\bar{\tau}^{g}_{m}}\left[1 - \left(\frac{1-\bar{\delta}^{\tau}_{m}}{1+\frac{\bar{r}}{(1-\bar{\tau}^{g}_{m})}}\right) \left[ \bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m} \right] \right]\bar{K}_{m}+ (1-\bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m}))\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m} \\
-\implies & \bar{p}_{m}\bar{X}_{m}   =  \\
-& \quad\quad   \left[ \frac{\bar{r} \bar{p}^{k}_{m}}{(1-\bar{\tau}^{g}_{m})(1-\bar{\tau}^{b}_{m})}\left[1 - \left(\frac{1-\bar{\delta}^{\tau}_{m}}{1+\frac{\bar{r}}{(1-\bar{\tau}^{g}_{m})}}\right) \left[ \bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m} \right] \right]+ \frac{(1-\bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m}))}{(1-\bar{\tau}^{b}_{m})}\delta_{m}\bar{p}^{k}_{m}\right]\bar{K}_{m} + \bar{w}\overline{EL}_{m} \\
-\implies & \bar{p}_{m}   =  \\
-& \quad\quad  \frac{\bar{p}^{k}_{m}}{(1-\bar{\tau}^{b}_{m})} \left[ \frac{\bar{r}}{(1-\bar{\tau}^{g}_{m})}\left[1 - \left(\frac{1-\bar{\delta}^{\tau}_{m}}{1+\frac{\bar{r}}{(1-\bar{\tau}^{g}_{m})}}\right) \left[ \bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m} \right] \right]+ (1-\bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m}))\delta_{m}\right]\frac{\bar{K}_{m}}{\bar{X}_{m}} + \bar{w}\frac{\overline{EL}_{m}}{\bar{X}_{m}} \\
+\implies &  \bar{p}_{m}\bar{X}_{m} = \bar{w}\overline{EL}_{m} + \left(\frac{\bar{r}\bar{q}_{m}}{(1-\bar{\tau}^{d}_{m})(1-\bar{\tau}^{b}_{m})}\right)\bar{K}_{m} + \left(\frac{(1-\bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m})\delta_{m}\bar{p}^{k}_{m}}{1-\bar{\tau}^{b}_{m}}\right)\bar{K}_{m} \\
+\implies &  \bar{p}_{m} = \bar{w}\frac{\overline{EL}_{m}}{\bar{X}_{m}} + \left(\frac{\bar{r}\bar{q}_{m}}{(1-\bar{\tau}^{d}_{m})(1-\bar{\tau}^{b}_{m})}\right)\frac{\bar{K}_{m}}{\bar{X}_{m}} + \left(\frac{(1-\bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m})\delta_{m}\bar{p}^{k}_{m}}{1-\bar{\tau}^{b}_{m}}\right)\frac{\bar{K}_{m}}{\bar{X}_{m}} \\
 \end{split}
 \end{equation}
 
