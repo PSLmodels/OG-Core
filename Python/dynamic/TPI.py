@@ -36,6 +36,7 @@ import tax
 import utils
 import household
 import firm
+import os
 
 
 '''
@@ -45,6 +46,8 @@ steady state computation in ss_vars.pkl
 ------------------------------------------------------------------------
 '''
 
+TPI_FIG_DIRECTORY = "TPI_FIGURES"
+
 from .parameters import get_parameters
 globals().update(get_parameters())
 
@@ -52,26 +55,27 @@ def create_tpi_params(a_tax_income, b_tax_income, c_tax_income,
                       d_tax_income,
                       b_ellipse, upsilon, J, S, T, beta, sigma, alpha, Z,
                       delta, ltilde, nu, g_y, tau_payroll, retire,
-                      mean_income_data, get_baseline=True, **kwargs):
+                      mean_income_data, get_baseline=True, output_dir="./OUTPUT", **kwargs):
 
 
 
 
-    #variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "rb"))
-    #for key in variables:
-    #    globals()[key] = variables[key]
     if get_baseline:
-        variables = pickle.load(open("OUTPUT/SSinit/ss_init_vars.pkl", "rb"))
+        ss_init = os.path.join(output_dir, "SSinit/ss_init_vars.pkl")
+        variables = pickle.load(open(ss_init, "rb"))
         for key in variables:
             globals()[key] = variables[key]
     else:
-        variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "rb"))
+        params_path = os.path.join(output_dir, "Saved_moments/params_changed.pkl")
+        variables = pickle.load(open(params_path, "rb"))
         for key in variables:
             globals()[key] = variables[key]
-        variables = pickle.load(open("OUTPUT/SS/ss_vars.pkl", "rb"))
+        var_path = os.path.join(output_dir, "SS/ss_vars.pkl")
+        variables = pickle.load(open(var_path, "rb"))
         for key in variables:
             globals()[key] = variables[key]
-        variables = pickle.load(open("OUTPUT/SSinit/ss_init_tpi_vars.pkl", "rb"))
+        init_tpi_vars = os.path.join(output_dir, "SSinit/ss_init_tpi_vars.pkl")
+        variables = pickle.load(open(init_tpi_vars, "rb"))
         for key in variables:
             globals()[key] = variables[key]
 
@@ -241,7 +245,7 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
     return list(error1.flatten()) + list(error2.flatten())
 
 
-def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, parameters, g_n_vector, omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, chi_n, get_baseline=False, **kwargs):
+def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, parameters, g_n_vector, omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, chi_n, get_baseline=False, output_dir="./OUTPUT", **kwargs):
 
     # Initialize Time paths
     domain = np.linspace(0, T, T)
@@ -289,7 +293,7 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, parameters, g_n_vector, 
                 y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
             plt.plot(np.arange(
                 T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
-            plt.savefig("OUTPUT/TPI_K")
+            plt.savefig(os.path.join(TPI_FIG_DIRECTORY, "TPI_K"))
         # Uncomment the following print statements to make sure all euler equations are converging.
         # If they don't, then you'll have negative consumption or consumption spikes.  If they don't,
         # it is the initial guesses.  You might need to scale them differently.  It is rather delicate for the first 
@@ -445,6 +449,8 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, parameters, g_n_vector, 
             'tax_path':tax_path, 'winit':winit}
 
     if get_baseline:
-        pickle.dump(output, open("OUTPUT/TPIinit/TPIinit_vars.pkl", "wb"))
+        tpi_init_vars = os.path.join(output_dir, "TPIinit/TPIinit_vars.pkl")
+        pickle.dump(output, open(tpi_init_vars, "wb"))
     else:
-        pickle.dump(output, open("OUTPUT/TPI/TPI_vars.pkl", "wb"))
+        tpi_vars = os.path.join(output_dir, "TPI/TPI_vars.pkl")
+        pickle.dump(output, open(tpi_vars, "wb"))

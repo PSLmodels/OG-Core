@@ -35,13 +35,18 @@ import firm
 ------------------------------------------------------------------------
 '''
 
-variables = pickle.load(open("OUTPUT/SSinit/ss_init_vars.pkl", "rb"))
+TPI_FIG_DIR = "TPI_FIG"
+VAR_DIR = "OUTPUT"
+ss_init = os.path.join(VAR_DIR, "SSinit/ss_init_vars.pkl")
+variables = pickle.load(open(ss_init, "rb"))
 for key in variables:
     globals()[key] = variables[key]
-variables = pickle.load(open("OUTPUT/TPIinit/TPIinit_vars.pkl", "rb"))
+tpi_init = os.path.join(VAR_DIR, "TPIinit/TPIinit_vars.pkl")
+variables = pickle.load(open(tpi_init, "rb"))
 for key in variables:
     globals()[key] = variables[key]
-variables = pickle.load(open("OUTPUT/Saved_moments/params_given.pkl", "rb"))
+params_given = os.path.join(VAR_DIR, "Saved_moments/params_given.pkl")
+variables = pickle.load(open(params_given, "rb"))
 for key in variables:
     globals()[key] = variables[key]
 
@@ -113,13 +118,16 @@ utility_period_init = utility_period.sum(1)
 '''
 
 
-variables = pickle.load(open("OUTPUT/SS/ss_vars.pkl", "rb"))
+ss_vars = os.path.join(VAR_DIR, "SS/ss_vars.pkl")
+variables = pickle.load(open(ss_vars, "rb"))
 for key in variables:
     globals()[key] = variables[key]
-variables = pickle.load(open("OUTPUT/TPI/TPI_vars.pkl", "rb"))
+tpi_vars = os.path.join(VAR_DIR, "TPI/TPI_vars.pkl")
+variables = pickle.load(open(tpi_vars, "rb"))
 for key in variables:
     globals()[key] = variables[key]
-variables = pickle.load(open("OUTPUT/Saved_moments/params_changed.pkl", "rb"))
+params_changed = os.path.join(VAR_DIR, "Saved_moments/params_changed.pkl")
+variables = pickle.load(open(params_changed, "rb"))
 for key in variables:
     globals()[key] = variables[key]
 
@@ -182,14 +190,16 @@ plt.plot(np.arange(T), Kpath_TPI[:T], 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Aggregate Capital Stock $\hat{K}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI/TPI_K")
+TPI_K = os.path.join(TPI_FIG_DIR, "TPI/TPI_K")
+plt.savefig(TPI_K) 
 
 plt.figure()
 plt.plot(np.arange(T), Kpath_TPIbase[:T], 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Aggregate Capital Stock $\hat{K}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPIinit/TPI_K")
+TPI_K = os.path.join(TPI_FIG_DIR, "TPIinit/TPI_K")
+plt.savefig(TPI_K) 
 
 plt.figure()
 plt.plot(np.arange(T), Lpath_TPIbase[:T], 'b', linewidth=2, label='Baseline')
@@ -197,14 +207,16 @@ plt.plot(np.arange(T), Lpath_TPI[:T], 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Aggregate Labor Supply $\hat{L}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI/TPI_L")
+TPI_L = os.path.join(TPI_FIG_DIR, "TPI/TPI_L")
+plt.savefig(TPI_L) 
 
 plt.figure()
 plt.plot(np.arange(T), Lpath_TPIbase[:T], 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Aggregate Labor Supply $\hat{L}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPIinit/TPI_L")
+TPI_L = os.path.join(TPI_FIG_DIR, "TPIinit/TPI_L")
+plt.savefig(TPI_L) 
 
 plt.figure()
 plt.plot(np.arange(T), (y_mat_init*omega_stationary.reshape(T, S, 1)*lambdas).sum(1).sum(1)[:T], 'b', linewidth=2, label='Baseline')
@@ -212,14 +224,16 @@ plt.plot(np.arange(T), (y_mat*omega_stationary.reshape(T, S, 1)*lambdas).sum(1).
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Aggregate Output $\hat{Y}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI/TPI_Y")
+TPI_Y = os.path.join(TPI_FIG_DIR, "TPI/TPI_Y")
+plt.savefig(TPI_Y) 
 
 plt.figure()
 plt.plot(np.arange(T), (y_mat_init*omega_stationary.reshape(T, S, 1)*lambdas).sum(1).sum(1)[:T], 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Aggregate Output $\hat{Y}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPIinit/TPI_Y")
+TPI_Y = os.path.join(TPI_FIG_DIR, "TPIinit/TPI_Y")
+plt.savefig(TPI_Y) 
 
 plt.figure()
 plt.plot(np.arange(T), w_base[:T], 'b', linewidth=2, label='Baseline')
@@ -227,14 +241,16 @@ plt.plot(np.arange(T), winit[:T], 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Wage $\hat{w}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI/TPI_w")
+TPI_w = os.path.join(TPI_FIG_DIR, "TPI/TPI_w")
+plt.savefig(TPI_w) 
 
 plt.figure()
 plt.plot(np.arange(T), w_base[:T], 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Wage $\hat{w}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPIinit/TPI_w")
+TPI_w = os.path.join(TPI_FIG_DIR, "TPIinit/TPI_w")
+plt.savefig(TPI_w) 
 
 plt.figure()
 plt.plot(np.arange(T), r_base[:T], 'b', linewidth=2, label='Baseline')
@@ -242,14 +258,16 @@ plt.plot(np.arange(T), rinit[:T], 'g--', linewidth=2, label="Tax")
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Rental Rate $\hat{r}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI/TPI_r")
+TPI_r = os.path.join(TPI_FIG_DIR, "TPI/TPI_r")
+plt.savefig(TPI_r) 
 
 plt.figure()
 plt.plot(np.arange(T), r_base[:T], 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Rental Rate $\hat{r}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPIinit/TPI_r")
+TPI_r = os.path.join(TPI_FIG_DIR, "TPIinit/TPI_r")
+plt.savefig(TPI_r) 
 
 X3, Y3 = np.meshgrid(np.arange(S), np.arange(J)+1)
 cmap2 = matplotlib.cm.get_cmap('winter')
@@ -259,7 +277,8 @@ ax5.set_xlabel(r'time-$t$')
 ax5.set_ylabel(r'ability-$j$')
 ax5.set_zlabel(r'Utility $\bar{u}_{j,t}$')
 ax5.plot_surface(X3, Y3, ((utility_lifetime - utility_lifetime_init)/np.abs(utility_lifetime_init)).T, rstride=1, cstride=1, cmap=cmap2)
-plt.savefig('OUTPUT/TPI/utility_lifetime_percdif')
+utility_lifetime_percdif = os.path.join(TPI_FIG_DIR, "TPI/utility_lifetime_percdif")
+plt.savefig(utility_lifetime_percdif)
 
 fig5 = plt.figure()
 ax5 = fig5.gca(projection='3d')
@@ -267,7 +286,8 @@ ax5.set_xlabel(r'time-$t$')
 ax5.set_ylabel(r'ability-$j$')
 ax5.set_zlabel(r'Utility $\bar{u}_{j,t}$')
 ax5.plot_surface(X3, Y3, (utility_lifetime_init).T, rstride=1, cstride=1, cmap=cmap2)
-plt.savefig('OUTPUT/TPIinit/utility_lifetime')
+utility_lifetime = os.path.join(TPI_FIG_DIR, "TPIinit/utility_lifetime")
+plt.savefig(utility_lifetime)
 
 fig5 = plt.figure()
 ax5 = fig5.gca(projection='3d')
@@ -275,7 +295,8 @@ ax5.set_xlabel(r'time-$t$')
 ax5.set_ylabel(r'ability-$j$')
 ax5.set_zlabel(r'Utility $\bar{u}_{j,t}$')
 ax5.plot_surface(X3, Y3, utility_lifetime.T, rstride=1, cstride=1, cmap=cmap2)
-plt.savefig('OUTPUT/TPI/utility_lifetime')
+utility_lifetime = os.path.join(TPI_FIG_DIR, "TPI/utility_lifetime")
+plt.savefig(utility_lifetime)
 
 fig5 = plt.figure()
 ax5 = fig5.gca(projection='3d')
@@ -283,7 +304,8 @@ ax5.set_xlabel(r'time-$t$')
 ax5.set_ylabel(r'ability-$j$')
 ax5.set_zlabel(r'Utility $\bar{u}_{j,t}$')
 ax5.plot_surface(X3, Y3, ((utility_period - utility_period_init)/np.abs(utility_period_init)).T, rstride=1, cstride=1, cmap=cmap2)
-plt.savefig('OUTPUT/TPI/utility_period_percdif')
+utility_period_percdif = os.path.join(TPI_FIG_DIR, "TPI/utility_period_percdif")
+plt.savefig(utility_period_percdif)
 
 fig5 = plt.figure()
 ax5 = fig5.gca(projection='3d')
@@ -291,7 +313,8 @@ ax5.set_xlabel(r'time-$t$')
 ax5.set_ylabel(r'ability-$j$')
 ax5.set_zlabel(r'Utility $\bar{u}_{j,t}$')
 ax5.plot_surface(X3, Y3, (utility_period_init).T, rstride=1, cstride=1, cmap=cmap2)
-plt.savefig('OUTPUT/TPIinit/utility_period')
+utility_period = os.path.join(TPI_FIG_DIR, "TPIinit/utility_period")
+plt.savefig(utility_period)
 
 fig5 = plt.figure()
 ax5 = fig5.gca(projection='3d')
@@ -299,7 +322,8 @@ ax5.set_xlabel(r'time-$t$')
 ax5.set_ylabel(r'ability-$j$')
 ax5.set_zlabel(r'Utility $\bar{u}_{j,t}$')
 ax5.plot_surface(X3, Y3, utility_period.T, rstride=1, cstride=1, cmap=cmap2)
-plt.savefig('OUTPUT/TPI/utility_period')
+utility_period = os.path.join(TPI_FIG_DIR, "TPI/utility_period")
+plt.savefig(utility_period)
 
 
 '''
@@ -317,7 +341,8 @@ for i in xrange(J):
     plt.xlabel(r"Time $t$")
     plt.ylabel(r"Aggregate $\hat{BQ_{j,t}}$")
     plt.legend(loc=0)
-    plt.savefig("OUTPUT/TPI/TPI_B_j{}".format(i+1))
+    fig_i = os.path.join(TPI_FIG_DIR, "TPI/TPI_B_j{}".format(i+1))
+    plt.savefig(fig_i)
 
 '''
 ------------------------------------------------------------------------
@@ -335,7 +360,8 @@ plt.ylabel('Error Value')
 plt.xlabel(r'Time $t$')
 plt.legend(loc=0)
 plt.title('Maximum Euler Error for each period across S and J')
-plt.savefig('OUTPUT/TPIinit/euler_errors_TPI')
+euler_errors_TPI = os.path.join(TPI_FIG_DIR, "TPIinit/euler_errors_TPI")
+plt.savefig(euler_errors_TPI)
 
 domain = np.linspace(1, T, T)
 plt.figure()
@@ -345,7 +371,8 @@ plt.ylabel('Error Value')
 plt.xlabel(r'Time $t$')
 plt.legend(loc=0)
 plt.title('Maximum Euler Error for each period across S and J')
-plt.savefig('OUTPUT/TPI/euler_errors_TPI')
+euler_errors_TPI = os.path.join(TPI_FIG_DIR, "TPI/euler_errors_TPI")
+plt.savefig(euler_errors_TPI)
 
 '''
 ------------------------------------------------------------------------
@@ -436,7 +463,8 @@ plt.plot(np.arange(T), gini_cols(b_mat[:T], omega_stationary_gini), 'g--', linew
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{b}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI/gini_b_cols")
+gini_b_cols = os.path.join(TPI_FIG_DIR, "TPI/gini_b_cols")
+plt.savefig(gini_b_cols) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_cols(n_mat_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
@@ -444,7 +472,8 @@ plt.plot(np.arange(T), gini_cols(n_mat[:T], omega_stationary_gini), 'g--', linew
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{l}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI/gini_l_cols")
+gini_l_cols = os.path.join(TPI_FIG_DIR, "TPI/gini_l_cols")
+plt.savefig(gini_l_cols) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_cols(y_mat_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
@@ -452,7 +481,8 @@ plt.plot(np.arange(T), gini_cols(y_mat[:T], omega_stationary_gini), 'g--', linew
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{y}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI/gini_y_cols")
+gini_y_cols = os.path.join(TPI_FIG_DIR, "TPI/gini_y_cols")
+plt.savefig(gini_y_cols) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_cols(c_path_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
@@ -460,7 +490,8 @@ plt.plot(np.arange(T), gini_cols(c_path[:T], omega_stationary_gini), 'g--', line
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{c}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI/gini_c_cols")
+gini_c_cols = os.path.join(TPI_FIG_DIR, "TPI/gini_c_cols")
+plt.savefig(gini_c_cols) 
 
 
 plt.figure()
@@ -469,7 +500,8 @@ plt.plot(np.arange(T), gini_colj(b_mat[:T], omega_stationary_gini), 'g--', linew
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{b}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI/gini_b_colj")
+gini_b_colj = os.path.join(TPI_FIG_DIR, "TPI/gini_b_colj")
+plt.savefig(gini_b_colj) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_colj(n_mat_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
@@ -477,7 +509,8 @@ plt.plot(np.arange(T), gini_colj(n_mat[:T], omega_stationary_gini), 'g--', linew
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{l}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI/gini_l_colj")
+gini_l_colj = os.path.join(TPI_FIG_DIR, "TPI/gini_l_colj")
+plt.savefig(gini_l_colj) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_colj(y_mat_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
@@ -485,7 +518,8 @@ plt.plot(np.arange(T), gini_colj(y_mat[:T], omega_stationary_gini), 'g--', linew
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{y}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI/gini_y_colj")
+gini_y_colj = os.path.join(TPI_FIG_DIR, "TPI/gini_y_colj")
+plt.savefig(gini_y_colj) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_colj(c_path_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
@@ -493,7 +527,8 @@ plt.plot(np.arange(T), gini_colj(c_path[:T], omega_stationary_gini), 'g--', line
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{c}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI/gini_c_colj")
+gini_c_colj = os.path.join(TPI_FIG_DIR, "TPI/gini_c_colj")
+plt.savefig(gini_c_colj) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_nocol(b_mat_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
@@ -501,7 +536,8 @@ plt.plot(np.arange(T), gini_nocol(b_mat[:T], omega_stationary_gini), 'g--', line
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{b}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI/gini_b_nocol")
+gini_b_nocol = os.path.join(TPI_FIG_DIR, "TPI/gini_b_nocol")
+plt.savefig(gini_b_nocol) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_nocol(n_mat_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
@@ -509,7 +545,8 @@ plt.plot(np.arange(T), gini_nocol(n_mat[:T], omega_stationary_gini), 'g--', line
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{l}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI/gini_l_nocol")
+gini_l_nocol = os.path.join(TPI_FIG_DIR, "TPI/gini_l_nocol")
+plt.savefig(gini_l_nocol) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_nocol(y_mat_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
@@ -517,7 +554,8 @@ plt.plot(np.arange(T), gini_nocol(y_mat[:T], omega_stationary_gini), 'g--', line
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{y}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI/gini_y_nocol")
+gini_y_nocol = os.path.join(TPI_FIG_DIR, "TPI/gini_y_nocol")
+plt.savefig(gini_y_nocol) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_nocol(c_path_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
@@ -525,7 +563,8 @@ plt.plot(np.arange(T), gini_nocol(c_path[:T], omega_stationary_gini), 'g--', lin
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{c}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPI/gini_c_nocol")
+gini_c_nocol = os.path.join(TPI_FIG_DIR, "TPI/gini_c_nocol")
+plt.savefig(gini_c_nocol) 
 
 '''
 ------------------------------------------------------------------------
@@ -538,84 +577,96 @@ plt.plot(np.arange(T), gini_cols(b_mat_init[:T], omega_stationary_init_gini), 'b
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{b}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPIinit/gini_b_cols")
+gini_b_cols = os.path.join(TPI_FIG_DIR, "TPIinit/gini_b_cols")
+plt.savefig(gini_b_cols) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_cols(n_mat_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{l}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPIinit/gini_l_cols")
+gini_l_cols = os.path.join(TPI_FIG_DIR, "TPIinit/gini_l_cols")
+plt.savefig(gini_l_cols) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_cols(y_mat_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{y}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPIinit/gini_y_cols")
+gini_y_cols = os.path.join(TPI_FIG_DIR, "TPIinit/gini_y_cols")
+plt.savefig(gini_y_cols) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_cols(c_path_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{c}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPIinit/gini_c_cols")
+gini_c_cols = os.path.join(TPI_FIG_DIR, "TPIinit/gini_c_cols")
+plt.savefig(gini_c_cols) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_colj(b_mat_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{b}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPIinit/gini_b_colj")
+gini_b_colj = os.path.join(TPI_FIG_DIR, "TPIinit/gini_b_colj")
+plt.savefig(gini_b_colj) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_colj(n_mat_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{l}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPIinit/gini_l_colj")
+gini_l_colj = os.path.join(TPI_FIG_DIR, "TPIinit/gini_l_colj")
+plt.savefig(gini_l_colj) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_colj(y_mat_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{y}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPIinit/gini_y_colj")
+gini_y_colj = os.path.join(TPI_FIG_DIR, "TPIinit/gini_y_colj")
+plt.savefig(gini_y_colj) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_colj(c_path_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{c}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPIinit/gini_c_colj")
+gini_c_colj = os.path.join(TPI_FIG_DIR, "TPIinit/gini_c_colj")
+plt.savefig(gini_c_colj) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_nocol(b_mat_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{b}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPIinit/gini_b_nocol")
+gini_b_nocol = os.path.join(TPI_FIG_DIR, "TPIinit/gini_b_nocol")
+plt.savefig(gini_b_nocol) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_nocol(n_mat_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{l}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPIinit/gini_l_nocol")
+gini_l_nocol = os.path.join(TPI_FIG_DIR, "TPIinit/gini_l_nocol")
+plt.savefig(gini_l_nocol) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_nocol(y_mat_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{y}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPIinit/gini_y_nocol")
+gini_y_nocol = os.path.join(TPI_FIG_DIR, "TPIinit/gini_y_nocol")
+plt.savefig(gini_y_nocol) 
 
 plt.figure()
 plt.plot(np.arange(T), gini_nocol(c_path_init[:T], omega_stationary_init_gini), 'b', linewidth=2, label='Baseline')
 plt.xlabel(r"Time $t$")
 plt.ylabel(r"Gini for $\hat{c}$")
 plt.legend(loc=0)
-plt.savefig("OUTPUT/TPIinit/gini_c_nocol")
+gini_c_nocol = os.path.join(TPI_FIG_DIR, "TPIinit/gini_c_nocol")
+plt.savefig(gini_c_nocol) 
 
 
 '''

@@ -65,7 +65,8 @@ to extrapolate ability for ages 80-100.
 '''
 
 
-def graph_income(S, J, e, starting_age, ending_age, bin_weights):
+def graph_income(S, J, e, starting_age, ending_age, bin_weights,
+                 output_dir='./OUTPUT'):
     '''
     Graphs the ability matrix (and it's log)
     Inputs:
@@ -92,7 +93,8 @@ def graph_income(S, J, e, starting_age, ending_age, bin_weights):
     if J == 1:
         plt.figure()
         plt.plot(domain, np.log(e))
-        plt.savefig('OUTPUT/Demographics/ability_log')
+        ability = os.path.join(output_dir, "Demographics/ability_log")
+        plt.savefig(ability)
     else:
         fig10 = plt.figure()
         ax10 = fig10.gca(projection='3d')
@@ -101,7 +103,8 @@ def graph_income(S, J, e, starting_age, ending_age, bin_weights):
         ax10.set_ylabel(r'ability type -$j$')
         ax10.set_zlabel(r'log ability $log(e_j(s))$')
         # plt.show()
-        plt.savefig('OUTPUT/Demographics/ability_log')
+        ability = os.path.join(output_dir, "Demographics/ability_log")
+        plt.savefig(ability)
         # 2D Version
         fig112 = plt.figure()
         ax = plt.subplot(111)
@@ -118,11 +121,13 @@ def graph_income(S, J, e, starting_age, ending_age, bin_weights):
         ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
         ax.set_xlabel(r'age-$s$')
         ax.set_ylabel(r'log ability $log(e_j(s))$')
-        plt.savefig('OUTPUT/Demographics/ability_log_2D')
+        ability_2d = os.path.join(output_dir, "Demographics/ability_log_2D")
+        plt.savefig(ability_2d)
     if J == 1:
         plt.figure()
         plt.plot(domain, e)
-        plt.savefig('OUTPUT/Demographics/ability')
+        ability = os.path.join(output_dir, "Demographics/ability")
+        plt.savefig(ability)
     else:
         fig10 = plt.figure()
         ax10 = fig10.gca(projection='3d')
@@ -130,7 +135,8 @@ def graph_income(S, J, e, starting_age, ending_age, bin_weights):
         ax10.set_xlabel(r'age-$s$')
         ax10.set_ylabel(r'ability type -$j$')
         ax10.set_zlabel(r'ability $e_j(s)$')
-        plt.savefig('OUTPUT/Demographics/ability')
+        ability = os.path.join(output_dir, "Demographics/ability")
+        plt.savefig(ability)
 
 
 def arc_tan_func(points, a, b, c):

@@ -18,7 +18,6 @@ import cPickle as pickle
 from pkg_resources import resource_stream, Requirement
 
 
-
 '''
 ------------------------------------------------------------------------
     Functions
@@ -58,7 +57,7 @@ def convex_combo(var1, var2, params):
     return combo
 
 
-def check_wealth_calibration(wealth_model, factor_model, params):
+def check_wealth_calibration(wealth_model, factor_model, params, wd_path):
     '''
     Creates a vector of the percent differences between the
     model and data wealth moments for the two age groups for
@@ -67,11 +66,13 @@ def check_wealth_calibration(wealth_model, factor_model, params):
         wealth_model = model wealth levels (SxJ array)
         factor_model = factor to convert wealth levels to dollars (scalar)
         params = parameters list from model (list)
+        wd_path = path to the wealth data momenets
     Outputs:
         wealth_fits = Fits for how well the model wealth levels match the data wealth levels ((2*J)x1 array)
     '''
     # Import the wealth data moments
-    wealth_dict = pickle.load(open("OUTPUT/Saved_moments/wealth_data_moments.pkl", "rb"))
+    wealth_path = os.path.join(wd_path, "Saved_moments/wealth_data_moments.pkl")
+    wealth_dict = pickle.load(wealth_path, "rb")
     # Set lowest ability group's wealth to be a positive, not negative, number for the calibration
     wealth_dict['wealth_data_array'][2:26, 0] = 500.0
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
