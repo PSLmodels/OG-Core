@@ -69,7 +69,7 @@ def the_inequalizer(dist, pop_weights, ability_weights, S, J):
 '''
 
 
-SS_FIG_DIR = "SS_FIG"
+SS_FIG_DIR = "OUTPUT"
 COMPARISON_DIR = "OUTPUT"
 
 ss_init = os.path.join(SS_FIG_DIR, "SSinit/ss_init_vars.pkl")

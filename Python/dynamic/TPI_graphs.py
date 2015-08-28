@@ -35,7 +35,7 @@ import firm
 ------------------------------------------------------------------------
 '''
 
-TPI_FIG_DIR = "TPI_FIG"
+TPI_FIG_DIR = "OUTPUT"
 VAR_DIR = "OUTPUT"
 ss_init = os.path.join(VAR_DIR, "SSinit/ss_init_vars.pkl")
 variables = pickle.load(open(ss_init, "rb"))
