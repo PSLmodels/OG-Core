@@ -32,7 +32,6 @@ def get_K(b, pop_weights, ability_weights, g_n, method):
     Output:
         K_now = Aggregate Capital (scalar or array)
     '''
-    import pdb;pdb.set_trace()
     K_presum = b * pop_weights * ability_weights
     if method == 'SS':
         K_now = K_presum.sum()
