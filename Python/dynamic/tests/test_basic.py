@@ -7,6 +7,8 @@ import tempfile
 import pickle
 import numpy as np
 
+TOL = 1e-5
+
 @pytest.yield_fixture
 def picklefile1():
     x = {'a': 1}
@@ -49,24 +51,24 @@ def test_compare_dict_basic():
     from dynamic.utils import dict_compare
     lhs = {'a':1, 'b':2}
     rhs = {'c':4, 'b':2}
-    assert not dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs)
+    assert not dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs, tol=TOL)
 
 def test_compare_dict_more_lhs():
     from dynamic.utils import dict_compare
     lhs = {'a':1, 'b':2, 'c':3}
     rhs = {'c':4, 'b':2}
-    assert not dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs)
+    assert not dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs, tol=TOL)
 
 def test_compare_dict_diff_ndarrays():
     from dynamic.utils import dict_compare
     lhs = {'a':np.array([1,2,3]), 'b':2}
     rhs = {'a':np.array([1,3]), 'b':2}
-    assert not dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs)
+    assert not dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs, tol=TOL)
 
 def test_compare_dict_diff_ndarrays2():
     from dynamic.utils import dict_compare
     lhs = {'a':np.array([1.,2.,3.]), 'b':2}
     rhs = {'a':np.array([1.,2.,3.1]), 'b':2}
-    assert not dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs)
+    assert not dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs, tol=TOL)
 
 
