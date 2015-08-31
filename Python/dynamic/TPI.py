@@ -46,7 +46,7 @@ steady state computation in ss_vars.pkl
 ------------------------------------------------------------------------
 '''
 
-TPI_FIG_DIRECTORY = "TPI_FIGURES"
+TPI_FIG_DIR = "OUTPUT"
 
 from .parameters import get_parameters
 globals().update(get_parameters())
@@ -293,7 +293,7 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, parameters, g_n_vector, 
                 y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
             plt.plot(np.arange(
                 T+10), Kpath_TPI[:T+10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
-            plt.savefig(os.path.join(TPI_FIG_DIRECTORY, "TPI_K"))
+            plt.savefig(os.path.join(TPI_FIG_DIR, "TPI_K"))
         # Uncomment the following print statements to make sure all euler equations are converging.
         # If they don't, then you'll have negative consumption or consumption spikes.  If they don't,
         # it is the initial guesses.  You might need to scale them differently.  It is rather delicate for the first 
