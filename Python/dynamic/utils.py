@@ -18,7 +18,6 @@ import cPickle as pickle
 from pkg_resources import resource_stream, Requirement
 
 
-
 '''
 ------------------------------------------------------------------------
     Functions
@@ -58,7 +57,7 @@ def convex_combo(var1, var2, params):
     return combo
 
 
-def check_wealth_calibration(wealth_model, factor_model, params):
+def check_wealth_calibration(wealth_model, factor_model, params, wealth_dir):
     '''
     Creates a vector of the percent differences between the
     model and data wealth moments for the two age groups for
@@ -67,11 +66,13 @@ def check_wealth_calibration(wealth_model, factor_model, params):
         wealth_model = model wealth levels (SxJ array)
         factor_model = factor to convert wealth levels to dollars (scalar)
         params = parameters list from model (list)
+        wealth_dir = path to the wealth data momenets
     Outputs:
         wealth_fits = Fits for how well the model wealth levels match the data wealth levels ((2*J)x1 array)
     '''
     # Import the wealth data moments
-    wealth_dict = pickle.load(open("OUTPUT/Saved_moments/wealth_data_moments.pkl", "rb"))
+    wealth_path = os.path.join(wealth_dir, "Saved_moments/wealth_data_moments.pkl")
+    wealth_dict = pickle.load(wealth_path, "rb")
     # Set lowest ability group's wealth to be a positive, not negative, number for the calibration
     wealth_dict['wealth_data_array'][2:26, 0] = 500.0
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
@@ -99,7 +100,7 @@ def read_file(path, fname):
     else:
         return open(os.path.join(path, fname))
 
-def pickle_file_compare(fname1, fname2):
+def pickle_file_compare(fname1, fname2, tol=1e-3):
     '''
     Read two pickle files and unpickle each. We assume that each resulting
     object is a dictionary. The values of each dict are either numpy arrays
@@ -109,18 +110,61 @@ def pickle_file_compare(fname1, fname2):
     pkl1 = pickle.load(open(fname1, 'rb'))
     pkl2 = pickle.load(open(fname2, 'rb'))
 
-    return dict_compare(fname1, pkl1, fname2, pkl2)
+    return dict_compare(fname1, pkl1, fname2, pkl2, tol=tol)
 
 
-def dict_compare(fname1, pkl1, fname2, pkl2):
+def comp_array(name, a, b, tol, unequal):
+    '''
+        Compare two arrays in the L inifinity norm
+        Return True if | a - b | < tol, False otherwise
+        If not equal, add items to the unequal list
+        name: the name of the value being compared
+    '''
+    if not a.shape == b.shape:
+        print "unequal shpaes for {0} comparison ".format(str(name))
+        unequal.append((str(name), a, b))
+        return False
+
+    else:
+        linfnorm = np.max(abs(a - b))
+        if not linfnorm < tol:
+            print "diff for {0} is {1} which is NOT OK".format(str(name), linfnorm)
+            unequal.append((str(name), a, b))
+            return False
+        else:
+            print "linf is {0} which is OK".format(linfnorm)
+            return True
+
+
+def comp_scalar(name, a, b, tol, unequal):
+    '''
+        Compare two scalars in the L inifinity norm
+        Return True if abs(a - b) < tol, False otherwise
+        If not equal, add items to the unequal list
+    '''
+    diff = abs(a - b)
+    if not diff < tol:
+        print "diff for {0} is {1} which is NOT OK".format(str(name), diff)
+        unequal.append((str(name), str(a), str(b)))
+        return False
+    else:
+        print "diff is {0} which is OK".format(diff)
+        return True
+
+
+def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False):
     '''
     Compare two dictionaries. The values of each dict are either
     numpy arrays
     or else types that are comparable with the == operator.
+    For arrays, they are considered the same if |x - y| < tol in
+    the L_inf norm.
+    For scalars, they are considered the same if x - y < tol
     '''
 
     keys1 = set(pkl1.keys())
     keys2 = set(pkl2.keys())
+    check = True
     if keys1 != keys2:
         if len(keys1) == len(keys2):
             extra1 = keys1 - keys2
@@ -142,22 +186,20 @@ def dict_compare(fname1, pkl1, fname2, pkl2):
         print msg.format(bigger_file, res)
         return False
     else:
-        check = True
         unequal_items = []
         for k, v in pkl1.items():
             if type(v) == np.ndarray:
-                if not v.shape == pkl2[k].shape:
-                    unequal_items.append((str(k), v, pkl2[k]))
-                elif not np.allclose(v, pkl2[k]):
-                    unequal_items.append((str(k), v, pkl2[k]))
+                check &= comp_array(k, v, pkl2[k], tol, unequal_items)
             else:
-                if not v == pkl2[k]:
-                    unequal_items.append((str(k), str(v), str(pkl2[k])))
+                try:
+                    check &= comp_scalar(k, v, pkl2[k], tol, unequal_items)
+                except TypeError:
+                    check &= comp_array(k, np.array(v), np.array(pkl2[k]), tol, unequal_items)
 
-        if unequal_items:
-            frmt = "{0}: {1} {2}"
-            res = [ frmt.format(x[0], x[1], x[2]) for x in unequal_items]
+        if verbose == True and unequal_items:
+            frmt = "Name {0}"
+            res = [ frmt.format(x[0]) for x in unequal_items]
             print "Different arrays: ", res
             return False
 
-    return True
+    return check
