@@ -426,14 +426,14 @@ Given the CRS production function, we need to find total output to determine the
 
 From the solution to the household's problem, we have the demands for each consumption good, $c_{i}$.  We'll let the aggregate demand for consumption goods from industry $i$ (summing over $S$ and $J$), be given by $C_{i}$.  Total demand for output from industry $i$ is the sum of the demands from consumption and investment.
 
-To find the demands for investment, note that in the SS, $I_{i}=\delta K_{i}$.  Recall that from Equation \ref{eqn:k_demand}, we can write the demand for capital as a function of output.  We can use this to find the total demand for output from each industry:
+To find the demands for investment, note that in the SS, $I_{i}=\delta K_{i}$.  Recall that from Equation \ref{eqn:k_demand2}, we can write the demand for capital as a function of output.  We can use this to find the total demand for output from each industry:
 
 \begin{equation}
 \label{eqn:find_output}
 \begin{split}
 X_{i} &= C_{i} + \delta K_{i} \\
-X_{i} &= C_{i} + \delta \left(\frac{\gamma X_{i}}{\left(\frac{(r+\delta)}{p_{i}}\right)^{\epsilon}A^{1-\epsilon}} \right)\\
-\implies X_{i} &= \frac{C_{i}}{1-\frac{\delta \gamma}{\left(\frac{(r+\delta)}{p_{i}}\right)^{\epsilon}A^{1-\epsilon}}}
+X_{i} &= C_{i} + \delta \left( \frac{X_{i}}{A}\left[\gamma^{\frac{1}{\epsilon}}+(1-\gamma)^{\frac{1}{\epsilon}}\left(\frac{r+\delta}{w}\right)^{\epsilon-1}\left(\frac{1-\gamma}{\gamma}\right)^{\frac{\epsilon-1}{\epsilon}}\right]^{\frac{\epsilon}{1-\epsilon}}\right)\\
+\implies X_{i} &= \frac{C_{i}}{1-\delta\left( \frac{1}{A}\left[\gamma^{\frac{1}{\epsilon}}+(1-\gamma)^{\frac{1}{\epsilon}}\left(\frac{r+\delta}{w}\right)^{\epsilon-1}\left(\frac{1-\gamma}{\gamma}\right)^{\frac{\epsilon-1}{\epsilon}}\right]^{\frac{\epsilon}{1-\epsilon}}\right)}
 \end{split}
 \end{equation}  
 
@@ -486,16 +486,16 @@ To compute the solution to the SS of the model with two firms, we'll build off t
 		\item Use a root finder (e.g. \texttt{fsolve}) to determine the optimal allocations given $\bar{r}$ and $\bar{w}$.
 		\end{enumerate}
 	\end{itemize}
-\item \textcolor{red}{Aggregate over $J$ and $S$ to determine aggregate supply of labor and capital (where savings=capital), and aggregate consumption of each good; $K$, $EL$, $C_{1}$, $C_{2}$.}
+\item \textcolor{red}{Aggregate over $J$ and $S$ to determine aggregate supply of labor and capital (where savings=capital), and aggregate consumption of each good; $K^{s}$, ${EL}^{s}$, $C_{1}$, $C_{2}$.}
 	\begin{itemize}
-	\item Remember to find $EL$ as the aggregate amount of effective labor units supplied, so you not only want to sum over $J$ and $S$, but weight by the number of effective labor units each type/age supplies.
+	\item Remember to find ${EL}^{s}$ as the aggregate amount of effective labor units supplied, so you not only want to sum over $J$ and $S$, but weight by the number of effective labor units each type/age supplies.
 	\end{itemize}
 \item \textcolor{red}{Use the aggregate demands for each of the two consumption goods and Equation \ref{eqn:find_output} to solve for the output from each industry $i$.}
 \item \textcolor{red}{Use Equations \ref{eqn:l_demand2} and \ref{eqn:k_demand2} to solve for the factor demands from each industry.}
-\item \textcolor{red}{Find the aggregate capital stock demanded: $K = K_{1}+K_{2}$.}
-\item \textcolor{red}{Find the aggregate effective labor demanded: $EL = EL_{1}+EL_{2}$.}
+\item \textcolor{red}{Find the aggregate capital stock demanded: $K^{d} = K_{1}+K_{2}$.}
+\item \textcolor{red}{Find the aggregate effective labor demanded: $EL^{d} = EL_{1}+EL_{2}$.}
 \item \textcolor{red}{Take differences between aggregate amounts supplied and demanded.}
-\item \textcolor{red}{Use a root finder to determine the eq'm $\bar{r}$ and $\bar{w}$ (i.e. it'll find the $\bar{r}$ and $\bar{w}$ where $K_{demand}-K_{supply}=0$ and $EL_{demand}-EL_{supply}=0$).}
+\item \textcolor{red}{Use a root finder to determine the eq'm $\bar{r}$ and $\bar{w}$ (i.e. it'll find the $\bar{r}$ and $\bar{w}$ where $K^{d}-K^{s}=0$ and ${EL}^{d}-{EL}_{s}=0$).}
 \end{enumerate}
 
 You might start by setting $\bar{c}_{1}=\bar{c}_{2}=0$ and $\alpha_{1}=\alpha_{2}=(1-\alpha_{1})=0.5$ (note that the $\alpha$'s have to sum to one).  Once you solve the model with this parameterization, try changing these parameters to make sure everything works out.  Note that you won't want to set the minimum consumption amounts too high since that may result in the consumer not being able to afford positive amounts of the composite consumption good.
@@ -514,12 +514,18 @@ This section proposes and alternative computational procedure.  This method has 
 
 \begin{enumerate}
 \setcounter{enumi}{6}
-\item With the factor demands in hand, use the firm FOCS to find the implied wage rate and interest rate for each firm. Call these $r_{new}$ and $w_{new}$.
+\item To ensure market clearing, we'll take the factor demands from all firms but one and use the factor supplies to get the ``residual" factor amounts - and we'll attribute that to the excluded industry.  E.g.:
 	\begin{itemize}
-	\item Note that the implies factor prices should be the same for each firm - so you only need to solve for one, but do a check to make sure they are the same.
+	\item $K_{1} = K^{s} - \sum_{m=2}^{M}K_{m}$ (where $K_{m}$ are determined from Equation \ref{eqn:k_demand2})
+	\item $EL_{1} = {EL}^{s} - \sum_{m=2}^{M}EL_{m}$ (where $EL_{m}$ are determined from Equation \ref{eqn:l_demand2})
+	\item Note that the residual may not be positive - so you'll need to write the code such that negative values are replaced with small values or otherwise avoided
+	\end{itemize}
+\item Use the firm FOCS to find the implied wage rate and interest rate for the residual industry. Call these $r_{new}$ and $w_{new}$.
+	\begin{itemize}
 	\item Note that you'll need to rearrange Equations \ref{eqn:k_demand} and \ref{eqn:l_demand} to find $r$ and $w$ in terms of factor demands and output prices:
 	\item $r = p_{i} MPK(K_{i},EL_{i}) - \delta$
 	\item $w = p_{i} MPL(K_{i},EL_{i}) $
+	\item Note that the implies factor prices should be the same for each firm in eq'm - so do a check to make sure they are the same in the SS solution.
 	\end{itemize}
 \item Take differences between $r_{new}$ and $r$ and $w_{new}$ and $w$.
 \item Use a root finder to determine the eq'm $r$ and $w$ (i.e. it'll find the where $r_{new}-r=0$ and $w_{new}-w=0$).
@@ -1088,7 +1094,7 @@ Equations \ref{eqn:foc_l_ss} through \ref{eqn:i_ss} give us $\overline{EL}_{i}, 
 
 \begin{equation}
 \label{eqn:k_ss}
-\bar{K}_{i} = \gamma_{i}\bar{X}_{i}\bar{A}_{i}^{1-\epsilon_{i}} \left(\frac{\bar{p}_{i}}{\bar{p}^{k}_{i}(\bar{r}+\delta)} \right)^{\epsilon_{i}} = K(\bar{p}_{i},\bar{p}^{k}_{i},\bar{r},\bar{X}_{i})
+\bar{K}_{i} = \gamma_{i}\bar{X}_{i}\bar{A}_{i}^{\epsilon_{i}-1} \left(\frac{\bar{p}_{i}}{\bar{p}^{k}_{i}(\bar{r}+\delta)} \right)^{\epsilon_{i}} = K(\bar{p}_{i},\bar{p}^{k}_{i},\bar{r},\bar{X}_{i})
 \end{equation}
 
 \begin{equation}
@@ -1115,7 +1121,7 @@ Alternatively, we can solve for factor demands using the firm FOC for capital an
 
 This implies the demand for labor as a function of the demand for capital:
 \begin{equation}
-\label{eqn:l_demand2}
+\label{eqn:l_demand_dyn_ss}
 \overline{EL}_{m} = \frac{1-\gamma_{m}}{\gamma_{m}}\left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}}\left( \bar{r}+ \delta_{m}\right)^{\epsilon_{m}}\bar{K}_{m}
 \end{equation}
 
@@ -1135,11 +1141,12 @@ We can then rearrange this to write the demand for capital as a function of outp
 
 \begin{equation}
 \begin{split}
+\label{eqn:k_demand_dyn_ss}
 \bar{K}_{m} &= \frac{\bar{X}_{m}}{\bar{A}_{m}}\left[\gamma_{m}^{\frac{1}{\epsilon_{m}}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}} \left(\frac{1-\gamma_{m}}{\gamma_{m}}\right)^{\frac{\epsilon_{m}-1}{\epsilon_{m}}} \left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}-1}\left( \bar{r}+\delta_{m}\right)^{\epsilon_{m}-1}  \right]^{\frac{\epsilon_{m}}{1-\epsilon_{m}}}
 \end{split}
 \end{equation}
 
-We can us the above with Equation \ref{eqn:l_demand2} to find the demand for labor as a function of output, prices, and parameters.
+We can us the above with Equation \ref{eqn:l_demand_dyn_ss} to find the demand for labor as a function of output, prices, and parameters.
 
 
 
@@ -1188,7 +1195,7 @@ X_{i,u} = C_{i,u} + \sum_{m=1}^{M}I_{m}*\xi{m,i}
 
 \subsection*{Finding factor demands}
 
-Same as in the static problem, updated to use the FOCs from the dynamic firm's problem.  The resulting demands for the steady state are given in Equations \ref{eqn:k_ss} and \ref{eqn:l_ss}.  For the transition path, they are given by Equations \ref{eqn:solve_dyn_k} and \ref{eqn:solve_dyn_l}.
+Same as in the static problem, updated to use the FOCs from the dynamic firm's problem.  The resulting demands for the steady state are given in Equations \ref{eqn:k_demand_dyn_ss} and \ref{eqn:l_demand_dyn_ss}.  For the transition path, they are given by Equations \ref{eqn:solve_dyn_k} and \ref{eqn:solve_dyn_l}.
 
 
 \subsection*{Market clearing}
@@ -1202,8 +1209,9 @@ There are three markets - the labor market, the asset market, and the goods mark
 \noindent\noindent This says that the total value of assets held by the households must equal the total value of the firms in which they own shares. We can determine the steady state value of the firm as :
 
 \begin{equation}
-\label{eqn:solve_firm_value}
-\bar{V}_{m} =\frac{\overline{DIV}_{m}}{\bar{r}}
+\label{eqn:solve_firm_value_ss}
+%\bar{V}_{m} =\frac{\overline{DIV}_{m}}{\bar{r}}
+\bar{V}_{m} =\bar{q}_{m}\bar{K}_{m}
 \end{equation}
 
 The condition for the labor market is: 
@@ -1232,11 +1240,11 @@ To compute the solution to the SS of the model with dynamic firms, we'll use a s
 	\item Here, $B$ is the sum of saving by all households.  We won't use $K$ since households don't hold any capital in this setup.
 	\item Remember to find $EL$ as the aggregate amount of effective labor units supplied, so you not only want to sum over $J$ and $S$, but weight by the number of effective labor units each type/age supplies.
 	\end{itemize}
-\item Use the aggregate demands for each of the two consumption goods and Equation \ref{eqn:find_output} to solve for the output from each industry $i$.
-\item Use Equations \ref{eqn:l_ss} and \ref{eqn:k_ss} to solve for the factor demands from each industry.
-\item Solve for the value of each firm using Equation \ref{eqn:solve_firm_value}
-\item Find the aggregate value of firms: $V = V_{1}+V_{2}$.
-\item Find the aggregate effective labor demanded: $EL = EL_{1}+EL_{2}$.
+\item Use the aggregate demands for each of the consumption goods and investment demand in Equation \ref{eqn:output_demand_dyn} to solve for the output from each industry $i$.
+\item Use Equations \ref{eqn:k_demand_dyn_ss} and \ref{eqn:l_demand_dyn_ss} to solve for the factor demands from each industry.
+\item Solve for the value of each firm using Equation \ref{eqn:solve_firm_value_ss}
+\item Find the aggregate value of firms: $\bar{V} = \sum_{m=1}^{M}\bar{V}_{m}$.
+\item Find the aggregate effective labor demanded: $\overline{EL} =\sum_{m=1}^{M} \overline{EL}_{m}$.
 \item Take differences between aggregate amounts of labor supplied and demanded and between aggregate savings and aggregate firm value.
 \item Use a root finder to determine the eq'm $\bar{r}$ and $\bar{w}$ (i.e. it'll find the $\bar{r}$ and $\bar{w}$ where $\bar{V}-\bar{B}=0$ and $\overline{EL}_{demand}-\overline{EL}_{supply}=0$).
 \end{enumerate}
@@ -1504,19 +1512,41 @@ The necessary conditions of the firm's problem in the steady state are:
 \end{equation}
 
 
-We can use these equations to solve for the endogenous variables.  In particular, the equations for factor demands in the steady state are given by:
+We solve for marginal q using Equations \ref{eqn:lagrange_foc_i_tax_ss} and \ref{eqn:lagrange_foc_ktau_tax_ss}:
+
+\begin{equation}
+\label{eqn:q_tax_ss}
+ \bar{q}_{m} = \bar{p}^{k}_{m}\left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right)\left[1 - (1-\bar{\delta}^{\tau}_{m})\left(\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\bar{r}+\bar{\delta}^{\tau}_{m}\right)^{-1} \right) \right]  \\
+\end{equation}
+
+
+We can solve for factor demands using the firm FOC for capital and labor together with the production function.  This method of solving for factor demands helpful in the computational solution.  To do this, note that dividing these two necessary conditions gives the optimal capital-labor ratio of the firm as a function of parameters and prices.  This capital-labor ratio can then be substituted into the firm's production function to find the factor demands as functions of the demand for output and prices: 
 
 \begin{equation}
 \label{eqn:k_demand_tax_ss}
-\bar{K}_{m} = \bar{A}_{m}^{\epsilon_{m}-1}\gamma_{m}\bar{X}_{m}\left(\frac{\bar{p}^{k}_{m}}{\bar{p}}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}\right)^{-1}\right)\right)^{-\epsilon_{m}}
+\bar{K}_{m} = \frac{\bar{X}_{m}}{\bar{A}_{m}}\left[\gamma^{\frac{1}{\epsilon_{m}}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}}\left(\frac{1-\gamma_{m}}{\gamma_{m}}\right)^{\frac{\epsilon_{m}-1}{\epsilon_{m}}}\left(\frac{\bar{q}_{m}}{\bar{w}}\left(\frac{(1-\bar{\tau}^{g})}{(1-\bar{\tau}^{d})(1-\bar{\tau}^{b})}\right)\left(\frac{\bar{r}}{1-\bar{\tau}^{g}}+\delta_{m}\right)\right)^{\epsilon_{m}-1} \right]^{\frac{\epsilon}{1-\epsilon}}
 \end{equation}
 
 \begin{equation}
 \label{eqn:l_demand_tax_ss}
-\overline{EL}_{m} = \bar{A}_{m}^{\epsilon_{m}-1}(1-\gamma_{m})\bar{X}_{m}\left(\frac{\bar{w}}{\bar{p}}\right)^{-\epsilon_{m}}
+\overline{EL}_{m} = \left(\frac{\bar{q}_{m}}{\bar{w}}\left(\frac{(1-\bar{\tau}^{g})}{(1-\bar{\tau}^{d})(1-\bar{\tau}^{b})}\right)\left(\frac{\bar{r}}{1-\bar{\tau}^{g}}+\delta_{m}\right)\right)^{\epsilon_{m}}\left(\frac{1-\gamma_{m}}{\gamma_{m}}\right)\bar{K}_{m} 
 \end{equation}
 
-With this, we can find the other endogenous quantity variables as:
+
+
+It will also be useful to solve for the firm's capital-output and labor-output ratios ($\frac{\bar{K}_{m}}{\bar{X}_{m}}$ and $\frac{\overline{EL}_{m}}{\bar{X}_{m}}$.  To do this, we'll use the firm's FOCs for capital and labor.  We find:
+
+\begin{equation}
+\label{eqn:k_over_x_tax_ss}
+\frac{\bar{K}_{m}}{\bar{X}_{m}} = \gamma_{m}\bar{A}_{m}^{\epsilon_{m}-1} \left(\frac{\bar{q}_{m}}{\bar{w}}\left(\frac{(1-\bar{\tau}^{g})}{(1-\bar{\tau}^{d})(1-\bar{\tau}^{b})}\right)\left(\frac{\bar{r}}{1-\bar{\tau}^{g}}+\delta_{m}\right)\right)^{-\epsilon_{m}}
+\end{equation}
+
+\begin{equation}
+\label{eqn:l_over_x_tax_ss}
+\frac{\overline{EL}_{m}}{\bar{X}_{m}} = (1-\gamma_{m})\bar{A}_{m}^{\epsilon-1}\left(\frac{\bar{p}_{m}}{\bar{w}}\right)^{\epsilon_{m}}
+\end{equation}
+
+With these, we can find the other endogenous quantity variables as:
 
 \begin{equation}
 \bar{I}_{m} = \delta_{m}\bar{K}_{m} 
@@ -1538,41 +1568,39 @@ With this, we can find the other endogenous quantity variables as:
 \begin{equation}
 \overline{VN}_{m} = 0
 \end{equation}
-
-Alternatively, we can solve for factor demands using the firm FOC for capital and labor together with the production function.  This can be helpful in the computational solution.  To do this, note that dividing these two necessary conditions gives the optimal capital-labor ratio of the firm as a function of parameters and prices:
-
-\begin{equation}
-\frac{\bar{K}_{m}}{\overline{EL}_{m}} = \frac{\gamma_{m}}{1-\gamma_{m}}\left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{-\epsilon_{m}}\left(\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}\right)^{-1}\right)\right)^{-\epsilon_{m}}
-\end{equation}
-
-This implies the demand for labor as a function of the demand for capital:
-\begin{equation}
-\label{eqn:l_demand_tax2}
-\overline{EL}_{m} = \frac{1-\gamma_{m}}{\gamma_{m}}\left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}}\left(\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}\right)^{-1}\right)\right)^{\epsilon_{m}}\bar{K}_{m}
-\end{equation}
-
-Substituting this into the CES production function, we have:
-
-\begin{equation}
-\begin{split}
-F(\bar{K}_{m},\overline{EL}_{m})=X_{m} & = \bar{A}_{m}\left[\gamma_{m}^{\frac{1}{\epsilon_{m}}}\bar{K}_{m}^{\frac{\epsilon_{m}-1}{\epsilon}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}}\overline{EL}_{m}^{\frac{\epsilon_{m}-1}{\epsilon}} \right]^{\frac{\epsilon_{m}}{\epsilon_{m}-1}} \\
-& = \bar{A}_{m}\left[\gamma_{m}^{\frac{1}{\epsilon_{m}}}\bar{K}_{m}^{\frac{\epsilon_{m}-1}{\epsilon}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}}\left( \left(\frac{1-\gamma_{m}}{\gamma_{m}}\right)^{\frac{\epsilon_{m}-1}{\epsilon_{m}}}\left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}}  \times \right. \right. \\
-& \left.\left. \left(\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}\right)^{-1}\right)\right)^{\epsilon_{m}}\bar{K}_{m}\right)^{\frac{\epsilon_{m}-1}{\epsilon}} \right]^{\frac{\epsilon_{m}}{\epsilon_{m}-1}}  \\
-& = \bar{A}_{m}\bar{K}_{m}\left[\gamma_{m}^{\frac{1}{\epsilon_{m}}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}} \left(\frac{1-\gamma_{m}}{\gamma_{m}}\right)^{\frac{\epsilon_{m}-1}{\epsilon_{m}}} \times \right. \\
-& \left.  \left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}-1}\left(\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}\right)^{-1}\right)\right)^{\epsilon_{m}-1} \right]^{\frac{\epsilon_{m}}{\epsilon_{m}-1}}
-\end{split}
-\end{equation}
-
-We can then rearrange this to write the demand for capital as a function of output:
-
-\begin{equation}
-\begin{split}
-\bar{K}_{m} &= \frac{\bar{X}_{m}}{\bar{A}_{m}}\left[\gamma_{m}^{\frac{1}{\epsilon_{m}}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}} \left(\frac{1-\gamma_{m}}{\gamma_{m}}\right)^{\frac{\epsilon_{m}-1}{\epsilon_{m}}} \times \right. \\
-& \left.  \left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}-1}\left(\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}\right)^{-1}\right)\right)^{\epsilon_{m}-1} \right]^{\frac{\epsilon_{m}}{\epsilon_{m}-1}}
-\end{split}
-\end{equation}
-
-We can us the above with Equation \ref{eqn:l_demand_tax2} to find the demand for labor as a function of output, prices, and parameters.
+%
+%Alternatively, we can solve for factor demands using the firm FOC for capital and labor together with the production function.  This can be helpful in the computational solution.  To do this, note that dividing these two necessary conditions gives the optimal capital-labor ratio of the firm as a function of parameters and prices:
+%
+%\begin{equation}
+%\frac{\bar{K}_{m}}{\overline{EL}_{m}} = \frac{\gamma_{m}}{1-\gamma_{m}}\left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{-\epsilon_{m}}\left(\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}\right)^{-1}\right)\right)^{-\epsilon_{m}}
+%\end{equation}
+%
+%This implies the demand for labor as a function of the demand for capital:
+%\begin{equation}
+%\label{eqn:l_demand_tax2}
+%\overline{EL}_{m} = \frac{1-\gamma_{m}}{\gamma_{m}}\left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}}\left(\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}\right)^{-1}\right)\right)^{\epsilon_{m}}\bar{K}_{m}
+%\end{equation}
+%
+%Substituting this into the CES production function, we have:
+%
+%\begin{equation}
+%\begin{split}
+%F(\bar{K}_{m},\overline{EL}_{m})=X_{m} & = \bar{A}_{m}\left[\gamma_{m}^{\frac{1}{\epsilon_{m}}}\bar{K}_{m}^{\frac{\epsilon_{m}-1}{\epsilon}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}}\overline{EL}_{m}^{\frac{\epsilon_{m}-1}{\epsilon}} \right]^{\frac{\epsilon_{m}}{\epsilon_{m}-1}} \\
+%& = \bar{A}_{m}\left[\gamma_{m}^{\frac{1}{\epsilon_{m}}}\bar{K}_{m}^{\frac{\epsilon_{m}-1}{\epsilon}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}}\left( \left(\frac{1-\gamma_{m}}{\gamma_{m}}\right)^{\frac{\epsilon_{m}-1}{\epsilon_{m}}}\left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}}  \times \right. \right. \\
+%& \left.\left. \left(\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}\right)^{-1}\right)\right)^{\epsilon_{m}}\bar{K}_{m}\right)^{\frac{\epsilon_{m}-1}{\epsilon}} \right]^{\frac{\epsilon_{m}}{\epsilon_{m}-1}}  \\
+%& = \bar{A}_{m}\bar{K}_{m}\left[\gamma_{m}^{\frac{1}{\epsilon_{m}}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}} \left(\frac{1-\gamma_{m}}{\gamma_{m}}\right)^{\frac{\epsilon_{m}-1}{\epsilon_{m}}} \times \right. \\
+%& \left.  \left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}-1}\left(\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}\right)^{-1}\right)\right)^{\epsilon_{m}-1} \right]^{\frac{\epsilon_{m}}{\epsilon_{m}-1}}
+%\end{split}
+%\end{equation}
+%
+%We can then rearrange this to write the demand for capital as a function of output:
+%
+%\begin{equation}
+%\begin{split}
+%\bar{K}_{m} &= \frac{\bar{X}_{m}}{\bar{A}_{m}}\left[\gamma_{m}^{\frac{1}{\epsilon_{m}}} + (1-\gamma_{m})^{\frac{1}{\epsilon_{m}}} \left(\frac{1-\gamma_{m}}{\gamma_{m}}\right)^{\frac{\epsilon_{m}-1}{\epsilon_{m}}} \times \right. \\
+%& \left.  \left(\frac{\bar{p}^{k}_{m}}{\bar{w}} \right)^{\epsilon_{m}-1}\left(\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}\right)\left(1-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}\right)^{-1}\right)\right)^{\epsilon_{m}-1} \right]^{\frac{\epsilon_{m}}{\epsilon_{m}-1}}
+%\end{split}
+%\end{equation}
 
 
 Factor prices can be written in terms of quantities.  Note that the real interest rate is a implicit function and we'll need to use a root finder to solve for the value of $\bar{r}$ that is implied given demands for capital, labor, and output.  The equation that determines $\bar{r}$ is:
@@ -1605,6 +1633,7 @@ Using the relation between marginal q and average q in this model with CRS produ
 \end{equation}
 
  \begin{equation}
+ \label{eqn:p_dynamic_tax_ss}
 \begin{split}
 & \bar{r}  =  \frac{(1-\bar{\tau}^{d}_{m})\overline{DIV}_{m}}{\bar{V}_{m}} \\
 \implies &  \bar{r}  =  \frac{(1-\bar{\tau}^{d}_{m})\left[(1-\bar{\tau}^{b}_{m})\left(\bar{p}_{m}F(\bar{K}_{m},\overline{EL}_{m}) - \bar{w}\overline{EL}_{m}\right) - (1-\bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m}))\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m}\right]}{\bar{V}_{m}} \\
@@ -1615,7 +1644,7 @@ Using the relation between marginal q and average q in this model with CRS produ
 \end{split}
 \end{equation}
 
-Looking at Equations \ref{eqn:k_demand_tax_ss} and \ref{eqn:l_demand_tax_ss} above, we can see that due to the CRS production function, dividing the factor demand by output results in an function of parameters and the exogenous variable that is the industry's total factor productivity ($A_{m,t}$).
+Looking at Equations \ref{eqn:k_over_x_tax_ss} and \ref{eqn:l_over_x_tax_ss} above, we can see that due to the CRS production function, dividing the factor demand by output results in an function of parameters and the exogenous variable that is the industry's total factor productivity ($A_{m,t}$).
 
 
 \subsection*{Changes to the household's problem}
@@ -1637,7 +1666,7 @@ The size of the transfer to a particular household is $\frac{T^{H}_{t}}{N_{t}}$,
 Same as in the static problem.
 
 \begin{equation}
-\label{eqn:output_demand_dyn}
+\label{eqn:output_demand_dyn_tax_ss}
 X_{i,u} = C_{i,u} + \sum_{m=1}^{M}I_{m}*\xi{m,i}
 \end{equation}
 
@@ -1657,8 +1686,9 @@ There are three markets - the labor market, the asset market, and the goods mark
 \noindent\noindent This says that the total value of assets held by the households must equal the total value of the firms in which they own shares. We can determine the steady state value of the firm as :
 
 \begin{equation}
-\label{eqn:solve_firm_value}
-\bar{V}_{m} =\frac{\overline{DIV}_{m}}{\bar{r}}
+\label{eqn:solve_firm_value_tax_ss}
+%\bar{V}_{m} =\frac{\overline{DIV}_{m}}{\bar{r}}
+\bar{V}_{m} =\bar{q}_{m}\bar{K}_{m}
 \end{equation}
 
 The condition for the labor market is: 
@@ -1673,7 +1703,7 @@ To compute the solution to the SS of the model with dynamic firms, we'll use a s
 
 \begin{enumerate}
 \item Make an initial guess at $\bar{r}$, $\bar{w}$, $\bar{T}^{H}$.  Note that we must make a guess at the value of transfers to the household (equivalently total tax revenue).  This is because we need to solve the consumers problem before solving the firm problem - but in order to solve the consumer problem we need to know how much they get in transfers (which we don't know unless we solve the firm's problem...).
-\item Use $r$ and $w$ and Equations \ref{eqn:price_det_ss} and \ref{eqn:composite_price2} to solve for the price of consumption goods 1 and 2 and the composite good price.
+\item Use $r$ and $w$ and Equations \ref{eqn:p_dynamic_tax_ss} and \ref{eqn:composite_price2} to solve for the price of consumption goods 1 and 2 and the composite good price.
 \item Taking $\bar{r}$, $\bar{w}$, $\bar{T}^{H}$, $p_{1}$, $p_{2}$, and $\tilde{p}$ as given, solve the household's problem:
 	\begin{itemize}
 	\item For each $j$ type:
@@ -1687,12 +1717,12 @@ To compute the solution to the SS of the model with dynamic firms, we'll use a s
 	\item Here, $B$ is the sum of saving by all households.  We won't use $K$ since households don't hold any capital in this setup.
 	\item Remember to find $EL$ as the aggregate amount of effective labor units supplied, so you not only want to sum over $J$ and $S$, but weight by the number of effective labor units each type/age supplies.
 	\end{itemize}
-\item Use the aggregate demands for each of the two consumption goods and Equation \ref{eqn:find_output} to solve for the output from each industry $i$.
-\item Use Equations \ref{eqn:l_ss} and \ref{eqn:k_ss} to solve for the factor demands from each industry.
-\item Solve for the value of each firm using Equation \ref{eqn:solve_firm_value}
-\item Find the aggregate value of firms: $V = V_{1}+V_{2}$.
-\item Find the aggregate effective labor demanded: $EL = EL_{1}+EL_{2}$.
-\item Find aggregate tax revenue: $\sum_{m=1}^{M}TE_{m,t}$
+\item Use the aggregate demands for each of the consumption goods and investment and Equation \ref{eqn:output_demand_dyn_tax_ss} to solve for the output from each industry $i$.
+\item Use Equations \ref{eqn:k_demand_tax_ss} and \ref{eqn:l_demand_tax_ss} to solve for the factor demands from each industry.
+\item Solve for the value of each firm using Equation \ref{eqn:solve_firm_value_tax_ss}
+\item Find the aggregate value of firms: $\bar{V} = \sum_{m=1}^{M}\bar{V}_{m}$.
+\item Find the aggregate effective labor demanded: $\overline{EL} =\sum_{m=1}^{M} \overline{EL}_{m}$.
+\item Find aggregate tax revenue: $\overline{TE}= \sum_{m=1}^{M}\overline{TE}_{m}$
 \item Take differences between aggregate amounts of labor supplied and demanded and between aggregate savings and aggregate firm value.  Take the difference between the guess at total government transfers/revenue and that implied from solving the model.
 \item Use a root finder to determine the eq'm $\bar{r}$, $\bar{w}$, $\bar{T}^{H}$ (i.e. it'll find the $\bar{r}$ and $\bar{w}$ where $\bar{V}-\bar{B}=0$ and $\overline{EL}_{demand}-\overline{EL}_{supply}=0$ and the $\bar{T}^{H}$ where $\sum_{m=1}^{M}TE_{m,t}=\bar{T}^{H}$ ).
 \end{enumerate}
