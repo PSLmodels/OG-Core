@@ -17,6 +17,8 @@ import numpy as np
 import cPickle as pickle
 from pkg_resources import resource_stream, Requirement
 
+EPSILON = 1e-10
+
 
 '''
 ------------------------------------------------------------------------
@@ -100,7 +102,7 @@ def read_file(path, fname):
     else:
         return open(os.path.join(path, fname))
 
-def pickle_file_compare(fname1, fname2, tol=1e-3):
+def pickle_file_compare(fname1, fname2, tol=1e-3, relative=False):
     '''
     Read two pickle files and unpickle each. We assume that each resulting
     object is a dictionary. The values of each dict are either numpy arrays
@@ -110,10 +112,10 @@ def pickle_file_compare(fname1, fname2, tol=1e-3):
     pkl1 = pickle.load(open(fname1, 'rb'))
     pkl2 = pickle.load(open(fname2, 'rb'))
 
-    return dict_compare(fname1, pkl1, fname2, pkl2, tol=tol)
+    return dict_compare(fname1, pkl1, fname2, pkl2, tol=tol, relative=relative)
 
 
-def comp_array(name, a, b, tol, unequal):
+def comp_array(name, a, b, tol, unequal, relative=False):
     '''
         Compare two arrays in the L inifinity norm
         Return True if | a - b | < tol, False otherwise
@@ -126,33 +128,52 @@ def comp_array(name, a, b, tol, unequal):
         return False
 
     else:
-        linfnorm = np.max(abs(a - b))
-        if not linfnorm < tol:
-            print "diff for {0} is {1} which is NOT OK".format(str(name), linfnorm)
+
+        if np.all(a < EPSILON) and np.all(b < EPSILON):
+            return True
+
+        if relative:
+            err = abs(a - b)
+            mn = np.mean(b)
+            err = np.max(err/mn)
+        else:
+            err = np.max(abs(a - b))
+
+        if not err < tol:
+            print "diff for {0} is {1} which is NOT OK".format(str(name), err)
             unequal.append((str(name), a, b))
             return False
         else:
-            print "linf is {0} which is OK".format(linfnorm)
+            print "err is {0} which is OK".format(err)
             return True
 
 
-def comp_scalar(name, a, b, tol, unequal):
+def comp_scalar(name, a, b, tol, unequal, relative=False):
     '''
         Compare two scalars in the L inifinity norm
         Return True if abs(a - b) < tol, False otherwise
         If not equal, add items to the unequal list
     '''
-    diff = abs(a - b)
-    if not diff < tol:
-        print "diff for {0} is {1} which is NOT OK".format(str(name), diff)
+
+
+    if (a < EPSILON) and (b < EPSILON):
+        return True
+
+    if relative:
+        err = float(abs(a-b))/float(b)
+    else:
+        err = abs(a - b)
+
+    if not err < tol:
+        print "err for {0} is {1} which is NOT OK".format(str(name), err)
         unequal.append((str(name), str(a), str(b)))
         return False
     else:
-        print "diff is {0} which is OK".format(diff)
+        print "err is {0} which is OK".format(err)
         return True
 
 
-def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False):
+def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False, relative=False):
     '''
     Compare two dictionaries. The values of each dict are either
     numpy arrays
@@ -189,12 +210,15 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False):
         unequal_items = []
         for k, v in pkl1.items():
             if type(v) == np.ndarray:
-                check &= comp_array(k, v, pkl2[k], tol, unequal_items)
+                check &= comp_array(k, v, pkl2[k], tol, unequal_items,
+                                    relative=relative)
             else:
                 try:
-                    check &= comp_scalar(k, v, pkl2[k], tol, unequal_items)
+                    check &= comp_scalar(k, v, pkl2[k], tol, unequal_items,
+                                         relative=relative)
                 except TypeError:
-                    check &= comp_array(k, np.array(v), np.array(pkl2[k]), tol, unequal_items)
+                    check &= comp_array(k, np.array(v), np.array(pkl2[k]), tol,
+                                        unequal_items, relative=relative)
 
         if verbose == True and unequal_items:
             frmt = "Name {0}"
