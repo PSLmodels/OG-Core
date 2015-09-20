@@ -17,6 +17,7 @@ import numpy as np
 import cPickle as pickle
 from pkg_resources import resource_stream, Requirement
 
+EPSILON = 1e-10
 
 '''
 ------------------------------------------------------------------------
@@ -100,7 +101,7 @@ def read_file(path, fname):
     else:
         return open(os.path.join(path, fname))
 
-def pickle_file_compare(fname1, fname2):
+def pickle_file_compare(fname1, fname2, tol=1e-3, relative=False):
     '''
     Read two pickle files and unpickle each. We assume that each resulting
     object is a dictionary. The values of each dict are either numpy arrays
@@ -110,18 +111,80 @@ def pickle_file_compare(fname1, fname2):
     pkl1 = pickle.load(open(fname1, 'rb'))
     pkl2 = pickle.load(open(fname2, 'rb'))
 
-    return dict_compare(fname1, pkl1, fname2, pkl2)
+    return dict_compare(fname1, pkl1, fname2, pkl2, tol=tol, relative=relative)
 
 
-def dict_compare(fname1, pkl1, fname2, pkl2):
+def comp_array(name, a, b, tol, unequal, relative=False):
+    '''
+        Compare two arrays in the L inifinity norm
+        Return True if | a - b | < tol, False otherwise
+        If not equal, add items to the unequal list
+        name: the name of the value being compared
+    '''
+    if not a.shape == b.shape:
+        print "unequal shpaes for {0} comparison ".format(str(name))
+        unequal.append((str(name), a, b))
+        return False
+
+    else:
+
+        if np.all(a < EPSILON) and np.all(b < EPSILON):
+            return True
+
+        if relative:
+            err = abs(a - b)
+            mn = np.mean(b)
+            err = np.max(err/mn)
+        else:
+            err = np.max(abs(a - b))
+
+        if not err < tol:
+            print "diff for {0} is {1} which is NOT OK".format(str(name), err)
+            unequal.append((str(name), a, b))
+            return False
+        else:
+            print "err is {0} which is OK".format(err)
+            return True
+
+
+def comp_scalar(name, a, b, tol, unequal, relative=False):
+    '''
+        Compare two scalars in the L inifinity norm
+        Return True if abs(a - b) < tol, False otherwise
+        If not equal, add items to the unequal list
+    '''
+
+
+    if (a < EPSILON) and (b < EPSILON):
+        return True
+
+    if relative:
+        err = float(abs(a-b))/float(b)
+    else:
+        err = abs(a - b)
+
+    if not err < tol:
+        print "err for {0} is {1} which is NOT OK".format(str(name), err)
+        unequal.append((str(name), str(a), str(b)))
+        return False
+    else:
+        print "err is {0} which is OK".format(err)
+        return True
+
+
+def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False, relative=False):
     '''
     Compare two dictionaries. The values of each dict are either
     numpy arrays
     or else types that are comparable with the == operator.
+    For arrays, they are considered the same if |x - y| < tol in
+    the L_inf norm.
+    For scalars, they are considered the same if x - y < tol
     '''
 
     keys1 = set(pkl1.keys())
     keys2 = set(pkl2.keys())
+    check = True
     if keys1 != keys2:
         if len(keys1) == len(keys2):
             extra1 = keys1 - keys2
@@ -143,22 +206,23 @@ def dict_compare(fname1, pkl1, fname2, pkl2):
         print msg.format(bigger_file, res)
         return False
     else:
-        check = True
         unequal_items = []
         for k, v in pkl1.items():
             if type(v) == np.ndarray:
-                if not v.shape == pkl2[k].shape:
-                    unequal_items.append((str(k), v, pkl2[k]))
-                elif not np.allclose(v, pkl2[k]):
-                    unequal_items.append((str(k), v, pkl2[k]))
+                check &= comp_array(k, v, pkl2[k], tol, unequal_items,
+                                    relative=relative)
             else:
-                if not v == pkl2[k]:
-                    unequal_items.append((str(k), str(v), str(pkl2[k])))
+                try:
+                    check &= comp_scalar(k, v, pkl2[k], tol, unequal_items,
+                                         relative=relative)
+                except TypeError:
+                    check &= comp_array(k, np.array(v), np.array(pkl2[k]), tol,
+                                        unequal_items, relative=relative)
 
-        if unequal_items:
-            frmt = "{0}: {1} {2}"
-            res = [ frmt.format(x[0], x[1], x[2]) for x in unequal_items]
+        if verbose == True and unequal_items:
+            frmt = "Name {0}"
+            res = [ frmt.format(x[0]) for x in unequal_items]
             print "Different arrays: ", res
             return False
 
-    return True
+    return check
