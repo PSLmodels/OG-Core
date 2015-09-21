@@ -46,8 +46,6 @@ steady state computation in ss_vars.pkl
 ------------------------------------------------------------------------
 '''
 
-TPI_FIG_DIR = "OUTPUT"
-
 from .parameters import get_parameters
 globals().update(get_parameters())
 
@@ -55,26 +53,26 @@ def create_tpi_params(a_tax_income, b_tax_income, c_tax_income,
                       d_tax_income,
                       b_ellipse, upsilon, J, S, T, beta, sigma, alpha, Z,
                       delta, ltilde, nu, g_y, tau_payroll, retire,
-                      mean_income_data, get_baseline=True, output_dir="./OUTPUT", **kwargs):
+                      mean_income_data, get_baseline=True, input_dir="./OUTPUT", **kwargs):
 
 
 
 
     if get_baseline:
-        ss_init = os.path.join(output_dir, "SSinit/ss_init_vars.pkl")
+        ss_init = os.path.join(input_dir, "SSinit/ss_init_vars.pkl")
         variables = pickle.load(open(ss_init, "rb"))
         for key in variables:
             globals()[key] = variables[key]
     else:
-        params_path = os.path.join(output_dir, "Saved_moments/params_changed.pkl")
+        params_path = os.path.join(input_dir, "Saved_moments/params_changed.pkl")
         variables = pickle.load(open(params_path, "rb"))
         for key in variables:
             globals()[key] = variables[key]
-        var_path = os.path.join(output_dir, "SS/ss_vars.pkl")
+        var_path = os.path.join(input_dir, "SS/ss_vars.pkl")
         variables = pickle.load(open(var_path, "rb"))
         for key in variables:
             globals()[key] = variables[key]
-        init_tpi_vars = os.path.join(output_dir, "SSinit/ss_init_tpi_vars.pkl")
+        init_tpi_vars = os.path.join(input_dir, "SSinit/ss_init_tpi_vars.pkl")
         variables = pickle.load(open(init_tpi_vars, "rb"))
         for key in variables:
             globals()[key] = variables[key]
@@ -247,6 +245,7 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
 
 def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, parameters, g_n_vector, omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, chi_n, get_baseline=False, output_dir="./OUTPUT", **kwargs):
 
+    TPI_FIG_DIR=output_dir
     # Initialize Time paths
     domain = np.linspace(0, T, T)
     Kinit = (-1/(domain + 1)) * (Kss-K0) + Kss
@@ -449,8 +448,12 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, parameters, g_n_vector, 
             'tax_path':tax_path, 'winit':winit}
 
     if get_baseline:
-        tpi_init_vars = os.path.join(output_dir, "TPIinit/TPIinit_vars.pkl")
+        tpi_init_dir = os.path.join(output_dir, "TPIinit")
+        utils.mkdirs(tpi_init_dir)
+        tpi_init_vars = os.path.join(tpi_init_dir, "TPIinit_vars.pkl")
         pickle.dump(output, open(tpi_init_vars, "wb"))
     else:
-        tpi_vars = os.path.join(output_dir, "TPI/TPI_vars.pkl")
+        tpi_dir = os.path.join(output_dir, "TPI")
+        utils.mkdirs(tpi_dir)
+        tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
         pickle.dump(output, open(tpi_vars, "wb"))

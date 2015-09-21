@@ -18,13 +18,14 @@ import cPickle as pickle
 from pkg_resources import resource_stream, Requirement
 
 EPSILON = 1e-10
+PATH_EXISTS_ERRNO = 17
 
-'''
-------------------------------------------------------------------------
-    Functions
-------------------------------------------------------------------------
-'''
-
+def mkdirs(path):
+    try:
+        os.makedirs(path)
+    except OSError as oe:
+        if oe.errno == PATH_EXISTS_ERRNO:
+            pass
 
 def perc_dif_func(simul, data):
     '''

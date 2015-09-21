@@ -422,6 +422,7 @@ def run_steady_state(ss_parameters, iterative_params, get_baseline=False, calibr
               'euler_labor_leisure': euler_labor_leisure, 'chi_n':chi_n,
               'chi_b':chi_b}
     if get_baseline:
+        utils.mkdirs(os.path.join(output_dir, "SSinit"))
         ss_init_dir = os.path.join(output_dir, "SSinit/ss_init_vars.pkl")
         pickle.dump(output, open(ss_init_dir, "wb"))
         bssmat_init = bssmat_splus1
@@ -431,6 +432,7 @@ def run_steady_state(ss_parameters, iterative_params, get_baseline=False, calibr
         ss_init_tpi = os.path.join(output_dir, "SSinit/ss_init_tpi_vars.pkl")
         pickle.dump(output2, open(ss_init_tpi, "wb"))
     else:
+        utils.mkdirs(os.path.join(output_dir, "SS"))
         ss_vars = os.path.join(output_dir, "SS/ss_vars.pkl")
         pickle.dump(output, open(ss_vars, "wb"))
     return output

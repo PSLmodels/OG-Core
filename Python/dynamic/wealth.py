@@ -95,6 +95,7 @@ def get_wealth_data(bin_weights, J, flag_graphs, output_dir):
         bin_weights = ability weights (Jx1 array)
         J = number of ability groups (scalar)
         flag_graphs = whether or not to graph distribution (bool)
+        output_dir = path to the starting data
     Output:
         Saves a pickle of the desired wealth percentiles.  Graphs those levels.
     '''
@@ -114,5 +115,7 @@ def get_wealth_data(bin_weights, J, flag_graphs, output_dir):
     dictionary = {}
     for key in var_names:
         dictionary[key] = locals()[key]
-    pkl_path = os.path.join(output_dir, "Saved_moments/wealth_data_moments.pkl")
+    saved_moments_dir = os.path.join(output_dir, "Saved_moments")
+    utils.mkdirs(saved_moments_dir)
+    pkl_path = os.path.join(saved_moments_dir, "wealth_data_moments.pkl")
     pickle.dump(dictionary, open(pkl_path, "wb"))
