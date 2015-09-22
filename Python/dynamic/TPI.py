@@ -100,7 +100,6 @@ def create_tpi_params(a_tax_income, b_tax_income, c_tax_income,
         initial_b = bssmat_init
         initial_n = nssmat_init
     # Get an initial distribution of capital with the initial population distribution
-    import pdb;pdb.set_trace()
     K0 = household.get_K(initial_b, omega_stationary[0].reshape(S, 1), lambdas, g_n_vector[0], 'SS')
     b_sinit = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_b[:-1]))
     b_splus1init = initial_b
