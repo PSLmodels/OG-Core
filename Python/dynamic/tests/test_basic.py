@@ -112,12 +112,26 @@ def test_comp_array_relative():
     assert not comp_array("test", y, x, 1e-3, unequal)
     assert comp_array("test", y, x, 1e-3, unequal, relative=True)
 
+def test_comp_array_relative_exception():
+    x = np.array([100., 200., 300.])
+    y = np.array([100.01, 200.02, 300.03])
+    unequal = []
+    exc = {'var': 1e-3}
+    assert comp_array("var", y, x, 1e-5, unequal, exceptions=exc, relative=True)
+
 def test_comp_scalar_relative():
     x = 100
     y = 100.01
     unequal = []
     assert not comp_scalar("test", y, x, 1e-3, unequal)
     assert comp_scalar("test", y, x, 1e-3, unequal, relative=True)
+
+def test_comp_scalar_relative_exception():
+    x = 100
+    y = 100.01
+    unequal = []
+    exc = {"var": 1e-3}
+    assert comp_scalar("var", y, x, 1e-5, unequal, exceptions=exc, relative=True)
 
 def test_compare_dict_diff_ndarrays_relative():
     lhs = {'a':np.array([100.,200.,300.]), 'b':2}

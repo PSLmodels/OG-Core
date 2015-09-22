@@ -23,6 +23,7 @@ from income import get_e
 DATASET = 'REAL'
 
 def get_parameters():
+    import pdb;pdb.set_trace()
     if DATASET == 'REAL':
         return get_full_parameters()
     elif DATASET == 'SMALL':

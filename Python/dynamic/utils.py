@@ -102,7 +102,7 @@ def read_file(path, fname):
     else:
         return open(os.path.join(path, fname))
 
-def pickle_file_compare(fname1, fname2, tol=1e-3, relative=False):
+def pickle_file_compare(fname1, fname2, tol=1e-3, exceptions={}, relative=False):
     '''
     Read two pickle files and unpickle each. We assume that each resulting
     object is a dictionary. The values of each dict are either numpy arrays
@@ -112,16 +112,21 @@ def pickle_file_compare(fname1, fname2, tol=1e-3, relative=False):
     pkl1 = pickle.load(open(fname1, 'rb'))
     pkl2 = pickle.load(open(fname2, 'rb'))
 
-    return dict_compare(fname1, pkl1, fname2, pkl2, tol=tol, relative=relative)
+    return dict_compare(fname1, pkl1, fname2, pkl2, tol=tol,
+                        exceptions=exceptions, relative=relative)
 
 
-def comp_array(name, a, b, tol, unequal, relative=False):
+def comp_array(name, a, b, tol, unequal, exceptions={}, relative=False):
     '''
         Compare two arrays in the L inifinity norm
         Return True if | a - b | < tol, False otherwise
         If not equal, add items to the unequal list
         name: the name of the value being compared
     '''
+
+    if name in exceptions:
+        tol = exceptions[name]
+
     if not a.shape == b.shape:
         print "unequal shpaes for {0} comparison ".format(str(name))
         unequal.append((str(name), a, b))
@@ -148,13 +153,15 @@ def comp_array(name, a, b, tol, unequal, relative=False):
             return True
 
 
-def comp_scalar(name, a, b, tol, unequal, relative=False):
+def comp_scalar(name, a, b, tol, unequal, exceptions={}, relative=False):
     '''
         Compare two scalars in the L inifinity norm
         Return True if abs(a - b) < tol, False otherwise
         If not equal, add items to the unequal list
     '''
 
+    if name in exceptions:
+        tol = exceptions[name]
 
     if (a < EPSILON) and (b < EPSILON):
         return True
@@ -173,7 +180,7 @@ def comp_scalar(name, a, b, tol, unequal, relative=False):
         return True
 
 
-def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False, relative=False):
+def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False, exceptions={}, relative=False):
     '''
     Compare two dictionaries. The values of each dict are either
     numpy arrays
@@ -211,14 +218,15 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False, relative=False)
         for k, v in pkl1.items():
             if type(v) == np.ndarray:
                 check &= comp_array(k, v, pkl2[k], tol, unequal_items,
-                                    relative=relative)
+                                    exceptions=exceptions, relative=relative)
             else:
                 try:
                     check &= comp_scalar(k, v, pkl2[k], tol, unequal_items,
-                                         relative=relative)
+                                         exceptions=exceptions, relative=relative)
                 except TypeError:
                     check &= comp_array(k, np.array(v), np.array(pkl2[k]), tol,
-                                        unequal_items, relative=relative)
+                                        unequal_items, exceptions=exceptions,
+                                        relative=relative)
 
         if verbose == True and unequal_items:
             frmt = "Name {0}"

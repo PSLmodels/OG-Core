@@ -39,17 +39,17 @@ def test_sstpi():
     import tempfile
     import pickle
     import numpy as np
-    from dynamic.utils import comp_array
-    from dynamic.utils import comp_scalar
-    from dynamic.utils import dict_compare
-    from dynamic.utils import pickle_file_compare
-
     import numpy as np
     import cPickle as pickle
     import os
 
     import dynamic
     dynamic.parameters.DATASET = 'REAL'
+
+    from dynamic.utils import comp_array
+    from dynamic.utils import comp_scalar
+    from dynamic.utils import dict_compare
+    from dynamic.utils import pickle_file_compare
 
     import dynamic.SS
     import dynamic.TPI
@@ -136,10 +136,19 @@ def test_sstpi():
     ss_outputs['g_n_vector'] = g_n_vector
     TPI.run_time_path_iteration(**ss_outputs)
 
+    #Platform specific exceptions:
+    if sys.platform == "darwin":
+        exceptions = {'tax_path': 0.08,
+                      'c_path' : 0.02,
+                      'b_mat' : 0.0017,
+                      'solutions': 0.005}
+    else:
+        exceptions = {}
+
     #compare results to test data
     for old, new in zip(oldfiles, newfiles):
         print "trying a pair"
         print old, new
-        assert pickle_file_compare(old, new, relative=True)
+        assert pickle_file_compare(old, new, exceptions=exceptions, relative=True)
         #pickle_file_compare(old, new)
         print "next pair"
