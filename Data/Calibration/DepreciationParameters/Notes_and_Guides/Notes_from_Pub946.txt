@@ -1,0 +1,29 @@
+Notes on depreciation from reading IRS Publication 946:
+
+- Cannot depreciate inventories
+- Cannot depreciate land (generally)
+	- Exception is for improvements to land very closely tied to structures (e.g. landscaping against house)
+- You can depreciate certain intangibles
+	- Not Section 197 intangibles (see IRS Pub 535 for these)
+	- This is mostly computer software, but includes some patents and copyrights
+	- The SL method is used to deprec
+	- "Created intangibles" are amortized with the SL method
+	- Some intangibles are amortized with the "income forecasting" method
+- Most property uses GDS, but some must use ADS and some can elect to use ADS
+	- But GDS more accelerated, so must use it??
+- Probably want to use the half-year convention as it applies most broadly
+	- On the other hand, it makes things more complicated 
+	- Also, CBO ignores when calculating effective tax rates
+- Table 4-1 has method by type of property
+	- DB with switch to SL most common
+	- No property has only a DB method
+	- Method used depends on the life (w/ some exceptions for certain assets)
+	- DB with 150% method only used for longer lived assets (shorter use 200%)
+	
+**********
+- How deal with Section 179 property??
+	- I think we leave depreciation calibration alone and instead try to use tax data on 179 expenses to get an estimate of current law expensing parameters (e.g. use expenses/invest ratio)
+	- How think about expansions of 179 in the model?  
+		- i.e., not 100% expensing on everything, but expensing up to a limit
+		- Guess we can use amount of invest/income in model and make expensing conditional on that...
+		- Else can try to estimate a function of how much expensing rates increase with expansion of 179 using historical data

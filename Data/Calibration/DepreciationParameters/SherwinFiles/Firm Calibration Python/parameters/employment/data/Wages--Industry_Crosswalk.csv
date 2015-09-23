@@ -1,0 +1,98 @@
+Line,Industry,NAICS_Code
+1,Wages and salaries per full-time equivalent employee,
+2,Domestic industries,1
+3,Private industries,
+4,"Agriculture, forestry, fishing, and hunting",11
+5,Farms,111
+6,"Forestry, fishing, and related activities",112.113.114.115
+7,Mining,21
+8,Oil and gas extraction,211
+9,"Mining, except oil and gas",212
+10,Support activities for mining,213
+11,Utilities,22
+12,Construction,23
+13,Manufacturing,31.32.33
+14,Durable goods,321.327.331.332.333.334.335.336.337.339
+15,Wood products,321
+16,Nonmetallic mineral products,327
+17,Primary metals,331
+18,Fabricated metal products,332
+19,Machinery,333
+20,Computer and electronic products,334
+21,"Electrical equipment, appliances, and components",335
+22,"Motor vehicles, bodies and trailers, and parts",3361.3362.3363
+23,Other transportation equipment,3364.3365.3366.3369
+24,Furniture and related products,337
+25,Miscellaneous manufacturing,339
+26,Nondurable goods,311.312.313.314.315.316.322.323.324.325.326
+27,Food and beverage and tobacco products,311.312
+28,Textile mills and textile product mills,313.314
+29,Apparel and leather and allied products,315.316
+30,Paper products,322
+31,Printing and related support activities,323
+32,Petroleum and coal products,324
+33,Chemical products,325
+34,Plastics and rubber products,326
+35,Wholesale trade,42
+36,Durable goods,423
+37,Nondurable goods,424
+38,Retail trade,44.45
+39,Motor vehicle and parts dealers,441
+40,Food and beverage stores,445
+41,General merchandise stores,452
+42,Other retail,442.443.444.446.447.448.451.453.454
+43,Transportation and warehousing,48.49
+44,Air transportation,481
+45,Rail transportation,482
+46,Water transportation,483
+47,Truck transportation,484
+48,Transit and ground passenger transportation,485
+49,Pipeline transportation,486
+50,Other transportation and support activities 3,487.488.491.492
+51,Warehousing and storage,493
+52,Information,51
+53,Publishing industries (includes software),511
+54,Motion picture and sound recording industries,512
+55,Broadcasting and telecommunications,515
+56,Information and data processing services,517.518.519
+57,Finance and insurance,52
+58,"Federal Reserve banks, credit intermediation, and related activities",521.522
+59,"Securities, commodity contracts, and investments",523
+60,Insurance carriers and related activities,524
+61,"Funds, trusts, and other financial vehicles",525
+62,Real estate and rental and leasing,53
+63,Real estate,531
+64,Rental and leasing services and lessors of intangible assets 4,532.533
+65,"Professional, scientific, and technical services",54
+66,Legal services,5411.5412
+67,Computer systems design and related services,5413.5414.5415
+68,"Miscellaneous professional, scientific, and technical services 5",5416.5417.5418.5419
+69,Management of companies and enterprises 6,55
+70,Administrative and waste management services,56
+71,Administrative and support services,561
+72,Waste management and remediation services,562
+73,Educational services,61
+74,Health care and social assistance,62
+75,Ambulatory health care services,621
+76,Hospitals,622
+77,Nursing and residential care facilities,623
+78,Social assistance,624
+79,"Arts, entertainment, and recreation",71
+80,"Performing arts, spectator sports, museums, and related activities",711.712
+81,"Amusements, gambling, and recreation industries",713
+82,Accommodation and food services,72
+83,Accommodation,721
+84,Food services and drinking places,722
+85,"Other services, except government",81
+86,Government,92
+87,Federal,921
+88,General government,
+89,Civilian,
+90,Military 7,
+91,Government enterprises,
+92,State and local,
+93,General government,
+94,Education,
+95,Other 8,
+96,Government enterprises 8,
+97,Rest of the world,
