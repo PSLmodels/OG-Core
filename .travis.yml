@@ -19,4 +19,4 @@ install:
 
 # command to run tests, e.g. python setup.py test
 script:
-  - py.test
+  - py.test -m 'not full_run'
