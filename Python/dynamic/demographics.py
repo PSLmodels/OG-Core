@@ -308,7 +308,8 @@ def get_fert(S, starting_age, ending_age, E):
 '''
 
 
-def rate_graphs(S, starting_age, ending_age, imm, fert, surv, child_imm, child_fert, child_mort):
+def rate_graphs(S, starting_age, ending_age, imm, fert, surv, child_imm,
+                child_fert, child_mort, output_dir="./OUTPUT"):
     domain = np.arange(child_fert.shape[0] + S) + 1
     mort = mort_data.mort_rate
     domain2 = np.arange(mort.shape[0]) + 1
@@ -320,7 +321,8 @@ def rate_graphs(S, starting_age, ending_age, imm, fert, surv, child_imm, child_f
         domain, list(child_fert)+list(fert), linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
     plt.ylabel(r'fertility $f_s$')
-    plt.savefig('OUTPUT/Demographics/fert_rates')
+    fert_rates = os.path.join(output_dir, "Demographics/fert_rates")
+    plt.savefig(fert_rates)
 
     # Graph of mortality rates
     plt.figure()
@@ -330,7 +332,8 @@ def rate_graphs(S, starting_age, ending_age, imm, fert, surv, child_imm, child_f
     plt.axvline(x=ending_age, color='red', linestyle='-', linewidth=1)
     plt.xlabel(r'age $s$')
     plt.ylabel(r'mortality $\rho_s$')
-    plt.savefig('OUTPUT/Demographics/mort_rates')
+    mort_rates = os.path.join(output_dir, "Demographics/mort_rates")
+    plt.savefig(mort_rates)
 
     cum_surv_arr = np.cumprod(surv)
     domain3 = np.arange(surv.shape[0]) + 1
@@ -340,13 +343,15 @@ def rate_graphs(S, starting_age, ending_age, imm, fert, surv, child_imm, child_f
     plt.plot(domain3, cum_surv_arr)
     plt.xlabel(r'age $s$')
     plt.ylabel(r'survival rate $1-\rho_s$')
-    plt.savefig('OUTPUT/Demographics/survival_rate')
+    surv_rates = os.path.join(output_dir, "Demographics/survival_rates")
+    plt.savefig(surv_rates)
     cum_mort_rate = 1-cum_surv_arr
     plt.figure()
     plt.plot(domain3, cum_mort_rate)
     plt.xlabel(r'age $s$')
     plt.ylabel(r'cumulative mortality rate')
-    plt.savefig('OUTPUT/Demographics/cum_mort_rate')
+    cum_mort_rates = os.path.join(output_dir, "Demographics/cum_mort_rate")
+    plt.savefig(cum_mort_rates)
 
     # Graph of immigration rates
     plt.figure()
@@ -354,7 +359,8 @@ def rate_graphs(S, starting_age, ending_age, imm, fert, surv, child_imm, child_f
         child_imm)+list(imm), linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
     plt.ylabel(r'immigration $i_s$')
-    plt.savefig('OUTPUT/Demographics/imm_rates')
+    imm_rates = os.path.join(output_dir, "Demographics/imm_rates")
+    plt.savefig(imm_rates)
 
 '''
 ------------------------------------------------------------------------
@@ -363,7 +369,8 @@ Generate graphs of Population
 '''
 
 
-def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
+def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega,
+               output_dir="./OUTPUT"):
     N = omega[T].sum() + children[T].sum()
     x = children.sum(1) + omega.sum(1)
     x2 = 100 * np.diff(x)/x[:-1]
@@ -373,7 +380,8 @@ def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
     plt.title('Population Size (as a percent of the initial population)')
     plt.xlabel(r'Time $t$')
     # plt.ylabel('Population size, as a percent of initial population')
-    plt.savefig('OUTPUT/Demographics/Population')
+    pop = os.path.join(output_dir, "Demographics/imm_rates")
+    plt.savefig(pop)
 
     plt.figure()
     plt.plot(np.arange(T+S-1)+1, x2, 'b', linewidth=2)
@@ -382,7 +390,8 @@ def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
     plt.xlabel(r'Time $t$')
     plt.ylabel(r'Population growth rate $g_n$')
     # plt.title('Population Growth rate over time')
-    plt.savefig('OUTPUT/Demographics/Population_growthrate')
+    pop_growth = os.path.join(output_dir, "Demographics/Population_growthrate")
+    plt.savefig(pop_growth)
 
     plt.figure()
     plt.plot(np.arange(S+int(starting_age * S / (
@@ -391,7 +400,8 @@ def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
         omega[0, :]), linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
     plt.ylabel(r'$\omega_{s,1}$')
-    plt.savefig('OUTPUT/Demographics/omega_init')
+    omega_init = os.path.join(output_dir, "Demographics/omega_init")
+    plt.savefig(omega_init)
 
     plt.figure()
     plt.plot(np.arange(S+int(starting_age * S / (
@@ -400,7 +410,8 @@ def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega):
         omega[T, :]/N), linewidth=2, color='blue')
     plt.xlabel(r'age $s$')
     plt.ylabel(r'$\overline{\omega}$')
-    plt.savefig('OUTPUT/Demographics/omega_ss')
+    omega_ss = os.path.join(output_dir, "Demographics/omega_ss")
+    plt.savefig(omega_ss)
 
 '''
 ------------------------------------------------------------------------
