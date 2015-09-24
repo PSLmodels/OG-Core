@@ -223,7 +223,7 @@ Consumers maximize the present discounted value of utility from consumption a co
   BQ_{j} = \sum_{J} \lambda_{j}b_{j,S+1}\tilde{N}
   \end{equation}
   
- The first order necessary conditions that must be satisfied in the households optimization problem are:
+ The first order necessary conditions that must be satisfied in the household's optimization problem are:
   
       \begin{equation}\label{Eqbfoc}
       \begin{split}
@@ -239,7 +239,7 @@ Consumers maximize the present discounted value of utility from consumption a co
 
     \begin{equation}\label{Eqbqfoc}
       \begin{split}
-      \frac{\partial U}{\partial b_{j,S+1}} & = \frac{\tilde{c}_{j,S}^{-\sigma}}{\tilde{p}_{S}} - \beta (1+r) \chi^{b} b_{j,S+1}^{-\sigma}, \forall j
+      \frac{\partial U}{\partial b_{j,S+1}} & = \frac{\tilde{c}_{j,S}^{-\sigma}}{\tilde{p}_{S}} -  \chi^{b} b_{j,S+1}^{-\sigma}, \forall j
       \end{split}
     \end{equation}
   
@@ -1277,7 +1277,7 @@ With taxes, we restate the firm's cash flow equation that defines dividends as:
 \begin{equation}
 \label{eqn:div_tax}
 \begin{split}
- DIV_{m,t}= (1-\tau^{b}_{m,t})\left(p_{m,t}F(K_{m,t},EL_{m,t})-w_{t}EL_{m,t}\right) - p^{k}_{m,t}I_{m,t} + \tau^{b}_{m,t}\delta^{\tau}_{m,t}K^{\tau}_{m,t}+ VN_{m,t},
+ DIV_{m,t}= (1-\tau^{b}_{m,t})\left(p_{m,t}F(K_{m,t},EL_{m,t})-w_{t}EL_{m,t}\right) - p^{k}_{m,t}I_{m,t} + \tau^{b}_{m,t}\delta^{\tau}_{m,t}(K^{\tau}_{m,t}+ p^{k}_{m,t}I_{m,t})+ VN_{m,t},
  \end{split}
 \end{equation}
 
@@ -1296,9 +1296,10 @@ With the equations above, we can write the Lagrangian representing the constrain
 \label{eqn:firm_lagrange_tax2}
 \begin{split}
 \mathcal{L} = &  \max_{\left\{\substack{I_{m,u},K_{m,u+1},K^{\tau}_{m,u+1},\\\ EL_{m,u},VN_{m,u}}\right\}_{u=t}^{\infty}} \sum_{u=t}^{\infty} \prod_{\nu=t}^{u} \left(\frac{1}{1+\frac{r_{v}}{(1-\tau^{g}_{m,\nu})}}\right)\\
-& \left\{ \left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}\right) \left[(1-\tau^{b}_{m,t})\left(p_{m,u}F(K_{m,u},EL_{m,u}) - w_{u}EL_{m,u}\right) -p^{k}_{m,u}I_{m,u} + \tau^{b}_{m,u}\delta^{\tau}_{m,u}K^{\tau}_{m,u} +VN_{m,u}\right]  \right.\\
-       & \left. - VN_{m,u} \right. \\
-       &+\left. \lambda^{d}_{m,u}\left[(1-\tau^{b}_{m,u})(p_{m,u}F(K_{m,u},EL_{m,u}) - w_{u}EL_{m,u}) -p^{k}_{m,u}I_{m,u}+ \tau^{b}_{m,u}\delta^{\tau}_{m,u}K^{\tau}_{m,u} +VN_{m,u})\right] \right. \\
+& \left\{ \left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}\right) \left[(1-\tau^{b}_{m,t})\left(p_{m,u}F(K_{m,u},EL_{m,u}) - w_{u}EL_{m,u}\right) -p^{k}_{m,u}I_{m,u}   \right. \right.\\
+       & \left.\left. + \tau^{b}_{m,u}\delta^{\tau}_{m,u}(K^{\tau}_{m,u}+p^{k}_{m,u}I_{m,u}) +VN_{m,u}\right]  - VN_{m,u} \right. \\
+       &+\left. \lambda^{d}_{m,u}\left[(1-\tau^{b}_{m,u})(p_{m,u}F(K_{m,u},EL_{m,u}) - w_{u}EL_{m,u}) -p^{k}_{m,u}I_{m,u} \right.\right. \\ 
+       & \left.\left. + \tau^{b}_{m,u}\delta^{\tau}_{m,u}(K^{\tau}_{m,u}+p^{k}_{m,u}I_{m,u}) +VN_{m,u})\right] \right. \\
        &+ \left. \lambda^{v}_{m,u}VN_{m,u} + q_{m,u}(I_{m,u} - K_{m,u+1} +(1-\delta_{m})K_{m,u}) + \right. \\
        & +\left. \lambda^{\tau}_{m,u}((1-\delta^{\tau}_{m,u})(K^{\tau}_{m,u}+p^{k}_{m,u}I_{m,u}) - K^{\tau}_{m,u+1})\right\}  \\
 \end{split}
@@ -1309,9 +1310,10 @@ And the FOC for the firm's choice of new equity is:
 \begin{equation}
 \label{eqn:lagrange_foc_i_tax}
 \begin{split}
- \frac{\partial \mathcal{L}}{\partial I_{m,u}} & =   \prod_{\nu=t}^{u} \left(\frac{1}{1+\frac{r_{\nu}}{(1-\tau^{g}_{m,\nu})}}\right) \left\{-\left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}\right)p^{k}_{m,u} - \lambda^{d}_{m,u}p^{k}_{m,u} + q_{m,u}  + \lambda^{\tau}_{m,u}(1-\delta^{\tau}_{m,u})p^{k}_{m,u} \right\} = 0 \\
-\implies &-\left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)p^{k}_{m,u} - \lambda^{d}_{m,u}p^{k}_{m,u} + q_{m,u}  + \lambda^{\tau}_{m,u}(1-\delta^{\tau}_{m,u})p^{k}_{m,u}  = 0 \\
-\implies &  q_{m,u} = p^{k}_{m,u}\left[\left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}\right) + \lambda^{d}_{m,u} - (1-\delta^{\tau}_{m,u})\lambda^{\tau}_{m,u} \right]  \\
+ \frac{\partial \mathcal{L}}{\partial I_{m,u}} & =   \prod_{\nu=t}^{u} \left(\frac{1}{1+\frac{r_{\nu}}{(1-\tau^{g}_{m,\nu})}}\right) \left\{-\left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}\right)p^{k}_{m,u}(1-\tau^{b}_{u}\delta^{\tau}_{u}) - \lambda^{d}_{m,u}p^{k}_{m,u}(1-\tau^{b}_{u}\delta^{\tau}_{u}) \right. \\
+ & \left. + q_{m,u}  + \lambda^{\tau}_{m,u}(1-\delta^{\tau}_{m,u})p^{k}_{m,u} \right\} = 0 \\
+\implies &-\left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)p^{k}_{m,u}(1-\tau^{b}_{u}\delta^{\tau}_{u}) - \lambda^{d}_{m,u}p^{k}_{m,u}(1-\tau^{b}_{u}\delta^{\tau}_{u}) + q_{m,u}  + \lambda^{\tau}_{m,u}(1-\delta^{\tau}_{m,u})p^{k}_{m,u}  = 0 \\
+\implies &  q_{m,u} = (1-\tau^{b}_{u}\delta^{\tau}_{u})p^{k}_{m,u}\left[\left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}\right) + \lambda^{d}_{m,u}\right] - (1-\delta^{\tau}_{m,u})p^{k}_{m,u}\lambda^{\tau}_{m,u}   \\
 \end{split}
 \end{equation}
 
@@ -1492,7 +1494,7 @@ The necessary conditions of the firm's problem in the steady state are:
 \label{eqn:lagrange_foc_ktau_tax_ss}
 \begin{split}
 \bar{\lambda}^{\tau}_{m} &=  \left(\frac{1}{1+\frac{\bar{r}}{(1-\bar{\tau}^{g}_{m})}}\right) \left[ \left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right)\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m} + (1-\bar{\delta}^{\tau}_{m})\bar{\lambda}^{\tau}_{m}\right]  \\
-\implies \bar{\lambda}^{\tau}_{m} &=\left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right)\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\bar{r}+\bar{\delta}^{\tau}_{m}\right)^{-1}
+\implies \bar{\lambda}^{\tau}_{m} &=\left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right)\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}}+\bar{\delta}^{\tau}_{m}\right)^{-1}
 \end{split}
 \end{equation}
 
@@ -1516,7 +1518,7 @@ We solve for marginal q using Equations \ref{eqn:lagrange_foc_i_tax_ss} and \ref
 
 \begin{equation}
 \label{eqn:q_tax_ss}
- \bar{q}_{m} = \bar{p}^{k}_{m}\left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right)\left[1 - (1-\bar{\delta}^{\tau}_{m})\left(\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\bar{r}+\bar{\delta}^{\tau}_{m}\right)^{-1} \right) \right]  \\
+ \bar{q}_{m} = \bar{p}^{k}_{m}\left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right)\left[1 - (1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}}+\bar{\delta}^{\tau}_{m}\right)^{-1} \right]  \\
 \end{equation}
 
 
@@ -1607,7 +1609,8 @@ Factor prices can be written in terms of quantities.  Note that the real interes
 
 \begin{equation}
 %\bar{r} = \left[\bar{A}_{m}^{\frac{\epsilon_{m}-1}{\epsilon_{m}}}\left(\frac{\gamma_{m}\bar{X}_{m}}{\bar{K}_{m}} \right)^{\frac{1}{\epsilon_{m}}} \frac{\bar{p}_{m}}{\bar{p}^{k}_{m}}\left(1-\left(\frac{1-\bar{\delta}^{\tau}_{m}}{1-\bar{\tau}^{g}_{m}}\right)\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\right)^{-1} - \delta_{m}\right](1-\bar{\tau}^{g}_{m})
-(1-\bar{\tau}^{b}_{m})\frac{\bar{p}_{m}}{\bar{p}^{k}_{m}}MPK(\bar{K}_{m},\overline{EL}_{m}) - \delta_{m} = \frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}}{\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}}\right)
+%(1-\bar{\tau}^{b}_{m})\frac{\bar{p}_{m}}{\bar{p}^{k}_{m}}MPK(\bar{K}_{m},\overline{EL}_{m}) - \delta_{m} = \frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}}{\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}}\right)
+\bar{q}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}}+\delta_{m}\right) = \left(\frac{1-\bar{\tau}^{d}}{1-\bar{\tau}^{g}}\right)(1-\bar{\tau}^{b})\bar{p}_{m}\bar{A}_{m}^{\frac{\epsilon_{m}-1}{\epsilon_{m}}}\left(\frac{\gamma_{m}\bar{X}_{m}}{\bar{K}_{m}}\right)^{\frac{1}{\epsilon_{m}}}
 \end{equation}
 
 \begin{equation}
