@@ -52,28 +52,33 @@ from .parameters import DATASET
 ------------------------------------------------------------------------
 '''
 
-#missing args are income_tax_params, wealth_tax_params, and ellipse_params
+# missing args are income_tax_params, wealth_tax_params, and ellipse_params
+
 
 def create_steady_state_parameters(a_tax_income, b_tax_income, c_tax_income,
-                                  d_tax_income,
-                                  b_ellipse, upsilon, J, S, T, beta, sigma, alpha,
-                                  Z, delta, ltilde, nu, g_y, tau_payroll, retire,
-                                  mean_income_data, get_baseline,
-                                  output_dir="./OUTPUT", **kwargs):
+                                   d_tax_income, b_ellipse, upsilon, J, S, T,
+                                   beta, sigma, alpha, Z, delta, ltilde, nu,
+                                   g_y, tau_payroll, retire,
+                                   mean_income_data, get_baseline,
+                                   output_dir="./OUTPUT", **kwargs):
 
     if get_baseline is False:
         # If this is a tax experiment, also import the changed tax variables
-        ss_params_changed_path = os.path.join(output_dir, "Saved_moments/params_changed.pkl")
+        params_filename = "Saved_moments/params_changed.pkl"
+        ss_params_changed_path = os.path.join(output_dir, params_filename)
         variables = pickle.load(open(ss_params_changed_path, 'rb'))
         for key in variables:
             globals()[key] = variables[key]
 
-    # Make a vector of all one dimensional parameters, to be used in the following functions
-    income_tax_params = [a_tax_income, b_tax_income, c_tax_income, d_tax_income]
+    # Make a vector of all one dimensional parameters, to be used in the
+    # following functions
+    income_tax_params = [a_tax_income, b_tax_income, c_tax_income,
+                         d_tax_income]
     wealth_tax_params = [h_wealth, p_wealth, m_wealth]
     ellipse_params = [b_ellipse, upsilon]
-    parameters = [J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, \
-    mean_income_data] + income_tax_params + wealth_tax_params + ellipse_params
+    parameters = [J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,
+                  g_n_ss, tau_payroll, retire, mean_income_data] + \
+        income_tax_params + wealth_tax_params + ellipse_params
     iterative_params = [maxiter, mindist_SS]
     return (income_tax_params, wealth_tax_params, ellipse_params,
             parameters, iterative_params)
@@ -101,8 +106,11 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n,
     Outputs:
         2Sx1 list of euler errors
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, \
+        tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, \
+        c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, \
+        upsilon = params
+
     b_guess = np.array(guesses[:S])
     n_guess = np.array(guesses[S:])
     b_s = np.array([0] + list(b_guess[:-1]))
@@ -110,29 +118,44 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n,
     b_splus2 = np.array(list(b_guess[1:]) + [0])
 
     BQ = household.get_BQ(r, b_splus1, weights, lambdas[j], rho, g_n_ss, 'SS')
-    theta = tax.replacement_rate_vals(n_guess, w, factor, e[:,j], J, weights, lambdas[j])
+    theta = tax.replacement_rate_vals(n_guess, w, factor, e[:, j], J, weights,
+                                      lambdas[j])
 
-    error1 = household.euler_savings_func(w, r, e[:, j], n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_H, chi_b[j], params, theta, tau_bq[j], rho, lambdas[j])
-    error2 = household.euler_labor_leisure_func(w, r, e[:, j], n_guess, b_s, b_splus1, BQ, factor, T_H, chi_n, params, theta, tau_bq[j], lambdas[j])
-    # Put in constraints for consumption and savings.  According to the euler equations, they can be negative.  When
+    error1 = household.euler_savings_func(w, r, e[:, j], n_guess, b_s,
+                                          b_splus1, b_splus2, BQ, factor, T_H,
+                                          chi_b[j], params, theta, tau_bq[j],
+                                          rho, lambdas[j])
+    error2 = household.euler_labor_leisure_func(w, r, e[:, j], n_guess, b_s,
+                                                b_splus1, BQ, factor, T_H,
+                                                chi_n, params, theta,
+                                                tau_bq[j], lambdas[j])
+    # Put in constraints for consumption and savings.
+    # According to the euler equations, they can be negative.  When
     # Chi_b is large, they will be.  This prevents that from happening.
-    # I'm not sure if the constraints are needed for labor.  But we might as well put them in for now.
+    # I'm not sure if the constraints are needed for labor.
+    # But we might as well put them in for now.
     mask1 = n_guess < 0
     mask2 = n_guess > ltilde
     mask3 = b_guess <= 0
     error2[mask1] += 1e14
     error2[mask2] += 1e14
     error1[mask3] += 1e14
-    tax1 = tax.total_taxes(r, b_s, w, e[:, j], n_guess, BQ, lambdas[j], factor, T_H, None, 'SS', False, params, theta, tau_bq[j])
-    cons = household.get_cons(r, b_s, w, e[:, j], n_guess, BQ, lambdas[j], b_splus1, params, tax1)
+    tax1 = tax.total_taxes(r, b_s, w, e[:, j], n_guess, BQ, lambdas[j], factor,
+                           T_H, None, 'SS', False, params, theta, tau_bq[j])
+    cons = household.get_cons(r, b_s, w, e[:, j], n_guess, BQ, lambdas[j],
+                              b_splus1, params, tax1)
     mask4 = cons < 0
     error1[mask4] += 1e14
     return list(error1.flatten()) + list(error2.flatten())
 
 
-def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess, chi_n, chi_b, params, iterative_params, tau_bq, rho, lambdas, weights, e):
+def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
+              factorguess, chi_n, chi_b, params, iterative_params, tau_bq,
+              rho, lambdas, weights, e):
+
     '''
-    Solves for the steady state distribution of capital, labor, as well as w, r, T_H and the scaling factor, using an iterative method similar to TPI.
+    Solves for the steady state distribution of capital, labor, as well as
+    w, r, T_H and the scaling factor, using an iterative method similar to TPI.
     Inputs:
         b_guess_init = guesses for b (SxJ array)
         n_guess_init = guesses for n (SxJ array)
@@ -143,17 +166,22 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
         chi_n = chi^n_s (Sx1 array)
         chi_b = chi^b_j (Jx1 array)
         params = list of parameters (list)
-        iterative_params = list of parameters that determine the convergence of the while loop (list)
+        iterative_params = list of parameters that determine the convergence
+                           of the while loop (list)
         tau_bq = bequest tax rate (Jx1 array)
         rho = mortality rates (Sx1 array)
         lambdas = ability weights (Jx1 array)
         weights = population weights (Sx1 array)
         e = ability levels (SxJ array)
     Outputs:
-        solutions = steady state values of b, n, w, r, factor, T_H ((2*S*J+4)x1 array)
+        solutions = steady state values of b, n, w, r, factor,
+                    T_H ((2*S*J+4)x1 array)
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, \
+        tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, \
+        c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, \
+        upsilon = params
+
     maxiter, mindist_SS = iterative_params
     # Rename the inputs
     w = wguess
@@ -166,42 +194,66 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
     dist = 10
     iteration = 0
     dist_vec = np.zeros(maxiter)
-    
+
     while (dist > mindist_SS) and (iteration < maxiter):
-        # Solve for the steady state levels of b and n, given w, r, T_H and factor
+        # Solve for the steady state levels of b and n, given w, r, T_H and
+        # factor
         for j in xrange(J):
             # Solve the euler equations
             guesses = np.append(bssmat[:, j], nssmat[:, j])
-            solutions = opt.fsolve(Euler_equation_solver, guesses * .9, args=(r, w, T_H, factor, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e), xtol=1e-13)
-            bssmat[:,j] = solutions[:S]
-            nssmat[:,j] = solutions[S:]
-            # print np.array(Euler_equation_solver(np.append(bssmat[:, j], nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n, theta, tau_bq, rho, lambdas, e)).max()
+            args_ = (r, w, T_H, factor, j, params, chi_b, chi_n, tau_bq, rho,
+                     lambdas, weights, e)
+            solutions = opt.fsolve(Euler_equation_solver, guesses * .9,
+                                   args=args_, xtol=1e-13)
+            bssmat[:, j] = solutions[:S]
+            nssmat[:, j] = solutions[S:]
+            # print np.array(Euler_equation_solver(np.append(bssmat[:, j],
+            # nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n,
+            # theta, tau_bq, rho, lambdas, e)).max()
 
-        K = household.get_K(bssmat, weights.reshape(S, 1), lambdas.reshape(1, J), g_n_ss, 'SS')
-        L = firm.get_L(e, nssmat, weights.reshape(S, 1), lambdas.reshape(1, J), 'SS')
+        K = household.get_K(bssmat, weights.reshape(S, 1),
+                            lambdas.reshape(1, J), g_n_ss, 'SS')
+        L = firm.get_L(e, nssmat, weights.reshape(S, 1),
+                       lambdas.reshape(1, J), 'SS')
         Y = firm.get_Y(K, L, params)
         new_r = firm.get_r(Y, K, params)
         new_w = firm.get_w(Y, L, params)
         b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
-        average_income_model = ((new_r * b_s + new_w * e * nssmat) * weights.reshape(S, 1) * lambdas.reshape(1, J)).sum()
-        new_factor = mean_income_data / average_income_model 
-        new_BQ = household.get_BQ(new_r, bssmat, weights.reshape(S, 1), lambdas.reshape(1, J), rho.reshape(S, 1), g_n_ss, 'SS')
-        theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, e, J, weights.reshape(S, 1), lambdas)
-        new_T_H = tax.get_lump_sum(new_r, b_s, new_w, e, nssmat, new_BQ, lambdas.reshape(1, J), factor, weights.reshape(S, 1), 'SS', params, theta, tau_bq)
+        average_income_model = ((new_r * b_s + new_w * e * nssmat) *
+                                weights.reshape(S, 1) *
+                                lambdas.reshape(1, J)).sum()
+        new_factor = mean_income_data / average_income_model
+        new_BQ = household.get_BQ(new_r, bssmat, weights.reshape(S, 1),
+                                  lambdas.reshape(1, J), rho.reshape(S, 1),
+                                  g_n_ss, 'SS')
+        theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, e, J,
+                                          weights.reshape(S, 1), lambdas)
+        new_T_H = tax.get_lump_sum(new_r, b_s, new_w, e, nssmat, new_BQ,
+                                   lambdas.reshape(1, J), factor,
+                                   weights.reshape(S, 1), 'SS', params, theta,
+                                   tau_bq)
 
         r = utils.convex_combo(new_r, r, params)
         w = utils.convex_combo(new_w, w, params)
         factor = utils.convex_combo(new_factor, factor, params)
         T_H = utils.convex_combo(new_T_H, T_H, params)
         if T_H != 0:
-            dist = np.array([utils.perc_dif_func(new_r, r)] + [utils.perc_dif_func(new_w, w)] + [utils.perc_dif_func(new_T_H, T_H)] + [utils.perc_dif_func(new_factor, factor)]).max()
+            dist = np.array([utils.perc_dif_func(new_r, r)] +
+                            [utils.perc_dif_func(new_w, w)] +
+                            [utils.perc_dif_func(new_T_H, T_H)] +
+                            [utils.perc_dif_func(new_factor, factor)]).max()
         else:
-            # If T_H is zero (if there are no taxes), a percent difference will throw NaN's, so we use an absoluate difference
-            dist = np.array([utils.perc_dif_func(new_r, r)] + [utils.perc_dif_func(new_w, w)] + [abs(new_T_H - T_H)] + [utils.perc_dif_func(new_factor, factor)]).max()
+            # If T_H is zero (if there are no taxes), a percent difference
+            # will throw NaN's, so we use an absoluate difference
+            dist = np.array([utils.perc_dif_func(new_r, r)] +
+                            [utils.perc_dif_func(new_w, w)] +
+                            [abs(new_T_H - T_H)] +
+                            [utils.perc_dif_func(new_factor, factor)]).max()
         dist_vec[iteration] = dist
-        # Similar to TPI: if the distance between iterations increases, then decrease the value of nu to prevent cycling
+        # Similar to TPI: if the distance between iterations increases, then
+        # decrease the value of nu to prevent cycling
         if iteration > 10:
-            if dist_vec[iteration] - dist_vec[iteration-1] > 0:
+            if dist_vec[iteration] - dist_vec[iteration - 1] > 0:
                 nu /= 2.0
                 print 'New value of nu:', nu
         iteration += 1
@@ -210,10 +262,18 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
     eul_errors = np.ones(J)
     b_mat = np.zeros((S, J))
     n_mat = np.zeros((S, J))
-    # Given the final w, r, T_H and factor, solve for the SS b and n (if you don't do a final fsolve, there will be a slight mismatch, with high euler errors)
+    # Given the final w, r, T_H and factor, solve for the SS b and n (if you
+    # don't do a final fsolve, there will be a slight mismatch,
+    # with high euler errors)
     for j in xrange(J):
-        solutions1 = opt.fsolve(Euler_equation_solver, np.append(bssmat[:, j], nssmat[:, j])* .9, args=(r, w, T_H, factor, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e), xtol=1e-13)
-        eul_errors[j] = np.array(Euler_equation_solver(solutions1, r, w, T_H, factor, j, params, chi_b, chi_n, tau_bq, rho, lambdas, weights, e)).max()
+        args_ = (r, w, T_H, factor, j, params, chi_b, chi_n, tau_bq, rho,
+                 lambdas, weights, e)
+        solutions1 = opt.fsolve(Euler_equation_solver, np.append(bssmat[:, j],
+                                nssmat[:, j]) * .9, args=args_, xtol=1e-13)
+        eul_solve = Euler_equation_solver(solutions1, r, w, T_H, factor, j,
+                                          params, chi_b, chi_n, tau_bq,
+                                          rho, lambdas, weights, e)
+        eul_errors[j] = np.array(eul_solve).max()
         b_mat[:, j] = solutions1[:S]
         n_mat[:, j] = solutions1[S:]
     print 'SS fsolve euler error:', eul_errors.max()
@@ -223,11 +283,15 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess, factorguess,
     return solutions
 
 
-def function_to_minimize(chi_params_scalars, chi_params_init, params, iterative_params, weights_SS, rho_vec, lambdas, tau_bq, e):
+def function_to_minimize(chi_params_scalars, chi_params_init, params,
+                         iterative_params, weights_SS, rho_vec, lambdas,
+                         tau_bq, e, output_dir):
     '''
     Inputs:
-        chi_params_scalars = guesses for multipliers for chi parameters ((S+J)x1 array)
-        chi_params_init = chi parameters that will be multiplied ((S+J)x1 array)
+        chi_params_scalars = guesses for multipliers for chi parameters
+                             ((S+J)x1 array)
+        chi_params_init = chi parameters that will be multiplied
+                          ((S+J)x1 array)
         params = list of parameters (list)
         weights_SS = steady state population weights (Sx1 array)
         rho_vec = mortality rates (Sx1 array)
@@ -235,27 +299,36 @@ def function_to_minimize(chi_params_scalars, chi_params_init, params, iterative_
         tau_bq = bequest tax rates (Jx1 array)
         e = ability levels (Jx1 array)
     Output:
-        The sum of absolute percent deviations between the actual and simulated wealth moments
+        The sum of absolute percent deviations between the actual and
+        simulated wealth moments
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, \
+        tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, \
+        c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, \
+        upsilon = params
+
     chi_params_init *= chi_params_scalars
     # print 'Print Chi_b: ', chi_params_init[:J]
     # print 'Scaling vals:', chi_params_scalars[:J]
-    ss_init_path = os.path.join(output_dir, "Saved_moments/SS_init_solutions.pkl")
+    ss_init_path = os.path.join(output_dir,
+                                "Saved_moments/SS_init_solutions.pkl")
     solutions_dict = pickle.load(open(ss_init_path, "rb"))
     solutions = solutions_dict['solutions']
 
-    b_guess = solutions[:S*J]
-    n_guess = solutions[S*J:2*S*J]
-    wguess, rguess, factorguess, T_Hguess = solutions[2*S*J:]
-    solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params_init[J:], chi_params_init[:J], params, iterative_params, tau_bq, rho, lambdas, weights_SS, e)
+    b_guess = solutions[:(S * J)]
+    n_guess = solutions[S * J:2 * S * J]
+    wguess, rguess, factorguess, T_Hguess = solutions[(2 * S * J):]
+    solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess,
+                          rguess, T_Hguess, factorguess, chi_params_init[J:],
+                          chi_params_init[:J], params, iterative_params,
+                          tau_bq, rho, lambdas, weights_SS, e)
 
-    b_new = solutions[:S*J]
-    n_new = solutions[S*J:2*S*J]
-    w_new, r_new, factor_new, T_H_new = solutions[2*S*J:]
+    b_new = solutions[:(S * J)]
+    n_new = solutions[(S * J):(2 * S * J)]
+    w_new, r_new, factor_new, T_H_new = solutions[(2 * S * J):]
     # Wealth Calibration Euler
-    error5 = list(utils.check_wealth_calibration(b_new.reshape(S, J)[:-1, :], factor_new, params))
+    error5 = list(utils.check_wealth_calibration(b_new.reshape(S, J)[:-1, :],
+                  factor_new, params))
     # labor calibration euler
     labor_path = os.path.join(output_dir, "Saved_moments/labor_data_moments.pkl")
     lab_data_dict = pickle.load(open(labor_path, "rb"))
