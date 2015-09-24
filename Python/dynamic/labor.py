@@ -65,7 +65,7 @@ def labor_data_moments(flag_graphs, output_dir="./OUTPUT"):
     '''
     # Fit a line to the last few years of the average labor participation which extends from
     # ages 76 to 100.
-    slope = (weighted[56] - weighted[49])/(56-49)
+    slope = (weighted[56] - weighted[49]) / (56 - 49)
     intercept = weighted[56] - slope * 56
     extension = slope * (np.linspace(56, 80, 23)) + intercept
     to_dot = slope * (np.linspace(45, 56, 11)) + intercept
@@ -77,24 +77,28 @@ def labor_data_moments(flag_graphs, output_dir="./OUTPUT"):
         import matplotlib
         import matplotlib.pyplot as plt
         from mpl_toolkits.mplot3d import Axes3D
-        
+
         domain = np.linspace(20, 80, S_labor)
         Jgrid = np.linspace(1, 100, J_labor)
         X, Y = np.meshgrid(domain, Jgrid)
         cmap2 = matplotlib.cm.get_cmap('summer')
 
         plt.plot(domain, weighted, color='black', label='Data')
-        plt.plot(np.linspace(76, 100, 23), extension, color='black', linestyle='-.', label='Extrapolation')
-        plt.plot(np.linspace(65, 76, 11), to_dot, linestyle='--', color='black')
+        plt.plot(np.linspace(76, 100, 23), extension, color='black',
+                 linestyle='-.', label='Extrapolation')
+        plt.plot(np.linspace(65, 76, 11), to_dot,
+                 linestyle='--', color='black')
         plt.axvline(x=76, color='black', linestyle='--')
         plt.xlabel(r'age-$s$')
         plt.ylabel(r'individual labor supply $/bar{l}_s$')
         plt.legend()
-        plt.savefig(os.path.join(output_dir, 'Demographics/labor_dist_data_withfit.png'))
+        plt.savefig(os.path.join(
+            output_dir, 'Demographics/labor_dist_data_withfit.png'))
 
         fig10 = plt.figure()
         ax10 = fig10.gca(projection='3d')
-        ax10.plot_surface(X, Y, lab_mat_basic.T, rstride=1, cstride=2, cmap=cmap2)
+        ax10.plot_surface(X, Y, lab_mat_basic.T,
+                          rstride=1, cstride=2, cmap=cmap2)
         ax10.set_xlabel(r'age-$s$')
         ax10.set_ylabel(r'ability type -$j$')
         ax10.set_zlabel(r'labor $e_j(s)$')
@@ -104,4 +108,5 @@ def labor_data_moments(flag_graphs, output_dir="./OUTPUT"):
     dictionary = {}
     for key in var_names:
         dictionary[key] = locals()[key]
-    pickle.dump(dictionary, open(os.path.join(output_dir, "Saved_moments/labor_data_moments.pkl"), "wb"))
+    pickle.dump(dictionary, open(os.path.join(
+        output_dir, "Saved_moments/labor_data_moments.pkl"), "wb"))
