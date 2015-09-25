@@ -544,7 +544,18 @@ First, we may generalize out parameters:
 \item The parameters of the firm problem may be industry specific: $\delta_{m}, \gamma_{m}, \epsilon_{m}, A_{m}$.
 \end{itemize}
 
-Second, we need to map output good prices into consumption good prices.  To do this, we'll use a fixed-coefficient matrix that related industry outputs to consumption goods.  This matrix corresponds to the BEA's PCE-Bridge Table.  This will be an $M\times I$ matrix, where the element of row $m$ and column $i$ gives the fraction of consumption good $i$ that is comprised of output from industry $m$.  Thus, each column of this matrix must sum to 1.  Let's denote this matrix by $\Pi$.  If we let $\boldsymbol{p^{c}_{t}}$ b an $I$-length vector of consumption goods prices and $\boldsymbol{p_{t}}$ be an $M$-length vector of output good prices, then we can find the prices of consumption goods as:
+Second, we need to map output good prices into consumption good prices.  To do this, we'll use a fixed-coefficient matrix that related industry outputs to consumption goods.  This matrix corresponds to the BEA's PCE-Bridge Table.  This will be an $M\times I$ matrix, where the element of row $m$ and column $i$ gives the fraction of consumption good $i$ that is comprised of output from industry $m$.  Thus, each column of this matrix must sum to 1.  Let us denote this matrix by $\Pi$: \\
+\ \\
+$\Pi=
+\begin{bmatrix}
+    \pi_{11}       & \pi_{12} & \pi_{13} & \dots & \pi_{1I} \\
+    \pi_{21}       & \pi_{22} & \pi_{23} & \dots & \pi_{2I} \\
+    \hdotsfor{5} \\
+    \pi_{M1}       & \pi_{M2} & \pi_{M3} & \dots & \pi_{MI}
+\end{bmatrix}$
+
+\ \\
+If we let $\boldsymbol{p^{c}_{t}}$ b an $I$-length vector of consumption goods prices and $\boldsymbol{p_{t}}$ be an $M$-length vector of output good prices, then we can find the prices of consumption goods as:
 
 \begin{equation}
 \label{eqn:capital_prices}
@@ -1000,7 +1011,21 @@ Recall from Equations \ref{eqn:solve_dyn_k} to \ref{eqn:solve_dyn_div}, we were 
 
 This means we have an equation written in terms of factor prices, output prices, capital prices, output, and parameters.  This will be the equation we use to solve for prices, but we need two more pieces. 
 
-First, we have that output prices determine capital prices, since capital is an output.  We'll assume a fixed-coefficient input-output matrix.  Call this matrix $\Xi$.  If we let $\boldsymbol{p_{t}}$ be the $1\times M$ vector of output prices, we can determine the capital prices as:
+First, we have that output prices determine capital prices, since capital is an output.  We'll assume a fixed-coefficient input-output matrix.  Call this matrix $\Xi$: \\
+
+ \ \\
+$\Xi=
+\begin{bmatrix}
+    \xi_{11}       & \xi_{12} & \xi_{13} & \dots & \xi_{1M} \\
+    \xi_{21}       & \xi_{22} & \xi_{23} & \dots & \xi_{2M} \\
+    \hdotsfor{5} \\
+    \xi_{M1}       & \xi_{M2} & \xi_{M3} & \dots & \xi_{MM}
+\end{bmatrix}$
+\ \\
+
+Where $\xi_{ij}$ represents that fraction of a unit of capital good used in industry $i$ that comes from the output of industry $j$.  The matrix $\Xi$ is thus an $M\times M$ matrix relating production inputs and outputs across the production industries.
+
+  If we let $\boldsymbol{p_{t}}$ be the $1\times M$ vector of output prices, we can determine the capital prices as:
 
 \begin{equation}
 \label{eqn:capital_prices}
@@ -1226,7 +1251,8 @@ To compute the solution to the SS of the model with dynamic firms, we'll use a s
 
 \begin{enumerate}
 \item Make an initial guess at $\bar{r}$ and $\bar{w}$
-\item Use $r$ and $w$ and Equations \ref{eqn:price_det_ss} and \ref{eqn:composite_price2} to solve for the price of consumption goods 1 and 2 and the composite good price.
+\item Use Equation \ref{eqn:price_det_ss} to solve for the firms' output prices, $p_{m}$.  NOTE: In this problem, you need to set some price as the numeraire or there is not solution.  Set $p_{0} = 1$.
+\item Use $r$,  $w$, $p_{m}$ \ref{eqn:composite_price2} to solve for the price of consumption goods 1 and 2 and the composite good price.
 \item Taking $\bar{r}$, $\bar{w}$, $p_{1}$, $p_{2}$, and $\tilde{p}$ as given, solve the household's problem:
 	\begin{itemize}
 	\item For each $j$ type:
@@ -1362,13 +1388,22 @@ If $\tau^{g}_{m,u}<\tau^{d}_{m,u}$ (as it was in the U.S. prior to the 2003 tax 
 
 If $\tau^{g}_{m,u}> \tau^{d}_{u}$, then $ \left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}\right)>1$, which means  $ \lambda^{d}_{m,u} + \lambda^{v}_{m,u} <0$.  This can't happen since these Lagrangian multipliers are non-negative.  What this is illustrating is that no solutions exists to the firm's problem if capital gains taxes are greater than dividend taxes.  In this case, the firm will want to issue an infinite amount of new equity and use that to finance dividends.  This will drive firm value to infinity.  The reason is that issuing \$1 of new equity costs the shareholder $\$1\times(1-\tau^{g}_{m,u})$.  Distributing a dollar of as dividends benefits the shareholder by $\$1\times (1-\tau^{d}_{m,u})$.  If $\tau^{g}_{m,u}> \tau^{d}_{m,u}$, then $\$1\times (1-\tau^{d}_{m,u}) > \$1\times(1-\tau^{g}_{m,u})$, and the shareholder benefits from this transaction of using new equity to finance dividends.  Without additional frictions (e.g. increasing costs to issuing equity), this is true at any amount of new equity issued, and therefore the problem's solution is that the firm issues an infinite amount of new equity and uses that to finance and infinite about of dividend distributions and firm value goes to infinity.  Tax arbitrage produces an infinite, risk free return for the shareholder.
 
-Using Equations \ref{eqn:lagrange_foc_i_tax} and \ref{eqn:lagrange_foc_ktau_tax}, we can solve for marginal q as a function of the price of capital, taxes, and the Lagrangian multiplier on the dividends non-negativity constraint.  To do this, we iterate on Equation \ref{eqn:lagrange_foc_ktau_tax}.  We end up with:
+Using Equations \ref{eqn:lagrange_foc_i_tax} and \ref{eqn:lagrange_foc_ktau_tax}, we can solve for marginal q as a function of the price of capital, taxes, and the Lagrangian multiplier on the dividends non-negativity constraint.  To do this, we iterate on Equation \ref{eqn:lagrange_foc_ktau_tax}.  This yields:
 
-\textcolor{red}{NON-SS EQUATIONS BELOW INVOLVING THE MULTIPLIER ON THE FISCAL CAPITAL STOCK LAW OF MOTION NEED TO BE FIXED}
+\begin{equation}
+\lambda^{\tau}_{m,u} = \frac{1}{(1-\delta^{\tau}_{m,u})} \sum_{t=u+1}^{\infty} \prod_{v=u+1}^{t} \left(\frac{1-\delta^{\tau}_{m,v-1}}{1+\frac{r_{v}}{1-\tau^{g}_{m,v}}} \right)\left(\left(\frac{1-\tau^{d}_{m,t}}{1-\tau^{g}_{m,t}}\right)+\lambda^{d}_{m,t}\right)\tau^{b}_{m,t}\delta^{\tau}_{m,t}
+\end{equation}
+
+Substituting this into Equation \ref{eqn:lagrange_foc_i_tax} gives us marginal $q$ as a function of the price of capital, taxes, and the Lagrangian multiplier on the dividends non-negativity constraint: 
 
 \begin{equation}
 \label{eqn:marg_q_tax}
-q_{m,u} = p^{k}_{m,u}\left[\left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}\right) + \lambda^{d}_{m,u} -  \left(\frac{(1-\delta^{\tau}_{m,u})}{1+\frac{r_{u+1}}{(1-\tau^{g}_{m,u+1})}}\right)  \left(\frac{1-\tau^{d}_{m,u+1}}{1-\tau^{g}_{m,u+1}}+\lambda^{d}_{m,u+1}\right)\tau^{b}_{m,u+1}\delta^{\tau}_{m,u+1} \right] 
+\begin{split}
+ q_{m,u} & = (1-\tau^{b}_{m,u}\delta^{\tau}_{m,u})p^{k}_{m,u}\left[\left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}\right) + \lambda^{d}_{m,u}\right] - \\
+  & \quad\quad\quad\quad\quad(1-\delta^{\tau}_{m,u})p^{k}_{m,u} \frac{1}{(1-\delta^{\tau}_{m,u})} \sum_{t=u+1}^{\infty} \prod_{v=u+1}^{t} \left(\frac{1-\delta^{\tau}_{m,v-1}}{1+\frac{r_{v}}{1-\tau^{g}_{m,v}}} \right)\left(\left(\frac{1-\tau^{d}_{m,t}}{1-\tau^{g}_{m,t}}\right)+\lambda^{d}_{m,t}\right)\tau^{b}_{m,t}\delta^{\tau}_{m,t} \\
+\implies & q_{m,u} = (1-\tau^{b}_{m,u}\delta^{\tau}_{m,u})p^{k}_{m,u}\left[\left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}\right) + \lambda^{d}_{m,u}\right] - \\
+& \quad\quad\quad\quad\quad p^{k}_{m,u} \sum_{t=u+1}^{\infty} \prod_{v=u+1}^{t} \left(\frac{1-\delta^{\tau}_{m,v-1}}{1+\frac{r_{v}}{1-\tau^{g}_{m,v}}} \right)\left(\left(\frac{1-\tau^{d}_{m,t}}{1-\tau^{g}_{m,t}}\right)+\lambda^{d}_{m,t}\right)\tau^{b}_{m,t}\delta^{\tau}_{m,t} \\
+\end{split}
 \end{equation}
 
 To solve for the firm's demand for capital, we use Equation \ref{eqn:marg_q_tax} in the FOC for the choice of one period ahead capital (Equation \ref{eqn:lagrange_foc_ktau_tax}).  This gives us:
@@ -1444,6 +1479,7 @@ TE_{m,u} = \tau^{b}_{m,u}\left(p_{m,u}F(K_{m,u},EL_{m,u})-w_{u}EL_{m,u} \right) 
 Solving for output and capital prices:
 
 \begin{equation}
+\label{eqn:firm_return_tax}
 \begin{split}
 r_{t} & = \frac{(1-\tau^{d}_{m,t})DIV_{m,t} + (1-\tau^{g}_{m,t})\left(V_{m,t+1}-V_{m,t}-VN_{m,t}\right)}{V_{m,t}}\\
 & =  \frac{(1-\tau^{d}_{m,t})DIV_{m,t}}{V_{m,t}}... \\  
@@ -1462,7 +1498,6 @@ Using the result of \citet{Hayashi1982} that marginal q is equal to average q, b
 \begin{split}
 &q_{m,t} = \frac{V_{m,t}-Z_{m,t}K^{\tau}_{m,t}}{K_{m,t}}, \ \  Q_{m,t}= \frac{V_{m,t}}{K_{m,t}}  \\
 \implies & V_{m,t}=q_{m,t}K_{m,t} + Z_{m,t}K^{\tau}_{m,t}  \\
-\implies & V_{m,t}=p^{k}_{m,t}K_{m,t}\left[\left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}\right) + \lambda^{d}_{m,u} -  \left(\frac{(1-\delta^{\tau}_{m,u})}{1+\frac{r_{u+1}}{(1-\tau^{g}_{m,u+1})}}\right)  \left(\frac{1-\tau^{d}_{m,u+1}}{1-\tau^{g}_{m,u+1}}+\lambda^{d}_{m,u+1}\right)\tau^{b}_{m,u+1}\delta^{\tau}_{m,u+1} \right]  \\
 \end{split}
 \end{equation}
 
@@ -1471,11 +1506,38 @@ Where $Z_{m,t}$ is the net present value of future depreciation deductions per d
 \begin{equation}
 \label{eqn:NPV_deprec}
 \begin{split}
-\text{NPV deprec deduct at $t$} = \sum_{u=t}^{\infty} \prod_{v=t}^{u} \left(\frac{1}{1+\frac{r_{v}}{1-\tau^{g}_{m,v}}} \right) \prod_{v=t}^{u}\frac{(1-\delta^{\tau}_{m,v})}{(1-\delta^{\tau}_{m,t})} \left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}  \right) \left[ \tau^{b}_{m,u}\delta^{\tau}_{m,u} \right]K^{\tau}_{t}
+\text{NPV deprec at $t$} & = \sum_{u=t}^{\infty} \prod_{v=t}^{u} \left(\frac{1}{1+\frac{r_{v}}{1-\tau^{g}_{m,v}}} \right) \prod_{v=t}^{u}\frac{(1-\delta^{\tau}_{m,v})}{(1-\delta^{\tau}_{m,t})} \left[\left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}  \right) + \lambda^{d}_{m,u} \right] \left[ \tau^{b}_{m,u}\delta^{\tau}_{m,u} \right]K^{\tau}_{m,t} \\
+& = \sum_{u=t}^{\infty} \prod_{v=t}^{u} \left(\frac{1}{1+\frac{r_{v}}{1-\tau^{g}_{m,v}}} \right) \prod_{v=t}^{u}(1-\delta^{\tau}_{m,v}) \left[\left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}  \right) + \lambda^{d}_{m,u} \right] \left[ \tau^{b}_{m,u}\delta^{\tau}_{m,u} \right]\frac{K^{\tau}_{m,t}}{(1-\delta^{\tau}_{m,t})} \\
+& = \frac{K^{\tau}_{m,t}}{(1-\delta^{\tau}_{m,t})} \sum_{u=t}^{\infty} \prod_{v=t}^{u} \left(\frac{1}{1+\frac{r_{v}}{1-\tau^{g}_{m,v}}} \right) \prod_{v=t}^{u}(1-\delta^{\tau}_{m,v}) \left[\left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}  \right) + \lambda^{d}_{m,u} \right] \left[ \tau^{b}_{m,u}\delta^{\tau}_{m,u} \right] \\
+& \equiv K^{\tau}_{m,t} Z_{m,t}
 \end{split}
 \end{equation}
 
-\textcolor{red}{The above is not quite right.  One needs to account for transitions between dividend distribution and equity issuance regimes.  The value of depreciation deductions varies between the two regimes.  Do we just have indicator functions that signal a binding constraint on dividends or equity issues?  I also haven't fully thought through if firms will ever be in a case where tax liability is zero because of zero negative taxable income.  In a deterministic model, I don't think this will ever be the case, but we should think about it.}
+\textcolor{red}{Not 100\% sure on the above.  The issue is that the value of dividends varies as you move better states where dividends are distributed and new equity is issued.  I think the multiplier on the dividend non-negativity constraint captures this, but not sure.  Also, there may be issue about when no tax liability is generated - but since we have deterministic firms, perhaps we don't need to worry about this.}
+
+We can use the above equation for the value of the firm as a function of $q_{m,t}$  in Equation \ref{eqn:firm_return_tax},  to solve for the price of output, $p_{m,t}$.
+
+\begin{equation}
+\begin{split}
+r_{t} & = \frac{\left(1-\tau^{d}_{m,t}-\left(\frac{1-\tau^{d}_{m,t}}{1+\frac{r_{t}}{1-\tau^{g}_{m,t}}}\right)\right)DIV_{m,t} + \left(1-\tau^{g}_{m,t}+\left(\frac{1-\tau^{d}_{m,t}}{1+\frac{r_{t}}{1-\tau^{g}_{m,t}}}\right)\right)VN_{m,t}}{V_{m,t}}  \\
+\implies r_{t} = &\frac{\left(1-\tau^{d}_{m,t}-\left(\frac{1-\tau^{d}_{m,t}}{1+\frac{r_{t}}{1-\tau^{g}_{m,t}}}\right)\right)DIV_{m,t} + \left(1-\tau^{g}_{m,t}+\left(\frac{1-\tau^{d}_{m,t}}{1+\frac{r_{t}}{1-\tau^{g}_{m,t}}}\right)\right)VN_{m,t}}{q_{m,t}K_{m,t} + Z_{m,t}K^{\tau}_{m,t}} \\
+& \text{We can get rid of the need to solve for factor demand by dividing} \\ 
+& \text{the numerator and denominator by $X_{m,t}$:} \\  
+\implies r_{t} = &\frac{\left(1-\tau^{d}_{m,t}-\left(\frac{1-\tau^{d}_{m,t}}{1+\frac{r_{t}}{1-\tau^{g}_{m,t}}}\right)\right)\frac{DIV_{m,t}}{X_{m,t}} + \left(1-\tau^{g}_{m,t}+\left(\frac{1-\tau^{d}_{m,t}}{1+\frac{r_{t}}{1-\tau^{g}_{m,t}}}\right)\right)\frac{VN_{m,t}}{X_{m,t}}}{q_{m,t}\frac{K_{m,t}}{X_{m,t}} + Z_{m,t}\frac{K^{\tau}_{m,t}}{X_{m,t}}} \\
+\end{split}
+\end{equation}
+
+The RHS to the above is a function of prices, taxes, and parameters and can be solved with a root finder. Implicit in the above equation will be the price of capital.  The price of capital, $p^{k}_{m,t}$ and of consumption goods, $p^{c}_{m,t}$ will be solved for using the transition matrices relating inputs and outputs and outputs to consumption goods:
+
+\begin{equation}
+\underbrace{\boldsymbol{p^{c}_{t}}}_{1\times I} =\underbrace{\boldsymbol{p_{t}}}_{1\times M} \times  \underbrace{\Pi}_{M\times I}
+\end{equation}
+
+\begin{equation}
+\underbrace{\boldsymbol{p^{k}_{t}}}_{1\times M} =\underbrace{\boldsymbol{p_{t}}}_{1\times M} \times  \underbrace{\Xi}_{M\times M}
+\end{equation}
+
+
 
 \subsection*{Dynamic firm problem with taxes, steady state}
 
@@ -1551,7 +1613,7 @@ It will also be useful to solve for the firm's capital-output and labor-output r
 
 \begin{equation}
 \label{eqn:k_over_x_tax_ss}
-\frac{\bar{K}_{m}}{\bar{X}_{m}} = \gamma_{m}\bar{A}_{m}^{\epsilon_{m}-1} \left(\frac{\bar{q}_{m}}{\bar{w}}\left(\frac{(1-\bar{\tau}^{g})}{(1-\bar{\tau}^{d})(1-\bar{\tau}^{b})}\right)\left(\frac{\bar{r}}{1-\bar{\tau}^{g}}+\delta_{m}\right)\right)^{-\epsilon_{m}}
+\frac{\bar{K}_{m}}{\bar{X}_{m}} = \gamma_{m}\bar{A}_{m}^{\epsilon_{m}-1} \left(\frac{\bar{q}_{m}}{\bar{p}_{m}}\left(\frac{(1-\bar{\tau}^{g})}{(1-\bar{\tau}^{d})(1-\bar{\tau}^{b})}\right)\left(\frac{\bar{r}}{1-\bar{\tau}^{g}}+\delta_{m}\right)\right)^{-\epsilon_{m}}
 \end{equation}
 
 \begin{equation}
@@ -1733,7 +1795,8 @@ To compute the solution to the SS of the model with dynamic firms, we'll use a s
 
 \begin{enumerate}
 \item Make an initial guess at $\bar{r}$, $\bar{w}$, $\bar{T}^{H}$.  Note that we must make a guess at the value of transfers to the household (equivalently total tax revenue).  This is because we need to solve the consumers problem before solving the firm problem - but in order to solve the consumer problem we need to know how much they get in transfers (which we don't know unless we solve the firm's problem...).
-\item Use $r$ and $w$ and Equations \ref{eqn:p_dynamic_tax_ss} and \ref{eqn:composite_price2} to solve for the price of consumption goods 1 and 2 and the composite good price.
+\item Use Equation \ref{eqn:price_det_ss} to solve for the firms' output prices, $p_{m}$.  NOTE: In this problem, you need to set some price as the numeraire or there is not solution.  Set $p_{0} = 1$.
+\item Use $r$, $w$, and $p_{m}$ Equation \ref{eqn:composite_price2} to solve for the price of consumption goods 1 and 2 and the composite good price.
 \item Taking $\bar{r}$, $\bar{w}$, $\bar{T}^{H}$, $p_{1}$, $p_{2}$, and $\tilde{p}$ as given, solve the household's problem:
 	\begin{itemize}
 	\item For each $j$ type:
