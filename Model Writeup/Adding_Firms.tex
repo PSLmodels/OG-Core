@@ -1310,10 +1310,10 @@ And the FOC for the firm's choice of new equity is:
 \begin{equation}
 \label{eqn:lagrange_foc_i_tax}
 \begin{split}
- \frac{\partial \mathcal{L}}{\partial I_{m,u}} & =   \prod_{\nu=t}^{u} \left(\frac{1}{1+\frac{r_{\nu}}{(1-\tau^{g}_{m,\nu})}}\right) \left\{-\left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}\right)p^{k}_{m,u}(1-\tau^{b}_{u}\delta^{\tau}_{u}) - \lambda^{d}_{m,u}p^{k}_{m,u}(1-\tau^{b}_{u}\delta^{\tau}_{u}) \right. \\
+ \frac{\partial \mathcal{L}}{\partial I_{m,u}} & =   \prod_{\nu=t}^{u} \left(\frac{1}{1+\frac{r_{\nu}}{(1-\tau^{g}_{m,\nu})}}\right) \left\{-\left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}\right)p^{k}_{m,u}(1-\tau^{b}_{m,u}\delta^{\tau}_{m,u}) - \lambda^{d}_{m,u}p^{k}_{m,u}(1-\tau^{b}_{m,u}\delta^{\tau}_{m,u}) \right. \\
  & \left. + q_{m,u}  + \lambda^{\tau}_{m,u}(1-\delta^{\tau}_{m,u})p^{k}_{m,u} \right\} = 0 \\
-\implies &-\left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)p^{k}_{m,u}(1-\tau^{b}_{u}\delta^{\tau}_{u}) - \lambda^{d}_{m,u}p^{k}_{m,u}(1-\tau^{b}_{u}\delta^{\tau}_{u}) + q_{m,u}  + \lambda^{\tau}_{m,u}(1-\delta^{\tau}_{m,u})p^{k}_{m,u}  = 0 \\
-\implies &  q_{m,u} = (1-\tau^{b}_{u}\delta^{\tau}_{u})p^{k}_{m,u}\left[\left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}\right) + \lambda^{d}_{m,u}\right] - (1-\delta^{\tau}_{m,u})p^{k}_{m,u}\lambda^{\tau}_{m,u}   \\
+\implies &-\left(\frac{1-\tau^{d}_{u}}{1-\tau^{g}_{u}}\right)p^{k}_{m,u}(1-\tau^{b}_{m,u}\delta^{\tau}_{m,u}) - \lambda^{d}_{m,u}p^{k}_{m,u}(1-\tau^{b}_{m,u}\delta^{\tau}_{m,u}) + q_{m,u}  + \lambda^{\tau}_{m,u}(1-\delta^{\tau}_{m,u})p^{k}_{m,u}  = 0 \\
+\implies &  q_{m,u} = (1-\tau^{b}_{m,u}\delta^{\tau}_{m,u})p^{k}_{m,u}\left[\left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}\right) + \lambda^{d}_{m,u}\right] - (1-\delta^{\tau}_{m,u})p^{k}_{m,u}\lambda^{\tau}_{m,u}   \\
 \end{split}
 \end{equation}
 
@@ -1413,10 +1413,10 @@ To solve for the firm's demand for labor we have:
 \end{split}
 \end{equation}
 
-The firm's investment demand and stock of fiscal capital can be derives from the respective transition equations and the factor demands above.  Dividends as well are a function of the firm's cash flow equation:
+The firm's investment demand and stock of fiscal capital can be derives from the respective transition equations and the factor demands above.  Dividends are a function of the firm's cash flow equation:
 
 \begin{equation}
-DIV_{m,u} = (1-\tau^{b}_{u})\left(p_{m,u}F(K_{m,u},EL_{m,u})-w_{u}EL_{u}\right) - p^{k}_{m,u}I_{m,u}+\tau^{b}_{m,u}\delta^{\tau}_{m,u}K^{\tau}_{m,u}+VN_{m,t}
+DIV_{m,u} = (1-\tau^{b}_{m,u})\left(p_{m,u}F(K_{m,u},EL_{m,u})-w_{u}EL_{u}\right) - p^{k}_{m,u}I_{m,u}+\tau^{b}_{m,u}\delta^{\tau}_{m,u}(K^{\tau}_{m,u}+p^{k}_{m,u}I_{m,u})+VN_{m,t}
 \end{equation}
 
 New equity issues are determined using the dividend function as well. Noting that new equity issues as only uniquely identified when $\tau^{d}_{m,u}>\tau^{g}_{m,u}$, we know that in this case new equity will only be raised when dividends are not being distributed (i.e. $DIV_{m,u}=0$).  In the case new equity is issued we can thus solve for the amount of new equity, by finding the $VN_{m,u}$ such that the firm's dividends are zero.  That is:
@@ -1425,9 +1425,10 @@ New equity issues are determined using the dividend function as well. Noting tha
 \begin{split}
 & DIV_{m,u} = 0 \\
 \implies & VN_{m,u} = -DIV_{m,u} + VN_{m,u}\\\
-\implies & VN_{m,u} = -1\times \left[(1-\tau^{b}_{u})\left(p_{m,u}F(K_{m,u},EL_{m,u})-w_{u}EL_{u}\right) - p^{k}_{m,u}I_{m,u}+\tau^{b}_{m,u}\delta^{\tau}_{m,u}K^{\tau}_{m,u}+VN_{m,u}\right] ... \\
-&\quad\quad\quad\quad\quad\quad+ VN_{m,u} \\
-\implies & VN_{m,u} = -1\times \left[(1-\tau^{b}_{u})\left(p_{m,u}F(K_{m,u},EL_{m,u})-w_{u}EL_{u}\right) - p^{k}_{m,u}I_{m,u}+\tau^{b}_{m,u}\delta^{\tau}_{m,u}K^{\tau}_{m,u}\right]   
+\implies & VN_{m,u} = -1\times \left[(1-\tau^{b}_{m,u})\left(p_{m,u}F(K_{m,u},EL_{m,u})-w_{u}EL_{u}\right) - p^{k}_{m,u}I_{m,u}+... \right. \\
+& \left. \quad\quad\quad\quad\quad\quad \tau^{b}_{m,u}\delta^{\tau}_{m,u}(K^{\tau}_{m,u}+p^{k}_{m,u}I_{m,u})+VN_{m,u}\right] + VN_{m,u} \\
+\implies & VN_{m,u} = -1\times \left[(1-\tau^{b}_{m,u})\left(p_{m,u}F(K_{m,u},EL_{m,u})-w_{u}EL_{u}\right) - ... \right. \\
+& \left.  \quad\quad\quad\quad\quad\quad  p^{k}_{m,u}I_{m,u}+\tau^{b}_{m,u}\delta^{\tau}_{m,u}(K^{\tau}_{m,u}+p^{k}_{m,u}I_{m,u})\right]   
  \end{split}
 \end{equation} 
   
@@ -1436,7 +1437,7 @@ With factor demands in hand, we can solve for total income taxes paid by industr
 
 \begin{equation}
 \label{eqn:inc_tax_firm}
-TE_{m,u} = \tau^{b}_{m,u}\left(p_{m,u}F(K_{m,u},EL_{m,u})-w_{u}EL_{m,u} \right) - \tau^{b}_{m,u}\delta^{\tau}_{m,u}K^{\tau}_{m,u}
+TE_{m,u} = \tau^{b}_{m,u}\left(p_{m,u}F(K_{m,u},EL_{m,u})-w_{u}EL_{m,u} \right) - \tau^{b}_{m,u}\delta^{\tau}_{m,u}(K^{\tau}_{m,u}+p^{k}_{m,u})
 \end{equation}
 
 
@@ -1455,16 +1456,26 @@ r_{t} & = \frac{(1-\tau^{d}_{m,t})DIV_{m,t} + (1-\tau^{g}_{m,t})\left(V_{m,t+1}-
 \end{equation}
 
 
-Using the result of \citet{Hayashi1982} that marginal q is equal to average q, we have:
+Using the result of \citet{Hayashi1982} that marginal q is equal to average q, but adjusting for the value of future depreciation deductions on the current capital stock. we have the following relation between marginal q and average q:
 
 \begin{equation}
 \begin{split}
-&q_{m,t} = \frac{V_{m,t}}{K_{m,t}}\equiv Q_{m,t} \\
-\implies & V_{m,t}=q_{m,t}K_{m,t} \\
+&q_{m,t} = \frac{V_{m,t}-Z_{m,t}K^{\tau}_{m,t}}{K_{m,t}}, \ \  Q_{m,t}= \frac{V_{m,t}}{K_{m,t}}  \\
+\implies & V_{m,t}=q_{m,t}K_{m,t} + Z_{m,t}K^{\tau}_{m,t}  \\
 \implies & V_{m,t}=p^{k}_{m,t}K_{m,t}\left[\left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}\right) + \lambda^{d}_{m,u} -  \left(\frac{(1-\delta^{\tau}_{m,u})}{1+\frac{r_{u+1}}{(1-\tau^{g}_{m,u+1})}}\right)  \left(\frac{1-\tau^{d}_{m,u+1}}{1-\tau^{g}_{m,u+1}}+\lambda^{d}_{m,u+1}\right)\tau^{b}_{m,u+1}\delta^{\tau}_{m,u+1} \right]  \\
 \end{split}
 \end{equation}
 
+Where $Z_{m,t}$ is the net present value of future depreciation deductions per dollar of fiscal capital.  We find $Z_{m,t}$ as:
+
+\begin{equation}
+\label{eqn:NPV_deprec}
+\begin{split}
+\text{NPV deprec deduct at $t$} = \sum_{u=t}^{\infty} \prod_{v=t}^{u} \left(\frac{1}{1+\frac{r_{v}}{1-\tau^{g}_{m,v}}} \right) \prod_{v=t}^{u}\frac{(1-\delta^{\tau}_{m,v})}{(1-\delta^{\tau}_{m,t})} \left(\frac{1-\tau^{d}_{m,u}}{1-\tau^{g}_{m,u}}  \right) \left[ \tau^{b}_{m,u}\delta^{\tau}_{m,u} \right]K^{\tau}_{t}
+\end{split}
+\end{equation}
+
+\textcolor{red}{The above is not quite right.  One needs to account for transitions between dividend distribution and equity issuance regimes.  The value of depreciation deductions varies between the two regimes.  Do we just have indicator functions that signal a binding constraint on dividends or equity issues?  I also haven't fully thought through if firms will ever be in a case where tax liability is zero because of zero negative taxable income.  In a deterministic model, I don't think this will ever be the case, but we should think about it.}
 
 \subsection*{Dynamic firm problem with taxes, steady state}
 
@@ -1477,7 +1488,7 @@ The necessary conditions of the firm's problem in the steady state are:
 \begin{equation}
 \label{eqn:lagrange_foc_i_tax_ss}
 \begin{split}
-  \bar{q}_{m} = \bar{p}^{k}_{m}\left[\left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right) - (1-\bar{\delta}^{\tau}_{m})\bar{\lambda}^{\tau}_{m} \right]  \\
+  \bar{q}_{m} = \bar{p}^{k}_{m}\left[\left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right)(1-\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}) - (1-\bar{\delta}^{\tau}_{m})\bar{\lambda}^{\tau}_{m} \right]  \\
 \end{split}
 \end{equation}
 
@@ -1518,7 +1529,7 @@ We solve for marginal q using Equations \ref{eqn:lagrange_foc_i_tax_ss} and \ref
 
 \begin{equation}
 \label{eqn:q_tax_ss}
- \bar{q}_{m} = \bar{p}^{k}_{m}\left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right)\left[1 - (1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}}+\bar{\delta}^{\tau}_{m}\right)^{-1} \right]  \\
+ \bar{q}_{m} = \bar{p}^{k}_{m}\left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right)\left[(1-\bar{\tau}^{b}\bar{\delta}^{\tau}_{m}) - (1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}}+\bar{\delta}^{\tau}_{m}\right)^{-1} \right]  \\
 \end{equation}
 
 
@@ -1555,16 +1566,16 @@ With these, we can find the other endogenous quantity variables as:
 \end{equation}
 
 \begin{equation}
-\bar{K}^{\tau}_{m} = (1-\bar{\delta}^{\tau}_{m})\frac{\delta_{m}}{\bar{\delta}^{\tau}}\bar{p}^{k}_{m}\bar{K}_{m} 
+\bar{K}^{\tau}_{m} = (1-\bar{\delta}^{\tau}_{m})\frac{\delta_{m}}{\bar{\delta}^{\tau}_{m}}\bar{p}^{k}_{m}\bar{K}_{m} 
 \end{equation}
 
 \begin{equation}
-\overline{DIV}_{m} = (1-\bar{\tau}^{b}_{m})\left(\bar{p}_{m}F(\bar{K}_{m},\overline{EL}_{m}) - \bar{w}\overline{EL}_{m}\right) - (1-\bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m}))\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m} 
+\overline{DIV}_{m} = (1-\bar{\tau}^{b}_{m})\left(\bar{p}_{m}F(\bar{K}_{m},\overline{EL}_{m}) - \bar{w}\overline{EL}_{m}\right) - (1-\bar{\tau}^{b}_{m})\delta_{m}\bar{p}^{k}\bar{K}_{m}
 \end{equation}
 
 \begin{equation}
 \label{eqn:inc_tax_firm_ss}
-\overline{TE}_{m} =\bar{\tau}^{b}_{m}\left(\bar{p}_{m}F(\bar{K}_{m},\overline{EL}_{m})-\bar{w}\overline{EL}_{m} \right) - \bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m})\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m} 
+\overline{TE}_{m} =\bar{\tau}^{b}_{m}\left(\bar{p}_{m}F(\bar{K}_{m},\overline{EL}_{m})-\bar{w}\overline{EL}_{m} \right) - \bar{\tau}^{b}_{m}\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m} 
 \end{equation}
 
 \begin{equation}
@@ -1605,12 +1616,10 @@ With these, we can find the other endogenous quantity variables as:
 %\end{equation}
 
 
-Factor prices can be written in terms of quantities.  Note that the real interest rate is a implicit function and we'll need to use a root finder to solve for the value of $\bar{r}$ that is implied given demands for capital, labor, and output.  The equation that determines $\bar{r}$ is:
+Factor prices can be written in terms of quantities.  The equation that determines $\bar{r}$ is:
 
 \begin{equation}
-%\bar{r} = \left[\bar{A}_{m}^{\frac{\epsilon_{m}-1}{\epsilon_{m}}}\left(\frac{\gamma_{m}\bar{X}_{m}}{\bar{K}_{m}} \right)^{\frac{1}{\epsilon_{m}}} \frac{\bar{p}_{m}}{\bar{p}^{k}_{m}}\left(1-\left(\frac{1-\bar{\delta}^{\tau}_{m}}{1-\bar{\tau}^{g}_{m}}\right)\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\right)^{-1} - \delta_{m}\right](1-\bar{\tau}^{g}_{m})
-%(1-\bar{\tau}^{b}_{m})\frac{\bar{p}_{m}}{\bar{p}^{k}_{m}}MPK(\bar{K}_{m},\overline{EL}_{m}) - \delta_{m} = \frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}-(1-\bar{\delta}^{\tau}_{m})\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\left(\frac{\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\delta_{m}}{\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}}\right)
-\bar{q}_{m}\left(\frac{\bar{r}}{1-\bar{\tau}^{g}}+\delta_{m}\right) = \left(\frac{1-\bar{\tau}^{d}}{1-\bar{\tau}^{g}}\right)(1-\bar{\tau}^{b})\bar{p}_{m}\bar{A}_{m}^{\frac{\epsilon_{m}-1}{\epsilon_{m}}}\left(\frac{\gamma_{m}\bar{X}_{m}}{\bar{K}_{m}}\right)^{\frac{1}{\epsilon_{m}}}
+\bar{r} = (1-\bar{\tau}^{g}_{m})\left(\left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right)(1-\bar{\tau}^{b}_{m})\frac{\bar{p}_{m}}{\bar{q}_{m}}\overline{MPK}_{m} - \delta \right)
 \end{equation}
 
 \begin{equation}
@@ -1626,24 +1635,42 @@ To find the price of output and capital, note that the steady-state return is gi
 \end{split}
 \end{equation}
 
-Using the relation between marginal q and average q in this model with CRS production and quadratic adjustment costs to changes in the capital stock, we have can use the steady state return to solve for the output price as a function of factor prices:
+Using the relation between marginal q and average q (accounting for the net present value of the future depreciation deductions on the current period fiscal capital stock) in this model with CRS production and quadratic adjustment costs to changes in the capital stock, we have can use the steady state return to solve for the output price as a function of factor prices:
 
  \begin{equation}
 \begin{split}
-& \bar{q}_{m} = \frac{\bar{V}_{m}}{\bar{K}_{m}} \\
-& \implies \bar{V}_{m} = \bar{q}_{m}\bar{K}_{m} \\
+& \bar{q}_{m} = \frac{\bar{V}_{m}- \bar{K}^{\tau}_{m}\bar{Z}_{m}}{\bar{K}_{m}} \\
+& \implies \bar{V}_{m} = \bar{q}_{m}\bar{K}_{m}+ \bar{K}^{\tau}_{m}\bar{Z}_{m} \\
 \end{split}
 \end{equation}
+
+The net present value of the depreciation deductions on a dollar of fiscal capital can be solved for in the SS as:
+
+\begin{equation}
+\label{eqn:NPV_deprec_ss}
+\begin{split}
+\text{NPV deprec deduct in SS} & = \sum_{t=1}^{\infty}  \left(\frac{1}{1+\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}} \right)^{t}(1-\bar{\delta}^{\tau}_{m})^{t-1}\left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right) \bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\bar{K}^{\tau} \\
+& = \left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right) \bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\bar{K}^{\tau} \sum_{t=1}^{\infty}  \left(\frac{1}{1+\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}} \right)^{t}(1-\bar{\delta}^{\tau}_{m})^{t-1}\\
+& = \left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right) \bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}\bar{K}^{\tau} \sum_{t=1}^{\infty}  \left(\frac{1}{1+\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}} \right)^{t}\frac{(1-\bar{\delta}^{\tau}_{m})^{t}}{(1-\bar{\delta}^{\tau}_{m})} \\
+& = \left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right) \frac{\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}}{(1-\bar{\delta}^{\tau}_{m})}\bar{K}^{\tau} \sum_{t=1}^{\infty}  \left(\frac{(1-\bar{\delta}^{\tau}_{m})}{1+\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}} \right)^{t} \\
+& =\bar{K}^{\tau} \left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right) \frac{\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}}{(1-\bar{\delta}^{\tau}_{m})} \sum_{t=1}^{\infty}  \left(\frac{(1-\bar{\delta}^{\tau}_{m})}{1+\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}} \right)^{t} \\
+& =\bar{K}^{\tau} \left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right) \frac{\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}}{(1-\bar{\delta}^{\tau}_{m})} \left[\frac{1-\bar{\delta}^{\tau}_{m}}{\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}}\right]\\
+& =\bar{K}^{\tau} \underbrace{\left(\frac{1-\bar{\tau}^{d}_{m}}{1-\bar{\tau}^{g}_{m}}\right) \left[\frac{\bar{\tau}^{b}_{m}\bar{\delta}^{\tau}_{m}}{\frac{\bar{r}}{1-\bar{\tau}^{g}_{m}}+\bar{\delta}^{\tau}_{m}}\right]}_{\bar{Z}_{m}}\\
+& =\bar{K}^{\tau} \bar{Z}_{m}\\
+\end{split}
+\end{equation}
+
 
  \begin{equation}
  \label{eqn:p_dynamic_tax_ss}
 \begin{split}
 & \bar{r}  =  \frac{(1-\bar{\tau}^{d}_{m})\overline{DIV}_{m}}{\bar{V}_{m}} \\
-\implies &  \bar{r}  =  \frac{(1-\bar{\tau}^{d}_{m})\left[(1-\bar{\tau}^{b}_{m})\left(\bar{p}_{m}F(\bar{K}_{m},\overline{EL}_{m}) - \bar{w}\overline{EL}_{m}\right) - (1-\bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m}))\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m}\right]}{\bar{V}_{m}} \\
-\implies &  \bar{r}  =  \frac{(1-\bar{\tau}^{d}_{m})\left[(1-\bar{\tau}^{b}_{m})\left(\bar{p}_{m}\bar{X}_{m} - \bar{w}\overline{EL}_{m}\right) - (1-\bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m}))\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m}\right]}{\bar{q}_{m}\bar{K}_{m}} \\
-\implies &  \bar{r}\bar{q}_{m}\bar{K}_{m}  =  (1-\bar{\tau}^{d}_{m})\left[(1-\bar{\tau}^{b}_{m})\left(\bar{p}_{m}\bar{X}_{m} - \bar{w}\overline{EL}_{m}\right) - (1-\bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m}))\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m}\right] \\
-\implies &  \bar{p}_{m}\bar{X}_{m} = \bar{w}\overline{EL}_{m} + \left(\frac{\bar{r}\bar{q}_{m}}{(1-\bar{\tau}^{d}_{m})(1-\bar{\tau}^{b}_{m})}\right)\bar{K}_{m} + \left(\frac{(1-\bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m}))\delta_{m}\bar{p}^{k}_{m}}{1-\bar{\tau}^{b}_{m}}\right)\bar{K}_{m} \\
-\implies &  \bar{p}_{m} = \bar{w}\frac{\overline{EL}_{m}}{\bar{X}_{m}} + \left(\frac{\bar{r}\bar{q}_{m}}{(1-\bar{\tau}^{d}_{m})(1-\bar{\tau}^{b}_{m})}\right)\frac{\bar{K}_{m}}{\bar{X}_{m}} + \left(\frac{(1-\bar{\tau}^{b}_{m}(1-\bar{\delta}^{\tau}_{m}))\delta_{m}\bar{p}^{k}_{m}}{1-\bar{\tau}^{b}_{m}}\right)\frac{\bar{K}_{m}}{\bar{X}_{m}} \\
+\implies &  \bar{r}  =  \frac{(1-\bar{\tau}^{d}_{m})\left[(1-\bar{\tau}^{b}_{m})\left(\bar{p}_{m}F(\bar{K}_{m},\overline{EL}_{m}) - \bar{w}\overline{EL}_{m}\right) - (1-\bar{\tau}^{b}_{m})\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m}\right]}{\bar{V}_{m}} \\
+\implies &  \bar{r}  =  \frac{(1-\bar{\tau}^{d}_{m})\left[(1-\bar{\tau}^{b}_{m})\left(\bar{p}_{m}\bar{X}_{m} - \bar{w}\overline{EL}_{m}\right) - (1-\bar{\tau}^{b}_{m})\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m}\right]}{\bar{q}_{m}\bar{K}_{m}+\bar{K}^{\tau} \bar{Z}_{m}} \\
+\implies &  \bar{r}  =  \frac{(1-\bar{\tau}^{d}_{m})\left[(1-\bar{\tau}^{b}_{m})\left(\bar{p}_{m}\bar{X}_{m} - \bar{w}\overline{EL}_{m}\right) - (1-\bar{\tau}^{b}_{m})\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m}\right]}{\bar{q}_{m}\bar{K}_{m}+(1-\bar{\delta}^{\tau}_{m})\bar{p}^{k}_{m}\frac{\delta_{m}}{\bar{\delta}^{\tau}_{m}}\bar{K}_{m} \bar{Z}_{m}} \\
+\implies &  \bar{r}\left(\bar{q}_{m}\bar{K}_{m}+(1-\bar{\delta}^{\tau}_{m})\bar{p}^{k}_{m}\frac{\delta_{m}}{\bar{\delta}^{\tau}_{m}}\bar{K}_{m} \bar{Z}_{m} \right)  =  (1-\bar{\tau}^{d}_{m})\left[(1-\bar{\tau}^{b}_{m})\left(\bar{p}_{m}\bar{X}_{m} - \bar{w}\overline{EL}_{m}\right) - (1-\bar{\tau}^{b}_{m})\delta_{m}\bar{p}^{k}_{m}\bar{K}_{m}\right] \\
+\implies &  \bar{p}_{m}\bar{X}_{m} = \bar{w}\overline{EL}_{m} + \left(\frac{\bar{r}\left(\bar{q}_{m}+(1-\bar{\delta}^{\tau}_{m})\bar{p}^{k}_{m}\frac{\delta_{m}}{\bar{\delta}^{\tau}_{m}} \bar{Z}_{m} \right)}{(1-\bar{\tau}^{d}_{m})(1-\bar{\tau}^{b}_{m})}\right)\bar{K}_{m} + \left(\frac{(1-\bar{\tau}^{b}_{m})\delta_{m}\bar{p}^{k}_{m}}{1-\bar{\tau}^{b}_{m}}\right)\bar{K}_{m} \\
+\implies &  \bar{p}_{m} = \bar{w}\frac{\overline{EL}_{m}}{\bar{X}_{m}} +  \left(\frac{\bar{r}\left(\bar{q}_{m}+(1-\bar{\delta}^{\tau}_{m})\bar{p}^{k}_{m}\frac{\delta_{m}}{\bar{\delta}^{\tau}_{m}} \bar{Z}_{m} \right)}{(1-\bar{\tau}^{d}_{m})(1-\bar{\tau}^{b}_{m})}\right)\frac{\bar{K}_{m}}{\bar{X}_{m}} + \delta_{m}\bar{p}^{k}_{m}\frac{\bar{K}_{m}}{\bar{X}_{m}} \\
 \end{split}
 \end{equation}
 
