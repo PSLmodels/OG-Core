@@ -47,3 +47,6 @@ depr_rates = clbr.calibrate_depr_rates(get_all=True)
 #debt_tree = clbr.calibrate_debt(soi_tree=soi_tree)
 #inc_tree = clbr.calibrate_incomes(output_data=True)
 
+print 'type of object that depr_rates is: ', type(depr_rates)
+depr_rates.to_csv(_CUR_DIR+'depr_rates_output.csv', index=False)
+
