@@ -15,8 +15,9 @@ csv files.
 # Packages:
 import os.path
 import sys
-#import numpy as np
-#import pandas as pd
+from pprint import pprint
+import numpy as np
+import pandas as pd
 # Directories:
 _CUR_DIR = os.path.dirname(__file__)
 _PROC_DIR = os.path.join(_CUR_DIR, "processing")
@@ -47,6 +48,17 @@ depr_rates = clbr.calibrate_depr_rates(get_all=True)
 #debt_tree = clbr.calibrate_debt(soi_tree=soi_tree)
 #inc_tree = clbr.calibrate_incomes(output_data=True)
 
-print 'type of object that depr_rates is: ', type(depr_rates)
-depr_rates.to_csv(_CUR_DIR+'depr_rates_output.csv', index=False)
+
+# put econ depreciation rates in a dataframe for printing to csv
+N = len(depr_rates['Econ'].enum_inds)
+econ_rates_df = pd.DataFrame(index=np.arange(0,N),columns=('NAICS','All','Corp','Non-Corp'))
+for i in xrange(0,N):
+    econ_rates_df['NAICS'].iloc[i]= depr_rates['Econ'].enum_inds[i].data.dfs['Codes:'].values
+    econ_rates_df['All'].iloc[i]= depr_rates['Econ'].enum_inds[i].data.dfs['Economic']['All'].iloc[0]
+    econ_rates_df['Corp'].iloc[i]= depr_rates['Econ'].enum_inds[i].data.dfs['Economic']['Corp'].iloc[0]
+    econ_rates_df['Non-Corp'].iloc[i]= depr_rates['Econ'].enum_inds[i].data.dfs['Economic']['Non-Corp'].iloc[0]
+    
+
+econ_rates_df.to_csv(_CUR_DIR+'depr_rates_output.csv', index=False)
+
 
