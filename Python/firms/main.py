@@ -105,13 +105,10 @@ delta = np.array([del1, del2])
 # SS parameters
 ss_tol = 1e-13
 ss_graphs = False
-# TPI parameters
-tpi_solve = True
-tpi_tol = 1e-13
-maxiter_tpi = 1
-mindist_tpi = 1e-13
-xi_tpi = 0.2
-tpi_graphs = False
+# TP parameters
+tp_solve = True
+tp_graphs = True
+tp_tol = 1e-9 # tolerance for fsolve for TP and for HH prob along time path
 
 '''
 ------------------------------------------------------------------------
@@ -296,7 +293,7 @@ elif GoodGuess == True:
                   missing one individual's consumption in that period
     --------------------------------------------------------------------
     '''
-    if tpi_solve == True:
+    if tp_solve == True:
         print 'BEGIN EQUILIBRIUM TIME PATH COMPUTATION'
         #Gamma1 = b_ss
         Gamma1 = 0.95 * b_ss
@@ -330,60 +327,33 @@ elif GoodGuess == True:
             #wpath_init[:] = w_ss
 
             # Run TPI
-            tpi_params = (S, T, alpha, beta, sigma, r_ss, w_ss,
-                         maxiter_tpi, mindist_tpi, xi_tpi, tpi_tol)
+            tp_params = (S, T, alpha, beta, sigma, r_ss, w_ss, tp_tol)
 
             guesses = np.append(rpath_init[:T], wpath_init[:T])
-            solutions = opt.fsolve(tpf.TPI_fsolve, guesses, args=(tpi_params, Km_ss, Ym_ss,
+            #solutions = opt.fsolve(tpf.TP_fsolve, guesses, args=(tp_params, Km_ss, Ym_ss,
+            #   Gamma1, cm_tilde, A, gamma, epsilon, delta, nvec,
+            #   tp_graphs), xtol=tp_tol, col_deriv=1)
+            solutions = tpf.TP_fsolve(guesses, tp_params, Km_ss, Ym_ss,
                Gamma1, cm_tilde, A, gamma, epsilon, delta, nvec,
-               tpi_graphs), xtol=1e-9, col_deriv=1)
+               tp_graphs)
             rpath = solutions[:T].reshape(T)
             wpath = solutions[T:].reshape(T)
 
-            print 'rpath: ', rpath
-            print 'wpath: ', wpath
-            print 'rpath shape', rpath.shape
 
-            # Plot time path of real wage
-            tvec = np.linspace(1, T, T)
-            minorLocator   = MultipleLocator(1)
-            fig, ax = plt.subplots()
-            plt.plot(tvec, wpath)
-            plt.plot(tvec, np.ones(T)*w_ss)
-            # for the minor ticks, use no labels; default NullFormatter
-            ax.xaxis.set_minor_locator(minorLocator)
-            plt.grid(b=True, which='major', color='0.65',linestyle='-')
-            plt.title('Time path for real wage')
-            plt.xlabel(r'Period $t$')
-            plt.ylabel(r'Real wage $w_{t}$')
-            # plt.savefig('wt_Sec2')
-            plt.show()
+            # run one iteration of TP with fsolve solution to get other output
+            rpath_init[:T] = rpath 
+            rpath_init[T:] = r_ss 
+            wpath_init[:T] = wpath 
+            wpath_init[T:] = w_ss 
 
-            # Plot time path of real interest rate
-            tvec = np.linspace(1, T, T)
-            minorLocator   = MultipleLocator(1)
-            fig, ax = plt.subplots()
-            plt.plot(tvec, rpath)
-            plt.plot(tvec, np.ones(T)*r_ss)
-            # for the minor ticks, use no labels; default NullFormatter
-            ax.xaxis.set_minor_locator(minorLocator)
-            plt.grid(b=True, which='major', color='0.65',linestyle='-')
-            plt.title('Time path for real interest rate')
-            plt.xlabel(r'Period $t$')
-            plt.ylabel(r'Real interest rate $r_{t}$')
-            # plt.savefig('rt_Sec2')
-            plt.show()
-
-            # run one iteration of TPI with fsolve solution to get other output
-            maxiter_tpi = 1
-            tpi_params = (S, T, alpha, beta, sigma, r_ss, w_ss,
-                         maxiter_tpi, mindist_tpi, xi_tpi, tpi_tol)
+            
+            tp_params = (S, T, alpha, beta, sigma, r_ss, w_ss,tp_tol)
             (r_path, w_path, pm_path, p_path, b_path, c_path, cm_path,
                 eul_path, Cm_path, Ym_path, Km_path, Lm_path,
                 MCKerr_path, MCLerr_path, tpi_time) = \
-                tpf.TP(tpi_params, rpath, wpath, Km_ss, Ym_ss,
+                tpf.TP(tp_params, rpath_init, wpath_init, Km_ss, Ym_ss,
                 Gamma1, cm_tilde, A, gamma, epsilon, delta, nvec,
-                tpi_graphs)
+                tp_graphs)
 
 
             # Print diagnostics
@@ -396,20 +366,7 @@ elif GoodGuess == True:
             print np.absolute(MCKerr_path).max(), np.absolute(MCLerr_path).max()
 
 
-            # Plot time path of the differences in the resource constraint
-            tvec = np.linspace(1, T-2, T-2)
-            minorLocator   = MultipleLocator(1)
-            fig, ax = plt.subplots()
-            plt.plot(tvec, ResmDiff[0,:T-2])
-            plt.plot(tvec, ResmDiff[1,:T-2])
-            # for the minor ticks, use no labels; default NullFormatter
-            ax.xaxis.set_minor_locator(minorLocator)
-            plt.grid(b=True, which='major', color='0.65',linestyle='-')
-            plt.title('Time path for resource constraint')
-            plt.xlabel(r'Period $t$')
-            plt.ylabel(r'RC Difference')
-            # plt.savefig('wt_Sec2')
-            plt.show()
+
 
             # Print TPI computation time
             if tpi_time < 60: # seconds
