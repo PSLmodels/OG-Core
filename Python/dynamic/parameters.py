@@ -22,6 +22,7 @@ from income import get_e
 
 DATASET = 'REAL'
 
+
 def get_parameters():
     if DATASET == 'REAL':
         return get_full_parameters()
@@ -114,17 +115,17 @@ def get_reduced_parameters():
     lambdas = np.array([.50, .50])
     starting_age = 40
     ending_age = 50
-    E = int(starting_age * (S / float(ending_age-starting_age)))
+    E = int(starting_age * (S / float(ending_age - starting_age)))
     beta_annual = .96
-    beta = beta_annual ** (float(ending_age-starting_age) / S)
+    beta = beta_annual ** (float(ending_age - starting_age) / S)
     sigma = 3.0
     alpha = .35
     Z = 1.0
     delta_annual = .05
-    delta = 1 - ((1-delta_annual) ** (float(ending_age-starting_age) / S))
+    delta = 1 - ((1 - delta_annual) ** (float(ending_age - starting_age) / S))
     ltilde = 1.0
     g_y_annual = 0.03
-    g_y = (1 + g_y_annual)**(float(ending_age-starting_age)/S) - 1
+    g_y = (1 + g_y_annual)**(float(ending_age - starting_age) / S) - 1
     #   Ellipse parameters
     b_ellipse = 25.6594
     k_ellipse = -26.4902
@@ -170,6 +171,7 @@ def get_reduced_parameters():
     allvars = dict(locals())
     return allvars
 
+
 def get_full_parameters():
     # Model Parameters
     S = 80
@@ -178,17 +180,17 @@ def get_full_parameters():
     lambdas = np.array([.25, .25, .2, .1, .1, .09, .01])
     starting_age = 20
     ending_age = 100
-    E = int(starting_age * (S / float(ending_age-starting_age)))
+    E = int(starting_age * (S / float(ending_age - starting_age)))
     beta_annual = .96
-    beta = beta_annual ** (float(ending_age-starting_age) / S)
+    beta = beta_annual ** (float(ending_age - starting_age) / S)
     sigma = 3.0
     alpha = .35
     Z = 1.0
     delta_annual = .05
-    delta = 1 - ((1-delta_annual) ** (float(ending_age-starting_age) / S))
+    delta = 1 - ((1 - delta_annual) ** (float(ending_age - starting_age) / S))
     ltilde = 1.0
     g_y_annual = 0.03
-    g_y = (1 + g_y_annual)**(float(ending_age-starting_age)/S) - 1
+    g_y = (1 + g_y_annual)**(float(ending_age - starting_age) / S) - 1
     #   Ellipse parameters
     b_ellipse = 25.6594
     k_ellipse = -26.4902
@@ -225,26 +227,11 @@ def get_full_parameters():
     #   Calibration parameters
     # These guesses are close to the calibrated values
     chi_b_guess = np.array([2, 10, 90, 350, 1700, 22000, 120000])
-    chi_n_guess = np.array([47.12000874 , 22.22762421 , 14.34842241 , 10.67954008 ,  8.41097278
-                             ,  7.15059004 ,  6.46771332 ,  5.85495452 ,  5.46242013 ,  5.00364263
-                             ,  4.57322063 ,  4.53371545 ,  4.29828515 ,  4.10144524 ,  3.8617942  ,  3.57282
-                             ,  3.47473172 ,  3.31111347 ,  3.04137299 ,  2.92616951 ,  2.58517969
-                             ,  2.48761429 ,  2.21744847 ,  1.9577682  ,  1.66931057 ,  1.6878927
-                             ,  1.63107201 ,  1.63390543 ,  1.5901486  ,  1.58143606 ,  1.58005578
-                             ,  1.59073213 ,  1.60190899 ,  1.60001831 ,  1.67763741 ,  1.70451784
-                             ,  1.85430468 ,  1.97291208 ,  1.97017228 ,  2.25518398 ,  2.43969757
-                             ,  3.21870602 ,  4.18334822 ,  4.97772026 ,  6.37663164 ,  8.65075992
-                             ,  9.46944758 , 10.51634777 , 12.13353793 , 11.89186997 , 12.07083882
-                             , 13.2992811  , 14.07987878 , 14.19951571 , 14.97943562 , 16.05601334
-                             , 16.42979341 , 16.91576867 , 17.62775142 , 18.4885405  , 19.10609921
-                             , 20.03988031 , 20.86564363 , 21.73645892 , 22.6208256  , 23.37786072
-                             , 24.38166073 , 25.22395387 , 26.21419653 , 27.05246704 , 27.86896121
-                             , 28.90029708 , 29.83586775 , 30.87563699 , 31.91207845 , 33.07449767
-                             , 34.27919965 , 35.57195873 , 36.95045988 , 38.62308152])
+    chi_n_guess = np.array([47.12000874, 22.22762421, 14.34842241, 10.67954008, 8.41097278, 7.15059004, 6.46771332, 5.85495452, 5.46242013, 5.00364263, 4.57322063, 4.53371545, 4.29828515, 4.10144524, 3.8617942, 3.57282, 3.47473172, 3.31111347, 3.04137299, 2.92616951, 2.58517969, 2.48761429, 2.21744847, 1.9577682, 1.66931057, 1.6878927, 1.63107201, 1.63390543, 1.5901486, 1.58143606, 1.58005578, 1.59073213, 1.60190899, 1.60001831, 1.67763741, 1.70451784, 1.85430468, 1.97291208, 1.97017228,
+                            2.25518398, 2.43969757, 3.21870602, 4.18334822, 4.97772026, 6.37663164, 8.65075992, 9.46944758, 10.51634777, 12.13353793, 11.89186997, 12.07083882, 13.2992811, 14.07987878, 14.19951571, 14.97943562, 16.05601334, 16.42979341, 16.91576867, 17.62775142, 18.4885405, 19.10609921, 20.03988031, 20.86564363, 21.73645892, 22.6208256, 23.37786072, 24.38166073, 25.22395387, 26.21419653, 27.05246704, 27.86896121, 28.90029708, 29.83586775, 30.87563699, 31.91207845, 33.07449767, 34.27919965, 35.57195873, 36.95045988, 38.62308152])
     # Generate Income and Demographic parameters
     omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = get_omega(
         S, T, starting_age, ending_age, E, flag_graphs)
     e = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
     allvars = dict(locals())
     return allvars
-

@@ -27,10 +27,14 @@ newfiles = [os.path.join(TEST_OUTPUT, "SSinit/ss_init_tpi_vars.pkl"),
             os.path.join(TEST_OUTPUT, "TPIinit/TPIinit_vars.pkl")]
 
 oldfiles = [os.path.join(CUR_PATH, "../../../Python/OUTPUT/SSinit/ss_init_tpi_vars.pkl"),
-            os.path.join(CUR_PATH, "../../../Python/OUTPUT/SSinit/ss_init_vars.pkl"),
-            os.path.join(CUR_PATH, "../../../Python/OUTPUT/Saved_moments/SS_init_solutions.pkl"),
-            os.path.join(CUR_PATH, "../../../Python/OUTPUT/Saved_moments/labor_data_moments.pkl"),
-            os.path.join(CUR_PATH, "../../../Python/OUTPUT/Saved_moments/wealth_data_moments.pkl"),
+            os.path.join(
+                CUR_PATH, "../../../Python/OUTPUT/SSinit/ss_init_vars.pkl"),
+            os.path.join(
+                CUR_PATH, "../../../Python/OUTPUT/Saved_moments/SS_init_solutions.pkl"),
+            os.path.join(
+                CUR_PATH, "../../../Python/OUTPUT/Saved_moments/labor_data_moments.pkl"),
+            os.path.join(
+                CUR_PATH, "../../../Python/OUTPUT/Saved_moments/wealth_data_moments.pkl"),
             os.path.join(CUR_PATH, "../../../Python/OUTPUT/TPIinit/TPIinit_vars.pkl")]
 
 
@@ -71,15 +75,15 @@ def test_sstpi():
     # List of parameter names that will not be changing (unless we decide to
     # change them for a tax experiment)
     param_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
-                'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
-                'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
-                'b_ellipse', 'k_ellipse', 'upsilon',
-                'a_tax_income', 'chi_b_guess', 'chi_n_guess',
-                'b_tax_income', 'c_tax_income', 'd_tax_income',
-                'tau_payroll', 'tau_bq', 'calibrate_model',
-                'retire', 'mean_income_data', 'g_n_vector',
-                'h_wealth', 'p_wealth', 'm_wealth', 'get_baseline',
-                'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'e', 'rho']
+                   'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
+                   'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
+                   'b_ellipse', 'k_ellipse', 'upsilon',
+                   'a_tax_income', 'chi_b_guess', 'chi_n_guess',
+                   'b_tax_income', 'c_tax_income', 'd_tax_income',
+                   'tau_payroll', 'tau_bq', 'calibrate_model',
+                   'retire', 'mean_income_data', 'g_n_vector',
+                   'h_wealth', 'p_wealth', 'm_wealth', 'get_baseline',
+                   'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'e', 'rho']
 
     '''
     ------------------------------------------------------------------------
@@ -112,7 +116,8 @@ def test_sstpi():
 
     ss_outputs['get_baseline'] = get_baseline
     income_tax_params, wealth_tax_params, ellipse_params, parameters, N_tilde, omega_stationary, K0, b_sinit, \
-    b_splus1init, L0, Y0, w0, r0, BQ0, T_H_0, tax0, c0, initial_b, initial_n = TPI.create_tpi_params(**sim_params)
+        b_splus1init, L0, Y0, w0, r0, BQ0, T_H_0, tax0, c0, initial_b, initial_n = TPI.create_tpi_params(
+            **sim_params)
     ss_outputs['output_dir'] = output_dir
     ss_outputs['income_tax_params'] = income_tax_params
     ss_outputs['wealth_tax_params'] = wealth_tax_params
@@ -136,19 +141,19 @@ def test_sstpi():
     ss_outputs['g_n_vector'] = g_n_vector
     TPI.run_time_path_iteration(**ss_outputs)
 
-    #Platform specific exceptions:
+    # Platform specific exceptions:
     if sys.platform == "darwin":
         exceptions = {'tax_path': 0.08,
-                      'c_path' : 0.02,
-                      'b_mat' : 0.0017,
+                      'c_path': 0.02,
+                      'b_mat': 0.0017,
                       'solutions': 0.005}
     else:
         exceptions = {}
 
-    #compare results to test data
+    # compare results to test data
     for old, new in zip(oldfiles, newfiles):
         print "trying a pair"
         print old, new
-        assert pickle_file_compare(old, new, exceptions=exceptions, relative=True)
-        #pickle_file_compare(old, new)
+        assert pickle_file_compare(
+            old, new, exceptions=exceptions, relative=True)
         print "next pair"

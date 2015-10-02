@@ -27,7 +27,7 @@ def get_r(Y_now, K_now, params):
         r_now = rental rate (same shape as Y_now)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     r_now = (alpha * Y_now / K_now) - delta
     return r_now
 
@@ -42,7 +42,7 @@ def get_Y(K_now, L_now, params):
         Y_now = Aggregate output (same shape as K_now)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     Y_now = Z * (K_now ** alpha) * ((L_now) ** (1 - alpha))
     return Y_now
 
@@ -57,7 +57,7 @@ def get_w(Y_now, L_now, params):
         w_now = wage rate (same shape as Y_now)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     w_now = (1 - alpha) * Y_now / L_now
     return w_now
 
@@ -92,5 +92,5 @@ def get_I(Knext, Know, delta, g_y, g_n):
     Output:
         aggI = aggregate investment (scalar or Tx1 array)
     '''
-    aggI = (np.exp(g_y) + g_n*np.exp(g_y))*Knext - (1.0 - delta) * Know
+    aggI = (np.exp(g_y) + g_n * np.exp(g_y)) * Knext - (1.0 - delta) * Know
     return aggI

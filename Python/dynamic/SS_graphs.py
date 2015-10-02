@@ -43,7 +43,8 @@ def the_inequalizer(dist, pop_weights, ability_weights, S, J):
     '''
     Generates 3 inequality measures
     '''
-    weights = np.tile(pop_weights.reshape(S, 1), (1, J)) * ability_weights.reshape(1, J)
+    weights = np.tile(pop_weights.reshape(S, 1), (1, J)) * \
+        ability_weights.reshape(1, J)
     flattened_dist = dist.flatten()
     flattened_weights = weights.flatten()
     idx = np.argsort(flattened_dist)
@@ -53,14 +54,16 @@ def the_inequalizer(dist, pop_weights, ability_weights, S, J):
     # variance
     print np.var(np.log(dist * weights))
     # 90/10 ratio
-    loc_90th = np.argmin(np.abs(cum_weights-.9))
-    loc_10th = np.argmin(np.abs(cum_weights-.1))
-    print sort_dist[loc_90th]/sort_dist[loc_10th]
+    loc_90th = np.argmin(np.abs(cum_weights - .9))
+    loc_10th = np.argmin(np.abs(cum_weights - .1))
+    print sort_dist[loc_90th] / sort_dist[loc_10th]
     # 10% ratio
-    print (sort_dist[loc_90th:]*sort_weights[loc_90th:]).sum() / (sort_dist * sort_weights).sum()
+    print (sort_dist[loc_90th:] * sort_weights[loc_90th:]
+           ).sum() / (sort_dist * sort_weights).sum()
     # 1% ratio
-    loc_99th = np.argmin(np.abs(cum_weights-.99))
-    print (sort_dist[loc_99th:]*sort_weights[loc_99th:]).sum() / (sort_dist * sort_weights).sum()
+    loc_99th = np.argmin(np.abs(cum_weights - .99))
+    print (sort_dist[loc_99th:] * sort_weights[loc_99th:]
+           ).sum() / (sort_dist * sort_weights).sum()
 
 '''
 ------------------------------------------------------------------------
@@ -91,9 +94,11 @@ factor_ss_init = factor_ss
 
 savings = np.copy(bssmat_splus1)
 
-beq_ut = chi_b.reshape(S, J) * (rho.reshape(S, 1)) * (savings**(1-sigma) -1)/(1-sigma)
-utility = ((cssmat_init ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(S, 1) * (b_ellipse * (1-(nssmat_init/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
-utility += beq_ut 
+beq_ut = chi_b.reshape(S, J) * (rho.reshape(S, 1)) * \
+    (savings**(1 - sigma) - 1) / (1 - sigma)
+utility = ((cssmat_init ** (1 - sigma) - 1) / (1 - sigma)) + chi_n.reshape(S, 1) * \
+    (b_ellipse * (1 - (nssmat_init / ltilde)**upsilon) ** (1 / upsilon) + k_ellipse)
+utility += beq_ut
 utility_init = utility.sum(0)
 
 T_Hss_init = T_Hss
@@ -112,7 +117,6 @@ income_init = cssmat + iss_init
 the_inequalizer(income_init, omega_SS, lambdas, S, J)
 
 
-
 '''
 ------------------------------------------------------------------------
     SS baseline graphs
@@ -129,7 +133,7 @@ X, Y = np.meshgrid(domain, Jgrid)
 X2, Y2 = np.meshgrid(domain[1:], Jgrid)
 
 plt.figure()
-plt.plot(np.arange(J)+1, utility_init)
+plt.plot(np.arange(J) + 1, utility_init)
 lt_utility = os.path.join(SS_FIG_DIR, "SSinit/lifetime_utility")
 plt.savefig(lt_utility)
 
@@ -146,8 +150,10 @@ plt.savefig(capital_dist)
 fig112 = plt.figure()
 ax = plt.subplot(111)
 ax.plot(domain, bssmat_s[:, 0], label='0 - 24%', linestyle='-', color='black')
-ax.plot(domain, bssmat_s[:, 1], label='25 - 49%', linestyle='--', color='black')
-ax.plot(domain, bssmat_s[:, 2], label='50 - 69%', linestyle='-.', color='black')
+ax.plot(domain, bssmat_s[:, 1], label='25 - 49%',
+        linestyle='--', color='black')
+ax.plot(domain, bssmat_s[:, 2], label='50 - 69%',
+        linestyle='-.', color='black')
 ax.plot(domain, bssmat_s[:, 3], label='70 - 79%', linestyle=':', color='black')
 ax.plot(domain, bssmat_s[:, 4], label='80 - 89%', marker='x', color='black')
 ax.plot(domain, bssmat_s[:, 5], label='90 - 99%', marker='v', color='black')
@@ -165,12 +171,13 @@ ax53 = fig53.gca(projection='3d')
 ax53.set_xlabel(r'age-$s$')
 ax53.set_ylabel(r'ability type-$j$')
 ax53.set_zlabel(r'log individual savings $log(\bar{b}_{j,s})$')
-ax53.plot_surface(X2, Y2, np.log(bssmat_s[1:]).T, rstride=1, cstride=1, cmap=cmap1)
+ax53.plot_surface(X2, Y2, np.log(
+    bssmat_s[1:]).T, rstride=1, cstride=1, cmap=cmap1)
 capital_dist_log = os.path.join(SS_FIG_DIR, "SSinit/capital_dist_log")
 plt.savefig(capital_dist_log)
 
 plt.figure()
-plt.plot(np.arange(J)+1, BQss)
+plt.plot(np.arange(J) + 1, BQss)
 plt.xlabel(r'ability-$j$')
 plt.ylabel(r'bequests $\overline{bq}_{j,E+S+1}$')
 intentional_bequests = os.path.join(SS_FIG_DIR, "SSinit/intentional_bequests")
@@ -193,12 +200,15 @@ for key in variables:
     globals()[key] = variables[key]
 
 plt.figure()
-plt.plot(np.arange(80)+20, (nssmat * lambdas).sum(1), label='Model', color='black', linestyle='--')
-plt.plot(np.arange(80)+20, labor_dist_data, label='Data', color='black', linestyle='-')
+plt.plot(np.arange(80) + 20, (nssmat * lambdas).sum(1),
+         label='Model', color='black', linestyle='--')
+plt.plot(np.arange(80) + 20, labor_dist_data,
+         label='Data', color='black', linestyle='-')
 plt.legend()
 plt.ylabel(r'individual labor supply $\bar{l}_{s}$')
 plt.xlabel(r'age-$s$')
-labor_dist_comparison = os.path.join(SS_FIG_DIR, "SSinit/labor_dist_comparison")
+labor_dist_comparison = os.path.join(
+    SS_FIG_DIR, "SSinit/labor_dist_comparison")
 plt.savefig(labor_dist_comparison)
 
 fig113 = plt.figure()
@@ -278,16 +288,19 @@ ax16.set_xlabel(r'Age Cohorts $S$')
 ax16.set_ylabel(r'Ability Types $J$')
 ax16.set_zlabel('Error Level')
 ax16.set_title('Euler Errors')
-euler_errors_savings_SS = os.path.join(SS_FIG_DIR, "SSinit/euler_errors_savings_SS")
+euler_errors_savings_SS = os.path.join(
+    SS_FIG_DIR, "SSinit/euler_errors_savings_SS")
 plt.savefig(euler_errors_savings_SS)
 fig17 = plt.figure()
 ax17 = fig17.gca(projection='3d')
-ax17.plot_surface(X, Y, euler_labor_leisure.T, rstride=1, cstride=2, cmap=cmap2)
+ax17.plot_surface(X, Y, euler_labor_leisure.T,
+                  rstride=1, cstride=2, cmap=cmap2)
 ax17.set_xlabel(r'Age Cohorts $S$')
 ax17.set_ylabel(r'Ability Types $J$')
 ax17.set_zlabel('Error Level')
 ax17.set_title('Euler Errors')
-euler_errors_laborleisure_SS = os.path.join(SS_FIG_DIR, "SSinit/euler_errors_laborleisure_SS")
+euler_errors_laborleisure_SS = os.path.join(
+    SS_FIG_DIR, "SSinit/euler_errors_laborleisure_SS")
 plt.savefig(euler_errors_laborleisure_SS)
 
 
@@ -300,7 +313,8 @@ ssvars = os.path.join(COMPARISON_DIR, "SS/ss_vars.pkl")
 variables = pickle.load(open(ssvars, "rb"))
 for key in variables:
     globals()[key] = variables[key]
-params_changed = os.path.join(COMPARISON_DIR, "Saved_moments/params_changed.pkl")
+params_changed = os.path.join(
+    COMPARISON_DIR, "Saved_moments/params_changed.pkl")
 variables = pickle.load(open(params_changed, "rb"))
 for key in variables:
     globals()[key] = variables[key]
@@ -311,11 +325,12 @@ for key in variables:
 # print factor_ss
 
 savings = np.copy(bssmat_splus1)
-beq_ut = chi_b.reshape(S, J) * (rho.reshape(S, 1)) * (savings**(1-sigma)-1)/(1-sigma)
-utility = ((cssmat ** (1-sigma) - 1)/(1- sigma)) + chi_n.reshape(S, 1) * (b_ellipse * (1-(nssmat/ltilde)**upsilon) ** (1/upsilon) + k_ellipse)
-utility += beq_ut 
+beq_ut = chi_b.reshape(S, J) * (rho.reshape(S, 1)) * \
+    (savings**(1 - sigma) - 1) / (1 - sigma)
+utility = ((cssmat ** (1 - sigma) - 1) / (1 - sigma)) + chi_n.reshape(S, 1) * \
+    (b_ellipse * (1 - (nssmat / ltilde)**upsilon) ** (1 / upsilon) + k_ellipse)
+utility += beq_ut
 utility = utility.sum(0)
-
 
 
 Css = household.get_C(cssmat, omega_SS.reshape(S, 1), lambdas, 'SS')
@@ -329,7 +344,7 @@ income = cssmat + iss
 # print (utility * omega_SS).sum()
 # the_inequalizer(yss, omega_SS, lambdas, S, J)
 
-print (Lss - Lss_init)/Lss_init
+print (Lss - Lss_init) / Lss_init
 
 '''
 ------------------------------------------------------------------------
@@ -339,7 +354,7 @@ print (Lss - Lss_init)/Lss_init
 
 
 plt.figure()
-plt.plot(np.arange(J)+1, utility)
+plt.plot(np.arange(J) + 1, utility)
 lifetime_utility = os.path.join(SS_FIG_DIR, "SSinit/lifetime_utility")
 plt.savefig(lifetime_utility)
 
@@ -353,7 +368,7 @@ capital_dist = os.path.join(SS_FIG_DIR, "SSinit/capital_dist")
 plt.savefig(capital_dist)
 
 plt.figure()
-plt.plot(np.arange(J)+1, BQss)
+plt.plot(np.arange(J) + 1, BQss)
 plt.xlabel(r'ability-$j$')
 plt.ylabel(r'bequests $\overline{bq}_{j,E+S+1}$')
 intentional_bequests = os.path.join(SS_FIG_DIR, "SSinit/intentional_bequests")
@@ -401,16 +416,19 @@ ax116.set_xlabel(r'Age Cohorts $S$')
 ax116.set_ylabel(r'Ability Types $J$')
 ax116.set_zlabel('Error Level')
 ax116.set_title('Euler Errors')
-euler_errors_savings_SS = os.path.join(SS_FIG_DIR, "SSinit/euler_errors_savings_SS")
+euler_errors_savings_SS = os.path.join(
+    SS_FIG_DIR, "SSinit/euler_errors_savings_SS")
 plt.savefig(euler_errors_savings_SS)
 fig117 = plt.figure()
 ax117 = fig117.gca(projection='3d')
-ax117.plot_surface(X, Y, euler_labor_leisure.T, rstride=1, cstride=2, cmap=cmap2)
+ax117.plot_surface(X, Y, euler_labor_leisure.T,
+                   rstride=1, cstride=2, cmap=cmap2)
 ax117.set_xlabel(r'Age Cohorts $S$')
 ax117.set_ylabel(r'Ability Types $J$')
 ax117.set_zlabel('Error Level')
 ax117.set_title('Euler Errors')
-euler_errors_laborleisure_SS = os.path.join(SS_FIG_DIR, "SSinit/euler_errors_laborleisure_SS")
+euler_errors_laborleisure_SS = os.path.join(
+    SS_FIG_DIR, "SSinit/euler_errors_laborleisure_SS")
 plt.savefig(euler_errors_laborleisure_SS)
 
 '''
@@ -419,17 +437,18 @@ plt.savefig(euler_errors_laborleisure_SS)
 ------------------------------------------------------------------------
 '''
 
-bssmat_percdif = (bssmat - bssmatinit)/ bssmatinit
-BQss_percdif = (BQss - BQss_init)/ BQss_init
-nssmat_percdif = (nssmat - nssmat_init)/ nssmat_init 
-cssmat_percdif = (cssmat - cssmat_init)/ cssmat_init
+bssmat_percdif = (bssmat - bssmatinit) / bssmatinit
+BQss_percdif = (BQss - BQss_init) / BQss_init
+nssmat_percdif = (nssmat - nssmat_init) / nssmat_init
+cssmat_percdif = (cssmat - cssmat_init) / cssmat_init
 utility_dif = (utility - utility_init) / np.abs(utility_init)
 income_dif = (income - income_init) / income_init
 
 
 plt.figure()
-plt.plot(np.arange(J)+1, utility_dif)
-lifetime_utility_percdif = os.path.join(SS_FIG_DIR, "SSinit/lifetime_utility_percdif")
+plt.plot(np.arange(J) + 1, utility_dif)
+lifetime_utility_percdif = os.path.join(
+    SS_FIG_DIR, "SSinit/lifetime_utility_percdif")
 plt.savefig(lifetime_utility_percdif)
 
 fig25 = plt.figure()
@@ -442,10 +461,11 @@ capital_dist_percdif = os.path.join(SS_FIG_DIR, "SSinit/capital_dist_percdif")
 plt.savefig(capital_dist_percdif)
 
 plt.figure()
-plt.plot(np.arange(J)+1, BQss_percdif)
+plt.plot(np.arange(J) + 1, BQss_percdif)
 plt.xlabel(r'ability-$j$')
 plt.ylabel(r'bequests $\overline{bq}_{j,E+S+1}$')
-intentional_bequests_percdif = os.path.join(SS_FIG_DIR, "SSinit/intentional_bequests_percdif")
+intentional_bequests_percdif = os.path.join(
+    SS_FIG_DIR, "SSinit/intentional_bequests_percdif")
 plt.savefig(intentional_bequests_percdif)
 
 fig24 = plt.figure()
@@ -477,18 +497,25 @@ income_percdif = os.path.join(SS_FIG_DIR, "SSinit/income_percdif")
 plt.savefig(income_percdif)
 
 
-domain2 = np.linspace(starting_age, ending_age, S-1)
+domain2 = np.linspace(starting_age, ending_age, S - 1)
 
 
 fig999 = plt.figure()
 ax = plt.subplot(311)
-ax.plot(domain2, bssmat_percdif[:, 0], label='0 - 24%', linestyle='-', color='black')
-ax.plot(domain2, bssmat_percdif[:, 1], label='25 - 49%', linestyle='--', color='black')
-ax.plot(domain2, bssmat_percdif[:, 2], label='50 - 69%', linestyle='-.', color='black')
-ax.plot(domain2, bssmat_percdif[:, 3], label='70 - 79%', linestyle=':', color='black')
-ax.plot(domain2, bssmat_percdif[:, 4], label='80 - 89%', marker='x', color='black')
-ax.plot(domain2, bssmat_percdif[:, 5], label='90 - 99%', marker='v', color='black')
-ax.plot(domain2, bssmat_percdif[:, 6], label='99 - 100%', marker='1', color='black')
+ax.plot(domain2, bssmat_percdif[:, 0],
+        label='0 - 24%', linestyle='-', color='black')
+ax.plot(domain2, bssmat_percdif[:, 1],
+        label='25 - 49%', linestyle='--', color='black')
+ax.plot(domain2, bssmat_percdif[:, 2],
+        label='50 - 69%', linestyle='-.', color='black')
+ax.plot(domain2, bssmat_percdif[:, 3],
+        label='70 - 79%', linestyle=':', color='black')
+ax.plot(domain2, bssmat_percdif[:, 4],
+        label='80 - 89%', marker='x', color='black')
+ax.plot(domain2, bssmat_percdif[:, 5],
+        label='90 - 99%', marker='v', color='black')
+ax.plot(domain2, bssmat_percdif[:, 6],
+        label='99 - 100%', marker='1', color='black')
 box = ax.get_position()
 ax.set_position([box.x0, box.y0, box.width * .4, box.height])
 # ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
@@ -497,13 +524,20 @@ ax.set_ylabel(r'% change in $\bar{b}_{j,s}$')
 ax.set_title('Wealth Tax')
 
 ax = plt.subplot(312)
-ax.plot(domain, cssmat_percdif[:, 0], label='0 - 24%', linestyle='-', color='black')
-ax.plot(domain, cssmat_percdif[:, 1], label='25 - 49%', linestyle='--', color='black')
-ax.plot(domain, cssmat_percdif[:, 2], label='50 - 69%', linestyle='-.', color='black')
-ax.plot(domain, cssmat_percdif[:, 3], label='70 - 79%', linestyle=':', color='black')
-ax.plot(domain, cssmat_percdif[:, 4], label='80 - 89%', marker='x', color='black')
-ax.plot(domain, cssmat_percdif[:, 5], label='90 - 99%', marker='v', color='black')
-ax.plot(domain, cssmat_percdif[:, 6], label='99 - 100%', marker='1', color='black')
+ax.plot(domain, cssmat_percdif[:, 0],
+        label='0 - 24%', linestyle='-', color='black')
+ax.plot(domain, cssmat_percdif[:, 1],
+        label='25 - 49%', linestyle='--', color='black')
+ax.plot(domain, cssmat_percdif[:, 2],
+        label='50 - 69%', linestyle='-.', color='black')
+ax.plot(domain, cssmat_percdif[:, 3],
+        label='70 - 79%', linestyle=':', color='black')
+ax.plot(domain, cssmat_percdif[:, 4],
+        label='80 - 89%', marker='x', color='black')
+ax.plot(domain, cssmat_percdif[:, 5],
+        label='90 - 99%', marker='v', color='black')
+ax.plot(domain, cssmat_percdif[:, 6],
+        label='99 - 100%', marker='1', color='black')
 box = ax.get_position()
 ax.set_position([box.x0, box.y0, box.width * .4, box.height])
 # ax.legend(loc='center left', bbox_to_anchor=(1.1, 0.5))
@@ -511,13 +545,20 @@ ax.set_position([box.x0, box.y0, box.width * .4, box.height])
 ax.set_ylabel(r'% change in $\bar{c}_{j,s}$')
 
 ax = plt.subplot(313)
-ax.plot(domain, nssmat_percdif[:, 0], label='0 - 24%', linestyle='-', color='black')
-ax.plot(domain, nssmat_percdif[:, 1], label='25 - 49%', linestyle='--', color='black')
-ax.plot(domain, nssmat_percdif[:, 2], label='50 - 69%', linestyle='-.', color='black')
-ax.plot(domain, nssmat_percdif[:, 3], label='70 - 79%', linestyle=':', color='black')
-ax.plot(domain, nssmat_percdif[:, 4], label='80 - 89%', marker='x', color='black')
-ax.plot(domain, nssmat_percdif[:, 5], label='90 - 99%', marker='v', color='black')
-ax.plot(domain, nssmat_percdif[:, 6], label='99 - 100%', marker='1', color='black')
+ax.plot(domain, nssmat_percdif[:, 0],
+        label='0 - 24%', linestyle='-', color='black')
+ax.plot(domain, nssmat_percdif[:, 1],
+        label='25 - 49%', linestyle='--', color='black')
+ax.plot(domain, nssmat_percdif[:, 2],
+        label='50 - 69%', linestyle='-.', color='black')
+ax.plot(domain, nssmat_percdif[:, 3],
+        label='70 - 79%', linestyle=':', color='black')
+ax.plot(domain, nssmat_percdif[:, 4],
+        label='80 - 89%', marker='x', color='black')
+ax.plot(domain, nssmat_percdif[:, 5],
+        label='90 - 99%', marker='v', color='black')
+ax.plot(domain, nssmat_percdif[:, 6],
+        label='99 - 100%', marker='1', color='black')
 box = ax.get_position()
 ax.set_position([box.x0, box.y0, box.width * .4, box.height])
 # ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
@@ -536,13 +577,14 @@ plt.savefig(combograph)
 '''
 domain = np.linspace(20, 95, 76)
 
-wealth_data_moments = os.path.join(COMPARISON_DIR, "Saved_moments/wealth_data_moments.pkl")
+wealth_data_moments = os.path.join(
+    COMPARISON_DIR, "Saved_moments/wealth_data_moments.pkl")
 variables = pickle.load(open(wealth_data_moments, "rb"))
 for key in variables:
     globals()[key] = variables[key]
 
-wealth_data_tograph = wealth_data_array[2:]/1000000
-wealth_model_tograph = factor_ss_init * bssmatinit[:76]/1000000
+wealth_data_tograph = wealth_data_array[2:] / 1000000
+wealth_model_tograph = factor_ss_init * bssmatinit[:76] / 1000000
 
 
 '''
@@ -560,15 +602,18 @@ for j in xrange(J):
     plt.xlabel(r'age-$s$')
     plt.ylabel(r'Individual savings, in millions of dollars')
     plt.legend(loc=0)
-    fig_j = os.path.join(SS_FIG_DIR, "SSinit/wealth_fit_graph_{}".format(whichpercentile[j]))
+    fig_j = os.path.join(
+        SS_FIG_DIR, "SSinit/wealth_fit_graph_{}".format(whichpercentile[j]))
     plt.savefig(fig_j)
 
 # all 7 together
 
-f, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(4, 2, sharex=True, sharey='row', figsize=(9, 9))
+f, ((ax1, ax2), (ax3, ax4), (ax5, ax6), (ax7, ax8)) = plt.subplots(
+    4, 2, sharex=True, sharey='row', figsize=(9, 9))
 
 ax1.plot(domain, wealth_data_tograph[:, 6], color='black', label='Data')
-ax1.plot(domain, wealth_model_tograph[:, 6], color='black', label='Model', linestyle='--')
+ax1.plot(domain, wealth_model_tograph[
+         :, 6], color='black', label='Model', linestyle='--')
 # ax1.set_xlabel(r'age-$s$')
 # ax1.set_ylabel(r'$b_s$, in millions of dollars')
 # ax1.set_ylim([0, 6])
@@ -580,42 +625,48 @@ ax1.set_title(r'$100^{th}$ Percentile')
 ax2.axis('off')
 
 ax3.plot(domain, wealth_data_tograph[:, 5], color='black', label='Data')
-ax3.plot(domain, wealth_model_tograph[:, 5], color='black', label='Model', linestyle='--')
+ax3.plot(domain, wealth_model_tograph[
+         :, 5], color='black', label='Model', linestyle='--')
 # ax3.set_xlabel(r'age-$s$')
 # ax3.set_ylabel(r'$b_s$, in millions of dollars')
 # ax3.set_ylim([0, 6])
 ax3.set_title(r'$90-99^{th}$ Percentile')
 
 ax4.plot(domain, wealth_data_tograph[:, 4], color='black', label='Data')
-ax4.plot(domain, wealth_model_tograph[:, 4], color='black', label='Model', linestyle='--')
+ax4.plot(domain, wealth_model_tograph[
+         :, 4], color='black', label='Model', linestyle='--')
 # ax4.set_xlabel(r'age-$s$')
 # ax4.set_ylabel(r'$b_s$, in millions of dollars')
 ax4.set_ylim([0, 6])
 ax4.set_title(r'$80-89^{th}$ Percentile')
 
 ax5.plot(domain, wealth_data_tograph[:, 3], color='black', label='Data')
-ax5.plot(domain, wealth_model_tograph[:, 3], color='black', label='Model', linestyle='--')
+ax5.plot(domain, wealth_model_tograph[
+         :, 3], color='black', label='Model', linestyle='--')
 # ax5.set_xlabel(r'age-$s$')
 # ax5.set_ylabel(r'$b_s$, in millions of dollars')
 # ax5.set_ylim([0, 6])
 ax5.set_title(r'$70-79^{th}$ Percentile')
 
 ax6.plot(domain, wealth_data_tograph[:, 2], color='black', label='Data')
-ax6.plot(domain, wealth_model_tograph[:, 2], color='black', label='Model', linestyle='--')
+ax6.plot(domain, wealth_model_tograph[
+         :, 2], color='black', label='Model', linestyle='--')
 # ax6.set_xlabel(r'age-$s$')
 # ax6.set_ylabel(r'$b_s$, in millions of dollars')
 ax6.set_ylim([0, 1])
 ax6.set_title(r'$50-69^{th}$ Percentile')
 
 ax7.plot(domain, wealth_data_tograph[:, 1], color='black', label='Data')
-ax7.plot(domain, wealth_model_tograph[:, 1], color='black', label='Model', linestyle='--')
+ax7.plot(domain, wealth_model_tograph[
+         :, 1], color='black', label='Model', linestyle='--')
 ax7.set_xlabel(r'age-$s$')
 ax7.set_ylabel(r'$b_s$, in millions of dollars')
 # ax7.set_ylim([0, 6])
 ax7.set_title(r'$25-49^{th}$ Percentile')
 
 ax8.plot(domain, wealth_data_tograph[:, 0], color='black', label='Data')
-ax8.plot(domain, wealth_model_tograph[:, 0], color='black', label='Model', linestyle='--')
+ax8.plot(domain, wealth_model_tograph[
+         :, 0], color='black', label='Model', linestyle='--')
 # ax8.set_xlabel(r'age-$s$')
 # ax8.set_ylabel(r'$b_s$, in millions of dollars')
 ax8.set_ylim([-.05, .25])
@@ -681,4 +732,3 @@ plt.savefig(income_dollars)
 #     # Percent differences
 #     print (np.mean(wealth_model_tograph[:24, j]) - np.mean(wealth_data_tograph[2:26, j])) / np.mean(wealth_data_tograph[2:26, j])
 #     print (np.mean(wealth_model_tograph[24:45, j]) - np.mean(wealth_data_tograph[26:47, j])) / np.mean(wealth_data_tograph[26:47, j])
-

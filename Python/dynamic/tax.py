@@ -32,34 +32,36 @@ def replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS, lambdas):
     Outputs:
         theta = replacement rates for each ability type (Jx1 array)
     '''
-    # Do a try/except, depending on whether the arrays are 1 or 2 dimensional 
+    # Do a try/except, depending on whether the arrays are 1 or 2 dimensional
     try:
-        AIME = ((wss * factor_ss * e * nssmat)*omega_SS).sum(0) * lambdas / 12.0
+        AIME = ((wss * factor_ss * e * nssmat) *
+                omega_SS).sum(0) * lambdas / 12.0
         PIA = np.zeros(J)
         # Bins from data for each level of replacement
         for j in xrange(J):
             if AIME[j] < 749.0:
                 PIA[j] = .9 * AIME[j]
             elif AIME[j] < 4517.0:
-                PIA[j] = 674.1+.32*(AIME[j] - 749.0)
+                PIA[j] = 674.1 + .32 * (AIME[j] - 749.0)
             else:
-                PIA[j] = 1879.86 + .15*(AIME[j] - 4517.0)
+                PIA[j] = 1879.86 + .15 * (AIME[j] - 4517.0)
         theta = PIA * (e * nssmat).mean(0) / AIME
         # Set the maximum replacment rate to be $30,000
-        maxpayment = 30000.0/(factor_ss * wss)
+        maxpayment = 30000.0 / (factor_ss * wss)
         theta[theta > maxpayment] = maxpayment
     except:
-        AIME = ((wss * factor_ss * e * nssmat)*omega_SS).sum() * lambdas / 12.0
+        AIME = ((wss * factor_ss * e * nssmat) *
+                omega_SS).sum() * lambdas / 12.0
         PIA = 0
         if AIME < 749.0:
             PIA = .9 * AIME
         elif AIME < 4517.0:
-            PIA = 674.1+.32*(AIME - 749.0)
+            PIA = 674.1 + .32 * (AIME - 749.0)
         else:
-            PIA = 1879.86 + .15*(AIME - 4517.0)
+            PIA = 1879.86 + .15 * (AIME - 4517.0)
         theta = PIA * (e * nssmat).mean(0) / AIME
         # Set the maximum replacment rate to be $30,000
-        maxpayment = 30000.0/(factor_ss * wss)
+        maxpayment = 30000.0 / (factor_ss * wss)
         if theta > maxpayment:
             theta = maxpayment
     return theta
@@ -75,11 +77,11 @@ def tau_wealth(b, params):
         tau_w = tau_wealth (various length arrays or scalar)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     h = h_wealth
     m = m_wealth
     p = p_wealth
-    tau_w = p * h * b / (h*b + m)
+    tau_w = p * h * b / (h * b + m)
     return tau_w
 
 
@@ -93,11 +95,11 @@ def tau_w_prime(b, params):
         tau_w_prime = derivative of tau_wealth (various length arrays or scalar)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     h = h_wealth
     m = m_wealth
     p = p_wealth
-    tau_w_prime = h * m * p / (b*h + m) ** 2
+    tau_w_prime = h * m * p / (b * h + m) ** 2
     return tau_w_prime
 
 
@@ -116,7 +118,7 @@ def tau_income(r, b, w, e, n, factor, params):
         tau = tau_income (various length array or scalar)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     a = a_tax_income
     b = b_tax_income
     c = c_tax_income
@@ -144,7 +146,7 @@ def tau_income_deriv(r, b, w, e, n, factor, params):
         tau = derivative of tau_income (various length array or scalar)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     a = a_tax_income
     b = b_tax_income
     c = c_tax_income
@@ -178,7 +180,7 @@ def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, weights, method, params, th
         T_H = lump sum tax (Tx1 array or scalar)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor, params) * I
     T_P = tau_payroll * w * e * n
@@ -217,20 +219,20 @@ def total_taxes(r, b, w, e, n, BQ, lambdas, factor, T_H, j, method, shift, param
         total_taxes = net taxes (various length array or scalar)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor, params) * I
     T_P = tau_payroll * w * e * n
     T_W = tau_wealth(b, params) * b
     if method == 'SS':
-        # Depending on if we are looking at b_s or b_s+1, the 
+        # Depending on if we are looking at b_s or b_s+1, the
         # entry for retirement will change (it shifts back one).
         # The shift boolean makes sure we start replacement rates
         # at the correct age.
         if shift is False:
             T_P[retire:] -= theta * w
         else:
-            T_P[retire-1:] -= theta * w
+            T_P[retire - 1:] -= theta * w
         T_BQ = tau_bq * BQ / lambdas
     elif method == 'TPI':
         if shift is False:
@@ -239,7 +241,7 @@ def total_taxes(r, b, w, e, n, BQ, lambdas, factor, T_H, j, method, shift, param
             # of retirement, depending on the shape of the lists.
             retireTPI = (retire - S)
         else:
-            retireTPI = (retire-1 - S)
+            retireTPI = (retire - 1 - S)
         if len(b.shape) != 3:
             T_P[retireTPI:] -= theta[j] * w[retireTPI:]
             T_BQ = tau_bq[j] * BQ / lambdas
