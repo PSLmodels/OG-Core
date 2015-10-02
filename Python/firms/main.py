@@ -332,12 +332,6 @@ elif GoodGuess == True:
             # Run TPI
             tpi_params = (S, T, alpha, beta, sigma, r_ss, w_ss,
                          maxiter_tpi, mindist_tpi, xi_tpi, tpi_tol)
-            # (r_path, w_path, pm_path, p_path, b_path, c_path, cm_path,
-            #     eul_path, Cm_path, Ym_path, Km_path, Lm_path,
-            #     MCKerr_path, MCLerr_path, tpi_time) = \
-            #     tpf.TPI(tpi_params, rpath_init, wpath_init, Km_ss, Ym_ss,
-            #     Gamma1, cmtilvec, Avec, gamvec, epsvec, delvec, nvec,
-            #     tpi_graphs)
 
             guesses = np.append(rpath_init[:T], wpath_init[:T])
             solutions = opt.fsolve(tpf.TPI_fsolve, guesses, args=(tpi_params, Km_ss, Ym_ss,
@@ -387,7 +381,7 @@ elif GoodGuess == True:
             (r_path, w_path, pm_path, p_path, b_path, c_path, cm_path,
                 eul_path, Cm_path, Ym_path, Km_path, Lm_path,
                 MCKerr_path, MCLerr_path, tpi_time) = \
-                tpf.TPI(tpi_params, rpath, wpath, Km_ss, Ym_ss,
+                tpf.TP(tpi_params, rpath, wpath, Km_ss, Ym_ss,
                 Gamma1, cmtilvec, Avec, gamvec, epsvec, delvec, nvec,
                 tpi_graphs)
 
