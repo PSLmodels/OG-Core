@@ -20,12 +20,14 @@ from pkg_resources import resource_stream, Requirement
 EPSILON = 1e-10
 PATH_EXISTS_ERRNO = 17
 
+
 def mkdirs(path):
     try:
         os.makedirs(path)
     except OSError as oe:
         if oe.errno == PATH_EXISTS_ERRNO:
             pass
+
 
 def perc_dif_func(simul, data):
     '''
@@ -37,7 +39,7 @@ def perc_dif_func(simul, data):
     Output:
         output = absolute percent difference between data and model moments (same shape as simul)
     '''
-    frac = (simul - data)/data
+    frac = (simul - data) / data
     output = np.abs(frac)
     return output
 
@@ -54,8 +56,8 @@ def convex_combo(var1, var2, params):
         combo = convex combination of var1 and var2 (same shape as var1)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    combo = nu * var1 + (1-nu)*var2
+        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    combo = nu * var1 + (1 - nu) * var2
     return combo
 
 
@@ -73,21 +75,27 @@ def check_wealth_calibration(wealth_model, factor_model, params, wealth_dir):
         wealth_fits = Fits for how well the model wealth levels match the data wealth levels ((2*J)x1 array)
     '''
     # Import the wealth data moments
-    wealth_path = os.path.join(wealth_dir, "Saved_moments/wealth_data_moments.pkl")
+    wealth_path = os.path.join(
+        wealth_dir, "Saved_moments/wealth_data_moments.pkl")
     wealth_dict = pickle.load(wealth_path, "rb")
-    # Set lowest ability group's wealth to be a positive, not negative, number for the calibration
+    # Set lowest ability group's wealth to be a positive, not negative, number
+    # for the calibration
     wealth_dict['wealth_data_array'][2:26, 0] = 500.0
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-    a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     # Convert wealth levels from model to dollar terms
     wealth_model_dollars = wealth_model * factor_model
-    wealth_fits = np.zeros(2*J)
+    wealth_fits = np.zeros(2 * J)
     # Look at the percent difference between the fits for the first age group (20-44) and second age group (45-65)
     #   The wealth_data_array moment indices are shifted because they start at age 18
-    #   The :: indices is so that we look at the 2 moments for the lowest group, the 2 moments for the second lowest group, etc in order
-    wealth_fits[0::2] = perc_dif_func(np.mean(wealth_model_dollars[:24], axis=0), np.mean(wealth_dict['wealth_data_array'][2:26], axis=0))
-    wealth_fits[1::2] = perc_dif_func(np.mean(wealth_model_dollars[24:45], axis=0), np.mean(wealth_dict['wealth_data_array'][26:47], axis=0))
+    # The :: indices is so that we look at the 2 moments for the lowest group,
+    # the 2 moments for the second lowest group, etc in order
+    wealth_fits[0::2] = perc_dif_func(np.mean(wealth_model_dollars[
+                                      :24], axis=0), np.mean(wealth_dict['wealth_data_array'][2:26], axis=0))
+    wealth_fits[1::2] = perc_dif_func(np.mean(wealth_model_dollars[
+                                      24:45], axis=0), np.mean(wealth_dict['wealth_data_array'][26:47], axis=0))
     return wealth_fits
+
 
 def read_file(path, fname):
     '''
@@ -101,6 +109,7 @@ def read_file(path, fname):
         return StringIO(_bytes.decode("utf-8"))
     else:
         return open(os.path.join(path, fname))
+
 
 def pickle_file_compare(fname1, fname2, tol=1e-3, exceptions={}, relative=False):
     '''
@@ -140,7 +149,7 @@ def comp_array(name, a, b, tol, unequal, exceptions={}, relative=False):
         if relative:
             err = abs(a - b)
             mn = np.mean(b)
-            err = np.max(err/mn)
+            err = np.max(err / mn)
         else:
             err = np.max(abs(a - b))
 
@@ -167,7 +176,7 @@ def comp_scalar(name, a, b, tol, unequal, exceptions={}, relative=False):
         return True
 
     if relative:
-        err = float(abs(a-b))/float(b)
+        err = float(abs(a - b)) / float(b)
     else:
         err = abs(a - b)
 
@@ -230,7 +239,7 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False, exceptions={}, 
 
         if verbose == True and unequal_items:
             frmt = "Name {0}"
-            res = [ frmt.format(x[0]) for x in unequal_items]
+            res = [frmt.format(x[0]) for x in unequal_items]
             print "Different arrays: ", res
             return False
 
