@@ -32,12 +32,12 @@ import sys
 ------------------------------------------------------------------------
 '''
 
-def feasible(params, rw_init, b_guess, cmtilvec, Avec, gamvec, epsvec,
-  delvec, nvec):
+def feasible(params, rw_init, b_guess, cm_tilde, A, gamma, epsilon,
+  delta, nvec):
     '''
     Determines whether a particular guess for the steady-state values
     or r and w are feasible. Feasibility means that
-    r + delvec > 0, w > 0, implied c_s>0, c_{1,s}>0, and c_{2,s}>0 for
+    r + delta > 0, w > 0, implied c_s>0, c_{1,s}>0, and c_{2,s}>0 for
     all s and implied K1 + K2 > 0
 
     Inputs:
@@ -50,14 +50,14 @@ def feasible(params, rw_init, b_guess, cmtilvec, Avec, gamvec, epsvec,
         ss_tol   = scalar > 0, tolerance level for steady-state fsolve
         rw_init  = [2,] vector, initial guesses for steady-state r and w
         b_guess  = [S-1,] vector, initial guess for savings vector
-        cmtilvec = [2,] vector, minimum consumption values for all goods
-        Avec     = [2,] vector, total factor productivity values for all
+        cm_tilde = [2,] vector, minimum consumption values for all goods
+        A     = [2,] vector, total factor productivity values for all
                    industries
-        gamvec   = [2,] vector, capital shares of income for all
+        gamma   = [2,] vector, capital shares of income for all
                    industries
-        epsvec   = [2,] vector, elasticities of substitution between
+        epsilon   = [2,] vector, elasticities of substitution between
                    capital and labor for all industries
-        delvec   = [2,] vector, model period depreciation rates for all
+        delta   = [2,] vector, model period depreciation rates for all
                    industries
         nvec     = [S,] vector, exogenous labor supply n_{s}
 
@@ -72,12 +72,12 @@ def feasible(params, rw_init, b_guess, cmtilvec, Avec, gamvec, epsvec,
         w          = scalar > 0, initial guess for real wage
         GoodGuess  = boolean, =True if initial steady-state guess is
                      feasible
-        r_cstr     = boolean, =True if r + delvec <= 0
+        r_cstr     = boolean, =True if r + delta <= 0
         w_cstr     = boolean, =True if w <= 0
         c_cstr     = [S,] boolean vector, =True if c_s<=0 for some s
         K1K2_cstr  = boolean, =True if K1 + K2 <= 0
         pm_params  = length 4 tuple, vectors to be passed in to get_pm
-                     (Avec, gamvec, epsvec, delvec)
+                     (A, gamma, epsilon, delta)
         pmvec      = [2,] vector, prices in each industry
         p          = scalar > 0, composite good price
         cbe_params = length 7 tuple, parameters for get_cbess function
@@ -101,23 +101,23 @@ def feasible(params, rw_init, b_guess, cmtilvec, Avec, gamvec, epsvec,
     w_cstr = False
     c_cstr = np.zeros(S, dtype=bool)
     K1K2_cstr = False
-    if (r + delvec).min() <= 0 and w <= 0:
+    if (r + delta).min() <= 0 and w <= 0:
         r_cstr = True
         w_cstr = True
         GoodGuess = False
-    elif (r + delvec).min() <= 0 and w > 0:
+    elif (r + delta).min() <= 0 and w > 0:
         r_cstr = True
         GoodGuess = False
-    elif (r + delvec).min() > 0 and w <= 0:
+    elif (r + delta).min() > 0 and w <= 0:
         w_cstr = True
         GoodGuess = False
-    elif (r + delvec).min() > 0 and w > 0:
-        pm_params = (Avec, gamvec, epsvec, delvec)
+    elif (r + delta).min() > 0 and w > 0:
+        pm_params = (A, gamma, epsilon, delta)
         pmvec = get_pm(pm_params, r, w)
         p = get_p(alpha, pmvec)
         cbe_params = (alpha, beta, sigma, r, w, p, ss_tol)
         bvec, cvec, c_cstr, cmmat, cm_cstr, eulvec = \
-            get_cbess(cbe_params, b_guess, pmvec, cmtilvec, nvec)
+            get_cbess(cbe_params, b_guess, pmvec, cm_tilde, nvec)
         # Check K1 + K2
         K1pK2 = bvec.sum()
         K1K2_cstr = K1pK2 <= 0
@@ -132,13 +132,13 @@ def get_pm(params, r, w):
     Generates vector of industry prices p_m from r and w
 
     Inputs:
-        params = length 4 tuple, (Avec, gamvec, epsvec, delvec)
-        Avec   = [M,] vector, total factor productivity for each
+        params = length 4 tuple, (A, gamma, epsilon, delta)
+        A   = [M,] vector, total factor productivity for each
                  industry
-        gamvec = [M,] vector, capital share of income for each industry
-        epsvec = [M,] vector, elasticity of substitution between capital
+        gamma = [M,] vector, capital share of income for each industry
+        epsilon = [M,] vector, elasticity of substitution between capital
                  and labor for each industry
-        delvec = [M,] vector, capital depreciation rate for each
+        delta = [M,] vector, capital depreciation rate for each
                  industry
         r      = scalar > 0, interest rate
         w      = scalar > 0, wage
@@ -150,9 +150,9 @@ def get_pm(params, r, w):
 
     Returns: pmvec
     '''
-    Avec, gamvec, epsvec, delvec = params
-    pmvec = (1 / Avec) * ((gamvec * ((r + delvec) ** (1 - epsvec)) +
-            (1 - gamvec) * (w ** (1 - epsvec))) ** (1 / (1 - epsvec)))
+    A, gamma, epsilon, delta = params
+    pmvec = (1 / A) * ((gamma * ((r + delta) ** (1 - epsilon)) +
+            (1 - gamma) * (w ** (1 - epsilon))) ** (1 / (1 - epsilon)))
     return pmvec
 
 
@@ -179,7 +179,7 @@ def get_p(alpha, pmvec):
     return p
 
 
-def get_cbess(params, b_guess, pmvec, cmtilvec, nvec):
+def get_cbess(params, b_guess, pmvec, cm_tilde, nvec):
     '''
     Generates vectors for individual savings, composite consumption,
     industry-specific consumption, constraint vectors, and Euler errors
@@ -197,7 +197,7 @@ def get_cbess(params, b_guess, pmvec, cmtilvec, nvec):
         ss_tol   = scalar > 0, tolerance level for steady-state fsolve
         b_guess  = [S-1,] vector, initial guess for savings vector
         pmvec    = [2,] vector, prices in each industry
-        cmtilvec = [2,] vector, minimum consumption values for all goods
+        cm_tilde = [2,] vector, minimum consumption values for all goods
         nvec     = [S,] vector, exogenous labor supply n_{s}
 
     Functions called:
@@ -209,7 +209,7 @@ def get_cbess(params, b_guess, pmvec, cmtilvec, nvec):
     Objects in function:
         eulb_objs  = length 9 tuple, objects to be passed in to
                      EulerSys_b: (alpha, beta, sigma, r, w, p, pmvec,
-                     cmtilvec, nvec)
+                     cm_tilde, nvec)
         bvec       = [S-1,] vector, optimal lifetime savings decisions
         c_params   = length 3 tuple, parameters for get_cvec (r, w, p)
         cvec       = [S,] vector, optimal lifetime consumption
@@ -226,12 +226,12 @@ def get_cbess(params, b_guess, pmvec, cmtilvec, nvec):
     Returns: bvec, cvec, c_cstr, cmmat, cm_cstr, eulvec
     '''
     alpha, beta, sigma, r, w, p, ss_tol = params
-    eulb_objs = (alpha, beta, sigma, r, w, p, pmvec, cmtilvec, nvec)
+    eulb_objs = (alpha, beta, sigma, r, w, p, pmvec, cm_tilde, nvec)
     bvec = opt.fsolve(EulerSys_b, b_guess, args=(eulb_objs), xtol=ss_tol)
     c_params = (r, w, p)
-    cvec, c_cstr = get_cvec(c_params, nvec, bvec, pmvec, cmtilvec)
+    cvec, c_cstr = get_cvec(c_params, nvec, bvec, pmvec, cm_tilde)
     cm_params = (alpha, p)
-    cmmat, cm_cstr = get_cmmat(cm_params, cvec, pmvec, cmtilvec)
+    cmmat, cm_cstr = get_cmmat(cm_params, cvec, pmvec, cm_tilde)
     eul_params = (beta, sigma)
     eulvec = get_b_errors(eul_params, r, cvec, c_cstr, diff=True)
 
@@ -246,7 +246,7 @@ def EulerSys_b(bvec, *objs):
     Inputs:
         bvec     = [S-1,] vector, lifetime savings decisions
         objs     = length 9 tuple,
-                   (alpha, beta, sigma, r, w, p, pmvec, cmtilvec, nvec)
+                   (alpha, beta, sigma, r, w, p, pmvec, cm_tilde, nvec)
         alpha    = scalar in (0,1), expenditure share on good 1
         beta     = scalar in [0,1), discount factor for each model
                    period
@@ -255,7 +255,7 @@ def EulerSys_b(bvec, *objs):
         w        = scalar > 0, real wage
         p        = scalar > 0, composite good price
         pmvec    = [2,] vector, prices in each industry
-        cmtilvec = [2,] vector, minimum consumption values for all goods
+        cm_tilde = [2,] vector, minimum consumption values for all goods
         nvec     = [S,] vector, exogenous labor supply n_{s}
 
     Functions called:
@@ -280,17 +280,17 @@ def EulerSys_b(bvec, *objs):
 
     Returns: b_err_vec
     '''
-    alpha, beta, sigma, r, w, p, pmvec, cmtilvec, nvec = objs
+    alpha, beta, sigma, r, w, p, pmvec, cm_tilde, nvec = objs
     c_params = (r, w, p)
-    cvec, c_cstr = get_cvec(c_params, nvec, bvec, pmvec, cmtilvec)
+    cvec, c_cstr = get_cvec(c_params, nvec, bvec, pmvec, cm_tilde)
     cm_params = (alpha, p)
-    cmmat, cm_cstr = get_cmmat(cm_params, cvec, pmvec, cmtilvec)
+    cmmat, cm_cstr = get_cmmat(cm_params, cvec, pmvec, cm_tilde)
     b_err_params = (beta, sigma)
     b_err_vec = get_b_errors(b_err_params, r, cvec, c_cstr, diff=True)
     return b_err_vec
 
 
-def get_cvec(params, nvec, bvec, pmvec, cmtilvec):
+def get_cvec(params, nvec, bvec, pmvec, cm_tilde):
     '''
     Generate lifetime consumption given prices and savings decisions
 
@@ -302,7 +302,7 @@ def get_cvec(params, nvec, bvec, pmvec, cmtilvec):
         nvec     = [S,] vector, exogenous labor supply n_{s}
         bvec     = [S-1,] vector, distribution of savings b_{s+1}
         pmvec    = [2,] vector, prices in each industry
-        cmtilvec = [2,] vector, minimum consumption values for all goods
+        cm_tilde = [2,] vector, minimum consumption values for all goods
 
     Functions called: None
 
@@ -320,12 +320,12 @@ def get_cvec(params, nvec, bvec, pmvec, cmtilvec):
     b_s = np.append([0], bvec)
     b_sp1 = np.append(bvec, [0])
     cvec = (1 / p) * ((1 + r) * b_s + w * nvec -
-           (pmvec * cmtilvec).sum() - b_sp1)
+           (pmvec * cm_tilde).sum() - b_sp1)
     c_cstr = cvec <= 0
     return cvec, c_cstr
 
 
-def get_cmmat(params, cvec, pmvec, cmtilvec):
+def get_cmmat(params, cvec, pmvec, cm_tilde):
     '''
     Generates matrix of consumptions of each type of good given prices
     and composite consumption
@@ -336,7 +336,7 @@ def get_cmmat(params, cvec, pmvec, cmtilvec):
         p        = scalar > 0, composite good price
         cvec     = [S,] vector, composite consumption by age c_s
         pmvec    = [2,] vector, prices in each industry
-        cmtilvec = [2,] vector, minimum consumption values for all goods
+        cm_tilde = [2,] vector, minimum consumption values for all goods
 
     Functions called: None
 
@@ -351,8 +351,8 @@ def get_cmmat(params, cvec, pmvec, cmtilvec):
     Returns: cmmat, cm_cstr
     '''
     alpha, p = params
-    c1vec = ((alpha * p * cvec) / pmvec[0]) + cmtilvec[0]
-    c2vec = (((1 - alpha) * p * cvec) / pmvec[1]) + cmtilvec[1]
+    c1vec = ((alpha * p * cvec) / pmvec[0]) + cm_tilde[0]
+    c2vec = (((1 - alpha) * p * cvec) / pmvec[1]) + cm_tilde[1]
     cmmat = np.vstack((c1vec, c2vec))
     cm_cstr = cmmat <= 0
     return cmmat, cm_cstr
@@ -420,7 +420,7 @@ def get_Cmvec(cmmat):
     return Cmvec
 
 
-def get_YKmvec(params, Cmvec, pmvec, Avec, gamvec, epsvec, delvec):
+def get_YKmvec(params, Cmvec, pmvec, A, gamma, epsilon, delta):
     '''
     Generates vector of aggregate output Y_m of good m and capital
     demand K_m for good m given r and w
@@ -431,27 +431,27 @@ def get_YKmvec(params, Cmvec, pmvec, Avec, gamvec, epsvec, delvec):
         w      = scalar > 0, real wage
         Cmvec  = [2,] vector, aggregate consumption of all goods
         pmvec  = [2,] vector, prices in each industry
-        Avec   = [2,] vector, total factor productivity values for all
+        A   = [2,] vector, total factor productivity values for all
                  industries
-        gamvec = [2,] vector, capital shares of income for all
+        gamma = [2,] vector, capital shares of income for all
                  industries
-        epsvec = [2,] vector, elasticities of substitution between
+        epsilon = [2,] vector, elasticities of substitution between
                  capital and labor for all industries
-        delvec = [2,] vector, model period depreciation rates for all
+        delta = [2,] vector, model period depreciation rates for all
                  industries
 
     Functions called: None
 
     Objects in function:
-        aa    = [2,] vector, gamvec
-        bb    = [2,] vector, 1 - gamvec
-        cc    = [2,] vector, (1 - gamvec) / gamvec
-        dd    = [2,] vector, (r + delvec) / w
-        ee    = [2,] vector, 1 / epsvec
-        ff    = [2,] vector, (epsvec - 1) / epsvec
-        gg    = [2,] vector, epsvec - 1
-        hh    = [2,] vector, epsvec / (1 - epsvec)
-        ii    = [2,] vector, ((1 / Avec) * (((aa ** ee) + (bb ** ee) *
+        aa    = [2,] vector, gamma
+        bb    = [2,] vector, 1 - gamma
+        cc    = [2,] vector, (1 - gamma) / gamma
+        dd    = [2,] vector, (r + delta) / w
+        ee    = [2,] vector, 1 / epsilon
+        ff    = [2,] vector, (epsilon - 1) / epsilon
+        gg    = [2,] vector, epsilon - 1
+        hh    = [2,] vector, epsilon / (1 - epsilon)
+        ii    = [2,] vector, ((1 / A) * (((aa ** ee) + (bb ** ee) *
                 (cc ** ff) * (dd ** gg)) ** hh))
         Ymvec = [2,] vector, aggregate output of all industries
         Kmvec = [2,] vector, capital demand of all industries
@@ -459,22 +459,22 @@ def get_YKmvec(params, Cmvec, pmvec, Avec, gamvec, epsvec, delvec):
     Returns: Ymvec, Kmvec
     '''
     r, w = params
-    aa = gamvec
-    bb = 1 - gamvec
-    cc = (1 - gamvec) / gamvec
-    dd = (r + delvec) / w
-    ee = 1 / epsvec
-    ff = (epsvec - 1) / epsvec
-    gg = epsvec - 1
-    hh = epsvec / (1 - epsvec)
-    ii = ((1 / Avec) *
+    aa = gamma
+    bb = 1 - gamma
+    cc = (1 - gamma) / gamma
+    dd = (r + delta) / w
+    ee = 1 / epsilon
+    ff = (epsilon - 1) / epsilon
+    gg = epsilon - 1
+    hh = epsilon / (1 - epsilon)
+    ii = ((1 / A) *
          (((aa ** ee) + (bb ** ee) * (cc ** ff) * (dd ** gg)) ** hh))
-    Ymvec = Cmvec / (1 - delvec * ii)
+    Ymvec = Cmvec / (1 - delta * ii)
     Kmvec = Ymvec * ii
     return Ymvec, Kmvec
 
 
-def get_Lmvec(params, Ymvec, Kmvec, pmvec, delvec):
+def get_Lmvec(params, Ymvec, Kmvec, pmvec, delta):
     '''
     Generates vector of labor demand L_m for each industry m
 
@@ -485,7 +485,7 @@ def get_Lmvec(params, Ymvec, Kmvec, pmvec, delvec):
         Ymvec  = [2,] vector, aggregate output of all goods
         Kmvec  = [2,] vector, capital demand in all industries
         pmvec  = [2,] vector, prices in each industry
-        delvec = [2,] vector, model period depreciation rates for all
+        delta = [2,] vector, model period depreciation rates for all
                  industries
 
     Functions called: None
@@ -496,11 +496,11 @@ def get_Lmvec(params, Ymvec, Kmvec, pmvec, delvec):
     Returns: Lmvec
     '''
     r, w = params
-    Lmvec = (pmvec * Ymvec - (r + delvec) * Kmvec) / w
+    Lmvec = (pmvec * Ymvec - (r + delta) * Kmvec) / w
 
     return Lmvec
 
-def get_Lmvec_alt(params, Kmvec, gamvec, epsvec, delvec):
+def get_Lmvec_alt(params, Kmvec, gamma, epsilon, delta):
     '''
     Generates vector of labor demand L_m for each industry m
 
@@ -511,7 +511,7 @@ def get_Lmvec_alt(params, Kmvec, gamvec, epsvec, delvec):
         Ymvec  = [2,] vector, aggregate output of all goods
         Kmvec  = [2,] vector, capital demand in all industries
         pmvec  = [2,] vector, prices in each industry
-        delvec = [2,] vector, model period depreciation rates for all
+        delta = [2,] vector, model period depreciation rates for all
                  industries
 
     Functions called: None
@@ -522,7 +522,7 @@ def get_Lmvec_alt(params, Kmvec, gamvec, epsvec, delvec):
     Returns: Lmvec
     '''
     r, w = params
-    Lmvec = ((1-gamvec)/gamvec)*Kmvec*(((r+delvec)/w)**epsvec)
+    Lmvec = ((1-gamma)/gamma)*Kmvec*(((r+delta)/w)**epsilon)
 
     return Lmvec
 
@@ -535,7 +535,7 @@ def MCerrs(rwvec, *objs):
     Inputs:
         rwvec    = [2,] vector, given values of r and w
         objs     = length 12 tuple, (S, alpha, beta, sigma, b_guess,
-                   cmtilvec, Avec, gamvec, epsvec, delvec, nvec, ss_tol)
+                   cm_tilde, A, gamma, epsilon, delta, nvec, ss_tol)
         S        = integer in [3,80], number of periods an individual
                    lives
         alpha    = scalar in (0,1), expenditure share on good 1
@@ -544,14 +544,14 @@ def MCerrs(rwvec, *objs):
         sigma    = scalar > 0, coefficient of relative risk aversion
         b_guess  = [S-1,] vector, initial guess for savings to use in
                    fsolve in get_cbess
-        cmtilvec = [2,] vector, minimum consumption values for all goods
-        Avec     = [2,] vector, total factor productivity values for all
+        cm_tilde = [2,] vector, minimum consumption values for all goods
+        A     = [2,] vector, total factor productivity values for all
                    industries
-        gamvec   = [2,] vector, capital shares of income for all
+        gamma   = [2,] vector, capital shares of income for all
                    industries
-        epsvec   = [2,] vector, elasticities of substitution between
+        epsilon   = [2,] vector, elasticities of substitution between
                    capital and labor for all industries
-        delvec   = [2,] vector, model period depreciation rates for all
+        delta   = [2,] vector, model period depreciation rates for all
                    industries
         nvec     = [S,] vector, exogenous labor supply n_{s}
         ss_tol   = scalar > 0, tolerance level for steady-state fsolve
@@ -572,7 +572,7 @@ def MCerrs(rwvec, *objs):
         MCLerr     = scalar, error in labor market clearing condition
                      given r and w
         pm_params  = length 4 tuple, vectors to be passed in to get_pm
-                     (Avec, gamvec, epsvec, delvec)
+                     (A, gamma, epsilon, delta)
         pmvec      = [2,] vector, prices in each industry
         p          = scalar > 0, composite good price
         cbe_params = length 7 tuple, parameters for get_cbess function
@@ -600,27 +600,27 @@ def MCerrs(rwvec, *objs):
 
     Returns: MC_errs
     '''
-    (S, alpha, beta, sigma, b_guess, cmtilvec, Avec, gamvec, epsvec,
-        delvec, nvec, ss_tol) = objs
+    (S, alpha, beta, sigma, b_guess, cm_tilde, A, gamma, epsilon,
+        delta, nvec, ss_tol) = objs
     r, w = rwvec
-    if (r + delvec).min() <= 0 or w <=0:
+    if (r + delta).min() <= 0 or w <=0:
         MCKerr = 9999.
         MCLerr = 9999.
         MC_errs = np.array((MCKerr, MCLerr))
-    elif (r + delvec).min() > 0 and w > 0:
-        pm_params = (Avec, gamvec, epsvec, delvec)
+    elif (r + delta).min() > 0 and w > 0:
+        pm_params = (A, gamma, epsilon, delta)
         pmvec = get_pm(pm_params, r, w)
         p = get_p(alpha, pmvec)
         cbe_params = (alpha, beta, sigma, r, w, p, ss_tol)
         bvec, cvec, c_cstr, cmmat, cm_cstr, eulvec = \
-            get_cbess(cbe_params, b_guess, pmvec, cmtilvec, nvec)
+            get_cbess(cbe_params, b_guess, pmvec, cm_tilde, nvec)
         Cmvec = get_Cmvec(cmmat)
         Ym_params = (r, w)
-        Ymvec, Kmvec = get_YKmvec(Ym_params, Cmvec, pmvec, Avec, gamvec,
-                       epsvec, delvec)
+        Ymvec, Kmvec = get_YKmvec(Ym_params, Cmvec, pmvec, A, gamma,
+                       epsilon, delta)
         Lm_params = (r, w)
-        #Lmvec = get_Lmvec(Lm_params, Ymvec, Kmvec, pmvec, delvec)
-        Lmvec = get_Lmvec_alt(Lm_params, Kmvec, gamvec, epsvec, delvec)
+        #Lmvec = get_Lmvec(Lm_params, Ymvec, Kmvec, pmvec, delta)
+        Lmvec = get_Lmvec_alt(Lm_params, Kmvec, gamma, epsilon, delta)
         MCKerr = Kmvec.sum() - bvec.sum()
         MCLerr = Lmvec.sum() - nvec.sum()
         MC_errs = np.array((MCKerr, MCLerr))
@@ -628,7 +628,7 @@ def MCerrs(rwvec, *objs):
     return MC_errs
 
 
-def SS(params, rw_init, b_guess, cmtilvec, Avec, gamvec, epsvec, delvec,
+def SS(params, rw_init, b_guess, cm_tilde, A, gamma, epsilon, delta,
     nvec, graphs):
     '''
     Generates all endogenous steady-state objects
@@ -645,14 +645,14 @@ def SS(params, rw_init, b_guess, cmtilvec, Avec, gamvec, epsvec, delvec,
         rw_init  = [2,] vector, initial guesses for steady-state r and w
         b_guess  = [S-1,] vector, initial guess for savings to use in
                    fsolve in get_cbess
-        cmtilvec = [2,] vector, minimum consumption values for all goods
-        Avec     = [2,] vector, total factor productivity values for all
+        cm_tilde = [2,] vector, minimum consumption values for all goods
+        A     = [2,] vector, total factor productivity values for all
                    industries
-        gamvec   = [2,] vector, capital shares of income for all
+        gamma   = [2,] vector, capital shares of income for all
                    industries
-        epsvec   = [2,] vector, elasticities of substitution between
+        epsilon   = [2,] vector, elasticities of substitution between
                    capital and labor for all industries
-        delvec   = [2,] vector, model period depreciation rates for all
+        delta   = [2,] vector, model period depreciation rates for all
                    industries
         nvec     = [S,] vector, exogenous labor supply n_{s}
         graphs   = boolean, =True if want graphs of steady-state objects
@@ -670,13 +670,13 @@ def SS(params, rw_init, b_guess, cmtilvec, Avec, gamvec, epsvec, delvec,
         start_time  = scalar, current processor time in seconds (float)
         MCerrs_objs = length 12 tuple, objects to be passed in to
                       MCerrs function: (S, alpha, beta, sigma, b_guess,
-                      cmtilvec, Avec, gamvec, epsvec, delvec, nvec,
+                      cm_tilde, A, gamma, epsilon, delta, nvec,
                       ss_tol)
         rw_ss       = [2,] vector, steady-state r and w
         r_ss        = scalar, steady-state interest rate
         w_ss        = scalar > 0, steady-state wage
         pm_params   = length 4 tuple, vectors to be passed in to get_pm
-                      (Avec, gamvec, epsvec, delvec)
+                      (A, gamma, epsilon, delta)
         pm_ss       = [2,] vector, steady-state prices in each industry
         p_ss        = scalar > 0, steady-state composite good price
         cbe_params  = length 7 tuple, parameters for get_cbess function
@@ -714,23 +714,23 @@ def SS(params, rw_init, b_guess, cmtilvec, Avec, gamvec, epsvec, delvec,
     '''
     start_time = time.clock()
     S, alpha, beta, sigma, ss_tol = params
-    MCerrs_objs = (S, alpha, beta, sigma, b_guess, cmtilvec, Avec,
-                  gamvec, epsvec, delvec, nvec, ss_tol)
+    MCerrs_objs = (S, alpha, beta, sigma, b_guess, cm_tilde, A,
+                  gamma, epsilon, delta, nvec, ss_tol)
     rw_ss = opt.fsolve(MCerrs, rw_init, args=(MCerrs_objs),
                 xtol=ss_tol)
     r_ss, w_ss = rw_ss
-    pm_params = (Avec, gamvec, epsvec, delvec)
+    pm_params = (A, gamma, epsilon, delta)
     pm_ss = get_pm(pm_params, r_ss, w_ss)
     p_ss = get_p(alpha, pm_ss)
     cbe_params = (alpha, beta, sigma, r_ss, w_ss, p_ss, ss_tol)
     b_ss, c_ss, c_cstr, cm_ss, cm_cstr, EulErr_ss = \
-        get_cbess(cbe_params, b_guess, pm_ss, cmtilvec, nvec)
+        get_cbess(cbe_params, b_guess, pm_ss, cm_tilde, nvec)
     Cm_ss = get_Cmvec(cm_ss)
     Ym_params = (r_ss, w_ss)
-    Ym_ss, Km_ss = get_YKmvec(Ym_params, Cm_ss, pm_ss, Avec, gamvec, epsvec, delvec)
+    Ym_ss, Km_ss = get_YKmvec(Ym_params, Cm_ss, pm_ss, A, gamma, epsilon, delta)
     Lm_params = (r_ss, w_ss)
-    #Lm_ss = get_Lmvec(Lm_params, Ym_ss, Km_ss, pm_ss, delvec)
-    Lm_ss = get_Lmvec_alt(Lm_params, Km_ss, gamvec, epsvec, delvec)
+    #Lm_ss = get_Lmvec(Lm_params, Ym_ss, Km_ss, pm_ss, delta)
+    Lm_ss = get_Lmvec_alt(Lm_params, Km_ss, gamma, epsilon, delta)
     MCK_err_ss = Km_ss.sum() - b_ss.sum()
     MCL_err_ss = Lm_ss.sum() - nvec.sum()
     MCerr_ss = np.array([MCK_err_ss, MCL_err_ss])

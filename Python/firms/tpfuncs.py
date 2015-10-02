@@ -36,13 +36,13 @@ def get_pmpath(params, rpath, wpath):
     Generates time path of industry prices p_m from rpath and wpath
 
     Inputs:
-        params = length 4 tuple, (Avec, gamvec, epsvec, delvec)
-        Avec   = [2,] vector, total factor productivity for each
+        params = length 4 tuple, (A, gamma, epsilon, delta)
+        A   = [2,] vector, total factor productivity for each
                  industry
-        gamvec = [2,] vector, capital share of income for each industry
-        epsvec = [2,] vector, elasticity of substitution between capital
+        gamma = [2,] vector, capital share of income for each industry
+        epsilon = [2,] vector, elasticity of substitution between capital
                  and labor for each industry
-        delvec = [2,] vector, capital depreciation rate for each
+        delta = [2,] vector, capital depreciation rate for each
                  industry
         rpath  = [T+S-2,] vector, time path of interest rate
         w      = [T+S-2,] vector, time path of wage
@@ -54,14 +54,14 @@ def get_pmpath(params, rpath, wpath):
 
     Returns: pmpath
     '''
-    Avec, gamvec, epsvec, delvec = params
-    pmpath = np.zeros((len(Avec), len(rpath)))
-    pmpath[0, :] = (1 / Avec[0]) * ((gamvec[0] * ((rpath + delvec[0]) **
-                   (1 - epsvec[0])) + (1 - gamvec[0]) * (wpath **
-                   (1 - epsvec[0]))) ** (1 / (1 - epsvec[0])))
-    pmpath[1, :] = (1 / Avec[1]) * ((gamvec[1] * ((rpath + delvec[1]) **
-                   (1 - epsvec[1])) + (1 - gamvec[1]) * (wpath **
-                   (1 - epsvec[1]))) ** (1 / (1 - epsvec[1])))
+    A, gamma, epsilon, delta = params
+    pmpath = np.zeros((len(A), len(rpath)))
+    pmpath[0, :] = (1 / A[0]) * ((gamma[0] * ((rpath + delta[0]) **
+                   (1 - epsilon[0])) + (1 - gamma[0]) * (wpath **
+                   (1 - epsilon[0]))) ** (1 / (1 - epsilon[0])))
+    pmpath[1, :] = (1 / A[1]) * ((gamma[1] * ((rpath + delta[1]) **
+                   (1 - epsilon[1])) + (1 - gamma[1]) * (wpath **
+                   (1 - epsilon[1]))) ** (1 / (1 - epsilon[1])))
     return pmpath
 
 
@@ -86,7 +86,7 @@ def get_ppath(alpha, pmpath):
 
 
 def get_cbepath(params, Gamma1, rpath_init, wpath_init, pmpath, ppath,
-  cmtilvec, nvec):
+  cm_tilde, nvec):
     '''
     Generates matrices for the time path of the distribution of
     individual savings, individual composite consumption, individual
@@ -111,7 +111,7 @@ def get_cbepath(params, Gamma1, rpath_init, wpath_init, pmpath, ppath,
                      the wage
         pmpath     = [2, T+S-1] matrix, time path of industry prices
         ppath      = [T+S-1] vector, time path of composite price
-        cmtilvec   = [2,] vector, minimum consumption values for all
+        cm_tilde   = [2,] vector, minimum consumption values for all
                      goods
         nvec       = [S,] vector, exogenous labor supply n_{s}
 
@@ -150,17 +150,17 @@ def get_cbepath(params, Gamma1, rpath_init, wpath_init, pmpath, ppath,
     # Solve the incomplete remaining lifetime decisions of agents alive
     # in period t=1 but not born in period t=1
     cpath[S-1, 0] = (1 / ppath[0]) * ((1 + rpath_init[0]) * Gamma1[S-2]
-        + wpath_init[0] * nvec[S-1] - (pmpath[:, 0] * cmtilvec).sum())
+        + wpath_init[0] * nvec[S-1] - (pmpath[:, 0] * cm_tilde).sum())
     cmpath[S-1, 0, 0] = alpha * ((ppath[0] * cpath[S-1, 0]) /
-                        pmpath[0, 0]) + cmtilvec[0]
+                        pmpath[0, 0]) + cm_tilde[0]
     cmpath[S-1, 0, 1] = (1 - alpha) * ((ppath[0] * cpath[S-1, 0]) /
-                        pmpath[1, 0]) + cmtilvec[1]
+                        pmpath[1, 0]) + cm_tilde[1]
     pl_params = (S, alpha, beta, sigma, tpi_tol)
     for p in xrange(2, S):
         # b_guess = b_ss[-p+1:]
         b_guess = np.diagonal(bpath[S-p:, :p-1])
         bveclf, cveclf, cmmatlf, b_err_veclf = paths_life(pl_params,
-            S-p+1, Gamma1[S-p-1], cmtilvec, nvec[-p:], rpath_init[:p],
+            S-p+1, Gamma1[S-p-1], cm_tilde, nvec[-p:], rpath_init[:p],
             wpath_init[:p], pmpath[:, :p], ppath[:p], b_guess)
         # Insert the vector lifetime solutions diagonally (twist donut)
         # into the cpath, bpath, and EulErrPath matrices
@@ -183,7 +183,7 @@ def get_cbepath(params, Gamma1, rpath_init, wpath_init, pmpath, ppath,
         # b_guess = b_ss
         b_guess = np.diagonal(bpath[:, t-1:t+S-2])
         bveclf, cveclf, cmmatlf, b_err_veclf = paths_life(pl_params, 1,
-            0, cmtilvec, nvec, rpath_init[t-1:t+S-1],
+            0, cm_tilde, nvec, rpath_init[t-1:t+S-1],
             wpath_init[t-1:t+S-1], pmpath[:, t-1:t+S-1],
             ppath[t-1:t+S-1], b_guess)
         # Insert the vector lifetime solutions diagonally (twist donut)
@@ -200,7 +200,7 @@ def get_cbepath(params, Gamma1, rpath_init, wpath_init, pmpath, ppath,
     return bpath, cpath, cmpath, eulerrpath
 
 
-def paths_life(params, beg_age, beg_wealth, cmtilvec, nvec, rpath,
+def paths_life(params, beg_age, beg_wealth, cm_tilde, nvec, rpath,
                wpath, pmpath, ppath, b_init):
     '''
     Solve for the remaining lifetime savings decisions of an individual
@@ -266,13 +266,13 @@ def paths_life(params, beg_age, beg_wealth, cmtilvec, nvec, rpath,
     if len(nvec) != p:
         sys.exit("Beginning age and length of nvec do not match.")
     b_guess = 1.01 * b_init
-    eullf_objs = (p, beta, sigma, beg_wealth, cmtilvec, nvec, rpath,
+    eullf_objs = (p, beta, sigma, beg_wealth, cm_tilde, nvec, rpath,
                   wpath, pmpath, ppath)
     bpath = opt.fsolve(LfEulerSys, b_guess, args=(eullf_objs),
                        xtol=tpi_tol)
-    cpath, c_cstr = get_cvec_lf(cmtilvec, rpath, wpath, pmpath, ppath,
+    cpath, c_cstr = get_cvec_lf(cm_tilde, rpath, wpath, pmpath, ppath,
                     nvec, np.append(beg_wealth, bpath))
-    cmpath, cm_cstr = get_cmmat_lf(alpha, cmtilvec, cpath, pmpath, ppath)
+    cmpath, cm_cstr = get_cmmat_lf(alpha, cm_tilde, cpath, pmpath, ppath)
     b_err_params = (beta, sigma)
     b_err_vec = ssf.get_b_errors(b_err_params, rpath[1:], cpath,
                                    c_cstr, diff=True)
@@ -314,10 +314,10 @@ def LfEulerSys(bvec, *objs):
 
     Returns: b_err_vec
     '''
-    (p, beta, sigma, beg_wealth, cmtilvec, nvec, rpath, wpath, pmpath,
+    (p, beta, sigma, beg_wealth, cm_tilde, nvec, rpath, wpath, pmpath,
         ppath) = objs
     bvec2 = np.append(beg_wealth, bvec)
-    cvec, c_cstr = get_cvec_lf(cmtilvec, rpath, wpath, pmpath, ppath,
+    cvec, c_cstr = get_cvec_lf(cm_tilde, rpath, wpath, pmpath, ppath,
                                nvec, bvec2)
     b_err_params = (beta, sigma)
     b_err_vec = ssf.get_b_errors(b_err_params, rpath[1:], cvec,
@@ -325,7 +325,7 @@ def LfEulerSys(bvec, *objs):
     return b_err_vec
 
 
-def get_cvec_lf(cmtilvec, rpath, wpath, pmpath, ppath, nvec, bvec):
+def get_cvec_lf(cm_tilde, rpath, wpath, pmpath, ppath, nvec, bvec):
     '''
     Generates vector of remaining lifetime consumptions from individual
     savings, and the time path of interest rates and the real wages
@@ -355,13 +355,13 @@ def get_cvec_lf(cmtilvec, rpath, wpath, pmpath, ppath, nvec, bvec):
     b_s = bvec
     b_sp1 = np.append(bvec[1:], [0])
     cvec = (1 / ppath) *((1 + rpath) * b_s + wpath * nvec -
-           pmpath[0, :] * cmtilvec[0] - pmpath[1, :] * cmtilvec[1]
+           pmpath[0, :] * cm_tilde[0] - pmpath[1, :] * cm_tilde[1]
            - b_sp1)
     c_cstr = cvec <= 0
     return cvec, c_cstr
 
 
-def get_cmmat_lf(alpha, cmtilvec, cpath, pmpath, ppath):
+def get_cmmat_lf(alpha, cm_tilde, cpath, pmpath, ppath):
     '''
     Generates matrix of remaining lifetime consumptions of individual
     goods
@@ -388,8 +388,8 @@ def get_cmmat_lf(alpha, cmtilvec, cpath, pmpath, ppath):
 
     Returns: cvec, c_constr
     '''
-    c1vec = alpha * ((ppath * cpath) / pmpath[0, :]) + cmtilvec[0]
-    c2vec = (1 - alpha) * ((ppath * cpath) / pmpath[1, :]) + cmtilvec[1]
+    c1vec = alpha * ((ppath * cpath) / pmpath[0, :]) + cm_tilde[0]
+    c2vec = (1 - alpha) * ((ppath * cpath) / pmpath[1, :]) + cm_tilde[1]
     cmmat = np.vstack((c1vec, c2vec))
     cm_cstr = cmmat <= 0
     return cmmat, cm_cstr
@@ -417,8 +417,8 @@ def get_Cmpath(cmpath):
 
 
 
-def get_YKmpath(params, rpath, wpath, Km_ss, Cmpath, Avec, gamvec,
-  epsvec, delvec):
+def get_YKmpath(params, rpath, wpath, Km_ss, Cmpath, A, gamma,
+  epsilon, delta):
     '''
     Generate matrix (vectors) of time path of aggregate output Y_{m,t}
     by industry given r_t, w_t, and C_{m,t}
@@ -429,24 +429,24 @@ def get_YKmpath(params, rpath, wpath, Km_ss, Cmpath, Avec, gamvec,
     rtp1 = r_ss
     wtp1 = w_ss
     Kmtp1 = Km_ss
-    aa = gamvec
-    bb = 1 - gamvec
-    cc = (1 - gamvec) / gamvec
-    dd = 1 / epsvec
-    ee = epsvec -1
-    ff = (epsvec - 1) / epsvec
-    gg = epsvec / (1 - epsvec)
+    aa = gamma
+    bb = 1 - gamma
+    cc = (1 - gamma) / gamma
+    dd = 1 / epsilon
+    ee = epsilon -1
+    ff = (epsilon - 1) / epsilon
+    gg = epsilon / (1 - epsilon)
 
     for t in range(T, 0, -1): # Go from periods T to 1
-        hh = (rtp1 + delvec) / wtp1
-        ii = (rpath[t-1] + delvec) / wpath[t-1]
+        hh = (rtp1 + delta) / wtp1
+        ii = (rpath[t-1] + delta) / wpath[t-1]
 
         numerator = Cmpath[:,t-1] + Kmtp1
-        denominator = 1 + ((1 - delvec) / Avec) * (((aa ** dd) +
+        denominator = 1 + ((1 - delta) / A) * (((aa ** dd) +
                     (bb ** dd) * (ii ** ee) * (cc ** ff)) ** gg)
         Ymt = numerator / denominator
         Ympath[:, t-1] = Ymt
-        Kmt =  (Ymt/Avec) * (((aa ** dd) +
+        Kmt =  (Ymt/A) * (((aa ** dd) +
                     (bb ** dd) * (ii ** ee) * (cc ** ff)) ** gg)
         Kmpath[:, t-1] = Kmt
         Ytp1 = Ymt
@@ -458,7 +458,7 @@ def get_YKmpath(params, rpath, wpath, Km_ss, Cmpath, Avec, gamvec,
 
 
 
-def get_Lmpath(Kmpath, rpath, wpath, gamvec, epsvec, delvec):
+def get_Lmpath(Kmpath, rpath, wpath, gamma, epsilon, delta):
     '''
     Generates vector of labor demand L_m for good m given Y_m, p_m and w
 
@@ -467,11 +467,11 @@ def get_Lmpath(Kmpath, rpath, wpath, gamvec, epsvec, delvec):
                  industry
         wpath  = [T, ] vector, time path of real wage
         pmpath = [2, T] matrix, time path of industry prices
-        Avec   = [2,] vector, total factor productivity values for all
+        A   = [2,] vector, total factor productivity values for all
                  industries
-        gamvec = [2,] vector, capital shares of income for all
+        gamma = [2,] vector, capital shares of income for all
                  industries
-        epsvec = [2,] vector, elasticities of substitution between
+        epsilon = [2,] vector, elasticities of substitution between
                  capital and labor for all industries
 
     Functions called: None
@@ -481,8 +481,8 @@ def get_Lmpath(Kmpath, rpath, wpath, gamvec, epsvec, delvec):
 
     Returns: Lmpath
     '''
-    L1path = Kmpath[0,:]*((1-gamvec[0])/gamvec[0])*(((rpath+delvec[0])/wpath)**epsvec[0])
-    L2path = Kmpath[1,:]*((1-gamvec[1])/gamvec[1])*(((rpath+delvec[1])/wpath)**epsvec[1])
+    L1path = Kmpath[0,:]*((1-gamma[0])/gamma[0])*(((rpath+delta[0])/wpath)**epsilon[0])
+    L2path = Kmpath[1,:]*((1-gamma[1])/gamma[1])*(((rpath+delta[1])/wpath)**epsilon[1])
 
     Lmpath = np.vstack((L1path, L2path))
     return Lmpath
@@ -490,8 +490,8 @@ def get_Lmpath(Kmpath, rpath, wpath, gamvec, epsvec, delvec):
 
 
 
-def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, cmtilvec, Avec,
-  gamvec, epsvec, delvec, nvec, graphs):
+def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, cm_tilde, A,
+  gamma, epsilon, delta, nvec, graphs):
     '''
     Generates equilibrium time path for all endogenous objects from
     initial state (Gamma1) to the steady state using initial guesses
@@ -520,15 +520,15 @@ def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, cmtilvec, Avec,
                      the wage
         Ym_ss      = [2,] vector, steady-state industry output levels
         Gamma1     = [S-1,] vector, initial period savings distribution
-        cmtilvec   = [2,] vector, minimum consumption values for all
+        cm_tilde   = [2,] vector, minimum consumption values for all
                      goods
-        Avec       = [2,] vector, total factor productivity values for
+        A       = [2,] vector, total factor productivity values for
                      all industries
-        gamvec     = [2,] vector, capital shares of income for all
+        gamma     = [2,] vector, capital shares of income for all
                      industries
-        epsvec     = [2,] vector, elasticities of substitution between
+        epsilon     = [2,] vector, elasticities of substitution between
                      capital and labor for all industries
-        delvec     = [2,] vector, model period depreciation rates for
+        delta     = [2,] vector, model period depreciation rates for
                      all industries
         nvec       = [S,] vector, exogenous labor supply n_{s}
         graphs     = boolean, =True if want graphs of TPI objects
@@ -548,7 +548,7 @@ def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, cmtilvec, Avec,
                        implied by household and firm optimization
         pm_params    = length 4 tuple, objects to be passed to
                        get_pmpath function:
-                       (Avec, gamvec, epsvec, delvec)
+                       (A, gamma, epsilon, delta)
         pmpath       = [2, T+S-1] matrix, time path of industry prices
         ppath        = [T+S-1] vector, time path of composite price
 
@@ -584,20 +584,20 @@ def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, cmtilvec, Avec,
     (S, T, alpha, beta, sigma, r_ss, w_ss, maxiter, mindist, xi,
         tpi_tol) = params
 
-    pm_params = (Avec, gamvec, epsvec, delvec)
+    pm_params = (A, gamma, epsilon, delta)
     pmpath = get_pmpath(pm_params, rpath_init, wpath_init)
     ppath = get_ppath(alpha, pmpath)
     cbe_params = (S, T, alpha, beta, sigma, tpi_tol)
     bpath, cpath, cmpath, eulerrpath = get_cbepath(cbe_params,
-        Gamma1, rpath_init, wpath_init, pmpath, ppath, cmtilvec,
+        Gamma1, rpath_init, wpath_init, pmpath, ppath, cm_tilde,
         nvec)
     Cmpath = get_Cmpath(cmpath[:, :T, :])
     Ym_params = (T, r_ss, w_ss)
     Ympath, Kmpath = get_YKmpath2(Ym_params, rpath_init[:T],
-        wpath_init[:T], Km_ss, Cmpath, Avec, gamvec, epsvec, delvec)
+        wpath_init[:T], Km_ss, Cmpath, A, gamma, epsilon, delta)
 
 
-    Lmpath = get_Lmpath2_alt(Kmpath, rpath[:T], wpath[:T], gamvec, epsvec, delvec)
+    Lmpath = get_Lmpath2_alt(Kmpath, rpath[:T], wpath[:T], gamma, epsilon, delta)
 
     
     rpath = rpath_init
@@ -718,8 +718,8 @@ def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, cmtilvec, Avec,
         MCLerrpath, elapsed_time)
 
 
-def TPI_fsolve(guesses, params, Km_ss, Ym_ss, Gamma1, cmtilvec, Avec,
-  gamvec, epsvec, delvec, nvec, graphs):
+def TPI_fsolve(guesses, params, Km_ss, Ym_ss, Gamma1, cm_tilde, A,
+  gamma, epsilon, delta, nvec, graphs):
     '''
     Generates equilibrium time path for all endogenous objects from
     initial state (Gamma1) to the steady state using initial guesses
@@ -748,15 +748,15 @@ def TPI_fsolve(guesses, params, Km_ss, Ym_ss, Gamma1, cmtilvec, Avec,
                      the wage
         Ym_ss      = [2,] vector, steady-state industry output levels
         Gamma1     = [S-1,] vector, initial period savings distribution
-        cmtilvec   = [2,] vector, minimum consumption values for all
+        cm_tilde   = [2,] vector, minimum consumption values for all
                      goods
-        Avec       = [2,] vector, total factor productivity values for
+        A       = [2,] vector, total factor productivity values for
                      all industries
-        gamvec     = [2,] vector, capital shares of income for all
+        gamma     = [2,] vector, capital shares of income for all
                      industries
-        epsvec     = [2,] vector, elasticities of substitution between
+        epsilon     = [2,] vector, elasticities of substitution between
                      capital and labor for all industries
-        delvec     = [2,] vector, model period depreciation rates for
+        delta     = [2,] vector, model period depreciation rates for
                      all industries
         nvec       = [S,] vector, exogenous labor supply n_{s}
         graphs     = boolean, =True if want graphs of TPI objects
@@ -776,7 +776,7 @@ def TPI_fsolve(guesses, params, Km_ss, Ym_ss, Gamma1, cmtilvec, Avec,
                        implied by household and firm optimization
         pm_params    = length 4 tuple, objects to be passed to
                        get_pmpath function:
-                       (Avec, gamvec, epsvec, delvec)
+                       (A, gamma, epsilon, delta)
         pmpath       = [2, T+S-1] matrix, time path of industry prices
         ppath        = [T+S-1] vector, time path of composite price
 
@@ -819,20 +819,20 @@ def TPI_fsolve(guesses, params, Km_ss, Ym_ss, Gamma1, cmtilvec, Avec,
     rpath[T:] = r_ss
     wpath[T:] = w_ss
 
-    pm_params = (Avec, gamvec, epsvec, delvec)
+    pm_params = (A, gamma, epsilon, delta)
     pmpath = get_pmpath(pm_params, rpath, wpath)
     ppath = get_ppath(alpha, pmpath)
     cbe_params = (S, T, alpha, beta, sigma, tpi_tol)
     bpath, cpath, cmpath, eulerrpath = get_cbepath(cbe_params,
-        Gamma1, rpath, wpath, pmpath, ppath, cmtilvec,
+        Gamma1, rpath, wpath, pmpath, ppath, cm_tilde,
         nvec)
     Cmpath = get_Cmpath(cmpath[:, :T, :])
     Ym_params = (T, r_ss, w_ss)
 
     Ympath, Kmpath = get_YKmpath(Ym_params, rpath[:T], wpath[:T], Km_ss,
-                      Cmpath, Avec, gamvec, epsvec, delvec)
+                      Cmpath, A, gamma, epsilon, delta)
 
-    Lmpath = get_Lmpath(Kmpath, rpath[:T], wpath[:T], gamvec, epsvec, delvec)
+    Lmpath = get_Lmpath(Kmpath, rpath[:T], wpath[:T], gamma, epsilon, delta)
 
     # Check market clearing in each period
     K_market_error = bpath[:, :T].sum(axis=0) - Kmpath[:, :].sum(axis=0)

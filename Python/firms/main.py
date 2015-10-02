@@ -35,23 +35,23 @@ T           = integer > S, number of time periods until steady state
 alpha       = scalar in (0,1), expenditure share on good 1
 c1til       = scalar > 0, minimum consumption of good 1
 c2til       = scalar > 0, minimum consumption of good 2
-cmtilvec    = [2,] vector, minimum consumption values for all goods
+cm_tilde    = [2,] vector, minimum consumption values for all goods
 beta_ann    = scalar in [0,1), discount factor for one year
 beta        = scalar in [0,1), discount factor for each model period
 sigma       = scalar > 0, coefficient of relative risk aversion
 nvec        = [S,] vector, exogenous labor supply n_{s,t}
 A1          = scalar > 0, total factor productivity in industry 1
 A2          = scalar > 0, total factor productivity in industry 2
-Avec        = [2,] vector, total factor productivity values for all
+A        = [2,] vector, total factor productivity values for all
               industries
 gam1        = scalar in (0,1), capital share of income in industry 1
 gam2        = scalar in (0,1), capital share of income in industry 2
-gamvec      = [2,] vector, capital shares of income for all industries
+gamma      = [2,] vector, capital shares of income for all industries
 eps1        = scalar in (0,1), elasticity of substitution between
               capital and labor in industry 1
 eps2        = scalar in (0,1), elasticity of substitution between
               capital and labor in industry 2
-epsvec      = [2,] vector, elasticities of substitution between capital
+epsilon      = [2,] vector, elasticities of substitution between capital
               and labor for all industries
 del1_ann    = scalar in [0,1], one-year depreciation rate of capital in
               industry 1
@@ -61,7 +61,7 @@ del2_ann    = scalar in [0,1], one-year depreciation rate of capital in
               industry 2
 del2        = scalar in [0,1], model period depreciation rate of capital
               in industry 2
-delvec      = [2,] vector, model period depreciation rates for all
+delta      = [2,] vector, model period depreciation rates for all
               industries
 ss_tol      = scalar > 0, tolerance level for steady-state fsolve
 ss_graphs   = boolean, =True if want graphs of steady-state objects
@@ -80,7 +80,7 @@ T = 220
 alpha = 0.4
 c1til = 0.6
 c2til = 0.6
-cmtilvec = np.array([c1til, c2til])
+cm_tilde = np.array([c1til, c2til])
 beta_annual = 0.96
 beta = beta_annual ** (80 / S)
 sigma = 3.0
@@ -90,18 +90,18 @@ nvec[int(round(2 * S / 3)):] = 0.9
 # Firm parameters
 A1 = 1.
 A2 = 1.2
-Avec = np.array([A1, A2])
+A = np.array([A1, A2])
 gam1 = 0.15
 gam2 = 0.2
-gamvec = np.array([gam1, gam2])
+gamma = np.array([gam1, gam2])
 eps1 = 0.6
 eps2 = 0.6
-epsvec = np.array([eps1, eps2])
+epsilon = np.array([eps1, eps2])
 del1_ann = .04
 del1 = 1 - ((1-del1_ann) ** (80 / S))
 del2_ann = .05
 del2 = 1 - ((1-del2_ann) ** (80 / S))
-delvec = np.array([del1, del2])
+delta = np.array([del1, del2])
 # SS parameters
 ss_tol = 1e-13
 ss_graphs = False
@@ -126,7 +126,7 @@ feas_params  = length 5 tuple, parameters for feasible function:
 b_guess      = [S-1,] vector, initial guess for savings to use in fsolve
                in ssf.get_cbess
 GoodGuess    = boolean, =True if initial steady-state guess is feasible
-r_cstr_ss    = boolean, =True if initial r + delvec <= 0
+r_cstr_ss    = boolean, =True if initial r + delta <= 0
 w_cstr_ss    = boolean, =True if initial w <= 0
 c_cstr_ss    = [S,] boolean vector, =True if c_s<=0 for initial r and w
 cm_cstr_ss   = [2, S] boolean matrix, =True if c_{m,s}<=0 for initial r
@@ -165,13 +165,13 @@ b_guess[:int(round(2 * S / 3))] = \
 b_guess[int(round(2 * S / 3)):] = \
     (np.linspace(0.3, 0.003, S - 1 - int(round(2 * S / 3))))
 GoodGuess, r_cstr_ss, w_cstr_ss, c_cstr_ss, cm_cstr_ss, K1K2_cstr_ss \
-    = ssf.feasible(feas_params, rwbar_init, b_guess, cmtilvec, Avec,
-    gamvec, epsvec, delvec, nvec)
+    = ssf.feasible(feas_params, rwbar_init, b_guess, cm_tilde, A,
+    gamma, epsilon, delta, nvec)
 
 if r_cstr_ss == True and w_cstr_ss == True:
-    print 'Initial guess is not feasible because both r + delvec, w <= 0.'
+    print 'Initial guess is not feasible because both r + delta, w <= 0.'
 elif r_cstr_ss == True and w_cstr_ss == False:
-    print 'Initial guess is not feasible because r + delvec <= 0.'
+    print 'Initial guess is not feasible because r + delta <= 0.'
 elif r_cstr_ss == False and w_cstr_ss == True:
     print 'Initial guess is not feasible because w <= 0.'
 elif (r_cstr_ss == False and w_cstr_ss == False and c_cstr_ss.max() == 1
@@ -197,8 +197,8 @@ elif GoodGuess == True:
     ss_params = (S, alpha, beta, sigma, ss_tol)
     (r_ss, w_ss, pm_ss, p_ss, b_ss, c_ss, cm_ss, eul_ss, Cm_ss, Ym_ss,
         Km_ss, Lm_ss, MCK_err_ss, MCL_err_ss, ss_time) = \
-        ssf.SS(ss_params, rwbar_init, b_guess, cmtilvec, Avec,
-        gamvec, epsvec, delvec, nvec, ss_graphs)
+        ssf.SS(ss_params, rwbar_init, b_guess, cm_tilde, A,
+        gamma, epsilon, delta, nvec, ss_graphs)
 
     # Print diagnostics
     print 'The maximum absolute steady-state Euler error is: ', \
@@ -217,7 +217,7 @@ elif GoodGuess == True:
     print pm_ss, p_ss
     print 'Aggregate output, capital stock and consumption for each industry are:'
     print np.array([[Ym_ss], [Km_ss], [Cm_ss]])
-    rcmdiff_ss = Ym_ss - Cm_ss - delvec * Km_ss
+    rcmdiff_ss = Ym_ss - Cm_ss - delta * Km_ss
     print 'The difference Ym_ss - Cm_ss - delta_m * Km_ss is: ', rcmdiff_ss
 
     # Print SS computation time
@@ -335,7 +335,7 @@ elif GoodGuess == True:
 
             guesses = np.append(rpath_init[:T], wpath_init[:T])
             solutions = opt.fsolve(tpf.TPI_fsolve, guesses, args=(tpi_params, Km_ss, Ym_ss,
-               Gamma1, cmtilvec, Avec, gamvec, epsvec, delvec, nvec,
+               Gamma1, cm_tilde, A, gamma, epsilon, delta, nvec,
                tpi_graphs), xtol=1e-9, col_deriv=1)
             rpath = solutions[:T].reshape(T)
             wpath = solutions[T:].reshape(T)
@@ -382,13 +382,13 @@ elif GoodGuess == True:
                 eul_path, Cm_path, Ym_path, Km_path, Lm_path,
                 MCKerr_path, MCLerr_path, tpi_time) = \
                 tpf.TP(tpi_params, rpath, wpath, Km_ss, Ym_ss,
-                Gamma1, cmtilvec, Avec, gamvec, epsvec, delvec, nvec,
+                Gamma1, cm_tilde, A, gamma, epsilon, delta, nvec,
                 tpi_graphs)
 
 
             # Print diagnostics
             print 'The max. absolute difference in the resource constraints are:'
-            delmat = np.tile(delvec.reshape((2, 1)), T-2)
+            delmat = np.tile(delta.reshape((2, 1)), T-2)
             ResmDiff = (Ym_path[:, :T-2] - Cm_path[:, :T-2] - Km_path[:, 1:T-1] +
                       (1 - delmat) * Km_path[:, :T-2])
             print np.absolute(ResmDiff).max(axis=1)
