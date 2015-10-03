@@ -583,24 +583,33 @@ def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, cm_tilde, A,
     start_time = time.clock()
     (S, T, alpha, beta, sigma, r_ss, w_ss,tp_tol) = params
 
+    rpath = np.zeros(T+S-1)
+    wpath = np.zeros(T+S-1)
+    rpath[:T] = rpath_init[:T]
+    wpath[:T] = wpath_init[:T]
+    rpath[T:] = r_ss
+    wpath[T:] = w_ss
+
+
     pm_params = (A, gamma, epsilon, delta)
-    pmpath = get_pmpath(pm_params, rpath_init, wpath_init)
+    pmpath = get_pmpath(pm_params, rpath, wpath)
     ppath = get_ppath(alpha, pmpath)
     cbe_params = (S, T, alpha, beta, sigma, tp_tol)
     bpath, cpath, cmpath, eulerrpath = get_cbepath(cbe_params,
-        Gamma1, rpath_init, wpath_init, pmpath, ppath, cm_tilde,
+        Gamma1, rpath, wpath, pmpath, ppath, cm_tilde,
         nvec)
     Cmpath = get_Cmpath(cmpath[:, :T, :])
     Ym_params = (T, r_ss, w_ss)
-    Ympath, Kmpath = get_YKmpath(Ym_params, rpath_init[:T],
-        wpath_init[:T], Km_ss, Cmpath, A, gamma, epsilon, delta)
+    Ympath, Kmpath = get_YKmpath(Ym_params, rpath[:T],
+        wpath[:T], Km_ss, Cmpath, A, gamma, epsilon, delta)
 
 
-    Lmpath = get_Lmpath(Kmpath, rpath_init[:T], wpath_init[:T], gamma, epsilon, delta)
+    Lmpath = get_Lmpath(Kmpath, rpath[:T], wpath[:T], gamma, epsilon, delta)
 
+    delmat = np.tile(delta.reshape((2, 1)), T-1)
+    ResmDiff = (Ympath[:, :T-1] - Cmpath[:, :T-1] - Kmpath[:, 1:T] +
+                (1 - delmat) * Kmpath[:, :T-1])
     
-    rpath = rpath_init
-    wpath = wpath_init
     MCKerrpath = bpath[:, :T].sum(axis=0) - Kmpath.sum(axis=0)
     MCLerrpath = nvec.sum() - Lmpath.sum(axis=0)
     elapsed_time = time.clock() - start_time
@@ -610,8 +619,8 @@ def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, cm_tilde, A,
         tvec = np.linspace(1, T, T)
         minorLocator   = MultipleLocator(1)
         fig, ax = plt.subplots()
-        plt.plot(tvec, Kmpath[0,:])
-        plt.plot(tvec, Kmpath[1,:])
+        #plt.plot(tvec, Kmpath[0,:T])
+        plt.plot(tvec, Kmpath[1,:T])
         # for the minor ticks, use no labels; default NullFormatter
         ax.xaxis.set_minor_locator(minorLocator)
         plt.grid(b=True, which='major', color='0.65',linestyle='-')
@@ -625,8 +634,8 @@ def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, cm_tilde, A,
         tvec = np.linspace(1, T, T)
         minorLocator   = MultipleLocator(1)
         fig, ax = plt.subplots()
-        plt.plot(tvec, Ympath[0,:])
-        plt.plot(tvec, Ympath[1,:])
+        plt.plot(tvec, Ympath[0,:T])
+        plt.plot(tvec, Ympath[1,:T])
         # for the minor ticks, use no labels; default NullFormatter
         ax.xaxis.set_minor_locator(minorLocator)
         plt.grid(b=True, which='major', color='0.65',linestyle='-')
@@ -640,8 +649,8 @@ def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, cm_tilde, A,
         tvec = np.linspace(1, T, T)
         minorLocator   = MultipleLocator(1)
         fig, ax = plt.subplots()
-        plt.plot(tvec, Cmpath[0,:])
-        plt.plot(tvec, Cmpath[1,:])
+        plt.plot(tvec, Cmpath[0,:T])
+        plt.plot(tvec, Cmpath[1,:T])
         # for the minor ticks, use no labels; default NullFormatter
         ax.xaxis.set_minor_locator(minorLocator)
         plt.grid(b=True, which='major', color='0.65',linestyle='-')
@@ -656,7 +665,7 @@ def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, cm_tilde, A,
         tvec = np.linspace(1, T, T)
         minorLocator   = MultipleLocator(1)
         fig, ax = plt.subplots()
-        plt.plot(tvec, wpath)
+        plt.plot(tvec, wpath[:T])
         plt.plot(tvec, np.ones(T)*w_ss)
         # for the minor ticks, use no labels; default NullFormatter
         ax.xaxis.set_minor_locator(minorLocator)
@@ -671,7 +680,7 @@ def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, cm_tilde, A,
         tvec = np.linspace(1, T, T)
         minorLocator   = MultipleLocator(1)
         fig, ax = plt.subplots()
-        plt.plot(tvec, rpath)
+        plt.plot(tvec, rpath[:T])
         plt.plot(tvec, np.ones(T)*r_ss)
         # for the minor ticks, use no labels; default NullFormatter
         ax.xaxis.set_minor_locator(minorLocator)
@@ -683,11 +692,26 @@ def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, cm_tilde, A,
         plt.show()
 
         # Plot time path of the differences in the resource constraint
-        tvec = np.linspace(1, T-2, T-2)
+        tvec = np.linspace(1, T-1, T-1)
         minorLocator   = MultipleLocator(1)
         fig, ax = plt.subplots()
-        plt.plot(tvec, ResmDiff[0,:T-2])
-        plt.plot(tvec, ResmDiff[1,:T-2])
+        plt.plot(tvec, ResmDiff[0,:T-1])
+        plt.plot(tvec, ResmDiff[1,:T-1])
+        # for the minor ticks, use no labels; default NullFormatter
+        ax.xaxis.set_minor_locator(minorLocator)
+        plt.grid(b=True, which='major', color='0.65',linestyle='-')
+        plt.title('Time path for resource constraint')
+        plt.xlabel(r'Period $t$')
+        plt.ylabel(r'RC Difference')
+        # plt.savefig('wt_Sec2')
+        plt.show()
+
+        # Plot time path of the differences in the market clearing conditions
+        tvec = np.linspace(1, T, T)
+        minorLocator   = MultipleLocator(1)
+        fig, ax = plt.subplots()
+        plt.plot(tvec, MCKerrpath[:T])
+        plt.plot(tvec, MCLerrpath[:T])
         # for the minor ticks, use no labels; default NullFormatter
         ax.xaxis.set_minor_locator(minorLocator)
         plt.grid(b=True, which='major', color='0.65',linestyle='-')
@@ -834,6 +858,7 @@ def TP_fsolve(guesses, params, Km_ss, Ym_ss, Gamma1, cm_tilde, A,
     rpath[T:] = r_ss
     wpath[T:] = w_ss
 
+
     pm_params = (A, gamma, epsilon, delta)
     pmpath = get_pmpath(pm_params, rpath, wpath)
     ppath = get_ppath(alpha, pmpath)
@@ -842,12 +867,17 @@ def TP_fsolve(guesses, params, Km_ss, Ym_ss, Gamma1, cm_tilde, A,
         Gamma1, rpath, wpath, pmpath, ppath, cm_tilde,
         nvec)
     Cmpath = get_Cmpath(cmpath[:, :T, :])
+
     Ym_params = (T, r_ss, w_ss)
 
     Ympath, Kmpath = get_YKmpath(Ym_params, rpath[:T], wpath[:T], Km_ss,
                       Cmpath, A, gamma, epsilon, delta)
 
     Lmpath = get_Lmpath(Kmpath, rpath[:T], wpath[:T], gamma, epsilon, delta)
+
+    print 'Kmpath: ', Kmpath
+    print 'Lmpath: ', Lmpath
+
 
     # Check market clearing in each period
     K_market_error = bpath[:, :T].sum(axis=0) - Kmpath[:, :].sum(axis=0)

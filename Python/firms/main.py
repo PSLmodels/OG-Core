@@ -30,78 +30,64 @@ from mpl_toolkits.mplot3d import Axes3D
 ------------------------------------------------------------------------
 Declare parameters
 ------------------------------------------------------------------------
-S           = integer in [3,80], number of periods an individual lives
-T           = integer > S, number of time periods until steady state
-alpha       = scalar in (0,1), expenditure share on good 1
-c1til       = scalar > 0, minimum consumption of good 1
-c2til       = scalar > 0, minimum consumption of good 2
-cm_tilde    = [2,] vector, minimum consumption values for all goods
-beta_ann    = scalar in [0,1), discount factor for one year
-beta        = scalar in [0,1), discount factor for each model period
-sigma       = scalar > 0, coefficient of relative risk aversion
-nvec        = [S,] vector, exogenous labor supply n_{s,t}
-A1          = scalar > 0, total factor productivity in industry 1
-A2          = scalar > 0, total factor productivity in industry 2
-A        = [2,] vector, total factor productivity values for all
-              industries
-gam1        = scalar in (0,1), capital share of income in industry 1
-gam2        = scalar in (0,1), capital share of income in industry 2
-gamma      = [2,] vector, capital shares of income for all industries
-eps1        = scalar in (0,1), elasticity of substitution between
-              capital and labor in industry 1
-eps2        = scalar in (0,1), elasticity of substitution between
-              capital and labor in industry 2
-epsilon      = [2,] vector, elasticities of substitution between capital
-              and labor for all industries
-del1_ann    = scalar in [0,1], one-year depreciation rate of capital in
-              industry 1
-del1        = scalar in [0,1], model period depreciation rate of capital
-              in industry 1
-del2_ann    = scalar in [0,1], one-year depreciation rate of capital in
-              industry 2
-del2        = scalar in [0,1], model period depreciation rate of capital
-              in industry 2
-delta      = [2,] vector, model period depreciation rates for all
-              industries
-ss_tol      = scalar > 0, tolerance level for steady-state fsolve
-ss_graphs   = boolean, =True if want graphs of steady-state objects
-tpi_solve   = boolean, =True if want to solve TPI after solving SS
-tpi_tol     = scalar > 0, tolerance level for fsolve's in TPI
-maxiter_tpi = integer >= 1, Maximum number of iterations for TPI
-mindist_tpi = scalar > 0, Convergence criterion for TPI
-xi_tpi      = scalar in (0,1], TPI path updating parameter
-tpi_graphs  = boolean, =True if want graphs of TPI objects
+S            = integer in [3,80], number of periods an individual lives
+T            = integer > S, number of time periods until steady state
+I            = integer, number of consumption goods
+alpha        = [I,] vector, ith element is the expenditure share on 
+              good i (elements must sum to one)
+cm_tilde     = [I,] vector, ith element is the minimum consumption 
+              amount for good i
+beta_ann     = scalar in [0,1), discount factor for one year
+beta         = scalar in [0,1), discount factor for each model period
+sigma        = scalar > 0, coefficient of relative risk aversion
+nvec         = [S,] vector, exogenous labor supply n_{s,t}
+M            = integer, number of production industries
+A            = [M,] vector, mth element is the total factor productivity 
+              values for the mth industry
+gamma        = [M,] vector, mth element is capital's share of income 
+              for the mth industry 
+epsilon      = [M,] vector, mth element is the elasticity of substitution 
+              between capital and labor for the mth industry
+delta_annual = [M,] vector, mth element is the one-year physical depreciation 
+              rate of capital in the mth industry
+delta        = [M,] vector, mth element is the model-period physical depreciation 
+              rate of capital in the mth industry
+xi           = [M,M] matrix, element i,j gives the fraction of capital used by 
+               industry j that comes from the output of industry i
+pi           = [I,M] matrix, element i,j gives the fraction of consumption
+               good i that comes from the output of industry j
+ss_tol       = scalar > 0, tolerance level for steady-state fsolve
+ss_graphs    = boolean, =True if want graphs of steady-state objects
+tp_solve     = boolean, =True if want to solve TPI after solving SS
+tp_tol       = scalar > 0, tolerance level for fsolve's in TP 
+tp_graphs    = boolean, =True if want graphs of TP objects
 ------------------------------------------------------------------------
 '''
 # Household parameters
 S = int(80)
-#T = int(round(5 * S))
 T = 220
-alpha = 0.4
-c1til = 0.6
-c2til = 0.6
-cm_tilde = np.array([c1til, c2til])
+I = 2
+alpha = np.array([0.4,0.4])
+cm_tilde = np.array([0.6, 0.6])
 beta_annual = 0.96
 beta = beta_annual ** (80 / S)
 sigma = 3.0
 nvec = np.zeros(S)
 nvec[:int(round(2 * S / 3))] = 1.
 nvec[int(round(2 * S / 3)):] = 0.9
+
 # Firm parameters
-A1 = 1.
-A2 = 1.2
-A = np.array([A1, A2])
+M = 2 
+A = np.array([1, 1.2])
 gam1 = 0.15
 gam2 = 0.2
-gamma = np.array([gam1, gam2])
-eps1 = 0.6
-eps2 = 0.6
-epsilon = np.array([eps1, eps2])
-del1_ann = .04
-del1 = 1 - ((1-del1_ann) ** (80 / S))
-del2_ann = .05
-del2 = 1 - ((1-del2_ann) ** (80 / S))
-delta = np.array([del1, del2])
+gamma = np.array([0.15, 0.2])
+epsilon = np.array([0.6, 0.6])
+delta_annual = np.array([0.04,0.05])
+delta = 1 - ((1-delta_annual)**(80/S))
+xi = np.array([[1.0, 0.0],[0.0, 1.0] ]) 
+pi = np.array([[1.0, 0.0],[0.0, 1.0] ]) 
+
 # SS parameters
 ss_tol = 1e-13
 ss_graphs = False
@@ -341,19 +327,14 @@ elif GoodGuess == True:
 
 
             # run one iteration of TP with fsolve solution to get other output
-            rpath_init[:T] = rpath 
-            rpath_init[T:] = r_ss 
-            wpath_init[:T] = wpath 
-            wpath_init[T:] = w_ss 
-
-            
-            tp_params = (S, T, alpha, beta, sigma, r_ss, w_ss,tp_tol)
+            tp_params = (S, T, alpha, beta, sigma, r_ss, w_ss, tp_tol)
             (r_path, w_path, pm_path, p_path, b_path, c_path, cm_path,
                 eul_path, Cm_path, Ym_path, Km_path, Lm_path,
                 MCKerr_path, MCLerr_path, tpi_time) = \
-                tpf.TP(tp_params, rpath_init, wpath_init, Km_ss, Ym_ss,
+                tpf.TP(tp_params, rpath, wpath, Km_ss, Ym_ss,
                 Gamma1, cm_tilde, A, gamma, epsilon, delta, nvec,
                 tp_graphs)
+                
 
 
             # Print diagnostics
