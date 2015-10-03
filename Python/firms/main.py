@@ -35,12 +35,12 @@ T            = integer > S, number of time periods until steady state
 I            = integer, number of consumption goods
 alpha        = [I,] vector, ith element is the expenditure share on 
               good i (elements must sum to one)
-cm_tilde     = [I,] vector, ith element is the minimum consumption 
+ci_tilde     = [I,] vector, ith element is the minimum consumption 
               amount for good i
 beta_ann     = scalar in [0,1), discount factor for one year
 beta         = scalar in [0,1), discount factor for each model period
 sigma        = scalar > 0, coefficient of relative risk aversion
-nvec         = [S,] vector, exogenous labor supply n_{s,t}
+n         = [S,] vector, exogenous labor supply n_{s,t}
 M            = integer, number of production industries
 A            = [M,] vector, mth element is the total factor productivity 
               values for the mth industry
@@ -68,13 +68,13 @@ S = int(80)
 T = 220
 I = 2
 alpha = np.array([0.4,0.4])
-cm_tilde = np.array([0.6, 0.6])
+ci_tilde = np.array([0.6, 0.6])
 beta_annual = 0.96
 beta = beta_annual ** (80 / S)
 sigma = 3.0
-nvec = np.zeros(S)
-nvec[:int(round(2 * S / 3))] = 1.
-nvec[int(round(2 * S / 3)):] = 0.9
+n = np.zeros(S)
+n[:int(round(2 * S / 3))] = 1.
+n[int(round(2 * S / 3)):] = 0.9
 
 # Firm parameters
 M = 2 
@@ -114,7 +114,7 @@ w_cstr_ss    = boolean, =True if initial w <= 0
 c_cstr_ss    = [S,] boolean vector, =True if c_s<=0 for initial r and w
 cm_cstr_ss   = [2, S] boolean matrix, =True if c_{m,s}<=0 for initial r
                and w
-K1K2_cstr_ss = boolean, =True if K1+K2<=0 for initial r and w
+K_cstr_ss = boolean, =True if sum of K_{m}<=0 for initial r and w
 ss_params    = length 5 tuple, parameters for SS function:
                (S, alpha, beta, sigma, ss_tol)
 r_ss         = scalar, steady-state interest rate
@@ -147,9 +147,9 @@ b_guess[:int(round(2 * S / 3))] = \
     (np.linspace(0.003, 0.3, int(round(2 * S / 3))))
 b_guess[int(round(2 * S / 3)):] = \
     (np.linspace(0.3, 0.003, S - 1 - int(round(2 * S / 3))))
-GoodGuess, r_cstr_ss, w_cstr_ss, c_cstr_ss, cm_cstr_ss, K1K2_cstr_ss \
-    = ssf.feasible(feas_params, rwbar_init, b_guess, cm_tilde, A,
-    gamma, epsilon, delta, nvec)
+GoodGuess, r_cstr_ss, w_cstr_ss, c_cstr_ss, cm_cstr_ss, K_cstr_ss \
+    = ssf.feasible(feas_params, rwbar_init, b_guess, ci_tilde, A,
+    gamma, epsilon, delta, pi, I, S, n)
 
 if r_cstr_ss == True and w_cstr_ss == True:
     print 'Initial guess is not feasible because both r + delta, w <= 0.'
@@ -162,16 +162,16 @@ elif (r_cstr_ss == False and w_cstr_ss == False and c_cstr_ss.max() == 1
     print 'Initial guess is not feasible because c_s<=0 for some s.'
 elif (r_cstr_ss == False and w_cstr_ss == False and c_cstr_ss.max() == 1
   and K1K2_cstr_ss == True):
-    print 'Initial guess is not feasible because c_s<=0 for some s and K1+K2<=0.'
+    print 'Initial guess is not feasible because c_s<=0 for some s and sum of K_{m}<=0.'
 elif (r_cstr_ss == False and w_cstr_ss == False and c_cstr_ss.max() == 0
   and cm_cstr_ss.max() == 1 and K1K2_cstr_ss == False):
-    print 'Initial guess is not feasible because c_{m,s}<=0 for some m and s.'
+    print 'Initial guess is not feasible because c_{i,s}<=0 for some m and s.'
 elif (r_cstr_ss == False and w_cstr_ss == False and c_cstr_ss.max() == 0
   and cm_cstr_ss.max() == 1 and K1K2_cstr_ss == True):
-    print 'Initial guess is not feasible because c_{m,s}<=0 for some m and s and K1+K2<=0.'
+    print 'Initial guess is not feasible because c_{i,s}<=0 for some m and s and sum of K_{m}<=0.'
 elif (r_cstr_ss == False and w_cstr_ss == False and c_cstr_ss.max() == 0
-  and cm_cstr_ss.max() == 0 and K1K2_cstr_ss == True):
-    print 'Initial guess is not feasible because K1+K2<=0.'
+  and cm_cstr_ss.max() == 0 and K_cstr_ss == True):
+    print 'Initial guess is not feasible because sum of K_{m}<=0.'
 elif GoodGuess == True:
     print 'Initial guess is feasible.'
 
@@ -180,8 +180,8 @@ elif GoodGuess == True:
     ss_params = (S, alpha, beta, sigma, ss_tol)
     (r_ss, w_ss, pm_ss, p_ss, b_ss, c_ss, cm_ss, eul_ss, Cm_ss, Ym_ss,
         Km_ss, Lm_ss, MCK_err_ss, MCL_err_ss, ss_time) = \
-        ssf.SS(ss_params, rwbar_init, b_guess, cm_tilde, A,
-        gamma, epsilon, delta, nvec, ss_graphs)
+        ssf.SS(ss_params, rwbar_init, b_guess, ci_tilde, A,
+        gamma, epsilon, delta, xi, pi, I, M, S, n, ss_graphs)
 
     # Print diagnostics
     print 'The maximum absolute steady-state Euler error is: ', \
@@ -317,10 +317,10 @@ elif GoodGuess == True:
 
             guesses = np.append(rpath_init[:T], wpath_init[:T])
             #solutions = opt.fsolve(tpf.TP_fsolve, guesses, args=(tp_params, Km_ss, Ym_ss,
-            #   Gamma1, cm_tilde, A, gamma, epsilon, delta, nvec,
+            #   Gamma1, ci_tilde, A, gamma, epsilon, delta, n,
             #   tp_graphs), xtol=tp_tol, col_deriv=1)
             solutions = tpf.TP_fsolve(guesses, tp_params, Km_ss, Ym_ss,
-               Gamma1, cm_tilde, A, gamma, epsilon, delta, nvec,
+               Gamma1, ci_tilde, A, gamma, epsilon, delta, n,
                tp_graphs)
             rpath = solutions[:T].reshape(T)
             wpath = solutions[T:].reshape(T)
@@ -332,7 +332,7 @@ elif GoodGuess == True:
                 eul_path, Cm_path, Ym_path, Km_path, Lm_path,
                 MCKerr_path, MCLerr_path, tpi_time) = \
                 tpf.TP(tp_params, rpath, wpath, Km_ss, Ym_ss,
-                Gamma1, cm_tilde, A, gamma, epsilon, delta, nvec,
+                Gamma1, ci_tilde, A, gamma, epsilon, delta, n,
                 tp_graphs)
                 
 
