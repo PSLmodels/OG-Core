@@ -67,7 +67,7 @@ tp_graphs    = boolean, =True if want graphs of TP objects
 S = int(80)
 T = 220
 I = 2
-alpha = np.array([0.4,0.4])
+alpha = np.array([0.4,0.6])
 ci_tilde = np.array([0.6, 0.6])
 beta_annual = 0.96
 beta = beta_annual ** (80 / S)
@@ -79,8 +79,6 @@ n[int(round(2 * S / 3)):] = 0.9
 # Firm parameters
 M = 2 
 A = np.array([1, 1.2])
-gam1 = 0.15
-gam2 = 0.2
 gamma = np.array([0.15, 0.2])
 epsilon = np.array([0.6, 0.6])
 delta_annual = np.array([0.04,0.05])
@@ -240,15 +238,16 @@ elif GoodGuess == True:
     cc_w        = scalar, parabola coefficient for wpath_init
     bb_w        = scalar, parabola coefficient for wpath_init
     aa_w        = scalar, parabola coefficient for wpath_init
-    tpi_params  = length 11 tuple, parameters to pass into TPI function:
-                  (S, T, alpha, beta, sigma, r_ss, w_ss, maxiter_tpi,
-                  mindist_tpi, xi_tpi, tpi_tol)
+    tp_params  = length 11 tuple, parameters to pass into TP function:
+                  (S, T, alpha, beta, sigma, r_ss, w_ss, tp_tol)
 
     r_path      = [T+S-2,] vector, equilibrium time path of the interest
                   rate
     w_path      = [T+S-2,] vector, equilibrium time path of the wage
-    pm_path     = [2, T+S-2] matrix, equilibrium time path of industry
-                  prices
+    pm_path     = [M, T+S-2] matrix, equilibrium time path of industry
+                  output prices
+    pc_path     = [I, T+S-2] matrix, equilibrium time path of consumption
+                  good prices
     p_path      = [T+S-2,] vector, equilibrium time path of the
                   composite good price
     b_path      = [S-1, T+S-2] matrix, equilibrium time path of the
@@ -256,25 +255,25 @@ elif GoodGuess == True:
                   exogenous distribution
     c_path      = [S, T+S-2] matrix, equilibrium time path of the
                   distribution of composite good consumption
-    cm_path     = [S, T+S-2, 2] array, equilibrium time path of the
-                  distribution of particular (industry) good consumption
+    ci_path     = [S, T+S-2, I] array, equilibrium time path of the
+                  distribution of individual consumption goods
     eul_path    = [S-1, T+S-2] matrix, equilibrium time path of the
                   euler errors associated with the distribution of
                   savings. Period 1 is a column of zeros
-    Cm_path     = [2, T+S-2] matrix, equilibrium time path of total
-                  demand for each industry's goods
-    Ym_path     = [2, T+S-2] matrix, equilibrium time path of total
+    Ci_path     = [I, T+S-2] matrix, equilibrium time path of total
+                  demand for each consumption good
+    Ym_path     = [M, T+S-2] matrix, equilibrium time path of total
                   output from each industry
-    Km_path     = [2, T+S-2] matrix, equilibrium time path of capital
+    Km_path     = [M, T+S-2] matrix, equilibrium time path of capital
                   demand for each industry
-    Lm_path     = [2, T+S-2] matrix, equilibrium time path of labor
+    Lm_path     = [M, T+S-2] matrix, equilibrium time path of labor
                   demand for each industry
     MCKerr_path = [T+S-2,] vector, equilibrium time path of capital
                   market clearing errors
     MCLerr_path = [T+S-2,] vector, equilibrium time path of labor market
                   clearing errors
     tpi_time    = scalar, number of seconds to compute TPI solution
-    ResmDiff    = [2, T-1] matrix, errors in the resource constraint
+    ResmDiff    = [M, T-1] matrix, errors in the resource constraint
                   from period 1 to T-1. We don't use T because we are
                   missing one individual's consumption in that period
     --------------------------------------------------------------------
@@ -283,7 +282,7 @@ elif GoodGuess == True:
         print 'BEGIN EQUILIBRIUM TIME PATH COMPUTATION'
         #Gamma1 = b_ss
         Gamma1 = 0.95 * b_ss
-        # Make sure initial savings distr. is feasible (K1+K2>0)
+        # Make sure initial savings distr. is feasible (sum of K_{m}>0)
         if Gamma1.sum() <= 0:
             print 'Initial savings distribution is not feasible (K1+K2<=0)'
         else:
@@ -328,8 +327,8 @@ elif GoodGuess == True:
 
             # run one iteration of TP with fsolve solution to get other output
             tp_params = (S, T, alpha, beta, sigma, r_ss, w_ss, tp_tol)
-            (r_path, w_path, pm_path, p_path, b_path, c_path, cm_path,
-                eul_path, Cm_path, Ym_path, Km_path, Lm_path,
+            (r_path, w_path, pc_path, p_path, b_path, c_path, ci_path,
+                eul_path, Ci_path, Ym_path, Km_path, Lm_path,
                 MCKerr_path, MCLerr_path, tpi_time) = \
                 tpf.TP(tp_params, rpath, wpath, Km_ss, Ym_ss,
                 Gamma1, ci_tilde, A, gamma, epsilon, delta, n,
@@ -339,7 +338,7 @@ elif GoodGuess == True:
 
             # Print diagnostics
             print 'The max. absolute difference in the resource constraints are:'
-            delmat = np.tile(delta.reshape((2, 1)), T-2)
+            delmat = np.tile(delta.reshape((I, 1)), T-2)
             ResmDiff = (Ym_path[:, :T-2] - Cm_path[:, :T-2] - Km_path[:, 1:T-1] +
                       (1 - delmat) * Km_path[:, :T-2])
             print np.absolute(ResmDiff).max(axis=1)

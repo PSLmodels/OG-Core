@@ -626,7 +626,7 @@ def MCerrs(rwvec, *objs):
         MC_errs = np.array((MCKerr, MCLerr))
     elif (r + delta).min() > 0 and w > 0:
         pm_params = (A, gamma, epsilon, delta)
-        p_m = get_pm(pm_params, r, w)
+        p_m = get_pm(pm_params, r, w)   
         p_c = np.dot(pi,p_m)
         p = get_p(alpha, p_c)
         cbe_params = (alpha, beta, sigma, r, w, p, ss_tol)
@@ -745,6 +745,7 @@ def SS(params, rw_init, b_guess, ci_tilde, A, gamma, epsilon, delta, xi, pi, I,
     r_ss, w_ss = rw_ss
     pm_params = (A, gamma, epsilon, delta)
     pm_ss = get_pm(pm_params, r_ss, w_ss)
+
     pc_ss = np.dot(pi,pm_ss)
     p_ss = get_p(alpha, pc_ss)
     cbe_params = (alpha, beta, sigma, r_ss, w_ss, p_ss, ss_tol)
