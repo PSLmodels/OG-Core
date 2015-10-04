@@ -238,8 +238,21 @@ elif GoodGuess == True:
     cc_w        = scalar, parabola coefficient for wpath_init
     bb_w        = scalar, parabola coefficient for wpath_init
     aa_w        = scalar, parabola coefficient for wpath_init
-    tp_params  = length 11 tuple, parameters to pass into TP function:
-                  (S, T, alpha, beta, sigma, r_ss, w_ss, tp_tol)
+    tp_params   = length 11 tuple, parameters to pass into TP function:
+                  (S, T, alpha_path, beta, sigma, r_ss, w_ss, tp_tol)
+    alpha_path  = [I,T+S-2] matrix, consumption good shares in each 
+                  period along time path
+    ci_tilde_path = [I,T+S-2] matrix, minimum consumption amounts in each 
+                     period along time path
+    A_path        = [M,T+S-2] matrix, TFP for each industry in each 
+                     period along time path
+    gamma_path    = [M,T+S-2] matrix, capital's share of output for each industry in each 
+                     period along time path
+    epsilon_path  = [M,T+S-2] matrix, elasticity of substitution for each industry in each 
+                     period along time path
+    delta_path    = [M,T+S-2] matrix, physical depreciation for each industry in each 
+                     period along time path
+
 
     r_path      = [T+S-2,] vector, equilibrium time path of the interest
                   rate
@@ -311,15 +324,24 @@ elif GoodGuess == True:
             wpath_init[T-S+1:] = w_ss
             #wpath_init[:] = w_ss
 
-            # Run TPI
-            tp_params = (S, T, alpha, beta, sigma, r_ss, w_ss, tp_tol)
+            # Solve for time path
+            # Tile arrays of time path parameters so easy to handle in 
+            # TP functions
+            alpha_path = np.tile(alpha,(1,len(rpath_init)))
+            ci_tilde_path = np.tile(ci_tilde,(1,len(rpath_init)))
+            A_path = np.tile(A,(1,len(rpath_init)))
+            gamma_path = np.tile(gamma,(1,len(rpath_init)))
+            epsilon_path = np.tile(epsilon,(1,len(rpath_init)))
+            delta_path = np.tile(delta,(1,len(rpath_init)))
+
+            tp_params = (S, T, alpha_path, beta, sigma, r_ss, w_ss, tp_tol)
 
             guesses = np.append(rpath_init[:T], wpath_init[:T])
             #solutions = opt.fsolve(tpf.TP_fsolve, guesses, args=(tp_params, Km_ss, Ym_ss,
             #   Gamma1, ci_tilde, A, gamma, epsilon, delta, n,
             #   tp_graphs), xtol=tp_tol, col_deriv=1)
             solutions = tpf.TP_fsolve(guesses, tp_params, Km_ss, Ym_ss,
-               Gamma1, ci_tilde, A, gamma, epsilon, delta, n,
+               Gamma1, ci_tilde_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
                tp_graphs)
             rpath = solutions[:T].reshape(T)
             wpath = solutions[T:].reshape(T)
@@ -331,8 +353,8 @@ elif GoodGuess == True:
                 eul_path, Ci_path, Ym_path, Km_path, Lm_path,
                 MCKerr_path, MCLerr_path, tpi_time) = \
                 tpf.TP(tp_params, rpath, wpath, Km_ss, Ym_ss,
-                Gamma1, ci_tilde, A, gamma, epsilon, delta, n,
-                tp_graphs)
+                Gamma1, ci_tilde, A, gamma, epsilon, delta, xi, pi, I, 
+                M, S, n, tp_graphs)
                 
 
 
