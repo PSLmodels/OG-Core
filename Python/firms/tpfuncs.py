@@ -62,7 +62,7 @@ def get_pmpath(params, rpath, wpath):
 
     return pmpath
 
-def get_pcpath(pmpath, pi, T):
+def get_pcpath(pmpath, pi, I):
     '''
     Generates time path of consumption good prices from
     industry output prices and fixed coefficient matrix
@@ -79,12 +79,11 @@ def get_pcpath(pmpath, pi, T):
     Objects in function:
         pcpath = [I, T+S-2] matrix, time path of consumption good prices
 
-    Returns: pmpath
+    Returns: pcpath
     '''
-    A, gamma, epsilon, delta = params
 
-    pcpath = np.zeros((I,T+S-2))
-    for t in range(0,T+S-2):
+    pcpath = np.zeros((I,(pmpath.shape)[1]))
+    for t in range(0,(pmpath.shape)[1]): 
         pcpath[:,t] = np.dot(pi,pmpath[:,t])
 
 
@@ -102,16 +101,17 @@ def get_ppath(alpha, pcpath):
     Functions called: None
 
     Objects in function:
-        ppath = [T+S-2] vector, time path of price of composite good
+        ppath = [T+S-2,] vector, time path of price of composite good
 
     Returns: ppath
     '''
+
     ppath = ((pcpath/alpha)**alpha).prod(axis=0)
     return ppath
 
 
 def get_cbepath(params, Gamma1, rpath_init, wpath_init, pcpath, ppath,
-  ci_tilde, n):
+  ci_tilde, I, n):
     '''
     Generates matrices for the time path of the distribution of
     individual savings, individual composite consumption, individual
@@ -124,6 +124,7 @@ def get_cbepath(params, Gamma1, rpath_init, wpath_init, pcpath, ppath,
                      lives
         T          = integer > S, number of time periods until steady
                      state
+        I          = integer, number unique consumption goods
         alpha      = [I,T+S-1] matrix, expenditure shares on each good along time path
         beta       = scalar in [0,1), discount factor for each model
                      period
@@ -176,13 +177,13 @@ def get_cbepath(params, Gamma1, rpath_init, wpath_init, pcpath, ppath,
     # Solve the incomplete remaining lifetime decisions of agents alive
     # in period t=1 but not born in period t=1
     cpath[S-1, 0] = (1 / ppath[0]) * ((1 + rpath_init[0]) * Gamma1[S-2]
-        + wpath_init[0] * n[S-1] - (pcpath[:, 0] * ci_tilde).sum(axis=0))
-    cipath[S-1, 0, 0] = alpha * ((ppath[0] * cpath[S-1, 0]) /
+        + wpath_init[0] * n[S-1] - (pcpath[:, 0] * ci_tilde[:,0]).sum(axis=0))
+    cipath[S-1, 0, :] = alpha[:,0] * ((ppath[0] * cpath[S-1, 0]) /
                         pcpath[:, 0]) + ci_tilde[:,0]
-    pl_params = (S, alpha, beta, sigma, tp_tol)
     for p in xrange(2, S):
         # b_guess = b_ss[-p+1:]
         b_guess = np.diagonal(bpath[S-p:, :p-1])
+        pl_params = (S, alpha[:,:p], beta, sigma, tp_tol)
         bveclf, cveclf, cimatlf, b_err_veclf = paths_life(pl_params,
             S-p+1, Gamma1[S-p-1], ci_tilde[:,:p], n[-p:], rpath_init[:p],
             wpath_init[:p], pcpath[:, :p], ppath[:p], b_guess)
@@ -192,7 +193,9 @@ def get_cbepath(params, Gamma1, rpath_init, wpath_init, pcpath, ppath,
         DiagMaskc = np.eye(p, dtype=bool)
         bpath[S-p:, 1:p] = DiagMaskb * bveclf + bpath[S-p:, 1:p]
         cpath[S-p:, :p] = DiagMaskc * cveclf + cpath[S-p:, :p]
-        cipath[S-p:, :p, :] = (DiagMaskc * cimatlf[:, :] +
+        DiagMaskc = np.reshape(np.tile(np.eye(p, dtype=bool),(I,1,1)),(p,p,I))
+        cimatlf = np.tile(np.reshape(cimatlf,((cimatlf.shape)[1],I)),((cimatlf.shape)[1],1,1))
+        cipath[S-p:, :p, :] = (DiagMaskc * cimatlf +
                               cipath[S-p:, :p, :])
         eulerrpath[S-p:, 1:p] = (DiagMaskb * b_err_veclf +
                                 eulerrpath[S-p:, 1:p])
@@ -200,19 +203,24 @@ def get_cbepath(params, Gamma1, rpath_init, wpath_init, pcpath, ppath,
     # 1 to T and insert the vector lifetime solutions diagonally (twist
     # donut) into the cpath, bpath, and EulErrPath matrices
     DiagMaskb = np.eye(S-1, dtype=bool)
-    DiagMaskc = np.eye(S, dtype=bool)
+    DiagMaskc = np.reshape(np.tile(np.eye(S, dtype=bool),(I,1,1)),(S,S,I))
     for t in xrange(1, T+1): # Go from periods 1 to T
         # b_guess = b_ss
         b_guess = np.diagonal(bpath[:, t-1:t+S-2])
+        pl_params = (S, alpha[:,t-1:t+S-1], beta, sigma, tp_tol)
         bveclf, cveclf, cimatlf, b_err_veclf = paths_life(pl_params, 1,
-            0, ci_tilde, n, rpath_init[t-1:t+S-1],
+            0, ci_tilde[:,t-1:t+S-1], n, rpath_init[t-1:t+S-1],
             wpath_init[t-1:t+S-1], pcpath[:, t-1:t+S-1],
             ppath[t-1:t+S-1], b_guess)
+        cimatlf = np.tile(np.reshape(cimatlf,((cimatlf.shape)[1],I)),((cimatlf.shape)[1],1,1))
         # Insert the vector lifetime solutions diagonally (twist donut)
         # into the cpath, bpath, and EulErrPath matrices
+        print 'cveclf shape: ', cveclf.shape
+        print 'DiagMaskc shape: ', DiagMaskc.shape
+        print 'cpath shape: ', cpath[:, t-1:t+S-1].shape
         bpath[:, t:t+S-1] = DiagMaskb * bveclf + bpath[:, t:t+S-1]
         cpath[:, t-1:t+S-1] = DiagMaskc * cveclf + cpath[:, t-1:t+S-1]
-        cipath[:, t-1:t+S-1, :] = (DiagMaskc * cimatlf[:, :] +
+        cipath[:, t-1:t+S-1, :] = (DiagMaskc * cimatlf +
                                   cipath[:, t-1:t+S-1, :])
         eulerrpath[:, t:t+S-1] = (DiagMaskb * b_err_veclf +
                                  eulerrpath[:, t:t+S-1])
@@ -221,7 +229,7 @@ def get_cbepath(params, Gamma1, rpath_init, wpath_init, pcpath, ppath,
 
 
 def paths_life(params, beg_age, beg_wealth, ci_tilde, n, rpath,
-               wpath, pmpath, ppath, b_init):
+               wpath, pcpath, ppath, b_init):
     '''
     Solve for the remaining lifetime savings decisions of an individual
     who enters the model at age beg_age, with corresponding initial
@@ -266,6 +274,8 @@ def paths_life(params, beg_age, beg_wealth, ci_tilde, n, rpath,
                        decisions
         cpath        = [p,] vector, optimal remaining lifetime
                        consumption decisions
+        cipath       = [p,I] martrix, remaining lifetime consumption
+                        decisions by consumption good
         c_constr     = [p,] boolean vector, =True if c_{p}<=0,
         b_err_params = length 2 tuple, parameters to pass into
                        c4ssf.get_b_errors (beta, sigma)
@@ -292,7 +302,7 @@ def paths_life(params, beg_age, beg_wealth, ci_tilde, n, rpath,
                        xtol=tp_tol)
     cpath, c_cstr = get_cvec_lf(ci_tilde, rpath, wpath, pcpath, ppath,
                     n, np.append(beg_wealth, bpath))
-    cipath, cm_cstr = get_cmmat_lf(alpha, ci_tilde, cpath, pcpath, ppath)
+    cipath, cm_cstr = get_cimat_lf(alpha[:,:p], ci_tilde, cpath, pcpath, ppath)
     b_err_params = (beta, sigma)
     b_err_vec = ssf.get_b_errors(b_err_params, rpath[1:], cpath,
                                    c_cstr, diff=True)
@@ -385,7 +395,7 @@ def get_cvec_lf(ci_tilde, rpath, wpath, pcpath, ppath, n, bvec):
     return cvec, c_cstr
 
 
-def get_cmmat_lf(alpha, ci_tilde, cpath, pcpath, ppath):
+def get_cimat_lf(alpha, ci_tilde, cpath, pcpath, ppath):
     '''
     Generates matrix of remaining lifetime consumptions of individual
     goods
@@ -412,11 +422,15 @@ def get_cmmat_lf(alpha, ci_tilde, cpath, pcpath, ppath):
 
     Returns: cvec, c_constr
     '''
+    print 'alpha shape: ', alpha.shape
+    print 'ppath shape: ', ppath.shape
+    print 'cpath shape: ', cpath.shape
+    print 'pcpath shape: ', pcpath.shape
+    print 'ci_tilde shape: ', ci_tilde.shape
+    cimat = alpha * ((ppath * cpath) / pcpath) + ci_tilde
 
-    cmmat = alpha * ((ppath * cpath) / pcpath) + ci_tilde
-
-    cm_cstr = cmmat <= 0
-    return cmmat, cm_cstr
+    cm_cstr = cimat <= 0
+    return cimat, cm_cstr
 
 
 def get_Cipath(cipath):
@@ -560,6 +574,8 @@ def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, ci_tilde, A,
                      lives
         T          = integer > S, number of time periods until steady
                      state
+        I          = integer, number unique consumption goods
+        M          = integer, number unique production industires
         alpha      = [I,T+S-1] matrix, expenditure share on each good
                       along the time path
         beta       = scalar in [0,1), discount factor for each model
@@ -645,11 +661,11 @@ def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, ci_tilde, A,
 
     pm_params = (A, gamma, epsilon, delta)
     pmpath = get_pmpath(pm_params, rpath, wpath)
-    pcpath = get_pcpath(pmpath, pi, T)
+    pcpath = get_pcpath(pmpath, pi, I)
     ppath = get_ppath(alpha, pcpath)
     cbe_params = (S, T, alpha, beta, sigma, tp_tol)
     bpath, cpath, cipath, eulerrpath = get_cbepath(cbe_params,
-        Gamma1, rpath, wpath, pcpath, ppath, ci_tilde,
+        Gamma1, rpath, wpath, pcpath, ppath, ci_tilde, I,
         n)
     Cipath = get_Cipath(cipath[:, :T, :])
 
@@ -666,7 +682,7 @@ def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, ci_tilde, A,
 
     Lmpath = get_Lmpath(Kmpath, rpath[:T], wpath[:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
     
-    RCdiff_path = Ympath[:, :T-1] - Cipath[:, :T-1] - Kmpath[:, 1:T] +
+    RCdiff_path = (Ympath[:, :T-1] - Cipath[:, :T-1] - Kmpath[:, 1:T] +
                 (1 - delta[:,:T-1]) * Kmpath[:, :T-1])
     
     MCKerrpath = bpath[:, :T].sum(axis=0) - Kmpath.sum(axis=0)
@@ -832,6 +848,8 @@ def TP_fsolve(guesses, params, Km_ss, Ym_ss, Gamma1, ci_tilde, A,
                      lives
         T          = integer > S, number of time periods until steady
                      state
+        I          = integer, number unique consumption goods
+        M          = integer, number unique production industires
         alpha      = [I,T+S-1] matrix, expenditure share on each good
                       along the time path
         beta       = scalar in [0,1), discount factor for each model
@@ -921,11 +939,11 @@ def TP_fsolve(guesses, params, Km_ss, Ym_ss, Gamma1, ci_tilde, A,
 
     pm_params = (A, gamma, epsilon, delta)
     pmpath = get_pmpath(pm_params, rpath, wpath)
-    pcpath = get_pcpath(pmpath, pi, T)
+    pcpath = get_pcpath(pmpath, pi, I)
     ppath = get_ppath(alpha, pcpath)
     cbe_params = (S, T, alpha, beta, sigma, tp_tol)
     bpath, cpath, cipath, eulerrpath = get_cbepath(cbe_params,
-        Gamma1, rpath, wpath, pcpath, ppath, ci_tilde,
+        Gamma1, rpath, wpath, pcpath, ppath, ci_tilde, I,
         n)
     Cipath = get_Cipath(cipath[:, :T, :])
 
