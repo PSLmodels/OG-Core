@@ -347,13 +347,15 @@ elif GoodGuess == True:
             wpath = solutions[T:].reshape(T)
 
 
+            print 'Solved once!!'
+
             # run one iteration of TP with fsolve solution to get other output
-            tp_params = (S, T, alpha, beta, sigma, r_ss, w_ss, tp_tol)
+            tp_params = (S, T, alpha_path, beta, sigma, r_ss, w_ss, tp_tol)
             (r_path, w_path, pc_path, p_path, b_path, c_path, ci_path,
                 eul_path, Ci_path, Ym_path, Km_path, Lm_path,
                 MCKerr_path, MCLerr_path, tpi_time) = \
                 tpf.TP(tp_params, rpath, wpath, Km_ss, Ym_ss,
-                Gamma1, ci_tilde, A, gamma, epsilon, delta, xi, pi, I, 
+                Gamma1, ci_tilde_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, 
                 M, S, n, tp_graphs)
                 
 

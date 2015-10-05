@@ -203,7 +203,8 @@ def get_cbepath(params, Gamma1, rpath_init, wpath_init, pcpath, ppath,
     # 1 to T and insert the vector lifetime solutions diagonally (twist
     # donut) into the cpath, bpath, and EulErrPath matrices
     DiagMaskb = np.eye(S-1, dtype=bool)
-    DiagMaskc = np.reshape(np.tile(np.eye(S, dtype=bool),(I,1,1)),(S,S,I))
+    DiagMaskc = np.eye(S, dtype=bool)
+    DiagMaskc_tiled = np.reshape(np.tile(np.eye(S, dtype=bool),(I,1,1)),(S,S,I))
     for t in xrange(1, T+1): # Go from periods 1 to T
         # b_guess = b_ss
         b_guess = np.diagonal(bpath[:, t-1:t+S-2])
@@ -215,12 +216,9 @@ def get_cbepath(params, Gamma1, rpath_init, wpath_init, pcpath, ppath,
         cimatlf = np.tile(np.reshape(cimatlf,((cimatlf.shape)[1],I)),((cimatlf.shape)[1],1,1))
         # Insert the vector lifetime solutions diagonally (twist donut)
         # into the cpath, bpath, and EulErrPath matrices
-        print 'cveclf shape: ', cveclf.shape
-        print 'DiagMaskc shape: ', DiagMaskc.shape
-        print 'cpath shape: ', cpath[:, t-1:t+S-1].shape
         bpath[:, t:t+S-1] = DiagMaskb * bveclf + bpath[:, t:t+S-1]
         cpath[:, t-1:t+S-1] = DiagMaskc * cveclf + cpath[:, t-1:t+S-1]
-        cipath[:, t-1:t+S-1, :] = (DiagMaskc * cimatlf +
+        cipath[:, t-1:t+S-1, :] = (DiagMaskc_tiled * cimatlf +
                                   cipath[:, t-1:t+S-1, :])
         eulerrpath[:, t:t+S-1] = (DiagMaskb * b_err_veclf +
                                  eulerrpath[:, t:t+S-1])
@@ -422,11 +420,7 @@ def get_cimat_lf(alpha, ci_tilde, cpath, pcpath, ppath):
 
     Returns: cvec, c_constr
     '''
-    print 'alpha shape: ', alpha.shape
-    print 'ppath shape: ', ppath.shape
-    print 'cpath shape: ', cpath.shape
-    print 'pcpath shape: ', pcpath.shape
-    print 'ci_tilde shape: ', ci_tilde.shape
+
     cimat = alpha * ((ppath * cpath) / pcpath) + ci_tilde
 
     cm_cstr = cimat <= 0
@@ -438,44 +432,89 @@ def get_Cipath(cipath):
     Generates vector of aggregate consumption C_m of good m
 
     Inputs:
-        cipath = [S, S+T-1, 2] array, time path of distribution of
+        cipath = [S, S+T-1, I] array, time path of distribution of
                  individual consumption of each good c_{m,s,t}
 
     Functions called: None
 
     Objects in function:
-        Cmvec = [2,] vector, aggregate consumption of all goods
+        Cipath = [I,S+T-1] matrix, aggregate consumption of all goods
 
-    Returns: Cmvec
+    Returns: Cipath
     '''
     
-    Cipath = cipath[:, :, :].sum(axis=0)
+    Cipath = np.reshape(cipath[:, :, :].sum(axis=0),((cipath.shape)[2],(cipath.shape)[1]))
 
     return Cipath
 
 
 
-def solve_Ympath(Ympath_init, params, rpath, wpath, Cipath, A, gamma,
-  epsilon, delta, xi, pi, I, M, T):
+def solve_Ympath(Ympath_init_guess, params, rpath, wpath, Cipath, A, gamma,
+  epsilon, delta, xi, pi, I, M):
 
     '''
     Generate matrix (vectors) of time path of aggregate output Y_{m,t}
     by industry given r_t, w_t, and C_{m,t}
+    
+    Inputs:
+        Ympath_init_guess = [M*T,] vector, initial guess of Ympath
+        Km_ss             = [M,] vector, steady-state capital stock by industry 
+        rpath             = [T,] vector, real interest rates
+        wpath             = [T,] vector, real wage rates
+        Cipath            = [I,T] matrix, aggregate consumption of each good
+                             along the time path     
+        A                 = [M,T] matrix, total factor productivity values for all
+                            industries
+        gamma             = [M,T] matrix, capital shares of income for all
+                            industries
+        epsilon           = [M,T] matrix, elasticities of substitution between
+                            capital and labor for all industries
+        delta             = [M,T] matrix, model period depreciation rates for all
+                            industries
+        xi                = [M,M] matrix, element i,j gives the fraction of capital used by 
+                            industry j that comes from the output of industry i
+        pi                = [I,M] matrix, element i,j gives the fraction of consumption
+        T                 = integer > S, number of time periods until steady
+                           state
+        I                 = integer, number unique consumption goods
+        M                 = integer, number unique production industires 
+
+
+    Functions called: None
+
+    Objects in function:
+        Inv = [M,T] matrix, investment demand from each industry
+        Y_inv = [M,T] matrix, demand for output from each industry due to 
+                 investment demand
+        Y_c   = [M,T] matrix, demand for output from each industry due to 
+                 consumption demand
+        Kmpath  = [M,T] matrix, capital demand of all industries
+        Ympath  = [M,T] matrix, output from each industry
+        rc_errors = [M*T,] vector, errors in resource constraint
+                    for each production industry along time path
+
+    Returns: rc_errors
     '''
 
     T, Km_ss = params
-    Ympath = Ympath_init
 
+    #unpack guesses, which needed to be a vector
+    Ympath = np.zeros((M,T))
+    for m in range(0,M):
+        Ympath[m,:] = Ympath_init_guess[(m*T):((m+1)*T)]
+    
     Kmpath = get_Kmpath(rpath, wpath, Ympath, A, gamma, epsilon, delta)
     Inv = np.zeros((M,T))
-    Inv[:,:-1] = Kmpath[1:] - (1-delta)*Kmpath[:-1]
-    Inv[:,-1] = Km_ss - (1-delta[:,T])*Kmpath[T]
+    Inv[:,:-1] = Kmpath[:,1:] - (1-delta[:,:-1])*Kmpath[:,:-1]
+    Inv[:,T-1] = Km_ss - (1-delta[:,T-1])*Kmpath[:,T-1]
 
+    Y_inv = np.zeros((M,T))
+    Y_c = np.zeros((M,T))
     for t in range(0,T):
         Y_inv[:,t] = np.dot(Inv[:,t],xi)
         Y_c[:,t] = np.dot(np.reshape(Cipath[:,t],(1,I)),pi)
 
-    rc_errors = np.reshape(Y_c  + Y_inv - Ym,(M,T))
+    rc_errors = np.reshape(Y_c  + Y_inv - Ympath,(M*T,))
 
     return rc_errors
     
@@ -523,6 +562,7 @@ def get_Kmpath(rpath, wpath, Ympath, A, gamma, epsilon, delta):
     ff = (epsilon - 1) / epsilon
     gg = epsilon - 1
     hh = epsilon / (1 - epsilon)
+
     Kmpath = ((Ympath / A) *
          (((aa ** ee) + (bb ** ee) * (cc ** ff) * (dd ** gg)) ** hh))
 
@@ -672,13 +712,18 @@ def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, ci_tilde, A,
     Ympath_params = (T, Km_ss)
     Ympath_init = np.zeros((M,T))
     for t in range(0,T):
-        Ympath_init[:,T] = (np.dot(np.reshape(Ci_ss[:,t],(1,I)),pi))/I
+        Ympath_init[:,t] = np.reshape((np.dot(np.reshape(Cipath[:,t],(1,I)),pi))/I,(M,))
 
-    Ympath = opt.fsolve(solve_Ympath, Ympath_init, args=(Ympath_params, rpath[:T], wpath[:T], 
+    Ympath_init_guess = np.reshape(Ympath_init,(T*I,)) #need a vector going into fsolve
+
+    Ympath_sol = opt.fsolve(solve_Ympath, Ympath_init_guess, args=(Ympath_params, rpath[:T], wpath[:T], 
              Cipath, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], xi, pi, I, 
-             M, T), xtol=tp_tol, col_deriv=1)
+             M), xtol=tp_tol, col_deriv=1)
+    Ympath = np.zeros((M,T))
+    for m in range(0,M): # unpack vector of Ympath solved by fsolve
+        Ympath[m,:] = Ympath_sol[(m*T):((m+1)*T)]
 
-    Kmpath = get_Km(rpath[:T], wpath[:T], Ympath, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
+    Kmpath = get_Kmpath(rpath[:T], wpath[:T], Ympath, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
 
     Lmpath = get_Lmpath(Kmpath, rpath[:T], wpath[:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
     
@@ -950,13 +995,18 @@ def TP_fsolve(guesses, params, Km_ss, Ym_ss, Gamma1, ci_tilde, A,
     Ympath_params = (T, Km_ss)
     Ympath_init = np.zeros((M,T))
     for t in range(0,T):
-        Ympath_init[:,T] = (np.dot(np.reshape(Ci_ss[:,t],(1,I)),pi))/I
+        Ympath_init[:,t] = np.reshape((np.dot(np.reshape(Cipath[:,t],(1,I)),pi))/I,(M,))
 
-    Ympath = opt.fsolve(solve_Ympath, Ympath_init, args=(Ympath_params, rpath[:T], wpath[:T], 
+    Ympath_init_guess = np.reshape(Ympath_init,(T*I,)) #need a vector going into fsolve
+
+    Ympath_sol = opt.fsolve(solve_Ympath, Ympath_init_guess, args=(Ympath_params, rpath[:T], wpath[:T], 
              Cipath, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], xi, pi, I, 
-             M, T), xtol=tp_tol, col_deriv=1)
+             M), xtol=tp_tol, col_deriv=1)
+    Ympath = np.zeros((M,T))
+    for m in range(0,M): # unpack vector of Ympath solved by fsolve
+        Ympath[m,:] = Ympath_sol[(m*T):((m+1)*T)]
 
-    Kmpath = get_Km(rpath[:T], wpath[:T], Ympath, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
+    Kmpath = get_Kmpath(rpath[:T], wpath[:T], Ympath, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
 
     Lmpath = get_Lmpath(Kmpath, rpath[:T], wpath[:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
 
