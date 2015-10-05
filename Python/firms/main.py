@@ -35,12 +35,12 @@ T            = integer > S, number of time periods until steady state
 I            = integer, number of consumption goods
 alpha        = [I,] vector, ith element is the expenditure share on 
               good i (elements must sum to one)
-cm_tilde     = [I,] vector, ith element is the minimum consumption 
+ci_tilde     = [I,] vector, ith element is the minimum consumption 
               amount for good i
 beta_ann     = scalar in [0,1), discount factor for one year
 beta         = scalar in [0,1), discount factor for each model period
 sigma        = scalar > 0, coefficient of relative risk aversion
-nvec         = [S,] vector, exogenous labor supply n_{s,t}
+n         = [S,] vector, exogenous labor supply n_{s,t}
 M            = integer, number of production industries
 A            = [M,] vector, mth element is the total factor productivity 
               values for the mth industry
@@ -67,20 +67,18 @@ tp_graphs    = boolean, =True if want graphs of TP objects
 S = int(80)
 T = 220
 I = 2
-alpha = np.array([0.4,0.4])
-cm_tilde = np.array([0.6, 0.6])
+alpha = np.array([0.4,0.6])
+ci_tilde = np.array([0.6, 0.6])
 beta_annual = 0.96
 beta = beta_annual ** (80 / S)
 sigma = 3.0
-nvec = np.zeros(S)
-nvec[:int(round(2 * S / 3))] = 1.
-nvec[int(round(2 * S / 3)):] = 0.9
+n = np.zeros(S)
+n[:int(round(2 * S / 3))] = 1.
+n[int(round(2 * S / 3)):] = 0.9
 
 # Firm parameters
 M = 2 
 A = np.array([1, 1.2])
-gam1 = 0.15
-gam2 = 0.2
 gamma = np.array([0.15, 0.2])
 epsilon = np.array([0.6, 0.6])
 delta_annual = np.array([0.04,0.05])
@@ -93,7 +91,7 @@ ss_tol = 1e-13
 ss_graphs = False
 # TP parameters
 tp_solve = True
-tp_graphs = True
+tp_graphs = False
 tp_tol = 1e-9 # tolerance for fsolve for TP and for HH prob along time path
 
 '''
@@ -114,7 +112,7 @@ w_cstr_ss    = boolean, =True if initial w <= 0
 c_cstr_ss    = [S,] boolean vector, =True if c_s<=0 for initial r and w
 cm_cstr_ss   = [2, S] boolean matrix, =True if c_{m,s}<=0 for initial r
                and w
-K1K2_cstr_ss = boolean, =True if K1+K2<=0 for initial r and w
+K_cstr_ss = boolean, =True if sum of K_{m}<=0 for initial r and w
 ss_params    = length 5 tuple, parameters for SS function:
                (S, alpha, beta, sigma, ss_tol)
 r_ss         = scalar, steady-state interest rate
@@ -147,9 +145,9 @@ b_guess[:int(round(2 * S / 3))] = \
     (np.linspace(0.003, 0.3, int(round(2 * S / 3))))
 b_guess[int(round(2 * S / 3)):] = \
     (np.linspace(0.3, 0.003, S - 1 - int(round(2 * S / 3))))
-GoodGuess, r_cstr_ss, w_cstr_ss, c_cstr_ss, cm_cstr_ss, K1K2_cstr_ss \
-    = ssf.feasible(feas_params, rwbar_init, b_guess, cm_tilde, A,
-    gamma, epsilon, delta, nvec)
+GoodGuess, r_cstr_ss, w_cstr_ss, c_cstr_ss, cm_cstr_ss, K_cstr_ss \
+    = ssf.feasible(feas_params, rwbar_init, b_guess, ci_tilde, A,
+    gamma, epsilon, delta, pi, I, S, n)
 
 if r_cstr_ss == True and w_cstr_ss == True:
     print 'Initial guess is not feasible because both r + delta, w <= 0.'
@@ -162,16 +160,16 @@ elif (r_cstr_ss == False and w_cstr_ss == False and c_cstr_ss.max() == 1
     print 'Initial guess is not feasible because c_s<=0 for some s.'
 elif (r_cstr_ss == False and w_cstr_ss == False and c_cstr_ss.max() == 1
   and K1K2_cstr_ss == True):
-    print 'Initial guess is not feasible because c_s<=0 for some s and K1+K2<=0.'
+    print 'Initial guess is not feasible because c_s<=0 for some s and sum of K_{m}<=0.'
 elif (r_cstr_ss == False and w_cstr_ss == False and c_cstr_ss.max() == 0
   and cm_cstr_ss.max() == 1 and K1K2_cstr_ss == False):
-    print 'Initial guess is not feasible because c_{m,s}<=0 for some m and s.'
+    print 'Initial guess is not feasible because c_{i,s}<=0 for some m and s.'
 elif (r_cstr_ss == False and w_cstr_ss == False and c_cstr_ss.max() == 0
   and cm_cstr_ss.max() == 1 and K1K2_cstr_ss == True):
-    print 'Initial guess is not feasible because c_{m,s}<=0 for some m and s and K1+K2<=0.'
+    print 'Initial guess is not feasible because c_{i,s}<=0 for some m and s and sum of K_{m}<=0.'
 elif (r_cstr_ss == False and w_cstr_ss == False and c_cstr_ss.max() == 0
-  and cm_cstr_ss.max() == 0 and K1K2_cstr_ss == True):
-    print 'Initial guess is not feasible because K1+K2<=0.'
+  and cm_cstr_ss.max() == 0 and K_cstr_ss == True):
+    print 'Initial guess is not feasible because sum of K_{m}<=0.'
 elif GoodGuess == True:
     print 'Initial guess is feasible.'
 
@@ -180,8 +178,8 @@ elif GoodGuess == True:
     ss_params = (S, alpha, beta, sigma, ss_tol)
     (r_ss, w_ss, pm_ss, p_ss, b_ss, c_ss, cm_ss, eul_ss, Cm_ss, Ym_ss,
         Km_ss, Lm_ss, MCK_err_ss, MCL_err_ss, ss_time) = \
-        ssf.SS(ss_params, rwbar_init, b_guess, cm_tilde, A,
-        gamma, epsilon, delta, nvec, ss_graphs)
+        ssf.SS(ss_params, rwbar_init, b_guess, ci_tilde, A,
+        gamma, epsilon, delta, xi, pi, I, M, S, n, ss_graphs)
 
     # Print diagnostics
     print 'The maximum absolute steady-state Euler error is: ', \
@@ -200,8 +198,8 @@ elif GoodGuess == True:
     print pm_ss, p_ss
     print 'Aggregate output, capital stock and consumption for each industry are:'
     print np.array([[Ym_ss], [Km_ss], [Cm_ss]])
-    rcmdiff_ss = Ym_ss - Cm_ss - delta * Km_ss
-    print 'The difference Ym_ss - Cm_ss - delta_m * Km_ss is: ', rcmdiff_ss
+    RCdiff_ss = Ym_ss - Cm_ss - delta * Km_ss
+    print 'The difference Ym_ss - Cm_ss - delta_m * Km_ss is: ', RCdiff_ss
 
     # Print SS computation time
     if ss_time < 60: # seconds
@@ -240,15 +238,29 @@ elif GoodGuess == True:
     cc_w        = scalar, parabola coefficient for wpath_init
     bb_w        = scalar, parabola coefficient for wpath_init
     aa_w        = scalar, parabola coefficient for wpath_init
-    tpi_params  = length 11 tuple, parameters to pass into TPI function:
-                  (S, T, alpha, beta, sigma, r_ss, w_ss, maxiter_tpi,
-                  mindist_tpi, xi_tpi, tpi_tol)
+    tp_params   = length 11 tuple, parameters to pass into TP function:
+                  (S, T, alpha_path, beta, sigma, r_ss, w_ss, tp_tol)
+    alpha_path  = [I,T+S-2] matrix, consumption good shares in each 
+                  period along time path
+    ci_tilde_path = [I,T+S-2] matrix, minimum consumption amounts in each 
+                     period along time path
+    A_path        = [M,T+S-2] matrix, TFP for each industry in each 
+                     period along time path
+    gamma_path    = [M,T+S-2] matrix, capital's share of output for each industry in each 
+                     period along time path
+    epsilon_path  = [M,T+S-2] matrix, elasticity of substitution for each industry in each 
+                     period along time path
+    delta_path    = [M,T+S-2] matrix, physical depreciation for each industry in each 
+                     period along time path
+
 
     r_path      = [T+S-2,] vector, equilibrium time path of the interest
                   rate
     w_path      = [T+S-2,] vector, equilibrium time path of the wage
-    pm_path     = [2, T+S-2] matrix, equilibrium time path of industry
-                  prices
+    pm_path     = [M, T+S-2] matrix, equilibrium time path of industry
+                  output prices
+    pc_path     = [I, T+S-2] matrix, equilibrium time path of consumption
+                  good prices
     p_path      = [T+S-2,] vector, equilibrium time path of the
                   composite good price
     b_path      = [S-1, T+S-2] matrix, equilibrium time path of the
@@ -256,25 +268,25 @@ elif GoodGuess == True:
                   exogenous distribution
     c_path      = [S, T+S-2] matrix, equilibrium time path of the
                   distribution of composite good consumption
-    cm_path     = [S, T+S-2, 2] array, equilibrium time path of the
-                  distribution of particular (industry) good consumption
+    ci_path     = [S, T+S-2, I] array, equilibrium time path of the
+                  distribution of individual consumption goods
     eul_path    = [S-1, T+S-2] matrix, equilibrium time path of the
                   euler errors associated with the distribution of
                   savings. Period 1 is a column of zeros
-    Cm_path     = [2, T+S-2] matrix, equilibrium time path of total
-                  demand for each industry's goods
-    Ym_path     = [2, T+S-2] matrix, equilibrium time path of total
+    Ci_path     = [I, T+S-2] matrix, equilibrium time path of total
+                  demand for each consumption good
+    Ym_path     = [M, T+S-2] matrix, equilibrium time path of total
                   output from each industry
-    Km_path     = [2, T+S-2] matrix, equilibrium time path of capital
+    Km_path     = [M, T+S-2] matrix, equilibrium time path of capital
                   demand for each industry
-    Lm_path     = [2, T+S-2] matrix, equilibrium time path of labor
+    Lm_path     = [M, T+S-2] matrix, equilibrium time path of labor
                   demand for each industry
     MCKerr_path = [T+S-2,] vector, equilibrium time path of capital
                   market clearing errors
     MCLerr_path = [T+S-2,] vector, equilibrium time path of labor market
                   clearing errors
     tpi_time    = scalar, number of seconds to compute TPI solution
-    ResmDiff    = [2, T-1] matrix, errors in the resource constraint
+    ResmDiff    = [M, T-1] matrix, errors in the resource constraint
                   from period 1 to T-1. We don't use T because we are
                   missing one individual's consumption in that period
     --------------------------------------------------------------------
@@ -283,7 +295,7 @@ elif GoodGuess == True:
         print 'BEGIN EQUILIBRIUM TIME PATH COMPUTATION'
         #Gamma1 = b_ss
         Gamma1 = 0.95 * b_ss
-        # Make sure initial savings distr. is feasible (K1+K2>0)
+        # Make sure initial savings distr. is feasible (sum of K_{m}>0)
         if Gamma1.sum() <= 0:
             print 'Initial savings distribution is not feasible (K1+K2<=0)'
         else:
@@ -312,15 +324,24 @@ elif GoodGuess == True:
             wpath_init[T-S+1:] = w_ss
             #wpath_init[:] = w_ss
 
-            # Run TPI
-            tp_params = (S, T, alpha, beta, sigma, r_ss, w_ss, tp_tol)
+            # Solve for time path
+            # Tile arrays of time path parameters so easy to handle in 
+            # TP functions
+            alpha_path = np.tile(alpha,(1,len(rpath_init)))
+            ci_tilde_path = np.tile(ci_tilde,(1,len(rpath_init)))
+            A_path = np.tile(A,(1,len(rpath_init)))
+            gamma_path = np.tile(gamma,(1,len(rpath_init)))
+            epsilon_path = np.tile(epsilon,(1,len(rpath_init)))
+            delta_path = np.tile(delta,(1,len(rpath_init)))
+
+            tp_params = (S, T, alpha_path, beta, sigma, r_ss, w_ss, tp_tol)
 
             guesses = np.append(rpath_init[:T], wpath_init[:T])
             #solutions = opt.fsolve(tpf.TP_fsolve, guesses, args=(tp_params, Km_ss, Ym_ss,
-            #   Gamma1, cm_tilde, A, gamma, epsilon, delta, nvec,
+            #   Gamma1, ci_tilde, A, gamma, epsilon, delta, n,
             #   tp_graphs), xtol=tp_tol, col_deriv=1)
             solutions = tpf.TP_fsolve(guesses, tp_params, Km_ss, Ym_ss,
-               Gamma1, cm_tilde, A, gamma, epsilon, delta, nvec,
+               Gamma1, ci_tilde_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
                tp_graphs)
             rpath = solutions[:T].reshape(T)
             wpath = solutions[T:].reshape(T)
@@ -328,21 +349,20 @@ elif GoodGuess == True:
 
             # run one iteration of TP with fsolve solution to get other output
             tp_params = (S, T, alpha, beta, sigma, r_ss, w_ss, tp_tol)
-            (r_path, w_path, pm_path, p_path, b_path, c_path, cm_path,
-                eul_path, Cm_path, Ym_path, Km_path, Lm_path,
+            (r_path, w_path, pc_path, p_path, b_path, c_path, ci_path,
+                eul_path, Ci_path, Ym_path, Km_path, Lm_path,
                 MCKerr_path, MCLerr_path, tpi_time) = \
                 tpf.TP(tp_params, rpath, wpath, Km_ss, Ym_ss,
-                Gamma1, cm_tilde, A, gamma, epsilon, delta, nvec,
-                tp_graphs)
+                Gamma1, ci_tilde, A, gamma, epsilon, delta, xi, pi, I, 
+                M, S, n, tp_graphs)
                 
 
 
             # Print diagnostics
             print 'The max. absolute difference in the resource constraints are:'
-            delmat = np.tile(delta.reshape((2, 1)), T-2)
-            ResmDiff = (Ym_path[:, :T-2] - Cm_path[:, :T-2] - Km_path[:, 1:T-1] +
-                      (1 - delmat) * Km_path[:, :T-2])
-            print np.absolute(ResmDiff).max(axis=1)
+            RCdiff_path = Ym_path[:, :T-1] - Ci_path[:, :T-1] - Km_path[:, 1:T] +
+                (1 - delta_path[:,:T-1]) * Km_path[:, :T-1])
+            print np.absolute(RCdiff_path).max(axis=1)
             print 'The max. absolute error in the market clearing conditions are:'
             print np.absolute(MCKerr_path).max(), np.absolute(MCLerr_path).max()
 
