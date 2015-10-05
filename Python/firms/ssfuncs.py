@@ -467,8 +467,8 @@ def solve_Ym(Ym_init, params, C_i, A, gamma, epsilon, delta, xi, pi, I, M):
 
 def get_Km(params, Ym, A, gamma, epsilon, delta):
     '''
-    Generates vector of aggregate output Y_m of good m and capital
-    demand K_m for good m given r and w
+    Generates vector of capital demand, Km, from industry m 
+    for a given Ym, r, and w
 
     Inputs:
         params = length 2 tuple, (r, w)

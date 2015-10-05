@@ -91,7 +91,7 @@ ss_tol = 1e-13
 ss_graphs = False
 # TP parameters
 tp_solve = True
-tp_graphs = True
+tp_graphs = False
 tp_tol = 1e-9 # tolerance for fsolve for TP and for HH prob along time path
 
 '''
@@ -198,8 +198,8 @@ elif GoodGuess == True:
     print pm_ss, p_ss
     print 'Aggregate output, capital stock and consumption for each industry are:'
     print np.array([[Ym_ss], [Km_ss], [Cm_ss]])
-    rcmdiff_ss = Ym_ss - Cm_ss - delta * Km_ss
-    print 'The difference Ym_ss - Cm_ss - delta_m * Km_ss is: ', rcmdiff_ss
+    RCdiff_ss = Ym_ss - Cm_ss - delta * Km_ss
+    print 'The difference Ym_ss - Cm_ss - delta_m * Km_ss is: ', RCdiff_ss
 
     # Print SS computation time
     if ss_time < 60: # seconds
@@ -360,10 +360,9 @@ elif GoodGuess == True:
 
             # Print diagnostics
             print 'The max. absolute difference in the resource constraints are:'
-            delmat = np.tile(delta.reshape((I, 1)), T-2)
-            ResmDiff = (Ym_path[:, :T-2] - Cm_path[:, :T-2] - Km_path[:, 1:T-1] +
-                      (1 - delmat) * Km_path[:, :T-2])
-            print np.absolute(ResmDiff).max(axis=1)
+            RCdiff_path = Ym_path[:, :T-1] - Ci_path[:, :T-1] - Km_path[:, 1:T] +
+                (1 - delta_path[:,:T-1]) * Km_path[:, :T-1])
+            print np.absolute(RCdiff_path).max(axis=1)
             print 'The max. absolute error in the market clearing conditions are:'
             print np.absolute(MCKerr_path).max(), np.absolute(MCLerr_path).max()
 
