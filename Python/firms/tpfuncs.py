@@ -62,7 +62,7 @@ def get_pmpath(params, rpath, wpath):
 
     return pmpath
 
-def get_pcpath(pmpath, pi, T):
+def get_pcpath(pmpath, pi, I):
     '''
     Generates time path of consumption good prices from
     industry output prices and fixed coefficient matrix
@@ -79,12 +79,11 @@ def get_pcpath(pmpath, pi, T):
     Objects in function:
         pcpath = [I, T+S-2] matrix, time path of consumption good prices
 
-    Returns: pmpath
+    Returns: pcpath
     '''
-    A, gamma, epsilon, delta = params
 
-    pcpath = np.zeros((I,T+S-2))
-    for t in range(0,T+S-2):
+    pcpath = np.zeros((I,(pmpath.shape)[1]))
+    for t in range(0,(pmpath.shape)[1]): 
         pcpath[:,t] = np.dot(pi,pmpath[:,t])
 
 
@@ -102,16 +101,17 @@ def get_ppath(alpha, pcpath):
     Functions called: None
 
     Objects in function:
-        ppath = [T+S-2] vector, time path of price of composite good
+        ppath = [T+S-2,] vector, time path of price of composite good
 
     Returns: ppath
     '''
+
     ppath = ((pcpath/alpha)**alpha).prod(axis=0)
     return ppath
 
 
 def get_cbepath(params, Gamma1, rpath_init, wpath_init, pcpath, ppath,
-  ci_tilde, n):
+  ci_tilde, I, n):
     '''
     Generates matrices for the time path of the distribution of
     individual savings, individual composite consumption, individual
@@ -124,6 +124,7 @@ def get_cbepath(params, Gamma1, rpath_init, wpath_init, pcpath, ppath,
                      lives
         T          = integer > S, number of time periods until steady
                      state
+        I          = integer, number unique consumption goods
         alpha      = [I,T+S-1] matrix, expenditure shares on each good along time path
         beta       = scalar in [0,1), discount factor for each model
                      period
@@ -176,13 +177,13 @@ def get_cbepath(params, Gamma1, rpath_init, wpath_init, pcpath, ppath,
     # Solve the incomplete remaining lifetime decisions of agents alive
     # in period t=1 but not born in period t=1
     cpath[S-1, 0] = (1 / ppath[0]) * ((1 + rpath_init[0]) * Gamma1[S-2]
-        + wpath_init[0] * n[S-1] - (pcpath[:, 0] * ci_tilde).sum(axis=0))
-    cipath[S-1, 0, 0] = alpha * ((ppath[0] * cpath[S-1, 0]) /
+        + wpath_init[0] * n[S-1] - (pcpath[:, 0] * ci_tilde[:,0]).sum(axis=0))
+    cipath[S-1, 0, :] = alpha[:,0] * ((ppath[0] * cpath[S-1, 0]) /
                         pcpath[:, 0]) + ci_tilde[:,0]
-    pl_params = (S, alpha, beta, sigma, tp_tol)
     for p in xrange(2, S):
         # b_guess = b_ss[-p+1:]
         b_guess = np.diagonal(bpath[S-p:, :p-1])
+        pl_params = (S, alpha[:,:p], beta, sigma, tp_tol)
         bveclf, cveclf, cimatlf, b_err_veclf = paths_life(pl_params,
             S-p+1, Gamma1[S-p-1], ci_tilde[:,:p], n[-p:], rpath_init[:p],
             wpath_init[:p], pcpath[:, :p], ppath[:p], b_guess)
@@ -192,36 +193,44 @@ def get_cbepath(params, Gamma1, rpath_init, wpath_init, pcpath, ppath,
         DiagMaskc = np.eye(p, dtype=bool)
         bpath[S-p:, 1:p] = DiagMaskb * bveclf + bpath[S-p:, 1:p]
         cpath[S-p:, :p] = DiagMaskc * cveclf + cpath[S-p:, :p]
-        cipath[S-p:, :p, :] = (DiagMaskc * cimatlf[:, :] +
+        DiagMaskc_tiled = np.tile(np.expand_dims(np.eye(p, dtype=bool),axis=2),(1,1,I))
+        cimatlf = np.tile(np.expand_dims(cimatlf.transpose(),axis=0),((cimatlf.shape)[1],1,1))
+        cipath[S-p:, :p, :] = (DiagMaskc_tiled * cimatlf +
                               cipath[S-p:, :p, :])
         eulerrpath[S-p:, 1:p] = (DiagMaskb * b_err_veclf +
                                 eulerrpath[S-p:, 1:p])
     # Solve for complete lifetime decisions of agents born in periods
     # 1 to T and insert the vector lifetime solutions diagonally (twist
     # donut) into the cpath, bpath, and EulErrPath matrices
+    
     DiagMaskb = np.eye(S-1, dtype=bool)
     DiagMaskc = np.eye(S, dtype=bool)
+    DiagMaskc_tiled = np.tile(np.expand_dims(np.eye(S, dtype=bool),axis=2),(1,1,I))
+
     for t in xrange(1, T+1): # Go from periods 1 to T
         # b_guess = b_ss
         b_guess = np.diagonal(bpath[:, t-1:t+S-2])
+        pl_params = (S, alpha[:,t-1:t+S-1], beta, sigma, tp_tol)
         bveclf, cveclf, cimatlf, b_err_veclf = paths_life(pl_params, 1,
-            0, ci_tilde, n, rpath_init[t-1:t+S-1],
+            0, ci_tilde[:,t-1:t+S-1], n, rpath_init[t-1:t+S-1],
             wpath_init[t-1:t+S-1], pcpath[:, t-1:t+S-1],
             ppath[t-1:t+S-1], b_guess)
+        cimatlf = np.tile(np.expand_dims(cimatlf.transpose(),axis=0),((cimatlf.shape)[1],1,1))
         # Insert the vector lifetime solutions diagonally (twist donut)
         # into the cpath, bpath, and EulErrPath matrices
         bpath[:, t:t+S-1] = DiagMaskb * bveclf + bpath[:, t:t+S-1]
         cpath[:, t-1:t+S-1] = DiagMaskc * cveclf + cpath[:, t-1:t+S-1]
-        cipath[:, t-1:t+S-1, :] = (DiagMaskc * cimatlf[:, :] +
+        cipath[:, t-1:t+S-1, :] = (DiagMaskc_tiled * cimatlf +
                                   cipath[:, t-1:t+S-1, :])
         eulerrpath[:, t:t+S-1] = (DiagMaskb * b_err_veclf +
                                  eulerrpath[:, t:t+S-1])
-
+    print 'bpath FIRMS: ', bpath
+    quit()
     return bpath, cpath, cipath, eulerrpath
 
 
 def paths_life(params, beg_age, beg_wealth, ci_tilde, n, rpath,
-               wpath, pmpath, ppath, b_init):
+               wpath, pcpath, ppath, b_init):
     '''
     Solve for the remaining lifetime savings decisions of an individual
     who enters the model at age beg_age, with corresponding initial
@@ -266,6 +275,8 @@ def paths_life(params, beg_age, beg_wealth, ci_tilde, n, rpath,
                        decisions
         cpath        = [p,] vector, optimal remaining lifetime
                        consumption decisions
+        cipath       = [p,I] martrix, remaining lifetime consumption
+                        decisions by consumption good
         c_constr     = [p,] boolean vector, =True if c_{p}<=0,
         b_err_params = length 2 tuple, parameters to pass into
                        c4ssf.get_b_errors (beta, sigma)
@@ -292,7 +303,7 @@ def paths_life(params, beg_age, beg_wealth, ci_tilde, n, rpath,
                        xtol=tp_tol)
     cpath, c_cstr = get_cvec_lf(ci_tilde, rpath, wpath, pcpath, ppath,
                     n, np.append(beg_wealth, bpath))
-    cipath, cm_cstr = get_cmmat_lf(alpha, ci_tilde, cpath, pcpath, ppath)
+    cipath, cm_cstr = get_cimat_lf(alpha[:,:p], ci_tilde, cpath, pcpath, ppath)
     b_err_params = (beta, sigma)
     b_err_vec = ssf.get_b_errors(b_err_params, rpath[1:], cpath,
                                    c_cstr, diff=True)
@@ -385,7 +396,7 @@ def get_cvec_lf(ci_tilde, rpath, wpath, pcpath, ppath, n, bvec):
     return cvec, c_cstr
 
 
-def get_cmmat_lf(alpha, ci_tilde, cpath, pcpath, ppath):
+def get_cimat_lf(alpha, ci_tilde, cpath, pcpath, ppath):
     '''
     Generates matrix of remaining lifetime consumptions of individual
     goods
@@ -413,10 +424,10 @@ def get_cmmat_lf(alpha, ci_tilde, cpath, pcpath, ppath):
     Returns: cvec, c_constr
     '''
 
-    cmmat = alpha * ((ppath * cpath) / pcpath) + ci_tilde
+    cimat = alpha * ((ppath * cpath) / pcpath) + ci_tilde
 
-    cm_cstr = cmmat <= 0
-    return cmmat, cm_cstr
+    cm_cstr = cimat <= 0
+    return cimat, cm_cstr
 
 
 def get_Cipath(cipath):
@@ -424,44 +435,89 @@ def get_Cipath(cipath):
     Generates vector of aggregate consumption C_m of good m
 
     Inputs:
-        cipath = [S, S+T-1, 2] array, time path of distribution of
+        cipath = [S, S+T-1, I] array, time path of distribution of
                  individual consumption of each good c_{m,s,t}
 
     Functions called: None
 
     Objects in function:
-        Cmvec = [2,] vector, aggregate consumption of all goods
+        Cipath = [I,S+T-1] matrix, aggregate consumption of all goods
 
-    Returns: Cmvec
+    Returns: Cipath
     '''
     
-    Cipath = cipath[:, :, :].sum(axis=0)
+    Cipath = np.reshape(cipath[:, :, :].sum(axis=0),((cipath.shape)[2],(cipath.shape)[1]))
 
     return Cipath
 
 
 
-def solve_Ympath(Ympath_init, params, rpath, wpath, Cipath, A, gamma,
-  epsilon, delta, xi, pi, I, M, T):
+def solve_Ympath(Ympath_init_guess, params, rpath, wpath, Cipath, A, gamma,
+  epsilon, delta, xi, pi, I, M):
 
     '''
     Generate matrix (vectors) of time path of aggregate output Y_{m,t}
     by industry given r_t, w_t, and C_{m,t}
+    
+    Inputs:
+        Ympath_init_guess = [M*T,] vector, initial guess of Ympath
+        Km_ss             = [M,] vector, steady-state capital stock by industry 
+        rpath             = [T,] vector, real interest rates
+        wpath             = [T,] vector, real wage rates
+        Cipath            = [I,T] matrix, aggregate consumption of each good
+                             along the time path     
+        A                 = [M,T] matrix, total factor productivity values for all
+                            industries
+        gamma             = [M,T] matrix, capital shares of income for all
+                            industries
+        epsilon           = [M,T] matrix, elasticities of substitution between
+                            capital and labor for all industries
+        delta             = [M,T] matrix, model period depreciation rates for all
+                            industries
+        xi                = [M,M] matrix, element i,j gives the fraction of capital used by 
+                            industry j that comes from the output of industry i
+        pi                = [I,M] matrix, element i,j gives the fraction of consumption
+        T                 = integer > S, number of time periods until steady
+                           state
+        I                 = integer, number unique consumption goods
+        M                 = integer, number unique production industires 
+
+
+    Functions called: None
+
+    Objects in function:
+        Inv = [M,T] matrix, investment demand from each industry
+        Y_inv = [M,T] matrix, demand for output from each industry due to 
+                 investment demand
+        Y_c   = [M,T] matrix, demand for output from each industry due to 
+                 consumption demand
+        Kmpath  = [M,T] matrix, capital demand of all industries
+        Ympath  = [M,T] matrix, output from each industry
+        rc_errors = [M*T,] vector, errors in resource constraint
+                    for each production industry along time path
+
+    Returns: rc_errors
     '''
 
     T, Km_ss = params
-    Ympath = Ympath_init
 
+    #unpack guesses, which needed to be a vector
+    Ympath = np.zeros((M,T))
+    for m in range(0,M):
+        Ympath[m,:] = Ympath_init_guess[(m*T):((m+1)*T)]
+    
     Kmpath = get_Kmpath(rpath, wpath, Ympath, A, gamma, epsilon, delta)
     Inv = np.zeros((M,T))
-    Inv[:,:-1] = Kmpath[1:] - (1-delta)*Kmpath[:-1]
-    Inv[:,-1] = Km_ss - (1-delta[:,T])*Kmpath[T]
+    Inv[:,:-1] = Kmpath[:,1:] - (1-delta[:,:-1])*Kmpath[:,:-1]
+    Inv[:,T-1] = Km_ss - (1-delta[:,T-1])*Kmpath[:,T-1]
 
+    Y_inv = np.zeros((M,T))
+    Y_c = np.zeros((M,T))
     for t in range(0,T):
         Y_inv[:,t] = np.dot(Inv[:,t],xi)
         Y_c[:,t] = np.dot(np.reshape(Cipath[:,t],(1,I)),pi)
 
-    rc_errors = np.reshape(Y_c  + Y_inv - Ym,(M,T))
+    rc_errors = np.reshape(Y_c  + Y_inv - Ympath,(M*T,))
 
     return rc_errors
     
@@ -509,6 +565,7 @@ def get_Kmpath(rpath, wpath, Ympath, A, gamma, epsilon, delta):
     ff = (epsilon - 1) / epsilon
     gg = epsilon - 1
     hh = epsilon / (1 - epsilon)
+
     Kmpath = ((Ympath / A) *
          (((aa ** ee) + (bb ** ee) * (cc ** ff) * (dd ** gg)) ** hh))
 
@@ -560,6 +617,8 @@ def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, ci_tilde, A,
                      lives
         T          = integer > S, number of time periods until steady
                      state
+        I          = integer, number unique consumption goods
+        M          = integer, number unique production industires
         alpha      = [I,T+S-1] matrix, expenditure share on each good
                       along the time path
         beta       = scalar in [0,1), discount factor for each model
@@ -645,28 +704,33 @@ def TP(params, rpath_init, wpath_init, Km_ss, Ym_ss, Gamma1, ci_tilde, A,
 
     pm_params = (A, gamma, epsilon, delta)
     pmpath = get_pmpath(pm_params, rpath, wpath)
-    pcpath = get_pcpath(pmpath, pi, T)
+    pcpath = get_pcpath(pmpath, pi, I)
     ppath = get_ppath(alpha, pcpath)
     cbe_params = (S, T, alpha, beta, sigma, tp_tol)
     bpath, cpath, cipath, eulerrpath = get_cbepath(cbe_params,
-        Gamma1, rpath, wpath, pcpath, ppath, ci_tilde,
+        Gamma1, rpath, wpath, pcpath, ppath, ci_tilde, I,
         n)
     Cipath = get_Cipath(cipath[:, :T, :])
 
     Ympath_params = (T, Km_ss)
     Ympath_init = np.zeros((M,T))
     for t in range(0,T):
-        Ympath_init[:,T] = (np.dot(np.reshape(Ci_ss[:,t],(1,I)),pi))/I
+        Ympath_init[:,t] = np.reshape((np.dot(np.reshape(Cipath[:,t],(1,I)),pi))/I,(M,))
 
-    Ympath = opt.fsolve(solve_Ympath, Ympath_init, args=(Ympath_params, rpath[:T], wpath[:T], 
+    Ympath_init_guess = np.reshape(Ympath_init,(T*I,)) #need a vector going into fsolve
+
+    Ympath_sol = opt.fsolve(solve_Ympath, Ympath_init_guess, args=(Ympath_params, rpath[:T], wpath[:T], 
              Cipath, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], xi, pi, I, 
-             M, T), xtol=tp_tol, col_deriv=1)
+             M), xtol=tp_tol, col_deriv=1)
+    Ympath = np.zeros((M,T))
+    for m in range(0,M): # unpack vector of Ympath solved by fsolve
+        Ympath[m,:] = Ympath_sol[(m*T):((m+1)*T)]
 
-    Kmpath = get_Km(rpath[:T], wpath[:T], Ympath, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
+    Kmpath = get_Kmpath(rpath[:T], wpath[:T], Ympath, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
 
     Lmpath = get_Lmpath(Kmpath, rpath[:T], wpath[:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
     
-    RCdiff_path = Ympath[:, :T-1] - Cipath[:, :T-1] - Kmpath[:, 1:T] +
+    RCdiff_path = (Ympath[:, :T-1] - Cipath[:, :T-1] - Kmpath[:, 1:T] +
                 (1 - delta[:,:T-1]) * Kmpath[:, :T-1])
     
     MCKerrpath = bpath[:, :T].sum(axis=0) - Kmpath.sum(axis=0)
@@ -832,6 +896,8 @@ def TP_fsolve(guesses, params, Km_ss, Ym_ss, Gamma1, ci_tilde, A,
                      lives
         T          = integer > S, number of time periods until steady
                      state
+        I          = integer, number unique consumption goods
+        M          = integer, number unique production industires
         alpha      = [I,T+S-1] matrix, expenditure share on each good
                       along the time path
         beta       = scalar in [0,1), discount factor for each model
@@ -921,29 +987,38 @@ def TP_fsolve(guesses, params, Km_ss, Ym_ss, Gamma1, ci_tilde, A,
 
     pm_params = (A, gamma, epsilon, delta)
     pmpath = get_pmpath(pm_params, rpath, wpath)
-    pcpath = get_pcpath(pmpath, pi, T)
+    pcpath = get_pcpath(pmpath, pi, I)
     ppath = get_ppath(alpha, pcpath)
     cbe_params = (S, T, alpha, beta, sigma, tp_tol)
     bpath, cpath, cipath, eulerrpath = get_cbepath(cbe_params,
-        Gamma1, rpath, wpath, pcpath, ppath, ci_tilde,
+        Gamma1, rpath, wpath, pcpath, ppath, ci_tilde, I,
         n)
+    print 'bpath FIRMS: ', bpath 
+    print 'bpath shape: ', bpath.shape
+    print 'rpath', rpath
+    quit()
     Cipath = get_Cipath(cipath[:, :T, :])
 
     Ympath_params = (T, Km_ss)
     Ympath_init = np.zeros((M,T))
     for t in range(0,T):
-        Ympath_init[:,T] = (np.dot(np.reshape(Ci_ss[:,t],(1,I)),pi))/I
+        Ympath_init[:,t] = np.reshape((np.dot(np.reshape(Cipath[:,t],(1,I)),pi))/I,(M,))
 
-    Ympath = opt.fsolve(solve_Ympath, Ympath_init, args=(Ympath_params, rpath[:T], wpath[:T], 
+    Ympath_init_guess = np.reshape(Ympath_init,(T*I,)) #need a vector going into fsolve
+
+    Ympath_sol = opt.fsolve(solve_Ympath, Ympath_init_guess, args=(Ympath_params, rpath[:T], wpath[:T], 
              Cipath, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], xi, pi, I, 
-             M, T), xtol=tp_tol, col_deriv=1)
+             M), xtol=tp_tol, col_deriv=1)
+    Ympath = np.zeros((M,T))
+    for m in range(0,M): # unpack vector of Ympath solved by fsolve
+        Ympath[m,:] = Ympath_sol[(m*T):((m+1)*T)]
 
-    Kmpath = get_Km(rpath[:T], wpath[:T], Ympath, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
+    Kmpath = get_Kmpath(rpath[:T], wpath[:T], Ympath, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
 
     Lmpath = get_Lmpath(Kmpath, rpath[:T], wpath[:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
 
-    print 'Kmpath: ', Kmpath
-    print 'Lmpath: ', Lmpath
+    #print 'Kmpath: ', Kmpath
+    #print 'Lmpath: ', Lmpath
 
     # Check market clearing in each period
     K_market_error = bpath[:, :T].sum(axis=0) - Kmpath[:, :].sum(axis=0)

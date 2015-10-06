@@ -321,18 +321,18 @@ elif GoodGuess == True:
             aa_w = -bb_w / (2 * (T - S))
             wpath_init[:T-S+1] = (aa_w * (np.arange(0, T-S+1) ** 2) +
                              (bb_w * np.arange(0, T-S+1)) + cc_w)
-            wpath_init[T-S+1:] = w_ss
+            wpath_init[T-S+1:] = w_cstr_ss
             #wpath_init[:] = w_ss
 
             # Solve for time path
             # Tile arrays of time path parameters so easy to handle in 
             # TP functions
-            alpha_path = np.tile(alpha,(1,len(rpath_init)))
-            ci_tilde_path = np.tile(ci_tilde,(1,len(rpath_init)))
-            A_path = np.tile(A,(1,len(rpath_init)))
-            gamma_path = np.tile(gamma,(1,len(rpath_init)))
-            epsilon_path = np.tile(epsilon,(1,len(rpath_init)))
-            delta_path = np.tile(delta,(1,len(rpath_init)))
+            alpha_path = np.tile(np.reshape(alpha,(I,1)),(1,len(rpath_init)))
+            ci_tilde_path = np.tile(np.reshape(ci_tilde,(I,1)),(1,len(rpath_init)))
+            A_path = np.tile(np.reshape(A,(M,1)),(1,len(rpath_init)))
+            gamma_path = np.tile(np.reshape(gamma,(M,1)),(1,len(rpath_init)))
+            epsilon_path = np.tile(np.reshape(epsilon,(M,1)),(1,len(rpath_init)))
+            delta_path = np.tile(np.reshape(delta,(M,1)),(1,len(rpath_init)))
 
             tp_params = (S, T, alpha_path, beta, sigma, r_ss, w_ss, tp_tol)
 
@@ -347,20 +347,22 @@ elif GoodGuess == True:
             wpath = solutions[T:].reshape(T)
 
 
+            print 'Solved once!!'
+
             # run one iteration of TP with fsolve solution to get other output
-            tp_params = (S, T, alpha, beta, sigma, r_ss, w_ss, tp_tol)
+            tp_params = (S, T, alpha_path, beta, sigma, r_ss, w_ss, tp_tol)
             (r_path, w_path, pc_path, p_path, b_path, c_path, ci_path,
                 eul_path, Ci_path, Ym_path, Km_path, Lm_path,
                 MCKerr_path, MCLerr_path, tpi_time) = \
                 tpf.TP(tp_params, rpath, wpath, Km_ss, Ym_ss,
-                Gamma1, ci_tilde, A, gamma, epsilon, delta, xi, pi, I, 
+                Gamma1, ci_tilde_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, 
                 M, S, n, tp_graphs)
                 
 
 
             # Print diagnostics
             print 'The max. absolute difference in the resource constraints are:'
-            RCdiff_path = Ym_path[:, :T-1] - Ci_path[:, :T-1] - Km_path[:, 1:T] +
+            RCdiff_path = (Ym_path[:, :T-1] - Ci_path[:, :T-1] - Km_path[:, 1:T] +
                 (1 - delta_path[:,:T-1]) * Km_path[:, :T-1])
             print np.absolute(RCdiff_path).max(axis=1)
             print 'The max. absolute error in the market clearing conditions are:'
