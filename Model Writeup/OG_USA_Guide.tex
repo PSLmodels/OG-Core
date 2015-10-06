@@ -1,4 +1,4 @@
-\documentclass[12pt]{report} 
+\documentclass[12pt]{report}
   \usepackage{threeparttable}
   \usepackage{geometry}
   \geometry{letterpaper,tmargin=1in,bmargin=1in,lmargin=1.25in,rmargin=1.25in}
@@ -52,7 +52,7 @@
   \newcommand{\cn}{\citeasnoun} % shortens command to cite as noun
   \renewcommand\theenumi{\roman{enumi}}
   \newcommand\norm[1]{\left\lVert#1\right\rVert}
-  
+
   \makeindex    % Make the index
 
 \begin{document}
@@ -72,8 +72,8 @@
   Kerk L. Phillips\footnote{Brigham Young University, Department of Economics, 166 FOB, Provo, Utah 84602, (801) 422-5928, \href{mailto:kerk_phillips@byu.edu}{kerk\_phillips@byu.edu}.} \\[-2pt]
   \and
   Isaac Swift\footnote{Brigham Young University, Department of Economics, 163 FOB, Provo, Utah 84602, \href{mailto:isaacdswift@gmail.com}{isaacdswift@gmail.com}.} \\[-2pt]}
-  \date{February 2015 \\
-  \scriptsize{(version 15.02.a)}}
+  \date{October 2015 \\
+  \scriptsize{(version 15.10.a)}}
   \maketitle
   \begin{abstract}
   \small{This document details the large scale, overlapping-generations model developed by the Open Source Policy Center (OSPC).  The model allows for dynamic scoring of federal tax policy.  In particular, the model specifies the fundamental parameters defining the preferences and technologies of heterogenous individuals and firms and links them together in a dynamic, general equilibrium framework.  This framework allows for detailed evaluation of tax policy, including revenue, distributional, and macroeconomic impacts.  The model is open source, meaning that all documentation and files needed to reproduce and execute the model are available freely.  This documents and other supporting files are available at \href{https://github.com/OpenSourcePolicyCenter/dynamic}{https://github.com/OpenSourcePolicyCenter/dynamic}.  We encourage other interested parties to use and contribute to the model.}
@@ -89,7 +89,7 @@
   \thispagestyle{empty}
 \end{titlepage}
 
-%%% 
+%%%
 % Table of Contents and Lists of Tables and Figures %
 %%%
 
@@ -99,7 +99,7 @@
 \listoffigures     % here, if applicable.
 
 
-%%% 
+%%%
 % Including files for different sections of handbook %
 %%%
 
@@ -108,11 +108,11 @@
 \index{Introduction%
 @\emph{Introduction}}%
 
-This document details the large scale, overlapping-generations model developed by the Open Source Policy Center (OSPC).  The model allows for dynamic scoring of federal tax policy.  In particular, the model specifies the  fundamental parameters defining the preferences and technologies of heterogenous individuals and firms and links them together in a dynamic, general equilibrium framework.  This framework allows for detailed evaluation of tax policy, including revenue, distributional, and macroeconomic impacts. 
+This document details the large scale, overlapping-generations model developed by the Open Source Policy Center (OSPC).  The model allows for dynamic scoring of federal tax policy.  In particular, the model specifies the  fundamental parameters defining the preferences and technologies of heterogenous individuals and firms and links them together in a dynamic, general equilibrium framework.  This framework allows for detailed evaluation of tax policy, including revenue, distributional, and macroeconomic impacts.
 
 The household sector consists of individuals of seven lifetime income groups, each of which has a different life-cycle earnings profiles.  This allow us to consider the lifetime incidence of taxation on households.  These individuals are intertemporal optimizers who allocate income between investment in financial assets and the consumption of 17 private consumption goods.  The consumption goods are produced by 48 different production sectors, which include 24 production industries with corporate and non-corporate firms in each.  In this way we can see the distributional impacts of consumption taxes and capital taxes levied on business entities as the taxes pass through to the individuals of different ages and income levels through changes in relative prices.  Finally, we specify a government sector that derives revenue from taxes and government enterprise and uses those revenues to subsidize government produced private and public goods and fund transfers.  The government is not bound by a balanced budget any particular period, but we do impose sustainable fiscal policy in the long run through a government reaction function that adjusts government purchases to maintain a specified debt-to-GDP ratio in the steady-state.
 
-Our model is a general equilibrium model, meaning the taxes in one area of the economy result in effects on other sectors through changes in relative prices.  For example, the simulation of a policy that slows the rate of depreciation allowed under tax law would increase the cost of capital in capital intensive industries to a greater extent than it would in other industries.  This would have the effect of pushing up prices for goods produced from capital intensive industries and in turn move the economy back along the demand curve for those goods.  This happens as individuals substitute towards other goods that are relatively cheaper.  Thus demand for those goods produced from less capital intensive production increase.  Capturing general equilibrium feedback effects such as these can be very important for the evaluation of the distributional, revenue, and macroeconomic impacts of policies and is why dynamic scoring is important.  
+Our model is a general equilibrium model, meaning the taxes in one area of the economy result in effects on other sectors through changes in relative prices.  For example, the simulation of a policy that slows the rate of depreciation allowed under tax law would increase the cost of capital in capital intensive industries to a greater extent than it would in other industries.  This would have the effect of pushing up prices for goods produced from capital intensive industries and in turn move the economy back along the demand curve for those goods.  This happens as individuals substitute towards other goods that are relatively cheaper.  Thus demand for those goods produced from less capital intensive production increase.  Capturing general equilibrium feedback effects such as these can be very important for the evaluation of the distributional, revenue, and macroeconomic impacts of policies and is why dynamic scoring is important.
 
 Our model is intended to provide year-by-year revenue estimates for the budget window.  To do this, we solve for not only the model's steady-state equilibrium, but also the entire transition path from the current state to the steady-state.  It's in this way that we are able to see the revenue and macroeconomic impacts over the budget window.
 
@@ -354,24 +354,24 @@ A future extension to this document will detail how the model is calibrated.
         \label{Calib_Bend_Tab1}
         \centering
         AGI Bend Points
-        \begin{tabular}{|r|r|r|r|r|} \hline 
-          Tax rate & Married Joint & Married Separate & Head of Household & Single \\ \hline 
-          10\% & 17,400 & 8700 & 12,400 & 8700 \\ \hline 
-          15\% & 70,700 & 35,350 & 47,350 & 35,350 \\ \hline 
-          25\% & 142,700 & 71,350 & 122,300 & 85,650 \\ \hline 
-          28\% & 217,450 & 108,725 & 198,050 & 178,650 \\ \hline 
-          33\% & 388,350 & 194,175 & 388,350 & 388,350 \\ \hline 
+        \begin{tabular}{|r|r|r|r|r|} \hline
+          Tax rate & Married Joint & Married Separate & Head of Household & Single \\ \hline
+          10\% & 17,400 & 8700 & 12,400 & 8700 \\ \hline
+          15\% & 70,700 & 35,350 & 47,350 & 35,350 \\ \hline
+          25\% & 142,700 & 71,350 & 122,300 & 85,650 \\ \hline
+          28\% & 217,450 & 108,725 & 198,050 & 178,650 \\ \hline
+          33\% & 388,350 & 194,175 & 388,350 & 388,350 \\ \hline
         \end{tabular}
         \\
         Corresponding Reported Income Bendpoints
-        \begin{tabular}{|r|r|r|r|r|} \hline 
-          Tax rate & Married Joint & Married Separate & Head of Household & Single \\ \hline 
-          0\%  & 5850  & 91 & 756 & 1435 \\ \hline 
-          10\% & 22,932 & 8591 & 12,911 & 9956 \\ \hline 
-          15\% & 75,181 & 34,592 & 47,023 & 36,021 \\ \hline 
-          25\% & 145,866 & 69,768 & 120,200 & 85,244 \\ \hline 
-          28\% & 219,162 & 106,245 & 194,176 & 176,270 \\ \hline 
-          33\% & 386,798 & 189,674 & 380,043 & 381,524 \\ \hline 
+        \begin{tabular}{|r|r|r|r|r|} \hline
+          Tax rate & Married Joint & Married Separate & Head of Household & Single \\ \hline
+          0\%  & 5850  & 91 & 756 & 1435 \\ \hline
+          10\% & 22,932 & 8591 & 12,911 & 9956 \\ \hline
+          15\% & 75,181 & 34,592 & 47,023 & 36,021 \\ \hline
+          25\% & 145,866 & 69,768 & 120,200 & 85,244 \\ \hline
+          28\% & 219,162 & 106,245 & 194,176 & 176,270 \\ \hline
+          33\% & 386,798 & 189,674 & 380,043 & 381,524 \\ \hline
         \end{tabular}
       \end{table}
 
@@ -380,21 +380,21 @@ A future extension to this document will detail how the model is calibrated.
         \caption{Aggregated Bend Points}
         \label{Calib_Bend_Tab2}
         \centering
-        \begin{tabular}{|r|r|} \hline 
-          Tax rate & Bend Point \\ \hline 
-          0\% & 2889 \\ \hline 
-          10\% & 15,116 \\ \hline 
-          15\% & 52,580 \\ \hline 
-          25\% & 114,552 \\ \hline 
-          28\% & 196,201 \\ \hline 
-          33\% & 380,657 \\ \hline 
+        \begin{tabular}{|r|r|} \hline
+          Tax rate & Bend Point \\ \hline
+          0\% & 2889 \\ \hline
+          10\% & 15,116 \\ \hline
+          15\% & 52,580 \\ \hline
+          25\% & 114,552 \\ \hline
+          28\% & 196,201 \\ \hline
+          33\% & 380,657 \\ \hline
         \end{tabular}
       \end{table}
 
 % Bibliography:
 \clearpage
-\bibliography{OSPC_BYU_Dyn_Bib}
-\index{Bibliography@\emph{Bibliography}}%  
+\bibliography{OG_USA_Guide}
+\index{Bibliography@\emph{Bibliography}}%
 
 \printindex
 
