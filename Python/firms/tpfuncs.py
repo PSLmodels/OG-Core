@@ -193,18 +193,20 @@ def get_cbepath(params, Gamma1, rpath_init, wpath_init, pcpath, ppath,
         DiagMaskc = np.eye(p, dtype=bool)
         bpath[S-p:, 1:p] = DiagMaskb * bveclf + bpath[S-p:, 1:p]
         cpath[S-p:, :p] = DiagMaskc * cveclf + cpath[S-p:, :p]
-        DiagMaskc = np.reshape(np.tile(np.eye(p, dtype=bool),(I,1,1)),(p,p,I))
-        cimatlf = np.tile(np.reshape(cimatlf,((cimatlf.shape)[1],I)),((cimatlf.shape)[1],1,1))
-        cipath[S-p:, :p, :] = (DiagMaskc * cimatlf +
+        DiagMaskc_tiled = np.tile(np.expand_dims(np.eye(p, dtype=bool),axis=2),(1,1,I))
+        cimatlf = np.tile(np.expand_dims(cimatlf.transpose(),axis=0),((cimatlf.shape)[1],1,1))
+        cipath[S-p:, :p, :] = (DiagMaskc_tiled * cimatlf +
                               cipath[S-p:, :p, :])
         eulerrpath[S-p:, 1:p] = (DiagMaskb * b_err_veclf +
                                 eulerrpath[S-p:, 1:p])
     # Solve for complete lifetime decisions of agents born in periods
     # 1 to T and insert the vector lifetime solutions diagonally (twist
     # donut) into the cpath, bpath, and EulErrPath matrices
+    
     DiagMaskb = np.eye(S-1, dtype=bool)
     DiagMaskc = np.eye(S, dtype=bool)
-    DiagMaskc_tiled = np.reshape(np.tile(np.eye(S, dtype=bool),(I,1,1)),(S,S,I))
+    DiagMaskc_tiled = np.tile(np.expand_dims(np.eye(S, dtype=bool),axis=2),(1,1,I))
+
     for t in xrange(1, T+1): # Go from periods 1 to T
         # b_guess = b_ss
         b_guess = np.diagonal(bpath[:, t-1:t+S-2])
@@ -213,7 +215,7 @@ def get_cbepath(params, Gamma1, rpath_init, wpath_init, pcpath, ppath,
             0, ci_tilde[:,t-1:t+S-1], n, rpath_init[t-1:t+S-1],
             wpath_init[t-1:t+S-1], pcpath[:, t-1:t+S-1],
             ppath[t-1:t+S-1], b_guess)
-        cimatlf = np.tile(np.reshape(cimatlf,((cimatlf.shape)[1],I)),((cimatlf.shape)[1],1,1))
+        cimatlf = np.tile(np.expand_dims(cimatlf.transpose(),axis=0),((cimatlf.shape)[1],1,1))
         # Insert the vector lifetime solutions diagonally (twist donut)
         # into the cpath, bpath, and EulErrPath matrices
         bpath[:, t:t+S-1] = DiagMaskb * bveclf + bpath[:, t:t+S-1]
@@ -222,7 +224,8 @@ def get_cbepath(params, Gamma1, rpath_init, wpath_init, pcpath, ppath,
                                   cipath[:, t-1:t+S-1, :])
         eulerrpath[:, t:t+S-1] = (DiagMaskb * b_err_veclf +
                                  eulerrpath[:, t:t+S-1])
-
+    print 'bpath FIRMS: ', bpath
+    quit()
     return bpath, cpath, cipath, eulerrpath
 
 
@@ -990,6 +993,10 @@ def TP_fsolve(guesses, params, Km_ss, Ym_ss, Gamma1, ci_tilde, A,
     bpath, cpath, cipath, eulerrpath = get_cbepath(cbe_params,
         Gamma1, rpath, wpath, pcpath, ppath, ci_tilde, I,
         n)
+    print 'bpath FIRMS: ', bpath 
+    print 'bpath shape: ', bpath.shape
+    print 'rpath', rpath
+    quit()
     Cipath = get_Cipath(cipath[:, :T, :])
 
     Ympath_params = (T, Km_ss)
@@ -1010,8 +1017,8 @@ def TP_fsolve(guesses, params, Km_ss, Ym_ss, Gamma1, ci_tilde, A,
 
     Lmpath = get_Lmpath(Kmpath, rpath[:T], wpath[:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
 
-    print 'Kmpath: ', Kmpath
-    print 'Lmpath: ', Lmpath
+    #print 'Kmpath: ', Kmpath
+    #print 'Lmpath: ', Lmpath
 
     # Check market clearing in each period
     K_market_error = bpath[:, :T].sum(axis=0) - Kmpath[:, :].sum(axis=0)
