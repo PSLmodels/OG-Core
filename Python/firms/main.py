@@ -15,6 +15,7 @@ functions:
 '''
 
 # Import packages
+import time
 import numpy as np
 import scipy.optimize as opt
 import ssfuncs as ssf
@@ -77,14 +78,22 @@ n[:int(round(2 * S / 3))] = 1.
 n[int(round(2 * S / 3)):] = 0.9
 
 # Firm parameters
-M = 2 
-A = np.array([1, 1.2])
-gamma = np.array([0.15, 0.2])
-epsilon = np.array([0.6, 0.6])
-delta_annual = np.array([0.04,0.05])
-delta = 1 - ((1-delta_annual)**(80/S))
-xi = np.array([[1.0, 0.0],[0.0, 1.0] ]) 
-pi = np.array([[1.0, 0.0],[0.0, 1.0] ]) 
+# M = 2 
+# A = np.array([1, 1.2])
+# gamma = np.array([0.15, 0.2])
+# epsilon = np.array([0.6, 0.6])
+# delta_annual = np.array([0.04,0.05])
+# delta = 1 - ((1-delta_annual)**(80/S))
+# xi = np.array([[1.0, 0.0],[0.0, 1.0] ]) 
+# pi = np.array([[1.0, 0.0],[0.0, 1.0] ]) 
+
+M = 3
+A = np.array([1, 1.2, 0.9])
+pi = np.array([[0.4, 0.3, 0.3],[0.1, 0.8, 0.1]]) 
+xi = np.array([[0.2, 0.6, 0.2],[0.0, 0.2, 0.8], [0.6, 0.2, 0.2] ])
+gamma = np.array([0.3, 0.25, 0.4])
+delta = np.array([0.1, 0.12, 0.15])
+epsilon = np.array([0.55, 0.6, 0.62])
 
 # SS parameters
 ss_tol = 1e-13
@@ -176,7 +185,7 @@ elif GoodGuess == True:
     # Compute steady state
     print 'BEGIN STEADY STATE COMPUTATION'
     ss_params = (S, alpha, beta, sigma, ss_tol)
-    (r_ss, w_ss, pm_ss, p_ss, b_ss, c_ss, cm_ss, eul_ss, Cm_ss, Ym_ss,
+    (r_ss, w_ss, pm_ss, p_ss, b_ss, c_ss, ci_ss, eul_ss, Ci_ss, Ym_ss,
         Km_ss, Lm_ss, MCK_err_ss, MCL_err_ss, ss_time) = \
         ssf.SS(ss_params, rwbar_init, b_guess, ci_tilde, A,
         gamma, epsilon, delta, xi, pi, I, M, S, n, ss_graphs)
@@ -191,15 +200,15 @@ elif GoodGuess == True:
     print 'The steady-state distribution of composite consumption is:'
     print c_ss
     print 'The steady-state distribution of goods consumption is:'
-    print cm_ss
+    print ci_ss
     print 'The steady-state interest rate and wage:'
     print np.array([r_ss, w_ss])
     print 'Steady-state industry prices and composite price are:'
     print pm_ss, p_ss
     print 'Aggregate output, capital stock and consumption for each industry are:'
-    print np.array([[Ym_ss], [Km_ss], [Cm_ss]])
-    RCdiff_ss = Ym_ss - Cm_ss - delta * Km_ss
-    print 'The difference Ym_ss - Cm_ss - delta_m * Km_ss is: ', RCdiff_ss
+    print np.array([[Ym_ss], [Km_ss], [Ci_ss]])
+    RCdiff_ss = Ym_ss - (np.dot(np.reshape(Ci_ss,(1,I)),pi)) - (np.dot(delta*Km_ss,xi)) 
+    print 'The difference in the resource constraints are: ', RCdiff_ss
 
     # Print SS computation time
     if ss_time < 60: # seconds
@@ -285,7 +294,7 @@ elif GoodGuess == True:
                   market clearing errors
     MCLerr_path = [T+S-2,] vector, equilibrium time path of labor market
                   clearing errors
-    tpi_time    = scalar, number of seconds to compute TPI solution
+    tpi_time    = scalar, number of seconds to solve for transition path
     ResmDiff    = [M, T-1] matrix, errors in the resource constraint
                   from period 1 to T-1. We don't use T because we are
                   missing one individual's consumption in that period
@@ -313,7 +322,6 @@ elif GoodGuess == True:
             #rpath_init[:] = r_ss
 
 
-            # wpath_init = w_ss * np.ones(T+S-1)
             wpath_init = np.zeros(T+S-1)
             w1 = 0.98 * w_ss
             cc_w = w1
@@ -321,7 +329,7 @@ elif GoodGuess == True:
             aa_w = -bb_w / (2 * (T - S))
             wpath_init[:T-S+1] = (aa_w * (np.arange(0, T-S+1) ** 2) +
                              (bb_w * np.arange(0, T-S+1)) + cc_w)
-            wpath_init[T-S+1:] = w_cstr_ss
+            wpath_init[T-S+1:] = w_ss
             #wpath_init[:] = w_ss
 
             # Solve for time path
@@ -337,23 +345,23 @@ elif GoodGuess == True:
             tp_params = (S, T, alpha_path, beta, sigma, r_ss, w_ss, tp_tol)
 
             guesses = np.append(rpath_init[:T], wpath_init[:T])
+            start_time = time.clock()
             #solutions = opt.fsolve(tpf.TP_fsolve, guesses, args=(tp_params, Km_ss, Ym_ss,
-            #   Gamma1, ci_tilde, A, gamma, epsilon, delta, n,
+            #   Gamma1, ci_tilde_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
             #   tp_graphs), xtol=tp_tol, col_deriv=1)
             solutions = tpf.TP_fsolve(guesses, tp_params, Km_ss, Ym_ss,
                Gamma1, ci_tilde_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
                tp_graphs)
+            tpi_time = time.clock() - start_time
             rpath = solutions[:T].reshape(T)
             wpath = solutions[T:].reshape(T)
 
-
-            print 'Solved once!!'
 
             # run one iteration of TP with fsolve solution to get other output
             tp_params = (S, T, alpha_path, beta, sigma, r_ss, w_ss, tp_tol)
             (r_path, w_path, pc_path, p_path, b_path, c_path, ci_path,
                 eul_path, Ci_path, Ym_path, Km_path, Lm_path,
-                MCKerr_path, MCLerr_path, tpi_time) = \
+                MCKerr_path, MCLerr_path) = \
                 tpf.TP(tp_params, rpath, wpath, Km_ss, Ym_ss,
                 Gamma1, ci_tilde_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, 
                 M, S, n, tp_graphs)
@@ -362,6 +370,14 @@ elif GoodGuess == True:
 
             # Print diagnostics
             print 'The max. absolute difference in the resource constraints are:'
+            Inv = np.zeros((M,T))
+            Y_inv = np.zeros((M,T))
+            Y_c = np.zeros((M,T))
+            Inv[:,:-1] = Km_path[:,1:] - (1-delta_path[:,:-1])*Km_path[:,:-1]
+            Inv[:,T-1] = Km_ss - (1-delta_path[:,T-1])*Km_path[:,T-1]
+            for t in range(0,T):
+                Y_inv_path[:,t] = np.dot(Inv[:,t],xi)
+                Y_c_path[:,t] = np.dot(np.reshape(Ci_path[:,t],(1,I)),pi)
             RCdiff_path = (Ym_path[:, :T-1] - Ci_path[:, :T-1] - Km_path[:, 1:T] +
                 (1 - delta_path[:,:T-1]) * Km_path[:, :T-1])
             print np.absolute(RCdiff_path).max(axis=1)
