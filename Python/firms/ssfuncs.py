@@ -21,11 +21,14 @@ These functions include:
 
 This Python script calls the following other file(s) with the associated
 functions:
-    sfuncs.py
-        feasible
-        SS
-    tpfuncs.py
-        TPI
+    firm_funcs.py
+        get_p
+        get_p_tilde
+        get_c_tilde
+        get_c
+        get_C
+        get_K
+        get_L
 
 ------------------------------------------------------------------------
 '''
@@ -38,6 +41,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import sys
 import firm_funcs as firm
+reload(firm)
 
 '''
 ------------------------------------------------------------------------
@@ -146,56 +150,6 @@ def feasible(params, rw_init, b_guess, c_bar, A, gamma, epsilon,
     return GoodGuess, r_cstr, w_cstr, c_cstr, c_cstr, K_cstr
 
 
-# def get_p(params, r, w):
-#     '''
-#     Generates vector of industry prices p from r and w
-
-#     Inputs:
-#         params = length 4 tuple, (A, gamma, epsilon, delta)
-#         A   = [M,] vector, total factor productivity for each
-#                  industry
-#         gamma = [M,] vector, capital share of income for each industry
-#         epsilon = [M,] vector, elasticity of substitution between capital
-#                  and labor for each industry
-#         delta = [M,] vector, capital depreciation rate for each
-#                  industry
-#         r      = scalar > 0, interest rate
-#         w      = scalar > 0, wage
-
-#     Functions called: None
-
-#     Objects in function:
-#         p = [M,] vector, industry prices
-
-#     Returns: p
-#     '''
-#     A, gamma, epsilon, delta = params
-#     p = (1 / A) * ((gamma * ((r + delta) ** (1 - epsilon)) +
-#             (1 - gamma) * (w ** (1 - epsilon))) ** (1 / (1 - epsilon)))
-
-#     return p
-
-
-# def get_p_tilde(alpha, p_c):
-#     '''
-#     Generates vector of industry prices p from r and w
-
-#     Inputs:
-#         alpha = [I,] vector, expenditure shares on each good
-#         p_c = [I,] vector, consumption good prices
-
-#     Functions called: None
-
-#     Objects in function:
-#         p_tilde = scalar > 0, price of composite consumption good
-
-#     Returns: p_tilde
-#     '''
-#     p_tilde = ((p_c/alpha)**alpha).prod()
-
-#     return p_tilde
-
-
 def get_cbess(params, b_guess, p_c, c_bar, I, S, n):
     '''
     Generates vectors for individual savings, composite consumption,
@@ -245,9 +199,10 @@ def get_cbess(params, b_guess, p_c, c_bar, I, S, n):
     alpha, beta, sigma, r, w, p_tilde, ss_tol = params
     eulb_objs = (alpha, beta, sigma, r, w, p_tilde, p_c, c_bar, I, S, n)
     b = opt.fsolve(EulerSys_b, b_guess, args=(eulb_objs), xtol=ss_tol)
-    c_tilde, c_tilde_cstr = get_c_tilde(c_bar, r, w, p_c, p_tilde, n, b)
+    c_tilde, c_tilde_cstr = firm.get_c_tilde(c_bar, r, w, p_c, p_tilde, n, np.append([0], b))
     c_params = (alpha, p_tilde)
-    c, c_cstr = firm.get_c(c_params, c_tilde, p_c, c_bar, I, S)
+    c, c_cstr = firm.get_c(np.tile(np.reshape(alpha,(I,1)),(1,S)), np.tile(np.reshape(c_bar,(I,1)),(1,S)), 
+                           np.tile(c_tilde,(I,1)), np.tile(np.reshape(p_c,(I,1)),(1,S)) , p_tilde)
     eul_params = (beta, sigma)
     euler_errors = firm.get_b_errors(eul_params, r, c_tilde, c_tilde_cstr, diff=True)
 
@@ -297,140 +252,14 @@ def EulerSys_b(b, *objs):
     Returns: b_err_vec
     '''
     alpha, beta, sigma, r, w, p_tilde, p_c, c_bar, I, S, n = objs
-    c_tilde, c_tilde_cstr = get_c_tilde(c_bar, r, w, p_c, p_tilde, n, b)
-    #c_params = (alpha, p_tilde)
-    #alpha, c_bar, c_tilde, p_c, p_tilde
-    #c, c_cstr = firm.get_c(c_params, c_tilde, p_c, c_bar, I, S)
-    c, c_cstr = firm.get_c(alpha, c_bar, c_tilde, p_c, p_tilde)
+
+    c_tilde, c_tilde_cstr = firm.get_c_tilde(c_bar, r, w, p_c, p_tilde, n, np.append([0], b))
+    c, c_cstr = firm.get_c(np.tile(np.reshape(alpha,(I,1)),(1,S)), np.tile(np.reshape(c_bar,(I,1)),(1,S)), 
+                           np.tile(c_tilde,(I,1)), np.tile(np.reshape(p_c,(I,1)),(1,S)) , p_tilde)
     b_err_params = (beta, sigma)
     b_err_vec = firm.get_b_errors(b_err_params, r, c_tilde, c_tilde_cstr, diff=True)
     return b_err_vec
 
-
-# def get_c_tilde(params, n, b, p_c, c_bar):
-def get_c_tilde(c_bar, r, w, p_c, p_tilde, n, b):
-    '''
-    Generate lifetime consumption given prices and savings decisions
-
-    Inputs:
-        params   = length 3 tuple, (r, w, p)
-        r        = scalar > 0, interest rate
-        w        = scalar > 0, real wage
-        p        = scalar > 0, composite good price
-        n     = [S,] vector, exogenous labor supply n_{s}
-        b     = [S-1,] vector, distribution of savings b_{s+1}
-        p_c      = [I,] vector, prices for each consumption good
-        c_bar = [I,] vector, minimum consumption values for all goods
-
-    Functions called: None
-
-    Objects in function:
-        b_s    = [S,] vector, 0 in first element and b in last S-1
-                 elements
-        b_sp1  = [S,] vector, b in first S-1 elements and 0 in last
-                 element
-        c_tilde   = [S,] vector, composite consumption by age c_s
-        c_tilde_cstr = [S,] boolean vector, =True if element c_s <= 0
-
-    Returns: c, c_constr
-    ''' 
-    #r, w, p_tilde = params
-    b_s = np.append([0], b)
-    b_sp1 = np.append(b, [0])
-    c_tilde = (1 / p_tilde) * ((1 + r) * b_s + w * n -
-           (p_c * c_bar).sum() - b_sp1)
-    c_tilde_cstr = c_tilde <= 0
-    return c_tilde, c_tilde_cstr
-
-
-# def get_c(params, c_tilde, p_c, c_bar, I, S):
-#     '''
-#     Generates matrix of consumptions of each type of good given prices
-#     and composite consumption
-
-#     Inputs:
-#         params   = length 2 tuple, (alpha, p)
-#         alpha    = [I,] vector, expenditure share on each consumption good
-#         p_tilde        = scalar > 0, composite good price
-#         c_tilde     = [S,] vector, composite consumption by age c_s
-#         p_c    = [I,] vector, prices for each consumption good
-#         c_bar = [I,] vector, minimum consumption values for all goods
-
-#     Functions called: None
-
-#     Objects in function:
-#         c   = [I,S] matrix, consumption of each good by age c_{I,s}
-#         c_cstr = [S,] boolean vector, =True if element c_s <= 0
-
-#     Returns: c, c_cstr
-#     '''
-#     alpha, p_tilde = params
-#     c = ((p_tilde*np.tile(c_tilde,(I,1))*np.tile(np.reshape(alpha,(I,1)),(1,S)))/np.tile(np.reshape(p_c,(I,1)),(1,S)) 
-#                 + np.tile(np.reshape(c_bar,(I,1)),(1,S)))
-#     c_cstr = c <= 0
-#     return c, c_cstr
-
-
-# def get_b_errors(params, r, c_tilde, c_tilde_cstr, diff):
-#     '''
-#     Generates vector of dynamic Euler errors that characterize the
-#     optimal lifetime savings
-
-#     Inputs:
-#         params = length 2 tuple, (beta, sigma)
-#         beta   = scalar in [0,1), discount factor
-#         sigma  = scalar > 0, coefficient of relative risk aversion
-#         r      = scalar > 0, interest rate
-#         c_tilde   = [S,] vector, distribution of consumption by age c_s
-#         c_tilde_cstr = [S,] boolean vector, =True if c_s<=0 for given b
-#         diff   = boolean, =True if use simple difference Euler errors.
-#                  Use percent difference errors otherwise.
-
-#     Functions called: None
-
-#     Objects in function:
-#         mu_c     = [S-1,] vector, marginal utility of current
-#                    consumption
-#         mu_cp1   = [S-1,] vector, marginal utility of next period
-#                    consumption
-#         b_errors = [S-1,] vector, Euler errors with errors = 0
-#                    characterizing optimal savings b
-
-#     Returns: b_errors
-#     '''
-#     beta, sigma = params
-#     c_tilde[c_tilde_cstr] = 9999. # Each consumption must be positive to
-#                          # generate marginal utilities
-#     mu_c = c_tilde[:-1] ** (-sigma)
-#     mu_cp1 = c_tilde[1:] ** (-sigma)
-#     if diff == True:
-#         b_errors = (beta * (1 + r) * mu_cp1) - mu_c
-#         b_errors[c_tilde_cstr[:-1]] = 9999.
-#         b_errors[c_tilde_cstr[1:]] = 9999.
-#     else:
-#         b_errors = ((beta * (1 + r) * mu_cp1) / mu_c) - 1
-#         b_errors[c_tilde_cstr[:-1]] = 9999. / 100
-#         b_errors[c_tilde_cstr[1:]] = 9999. / 100
-#     return b_errors
-
-
-# def get_C(c):
-#     '''
-#     Generates vector of aggregate consumption C of good i
-
-#     Inputs:
-#         c    = [I,S] matrix, distribution of individual consumption
-#                    c_{i,s}
-
-#     Functions called: None
-
-#     Objects in function:
-#         C = [I,] vector, aggregate consumption of all goods
-
-#     Returns: C
-#     '''
-#     C = c.sum(axis=1)
-#     return C
 
 
 def solve_X(X_init, params, C, A, gamma, epsilon, delta, xi, pi, I, M):
@@ -472,90 +301,11 @@ def solve_X(X_init, params, C, A, gamma, epsilon, delta, xi, pi, I, M):
     
     X_c = np.dot(np.reshape(C,(1,I)),pi)
 
-    K_params = (r, w)
-    Inv = np.reshape(delta*firm.get_K(K_params, X, A, gamma, epsilon, delta),(1,M))
+    Inv = np.reshape(delta*firm.get_K(r, w, X, A, gamma, epsilon, delta),(1,M))
     
     rc_errors = np.reshape(X_c  + np.dot(Inv,xi) - X,(M))
 
     return rc_errors
-
-# def get_K(params, X, A, gamma, epsilon, delta):
-#     '''
-#     Generates vector of capital demand, K, from industry m 
-#     for a given X, r, and w
-
-#     Inputs:
-#         params = length 2 tuple, (r, w)
-#         r      = scalar > 0, interest rate
-#         w      = scalar > 0, real wage
-#         X  = [M,] vector, output from each industry
-#         A   = [M,] vector, total factor productivity values for all
-#                  industries
-#         gamma = [M,] vector, capital shares of income for all
-#                  industries
-#         epsilon = [M,] vector, elasticities of substitution between
-#                  capital and labor for all industries
-#         delta = [M,] vector, model period depreciation rates for all
-#                  industries
-
-#     Functions called: None
-
-#     Objects in function:
-#         aa    = [M,] vector, gamma
-#         bb    = [M,] vector, 1 - gamma
-#         cc    = [M,] vector, (1 - gamma) / gamma
-#         dd    = [M,] vector, (r + delta) / w
-#         ee    = [M,] vector, 1 / epsilon
-#         ff    = [M,] vector, (epsilon - 1) / epsilon
-#         gg    = [M,] vector, epsilon - 1
-#         hh    = [M,] vector, epsilon / (1 - epsilon)
-#         ii    = [M,] vector, ((1 / A) * (((aa ** ee) + (bb ** ee) *
-#                 (cc ** ff) * (dd ** gg)) ** hh))
-#         K = [M,] vector, capital demand of all industries
-
-#     Returns: K
-#     '''
-#     r, w = params
-#     aa = gamma
-#     bb = 1 - gamma
-#     cc = (1 - gamma) / gamma
-#     dd = (r + delta) / w
-#     ee = 1 / epsilon
-#     ff = (epsilon - 1) / epsilon
-#     gg = epsilon - 1
-#     hh = epsilon / (1 - epsilon)
-#     K = ((X / A) *
-#          (((aa ** ee) + (bb ** ee) * (cc ** ff) * (dd ** gg)) ** hh))
-#     return K
-
-
-# def get_L(params, K, gamma, epsilon, delta):
-#     '''
-#     Generates vector of labor demand L_m for each industry m
-
-#     Inputs:
-#         params = length 2 tuple, (r, w)
-#         r      = scalar > 0, interest rate
-#         w      = scalar > 0, real wage
-#         K  = [M,] vector, capital demand in all industries
-#         gamma = [M,] vector, capital shares of income for all
-#                  industries
-#         epsilon = [M,] vector, elasticities of substitution between
-#                  capital and labor for all industries
-#         delta = [M,] vector, model period depreciation rates for all
-#                  industries
-
-#     Functions called: None
-
-#     Objects in function:
-#         Lvec = [2,] vector, aggregate output of all goods
-
-#     Returns: Lvec
-#     '''
-#     r, w = params
-#     L = K*((1-gamma)/gamma)*(((r+delta)/w)**epsilon)
-
-#     return L
 
 
 def MCerrs(rwvec, *objs):
@@ -646,14 +396,12 @@ def MCerrs(rwvec, *objs):
         cbe_params = (alpha, beta, sigma, r, w, p_tilde, ss_tol)
         b, c_tilde, c_tilde_cstr, c, c_cstr, euler_errors = \
             get_cbess(cbe_params, b_guess, p_c, c_bar, I, S, n)
-        C = firm.get_C(c)
+        C = firm.get_C(c.transpose())
         X_params = (r, w)
         X_init = (np.dot(np.reshape(C,(1,I)),pi))/I
         X = opt.fsolve(solve_X, X_init, args=(X_params, C, A, gamma, epsilon, delta, xi, pi, I, M), xtol=ss_tol, col_deriv=1)
-        K_params = (r,w)
-        K = firm.get_K(K_params, X, A, gamma, epsilon, delta)
-        L_params = (r, w)
-        L = firm.get_L(L_params, K, gamma, epsilon, delta)
+        K = firm.get_K(r, w, X, A, gamma, epsilon, delta)
+        L = firm.get_L(r, w, K, gamma, epsilon, delta)
         MCKerr = K.sum() - b.sum()
         MCLerr = L.sum() - n.sum()
         MC_errs = np.array((MCKerr, MCLerr))
@@ -765,14 +513,12 @@ def SS(params, rw_init, b_guess, c_bar, A, gamma, epsilon, delta, xi, pi, I,
     cbe_params = (alpha, beta, sigma, r_ss, w_ss, p_tilde_ss, ss_tol)
     b_ss, c_tilde_ss, c_tilde_cstr, c_ss, c_cstr, EulErr_ss = \
         get_cbess(cbe_params, b_guess, p_c_ss, c_bar, I, S, n)
-    C_ss = firm.get_C(c_ss)
+    C_ss = firm.get_C(c_ss.transpose())
     X_params = (r_ss, w_ss)
     X_init = (np.dot(np.reshape(C_ss,(1,I)),pi))/I
     X_ss = opt.fsolve(solve_X, X_init, args=(X_params, C_ss, A, gamma, epsilon, delta, xi, pi, I, M), xtol=ss_tol, col_deriv=1)
-    K_params = (r_ss,w_ss)
-    K_ss = firm.get_K(K_params, X_ss, A, gamma, epsilon, delta)
-    L_params = (r_ss, w_ss)
-    L_ss = firm.get_L(L_params, K_ss, gamma, epsilon, delta)
+    K_ss = firm.get_K(r_ss, w_ss, X_ss, A, gamma, epsilon, delta)
+    L_ss = firm.get_L(r_ss, w_ss, K_ss, gamma, epsilon, delta)
 
     MCK_err_ss = K_ss.sum() - b_ss.sum()
     MCL_err_ss = L_ss.sum() - n.sum()

@@ -33,51 +33,19 @@ functions:
 # Import Packages
 import numpy as np
 import scipy.optimize as opt
-import ssfuncs as ssf
-reload(ssf)
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
 import sys
 import firm_funcs as firm
+reload(firm)
 
 '''
 ------------------------------------------------------------------------
     Functions
 ------------------------------------------------------------------------
 '''
-
-# def get_p_path(params, r_path, w_path):
-#     '''
-#     Generates time path of industry prices p_m from r_path and w_path
-
-#     Inputs:
-#         params = length 4 tuple, (A, gamma, epsilon, delta)
-#         A   = [M,T+S-2] matrix, total factor productivity for each
-#                  industry
-#         gamma = [M,T+S-2] matrix, capital share of income for each industry
-#         epsilon = [M,T+S-2] matrix, elasticity of substitution between capital
-#                  and labor for each industry
-#         delta = [M,T+S-2] matrix, capital depreciation rate for each
-#                  industry
-#         r_path  = [T+S-2,] matrix, time path of interest rate
-#         w      = [T+S-2,] matrix, time path of wage
-
-#     Functions called: None
-
-#     Objects in function:
-#         p_path = [M, T+S-2] matrix, time path of industry prices
-
-#     Returns: p_path
-#     '''
-#     A, gamma, epsilon, delta = params
-
-#     p_path = (1 / A) * ((gamma * ((r_path + delta) **
-#                    (1 - epsilon)) + (1 - gamma) * (w_path **
-#                    (1 - epsilon))) ** (1 / (1 - epsilon)))
-
-#     return p_path
 
 def get_p_c_path(p_path, pi, I):
     '''
@@ -105,26 +73,6 @@ def get_p_c_path(p_path, pi, I):
 
 
     return p_c_path
-
-
-# def get_p_tilde_path(alpha, p_c_path):
-#     '''
-#     Generates time path of composite price p from p_path
-
-#     Inputs:
-#         alpha = [I, T+S-2], expenditure share on each good along time path
-#         p_c_path = [I, T+S-2] matrix, time path of industry prices
-
-#     Functions called: None
-
-#     Objects in function:
-#         p_tilde_path = [T+S-2,] vector, time path of price of composite good
-
-#     Returns: p_tilde_path
-#     '''
-
-#     p_tilde_path = ((p_c_path/alpha)**alpha).prod(axis=0)
-#     return p_tilde_path
 
 
 def get_cbepath(params, Gamma1, r_path, w_path, p_c_path, p_tilde_path,
@@ -193,15 +141,10 @@ def get_cbepath(params, Gamma1, r_path, w_path, p_c_path, p_tilde_path,
     eulerr_path = np.zeros((S-1, T+S-1))
     # Solve the incomplete remaining lifetime decisions of agents alive
     # in period t=1 but not born in period t=1
-    #c_tilde_path[S-1, 0] = (1 / p_tilde_path[0]) * ((1 + r_path[0]) * Gamma1[S-2]
-    #    + w_path[0] * n[S-1] - (p_c_path[:, 0] * c_bar[:,0]).sum(axis=0))
-    c_tilde_path[S-1, 0], c_tilde_cstr = firm.get_c_tilde_lf(c_bar[:,0],r_path[0],w_path[0],
+    c_tilde_path[S-1, 0], c_tilde_cstr = firm.get_c_tilde(c_bar[:,0],r_path[0],w_path[0],
                                 p_c_path[:,0], p_tilde_path[0],n[S-1],Gamma1[S-2])
-
-    c_path[S-1, 0, :], ci_cstr = firm.get_c(alpha[:,0],c_bar[:,0],c_tilde_path[S-1,0],
+    c_path[S-1, 0, :], c_cstr = firm.get_c(alpha[:,0],c_bar[:,0],c_tilde_path[S-1,0],
                                      p_c_path[:,0],p_tilde_path[0])
-    #c_path[S-1, 0, :] = alpha[:,0] * ((p_tilde_path[0] * c_tilde_path[S-1, 0]) /
-    #                    p_c_path[:, 0]) + c_bar[:,0]
     for p in xrange(2, S):
         # b_guess = b_ss[-p+1:]
         b_guess = np.diagonal(b_path[S-p:, :p-1])
@@ -324,7 +267,7 @@ def paths_life(params, beg_age, beg_wealth, c_bar, n, r_path,
                        xtol=tp_tol)
     c_tilde_path, c_tilde_cstr = firm.get_c_tilde(c_bar, r_path, w_path, p_c_path, p_tilde_path,
                     n, np.append(beg_wealth, b_path))
-    c_path, ci_cstr = firm.get_c(alpha[:,:p], c_bar, c_tilde_path, p_c_path, p_tilde_path)
+    c_path, c_cstr = firm.get_c(alpha[:,:p], c_bar, c_tilde_path, p_c_path, p_tilde_path)
     b_err_params = (beta, sigma)
     b_err_vec = ssf.get_b_errors(b_err_params, r_path[1:], c_tilde_path,
                                    c_tilde_cstr, diff=True)
@@ -380,102 +323,6 @@ def LfEulerSys(b, *objs):
     b_err_vec = firm.get_b_errors(b_err_params, r_path[1:], c_tilde,
                                    c_tilde_cstr, diff=True)
     return b_err_vec
-
-
-# def get_c_tilde_lf(c_bar, r_path, w_path, p_c_path, p_tilde_path, n, b):
-#     '''
-#     Generates vector of remaining lifetime consumptions from individual
-#     savings, and the time path of interest rates and the real wages
-
-#     Inputs:
-#         p      = integer in [2,80], number of periods remaining in
-#                  individual life
-#         r_path  = [p,] vector, remaining interest rates
-#         w_path  = [p,] vector, remaining wages
-#         p_c_path = [I, p] matrix, remaining industry prices
-#         p_tilde_path  = [p,] vector, remaining composite prices
-#         n   = [p,] vector, remaining exogenous labor supply
-#         b   = [p,] vector, remaining savings including initial
-#                  savings
-
-#     Functions called: None
-
-#     Objects in function:
-#         c_cstr = [p,] boolean vector, =True if element c_s <= 0
-#         b_s    = [p,] vector, b
-#         b_sp1  = [p,] vector, last p-1 elements of b and 0 in last
-#                  element
-#         c   = [p,] vector, remaining consumption by age c_s
-
-#     Returns: c, c_constr
-#     '''
-
-#     if np.isscalar(b): # check if scalar - if so, then in last period of life and savings = 0
-#         c_tilde = (1 / p_tilde_path) *((1 + r_path) * b + w_path * n -
-#            (p_c_path * c_bar).sum(axis=0))
-#         c_tilde_cstr = c_tilde <= 0
-#     else:
-#         b_s = b
-#         b_sp1 = np.append(b[1:], [0])
-#         c_tilde = (1 / p_tilde_path) *((1 + r_path) * b_s + w_path * n -
-#            (p_c_path * c_bar).sum(axis=0) - b_sp1)
-#         c_tilde_cstr = c_tilde <= 0
-#     return c_tilde, c_tilde_cstr
-
-
-# def get_c_lf(alpha, c_bar, c_tilde_path, p_c_path, p_tilde_path):
-#     '''
-#     Generates matrix of remaining lifetime consumptions of individual
-#     goods
-
-#     Inputs:
-#         p      = integer in [2,80], number of periods remaining in
-#                  individual life
-#         r_path  = [p,] vector, remaining interest rates
-#         w_path  = [p,] vector, remaining wages
-#         p_c_path = [I, p] matrix, remaining industry prices
-#         p_tilde_path  = [p,] vector, remaining composite prices
-#         n   = [p,] vector, remaining exogenous labor supply
-#         b   = [p,] vector, remaining savings including initial
-#                  savings
-
-#     Functions called: None
-
-#     Objects in function:
-#         c_cstr = [p,] boolean vector, =True if element c_s <= 0
-#         b_s    = [p,] vector, b
-#         b_sp1  = [p,] vector, last p-1 elements of b and 0 in last
-#                  element
-#         c   = [p,] vector, remaining consumption by age c_s
-
-#     Returns: c, c_constr
-#     '''
-
-#     c = alpha * ((p_tilde_path * c_tilde_path) / p_c_path) + c_bar
-
-#     c_cstr = c <= 0
-#     return c, c_cstr
-
-
-# def get_C_path(c_path):
-#     '''
-#     Generates vector of aggregate consumption C_m of good m
-
-#     Inputs:
-#         c_path = [S, S+T-1, I] array, time path of distribution of
-#                  individual consumption of each good c_{m,s,t}
-
-#     Functions called: None
-
-#     Objects in function:
-#         C_path = [I,S+T-1] matrix, aggregate consumption of all goods
-
-#     Returns: C_path
-#     '''
-
-#     C_path = (c_path.sum(axis=0)).transpose()
-
-#     return C_path
 
 
 
@@ -534,7 +381,7 @@ def solve_X_path(X_path_init_guess, params, r_path, w_path, C_path, A, gamma,
     for m in range(0,M):
         X_path[m,:] = X_path_init_guess[(m*T):((m+1)*T)]
     
-    K_path = firm.get_K_path(r_path, w_path, X_path, A, gamma, epsilon, delta)
+    K_path = firm.get_K(r_path, w_path, X_path, A, gamma, epsilon, delta)
     Inv = np.zeros((M,T))
     Inv[:,:-1] = K_path[:,1:] - (1-delta[:,:-1])*K_path[:,:-1]
     Inv[:,T-1] = K_ss - (1-delta[:,T-1])*K_path[:,T-1]
@@ -549,86 +396,6 @@ def solve_X_path(X_path_init_guess, params, r_path, w_path, C_path, A, gamma,
 
     return rc_errors
     
-
-# def get_K_path(r_path, w_path, X_path, A, gamma, epsilon, delta):
-#     '''
-#     Generates vector of capital demand from production industry m 
-#     along the time path for a given X_path, r_path, w_path.
-
-#     Inputs:
-#         r_path      = [T,] vector, real interest rates
-#         w_path      = [T,] vector, real wage rates
-#         X_path  = [M,T] matrix, output from each industry
-#         A       = [M,T] matrix, total factor productivity values for all
-#                    industries
-#         gamma = [M,T] matrix, capital shares of income for all
-#                  industries
-#         epsilon = [M,T] matrix, elasticities of substitution between
-#                  capital and labor for all industries
-#         delta = [M,T] matrix, model period depreciation rates for all
-#                  industries
-
-#     Functions called: None
-
-#     Objects in function:
-#         aa    = [M,T] matrix, gamma
-#         bb    = [M,T] matrix, 1 - gamma
-#         cc    = [M,T] matrix, (1 - gamma) / gamma
-#         dd    = [M,T] matrix, (r + delta) / w
-#         ee    = [M,T] matrix, 1 / epsilon
-#         ff    = [M,T] matrix, (epsilon - 1) / epsilon
-#         gg    = [M,T] matrix, epsilon - 1
-#         hh    = [M,T] matrix, epsilon / (1 - epsilon)
-#         ii    = [M,T] matrix, ((1 / A) * (((aa ** ee) + (bb ** ee) *
-#                 (cc ** ff) * (dd ** gg)) ** hh))
-#         K_path = [M,T] matrix, capital demand of all industries
-
-#     Returns: K_path
-#     '''
-#     aa = gamma
-#     bb = 1 - gamma
-#     cc = (1 - gamma) / gamma
-#     dd = (r_path + delta) / w_path
-#     ee = 1 / epsilon
-#     ff = (epsilon - 1) / epsilon
-#     gg = epsilon - 1
-#     hh = epsilon / (1 - epsilon)
-
-#     K_path = ((X_path / A) *
-#          (((aa ** ee) + (bb ** ee) * (cc ** ff) * (dd ** gg)) ** hh))
-
-#     return K_path
-
-
-
-# def get_L_path(K_path, r_path, w_path, gamma, epsilon, delta):
-#     '''
-#     Generates vector of labor demand L_m for good m given X_m, p_m and w
-
-#     Inputs:
-#         K_path = [M, T] matrix, time path of aggregate output by
-#                  industry
-#         r_path  = [T, ] matrix, time path of real interest rate
-#         w_path  = [T, ] matrix, time path of real wage
-#         gamma = [M,T] matrix, capital shares of income for all
-#                  industries
-#         epsilon = [M,T] matrix, elasticities of substitution between
-#                  capital and labor for all industries
-#         delta = [M,T] matrix, rate of phyical depreciation for all industries
-
-#     Functions called: None
-
-#     Objects in function:
-#         L_path = [M,T] matrix, labor demand from each industry
-
-#     Returns: L_path
-#     '''
-#     L_path = K_path*((1-gamma)/gamma)*(((r_path+delta)/w_path)**epsilon)
-
-#     return L_path
-
-
-
 
 def TP(params, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar, A,
   gamma, epsilon, delta, xi, pi, I, M, S, n, graphs):
@@ -730,14 +497,14 @@ def TP(params, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar, A,
 
 
     p_params = (A, gamma, epsilon, delta)
-    p_path = firm.get_p_path(p_params, r_path, w_path)
+    p_path = firm.get_p(p_params, r_path, w_path)
     p_c_path = get_p_c_path(p_path, pi, I)
-    p_tilde_path = firm.get_p_tilde_path(alpha, p_c_path)
+    p_tilde_path = firm.get_p_tilde(alpha, p_c_path)
     cbe_params = (S, T, alpha, beta, sigma, tp_tol)
     b_path, c_tilde_path, c_path, eulerr_path = get_cbepath(cbe_params,
         Gamma1, r_path, w_path, p_c_path, p_tilde_path, c_bar, I,
         n)
-    C_path = firm.get_C_path(c_path[:, :T, :])
+    C_path = firm.get_C(c_path[:, :T, :])
 
     X_path_params = (T, K_ss)
     X_path_init = np.zeros((M,T))
@@ -753,12 +520,11 @@ def TP(params, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar, A,
     for m in range(0,M): # unpack vector of X_path solved by fsolve
         X_path[m,:] = X_path_sol[(m*T):((m+1)*T)]
 
-    K_path = firm.get_K_path(r_path[:T], w_path[:T], X_path, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
+    K_path = firm.get_K(r_path[:T], w_path[:T], X_path, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
 
-    L_path = firm.get_L_path(K_path, r_path[:T], w_path[:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
+    L_path = firm.get_L(r_path[:T], w_path[:T], K_path, gamma[:,:T], epsilon[:,:T], delta[:,:T])
     
     # Checking resource constraint along the path:
-    print 'L_path shape: ', L_path.shape
     Inv_path = np.zeros((M,T))
     X_inv_path = np.zeros((M,T))
     X_c_path = np.zeros((M,T))
@@ -1021,14 +787,14 @@ def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
 
 
     p_params = (A, gamma, epsilon, delta)
-    p_path = firm.get_p_path(p_params, r_path, w_path)
+    p_path = firm.get_p(p_params, r_path, w_path)
     p_c_path = get_p_c_path(p_path, pi, I)
-    p_tilde_path = firm.get_p_tilde_path(alpha, p_c_path)
+    p_tilde_path = firm.get_p_tilde(alpha, p_c_path)
     cbe_params = (S, T, alpha, beta, sigma, tp_tol)
     b_path, c_tilde_path, c_path, eulerr_path = get_cbepath(cbe_params,
         Gamma1, r_path, w_path, p_c_path, p_tilde_path, c_bar, I,
         n)
-    C_path = firm.get_C_path(c_path[:, :T, :])
+    C_path = firm.get_C(c_path[:, :T, :])
     X_path_params = (T, K_ss)
     X_path_init = np.zeros((M,T))
     for t in range(0,T):
@@ -1043,12 +809,9 @@ def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
     for m in range(0,M): # unpack vector of X_path solved by fsolve
         X_path[m,:] = X_path_sol[(m*T):((m+1)*T)]
 
-    K_path = firm.get_K_path(r_path[:T], w_path[:T], X_path, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
+    K_path = firm.get_K(r_path[:T], w_path[:T], X_path, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
 
-    L_path = firm.get_L_path(K_path, r_path[:T], w_path[:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
-
-    #print 'K_path: ', K_path
-    #print 'L_path: ', L_path
+    L_path = firm.get_L(r_path[:T], w_path[:T], K_path, gamma[:,:T], epsilon[:,:T], delta[:,:T])
 
     # Check market clearing in each period
     K_market_error = b_path[:, :T].sum(axis=0) - K_path[:, :].sum(axis=0)
