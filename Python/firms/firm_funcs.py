@@ -86,24 +86,24 @@ def get_c_tilde(c_bar, r, w, p_c, p_tilde, n, b):
     savings, and the time path of interest rates and the real wages
 
     Inputs:
-        p      = (not an input, but relevant),integer in [2,80], number 
+        u      = (not an input, but relevant),integer in [2,80], number 
                   of periods remaining in individual life
-        r  = [p,] vector, remaining interest rates
-        w  = [p,] vector, remaining wages
-        p_c = [I, p] matrix, remaining industry prices
-        p_tilde  = [p,] vector, remaining composite prices
-        n   = [p,] vector, remaining exogenous labor supply
-        b   = [p,] vector, remaining savings including initial
+        r  = [u,] vector, remaining interest rates
+        w  = [u,] vector, remaining wages
+        p_c = [I, u] matrix, remaining industry prices
+        p_tilde  = [u,] vector, remaining composite prices
+        n   = [u,] vector, remaining exogenous labor supply
+        b   = [u,] vector, remaining savings including initial
                  savings
 
     Functions called: None
 
     Objects in function:
-        c_cstr = [p,] boolean vector, =True if element c_s <= 0
-        b_s    = [p,] vector, b
-        b_sp1  = [p,] vector, last p-1 elements of b and 0 in last
+        c_cstr = [u,] boolean vector, =True if element c_s <= 0
+        b_s    = [u,] vector, b
+        b_sp1  = [u,] vector, last p-1 elements of b and 0 in last
                  element
-        c   = [p,] vector, remaining consumption by age c_s
+        c   = [u,] vector, remaining consumption by age c_s
 
     Returns: c, c_constr
     '''
@@ -128,18 +128,18 @@ def get_c(alpha, c_bar, c_tilde, p_c, p_tilde):
     goods
 
     Inputs:
-        p      = (not an input, but relevant) integer in [2,80], number 
+        u      = (not an input, but relevant) integer in [2,80], number 
                  of periods remaining in individual life
-        alpha  = [I,p] vector, remaining expenditure shares on consumption goods
-        c_tilde =[p,] vector, remaining composite consumption amounts
-        p_c    = [I, p] matrix, remaining consumption good prices
-        c_bar    = [I, p] matrix, remaining minimum consumption amounts
-        p_tilde  = [p,] vector, remaining composite prices
+        alpha  = [I,u] vector, remaining expenditure shares on consumption goods
+        c_tilde =[u,] vector, remaining composite consumption amounts
+        p_c    = [I, u] matrix, remaining consumption good prices
+        c_bar    = [I, u] matrix, remaining minimum consumption amounts
+        p_tilde  = [u,] vector, remaining composite prices
 
     Functions called: None
 
     Objects in function:
-        c   = [I,p] vector, remaining consumption by age c_s
+        c   = [I,u] vector, remaining consumption by age c_s
 
     Returns: c, c_constr
     '''

@@ -116,20 +116,20 @@ def get_cbepath(params, Gamma1, r_path, w_path, p_c_path, p_tilde_path,
         eulerr_path = [S-1, T+S-1] matrix, Euler equation errors along the time path
         pl_params  = length 4 tuple, parameters to pass into paths_life
                      (S, beta, sigma, TP_tol)
-        p          = integer >= 2, represents number of periods
+        u          = integer >= 2, represents number of periods
                      remaining in a lifetime, used to solve incomplete
                      lifetimes
-        b_guess    = [p-1,] vector, initial guess for remaining lifetime
+        b_guess    = [u-1,] vector, initial guess for remaining lifetime
                      savings, taken from previous cohort's choices
-        b_lf     = [p-1,] vector, optimal remaining lifetime savings
+        b_lf     = [u-1,] vector, optimal remaining lifetime savings
                      decisions
-        c_lf     = [p,] vector, optimal remaining lifetime consumption
+        c_tilde_lf     = [u,] vector, optimal remaining lifetime composite consumption
                      decisions
-        c_i_lf    = [p,I] matrix, optimal remaining lifetime consumption decisions 
-        b_err_vec_lf = [p-1,] vector, Euler errors associated with
+        c_lf    = [u,I] matrix, optimal remaining lifetime invididual consumption decisions 
+        b_err_vec_lf = [u-1,] vector, Euler errors associated with
                       optimal remaining lifetime savings decisions
-        DiagMaskb   = [p-1, p-1] boolean identity matrix
-        DiagMaskc   = [p, p] boolean identity matrix
+        DiagMaskb   = [u-1, u-1] boolean identity matrix
+        DiagMaskc   = [u, u] boolean identity matrix
 
     Returns: b_path, c_tilde_path, c_path, eulerr_path
     '''
@@ -145,25 +145,25 @@ def get_cbepath(params, Gamma1, r_path, w_path, p_c_path, p_tilde_path,
                                 p_c_path[:,0], p_tilde_path[0],n[S-1],Gamma1[S-2])
     c_path[S-1, 0, :], c_cstr = firm.get_c(alpha[:,0],c_bar[:,0],c_tilde_path[S-1,0],
                                      p_c_path[:,0],p_tilde_path[0])
-    for p in xrange(2, S):
-        # b_guess = b_ss[-p+1:]
-        b_guess = np.diagonal(b_path[S-p:, :p-1])
-        pl_params = (S, alpha[:,:p], beta, sigma, tp_tol)
-        b_lf, c_lf, c_i_lf, b_err_vec_lf = paths_life(pl_params,
-            S-p+1, Gamma1[S-p-1], c_bar[:,:p], n[-p:], r_path[:p],
-            w_path[:p], p_c_path[:, :p], p_tilde_path[:p], b_guess)
+    for u in xrange(2, S):
+        # b_guess = b_ss[-u+1:]
+        b_guess = np.diagonal(b_path[S-u:, :u-1])
+        pl_params = (S, alpha[:,:u], beta, sigma, tp_tol)
+        b_lf, c_tilde_lf, c_lf, b_err_vec_lf = paths_life(pl_params,
+            S-u+1, Gamma1[S-u-1], c_bar[:,:u], n[-u:], r_path[:u],
+            w_path[:u], p_c_path[:, :u], p_tilde_path[:u], b_guess)
         # Insert the vector lifetime solutions diagonally (twist donut)
         # into the c_tilde_path, b_path, and EulErrPath matrices
         DiagMaskb = np.eye(p-1, dtype=bool)
         DiagMaskc = np.eye(p, dtype=bool)
-        b_path[S-p:, 1:p] = DiagMaskb * b_lf + b_path[S-p:, 1:p]
-        c_tilde_path[S-p:, :p] = DiagMaskc * c_lf + c_tilde_path[S-p:, :p]
-        DiagMaskc_tiled = np.tile(np.expand_dims(np.eye(p, dtype=bool),axis=2),(1,1,I))
-        c_i_lf = np.tile(np.expand_dims(c_i_lf.transpose(),axis=0),((c_i_lf.shape)[1],1,1))
-        c_path[S-p:, :p, :] = (DiagMaskc_tiled * c_i_lf +
-                              c_path[S-p:, :p, :])
-        eulerr_path[S-p:, 1:p] = (DiagMaskb * b_err_vec_lf +
-                                eulerr_path[S-p:, 1:p])
+        b_path[S-u:, 1:u] = DiagMaskb * b_lf + b_path[S-u:, 1:u]
+        c_tilde_path[S-u:, :u] = DiagMaskc * c_tilde_lf + c_tilde_path[S-u:, :u]
+        DiagMaskc_tiled = np.tile(np.expand_dims(np.eye(u, dtype=bool),axis=2),(1,1,I))
+        c_lf = np.tile(np.expand_dims(c_lf.transpose(),axis=0),((c_lf.shape)[1],1,1))
+        c_path[S-u:, :u, :] = (DiagMaskc_tiled * c_lf +
+                              c_path[S-u:, :u, :])
+        eulerr_path[S-u:, 1:u] = (DiagMaskb * b_err_vec_lf +
+                                eulerr_path[S-u:, 1:u])
     # Solve for complete lifetime decisions of agents born in periods
     # 1 to T and insert the vector lifetime solutions diagonally (twist
     # donut) into the c_tilde_path, b_path, and EulErrPath matrices
@@ -229,45 +229,45 @@ def paths_life(params, beg_age, beg_wealth, c_bar, n, r_path,
         firm.get_b_errors
 
     Objects in function:
-        p            = integer in [2,S], remaining periods in life
-        b_guess      = [p-1,] vector, initial guess for lifetime savings
+        u            = integer in [2,S], remaining periods in life
+        b_guess      = [u-1,] vector, initial guess for lifetime savings
                        decisions
         eullf_objs   = length 9 tuple, objects to be passed in to
                        LfEulerSys: (p, beta, sigma, beg_wealth, n,
                        r_path, w_path, p_path, p_tilde_path)
-        b_path        = [p-1,] vector, optimal remaining lifetime savings
+        b_path        = [u-1,] vector, optimal remaining lifetime savings
                        decisions
-        c_tilde_path        = [p,] vector, optimal remaining lifetime
+        c_tilde_path        = [u,] vector, optimal remaining lifetime
                        consumption decisions
-        c_path       = [p,I] martrix, remaining lifetime consumption
+        c_path       = [u,I] martrix, remaining lifetime consumption
                         decisions by consumption good
-        c_constr     = [p,] boolean vector, =True if c_{p}<=0,
+        c_constr     = [u,] boolean vector, =True if c_{u}<=0,
         b_err_params = length 2 tuple, parameters to pass into
                        firm.get_b_errors (beta, sigma)
-        b_err_vec    = [p-1,] vector, Euler errors associated with
+        b_err_vec    = [u-1,] vector, Euler errors associated with
                        optimal savings decisions
 
     Returns: b_path, c_tilde_path, c_path, b_err_vec
     '''
     S, alpha, beta, sigma, tp_tol = params
-    p = int(S - beg_age + 1)
+    u = int(S - beg_age + 1)
     if beg_age == 1 and beg_wealth != 0:
         sys.exit("Beginning wealth is nonzero for age s=1.")
-    if len(r_path) != p:
+    if len(r_path) != u:
         #print len(r_path), S-beg_age+1
         sys.exit("Beginning age and length of r_path do not match.")
-    if len(w_path) != p:
+    if len(w_path) != u:
         sys.exit("Beginning age and length of w_path do not match.")
-    if len(n) != p:
+    if len(n) != u:
         sys.exit("Beginning age and length of n do not match.")
     b_guess = 1.01 * b_init
-    eullf_objs = (p, beta, sigma, beg_wealth, c_bar, n, r_path,
+    eullf_objs = (u, beta, sigma, beg_wealth, c_bar, n, r_path,
                   w_path, p_c_path, p_tilde_path)
     b_path = opt.fsolve(LfEulerSys, b_guess, args=(eullf_objs),
                        xtol=tp_tol)
     c_tilde_path, c_tilde_cstr = firm.get_c_tilde(c_bar, r_path, w_path, p_c_path, p_tilde_path,
                     n, np.append(beg_wealth, b_path))
-    c_path, c_cstr = firm.get_c(alpha[:,:p], c_bar, c_tilde_path, p_c_path, p_tilde_path)
+    c_path, c_cstr = firm.get_c(alpha[:,:u], c_bar, c_tilde_path, p_c_path, p_tilde_path)
     b_err_params = (beta, sigma)
     b_err_vec = ssf.get_b_errors(b_err_params, r_path[1:], c_tilde_path,
                                    c_tilde_cstr, diff=True)
@@ -280,41 +280,41 @@ def LfEulerSys(b, *objs):
     characterize all optimal lifetime decisions
 
     Inputs:
-        b       = [p-1,] vector, remaining lifetime savings decisions
+        b       = [u-1,] vector, remaining lifetime savings decisions
                      where p is the number of remaining periods
-        objs       = length 9 tuple, (p, beta, sigma, beg_wealth, n,
+        objs       = length 9 tuple, (u, beta, sigma, beg_wealth, n,
                      r_path, w_path, p_path, p_tilde_path)
-        p          = integer in [2,S], remaining periods in life
+        u          = integer in [2,S], remaining periods in life
         beta       = scalar in [0,1), discount factor
         sigma      = scalar > 0, coefficient of relative risk aversion
         beg_wealth = scalar, wealth at the beginning of first age
-        n       = [p,] vector, remaining exogenous labor supply
-        r_path      = [p,] vector, interest rates over remaining life
-        w_path      = [p,] vector, wages rates over remaining life
-        p_c_path     = [I, p] matrix, remaining lifetime
+        n       = [u,] vector, remaining exogenous labor supply
+        r_path      = [u,] vector, interest rates over remaining life
+        w_path      = [u,] vector, wages rates over remaining life
+        p_c_path     = [I, u] matrix, remaining lifetime
                      consumption good prices
-        p_tilde_path      = [p,] vector, remaining lifetime composite
+        p_tilde_path      = [u,] vector, remaining lifetime composite
                      goods prices
-        p_tilde_path      = 
+        p_tilde_path      = [u,] vector of composite good prices
 
     Functions called:
         firm.get_c_tilde
         firm.get_b_errors
 
     Objects in function:
-        b2        = [p, ] vector, remaining savings including initial
+        b2        = [u, ] vector, remaining savings including initial
                        savings
-        c         = [p, ] vector, remaining lifetime consumption
+        c         = [u, ] vector, remaining lifetime consumption
                        levels implied by b2
-        c_constr     = [p, ] boolean vector, =True if c_{s,t}<=0
+        c_constr     = [u, ] boolean vector, =True if c_{s,t}<=0
         b_err_params = length 2 tuple, parameters to pass into
                        get_b_errors (beta, sigma)
-        b_err_vec    = [p-1,] vector, Euler errors from lifetime
+        b_err_vec    = [u-1,] vector, Euler errors from lifetime
                        consumption vector
 
     Returns: b_err_vec
     '''
-    (p, beta, sigma, beg_wealth, c_bar, n, r_path, w_path, p_c_path,
+    (u, beta, sigma, beg_wealth, c_bar, n, r_path, w_path, p_c_path,
         p_tilde_path) = objs
     b2 = np.append(beg_wealth, b)
     c_tilde, c_tilde_cstr = firm.get_c_tilde(c_bar, r_path, w_path, p_c_path, p_tilde_path,
