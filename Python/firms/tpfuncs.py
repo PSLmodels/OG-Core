@@ -137,7 +137,7 @@ def get_cbepath(params, Gamma1, r_path, w_path, p_c_path, p_tilde_path,
     b_path = np.append(Gamma1.reshape((S-1,1)), np.zeros((S-1, T+S-2)),
             axis=1)
     c_tilde_path = np.zeros((S, T+S-1))
-    c_path = np.zeros((S, T+S-1, 2))
+    c_path = np.zeros((S, T+S-1, I))
     eulerr_path = np.zeros((S-1, T+S-1))
     # Solve the incomplete remaining lifetime decisions of agents alive
     # in period t=1 but not born in period t=1
@@ -154,8 +154,8 @@ def get_cbepath(params, Gamma1, r_path, w_path, p_c_path, p_tilde_path,
             w_path[:u], p_c_path[:, :u], p_tilde_path[:u], b_guess)
         # Insert the vector lifetime solutions diagonally (twist donut)
         # into the c_tilde_path, b_path, and EulErrPath matrices
-        DiagMaskb = np.eye(p-1, dtype=bool)
-        DiagMaskc = np.eye(p, dtype=bool)
+        DiagMaskb = np.eye(u-1, dtype=bool)
+        DiagMaskc = np.eye(u, dtype=bool)
         b_path[S-u:, 1:u] = DiagMaskb * b_lf + b_path[S-u:, 1:u]
         c_tilde_path[S-u:, :u] = DiagMaskc * c_tilde_lf + c_tilde_path[S-u:, :u]
         DiagMaskc_tiled = np.tile(np.expand_dims(np.eye(u, dtype=bool),axis=2),(1,1,I))
@@ -269,7 +269,7 @@ def paths_life(params, beg_age, beg_wealth, c_bar, n, r_path,
                     n, np.append(beg_wealth, b_path))
     c_path, c_cstr = firm.get_c(alpha[:,:u], c_bar, c_tilde_path, p_c_path, p_tilde_path)
     b_err_params = (beta, sigma)
-    b_err_vec = ssf.get_b_errors(b_err_params, r_path[1:], c_tilde_path,
+    b_err_vec = firm.get_b_errors(b_err_params, r_path[1:], c_tilde_path,
                                    c_tilde_cstr, diff=True)
     return b_path, c_tilde_path, c_path, b_err_vec
 
@@ -325,8 +325,55 @@ def LfEulerSys(b, *objs):
     return b_err_vec
 
 
+def get_K_over_X_path(r, w, A, gamma, epsilon, delta):
+    '''
+    Generates vector of K/X for each industry along the time path.
 
-def solve_X_path(X_path_init_guess, params, r_path, w_path, C_path, A, gamma,
+    Inputs:
+        r      = [T,] vector, real interest rates
+        w      = [T,] vector, real wage rates
+        A       = [M,T] matrix, total factor productivity values for all
+                   industries
+        gamma = [M,T] matrix, capital shares of income for all
+                 industries
+        epsilon = [M,T] matrix, elasticities of substitution between
+                 capital and labor for all industries
+        delta = [M,T] matrix, model period depreciation rates for all
+                 industries
+
+    Functions called: None
+
+    Objects in function:
+        aa    = [M,T] matrix, gamma
+        bb    = [M,T] matrix, 1 - gamma
+        cc    = [M,T] matrix, (1 - gamma) / gamma
+        dd    = [M,T] matrix, (r + delta) / w
+        ee    = [M,T] matrix, 1 / epsilon
+        ff    = [M,T] matrix, (epsilon - 1) / epsilon
+        gg    = [M,T] matrix, epsilon - 1
+        hh    = [M,T] matrix, epsilon / (1 - epsilon)
+        ii    = [M,T] matrix, ((1 / A) * (((aa ** ee) + (bb ** ee) *
+                (cc ** ff) * (dd ** gg)) ** hh))
+        K_over_X_path = [M,T] matrix, capital demand of all industries
+
+    Returns: K_over_X_path
+    '''
+    aa = gamma
+    bb = 1 - gamma
+    cc = (1 - gamma) / gamma
+    dd = (r + delta) / w
+    ee = 1 / epsilon
+    ff = (epsilon - 1) / epsilon
+    gg = epsilon - 1
+    hh = epsilon / (1 - epsilon)
+
+    K_over_X_path = ((1 / A) *
+         (((aa ** ee) + (bb ** ee) * (cc ** ff) * (dd ** gg)) ** hh))
+
+    return K_over_X_path
+
+
+def get_X_path(params, r_path, w_path, C_path, A, gamma,
   epsilon, delta, xi, pi, I, M):
 
     '''
@@ -334,7 +381,6 @@ def solve_X_path(X_path_init_guess, params, r_path, w_path, C_path, A, gamma,
     by industry given r_t, w_t, and C_{m,t}
     
     Inputs:
-        X_path_init_guess = [M*T,] vector, initial guess of X_path
         K_ss             = [M,] vector, steady-state capital stock by industry 
         r_path             = [T,] vector, real interest rates
         w_path             = [T,] vector, real wage rates
@@ -358,43 +404,46 @@ def solve_X_path(X_path_init_guess, params, r_path, w_path, C_path, A, gamma,
 
 
     Functions called: 
-        firm.get_K
+        get_K_over_X_path
 
     Objects in function:
         Inv = [M,T] matrix, investment demand from each industry
-        X_inv = [M,T] matrix, demand for output from each industry due to 
-                 investment demand
+        K_p1 = [M,] vector, demand for capital from each industry 
+                in the next period
+        X_kp1 = [M,] vector, demand for output for capital from
+                 each industry in the next period
         X_c   = [M,T] matrix, demand for output from each industry due to 
                  consumption demand
-        K_path  = [M,T] matrix, capital demand of all industries
+        b_coeffs = coeffients in the linear problem: aX=b
+        a_coeffs = coefficients in the linear problem: aX=b
         X_path  = [M,T] matrix, output from each industry
-        rc_errors = [M*T,] vector, errors in resource constraint
-                    for each production industry along time path
+    
 
     Returns: rc_errors
     '''
 
     T, K_ss = params
 
-    #unpack guesses, which needed to be a vector
+    aa = get_K_over_X_path(r_path, w_path, A, gamma, epsilon, delta)
+    bb = (1-delta)*aa
+
     X_path = np.zeros((M,T))
-    for m in range(0,M):
-        X_path[m,:] = X_path_init_guess[(m*T):((m+1)*T)]
-    
-    K_path = firm.get_K(r_path, w_path, X_path, A, gamma, epsilon, delta)
-    Inv = np.zeros((M,T))
-    Inv[:,:-1] = K_path[:,1:] - (1-delta[:,:-1])*K_path[:,:-1]
-    Inv[:,T-1] = K_ss - (1-delta[:,T-1])*K_path[:,T-1]
+    K_p1 = K_ss
+    for t in range(T-1, -1, -1): # Go from periods T to 1
+        X_kp1 = np.dot(np.reshape(K_p1,(1,M)),xi)
+        X_c = np.dot(np.reshape(C_path[:,t],(1,I)),pi)
+        b_coeffs = (X_c + X_kp1).transpose()
+        a_coeffs = np.eye(M) + (np.tile(bb[:,t],(M,1))*xi.transpose())
+        X_path[:,t] = np.reshape(np.linalg.solve(a_coeffs, b_coeffs),(M,))
+        #K = X_path[:,t]*aa[:,t]
+        #Inv = K_p1 - (1-delta[:,t])*K
+        #print 'Check RC: ', X_path[:,t]- X_c - np.dot(Inv,xi)
+        #print(a_coeffs)
+        #print(b_coeffs)
+        K_p1 = X_path[:,t]*aa[:,t]
 
-    X_inv = np.zeros((M,T))
-    X_c = np.zeros((M,T))
-    for t in range(0,T):
-        X_inv[:,t] = np.dot(Inv[:,t],xi)
-        X_c[:,t] = np.dot(np.reshape(C_path[:,t],(1,I)),pi)
 
-    rc_errors = np.reshape(X_c  + X_inv - X_path,(M*T,))
-
-    return rc_errors
+    return X_path
     
 
 def TP(params, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar, A,
@@ -506,19 +555,9 @@ def TP(params, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar, A,
         n)
     C_path = firm.get_C(c_path[:, :T, :])
 
-    X_path_params = (T, K_ss)
-    X_path_init = np.zeros((M,T))
-    for t in range(0,T):
-        X_path_init[:,t] = np.reshape((np.dot(np.reshape(C_path[:,t],(1,I)),pi))/I,(M,))
-
-    X_path_init_guess = np.reshape(X_path_init,(T*M,)) #need a vector going into fsolve
-
-    X_path_sol = opt.fsolve(solve_X_path, X_path_init_guess, args=(X_path_params, r_path[:T], w_path[:T], 
-             C_path, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], xi, pi, I, 
-             M), xtol=tp_tol, col_deriv=1)
-    X_path = np.zeros((M,T))
-    for m in range(0,M): # unpack vector of X_path solved by fsolve
-        X_path[m,:] = X_path_sol[(m*T):((m+1)*T)]
+    X_params = (T, K_ss)
+    X_path = get_X_path(X_params, r_path[:T], w_path[:T], C_path[:,:T], A[:,:T], gamma[:,:T],
+                            epsilon[:,:T], delta[:,:T], xi, pi, I, M)
 
     K_path = firm.get_K(r_path[:T], w_path[:T], X_path, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
 
@@ -681,7 +720,7 @@ def TP(params, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar, A,
 
     return (r_path, w_path, p_path, p_tilde_path, b_path, c_tilde_path, c_path,
         eulerr_path, C_path, X_path, K_path, L_path, MCKerr_path,
-        MCLerr_path)
+        MCLerr_path, RCdiff_path)
 
 
 def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
@@ -795,19 +834,10 @@ def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
         Gamma1, r_path, w_path, p_c_path, p_tilde_path, c_bar, I,
         n)
     C_path = firm.get_C(c_path[:, :T, :])
-    X_path_params = (T, K_ss)
-    X_path_init = np.zeros((M,T))
-    for t in range(0,T):
-        X_path_init[:,t] = np.reshape((np.dot(np.reshape(C_path[:,t],(1,I)),pi))/I,(M,))
 
-    X_path_init_guess = np.reshape(X_path_init,(T*M,)) #need a vector going into fsolve
-
-    X_path_sol = opt.fsolve(solve_X_path, X_path_init_guess, args=(X_path_params, r_path[:T], w_path[:T], 
-             C_path, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], xi, pi, I, 
-             M), xtol=tp_tol, col_deriv=1)
-    X_path = np.zeros((M,T))
-    for m in range(0,M): # unpack vector of X_path solved by fsolve
-        X_path[m,:] = X_path_sol[(m*T):((m+1)*T)]
+    X_params = (T, K_ss)
+    X_path = get_X_path(X_params, r_path[:T], w_path[:T], C_path[:,:T], A[:,:T], gamma[:,:T],
+                            epsilon[:,:T], delta[:,:T], xi, pi, I, M)
 
     K_path = firm.get_K(r_path[:T], w_path[:T], X_path, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
 
@@ -816,6 +846,18 @@ def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
     # Check market clearing in each period
     K_market_error = b_path[:, :T].sum(axis=0) - K_path[:, :].sum(axis=0)
     L_market_error = n.sum() - L_path[:, :].sum(axis=0)
+
+    # Checking resource constraint along the path:
+    Inv_path = np.zeros((M,T))
+    X_inv_path = np.zeros((M,T))
+    X_c_path = np.zeros((M,T))
+    Inv_path[:,:T-1] = K_path[:,1:] - (1-delta[:,:T-1])*K_path[:,:T-1]
+    Inv_path[:,T-1] = K_ss - (1-delta[:,T-1])*K_path[:,T-1]
+    for t in range(0,T):
+        X_inv_path[:,t] = np.dot(Inv_path[:,t],xi)
+        X_c_path[:,t] = np.dot(np.reshape(C_path[:,t],(1,I)),pi)
+    RCdiff_path = (X_path - X_c_path - X_inv_path) 
+    print 'the max RC diff is: ', np.absolute(RCdiff_path).max(axis=1)
 
     # Check and punish constraing violations
     mask1 = r_path[:T] <= 0

@@ -18,6 +18,7 @@ functions:
 import time
 import numpy as np
 import scipy.optimize as opt
+import pandas as pd
 import ssfuncs as ssf
 reload(ssf)
 import tpfuncs as tpf
@@ -67,9 +68,6 @@ tp_graphs    = boolean, =True if want graphs of TP objects
 # Household parameters
 S = int(80)
 T = 220
-I = 2
-alpha = np.array([0.4,0.6])
-c_bar = np.array([0.6, 0.6])
 beta_annual = 0.96
 beta = beta_annual ** (80 / S)
 sigma = 3.0
@@ -77,23 +75,83 @@ n = np.zeros(S)
 n[:int(round(2 * S / 3))] = 1.
 n[int(round(2 * S / 3)):] = 0.9
 
-# Firm parameters
-M = 2 
-A = np.array([1, 1.2])
-gamma = np.array([0.15, 0.2])
-epsilon = np.array([0.6, 0.6])
-delta_annual = np.array([0.04,0.05])
-delta = 1 - ((1-delta_annual)**(80/S))
-xi = np.array([[1.0, 0.0],[0.0, 1.0] ]) 
-pi = np.array([[1.0, 0.0],[0.0, 1.0] ]) 
+# Model calibation parameters
+FR1993_calib = False # if True, then calibration firm params to 
+      # Fullerton and Rogers (Brookings, 1993)
 
-# M = 3
-# A = np.array([1, 1.2, 0.9])
-# pi = np.array([[0.4, 0.3, 0.3],[0.1, 0.8, 0.1]]) 
-# xi = np.array([[0.2, 0.6, 0.2],[0.0, 0.2, 0.8], [0.6, 0.2, 0.2] ])
-# gamma = np.array([0.3, 0.25, 0.4])
-# delta = np.array([0.1, 0.12, 0.15])
-# epsilon = np.array([0.55, 0.6, 0.62])
+if FR1993_calib == True:
+  # Specify model dimensions
+  I = 17 # number of consumption goods
+  M = 19 # number of production industries
+
+  # Read in parameters from Fullerton and Rogers (1993) from excel file
+  xi_sheet = pd.read_excel('Firm_Parameters_FullertonRogers.xlsx', sheetname='xi')
+  xi = xi_sheet.as_matrix() # turn into numpy array
+  xi=xi[0:19,1:20] # keep only cells interested in
+  xi=xi.astype(float) # make sure type is float
+  xi = (xi/np.tile(xi.sum(0),(M,1))).transpose() # make xi so fractions and so rows are capital used in and columns are capital supplied in (MxM)
+  #print 'xi sum check: ', xi.sum(1)
+
+  pi_sheet = pd.read_excel('Firm_Parameters_FullertonRogers.xlsx', sheetname='pi')
+  pi = pi_sheet.as_matrix()
+  pi=pi[0:19,1:18]
+  pi=pi.astype(float)
+  pi = (pi/np.tile(pi.sum(0),(M,1))).transpose() # make pi so fractions and so rows are consumption goods and columns are output industries in (IxM)
+  #print 'pi sum check: ', pi.sum(1)
+
+  delta_sheet = pd.read_excel('Firm_Parameters_FullertonRogers.xlsx', sheetname='delta')
+  delta = delta_sheet.as_matrix()
+  delta=delta[0:19,1]
+  delta=delta.astype(float)
+  #print 'delta shape: ', delta.shape
+
+  gamma_sheet = pd.read_excel('Firm_Parameters_FullertonRogers.xlsx', sheetname='gamma')
+  gamma = gamma_sheet.as_matrix()
+  gamma=gamma[0:19,1]
+  gamma=gamma.astype(float)
+
+  epsilon_sheet = pd.read_excel('Firm_Parameters_FullertonRogers.xlsx', sheetname='epsilon')
+  epsilon = epsilon_sheet.as_matrix()
+  epsilon=epsilon[0:19,1]
+  epsilon=epsilon.astype(float)
+
+  alpha_sheet = pd.read_excel('Firm_Parameters_FullertonRogers.xlsx', sheetname='alpha')
+  alpha = alpha_sheet.as_matrix()
+  alpha =alpha[0:17,1]
+  alpha =alpha.astype(float)
+  alpha = alpha/alpha.sum() # ensure the alpha vector sums to one 
+
+  cbar_sheet = pd.read_excel('Firm_Parameters_FullertonRogers.xlsx', sheetname='cbar')
+  c_bar = cbar_sheet.as_matrix()
+  c_bar =c_bar[0:17,1]
+  c_bar =c_bar.astype(float)
+
+  # No TFP from FR1993, so just set to one for all
+  A = np.ones((M,))
+
+else: 
+# Firm/consumption parameters
+  I = 2
+  alpha = np.array([0.4,0.6])
+  c_bar = np.array([0.6, 0.6])
+  
+  M = 2
+  A = np.array([1, 1.2])
+  gamma = np.array([0.15, 0.2])
+  epsilon = np.array([0.6, 0.6])
+  delta_annual = np.array([0.04,0.05])
+  delta = 1 - ((1-delta_annual)**(80/S))
+  xi = np.array([[1.0, 0.0],[0.0, 1.0] ]) 
+  pi = np.array([[1.0, 0.0],[0.0, 1.0] ]) 
+
+
+  # M = 3
+  # A = np.array([1, 1.2, 0.9])
+  # gamma = np.array([0.3, 0.25, 0.4])
+  # delta = np.array([0.1, 0.12, 0.15])
+  # epsilon = np.array([0.55, 0.6, 0.62])
+  # pi = np.array([[0.4, 0.3, 0.3],[0.1, 0.8, 0.1]]) 
+  # xi = np.array([[0.2, 0.6, 0.2],[0.0, 0.2, 0.8], [0.6, 0.2, 0.2] ])
 
 # SS parameters
 ss_tol = 1e-13
@@ -352,9 +410,9 @@ elif GoodGuess == True:
 
             guesses = np.append(rpath_init[:T], wpath_init[:T])
             start_time = time.clock()
-            #solutions = opt.fsolve(tpf.TP_fsolve, guesses, args=(tp_params, K_ss, X_ss,
-            #   Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
-            #   tp_graphs), xtol=tp_tol, col_deriv=1)
+            solutions = opt.fsolve(tpf.TP_fsolve, guesses, args=(tp_params, K_ss, X_ss,
+               Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
+               tp_graphs), xtol=tp_tol, col_deriv=1)
             solutions = tpf.TP_fsolve(guesses, tp_params, K_ss, X_ss,
                Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
                tp_graphs)
@@ -367,7 +425,7 @@ elif GoodGuess == True:
             tp_params = (S, T, alpha_path, beta, sigma, r_ss, w_ss, tp_tol)
             (r_path, w_path, pc_path, p_tilde_path, b_path, c_tilde_path, c_path,
                 eul_path, C_path, X_path, K_path, L_path,
-                MCKerr_path, MCLerr_path) = \
+                MCKerr_path, MCLerr_path, RCdiff_path) = \
                 tpf.TP(tp_params, rpath, wpath, K_ss, X_ss,
                 Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, 
                 M, S, n, tp_graphs)
@@ -376,15 +434,6 @@ elif GoodGuess == True:
 
             # Print diagnostics
             print 'The max. absolute difference in the resource constraints are:'
-            Inv_path = np.zeros((M,T))
-            X_inv_path = np.zeros((M,T))
-            X_c_path = np.zeros((M,T))
-            Inv_path[:,:-1] = K_path[:,1:] - (1-delta_path[:,:T-1])*K_path[:,:-1]
-            Inv_path[:,T-1] = K_ss - (1-delta_path[:,T-1])*K_path[:,T-1]
-            for t in range(0,T):
-                X_inv_path[:,t] = np.dot(Inv_path[:,t],xi)
-                X_c_path[:,t] = np.dot(np.reshape(C_path[:,t],(1,I)),pi)
-            RCdiff_path = (X_path[:, :T-1] - X_c_path[:, :T-1] - X_inv_path[:, 1:T]) 
             print np.absolute(RCdiff_path).max(axis=1)
             print 'The max. absolute error in the market clearing conditions are:'
             print np.absolute(MCKerr_path).max(), np.absolute(MCLerr_path).max()
