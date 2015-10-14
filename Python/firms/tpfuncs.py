@@ -567,13 +567,12 @@ def TP(params, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar, A,
     Inv_path = np.zeros((M,T))
     X_inv_path = np.zeros((M,T))
     X_c_path = np.zeros((M,T))
-    Inv_path[:,:-1] = K_path[:,1:] - (1-delta[:,:T-1])*K_path[:,:-1]
+    Inv_path[:,:T-1] = K_path[:,1:] - (1-delta[:,:T-1])*K_path[:,:T-1]
     Inv_path[:,T-1] = K_ss - (1-delta[:,T-1])*K_path[:,T-1]
     for t in range(0,T):
         X_inv_path[:,t] = np.dot(Inv_path[:,t],xi)
         X_c_path[:,t] = np.dot(np.reshape(C_path[:,t],(1,I)),pi)
-    RCdiff_path = (X_path[:, :T-1] - X_c_path[:, :T-1] - X_inv_path[:, 1:T]) 
-
+    RCdiff_path = (X_path - X_c_path - X_inv_path) 
     
     MCKerr_path = b_path[:, :T].sum(axis=0) - K_path.sum(axis=0)
     MCLerr_path = n.sum() - L_path.sum(axis=0)

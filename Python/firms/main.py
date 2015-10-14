@@ -76,7 +76,7 @@ n[:int(round(2 * S / 3))] = 1.
 n[int(round(2 * S / 3)):] = 0.9
 
 # Model calibation parameters
-FR1993_calib = False # if True, then calibration firm params to 
+FR1993_calib = True # if True, then calibration firm params to 
       # Fullerton and Rogers (Brookings, 1993)
 
 if FR1993_calib == True:
@@ -413,9 +413,9 @@ elif GoodGuess == True:
             solutions = opt.fsolve(tpf.TP_fsolve, guesses, args=(tp_params, K_ss, X_ss,
                Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
                tp_graphs), xtol=tp_tol, col_deriv=1)
-            solutions = tpf.TP_fsolve(guesses, tp_params, K_ss, X_ss,
-               Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
-               tp_graphs)
+            #solutions = tpf.TP_fsolve(guesses, tp_params, K_ss, X_ss,
+            #   Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
+            #   tp_graphs)
             tpi_time = time.clock() - start_time
             rpath = solutions[:T].reshape(T)
             wpath = solutions[T:].reshape(T)
