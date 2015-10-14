@@ -38,7 +38,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
 import sys
-import firm_funcs as firm
+import firm_funcs_static as firm
 reload(firm)
 
 '''
@@ -446,7 +446,7 @@ def get_X_path(params, r_path, w_path, C_path, A, gamma,
     return X_path
     
 
-def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar, A,
+def TP(params, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar, A,
   gamma, epsilon, delta, xi, pi, I, M, S, n, graphs):
 
     '''
@@ -468,7 +468,6 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
         beta       = scalar in [0,1), discount factor for each model
                      period
         sigma      = scalar > 0, coefficient of relative risk aversion
-        p_ss       = [M,] vector, SS output prices for each industry
         r_ss       = scalar > 0, steady-state interest rate
         w_ss       = scalar > 0, steady-state wage
         tp_tol    = scalar > 0, tolerance level for fsolve's in TP solution
@@ -476,7 +475,6 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
                      the interest rate
         w_path_init = [T+S-1,] vector, initial guess for the time path of
                      the wage
-        p_path_init       = [M, T+S-1] matrix, time path of industry output prices
         X_ss      = [M,] vector, steady-state industry output levels
         Gamma1     = [S-1,] vector, initial period savings distribution
         c_bar   = [I,T+S-1] matrix, minimum consumption values for all
@@ -505,8 +503,10 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
         p_params    = length 4 tuple, objects to be passed to
                        get_p_path function:
                        (A, gamma, epsilon, delta)
+        p_path       = [M, T+S-1] matrix, time path of industry output prices
         p_c_path       = [I, T+S-1] matrix, time path of consumption good prices
         p_tilde_path        = [T+S-1] vector, time path of composite price
+
         r_params     = length 3 tuple, parameters passed in to get_r
         w_params     = length 2 tuple, parameters passed in to get_w
         cbe_params   = length 5 tuple. parameters passed in to
@@ -515,7 +515,6 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
                        interest rate
         w_path        = [T+S-2,] vector, equilibrium time path of the
                        real wage
-        p_path       = [M, T+S-1] matrix, time path of industry output prices
         c_tilde_path        = [S, T+S-2] matrix, equilibrium time path values
                        of individual consumption c_{s,t}
         b_path        = [S-1, T+S-2] matrix, equilibrium time path values
@@ -536,7 +535,7 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
     Returns: b_path, c_tilde_path, w_path, r_path, K_path, X_path, Cpath,
              EulErr_path, elapsed_time
     '''
-    (S, T, alpha, beta, sigma, p_ss, r_ss, w_ss, tp_tol) = params
+    (S, T, alpha, beta, sigma, r_ss, w_ss, tp_tol) = params
 
     r_path = np.zeros(T+S-1)
     w_path = np.zeros(T+S-1)
@@ -545,10 +544,9 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
     r_path[T:] = r_ss
     w_path[T:] = w_ss
 
-    p_path = np.zeros((M,T+S-1))
-    p_path[:,:T] = p_path_init[:,:T]
-    p_path[:,T:] = np.ones((M,S-1))*np.tile(np.reshape(p_ss,(M,1)),(1,S-1))
 
+    p_params = (A, gamma, epsilon, delta)
+    p_path = firm.get_p(p_params, r_path, w_path)
     p_c_path = get_p_c_path(p_path, pi, I)
     p_tilde_path = firm.get_p_tilde(alpha, p_c_path)
     cbe_params = (S, T, alpha, beta, sigma, tp_tol)
@@ -578,8 +576,7 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
     
     MCKerr_path = b_path[:, :T].sum(axis=0) - K_path.sum(axis=0)
     MCLerr_path = n.sum() - L_path.sum(axis=0)
-    p_params = (A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
-    p_err_path  = p_path[:,:T] - firm.get_p(p_params, r_path[:T], w_path[:T])
+    
 
     if graphs == True:
         # Plot time path of aggregate capital stock
@@ -817,20 +814,18 @@ def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
     Returns: b_path, c_tilde_path, w_path, r_path, K_path, X_path, Cpath,
              EulErr_path
     '''
-    (S, T, alpha, beta, sigma, p_ss, r_ss, w_ss, tp_tol) = params
+    (S, T, alpha, beta, sigma, r_ss, w_ss, tp_tol) = params
 
     r_path = np.zeros(T+S-1)
     w_path = np.zeros(T+S-1)
-    p_path = np.zeros((M,T+S-1))
-    r_path[:T] = guesses[0:T].reshape(T)
-    w_path[:T] = guesses[T:2*T].reshape(T)
+    r_path[:T] = guesses[0:T]
+    w_path[:T] = guesses[T:]
     r_path[T:] = r_ss
     w_path[T:] = w_ss
 
-    p_path[:,:T] = guesses[2*T:].reshape(M,T)
-    p_path[:,T:] = np.ones((M,S-1))*np.tile(np.reshape(p_ss,(M,1)),(1,S-1))
 
-
+    p_params = (A, gamma, epsilon, delta)
+    p_path = firm.get_p(p_params, r_path, w_path)
     p_c_path = get_p_c_path(p_path, pi, I)
     p_tilde_path = firm.get_p_tilde(alpha, p_c_path)
     cbe_params = (S, T, alpha, beta, sigma, tp_tol)
@@ -851,11 +846,6 @@ def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
     K_market_error = b_path[:, :T].sum(axis=0) - K_path[:, :].sum(axis=0)
     L_market_error = n.sum() - L_path[:, :].sum(axis=0)
 
-    # Check errors between guessed and implied prices
-    p_params = (A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
-    p_error  = p_path[:,:T] - firm.get_p(p_params, r_path[:T], w_path[:T])
-
-
     # Checking resource constraint along the path:
     Inv_path = np.zeros((M,T))
     X_inv_path = np.zeros((M,T))
@@ -873,15 +863,10 @@ def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
     mask2 = w_path[:T] <= 0
     mask3 = np.isnan(r_path[:T])
     mask4 = np.isnan(w_path[:T])
-    K_market_error[mask1] = 1e14
-    L_market_error[mask2] = 1e14
-    K_market_error[mask3] = 1e14
-    L_market_error[mask4] = 1e14
-
-    mask5 = p_path[:,:T] <= 0
-    mask6 = np.isnan(p_path[:,:T])
-    p_error[mask5] = 1e14
-    p_error[mask6] = 1e14
+    K_market_error[mask1] += 1e14
+    L_market_error[mask2] += 1e14
+    K_market_error[mask3] += 1e14
+    L_market_error[mask4] += 1e14
 
 
     print 'max capital market clearing distance: ', np.absolute(K_market_error).max()
@@ -889,7 +874,7 @@ def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
     print 'min capital market clearing distance: ', np.absolute(K_market_error).min()
     print 'min labor market clearing distance: ', np.absolute(L_market_error).min()
 
-    errors = np.insert(np.reshape(p_error,(T*M)),0,np.append(K_market_error, L_market_error))
+    errors = np.append(K_market_error, L_market_error)
 
     return errors
 

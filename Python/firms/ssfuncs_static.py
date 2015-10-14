@@ -40,7 +40,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import sys
-import firm_funcs as firm
+import firm_funcs_static as firm
 reload(firm)
 
 '''
@@ -49,7 +49,7 @@ reload(firm)
 ------------------------------------------------------------------------
 '''
 
-def feasible(params, rwp_init, b_guess, c_bar, A, gamma, epsilon,
+def feasible(params, rw_init, b_guess, c_bar, A, gamma, epsilon,
   delta, pi, I, S, n):
     '''
     Determines whether a particular guess for the steady-state values
@@ -65,7 +65,7 @@ def feasible(params, rwp_init, b_guess, c_bar, A, gamma, epsilon,
                    period
         sigma    = scalar > 0, coefficient of relative risk aversion
         ss_tol   = scalar > 0, tolerance level for steady-state fsolve
-        rwp_init  = [2+M,] vector, initial guesses for steady-state r, w, and p
+        rw_init  = [2,] vector, initial guesses for steady-state r and w
         b_guess  = [S-1,] vector, initial guess for savings vector
         c_bar = [I,] vector, minimum consumption values for all goods
         A        = [M,] vector, total factor productivity values for all
@@ -117,9 +117,7 @@ def feasible(params, rwp_init, b_guess, c_bar, A, gamma, epsilon,
     Returns: GoodGuess, r_cstr, w_cstr, c_cstr, c_cstr, K_cstr
     '''
     S, alpha, beta, sigma, ss_tol = params
-    r = rwp_init[0]
-    w = rwp_init[1]
-    p = rwp_init[2:]
+    r, w = rw_init
     GoodGuess = True
     r_cstr = False
     w_cstr = False
@@ -135,10 +133,9 @@ def feasible(params, rwp_init, b_guess, c_bar, A, gamma, epsilon,
     elif (r + delta).min() > 0 and w <= 0:
         w_cstr = True
         GoodGuess = False
-    elif p.max() <= 0 :
-        w_cstr = True
-        GoodGuess = False
-    elif (r + delta).min() > 0 and w > 0 and p.max()>0:
+    elif (r + delta).min() > 0 and w > 0:
+        p_params = (A, gamma, epsilon, delta)
+        p = firm.get_p(p_params, r, w)
         p_c = np.dot(pi,p)
         p_tilde = firm.get_p_tilde(alpha, p_c)
         cbe_params = (alpha, beta, sigma, r, w, p_tilde, ss_tol)
@@ -311,13 +308,13 @@ def solve_X(X_init, params, C, A, gamma, epsilon, delta, xi, pi, I, M):
     return rc_errors
 
 
-def MCerrs(rwp_vec, *objs):
+def MCerrs(rwvec, *objs):
     '''
     Returns capital and labor market clearing condition errors given
     particular values of r and w
 
     Inputs:
-        rwp_vec    = [2+M,] vector, given values of r, w, and p
+        rwvec    = [2,] vector, given values of r and w
         objs     = length 12 tuple, (S, alpha, beta, sigma, b_guess,
                    c_bar, A, gamma, epsilon, delta, n, ss_tol)
         S        = integer in [3,80], number of periods an individual
@@ -357,7 +354,7 @@ def MCerrs(rwp_vec, *objs):
                      given r and w
         p_c_params  = length 4 tuple, vectors to be passed in to get_p_c
                      (A, gamma, epsilon, delta)
-        p      = [M,] vector, prices in each industry
+        p      = [2,] vector, prices in each industry
         p_tilde          = scalar > 0, composite good price
         cbe_params = length 7 tuple, parameters for get_cbess function
                      (alpha, beta, sigma, r, w, p, ss_tol)
@@ -365,36 +362,35 @@ def MCerrs(rwp_vec, *objs):
         c       = [S,] vector, optimal composite consumption given
                      prices
         c_cstr     = [S,] boolean vector, =True if c_s<=0 for some s
-        c      = [I,S] matrix, optimal consumption of each good
+        c      = [2,S] matrix, optimal consumption of each good
                      given prices
-        c_cstr    = [M,S] boolean matrix, =True if c_{m,s}<=0 for
+        c_cstr    = [2,S] boolean matrix, =True if c_{m,s}<=0 for
                      given c_s
         euler_errors     = [S-1,] vector, Euler equations from optimal savings
-        C      = [I,] vector, total consumption demand for each
+        C      = [2,] vector, total consumption demand for each
                      industry
         X_params  = length 2 tuple, parameters for get_XK function:
                      (r, w)
-        X      = [M,] vector, total output for each industry
-        K      = [M,] vector, capital demand for each industry
+        X      = [2,] vector, total output for each industry
+        K      = [2,] vector, capital demand for each industry
         L_params  = length 2 tuple, parameters for get_Lvec function:
                      (r, w)
-        Lvec      = [M,] vector, labor demand for each industry
-        MCp_errs    = [2+M,] vector, capital and labor market clearing
-                     errors and pricing equation errors given r, w, and p
+        Lvec      = [2,] vector, labor demand for each industry
+        MC_errs    = [2,] vector, capital and labor market clearing
+                     errors given r ans w
 
     Returns: MC_errs
     '''
     (S, alpha, beta, sigma, b_guess, c_bar, A, gamma, epsilon,
         delta, xi, pi, I, M, S, n, ss_tol) = objs
-    r = rwp_vec[0]
-    w = rwp_vec[1]
-    p = rwp_vec[2:]
-    if (r + delta).min() <= 0 or w <=0 or p.max()<=0:
+    r, w = rwvec
+    if (r + delta).min() <= 0 or w <=0:
         MCKerr = 9999.
         MCLerr = 9999.
-        p_errors = 9999.
-        MCp_errs = np.insert(p_errors, 0,np.array([MCKerr, MCLerr]))
+        MC_errs = np.array((MCKerr, MCLerr))
     elif (r + delta).min() > 0 and w > 0:
+        p_params = (A, gamma, epsilon, delta)
+        p = firm.get_p(p_params, r, w)   
         p_c = np.dot(pi,p)
         p_tilde = firm.get_p_tilde(alpha, p_c)
         cbe_params = (alpha, beta, sigma, r, w, p_tilde, ss_tol)
@@ -408,14 +404,12 @@ def MCerrs(rwp_vec, *objs):
         L = firm.get_L(r, w, K, gamma, epsilon, delta)
         MCKerr = K.sum() - b.sum()
         MCLerr = L.sum() - n.sum()
-        p_params = (A, gamma, epsilon, delta)
-        p_errors = p - firm.get_p(p_params, r, w)
-        MCp_errs = np.insert(p_errors, 0,np.array([MCKerr, MCLerr]))
+        MC_errs = np.array((MCKerr, MCLerr))
 
-    return MCp_errs
+    return MC_errs
 
 
-def SS(params, rwp_init, b_guess, c_bar, A, gamma, epsilon, delta, xi, pi, I,
+def SS(params, rw_init, b_guess, c_bar, A, gamma, epsilon, delta, xi, pi, I,
     M, S, n, graphs):
     '''
     Generates all endogenous steady-state objects
@@ -463,7 +457,7 @@ def SS(params, rwp_init, b_guess, c_bar, A, gamma, epsilon, delta, xi, pi, I,
                       MCerrs function: (S, alpha, beta, sigma, b_guess,
                       c_bar, A, gamma, epsilon, delta, n,
                       ss_tol)
-        rwp_ss       = [2+M,] vector, steady-state r, w, and p
+        rw_ss       = [2,] vector, steady-state r and w
         r_ss        = scalar, steady-state interest rate
         w_ss        = scalar > 0, steady-state wage
         p_c_params   = length 4 tuple, vectors to be passed in to get_p_c
@@ -497,7 +491,6 @@ def SS(params, rwp_init, b_guess, c_bar, A, gamma, epsilon, delta, xi, pi, I,
         MCL_err_ss  = scalar, steady-state labor market clearing error
         MCerr_ss    = [2,] vector, steady-state capital and labor market
                       clearing errors
-        p_errors    = [M,] vector, differences between guessed and implied prices
         ss_time     = scalar, time to compute SS solution (seconds)
         svec         = [S,] vector, age-s indices from 1 to S
         b_ss0        = [S,] vector, age-s wealth levels including b_1=0
@@ -509,11 +502,11 @@ def SS(params, rwp_init, b_guess, c_bar, A, gamma, epsilon, delta, xi, pi, I,
     S, alpha, beta, sigma, ss_tol = params
     MCerrs_objs = (S, alpha, beta, sigma, b_guess, c_bar, A,
                   gamma, epsilon, delta, xi, pi, I, M, S, n, ss_tol)
-    rwp_ss = opt.fsolve(MCerrs, rwp_init, args=(MCerrs_objs),
+    rw_ss = opt.fsolve(MCerrs, rw_init, args=(MCerrs_objs),
                 xtol=ss_tol)
-    r_ss = rwp_ss[0]
-    w_ss = rwp_ss[1]
-    p_ss = rwp_ss[2:]
+    r_ss, w_ss = rw_ss
+    p_params = (A, gamma, epsilon, delta)
+    p_ss = firm.get_p(p_params, r_ss, w_ss)
 
     p_c_ss = np.dot(pi,p_ss)
     p_tilde_ss = firm.get_p_tilde(alpha, p_c_ss)
@@ -530,8 +523,6 @@ def SS(params, rwp_init, b_guess, c_bar, A, gamma, epsilon, delta, xi, pi, I,
     MCK_err_ss = K_ss.sum() - b_ss.sum()
     MCL_err_ss = L_ss.sum() - n.sum()
     MCerr_ss = np.array([MCK_err_ss, MCL_err_ss])
-    p_params = (A, gamma, epsilon, delta)
-    p_errors_ss = p_ss - firm.get_p(p_params, r_ss, w_ss)
     ss_time = time.clock() - start_time
 
     if graphs == True:
@@ -576,5 +567,5 @@ def SS(params, rwp_init, b_guess, c_bar, A, gamma, epsilon, delta, xi, pi, I,
         # plt.savefig('c_ss_Chap11')
         plt.show()
 
-    return (r_ss, w_ss, p_ss, p_c_ss, p_tilde_ss, b_ss, c_tilde_ss, c_ss, EulErr_ss,
-           C_ss, X_ss, K_ss, L_ss, MCK_err_ss, MCL_err_ss, p_errors_ss, ss_time)
+    return (r_ss, w_ss, p_c_ss, p_tilde_ss, b_ss, c_tilde_ss, c_ss, EulErr_ss,
+           C_ss, X_ss, K_ss, L_ss, MCK_err_ss, MCL_err_ss, ss_time)

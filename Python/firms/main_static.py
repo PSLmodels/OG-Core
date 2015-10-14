@@ -19,9 +19,9 @@ import time
 import numpy as np
 import scipy.optimize as opt
 import pandas as pd
-import ssfuncs as ssf
+import ssfuncs_static as ssf
 reload(ssf)
-import tpfuncs as tpf
+import tpfuncs_static as tpf
 reload(tpf)
 import matplotlib
 import matplotlib.pyplot as plt
@@ -133,7 +133,8 @@ else:
 # Firm/consumption parameters
   I = 2
   alpha = np.array([0.4,0.6])
-  c_bar = np.array([0.0, 0.0]) #np.array([0.6, 0.6])
+  #c_bar = np.array([0.6, 0.6])
+  c_bar = np.array([0.0, 0.0])
   
   M = 2
   A = np.array([1, 1.2])
@@ -168,8 +169,7 @@ Compute the steady state
 rbar_init    = scalar > 1, initial guess for steady-state model period
                interest rate
 wbar_init    = scalar > 1, initial guess for steady-state real wage
-p_init       = [M,] vector, initial guess for steady-state output prices
-rwpbar_init   = [2+M,] vector, initial guesses for steady-state r, w, and p
+rwbar_init   = [2,] vector, initial guesses for steady-state r and w
 feas_params  = length 5 tuple, parameters for feasible function:
                (S, alpha, beta, sigma, ss_tol)
 b_guess      = [S-1,] vector, initial guess for savings to use in fsolve
@@ -206,8 +206,7 @@ rcdiff_ss   = [M,] vector, steady-state difference in goods market
 # Make sure initial guess of r and w is feasible
 rbar_init = ((1 + 0.04) ** (80 / S)) - 1
 wbar_init = 1.
-p_init = np.ones(M)
-rwpbar_init = np.insert(p_init, 0,np.array([rbar_init, wbar_init]))
+rwbar_init = np.array([rbar_init, wbar_init])
 feas_params = (S, alpha, beta, sigma, ss_tol)
 b_guess = np.zeros(S-1)
 b_guess[:int(round(2 * S / 3))] = \
@@ -215,7 +214,7 @@ b_guess[:int(round(2 * S / 3))] = \
 b_guess[int(round(2 * S / 3)):] = \
     (np.linspace(0.3, 0.003, S - 1 - int(round(2 * S / 3))))
 GoodGuess, r_cstr_ss, w_cstr_ss, c_tilde_cstr_ss, c_cstr_ss, K_cstr_ss \
-    = ssf.feasible(feas_params, rwpbar_init, b_guess, c_bar, A,
+    = ssf.feasible(feas_params, rwbar_init, b_guess, c_bar, A,
     gamma, epsilon, delta, pi, I, S, n)
 
 if r_cstr_ss == True and w_cstr_ss == True:
@@ -239,17 +238,15 @@ elif (r_cstr_ss == False and w_cstr_ss == False and c_tilde_cstr_ss.max() == 0
 elif (r_cstr_ss == False and w_cstr_ss == False and c_tilde_cstr_ss.max() == 0
   and c_cstr_ss.max() == 0 and K_cstr_ss == True):
     print 'Initial guess is not feasible because sum of K_{m}<=0.'
-elif p_init.min() <= 0:
-    print 'Initial guess is not feabile because at least one p_{m}<=0'
 elif GoodGuess == True:
     print 'Initial guess is feasible.'
 
     # Compute steady state
     print 'BEGIN STEADY STATE COMPUTATION'
     ss_params = (S, alpha, beta, sigma, ss_tol)
-    (r_ss, w_ss, p_ss, p_c_ss, p_tilde_ss, b_ss, c_tilde_ss, c_ss, eul_ss, C_ss, X_ss,
-        K_ss, L_ss, MCK_err_ss, MCL_err_ss, p_errors_ss, ss_time) = \
-        ssf.SS(ss_params, rwpbar_init, b_guess, c_bar, A,
+    (r_ss, w_ss, p_c_ss, p_tilde_ss, b_ss, c_tilde_ss, c_ss, eul_ss, C_ss, X_ss,
+        K_ss, L_ss, MCK_err_ss, MCL_err_ss, ss_time) = \
+        ssf.SS(ss_params, rwbar_init, b_guess, c_bar, A,
         gamma, epsilon, delta, xi, pi, I, M, S, n, ss_graphs)
 
     # Print diagnostics
@@ -257,14 +254,12 @@ elif GoodGuess == True:
         np.absolute(eul_ss).max()
     print 'The capital and labor market clearing errors are: ', \
         (MCK_err_ss, MCL_err_ss)
-    print 'The errors in the pricing equations are: ', \
-        (p_errors_ss)
-    #print 'The steady-state distribution of capital is:'
-    #print b_ss
-    #print 'The steady-state distribution of composite consumption is:'
-    #print c_tilde_ss
-    #print 'The steady-state distribution of goods consumption is:'
-    #print c_ss
+    print 'The steady-state distribution of capital is:'
+    print b_ss
+    print 'The steady-state distribution of composite consumption is:'
+    print c_tilde_ss
+    print 'The steady-state distribution of goods consumption is:'
+    print c_ss
     print 'The steady-state interest rate and wage:'
     print np.array([r_ss, w_ss])
     print 'Steady-state consumption good prices and composite price are:'
@@ -330,7 +325,7 @@ elif GoodGuess == True:
     r_path      = [T+S-2,] vector, equilibrium time path of the interest
                   rate
     w_path      = [T+S-2,] vector, equilibrium time path of the wage
-    p_path     = [M, T+S-2] matrix, equilibrium time path of industry
+    pm_path     = [M, T+S-2] matrix, equilibrium time path of industry
                   output prices
     pc_path     = [I, T+S-2] matrix, equilibrium time path of consumption
                   good prices
@@ -370,7 +365,6 @@ elif GoodGuess == True:
                   missing one individual's consumption in that period
     --------------------------------------------------------------------
     '''
-
     if tp_solve == True:
         print 'BEGIN EQUILIBRIUM TIME PATH COMPUTATION'
         #Gamma1 = b_ss
@@ -403,9 +397,6 @@ elif GoodGuess == True:
             wpath_init[T-S+1:] = w_ss
             #wpath_init[:] = w_ss
 
-            # initial guess for time path of prices
-            ppath_init = np.ones((M,T+S-1))*np.tile(np.reshape(p_ss,(M,1)),(1,T+S-1))
-
             # Solve for time path
             # Tile arrays of time path parameters so easy to handle in 
             # TP functions
@@ -416,9 +407,9 @@ elif GoodGuess == True:
             epsilon_path = np.tile(np.reshape(epsilon,(M,1)),(1,len(rpath_init)))
             delta_path = np.tile(np.reshape(delta,(M,1)),(1,len(rpath_init)))
 
-            tp_params = (S, T, alpha_path, beta, sigma, p_ss, r_ss, w_ss, tp_tol)
+            tp_params = (S, T, alpha_path, beta, sigma, r_ss, w_ss, tp_tol)
 
-            guesses = np.insert(np.reshape(ppath_init[:,:T],(T*M)),0,np.append(rpath_init[:T], wpath_init[:T]))
+            guesses = np.append(rpath_init[:T], wpath_init[:T])
             start_time = time.clock()
             solutions = opt.fsolve(tpf.TP_fsolve, guesses, args=(tp_params, K_ss, X_ss,
                Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
@@ -427,17 +418,16 @@ elif GoodGuess == True:
             #   Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
             #   tp_graphs)
             tpi_time = time.clock() - start_time
-            r_path = solutions[:T].reshape(T)
-            w_path = solutions[T:2*T].reshape(T)
-            p_path = solutions[2*T:].reshape(M,T)
+            rpath = solutions[:T].reshape(T)
+            wpath = solutions[T:].reshape(T)
 
 
             # run one iteration of TP with fsolve solution to get other output
-            tp_params = (S, T, alpha_path, beta, sigma, p_ss, r_ss, w_ss, tp_tol)
+            tp_params = (S, T, alpha_path, beta, sigma, r_ss, w_ss, tp_tol)
             (r_path, w_path, pc_path, p_tilde_path, b_path, c_tilde_path, c_path,
                 eul_path, C_path, X_path, K_path, L_path,
                 MCKerr_path, MCLerr_path, RCdiff_path) = \
-                tpf.TP(tp_params, p_path, r_path, w_path, K_ss, X_ss,
+                tpf.TP(tp_params, rpath, wpath, K_ss, X_ss,
                 Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, 
                 M, S, n, tp_graphs)
                 
