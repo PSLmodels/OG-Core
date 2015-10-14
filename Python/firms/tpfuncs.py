@@ -435,11 +435,6 @@ def get_X_path(params, r_path, w_path, C_path, A, gamma,
         b_coeffs = (X_c + X_kp1).transpose()
         a_coeffs = np.eye(M) + (np.tile(bb[:,t],(M,1))*xi.transpose())
         X_path[:,t] = np.reshape(np.linalg.solve(a_coeffs, b_coeffs),(M,))
-        #K = X_path[:,t]*aa[:,t]
-        #Inv = K_p1 - (1-delta[:,t])*K
-        #print 'Check RC: ', X_path[:,t]- X_c - np.dot(Inv,xi)
-        #print(a_coeffs)
-        #print(b_coeffs)
         K_p1 = X_path[:,t]*aa[:,t]
 
 
