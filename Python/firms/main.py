@@ -75,7 +75,17 @@ n = np.zeros(S)
 n[:int(round(2 * S / 3))] = 1.
 n[int(round(2 * S / 3)):] = 0.9
 
-# Model calibation parameters
+
+# SS parameters
+ss_tol = 1e-13
+ss_graphs = False
+# TP parameters
+tp_solve = False
+tp_graphs = False
+tp_tol = 1e-9 # tolerance for fsolve for TP and for HH prob along time path
+
+
+# Firm and consumption good parameters
 FR1993_calib = False # if True, then calibration firm params to 
       # Fullerton and Rogers (Brookings, 1993)
 
@@ -153,13 +163,6 @@ else:
   # pi = np.array([[0.4, 0.3, 0.3],[0.1, 0.8, 0.1]]) 
   # xi = np.array([[0.2, 0.6, 0.2],[0.0, 0.2, 0.8], [0.6, 0.2, 0.2] ])
 
-# SS parameters
-ss_tol = 1e-13
-ss_graphs = False
-# TP parameters
-tp_solve = True
-tp_graphs = False
-tp_tol = 1e-9 # tolerance for fsolve for TP and for HH prob along time path
 
 '''
 ------------------------------------------------------------------------
@@ -206,8 +209,7 @@ rcdiff_ss   = [M,] vector, steady-state difference in goods market
 # Make sure initial guess of r and w is feasible
 rbar_init = ((1 + 0.04) ** (80 / S)) - 1
 wbar_init = 1.
-p_init = np.ones(M)
-rwpbar_init = np.insert(p_init, 0,np.array([rbar_init, wbar_init]))
+rwbar_init = np.array([rbar_init, wbar_init])
 feas_params = (S, alpha, beta, sigma, ss_tol)
 b_guess = np.zeros(S-1)
 b_guess[:int(round(2 * S / 3))] = \
@@ -215,13 +217,13 @@ b_guess[:int(round(2 * S / 3))] = \
 b_guess[int(round(2 * S / 3)):] = \
     (np.linspace(0.3, 0.003, S - 1 - int(round(2 * S / 3))))
 GoodGuess, r_cstr_ss, w_cstr_ss, c_tilde_cstr_ss, c_cstr_ss, K_cstr_ss \
-    = ssf.feasible(feas_params, rwpbar_init, b_guess, c_bar, A,
-    gamma, epsilon, delta, pi, I, S, n)
+    = ssf.feasible(feas_params, rwbar_init, b_guess, c_bar, A,
+    gamma, epsilon, delta, xi, pi, M, I, S, n)
 
 if r_cstr_ss == True and w_cstr_ss == True:
-    print 'Initial guess is not feasible because both r + delta, w <= 0.'
+    print 'Initial guess is not feasible because both r, w <= 0.'
 elif r_cstr_ss == True and w_cstr_ss == False:
-    print 'Initial guess is not feasible because r + delta <= 0.'
+    print 'Initial guess is not feasible because r <= 0.'
 elif r_cstr_ss == False and w_cstr_ss == True:
     print 'Initial guess is not feasible because w <= 0.'
 elif (r_cstr_ss == False and w_cstr_ss == False and c_tilde_cstr_ss.max() == 1
@@ -239,17 +241,15 @@ elif (r_cstr_ss == False and w_cstr_ss == False and c_tilde_cstr_ss.max() == 0
 elif (r_cstr_ss == False and w_cstr_ss == False and c_tilde_cstr_ss.max() == 0
   and c_cstr_ss.max() == 0 and K_cstr_ss == True):
     print 'Initial guess is not feasible because sum of K_{m}<=0.'
-elif p_init.min() <= 0:
-    print 'Initial guess is not feabile because at least one p_{m}<=0'
 elif GoodGuess == True:
     print 'Initial guess is feasible.'
 
     # Compute steady state
     print 'BEGIN STEADY STATE COMPUTATION'
     ss_params = (S, alpha, beta, sigma, ss_tol)
-    (r_ss, w_ss, p_ss, p_c_ss, p_tilde_ss, b_ss, c_tilde_ss, c_ss, eul_ss, C_ss, X_ss,
-        K_ss, L_ss, MCK_err_ss, MCL_err_ss, p_errors_ss, ss_time) = \
-        ssf.SS(ss_params, rwpbar_init, b_guess, c_bar, A,
+    (r_ss, w_ss, p_ss, p_k_ss, p_c_ss, p_tilde_ss, b_ss, c_tilde_ss, c_ss, eul_ss, C_ss, X_ss,
+        K_ss, L_ss, MCK_err_ss, MCL_err_ss, ss_time) = \
+        ssf.SS(ss_params, rwbar_init, b_guess, c_bar, A,
         gamma, epsilon, delta, xi, pi, I, M, S, n, ss_graphs)
 
     # Print diagnostics
@@ -257,14 +257,12 @@ elif GoodGuess == True:
         np.absolute(eul_ss).max()
     print 'The capital and labor market clearing errors are: ', \
         (MCK_err_ss, MCL_err_ss)
-    print 'The errors in the pricing equations are: ', \
-        (p_errors_ss)
-    #print 'The steady-state distribution of capital is:'
-    #print b_ss
-    #print 'The steady-state distribution of composite consumption is:'
-    #print c_tilde_ss
-    #print 'The steady-state distribution of goods consumption is:'
-    #print c_ss
+    # print 'The steady-state distribution of capital is:'
+    # print b_ss
+    # print 'The steady-state distribution of composite consumption is:'
+    # print c_tilde_ss
+    # print 'The steady-state distribution of goods consumption is:'
+    # print c_ss
     print 'The steady-state interest rate and wage:'
     print np.array([r_ss, w_ss])
     print 'Steady-state consumption good prices and composite price are:'
@@ -273,6 +271,10 @@ elif GoodGuess == True:
     print np.array([[X_ss], [K_ss], [C_ss]])
     RCdiff_ss = X_ss - (np.dot(np.reshape(C_ss,(1,I)),pi)) - (np.dot(delta*K_ss,xi)) 
     print 'The difference in the resource constraints are: ', RCdiff_ss
+    # Calculate firm value
+    V_alt_ss = (p_ss*X_ss - w_ss*L_ss - p_k_ss*delta*K_ss)/r_ss
+    V_ss = p_k_ss*K_ss
+    print 'The difference between SS firm value, calculated two ways: ', V_alt_ss - V_ss 
 
     # Print SS computation time
     if ss_time < 60: # seconds

@@ -372,6 +372,60 @@ def get_K_over_X_path(r, w, A, gamma, epsilon, delta):
 
     return K_over_X_path
 
+def get_K_over_X_pf(r, w, p_k, A, gamma, epsilon, delta):
+    '''
+    Generates vector of SS capital-ouput ratios by production industry m 
+    for a given X, r, w.  
+
+    :: Note: This function differs from get_K_over_X because that function
+       uses is derived from the FOC for capital demand only.  This function
+       uses the capital-labor ratio implied from the FOCs for capital and 
+       labor demand together with the firms' production functions
+
+    Inputs:
+        r      = scalar, SS real interest rate
+        w      = scalar, SS real wage rate
+        p_k  = [M,] vector, SS capital prices for each industry
+        A       = [M,] vector, total factor productivity values for all
+                   industries
+        gamma = [M,] vector, capital shares of income for all
+                 industries
+        epsilon = [M,] vector, elasticities of substitution between
+                 capital and labor for all industries
+        delta = [M,] vector, model period depreciation rates for all
+                 industries
+
+    Functions called: None
+
+    Objects in function:
+        aa    = [M,] vector, gamma
+        bb    = [M,] vector, 1 - gamma
+        cc    = [M,] vector, (1 - gamma) / gamma
+        dd    = [M,] vector, (r + delta) / w
+        ee    = [M,] vector, 1 / epsilon
+        ff    = [M,] vector, (epsilon - 1) / epsilon
+        gg    = [M,] vector, epsilon - 1
+        hh    = [M,] vector, epsilon / (1 - epsilon)
+        ii    = [M,] vector, ((1 / A) * (((aa ** ee) + (bb ** ee) *
+                (cc ** ff) * (dd ** gg)) ** hh))
+        K = [M,] vector, SS capital demand of all industries
+
+    Returns: K_path
+    '''
+    aa = gamma
+    bb = 1 - gamma
+    cc = (1 - gamma) / gamma
+    dd = (p_k*(r + delta)) / w
+    ee = 1 / epsilon
+    ff = (epsilon - 1) / epsilon
+    gg = epsilon - 1
+    hh = epsilon / (1 - epsilon)
+
+    K = ((1/ A) *
+         (((aa ** ee) + (bb ** ee) * (cc ** ff) * (dd ** gg)) ** hh))
+
+    return K
+    
 
 def get_X_path(params, r_path, w_path, C_path, A, gamma,
   epsilon, delta, xi, pi, I, M):
