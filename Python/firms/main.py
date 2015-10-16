@@ -80,7 +80,7 @@ n[int(round(2 * S / 3)):] = 0.9
 ss_tol = 1e-13
 ss_graphs = False
 # TP parameters
-tp_solve = False
+tp_solve = True
 tp_graphs = False
 tp_tol = 1e-9 # tolerance for fsolve for TP and for HH prob along time path
 
@@ -422,12 +422,12 @@ elif GoodGuess == True:
 
             guesses = np.insert(np.reshape(ppath_init[:,:T],(T*M)),0,np.append(rpath_init[:T], wpath_init[:T]))
             start_time = time.clock()
-            solutions = opt.fsolve(tpf.TP_fsolve, guesses, args=(tp_params, K_ss, X_ss,
-               Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
-               tp_graphs), xtol=tp_tol, col_deriv=1)
-            #solutions = tpf.TP_fsolve(guesses, tp_params, K_ss, X_ss,
+            #solutions = opt.fsolve(tpf.TP_fsolve, guesses, args=(tp_params, K_ss, X_ss,
             #   Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
-            #   tp_graphs)
+            #   tp_graphs), xtol=tp_tol, col_deriv=1)
+            solutions = tpf.TP_fsolve(guesses, tp_params, K_ss, X_ss,
+               Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
+               tp_graphs)
             tpi_time = time.clock() - start_time
             r_path = solutions[:T].reshape(T)
             w_path = solutions[T:2*T].reshape(T)
@@ -436,9 +436,9 @@ elif GoodGuess == True:
 
             # run one iteration of TP with fsolve solution to get other output
             tp_params = (S, T, alpha_path, beta, sigma, p_ss, r_ss, w_ss, tp_tol)
-            (r_path, w_path, pc_path, p_tilde_path, b_path, c_tilde_path, c_path,
+            (r_path, w_path, p_path, p_k_path, p_tilde_path, b_path, c_tilde_path, c_path,
                 eul_path, C_path, X_path, K_path, L_path,
-                MCKerr_path, MCLerr_path, RCdiff_path) = \
+                MCKerr_path, MCLerr_path, RCdiff_path, p_err_path) = \
                 tpf.TP(tp_params, p_path, r_path, w_path, K_ss, X_ss,
                 Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, 
                 M, S, n, tp_graphs)
@@ -450,6 +450,13 @@ elif GoodGuess == True:
             print np.absolute(RCdiff_path).max(axis=1)
             print 'The max. absolute error in the market clearing conditions are:'
             print np.absolute(MCKerr_path).max(), np.absolute(MCLerr_path).max()
+            print 'The max. absolute error in pricing equations are:'
+            print np.absolute(p_err_path).max()
+            print 'The max. absolute error between alternative methods of finding firm value are:'
+            V_alt_path = (((p_path[:,:T-1]*X_path[:,:T-1] - w_path[:T-1]*L_path[:,:T-1] - 
+                            p_k_path[:,:T-1]*(K_path[:,1:T]-(1-delta_path[:,:T-1])*K_path[:,:T-1])) + (p_k_path[:,1:T]*K_path[:,1:T])) /(1+r_path[:T-1]))
+            V_path = p_k_path[:,:T]*K_path
+            print np.absolute(V_alt_path[:,:T-1]-V_path[:,:T-1]).max()
 
 
 

@@ -29,36 +29,6 @@ import sys
 ------------------------------------------------------------------------
 '''
 
-def get_p(params, r, w):
-    '''
-    Generates time path of industry prices p_m from r_path and w_path
-
-    Inputs:
-        params = length 4 tuple, (A, gamma, epsilon, delta)
-        A   = [M,T+S-2] matrix, total factor productivity for each
-                 industry
-        gamma = [M,T+S-2] matrix, capital share of income for each industry
-        epsilon = [M,T+S-2] matrix, elasticity of substitution between capital
-                 and labor for each industry
-        delta = [M,T+S-2] matrix, capital depreciation rate for each
-                 industry
-        r  = [T+S-2,] matrix, time path of interest rate
-        w      = [T+S-2,] matrix, time path of wage
-
-    Functions called: None
-
-    Objects in function:
-        p = [M, T+S-2] matrix, time path of industry prices
-
-    Returns: p
-    '''
-    A, gamma, epsilon, delta = params
-
-    p = (1 / A) * ((gamma * ((r + delta) **
-                   (1 - epsilon)) + (1 - gamma) * (w **
-                   (1 - epsilon))) ** (1 / (1 - epsilon)))
-
-    return p
 
 def get_p_tilde(alpha, p_c):
     '''
@@ -169,84 +139,6 @@ def get_C(c):
     C = (c.sum(axis=0)).transpose()
 
     return C
-
-
-def get_K(r, w, X, A, gamma, epsilon, delta):
-    '''
-    Generates vector of capital demand from production industry m 
-    along the time path for a given X, r, w.
-
-    Inputs:
-        r      = [T,] vector, real interest rates
-        w      = [T,] vector, real wage rates
-        X  = [M,T] matrix, output from each industry
-        A       = [M,T] matrix, total factor productivity values for all
-                   industries
-        gamma = [M,T] matrix, capital shares of income for all
-                 industries
-        epsilon = [M,T] matrix, elasticities of substitution between
-                 capital and labor for all industries
-        delta = [M,T] matrix, model period depreciation rates for all
-                 industries
-
-    Functions called: None
-
-    Objects in function:
-        aa    = [M,T] matrix, gamma
-        bb    = [M,T] matrix, 1 - gamma
-        cc    = [M,T] matrix, (1 - gamma) / gamma
-        dd    = [M,T] matrix, (r + delta) / w
-        ee    = [M,T] matrix, 1 / epsilon
-        ff    = [M,T] matrix, (epsilon - 1) / epsilon
-        gg    = [M,T] matrix, epsilon - 1
-        hh    = [M,T] matrix, epsilon / (1 - epsilon)
-        ii    = [M,T] matrix, ((1 / A) * (((aa ** ee) + (bb ** ee) *
-                (cc ** ff) * (dd ** gg)) ** hh))
-        K_path = [M,T] matrix, capital demand of all industries
-
-    Returns: K_path
-    '''
-    aa = gamma
-    bb = 1 - gamma
-    cc = (1 - gamma) / gamma
-    dd = (r + delta) / w
-    ee = 1 / epsilon
-    ff = (epsilon - 1) / epsilon
-    gg = epsilon - 1
-    hh = epsilon / (1 - epsilon)
-
-    K = ((X / A) *
-         (((aa ** ee) + (bb ** ee) * (cc ** ff) * (dd ** gg)) ** hh))
-
-    return K
-
-
-
-def get_L(r, w, K, gamma, epsilon, delta):
-    '''
-    Generates vector of labor demand L_{m} for good m given X_{m}, p_{m}, r and w
-
-    Inputs:
-        K = [M, T] matrix, time path of aggregate output by
-                 industry
-        r  = [T, ] matrix, time path of real interest rate
-        w  = [T, ] matrix, time path of real wage
-        gamma = [M,T] matrix, capital shares of income for all
-                 industries
-        epsilon = [M,T] matrix, elasticities of substitution between
-                 capital and labor for all industries
-        delta = [M,T] matrix, rate of phyical depreciation for all industries
-
-    Functions called: None
-
-    Objects in function:
-        L = [M,T] matrix, labor demand from each industry
-
-    Returns: L_path
-    '''
-    L = K*((1-gamma)/gamma)*(((r+delta)/w)**epsilon)
-
-    return L
 
 def get_b_errors(params, r, c_tilde, c_tilde_cstr, diff):
     '''
