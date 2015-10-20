@@ -40,7 +40,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 import sys
-import firm_funcs as firm
+import firm_funcs_static as firm
 reload(firm)
 
 '''
@@ -50,7 +50,7 @@ reload(firm)
 '''
 
 def feasible(params, rw_init, b_guess, c_bar, A, gamma, epsilon,
-  delta, xi, pi, M, I, S, n):
+  delta, pi, I, S, n):
     '''
     Determines whether a particular guess for the steady-state values
     or r and w are feasible. Feasibility means that
@@ -117,27 +117,25 @@ def feasible(params, rw_init, b_guess, c_bar, A, gamma, epsilon,
     Returns: GoodGuess, r_cstr, w_cstr, c_cstr, c_cstr, K_cstr
     '''
     S, alpha, beta, sigma, ss_tol = params
-    r = rw_init[0]
-    w = rw_init[1]
+    r, w = rw_init
     GoodGuess = True
     r_cstr = False
     w_cstr = False
     c_cstr = np.zeros(S, dtype=bool)
     K_cstr = False
-    if r <= 0 and w <= 0:
+    if (r + delta).min() <= 0 and w <= 0:
         r_cstr = True
         w_cstr = True
         GoodGuess = False
-    elif r <= 0 and w > 0:
+    elif (r + delta).min() <= 0 and w > 0:
         r_cstr = True
         GoodGuess = False
-    elif r > 0 and w <= 0:
+    elif (r + delta).min() > 0 and w <= 0:
         w_cstr = True
         GoodGuess = False
-    elif r > 0 and w > 0:
-        p_guess = np.ones(M)
-        p_params =  A, gamma, epsilon, delta
-        p = opt.fsolve(solve_p, p_guess, args=(p_params, r, w, xi), xtol=ss_tol, col_deriv=1)
+    elif (r + delta).min() > 0 and w > 0:
+        p_params = (A, gamma, epsilon, delta)
+        p = firm.get_p(p_params, r, w)
         p_c = np.dot(pi,p)
         p_tilde = firm.get_p_tilde(alpha, p_c)
         cbe_params = (alpha, beta, sigma, r, w, p_tilde, ss_tol)
@@ -264,7 +262,7 @@ def EulerSys_b(b, *objs):
 
 
 
-def solve_X(X_init, params, C, p_k, A, gamma, epsilon, delta, xi, pi, I, M):
+def solve_X(X_init, params, C, A, gamma, epsilon, delta, xi, pi, I, M):
     '''
     Generates vector of aggregate output X_m of good m given r and w
     and consumption demands
@@ -274,7 +272,6 @@ def solve_X(X_init, params, C, p_k, A, gamma, epsilon, delta, xi, pi, I, M):
         r      = scalar > 0, interest rate
         w      = scalar > 0, real wage
         C    = [I,] vector, aggregate consumption of all goods
-        p_k = [M,] vector, SS industry capital prices
         A   = [M,] vector, total factor productivity values for all
                  industries
         gamma = [M,] vector, capital shares of income for all
@@ -289,7 +286,7 @@ def solve_X(X_init, params, C, p_k, A, gamma, epsilon, delta, xi, pi, I, M):
                good i that comes from the output of industry j
 
     Functions called: 
-        get_K
+        firm.get_K
 
     Objects in function:
         X    = [M,] vector, aggregate output of all industries
@@ -304,207 +301,20 @@ def solve_X(X_init, params, C, p_k, A, gamma, epsilon, delta, xi, pi, I, M):
     
     X_c = np.dot(np.reshape(C,(1,I)),pi)
 
-
-    Inv = np.reshape(delta*get_K(r, w, X, p_k, A, gamma, epsilon, delta),(1,M))
+    Inv = np.reshape(delta*firm.get_K(r, w, X, A, gamma, epsilon, delta),(1,M))
     
     rc_errors = np.reshape(X_c  + np.dot(Inv,xi) - X,(M))
 
     return rc_errors
 
-def get_K_over_X(params, p, p_k, r):
-    '''
-    Generates SS capital-output ratio by industry
 
-    Inputs:
-        params = length 4 tuple, (A, gamma, epsilon, delta)
-        A   = [M,] vector, total factor productivity for each
-                 industry
-        gamma = [M,] vector, capital share of income for each industry
-        epsilon = [M,] vector, elasticity of substitution between capital
-                 and labor for each industry
-        delta = [M,] vector, capital depreciation rate for each
-                 industry
-        r  = scalar, SS interest rate
-        p_k = [M,] vector, SS industry capital prices
-        p = [M,] vector,  SS industry output prices
-
-
-    Functions called: None
-
-    Objects in function:
-        K_over_X = [M,] vector,  SS capital-output ratio by industry
-
-    Returns: K_over_X
-    '''
-
-    A, gamma, epsilon, delta = params
-
-    K_over_X = gamma*(A**(epsilon-1))*((p/(p_k*(r+delta)))**(epsilon))
-
-    return K_over_X 
-
-
-def get_L_over_X(params, p, w):
-    '''
-    Generates SS labor-output ratio by industry
-
-    Inputs:
-        params = length 4 tuple, (A, gamma, epsilon, delta)
-        A   = [M,] vector, total factor productivity for each
-                 industry
-        gamma = [M,] vector, capital share of income for each industry
-        epsilon = [M,] vector, elasticity of substitution between capital
-                 and labor for each industry
-        delta = [M,] vector, capital depreciation rate for each
-                 industry
-        w      = scalar, SS wage rate
-        p = [M,] vector,  SS industry output prices
-
-
-    Functions called: None
-
-    Objects in function:
-        L_over_X = [M,] vector,  SS capital-output ratio by industry
-
-    Returns: K_over_X
-    '''
-
-    A, gamma, epsilon, delta = params
-
-    L_over_X = (1-gamma)*(A**(epsilon-1))*((p/w)**epsilon)
-
-
-    return L_over_X 
-
-
-
-def solve_p(guesses, params, r, w, xi):
-    '''
-    Generates SS industry prices p from r and w by solving a system of
-    M equations and M unknowns
-
-    Inputs:
-        params = length 4 tuple, (A, gamma, epsilon, delta)
-        A   = [M,] vector, total factor productivity for each
-                 industry
-        gamma = [M,] vector, capital share of income for each industry
-        epsilon = [M,] vector, elasticity of substitution between capital
-                 and labor for each industry
-        delta = [M,] vector, capital depreciation rate for each
-                 industry
-        r  = scalar, SS interest rate
-        w      = scalar, SS wage rate
-
-    Functions called: 
-        get_L_over_X
-        get_K_over_X
-
-    Objects in function:
-        p = [M,] vector,  SS industry output prices
-        p_k = [M,] vector, SS industry capital prices
-
-    Returns: errors - difference between guess and implied price
-    '''
-    A, gamma, epsilon, delta = params
-
-    p = guesses 
-
-    p_k = np.dot(xi,p)
-
-    L_over_X = get_L_over_X(params, p, w)
-    K_over_X = get_K_over_X(params, p, p_k, r)
-
-    errors = p - (w*L_over_X + p_k*(r+delta)*K_over_X)
-
-    return errors
-
-def get_K(r, w, X, p_k, A, gamma, epsilon, delta):
-    '''
-    Generates vector of SS capital demand by production industry m 
-    for a given X, r, w.
-
-    Inputs:
-        r      = scalar, SS real interest rate
-        w      = scalar, SS real wage rate
-        X  = [M,] vector, SS output from each industry
-        p_k  = [M,] vector, SS capital prices for each industry
-        A       = [M,] vector, total factor productivity values for all
-                   industries
-        gamma = [M,] vector, capital shares of income for all
-                 industries
-        epsilon = [M,] vector, elasticities of substitution between
-                 capital and labor for all industries
-        delta = [M,] vector, model period depreciation rates for all
-                 industries
-
-    Functions called: None
-
-    Objects in function:
-        aa    = [M,] vector, gamma
-        bb    = [M,] vector, 1 - gamma
-        cc    = [M,] vector, (1 - gamma) / gamma
-        dd    = [M,] vector, (r + delta) / w
-        ee    = [M,] vector, 1 / epsilon
-        ff    = [M,] vector, (epsilon - 1) / epsilon
-        gg    = [M,] vector, epsilon - 1
-        hh    = [M,] vector, epsilon / (1 - epsilon)
-        ii    = [M,] vector, ((1 / A) * (((aa ** ee) + (bb ** ee) *
-                (cc ** ff) * (dd ** gg)) ** hh))
-        K = [M,] vector, SS capital demand of all industries
-
-    Returns: K_path
-    '''
-    aa = gamma
-    bb = 1 - gamma
-    cc = (1 - gamma) / gamma
-    dd = (p_k*(r + delta)) / w
-    ee = 1 / epsilon
-    ff = (epsilon - 1) / epsilon
-    gg = epsilon - 1
-    hh = epsilon / (1 - epsilon)
-
-    K = ((X / A) *
-         (((aa ** ee) + (bb ** ee) * (cc ** ff) * (dd ** gg)) ** hh))
-
-    return K
-
-
-def get_L(r, w, K, p_k, gamma, epsilon, delta):
-    '''
-    Generates vector of labor demand L_{m} for good m given X_{m}, p_{m}, r and w
-
-    Inputs:
-        K = [M,] vector matrix, SS output by industry
-        r  = scalar, SS real interest rate
-        w  = scalar, SS real wage
-        p_k = [M,] vector, SS industry capital prices
-        gamma = [M,] vector, capital shares of income for all
-                 industries
-        epsilon = [M,] vector, elasticities of substitution between
-                 capital and labor for all industries
-        delta = [M,] vector, rate of phyical depreciation for all industries
-
-    Functions called: None
-
-    Objects in function:
-        L = [M,] vector, SS labor demand from each industry
-
-    Returns: L
-    '''
-
-    L = K*((1-gamma)/gamma)*(((p_k*(r+delta))/w)**epsilon)
-
-    return L
-
-
-
-def MCerrs(rw_vec, *objs):
+def MCerrs(rwvec, *objs):
     '''
     Returns capital and labor market clearing condition errors given
     particular values of r and w
 
     Inputs:
-        rw_vec    = [2,] vector, given values of r and w
+        rwvec    = [2,] vector, given values of r and w
         objs     = length 12 tuple, (S, alpha, beta, sigma, b_guess,
                    c_bar, A, gamma, epsilon, delta, n, ss_tol)
         S        = integer in [3,80], number of periods an individual
@@ -528,14 +338,13 @@ def MCerrs(rw_vec, *objs):
         ss_tol   = scalar > 0, tolerance level for steady-state fsolve
 
     Functions called:
-        solve_p
+        firm.get_p
         firm.get_p_tilde
         get_cbess
         firm.get_C
-        solve_X
-        get_K
-        get_L
-  
+        firm.get_K
+        firm.get_L
+
     Objects in function:
         r          = scalar > 0, interest rate
         w          = scalar > 0, real wage
@@ -545,7 +354,7 @@ def MCerrs(rw_vec, *objs):
                      given r and w
         p_c_params  = length 4 tuple, vectors to be passed in to get_p_c
                      (A, gamma, epsilon, delta)
-        p      = [M,] vector, prices in each industry
+        p      = [2,] vector, prices in each industry
         p_tilde          = scalar > 0, composite good price
         cbe_params = length 7 tuple, parameters for get_cbess function
                      (alpha, beta, sigma, r, w, p, ss_tol)
@@ -553,38 +362,35 @@ def MCerrs(rw_vec, *objs):
         c       = [S,] vector, optimal composite consumption given
                      prices
         c_cstr     = [S,] boolean vector, =True if c_s<=0 for some s
-        c      = [I,S] matrix, optimal consumption of each good
+        c      = [2,S] matrix, optimal consumption of each good
                      given prices
-        c_cstr    = [M,S] boolean matrix, =True if c_{m,s}<=0 for
+        c_cstr    = [2,S] boolean matrix, =True if c_{m,s}<=0 for
                      given c_s
         euler_errors     = [S-1,] vector, Euler equations from optimal savings
-        C      = [I,] vector, total consumption demand for each
+        C      = [2,] vector, total consumption demand for each
                      industry
         X_params  = length 2 tuple, parameters for get_XK function:
                      (r, w)
-        X      = [M,] vector, total output for each industry
-        K      = [M,] vector, capital demand for each industry
+        X      = [2,] vector, total output for each industry
+        K      = [2,] vector, capital demand for each industry
         L_params  = length 2 tuple, parameters for get_Lvec function:
                      (r, w)
-        Lvec      = [M,] vector, labor demand for each industry
-        MCp_errs    = [2+M,] vector, capital and labor market clearing
-                     errors and pricing equation errors given r, w, and p
+        Lvec      = [2,] vector, labor demand for each industry
+        MC_errs    = [2,] vector, capital and labor market clearing
+                     errors given r ans w
 
     Returns: MC_errs
     '''
     (S, alpha, beta, sigma, b_guess, c_bar, A, gamma, epsilon,
         delta, xi, pi, I, M, S, n, ss_tol) = objs
-    r = rw_vec[0]
-    w = rw_vec[1]
-    if r <= 0 or w <=0 :
+    r, w = rwvec
+    if (r + delta).min() <= 0 or w <=0:
         MCKerr = 9999.
         MCLerr = 9999.
-        MC_errs = np.array([MCKerr, MCLerr])
-    elif r > 0 and w > 0:
-        p_guess = np.ones(M)
-        p_params =  A, gamma, epsilon, delta
-        p = opt.fsolve(solve_p, p_guess, args=(p_params, r, w, xi), xtol=ss_tol, col_deriv=1)
-        p_k = np.dot(xi,p)
+        MC_errs = np.array((MCKerr, MCLerr))
+    elif (r + delta).min() > 0 and w > 0:
+        p_params = (A, gamma, epsilon, delta)
+        p = firm.get_p(p_params, r, w)   
         p_c = np.dot(pi,p)
         p_tilde = firm.get_p_tilde(alpha, p_c)
         cbe_params = (alpha, beta, sigma, r, w, p_tilde, ss_tol)
@@ -593,16 +399,12 @@ def MCerrs(rw_vec, *objs):
         C = firm.get_C(c.transpose())
         X_params = (r, w)
         X_init = (np.dot(np.reshape(C,(1,I)),pi))/I
-        X = opt.fsolve(solve_X, X_init, args=(X_params, C, p_k, A, gamma, epsilon, delta, xi, pi, I, M), xtol=ss_tol, col_deriv=1)
-        K = get_K(r, w, X, p_k, A, gamma, epsilon, delta)
-        L = get_L(r, w, K, p_k, gamma, epsilon, delta)
-
-        # Calculate firm value
-        V = p_k*K
-
-        MCKerr = V.sum() - b.sum()
+        X = opt.fsolve(solve_X, X_init, args=(X_params, C, A, gamma, epsilon, delta, xi, pi, I, M), xtol=ss_tol, col_deriv=1)
+        K = firm.get_K(r, w, X, A, gamma, epsilon, delta)
+        L = firm.get_L(r, w, K, gamma, epsilon, delta)
+        MCKerr = K.sum() - b.sum()
         MCLerr = L.sum() - n.sum()
-        MC_errs = np.array([MCKerr, MCLerr])
+        MC_errs = np.array((MCKerr, MCLerr))
 
     return MC_errs
 
@@ -642,12 +444,12 @@ def SS(params, rw_init, b_guess, c_bar, A, gamma, epsilon, delta, xi, pi, I,
 
     Functions called:
         MCerrs
-        get_p
+        firm.get_p
         firm.get_p_tilde
         get_cbess
         firm.get_C
-        get_K
-        get_L
+        firm.get_K
+        firm.get_L
 
     Objects in function:
         start_time  = scalar, current processor time in seconds (float)
@@ -655,7 +457,7 @@ def SS(params, rw_init, b_guess, c_bar, A, gamma, epsilon, delta, xi, pi, I,
                       MCerrs function: (S, alpha, beta, sigma, b_guess,
                       c_bar, A, gamma, epsilon, delta, n,
                       ss_tol)
-        rw_ss       = [2,] vector, steady-state r, w
+        rw_ss       = [2,] vector, steady-state r and w
         r_ss        = scalar, steady-state interest rate
         w_ss        = scalar > 0, steady-state wage
         p_c_params   = length 4 tuple, vectors to be passed in to get_p_c
@@ -689,7 +491,6 @@ def SS(params, rw_init, b_guess, c_bar, A, gamma, epsilon, delta, xi, pi, I,
         MCL_err_ss  = scalar, steady-state labor market clearing error
         MCerr_ss    = [2,] vector, steady-state capital and labor market
                       clearing errors
-        p_errors    = [M,] vector, differences between guessed and implied prices
         ss_time     = scalar, time to compute SS solution (seconds)
         svec         = [S,] vector, age-s indices from 1 to S
         b_ss0        = [S,] vector, age-s wealth levels including b_1=0
@@ -703,13 +504,10 @@ def SS(params, rw_init, b_guess, c_bar, A, gamma, epsilon, delta, xi, pi, I,
                   gamma, epsilon, delta, xi, pi, I, M, S, n, ss_tol)
     rw_ss = opt.fsolve(MCerrs, rw_init, args=(MCerrs_objs),
                 xtol=ss_tol)
-    r_ss = rw_ss[0]
-    w_ss = rw_ss[1]
+    r_ss, w_ss = rw_ss
+    p_params = (A, gamma, epsilon, delta)
+    p_ss = firm.get_p(p_params, r_ss, w_ss)
 
-    p_guess = np.ones(M)
-    p_params =  A, gamma, epsilon, delta
-    p_ss = opt.fsolve(solve_p, p_guess, args=(p_params, r_ss, w_ss, xi), xtol=ss_tol, col_deriv=1)
-    p_k_ss = np.dot(xi,p_ss)
     p_c_ss = np.dot(pi,p_ss)
     p_tilde_ss = firm.get_p_tilde(alpha, p_c_ss)
     cbe_params = (alpha, beta, sigma, r_ss, w_ss, p_tilde_ss, ss_tol)
@@ -718,14 +516,11 @@ def SS(params, rw_init, b_guess, c_bar, A, gamma, epsilon, delta, xi, pi, I,
     C_ss = firm.get_C(c_ss.transpose())
     X_params = (r_ss, w_ss)
     X_init = (np.dot(np.reshape(C_ss,(1,I)),pi))/I
-    X_ss = opt.fsolve(solve_X, X_init, args=(X_params, C_ss, p_k_ss, A, gamma, epsilon, delta, xi, pi, I, M), xtol=ss_tol, col_deriv=1)
-    K_ss = get_K(r_ss, w_ss, X_ss, p_k_ss, A, gamma, epsilon, delta)
-    L_ss = get_L(r_ss, w_ss, K_ss, p_k_ss, gamma, epsilon, delta)
+    X_ss = opt.fsolve(solve_X, X_init, args=(X_params, C_ss, A, gamma, epsilon, delta, xi, pi, I, M), xtol=ss_tol, col_deriv=1)
+    K_ss = firm.get_K(r_ss, w_ss, X_ss, A, gamma, epsilon, delta)
+    L_ss = firm.get_L(r_ss, w_ss, K_ss, gamma, epsilon, delta)
 
-    # Calculate firm value
-    V_ss = p_k_ss*K_ss
-
-    MCK_err_ss = V_ss.sum() - b_ss.sum()
+    MCK_err_ss = K_ss.sum() - b_ss.sum()
     MCL_err_ss = L_ss.sum() - n.sum()
     MCerr_ss = np.array([MCK_err_ss, MCL_err_ss])
     ss_time = time.clock() - start_time
@@ -772,5 +567,5 @@ def SS(params, rw_init, b_guess, c_bar, A, gamma, epsilon, delta, xi, pi, I,
         # plt.savefig('c_ss_Chap11')
         plt.show()
 
-    return (r_ss, w_ss, p_ss, p_k_ss, p_c_ss, p_tilde_ss, b_ss, c_tilde_ss, c_ss, EulErr_ss,
+    return (r_ss, w_ss, p_c_ss, p_tilde_ss, b_ss, c_tilde_ss, c_ss, EulErr_ss,
            C_ss, X_ss, K_ss, L_ss, MCK_err_ss, MCL_err_ss, ss_time)

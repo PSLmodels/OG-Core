@@ -796,8 +796,8 @@ Using the result above, we can write the problem of the firm as a sequence probl
 \begin{equation}
 \label{eqn:firm_seq_prob}
 \begin{split}
-&\max_{\left\{I_{i,u}, K_{i,u+1},EL_{i,u},VN_{i,t}\right\}_{u=t}^{\infty}} \sum_{u=t}^{\infty} \prod_{\nu=t}^{u} \left(\frac{1}{1+r_{v}}\right) DIV_{i,u}-VN_{i,u} \\
-&\quad\quad\quad \text{subject to: } DIV_{i,u}\geq0, VN_{i,t}\geq0, I_{i,u} = K_{i,u+1}-(1-\delta)K_{i,u} \\
+&\max_{\left\{I_{i,u}, K_{i,u+1},EL_{i,u},VN_{i,u}\right\}_{u=t}^{\infty}} \sum_{u=t}^{\infty} \prod_{\nu=t}^{u} \left(\frac{1}{1+r_{v}}\right) DIV_{i,u}-VN_{i,u} \\
+&\quad\quad\quad \text{subject to: } DIV_{i,u}\geq0, VN_{i,u}\geq0, I_{i,u} = K_{i,u+1}-(1-\delta)K_{i,u} \\
 \end{split}
 \end{equation}
 
@@ -811,7 +811,7 @@ The Lagrangian describing this constraint optimization problem is given by:
 \mathcal{L} = &  \max_{\left\{I_{i,u},K_{i,u+1},EL_{i,u},VN_{i,u}\right\}_{u=t}^{\infty}} \sum_{u=t}^{\infty} \prod_{\nu=t}^{u} \left(\frac{1}{1+r_{v}}\right) \left\{ p_{i,u}F(K_{i,u},EL_{i,u}) - w_{u}EL_{i,u} \right.\\
        & \left. -p^{k}_{i,u}I_{i,u} +VN_{i,u} - VN_{i,u} \right. \\
        &+\left. \lambda_{i,u}(p_{i,u}F(K_{i,u},EL_{i,u}) - w_{u}EL_{i,u} -p^{k}_{i,u}I_{i,u} +VN_{i,u}) \right. \\
-       &+ \left. \mu_{i,u}VN_{i,u} + q_{i,u}(I - K_{i,u+1} + (1-\delta)K_{i,u})\right\} \\
+       &+ \left. \mu_{i,u}VN_{i,u} + q_{i,u}(I_{i,u} - K_{i,u+1} + (1-\delta)K_{i,u})\right\} \\
 \end{split}
 \end{equation}
 

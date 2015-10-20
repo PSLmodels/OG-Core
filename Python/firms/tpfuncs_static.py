@@ -38,7 +38,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
 import sys
-import firm_funcs as firm
+import firm_funcs_static as firm
 reload(firm)
 
 '''
@@ -46,55 +46,6 @@ reload(firm)
     Functions
 ------------------------------------------------------------------------
 '''
-
-def get_p_path(params, r_path, w_path, p_path, p_k_path, K_path, X_path):
-    '''
-    Generates implied time path of output prices given the path of 
-    guessed output prices, the path of capital prices, r, w, K, and X
-
-    Inputs:
-        params = length 5 tuple, (A, gamma, epsilon, delta, K_ss)
-        A   = [M,T] matrix, total factor productivity for each
-                 industry
-        gamma = [M,T] matrix, capital share of income for each industry
-        epsilon = [M,T] matrix, elasticity of substitution between capital
-                 and labor for each industry
-        delta = [M,T] matrix, capital depreciation rate for each
-                 industry
-        K_ss   = [M,] vector, SS output for each industry
-        r_path  = [T,] vector, time path of real interest rates
-        w_path  = [T,] vector, time path of real wage rates
-        p_path = [M,T] matrix, time path of industry output prices
-        p_k_path = [M,T+1] matrix, time path of industry capital prices
-        K_path  = [M,T] matrix, time path of industry capital demand
-        X_path  = [M,T] matrix, time path of industry output
-        
-
-    Functions called: 
-        get_L_over_X
-        get_K_over_X
-
-    Objects in function:
-        p_path_implied = [M, T] matrix, time path of output prices implied from model solution
-
-    Returns: p_path_implied
-    '''
-    A, gamma, epsilon, delta, K_ss, M, T = params
-
-    l_ratio_params = (A, gamma, epsilon, delta)
-    L_over_X = get_L_over_X(l_ratio_params, p_path, w_path)
-    k_ratio_params = (A, gamma, epsilon, delta, M, T)
-    K_over_X = get_K_over_X(k_ratio_params, p_path, p_k_path[:,:T], r_path)
-    
-
-    p_k_p1 = p_k_path[:,1:]
-    K_p1 = np.append(K_path[:,1:],np.reshape(K_ss,[M,1]),axis=1)
-    p_path_implied = (w_path*L_over_X) + ((r_path+delta)*K_over_X) + ((p_k_p1 - p_k_path[:,:T])*(K_p1/X_path))
-
-
-    return p_path_implied
-
-
 
 def get_p_c_path(p_path, pi, I):
     '''
@@ -105,7 +56,8 @@ def get_p_c_path(p_path, pi, I):
     Inputs:
         p_path    = [M,T+S-2] matrix of params = length 4 tuple, (A, gamma, epsilon, delta)
         pi        = [I,M] matrix, element i,j gives the fraction of consumption
-        I         = integer > S, number consumption goods
+        T         = integer > S, number of time periods until steady
+                     state
 
     Functions called: None
 
@@ -121,36 +73,6 @@ def get_p_c_path(p_path, pi, I):
 
 
     return p_c_path
-
-def get_p_k_path(p_path, xi, M):
-    '''
-    Generates time path of capital prices from
-    industry output prices and fixed coefficient matrix
-    relating output goods to capital goods.
-
-    Inputs:
-        p_path    = [M,T+S-2] matrix of params = length 4 tuple, (A, gamma, epsilon, delta)
-        xi        = [M,M] matrix, element i,j gives the fraction of capital used by industry i
-                    that comes from the output of industry j
-        T         = integer > S, number of time periods until steady
-                     state
-
-    Functions called: None
-
-    Objects in function:
-        p_k_path = [I, T+S-2] matrix, time path of capital good prices
-
-    Returns: p_k_path
-    '''
-
-    p_k_path = np.zeros((M,(p_path.shape)[1]))
-    for t in range(0,(p_path.shape)[1]): 
-        p_k_path[:,t] = np.dot(xi,p_path[:,t])
-
-
-    return p_k_path
-
-
 
 
 def get_cbepath(params, Gamma1, r_path, w_path, p_c_path, p_tilde_path,
@@ -402,22 +324,14 @@ def LfEulerSys(b, *objs):
                                    c_tilde_cstr, diff=True)
     return b_err_vec
 
-    
-def get_K_over_X_pf_path(r_path, w_path, p_k_path, A, gamma, epsilon, delta, M, T):
+
+def get_K_over_X_path(r, w, A, gamma, epsilon, delta):
     '''
-    Generates an array of the time path of capital-ouput ratios by production industry m 
-    for a given X, r, w, p_k.  
+    Generates vector of K/X for each industry along the time path.
 
-    :: Note: This function differs from get_K_over_X because that function
-       uses is derived from the FOC for capital demand only.  This function
-       uses the capital-labor ratio implied from the FOCs for capital and 
-       labor demand together with the firms' production functions
-
-        Inputs:
-        r_path      = [T,] vector, real interest rates
-        w_path      = [T,] vector, real wage rates
-        X_path  = [M,T] matrix, output from each industry
-        p_k_path = [M,T] matrix, capital prices from each industry
+    Inputs:
+        r      = [T,] vector, real interest rates
+        w      = [T,] vector, real wage rates
         A       = [M,T] matrix, total factor productivity values for all
                    industries
         gamma = [M,T] matrix, capital shares of income for all
@@ -430,7 +344,6 @@ def get_K_over_X_pf_path(r_path, w_path, p_k_path, A, gamma, epsilon, delta, M, 
     Functions called: None
 
     Objects in function:
-        p_k_m1 = [M,T] matrix, price of capital on period prior
         aa    = [M,T] matrix, gamma
         bb    = [M,T] matrix, 1 - gamma
         cc    = [M,T] matrix, (1 - gamma) / gamma
@@ -441,28 +354,26 @@ def get_K_over_X_pf_path(r_path, w_path, p_k_path, A, gamma, epsilon, delta, M, 
         hh    = [M,T] matrix, epsilon / (1 - epsilon)
         ii    = [M,T] matrix, ((1 / A) * (((aa ** ee) + (bb ** ee) *
                 (cc ** ff) * (dd ** gg)) ** hh))
-        K_path = [M,T] matrix, capital demand of all industries
+        K_over_X_path = [M,T] matrix, capital demand of all industries
 
-    Returns: K_path
+    Returns: K_over_X_path
     '''
-
-    p_k_m1 = np.insert(p_k_path[:,:T-1],0,(p_k_path[:,0]).reshape(M,),axis=1) # assumption is that p_k before time path starts same as initial value
     aa = gamma
     bb = 1 - gamma
     cc = (1 - gamma) / gamma
-    dd = ((p_k_m1*(1+r_path)) - (p_k_path*(1-delta))) / w_path
+    dd = (r + delta) / w
     ee = 1 / epsilon
     ff = (epsilon - 1) / epsilon
     gg = epsilon - 1
     hh = epsilon / (1 - epsilon)
 
-    K_over_X_pf_path = ((1/ A) *
+    K_over_X_path = ((1 / A) *
          (((aa ** ee) + (bb ** ee) * (cc ** ff) * (dd ** gg)) ** hh))
 
-    return K_over_X_pf_path
+    return K_over_X_path
 
 
-def get_X_path(params, r_path, w_path, C_path, p_k_path, A, gamma,
+def get_X_path(params, r_path, w_path, C_path, A, gamma,
   epsilon, delta, xi, pi, I, M):
 
     '''
@@ -493,7 +404,7 @@ def get_X_path(params, r_path, w_path, C_path, p_k_path, A, gamma,
 
 
     Functions called: 
-        get_K_over_X_path_pf
+        get_K_over_X_path
 
     Objects in function:
         Inv = [M,T] matrix, investment demand from each industry
@@ -513,7 +424,7 @@ def get_X_path(params, r_path, w_path, C_path, p_k_path, A, gamma,
 
     T, K_ss = params
 
-    aa = get_K_over_X_pf_path(r_path, w_path, p_k_path, A, gamma, epsilon, delta, M, T)
+    aa = get_K_over_X_path(r_path, w_path, A, gamma, epsilon, delta)
     bb = (1-delta)*aa
 
     X_path = np.zeros((M,T))
@@ -524,168 +435,18 @@ def get_X_path(params, r_path, w_path, C_path, p_k_path, A, gamma,
         b_coeffs = (X_c + X_kp1).transpose()
         a_coeffs = np.eye(M) + (np.tile(bb[:,t],(M,1))*xi.transpose())
         X_path[:,t] = np.reshape(np.linalg.solve(a_coeffs, b_coeffs),(M,))
+        #K = X_path[:,t]*aa[:,t]
+        #Inv = K_p1 - (1-delta[:,t])*K
+        #print 'Check RC: ', X_path[:,t]- X_c - np.dot(Inv,xi)
+        #print(a_coeffs)
+        #print(b_coeffs)
         K_p1 = X_path[:,t]*aa[:,t]
 
 
     return X_path
- 
-def get_K_path(r_path, w_path, X_path, p_k_path, A, gamma, epsilon, delta, M, T):
-    '''
-    Generates vector of capital demand from production industry m 
-    along the time path for a given X, r, w.
+    
 
-    Inputs:
-        r_path      = [T,] vector, real interest rates
-        w_path      = [T,] vector, real wage rates
-        X_path  = [M,T] matrix, output from each industry
-        p_k_path = [M,T] matrix, capital prices from each industry
-        A       = [M,T] matrix, total factor productivity values for all
-                   industries
-        gamma = [M,T] matrix, capital shares of income for all
-                 industries
-        epsilon = [M,T] matrix, elasticities of substitution between
-                 capital and labor for all industries
-        delta = [M,T] matrix, model period depreciation rates for all
-                 industries
-
-    Functions called: None
-
-    Objects in function:
-        p_k_m1 = [M,T] matrix, price of capital on period prior
-        aa    = [M,T] matrix, gamma
-        bb    = [M,T] matrix, 1 - gamma
-        cc    = [M,T] matrix, (1 - gamma) / gamma
-        dd    = [M,T] matrix, (r + delta) / w
-        ee    = [M,T] matrix, 1 / epsilon
-        ff    = [M,T] matrix, (epsilon - 1) / epsilon
-        gg    = [M,T] matrix, epsilon - 1
-        hh    = [M,T] matrix, epsilon / (1 - epsilon)
-        ii    = [M,T] matrix, ((1 / A) * (((aa ** ee) + (bb ** ee) *
-                (cc ** ff) * (dd ** gg)) ** hh))
-        K_path = [M,T] matrix, capital demand of all industries
-
-    Returns: K_path
-    '''
-
-    p_k_m1 = np.insert(p_k_path[:,:T-1],0,(p_k_path[:,0]).reshape(M,),axis=1) # assumption is that p_k before time path starts same as initial value
-    aa = gamma
-    bb = 1 - gamma
-    cc = (1 - gamma) / gamma
-    dd = ((p_k_m1*(1+r_path)) - (p_k_path*(1-delta))) / w_path
-    ee = 1 / epsilon
-    ff = (epsilon - 1) / epsilon
-    gg = epsilon - 1
-    hh = epsilon / (1 - epsilon)
-
-    K_path = ((X_path / A) *
-         (((aa ** ee) + (bb ** ee) * (cc ** ff) * (dd ** gg)) ** hh))
-
-    return K_path
-
-
-
-def get_L_path(r_path, w_path, K_path, p_k_path, gamma, epsilon, delta, M, T):
-    '''
-    Generates vector of labor demand L_{m} for good m given X_{m}, p_{m}, r and w
-
-    Inputs:
-        K_path = [M, T] matrix, time path of aggregate output by
-                 industry
-        r_path  = [T, ] matrix, time path of real interest rate
-        w_path  = [T, ] matrix, time path of real wage
-        p_k_path = [M,T] matrix, capital prices from each industry
-        gamma = [M,T] matrix, capital shares of income for all
-                 industries
-        epsilon = [M,T] matrix, elasticities of substitution between
-                 capital and labor for all industries
-        delta = [M,T] matrix, rate of phyical depreciation for all industries
-
-    Functions called: None
-
-    Objects in function:
-        L_path = [M,T] matrix, labor demand from each industry
-
-    Returns: L_path
-    '''
-
-    p_k_m1 = np.insert(p_k_path[:,:T-1],0,(p_k_path[:,0]).reshape(M,),axis=1) # assumption is that p_k before time path starts same as initial value
-
-    L_path = K_path*((1-gamma)/gamma)*((((p_k_m1*(1+r_path)) - (p_k_path*(1-delta))) / w_path)**epsilon)
-
-    return L_path
-
-
-def get_K_over_X(params, p_path, p_k_path, r_path):
-    '''
-    Generates SS capital-output ratio by industry
-
-    Inputs:
-        params = length 4 tuple, (A, gamma, epsilon, delta)
-        A   = [M,T] matrix, total factor productivity for each
-                 industry
-        gamma = [M,T] matrix, capital share of income for each industry
-        epsilon = [M,T] matrix, elasticity of substitution between capital
-                 and labor for each industry
-        delta = [M,T] matrix, capital depreciation rate for each
-                 industry
-        r_path  = [T,] vector, time path of real interest rates
-        p_k_path = [M,T] matrix, SS industry capital prices
-        p_path = [M,T] matrix,  SS industry output prices
-
-
-    Functions called: None
-
-    Objects in function:
-        p_k_m1 = [M,T] matrix, capital prices one period ago
-        K_over_X = [M,] vector,  SS capital-output ratio by industry
-
-    Returns: K_over_X
-    '''
-
-    A, gamma, epsilon, delta, M, T = params
-
-    p_k_m1 = np.insert(p_k_path[:,:T-1],0,(p_k_path[:,0]).reshape(M,),axis=1) # assumption is that p_k before time path starts same as initial value
-
-    K_over_X = gamma*(A**(epsilon-1))*((p_path/((p_k_m1*(1+r_path))-(p_k_path*(1-delta))))**(epsilon))
-
-    return K_over_X 
-
-
-def get_L_over_X(params, p_path, w_path):
-    '''
-    Generates SS labor-output ratio by industry
-
-    Inputs:
-        params = length 4 tuple, (A, gamma, epsilon, delta)
-        A   = [M,T] matrix, total factor productivity for each
-                 industry
-        gamma = [M,T] matrix, capital share of income for each industry
-        epsilon = [M,T] matrix, elasticity of substitution between capital
-                 and labor for each industry
-        delta = [M,T] matrix, capital depreciation rate for each
-                 industry
-        w      = [T,] vector, wage rate
-        p = [M,T] matrix,  industry output prices
-
-
-    Functions called: None
-
-    Objects in function:
-        L_over_X = [M,] vector,  SS capital-output ratio by industry
-
-    Returns: K_over_X
-    '''
-
-    A, gamma, epsilon, delta = params
-
-    L_over_X = (1-gamma)*(A**(epsilon-1))*((p_path/w_path)**epsilon)
-
-
-    return L_over_X 
-
-
-
-def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar, A,
+def TP(params, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar, A,
   gamma, epsilon, delta, xi, pi, I, M, S, n, graphs):
 
     '''
@@ -707,7 +468,6 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
         beta       = scalar in [0,1), discount factor for each model
                      period
         sigma      = scalar > 0, coefficient of relative risk aversion
-        p_ss       = [M,] vector, SS output prices for each industry
         r_ss       = scalar > 0, steady-state interest rate
         w_ss       = scalar > 0, steady-state wage
         tp_tol    = scalar > 0, tolerance level for fsolve's in TP solution
@@ -715,7 +475,6 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
                      the interest rate
         w_path_init = [T+S-1,] vector, initial guess for the time path of
                      the wage
-        p_path_init       = [M, T+S-1] matrix, time path of industry output prices
         X_ss      = [M,] vector, steady-state industry output levels
         Gamma1     = [S-1,] vector, initial period savings distribution
         c_bar   = [I,T+S-1] matrix, minimum consumption values for all
@@ -744,8 +503,10 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
         p_params    = length 4 tuple, objects to be passed to
                        get_p_path function:
                        (A, gamma, epsilon, delta)
+        p_path       = [M, T+S-1] matrix, time path of industry output prices
         p_c_path       = [I, T+S-1] matrix, time path of consumption good prices
         p_tilde_path        = [T+S-1] vector, time path of composite price
+
         r_params     = length 3 tuple, parameters passed in to get_r
         w_params     = length 2 tuple, parameters passed in to get_w
         cbe_params   = length 5 tuple. parameters passed in to
@@ -754,7 +515,6 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
                        interest rate
         w_path        = [T+S-2,] vector, equilibrium time path of the
                        real wage
-        p_path       = [M, T+S-1] matrix, time path of industry output prices
         c_tilde_path        = [S, T+S-2] matrix, equilibrium time path values
                        of individual consumption c_{s,t}
         b_path        = [S-1, T+S-2] matrix, equilibrium time path values
@@ -775,7 +535,7 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
     Returns: b_path, c_tilde_path, w_path, r_path, K_path, X_path, Cpath,
              EulErr_path, elapsed_time
     '''
-    (S, T, alpha, beta, sigma, p_ss, r_ss, w_ss, tp_tol) = params
+    (S, T, alpha, beta, sigma, r_ss, w_ss, tp_tol) = params
 
     r_path = np.zeros(T+S-1)
     w_path = np.zeros(T+S-1)
@@ -784,10 +544,9 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
     r_path[T:] = r_ss
     w_path[T:] = w_ss
 
-    p_path = np.zeros((M,T+S-1))
-    p_path[:,:T] = p_path_init[:,:T]
-    p_path[:,T:] = np.ones((M,S-1))*np.tile(np.reshape(p_ss,(M,1)),(1,S-1))
-    p_k_path = get_p_k_path(p_path, xi, M)
+
+    p_params = (A, gamma, epsilon, delta)
+    p_path = firm.get_p(p_params, r_path, w_path)
     p_c_path = get_p_c_path(p_path, pi, I)
     p_tilde_path = firm.get_p_tilde(alpha, p_c_path)
     cbe_params = (S, T, alpha, beta, sigma, tp_tol)
@@ -797,15 +556,13 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
     C_path = firm.get_C(c_path[:, :T, :])
 
     X_params = (T, K_ss)
-    X_path = get_X_path(X_params, r_path[:T], w_path[:T], C_path[:,:T], p_k_path[:,:T], A[:,:T], gamma[:,:T],
+    X_path = get_X_path(X_params, r_path[:T], w_path[:T], C_path[:,:T], A[:,:T], gamma[:,:T],
                             epsilon[:,:T], delta[:,:T], xi, pi, I, M)
-    K_path = get_K_path(r_path[:T], w_path[:T], X_path, p_k_path[:,:T], A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], M, T)
-    L_path = get_L_path(r_path[:T], w_path[:T], K_path, p_k_path[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], M, T)
+
+    K_path = firm.get_K(r_path[:T], w_path[:T], X_path, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
+
+    L_path = firm.get_L(r_path[:T], w_path[:T], K_path, gamma[:,:T], epsilon[:,:T], delta[:,:T])
     
-
-    # Calculate the time path of firm values
-    V_path = p_k_path[:,:T]*K_path
-
     # Checking resource constraint along the path:
     Inv_path = np.zeros((M,T))
     X_inv_path = np.zeros((M,T))
@@ -817,11 +574,9 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
         X_c_path[:,t] = np.dot(np.reshape(C_path[:,t],(1,I)),pi)
     RCdiff_path = (X_path - X_c_path - X_inv_path) 
     
-    # Checking market clearing conditions
-    MCKerr_path = b_path[:, :T].sum(axis=0) - V_path.sum(axis=0)
+    MCKerr_path = b_path[:, :T].sum(axis=0) - K_path.sum(axis=0)
     MCLerr_path = n.sum() - L_path.sum(axis=0)
-    p_params = (A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], K_ss, M, T)
-    p_err_path  = p_path[:,:T] - get_p_path(p_params, r_path[:T], w_path[:T], p_path[:,:T], p_k_path[:,:T+1], K_path, X_path)
+    
 
     if graphs == True:
         # Plot time path of aggregate capital stock
@@ -962,9 +717,9 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
         # plt.savefig('b_path')
         plt.show()
 
-    return (r_path, w_path, p_path, p_k_path, p_tilde_path, b_path, c_tilde_path, c_path,
+    return (r_path, w_path, p_path, p_tilde_path, b_path, c_tilde_path, c_path,
         eulerr_path, C_path, X_path, K_path, L_path, MCKerr_path,
-        MCLerr_path, RCdiff_path, p_err_path)
+        MCLerr_path, RCdiff_path)
 
 
 def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
@@ -1059,20 +814,18 @@ def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
     Returns: b_path, c_tilde_path, w_path, r_path, K_path, X_path, Cpath,
              EulErr_path
     '''
-    (S, T, alpha, beta, sigma, p_ss, r_ss, w_ss, tp_tol) = params
+    (S, T, alpha, beta, sigma, r_ss, w_ss, tp_tol) = params
 
     r_path = np.zeros(T+S-1)
     w_path = np.zeros(T+S-1)
-    p_path = np.zeros((M,T+S-1))
-    r_path[:T] = guesses[0:T].reshape(T)
-    w_path[:T] = guesses[T:2*T].reshape(T)
+    r_path[:T] = guesses[0:T]
+    w_path[:T] = guesses[T:]
     r_path[T:] = r_ss
     w_path[T:] = w_ss
 
-    p_path[:,:T] = guesses[2*T:].reshape(M,T)
-    p_path[:,T:] = np.ones((M,S-1))*np.tile(np.reshape(p_ss,(M,1)),(1,S-1))
 
-    p_k_path = get_p_k_path(p_path, xi, M)
+    p_params = (A, gamma, epsilon, delta)
+    p_path = firm.get_p(p_params, r_path, w_path)
     p_c_path = get_p_c_path(p_path, pi, I)
     p_tilde_path = firm.get_p_tilde(alpha, p_c_path)
     cbe_params = (S, T, alpha, beta, sigma, tp_tol)
@@ -1082,22 +835,16 @@ def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
     C_path = firm.get_C(c_path[:, :T, :])
 
     X_params = (T, K_ss)
-    X_path = get_X_path(X_params, r_path[:T], w_path[:T], C_path[:,:T], p_k_path[:,:T], A[:,:T], gamma[:,:T],
+    X_path = get_X_path(X_params, r_path[:T], w_path[:T], C_path[:,:T], A[:,:T], gamma[:,:T],
                             epsilon[:,:T], delta[:,:T], xi, pi, I, M)
-    K_path = get_K_path(r_path[:T], w_path[:T], X_path, p_k_path[:,:T], A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], M, T)
-    L_path = get_L_path(r_path[:T], w_path[:T], K_path, p_k_path[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], M, T)
 
-    # Calculate the time path of firm values
-    V_path = p_k_path[:,:T]*K_path
+    K_path = firm.get_K(r_path[:T], w_path[:T], X_path, A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T])
+
+    L_path = firm.get_L(r_path[:T], w_path[:T], K_path, gamma[:,:T], epsilon[:,:T], delta[:,:T])
 
     # Check market clearing in each period
-    K_market_error = b_path[:, :T].sum(axis=0) - V_path.sum(axis=0)
+    K_market_error = b_path[:, :T].sum(axis=0) - K_path[:, :].sum(axis=0)
     L_market_error = n.sum() - L_path[:, :].sum(axis=0)
-
-    # Check errors between guessed and implied prices
-    p_params = (A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], K_ss, M, T)
-    p_error  = p_path[:,:T] - get_p_path(p_params, r_path[:T], w_path[:T], p_path[:,:T], p_k_path[:,:T+1], K_path, X_path)
-
 
     # Checking resource constraint along the path:
     Inv_path = np.zeros((M,T))
@@ -1116,15 +863,10 @@ def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
     mask2 = w_path[:T] <= 0
     mask3 = np.isnan(r_path[:T])
     mask4 = np.isnan(w_path[:T])
-    K_market_error[mask1] = 1e14
-    L_market_error[mask2] = 1e14
-    K_market_error[mask3] = 1e14
-    L_market_error[mask4] = 1e14
-
-    mask5 = p_path[:,:T] <= 0
-    mask6 = np.isnan(p_path[:,:T])
-    p_error[mask5] = 1e14
-    p_error[mask6] = 1e14
+    K_market_error[mask1] += 1e14
+    L_market_error[mask2] += 1e14
+    K_market_error[mask3] += 1e14
+    L_market_error[mask4] += 1e14
 
 
     print 'max capital market clearing distance: ', np.absolute(K_market_error).max()
@@ -1132,7 +874,7 @@ def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
     print 'min capital market clearing distance: ', np.absolute(K_market_error).min()
     print 'min labor market clearing distance: ', np.absolute(L_market_error).min()
 
-    errors = np.insert(np.reshape(p_error,(T*M)),0,np.append(K_market_error, L_market_error))
+    errors = np.append(K_market_error, L_market_error)
 
     return errors
 
