@@ -89,8 +89,7 @@ def get_p_path(params, r_path, w_path, p_path, p_k_path, K_path, X_path):
 
     p_k_p1 = p_k_path[:,1:]
     K_p1 = np.append(K_path[:,1:],np.reshape(K_ss,[M,1]),axis=1)
-    p_path_implied = (w_path*L_over_X) + ((r_path+delta)*K_over_X) + ((p_k_p1 - p_k_path[:,:T])*(K_p1/X_path))
-
+    p_path_implied = (w_path*L_over_X) + ((r_path+delta)*p_k_path[:,:T]*K_over_X) + ((p_k_path[:,:T]- p_k_p1)*(K_p1/X_path))
 
     return p_path_implied
 
@@ -787,6 +786,7 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
     p_path = np.zeros((M,T+S-1))
     p_path[:,:T] = p_path_init[:,:T]
     p_path[:,T:] = np.ones((M,S-1))*np.tile(np.reshape(p_ss,(M,1)),(1,S-1))
+    p_path = p_path/p_ss[0]
     p_k_path = get_p_k_path(p_path, xi, M)
     p_c_path = get_p_c_path(p_path, pi, I)
     p_tilde_path = firm.get_p_tilde(alpha, p_c_path)
@@ -797,10 +797,10 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
     C_path = firm.get_C(c_path[:, :T, :])
 
     X_params = (T, K_ss)
-    X_path = get_X_path(X_params, r_path[:T], w_path[:T], C_path[:,:T], p_k_path[:,:T], A[:,:T], gamma[:,:T],
+    X_path = get_X_path(X_params, r_path[1:T+1], w_path[:T], C_path[:,:T], p_k_path[:,:T], A[:,:T], gamma[:,:T],
                             epsilon[:,:T], delta[:,:T], xi, pi, I, M)
-    K_path = get_K_path(r_path[:T], w_path[:T], X_path, p_k_path[:,:T], A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], M, T)
-    L_path = get_L_path(r_path[:T], w_path[:T], K_path, p_k_path[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], M, T)
+    K_path = get_K_path(r_path[1:T+1], w_path[:T], X_path, p_k_path[:,:T], A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], M, T)
+    L_path = get_L_path(r_path[1:T+1], w_path[:T], K_path, p_k_path[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], M, T)
     
 
     # Calculate the time path of firm values
@@ -821,7 +821,7 @@ def TP(params, p_path_init, r_path_init, w_path_init, K_ss, X_ss, Gamma1, c_bar,
     MCKerr_path = b_path[:, :T].sum(axis=0) - V_path.sum(axis=0)
     MCLerr_path = n.sum() - L_path.sum(axis=0)
     p_params = (A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], K_ss, M, T)
-    p_err_path  = p_path[:,:T] - get_p_path(p_params, r_path[:T], w_path[:T], p_path[:,:T], p_k_path[:,:T+1], K_path, X_path)
+    p_err_path  = p_path[:,:T] - get_p_path(p_params, r_path[1:T+1], w_path[:T], p_path[:,:T], p_k_path[:,:T+1], K_path, X_path)
 
     if graphs == True:
         # Plot time path of aggregate capital stock
@@ -1071,6 +1071,7 @@ def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
 
     p_path[:,:T] = guesses[2*T:].reshape(M,T)
     p_path[:,T:] = np.ones((M,S-1))*np.tile(np.reshape(p_ss,(M,1)),(1,S-1))
+    p_path = p_path/p_ss[0]
 
     p_k_path = get_p_k_path(p_path, xi, M)
     p_c_path = get_p_c_path(p_path, pi, I)
@@ -1082,10 +1083,10 @@ def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
     C_path = firm.get_C(c_path[:, :T, :])
 
     X_params = (T, K_ss)
-    X_path = get_X_path(X_params, r_path[:T], w_path[:T], C_path[:,:T], p_k_path[:,:T], A[:,:T], gamma[:,:T],
+    X_path = get_X_path(X_params, r_path[1:T+1], w_path[:T], C_path[:,:T], p_k_path[:,:T], A[:,:T], gamma[:,:T],
                             epsilon[:,:T], delta[:,:T], xi, pi, I, M)
-    K_path = get_K_path(r_path[:T], w_path[:T], X_path, p_k_path[:,:T], A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], M, T)
-    L_path = get_L_path(r_path[:T], w_path[:T], K_path, p_k_path[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], M, T)
+    K_path = get_K_path(r_path[1:T+1], w_path[:T], X_path, p_k_path[:,:T], A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], M, T)
+    L_path = get_L_path(r_path[1:T+1], w_path[:T], K_path, p_k_path[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], M, T)
 
     # Calculate the time path of firm values
     V_path = p_k_path[:,:T]*K_path
@@ -1096,7 +1097,25 @@ def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
 
     # Check errors between guessed and implied prices
     p_params = (A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], K_ss, M, T)
-    p_error  = p_path[:,:T] - get_p_path(p_params, r_path[:T], w_path[:T], p_path[:,:T], p_k_path[:,:T+1], K_path, X_path)
+    p_error  = p_path[:,:T] - get_p_path(p_params, r_path[1:T+1], w_path[:T], p_path[:,:T], p_k_path[:,:T+1], K_path, X_path)
+
+
+    # X_path = get_X_path(X_params, r_path[:T], w_path[:T], C_path[:,:T], p_k_path[:,:T], A[:,:T], gamma[:,:T],
+    #                         epsilon[:,:T], delta[:,:T], xi, pi, I, M)
+    # K_path = get_K_path(r_path[:T], w_path[:T], X_path, p_k_path[:,:T], A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], M, T)
+    # L_path = get_L_path(r_path[:T], w_path[:T], K_path, p_k_path[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], M, T)
+
+    # # Calculate the time path of firm values
+    # V_path = p_k_path[:,:T]*K_path
+
+    # # Check market clearing in each period
+    # K_market_error = b_path[:, :T].sum(axis=0) - V_path.sum(axis=0)
+    # L_market_error = n.sum() - L_path[:, :].sum(axis=0)
+
+    # # Check errors between guessed and implied prices
+    # p_params = (A[:,:T], gamma[:,:T], epsilon[:,:T], delta[:,:T], K_ss, M, T)
+    # p_error  = p_path[:,:T] - get_p_path(p_params, r_path[:T], w_path[:T], p_path[:,:T], p_k_path[:,:T+1], K_path, X_path)
+
 
 
     # Checking resource constraint along the path:
@@ -1131,6 +1150,26 @@ def TP_fsolve(guesses, params, K_ss, X_ss, Gamma1, c_bar, A,
     print 'max labor market clearing distance: ', np.absolute(L_market_error).max()
     print 'min capital market clearing distance: ', np.absolute(K_market_error).min()
     print 'min labor market clearing distance: ', np.absolute(L_market_error).min()
+
+    print 'the max pricing error is: ', np.absolute(p_error).max()
+    print 'the min pricing error is: ', np.absolute(p_error).min()
+
+    V_alt_path = (((p_path[:,:T-1]*X_path[:,:T-1] - w_path[:T-1]*L_path[:,:T-1] - 
+                            p_k_path[:,:T-1]*(K_path[:,1:T]-(1-delta[:,:T-1])*K_path[:,:T-1])) + (p_k_path[:,1:T]*K_path[:,1:T])) /(1+r_path[1:T]))
+    V_path = p_k_path[:,:T]*K_path[:,:T]
+
+    print 'the max V error is: ', np.absolute(V_alt_path-V_path[:,:T-1]).max()
+    print 'the min V error is: ', np.absolute(V_alt_path-V_path[:,:T-1]).min()
+
+    # get implied r:
+    r_implied = ((p_path[:,:T]/p_k_path[:,:T])*((A[:,:T]**((epsilon[:,:T]-1)/epsilon[:,:T]))*(((gamma[:,:T]*X_path)/K_path)**(1/epsilon[:,:T]))) 
+                 + (1-delta[:,:T])*(p_k_path[:,1:T+1]/p_path[:,1:T+1]) - (p_k_path[:,:T]/p_path[:,1:T+1]))
+
+
+    print 'the max r error is: ', np.absolute(r_implied-r_path[:T]).max()
+    print 'the min r error is: ', np.absolute(r_implied-r_path[:T]).min()
+
+    
 
     errors = np.insert(np.reshape(p_error,(T*M)),0,np.append(K_market_error, L_market_error))
 

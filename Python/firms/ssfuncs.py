@@ -584,6 +584,7 @@ def MCerrs(rw_vec, *objs):
         p_guess = np.ones(M)
         p_params =  A, gamma, epsilon, delta
         p = opt.fsolve(solve_p, p_guess, args=(p_params, r, w, xi), xtol=ss_tol, col_deriv=1)
+        p= p/p[0] # need a normalization for prices
         p_k = np.dot(xi,p)
         p_c = np.dot(pi,p)
         p_tilde = firm.get_p_tilde(alpha, p_c)
@@ -709,6 +710,7 @@ def SS(params, rw_init, b_guess, c_bar, A, gamma, epsilon, delta, xi, pi, I,
     p_guess = np.ones(M)
     p_params =  A, gamma, epsilon, delta
     p_ss = opt.fsolve(solve_p, p_guess, args=(p_params, r_ss, w_ss, xi), xtol=ss_tol, col_deriv=1)
+    p_ss = p_ss/p_ss[0] # need a normalization for prices
     p_k_ss = np.dot(xi,p_ss)
     p_c_ss = np.dot(pi,p_ss)
     p_tilde_ss = firm.get_p_tilde(alpha, p_c_ss)

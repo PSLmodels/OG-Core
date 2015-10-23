@@ -383,7 +383,7 @@ elif GoodGuess == True:
         else:
             # Choose initial guesses of path of interest rate and wage.
             # Use parabola specification aa*x^2 + bb*x + cc
-            # rpath_init = r_ss * np.ones(T+S-1)
+            #rpath_init = r_ss * np.ones(T+S-1)
             rpath_init = np.zeros(T+S-1)
             r1 = 1.02 * r_ss
             cc_r = r1
@@ -392,7 +392,7 @@ elif GoodGuess == True:
             rpath_init[:T-S+1] = (aa_r * (np.arange(0, T-S+1) ** 2) +
                              (bb_r * np.arange(0, T-S+1)) + cc_r)
             rpath_init[T-S+1:] = r_ss
-            #rpath_init[:] = r_ss
+            rpath_init[:] = r_ss
 
 
             wpath_init = np.zeros(T+S-1)
@@ -454,11 +454,9 @@ elif GoodGuess == True:
             print np.absolute(p_err_path).max()
             print 'The max. absolute error between alternative methods of finding firm value are:'
             V_alt_path = (((p_path[:,:T-1]*X_path[:,:T-1] - w_path[:T-1]*L_path[:,:T-1] - 
-                            p_k_path[:,:T-1]*(K_path[:,1:T]-(1-delta_path[:,:T-1])*K_path[:,:T-1])) + (p_k_path[:,1:T]*K_path[:,1:T])) /(1+r_path[:T-1]))
-            V_path = p_k_path[:,:T]*K_path
-            print np.absolute(V_alt_path[:,:T-1]-V_path[:,:T-1]).max()
-
-
+                            p_k_path[:,:T-1]*(K_path[:,1:T]-(1-delta_path[:,:T-1])*K_path[:,:T-1])) + (p_k_path[:,1:T]*K_path[:,1:T])) /(1+r_path[1:T]))
+            V_path = p_k_path[:,:T]*K_path[:,:T]
+            print np.absolute(V_alt_path-V_path[:,:T-1]).max()
 
 
             # Print TPI computation time
