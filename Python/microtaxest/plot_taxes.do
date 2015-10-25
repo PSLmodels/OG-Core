@@ -46,6 +46,29 @@ gen capital_inc = ati - labor_inc ;
 gen ln_ati = log(ati) ;
 gen has_se_inc = se_inc != 4 ;
 
+/* create income bins */
+scalar bin_size = 10000 ;
+scalar max_ati = 2000000 ;
+scalar num_bins = ceil(max_ati/bin_size) ;
+gen ati_bin = 0 if ati <= 0 ;
+replace ati_bin = 1 if ati > 0 & ati <= bin_size ;
+local i = 1 ;
+while `i'< num_bins { ; /* not sure why, but wasn't working with scalar in the "to" place */
+	replace ati_bin = (`i'+1) if (ati > bin_size*`i') & (ati <= bin_size*(`i'+1)) ;
+	local i = `i'+1 ;
+} ;
+
+/* create age categories */
+gen age_bin = 1 if age < 25 ;
+replace age_bin = 2 if age >= 25 & age < 34 ;
+replace age_bin = 3 if age >=35 & age < 44 ;
+replace age_bin = 4 if age >=45 & age < 54 ;
+replace age_bin = 5 if age >=55 & age < 64 ;
+replace age_bin = 6 if age >=65 & age < 74 ;
+replace age_bin = 7 if age >=75  ;
+
+
+
 /* summarize the data before any deletions */
 summ [iweight=weight] ;
 
@@ -62,6 +85,36 @@ scalar min_allowable_aetr = -0.5*(max_eitc_rate-min_statutory_mtr) ;
 
 /* summarize data after some restrictions on ATI and AETRs */
 summarize if aetr < max_allowable_aetr & aetr > min_allowable_aetr & ati > 5 [iweight=weight] ;
+
+/* plot curves by ati bin and age */
+collapse (mean) ati aetr tot_tax, by(ati_bin age_bin) ;
+gen aetr_bin = tot_tax/ati ;
+twoway (connected aetr_bin ati_bin if age_bin == 1 & aetr_bin < 0.5, msize(small) mcolor(blue) lcolor(blue) msymbol(D))
+(connected aetr_bin ati_bin if age_bin == 2 & aetr_bin < 0.5, msize(small) mcolor(orange) lcolor(organge) msymbol(S))
+(connected aetr_bin ati_bin if age_bin == 3 & aetr_bin < 0.5, msize(small) mcolor(green) lcolor(green) msymbol(T))
+(connected aetr_bin ati_bin if age_bin == 4 & aetr_bin < 0.5, msize(small) mcolor(purple) lcolor(purple) msymbol(X)),
+	title("AETR as a function of ATI") 
+	xtitle("ATI range") 
+	ytitle("AETR")
+	/*xscale(range(1 8)) 
+	xlabel(1(1)8) */
+	ylabel(-0.2(0.1)0.5,grid)
+	legend(label(1 "Age < 25"))  
+	legend(label(2 "Age 25-34")) 
+	legend(label(3 "Age 35-44"))
+	legend(label(4 "Age 45-54"))  
+	scheme(s1mono) 
+	saving(graph1, replace); 
+graph export "`graphpath'/aetr_ati_bin_ages.pdf", replace;
+
+
+
+
+
+capture log close ;
+
+
+stop running ;
 
 /* loop over ages, creating scatter plot */
 forvalues i = 21/81 { ;
@@ -89,6 +142,3 @@ forvalues i = 21/81 { ;
 	graph export "`graphpath'/ATI_log/aetr_ln_ati_age`i'.pdf", replace;
 
 } ;
-
-
-capture log close ;
