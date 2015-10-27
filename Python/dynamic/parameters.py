@@ -15,13 +15,24 @@ This py-file calls the following other file(s):
 Import Packages
 ------------------------------------------------------------------------
 '''
-
+import os
+import json
 import numpy as np
 from demographics import get_omega
 from income import get_e
 
 DATASET = 'REAL'
 
+PARAMS_FILE = os.path.join(os.path.dirname(__file__), 'default_full_parameters.json')
+
+
+def get_parameters_from_file():
+    with open(PARAMS_FILE,'r') as f:
+        j = json.load(f)
+        for key in j:
+            if isinstance(j[key], list):
+                j[key] = np.array(j[key])
+        return j
 
 def get_parameters():
     if DATASET == 'REAL':
