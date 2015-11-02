@@ -1,11 +1,13 @@
 '''
 ------------------------------------------------------------------------
 This script reads in data generated from the OSPC Tax Calcultor and
-the 2009 IRS PUF.  It then estimates tax functions tau_{s,t}(x,y), where
+the 2009 IRS PUF. It then estimates tax functions tau_{s,t}(x,y), where
 tau_{s,t} is the effective tax rate for a given age (s) in a particular
 year (t), x is total labor income, and y is total capital income.
 
 This Python script calls the following functions:
+    gen_etr_grid: generates summary grid points for effective tax rate
+    wsumsq:       generates weighted sum of squared residuals
 
 
 This Python script outputs the following:
@@ -27,25 +29,42 @@ from matplotlib import cm
 ------------------------------------------------------------------------
 Set parameters and create objects for output
 ------------------------------------------------------------------------
-s_min     = integer > 0, minimum age relevant to the model
-s_max     = integer > s_min, maximum age relevant to the model
-taxparams =
+s_min       = integer > 0, minimum age relevant to the model
+s_max       = integer > s_min, maximum age relevant to the model
+tpers       = integer > 0, number of years to forecast
+numparams   = integer > 0, number of parameters to estimate for the tax
+              function for each age s and year t
+param_arr   = (s_max-s_min+1 x tpers x numparams) array, parameter
+              values for the estimated tax function for each age s and
+              year t
+desc_data   = boolean, =True if print descriptive stats for each age s
+              and year t
+graph_data  = boolean, =True if print 3D graph of data for each age s
+              and year t
+graph_est   = boolean, =True if print 3D graph of data and estimated tax
+              function for each age s and year t
+cmap1       = matplotlib setting, set color map for 3D surface plots
+beg_yr      = integer >= 2015, beginning year for forecasts
+end_yr      = integer >= beg_yr, ending year for forecasts
+years_list  = [beg_yr-end_yr+1,] vector, iterable list of years to be
+              forecast
+data_folder = string, path of hard drive folder where data files reside
 ------------------------------------------------------------------------
 '''
 s_min = int(21)
 s_max = int(100)
 tpers = int(10)
-numparams = int(7)
+numparams = int(10)
 param_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
-desc_data = True
-graph_data = True
+desc_data = False
+graph_data = False
 graph_est = True
 cmap1 = matplotlib.cm.get_cmap('summer')
 # cmap1 = matplotlib.cm.get_cmap('jet')
 # cmap1 = matplotlib.cm.get_cmap('coolwarm')
 
 beg_yr = int(2015)
-end_yr = int(2015)
+end_yr = int(2024)
 years_list = np.arange(beg_yr, end_yr + 1)
 data_folder = '/Users/rwe2/Documents/OSPC/Data/micro-dynamic/'
 
@@ -55,19 +74,20 @@ Define Functions
 ------------------------------------------------------------------------
 '''
 
-def gen_etr_grid(X, Y, params, G):
+def gen_etr_grid(X, Y, params):
     '''
     --------------------------------------------------------------------
     This function generates a grid of effective tax rates from a grid of
     total labor income and a grid of total capital income.
     --------------------------------------------------------------------
     '''
-    A, B, C, D, E, F = params
-    P_num = (A * (X ** 2) + B * (Y ** 2) + C * (X * Y) + D * X + E * Y
-            + A + B + C + D + E)
+    A, B, C, D, E, F, max_x, min_x, max_y, min_y = params
+    phi = X / (X + Y)
+    P_num = A * (X ** 2) + B * (Y ** 2) + C * (X * Y) + D * X + E * Y
     P_den = (A * (X ** 2) + B * (Y ** 2) + C * (X * Y) + D * X + E * Y
-            + F + A + B + C + D + E)
-    etr_grid = P_num / P_den - G
+            + F)
+    etr_grid = ((phi * (max_x - min_x) + (1 - phi) * (max_y - min_y)) *
+        (P_num / P_den) + (phi * min_x + (1 - phi) * min_y))
     return etr_grid
 
 
@@ -102,11 +122,13 @@ def wsumsq(params, *objs):
     returns: wssqdev
     --------------------------------------------------------------------
     '''
-    varmat_hat, etr, wgts, G, varmat_bar = objs
-    Htil = np.dot(varmat_bar, params[:-1])
-    P_num = np.dot(varmat_hat[:,:-1], params[:-1]) + Htil
-    P_den = np.dot(varmat_hat, params) + Htil
-    etr_est = P_num / P_den - G
+    varmat_hat, etr, wgts, varmat_bar, phi = objs
+    max_x, min_x, max_y, min_y = params[-4:]
+    Gtil = params[:5].sum()
+    P_num = np.dot(varmat_hat[:,:-1], params[:5]) + Gtil
+    P_den = np.dot(varmat_hat, params[:6]) + Gtil
+    etr_est = ((phi * (max_x - min_x) + (1 - phi) * (max_y - min_y)) *
+        (P_num / P_den) + (phi * min_x + (1 - phi) * min_y))
     errors = etr_est - etr
     wssqdev = (wgts * (errors ** 2)).sum()
     return wssqdev
@@ -123,10 +145,17 @@ for t in years_list:
     --------------------------------------------------------------------
     Load OSPC Tax Calculator Data into a Dataframe
     --------------------------------------------------------------------
-    data_path = string, path to directory address of data
+    t         = integer >= 2015, current year of tax functions being
+                estimated
+    data_file = string, name of data file for current year tax data
+    data_path = string, path to directory address of data file
     data_orig = (I x 12) DataFrame, I observations, 12 variables
     data      = (I x 6) DataFrame, I observations, 6 variables
     data_trnc = (I2 x 6) DataFrame, I2 observations (I2<I), 6 variables
+    min_age   = integer, minimum age in data_trnc that is at least s_min
+    max_age   = integer, maximum age in data_trnc that is at most s_max
+    ages_list = [age_max-age_min+1,] vector, iterable list of relevant
+                ages in data_trnc
     --------------------------------------------------------------------
     '''
     data_file = str(t) + '_tau_n.csv'
@@ -154,17 +183,48 @@ for t in years_list:
         data_trnc.drop(data_trnc[data_trnc['Adjusted Total income'] < 5]
         .index)
 
-
-
     # Create an array of the different ages in the data
-    # min_age = int(np.maximum(data_trnc['Age'].min(), s_min))
-    # max_age = int(np.minimum(data_trnc['Age'].max(), s_max))
-    min_age = int(45)
-    max_age = int(45)
+    min_age = int(np.maximum(data_trnc['Age'].min(), s_min))
+    max_age = int(np.minimum(data_trnc['Age'].max(), s_max))
+    # min_age = int(45)
+    # max_age = int(45)
     ages_list = np.arange(min_age, max_age+1)
 
     for s in ages_list:
+        '''
+        ----------------------------------------------------------------
+        Load OSPC Tax Calculator Data into a Dataframe
+        ----------------------------------------------------------------
+        s            = integer >= s_min, current age of tax function
+                       estimation
+        df           = (I3 x 6) DataFrame, data_trnc for age=s
+        df_trnc_gph  = (I4 x 6) DataFrame, truncated data for 3D graph
+        inc_lab_gph  = (I4 x 1) vector, total labor income for 3D graph
+        inc_cap_gph  = (I4 x 1) vector, total capital income for 3D
+                       graph
+        etr_data_gph = (I4 x 1) vector, effective tax rate data for 3D
+                       graph
+        df_trnc      = (I5 x 6) DataFrame, truncated data for parameter
+                       estimation
+        inc_lab      = (I5 x 1) vector, total labor income for parameter
+                       estimation
+        inc_cap      = (I5 x 1) vector, total capital income for
+                       parameter estimation
+        etr          = (I5 x 1) vector, effective tax rate data for
+                       parameter estimation
+        wgts         = (I5 x 1) vector, population weights for each
+                       for each observation for parameter estimation
+        Obs          = integer, number of observations in sample
+        X1           = (Obs x 1) vector, ?
+        X2           = (Obs x 1) vector, ?
+        X3           = (Obs x 1) vector, ?
+        X4           = (Obs x 1) vector, ?
+        X5           = (Obs x 1) vector, ?
+        X6           = (Obs x 1) vector, ?
+        ----------------------------------------------------------------
+        '''
         df = data_trnc[data_trnc['Age'] == s]
+        # Don't estimate function if obs < 600
         if df.shape[0] < 600:
             param_arr[s-21, t-beg_yr, :] = np.nan
         else:
@@ -180,14 +240,14 @@ for t in years_list:
                               (df['Total Labor Income'] < 500000) &
                               (df['Total Capital Income'] > 5) &
                               (df['Total Capital Income'] < 500000)]
-                inc_lab = df_trnc_gph['Total Labor Income']
-                inc_cap = df_trnc_gph['Total Capital Income']
-                etr_data = df_trnc_gph['Effective Tax Rate']
-
+                inc_lab_gph = df_trnc_gph['Total Labor Income']
+                inc_cap_gph = df_trnc_gph['Total Capital Income']
+                etr_data_gph = df_trnc_gph['Effective Tax Rate']
 
                 fig = plt.figure()
                 ax = fig.add_subplot(111, projection ='3d')
-                ax.scatter(inc_lab, inc_cap, etr_data, c='r', marker='o')
+                ax.scatter(inc_lab_gph, inc_cap_gph, etr_data_gph,
+                    c='r', marker='o')
                 ax.set_xlabel('Total Labor Income')
                 ax.set_ylabel('Total Capital Income')
                 ax.set_zlabel('Effective Tax Rate')
@@ -211,34 +271,47 @@ for t in years_list:
             varmat_bar = varmat.mean(axis=0)
             varmat_hat = (varmat - varmat_bar)/varmat_bar
             varmat_hat[:, 5] = np.ones(Obs)
-            G = np.maximum(0, -etr.min() + 0.1)
-            Atil_init = 0.1
-            Btil_init = 0.1
+            Atil_init = 0.5
+            Btil_init = 0.5
             Ctil_init = 0.5
             Dtil_init = 0.5
             Etil_init = 0.5
-            Ftil_init = 0.5
+            F_init = 0.5
+            max_x_init = etr[(df_trnc['Total Capital Income']
+                         <3000)].max()
+            min_x_init = etr[(df_trnc['Total Capital Income']
+                         <3000)].min()
+            max_y_init = etr[(df_trnc['Total Labor Income']
+                         <3000)].max()
+            min_y_init = etr[(df_trnc['Total Labor Income']
+                         <3000)].min()
             params_init = np.array([Atil_init, Btil_init, Ctil_init,
-                Dtil_init, Etil_init, Ftil_init])
+                Dtil_init, Etil_init, F_init, max_x_init, min_x_init,
+                max_y_init, min_y_init])
             varmat_barm1 = varmat_bar[:-1]
-            tau_objs = (varmat_hat, etr, wgts, G, varmat_barm1)
+            phi = (X4 / (X4 + X5)).reshape(Obs)
+            tau_objs = (varmat_hat, etr, wgts, varmat_barm1, phi)
             bnds = ((1e-12, None), (1e-12, None), (1e-12, None),
-                   (1e-12, None), (1e-12, None), (1e-12, None))
+                   (1e-12, None), (1e-12, None), (1e-12, None),
+                   (1e-12, None), (None, None), (1e-12, None),
+                   (None, None))
             params_til = opt.minimize(wsumsq, params_init,
                 args=(tau_objs), method="L-BFGS-B", bounds=bnds,
                 tol=1e-15)
-            Atil, Btil, Ctil, Dtil, Etil, Ftil = params_til.x
-            Htil = (params_til.x[:-1] * varmat_bar[:-1]).sum()
-            P_num = np.dot(varmat_hat[:,:-1], params_til.x[:-1]) + Htil
-            P_den = np.dot(varmat_hat, params_til.x) + Htil
-            etr_est = P_num / P_den - G
-            # etr_est = np.exp(-np.dot(varmat_hat, params_til.x)) - G
-            params = np.zeros(numparams - 1)
-            params[:-1] = params_til.x[:-1] / varmat_bar[:-1]
-            A, B, C, D, E = params[:-1]
-            F = params_til.x[-1]
-            params[-1] = F
-            param_arr[s-21, t-beg_yr, :] = np.hstack((params, G))
+            (Atil, Btil, Ctil, Dtil, Etil, F, max_x, min_x, max_y,
+                min_y) = params_til.x
+            Gtil = params_til.x[:5].sum()
+            P_num = np.dot(varmat_hat[:, :-1], params_til.x[:5]) + Gtil
+            P_den = np.dot(varmat_hat, params_til.x[:6]) + Gtil
+            etr_est = \
+                ((phi * (max_x - min_x) + (1 - phi) * (max_y - min_y)) *
+                (P_num / P_den) + (phi * min_x + (1 - phi) * min_y))
+            params = np.zeros(numparams)
+            params[:5] = params_til.x[:5] / varmat_bar[:5]
+            A, B, C, D, E = params[:5]
+            params[5] = F
+            params[6:] = [max_x, min_x, max_y, min_y]
+            param_arr[s-21, t-beg_yr, :] = params
 
             if graph_est == True:
                 # Generate 3-D graph here of predicted surface and
@@ -259,7 +332,7 @@ for t in years_list:
                 inc_lab_grid, inc_cap_grid = np.meshgrid(inc_lab_vec,
                                              inc_cap_vec)
                 etr_grid = gen_etr_grid(inc_lab_grid, inc_cap_grid,
-                           params, G)
+                           params)
                 ax.plot_surface(inc_lab_grid, inc_cap_grid, etr_grid,
                     cmap=cmap1, linewidth=0)
                 plt.show()
