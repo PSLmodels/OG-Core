@@ -6,9 +6,9 @@ import pytest
 import tempfile
 import pickle
 import numpy as np
-from dynamic.utils import comp_array
-from dynamic.utils import comp_scalar
-from dynamic.utils import dict_compare
+from ogusa.utils import comp_array
+from ogusa.utils import comp_scalar
+from ogusa.utils import dict_compare
 
 TOL = 1e-5
 
@@ -59,7 +59,7 @@ def picklefile4():
 
 
 def test_import_ok():
-    import dynamic
+    import ogusa
 
 
 def test_run_small():
@@ -68,49 +68,49 @@ def test_run_small():
 
 
 def test_compare_pickle_file_bad(picklefile1, picklefile2):
-    from dynamic.utils import pickle_file_compare
+    from ogusa.utils import pickle_file_compare
     assert not pickle_file_compare(picklefile1.name, picklefile2.name)
 
 
 def test_compare_pickle_file_bad2(picklefile3, picklefile4):
-    from dynamic.utils import pickle_file_compare
+    from ogusa.utils import pickle_file_compare
     assert not pickle_file_compare(picklefile3.name, picklefile4.name)
 
 
 def test_compare_pickle_file_relative(picklefile3, picklefile4):
-    from dynamic.utils import pickle_file_compare
+    from ogusa.utils import pickle_file_compare
     assert pickle_file_compare(
         picklefile3.name, picklefile4.name, relative=True)
 
 
 def test_compare_pickle_file_basic(picklefile1):
-    from dynamic.utils import pickle_file_compare
+    from ogusa.utils import pickle_file_compare
     assert pickle_file_compare(picklefile1.name, picklefile1.name)
 
 
 def test_compare_dict_basic():
-    from dynamic.utils import dict_compare
+    from ogusa.utils import dict_compare
     lhs = {'a': 1, 'b': 2}
     rhs = {'c': 4, 'b': 2}
     assert not dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs, tol=TOL)
 
 
 def test_compare_dict_more_lhs():
-    from dynamic.utils import dict_compare
+    from ogusa.utils import dict_compare
     lhs = {'a': 1, 'b': 2, 'c': 3}
     rhs = {'c': 4, 'b': 2}
     assert not dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs, tol=TOL)
 
 
 def test_compare_dict_diff_ndarrays():
-    from dynamic.utils import dict_compare
+    from ogusa.utils import dict_compare
     lhs = {'a': np.array([1, 2, 3]), 'b': 2}
     rhs = {'a': np.array([1, 3]), 'b': 2}
     assert not dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs, tol=TOL)
 
 
 def test_compare_dict_diff_ndarrays2():
-    from dynamic.utils import dict_compare
+    from ogusa.utils import dict_compare
     lhs = {'a': np.array([1., 2., 3.]), 'b': 2}
     rhs = {'a': np.array([1., 2., 3.1]), 'b': 2}
     assert not dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs, tol=TOL)

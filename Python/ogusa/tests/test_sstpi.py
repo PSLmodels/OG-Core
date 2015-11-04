@@ -47,19 +47,19 @@ def test_sstpi():
     import cPickle as pickle
     import os
 
-    import dynamic
-    dynamic.parameters.DATASET = 'REAL'
+    import ogusa
+    ogusa.parameters.DATASET = 'REAL'
 
-    from dynamic.utils import comp_array
-    from dynamic.utils import comp_scalar
-    from dynamic.utils import dict_compare
-    from dynamic.utils import pickle_file_compare
+    from ogusa.utils import comp_array
+    from ogusa.utils import comp_scalar
+    from ogusa.utils import dict_compare
+    from ogusa.utils import pickle_file_compare
 
-    import dynamic.SS
-    import dynamic.TPI
-    from dynamic import parameters, wealth, labor, demographics, income, SS, TPI
+    import ogusa.SS
+    import ogusa.TPI
+    from ogusa import parameters, wealth, labor, demographics, income, SS, TPI
 
-    globals().update(dynamic.parameters.get_parameters())
+    globals().update(ogusa.parameters.get_parameters())
 
     # Generate Wealth data moments
     output_dir = TEST_OUTPUT
