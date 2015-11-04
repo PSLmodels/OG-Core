@@ -5,16 +5,16 @@ except ImportError:
 
 
 config = {
-    'description': 'dynamic scoring model',
-    'url': 'https://github.com/OpenSourcePolicyCenter/dynamic',
-    'download_url': 'https://github.com/OpenSourcePolicyCenter/dynamic',
-    'description':'dynamic',
-    'install_requires': ["scipy", "numpy"],
+    'description': 'dynamic scoring model using Overlapping Generations model for the USA',
+    'url': 'https://github.com/open-source-economics/OG-USA/',
+    'download_url': 'https://github.com/open-source-economics/OG-USA/',
+    'description':'ogusa',
+    'install_requires': ['scipy', 'numpy'],
     'version': '0.1',
     'license': 'MIT',
-    'packages': ['dynamic'],
+    'packages': ['ogusa'],
     'include_package_data': True,
-    'name': 'dynamic',
+    'name': 'ogusa',
     'classifiers': [
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
