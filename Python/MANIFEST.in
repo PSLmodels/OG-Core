@@ -1,4 +1,0 @@
-include ogusa/data/ability/*
-include ogusa/data/demographic/*
-include ogusa/data/labor/*
-include ogusa/data/wealth/*
