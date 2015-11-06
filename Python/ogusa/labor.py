@@ -24,6 +24,7 @@ import os
 import numpy as np
 import pandas as pd
 import cPickle as pickle
+import utils
 
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 LABOR_DIR = os.path.join(cur_path, "data", "labor")
@@ -39,8 +40,9 @@ LABOR_DIR = os.path.join(cur_path, "data", "labor")
 S_labor = 60
 J_labor = 99
 
-data = pd.read_table(
-    os.path.join(LABOR_DIR, "cps_hours_by_age_hourspct.txt"), header=0)
+labor_file = utils.read_file(cur_path,
+                             "data/labor/cps_hours_by_age_hourspct.txt")
+data = pd.read_table(labor_file, header=0)
 
 piv = data.pivot(index='age', columns='hours_pct', values='mean_hrs')
 lab_mat_basic = np.array(piv)

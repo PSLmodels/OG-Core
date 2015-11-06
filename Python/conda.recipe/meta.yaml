@@ -1,0 +1,25 @@
+package:
+  name: ogusa
+  version: 0.1
+
+requirements:
+  build:
+    - setuptools
+    - scipy
+    - matplotlib
+    - numpy
+    - pandas <=0.16.2
+    - pytest
+    - python 2.7.10
+
+  run:
+    - setuptools
+    - scipy
+    - matplotlib
+    - numpy
+    - pandas <=0.16.2
+    - pytest
+    - python 2.7.10
+
+about:
+  home: https://github.com/open-source-economics/OG-USA/
