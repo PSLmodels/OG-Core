@@ -1,5 +1,5 @@
 '''
-A 'smoke test' for the dynamic package. Uses a fake data set to run the
+A 'smoke test' for the ogusa package. Uses a fake data set to run the
 baseline
 '''
 
@@ -8,14 +8,14 @@ import os
 import numpy as np
 import time
 
-import dynamic
-dynamic.parameters.DATASET = 'SMALL'
+import ogusa
+ogusa.parameters.DATASET = 'SMALL'
 
-import dynamic.SS
-import dynamic.TPI
-from dynamic import parameters, wealth, labor, demographics, income, SS, TPI
+import ogusa.SS
+import ogusa.TPI
+from ogusa import parameters, wealth, labor, demographics, income, SS, TPI
 
-globals().update(dynamic.parameters.get_parameters())
+globals().update(ogusa.parameters.get_parameters())
 
 def runner():
 

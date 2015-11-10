@@ -6,8 +6,12 @@ tau_{s,t} is the effective tax rate for a given age (s) in a particular
 year (t), x is total labor income, and y is total capital income.
 
 This Python script calls the following functions:
-    gen_etr_grid: generates summary grid points for effective tax rate
-    wsumsq:       generates weighted sum of squared residuals
+    gen_etr_grid:   generates summary grid points for effective tax rate
+    gen_dmtrx_grid: generates summary grid points for derivative of
+                    marginal tax rate with respect to labor income
+    gen_dmtry_grid: generates summary grid points for derivative of
+                    marginal tax rate with respect to capital income
+    wsumsq:         generates weighted sum of squared residuals
 
 
 This Python script outputs the following:
@@ -16,9 +20,14 @@ This Python script outputs the following:
 '''
 
 # Import packages
+import time
 import numpy as np
 import numpy.random as rnd
 import scipy.optimize as opt
+try:
+    import cPickle as pickle
+except:
+    import pickle
 import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
@@ -43,12 +52,15 @@ graph_data  = boolean, =True if print 3D graph of data for each age s
               and year t
 graph_est   = boolean, =True if print 3D graph of data and estimated tax
               function for each age s and year t
+dmtrgr_est  = boolean, =True if print 3D graph of derivative of
+              estimated marginal tax rates for each age s and year t
 cmap1       = matplotlib setting, set color map for 3D surface plots
 beg_yr      = integer >= 2015, beginning year for forecasts
 end_yr      = integer >= beg_yr, ending year for forecasts
 years_list  = [beg_yr-end_yr+1,] vector, iterable list of years to be
               forecast
 data_folder = string, path of hard drive folder where data files reside
+start_time  = scalar, current processor time in seconds (float)
 ------------------------------------------------------------------------
 '''
 s_min = int(21)
@@ -58,7 +70,8 @@ numparams = int(10)
 param_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
 desc_data = False
 graph_data = False
-graph_est = True
+graph_est = False
+dmtrgr_est = False
 cmap1 = matplotlib.cm.get_cmap('summer')
 # cmap1 = matplotlib.cm.get_cmap('jet')
 # cmap1 = matplotlib.cm.get_cmap('coolwarm')
@@ -66,7 +79,8 @@ cmap1 = matplotlib.cm.get_cmap('summer')
 beg_yr = int(2015)
 end_yr = int(2024)
 years_list = np.arange(beg_yr, end_yr + 1)
-data_folder = '/Users/rwe2/Documents/OSPC/Data/micro-dynamic/'
+data_folder = '/Users/rwe2/Documents/Economics/OSPC/Data/micro-dynamic/'
+start_time = time.clock()
 
 '''
 ------------------------------------------------------------------------
@@ -89,6 +103,51 @@ def gen_etr_grid(X, Y, params):
     etr_grid = ((phi * (max_x - min_x) + (1 - phi) * (max_y - min_y)) *
         (P_num / P_den) + (phi * min_x + (1 - phi) * min_y))
     return etr_grid
+
+
+def gen_dmtrx_grid(X, Y, params):
+    '''
+    --------------------------------------------------------------------
+    This function generates a grid of derivatives of marginal tax rates
+    with respect to labor income from a grid of total labor income and a
+    grid of total capital income
+    --------------------------------------------------------------------
+    '''
+    A, B, C, D, E, F, max_x, min_x, max_y, min_y = params
+    MTRx = ((F * ((2 * A * X) + (C * Y) + D)) /
+           (((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
+           (E * Y) + F) **2))
+    dMTRx = ((2 * F * ((-3 * (A ** 2) * (X ** 2)) +
+        ((A * B - C ** 2) * (Y ** 2)) - (3 * A * C * X * Y) -
+        (3 * A * D * X) + ((A * E - 2 * C * D) * Y) + (A * F - D ** 2)))
+        / (((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
+        (E * Y) + F) ** 3))
+    detrx_grid = (2 * (max_x - min_x) * MTRx +
+                 ((max_x - min_x) * X + (max_y - min_y) * Y) * dMTRx)
+    return dmtrx_grid
+
+
+def gen_dmtry_grid(X, Y, params):
+    '''
+    --------------------------------------------------------------------
+    This function generates a grid of derivatives of marginal tax rates
+    from a grid of total labor income and
+    a grid of total capital income
+    --------------------------------------------------------------------
+    '''
+    A, B, C, D, E, F, max_x, min_x, max_y, min_y = params
+    MTRy = ((F * ((2 * B * Y) + (C * X) + E)) /
+           (((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
+           (E * Y) + F) **2))
+    dMTRy = ((2 * F * ((-3 * (B ** 2) * (Y ** 2)) +
+        ((A * B - C ** 2) * (X ** 2)) - (3 * B * C * X * Y) -
+        (3 * B * E * Y) + ((B * D - 2 * C * E) * X) + (B * F - E ** 2)))
+        / (((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
+        (E * Y) + F) ** 3))
+    detry_grid = (2 * (max_y - min_y) * MTRy +
+                 ((max_x - min_x) * X + (max_y - min_y) * Y) * dMTRy)
+    return dmtry_grid
+
 
 
 def wsumsq(params, *objs):
@@ -186,8 +245,6 @@ for t in years_list:
     # Create an array of the different ages in the data
     min_age = int(np.maximum(data_trnc['Age'].min(), s_min))
     max_age = int(np.minimum(data_trnc['Age'].max(), s_max))
-    # min_age = int(45)
-    # max_age = int(45)
     ages_list = np.arange(min_age, max_age+1)
 
     for s in ages_list:
@@ -223,6 +280,7 @@ for t in years_list:
         X6           = (Obs x 1) vector, ?
         ----------------------------------------------------------------
         '''
+        print "year=", t, "Age=", s
         df = data_trnc[data_trnc['Age'] == s]
         # Don't estimate function if obs < 600
         if df.shape[0] < 600:
@@ -314,7 +372,7 @@ for t in years_list:
             param_arr[s-21, t-beg_yr, :] = params
 
             if graph_est == True:
-                # Generate 3-D graph here of predicted surface and
+                # Generate 3-D graph of predicted surface and
                 # scatterplot of data
                 fig = plt.figure()
                 ax = fig.add_subplot(111, projection ='3d')
@@ -337,4 +395,54 @@ for t in years_list:
                     cmap=cmap1, linewidth=0)
                 plt.show()
 
+            if dmtrgr_est == True:
+                # Generate 3-D graph of predicted derivative of marginal
+                # tax rates
+                gridpts = 50
+                inc_lab_vec = np.exp(np.linspace(np.log(5),
+                              np.log(inc_lab.max()), gridpts))
+                inc_cap_vec = np.exp(np.linspace(np.log(5),
+                              np.log(inc_cap.max()), gridpts))
+                inc_lab_grid, inc_cap_grid = np.meshgrid(inc_lab_vec,
+                                             inc_cap_vec)
+                dmtrx_grid = gen_dmtrx_grid(inc_lab_grid, inc_cap_grid,
+                             params)
+                fig = plt.figure()
+                ax = fig.add_subplot(111, projection ='3d')
+                ax.plot_surface(inc_lab_grid, inc_cap_grid, dmtrx_grid,
+                    cmap=cmap1, linewidth=0)
+                ax.set_xlabel('Total Labor Income')
+                ax.set_ylabel('Total Capital Income')
+                ax.set_zlabel('d MTR labor inc.')
+                plt.title('d MTR labor inc.: Age=' + str(s) + ', Year=' + str(t))
+                print dmtrx_grid.min(), dmtrx_grid.max()
+                plt.show()
 
+                dmtry_grid = gen_dmtry_grid(inc_lab_grid, inc_cap_grid,
+                             params)
+                fig = plt.figure()
+                ax = fig.add_subplot(111, projection ='3d')
+                ax.plot_surface(inc_lab_grid, inc_cap_grid, dmtry_grid,
+                    cmap=cmap1, linewidth=0)
+                ax.set_xlabel('Total Labor Income')
+                ax.set_ylabel('Total Capital Income')
+                ax.set_zlabel('d MTR capital inc.')
+                plt.title('d MTR capital inc.: Age=' + str(s) + ', Year=' + str(t))
+                print dmtry_grid.min(), dmtry_grid.max()
+                plt.show()
+
+elapsed_time = time.clock() - start_time
+
+# Print tax function computation time
+if elapsed_time < 60: # seconds
+    secs = round(elapsed_time, 3)
+    print 'Tax function estimation time: ', secs, ' sec.'
+elif elapsed_time >= 60 and elapsed_time < 3600: # minutes
+    mins = int(elapsed_time / 60)
+    secs = round(((elapsed_time / 60) - mins) * 60, 1)
+    print 'Tax function estimation time: ', mins, ' min, ', secs, ' sec'
+
+# Save tax function parameters array and computation time in pickle
+dict_params = dict([('tfunc_params', param_arr), ('tfunc_time', elapsed_time)])
+pkl_path = "TxFuncEst.pkl"
+pickle.dump(dict_params, open(pkl_path, "wb"))

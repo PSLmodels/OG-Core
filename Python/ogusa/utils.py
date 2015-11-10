@@ -103,8 +103,8 @@ def read_file(path, fname):
     is installed in a .egg file, and adjust accordingly
     '''
     if not os.path.exists(os.path.join(path, fname)):
-        path_in_egg = os.path.join("dynamic", fname)
-        buf = resource_stream(Requirement.parse("dynamic"), path_in_egg)
+        path_in_egg = os.path.join("ogusa", fname)
+        buf = resource_stream(Requirement.parse("ogusa"), path_in_egg)
         _bytes = buf.read()
         return StringIO(_bytes.decode("utf-8"))
     else:

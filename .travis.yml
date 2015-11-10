@@ -14,9 +14,9 @@ install:
   - conda create -n test-environment python=$TRAVIS_PYTHON_VERSION pytest scipy numpy pandas matplotlib
   - conda install -n test-environment numba 
   - source activate test-environment
-  - cd Python; python setup.py install
+  - python setup.py install
 
 
 # command to run tests, e.g. python setup.py test
 script:
-  - py.test -m 'not full_run'
+  - cd Python; py.test -m 'not full_run'

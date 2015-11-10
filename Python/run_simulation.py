@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-A 'driver' script to use the dynamic package for an Overlapping Generations
+A 'driver' script to use the ogusa package for an Overlapping Generations
 macroeconomic model
 
 This will run the steady state solver as well as time path iteration.
@@ -21,12 +21,12 @@ import numpy as np
 import cPickle as pickle
 import os
 
-import dynamic
-dynamic.parameters.DATASET = 'REAL'
+import ogusa
+ogusa.parameters.DATASET = 'REAL'
 
-import dynamic.SS
-import dynamic.TPI
-from dynamic import parameters, wealth, labor, demographics, income, SS, TPI
+import ogusa.SS
+import ogusa.TPI
+from ogusa import parameters, wealth, labor, demographics, income, SS, TPI
 
 '''
 ------------------------------------------------------------------------
@@ -37,7 +37,7 @@ calibrate_model = Flag to run calibration of chi values or not (bool)
 ------------------------------------------------------------------------
 '''
 
-globals().update(dynamic.parameters.get_parameters())
+globals().update(ogusa.parameters.get_parameters())
 
 # Generate Wealth data moments
 output_dir = "./OUTPUT"

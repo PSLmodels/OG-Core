@@ -1,4 +1,0 @@
-include dynamic/data/ability/*
-include dynamic/data/demographic/*
-include dynamic/data/labor/*
-include dynamic/data/wealth/*

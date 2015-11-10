@@ -3,18 +3,25 @@ try:
 except ImportError:
     from distutils.core import setup
 
+import versioneer
+
 
 config = {
-    'description': 'dynamic scoring model',
-    'url': 'https://github.com/OpenSourcePolicyCenter/dynamic',
-    'download_url': 'https://github.com/OpenSourcePolicyCenter/dynamic',
-    'description':'dynamic',
-    'install_requires': ["scipy", "numpy"],
+    'description': 'dynamic scoring model using Overlapping Generations model for the USA',
+    'url': 'https://github.com/open-source-economics/OG-USA/',
+    'download_url': 'https://github.com/open-source-economics/OG-USA/',
+    'description': 'ogusa',
+    'package_dir': {'': 'Python'},
+    'install_requires': ['scipy', 'numpy'],
     'version': '0.1',
     'license': 'MIT',
-    'packages': ['dynamic'],
+    'packages': ['ogusa'],
+    'package_dir': {'ogusa': 'Python/ogusa'},
+    'package_data': {'ogusa': ['data/ability/*', 'data/demographic/*', 'data/labor/*', 'data/wealth/*']},
     'include_package_data': True,
-    'name': 'dynamic',
+    'name': 'ogusa',
+    'version': versioneer.get_version(),
+    'cmdclass': versioneer.get_cmdclass(),
     'classifiers': [
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
