@@ -1,7 +1,7 @@
 (dp1
 S'tfunc_time'
 p2
-F1100.9612619999998
+F1166.3004679999999
 sS'tfunc_params'
 p3
 cnumpy.core.multiarray

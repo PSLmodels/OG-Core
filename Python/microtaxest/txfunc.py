@@ -13,12 +13,10 @@ This Python script calls the following functions:
                     marginal tax rate with respect to capital income
     wsumsq:         generates weighted sum of squared residuals
 
-
 This Python script outputs the following:
-
+    TxFuncEst.pkl: pickle of dictionary with param_arr and elapsed_time
 ------------------------------------------------------------------------
 '''
-
 # Import packages
 import time
 import numpy as np
@@ -88,11 +86,37 @@ Define Functions
 ------------------------------------------------------------------------
 '''
 
+
 def gen_etr_grid(X, Y, params):
     '''
     --------------------------------------------------------------------
     This function generates a grid of effective tax rates from a grid of
-    total labor income and a grid of total capital income.
+    total labor income (X) and a grid of total capital income (Y).
+    --------------------------------------------------------------------
+    X        = (N x N) matrix, discretized support (N elements) of
+               inc_lab as row vector copied down N rows
+    Y        = (N x N) matrix, discretized support (N elements) of
+               inc_cap as column vector copied across N columns
+    params   = (10,) vector, estimated parameters
+               (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
+    A        = scalar > 0, polynomial coefficient on X**2
+    B        = scalar > 0, polynomial coefficient on Y**2
+    C        = scalar > 0, polynomial coefficient on X*Y
+    D        = scalar > 0, polynomial coefficient on X
+    E        = scalar > 0, polynomial coefficient on Y
+    F        = scalar > 0, polynomial constant
+    max_x    = scalar > 0, maximum effective tax rate for X given Y=0
+    min_x    = scalar, minimum effective tax rate for X given Y=0
+    max_y    = scalar > 0, maximum effective tax rate for Y given X=0
+    min_y    = scalar, minimum effective tax rate for Y given X=0
+    phi      = (N x N) matrix, labor income as percent of total income
+    P_num    = (N x N) matrix, numerator values in ratio of polynomials
+    P_den    = (N x N) matrix, denominator values in ratio of
+               polynomials
+    etr_grid = (N x N) matrix, predicted effective tax rates given labor
+               income grid (X) and capital income grid (Y)
+
+    returns: etr_grid
     --------------------------------------------------------------------
     '''
     A, B, C, D, E, F, max_x, min_x, max_y, min_y = params
@@ -112,18 +136,43 @@ def gen_dmtrx_grid(X, Y, params):
     with respect to labor income from a grid of total labor income and a
     grid of total capital income
     --------------------------------------------------------------------
+    X          = (N x N) matrix, discretized support (N elements) of
+                 inc_lab as row vector copied down N rows
+    Y          = (N x N) matrix, discretized support (N elements) of
+                 inc_cap as column vector copied across N columns
+    params     = (10,) vector, estimated parameters
+                 (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
+    A          = scalar > 0, polynomial coefficient on X**2
+    B          = scalar > 0, polynomial coefficient on Y**2
+    C          = scalar > 0, polynomial coefficient on X*Y
+    D          = scalar > 0, polynomial coefficient on X
+    E          = scalar > 0, polynomial coefficient on Y
+    F          = scalar > 0, polynomial constant
+    max_x      = scalar > 0, maximum effective tax rate for X given Y=0
+    min_x      = scalar, minimum effective tax rate for X given Y=0
+    max_y      = scalar > 0, maximum effective tax rate for Y given X=0
+    min_y      = scalar, minimum effective tax rate for Y given X=0
+    dOMdx      = (N x N) matrix, derivative of ratio of polynomials
+                 (Omega) with respect to labor income (X)
+    d2OMd2x    = (N x N) matrix, second derivative of ratio of
+                 polynomials (Omega) with respect to labor income (X)
+    dmtrx_grid = (N x N) matrix, second derivative of total tax
+                 liability with respect to labor income (X)
+
+    returns: dmtrx_grid
+    --------------------------------------------------------------------
     '''
     A, B, C, D, E, F, max_x, min_x, max_y, min_y = params
-    MTRx = ((F * ((2 * A * X) + (C * Y) + D)) /
-           (((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
-           (E * Y) + F) **2))
-    dMTRx = ((2 * F * ((-3 * (A ** 2) * (X ** 2)) +
+    dOMdx = ((F * ((2 * A * X) + (C * Y) + D)) /
+            (((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
+            (E * Y) + F) **2))
+    d2OMd2x = ((2 * F * ((-3 * (A ** 2) * (X ** 2)) +
         ((A * B - C ** 2) * (Y ** 2)) - (3 * A * C * X * Y) -
         (3 * A * D * X) + ((A * E - 2 * C * D) * Y) + (A * F - D ** 2)))
         / (((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
         (E * Y) + F) ** 3))
-    detrx_grid = (2 * (max_x - min_x) * MTRx +
-                 ((max_x - min_x) * X + (max_y - min_y) * Y) * dMTRx)
+    dmtrx_grid = (2 * (max_x - min_x) * dOMdx +
+                 ((max_x - min_x) * X + (max_y - min_y) * Y) * d2OMd2x)
     return dmtrx_grid
 
 
@@ -131,52 +180,84 @@ def gen_dmtry_grid(X, Y, params):
     '''
     --------------------------------------------------------------------
     This function generates a grid of derivatives of marginal tax rates
-    from a grid of total labor income and
+    with respect to capital income from a grid of total labor income and
     a grid of total capital income
+    --------------------------------------------------------------------
+    X          = (N x N) matrix, discretized support (N elements) of
+                 inc_lab as row vector copied down N rows
+    Y          = (N x N) matrix, discretized support (N elements) of
+                 inc_cap as column vector copied across N columns
+    params     = (10,) vector, estimated parameters
+                 (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
+    A          = scalar > 0, polynomial coefficient on X**2
+    B          = scalar > 0, polynomial coefficient on Y**2
+    C          = scalar > 0, polynomial coefficient on X*Y
+    D          = scalar > 0, polynomial coefficient on X
+    E          = scalar > 0, polynomial coefficient on Y
+    F          = scalar > 0, polynomial constant
+    max_x      = scalar > 0, maximum effective tax rate for X given Y=0
+    min_x      = scalar, minimum effective tax rate for X given Y=0
+    max_y      = scalar > 0, maximum effective tax rate for Y given X=0
+    min_y      = scalar, minimum effective tax rate for Y given X=0
+    dOMdy      = (N x N) matrix, derivative of ratio of polynomials
+                 (Omega) with respect to capital income (Y)
+    d2OMd2y    = (N x N) matrix, second derivative of ratio of
+                 polynomials (Omega) with respect to capital income (Y)
+    dmtry_grid = (N x N) matrix, second derivative of total tax
+                 liability with respect to capital income (Y)
+
+    returns: dmtry_grid
     --------------------------------------------------------------------
     '''
     A, B, C, D, E, F, max_x, min_x, max_y, min_y = params
-    MTRy = ((F * ((2 * B * Y) + (C * X) + E)) /
-           (((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
-           (E * Y) + F) **2))
-    dMTRy = ((2 * F * ((-3 * (B ** 2) * (Y ** 2)) +
+    dOMdy = ((F * ((2 * B * Y) + (C * X) + E)) /
+            (((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
+            (E * Y) + F) **2))
+    d2OMd2y = ((2 * F * ((-3 * (B ** 2) * (Y ** 2)) +
         ((A * B - C ** 2) * (X ** 2)) - (3 * B * C * X * Y) -
         (3 * B * E * Y) + ((B * D - 2 * C * E) * X) + (B * F - E ** 2)))
         / (((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
         (E * Y) + F) ** 3))
-    detry_grid = (2 * (max_y - min_y) * MTRy +
-                 ((max_x - min_x) * X + (max_y - min_y) * Y) * dMTRy)
+    dmtry_grid = (2 * (max_y - min_y) * dOMdy +
+                 ((max_x - min_x) * X + (max_y - min_y) * Y) * d2OMd2y)
     return dmtry_grid
-
 
 
 def wsumsq(params, *objs):
     '''
     --------------------------------------------------------------------
-    This function generates the sum of squared percent deviations of
-    predicted values of effective tax rates as a function of income and
-    functional form parameters.
-
-    tau(y) = (maxt - mint)*(A*y^2 + B*y)/(A*y^2 + B*y + C) + mint
+    This function generates the weighted sum of squared deviations of
+    predicted values of effective tax rates from the effective tax rates
+    from the data.
     --------------------------------------------------------------------
-    params     = [5,] vector, guesses for maxt, mint, A, B, C
-    maxt       = scalar > 0, guess for maximum value of tax rate
-                 function
-    mint       = scalar, guess for minimum value of tax rate function
-    A          = scalar > 0, tax function parameter A
-    B          = scalar > 0, tax function parameter B
-    C          = scalar > 0, tax function parameter B
-    objs       = (3,) tuple, array objects passed in to function
-    avinc      = [n,] vector, average AGI of income bins
-    avgtax_dta = [n,] vector, average effective tax rate for each
-                 income bin
-    incwgts    = [n,] vector, weights on each (income, tax) point for
+    params     = (10,) vector, guesses for (Atil, Btil, Ctil, Dtil,
+                 Etil, F, max_x, min_x, max_y, min_y)
+    objs       = length 5 tuple,
+                 (varmat_hat, etr, wgts, varmat_bar, phi)
+    varmat_hat = (N x 6) matrix, percent deviation from mean
+                 transformation of original variables (varmat)
+    etr        = (N x 1) vector, effective tax rate data for parameter
                  estimation
-    avgtax_est = [n,] vector, average estimated effective tax rate for
-                 each income bin
-    pctdev     = [n,] vector, weighted percent deviation (times 100) of
-                 estimated tax rates from data tax rates
-    wssqdev    = scalar > 0, weighted sum of squared percent deviations
+    wgts       = (N x 1) vector, population weights for each observation
+                 for parameter estimation
+    varmat_bar = (5,) vector, vector of means of the levels of the
+                 first 5 variables in varmat_hat [X1,...X5]
+    phi        = (N,) vector, percent of total income that is labor
+                 income x/(x+y) for each observation
+    max_x      = scalar > 0, maximum effective tax rate for X given Y=0
+    min_x      = scalar, minimum effective tax rate for X given Y=0
+    max_y      = scalar > 0, maximum effective tax rate for Y given X=0
+    min_y      = scalar, minimum effective tax rate for Y given X=0
+    Gtil       = scalar > 0, sum of Atil through Etil coefficients
+    P_num      = (N x N) matrix, numerator values in ratio of
+                 polynomials
+    P_den      = (N x N) matrix, denominator values in ratio of
+                 polynomials
+    etr_est    = (N,) vector, predicted effective tax rate for each
+                 observation
+    errors     = (N,) vector, difference between predicted effective tax
+                 rate and the effective tax rate from the data
+    wssqdev    = scalar > 0, weighted sum of squared errors
 
     returns: wssqdev
     --------------------------------------------------------------------
@@ -255,12 +336,6 @@ for t in years_list:
         s            = integer >= s_min, current age of tax function
                        estimation
         df           = (I3 x 6) DataFrame, data_trnc for age=s
-        df_trnc_gph  = (I4 x 6) DataFrame, truncated data for 3D graph
-        inc_lab_gph  = (I4 x 1) vector, total labor income for 3D graph
-        inc_cap_gph  = (I4 x 1) vector, total capital income for 3D
-                       graph
-        etr_data_gph = (I4 x 1) vector, effective tax rate data for 3D
-                       graph
         df_trnc      = (I5 x 6) DataFrame, truncated data for parameter
                        estimation
         inc_lab      = (I5 x 1) vector, total labor income for parameter
@@ -270,14 +345,74 @@ for t in years_list:
         etr          = (I5 x 1) vector, effective tax rate data for
                        parameter estimation
         wgts         = (I5 x 1) vector, population weights for each
-                       for each observation for parameter estimation
+                       observation for parameter estimation
         Obs          = integer, number of observations in sample
-        X1           = (Obs x 1) vector, ?
-        X2           = (Obs x 1) vector, ?
-        X3           = (Obs x 1) vector, ?
-        X4           = (Obs x 1) vector, ?
-        X5           = (Obs x 1) vector, ?
-        X6           = (Obs x 1) vector, ?
+        X1           = (Obs x 1) vector, lab_inc ** 2
+        X2           = (Obs x 1) vector, cap_inc ** 2
+        X3           = (Obs x 1) vector, lab_inc * cap_inc
+        X4           = (Obs x 1) vector, lab_inc
+        X5           = (Obs x 1) vector, cap_inc
+        X6           = (Obs x 1) vector of ones
+        varmat       = (Obs x 6) matrix, variables [X1,...X6]
+        varmat_bar   = (6,) vector, mean values of each column of varmat
+        varmat_hat   = (Obs x 6) matrix, percent deviation from mean
+                       transformation of varmat
+        Atil_init    = scalar > 0, initial guess for A tilde
+        Btil_init    = scalar > 0, initial guess for B tilde
+        Ctil_init    = scalar > 0, initial guess for C tilde
+        Dtil_init    = scalar > 0, initial guess for D tilde
+        Etil_init    = scalar > 0, initial guess for E tilde
+        F_init       = scalar > 0, initial guess for F constant
+        max_x_init   = scalar > 0, initial guess for max_x (labor
+                       income)
+        min_x_init   = scalar > 0, initial guess for min_x (labor
+                       income)
+        max_y_init   = scalar > 0, initial guess for max_y (capital
+                       income)
+        min_y_init   = scalar > 0, initial guess for min_y (capital
+                       income)
+        params_init  = (10,) vector, initial parameter guesses
+        varmat_barm1 = (5,) vector, vector of means of [X1,...X5]
+        phi          = (Obs,) vector, percent of total income that is
+                       labor income x/(x+y) for each observation
+        tau_objs     = length 5 tuple, inputs for minimizer
+                       (varmat_hat, etr, wgts, varmat_barm1, phi)
+        bnds         = length 10 tuple, max and min parameter bounds
+        params_til   = length 8 tuple, output from minimizer. Object
+                       with the estimated param values is params_til.x
+        Atil         = scalar > 0, estimated value for A tilde
+        Btil         = scalar > 0, estimated value for B tilde
+        Ctil         = scalar > 0, estimated value for C tilde
+        Dtil         = scalar > 0, estimated value for D tilde
+        Etil         = scalar > 0, estimated value for E tilde
+        F            = scalar > 0, estimated value for F constant
+        max_x        = scalar > 0, estimated value for max_x (labor
+                       income)
+        min_x        = scalar, estimated value for min_x (labor income)
+        max_y        = scalar > 0, estimated value for max_y (capital
+                       income)
+        min_y        = scalar, estimated value for min_y (capital
+                       income)
+        Gtil         = scalar > 0, sum of Atil through Etil
+        P_num        = (Obs,) vector, value of the numerator of the
+                       ratio of polynomials for each observation
+        P_den        = (Obs,) vector, value of the denominator of the
+                       ratio of polynomials for each observation
+        etr_est      = (Obs,) vector, predicted effective tax rates for
+                       each observation
+        params       = (10,) vector, estimated parameters
+                       (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
+        A            = scalar > 0, estimated polynomial coefficient on
+                       x**2
+        B            = scalar > 0, estimated polynomial coefficient on
+                       y**2
+        C            = scalar > 0, estimated polynomial coefficient on
+                       x*y
+        D            = scalar > 0, estimated polynomial coefficient on x
+        E            = scalar > 0, estimated polynomial coefficient on y
+        elapsed_time = scalar > 0, seconds to finish computation
+        dict_params  = length 2 dictionary, saves param_arr and
+                       elapsed_time
         ----------------------------------------------------------------
         '''
         print "year=", t, "Age=", s
@@ -292,8 +427,21 @@ for t in years_list:
                 print df.describe()
 
             if graph_data == True:
-                # Create 3-D scatterplot of effective tax rate as a
-                # function of labor income and capital income
+                '''
+                --------------------------------------------------------
+                Create 3-D scatterplot of effective tax rate as a
+                function of labor income and capital income
+                --------------------------------------------------------
+                df_trnc_gph  = (I4 x 6) DataFrame, truncated data for 3D
+                               graph
+                inc_lab_gph  = (I4 x 1) vector, total labor income for
+                               3D graph
+                inc_cap_gph  = (I4 x 1) vector, total capital income for
+                               3D graph
+                etr_data_gph = (I4 x 1) vector, effective tax rate data
+                               for 3D graph
+                --------------------------------------------------------
+                '''
                 df_trnc_gph = df[(df['Total Labor Income'] > 5) &
                               (df['Total Labor Income'] < 500000) &
                               (df['Total Capital Income'] > 5) &
@@ -372,8 +520,27 @@ for t in years_list:
             param_arr[s-21, t-beg_yr, :] = params
 
             if graph_est == True:
-                # Generate 3-D graph of predicted surface and
-                # scatterplot of data
+                '''
+                --------------------------------------------------------
+                Generate 3-D graph of predicted surface and scatterplot
+                of data
+                --------------------------------------------------------
+                gridpts      = integer >= 2, number of gridpoint in
+                               each dimension to plot
+                inc_lab_vec  = (gridpts,) vector, points in support of
+                               inc_lab to plot
+                inc_cap_vec  = (gridpts,) vector, points in support of
+                               inc_cap to plot
+                inc_lab_grid = (gridpts x gridpts) matrix, row vector of
+                               inc_lab_vec copied down gridpts rows
+                inc_cap_grid = (gridpts x gridpts) matrix, column vector
+                               of inc_cap_vec copied across gridpts
+                               columns
+                etr_grid     = (gridpts x gridpts) matrix, predicted
+                               effective tax rates given inc_lab_grid
+                               and inc_cap_grid
+                --------------------------------------------------------
+                '''
                 fig = plt.figure()
                 ax = fig.add_subplot(111, projection ='3d')
                 ax.scatter(inc_lab, inc_cap, etr, c='r', marker='o')
@@ -396,8 +563,32 @@ for t in years_list:
                 plt.show()
 
             if dmtrgr_est == True:
-                # Generate 3-D graph of predicted derivative of marginal
-                # tax rates
+                '''
+                --------------------------------------------------------
+                Generate 3-D graph of predicted derivative of marginal
+                tax rates
+                --------------------------------------------------------
+                gridpts      = integer >= 2, number of gridpoint in
+                               each dimension to plot
+                inc_lab_vec  = (gridpts,) vector, points in support of
+                               inc_lab to plot
+                inc_cap_vec  = (gridpts,) vector, points in support of
+                               inc_cap to plot
+                inc_lab_grid = (gridpts x gridpts) matrix, row vector of
+                               inc_lab_vec copied down gridpts rows
+                inc_cap_grid = (gridpts x gridpts) matrix, column vector
+                               of inc_cap_vec copied across gridpts
+                               columns
+                dmtrx_grid   = (gridpts x gridpts) matrix, predicted
+                               derivative of marginal tax rates with
+                               respect to labor income given
+                               inc_lab_grid and inc_cap_grid
+                dmtry_grid   = (gridpts x gridpts) matrix, predicted
+                               derivative of marginal tax rates with
+                               respect to capital income given
+                               inc_lab_grid and inc_cap_grid
+                --------------------------------------------------------
+                '''
                 gridpts = 50
                 inc_lab_vec = np.exp(np.linspace(np.log(5),
                               np.log(inc_lab.max()), gridpts))
@@ -443,6 +634,7 @@ elif elapsed_time >= 60 and elapsed_time < 3600: # minutes
     print 'Tax function estimation time: ', mins, ' min, ', secs, ' sec'
 
 # Save tax function parameters array and computation time in pickle
-dict_params = dict([('tfunc_params', param_arr), ('tfunc_time', elapsed_time)])
+dict_params = dict([('tfunc_params', param_arr), ('tfunc_time',
+              elapsed_time)])
 pkl_path = "TxFuncEst.pkl"
 pickle.dump(dict_params, open(pkl_path, "wb"))
