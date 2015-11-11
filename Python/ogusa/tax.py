@@ -118,16 +118,29 @@ def tau_income(r, b, w, e, n, factor, params):
         tau = tau_income (various length array or scalar)
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+        a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
+        min_x_tax_income, max_x_tax_income, min_y_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     a = a_tax_income
     b = b_tax_income
     c = c_tax_income
     d = d_tax_income
-    I = r * b + w * e * n
-    I *= factor
-    num = a * (I ** 2) + b * I
-    denom = a * (I ** 2) + b * I + c
-    tau = d * num / denom
+    e = d_tax_income
+    f = d_tax_income
+    min_x = min_x_tax_income
+    max_x = max_x_tax_income
+    min_y = min_y_tax_income
+    max_y = max_y_tax_income
+    x = (w*e*n)*factor
+    y = (r*b)*factor
+    I = x+y
+
+    phi = x/I
+    Phi = phi*(max_x-min_x) + (1-phi)*(max_y-min_y)
+    K = phi*min_x + (1-phi)*min_y
+
+    num = (a*(x**2)) + (b*(y**2)) + (c*x*y) + (d*x) + (e*y)
+    denom = (a*(x**2)) + (b*(y**2)) + (c*x*y) + (d*x) + (e*y) + f
+    tau =  (Phi*(num/denom)) + K
     return tau
 
 

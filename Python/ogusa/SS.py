@@ -56,7 +56,10 @@ from .parameters import DATASET
 
 
 def create_steady_state_parameters(a_tax_income, b_tax_income, c_tax_income,
-                                   d_tax_income, b_ellipse, upsilon, J, S, T,
+                                   d_tax_income, e_tax_income, f_tax_income, 
+                                   min_x_tax_income, max_x_tax_income, 
+                                   min_y_tax_income, max_y_tax_income, 
+                                   b_ellipse, upsilon, J, S, T, BW,
                                    beta, sigma, alpha, Z, delta, ltilde, nu,
                                    g_y, tau_payroll, retire,
                                    mean_income_data, get_baseline,
@@ -70,10 +73,16 @@ def create_steady_state_parameters(a_tax_income, b_tax_income, c_tax_income,
         for key in variables:
             globals()[key] = variables[key]
 
+    # Put income tax parameters in a tuple 
+    # Assumption here is that tax parameters of last year of budget
+    # window continue forever   
+    income_tax_params = (a_tax_income[:,-1], b_tax_income[:,-1], c_tax_income[:,-1],
+                         d_tax_income[:,-1], e_tax_income[:,-1], f_tax_income[:,-1], 
+                         min_x_tax_income[:,-1], max_x_tax_income[:,-1], 
+                         min_y_tax_income[:,-1], max_y_tax_income[:,-1])
+
     # Make a vector of all one dimensional parameters, to be used in the
     # following functions
-    income_tax_params = [a_tax_income, b_tax_income, c_tax_income,
-                         d_tax_income]
     wealth_tax_params = [h_wealth, p_wealth, m_wealth]
     ellipse_params = [b_ellipse, upsilon]
     parameters = [J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,
@@ -108,8 +117,9 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, params, chi_b, chi_n,
     '''
     J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, \
         tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, \
-        c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, \
-        upsilon = params
+        c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
+        min_x_tax_income, max_x_tax_income, min_y_tax_income, h_wealth, \
+        p_wealth, m_wealth, b_ellipse, upsilon = params
 
     b_guess = np.array(guesses[:S])
     n_guess = np.array(guesses[S:])
@@ -176,10 +186,11 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
         solutions = steady state values of b, n, w, r, factor,
                     T_H ((2*S*J+4)x1 array)
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, \
+    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, \
         tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, \
-        c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, \
-        upsilon = params
+        c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
+        min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income, \
+        h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
 
     maxiter, mindist_SS = iterative_params
     # Rename the inputs

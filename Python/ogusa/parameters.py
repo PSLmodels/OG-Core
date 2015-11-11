@@ -52,6 +52,7 @@ Model Parameters:
 S            = number of periods an individual lives (scalar)
 J            = number of different ability groups (scalar)
 T            = number of time periods until steady state is reached (scalar)
+BW           = number of time periods in the budget window (scalar)
 lambdas      = percentiles for ability groups (Jx1 array)
 starting_age = age of first members of cohort (scalar)
 ending age   = age of the last members of cohort (scalar)
@@ -74,18 +75,24 @@ upsilon      = value of omega for elliptical fit of utility function (scalar)
 ------------------------------------------------------------------------
 Tax Parameters:
 ------------------------------------------------------------------------
-mean_income_data  = mean income from IRS data file used to calibrate income tax
+mean_income_data = mean income from IRS data file used to calibrate income tax
                (scalar)
-a_tax_income = used to calibrate income tax (scalar)
-b_tax_income = used to calibrate income tax (scalar)
-c_tax_income = used to calibrate income tax (scalar)
-d_tax_income = used to calibrate income tax (scalar)
-h_wealth     = wealth tax parameter h (scalar)
-m_wealth     = wealth tax parameter m (scalar)
-p_wealth     = wealth tax parameter p (scalar)
-tau_bq       = bequest tax (Jx1 array)
-tau_payroll  = payroll tax (scalar)
-retire       = age at which individuals retire (scalar)
+a_tax_income     = used to calibrate income tax (SxBW array)
+b_tax_income     = used to calibrate income tax (SxBW array)
+c_tax_income     = used to calibrate income tax (SxBW array)
+d_tax_income     = used to calibrate income tax (SxBW array)
+e_tax_income     = used to calibrate income tax (SxBW array)
+f_tax_income     = used to calibrate income tax (SxBW array)
+min_x_tax_income = used to calibrate income tax (SxBW array)
+max_x_tax_income = used to calibrate income tax (SxBW array)
+min_y_tax_income = used to calibrate income tax (SxBW array)
+max_y_tax_income = used to calibrate income tax (SxBW array)
+h_wealth         = wealth tax parameter h (scalar)
+m_wealth         = wealth tax parameter m (scalar)
+p_wealth         = wealth tax parameter p (scalar)
+tau_bq           = bequest tax (Jx1 array)
+tau_payroll      = payroll tax (scalar)
+retire           = age at which individuals retire (scalar)
 ------------------------------------------------------------------------
 Simulation Parameters:
 ------------------------------------------------------------------------
@@ -123,6 +130,7 @@ def get_reduced_parameters():
     S = 10
     J = 2
     T = int(2 * S)
+    BW = 10 
     lambdas = np.array([.50, .50])
     starting_age = 40
     ending_age = 50
@@ -144,11 +152,21 @@ def get_reduced_parameters():
 
     # Tax parameters:
     #   Income Tax Parameters
-    mean_income_data = 84377.0
-    a_tax_income = 3.03452713268985e-06
-    b_tax_income = .222
-    c_tax_income = 133261.0
-    d_tax_income = .219
+    ####  will call tax function estimation function here...
+    ### do output such that each parameters is in a separate SxBW array
+    mean_income_data = 84377.0*np.ones(S,BW)
+    a_tax_income = 3.03452713268985e-06*np.ones(S,BW)
+    b_tax_income = .222*np.ones(S,BW)
+    c_tax_income = 133261.0*np.ones(S,BW)
+    d_tax_income = .219*np.ones(S,BW)
+    e_tax_income = 0.1*np.ones(S,BW)
+    f_tax_income = 1.5*np.ones(S,BW)
+    min_x_tax_income = -0.18*np.ones(S,BW)
+    max_x_tax_income = 0.44*np.ones(S,BW)
+    min_y_tax_income = -0.10*np.ones(S,BW)
+    max_y_tax_income = 0.35*np.ones(S,BW)
+
+
     #   Wealth tax params
     #       These are non-calibrated values, h and m just need
     #       need to be nonzero to avoid errors. When p_wealth
@@ -188,6 +206,7 @@ def get_full_parameters():
     S = 80
     J = 7
     T = int(2 * S)
+    BW = 10 
     lambdas = np.array([.25, .25, .2, .1, .1, .09, .01])
     starting_age = 20
     ending_age = 100
@@ -209,11 +228,21 @@ def get_full_parameters():
 
     # Tax parameters:
     #   Income Tax Parameters
-    mean_income_data = 84377.0
-    a_tax_income = 3.03452713268985e-06
-    b_tax_income = .222
-    c_tax_income = 133261.0
-    d_tax_income = .219
+    ####  will call tax function estimation function here...
+    ### do output such that each parameters is in a separate SxBW array
+    ##
+    mean_income_data = 84377.0*np.ones(S,BW)
+    a_tax_income = 3.03452713268985e-06*np.ones(S,BW)
+    b_tax_income = .222*np.ones(S,BW)
+    c_tax_income = 133261.0*np.ones(S,BW)
+    d_tax_income = .219*np.ones(S,BW)
+    e_tax_income = 0.1*np.ones(S,BW)
+    f_tax_income = 1.5*np.ones(S,BW)
+    min_x_tax_income = -0.18*np.ones(S,BW)
+    max_x_tax_income = 0.44*np.ones(S,BW)
+    min_y_tax_income = -0.10*np.ones(S,BW)
+    max_y_tax_income = 0.35*np.ones(S,BW)
+
     #   Wealth tax params
     #       These are non-calibrated values, h and m just need
     #       need to be nonzero to avoid errors. When p_wealth
