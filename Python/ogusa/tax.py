@@ -117,15 +117,14 @@ def tau_income(r, b, w, e, n, factor, params):
     Output:
         tau = tau_income (various length array or scalar)
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-        a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
-        min_x_tax_income, max_x_tax_income, min_y_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    a = a_tax_income
-    b = b_tax_income
-    c = c_tax_income
-    d = d_tax_income
-    e = d_tax_income
-    f = d_tax_income
+    a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
+        min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = params
+    A = a_tax_income
+    B = b_tax_income
+    C = c_tax_income
+    D = d_tax_income
+    E = d_tax_income
+    F = d_tax_income
     min_x = min_x_tax_income
     max_x = max_x_tax_income
     min_y = min_y_tax_income
@@ -138,9 +137,88 @@ def tau_income(r, b, w, e, n, factor, params):
     Phi = phi*(max_x-min_x) + (1-phi)*(max_y-min_y)
     K = phi*min_x + (1-phi)*min_y
 
-    num = (a*(x**2)) + (b*(y**2)) + (c*x*y) + (d*x) + (e*y)
-    denom = (a*(x**2)) + (b*(y**2)) + (c*x*y) + (d*x) + (e*y) + f
+    num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
+    denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
     tau =  (Phi*(num/denom)) + K
+    return tau
+
+
+def tau_capital_deriv(r, b, w, e, n, factor, params):
+    '''
+    Gives derivative of AETR function with repect to 
+    capital income at a certain income level
+    Inputs:
+        r = interest rate (various length list or scalar)
+        b = wealth holdings (various length array or scalar)
+        w = wage (various length list or scalar)
+        e = ability level (various size array or scalar)
+        n = labor participation rate (various length array or scalar)
+        factor = scaling factor (scalar)
+        params = parameter list of model (list)
+    Output:
+        tau = derivative of tau_income w.r.t. capital income (various length array or scalar)
+    '''
+    a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
+        min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = params
+    A = a_tax_income
+    B = b_tax_income
+    C = c_tax_income
+    D = d_tax_income
+    E = d_tax_income
+    F = d_tax_income
+    min_x = min_x_tax_income
+    max_x = max_x_tax_income
+    min_y = min_y_tax_income
+    max_y = max_y_tax_income
+    x = (w*e*n)*factor
+    y = (r*b)*factor
+
+    num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
+    denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
+    Lambda = num/denom
+
+    Lambda_deriv = ((2*B*y + C*x + E)*F)/(denom**2)
+
+    tau =  ((max_y-min_y)*Lambda) + ((x*(max_x-min_x))+(y*(max_y-min_y)))*Lambda_deriv + min_y 
+    return tau
+
+def tau_labor_deriv(r, b, w, e, n, factor, params):
+    '''
+    Gives derivative of AETR function with repect to 
+    labor income at a certain income level
+    Inputs:
+        r = interest rate (various length list or scalar)
+        b = wealth holdings (various length array or scalar)
+        w = wage (various length list or scalar)
+        e = ability level (various size array or scalar)
+        n = labor participation rate (various length array or scalar)
+        factor = scaling factor (scalar)
+        params = parameter list of model (list)
+    Output:
+        tau = derivative of tau_income w.r.t. labor income (various length array or scalar)
+    '''
+    a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
+        min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = params
+    A = a_tax_income
+    B = b_tax_income
+    C = c_tax_income
+    D = d_tax_income
+    E = d_tax_income
+    F = d_tax_income
+    min_x = min_x_tax_income
+    max_x = max_x_tax_income
+    min_y = min_y_tax_income
+    max_y = max_y_tax_income
+    x = (w*e*n)*factor
+    y = (r*b)*factor
+
+    num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
+    denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
+    Lambda = num/denom
+
+    Lambda_deriv = ((2*A*x + C*y + D)*F)/(denom**2)
+
+    tau =  ((max_x-min_x)*Lambda) + ((x*(max_x-min_x))+(y*(max_y-min_y)))*Lambda_deriv + min_x 
     return tau
 
 
@@ -231,10 +309,12 @@ def total_taxes(r, b, w, e, n, BQ, lambdas, factor, T_H, j, method, shift, param
     Output:
         total_taxes = net taxes (various length array or scalar)
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, retire, a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
+        min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income, h_wealth, p_wealth, m_wealth = params
     I = r * b + w * e * n
-    T_I = tau_income(r, b, w, e, n, factor, params) * I
+    tau_inc_params = (a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
+        min_x_tax_income, max_x_tax_income, min_y_tax_income)
+    T_I = tau_income(r, b, w, e, n, factor, tau_inc_params) * I
     T_P = tau_payroll * w * e * n
     T_W = tau_wealth(b, params) * b
     if method == 'SS':

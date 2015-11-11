@@ -83,6 +83,9 @@ income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_p
 ss_outputs = SS.run_steady_state(ss_parameters, iterative_params, get_baseline, calibrate_model)
 
 
+print 'Solved SS'
+print 'SS distribution of capital: ', ss_outputs['bssmat']
+
 '''
 ------------------------------------------------------------------------
     Run the baseline TPI simulation
@@ -113,6 +116,7 @@ ss_outputs['initial_n'] = initial_n
 ss_outputs['tau_bq'] = tau_bq
 ss_outputs['g_n_vector'] = g_n_vector
 TPI.run_time_path_iteration(**ss_outputs)
+
 
 '''
 ------------------------------------------------------------------------
