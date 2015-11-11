@@ -287,17 +287,20 @@ for t in years_list:
     --------------------------------------------------------------------
     Load OSPC Tax Calculator Data into a Dataframe
     --------------------------------------------------------------------
-    t         = integer >= 2015, current year of tax functions being
-                estimated
-    data_file = string, name of data file for current year tax data
-    data_path = string, path to directory address of data file
-    data_orig = (I x 12) DataFrame, I observations, 12 variables
-    data      = (I x 6) DataFrame, I observations, 6 variables
-    data_trnc = (I2 x 6) DataFrame, I2 observations (I2<I), 6 variables
-    min_age   = integer, minimum age in data_trnc that is at least s_min
-    max_age   = integer, maximum age in data_trnc that is at most s_max
-    ages_list = [age_max-age_min+1,] vector, iterable list of relevant
-                ages in data_trnc
+    t          = integer >= 2015, current year of tax functions being
+                 estimated
+    data_file  = string, name of data file for current year tax data
+    data_path  = string, path to directory address of data file
+    data_orig  = (I x 12) DataFrame, I observations, 12 variables
+    data       = (I x 6) DataFrame, I observations, 6 variables
+    data_trnc  = (I2 x 6) DataFrame, I2 observations (I2<I), 6 variables
+    min_age    = integer, minimum age in data_trnc that is at least
+                 s_min
+    max_age    = integer, maximum age in data_trnc that is at most s_max
+    ages_list  = [age_max-age_min+1,] vector, iterable list of relevant
+                 ages in data_trnc
+    NoData_cnt = integer >= 0, number of consecutive ages with
+                 insufficient data to estimate parameters
     --------------------------------------------------------------------
     '''
     data_file = str(t) + '_tau_n.csv'
@@ -335,6 +338,10 @@ for t in years_list:
     max_age = int(np.minimum(data_trnc['Age'].max(), s_max))
     ages_list = np.arange(min_age, max_age+1)
 
+    NoData_cnt = 0
+
+    # Each age s must be done in serial, but each year can be done in
+    # parallel
     for s in ages_list:
         '''
         ----------------------------------------------------------------
@@ -424,10 +431,35 @@ for t in years_list:
         '''
         print "year=", t, "Age=", s
         df = data_trnc[data_trnc['Age'] == s]
-        # Don't estimate function if obs < 600
-        if df.shape[0] < 600:
+
+        if df.shape[0] < 600 and s < max_age:
+            '''
+            ------------------------------------------------------------
+            Don't estimate function on this iteration if obs < 600.
+            Will fill in later with interpolated values
+            ------------------------------------------------------------
+            '''
+            NoData_cnt += 1
             param_arr[s-21, t-beg_yr, :] = np.nan
+
+        elif df.shape[0] < 600 and s == max_age:
+            '''
+            ------------------------------------------------------------
+            If last period does not have sufficient data, fill in final
+            missing age data with last positive year
+            ------------------------------------------------------------
+            lastparams = (10,) vector, vector of parameter estimates
+                         from previous age with sufficient observations
+            ------------------------------------------------------------
+            '''
+            NoData_cnt += 1
+            lastparams = param_arr[s-NoData_cnt-21, t-beg_yr, :]
+            param_arr[s-NoData_cnt-20:, t-beg_yr, :] = \
+                np.tile(lastparams.reshape((1, 10)),
+                (NoData_cnt, 1))
+
         else:
+            # Estimate parameters for age with sufficient data
             if desc_data == True:
                 # print some desciptive stats
                 print 'Descriptive Statistics for age == ', s
@@ -525,6 +557,49 @@ for t in years_list:
             params[5] = F
             params[6:] = [max_x, min_x, max_y, min_y]
             param_arr[s-21, t-beg_yr, :] = params
+
+            if NoData_cnt > 0 & NoData_cnt == s-21:
+                '''
+                --------------------------------------------------------
+                Fill in initial blanks with first positive data
+                estimates
+                --------------------------------------------------------
+                '''
+                param_arr[:s-21, t-beg_yr, :] = \
+                    np.tile(params.reshape((1, 10)), (s-21, 1))
+
+            elif NoData_cnt > 0 & NoData_cnt < s-21:
+                '''
+                --------------------------------------------------------
+                Fill in interior data gaps with linear interpolation
+                between bracketing positive data ages
+                --------------------------------------------------------
+                tvals      = (NoData_cnt+2,) vector, linearly space
+                             points between 0 and 1
+                x0         = (NoData_cnt x 10) matrix, positive
+                             estimates at beginning of no data spell
+                x1         = (NoData_cnt x 10) matrix, positive
+                             estimates at end (current period) of no
+                             data spell
+                lin_interp = (NoData_cnt x 10) matrix, linearly
+                             interpolated parameters between x0 and x1
+                --------------------------------------------------------
+                '''
+                tvals = np.linspace(0, 1, NoData_cnt+2)
+                x0 = np.tile(param_arr[
+                     s-NoData_cnt-22, t-beg_yr, :].reshape((1, 10)),
+                     (NoData_cnt, 1))
+                x1 = np.tile(params.reshape((1, 10)), (NoData_cnt, 1))
+                lin_interp = (x0 + tvals[1:-1].reshape((NoData_cnt, 1))
+                             * (x1 - x0))
+                param_arr[s-NoData_cnt-21:s-21, t-beg_yr, :] = \
+                    lin_interp
+
+            NoData_cnt == 0
+
+            if s == max_age and max_age < s_max:
+                param_arr[s-20:, t-beg_yr, :] = \
+                    np.tile(params.reshape((1, 10)), (s_max-max_age, 1))
 
             if graph_est == True:
                 '''
