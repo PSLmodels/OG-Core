@@ -44,6 +44,7 @@ numparams   = integer > 0, number of parameters to estimate for the tax
 param_arr   = (s_max-s_min+1 x tpers x numparams) array, parameter
               values for the estimated tax function for each age s and
               year t
+AvgInc      = (tpers,) vector, average income in each year
 desc_data   = boolean, =True if print descriptive stats for each age s
               and year t
 graph_data  = boolean, =True if print 3D graph of data for each age s
@@ -66,6 +67,7 @@ s_max = int(100)
 tpers = int(10)
 numparams = int(10)
 param_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
+AvgInc = np.zeros(tpers)
 desc_data = False
 graph_data = False
 graph_est = False
@@ -312,6 +314,11 @@ for t in years_list:
         'Total Capital Income', 'Adjusted Total income',
         'Effective Tax Rate', 'Weights']]
 
+    # Calculate average total income in each year
+    AvgInc[t-beg_yr] = \
+        (((data['Adjusted Total income'] * data['Weights']).sum())
+        / data['Weights'].sum())
+
     # Clean up the data by dropping outliers
     # drop all obs with AETR > 0.5
     data_trnc = data.drop(data[data['Effective Tax Rate'] >0.5].index)
@@ -411,7 +418,7 @@ for t in years_list:
         D            = scalar > 0, estimated polynomial coefficient on x
         E            = scalar > 0, estimated polynomial coefficient on y
         elapsed_time = scalar > 0, seconds to finish computation
-        dict_params  = length 2 dictionary, saves param_arr and
+        dict_params  = length 3 dictionary, saves param_arr, AvgInc, and
                        elapsed_time
         ----------------------------------------------------------------
         '''
@@ -634,7 +641,7 @@ elif elapsed_time >= 60 and elapsed_time < 3600: # minutes
     print 'Tax function estimation time: ', mins, ' min, ', secs, ' sec'
 
 # Save tax function parameters array and computation time in pickle
-dict_params = dict([('tfunc_params', param_arr), ('tfunc_time',
-              elapsed_time)])
+dict_params = dict([('tfunc_params', param_arr), ('tfunc_avginc',
+              AvgInc), ('tfunc_time', elapsed_time)])
 pkl_path = "TxFuncEst.pkl"
 pickle.dump(dict_params, open(pkl_path, "wb"))
