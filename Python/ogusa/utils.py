@@ -44,7 +44,7 @@ def perc_dif_func(simul, data):
     return output
 
 
-def convex_combo(var1, var2, params):
+def convex_combo(var1, var2, nu):
     '''
     Takes the convex combination of two variables, where nu is the value
     between 0 and 1 in params.
@@ -55,8 +55,6 @@ def convex_combo(var1, var2, params):
     Outputs:
         combo = convex combination of var1 and var2 (same shape as var1)
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
     combo = nu * var1 + (1 - nu) * var2
     return combo
 

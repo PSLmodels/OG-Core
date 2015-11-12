@@ -21,12 +21,12 @@ import numpy as np
 import cPickle as pickle
 import os
 
-import dynamic
-dynamic.parameters.DATASET = 'REAL'
+import ogusa
+ogusa.parameters.DATASET = 'REAL'
 
-import dynamic.SS
-import dynamic.TPI
-from dynamic import parameters, wealth, labor, demographics, income, SS, TPI
+import ogusa.SS
+import ogusa.TPI
+from ogusa import parameters, wealth, labor, demographics, income, SS, TPI
 
 '''
 ------------------------------------------------------------------------
@@ -37,7 +37,8 @@ calibrate_model = Flag to run calibration of chi values or not (bool)
 ------------------------------------------------------------------------
 '''
 
-globals().update(dynamic.parameters.get_parameters_from_file())
+#globals().update(ogusa.parameters.get_parameters_from_file())
+globals().update(ogusa.parameters.get_parameters())
 
 # Generate Wealth data moments
 output_dir = "./OUTPUT"
@@ -51,7 +52,7 @@ calibrate_model = False
 
 # List of parameter names that will not be changing (unless we decide to
 # change them for a tax experiment)
-param_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
+param_names = ['S', 'J', 'T', 'BW', 'lambdas', 'starting_age', 'ending_age',
              'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
              'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
              'b_ellipse', 'k_ellipse', 'upsilon',
@@ -80,11 +81,12 @@ for key in param_names:
 income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
 
 
-ss_outputs = SS.run_steady_state(ss_parameters, iterative_params, get_baseline, calibrate_model)
+ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, get_baseline, calibrate_model)
 
 
 print 'Solved SS'
 print 'SS distribution of capital: ', ss_outputs['bssmat']
+quit()
 
 '''
 ------------------------------------------------------------------------

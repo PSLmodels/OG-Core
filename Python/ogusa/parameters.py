@@ -127,10 +127,10 @@ e            = age dependent possible working abilities (SxJ array)
 
 def get_reduced_parameters():
     # Model Parameters
-    S = 10
-    J = 2
+    S = int(80)
+    J = int(2)
     T = int(2 * S)
-    BW = 10 
+    BW = int(10) 
     lambdas = np.array([.50, .50])
     starting_age = 40
     ending_age = 50
@@ -154,17 +154,17 @@ def get_reduced_parameters():
     #   Income Tax Parameters
     ####  will call tax function estimation function here...
     ### do output such that each parameters is in a separate SxBW array
-    mean_income_data = 84377.0*np.ones(S,BW)
-    a_tax_income = 3.03452713268985e-06*np.ones(S,BW)
-    b_tax_income = .222*np.ones(S,BW)
-    c_tax_income = 133261.0*np.ones(S,BW)
-    d_tax_income = .219*np.ones(S,BW)
-    e_tax_income = 0.1*np.ones(S,BW)
-    f_tax_income = 1.5*np.ones(S,BW)
-    min_x_tax_income = -0.18*np.ones(S,BW)
-    max_x_tax_income = 0.44*np.ones(S,BW)
-    min_y_tax_income = -0.10*np.ones(S,BW)
-    max_y_tax_income = 0.35*np.ones(S,BW)
+    mean_income_data = 84377.0 # just need mean income in base year to get factor right...
+    a_tax_income = np.ones((S,BW))*3.03452713268985e-06
+    b_tax_income = np.ones((S,BW))*.222
+    c_tax_income = np.ones((S,BW))*133261.0
+    d_tax_income = np.ones((S,BW))*.219
+    e_tax_income = np.ones((S,BW))*0.1
+    f_tax_income = np.ones((S,BW))*1.5
+    min_x_tax_income = np.ones((S,BW))*-0.18
+    max_x_tax_income = np.ones((S,BW))*0.44
+    min_y_tax_income = np.ones((S,BW))*-0.10
+    max_y_tax_income = np.ones((S,BW))*0.35
 
 
     #   Wealth tax params
@@ -203,10 +203,10 @@ def get_reduced_parameters():
 
 def get_full_parameters():
     # Model Parameters
-    S = 80
-    J = 7
+    S = int(80)
+    J = int(7)
     T = int(2 * S)
-    BW = 10 
+    BW = int(10) 
     lambdas = np.array([.25, .25, .2, .1, .1, .09, .01])
     starting_age = 20
     ending_age = 100
@@ -228,20 +228,30 @@ def get_full_parameters():
 
     # Tax parameters:
     #   Income Tax Parameters
-    ####  will call tax function estimation function here...
-    ### do output such that each parameters is in a separate SxBW array
-    ##
-    mean_income_data = 84377.0*np.ones(S,BW)
-    a_tax_income = 3.03452713268985e-06*np.ones(S,BW)
-    b_tax_income = .222*np.ones(S,BW)
-    c_tax_income = 133261.0*np.ones(S,BW)
-    d_tax_income = .219*np.ones(S,BW)
-    e_tax_income = 0.1*np.ones(S,BW)
-    f_tax_income = 1.5*np.ones(S,BW)
-    min_x_tax_income = -0.18*np.ones(S,BW)
-    max_x_tax_income = 0.44*np.ones(S,BW)
-    min_y_tax_income = -0.10*np.ones(S,BW)
-    max_y_tax_income = 0.35*np.ones(S,BW)
+    #  will call tax function estimation function here...
+    # do output such that each parameters is in a separate SxBW array
+    mean_income_data = 84377.0 # just need mean income in base year to get factor right...
+    # a_tax_income = np.ones((S,BW))*3.03452713268985e-06
+    # b_tax_income = np.ones((S,BW))*.222
+    # c_tax_income = np.ones((S,BW))*133261.0
+    # d_tax_income = np.ones((S,BW))*.219
+    # e_tax_income = np.ones((S,BW))*0.1
+    # f_tax_income = np.ones((S,BW))*1.5
+    # min_x_tax_income = np.ones((S,BW))*-0.18
+    # max_x_tax_income = np.ones((S,BW))*0.44
+    # min_y_tax_income = np.ones((S,BW))*-0.10
+    # max_y_tax_income = np.ones((S,BW))*0.35
+
+    a_tax_income = np.ones((S,BW))
+    b_tax_income = np.ones((S,BW))
+    c_tax_income = np.ones((S,BW))
+    d_tax_income = np.ones((S,BW))
+    e_tax_income = np.ones((S,BW))
+    f_tax_income = np.ones((S,BW))
+    min_x_tax_income = np.ones((S,BW))*0.0
+    max_x_tax_income = np.ones((S,BW))*0.0
+    min_y_tax_income = np.ones((S,BW))*0.0
+    max_y_tax_income = np.ones((S,BW))*0.0
 
     #   Wealth tax params
     #       These are non-calibrated values, h and m just need
