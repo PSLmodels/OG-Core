@@ -380,11 +380,11 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
                                weights.reshape(S, 1), 'SS', tax_params, params, theta,
                                tau_bq)
     
-    error1 = new_r - r
-    error2 = new_w - w
+    error1 = new_w - w
+    error2 = new_r - r
     #error3 = new_T_H - T_H
     error3 = new_factor - factor
-    print 'errors: ', error1, error2, error3#, error4
+    print 'errors: ', error1, error2#, error3#, error4
     print 'T_H: ', new_T_H
     print 'factor: ', new_factor
 
@@ -397,7 +397,7 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
         error2 += 1e9
 
     #return [error1, error2, error3, error4]
-    return [error1, error2, error3]
+    return [error1, error2]
 
     return errors
 
@@ -531,7 +531,7 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
         # (income_tax_params, wealth_tax_params, ellipse_params,
         #     parameters, iterative_params)
         #guesses = [wguess, rguess, T_Hguess, factorguess]
-        guesses = [wguess, rguess, factorguess]
+        guesses = [wguess, rguess]
         args_ = (b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params[J:], chi_params[:J], 
                  income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
         solutions = opt.fsolve(SS_fsolve, guesses, args=args_, xtol=1e-13, full_output=True)
