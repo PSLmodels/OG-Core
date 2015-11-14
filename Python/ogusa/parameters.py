@@ -20,6 +20,7 @@ import json
 import numpy as np
 from demographics import get_omega
 from income import get_e
+import pickle
 
 DATASET = 'REAL'
 
@@ -52,6 +53,7 @@ Model Parameters:
 S            = number of periods an individual lives (scalar)
 J            = number of different ability groups (scalar)
 T            = number of time periods until steady state is reached (scalar)
+BW           = number of time periods in the budget window (scalar)
 lambdas      = percentiles for ability groups (Jx1 array)
 starting_age = age of first members of cohort (scalar)
 ending age   = age of the last members of cohort (scalar)
@@ -74,18 +76,24 @@ upsilon      = value of omega for elliptical fit of utility function (scalar)
 ------------------------------------------------------------------------
 Tax Parameters:
 ------------------------------------------------------------------------
-mean_income_data  = mean income from IRS data file used to calibrate income tax
+mean_income_data = mean income from IRS data file used to calibrate income tax
                (scalar)
-a_tax_income = used to calibrate income tax (scalar)
-b_tax_income = used to calibrate income tax (scalar)
-c_tax_income = used to calibrate income tax (scalar)
-d_tax_income = used to calibrate income tax (scalar)
-h_wealth     = wealth tax parameter h (scalar)
-m_wealth     = wealth tax parameter m (scalar)
-p_wealth     = wealth tax parameter p (scalar)
-tau_bq       = bequest tax (Jx1 array)
-tau_payroll  = payroll tax (scalar)
-retire       = age at which individuals retire (scalar)
+a_tax_income     = used to calibrate income tax (SxBW array)
+b_tax_income     = used to calibrate income tax (SxBW array)
+c_tax_income     = used to calibrate income tax (SxBW array)
+d_tax_income     = used to calibrate income tax (SxBW array)
+e_tax_income     = used to calibrate income tax (SxBW array)
+f_tax_income     = used to calibrate income tax (SxBW array)
+min_x_tax_income = used to calibrate income tax (SxBW array)
+max_x_tax_income = used to calibrate income tax (SxBW array)
+min_y_tax_income = used to calibrate income tax (SxBW array)
+max_y_tax_income = used to calibrate income tax (SxBW array)
+h_wealth         = wealth tax parameter h (scalar)
+m_wealth         = wealth tax parameter m (scalar)
+p_wealth         = wealth tax parameter p (scalar)
+tau_bq           = bequest tax (Jx1 array)
+tau_payroll      = payroll tax (scalar)
+retire           = age at which individuals retire (scalar)
 ------------------------------------------------------------------------
 Simulation Parameters:
 ------------------------------------------------------------------------
@@ -120,9 +128,10 @@ e            = age dependent possible working abilities (SxJ array)
 
 def get_reduced_parameters():
     # Model Parameters
-    S = 10
-    J = 2
+    S = int(80)
+    J = int(2)
     T = int(2 * S)
+    BW = int(10) 
     lambdas = np.array([.50, .50])
     starting_age = 40
     ending_age = 50
@@ -144,11 +153,21 @@ def get_reduced_parameters():
 
     # Tax parameters:
     #   Income Tax Parameters
-    mean_income_data = 84377.0
-    a_tax_income = 3.03452713268985e-06
-    b_tax_income = .222
-    c_tax_income = 133261.0
-    d_tax_income = .219
+    ####  will call tax function estimation function here...
+    ### do output such that each parameters is in a separate SxBW array
+    mean_income_data = 84377.0 # just need mean income in base year to get factor right...
+    a_tax_income = np.ones((S,BW))*3.03452713268985e-06
+    b_tax_income = np.ones((S,BW))*.222
+    c_tax_income = np.ones((S,BW))*133261.0
+    d_tax_income = np.ones((S,BW))*.219
+    e_tax_income = np.ones((S,BW))*0.1
+    f_tax_income = np.ones((S,BW))*1.5
+    min_x_tax_income = np.ones((S,BW))*-0.18
+    max_x_tax_income = np.ones((S,BW))*0.44
+    min_y_tax_income = np.ones((S,BW))*-0.10
+    max_y_tax_income = np.ones((S,BW))*0.35
+
+
     #   Wealth tax params
     #       These are non-calibrated values, h and m just need
     #       need to be nonzero to avoid errors. When p_wealth
@@ -185,9 +204,10 @@ def get_reduced_parameters():
 
 def get_full_parameters():
     # Model Parameters
-    S = 80
-    J = 7
+    S = int(80)
+    J = int(7)
     T = int(2 * S)
+    BW = int(10) 
     lambdas = np.array([.25, .25, .2, .1, .1, .09, .01])
     starting_age = 20
     ending_age = 100
@@ -209,11 +229,34 @@ def get_full_parameters():
 
     # Tax parameters:
     #   Income Tax Parameters
-    mean_income_data = 84377.0
-    a_tax_income = 3.03452713268985e-06
-    b_tax_income = .222
-    c_tax_income = 133261.0
-    d_tax_income = .219
+    #  will call tax function estimation function here...
+    # do output such that each parameters is in a separate SxBW array
+    #mean_income_data = 84377.0 # just need mean income in base year to get factor right...
+    # a_tax_income = np.ones((S,BW))*3.03452713268985e-06
+    # b_tax_income = np.ones((S,BW))*.222
+    # c_tax_income = np.ones((S,BW))*133261.0
+    # d_tax_income = np.ones((S,BW))*.219
+    # e_tax_income = np.ones((S,BW))*0.1
+    # f_tax_income = np.ones((S,BW))*1.5
+    # min_x_tax_income = np.ones((S,BW))*-0.18
+    # max_x_tax_income = np.ones((S,BW))*0.44
+    # min_y_tax_income = np.ones((S,BW))*-0.10
+    # max_y_tax_income = np.ones((S,BW))*0.35
+    # read in estimated parameters
+    dict_params = pickle.load( open( "TxFuncEst.pkl.txt", "rb" ) )
+    mean_income_data = dict_params['tfunc_avginc'][0]
+    a_tax_income = dict_params['tfunc_params'][:,:,0]
+    b_tax_income = dict_params['tfunc_params'][:,:,1]
+    c_tax_income = dict_params['tfunc_params'][:,:,2]
+    d_tax_income = dict_params['tfunc_params'][:,:,3]
+    e_tax_income = dict_params['tfunc_params'][:,:,4]
+    f_tax_income = dict_params['tfunc_params'][:,:,5]
+    max_x_tax_income = np.ones((S,BW))*0.0 #dict_params['tfunc_params'][:,:,6]
+    min_x_tax_income = np.ones((S,BW))*0.0 #dict_params['tfunc_params'][:,:,7]
+    max_y_tax_income = np.ones((S,BW))*0.0 #dict_params['tfunc_params'][:,:,8]
+    min_y_tax_income = np.ones((S,BW))*0.0 #dict_params['tfunc_params'][:,:,9]
+
+
     #   Wealth tax params
     #       These are non-calibrated values, h and m just need
     #       need to be nonzero to avoid errors. When p_wealth
@@ -223,7 +266,7 @@ def get_full_parameters():
     p_wealth = 0.0
     #   Bequest and Payroll Taxes
     tau_bq = np.zeros(J)
-    tau_payroll = 0.15
+    tau_payroll = 0. #0.15
     retire = np.round(9.0 * S / 16.0) - 1
 
     # Simulation Parameters
