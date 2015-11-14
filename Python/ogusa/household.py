@@ -210,6 +210,7 @@ def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_
     deriv = (1+r) - r*(tax.tau_capital_deriv(r, b_splus1, w, e_extended[1:], n_extended[1:], factor, tau_inc_params)*income 
                     - tax.tau_income(r, b_splus1, w, e_extended[1:], n_extended[1:], factor, tau_inc_params))
 
+
     #deriv = (
     #    1 + r * (1 - tax.tau_income(r, b_splus1, w, e_extended[1:], n_extended[1:], factor, params) - tax.tau_income_deriv(
     #        r, b_splus1, w, e_extended[1:], n_extended[1:], factor, params) * income) - tax.tau_w_prime(b_splus1, params) 

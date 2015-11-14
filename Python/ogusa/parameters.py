@@ -20,6 +20,7 @@ import json
 import numpy as np
 from demographics import get_omega
 from income import get_e
+import pickle
 
 DATASET = 'REAL'
 
@@ -230,7 +231,7 @@ def get_full_parameters():
     #   Income Tax Parameters
     #  will call tax function estimation function here...
     # do output such that each parameters is in a separate SxBW array
-    mean_income_data = 84377.0 # just need mean income in base year to get factor right...
+    #mean_income_data = 84377.0 # just need mean income in base year to get factor right...
     # a_tax_income = np.ones((S,BW))*3.03452713268985e-06
     # b_tax_income = np.ones((S,BW))*.222
     # c_tax_income = np.ones((S,BW))*133261.0
@@ -241,17 +242,20 @@ def get_full_parameters():
     # max_x_tax_income = np.ones((S,BW))*0.44
     # min_y_tax_income = np.ones((S,BW))*-0.10
     # max_y_tax_income = np.ones((S,BW))*0.35
+    # read in estimated parameters
+    dict_params = pickle.load( open( "TxFuncEst.pkl.txt", "rb" ) )
+    mean_income_data = dict_params['tfunc_avginc'][0]
+    a_tax_income = dict_params['tfunc_params'][:,:,0]
+    b_tax_income = dict_params['tfunc_params'][:,:,1]
+    c_tax_income = dict_params['tfunc_params'][:,:,2]
+    d_tax_income = dict_params['tfunc_params'][:,:,3]
+    e_tax_income = dict_params['tfunc_params'][:,:,4]
+    f_tax_income = dict_params['tfunc_params'][:,:,5]
+    max_x_tax_income = np.ones((S,BW))*0.0 #dict_params['tfunc_params'][:,:,6]
+    min_x_tax_income = np.ones((S,BW))*0.0 #dict_params['tfunc_params'][:,:,7]
+    max_y_tax_income = np.ones((S,BW))*0.0 #dict_params['tfunc_params'][:,:,8]
+    min_y_tax_income = np.ones((S,BW))*0.0 #dict_params['tfunc_params'][:,:,9]
 
-    a_tax_income = np.ones((S,BW))
-    b_tax_income = np.ones((S,BW))
-    c_tax_income = np.ones((S,BW))
-    d_tax_income = np.ones((S,BW))
-    e_tax_income = np.ones((S,BW))
-    f_tax_income = np.ones((S,BW))
-    min_x_tax_income = np.ones((S,BW))*0.0
-    max_x_tax_income = np.ones((S,BW))*0.0
-    min_y_tax_income = np.ones((S,BW))*0.0
-    max_y_tax_income = np.ones((S,BW))*0.0
 
     #   Wealth tax params
     #       These are non-calibrated values, h and m just need
@@ -262,7 +266,7 @@ def get_full_parameters():
     p_wealth = 0.0
     #   Bequest and Payroll Taxes
     tau_bq = np.zeros(J)
-    tau_payroll = 0.15
+    tau_payroll = 0. #0.15
     retire = np.round(9.0 * S / 16.0) - 1
 
     # Simulation Parameters
