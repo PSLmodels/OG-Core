@@ -251,10 +251,14 @@ def get_full_parameters():
     d_tax_income = dict_params['tfunc_params'][:,:,3]
     e_tax_income = dict_params['tfunc_params'][:,:,4]
     f_tax_income = dict_params['tfunc_params'][:,:,5]
-    max_x_tax_income = np.ones((S,BW))*0.0 #dict_params['tfunc_params'][:,:,6]
-    min_x_tax_income = np.ones((S,BW))*0.0 #dict_params['tfunc_params'][:,:,7]
-    max_y_tax_income = np.ones((S,BW))*0.0 #dict_params['tfunc_params'][:,:,8]
-    min_y_tax_income = np.ones((S,BW))*0.0 #dict_params['tfunc_params'][:,:,9]
+    max_x_tax_income = dict_params['tfunc_params'][:,:,6]
+    min_x_tax_income = dict_params['tfunc_params'][:,:,7]
+    max_y_tax_income = dict_params['tfunc_params'][:,:,8]
+    min_y_tax_income = dict_params['tfunc_params'][:,:,9]
+    # min_x_tax_income = np.ones((S,BW))*0.0
+    # max_x_tax_income = np.ones((S,BW))*0.0
+    # min_y_tax_income = np.ones((S,BW))*0.0
+    # max_y_tax_income = np.ones((S,BW))*0.0
 
 
     #   Wealth tax params
@@ -266,7 +270,7 @@ def get_full_parameters():
     p_wealth = 0.0
     #   Bequest and Payroll Taxes
     tau_bq = np.zeros(J)
-    tau_payroll = 0. #0.15
+    tau_payroll = 0.0 #0.15
     retire = np.round(9.0 * S / 16.0) - 1
 
     # Simulation Parameters
