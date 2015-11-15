@@ -64,6 +64,7 @@ def replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS, lambdas):
         maxpayment = 30000.0 / (factor_ss * wss)
         if theta > maxpayment:
             theta = maxpayment
+    theta = 0 
     return theta
 
 
@@ -180,6 +181,7 @@ def tau_capital_deriv(r, b, w, e, n, factor, params):
     Lambda_deriv = ((2*B*y + C*x + E)*F)/(denom**2)
 
     tau =  ((max_y-min_y)*Lambda) + ((x*(max_x-min_x))+(y*(max_y-min_y)))*Lambda_deriv + min_y 
+
     return tau
 
 def tau_labor_deriv(r, b, w, e, n, factor, params):

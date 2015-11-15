@@ -137,10 +137,12 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, tax_params, params, chi
                                           b_splus1, b_splus2, BQ, factor, T_H,
                                           chi_b[j], tax_params, params, theta, tau_bq[j],
                                           rho, lambdas[j])
+
     error2 = household.euler_labor_leisure_func(w, r, e[:, j], n_guess, b_s,
                                                 b_splus1, BQ, factor, T_H,
                                                 chi_n, tax_params, params, theta,
                                                 tau_bq[j], lambdas[j])
+
     # Put in constraints for consumption and savings.
     # According to the euler equations, they can be negative.  When
     # Chi_b is large, they will be.  This prevents that from happening.
@@ -149,17 +151,22 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, tax_params, params, chi
     mask1 = n_guess < 0
     mask2 = n_guess > ltilde
     mask3 = b_guess <= 0
-    error2[mask1] += 1e14
-    error2[mask2] += 1e14
-    error1[mask3] += 1e14
+    mask4 = np.isnan(n_guess)
+    mask5 = np.isnan(b_guess)
+    error2[mask1] = 1e14
+    error2[mask2] = 1e14
+    error1[mask3] = 1e14
+    error1[mask5] = 1e14
+    error2[mask4] = 1e14
     tax1_params = (J, S, retire, a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income,
                    min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income, h_wealth, p_wealth, m_wealth, tau_payroll)
     tax1 = tax.total_taxes(r, b_s, w, e[:, j], n_guess, BQ, lambdas[j], factor,
                            T_H, None, 'SS', False, tax1_params, theta, tau_bq[j])
     cons = household.get_cons(r, b_s, w, e[:, j], n_guess, BQ, lambdas[j],
                               b_splus1, params, tax1)
-    mask4 = cons < 0
-    error1[mask4] += 1e14
+    mask6 = cons < 0
+    error1[mask6] = 1e14
+
     return list(error1.flatten()) + list(error2.flatten())
 
 
@@ -217,11 +224,19 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
         # factor
         for j in xrange(J):
             # Solve the euler equations
-            guesses = np.append(bssmat[:, j], nssmat[:, j])
+            if j == 0:
+                guesses = np.append(bssmat[:, j], nssmat[:, j])
+            else:
+                guesses = np.append(bssmat[:, j-1], nssmat[:, j-1])
+
             args_ = (r, w, T_H, factor, j, tax_params, params, chi_b, chi_n, tau_bq, rho,
                      lambdas, weights, e)
-            solutions = opt.fsolve(Euler_equation_solver, guesses * .9,
-                                   args=args_, xtol=1e-13)
+            f_out = opt.fsolve(Euler_equation_solver, guesses * .9,
+                                   args=args_, xtol=1e-13, full_ouput=True)
+            solutions = f_out
+            print 'Min Euler errors: ', f_out['fvec'] 
+            print 'solutions, ', solutions
+            quit()
             bssmat[:, j] = solutions[:S]
             nssmat[:, j] = solutions[S:]
             # print np.array(Euler_equation_solver(np.append(bssmat[:, j],
@@ -283,14 +298,13 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
     # don't do a final fsolve, there will be a slight mismatch,
     # with high euler errors)
     for j in xrange(J):
+        guesses = np.append(bssmat[:, j], nssmat[:, j])
         args_ = (r, w, T_H, factor, j, tax_params, params, chi_b, chi_n, tau_bq, rho,
                  lambdas, weights, e)
-        solutions1 = opt.fsolve(Euler_equation_solver, np.append(bssmat[:, j],
-                                                                 nssmat[:, j]) * .9, args=args_, xtol=1e-13)
-        eul_solve = Euler_equation_solver(solutions1, r, w, T_H, factor, j,
-                                          tax_params, params, chi_b, chi_n, tau_bq,
-                                          rho, lambdas, weights, e)
-        eul_errors[j] = np.array(eul_solve).max()
+        [solutions, infodict, ier, message] = opt.fsolve(Euler_equation_solver, guesses * .9,
+                                   args=args_, xtol=1e-13, full_output=True)
+
+        print 'Max Euler errors: ', np.absolute(infodict['fvec']).max()
         b_mat[:, j] = solutions1[:S]
         n_mat[:, j] = solutions1[S:]
     print 'SS fsolve euler error:', eul_errors.max()
@@ -338,8 +352,8 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
     # Rename the inputs
     w = guesses[0]
     r = guesses[1]
-    T_H = 0.0 #guesses[2]
-    factor = 1.0#guesses[3]
+    T_H = guesses[2]
+    factor = guesses[3]
     bssmat = b_guess_init
     nssmat = n_guess_init
 
@@ -347,11 +361,17 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
     # factor
     for j in xrange(J):
         # Solve the euler equations
-        guesses = np.append(bssmat[:, j], nssmat[:, j])
+        if j == 0:
+            guesses = np.append(bssmat[:, j], nssmat[:, j])
+        else:
+            guesses = np.append(bssmat[:, j-1], nssmat[:, j-1])
         args_ = (r, w, T_H, factor, j, tax_params, params, chi_b, chi_n, tau_bq, rho,
                  lambdas, weights, e)
-        solutions = opt.fsolve(Euler_equation_solver, guesses * .9,
-                               args=args_, xtol=1e-13)
+        [solutions, infodict, ier, message] = opt.fsolve(Euler_equation_solver, guesses * .9,
+                                   args=args_, xtol=1e-13, full_output=True)
+
+        print 'Max Euler errors: ', np.absolute(infodict['fvec']).max()
+        
         bssmat[:, j] = solutions[:S]
         nssmat[:, j] = solutions[S:]
         # print np.array(Euler_equation_solver(np.append(bssmat[:, j],
@@ -382,9 +402,9 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
     
     error1 = new_w - w
     error2 = new_r - r
-    #error3 = new_T_H - T_H
-    error3 = new_factor - factor
-    print 'errors: ', error1, error2#, error3#, error4
+    error3 = new_T_H - T_H
+    error4 = new_factor - factor
+    print 'errors: ', error1, error2, error3    , error4
     print 'T_H: ', new_T_H
     print 'factor: ', new_factor
 
@@ -396,8 +416,7 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
     if w <= 0:
         error2 += 1e9
 
-    #return [error1, error2, error3, error4]
-    return [error1, error2]
+    return [error1, error2, error3, error4]
 
     return errors
 
@@ -514,8 +533,8 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
         chi_params[J:] = chi_n_guess
         # First run SS simulation with guesses at initial values for b, n, w, r, etc
         # For inital guesses of b and n, we choose very small b, and medium n
-        b_guess = np.ones((S, J)).flatten() * .01
-        n_guess = np.ones((S, J)).flatten() * .5 * ltilde
+        b_guess = np.ones((S, J)).flatten() * .05
+        n_guess = np.ones((S, J)).flatten() * .4 * ltilde
         # For initial guesses of w, r, T_H, and factor, we use values that are close
         # to some steady state values.
         wguess = 1.2
@@ -530,8 +549,7 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
 
         # (income_tax_params, wealth_tax_params, ellipse_params,
         #     parameters, iterative_params)
-        #guesses = [wguess, rguess, T_Hguess, factorguess]
-        guesses = [wguess, rguess]
+        guesses = [wguess, rguess, T_Hguess, factorguess]
         args_ = (b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params[J:], chi_params[:J], 
                  income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
         solutions = opt.fsolve(SS_fsolve, guesses, args=args_, xtol=1e-13, full_output=True)
