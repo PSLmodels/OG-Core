@@ -288,8 +288,9 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, params):
             consumption constraints.
     '''
     print 'Checking constraints on capital, labor, and consumption.'
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    
+    ltilde = params 
+
     if (bssmat < 0).any():
         print '\tWARNING: There is negative capital stock'
     flag2 = False

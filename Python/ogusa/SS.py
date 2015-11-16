@@ -231,12 +231,11 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
 
             args_ = (r, w, T_H, factor, j, tax_params, params, chi_b, chi_n, tau_bq, rho,
                      lambdas, weights, e)
-            f_out = opt.fsolve(Euler_equation_solver, guesses * .9,
-                                   args=args_, xtol=1e-13, full_ouput=True)
-            solutions = f_out
-            print 'Min Euler errors: ', f_out['fvec'] 
-            print 'solutions, ', solutions
-            quit()
+            [solutions, infodict, ier, message] = opt.fsolve(Euler_equation_solver, guesses * .9,
+                                   args=args_, xtol=1e-13, full_output=True)
+
+            print 'Max Euler errors: ', np.absolute(infodict['fvec']).max()
+
             bssmat[:, j] = solutions[:S]
             nssmat[:, j] = solutions[S:]
             # print np.array(Euler_equation_solver(np.append(bssmat[:, j],
@@ -301,9 +300,9 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
         guesses = np.append(bssmat[:, j], nssmat[:, j])
         args_ = (r, w, T_H, factor, j, tax_params, params, chi_b, chi_n, tau_bq, rho,
                  lambdas, weights, e)
-        [solutions, infodict, ier, message] = opt.fsolve(Euler_equation_solver, guesses * .9,
+        [solutions1, infodict, ier, message] = opt.fsolve(Euler_equation_solver, guesses * .9,
                                    args=args_, xtol=1e-13, full_output=True)
-
+        eul_errors[j] = np.array(infodict['fvec']).max()
         print 'Max Euler errors: ', np.absolute(infodict['fvec']).max()
         b_mat[:, j] = solutions1[:S]
         n_mat[:, j] = solutions1[S:]
@@ -526,6 +525,14 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
     ------------------------------------------------------------------------
     '''
 
+    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
+                  g_n_ss, tau_payroll, retire, mean_income_data,\
+                  h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_parameters
+
+    a_tax_income, b_tax_income, \
+        c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
+        min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = income_tax_parameters
+
     if get_baseline:
         # Generate initial guesses for chi^b_j and chi^n_s
         chi_params = np.zeros(S + J)
@@ -539,25 +546,17 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
         # to some steady state values.
         wguess = 1.2
         rguess = .06
-        T_Hguess = 0.0 
-        factorguess = 100000.0
-        # J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, \
-        # tau_payroll, retire, mean_income_data, a_tax_income, b_tax_income, \
-        # c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
-        # min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income, \
-        # h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+        T_Hguess = 0.12 
+        factorguess = 70000.0
 
-        # (income_tax_params, wealth_tax_params, ellipse_params,
-        #     parameters, iterative_params)
         guesses = [wguess, rguess, T_Hguess, factorguess]
         args_ = (b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params[J:], chi_params[:J], 
                  income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
-        solutions = opt.fsolve(SS_fsolve, guesses, args=args_, xtol=1e-13, full_output=True)
-        print 'SS solutions: ', solutions
-        quit()
+        [solutions, infodict, ier, message] = opt.fsolve(SS_fsolve, guesses, args=args_, xtol=1e-13, full_output=True)
+        [wguess, rguess, T_Hguess, factorguess] = solutions
+        solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[
+                              J:], chi_params[:J], income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
 
-        #solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[
-        #                      J:], chi_params[:J], income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
 
         if calibrate_model:
             outputs = {'solutions': solutions, 'chi_params': chi_params}
@@ -583,8 +582,14 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
             b_guess = solutions[:S * J]
             n_guess = solutions[S * J:2 * S * J]
             wguess, rguess, factorguess, T_Hguess = solutions[2 * S * J:]
+            guesses = [wguess, rguess, T_Hguess, factorguess]
+            args_ = (b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params[J:], chi_params[:J], 
+                 income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
+            [solutions, infodict, ier, message] = opt.fsolve(SS_fsolve, guesses, args=args_, xtol=1e-13, full_output=True)
+            [wguess, rguess, T_Hguess, factorguess] = solutions
             solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[
-                                  J:], chi_params[:J], ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
+                              J:], chi_params[:J], income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
+
     else:
         variables = pickle.load(open(ss_init_path, "rb"))
         solutions = solutions_dict['solutions']
@@ -596,12 +601,11 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
         guesses = [wguess, rguess, T_Hguess, factorguess]
         args_ = (b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params[J:], chi_params[:J], 
                  income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
-        solutions = opt.fsolve(SS_fsolve, guesses,args=args_, xtol=1e-13)
-        print 'SS solutions: ', solutions
-        quit()
+        [solutions, infodict, ier, message] = opt.fsolve(SS_fsolve, guesses, args=args_, xtol=1e-13, full_output=True)
+        [wguess, rguess, T_Hguess, factorguess] = solutions
+        solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[
+                              J:], chi_params[:J], income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
 
-        #solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[
-        #                      J:], chi_params[:J], ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
 
     '''
     ------------------------------------------------------------------------
@@ -634,13 +638,21 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
 
     Iss = firm.get_I(Kss, Kss, delta, g_y, g_n_ss)
 
-    theta = tax.replacement_rate_vals(
-        nssmat, wss, factor_ss, e, J, omega_SS.reshape(S, 1), lambdas)
+    theta = np.zeros(J) #tax.replacement_rate_vals(
+        #nssmat, wss, factor_ss, e, J, omega_SS.reshape(S, 1), lambdas)
     BQss = household.get_BQ(rss, bssmat_splus1, omega_SS.reshape(
         S, 1), lambdas, rho.reshape(S, 1), g_n_ss, 'SS')
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
+    
+    
+    taxss_params = (J, S, retire, np.tile(np.reshape(a_tax_income,(S,1)),(1,J)), np.tile(np.reshape(b_tax_income,(S,1)),(1,J)), 
+                    np.tile(np.reshape(c_tax_income,(S,1)),(1,J)), np.tile(np.reshape(d_tax_income,(S,1)),(1,J)), 
+                    np.tile(np.reshape(e_tax_income,(S,1)),(1,J)), np.tile(np.reshape(f_tax_income,(S,1)),(1,J)),
+                    np.tile(np.reshape(min_x_tax_income,(S,1)),(1,J)), np.tile(np.reshape(max_x_tax_income,(S,1)),(1,J)), 
+                    np.tile(np.reshape(min_y_tax_income,(S,1)),(1,J)), np.tile(np.reshape(max_y_tax_income,(S,1)),(1,J)), 
+                    h_wealth, p_wealth, m_wealth, tau_payroll)
     taxss = tax.total_taxes(rss, b_s, wss, e, nssmat, BQss, lambdas,
-                            factor_ss, T_Hss, None, 'SS', False, ss_parameters, theta, tau_bq)
+                            factor_ss, T_Hss, None, 'SS', False, taxss_params, theta, tau_bq)
     cssmat = household.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(
         1, J), lambdas.reshape(1, J), bssmat_splus1, ss_parameters, taxss)
 
@@ -650,22 +662,24 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
 
     print 'Resource Constraint Difference:', resource_constraint
 
-    household.constraint_checker_SS(bssmat, nssmat, cssmat, ss_parameters)
+    constraint_params = ltilde
+    household.constraint_checker_SS(bssmat, nssmat, cssmat, constraint_params)
 
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
     b_splus1 = bssmat_splus1
-    b_splus2 = np.array(
-        list(bssmat_splus1[1:]) + list(np.zeros(J).reshape((1, J))))
+    b_splus2 = np.array(list(bssmat_splus1[1:]) + list(np.zeros(J).reshape((1, J))))
 
     chi_b = np.tile(chi_params[:J].reshape(1, J), (S, 1))
     chi_n = np.array(chi_params[J:])
     euler_savings = np.zeros((S, J))
     euler_labor_leisure = np.zeros((S, J))
     for j in xrange(J):
-        euler_savings[:, j] = household.euler_savings_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], b_splus1[:, j], b_splus2[
-                                                           :, j], BQss[j], factor_ss, T_Hss, chi_b[:, j], ss_parameters, theta[j], tau_bq[j], rho, lambdas[j])
-        euler_labor_leisure[:, j] = household.euler_labor_leisure_func(wss, rss, e[:, j], nssmat[:, j], b_s[
-                                                                       :, j], b_splus1[:, j], BQss[j], factor_ss, T_Hss, chi_n, ss_parameters, theta[j], tau_bq[j], lambdas[j])
+        euler_savings[:, j] = household.euler_savings_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], b_splus1[:, j], 
+                                 b_splus2[:, j], BQss[j], factor_ss, T_Hss, chi_b[:, j], income_tax_parameters, ss_parameters, 
+                                 theta[j], tau_bq[j], rho, lambdas[j])
+        euler_labor_leisure[:, j] = household.euler_labor_leisure_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], 
+                                     b_splus1[:, j], BQss[j], factor_ss, T_Hss, chi_n, income_tax_parameters, 
+                                     ss_parameters, theta[j], tau_bq[j], lambdas[j])
     '''
     ------------------------------------------------------------------------
         Save the values in various ways, depending on the stage of
