@@ -51,8 +51,10 @@ globals().update(get_parameters())
 
 
 def create_tpi_params(a_tax_income, b_tax_income, c_tax_income,
-                      d_tax_income,
-                      b_ellipse, upsilon, J, S, T, beta, sigma, alpha, Z,
+                      d_tax_income, e_tax_income, f_tax_income, 
+                      min_x_tax_income, max_x_tax_income, 
+                      min_y_tax_income, max_y_tax_income, ,
+                      b_ellipse, upsilon, J, S, T, BW, beta, sigma, alpha, Z,
                       delta, ltilde, nu, g_y, tau_payroll, retire,
                       mean_income_data, get_baseline=True, input_dir="./OUTPUT", **kwargs):
 
@@ -84,12 +86,52 @@ def create_tpi_params(a_tax_income, b_tax_income, c_tax_income,
 
     # Make a vector of all one dimensional parameters, to be used in the
     # following functions
-    income_tax_params = [a_tax_income,
-                         b_tax_income, c_tax_income, d_tax_income]
+    # Put income tax parameters in a tuple 
+    # Assumption here is that tax parameters of last year of budget
+    # window continue forever and so will be SS values
+    a_tax_income_TP = np.zeros(S,T)
+    a_tax_income_TP[:,:BW] = a_tax_income
+    a_tax_income_TP[:,BW:] = a_tax_income(:,BW)
+    b_tax_income_TP = np.zeros(S,T)
+    b_tax_income_TP[:,:BW] = b_tax_income
+    b_tax_income_TP[:,BW:] = b_tax_income(:,BW)
+    c_tax_income_TP = np.zeros(S,T)
+    c_tax_income_TP[:,:BW] = b_tax_income
+    d_tax_income_TP[:,BW:] = b_tax_income(:,BW)
+    d_tax_income_TP = np.zeros(S,T)
+    d_tax_income_TP[:,:BW] = b_tax_income
+    d_tax_income_TP[:,BW:] = b_tax_income(:,BW)
+    e_tax_income_TP = np.zeros(S,T)
+    e_tax_income_TP[:,:BW] = b_tax_income
+    e_tax_income_TP[:,BW:] = b_tax_income(:,BW)
+    f_tax_income_TP = np.zeros(S,T)
+    f_tax_income_TP[:,:BW] = b_tax_income
+    f_tax_income_TP[:,BW:] = b_tax_income(:,BW)
+    min_x_tax_income_TP = np.zeros(S,T)
+    min_x_tax_income_TP[:,:BW] = min_x_tax_income
+    min_x_tax_income_TP[:,BW:] = min_x_tax_income(:,BW)
+    max_x_tax_income_TP = np.zeros(S,T)
+    max_x_tax_income_TP[:,:BW] = max_x_tax_income
+    max_x_tax_income_TP[:,BW:] = max_x_tax_income(:,BW)
+    min_y_tax_income_TP = np.zeros(S,T)
+    min_y_tax_income_TP[:,:BW] = min_y_tax_income
+    min_y_tax_income_TP[:,BW:] = min_y_tax_income(:,BW)
+    max_y_tax_income_TP = np.zeros(S,T)
+    max_y_tax_income_TP[:,:BW] = max_y_tax_income
+    max_y_tax_income_TP[:,BW:] = max_y_tax_income(:,BW)
+
+
+
+    income_tax_params = (a_tax_income_TP, b_tax_income_TP, c_tax_income_TP,
+                         d_tax_income_TP, e_tax_income_TP, f_tax_income_TP, 
+                         min_x_tax_income_TP, max_x_tax_income_TP, 
+                         min_y_tax_income_TP, max_y_tax_income_TP)
+
+
     wealth_tax_params = [h_wealth, p_wealth, m_wealth]
     ellipse_params = [b_ellipse, upsilon]
-    parameters = [J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire,
-                  mean_income_data] + income_tax_params + wealth_tax_params + ellipse_params
+    parameters = [J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire,
+                  mean_income_data]  + wealth_tax_params + ellipse_params
 
     N_tilde = omega.sum(1)
     omega_stationary = omega / N_tilde.reshape(T + S, 1)
@@ -113,10 +155,17 @@ def create_tpi_params(a_tax_income, b_tax_income, c_tax_income,
     r0 = firm.get_r(Y0, K0, parameters)
     BQ0 = household.get_BQ(r0, initial_b, omega_stationary[0].reshape(
         S, 1), lambdas, rho.reshape(S, 1), g_n_vector[0], 'SS')
+    TH_tax_params = (a_tax_income_TP[:,0], b_tax_income_TP[:,0], c_tax_income_TP[:,0],
+                         d_tax_income_TP[:,0], e_tax_income_TP[:,0], f_tax_income_TP[:,0], 
+                         min_x_tax_income_TP[:,0], max_x_tax_income_TP[:,0], 
+                         min_y_tax_income_TP[:,0], max_y_tax_income_TP[:,0])
     T_H_0 = tax.get_lump_sum(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, omega_stationary[
-                             0].reshape(S, 1), 'SS', parameters, theta, tau_bq)
+                             0].reshape(S, 1), 'SS', TH_tax_params, parameters, theta, tau_bq)
+    tax0_params = (J, S, retire, a_tax_income_TP[:,0], b_tax_income_TP[:,0], c_tax_income_TP[:,0], d_tax_income_TP[:,0], 
+                   e_tax_income_TP[:,0], f_tax_income_TP[:,0], min_x_tax_income_TP[:,0], max_x_tax_income_TP[:,0], 
+                   min_y_tax_income_TP[:,0], max_y_tax_income_TP[:,0], h_wealth, p_wealth, m_wealth, tau_payroll)
     tax0 = tax.total_taxes(r0, b_sinit, w0, e, initial_n, BQ0, lambdas,
-                           factor_ss, T_H_0, None, 'SS', False, parameters, theta, tau_bq)
+                           factor_ss, T_H_0, None, 'SS', False, tax1_params, theta, tau_bq)
     c0 = household.get_cons(r0, b_sinit, w0, e, initial_n, BQ0.reshape(
         1, J), lambdas.reshape(1, J), b_splus1init, parameters, tax0)
 
@@ -259,7 +308,10 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
     return list(error1.flatten()) + list(error2.flatten())
 
 
-def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, parameters, g_n_vector, omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, chi_n, get_baseline=False, output_dir="./OUTPUT", **kwargs):
+def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_tax_params, ellipse_params, parameters, g_n_vector, 
+                           omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, 
+                           T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, 
+                           chi_n, get_baseline=False, output_dir="./OUTPUT", **kwargs):
 
     TPI_FIG_DIR = output_dir
     # Initialize Time paths

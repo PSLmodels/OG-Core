@@ -84,10 +84,6 @@ income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_p
 ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, get_baseline, calibrate_model)
 
 
-print 'Solved SS'
-print 'SS distribution of capital: ', ss_outputs['bssmat']
-quit()
-
 '''
 ------------------------------------------------------------------------
     Run the baseline TPI simulation
