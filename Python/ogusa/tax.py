@@ -95,8 +95,8 @@ def tau_w_prime(b, params):
     Outputs:
         tau_w_prime = derivative of tau_wealth (various length arrays or scalar)
     '''
-    J, S, retire, a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income,\
-       min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income, h_wealth, p_wealth, m_wealth, tau_payroll = params
+    h_wealth, p_wealth, m_wealth = params
+    
     h = h_wealth
     m = m_wealth
     p = p_wealth
