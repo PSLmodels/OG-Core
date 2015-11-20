@@ -96,7 +96,7 @@ def tau_w_prime(b, params):
         tau_w_prime = derivative of tau_wealth (various length arrays or scalar)
     '''
     h_wealth, p_wealth, m_wealth = params
-    
+
     h = h_wealth
     m = m_wealth
     p = p_wealth
@@ -256,9 +256,18 @@ def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, weights, method, tax_params
     I = r * b + w * e * n
     tau_inc_params = (a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income,
                       min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income)
-    T_I = np.zeros((S,J))
-    for j in xrange(J):
-        T_I[:,j] = tau_income(r, b[:,j], w, e[:,j], n[:,j], factor, tau_inc_params) * I[:,j]
+    
+    if I.ndim == 2: 
+        T_I = np.zeros((S,J))
+        for j in xrange(J):
+            T_I[:,j] = tau_income(r, b[:,j], w, e[:,j], n[:,j], factor, tau_inc_params) * I[:,j]
+    if I.ndim == 3:
+        T_I = np.zeros((T,S,J))
+        for j in xrange(J):
+            tau_inc_params3D = (a_tax_income[:,:,j], b_tax_income[:,:,j], c_tax_income[:,:,j], d_tax_income[:,:,j], 
+                                e_tax_income[:,:,j], f_tax_income[:,:,j], min_x_tax_income[:,:,j], max_x_tax_income[:,:,j], 
+                                min_y_tax_income[:,:,j], max_y_tax_income[:,:,j])
+            T_I[:,:,j] = tau_income(r[:,:,j], b[:,:,j], w[:,:,j], e[:,:,j], n[:,:,j], factor, tau_inc_params3D) * I[:,:,j]  
     T_P = tau_payroll * w * e * n
     TW_params = (h_wealth, p_wealth, m_wealth)
     T_W = tau_wealth(b, TW_params) * b
@@ -267,7 +276,7 @@ def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, weights, method, tax_params
         T_BQ = tau_bq * BQ / lambdas
         T_H = (weights * lambdas * (T_I + T_P + T_BQ + T_W)).sum()
     elif method == 'TPI':
-        T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w
+        T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w[:,retire:,:]
         T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
         T_H = (weights * lambdas * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1)
     return T_H
@@ -327,7 +336,7 @@ def total_taxes(r, b, w, e, n, BQ, lambdas, factor, T_H, j, method, shift, param
             T_P[retireTPI:] -= theta[j] * w[retireTPI:]
             T_BQ = tau_bq[j] * BQ / lambdas
         else:
-            T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w
+            T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w[:,retire:,:]
             T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
     elif method == 'TPI_scalar':
         # The above methods won't work if scalars are used.  This option is only called by the

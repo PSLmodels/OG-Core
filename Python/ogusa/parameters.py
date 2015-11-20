@@ -279,7 +279,7 @@ def get_full_parameters():
     PLOT_TPI = True
     maxiter = 250
     mindist_SS = 1e-9
-    mindist_TPI = 1e-6
+    mindist_TPI = 2e-5 #1e-6
     nu = .4
     flag_graphs = False
     #   Calibration parameters

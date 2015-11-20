@@ -371,6 +371,9 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
                            T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, 
                            chi_n, get_baseline=False, output_dir="./OUTPUT", **kwargs):
 
+    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
+        h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = parameters
+
     a_tax_income, b_tax_income, \
         c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
         min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = income_tax_params
@@ -518,20 +521,31 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
             T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1), g_n_vector[:T].reshape(T, 1), 'TPI')
         bmat_s = np.zeros((T, S, J))
         bmat_s[:, 1:, :] = b_mat[:T, :-1, :]
-        TH_tax_params = (a_tax_income[:,:T], b_tax_income[:,:T], c_tax_income[:,:T], d_tax_income[:,:T], 
-                   e_tax_income[:,:T], f_tax_income[:,:T], min_x_tax_income[:,:T], max_x_tax_income[:,:T], 
-                   min_y_tax_income[:,:T], max_y_tax_income[:,:T]) 
-        T_H_new = np.array(list(tax.get_lump_sum(rnew.reshape(T, 1, 1), bmat_s, wnew.reshape(
-            T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQnew.reshape(T, 1, J), lambdas.reshape(
+        TH_tax_params = (np.tile(np.reshape(np.transpose(a_tax_income[:,:T]),(T,S,1)),(1,1,J)), 
+                         np.tile(np.reshape(np.transpose(b_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(c_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(d_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(e_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(f_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(min_x_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(max_x_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(min_y_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(max_y_tax_income[:,:T]),(T,S,1)),(1,1,J))) 
+
+        #T_H_new = np.array(list(tax.get_lump_sum(rnew.reshape(T, 1, 1), bmat_s, wnew.reshape(
+        #    T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQnew.reshape(T, 1, J), lambdas.reshape(
+        #    1, 1, J), factor_ss, omega_stationary[:T].reshape(T, S, 1), 'TPI', TH_tax_params, parameters, theta, tau_bq)) + [T_Hss] * S)
+
+        T_H_new = np.array(list(tax.get_lump_sum(np.tile(rnew.reshape(T, 1, 1),(1,S,J)), bmat_s, np.tile(wnew.reshape(
+            T, 1, 1),(1,S,J)), np.tile(e.reshape(1, S, J),(T,1,1)), n_mat[:T,:,:], BQnew.reshape(T, 1, J), lambdas.reshape(
             1, 1, J), factor_ss, omega_stationary[:T].reshape(T, S, 1), 'TPI', TH_tax_params, parameters, theta, tau_bq)) + [T_Hss] * S)
 
-        winit[:T] = utils.convex_combo(wnew, winit[:T], parameters)
-        rinit[:T] = utils.convex_combo(rnew, rinit[:T], parameters)
-        BQinit[:T] = utils.convex_combo(BQnew, BQinit[:T], parameters)
-        T_H_init[:T] = utils.convex_combo(
-            T_H_new[:T], T_H_init[:T], parameters)
-        guesses_b = utils.convex_combo(b_mat, guesses_b, parameters)
-        guesses_n = utils.convex_combo(n_mat, guesses_n, parameters)
+        winit[:T] = utils.convex_combo(wnew, winit[:T], nu)
+        rinit[:T] = utils.convex_combo(rnew, rinit[:T], nu)
+        BQinit[:T] = utils.convex_combo(BQnew, BQinit[:T], nu)
+        T_H_init[:T] = utils.convex_combo(T_H_new[:T], T_H_init[:T], nu)
+        guesses_b = utils.convex_combo(b_mat, guesses_b, nu)
+        guesses_n = utils.convex_combo(n_mat, guesses_n, nu)
         if T_H_init.all() != 0:
             TPIdist = np.array(list(utils.perc_dif_func(rnew, rinit[:T])) + list(utils.perc_dif_func(BQnew, BQinit[:T]).flatten()) + list(
                 utils.perc_dif_func(wnew, winit[:T])) + list(utils.perc_dif_func(T_H_new, T_H_init))).max()
@@ -556,39 +570,42 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
     # w, r, BQ, etc.  Otherwise the euler errors are large.  You need one more
     # fsolve.
     for j in xrange(J):
-        a_tax_income_to_use = np.diag(np.transpose(a_tax_income[:S,:]),S-(s+2))
-        b_tax_income_to_use = np.diag(np.transpose(b_tax_income[:S,:]),S-(s+2))
-        c_tax_income_to_use = np.diag(np.transpose(c_tax_income[:S,:]),S-(s+2))
-        d_tax_income_to_use = np.diag(np.transpose(d_tax_income[:S,:]),S-(s+2))
-        e_tax_income_to_use = np.diag(np.transpose(e_tax_income[:S,:]),S-(s+2))
-        f_tax_income_to_use = np.diag(np.transpose(f_tax_income[:S,:]),S-(s+2))
-        min_x_tax_income_to_use = np.diag(np.transpose(min_x_tax_income[:S,:]),S-(s+2))
-        max_x_tax_income_to_use = np.diag(np.transpose(max_x_tax_income[:S,:]),S-(s+2))
-        min_y_tax_income_to_use = np.diag(np.transpose(min_y_tax_income[:S,:]),S-(s+2))
-        max_y_tax_income_to_use = np.diag(np.transpose(max_y_tax_income[:S,:]),S-(s+2))
+        # a_tax_income_to_use = np.diag(np.transpose(a_tax_income[:S,:]),S-(s+2))
+        # b_tax_income_to_use = np.diag(np.transpose(b_tax_income[:S,:]),S-(s+2))
+        # c_tax_income_to_use = np.diag(np.transpose(c_tax_income[:S,:]),S-(s+2))
+        # d_tax_income_to_use = np.diag(np.transpose(d_tax_income[:S,:]),S-(s+2))
+        # e_tax_income_to_use = np.diag(np.transpose(e_tax_income[:S,:]),S-(s+2))
+        # f_tax_income_to_use = np.diag(np.transpose(f_tax_income[:S,:]),S-(s+2))
+        # min_x_tax_income_to_use = np.diag(np.transpose(min_x_tax_income[:S,:]),S-(s+2))
+        # max_x_tax_income_to_use = np.diag(np.transpose(max_x_tax_income[:S,:]),S-(s+2))
+        # min_y_tax_income_to_use = np.diag(np.transpose(min_y_tax_income[:S,:]),S-(s+2))
+        # max_y_tax_income_to_use = np.diag(np.transpose(max_y_tax_income[:S,:]),S-(s+2))
 
-        inc_tax_params_upper = (a_tax_income_to_use, b_tax_income_to_use, c_tax_income_to_use, d_tax_income_to_use,
-                                        e_tax_income_to_use, f_tax_income_to_use, min_x_tax_income_to_use, max_x_tax_income_to_use,
-                                        min_y_tax_income_to_use, max_y_tax_income_to_use)
+        # inc_tax_params_upper = (a_tax_income_to_use, b_tax_income_to_use, c_tax_income_to_use, d_tax_income_to_use,
+        #                                 e_tax_income_to_use, f_tax_income_to_use, min_x_tax_income_to_use, max_x_tax_income_to_use,
+        #                                 min_y_tax_income_to_use, max_y_tax_income_to_use)
+        # a_tax_income, b_tax_income, \
+        # c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
+        # min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = tax_params
 
         b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],
                                                                    args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1], initial_b, factor_ss, 
-                                                                   j, inc_tax_params_upper, parameters, theta, tau_bq), xtol=1e-13))
+                                                                   j, income_tax_params, parameters, theta, tau_bq), xtol=1e-13))
         for s in xrange(S - 2):  # Upper triangle
             ind2 = np.arange(s + 2)
             b_guesses_to_use = np.diag(guesses_b[1:S + 1, :, j], S - (s + 2))
             n_guesses_to_use = np.diag(guesses_n[:S, :, j], S - (s + 2))
 
-            a_tax_income_to_use = np.diag(np.transpose(a_tax_income[:,t:t+S]))
-            b_tax_income_to_use = np.diag(np.transpose(b_tax_income[:,t:t+S]))
-            c_tax_income_to_use = np.diag(np.transpose(c_tax_income[:,t:t+S]))
-            d_tax_income_to_use = np.diag(np.transpose(d_tax_income[:,t:t+S]))
-            e_tax_income_to_use = np.diag(np.transpose(e_tax_income[:,t:t+S]))
-            f_tax_income_to_use = np.diag(np.transpose(f_tax_income[:,t:t+S]))
-            min_x_tax_income_to_use = np.diag(np.transpose(min_x_tax_income[:S,:]))
-            max_x_tax_income_to_use = np.diag(np.transpose(max_x_tax_income[:S,:]))
-            min_y_tax_income_to_use = np.diag(np.transpose(min_y_tax_income[:S,:]))
-            max_y_tax_income_to_use = np.diag(np.transpose(max_y_tax_income[:S,:]))
+            a_tax_income_to_use = np.diag(np.transpose(a_tax_income[:S,:]),S-(s+2))
+            b_tax_income_to_use = np.diag(np.transpose(b_tax_income[:S,:]),S-(s+2))
+            c_tax_income_to_use = np.diag(np.transpose(c_tax_income[:S,:]),S-(s+2))
+            d_tax_income_to_use = np.diag(np.transpose(d_tax_income[:S,:]),S-(s+2))
+            e_tax_income_to_use = np.diag(np.transpose(e_tax_income[:S,:]),S-(s+2))
+            f_tax_income_to_use = np.diag(np.transpose(f_tax_income[:S,:]),S-(s+2))
+            min_x_tax_income_to_use = np.diag(np.transpose(min_x_tax_income[:S,:]),S-(s+2))
+            max_x_tax_income_to_use = np.diag(np.transpose(max_x_tax_income[:S,:]),S-(s+2))
+            min_y_tax_income_to_use = np.diag(np.transpose(min_y_tax_income[:S,:]),S-(s+2))
+            max_y_tax_income_to_use = np.diag(np.transpose(max_y_tax_income[:S,:]),S-(s+2))
 
             inc_tax_params_TP = (a_tax_income_to_use, b_tax_income_to_use, c_tax_income_to_use, d_tax_income_to_use,
                                         e_tax_income_to_use, f_tax_income_to_use, min_x_tax_income_to_use, max_x_tax_income_to_use,
@@ -648,14 +665,24 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
     b_splus1 = np.zeros((T, S, J))
     b_splus1[:, :, :] = b_mat[1:T + 1, :, :]
 
-    tax_path_params = (J, S, retire, a_tax_income[:,:T], b_tax_income[:,:T], 
-                   c_tax_income[:,:T], d_tax_income[:,:T], 
-                   e_tax_income[:,:T], f_tax_income[:,:T], 
-                   min_x_tax_income[:,:T], max_x_tax_income[:,:T], 
-                   min_y_tax_income[:,:T], max_y_tax_income[:,:T], h_wealth, p_wealth, m_wealth, tau_payroll)
-    tax_path = tax.total_taxes(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), 
-        n_mat[:T], BQinit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T].reshape(T, 1, 1), None, 'TPI', False, 
-        tax_path_params, theta, tau_bq)
+    tax_path_params = (J, S, retire, np.tile(np.reshape(np.transpose(a_tax_income[:,:T]),(T,S,1)),(1,1,J)), 
+                         np.tile(np.reshape(np.transpose(b_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(c_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(d_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(e_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(f_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(min_x_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(max_x_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(min_y_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(max_y_tax_income[:,:T]),(T,S,1)),(1,1,J)), h_wealth, p_wealth, m_wealth, tau_payroll)
+
+    tax_path = tax.total_taxes(np.tile(rinit[:T].reshape(T, 1, 1),(1,S,J)), b_s, np.tile(winit[:T].reshape(T, 1, 1),(1,S,J)), 
+                               np.tile(e.reshape(1, S, J),(T,1,1)), n_mat[:T,:,:], BQinit[:T, :].reshape(T, 1, J), lambdas, 
+                               factor_ss, T_H_init[:T].reshape(T, 1, 1), None, 'TPI', False, tax_path_params, theta, tau_bq)
+
+    #tax_path = tax.total_taxes(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(1, S, J), 
+    #    n_mat[:T], BQinit[:T, :].reshape(T, 1, J), lambdas, factor_ss, T_H_init[:T].reshape(T, 1, 1), None, 'TPI', False, 
+    #    tax_path_params, theta, tau_bq)
     c_path = household.get_cons(rinit[:T].reshape(T, 1, 1), b_s, winit[:T].reshape(T, 1, 1), e.reshape(
         1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b_splus1, parameters, tax_path)
 
@@ -670,7 +697,7 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
     hh_constraint_params = ltilde
     for t in xrange(T):
         household.constraint_checker_TPI(
-            b_mat[t], n_mat[t], c_path[t], t, hh_consraint_params)
+            b_mat[t], n_mat[t], c_path[t], t, hh_constraint_params)
 
     eul_savings = euler_errors[:, :S, :].max(1).max(1)
     eul_laborleisure = euler_errors[:, S:, :].max(1).max(1)

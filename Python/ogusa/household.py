@@ -319,8 +319,7 @@ def constraint_checker_TPI(b_dist, n_dist, c_dist, t, params):
         Prints warnings for violations of capital, labor, and
             consumption constraints.
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    ltilde = params
     if (b_dist <= 0).any():
         print '\tWARNING: Aggregate capital is less than or equal to ' \
             'zero in period %.f.' % t
