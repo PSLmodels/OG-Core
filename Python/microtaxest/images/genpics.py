@@ -1,21 +1,6 @@
 '''
 ------------------------------------------------------------------------
-This script reads in data generated from the OSPC Tax Calcultor and
-the 2009 IRS PUF. It then estimates tax functions tau_{s,t}(x,y), where
-tau_{s,t} is the effective tax rate for a given age (s) in a particular
-year (t), x is total labor income, and y is total capital income.
-
-This Python script calls the following functions:
-    gen_etr_grid:   generates summary grid points for effective tax rate
-    gen_dmtrx_grid: generates summary grid points for derivative of
-                    marginal tax rate with respect to labor income
-    gen_dmtry_grid: generates summary grid points for derivative of
-                    marginal tax rate with respect to capital income
-    wsumsq:         generates weighted sum of squared residuals
-
-This Python script outputs the following:
-    TxFuncEst.pkl: pickle of dictionary with param_arr_S, AvgInc,
-                   and elapsed_time
+Generate images for Jason's presentation
 ------------------------------------------------------------------------
 '''
 # Import packages
@@ -30,6 +15,7 @@ except:
 import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 
@@ -80,14 +66,14 @@ TotPop_yr = np.zeros(tpers)
 PopPct_age = np.zeros((s_max-s_min+1, tpers))
 desc_data = False
 graph_data = False
-graph_est = False
+graph_est = True
 dmtrgr_est = False
 cmap1 = matplotlib.cm.get_cmap('summer')
 # cmap1 = matplotlib.cm.get_cmap('jet')
 # cmap1 = matplotlib.cm.get_cmap('coolwarm')
 
 beg_yr = int(2015)
-end_yr = int(2024)
+end_yr = int(2015)
 years_list = np.arange(beg_yr, end_yr + 1)
 data_folder = '/Users/rwe2/Documents/Economics/OSPC/Data/micro-dynamic/reform/'
 start_time = time.clock()
@@ -347,8 +333,10 @@ for t in years_list:
         .index)
 
     # Create an array of the different ages in the data
-    min_age = int(np.maximum(data_trnc['Age'].min(), s_min))
-    max_age = int(np.minimum(data_trnc['Age'].max(), s_max))
+    # min_age = int(np.maximum(data_trnc['Age'].min(), s_min))
+    # max_age = int(np.minimum(data_trnc['Age'].max(), s_max))
+    min_age = (44)
+    max_age = int(44)
     ages_list = np.arange(min_age, max_age+1)
 
     NoData_cnt = 0
@@ -659,6 +647,111 @@ for t in years_list:
                     cmap=cmap1, linewidth=0)
                 plt.show()
 
+                lab_ub = 1000000
+                cap_ub = 1000000
+                df_trnc_gph = df[(df['Total Labor Income'] < lab_ub) &
+                              (df['Total Capital Income'] < cap_ub)]
+                inc_lab_gph = df_trnc_gph['Total Labor Income']
+                inc_cap_gph = df_trnc_gph['Total Capital Income']
+                etr_data_gph = df_trnc_gph['Effective Tax Rate']
+                fig = plt.figure()
+                ax = fig.add_subplot(111, projection ='3d')
+                ax.scatter(inc_lab_gph, inc_cap_gph, etr_data_gph, c='r', marker='o')
+                ax.set_xlabel('Total Labor Income')
+                ax.set_ylabel('Total Capital Income')
+                ax.set_zlabel('Effective Tax Rate')
+                plt.title('ETR vs. Predicted ETR: Age=' + str(s) + ', Year=' + str(t))
+
+                gridpts = 50
+                inc_lab_vec = np.exp(np.linspace(np.log(5),
+                              np.log(lab_ub), gridpts))
+                inc_cap_vec = np.exp(np.linspace(np.log(5),
+                              np.log(cap_ub), gridpts))
+                inc_lab_grid, inc_cap_grid = np.meshgrid(inc_lab_vec,
+                                             inc_cap_vec)
+                etr_grid = gen_etr_grid(inc_lab_grid, inc_cap_grid,
+                           params)
+                ax.plot_surface(inc_lab_grid, inc_cap_grid, etr_grid,
+                    cmap=cmap1, linewidth=0)
+                plt.show()
+
+                # Plot a slice of baseline estimated tax function for
+                # fixed capital versus same slice of reform tax function
+                # for fixed capital for non-truncated labor income
+                lab_inc_sup = np.exp(np.linspace(np.log(5), np.log(inc_lab.max()), 100))
+                cap_inc_fix = 50000
+                phi = lab_inc_sup / (lab_inc_sup + cap_inc_fix)
+                P_num = (A * lab_inc_sup ** 2 + B * cap_inc_fix ** 2 +
+                    C * lab_inc_sup * cap_inc_fix + D * lab_inc_sup +
+                    E * cap_inc_fix)
+                P_den = (A * lab_inc_sup ** 2 + B * cap_inc_fix ** 2 +
+                    C * lab_inc_sup * cap_inc_fix + D * lab_inc_sup +
+                    E * cap_inc_fix + F)
+                etr_ref = ((phi * (max_x - min_x) + (1 - phi) * (max_y - min_y)) *
+                    (P_num / P_den) + phi * min_x + (1 - phi) * min_y)
+                dict_params = pickle.load( open( "TxFuncEst.pkl", "rb" ) )
+                Ab, Bb, Cb, Db, Eb, Fb, max_xb, min_xb, max_yb, min_yb = \
+                    dict_params['tfunc_params_S'][23,0,:]
+                P_numb = (Ab * lab_inc_sup ** 2 + Bb * cap_inc_fix ** 2 +
+                    Cb * lab_inc_sup * cap_inc_fix + Db * lab_inc_sup +
+                    Eb * cap_inc_fix)
+                P_denb = (Ab * lab_inc_sup ** 2 + Bb * cap_inc_fix ** 2 +
+                    Cb * lab_inc_sup * cap_inc_fix + Db * lab_inc_sup +
+                    Eb * cap_inc_fix + Fb)
+                etr_base = ((phi * (max_xb - min_xb) + (1 - phi) * (max_yb - min_yb)) *
+                    (P_numb / P_denb) + phi * min_xb + (1 - phi) * min_yb)
+                fig, ax = plt.subplots()
+                plt.plot(lab_inc_sup, etr_base, 'r--', label='Baseline')
+                plt.plot(lab_inc_sup, etr_ref, 'b', label='Reform')
+                # for the minor ticks, use no labels; default NullFormatter
+                # ax.xaxis.set_minor_locator(MinorLocator)
+                # plt.grid(b=True, which='major', color='0.65',linestyle='-')
+                plt.legend(loc='center right')
+                plt.title('Baseline vs. reform AETR for y=50,000')
+                plt.xlabel(r'Labor income $x$')
+                plt.ylabel(r'AETR')
+                # plt.savefig('cm_ss_Chap11')
+                plt.show()
+
+                # Plot a slice of baseline estimated tax function for
+                # fixed capital versus same slice of reform tax function
+                # for fixed capital for truncated labor income
+                lab_inc_sup = np.exp(np.linspace(np.log(5), np.log(lab_ub), 100))
+                cap_inc_fix = 50000
+                phi = lab_inc_sup / (lab_inc_sup + cap_inc_fix)
+                P_num = (A * lab_inc_sup ** 2 + B * cap_inc_fix ** 2 +
+                    C * lab_inc_sup * cap_inc_fix + D * lab_inc_sup +
+                    E * cap_inc_fix)
+                P_den = (A * lab_inc_sup ** 2 + B * cap_inc_fix ** 2 +
+                    C * lab_inc_sup * cap_inc_fix + D * lab_inc_sup +
+                    E * cap_inc_fix + F)
+                etr_ref = ((phi * (max_x - min_x) + (1 - phi) * (max_y - min_y)) *
+                    (P_num / P_den) + phi * min_x + (1 - phi) * min_y)
+                dict_params = pickle.load( open( "TxFuncEst.pkl", "rb" ) )
+                Ab, Bb, Cb, Db, Eb, Fb, max_xb, min_xb, max_yb, min_yb = \
+                    dict_params['tfunc_params_S'][23,0,:]
+                P_numb = (Ab * lab_inc_sup ** 2 + Bb * cap_inc_fix ** 2 +
+                    Cb * lab_inc_sup * cap_inc_fix + Db * lab_inc_sup +
+                    Eb * cap_inc_fix)
+                P_denb = (Ab * lab_inc_sup ** 2 + Bb * cap_inc_fix ** 2 +
+                    Cb * lab_inc_sup * cap_inc_fix + Db * lab_inc_sup +
+                    Eb * cap_inc_fix + Fb)
+                etr_base = ((phi * (max_xb - min_xb) + (1 - phi) * (max_yb - min_yb)) *
+                    (P_numb / P_denb) + phi * min_xb + (1 - phi) * min_yb)
+                fig, ax = plt.subplots()
+                plt.plot(lab_inc_sup, etr_base, 'r--', label='Baseline')
+                plt.plot(lab_inc_sup, etr_ref, 'b', label='Reform')
+                # for the minor ticks, use no labels; default NullFormatter
+                # ax.xaxis.set_minor_locator(MinorLocator)
+                # plt.grid(b=True, which='major', color='0.65',linestyle='-')
+                plt.legend(loc='center right')
+                plt.title('Baseline vs. reform AETR for y=50,000')
+                plt.xlabel(r'Labor income $x$')
+                plt.ylabel(r'AETR')
+                # plt.savefig('cm_ss_Chap11')
+                plt.show()
+
+
             if dmtrgr_est == True:
                 '''
                 --------------------------------------------------------
@@ -747,31 +840,31 @@ age_wgts     = ages x tpers x 10 array, age weights for each age in each
                year copied back 10 times in the 3rd dimension
 ------------------------------------------------------------------------
 '''
-if S == s_max - s_min + 1:
-    param_arr_S = param_arr
+# if S == s_max - s_min + 1:
+#     param_arr_S = param_arr
 
-elif S < s_max - s_min + 1:
-    param_arr_S = np.zeros((S, tpers, numparams))
-    age_cuts = np.linspace(0, s_max-s_min+1, S+1)
-    yrcut_lb = int(age_cuts[0])
-    rmndr_pct_lb = 1.
-    for s in np.arange(S):
-        yrcut_ub = int(np.floor(age_cuts[s+1]))
-        rmndr_pct_ub = age_cuts[s+1] - np.floor(age_cuts[s+1])
-        if rmndr_pct_ub == 0.:
-            rmndr_pct_ub = 1.
-            yrcut_ub -= 1
-        age_wgts = np.dstack([PopPct_age[yrcut_lb:yrcut_ub+1, :]]*10)
-        # print yrcut_lb, yrcut_ub, rmndr_pct_lb, rmndr_pct_ub, age_wgts.shape
-        age_wgts[0, :, :] *= rmndr_pct_lb
-        age_wgts[yrcut_ub-yrcut_lb, :, :] *= rmndr_pct_ub
-        param_arr_S[s, :, :] = (param_arr[yrcut_lb:yrcut_ub+1, :, :] * age_wgts).sum(axis=0)
-        yrcut_lb = yrcut_ub
-        rmndr_pct_lb = 1 - rmndr_pct_ub
+# elif S < s_max - s_min + 1:
+#     param_arr_S = np.zeros((S, tpers, numparams))
+#     age_cuts = np.linspace(0, s_max-s_min+1, S+1)
+#     yrcut_lb = int(age_cuts[0])
+#     rmndr_pct_lb = 1.
+#     for s in np.arange(S):
+#         yrcut_ub = int(np.floor(age_cuts[s+1]))
+#         rmndr_pct_ub = age_cuts[s+1] - np.floor(age_cuts[s+1])
+#         if rmndr_pct_ub == 0.:
+#             rmndr_pct_ub = 1.
+#             yrcut_ub -= 1
+#         age_wgts = np.dstack([PopPct_age[yrcut_lb:yrcut_ub+1, :]]*10)
+#         # print yrcut_lb, yrcut_ub, rmndr_pct_lb, rmndr_pct_ub, age_wgts.shape
+#         age_wgts[0, :, :] *= rmndr_pct_lb
+#         age_wgts[yrcut_ub-yrcut_lb, :, :] *= rmndr_pct_ub
+#         param_arr_S[s, :, :] = (param_arr[yrcut_lb:yrcut_ub+1, :, :] * age_wgts).sum(axis=0)
+#         yrcut_lb = yrcut_ub
+#         rmndr_pct_lb = 1 - rmndr_pct_ub
 
 
-# Save tax function parameters array and computation time in pickle
-dict_params = dict([('tfunc_params_S', param_arr_S),
-    ('tfunc_avginc', AvgInc), ('tfunc_time', elapsed_time)])
-pkl_path = "TxFuncEst2.pkl"
-pickle.dump(dict_params, open(pkl_path, "wb"))
+# # Save tax function parameters array and computation time in pickle
+# dict_params = dict([('tfunc_params_S', param_arr_S),
+#     ('tfunc_avginc', AvgInc), ('tfunc_time', elapsed_time)])
+# pkl_path = "TxFuncEst.pkl"
+# pickle.dump(dict_params, open(pkl_path, "wb"))
