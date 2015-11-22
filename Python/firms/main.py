@@ -67,7 +67,7 @@ tp_graphs    = boolean, =True if want graphs of TP objects
 '''
 # Household parameters
 S = int(80)
-T = 220
+T = 81 #220
 beta_annual = 0.96
 beta = beta_annual ** (80 / S)
 sigma = 3.0
@@ -375,38 +375,39 @@ elif GoodGuess == True:
 
     if tp_solve == True:
         print 'BEGIN EQUILIBRIUM TIME PATH COMPUTATION'
-        #Gamma1 = b_ss
-        Gamma1 = 0.95 * b_ss
+        Gamma1 = b_ss
+        #Gamma1 = 0.95 * b_ss
         # Make sure initial savings distr. is feasible (sum of b_{s}>0)
         if Gamma1.sum() <= 0:
             print 'Initial savings distribution is not feasible (sum of b_{s}<=0)'
         else:
             # Choose initial guesses of path of interest rate and wage.
             # Use parabola specification aa*x^2 + bb*x + cc
-            #rpath_init = r_ss * np.ones(T+S-1)
-            rpath_init = np.zeros(T+S-1)
-            r1 = 1.02 * r_ss
-            cc_r = r1
-            bb_r = - 2 * (r1 - r_ss) / (T - S)
-            aa_r = -bb_r / (2 * (T - S))
-            rpath_init[:T-S+1] = (aa_r * (np.arange(0, T-S+1) ** 2) +
-                             (bb_r * np.arange(0, T-S+1)) + cc_r)
-            rpath_init[T-S+1:] = r_ss
-            rpath_init[:] = r_ss
+            rpath_init = r_ss * np.ones(T+S-1)
+            # rpath_init = np.zeros(T+S-1)
+            # r1 = 1.02 * r_ss
+            # cc_r = r1
+            # bb_r = - 2 * (r1 - r_ss) / (T - S)
+            # aa_r = -bb_r / (2 * (T - S))
+            # rpath_init[:T-S+1] = (aa_r * (np.arange(0, T-S+1) ** 2) +
+            #                  (bb_r * np.arange(0, T-S+1)) + cc_r)
+            # rpath_init[T-S+1:] = r_ss
+            
 
 
             wpath_init = np.zeros(T+S-1)
-            w1 = 0.98 * w_ss
-            cc_w = w1
-            bb_w = - 2 * (w1 - w_ss) / (T - S)
-            aa_w = -bb_w / (2 * (T - S))
-            wpath_init[:T-S+1] = (aa_w * (np.arange(0, T-S+1) ** 2) +
-                             (bb_w * np.arange(0, T-S+1)) + cc_w)
-            wpath_init[T-S+1:] = w_ss
-            #wpath_init[:] = w_ss
+            # w1 = 0.98 * w_ss
+            # cc_w = w1
+            # bb_w = - 2 * (w1 - w_ss) / (T - S)
+            # aa_w = -bb_w / (2 * (T - S))
+            # wpath_init[:T-S+1] = (aa_w * (np.arange(0, T-S+1) ** 2) +
+            #                  (bb_w * np.arange(0, T-S+1)) + cc_w)
+            # wpath_init[T-S+1:] = w_ss
+            wpath_init[:] = w_ss
 
             # initial guess for time path of prices
-            ppath_init = np.ones((M,T+S-1))*np.tile(np.reshape(p_ss,(M,1)),(1,T+S-1))
+            #ppath_init = np.ones((M,T+S-1))*np.tile(np.reshape(p_ss,(M,1)),(1,T+S-1))
+            ppath_init = np.ones((M,T+S-1))
 
             # Solve for time path
             # Tile arrays of time path parameters so easy to handle in 
@@ -422,12 +423,12 @@ elif GoodGuess == True:
 
             guesses = np.insert(np.reshape(ppath_init[:,:T],(T*M)),0,np.append(rpath_init[:T], wpath_init[:T]))
             start_time = time.clock()
-            #solutions = opt.fsolve(tpf.TP_fsolve, guesses, args=(tp_params, K_ss, X_ss,
-            #   Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
-            #   tp_graphs), xtol=tp_tol, col_deriv=1)
-            solutions = tpf.TP_fsolve(guesses, tp_params, K_ss, X_ss,
+            solutions = opt.fsolve(tpf.TP_fsolve, guesses, args=(tp_params, K_ss, X_ss,
                Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
-               tp_graphs)
+               tp_graphs), xtol=tp_tol, col_deriv=1)
+            #solutions = tpf.TP_fsolve(guesses, tp_params, K_ss, X_ss,
+            #   Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
+            #   tp_graphs)
             tpi_time = time.clock() - start_time
             r_path = solutions[:T].reshape(T)
             w_path = solutions[T:2*T].reshape(T)

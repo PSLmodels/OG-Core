@@ -64,6 +64,7 @@ def replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS, lambdas):
         maxpayment = 30000.0 / (factor_ss * wss)
         if theta > maxpayment:
             theta = maxpayment
+    theta = 0 
     return theta
 
 
@@ -76,8 +77,8 @@ def tau_wealth(b, params):
     Outputs:
         tau_w = tau_wealth (various length arrays or scalar)
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    h_wealth, p_wealth, m_wealth = params
+    
     h = h_wealth
     m = m_wealth
     p = p_wealth
@@ -94,8 +95,8 @@ def tau_w_prime(b, params):
     Outputs:
         tau_w_prime = derivative of tau_wealth (various length arrays or scalar)
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    h_wealth, p_wealth, m_wealth = params
+
     h = h_wealth
     m = m_wealth
     p = p_wealth
@@ -117,23 +118,36 @@ def tau_income(r, b, w, e, n, factor, params):
     Output:
         tau = tau_income (various length array or scalar)
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    a = a_tax_income
-    b = b_tax_income
-    c = c_tax_income
-    d = d_tax_income
-    I = r * b + w * e * n
-    I *= factor
-    num = a * (I ** 2) + b * I
-    denom = a * (I ** 2) + b * I + c
-    tau = d * num / denom
+    a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income,\
+        min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = params
+    A = a_tax_income
+    B = b_tax_income
+    C = c_tax_income
+    D = d_tax_income
+    E = d_tax_income
+    F = d_tax_income
+    min_x = min_x_tax_income
+    max_x = max_x_tax_income
+    min_y = min_y_tax_income
+    max_y = max_y_tax_income
+    x = (w*e*n)*factor
+    y = (r*b)*factor
+    I = x+y
+
+    phi = x/I
+    Phi = phi*(max_x-min_x) + (1-phi)*(max_y-min_y)
+    K = phi*min_x + (1-phi)*min_y
+
+    num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
+    denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
+    tau =  (Phi*(num/denom)) + K
     return tau
 
 
-def tau_income_deriv(r, b, w, e, n, factor, params):
+def tau_capital_deriv(r, b, w, e, n, factor, params):
     '''
-    Gives derivative of income tax value at a certain income level
+    Gives derivative of AETR function with repect to 
+    capital income at a certain income level
     Inputs:
         r = interest rate (various length list or scalar)
         b = wealth holdings (various length array or scalar)
@@ -143,23 +157,75 @@ def tau_income_deriv(r, b, w, e, n, factor, params):
         factor = scaling factor (scalar)
         params = parameter list of model (list)
     Output:
-        tau = derivative of tau_income (various length array or scalar)
+        tau = derivative of tau_income w.r.t. capital income (various length array or scalar)
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    a = a_tax_income
-    b = b_tax_income
-    c = c_tax_income
-    d = d_tax_income
-    I = r * b + w * e * n
-    I *= factor
-    denom = a * (I ** 2) + b * I + c
-    num = (2 * a * I + b)
-    tau = d * c * num / (denom ** 2)
+    a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
+        min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = params
+    A = a_tax_income
+    B = b_tax_income
+    C = c_tax_income
+    D = d_tax_income
+    E = d_tax_income
+    F = d_tax_income
+    min_x = min_x_tax_income
+    max_x = max_x_tax_income
+    min_y = min_y_tax_income
+    max_y = max_y_tax_income
+    x = (w*e*n)*factor
+    y = (r*b)*factor
+
+    num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
+    denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
+    Lambda = num/denom
+
+    Lambda_deriv = ((2*B*y + C*x + E)*F)/(denom**2)
+
+    tau =  ((max_y-min_y)*Lambda) + ((x*(max_x-min_x))+(y*(max_y-min_y)))*Lambda_deriv + min_y 
+
+    return tau
+
+def tau_labor_deriv(r, b, w, e, n, factor, params):
+    '''
+    Gives derivative of AETR function with repect to 
+    labor income at a certain income level
+    Inputs:
+        r = interest rate (various length list or scalar)
+        b = wealth holdings (various length array or scalar)
+        w = wage (various length list or scalar)
+        e = ability level (various size array or scalar)
+        n = labor participation rate (various length array or scalar)
+        factor = scaling factor (scalar)
+        params = parameter list of model (list)
+    Output:
+        tau = derivative of tau_income w.r.t. labor income (various length array or scalar)
+    '''
+    a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income,\
+                      min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = params
+    A = a_tax_income
+    B = b_tax_income
+    C = c_tax_income
+    D = d_tax_income
+    E = d_tax_income
+    F = d_tax_income
+    min_x = min_x_tax_income
+    max_x = max_x_tax_income
+    min_y = min_y_tax_income
+    max_y = max_y_tax_income
+    x = (w*e*n)*factor
+    y = (r*b)*factor
+
+    num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
+    denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
+    Lambda = num/denom
+
+    Lambda_deriv = ((2*A*x + C*y + D)*F)/(denom**2)
+
+    tau =  ((max_x-min_x)*Lambda) + ((x*(max_x-min_x))+(y*(max_y-min_y)))*Lambda_deriv + min_x 
     return tau
 
 
-def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, weights, method, params, theta, tau_bq):
+
+def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, weights, method, tax_params, params, theta, tau_bq):
     '''
     Gives lump sum tax value.
     Inputs:
@@ -179,18 +245,38 @@ def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, weights, method, params, th
     Output:
         T_H = lump sum tax (Tx1 array or scalar)
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
+                  g_n_ss, tau_payroll, retire, mean_income_data,\
+                  h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+
+    a_tax_income, b_tax_income, \
+        c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
+        min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = tax_params
+
     I = r * b + w * e * n
-    T_I = tau_income(r, b, w, e, n, factor, params) * I
+    tau_inc_params = (a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income,
+                      min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income)
+    
+    if I.ndim == 2: 
+        T_I = np.zeros((S,J))
+        for j in xrange(J):
+            T_I[:,j] = tau_income(r, b[:,j], w, e[:,j], n[:,j], factor, tau_inc_params) * I[:,j]
+    if I.ndim == 3:
+        T_I = np.zeros((T,S,J))
+        for j in xrange(J):
+            tau_inc_params3D = (a_tax_income[:,:,j], b_tax_income[:,:,j], c_tax_income[:,:,j], d_tax_income[:,:,j], 
+                                e_tax_income[:,:,j], f_tax_income[:,:,j], min_x_tax_income[:,:,j], max_x_tax_income[:,:,j], 
+                                min_y_tax_income[:,:,j], max_y_tax_income[:,:,j])
+            T_I[:,:,j] = tau_income(r[:,:,j], b[:,:,j], w[:,:,j], e[:,:,j], n[:,:,j], factor, tau_inc_params3D) * I[:,:,j]  
     T_P = tau_payroll * w * e * n
-    T_W = tau_wealth(b, params) * b
+    TW_params = (h_wealth, p_wealth, m_wealth)
+    T_W = tau_wealth(b, TW_params) * b
     if method == 'SS':
         T_P[retire:] -= theta * w
         T_BQ = tau_bq * BQ / lambdas
         T_H = (weights * lambdas * (T_I + T_P + T_BQ + T_W)).sum()
     elif method == 'TPI':
-        T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w
+        T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w[:,retire:,:]
         T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
         T_H = (weights * lambdas * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1)
     return T_H
@@ -218,12 +304,16 @@ def total_taxes(r, b, w, e, n, BQ, lambdas, factor, T_H, j, method, shift, param
     Output:
         total_taxes = net taxes (various length array or scalar)
     '''
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+    J, S, retire, a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income,\
+                   min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income, h_wealth, p_wealth, m_wealth, tau_payroll = params
+
     I = r * b + w * e * n
-    T_I = tau_income(r, b, w, e, n, factor, params) * I
+    tau_inc_params = (a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income,
+                      min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income)
+    T_I = tau_income(r, b, w, e, n, factor, tau_inc_params) * I
     T_P = tau_payroll * w * e * n
-    T_W = tau_wealth(b, params) * b
+    TW_params = (h_wealth, p_wealth, m_wealth)
+    T_W = tau_wealth(b, TW_params) * b
     if method == 'SS':
         # Depending on if we are looking at b_s or b_s+1, the
         # entry for retirement will change (it shifts back one).
@@ -246,7 +336,7 @@ def total_taxes(r, b, w, e, n, BQ, lambdas, factor, T_H, j, method, shift, param
             T_P[retireTPI:] -= theta[j] * w[retireTPI:]
             T_BQ = tau_bq[j] * BQ / lambdas
         else:
-            T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w
+            T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w[:,retire:,:]
             T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
     elif method == 'TPI_scalar':
         # The above methods won't work if scalars are used.  This option is only called by the

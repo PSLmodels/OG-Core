@@ -21,12 +21,12 @@ import numpy as np
 import cPickle as pickle
 import os
 
-import dynamic
-dynamic.parameters.DATASET = 'REAL'
+import ogusa
+ogusa.parameters.DATASET = 'REAL'
 
-import dynamic.SS
-import dynamic.TPI
-from dynamic import parameters, wealth, labor, demographics, income, SS, TPI
+import ogusa.SS
+import ogusa.TPI
+from ogusa import parameters, wealth, labor, demographics, income, SS, TPI
 
 '''
 ------------------------------------------------------------------------
@@ -37,7 +37,8 @@ calibrate_model = Flag to run calibration of chi values or not (bool)
 ------------------------------------------------------------------------
 '''
 
-globals().update(dynamic.parameters.get_parameters_from_file())
+#globals().update(ogusa.parameters.get_parameters_from_file())
+globals().update(ogusa.parameters.get_parameters())
 
 # Generate Wealth data moments
 output_dir = "./OUTPUT"
@@ -51,12 +52,14 @@ calibrate_model = False
 
 # List of parameter names that will not be changing (unless we decide to
 # change them for a tax experiment)
-param_names = ['S', 'J', 'T', 'lambdas', 'starting_age', 'ending_age',
+param_names = ['S', 'J', 'T', 'BW', 'lambdas', 'starting_age', 'ending_age',
              'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
              'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
              'b_ellipse', 'k_ellipse', 'upsilon',
              'a_tax_income', 'chi_b_guess', 'chi_n_guess',
              'b_tax_income', 'c_tax_income', 'd_tax_income',
+             'e_tax_income', 'f_tax_income', 'min_x_tax_income', 
+             'max_x_tax_income', 'min_y_tax_income', 'max_y_tax_income',
              'tau_payroll', 'tau_bq', 'calibrate_model',
              'retire', 'mean_income_data', 'g_n_vector',
              'h_wealth', 'p_wealth', 'm_wealth', 'get_baseline',
@@ -78,7 +81,7 @@ for key in param_names:
 income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
 
 
-ss_outputs = SS.run_steady_state(ss_parameters, iterative_params, get_baseline, calibrate_model)
+ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, get_baseline, calibrate_model)
 
 
 '''
@@ -111,6 +114,7 @@ ss_outputs['initial_n'] = initial_n
 ss_outputs['tau_bq'] = tau_bq
 ss_outputs['g_n_vector'] = g_n_vector
 TPI.run_time_path_iteration(**ss_outputs)
+
 
 '''
 ------------------------------------------------------------------------
