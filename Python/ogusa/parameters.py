@@ -128,13 +128,13 @@ e            = age dependent possible working abilities (SxJ array)
 
 def get_reduced_parameters():
     # Model Parameters
-    S = int(80)
+    starting_age = 40
+    ending_age = 50
+    S = int(ending_age-starting_age)
     J = int(2)
     T = int(2 * S)
     BW = int(10) 
     lambdas = np.array([.50, .50])
-    starting_age = 40
-    ending_age = 50
     E = int(starting_age * (S / float(ending_age - starting_age)))
     beta_annual = .96
     beta = beta_annual ** (float(ending_age - starting_age) / S)
@@ -155,17 +155,18 @@ def get_reduced_parameters():
     #   Income Tax Parameters
     ####  will call tax function estimation function here...
     ### do output such that each parameters is in a separate SxBW array
-    mean_income_data = 84377.0 # just need mean income in base year to get factor right...
-    a_tax_income = np.ones((S,BW))*3.03452713268985e-06
-    b_tax_income = np.ones((S,BW))*.222
-    c_tax_income = np.ones((S,BW))*133261.0
-    d_tax_income = np.ones((S,BW))*.219
-    e_tax_income = np.ones((S,BW))*0.1
-    f_tax_income = np.ones((S,BW))*1.5
-    min_x_tax_income = np.ones((S,BW))*-0.18
-    max_x_tax_income = np.ones((S,BW))*0.44
-    min_y_tax_income = np.ones((S,BW))*-0.10
-    max_y_tax_income = np.ones((S,BW))*0.35
+    dict_params = pickle.load( open( "TxFuncEst.pkl.txt", "rb" ) )
+    mean_income_data = dict_params['tfunc_avginc'][0]
+    a_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,0]
+    b_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,1]
+    c_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,2]
+    d_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,3]
+    e_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,4]
+    f_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,5]
+    max_x_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,6]
+    min_x_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,7]
+    max_y_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,8]
+    min_y_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,9]
 
 
     #   Wealth tax params
@@ -245,16 +246,16 @@ def get_full_parameters():
     # read in estimated parameters
     dict_params = pickle.load( open( "TxFuncEst.pkl.txt", "rb" ) )
     mean_income_data = dict_params['tfunc_avginc'][0]
-    a_tax_income = dict_params['tfunc_params'][:,:,0]
-    b_tax_income = dict_params['tfunc_params'][:,:,1]
-    c_tax_income = dict_params['tfunc_params'][:,:,2]
-    d_tax_income = dict_params['tfunc_params'][:,:,3]
-    e_tax_income = dict_params['tfunc_params'][:,:,4]
-    f_tax_income = dict_params['tfunc_params'][:,:,5]
-    max_x_tax_income = dict_params['tfunc_params'][:,:,6]
-    min_x_tax_income = dict_params['tfunc_params'][:,:,7]
-    max_y_tax_income = dict_params['tfunc_params'][:,:,8]
-    min_y_tax_income = dict_params['tfunc_params'][:,:,9]
+    a_tax_income = dict_params['tfunc_params'][:S,:BW,0]
+    b_tax_income = dict_params['tfunc_params'][:S,:BW,1]
+    c_tax_income = dict_params['tfunc_params'][:S,:BW,2]
+    d_tax_income = dict_params['tfunc_params'][:S,:BW,3]
+    e_tax_income = dict_params['tfunc_params'][:S,:BW,4]
+    f_tax_income = dict_params['tfunc_params'][:S,:BW,5]
+    max_x_tax_income = dict_params['tfunc_params'][:S,:BW,6]
+    min_x_tax_income = dict_params['tfunc_params'][:S,:BW,7]
+    max_y_tax_income = dict_params['tfunc_params'][:S,:BW,8]
+    min_y_tax_income = dict_params['tfunc_params'][:S,:BW,9]
     # min_x_tax_income = np.ones((S,BW))*0.0
     # max_x_tax_income = np.ones((S,BW))*0.0
     # min_y_tax_income = np.ones((S,BW))*0.0

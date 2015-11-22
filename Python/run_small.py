@@ -73,7 +73,7 @@ def runner():
     print "got here"
 
     before = time.time()
-    ss_outputs = SS.run_steady_state(ss_parameters, iterative_params, get_baseline)
+    ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, get_baseline)
 
     '''
     ------------------------------------------------------------------------

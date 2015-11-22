@@ -536,6 +536,10 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
     if get_baseline:
         # Generate initial guesses for chi^b_j and chi^n_s
         chi_params = np.zeros(S + J)
+        print "s: ", S
+        print 'J:', J
+        print 'size chi_b_guess', chi_b_guess.shape
+        print 'size chi_n_guess', chi_n_guess.shape
         chi_params[:J] = chi_b_guess
         chi_params[J:] = chi_n_guess
         # First run SS simulation with guesses at initial values for b, n, w, r, etc
