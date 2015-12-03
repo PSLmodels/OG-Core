@@ -378,24 +378,25 @@ def TPI_fsolve(guesses, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_ta
         c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
         min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = income_tax_params
 
+    # create full time paths with guesses and SS values
+    rinit = np.zeros(T+S)
+    winit = np.zeros(T+S)
+    T_H_init = np.zeros(T+S)
+    BQinit = np.zeros((T+S,J))
+    rinit[:T] = guesses[0:T].reshape(T)
+    winit[:T] = guesses[T:2*T].reshape(T)
+    rinit[T:] = rss
+    winit[T:] = wss
+    T_H_init[:T] = guesses[2*T:3*T].reshape(T)
+    BQinit[:T,:] = guesses[3*T:].reshape(T,J)
+    T_H_init[T:] = T_Hss
+    BQinit[T:,:] = BQss
 
-    TPI_FIG_DIR = output_dir
-    # Initialize Time paths
+    
+
+    # Make array of initial guesses for distribution of 
+    # savings and labor supply
     domain = np.linspace(0, T, T)
-    Kinit = (-1 / (domain + 1)) * (Kss - K0) + Kss
-    Kinit[-1] = Kss
-    Kinit = np.array(list(Kinit) + list(np.ones(S) * Kss))
-    Linit = np.ones(T + S) * Lss
-    Yinit = firm.get_Y(Kinit, Linit, parameters)
-    winit = firm.get_w(Yinit, Linit, parameters)
-    rinit = firm.get_r(Yinit, Kinit, parameters)
-    BQinit = np.zeros((T + S, J))
-    for j in xrange(J):
-        BQinit[:, j] = list(np.linspace(BQ0[j], BQss[j], T)) + [BQss[j]] * S
-    BQinit = np.array(BQinit)
-    T_H_init = np.ones(T + S) * T_Hss
-
-    # Make array of initial guesses
     domain2 = np.tile(domain.reshape(T, 1, 1), (1, S, J))
     ending_b = bssmat_splus1
     guesses_b = (-1 / (domain2 + 1)) * (ending_b - initial_b) + ending_b
@@ -410,159 +411,166 @@ def TPI_fsolve(guesses, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_ta
     n_mat = np.zeros((T + S, S, J))
     ind = np.arange(S)
 
-    TPIiter = 0
-    TPIdist = 10
-
     euler_errors = np.zeros((T, 2 * S, J))
-    TPIdist_vec = np.zeros(maxiter)
 
-    while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
-        Kpath_TPI = list(Kinit) + list(np.ones(10) * Kss)
-        Lpath_TPI = list(Linit) + list(np.ones(10) * Lss)
-        # Plot TPI for K for each iteration, so we can see if there is a
-        # problem
-        if PLOT_TPI is True:
-            plt.figure()
-            plt.axhline(
-                y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
-            plt.plot(np.arange(
-                T + 10), Kpath_TPI[:T + 10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
-            plt.savefig(os.path.join(TPI_FIG_DIR, "TPI_K"))
-        # Uncomment the following print statements to make sure all euler equations are converging.
-        # If they don't, then you'll have negative consumption or consumption spikes.  If they don't,
-        # it is the initial guesses.  You might need to scale them differently.  It is rather delicate for the first
-        # few periods and high ability groups.
-        for j in xrange(J):
-            b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],
-                                                                   args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1], initial_b, factor_ss, 
-                                                                   j, income_tax_params, parameters, theta, tau_bq), xtol=1e-13))
-            # if np.array(SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1, j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1], initial_b, factor_ss, j, parameters, theta, tau_bq)).max() > 1e-6:
-            # print 'minidoughnut:',
-            # np.array(SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1,
-            # j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1], initial_b,
-            # factor_ss, j, parameters, theta, tau_bq)).max()
-            for s in xrange(S - 2):  # Upper triangle
-                ind2 = np.arange(s + 2)
-                b_guesses_to_use = np.diag(
-                    guesses_b[1:S + 1, :, j], S - (s + 2))
-                n_guesses_to_use = np.diag(guesses_n[:S, :, j], S - (s + 2))
+    # Solve hh problem over time path:
+    # Uncomment the following print statements to make sure all euler equations are converging.
+    # If they don't, then you'll have negative consumption or consumption spikes.  If they don't,
+    # it is the initial guesses.  You might need to scale them differently.  It is rather delicate for the first
+    # few periods and high ability groups.
+    for j in xrange(J):
+        b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(SS_TPI_firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],
+                                                               args=(winit[1], rinit[1], BQinit[1, j], T_H_init[1], initial_b, factor_ss, 
+                                                               j, income_tax_params, parameters, theta, tau_bq), xtol=1e-13))
+        # if np.array(SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1, j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1], initial_b, factor_ss, j, parameters, theta, tau_bq)).max() > 1e-6:
+        # print 'minidoughnut:',
+        # np.array(SS_TPI_firstdoughnutring([b_mat[1, -1, j], n_mat[0, -1,
+        # j]], winit[1], rinit[1], BQinit[1, j], T_H_init[1], initial_b,
+        # factor_ss, j, parameters, theta, tau_bq)).max()
+        for s in xrange(S - 2):  # Upper triangle
+            ind2 = np.arange(s + 2)
+            b_guesses_to_use = np.diag(
+                guesses_b[1:S + 1, :, j], S - (s + 2))
+            n_guesses_to_use = np.diag(guesses_n[:S, :, j], S - (s + 2))
 
-                a_tax_income_to_use = np.diag(np.transpose(a_tax_income[:S,:]),S-(s+2))
-                b_tax_income_to_use = np.diag(np.transpose(b_tax_income[:S,:]),S-(s+2))
-                c_tax_income_to_use = np.diag(np.transpose(c_tax_income[:S,:]),S-(s+2))
-                d_tax_income_to_use = np.diag(np.transpose(d_tax_income[:S,:]),S-(s+2))
-                e_tax_income_to_use = np.diag(np.transpose(e_tax_income[:S,:]),S-(s+2))
-                f_tax_income_to_use = np.diag(np.transpose(f_tax_income[:S,:]),S-(s+2))
-                min_x_tax_income_to_use = np.diag(np.transpose(min_x_tax_income[:S,:]),S-(s+2))
-                max_x_tax_income_to_use = np.diag(np.transpose(max_x_tax_income[:S,:]),S-(s+2))
-                min_y_tax_income_to_use = np.diag(np.transpose(min_y_tax_income[:S,:]),S-(s+2))
-                max_y_tax_income_to_use = np.diag(np.transpose(max_y_tax_income[:S,:]),S-(s+2))
+            a_tax_income_to_use = np.diag(np.transpose(a_tax_income[:S,:]),S-(s+2))
+            b_tax_income_to_use = np.diag(np.transpose(b_tax_income[:S,:]),S-(s+2))
+            c_tax_income_to_use = np.diag(np.transpose(c_tax_income[:S,:]),S-(s+2))
+            d_tax_income_to_use = np.diag(np.transpose(d_tax_income[:S,:]),S-(s+2))
+            e_tax_income_to_use = np.diag(np.transpose(e_tax_income[:S,:]),S-(s+2))
+            f_tax_income_to_use = np.diag(np.transpose(f_tax_income[:S,:]),S-(s+2))
+            min_x_tax_income_to_use = np.diag(np.transpose(min_x_tax_income[:S,:]),S-(s+2))
+            max_x_tax_income_to_use = np.diag(np.transpose(max_x_tax_income[:S,:]),S-(s+2))
+            min_y_tax_income_to_use = np.diag(np.transpose(min_y_tax_income[:S,:]),S-(s+2))
+            max_y_tax_income_to_use = np.diag(np.transpose(max_y_tax_income[:S,:]),S-(s+2))
 
-                inc_tax_params_upper = (a_tax_income_to_use, b_tax_income_to_use, c_tax_income_to_use, d_tax_income_to_use,
-                                        e_tax_income_to_use, f_tax_income_to_use, min_x_tax_income_to_use, max_x_tax_income_to_use,
-                                        min_y_tax_income_to_use, max_y_tax_income_to_use)
+            inc_tax_params_upper = (a_tax_income_to_use, b_tax_income_to_use, c_tax_income_to_use, d_tax_income_to_use,
+                                    e_tax_income_to_use, f_tax_income_to_use, min_x_tax_income_to_use, max_x_tax_income_to_use,
+                                    min_y_tax_income_to_use, max_y_tax_income_to_use)
 
-                solutions = opt.fsolve(Steady_state_TPI_solver, list(
-                    b_guesses_to_use) + list(n_guesses_to_use), args=(
-                    winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, s, 0, inc_tax_params_upper, parameters, theta, tau_bq, rho, lambdas, e, initial_b, chi_b, chi_n), xtol=1e-13)
-                b_vec = solutions[:len(solutions) / 2]
-                b_mat[1 + ind2, S - (s + 2) + ind2, j] = b_vec
-                n_vec = solutions[len(solutions) / 2:]
-                n_mat[ind2, S - (s + 2) + ind2, j] = n_vec
-                # if abs(np.array(Steady_state_TPI_solver(solutions, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, s, 0, parameters, theta, tau_bq, rho, lambdas, e, initial_b, chi_b, chi_n))).max() > 1e-6:
-                # print 's-loop:',
-                # abs(np.array(Steady_state_TPI_solver(solutions, winit, rinit,
-                # BQinit[:, j], T_H_init, factor_ss, j, s, 0, parameters,
-                # theta, tau_bq, rho, lambdas, e, initial_b, chi_b,
-                # chi_n))).max()
-            for t in xrange(0, T):
-                b_guesses_to_use = .75 * \
-                    np.diag(guesses_b[t + 1:t + S + 1, :, j])
-                n_guesses_to_use = np.diag(guesses_n[t:t + S, :, j])
+            solutions = opt.fsolve(Steady_state_TPI_solver, list(
+                b_guesses_to_use) + list(n_guesses_to_use), args=(
+                winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, s, 0, inc_tax_params_upper, parameters, theta, tau_bq, rho, lambdas, e, initial_b, chi_b, chi_n), xtol=1e-13)
+            b_vec = solutions[:len(solutions) / 2]
+            b_mat[1 + ind2, S - (s + 2) + ind2, j] = b_vec
+            n_vec = solutions[len(solutions) / 2:]
+            n_mat[ind2, S - (s + 2) + ind2, j] = n_vec
+            # if abs(np.array(Steady_state_TPI_solver(solutions, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, s, 0, parameters, theta, tau_bq, rho, lambdas, e, initial_b, chi_b, chi_n))).max() > 1e-6:
+            # print 's-loop:',
+            # abs(np.array(Steady_state_TPI_solver(solutions, winit, rinit,
+            # BQinit[:, j], T_H_init, factor_ss, j, s, 0, parameters,
+            # theta, tau_bq, rho, lambdas, e, initial_b, chi_b,
+            # chi_n))).max()
+        for t in xrange(0, T):
+            b_guesses_to_use = .75 * \
+                np.diag(guesses_b[t + 1:t + S + 1, :, j])
+            n_guesses_to_use = np.diag(guesses_n[t:t + S, :, j])
 
-                a_tax_income_to_use = np.diag(np.transpose(a_tax_income[:,t:t+S]))
-                b_tax_income_to_use = np.diag(np.transpose(b_tax_income[:,t:t+S]))
-                c_tax_income_to_use = np.diag(np.transpose(c_tax_income[:,t:t+S]))
-                d_tax_income_to_use = np.diag(np.transpose(d_tax_income[:,t:t+S]))
-                e_tax_income_to_use = np.diag(np.transpose(e_tax_income[:,t:t+S]))
-                f_tax_income_to_use = np.diag(np.transpose(f_tax_income[:,t:t+S]))
-                min_x_tax_income_to_use = np.diag(np.transpose(min_x_tax_income[:S,:]))
-                max_x_tax_income_to_use = np.diag(np.transpose(max_x_tax_income[:S,:]))
-                min_y_tax_income_to_use = np.diag(np.transpose(min_y_tax_income[:S,:]))
-                max_y_tax_income_to_use = np.diag(np.transpose(max_y_tax_income[:S,:]))
+            a_tax_income_to_use = np.diag(np.transpose(a_tax_income[:,t:t+S]))
+            b_tax_income_to_use = np.diag(np.transpose(b_tax_income[:,t:t+S]))
+            c_tax_income_to_use = np.diag(np.transpose(c_tax_income[:,t:t+S]))
+            d_tax_income_to_use = np.diag(np.transpose(d_tax_income[:,t:t+S]))
+            e_tax_income_to_use = np.diag(np.transpose(e_tax_income[:,t:t+S]))
+            f_tax_income_to_use = np.diag(np.transpose(f_tax_income[:,t:t+S]))
+            min_x_tax_income_to_use = np.diag(np.transpose(min_x_tax_income[:S,:]))
+            max_x_tax_income_to_use = np.diag(np.transpose(max_x_tax_income[:S,:]))
+            min_y_tax_income_to_use = np.diag(np.transpose(min_y_tax_income[:S,:]))
+            max_y_tax_income_to_use = np.diag(np.transpose(max_y_tax_income[:S,:]))
 
-                inc_tax_params_TP = (a_tax_income_to_use, b_tax_income_to_use, c_tax_income_to_use, d_tax_income_to_use,
-                                        e_tax_income_to_use, f_tax_income_to_use, min_x_tax_income_to_use, max_x_tax_income_to_use,
-                                        min_y_tax_income_to_use, max_y_tax_income_to_use)
+            inc_tax_params_TP = (a_tax_income_to_use, b_tax_income_to_use, c_tax_income_to_use, d_tax_income_to_use,
+                                    e_tax_income_to_use, f_tax_income_to_use, min_x_tax_income_to_use, max_x_tax_income_to_use,
+                                    min_y_tax_income_to_use, max_y_tax_income_to_use)
 
-                solutions = opt.fsolve(Steady_state_TPI_solver, list(
-                    b_guesses_to_use) + list(n_guesses_to_use), args=(
-                    winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, inc_tax_params_TP, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n), xtol=1e-13)
-                b_vec = solutions[:S]
-                b_mat[t + 1 + ind, ind, j] = b_vec
-                n_vec = solutions[S:]
-                n_mat[t + ind, ind, j] = n_vec
-                inputs = list(solutions)
-                euler_errors[t, :, j] = np.abs(Steady_state_TPI_solver(
-                    inputs, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, inc_tax_params_TP, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n))
-        # if euler_errors.max() > 1e-6:
-        #     print 't-loop:', euler_errors.max()
-        # Force the initial distribution of capital to be as given above.
-        b_mat[0, :, :] = initial_b
-        Kinit = household.get_K(b_mat[:T], omega_stationary[:T].reshape(
-            T, S, 1), lambdas.reshape(1, 1, J), g_n_vector[:T], 'TPI')
-        Linit = firm.get_L(e.reshape(1, S, J), n_mat[:T], omega_stationary[
-                           :T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI')
-        Ynew = firm.get_Y(Kinit, Linit, parameters)
-        wnew = firm.get_w(Ynew, Linit, parameters)
-        rnew = firm.get_r(Ynew, Kinit, parameters)
-        # the following needs a g_n term
-        BQnew = household.get_BQ(rnew.reshape(T, 1), b_mat[:T], omega_stationary[:T].reshape(
-            T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1), g_n_vector[:T].reshape(T, 1), 'TPI')
-        bmat_s = np.zeros((T, S, J))
-        bmat_s[:, 1:, :] = b_mat[:T, :-1, :]
-        TH_tax_params = (np.tile(np.reshape(np.transpose(a_tax_income[:,:T]),(T,S,1)),(1,1,J)), 
-                         np.tile(np.reshape(np.transpose(b_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(c_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(d_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(e_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(f_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(min_x_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(max_x_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(min_y_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(max_y_tax_income[:,:T]),(T,S,1)),(1,1,J))) 
+            solutions = opt.fsolve(Steady_state_TPI_solver, list(
+                b_guesses_to_use) + list(n_guesses_to_use), args=(
+                winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, inc_tax_params_TP, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n), xtol=1e-13)
+            b_vec = solutions[:S]
+            b_mat[t + 1 + ind, ind, j] = b_vec
+            n_vec = solutions[S:]
+            n_mat[t + ind, ind, j] = n_vec
+            inputs = list(solutions)
+            euler_errors[t, :, j] = np.abs(Steady_state_TPI_solver(
+                inputs, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, inc_tax_params_TP, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n))
+    # if euler_errors.max() > 1e-6:
+    #     print 't-loop:', euler_errors.max()
+    # Force the initial distribution of capital to be as given above.
+    b_mat[0, :, :] = initial_b
+    Kinit = household.get_K(b_mat[:T], omega_stationary[:T].reshape(
+        T, S, 1), lambdas.reshape(1, 1, J), g_n_vector[:T], 'TPI')
+    Linit = firm.get_L(e.reshape(1, S, J), n_mat[:T], omega_stationary[
+                       :T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI')
 
-        #T_H_new = np.array(list(tax.get_lump_sum(rnew.reshape(T, 1, 1), bmat_s, wnew.reshape(
-        #    T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQnew.reshape(T, 1, J), lambdas.reshape(
-        #    1, 1, J), factor_ss, omega_stationary[:T].reshape(T, S, 1), 'TPI', TH_tax_params, parameters, theta, tau_bq)) + [T_Hss] * S)
+    # Plotting of Kpath and Lpath to check convergence
+    # make vectors of Kpath and Lpath to plot
+    Kpath_TPI = list(Kinit) + list(np.ones(10) * Kss)
+    Lpath_TPI = list(Linit) + list(np.ones(10) * Lss)
+    # Plot TPI for K for each iteration, so we can see if there is a
+    # problem
+    TPI_FIG_DIR = output_dir
+    if PLOT_TPI is True:
+        plt.figure()
+        plt.axhline(
+            y=Kss, color='black', linewidth=2, label=r"Steady State $\hat{K}$", ls='--')
+        plt.plot(np.arange(
+            T + 10), Kpath_TPI[:T + 10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
+        plt.savefig(os.path.join(TPI_FIG_DIR, "TPI_K"))
 
-        T_H_new = np.array(list(tax.get_lump_sum(np.tile(rnew.reshape(T, 1, 1),(1,S,J)), bmat_s, np.tile(wnew.reshape(
-            T, 1, 1),(1,S,J)), np.tile(e.reshape(1, S, J),(T,1,1)), n_mat[:T,:,:], BQnew.reshape(T, 1, J), lambdas.reshape(
-            1, 1, J), factor_ss, omega_stationary[:T].reshape(T, S, 1), 'TPI', TH_tax_params, parameters, theta, tau_bq)) + [T_Hss] * S)
 
-        winit[:T] = utils.convex_combo(wnew, winit[:T], nu)
-        rinit[:T] = utils.convex_combo(rnew, rinit[:T], nu)
-        BQinit[:T] = utils.convex_combo(BQnew, BQinit[:T], nu)
-        T_H_init[:T] = utils.convex_combo(T_H_new[:T], T_H_init[:T], nu)
-        guesses_b = utils.convex_combo(b_mat, guesses_b, nu)
-        guesses_n = utils.convex_combo(n_mat, guesses_n, nu)
-        if T_H_init.all() != 0:
-            TPIdist = np.array(list(utils.perc_dif_func(rnew, rinit[:T])) + list(utils.perc_dif_func(BQnew, BQinit[:T]).flatten()) + list(
-                utils.perc_dif_func(wnew, winit[:T])) + list(utils.perc_dif_func(T_H_new, T_H_init))).max()
-        else:
-            TPIdist = np.array(list(utils.perc_dif_func(rnew, rinit[:T])) + list(utils.perc_dif_func(BQnew, BQinit[:T]).flatten()) + list(
-                utils.perc_dif_func(wnew, winit[:T])) + list(np.abs(T_H_new, T_H_init))).max()
-        TPIdist_vec[TPIiter] = TPIdist
-        # After T=10, if cycling occurs, drop the value of nu
-        # wait til after T=10 or so, because sometimes there is a jump up
-        # in the first couple iterations
-        if TPIiter > 10:
-            if TPIdist_vec[TPIiter] - TPIdist_vec[TPIiter - 1] > 0:
-                nu /= 2
-                print 'New Value of nu:', nu
-        TPIiter += 1
-        print '\tIteration:', TPIiter
-        print '\t\tDistance:', TPIdist
+    Ynew = firm.get_Y(Kinit, Linit, parameters)
+    wnew = firm.get_w(Ynew, Linit, parameters)
+    rnew = firm.get_r(Ynew, Kinit, parameters)
+    # the following needs a g_n term
+    BQnew = household.get_BQ(rnew.reshape(T, 1), b_mat[:T], omega_stationary[:T].reshape(
+        T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1), g_n_vector[:T].reshape(T, 1), 'TPI')
+
+    bmat_s = np.zeros((T, S, J))
+    bmat_s[:, 1:, :] = b_mat[:T, :-1, :]
+    TH_tax_params = (np.tile(np.reshape(np.transpose(a_tax_income[:,:T]),(T,S,1)),(1,1,J)), 
+                     np.tile(np.reshape(np.transpose(b_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                     np.tile(np.reshape(np.transpose(c_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                     np.tile(np.reshape(np.transpose(d_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                     np.tile(np.reshape(np.transpose(e_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                     np.tile(np.reshape(np.transpose(f_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                     np.tile(np.reshape(np.transpose(min_x_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                     np.tile(np.reshape(np.transpose(max_x_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                     np.tile(np.reshape(np.transpose(min_y_tax_income[:,:T]),(T,S,1)),(1,1,J)),
+                     np.tile(np.reshape(np.transpose(max_y_tax_income[:,:T]),(T,S,1)),(1,1,J))) 
+
+    T_H_new = np.array(list(tax.get_lump_sum(np.tile(rnew.reshape(T, 1, 1),(1,S,J)), bmat_s, np.tile(wnew.reshape(
+        T, 1, 1),(1,S,J)), np.tile(e.reshape(1, S, J),(T,1,1)), n_mat[:T,:,:], BQnew.reshape(T, 1, J), lambdas.reshape(
+        1, 1, J), factor_ss, omega_stationary[:T].reshape(T, S, 1), 'TPI', TH_tax_params, parameters, theta, tau_bq)) + [T_Hss] * S)
+
+    error1 = rinit[:T]-rnew[:T] 
+    error2 = winit[:T]-wnew[:T] 
+    error3 = T_H_init[:T]-T_H_new[:T]
+    error4 = BQinit[:T] - BQnew[:T]
+
+    # Check and punish constraing violations
+    mask1 = rinit[:T] <= 0
+    mask2 = winit[:T] <= 0
+    mask3 = np.isnan(rinit[:T])
+    mask4 = np.isnan(winit[:T])
+    error1[mask1] = 1e14
+    error2[mask2] = 1e14
+    error1[mask3] = 1e14
+    error2[mask4] = 1e14
+    mask5 = T_H_init[:T] < 0
+    mask6 = np.isnan(T_H_init[:T])
+    mask7 = BQinit[:T] < 0
+    mask8 = np.isnan(BQinit[:T])
+    error3[mask5] = 1e14
+    error3[mask6] = 1e14
+    error4[mask7] = 1e14
+    error4[mask8] = 1e14
+
+
+
+    
+    errors = np.array(list(error1) +list(error2) + list(error3) + list(error4.flatten()))
+
+    print '\t\tDistance:', np.absolute(errors).max()
+
+    return errors 
 
 
 
@@ -764,7 +772,50 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
         print '\tIteration:', TPIiter
         print '\t\tDistance:', TPIdist
 
+    return winit[:T], rinit[:T], T_H_init[:T], BQinit[:T]
+
+
+
+def TP_solutions(winit, rinit, T_H_init, BQinit, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_tax_params, ellipse_params, parameters, g_n_vector, 
+                           omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, 
+                           T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, 
+                           chi_n, get_baseline=False, output_dir="./OUTPUT", **kwargs):
+
+    '''
+    This function returns the solutions for all variables along the time path.
+
+    
+    '''
+
+    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
+        h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = parameters
+
+    a_tax_income, b_tax_income, \
+        c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
+        min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = income_tax_params
+
     print 'Computing final solutions'
+
+    # Make array of initial guesses
+    domain = np.linspace(0, T, T)
+    domain2 = np.tile(domain.reshape(T, 1, 1), (1, S, J))
+    ending_b = bssmat_splus1
+    guesses_b = (-1 / (domain2 + 1)) * (ending_b - initial_b) + ending_b
+    ending_b_tail = np.tile(ending_b.reshape(1, S, J), (S, 1, 1))
+    guesses_b = np.append(guesses_b, ending_b_tail, axis=0)
+
+    domain3 = np.tile(np.linspace(0, 1, T).reshape(T, 1, 1), (1, S, J))
+    guesses_n = domain3 * (nssmat - initial_n) + initial_n
+    ending_n_tail = np.tile(nssmat.reshape(1, S, J), (S, 1, 1))
+    guesses_n = np.append(guesses_n, ending_n_tail, axis=0)
+    b_mat = np.zeros((T + S, S, J))
+    n_mat = np.zeros((T + S, S, J))
+    ind = np.arange(S)
+
+    #BQinit = np.append(BQinit, BQss.reshape(1,J), axis=1)
+
+    # initialize array of Euler errors
+    euler_errors = np.zeros((T, 2 * S, J))
 
     # As in SS, you need the final distributions of b and n to match the final
     # w, r, BQ, etc.  Otherwise the euler errors are large.  You need one more
@@ -837,6 +888,11 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
                                         e_tax_income_to_use, f_tax_income_to_use, min_x_tax_income_to_use, max_x_tax_income_to_use,
                                         min_y_tax_income_to_use, max_y_tax_income_to_use)
 
+            print e.shape
+            print winit.shape
+            print rinit.shape
+            print b_guesses_to_use.shape
+            print n_guesses_to_use.shape
             solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
                 winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, inc_tax_params_TP, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n), xtol=1e-13)
@@ -902,6 +958,32 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
     eul_savings = euler_errors[:, :S, :].max(1).max(1)
     eul_laborleisure = euler_errors[:, S:, :].max(1).max(1)
 
+    print 'Max Euler error, savings: ', eul_savings
+    print 'Max Euler error labor supply: ', eul_laborleisure
+
+    '''
+    ------------------------------------------------------------------------
+    Create the unstationarized versions of the paths of macro aggregates
+    ------------------------------------------------------------------------
+    '''
+    tvec = np.linspace(0, len(C_path), len(C_path))
+    growth_path = np.exp(g_y*tvec)
+    for i in range(0,len(C_path)):
+        pop_path[i] = np.exp(np.cumsum(g_n_vec[:i])) # note that this normalizes the pop in the initial period to one
+
+    growth_pop_path = growth_path*pop_path 
+
+    C_ns_path = C_path * growth_pop_path
+    K_ns_path = Kpath_TPI * growth_pop_path
+    BQ_ns_path = BQpath_TPI * growth_pop_path
+    L_ns_path = Lpath_TPI * pop_path 
+    T_H_ns_path = T_H_init * growth_pop_path
+    w_ns_path = winit*growth_path
+    I_ns_path = I_path * growth_pop_path
+    Y_ns_path = Y_init * growth_pop_path 
+    
+
+
     '''
     ------------------------------------------------------------------------
     Save variables/values so they can be used in other modules
@@ -919,6 +1001,11 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
               'rinit': rinit, 'Yinit': Yinit, 'T_H_init': T_H_init,
               'winit': winit}
 
+    macro_ns_output = {'K_ns_path': K_ns_path, 'C_ns_path': C_ns_path, 'I_ns_path': I_ns_path,
+              'L_ns_path': L_ns_path, 'BQ_ns_path': BQ_ns_path,
+              'rinit': rinit, 'Y_ns_path': Y_ns_path, 'T_H_ns_path': T_H_ns_path,
+              'w_ns_path': w_ns_path}
+
     if get_baseline:
         tpi_init_dir = os.path.join(output_dir, "TPIinit")
         utils.mkdirs(tpi_init_dir)
@@ -934,3 +1021,6 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
     utils.mkdirs(tpi_dir)
     tpi_vars = os.path.join(tpi_dir, "TPI_macro_vars.pkl")
     pickle.dump(macro_output, open(tpi_vars, "wb"))
+
+    tpi_ns_vars = os.path.join(tpi_dir, "TPI_macro_ns_vars.pkl")
+    pickle.dump(macro_ns_output, open(tpi_ns_vars, "wb"))

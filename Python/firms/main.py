@@ -422,17 +422,7 @@ elif GoodGuess == True:
             tp_params = (S, T, alpha_path, beta, sigma, p_ss, r_ss, w_ss, tp_tol)
 
             guesses = np.insert(np.reshape(ppath_init[:,:T],(T*M)),0,np.append(rpath_init[:T], wpath_init[:T]))
-            start_time = time.clock()
-            solutions = opt.fsolve(tpf.TP_fsolve, guesses, args=(tp_params, K_ss, X_ss,
-               Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
-               tp_graphs), xtol=tp_tol, col_deriv=1)
-            #solutions = tpf.TP_fsolve(guesses, tp_params, K_ss, X_ss,
-            #   Gamma1, c_bar_path, A_path, gamma_path, epsilon_path, delta_path, xi, pi, I, M, S, n,
-            #   tp_graphs)
-            tpi_time = time.clock() - start_time
-            r_path = solutions[:T].reshape(T)
-            w_path = solutions[T:2*T].reshape(T)
-            p_path = solutions[2*T:].reshape(M,T)
+            `
 
 
             # run one iteration of TP with fsolve solution to get other output
