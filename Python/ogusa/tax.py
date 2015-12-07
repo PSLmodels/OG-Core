@@ -306,7 +306,6 @@ def total_taxes(r, b, w, e, n, BQ, lambdas, factor, T_H, j, method, shift, param
     '''
     J, S, retire, a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income,\
                    min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income, h_wealth, p_wealth, m_wealth, tau_payroll = params
-
     I = r * b + w * e * n
     tau_inc_params = (a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income,
                       min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income)

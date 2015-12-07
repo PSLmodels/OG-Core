@@ -280,6 +280,7 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
         b_s = np.array([0] + list(b_guess[:-1]))
     else:
         b_s = np.array([(initial_b[-(s + 3), j])] + list(b_guess[:-1]))
+
     b_splus1 = b_guess
     b_splus2 = np.array(list(b_guess[1:]) + [0])
     w_s = winit[t:t + length]
@@ -295,7 +296,7 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
     T_H_s = T_H_init[t:t + length]
     T_H_splus1 = T_H_init[t + 1:t + length + 1]
     # Savings euler equations
-    
+
     taxs_params = (J, S, retire, a_tax_income, b_tax_income, 
                    c_tax_income, d_tax_income, 
                    e_tax_income, f_tax_income, 
@@ -776,7 +777,7 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
 
 
 
-def TP_solutions(winit, rinit, T_H_init, BQinit, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_tax_params, ellipse_params, parameters, g_n_vector, 
+def TP_solutions(winit, rinit, T_H_init, BQinit2, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_tax_params, ellipse_params, parameters, g_n_vector, 
                            omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, 
                            T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, 
                            chi_n, get_baseline=False, output_dir="./OUTPUT", **kwargs):
@@ -796,6 +797,17 @@ def TP_solutions(winit, rinit, T_H_init, BQinit, Kss, Lss, Yss, BQss, theta, inc
 
     print 'Computing final solutions'
 
+    # Extend time paths past T
+    winit = np.array(list(winit) + list(np.ones(S) * wss))
+    rinit = np.array(list(rinit) + list(np.ones(S) * rss))
+    T_H_init = np.array(list(T_H_init) + list(np.ones(S) * T_Hss))
+    BQinit = np.zeros((T + S, J))
+    for j in xrange(J):
+        BQinit[:, j] = list(BQinit2[:,j]) + [BQss[j]] * S
+    BQinit = np.array(BQinit)
+    T_H_init = np.ones(T + S) * T_Hss
+
+
     # Make array of initial guesses
     domain = np.linspace(0, T, T)
     domain2 = np.tile(domain.reshape(T, 1, 1), (1, S, J))
@@ -812,7 +824,6 @@ def TP_solutions(winit, rinit, T_H_init, BQinit, Kss, Lss, Yss, BQss, theta, inc
     n_mat = np.zeros((T + S, S, J))
     ind = np.arange(S)
 
-    #BQinit = np.append(BQinit, BQss.reshape(1,J), axis=1)
 
     # initialize array of Euler errors
     euler_errors = np.zeros((T, 2 * S, J))
@@ -888,11 +899,6 @@ def TP_solutions(winit, rinit, T_H_init, BQinit, Kss, Lss, Yss, BQss, theta, inc
                                         e_tax_income_to_use, f_tax_income_to_use, min_x_tax_income_to_use, max_x_tax_income_to_use,
                                         min_y_tax_income_to_use, max_y_tax_income_to_use)
 
-            print e.shape
-            print winit.shape
-            print rinit.shape
-            print b_guesses_to_use.shape
-            print n_guesses_to_use.shape
             solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
                 winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, inc_tax_params_TP, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n), xtol=1e-13)
@@ -911,6 +917,10 @@ def TP_solutions(winit, rinit, T_H_init, BQinit, Kss, Lss, Yss, BQss, theta, inc
     Generate variables/values so they can be used in other modules
     ------------------------------------------------------------------------
     '''
+    Kinit = household.get_K(b_mat[:T], omega_stationary[:T].reshape(
+            T, S, 1), lambdas.reshape(1, 1, J), g_n_vector[:T], 'TPI')
+    Linit = firm.get_L(e.reshape(1, S, J), n_mat[:T], omega_stationary[
+                           :T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI')
 
     Kpath_TPI = np.array(list(Kinit) + list(np.ones(10) * Kss))
     Lpath_TPI = np.array(list(Linit) + list(np.ones(10) * Lss))
@@ -968,16 +978,17 @@ def TP_solutions(winit, rinit, T_H_init, BQinit, Kss, Lss, Yss, BQss, theta, inc
     '''
     tvec = np.linspace(0, len(C_path), len(C_path))
     growth_path = np.exp(g_y*tvec)
+    pop_path = np.zeros(len(C_path))
     for i in range(0,len(C_path)):
-        pop_path[i] = np.exp(np.cumsum(g_n_vec[:i])) # note that this normalizes the pop in the initial period to one
+        pop_path[i] = np.exp(g_n_vector[:i].sum())   # note that this normalizes the pop in the initial period to one
 
     growth_pop_path = growth_path*pop_path 
 
     C_ns_path = C_path * growth_pop_path
-    K_ns_path = Kpath_TPI * growth_pop_path
-    BQ_ns_path = BQpath_TPI * growth_pop_path
-    L_ns_path = Lpath_TPI * pop_path 
-    T_H_ns_path = T_H_init * growth_pop_path
+    K_ns_path = Kinit * growth_pop_path
+    BQ_ns_path = growth_pop_path * BQinit[:T]
+    L_ns_path = Linit * pop_path 
+    T_H_ns_path = T_H_init[:T] * growth_pop_path
     w_ns_path = winit*growth_path
     I_ns_path = I_path * growth_pop_path
     Y_ns_path = Y_init * growth_pop_path 

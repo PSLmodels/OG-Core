@@ -21,6 +21,8 @@ import numpy as np
 import cPickle as pickle
 import os
 import time
+import scipy.optimize as opt
+
 
 import ogusa
 ogusa.parameters.DATASET = 'REAL'
@@ -115,44 +117,55 @@ ss_outputs['initial_b'] = initial_b
 ss_outputs['initial_n'] = initial_n
 ss_outputs['tau_bq'] = tau_bq
 ss_outputs['g_n_vector'] = g_n_vector
-#w_path, r_path, T_H_path, BQ_path = TPI.run_time_path_iteration(**ss_outputs)
-#TPI.TP_solutions(w_path, r_path, T_H_path, BQ_path, **ss_outputs)
+w_path, r_path, T_H_path, BQ_path = TPI.run_time_path_iteration(**ss_outputs)
+TPI.TP_solutions(w_path, r_path, T_H_path, BQ_path, **ss_outputs)
 
 
-# Use fsolve to find time path
-J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-        h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = parameters
+# # Use fsolve to find time path
+# J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
+#         h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = parameters
 
-Kss = ss_outputs['Kss']
-Lss = ss_outputs['Lss']
-T_Hss = ss_outputs['T_Hss']
-BQss = ss_outputs['BQss']
+# Kss = ss_outputs['Kss']
+# Lss = ss_outputs['Lss']
+# T_Hss = ss_outputs['T_Hss']
+# BQss = ss_outputs['BQss']
 
-# Initialize Time paths
-domain = np.linspace(0, T, T)
-Kinit = (-1 / (domain + 1)) * (Kss - K0) + Kss
-Kinit[-1] = Kss
-Linit = np.ones(T) * Lss
-Yinit = firm.get_Y(Kinit, Linit, parameters)
-winit = firm.get_w(Yinit, Linit, parameters)
-rinit = firm.get_r(Yinit, Kinit, parameters)
-BQinit = np.zeros((T, J))
-for j in xrange(J):
-    BQinit[:, j] = list(np.linspace(BQ0[j], BQss[j], T))
-BQinit = np.array(BQinit)
-T_H_init = np.ones(T) * T_Hss
-guesses= np.array(list(rinit) +list(winit) + list(T_H_init) + list(BQinit.flatten()))
-start_time = time.clock()
-#solutions = opt.fsolve(TPI.TPI_fsolve, guesses, args=(**ss_outputs), xtol=mindist_TPI, col_deriv=1)
-#solutions = TPI.TPI_fsolve(guesses, **ss_outputs)
+# # Initialize Time paths
+# domain = np.linspace(0, T, T)
+# Kinit = (-1 / (domain + 1)) * (Kss - K0) + Kss
+# Kinit[-1] = Kss
+# Linit = np.ones(T) * Lss
+# Yinit = firm.get_Y(Kinit, Linit, parameters)
+# winit = firm.get_w(Yinit, Linit, parameters)
+# rinit = firm.get_r(Yinit, Kinit, parameters)
+# BQinit = np.zeros((T, J))
+# for j in xrange(J):
+#     BQinit[:, j] = list(np.linspace(BQ0[j], BQss[j], T))
+# BQinit = np.array(BQinit)
+# T_H_init = np.ones(T) * T_Hss
+# guesses= np.array(list(rinit) +list(winit) + list(T_H_init) + list(BQinit.flatten()))
+# start_time = time.clock()
+# fsolve_args = (ss_outputs['Kss'], ss_outputs['Lss'], ss_outputs['Yss'], ss_outputs['BQss'], ss_outputs['theta'], 
+#                ss_outputs['income_tax_params'], ss_outputs['wealth_tax_params'], ss_outputs['ellipse_params'], 
+#                ss_outputs['parameters'], ss_outputs['g_n_vector'], ss_outputs['omega_stationary'], 
+#                ss_outputs['K0'], ss_outputs['b_sinit'], ss_outputs['b_splus1init'], ss_outputs['L0'], 
+#                ss_outputs['Y0'], ss_outputs['r0'], ss_outputs['BQ0'], ss_outputs['T_H_0'], ss_outputs['tax0'], ss_outputs['c0'], 
+#                ss_outputs['initial_b'], ss_outputs['initial_n'], ss_outputs['factor_ss'], 
+#                ss_outputs['tau_bq'], ss_outputs['chi_b'], ss_outputs['chi_n'])
+# solutions = opt.fsolve(TPI.TPI_fsolve, guesses, args=fsolve_args, xtol=mindist_TPI, col_deriv=1)
+# #solutions = TPI.TPI_fsolve(guesses, **ss_outputs)
 
-TPI.TP_solutions(winit, rinit, T_H_init, BQinit, **ss_outputs)
+# #TPI.TP_solutions(winit, rinit, T_H_init, BQinit, **ss_outputs)
 
-tpi_time = time.clock() - start_time
-r_path = guesses[0:T].reshape(T)
-w_path = guesses[T:2*T].reshape(T)
-T_H_path = guesses[2*T:3*T].reshape(T)
-BQ_path = guesses[3*T:].reshape(T,J)
+# tpi_time = time.clock() - start_time
+# r_path = solutions[0:T].reshape(T)
+# w_path = solutions[T:2*T].reshape(T)
+# T_H_path = solutions[2*T:3*T].reshape(T)
+# BQ_path = solutions[3*T:].reshape(T,J)
+# # r_path = guesses[0:T].reshape(T)
+# # w_path = guesses[T:2*T].reshape(T)
+# # T_H_path = guesses[2*T:3*T].reshape(T)
+# # BQ_path = guesses[3*T:].reshape(T,J)
 print 'finished'
 
 
