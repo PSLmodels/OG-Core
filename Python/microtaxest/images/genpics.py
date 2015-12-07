@@ -75,7 +75,7 @@ cmap1 = matplotlib.cm.get_cmap('summer')
 beg_yr = int(2015)
 end_yr = int(2015)
 years_list = np.arange(beg_yr, end_yr + 1)
-data_folder = '/Users/rwe2/Documents/Economics/OSPC/Data/micro-dynamic/reform/'
+data_folder = '/Users/rwe2/Documents/Economics/OSPC/Data/micro-dynamic/baseline/'
 start_time = time.clock()
 
 '''
@@ -647,13 +647,23 @@ for t in years_list:
                     cmap=cmap1, linewidth=0)
                 plt.show()
 
-                lab_ub = 1000000
-                cap_ub = 1000000
+                lab_ub = 5000000
+                cap_ub = 5000000
                 df_trnc_gph = df[(df['Total Labor Income'] < lab_ub) &
                               (df['Total Capital Income'] < cap_ub)]
                 inc_lab_gph = df_trnc_gph['Total Labor Income']
                 inc_cap_gph = df_trnc_gph['Total Capital Income']
                 etr_data_gph = df_trnc_gph['Effective Tax Rate']
+
+                fig = plt.figure()
+                ax = fig.add_subplot(111, projection ='3d')
+                ax.scatter(inc_lab_gph, inc_cap_gph, etr_data_gph, c='r', marker='o')
+                ax.set_xlabel('Total Labor Income')
+                ax.set_ylabel('Total Capital Income')
+                ax.set_zlabel('Effective Tax Rate')
+                plt.title('ETR vs. Predicted ETR: Age=' + str(s) + ', Year=' + str(t))
+                plt.show()
+
                 fig = plt.figure()
                 ax = fig.add_subplot(111, projection ='3d')
                 ax.scatter(inc_lab_gph, inc_cap_gph, etr_data_gph, c='r', marker='o')
@@ -674,6 +684,7 @@ for t in years_list:
                 ax.plot_surface(inc_lab_grid, inc_cap_grid, etr_grid,
                     cmap=cmap1, linewidth=0)
                 plt.show()
+
 
                 # Plot a slice of baseline estimated tax function for
                 # fixed capital versus same slice of reform tax function
