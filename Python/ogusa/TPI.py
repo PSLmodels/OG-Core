@@ -50,10 +50,18 @@ from .parameters import get_parameters
 globals().update(get_parameters())
 
 
-def create_tpi_params(a_tax_income, b_tax_income, c_tax_income,
-                      d_tax_income, e_tax_income, f_tax_income, 
-                      min_x_tax_income, max_x_tax_income, 
-                      min_y_tax_income, max_y_tax_income,
+def create_tpi_params(a_etr_income, b_etr_income, c_etr_income,
+                      d_etr_income, e_etr_income, f_etr_income, 
+                      min_x_etr_income, max_x_etr_income, 
+                      min_y_etr_income, max_y_etr_income,
+                      a_mtrx_income, b_mtrx_income, c_mtrx_income,
+                      d_mtrx_income, e_mtrx_income, f_mtrx_income, 
+                      min_x_mtrx_income, max_x_mtrx_income, 
+                      min_y_mtrx_income, max_y_mtrx_income,
+                      a_mtry_income, b_mtry_income, c_mtry_income,
+                      d_mtry_income, e_mtry_income, f_mtry_income, 
+                      min_x_mtry_income, max_x_mtry_income, 
+                      min_y_mtry_income, max_y_mtry_income,
                       b_ellipse, upsilon, J, S, T, BW, beta, sigma, alpha, Z,
                       delta, ltilde, nu, g_y, tau_payroll, retire,
                       mean_income_data, get_baseline=True, input_dir="./OUTPUT", **kwargs):
@@ -89,42 +97,113 @@ def create_tpi_params(a_tax_income, b_tax_income, c_tax_income,
     # Put income tax parameters in a tuple 
     # Assumption here is that tax parameters of last year of budget
     # window continue forever and so will be SS values
-    a_tax_income_TP = np.zeros((S,T+S))
-    a_tax_income_TP[:,:BW] = a_tax_income
-    a_tax_income_TP[:,BW:] = np.reshape(a_tax_income[:,BW-1],(S,1))
-    b_tax_income_TP = np.zeros((S,T+S))
-    b_tax_income_TP[:,:BW] = b_tax_income
-    b_tax_income_TP[:,BW:] = np.reshape(b_tax_income[:,BW-1],(S,1))
-    c_tax_income_TP = np.zeros((S,T+S))
-    c_tax_income_TP[:,:BW] = b_tax_income
-    c_tax_income_TP[:,BW:] = np.reshape(c_tax_income[:,BW-1],(S,1))
-    d_tax_income_TP = np.zeros((S,T+S))
-    d_tax_income_TP[:,:BW] = b_tax_income
-    d_tax_income_TP[:,BW:] = np.reshape(d_tax_income[:,BW-1],(S,1))
-    e_tax_income_TP = np.zeros((S,T+S))
-    e_tax_income_TP[:,:BW] = b_tax_income
-    e_tax_income_TP[:,BW:] = np.reshape(e_tax_income[:,BW-1],(S,1))
-    f_tax_income_TP = np.zeros((S,T+S))
-    f_tax_income_TP[:,:BW] = b_tax_income
-    f_tax_income_TP[:,BW:] = np.reshape(f_tax_income[:,BW-1],(S,1))
-    min_x_tax_income_TP = np.zeros((S,T+S))
-    min_x_tax_income_TP[:,:BW] = min_x_tax_income
-    min_x_tax_income_TP[:,BW:] = np.reshape(min_x_tax_income[:,BW-1],(S,1))
-    max_x_tax_income_TP = np.zeros((S,T+S))
-    max_x_tax_income_TP[:,:BW] = max_x_tax_income
-    max_x_tax_income_TP[:,BW:] = np.reshape(max_x_tax_income[:,BW-1],(S,1))
-    min_y_tax_income_TP = np.zeros((S,T+S))
-    min_y_tax_income_TP[:,:BW] = min_y_tax_income
-    min_y_tax_income_TP[:,BW:] = np.reshape(min_y_tax_income[:,BW-1],(S,1))
-    max_y_tax_income_TP = np.zeros((S,T+S))
-    max_y_tax_income_TP[:,:BW] = max_y_tax_income
-    max_y_tax_income_TP[:,BW:] = np.reshape(max_y_tax_income[:,BW-1],(S,1))
+    a_etr_income_TP = np.zeros((S,T+S))
+    a_etr_income_TP[:,:BW] = a_etr_income
+    a_etr_income_TP[:,BW:] = np.reshape(a_etr_income[:,BW-1],(S,1))
+    b_etr_income_TP = np.zeros((S,T+S))
+    b_etr_income_TP[:,:BW] = b_etr_income
+    b_etr_income_TP[:,BW:] = np.reshape(b_etr_income[:,BW-1],(S,1))
+    c_etr_income_TP = np.zeros((S,T+S))
+    c_etr_income_TP[:,:BW] = b_etr_income
+    c_etr_income_TP[:,BW:] = np.reshape(c_etr_income[:,BW-1],(S,1))
+    d_etr_income_TP = np.zeros((S,T+S))
+    d_etr_income_TP[:,:BW] = b_etr_income
+    d_etr_income_TP[:,BW:] = np.reshape(d_etr_income[:,BW-1],(S,1))
+    e_etr_income_TP = np.zeros((S,T+S))
+    e_etr_income_TP[:,:BW] = b_etr_income
+    e_etr_income_TP[:,BW:] = np.reshape(e_etr_income[:,BW-1],(S,1))
+    f_etr_income_TP = np.zeros((S,T+S))
+    f_etr_income_TP[:,:BW] = b_etr_income
+    f_etr_income_TP[:,BW:] = np.reshape(f_etr_income[:,BW-1],(S,1))
+    min_x_etr_income_TP = np.zeros((S,T+S))
+    min_x_etr_income_TP[:,:BW] = min_x_etr_income
+    min_x_etr_income_TP[:,BW:] = np.reshape(min_x_etr_income[:,BW-1],(S,1))
+    max_x_etr_income_TP = np.zeros((S,T+S))
+    max_x_etr_income_TP[:,:BW] = max_x_etr_income
+    max_x_etr_income_TP[:,BW:] = np.reshape(max_x_etr_income[:,BW-1],(S,1))
+    min_y_etr_income_TP = np.zeros((S,T+S))
+    min_y_etr_income_TP[:,:BW] = min_y_etr_income
+    min_y_etr_income_TP[:,BW:] = np.reshape(min_y_etr_income[:,BW-1],(S,1))
+    max_y_etr_income_TP = np.zeros((S,T+S))
+    max_y_etr_income_TP[:,:BW] = max_y_etr_income
+    max_y_etr_income_TP[:,BW:] = np.reshape(max_y_etr_income[:,BW-1],(S,1))
+
+    a_mtrx_income_TP = np.zeros((S,T+S))
+    a_mtrx_income_TP[:,:BW] = a_mtrx_income
+    a_mtrx_income_TP[:,BW:] = np.reshape(a_mtrx_income[:,BW-1],(S,1))
+    b_mtrx_income_TP = np.zeros((S,T+S))
+    b_mtrx_income_TP[:,:BW] = b_mtrx_income
+    b_mtrx_income_TP[:,BW:] = np.reshape(b_mtrx_income[:,BW-1],(S,1))
+    c_mtrx_income_TP = np.zeros((S,T+S))
+    c_mtrx_income_TP[:,:BW] = b_mtrx_income
+    c_mtrx_income_TP[:,BW:] = np.reshape(c_mtrx_income[:,BW-1],(S,1))
+    d_mtrx_income_TP = np.zeros((S,T+S))
+    d_mtrx_income_TP[:,:BW] = b_mtrx_income
+    d_mtrx_income_TP[:,BW:] = np.reshape(d_mtrx_income[:,BW-1],(S,1))
+    e_mtrx_income_TP = np.zeros((S,T+S))
+    e_mtrx_income_TP[:,:BW] = b_mtrx_income
+    e_mtrx_income_TP[:,BW:] = np.reshape(e_mtrx_income[:,BW-1],(S,1))
+    f_mtrx_income_TP = np.zeros((S,T+S))
+    f_mtrx_income_TP[:,:BW] = b_mtrx_income
+    f_mtrx_income_TP[:,BW:] = np.reshape(f_mtrx_income[:,BW-1],(S,1))
+    min_x_mtrx_income_TP = np.zeros((S,T+S))
+    min_x_mtrx_income_TP[:,:BW] = min_x_mtrx_income
+    min_x_mtrx_income_TP[:,BW:] = np.reshape(min_x_mtrx_income[:,BW-1],(S,1))
+    max_x_mtrx_income_TP = np.zeros((S,T+S))
+    max_x_mtrx_income_TP[:,:BW] = max_x_mtrx_income
+    max_x_mtrx_income_TP[:,BW:] = np.reshape(max_x_mtrx_income[:,BW-1],(S,1))
+    min_y_mtrx_income_TP = np.zeros((S,T+S))
+    min_y_mtrx_income_TP[:,:BW] = min_y_mtrx_income
+    min_y_mtrx_income_TP[:,BW:] = np.reshape(min_y_mtrx_income[:,BW-1],(S,1))
+    max_y_mtrx_income_TP = np.zeros((S,T+S))
+    max_y_mtrx_income_TP[:,:BW] = max_y_mtrx_income
+    max_y_mtrx_income_TP[:,BW:] = np.reshape(max_y_mtrx_income[:,BW-1],(S,1))
 
 
-    income_tax_params = (a_tax_income_TP, b_tax_income_TP, c_tax_income_TP,
-                         d_tax_income_TP, e_tax_income_TP, f_tax_income_TP, 
-                         min_x_tax_income_TP, max_x_tax_income_TP, 
-                         min_y_tax_income_TP, max_y_tax_income_TP)
+    a_mtry_income_TP = np.zeros((S,T+S))
+    a_mtry_income_TP[:,:BW] = a_mtry_income
+    a_mtry_income_TP[:,BW:] = np.reshape(a_mtry_income[:,BW-1],(S,1))
+    b_mtry_income_TP = np.zeros((S,T+S))
+    b_mtry_income_TP[:,:BW] = b_mtry_income
+    b_mtry_income_TP[:,BW:] = np.reshape(b_mtry_income[:,BW-1],(S,1))
+    c_mtry_income_TP = np.zeros((S,T+S))
+    c_mtry_income_TP[:,:BW] = b_mtry_income
+    c_mtry_income_TP[:,BW:] = np.reshape(c_mtry_income[:,BW-1],(S,1))
+    d_mtry_income_TP = np.zeros((S,T+S))
+    d_mtry_income_TP[:,:BW] = b_mtry_income
+    d_mtry_income_TP[:,BW:] = np.reshape(d_mtry_income[:,BW-1],(S,1))
+    e_mtry_income_TP = np.zeros((S,T+S))
+    e_mtry_income_TP[:,:BW] = b_mtry_income
+    e_mtry_income_TP[:,BW:] = np.reshape(e_mtry_income[:,BW-1],(S,1))
+    f_mtry_income_TP = np.zeros((S,T+S))
+    f_mtry_income_TP[:,:BW] = b_mtry_income
+    f_mtry_income_TP[:,BW:] = np.reshape(f_mtry_income[:,BW-1],(S,1))
+    min_x_mtry_income_TP = np.zeros((S,T+S))
+    min_x_mtry_income_TP[:,:BW] = min_x_mtry_income
+    min_x_mtry_income_TP[:,BW:] = np.reshape(min_x_mtry_income[:,BW-1],(S,1))
+    max_x_mtry_income_TP = np.zeros((S,T+S))
+    max_x_mtry_income_TP[:,:BW] = max_x_mtry_income
+    max_x_mtry_income_TP[:,BW:] = np.reshape(max_x_mtry_income[:,BW-1],(S,1))
+    min_y_mtry_income_TP = np.zeros((S,T+S))
+    min_y_mtry_income_TP[:,:BW] = min_y_mtry_income
+    min_y_mtry_income_TP[:,BW:] = np.reshape(min_y_mtry_income[:,BW-1],(S,1))
+    max_y_mtry_income_TP = np.zeros((S,T+S))
+    max_y_mtry_income_TP[:,:BW] = max_y_mtry_income
+    max_y_mtry_income_TP[:,BW:] = np.reshape(max_y_mtry_income[:,BW-1],(S,1))
+
+
+    income_tax_params = (a_etr_income_TP, b_etr_income_TP, c_etr_income_TP,
+                         d_etr_income_TP, e_etr_income_TP, f_etr_income_TP, 
+                         min_x_etr_income_TP, max_x_etr_income_TP, 
+                         min_y_etr_income_TP, max_y_etr_income_TP,
+                         a_mtrx_income_TP, b_mtrx_income_TP, c_mtrx_income_TP,
+                         d_mtrx_income_TP, e_mtrx_income_TP, f_mtrx_income_TP, 
+                         min_x_mtrx_income_TP, max_x_mtrx_income_TP, 
+                         min_y_mtrx_income_TP, max_y_mtrx_income_TP,
+                         a_mtry_income_TP, b_mtry_income_TP, c_mtry_income_TP,
+                         d_mtry_income_TP, e_mtry_income_TP, f_mtry_income_TP, 
+                         min_x_mtry_income_TP, max_x_mtry_income_TP, 
+                         min_y_mtry_income_TP, max_y_mtry_income_TP)
 
 
     wealth_tax_params = [h_wealth, p_wealth, m_wealth]
@@ -154,18 +233,18 @@ def create_tpi_params(a_tax_income, b_tax_income, c_tax_income,
     r0 = firm.get_r(Y0, K0, parameters)
     BQ0 = household.get_BQ(r0, initial_b, omega_stationary[0].reshape(
         S, 1), lambdas, rho.reshape(S, 1), g_n_vector[0], 'SS')
-    TH_tax_params = (a_tax_income_TP[:,0], b_tax_income_TP[:,0], c_tax_income_TP[:,0],
-                         d_tax_income_TP[:,0], e_tax_income_TP[:,0], f_tax_income_TP[:,0], 
-                         min_x_tax_income_TP[:,0], max_x_tax_income_TP[:,0], 
-                         min_y_tax_income_TP[:,0], max_y_tax_income_TP[:,0])
+    TH_tax_params = (a_etr_income_TP[:,0], b_etr_income_TP[:,0], c_etr_income_TP[:,0],
+                         d_etr_income_TP[:,0], e_etr_income_TP[:,0], f_etr_income_TP[:,0], 
+                         min_x_etr_income_TP[:,0], max_x_etr_income_TP[:,0], 
+                         min_y_etr_income_TP[:,0], max_y_etr_income_TP[:,0])
     T_H_0 = tax.get_lump_sum(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, omega_stationary[
                              0].reshape(S, 1), 'SS', TH_tax_params, parameters, theta, tau_bq)
 
-    tax0_params = (J, S, retire, np.tile(np.reshape(a_tax_income[:,0],(S,1)),(1,J)), np.tile(np.reshape(b_tax_income[:,0],(S,1)),(1,J)), 
-                    np.tile(np.reshape(c_tax_income[:,0],(S,1)),(1,J)), np.tile(np.reshape(d_tax_income[:,0],(S,1)),(1,J)), 
-                    np.tile(np.reshape(e_tax_income[:,0],(S,1)),(1,J)), np.tile(np.reshape(f_tax_income[:,0],(S,1)),(1,J)),
-                    np.tile(np.reshape(min_x_tax_income[:,0],(S,1)),(1,J)), np.tile(np.reshape(max_x_tax_income[:,0],(S,1)),(1,J)), 
-                    np.tile(np.reshape(min_y_tax_income[:,0],(S,1)),(1,J)), np.tile(np.reshape(max_y_tax_income[:,0],(S,1)),(1,J)), 
+    tax0_params = (J, S, retire, np.tile(np.reshape(a_etr_income[:,0],(S,1)),(1,J)), np.tile(np.reshape(b_etr_income[:,0],(S,1)),(1,J)), 
+                    np.tile(np.reshape(c_etr_income[:,0],(S,1)),(1,J)), np.tile(np.reshape(d_etr_income[:,0],(S,1)),(1,J)), 
+                    np.tile(np.reshape(e_etr_income[:,0],(S,1)),(1,J)), np.tile(np.reshape(f_etr_income[:,0],(S,1)),(1,J)),
+                    np.tile(np.reshape(min_x_etr_income[:,0],(S,1)),(1,J)), np.tile(np.reshape(max_x_etr_income[:,0],(S,1)),(1,J)), 
+                    np.tile(np.reshape(min_y_etr_income[:,0],(S,1)),(1,J)), np.tile(np.reshape(max_y_etr_income[:,0],(S,1)),(1,J)), 
                     h_wealth, p_wealth, m_wealth, tau_payroll)
     tax0 = tax.total_taxes(r0, b_sinit, w0, e, initial_n, BQ0, lambdas,
                            factor_ss, T_H_0, None, 'SS', False, tax0_params, theta, tau_bq)
@@ -203,16 +282,22 @@ def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init, initial_b,
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = parameters
 
 
-    a_tax_income, b_tax_income, \
-        c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
-        min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = tax_params
+    a_etr_income, b_etr_income, \
+        c_etr_income, d_etr_income, e_etr_income, f_etr_income, \
+        min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income, \
+        a_mtrx_income, b_mtrx_income, \
+        c_mtrx_income, d_mtrx_income, e_mtrx_income, f_mtrx_income, \
+        min_x_mtrx_income, max_x_mtrx_income, min_y_mtrx_income, max_y_mtrx_income, \
+        a_mtry_income, b_mtry_income, \
+        c_mtry_income, d_mtry_income, e_mtry_income, f_mtry_income, \
+        min_x_mtry_income, max_x_mtry_income, min_y_mtry_income, max_y_mtry_income = tax_params
 
     b2 = float(guesses[0])
     n1 = float(guesses[1])
     b1 = float(initial_b[-2, j])
     # Euler 1 equations
-    tax1_params = (J, S, retire, a_tax_income[-1,0], b_tax_income[-1,0], c_tax_income[-1,0], d_tax_income[-1,0], e_tax_income[-1,0], f_tax_income[-1,0],
-                   min_x_tax_income[-1,0], max_x_tax_income[-1,0], min_y_tax_income[-1,0], max_y_tax_income[-1,0], h_wealth, p_wealth, m_wealth, 
+    tax1_params = (J, S, retire, a_etr_income[-1,0], b_etr_income[-1,0], c_etr_income[-1,0], d_etr_income[-1,0], e_etr_income[-1,0], f_etr_income[-1,0],
+                   min_x_etr_income[-1,0], max_x_etr_income[-1,0], min_y_etr_income[-1,0], max_y_etr_income[-1,0], h_wealth, p_wealth, m_wealth, 
                    tau_payroll)
     tax1 = tax.total_taxes(rinit, b1, winit, e[-1, j], n1, BQinit, lambdas[
                            j], factor_ss, T_H_init, j, 'TPI_scalar', False, tax1_params, theta, tau_bq)
@@ -222,11 +307,13 @@ def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init, initial_b,
     error1 = household.marg_ut_cons(cons1, parameters) - bequest_ut
     # Euler 2 equations
     income2 = (rinit * b1 + winit * e[-1, j] * n1) * factor_ss
-    tau_inc_params = (a_tax_income[-1,0], b_tax_income[-1,0], c_tax_income[-1,0], d_tax_income[-1,0], e_tax_income[-1,0], f_tax_income[-1,0],
-                   min_x_tax_income[-1,0], max_x_tax_income[-1,0], min_y_tax_income[-1,0], max_y_tax_income[-1,0]) 
-    deriv2 = 1 - tau_payroll - tax.tau_income(rinit, b1, winit, e[
-        -1, j], n1, factor_ss, tau_inc_params) - tax.tau_labor_deriv(
-        rinit, b1, winit, e[-1, j], n1, factor_ss, tau_inc_params)
+    mtr_lab_params = (a_mtrx_income[-1,0], b_mtrx_income[-1,0], c_mtrx_income[-1,0], d_mtrx_income[-1,0], e_mtrx_income[-1,0], f_mtrx_income[-1,0],
+                   min_x_mtrx_income[-1,0], max_x_mtrx_income[-1,0], min_y_mtrx_income[-1,0], max_y_mtrx_income[-1,0]) 
+    deriv2 = 1 - tau_payroll - tax.MTR_labor(rinit, b1, winit, e[-1, j], n1, factor_ss, mtr_lab_params)
+
+    #deriv2 = 1 - tau_payroll - tax.tau_income(rinit, b1, winit, e[
+    #    -1, j], n1, factor_ss, tau_inc_params) - tax.tau_labor_deriv(
+    #    rinit, b1, winit, e[-1, j], n1, factor_ss, tau_inc_params)
     error2 = household.marg_ut_cons(cons1, parameters) * winit * \
         e[-1, j] * deriv2 - household.marg_ut_labor(n1, chi_n[-1], parameters)
     if n1 <= 0 or n1 >= 1:
@@ -267,9 +354,15 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
         h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
 
 
-    a_tax_income, b_tax_income, \
-        c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
-        min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = tax_params
+    a_etr_income, b_etr_income, \
+        c_etr_income, d_etr_income, e_etr_income, f_etr_income, \
+        min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income, \
+        a_mtrx_income, b_mtrx_income, \
+        c_mtrx_income, d_mtrx_income, e_mtrx_income, f_mtrx_income, \
+        min_x_mtrx_income, max_x_mtrx_income, min_y_mtrx_income, max_y_mtrx_income, \
+        a_mtry_income, b_mtry_income, \
+        c_mtry_income, d_mtry_income, e_mtry_income, f_mtry_income, \
+        min_x_mtry_income, max_x_mtry_income, min_y_mtry_income, max_y_mtry_income = tax_params
 
 
     length = len(guesses) / 2
@@ -280,6 +373,7 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
         b_s = np.array([0] + list(b_guess[:-1]))
     else:
         b_s = np.array([(initial_b[-(s + 3), j])] + list(b_guess[:-1]))
+
     b_splus1 = b_guess
     b_splus2 = np.array(list(b_guess[1:]) + [0])
     w_s = winit[t:t + length]
@@ -295,24 +389,24 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
     T_H_s = T_H_init[t:t + length]
     T_H_splus1 = T_H_init[t + 1:t + length + 1]
     # Savings euler equations
-    
-    taxs_params = (J, S, retire, a_tax_income, b_tax_income, 
-                   c_tax_income, d_tax_income, 
-                   e_tax_income, f_tax_income, 
-                   min_x_tax_income, max_x_tax_income, 
-                   min_y_tax_income, max_y_tax_income, h_wealth, p_wealth, m_wealth, tau_payroll)
+
+    taxs_params = (J, S, retire, a_etr_income, b_etr_income, 
+                   c_etr_income, d_etr_income, 
+                   e_etr_income, f_etr_income, 
+                   min_x_etr_income, max_x_etr_income, 
+                   min_y_etr_income, max_y_etr_income, h_wealth, p_wealth, m_wealth, tau_payroll)
     tax_s = tax.total_taxes(r_s, b_s, w_s, e_s, n_s, BQ_s, lambdas[
                             j], factor, T_H_s, j, 'TPI', False, taxs_params, theta, tau_bq)
-    taxsp1_params = (J, S, retire, np.array(list(a_tax_income) + [a_tax_income[-1]])[1:], 
-                     np.array(list(b_tax_income) + [b_tax_income[-1]])[1:],
-                     np.array(list(c_tax_income) + [c_tax_income[-1]])[1:], 
-                     np.array(list(d_tax_income) + [d_tax_income[-1]])[1:], 
-                     np.array(list(e_tax_income) + [e_tax_income[-1]])[1:], 
-                     np.array(list(f_tax_income) + [f_tax_income[-1]])[1:], 
-                     np.array(list(min_x_tax_income) + [min_x_tax_income[-1]])[1:], 
-                     np.array(list(max_x_tax_income) + [max_x_tax_income[-1]])[1:], 
-                     np.array(list(min_y_tax_income) + [min_y_tax_income[-1]])[1:], 
-                     np.array(list(max_y_tax_income) + [max_y_tax_income[-1]])[1:], h_wealth, p_wealth, m_wealth, tau_payroll)
+    taxsp1_params = (J, S, retire, np.array(list(a_etr_income) + [a_etr_income[-1]])[1:], 
+                     np.array(list(b_etr_income) + [b_etr_income[-1]])[1:],
+                     np.array(list(c_etr_income) + [c_etr_income[-1]])[1:], 
+                     np.array(list(d_etr_income) + [d_etr_income[-1]])[1:], 
+                     np.array(list(e_etr_income) + [e_etr_income[-1]])[1:], 
+                     np.array(list(f_etr_income) + [f_etr_income[-1]])[1:], 
+                     np.array(list(min_x_etr_income) + [min_x_etr_income[-1]])[1:], 
+                     np.array(list(max_x_etr_income) + [max_x_etr_income[-1]])[1:], 
+                     np.array(list(min_y_etr_income) + [min_y_etr_income[-1]])[1:], 
+                     np.array(list(max_y_etr_income) + [max_y_etr_income[-1]])[1:], h_wealth, p_wealth, m_wealth, tau_payroll)
     tax_splus1 = tax.total_taxes(r_splus1, b_splus1, w_splus1, e_extended, n_extended, BQ_splus1, lambdas[
                                  j], factor, T_H_splus1, j, 'TPI', True, taxsp1_params, theta, tau_bq)
     cons_s = household.get_cons(r_s, b_s, w_s, e_s, n_s, BQ_s, lambdas[
@@ -324,32 +418,30 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
     savings_ut = rho[-(length):] * np.exp(-sigma * g_y) * \
         chi_b[-(length):, j] * b_splus1 ** (-sigma)
 
-    tau_inc_params = (np.array(list(a_tax_income) + [a_tax_income[-1]])[1:], 
-                     np.array(list(b_tax_income) + [b_tax_income[-1]])[1:],
-                     np.array(list(c_tax_income) + [c_tax_income[-1]])[1:], 
-                     np.array(list(d_tax_income) + [d_tax_income[-1]])[1:], 
-                     np.array(list(e_tax_income) + [e_tax_income[-1]])[1:], 
-                     np.array(list(f_tax_income) + [f_tax_income[-1]])[1:], 
-                     np.array(list(min_x_tax_income) + [min_x_tax_income[-1]])[1:], 
-                     np.array(list(max_x_tax_income) + [max_x_tax_income[-1]])[1:], 
-                     np.array(list(min_y_tax_income) + [min_y_tax_income[-1]])[1:], 
-                     np.array(list(max_y_tax_income) + [max_y_tax_income[-1]])[1:]) 
+    mtr_cap_params = (np.array(list(a_mtry_income) + [a_mtry_income[-1]])[1:], 
+                     np.array(list(b_mtry_income) + [b_mtry_income[-1]])[1:],
+                     np.array(list(c_mtry_income) + [c_mtry_income[-1]])[1:], 
+                     np.array(list(d_mtry_income) + [d_mtry_income[-1]])[1:], 
+                     np.array(list(e_mtry_income) + [e_mtry_income[-1]])[1:], 
+                     np.array(list(f_mtry_income) + [f_mtry_income[-1]])[1:], 
+                     np.array(list(min_x_mtry_income) + [min_x_mtry_income[-1]])[1:], 
+                     np.array(list(max_x_mtry_income) + [max_x_mtry_income[-1]])[1:], 
+                     np.array(list(min_y_mtry_income) + [min_y_mtry_income[-1]])[1:], 
+                     np.array(list(max_y_mtry_income) + [max_y_mtry_income[-1]])[1:]) 
     wealth_tax_params = (h_wealth, p_wealth, m_wealth)
-    deriv_savings = 1 + r_splus1 * (1 - tax.tau_income(
-        r_splus1, b_splus1, w_splus1, e_extended, n_extended, factor, tau_inc_params) - tax.tau_capital_deriv(
-        r_splus1, b_splus1, w_splus1, e_extended, n_extended, factor, tau_inc_params)) - tax.tau_w_prime(
-        b_splus1, wealth_tax_params) * b_splus1 - tax.tau_wealth(b_splus1, wealth_tax_params)
+    deriv_savings = 1 + r_splus1 * (1 - tax.MTR_capital(
+        r_splus1, b_splus1, w_splus1, e_extended, n_extended, factor, mtr_cap_params))
+
     error1 = household.marg_ut_cons(cons_s, params) - beta * (1 - rho[-(length):]) * np.exp(-sigma * g_y) * deriv_savings * household.marg_ut_cons(
         cons_splus1, params) - savings_ut
     # Labor leisure euler equations
     income_s = (r_s * b_s + w_s * e_s * n_s) * factor
-    tau_inc_params_labor = (a_tax_income, b_tax_income, 
-                   c_tax_income, d_tax_income, 
-                   e_tax_income, f_tax_income, 
-                   min_x_tax_income, max_x_tax_income, 
-                   min_y_tax_income, max_y_tax_income) 
-    deriv_laborleisure = 1 - tau_payroll - tax.tau_income(r_s, b_s, w_s, e_s, n_s, factor, tau_inc_params_labor) - tax.tau_labor_deriv(
-        r_s, b_s, w_s, e_s, n_s, factor, tau_inc_params_labor)
+    mtr_labor_params = (a_mtrx_income, b_mtrx_income, 
+                   c_mtrx_income, d_mtrx_income, 
+                   e_mtrx_income, f_mtrx_income, 
+                   min_x_mtrx_income, max_x_mtrx_income, 
+                   min_y_mtrx_income, max_y_mtrx_income) 
+    deriv_laborleisure = 1 - tau_payroll - tax.MTR_labor(r_s, b_s, w_s, e_s, n_s, factor, mtr_labor_params)
     error2 = household.marg_ut_cons(cons_s, params) * w_s * e[-(
         length):, j] * deriv_laborleisure - household.marg_ut_labor(n_s, chi_n[-length:], params)
     # Check and punish constraint violations
@@ -374,9 +466,15 @@ def TPI_fsolve(guesses, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_ta
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
         h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = parameters
 
-    a_tax_income, b_tax_income, \
-        c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
-        min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = income_tax_params
+    a_etr_income, b_etr_income, \
+        c_etr_income, d_etr_income, e_etr_income, f_etr_income, \
+        min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income, \
+        a_mtrx_income, b_mtrx_income, \
+        c_mtrx_income, d_mtrx_income, e_mtrx_income, f_mtrx_income, \
+        min_x_mtrx_income, max_x_mtrx_income, min_y_mtrx_income, max_y_mtrx_income, \
+        a_mtry_income, b_mtry_income, \
+        c_mtry_income, d_mtry_income, e_mtry_income, f_mtry_income, \
+        min_x_mtry_income, max_x_mtry_income, min_y_mtry_income, max_y_mtry_income = income_tax_params
 
     # create full time paths with guesses and SS values
     rinit = np.zeros(T+S)
@@ -433,20 +531,48 @@ def TPI_fsolve(guesses, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_ta
                 guesses_b[1:S + 1, :, j], S - (s + 2))
             n_guesses_to_use = np.diag(guesses_n[:S, :, j], S - (s + 2))
 
-            a_tax_income_to_use = np.diag(np.transpose(a_tax_income[:S,:]),S-(s+2))
-            b_tax_income_to_use = np.diag(np.transpose(b_tax_income[:S,:]),S-(s+2))
-            c_tax_income_to_use = np.diag(np.transpose(c_tax_income[:S,:]),S-(s+2))
-            d_tax_income_to_use = np.diag(np.transpose(d_tax_income[:S,:]),S-(s+2))
-            e_tax_income_to_use = np.diag(np.transpose(e_tax_income[:S,:]),S-(s+2))
-            f_tax_income_to_use = np.diag(np.transpose(f_tax_income[:S,:]),S-(s+2))
-            min_x_tax_income_to_use = np.diag(np.transpose(min_x_tax_income[:S,:]),S-(s+2))
-            max_x_tax_income_to_use = np.diag(np.transpose(max_x_tax_income[:S,:]),S-(s+2))
-            min_y_tax_income_to_use = np.diag(np.transpose(min_y_tax_income[:S,:]),S-(s+2))
-            max_y_tax_income_to_use = np.diag(np.transpose(max_y_tax_income[:S,:]),S-(s+2))
+            a_etr_income_to_use = np.diag(np.transpose(a_etr_income[:S,:]),S-(s+2))
+            b_etr_income_to_use = np.diag(np.transpose(b_etr_income[:S,:]),S-(s+2))
+            c_etr_income_to_use = np.diag(np.transpose(c_etr_income[:S,:]),S-(s+2))
+            d_etr_income_to_use = np.diag(np.transpose(d_etr_income[:S,:]),S-(s+2))
+            e_etr_income_to_use = np.diag(np.transpose(e_etr_income[:S,:]),S-(s+2))
+            f_etr_income_to_use = np.diag(np.transpose(f_etr_income[:S,:]),S-(s+2))
+            min_x_etr_income_to_use = np.diag(np.transpose(min_x_etr_income[:S,:]),S-(s+2))
+            max_x_etr_income_to_use = np.diag(np.transpose(max_x_etr_income[:S,:]),S-(s+2))
+            min_y_etr_income_to_use = np.diag(np.transpose(min_y_etr_income[:S,:]),S-(s+2))
+            max_y_etr_income_to_use = np.diag(np.transpose(max_y_etr_income[:S,:]),S-(s+2))
 
-            inc_tax_params_upper = (a_tax_income_to_use, b_tax_income_to_use, c_tax_income_to_use, d_tax_income_to_use,
-                                    e_tax_income_to_use, f_tax_income_to_use, min_x_tax_income_to_use, max_x_tax_income_to_use,
-                                    min_y_tax_income_to_use, max_y_tax_income_to_use)
+            a_mtrx_income_to_use = np.diag(np.transpose(a_mtrx_income[:S,:]),S-(s+2))
+            b_mtrx_income_to_use = np.diag(np.transpose(b_mtrx_income[:S,:]),S-(s+2))
+            c_mtrx_income_to_use = np.diag(np.transpose(c_mtrx_income[:S,:]),S-(s+2))
+            d_mtrx_income_to_use = np.diag(np.transpose(d_mtrx_income[:S,:]),S-(s+2))
+            e_mtrx_income_to_use = np.diag(np.transpose(e_mtrx_income[:S,:]),S-(s+2))
+            f_mtrx_income_to_use = np.diag(np.transpose(f_mtrx_income[:S,:]),S-(s+2))
+            min_x_mtrx_income_to_use = np.diag(np.transpose(min_x_mtrx_income[:S,:]),S-(s+2))
+            max_x_mtrx_income_to_use = np.diag(np.transpose(max_x_mtrx_income[:S,:]),S-(s+2))
+            min_y_mtrx_income_to_use = np.diag(np.transpose(min_y_mtrx_income[:S,:]),S-(s+2))
+            max_y_mtrx_income_to_use = np.diag(np.transpose(max_y_mtrx_income[:S,:]),S-(s+2))
+
+            a_mtry_income_to_use = np.diag(np.transpose(a_mtry_income[:S,:]),S-(s+2))
+            b_mtry_income_to_use = np.diag(np.transpose(b_mtry_income[:S,:]),S-(s+2))
+            c_mtry_income_to_use = np.diag(np.transpose(c_mtry_income[:S,:]),S-(s+2))
+            d_mtry_income_to_use = np.diag(np.transpose(d_mtry_income[:S,:]),S-(s+2))
+            e_mtry_income_to_use = np.diag(np.transpose(e_mtry_income[:S,:]),S-(s+2))
+            f_mtry_income_to_use = np.diag(np.transpose(f_mtry_income[:S,:]),S-(s+2))
+            min_x_mtry_income_to_use = np.diag(np.transpose(min_x_mtry_income[:S,:]),S-(s+2))
+            max_x_mtry_income_to_use = np.diag(np.transpose(max_x_mtry_income[:S,:]),S-(s+2))
+            min_y_mtry_income_to_use = np.diag(np.transpose(min_y_mtry_income[:S,:]),S-(s+2))
+            max_y_mtry_income_to_use = np.diag(np.transpose(max_y_mtry_income[:S,:]),S-(s+2))
+
+            inc_mtry_params_upper = (a_etr_income_to_use, b_etr_income_to_use, c_etr_income_to_use, d_etr_income_to_use,
+                                    e_etr_income_to_use, f_etr_income_to_use, min_x_etr_income_to_use, max_x_etr_income_to_use,
+                                    min_y_etr_income_to_use, max_y_etr_income_to_use, a_mtrx_income_to_use, b_mtrx_income_to_use, 
+                                    c_mtrx_income_to_use, d_mtrx_income_to_use, e_mtrx_income_to_use, f_mtrx_income_to_use, 
+                                    min_x_mtrx_income_to_use, max_x_mtrx_income_to_use, min_y_mtrx_income_to_use, 
+                                    max_y_mtrx_income_to_use, a_mtry_income_to_use, b_mtry_income_to_use, 
+                                    c_mtry_income_to_use, d_mtry_income_to_use, e_mtry_income_to_use, f_mtry_income_to_use, 
+                                    min_x_mtry_income_to_use, max_x_mtry_income_to_use, min_y_mtry_income_to_use, 
+                                    max_y_mtry_income_to_use)
 
             solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
@@ -466,20 +592,48 @@ def TPI_fsolve(guesses, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_ta
                 np.diag(guesses_b[t + 1:t + S + 1, :, j])
             n_guesses_to_use = np.diag(guesses_n[t:t + S, :, j])
 
-            a_tax_income_to_use = np.diag(np.transpose(a_tax_income[:,t:t+S]))
-            b_tax_income_to_use = np.diag(np.transpose(b_tax_income[:,t:t+S]))
-            c_tax_income_to_use = np.diag(np.transpose(c_tax_income[:,t:t+S]))
-            d_tax_income_to_use = np.diag(np.transpose(d_tax_income[:,t:t+S]))
-            e_tax_income_to_use = np.diag(np.transpose(e_tax_income[:,t:t+S]))
-            f_tax_income_to_use = np.diag(np.transpose(f_tax_income[:,t:t+S]))
-            min_x_tax_income_to_use = np.diag(np.transpose(min_x_tax_income[:S,:]))
-            max_x_tax_income_to_use = np.diag(np.transpose(max_x_tax_income[:S,:]))
-            min_y_tax_income_to_use = np.diag(np.transpose(min_y_tax_income[:S,:]))
-            max_y_tax_income_to_use = np.diag(np.transpose(max_y_tax_income[:S,:]))
+            a_etr_income_to_use = np.diag(np.transpose(a_etr_income[:,t:t+S]))
+            b_etr_income_to_use = np.diag(np.transpose(b_etr_income[:,t:t+S]))
+            c_etr_income_to_use = np.diag(np.transpose(c_etr_income[:,t:t+S]))
+            d_etr_income_to_use = np.diag(np.transpose(d_etr_income[:,t:t+S]))
+            e_etr_income_to_use = np.diag(np.transpose(e_etr_income[:,t:t+S]))
+            f_etr_income_to_use = np.diag(np.transpose(f_etr_income[:,t:t+S]))
+            min_x_etr_income_to_use = np.diag(np.transpose(min_x_etr_income[:S,:]))
+            max_x_etr_income_to_use = np.diag(np.transpose(max_x_etr_income[:S,:]))
+            min_y_etr_income_to_use = np.diag(np.transpose(min_y_etr_income[:S,:]))
+            max_y_etr_income_to_use = np.diag(np.transpose(max_y_etr_income[:S,:]))
 
-            inc_tax_params_TP = (a_tax_income_to_use, b_tax_income_to_use, c_tax_income_to_use, d_tax_income_to_use,
-                                    e_tax_income_to_use, f_tax_income_to_use, min_x_tax_income_to_use, max_x_tax_income_to_use,
-                                    min_y_tax_income_to_use, max_y_tax_income_to_use)
+            a_mtrx_income_to_use = np.diag(np.transpose(a_mtrx_income[:,t:t+S]))
+            b_mtrx_income_to_use = np.diag(np.transpose(b_mtrx_income[:,t:t+S]))
+            c_mtrx_income_to_use = np.diag(np.transpose(c_mtrx_income[:,t:t+S]))
+            d_mtrx_income_to_use = np.diag(np.transpose(d_mtrx_income[:,t:t+S]))
+            e_mtrx_income_to_use = np.diag(np.transpose(e_mtrx_income[:,t:t+S]))
+            f_mtrx_income_to_use = np.diag(np.transpose(f_mtrx_income[:,t:t+S]))
+            min_x_mtrx_income_to_use = np.diag(np.transpose(min_x_mtrx_income[:S,:]))
+            max_x_mtrx_income_to_use = np.diag(np.transpose(max_x_mtrx_income[:S,:]))
+            min_y_mtrx_income_to_use = np.diag(np.transpose(min_y_mtrx_income[:S,:]))
+            max_y_mtrx_income_to_use = np.diag(np.transpose(max_y_mtrx_income[:S,:]))
+
+            a_mtry_income_to_use = np.diag(np.transpose(a_mtry_income[:,t:t+S]))
+            b_mtry_income_to_use = np.diag(np.transpose(b_mtry_income[:,t:t+S]))
+            c_mtry_income_to_use = np.diag(np.transpose(c_mtry_income[:,t:t+S]))
+            d_mtry_income_to_use = np.diag(np.transpose(d_mtry_income[:,t:t+S]))
+            e_mtry_income_to_use = np.diag(np.transpose(e_mtry_income[:,t:t+S]))
+            f_mtry_income_to_use = np.diag(np.transpose(f_mtry_income[:,t:t+S]))
+            min_x_mtry_income_to_use = np.diag(np.transpose(min_x_mtry_income[:S,:]))
+            max_x_mtry_income_to_use = np.diag(np.transpose(max_x_mtry_income[:S,:]))
+            min_y_mtry_income_to_use = np.diag(np.transpose(min_y_mtry_income[:S,:]))
+            max_y_mtry_income_to_use = np.diag(np.transpose(max_y_mtry_income[:S,:]))
+
+
+            inc_tax_params_TP = (a_etr_income_to_use, b_etr_income_to_use, c_etr_income_to_use, d_etr_income_to_use,
+                                    e_etr_income_to_use, f_etr_income_to_use, min_x_etr_income_to_use, max_x_etr_income_to_use,
+                                    min_y_etr_income_to_use, max_y_etr_income_to_use, a_mtrx_income_to_use, b_mtrx_income_to_use, 
+                                    c_mtrx_income_to_use, d_mtrx_income_to_use, e_mtrx_income_to_use, f_mtrx_income_to_use, 
+                                    min_x_mtrx_income_to_use, max_x_mtrx_income_to_use, min_y_mtrx_income_to_use, 
+                                    max_y_mtrx_income_to_use, a_mtry_income_to_use, b_mtry_income_to_use, c_mtry_income_to_use, 
+                                    d_mtry_income_to_use, e_mtry_income_to_use, f_mtry_income_to_use, min_x_mtry_income_to_use, 
+                                    max_x_mtry_income_to_use, min_y_mtry_income_to_use, max_y_mtry_income_to_use)
 
             solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
@@ -525,16 +679,16 @@ def TPI_fsolve(guesses, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_ta
 
     bmat_s = np.zeros((T, S, J))
     bmat_s[:, 1:, :] = b_mat[:T, :-1, :]
-    TH_tax_params = (np.tile(np.reshape(np.transpose(a_tax_income[:,:T]),(T,S,1)),(1,1,J)), 
-                     np.tile(np.reshape(np.transpose(b_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                     np.tile(np.reshape(np.transpose(c_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                     np.tile(np.reshape(np.transpose(d_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                     np.tile(np.reshape(np.transpose(e_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                     np.tile(np.reshape(np.transpose(f_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                     np.tile(np.reshape(np.transpose(min_x_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                     np.tile(np.reshape(np.transpose(max_x_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                     np.tile(np.reshape(np.transpose(min_y_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                     np.tile(np.reshape(np.transpose(max_y_tax_income[:,:T]),(T,S,1)),(1,1,J))) 
+    TH_tax_params = (np.tile(np.reshape(np.transpose(a_etr_income[:,:T]),(T,S,1)),(1,1,J)), 
+                     np.tile(np.reshape(np.transpose(b_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                     np.tile(np.reshape(np.transpose(c_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                     np.tile(np.reshape(np.transpose(d_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                     np.tile(np.reshape(np.transpose(e_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                     np.tile(np.reshape(np.transpose(f_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                     np.tile(np.reshape(np.transpose(min_x_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                     np.tile(np.reshape(np.transpose(max_x_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                     np.tile(np.reshape(np.transpose(min_y_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                     np.tile(np.reshape(np.transpose(max_y_etr_income[:,:T]),(T,S,1)),(1,1,J))) 
 
     T_H_new = np.array(list(tax.get_lump_sum(np.tile(rnew.reshape(T, 1, 1),(1,S,J)), bmat_s, np.tile(wnew.reshape(
         T, 1, 1),(1,S,J)), np.tile(e.reshape(1, S, J),(T,1,1)), n_mat[:T,:,:], BQnew.reshape(T, 1, J), lambdas.reshape(
@@ -582,9 +736,15 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
         h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = parameters
 
-    a_tax_income, b_tax_income, \
-        c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
-        min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = income_tax_params
+    a_etr_income, b_etr_income, \
+        c_etr_income, d_etr_income, e_etr_income, f_etr_income, \
+        min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income, \
+        a_mtrx_income, b_mtrx_income, \
+        c_mtrx_income, d_mtrx_income, e_mtrx_income, f_mtrx_income, \
+        min_x_mtrx_income, max_x_mtrx_income, min_y_mtrx_income, max_y_mtrx_income, \
+        a_mtry_income, b_mtry_income, \
+        c_mtry_income, d_mtry_income, e_mtry_income, f_mtry_income, \
+        min_x_mtry_income, max_x_mtry_income, min_y_mtry_income, max_y_mtry_income = income_tax_params
 
 
     TPI_FIG_DIR = output_dir
@@ -655,20 +815,48 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
                     guesses_b[1:S + 1, :, j], S - (s + 2))
                 n_guesses_to_use = np.diag(guesses_n[:S, :, j], S - (s + 2))
 
-                a_tax_income_to_use = np.diag(np.transpose(a_tax_income[:S,:]),S-(s+2))
-                b_tax_income_to_use = np.diag(np.transpose(b_tax_income[:S,:]),S-(s+2))
-                c_tax_income_to_use = np.diag(np.transpose(c_tax_income[:S,:]),S-(s+2))
-                d_tax_income_to_use = np.diag(np.transpose(d_tax_income[:S,:]),S-(s+2))
-                e_tax_income_to_use = np.diag(np.transpose(e_tax_income[:S,:]),S-(s+2))
-                f_tax_income_to_use = np.diag(np.transpose(f_tax_income[:S,:]),S-(s+2))
-                min_x_tax_income_to_use = np.diag(np.transpose(min_x_tax_income[:S,:]),S-(s+2))
-                max_x_tax_income_to_use = np.diag(np.transpose(max_x_tax_income[:S,:]),S-(s+2))
-                min_y_tax_income_to_use = np.diag(np.transpose(min_y_tax_income[:S,:]),S-(s+2))
-                max_y_tax_income_to_use = np.diag(np.transpose(max_y_tax_income[:S,:]),S-(s+2))
+                a_etr_income_to_use = np.diag(np.transpose(a_etr_income[:S,:]),S-(s+2))
+                b_etr_income_to_use = np.diag(np.transpose(b_etr_income[:S,:]),S-(s+2))
+                c_etr_income_to_use = np.diag(np.transpose(c_etr_income[:S,:]),S-(s+2))
+                d_etr_income_to_use = np.diag(np.transpose(d_etr_income[:S,:]),S-(s+2))
+                e_etr_income_to_use = np.diag(np.transpose(e_etr_income[:S,:]),S-(s+2))
+                f_etr_income_to_use = np.diag(np.transpose(f_etr_income[:S,:]),S-(s+2))
+                min_x_etr_income_to_use = np.diag(np.transpose(min_x_etr_income[:S,:]),S-(s+2))
+                max_x_etr_income_to_use = np.diag(np.transpose(max_x_etr_income[:S,:]),S-(s+2))
+                min_y_etr_income_to_use = np.diag(np.transpose(min_y_etr_income[:S,:]),S-(s+2))
+                max_y_etr_income_to_use = np.diag(np.transpose(max_y_etr_income[:S,:]),S-(s+2))
 
-                inc_tax_params_upper = (a_tax_income_to_use, b_tax_income_to_use, c_tax_income_to_use, d_tax_income_to_use,
-                                        e_tax_income_to_use, f_tax_income_to_use, min_x_tax_income_to_use, max_x_tax_income_to_use,
-                                        min_y_tax_income_to_use, max_y_tax_income_to_use)
+                a_mtrx_income_to_use = np.diag(np.transpose(a_mtrx_income[:S,:]),S-(s+2))
+                b_mtrx_income_to_use = np.diag(np.transpose(b_mtrx_income[:S,:]),S-(s+2))
+                c_mtrx_income_to_use = np.diag(np.transpose(c_mtrx_income[:S,:]),S-(s+2))
+                d_mtrx_income_to_use = np.diag(np.transpose(d_mtrx_income[:S,:]),S-(s+2))
+                e_mtrx_income_to_use = np.diag(np.transpose(e_mtrx_income[:S,:]),S-(s+2))
+                f_mtrx_income_to_use = np.diag(np.transpose(f_mtrx_income[:S,:]),S-(s+2))
+                min_x_mtrx_income_to_use = np.diag(np.transpose(min_x_mtrx_income[:S,:]),S-(s+2))
+                max_x_mtrx_income_to_use = np.diag(np.transpose(max_x_mtrx_income[:S,:]),S-(s+2))
+                min_y_mtrx_income_to_use = np.diag(np.transpose(min_y_mtrx_income[:S,:]),S-(s+2))
+                max_y_mtrx_income_to_use = np.diag(np.transpose(max_y_mtrx_income[:S,:]),S-(s+2))
+
+                a_mtry_income_to_use = np.diag(np.transpose(a_mtry_income[:S,:]),S-(s+2))
+                b_mtry_income_to_use = np.diag(np.transpose(b_mtry_income[:S,:]),S-(s+2))
+                c_mtry_income_to_use = np.diag(np.transpose(c_mtry_income[:S,:]),S-(s+2))
+                d_mtry_income_to_use = np.diag(np.transpose(d_mtry_income[:S,:]),S-(s+2))
+                e_mtry_income_to_use = np.diag(np.transpose(e_mtry_income[:S,:]),S-(s+2))
+                f_mtry_income_to_use = np.diag(np.transpose(f_mtry_income[:S,:]),S-(s+2))
+                min_x_mtry_income_to_use = np.diag(np.transpose(min_x_mtry_income[:S,:]),S-(s+2))
+                max_x_mtry_income_to_use = np.diag(np.transpose(max_x_mtry_income[:S,:]),S-(s+2))
+                min_y_mtry_income_to_use = np.diag(np.transpose(min_y_mtry_income[:S,:]),S-(s+2))
+                max_y_mtry_income_to_use = np.diag(np.transpose(max_y_mtry_income[:S,:]),S-(s+2))
+
+
+                inc_tax_params_upper = (a_etr_income_to_use, b_etr_income_to_use, c_etr_income_to_use, d_etr_income_to_use,
+                                        e_etr_income_to_use, f_etr_income_to_use, min_x_etr_income_to_use, max_x_etr_income_to_use,
+                                        min_y_etr_income_to_use, max_y_etr_income_to_use, a_mtrx_income_to_use, b_mtrx_income_to_use, 
+                                        c_mtrx_income_to_use, d_mtrx_income_to_use, e_mtrx_income_to_use, f_mtrx_income_to_use, 
+                                        min_x_mtrx_income_to_use, max_x_mtrx_income_to_use, min_y_mtrx_income_to_use, 
+                                        max_y_mtrx_income_to_use, a_mtry_income_to_use, b_mtry_income_to_use, c_mtry_income_to_use, d_mtry_income_to_use,
+                                        e_mtry_income_to_use, f_mtry_income_to_use, min_x_mtry_income_to_use, max_x_mtry_income_to_use,
+                                        min_y_mtry_income_to_use, max_y_mtry_income_to_use)
 
                 solutions = opt.fsolve(Steady_state_TPI_solver, list(
                     b_guesses_to_use) + list(n_guesses_to_use), args=(
@@ -688,20 +876,47 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
                     np.diag(guesses_b[t + 1:t + S + 1, :, j])
                 n_guesses_to_use = np.diag(guesses_n[t:t + S, :, j])
 
-                a_tax_income_to_use = np.diag(np.transpose(a_tax_income[:,t:t+S]))
-                b_tax_income_to_use = np.diag(np.transpose(b_tax_income[:,t:t+S]))
-                c_tax_income_to_use = np.diag(np.transpose(c_tax_income[:,t:t+S]))
-                d_tax_income_to_use = np.diag(np.transpose(d_tax_income[:,t:t+S]))
-                e_tax_income_to_use = np.diag(np.transpose(e_tax_income[:,t:t+S]))
-                f_tax_income_to_use = np.diag(np.transpose(f_tax_income[:,t:t+S]))
-                min_x_tax_income_to_use = np.diag(np.transpose(min_x_tax_income[:S,:]))
-                max_x_tax_income_to_use = np.diag(np.transpose(max_x_tax_income[:S,:]))
-                min_y_tax_income_to_use = np.diag(np.transpose(min_y_tax_income[:S,:]))
-                max_y_tax_income_to_use = np.diag(np.transpose(max_y_tax_income[:S,:]))
+                a_etr_income_to_use = np.diag(np.transpose(a_etr_income[:,t:t+S]))
+                b_etr_income_to_use = np.diag(np.transpose(b_etr_income[:,t:t+S]))
+                c_etr_income_to_use = np.diag(np.transpose(c_etr_income[:,t:t+S]))
+                d_etr_income_to_use = np.diag(np.transpose(d_etr_income[:,t:t+S]))
+                e_etr_income_to_use = np.diag(np.transpose(e_etr_income[:,t:t+S]))
+                f_etr_income_to_use = np.diag(np.transpose(f_etr_income[:,t:t+S]))
+                min_x_etr_income_to_use = np.diag(np.transpose(min_x_etr_income[:S,:]))
+                max_x_etr_income_to_use = np.diag(np.transpose(max_x_etr_income[:S,:]))
+                min_y_etr_income_to_use = np.diag(np.transpose(min_y_etr_income[:S,:]))
+                max_y_etr_income_to_use = np.diag(np.transpose(max_y_etr_income[:S,:]))
 
-                inc_tax_params_TP = (a_tax_income_to_use, b_tax_income_to_use, c_tax_income_to_use, d_tax_income_to_use,
-                                        e_tax_income_to_use, f_tax_income_to_use, min_x_tax_income_to_use, max_x_tax_income_to_use,
-                                        min_y_tax_income_to_use, max_y_tax_income_to_use)
+                a_mtrx_income_to_use = np.diag(np.transpose(a_mtrx_income[:,t:t+S]))
+                b_mtrx_income_to_use = np.diag(np.transpose(b_mtrx_income[:,t:t+S]))
+                c_mtrx_income_to_use = np.diag(np.transpose(c_mtrx_income[:,t:t+S]))
+                d_mtrx_income_to_use = np.diag(np.transpose(d_mtrx_income[:,t:t+S]))
+                e_mtrx_income_to_use = np.diag(np.transpose(e_mtrx_income[:,t:t+S]))
+                f_mtrx_income_to_use = np.diag(np.transpose(f_mtrx_income[:,t:t+S]))
+                min_x_mtrx_income_to_use = np.diag(np.transpose(min_x_mtrx_income[:S,:]))
+                max_x_mtrx_income_to_use = np.diag(np.transpose(max_x_mtrx_income[:S,:]))
+                min_y_mtrx_income_to_use = np.diag(np.transpose(min_y_mtrx_income[:S,:]))
+                max_y_mtrx_income_to_use = np.diag(np.transpose(max_y_mtrx_income[:S,:]))
+
+                a_mtry_income_to_use = np.diag(np.transpose(a_mtry_income[:,t:t+S]))
+                b_mtry_income_to_use = np.diag(np.transpose(b_mtry_income[:,t:t+S]))
+                c_mtry_income_to_use = np.diag(np.transpose(c_mtry_income[:,t:t+S]))
+                d_mtry_income_to_use = np.diag(np.transpose(d_mtry_income[:,t:t+S]))
+                e_mtry_income_to_use = np.diag(np.transpose(e_mtry_income[:,t:t+S]))
+                f_mtry_income_to_use = np.diag(np.transpose(f_mtry_income[:,t:t+S]))
+                min_x_mtry_income_to_use = np.diag(np.transpose(min_x_mtry_income[:S,:]))
+                max_x_mtry_income_to_use = np.diag(np.transpose(max_x_mtry_income[:S,:]))
+                min_y_mtry_income_to_use = np.diag(np.transpose(min_y_mtry_income[:S,:]))
+                max_y_mtry_income_to_use = np.diag(np.transpose(max_y_mtry_income[:S,:]))
+
+                inc_tax_params_TP = (a_etr_income_to_use, b_etr_income_to_use, c_etr_income_to_use, d_etr_income_to_use,
+                                        e_etr_income_to_use, f_etr_income_to_use, min_x_etr_income_to_use, max_x_etr_income_to_use,
+                                        min_y_etr_income_to_use, max_y_etr_income_to_use, a_mtrx_income_to_use, b_mtrx_income_to_use, 
+                                        c_mtrx_income_to_use, d_mtrx_income_to_use, e_mtrx_income_to_use, f_mtrx_income_to_use, 
+                                        min_x_mtrx_income_to_use, max_x_mtrx_income_to_use, min_y_mtrx_income_to_use, max_y_mtrx_income_to_use, 
+                                        a_mtry_income_to_use, b_mtry_income_to_use, c_mtry_income_to_use, d_mtry_income_to_use,
+                                        e_mtry_income_to_use, f_mtry_income_to_use, min_x_mtry_income_to_use, max_x_mtry_income_to_use,
+                                        min_y_mtry_income_to_use, max_y_mtry_income_to_use)
 
                 solutions = opt.fsolve(Steady_state_TPI_solver, list(
                     b_guesses_to_use) + list(n_guesses_to_use), args=(
@@ -729,16 +944,16 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
             T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1), g_n_vector[:T].reshape(T, 1), 'TPI')
         bmat_s = np.zeros((T, S, J))
         bmat_s[:, 1:, :] = b_mat[:T, :-1, :]
-        TH_tax_params = (np.tile(np.reshape(np.transpose(a_tax_income[:,:T]),(T,S,1)),(1,1,J)), 
-                         np.tile(np.reshape(np.transpose(b_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(c_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(d_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(e_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(f_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(min_x_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(max_x_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(min_y_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(max_y_tax_income[:,:T]),(T,S,1)),(1,1,J))) 
+        TH_tax_params = (np.tile(np.reshape(np.transpose(a_etr_income[:,:T]),(T,S,1)),(1,1,J)), 
+                         np.tile(np.reshape(np.transpose(b_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(c_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(d_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(e_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(f_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(min_x_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(max_x_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(min_y_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(max_y_etr_income[:,:T]),(T,S,1)),(1,1,J))) 
 
         #T_H_new = np.array(list(tax.get_lump_sum(rnew.reshape(T, 1, 1), bmat_s, wnew.reshape(
         #    T, 1, 1), e.reshape(1, S, J), n_mat[:T], BQnew.reshape(T, 1, J), lambdas.reshape(
@@ -776,7 +991,7 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
 
 
 
-def TP_solutions(winit, rinit, T_H_init, BQinit, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_tax_params, ellipse_params, parameters, g_n_vector, 
+def TP_solutions(winit, rinit, T_H_init, BQinit2, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_tax_params, ellipse_params, parameters, g_n_vector, 
                            omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, 
                            T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, 
                            chi_n, get_baseline=False, output_dir="./OUTPUT", **kwargs):
@@ -790,11 +1005,28 @@ def TP_solutions(winit, rinit, T_H_init, BQinit, Kss, Lss, Yss, BQss, theta, inc
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
         h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = parameters
 
-    a_tax_income, b_tax_income, \
-        c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
-        min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = income_tax_params
+    a_etr_income, b_etr_income, \
+        c_etr_income, d_etr_income, e_etr_income, f_etr_income, \
+        min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income, \
+        a_mtrx_income, b_mtrx_income, \
+        c_mtrx_income, d_mtrx_income, e_mtrx_income, f_mtrx_income, \
+        min_x_mtrx_income, max_x_mtrx_income, min_y_mtrx_income, max_y_mtrx_income, \
+        a_mtry_income, b_mtry_income, \
+        c_mtry_income, d_mtry_income, e_mtry_income, f_mtry_income, \
+        min_x_mtry_income, max_x_mtry_income, min_y_mtry_income, max_y_mtry_income = income_tax_params
 
     print 'Computing final solutions'
+
+    # Extend time paths past T
+    winit = np.array(list(winit) + list(np.ones(S) * wss))
+    rinit = np.array(list(rinit) + list(np.ones(S) * rss))
+    T_H_init = np.array(list(T_H_init) + list(np.ones(S) * T_Hss))
+    BQinit = np.zeros((T + S, J))
+    for j in xrange(J):
+        BQinit[:, j] = list(BQinit2[:,j]) + [BQss[j]] * S
+    BQinit = np.array(BQinit)
+    T_H_init = np.ones(T + S) * T_Hss
+
 
     # Make array of initial guesses
     domain = np.linspace(0, T, T)
@@ -812,7 +1044,6 @@ def TP_solutions(winit, rinit, T_H_init, BQinit, Kss, Lss, Yss, BQss, theta, inc
     n_mat = np.zeros((T + S, S, J))
     ind = np.arange(S)
 
-    #BQinit = np.append(BQinit, BQss.reshape(1,J), axis=1)
 
     # initialize array of Euler errors
     euler_errors = np.zeros((T, 2 * S, J))
@@ -847,20 +1078,47 @@ def TP_solutions(winit, rinit, T_H_init, BQinit, Kss, Lss, Yss, BQss, theta, inc
             b_guesses_to_use = np.diag(guesses_b[1:S + 1, :, j], S - (s + 2))
             n_guesses_to_use = np.diag(guesses_n[:S, :, j], S - (s + 2))
 
-            a_tax_income_to_use = np.diag(np.transpose(a_tax_income[:S,:]),S-(s+2))
-            b_tax_income_to_use = np.diag(np.transpose(b_tax_income[:S,:]),S-(s+2))
-            c_tax_income_to_use = np.diag(np.transpose(c_tax_income[:S,:]),S-(s+2))
-            d_tax_income_to_use = np.diag(np.transpose(d_tax_income[:S,:]),S-(s+2))
-            e_tax_income_to_use = np.diag(np.transpose(e_tax_income[:S,:]),S-(s+2))
-            f_tax_income_to_use = np.diag(np.transpose(f_tax_income[:S,:]),S-(s+2))
-            min_x_tax_income_to_use = np.diag(np.transpose(min_x_tax_income[:S,:]),S-(s+2))
-            max_x_tax_income_to_use = np.diag(np.transpose(max_x_tax_income[:S,:]),S-(s+2))
-            min_y_tax_income_to_use = np.diag(np.transpose(min_y_tax_income[:S,:]),S-(s+2))
-            max_y_tax_income_to_use = np.diag(np.transpose(max_y_tax_income[:S,:]),S-(s+2))
+            a_etr_income_to_use = np.diag(np.transpose(a_etr_income[:S,:]),S-(s+2))
+            b_etr_income_to_use = np.diag(np.transpose(b_etr_income[:S,:]),S-(s+2))
+            c_etr_income_to_use = np.diag(np.transpose(c_etr_income[:S,:]),S-(s+2))
+            d_etr_income_to_use = np.diag(np.transpose(d_etr_income[:S,:]),S-(s+2))
+            e_etr_income_to_use = np.diag(np.transpose(e_etr_income[:S,:]),S-(s+2))
+            f_etr_income_to_use = np.diag(np.transpose(f_etr_income[:S,:]),S-(s+2))
+            min_x_etr_income_to_use = np.diag(np.transpose(min_x_etr_income[:S,:]),S-(s+2))
+            max_x_etr_income_to_use = np.diag(np.transpose(max_x_etr_income[:S,:]),S-(s+2))
+            min_y_etr_income_to_use = np.diag(np.transpose(min_y_etr_income[:S,:]),S-(s+2))
+            max_y_etr_income_to_use = np.diag(np.transpose(max_y_etr_income[:S,:]),S-(s+2))
 
-            inc_tax_params_TP = (a_tax_income_to_use, b_tax_income_to_use, c_tax_income_to_use, d_tax_income_to_use,
-                                        e_tax_income_to_use, f_tax_income_to_use, min_x_tax_income_to_use, max_x_tax_income_to_use,
-                                        min_y_tax_income_to_use, max_y_tax_income_to_use)
+            a_mtrx_income_to_use = np.diag(np.transpose(a_mtrx_income[:S,:]),S-(s+2))
+            b_mtrx_income_to_use = np.diag(np.transpose(b_mtrx_income[:S,:]),S-(s+2))
+            c_mtrx_income_to_use = np.diag(np.transpose(c_mtrx_income[:S,:]),S-(s+2))
+            d_mtrx_income_to_use = np.diag(np.transpose(d_mtrx_income[:S,:]),S-(s+2))
+            e_mtrx_income_to_use = np.diag(np.transpose(e_mtrx_income[:S,:]),S-(s+2))
+            f_mtrx_income_to_use = np.diag(np.transpose(f_mtrx_income[:S,:]),S-(s+2))
+            min_x_mtrx_income_to_use = np.diag(np.transpose(min_x_mtrx_income[:S,:]),S-(s+2))
+            max_x_mtrx_income_to_use = np.diag(np.transpose(max_x_mtrx_income[:S,:]),S-(s+2))
+            min_y_mtrx_income_to_use = np.diag(np.transpose(min_y_mtrx_income[:S,:]),S-(s+2))
+            max_y_mtrx_income_to_use = np.diag(np.transpose(max_y_mtrx_income[:S,:]),S-(s+2))
+
+            a_mtry_income_to_use = np.diag(np.transpose(a_mtry_income[:S,:]),S-(s+2))
+            b_mtry_income_to_use = np.diag(np.transpose(b_mtry_income[:S,:]),S-(s+2))
+            c_mtry_income_to_use = np.diag(np.transpose(c_mtry_income[:S,:]),S-(s+2))
+            d_mtry_income_to_use = np.diag(np.transpose(d_mtry_income[:S,:]),S-(s+2))
+            e_mtry_income_to_use = np.diag(np.transpose(e_mtry_income[:S,:]),S-(s+2))
+            f_mtry_income_to_use = np.diag(np.transpose(f_mtry_income[:S,:]),S-(s+2))
+            min_x_mtry_income_to_use = np.diag(np.transpose(min_x_mtry_income[:S,:]),S-(s+2))
+            max_x_mtry_income_to_use = np.diag(np.transpose(max_x_mtry_income[:S,:]),S-(s+2))
+            min_y_mtry_income_to_use = np.diag(np.transpose(min_y_mtry_income[:S,:]),S-(s+2))
+            max_y_mtry_income_to_use = np.diag(np.transpose(max_y_mtry_income[:S,:]),S-(s+2))
+
+            inc_tax_params_TP = (a_etr_income_to_use, b_etr_income_to_use, c_etr_income_to_use, d_etr_income_to_use,
+                                        e_etr_income_to_use, f_etr_income_to_use, min_x_etr_income_to_use, max_x_etr_income_to_use,
+                                        min_y_etr_income_to_use, max_y_etr_income_to_use, a_mtrx_income_to_use, b_mtrx_income_to_use, 
+                                        c_mtrx_income_to_use, d_mtrx_income_to_use, e_mtrx_income_to_use, f_mtrx_income_to_use, 
+                                        min_x_mtrx_income_to_use, max_x_mtrx_income_to_use, min_y_mtrx_income_to_use, 
+                                        max_y_mtrx_income_to_use, a_mtry_income_to_use, b_mtry_income_to_use, c_mtry_income_to_use, 
+                                        d_mtry_income_to_use, e_mtry_income_to_use, f_mtry_income_to_use, min_x_mtry_income_to_use, 
+                                        max_x_mtry_income_to_use, min_y_mtry_income_to_use, max_y_mtry_income_to_use)
 
             solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
@@ -873,26 +1131,48 @@ def TP_solutions(winit, rinit, T_H_init, BQinit, Kss, Lss, Yss, BQss, theta, inc
             b_guesses_to_use = .75 * np.diag(guesses_b[t + 1:t + S + 1, :, j])
             n_guesses_to_use = np.diag(guesses_n[t:t + S, :, j])
 
-            a_tax_income_to_use = np.diag(np.transpose(a_tax_income[:,t:t+S]))
-            b_tax_income_to_use = np.diag(np.transpose(b_tax_income[:,t:t+S]))
-            c_tax_income_to_use = np.diag(np.transpose(c_tax_income[:,t:t+S]))
-            d_tax_income_to_use = np.diag(np.transpose(d_tax_income[:,t:t+S]))
-            e_tax_income_to_use = np.diag(np.transpose(e_tax_income[:,t:t+S]))
-            f_tax_income_to_use = np.diag(np.transpose(f_tax_income[:,t:t+S]))
-            min_x_tax_income_to_use = np.diag(np.transpose(min_x_tax_income[:S,:]))
-            max_x_tax_income_to_use = np.diag(np.transpose(max_x_tax_income[:S,:]))
-            min_y_tax_income_to_use = np.diag(np.transpose(min_y_tax_income[:S,:]))
-            max_y_tax_income_to_use = np.diag(np.transpose(max_y_tax_income[:S,:]))
+            a_etr_income_to_use = np.diag(np.transpose(a_etr_income[:,t:t+S]))
+            b_etr_income_to_use = np.diag(np.transpose(b_etr_income[:,t:t+S]))
+            c_etr_income_to_use = np.diag(np.transpose(c_etr_income[:,t:t+S]))
+            d_etr_income_to_use = np.diag(np.transpose(d_etr_income[:,t:t+S]))
+            e_etr_income_to_use = np.diag(np.transpose(e_etr_income[:,t:t+S]))
+            f_etr_income_to_use = np.diag(np.transpose(f_etr_income[:,t:t+S]))
+            min_x_etr_income_to_use = np.diag(np.transpose(min_x_etr_income[:S,:]))
+            max_x_etr_income_to_use = np.diag(np.transpose(max_x_etr_income[:S,:]))
+            min_y_etr_income_to_use = np.diag(np.transpose(min_y_etr_income[:S,:]))
+            max_y_etr_income_to_use = np.diag(np.transpose(max_y_mtrx_income[:S,:]))
 
-            inc_tax_params_TP = (a_tax_income_to_use, b_tax_income_to_use, c_tax_income_to_use, d_tax_income_to_use,
-                                        e_tax_income_to_use, f_tax_income_to_use, min_x_tax_income_to_use, max_x_tax_income_to_use,
-                                        min_y_tax_income_to_use, max_y_tax_income_to_use)
+            a_mtrx_income_to_use = np.diag(np.transpose(a_mtrx_income[:,t:t+S]))
+            b_mtrx_income_to_use = np.diag(np.transpose(b_mtrx_income[:,t:t+S]))
+            c_mtrx_income_to_use = np.diag(np.transpose(c_mtrx_income[:,t:t+S]))
+            d_mtrx_income_to_use = np.diag(np.transpose(d_mtrx_income[:,t:t+S]))
+            e_mtrx_income_to_use = np.diag(np.transpose(e_mtrx_income[:,t:t+S]))
+            f_mtrx_income_to_use = np.diag(np.transpose(f_mtrx_income[:,t:t+S]))
+            min_x_mtrx_income_to_use = np.diag(np.transpose(min_x_mtrx_income[:S,:]))
+            max_x_mtrx_income_to_use = np.diag(np.transpose(max_x_mtrx_income[:S,:]))
+            min_y_mtrx_income_to_use = np.diag(np.transpose(min_y_mtrx_income[:S,:]))
+            max_y_mtrx_income_to_use = np.diag(np.transpose(max_y_mtrx_income[:S,:]))
 
-            print e.shape
-            print winit.shape
-            print rinit.shape
-            print b_guesses_to_use.shape
-            print n_guesses_to_use.shape
+            a_mtry_income_to_use = np.diag(np.transpose(a_mtry_income[:,t:t+S]))
+            b_mtry_income_to_use = np.diag(np.transpose(b_mtry_income[:,t:t+S]))
+            c_mtry_income_to_use = np.diag(np.transpose(c_mtry_income[:,t:t+S]))
+            d_mtry_income_to_use = np.diag(np.transpose(d_mtry_income[:,t:t+S]))
+            e_mtry_income_to_use = np.diag(np.transpose(e_mtry_income[:,t:t+S]))
+            f_mtry_income_to_use = np.diag(np.transpose(f_mtry_income[:,t:t+S]))
+            min_x_mtry_income_to_use = np.diag(np.transpose(min_x_mtry_income[:S,:]))
+            max_x_mtry_income_to_use = np.diag(np.transpose(max_x_mtry_income[:S,:]))
+            min_y_mtry_income_to_use = np.diag(np.transpose(min_y_mtry_income[:S,:]))
+            max_y_mtry_income_to_use = np.diag(np.transpose(max_y_mtry_income[:S,:]))
+
+            inc_tax_params_TP = (a_etr_income_to_use, b_etr_income_to_use, c_etr_income_to_use, d_etr_income_to_use,
+                                        e_etr_income_to_use, f_etr_income_to_use, min_x_etr_income_to_use, max_x_etr_income_to_use,
+                                        min_y_etr_income_to_use, max_y_etr_income_to_use, a_mtrx_income_to_use, b_mtrx_income_to_use, 
+                                        c_mtrx_income_to_use, d_mtrx_income_to_use, e_mtrx_income_to_use, f_mtrx_income_to_use, 
+                                        min_x_mtrx_income_to_use, max_x_mtrx_income_to_use, min_y_mtrx_income_to_use, max_y_mtrx_income_to_use, 
+                                        a_mtry_income_to_use, b_mtry_income_to_use, c_mtry_income_to_use, d_mtry_income_to_use,
+                                        e_mtry_income_to_use, f_mtry_income_to_use, min_x_mtry_income_to_use, max_x_mtry_income_to_use,
+                                        min_y_mtry_income_to_use, max_y_mtry_income_to_use)
+
             solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
                 winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, inc_tax_params_TP, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n), xtol=1e-13)
@@ -911,6 +1191,10 @@ def TP_solutions(winit, rinit, T_H_init, BQinit, Kss, Lss, Yss, BQss, theta, inc
     Generate variables/values so they can be used in other modules
     ------------------------------------------------------------------------
     '''
+    Kinit = household.get_K(b_mat[:T], omega_stationary[:T].reshape(
+            T, S, 1), lambdas.reshape(1, 1, J), g_n_vector[:T], 'TPI')
+    Linit = firm.get_L(e.reshape(1, S, J), n_mat[:T], omega_stationary[
+                           :T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI')
 
     Kpath_TPI = np.array(list(Kinit) + list(np.ones(10) * Kss))
     Lpath_TPI = np.array(list(Linit) + list(np.ones(10) * Lss))
@@ -921,16 +1205,16 @@ def TP_solutions(winit, rinit, T_H_init, BQinit, Kss, Lss, Yss, BQss, theta, inc
     b_splus1 = np.zeros((T, S, J))
     b_splus1[:, :, :] = b_mat[1:T + 1, :, :]
 
-    tax_path_params = (J, S, retire, np.tile(np.reshape(np.transpose(a_tax_income[:,:T]),(T,S,1)),(1,1,J)), 
-                         np.tile(np.reshape(np.transpose(b_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(c_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(d_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(e_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(f_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(min_x_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(max_x_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(min_y_tax_income[:,:T]),(T,S,1)),(1,1,J)),
-                         np.tile(np.reshape(np.transpose(max_y_tax_income[:,:T]),(T,S,1)),(1,1,J)), h_wealth, p_wealth, m_wealth, tau_payroll)
+    tax_path_params = (J, S, retire, np.tile(np.reshape(np.transpose(a_etr_income[:,:T]),(T,S,1)),(1,1,J)), 
+                         np.tile(np.reshape(np.transpose(b_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(c_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(d_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(e_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(f_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(min_x_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(max_x_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(min_y_etr_income[:,:T]),(T,S,1)),(1,1,J)),
+                         np.tile(np.reshape(np.transpose(max_y_etr_income[:,:T]),(T,S,1)),(1,1,J)), h_wealth, p_wealth, m_wealth, tau_payroll)
 
     tax_path = tax.total_taxes(np.tile(rinit[:T].reshape(T, 1, 1),(1,S,J)), b_s, np.tile(winit[:T].reshape(T, 1, 1),(1,S,J)), 
                                np.tile(e.reshape(1, S, J),(T,1,1)), n_mat[:T,:,:], BQinit[:T, :].reshape(T, 1, J), lambdas, 
@@ -966,21 +1250,22 @@ def TP_solutions(winit, rinit, T_H_init, BQinit, Kss, Lss, Yss, BQss, theta, inc
     Create the unstationarized versions of the paths of macro aggregates
     ------------------------------------------------------------------------
     '''
-    tvec = np.linspace(0, len(C_path), len(C_path))
-    growth_path = np.exp(g_y*tvec)
-    for i in range(0,len(C_path)):
-        pop_path[i] = np.exp(np.cumsum(g_n_vec[:i])) # note that this normalizes the pop in the initial period to one
+    # tvec = np.linspace(0, len(C_path), len(C_path))
+    # growth_path = np.exp(g_y*tvec)
+    # pop_path = np.zeros(len(C_path))
+    # for i in range(0,len(C_path)):
+    #     pop_path[i] = np.exp(g_n_vector[:i].sum())   # note that this normalizes the pop in the initial period to one
 
-    growth_pop_path = growth_path*pop_path 
+    # growth_pop_path = growth_path*pop_path 
 
-    C_ns_path = C_path * growth_pop_path
-    K_ns_path = Kpath_TPI * growth_pop_path
-    BQ_ns_path = BQpath_TPI * growth_pop_path
-    L_ns_path = Lpath_TPI * pop_path 
-    T_H_ns_path = T_H_init * growth_pop_path
-    w_ns_path = winit*growth_path
-    I_ns_path = I_path * growth_pop_path
-    Y_ns_path = Y_init * growth_pop_path 
+    # C_ns_path = C_path * growth_pop_path
+    # K_ns_path = Kinit * growth_pop_path
+    # BQ_ns_path = growth_pop_path * BQinit[:T]
+    # L_ns_path = Linit * pop_path 
+    # T_H_ns_path = T_H_init[:T] * growth_pop_path
+    # w_ns_path = winit*growth_path
+    # I_ns_path = I_path * growth_pop_path
+    # Y_ns_path = Y_path * growth_pop_path 
     
 
 
@@ -993,18 +1278,18 @@ def TP_solutions(winit, rinit, T_H_init, BQinit, Kss, Lss, Yss, BQss, theta, inc
     output = {'Kpath_TPI': Kpath_TPI, 'b_mat': b_mat, 'c_path': c_path,
               'eul_savings': eul_savings, 'eul_laborleisure': eul_laborleisure,
               'Lpath_TPI': Lpath_TPI, 'BQpath_TPI': BQpath_TPI, 'n_mat': n_mat,
-              'rinit': rinit, 'Yinit': Yinit, 'T_H_init': T_H_init,
+              'rinit': rinit, 'Y_path': Y_path, 'T_H_init': T_H_init,
               'tax_path': tax_path, 'winit': winit}
     
     macro_output = {'Kpath_TPI': Kpath_TPI, 'C_path': C_path, 'I_path': I_path,
               'Lpath_TPI': Lpath_TPI, 'BQpath_TPI': BQpath_TPI,
-              'rinit': rinit, 'Yinit': Yinit, 'T_H_init': T_H_init,
+              'rinit': rinit, 'Y_path': Y_path, 'T_H_init': T_H_init,
               'winit': winit}
 
-    macro_ns_output = {'K_ns_path': K_ns_path, 'C_ns_path': C_ns_path, 'I_ns_path': I_ns_path,
-              'L_ns_path': L_ns_path, 'BQ_ns_path': BQ_ns_path,
-              'rinit': rinit, 'Y_ns_path': Y_ns_path, 'T_H_ns_path': T_H_ns_path,
-              'w_ns_path': w_ns_path}
+    # macro_ns_output = {'K_ns_path': K_ns_path, 'C_ns_path': C_ns_path, 'I_ns_path': I_ns_path,
+    #           'L_ns_path': L_ns_path, 'BQ_ns_path': BQ_ns_path,
+    #           'rinit': rinit, 'Y_ns_path': Y_ns_path, 'T_H_ns_path': T_H_ns_path,
+    #           'w_ns_path': w_ns_path}
 
     if get_baseline:
         tpi_init_dir = os.path.join(output_dir, "TPIinit")
@@ -1022,5 +1307,5 @@ def TP_solutions(winit, rinit, T_H_init, BQinit, Kss, Lss, Yss, BQss, theta, inc
     tpi_vars = os.path.join(tpi_dir, "TPI_macro_vars.pkl")
     pickle.dump(macro_output, open(tpi_vars, "wb"))
 
-    tpi_ns_vars = os.path.join(tpi_dir, "TPI_macro_ns_vars.pkl")
-    pickle.dump(macro_ns_output, open(tpi_ns_vars, "wb"))
+    # tpi_ns_vars = os.path.join(tpi_dir, "TPI_macro_ns_vars.pkl")
+    # pickle.dump(macro_ns_output, open(tpi_ns_vars, "wb"))

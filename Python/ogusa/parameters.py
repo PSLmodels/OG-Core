@@ -21,6 +21,7 @@ import numpy as np
 from demographics import get_omega
 from income import get_e
 import pickle
+import txfunc
 
 DATASET = 'REAL'
 
@@ -155,18 +156,76 @@ def get_reduced_parameters():
     #   Income Tax Parameters
     ####  will call tax function estimation function here...
     ### do output such that each parameters is in a separate SxBW array
-    dict_params = pickle.load( open( "TxFuncEst.pkl.txt", "rb" ) )
+    dict_params = pickle.load( open( "TxFuncEst_policy.pkl", "rb" ) )
+    #dict_params = txfunc.tax_func_estimate()
+
+    # print 'etr mins: ', dict_params['tfunc_etr_params_S'].min(axis=(0,1))
+    # print 'etr maxes: ', dict_params['tfunc_etr_params_S'].max(axis=(0,1))
+    # print 'mtrx mins: ', dict_params['tfunc_mtrx_params_S'].min(axis=(0,1))
+    # print 'mtrx maxes: ', dict_params['tfunc_mtrx_params_S'].max(axis=(0,1))
+    # print 'mtry mins: ', dict_params['tfunc_mtry_params_S'].min(axis=(0,1))
+    # print 'mtry maxes: ', dict_params['tfunc_mtry_params_S'].max(axis=(0,1))
+    # quit()
+
+    # print 'age 61 ', dict_params['tfunc_etr_params_S'][42,9,:]
+    # print 'age 62 ', dict_params['tfunc_etr_params_S'][43,9,:]
+    # print 'age 63 ', dict_params['tfunc_etr_params_S'][44,9,:]
+    # print 'age 64 ', dict_params['tfunc_etr_params_S'][45,9,:]
+    # print 'age 65 ', dict_params['tfunc_etr_params_S'][46,9,:]
+    # print 'age 66 ', dict_params['tfunc_etr_params_S'][47,9,:]
+    # print 'age 67 ', dict_params['tfunc_etr_params_S'][48,9,:]
+    # quit()
+
     mean_income_data = dict_params['tfunc_avginc'][0]
-    a_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,0]
-    b_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,1]
-    c_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,2]
-    d_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,3]
-    e_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,4]
-    f_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,5]
-    max_x_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,6]
-    min_x_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,7]
-    max_y_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,8]
-    min_y_tax_income = dict_params['tfunc_params'][starting_age:ending_age,:BW,9]
+    a_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,0]
+    b_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,1]
+    c_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,2]
+    d_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,3]
+    e_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,4]
+    f_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,5]
+    max_x_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,6]
+    min_x_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,7]
+    max_y_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,8]
+    min_y_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,9]
+
+    a_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,0]
+    b_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,1]
+    c_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,2]
+    d_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,3]
+    e_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,4]
+    f_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,5]
+    max_x_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,6]
+    min_x_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,7]
+    max_y_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,8]
+    min_y_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,9]
+
+    a_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,0]
+    b_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,1]
+    c_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,2]
+    d_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,3]
+    e_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,4]
+    f_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,5]
+    max_x_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,6]
+    min_x_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,7]
+    max_y_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,8]
+    min_y_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,9]
+
+
+    # # zero out income taxes:
+    # max_x_etr_income = np.ones((S,BW))*0.0
+    # min_x_etr_income = np.ones((S,BW))*0.0
+    # max_y_etr_income = np.ones((S,BW))*0.0
+    # min_y_etr_income = np.ones((S,BW))*0.0
+
+    # max_x_mtrx_income = np.ones((S,BW))*0.0
+    # min_x_mtrx_income = np.ones((S,BW))*0.0
+    # max_y_mtrx_income = np.ones((S,BW))*0.0
+    # min_y_mtrx_income = np.ones((S,BW))*0.0
+
+    # max_x_mtry_income = np.ones((S,BW))*0.0
+    # min_x_mtry_income = np.ones((S,BW))*0.0
+    # max_y_mtry_income = np.ones((S,BW))*0.0
+    # min_y_mtry_income = np.ones((S,BW))*0.0
 
 
     #   Wealth tax params
@@ -232,34 +291,77 @@ def get_full_parameters():
     #   Income Tax Parameters
     #  will call tax function estimation function here...
     # do output such that each parameters is in a separate SxBW array
-    #mean_income_data = 84377.0 # just need mean income in base year to get factor right...
-    # a_tax_income = np.ones((S,BW))*3.03452713268985e-06
-    # b_tax_income = np.ones((S,BW))*.222
-    # c_tax_income = np.ones((S,BW))*133261.0
-    # d_tax_income = np.ones((S,BW))*.219
-    # e_tax_income = np.ones((S,BW))*0.1
-    # f_tax_income = np.ones((S,BW))*1.5
-    # min_x_tax_income = np.ones((S,BW))*-0.18
-    # max_x_tax_income = np.ones((S,BW))*0.44
-    # min_y_tax_income = np.ones((S,BW))*-0.10
-    # max_y_tax_income = np.ones((S,BW))*0.35
     # read in estimated parameters
-    dict_params = pickle.load( open( "TxFuncEst_baseline.pkl", "rb" ) )
+    dict_params = pickle.load( open( "TxFuncEst_policy.pkl", "rb" ) )
+    #dict_params = txfunc.tax_func_estimate()
+
+    # print 'etr mins: ', dict_params['tfunc_etr_params_S'].min(axis=(0,1))
+    # print 'etr maxes: ', dict_params['tfunc_etr_params_S'].max(axis=(0,1))
+    # print 'mtrx mins: ', dict_params['tfunc_mtrx_params_S'].min(axis=(0,1))
+    # print 'mtrx maxes: ', dict_params['tfunc_mtrx_params_S'].max(axis=(0,1))
+    # print 'mtry mins: ', dict_params['tfunc_mtry_params_S'].min(axis=(0,1))
+    # print 'mtry maxes: ', dict_params['tfunc_mtry_params_S'].max(axis=(0,1))
+    # quit()
+
+    # print 'age 61 ', dict_params['tfunc_etr_params_S'][42,9,:]
+    # print 'age 62 ', dict_params['tfunc_etr_params_S'][43,9,:]
+    # print 'age 63 ', dict_params['tfunc_etr_params_S'][44,9,:]
+    # print 'age 64 ', dict_params['tfunc_etr_params_S'][45,9,:]
+    # print 'age 65 ', dict_params['tfunc_etr_params_S'][46,9,:]
+    # print 'age 66 ', dict_params['tfunc_etr_params_S'][47,9,:]
+    # print 'age 67 ', dict_params['tfunc_etr_params_S'][48,9,:]
+    # quit()
+
     mean_income_data = dict_params['tfunc_avginc'][0]
-    a_tax_income = dict_params['tfunc_params_S'][:S,:BW,0]
-    b_tax_income = dict_params['tfunc_params_S'][:S,:BW,1]
-    c_tax_income = dict_params['tfunc_params_S'][:S,:BW,2]
-    d_tax_income = dict_params['tfunc_params_S'][:S,:BW,3]
-    e_tax_income = dict_params['tfunc_params_S'][:S,:BW,4]
-    f_tax_income = dict_params['tfunc_params_S'][:S,:BW,5]
-    max_x_tax_income = dict_params['tfunc_params_S'][:S,:BW,6]
-    min_x_tax_income = dict_params['tfunc_params_S'][:S,:BW,7]
-    max_y_tax_income = dict_params['tfunc_params_S'][:S,:BW,8]
-    min_y_tax_income = dict_params['tfunc_params_S'][:S,:BW,9]
-    # min_x_tax_income = np.ones((S,BW))*0.0
-    # max_x_tax_income = np.ones((S,BW))*0.0
-    # min_y_tax_income = np.ones((S,BW))*0.0
-    # max_y_tax_income = np.ones((S,BW))*0.0
+    a_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,0]
+    b_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,1]
+    c_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,2]
+    d_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,3]
+    e_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,4]
+    f_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,5]
+    max_x_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,6]
+    min_x_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,7]
+    max_y_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,8]
+    min_y_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,9]
+
+    a_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,0]
+    b_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,1]
+    c_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,2]
+    d_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,3]
+    e_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,4]
+    f_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,5]
+    max_x_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,6]
+    min_x_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,7]
+    max_y_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,8]
+    min_y_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,9]
+
+    a_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,0]
+    b_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,1]
+    c_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,2]
+    d_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,3]
+    e_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,4]
+    f_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,5]
+    max_x_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,6]
+    min_x_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,7]
+    max_y_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,8]
+    min_y_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,9]
+
+
+    # # zero out income taxes:
+    # max_x_etr_income = np.ones((S,BW))*0.0
+    # min_x_etr_income = np.ones((S,BW))*0.0
+    # max_y_etr_income = np.ones((S,BW))*0.0
+    # min_y_etr_income = np.ones((S,BW))*0.0
+
+    # max_x_mtrx_income = np.ones((S,BW))*0.0
+    # min_x_mtrx_income = np.ones((S,BW))*0.0
+    # max_y_mtrx_income = np.ones((S,BW))*0.0
+    # min_y_mtrx_income = np.ones((S,BW))*0.0
+
+    # max_x_mtry_income = np.ones((S,BW))*0.0
+    # min_x_mtry_income = np.ones((S,BW))*0.0
+    # max_y_mtry_income = np.ones((S,BW))*0.0
+    # min_y_mtry_income = np.ones((S,BW))*0.0
 
 
     #   Wealth tax params
@@ -271,13 +373,13 @@ def get_full_parameters():
     p_wealth = 0.0
     #   Bequest and Payroll Taxes
     tau_bq = np.zeros(J)
-    tau_payroll = 0.0 #0.15
+    tau_payroll = 0.0 #0.15 # were are inluding payroll taxes in tax functions for now
     retire = np.round(9.0 * S / 16.0) - 1
 
     # Simulation Parameters
     MINIMIZER_TOL = 1e-14
     MINIMIZER_OPTIONS = None
-    PLOT_TPI = True
+    PLOT_TPI = False
     maxiter = 250
     mindist_SS = 1e-9
     mindist_TPI = 2e-5 #1e-6
