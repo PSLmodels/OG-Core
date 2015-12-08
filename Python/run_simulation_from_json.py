@@ -40,6 +40,11 @@ get_baseline = Flag to run baseline or tax experiments (bool)
 calibrate_model = Flag to run calibration of chi values or not (bool)
 ------------------------------------------------------------------------
 '''
+get_baseline = True
+calibrate_model = False
+taxes = 'baseline' # policy# #none ## some flag for do we run without taxes, with baseline 
+# taxes or do we use user inputted taxes?
+
 
 #globals().update(ogusa.parameters.get_parameters_from_file())
 globals().update(ogusa.parameters.get_parameters())
@@ -51,8 +56,6 @@ wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir)
 # Generate labor data moments
 labor.labor_data_moments(flag_graphs)
 
-get_baseline = True
-calibrate_model = False
 
 # List of parameter names that will not be changing (unless we decide to
 # change them for a tax experiment)
@@ -60,10 +63,18 @@ param_names = ['S', 'J', 'T', 'BW', 'lambdas', 'starting_age', 'ending_age',
              'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
              'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
              'b_ellipse', 'k_ellipse', 'upsilon',
-             'a_tax_income', 'chi_b_guess', 'chi_n_guess',
-             'b_tax_income', 'c_tax_income', 'd_tax_income',
-             'e_tax_income', 'f_tax_income', 'min_x_tax_income', 
-             'max_x_tax_income', 'min_y_tax_income', 'max_y_tax_income',
+             'chi_b_guess', 'chi_n_guess','a_etr_income',
+             'b_etr_income', 'c_etr_income', 'd_etr_income',
+             'e_etr_income', 'f_etr_income', 'min_x_etr_income', 
+             'max_x_etr_income', 'min_y_etr_income', 'max_y_etr_income',
+             'a_mtrx_income',
+             'b_mtrx_income', 'c_mtrx_income', 'd_mtrx_income',
+             'e_mtrx_income', 'f_mtrx_income', 'min_x_mtrx_income', 
+             'max_x_mtrx_income', 'min_y_mtrx_income', 'max_y_mtrx_income',
+             'a_mtry_income',
+             'b_mtry_income', 'c_mtry_income', 'd_mtry_income',
+             'e_mtry_income', 'f_mtry_income', 'min_x_mtry_income', 
+             'max_x_mtry_income', 'min_y_mtry_income', 'max_y_mtry_income',
              'tau_payroll', 'tau_bq', 'calibrate_model',
              'retire', 'mean_income_data', 'g_n_vector',
              'h_wealth', 'p_wealth', 'm_wealth', 'get_baseline',

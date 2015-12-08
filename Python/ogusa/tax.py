@@ -118,18 +118,18 @@ def tau_income(r, b, w, e, n, factor, params):
     Output:
         tau = tau_income (various length array or scalar)
     '''
-    a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income,\
-        min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = params
-    A = a_tax_income
-    B = b_tax_income
-    C = c_tax_income
-    D = d_tax_income
-    E = d_tax_income
-    F = d_tax_income
-    min_x = min_x_tax_income
-    max_x = max_x_tax_income
-    min_y = min_y_tax_income
-    max_y = max_y_tax_income
+    a_etr_income, b_etr_income, c_etr_income, d_etr_income, e_etr_income, f_etr_income,\
+        min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income = params
+    A = a_etr_income
+    B = b_etr_income
+    C = c_etr_income
+    D = d_etr_income
+    E = d_etr_income
+    F = d_etr_income
+    min_x = min_x_etr_income
+    max_x = max_x_etr_income
+    min_y = min_y_etr_income
+    max_y = max_y_etr_income
     x = (w*e*n)*factor
     y = (r*b)*factor
     I = x+y
@@ -183,6 +183,91 @@ def tau_capital_deriv(r, b, w, e, n, factor, params):
     tau =  ((max_y-min_y)*Lambda) + ((x*(max_x-min_x))+(y*(max_y-min_y)))*Lambda_deriv + min_y 
 
     return tau
+
+
+## Note that since when we use the same functional form, one could
+# use just one tax function for ATR, MTR_lab, MTR_cap, just with different parameters input
+def MTR_capital(r, b, w, e, n, factor, params):
+    '''
+    Gives derivative of MTR function with repect to 
+    labor income at a certain income level
+    Inputs:
+        r = interest rate (various length list or scalar)
+        b = wealth holdings (various length array or scalar)
+        w = wage (various length list or scalar)
+        e = ability level (various size array or scalar)
+        n = labor participation rate (various length array or scalar)
+        factor = scaling factor (scalar)
+        params = parameter list of model (list)
+    Output:
+        tau = derivative of tau_income w.r.t. labor income (various length array or scalar)
+    '''
+    a_mtry_income, b_mtry_income, c_mtry_income, d_mtry_income, e_mtry_income, f_mtry_income,\
+                      min_x_mtry_income, max_x_mtry_income, min_y_mtry_income, max_y_mtry_income = params
+    A = a_mtry_income
+    B = b_mtry_income
+    C = c_mtry_income
+    D = d_mtry_income
+    E = d_mtry_income
+    F = d_mtry_income
+    min_x = min_x_mtry_income
+    max_x = max_x_mtry_income
+    min_y = min_y_mtry_income
+    max_y = max_y_mtry_income
+    x = (w*e*n)*factor
+    y = (r*b)*factor
+    I = x+y
+
+    phi = x/I
+    Phi = phi*(max_x-min_x) + (1-phi)*(max_y-min_y)
+    K = phi*min_x + (1-phi)*min_y
+
+    num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
+    denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
+    tau =  (Phi*(num/denom)) + K
+    return tau
+
+
+def MTR_labor(r, b, w, e, n, factor, params):
+    '''
+    Gives derivative of MTR function with repect to 
+    labor income at a certain income level
+    Inputs:
+        r = interest rate (various length list or scalar)
+        b = wealth holdings (various length array or scalar)
+        w = wage (various length list or scalar)
+        e = ability level (various size array or scalar)
+        n = labor participation rate (various length array or scalar)
+        factor = scaling factor (scalar)
+        params = parameter list of model (list)
+    Output:
+        tau = derivative of tau_income w.r.t. labor income (various length array or scalar)
+    '''
+    a_mtrx_income, b_mtrx_income, c_mtrx_income, d_mtrx_income, e_mtrx_income, f_mtrx_income,\
+                      min_x_mtrx_income, max_x_mtrx_income, min_y_mtrx_income, max_y_mtrx_income = params
+    A = a_mtrx_income
+    B = b_mtrx_income
+    C = c_mtrx_income
+    D = d_mtrx_income
+    E = d_mtrx_income
+    F = d_mtrx_income
+    min_x = min_x_mtrx_income
+    max_x = max_x_mtrx_income
+    min_y = min_y_mtrx_income
+    max_y = max_y_mtrx_income
+    x = (w*e*n)*factor
+    y = (r*b)*factor
+    I = x+y
+
+    phi = x/I
+    Phi = phi*(max_x-min_x) + (1-phi)*(max_y-min_y)
+    K = phi*min_x + (1-phi)*min_y
+
+    num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
+    denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
+    tau =  (Phi*(num/denom)) + K
+    return tau
+
 
 def tau_labor_deriv(r, b, w, e, n, factor, params):
     '''
@@ -249,13 +334,13 @@ def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, weights, method, tax_params
                   g_n_ss, tau_payroll, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
 
-    a_tax_income, b_tax_income, \
-        c_tax_income, d_tax_income, e_tax_income, f_tax_income, \
-        min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income = tax_params
+    a_etr_income, b_etr_income, \
+        c_etr_income, d_etr_income, e_etr_income, f_etr_income, \
+        min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income = tax_params
 
     I = r * b + w * e * n
-    tau_inc_params = (a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income,
-                      min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income)
+    tau_inc_params = (a_etr_income, b_etr_income, c_etr_income, d_etr_income, e_etr_income, f_etr_income,
+                      min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income)
     
     if I.ndim == 2: 
         T_I = np.zeros((S,J))
@@ -264,9 +349,9 @@ def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, weights, method, tax_params
     if I.ndim == 3:
         T_I = np.zeros((T,S,J))
         for j in xrange(J):
-            tau_inc_params3D = (a_tax_income[:,:,j], b_tax_income[:,:,j], c_tax_income[:,:,j], d_tax_income[:,:,j], 
-                                e_tax_income[:,:,j], f_tax_income[:,:,j], min_x_tax_income[:,:,j], max_x_tax_income[:,:,j], 
-                                min_y_tax_income[:,:,j], max_y_tax_income[:,:,j])
+            tau_inc_params3D = (a_etr_income[:,:,j], b_etr_income[:,:,j], c_etr_income[:,:,j], d_etr_income[:,:,j], 
+                                e_etr_income[:,:,j], f_etr_income[:,:,j], min_x_etr_income[:,:,j], max_x_etr_income[:,:,j], 
+                                min_y_etr_income[:,:,j], max_y_etr_income[:,:,j])
             T_I[:,:,j] = tau_income(r[:,:,j], b[:,:,j], w[:,:,j], e[:,:,j], n[:,:,j], factor, tau_inc_params3D) * I[:,:,j]  
     T_P = tau_payroll * w * e * n
     TW_params = (h_wealth, p_wealth, m_wealth)
@@ -304,12 +389,13 @@ def total_taxes(r, b, w, e, n, BQ, lambdas, factor, T_H, j, method, shift, param
     Output:
         total_taxes = net taxes (various length array or scalar)
     '''
-    J, S, retire, a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income,\
-                   min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income, h_wealth, p_wealth, m_wealth, tau_payroll = params
+    J, S, retire, a_etr_income, b_etr_income, c_etr_income, d_etr_income, e_etr_income, f_etr_income,\
+                   min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income, h_wealth, p_wealth, m_wealth, tau_payroll = params
     I = r * b + w * e * n
-    tau_inc_params = (a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income,
-                      min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income)
+    tau_inc_params = (a_etr_income, b_etr_income, c_etr_income, d_etr_income, e_etr_income, f_etr_income,
+                      min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income)
     T_I = tau_income(r, b, w, e, n, factor, tau_inc_params) * I
+
     T_P = tau_payroll * w * e * n
     TW_params = (h_wealth, p_wealth, m_wealth)
     T_W = tau_wealth(b, TW_params) * b
@@ -343,4 +429,6 @@ def total_taxes(r, b, w, e, n, BQ, lambdas, factor, T_H, j, method, shift, param
         T_P -= theta[j] * w
         T_BQ = tau_bq[j] * BQ / lambdas
     total_taxes = T_I + T_P + T_BQ + T_W - T_H
+
+
     return total_taxes
