@@ -111,15 +111,15 @@ def get_data():
         [mtr_fica_sey, mtr_iit_sey, mtr_combined_sey] = calc1.mtr('e00900p')
 
         temp = np.empty([length, 11])
-        temp[:,0] = mtr_iit
-        temp[:,1] = mtr_iit_sey
+        temp[:,0] = mtr_combined
+        temp[:,1] = mtr_combined_sey
         temp[:,2] = mtr_iit_capinc
         temp[:,3] = calc1.records.age
         temp[:,4] = calc1.records.e00200
         temp[:,5] = calc1.records._sey
         temp[:,6] = calc1.records._sey + calc1.records.e00200
         temp[:,7] = calc1.records._expanded_income
-        temp[:,8] = calc1.records._iitax
+        temp[:,8] = calc1.records._combined
         temp[:,9] = calc1.current_year * np.ones(length)
         temp[:,10] = calc1.records.s006
 
