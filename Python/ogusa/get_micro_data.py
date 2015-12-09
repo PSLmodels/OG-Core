@@ -9,12 +9,14 @@ import sys
 sys.path.insert(0, '/Users/jasondebacker/repos/tax-calculator')
 
 from taxcalc import *
+import utils
 import pandas as pd
 from pandas import DataFrame
 import numpy as np
 import copy
-import numba
 import pickle
+
+
 
 
 def get_data():
@@ -70,7 +72,7 @@ def get_data():
                                         'e00650', 'e01000', 'e01400',
                                         'e01500', 'e01700', 'e02000',
                                         'e23250')
-    mtr_iit_capinc = calc1.capital_mtr(capital_income_sources)
+    mtr_iit_capinc = utils.capital_mtr(calc1, capital_income_sources)
 
     # create a temporary array to save all variables we need
     length = len(calc1.records.s006)

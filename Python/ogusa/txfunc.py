@@ -75,11 +75,11 @@ data_folder = string, path of hard drive folder where data files reside
 start_time  = scalar, current processor time in seconds (float)
 ------------------------------------------------------------------------
 '''
-S = int(80)
-s_min = int(21)
-s_max = int(100)
-tpers = int(10)
-numparams = int(10)
+S = 80
+s_min = 21
+s_max = 100
+tpers = 10
+numparams = 10
 etrparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
 mtrxparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
 mtryparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
@@ -94,8 +94,8 @@ cmap1 = matplotlib.cm.get_cmap('summer')
 # cmap1 = matplotlib.cm.get_cmap('jet')
 # cmap1 = matplotlib.cm.get_cmap('coolwarm')
 
-beg_yr = int(2015)
-end_yr = int(2024)
+beg_yr = 2015
+end_yr = 2024
 years_list = np.arange(beg_yr, end_yr + 1)
 start_time = time.clock()
 

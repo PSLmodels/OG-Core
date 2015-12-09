@@ -16,9 +16,68 @@ from io import StringIO
 import numpy as np
 import cPickle as pickle
 from pkg_resources import resource_stream, Requirement
+import copy
 
 EPSILON = 1e-10
 PATH_EXISTS_ERRNO = 17
+
+
+def capital_mtr(calc,
+                capital_income_sources=['e00300', 'e00400', 'e00600',
+                                        'e00650', 'e01000', 'e01400',
+                                        'e01500', 'e01700', 'e02000',
+                                        'e23250']):
+    '''
+    Implementation of a function for calculating marginal tax rate
+    on capital income from Amy Xu
+    '''
+
+    num_sources = len(capital_income_sources)
+    length = len(calc.records.s006)
+    income_sum = np.zeros(length)
+    no_capital_income = np.zeros(length)
+    originals = {}
+
+    # get the sum of all capital income and save the values for later use
+    for capital_income in capital_income_sources:
+        income_sum += getattr(calc.records, capital_income)
+        originals[capital_income] = getattr(calc.records, capital_income)
+        no_capital_income = np.where(originals[capital_income] != 0,
+                                        1, no_capital_income)
+
+    calc.calc_all()
+    iitax_base = copy.deepcopy(calc.records._iitax)
+
+    # add the one-cent margin
+    finite_diff = 0.01  # a one-cent difference
+    epsilon = 10e-20
+    for capital_income in capital_income_sources:
+        margin = finite_diff * originals[capital_income] / (income_sum +
+                                                            epsilon)
+        income_up = originals[capital_income] + margin
+        setattr(calc.records, capital_income, income_up)
+
+    # distribute the margin to interest if taxpayer has no capital income
+    interest = np.where(no_capital_income == 0,
+                        finite_diff,
+                        calc.records.e00300)
+    setattr(calc.records, 'e00300', interest)
+
+    calc.calc_all()
+    iitax_up = copy.deepcopy(calc.records._iitax)
+
+    # delta of the results with margin added
+    iitax_delta = iitax_up - iitax_base
+
+    # calculates mtrs
+    mtr_iit = iitax_delta / finite_diff
+
+    # reset everything
+    for capital_income in capital_income_sources:
+        setattr(calc.records, capital_income, originals[capital_income])
+    calc.calc_all()
+
+    return mtr_iit
 
 
 def mkdirs(path):
