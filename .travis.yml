@@ -13,6 +13,7 @@ install:
   - conda update conda
   - conda create -n test-environment python=$TRAVIS_PYTHON_VERSION pytest scipy numpy pandas matplotlib
   - conda install -n test-environment numba 
+  - conda install -n test-environment -c ospc taxcalc
   - source activate test-environment
   - python setup.py install
 

@@ -1,10 +1,13 @@
 name: ospcdyn
+channels:
+- ospc
 dependencies:
 - ipython
 - ipython-notebook
 - setuptools
 - scipy
 - matplotlib
+- taxcalc
 - numba
 - numpy
 - pandas=0.16.1
