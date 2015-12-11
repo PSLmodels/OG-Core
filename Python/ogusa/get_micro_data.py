@@ -67,10 +67,26 @@ def get_data():
 
     # find mtr on capital income
     capital_income_sources = ('e00300', 'e00400', 'e00600',
-                                        'e00650', 'e01000', 'e01400',
-                                        'e01500', 'e01700', 'e02000',
-                                        'e23250')
-    mtr_iit_capinc = calc1.capital_mtr(capital_income_sources)
+                                'e00650', 'e01000', 'e01400',
+                                'e01500', 'e01700', 'e02000',
+                                'e23250')
+
+    # calculating MTRs separately
+    all_mtrs = {income_source: calc1.mtr(income_source) for income_source in capital_income_sources}
+    # Get each column of income sources
+    record_columns = [getattr(calc1.records, income_source) for income_source in capital_income_sources]
+    # weighted average of all those MTRs
+    total = sum(record_columns)
+    # i.e., capital_gain_mtr = (e00300 * mtr_iit_300 + e00400 * mtr_iit_400 + ... + e23250 * mtr_iit_23250) /
+    #                           sum_of_all_ten_variables
+    capital_gain_mtr = [ col * all_mtrs[source][1] for col, source in zip(record_columns, capital_income_sources)]
+    mtr_iit_capinc = sum(capital_gain_mtr) / total
+
+    #Get the total of every capital income source
+
+    #if every item in capital_income_sources == 0: # no capital income taxpayers
+    if np.all(total == 0): # no capital income taxpayers
+        mtr_itt_capinc = all_mtrs['e00300'][1] # give all the weight to interest income
 
     # create a temporary array to save all variables we need
     length = len(calc1.records.s006)
