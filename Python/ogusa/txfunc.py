@@ -405,7 +405,7 @@ def wsumsq(params, *objs):
     return wssqdev
 
 
-def tax_func_estiamte():
+def tax_func_estimate():
     '''
     --------------------------------------------------------------------
     This function estimates functions for the ETR, MTR on Labor Income,
@@ -1448,7 +1448,8 @@ def tax_func_estiamte():
     return dict_params
 
 
-# Code to run manually from here:
-dict_params = tax_func_estiamte()
-pkl_path = "TxFuncEst_policy.pkl"
-pickle.dump(dict_params, open(pkl_path, "wb"))
+def get_tax_func_estimate():
+    # Code to run manually from here:
+    dict_params = tax_func_estimate()
+    pkl_path = "TxFuncEst_policy.pkl"
+    pickle.dump(dict_params, open(pkl_path, "wb"))
