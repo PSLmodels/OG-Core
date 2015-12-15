@@ -66,27 +66,36 @@ def get_data():
     [mtr_fica_sey, mtr_iit_sey, mtr_combined_sey] = calc1.mtr('e00900p')
 
     # find mtr on capital income
-    capital_income_sources = ('e00300', 'e00400', 'e00600',
-                                'e00650', 'e01000', 'e01400',
-                                'e01500', 'e01700', 'e02000',
-                                'e23250')
+    capital_income_sources_taxed = ('e00300', 'e00400', 'e00600',
+                                'e00650', 'e01400',
+                                'e01700', 'e02000',
+                                'e22250','e23250')
 
-    # calculating MTRs separately
-    all_mtrs = {income_source: calc1.mtr(income_source) for income_source in capital_income_sources}
-    # Get each column of income sources
+    # note that use total pension income (e01500) since don't have both the 
+    # taxable (e01700) and non-taxable pension income separately
+    # don't appear to have variable for non-taxable IRS distributions
+    capital_income_sources = ('e00300', 'e00400', 'e00600',
+                                'e00650', 'e01400',
+                                'e01500', 'e02000',
+                                'e22250','e23250')
+
+    # calculating MTRs separately - can skip items with zero tax
+    all_mtrs = {income_source: calc1.mtr(income_source) for income_source in capital_income_sources_taxed}
+    # Get each column of income sources - need to include non-taxable capital income
     record_columns = [getattr(calc1.records, income_source) for income_source in capital_income_sources]
     # weighted average of all those MTRs
     total = sum(record_columns)
     # i.e., capital_gain_mtr = (e00300 * mtr_iit_300 + e00400 * mtr_iit_400 + ... + e23250 * mtr_iit_23250) /
     #                           sum_of_all_ten_variables
-    capital_gain_mtr = [ col * all_mtrs[source][1] for col, source in zip(record_columns, capital_income_sources)]
-    mtr_iit_capinc = sum(capital_gain_mtr) / total
+    # Note that all_mtrs gives fica (0), iit (1), and combined (2) mtrs  - we'll use the combined - hence all_mtrs[source][2]
+    capital_gain_mtr = [ col * all_mtrs[source][2] for col, source in zip(record_columns, capital_income_sources_taxed)]
+    mtr_combined_capinc = sum(capital_gain_mtr) / total
 
     #Get the total of every capital income source
 
     #if every item in capital_income_sources == 0: # no capital income taxpayers
     if np.all(total == 0): # no capital income taxpayers
-        mtr_itt_capinc = all_mtrs['e00300'][1] # give all the weight to interest income
+        mtr_combined_capinc = all_mtrs['e00300'][2] # give all the weight to interest income
 
     # create a temporary array to save all variables we need
     length = len(calc1.records.s006)
@@ -98,7 +107,7 @@ def get_data():
     # e00200 - wage and salaries, _sey - self-employed income
     temp[:,0] = mtr_combined
     temp[:,1] = mtr_combined_sey
-    temp[:,2] = mtr_iit_capinc
+    temp[:,2] = mtr_combined_capinc
     temp[:,3] = calc1.records.age
     temp[:,4] = calc1.records.e00200
     temp[:,5] = calc1.records._sey
@@ -129,7 +138,7 @@ def get_data():
         temp = np.empty([length, 11])
         temp[:,0] = mtr_combined
         temp[:,1] = mtr_combined_sey
-        temp[:,2] = mtr_iit_capinc
+        temp[:,2] = mtr_combined_capinc
         temp[:,3] = calc1.records.age
         temp[:,4] = calc1.records.e00200
         temp[:,5] = calc1.records._sey
@@ -145,7 +154,7 @@ def get_data():
                                   'Adjusted Total income','Total Tax Liability','Year', 'Weights'])
         print 'year: ', i
     
-    pkl_path = "micro_data_w_capmtr_policy.pkl"
+    pkl_path = "micro_data_w_capmtr_policy_12142015.pkl"
     pickle.dump(micro_data_dict, open(pkl_path, "wb"))
 
     return micro_data_dict

@@ -34,7 +34,6 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 
 import get_micro_data
-reload(get_micro_data)
 
 
 '''
@@ -484,7 +483,7 @@ def tax_func_estimate():
 
     # call tax caculator and get microdata
     micro_data = get_micro_data.get_data()
-    #micro_data = pickle.load( open( "micro_data_w_capmtr_baseline.pkl", "rb" ) )
+    #micro_data = pickle.load( open( "micro_data_w_capmtr_policy_12142015.pkl", "rb" ) )
 
 
     for t in years_list: #range(2024, 2025): #
@@ -537,8 +536,8 @@ def tax_func_estimate():
         TotPop_yr[t-beg_yr] = data['Weights'].sum()
 
         # Clean up the data by dropping outliers
-        # drop all obs with ETR > 0.5
-        data_trnc = data.drop(data[data['Effective Tax Rate'] >0.5].index)
+        # drop all obs with ETR > 0.65
+        data_trnc = data.drop(data[data['Effective Tax Rate'] >0.65].index)
         # drop all obs with ETR < -0.15
         data_trnc = data_trnc.drop(data_trnc[data_trnc['Effective Tax Rate']
                     < -0.15].index)
@@ -1451,5 +1450,5 @@ def tax_func_estimate():
 def get_tax_func_estimate():
     # Code to run manually from here:
     dict_params = tax_func_estimate()
-    pkl_path = "TxFuncEst_policy.pkl"
+    pkl_path = "TxFuncEst_policy_12142015.pkl"
     pickle.dump(dict_params, open(pkl_path, "wb"))
