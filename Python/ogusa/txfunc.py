@@ -20,6 +20,7 @@ This Python script outputs the following:
 '''
 # Import packages
 import time
+import os
 import numpy as np
 import numpy.random as rnd
 import scipy.optimize as opt
@@ -35,6 +36,7 @@ from matplotlib import cm
 
 import get_micro_data
 
+TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
 
 '''
 ------------------------------------------------------------------------
@@ -404,7 +406,7 @@ def wsumsq(params, *objs):
     return wssqdev
 
 
-def tax_func_estimate():
+def tax_func_estimate(baseline=False, reform={}):
     '''
     --------------------------------------------------------------------
     This function estimates functions for the ETR, MTR on Labor Income,
@@ -1447,8 +1449,12 @@ def tax_func_estimate():
     return dict_params
 
 
-def get_tax_func_estimate():
+def get_tax_func_estimate(baseline=False, reform={}):
     # Code to run manually from here:
-    dict_params = tax_func_estimate()
-    pkl_path = "TxFuncEst_policy_12142015.pkl"
+    dict_params = tax_func_estimate(baseline, reform)
+    if baseline:
+        pkl_path = os.path.join(TAX_ESTIMATE_PATH, "TxFuncEst_baseline.pkl")
+    else:
+        pkl_path = os.path.join(TAX_ESTIMATE_PATH, "TxFuncEst_policy_12142015.pkl")
+
     pickle.dump(dict_params, open(pkl_path, "wb"))

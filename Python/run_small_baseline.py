@@ -17,12 +17,12 @@ from ogusa import parameters, wealth, labor, demographics, income, SS, TPI
 
 from ogusa import txfunc
 
-#txfunc.get_tax_func_estimate(baseline=False)
+#txfunc.get_tax_func_estimate(baseline=True)
 
 from execute import runner
 
 
 if __name__ == "__main__":
-    output_base = "./OUTPUT"
-    input_dir = "./OUTPUT"
-    runner(output_base=output_base, input_dir=input_dir)
+    output_base = "./OUTPUT_BASELINE"
+    input_dir = "./OUTPUT_BASELINE"
+    runner(output_base=output_base, input_dir=input_dir, baseline=True)

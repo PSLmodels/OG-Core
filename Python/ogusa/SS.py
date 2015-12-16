@@ -571,8 +571,7 @@ def function_to_minimize(chi_params_scalars, chi_params_init, tax_params, params
     return value.sum()
 
 
-def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get_baseline=False, calibrate_model=False,
-                     output_dir="./OUTPUT"):
+def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get_baseline=False, calibrate_model=False, output_dir="./OUTPUT"):
     '''
     ------------------------------------------------------------------------
         Run SS
