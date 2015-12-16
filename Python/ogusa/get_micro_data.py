@@ -17,7 +17,7 @@ import numba
 import pickle
 
 
-def get_data():
+def get_data(baseline=False, reform={}):
     '''
     --------------------------------------------------------------------
     This function creates dataframes of micro data from the 
@@ -31,7 +31,7 @@ def get_data():
     policy1 = Policy()
     records1 = Records()
 
-    reform = {
+    """reform = {
     2015: {
         '_II_rt1': [.09],
         '_II_rt2': [.135],
@@ -40,11 +40,12 @@ def get_data():
         '_II_rt5': [.297],
         '_II_rt6': [.315],
         '_II_rt7': [0.3564],
-    }, }
+    }, }"""
 
+    import pdb;pdb.set_trace()
 
-
-    policy1.implement_reform(reform)
+    if not baseline:
+        policy1.implement_reform(reform)
 
     # the default set up increments year to 2013
     calc1 = Calculator(records=records1, policy=policy1)

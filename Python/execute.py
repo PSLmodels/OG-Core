@@ -17,10 +17,10 @@ from ogusa import parameters, wealth, labor, demographics, income, SS, TPI
 
 from ogusa import txfunc
 
-#txfunc.get_tax_func_estimate(baseline=False)
 
-def runner(output_base, input_dir, baseline=False):
+def runner(output_base, input_dir, baseline=False, reform={}, user_params={}):
 
+    #txfunc.get_tax_func_estimate(baseline=baseline, reform=reform)
     globals().update(ogusa.parameters.get_parameters(baseline=baseline))
     #Create output directory structure
     saved_moments_dir = os.path.join(output_base, "Saved_moments")
@@ -85,6 +85,9 @@ def runner(output_base, input_dir, baseline=False):
             sim_params[key] = lcls[key]
 
     sim_params['output_dir'] = input_dir
+
+    # Modify ogusa parameters based on user input
+    sim_params.update(user_params)
 
     income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
 
