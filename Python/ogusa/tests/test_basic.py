@@ -64,8 +64,9 @@ def test_import_ok():
 
 def test_run_small():
     from run_small import runner
-    runner()
-
+    output_base = "./OUTPUT"
+    input_dir = "./OUTPUT"
+    runner(output_base=output_base, input_dir=input_dir)
 
 def test_compare_pickle_file_bad(picklefile1, picklefile2):
     from ogusa.utils import pickle_file_compare
