@@ -9,7 +9,7 @@ import numpy as np
 import time
 
 import ogusa
-ogusa.parameters.DATASET = 'SMALL'
+ogusa.parameters.DATASET = 'REAL'
 
 
 def runner(output_base, input_dir, baseline=False, reform={}, user_params={}):
@@ -17,7 +17,7 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}):
     from ogusa import parameters, wealth, labor, demographics, income, SS, TPI
     from ogusa import txfunc
 
-    #txfunc.get_tax_func_estimate(baseline=baseline, reform=reform)
+    txfunc.get_tax_func_estimate(baseline=baseline, reform=reform)
     globals().update(ogusa.parameters.get_parameters(baseline=baseline))
     #Create output directory structure
     saved_moments_dir = os.path.join(output_base, "Saved_moments")
