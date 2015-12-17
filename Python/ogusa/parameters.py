@@ -21,8 +21,6 @@ import numpy as np
 from demographics import get_omega
 from income import get_e
 import pickle
-#import txfunc
-#txfunc.get_tax_func_estimate()
 
 DATASET = 'REAL'
 PARAMS_FILE = os.path.join(os.path.dirname(__file__), 'default_full_parameters.json')

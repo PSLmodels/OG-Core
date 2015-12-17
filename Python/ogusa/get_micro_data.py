@@ -42,8 +42,6 @@ def get_data(baseline=False, reform={}):
         '_II_rt7': [0.3564],
     }, }"""
 
-    import pdb;pdb.set_trace()
-
     if not baseline:
         policy1.implement_reform(reform)
 
