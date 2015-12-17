@@ -55,18 +55,7 @@ from .parameters import DATASET
 # missing args are income_tax_params, wealth_tax_params, and ellipse_params
 
 
-def create_steady_state_parameters(a_etr_income, b_etr_income, c_etr_income,
-                                   d_etr_income, e_etr_income, f_etr_income, 
-                                   min_x_etr_income, max_x_etr_income, 
-                                   min_y_etr_income, max_y_etr_income,
-                                   a_mtrx_income, b_mtrx_income, c_mtrx_income,
-                                   d_mtrx_income, e_mtrx_income, f_mtrx_income, 
-                                   min_x_mtrx_income, max_x_mtrx_income, 
-                                   min_y_mtrx_income, max_y_mtrx_income,
-                                   a_mtry_income, b_mtry_income, c_mtry_income,
-                                   d_mtry_income, e_mtry_income, f_mtry_income, 
-                                   min_x_mtry_income, max_x_mtry_income, 
-                                   min_y_mtry_income, max_y_mtry_income, 
+def create_steady_state_parameters(etr_params, mtrx_params, mtry_params, 
                                    b_ellipse, upsilon, J, S, T, BW,
                                    beta, sigma, alpha, Z, delta, ltilde, nu,
                                    g_y, tau_payroll, retire,
@@ -84,18 +73,7 @@ def create_steady_state_parameters(a_etr_income, b_etr_income, c_etr_income,
     # Put income tax parameters in a tuple 
     # Assumption here is that tax parameters of last year of budget
     # window continue forever and so will be SS values
-    income_tax_params = (a_etr_income[:,-1], b_etr_income[:,-1], c_etr_income[:,-1],
-                         d_etr_income[:,-1], e_etr_income[:,-1], f_etr_income[:,-1], 
-                         min_x_etr_income[:,-1], max_x_etr_income[:,-1], 
-                         min_y_etr_income[:,-1], max_y_etr_income[:,-1],
-                         a_mtrx_income[:,-1], b_mtrx_income[:,-1], c_mtrx_income[:,-1],
-                         d_mtrx_income[:,-1], e_mtrx_income[:,-1], f_mtrx_income[:,-1], 
-                         min_x_mtrx_income[:,-1], max_x_mtrx_income[:,-1], 
-                         min_y_mtrx_income[:,-1], max_y_mtrx_income[:,-1],
-                         a_mtry_income[:,-1], b_mtry_income[:,-1], c_mtry_income[:,-1],
-                         d_mtry_income[:,-1], e_mtry_income[:,-1], f_mtry_income[:,-1], 
-                         min_x_mtry_income[:,-1], max_x_mtry_income[:,-1], 
-                         min_y_mtry_income[:,-1], max_y_mtry_income[:,-1])
+    income_tax_params = (etr_params[:,-1,:],mtrx_params[:,-1,:],mtry_params[:,-1,:])
 
     # Make a vector of all one dimensional parameters, to be used in the
     # following functions
@@ -135,15 +113,7 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, tax_params, params, chi
                   g_n_ss, tau_payroll, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
 
-    a_etr_income, b_etr_income, \
-        c_etr_income, d_etr_income, e_etr_income, f_etr_income, \
-        min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income, \
-        a_mtrx_income, b_mtrx_income, \
-        c_mtrx_income, d_mtrx_income, e_mtrx_income, f_mtrx_income, \
-        min_x_mtrx_income, max_x_mtrx_income, min_y_mtrx_income, max_y_mtrx_income, \
-        a_mtry_income, b_mtry_income, \
-        c_mtry_income, d_mtry_income, e_mtry_income, f_mtry_income, \
-        min_x_mtry_income, max_x_mtry_income, min_y_mtry_income, max_y_mtry_income = tax_params
+    etr_params, mtrx_params, mtry_params = tax_params
 
     b_guess = np.array(guesses[:S])
     n_guess = np.array(guesses[S:])
@@ -180,8 +150,7 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, tax_params, params, chi
     error1[mask3] = 1e14
     error1[mask5] = 1e14
     error2[mask4] = 1e14
-    tax1_params = (J, S, retire, a_etr_income, b_etr_income, c_etr_income, d_etr_income, e_etr_income, f_etr_income, 
-                   min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income, h_wealth, p_wealth, 
+    tax1_params = (J, S, retire, etr_params, h_wealth, p_wealth, 
                    m_wealth, tau_payroll)
     tax1 = tax.total_taxes(r, b_s, w, e[:, j], n_guess, BQ, lambdas[j], factor,
                            T_H, None, 'SS', False, tax1_params, theta, tau_bq[j])
@@ -189,6 +158,7 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, tax_params, params, chi
                               b_splus1, params, tax1)
     mask6 = cons < 0
     error1[mask6] = 1e14
+
 
     return list(error1.flatten()) + list(error2.flatten())
 
@@ -225,15 +195,17 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
                   g_n_ss, tau_payroll, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
 
-    a_etr_income, b_etr_income, \
-        c_etr_income, d_etr_income, e_etr_income, f_etr_income, \
-        min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income, \
-        a_mtrx_income, b_mtrx_income, \
-        c_mtrx_income, d_mtrx_income, e_mtrx_income, f_mtrx_income, \
-        min_x_mtrx_income, max_x_mtrx_income, min_y_mtrx_income, max_y_mtrx_income, \
-        a_mtry_income, b_mtry_income, \
-        c_mtry_income, d_mtry_income, e_mtry_income, f_mtry_income, \
-        min_x_mtry_income, max_x_mtry_income, min_y_mtry_income, max_y_mtry_income = tax_params
+    # a_etr_income, b_etr_income, \
+    #     c_etr_income, d_etr_income, e_etr_income, f_etr_income, \
+    #     min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income, \
+    #     a_mtrx_income, b_mtrx_income, \
+    #     c_mtrx_income, d_mtrx_income, e_mtrx_income, f_mtrx_income, \
+    #     min_x_mtrx_income, max_x_mtrx_income, min_y_mtrx_income, max_y_mtrx_income, \
+    #     a_mtry_income, b_mtry_income, \
+    #     c_mtry_income, d_mtry_income, e_mtry_income, f_mtry_income, \
+    #     min_x_mtry_income, max_x_mtry_income, min_y_mtry_income, max_y_mtry_income = tax_params
+
+    etr_params, mtrx_params, mtry_params = tax_params
 
     maxiter, mindist_SS = iterative_params
     # Rename the inputs
@@ -292,12 +264,12 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
                                   g_n_ss, 'SS')
         theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, e, J,
                                           weights.reshape(S, 1), lambdas)
-        lump_sum_tax_params = (a_etr_income, b_etr_income, c_etr_income, d_etr_income, 
-                           e_etr_income, f_etr_income, min_x_etr_income, max_x_etr_income, 
-                           min_y_etr_income, max_y_etr_income)
+        # lump_sum_tax_params = (a_etr_income, b_etr_income, c_etr_income, d_etr_income, 
+        #                    e_etr_income, f_etr_income, min_x_etr_income, max_x_etr_income, 
+        #                    min_y_etr_income, max_y_etr_income)
         new_T_H = tax.get_lump_sum(new_r, b_s, new_w, e, nssmat, new_BQ,
                                    lambdas.reshape(1, J), factor,
-                                   weights.reshape(S, 1), 'SS', lump_sum_tax_params, params, theta,
+                                   weights.reshape(S, 1), 'SS', etr_params, params, theta,
                                    tau_bq)
 
         r = utils.convex_combo(new_r, r, nu)
@@ -379,15 +351,7 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
                   g_n_ss, tau_payroll, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
 
-    a_etr_income, b_etr_income, \
-        c_etr_income, d_etr_income, e_etr_income, f_etr_income, \
-        min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income, \
-        a_mtrx_income, b_mtrx_income, \
-        c_mtrx_income, d_mtrx_income, e_mtrx_income, f_mtrx_income, \
-        min_x_mtrx_income, max_x_mtrx_income, min_y_mtrx_income, max_y_mtrx_income, \
-        a_mtry_income, b_mtry_income, \
-        c_mtry_income, d_mtry_income, e_mtry_income, f_mtry_income, \
-        min_x_mtry_income, max_x_mtry_income, min_y_mtry_income, max_y_mtry_income = tax_params
+    etr_params, mtrx_params, mtry_params = tax_params
 
     maxiter, mindist_SS = iterative_params
     # Rename the inputs
@@ -436,12 +400,12 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
                               g_n_ss, 'SS')
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, e, J,
                                       weights.reshape(S, 1), lambdas)
-    lump_sum_tax_params = (a_etr_income, b_etr_income, c_etr_income, d_etr_income, 
-                           e_etr_income, f_etr_income, min_x_etr_income, max_x_etr_income, 
-                           min_y_etr_income, max_y_etr_income)
+    # lump_sum_tax_params = (a_etr_income, b_etr_income, c_etr_income, d_etr_income, 
+    #                        e_etr_income, f_etr_income, min_x_etr_income, max_x_etr_income, 
+    #                        min_y_etr_income, max_y_etr_income)
     new_T_H = tax.get_lump_sum(new_r, b_s, new_w, e, nssmat, new_BQ,
                                lambdas.reshape(1, J), factor,
-                               weights.reshape(S, 1), 'SS', lump_sum_tax_params, params, theta,
+                               weights.reshape(S, 1), 'SS', etr_params, params, theta,
                                tau_bq)
     
     #print 'new r: ', new_r
@@ -451,7 +415,7 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
     error2 = new_r - r
     error3 = new_T_H - T_H
     error4 = new_factor - factor
-    print 'errors: ', error1, error2, error3    , error4
+    print 'errors: ', error1, error2, error3, error4
     print 'T_H: ', new_T_H
     print 'factor: ', new_factor
 
@@ -465,7 +429,6 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
 
     return [error1, error2, error3, error4]
 
-    return errors
 
 
 
@@ -493,15 +456,7 @@ def function_to_minimize(chi_params_scalars, chi_params_init, tax_params, params
                   g_n_ss, tau_payroll, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
 
-    a_etr_income, b_etr_income, \
-        c_etr_income, d_etr_income, e_etr_income, f_etr_income, \
-        min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income,\
-        a_mtrx_income, b_mtrx_income, \
-        c_mtrx_income, d_mtrx_income, e_mtrx_income, f_mtrx_income, \
-        min_x_mtrx_income, max_x_mtrx_income, min_y_mtrx_income, max_y_mtrx_income,\
-        a_mtry_income, b_mtry_income, \
-        c_mtry_income, d_mtry_income, e_mtry_income, f_mtry_income, \
-        min_x_mtry_income, max_x_mtry_income, min_y_mtry_income, max_y_mtry_income = tax_params
+    etr_params, mtrx_params, mtry_params = tax_params
 
     chi_params_init *= chi_params_scalars
     # print 'Print Chi_b: ', chi_params_init[:J]
@@ -583,15 +538,7 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
                   g_n_ss, tau_payroll, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_parameters
 
-    a_etr_income, b_etr_income, \
-        c_etr_income, d_etr_income, e_etr_income, f_etr_income, \
-        min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income, \
-        a_mtrx_income, b_mtrx_income, \
-        c_mtrx_income, d_mtrx_income, e_mtrx_income, f_mtrx_income, \
-        min_x_mtrx_income, max_x_mtrx_income, min_y_mtrx_income, max_y_mtrx_income, \
-        a_mtry_income, b_mtry_income, \
-        c_mtry_income, d_mtry_income, e_mtry_income, f_mtry_income, \
-        min_x_mtry_income, max_x_mtry_income, min_y_mtry_income, max_y_mtry_income = income_tax_parameters
+    etr_params, mtrx_params, mtry_params = income_tax_parameters
 
     if get_baseline:
         # Generate initial guesses for chi^b_j and chi^n_s
@@ -706,12 +653,15 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
     
     
-    taxss_params = (J, S, retire, np.tile(np.reshape(a_etr_income,(S,1)),(1,J)), np.tile(np.reshape(b_etr_income,(S,1)),(1,J)), 
-                    np.tile(np.reshape(c_etr_income,(S,1)),(1,J)), np.tile(np.reshape(d_etr_income,(S,1)),(1,J)), 
-                    np.tile(np.reshape(e_etr_income,(S,1)),(1,J)), np.tile(np.reshape(f_etr_income,(S,1)),(1,J)),
-                    np.tile(np.reshape(min_x_etr_income,(S,1)),(1,J)), np.tile(np.reshape(max_x_etr_income,(S,1)),(1,J)), 
-                    np.tile(np.reshape(min_y_etr_income,(S,1)),(1,J)), np.tile(np.reshape(max_y_etr_income,(S,1)),(1,J)), 
+    taxss_params = (J,S, retire, np.tile(np.reshape(etr_params,(S,1,etr_params.shape[2])),(1,J,1)),
                     h_wealth, p_wealth, m_wealth, tau_payroll)
+
+    # taxss_params = (J, S, retire, np.tile(np.reshape(a_etr_income,(S,1)),(1,J)), np.tile(np.reshape(b_etr_income,(S,1)),(1,J)), 
+    #                 np.tile(np.reshape(c_etr_income,(S,1)),(1,J)), np.tile(np.reshape(d_etr_income,(S,1)),(1,J)), 
+    #                 np.tile(np.reshape(e_etr_income,(S,1)),(1,J)), np.tile(np.reshape(f_etr_income,(S,1)),(1,J)),
+    #                 np.tile(np.reshape(min_x_etr_income,(S,1)),(1,J)), np.tile(np.reshape(max_x_etr_income,(S,1)),(1,J)), 
+    #                 np.tile(np.reshape(min_y_etr_income,(S,1)),(1,J)), np.tile(np.reshape(max_y_etr_income,(S,1)),(1,J)), 
+    #                 h_wealth, p_wealth, m_wealth, tau_payroll)
     taxss = tax.total_taxes(rss, b_s, wss, e, nssmat, BQss, lambdas,
                             factor_ss, T_Hss, None, 'SS', False, taxss_params, theta, tau_bq)
     cssmat = household.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(
