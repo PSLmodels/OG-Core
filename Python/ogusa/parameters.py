@@ -23,7 +23,6 @@ from income import get_e
 import pickle
 import txfunc
 
-txfunc.get_tax_func_estimate()
 
 DATASET = 'REAL'
 
@@ -350,6 +349,40 @@ def get_full_parameters():
 
 
     # # zero out income taxes:
+
+    # a_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,0]
+    # b_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,1]
+    # c_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,2]
+    # d_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,3]
+    # e_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,4]
+    # f_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,5]
+    # max_x_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,6]
+    # min_x_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,7]
+    # max_y_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,8]
+    # min_y_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,9]
+
+    # a_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,0]
+    # b_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,1]
+    # c_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,2]
+    # d_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,3]
+    # e_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,4]
+    # f_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,5]
+    # max_x_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,6]
+    # min_x_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,7]
+    # max_y_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,8]
+    # min_y_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,9]
+
+    # a_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,0]
+    # b_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,1]
+    # c_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,2]
+    # d_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,3]
+    # e_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,4]
+    # f_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,5]
+    # max_x_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,6]
+    # min_x_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,7]
+    # max_y_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,8]
+    # min_y_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,9]
+
     # max_x_etr_income = np.ones((S,BW))*0.0
     # min_x_etr_income = np.ones((S,BW))*0.0
     # max_y_etr_income = np.ones((S,BW))*0.0

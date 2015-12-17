@@ -11,8 +11,8 @@ p4
 tS'b'
 tRp5
 (I1
-(L78L
-L7L
+(I78
+I7
 tcnumpy
 dtype
 p6

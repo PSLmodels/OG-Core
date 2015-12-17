@@ -124,8 +124,8 @@ def tau_income(r, b, w, e, n, factor, params):
     B = b_etr_income
     C = c_etr_income
     D = d_etr_income
-    E = d_etr_income
-    F = d_etr_income
+    E = e_etr_income
+    F = f_etr_income
     min_x = min_x_etr_income
     max_x = max_x_etr_income
     min_y = min_y_etr_income
@@ -165,8 +165,8 @@ def tau_capital_deriv(r, b, w, e, n, factor, params):
     B = b_tax_income
     C = c_tax_income
     D = d_tax_income
-    E = d_tax_income
-    F = d_tax_income
+    E = e_tax_income
+    F = f_tax_income
     min_x = min_x_tax_income
     max_x = max_x_tax_income
     min_y = min_y_tax_income
@@ -208,8 +208,8 @@ def MTR_capital(r, b, w, e, n, factor, params):
     B = b_mtry_income
     C = c_mtry_income
     D = d_mtry_income
-    E = d_mtry_income
-    F = d_mtry_income
+    E = e_mtry_income
+    F = f_mtry_income
     min_x = min_x_mtry_income
     max_x = max_x_mtry_income
     min_y = min_y_mtry_income
@@ -249,8 +249,8 @@ def MTR_labor(r, b, w, e, n, factor, params):
     B = b_mtrx_income
     C = c_mtrx_income
     D = d_mtrx_income
-    E = d_mtrx_income
-    F = d_mtrx_income
+    E = e_mtrx_income
+    F = f_mtrx_income
     min_x = min_x_mtrx_income
     max_x = max_x_mtrx_income
     min_y = min_y_mtrx_income
@@ -290,8 +290,8 @@ def tau_labor_deriv(r, b, w, e, n, factor, params):
     B = b_tax_income
     C = c_tax_income
     D = d_tax_income
-    E = d_tax_income
-    F = d_tax_income
+    E = e_tax_income
+    F = f_tax_income
     min_x = min_x_tax_income
     max_x = max_x_tax_income
     min_y = min_y_tax_income
