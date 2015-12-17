@@ -1455,6 +1455,6 @@ def get_tax_func_estimate(baseline=False, reform={}):
     if baseline:
         pkl_path = os.path.join(TAX_ESTIMATE_PATH, "TxFuncEst_baseline.pkl")
     else:
-        pkl_path = os.path.join(TAX_ESTIMATE_PATH, "TxFuncEst_policy_12142015.pkl")
+        pkl_path = os.path.join(TAX_ESTIMATE_PATH, "TxFuncEst_policy.pkl")
 
     pickle.dump(dict_params, open(pkl_path, "wb"))
