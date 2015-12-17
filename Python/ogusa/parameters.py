@@ -25,8 +25,9 @@ import txfunc
 
 
 DATASET = 'REAL'
-
 PARAMS_FILE = os.path.join(os.path.dirname(__file__), 'default_full_parameters.json')
+
+TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
 
 
 def get_parameters_from_file():
@@ -37,11 +38,11 @@ def get_parameters_from_file():
                 j[key] = np.array(j[key])
         return j
 
-def get_parameters():
+def get_parameters(baseline=False):
     if DATASET == 'REAL':
-        return get_full_parameters()
+        return get_full_parameters(baseline=baseline)
     elif DATASET == 'SMALL':
-        return get_reduced_parameters()
+        return get_reduced_parameters(baseline=baseline)
     else:
         raise ValueError("Unknown value {0}".format(DATASET))
 
@@ -128,7 +129,7 @@ e            = age dependent possible working abilities (SxJ array)
 '''
 
 
-def get_reduced_parameters():
+def get_reduced_parameters(baseline):
     # Model Parameters
     starting_age = 40
     ending_age = 50
@@ -157,8 +158,14 @@ def get_reduced_parameters():
     #   Income Tax Parameters
     ####  will call tax function estimation function here...
     ### do output such that each parameters is in a separate SxBW array
-    dict_params = pickle.load( open( "TxFuncEst_policy.pkl", "rb" ) )
-    #dict_params = txfunc.tax_func_estimate()
+    if baseline:
+        estimate_file = os.path.join(TAX_ESTIMATE_PATH,
+                                     "TxFuncEst_baseline_w_mtrs2.pkl")
+    else:
+        estimate_file = os.path.join(TAX_ESTIMATE_PATH,
+                                     "TxFuncEst_policy.pkl")
+
+    dict_params = pickle.load( open( estimate_file, "rb" ) )
 
     # print 'etr mins: ', dict_params['tfunc_etr_params_S'].min(axis=(0,1))
     # print 'etr maxes: ', dict_params['tfunc_etr_params_S'].max(axis=(0,1))
@@ -263,7 +270,7 @@ def get_reduced_parameters():
     return allvars
 
 
-def get_full_parameters():
+def get_full_parameters(baseline):
     # Model Parameters
     S = int(80)
     J = int(7)
@@ -293,8 +300,11 @@ def get_full_parameters():
     #  will call tax function estimation function here...
     # do output such that each parameters is in a separate SxBW array
     # read in estimated parameters
-    dict_params = pickle.load( open( "TxFuncEst_policy.pkl", "rb" ) )
-    #dict_params = txfunc.tax_func_estimate()
+    if baseline:
+        dict_params = pickle.load( open( "TxFuncEst_baseline_w_mtrs2.pkl", "rb" ) )
+    else:
+        dict_params = pickle.load( open( "TxFuncEst_policy.pkl", "rb" ) )
+
 
     # print 'etr mins: ', dict_params['tfunc_etr_params_S'].min(axis=(0,1))
     # print 'etr maxes: ', dict_params['tfunc_etr_params_S'].max(axis=(0,1))

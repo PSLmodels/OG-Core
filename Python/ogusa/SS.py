@@ -195,7 +195,7 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, tax_params, params, chi
 
 def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
               factorguess, chi_n, chi_b, tax_params, params, iterative_params, tau_bq,
-              rho, lambdas, weights, e, fsolve_flag):
+              rho, lambdas, weights, e, fsolve_flag=False):
     '''
     Solves for the steady state distribution of capital, labor, as well as
     w, r, T_H and the scaling factor, using an iterative method similar to TPI.
@@ -516,7 +516,7 @@ def function_to_minimize(chi_params_scalars, chi_params_init, tax_params, params
     wguess, rguess, factorguess, T_Hguess = solutions[(2 * S * J):]
     solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess,
                           rguess, T_Hguess, factorguess, chi_params_init[J:],
-                          chi_params_init[:J], params, iterative_params,
+                          chi_params_init[:J], tax_params, params, iterative_params,
                           tau_bq, rho, lambdas, weights_SS, e)
 
     b_new = solutions[:(S * J)]
@@ -524,7 +524,7 @@ def function_to_minimize(chi_params_scalars, chi_params_init, tax_params, params
     w_new, r_new, factor_new, T_H_new = solutions[(2 * S * J):]
     # Wealth Calibration Euler
     error5 = list(utils.check_wealth_calibration(b_new.reshape(S, J)[:-1, :],
-                                                 factor_new, params))
+                                                 factor_new, params, output_dir))
     # labor calibration euler
     labor_path = os.path.join(
         output_dir, "Saved_moments/labor_data_moments.pkl")
@@ -571,8 +571,7 @@ def function_to_minimize(chi_params_scalars, chi_params_init, tax_params, params
     return value.sum()
 
 
-def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get_baseline=False, calibrate_model=False,
-                     output_dir="./OUTPUT"):
+def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get_baseline=False, calibrate_model=False, output_dir="./OUTPUT"):
     '''
     ------------------------------------------------------------------------
         Run SS
@@ -625,7 +624,7 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
                 output_dir, "Saved_moments/SS_init_solutions.pkl")
             pickle.dump(outputs, open(ss_init_path, "wb"))
             function_to_minimize_X = lambda x: function_to_minimize(
-                x, chi_params, income_tax_params, ss_parameters, iterative_params, omega_SS, rho, lambdas, tau_bq, e, output_dir)
+                x, chi_params, income_tax_parameters, ss_parameters, iterative_params, omega_SS, rho, lambdas, tau_bq, e, output_dir)
             bnds = tuple([(1e-6, None)] * (S + J))
             # In order to scale all the parameters to estimate in the minimizer, we have the minimizer fit a vector of ones that
             # will be multiplied by the chi initial guesses inside the function.  Otherwise, if chi^b_j=1e5 for some j, and the
