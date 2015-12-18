@@ -88,7 +88,7 @@ income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_p
 ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, get_baseline, calibrate_model)
 
 print 'finished SS'
-quit()
+
 '''
 ------------------------------------------------------------------------
     Run the baseline TPI simulation
@@ -121,6 +121,7 @@ ss_outputs['g_n_vector'] = g_n_vector
 w_path, r_path, T_H_path, BQ_path = TPI.run_time_path_iteration(**ss_outputs)
 TPI.TP_solutions(w_path, r_path, T_H_path, BQ_path, **ss_outputs)
 
+quit()
 
 # # Use fsolve to find time path
 # J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
