@@ -118,6 +118,7 @@ def tau_income(r, b, w, e, n, factor, etr_params):
     Output:
         tau = tau_income (various length array or scalar)
     '''
+
     if etr_params.ndim == 3: 
         A = etr_params[:,:,0]
         B = etr_params[:,:,1]
@@ -141,15 +142,6 @@ def tau_income(r, b, w, e, n, factor, etr_params):
         max_y = etr_params[:,8]
         min_y = etr_params[:,9]
 
-    # B = b_etr_income
-    # C = c_etr_income
-    # D = d_etr_income
-    # E = d_etr_income
-    # F = d_etr_income
-    # min_x = min_x_etr_income
-    # max_x = max_x_etr_income
-    # min_y = min_y_etr_income
-    # max_y = max_y_etr_income
     x = (w*e*n)*factor
     y = (r*b)*factor
     I = x+y
@@ -162,7 +154,6 @@ def tau_income(r, b, w, e, n, factor, etr_params):
     denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
     tau =  (Phi*(num/denom)) + K
     return tau
-
 
 
 
@@ -195,16 +186,6 @@ def MTR_capital(r, b, w, e, n, factor, mtry_params):
     max_y = mtry_params[:,8]
     min_y = mtry_params[:,9]
     
-    # A = a_mtry_income
-    # B = b_mtry_income
-    # C = c_mtry_income
-    # D = d_mtry_income
-    # E = d_mtry_income
-    # F = d_mtry_income
-    # min_x = min_x_mtry_income
-    # max_x = max_x_mtry_income
-    # min_y = min_y_mtry_income
-    # max_y = max_y_mtry_income
     x = (w*e*n)*factor
     y = (r*b)*factor
     I = x+y
@@ -234,9 +215,7 @@ def MTR_labor(r, b, w, e, n, factor, mtrx_params):
     Output:
         tau = derivative of tau_income w.r.t. labor income (various length array or scalar)
     '''
-    # a_mtrx_income, b_mtrx_income, c_mtrx_income, d_mtrx_income, e_mtrx_income, f_mtrx_income,\
-    #                   min_x_mtrx_income, max_x_mtrx_income, min_y_mtrx_income, max_y_mtrx_income = params
-    
+
     A = mtrx_params[:,0]
     B = mtrx_params[:,1]
     C = mtrx_params[:,2]
@@ -247,17 +226,7 @@ def MTR_labor(r, b, w, e, n, factor, mtrx_params):
     min_x = mtrx_params[:,7]
     max_y = mtrx_params[:,8]
     min_y = mtrx_params[:,9]
-                      
-    # A = a_mtrx_income
-    # B = b_mtrx_income
-    # C = c_mtrx_income
-    # D = d_mtrx_income
-    # E = d_mtrx_income
-    # F = d_mtrx_income
-    # min_x = min_x_mtrx_income
-    # max_x = max_x_mtrx_income
-    # min_y = min_y_mtrx_income
-    # max_y = max_y_mtrx_income
+  
     x = (w*e*n)*factor
     y = (r*b)*factor
     I = x+y
@@ -270,9 +239,6 @@ def MTR_labor(r, b, w, e, n, factor, mtrx_params):
     denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
     tau =  (Phi*(num/denom)) + K
     return tau
-
-
-
 
 
 def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, weights, method, etr_params, params, theta, tau_bq):

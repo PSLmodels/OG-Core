@@ -987,11 +987,11 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
         print '\tIteration:', TPIiter
         print '\t\tDistance:', TPIdist
 
-    return winit[:T], rinit[:T], T_H_init[:T], BQinit[:T]
+    return winit[:T], rinit[:T], T_H_init[:T], BQinit[:T], Yinit
 
 
 
-def TP_solutions(winit, rinit, T_H_init, BQinit2, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_tax_params, ellipse_params, parameters, g_n_vector, 
+def TP_solutions(winit, rinit, T_H_init, BQinit2, Yinit, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_tax_params, ellipse_params, parameters, g_n_vector, 
                            omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, 
                            T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, 
                            chi_n, get_baseline=False, output_dir="./OUTPUT", **kwargs):
@@ -1284,7 +1284,7 @@ def TP_solutions(winit, rinit, T_H_init, BQinit2, Kss, Lss, Yss, BQss, theta, in
     macro_output = {'Kpath_TPI': Kpath_TPI, 'C_path': C_path, 'I_path': I_path,
               'Lpath_TPI': Lpath_TPI, 'BQpath_TPI': BQpath_TPI,
               'rinit': rinit, 'Y_path': Y_path, 'T_H_init': T_H_init,
-              'winit': winit}
+              'winit': winit, 'Yinit': Yinit}
 
     # macro_ns_output = {'K_ns_path': K_ns_path, 'C_ns_path': C_ns_path, 'I_ns_path': I_ns_path,
     #           'L_ns_path': L_ns_path, 'BQ_ns_path': BQ_ns_path,

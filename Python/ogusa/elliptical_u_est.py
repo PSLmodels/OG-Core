@@ -82,16 +82,8 @@ def sumsq_MU(params, *objs):
     '''
     theta, l_tilde, n_grid = objs
     b, upsilon = params
-    CFE_MU = n_grid**theta #(l_tilde-n_grid)**theta
-    # ellipse_MU = b * (1.0 / l_tilde) * ((1.0 - (n_grid / l_tilde) ** upsilon) ** ((1.0 / upsilon) - 1.0)) * (n_grid / l_tilde) ** (upsilon - 1.0)
+    CFE_MU = (1.0/l_tilde)*((n_grid/l_tilde)**theta)
     ellipse_MU =  b * (1.0 / l_tilde) * ((1.0 - (n_grid / l_tilde) ** upsilon) ** ((1.0 / upsilon) - 1.0)) * (n_grid / l_tilde) ** (upsilon - 1.0)
-        
-    #ellipse_MU = b*((1-np.absolute(l_tilde-n_grid))**upsilon)**((1/upsilon)-1)*np.absolute(l_tilde-n_grid)**(upsilon-1)
-    #b *((1-n_grid**upsilon)**((1/upsilon)-1))*(1-n_grid**(upsilon-1))
-    #ellipse_MU = -1.0*b * (1.0 / upsilon) * ((1.0 - (n_grid / l_tilde) ** upsilon) ** ((1.0 / upsilon) - 1.0)) * (n_grid / l_tilde) ** (upsilon - 1.0)
-    #ellipse_MU = b * ((1-np.absolute(l_tilde-n_grid))**upsilon)**((1-upsilon)/upsilon)*np.absolute(l_tilde-n_grid)**(upsilon-1)
-    #print CFE_MU
-    #print ellipse_MU
     errors = CFE_MU - ellipse_MU
     ssqdev = (errors ** 2).sum()
     #ssqdev = (np.abs(errors)).sum()
@@ -125,7 +117,6 @@ def estimation(frisch, l_tilde):
     # start_time = time.clock()
 
 
-
     '''
     ------------------------------------------------------------------------
     Estimate parameters of ellipitical utility function
@@ -146,6 +137,7 @@ def estimation(frisch, l_tilde):
     upsilon_til         = scalar > 0, estimate of upsilon
     ------------------------------------------------------------------------
     '''
+
     # Initial guesses
     b_init = .6701
     k_init = -.6548
@@ -208,8 +200,10 @@ def estimation(frisch, l_tilde):
         plt.show()
 
 
-        CFE_MU = n_grid**theta #(l_tilde-n_grid)**theta
-        ellipse_MU = 1.0*b_MU_til * (1.0 / l_tilde) * ((1.0 - (n_grid / l_tilde) ** upsilon_MU_til) ** ((1.0 / upsilon_MU_til) - 1.0)) * (n_grid / l_tilde) ** (upsilon_MU_til - 1.0)
+
+        CFE_MU = (1.0/l_tilde)*((n_grid/l_tilde)**theta)
+        ellipse_MU = (1.0*b_MU_til * (1.0 / l_tilde) * ((1.0 - (n_grid / l_tilde) ** upsilon_MU_til) 
+                     ** ((1.0 / upsilon_MU_til) - 1.0)) * (n_grid / l_tilde) ** (upsilon_MU_til - 1.0))
         fig, ax = plt.subplots()
         plt.plot(n_grid, CFE_MU, 'r--', label='CFE')
         plt.plot(n_grid, ellipse_MU, 'b', label='Elliptical U')
@@ -223,5 +217,7 @@ def estimation(frisch, l_tilde):
         # plt.savefig('cm_ss_Chap11')
         plt.show()
 
+
     #return b_til, k_til, upsilon_til
     return b_MU_til, upsilon_MU_til
+

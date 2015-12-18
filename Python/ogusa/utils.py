@@ -75,12 +75,15 @@ def check_wealth_calibration(wealth_model, factor_model, params, wealth_dir):
     # Import the wealth data moments
     wealth_path = os.path.join(
         wealth_dir, "Saved_moments/wealth_data_moments.pkl")
-    wealth_dict = pickle.load(wealth_path, "rb")
+    wealth_dict = pickle.load(open(wealth_path, "rb"))
     # Set lowest ability group's wealth to be a positive, not negative, number
     # for the calibration
     wealth_dict['wealth_data_array'][2:26, 0] = 500.0
-    J, S, T, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
-        a_tax_income, b_tax_income, c_tax_income, d_tax_income, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+
+    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
+                  g_n_ss, tau_payroll, retire, mean_income_data,\
+                  h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+
     # Convert wealth levels from model to dollar terms
     wealth_model_dollars = wealth_model * factor_model
     wealth_fits = np.zeros(2 * J)
