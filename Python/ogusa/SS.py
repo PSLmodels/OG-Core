@@ -653,7 +653,7 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
     
     
-    taxss_params = (J,S, retire, np.tile(np.reshape(etr_params,(S,1,etr_params.shape[2])),(1,J,1)),
+    taxss_params = (J,S, retire, np.tile(np.reshape(etr_params,(S,1,etr_params.shape[1])),(1,J,1)),
                     h_wealth, p_wealth, m_wealth, tau_payroll)
 
     # taxss_params = (J, S, retire, np.tile(np.reshape(a_etr_income,(S,1)),(1,J)), np.tile(np.reshape(b_etr_income,(S,1)),(1,J)), 

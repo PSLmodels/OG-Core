@@ -118,17 +118,28 @@ def tau_income(r, b, w, e, n, factor, etr_params):
     Output:
         tau = tau_income (various length array or scalar)
     '''
-
-    A = etr_params[:,0]
-    B = etr_params[:,1]
-    C = etr_params[:,2]
-    D = etr_params[:,3]
-    E = etr_params[:,4]
-    F = etr_params[:,5]
-    min_x = etr_params[:,6]
-    max_x = etr_params[:,7]
-    min_y = etr_params[:,8]
-    max_y = etr_params[:,9]
+    if etr_params.ndim == 3: 
+        A = etr_params[:,:,0]
+        B = etr_params[:,:,1]
+        C = etr_params[:,:,2]
+        D = etr_params[:,:,3]
+        E = etr_params[:,:,4]
+        F = etr_params[:,:,5]
+        max_x = etr_params[:,:,6]
+        min_x = etr_params[:,:,7]
+        max_y = etr_params[:,:,8]
+        min_y = etr_params[:,:,9]
+    if etr_params.ndim == 2: 
+        A = etr_params[:,0]
+        B = etr_params[:,1]
+        C = etr_params[:,2]
+        D = etr_params[:,3]
+        E = etr_params[:,4]
+        F = etr_params[:,5]
+        max_x = etr_params[:,6]
+        min_x = etr_params[:,7]
+        max_y = etr_params[:,8]
+        min_y = etr_params[:,9]
 
     # B = b_etr_income
     # C = c_etr_income
@@ -179,10 +190,10 @@ def MTR_capital(r, b, w, e, n, factor, mtry_params):
     D = mtry_params[:,3]
     E = mtry_params[:,4]
     F = mtry_params[:,5]
-    min_x = mtry_params[:,6]
-    max_x = mtry_params[:,7]
-    min_y = mtry_params[:,8]
-    max_y = mtry_params[:,9]
+    max_x = mtry_params[:,6]
+    min_x = mtry_params[:,7]
+    max_y = mtry_params[:,8]
+    min_y = mtry_params[:,9]
     
     # A = a_mtry_income
     # B = b_mtry_income
@@ -232,10 +243,10 @@ def MTR_labor(r, b, w, e, n, factor, mtrx_params):
     D = mtrx_params[:,3]
     E = mtrx_params[:,4]
     F = mtrx_params[:,5]
-    min_x = mtrx_params[:,6]
-    max_x = mtrx_params[:,7]
-    min_y = mtrx_params[:,8]
-    max_y = mtrx_params[:,9]
+    max_x = mtrx_params[:,6]
+    min_x = mtrx_params[:,7]
+    max_y = mtrx_params[:,8]
+    min_y = mtrx_params[:,9]
                       
     # A = a_mtrx_income
     # B = b_mtrx_income
