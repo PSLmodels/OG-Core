@@ -96,7 +96,7 @@ def create_tpi_params(etr_params, mtrx_params, mtry_params,
 
     mtry_params_TP = np.zeros((S,T+S,mtry_params.shape[2]))
     mtry_params_TP[:,:BW,:] = mtry_params
-    mtry_params_TP[:,BW:,:] = np.reshape(mtrx_params[:,BW-1,:],(S,1,mtry_params.shape[2]))
+    mtry_params_TP[:,BW:,:] = np.reshape(mtry_params[:,BW-1,:],(S,1,mtry_params.shape[2]))
 
     income_tax_params = (etr_params_TP, mtrx_params_TP, mtry_params_TP)
 
@@ -276,7 +276,15 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
     #                  np.array(list(min_y_etr_income) + [min_y_etr_income[-1]])[1:], 
     #                  np.array(list(max_y_etr_income) + [max_y_etr_income[-1]])[1:], h_wealth, p_wealth, m_wealth, tau_payroll)
 
+#    print 'shape etr_params: ', etr_params.shape
     etr_params_sp1 = np.append(etr_params,np.reshape(etr_params[-1,:],(1,etr_params.shape[1])),axis=0)[1:,:]
+    # print 'shape etr_params_sp1: ', etr_params_sp1.shape
+
+    # etr_a_sp1 = np.array(list(etr_params[:,0]) + [etr_params[-1,0]])[1:]
+
+    # print 'check sp1, etr: ', etr_params_sp1[:,0]- etr_a_sp1
+    
+
     taxsp1_params = (J, S, retire, etr_params_sp1, h_wealth, p_wealth, m_wealth, tau_payroll)
     tax_splus1 = tax.total_taxes(r_splus1, b_splus1, w_splus1, e_extended, n_extended, BQ_splus1, lambdas[
                                  j], factor, T_H_splus1, j, 'TPI', True, taxsp1_params, theta, tau_bq)
@@ -300,6 +308,12 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
     #                  np.array(list(min_y_mtry_income) + [min_y_mtry_income[-1]])[1:], 
     #                  np.array(list(max_y_mtry_income) + [max_y_mtry_income[-1]])[1:]) 
     mtry_params_sp1 = np.append(mtry_params,np.reshape(mtry_params[-1,:],(1,mtry_params.shape[1])),axis=0)[1:,:]
+
+    # mtry_a_sp1 = np.array(list(mtry_params[:,0]) + [mtry_params[-1,0]])[1:]
+
+    # print 'check sp1, mtry: ', mtry_params_sp1[:,0]- mtry_a_sp1
+    # quit ()
+
     wealth_tax_params = (h_wealth, p_wealth, m_wealth)
     deriv_savings = 1 + r_splus1 * (1 - tax.MTR_capital(
         r_splus1, b_splus1, w_splus1, e_extended, n_extended, factor, mtry_params_sp1))
@@ -683,8 +697,8 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
                 # initialize array of diagonal elements
                 length_diag = (np.diag(np.transpose(etr_params[:S,:,0]),S-(s+2))).shape[0]
                 etr_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
-                mtrx_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
-                mtry_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
+                mtrx_params_to_use = np.zeros((length_diag,mtrx_params.shape[2]))
+                mtry_params_to_use = np.zeros((length_diag,mtry_params.shape[2]))
                 for i in range(etr_params.shape[2]):
                     etr_params_to_use[:,i] = np.diag(np.transpose(etr_params[:S,:,i]),S-(s+2))
                     mtrx_params_to_use[:,i] = np.diag(np.transpose(mtrx_params[:S,:,i]),S-(s+2))
@@ -713,8 +727,8 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
                 # initialize array of diagonal elements
                 length_diag = (np.diag(np.transpose(etr_params[:,t:t+S,i]))).shape[0]
                 etr_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
-                mtrx_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
-                mtry_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
+                mtrx_params_to_use = np.zeros((length_diag,mtrx_params.shape[2]))
+                mtry_params_to_use = np.zeros((length_diag,mtry_params.shape[2]))
                 for i in range(etr_params.shape[2]):
                     etr_params_to_use[:,i] = np.diag(np.transpose(etr_params[:,t:t+S,i]))
                     mtrx_params_to_use[:,i] = np.diag(np.transpose(mtrx_params[:,t:t+S,i]))
@@ -749,10 +763,16 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
         bmat_s = np.zeros((T, S, J))
         bmat_s[:, 1:, :] = b_mat[:T, :-1, :]
 
-        TH_tax_params = np.tile(np.reshape(etr_params[:,:T,:],(T,S,1,etr_params.shape[2])),(1,1,J,1))
+        # initialize array 
+        TH_tax_params = np.zeros((T,S,J,etr_params.shape[2]))
+        for i in range(etr_params.shape[2]):
+            TH_tax_params[:,:,:,i] = np.tile(np.reshape(np.transpose(etr_params[:,:T,i]),(T,S,1)),(1,1,J))
+
+
+        #TH_tax_params = np.tile(np.reshape(etr_params[:,:T,:],(T,S,1,etr_params.shape[2])),(1,1,J,1))
 
         #a_tax_params = np.tile(np.reshape(np.transpose(etr_params[:,:T,0]),(T,S,1)),(1,1,J))
-        a_tax_params = np.tile(np.reshape(etr_params[:,:T,0],(T,S,1)),(1,1,J))
+        #a_tax_params = np.tile(np.reshape(etr_params[:,:T,0],(T,S,1)),(1,1,J))
 
 
         # TH_tax_params = (np.tile(np.reshape(np.transpose(a_etr_income[:,:T]),(T,S,1)),(1,1,J)), 
@@ -885,8 +905,8 @@ def TP_solutions(winit, rinit, T_H_init, BQinit2, Yinit, Kss, Lss, Yss, BQss, th
             # initialize array of diagonal elements
             length_diag = (np.diag(np.transpose(etr_params[:S,:,0]),S-(s+2))).shape[0]
             etr_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
-            mtrx_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
-            mtry_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
+            mtrx_params_to_use = np.zeros((length_diag,mtrx_params.shape[2]))
+            mtry_params_to_use = np.zeros((length_diag,mtry_params.shape[2]))
             for i in range(etr_params.shape[2]):
                 etr_params_to_use[:,i] = np.diag(np.transpose(etr_params[:S,:,i]),S-(s+2))
                 mtrx_params_to_use[:,i] = np.diag(np.transpose(mtrx_params[:S,:,i]),S-(s+2))
@@ -908,8 +928,8 @@ def TP_solutions(winit, rinit, T_H_init, BQinit2, Yinit, Kss, Lss, Yss, BQss, th
             # initialize array of diagonal elements
             length_diag = (np.diag(np.transpose(etr_params[:,t:t+S,i]))).shape[0]
             etr_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
-            mtrx_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
-            mtry_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
+            mtrx_params_to_use = np.zeros((length_diag,mtrx_params.shape[2]))
+            mtry_params_to_use = np.zeros((length_diag,mtry_params.shape[2]))
             for i in range(etr_params.shape[2]):
                 etr_params_to_use[:,i] = np.diag(np.transpose(etr_params[:,t:t+S,i]))
                 mtrx_params_to_use[:,i] = np.diag(np.transpose(mtrx_params[:,t:t+S,i]))
@@ -960,7 +980,12 @@ def TP_solutions(winit, rinit, T_H_init, BQinit2, Yinit, Kss, Lss, Yss, BQss, th
     #                      np.tile(np.reshape(np.transpose(min_y_etr_income[:,:T]),(T,S,1)),(1,1,J)),
     #                      np.tile(np.reshape(np.transpose(max_y_etr_income[:,:T]),(T,S,1)),(1,1,J)), h_wealth, p_wealth, m_wealth, tau_payroll)
 
-    tax_path_params = np.tile(np.reshape(etr_params[:,:T,:],(T,S,1,etr_params.shape[2])),(1,1,J,1))
+    #tax_path_params = np.tile(np.reshape(etr_params[:,:T,:],(T,S,1,etr_params.shape[2])),(1,1,J,1))
+
+    # initialize array 
+    tax_path_params = np.zeros((T,S,J,etr_params.shape[2]))
+    for i in range(etr_params.shape[2]):
+        tax_path_params[:,:,:,i] = np.tile(np.reshape(np.transpose(etr_params[:,:T,i]),(T,S,1)),(1,1,J))
 
     tax_path = tax.total_taxes(np.tile(rinit[:T].reshape(T, 1, 1),(1,S,J)), b_s, np.tile(winit[:T].reshape(T, 1, 1),(1,S,J)), 
                                np.tile(e.reshape(1, S, J),(T,1,1)), n_mat[:T,:,:], BQinit[:T, :].reshape(T, 1, J), lambdas, 

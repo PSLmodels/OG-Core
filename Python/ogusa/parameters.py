@@ -162,9 +162,11 @@ def get_reduced_parameters(baseline):
     if baseline:
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      "TxFuncEst_baseline_w_mtrs2.pkl")
+        print ' using baseline'
     else:
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      "TxFuncEst_policy.pkl")
+        print ' using policy'
 
     dict_params = pickle.load( open( estimate_file, "rb" ) )
 
@@ -305,8 +307,10 @@ def get_full_parameters(baseline):
     # read in estimated parameters
     if baseline:
         dict_params = pickle.load( open( "TxFuncEst_baseline_w_mtrs2.pkl", "rb" ) )
+        print 'using baseline'
     else:
         dict_params = pickle.load( open( "TxFuncEst_policy.pkl", "rb" ) )
+        print 'using policy'
 
     # print 'etr mins: ', dict_params['tfunc_etr_params_S'].min(axis=(0,1))
     # print 'etr maxes: ', dict_params['tfunc_etr_params_S'].max(axis=(0,1))
