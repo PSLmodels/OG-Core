@@ -119,6 +119,17 @@ def tau_income(r, b, w, e, n, factor, etr_params):
         tau = tau_income (various length array or scalar)
     '''
 
+    if etr_params.ndim == 4: 
+        A = etr_params[:,:,:,0]
+        B = etr_params[:,:,:,1]
+        C = etr_params[:,:,:,2]
+        D = etr_params[:,:,:,3]
+        E = etr_params[:,:,:,4]
+        F = etr_params[:,:,:,5]
+        max_x = etr_params[:,:,:,6]
+        min_x = etr_params[:,:,:,7]
+        max_y = etr_params[:,:,:,8]
+        min_y = etr_params[:,:,:,9]
     if etr_params.ndim == 3: 
         A = etr_params[:,:,0]
         B = etr_params[:,:,1]
@@ -141,6 +152,17 @@ def tau_income(r, b, w, e, n, factor, etr_params):
         min_x = etr_params[:,7]
         max_y = etr_params[:,8]
         min_y = etr_params[:,9]
+    if etr_params.ndim == 1: 
+        A = etr_params[0]
+        B = etr_params[1]
+        C = etr_params[2]
+        D = etr_params[3]
+        E = etr_params[4]
+        F = etr_params[5]
+        max_x = etr_params[6]
+        min_x = etr_params[7]
+        max_y = etr_params[8]
+        min_y = etr_params[9]
 
     x = (w*e*n)*factor
     y = (r*b)*factor
@@ -175,16 +197,28 @@ def MTR_capital(r, b, w, e, n, factor, mtry_params):
         tau = derivative of tau_income w.r.t. labor income (various length array or scalar)
     '''
 
-    A = mtry_params[:,0]
-    B = mtry_params[:,1]
-    C = mtry_params[:,2]
-    D = mtry_params[:,3]
-    E = mtry_params[:,4]
-    F = mtry_params[:,5]
-    max_x = mtry_params[:,6]
-    min_x = mtry_params[:,7]
-    max_y = mtry_params[:,8]
-    min_y = mtry_params[:,9]
+    if mtry_params.ndim == 2: 
+        A = mtry_params[:,0]
+        B = mtry_params[:,1]
+        C = mtry_params[:,2]
+        D = mtry_params[:,3]
+        E = mtry_params[:,4]
+        F = mtry_params[:,5]
+        max_x = mtry_params[:,6]
+        min_x = mtry_params[:,7]
+        max_y = mtry_params[:,8]
+        min_y = mtry_params[:,9]
+    if mtry_params.ndim == 1: 
+        A = mtry_params[0]
+        B = mtry_params[1]
+        C = mtry_params[2]
+        D = mtry_params[3]
+        E = mtry_params[4]
+        F = mtry_params[5]
+        max_x = mtry_params[6]
+        min_x = mtry_params[7]
+        max_y = mtry_params[8]
+        min_y = mtry_params[9]
     
     x = (w*e*n)*factor
     y = (r*b)*factor
@@ -216,16 +250,28 @@ def MTR_labor(r, b, w, e, n, factor, mtrx_params):
         tau = derivative of tau_income w.r.t. labor income (various length array or scalar)
     '''
 
-    A = mtrx_params[:,0]
-    B = mtrx_params[:,1]
-    C = mtrx_params[:,2]
-    D = mtrx_params[:,3]
-    E = mtrx_params[:,4]
-    F = mtrx_params[:,5]
-    max_x = mtrx_params[:,6]
-    min_x = mtrx_params[:,7]
-    max_y = mtrx_params[:,8]
-    min_y = mtrx_params[:,9]
+    if mtrx_params.ndim == 2: 
+        A = mtrx_params[:,0]
+        B = mtrx_params[:,1]
+        C = mtrx_params[:,2]
+        D = mtrx_params[:,3]
+        E = mtrx_params[:,4]
+        F = mtrx_params[:,5]
+        max_x = mtrx_params[:,6]
+        min_x = mtrx_params[:,7]
+        max_y = mtrx_params[:,8]
+        min_y = mtrx_params[:,9]
+    if mtrx_params.ndim == 1: 
+        A = mtrx_params[0]
+        B = mtrx_params[1]
+        C = mtrx_params[2]
+        D = mtrx_params[3]
+        E = mtrx_params[4]
+        F = mtrx_params[5]
+        max_x = mtrx_params[6]
+        min_x = mtrx_params[7]
+        max_y = mtrx_params[8]
+        min_y = mtrx_params[9]
   
     x = (w*e*n)*factor
     y = (r*b)*factor
@@ -283,7 +329,10 @@ def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, weights, method, etr_params
             # tau_inc_params3D = (a_etr_income[:,:,j], b_etr_income[:,:,j], c_etr_income[:,:,j], d_etr_income[:,:,j], 
             #                     e_etr_income[:,:,j], f_etr_income[:,:,j], min_x_etr_income[:,:,j], max_x_etr_income[:,:,j], 
             #                     min_y_etr_income[:,:,j], max_y_etr_income[:,:,j])
-            tau_inc_params3D = etr_params[:,j,:]
+            if etr_params.ndim == 3:
+                tau_inc_params3D = etr_params[:,j,:]
+            if etr_params.ndim == 4:
+                tau_inc_params3D = etr_params[:,:,j,:]
             T_I[:,:,j] = tau_income(r[:,:,j], b[:,:,j], w[:,:,j], e[:,:,j], n[:,:,j], factor, tau_inc_params3D) * I[:,:,j]  
     T_P = tau_payroll * w * e * n
     TW_params = (h_wealth, p_wealth, m_wealth)
