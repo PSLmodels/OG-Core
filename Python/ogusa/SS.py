@@ -195,16 +195,6 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
                   g_n_ss, tau_payroll, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
 
-    # a_etr_income, b_etr_income, \
-    #     c_etr_income, d_etr_income, e_etr_income, f_etr_income, \
-    #     min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income, \
-    #     a_mtrx_income, b_mtrx_income, \
-    #     c_mtrx_income, d_mtrx_income, e_mtrx_income, f_mtrx_income, \
-    #     min_x_mtrx_income, max_x_mtrx_income, min_y_mtrx_income, max_y_mtrx_income, \
-    #     a_mtry_income, b_mtry_income, \
-    #     c_mtry_income, d_mtry_income, e_mtry_income, f_mtry_income, \
-    #     min_x_mtry_income, max_x_mtry_income, min_y_mtry_income, max_y_mtry_income = tax_params
-
     etr_params, mtrx_params, mtry_params = tax_params
 
     maxiter, mindist_SS = iterative_params
@@ -400,16 +390,12 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
                               g_n_ss, 'SS')
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, e, J,
                                       weights.reshape(S, 1), lambdas)
-    # lump_sum_tax_params = (a_etr_income, b_etr_income, c_etr_income, d_etr_income, 
-    #                        e_etr_income, f_etr_income, min_x_etr_income, max_x_etr_income, 
-    #                        min_y_etr_income, max_y_etr_income)
+
     new_T_H = tax.get_lump_sum(new_r, b_s, new_w, e, nssmat, new_BQ,
                                lambdas.reshape(1, J), factor,
                                weights.reshape(S, 1), 'SS', etr_params, params, theta,
                                tau_bq)
-    
-    #print 'new r: ', new_r
-    #print 'new w: ', new_w
+
 
     error1 = new_w - w
     error2 = new_r - r
@@ -655,12 +641,6 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
     taxss_params = (J,S, retire, np.tile(np.reshape(etr_params,(S,1,etr_params.shape[1])),(1,J,1)),
                     h_wealth, p_wealth, m_wealth, tau_payroll)
 
-    # taxss_params = (J, S, retire, np.tile(np.reshape(a_etr_income,(S,1)),(1,J)), np.tile(np.reshape(b_etr_income,(S,1)),(1,J)), 
-    #                 np.tile(np.reshape(c_etr_income,(S,1)),(1,J)), np.tile(np.reshape(d_etr_income,(S,1)),(1,J)), 
-    #                 np.tile(np.reshape(e_etr_income,(S,1)),(1,J)), np.tile(np.reshape(f_etr_income,(S,1)),(1,J)),
-    #                 np.tile(np.reshape(min_x_etr_income,(S,1)),(1,J)), np.tile(np.reshape(max_x_etr_income,(S,1)),(1,J)), 
-    #                 np.tile(np.reshape(min_y_etr_income,(S,1)),(1,J)), np.tile(np.reshape(max_y_etr_income,(S,1)),(1,J)), 
-    #                 h_wealth, p_wealth, m_wealth, tau_payroll)
     taxss = tax.total_taxes(rss, b_s, wss, e, nssmat, BQss, lambdas,
                             factor_ss, T_Hss, None, 'SS', False, taxss_params, theta, tau_bq)
     cssmat = household.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(

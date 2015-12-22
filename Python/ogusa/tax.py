@@ -311,13 +311,7 @@ def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, weights, method, etr_params
                   g_n_ss, tau_payroll, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
 
-    # a_etr_income, b_etr_income, \
-    #     c_etr_income, d_etr_income, e_etr_income, f_etr_income, \
-    #     min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income = tax_params
-
     I = r * b + w * e * n
-    # tau_inc_params = (a_etr_income, b_etr_income, c_etr_income, d_etr_income, e_etr_income, f_etr_income,
-    #                   min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income)
     
     if I.ndim == 2: 
         T_I = np.zeros((S,J))
@@ -326,9 +320,6 @@ def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, weights, method, etr_params
     if I.ndim == 3:
         T_I = np.zeros((T,S,J))
         for j in xrange(J):
-            # tau_inc_params3D = (a_etr_income[:,:,j], b_etr_income[:,:,j], c_etr_income[:,:,j], d_etr_income[:,:,j], 
-            #                     e_etr_income[:,:,j], f_etr_income[:,:,j], min_x_etr_income[:,:,j], max_x_etr_income[:,:,j], 
-            #                     min_y_etr_income[:,:,j], max_y_etr_income[:,:,j])
             if etr_params.ndim == 3:
                 tau_inc_params3D = etr_params[:,j,:]
             if etr_params.ndim == 4:
@@ -372,8 +363,6 @@ def total_taxes(r, b, w, e, n, BQ, lambdas, factor, T_H, j, method, shift, param
     '''
     J, S, retire, etr_params, h_wealth, p_wealth, m_wealth, tau_payroll = params
     I = r * b + w * e * n
-    #tau_inc_params = (a_etr_income, b_etr_income, c_etr_income, d_etr_income, e_etr_income, f_etr_income,
-    #                  min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income)
     T_I = tau_income(r, b, w, e, n, factor, etr_params) * I
 
     T_P = tau_payroll * w * e * n
