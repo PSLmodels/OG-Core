@@ -140,20 +140,20 @@ def get_reduced_parameters(baseline):
     BW = int(10) 
     lambdas = np.array([.50, .50])
     E = int(starting_age * (S / float(ending_age - starting_age)))
-    beta_annual = .96
+    beta_annual = .96 # Carroll (JME, 2009)
     beta = beta_annual ** (float(ending_age - starting_age) / S)
-    sigma = 3.0
-    alpha = .35
+    sigma = 1.5 # value from Attanasio, Banks, Meghir and Weber (JEBS, 1999)
+    alpha = .35 # many use 0.33, but many find that capitals share is increasing (e.g. Elsby, Hobijn, and Sahin (BPEA, 2013))
     Z = 1.0
-    delta_annual = .05
+    delta_annual = .05 # approximately the value from Kehoe calibration exercise: http://www.econ.umn.edu/~tkehoe/classes/calibration-04.pdf
     delta = 1 - ((1 - delta_annual) ** (float(ending_age - starting_age) / S))
     ltilde = 1.0
     g_y_annual = 0.03
     g_y = (1 + g_y_annual)**(float(ending_age - starting_age) / S) - 1
     #   Ellipse parameters
-    b_ellipse = 25.6594
-    k_ellipse = -26.4902
-    upsilon = 3.0542
+    frisch = 0.4 # Frisch elasticity consistent with Altonji (JPE, 1996) and Peterman (Econ Inquiry, 2016)
+    b_ellipse, upsilon = elliptical_u_est.estimation(frisch,ltilde)
+    k_ellipse = 0 # this parameter is just a level shifter in utlitiy - irrelevant for analysis
 
     # Tax parameters:
     #   Income Tax Parameters
@@ -162,82 +162,24 @@ def get_reduced_parameters(baseline):
     if baseline:
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      "TxFuncEst_baseline_w_mtrs2.pkl")
-        print ' using baseline'
+        print 'Using baseline tax parameters'
     else:
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      "TxFuncEst_policy.pkl")
-        print ' using policy'
+        print 'Using policy tax parameters'
 
     dict_params = pickle.load( open( estimate_file, "rb" ) )
 
-    # print 'etr mins: ', dict_params['tfunc_etr_params_S'].min(axis=(0,1))
-    # print 'etr maxes: ', dict_params['tfunc_etr_params_S'].max(axis=(0,1))
-    # print 'mtrx mins: ', dict_params['tfunc_mtrx_params_S'].min(axis=(0,1))
-    # print 'mtrx maxes: ', dict_params['tfunc_mtrx_params_S'].max(axis=(0,1))
-    # print 'mtry mins: ', dict_params['tfunc_mtry_params_S'].min(axis=(0,1))
-    # print 'mtry maxes: ', dict_params['tfunc_mtry_params_S'].max(axis=(0,1))
-    # quit()
-
-    # print 'age 61 ', dict_params['tfunc_etr_params_S'][42,9,:]
-    # print 'age 62 ', dict_params['tfunc_etr_params_S'][43,9,:]
-    # print 'age 63 ', dict_params['tfunc_etr_params_S'][44,9,:]
-    # print 'age 64 ', dict_params['tfunc_etr_params_S'][45,9,:]
-    # print 'age 65 ', dict_params['tfunc_etr_params_S'][46,9,:]
-    # print 'age 66 ', dict_params['tfunc_etr_params_S'][47,9,:]
-    # print 'age 67 ', dict_params['tfunc_etr_params_S'][48,9,:]
-    # quit()
-
     mean_income_data = dict_params['tfunc_avginc'][0]
-    a_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,0]
-    b_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,1]
-    c_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,2]
-    d_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,3]
-    e_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,4]
-    f_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,5]
-    max_x_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,6]
-    min_x_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,7]
-    max_y_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,8]
-    min_y_etr_income = dict_params['tfunc_etr_params_S'][:S,:BW,9]
 
-    a_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,0]
-    b_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,1]
-    c_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,2]
-    d_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,3]
-    e_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,4]
-    f_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,5]
-    max_x_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,6]
-    min_x_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,7]
-    max_y_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,8]
-    min_y_mtrx_income = dict_params['tfunc_mtrx_params_S'][:S,:BW,9]
+    etr_params = dict_params['tfunc_etr_params_S'][:S,:BW,:]
+    mtrx_params = dict_params['tfunc_mtrx_params_S'][:S,:BW,:]
+    mtry_params = dict_params['tfunc_mtry_params_S'][:S,:BW,:]
 
-    a_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,0]
-    b_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,1]
-    c_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,2]
-    d_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,3]
-    e_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,4]
-    f_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,5]
-    max_x_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,6]
-    min_x_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,7]
-    max_y_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,8]
-    min_y_mtry_income = dict_params['tfunc_mtry_params_S'][:S,:BW,9]
-
-
-    # # zero out income taxes:
-    # max_x_etr_income = np.ones((S,BW))*0.0
-    # min_x_etr_income = np.ones((S,BW))*0.0
-    # max_y_etr_income = np.ones((S,BW))*0.0
-    # min_y_etr_income = np.ones((S,BW))*0.0
-
-    # max_x_mtrx_income = np.ones((S,BW))*0.0
-    # min_x_mtrx_income = np.ones((S,BW))*0.0
-    # max_y_mtrx_income = np.ones((S,BW))*0.0
-    # min_y_mtrx_income = np.ones((S,BW))*0.0
-
-    # max_x_mtry_income = np.ones((S,BW))*0.0
-    # min_x_mtry_income = np.ones((S,BW))*0.0
-    # max_y_mtry_income = np.ones((S,BW))*0.0
-    # min_y_mtry_income = np.ones((S,BW))*0.0
-
+    # To zero out income taxes, uncomment the following 3 lines:
+    # etr_params[:,:,6:] = 0.0
+    # mtrx_params[:,:,6:] = 0.0
+    # mtry_params[:,:,6:] = 0.0
 
     #   Wealth tax params
     #       These are non-calibrated values, h and m just need
@@ -257,7 +199,7 @@ def get_reduced_parameters(baseline):
     PLOT_TPI = False
     maxiter = 10
     mindist_SS = 1e-3
-    mindist_TPI = 1e-6
+    mindist_TPI = 1e-3 #1e-6
     nu = .4
     flag_graphs = False
     #   Calibration parameters
@@ -283,22 +225,20 @@ def get_full_parameters(baseline):
     starting_age = 20
     ending_age = 100
     E = int(starting_age * (S / float(ending_age - starting_age)))
-    beta_annual = .96
+    beta_annual = .96 # Carroll (JME, 2009)
     beta = beta_annual ** (float(ending_age - starting_age) / S)
-    sigma = 3.0
-    alpha = .35
+    sigma = 1.5 # value from Attanasio, Banks, Meghir and Weber (JEBS, 1999)
+    alpha = .35 # many use 0.33, but many find that capitals share is increasing (e.g. Elsby, Hobijn, and Sahin (BPEA, 2013))
     Z = 1.0
-    delta_annual = .05
+    delta_annual = .05 # approximately the value from Kehoe calibration exercise: http://www.econ.umn.edu/~tkehoe/classes/calibration-04.pdf
     delta = 1 - ((1 - delta_annual) ** (float(ending_age - starting_age) / S))
     ltilde = 1.0
     g_y_annual = 0.03
     g_y = (1 + g_y_annual)**(float(ending_age - starting_age) / S) - 1
     #   Ellipse parameters
-    #frisch = 3.0 # 1.5 is the Frisch elasticity
-    #b_ellipse, upsilon = elliptical_u_est.estimation(frisch,ltilde)
-    b_ellipse = 25.6594
-    k_ellipse = -26.4902
-    upsilon = 3.0542
+    frisch = 0.4 # Frisch elasticity consistent with Altonji (JPE, 1996) and Peterman (Econ Inquiry, 2016)
+    b_ellipse, upsilon = elliptical_u_est.estimation(frisch,ltilde)
+    k_ellipse = 0 # this parameter is just a level shifter in utlitiy - irrelevant for analysis
 
     # Tax parameters:
     #   Income Tax Parameters
@@ -307,27 +247,10 @@ def get_full_parameters(baseline):
     # read in estimated parameters
     if baseline:
         dict_params = pickle.load( open( "TxFuncEst_baseline_w_mtrs2.pkl", "rb" ) )
-        print 'using baseline'
+        print 'Using baseline tax parameters'
     else:
         dict_params = pickle.load( open( "TxFuncEst_policy.pkl", "rb" ) )
-        print 'using policy'
-
-    # print 'etr mins: ', dict_params['tfunc_etr_params_S'].min(axis=(0,1))
-    # print 'etr maxes: ', dict_params['tfunc_etr_params_S'].max(axis=(0,1))
-    # print 'mtrx mins: ', dict_params['tfunc_mtrx_params_S'].min(axis=(0,1))
-    # print 'mtrx maxes: ', dict_params['tfunc_mtrx_params_S'].max(axis=(0,1))
-    # print 'mtry mins: ', dict_params['tfunc_mtry_params_S'].min(axis=(0,1))
-    # print 'mtry maxes: ', dict_params['tfunc_mtry_params_S'].max(axis=(0,1))
-    # quit()
-
-    # print 'age 61 ', dict_params['tfunc_etr_params_S'][42,9,:]
-    # print 'age 62 ', dict_params['tfunc_etr_params_S'][43,9,:]
-    # print 'age 63 ', dict_params['tfunc_etr_params_S'][44,9,:]
-    # print 'age 64 ', dict_params['tfunc_etr_params_S'][45,9,:]
-    # print 'age 65 ', dict_params['tfunc_etr_params_S'][46,9,:]
-    # print 'age 66 ', dict_params['tfunc_etr_params_S'][47,9,:]
-    # print 'age 67 ', dict_params['tfunc_etr_params_S'][48,9,:]
-    # quit()
+        print 'Using policy tax parameters'
 
     mean_income_data = dict_params['tfunc_avginc'][0]
 
@@ -335,12 +258,7 @@ def get_full_parameters(baseline):
     mtrx_params = dict_params['tfunc_mtrx_params_S'][:S,:BW,:]
     mtry_params = dict_params['tfunc_mtry_params_S'][:S,:BW,:]
 
-    # print 'etr params:', etr_params.mean(axis=(0,1))
-    # print 'mtrx params:', mtrx_params.mean(axis=(0,1))
-    # print 'mtry params:', mtry_params.mean(axis=(0,1))
-
-
-    # zero out income taxes:
+    # To zero out income taxes, uncomment the following 3 lines:
     # etr_params[:,:,6:] = 0.0
     # mtrx_params[:,:,6:] = 0.0
     # mtry_params[:,:,6:] = 0.0
