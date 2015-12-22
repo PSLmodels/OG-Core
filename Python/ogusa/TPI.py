@@ -640,7 +640,11 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
     for j in xrange(J):
         BQinit[:, j] = list(np.linspace(BQ0[j], BQss[j], T)) + [BQss[j]] * S
     BQinit = np.array(BQinit)
-    T_H_init = np.ones(T + S) * T_Hss
+    if T_Hss < 1e-13 and T_Hss > 0.0 :
+        T_Hss2 = 0.0 # sometimes SS is very small but not zero, even if taxes are zero, this get's rid of the approximation error, which affects the perc changes below
+    else:
+        T_Hss2 = T_Hss   
+    T_H_init = np.ones(T + S) * T_Hss2
 
     # Make array of initial guesses
     domain2 = np.tile(domain.reshape(T, 1, 1), (1, S, J))
@@ -746,6 +750,7 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
                 inputs = list(solutions)
                 euler_errors[t, :, j] = np.abs(Steady_state_TPI_solver(
                     inputs, winit, rinit, BQinit[:, j], T_H_init, factor_ss, j, None, t, inc_tax_params_TP, parameters, theta, tau_bq, rho, lambdas, e, None, chi_b, chi_n))
+
         # if euler_errors.max() > 1e-6:
         #     print 't-loop:', euler_errors.max()
         # Force the initial distribution of capital to be as given above.
@@ -810,10 +815,10 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
         # After T=10, if cycling occurs, drop the value of nu
         # wait til after T=10 or so, because sometimes there is a jump up
         # in the first couple iterations
-        if TPIiter > 10:
-            if TPIdist_vec[TPIiter] - TPIdist_vec[TPIiter - 1] > 0:
-                nu /= 2
-                print 'New Value of nu:', nu
+        # if TPIiter > 10:
+        #     if TPIdist_vec[TPIiter] - TPIdist_vec[TPIiter - 1] > 0:
+        #         nu /= 2
+        #         print 'New Value of nu:', nu
         TPIiter += 1
         print '\tIteration:', TPIiter
         print '\t\tDistance:', TPIdist
@@ -849,7 +854,11 @@ def TP_solutions(winit, rinit, T_H_init, BQinit2, Yinit, Kss, Lss, Yss, BQss, th
     for j in xrange(J):
         BQinit[:, j] = list(BQinit2[:,j]) + [BQss[j]] * S
     BQinit = np.array(BQinit)
-    T_H_init = np.ones(T + S) * T_Hss
+    if T_Hss < 1e-13 and T_Hss > 0.0 :
+        T_Hss2 = 0.0 # sometimes SS is very small but not zero, even if taxes are zero, this get's rid of the approximation error, which affects the perc changes below
+    else:
+        T_Hss2 = T_Hss   
+    T_H_init = np.ones(T + S) * T_Hss2
 
 
     # Make array of initial guesses

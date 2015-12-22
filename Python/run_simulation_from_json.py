@@ -118,7 +118,7 @@ ss_outputs['initial_b'] = initial_b
 ss_outputs['initial_n'] = initial_n
 ss_outputs['tau_bq'] = tau_bq
 ss_outputs['g_n_vector'] = g_n_vector
-w_path, r_path, T_H_path, BQ_path = TPI.run_time_path_iteration(**ss_outputs)
+w_path, r_path, T_H_path, BQ_path, Y_path = TPI.run_time_path_iteration(**ss_outputs)
 TPI.TP_solutions(w_path, r_path, T_H_path, BQ_path, **ss_outputs)
 
 quit()
