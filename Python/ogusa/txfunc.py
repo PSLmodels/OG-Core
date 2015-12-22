@@ -1446,6 +1446,13 @@ def tax_func_estimate(baseline=False, reform={}):
         ('tfunc_mtrx_params_S', mtrxparam_arr_S), ('tfunc_mtry_params_S', mtryparam_arr_S), ('tfunc_avginc', AvgInc),
         ('tfunc_time', elapsed_time)])
     
+    if baseline:
+        pkl_path = os.path.join('/Users/jasondebacker/repos/dynamic/Python', "TxFuncEst_baseline.pkl")
+    else:
+        pkl_path = os.path.join('/Users/jasondebacker/repos/dynamic/Python', "TxFuncEst_policy.pkl")
+
+    pickle.dump(dict_params, open(pkl_path, "wb"))
+
     return dict_params
 
 

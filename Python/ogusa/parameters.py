@@ -159,16 +159,18 @@ def get_reduced_parameters(baseline):
     #   Income Tax Parameters
     ####  will call tax function estimation function here...
     ### do output such that each parameters is in a separate SxBW array
-    if baseline:
-        estimate_file = os.path.join(TAX_ESTIMATE_PATH,
-                                     "TxFuncEst_baseline_w_mtrs2.pkl")
-        print 'Using baseline tax parameters'
-    else:
-        estimate_file = os.path.join(TAX_ESTIMATE_PATH,
-                                     "TxFuncEst_policy.pkl")
-        print 'Using policy tax parameters'
+    # if baseline:
+    #     estimate_file = os.path.join(TAX_ESTIMATE_PATH,
+    #                                  "TxFuncEst_baseline_w_mtrs2.pkl")
+    #     print 'Using baseline tax parameters'
+    # else:
+    #     estimate_file = os.path.join(TAX_ESTIMATE_PATH,
+    #                                  "TxFuncEst_policy.pkl")
+    #     print 'Using policy tax parameters'
 
-    dict_params = pickle.load( open( estimate_file, "rb" ) )
+    # dict_params = pickle.load( open( estimate_file, "rb" ) )
+
+    dict_params = txfunc.tax_func_estimate(True,)
 
     mean_income_data = dict_params['tfunc_avginc'][0]
 
@@ -245,12 +247,18 @@ def get_full_parameters(baseline):
     #  will call tax function estimation function here...
     # do output such that each parameters is in a separate SxBW array
     # read in estimated parameters
-    if baseline:
-        dict_params = pickle.load( open( "TxFuncEst_baseline_w_mtrs2.pkl", "rb" ) )
-        print 'Using baseline tax parameters'
-    else:
-        dict_params = pickle.load( open( "TxFuncEst_policy.pkl", "rb" ) )
-        print 'Using policy tax parameters'
+    # if baseline:
+    #     estimate_file = os.path.join(TAX_ESTIMATE_PATH,
+    #                                  "TxFuncEst_baseline_w_mtrs2.pkl")
+    #     print 'Using baseline tax parameters'
+    # else:
+    #     estimate_file = os.path.join(TAX_ESTIMATE_PATH,
+    #                                  "TxFuncEst_policy.pkl")
+    #     print 'Using policy tax parameters'
+
+    # dict_params = pickle.load( open( estimate_file, "rb" ) )
+
+    dict_params = txfunc.tax_func_estimate(True,)
 
     mean_income_data = dict_params['tfunc_avginc'][0]
 
@@ -288,12 +296,13 @@ def get_full_parameters(baseline):
     #   Calibration parameters
     # These guesses are close to the calibrated values
     chi_b_guess = np.array([2, 10, 90, 350, 1700, 22000, 120000])
-    #chi_n_guess = np.ones(S)*20.0
-    chi_n_guess = np.array([47.12000874, 22.22762421, 14.34842241, 10.67954008, 8.41097278, 7.15059004, 6.46771332, 5.85495452, 5.46242013, 5.00364263, 4.57322063, 4.53371545, 4.29828515, 4.10144524, 3.8617942, 3.57282, 3.47473172, 3.31111347, 3.04137299, 2.92616951, 2.58517969, 2.48761429, 2.21744847, 1.9577682, 1.66931057, 1.6878927, 1.63107201, 1.63390543, 1.5901486, 1.58143606, 1.58005578, 1.59073213, 1.60190899, 1.60001831, 1.67763741, 1.70451784, 1.85430468, 1.97291208, 1.97017228,
-                            2.25518398, 2.43969757, 3.21870602, 4.18334822, 4.97772026, 6.37663164, 8.65075992, 9.46944758, 10.51634777, 12.13353793, 11.89186997, 12.07083882, 13.2992811, 14.07987878, 14.19951571, 14.97943562, 16.05601334, 16.42979341, 16.91576867, 17.62775142, 18.4885405, 19.10609921, 20.03988031, 20.86564363, 21.73645892, 22.6208256, 23.37786072, 24.38166073, 25.22395387, 26.21419653, 27.05246704, 27.86896121, 28.90029708, 29.83586775, 30.87563699, 31.91207845, 33.07449767, 34.27919965, 35.57195873, 36.95045988, 38.62308152])
+    chi_n_guess = np.ones(S)*20.0
+    #chi_n_guess = np.array([47.12000874, 22.22762421, 14.34842241, 10.67954008, 8.41097278, 7.15059004, 6.46771332, 5.85495452, 5.46242013, 5.00364263, 4.57322063, 4.53371545, 4.29828515, 4.10144524, 3.8617942, 3.57282, 3.47473172, 3.31111347, 3.04137299, 2.92616951, 2.58517969, 2.48761429, 2.21744847, 1.9577682, 1.66931057, 1.6878927, 1.63107201, 1.63390543, 1.5901486, 1.58143606, 1.58005578, 1.59073213, 1.60190899, 1.60001831, 1.67763741, 1.70451784, 1.85430468, 1.97291208, 1.97017228,
+    #                        2.25518398, 2.43969757, 3.21870602, 4.18334822, 4.97772026, 6.37663164, 8.65075992, 9.46944758, 10.51634777, 12.13353793, 11.89186997, 12.07083882, 13.2992811, 14.07987878, 14.19951571, 14.97943562, 16.05601334, 16.42979341, 16.91576867, 17.62775142, 18.4885405, 19.10609921, 20.03988031, 20.86564363, 21.73645892, 22.6208256, 23.37786072, 24.38166073, 25.22395387, 26.21419653, 27.05246704, 27.86896121, 28.90029708, 29.83586775, 30.87563699, 31.91207845, 33.07449767, 34.27919965, 35.57195873, 36.95045988, 38.62308152])
     # Generate Income and Demographic parameters
     omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = get_omega(
         S, T, starting_age, ending_age, E, flag_graphs)
     e = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
+
     allvars = dict(locals())
     return allvars

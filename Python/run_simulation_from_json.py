@@ -41,8 +41,8 @@ calibrate_model = Flag to run calibration of chi values or not (bool)
 ------------------------------------------------------------------------
 '''
 get_baseline = True
-calibrate_model = False
-taxes = 'baseline' # policy# #none ## some flag for do we run without taxes, with baseline 
+calibrate_model = True
+#taxes = 'baseline' # policy# #none ## some flag for do we run without taxes, with baseline 
 # taxes or do we use user inputted taxes?
 
 
