@@ -486,6 +486,10 @@ def tax_func_estimate(baseline=False, reform={}):
     # call tax caculator and get microdata
     micro_data = get_micro_data.get_data(baseline=baseline, reform=reform)
     #micro_data = pickle.load( open( "micro_data_w_capmtr_policy_12142015.pkl", "rb" ) )
+    """if reform:
+        micro_data = pickle.load( open( "micro_data_policy.pkl", "rb" ) )
+    else:
+        micro_data = pickle.load( open( "micro_data_baseline.pkl", "rb" ) )"""
 
 
     for t in years_list: #range(2024, 2025): #
