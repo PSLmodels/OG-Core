@@ -68,7 +68,7 @@ def get_data(baseline=False, reform={}):
     capital_income_sources_taxed = ('e00300', 'e00400', 'e00600',
                                 'e00650', 'e01400',
                                 'e01700', 'e02000',
-                                'e22250','e23250')
+                                'p22250','p23250')
 
     # note that use total pension income (e01500) since don't have both the 
     # taxable (e01700) and non-taxable pension income separately
@@ -76,7 +76,7 @@ def get_data(baseline=False, reform={}):
     capital_income_sources = ('e00300', 'e00400', 'e00600',
                                 'e00650', 'e01400',
                                 'e01500', 'e02000',
-                                'e22250','e23250')
+                                'p22250','p23250')
 
     # calculating MTRs separately - can skip items with zero tax
     all_mtrs = {income_source: calc1.mtr(income_source) for income_source in capital_income_sources_taxed}
@@ -152,7 +152,7 @@ def get_data(baseline=False, reform={}):
                                   'Wage and Salaries', 'Self-Employed Income','Wage + Self-Employed Income',
                                   'Adjusted Total income','Total Tax Liability','Year', 'Weights'])
         print 'year: ', i
-    
+   
     pkl_path = "micro_data_w_capmtr_policy_12142015.pkl"
     pickle.dump(micro_data_dict, open(pkl_path, "wb"))
 

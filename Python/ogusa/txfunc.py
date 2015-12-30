@@ -484,8 +484,10 @@ def tax_func_estimate(baseline=False, reform={}):
     '''
 
     # call tax caculator and get microdata
-    micro_data = get_micro_data.get_data(baseline=baseline, reform=reform)
-    #micro_data = pickle.load( open( "micro_data_w_capmtr_policy_12142015.pkl", "rb" ) )
+    #micro_data = get_micro_data.get_data(baseline=baseline, reform=reform)
+    print "finished get_data"
+    #import pdb;pdb.set_trace()
+    micro_data = pickle.load( open( "micro_data_w_capmtr_policy_12142015.pkl", "rb" ) )
 
 
     for t in years_list: #range(2024, 2025): #
@@ -1381,6 +1383,8 @@ def tax_func_estimate(baseline=False, reform={}):
                     plt.close()
 
 
+    print "finished this loop"
+    #import pdb;pdb.set_trace()
     elapsed_time = time.clock() - start_time
 
     # Print tax function computation time
@@ -1445,16 +1449,20 @@ def tax_func_estimate(baseline=False, reform={}):
     dict_params = dict([('tfunc_etr_params_S', etrparam_arr_S),
         ('tfunc_mtrx_params_S', mtrxparam_arr_S), ('tfunc_mtry_params_S', mtryparam_arr_S), ('tfunc_avginc', AvgInc),
         ('tfunc_time', elapsed_time)])
+
+    #import pdb;pdb.set_trace()
     
     return dict_params
 
 
-def get_tax_func_estimate(baseline=False, reform={}):
+def get_tax_func_estimate(baseline=False, reform={}, guid=''):
     # Code to run manually from here:
     dict_params = tax_func_estimate(baseline, reform)
     if baseline:
-        pkl_path = os.path.join(TAX_ESTIMATE_PATH, "TxFuncEst_baseline.pkl")
+        baseline_pckl = "TxFuncEst_baseline_w_mtrs2{}.pkl".format(guid)
+        pkl_path = os.path.join(TAX_ESTIMATE_PATH, baseline_pckl)
     else:
-        pkl_path = os.path.join(TAX_ESTIMATE_PATH, "TxFuncEst_policy.pkl")
+        policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
+        pkl_path = os.path.join(TAX_ESTIMATE_PATH, policy_pckl)
 
     pickle.dump(dict_params, open(pkl_path, "wb"))

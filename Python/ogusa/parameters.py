@@ -36,11 +36,11 @@ def get_parameters_from_file():
                 j[key] = np.array(j[key])
         return j
 
-def get_parameters(baseline=False):
+def get_parameters(baseline=False, guid=''):
     if DATASET == 'REAL':
-        return get_full_parameters(baseline=baseline)
+        return get_full_parameters(baseline=baseline, guid=guid)
     elif DATASET == 'SMALL':
-        return get_reduced_parameters(baseline=baseline)
+        return get_reduced_parameters(baseline=baseline, guid=guid)
     else:
         raise ValueError("Unknown value {0}".format(DATASET))
 
@@ -127,7 +127,7 @@ e            = age dependent possible working abilities (SxJ array)
 '''
 
 
-def get_reduced_parameters(baseline):
+def get_reduced_parameters(baseline, guid):
     # Model Parameters
     starting_age = 40
     ending_age = 50
@@ -157,11 +157,13 @@ def get_reduced_parameters(baseline):
     ####  will call tax function estimation function here...
     ### do output such that each parameters is in a separate SxBW array
     if baseline:
+        baseline_pckl = "TxFuncEst_baseline_w_mtrs2{}.pkl".format(guid)
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
-                                     "TxFuncEst_baseline_w_mtrs2.pkl")
+                                     baseline_pckl)
     else:
+        policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
-                                     "TxFuncEst_policy.pkl")
+                                     policy_pckl)
 
     dict_params = pickle.load( open( estimate_file, "rb" ) )
 
