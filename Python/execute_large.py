@@ -12,12 +12,15 @@ import ogusa
 ogusa.parameters.DATASET = 'REAL'
 
 
-def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, guid=''):
+def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, guid='', run_micro=True):
 
     from ogusa import parameters, wealth, labor, demographics, income
     from ogusa import txfunc
 
-    txfunc.get_tax_func_estimate(baseline=baseline, reform=reform, guid=guid)
+    tick = time.time()
+
+    if run_micro:
+        txfunc.get_tax_func_estimate(baseline=baseline, reform=reform, guid=guid)
     globals().update(ogusa.parameters.get_parameters(baseline=baseline, guid=guid))
 
     from ogusa import SS, TPI
@@ -25,6 +28,7 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
     saved_moments_dir = os.path.join(output_base, "Saved_moments")
     ssinit_dir = os.path.join(output_base, "SSinit")
     tpiinit_dir = os.path.join(output_base, "TPIinit")
+    #dirs = ["./OUTPUT/Saved_moments", "./OUTPUT/SSinit", "./OUTPUT/TPIinit"]
     dirs = [saved_moments_dir, ssinit_dir, tpiinit_dir]
     for _dir in dirs:
         try:
@@ -89,9 +93,7 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
 
     income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
 
-    print "got here"
 
-    before = time.time()
     ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, get_baseline, calibrate_model, output_dir=input_dir)
 
     '''
@@ -132,5 +134,6 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
 
     w_path, r_path, T_H_path, BQ_path, Yinit = TPI.run_time_path_iteration(**ss_outputs)
 
+    print "getting to here...."
     TPI.TP_solutions(w_path, r_path, T_H_path, BQ_path, Yinit, **ss_outputs)
-    print "took {0} seconds to get that part done.".format(time.time() - before)
+    print "took {0} seconds to get that part done.".format(time.time() - tick)
