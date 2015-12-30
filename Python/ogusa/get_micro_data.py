@@ -31,17 +31,6 @@ def get_data(baseline=False, reform={}):
     policy1 = Policy()
     records1 = Records()
 
-    """reform = {
-    2015: {
-        '_II_rt1': [.09],
-        '_II_rt2': [.135],
-        '_II_rt3': [.225],
-        '_II_rt4': [.252],
-        '_II_rt5': [.297],
-        '_II_rt6': [.315],
-        '_II_rt7': [0.3564],
-    }, }"""
-
     if not baseline:
         policy1.implement_reform(reform)
 
@@ -152,8 +141,11 @@ def get_data(baseline=False, reform={}):
                                   'Wage and Salaries', 'Self-Employed Income','Wage + Self-Employed Income',
                                   'Adjusted Total income','Total Tax Liability','Year', 'Weights'])
         print 'year: ', i
-   
-    pkl_path = "micro_data_w_capmtr_policy_12142015.pkl"
+  
+    if reform:
+        pkl_path = "micro_data_policy.pkl"
+    else:
+        pkl_path = "micro_data_baseline.pkl"
     pickle.dump(micro_data_dict, open(pkl_path, "wb"))
 
     return micro_data_dict

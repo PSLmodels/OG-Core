@@ -17,13 +17,12 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
     from ogusa import parameters, wealth, labor, demographics, income
     from ogusa import txfunc
 
-    print "here 0"
+    tick = time.time()
+
     if run_micro:
         txfunc.get_tax_func_estimate(baseline=baseline, reform=reform, guid=guid)
-    print "here 1"
     globals().update(ogusa.parameters.get_parameters(baseline=baseline, guid=guid))
 
-    print "here 2"
     from ogusa import SS, TPI
     #Create output directory structure
     saved_moments_dir = os.path.join(output_base, "Saved_moments")
@@ -37,7 +36,6 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
         except OSError as oe:
             pass
 
-    print "here 3"
     # Generate Wealth data moments
     wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir=input_dir)
 
@@ -50,7 +48,6 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
     # List of parameter names that will not be changing (unless we decide to
     # change them for a tax experiment)
 
-    print "here 4"
     param_names = ['S', 'J', 'T', 'BW', 'lambdas', 'starting_age', 'ending_age',
                 'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
                 'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
@@ -91,16 +88,12 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
 
     sim_params['output_dir'] = input_dir
 
-    print "here 5"
     # Modify ogusa parameters based on user input
     sim_params.update(user_params)
 
-    print "here 6"
     income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
 
-    print "got here"
 
-    before = time.time()
     ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, get_baseline, calibrate_model, output_dir=input_dir)
 
     '''
@@ -143,4 +136,4 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
 
     print "getting to here...."
     TPI.TP_solutions(w_path, r_path, T_H_path, BQ_path, Yinit, **ss_outputs)
-    print "took {0} seconds to get that part done.".format(time.time() - before)
+    print "took {0} seconds to get that part done.".format(time.time() - tick)
