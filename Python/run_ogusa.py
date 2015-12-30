@@ -57,8 +57,9 @@ def run_micro_macro(user_params):
     ans = postprocess.create_diff(baseline=BASELINE_DIR, policy=REFORM_DIR)
 
     print "total time was ", (time.time() - start_time)
+    print ans
 
-    #return ans
+    return ans
 
 if __name__ == "__main__":
     run_micro_macro(user_params={})
