@@ -17,7 +17,7 @@ config = {
     'license': 'MIT',
     'packages': ['ogusa'],
     'package_dir': {'ogusa': 'Python/ogusa'},
-    'package_data': {'ogusa': ['data/ability/*', 'data/demographic/*', 'data/labor/*', 'data/wealth/*']},
+    'package_data': {'ogusa': ['parameters_metadata.json', 'data/ability/*', 'data/demographic/*', 'data/labor/*', 'data/wealth/*']},
     'include_package_data': True,
     'name': 'ogusa',
     'version': versioneer.get_version(),

@@ -24,8 +24,11 @@ import pickle
 
 DATASET = 'REAL'
 PARAMS_FILE = os.path.join(os.path.dirname(__file__), 'default_full_parameters.json')
+PARAMS_FILE_METADATA = os.path.join(os.path.dirname(__file__), 'parameters_metadata.json')
 
 TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
+
+USER_MODIFIABLE_PARAMS = ['g_y', 'upsilon']
 
 
 def get_parameters_from_file():
@@ -36,11 +39,15 @@ def get_parameters_from_file():
                 j[key] = np.array(j[key])
         return j
 
-def get_parameters(baseline=False):
+def get_parameters(baseline=False, user_modifiable=False, metadata=False):
     if DATASET == 'REAL':
-        return get_full_parameters(baseline=baseline)
+        return get_full_parameters(baseline=baseline,
+                                   user_modifiable=user_modifiable,
+                                   metadata=metadata)
     elif DATASET == 'SMALL':
-        return get_reduced_parameters(baseline=baseline)
+        return get_reduced_parameters(baseline=baseline,
+                                      user_modifiable=user_modifiable,
+                                      metadata=metadata)
     else:
         raise ValueError("Unknown value {0}".format(DATASET))
 
@@ -127,7 +134,7 @@ e            = age dependent possible working abilities (SxJ array)
 '''
 
 
-def get_reduced_parameters(baseline):
+def get_reduced_parameters(baseline, user_modifiable, metadata):
     # Model Parameters
     starting_age = 40
     ending_age = 50
@@ -265,10 +272,21 @@ def get_reduced_parameters(baseline):
         S, T, starting_age, ending_age, E, flag_graphs)
     e = np.array([[0.25, 1.25]] * 10)
     allvars = dict(locals())
+
+    if user_modifiable:
+        allvars = {k:allvars[k] for k in USER_MODIFIABLE_PARAMS}
+
+    if metadata:
+        with open(PARAMS_FILE_METADATA) as f:
+            params_meta = json.load(f)
+        for k,v in allvars.iteritems():
+            params_meta[k]["value"] = v
+        allvars = params_meta
+
     return allvars
 
 
-def get_full_parameters(baseline):
+def get_full_parameters(baseline, user_modifiable, metadata):
     # Model Parameters
     S = int(80)
     J = int(7)
@@ -404,4 +422,14 @@ def get_full_parameters(baseline):
         S, T, starting_age, ending_age, E, flag_graphs)
     e = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
     allvars = dict(locals())
+
+    if user_modifiable:
+        allvars = {k:allvars[k] for k in USER_MODIFIABLE_PARAMS}
+
+    if metadata:
+        params_meta = json.load(open(PARAMS_FILE_METADATA))
+        for k,v in allvars.iteritems():
+            params_meta[k]["value"] = v
+        allvars = params_meta
+
     return allvars
