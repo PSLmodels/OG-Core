@@ -12,13 +12,14 @@ import ogusa
 ogusa.parameters.DATASET = 'SMALL'
 
 
-def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, guid=''):
+def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, guid='', run_micro=True):
 
     from ogusa import parameters, wealth, labor, demographics, income
     from ogusa import txfunc
 
     print "here 0"
-    txfunc.get_tax_func_estimate(baseline=baseline, reform=reform, guid=guid)
+    if run_micro:
+        txfunc.get_tax_func_estimate(baseline=baseline, reform=reform, guid=guid)
     print "here 1"
     globals().update(ogusa.parameters.get_parameters(baseline=baseline, guid=guid))
 
