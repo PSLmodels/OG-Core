@@ -41,7 +41,7 @@ calibrate_model = Flag to run calibration of chi values or not (bool)
 ------------------------------------------------------------------------
 '''
 get_baseline = True
-calibrate_model = True
+calibrate_model = False
 #taxes = 'baseline' # policy# #none ## some flag for do we run without taxes, with baseline 
 # taxes or do we use user inputted taxes?
 
@@ -87,7 +87,6 @@ income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_p
 
 ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, get_baseline, calibrate_model)
 
-print 'finished SS'
 
 '''
 ------------------------------------------------------------------------

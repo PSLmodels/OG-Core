@@ -678,10 +678,11 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
 
 
 
-def TP_solutions(winit, rinit, T_H_init, BQinit2, Yinit, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_tax_params, ellipse_params, parameters, g_n_vector, 
+def TP_solutions(winit, rinit, T_H_init, BQinit2, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_tax_params, ellipse_params, parameters, g_n_vector, 
                            omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, 
                            T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, 
                            chi_n, get_baseline=False, output_dir="./OUTPUT", **kwargs):
+
 
     '''
     This function returns the solutions for all variables along the time path.
@@ -704,12 +705,6 @@ def TP_solutions(winit, rinit, T_H_init, BQinit2, Yinit, Kss, Lss, Yss, BQss, th
     for j in xrange(J):
         BQinit[:, j] = list(BQinit2[:,j]) + [BQss[j]] * S
     BQinit = np.array(BQinit)
-    if T_Hss < 1e-13 and T_Hss > 0.0 :
-        T_Hss2 = 0.0 # sometimes SS is very small but not zero, even if taxes are zero, this get's rid of the approximation error, which affects the perc changes below
-    else:
-        T_Hss2 = T_Hss   
-    T_H_init = np.ones(T + S) * T_Hss2
-
 
     # Make array of initial guesses
     domain = np.linspace(0, T, T)
@@ -811,10 +806,11 @@ def TP_solutions(winit, rinit, T_H_init, BQinit2, Yinit, Kss, Lss, Yss, BQss, th
     b_splus1[:, :, :] = b_mat[1:T + 1, :, :]
 
     # initialize array 
-    tax_path_params = np.zeros((T,S,J,etr_params.shape[2]))
+    etr_params_path = np.zeros((T,S,J,etr_params.shape[2]))
     for i in range(etr_params.shape[2]):
-        tax_path_params[:,:,:,i] = np.tile(np.reshape(np.transpose(etr_params[:,:T,i]),(T,S,1)),(1,1,J))
+        etr_params_path[:,:,:,i] = np.tile(np.reshape(np.transpose(etr_params[:,:T,i]),(T,S,1)),(1,1,J))
 
+    tax_path_params = J, S, retire, etr_params_path, h_wealth, p_wealth, m_wealth, tau_payroll
     tax_path = tax.total_taxes(np.tile(rinit[:T].reshape(T, 1, 1),(1,S,J)), b_s, np.tile(winit[:T].reshape(T, 1, 1),(1,S,J)), 
                                np.tile(e.reshape(1, S, J),(T,1,1)), n_mat[:T,:,:], BQinit[:T, :].reshape(T, 1, J), lambdas, 
                                factor_ss, T_H_init[:T].reshape(T, 1, 1), None, 'TPI', False, tax_path_params, theta, tau_bq)
@@ -880,7 +876,7 @@ def TP_solutions(winit, rinit, T_H_init, BQinit2, Yinit, Kss, Lss, Yss, BQss, th
     macro_output = {'Kpath_TPI': Kpath_TPI, 'C_path': C_path, 'I_path': I_path,
               'Lpath_TPI': Lpath_TPI, 'BQpath_TPI': BQpath_TPI,
               'rinit': rinit, 'Y_path': Y_path, 'T_H_init': T_H_init,
-              'winit': winit, 'Yinit': Yinit}
+              'winit': winit, 'tax_path': tax_path}
 
     # macro_ns_output = {'K_ns_path': K_ns_path, 'C_ns_path': C_ns_path, 'I_ns_path': I_ns_path,
     #           'L_ns_path': L_ns_path, 'BQ_ns_path': BQ_ns_path,

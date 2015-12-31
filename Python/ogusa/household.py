@@ -245,7 +245,7 @@ def euler_labor_leisure_func(w, r, e, n_guess, b_s, b_splus1, BQ, factor, T_H, c
     income = (r * b_s + w * e * n_guess) * factor
     
     deriv = (1 - tau_payroll - tax.MTR_labor(r, b_s, w, e, n_guess, factor, mtrx_params))
-    
+        
     euler = marg_ut_cons(cons, params) * w * deriv * e - \
         marg_ut_labor(n_guess, chi_n, params)
 
