@@ -270,7 +270,7 @@ def get_reduced_parameters(baseline, guid):
     return allvars
 
 
-def get_full_parameters(baseline):
+def get_full_parameters(baseline, guid):
     # Model Parameters
     S = int(80)
     J = int(7)
@@ -301,10 +301,15 @@ def get_full_parameters(baseline):
     # do output such that each parameters is in a separate SxBW array
     # read in estimated parameters
     if baseline:
-        dict_params = pickle.load( open( "TxFuncEst_baseline_w_mtrs2.pkl", "rb" ) )
+        baseline_pckl = "TxFuncEst_baseline_w_mtrs2{}.pkl".format(guid)
+        estimate_file = os.path.join(TAX_ESTIMATE_PATH,
+                                     baseline_pckl)
     else:
-        dict_params = pickle.load( open( "TxFuncEst_policy.pkl", "rb" ) )
+        policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
+        estimate_file = os.path.join(TAX_ESTIMATE_PATH,
+                                     policy_pckl)
 
+    dict_params = pickle.load( open( estimate_file, "rb" ) )
 
     # print 'etr mins: ', dict_params['tfunc_etr_params_S'].min(axis=(0,1))
     # print 'etr maxes: ', dict_params['tfunc_etr_params_S'].max(axis=(0,1))
