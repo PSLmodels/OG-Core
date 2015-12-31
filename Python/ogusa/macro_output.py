@@ -30,22 +30,22 @@ def dump_diff_output(baseline_dir, policy_dir):
 
     T = len(TPI_macro_vars_baseline['C_path'])
     baseline_macros = np.zeros((7,T))
-    baseline_macros[0,:] = TPI_macro_vars_baseline['Yinit'][:T]
+    baseline_macros[0,:] = TPI_macro_vars_baseline['Y_path'][:T]
     baseline_macros[1,:] = TPI_macro_vars_baseline['C_path'][:T]
     baseline_macros[2,:] = TPI_macro_vars_baseline['I_path'][:T]
     baseline_macros[3,:] = TPI_macro_vars_baseline['Lpath_TPI'][:T]
     baseline_macros[4,:] = TPI_macro_vars_baseline['winit'][:T]
     baseline_macros[5,:] = TPI_macro_vars_baseline['rinit'][:T]
-    baseline_macros[6,:] = TPI_macro_vars_baseline['T_H_init'][:T]
+    baseline_macros[6,:] = TPI_macro_vars_baseline['tax_path'][:T]
 
     policy_macros = np.zeros((7,T))
-    policy_macros[0,:] = TPI_macro_vars_policy['Yinit'][:T]
+    policy_macros[0,:] = TPI_macro_vars_policy['Y_path'][:T]
     policy_macros[1,:] = TPI_macro_vars_policy['C_path'][:T]
     policy_macros[2,:] = TPI_macro_vars_policy['I_path'][:T]
     policy_macros[3,:] = TPI_macro_vars_policy['Lpath_TPI'][:T]
     policy_macros[4,:] = TPI_macro_vars_policy['winit'][:T]
     policy_macros[5,:] = TPI_macro_vars_policy['rinit'][:T]
-    policy_macros[6,:] = TPI_macro_vars_policy['T_H_init'][:T]
+    policy_macros[6,:] = TPI_macro_vars_policy['tax_path'][:T]
 
     pct_changes = np.zeros((7,12))
     # pct changes for each year in budget window
@@ -54,7 +54,6 @@ def dump_diff_output(baseline_dir, policy_dir):
     pct_changes[:,10] = ((policy_macros[:,:10].sum(axis=1)-baseline_macros[:,:10].sum(axis=1))/policy_macros[:,:10].sum(axis=1))
     # pct changes in SS (use two periods back to avoid any odd things in last year of path)
     pct_changes[:,11] = ((policy_macros-baseline_macros)/policy_macros)[:,-2] 
-
 
     print 'pct changes: ', pct_changes
 

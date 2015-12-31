@@ -52,7 +52,7 @@ def sumsq(params, *objs):
     '''
     theta, l_tilde, n_grid = objs
     b, k, upsilon = params
-    CFE = ((l_tilde-n_grid)**(1+theta))/(1+theta)
+    CFE = ((n_grid/l_tilde)**(1+theta))/(1+theta)
     ellipse = b*((1-((n_grid/l_tilde)**upsilon))**(1/upsilon)) + k
     errors = CFE - ellipse
     ssqdev = (errors ** 2).sum()
@@ -82,11 +82,8 @@ def sumsq_MU(params, *objs):
     '''
     theta, l_tilde, n_grid = objs
     b, upsilon = params
-    CFE_MU = (l_tilde-n_grid)**theta
-    ellipse_MU = b * (1.0 / l_tilde) * ((1.0 - (n_grid / l_tilde) ** upsilon) ** ((1.0 / upsilon) - 1.0)) * (n_grid / l_tilde) ** (upsilon - 1.0)
-    #ellipse_MU = b * ((1-np.absolute(l_tilde-n_grid))**upsilon)**((1-upsilon)/upsilon)*np.absolute(l_tilde-n_grid)**(upsilon-1)
-    #print CFE_MU
-    print ellipse_MU
+    CFE_MU = (1.0/l_tilde)*((n_grid/l_tilde)**theta)
+    ellipse_MU =  b * (1.0 / l_tilde) * ((1.0 - (n_grid / l_tilde) ** upsilon) ** ((1.0 / upsilon) - 1.0)) * (n_grid / l_tilde) ** (upsilon - 1.0)
     errors = CFE_MU - ellipse_MU
     ssqdev = (errors ** 2).sum()
     #ssqdev = (np.abs(errors)).sum()
@@ -94,7 +91,7 @@ def sumsq_MU(params, *objs):
 
 
 
-def estimation(theta, l_tilde):
+def estimation(frisch, l_tilde):
     '''
     --------------------------------------------------------------------
     This function estimates the parameters of an elliptical utility 
@@ -106,7 +103,7 @@ def estimation(theta, l_tilde):
     ------------------------------------------------------------------------
     Set parameters
     ------------------------------------------------------------------------
-    theta       = Frisch elasticity of labor supply
+    theta       = inverse of the Frisch elasticity of labor supply
     l_tilde     = max labor supply 
     N           = number of grid points used in function estimation
     graph       = boolean, =True if print graph with CFE and elliptical functions
@@ -114,9 +111,10 @@ def estimation(theta, l_tilde):
     ------------------------------------------------------------------------
     '''
 
+    theta = 1/frisch
     N = 101
-    graph = True
-    start_time = time.clock()
+    graph = False
+    # start_time = time.clock()
 
 
     '''
@@ -139,40 +137,45 @@ def estimation(theta, l_tilde):
     upsilon_til         = scalar > 0, estimate of upsilon
     ------------------------------------------------------------------------
     '''
+
+    # Initial guesses
     b_init = .6701
     k_init = -.6548
-    upsilon_init = 1.3499
-    ellipse_params_init = np.array([b_init, k_init, upsilon_init])
-    n_grid = np.linspace(0.01, l_tilde, num=101)
-    ellipse_objs = (theta, l_tilde, n_grid)
-    bnds = ((1e-12, None), (None, None), (1e-12, None))
-    ellipse_params_til = opt.minimize(sumsq, ellipse_params_init,
-                        args=(ellipse_objs), method="L-BFGS-B", bounds=bnds,
-                        tol=1e-15)
-    (b_til, k_til, upsilon_til) = ellipse_params_til.x
+    upsilon_init = 2.3499
+    #n_grid = np.linspace(0.01, l_tilde, num=N)
+    n_grid = np.linspace(0.01, 0.8, num=N) # don't estimate near edge of range of labor supply
 
-    elapsed_time = time.clock() - start_time
+    #Estimating using levels of utility function
+    # ellipse_params_init = np.array([b_init, k_init, upsilon_init])
+    # ellipse_objs = (theta, l_tilde, n_grid)
+    # bnds = ((None, None), (None, None), (1e-12, None))
+    # ellipse_params_til = opt.minimize(sumsq, ellipse_params_init,
+    #                     args=(ellipse_objs), method="L-BFGS-B", bounds=bnds,
+    #                     tol=1e-15)
+    # (b_til, k_til, upsilon_til) = ellipse_params_til.x
+
+    # elapsed_time = time.clock() - start_time
 
     ### Estimate params using MUs
-    ellipse_MU_params_init = np.array([b_til, upsilon_til])
+    ellipse_MU_params_init = np.array([b_init, upsilon_init])
     ellipse_MU_objs = (theta, l_tilde, n_grid)
-    bnds_MU = ((1e-12, None), (1e-12, 0.99))
+    bnds_MU = ((None, None), (None, None))
     ellipse_MU_params_til = opt.minimize(sumsq_MU, ellipse_MU_params_init,
                         args=(ellipse_MU_objs), method="L-BFGS-B", bounds=bnds_MU,
                         tol=1e-15)
     (b_MU_til, upsilon_MU_til) = ellipse_MU_params_til.x
 
     # Print tax function computation time
-    if elapsed_time < 60: # seconds
-        secs = round(elapsed_time, 3)
-        print 'Tax function estimation time: ', secs, ' sec.'
-    elif elapsed_time >= 60 and elapsed_time < 3600: # minutes
-        mins = int(elapsed_time / 60)
-        secs = round(((elapsed_time / 60) - mins) * 60, 1)
-        print 'Tax function estimation time: ', mins, ' min, ', secs, ' sec'
+    # if elapsed_time < 60: # seconds
+    #     secs = round(elapsed_time, 3)
+    #     print 'Elliptical utility estimation time: ', secs, ' sec.'
+    # elif elapsed_time >= 60 and elapsed_time < 3600: # minutes
+    #     mins = int(elapsed_time / 60)
+    #     secs = round(((elapsed_time / 60) - mins) * 60, 1)
+    #     print 'Elliptical utility estimation time: ', mins, ' min, ', secs, ' sec'
 
-    print 'Ellipse parameters; b, k, upsilon: ', b_til, k_til, upsilon_til, ellipse_params_til
-    print 'Ellipse MU parameters; b, upsilon: ', b_MU_til, upsilon_MU_til, ellipse_MU_params_til
+    #print 'Ellipse parameters; b, k, upsilon: ', b_til, k_til, upsilon_til, ellipse_params_til
+    #print 'Ellipse MU parameters; b, upsilon: ', b_MU_til, upsilon_MU_til, ellipse_MU_params_til
 
 
     if graph == True:
@@ -181,7 +184,7 @@ def estimation(theta, l_tilde):
         Plot CFE vs Elliptical Function
         ------------------------------------------------------------------------
         '''
-        CFE = ((l_tilde-n_grid)**(1+theta))/(1+theta)
+        CFE = ((n_grid/l_tilde)**(1+theta))/(1+theta)
         ellipse_til = b_til*((1-((n_grid/l_tilde)**upsilon_til))**(1/upsilon_til)) + k_til
         fig, ax = plt.subplots()
         plt.plot(n_grid, CFE, 'r--', label='CFE')
@@ -197,9 +200,10 @@ def estimation(theta, l_tilde):
         plt.show()
 
 
-        CFE_MU = (l_tilde-n_grid)**theta
-        ellipse_MU = b_til * (1.0 / l_tilde) * ((1.0 - (n_grid / l_tilde) ** upsilon_til) ** (
-                (1.0 / upsilon_til) - 1.0)) * (n_grid / l_tilde) ** (upsilon_til - 1.0)
+
+        CFE_MU = (1.0/l_tilde)*((n_grid/l_tilde)**theta)
+        ellipse_MU = (1.0*b_MU_til * (1.0 / l_tilde) * ((1.0 - (n_grid / l_tilde) ** upsilon_MU_til) 
+                     ** ((1.0 / upsilon_MU_til) - 1.0)) * (n_grid / l_tilde) ** (upsilon_MU_til - 1.0))
         fig, ax = plt.subplots()
         plt.plot(n_grid, CFE_MU, 'r--', label='CFE')
         plt.plot(n_grid, ellipse_MU, 'b', label='Elliptical U')
@@ -213,4 +217,7 @@ def estimation(theta, l_tilde):
         # plt.savefig('cm_ss_Chap11')
         plt.show()
 
-    return b_til, k_til, upsilon_til
+
+    #return b_til, k_til, upsilon_til
+    return b_MU_til, upsilon_MU_til
+
