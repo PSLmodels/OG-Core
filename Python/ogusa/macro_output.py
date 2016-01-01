@@ -36,7 +36,7 @@ def dump_diff_output(baseline_dir, policy_dir):
     baseline_macros[3,:] = TPI_macro_vars_baseline['Lpath_TPI'][:T]
     baseline_macros[4,:] = TPI_macro_vars_baseline['winit'][:T]
     baseline_macros[5,:] = TPI_macro_vars_baseline['rinit'][:T]
-    baseline_macros[6,:] = TPI_macro_vars_baseline['tax_path'][:T]
+    baseline_macros[6,:] = TPI_macro_vars_baseline['T_H_init'][:T]
 
     policy_macros = np.zeros((7,T))
     policy_macros[0,:] = TPI_macro_vars_policy['Y_path'][:T]
@@ -45,7 +45,7 @@ def dump_diff_output(baseline_dir, policy_dir):
     policy_macros[3,:] = TPI_macro_vars_policy['Lpath_TPI'][:T]
     policy_macros[4,:] = TPI_macro_vars_policy['winit'][:T]
     policy_macros[5,:] = TPI_macro_vars_policy['rinit'][:T]
-    policy_macros[6,:] = TPI_macro_vars_policy['tax_path'][:T]
+    policy_macros[6,:] = TPI_macro_vars_policy['T_H_init'][:T]
 
     pct_changes = np.zeros((7,12))
     # pct changes for each year in budget window
@@ -60,4 +60,5 @@ def dump_diff_output(baseline_dir, policy_dir):
     return pct_changes
 
 
-
+#pct_changes = dump_diff_output('/Users/jasondebacker/repos/dynamic/Python/OUTPUT_BASELINE','/Users/jasondebacker/repos/dynamic/Python/OUTPUT_REFORM')
+#np.savetxt("pct_changes_01012016.csv", pct_changes, delimiter=",")

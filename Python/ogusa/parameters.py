@@ -42,15 +42,11 @@ def get_parameters_from_file():
                 j[key] = np.array(j[key])
         return j
 
-def get_parameters(baseline=False, user_modifiable=False, metadata=False):
+def get_parameters(baseline=False, guid=''):
     if DATASET == 'REAL':
-        return get_full_parameters(baseline=baseline,
-                                   user_modifiable=user_modifiable,
-                                   metadata=metadata)
+        return get_full_parameters(baseline=baseline, guid=guid)
     elif DATASET == 'SMALL':
-        return get_reduced_parameters(baseline=baseline,
-                                      user_modifiable=user_modifiable,
-                                      metadata=metadata)
+        return get_reduced_parameters(baseline=baseline, guid=guid)
     else:
         raise ValueError("Unknown value {0}".format(DATASET))
 
@@ -137,7 +133,7 @@ e            = age dependent possible working abilities (SxJ array)
 '''
 
 
-def get_reduced_parameters(baseline, user_modifiable, metadata):
+def get_reduced_parameters(baseline, guid):
     # Model Parameters
     starting_age = 40
     ending_age = 50
@@ -168,7 +164,7 @@ def get_reduced_parameters(baseline, user_modifiable, metadata):
     ### do output such that each parameters is in a separate SxBW array
 
     if baseline:
-        baseline_pckl = "TxFuncEst_baseline_w_mtrs2{}.pkl".format(guid)
+        baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      baseline_pckl)
     else:
@@ -221,20 +217,10 @@ def get_reduced_parameters(baseline, user_modifiable, metadata):
     e = np.array([[0.25, 1.25]] * 10)
     allvars = dict(locals())
 
-    if user_modifiable:
-        allvars = {k:allvars[k] for k in USER_MODIFIABLE_PARAMS}
-
-    if metadata:
-        with open(PARAMS_FILE_METADATA) as f:
-            params_meta = json.load(f)
-        for k,v in allvars.iteritems():
-            params_meta[k]["value"] = v
-        allvars = params_meta
-
     return allvars
 
 
-def get_full_parameters(baseline, user_modifiable, metadata):
+def get_full_parameters(baseline, guid):
     # Model Parameters
     S = int(80)
     J = int(7)
@@ -265,7 +251,7 @@ def get_full_parameters(baseline, user_modifiable, metadata):
     # do output such that each parameters is in a separate SxBW array
     # read in estimated parameters
     if baseline:
-        baseline_pckl = "TxFuncEst_baseline_w_mtrs2{}.pkl".format(guid)
+        baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      baseline_pckl)
     else:
@@ -334,14 +320,5 @@ def get_full_parameters(baseline, user_modifiable, metadata):
     e = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
 
     allvars = dict(locals())
-
-    if user_modifiable:
-        allvars = {k:allvars[k] for k in USER_MODIFIABLE_PARAMS}
-
-    if metadata:
-        params_meta = json.load(open(PARAMS_FILE_METADATA))
-        for k,v in allvars.iteritems():
-            params_meta[k]["value"] = v
-        allvars = params_meta
 
     return allvars

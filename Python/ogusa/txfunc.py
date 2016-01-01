@@ -1453,8 +1453,6 @@ def tax_func_estimate(baseline=False, reform={}):
 
     #import pdb;pdb.set_trace()
 
-    pickle.dump(dict_params, open(pkl_path, "wb"))
-
     return dict_params
 
 
