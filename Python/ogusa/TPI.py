@@ -55,25 +55,11 @@ def create_tpi_params(etr_params, mtrx_params, mtry_params,
                       delta, ltilde, nu, g_y, tau_payroll, retire,
                       mean_income_data, get_baseline=True, input_dir="./OUTPUT", **kwargs):
 
-    if get_baseline:
-        ss_init = os.path.join(input_dir, "SSinit/ss_init_vars.pkl")
-        variables = pickle.load(open(ss_init, "rb"))
-        for key in variables:
-            globals()[key] = variables[key]
-    else:
-        params_path = os.path.join(
-            input_dir, "Saved_moments/params_changed.pkl")
-        variables = pickle.load(open(params_path, "rb"))
-        for key in variables:
-            globals()[key] = variables[key]
-        var_path = os.path.join(input_dir, "SS/ss_vars.pkl")
-        variables = pickle.load(open(var_path, "rb"))
-        for key in variables:
-            globals()[key] = variables[key]
-        init_tpi_vars = os.path.join(input_dir, "SSinit/ss_init_tpi_vars.pkl")
-        variables = pickle.load(open(init_tpi_vars, "rb"))
-        for key in variables:
-            globals()[key] = variables[key]
+    ss_init = os.path.join(input_dir, "SSinit/ss_init_vars.pkl")
+    variables = pickle.load(open(ss_init, "rb"))
+    for key in variables:
+        globals()[key] = variables[key]
+
 
     '''
     ------------------------------------------------------------------------
@@ -109,12 +95,9 @@ def create_tpi_params(etr_params, mtrx_params, mtry_params,
     N_tilde = omega.sum(1)
     omega_stationary = omega / N_tilde.reshape(T + S, 1)
 
-    if get_baseline:
-        initial_b = bssmat_splus1
-        initial_n = nssmat
-    else:
-        initial_b = bssmat_init
-        initial_n = nssmat_init
+    initial_b = bssmat_splus1
+    initial_n = nssmat
+
     # Get an initial distribution of capital with the initial population
     # distribution
     K0 = household.get_K(initial_b, omega_stationary[
@@ -883,16 +866,11 @@ def TP_solutions(winit, rinit, T_H_init, BQinit2, Kss, Lss, Yss, BQss, theta, in
     #           'rinit': rinit, 'Y_ns_path': Y_ns_path, 'T_H_ns_path': T_H_ns_path,
     #           'w_ns_path': w_ns_path}
 
-    if get_baseline:
-        tpi_init_dir = os.path.join(output_dir, "TPIinit")
-        utils.mkdirs(tpi_init_dir)
-        tpi_init_vars = os.path.join(tpi_init_dir, "TPIinit_vars.pkl")
-        pickle.dump(output, open(tpi_init_vars, "wb"))
-    else:
-        tpi_dir = os.path.join(output_dir, "TPI")
-        utils.mkdirs(tpi_dir)
-        tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
-        pickle.dump(output, open(tpi_vars, "wb"))
+
+    tpi_dir = os.path.join(output_dir, "TPI")
+    utils.mkdirs(tpi_dir)
+    tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
+    pickle.dump(output, open(tpi_vars, "wb"))
 
     tpi_dir = os.path.join(output_dir, "TPI")
     utils.mkdirs(tpi_dir)

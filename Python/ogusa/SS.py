@@ -62,14 +62,6 @@ def create_steady_state_parameters(etr_params, mtrx_params, mtry_params,
                                    mean_income_data, get_baseline,
                                    output_dir="./OUTPUT", **kwargs):
 
-    if get_baseline is False:
-        # If this is a tax experiment, also import the changed tax variables
-        params_filename = "Saved_moments/params_changed.pkl"
-        ss_params_changed_path = os.path.join(output_dir, params_filename)
-        variables = pickle.load(open(ss_params_changed_path, 'rb'))
-        for key in variables:
-            globals()[key] = variables[key]
-
     # Put income tax parameters in a tuple 
     # Assumption here is that tax parameters of last year of budget
     # window continue forever and so will be SS values
@@ -558,97 +550,79 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
 
     etr_params, mtrx_params, mtry_params = income_tax_parameters
 
-    if get_baseline:
-        # Generate initial guesses for chi^b_j and chi^n_s
-        chi_params = np.zeros(S + J)
-        chi_params[:J] = chi_b_guess
-        chi_params[J:] = chi_n_guess
-        # First run SS simulation with guesses at initial values for b, n, w, r, etc
-        # For inital guesses of b and n, we choose very small b, and medium n
-        b_guess = np.ones((S, J)).flatten() * .05
-        n_guess = np.ones((S, J)).flatten() * .4 * ltilde
-        # For initial guesses of w, r, T_H, and factor, we use values that are close
-        # to some steady state values.
-        wguess = 1.2
-        rguess = .06
-        T_Hguess = 0.12 
-        factorguess = 70000.0
+    # Generate initial guesses for chi^b_j and chi^n_s
+    chi_params = np.zeros(S + J)
+    chi_params[:J] = chi_b_guess
+    chi_params[J:] = chi_n_guess
+    # First run SS simulation with guesses at initial values for b, n, w, r, etc
+    # For inital guesses of b and n, we choose very small b, and medium n
+    b_guess = np.ones((S, J)).flatten() * .05
+    n_guess = np.ones((S, J)).flatten() * .4 * ltilde
+    # For initial guesses of w, r, T_H, and factor, we use values that are close
+    # to some steady state values.
+    wguess = 1.2
+    rguess = .06
+    T_Hguess = 0.12 
+    factorguess = 70000.0
 
+    guesses = [wguess, rguess, T_Hguess, factorguess]
+    args_ = (b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params[J:], chi_params[:J], 
+             income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
+    [solutions, infodict, ier, message] = opt.fsolve(SS_fsolve, guesses, args=args_, xtol=mindist_SS, full_output=True)
+    [wguess, rguess, T_Hguess, factorguess] = solutions
+    fsolve_flag = True
+    solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[
+                          J:], chi_params[:J], income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e, fsolve_flag)
+
+
+    if calibrate_model:
+        global Nfeval, value_all, chi_params_all
+        Nfeval = 1
+        value_all = np.zeros((10000))
+        chi_params_all = np.zeros((S+J,10000))
+        outputs = {'solutions': solutions, 'chi_params': chi_params}
+        ss_init_path = os.path.join(
+            output_dir, "Saved_moments/SS_init_solutions.pkl")
+        pickle.dump(outputs, open(ss_init_path, "wb"))
+        function_to_minimize_X = lambda x: function_to_minimize(
+            x, chi_params, income_tax_parameters, ss_parameters, iterative_params, omega_SS, rho, lambdas, tau_bq, e, output_dir)
+        bnds = tuple([(1e-6, None)] * (S + J))
+        # In order to scale all the parameters to estimate in the minimizer, we have the minimizer fit a vector of ones that
+        # will be multiplied by the chi initial guesses inside the function.  Otherwise, if chi^b_j=1e5 for some j, and the
+        # minimizer peturbs that value by 1e-8, the % difference will be extremely small, outside of the tolerance of the
+        # minimizer, and it will not change that parameter.
+        chi_params_scalars = np.ones(S + J)
+        #chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars,
+        #                                  method='TNC', tol=MINIMIZER_TOL, bounds=bnds, callback=callbackF(chi_params_scalars), options=MINIMIZER_OPTIONS).x
+        # chi_params_scalars = opt.minimize(function_to_minimize, chi_params_scalars, 
+        #                                   args=(chi_params, income_tax_parameters, ss_parameters, iterative_params, 
+        #                                     omega_SS, rho, lambdas, tau_bq, e, output_dir),
+        #                                   method='TNC', tol=MINIMIZER_TOL, bounds=bnds, 
+        #                                   callback=callbackF(chi_params_scalars,chi_params, income_tax_parameters, 
+        #                                     ss_parameters, iterative_params, omega_SS, rho, lambdas, tau_bq, e, output_dir), 
+        #                                   options=MINIMIZER_OPTIONS).x
+        chi_params_scalars = opt.minimize(function_to_minimize, chi_params_scalars, 
+                                          args=(chi_params, income_tax_parameters, ss_parameters, iterative_params, 
+                                            omega_SS, rho, lambdas, tau_bq, e, output_dir),
+                                          method='TNC', tol=MINIMIZER_TOL, bounds=bnds, 
+                                          options=MINIMIZER_OPTIONS).x
+        chi_params *= chi_params_scalars
+        print 'The final scaling params', chi_params_scalars
+        print 'The final bequest parameter values:', chi_params
+
+        solutions_dict = pickle.load(open(ss_init_path, "rb"))
+        solutions = solutions_dict['solutions']
+        b_guess = solutions[:S * J]
+        n_guess = solutions[S * J:2 * S * J]
+        wguess, rguess, factorguess, T_Hguess = solutions[2 * S * J:]
         guesses = [wguess, rguess, T_Hguess, factorguess]
         args_ = (b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params[J:], chi_params[:J], 
-                 income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
+             income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
         [solutions, infodict, ier, message] = opt.fsolve(SS_fsolve, guesses, args=args_, xtol=mindist_SS, full_output=True)
         [wguess, rguess, T_Hguess, factorguess] = solutions
         fsolve_flag = True
         solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[
-                              J:], chi_params[:J], income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e, fsolve_flag)
-
-
-        if calibrate_model:
-            global Nfeval, value_all, chi_params_all
-            Nfeval = 1
-            value_all = np.zeros((10000))
-            chi_params_all = np.zeros((S+J,10000))
-            outputs = {'solutions': solutions, 'chi_params': chi_params}
-            ss_init_path = os.path.join(
-                output_dir, "Saved_moments/SS_init_solutions.pkl")
-            pickle.dump(outputs, open(ss_init_path, "wb"))
-            function_to_minimize_X = lambda x: function_to_minimize(
-                x, chi_params, income_tax_parameters, ss_parameters, iterative_params, omega_SS, rho, lambdas, tau_bq, e, output_dir)
-            bnds = tuple([(1e-6, None)] * (S + J))
-            # In order to scale all the parameters to estimate in the minimizer, we have the minimizer fit a vector of ones that
-            # will be multiplied by the chi initial guesses inside the function.  Otherwise, if chi^b_j=1e5 for some j, and the
-            # minimizer peturbs that value by 1e-8, the % difference will be extremely small, outside of the tolerance of the
-            # minimizer, and it will not change that parameter.
-            chi_params_scalars = np.ones(S + J)
-            #chi_params_scalars = opt.minimize(function_to_minimize_X, chi_params_scalars,
-            #                                  method='TNC', tol=MINIMIZER_TOL, bounds=bnds, callback=callbackF(chi_params_scalars), options=MINIMIZER_OPTIONS).x
-            # chi_params_scalars = opt.minimize(function_to_minimize, chi_params_scalars, 
-            #                                   args=(chi_params, income_tax_parameters, ss_parameters, iterative_params, 
-            #                                     omega_SS, rho, lambdas, tau_bq, e, output_dir),
-            #                                   method='TNC', tol=MINIMIZER_TOL, bounds=bnds, 
-            #                                   callback=callbackF(chi_params_scalars,chi_params, income_tax_parameters, 
-            #                                     ss_parameters, iterative_params, omega_SS, rho, lambdas, tau_bq, e, output_dir), 
-            #                                   options=MINIMIZER_OPTIONS).x
-            chi_params_scalars = opt.minimize(function_to_minimize, chi_params_scalars, 
-                                              args=(chi_params, income_tax_parameters, ss_parameters, iterative_params, 
-                                                omega_SS, rho, lambdas, tau_bq, e, output_dir),
-                                              method='TNC', tol=MINIMIZER_TOL, bounds=bnds, 
-                                              options=MINIMIZER_OPTIONS).x
-            chi_params *= chi_params_scalars
-            print 'The final scaling params', chi_params_scalars
-            print 'The final bequest parameter values:', chi_params
-
-            solutions_dict = pickle.load(open(ss_init_path, "rb"))
-            solutions = solutions_dict['solutions']
-            b_guess = solutions[:S * J]
-            n_guess = solutions[S * J:2 * S * J]
-            wguess, rguess, factorguess, T_Hguess = solutions[2 * S * J:]
-            guesses = [wguess, rguess, T_Hguess, factorguess]
-            args_ = (b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params[J:], chi_params[:J], 
-                 income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
-            [solutions, infodict, ier, message] = opt.fsolve(SS_fsolve, guesses, args=args_, xtol=mindist_SS, full_output=True)
-            [wguess, rguess, T_Hguess, factorguess] = solutions
-            fsolve_flag = True
-            solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[
-                              J:], chi_params[:J], income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e, fsolve_flag)
-
-
-    else:
-        variables = pickle.load(open(ss_init_path, "rb"))
-        solutions = solutions_dict['solutions']
-        chi_params = solutions_dict['chi_params']
-        b_guess = solutions[:S * J]
-        n_guess = solutions[S * J:2 * S * J]
-        wguess, rguess, factorguess, T_Hguess = solutions[2 * S * J:]
-
-        guesses = [wguess, rguess, T_Hguess, factorguess]
-        args_ = (b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params[J:], chi_params[:J], 
-                 income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
-        [solutions, infodict, ier, message] = opt.fsolve(SS_fsolve, guesses, args=args_, xtol=mindist_SS, full_output=True)
-        [wguess, rguess, T_Hguess, factorguess] = solutions
-        solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[
-                              J:], chi_params[:J], income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
+                          J:], chi_params[:J], income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e, fsolve_flag)
 
 
     '''
@@ -660,12 +634,12 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
     if get_baseline:
         outputs = {'solutions': solutions, 'chi_params': chi_params}
         ss_init_dir = os.path.join(
-            output_dir, "Saved_moments/SS_init_solutions.pkl")
+            output_dir, "Saved_moments/SS_baseline_solutions.pkl")
         pickle.dump(outputs, open(ss_init_dir, "wb"))
     else:
         outputs = {'solutions': solutions, 'chi_params': chi_params}
         ss_exp_dir = os.path.join(
-            output_dir, "Saved_moments/SS_experiment_solutions.pkl")
+            output_dir, "Saved_moments/SS_reform_solutions.pkl")
         pickle.dump(outputs, open(ss_exp_dir, "wb"))
 
     bssmat = solutions[0:(S - 1) * J].reshape(S - 1, J)
@@ -735,18 +709,15 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
               'T_Hss': T_Hss, 'euler_savings': euler_savings,
               'euler_labor_leisure': euler_labor_leisure, 'chi_n': chi_n,
               'chi_b': chi_b}
-    if get_baseline:
-        utils.mkdirs(os.path.join(output_dir, "SSinit"))
-        ss_init_dir = os.path.join(output_dir, "SSinit/ss_init_vars.pkl")
-        pickle.dump(output, open(ss_init_dir, "wb"))
-        bssmat_init = bssmat_splus1
-        nssmat_init = nssmat
-        # Pickle variables for TPI initial values
-        output2 = {'bssmat_init': bssmat_init, 'nssmat_init': nssmat_init}
-        ss_init_tpi = os.path.join(output_dir, "SSinit/ss_init_tpi_vars.pkl")
-        pickle.dump(output2, open(ss_init_tpi, "wb"))
-    else:
-        utils.mkdirs(os.path.join(output_dir, "SS"))
-        ss_vars = os.path.join(output_dir, "SS/ss_vars.pkl")
-        pickle.dump(output, open(ss_vars, "wb"))
+
+    utils.mkdirs(os.path.join(output_dir, "SSinit"))
+    ss_init_dir = os.path.join(output_dir, "SSinit/ss_init_vars.pkl")
+    pickle.dump(output, open(ss_init_dir, "wb"))
+    bssmat_init = bssmat_splus1
+    nssmat_init = nssmat
+    # Pickle variables for TPI initial values
+    output2 = {'bssmat_init': bssmat_init, 'nssmat_init': nssmat_init}
+    ss_init_tpi = os.path.join(output_dir, "SSinit/ss_init_tpi_vars.pkl")
+    pickle.dump(output2, open(ss_init_tpi, "wb"))
+    
     return output
