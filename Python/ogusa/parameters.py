@@ -164,7 +164,7 @@ def get_reduced_parameters(baseline, guid):
     ### do output such that each parameters is in a separate SxBW array
 
     if baseline:
-        baseline_pckl = "TxFuncEst_baseline_w_mtrs2{}.pkl".format(guid)
+        baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      baseline_pckl)
     else:
@@ -251,7 +251,7 @@ def get_full_parameters(baseline, guid):
     # do output such that each parameters is in a separate SxBW array
     # read in estimated parameters
     if baseline:
-        baseline_pckl = "TxFuncEst_baseline_w_mtrs2{}.pkl".format(guid)
+        baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      baseline_pckl)
     else:

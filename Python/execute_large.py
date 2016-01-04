@@ -44,7 +44,7 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
 
     
     get_baseline = True
-    calibrate_model = True
+    calibrate_model = False
     # List of parameter names that will not be changing (unless we decide to
     # change them for a tax experiment)
 
