@@ -35,7 +35,7 @@ def run_micro_macro(user_params):
 
     kwargs={'output_base':output_base, 'input_dir':input_dir,
             'baseline':False, 'reform':reform, 'user_params':user_params,
-            'guid':'42'}
+            'guid':''}
     runner(**kwargs)
 
     time.sleep(0.5)

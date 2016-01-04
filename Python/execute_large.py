@@ -19,8 +19,8 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
 
     tick = time.time()
 
-    if run_micro:
-        txfunc.get_tax_func_estimate(baseline=baseline, reform=reform, guid=guid)
+    #if run_micro:
+    #    txfunc.get_tax_func_estimate(baseline=baseline, reform=reform, guid=guid)
     globals().update(ogusa.parameters.get_parameters(baseline=baseline, guid=guid))
 
     from ogusa import SS, TPI
@@ -52,19 +52,8 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
                 'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
                 'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
                 'b_ellipse', 'k_ellipse', 'upsilon',
-                'chi_b_guess', 'chi_n_guess','a_etr_income',
-                'b_etr_income', 'c_etr_income', 'd_etr_income',
-                'e_etr_income', 'f_etr_income', 'min_x_etr_income', 
-                'max_x_etr_income', 'min_y_etr_income', 'max_y_etr_income',
-                'a_mtrx_income',
-                'b_mtrx_income', 'c_mtrx_income', 'd_mtrx_income',
-                'e_mtrx_income', 'f_mtrx_income', 'min_x_mtrx_income', 
-                'max_x_mtrx_income', 'min_y_mtrx_income', 'max_y_mtrx_income',
-                'a_mtry_income',
-                'b_mtry_income', 'c_mtry_income', 'd_mtry_income',
-                'e_mtry_income', 'f_mtry_income', 'min_x_mtry_income', 
-                'max_x_mtry_income', 'min_y_mtry_income', 'max_y_mtry_income',
-                'tau_payroll', 'tau_bq', 'calibrate_model',
+                'chi_b_guess', 'chi_n_guess','etr_params','mtrx_params',
+                'mtry_params','tau_payroll', 'tau_bq', 'calibrate_model',
                 'retire', 'mean_income_data', 'g_n_vector',
                 'h_wealth', 'p_wealth', 'm_wealth', 'get_baseline',
                 'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'e', 'rho']
@@ -132,7 +121,7 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
     with open("ss_outputs.pkl", 'wb') as fp:
         pickle.dump(ss_outputs, fp)
 
-    w_path, r_path, T_H_path, BQ_path Y_path = TPI.run_time_path_iteration(**ss_outputs)
+    w_path, r_path, T_H_path, BQ_path, Y_path = TPI.run_time_path_iteration(**ss_outputs)
 
 
     print "getting to here...."

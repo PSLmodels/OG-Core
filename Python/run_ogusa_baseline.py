@@ -23,14 +23,12 @@ def run_micro_macro(user_params):
     input_dir = BASELINE_DIR
 
     kwargs={'output_base':output_base, 'input_dir':input_dir, 'baseline':True, 'user_params':user_params,
-            'guid':'42'}
+            'guid':''}
     runner(**kwargs)
     time.sleep(0.5)
 
     print "total time for baseline was ", (time.time() - start_time)
-    print ans
 
-    return ans
 
 if __name__ == "__main__":
     run_micro_macro(user_params={})
