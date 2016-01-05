@@ -47,7 +47,7 @@ calibrate_model = False
 
 
 #globals().update(ogusa.parameters.get_parameters_from_file())
-globals().update(ogusa.parameters.get_parameters())
+globals().update(ogusa.parameters.get_parameters(baseline=True, guid='abc123'))
 
 # Generate Wealth data moments
 output_dir = "./OUTPUT"

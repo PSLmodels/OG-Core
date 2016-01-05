@@ -719,5 +719,5 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
     output2 = {'bssmat_init': bssmat_init, 'nssmat_init': nssmat_init}
     ss_init_tpi = os.path.join(output_dir, "SSinit/ss_init_tpi_vars.pkl")
     pickle.dump(output2, open(ss_init_tpi, "wb"))
-    
+
     return output
