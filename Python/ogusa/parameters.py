@@ -167,10 +167,12 @@ def get_reduced_parameters(baseline, guid):
         baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      baseline_pckl)
+        print 'using baseline1 tax parameters'
     else:
         policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      policy_pckl)
+        print 'using policy1 tax parameters'
 
     dict_params = pickle.load( open( estimate_file, "rb" ) )
 
@@ -250,14 +252,18 @@ def get_full_parameters(baseline, guid):
     #  will call tax function estimation function here...
     # do output such that each parameters is in a separate SxBW array
     # read in estimated parameters
+    print 'baselines is:', baseline
     if baseline:
         baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      baseline_pckl)
+        print 'using baseline2 tax parameters'
+
     else:
         policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      policy_pckl)
+        print 'using policy2 tax parameters'
 
     dict_params = pickle.load( open( estimate_file, "rb" ) )
 
@@ -296,7 +302,8 @@ def get_full_parameters(baseline, guid):
     flag_graphs = False
     #   Calibration parameters
     # These guesses are close to the calibrated values
-    chi_b_guess = np.array([0.7, 0.7, 1.0, 1.2, 1.2, 1.2, 1.4])
+    #chi_b_guess = np.array([0.7, 0.7, 1.0, 1.2, 1.2, 1.2, 1.4])
+    chi_b_guess = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
     chi_n_guess = np.array([38.12000874, 33.22762421, 25.34842241, 26.67954008, 24.41097278, 
                             23.15059004, 22.46771332, 21.85495452, 21.46242013, 22.00364263, 
                             21.57322063, 21.53371545, 21.29828515, 21.10144524, 20.8617942, 

@@ -22,7 +22,7 @@ import cPickle as pickle
 import os
 
 def dump_diff_output(baseline_dir, policy_dir):
-    # read stationarized output
+    # read macro output
     tpi_macro_vars_policy_path = os.path.join(policy_dir, "TPI", "TPI_macro_vars.pkl")
     TPI_macro_vars_policy = pickle.load(open( tpi_macro_vars_policy_path, "rb" ))
     tpi_macro_vars_baseline_path = os.path.join(baseline_dir, "TPI", "TPI_macro_vars.pkl")
@@ -57,8 +57,10 @@ def dump_diff_output(baseline_dir, policy_dir):
 
     print 'pct changes: ', pct_changes
 
+
     return pct_changes
 
 
 #pct_changes = dump_diff_output('/Users/jasondebacker/repos/dynamic/Python/OUTPUT_BASELINE','/Users/jasondebacker/repos/dynamic/Python/OUTPUT_REFORM')
 #np.savetxt("pct_changes_01012016.csv", pct_changes, delimiter=",")
+

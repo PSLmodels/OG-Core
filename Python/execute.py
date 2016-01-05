@@ -12,7 +12,7 @@ import ogusa
 ogusa.parameters.DATASET = 'REAL'
 
 
-def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, guid='', run_micro=True):
+def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, guid='', run_micro=False):
 
     from ogusa import parameters, wealth, labor, demographics, income
     from ogusa import txfunc
@@ -84,6 +84,9 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
 
 
     ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, get_baseline, calibrate_model, output_dir=input_dir)
+
+    print 'SS done!!!'
+    quit()
 
     '''
     ------------------------------------------------------------------------
