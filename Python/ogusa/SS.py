@@ -570,7 +570,7 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
              income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
     [solutions, infodict, ier, message] = opt.fsolve(SS_fsolve, guesses, args=args_, xtol=mindist_SS, full_output=True)
     [wguess, rguess, T_Hguess, factorguess] = solutions
-    fsolve_flag = False
+    fsolve_flag = True
     solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[
                           J:], chi_params[:J], income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e, fsolve_flag)
 
