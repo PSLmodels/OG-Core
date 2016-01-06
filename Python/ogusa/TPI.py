@@ -46,14 +46,17 @@ steady state computation in ss_vars.pkl
 ------------------------------------------------------------------------
 '''
 
-from .parameters import get_parameters
-globals().update(get_parameters())
+#from .parameters import get_parameters
+#globals().update(get_parameters())
 
 
 def create_tpi_params(etr_params, mtrx_params, mtry_params,
                       b_ellipse, upsilon, J, S, T, BW, beta, sigma, alpha, Z,
                       delta, ltilde, nu, g_y, tau_payroll, retire,
-                      mean_income_data, get_baseline=True, input_dir="./OUTPUT", **kwargs):
+                      mean_income_data, run_params, get_baseline=True,
+                      input_dir="./OUTPUT", **kwargs):
+
+    globals().update(run_params)
 
     ss_init = os.path.join(input_dir, "SSinit/ss_init_vars.pkl")
     variables = pickle.load(open(ss_init, "rb"))

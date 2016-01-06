@@ -19,9 +19,11 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
 
     tick = time.time()
 
-    #if run_micro:
-    #    txfunc.get_tax_func_estimate(baseline=baseline, reform=reform, guid=guid)
-    globals().update(ogusa.parameters.get_parameters(baseline=baseline, guid=guid))
+    if run_micro:
+        txfunc.get_tax_func_estimate(baseline=baseline, reform=reform, guid=guid)
+    print ("in runner, baseline is ", baseline)
+    run_params = ogusa.parameters.get_parameters(baseline=baseline, guid=guid)
+    globals().update(run_params)
 
     from ogusa import SS, TPI
     #Create output directory structure
@@ -76,12 +78,12 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
             sim_params[key] = lcls[key]
 
     sim_params['output_dir'] = input_dir
+    sim_params['run_params'] = run_params
 
     # Modify ogusa parameters based on user input
     sim_params.update(user_params)
 
     income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
-
 
     ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, get_baseline, calibrate_model, output_dir=input_dir)
 

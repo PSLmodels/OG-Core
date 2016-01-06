@@ -11,4 +11,4 @@ def create_diff(baseline, policy, dump_output=False):
     return pct_changes
 
 if __name__ == "__main__":
-    create_diff(baseline="./OUTPUT_BASELINE", policy="./OUTPUT")
+    create_diff(baseline="./OUTPUT_BASELINE3", policy="./OUTPUT_REFORM3")

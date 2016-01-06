@@ -28,14 +28,14 @@ def run_micro_macro(user_params):
 
     start_time = time.time()
 
-    REFORM_DIR = "./OUTPUT_REFORM2"
+    REFORM_DIR = "./OUTPUT_REFORM4"
 
     output_base = REFORM_DIR
     input_dir = REFORM_DIR
 
     kwargs={'output_base':output_base, 'input_dir':input_dir,
             'baseline':False, 'reform':reform, 'user_params':user_params,
-            'guid':'abc123'}
+            'guid':'abc123', 'run_micro':False}
     runner(**kwargs)
 
     time.sleep(0.5)

@@ -17,13 +17,13 @@ def run_micro_macro(user_params):
 
     start_time = time.time()
 
-    BASELINE_DIR = "./OUTPUT_BASELINE2"
+    BASELINE_DIR = "./OUTPUT_BASELINE4"
 
     output_base = BASELINE_DIR
     input_dir = BASELINE_DIR
 
     kwargs={'output_base':output_base, 'input_dir':input_dir, 'baseline':True, 'user_params':user_params,
-            'guid':'abc123'}
+            'guid':'abc123', 'run_micro':False}
     runner(**kwargs)
     time.sleep(0.5)
 
