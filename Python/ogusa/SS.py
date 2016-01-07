@@ -42,8 +42,8 @@ Imported user given values
 ------------------------------------------------------------------------
 '''
 
-from .parameters import get_parameters
-globals().update(get_parameters())
+#from .parameters import get_parameters
+#globals().update(get_parameters())
 from .parameters import DATASET
 
 '''
@@ -59,8 +59,10 @@ def create_steady_state_parameters(etr_params, mtrx_params, mtry_params,
                                    b_ellipse, upsilon, J, S, T, BW,
                                    beta, sigma, alpha, Z, delta, ltilde, nu,
                                    g_y, tau_payroll, retire,
-                                   mean_income_data, get_baseline,
+                                   mean_income_data, get_baseline, run_params,
                                    output_dir="./OUTPUT", **kwargs):
+
+    globals().update(run_params)
 
     # Put income tax parameters in a tuple 
     # Assumption here is that tax parameters of last year of budget

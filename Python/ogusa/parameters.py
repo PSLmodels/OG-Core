@@ -44,6 +44,7 @@ def get_parameters_from_file():
 
 def get_parameters(baseline=False, guid=''):
     if DATASET == 'REAL':
+        print("in get parameters, baseline is ", baseline)
         return get_full_parameters(baseline=baseline, guid=guid)
     elif DATASET == 'SMALL':
         return get_reduced_parameters(baseline=baseline, guid=guid)
