@@ -449,6 +449,7 @@ def get_omega(S, T, starting_age, ending_age, E, flag_graphs):
     surv_array[-1] = 0.0
     imm_array, children_im = get_immigration2(S, starting_age, ending_age, E)
     imm_array *= 0.0
+    children_im *= 0.0
     fert_rate, children_fertrate = get_fert(S, starting_age, ending_age, E)
     cum_surv_rate = np.cumprod(surv_array)
     if flag_graphs:

@@ -63,10 +63,10 @@ def test_import_ok():
 
 
 def test_run_small():
-    from run_small import runner
+    from execute import runner
     output_base = "./OUTPUT"
     input_dir = "./OUTPUT"
-    runner(output_base=output_base, input_dir=input_dir)
+    runner(output_base=output_base, input_dir=input_dir, run_micro=False)
 
 def test_compare_pickle_file_bad(picklefile1, picklefile2):
     from ogusa.utils import pickle_file_compare

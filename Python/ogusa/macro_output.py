@@ -22,7 +22,7 @@ import cPickle as pickle
 import os
 
 def dump_diff_output(baseline_dir, policy_dir):
-    # read stationarized output
+    # read macro output
     tpi_macro_vars_policy_path = os.path.join(policy_dir, "TPI", "TPI_macro_vars.pkl")
     TPI_macro_vars_policy = pickle.load(open( tpi_macro_vars_policy_path, "rb" ))
     tpi_macro_vars_baseline_path = os.path.join(baseline_dir, "TPI", "TPI_macro_vars.pkl")
@@ -30,7 +30,7 @@ def dump_diff_output(baseline_dir, policy_dir):
 
     T = len(TPI_macro_vars_baseline['C_path'])
     baseline_macros = np.zeros((7,T))
-    baseline_macros[0,:] = TPI_macro_vars_baseline['Yinit'][:T]
+    baseline_macros[0,:] = TPI_macro_vars_baseline['Y_path'][:T]
     baseline_macros[1,:] = TPI_macro_vars_baseline['C_path'][:T]
     baseline_macros[2,:] = TPI_macro_vars_baseline['I_path'][:T]
     baseline_macros[3,:] = TPI_macro_vars_baseline['Lpath_TPI'][:T]
@@ -39,7 +39,7 @@ def dump_diff_output(baseline_dir, policy_dir):
     baseline_macros[6,:] = TPI_macro_vars_baseline['T_H_init'][:T]
 
     policy_macros = np.zeros((7,T))
-    policy_macros[0,:] = TPI_macro_vars_policy['Yinit'][:T]
+    policy_macros[0,:] = TPI_macro_vars_policy['Y_path'][:T]
     policy_macros[1,:] = TPI_macro_vars_policy['C_path'][:T]
     policy_macros[2,:] = TPI_macro_vars_policy['I_path'][:T]
     policy_macros[3,:] = TPI_macro_vars_policy['Lpath_TPI'][:T]
@@ -55,10 +55,12 @@ def dump_diff_output(baseline_dir, policy_dir):
     # pct changes in SS (use two periods back to avoid any odd things in last year of path)
     pct_changes[:,11] = ((policy_macros-baseline_macros)/policy_macros)[:,-2] 
 
-
     print 'pct changes: ', pct_changes
+
 
     return pct_changes
 
 
+#pct_changes = dump_diff_output('/Users/jasondebacker/repos/dynamic/Python/OUTPUT_BASELINE','/Users/jasondebacker/repos/dynamic/Python/OUTPUT_REFORM')
+#np.savetxt("pct_changes_01012016.csv", pct_changes, delimiter=",")
 

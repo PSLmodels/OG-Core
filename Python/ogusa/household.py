@@ -175,15 +175,7 @@ def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_
                   g_n_ss, tau_payroll, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
 
-    a_etr_income, b_etr_income, \
-        c_etr_income, d_etr_income, e_etr_income, f_etr_income, \
-        min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income,\
-        a_mtrx_income, b_mtrx_income, \
-        c_mtrx_income, d_mtrx_income, e_mtrx_income, f_mtrx_income, \
-        min_x_mtrx_income, max_x_mtrx_income, min_y_mtrx_income, max_y_mtrx_income,\
-        a_mtry_income, b_mtry_income, \
-        c_mtry_income, d_mtry_income, e_mtry_income, f_mtry_income, \
-        min_x_mtry_income, max_x_mtry_income, min_y_mtry_income, max_y_mtry_income = tax_params
+    etr_params, mtrx_params, mtry_params = tax_params
     # In order to not have 2 savings euler equations (one that solves the first S-1 equations, and one that solves the last one),
     # we combine them.  In order to do this, we have to compute a consumption term in period t+1, which requires us to have a shifted
     # e and n matrix.  We append a zero on the end of both of these so they will be the right size.  We could append any value to them,
@@ -191,16 +183,11 @@ def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_
     # consumption for this term will be zero (since rho is one).
     e_extended = np.array(list(e) + [0])
     n_extended = np.array(list(n_guess) + [0])
-    tax1_params = (J, S, retire, a_etr_income, b_etr_income, c_etr_income, d_etr_income, e_etr_income, f_etr_income,
-                   min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income, h_wealth, p_wealth, m_wealth, tau_payroll)
+    tax1_params = (J, S, retire, etr_params, h_wealth, p_wealth, m_wealth, tau_payroll)
     tax1 = tax.total_taxes(r, b_s, w, e, n_guess, BQ, lambdas,
                            factor, T_H, None, 'SS', False, tax1_params, theta, tau_bq)
 
-    tax2_params = (J, S, retire, np.array(list(a_etr_income) + [a_etr_income[-1]])[1:], np.array(list(b_etr_income) + [b_etr_income[-1]])[1:], 
-                   np.array(list(c_etr_income) + [c_etr_income[-1]])[1:], np.array(list(d_etr_income) + [d_etr_income[-1]])[1:], 
-                   np.array(list(e_etr_income) + [e_etr_income[-1]])[1:], np.array(list(f_etr_income) + [f_etr_income[-1]])[1:],
-                   np.array(list(min_x_etr_income) + [min_x_etr_income[-1]])[1:], np.array(list(max_x_etr_income) + [max_x_etr_income[-1]])[1:], 
-                   np.array(list(min_y_etr_income) + [min_y_etr_income[-1]])[1:], np.array(list(max_y_etr_income) + [max_y_etr_income[-1]])[1:], 
+    tax2_params = (J, S, retire, np.append(etr_params,np.reshape(etr_params[-1,:],(1,etr_params.shape[1])),axis=0)[1:,:], 
                    h_wealth, p_wealth, m_wealth, tau_payroll)
     tax2 = tax.total_taxes(r, b_splus1, w, e_extended[1:], n_extended[
                            1:], BQ, lambdas, factor, T_H, None, 'SS', True, tax2_params, theta, tau_bq)
@@ -209,28 +196,9 @@ def euler_savings_func(w, r, e, n_guess, b_s, b_splus1, b_splus2, BQ, factor, T_
     cons2 = get_cons(r, b_splus1, w, e_extended[1:], n_extended[
                      1:], BQ, lambdas, b_splus2, params, tax2)
     income = (r * b_splus1 + w * e_extended[1:] * n_extended[1:]) * factor
-
-    #tau_inc_params = (np.array(list(a_tax_income) + [a_tax_income[-1]])[1:], np.array(list(b_tax_income) + [b_tax_income[-1]])[1:], 
-    #               np.array(list(c_tax_income) + [c_tax_income[-1]])[1:], np.array(list(d_tax_income) + [d_tax_income[-1]])[1:], 
-    #               np.array(list(e_tax_income) + [e_tax_income[-1]])[1:], np.array(list(f_tax_income) + [f_tax_income[-1]])[1:],
-    #               np.array(list(min_x_tax_income) + [min_x_tax_income[-1]])[1:], np.array(list(max_x_tax_income) + [max_x_tax_income[-1]])[1:], 
-    #               np.array(list(min_y_tax_income) + [min_y_tax_income[-1]])[1:], np.array(list(max_y_tax_income) + [max_y_tax_income[-1]])[1:]) 
-    mtr_cap_params = (np.array(list(a_mtry_income) + [a_mtry_income[-1]])[1:], np.array(list(b_mtry_income) + [b_mtry_income[-1]])[1:], 
-                   np.array(list(c_mtry_income) + [c_mtry_income[-1]])[1:], np.array(list(d_mtry_income) + [d_mtry_income[-1]])[1:], 
-                   np.array(list(e_mtry_income) + [e_mtry_income[-1]])[1:], np.array(list(f_mtry_income) + [f_mtry_income[-1]])[1:],
-                   np.array(list(min_x_mtry_income) + [min_x_mtry_income[-1]])[1:], np.array(list(max_x_mtry_income) + [max_x_mtry_income[-1]])[1:], 
-                   np.array(list(min_y_mtry_income) + [min_y_mtry_income[-1]])[1:], np.array(list(max_y_mtry_income) + [max_y_mtry_income[-1]])[1:]) 
-    
+    mtr_cap_params = np.append(mtry_params,np.reshape(mtry_params[-1,:],(1,mtry_params.shape[1])),axis=0)[1:,:]
     deriv = (1+r) - r*(tax.MTR_capital(r, b_splus1, w, e_extended[1:], n_extended[1:], factor, mtr_cap_params))
 
-
-    #deriv = (1+r) - r*(tax.tau_capital_deriv(r, b_splus1, w, e_extended[1:], n_extended[1:], factor, tau_inc_params)
-    #               - tax.tau_income(r, b_splus1, w, e_extended[1:], n_extended[1:], factor, tau_inc_params))
-
-    #deriv = (
-    #    1 + r * (1 - tax.tau_income(r, b_splus1, w, e_extended[1:], n_extended[1:], factor, params) - tax.tau_income_deriv(
-    #        r, b_splus1, w, e_extended[1:], n_extended[1:], factor, params) * income) - tax.tau_w_prime(b_splus1, params) 
-    #         * b_splus1 - tax.tau_wealth(b_splus1, params))
     savings_ut = rho * np.exp(-sigma * g_y) * chi_b * b_splus1 ** (-sigma)
 
     # Again, note timing in this equation, the (1-rho) term will zero out in the last period, so the last entry of cons2 can be complete
@@ -268,35 +236,16 @@ def euler_labor_leisure_func(w, r, e, n_guess, b_s, b_splus1, BQ, factor, T_H, c
                   g_n_ss, tau_payroll, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
 
-    a_etr_income, b_etr_income, \
-        c_etr_income, d_etr_income, e_etr_income, f_etr_income, \
-        min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income,\
-        a_mtrx_income, b_mtrx_income, \
-        c_mtrx_income, d_mtrx_income, e_mtrx_income, f_mtrx_income, \
-        min_x_mtrx_income, max_x_mtrx_income, min_y_mtrx_income, max_y_mtrx_income,\
-        a_mtry_income, b_mtry_income, \
-        c_mtry_income, d_mtry_income, e_mtry_income, f_mtry_income, \
-        min_x_mtry_income, max_x_mtry_income, min_y_mtry_income, max_y_mtry_income = tax_params
+    etr_params, mtrx_params, mtry_params = tax_params
 
-    tax1_params = (J, S, retire, a_etr_income, b_etr_income, c_etr_income, d_etr_income, e_etr_income, f_etr_income,
-                   min_x_etr_income, max_x_etr_income, min_y_etr_income, max_y_etr_income, h_wealth, p_wealth, m_wealth, tau_payroll)
+    tax1_params = (J, S, retire, etr_params, h_wealth, p_wealth, m_wealth, tau_payroll)
     tax1 = tax.total_taxes(r, b_s, w, e, n_guess, BQ, lambdas,
                            factor, T_H, None, 'SS', False, tax1_params, theta, tau_bq)
     cons = get_cons(r, b_s, w, e, n_guess, BQ, lambdas, b_splus1, params, tax1)
     income = (r * b_s + w * e * n_guess) * factor
     
-    #tau_inc_params = (a_tax_income, b_tax_income, c_tax_income, d_tax_income, e_tax_income, f_tax_income,
-    #                  min_x_tax_income, max_x_tax_income, min_y_tax_income, max_y_tax_income)
-    #deriv = (1 - tau_payroll - tax.tau_labor_deriv(r, b_s, w, e, n_guess, factor, tau_inc_params) 
-    #         - tax.tau_income(r, b_s, w, e, n_guess, factor, tau_inc_params))
-
-    mtr_lab_params = (a_mtrx_income, b_mtrx_income, c_mtrx_income, d_mtrx_income, e_mtrx_income, f_mtrx_income,
-                      min_x_mtrx_income, max_x_mtrx_income, min_y_mtrx_income, max_y_mtrx_income)
-    deriv = (1 - tau_payroll - tax.MTR_labor(r, b_s, w, e, n_guess, factor, mtr_lab_params))
-
-    #deriv = 1 - tau_payroll - tax.tau_income(r, b_s, w, e, n_guess, factor, params) - tax.tau_income_deriv(
-    #    r, b_s, w, e, n_guess, factor, params) * income
-
+    deriv = (1 - tau_payroll - tax.MTR_labor(r, b_s, w, e, n_guess, factor, mtrx_params))
+        
     euler = marg_ut_cons(cons, params) * w * deriv * e - \
         marg_ut_labor(n_guess, chi_n, params)
 

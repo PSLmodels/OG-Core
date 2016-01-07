@@ -37,4 +37,4 @@ if __name__ == "__main__":
                     },
               }
 
-    runner(output_base=output_base, input_dir=input_dir, baseline=False, reform=reform)
+    runner(output_base=output_base, input_dir=input_dir, baseline=False, reform=reform, run_micro=False)
