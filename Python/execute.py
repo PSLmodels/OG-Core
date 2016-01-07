@@ -21,7 +21,8 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
 
     if run_micro:
         txfunc.get_tax_func_estimate(baseline=baseline, reform=reform, guid=guid)
-    globals().update(ogusa.parameters.get_parameters(baseline=baseline, guid=guid))
+    run_params = ogusa.parameters.get_parameters(baseline=baseline, guid=guid)
+    globals().update(run_params)
 
     from ogusa import SS, TPI
     #Create output directory structure
@@ -76,6 +77,7 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
             sim_params[key] = lcls[key]
 
     sim_params['output_dir'] = input_dir
+    sim_params['run_params'] = run_params
 
     # Modify ogusa parameters based on user input
     sim_params.update(user_params)
