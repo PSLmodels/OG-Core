@@ -14,21 +14,21 @@ from ogusa.parameters import (get_reduced_parameters, USER_MODIFIABLE_PARAMS,
 
 
 def test_parameters_user_modifiable():
-    dd = get_reduced_parameters(False, user_modifiable=True, metadata=False)
+    dd = get_reduced_parameters(False, guid='', user_modifiable=True, metadata=False)
     assert set(dd.keys()) == set(USER_MODIFIABLE_PARAMS)
-    dd = get_full_parameters(False, user_modifiable=True, metadata=False)
+    dd = get_full_parameters(False, guid='', user_modifiable=True, metadata=False)
     assert set(dd.keys()) == set(USER_MODIFIABLE_PARAMS)
 
 
 def test_parameters_metadata():
-    dd_standard = get_reduced_parameters(False, user_modifiable=True, metadata=False)
-    dd_meta = get_reduced_parameters(False, user_modifiable=True, metadata=True)
+    dd_standard = get_reduced_parameters(False, guid='', user_modifiable=True, metadata=False)
+    dd_meta = get_reduced_parameters(False, guid='', user_modifiable=True, metadata=True)
     for k, v in dd_meta.iteritems():
         assert dd_standard[k] == dd_meta[k]['value']
     assert set(dd_meta.keys()) == set(USER_MODIFIABLE_PARAMS)
 
-    dd_standard = get_full_parameters(False, user_modifiable=True, metadata=False)
-    dd_meta = get_full_parameters(False, user_modifiable=True, metadata=True)
+    dd_standard = get_full_parameters(False, guid='', user_modifiable=True, metadata=False)
+    dd_meta = get_full_parameters(False, guid='', user_modifiable=True, metadata=True)
     for k, v in dd_meta.iteritems():
         assert dd_standard[k] == dd_meta[k]['value']
     assert set(dd_meta.keys()) == set(USER_MODIFIABLE_PARAMS)

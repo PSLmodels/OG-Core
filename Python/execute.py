@@ -9,7 +9,7 @@ import numpy as np
 import time
 
 import ogusa
-ogusa.parameters.DATASET = 'REAL'
+ogusa.parameters.DATASET = 'SMALL'
 
 
 def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, guid='', run_micro=False):
@@ -86,8 +86,6 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
     ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, get_baseline, calibrate_model, output_dir=input_dir)
 
     print 'SS done!!!'
-    quit()
-
     '''
     ------------------------------------------------------------------------
         Run the baseline TPI simulation

@@ -63,7 +63,7 @@ def test_import_ok():
 
 
 def test_run_small():
-    from run_small import runner
+    from execute import runner
     output_base = "./OUTPUT"
     input_dir = "./OUTPUT"
     runner(output_base=output_base, input_dir=input_dir, run_micro=False)
