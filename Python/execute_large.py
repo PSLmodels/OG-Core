@@ -14,6 +14,7 @@ ogusa.parameters.DATASET = 'REAL'
 
 def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, guid='', run_micro=True):
 
+
     from ogusa import parameters, wealth, labor, demographics, income
     from ogusa import txfunc
 
@@ -23,6 +24,15 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
         txfunc.get_tax_func_estimate(baseline=baseline, reform=reform, guid=guid)
     print ("in runner, baseline is ", baseline)
     run_params = ogusa.parameters.get_parameters(baseline=baseline, guid=guid)
+
+    # Modify ogusa parameters based on user input
+    if 'frisch' in user_params:
+        b_ellipse, upsilon = ogusa.elliptical_u_est.estimation(user_params['frisch'],
+                                                               run_params['ltilde'])
+        run_params.update(user_params)
+        run_params['b_ellipse'] = b_ellipse
+        run_params['upsilon'] = upsilon
+
     globals().update(run_params)
 
     from ogusa import SS, TPI
@@ -79,9 +89,6 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
 
     sim_params['output_dir'] = input_dir
     sim_params['run_params'] = run_params
-
-    # Modify ogusa parameters based on user input
-    sim_params.update(user_params)
 
     income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
 

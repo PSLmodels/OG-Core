@@ -33,4 +33,4 @@ def test_parameters_metadata():
         assert dd_standard[k] == dd_meta[k]['value']
 
     assert set(dd_meta.keys()) == set(USER_MODIFIABLE_PARAMS)
-    assert 'validations' in dd_meta['upsilon']
+    assert 'validations' in dd_meta['frisch']

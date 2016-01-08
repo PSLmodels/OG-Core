@@ -6,7 +6,7 @@
         "notes": "",
         "col_label": ["Growth rate of technology"]
     },
-    "upsilon":{
+    "frisch":{
         "long_name": "omega for elliptical fit utility function",
 	    "description": "The Frisch elasticity gives the elasticity of labor supply to changes in the net of tax wage rate, holding wealth constant.   This means that the Frisch elasticity captures the substitution effects, but not the income effects, of a change in the net of tax wage rate.  A Frisch elasticity of 0.4 would indicate that if the net of tax wage rate increases by 10% then hours worked would increase by 4%, if wealth were held constant.  Note that OG-USA uses an elliptical utility function for labor supply.  We parameterize this function to fit a constant Frisch elasticity function with a Frisch elasticity as input here.",
         "irs_ref": "",
