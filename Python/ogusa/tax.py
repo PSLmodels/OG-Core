@@ -411,7 +411,8 @@ def get_lump_sum(r, w, b, n, BQ, factor, params):
     if I.ndim == 2: 
         T_I = np.zeros((S,J))
         for j in xrange(J):
-            T_I[:,j] = tau_income(r, b[:,j], w, e[:,j], n[:,j], factor, etr_params) * I[:,j]
+            TI_params = (e[:,j], etr_params)
+            T_I[:,j] = tau_income(r, w, b[:,j], n[:,j], factor, TI_params) * I[:,j]
     if I.ndim == 3:
         T_I = np.zeros((T,S,J))
         for j in xrange(J):
@@ -419,7 +420,8 @@ def get_lump_sum(r, w, b, n, BQ, factor, params):
                 tau_inc_params3D = etr_params[:,j,:]
             if etr_params.ndim == 4:
                 tau_inc_params3D = etr_params[:,:,j,:]
-            T_I[:,:,j] = tau_income(r[:,:,j], b[:,:,j], w[:,:,j], e[:,:,j], n[:,:,j], factor, tau_inc_params3D) * I[:,:,j]  
+            TI_params = (e[:,:,j], tau_inc_params3D)
+            T_I[:,:,j] = tau_income(r[:,:,j], w[:,:,j], b[:,:,j], n[:,:,j], factor, TI_params) * I[:,:,j]  
     T_P = tau_payroll * w * e * n
     TW_params = (h_wealth, p_wealth, m_wealth)
     T_W = tau_wealth(b, TW_params) * b
@@ -484,7 +486,8 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
     e, lambdas, method, retire, etr_params, h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S = params
 
     I = r * b + w * e * n
-    T_I = tau_income(r, b, w, e, n, factor, etr_params) * I
+    TI_params = (e, etr_params)
+    T_I = tau_income(r, w, b, n, factor, TI_params) * I
 
     T_P = tau_payroll * w * e * n
     TW_params = (h_wealth, p_wealth, m_wealth)
