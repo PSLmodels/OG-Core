@@ -12,7 +12,8 @@ import ogusa
 ogusa.parameters.DATASET = 'SMALL'
 
 
-def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, guid='', run_micro=False):
+def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, guid='', run_micro=True):
+
 
     from ogusa import parameters, wealth, labor, demographics, income
     from ogusa import txfunc
@@ -21,7 +22,17 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
 
     if run_micro:
         txfunc.get_tax_func_estimate(baseline=baseline, reform=reform, guid=guid)
+    print ("in runner, baseline is ", baseline)
     run_params = ogusa.parameters.get_parameters(baseline=baseline, guid=guid)
+
+    # Modify ogusa parameters based on user input
+    if 'frisch' in user_params:
+        b_ellipse, upsilon = ogusa.elliptical_u_est.estimation(user_params['frisch'],
+                                                               run_params['ltilde'])
+        run_params.update(user_params)
+        run_params['b_ellipse'] = b_ellipse
+        run_params['upsilon'] = upsilon
+
     globals().update(run_params)
 
     from ogusa import SS, TPI
@@ -50,14 +61,14 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
     # change them for a tax experiment)
 
     param_names = ['S', 'J', 'T', 'BW', 'lambdas', 'starting_age', 'ending_age',
-             'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
-             'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
-             'b_ellipse', 'k_ellipse', 'upsilon',
-             'chi_b_guess', 'chi_n_guess','etr_params','mtrx_params',
-             'mtry_params','tau_payroll', 'tau_bq', 'calibrate_model',
-             'retire', 'mean_income_data', 'g_n_vector',
-             'h_wealth', 'p_wealth', 'm_wealth', 'get_baseline',
-             'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'e', 'rho']
+                'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
+                'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
+                'b_ellipse', 'k_ellipse', 'upsilon',
+                'chi_b_guess', 'chi_n_guess','etr_params','mtrx_params',
+                'mtry_params','tau_payroll', 'tau_bq', 'calibrate_model',
+                'retire', 'mean_income_data', 'g_n_vector',
+                'h_wealth', 'p_wealth', 'm_wealth', 'get_baseline',
+                'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'e', 'rho']
 
 
     '''
@@ -79,15 +90,10 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
     sim_params['output_dir'] = input_dir
     sim_params['run_params'] = run_params
 
-    # Modify ogusa parameters based on user input
-    sim_params.update(user_params)
-
     income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
-
 
     ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, get_baseline, calibrate_model, output_dir=input_dir)
 
-    print 'SS done!!!'
     '''
     ------------------------------------------------------------------------
         Run the baseline TPI simulation
@@ -125,6 +131,7 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
         pickle.dump(ss_outputs, fp)
 
     w_path, r_path, T_H_path, BQ_path, Y_path = TPI.run_time_path_iteration(**ss_outputs)
+
 
     print "getting to here...."
     TPI.TP_solutions(w_path, r_path, T_H_path, BQ_path, **ss_outputs)
