@@ -447,7 +447,7 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
         factor     = scalar, model income scaling factor
         T_H        = [T,] vector, lump sum transfer amount(s) 
         j          = integer, lifetime incoem group being computed
-        shift      = integer, computing for periods 0--s or 1--(s+1) (bool) (True for 1--(s+1))
+        shift      = boolean, computing for periods 0--s or 1--(s+1) (bool) (True for 1--(s+1))
         params = length 13 tuple, (e, lambdas, method, retire, etr_params, h_wealth, p_wealth, 
                                    m_wealth, tau_payroll, theta, tau_bq, J, S)
         e           = [T,S,J] array, effective labor units
