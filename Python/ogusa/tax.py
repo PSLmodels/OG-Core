@@ -1,8 +1,8 @@
 '''
 ------------------------------------------------------------------------
-Last updated 7/16/2015
+Last updated 1/8/2016
 
-Functions for taxes in SS and TPI.
+Functions for taxes in the steady state and along the transition path.
 
 ------------------------------------------------------------------------
 '''
@@ -11,27 +11,40 @@ Functions for taxes in SS and TPI.
 import numpy as np
 import cPickle as pickle
 
+
 '''
 ------------------------------------------------------------------------
     Functions
 ------------------------------------------------------------------------
 '''
 
-
-def replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS, lambdas):
+def replacement_rate_vals(nssmat, wss, factor_ss, params):
     '''
     Calculates replacement rate values for the payroll tax.
+
     Inputs:
-        nssmat = labor participation rate values (SxJ array or Sx1 array)
-        wss = wage rate (scalar)
-        factor_ss = factor that converts income to dollars (scalar)
-        e = ability levels (SxJ array or Sx1 array)
-        J = number of ability types (scalar)
-        omega_SS = population weights by age (Sx1 array)
-        lambdas = ability weights (Jx1 array or scalar)
-    Outputs:
-        theta = replacement rates for each ability type (Jx1 array)
+        nssmat    = [S,J] array, steady state labor supply
+        wss       = scalar, steady state wage rate
+        factor_ss = scalar, factor that converts model income to dollars 
+        params    = length 4 tuple, (e, J, omega_SS, lambdas)
+        e         = [S,J] array, effective labor units 
+        J         = integer, number of ability types 
+        omega_SS  = [S,] vector, population weights by age 
+        lambdas   = [J,] vector, lifetime income group weights
+
+    Functions called: None
+
+    Objects in function:
+        AIME       = [J,] vector, average indexed monthly earnings by lifetime income group
+        PIA        = [J,] vector, primary insurance amount by lifetime income group
+        maxpayment = scalar, maximum replacement rate
+        theta      = [J,] vector, replacement rates by lifetime income group
+
+    Returns: theta
+
     '''
+    e, J, omega_SS, lambdas = params
+
     # Do a try/except, depending on whether the arrays are 1 or 2 dimensional
     try:
         AIME = ((wss * factor_ss * e * nssmat) *
@@ -64,18 +77,28 @@ def replacement_rate_vals(nssmat, wss, factor_ss, e, J, omega_SS, lambdas):
         maxpayment = 30000.0 / (factor_ss * wss)
         if theta > maxpayment:
             theta = maxpayment
-    theta = 0 
+    theta = 0  # setting theta = 0 since we are including social security income in capital income (CHECK)
     return theta
 
 
 def tau_wealth(b, params):
     '''
-    Calculates tau_wealth based on the wealth level for an individual
+    Calculates the effective tax rate on wealth.
+
     Inputs:
-        b = wealth holdings of an individual (various length arrays or scalar)
-        params = parameter list of model
-    Outputs:
-        tau_w = tau_wealth (various length arrays or scalar)
+        b        = [T,S,J] array, wealth holdings
+        params   = length 3 tuple, (h_wealth, p_wealth, m_wealth)
+        h_wealth = scalar, parameter of wealth tax function
+        p_wealth = scalar, parameter of wealth tax function
+        m_wealth = scalar, parameter of wealth tax function
+
+    Functions called: None
+
+    Objects in function:
+        tau_w = [T,S,J] array, effective tax rate on wealth 
+
+    Returns: tau_w
+        
     '''
     h_wealth, p_wealth, m_wealth = params
     
@@ -88,12 +111,22 @@ def tau_wealth(b, params):
 
 def tau_w_prime(b, params):
     '''
-    Calculates derivative of tau_wealth based on the wealth level for an individual
+    Calculates the marginal tax rate on wealth from the wealth tax.
+
     Inputs:
-        b = wealth holdings of an individual (various length arrays or scalar)
-        params = parameter list of model (list)
-    Outputs:
-        tau_w_prime = derivative of tau_wealth (various length arrays or scalar)
+        b        = [T,S,J] array, wealth holdings
+        params   = length 3 tuple, (h_wealth, p_wealth, m_wealth)
+        h_wealth = scalar, parameter of wealth tax function
+        p_wealth = scalar, parameter of wealth tax function
+        m_wealth = scalar, parameter of wealth tax function
+
+    Functions called: None
+
+    Objects in function:
+        tau_w_prime = [T,S,J] array, marginal tax rate on wealth from wealth tax
+
+    Returns: tau_w
+
     '''
     h_wealth, p_wealth, m_wealth = params
 
@@ -104,20 +137,34 @@ def tau_w_prime(b, params):
     return tau_w_prime
 
 
-def tau_income(r, b, w, e, n, factor, etr_params):
+def tau_income(r, w, b, n, factor, params):
     '''
-    Gives income tax value for a certain income level
+    Calculate personal income tax liability.
+
     Inputs:
-        r = interest rate (various length list or scalar)
-        b = wealth holdings (various length array or scalar)
-        w = wage (various length list or scalar)
-        e = ability level (various size array or scalar)
-        n = labor participation rate (various length array or scalar)
-        factor = scaling factor (scalar)
-        params = parameter list of model (list)
-    Output:
-        tau = tau_income (various length array or scalar)
+        r          = [T,] vector, interest rate 
+        w          = [T,] vector, wage rate 
+        b          = [T,S,J] array, wealth holdings 
+        n          = [T,S,J] array, labor supply
+        factor     = scalar, model income scaling factor
+        params     = length 2 tuple, (e, etr_params)
+        e          = [T,S,J] array, effective labor units
+        etr_params = [T,S,J] array, effective tax rate function parameters
+
+    Functions called: None
+
+    Objects in function:
+        x   = [T,S,J] array, labor income
+        y   = [T,S,J] array, capital income
+        I   = [T,S,J] array, total income (capital plus labor income)
+        phi = [T,S,J] array, fraction of total income that is labor income
+        tau = [T,S,J] array, personal income tax liability
+
+    Returns: tau
+    
     '''
+
+    e, etr_params = params
 
     if etr_params.ndim == 4: 
         A = etr_params[:,:,:,0]
@@ -178,24 +225,34 @@ def tau_income(r, b, w, e, n, factor, etr_params):
     return tau
 
 
+def MTR_capital(r, w, b, n, factor, params):
+    '''
+    Generates the marginal tax rate on capital income for households.
 
-## Note that since when we use the same functional form, one could
-# use just one tax function for ATR, MTR_lab, MTR_cap, just with different parameters input
-def MTR_capital(r, b, w, e, n, factor, mtry_params):
-    '''
-    Gives derivative of MTR function with repect to 
-    labor income at a certain income level
     Inputs:
-        r = interest rate (various length list or scalar)
-        b = wealth holdings (various length array or scalar)
-        w = wage (various length list or scalar)
-        e = ability level (various size array or scalar)
-        n = labor participation rate (various length array or scalar)
-        factor = scaling factor (scalar)
-        params = parameter list of model (list)
-    Output:
-        tau = derivative of tau_income w.r.t. labor income (various length array or scalar)
+        r          = [T,] vector, interest rate 
+        w          = [T,] vector, wage rate 
+        b          = [T,S,J] array, wealth holdings 
+        n          = [T,S,J] array, labor supply
+        factor     = scalar, model income scaling factor
+        params     = length 2 tuple, (e, mtry_params)
+        e          = [T,S,J] array, effective labor units
+        mtry_params = [T,S,J] array, marginal tax rate on capital income function parameters
+
+    Functions called: None
+
+    Objects in function:
+        x   = [T,S,J] array, labor income
+        y   = [T,S,J] array, capital income
+        I   = [T,S,J] array, total income (capital plus labor income)
+        phi = [T,S,J] array, fraction of total income that is labor income
+        tau = [T,S,J] array, marginal tax rate on capital income 
+
+    Returns: tau
+    
     '''
+
+    e, mtry_params = params
 
     if mtry_params.ndim == 2: 
         A = mtry_params[:,0]
@@ -236,19 +293,32 @@ def MTR_capital(r, b, w, e, n, factor, mtry_params):
 
 def MTR_labor(r, b, w, e, n, factor, mtrx_params):
     '''
-    Gives derivative of MTR function with repect to 
-    labor income at a certain income level
+    Generates the marginal tax rate on labor income for households.
+
     Inputs:
-        r = interest rate (various length list or scalar)
-        b = wealth holdings (various length array or scalar)
-        w = wage (various length list or scalar)
-        e = ability level (various size array or scalar)
-        n = labor participation rate (various length array or scalar)
-        factor = scaling factor (scalar)
-        params = parameter list of model (list)
-    Output:
-        tau = derivative of tau_income w.r.t. labor income (various length array or scalar)
+        r           = [T,] vector, interest rate 
+        w           = [T,] vector, wage rate 
+        b           = [T,S,J] array, wealth holdings 
+        n           = [T,S,J] array, labor supply
+        factor      = scalar, model income scaling factor
+        params      = length 2 tuple, (e, mtrx_params)
+        e           = [T,S,J] array, effective labor units
+        mtrx_params = [T,S,J] array, marginal tax rate on labor income function parameters
+
+    Functions called: None
+
+    Objects in function:
+        x   = [T,S,J] array, labor income
+        y   = [T,S,J] array, capital income
+        I   = [T,S,J] array, total income (capital plus labor income)
+        phi = [T,S,J] array, fraction of total income that is labor income
+        tau = [T,S,J] array, marginal tax rate on labor income 
+
+    Returns: tau
+    
     '''
+
+    e, mtry_params = params
 
     if mtrx_params.ndim == 2: 
         A = mtrx_params[:,0]
@@ -287,29 +357,54 @@ def MTR_labor(r, b, w, e, n, factor, mtrx_params):
     return tau
 
 
-def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, weights, method, etr_params, params, theta, tau_bq):
+def get_lump_sum(r, w, b, n, BQ, factor, params):
     '''
     Gives lump sum tax value.
+
     Inputs:
-        r = interest rate (various length list or scalar)
-        b = wealth holdings (various length array or scalar)
-        w = wage (various length list or scalar)
-        e = ability level (various size array or scalar)
-        n = labor participation rate (various length array or scalar)
-        BQ = Bequest values (various length array or scalar)
-        lambdas = ability levels (Jx1 array or scalar)
-        factor = scaling factor (scalar)
-        weights = population weights (various length array or scalar)
-        method = 'SS' or 'TPI', depending on the shape of arrays
-        params = parameter list of model (list)
-        theta = replacement rate values (Jx1 array or scalar)
-        tau_bq = bequest tax values (Jx1 array or scalar)
-    Output:
-        T_H = lump sum tax (Tx1 array or scalar)
+        r           = [T,] vector, interest rate 
+        w           = [T,] vector, wage rate 
+        b           = [T,S,J] array, wealth holdings 
+        n           = [T,S,J] array, labor supply
+        BQ          = [T,J] array, bequest amounts
+        factor      = scalar, model income scaling factor
+        params      = length 12 tuple, (e, lambdas, weights, method, etr_params, 
+                                        theta, tau_bq, tau_payroll, h_wealth, 
+                                        p_wealth, m_wealth, retire, T, S, J)
+        e           = [T,S,J] array, effective labor units
+        lambdas     = [J,] vector, population weights by lifetime income group
+        weights     = [T,S] array, population weights by age
+        method      = string, 'SS' or 'TPI'
+        etr_params  = [T,S,J] array, effective tax rate function parameters
+        theta       = [J,] vector, replacement rate values by lifetime income group
+        tau_bq      = scalar, bequest tax rate 
+        h_wealth    = scalar, wealth tax function parameter
+        p_wealth    = scalar, wealth tax function parameter
+        m_wealth    = scalar, wealth tax function parameter
+        tau_payroll = scalar, payroll tax rate
+        retire      = integer, retirement age
+        T           = integer, number of periods in transition path
+        S           = integer, number of age groups
+        J           = integer, number of lifetime income groups 
+
+    Functions called: 
+        tau_income
+        tau_wealth
+
+    Objects in function:
+        I    = [T,S,J] array, total income
+        T_I  = [T,S,J] array, total income taxes
+        T_P  = [T,S,J] array, total payroll taxes
+        T_W  = [T,S,J] array, total wealth taxes
+        T_BQ = [T,S,J] array, total bequest taxes
+        T_H  = [T,] vector, lump sum transfer amount(s) 
+
+    Returns: T_H
+    
     '''
-    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, retire, mean_income_data,\
-                  h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
+
+    e, lambdas, weights, method, etr_params, theta, tau_bq, \
+        tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J = params
 
     I = r * b + w * e * n
     
@@ -338,30 +433,56 @@ def get_lump_sum(r, b, w, e, n, BQ, lambdas, factor, weights, method, etr_params
         T_H = (weights * lambdas * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1)
     return T_H
 
+    
+def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
+    '''
+    Gives net tax values.
 
-def total_taxes(r, b, w, e, n, BQ, lambdas, factor, T_H, j, method, shift, params, theta, tau_bq):
-    '''
-    Gives net taxes values.
     Inputs:
-        r = interest rate (various length list or scalar)
-        b = wealth holdings (various length array or scalar)
-        w = wage (various length list or scalar)
-        e = ability level (various size array or scalar)
-        n = labor participation rate (various length array or scalar)
-        BQ = Bequest values (various length array or scalar)
-        lambdas = ability levels (Jx1 array or scalar)
-        factor = scaling factor (scalar)
-        T_H = net taxes (Tx1 array or scalar)
-        j = Which ability level is being computed, if doing one ability level at a time (scalar)
-        method = 'SS' or 'TPI' or 'TPI_scalar', depending on the shape of arrays
-        shift = Computing for periods 0--s or 1--(s+1) (bool) (True for 1--(s+1))
-        params = parameter list of model (list)
-        theta = replacement rate values (Jx1 array or scalar)
-        tau_bq = bequest tax values (Jx1 array or scalar)
-    Output:
-        total_taxes = net taxes (various length array or scalar)
+        r          = [T,] vector, interest rate 
+        w          = [T,] vector, wage rate 
+        b          = [T,S,J] array, wealth holdings 
+        n          = [T,S,J] array, labor supply
+        BQ         = [T,J] vector,  bequest amounts
+        factor     = scalar, model income scaling factor
+        T_H        = [T,] vector, lump sum transfer amount(s) 
+        j          = integer, lifetime incoem group being computed
+        shift      = integer, computing for periods 0--s or 1--(s+1) (bool) (True for 1--(s+1))
+        params = length 13 tuple, (e, lambdas, method, retire, etr_params, h_wealth, p_wealth, 
+                                   m_wealth, tau_payroll, theta, tau_bq, J, S)
+        e           = [T,S,J] array, effective labor units
+        lambdas     = [J,] vector, population weights by lifetime income group
+        method      = string, 'SS' or 'TPI'
+        retire      = integer, retirement age
+        etr_params  = [T,S,J] array, effective tax rate function parameters
+        h_wealth    = scalar, wealth tax function parameter
+        p_wealth    = scalar, wealth tax function parameter
+        m_wealth    = scalar, wealth tax function parameter
+        tau_payroll = scalar, payroll tax rate
+        theta       = [J,] vector, replacement rate values by lifetime income group
+        tau_bq      = scalar, bequest tax rate 
+        S           = integer, number of age groups
+        J           = integer, number of lifetime income groups 
+
+    Functions called: 
+        tau_income
+        tau_wealth
+
+    Objects in function:
+        I           = [T,S,J] array, total income
+        T_I         = [T,S,J] array, total income taxes
+        T_P         = [T,S,J] array, total payroll taxes
+        T_W         = [T,S,J] array, total wealth taxes
+        T_BQ        = [T,S,J] array, total bequest taxes
+        retireTPI   = integer, =(retire - S)
+        total_taxes = [T,] vector, net taxes 
+
+    Returns: total_taxes
+    
     '''
-    J, S, retire, etr_params, h_wealth, p_wealth, m_wealth, tau_payroll = params
+
+    e, lambdas, method, retire, etr_params, h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S = params
+
     I = r * b + w * e * n
     T_I = tau_income(r, b, w, e, n, factor, etr_params) * I
 
