@@ -1,5 +1,5 @@
 {
-    "g_y":{
+    "g_y_annual":{
         "long_name": "Growth rate of technology",
 	    "description": "This parameter gives the underlying growth rate for labor augmenting technological change.  The growth rate determines long-run economic growth in OG-USA.",
         "irs_ref": "",

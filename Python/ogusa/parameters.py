@@ -32,7 +32,7 @@ PARAMS_FILE_METADATA_PATH = os.path.join(os.path.dirname(__file__), PARAMS_FILE_
 
 TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
 
-USER_MODIFIABLE_PARAMS = ['g_y', 'frisch']
+USER_MODIFIABLE_PARAMS = ['g_y_annual', 'frisch']
 
 def read_parameter_metadata():
     if os.path.exists(PARAMS_FILE_METADATA_PATH):
