@@ -20,6 +20,18 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
 
     tick = time.time()
 
+    #Create output directory structure
+    saved_moments_dir = os.path.join(output_base, "Saved_moments")
+    ssinit_dir = os.path.join(output_base, "SSinit")
+    tpiinit_dir = os.path.join(output_base, "TPIinit")
+    dirs = [saved_moments_dir, ssinit_dir, tpiinit_dir]
+    for _dir in dirs:
+        try:
+            print "making dir: ", _dir
+            os.makedirs(_dir)
+        except OSError as oe:
+            pass
+
     if run_micro:
         txfunc.get_tax_func_estimate(baseline=baseline, reform=reform, guid=guid)
     print ("in runner, baseline is ", baseline)
@@ -27,27 +39,23 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
 
     # Modify ogusa parameters based on user input
     if 'frisch' in user_params:
+        print "updating fricsh and associated"
         b_ellipse, upsilon = ogusa.elliptical_u_est.estimation(user_params['frisch'],
                                                                run_params['ltilde'])
-        run_params.update(user_params)
         run_params['b_ellipse'] = b_ellipse
         run_params['upsilon'] = upsilon
+        run_params.update(user_params)
+
+    # Modify ogusa parameters based on user input
+    if 'g_y_annual' in user_params:
+        print "updating g_y_annual and associated"
+        g_y = (1 + user_params['g_y_annual'])**(float(ending_age - starting_age) / S) - 1
+        run_params['g_y'] = g_y
+        run_params.update(user_params)
 
     globals().update(run_params)
 
     from ogusa import SS, TPI
-    #Create output directory structure
-    saved_moments_dir = os.path.join(output_base, "Saved_moments")
-    ssinit_dir = os.path.join(output_base, "SSinit")
-    tpiinit_dir = os.path.join(output_base, "TPIinit")
-    #dirs = ["./OUTPUT/Saved_moments", "./OUTPUT/SSinit", "./OUTPUT/TPIinit"]
-    dirs = [saved_moments_dir, ssinit_dir, tpiinit_dir]
-    for _dir in dirs:
-        try:
-            os.makedirs(_dir)
-        except OSError as oe:
-            pass
-
     # Generate Wealth data moments
     wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir=input_dir)
 
