@@ -291,7 +291,7 @@ def MTR_capital(r, w, b, n, factor, params):
     return tau
 
 
-def MTR_labor(r, b, w, e, n, factor, mtrx_params):
+def MTR_labor(r, b, w, n, factor, params):
     '''
     Generates the marginal tax rate on labor income for households.
 
@@ -318,7 +318,7 @@ def MTR_labor(r, b, w, e, n, factor, mtrx_params):
     
     '''
 
-    e, mtry_params = params
+    e, mtrx_params = params
 
     if mtrx_params.ndim == 2: 
         A = mtrx_params[:,0]
