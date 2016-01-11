@@ -7,7 +7,6 @@ This file generates demographic and ability variables.
 This py-file calls the following other file(s):
             income.py
             demographics.py
-            txfunc.py
             elliptical_u_est.py
 ------------------------------------------------------------------------
 '''
@@ -23,7 +22,6 @@ import numpy as np
 from demographics import get_omega
 from income import get_e
 import pickle
-import txfunc
 import elliptical_u_est
 
 
