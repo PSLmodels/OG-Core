@@ -1,21 +1,19 @@
 '''
 ------------------------------------------------------------------------
+Last updated 1/10/2016
+
 This script reads in data generated from the OSPC Tax Calcultor and
 the 2009 IRS PUF. It then estimates tax functions tau_{s,t}(x,y), where
-tau_{s,t} is the effective tax rate for a given age (s) in a particular
-year (t), x is total labor income, and y is total capital income.
+tau_{s,t} is the effective tax rate (or marginal tax rate for capital 
+or labor income) for a given age (s) in a particular year (t), x is total 
+labor income, and y is total capital income.
 
 This Python script calls the following functions:
-    gen_etr_grid:   generates summary grid points for effective tax rate
-    gen_dmtrx_grid: generates summary grid points for derivative of
-                    marginal tax rate with respect to labor income
-    gen_dmtry_grid: generates summary grid points for derivative of
-                    marginal tax rate with respect to capital income
-    wsumsq:         generates weighted sum of squared residuals
-
+    get_micro_data.py
+    
 This Python script outputs the following:
-    TxFuncEst.pkl: pickle of dictionary with param_arr_S, AvgInc,
-                   and elapsed_time
+    ./TAX_ESTIMATE_PATH/TxFuncEst_baseline{}.pkl
+    ./TAX_ESTIMATE_PATH/TxFuncEst_policy{}.pkl
 ------------------------------------------------------------------------
 '''
 # Import packages
@@ -412,45 +410,61 @@ def tax_func_estimate(baseline=False, reform={}):
     This function estimates functions for the ETR, MTR on Labor Income,
     and MTR on Capital Income.
     --------------------------------------------------------------------
-    '''
+    Inputs:
+        baseline = boolean, =True if running baseline tax policy
+        reform   = dictionary, contains policy changes for tax reform evaluated
+
+    Functions called: 
+        get_micro_data.get_data
+        gen_etr_grid:   generates summary grid points for effective tax rate
+        gen_dmtrx_grid: generates summary grid points for derivative of
+                    marginal tax rate with respect to labor income
+        gen_dmtry_grid: generates summary grid points for derivative of
+                    marginal tax rate with respect to capital income
+        wsumsq:         generates weighted sum of squared residuals
+
+    Objects in function:
+        S           = integer >= 3, number of periods an individual can live. S
+                  represents the lifespan in years between s_min and s_max
+        s_min       = integer > 0, minimum age relevant to the model
+        s_max       = integer > s_min, maximum age relevant to the model
+        tpers       = integer > 0, number of years to forecast
+        numparams   = integer > 0, number of parameters to estimate for the tax
+                      function for each age s and year t
+        etrparam_arr  = (s_max-s_min+1 x tpers x numparams) array, parameter
+                        values for the estimated effective tax rate functions
+                        for each age s and year t
+        mtrxparam_arr = (s_max-s_min+1 x tpers x numparams) array, parameter
+                        values for the estimated marginal tax rate functions of
+                        labor income for each age s and year t
+        AvgInc      = (tpers,) vector, average income in each year
+        TotPop_yr   = (tpers,) vector, total population according to Weights
+                      variable in each year
+        PopPct_age  = (s_max-s_min+1, tpers) matrix, population percent of each
+                      age as percent of total population in each year
+        desc_data   = boolean, =True if print descriptive stats for each age s
+                      and year t
+        graph_data  = boolean, =True if print 3D graph of data for each age s
+                      and year t
+        graph_est   = boolean, =True if print 3D graph of data and estimated tax
+                      function for each age s and year t
+        dmtrgr_est  = boolean, =True if print 3D graph of derivative of
+                      estimated marginal tax rates for each age s and year t
+        cmap1       = matplotlib setting, set color map for 3D surface plots
+        beg_yr      = integer >= 2015, beginning year for forecasts
+        end_yr      = integer >= beg_yr, ending year for forecasts
+        years_list  = [beg_yr-end_yr+1,] vector, iterable list of years to be
+                      forecast
+        data_folder = string, path of hard drive folder where data files reside
+        start_time  = scalar, current processor time in seconds (float)
+        OTHERS NOTED BELOW
+
+    Returns: dict_params
 
     '''
+    '''
     ------------------------------------------------------------------------
-    Set parameters and create objects for output
-    ------------------------------------------------------------------------
-    S           = integer >= 3, number of periods an individual can live. S
-                  represents the lifespan in years between s_min and s_max
-    s_min       = integer > 0, minimum age relevant to the model
-    s_max       = integer > s_min, maximum age relevant to the model
-    tpers       = integer > 0, number of years to forecast
-    numparams   = integer > 0, number of parameters to estimate for the tax
-                  function for each age s and year t
-    etrparam_arr  = (s_max-s_min+1 x tpers x numparams) array, parameter
-                    values for the estimated effective tax rate functions
-                    for each age s and year t
-    mtrxparam_arr = (s_max-s_min+1 x tpers x numparams) array, parameter
-                    values for the estimated marginal tax rate functions of
-                    labor income for each age s and year t
-    AvgInc      = (tpers,) vector, average income in each year
-    TotPop_yr   = (tpers,) vector, total population according to Weights
-                  variable in each year
-    PopPct_age  = (s_max-s_min+1, tpers) matrix, population percent of each
-                  age as percent of total population in each year
-    desc_data   = boolean, =True if print descriptive stats for each age s
-                  and year t
-    graph_data  = boolean, =True if print 3D graph of data for each age s
-                  and year t
-    graph_est   = boolean, =True if print 3D graph of data and estimated tax
-                  function for each age s and year t
-    dmtrgr_est  = boolean, =True if print 3D graph of derivative of
-                  estimated marginal tax rates for each age s and year t
-    cmap1       = matplotlib setting, set color map for 3D surface plots
-    beg_yr      = integer >= 2015, beginning year for forecasts
-    end_yr      = integer >= beg_yr, ending year for forecasts
-    years_list  = [beg_yr-end_yr+1,] vector, iterable list of years to be
-                  forecast
-    data_folder = string, path of hard drive folder where data files reside
-    start_time  = scalar, current processor time in seconds (float)
+    Set parameters and create objects for output    
     ------------------------------------------------------------------------
     '''
     S = int(80)
