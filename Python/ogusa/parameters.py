@@ -1,12 +1,14 @@
 '''
 ------------------------------------------------------------------------
-Last updated 7/21/2015
+Last updated 1/10/2016
 
 This file generates demographic and ability variables.
 
 This py-file calls the following other file(s):
             income.py
             demographics.py
+            txfunc.py
+            elliptical_u_est.py
 ------------------------------------------------------------------------
 '''
 
@@ -34,6 +36,11 @@ TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
 USER_MODIFIABLE_PARAMS = ['g_y', 'frisch']
 
 
+'''
+------------------------------------------------------------------------
+Define functions
+------------------------------------------------------------------------
+'''
 def get_parameters_from_file():
     with open(PARAMS_FILE,'r') as f:
         j = json.load(f)
@@ -82,6 +89,7 @@ ltilde       = measure of time each individual is endowed with each
                period (scalar)
 g_y_annual   = annual growth rate of technology (scalar)
 g_y          = growth rate of technology for one cohort (scalar)
+frisch       = Frisch elasticity of labor supply (scalar)
 b_ellipse    = value of b for elliptical fit of utility function (scalar)
 k_ellipse    = value of k for elliptical fit of utility function (scalar)
 upsilon      = value of omega for elliptical fit of utility function (scalar)
