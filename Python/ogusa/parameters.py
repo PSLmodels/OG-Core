@@ -31,7 +31,7 @@ PARAMS_FILE_METADATA = os.path.join(os.path.dirname(__file__), 'parameters_metad
 
 TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
 
-USER_MODIFIABLE_PARAMS = ['g_y', 'frisch']
+USER_MODIFIABLE_PARAMS = ['g_y_annual', 'frisch']
 
 
 def get_parameters_from_file():
