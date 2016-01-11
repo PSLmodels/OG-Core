@@ -15,6 +15,7 @@ requirements:
   run:
     - setuptools
     - scipy
+    - taxcalc
     - matplotlib
     - numpy
     - pandas <=0.16.2
