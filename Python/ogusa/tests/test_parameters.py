@@ -20,7 +20,7 @@ def test_parameters_user_modifiable():
     assert set(dd.keys()) == set(USER_MODIFIABLE_PARAMS)
 
 
-def test_parameters_metadata():
+def test_parameters_metadata_policy():
     dd_standard = get_reduced_parameters(False, guid='', user_modifiable=True, metadata=False)
     dd_meta = get_reduced_parameters(False, guid='', user_modifiable=True, metadata=True)
     for k, v in dd_meta.iteritems():
@@ -29,6 +29,21 @@ def test_parameters_metadata():
 
     dd_standard = get_full_parameters(False, guid='', user_modifiable=True, metadata=False)
     dd_meta = get_full_parameters(False, guid='', user_modifiable=True, metadata=True)
+    for k, v in dd_meta.iteritems():
+        assert dd_standard[k] == dd_meta[k]['value']
+
+    assert set(dd_meta.keys()) == set(USER_MODIFIABLE_PARAMS)
+    assert 'validations' in dd_meta['frisch']
+
+def test_parameters_metadata_baseline():
+    dd_standard = get_reduced_parameters(True, guid='', user_modifiable=True, metadata=False)
+    dd_meta = get_reduced_parameters(True, guid='', user_modifiable=True, metadata=True)
+    for k, v in dd_meta.iteritems():
+        assert dd_standard[k] == dd_meta[k]['value']
+    assert set(dd_meta.keys()) == set(USER_MODIFIABLE_PARAMS)
+
+    dd_standard = get_full_parameters(True, guid='', user_modifiable=True, metadata=False)
+    dd_meta = get_full_parameters(True, guid='', user_modifiable=True, metadata=True)
     for k, v in dd_meta.iteritems():
         assert dd_standard[k] == dd_meta[k]['value']
 

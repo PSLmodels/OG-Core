@@ -27,11 +27,40 @@ import elliptical_u_est
 
 DATASET = 'REAL'
 PARAMS_FILE = os.path.join(os.path.dirname(__file__), 'default_full_parameters.json')
-PARAMS_FILE_METADATA = os.path.join(os.path.dirname(__file__), 'parameters_metadata.json')
+PARAMS_FILE_METADATA_NAME = 'parameters_metadata.json'
+PARAMS_FILE_METADATA_PATH = os.path.join(os.path.dirname(__file__), PARAMS_FILE_METADATA_NAME)
 
 TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
 
 USER_MODIFIABLE_PARAMS = ['g_y_annual', 'frisch']
+
+def read_parameter_metadata():
+    if os.path.exists(PARAMS_FILE_METADATA_PATH):
+        with open(PARAMS_FILE_METADATA_PATH) as pfile:
+            params_dict = json.load(pfile)
+    else:
+        from pkg_resources import resource_stream, Requirement
+        path_in_egg = os.path.join('ogusa', PARAMS_FILE_METADATA_NAME)
+        buf = resource_stream(Requirement.parse('ogusa'), path_in_egg)
+        as_bytes = buf.read()
+        as_string = as_bytes.decode("utf-8")
+        params_dict = json.loads(as_string)
+
+    return params_dict
+
+def read_tax_func_estimate(pickle_path, pickle_file):
+    if os.path.exists(pickle_path):
+        with open(pickle_path) as pfile:
+            dict_params = pickle.load(pfile)
+    else:
+        from pkg_resources import resource_stream, Requirement
+        path_in_egg = pickle_file
+        buf = resource_stream(Requirement.parse('ogusa'), path_in_egg)
+        as_bytes = buf.read()
+        as_string = as_bytes.decode("utf-8")
+        dict_params = pickle.loads(as_string)
+
+    return dict_params
 
 
 def get_parameters_from_file():
@@ -173,13 +202,14 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      baseline_pckl)
         print 'using baseline1 tax parameters'
+        dict_params = read_tax_func_estimate(estimate_file, baseline_pckl)
     else:
         policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      policy_pckl)
         print 'using policy1 tax parameters'
+        dict_params = read_tax_func_estimate(estimate_file, policy_pckl)
 
-    dict_params = pickle.load( open( estimate_file, "rb" ) )
 
     mean_income_data = dict_params['tfunc_avginc'][0]
 
@@ -228,8 +258,7 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
         allvars = {k:allvars[k] for k in USER_MODIFIABLE_PARAMS}
 
     if metadata:
-        with open(PARAMS_FILE_METADATA) as f:
-            params_meta = json.load(f)
+        params_meta = read_parameter_metadata()
         for k,v in allvars.iteritems():
             params_meta[k]["value"] = v
         allvars = params_meta
@@ -273,14 +302,15 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      baseline_pckl)
         print 'using baseline2 tax parameters'
+        dict_params = read_tax_func_estimate(estimate_file, baseline_pckl)
 
     else:
         policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      policy_pckl)
         print 'using policy2 tax parameters'
+        dict_params = read_tax_func_estimate(estimate_file, policy_pckl)
 
-    dict_params = pickle.load( open( estimate_file, "rb" ) )
 
     mean_income_data = dict_params['tfunc_avginc'][0]
 
@@ -347,7 +377,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
         allvars = {k:allvars[k] for k in USER_MODIFIABLE_PARAMS}
 
     if metadata:
-        params_meta = json.load(open(PARAMS_FILE_METADATA))
+        params_meta = read_parameter_metadata()
         for k,v in allvars.iteritems():
             params_meta[k]["value"] = v
         allvars = params_meta
