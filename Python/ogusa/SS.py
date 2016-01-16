@@ -1,8 +1,8 @@
 '''
 ------------------------------------------------------------------------
-Last updated: 7/17/2015
+Last updated: 1/10/2016
 
-Calculates steady state of OLG model with S age cohorts.
+Solves for the steady state of OG model with S age cohorts.
 
 This py-file calls the following other file(s):
             tax.py

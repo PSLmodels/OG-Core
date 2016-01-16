@@ -1,13 +1,21 @@
 '''
 ------------------------------------------------------------------------
+Last updated 1/10/2016
+
 This program extracts tax rate and income data from the microsimulation
-model (tax-calculator) and saves it as csv files.
+model (tax-calculator) and saves teh resulting micro data in pickle files
+
+This py-file calls the following other file(s):
+
+
+This py-file creates the following other file(s):
+    (make sure that an OUTPUT folder exists)
+            ./micro_data_baseline.pkl
+            ./micro_data_policy.pkl
 ------------------------------------------------------------------------
 '''
 
-import sys
-sys.path.insert(0, '/Users/jasondebacker/repos/tax-calculator')
-
+#Packages
 from taxcalc import *
 import pandas as pd
 from pandas import DataFrame
@@ -23,8 +31,26 @@ def get_data(baseline=False, reform={}):
     This function creates dataframes of micro data from the 
     tax calculator
     --------------------------------------------------------------------
+    Inputs:
+        baseline = boolean, =True if baseline tax parameters used
+        reform   = dictionary, policy changes for reform policy
 
-    --------------------------------------------------------------------
+    Functions called: 
+        taxcalc.Calculator
+
+    Objects in function:
+        policy1                      = ? 
+        records1                     = ?
+        calc1                        = ?, instance of the tax calculator
+        capital_income_sources       = length J list, PUF variable code for each taxes income source
+        capital_income_sources_taxed = length K list, PUF variable code for each taxes income source
+        all_mtrs                     = [N,K] vector, mtr on each tax capital income soure 
+        total                        = [N,] vector, total capital income for each obs in micro data
+        capital_income_times_mtr     = [N,] vector, mtr capital income*capital income for each obs in micro data
+        mtr_combined_capinc          = [N,] vector, weighted average marginal tax rate on capital income for each obs in micro data
+        micro_data_dict              = dictionary, dataframe of microsim output for each year in budget window
+
+    Returns: micro_data_dict
     '''
 
     # create a calculator
@@ -76,8 +102,8 @@ def get_data(baseline=False, reform={}):
     # i.e., capital_gain_mtr = (e00300 * mtr_iit_300 + e00400 * mtr_iit_400 + ... + e23250 * mtr_iit_23250) /
     #                           sum_of_all_ten_variables
     # Note that all_mtrs gives fica (0), iit (1), and combined (2) mtrs  - we'll use the combined - hence all_mtrs[source][2]
-    capital_gain_mtr = [ col * all_mtrs[source][2] for col, source in zip(record_columns, capital_income_sources_taxed)]
-    mtr_combined_capinc = sum(capital_gain_mtr) / total
+    capital_income_times_mtr = [ col * all_mtrs[source][2] for col, source in zip(record_columns, capital_income_sources_taxed)]
+    mtr_combined_capinc = sum(capital_income_times_mtr) / total
 
     #Get the total of every capital income source
 

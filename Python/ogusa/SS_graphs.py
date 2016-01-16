@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 6/19/2015
+Last updated 1/9/2016
 
 Creates graphs for steady state values.
 
@@ -45,7 +45,29 @@ parameters.DATASET = 'REAL'
 
 def the_inequalizer(dist, pop_weights, ability_weights, S, J):
     '''
-    Generates 3 inequality measures
+    Generates three measures of inequality.
+
+    Inputs:
+        dist            = [S,J] array, distribution of endogenous variables over age and lifetime income group
+        params          = length 4 tuple, (pop_weights, ability_weights, S, J)
+        pop_weights     = [S,] vector, fraction of population by each age
+        ability_weights = [J,] vector, fraction of population for each lifetime income group
+        S               = integer, number of economically active periods in lifetime
+        J               = integer, number of ability types 
+
+    Functions called: None
+
+    Objects in function:
+        weights           = [S,J] array, fraction of population for each age and lifetime income group
+        flattened_dist    = [S*J,] vector, vectorized dist
+        flattened_weights = [S*J,] vector, vectorized weights
+        sort_dist         = [S*J,] vector, ascending order vector of dist
+        loc_90th          = integer, index of 90th percentile
+        loc_10th          = integer, index of 10th percentile
+        loc_99th          = integer, index of 99th percentile
+
+    Returns: N/A
+
     '''
     weights = np.tile(pop_weights.reshape(S, 1), (1, J)) * \
         ability_weights.reshape(1, J)

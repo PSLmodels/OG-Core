@@ -1,18 +1,17 @@
 '''
 ------------------------------------------------------------------------
-Last updated 12/02/2015
+Last updated 1/10/2016
 
-This program read in the output from TPI.py and creates table of
+This program read in the output from TPI.py and returns an array of 
 percentage changes between the baseline and policy results.
 
 This py-file calls the following other file(s):
-            OUTPUT/TPIinit/TPIinit_vars.pkl
-            OUTPUT/TPI/TPI_vars.pkl
+            `baseline_dir'/TPI/TPI_macro_vars.pkl
+            `policy_dir'/TPI/TPI_macro_vars.pkl
 
 
 This py-file creates the following other file(s):
-    (make sure that an OUTPUT folder exists)
-            OUTPUT/TPI/ogusa_output.pkl
+
 ------------------------------------------------------------------------
 '''
 
@@ -22,6 +21,27 @@ import cPickle as pickle
 import os
 
 def dump_diff_output(baseline_dir, policy_dir):
+        '''
+    Calculates percentage changes in macro output from TPI.py.
+
+    Inputs:
+        baseline_dir = string, path to directory with baseline output
+        policy_dir   = string, path to directory with policy output
+
+    Functions called: None
+
+    Objects in function:
+        T               = integer, length of time path
+        baseline_macros = [7,T] array, baseline macro variables
+        policy_macros   = [7,T] array, policy macro variables
+        pct_changes     = [7,12] array, percentage changes in macro variables during 
+                                        budget windown and in the steady state between 
+                                        baseline and policy runs
+
+    Returns: pct_change
+
+    '''
+
     # read macro output
     tpi_macro_vars_policy_path = os.path.join(policy_dir, "TPI", "TPI_macro_vars.pkl")
     TPI_macro_vars_policy = pickle.load(open( tpi_macro_vars_policy_path, "rb" ))
