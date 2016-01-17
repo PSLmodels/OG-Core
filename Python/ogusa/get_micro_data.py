@@ -72,11 +72,12 @@ def get_data(baseline=False, reform={}):
     # Get each column of income sources - need to include non-taxable capital income
     record_columns = [getattr(calc1.records, income_source) for income_source in capital_income_sources]
     # weighted average of all those MTRs
-    total = sum(record_columns)
+    # weighted average of all those MTRs
+    total = sum(map(abs,record_columns))
     # i.e., capital_gain_mtr = (e00300 * mtr_iit_300 + e00400 * mtr_iit_400 + ... + e23250 * mtr_iit_23250) /
     #                           sum_of_all_ten_variables
     # Note that all_mtrs gives fica (0), iit (1), and combined (2) mtrs  - we'll use the combined - hence all_mtrs[source][2]
-    capital_gain_mtr = [ col * all_mtrs[source][2] for col, source in zip(record_columns, capital_income_sources_taxed)]
+    capital_gain_mtr = [ abs(col) * all_mtrs[source][2] for col, source in zip(record_columns, capital_income_sources_taxed)]
     mtr_combined_capinc = sum(capital_gain_mtr) / total
 
     #Get the total of every capital income source
