@@ -1464,9 +1464,6 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}):
         ('tfunc_etr_obs', etr_obs_arr), ('tfunc_mtrx_obs', mtrx_obs_arr), ('tfunc_mtry_obs', mtry_obs_arr), 
         ('tfunc_time', elapsed_time)])
 
-        mtrx_sumsq_arr[s-21, t-beg_yr] = mtrxparams_til.fun
-                mtrx_obs_arr[s-21, t-beg_yr] = df_trnc.shape[0]
-
     #import pdb;pdb.set_trace()
 
     return dict_params
