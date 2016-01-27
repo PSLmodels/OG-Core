@@ -12,8 +12,7 @@ import ogusa
 ogusa.parameters.DATASET = 'SMALL'
 
 
-def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, guid='', run_micro=True):
-
+def runner(output_base, input_dir, baseline=False, analytical_mtrs=True, reform={}, user_params={}, guid='', run_micro=True):
 
     from ogusa import parameters, wealth, labor, demographics, income
     from ogusa import txfunc
@@ -33,9 +32,10 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
             pass
 
     if run_micro:
-        txfunc.get_tax_func_estimate(baseline=baseline, reform=reform, guid=guid)
+        txfunc.get_tax_func_estimate(baseline=baseline, analytical_mtrs=analytical_mtrs, reform=reform, guid=guid)
     print ("in runner, baseline is ", baseline)
     run_params = ogusa.parameters.get_parameters(baseline=baseline, guid=guid)
+    run_params['analytical_mtrs'] = analytical_mtrs
 
     # Modify ogusa parameters based on user input
     if 'frisch' in user_params:
@@ -71,7 +71,7 @@ def runner(output_base, input_dir, baseline=False, reform={}, user_params={}, gu
     param_names = ['S', 'J', 'T', 'BW', 'lambdas', 'starting_age', 'ending_age',
                 'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
                 'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
-                'b_ellipse', 'k_ellipse', 'upsilon',
+                'analytical_mtrs', 'b_ellipse', 'k_ellipse', 'upsilon',
                 'chi_b_guess', 'chi_n_guess','etr_params','mtrx_params',
                 'mtry_params','tau_payroll', 'tau_bq', 'calibrate_model',
                 'retire', 'mean_income_data', 'g_n_vector',

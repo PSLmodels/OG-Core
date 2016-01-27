@@ -9,8 +9,8 @@ import time
 #sys.path.append(OGUSA_PATH)
 
 import postprocess
-from execute import runner # change here for small jobs
-#from execute_large import runner
+#from execute import runner # change here for small jobs
+from execute_large import runner
 
 
 def run_micro_macro(user_params):
@@ -35,15 +35,16 @@ def run_micro_macro(user_params):
     input_dir = REFORM_DIR
 
     kwargs={'output_base':output_base, 'input_dir':input_dir,
-            'baseline':False, 'reform':reform, 'user_params':user_params,
-            'guid':'42'}
+            'baseline':False, 'analytical_mtrs':True, 'reform':reform,
+            'user_params':user_params,'guid':'42'}
     p1 = Process(target=runner, kwargs=kwargs)
     p1.start()
     #runner(**kwargs)
 
     output_base = BASELINE_DIR
     input_dir = BASELINE_DIR
-    kwargs={'output_base':output_base, 'input_dir':input_dir, 'baseline':True, 'user_params':user_params,
+    kwargs={'output_base':output_base, 'input_dir':input_dir, 
+            'baseline':True, 'analytical_mtrs':True, 'user_params':user_params,
             'guid':'42'}
     p2 = Process(target=runner, kwargs=kwargs)
     p2.start()

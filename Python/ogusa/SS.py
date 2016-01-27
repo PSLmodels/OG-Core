@@ -55,7 +55,7 @@ from .parameters import DATASET
 # missing args are income_tax_params, wealth_tax_params, and ellipse_params
 
 
-def create_steady_state_parameters(etr_params, mtrx_params, mtry_params, 
+def create_steady_state_parameters(analytical_mtrs, etr_params, mtrx_params, mtry_params, 
                                    b_ellipse, upsilon, J, S, T, BW,
                                    beta, sigma, alpha, Z, delta, ltilde, nu,
                                    g_y, tau_payroll, retire,
@@ -67,7 +67,7 @@ def create_steady_state_parameters(etr_params, mtrx_params, mtry_params,
     # Put income tax parameters in a tuple 
     # Assumption here is that tax parameters of last year of budget
     # window continue forever and so will be SS values
-    income_tax_params = (etr_params[:,-1,:],mtrx_params[:,-1,:],mtry_params[:,-1,:])
+    income_tax_params = (analytical_mtrs, etr_params[:,-1,:],mtrx_params[:,-1,:],mtry_params[:,-1,:])
 
     # Make a vector of all one dimensional parameters, to be used in the
     # following functions
@@ -107,7 +107,7 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, tax_params, params, chi
                   g_n_ss, tau_payroll, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
 
-    etr_params, mtrx_params, mtry_params = tax_params
+    analytical_mtrs, etr_params, mtrx_params, mtry_params = tax_params
 
     b_guess = np.array(guesses[:S])
     n_guess = np.array(guesses[S:])
@@ -189,7 +189,7 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
                   g_n_ss, tau_payroll, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
 
-    etr_params, mtrx_params, mtry_params = tax_params
+    analytical_mtrs, etr_params, mtrx_params, mtry_params = tax_params
 
     maxiter, mindist_SS = iterative_params
     # Rename the inputs
@@ -335,7 +335,7 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
                   g_n_ss, tau_payroll, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
 
-    etr_params, mtrx_params, mtry_params = tax_params
+    analytical_mtrs, etr_params, mtrx_params, mtry_params = tax_params
 
     maxiter, mindist_SS = iterative_params
     # Rename the inputs
@@ -435,7 +435,7 @@ def function_to_minimize(chi_params_scalars, chi_params_init, income_tax_paramet
                   g_n_ss, tau_payroll, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_parameters
 
-    etr_params, mtrx_params, mtry_params = income_tax_parameters
+    analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_parameters
 
     chi_params_init *= chi_params_scalars
     # print 'Print Chi_b: ', chi_params_init[:J]
@@ -550,7 +550,7 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
                   g_n_ss, tau_payroll, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_parameters
 
-    etr_params, mtrx_params, mtry_params = income_tax_parameters
+    analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_parameters
 
     # Generate initial guesses for chi^b_j and chi^n_s
     chi_params = np.zeros(S + J)

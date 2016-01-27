@@ -406,7 +406,7 @@ def wsumsq(params, *objs):
     return wssqdev
 
 
-def tax_func_estimate(baseline=False, reform={}):
+def tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}):
     '''
     --------------------------------------------------------------------
     This function estimates functions for the ETR, MTR on Labor Income,
@@ -546,20 +546,25 @@ def tax_func_estimate(baseline=False, reform={}):
         # drop all obs with ETR < -0.15
         data_trnc = data_trnc.drop(data_trnc[data_trnc['Effective Tax Rate']
                     < -0.15].index)
-        # drop all obs with MTR on capital income > 10.99
-        data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR capital income'] >0.99].index)
-        # drop all obs with MTR on capital income < -0.45
-        data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR capital income']
-                    < -0.45].index)
-        # drop all obs with MTR on labor income > 10.99
-        data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR Labor'] >0.99].index)
-        # drop all obs with MTR on labor income < -0.45
-        data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR Labor']
-                    < -0.45].index)
         # drop all obs with ATI < $5
         data_trnc = \
             data_trnc.drop(data_trnc[data_trnc['Adjusted Total income'] < 5]
             .index)
+
+        # If not using analytical derivatives, also drop MTR outliers
+        if not analytical_mtrs:
+            # drop all obs with MTR on capital income > 10.99
+            data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR capital income'] >0.99].index)
+            # drop all obs with MTR on capital income < -0.45
+            data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR capital income']
+                        < -0.45].index)
+            # drop all obs with MTR on labor income > 10.99
+            data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR Labor'] >0.99].index)
+            # drop all obs with MTR on labor income < -0.45
+            data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR Labor']
+                        < -0.45].index)
+
+
      
 
         # Create an array of the different ages in the data
@@ -852,6 +857,8 @@ def tax_func_estimate(baseline=False, reform={}):
                     tol=1e-15)
                 (Atil, Btil, Ctil, Dtil, Etil, F, maxetr_x, minetr_x,
                     maxetr_y, minetr_y) = etrparams_til.x
+                etr_sumsq_arr[s-21, t-beg_yr] = etrparams_til.fun
+                etr_obs_arr[s-21, t-beg_yr] = df_trnc.shape[0]
                 Gtil = etrparams_til.x[:5].sum()
                 P_num = (np.dot(varmat_hat[:, :-1], etrparams_til.x[:5])
                         + Gtil)
@@ -949,6 +956,8 @@ def tax_func_estimate(baseline=False, reform={}):
                     tol=1e-15)
                 (Htil, Itil, Jtil, Ktil, Ltil, M, maxmtrx_x, minmtrx_x,
                     maxmtrx_y, minmtrx_y) = mtrxparams_til.x
+                mtrx_sumsq_arr[s-21, t-beg_yr] = mtrxparams_til.fun
+                mtrx_obs_arr[s-21, t-beg_yr] = df_trnc.shape[0]
                 Ntil = mtrxparams_til.x[:5].sum()
                 P_num = (np.dot(varmat_hat[:, :-1], mtrxparams_til.x[:5])
                         + Ntil)
@@ -1045,6 +1054,8 @@ def tax_func_estimate(baseline=False, reform={}):
                     tol=1e-15)
                 (Htil, Itil, Jtil, Ktil, Ltil, M, maxmtry_x, minmtry_x,
                     maxmtry_y, minmtry_y) = mtryparams_til.x
+                mtry_sumsq_arr[s-21, t-beg_yr] = mtryparams_til.fun
+                mtry_obs_arr[s-21, t-beg_yr] = df_trnc.shape[0]
                 Ntil = mtryparams_til.x[:5].sum()
                 P_num = (np.dot(varmat_hat[:, :-1], mtryparams_til.x[:5])
                         + Ntil)
@@ -1449,16 +1460,21 @@ def tax_func_estimate(baseline=False, reform={}):
     # Save tax function parameters array and computation time in pickle
     dict_params = dict([('tfunc_etr_params_S', etrparam_arr_S),
         ('tfunc_mtrx_params_S', mtrxparam_arr_S), ('tfunc_mtry_params_S', mtryparam_arr_S), ('tfunc_avginc', AvgInc),
+        ('tfunc_etr_sumsq', etr_sumsq_arr), ('tfunc_mtrx_sumsq', mtrx_sumsq_arr), ('tfunc_mtry_sumsq', mtry_sumsq_arr), 
+        ('tfunc_etr_obs', etr_obs_arr), ('tfunc_mtrx_obs', mtrx_obs_arr), ('tfunc_mtry_obs', mtry_obs_arr), 
         ('tfunc_time', elapsed_time)])
+
+        mtrx_sumsq_arr[s-21, t-beg_yr] = mtrxparams_til.fun
+                mtrx_obs_arr[s-21, t-beg_yr] = df_trnc.shape[0]
 
     #import pdb;pdb.set_trace()
 
     return dict_params
 
 
-def get_tax_func_estimate(baseline=False, reform={}, guid=''):
+def get_tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}, guid=''):
     # Code to run manually from here:
-    dict_params = tax_func_estimate(baseline, reform)
+    dict_params = tax_func_estimate(baseline, analytical_mtrs, reform)
     if baseline:
         baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         pkl_path = os.path.join(TAX_ESTIMATE_PATH, baseline_pckl)

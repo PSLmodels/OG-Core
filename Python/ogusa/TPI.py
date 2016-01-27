@@ -50,7 +50,7 @@ steady state computation in ss_vars.pkl
 #globals().update(get_parameters())
 
 
-def create_tpi_params(etr_params, mtrx_params, mtry_params,
+def create_tpi_params(analytical_mtrs, etr_params, mtrx_params, mtry_params,
                       b_ellipse, upsilon, J, S, T, BW, beta, sigma, alpha, Z,
                       delta, ltilde, nu, g_y, tau_payroll, retire,
                       mean_income_data, run_params, get_baseline=True,
@@ -87,7 +87,7 @@ def create_tpi_params(etr_params, mtrx_params, mtry_params,
     mtry_params_TP[:,:BW,:] = mtry_params
     mtry_params_TP[:,BW:,:] = np.reshape(mtry_params[:,BW-1,:],(S,1,mtry_params.shape[2]))
 
-    income_tax_params = (etr_params_TP, mtrx_params_TP, mtry_params_TP)
+    income_tax_params = (analytical_mtrs, etr_params_TP, mtrx_params_TP, mtry_params_TP)
 
 
     wealth_tax_params = [h_wealth, p_wealth, m_wealth]
@@ -156,7 +156,7 @@ def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init, initial_b,
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = parameters
 
 
-    etr_params, mtrx_params, mtry_params = tax_params
+    analytical_mtrs, etr_params, mtrx_params, mtry_params = tax_params
 
     b2 = float(guesses[0])
     n1 = float(guesses[1])
@@ -171,7 +171,7 @@ def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init, initial_b,
     error1 = household.marg_ut_cons(cons1, parameters) - bequest_ut
     # Euler 2 equations
     income2 = (rinit * b1 + winit * e[-1, j] * n1) * factor_ss
-    deriv2 = 1 - tau_payroll - tax.MTR_labor(rinit, b1, winit, e[-1, j], n1, factor_ss, mtrx_params[-1,0,:])
+    deriv2 = 1 - tau_payroll - tax.MTR_labor(rinit, b1, winit, e[-1, j], n1, factor_ss, analytical_mtrs, etr_params[-1,0,:], mtrx_params[-1,0,:])
     error2 = household.marg_ut_cons(cons1, parameters) * winit * \
         e[-1, j] * deriv2 - household.marg_ut_labor(n1, chi_n[-1], parameters)
     
@@ -212,7 +212,7 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
         h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
 
-    etr_params, mtrx_params, mtry_params = tax_params
+    analytical_mtrs, etr_params, mtrx_params, mtry_params = tax_params
 
     length = len(guesses) / 2
     b_guess = np.array(guesses[:length])
@@ -258,14 +258,14 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
     mtry_params_sp1 = np.append(mtry_params,np.reshape(mtry_params[-1,:],(1,mtry_params.shape[1])),axis=0)[1:,:]
     wealth_tax_params = (h_wealth, p_wealth, m_wealth)
     deriv_savings = 1 + r_splus1 * (1 - tax.MTR_capital(
-        r_splus1, b_splus1, w_splus1, e_extended, n_extended, factor, mtry_params_sp1))
+        r_splus1, b_splus1, w_splus1, e_extended, n_extended, factor, analytical_mtrs, etr_params_sp1, mtry_params_sp1))
 
     error1 = household.marg_ut_cons(cons_s, params) - beta * (1 - rho[-(length):]) * np.exp(-sigma * g_y) * deriv_savings * household.marg_ut_cons(
         cons_splus1, params) - savings_ut
     # Labor leisure euler equations
     income_s = (r_s * b_s + w_s * e_s * n_s) * factor
     
-    deriv_laborleisure = 1 - tau_payroll - tax.MTR_labor(r_s, b_s, w_s, e_s, n_s, factor, mtrx_params)
+    deriv_laborleisure = 1 - tau_payroll - tax.MTR_labor(r_s, b_s, w_s, e_s, n_s, factor, analytical_mtrs, etr_params, mtrx_params)
     error2 = household.marg_ut_cons(cons_s, params) * w_s * e[-(
         length):, j] * deriv_laborleisure - household.marg_ut_labor(n_s, chi_n[-length:], params)
     # Check and punish constraint violations
@@ -290,7 +290,7 @@ def TPI_fsolve(guesses, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_ta
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
         h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = parameters
 
-    etr_params, mtrx_params, mtry_params = income_tax_params
+    analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
 
     # create full time paths with guesses and SS values
     rinit = np.zeros(T+S)
@@ -357,7 +357,7 @@ def TPI_fsolve(guesses, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_ta
                 mtrx_params_to_use[:,i] = np.diag(np.transpose(mtrx_params[:S,:,i]),S-(s+2))
                 mtry_params_to_use[:,i] = np.diag(np.transpose(mtry_params[:S,:,i]),S-(s+2))
 
-            inc_tax_params_upper = (etr_params_to_use, mtrx_params_to_use, mtry_params_to_use)
+            inc_tax_params_upper = (analytical_mtrs, etr_params_to_use, mtrx_params_to_use, mtry_params_to_use)
 
             solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
@@ -387,7 +387,7 @@ def TPI_fsolve(guesses, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_ta
                 mtrx_params_to_use[:,i] = np.diag(np.transpose(mtrx_params[:,t:t+S,i]))
                 mtry_params_to_use[:,i] = np.diag(np.transpose(mtry_params[:,t:t+S,i]))
 
-            inc_tax_params_TP = (etr_params_to_use, mtrx_params_to_use, mtry_params_to_use)
+            inc_tax_params_TP = (analytical_mtrs, etr_params_to_use, mtrx_params_to_use, mtry_params_to_use)
 
             solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
@@ -481,7 +481,7 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
         h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = parameters
 
-    etr_params, mtrx_params, mtry_params = income_tax_params
+    analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
 
 
     TPI_FIG_DIR = output_dir
@@ -566,7 +566,7 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
                     mtrx_params_to_use[:,i] = np.diag(np.transpose(mtrx_params[:S,:,i]),S-(s+2))
                     mtry_params_to_use[:,i] = np.diag(np.transpose(mtry_params[:S,:,i]),S-(s+2))
 
-                inc_tax_params_upper = (etr_params_to_use, mtrx_params_to_use, mtry_params_to_use)
+                inc_tax_params_upper = (analytical_mtrs, etr_params_to_use, mtrx_params_to_use, mtry_params_to_use)
 
                 solutions = opt.fsolve(Steady_state_TPI_solver, list(
                     b_guesses_to_use) + list(n_guesses_to_use), args=(
@@ -596,7 +596,7 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
                     mtrx_params_to_use[:,i] = np.diag(np.transpose(mtrx_params[:,t:t+S,i]))
                     mtry_params_to_use[:,i] = np.diag(np.transpose(mtry_params[:,t:t+S,i]))
 
-                inc_tax_params_TP = (etr_params_to_use, mtrx_params_to_use, mtry_params_to_use)
+                inc_tax_params_TP = (analytical_mtrs, etr_params_to_use, mtrx_params_to_use, mtry_params_to_use)
 
                 solutions = opt.fsolve(Steady_state_TPI_solver, list(
                     b_guesses_to_use) + list(n_guesses_to_use), args=(
@@ -679,7 +679,7 @@ def TP_solutions(winit, rinit, T_H_init, BQinit2, Kss, Lss, Yss, BQss, theta, in
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
         h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = parameters
 
-    etr_params, mtrx_params, mtry_params = income_tax_params
+    analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
 
     print 'Computing final solutions'
 
@@ -734,7 +734,7 @@ def TP_solutions(winit, rinit, T_H_init, BQinit2, Kss, Lss, Yss, BQss, theta, in
                 mtrx_params_to_use[:,i] = np.diag(np.transpose(mtrx_params[:S,:,i]),S-(s+2))
                 mtry_params_to_use[:,i] = np.diag(np.transpose(mtry_params[:S,:,i]),S-(s+2))
 
-            inc_tax_params_upper = (etr_params_to_use, mtrx_params_to_use, mtry_params_to_use)
+            inc_tax_params_upper = (analytical_mtrs, etr_params_to_use, mtrx_params_to_use, mtry_params_to_use)
 
             solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
@@ -757,7 +757,7 @@ def TP_solutions(winit, rinit, T_H_init, BQinit2, Kss, Lss, Yss, BQss, theta, in
                 mtrx_params_to_use[:,i] = np.diag(np.transpose(mtrx_params[:,t:t+S,i]))
                 mtry_params_to_use[:,i] = np.diag(np.transpose(mtry_params[:,t:t+S,i]))
 
-            inc_tax_params_TP = (etr_params_to_use, mtrx_params_to_use, mtry_params_to_use)
+            inc_tax_params_TP = (analytical_mtrs, etr_params_to_use, mtrx_params_to_use, mtry_params_to_use)
 
             solutions = opt.fsolve(Steady_state_TPI_solver, list(
                 b_guesses_to_use) + list(n_guesses_to_use), args=(
