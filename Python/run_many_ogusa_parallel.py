@@ -80,8 +80,9 @@ def run_micro_macro(user_params):
     input_dir = BASELINE_DIR
 
     kwargs={'output_base':output_base, 'input_dir':input_dir,
-            'baseline':False, 'analytical_mtrs':True, 'reform':reform,
-            'user_params':user_params,'guid':'_baseline'}
+            'baseline':True, 'analytical_mtrs':True,
+            'user_params':user_params,'guid':'_baseline',
+            'run_micro':True}
     p5 = Process(target=runner, kwargs=kwargs)
     p5.start()
 
@@ -95,12 +96,12 @@ def run_micro_macro(user_params):
         output_base = REFORM_DIR
         input_dir = REFORM_DIR
 
-        reform_iter = 'reform' + str(counter)
+        reform = x 
         guid_iter = 'reform_' + str(counter)
 
         kwargs={'output_base':output_base, 'input_dir':input_dir,
-            'baseline':False, 'analytical_mtrs':True, 'reform':reform_iter,
-            'user_params':user_params,'guid':guid_iter}
+            'baseline':False, 'analytical_mtrs':True, 'reform':reform,
+            'user_params':user_params,'guid':guid_iter, 'run_micro':True}
         p_num = 'p'+str(counter)
         p_num = Process(target=runner, kwargs=kwargs)
         p_num.start()
