@@ -235,7 +235,8 @@ def MTR_capital(r, b, w, e, n, factor, analytical_mtrs, etr_params, mtry_params)
 
         tau =  (max_y-min_y)*Lambda + (x*(max_x-min_x) + y*(max_y-min_y))*d_Lambda + min_y
 
-    if not analytical_mtrs:
+
+    else:
         if mtry_params.ndim == 2: 
             A = mtry_params[:,0]
             B = mtry_params[:,1]
@@ -327,7 +328,7 @@ def MTR_labor(r, b, w, e, n, factor, analytical_mtrs, etr_params, mtrx_params):
 
         tau =  (max_x-min_x)*Lambda + (x*(max_x-min_x) + y*(max_y-min_y))*d_Lambda + min_x
 
-    if analytical_mtrs:
+    else:
         if mtrx_params.ndim == 2: 
             A = mtrx_params[:,0]
             B = mtrx_params[:,1]
@@ -362,7 +363,7 @@ def MTR_labor(r, b, w, e, n, factor, analytical_mtrs, etr_params, mtrx_params):
         num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
         denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
         tau =  (Phi*(num/denom)) + K
-    
+
     return tau
 
 
