@@ -181,7 +181,7 @@ def tau_income(r, b, w, e, n, factor, etr_params):
 
 ## Note that since when we use the same functional form, one could
 # use just one tax function for ATR, MTR_lab, MTR_cap, just with different parameters input
-def MTR_capital(r, b, w, e, n, factor, mtry_params):
+def MTR_capital(r, b, w, e, n, factor, analytical_mtrs, etr_params, mtry_params):
     '''
     Gives derivative of MTR function with repect to 
     labor income at a certain income level
@@ -197,44 +197,84 @@ def MTR_capital(r, b, w, e, n, factor, mtry_params):
         tau = derivative of tau_income w.r.t. labor income (various length array or scalar)
     '''
 
-    if mtry_params.ndim == 2: 
-        A = mtry_params[:,0]
-        B = mtry_params[:,1]
-        C = mtry_params[:,2]
-        D = mtry_params[:,3]
-        E = mtry_params[:,4]
-        F = mtry_params[:,5]
-        max_x = mtry_params[:,6]
-        min_x = mtry_params[:,7]
-        max_y = mtry_params[:,8]
-        min_y = mtry_params[:,9]
-    if mtry_params.ndim == 1: 
-        A = mtry_params[0]
-        B = mtry_params[1]
-        C = mtry_params[2]
-        D = mtry_params[3]
-        E = mtry_params[4]
-        F = mtry_params[5]
-        max_x = mtry_params[6]
-        min_x = mtry_params[7]
-        max_y = mtry_params[8]
-        min_y = mtry_params[9]
-    
-    x = (w*e*n)*factor
-    y = (r*b)*factor
-    I = x+y
+    if analytical_mtrs:
+        if etr_params.ndim == 2: 
+            A = etr_params[:,0]
+            B = etr_params[:,1]
+            C = etr_params[:,2]
+            D = etr_params[:,3]
+            E = etr_params[:,4]
+            F = etr_params[:,5]
+            max_x = etr_params[:,6]
+            min_x = etr_params[:,7]
+            max_y = etr_params[:,8]
+            min_y = etr_params[:,9]
+        if etr_params.ndim == 1: 
+            A = etr_params[0]
+            B = etr_params[1]
+            C = etr_params[2]
+            D = etr_params[3]
+            E = etr_params[4]
+            F = etr_params[5]
+            max_x = etr_params[6]
+            min_x = etr_params[7]
+            max_y = etr_params[8]
+            min_y = etr_params[9]
+        
+        x = (w*e*n)*factor
+        y = (r*b)*factor
+        I = x+y
 
-    phi = x/I
-    Phi = phi*(max_x-min_x) + (1-phi)*(max_y-min_y)
-    K = phi*min_x + (1-phi)*min_y
+        num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
+        denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
+        Lambda = num/denom
 
-    num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
-    denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
-    tau =  (Phi*(num/denom)) + K
+        d_num = (2*B*y + C*x + E)*F
+        d_denom = ((A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F)**2
+        d_Lambda = d_num/d_denom
+
+        tau =  (max_y-min_y)*Lambda + (x*(max_x-min_x) + y*(max_y-min_y))*d_Lambda + min_y
+
+
+    else:
+        if mtry_params.ndim == 2: 
+            A = mtry_params[:,0]
+            B = mtry_params[:,1]
+            C = mtry_params[:,2]
+            D = mtry_params[:,3]
+            E = mtry_params[:,4]
+            F = mtry_params[:,5]
+            max_x = mtry_params[:,6]
+            min_x = mtry_params[:,7]
+            max_y = mtry_params[:,8]
+            min_y = mtry_params[:,9]
+        if mtry_params.ndim == 1: 
+            A = mtry_params[0]
+            B = mtry_params[1]
+            C = mtry_params[2]
+            D = mtry_params[3]
+            E = mtry_params[4]
+            F = mtry_params[5]
+            max_x = mtry_params[6]
+            min_x = mtry_params[7]
+            max_y = mtry_params[8]
+            min_y = mtry_params[9]
+        
+        x = (w*e*n)*factor
+        y = (r*b)*factor
+        I = x+y
+
+        phi = x/I
+        Phi = phi*(max_x-min_x) + (1-phi)*(max_y-min_y)
+        K = phi*min_x + (1-phi)*min_y
+
+        num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
+        denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
+        tau =  (Phi*(num/denom)) + K
     return tau
 
 
-def MTR_labor(r, b, w, e, n, factor, mtrx_params):
+def MTR_labor(r, b, w, e, n, factor, analytical_mtrs, etr_params, mtrx_params):
     '''
     Gives derivative of MTR function with repect to 
     labor income at a certain income level
@@ -250,40 +290,80 @@ def MTR_labor(r, b, w, e, n, factor, mtrx_params):
         tau = derivative of tau_income w.r.t. labor income (various length array or scalar)
     '''
 
-    if mtrx_params.ndim == 2: 
-        A = mtrx_params[:,0]
-        B = mtrx_params[:,1]
-        C = mtrx_params[:,2]
-        D = mtrx_params[:,3]
-        E = mtrx_params[:,4]
-        F = mtrx_params[:,5]
-        max_x = mtrx_params[:,6]
-        min_x = mtrx_params[:,7]
-        max_y = mtrx_params[:,8]
-        min_y = mtrx_params[:,9]
-    if mtrx_params.ndim == 1: 
-        A = mtrx_params[0]
-        B = mtrx_params[1]
-        C = mtrx_params[2]
-        D = mtrx_params[3]
-        E = mtrx_params[4]
-        F = mtrx_params[5]
-        max_x = mtrx_params[6]
-        min_x = mtrx_params[7]
-        max_y = mtrx_params[8]
-        min_y = mtrx_params[9]
-  
-    x = (w*e*n)*factor
-    y = (r*b)*factor
-    I = x+y
+    if analytical_mtrs:
+        if etr_params.ndim == 2: 
+            A = etr_params[:,0]
+            B = etr_params[:,1]
+            C = etr_params[:,2]
+            D = etr_params[:,3]
+            E = etr_params[:,4]
+            F = etr_params[:,5]
+            max_x = etr_params[:,6]
+            min_x = etr_params[:,7]
+            max_y = etr_params[:,8]
+            min_y = etr_params[:,9]
+        if etr_params.ndim == 1: 
+            A = etr_params[0]
+            B = etr_params[1]
+            C = etr_params[2]
+            D = etr_params[3]
+            E = etr_params[4]
+            F = etr_params[5]
+            max_x = etr_params[6]
+            min_x = etr_params[7]
+            max_y = etr_params[8]
+            min_y = etr_params[9]
+        
+        x = (w*e*n)*factor
+        y = (r*b)*factor
+        I = x+y
 
-    phi = x/I
-    Phi = phi*(max_x-min_x) + (1-phi)*(max_y-min_y)
-    K = phi*min_x + (1-phi)*min_y
+        num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
+        denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
+        Lambda = num/denom
 
-    num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
-    denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
-    tau =  (Phi*(num/denom)) + K
+        d_num = (2*A*x + C*y + D)*F
+        d_denom = ((A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F)**2
+        d_Lambda = d_num/d_denom
+
+        tau =  (max_x-min_x)*Lambda + (x*(max_x-min_x) + y*(max_y-min_y))*d_Lambda + min_x
+
+    else:
+        if mtrx_params.ndim == 2: 
+            A = mtrx_params[:,0]
+            B = mtrx_params[:,1]
+            C = mtrx_params[:,2]
+            D = mtrx_params[:,3]
+            E = mtrx_params[:,4]
+            F = mtrx_params[:,5]
+            max_x = mtrx_params[:,6]
+            min_x = mtrx_params[:,7]
+            max_y = mtrx_params[:,8]
+            min_y = mtrx_params[:,9]
+        if mtrx_params.ndim == 1: 
+            A = mtrx_params[0]
+            B = mtrx_params[1]
+            C = mtrx_params[2]
+            D = mtrx_params[3]
+            E = mtrx_params[4]
+            F = mtrx_params[5]
+            max_x = mtrx_params[6]
+            min_x = mtrx_params[7]
+            max_y = mtrx_params[8]
+            min_y = mtrx_params[9]
+      
+        x = (w*e*n)*factor
+        y = (r*b)*factor
+        I = x+y
+
+        phi = x/I
+        Phi = phi*(max_x-min_x) + (1-phi)*(max_y-min_y)
+        K = phi*min_x + (1-phi)*min_y
+
+        num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
+        denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
+        tau =  (Phi*(num/denom)) + K
+
     return tau
 
 
