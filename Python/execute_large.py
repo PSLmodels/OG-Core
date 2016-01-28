@@ -31,8 +31,8 @@ def runner(output_base, input_dir, baseline=False, analytical_mtrs=True, reform=
         except OSError as oe:
             pass
 
-    #if run_micro:
-    #    txfunc.get_tax_func_estimate(baseline=baseline, analytical_mtrs=analytical_mtrs, reform=reform, guid=guid)
+    if run_micro:
+        txfunc.get_tax_func_estimate(baseline=baseline, analytical_mtrs=analytical_mtrs, reform=reform, guid=guid)
     print ("in runner, baseline is ", baseline)
     run_params = ogusa.parameters.get_parameters(baseline=baseline, guid=guid)
     run_params['analytical_mtrs'] = analytical_mtrs
