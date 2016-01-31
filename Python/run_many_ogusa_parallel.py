@@ -82,7 +82,7 @@ def run_micro_macro(user_params):
     kwargs={'output_base':output_base, 'input_dir':input_dir,
             'baseline':True, 'analytical_mtrs':True,
             'user_params':user_params,'guid':'_baseline',
-            'run_micro':True}
+            'run_micro':False}
     p5 = Process(target=runner, kwargs=kwargs)
     p5.start()
 
@@ -101,7 +101,7 @@ def run_micro_macro(user_params):
 
         kwargs={'output_base':output_base, 'input_dir':input_dir,
             'baseline':False, 'analytical_mtrs':True, 'reform':reform,
-            'user_params':user_params,'guid':guid_iter, 'run_micro':True}
+            'user_params':user_params,'guid':guid_iter, 'run_micro':False}
         p_num = 'p'+str(counter)
         p_num = Process(target=runner, kwargs=kwargs)
         p_num.start()

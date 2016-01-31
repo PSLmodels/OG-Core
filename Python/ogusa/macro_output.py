@@ -55,7 +55,7 @@ def dump_diff_output(baseline_dir, policy_dir):
     # pct changes in SS (use two periods back to avoid any odd things in last year of path)
     pct_changes[:,11] = ((policy_macros-baseline_macros)/policy_macros)[:,-2] 
 
-    print 'pct changes: ', pct_changes
+    #print 'pct changes: ', pct_changes
 
 
     return pct_changes
