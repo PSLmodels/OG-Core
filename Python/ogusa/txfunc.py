@@ -1464,7 +1464,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}):
 
 
     # Save tax function parameters array and computation time in pickle
-    dict_params = dict([('tfunc_etr_params_S', etrparam_arr_S),
+    dict_params = dict([('x', etrparam_arr_S),
         ('tfunc_mtrx_params_S', mtrxparam_arr_S), ('tfunc_mtry_params_S', mtryparam_arr_S), ('tfunc_avginc', AvgInc),
         ('tfunc_etr_sumsq', etr_sumsq_arr), ('tfunc_mtrx_sumsq', mtrx_sumsq_arr), ('tfunc_mtry_sumsq', mtry_sumsq_arr), 
         ('tfunc_etr_obs', etr_obs_arr), ('tfunc_mtrx_obs', mtrx_obs_arr), ('tfunc_mtry_obs', mtry_obs_arr), 

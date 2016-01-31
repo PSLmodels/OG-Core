@@ -52,8 +52,20 @@ def dump_diff_output(baseline_dir, policy_dir):
     pct_changes[:,:10] = ((policy_macros-baseline_macros)/policy_macros)[:,:10]
     # pct changes over entire budget window
     pct_changes[:,10] = ((policy_macros[:,:10].sum(axis=1)-baseline_macros[:,:10].sum(axis=1))/policy_macros[:,:10].sum(axis=1))
-    # pct changes in SS (use two periods back to avoid any odd things in last year of path)
-    pct_changes[:,11] = ((policy_macros-baseline_macros)/policy_macros)[:,-2] 
+    
+    ## Load SS results
+    ss_policy_path = os.path.join(policy_dir, "SSinit", "ss_init_vars.pkl")
+    ss_policy = pickle.load(open( tpi_macro_vars_policy_path, "rb" ))
+    ss_baseline_path = os.path.join(baseline_dir, "SSinit", "ss_init_vars.pkl")
+    ss_baseline = pickle.load(open( tpi_macro_vars_baseline_path, "rb" ) )
+    # pct changes in macro aggregates in SS
+    pct_changes[0,11] = (ss_policy['Yss']-ss_baseline['Yss'])/ss_baseline['Yss']
+    pct_changes[1,11] = (ss_policy['Css']-ss_baseline['Css'])/ss_baseline['Css']
+    pct_changes[2,11] = (ss_policy['Kss']-ss_baseline['Kss'])/ss_baseline['Kss']
+    pct_changes[3,11] = (ss_policy['Lss']-ss_baseline['Lss'])/ss_baseline['Lss']
+    pct_changes[4,11] = (ss_policy['wss']-ss_baseline['wss'])/ss_baseline['wss']
+    pct_changes[5,11] = (ss_policy['rss']-ss_baseline['rss'])/ss_baseline['rss']
+    pct_changes[6,11] = (ss_policy['T_Hss']-ss_baseline['T_Hss'])/ss_baseline['T_Hss']
 
     #print 'pct changes: ', pct_changes
 
