@@ -366,6 +366,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
                             53.86896121, 53.90029708, 61.83586775, 64.87563699, 66.91207845, 
                             68.07449767, 71.27919965, 73.57195873, 74.95045988, 76.62308152])
 
+
    # Generate Income and Demographic parameters
     omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = get_omega(
         S, T, starting_age, ending_age, E, flag_graphs)

@@ -76,8 +76,8 @@ def the_inequalizer(dist, pop_weights, ability_weights, S, J):
 '''
 
 
-SS_FIG_DIR = "OUTPUT"
-COMPARISON_DIR = "OUTPUT"
+SS_FIG_DIR = "OUTPUT_BASELINE/"
+COMPARISON_DIR = "OUTPUT_BASELINE/"
 
 ss_init = os.path.join(SS_FIG_DIR, "SSinit/ss_init_vars.pkl")
 variables = pickle.load(open(ss_init, "rb"))

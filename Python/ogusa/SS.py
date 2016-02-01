@@ -645,7 +645,7 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
         pickle.dump(outputs, open(ss_exp_dir, "wb"))
 
     bssmat = solutions[0:(S - 1) * J].reshape(S - 1, J)
-    bq = solutions[(S - 1) * J:S * J]
+    bq = solutions[(S - 1) * J:S * J] # technically, this is just the intentional bequests - wealth of those with max age
     bssmat_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat))
     bssmat_splus1 = np.array(list(bssmat) + list(bq.reshape(1, J)))
     nssmat = solutions[S * J:2 * S * J].reshape(S, J)
@@ -664,7 +664,22 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
         S, 1), lambdas, rho.reshape(S, 1), g_n_ss, 'SS')
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
     
-    
+    etr_params_3D = np.tile(np.reshape(etr_params,(S,1,etr_params.shape[1])),(1,J,1))
+    mtrx_params_3D = np.tile(np.reshape(mtrx_params,(S,1,mtrx_params.shape[1])),(1,J,1))
+    etr_params_extended = np.append(etr_params,np.reshape(etr_params[-1,:],(1,etr_params.shape[1])),axis=0)[1:,:]
+    etr_params_extended_3D = np.tile(np.reshape(etr_params_extended,(S,1,etr_params_extended.shape[1])),(1,J,1))
+    mtry_params_extended = np.append(mtry_params,np.reshape(mtry_params[-1,:],(1,mtry_params.shape[1])),axis=0)[1:,:]
+    mtry_params_extended_3D = np.tile(np.reshape(mtry_params_extended,(S,1,mtry_params_extended.shape[1])),(1,J,1))
+    e_extended = np.array(list(e) + list(np.zeros(J).reshape(1, J))) 
+    nss_extended = np.array(list(nssmat) + list(np.zeros(J).reshape(1, J))) 
+    mtry_ss = tax.MTR_capital(rss, bssmat_splus1, wss, e_extended[1:,:], nss_extended[1:,:], factor_ss, 
+                              analytical_mtrs, etr_params_extended_3D, mtry_params_extended_3D)
+
+    mtrx_ss = tax.MTR_labor(rss, bssmat_s, wss, e, nssmat, factor_ss, analytical_mtrs, etr_params_3D, mtrx_params_3D)
+
+    np.savetxt("mtr_ss_capital.csv", mtry_ss, delimiter=",")
+    np.savetxt("mtr_ss_labor.csv", mtrx_ss, delimiter=",")
+
     taxss_params = (J,S, retire, np.tile(np.reshape(etr_params,(S,1,etr_params.shape[1])),(1,J,1)),
                     h_wealth, p_wealth, m_wealth, tau_payroll)
 
@@ -705,7 +720,7 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
     '''
 
     # Pickle variables
-    output = {'Kss': Kss, 'bssmat': bssmat, 'Lss': Lss, 'nssmat': nssmat, 'Yss': Yss,
+    output = {'Kss': Kss, 'bssmat': bssmat, 'Lss': Lss, 'Css':Css, 'nssmat': nssmat, 'Yss': Yss,
               'wss': wss, 'rss': rss, 'theta': theta, 'BQss': BQss, 'factor_ss': factor_ss,
               'bssmat_s': bssmat_s, 'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
               'T_Hss': T_Hss, 'euler_savings': euler_savings,

@@ -35,32 +35,32 @@ def run_micro_macro(user_params):
     input_dir = REFORM_DIR
 
     kwargs={'output_base':output_base, 'input_dir':input_dir,
-            'baseline':False, 'analytical_mtrs':True, 'reform':reform,
-            'user_params':user_params,'guid':'42'}
+            'baseline':False, 'analytical_mtrs':False, 'reform':reform,
+            'user_params':user_params,'guid':'42', 'run_micro':False}
     p1 = Process(target=runner, kwargs=kwargs)
     p1.start()
     #runner(**kwargs)
 
-    output_base = BASELINE_DIR
-    input_dir = BASELINE_DIR
-    kwargs={'output_base':output_base, 'input_dir':input_dir, 
-            'baseline':True, 'analytical_mtrs':True, 'user_params':user_params,
-            'guid':'42'}
-    p2 = Process(target=runner, kwargs=kwargs)
-    p2.start()
+    # output_base = BASELINE_DIR
+    # input_dir = BASELINE_DIR
+    # kwargs={'output_base':output_base, 'input_dir':input_dir, 
+    #         'baseline':True, 'analytical_mtrs':True, 'user_params':user_params,
+    #         'guid':'42','run_micro':False}
+    # p2 = Process(target=runner, kwargs=kwargs)
+    # p2.start()
 
-    p1.join()
-    print "just joined"
-    p2.join()
+    # p1.join()
+    # print "just joined"
+    # p2.join()
 
-    time.sleep(0.5)
+    # time.sleep(0.5)
 
-    ans = postprocess.create_diff(baseline=BASELINE_DIR, policy=REFORM_DIR)
+    # ans = postprocess.create_diff(baseline=BASELINE_DIR, policy=REFORM_DIR)
 
-    print "total time was ", (time.time() - start_time)
-    print ans
+    # print "total time was ", (time.time() - start_time)
+    # print ans
 
-    return ans
+    # return ans
 
 if __name__ == "__main__":
     run_micro_macro(user_params={})

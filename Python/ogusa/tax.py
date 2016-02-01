@@ -198,6 +198,17 @@ def MTR_capital(r, b, w, e, n, factor, analytical_mtrs, etr_params, mtry_params)
     '''
 
     if analytical_mtrs:
+        if etr_params.ndim == 3: 
+            A = etr_params[:,:,0]
+            B = etr_params[:,:,1]
+            C = etr_params[:,:,2]
+            D = etr_params[:,:,3]
+            E = etr_params[:,:,4]
+            F = etr_params[:,:,5]
+            max_x = etr_params[:,:,6]
+            min_x = etr_params[:,:,7]
+            max_y = etr_params[:,:,8]
+            min_y = etr_params[:,:,9]
         if etr_params.ndim == 2: 
             A = etr_params[:,0]
             B = etr_params[:,1]
@@ -237,6 +248,17 @@ def MTR_capital(r, b, w, e, n, factor, analytical_mtrs, etr_params, mtry_params)
 
 
     else:
+        if mtry_params.ndim == 3: 
+            A = mtry_params[:,:,0]
+            B = mtry_params[:,:,1]
+            C = mtry_params[:,:,2]
+            D = mtry_params[:,:,3]
+            E = mtry_params[:,:,4]
+            F = mtry_params[:,:,5]
+            max_x = mtry_params[:,:,6]
+            min_x = mtry_params[:,:,7]
+            max_y = mtry_params[:,:,8]
+            min_y = mtry_params[:,:,9]
         if mtry_params.ndim == 2: 
             A = mtry_params[:,0]
             B = mtry_params[:,1]
@@ -291,6 +313,17 @@ def MTR_labor(r, b, w, e, n, factor, analytical_mtrs, etr_params, mtrx_params):
     '''
 
     if analytical_mtrs:
+        if etr_params.ndim == 3: 
+            A = etr_params[:,:,0]
+            B = etr_params[:,:,1]
+            C = etr_params[:,:,2]
+            D = etr_params[:,:,3]
+            E = etr_params[:,:,4]
+            F = etr_params[:,:,5]
+            max_x = etr_params[:,:,6]
+            min_x = etr_params[:,:,7]
+            max_y = etr_params[:,:,8]
+            min_y = etr_params[:,:,9]
         if etr_params.ndim == 2: 
             A = etr_params[:,0]
             B = etr_params[:,1]
@@ -329,6 +362,17 @@ def MTR_labor(r, b, w, e, n, factor, analytical_mtrs, etr_params, mtrx_params):
         tau =  (max_x-min_x)*Lambda + (x*(max_x-min_x) + y*(max_y-min_y))*d_Lambda + min_x
 
     else:
+        if mtrx_params.ndim == 3: 
+            A = mtrx_params[:,:,0]
+            B = mtrx_params[:,:,1]
+            C = mtrx_params[:,:,2]
+            D = mtrx_params[:,:,3]
+            E = mtrx_params[:,:,4]
+            F = mtrx_params[:,:,5]
+            max_x = mtrx_params[:,:,6]
+            min_x = mtrx_params[:,:,7]
+            max_y = mtrx_params[:,:,8]
+            min_y = mtrx_params[:,:,9]
         if mtrx_params.ndim == 2: 
             A = mtrx_params[:,0]
             B = mtrx_params[:,1]
