@@ -31,6 +31,7 @@ except:
 import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
+from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 
@@ -406,6 +407,185 @@ def wsumsq(params, *objs):
     return wssqdev
 
 
+def find_outliers(sse_mat, age_vec, se_mult, varstr, graph=True):
+    '''
+    --------------------------------------------------------------------
+    This function takes a matrix of sum of squared errors (SSE) from
+    tax function estimations for each age (s) in each year of the budget
+    window (t) and marks estimations that have outlier SSE.
+    --------------------------------------------------------------------
+    RETURNS: sse_big_mat
+    --------------------------------------------------------------------
+    '''
+    # Mark outliers from estimated MTRx functions
+    thresh = (sse_mat[sse_mat>0].mean() +
+             se_mult * sse_mat[sse_mat>0].std())
+    sse_big_mat = sse_mat > thresh
+    print varstr, ": ", str(sse_big_mat.sum()), \
+          " observations tagged as outliers."
+    if graph == True:
+        # Plot sum of squared errors of tax functions over age for each
+        # year of budget window
+        fig, ax = plt.subplots()
+        plt.plot(age_vec, sse_mat[:,0], label='2015')
+        plt.plot(age_vec, sse_mat[:,1], label='2016')
+        plt.plot(age_vec, sse_mat[:,2], label='2017')
+        plt.plot(age_vec, sse_mat[:,3], label='2018')
+        plt.plot(age_vec, sse_mat[:,4], label='2019')
+        plt.plot(age_vec, sse_mat[:,5], label='2020')
+        plt.plot(age_vec, sse_mat[:,6], label='2021')
+        plt.plot(age_vec, sse_mat[:,7], label='2022')
+        plt.plot(age_vec, sse_mat[:,8], label='2023')
+        plt.plot(age_vec, sse_mat[:,9], label='2024')
+        # for the minor ticks, use no labels; default NullFormatter
+        minorLocator   = MultipleLocator(1)
+        ax.xaxis.set_minor_locator(minorLocator)
+        plt.grid(b=True, which='major', color='0.65',linestyle='-')
+        plt.legend(loc='upper right')
+        titletext = "Sum of Squared Errors by Age and Tax Year: " + varstr
+        plt.title(titletext)
+        plt.xlabel(r'Age $s$')
+        plt.ylabel(r'SSE')
+        # Create directory if OUTPUT directory does not already exist
+        cur_path = os.path.split(os.path.abspath(__file__))[0]
+        output_fldr = "OUTPUT/TaxFunctions"
+        output_dir = os.path.join(cur_path, output_fldr)
+        if os.access(output_dir, os.F_OK) == False:
+            os.makedirs(output_dir)
+        graphname = "SSE_" + varstr
+        output_path = os.path.join(output_dir, graphname)
+        plt.savefig(output_path)
+        # plt.show()
+    if sse_big_mat.sum() > 0:
+        # Mark the outliers from the first sweep above. Then mark the
+        # new outliers in a second sweep
+        sse_mat_new = sse_mat.copy()
+        sse_mat_new[sse_big_mat] = np.nan
+        thresh2 = (sse_mat_new[sse_mat_new>0].mean() +
+                  se_mult * sse_mat_new[sse_mat_new>0].std())
+        sse_big_mat += sse_mat_new > thresh2
+        print varstr, ": ", "After second round, ", \
+            str(sse_big_mat.sum()), \
+            " observations tagged as outliers (cumulative)."
+        if graph == True:
+            # Plot sum of squared errors of tax functions over age for
+            # each year of budget window
+            fig, ax = plt.subplots()
+            plt.plot(age_vec, sse_mat_new[:,0], label='2015')
+            plt.plot(age_vec, sse_mat_new[:,1], label='2016')
+            plt.plot(age_vec, sse_mat_new[:,2], label='2017')
+            plt.plot(age_vec, sse_mat_new[:,3], label='2018')
+            plt.plot(age_vec, sse_mat_new[:,4], label='2019')
+            plt.plot(age_vec, sse_mat_new[:,5], label='2020')
+            plt.plot(age_vec, sse_mat_new[:,6], label='2021')
+            plt.plot(age_vec, sse_mat_new[:,7], label='2022')
+            plt.plot(age_vec, sse_mat_new[:,8], label='2023')
+            plt.plot(age_vec, sse_mat_new[:,9], label='2024')
+            # for the minor ticks, use no labels; default NullFormatter
+            minorLocator   = MultipleLocator(1)
+            ax.xaxis.set_minor_locator(minorLocator)
+            plt.grid(b=True, which='major', color='0.65',linestyle='-')
+            plt.legend(loc='upper right')
+            titletext = ("Sum of Squared Errors by Age and Tax Year" +
+                        " minus outliers (round 1): " + varstr)
+            plt.title(titletext)
+            plt.xlabel(r'Age $s$')
+            plt.ylabel(r'SSE')
+            graphname = "SSE_" + varstr + "_NoOut1"
+            output_path = os.path.join(output_dir, graphname)
+            plt.savefig(output_path)
+            # plt.show()
+        if (sse_mat_new > thresh2).sum() > 0:
+            # Mark the outliers from the second sweep above
+            sse_mat_new2 = sse_mat_new.copy()
+            sse_mat_new2[sse_big_mat] = np.nan
+            if graph == True:
+                # Plot sum of squared errors of tax functions over age
+                # for each year of budget window
+                fig, ax = plt.subplots()
+                plt.plot(age_vec, sse_mat_new2[:,0], label='2015')
+                plt.plot(age_vec, sse_mat_new2[:,1], label='2016')
+                plt.plot(age_vec, sse_mat_new2[:,2], label='2017')
+                plt.plot(age_vec, sse_mat_new2[:,3], label='2018')
+                plt.plot(age_vec, sse_mat_new2[:,4], label='2019')
+                plt.plot(age_vec, sse_mat_new2[:,5], label='2020')
+                plt.plot(age_vec, sse_mat_new2[:,6], label='2021')
+                plt.plot(age_vec, sse_mat_new2[:,7], label='2022')
+                plt.plot(age_vec, sse_mat_new2[:,8], label='2023')
+                plt.plot(age_vec, sse_mat_new2[:,9], label='2024')
+                # for the minor ticks, use no labels; default NullFormatter
+                minorLocator   = MultipleLocator(1)
+                ax.xaxis.set_minor_locator(minorLocator)
+                plt.grid(b=True, which='major', color='0.65',linestyle='-')
+                plt.legend(loc='upper right')
+                titletext = ("Sum of Squared Errors by Age and Tax Year"
+                            + " minus outliers (round 2): " + varstr)
+                plt.title(titletext)
+                plt.xlabel(r'Age $s$')
+                plt.ylabel(r'SSE')
+                graphname = "SSE_" + varstr + "_NoOut2"
+                output_path = os.path.join(output_dir, graphname)
+                plt.savefig(output_path)
+                # plt.show()
+
+    return sse_big_mat
+
+
+def replace_outliers(param_arr, sse_big_mat,):
+    '''
+    --------------------------------------------------------------------
+    This function replaces outlier estimated tax function parameters
+    with linearly interpolated tax function tax function parameters
+    --------------------------------------------------------------------
+    RETURNS: param_arr_adj
+    --------------------------------------------------------------------
+    '''
+    age_ind = np.arange(0, sse_big_mat.shape[0])
+    param_arr_adj = param_arr.copy()
+    for t in xrange(0, sse_big_mat.shape[1]):
+        big_cnt = 0
+        for s in age_ind:
+            # Smooth out ETR tax function outliers
+            if sse_big_mat[s, t] == True and s < sse_big_mat.shape[0]-1:
+                # For all outlier observations, increase the big_cnt by
+                # 1 and set the param_arr_adj equal to nan
+                big_cnt += 1
+                param_arr_adj[s, t, :] = np.nan
+            if (sse_big_mat[s, t] == False and big_cnt > 0 and
+              s == big_cnt):
+                # When the current function is not an outlier but the last
+                # one was and this string of outliers is at the beginning
+                # ages, set the outliers equal to this period's tax function
+                param_arr_adj[:big_cnt, t, :] = \
+                    np.tile(param_arr_adj[s, t, :].reshape((1, 1, 10)),
+                    (big_cnt, 1, 1))
+                big_cnt = 0
+            if (sse_big_mat[s, t] == False and big_cnt > 0 and
+              s > big_cnt):
+                # When the current function is not an outlier but the last
+                # one was and this string of outliers is in the interior of
+                # ages, set the outliers equal to a linear interpolation
+                # between the two bounding non-outlier functions
+                slopevec = ((param_arr_adj[s, t, :] -
+                    param_arr_adj[s-big_cnt-1, t, :]) / (big_cnt + 1))
+                interceptvec = (param_arr_adj[s-big_cnt-1, t, :]) 
+                param_arr_adj[s-big_cnt:s, t, :] = (np.tile(interceptvec.reshape(1,10),(big_cnt,1)) + 
+                    np.tile(slopevec.reshape(1,10),(big_cnt,1))*np.tile(np.reshape(np.arange(1,big_cnt+1),(big_cnt,1)),(1,10)))
+                big_cnt = 0
+            if sse_big_mat[s, t] == True and s == sse_big_mat.shape[0]-1:
+                # When the last ages are outliers, set the parameters equal
+                # to the most recent non-outlier tax function
+                big_cnt += 1
+                param_arr_adj[s, t, :] = np.nan
+                param_arr_adj[s-big_cnt+1:, t, :] = \
+                    np.tile(param_arr_adj[s-big_cnt, t, :].reshape((1, 1, 10)),
+                    (big_cnt, 1, 1))
+
+    return param_arr_adj
+
+
+
+
 def tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}):
     '''
     --------------------------------------------------------------------
@@ -526,7 +706,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}):
         data_orig["Total Capital Income"] = \
             (data_orig['Adjusted Total income'] -
             data_orig['Total Labor Income'])
-        # use weighted avg for MTR labor - abs value because 
+        # use weighted avg for MTR labor - abs value because
         # SE income may be negative
         data_orig['MTR Labor'] = \
             (data_orig['MTR wage'] * (data_orig['Wage and Salaries'] /
@@ -571,7 +751,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}):
                         < -0.45].index)
 
 
-     
+
 
         # Create an array of the different ages in the data
         min_age = int(np.maximum(data_trnc['Age'].min(), s_min))
@@ -1415,6 +1595,33 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}):
         print 'Tax function estimation time: ', mins, ' min, ', secs, ' sec'
 
     '''
+    --------------------------------------------------------------------
+    Replace outlier tax functions (SSE>mean+2.5*std) with linear
+    linear interpolation. We make two passes (filtering runs).
+    --------------------------------------------------------------------
+    '''
+    age_sup = np.linspace(21, 100, 80)
+    se_mult = 2.5
+
+    etr_sse_big = find_outliers(etr_sumsq_arr, age_sup, se_mult, "ETR")
+    if etr_sse_big.sum() > 0:
+        etrparam_arr_adj = replace_outliers(etrparam_arr, etr_sse_big)
+    elif etr_sse_big.sum() == 0:
+        etrparam_arr_adj = etrparam_arr
+
+    mtrx_sse_big = find_outliers(mtrx_sumsq_arr, age_sup, se_mult, "MTRx")
+    if mtrx_sse_big.sum() > 0:
+        mtrxparam_arr_adj = replace_outliers(mtrxparam_arr, mtrx_sse_big)
+    elif mtrx_sse_big.sum() == 0:
+        mtrxparam_arr_adj = mtrxparam_arr
+
+    mtry_sse_big = find_outliers(mtry_sumsq_arr, age_sup, se_mult, "MTRy")
+    if mtry_sse_big.sum() > 0:
+        mtryparam_arr_adj = replace_outliers(mtryparam_arr, mtry_sse_big)
+    elif mtry_sse_big.sum() == 0:
+        mtryparam_arr_adj = mtryparam_arr
+
+    '''
     ------------------------------------------------------------------------
     Generate tax function parameters for S < s_max - s_min + 1
     ------------------------------------------------------------------------
@@ -1435,11 +1642,14 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}):
     ------------------------------------------------------------------------
     '''
     if S == s_max - s_min + 1:
-        etrparam_arr_S = etrparam_arr
-        mtrxparam_arr_S = mtrxparam_arr
-        mtryparam_arr_S = mtryparam_arr
+        etrparam_arr_S = etrparam_arr_adj
+        mtrxparam_arr_S = mtrxparam_arr_adj
+        mtryparam_arr_S = mtryparam_arr_adj
 
     elif S < s_max - s_min + 1:
+        etrparam_arr_S = etrparam_arr_adj
+        mtrxparam_arr_S = mtrxparam_arr_adj
+        mtryparam_arr_S = mtryparam_arr_adj
         etrparam_arr_S = np.zeros((S, tpers, numparams))
         mtrxparam_arr_S = np.zeros((S, tpers, numparams))
         mtryparam_arr_S = np.zeros((S, tpers, numparams))
@@ -1456,18 +1666,20 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}):
             # print yrcut_lb, yrcut_ub, rmndr_pct_lb, rmndr_pct_ub, age_wgts.shape
             age_wgts[0, :, :] *= rmndr_pct_lb
             age_wgts[yrcut_ub-yrcut_lb, :, :] *= rmndr_pct_ub
-            etrparam_arr_S[s, :, :] = (etrparam_arr[yrcut_lb:yrcut_ub+1, :, :] * age_wgts).sum(axis=0)
-            mtrxparam_arr_S[s, :, :] = (mtrxparam_arr[yrcut_lb:yrcut_ub+1, :, :] * age_wgts).sum(axis=0)
-            mtryparam_arr_S[s, :, :] = (mtryparam_arr[yrcut_lb:yrcut_ub+1, :, :] * age_wgts).sum(axis=0)
+            etrparam_arr_S[s, :, :] = (etrparam_arr_adj[yrcut_lb:yrcut_ub+1, :, :] * age_wgts).sum(axis=0)
+            mtrxparam_arr_S[s, :, :] = (mtrxparam_arr_adj[yrcut_lb:yrcut_ub+1, :, :] * age_wgts).sum(axis=0)
+            mtryparam_arr_S[s, :, :] = (mtryparam_arr_adj[yrcut_lb:yrcut_ub+1, :, :] * age_wgts).sum(axis=0)
             yrcut_lb = yrcut_ub
             rmndr_pct_lb = 1 - rmndr_pct_ub
 
+    print 'Big S: ', S
+    print 'max age, min age: ', s_max, s_min
 
     # Save tax function parameters array and computation time in pickle
     dict_params = dict([('tfunc_etr_params_S', etrparam_arr_S),
         ('tfunc_mtrx_params_S', mtrxparam_arr_S), ('tfunc_mtry_params_S', mtryparam_arr_S), ('tfunc_avginc', AvgInc),
-        ('tfunc_etr_sumsq', etr_sumsq_arr), ('tfunc_mtrx_sumsq', mtrx_sumsq_arr), ('tfunc_mtry_sumsq', mtry_sumsq_arr), 
-        ('tfunc_etr_obs', etr_obs_arr), ('tfunc_mtrx_obs', mtrx_obs_arr), ('tfunc_mtry_obs', mtry_obs_arr), 
+        ('tfunc_etr_sumsq', etr_sumsq_arr), ('tfunc_mtrx_sumsq', mtrx_sumsq_arr), ('tfunc_mtry_sumsq', mtry_sumsq_arr),
+        ('tfunc_etr_obs', etr_obs_arr), ('tfunc_mtrx_obs', mtrx_obs_arr), ('tfunc_mtry_obs', mtry_obs_arr),
         ('tfunc_time', elapsed_time)])
 
     #import pdb;pdb.set_trace()
