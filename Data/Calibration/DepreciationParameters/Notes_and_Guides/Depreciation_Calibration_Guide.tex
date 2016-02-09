@@ -594,11 +594,22 @@ To get the economic deprecation rate by industry and sector, we use a weighted a
 
 \begin{equation}
 \label{eqn:econ_deprec}
-\delta_{m,C}=\frac{\sum_{i=1}^{I}\delta_{i}{FA}_{i,m,C}+{INV}_{m,C}+{LAND}_{m,C}}{K_{m,C}} 
+\delta_{m,C}=\frac{\sum_{i=1}^{I}\delta_{i}{FA}_{i,m,C}+\delta_{inv}{INV}_{m,C}+\delta_{land}{LAND}_{m,C}}{K_{m,C}},
 \end{equation}
 
+\noindent\noindent where $\delta_{inv}$ is the depreciation rate on inventories and $\delta_{land}$ is the depreciation rate on land.  We'll generally take these both to be zero, but our code will be written such that other values may be used. 
 
-
+ Since we are not yet sure how land will enter into the model, let's also calculate economic deprecation rates for just fixed assets:
+ \begin{equation}
+\label{eqn:econ_deprec_FA}
+\delta_{m,C}=\frac{\sum_{i=1}^{I}\delta_{i}{FA}_{i,m,C}}{\sum_{i=1}^{I}FA_{i,m,C}},
+\end{equation}
+ 
+ and for all capital, excluding land:
+ \begin{equation}
+\label{eqn:econ_deprec_notland}
+\delta_{m,C}=\frac{\sum_{i=1}^{I}\delta_{i}{FA}_{i,m,C}+\delta_{inv}{INV}_{m,C}}{\sum_{i=1}^{I}FA_{i,m,C} + INV_{m,C}},
+\end{equation}
  
 
 \ \\
@@ -615,10 +626,12 @@ Table of econ deprec rates by industry/sector.
 
 \begin{equation}
 \label{eqn:tax_deprec}
-\delta^{\tau}_{m,C}=\frac{\sum_{i=1}^{I}\delta^{\tau}_{i}{FA}_{i,m,C}+{INV}_{m,C}+{LAND}_{m,C}}{K_{m,C}},
+\delta^{\tau}_{m,C}=\frac{\sum_{i=1}^{I}\delta^{\tau}_{i}{FA}_{i,m,C}+\delta^{\tau}_{inv}{INV}_{m,C}+\delta^{\tau}_{land}{LAND}_{m,C}}{K_{m,C}},
 \end{equation}
 
 \noindent\noindent where $\delta^{\tau C}_{i}$ is the tax depreciation rate of fixed asset of type $i$ and is given by tax law and our geometric rate approximation described in Section \ref{sec:approx_tax_depr_rates}.
+
+$\delta^{\tau}_{inv}$ is the tax depreciation rate on inventories and $\delta^{\tau}_{land}$ is the tax depreciation rate on land.  We'll generally take these both to be zero, but our code will be written such that other values may be used. 
 
 \ \\
 \begin{center}
