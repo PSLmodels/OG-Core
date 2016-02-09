@@ -55,9 +55,9 @@ def dump_diff_output(baseline_dir, policy_dir):
     
     ## Load SS results
     ss_policy_path = os.path.join(policy_dir, "SSinit", "ss_init_vars.pkl")
-    ss_policy = pickle.load(open( tpi_macro_vars_policy_path, "rb" ))
+    ss_policy = pickle.load(open( ss_policy_path, "rb" ))
     ss_baseline_path = os.path.join(baseline_dir, "SSinit", "ss_init_vars.pkl")
-    ss_baseline = pickle.load(open( tpi_macro_vars_baseline_path, "rb" ) )
+    ss_baseline = pickle.load(open( ss_baseline_path, "rb" ) )
     # pct changes in macro aggregates in SS
     pct_changes[0,11] = (ss_policy['Yss']-ss_baseline['Yss'])/ss_baseline['Yss']
     pct_changes[1,11] = (ss_policy['Css']-ss_baseline['Css'])/ss_baseline['Css']
@@ -74,5 +74,5 @@ def dump_diff_output(baseline_dir, policy_dir):
 
 
 #pct_changes = dump_diff_output('/Users/jasondebacker/repos/dynamic/Python/OUTPUT_BASELINE','/Users/jasondebacker/repos/dynamic/Python/OUTPUT_REFORM')
-#np.savetxt("pct_changes_01012016.csv", pct_changes, delimiter=",")
+#np.savetxt("pct_changes_02082016.csv", pct_changes, delimiter=",")
 
