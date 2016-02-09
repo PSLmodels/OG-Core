@@ -677,8 +677,8 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
 
     mtrx_ss = tax.MTR_labor(rss, bssmat_s, wss, e, nssmat, factor_ss, analytical_mtrs, etr_params_3D, mtrx_params_3D)
 
-    np.savetxt("mtr_ss_capital.csv", mtry_ss, delimiter=",")
-    np.savetxt("mtr_ss_labor.csv", mtrx_ss, delimiter=",")
+    #np.savetxt("mtr_ss_capital.csv", mtry_ss, delimiter=",")
+    #np.savetxt("mtr_ss_labor.csv", mtrx_ss, delimiter=",")
 
     taxss_params = (J,S, retire, np.tile(np.reshape(etr_params,(S,1,etr_params.shape[1])),(1,J,1)),
                     h_wealth, p_wealth, m_wealth, tau_payroll)
