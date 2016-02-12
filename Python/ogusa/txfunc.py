@@ -407,7 +407,7 @@ def wsumsq(params, *objs):
     return wssqdev
 
 
-def find_outliers(sse_mat, age_vec, se_mult, varstr, graph=True):
+def find_outliers(sse_mat, age_vec, se_mult, varstr, graph=False):
     '''
     --------------------------------------------------------------------
     This function takes a matrix of sum of squared errors (SSE) from
@@ -568,8 +568,8 @@ def replace_outliers(param_arr, sse_big_mat,):
                 # between the two bounding non-outlier functions
                 slopevec = ((param_arr_adj[s, t, :] -
                     param_arr_adj[s-big_cnt-1, t, :]) / (big_cnt + 1))
-                interceptvec = (param_arr_adj[s-big_cnt-1, t, :]) 
-                param_arr_adj[s-big_cnt:s, t, :] = (np.tile(interceptvec.reshape(1,10),(big_cnt,1)) + 
+                interceptvec = (param_arr_adj[s-big_cnt-1, t, :])
+                param_arr_adj[s-big_cnt:s, t, :] = (np.tile(interceptvec.reshape(1,10),(big_cnt,1)) +
                     np.tile(slopevec.reshape(1,10),(big_cnt,1))*np.tile(np.reshape(np.arange(1,big_cnt+1),(big_cnt,1)),(1,10)))
                 big_cnt = 0
             if sse_big_mat[s, t] == True and s == sse_big_mat.shape[0]-1:
