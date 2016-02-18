@@ -1,0 +1,16 @@
+List,Industry,NAICS
+1,Private inventories 1,1
+2,Farm,11
+3,"Mining, utilities, and construction",21.22.23
+4,Manufacturing,31.32.33
+5,Durable goods industries,321.327.331.332.333.334.335.336.337.339
+6,Nondurable goods industries,311.312.313.314.315.316.322.323.324.325.326
+7,Wholesale trade,42
+8,Durable goods industries,423
+9,Nondurable goods industries,424
+10,Retail trade,44.45
+11,Motor vehicle and parts dealers,441
+12,Food and beverage stores,445
+13,General merchandise stores,452
+14,Other retail stores,453
+15,Other industries,49.51.52.53.54.55.56.61.62.71.72.81.92

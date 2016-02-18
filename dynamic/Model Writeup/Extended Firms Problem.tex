@@ -1,0 +1,99 @@
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{threeparttable}
+\usepackage{geometry}
+\geometry{letterpaper,tmargin=1in,bmargin=1in,lmargin=1.25in,rmargin=1.25in}
+\usepackage[format=hang,font=normalsize,labelfont=bf]{caption}
+\usepackage{amsmath}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{delarray}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{enumerate}
+\usepackage{lscape}
+\usepackage{natbib}
+\usepackage{setspace}
+\usepackage{float,color}
+\usepackage[pdftex]{graphicx}
+\usepackage{pdfsync}
+\usepackage{verbatim}
+\usepackage{placeins}
+\synctex=1
+\usepackage{hyperref}
+\hypersetup{colorlinks,linkcolor=red,urlcolor=blue,citecolor=red}
+\usepackage{bm}
+
+
+\theoremstyle{definition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}[theorem]{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}{Definition} % Number definitions on their own
+\newtheorem{derivation}{Derivation} % Number derivations on their own
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}{Proposition} % Number propositions on their own
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\bibliographystyle{aer}
+\newcommand\ve{\varepsilon}
+\renewcommand\theenumi{\roman{enumi}}
+\newcommand\norm[1]{\left\lVert#1\right\rVert}
+
+\begin{document}
+
+\title{Firms Problem with CES Production and Ownership of Capital}
+\maketitle
+Denote the stock of bonds issued by the firm as $b^F$.  $T^F$ denotes taxes on the firm.
+
+Firm $\iota$'s maximization problem is:
+\begin{align}
+   \begin{split}
+   & V_\iota(k^F_{\iota,t},b^F_{\iota,t},\Omega_t) \\
+   & = \max_{n^F_{\iota,t},k^F_{\iota,t+1},b^F_{\iota,t+1}} e^F_{\iota,t}  + \frac{1}{1+r_{t+1}} V_\iota(k^F_{\iota,t+1},b^F_{\iota,t+1},\epsilon^F_{\iota,t},\Omega_{t+1}) \label{EqProfMax}
+   \end{split} \\
+   & e^F_{\iota,t} = p_{\iota,t} y^F_{\iota,t} - w_tn^F_{\iota,t} + (1-\delta)k^F_{\iota,t} - (1+r_t)b^F_{\iota,t} - k^F_{\iota,t+1} + b^F_{\iota,t+1} -T^F_{\iota,t} \label{EqEarn} \\
+   & y^F_{\iota,t} = f(z_t,k^F_{\iota,t},n^F_{\iota,t}) = z_t \left[ \zeta (k^F_{\iota,t})^\eta + (1-\zeta)(n^F_{\iota,t})^\eta \right]^{\frac{1}{\eta}} \label{EqProd}
+\end{align}
+
+The first-order conditions are:
+\begin{align}
+   & p_{\iota,t} z_t \left[ \zeta (k^F_{\iota,t})^\eta + (1-\zeta)(n^F_{\iota,t})^\eta \right]^{\frac{1-\eta}{\eta}}(1-\zeta)(n^F_{\iota,t})^{\eta-1} - w_t - \frac{\partial T^F_{\iota,t}}{\partial n^F_{\iota,t}}  = 0 \nonumber\\
+   & -1 - \frac{\partial T^F_{\iota,t}}{\partial k^F_{\iota,t+1}} + \frac{1}{1+r_{t+1}} \frac{\partial V_\iota}{\partial k^F_{\iota}}(t+1) = 0 \nonumber \\
+   & 1 - \frac{\partial T^F_{\iota,t}}{\partial b^F_{\iota,t+1}} + \frac{1}{1+r_{t+1}} \frac{\partial V_\iota}{\partial b^F_{\iota}}(t+1) = 0 \nonumber 
+\end{align}
+
+Envelope conditions are:
+\begin{align}
+   \frac{\partial V_\iota}{\partial k^F_{\iota}}(t) & = p_{\iota,t} z_t \left[ \zeta (k^F_{\iota,t})^\eta + (1-\zeta)(n^F_{\iota,t})^\eta \right]^{\frac{1-\eta}{\eta}}\zeta (k^F_{\iota,t})^{\eta-1} + 1 - \delta - \frac{\partial T^F_{\iota,t}}{\partial k^F_{\iota,t}}  \nonumber \\
+   \frac{\partial V_\iota}{\partial b^F_{\iota}}(t) & = - \left( 1+r_t+\frac{\partial T^F_{\iota,t}}{\partial b^F_{\iota,t}} \right) \nonumber 
+\end{align}
+
+Euler equations are:
+\begin{align}
+   & p_{\iota,t} z_t \left[ \zeta (k^F_{\iota,t})^\eta + (1-\zeta)(n^F_{\iota,t})^\eta \right]^{\frac{1-\eta}{\eta}}(1-\zeta)(n^F_{\iota,t})^{\eta-1} = w_t + \frac{\partial T^F_{\iota,t+1}}{\partial n^F_{\iota,t+1}} \label{EqEulern}\\
+   \begin{split}
+   & p_{\iota,t+1} z_{t+1} \left[ \zeta (k^F_{\iota,t+1})^\eta + (1-\zeta)(n^F_{\iota,t})^\eta \right]^{\frac{1-\eta}{\eta}}\zeta (k^F_{\iota,t+1})^{\eta-1} \\
+   & = \left( 1 + \frac{\partial T^F_{\iota,t+1}}{\partial k^F_{\iota,t+1}} \right) \left( 1+r_{t+1} \right) - 1 - \delta - \frac{\partial T^F_{\iota,t}}{\partial k^F_{\iota,t+1}} \label{EqEulerk} 
+   \end{split} \\
+   & r_{t+1} = - \frac{ \frac{\partial T^F_{\iota,t+1}}{\partial b^F_{\iota,t+1}} + \frac{\partial T^F_{\iota,t}}{\partial b^F_{\iota,t+1}} } { \frac{\partial T^F_{\iota,t}}{\partial b^F_{\iota,t+1}} } \label{EqEulerb}
+\end{align}
+
+Starting with a values for $k^F_{\iota,1}$, $b^F_{\iota,1}$, $w_t$, $p_{\iota,t}$ and $z_t$, we get $n^F_{\iota,t}$ from equation \eqref{EqEulern}. Equations \eqref{EqEulerk} and \eqref{EqEulerb} then give $k^F_{\iota,t+1}$ and $b^F_{\iota,t+1}$using the known value of $r_{t+1}$.  This allows us to iteratively solve for labor hired, capital and outstanding debt for firm $\iota$ over time.
+
+WE NEED TO ADD EQUITY SHARES CHOICE
+
+\end{document}

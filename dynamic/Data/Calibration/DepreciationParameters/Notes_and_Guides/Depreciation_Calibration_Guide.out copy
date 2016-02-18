@@ -1,0 +1,18 @@
+\BOOKMARK [1][-]{section.1}{Calibrating Deprecation Parameters}{}% 1
+\BOOKMARK [1][-]{section.2}{Measuring the Capital Stock}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{A Note on Industry Classifications}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Calculating the Capital Stock by Tax Entity From IRS Data}{section.2}% 4
+\BOOKMARK [3][-]{subsubsection.2.2.1}{C Corporations}{subsection.2.2}% 5
+\BOOKMARK [3][-]{subsubsection.2.2.2}{S Corporations}{subsection.2.2}% 6
+\BOOKMARK [3][-]{subsubsection.2.2.3}{Partnerships}{subsection.2.2}% 7
+\BOOKMARK [3][-]{subsubsection.2.2.4}{Sole Proprietorships}{subsection.2.2}% 8
+\BOOKMARK [2][-]{subsection.2.3}{Allocating the BEA Capital Stock Across Corporate and Non-corporate Tax Treatment}{section.2}% 9
+\BOOKMARK [3][-]{subsubsection.2.3.1}{Fixed Assets}{subsection.2.3}% 10
+\BOOKMARK [3][-]{subsubsection.2.3.2}{Inventories}{subsection.2.3}% 11
+\BOOKMARK [3][-]{subsubsection.2.3.3}{Land}{subsection.2.3}% 12
+\BOOKMARK [1][-]{section.3}{Depreciation Rates by Asset Type}{}% 13
+\BOOKMARK [2][-]{subsection.3.1}{Rates of Economic Deprecation}{section.3}% 14
+\BOOKMARK [2][-]{subsection.3.2}{Current Law Tax Depreciation Rates}{section.3}% 15
+\BOOKMARK [2][-]{subsection.3.3}{Approximating Tax Depreciation Rates}{section.3}% 16
+\BOOKMARK [1][-]{section.4}{Economic Depreciation Rates by Industry and Sector}{}% 17
+\BOOKMARK [1][-]{section.5}{Tax Depreciation Rates by Industry and Sector}{}% 18

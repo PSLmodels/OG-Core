@@ -1,0 +1,98 @@
+Code,Asset,Economic Depreciation Rate
+EP1A,Mainframes,0.3
+EP1B,PCs,0.11
+EP1C,DASDs,0.28
+EP1D,Printers,0.35
+EP1E,Terminals,0.27
+EP1F,Tape drives,0.28
+EP1G,Storage devices,0.28
+EP1H,System integrators,0.3
+EP20,Communications,0.1129
+EP34,Nonelectro medical instruments,0.135
+EP35,Electro medical instruments,0.1834
+EP36,Nonmedical instruments,0.135
+EP31,Photocopy and related equipment,0.18
+EP12,Office and accounting equipment,0.3119
+EI11,Nuclear fuel,0.25
+EI12,Other fabricated metals,0.0917
+EI21,Steam engines,0.0516
+EI22,Internal combustion engines,0.2063
+EI30,Metalworking machinery,0.1031
+EI40,Special industrial machinery,0.15
+EI50,General industrial equipment,0.15
+EI60,Electric transmission and distribution,0.05
+,Light trucks (including utility vehicles),0.1925
+ET11,"Other trucks, buses and truck trailers",0.1725
+ET12,Autos,0.3333
+ET20,Aircraft,0.0859
+ET30,Ships and boats,0.0611
+ET40,Railroad equipment,0.0589
+ET50,Household furniture,0.1375
+EO11,Other furniture,0.1179
+EO12,Other agricultural machinery,0.1179
+EO30,Farm tractors,0.1452
+EO21,Other construction machinery,0.155
+EO40,Construction tractors,0.1633
+EO22,Mining and oilfield machinery,0.15
+EO50,Service industry machinery,0.1528
+EO60,Household appliances,0.165
+EO71,Other electrical,0.1834
+EO72,Other,0.1473
+EO80,Office                                    ,0.0247
+SOO1,Hospitals                             ,0.0188
+SB31,Special care                          ,0.0188
+SB32,Medical buildings                       ,0.0247
+SOO2,Multimerchandise shopping            ,0.0262
+SC03,Food and beverage establishments,0.0262
+SC04,Warehouses                                ,0.0222
+SC01,Mobile structures,0.0556
+SOMO ,Other commercial,0.0262
+SC02,Manufacturing                               ,0.0314
+SI00,Electric                                ,0.0211
+SU30,Wind and solar,0.0303
+SU60,Gas,0.0237
+SU40,Petroleum pipelines,0.0237
+SU50,Communication                             ,0.0237
+SU20,Petroleum and natural gas          ,0.0751
+SM01,Mining                    ,0.045
+SM02,Religious                   ,0.0188
+SB10,Educational and vocational       ,0.0188
+SB20,Lodging                                   ,0.0281
+SB41,Amusement and recreation         ,0.03
+SB42,Air transportation,0.0237
+SB43,Other transportation,0.0237
+SB45,Other railroad,0.0176
+SU11,Track replacement,0.0249
+SU12,Local transit structures,0.0237
+SB44,Other land transportation,0.0237
+SB46,Farm,0.0239
+SN00,Water supply,0.0225
+SO01,Sewage and waste disposal,0.0225
+SO02,Public safety,0.0237
+SO03,Highway and conservation and development,0.0225
+SO04,Prepackaged software,0.55
+ENS1,Custom software,0.33
+ENS2,Own account software,0.33
+ENS3,Pharmaceutical and medicine manufacturing,0.1
+RD11,"Chemical manufacturing, ex. pharma and med",0.16
+RD12,Semiconductor and other component manufacturing,0.25
+RD23,Computers and peripheral equipment manufacturing,0.4
+RD21,Communications equipment manufacturing ,0.27
+RD22,Navigational and other instruments manufacturing,0.29
+RD24,"Other computer and electronic manufacturing, n.e.c.",0.4
+RD25,Motor vehicles and parts manufacturing ,0.31
+RD31,Aerospace products and parts manufacturing,0.22
+RD32,Other manufacturing,0.16
+RDOM,Scientific research and development services,0.16
+RD70,Software publishers,0.22
+RD40,Financial and real estate services,0.16
+RD50,Computer systems design and related services,0.36
+RD60,"All other nonmanufacturing, n.e.c.",0.16
+RD80,Private universities and colleges,0.16
+RD91,Other nonprofit institutions,0.16
+RD92,Theatrical movies,0.093
+AE10,Long-lived television programs,0.168
+AE20,Books,0.121
+AE30,Music,0.267
+AE40,Other entertainment originals,0.109
+AE50,,
