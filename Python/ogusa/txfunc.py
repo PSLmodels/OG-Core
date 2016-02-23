@@ -586,7 +586,7 @@ def replace_outliers(param_arr, sse_big_mat,):
 
 
 
-def tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}):
+def tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False,reform={}):
     '''
     --------------------------------------------------------------------
     This function estimates functions for the ETR, MTR on Labor Income,
@@ -634,6 +634,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}):
     ------------------------------------------------------------------------
     '''
     S = int(80)
+    BW = int(10)
     s_min = int(21)
     s_max = int(100)
     tpers = int(10)
@@ -659,7 +660,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}):
     # cmap1 = matplotlib.cm.get_cmap('coolwarm')
 
     beg_yr = int(2015)
-    end_yr = int(2024)
+    end_yr = int(beg_yr+BW-1)
     years_list = np.arange(beg_yr, end_yr + 1)
     start_time = time.clock()
 
@@ -756,7 +757,10 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}):
         # Create an array of the different ages in the data
         min_age = int(np.maximum(data_trnc['Age'].min(), s_min))
         max_age = int(np.minimum(data_trnc['Age'].max(), s_max))
-        ages_list = np.arange(min_age, max_age+1)
+        if age_specific:
+            ages_list = np.arange(min_age, max_age+1)
+        else:
+            ages_list = np.arange(0,1)
         NoData_cnt = 0
 
         # Each age s must be done in serial, but each year can be done in
@@ -800,10 +804,17 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}):
                            elapsed_time
             ----------------------------------------------------------------
             '''
-            print "year=", t, "Age=", s
-            df = data_trnc[data_trnc['Age'] == s]
-            PopPct_age[s-s_min, t-beg_yr] = \
-                df['Weights'].sum() / TotPop_yr[t-beg_yr]
+            
+            if age_specific:
+                print "year=", t, "Age=", s
+                df = data_trnc[data_trnc['Age'] == s]
+                PopPct_age[s-s_min, t-beg_yr] = \
+                    df['Weights'].sum() / TotPop_yr[t-beg_yr]
+            else:
+                print "year=", t, "Age= all ages"
+                df = data_trnc
+                PopPct_age[0, t-beg_yr] = \
+                    df['Weights'].sum() / TotPop_yr[t-beg_yr]
 
             if df.shape[0] < 600 and s < max_age:
                 '''
@@ -1600,26 +1611,27 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}):
     linear interpolation. We make two passes (filtering runs).
     --------------------------------------------------------------------
     '''
-    age_sup = np.linspace(21, 100, 80)
-    se_mult = 2.5
+    if age_specific:
+        age_sup = np.linspace(21, 100, 80)
+        se_mult = 2.5
 
-    etr_sse_big = find_outliers(etr_sumsq_arr, age_sup, se_mult, "ETR")
-    if etr_sse_big.sum() > 0:
-        etrparam_arr_adj = replace_outliers(etrparam_arr, etr_sse_big)
-    elif etr_sse_big.sum() == 0:
-        etrparam_arr_adj = etrparam_arr
+        etr_sse_big = find_outliers(etr_sumsq_arr, age_sup, se_mult, "ETR")
+        if etr_sse_big.sum() > 0:
+            etrparam_arr_adj = replace_outliers(etrparam_arr, etr_sse_big)
+        elif etr_sse_big.sum() == 0:
+            etrparam_arr_adj = etrparam_arr
 
-    mtrx_sse_big = find_outliers(mtrx_sumsq_arr, age_sup, se_mult, "MTRx")
-    if mtrx_sse_big.sum() > 0:
-        mtrxparam_arr_adj = replace_outliers(mtrxparam_arr, mtrx_sse_big)
-    elif mtrx_sse_big.sum() == 0:
-        mtrxparam_arr_adj = mtrxparam_arr
+        mtrx_sse_big = find_outliers(mtrx_sumsq_arr, age_sup, se_mult, "MTRx")
+        if mtrx_sse_big.sum() > 0:
+            mtrxparam_arr_adj = replace_outliers(mtrxparam_arr, mtrx_sse_big)
+        elif mtrx_sse_big.sum() == 0:
+            mtrxparam_arr_adj = mtrxparam_arr
 
-    mtry_sse_big = find_outliers(mtry_sumsq_arr, age_sup, se_mult, "MTRy")
-    if mtry_sse_big.sum() > 0:
-        mtryparam_arr_adj = replace_outliers(mtryparam_arr, mtry_sse_big)
-    elif mtry_sse_big.sum() == 0:
-        mtryparam_arr_adj = mtryparam_arr
+        mtry_sse_big = find_outliers(mtry_sumsq_arr, age_sup, se_mult, "MTRy")
+        if mtry_sse_big.sum() > 0:
+            mtryparam_arr_adj = replace_outliers(mtryparam_arr, mtry_sse_big)
+        elif mtry_sse_big.sum() == 0:
+            mtryparam_arr_adj = mtryparam_arr
 
     '''
     ------------------------------------------------------------------------
@@ -1641,39 +1653,45 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}):
                    year copied back 10 times in the 3rd dimension
     ------------------------------------------------------------------------
     '''
-    if S == s_max - s_min + 1:
-        etrparam_arr_S = etrparam_arr_adj
-        mtrxparam_arr_S = mtrxparam_arr_adj
-        mtryparam_arr_S = mtryparam_arr_adj
+    if age_specific: 
+        if S == s_max - s_min + 1:
+            etrparam_arr_S = etrparam_arr_adj
+            mtrxparam_arr_S = mtrxparam_arr_adj
+            mtryparam_arr_S = mtryparam_arr_adj
 
-    elif S < s_max - s_min + 1:
-        etrparam_arr_S = etrparam_arr_adj
-        mtrxparam_arr_S = mtrxparam_arr_adj
-        mtryparam_arr_S = mtryparam_arr_adj
-        etrparam_arr_S = np.zeros((S, tpers, numparams))
-        mtrxparam_arr_S = np.zeros((S, tpers, numparams))
-        mtryparam_arr_S = np.zeros((S, tpers, numparams))
-        age_cuts = np.linspace(0, s_max-s_min+1, S+1)
-        yrcut_lb = int(age_cuts[0])
-        rmndr_pct_lb = 1.
-        for s in np.arange(S):
-            yrcut_ub = int(np.floor(age_cuts[s+1]))
-            rmndr_pct_ub = age_cuts[s+1] - np.floor(age_cuts[s+1])
-            if rmndr_pct_ub == 0.:
-                rmndr_pct_ub = 1.
-                yrcut_ub -= 1
-            age_wgts = np.dstack([PopPct_age[yrcut_lb:yrcut_ub+1, :]]*10)
-            # print yrcut_lb, yrcut_ub, rmndr_pct_lb, rmndr_pct_ub, age_wgts.shape
-            age_wgts[0, :, :] *= rmndr_pct_lb
-            age_wgts[yrcut_ub-yrcut_lb, :, :] *= rmndr_pct_ub
-            etrparam_arr_S[s, :, :] = (etrparam_arr_adj[yrcut_lb:yrcut_ub+1, :, :] * age_wgts).sum(axis=0)
-            mtrxparam_arr_S[s, :, :] = (mtrxparam_arr_adj[yrcut_lb:yrcut_ub+1, :, :] * age_wgts).sum(axis=0)
-            mtryparam_arr_S[s, :, :] = (mtryparam_arr_adj[yrcut_lb:yrcut_ub+1, :, :] * age_wgts).sum(axis=0)
-            yrcut_lb = yrcut_ub
-            rmndr_pct_lb = 1 - rmndr_pct_ub
+        elif S < s_max - s_min + 1:
+            etrparam_arr_S = etrparam_arr_adj
+            mtrxparam_arr_S = mtrxparam_arr_adj
+            mtryparam_arr_S = mtryparam_arr_adj
+            etrparam_arr_S = np.zeros((S, tpers, numparams))
+            mtrxparam_arr_S = np.zeros((S, tpers, numparams))
+            mtryparam_arr_S = np.zeros((S, tpers, numparams))
+            age_cuts = np.linspace(0, s_max-s_min+1, S+1)
+            yrcut_lb = int(age_cuts[0])
+            rmndr_pct_lb = 1.
+            for s in np.arange(S):
+                yrcut_ub = int(np.floor(age_cuts[s+1]))
+                rmndr_pct_ub = age_cuts[s+1] - np.floor(age_cuts[s+1])
+                if rmndr_pct_ub == 0.:
+                    rmndr_pct_ub = 1.
+                    yrcut_ub -= 1
+                age_wgts = np.dstack([PopPct_age[yrcut_lb:yrcut_ub+1, :]]*10)
+                # print yrcut_lb, yrcut_ub, rmndr_pct_lb, rmndr_pct_ub, age_wgts.shape
+                age_wgts[0, :, :] *= rmndr_pct_lb
+                age_wgts[yrcut_ub-yrcut_lb, :, :] *= rmndr_pct_ub
+                etrparam_arr_S[s, :, :] = (etrparam_arr_adj[yrcut_lb:yrcut_ub+1, :, :] * age_wgts).sum(axis=0)
+                mtrxparam_arr_S[s, :, :] = (mtrxparam_arr_adj[yrcut_lb:yrcut_ub+1, :, :] * age_wgts).sum(axis=0)
+                mtryparam_arr_S[s, :, :] = (mtryparam_arr_adj[yrcut_lb:yrcut_ub+1, :, :] * age_wgts).sum(axis=0)
+                yrcut_lb = yrcut_ub
+                rmndr_pct_lb = 1 - rmndr_pct_ub
 
-    print 'Big S: ', S
-    print 'max age, min age: ', s_max, s_min
+        print 'Big S: ', S
+        print 'max age, min age: ', s_max, s_min
+    else:
+        etrparam_arr_S = np.tile(np.reshape(etrparam_arr[s-21,:,:],(1,BW,etrparam_arr.shape[2])),(S,1,1))
+        mtrxparam_arr_S = np.tile(np.reshape(mtrxparam_arr[s-21,:,:],(1,BW,mtrxparam_arr.shape[2])),(S,1,1))
+        mtryparam_arr_S = np.tile(np.reshape(mtryparam_arr[s-21,:,:],(1,BW,mtryparam_arr.shape[2])),(S,1,1))
+
 
     # Save tax function parameters array and computation time in pickle
     dict_params = dict([('tfunc_etr_params_S', etrparam_arr_S),
@@ -1687,9 +1705,9 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}):
     return dict_params
 
 
-def get_tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}, guid=''):
+def get_tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False, reform={}, guid=''):
     # Code to run manually from here:
-    dict_params = tax_func_estimate(baseline, analytical_mtrs, reform)
+    dict_params = tax_func_estimate(baseline, analytical_mtrs, age_specific, reform)
     if baseline:
         baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         pkl_path = os.path.join(TAX_ESTIMATE_PATH, baseline_pckl)
@@ -1698,3 +1716,6 @@ def get_tax_func_estimate(baseline=False, analytical_mtrs=True, reform={}, guid=
         pkl_path = os.path.join(TAX_ESTIMATE_PATH, policy_pckl)
 
     pickle.dump(dict_params, open(pkl_path, "wb"))
+
+
+#get_tax_func_estimate(True, True, False, {}, '99')
