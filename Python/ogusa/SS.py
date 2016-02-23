@@ -558,7 +558,7 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, get
     chi_params[J:] = chi_n_guess
     # First run SS simulation with guesses at initial values for b, n, w, r, etc
     # For inital guesses of b and n, we choose very small b, and medium n
-    b_guess = np.ones((S, J)).flatten() * .05
+    b_guess = np.ones((S, J)).flatten() * 0.05
     n_guess = np.ones((S, J)).flatten() * .4 * ltilde
     # For initial guesses of w, r, T_H, and factor, we use values that are close
     # to some steady state values.

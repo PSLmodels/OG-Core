@@ -12,7 +12,7 @@ import ogusa
 ogusa.parameters.DATASET = 'REAL'
 
 
-def runner(output_base, input_dir, baseline=False, analytical_mtrs=True, reform={}, user_params={}, guid='', run_micro=True):
+def runner(output_base, input_dir, baseline=False, analytical_mtrs=True, age_specific=False, reform={}, user_params={}, guid='', run_micro=True):
 
     from ogusa import parameters, wealth, labor, demographics, income
     from ogusa import txfunc
@@ -32,7 +32,7 @@ def runner(output_base, input_dir, baseline=False, analytical_mtrs=True, reform=
             pass
 
     if run_micro:
-        txfunc.get_tax_func_estimate(baseline=baseline, analytical_mtrs=analytical_mtrs, reform=reform, guid=guid)
+        txfunc.get_tax_func_estimate(baseline=baseline, analytical_mtrs=analytical_mtrs, age_specific=age_specific, reform=reform, guid=guid)
     print ("in runner, baseline is ", baseline)
     run_params = ogusa.parameters.get_parameters(baseline=baseline, guid=guid)
     run_params['analytical_mtrs'] = analytical_mtrs
