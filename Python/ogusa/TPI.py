@@ -53,8 +53,8 @@ steady state computation in ss_vars.pkl
 def create_tpi_params(analytical_mtrs, etr_params, mtrx_params, mtry_params,
                       b_ellipse, upsilon, J, S, T, BW, beta, sigma, alpha, Z,
                       delta, ltilde, nu, g_y, tau_payroll, retire,
-                      mean_income_data, run_params, get_baseline=True,
-                      input_dir="./OUTPUT", **kwargs):
+                      mean_income_data, run_params,
+                      input_dir="./OUTPUT", baseline_dir="./OUTPUT", **kwargs):
 
     globals().update(run_params)
 
@@ -62,6 +62,17 @@ def create_tpi_params(analytical_mtrs, etr_params, mtrx_params, mtry_params,
     variables = pickle.load(open(ss_init, "rb"))
     for key in variables:
         globals()[key] = variables[key]
+
+    '''
+    ------------------------------------------------------------------------
+    Set factor and initial capital stock to SS from baseline
+    ------------------------------------------------------------------------
+    '''
+    baseline_ss = os.path.join(baseline_dir, "SSinit/ss_init_vars.pkl")
+    ss_baseline_vars = pickle.load(open(baseline_ss, "rb"))
+    factor = ss_baseline_vars['factor_ss']
+    #initial_b = ss_baseline_vars['bssmat_s'] + ss_baseline_vars['BQss']/lambdas
+    initial_b= ss_baseline_vars['bssmat_splus1'] 
 
 
     '''
@@ -98,13 +109,14 @@ def create_tpi_params(analytical_mtrs, etr_params, mtrx_params, mtry_params,
     N_tilde = omega.sum(1)
     omega_stationary = omega / N_tilde.reshape(T + S, 1)
 
-    initial_b = bssmat_splus1
     initial_n = nssmat
 
     # Get an initial distribution of capital with the initial population
     # distribution
     K0 = household.get_K(initial_b, omega_stationary[
                          0].reshape(S, 1), lambdas, g_n_vector[0], 'SS')
+
+
     b_sinit = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_b[:-1]))
     b_splus1init = initial_b
     L0 = firm.get_L(e, initial_n, omega_stationary[
@@ -127,7 +139,7 @@ def create_tpi_params(analytical_mtrs, etr_params, mtrx_params, mtry_params,
 
     return (income_tax_params, wealth_tax_params, ellipse_params, parameters,
             N_tilde, omega_stationary, K0, b_sinit, b_splus1init, L0, Y0,
-            w0, r0, BQ0, T_H_0, tax0, c0, initial_b, initial_n)
+            w0, r0, BQ0, T_H_0, factor, tax0, c0, initial_b, initial_n)
 
 
 def SS_TPI_firstdoughnutring(guesses, winit, rinit, BQinit, T_H_init, initial_b, factor_ss, j, tax_params, parameters, theta, tau_bq):
@@ -285,7 +297,7 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
 def TPI_fsolve(guesses, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_tax_params, ellipse_params, parameters, g_n_vector, 
                            omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, 
                            T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, 
-                           chi_n, get_baseline=False, output_dir="./OUTPUT", **kwargs):
+                           chi_n, output_dir="./OUTPUT", **kwargs):
 
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
         h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = parameters
@@ -476,13 +488,12 @@ def TPI_fsolve(guesses, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_ta
 def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_tax_params, ellipse_params, parameters, g_n_vector, 
                            omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, 
                            T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, 
-                           chi_n, get_baseline=False, output_dir="./OUTPUT", **kwargs):
+                           chi_n, output_dir="./OUTPUT", **kwargs):
 
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire, mean_income_data, \
         h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = parameters
 
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
-
 
     TPI_FIG_DIR = output_dir
     # Initialize Time paths
@@ -667,7 +678,7 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
 def TP_solutions(winit, rinit, T_H_init, BQinit2, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_tax_params, ellipse_params, parameters, g_n_vector, 
                            omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, 
                            T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, 
-                           chi_n, get_baseline=False, output_dir="./OUTPUT", **kwargs):
+                           chi_n, output_dir="./OUTPUT", **kwargs):
 
 
     '''

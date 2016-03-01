@@ -19,6 +19,7 @@ import os
 import json
 import numpy as np
 from demographics import get_omega
+from demog import get_pop_objs
 from income import get_e
 import pickle
 import txfunc
@@ -249,8 +250,10 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     chi_n_guess = np.array([5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
     # Generate Income and Demographic parameters
-    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = get_omega(
-        S, T, starting_age, ending_age, E, flag_graphs)
+    #omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = get_omega(
+    #    S, T, starting_age, ending_age, E, flag_graphs)
+    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = get_pop_objs(
+        E, S, T, 0, 100, 2015, flag_graphs)
     e = np.array([[0.25, 1.25]] * 10)
     allvars = dict(locals())
 
@@ -348,7 +351,8 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     #   Calibration parameters
     # These guesses are close to the calibrated values
     #chi_b_guess = np.array([0.7, 0.7, 1.0, 1.2, 1.2, 1.2, 1.4])
-    chi_b_guess = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+    #chi_b_guess = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
+    chi_b_guess = np.array([5, 10, 90, 250, 250, 250, 250])
     chi_n_guess = np.array([38.12000874, 33.22762421, 25.34842241, 26.67954008, 24.41097278, 
                             23.15059004, 22.46771332, 21.85495452, 21.46242013, 22.00364263, 
                             21.57322063, 21.53371545, 21.29828515, 21.10144524, 20.8617942, 
@@ -370,6 +374,27 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
    # Generate Income and Demographic parameters
     omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = get_omega(
         S, T, starting_age, ending_age, E, flag_graphs)
+    # omega2, g_n_ss2, omega_SS2, surv_rate2, rho2, g_n_vector2 = get_pop_objs(
+    #     E, S, T, 0, 100, 2015, flag_graphs)
+    # print 'Differences:'
+    # print 'omega diffs: ', (np.absolute(omega-omega2)).max()
+    # print 'g_n', g_n_ss, g_n_ss2
+    # print 'omega SS diffs: ', (np.absolute(omega_SS-omega_SS2)).max()
+    # print 'surv diffs: ', (np.absolute(surv_rate- surv_rate2)).max()
+    # print 'mort diffs: ', (np.absolute(rho- rho2)).max()
+    # print 'g_n_TP diffs: ', (np.absolute(g_n_vector- g_n_vector2)).max()
+    # quit() 
+    #print 'omega_SS shape: ', omega_SS.shape
+    g_n_ss = 0.0    
+    surv_rate1 = np.ones((S,))# prob start at age S
+    surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
+    omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
+    omega_SS = omega_SS/omega_SS.sum()
+    
+    # omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
+    # g_n_vector = np.tile(g_n_ss,(T+S,))
+
+
     e = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
 
     allvars = dict(locals())

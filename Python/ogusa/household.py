@@ -11,7 +11,6 @@ This file calls the following files:
 
 # Packages
 import numpy as np
-
 import tax
 
 '''
