@@ -394,7 +394,7 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
     error1 = new_w - w
     error2 = new_r - r
     error3 = new_T_H - T_H
-    error4 = new_factor - factor
+    error4 = new_factor/1000000 - factor/1000000
     print 'errors: ', error1, error2, error3, error4
     print 'T_H: ', new_T_H
     print 'factor: ', new_factor
@@ -814,6 +814,7 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, bas
     resource_constraint = Yss - (Css + Iss)
 
     print 'Resource Constraint Difference:', resource_constraint
+    print 'SS pop growth: ', g_n_ss
 
     constraint_params = ltilde
     household.constraint_checker_SS(bssmat, nssmat, cssmat, constraint_params)

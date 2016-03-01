@@ -14,7 +14,8 @@ ogusa.parameters.DATASET = 'REAL'
 
 def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_specific=False, reform={}, user_params={}, guid='', run_micro=True):
 
-    from ogusa import parameters, wealth, labor, demographics, income
+    #from ogusa import parameters, wealth, labor, demographics, income
+    from ogusa import parameters, wealth, labor, demog, income
     from ogusa import txfunc
 
     tick = time.time()
