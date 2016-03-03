@@ -427,16 +427,16 @@ def find_outliers(sse_mat, age_vec, se_mult, varstr, graph=False):
         # Plot sum of squared errors of tax functions over age for each
         # year of budget window
         fig, ax = plt.subplots()
-        plt.plot(age_vec, sse_mat[:,0], label='2015')
-        plt.plot(age_vec, sse_mat[:,1], label='2016')
-        plt.plot(age_vec, sse_mat[:,2], label='2017')
-        plt.plot(age_vec, sse_mat[:,3], label='2018')
-        plt.plot(age_vec, sse_mat[:,4], label='2019')
-        plt.plot(age_vec, sse_mat[:,5], label='2020')
-        plt.plot(age_vec, sse_mat[:,6], label='2021')
-        plt.plot(age_vec, sse_mat[:,7], label='2022')
-        plt.plot(age_vec, sse_mat[:,8], label='2023')
-        plt.plot(age_vec, sse_mat[:,9], label='2024')
+        plt.plot(age_vec, sse_mat[:,0], label=str(start_year))
+        plt.plot(age_vec, sse_mat[:,1], label=str(start_year+1))
+        plt.plot(age_vec, sse_mat[:,2], label=str(start_year+2))
+        plt.plot(age_vec, sse_mat[:,3], label=str(start_year+3))
+        plt.plot(age_vec, sse_mat[:,4], label=str(start_year+4))
+        plt.plot(age_vec, sse_mat[:,5], label=str(start_year+5))
+        plt.plot(age_vec, sse_mat[:,6], label=str(start_year+6))
+        plt.plot(age_vec, sse_mat[:,7], label=str(start_year+7))
+        plt.plot(age_vec, sse_mat[:,8], label=str(start_year+8))
+        plt.plot(age_vec, sse_mat[:,9], label=str(start_year+9))
         # for the minor ticks, use no labels; default NullFormatter
         minorLocator   = MultipleLocator(1)
         ax.xaxis.set_minor_locator(minorLocator)
@@ -471,16 +471,16 @@ def find_outliers(sse_mat, age_vec, se_mult, varstr, graph=False):
             # Plot sum of squared errors of tax functions over age for
             # each year of budget window
             fig, ax = plt.subplots()
-            plt.plot(age_vec, sse_mat_new[:,0], label='2015')
-            plt.plot(age_vec, sse_mat_new[:,1], label='2016')
-            plt.plot(age_vec, sse_mat_new[:,2], label='2017')
-            plt.plot(age_vec, sse_mat_new[:,3], label='2018')
-            plt.plot(age_vec, sse_mat_new[:,4], label='2019')
-            plt.plot(age_vec, sse_mat_new[:,5], label='2020')
-            plt.plot(age_vec, sse_mat_new[:,6], label='2021')
-            plt.plot(age_vec, sse_mat_new[:,7], label='2022')
-            plt.plot(age_vec, sse_mat_new[:,8], label='2023')
-            plt.plot(age_vec, sse_mat_new[:,9], label='2024')
+            plt.plot(age_vec, sse_mat_new[:,0], label=str(start_year))
+            plt.plot(age_vec, sse_mat_new[:,1], label=str(start_year+1))
+            plt.plot(age_vec, sse_mat_new[:,2], label=str(start_year+2))
+            plt.plot(age_vec, sse_mat_new[:,3], label=str(start_year+3))
+            plt.plot(age_vec, sse_mat_new[:,4], label=str(start_year+4))
+            plt.plot(age_vec, sse_mat_new[:,5], label=str(start_year+5))
+            plt.plot(age_vec, sse_mat_new[:,6], label=str(start_year+6))
+            plt.plot(age_vec, sse_mat_new[:,7], label=str(start_year+7))
+            plt.plot(age_vec, sse_mat_new[:,8], label=str(start_year+8))
+            plt.plot(age_vec, sse_mat_new[:,9], label=str(start_year+9))
             # for the minor ticks, use no labels; default NullFormatter
             minorLocator   = MultipleLocator(1)
             ax.xaxis.set_minor_locator(minorLocator)
@@ -503,16 +503,16 @@ def find_outliers(sse_mat, age_vec, se_mult, varstr, graph=False):
                 # Plot sum of squared errors of tax functions over age
                 # for each year of budget window
                 fig, ax = plt.subplots()
-                plt.plot(age_vec, sse_mat_new2[:,0], label='2015')
-                plt.plot(age_vec, sse_mat_new2[:,1], label='2016')
-                plt.plot(age_vec, sse_mat_new2[:,2], label='2017')
-                plt.plot(age_vec, sse_mat_new2[:,3], label='2018')
-                plt.plot(age_vec, sse_mat_new2[:,4], label='2019')
-                plt.plot(age_vec, sse_mat_new2[:,5], label='2020')
-                plt.plot(age_vec, sse_mat_new2[:,6], label='2021')
-                plt.plot(age_vec, sse_mat_new2[:,7], label='2022')
-                plt.plot(age_vec, sse_mat_new2[:,8], label='2023')
-                plt.plot(age_vec, sse_mat_new2[:,9], label='2024')
+                plt.plot(age_vec, sse_mat_new2[:,0], label=str(start_year))
+                plt.plot(age_vec, sse_mat_new2[:,1], label=str(start_year+1))
+                plt.plot(age_vec, sse_mat_new2[:,2], label=str(start_year+2))
+                plt.plot(age_vec, sse_mat_new2[:,3], label=str(start_year+3))
+                plt.plot(age_vec, sse_mat_new2[:,4], label=str(start_year+4))
+                plt.plot(age_vec, sse_mat_new2[:,5], label=str(start_year+5))
+                plt.plot(age_vec, sse_mat_new2[:,6], label=str(start_year+6))
+                plt.plot(age_vec, sse_mat_new2[:,7], label=str(start_year+7))
+                plt.plot(age_vec, sse_mat_new2[:,8], label=str(start_year+8))
+                plt.plot(age_vec, sse_mat_new2[:,9], label=str(start_year+9))
                 # for the minor ticks, use no labels; default NullFormatter
                 minorLocator   = MultipleLocator(1)
                 ax.xaxis.set_minor_locator(minorLocator)
@@ -586,7 +586,7 @@ def replace_outliers(param_arr, sse_big_mat,):
 
 
 
-def tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False,reform={}):
+def tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False, start_year=2016,reform={}):
     '''
     --------------------------------------------------------------------
     This function estimates functions for the ETR, MTR on Labor Income,
@@ -659,7 +659,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False,r
     # cmap1 = matplotlib.cm.get_cmap('jet')
     # cmap1 = matplotlib.cm.get_cmap('coolwarm')
 
-    beg_yr = int(2015)
+    beg_yr = int(start_year)
     end_yr = int(beg_yr+BW-1)
     years_list = np.arange(beg_yr, end_yr + 1)
     start_time = time.clock()
@@ -671,7 +671,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False,r
     '''
 
     # call tax caculator and get microdata
-    micro_data = get_micro_data.get_data(baseline=baseline, reform=reform)
+    micro_data = get_micro_data.get_data(baseline=baseline, start_year=beg_yr, reform=reform)
     """if reform:
         micro_data = pickle.load( open( "micro_data_policy.pkl", "rb" ) )
     else:
@@ -1705,9 +1705,9 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False,r
     return dict_params
 
 
-def get_tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False, reform={}, guid=''):
+def get_tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False, start_year=2016, reform={}, guid=''):
     # Code to run manually from here:
-    dict_params = tax_func_estimate(baseline, analytical_mtrs, age_specific, reform)
+    dict_params = tax_func_estimate(baseline, analytical_mtrs, age_specific, start_year, reform)
     if baseline:
         baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         pkl_path = os.path.join(TAX_ESTIMATE_PATH, baseline_pckl)

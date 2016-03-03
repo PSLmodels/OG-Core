@@ -17,7 +17,7 @@ import numba
 import pickle
 
 
-def get_data(baseline=False, reform={}):
+def get_data(baseline=False, start_year=2016, reform={}):
     '''
     --------------------------------------------------------------------
     This function creates dataframes of micro data from the 
@@ -111,7 +111,7 @@ def get_data(baseline=False, reform={}):
     # dictionary of data frames to return
     micro_data_dict = {}
 
-    micro_data_dict['2015'] = DataFrame(data = temp,
+    micro_data_dict[str(start_year)] = DataFrame(data = temp,
                       columns = ['MTR wage', 'MTR self-employed Wage', 'MTR capital income','Age',
                                  'Wage and Salaries', 'Self-Employed Income','Wage + Self-Employed Income',
                                  'Adjusted Total income', 'Total Tax Liability', 'Year', 'Weights'])
