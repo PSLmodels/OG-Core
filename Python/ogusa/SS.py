@@ -814,7 +814,6 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, bas
     resource_constraint = Yss - (Css + Iss)
 
     print 'Resource Constraint Difference:', resource_constraint
-    print 'SS pop growth: ', g_n_ss
 
     constraint_params = ltilde
     household.constraint_checker_SS(bssmat, nssmat, cssmat, constraint_params)

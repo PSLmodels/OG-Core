@@ -57,10 +57,10 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
 
     from ogusa import SS, TPI
     # Generate Wealth data moments
-    wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir=input_dir)
+    wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir=output_base)
 
     # Generate labor data moments
-    labor.labor_data_moments(flag_graphs, output_dir=input_dir)
+    labor.labor_data_moments(flag_graphs, output_dir=output_base)
 
     
     get_baseline = True
@@ -94,12 +94,13 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
         else:
             sim_params[key] = lcls[key]
 
-    sim_params['output_dir'] = input_dir
+    sim_params['output_dir'] = output_base
     sim_params['run_params'] = run_params
 
     income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
 
-    ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, get_baseline, calibrate_model, output_dir=input_dir)
+    ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, baseline, 
+                                     calibrate_model, output_dir=output_base, baseline_dir=baseline_dir)
 
     '''
     ------------------------------------------------------------------------
@@ -107,10 +108,10 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
     ------------------------------------------------------------------------
     '''
 
-    ss_outputs['get_baseline'] = get_baseline
-    sim_params['input_dir'] = input_dir
+    sim_params['input_dir'] = output_base
+    sim_params['baseline_dir'] = baseline_dir
     income_tax_params, wealth_tax_params, ellipse_params, parameters, N_tilde, omega_stationary, K0, b_sinit, \
-    b_splus1init, L0, Y0, w0, r0, BQ0, T_H_0, tax0, c0, initial_b, initial_n = TPI.create_tpi_params(**sim_params)
+    b_splus1init, L0, Y0, w0, r0, BQ0, T_H_0, factor, tax0, c0, initial_b, initial_n = TPI.create_tpi_params(**sim_params)
     ss_outputs['income_tax_params'] = income_tax_params
     ss_outputs['wealth_tax_params'] = wealth_tax_params
     ss_outputs['ellipse_params'] = ellipse_params
@@ -125,13 +126,14 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
     ss_outputs['r0'] = r0
     ss_outputs['BQ0'] = BQ0
     ss_outputs['T_H_0'] = T_H_0
+    ss_outputs['factor_ss'] = factor
     ss_outputs['tax0'] = tax0
     ss_outputs['c0'] = c0
     ss_outputs['initial_b'] = initial_b
     ss_outputs['initial_n'] = initial_n
     ss_outputs['tau_bq'] = tau_bq
     ss_outputs['g_n_vector'] = g_n_vector
-    ss_outputs['output_dir'] = input_dir
+    ss_outputs['output_dir'] = output_base
 
 
     with open("ss_outputs.pkl", 'wb') as fp:
@@ -190,10 +192,10 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
 
     from ogusa import SS, TPI
     # Generate Wealth data moments
-    wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir=input_dir)
+    wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir=output_base)
 
     # Generate labor data moments
-    labor.labor_data_moments(flag_graphs, output_dir=input_dir)
+    labor.labor_data_moments(flag_graphs, output_dir=output_base)
 
     
     get_baseline = True
@@ -227,9 +229,10 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
         else:
             sim_params[key] = lcls[key]
 
-    sim_params['output_dir'] = input_dir
+    sim_params['output_dir'] = output_base
     sim_params['run_params'] = run_params
 
     income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
 
-    ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, get_baseline, calibrate_model, output_dir=input_dir)
+    ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, baseline, 
+                                     calibrate_model, output_dir=output_base, baseline_dir=baseline_dir)
