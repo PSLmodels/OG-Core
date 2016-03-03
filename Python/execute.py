@@ -190,10 +190,10 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
 
     from ogusa import SS, TPI
     # Generate Wealth data moments
-    wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir=input_dir)
+    wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir=output_base)
 
     # Generate labor data moments
-    labor.labor_data_moments(flag_graphs, output_dir=input_dir)
+    labor.labor_data_moments(flag_graphs, output_dir=output_base)
 
     
     get_baseline = True
@@ -227,9 +227,10 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
         else:
             sim_params[key] = lcls[key]
 
-    sim_params['output_dir'] = input_dir
+    sim_params['output_dir'] = output_base
     sim_params['run_params'] = run_params
 
     income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
 
-    ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, get_baseline, calibrate_model, output_dir=input_dir)
+    ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, baseline, 
+                                     calibrate_model, output_dir=output_base, baseline_dir=baseline_dir)
