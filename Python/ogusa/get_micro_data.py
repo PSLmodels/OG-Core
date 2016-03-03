@@ -38,9 +38,9 @@ def get_data(baseline=False, start_year=2016, reform={}):
     calc1 = Calculator(records=records1, policy=policy1)
 
     # this increment_year function extrapolates all PUF variables to the next year
-    # so this step takes the calculator to 2015
-    calc1.increment_year()
-    calc1.increment_year()
+    # so this step takes the calculator to the start_year
+    for i in range(start_year-2013):
+        calc1.increment_year()
 
     # running all the functions and calculates taxes
     calc1.calc_all()
@@ -141,7 +141,7 @@ def get_data(baseline=False, start_year=2016, reform={}):
                        columns = ['MTR wage', 'MTR self-employed Wage','MTR capital income','Age',
                                   'Wage and Salaries', 'Self-Employed Income','Wage + Self-Employed Income',
                                   'Adjusted Total income','Total Tax Liability','Year', 'Weights'])
-        print 'year: ', i
+        print 'year: ', str(calc1.current_year) 
   
     if reform:
         pkl_path = "micro_data_policy.pkl"
