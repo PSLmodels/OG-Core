@@ -67,8 +67,8 @@ def test_run_small():
     output_base = "./OUTPUT"
     input_dir = "./OUTPUT"
     user_params = {'frisch':0.41}
-    runner_SS(output_base=output_base, baseline_dir=input_dir, user_params=user_params, run_micro=False)
-    runner(output_base=output_base, baseline_dir=input_dir, user_params=user_params, run_micro=False)
+    runner_SS(output_base=output_base, baseline_dir=input_dir, baseline=True, user_params=user_params, run_micro=False)
+    runner(output_base=output_base, baseline_dir=input_dir, baseline=True, user_params=user_params, run_micro=False)
 
 
 def test_compare_pickle_file_bad(picklefile1, picklefile2):
