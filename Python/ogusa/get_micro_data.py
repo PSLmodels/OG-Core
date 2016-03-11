@@ -62,9 +62,13 @@ def get_data(baseline=False, start_year=2016, reform={}):
     # note that use total pension income (e01500) since don't have both the 
     # taxable (e01700) and non-taxable pension income separately
     # don't appear to have variable for non-taxable IRA distributions
-    capital_income_sources = ('e00300', 'e00400', 'e00600',
+    # capital_income_sources = ('e00300', 'e00400', 'e00600',
+    #                             'e00650', 'e01400',
+    #                             'e01500', 'e02000',
+    #                             'p22250','p23250')
+        capital_income_sources = ('e00300', 'e00400', 'e00600',
                                 'e00650', 'e01400',
-                                'e01500', 'e02000',
+                                'e01700', 'e02000',
                                 'p22250','p23250')
 
     # calculating MTRs separately - can skip items with zero tax
