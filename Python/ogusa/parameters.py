@@ -24,6 +24,7 @@ from income import get_e
 import pickle
 import txfunc
 import elliptical_u_est
+import matplotlib.pyplot as plt
 
 
 DATASET = 'REAL'
@@ -317,9 +318,24 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
     mean_income_data = dict_params['tfunc_avginc'][0]
 
-    etr_params = dict_params['tfunc_etr_params_S'][:S,:BW,:]
-    mtrx_params = dict_params['tfunc_mtrx_params_S'][:S,:BW,:]
-    mtry_params = dict_params['tfunc_mtry_params_S'][:S,:BW,:]
+    # etr_params = dict_params['tfunc_etr_params_S'][:S,:BW,:]
+    # mtrx_params = dict_params['tfunc_mtrx_params_S'][:S,:BW,:]
+    # mtry_params = dict_params['tfunc_mtry_params_S'][:S,:BW,:]
+
+    # set etrs and mtrs to constant rates over income/age
+    etr_params = np.zeros((S,BW,10))
+    mtrx_params = np.zeros((S,BW,10))
+    mtry_params = np.zeros((S,BW,10))
+    etr_params[:,:,7] = dict_params['tfunc_avg_etr']
+    mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx']
+    mtry_params[:,:,7] = dict_params['tfunc_avg_mtry']
+    etr_params[:,:,9] = dict_params['tfunc_avg_etr']
+    mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx']
+    mtry_params[:,:,9] = dict_params['tfunc_avg_mtry']
+    etr_params[:,:,5] = 1.0
+    mtrx_params[:,:,5] = 1.0
+    mtry_params[:,:,5] = 1.0
+
 
     # To zero out income taxes, uncomment the following 3 lines:
     # etr_params[:,:,6:] = 0.0
@@ -350,9 +366,11 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     flag_graphs = False
     #   Calibration parameters
     # These guesses are close to the calibrated values
+    chi_b_guess = np.ones((J,)) * 80.0
     #chi_b_guess = np.array([0.7, 0.7, 1.0, 1.2, 1.2, 1.2, 1.4])
-    #chi_b_guess = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0])
-    chi_b_guess = np.array([5, 10, 90, 250, 250, 250, 250])
+    #chi_b_guess = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 4.0, 10.0])
+    #chi_b_guess = np.array([5, 10, 90, 250, 250, 250, 250])
+    #chi_b_guess = np.array([2, 10, 90, 350, 1700, 22000, 120000])
     chi_n_guess = np.array([38.12000874, 33.22762421, 25.34842241, 26.67954008, 24.41097278, 
                             23.15059004, 22.46771332, 21.85495452, 21.46242013, 22.00364263, 
                             21.57322063, 21.53371545, 21.29828515, 21.10144524, 20.8617942, 
@@ -395,7 +413,10 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     g_n_vector = np.tile(g_n_ss,(T+S,))
 
 
-    e = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
+    e_hetero = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
+    e = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))
+    e /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
+
 
     allvars = dict(locals())
 

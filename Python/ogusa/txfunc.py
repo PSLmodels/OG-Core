@@ -649,6 +649,9 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False, 
     mtry_sumsq_arr = np.zeros((s_max - s_min + 1, tpers))
     mtry_obs_arr = np.zeros((s_max - s_min + 1, tpers))
     AvgInc = np.zeros(tpers)
+    AvgETR = np.zeros(tpers)
+    AvgMTRx = np.zeros(tpers)
+    AvgMTRy = np.zeros(tpers)
     TotPop_yr = np.zeros(tpers)
     PopPct_age = np.zeros((s_max-s_min+1, tpers))
     desc_data = False
@@ -723,6 +726,21 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False, 
         AvgInc[t-beg_yr] = \
             (((data['Adjusted Total income'] * data['Weights']).sum())
             / data['Weights'].sum())
+
+        # Calculate average ETR and MTRs (weight by population weights
+        #    and income) for each year
+        AvgETR[t-beg_yr] = \
+            (((data['Effective Tax Rate']*data['Adjusted Total income'] * data['Weights']).sum())
+            / (data['Adjusted Total income']*data['Weights']).sum())
+
+        AvgMTRx[t-beg_yr] = \
+            (((data['MTR Labor']*data['Adjusted Total income'] * data['Weights']).sum())
+            / (data['Adjusted Total income']*data['Weights']).sum())
+
+        AvgMTRy[t-beg_yr] = \
+            (((data['MTR capital income']*data['Adjusted Total income'] * data['Weights']).sum())
+            / (data['Adjusted Total income']*data['Weights']).sum())
+            
 
         # Calculate total population in each year
         TotPop_yr[t-beg_yr] = data['Weights'].sum()
@@ -1696,6 +1714,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False, 
     # Save tax function parameters array and computation time in pickle
     dict_params = dict([('tfunc_etr_params_S', etrparam_arr_S),
         ('tfunc_mtrx_params_S', mtrxparam_arr_S), ('tfunc_mtry_params_S', mtryparam_arr_S), ('tfunc_avginc', AvgInc),
+        ('tfunc_avg_etr', AvgETR), ('tfunc_avg_mtrx', AvgMTRx), ('tfunc_avg_mtry', AvgMTRy),
         ('tfunc_etr_sumsq', etr_sumsq_arr), ('tfunc_mtrx_sumsq', mtrx_sumsq_arr), ('tfunc_mtry_sumsq', mtry_sumsq_arr),
         ('tfunc_etr_obs', etr_obs_arr), ('tfunc_mtrx_obs', mtrx_obs_arr), ('tfunc_mtry_obs', mtry_obs_arr),
         ('tfunc_time', elapsed_time)])
