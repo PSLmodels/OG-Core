@@ -66,7 +66,7 @@ def get_data(baseline=False, start_year=2016, reform={}):
     #                             'e00650', 'e01400',
     #                             'e01500', 'e02000',
     #                             'p22250','p23250')
-        capital_income_sources = ('e00300', 'e00400', 'e00600',
+    capital_income_sources = ('e00300', 'e00400', 'e00600',
                                 'e00650', 'e01400',
                                 'e01700', 'e02000',
                                 'p22250','p23250')
