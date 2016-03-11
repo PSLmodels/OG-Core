@@ -17,7 +17,7 @@ import numba
 import pickle
 
 
-def get_data(baseline=False, reform={}):
+def get_data(baseline=False, start_year=2016, reform={}):
     '''
     --------------------------------------------------------------------
     This function creates dataframes of micro data from the 
@@ -38,9 +38,9 @@ def get_data(baseline=False, reform={}):
     calc1 = Calculator(records=records1, policy=policy1)
 
     # this increment_year function extrapolates all PUF variables to the next year
-    # so this step takes the calculator to 2015
-    calc1.increment_year()
-    calc1.increment_year()
+    # so this step takes the calculator to the start_year
+    for i in range(start_year-2013):
+        calc1.increment_year()
 
     # running all the functions and calculates taxes
     calc1.calc_all()
@@ -61,10 +61,14 @@ def get_data(baseline=False, reform={}):
 
     # note that use total pension income (e01500) since don't have both the 
     # taxable (e01700) and non-taxable pension income separately
-    # don't appear to have variable for non-taxable IRS distributions
+    # don't appear to have variable for non-taxable IRA distributions
+    # capital_income_sources = ('e00300', 'e00400', 'e00600',
+    #                             'e00650', 'e01400',
+    #                             'e01500', 'e02000',
+    #                             'p22250','p23250')
     capital_income_sources = ('e00300', 'e00400', 'e00600',
                                 'e00650', 'e01400',
-                                'e01500', 'e02000',
+                                'e01700', 'e02000',
                                 'p22250','p23250')
 
     # calculating MTRs separately - can skip items with zero tax
@@ -111,7 +115,7 @@ def get_data(baseline=False, reform={}):
     # dictionary of data frames to return
     micro_data_dict = {}
 
-    micro_data_dict['2015'] = DataFrame(data = temp,
+    micro_data_dict[str(start_year)] = DataFrame(data = temp,
                       columns = ['MTR wage', 'MTR self-employed Wage', 'MTR capital income','Age',
                                  'Wage and Salaries', 'Self-Employed Income','Wage + Self-Employed Income',
                                  'Adjusted Total income', 'Total Tax Liability', 'Year', 'Weights'])
@@ -141,7 +145,7 @@ def get_data(baseline=False, reform={}):
                        columns = ['MTR wage', 'MTR self-employed Wage','MTR capital income','Age',
                                   'Wage and Salaries', 'Self-Employed Income','Wage + Self-Employed Income',
                                   'Adjusted Total income','Total Tax Liability','Year', 'Weights'])
-        print 'year: ', i
+        print 'year: ', str(calc1.current_year) 
   
     if reform:
         pkl_path = "micro_data_policy.pkl"

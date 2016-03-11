@@ -32,7 +32,8 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
             pass
 
     if run_micro:
-        txfunc.get_tax_func_estimate(baseline=baseline, analytical_mtrs=analytical_mtrs, reform=reform, guid=guid)
+        txfunc.get_tax_func_estimate(baseline=baseline, analytical_mtrs=analytical_mtrs, age_specific=age_specific, 
+                                     start_year=user_params['start_year'], reform=reform, guid=guid)
     print ("in runner, baseline is ", baseline)
     run_params = ogusa.parameters.get_parameters(baseline=baseline, guid=guid)
     run_params['analytical_mtrs'] = analytical_mtrs
@@ -167,7 +168,8 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
             pass
 
     if run_micro:
-        txfunc.get_tax_func_estimate(baseline=baseline, analytical_mtrs=analytical_mtrs, reform=reform, guid=guid)
+        txfunc.get_tax_func_estimate(baseline=baseline, analytical_mtrs=analytical_mtrs, age_specific=age_specific, 
+                                     start_year=user_params['start_year'], reform=reform, guid=guid)
     print ("in runner, baseline is ", baseline)
     run_params = ogusa.parameters.get_parameters(baseline=baseline, guid=guid)
     run_params['analytical_mtrs'] = analytical_mtrs

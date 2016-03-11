@@ -395,9 +395,14 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
     error2 = new_r - r
     error3 = new_T_H - T_H
     error4 = new_factor/1000000 - factor/1000000
+
+    print 'mean income in model and data: ', average_income_model, mean_income_data
+    print 'model income with factor: ', average_income_model*factor
+
     print 'errors: ', error1, error2, error3, error4
     print 'T_H: ', new_T_H
     print 'factor: ', new_factor
+    print 'interest rate: ', new_r
 
     # Check and punish violations
     if r <= 0:
@@ -504,6 +509,7 @@ def SS_fsolve_reform(guesses, b_guess_init, n_guess_init, factor, chi_n, chi_b, 
     error3 = new_T_H - T_H
     print 'errors: ', error1, error2, error3
     print 'T_H: ', new_T_H
+
 
     # Check and punish violations
     if r <= 0:
@@ -798,8 +804,8 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, bas
 
     mtrx_ss = tax.MTR_labor(rss, bssmat_s, wss, e, nssmat, factor_ss, analytical_mtrs, etr_params_3D, mtrx_params_3D)
 
-    #np.savetxt("mtr_ss_capital.csv", mtry_ss, delimiter=",")
-    #np.savetxt("mtr_ss_labor.csv", mtrx_ss, delimiter=",")
+    # np.savetxt("mtr_ss_capital.csv", mtry_ss, delimiter=",")
+    # np.savetxt("mtr_ss_labor.csv", mtrx_ss, delimiter=",")
 
     taxss_params = (J,S, retire, np.tile(np.reshape(etr_params,(S,1,etr_params.shape[1])),(1,J,1)),
                     h_wealth, p_wealth, m_wealth, tau_payroll)

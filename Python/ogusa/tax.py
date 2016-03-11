@@ -293,6 +293,7 @@ def MTR_capital(r, b, w, e, n, factor, analytical_mtrs, etr_params, mtry_params)
         num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
         denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
         tau =  (Phi*(num/denom)) + K
+
     return tau
 
 

@@ -54,7 +54,7 @@ constant = np.array([3.41e+00, 0.69689692, -0.78761958, -
                      1.11e+00, -0.93939272, 1.60e+00, 1.89e+00])
 ages = np.linspace(21, 80, 60)
 ages = np.tile(ages.reshape(60, 1), (1, 7))
-income_profiles = constant + one * ages + two * ages ** 2 + three * ages ** 3
+income_profiles = constant + (one * ages) + (two * (ages ** 2)) + (three * (ages ** 3))
 income_profiles = np.exp(income_profiles)
 
 
