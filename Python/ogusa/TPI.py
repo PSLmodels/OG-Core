@@ -670,6 +670,8 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
         print '\tIteration:', TPIiter
         print '\t\tDistance:', TPIdist
 
+    if TPIiter >= maxiter:
+        RAISE EXCEPTION - Transition path equlibrium not found
 
     return winit[:T], rinit[:T], T_H_init[:T], BQinit[:T], Yinit
 
