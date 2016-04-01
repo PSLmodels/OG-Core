@@ -5,17 +5,19 @@ the 2009 IRS PUF. It then estimates tax functions tau_{s,t}(x,y), where
 tau_{s,t} is the effective tax rate for a given age (s) in a particular
 year (t), x is total labor income, and y is total capital income.
 
-This Python script calls the following functions:
-    gen_etr_grid:   generates summary grid points for effective tax rate
-    gen_dmtrx_grid: generates summary grid points for derivative of
-                    marginal tax rate with respect to labor income
-    gen_dmtry_grid: generates summary grid points for derivative of
-                    marginal tax rate with respect to capital income
-    wsumsq:         generates weighted sum of squared residuals
-
-This Python script outputs the following:
-    TxFuncEst.pkl: pickle of dictionary with param_arr_S, AvgInc,
-                   and elapsed_time
+This module defines the following functions:
+    gen_etr_grid()
+    gen_mtrx_grid_impl()
+    gen_mtry_grid_impl()
+    gen_mtrx_grid_est()
+    gen_mtry_grid_est()
+    gen_dmtrx_grid()
+    gen_dmtry_grid()
+    wsumsq()
+    find_outliers()
+    replace_outliers()
+    tax_func_estimate()
+    get_tax_func_estimate()
 ------------------------------------------------------------------------
 '''
 # Import packages
@@ -51,22 +53,27 @@ def gen_etr_grid(X, Y, params):
     This function generates a grid of effective tax rates from a grid of
     total labor income (X) and a grid of total capital income (Y).
     --------------------------------------------------------------------
-    X        = (N x N) matrix, discretized support (N elements) of
-               inc_lab as row vector copied down N rows
-    Y        = (N x N) matrix, discretized support (N elements) of
-               inc_cap as column vector copied across N columns
-    params   = (10,) vector, estimated parameters
-               (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
-    A        = scalar > 0, polynomial coefficient on X**2
-    B        = scalar > 0, polynomial coefficient on Y**2
-    C        = scalar > 0, polynomial coefficient on X*Y
-    D        = scalar > 0, polynomial coefficient on X
-    E        = scalar > 0, polynomial coefficient on Y
-    F        = scalar > 0, polynomial constant
-    max_x    = scalar > 0, maximum effective tax rate for X given Y=0
-    min_x    = scalar, minimum effective tax rate for X given Y=0
-    max_y    = scalar > 0, maximum effective tax rate for Y given X=0
-    min_y    = scalar, minimum effective tax rate for Y given X=0
+    INPUTS:
+    X      = (N x N) matrix, discretized support (N elements) of inc_lab
+             as row vector copied down N rows
+    Y      = (N x N) matrix, discretized support (N elements) of inc_cap
+             as column vector copied across N columns
+    params = (10,) vector, estimated parameters
+             (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
+    A      = scalar > 0, polynomial coefficient on X**2
+    B      = scalar > 0, polynomial coefficient on Y**2
+    C      = scalar > 0, polynomial coefficient on X*Y
+    D      = scalar > 0, polynomial coefficient on X
+    E      = scalar > 0, polynomial coefficient on Y
+    F      = scalar > 0, polynomial constant
+    max_x  = scalar > 0, maximum effective tax rate for X given Y=0
+    min_x  = scalar, minimum effective tax rate for X given Y=0
+    max_y  = scalar > 0, maximum effective tax rate for Y given X=0
+    min_y  = scalar, minimum effective tax rate for Y given X=0
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
     phi      = (N x N) matrix, labor income as percent of total income
     P_num    = (N x N) matrix, numerator values in ratio of polynomials
     P_den    = (N x N) matrix, denominator values in ratio of
@@ -74,7 +81,7 @@ def gen_etr_grid(X, Y, params):
     etr_grid = (N x N) matrix, predicted effective tax rates given labor
                income grid (X) and capital income grid (Y)
 
-    returns: etr_grid
+    RETURNS: etr_grid
     --------------------------------------------------------------------
     '''
     A, B, C, D, E, F, max_x, min_x, max_y, min_y = params
@@ -95,29 +102,34 @@ def gen_mtrx_grid_impl(X, Y, params):
     capital income. This is the implied grid because it is derived from
     the estimated effective tax rate function
     --------------------------------------------------------------------
-    X         = (N x N) matrix, discretized support (N elements) of
-                inc_lab as row vector copied down N rows
-    Y         = (N x N) matrix, discretized support (N elements) of
-                inc_cap as column vector copied across N columns
-    params    = (10,) vector, estimated parameters
-                (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
-    A         = scalar > 0, polynomial coefficient on X**2
-    B         = scalar > 0, polynomial coefficient on Y**2
-    C         = scalar > 0, polynomial coefficient on X*Y
-    D         = scalar > 0, polynomial coefficient on X
-    E         = scalar > 0, polynomial coefficient on Y
-    F         = scalar > 0, polynomial constant
-    max_x     = scalar > 0, maximum effective tax rate for X given Y=0
-    min_x     = scalar, minimum effective tax rate for X given Y=0
-    max_y     = scalar > 0, maximum effective tax rate for Y given X=0
-    min_y     = scalar, minimum effective tax rate for Y given X=0
+    INPUTS:
+    X      = (N x N) matrix, discretized support (N elements) of inc_lab
+             as row vector copied down N rows
+    Y      = (N x N) matrix, discretized support (N elements) of inc_cap
+             as column vector copied across N columns
+    params = (10,) vector, estimated parameters
+             (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
+    A      = scalar > 0, polynomial coefficient on X**2
+    B      = scalar > 0, polynomial coefficient on Y**2
+    C      = scalar > 0, polynomial coefficient on X*Y
+    D      = scalar > 0, polynomial coefficient on X
+    E      = scalar > 0, polynomial coefficient on Y
+    F      = scalar > 0, polynomial constant
+    max_x  = scalar > 0, maximum effective tax rate for X given Y=0
+    min_x  = scalar, minimum effective tax rate for X given Y=0
+    max_y  = scalar > 0, maximum effective tax rate for Y given X=0
+    min_y  = scalar, minimum effective tax rate for Y given X=0
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
     Omega     = (N x N) matrix, ratio of polynomials
     dOMdx     = (N x N) matrix, derivative of ratio of polynomials
                 (Omega) with respect to labor income (X)
     mtrx_grid = (N x N) matrix, derivative of total tax liability with
                 respect to labor income (X)
 
-    returns: mtrx_grid
+    RETURNS: mtrx_grid
     --------------------------------------------------------------------
     '''
     A, B, C, D, E, F, max_x, min_x, max_y, min_y = params
@@ -131,6 +143,7 @@ def gen_mtrx_grid_impl(X, Y, params):
                 (max_y - min_y) * Y) * dOMdx + min_x)
     return mtrx_grid
 
+
 def gen_mtry_grid_impl(X, Y, params):
     '''
     --------------------------------------------------------------------
@@ -139,29 +152,34 @@ def gen_mtry_grid_impl(X, Y, params):
     capital income. This is the implied grid because it is derived from
     the estimated effective tax rate function
     --------------------------------------------------------------------
-    X         = (N x N) matrix, discretized support (N elements) of
-                inc_lab as row vector copied down N rows
-    Y         = (N x N) matrix, discretized support (N elements) of
-                inc_cap as column vector copied across N columns
-    params    = (10,) vector, estimated parameters
-                (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
-    A         = scalar > 0, polynomial coefficient on X**2
-    B         = scalar > 0, polynomial coefficient on Y**2
-    C         = scalar > 0, polynomial coefficient on X*Y
-    D         = scalar > 0, polynomial coefficient on X
-    E         = scalar > 0, polynomial coefficient on Y
-    F         = scalar > 0, polynomial constant
-    max_x     = scalar > 0, maximum effective tax rate for X given Y=0
-    min_x     = scalar, minimum effective tax rate for X given Y=0
-    max_y     = scalar > 0, maximum effective tax rate for Y given X=0
-    min_y     = scalar, minimum effective tax rate for Y given X=0
+    INPUTS:
+    X      = (N x N) matrix, discretized support (N elements) of inc_lab
+             as row vector copied down N rows
+    Y      = (N x N) matrix, discretized support (N elements) of inc_cap
+             as column vector copied across N columns
+    params = (10,) vector, estimated parameters
+             (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
+    A      = scalar > 0, polynomial coefficient on X**2
+    B      = scalar > 0, polynomial coefficient on Y**2
+    C      = scalar > 0, polynomial coefficient on X*Y
+    D      = scalar > 0, polynomial coefficient on X
+    E      = scalar > 0, polynomial coefficient on Y
+    F      = scalar > 0, polynomial constant
+    max_x  = scalar > 0, maximum effective tax rate for X given Y=0
+    min_x  = scalar, minimum effective tax rate for X given Y=0
+    max_y  = scalar > 0, maximum effective tax rate for Y given X=0
+    min_y  = scalar, minimum effective tax rate for Y given X=0
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
     Omega     = (N x N) matrix, ratio of polynomials
     dOMdx     = (N x N) matrix, derivative of ratio of polynomials
                 (Omega) with respect to labor income (X)
     mtrx_grid = (N x N) matrix, derivative of total tax liability with
                 respect to labor income (X)
 
-    returns: mtrx_grid
+    RETURNS: mtrx_grid
     --------------------------------------------------------------------
     '''
     A, B, C, D, E, F, max_x, min_x, max_y, min_y = params
@@ -184,30 +202,35 @@ def gen_mtrx_grid_est(X, Y, params):
     capital income. This is the estimated grid because it is re-
     estimated using the same functional form as the effective tax rate
     --------------------------------------------------------------------
-    X         = (N x N) matrix, discretized support (N elements) of
-                inc_lab as row vector copied down N rows
-    Y         = (N x N) matrix, discretized support (N elements) of
-                inc_cap as column vector copied across N columns
-    params    = (10,) vector, estimated parameters
-                (H, I, J, K, L, M, max_x, min_x, max_y, min_y)
-    H         = scalar > 0, polynomial coefficient on X**2
-    I         = scalar > 0, polynomial coefficient on Y**2
-    J         = scalar > 0, polynomial coefficient on X*Y
-    K         = scalar > 0, polynomial coefficient on X
-    L         = scalar > 0, polynomial coefficient on Y
-    M         = scalar > 0, polynomial constant
-    max_x     = scalar > 0, maximum effective tax rate for X given Y=0
-    min_x     = scalar, minimum effective tax rate for X given Y=0
-    max_y     = scalar > 0, maximum effective tax rate for Y given X=0
-    min_y     = scalar, minimum effective tax rate for Y given X=0
-    phi      = (N x N) matrix, labor income as percent of total income
-    P_num    = (N x N) matrix, numerator values in ratio of polynomials
-    P_den    = (N x N) matrix, denominator values in ratio of
-               polynomials
+    INPUTS:
+    X      = (N x N) matrix, discretized support (N elements) of inc_lab
+             as row vector copied down N rows
+    Y      = (N x N) matrix, discretized support (N elements) of inc_cap
+             as column vector copied across N columns
+    params = (10,) vector, estimated parameters
+             (H, I, J, K, L, M, max_x, min_x, max_y, min_y)
+    H      = scalar > 0, polynomial coefficient on X**2
+    I      = scalar > 0, polynomial coefficient on Y**2
+    J      = scalar > 0, polynomial coefficient on X*Y
+    K      = scalar > 0, polynomial coefficient on X
+    L      = scalar > 0, polynomial coefficient on Y
+    M      = scalar > 0, polynomial constant
+    max_x  = scalar > 0, maximum effective tax rate for X given Y=0
+    min_x  = scalar, minimum effective tax rate for X given Y=0
+    max_y  = scalar > 0, maximum effective tax rate for Y given X=0
+    min_y  = scalar, minimum effective tax rate for Y given X=0
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    phi       = (N x N) matrix, labor income as percent of total income
+    P_num     = (N x N) matrix, numerator values in ratio of polynomials
+    P_den     = (N x N) matrix, denominator values in ratio of
+                polynomials
     mtrx_grid = (N x N) matrix, derivative of total tax liability with
                 respect to labor income (X)
 
-    returns: mtrx_grid
+    RETURNS: mtrx_grid
     --------------------------------------------------------------------
     '''
     H, I, J, K, L, M, max_x, min_x, max_y, min_y = params
@@ -219,38 +242,44 @@ def gen_mtrx_grid_est(X, Y, params):
         (P_num / P_den) + (phi * min_x + (1 - phi) * min_y))
     return mtrx_grid
 
+
 def gen_mtry_grid_est(X, Y, params):
     '''
     --------------------------------------------------------------------
     This function generates a grid of marginal tax rates with respect to
-    labor income from a grid of total labor income and a grid of total
+    capital income from a grid of total labor income and a grid of total
     capital income. This is the estimated grid because it is re-
     estimated using the same functional form as the effective tax rate
     --------------------------------------------------------------------
-    X         = (N x N) matrix, discretized support (N elements) of
-                inc_lab as row vector copied down N rows
-    Y         = (N x N) matrix, discretized support (N elements) of
-                inc_cap as column vector copied across N columns
-    params    = (10,) vector, estimated parameters
-                (H, I, J, K, L, M, max_x, min_x, max_y, min_y)
-    H         = scalar > 0, polynomial coefficient on X**2
-    I         = scalar > 0, polynomial coefficient on Y**2
-    J         = scalar > 0, polynomial coefficient on X*Y
-    K         = scalar > 0, polynomial coefficient on X
-    L         = scalar > 0, polynomial coefficient on Y
-    M         = scalar > 0, polynomial constant
-    max_x     = scalar > 0, maximum effective tax rate for X given Y=0
-    min_x     = scalar, minimum effective tax rate for X given Y=0
-    max_y     = scalar > 0, maximum effective tax rate for Y given X=0
-    min_y     = scalar, minimum effective tax rate for Y given X=0
-    phi      = (N x N) matrix, labor income as percent of total income
-    P_num    = (N x N) matrix, numerator values in ratio of polynomials
-    P_den    = (N x N) matrix, denominator values in ratio of
-               polynomials
-    mtrx_grid = (N x N) matrix, derivative of total tax liability with
-                respect to labor income (X)
+    INPUTS:
+    X      = (N x N) matrix, discretized support (N elements) of inc_lab
+             as row vector copied down N rows
+    Y      = (N x N) matrix, discretized support (N elements) of inc_cap
+             as column vector copied across N columns
+    params = (10,) vector, estimated parameters
+             (H, I, J, K, L, M, max_x, min_x, max_y, min_y)
+    H      = scalar > 0, polynomial coefficient on X**2
+    I      = scalar > 0, polynomial coefficient on Y**2
+    J      = scalar > 0, polynomial coefficient on X*Y
+    K      = scalar > 0, polynomial coefficient on X
+    L      = scalar > 0, polynomial coefficient on Y
+    M      = scalar > 0, polynomial constant
+    max_x  = scalar > 0, maximum effective tax rate for X given Y=0
+    min_x  = scalar, minimum effective tax rate for X given Y=0
+    max_y  = scalar > 0, maximum effective tax rate for Y given X=0
+    min_y  = scalar, minimum effective tax rate for Y given X=0
 
-    returns: mtrx_grid
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    phi       = (N x N) matrix, labor income as percent of total income
+    P_num     = (N x N) matrix, numerator values in ratio of polynomials
+    P_den     = (N x N) matrix, denominator values in ratio of
+                polynomials
+    mtry_grid = (N x N) matrix, derivative of total tax liability with
+                respect to capital income (Y)
+
+    RETURNS: mtry_grid
     --------------------------------------------------------------------
     '''
     H, I, J, K, L, M, max_x, min_x, max_y, min_y = params
@@ -262,6 +291,7 @@ def gen_mtry_grid_est(X, Y, params):
         (P_num / P_den) + (phi * min_x + (1 - phi) * min_y))
     return mtry_grid
 
+
 def gen_dmtrx_grid(X, Y, params):
     '''
     --------------------------------------------------------------------
@@ -269,22 +299,27 @@ def gen_dmtrx_grid(X, Y, params):
     with respect to labor income from a grid of total labor income and a
     grid of total capital income
     --------------------------------------------------------------------
-    X          = (N x N) matrix, discretized support (N elements) of
-                 inc_lab as row vector copied down N rows
-    Y          = (N x N) matrix, discretized support (N elements) of
-                 inc_cap as column vector copied across N columns
-    params     = (10,) vector, estimated parameters
-                 (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
-    A          = scalar > 0, polynomial coefficient on X**2
-    B          = scalar > 0, polynomial coefficient on Y**2
-    C          = scalar > 0, polynomial coefficient on X*Y
-    D          = scalar > 0, polynomial coefficient on X
-    E          = scalar > 0, polynomial coefficient on Y
-    F          = scalar > 0, polynomial constant
-    max_x      = scalar > 0, maximum effective tax rate for X given Y=0
-    min_x      = scalar, minimum effective tax rate for X given Y=0
-    max_y      = scalar > 0, maximum effective tax rate for Y given X=0
-    min_y      = scalar, minimum effective tax rate for Y given X=0
+    INPUTS:
+    X      = (N x N) matrix, discretized support (N elements) of inc_lab
+             as row vector copied down N rows
+    Y      = (N x N) matrix, discretized support (N elements) of inc_cap
+             as column vector copied across N columns
+    params = (10,) vector, estimated parameters
+             (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
+    A      = scalar > 0, polynomial coefficient on X**2
+    B      = scalar > 0, polynomial coefficient on Y**2
+    C      = scalar > 0, polynomial coefficient on X*Y
+    D      = scalar > 0, polynomial coefficient on X
+    E      = scalar > 0, polynomial coefficient on Y
+    F      = scalar > 0, polynomial constant
+    max_x  = scalar > 0, maximum effective tax rate for X given Y=0
+    min_x  = scalar, minimum effective tax rate for X given Y=0
+    max_y  = scalar > 0, maximum effective tax rate for Y given X=0
+    min_y  = scalar, minimum effective tax rate for Y given X=0
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
     dOMdx      = (N x N) matrix, derivative of ratio of polynomials
                  (Omega) with respect to labor income (X)
     d2OMd2x    = (N x N) matrix, second derivative of ratio of
@@ -292,7 +327,7 @@ def gen_dmtrx_grid(X, Y, params):
     dmtrx_grid = (N x N) matrix, second derivative of total tax
                  liability with respect to labor income (X)
 
-    returns: dmtrx_grid
+    RETURNS: dmtrx_grid
     --------------------------------------------------------------------
     '''
     A, B, C, D, E, F, max_x, min_x, max_y, min_y = params
@@ -316,22 +351,27 @@ def gen_dmtry_grid(X, Y, params):
     with respect to capital income from a grid of total labor income and
     a grid of total capital income
     --------------------------------------------------------------------
-    X          = (N x N) matrix, discretized support (N elements) of
-                 inc_lab as row vector copied down N rows
-    Y          = (N x N) matrix, discretized support (N elements) of
-                 inc_cap as column vector copied across N columns
-    params     = (10,) vector, estimated parameters
-                 (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
-    A          = scalar > 0, polynomial coefficient on X**2
-    B          = scalar > 0, polynomial coefficient on Y**2
-    C          = scalar > 0, polynomial coefficient on X*Y
-    D          = scalar > 0, polynomial coefficient on X
-    E          = scalar > 0, polynomial coefficient on Y
-    F          = scalar > 0, polynomial constant
-    max_x      = scalar > 0, maximum effective tax rate for X given Y=0
-    min_x      = scalar, minimum effective tax rate for X given Y=0
-    max_y      = scalar > 0, maximum effective tax rate for Y given X=0
-    min_y      = scalar, minimum effective tax rate for Y given X=0
+    INPUTS:
+    X      = (N x N) matrix, discretized support (N elements) of
+             inc_lab as row vector copied down N rows
+    Y      = (N x N) matrix, discretized support (N elements) of
+             inc_cap as column vector copied across N columns
+    params = (10,) vector, estimated parameters
+             (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
+    A      = scalar > 0, polynomial coefficient on X**2
+    B      = scalar > 0, polynomial coefficient on Y**2
+    C      = scalar > 0, polynomial coefficient on X*Y
+    D      = scalar > 0, polynomial coefficient on X
+    E      = scalar > 0, polynomial coefficient on Y
+    F      = scalar > 0, polynomial constant
+    max_x  = scalar > 0, maximum effective tax rate for X given Y=0
+    min_x  = scalar, minimum effective tax rate for X given Y=0
+    max_y  = scalar > 0, maximum effective tax rate for Y given X=0
+    min_y  = scalar, minimum effective tax rate for Y given X=0
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
     dOMdy      = (N x N) matrix, derivative of ratio of polynomials
                  (Omega) with respect to capital income (Y)
     d2OMd2y    = (N x N) matrix, second derivative of ratio of
@@ -339,7 +379,7 @@ def gen_dmtry_grid(X, Y, params):
     dmtry_grid = (N x N) matrix, second derivative of total tax
                  liability with respect to capital income (Y)
 
-    returns: dmtry_grid
+    RETURNS: dmtry_grid
     --------------------------------------------------------------------
     '''
     A, B, C, D, E, F, max_x, min_x, max_y, min_y = params
@@ -356,16 +396,17 @@ def gen_dmtry_grid(X, Y, params):
     return dmtry_grid
 
 
-def wsumsq(params, *objs):
+def wsumsq(params, *args):
     '''
     --------------------------------------------------------------------
     This function generates the weighted sum of squared deviations of
     predicted values of either effective or marginal tax rates from the
     effective or marginal tax rates from the data.
     --------------------------------------------------------------------
+    INPUTS:
     params     = (10,) vector, guesses for (Coef1, Coef2, Coef3, Coef4,
                  Coef5, Coef6, max_x, min_x, max_y, min_y)
-    objs       = length 5 tuple,
+    args       = length 5 tuple,
                  (varmat_hat, txrates, wgts, varmat_bar, phi)
     varmat_hat = (N x 6) matrix, percent deviation from mean
                  transformation of original variables (varmat)
@@ -381,21 +422,25 @@ def wsumsq(params, *objs):
     min_x      = scalar, minimum effective tax rate for X given Y=0
     max_y      = scalar > 0, maximum effective tax rate for Y given X=0
     min_y      = scalar, minimum effective tax rate for Y given X=0
-    Coef7      = scalar > 0, sum of Coef1 through Coef5 coefficients
-    P_num      = (N x N) matrix, numerator values in ratio of
-                 polynomials
-    P_den      = (N x N) matrix, denominator values in ratio of
-                 polynomials
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    Coef7       = scalar > 0, sum of Coef1 through Coef5 coefficients
+    P_num       = (N x N) matrix, numerator values in ratio of
+                  polynomials
+    P_den       = (N x N) matrix, denominator values in ratio of
+                  polynomials
     txrates_est = (N,) vector, predicted effective or marginal tax rate
                   for each observation
     errors      = (N,) vector, difference between predicted tax rates
                   and the tax rates from the data
     wssqdev     = scalar > 0, weighted sum of squared errors
 
-    returns: wssqdev
+    RETURNS: wssqdev
     --------------------------------------------------------------------
     '''
-    varmat_hat, txrates, wgts, varmat_bar, phi = objs
+    varmat_hat, txrates, wgts, varmat_bar, phi = args
     max_x, min_x, max_y, min_y = params[-4:]
     Coef7 = params[:5].sum()
     P_num = np.dot(varmat_hat[:,:-1], params[:5]) + Coef7
@@ -407,7 +452,8 @@ def wsumsq(params, *objs):
     return wssqdev
 
 
-def find_outliers(sse_mat, age_vec, se_mult, varstr, graph=False):
+def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
+  graph=False):
     '''
     --------------------------------------------------------------------
     This function takes a matrix of sum of squared errors (SSE) from
@@ -441,7 +487,7 @@ def find_outliers(sse_mat, age_vec, se_mult, varstr, graph=False):
         minorLocator   = MultipleLocator(1)
         ax.xaxis.set_minor_locator(minorLocator)
         plt.grid(b=True, which='major', color='0.65',linestyle='-')
-        plt.legend(loc='upper right')
+        plt.legend(loc='upper left')
         titletext = "Sum of Squared Errors by Age and Tax Year: " + varstr
         plt.title(titletext)
         plt.xlabel(r'Age $s$')
@@ -485,7 +531,7 @@ def find_outliers(sse_mat, age_vec, se_mult, varstr, graph=False):
             minorLocator   = MultipleLocator(1)
             ax.xaxis.set_minor_locator(minorLocator)
             plt.grid(b=True, which='major', color='0.65',linestyle='-')
-            plt.legend(loc='upper right')
+            plt.legend(loc='upper left')
             titletext = ("Sum of Squared Errors by Age and Tax Year" +
                         " minus outliers (round 1): " + varstr)
             plt.title(titletext)
@@ -517,7 +563,7 @@ def find_outliers(sse_mat, age_vec, se_mult, varstr, graph=False):
                 minorLocator   = MultipleLocator(1)
                 ax.xaxis.set_minor_locator(minorLocator)
                 plt.grid(b=True, which='major', color='0.65',linestyle='-')
-                plt.legend(loc='upper right')
+                plt.legend(loc='upper left')
                 titletext = ("Sum of Squared Errors by Age and Tax Year"
                             + " minus outliers (round 2): " + varstr)
                 plt.title(titletext)
@@ -531,7 +577,7 @@ def find_outliers(sse_mat, age_vec, se_mult, varstr, graph=False):
     return sse_big_mat
 
 
-def replace_outliers(param_arr, sse_big_mat,):
+def replace_outliers(param_arr, sse_big_mat):
     '''
     --------------------------------------------------------------------
     This function replaces outlier estimated tax function parameters
@@ -584,9 +630,8 @@ def replace_outliers(param_arr, sse_big_mat,):
     return param_arr_adj
 
 
-
-
-def tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False, start_year=2016,reform={}):
+def tax_func_estimate(baseline=False, analytical_mtrs=True,
+  age_specific=False, start_year=2016,reform={}):
     '''
     --------------------------------------------------------------------
     This function estimates functions for the ETR, MTR on Labor Income,
@@ -740,7 +785,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False, 
         AvgMTRy[t-beg_yr] = \
             (((data['MTR capital income']*data['Adjusted Total income'] * data['Weights']).sum())
             / (data['Adjusted Total income']*data['Weights']).sum())
-            
+
 
         # Calculate total population in each year
         TotPop_yr[t-beg_yr] = data['Weights'].sum()
@@ -822,7 +867,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False, 
                            elapsed_time
             ----------------------------------------------------------------
             '''
-            
+
             if age_specific:
                 print "year=", t, "Age=", s
                 df = data_trnc[data_trnc['Age'] == s]
@@ -1631,21 +1676,24 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False, 
     '''
     if age_specific:
         age_sup = np.linspace(21, 100, 80)
-        se_mult = 2.5
+        se_mult = 3.5
 
-        etr_sse_big = find_outliers(etr_sumsq_arr, age_sup, se_mult, "ETR")
+        etr_sse_big = find_outliers(etr_sumsq_arr / etr_obs_arr,
+            age_sup, se_mult, start_year, "ETR")
         if etr_sse_big.sum() > 0:
             etrparam_arr_adj = replace_outliers(etrparam_arr, etr_sse_big)
         elif etr_sse_big.sum() == 0:
             etrparam_arr_adj = etrparam_arr
 
-        mtrx_sse_big = find_outliers(mtrx_sumsq_arr, age_sup, se_mult, "MTRx")
+        mtrx_sse_big = find_outliers(mtrx_sumsq_arr / mtrx_obs_arr,
+            age_sup, se_mult, start_year, "MTRx")
         if mtrx_sse_big.sum() > 0:
             mtrxparam_arr_adj = replace_outliers(mtrxparam_arr, mtrx_sse_big)
         elif mtrx_sse_big.sum() == 0:
             mtrxparam_arr_adj = mtrxparam_arr
 
-        mtry_sse_big = find_outliers(mtry_sumsq_arr, age_sup, se_mult, "MTRy")
+        mtry_sse_big = find_outliers(mtry_sumsq_arr / mtry_obs_arr,
+            age_sup, se_mult, start_year, "MTRy")
         if mtry_sse_big.sum() > 0:
             mtryparam_arr_adj = replace_outliers(mtryparam_arr, mtry_sse_big)
         elif mtry_sse_big.sum() == 0:
@@ -1671,7 +1719,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False, 
                    year copied back 10 times in the 3rd dimension
     ------------------------------------------------------------------------
     '''
-    if age_specific: 
+    if age_specific:
         if S == s_max - s_min + 1:
             etrparam_arr_S = etrparam_arr_adj
             mtrxparam_arr_S = mtrxparam_arr_adj
@@ -1713,10 +1761,16 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False, 
 
     # Save tax function parameters array and computation time in pickle
     dict_params = dict([('tfunc_etr_params_S', etrparam_arr_S),
-        ('tfunc_mtrx_params_S', mtrxparam_arr_S), ('tfunc_mtry_params_S', mtryparam_arr_S), ('tfunc_avginc', AvgInc),
-        ('tfunc_avg_etr', AvgETR), ('tfunc_avg_mtrx', AvgMTRx), ('tfunc_avg_mtry', AvgMTRy),
-        ('tfunc_etr_sumsq', etr_sumsq_arr), ('tfunc_mtrx_sumsq', mtrx_sumsq_arr), ('tfunc_mtry_sumsq', mtry_sumsq_arr),
-        ('tfunc_etr_obs', etr_obs_arr), ('tfunc_mtrx_obs', mtrx_obs_arr), ('tfunc_mtry_obs', mtry_obs_arr),
+        ('tfunc_mtrx_params_S', mtrxparam_arr_S),
+        ('tfunc_mtry_params_S', mtryparam_arr_S),
+        ('tfunc_avginc', AvgInc), ('tfunc_avg_etr', AvgETR),
+        ('tfunc_avg_mtrx', AvgMTRx), ('tfunc_avg_mtry', AvgMTRy),
+        ('tfunc_etr_sumsq', etr_sumsq_arr),
+        ('tfunc_mtrx_sumsq', mtrx_sumsq_arr),
+        ('tfunc_mtry_sumsq', mtry_sumsq_arr),
+        ('tfunc_etr_obs', etr_obs_arr),
+        ('tfunc_mtrx_obs', mtrx_obs_arr),
+        ('tfunc_mtry_obs', mtry_obs_arr),
         ('tfunc_time', elapsed_time)])
 
     #import pdb;pdb.set_trace()
@@ -1724,9 +1778,11 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False, 
     return dict_params
 
 
-def get_tax_func_estimate(baseline=False, analytical_mtrs=True, age_specific=False, start_year=2016, reform={}, guid=''):
+def get_tax_func_estimate(baseline=False, analytical_mtrs=True,
+  age_specific=False, start_year=2016, reform={}, guid=''):
     # Code to run manually from here:
-    dict_params = tax_func_estimate(baseline, analytical_mtrs, age_specific, start_year, reform)
+    dict_params = tax_func_estimate(baseline, analytical_mtrs,
+                  age_specific, start_year, reform)
     if baseline:
         baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         pkl_path = os.path.join(TAX_ESTIMATE_PATH, baseline_pckl)

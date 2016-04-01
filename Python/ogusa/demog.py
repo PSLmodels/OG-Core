@@ -3,7 +3,7 @@
 Functions for generating demographic objects necessary for the OG-USA
 model
 
-This py-file defines the following function(s):
+This module defines the following function(s):
     get_fert()
     get_mort()
     get_imm_resid()
@@ -11,12 +11,7 @@ This py-file defines the following function(s):
     get_pop_objs()
 ------------------------------------------------------------------------
 '''
-
-'''
-------------------------------------------------------------------------
-Import packages
-------------------------------------------------------------------------
-'''
+# Import packages
 import os
 import numpy as np
 import scipy.optimize as opt

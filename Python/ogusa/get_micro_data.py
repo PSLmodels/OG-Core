@@ -6,7 +6,7 @@ model (tax-calculator) and saves it as csv files.
 '''
 
 import sys
-sys.path.insert(0, '/Users/jasondebacker/repos/tax-calculator')
+sys.path.insert(0, '/Users/rwe2/Documents/Economics/OSPC/Tax-Calculator')
 
 from taxcalc import *
 import pandas as pd
@@ -20,7 +20,7 @@ import pickle
 def get_data(baseline=False, start_year=2016, reform={}):
     '''
     --------------------------------------------------------------------
-    This function creates dataframes of micro data from the 
+    This function creates dataframes of micro data from the
     tax calculator
     --------------------------------------------------------------------
 
@@ -59,7 +59,7 @@ def get_data(baseline=False, start_year=2016, reform={}):
                                 'e01700', 'e02000',
                                 'p22250','p23250')
 
-    # note that use total pension income (e01500) since don't have both the 
+    # note that use total pension income (e01500) since don't have both the
     # taxable (e01700) and non-taxable pension income separately
     # don't appear to have variable for non-taxable IRA distributions
     # capital_income_sources = ('e00300', 'e00400', 'e00600',
@@ -145,8 +145,8 @@ def get_data(baseline=False, start_year=2016, reform={}):
                        columns = ['MTR wage', 'MTR self-employed Wage','MTR capital income','Age',
                                   'Wage and Salaries', 'Self-Employed Income','Wage + Self-Employed Income',
                                   'Adjusted Total income','Total Tax Liability','Year', 'Weights'])
-        print 'year: ', str(calc1.current_year) 
-  
+        print 'year: ', str(calc1.current_year)
+
     if reform:
         pkl_path = "micro_data_policy.pkl"
     else:
