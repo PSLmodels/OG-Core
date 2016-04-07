@@ -1,8 +1,9 @@
 '''
 ------------------------------------------------------------------------
-Last updated 7/16/2015
+Last updated 4/7/2015
 
-Firm functions for firms in SS and TPI.
+Firm functions for firms in the steady state and along the transition 
+path.
 
 ------------------------------------------------------------------------
 '''
@@ -17,83 +18,127 @@ import numpy as np
 '''
 
 
-def get_r(Y_now, K_now, params):
+def get_r(Y, K, params):
     '''
+    Generates vector of interest rates.
+
     Inputs:
-        Y_now = Aggregate output ((T+S)x1 array or scalar)
-        K_now = Aggregate capital (same shape as Y_now)
-        params = list of parameters (list)
-    Output:
-        r_now = rental rate (same shape as Y_now)
+        Y      = [T+S,] vector, aggregate output 
+        K      = [T+S,] vector, aggregate capital
+        params = length 2 tuple, (alpha, delta)
+        alpha  = scalar, capital's share of output
+        delta  = scalar, rate of depreciation of capital
+
+    Functions called: None
+
+    Objects in function:
+        r = [T+S,] vector, rental rate 
+
+    Returns: r
     '''
-    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, retire, mean_income_data,\
-                  h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    r_now = (alpha * Y_now / K_now) - delta
-    return r_now
+
+    alpha, delta = params
+    r = (alpha * Y / K) - delta
+    return r
 
 
-def get_Y(K_now, L_now, params):
+def get_w(Y, L, params):
     '''
+    Generates vector of aggregate output.
+
     Inputs:
-        K_now = Aggregate capital ((T+S)x1 array or scalar)
-        L_now = Aggregate labor (same shape as K_now)
-        params = list of parameters (list)
-    Output:
-        Y_now = Aggregate output (same shape as K_now)
+        Y      = [T+S,] vector, aggregate output 
+        L      = [T+S,] vector, aggregate labor
+        params = length 1 tuple, (alpha)
+        alpha  = scalar, capital's share of output
+
+    Functions called: None
+
+    Objects in function:
+        w = [T+S,] vector, rental rate 
+
+    Returns: w
     '''
-    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, retire, mean_income_data,\
-                  h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    Y_now = Z * (K_now ** alpha) * ((L_now) ** (1 - alpha))
-    return Y_now
+    alpha = params
+    w = (1 - alpha) * Y / L
+    return w
 
 
-def get_w(Y_now, L_now, params):
+def get_Y(K, L, params):
     '''
+    Generates vector of aggregate output.
+
     Inputs:
-        Y_now = Aggregate output ((T+S)x1 array or scalar)
-        L_now = Aggregate labor (same shape as Y_now)
-        params = list of parameters (list)
-    Output:
-        w_now = wage rate (same shape as Y_now)
+        K      = [T+S,] vector, aggregate capital
+        L      = [T+S,] vector, aggregate labor
+        params = length 2 tuple, (alpha, Z)
+        alpha  = scalar, capital's share of output
+        Z      = scalar, total factor productivity
+
+    Functions called: None
+
+    Objects in function:
+        Y = [T+S,] vector, aggregate output 
+
+    Returns: Y
     '''
-    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, retire, mean_income_data,\
-                  h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-    w_now = (1 - alpha) * Y_now / L_now
-    return w_now
+    alpha, Z = params
+    Y = Z * (K ** alpha) * (L ** (1 - alpha))
+    return Y
 
 
-def get_L(e, n, pop_weights, ability_weights, method):
+def get_L(n, params):
     '''
+    Generates vector of aggregate labor supply.
+
     Inputs:
-        e = ability levels (SxJ array)
-        n = labor participation array (SxJ array)
-        pop_weights = population weights (Sx1 array)
-        ability_weights = ability weights (Jx1 array)
-        method = 'SS' or 'TPI'
-    Output:
-        L_now = Aggregate labor (scalar)
+        n               = [T,S,J] array, labor supply
+        params          = length 4 tuple, (e, pop_weights, ability_weights, method)
+        e               = [T,S,J] array, effective labor units
+        pop_weights     = [T,S,1] array, population weights
+        ability_weights = [1,1,J] array, ability weights
+        method          = string, 'SS' or 'TPI'
+
+    Functions called: None
+
+    Objects in function:
+        L_presum = [T,S,J] array, weighted labor supply
+        L = [T+S,] vector, aggregate labor 
+
+    Returns: L
+
     '''
+    e, pop_weights, ability_weights, method = params
+
     L_presum = e * pop_weights * ability_weights * n
     if method == 'SS':
-        L_now = L_presum.sum()
+        L = L_presum.sum()
     elif method == 'TPI':
-        L_now = L_presum.sum(1).sum(1)
-    return L_now
+        L = L_presum.sum(1).sum(1)
+    return L
 
 
-def get_I(Knext, Know, delta, g_y, g_n):
+def get_I(K_p1, K, params):
     '''
+    Generates vector of aggregate investment.
+
     Inputs:
-        Knext = K_t+1 (scalar or Tx1 array)
-        Know = K_t (scalar or Tx1 array)
-        delta = depreciation rate of capital (scalar)
-        g_y = production growth rate (scalar)
-        g_n = population growth rate (scalar or Tx1 array)
-    Output:
-        aggI = aggregate investment (scalar or Tx1 array)
+        K_p1   = [T,] vector, aggregate capital, one period ahead        
+        K      = [T,] vector, aggregate capital
+        params = length 3 tuple, (delta, g_y, g_n)
+        delta  = scalar, depreciation rate of capital 
+        g_y    = scalar, production growth rate 
+        g_n    = [T,] vector, population growth rate
+
+    Functions called: None
+
+    Objects in function:
+        aggI = [T,] vector, aggregate investment 
+
+    Returns: aggI
+
     '''
-    aggI = (np.exp(g_y) + g_n * np.exp(g_y)) * Knext - (1.0 - delta) * Know
+    delta, g_y, g_n = params
+
+    aggI = ((1. + g_n) * np.exp(g_y)) * K_p1 - (1.0 - delta) * K
     return aggI
