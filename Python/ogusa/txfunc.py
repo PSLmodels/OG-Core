@@ -1,9 +1,12 @@
 '''
 ------------------------------------------------------------------------
-This script reads in data generated from the OSPC Tax Calcultor and
+Last updated 4/7/2016
+
+This script reads in data generated from the OSPC Tax Calculator and
 the 2009 IRS PUF. It then estimates tax functions tau_{s,t}(x,y), where
-tau_{s,t} is the effective tax rate for a given age (s) in a particular
-year (t), x is total labor income, and y is total capital income.
+tau_{s,t} is the effective tax rate, marginal tax rate on labor income, 
+or the marginal tax rate on capital income, for a given age (s) in a particular
+year (t). x is total labor income, and y is total capital income.
 
 This module defines the following functions:
     gen_etr_grid()
@@ -18,6 +21,14 @@ This module defines the following functions:
     replace_outliers()
     tax_func_estimate()
     get_tax_func_estimate()
+
+This Python script calls the following functions:
+    get_micro_data.py
+    
+This Python script outputs the following:
+    ./TAX_ESTIMATE_PATH/TxFuncEst_baseline{}.pkl
+    ./TAX_ESTIMATE_PATH/TxFuncEst_policy{}.pkl
+
 ------------------------------------------------------------------------
 '''
 # Import packages
@@ -460,6 +471,22 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
     tax function estimations for each age (s) in each year of the budget
     window (t) and marks estimations that have outlier SSE.
     --------------------------------------------------------------------
+    INPUTS:
+    sse_mat    = [S,BW] array, SSE for each estimated tax function
+    age_vec    = [S,] vector, vector of ages
+    se_mult    = scalar, multiple of standard devitiosn before consider 
+                  estimate an outlier
+    start_year = integer, first year of budget window
+    varstr     = string, name of tax function being evaluated
+    graph      = boolean, flag to output graphs
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    thresh      = [S,BW] array, threshold values for SSE before consider 
+                   tax function outlier
+    sse_big_mat = [S,BW] array, indicators of weither tax function is outlier
+
     RETURNS: sse_big_mat
     --------------------------------------------------------------------
     '''
@@ -583,6 +610,19 @@ def replace_outliers(param_arr, sse_big_mat):
     This function replaces outlier estimated tax function parameters
     with linearly interpolated tax function tax function parameters
     --------------------------------------------------------------------
+    INPUTS:
+    sse_big_mat = [S,BW] array, indicators of weither tax function is outlier
+    param_arr   = [S,BW,#tax params] array, estimated tax function parameters
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    age_ind       = [S,] list, list of ages
+    param_arr_adj = [S,BW,#tax params] array, estimated and interpolated tax function parameters
+    big_cnt       = integer, number of outliers replaced
+    slopevec      = [1,1,#tax params] array, slope used for linear interpolation of outliers
+    interceptvec  = [1,1,#tax params] array, intercept used for linear interpolation of outliers
+
     RETURNS: param_arr_adj
     --------------------------------------------------------------------
     '''
@@ -637,9 +677,38 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
     This function estimates functions for the ETR, MTR on Labor Income,
     and MTR on Capital Income.
     --------------------------------------------------------------------
-    '''
+    
+    INPUTS:
+    baseline        = boolean, =True if baseline tax policy, =False if reform
+    analytical_mtrs = boolean, =True if use analytical_mtrs, =False if 
+                      use estimated MTRs
+    age_specific    = boolean, =True if estimate tax functions separately 
+                      for each age, =False if estimate a single tax function 
+                      to represent all ages in a given budget year 
+    start_year      = integer, first year of budget window
+    reform          = dictionary, reform parameters
 
-    '''
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: 
+    get_micro_data.get_data
+    gen_etr_grid()
+    gen_mtrx_grid_impl()
+    gen_mtry_grid_impl()
+    gen_mtrx_grid_est()
+    gen_mtry_grid_est()
+    gen_dmtrx_grid()
+    gen_dmtry_grid()
+    wsumsq()
+    find_outliers()
+    replace_outliers()
+
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    See comments in this function
+    dict_params = dictionary, contains numpy arrays of estimated parameters
+                   and other statistics describing data and estimation
+
+    RETURNS: dict_params
+
     ------------------------------------------------------------------------
     Set parameters and create objects for output
     ------------------------------------------------------------------------
@@ -1780,6 +1849,35 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
 
 def get_tax_func_estimate(baseline=False, analytical_mtrs=True,
   age_specific=False, start_year=2016, reform={}, guid=''):
+    '''
+    --------------------------------------------------------------------
+    This function calls the tax function estimation routine and saves
+    the resulting dictionary in pickle files corresponding to the
+    baseline or reform policy.
+    --------------------------------------------------------------------
+    
+    INPUTS:
+    baseline        = boolean, =True if baseline tax policy, =False if reform
+    analytical_mtrs = boolean, =True if use analytical_mtrs, =False if 
+                      use estimated MTRs
+    age_specific    = boolean, =True if estimate tax functions separately 
+                      for each age, =False if estimate a single tax function 
+                      to represent all ages in a given budget year 
+    start_year      = integer, first year of budget window
+    reform          = dictionary, reform parameters
+    guid            = string, id for reform run
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: 
+    tax_func_estimate()
+
+    OBJECTS CREATED WITHIN FUNCTION:
+
+    RETURNS: 
+    saves:
+    ./TAX_ESTIMATE_PATH/TxFuncEst_baseline{}.pkl
+    ./TAX_ESTIMATE_PATH/TxFuncEst_policy{}.pkl
+    --------------------------------------------------------------------
+    '''
     # Code to run manually from here:
     dict_params = tax_func_estimate(baseline, analytical_mtrs,
                   age_specific, start_year, reform)
@@ -1792,5 +1890,3 @@ def get_tax_func_estimate(baseline=False, analytical_mtrs=True,
 
     pickle.dump(dict_params, open(pkl_path, "wb"))
 
-
-#get_tax_func_estimate(True, True, False, {}, '99')
