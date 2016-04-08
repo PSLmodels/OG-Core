@@ -54,8 +54,6 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
         run_params['g_y'] = g_y
         run_params.update(user_params)
 
-    globals().update(run_params)
-
     from ogusa import SS, TPI
     # Generate Wealth data moments
     wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir=output_base)
@@ -87,13 +85,8 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
     '''
 
     sim_params = {}
-    glbs = globals()
-    lcls = locals()
     for key in param_names:
-        if key in glbs:
-            sim_params[key] = glbs[key]
-        else:
-            sim_params[key] = lcls[key]
+        sim_params[key] = glbs[key]
 
     sim_params['output_dir'] = output_base
     sim_params['run_params'] = run_params
@@ -190,8 +183,6 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
         run_params['g_y'] = g_y
         run_params.update(user_params)
 
-    globals().update(run_params)
-
     from ogusa import SS, TPI
     # Generate Wealth data moments
     wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir=output_base)
@@ -223,18 +214,13 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
     '''
 
     sim_params = {}
-    glbs = globals()
-    lcls = locals()
     for key in param_names:
-        if key in glbs:
-            sim_params[key] = glbs[key]
-        else:
-            sim_params[key] = lcls[key]
+        sim_params[key] = glbs[key]
 
     sim_params['output_dir'] = output_base
     sim_params['run_params'] = run_params
 
-    income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
+    income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params, chi_params = SS.create_steady_state_parameters(**sim_params)
 
-    ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, baseline, 
+    ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, chi_params, baseline, 
                                      calibrate_model, output_dir=output_base, baseline_dir=baseline_dir)

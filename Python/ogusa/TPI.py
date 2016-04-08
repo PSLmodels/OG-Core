@@ -653,11 +653,11 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
         guesses_b = utils.convex_combo(b_mat, guesses_b, nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, nu)
         if T_H_init.all() != 0:
-            TPIdist = np.array(list(utils.perc_dif_func(rnew, rinit[:T])) + list(utils.perc_dif_func(BQnew, BQinit[:T]).flatten()) + list(
-                utils.perc_dif_func(wnew, winit[:T])) + list(utils.perc_dif_func(T_H_new, T_H_init))).max()
+            TPIdist = np.array(list(utils.pct_diff_func(rnew, rinit[:T])) + list(utils.pct_diff_func(BQnew, BQinit[:T]).flatten()) + list(
+                utils.pct_diff_func(wnew, winit[:T])) + list(utils.pct_diff_func(T_H_new, T_H_init))).max()
         else:
-            TPIdist = np.array(list(utils.perc_dif_func(rnew, rinit[:T])) + list(utils.perc_dif_func(BQnew, BQinit[:T]).flatten()) + list(
-                utils.perc_dif_func(wnew, winit[:T])) + list(np.abs(T_H_new, T_H_init))).max()
+            TPIdist = np.array(list(utils.pct_diff_func(rnew, rinit[:T])) + list(utils.pct_diff_func(BQnew, BQinit[:T]).flatten()) + list(
+                utils.pct_diff_func(wnew, winit[:T])) + list(np.abs(T_H_new, T_H_init))).max()
         TPIdist_vec[TPIiter] = TPIdist
         # After T=10, if cycling occurs, drop the value of nu
         # wait til after T=10 or so, because sometimes there is a jump up

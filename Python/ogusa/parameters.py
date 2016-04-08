@@ -72,7 +72,7 @@ def read_parameter_metadata():
 
 
 def read_tax_func_estimate(pickle_path, pickle_file):
-'''
+    '''
     --------------------------------------------------------------------
     This function reads in tax function parameters
     --------------------------------------------------------------------

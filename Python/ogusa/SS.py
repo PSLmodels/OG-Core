@@ -1,8 +1,9 @@
 '''
 ------------------------------------------------------------------------
-Last updated: 7/17/2015
+Last updated: 4/8/2016
 
-Calculates steady state of OLG model with S age cohorts.
+Calculates steady state of OG-USA model with S age cohorts and J
+ability types.
 
 This py-file calls the following other file(s):
             tax.py
@@ -41,9 +42,6 @@ import os
 Imported user given values
 ------------------------------------------------------------------------
 '''
-
-#from .parameters import get_parameters
-#globals().update(get_parameters())
 from .parameters import DATASET
 
 '''
@@ -55,59 +53,159 @@ from .parameters import DATASET
 # missing args are income_tax_params, wealth_tax_params, and ellipse_params
 
 
-def create_steady_state_parameters(analytical_mtrs, etr_params, mtrx_params, mtry_params, 
-                                   b_ellipse, upsilon, J, S, T, BW,
-                                   beta, sigma, alpha, Z, delta, ltilde, nu,
-                                   g_y, tau_payroll, retire,
-                                   mean_income_data, run_params,
-                                   output_dir="./OUTPUT", **kwargs):
+# def create_steady_state_parameters(analytical_mtrs, etr_params, mtrx_params, mtry_params, 
+#                                    b_ellipse, upsilon, J, S, T, BW,
+#                                    beta, sigma, alpha, Z, delta, ltilde, nu,
+#                                    g_y, tau_payroll, retire,
+#                                    mean_income_data, run_params,
+#                                    output_dir="./OUTPUT", **kwargs):
+def create_steady_state_parameters(**sim_params):
+    '''
+    --------------------------------------------------------------------
+    This function calls the tax function estimation routine and saves
+    the resulting dictionary in pickle files corresponding to the
+    baseline or reform policy.
+    --------------------------------------------------------------------
+    
+    INPUTS:
+    sim_params       = dictionary, dict containing variables for simulation
+    analytical_mtrs  = boolean, =True if use analytical_mtrs, =False if 
+                       use estimated MTRs
+    etr_params       = [S,BW,#tax params] array, parameters for effective tax rate function
+    mtrx_params      = [S,BW,#tax params] array, parameters for marginal tax rate on 
+                       labor income function
+    mtry_params      = [S,BW,#tax params] array, parameters for marginal tax rate on 
+                       capital income function
+    b_ellipse        = scalar, value of b for elliptical fit of utility function
+    upsilon          = scalar, value of omega for elliptical fit of utility function
+    S                = integer, number of economically active periods an individual lives
+    J                = integer, number of different ability groups
+    T                = integer, number of time periods until steady state is reached 
+    BW               = integer, number of time periods in the budget window
+    beta             = scalar, discount factor for model period
+    sigma            = scalar, coefficient of relative risk aversion
+    alpha            = scalar, capital share of income 
+    Z                = scalar, total factor productivity parameter in firms' production
+                       function
+    ltilde           = scalar, measure of time each individual is endowed with each
+                       period
+    nu               = scalar, contraction parameter in SS and TPI iteration process
+                       representing the weight on the new distribution
+    g_y              = scalar, growth rate of technology for a model period
+    tau_payroll      = scalar, payroll tax rate
+    retire           = integer, age at which individuals eligible for retirement benefits
+    mean_income_data = scalar, mean income from IRS data file used to calibrate income tax
+    run_params       = ???
+    output_dir       = string, directory for output files to be saved
 
-    globals().update(run_params)
 
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    income_tax_params = length 3 tuple, (analytical_mtrs, etr_params,
+                        mtrx_params,mtry_params)
+    wealth_tax_params = [3,] vector, contains values of three parameters 
+                        of wealth tax function
+    ellipse_params    = [2,] vector, vector with b_ellipse and upsilon 
+                        paramters of elliptical utility
+    parameters        = length 3 tuple, ([15,] vector of general model 
+                        params, wealth_tax_params, ellipse_params)
+    iterative_params  = [2,] vector, vector with max iterations and tolerance 
+                        for SS solution
+
+    RETURNS: (income_tax_params, wealth_tax_params, ellipse_params,
+            parameters, iterative_params)
+    
+    OUTPUT: None
+    --------------------------------------------------------------------
+    '''
     # Put income tax parameters in a tuple 
     # Assumption here is that tax parameters of last year of budget
     # window continue forever and so will be SS values
-    income_tax_params = (analytical_mtrs, etr_params[:,-1,:],mtrx_params[:,-1,:],mtry_params[:,-1,:])
+    income_tax_params = (sim_params['analytical_mtrs'], sim_params['etr_params'][:,-1,:],
+                         sim_params['mtrx_params'][:,-1,:],sim_params['mtry_params'][:,-1,:])
 
     # Make a vector of all one dimensional parameters, to be used in the
     # following functions
-    wealth_tax_params = [h_wealth, p_wealth, m_wealth]
-    ellipse_params = [b_ellipse, upsilon]
-    parameters = [J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,
-                  g_n_ss, tau_payroll, retire, mean_income_data] + \
-                 wealth_tax_params + ellipse_params
-    iterative_params = [maxiter, mindist_SS]
+    wealth_tax_params = [sim_params['h_wealth'], sim_params['p_wealth'], sim_params['m_wealth']]
+    ellipse_params = [sim_params['b_ellipse'], sim_params['upsilon']]
+    parameters = [sim_params['J'], sim_params['S'], sim_params['T'], sim_params['BW'], 
+                  sim_params['beta'], sim_params['sigma'], sim_params['alpha'], 
+                  sim_params['Z'], sim_params['delta'], sim_params['ltilde'], 
+                  sim_params['nu'], sim_params['g_y'], sim_params['g_n_ss'], 
+                  sim_params['tau_payroll'], sim_params['retire'], sim_params['mean_income_data']] + \
+                  wealth_tax_params + ellipse_params
+    iterative_params = [sim_params['maxiter'], sim_params['mindist_SS']]
+    chi_params = (sim_params['chi_b_guess'], sim_params['chi_n_guess'])
     return (income_tax_params, wealth_tax_params, ellipse_params,
-            parameters, iterative_params)
+            parameters, iterative_params, chi_params)
 
 
-def Euler_equation_solver(guesses, r, w, T_H, factor, j, tax_params, params, chi_b, chi_n,
-                          tau_bq, rho, lambdas, weights, e):
+# def Euler_equation_solver(guesses, r, w, T_H, factor, j, tax_params, params, chi_b, chi_n,
+#                           tau_bq, rho, lambdas, omega, e):
+def Euler_equation_solver(guesses, r, w, T_H, factor, params):
     '''
-    Finds the euler error for certain b and n, one ability type at a time.
-    Inputs:
-        guesses = guesses for b and n (2Sx1 list)
-        r = rental rate (scalar)
-        w = wage rate (scalar)
-        T_H = lump sum tax (scalar)
-        factor = scaling factor to dollars (scalar)
-        j = which ability group is being solved for (scalar)
-        params = list of parameters (list)
-        chi_b = chi^b_j (scalar)
-        chi_n = chi^n_s (Sx1 array)
-        tau_bq = bequest tax rate (scalar)
-        rho = mortality rates (Sx1 array)
-        lambdas = ability weights (scalar)
-        weights = population weights (Sx1 array)
-        e = ability levels (Sx1 array)
-    Outputs:
-        2Sx1 list of euler errors
+    --------------------------------------------------------------------
+    Finds the euler errors for certain b and n, one ability type at a time.
+    --------------------------------------------------------------------
+    
+    INPUTS:
+    guesses = [2S,] vector, initial guesses for b and n
+    r = scalar, real interest rate
+    w = scalar, real wage rate
+    T_H = scalar, lump sum transfer 
+    factor = scalar, scaling factor converting model units to dollars
+    j = integer, ability group
+    params = length 21 tuple, list of parameters
+    chi_b = [J,] vector, chi^b_j, the utility weight on bequests
+    chi_n = [S,] vector, chi^n_s utility weight on labor supply
+    tau_bq = scalar, bequest tax rate
+    rho = [S,] vector, mortality rates by age
+    lambdas = [J,] vector, fraction of population with each ability type
+    omega = [S,] vector, stationary population weights 
+    e =  [S,J] array, effective labor units by age and ability type
+    tax_params = length 4 tuple, (analytical_mtrs, etr_params, mtrx_params, mtry_params)
+    analytical_mtrs = boolean, =True if use analytical_mtrs, =False if 
+                       use estimated MTRs
+    etr_params      = [S,BW,#tax params] array, parameters for effective tax rate function
+    mtrx_params     = [S,BW,#tax params] array, parameters for marginal tax rate on 
+                       labor income function
+    mtry_params     = [S,BW,#tax params] array, parameters for marginal tax rate on 
+                       capital income function
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: 
+    household.get_BQ()
+    tax.replacement_rate_vals()
+    household.euler_savings_func()
+    household.euler_labor_leisure_func()
+    tax.total_taxes()
+    household.get_cons()
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    b_guess = [S,] vector, initial guess at household savings
+    n_guess = [S,] vector, initial guess at household labor supply
+    b_s = [S,] vector, wealth enter period with
+    b_splus1 = [S,] vector, household savings
+    b_splus2 = [S,] vector, household savings one period ahead
+    BQ = scalar, aggregate bequests to lifetime income group
+    theta = scalar, replacement rate for social security benenfits
+    error1 = [S,] vector, errors from FOC for savings 
+    error2 = [S,] vector, errors from FOC for labor supply
+    tax1 = [S,] vector, total income taxes paid
+    cons = [S,] vector, household consumption
+
+    RETURNS: 2Sx1 list of euler errors
+    
+    OUTPUT: None
+    --------------------------------------------------------------------
     '''
-    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
+
+    J, S, beta, sigma, ltilde, g_y,\
                   g_n_ss, tau_payroll, retire, mean_income_data,\
-                  h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
-
-    analytical_mtrs, etr_params, mtrx_params, mtry_params = tax_params
+                  h_wealth, p_wealth, m_wealth, b_ellipse, upsilon,\
+                  j, chi_b, chi_n, tau_bq, rho, lambdas, omega, e,\
+                  analytical_mtrs, etr_params, mtrx_params,\
+                  mtry_params = params
 
     b_guess = np.array(guesses[:S])
     n_guess = np.array(guesses[S:])
@@ -115,8 +213,8 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, tax_params, params, chi
     b_splus1 = b_guess
     b_splus2 = np.array(list(b_guess[1:]) + [0])
 
-    BQ = household.get_BQ(r, b_splus1, weights, lambdas[j], rho, g_n_ss, 'SS')
-    theta = tax.replacement_rate_vals(n_guess, w, factor, e[:, j], J, weights,
+    BQ = household.get_BQ(r, b_splus1, omega, lambdas[j], rho, g_n_ss, 'SS')
+    theta = tax.replacement_rate_vals(n_guess, w, factor, e[:, j], J, omega,
                                       lambdas[j])
 
     error1 = household.euler_savings_func(w, r, e[:, j], n_guess, b_s,
@@ -159,30 +257,66 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, j, tax_params, params, chi
 
 def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
               factorguess, chi_n, chi_b, tax_params, params, iterative_params, tau_bq,
-              rho, lambdas, weights, e, fsolve_flag=False):
+              rho, lambdas, omega, e, fsolve_flag=False):
     '''
+    --------------------------------------------------------------------
     Solves for the steady state distribution of capital, labor, as well as
-    w, r, T_H and the scaling factor, using an iterative method similar to TPI.
-    Inputs:
-        b_guess_init = guesses for b (SxJ array)
-        n_guess_init = guesses for n (SxJ array)
-        wguess = guess for wage rate (scalar)
-        rguess = guess for rental rate (scalar)
-        T_Hguess = guess for lump sum tax (scalar)
-        factorguess = guess for scaling factor to dollars (scalar)
-        chi_n = chi^n_s (Sx1 array)
-        chi_b = chi^b_j (Jx1 array)
-        params = list of parameters (list)
-        iterative_params = list of parameters that determine the convergence
-                           of the while loop (list)
-        tau_bq = bequest tax rate (Jx1 array)
-        rho = mortality rates (Sx1 array)
-        lambdas = ability weights (Jx1 array)
-        weights = population weights (Sx1 array)
-        e = ability levels (SxJ array)
-    Outputs:
-        solutions = steady state values of b, n, w, r, factor,
+    w, r, T_H and the scaling factor, using a bisection method similar to TPI.
+    --------------------------------------------------------------------
+    
+    INPUTS:
+    b_guess_init = [S,J] array, initial guesses for savings
+    n_guess_init = [S,J] array, initial guesses for labor supply
+    wguess = scalar, initial guess for SS real wage rate 
+    rguess = scalar, initial guess for SS real interest rate
+    T_Hguess = scalar, initial guess for lump sum transfer
+    factorguess = scalar, initial guess for scaling factor to dollars
+    chi_b = [J,] vector, chi^b_j, the utility weight on bequests
+    chi_n = [S,] vector, chi^n_s utility weight on labor supply
+    params = lenght X tuple, list of parameters 
+    iterative_params = length X tuple, list of parameters that determine the convergence
+                       of the while loop 
+    tau_bq = [J,] vector, bequest tax rate 
+    rho = [S,] vector, mortality rates by age
+    lambdas = [J,] vector, fraction of population with each ability type
+    omega = [S,] vector, stationary population weights 
+    e =  [S,J] array, effective labor units by age and ability type
+
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: 
+    Euler_equation_solver()
+    household.get_K()
+    firm.get_L()
+    firm.get_Y()
+    firm.get_r()
+    firm.get_w()
+    household.get_BQ()
+    tax.replacement_rate_vals()
+    tax.get_lump_sum()
+    utils.convex_combo()
+    utils.pct_diff_func()
+
+
+
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    b_guess = [S,] vector, initial guess at household savings
+    n_guess = [S,] vector, initial guess at household labor supply
+    b_s = [S,] vector, wealth enter period with
+    b_splus1 = [S,] vector, household savings
+    b_splus2 = [S,] vector, household savings one period ahead
+    BQ = scalar, aggregate bequests to lifetime income group
+    theta = scalar, replacement rate for social security benenfits
+    error1 = [S,] vector, errors from FOC for savings 
+    error2 = [S,] vector, errors from FOC for labor supply
+    tax1 = [S,] vector, total income taxes paid
+    cons = [S,] vector, household consumption
+
+    RETURNS: solutions = steady state values of b, n, w, r, factor,
                     T_H ((2*S*J+4)x1 array)
+    
+    OUTPUT: None
+    --------------------------------------------------------------------
     '''
     
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
@@ -219,7 +353,7 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
                 guesses = np.append(bssmat[:, j-1], nssmat[:, j-1])
 
             args_ = (r, w, T_H, factor, j, tax_params, params, chi_b, chi_n, tau_bq, rho,
-                     lambdas, weights, e)
+                     lambdas, omega, e)
             [solutions, infodict, ier, message] = opt.fsolve(Euler_equation_solver, guesses * .9,
                                    args=args_, xtol=1e-13, full_output=True)
 
@@ -231,29 +365,29 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
             # nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n,
             # theta, tau_bq, rho, lambdas, e)).max()
 
-        K = household.get_K(bssmat, weights.reshape(S, 1),
+        K = household.get_K(bssmat, omega.reshape(S, 1),
                             lambdas.reshape(1, J), g_n_ss, 'SS')
-        L = firm.get_L(e, nssmat, weights.reshape(S, 1),
+        L = firm.get_L(e, nssmat, omega.reshape(S, 1),
                        lambdas.reshape(1, J), 'SS')
         Y = firm.get_Y(K, L, params)
         new_r = firm.get_r(Y, K, params)
         new_w = firm.get_w(Y, L, params)
         b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
         average_income_model = ((new_r * b_s + new_w * e * nssmat) *
-                                weights.reshape(S, 1) *
+                                omega.reshape(S, 1) *
                                 lambdas.reshape(1, J)).sum()
         new_factor = mean_income_data / average_income_model
-        new_BQ = household.get_BQ(new_r, bssmat, weights.reshape(S, 1),
+        new_BQ = household.get_BQ(new_r, bssmat, omega.reshape(S, 1),
                                   lambdas.reshape(1, J), rho.reshape(S, 1),
                                   g_n_ss, 'SS')
         theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, e, J,
-                                          weights.reshape(S, 1), lambdas)
+                                          omega.reshape(S, 1), lambdas)
         # lump_sum_tax_params = (a_etr_income, b_etr_income, c_etr_income, d_etr_income, 
         #                    e_etr_income, f_etr_income, min_x_etr_income, max_x_etr_income, 
         #                    min_y_etr_income, max_y_etr_income)
         new_T_H = tax.get_lump_sum(new_r, b_s, new_w, e, nssmat, new_BQ,
                                    lambdas.reshape(1, J), factor,
-                                   weights.reshape(S, 1), 'SS', etr_params, params, theta,
+                                   omega.reshape(S, 1), 'SS', etr_params, params, theta,
                                    tau_bq)
 
         r = utils.convex_combo(new_r, r, nu)
@@ -261,17 +395,17 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
         factor = utils.convex_combo(new_factor, factor, nu)
         T_H = utils.convex_combo(new_T_H, T_H, nu)
         if T_H != 0:
-            dist = np.array([utils.perc_dif_func(new_r, r)] +
-                            [utils.perc_dif_func(new_w, w)] +
-                            [utils.perc_dif_func(new_T_H, T_H)] +
-                            [utils.perc_dif_func(new_factor, factor)]).max()
+            dist = np.array([utils.pct_diff_func(new_r, r)] +
+                            [utils.pct_diff_func(new_w, w)] +
+                            [utils.pct_diff_func(new_T_H, T_H)] +
+                            [utils.pct_diff_func(new_factor, factor)]).max()
         else:
             # If T_H is zero (if there are no taxes), a percent difference
             # will throw NaN's, so we use an absoluate difference
-            dist = np.array([utils.perc_dif_func(new_r, r)] +
-                            [utils.perc_dif_func(new_w, w)] +
+            dist = np.array([utils.pct_diff_func(new_r, r)] +
+                            [utils.pct_diff_func(new_w, w)] +
                             [abs(new_T_H - T_H)] +
-                            [utils.perc_dif_func(new_factor, factor)]).max()
+                            [utils.pct_diff_func(new_factor, factor)]).max()
         dist_vec[iteration] = dist
         # Similar to TPI: if the distance between iterations increases, then
         # decrease the value of nu to prevent cycling
@@ -291,7 +425,7 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
     for j in xrange(J):
         guesses = np.append(bssmat[:, j], nssmat[:, j])
         args_ = (r, w, T_H, factor, j, tax_params, params, chi_b, chi_n, tau_bq, rho,
-                 lambdas, weights, e)
+                 lambdas, omega, e)
         [solutions1, infodict, ier, message] = opt.fsolve(Euler_equation_solver, guesses * .9,
                                    args=args_, xtol=1e-13, full_output=True)
         eul_errors[j] = np.array(infodict['fvec']).max()
@@ -304,8 +438,11 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
     solutions = np.append(solutions, other_vars)
     return solutions
 
-def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, params, iterative_params, tau_bq,
-              rho, lambdas, weights, e):
+# def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, params, iterative_params, tau_bq,
+#               rho, lambdas, omega, e):
+def SS_fsolve(guesses, params):
+ss_params = (b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params[J:], chi_params[:J], 
+             income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
     '''
     Solves for the steady state distribution of capital, labor, as well as
     w, r, T_H and the scaling factor, using an a root finder.
@@ -324,7 +461,7 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
         tau_bq = bequest tax rate (Jx1 array)
         rho = mortality rates (Sx1 array)
         lambdas = ability weights (Jx1 array)
-        weights = population weights (Sx1 array)
+        omega = population weights (Sx1 array)
         e = ability levels (SxJ array)
     Outputs:
         solutions = steady state values of b, n, w, r, factor,
@@ -355,7 +492,7 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
         else:
             guesses = np.append(bssmat[:, j-1], nssmat[:, j-1])
         args_ = (r, w, T_H, factor, j, tax_params, params, chi_b, chi_n, tau_bq, rho,
-                 lambdas, weights, e)
+                 lambdas, omega, e)
         [solutions, infodict, ier, message] = opt.fsolve(Euler_equation_solver, guesses * .9,
                                    args=args_, xtol=1e-13, full_output=True)
 
@@ -367,27 +504,27 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
         # nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n,
         # theta, tau_bq, rho, lambdas, e)).max()
 
-    K = household.get_K(bssmat, weights.reshape(S, 1),
+    K = household.get_K(bssmat, omega.reshape(S, 1),
                         lambdas.reshape(1, J), g_n_ss, 'SS')
-    L = firm.get_L(e, nssmat, weights.reshape(S, 1),
+    L = firm.get_L(e, nssmat, omega.reshape(S, 1),
                    lambdas.reshape(1, J), 'SS')
     Y = firm.get_Y(K, L, params)
     new_r = firm.get_r(Y, K, params)
     new_w = firm.get_w(Y, L, params)
     b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
     average_income_model = ((new_r * b_s + new_w * e * nssmat) *
-                            weights.reshape(S, 1) *
+                            omega.reshape(S, 1) *
                             lambdas.reshape(1, J)).sum()
     new_factor = mean_income_data / average_income_model
-    new_BQ = household.get_BQ(new_r, bssmat, weights.reshape(S, 1),
+    new_BQ = household.get_BQ(new_r, bssmat, omega.reshape(S, 1),
                               lambdas.reshape(1, J), rho.reshape(S, 1),
                               g_n_ss, 'SS')
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, e, J,
-                                      weights.reshape(S, 1), lambdas)
+                                      omega.reshape(S, 1), lambdas)
 
     new_T_H = tax.get_lump_sum(new_r, b_s, new_w, e, nssmat, new_BQ,
                                lambdas.reshape(1, J), factor,
-                               weights.reshape(S, 1), 'SS', etr_params, params, theta,
+                               omega.reshape(S, 1), 'SS', etr_params, params, theta,
                                tau_bq)
 
 
@@ -415,7 +552,7 @@ def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, par
     return [error1, error2, error3, error4]
 
 def SS_fsolve_reform(guesses, b_guess_init, n_guess_init, factor, chi_n, chi_b, tax_params, params, iterative_params, tau_bq,
-              rho, lambdas, weights, e):
+              rho, lambdas, omega, e):
     '''
     Solves for the steady state distribution of capital, labor, as well as
     w, r, and T_H and the scaling factor, using a root finder. This solves for the 
@@ -435,7 +572,7 @@ def SS_fsolve_reform(guesses, b_guess_init, n_guess_init, factor, chi_n, chi_b, 
         tau_bq = bequest tax rate (Jx1 array)
         rho = mortality rates (Sx1 array)
         lambdas = ability weights (Jx1 array)
-        weights = population weights (Sx1 array)
+        omega = population weights (Sx1 array)
         e = ability levels (SxJ array)
     Outputs:
         solutions = steady state values of b, n, w, r, factor,
@@ -468,7 +605,7 @@ def SS_fsolve_reform(guesses, b_guess_init, n_guess_init, factor, chi_n, chi_b, 
         else:
             guesses = np.append(bssmat[:, j-1], nssmat[:, j-1])
         args_ = (r, w, T_H, factor, j, tax_params, params, chi_b, chi_n, tau_bq, rho,
-                 lambdas, weights, e)
+                 lambdas, omega, e)
         [solutions, infodict, ier, message] = opt.fsolve(Euler_equation_solver, guesses * .9,
                                    args=args_, xtol=1e-13, full_output=True)
 
@@ -480,27 +617,27 @@ def SS_fsolve_reform(guesses, b_guess_init, n_guess_init, factor, chi_n, chi_b, 
         # nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n,
         # theta, tau_bq, rho, lambdas, e)).max()
 
-    K = household.get_K(bssmat, weights.reshape(S, 1),
+    K = household.get_K(bssmat, omega.reshape(S, 1),
                         lambdas.reshape(1, J), g_n_ss, 'SS')
-    L = firm.get_L(e, nssmat, weights.reshape(S, 1),
+    L = firm.get_L(e, nssmat, omega.reshape(S, 1),
                    lambdas.reshape(1, J), 'SS')
     Y = firm.get_Y(K, L, params)
     new_r = firm.get_r(Y, K, params)
     new_w = firm.get_w(Y, L, params)
     b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
     average_income_model = ((new_r * b_s + new_w * e * nssmat) *
-                            weights.reshape(S, 1) *
+                            omega.reshape(S, 1) *
                             lambdas.reshape(1, J)).sum()
     new_factor = mean_income_data / average_income_model
-    new_BQ = household.get_BQ(new_r, bssmat, weights.reshape(S, 1),
+    new_BQ = household.get_BQ(new_r, bssmat, omega.reshape(S, 1),
                               lambdas.reshape(1, J), rho.reshape(S, 1),
                               g_n_ss, 'SS')
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, e, J,
-                                      weights.reshape(S, 1), lambdas)
+                                      omega.reshape(S, 1), lambdas)
 
     new_T_H = tax.get_lump_sum(new_r, b_s, new_w, e, nssmat, new_BQ,
                                lambdas.reshape(1, J), factor,
-                               weights.reshape(S, 1), 'SS', etr_params, params, theta,
+                               omega.reshape(S, 1), 'SS', etr_params, params, theta,
                                tau_bq)
 
 
@@ -526,7 +663,7 @@ def SS_fsolve_reform(guesses, b_guess_init, n_guess_init, factor, chi_n, chi_b, 
 
 
 def function_to_minimize(chi_params_scalars, chi_params_init, income_tax_parameters, ss_parameters, 
-                         iterative_params, weights_SS, rho_vec, lambdas, tau_bq, e, output_dir):
+                         iterative_params, omega_SS, rho_vec, lambdas, tau_bq, e, output_dir):
     '''
     Inputs:
         chi_params_scalars = guesses for multipliers for chi parameters
@@ -534,7 +671,7 @@ def function_to_minimize(chi_params_scalars, chi_params_init, income_tax_paramet
         chi_params_init = chi parameters that will be multiplied
                           ((S+J)x1 array)
         params = list of parameters (list)
-        weights_SS = steady state population weights (Sx1 array)
+        omega_SS = steady state population weights (Sx1 array)
         rho_vec = mortality rates (Sx1 array)
         lambdas = ability weights (Jx1 array)
         tau_bq = bequest tax rates (Jx1 array)
@@ -586,14 +723,14 @@ def function_to_minimize(chi_params_scalars, chi_params_init, income_tax_paramet
     else:
         lab_dist_data = lab_data_dict['labor_dist_data']
 
-    error6 = list(utils.perc_dif_func(labor_sim, lab_dist_data))
+    error6 = list(utils.pct_diff_func(labor_sim, lab_dist_data))
     # combine eulers
     output = np.array(error5 + error6)
     # Constraints
     eul_error = np.ones(J)
     for j in xrange(J):
         eul_error[j] = np.abs(Euler_equation_solver(np.append(b_new.reshape(S, J)[:, j], n_new.reshape(S, J)[:, j]), r_new, w_new,
-                                                    T_H_new, factor_new, j, income_tax_parameters, ss_parameters, chi_params_init[:J], chi_params_init[J:], tau_bq, rho, lambdas, weights_SS, e)).max()
+                                                    T_H_new, factor_new, j, income_tax_parameters, ss_parameters, chi_params_init[:J], chi_params_init[J:], tau_bq, rho, lambdas, omega_SS, e)).max()
     fsolve_no_converg = eul_error.max()
     if np.isnan(fsolve_no_converg):
         fsolve_no_converg = 1e6
@@ -651,11 +788,44 @@ def callbackF(chi,chi_params, income_tax_parameters, ss_parameters, iterative_pa
     Nfeval += 1
 
 
-def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, baseline=True, calibrate_model=False, output_dir="./OUTPUT", baseline_dir="./OUTPUT"):
+def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, chi_params, baseline=True, calibrate_model=False, output_dir="./OUTPUT", baseline_dir="./OUTPUT"):
     '''
-    ------------------------------------------------------------------------
-        Run SS
-    ------------------------------------------------------------------------
+    --------------------------------------------------------------------
+    Solve for SS of OG-USA.
+    --------------------------------------------------------------------
+    
+    INPUTS:
+    income_tax_parameters = length 4 tuple, (analytical_mtrs, etr_params, mtrx_params, mtry_params)
+    ss_parameters = length 21 tuple, (J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
+                  g_n_ss, tau_payroll, retire, mean_income_data,\
+                  h_wealth, p_wealth, m_wealth, b_ellipse, upsilon)
+    iterative_params  = [2,] vector, vector with max iterations and tolerance 
+                        for SS solution
+    baseline = boolean, =True if run is for baseline tax policy
+    calibrate_model = boolean, =True if run calibration of chi parameters
+    output_dir = string, path to save output from current model run
+    baseline_dir = string, path where baseline results located
+
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
+    SS_fsolve()
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    chi_params = [J+S,] vector, chi_b and chi_n stacked together
+    b_guess = [S,J] array, initial guess at savings
+    n_guess = [S,J] array, initial guess at labor supply
+    wguess = scalar, initial guess at SS real wage rate
+    rguess = scalar, initial guess at SS real interest rate
+    T_Hguess = scalar, initial guess at SS lump sum transfers
+    factorguess = scalar, initial guess at SS factor adjustment (to scale model units to dollars)
+
+    output 
+    
+
+    RETURNS: output
+    
+    OUTPUT: None
+    --------------------------------------------------------------------
     '''
 
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
@@ -663,6 +833,8 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, bas
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_parameters
 
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_parameters
+
+    chi_b_guess, chi_n_guess = chi_b_params
 
     # Generate initial guesses for chi^b_j and chi^n_s
     chi_params = np.zeros(S + J)
@@ -680,10 +852,10 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, bas
         rguess = .06
         T_Hguess = 0.12 
         factorguess = 70000
-        args_ = (b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params[J:], chi_params[:J], 
+        ss_params = (b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params[J:], chi_params[:J], 
              income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
         guesses = [wguess, rguess, T_Hguess, factorguess]
-        [solutions, infodict, ier, message] = opt.fsolve(SS_fsolve, guesses, args=args_, xtol=mindist_SS, full_output=True)
+        [solutions, infodict, ier, message] = opt.fsolve(SS_fsolve, guesses, args=ss_params, xtol=mindist_SS, full_output=True)
         [wguess, rguess, T_Hguess, factorguess] = solutions
         fsolve_flag = True
         solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[

@@ -42,7 +42,7 @@ def mkdirs(path):
             pass
 
 
-def pct_dif_func(simul, data):
+def pct_diff_func(simul, data):
     '''
     Used to calculate the absolute percent difference between data
     moments and model moments.
