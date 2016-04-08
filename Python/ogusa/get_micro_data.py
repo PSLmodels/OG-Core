@@ -13,7 +13,7 @@ This Python script calls the following functions:
     get_micro_data.py
     taxcalc
     
-This Python script outputs the following:
+This py-file creates the following other file(s):
     ./TAX_ESTIMATE_PATH/TxFuncEst_baseline{}.pkl
     ./TAX_ESTIMATE_PATH/TxFuncEst_policy{}.pkl
 

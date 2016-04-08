@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 7/13/2015
+Last updated 4/8/2016
 
 Functions for generating omega, the T x S array which describes the
 demographics of the population
