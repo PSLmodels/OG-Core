@@ -1,18 +1,19 @@
 '''
 ------------------------------------------------------------------------
-Last updated 12/02/2015
+Last updated 4/8/2016
 
-This program read in the output from TPI.py and creates table of
+This program reads in the output from TPI.py and creates table of
 percentage changes between the baseline and policy results.
 
 This py-file calls the following other file(s):
-            OUTPUT/TPIinit/TPIinit_vars.pkl
-            OUTPUT/TPI/TPI_vars.pkl
+            /baseline_dir/TPI/TPI_macro_vars.pkl
+            /policy_dir/TPI/TPI_macro_vars.pkl
+            /baseline_dir/SSinit/ss_init_vars.pkl
+            /policy_dir/SSinit/ss_init_vars.pkl
 
 
-This py-file creates the following other file(s):
-    (make sure that an OUTPUT folder exists)
-            OUTPUT/TPI/ogusa_output.pkl
+
+This py-file creates the following other file(s): None
 ------------------------------------------------------------------------
 '''
 
@@ -22,30 +23,70 @@ import cPickle as pickle
 import os
 
 def dump_diff_output(baseline_dir, policy_dir):
+    '''
+    --------------------------------------------------------------------
+    This function calls the tax function estimation routine and saves
+    the resulting dictionary in pickle files corresponding to the
+    baseline or reform policy.
+    --------------------------------------------------------------------
+    
+    INPUTS:
+    baseline_dir = string, path for directory with baseline policy results
+    policy_dir   = string, path for directory with reform policy results
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    tpi_macro_vars_policy_path   = string, path to pickle with time path 
+                                    results for reform
+    tpi_macro_vars_policy        = dictionary, dictionary with numpy arrays of 
+                                    results from transition path equilibrium for reform
+    tpi_macro_vars_baseline_path = string, path to pickle with time path 
+                                    results for baseline policy
+    tpi_macro_vars_baseline      = dictionary, dictionary with numpy arrays of 
+                                    results from transition path equilibrium for baseline policy
+    baseline_macros              = [7,T] array, numpy array with time path for relevant macro 
+                                    variables from baseline equilibrium
+    policy_macros                = [7,T] array, numpy array with time path for relevant macro 
+                                    variables from reform equilibrium
+    pct_changes                  = [7,12] array, numpy array with pct changes in macro variables 
+                                    from baseline to reform for each year 
+                                    in the budget window (10 years), over all 10 years, and in the SS
+    ss_policy_path               = string, path to pickle of SS results for reform
+    ss_policy                    = dictionary, dictionary with numpy arrays of results from 
+                                    SS equilibrium for reform
+    ss_baseline_path             = string, path to pickle of SS results for baseline
+    ss_baseline                  = dictionary, dictionary with numpy arrays of results from 
+                                    SS equilibrium for baseline
+
+    RETURNS: pct_changes
+    --------------------------------------------------------------------
+    '''
+
     # read macro output
     tpi_macro_vars_policy_path = os.path.join(policy_dir, "TPI", "TPI_macro_vars.pkl")
-    TPI_macro_vars_policy = pickle.load(open( tpi_macro_vars_policy_path, "rb" ))
+    tpi_macro_vars_policy = pickle.load(open( tpi_macro_vars_policy_path, "rb" ))
     tpi_macro_vars_baseline_path = os.path.join(baseline_dir, "TPI", "TPI_macro_vars.pkl")
-    TPI_macro_vars_baseline = pickle.load(open( tpi_macro_vars_baseline_path, "rb" ) )
+    tpi_macro_vars_baseline = pickle.load(open( tpi_macro_vars_baseline_path, "rb" ) )
 
     T = len(TPI_macro_vars_baseline['C_path'])
     baseline_macros = np.zeros((7,T))
-    baseline_macros[0,:] = TPI_macro_vars_baseline['Y_path'][:T]
-    baseline_macros[1,:] = TPI_macro_vars_baseline['C_path'][:T]
-    baseline_macros[2,:] = TPI_macro_vars_baseline['I_path'][:T]
-    baseline_macros[3,:] = TPI_macro_vars_baseline['Lpath_TPI'][:T]
-    baseline_macros[4,:] = TPI_macro_vars_baseline['winit'][:T]
-    baseline_macros[5,:] = TPI_macro_vars_baseline['rinit'][:T]
-    baseline_macros[6,:] = TPI_macro_vars_baseline['T_H_init'][:T]
+    baseline_macros[0,:] = tpi_macro_vars_baseline['Y_path'][:T]
+    baseline_macros[1,:] = tpi_macro_vars_baseline['C_path'][:T]
+    baseline_macros[2,:] = tpi_macro_vars_baseline['I_path'][:T]
+    baseline_macros[3,:] = tpi_macro_vars_baseline['Lpath_TPI'][:T]
+    baseline_macros[4,:] = tpi_macro_vars_baseline['winit'][:T]
+    baseline_macros[5,:] = tpi_macro_vars_baseline['rinit'][:T]
+    baseline_macros[6,:] = tpi_macro_vars_baseline['T_H_init'][:T]
 
     policy_macros = np.zeros((7,T))
-    policy_macros[0,:] = TPI_macro_vars_policy['Y_path'][:T]
-    policy_macros[1,:] = TPI_macro_vars_policy['C_path'][:T]
-    policy_macros[2,:] = TPI_macro_vars_policy['I_path'][:T]
-    policy_macros[3,:] = TPI_macro_vars_policy['Lpath_TPI'][:T]
-    policy_macros[4,:] = TPI_macro_vars_policy['winit'][:T]
-    policy_macros[5,:] = TPI_macro_vars_policy['rinit'][:T]
-    policy_macros[6,:] = TPI_macro_vars_policy['T_H_init'][:T]
+    policy_macros[0,:] = tpi_macro_vars_policy['Y_path'][:T]
+    policy_macros[1,:] = tpi_macro_vars_policy['C_path'][:T]
+    policy_macros[2,:] = tpi_macro_vars_policy['I_path'][:T]
+    policy_macros[3,:] = tpi_macro_vars_policy['Lpath_TPI'][:T]
+    policy_macros[4,:] = tpi_macro_vars_policy['winit'][:T]
+    policy_macros[5,:] = tpi_macro_vars_policy['rinit'][:T]
+    policy_macros[6,:] = tpi_macro_vars_policy['T_H_init'][:T]
 
     pct_changes = np.zeros((7,12))
     # pct changes for each year in budget window
@@ -69,10 +110,6 @@ def dump_diff_output(baseline_dir, policy_dir):
 
     #print 'pct changes: ', pct_changes
 
-
     return pct_changes
 
-
-#pct_changes = dump_diff_output('/Users/jasondebacker/repos/dynamic/Python/OUTPUT_BASELINE','/Users/jasondebacker/repos/dynamic/Python/OUTPUT_REFORM')
-#np.savetxt("pct_changes_02082016.csv", pct_changes, delimiter=",")
 
