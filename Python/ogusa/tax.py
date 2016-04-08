@@ -154,11 +154,21 @@ def tau_income(r, w, b, n, factor, params):
     Functions called: None
 
     Objects in function:
-        x   = [T,S,J] array, labor income
-        y   = [T,S,J] array, capital income
-        I   = [T,S,J] array, total income (capital plus labor income)
-        phi = [T,S,J] array, fraction of total income that is labor income
-        tau = [T,S,J] array, personal income tax liability
+        A     = [T,S,J] array, polynomial coefficient on x**2
+        B     = [T,S,J] array, polynomial coefficient on y**2
+        C     = [T,S,J] array, polynomial coefficient on x*y
+        D     = [T,S,J] array, polynomial coefficient on x
+        E     = [T,S,J] array, polynomial coefficient on y
+        F     = [T,S,J] array, polynomial constant
+        max_x = [T,S,J] array, maximum effective tax rate for x given y=0
+        min_x = [T,S,J] array, minimum effective tax rate for x given y=0
+        max_y = [T,S,J] array, maximum effective tax rate for y given x=0
+        min_y = [T,S,J] array, minimum effective tax rate for y given x=0
+        x     = [T,S,J] array, labor income
+        y     = [T,S,J] array, capital income
+        I     = [T,S,J] array, total income (capital plus labor income)
+        phi   = [T,S,J] array, fraction of total income that is labor income
+        tau   = [T,S,J] array, personal income tax liability
 
     Returns: tau
     '''
@@ -244,16 +254,16 @@ def MTR_capital(r, w, b, n, factor, params):
     Functions called: None
 
     Objects in function:
-        A     = [T,S,J] array, A parameter of tax function
-        B     = [T,S,J] array, B parameter of tax function
-        C     = [T,S,J] array, C parameter of tax function
-        D     = [T,S,J] array, D parameter of tax function
-        E     = [T,S,J] array, E parameter of tax function
-        F     = [T,S,J] array, F parameter of tax function
-        max_x = [T,S,J] array, max_x parameter of tax function
-        min_x = [T,S,J] array, min_x parameter of tax function
-        max_y = [T,S,J] array, max_y parameter of tax function
-        min_y = [T,S,J] array, min_y parameter of tax function
+        A     = [T,S,J] array, polynomial coefficient on x**2
+        B     = [T,S,J] array, polynomial coefficient on y**2
+        C     = [T,S,J] array, polynomial coefficient on x*y
+        D     = [T,S,J] array, polynomial coefficient on x
+        E     = [T,S,J] array, polynomial coefficient on y
+        F     = [T,S,J] array, polynomial constant
+        max_x = [T,S,J] array, maximum effective tax rate for x given y=0
+        min_x = [T,S,J] array, minimum effective tax rate for x given y=0
+        max_y = [T,S,J] array, maximum effective tax rate for y given x=0
+        min_y = [T,S,J] array, minimum effective tax rate for y given x=0
         x     = [T,S,J] array, labor income
         y     = [T,S,J] array, capital income
         I     = [T,S,J] array, total income (capital plus labor income)
@@ -383,16 +393,16 @@ def MTR_labor(r, w, b, n, factor, params):
     Functions called: None
 
     Objects in function:
-        A     = [T,S,J] array, A parameter of tax function
-        B     = [T,S,J] array, B parameter of tax function
-        C     = [T,S,J] array, C parameter of tax function
-        D     = [T,S,J] array, D parameter of tax function
-        E     = [T,S,J] array, E parameter of tax function
-        F     = [T,S,J] array, F parameter of tax function
-        max_x = [T,S,J] array, max_x parameter of tax function
-        min_x = [T,S,J] array, min_x parameter of tax function
-        max_y = [T,S,J] array, max_y parameter of tax function
-        min_y = [T,S,J] array, min_y parameter of tax function
+        A     = [T,S,J] array, polynomial coefficient on x**2
+        B     = [T,S,J] array, polynomial coefficient on y**2
+        C     = [T,S,J] array, polynomial coefficient on x*y
+        D     = [T,S,J] array, polynomial coefficient on x
+        E     = [T,S,J] array, polynomial coefficient on y
+        F     = [T,S,J] array, polynomial constant
+        max_x = [T,S,J] array, maximum effective tax rate for x given y=0
+        min_x = [T,S,J] array, minimum effective tax rate for x given y=0
+        max_y = [T,S,J] array, maximum effective tax rate for y given x=0
+        min_y = [T,S,J] array, minimum effective tax rate for y given x=0
         x     = [T,S,J] array, labor income
         y     = [T,S,J] array, capital income
         I     = [T,S,J] array, total income (capital plus labor income)
