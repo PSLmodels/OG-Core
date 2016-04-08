@@ -1872,8 +1872,9 @@ def get_tax_func_estimate(baseline=False, analytical_mtrs=True,
 
     OBJECTS CREATED WITHIN FUNCTION:
 
-    RETURNS: 
-    saves:
+    RETURNS: N/A
+    
+    OUTPUT:
     ./TAX_ESTIMATE_PATH/TxFuncEst_baseline{}.pkl
     ./TAX_ESTIMATE_PATH/TxFuncEst_policy{}.pkl
     --------------------------------------------------------------------

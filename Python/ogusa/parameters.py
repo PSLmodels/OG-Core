@@ -1,8 +1,8 @@
 '''
 ------------------------------------------------------------------------
-Last updated 7/21/2015
+Last updated 4/8/2015
 
-This file generates demographic and ability variables.
+This file sets parameters for the model run.
 
 This py-file calls the following other file(s):
             income.py
@@ -27,16 +27,36 @@ import elliptical_u_est
 import matplotlib.pyplot as plt
 
 
+'''
+------------------------------------------------------------------------
+Set paths, define user modifiable parameters
+------------------------------------------------------------------------
+'''
 DATASET = 'REAL'
 PARAMS_FILE = os.path.join(os.path.dirname(__file__), 'default_full_parameters.json')
 PARAMS_FILE_METADATA_NAME = 'parameters_metadata.json'
 PARAMS_FILE_METADATA_PATH = os.path.join(os.path.dirname(__file__), PARAMS_FILE_METADATA_NAME)
-
 TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
-
 USER_MODIFIABLE_PARAMS = ['g_y_annual', 'frisch']
 
+
 def read_parameter_metadata():
+    '''
+    --------------------------------------------------------------------
+    This function reads in parameter metadata
+    --------------------------------------------------------------------
+    
+    INPUTS: None
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: 
+    /PARAMS_FILE_METADATA_PATH/ = json file with metadata 
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    params_dict = dictionary of metadata
+
+    RETURNS: params_dict
+    --------------------------------------------------------------------
+    '''
     if os.path.exists(PARAMS_FILE_METADATA_PATH):
         with open(PARAMS_FILE_METADATA_PATH) as pfile:
             params_dict = json.load(pfile)
@@ -50,7 +70,26 @@ def read_parameter_metadata():
 
     return params_dict
 
+
 def read_tax_func_estimate(pickle_path, pickle_file):
+'''
+    --------------------------------------------------------------------
+    This function reads in tax function parameters
+    --------------------------------------------------------------------
+    
+    INPUTS: 
+    pickle_path = string, path to pickle with tax function parameter estimates
+    pickle_file = string, name of pickle file with tax function parmaeter estimates
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: 
+    /picklepath/ = pickle file with dictionary of tax function estimated parameters
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    dict_params = dictionary, contains numpy arrays of tax function estimates
+
+    RETURNS: dict_params
+    --------------------------------------------------------------------
+    '''
     if os.path.exists(pickle_path):
         with open(pickle_path) as pfile:
             dict_params = pickle.load(pfile)
@@ -66,6 +105,21 @@ def read_tax_func_estimate(pickle_path, pickle_file):
 
 
 def get_parameters_from_file():
+    '''
+    --------------------------------------------------------------------
+    This function loads the json file with model parameters
+    --------------------------------------------------------------------
+    
+    INPUTS: None
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: 
+    /PARAMS_FILE/ = json file with model parameters
+
+    OBJECTS CREATED WITHIN FUNCTION:
+
+    RETURNS: j
+    --------------------------------------------------------------------
+    '''
     with open(PARAMS_FILE,'r') as f:
         j = json.load(f)
         for key in j:
@@ -73,7 +127,29 @@ def get_parameters_from_file():
                 j[key] = np.array(j[key])
         return j
 
+
 def get_parameters(baseline=False, guid='', user_modifiable=False, metadata=False):
+    '''
+    --------------------------------------------------------------------
+    This function returns the model parameters.
+    --------------------------------------------------------------------
+    
+    INPUTS: 
+    baseline        = boolean, =True if run is of baseline policy
+    guid            = string, id for model run
+    user_modifiable = boolean, =True if allow user modifiable parameters
+    metadata        = boolean, =True if use metadata file for parameter 
+                       values (rather than what is entered in parameters below)
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: 
+    get_full_parameters()
+    get_reduced_parameters()
+
+    OBJECTS CREATED WITHIN FUNCTION:
+
+    RETURNS: dictionary with model parameters
+    --------------------------------------------------------------------
+    '''
     if DATASET == 'REAL':
         return get_full_parameters(baseline=baseline, guid=guid,
                                    user_modifiable=user_modifiable,
@@ -93,83 +169,106 @@ Parameters
 ------------------------------------------------------------------------
 Model Parameters:
 ------------------------------------------------------------------------
-S            = number of periods an individual lives (scalar)
-J            = number of different ability groups (scalar)
-T            = number of time periods until steady state is reached (scalar)
-BW           = number of time periods in the budget window (scalar)
-lambdas      = percentiles for ability groups (Jx1 array)
-starting_age = age of first members of cohort (scalar)
-ending age   = age of the last members of cohort (scalar)
-E            = number of cohorts before S=1 (scalar)
-beta_annual  = discount factor for one year (scalar)
-beta         = discount factor for each age cohort (scalar)
-sigma        = coefficient of relative risk aversion (scalar)
-alpha        = capital share of income (scalar)
-Z            = total factor productivity parameter in firms' production
-               function (scalar)
-delta_annual = depreciation rate of capital for one year (scalar)
-delta        = depreciation rate of capital for each cohort (scalar)
-ltilde       = measure of time each individual is endowed with each
-               period (scalar)
-g_y_annual   = annual growth rate of technology (scalar)
-g_y          = growth rate of technology for one cohort (scalar)
-b_ellipse    = value of b for elliptical fit of utility function (scalar)
-k_ellipse    = value of k for elliptical fit of utility function (scalar)
-upsilon      = value of omega for elliptical fit of utility function (scalar)
+S            = integer, number of economically active periods an individual lives
+J            = integer, number of different ability groups
+T            = integer, number of time periods until steady state is reached 
+BW           = integer, number of time periods in the budget window
+lambdas      = [J,] vector, percentiles for ability groups
+starting_age = integer, age agents enter population
+ending age   = integer, maximum age agents can live until
+E            = integer, age agents become economically active
+beta_annual  = scalar, discount factor as an annual rate
+beta         = scalar, discount factor for model period
+sigma        = scalar, coefficient of relative risk aversion
+alpha        = scalar, capital share of income 
+Z            = scalar, total factor productivity parameter in firms' production
+               function
+delta_annual = scalar, depreciation rate as an annual rate
+delta        = scalar, depreciation rate for model period
+ltilde       = scalar, measure of time each individual is endowed with each
+               period
+g_y_annual   = scalar, annual growth rate of technology
+g_y          = scalar, growth rate of technology for a model period
+frisch       = scalar, Frisch elasticity that is used to fit ellipitcal utility
+               to constant Frisch elasticity function 
+b_ellipse    = scalar, value of b for elliptical fit of utility function
+k_ellipse    = scalar, value of k for elliptical fit of utility function
+upsilon      = scalar, value of omega for elliptical fit of utility function
 ------------------------------------------------------------------------
 Tax Parameters:
 ------------------------------------------------------------------------
-mean_income_data = mean income from IRS data file used to calibrate income tax
-               (scalar)
-a_tax_income     = used to calibrate income tax (SxBW array)
-b_tax_income     = used to calibrate income tax (SxBW array)
-c_tax_income     = used to calibrate income tax (SxBW array)
-d_tax_income     = used to calibrate income tax (SxBW array)
-e_tax_income     = used to calibrate income tax (SxBW array)
-f_tax_income     = used to calibrate income tax (SxBW array)
-min_x_tax_income = used to calibrate income tax (SxBW array)
-max_x_tax_income = used to calibrate income tax (SxBW array)
-min_y_tax_income = used to calibrate income tax (SxBW array)
-max_y_tax_income = used to calibrate income tax (SxBW array)
-h_wealth         = wealth tax parameter h (scalar)
-m_wealth         = wealth tax parameter m (scalar)
-p_wealth         = wealth tax parameter p (scalar)
-tau_bq           = bequest tax (Jx1 array)
-tau_payroll      = payroll tax (scalar)
-retire           = age at which individuals retire (scalar)
+mean_income_data = scalar, mean income from IRS data file used to calibrate income tax
+etr_params       = [S,BW,#tax params] array, parameters for effective tax rate function
+mtrx_params      = [S,BW,#tax params] array, parameters for marginal tax rate on 
+                    labor income function
+mtry_params      = [S,BW,#tax params] array, parameters for marginal tax rate on 
+                    capital income function
+h_wealth         = scalar, wealth tax parameter h (scalar)
+m_wealth         = scalar, wealth tax parameter m (scalar)
+p_wealth         = scalar, wealth tax parameter p (scalar)
+tau_bq           = [J,] vector, bequest tax 
+tau_payroll      = scalar, payroll tax rate
+retire           = integer, age at which individuals eligible for retirement benefits
 ------------------------------------------------------------------------
 Simulation Parameters:
 ------------------------------------------------------------------------
-MINIMIZER_TOL= Tolerance level for the minimizer in the calibration of chi's (scalar)
-MINIMIZER_OPTIONS = dictionary for options to put into the minimizer, usually
-                    to set a max iteration (dict)
-PLOT_TPI     = Plot the path of K as TPI iterates (for debugging purposes) (bool)
-maxiter      = Maximum number of iterations that SS and TPI will undergo (scalar)
-mindist_SS   = Cut-off distance between iterations for SS (scalar)
-mindist_TPI  = Cut-off distance between iterations for TPI (scalar)
-nu           = contraction parameter in SS and TPI iteration process
-               representing the weight on the new distribution (scalar)
-flag_graphs  = Flag to prevent graphing from occuring in demographic, income,
-               wealth, and labor files (True=graph) (bool)
-chi_b_guess  = Chi^b_j initial guess for model (Jx1 array)
-               (if no calibration occurs, these are the values that will be used for chi^b_j)
-chi_n_guess  = Chi^n_s initial guess for model (Sx1 array)
-               (if no calibration occurs, these are the values that will be used for chi^n_s)
+MINIMIZER_TOL = scalar, tolerance level for the minimizer in the calibration of chi parameters
+MINIMIZER_OPTIONS = dictionary, dictionary for options to put into the minimizer, usually
+                    to set a max iteration
+PLOT_TPI     = boolean, =Ture if plot the path of K as TPI iterates (for debugging purposes)
+maxiter      = integer, maximum number of iterations that SS and TPI solution methods will undergo
+mindist_SS   = scalar, tolerance for SS solution
+mindist_TPI  = scalar, tolerance for TPI solution
+nu           = scalar, contraction parameter in SS and TPI iteration process
+               representing the weight on the new distribution
+flag_graphs  = boolean, =True if produce graphs in demographic, income,
+               wealth, and labor files (True=graph)
+chi_b_guess  = [J,] vector, initial guess of \chi^{b}_{j} parameters 
+               (if no calibration occurs, these are the values that will be used for \chi^{b}_{j})
+chi_n_guess  = [S,] vector, initial guess of \chi^{n}_{s} parameters 
+               (if no calibration occurs, these are the values that will be used for \chi^{n}_{s})
 ------------------------------------------------------------------------
 Demographics and Ability variables:
 ------------------------------------------------------------------------
-omega        =  Time path of of population size for each age across T ((T+S)xS array)
-g_n_ss       = steady state population growth rate (scalar)
-omega_SS     = stationarized steady state population distribution (Sx1 array)
-surv_rate    = survival rates (Sx1 array)
-rho          = mortality rates (Sx1 array)
-g_n_vector   = population size for each T ((T+S)x1 array)
-e            = age dependent possible working abilities (SxJ array)
+omega        = [T+S,S] array, time path of stationary distribution of economically active population by age
+g_n_ss       = scalar, steady state population growth rate
+omega_SS     = [S,] vector, stationary steady state population distribution
+surv_rate    = [S,] vector, survival rates by age
+rho          = [S,] vector, mortality rates by age
+g_n_vector   = [T+S,] vector, growth rate in economically active pop for each period in transition path
+e            = [S,J] array, normalized effective labor units by age and ability type
 ------------------------------------------------------------------------
 '''
 
 
 def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
+    '''
+    --------------------------------------------------------------------
+    This function sets the parameters for the reduced model, which is
+    simplified to run more quickly for testing.
+    --------------------------------------------------------------------
+    
+    INPUTS:
+    baseline        = boolean, =True if baseline tax policy, =False if reform
+    guid            = string, id for reform run
+    user_modifiable = boolean, =True if allow user modifiable parameters
+    metadata        = boolean, =True if use metadata file for parameter 
+                       values (rather than what is entered in parameters below)
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: 
+    read_tax_func_estimate()
+    elliptical_u_est.estimation()
+    read_parameter_metadata()
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    See parameters defined above
+    allvars = dictionary, dictionary with all parameters defined in this function
+
+    RETURNS: allvars
+    
+    OUTPUT: None
+    --------------------------------------------------------------------
+    '''
     # Model Parameters
     starting_age = 40
     ending_age = 50
@@ -271,6 +370,32 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
 
 
 def get_full_parameters(baseline, guid, user_modifiable, metadata):
+    '''
+    --------------------------------------------------------------------
+    This function sets the parameters for the full model.
+    --------------------------------------------------------------------
+    
+    INPUTS:
+    baseline        = boolean, =True if baseline tax policy, =False if reform
+    guid            = string, id for reform run
+    user_modifiable = boolean, =True if allow user modifiable parameters
+    metadata        = boolean, =True if use metadata file for parameter 
+                       values (rather than what is entered in parameters below)
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: 
+    read_tax_func_estimate()
+    elliptical_u_est.estimation()
+    read_parameter_metadata()
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    See parameters defined above
+    allvars = dictionary, dictionary with all parameters defined in this function
+
+    RETURNS: allvars
+    
+    OUTPUT: None
+    --------------------------------------------------------------------
+    '''
     # Model Parameters
     S = int(80)
     J = int(7)

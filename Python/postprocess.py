@@ -1,3 +1,18 @@
+'''
+------------------------------------------------------------------------
+Last updated 4/8/2016
+
+This function finds the percentage changes in macro variables that
+result from the tax reform.
+
+This py-file calls the following other files:
+            macro_output.py
+
+This py-file creates the following other file(s): 
+            ./ogusa_output{}.pkl
+------------------------------------------------------------------------
+'''
+
 import ogusa
 from ogusa import macro_output
 import pickle

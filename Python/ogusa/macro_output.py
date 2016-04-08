@@ -11,8 +11,6 @@ This py-file calls the following other file(s):
             /baseline_dir/SSinit/ss_init_vars.pkl
             /policy_dir/SSinit/ss_init_vars.pkl
 
-
-
 This py-file creates the following other file(s): None
 ------------------------------------------------------------------------
 '''
