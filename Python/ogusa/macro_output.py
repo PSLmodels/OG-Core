@@ -25,9 +25,10 @@ import os
 def dump_diff_output(baseline_dir, policy_dir):
     '''
     --------------------------------------------------------------------
-    This function calls the tax function estimation routine and saves
-    the resulting dictionary in pickle files corresponding to the
-    baseline or reform policy.
+    This function reads the pickles with the SS and time path results 
+    from the baseline and reform and then calculates the percentage 
+    differences between the two for each year in the 10-year budget 
+    window, over the entire budget window, and in the SS.
     --------------------------------------------------------------------
     
     INPUTS:
