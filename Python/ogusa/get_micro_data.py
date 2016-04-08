@@ -1,7 +1,22 @@
 '''
 ------------------------------------------------------------------------
+Late updated 4/7/2016
+
 This program extracts tax rate and income data from the microsimulation
-model (tax-calculator) and saves it as csv files.
+model (tax-calculator) and saves it in pickle files.
+
+This module defines the following functions:
+    get_data()
+
+
+This Python script calls the following functions:
+    get_micro_data.py
+    taxcalc
+    
+This Python script outputs the following:
+    ./TAX_ESTIMATE_PATH/TxFuncEst_baseline{}.pkl
+    ./TAX_ESTIMATE_PATH/TxFuncEst_policy{}.pkl
+
 ------------------------------------------------------------------------
 '''
 
@@ -23,7 +38,23 @@ def get_data(baseline=False, start_year=2016, reform={}):
     This function creates dataframes of micro data from the
     tax calculator
     --------------------------------------------------------------------
+    INPUTS:
+    baseline        = boolean, =True if baseline tax policy, =False if reform 
+    start_year      = integer, first year of budget window
+    reform          = dictionary, reform parameters
 
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    micro_data_dict = dictionary, contains pandas dataframe for each year 
+                      of budget window.  Dataframe contain mtrs, etrs, income variables, age
+                      from tax-calculator and PUF-CPS match
+
+    OUTPUT:
+        ./micro_data_policy.pkl
+        ./micro_data_baseline.pkl
+
+    RETURNS: micro_data_dict
     --------------------------------------------------------------------
     '''
 
