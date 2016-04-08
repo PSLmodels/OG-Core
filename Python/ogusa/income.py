@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 7/17/2015
+Last updated 4/7/2016
 
 Functions for created the matrix of ability levels, e.  This can
     only be used for looking at the 25, 50, 70, 80, 90, 99, and 100th
@@ -44,6 +44,8 @@ log(ability) = constant + (one)(age) + (two)(age)^2 + (three)(age)^3
 '''
 
 # Vals for: .25 .25 .2 .1 .1 .09 .01
+# Values come from regression analysis using IRS CWHS with
+# hours imputed from the CPS
 one = np.array([-0.09720122, 0.05995294, 0.17654618,
                 0.21168263, 0.21638731, 0.04500235, 0.09229392])
 two = np.array([0.00247639, -0.00004086, -0.00240656, -
@@ -73,13 +75,15 @@ def graph_income(S, J, e, starting_age, ending_age, bin_weights,
                  output_dir='./OUTPUT'):
     '''
     Graphs the ability matrix (and it's log)
+
     Inputs:
-        S = number of age groups (scalar)
-        J = number of ability types (scalar)
-        e = ability matrix (SxJ array)
+        S            = number of age groups (scalar)
+        J            = number of ability types (scalar)
+        e            = ability matrix (SxJ array)
         starting_age = initial age (scalar)
-        ending_age = end age (scalar)
-        bin_weights = ability weights (Jx1 array)
+        ending_age   = end age (scalar)
+        bin_weights  = ability weights (Jx1 array)
+
     Outputs:
         OUTPUT/Demographics/ability_log.png
         OUTPUT/Demographics/ability.png
@@ -153,6 +157,19 @@ def graph_income(S, J, e, starting_age, ending_age, bin_weights,
 def arc_tan_func(points, a, b, c):
     '''
     Functional form for a generic arctan function
+
+    Inputs:
+        points    = any length vector, grid on which to fit arctan function
+        a         = scalar, scale parameter for arctan function
+        b         = scalar, curvature parameter for arctan function
+        c         = scalar, shift parameter for arctan function
+
+    Functions called: None
+
+    Objects in function:
+        y = any length vector (same length as points), fitted values of arctan function
+
+    Returns: y
     '''
     y = (-a / np.pi) * np.arctan(b * points + c) + a / 2
     return y
@@ -161,6 +178,19 @@ def arc_tan_func(points, a, b, c):
 def arc_tan_deriv_func(points, a, b, c):
     '''
     Functional form for the derivative of a generic arctan function
+
+    Inputs:
+        points    = any length vector, grid on which to fit arctan function
+        a         = scalar, scale parameter for arctan function
+        b         = scalar, curvature parameter for arctan function
+        c         = scalar, shift parameter for arctan function
+
+    Functions called: None
+
+    Objects in function:
+        y = any length vector (same length as points), fitted values of arctan deriv function
+
+    Returns: y
     '''
     y = -a * b / (np.pi * (1 + (b * points + c)**2))
     return y
@@ -169,7 +199,29 @@ def arc_tan_deriv_func(points, a, b, c):
 def arc_error(guesses, params):
     '''
     How well the arctan function fits the slope of ability matrix at age 80, the level at age 80, and the level of age 80 times a constant
+
+    Inputs:
+        guesses    = length 3 tuple, (a,b,c)
+        a         = scalar, scale parameter for arctan function
+        b         = scalar, curvature parameter for arctan function
+        c         = scalar, shift parameter for arctan function
+        params    = length 5 tuple, (first_point, coef1, coef2, coef3, ability_depreciation)
+        first_point = 
+        coef1 = 
+        coef2 = 
+        coef3 = 
+        ability_depreciation = 
+
+    Functions called: 
+        arc_tan_deriv_func
+        arc_tan_func
+
+    Objects in function:
+        error = 
+
+    Returns: error
     '''
+
     a, b, c = guesses
     first_point, coef1, coef2, coef3, ability_depreciation = params
     error1 = first_point - arc_tan_func(80, a, b, c)
@@ -186,6 +238,26 @@ def arc_error(guesses, params):
 def arc_tan_fit(first_point, coef1, coef2, coef3, ability_depreciation, init_guesses):
     '''
     Fits an arctan function to the last 20 years of the ability levels
+
+    Inputs:
+        first_point = 
+        coef1 = 
+        coef2 = 
+        coef3 = 
+        ability_depreciation = 
+        init_guesses = 
+
+    Functions called: 
+        arc_error
+        arc_tan_func
+
+    Objects in function:
+        a         = scalar, scale parameter for arctan function
+        b         = scalar, curvature parameter for arctan function
+        c         = scalar, shift parameter for arctan function
+        old_ages  = [20,] vector, grid of ages 81-100
+
+    Returns: arc_tan_func over ages 81-100
     '''
     guesses = init_guesses
     params = [first_point, coef1, coef2, coef3, ability_depreciation]
@@ -197,17 +269,29 @@ def arc_tan_fit(first_point, coef1, coef2, coef3, ability_depreciation, init_gue
 def get_e(S, J, starting_age, ending_age, bin_weights, omega_SS, flag_graphs):
     '''
     Inputs:
-        S = Number of age cohorts (scalar)
-        J = Number of ability levels by age (scalar)
+        S            = Number of age cohorts (scalar)
+        J            = Number of ability levels by age (scalar)
         starting_age = age of first age cohort (scalar)
-        ending_age = age of last age cohort (scalar)
-        bin_weights = ability weights (Jx1 array)
-        omega_SS = population weights (Sx1 array)
-        flag_graphs = Graph flags or not (bool)
+        ending_age   = age of last age cohort (scalar)
+        bin_weights  = ability weights (Jx1 array)
+        omega_SS     = population weights (Sx1 array)
+        flag_graphs  = Graph flags or not (bool)
 
-    Output:
-        e = ability levels for each age cohort, normalized so
-            the weighted sum is one (SxJ array)
+    Functions called: 
+        arc_tan_fit
+        graph_income
+
+    Objects in function:
+        e_short              = [S-20,J] array, ability levels for each age (except last 20
+                                    years) and ability type
+        e_final              = [S,J] array, ability levels for each age and ability type,
+                                    normalize so the weighted sum is one
+        ability_depreciation = [J,] vector, depreciaton rate for effective labor
+                                    unites for each ability group
+        init_guesses         = [3,J] array, initial guesses for parameters of the arctan 
+                                    functional fit for the last 20 years of life
+    
+    Returns: e_final
     '''
     e_short = income_profiles
     e_final = np.ones((S, J))
