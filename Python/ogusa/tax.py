@@ -273,7 +273,7 @@ def MTR_capital(r, w, b, n, factor, params):
     Returns: tau
     '''
 
-    e, mtry_params, analytical_mtrs = params
+    e, etr_params, mtry_params, analytical_mtrs = params
 
     if analytical_mtrs:
         if etr_params.ndim == 3: 
@@ -412,7 +412,7 @@ def MTR_labor(r, w, b, n, factor, params):
     Returns: tau
     '''
 
-    e, mtry_params, analytical_mtrs = params
+    e, etr_params, mtry_params, analytical_mtrs = params
 
     if analytical_mtrs:
         if etr_params.ndim == 3: 
@@ -524,12 +524,12 @@ def get_lump_sum(r, w, b, n, BQ, factor, params):
         n           = [T,S,J] array, labor supply
         BQ          = [T,J] array, bequest amounts
         factor      = scalar, model income scaling factor
-        params      = length 12 tuple, (e, lambdas, weights, method, etr_params, 
+        params      = length 12 tuple, (e, lambdas, omega, method, etr_params, 
                                         theta, tau_bq, tau_payroll, h_wealth, 
                                         p_wealth, m_wealth, retire, T, S, J)
         e           = [T,S,J] array, effective labor units
         lambdas     = [J,] vector, population weights by lifetime income group
-        weights     = [T,S] array, population weights by age
+        omega       = [T,S] array, population weights by age
         method      = string, 'SS' or 'TPI'
         etr_params  = [T,S,J] array, effective tax rate function parameters
         theta       = [J,] vector, replacement rate values by lifetime income group
@@ -559,7 +559,7 @@ def get_lump_sum(r, w, b, n, BQ, factor, params):
     
     '''
 
-    e, lambdas, weights, method, etr_params, theta, tau_bq, \
+    e, lambdas, omega, method, etr_params, theta, tau_bq, \
         tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J = params
 
     I = r * b + w * e * n
@@ -584,11 +584,11 @@ def get_lump_sum(r, w, b, n, BQ, factor, params):
     if method == 'SS':
         T_P[retire:] -= theta * w
         T_BQ = tau_bq * BQ / lambdas
-        T_H = (weights * lambdas * (T_I + T_P + T_BQ + T_W)).sum()
+        T_H = (omega * lambdas * (T_I + T_P + T_BQ + T_W)).sum()
     elif method == 'TPI':
         T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w[:,retire:,:]
         T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
-        T_H = (weights * lambdas * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1)
+        T_H = (omega * lambdas * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1)
     return T_H
 
     

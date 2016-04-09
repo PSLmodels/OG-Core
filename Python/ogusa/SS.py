@@ -214,8 +214,8 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, params):
     b_splus2 = np.array(list(b_guess[1:]) + [0])
 
     BQ = household.get_BQ(r, b_splus1, omega, lambdas[j], rho, g_n_ss, 'SS')
-    theta = tax.replacement_rate_vals(n_guess, w, factor, e[:, j], J, omega,
-                                      lambdas[j])
+    theta_params = (e, J, omega, lambdas)
+    theta = tax.replacement_rate_vals(n_guess, w, factor, theta_params)
 
     error1 = household.euler_savings_func(w, r, e[:, j], n_guess, b_s,
                                           b_splus1, b_splus2, BQ, factor, T_H,
@@ -242,10 +242,11 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, params):
     error1[mask3] = 1e14
     error1[mask5] = 1e14
     error2[mask4] = 1e14
-    tax1_params = (J, S, retire, etr_params, h_wealth, p_wealth, 
-                   m_wealth, tau_payroll)
-    tax1 = tax.total_taxes(r, b_s, w, e[:, j], n_guess, BQ, lambdas[j], factor,
-                           T_H, None, 'SS', False, tax1_params, theta, tau_bq[j])
+    tax1_params = (J, S, retire, , )
+
+    tax1_params = (e[:, j], lambdas[j], 'SS', retire, etr_params, h_wealth, p_wealth, 
+                   m_wealth, tau_payroll, theta, tau_bq[j], J, S)
+    tax1 = tax.total_taxes(r, w, b_s, n_guess, BQ, factor, T_H, None, False, tax1_params)
     cons = household.get_cons(r, b_s, w, e[:, j], n_guess, BQ, lambdas[j],
                               b_splus1, params, tax1)
     mask6 = cons < 0
@@ -361,17 +362,16 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
 
             bssmat[:, j] = solutions[:S]
             nssmat[:, j] = solutions[S:]
-            # print np.array(Euler_equation_solver(np.append(bssmat[:, j],
-            # nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n,
-            # theta, tau_bq, rho, lambdas, e)).max()
-
-        K = household.get_K(bssmat, omega.reshape(S, 1),
-                            lambdas.reshape(1, J), g_n_ss, 'SS')
-        L = firm.get_L(e, nssmat, omega.reshape(S, 1),
-                       lambdas.reshape(1, J), 'SS')
-        Y = firm.get_Y(K, L, params)
-        new_r = firm.get_r(Y, K, params)
-        new_w = firm.get_w(Y, L, params)
+        
+        K_params = (omega.reshape(S, 1), lambdas.reshape(1, J), g_n_ss, 'SS')
+        K = household.get_K(bssmat, K_params)
+        L_params = (e, omega.reshape(S, 1), lambdas.reshape(1, J), 'SS')
+        L = firm.get_L(nssmat, L_params)
+        Y_params = (alpha, Z)
+        Y = firm.get_Y(K, L, Y_params)
+        r_params = (alpha, delta)
+        new_r = firm.get_r(Y, K, r_params)
+        new_w = firm.get_w(Y, L, alpha)
         b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
         average_income_model = ((new_r * b_s + new_w * e * nssmat) *
                                 omega.reshape(S, 1) *
@@ -380,15 +380,13 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
         new_BQ = household.get_BQ(new_r, bssmat, omega.reshape(S, 1),
                                   lambdas.reshape(1, J), rho.reshape(S, 1),
                                   g_n_ss, 'SS')
-        theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, e, J,
-                                          omega.reshape(S, 1), lambdas)
-        # lump_sum_tax_params = (a_etr_income, b_etr_income, c_etr_income, d_etr_income, 
-        #                    e_etr_income, f_etr_income, min_x_etr_income, max_x_etr_income, 
-        #                    min_y_etr_income, max_y_etr_income)
-        new_T_H = tax.get_lump_sum(new_r, b_s, new_w, e, nssmat, new_BQ,
-                                   lambdas.reshape(1, J), factor,
-                                   omega.reshape(S, 1), 'SS', etr_params, params, theta,
-                                   tau_bq)
+        
+        theta_params = (e, J, omega.reshape(S, 1), lambdas)
+        theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, theta_params)
+
+        T_H_params = (e, lambdas.reshape(1, J), omega.reshape(S, 1), 'SS', etr_params, theta, tau_bq,
+                      tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
+        new_T_H = tax.get_lump_sum(new_r, new_w, b_s, nssmat, new_BQ, factor, T_H_params)
 
         r = utils.convex_combo(new_r, r, nu)
         w = utils.convex_combo(new_w, w, nu)
@@ -441,8 +439,6 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
 # def SS_fsolve(guesses, b_guess_init, n_guess_init, chi_n, chi_b, tax_params, params, iterative_params, tau_bq,
 #               rho, lambdas, omega, e):
 def SS_fsolve(guesses, params):
-ss_params = (b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params[J:], chi_params[:J], 
-             income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
     '''
     Solves for the steady state distribution of capital, labor, as well as
     w, r, T_H and the scaling factor, using an a root finder.
@@ -468,6 +464,9 @@ ss_params = (b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params[J:], chi_p
                     T_H ((2*S*J+4)x1 array)
     '''
     
+    ss_params = (b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params[J:], chi_params[:J], 
+             income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
+
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
                   g_n_ss, tau_payroll, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = params
@@ -504,13 +503,15 @@ ss_params = (b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params[J:], chi_p
         # nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n,
         # theta, tau_bq, rho, lambdas, e)).max()
 
-    K = household.get_K(bssmat, omega.reshape(S, 1),
-                        lambdas.reshape(1, J), g_n_ss, 'SS')
-    L = firm.get_L(e, nssmat, omega.reshape(S, 1),
-                   lambdas.reshape(1, J), 'SS')
-    Y = firm.get_Y(K, L, params)
-    new_r = firm.get_r(Y, K, params)
-    new_w = firm.get_w(Y, L, params)
+    K_params = (omega.reshape(S, 1), lambdas.reshape(1, J), g_n_ss, 'SS')
+    K = household.get_K(bssmat, K_params)
+    L_params = (e, omega.reshape(S, 1), lambdas.reshape(1, J), 'SS')
+    L = firm.get_L(nssmat, L_params)
+    Y_params = (alpha, Z)
+    Y = firm.get_Y(K, L, Y_params)
+    r_params = (alpha, delta)
+    new_r = firm.get_r(Y, K, r_params)
+    new_w = firm.get_w(Y, L, alpha)
     b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
     average_income_model = ((new_r * b_s + new_w * e * nssmat) *
                             omega.reshape(S, 1) *
@@ -519,14 +520,13 @@ ss_params = (b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params[J:], chi_p
     new_BQ = household.get_BQ(new_r, bssmat, omega.reshape(S, 1),
                               lambdas.reshape(1, J), rho.reshape(S, 1),
                               g_n_ss, 'SS')
-    theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, e, J,
-                                      omega.reshape(S, 1), lambdas)
 
-    new_T_H = tax.get_lump_sum(new_r, b_s, new_w, e, nssmat, new_BQ,
-                               lambdas.reshape(1, J), factor,
-                               omega.reshape(S, 1), 'SS', etr_params, params, theta,
-                               tau_bq)
+    theta_params = (e, J, omega.reshape(S, 1), lambdas)
+    theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, theta_params)
 
+    T_H_params = (e, lambdas.reshape(1, J), omega.reshape(S, 1), 'SS', etr_params, theta, tau_bq,
+                      tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
+    new_T_H = tax.get_lump_sum(new_r, new_w, b_s, nssmat, new_BQ, factor, T_H_params)
 
     error1 = new_w - w
     error2 = new_r - r
@@ -617,13 +617,15 @@ def SS_fsolve_reform(guesses, b_guess_init, n_guess_init, factor, chi_n, chi_b, 
         # nssmat[:, j]), r, w, T_H, factor, j, params, chi_b, chi_n,
         # theta, tau_bq, rho, lambdas, e)).max()
 
-    K = household.get_K(bssmat, omega.reshape(S, 1),
-                        lambdas.reshape(1, J), g_n_ss, 'SS')
-    L = firm.get_L(e, nssmat, omega.reshape(S, 1),
-                   lambdas.reshape(1, J), 'SS')
-    Y = firm.get_Y(K, L, params)
-    new_r = firm.get_r(Y, K, params)
-    new_w = firm.get_w(Y, L, params)
+    K_params = (omega.reshape(S, 1), lambdas.reshape(1, J), g_n_ss, 'SS')
+    K = household.get_K(bssmat, K_params)
+    L_params = (e, omega.reshape(S, 1), lambdas.reshape(1, J), 'SS')
+    L = firm.get_L(nssmat, L_params)
+    Y_params = (alpha, Z)
+    Y = firm.get_Y(K, L, Y_params)
+    r_params = (alpha, delta)
+    new_r = firm.get_r(Y, K, r_params)
+    new_w = firm.get_w(Y, L, alpha)
     b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
     average_income_model = ((new_r * b_s + new_w * e * nssmat) *
                             omega.reshape(S, 1) *
@@ -632,14 +634,12 @@ def SS_fsolve_reform(guesses, b_guess_init, n_guess_init, factor, chi_n, chi_b, 
     new_BQ = household.get_BQ(new_r, bssmat, omega.reshape(S, 1),
                               lambdas.reshape(1, J), rho.reshape(S, 1),
                               g_n_ss, 'SS')
-    theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, e, J,
-                                      omega.reshape(S, 1), lambdas)
+    theta_params = (e, J, omega.reshape(S, 1), lambdas)
+    theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, theta_params)
 
-    new_T_H = tax.get_lump_sum(new_r, b_s, new_w, e, nssmat, new_BQ,
-                               lambdas.reshape(1, J), factor,
-                               omega.reshape(S, 1), 'SS', etr_params, params, theta,
-                               tau_bq)
-
+    T_H_params = (e, lambdas.reshape(1, J), omega.reshape(S, 1), 'SS', etr_params, theta, tau_bq,
+                      tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
+    new_T_H = tax.get_lump_sum(new_r, new_w, b_s, nssmat, new_BQ, factor, T_H_params)
 
     error1 = new_w - w
     error2 = new_r - r
@@ -952,13 +952,16 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, chi
     Kss = household.get_K(bssmat_splus1, omega_SS.reshape(
         S, 1), lambdas, g_n_ss, 'SS')
   
-    Lss = firm.get_L(e, nssmat, omega_SS.reshape(S, 1), lambdas, 'SS')
-    Yss = firm.get_Y(Kss, Lss, ss_parameters)
+    Lss_params = (e, omega_SS.reshape(S, 1), lambdas, 'SS')
+    Lss = firm.get_L(nssmat)
+    Yss_params = (alpha, Z)
+    Yss = firm.get_Y(Kss, Lss, Yss_params)
+    Iss_params = (delta, g_y, g_n_ss)
+    Iss = firm.get_I(Kss, Kss, Iss_params)
 
-    Iss = firm.get_I(Kss, Kss, delta, g_y, g_n_ss)
-
-    theta = np.zeros(J) #tax.replacement_rate_vals(
-        #nssmat, wss, factor_ss, e, J, omega_SS.reshape(S, 1), lambdas)
+    theta = np.zeros(J) # zero out payroll taxes since included in tax functions
+    # theta_params = (e, J, omega_SS.reshape(S, 1), lambdas)
+    # tax.replacement_rate_vals(nssmat, wss, factor_ss, theta_params)
     BQss = household.get_BQ(rss, bssmat_splus1, omega_SS.reshape(
         S, 1), lambdas, rho.reshape(S, 1), g_n_ss, 'SS')
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
@@ -971,19 +974,17 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, chi
     mtry_params_extended_3D = np.tile(np.reshape(mtry_params_extended,(S,1,mtry_params_extended.shape[1])),(1,J,1))
     e_extended = np.array(list(e) + list(np.zeros(J).reshape(1, J))) 
     nss_extended = np.array(list(nssmat) + list(np.zeros(J).reshape(1, J))) 
-    mtry_ss = tax.MTR_capital(rss, bssmat_splus1, wss, e_extended[1:,:], nss_extended[1:,:], factor_ss, 
-                              analytical_mtrs, etr_params_extended_3D, mtry_params_extended_3D)
-
-    mtrx_ss = tax.MTR_labor(rss, bssmat_s, wss, e, nssmat, factor_ss, analytical_mtrs, etr_params_3D, mtrx_params_3D)
+    mtry_params = (e_extended[1:,:],etr_params_extended_3D, mtry_params_extended_3D,analytical_mtrs)
+    mtry_ss = tax.MTR_capital(rss, wss, bssmat_splus1, nss_extended[1:,:], factor_ss, mtry_params)
+    mtrx_params = (e, etr_params_3D, mtrx_params_3D, analytical_mtrs)
+    mtrx_ss = tax.MTR_labor(rss, wss, bssmat_s, nssmat, factor_ss, mtrx_params)
 
     # np.savetxt("mtr_ss_capital.csv", mtry_ss, delimiter=",")
     # np.savetxt("mtr_ss_labor.csv", mtrx_ss, delimiter=",")
 
-    taxss_params = (J,S, retire, np.tile(np.reshape(etr_params,(S,1,etr_params.shape[1])),(1,J,1)),
-                    h_wealth, p_wealth, m_wealth, tau_payroll)
-
-    taxss = tax.total_taxes(rss, b_s, wss, e, nssmat, BQss, lambdas,
-                            factor_ss, T_Hss, None, 'SS', False, taxss_params, theta, tau_bq)
+    taxss_params = (e, lambdas, 'SS', retire, np.tile(np.reshape(etr_params,(S,1,etr_params.shape[1])),(1,J,1)), 
+                    h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
+    taxss = tax.total_taxes(rss, wss, b_s, nssmat, BQss, factor_ss, T_Hss, None, False, taxss_params)
     cssmat = household.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(
         1, J), lambdas.reshape(1, J), bssmat_splus1, ss_parameters, taxss)
 

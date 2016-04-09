@@ -93,10 +93,10 @@ def get_L(n, params):
 
     Inputs:
         n               = [T,S,J] array, labor supply
-        params          = length 4 tuple, (e, pop_weights, ability_weights, method)
+        params          = length 4 tuple, (e, omega, lambdas, method)
         e               = [T,S,J] array, effective labor units
-        pop_weights     = [T,S,1] array, population weights
-        ability_weights = [1,1,J] array, ability weights
+        omega     = [T,S,1] array, population weights
+        lambdas = [1,1,J] array, ability weights
         method          = string, 'SS' or 'TPI'
 
     Functions called: None
@@ -108,9 +108,9 @@ def get_L(n, params):
     Returns: L
 
     '''
-    e, pop_weights, ability_weights, method = params
+    e, omega, lambdas, method = params
 
-    L_presum = e * pop_weights * ability_weights * n
+    L_presum = e * omega * lambdas * n
     if method == 'SS':
         L = L_presum.sum()
     elif method == 'TPI':
