@@ -213,19 +213,17 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, params):
     b_splus1 = b_guess
     b_splus2 = np.array(list(b_guess[1:]) + [0])
 
-    BQ = household.get_BQ(r, b_splus1, omega, lambdas[j], rho, g_n_ss, 'SS')
+    BQ_params = (omega, lambdas[j], rho, g_n_ss, 'SS')
+    BQ = household.get_BQ(r, b_splus1, BQ_params)
     theta_params = (e, J, omega, lambdas)
     theta = tax.replacement_rate_vals(n_guess, w, factor, theta_params)
 
-    error1 = household.euler_savings_func(w, r, e[:, j], n_guess, b_s,
-                                          b_splus1, b_splus2, BQ, factor, T_H,
-                                          chi_b[j], tax_params, params, theta, tau_bq[j],
-                                          rho, lambdas[j])
-
-    error2 = household.euler_labor_leisure_func(w, r, e[:, j], n_guess, b_s,
-                                                b_splus1, BQ, factor, T_H,
-                                                chi_n, tax_params, params, theta,
-                                                tau_bq[j], lambdas[j])
+    foc_save_parms = (e[:, j], sigma, beta, g_y, chi_b[j], theta, tau_bq[j], rho, lambdas[j], J, S,
+                           analytical_mtrs, etr_params, mtry_params, h_wealth, p_wealth, m_wealth, tau_payroll, tau_bq)
+    error1 = household.euler_savings_func(r, w, b_s, b_splus1, b_splus2, n_guess, BQ, factor, T_H, foc_save_parms)
+    foc_labor_params = (e[:, j], sigma, g_y, b_ellipse, upsilon, chi_n, ltilde, tau_bq[j], lambdas[j], J, S,
+                            analytical_mtrs, etr_params, mtrx_params, h_wealth, p_wealth, m_wealth, tau_payroll, tau_bq)
+    error2 = household.euler_labor_leisure_func(r, w, r, b_s, b_splus1, n_guess, BQ, factor, T_H, foc_labor_params)
 
     # Put in constraints for consumption and savings.
     # According to the euler equations, they can be negative.  When
@@ -247,8 +245,8 @@ def Euler_equation_solver(guesses, r, w, T_H, factor, params):
     tax1_params = (e[:, j], lambdas[j], 'SS', retire, etr_params, h_wealth, p_wealth, 
                    m_wealth, tau_payroll, theta, tau_bq[j], J, S)
     tax1 = tax.total_taxes(r, w, b_s, n_guess, BQ, factor, T_H, None, False, tax1_params)
-    cons = household.get_cons(r, b_s, w, e[:, j], n_guess, BQ, lambdas[j],
-                              b_splus1, params, tax1)
+    cons_params = (e[:, j], lambdas[j], g_y)
+    cons = household.get_cons(r, w, b_s, b_splus1, n_guess, BQ, tax1, cons_params)
     mask6 = cons < 0
     error1[mask6] = 1e14
 
@@ -377,9 +375,9 @@ def SS_solver(b_guess_init, n_guess_init, wguess, rguess, T_Hguess,
                                 omega.reshape(S, 1) *
                                 lambdas.reshape(1, J)).sum()
         new_factor = mean_income_data / average_income_model
-        new_BQ = household.get_BQ(new_r, bssmat, omega.reshape(S, 1),
-                                  lambdas.reshape(1, J), rho.reshape(S, 1),
-                                  g_n_ss, 'SS')
+        new_BQ_params = (omega.reshape(S, 1), lambdas.reshape(1, J), rho.reshape(S, 1),
+                         g_n_ss, 'SS')
+        new_BQ = household.get_BQ(new_r, bssmat, new_BQ_params)
         
         theta_params = (e, J, omega.reshape(S, 1), lambdas)
         theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, theta_params)
@@ -517,9 +515,8 @@ def SS_fsolve(guesses, params):
                             omega.reshape(S, 1) *
                             lambdas.reshape(1, J)).sum()
     new_factor = mean_income_data / average_income_model
-    new_BQ = household.get_BQ(new_r, bssmat, omega.reshape(S, 1),
-                              lambdas.reshape(1, J), rho.reshape(S, 1),
-                              g_n_ss, 'SS')
+    BQ_params = (omega.reshape(S, 1), lambdas.reshape(1, J), rho.reshape(S, 1), g_n_ss, 'SS')
+    new_BQ = household.get_BQ(new_r, bssmat, BQ_params)
 
     theta_params = (e, J, omega.reshape(S, 1), lambdas)
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, theta_params)
@@ -631,9 +628,9 @@ def SS_fsolve_reform(guesses, b_guess_init, n_guess_init, factor, chi_n, chi_b, 
                             omega.reshape(S, 1) *
                             lambdas.reshape(1, J)).sum()
     new_factor = mean_income_data / average_income_model
-    new_BQ = household.get_BQ(new_r, bssmat, omega.reshape(S, 1),
-                              lambdas.reshape(1, J), rho.reshape(S, 1),
-                              g_n_ss, 'SS')
+    BQ_params = (omega.reshape(S, 1), lambdas.reshape(1, J), rho.reshape(S, 1), g_n_ss, 'SS')
+    new_BQ = household.get_BQ(new_r, bssmat, BQ_params)
+    new_BQ = household.get_BQ(new_r, bssmat, BQ_params)
     theta_params = (e, J, omega.reshape(S, 1), lambdas)
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, theta_params)
 
@@ -949,9 +946,8 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, chi
     nssmat = solutions[S * J:2 * S * J].reshape(S, J)
     wss, rss, factor_ss, T_Hss = solutions[2 * S * J:]
 
-    Kss = household.get_K(bssmat_splus1, omega_SS.reshape(
-        S, 1), lambdas, g_n_ss, 'SS')
-  
+    Kss_parmas = (omega_SS.reshape(S, 1), lambdas, g_n_ss, 'SS')
+    Kss = household.get_K(bssmat_splus1, Kss_params)
     Lss_params = (e, omega_SS.reshape(S, 1), lambdas, 'SS')
     Lss = firm.get_L(nssmat)
     Yss_params = (alpha, Z)
@@ -962,8 +958,8 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, chi
     theta = np.zeros(J) # zero out payroll taxes since included in tax functions
     # theta_params = (e, J, omega_SS.reshape(S, 1), lambdas)
     # tax.replacement_rate_vals(nssmat, wss, factor_ss, theta_params)
-    BQss = household.get_BQ(rss, bssmat_splus1, omega_SS.reshape(
-        S, 1), lambdas, rho.reshape(S, 1), g_n_ss, 'SS')
+    BQss_params = (omega_SS.reshape(S, 1), lambdas, rho.reshape(S, 1), g_n_ss, 'SS')
+    BQss = household.get_BQ(rss, bssmat_splus1, BQss_params)
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
     
     etr_params_3D = np.tile(np.reshape(etr_params,(S,1,etr_params.shape[1])),(1,J,1))
@@ -985,17 +981,18 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, chi
     taxss_params = (e, lambdas, 'SS', retire, np.tile(np.reshape(etr_params,(S,1,etr_params.shape[1])),(1,J,1)), 
                     h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
     taxss = tax.total_taxes(rss, wss, b_s, nssmat, BQss, factor_ss, T_Hss, None, False, taxss_params)
-    cssmat = household.get_cons(rss, b_s, wss, e, nssmat, BQss.reshape(
-        1, J), lambdas.reshape(1, J), bssmat_splus1, ss_parameters, taxss)
+    css_params = (e, lambdas.reshape(1, J), g_y)
+    cssmat = household.get_cons(rss, wss, b_s, bssmat_splus1, nssmat, BQss.reshape(
+        1, J), taxss, css_params)
 
-    Css = household.get_C(cssmat, omega_SS.reshape(S, 1), lambdas, 'SS')
+    Css_params = (omega_SS.reshape(S, 1), lambdas, 'SS') 
+    Css = household.get_C(cssmat, Css_params)
 
     resource_constraint = Yss - (Css + Iss)
 
     print 'Resource Constraint Difference:', resource_constraint
 
-    constraint_params = ltilde
-    household.constraint_checker_SS(bssmat, nssmat, cssmat, constraint_params)
+    household.constraint_checker_SS(bssmat, nssmat, cssmat, ltilde)
 
     b_s = np.array(list(np.zeros(J).reshape((1, J))) + list(bssmat))
     b_splus1 = bssmat_splus1
@@ -1006,12 +1003,14 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, chi
     euler_savings = np.zeros((S, J))
     euler_labor_leisure = np.zeros((S, J))
     for j in xrange(J):
-        euler_savings[:, j] = household.euler_savings_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], b_splus1[:, j], 
-                                 b_splus2[:, j], BQss[j], factor_ss, T_Hss, chi_b[:, j], income_tax_parameters, ss_parameters, 
-                                 theta[j], tau_bq[j], rho, lambdas[j])
-        euler_labor_leisure[:, j] = household.euler_labor_leisure_func(wss, rss, e[:, j], nssmat[:, j], b_s[:, j], 
-                                     b_splus1[:, j], BQss[j], factor_ss, T_Hss, chi_n, income_tax_parameters, 
-                                     ss_parameters, theta[j], tau_bq[j], lambdas[j])
+        foc_save_params = (e[:, j], sigma, beta, g_y, chi_b[:, j], theta[j], tau_bq[j], rho, lambdas[j], J, S,
+                           analytical_mtrs, etr_params, mtry_params, h_wealth, p_wealth, m_wealth, tau_payroll, tau_bq)
+        euler_savings[:, j] = household.euler_savings_func(rss, wss, b_s[:, j], b_splus1[:, j], b_splus2[:, j], nssmat[:, j], 
+                                BQss[j], factor_ss, T_Hss, foc_save_params)
+        foc_labor_params = (e[:, j], sigma, g_y, theta[j], b_ellipse, upsilon, chi_n, ltilde, tau_bq[j], lambdas[j], J, S,
+                            analytical_mtrs, etr_params, mtrx_params, h_wealth, p_wealth, m_wealth, tau_payroll, tau_bq)
+        euler_labor_leisure[:, j] = household.euler_labor_leisure_func(rss, wss, b_s[:, j], b_splus1[:, j], nssmat[:, j], 
+                                    BQss[j], factor_ss, T_Hss, foc_labor_params)
     '''
     ------------------------------------------------------------------------
         Save the values in various ways, depending on the stage of
