@@ -1,6 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 7/19/2015
+Last updated 4/9/2016
 
 This program solves for transition path of the distribution of wealth
 and the aggregate capital stock using the time path iteration (TPI)
@@ -11,9 +11,8 @@ This py-file calls the following other file(s):
             utils.py
             household.py
             firm.py
-            OUTPUT/SSinit/ss_init_vars.pkl
             OUTPUT/SS/ss_vars.pkl
-            OUTPUT/SSinit/ss_init_tpi.pkl
+            OUTPUT/SS/ss_tpi_vars.pkl
             OUTPUT/Saved_moments/params_given.pkl
             OUTPUT/Saved_moments/params_changed.pkl
 
