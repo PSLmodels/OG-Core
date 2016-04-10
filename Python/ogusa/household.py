@@ -174,7 +174,7 @@ def get_cons(r, w, b, b_splus1, n, BQ, net_tax, params):
     return cons
 
 
-def get_C(cons, params):
+def get_C(c, params):
     '''
     Calculation of aggregate consumption.
 
@@ -259,7 +259,7 @@ def euler_savings_func(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, params):
     Returns: euler
     '''
     e, sigma, beta, g_y, chi_b, theta, tau_bq, rho, lambdas, J, S, \
-        analytical_mtrs, etr_params, mtry_params, h_wealth, p_wealth, m_wealth, tau_payroll, tau_bq = params
+        analytical_mtrs, etr_params, mtry_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire = params
 
     # In order to not have 2 savings euler equations (one that solves the first S-1 equations, and one that solves the last one),
     # we combine them.  In order to do this, we have to compute a consumption term in period t+1, which requires us to have a shifted
@@ -275,9 +275,9 @@ def euler_savings_func(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, params):
                    h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
     tax2 = tax.total_taxes(r, w, b_splus1, n_extended[1:], BQ, factor, T_H, None, True, tax2_params)
     cons1_params = (e, lambdas, g_y)
-    cons1 = get_cons(r, w, b, b_splus1, n, BQ, lambdas, tax1, cons1_params)
+    cons1 = get_cons(r, w, b, b_splus1, n, BQ, tax1, cons1_params)
     cons2_params = (e_extended[1:], lambdas, g_y)
-    cons2 = get_cons(r, w, b_splus1, b_splus2, n_extended[1:], BQ, lambdas, tax2, cons2_params)
+    cons2 = get_cons(r, w, b_splus1, b_splus2, n_extended[1:], BQ, tax2, cons2_params)
 
     mtr_cap_params = (e_extended[1:], np.append(etr_params,np.reshape(etr_params[-1,:],(1,etr_params.shape[1])),axis=0)[1:,:],
                       np.append(mtry_params,np.reshape(mtry_params[-1,:],(1,mtry_params.shape[1])),axis=0)[1:,:],analytical_mtrs)
@@ -349,13 +349,13 @@ def euler_labor_leisure_func(r, w, b, b_splus1, n, BQ, factor, T_H, params):
     Returns: euler
     '''
     e, sigma, g_y, theta, b_ellipse, upsilon, chi_n, ltilde, tau_bq, lambdas, J, S, \
-        analytical_mtrs, etr_params, mtrx_params, h_wealth, p_wealth, m_wealth, tau_payroll, tau_bq = params
+        analytical_mtrs, etr_params, mtrx_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire  = params
 
-    tax_params = (e, lambdas, 'SS', retire, etr_params, h_wealth, p_wealth, 
+    tax1_params = (e, lambdas, 'SS', retire, etr_params, h_wealth, p_wealth, 
                   m_wealth, tau_payroll, theta, tau_bq, J, S)
-    tax = tax.total_taxes(r, w, b, n, BQ, factor, T_H, None, False, tax1_params)
+    tax1 = tax.total_taxes(r, w, b, n, BQ, factor, T_H, None, False, tax1_params)
     cons_params = (e, lambdas, g_y)
-    cons = get_cons(r, w, b, b_splus1, n, BQ, lambdas, tax1, cons1_params)  
+    cons = get_cons(r, w, b, b_splus1, n, BQ, tax1, cons_params)  
     mtr_lab_params = (e, etr_params, mtrx_params, analytical_mtrs)
     deriv = (1 - tau_payroll - tax.MTR_labor(r, b, w, n, factor, mtr_lab_params))
         

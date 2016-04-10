@@ -412,7 +412,7 @@ def MTR_labor(r, w, b, n, factor, params):
     Returns: tau
     '''
 
-    e, etr_params, mtry_params, analytical_mtrs = params
+    e, etr_params, mtrx_params, analytical_mtrs = params
 
     if analytical_mtrs:
         if etr_params.ndim == 3: 

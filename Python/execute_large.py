@@ -55,7 +55,6 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
         run_params['g_y'] = g_y
         run_params.update(user_params)
 
-    globals().update(run_params)
 
     from ogusa import SS, TPI
     # Generate Wealth data moments
@@ -87,20 +86,15 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
     '''
 
     sim_params = {}
-    glbs = globals()
-    lcls = locals()
     for key in param_names:
-        if key in glbs:
-            sim_params[key] = glbs[key]
-        else:
-            sim_params[key] = lcls[key]
+        sim_params[key] = run_params[key]
 
     sim_params['output_dir'] = output_base
     sim_params['run_params'] = run_params
 
-    income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
+    income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params, chi_params = SS.create_steady_state_parameters(**sim_params)
 
-    ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, baseline, 
+    ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, chi_params, baseline, 
                                      calibrate_model, output_dir=output_base, baseline_dir=baseline_dir)
 
 
@@ -191,14 +185,12 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
         run_params['g_y'] = g_y
         run_params.update(user_params)
 
-    globals().update(run_params)
-
     from ogusa import SS, TPI
     # Generate Wealth data moments
-    wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir=output_base)
+    wealth.get_wealth_data(run_params['lambdas'], run_params['J'], run_params['flag_graphs'], output_dir=output_base)
 
     # Generate labor data moments
-    labor.labor_data_moments(flag_graphs, output_dir=output_base)
+    labor.labor_data_moments(run_params['flag_graphs'], output_dir=output_base)
 
     
     calibrate_model = False
@@ -210,7 +202,7 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
                 'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
                 'analytical_mtrs', 'b_ellipse', 'k_ellipse', 'upsilon',
                 'chi_b_guess', 'chi_n_guess','etr_params','mtrx_params',
-                'mtry_params','tau_payroll', 'tau_bq', 'calibrate_model',
+                'mtry_params','tau_payroll', 'tau_bq',
                 'retire', 'mean_income_data', 'g_n_vector',
                 'h_wealth', 'p_wealth', 'm_wealth',
                 'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'e', 'rho']
@@ -223,19 +215,14 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
     '''
 
     sim_params = {}
-    glbs = globals()
-    lcls = locals()
     for key in param_names:
-        if key in glbs:
-            sim_params[key] = glbs[key]
-        else:
-            sim_params[key] = lcls[key]
+        sim_params[key] = run_params[key]
 
     sim_params['output_dir'] = output_base
     sim_params['run_params'] = run_params
 
-    income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
+    income_tax_params, wealth_tax_params, ellipse_params, ss_params, iterative_params, chi_params = SS.create_steady_state_parameters(**sim_params)
 
-    ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, baseline, 
+    ss_outputs = SS.run_steady_state(income_tax_params, ss_params, iterative_params, chi_params, baseline, 
                                      calibrate_model, output_dir=output_base, baseline_dir=baseline_dir)
 

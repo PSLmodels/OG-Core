@@ -86,14 +86,14 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
 
     sim_params = {}
     for key in param_names:
-        sim_params[key] = glbs[key]
+        sim_params[key] = run_params[key]
 
     sim_params['output_dir'] = output_base
     sim_params['run_params'] = run_params
 
-    income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
+    income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params, chi_params = SS.create_steady_state_parameters(**sim_params)
 
-    ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, baseline, 
+    ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, chi_params, baseline, 
                                      calibrate_model, output_dir=output_base, baseline_dir=baseline_dir)
 
     '''
