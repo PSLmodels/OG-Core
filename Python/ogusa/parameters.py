@@ -515,7 +515,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
 
    # Generate Income and Demographic parameters
-    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = get_omega(
+    omega_hat, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = get_omega(
         S, T, starting_age, ending_age, E, flag_graphs)
     # omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = get_pop_objs(
     #     E, S, T, 0, 100, 2015, flag_graphs)

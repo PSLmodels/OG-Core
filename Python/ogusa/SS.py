@@ -631,7 +631,6 @@ def SS_fsolve_reform(guesses, params):
     new_factor = mean_income_data / average_income_model
     BQ_params = (omega_SS.reshape(S, 1), lambdas.reshape(1, J), rho.reshape(S, 1), g_n_ss, 'SS')
     new_BQ = household.get_BQ(new_r, bssmat, BQ_params)
-    new_BQ = household.get_BQ(new_r, bssmat, BQ_params)
     theta_params = (e, J, omega_SS.reshape(S, 1), lambdas)
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, theta_params)
 

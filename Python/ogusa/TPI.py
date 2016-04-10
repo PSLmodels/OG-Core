@@ -55,23 +55,53 @@ def create_tpi_params(analytical_mtrs, etr_params, mtrx_params, mtry_params,
                       mean_income_data, run_params,
                       input_dir="./OUTPUT", baseline_dir="./OUTPUT", **kwargs):
 
-    globals().update(run_params)
+def create_tpi_params(**sim_params):
 
-    ss_init = os.path.join(input_dir, "SSinit/ss_init_vars.pkl")
-    variables = pickle.load(open(ss_init, "rb"))
-    for key in variables:
-        globals()[key] = variables[key]
+    etr_params_TP = np.zeros((S,T+S,sim_params['etr_params'].shape[2]))
+    etr_params_TP[:,:BW,:] = sim_params['etr_params']
+    etr_params_TP[:,BW:,:] = np.reshape(sim_params['etr_params'][:,BW-1,:],(S,1,sim_params['etr_params'].shape[2]))
+
+    mtrx_params_TP = np.zeros((S,T+S,sim_params['mtrx_params'].shape[2]))
+    mtrx_params_TP[:,:BW,:] = sim_params['mtrx_params']
+    mtrx_params_TP[:,BW:,:] = np.reshape(sim_params['mtrx_params'][:,BW-1,:],(S,1,sim_params['mtrx_params'].shape[2]))
+
+    mtry_params_TP = np.zeros((S,T+S,sim_params['mtry_params'].shape[2]))
+    mtry_params_TP[:,:BW,:] = sim_params['mtry_params']
+    mtry_params_TP[:,BW:,:] = np.reshape(sim_params['mtry_params'][:,BW-1,:],(S,1,sim_params['mtry_params'].shape[2]))
+
+    income_tax_params = (sim_params['analytical_mtrs'], etr_params_TP, mtrx_params_TP, mtry_params_TP)
+
+    # Make a vector of all one dimensional parameters, to be used in the
+    # following functions
+    wealth_tax_params = [sim_params['h_wealth'], sim_params['p_wealth'], sim_params['m_wealth']]
+    ellipse_params = [sim_params['b_ellipse'], sim_params['upsilon']]
+    
+    tpi_params = [sim_params['J'], sim_params['S'], sim_params['T'], sim_params['BW'], 
+                  sim_params['beta'], sim_params['sigma'], sim_params['alpha'], 
+                  sim_params['Z'], sim_params['delta'], sim_params['ltilde'], 
+                  sim_params['nu'], sim_params['g_y'], sim_params['g_n_vector'], 
+                  sim_params['tau_payroll'], sim_params['tau_bq'], sim_params['rho'], sim_params['omega'],
+                  sim_params['lambdas'], sim_params['e'], sim_params['retire'], sim_params['mean_income_data']] + \
+                  wealth_tax_params + ellipse_params
+    iterative_params = [sim_params['maxiter'], sim_params['mindist_SS']]
+    chi_params = (sim_params['chi_b_guess'], sim_params['chi_n_guess'])
+
+    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
+                  g_n_vector, tau_payroll, tau_bq, rho, omega, lambdas, e, retire, mean_income_data,\
+                  h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = tpi_params
+
 
     '''
     ------------------------------------------------------------------------
     Set factor and initial capital stock to SS from baseline
     ------------------------------------------------------------------------
     '''
-    baseline_ss = os.path.join(baseline_dir, "SSinit/ss_init_vars.pkl")
+    baseline_ss = os.path.join(sim_params['baseline_dir'], "SS/ss_vars.pkl")
     ss_baseline_vars = pickle.load(open(baseline_ss, "rb"))
     factor = ss_baseline_vars['factor_ss']
     #initial_b = ss_baseline_vars['bssmat_s'] + ss_baseline_vars['BQss']/lambdas
-    initial_b= ss_baseline_vars['bssmat_splus1'] 
+    initial_b = ss_baseline_vars['bssmat_splus1']
+    initial_n = ss_baseline_vars['nssmat']
 
 
     '''
@@ -85,59 +115,42 @@ def create_tpi_params(analytical_mtrs, etr_params, mtrx_params, mtry_params,
     # Put income tax parameters in a tuple 
     # Assumption here is that tax parameters of last year of budget
     # window continue forever and so will be SS values
-    etr_params_TP = np.zeros((S,T+S,etr_params.shape[2]))
-    etr_params_TP[:,:BW,:] = etr_params
-    etr_params_TP[:,BW:,:] = np.reshape(etr_params[:,BW-1,:],(S,1,etr_params.shape[2]))
 
-    mtrx_params_TP = np.zeros((S,T+S,mtrx_params.shape[2]))
-    mtrx_params_TP[:,:BW,:] = mtrx_params
-    mtrx_params_TP[:,BW:,:] = np.reshape(mtrx_params[:,BW-1,:],(S,1,mtrx_params.shape[2]))
-
-    mtry_params_TP = np.zeros((S,T+S,mtry_params.shape[2]))
-    mtry_params_TP[:,:BW,:] = mtry_params
-    mtry_params_TP[:,BW:,:] = np.reshape(mtry_params[:,BW-1,:],(S,1,mtry_params.shape[2]))
-
-    income_tax_params = (analytical_mtrs, etr_params_TP, mtrx_params_TP, mtry_params_TP)
-
-
-    wealth_tax_params = [h_wealth, p_wealth, m_wealth]
-    ellipse_params = [b_ellipse, upsilon]
-    parameters = [J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll, retire,
-                  mean_income_data]  + wealth_tax_params + ellipse_params
-
-    N_tilde = omega.sum(1)
-    omega_stationary = omega / N_tilde.reshape(T + S, 1)
-
-    initial_n = nssmat
+    N_tilde = omega.sum(1) #this should just be one given how we've constructed omega
+    omega = omega / N_tilde.reshape(T + S, 1)
 
     # Get an initial distribution of capital with the initial population
     # distribution
-    K0 = household.get_K(initial_b, omega_stationary[
-                         0].reshape(S, 1), lambdas, g_n_vector[0], 'SS')
-
+    K0_params = (omega[0].reshape(S, 1), lambdas, g_n_vector[0], 'SS')
+    K0 = household.get_K(initial_b, K0_params)
 
     b_sinit = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_b[:-1]))
     b_splus1init = initial_b
-    L0 = firm.get_L(e, initial_n, omega_stationary[
-                    0].reshape(S, 1), lambdas, 'SS')
-    Y0 = firm.get_Y(K0, L0, parameters)
-    w0 = firm.get_w(Y0, L0, parameters)
-    r0 = firm.get_r(Y0, K0, parameters)
-    BQ0 = household.get_BQ(r0, initial_b, omega_stationary[0].reshape(
-        S, 1), lambdas, rho.reshape(S, 1), g_n_vector[0], 'SS')
+    L0_params = (e, omega[0].reshape(S, 1), lambdas, 'SS')
+    L0 = firm.get_L(initial_n, L0_params)
+    Y0_params = (alpha, Z)
+    Y0 = firm.get_Y(K0, L0, Y0_params)
+    w0 = firm.get_w(Y0, L0, alpha)
+    r0_params = (alpha, delta)
+    r0 = firm.get_r(Y0, K0, r0_params)
 
-    T_H_0 = tax.get_lump_sum(r0, b_sinit, w0, e, initial_n, BQ0, lambdas, factor_ss, omega_stationary[
-                             0].reshape(S, 1), 'SS', etr_params_TP[:,0,:], parameters, theta, tau_bq)
+    BQ0_params = (omega[0].reshape(S, 1), lambdas, rho.reshape(S, 1), g_n_vector[0], 'SS')
+    BQ0 = household.get_BQ(r0, initial_b, BQ0_params)
 
-    tax0_params = (J, S, retire, np.tile(np.reshape(etr_params_TP[:,0,:],(S,1,etr_params_TP.shape[2])),(1,J,1)), 
-                    h_wealth, p_wealth, m_wealth, tau_payroll)
-    tax0 = tax.total_taxes(r0, b_sinit, w0, e, initial_n, BQ0, lambdas,
-                           factor_ss, T_H_0, None, 'SS', False, tax0_params, theta, tau_bq)
-    c0 = household.get_cons(r0, b_sinit, w0, e, initial_n, BQ0.reshape(
-        1, J), lambdas.reshape(1, J), b_splus1init, parameters, tax0)
+    T_H_params = (e, lambdas, omega[0].reshape(S, 1)), 'SS', etr_params_TP[:,0,:], 
+                    theta, tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
+    T_H_0 = tax.get_lump_sum(r0, w0, b_sinit, initial_n, BQ0, factor_ss, T_H_params)
 
-    return (income_tax_params, wealth_tax_params, ellipse_params, parameters,
-            N_tilde, omega_stationary, K0, b_sinit, b_splus1init, L0, Y0,
+    tax0_params = (e, lambdas, 'SS', retire, etr_params, h_wealth, p_wealth, m_wealth, 
+                    tau_payroll, theta, tau_bq, J, S)
+    tax0 = tax.total_taxes(r0, w0, b_sinit, initial_n, BQ0, factor_ss, T_H_0, None, False, tax0_params)
+
+    c0_params = (e, lambdas.reshape(1, J), g_y)
+    c0 = household.get_cons(r0, w0, b_sinit, b_splus1init, initial_n, BQ0.reshape(
+        1, J), tax0, c0_params)
+
+    return (income_tax_params, wealth_tax_params, ellipse_params, tpi_params,
+            N_tilde, omega, K0, b_sinit, b_splus1init, L0, Y0,
             w0, r0, BQ0, T_H_0, factor, tax0, c0, initial_b, initial_n)
 
 
@@ -294,7 +307,7 @@ def Steady_state_TPI_solver(guesses, winit, rinit, BQinit, T_H_init, factor, j, 
 
 
 def TPI_fsolve(guesses, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_tax_params, ellipse_params, parameters, g_n_vector, 
-                           omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, 
+                           omega, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, 
                            T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, 
                            chi_n, output_dir="./OUTPUT", **kwargs):
 
@@ -414,9 +427,9 @@ def TPI_fsolve(guesses, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_ta
     #     print 't-loop:', euler_errors.max()
     # Force the initial distribution of capital to be as given above.
     b_mat[0, :, :] = initial_b
-    Kinit = household.get_K(b_mat[:T], omega_stationary[:T].reshape(
+    Kinit = household.get_K(b_mat[:T], omega[:T].reshape(
         T, S, 1), lambdas.reshape(1, 1, J), g_n_vector[:T], 'TPI')
-    Linit = firm.get_L(e.reshape(1, S, J), n_mat[:T], omega_stationary[
+    Linit = firm.get_L(e.reshape(1, S, J), n_mat[:T], omega[
                        :T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI')
 
     # Plotting of Kpath and Lpath to check convergence
@@ -439,7 +452,7 @@ def TPI_fsolve(guesses, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_ta
     wnew = firm.get_w(Ynew, Linit, parameters)
     rnew = firm.get_r(Ynew, Kinit, parameters)
     # the following needs a g_n term
-    BQnew = household.get_BQ(rnew.reshape(T, 1), b_mat[:T], omega_stationary[:T].reshape(
+    BQnew = household.get_BQ(rnew.reshape(T, 1), b_mat[:T], omega[:T].reshape(
         T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1), g_n_vector[:T].reshape(T, 1), 'TPI')
 
     bmat_s = np.zeros((T, S, J))
@@ -451,7 +464,7 @@ def TPI_fsolve(guesses, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_ta
 
     T_H_new = np.array(list(tax.get_lump_sum(np.tile(rnew.reshape(T, 1, 1),(1,S,J)), bmat_s, np.tile(wnew.reshape(
         T, 1, 1),(1,S,J)), np.tile(e.reshape(1, S, J),(T,1,1)), n_mat[:T,:,:], BQnew.reshape(T, 1, J), lambdas.reshape(
-        1, 1, J), factor_ss, omega_stationary[:T].reshape(T, S, 1), 'TPI', TH_tax_params, parameters, theta, tau_bq)) + [T_Hss] * S)
+        1, 1, J), factor_ss, omega[:T].reshape(T, S, 1), 'TPI', TH_tax_params, parameters, theta, tau_bq)) + [T_Hss] * S)
 
     error1 = rinit[:T]-rnew[:T] 
     error2 = winit[:T]-wnew[:T] 
@@ -485,7 +498,7 @@ def TPI_fsolve(guesses, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_ta
 
 
 def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_tax_params, ellipse_params, parameters, g_n_vector, 
-                           omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, 
+                           omega, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, 
                            T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, 
                            chi_n, output_dir="./OUTPUT", **kwargs):
 
@@ -623,15 +636,15 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
         #     print 't-loop:', euler_errors.max()
         # Force the initial distribution of capital to be as given above.
         b_mat[0, :, :] = initial_b
-        Kinit = household.get_K(b_mat[:T], omega_stationary[:T].reshape(
+        Kinit = household.get_K(b_mat[:T], omega[:T].reshape(
             T, S, 1), lambdas.reshape(1, 1, J), g_n_vector[:T], 'TPI')
-        Linit = firm.get_L(e.reshape(1, S, J), n_mat[:T], omega_stationary[
+        Linit = firm.get_L(e.reshape(1, S, J), n_mat[:T], omega[
                            :T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI')
         Ynew = firm.get_Y(Kinit, Linit, parameters)
         wnew = firm.get_w(Ynew, Linit, parameters)
         rnew = firm.get_r(Ynew, Kinit, parameters)
         # the following needs a g_n term
-        BQnew = household.get_BQ(rnew.reshape(T, 1), b_mat[:T], omega_stationary[:T].reshape(
+        BQnew = household.get_BQ(rnew.reshape(T, 1), b_mat[:T], omega[:T].reshape(
             T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1), g_n_vector[:T].reshape(T, 1), 'TPI')
         bmat_s = np.zeros((T, S, J))
         bmat_s[:, 1:, :] = b_mat[:T, :-1, :]
@@ -643,7 +656,7 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
 
         T_H_new = np.array(list(tax.get_lump_sum(np.tile(rnew.reshape(T, 1, 1),(1,S,J)), bmat_s, np.tile(wnew.reshape(
             T, 1, 1),(1,S,J)), np.tile(e.reshape(1, S, J),(T,1,1)), n_mat[:T,:,:], BQnew.reshape(T, 1, J), lambdas.reshape(
-            1, 1, J), factor_ss, omega_stationary[:T].reshape(T, S, 1), 'TPI', TH_tax_params, parameters, theta, tau_bq)) + [T_Hss] * S)
+            1, 1, J), factor_ss, omega[:T].reshape(T, S, 1), 'TPI', TH_tax_params, parameters, theta, tau_bq)) + [T_Hss] * S)
 
         winit[:T] = utils.convex_combo(wnew, winit[:T], nu)
         rinit[:T] = utils.convex_combo(rnew, rinit[:T], nu)
@@ -675,7 +688,7 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
 
 
 def TP_solutions(winit, rinit, T_H_init, BQinit2, Kss, Lss, Yss, BQss, theta, income_tax_params, wealth_tax_params, ellipse_params, parameters, g_n_vector, 
-                           omega_stationary, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, 
+                           omega, K0, b_sinit, b_splus1init, L0, Y0, r0, BQ0, 
                            T_H_0, tax0, c0, initial_b, initial_n, factor_ss, tau_bq, chi_b, 
                            chi_n, output_dir="./OUTPUT", **kwargs):
 
@@ -787,9 +800,9 @@ def TP_solutions(winit, rinit, T_H_init, BQinit2, Kss, Lss, Yss, BQss, theta, in
     Generate variables/values so they can be used in other modules
     ------------------------------------------------------------------------
     '''
-    Kinit = household.get_K(b_mat[:T], omega_stationary[:T].reshape(
+    Kinit = household.get_K(b_mat[:T], omega[:T].reshape(
             T, S, 1), lambdas.reshape(1, 1, J), g_n_vector[:T], 'TPI')
-    Linit = firm.get_L(e.reshape(1, S, J), n_mat[:T], omega_stationary[
+    Linit = firm.get_L(e.reshape(1, S, J), n_mat[:T], omega[
                            :T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI')
 
     Kpath_TPI = np.array(list(Kinit) + list(np.ones(10) * Kss))
@@ -815,7 +828,7 @@ def TP_solutions(winit, rinit, T_H_init, BQinit2, Kss, Lss, Yss, BQss, theta, in
         1, S, J), n_mat[:T], BQinit[:T].reshape(T, 1, J), lambdas.reshape(1, 1, J), b_splus1, parameters, tax_path)
 
     Y_path = firm.get_Y(Kpath_TPI[:T], Lpath_TPI[:T], parameters)
-    C_path = household.get_C(c_path, omega_stationary[
+    C_path = household.get_C(c_path, omega[
                              :T].reshape(T, S, 1), lambdas, 'TPI')
     I_path = firm.get_I(Kpath_TPI[1:T + 1],
                         Kpath_TPI[:T], delta, g_y, g_n_vector[:T])
