@@ -62,17 +62,6 @@ def run_micro_macro(user_params):
     #p1.start()
     runner_SS(**kwargs)
 
-    output_base = REFORM_DIR
-    input_dir = REFORM_DIR
-    guid_iter = 'reform_' + str(0)
-    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'baseline':False, 'analytical_mtrs':False, 'age_specific':False, 
-            'reform':reform, 'user_params':user_params,'guid':'38_mtr', 'run_micro':False}
-    #p2 = Process(target=runner, kwargs=kwargs)
-    #p2.start()
-    runner_SS(**kwargs)
-
-    quit()
 
     '''
     ------------------------------------------------------------------------

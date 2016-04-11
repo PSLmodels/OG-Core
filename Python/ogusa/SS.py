@@ -129,8 +129,7 @@ def create_steady_state_parameters(**sim_params):
                   wealth_tax_params + ellipse_params
     iterative_params = [sim_params['maxiter'], sim_params['mindist_SS']]
     chi_params = (sim_params['chi_b_guess'], sim_params['chi_n_guess'])
-    return (income_tax_params, wealth_tax_params, ellipse_params,
-            ss_params, iterative_params, chi_params)
+    return (income_tax_params, ss_params, iterative_params, chi_params)
 
 
 def euler_equation_solver(guesses, params):
