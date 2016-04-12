@@ -10,7 +10,7 @@ import time
 
 import postprocess
 #from execute import runner # change here for small jobs
-from execute_large import runner, runner_SS
+from execute import runner, runner_SS
 
 
 def run_micro_macro(user_params):

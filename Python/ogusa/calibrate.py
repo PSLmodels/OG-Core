@@ -1,4 +1,126 @@
 
+'''
+This module should be organized as follows:
+
+Main function:
+chi_estimate() = returns chi_n, chi_b
+    - calls: 
+        wealth.get_wealth_data() - returns data moments on wealth distribution
+        labor.labor_data_moments() - returns data moments on labor supply
+        minstat() - returns min of statistical objective function
+            model_moments() - returns model moments
+                SS.run_SS() - return SS distributions
+
+'''
+
+'''
+------------------------------------------------------------------------
+Last updated: 4/11/2016
+
+Uses a simulated method of moments to calibrate the chi_n adn chi_b 
+parameters of OG-USA.
+
+This py-file calls the following other file(s):
+    wealth.get_wealth_data()
+    labor.labor_data_moments()
+    SS.run_SS
+
+This py-file creates the following other file(s): None
+------------------------------------------------------------------------
+'''
+
+
+def chi_estimate(income_tax_params, ss_parameters, iterative_params, chi_guesses, baseline_dir="./OUTPUT"):
+
+    # unpack tuples of parameters
+    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, lambdas, e, retire, mean_income_data,\
+                  h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
+
+    # Generate Wealth data moments
+    wealth_moments = wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir)
+
+    # Generate labor data moments
+    labor_moments = labor.labor_data_moments(flag_graphs, output_dir)
+
+    # combine moments
+    data_moments = list(wealth_moments.flatten()) + list(labor_moments.flatten())
+
+    # call minimizer
+    bnds = np.ones((S+J,2))*(1e-12, None) # Need (1e-12, None) pari J+S times
+    min_args = () data_moments
+    est_output = opt.minimize(minstat, chi_guesses,
+                    args=(min_args), method="L-BFGS-B", bounds=bnds,
+                    tol=1e-15)
+    chi_params = est_output.x
+    objective_func_min = est_out.fun 
+
+    return chi_params
+
+
+
+
+def minstat(chi_guesses, *args):
+    '''
+    --------------------------------------------------------------------
+    This function generates the weighted sum of squared differences
+    between the model and data moments.
+
+
+    RETURNS: wssqdev
+    --------------------------------------------------------------------
+    '''
+    chi_params = chi_guesses
+    data_moments, income_tax_params, ss_params, iterative_params, chi_params, baseline_dir = args
+    ss_output = SS.run_SS(income_tax_params, ss_params, iterative_params, chi_params, True, baseline_dir)
+
+        # output = {'Kss': Kss, 'bssmat': bssmat, 'Lss': Lss, 'Css':Css, 'nssmat': nssmat, 'Yss': Yss,
+        #       'wss': wss, 'rss': rss, 'theta': theta, 'BQss': BQss, 'factor_ss': factor_ss,
+        #       'bssmat_s': bssmat_s, 'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
+        #       'T_Hss': T_Hss, 'euler_savings': euler_savings,
+        #       'euler_labor_leisure': euler_labor_leisure, 'chi_n': chi_n,
+        #       'chi_b': chi_b}
+
+    model_moments = calc_moments(ss_output)
+
+    distance = ((model_moments - data_moments)**2).sum()
+    return distance
+
+
+def calc_moments(**ss_output):
+    '''
+    --------------------------------------------------------------------
+    This function calculates moments from the SS output that correspond
+    to the data moments used for estimation.
+
+    RETURNS: model_moments
+    --------------------------------------------------------------------
+    '''
+
+    # wealth moments
+
+    # labor moments
+
+    # combine moments
+    model_moments = list(model_wealth_moments.flatten()) + list(model_labor_moments.flatten())
+
+
+    return model_moments
+
+
+
+
+
+
+
+    ***********************************************
+    ***********************************************
+
+    OLD CODE BELOW
+
+    ***********************************************
+    ***********************************************
+
 if calibrate_model:
         global Nfeval, value_all, chi_params_all
         Nfeval = 1

@@ -10,16 +10,10 @@ This py-file calls the following other file(s):
             household.py
             firm.py
             utils.py
-            OUTPUT/Saved_moments/params_given.pkl
-            OUTPUT/Saved_moments/params_changed.pkl
-            OUTPUT/Saved_moments/labor_data_moments.pkl
-            OUTPUT/Saved_moments/SS_solutions.pkl
+            OUTPUT/SS/SS_vars.pkl
 
 This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
-            OUTPUT/Saved_moments/SS_solutions.pkl
-            OUTPUT/Saved_moments/SS_experiment_solutions.pkl
-            OUTPUT/SS/ss_vars.pkl
             OUTPUT/SS/ss_vars.pkl
 ------------------------------------------------------------------------
 '''
@@ -37,11 +31,9 @@ import os
 
 
 '''
-------------------------------------------------------------------------
-Imported user given values
-------------------------------------------------------------------------
+Set minimizer tolerance
 '''
-from .parameters import DATASET
+MINIMIZER_TOL = 1e-13
 
 '''
 ------------------------------------------------------------------------
@@ -208,10 +200,10 @@ def euler_equation_solver(guesses, params):
     theta = tax.replacement_rate_vals(n_guess, w, factor, theta_params)
 
     foc_save_parms = (e[:, j], sigma, beta, g_y, chi_b[j], theta, tau_bq[j], rho, lambdas[j], J, S,
-                           analytical_mtrs, etr_params, mtry_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire)
+                           analytical_mtrs, etr_params, mtry_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire, 'SS')
     error1 = household.euler_savings_func(r, w, b_s, b_splus1, b_splus2, n_guess, BQ, factor, T_H, foc_save_parms)
     foc_labor_params = (e[:, j], sigma, g_y, theta, b_ellipse, upsilon, chi_n, ltilde, tau_bq[j], lambdas[j], J, S,
-                            analytical_mtrs, etr_params, mtrx_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire)
+                            analytical_mtrs, etr_params, mtrx_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire, 'SS')
     error2 = household.euler_labor_leisure_func(r, w, b_s, b_splus1, n_guess, BQ, factor, T_H, foc_labor_params)
 
     # Put in constraints for consumption and savings.
@@ -347,7 +339,7 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, fs
                   mtry_params]
 
             [solutions, infodict, ier, message] = opt.fsolve(euler_equation_solver, guesses * .9,
-                                   args=euler_params, xtol=1e-13, full_output=True)
+                                   args=euler_params, xtol=MINIMIZER_TOL, full_output=True)
 
             print 'Max Euler errors: ', np.absolute(infodict['fvec']).max()
 
@@ -421,7 +413,7 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, fs
                   mtry_params]
 
         [solutions1, infodict, ier, message] = opt.fsolve(euler_equation_solver, guesses * .9,
-                                   args=euler_params, xtol=1e-13, full_output=True)
+                                   args=euler_params, xtol=MINIMIZER_TOL, full_output=True)
         eul_errors[j] = np.array(infodict['fvec']).max()
         print 'Max Euler errors: ', np.absolute(infodict['fvec']).max()
         b_mat[:, j] = solutions1[:S]
@@ -492,7 +484,7 @@ def SS_fsolve(guesses, params):
                   mtry_params]
 
         [solutions, infodict, ier, message] = opt.fsolve(euler_equation_solver, guesses * .9,
-                                   args=euler_params, xtol=mindist_SS, full_output=True)
+                                   args=euler_params, xtol=MINIMIZER_TOL, full_output=True)
 
         print 'Max Euler errors: ', np.absolute(infodict['fvec']).max()
         
@@ -607,7 +599,7 @@ def SS_fsolve_reform(guesses, params):
                   mtry_params]
 
         [solutions, infodict, ier, message] = opt.fsolve(euler_equation_solver, guesses * .9,
-                                   args=euler_params, xtol=mindist_SS, full_output=True)
+                                   args=euler_params, xtol=MINIMIZER_TOL, full_output=True)
 
         print 'Max Euler errors: ', np.absolute(infodict['fvec']).max()
         
@@ -656,7 +648,7 @@ def SS_fsolve_reform(guesses, params):
 
 
 
-def run_steady_state(income_tax_params, ss_params, iterative_params, chi_params, baseline=True, calibrate_model=False, output_dir="./OUTPUT", baseline_dir="./OUTPUT"):
+def run_SS(income_tax_params, ss_params, iterative_params, chi_params, baseline=True, baseline_dir="./OUTPUT"):
     '''
     --------------------------------------------------------------------
     Solve for SS of OG-USA.
@@ -719,19 +711,19 @@ def run_steady_state(income_tax_params, ss_params, iterative_params, chi_params,
         factorguess = 70000
         ss_params = [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params]
         guesses = [wguess, rguess, T_Hguess, factorguess]
-        [solutions, infodict, ier, message] = opt.fsolve(SS_fsolve, guesses, args=ss_params, xtol=mindist_SS, full_output=True)
-        [wss, rss, T_Hss, factor_ss] = solutions
+        [solutions_fsolve, infodict, ier, message] = opt.fsolve(SS_fsolve, guesses, args=ss_params, xtol=mindist_SS, full_output=True)
+        [wss, rss, T_Hss, factor_ss] = solutions_fsolve
         fsolve_flag = True
         solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wss, rss, T_Hss, factor_ss, ss_params, fsolve_flag)
     else:
         baseline_ss_dir = os.path.join(
-            baseline_dir, "Saved_moments/SS_baseline_solutions.pkl")
+            baseline_dir, "SS/SS_vars.pkl")
         ss_solutions = pickle.load(open(baseline_ss_dir, "rb"))
         [wguess, rguess, factor, T_Hguess] = ss_solutions['solutions'][2 * S * J:]
         ss_params_reform = [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params, factor]
         guesses = [wguess, rguess, T_Hguess]
-        [solutions, infodict, ier, message] = opt.fsolve(SS_fsolve_reform, guesses, args=ss_params_reform, xtol=mindist_SS, full_output=True)
-        [wss, rss, T_Hss] = solutions
+        [solutions_fsolve, infodict, ier, message] = opt.fsolve(SS_fsolve_reform, guesses, args=ss_params_reform, xtol=mindist_SS, full_output=True)
+        [wss, rss, T_Hss] = solutions_fsolve
         fsolve_flag = True
         ss_params= [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params]
         solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wss, rss, T_Hss, factor, ss_params, fsolve_flag)
@@ -744,17 +736,6 @@ def run_steady_state(income_tax_params, ss_params, iterative_params, chi_params,
         Generate the SS values of variables, including euler errors
     ------------------------------------------------------------------------
     '''
-
-    if baseline:
-        outputs = {'solutions': solutions, 'chi_params': chi_params}
-        ss_init_dir = os.path.join(
-            output_dir, "Saved_moments/SS_baseline_solutions.pkl")
-        pickle.dump(outputs, open(ss_init_dir, "wb"))
-    else:
-        outputs = {'solutions': solutions, 'chi_params': chi_params}
-        ss_exp_dir = os.path.join(
-            output_dir, "Saved_moments/SS_reform_solutions.pkl")
-        pickle.dump(outputs, open(ss_exp_dir, "wb"))
 
     bssmat = solutions[0:(S - 1) * J].reshape(S - 1, J)
     bq = solutions[(S - 1) * J:S * J] # technically, this is just the intentional bequests - wealth of those with max age
@@ -819,40 +800,25 @@ def run_steady_state(income_tax_params, ss_params, iterative_params, chi_params,
     euler_labor_leisure = np.zeros((S, J))
     for j in xrange(J):
         foc_save_params = (e[:, j], sigma, beta, g_y, chi_b[j], theta[j], tau_bq[j], rho, lambdas[j], J, S,
-                           analytical_mtrs, etr_params, mtry_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire)
+                           analytical_mtrs, etr_params, mtry_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire, 'SS')
         euler_savings[:, j] = household.euler_savings_func(rss, wss, b_s[:, j], b_splus1[:, j], b_splus2[:, j], nssmat[:, j], 
                                 BQss[j], factor_ss, T_Hss, foc_save_params)
         foc_labor_params = (e[:, j], sigma, g_y, theta[j], b_ellipse, upsilon, chi_n, ltilde, tau_bq[j], lambdas[j], J, S,
-                            analytical_mtrs, etr_params, mtrx_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire)
+                            analytical_mtrs, etr_params, mtrx_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire, 'SS')
         euler_labor_leisure[:, j] = household.euler_labor_leisure_func(rss, wss, b_s[:, j], b_splus1[:, j], nssmat[:, j], 
                                     BQss[j], factor_ss, T_Hss, foc_labor_params)
     '''
     ------------------------------------------------------------------------
-        Save the values in various ways, depending on the stage of
-            the simulation, to be used in TPI or graphing functions
+        Return SS results
     ------------------------------------------------------------------------
     '''
 
-    # Pickle variables
     output = {'Kss': Kss, 'bssmat': bssmat, 'Lss': Lss, 'Css':Css, 'nssmat': nssmat, 'Yss': Yss,
               'wss': wss, 'rss': rss, 'theta': theta, 'BQss': BQss, 'factor_ss': factor_ss,
               'bssmat_s': bssmat_s, 'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
               'T_Hss': T_Hss, 'euler_savings': euler_savings,
               'euler_labor_leisure': euler_labor_leisure, 'chi_n': chi_n,
-              'chi_b': chi_b}
+              'chi_b': chi_b, 'solutions': solutions_fsolve}
 
-    if baseline:
-        utils.mkdirs(os.path.join(baseline_dir, "SS"))
-        ss_init_dir = os.path.join(baseline_dir, "SS/ss_vars.pkl")
-        pickle.dump(output, open(ss_init_dir, "wb"))
-    else:
-        utils.mkdirs(os.path.join(output_dir, "SS"))
-        ss_init_dir = os.path.join(output_dir, "SS/ss_vars.pkl")
-        pickle.dump(output, open(ss_init_dir, "wb"))
-
-    # Pickle variables for TPI initial values
-    output2 = {'bssmat_splus1': bssmat_splus1, 'nssmat': nssmat}
-    ss_init_tpi = os.path.join(output_dir, "SS/ss_tpi_vars.pkl")
-    pickle.dump(output2, open(ss_init_tpi, "wb"))
 
     return output

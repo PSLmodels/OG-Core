@@ -648,6 +648,7 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
     T_P = tau_payroll * w * e * n
     TW_params = (h_wealth, p_wealth, m_wealth)
     T_W = tau_wealth(b, TW_params) * b
+
     if method == 'SS':
         # Depending on if we are looking at b_s or b_s+1, the
         # entry for retirement will change (it shifts back one).
@@ -675,7 +676,8 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
     elif method == 'TPI_scalar':
         # The above methods won't work if scalars are used.  This option is only called by the
         # SS_TPI_firstdoughnutring function in TPI.
-        T_P -= theta[j] * w
+        #T_P -= theta[j] * w
+        T_P = 0.
         T_BQ = tau_bq[j] * BQ / lambdas
     total_taxes = T_I + T_P + T_BQ + T_W - T_H
 
