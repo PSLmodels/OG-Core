@@ -485,7 +485,6 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     MINIMIZER_OPTIONS = None
     PLOT_TPI = False
     maxiter = 250
-    mindist_fsolve = 1e-13
     mindist_SS = 1e-9
     mindist_TPI = 2e-5 
     nu = .4

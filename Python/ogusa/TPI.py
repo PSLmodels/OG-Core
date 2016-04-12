@@ -75,6 +75,7 @@ def create_tpi_params(**sim_params):
     chi_params = [sim_params['chi_b_guess'], sim_params['chi_n_guess']]
 
     N_tilde = sim_params['omega'].sum(1) #this should just be one in each year given how we've constructed omega
+    print 'N_tilde: ', N_tilde
     sim_params['omega'] = sim_params['omega'] / N_tilde.reshape(sim_params['T'] + sim_params['S'], 1)
 
     tpi_params = [sim_params['J'], sim_params['S'], sim_params['T'], sim_params['BW'], 
@@ -211,11 +212,11 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params):
     #### TEST THESE FUNCS BELOW TO BE SURE GET SAME OUTPUT, but should use if so *** 
     # foc_save_params = (e[-1, j], sigma, beta, g_y, chi_b, theta, tau_bq, rho, lambdas, J, S, 
     #     analytical_mtrs, etr_params[-1,0,:], mtry_params[-1,0,:], h_wealth, p_wealth, m_wealth, tau_payroll, retire, 'TPI')   
-    # error3 = household.euler_savings_func(r, w, b_s, b_splus1, 0., n, BQ, factor, T_H, foc_save_params)  
+    # error3 = household.FOC_savings(r, w, b_s, b_splus1, 0., n, BQ, factor, T_H, foc_save_params)  
 
     # foc_labor_params = (e[-1, j], sigma, g_y, theta, b_ellipse, upsilon, chi_n, ltilde, tau_bq, lambdas, J, S, 
     #     analytical_mtrs, etr_params[-1,0,:], mtrx_params[-1,0,:], h_wealth, p_wealth, m_wealth, tau_payroll, retire, 'TPI')   
-    # error4 = household.euler_labor_leisure_func(r, w, b, b_splus1, n, BQ, factor, T_H, foc_labor_params) 
+    # error4 = household.FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, foc_labor_params) 
     # print 'check1:', error2-error4
     # print 'check2:', error1-error3  
 
@@ -505,7 +506,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
 
         BQ_params = (omega[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1), 
                     g_n_vector[:T].reshape(T, 1), 'TPI')
-        BQnew = household.get_BQ(rnew.reshape(T, 1), b_mat[:T], BQ_params)
+        BQnew = household.get_BQ(rnew.reshape(T, 1), b_mat[:T,:,:], BQ_params)
         bmat_s = np.zeros((T, S, J))
         print 'size b_mat: ', b_mat.shape
         print 'size bs_mat: ', bmat_s.shape
@@ -578,6 +579,39 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
 
     print 'Max Euler error, savings: ', eul_savings
     print 'Max Euler error labor supply: ', eul_laborleisure
+
+
+    '''
+    ------------------------------------------------------------------------
+    Save variables/values so they can be used in other modules
+    ------------------------------------------------------------------------
+    '''
+
+    output = {'Y': Y, 'K': K, 'L': L, 'C': C, 'I': I, 'BQ': BQ, 
+              'T_H': T_H, 'r': r, 'w': w, 'b_mat': b_mat, 'n_mat': n_mat, 
+              'c_path': c_path, 'tax_path': tax_path,
+              'eul_savings': eul_savings, 'eul_laborleisure': eul_laborleisure}
+    
+    macro_output = {'Y': Y, 'K': K, 'L': L, 'C': C, 'I': I,
+                    'BQ': BQ, 'T_H': T_H, 'r': r, 'w': w, 
+                    'tax_path': tax_path}
+
+    # Non-stationary output
+    # macro_ns_output = {'K_ns_path': K_ns_path, 'C_ns_path': C_ns_path, 'I_ns_path': I_ns_path,
+    #           'L_ns_path': L_ns_path, 'BQ_ns_path': BQ_ns_path,
+    #           'rinit': rinit, 'Y_ns_path': Y_ns_path, 'T_H_ns_path': T_H_ns_path,
+    #           'w_ns_path': w_ns_path}
+
+
+    tpi_dir = os.path.join(output_dir, "TPI")
+    utils.mkdirs(tpi_dir)
+    tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
+    pickle.dump(output, open(tpi_vars, "wb"))
+
+    tpi_dir = os.path.join(output_dir, "TPI")
+    utils.mkdirs(tpi_dir)
+    tpi_vars = os.path.join(tpi_dir, "TPI_macro_vars.pkl")
+    pickle.dump(macro_output, open(tpi_vars, "wb"))
 
     return w[:T], r[:T], T_H[:T], BQ[:T], Y
 

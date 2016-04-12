@@ -10,7 +10,7 @@ This py-file calls the following other file(s):
             household.py
             firm.py
             utils.py
-            OUTPUT/SS/SS_vars.pkl
+            OUTPUT/SS/ss_vars.pkl
 
 This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
@@ -157,8 +157,8 @@ def euler_equation_solver(guesses, params):
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: 
     household.get_BQ()
     tax.replacement_rate_vals()
-    household.euler_savings_func()
-    household.euler_labor_leisure_func()
+    household.FOC_savings()
+    household.FOC_labor()
     tax.total_taxes()
     household.get_cons()
 
@@ -201,10 +201,10 @@ def euler_equation_solver(guesses, params):
 
     foc_save_parms = (e[:, j], sigma, beta, g_y, chi_b[j], theta, tau_bq[j], rho, lambdas[j], J, S,
                            analytical_mtrs, etr_params, mtry_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire, 'SS')
-    error1 = household.euler_savings_func(r, w, b_s, b_splus1, b_splus2, n_guess, BQ, factor, T_H, foc_save_parms)
+    error1 = household.FOC_savings(r, w, b_s, b_splus1, b_splus2, n_guess, BQ, factor, T_H, foc_save_parms)
     foc_labor_params = (e[:, j], sigma, g_y, theta, b_ellipse, upsilon, chi_n, ltilde, tau_bq[j], lambdas[j], J, S,
                             analytical_mtrs, etr_params, mtrx_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire, 'SS')
-    error2 = household.euler_labor_leisure_func(r, w, b_s, b_splus1, n_guess, BQ, factor, T_H, foc_labor_params)
+    error2 = household.FOC_labor(r, w, b_s, b_splus1, n_guess, BQ, factor, T_H, foc_labor_params)
 
     # Put in constraints for consumption and savings.
     # According to the euler equations, they can be negative.  When
@@ -717,7 +717,7 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, baseline=
         solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wss, rss, T_Hss, factor_ss, ss_params, fsolve_flag)
     else:
         baseline_ss_dir = os.path.join(
-            baseline_dir, "SS/SS_vars.pkl")
+            baseline_dir, "SS/ss_vars.pkl")
         ss_solutions = pickle.load(open(baseline_ss_dir, "rb"))
         [wguess, rguess, factor, T_Hguess] = ss_solutions['solutions'][2 * S * J:]
         ss_params_reform = [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params, factor]
@@ -801,11 +801,11 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, baseline=
     for j in xrange(J):
         foc_save_params = (e[:, j], sigma, beta, g_y, chi_b[j], theta[j], tau_bq[j], rho, lambdas[j], J, S,
                            analytical_mtrs, etr_params, mtry_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire, 'SS')
-        euler_savings[:, j] = household.euler_savings_func(rss, wss, b_s[:, j], b_splus1[:, j], b_splus2[:, j], nssmat[:, j], 
+        euler_savings[:, j] = household.FOC_savings(rss, wss, b_s[:, j], b_splus1[:, j], b_splus2[:, j], nssmat[:, j], 
                                 BQss[j], factor_ss, T_Hss, foc_save_params)
         foc_labor_params = (e[:, j], sigma, g_y, theta[j], b_ellipse, upsilon, chi_n, ltilde, tau_bq[j], lambdas[j], J, S,
                             analytical_mtrs, etr_params, mtrx_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire, 'SS')
-        euler_labor_leisure[:, j] = household.euler_labor_leisure_func(rss, wss, b_s[:, j], b_splus1[:, j], nssmat[:, j], 
+        euler_labor_leisure[:, j] = household.FOC_labor(rss, wss, b_s[:, j], b_splus1[:, j], nssmat[:, j], 
                                     BQss[j], factor_ss, T_Hss, foc_labor_params)
     '''
     ------------------------------------------------------------------------

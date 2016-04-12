@@ -68,24 +68,24 @@ def dump_diff_output(baseline_dir, policy_dir):
     tpi_macro_vars_baseline_path = os.path.join(baseline_dir, "TPI", "TPI_macro_vars.pkl")
     tpi_macro_vars_baseline = pickle.load(open( tpi_macro_vars_baseline_path, "rb" ) )
 
-    T = len(TPI_macro_vars_baseline['C_path'])
+    T = len(TPI_macro_vars_baseline['C'])
     baseline_macros = np.zeros((7,T))
-    baseline_macros[0,:] = tpi_macro_vars_baseline['Y_path'][:T]
-    baseline_macros[1,:] = tpi_macro_vars_baseline['C_path'][:T]
-    baseline_macros[2,:] = tpi_macro_vars_baseline['I_path'][:T]
-    baseline_macros[3,:] = tpi_macro_vars_baseline['Lpath_TPI'][:T]
-    baseline_macros[4,:] = tpi_macro_vars_baseline['winit'][:T]
-    baseline_macros[5,:] = tpi_macro_vars_baseline['rinit'][:T]
-    baseline_macros[6,:] = tpi_macro_vars_baseline['T_H_init'][:T]
+    baseline_macros[0,:] = tpi_macro_vars_baseline['Y'][:T]
+    baseline_macros[1,:] = tpi_macro_vars_baseline['C'][:T]
+    baseline_macros[2,:] = tpi_macro_vars_baseline['I'][:T]
+    baseline_macros[3,:] = tpi_macro_vars_baseline['L'][:T]
+    baseline_macros[4,:] = tpi_macro_vars_baseline['w'][:T]
+    baseline_macros[5,:] = tpi_macro_vars_baseline['r'][:T]
+    baseline_macros[6,:] = tpi_macro_vars_baseline['T_H'][:T]
 
     policy_macros = np.zeros((7,T))
-    policy_macros[0,:] = tpi_macro_vars_policy['Y_path'][:T]
-    policy_macros[1,:] = tpi_macro_vars_policy['C_path'][:T]
-    policy_macros[2,:] = tpi_macro_vars_policy['I_path'][:T]
-    policy_macros[3,:] = tpi_macro_vars_policy['Lpath_TPI'][:T]
-    policy_macros[4,:] = tpi_macro_vars_policy['winit'][:T]
-    policy_macros[5,:] = tpi_macro_vars_policy['rinit'][:T]
-    policy_macros[6,:] = tpi_macro_vars_policy['T_H_init'][:T]
+    policy_macros[0,:] = tpi_macro_vars_policy['Y'][:T]
+    policy_macros[1,:] = tpi_macro_vars_policy['C'][:T]
+    policy_macros[2,:] = tpi_macro_vars_policy['I'][:T]
+    policy_macros[3,:] = tpi_macro_vars_policy['L'][:T]
+    policy_macros[4,:] = tpi_macro_vars_policy['w'][:T]
+    policy_macros[5,:] = tpi_macro_vars_policy['r'][:T]
+    policy_macros[6,:] = tpi_macro_vars_policy['T_H'][:T]
 
     pct_changes = np.zeros((7,12))
     # pct changes for each year in budget window
@@ -94,9 +94,9 @@ def dump_diff_output(baseline_dir, policy_dir):
     pct_changes[:,10] = ((policy_macros[:,:10].sum(axis=1)-baseline_macros[:,:10].sum(axis=1))/policy_macros[:,:10].sum(axis=1))
     
     ## Load SS results
-    ss_policy_path = os.path.join(policy_dir, "SSinit", "ss_init_vars.pkl")
+    ss_policy_path = os.path.join(policy_dir, "SS", "ss_vars.pkl")
     ss_policy = pickle.load(open( ss_policy_path, "rb" ))
-    ss_baseline_path = os.path.join(baseline_dir, "SSinit", "ss_init_vars.pkl")
+    ss_baseline_path = os.path.join(baseline_dir, "SS", "ss_vars.pkl")
     ss_baseline = pickle.load(open( ss_baseline_path, "rb" ) )
     # pct changes in macro aggregates in SS
     pct_changes[0,11] = (ss_policy['Yss']-ss_baseline['Yss'])/ss_baseline['Yss']

@@ -204,7 +204,7 @@ def get_C(c, params):
     return aggC
 
 
-def euler_savings_func(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, params):
+def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, params):
     '''
     Computes Euler errors for the FOC for savings in the steady state.  
     This function is usually looped through over J, so it does one lifetime income group at a time.
@@ -318,7 +318,7 @@ def euler_savings_func(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, params):
     return euler
 
 
-def euler_labor_leisure_func(r, w, b, b_splus1, n, BQ, factor, T_H, params):
+def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, params):
     '''
     Computes Euler errors for the FOC for labor supply in the steady state.  
     This function is usually looped through over J, so it does one lifetime income group at a time.
