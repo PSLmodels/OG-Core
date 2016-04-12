@@ -75,7 +75,6 @@ def create_tpi_params(**sim_params):
     chi_params = [sim_params['chi_b_guess'], sim_params['chi_n_guess']]
 
     N_tilde = sim_params['omega'].sum(1) #this should just be one in each year given how we've constructed omega
-    print 'N_tilde: ', N_tilde
     sim_params['omega'] = sim_params['omega'] / N_tilde.reshape(sim_params['T'] + sim_params['S'], 1)
 
     tpi_params = [sim_params['J'], sim_params['S'], sim_params['T'], sim_params['BW'], 
@@ -499,18 +498,15 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
         L[:T]  = firm.get_L(n_mat[:T], L_params)
 
         Y_params = (alpha, Z)
-        Ynew = firm.get_Y(K, L, Y_params)
-        wnew = firm.get_w(Ynew, L, alpha)
+        Ynew = firm.get_Y(K[:T], L[:T], Y_params)
+        wnew = firm.get_w(Ynew[:T], L[:T], alpha)
         r_params = (alpha, delta)
-        rnew = firm.get_r(Ynew, K, r_params)
+        rnew = firm.get_r(Ynew[:T], K[:T], r_params)
 
         BQ_params = (omega[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1), 
                     g_n_vector[:T].reshape(T, 1), 'TPI')
-        BQnew = household.get_BQ(rnew.reshape(T, 1), b_mat[:T,:,:], BQ_params)
+        BQnew = household.get_BQ(rnew[:T].reshape(T, 1), b_mat[:T,:,:], BQ_params)
         bmat_s = np.zeros((T, S, J))
-        print 'size b_mat: ', b_mat.shape
-        print 'size bs_mat: ', bmat_s.shape
-
         bmat_s[:, 1:, :] = b_mat[:T, :-1, :]
         bmat_splus1 = np.zeros((T, S, J))
         bmat_splus1[:, :, :] = b_mat[1:T + 1, :, :]
@@ -521,21 +517,21 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
 
         T_H_params = (np.tile(e.reshape(1, S, J),(T,1,1)), lambdas.reshape(1, 1, J), omega[:T].reshape(T, S, 1), 'TPI', 
                 TH_tax_params, theta, tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
-        T_H_new = np.array(list(tax.get_lump_sum(np.tile(rnew.reshape(T, 1, 1),(1,S,J)), np.tile(wnew.reshape(T, 1, 1),(1,S,J)),
-               bmat_s, n_mat[:T,:,:], BQnew.reshape(T, 1, J), factor, T_H_params)) + [T_Hss] * S)
+        T_H_new = np.array(list(tax.get_lump_sum(np.tile(rnew[:T].reshape(T, 1, 1),(1,S,J)), np.tile(wnew[:T].reshape(T, 1, 1),(1,S,J)),
+               bmat_s, n_mat[:T,:,:], BQnew[:T].reshape(T, 1, J), factor, T_H_params)) + [T_Hss] * S)
 
-        w[:T] = utils.convex_combo(wnew, w[:T], nu)
-        r[:T] = utils.convex_combo(rnew, r[:T], nu)
-        BQ[:T] = utils.convex_combo(BQnew, BQ[:T], nu)
+        w[:T] = utils.convex_combo(wnew[:T], w[:T], nu)
+        r[:T] = utils.convex_combo(rnew[:T], r[:T], nu)
+        BQ[:T] = utils.convex_combo(BQnew[:T], BQ[:T], nu)
         T_H[:T] = utils.convex_combo(T_H_new[:T], T_H[:T], nu)
         guesses_b = utils.convex_combo(b_mat, guesses_b, nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, nu)
         if T_H.all() != 0:
-            TPIdist = np.array(list(utils.pct_diff_func(rnew, r[:T])) + list(utils.pct_diff_func(BQnew, BQ[:T]).flatten()) + list(
-                utils.pct_diff_func(wnew, w[:T])) + list(utils.pct_diff_func(T_H_new, T_H))).max()
+            TPIdist = np.array(list(utils.pct_diff_func(rnew[:T], r[:T])) + list(utils.pct_diff_func(BQnew[:T], BQ[:T]).flatten()) + list(
+                utils.pct_diff_func(wnew[:T], w[:T])) + list(utils.pct_diff_func(T_H_new[:T], T_H[:T]))).max()
         else:
-            TPIdist = np.array(list(utils.pct_diff_func(rnew, r[:T])) + list(utils.pct_diff_func(BQnew, BQ[:T]).flatten()) + list(
-                utils.pct_diff_func(wnew, w[:T])) + list(np.abs(T_H_new, T_H))).max()
+            TPIdist = np.array(list(utils.pct_diff_func(rnew[:T], r[:T])) + list(utils.pct_diff_func(BQnew[:T], BQ[:T]).flatten()) + list(
+                utils.pct_diff_func(wnew[:T], w[:T])) + list(np.abs(T_H_new[:T], T_H[:T]))).max()
         TPIdist_vec[TPIiter] = TPIdist
         # After T=10, if cycling occurs, drop the value of nu
         # wait til after T=10 or so, because sometimes there is a jump up
@@ -548,17 +544,27 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
         print '\tIteration:', TPIiter
         print '\t\tDistance:', TPIdist
 
+        output = {'Y': Y, 'K': K, 'L': L, 'BQ': BQ, 
+              'T_H': T_H, 'r': r, 'w': w, 'b_mat': b_mat, 'n_mat': n_mat}
+        tpi_dir = os.path.join(output_dir, "TPI")
+        utils.mkdirs(tpi_dir)
+        tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
+        pickle.dump(output, open(tpi_vars, "wb"))
+
+        tpi_dir = os.path.join(output_dir, "TPI")
+        quit()
+
+
 
     Y[:T] = Ynew
 
     etr_params_path = np.zeros((T,S,J,etr_params.shape[2]))
     for i in range(etr_params.shape[2]):
         etr_params_path[:,:,:,i] = np.tile(np.reshape(np.transpose(etr_params[:,:T,i]),(T,S,1)),(1,1,J))
-
     tax_path_params = (np.tile(e.reshape(1, S, J),(T,1,1)), lambdas, 'TPI', retire, etr_params_path, h_wealth, 
                        p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
     tax_path = tax.total_taxes(np.tile(r[:T].reshape(T, 1, 1),(1,S,J)), np.tile(w[:T].reshape(T, 1, 1),(1,S,J)), bmat_s, 
-                               n_mat[:T,:,:], BQ[:T, :].reshape(T, 1, J), factor, T_H[:T,:,:], None, False, tax_path_params) 
+                               n_mat[:T,:,:], BQ[:T, :].reshape(T, 1, J), factor, T_H[:T].reshape(T, 1, 1), None, False, tax_path_params) 
 
     cons_params = (e.reshape(1, S, J), lambdas.reshape(1, 1, J), g_y)
     c_path = household.get_cons(r[:T].reshape(T, 1, 1), w[:T].reshape(T, 1, 1), bmat_s, bmat_splus1, n_mat[:T,:,:], 
@@ -566,7 +572,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     C_params = (omega[:T].reshape(T, S, 1), lambdas, 'TPI')
     C = household.get_C(c_path, C_params)
     I_params = (delta, g_y, g_n_vector[:T])
-    I_path = firm.get_I(K[1:T+1], K[:T], I_params)
+    I = firm.get_I(K[1:T+1], K[:T], I_params)
     print 'Resource Constraint Difference:', Y[:T] - C[:T] - I[:T]
 
     print'Checking time path for violations of constaints.'

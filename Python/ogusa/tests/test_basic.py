@@ -63,7 +63,7 @@ def test_import_ok():
 
 
 def test_run_small():
-    from execute import runner, runner_SS
+    from execute_smalll import runner, runner_SS
     output_base = "./OUTPUT"
     input_dir = "./OUTPUT"
     user_params = {'frisch':0.41}
