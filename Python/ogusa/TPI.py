@@ -538,74 +538,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
         outer_loop_vars = (r, w, K, BQ, T_H)
         inner_loop_params = (income_tax_params, tpi_params, initial_values, theta, ind)
 
+        # Solve HH problem in inner loop
         euler_errors, b_mat, n_mat = inner_loop(guesses, outer_loop_vars, inner_loop_params)
 
-        # for j in xrange(J):
-        #     first_doughnut_params = (income_tax_params, tpi_params, initial_b)
-        #     b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],
-        #                                                            args=(r[1], w[1], initial_b, BQ[1, j], T_H[1], j, 
-        #                                                            first_doughnut_params), xtol=MINIMIZER_TOL))
-
-        #     for s in xrange(S - 2):  # Upper triangle
-        #         ind2 = np.arange(s + 2)
-        #         b_guesses_to_use = np.diag(
-        #             guesses_b[1:S + 1, :, j], S - (s + 2))
-        #         n_guesses_to_use = np.diag(guesses_n[:S, :, j], S - (s + 2))
-
-        #         # initialize array of diagonal elements
-        #         length_diag = (np.diag(np.transpose(etr_params[:S,:,0]),S-(s+2))).shape[0]
-        #         etr_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
-        #         mtrx_params_to_use = np.zeros((length_diag,mtrx_params.shape[2]))
-        #         mtry_params_to_use = np.zeros((length_diag,mtry_params.shape[2]))
-        #         for i in range(etr_params.shape[2]):
-        #             etr_params_to_use[:,i] = np.diag(np.transpose(etr_params[:S,:,i]),S-(s+2))
-        #             mtrx_params_to_use[:,i] = np.diag(np.transpose(mtrx_params[:S,:,i]),S-(s+2))
-        #             mtry_params_to_use[:,i] = np.diag(np.transpose(mtry_params[:S,:,i]),S-(s+2))
-
-        #         inc_tax_params_upper = (analytical_mtrs, etr_params_to_use, mtrx_params_to_use, mtry_params_to_use)
-
-        #         TPI_solver_params = (inc_tax_params_upper, tpi_params, initial_b)
-        #         solutions = opt.fsolve(twist_doughnut, list(
-        #             b_guesses_to_use) + list(n_guesses_to_use), args=(
-        #             r, w, BQ[:, j], T_H, j, s, 0, TPI_solver_params), xtol=MINIMIZER_TOL)
-
-        #         b_vec = solutions[:len(solutions) / 2]
-        #         b_mat[1 + ind2, S - (s + 2) + ind2, j] = b_vec
-        #         n_vec = solutions[len(solutions) / 2:]
-        #         n_mat[ind2, S - (s + 2) + ind2, j] = n_vec
-
-        #     for t in xrange(0, T):
-        #         b_guesses_to_use = .75 * \
-        #             np.diag(guesses_b[t + 1:t + S + 1, :, j])
-        #         n_guesses_to_use = np.diag(guesses_n[t:t + S, :, j])
-
-        #         # initialize array of diagonal elements
-        #         length_diag = (np.diag(np.transpose(etr_params[:,t:t+S,i]))).shape[0]
-        #         etr_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
-        #         mtrx_params_to_use = np.zeros((length_diag,mtrx_params.shape[2]))
-        #         mtry_params_to_use = np.zeros((length_diag,mtry_params.shape[2]))
-        #         for i in range(etr_params.shape[2]):
-        #             etr_params_to_use[:,i] = np.diag(np.transpose(etr_params[:,t:t+S,i]))
-        #             mtrx_params_to_use[:,i] = np.diag(np.transpose(mtrx_params[:,t:t+S,i]))
-        #             mtry_params_to_use[:,i] = np.diag(np.transpose(mtry_params[:,t:t+S,i]))
-
-        #         inc_tax_params_TP = (analytical_mtrs, etr_params_to_use, mtrx_params_to_use, mtry_params_to_use)
-
-
-        #         TPI_solver_params = (inc_tax_params_TP, tpi_params, None)
-        #         solutions = opt.fsolve(twist_doughnut, list(
-        #             b_guesses_to_use) + list(n_guesses_to_use), args=(
-        #             r, w, BQ[:, j], T_H, j, None, t, TPI_solver_params), xtol=MINIMIZER_TOL)
-
-        #         b_vec = solutions[:S]
-        #         b_mat[t + 1 + ind, ind, j] = b_vec
-        #         n_vec = solutions[S:]
-        #         n_mat[t + ind, ind, j] = n_vec
-        #         inputs = list(solutions)
-
-        #         TPI_solver_params = (inc_tax_params_TP, tpi_params, None)
-        #         euler_errors[t, :, j] = np.abs(opt.fsolve(twist_doughnut, inputs, args=(
-        #             r, w, BQ[:, j], T_H, j, None, t, TPI_solver_params), xtol=MINIMIZER_TOL))
 
         # if euler_errors.max() > 1e-6:
         #     print 't-loop:', euler_errors.max()
@@ -699,76 +634,13 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     fsolve.
     -----------------------------------------------------------------
     '''
-    # initialize array of Euler errors
-    euler_errors = np.zeros((T, 2 * S, J))
+    guesses = (guesses_b, guesses_n)
+    outer_loop_vars = (r, w, K, BQ, T_H)
+    inner_loop_params = (income_tax_params, tpi_params, initial_values, theta, ind)
 
-   
-    for j in xrange(J):
-        first_doughnut_params = (income_tax_params, tpi_params, initial_b)
-        b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],
-                                                               args=(r[1], w[1], initial_b, BQ[1, j], T_H[1], j, 
-                                                               first_doughnut_params), xtol=MINIMIZER_TOL))
+    # Solve HH problem in inner loop
+    euler_errors, b_mat, n_mat = inner_loop(guesses, outer_loop_vars, inner_loop_params)
 
-        for s in xrange(S - 2):  # Upper triangle
-            ind2 = np.arange(s + 2)
-            b_guesses_to_use = np.diag(
-                guesses_b[1:S + 1, :, j], S - (s + 2))
-            n_guesses_to_use = np.diag(guesses_n[:S, :, j], S - (s + 2))
-
-            # initialize array of diagonal elements
-            length_diag = (np.diag(np.transpose(etr_params[:S,:,0]),S-(s+2))).shape[0]
-            etr_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
-            mtrx_params_to_use = np.zeros((length_diag,mtrx_params.shape[2]))
-            mtry_params_to_use = np.zeros((length_diag,mtry_params.shape[2]))
-            for i in range(etr_params.shape[2]):
-                etr_params_to_use[:,i] = np.diag(np.transpose(etr_params[:S,:,i]),S-(s+2))
-                mtrx_params_to_use[:,i] = np.diag(np.transpose(mtrx_params[:S,:,i]),S-(s+2))
-                mtry_params_to_use[:,i] = np.diag(np.transpose(mtry_params[:S,:,i]),S-(s+2))
-
-            inc_tax_params_upper = (analytical_mtrs, etr_params_to_use, mtrx_params_to_use, mtry_params_to_use)
-
-            TPI_solver_params = (inc_tax_params_upper, tpi_params, initial_b)
-            solutions = opt.fsolve(twist_doughnut, list(
-                b_guesses_to_use) + list(n_guesses_to_use), args=(
-                r, w, BQ[:, j], T_H, j, s, 0, TPI_solver_params), xtol=MINIMIZER_TOL)
-
-            b_vec = solutions[:len(solutions) / 2]
-            b_mat[1 + ind2, S - (s + 2) + ind2, j] = b_vec
-            n_vec = solutions[len(solutions) / 2:]
-            n_mat[ind2, S - (s + 2) + ind2, j] = n_vec
-
-        for t in xrange(0, T):
-            b_guesses_to_use = .75 * \
-                np.diag(guesses_b[t + 1:t + S + 1, :, j])
-            n_guesses_to_use = np.diag(guesses_n[t:t + S, :, j])
-
-            # initialize array of diagonal elements
-            length_diag = (np.diag(np.transpose(etr_params[:,t:t+S,i]))).shape[0]
-            etr_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
-            mtrx_params_to_use = np.zeros((length_diag,mtrx_params.shape[2]))
-            mtry_params_to_use = np.zeros((length_diag,mtry_params.shape[2]))
-            for i in range(etr_params.shape[2]):
-                etr_params_to_use[:,i] = np.diag(np.transpose(etr_params[:,t:t+S,i]))
-                mtrx_params_to_use[:,i] = np.diag(np.transpose(mtrx_params[:,t:t+S,i]))
-                mtry_params_to_use[:,i] = np.diag(np.transpose(mtry_params[:,t:t+S,i]))
-
-            inc_tax_params_TP = (analytical_mtrs, etr_params_to_use, mtrx_params_to_use, mtry_params_to_use)
-
-
-            TPI_solver_params = (inc_tax_params_TP, tpi_params, None)
-            solutions = opt.fsolve(twist_doughnut, list(
-                b_guesses_to_use) + list(n_guesses_to_use), args=(
-                r, w, BQ[:, j], T_H, j, None, t, TPI_solver_params), xtol=MINIMIZER_TOL)
-
-            b_vec = solutions[:S]
-            b_mat[t + 1 + ind, ind, j] = b_vec
-            n_vec = solutions[S:]
-            n_mat[t + ind, ind, j] = n_vec
-            inputs = list(solutions)
-
-            TPI_solver_params = (inc_tax_params_TP, tpi_params, None)
-            euler_errors[t, :, j] = np.abs(opt.fsolve(twist_doughnut, inputs, args=(
-                r, w, BQ[:, j], T_H, j, None, t, TPI_solver_params), xtol=MINIMIZER_TOL))
 
     eul_savings = euler_errors[:, :S, :].max(1).max(1)
     eul_laborleisure = euler_errors[:, S:, :].max(1).max(1)
