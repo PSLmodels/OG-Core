@@ -297,3 +297,53 @@ def callbackF(chi,chi_params, income_tax_parameters, ss_parameters, iterative_pa
     pickle.dump(dict_GMM, open(ss_init_path, "wb"))
 
     Nfeval += 1
+
+
+def check_wealth_calibration(wealth_model, factor_model, params):
+    '''
+    Creates a vector of the percent differences between the
+    model and data wealth moments for the two age groups for
+    each J group.
+
+    Inputs:
+        wealth_model = [S,J] array, model wealth levels
+        factor_model = scalar, factor to convert wealth levels to dollars
+        params       = length 2 tuple, (wealth_dir, J)
+        wealth_dir   = string, directory containing wealth data moments
+        J            = integer, number of lifetime income groups
+
+    Functions called: 
+        pct_dif_func
+
+    Objects in function:
+        wealth path          = string, path of pickle file with wealth data moments 
+        wealth_dict          = dictionary, contains wealth data moments
+        wealth_model         = [S,J] array, wealth holdings of model households
+        wealth_model_dollars = [S,J] array, wealth holdings of model households in dollars
+        wealth_fits          = [2*J,] vector, fits for how well the model wealth levels match the data wealth levels
+
+    Returns: wealth_fits
+    '''
+
+    wealth_dir, J = params
+
+    # Import the wealth data moments
+    wealth_path = os.path.join(
+        wealth_dir, "Saved_moments/wealth_data_moments.pkl")
+    wealth_dict = pickle.load(open(wealth_path, "rb"))
+    # Set lowest ability group's wealth to be a positive, not negative, number
+    # for the calibration
+    wealth_dict['wealth_data_array'][2:26, 0] = 500.0
+
+    # Convert wealth levels from model to dollar terms
+    wealth_model_dollars = wealth_model * factor_model
+    wealth_fits = np.zeros(2 * J)
+    # Look at the percent difference between the fits for the first age group (20-44) and second age group (45-65)
+    #   The wealth_data_array moment indices are shifted because they start at age 18
+    # The :: indices is so that we look at the 2 moments for the lowest group,
+    # the 2 moments for the second lowest group, etc in order
+    wealth_fits[0::2] = pct_dif_func(np.mean(wealth_model_dollars[
+                                      :24], axis=0), np.mean(wealth_dict['wealth_data_array'][2:26], axis=0))
+    wealth_fits[1::2] = pct_dif_func(np.mean(wealth_model_dollars[
+                                      24:45], axis=0), np.mean(wealth_dict['wealth_data_array'][26:47], axis=0))
+    return wealth_fits

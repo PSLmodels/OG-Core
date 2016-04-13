@@ -68,7 +68,7 @@ def dump_diff_output(baseline_dir, policy_dir):
     tpi_macro_vars_baseline_path = os.path.join(baseline_dir, "TPI", "TPI_macro_vars.pkl")
     tpi_macro_vars_baseline = pickle.load(open( tpi_macro_vars_baseline_path, "rb" ) )
 
-    T = len(TPI_macro_vars_baseline['C'])
+    T = len(tpi_macro_vars_baseline['C'])
     baseline_macros = np.zeros((7,T))
     baseline_macros[0,:] = tpi_macro_vars_baseline['Y'][:T]
     baseline_macros[1,:] = tpi_macro_vars_baseline['C'][:T]

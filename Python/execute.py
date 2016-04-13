@@ -101,14 +101,14 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
         ss_dir = os.path.join(baseline_dir, "SS/SS_vars.pkl")
         pickle.dump(ss_outputs, open(ss_dir, "wb"))
     else:
-        utils.mkdirs(os.path.join(output_dir, "SS"))
-        ss_dir = os.path.join(output_dir, "SS/SS_vars.pkl")
+        utils.mkdirs(os.path.join(output_base, "SS"))
+        ss_dir = os.path.join(output_base, "SS/SS_vars.pkl")
         pickle.dump(ss_outputs, open(ss_dir, "wb"))
 
 
     '''
     ------------------------------------------------------------------------
-        Run the baseline TPI simulation
+        Run the TPI simulation
     ------------------------------------------------------------------------
     '''
 
@@ -118,12 +118,27 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
 
     income_tax_params, tpi_params, iterative_params, initial_values, SS_values = TPI.create_tpi_params(**sim_params)
 
-    w_path, r_path, T_H_path, BQ_path, Y_path = TPI.run_TPI(income_tax_params, 
+    tpi_output, macro_output = TPI.run_TPI(income_tax_params, 
         tpi_params, iterative_params, initial_values, SS_values, output_dir=output_base)
 
 
-    print "getting to here...."
-    TPI.TP_solutions(w_path, r_path, T_H_path, BQ_path, **ss_outputs)
+    '''
+    ------------------------------------------------------------------------
+        Pickle TPI results 
+    ------------------------------------------------------------------------
+    '''
+    tpi_dir = os.path.join(output_base, "TPI")
+    utils.mkdirs(tpi_dir)
+    tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
+    pickle.dump(tpi_output, open(tpi_vars, "wb"))
+
+    tpi_dir = os.path.join(output_base, "TPI")
+    utils.mkdirs(tpi_dir)
+    tpi_vars = os.path.join(tpi_dir, "TPI_macro_vars.pkl")
+    pickle.dump(macro_output, open(tpi_vars, "wb"))
+
+
+    print "Time path iteration complete.  It"
     print "took {0} seconds to get that part done.".format(time.time() - tick)
 
 
@@ -223,10 +238,10 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
     '''
     if baseline:
         utils.mkdirs(os.path.join(baseline_dir, "SS"))
-        ss_dir = os.path.join(baseline_dir, "SS/ss_vars.pkl")
+        ss_dir = os.path.join(baseline_dir, "SS/SS_vars.pkl")
         pickle.dump(ss_outputs, open(ss_dir, "wb"))
     else:
-        utils.mkdirs(os.path.join(output_dir, "SS"))
-        ss_dir = os.path.join(output_dir, "SS/ss_vars.pkl")
+        utils.mkdirs(os.path.join(output_base, "SS"))
+        ss_dir = os.path.join(output_base, "SS/SS_vars.pkl")
         pickle.dump(ss_outputs, open(ss_dir, "wb"))
 
