@@ -640,6 +640,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
               'T_H': T_H, 'r': r, 'w': w, 'b_mat': b_mat, 'n_mat': n_mat, 
               'c_path': c_path, 'tax_path': tax_path,
               'eul_savings': eul_savings, 'eul_laborleisure': eul_laborleisure}
+
     
     macro_output = {'Y': Y, 'K': K, 'L': L, 'C': C, 'I': I,
                     'BQ': BQ, 'T_H': T_H, 'r': r, 'w': w, 
