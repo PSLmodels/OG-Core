@@ -434,19 +434,20 @@ def inner_loop(guesses, outer_loop_vars, params):
 
 
                 TPI_solver_params = (inc_tax_params_TP, tpi_params, None)
-                solutions = opt.fsolve(twist_doughnut, list(
+                [solutions, infodict, ier, message] = opt.fsolve(twist_doughnut, list(
                     b_guesses_to_use) + list(n_guesses_to_use), args=(
-                    r, w, BQ[:, j], T_H, j, None, t, TPI_solver_params), xtol=MINIMIZER_TOL)
+                    r, w, BQ[:, j], T_H, j, None, t, TPI_solver_params), xtol=MINIMIZER_TOL, full_output=True)
+                euler_errors[t, :, j] = infodict['fvec']
 
                 b_vec = solutions[:S]
                 b_mat[t + 1 + ind, ind, j] = b_vec
                 n_vec = solutions[S:]
                 n_mat[t + ind, ind, j] = n_vec
-                inputs = list(solutions)
+                # inputs = list(solutions)
 
-                TPI_solver_params = (inc_tax_params_TP, tpi_params, None)
-                euler_errors[t, :, j] = np.abs(opt.fsolve(twist_doughnut, inputs, args=(
-                    r, w, BQ[:, j], T_H, j, None, t, TPI_solver_params), xtol=MINIMIZER_TOL))
+                # TPI_solver_params = (inc_tax_params_TP, tpi_params, None)
+                # euler_errors[t, :, j] = np.abs(opt.fsolve(twist_doughnut, inputs, args=(
+                #     r, w, BQ[:, j], T_H, j, None, t, TPI_solver_params), xtol=MINIMIZER_TOL))
 
     return euler_errors, b_mat, n_mat
 
@@ -512,8 +513,8 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     TPIdist_vec = np.zeros(maxiter)
 
 
-
-    while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
+    while (TPIiter < 1) and (TPIdist >= mindist_TPI):
+    # while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
         # Plot TPI for K for each iteration, so we can see if there is a
         # problem
         if PLOT_TPI is True:
@@ -540,7 +541,6 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
 
         # Solve HH problem in inner loop
         euler_errors, b_mat, n_mat = inner_loop(guesses, outer_loop_vars, inner_loop_params)
-
 
         # if euler_errors.max() > 1e-6:
         #     print 't-loop:', euler_errors.max()
@@ -622,25 +622,6 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     for t in xrange(T):
         household.constraint_checker_TPI(
             b_mat[t], n_mat[t], c_path[t], t, ltilde)
-
-
-    ''' 
-    -----------------------------------------------------------------
-    Obnoxious - but need to solve for Euler errors one more time 
-    after final solutions
-
-    As in SS, you need the final distributions of b and n to match the final
-    w, r, BQ, etc.  Otherwise the euler errors are large.  You need one more
-    fsolve.
-    -----------------------------------------------------------------
-    '''
-    guesses = (guesses_b, guesses_n)
-    outer_loop_vars = (r, w, K, BQ, T_H)
-    inner_loop_params = (income_tax_params, tpi_params, initial_values, theta, ind)
-
-    # Solve HH problem in inner loop
-    euler_errors, b_mat, n_mat = inner_loop(guesses, outer_loop_vars, inner_loop_params)
-
 
     eul_savings = euler_errors[:, :S, :].max(1).max(1)
     eul_laborleisure = euler_errors[:, S:, :].max(1).max(1)
