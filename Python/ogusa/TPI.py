@@ -513,8 +513,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     TPIdist_vec = np.zeros(maxiter)
 
 
-    while (TPIiter < 1) and (TPIdist >= mindist_TPI):
-    # while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
+    while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
         # Plot TPI for K for each iteration, so we can see if there is a
         # problem
         if PLOT_TPI is True:
@@ -599,7 +598,16 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
         print '\t\tDistance:', TPIdist
 
 
+
     Y[:T] = Ynew
+
+    # # Solve HH problem in inner loop
+    # guesses = (guesses_b, guesses_n)
+    # outer_loop_vars = (r, w, K, BQ, T_H)
+    # inner_loop_params = (income_tax_params, tpi_params, initial_values, theta, ind)
+
+    # # Solve HH problem in inner loop
+    # euler_errors, b_mat, n_mat = inner_loop(guesses, outer_loop_vars, inner_loop_params)
 
     etr_params_path = np.zeros((T,S,J,etr_params.shape[2]))
     for i in range(etr_params.shape[2]):
@@ -641,6 +649,10 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
               'c_path': c_path, 'tax_path': tax_path,
               'eul_savings': eul_savings, 'eul_laborleisure': eul_laborleisure}
 
+    tpi_dir = os.path.join(output_dir, "TPI")
+    utils.mkdirs(tpi_dir)
+    tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
+    pickle.dump(output, open(tpi_vars, "wb"))
     
     macro_output = {'Y': Y, 'K': K, 'L': L, 'C': C, 'I': I,
                     'BQ': BQ, 'T_H': T_H, 'r': r, 'w': w, 
