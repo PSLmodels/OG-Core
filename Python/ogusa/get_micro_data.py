@@ -21,8 +21,6 @@ This py-file creates the following other file(s):
 '''
 
 import sys
-sys.path.insert(0, '/Users/rwe2/Documents/Economics/OSPC/Tax-Calculator')
-
 from taxcalc import *
 import pandas as pd
 from pandas import DataFrame
