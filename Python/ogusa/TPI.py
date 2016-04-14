@@ -600,7 +600,8 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
 
 
     Y[:T] = Ynew
-
+    # K_params = (omega[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), g_n_vector[:T], 'TPI')
+    # K[:T] = household.get_K(bmat_splus1[:T], K_params)
     # # Solve HH problem in inner loop
     # guesses = (guesses_b, guesses_n)
     # outer_loop_vars = (r, w, K, BQ, T_H)
