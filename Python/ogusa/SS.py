@@ -684,6 +684,11 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, bas
              income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
         guesses = [wguess, rguess, T_Hguess, factorguess]
         [solutions, infodict, ier, message] = opt.fsolve(SS_fsolve, guesses, args=args_, xtol=mindist_SS, full_output=True)
+
+        if not ier == 1:
+            RAISE EXCEPTION - Steady state equilibrium not found
+
+
         [wguess, rguess, T_Hguess, factorguess] = solutions
         fsolve_flag = True
         solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factorguess, chi_params[
@@ -697,6 +702,10 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, bas
              income_tax_parameters, ss_parameters, iterative_params, tau_bq, rho, lambdas, omega_SS, e)
         guesses = [wguess, rguess, T_Hguess]
         [solutions, infodict, ier, message] = opt.fsolve(SS_fsolve_reform, guesses, args=args_, xtol=mindist_SS, full_output=True)
+
+        if not ier == 1:
+            RAISE EXCEPTION - Steady state equilibrium not found
+
         [wguess, rguess, T_Hguess] = solutions
         fsolve_flag = True
         solutions = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wguess, rguess, T_Hguess, factor, chi_params[
@@ -820,6 +829,9 @@ def run_steady_state(income_tax_parameters, ss_parameters, iterative_params, bas
     resource_constraint = Yss - (Css + Iss)
 
     print 'Resource Constraint Difference:', resource_constraint
+
+    if np.absolute(resource_constraint) > 1e-8:
+        RAISE EXCEPTION - Steady state aggregate resource constraint not satisfied
 
     constraint_params = ltilde
     household.constraint_checker_SS(bssmat, nssmat, cssmat, constraint_params)

@@ -670,6 +670,8 @@ def run_time_path_iteration(Kss, Lss, Yss, BQss, theta, income_tax_params, wealt
         print '\tIteration:', TPIiter
         print '\t\tDistance:', TPIdist
 
+    if (TPIiter >= maxiter) or (np.absolute(TPIdist) > mindist_TPI):
+        RAISE EXCEPTION - Transition path equlibrium not found
 
     return winit[:T], rinit[:T], T_H_init[:T], BQinit[:T], Yinit
 
@@ -832,7 +834,10 @@ def TP_solutions(winit, rinit, T_H_init, BQinit2, Kss, Lss, Yss, BQss, theta, in
     eul_laborleisure = euler_errors[:, S:, :].max(1).max(1)
 
     print 'Max Euler error, savings: ', eul_savings
-    print 'Max Euler error labor supply: ', eul_laborleisure
+    print 'Max Euler error labor supply: ', eul_savings
+
+    if (np.absolute(eul_savings) >= mindist_TPI) or (np.absolute(eul_savings) > mindist_TPI):
+        RAISE EXCEPTION - Transition path equlibrium not found
 
     '''
     ------------------------------------------------------------------------
