@@ -513,7 +513,8 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     TPIdist_vec = np.zeros(maxiter)
 
 
-    while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
+    #while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
+    while (TPIiter < 1) and (TPIdist >= mindist_TPI):
         # Plot TPI for K for each iteration, so we can see if there is a
         # problem
         if PLOT_TPI is True:
@@ -600,6 +601,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
 
 
     Y[:T] = Ynew
+
+
+    ## The stuff below doesn't matter 
     # K_params = (omega[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), g_n_vector[:T], 'TPI')
     # K[:T] = household.get_K(bmat_splus1[:T], K_params)
     # # Solve HH problem in inner loop
@@ -607,8 +611,8 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     # outer_loop_vars = (r, w, K, BQ, T_H)
     # inner_loop_params = (income_tax_params, tpi_params, initial_values, theta, ind)
 
-    # # Solve HH problem in inner loop
-    # euler_errors, b_mat, n_mat = inner_loop(guesses, outer_loop_vars, inner_loop_params)
+    # Solve HH problem in inner loop
+    euler_errors, b_mat, n_mat = inner_loop(guesses, outer_loop_vars, inner_loop_params)
 
     etr_params_path = np.zeros((T,S,J,etr_params.shape[2]))
     for i in range(etr_params.shape[2]):
