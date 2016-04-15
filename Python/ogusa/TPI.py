@@ -513,8 +513,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     TPIdist_vec = np.zeros(maxiter)
 
 
-    #while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
-    while (TPIiter < 1) and (TPIdist >= mindist_TPI):
+    while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
         # Plot TPI for K for each iteration, so we can see if there is a
         # problem
         if PLOT_TPI is True:
@@ -541,6 +540,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
 
         # Solve HH problem in inner loop
         euler_errors, b_mat, n_mat = inner_loop(guesses, outer_loop_vars, inner_loop_params)
+
 
         # if euler_errors.max() > 1e-6:
         #     print 't-loop:', euler_errors.max()
@@ -599,20 +599,18 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
         print '\t\tDistance:', TPIdist
 
 
-
     Y[:T] = Ynew
 
 
-    ## The stuff below doesn't matter 
-    # K_params = (omega[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), g_n_vector[:T], 'TPI')
-    # K[:T] = household.get_K(bmat_splus1[:T], K_params)
-    # # Solve HH problem in inner loop
-    # guesses = (guesses_b, guesses_n)
-    # outer_loop_vars = (r, w, K, BQ, T_H)
-    # inner_loop_params = (income_tax_params, tpi_params, initial_values, theta, ind)
-
     # Solve HH problem in inner loop
+    guesses = (guesses_b, guesses_n)
+    outer_loop_vars = (r, w, K, BQ, T_H)
+    inner_loop_params = (income_tax_params, tpi_params, initial_values, theta, ind)
     euler_errors, b_mat, n_mat = inner_loop(guesses, outer_loop_vars, inner_loop_params)
+    b_mat[0, :, :] = initial_b
+
+    K_params = (omega[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), g_n_vector[:T], 'TPI')
+    K[:T] = household.get_K(bmat_splus1[:T], K_params)
 
     etr_params_path = np.zeros((T,S,J,etr_params.shape[2]))
     for i in range(etr_params.shape[2]):
@@ -630,6 +628,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     I_params = (delta, g_y, g_n_vector[:T])
     I = firm.get_I(K[1:T+1], K[:T], I_params)
     print 'Resource Constraint Difference:', Y[:T] - C[:T] - I[:T]
+
 
     print'Checking time path for violations of constaints.'
     for t in xrange(T):
