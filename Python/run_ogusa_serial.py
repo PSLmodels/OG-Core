@@ -10,7 +10,7 @@ import time
 
 import postprocess
 #from execute import runner # change here for small jobs
-from execute_large import runner, runner_SS
+from execute import runner, runner_SS
 
 
 def run_micro_macro(user_params):
@@ -47,20 +47,20 @@ def run_micro_macro(user_params):
 
     user_params = {'frisch':0.41, 'start_year':2015}
 
-    '''
-    ------------------------------------------------------------------------
-        Run SS for Baseline first - so can run baseline and reform in parallel if want 
-    ------------------------------------------------------------------------
-    '''
-    output_base = BASELINE_DIR
-    input_dir = BASELINE_DIR
-    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'baseline':True, 'analytical_mtrs':False, 'age_specific':False,
-            'user_params':user_params,'guid':'38_mtr',
-            'run_micro':False}
-    #p1 = Process(target=runner, kwargs=kwargs)
-    #p1.start()
-    runner_SS(**kwargs)
+    # '''
+    # ------------------------------------------------------------------------
+    #     Run SS for Baseline first - so can run baseline and reform in parallel if want 
+    # ------------------------------------------------------------------------
+    # '''
+    # output_base = BASELINE_DIR
+    # input_dir = BASELINE_DIR
+    # kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
+    #         'baseline':True, 'analytical_mtrs':False, 'age_specific':False,
+    #         'user_params':user_params,'guid':'38_mtr',
+    #         'run_micro':False}
+    # #p1 = Process(target=runner, kwargs=kwargs)
+    # #p1.start()
+    # runner_SS(**kwargs)
 
 
     '''
@@ -102,7 +102,7 @@ def run_micro_macro(user_params):
 
     time.sleep(0.5)
 
-    ans = postprocess.create_diff(baseline=BASELINE_DIR, policy=REFORM_DIR)
+    ans = postprocess.create_diff(baseline_dir=BASELINE_DIR, policy_dir=REFORM_DIR)
 
     print "total time was ", (time.time() - start_time)
     print ans

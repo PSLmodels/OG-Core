@@ -15,7 +15,7 @@ ogusa.parameters.DATASET = 'REAL'
 def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_specific=False, reform={}, user_params={}, guid='', run_micro=True):
 
     #from ogusa import parameters, wealth, labor, demographics, income
-    from ogusa import parameters, wealth, labor, demog, income
+    from ogusa import parameters, wealth, labor, demog, income, utils
     from ogusa import txfunc
 
     tick = time.time()
@@ -55,14 +55,13 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
         run_params['g_y'] = g_y
         run_params.update(user_params)
 
-    globals().update(run_params)
 
     from ogusa import SS, TPI
     # Generate Wealth data moments
-    wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir=output_base)
+    wealth.get_wealth_data(run_params['lambdas'], run_params['J'], run_params['flag_graphs'], output_dir=output_base)
 
     # Generate labor data moments
-    labor.labor_data_moments(flag_graphs, output_dir=output_base)
+    labor.labor_data_moments(run_params['flag_graphs'], output_dir=output_base)
 
     
     calibrate_model = False
@@ -74,7 +73,7 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
                 'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
                 'analytical_mtrs', 'b_ellipse', 'k_ellipse', 'upsilon',
                 'chi_b_guess', 'chi_n_guess','etr_params','mtrx_params',
-                'mtry_params','tau_payroll', 'tau_bq', 'calibrate_model',
+                'mtry_params','tau_payroll', 'tau_bq',
                 'retire', 'mean_income_data', 'g_n_vector',
                 'h_wealth', 'p_wealth', 'm_wealth',
                 'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'e', 'rho']
@@ -87,21 +86,30 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
     '''
 
     sim_params = {}
-    glbs = globals()
-    lcls = locals()
     for key in param_names:
-        if key in glbs:
-            sim_params[key] = glbs[key]
-        else:
-            sim_params[key] = lcls[key]
+        sim_params[key] = run_params[key]
 
     sim_params['output_dir'] = output_base
     sim_params['run_params'] = run_params
 
-    income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
+    income_tax_params, ss_parameters, iterative_params, chi_params = SS.create_steady_state_parameters(**sim_params)
 
-    ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, baseline, 
-                                     calibrate_model, output_dir=output_base, baseline_dir=baseline_dir)
+    ss_outputs = SS.run_SS(income_tax_params, ss_parameters, iterative_params, chi_params, baseline, 
+                                     baseline_dir=baseline_dir)
+
+    '''
+    ------------------------------------------------------------------------
+        Pickle SS results 
+    ------------------------------------------------------------------------
+    '''
+    if baseline:
+        utils.mkdirs(os.path.join(baseline_dir, "SS"))
+        ss_dir = os.path.join(baseline_dir, "SS/ss_vars.pkl")
+        pickle.dump(ss_outputs, open(ss_dir, "wb"))
+    else:
+        utils.mkdirs(os.path.join(output_dir, "SS"))
+        ss_dir = os.path.join(output_dir, "SS/ss_vars.pkl")
+        pickle.dump(ss_outputs, open(ss_dir, "wb"))
 
 
     '''
@@ -112,36 +120,39 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
 
     sim_params['input_dir'] = output_base
     sim_params['baseline_dir'] = baseline_dir
-    income_tax_params, wealth_tax_params, ellipse_params, parameters, N_tilde, omega_stationary, K0, b_sinit, \
-    b_splus1init, L0, Y0, w0, r0, BQ0, T_H_0, factor, tax0, c0, initial_b, initial_n = TPI.create_tpi_params(**sim_params)
-    ss_outputs['income_tax_params'] = income_tax_params
-    ss_outputs['wealth_tax_params'] = wealth_tax_params
-    ss_outputs['ellipse_params'] = ellipse_params
-    ss_outputs['parameters'] = parameters
-    ss_outputs['N_tilde'] = N_tilde
-    ss_outputs['omega_stationary'] = omega_stationary
-    ss_outputs['K0'] = K0
-    ss_outputs['b_sinit'] = b_sinit
-    ss_outputs['b_splus1init'] = b_splus1init
-    ss_outputs['L0'] = L0
-    ss_outputs['Y0'] = Y0
-    ss_outputs['r0'] = r0
-    ss_outputs['BQ0'] = BQ0
-    ss_outputs['T_H_0'] = T_H_0
-    ss_outputs['factor_ss'] = factor
-    ss_outputs['tax0'] = tax0
-    ss_outputs['c0'] = c0
-    ss_outputs['initial_b'] = initial_b
-    ss_outputs['initial_n'] = initial_n
-    ss_outputs['tau_bq'] = tau_bq
-    ss_outputs['g_n_vector'] = g_n_vector
-    ss_outputs['output_dir'] = output_base
+    
+
+    income_tax_params, tpi_params, iterative_params, initial_values, SS_values = TPI.create_tpi_params(**sim_params)
+
+    # ss_outputs['income_tax_params'] = income_tax_params
+    # ss_outputs['wealth_tax_params'] = wealth_tax_params
+    # ss_outputs['ellipse_params'] = ellipse_params
+    # ss_outputs['parameters'] = parameters
+    # ss_outputs['N_tilde'] = N_tilde
+    # ss_outputs['omega_stationary'] = omega_stationary
+    # ss_outputs['K0'] = K0
+    # ss_outputs['b_sinit'] = b_sinit
+    # ss_outputs['b_splus1init'] = b_splus1init
+    # ss_outputs['L0'] = L0
+    # ss_outputs['Y0'] = Y0
+    # ss_outputs['r0'] = r0
+    # ss_outputs['BQ0'] = BQ0
+    # ss_outputs['T_H_0'] = T_H_0
+    # ss_outputs['factor_ss'] = factor
+    # ss_outputs['tax0'] = tax0
+    # ss_outputs['c0'] = c0
+    # ss_outputs['initial_b'] = initial_b
+    # ss_outputs['initial_n'] = initial_n
+    # ss_outputs['tau_bq'] = tau_bq
+    # ss_outputs['g_n_vector'] = g_n_vector
+    # ss_outputs['output_dir'] = output_base
 
 
-    with open("ss_outputs.pkl", 'wb') as fp:
-        pickle.dump(ss_outputs, fp)
+    # with open("ss_outputs.pkl", 'wb') as fp:
+    #     pickle.dump(ss_outputs, fp)
 
-    w_path, r_path, T_H_path, BQ_path, Y_path = TPI.run_time_path_iteration(**ss_outputs)
+    w_path, r_path, T_H_path, BQ_path, Y_path = TPI.run_TPI(income_tax_params, 
+        tpi_params, iterative_params, initial_values, SS_values, output_dir=output_base)
 
 
     print "getting to here...."
@@ -151,7 +162,7 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
 
 def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_specific=False, reform={}, user_params={}, guid='', run_micro=True):
 
-    from ogusa import parameters, wealth, labor, demographics, income
+    from ogusa import parameters, wealth, labor, demographics, income, utils
     from ogusa import txfunc
 
     tick = time.time()
@@ -191,17 +202,21 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
         run_params['g_y'] = g_y
         run_params.update(user_params)
 
-    globals().update(run_params)
-
     from ogusa import SS, TPI
-    # Generate Wealth data moments
-    wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir=output_base)
 
-    # Generate labor data moments
-    labor.labor_data_moments(flag_graphs, output_dir=output_base)
+    '''
+    ****
+    CALL CALIBRATION here if boolean flagged
 
-    
+    ****
+    '''
     calibrate_model = False
+    # if calibrate_model:
+    #     chi_b, chi_n = calibrate.(income_tax_params, ss_params, iterative_params, chi_params, baseline, 
+    #                                  calibrate_model, output_dir=output_base, baseline_dir=baseline_dir)
+
+
+
     # List of parameter names that will not be changing (unless we decide to
     # change them for a tax experiment)
 
@@ -210,7 +225,7 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
                 'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
                 'analytical_mtrs', 'b_ellipse', 'k_ellipse', 'upsilon',
                 'chi_b_guess', 'chi_n_guess','etr_params','mtrx_params',
-                'mtry_params','tau_payroll', 'tau_bq', 'calibrate_model',
+                'mtry_params','tau_payroll', 'tau_bq',
                 'retire', 'mean_income_data', 'g_n_vector',
                 'h_wealth', 'p_wealth', 'm_wealth',
                 'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'e', 'rho']
@@ -223,19 +238,28 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
     '''
 
     sim_params = {}
-    glbs = globals()
-    lcls = locals()
     for key in param_names:
-        if key in glbs:
-            sim_params[key] = glbs[key]
-        else:
-            sim_params[key] = lcls[key]
+        sim_params[key] = run_params[key]
 
     sim_params['output_dir'] = output_base
     sim_params['run_params'] = run_params
 
-    income_tax_params, wealth_tax_params, ellipse_params, ss_parameters, iterative_params = SS.create_steady_state_parameters(**sim_params)
+    income_tax_params, ss_params, iterative_params, chi_params= SS.create_steady_state_parameters(**sim_params)
 
-    ss_outputs = SS.run_steady_state(income_tax_params, ss_parameters, iterative_params, baseline, 
-                                     calibrate_model, output_dir=output_base, baseline_dir=baseline_dir)
+    ss_outputs = SS.run_SS(income_tax_params, ss_params, iterative_params, chi_params, baseline, 
+                                     baseline_dir=baseline_dir)
+
+    '''
+    ------------------------------------------------------------------------
+        Pickle SS results 
+    ------------------------------------------------------------------------
+    '''
+    if baseline:
+        utils.mkdirs(os.path.join(baseline_dir, "SS"))
+        ss_dir = os.path.join(baseline_dir, "SS/ss_vars.pkl")
+        pickle.dump(ss_outputs, open(ss_dir, "wb"))
+    else:
+        utils.mkdirs(os.path.join(output_dir, "SS"))
+        ss_dir = os.path.join(output_dir, "SS/ss_vars.pkl")
+        pickle.dump(ss_outputs, open(ss_dir, "wb"))
 
