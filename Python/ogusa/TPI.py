@@ -610,7 +610,8 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     b_mat[0, :, :] = initial_b
 
     K_params = (omega[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), g_n_vector[:T], 'TPI')
-    K[:T] = household.get_K(bmat_splus1[:T], K_params)
+    K[:T] = household.get_K(bmat[:T], K_params) # this is what old code does, but it's strange - why use 
+    # b_mat -- what is going on with initial period, etc.
 
     etr_params_path = np.zeros((T,S,J,etr_params.shape[2]))
     for i in range(etr_params.shape[2]):
