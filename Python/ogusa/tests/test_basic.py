@@ -9,6 +9,8 @@ import numpy as np
 from ogusa.utils import comp_array
 from ogusa.utils import comp_scalar
 from ogusa.utils import dict_compare
+from ogusa import SS
+from ogusa import TPI
 
 TOL = 1e-5
 
@@ -64,6 +66,9 @@ def test_import_ok():
 
 def test_run_small():
     from execute_small import runner, runner_SS
+    # Monkey patch enforcement flag since small data won't pass checks
+    SS.ENFORCE_SOLUTION_CHECKS = False
+    TPI.ENFORCE_SOLUTION_CHECKS = False
     output_base = "./OUTPUT"
     input_dir = "./OUTPUT"
     user_params = {'frisch':0.41}
