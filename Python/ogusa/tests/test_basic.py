@@ -9,6 +9,7 @@ import numpy as np
 from ogusa.utils import comp_array
 from ogusa.utils import comp_scalar
 from ogusa.utils import dict_compare
+from ogusa.get_micro_data import get_calculator
 from ogusa import SS
 from ogusa import TPI
 
@@ -164,3 +165,35 @@ def test_compare_dict_diff_ndarrays_relative():
     rhs = {'a': np.array([100., 200., 300.1]), 'b': 2}
     assert dict_compare("lhs.pkle", lhs, "rhs.pkle",
                         rhs, tol=1e-3, relative=True)
+
+
+def test_get_micro_data_get_calculator():
+
+    reform = {
+    2016: {
+        '_II_rt1': [.09],
+        '_II_rt2': [.135],
+        '_II_rt3': [.225],
+        '_II_rt4': [.252],
+        '_II_rt5': [.297],
+        '_II_rt6': [.315],
+        '_II_rt7': [0.3564],
+    }, }
+
+    calc = get_calculator(baseline=False, start_year=2016, reform=reform)
+    assert calc.current_year == 2016
+
+    reform = {
+    2016: {
+        '_II_rt1': [.09],
+        '_II_rt2': [.135],
+        '_II_rt3': [.225],
+        '_II_rt4': [.252],
+        '_II_rt5': [.297],
+        '_II_rt6': [.315],
+        '_II_rt7': [0.3564],
+        '_factor_adjustment': [0.1]
+    }, }
+
+    calc2 = get_calculator(baseline=False, start_year=2016, reform=reform)
+    assert calc2.current_year == 2016
