@@ -603,7 +603,8 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
         print '\tIteration:', TPIiter
         print '\t\tDistance:', TPIdist
 
-    if ENFORCE_SOLUTION_CHECKS and ((TPIiter >= maxiter) or (np.absolute(TPIdist) > mindist_TPI)):
+    if ((TPIiter >= maxiter) or (np.absolute(TPIdist) > mindist_TPI)) and ENFORCE_SOLUTION_CHECKS :
+        import pdb;pdb.set_trace()
         raise RuntimeError("Transition path equlibrium not found")
 
 
@@ -650,8 +651,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     print 'Max Euler error, savings: ', eul_savings
     print 'Max Euler error labor supply: ', eul_laborleisure
 
-    if ENFORCE_SOLUTION_CHECKS and ((np.absolute(eul_savings) >= mindist_TPI) or
-                                    (np.absolute(eul_laborleisure) > mindist_TPI)):
+    if ((np.any(np.absolute(eul_savings) >= mindist_TPI) or
+        (np.any(np.absolute(eul_laborleisure) > mindist_TPI)))
+        and ENFORCE_SOLUTION_CHECKS):
         raise RuntimeError("Transition path equlibrium not found")
 
     '''
