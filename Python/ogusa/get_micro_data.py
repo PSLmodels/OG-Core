@@ -137,7 +137,7 @@ def get_data(baseline=False, start_year=2016, reform={}):
     --------------------------------------------------------------------
     '''
 
-    calc1 = get_calculator(baseline=baseline, start_year=start_year,
+    calc1 = get_calculator(baseline=baseline, calculator_start_year=start_year,
                            reform=reform)
 
     # running all the functions and calculates taxes
@@ -199,7 +199,7 @@ def get_data(baseline=False, start_year=2016, reform={}):
     temp[:,0] = mtr_combined
     temp[:,1] = mtr_combined_sey
     temp[:,2] = mtr_combined_capinc
-    temp[:,3] = calc1.records.age
+    temp[:,3] = calc1.records.age_head
     temp[:,4] = calc1.records.e00200
     temp[:,5] = calc1.records._sey
     temp[:,6] = calc1.records._sey + calc1.records.e00200
@@ -230,7 +230,7 @@ def get_data(baseline=False, start_year=2016, reform={}):
         temp[:,0] = mtr_combined
         temp[:,1] = mtr_combined_sey
         temp[:,2] = mtr_combined_capinc
-        temp[:,3] = calc1.records.age
+        temp[:,3] = calc1.records.age_head
         temp[:,4] = calc1.records.e00200
         temp[:,5] = calc1.records._sey
         temp[:,6] = calc1.records._sey + calc1.records.e00200
