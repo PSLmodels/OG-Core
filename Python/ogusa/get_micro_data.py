@@ -62,26 +62,37 @@ def only_reform_mods(user_mods, start_year):
             pol_refs[year] = {param:reforms[param] for param in pols}
     return pol_refs
 
-def get_calculator(baseline, start_year, reform):
+def get_calculator(baseline, calculator_start_year, reform=None, data=None, weights=None, records_start_year=None):
     '''
     --------------------------------------------------------------------
     This function creates the tax calculator object for the microsim
     --------------------------------------------------------------------
     INPUTS:
-    baseline        = boolean, =True if baseline tax policy, =False if reform 
-    start_year      = integer, first year of budget window
-    reform          = dictionary, reform parameters
+    baseline                 = boolean, True if baseline tax policy
+    calculator_start_year    = integer, first year of budget window
+    reform                   = dictionary, reform parameters
+    data                     = DataFrame for Records object (opt.)
+    weights                  = weights DataFrame for Records object (opt.)
+    records_start_year       = the start year for the data and weights dfs
 
-    RETURNS: Calculator object with a current_year equal to start_year
+    RETURNS: Calculator object with a current_year equal to
+             calculator_start_year
     --------------------------------------------------------------------
 
     '''
     # create a calculator
     policy1 = Policy()
-    records1 = Records()
+    if data is not None:
+        records1 = Records(data=data, weights=weights, start_year=records_start_year)
+    else:
+        records1 = Records()
 
-    growth_assumptions = only_growth_assumptions(reform, start_year)
-    reform_mods = only_reform_mods(reform, start_year)
+    if baseline:
+        #Should not be a reform if baseline is True
+        assert not reform
+
+    growth_assumptions = only_growth_assumptions(reform, calculator_start_year)
+    reform_mods = only_reform_mods(reform, calculator_start_year)
 
     if not baseline:
         policy1.implement_reform(reform_mods)
@@ -94,7 +105,7 @@ def get_calculator(baseline, start_year, reform):
 
     # this increment_year function extrapolates all PUF variables to the next year
     # so this step takes the calculator to the start_year
-    for i in range(start_year-2013):
+    for i in range(calculator_start_year-2013):
         calc1.increment_year()
 
     return calc1
