@@ -743,6 +743,7 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
         pop_next = np.dot(OMEGA_orig, pop_curr)
         omega_path_lev[:, per] = pop_next.copy()
         pop_curr = pop_next.copy()
+    print np.max(np.absolute(omega_path_lev[1:,10] - (1-mort_rates[:-1])*omega_path_lev[:-1,9] - imm_rates_orig[1:]*omega_path_lev[1:,9]))
 
     # Force the population distribution after 1.5*S periods to be the
     # steady-state distribution by adjusting immigration rates, holding
