@@ -94,9 +94,9 @@ def dump_diff_output(baseline_dir, policy_dir):
     pct_changes[:,10] = ((policy_macros[:,:10].sum(axis=1)-baseline_macros[:,:10].sum(axis=1))/policy_macros[:,:10].sum(axis=1))
     
     ## Load SS results
-    ss_policy_path = os.path.join(policy_dir, "SS", "ss_vars.pkl")
+    ss_policy_path = os.path.join(policy_dir, "SS", "SS_vars.pkl")
     ss_policy = pickle.load(open( ss_policy_path, "rb" ))
-    ss_baseline_path = os.path.join(baseline_dir, "SS", "ss_vars.pkl")
+    ss_baseline_path = os.path.join(baseline_dir, "SS", "SS_vars.pkl")
     ss_baseline = pickle.load(open( ss_baseline_path, "rb" ) )
     # pct changes in macro aggregates in SS
     pct_changes[0,11] = (ss_policy['Yss']-ss_baseline['Yss'])/ss_baseline['Yss']

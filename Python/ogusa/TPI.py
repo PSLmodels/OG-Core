@@ -42,6 +42,11 @@ Set minimizer tolerance
 '''
 MINIMIZER_TOL = 1e-13
 
+'''
+Set flag for enforcement of solution check
+'''
+ENFORCE_SOLUTION_CHECKS = True
+
 
 '''
 ------------------------------------------------------------------------
@@ -598,6 +603,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
         print '\tIteration:', TPIiter
         print '\t\tDistance:', TPIdist
 
+    if ((TPIiter >= maxiter) or (np.absolute(TPIdist) > mindist_TPI)) and ENFORCE_SOLUTION_CHECKS :
+        raise RuntimeError("Transition path equlibrium not found")
+
 
     Y[:T] = Ynew
 
@@ -642,6 +650,10 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     print 'Max Euler error, savings: ', eul_savings
     print 'Max Euler error labor supply: ', eul_laborleisure
 
+    if ((np.any(np.absolute(eul_savings) >= mindist_TPI) or
+        (np.any(np.absolute(eul_laborleisure) > mindist_TPI)))
+        and ENFORCE_SOLUTION_CHECKS):
+        raise RuntimeError("Transition path equlibrium not found")
 
     '''
     ------------------------------------------------------------------------

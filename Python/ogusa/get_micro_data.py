@@ -21,6 +21,7 @@ This py-file creates the following other file(s):
 '''
 
 import sys
+import taxcalc
 from taxcalc import *
 import pandas as pd
 from pandas import DataFrame
@@ -28,6 +29,86 @@ import numpy as np
 import copy
 import numba
 import pickle
+
+def only_growth_assumptions(user_mods, start_year):
+    """
+    Extract any reform parameters that are pertinent to growth
+    assumptions
+    """
+    growth_dd = taxcalc.growth.Growth.default_data(start_year=start_year)
+    ga = {}
+    for year, reforms in user_mods.items():
+        overlap = set(growth_dd.keys()) & set(reforms.keys())
+        if overlap:
+            ga[year] = {param:reforms[param] for param in overlap}
+    return ga
+
+
+def only_reform_mods(user_mods, start_year):
+    """
+    Extract parameters that are just for policy reforms
+    """
+    pol_refs = {}
+    beh_dd = Behavior.default_data(start_year=start_year)
+    growth_dd = taxcalc.growth.Growth.default_data(start_year=start_year)
+    policy_dd = taxcalc.policy.Policy.default_data(start_year=start_year)
+    for year, reforms in user_mods.items():
+        all_cpis = {p for p in reforms.keys() if p.endswith("_cpi") and
+                    p[:-4] in policy_dd.keys()}
+        pols = set(reforms.keys()) - set(beh_dd.keys()) - set(growth_dd.keys())
+        pols &= set(policy_dd.keys())
+        pols ^= all_cpis
+        if pols:
+            pol_refs[year] = {param:reforms[param] for param in pols}
+    return pol_refs
+
+def get_calculator(baseline, calculator_start_year, reform=None, data=None, weights=None, records_start_year=None):
+    '''
+    --------------------------------------------------------------------
+    This function creates the tax calculator object for the microsim
+    --------------------------------------------------------------------
+    INPUTS:
+    baseline                 = boolean, True if baseline tax policy
+    calculator_start_year    = integer, first year of budget window
+    reform                   = dictionary, reform parameters
+    data                     = DataFrame for Records object (opt.)
+    weights                  = weights DataFrame for Records object (opt.)
+    records_start_year       = the start year for the data and weights dfs
+
+    RETURNS: Calculator object with a current_year equal to
+             calculator_start_year
+    --------------------------------------------------------------------
+
+    '''
+    # create a calculator
+    policy1 = Policy()
+    if data is not None:
+        records1 = Records(data=data, weights=weights, start_year=records_start_year)
+    else:
+        records1 = Records()
+
+    if baseline:
+        #Should not be a reform if baseline is True
+        assert not reform
+
+    growth_assumptions = only_growth_assumptions(reform, calculator_start_year)
+    reform_mods = only_reform_mods(reform, calculator_start_year)
+
+    if not baseline:
+        policy1.implement_reform(reform_mods)
+
+    # the default set up increments year to 2013
+    calc1 = Calculator(records=records1, policy=policy1)
+
+    if growth_assumptions:
+        calc1.growth.update_economic_growth(growth_assumptions)
+
+    # this increment_year function extrapolates all PUF variables to the next year
+    # so this step takes the calculator to the start_year
+    for i in range(calculator_start_year-2013):
+        calc1.increment_year()
+
+    return calc1
 
 
 def get_data(baseline=False, start_year=2016, reform={}):
@@ -56,20 +137,8 @@ def get_data(baseline=False, start_year=2016, reform={}):
     --------------------------------------------------------------------
     '''
 
-    # create a calculator
-    policy1 = Policy()
-    records1 = Records()
-
-    if not baseline:
-        policy1.implement_reform(reform)
-
-    # the default set up increments year to 2013
-    calc1 = Calculator(records=records1, policy=policy1)
-
-    # this increment_year function extrapolates all PUF variables to the next year
-    # so this step takes the calculator to the start_year
-    for i in range(start_year-2013):
-        calc1.increment_year()
+    calc1 = get_calculator(baseline=baseline, calculator_start_year=start_year,
+                           reform=reform)
 
     # running all the functions and calculates taxes
     calc1.calc_all()
@@ -130,7 +199,7 @@ def get_data(baseline=False, start_year=2016, reform={}):
     temp[:,0] = mtr_combined
     temp[:,1] = mtr_combined_sey
     temp[:,2] = mtr_combined_capinc
-    temp[:,3] = calc1.records.age
+    temp[:,3] = calc1.records.age_head
     temp[:,4] = calc1.records.e00200
     temp[:,5] = calc1.records._sey
     temp[:,6] = calc1.records._sey + calc1.records.e00200
@@ -161,7 +230,7 @@ def get_data(baseline=False, start_year=2016, reform={}):
         temp[:,0] = mtr_combined
         temp[:,1] = mtr_combined_sey
         temp[:,2] = mtr_combined_capinc
-        temp[:,3] = calc1.records.age
+        temp[:,3] = calc1.records.age_head
         temp[:,4] = calc1.records.e00200
         temp[:,5] = calc1.records._sey
         temp[:,6] = calc1.records._sey + calc1.records.e00200

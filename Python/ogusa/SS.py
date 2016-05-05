@@ -36,6 +36,11 @@ Set minimizer tolerance
 MINIMIZER_TOL = 1e-13
 
 '''
+Set flag for enforcement of solution check
+'''
+ENFORCE_SOLUTION_CHECKS = True
+
+'''
 ------------------------------------------------------------------------
     Define Functions
 ------------------------------------------------------------------------
@@ -521,6 +526,10 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, fs
 
     print 'Resource Constraint Difference:', resource_constraint
 
+    if ENFORCE_SOLUTION_CHECKS and np.absolute(resource_constraint) > 1e-8:
+        err = "Steady state aggregate resource constraint not satisfied"
+        raise RuntimeError(err)
+
     # check constraints
     household.constraint_checker_SS(bssmat, nssmat, cssmat, ltilde)
 
@@ -761,6 +770,8 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, baseline=
         ss_params = [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params]
         guesses = [wguess, rguess, T_Hguess, factorguess]
         [solutions_fsolve, infodict, ier, message] = opt.fsolve(SS_fsolve, guesses, args=ss_params, xtol=mindist_SS, full_output=True)
+        if ENFORCE_SOLUTION_CHECKS and not ier == 1:
+            raise RuntimeError("Steady state equilibrium not found")
         [wss, rss, T_Hss, factor_ss] = solutions_fsolve
         fsolve_flag = True
         # Return SS values of variables
@@ -774,6 +785,8 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, baseline=
         ss_params_reform = [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params, factor]
         guesses = [wguess, rguess, T_Hguess]
         [solutions_fsolve, infodict, ier, message] = opt.fsolve(SS_fsolve_reform, guesses, args=ss_params_reform, xtol=mindist_SS, full_output=True)
+        if ENFORCE_SOLUTION_CHECKS and not ier == 1:
+            raise RuntimeError("Steady state equilibrium not found")
         [wss, rss, T_Hss] = solutions_fsolve
         fsolve_flag = True
         # Return SS values of variables

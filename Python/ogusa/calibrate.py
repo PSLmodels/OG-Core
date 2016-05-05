@@ -48,7 +48,8 @@ def chi_estimate(income_tax_params, ss_parameters, iterative_params, chi_guesses
 
     # call minimizer
     bnds = np.ones((S+J,2))*(1e-12, None) # Need (1e-12, None) pari J+S times
-    min_args = () data_moments
+    #min_args = () data_moments
+    min_args = data_moments
     est_output = opt.minimize(minstat, chi_guesses,
                     args=(min_args), method="L-BFGS-B", bounds=bnds,
                     tol=1e-15)
