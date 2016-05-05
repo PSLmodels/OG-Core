@@ -6,6 +6,7 @@ model
 This module defines the following function(s):
     get_fert()
     get_mort()
+    pop_rebin()
     get_imm_resid()
     immsolve()
     get_pop_objs()
@@ -544,7 +545,7 @@ def get_imm_resid(totpers, min_yr, max_yr, graph=True):
     return imm_rates
 
 
-def immsolve(imm_rates, *objs):
+def immsolve(imm_rates, *args):
     '''
     --------------------------------------------------------------------
     This function generates a vector of errors representing the
@@ -558,8 +559,8 @@ def immsolve(imm_rates, *objs):
     INPUTS:
     imm_rates    = (totpers,) vector, immigration rates that correspond
                    to each period of life
-    objs         = length 4 tuple,
-                   (fert_rates, mort_rates, infmort_rate, omega_cur)
+    args         = length 5 tuple, (fert_rates, mort_rates,
+                   infmort_rate, omega_cur, g_n_SS)
     fert_rates   = (totpers,) vector, fertility rates that correspond to
                    each period of life
     mort_rates   = (totpers,) vector, mortality rates that correspond to
@@ -568,6 +569,8 @@ def immsolve(imm_rates, *objs):
                    World Factbook
     omega_cur    = (totpers,) vector, population distribution (levels)
                    by age in current period
+    g_n_SS       = scalar, steady-state growth rate from original OMEGA
+                   matrix
 
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
 
@@ -585,7 +588,7 @@ def immsolve(imm_rates, *objs):
     RETURNS: omega_errs
     --------------------------------------------------------------------
     '''
-    fert_rates, mort_rates, infmort_rate, omega_cur_lev = objs
+    fert_rates, mort_rates, infmort_rate, omega_cur_lev, g_n_SS = args
     omega_cur_pct = omega_cur_lev / omega_cur_lev.sum()
     totpers = len(fert_rates)
     OMEGA = np.zeros((totpers, totpers))
@@ -593,7 +596,7 @@ def immsolve(imm_rates, *objs):
                   np.hstack((imm_rates[0], np.zeros(totpers-1))))
     OMEGA[1:, :-1] += np.diag(1-mort_rates[:-1])
     OMEGA[1:, 1:] += np.diag(imm_rates[1:])
-    omega_new = np.dot(OMEGA, omega_cur_pct)
+    omega_new = np.dot(OMEGA, omega_cur_pct) / (1 + g_n_SS)
     omega_errs = omega_new - omega_cur_pct
 
     return omega_errs
@@ -615,7 +618,7 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
                 minimum age
     max_yr    = integer >= 4, age in years at which agents die with
                 certainty, maximum age
-    curr_year = integer >= 2015, current year for which analysis will
+    curr_year = integer >= 2016, current year for which analysis will
                 begin
     GraphDiag = boolean, =True if want graphical output and printed
                 diagnostics
@@ -683,8 +686,12 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     imm_rates_adj   = ?
     imm_diagdict    = ?
     omega_path_S    = ?
+    imm_rates_S     = ?
+    imm_rates_S_adj = ?
 
-    RETURNS: mort_rates_S, g_n_SS, omega_SSfx, omega_path_S, g_n_path
+    RETURNS: omega_path_S.T, g_n_SS,
+        omega_SSfx[-S:] / omega_SSfx[-S:].sum(), 1-mort_rates_S,
+        mort_rates_S, g_n_path, imm_rates_mat
     --------------------------------------------------------------------
     '''
     age_per = np.linspace(min_yr, max_yr, E+S)
@@ -693,6 +700,7 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
                                         graph=False)
     mort_rates_S = mort_rates[-S:]
     imm_rates_orig = get_imm_resid(E+S, min_yr, max_yr, graph=False)
+    imm_rates_S = imm_rates_orig[-S:]
     OMEGA_orig = np.zeros((E+S, E+S))
     OMEGA_orig[0, :] = ((1 - infmort_rate) * fert_rates +
                   np.hstack((imm_rates_orig[0], np.zeros(E+S-1))))
@@ -703,12 +711,12 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     # population distribution by age using eigenvalue and eigenvector
     # decomposition
     eigvalues, eigvectors = np.linalg.eig(OMEGA_orig)
-    g_n_SS_orig = (eigvalues[np.isreal(eigvalues)].real).max() - 1
+    g_n_SS = (eigvalues[np.isreal(eigvalues)].real).max() - 1
     eigvec_raw = eigvectors[:,
         (eigvalues[np.isreal(eigvalues)].real).argmax()].real
     omega_SS_orig = eigvec_raw / eigvec_raw.sum()
 
-    # Generate time path of the population distribution
+    # Generate time path of the nonstationary population distribution
     omega_path_lev = np.zeros((E+S, T+S))
     cur_path = os.path.split(os.path.abspath(__file__))[0]
     pop_file = utils.read_file(cur_path,
@@ -748,37 +756,25 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     omega_SSfx = (omega_path_lev[:, fixper] /
                  omega_path_lev[:, fixper].sum())
     imm_objs = (fert_rates, mort_rates, infmort_rate,
-               omega_path_lev[:, fixper])
+               omega_path_lev[:, fixper], g_n_SS)
     imm_fulloutput = opt.fsolve(immsolve, imm_rates_orig,
         args=(imm_objs), full_output=True, xtol=imm_tol)
     imm_rates_adj = imm_fulloutput[0]
+    imm_rates_S_adj = imm_rates_adj[-S:]
     imm_diagdict = imm_fulloutput[1]
     omega_path_S = (omega_path_lev[-S:, :] /
         np.tile(omega_path_lev[-S:, :].sum(axis=0),(S, 1)))
-    omega_path_S[:, T+S-int(1.5*S):] = \
-        np.tile(omega_path_S[:, int(1.5*S)].reshape((S, 1)),
-        (1, T+S-int(1.5*S)))
+    omega_path_S[:, fixper:] = \
+        np.tile(omega_path_S[:, fixper].reshape((S, 1)),
+        (1, T+S-fixper))
     g_n_path = np.zeros(T+S)
-    g_n_path[:-1] = ((omega_path_lev[-S:, 1:].sum(axis=0) -
+    g_n_path[1:] = ((omega_path_lev[-S:, 1:].sum(axis=0) -
                     omega_path_lev[-S:, :-1].sum(axis=0)) /
                     omega_path_lev[-S:, :-1].sum(axis=0))
-    g_n_path[-1] = g_n_path[-2]
-    # omega_path_adj = omega_path_lev.copy()
-    # omega_path_adj[:, fixper:] = np.tile(omega_SSfx.reshape((E+S, 1)),
-    #                                     (1, T+S-int(1.5*S)))
-    # g_n_path_adj = ((omega_path_adj[:, 1:].sum(axis=0) -
-    #                omega_path_adj[:, :-1].sum(axis=0)) /
-    #                omega_path_adj[:, :-1].sum(axis=0))
-    # omega_path_S = omega_path_adj[-S:, :]
-
-    # Solve for adjusted steady-state growth rate
-    OMEGA2 = np.zeros((E+S, E+S))
-    OMEGA2[0, :] = ((1 - infmort_rate) * fert_rates +
-                   np.hstack((imm_rates_adj[0], np.zeros(E+S-1))))
-    OMEGA2[1:, :-1] += np.diag(1-mort_rates[:-1])
-    OMEGA2[1:, 1:] += np.diag(imm_rates_adj[1:])
-    eigvalues2, eigvectors2 = np.linalg.eig(OMEGA2)
-    g_n_SS_adj = (eigvalues[np.isreal(eigvalues2)].real).max() - 1
+    g_n_path[fixper:] = g_n_SS
+    imm_rates_mat = np.hstack((
+        np.tile(np.reshape(imm_rates_orig[E:],(S,1)), (1, fixper)),
+        np.tile(np.reshape(imm_rates_adj[E:],(S,1)), (1, T+S-fixper))))
 
     if GraphDiag == True:
         # Check whether original SS population distribution is close to
@@ -787,13 +783,13 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
                         (omega_path_lev[:,T] /
                         omega_path_lev[:,T].sum())).max()
         if omegaSSmaxdif > 0.0003:
-            print("POP. WARNING: Max. dist. between original SS pop. "
-                  + "dist'n and period-T pop. dist'n is greater than" +
+            print("POP. WARNING: Max. abs. dist. between original SS " +
+                "pop. dist'n and period-T pop. dist'n is greater than" +
                   " 0.0003. It is " + str(omegaSSmaxdif) + ".")
         else:
             print("POP. SUCCESS: orig. SS pop. dist is very close to " +
-                  "period-T pop. dist'n. The maximum difference is " +
-                  str(omegaSSmaxdif) + ".")
+                  "period-T pop. dist'n. The maximum absolute " +
+                  "difference is " + str(omegaSSmaxdif) + ".")
 
         # Plot the adjusted steady-state population distribution versus
         # the original population distribution. The difference should be
@@ -856,6 +852,29 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
                   "solve. Maximum absolute error of " +
                   str(np.absolute(imm_diagdict['fvec'].max())) +
                   " is greater than the tolerance of " + str(imm_tol))
+
+        # Test whether the steady-state growth rates implied by the
+        # adjusted OMEGA matrix equals the steady-state growth rate of
+        # the original OMEGA matrix
+        OMEGA2 = np.zeros((E+S, E+S))
+        OMEGA2[0, :] = ((1 - infmort_rate) * fert_rates +
+                       np.hstack((imm_rates_adj[0], np.zeros(E+S-1))))
+        OMEGA2[1:, :-1] += np.diag(1-mort_rates[:-1])
+        OMEGA2[1:, 1:] += np.diag(imm_rates_adj[1:])
+        eigvalues2, eigvectors2 = np.linalg.eig(OMEGA2)
+        g_n_SS_adj = (eigvalues[np.isreal(eigvalues2)].real).max() - 1
+        if np.max(np.absolute(g_n_SS_adj - g_n_SS)) > 10 ** (-8):
+            print("FAILURE: The steady-state population growth rate" +
+                  " from adjusted OMEGA is different (diff is " +
+                  str(g_n_SS_adj - g_n_SS)  + ") than the steady-" +
+                  "state population growth rate from the original" +
+                  " OMEGA.")
+        elif np.max(np.absolute(g_n_SS_adj - g_n_SS)) <= 10 ** (-8):
+            print("SUCCESS: The steady-state population growth rate" +
+                  " from adjusted OMEGA is close to (diff is " +
+                  str(g_n_SS_adj - g_n_SS)  + ") the steady-" +
+                  "state population growth rate from the original" +
+                  " OMEGA.")
 
         # Do another test of the adjusted immigration rates. Create the
         # new OMEGA matrix implied by the new immigration rates. Plug in
@@ -925,8 +944,8 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
         plt.savefig(output_path)
         plt.show()
 
-    # return omega_path_S, g_n_SS_adj, omega_SSfx, survival rates,
+    # return omega_path_S, g_n_SS, omega_SSfx, survival rates,
     # mort_rates_S, and g_n_path
-    return (omega_path_S.T, g_n_SS_adj,
+    return (omega_path_S.T, g_n_SS,
         omega_SSfx[-S:] / omega_SSfx[-S:].sum(), 1-mort_rates_S,
-        mort_rates_S, g_n_path)
+        mort_rates_S, g_n_path, imm_rates_mat)
