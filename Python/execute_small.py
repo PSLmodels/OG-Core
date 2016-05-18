@@ -51,6 +51,9 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
     # Modify ogusa parameters based on user input
     if 'g_y_annual' in user_params:
         print "updating g_y_annual and associated"
+        ending_age = run_params['ending_age']
+        starting_age = run_params['starting_age']
+        S = run_params['S']
         g_y = (1 + user_params['g_y_annual'])**(float(ending_age - starting_age) / S) - 1
         run_params['g_y'] = g_y
         run_params.update(user_params)
@@ -180,6 +183,9 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
     # Modify ogusa parameters based on user input
     if 'g_y_annual' in user_params:
         print "updating g_y_annual and associated"
+        ending_age = run_params['ending_age']
+        starting_age = run_params['starting_age']
+        S = run_params['S']
         g_y = (1 + user_params['g_y_annual'])**(float(ending_age - starting_age) / S) - 1
         run_params['g_y'] = g_y
         run_params.update(user_params)
