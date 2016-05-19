@@ -18,8 +18,7 @@ Import Packages
 import os
 import json
 import numpy as np
-from demographics import get_omega
-from demog import get_pop_objs
+from demographics import get_pop_objs
 from income import get_e
 import pickle
 import txfunc
@@ -350,10 +349,8 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     chi_n_guess = np.array([5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
     # Generate Income and Demographic parameters
-    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = get_omega(
-       S, T, starting_age, ending_age, E, flag_graphs)
-    # omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = get_pop_objs(
-    #     E, S, T, 0, 100, 2015, flag_graphs)
+    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_mat_adj = get_pop_objs(
+        E, S, T, 1, 100, 2016, flag_graphs)
     e = np.array([[0.25, 1.25]] * 10)
     allvars = dict(locals())
 
@@ -515,10 +512,8 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
 
    # Generate Income and Demographic parameters
-    omega_hat, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = get_omega(
-        S, T, starting_age, ending_age, E, flag_graphs)
-    # omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector = get_pop_objs(
-    #     E, S, T, 0, 100, 2015, flag_graphs)
+    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates_mat = get_pop_objs(
+        E, S, T, 1, 100, 2016, flag_graphs)
     # print 'Differences:'
     # print 'omega diffs: ', (np.absolute(omega-omega2)).max()
     # print 'g_n', g_n_ss, g_n_ss2
