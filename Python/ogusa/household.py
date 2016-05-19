@@ -42,7 +42,11 @@ def get_K(b, params):
     Returns: K
     '''
 
-    omega, lambdas, g_n, method = params 
+    omega, lambdas, imm_rates, g_n, method = params 
+
+    #part1 = b * omega * lambdas
+    #part2 = (lambdas*b)*(omega.reshape((omega.shape[0],))*imm_rates).reshape((np.shape(omega)[0],1))
+    #K_presum = part1+part2
 
     K_presum = b * omega * lambdas
     if method == 'SS':

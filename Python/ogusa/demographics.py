@@ -699,7 +699,7 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     mort_rates, infmort_rate = get_mort(E+S, min_yr, max_yr,
                                         graph=False)
     mort_rates_S = mort_rates[-S:]
-    # imm_rates_orig = get_imm_resid(E+S, min_yr, max_yr, graph=False)
+    #imm_rates_orig = get_imm_resid(E+S, min_yr, max_yr, graph=False)
     imm_rates_orig = np.zeros(E+S)
     imm_rates_S = imm_rates_orig[-S:]
     OMEGA_orig = np.zeros((E+S, E+S))
@@ -760,7 +760,7 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
                omega_path_lev[:, fixper], g_n_SS)
     imm_fulloutput = opt.fsolve(immsolve, imm_rates_orig,
         args=(imm_objs), full_output=True, xtol=imm_tol)
-    # imm_rates_adj = imm_fulloutput[0]
+    #imm_rates_adj = imm_fulloutput[0]
     imm_rates_adj = np.zeros(E+S)
     imm_rates_S_adj = imm_rates_adj[-S:]
     imm_diagdict = imm_fulloutput[1]

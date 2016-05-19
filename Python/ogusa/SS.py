@@ -122,7 +122,7 @@ def create_steady_state_parameters(**sim_params):
                   sim_params['Z'], sim_params['delta'], sim_params['ltilde'], 
                   sim_params['nu'], sim_params['g_y'], sim_params['g_n_ss'], 
                   sim_params['tau_payroll'], sim_params['tau_bq'], sim_params['rho'], sim_params['omega_SS'],
-                  sim_params['lambdas'], sim_params['e'], sim_params['retire'], sim_params['mean_income_data']] + \
+                  sim_params['lambdas'], sim_params['imm_rates'][:,-1], sim_params['e'], sim_params['retire'], sim_params['mean_income_data']] + \
                   wealth_tax_params + ellipse_params
     iterative_params = [sim_params['maxiter'], sim_params['mindist_SS']]
     chi_params = (sim_params['chi_b_guess'], sim_params['chi_n_guess'])
@@ -281,7 +281,7 @@ def inner_loop(outer_loop_vars, params):
     ss_params, income_tax_params, chi_params = params 
 
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, lambdas, e, retire, mean_income_data,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
@@ -312,7 +312,7 @@ def inner_loop(outer_loop_vars, params):
         bssmat[:, j] = solutions[:S]
         nssmat[:, j] = solutions[S:]
 
-    K_params = (omega_SS.reshape(S, 1), lambdas.reshape(1, J), g_n_ss, 'SS')
+    K_params = (omega_SS.reshape(S, 1), lambdas.reshape(1, J), imm_rates, g_n_ss, 'SS')
     K = household.get_K(bssmat, K_params)
     L_params = (e, omega_SS.reshape(S, 1), lambdas.reshape(1, J), 'SS')
     L = firm.get_L(nssmat, L_params)
@@ -402,7 +402,7 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, fs
     bssmat, nssmat, chi_params, ss_params, income_tax_params, iterative_params = params 
 
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, lambdas, e, retire, mean_income_data,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
@@ -473,14 +473,14 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, fs
     factor_ss = factor
     T_Hss = T_H
 
-    Kss_params = (omega_SS.reshape(S, 1), lambdas, g_n_ss, 'SS')
+    Kss_params = (omega_SS.reshape(S, 1), lambdas, imm_rates, g_n_ss, 'SS')
     Kss = household.get_K(bssmat_splus1, Kss_params)
     Lss_params = (e, omega_SS.reshape(S, 1), lambdas, 'SS')
     Lss = firm.get_L(nssmat, Lss_params)
     Yss_params = (alpha, Z)
     Yss = firm.get_Y(Kss, Lss, Yss_params)
-    Iss_params = (delta, g_y, g_n_ss)
-    Iss = firm.get_I(Kss, Kss, Iss_params)
+    Iss_params = (delta, g_y, omega_SS, lambdas, imm_rates, g_n_ss)
+    Iss = firm.get_I(bssmat_splus1, Kss, Kss, Iss_params)
 
     BQss = new_BQ 
     theta = np.zeros(J) # zero out payroll taxes since included in tax functions
@@ -494,7 +494,7 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, fs
     '''
     ------------------------------------------------------------------------
         The code below is to calulate and save model MTRs 
-                - only exists help debug
+                - only exists to help debug
     ------------------------------------------------------------------------
     '''
     # etr_params_extended = np.append(etr_params,np.reshape(etr_params[-1,:],(1,etr_params.shape[1])),axis=0)[1:,:]
@@ -525,6 +525,7 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, fs
     resource_constraint = Yss - (Css + Iss)
 
     print 'Resource Constraint Difference:', resource_constraint
+    quit()
 
     if ENFORCE_SOLUTION_CHECKS and np.absolute(resource_constraint) > 1e-8:
         err = "Steady state aggregate resource constraint not satisfied"
@@ -583,7 +584,7 @@ def SS_fsolve(guesses, params):
     bssmat, nssmat, chi_params, ss_params, income_tax_params, iterative_params = params 
 
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, lambdas, e, retire, mean_income_data,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
@@ -663,7 +664,7 @@ def SS_fsolve_reform(guesses, params):
     bssmat, nssmat, chi_params, ss_params, income_tax_params, iterative_params, factor = params 
 
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, lambdas, e, retire, mean_income_data,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
@@ -746,7 +747,7 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, baseline=
     --------------------------------------------------------------------
     '''
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, lambdas, e, retire, mean_income_data,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
@@ -767,16 +768,16 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, baseline=
         rguess = .06
         T_Hguess = 0.12 
         factorguess = 70000
-        ss_params = [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params]
+        ss_params_baseline = [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params]
         guesses = [wguess, rguess, T_Hguess, factorguess]
-        [solutions_fsolve, infodict, ier, message] = opt.fsolve(SS_fsolve, guesses, args=ss_params, xtol=mindist_SS, full_output=True)
+        [solutions_fsolve, infodict, ier, message] = opt.fsolve(SS_fsolve, guesses, args=ss_params_baseline, xtol=mindist_SS, full_output=True)
         if ENFORCE_SOLUTION_CHECKS and not ier == 1:
             raise RuntimeError("Steady state equilibrium not found")
         [wss, rss, T_Hss, factor_ss] = solutions_fsolve
         fsolve_flag = True
         # Return SS values of variables
         solution_params= [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params]
-        output = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wss, rss, T_Hss, factor_ss, ss_params, fsolve_flag)
+        output = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wss, rss, T_Hss, factor_ss, solution_params, fsolve_flag)
     else:
         baseline_ss_dir = os.path.join(
             baseline_dir, "SS/SS_vars.pkl")

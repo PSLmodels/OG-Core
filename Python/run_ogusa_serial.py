@@ -77,6 +77,7 @@ def run_micro_macro(user_params):
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
     runner(**kwargs)
+    quit()
 
     '''
     ------------------------------------------------------------------------

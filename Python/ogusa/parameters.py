@@ -173,6 +173,7 @@ J            = integer, number of different ability groups
 T            = integer, number of time periods until steady state is reached
 BW           = integer, number of time periods in the budget window
 lambdas      = [J,] vector, percentiles for ability groups
+imm_rates    = [J,T+S] array, immigration rates by age and year
 starting_age = integer, age agents enter population
 ending age   = integer, maximum age agents can live until
 E            = integer, age agents become economically active
@@ -512,7 +513,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
 
    # Generate Income and Demographic parameters
-    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates_mat = get_pop_objs(
+    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates = get_pop_objs(
         E, S, T, 1, 100, 2016, flag_graphs)
     # print 'Differences:'
     # print 'omega diffs: ', (np.absolute(omega-omega2)).max()
