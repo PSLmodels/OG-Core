@@ -15,7 +15,7 @@ ogusa.parameters.DATASET = 'REAL'
 def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_specific=False, reform={}, user_params={}, guid='', run_micro=True):
 
     #from ogusa import parameters, wealth, labor, demographics, income
-    from ogusa import parameters, demog, income, utils
+    from ogusa import parameters, demographics, income, utils
     from ogusa import txfunc
 
     tick = time.time()
@@ -33,7 +33,7 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
             pass
 
     if run_micro:
-        txfunc.get_tax_func_estimate(baseline=baseline, analytical_mtrs=analytical_mtrs, age_specific=age_specific, 
+        txfunc.get_tax_func_estimate(baseline=baseline, analytical_mtrs=analytical_mtrs, age_specific=age_specific,
                                      start_year=user_params['start_year'], reform=reform, guid=guid)
     print ("in runner, baseline is ", baseline)
     run_params = ogusa.parameters.get_parameters(baseline=baseline, guid=guid)
@@ -61,7 +61,7 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
 
     from ogusa import SS, TPI
 
-    
+
     calibrate_model = False
     # List of parameter names that will not be changing (unless we decide to
     # change them for a tax experiment)
@@ -78,7 +78,7 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
 
     '''
     ------------------------------------------------------------------------
-        Run SS 
+        Run SS
     ------------------------------------------------------------------------
     '''
 
@@ -91,12 +91,12 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
 
     income_tax_params, ss_parameters, iterative_params, chi_params = SS.create_steady_state_parameters(**sim_params)
 
-    ss_outputs = SS.run_SS(income_tax_params, ss_parameters, iterative_params, chi_params, baseline, 
+    ss_outputs = SS.run_SS(income_tax_params, ss_parameters, iterative_params, chi_params, baseline,
                                      baseline_dir=baseline_dir)
 
     '''
     ------------------------------------------------------------------------
-        Pickle SS results 
+        Pickle SS results
     ------------------------------------------------------------------------
     '''
     if baseline:
@@ -117,17 +117,17 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
 
     sim_params['input_dir'] = output_base
     sim_params['baseline_dir'] = baseline_dir
-    
+
 
     income_tax_params, tpi_params, iterative_params, initial_values, SS_values = TPI.create_tpi_params(**sim_params)
 
-    tpi_output, macro_output = TPI.run_TPI(income_tax_params, 
+    tpi_output, macro_output = TPI.run_TPI(income_tax_params,
         tpi_params, iterative_params, initial_values, SS_values, output_dir=output_base)
 
 
     '''
     ------------------------------------------------------------------------
-        Pickle TPI results 
+        Pickle TPI results
     ------------------------------------------------------------------------
     '''
     tpi_dir = os.path.join(output_base, "TPI")
@@ -165,7 +165,7 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
             pass
 
     if run_micro:
-        txfunc.get_tax_func_estimate(baseline=baseline, analytical_mtrs=analytical_mtrs, age_specific=age_specific, 
+        txfunc.get_tax_func_estimate(baseline=baseline, analytical_mtrs=analytical_mtrs, age_specific=age_specific,
                                      start_year=user_params['start_year'], reform=reform, guid=guid)
     print ("in runner, baseline is ", baseline)
     run_params = ogusa.parameters.get_parameters(baseline=baseline, guid=guid)
@@ -200,7 +200,7 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
     '''
     calibrate_model = False
     # if calibrate_model:
-    #     chi_b, chi_n = calibrate.(income_tax_params, ss_params, iterative_params, chi_params, baseline, 
+    #     chi_b, chi_n = calibrate.(income_tax_params, ss_params, iterative_params, chi_params, baseline,
     #                                  calibrate_model, output_dir=output_base, baseline_dir=baseline_dir)
 
 
@@ -221,7 +221,7 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
 
     '''
     ------------------------------------------------------------------------
-        Run SS 
+        Run SS
     ------------------------------------------------------------------------
     '''
 
@@ -234,12 +234,12 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
 
     income_tax_params, ss_params, iterative_params, chi_params= SS.create_steady_state_parameters(**sim_params)
 
-    ss_outputs = SS.run_SS(income_tax_params, ss_params, iterative_params, chi_params, baseline, 
+    ss_outputs = SS.run_SS(income_tax_params, ss_params, iterative_params, chi_params, baseline,
                                      baseline_dir=baseline_dir)
 
     '''
     ------------------------------------------------------------------------
-        Pickle SS results 
+        Pickle SS results
     ------------------------------------------------------------------------
     '''
     if baseline:
