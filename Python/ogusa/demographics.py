@@ -1,496 +1,953 @@
 '''
 ------------------------------------------------------------------------
-Last updated 4/8/2016
+Functions for generating demographic objects necessary for the OG-USA
+model
 
-Functions for generating omega, the T x S array which describes the
-demographics of the population
-
-This py-file calls the following other file(s):
-            utils.py
-            data\demographic\demographic_data.csv
-            data\demographic\mortality_rates.csv
-
-This py-file creates the following other file(s):
-    (make sure that an OUTPUT folder exists)
-            OUTPUT/fert_rates.png
-            OUTPUT/mort_rates.png
-            OUTPUT/survival_rate.png
-            OUTPUT/cum_mort_rate.png
-            OUTPUT/imm_rates.png
-            OUTPUT/Population.png
-            OUTPUT/Population_growthrate.png
-            OUTPUT/omega_init.png
-            OUTPUT/omega_ss.png
+This module defines the following function(s):
+    get_fert()
+    get_mort()
+    pop_rebin()
+    get_imm_resid()
+    immsolve()
+    get_pop_objs()
 ------------------------------------------------------------------------
 '''
-
-'''
-------------------------------------------------------------------------
-    Packages
-------------------------------------------------------------------------
-'''
+# Import packages
 import os
 import numpy as np
+import scipy.optimize as opt
 import pandas as pd
+import matplotlib
 import matplotlib.pyplot as plt
-import numpy.polynomial.polynomial as poly
+from matplotlib.ticker import MultipleLocator, FormatStrFormatter
+import scipy.interpolate as interp
 import scipy.optimize as opt
 import utils
 
-cur_path = os.path.split(os.path.abspath(__file__))[0]
-DEMO_DIR = os.path.join(cur_path, "data", "demographic")
-
-pd.options.mode.chained_assignment = None
-
-
 '''
 ------------------------------------------------------------------------
-    Import data sets
-------------------------------------------------------------------------
-Population data:
-    Obtained from:
-        Annual Estimates of the Resident Population by Single Year of
-            Age and Sex: April 1, 2010 to July 1, 2013
-             (Both sexes)
-        National Characteristics, Vintage 2013
-        US Census Bureau
-        http://www.census.gov/popest/data/national/asrh/2013/index.html
-Mortality rates data:
-    Obtained from:
-        Male and Female death probabilities
-        Actuarial Life table, 2010
-        Social Security Administration
-        http://www.ssa.gov/oact/STATS/table4c6.html
-Fertility rates data:
-    Obtained from:
-        Births and birth rates, by age of mother, US, 2010
-        National Vital Statistics Reports, CDC
-        http://www.cdc.gov/nchs/data/nvsr/nvsr60/nvsr60_02.pdf
-        Since rates are per 1000 women, the data is divided by 1000
+Define functions
 ------------------------------------------------------------------------
 '''
 
-# Population data
-demo_file = utils.read_file(cur_path, "data/demographic/demographic_data.csv")
-data = pd.read_table(demo_file, sep=',', header=0)
-data = data.set_index('Age')
-# Remove commas in the data
-for index, value in enumerate(data['2010']):
-    data['2010'][index] = int(value.replace(',', ''))
-for index, value in enumerate(data['2011']):
-    data['2011'][index] = int(value.replace(',', ''))
-for index, value in enumerate(data['2012']):
-    data['2012'][index] = int(value.replace(',', ''))
-for index, value in enumerate(data['2013']):
-    data['2013'][index] = int(value.replace(',', ''))
-# Create a copy of the data to be used elsewhere, without changing the
-# main data
-data_raw = data.copy(deep=True)
-
-# Mortality rates data
-#mort_data = pd.read_table(os.path.join(DEMO_DIR, 'mortality_rates.csv'), sep=',')
-mort_file = utils.read_file(cur_path, "data/demographic/mortality_rates.csv")
-mort_data = pd.read_table(mort_file, sep=',')
-# Remove commas in the data
-for index, value in enumerate(mort_data['male_weight']):
-    mort_data['male_weight'][index] = float(value.replace(',', ''))
-for index, value in enumerate(mort_data['female_weight']):
-    mort_data['female_weight'][index] = float(value.replace(',', ''))
-# Average male and female death rates
-mort_data['mort_rate'] = (
-    (np.array(mort_data.male_death.values).astype(float) * np.array(
-        mort_data.male_weight.values).astype(float)) + (np.array(
-            mort_data.female_death.values).astype(float) * np.array(
-            mort_data.female_weight.values).astype(float))) / (
-    np.array(mort_data.male_weight.values).astype(float) + np.array(
-        mort_data.female_weight.values).astype(float))
-mort_data = mort_data[mort_data.mort_rate.values < 1]
-del mort_data['male_death'], mort_data[
-    'female_death'], mort_data['male_weight'], mort_data[
-    'female_weight'], mort_data['male_expectancy'], mort_data[
-    'female_expectancy']
-# As the data gives the probability of death, one minus the rate will
-# give the survial rate
-mort_data['surv_rate'] = 1 - mort_data.mort_rate
-# Create an array of death rates of children
-
-# Fertility rates data
-fert_data = np.array(
-    [.4, 34.3, 17.3, 58.3, 90.0, 108.3, 96.6, 45.9, 10.2, .7]) / 1000
-# Fertility rates are given in age groups of 5 years, so the following
-# are the midpoints of those groups
-age_midpoint = np.array([12, 17, 16, 18.5, 22, 27, 32, 37, 42, 49.5])
-
-'''
-------------------------------------------------------------------------
-    Define functions
-------------------------------------------------------------------------
-'''
-
-def fit_exp_right(params, point1, point2):
-    # Fit exponentials to two points for right tail of distributions
-    a, b = params
-    x1, y1 = point1
-    x2, y2 = point2
-    error1 = a*b**(-x1) - y1
-    error2 = a*b**(-x2) - y2
-    return [error1, error2]
-
-
-def fit_exp_left(params, point1, point2):
-    # Fit exponentials to two points for left tail of distributions
-    a, b = params
-    x1, y1 = point1
-    x2, y2 = point2
-    error1 = a*b**(x1) - y1
-    error2 = a*b**(x2) - y2
-    return [error1, error2]
-
-
-def exp_int(points, a, b):
-    top = a * ((1.0/(b**40)) - b**(-points))
-    bottom = np.log(b)
-    return top / bottom
-
-
-def integrate(func, points):
-    params_guess = [1, 1]
-    a, b = opt.fsolve(fit_exp_right, params_guess, args=(
-        [40, poly.polyval(40, func)], [49.5, .0007]))
-    func_int = poly.polyint(func)
-    integral = np.empty(points.shape)
-    integral[points <= 40] = poly.polyval(points[points <= 40], func_int)
-    integral[points > 40] = poly.polyval(40, func_int) + exp_int(
-        points[points > 40], a, b)
-    return np.diff(integral)
-
-'''
-------------------------------------------------------------------------
-    Survival Rates
-------------------------------------------------------------------------
-'''
-
-
-def get_survival(S, starting_age, ending_age, E):
+def get_fert(totpers, min_yr, max_yr, graph=False):
     '''
-    Parameters:
-        S - Number of age cohorts (scalar)
-        starting_age = initial age of cohorts (scalar)
-        ending_age = ending age of cohorts (scalar)
-        E = number of children (scalar)
+    --------------------------------------------------------------------
+    This function generates a vector of fertility rates by model period
+    age that corresponds to the fertility rate data by age in years
+    (Source: National Vital Statistics Reports, Volume 64, Number 1,
+    January 15, 2015, Table 3, final 2013 data
+    http://www.cdc.gov/nchs/data/nvsr/nvsr64/nvsr64_01.pdf)
+    --------------------------------------------------------------------
+    INPUTS:
+    totpers = integer >= 3, total number of agent life periods (E+S)
+    min_yr  = integer >= 0, age in years at which agents are born,
+              minimum age
+    max_yr  = integer >= 4, age in years at which agents die with
+              certainty, maximum age
+    graph   = boolean, =True if want graphical output
 
-    Returns:
-        surv_array - S x 1 array of survival rates for each age cohort
-        children_rate - starting_age x 1 array of survival
-            rates for children
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
+        utlis.read_file()
+        pop_data.csv
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    cur_path       = string, path in which calling file resides
+    pop_file       = string, path of population data source csv file
+    pop_data       = 101 x 5 DataFrame, Age, Pop2010, Pop2011, Pop2012,
+                     Pop2013, for ages 0 to 100
+    pop_data_samp  = 100 x 5 DataFrame, Age, Pop2010, Pop2011, Pop2012,
+                     Pop2013, for ages 0 to 99
+    age_year_all   = (100,) vector, ages by year from data (beg per=1)
+    curr_pop       = (100,) vector, population for ages 0 to 99 in 2013
+    curr_pop_pct   = (100,) vector, population (in percent) for ages 0
+                     to 99 in 2013
+    fert_data      = (13,) vector, fertility rates for given age bins.
+                     We divide numbers by 2,000 because original data is
+                     in births per 1000 women. We assume an equal number
+                     of men. Added two zeros on the front and on the
+                     back to make spline interpolation work right
+    age_midp       = (13,) vector, midpoint age of age bins ranges from
+                     original data (9, 10, 10-14, 15-17, 18-19, 20-24,
+                     25-29, 30-34, 35-39, 40-44, 45-49, 55, 56). The
+                     first two and last two are not data
+    fert_func      = function, generated by interp1d function, takes
+                     ages and returns the interpolated fertility rates
+    binsize        = scalar > 0, size of each model period bin in data
+                     years
+    num_sub_bins   = scalar, an arbitrarily and deliberately large
+                     number of sub-bins that each population bin will be
+                     broken up into
+    len_subbins    = scalar, length of a model period in data sub-bins
+    age_sub        = (num_sub_bins*100,) vector, midpoint ages of each
+                     data sub-bin
+    curr_pop_sub   = (num_sub_bins*100,) vector, population linearly
+                     interpolated from data in each sub-bin
+    fert_rates_sub = (num_sub_bins*100,) vector, fertility rates by sub-
+                     bin interpolated from fert_func()
+    pred_ind       = (num_sub_bins*100,) boolean vector, =True if period
+                     is one that must be interpolated
+    age_pred       = (num_sub_bins*100-some,) vector, midpoint age in
+                     years corresponding to each period to be
+                     interpolated
+    fert_rates     = (totpers,) vector, fertility rates for each model
+                     period of life
+    i              = integer >= 0, index of model period being computed
+    beg_sub_bin    = integer >= 0, index of beginning sub-bin for
+                     calculation of average fertility rate of given
+                     model period
+    end_sub_bin    = integer >= 0, index of ending sub-bin + 1 for
+                     calculation of average fertility rate of given
+                     model period
+
+    FILES CREATED BY THIS FUNCTION:
+        fert_rates.png
+
+    RETURNS: fert_rates
+    --------------------------------------------------------------------
     '''
-    mort_rate = np.array(mort_data.mort_rate)
-    mort_poly = poly.polyfit(np.arange(mort_rate.shape[0]), mort_rate, deg=18)
-    mort_int = poly.polyint(mort_poly)
-    child_rate = poly.polyval(np.linspace(0, starting_age, E+1), mort_int)
-    child_rate = np.diff(child_rate)
-    mort_rate = poly.polyval(
-        np.linspace(starting_age, ending_age, S+1), mort_int)
-    mort_rate = np.diff(mort_rate)
-    child_rate[child_rate < 0] = 0.0
-    mort_rate[mort_rate < 0] = 0.0
-    return 1.0 - mort_rate, 1.0 - child_rate
+    # Get current population data (2013) for weighting
+    cur_path = os.path.split(os.path.abspath(__file__))[0]
+    pop_file = utils.read_file(cur_path,
+                "data/demographic/pop_data.csv")
+    pop_data = pd.read_table(pop_file, sep=',', thousands=',')
+    pop_data_samp = pop_data[(pop_data['Age']>=min_yr-1) &
+                    (pop_data['Age']<=max_yr-1)]
+    age_year_all = pop_data_samp['Age'] + 1
+    curr_pop = np.array(pop_data_samp['2013'], dtype='f')
+    curr_pop_pct = curr_pop / curr_pop.sum()
+    # Get fertility rate by age-bin data
+    fert_data = (np.array([0.0, 0.0, 0.3, 12.3, 47.1, 80.7, 105.5, 98.0,
+                49.3, 10.4, 0.8, 0.0, 0.0]) / 2000)
+    age_midp = np.array([9, 10, 12, 16, 18.5, 22, 27, 32, 37, 42, 47,
+               55, 56])
+    # Generate interpolation functions for fertility rates
+    fert_func = interp.interp1d(age_midp, fert_data, kind='cubic')
+    # Calculate average fertility rate in each age bin using trapezoid
+    # method with a large number of points in each bin.
+    binsize = (max_yr - min_yr + 1) / totpers
+    num_sub_bins = float(10000)
+    len_subbins = (np.float64(100 * num_sub_bins)) / totpers
+    age_sub = (np.linspace(np.float64(binsize) / num_sub_bins,
+              np.float64(max_yr), int(num_sub_bins*max_yr)) -
+              0.5 * np.float64(binsize) / num_sub_bins)
+    curr_pop_sub = np.repeat(np.float64(curr_pop_pct) /
+                   num_sub_bins, num_sub_bins)
+    fert_rates_sub = np.zeros(curr_pop_sub.shape)
+    pred_ind = (age_sub > age_midp[0]) * (age_sub < age_midp[-1])
+    age_pred = age_sub[pred_ind]
+    fert_rates_sub[pred_ind] = np.float64(fert_func(age_pred))
+    fert_rates = np.zeros(totpers)
+    end_sub_bin = 0
+    for i in xrange(totpers):
+        beg_sub_bin = int(end_sub_bin)
+        end_sub_bin = int(np.rint((i + 1) * len_subbins))
+        fert_rates[i] = ((curr_pop_sub[beg_sub_bin:end_sub_bin] *
+            fert_rates_sub[beg_sub_bin:end_sub_bin]).sum() /
+            curr_pop_sub[beg_sub_bin:end_sub_bin].sum())
 
-'''
-------------------------------------------------------------------------
-    Immigration Rates
-------------------------------------------------------------------------
-'''
-pop_2010, pop_2011, pop_2012, pop_2013 = np.array(
-    data_raw['2010'], dtype='f'), np.array(
-        data_raw['2011'], dtype='f'), np.array(
-        data_raw['2012'], dtype='f'), np.array(
-        data_raw['2013'], dtype='f')
+    if graph == True:
+        '''
+        ----------------------------------------------------------------
+        age_fine_pred  = (300,) vector, equally spaced support of ages
+                         between the minimum and maximum interpolating
+                         ages
+        fert_fine_pred = (300,) vector, interpolated fertility rates
+                         based on age_fine_pred
+        age_fine       = (300+some,) vector of ages including leading
+                         and trailing zeros
+        fert_fine      = (300+some,) vector of fertility rates including
+                         leading and trailing zeros
+        age_mid_new    = (totpers,) vector, midpoint age of each model
+                         period age bin
+        output_fldr    = string, path of the OUTPUT folder from cur_path
+        output_dir     = string, total path of OUTPUT folder
+        output_path    = string, path of file name of figure to be saved
+        ----------------------------------------------------------------
+        '''
+        # Generate finer age vector and fertility rate vector for
+        # graphing cubic spline interpolating function
+        age_fine_pred = np.linspace(age_midp[0], age_midp[-1], 300)
+        fert_fine_pred = fert_func(age_fine_pred)
+        age_fine = np.hstack((min_yr, age_fine_pred, max_yr))
+        fert_fine = np.hstack((0, fert_fine_pred, 0))
+        age_mid_new = (np.linspace(np.float(max_yr) /
+            totpers, max_yr, totpers) -
+            (0.5 * np.float(max_yr) / totpers))
+
+        fig, ax = plt.subplots()
+        plt.scatter(age_midp, fert_data, s=70, c='blue', marker='o',
+            label='Data')
+        plt.scatter(age_mid_new, fert_rates, s=40, c='red', marker='d',
+            label='Model period (integrated)')
+        plt.plot(age_fine, fert_fine, label='Cubic spline')
+        # for the minor ticks, use no labels; default NullFormatter
+        minorLocator   = MultipleLocator(1)
+        ax.xaxis.set_minor_locator(minorLocator)
+        plt.grid(b=True, which='major', color='0.65',linestyle='-')
+        # plt.title('Fitted fertility rate function by age ($f_{s}$)',
+        #     fontsize=20)
+        plt.xlabel(r'Age $s$')
+        plt.ylabel(r'Fertility rate $f_{s}$')
+        plt.xlim((min_yr-1, max_yr+1))
+        plt.ylim((-0.15*(fert_fine_pred.max()),
+            1.15*(fert_fine_pred.max())))
+        plt.legend(loc='upper right')
+        plt.text(-5, -0.018,
+            "Source: National Vital Statistics Reports, Volume 64, Number 1, January 15, 2015.",
+            fontsize=9)
+        plt.tight_layout(rect=(0, 0.03, 1, 1))
+        # Create directory if OUTPUT directory does not already exist
+        output_fldr = "OUTPUT/Demographics"
+        output_dir = os.path.join(cur_path, output_fldr)
+        if os.access(output_dir, os.F_OK) == False:
+            os.makedirs(output_dir)
+        output_path = os.path.join(output_dir, "fert_rates")
+        plt.savefig(output_path)
+        # plt.show()
+
+    return fert_rates
 
 
-def get_immigration1(S, starting_age, ending_age, pop_2010, pop_2011, E):
+def get_mort(totpers, min_yr, max_yr, graph=False):
     '''
-    Parameters:
-        S - Number of age cohorts
-        starting_age - initial age of cohorts
-        pop1 - initial population
-        pop2 - population one year later
+    --------------------------------------------------------------------
+    This function generates a vector of mortality rates by model period
+    age.
+    (Source: Male and Female death probabilities Actuarial Life table,
+    2011 Social Security Administration,
+    http://www.ssa.gov/oact/STATS/table4c6.html)
+    --------------------------------------------------------------------
+    INPUTS:
+    totpers = integer >= 3, total number of agent life periods (E+S)
+    min_yr  = integer >= 0, age in years at which agents are born,
+              minimum age
+    max_yr  = integer >= 4, age in years at which agents die with
+              certainty, maximum age
+    graph   = boolean, =True if want graphical output
 
-    Returns:
-        im_array - S+E x 1 array of immigration rates for each
-                   age cohort
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
+        utils.read_file()
+        mort_rates2011.csv
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    infmort_rate    = scalar > 0, infant mortality rate from 2015 U.S.
+                      CIA World Factbook
+    cur_path        = string, path where function calling file resides
+    mort_file       = string, path of mortality rate data source (.csv)
+    mort_data       = 120 x 7 DataFrame, 2011 mortality rate data for
+                      men and women
+    age_year_all    = (114,) vector, ages by year for which total
+                      mortality have positive population weight
+    mort_rates_all  = (114,) vector, mortality rates by all ages with
+                      positive population weight
+    mort_rates_mxyr = (100,) vector, truncated mortality rates by age
+    binsize         = scalar > 0, size of each model period bin in data
+                      years
+    num_sub_bins    = scalar, an arbitrarily and deliberately large
+                      number of sub-bins that each population bin will
+                      be broken up into
+    len_subbins     = scalar, length of a model period in data sub-bins
+    mort_rates_sub  = (num_sub_bins*100,) vector, mortality rates by
+                      sub-bin implied by mort_rates_mxyr
+    mort_rates      = (totpers,) vector, mortality rates that correspond
+                      to each period of life
+    i               = integer >= 0, index of model period being computed
+    beg_sub_bin     = integer >= 0, index of beginning sub-bin for
+                      calculation of cumulative mortality rate of given
+                      model period
+    end_sub_bin     = integer >= 0, index of ending sub-bin + 1 for
+                      calculation of cumulative mortality rate of given
+                      model period
+
+    FILES CREATED BY THIS FUNCTION:
+        mort_rates.png
+
+    RETURNS: mort_rates, infmort_rate
+    --------------------------------------------------------------------
     '''
-    # Get survival rates for the S age groups
-    surv_array, children_rate = get_survival(
-        ending_age-starting_age, starting_age, ending_age, starting_age)
-    surv_array = np.array(list(children_rate) + list(surv_array))
-    # Only keep track of individuals in 2010 that don't die
-    pop_2010 = pop_2010[:ending_age]
-    # In 2011, individuals will have aged one year
-    pop_2011 = pop_2011[1:ending_age+1]
-    # The immigration rate will be 1 plus the percent change in
-    # population (since death has already been accounted for)
-    perc_change = ((pop_2011 - pop_2010) / pop_2010)
-    # Remove the last entry, since individuals in the last period will die
-    im_array = perc_change - (surv_array - 1)
-    return im_array
+    # Get mortality rate by age data
+    infmort_rate = 0.00587 # taken from 2015 U.S. infant mortality rate
+    cur_path = os.path.split(os.path.abspath(__file__))[0]
+    mort_file = utils.read_file(cur_path,
+                'data/demographic/mort_rates2011.csv')
+    mort_data = pd.read_table(mort_file, sep=',', thousands=',')
+    age_year_all = mort_data['Age'] + 1
+    mort_rates_all = (((mort_data['Male Mort. Rate'] *
+        mort_data['Num. Male Lives']) + (mort_data['Female Mort. Rate']
+        * mort_data['Num. Female Lives'])) /
+        (mort_data['Num. Male Lives'] + mort_data['Num. Female Lives']))
+    age_year_all = age_year_all[np.isfinite(mort_rates_all)]
+    mort_rates_all = mort_rates_all[np.isfinite(mort_rates_all)]
+    # Calculate implied mortality rates in sub-bins of mort_rates_all.
+    mort_rates_mxyr = mort_rates_all[0:max_yr]
+    binsize = (max_yr - min_yr + 1) / totpers
+    num_sub_bins = float(100)
+    len_subbins = ((np.float64((max_yr - min_yr + 1) * num_sub_bins)) /
+                  totpers)
+    mort_rates_sub = np.zeros(num_sub_bins * max_yr, dtype=np.float64)
+    for i in xrange(max_yr):
+        mort_rates_sub[i*num_sub_bins:(i+1)*num_sub_bins] = (1 -
+            ((1 - np.float64(mort_rates_mxyr[i])) ** (1 / num_sub_bins)))
+    mort_rates = np.zeros(totpers)
+    end_sub_bin = 0
+    for i in xrange(totpers):
+        beg_sub_bin = int(end_sub_bin)
+        end_sub_bin = int(np.rint((i + 1) * len_subbins))
+        mort_rates[i] = (1 - (1 -
+            np.float64(mort_rates_sub[beg_sub_bin:end_sub_bin])).prod())
+    mort_rates[-1] = 1 # Mortality rate in last period is set to 1
+
+    if graph == True:
+        '''
+        ----------------------------------------------------------------
+        age_mid_new = (totpers,) vector, midpoint age of each model
+                      period age bin
+        output_fldr = string, path of the OUTPUT folder from cur_path
+        output_dir  = string, total path of OUTPUT folder
+        output_path = string, path of file name of figure to be saved
+        ----------------------------------------------------------------
+        '''
+        age_mid_new = (np.linspace(np.float(max_yr) /
+            totpers, max_yr, totpers) -
+            (0.5 * np.float(max_yr) / totpers))
+        fig, ax = plt.subplots()
+        plt.scatter(np.hstack([0, age_year_all]),
+            np.hstack([infmort_rate, mort_rates_all]),
+            s=20, c='blue', marker='o', label='Data')
+        plt.scatter(np.hstack([0, age_mid_new]),
+            np.hstack([infmort_rate, mort_rates]),
+            s=40, c='red', marker='d', label='Model period (cumulative)')
+        plt.plot(np.hstack([0, age_year_all[min_yr-1:max_yr]]),
+            np.hstack([infmort_rate, mort_rates_all[min_yr-1:max_yr]]))
+        plt.axvline(x=max_yr, color='red', linestyle='-', linewidth=1)
+        # for the minor ticks, use no labels; default NullFormatter
+        minorLocator   = MultipleLocator(1)
+        ax.xaxis.set_minor_locator(minorLocator)
+        plt.grid(b=True, which='major', color='0.65',linestyle='-')
+        # plt.title('Fitted mortality rate function by age ($rho_{s}$)',
+        #     fontsize=20)
+        plt.xlabel(r'Age $s$')
+        plt.ylabel(r'Mortality rate $\rho_{s}$')
+        plt.xlim((min_yr-2, age_year_all.max()+2))
+        plt.ylim((-0.05, 1.05))
+        plt.legend(loc='upper left')
+        plt.text(-5, -0.2,
+            "Source: Actuarial Life table, 2011 Social Security Administration.",
+            fontsize=9)
+        plt.tight_layout(rect=(0, 0.03, 1, 1))
+        # Create directory if OUTPUT directory does not already exist
+        output_fldr = "OUTPUT/Demographics"
+        output_dir = os.path.join(cur_path, output_fldr)
+        if os.access(output_dir, os.F_OK) == False:
+            os.makedirs(output_dir)
+        output_path = os.path.join(output_dir, "mort_rates")
+        plt.savefig(output_path)
+        # plt.show()
+
+    return mort_rates, infmort_rate
 
 
-def get_immigration2(S, starting_age, ending_age, E):
+def pop_rebin(curr_pop_dist, totpers_new):
     '''
-    Parameters:
-        S - Number of age cohorts
-        starting age - initial age of cohorts
+    --------------------------------------------------------------------
+    For cases in which totpers (E+S) is less than the number of periods
+    in the population distribution data, this function calculates a new
+    population distribution vector with totpers (E+S) elements.
+    --------------------------------------------------------------------
+    INPUTS:
+    curr_pop_dist = (N,) vector, population distribution over N periods
+    totpers_new   = integer >= 4, number of periods to which we are
+                    transforming the population distribution
 
-    Returns:
-        im_array - S x 1 array of immigration rates for each
-                   age cohort
-        child_imm_rate - starting_age x 1 array of immigration
-            rates for children
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    totpers_orig = integer >= 4, number of periods in curr_pop_dist
+                   original data
+    curr_pop_new = (totpers,) vector, new population distribution over
+                   totpers (E+S) periods that approximates curr_pop_dist
+    num_sub_bins = integer > 1, an arbitrarily and deliberately large
+                   number of sub-bins that each population bin will be
+                   broken up into
+    len_subbins  = scalar > 1, number of bins (in terms of sub-bins)
+                   that equal the length of one of the new periods
+    i            = integer >= 0, index of new bin number
+    beg_sub_bin  = integer >= 0, index of beginning bin in sum
+    end_sub_bin  = integer >= 0, index of ending bin plus 1 in sum
+
+    RETURNS: curr_pop_new
+    --------------------------------------------------------------------
     '''
-    imm_rate_condensed1 = get_immigration1(
-        S, starting_age, ending_age, pop_2010, pop_2011, E)
-    imm_rate_condensed2 = get_immigration1(
-        S, starting_age, ending_age, pop_2011, pop_2012, E)
-    imm_rate_condensed3 = get_immigration1(
-        S, starting_age, ending_age, pop_2012, pop_2013, E)
-    im_array = (
-        imm_rate_condensed1 + imm_rate_condensed2 + imm_rate_condensed3) / 3.0
-    poly_imm = poly.polyfit(np.linspace(
-        1, ending_age, ending_age-1), im_array[:-1], deg=18)
-    poly_imm_int = poly.polyint(poly_imm)
-    child_imm_rate = poly.polyval(np.linspace(
-        0, starting_age, E+1), poly_imm_int)
-    imm_rate = poly.polyval(np.linspace(
-        starting_age, ending_age, S+1), poly_imm_int)
-    child_imm_rate = np.diff(child_imm_rate)
-    imm_rate = np.diff(imm_rate)
-    imm_rate[-1] = 0.0
-    return imm_rate, child_imm_rate
+    totpers_orig = len(curr_pop_dist)
+    if int(totpers_new) == totpers_orig:
+        curr_pop_new = curr_pop_dist
+    elif int(totpers_new) < totpers_orig:
+        num_sub_bins = float(10000)
+        curr_pop_sub = np.repeat(np.float64(curr_pop_dist) /
+                       num_sub_bins, num_sub_bins)
+        len_subbins = ((np.float64(totpers_orig*num_sub_bins)) /
+                      totpers_new)
+        curr_pop_new = np.zeros(totpers_new, dtype=np.float64)
+        end_sub_bin = 0
+        for i in xrange(totpers_new):
+            beg_sub_bin = int(end_sub_bin)
+            end_sub_bin = int(np.rint((i + 1) * len_subbins))
+            curr_pop_new[i] = \
+                curr_pop_sub[beg_sub_bin:end_sub_bin].sum()
+        # Return curr_pop_new to single precision float (float32)
+        # datatype
+        curr_pop_new = np.float32(curr_pop_new)
 
-'''
-------------------------------------------------------------------------
-    Fertility Rates
-------------------------------------------------------------------------
-'''
+    return curr_pop_new
 
 
-def get_fert(S, starting_age, ending_age, E):
+def get_imm_resid(totpers, min_yr, max_yr, graph=True):
     '''
-    Parameters:
-        S - Number of age cohorts
-        starting age - initial age of cohorts
+    --------------------------------------------------------------------
+    Calculate immigration rates by age as a residual given population
+    levels in different periods, then output average calculated
+    immigration rate. We have to replace the first mortality rate in
+    this function in order to adjust the first implied immigration rate
+    (Source: Population data come from Annual Estimates of the Resident
+    Population by Single Year of Age and Sex: April 1, 2010 to July 1,
+    2013 (Both sexes) National Characteristics, Vintage 2013, US Census
+    Bureau,
+    http://www.census.gov/popest/data/national/asrh/2013/index.html)
+    --------------------------------------------------------------------
+    INPUTS:
+    totpers = integer >= 3, number of agent life periods (E+S)
+    min_yr  = integer >= 0, age in years at which agents are born,
+              minimum age
+    max_yr  = integer >= 4, age in years at which agents die with
+              certainty, maximum age
+    graph   = boolean, =True if want graphical output
 
-    Returns:
-        fert_rate - Sx1 array of fertility rates for each
-            age cohort
-        children_fertrate  - starting_age x 1 array of zeros, to be
-            used in get_omega()
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
+        utils.read_file()
+        get_fert()
+        get_mort()
+        pop_data.csv
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    cur_path      = string, path in which calling file resides
+    pop_file      = string, path of population data source csv file
+    pop_data      = 101 x 5 DataFrame, Age, Pop2010, Pop2011, Pop2012,
+                    Pop2013, for ages 0 to 100
+    pop_data_samp = 100 x 5 DataFrame, Age, Pop2010, Pop2011, Pop2012,
+                    Pop2013, for ages 0 to 99
+    age_year_all  = (100,) vector, ages by year from data (beg per is 1)
+    pop_2010      = (100,) vector, population for ages 0 to 99 in 2010
+    pop_2011      = (100,) vector, population for ages 0 to 99 in 2011
+    pop_2012      = (100,) vector, population for ages 0 to 99 in 2012
+    pop_2013      = (100,) vector, population for ages 0 to 99 in 2013
+    imm_mat       = (3, 100) matrix, immigration rates computed as
+                    residuals for each age in three successive pairs of
+                    years
+    pop11vec      = (3,) vector, age-1 population in first three years
+    pop21vec      = (3,) vector, age-1 population in last three years
+    fert_rates    = (100,) vector, fertility rates by model age
+    mort_rates    = (100,) vector, mortality rates by model age
+    infmort_rate  = scalar > 0, infant mortality rate from 2015 U.S. CIA
+                    World Factbook
+    newbornvec    = (3,) vector, total births in first three years
+    pop11mat      = (3, 99) matrix, population of age 1 through 99 for
+                    first three years
+    pop12mat      = (3, 99) matrix, population of age 2 through 100 for
+                    first three years
+    pop22mat      = (3, 99) matrix, population of age 2 through 100 for
+                    last three years
+    mort_mat      = (3, 99) matrix, the first 99 mortality rates copied
+                    into 3 rows
+    imm_rates_all = (100,) vector, average of three years residual
+                    immigration rates by each age in data
+    imm_func      = function, generated by interp1d function, takes
+                    ages and returns the interpolated immigration rates
+    age_per       = (E+S,) vector, age in years at each period of life
+    imm_rates     = (E+S,) vector, immigration rates that correspond to
+                    each period of life
+
+    RETURNS: imm_rates
+    --------------------------------------------------------------------
     '''
-    # Fit a polynomial to the fertility rates
-    poly_fert = poly.polyfit(age_midpoint, fert_data, deg=4)
-    fert_rate = integrate(poly_fert, np.linspace(
-        starting_age, ending_age, S+1))
-    fert_rate /= 2.0
-    children_fertrate_int = poly.polyint(poly_fert)
-    children_fertrate_int = poly.polyval(np.linspace(
-        0, starting_age, E + 1), children_fertrate_int)
-    children_fertrate = np.diff(children_fertrate_int)
-    children_fertrate /= 2.0
-    children_fertrate[children_fertrate < 0] = 0
-    children_fertrate[:int(10*S/float(ending_age-starting_age))] = 0
-    return fert_rate, children_fertrate
+    cur_path = os.path.split(os.path.abspath(__file__))[0]
+    pop_file = utils.read_file(cur_path,
+                "data/demographic/pop_data.csv")
+    pop_data = pd.read_table(pop_file, sep=',', thousands=',')
+    pop_data_samp = pop_data[(pop_data['Age']>=min_yr-1) &
+                    (pop_data['Age']<=max_yr-1)]
+    age_year_all = pop_data_samp['Age'] + 1
+    pop_2010, pop_2011, pop_2012, pop_2013 = (
+        np.array(pop_data_samp['2010'], dtype='f'),
+        np.array(pop_data_samp['2011'], dtype='f'),
+        np.array(pop_data_samp['2012'], dtype='f'),
+        np.array(pop_data_samp['2013'], dtype='f'))
+    pop_2010_EpS = pop_rebin(pop_2010, totpers)
+    pop_2011_EpS = pop_rebin(pop_2011, totpers)
+    pop_2012_EpS = pop_rebin(pop_2012, totpers)
+    pop_2013_EpS = pop_rebin(pop_2013, totpers)
+    # Create three years of estimated immigration rates for youngest age
+    # individuals
+    imm_mat = np.zeros((3, totpers))
+    pop11vec = np.array([pop_2010_EpS[0], pop_2011_EpS[0],
+               pop_2012_EpS[0]])
+    pop21vec = np.array([pop_2011_EpS[0], pop_2012_EpS[0],
+               pop_2013_EpS[0]])
+    fert_rates = get_fert(totpers, min_yr, max_yr, False)
+    mort_rates, infmort_rate = get_mort(totpers, min_yr, max_yr, False)
+    newbornvec = np.dot(fert_rates,
+        np.vstack((pop_2010_EpS, pop_2011_EpS, pop_2012_EpS)).T)
+    imm_mat[:, 0] = ((pop21vec - (1 - infmort_rate) * newbornvec) /
+                    pop11vec)
+    # Estimate 3 years of immigration rates for all other-aged
+    # individuals
+    pop11mat = np.vstack((pop_2010_EpS[:-1], pop_2011_EpS[:-1],
+               pop_2012_EpS[:-1]))
+    pop12mat = np.vstack((pop_2010_EpS[1:], pop_2011_EpS[1:],
+               pop_2012_EpS[1:]))
+    pop22mat = np.vstack((pop_2011_EpS[1:], pop_2012_EpS[1:],
+               pop_2013_EpS[1:]))
+    mort_mat = np.tile(mort_rates[:-1], (3, 1))
+    imm_mat[:, 1:] = (pop22mat - (1 - mort_mat) * pop11mat) / pop12mat
+    # Final estimated immigration rates are the averages over 3 years
+    imm_rates = imm_mat.mean(axis=0)
+    age_per = np.linspace(1, totpers, totpers)
 
-'''
-------------------------------------------------------------------------
-    Generate graphs of mortality, fertility, and immigration rates
-------------------------------------------------------------------------
-'''
+    if graph == True:
+        '''
+        ----------------------------------------------------------------
+        output_fldr = string, path of the OUTPUT folder from cur_path
+        output_dir  = string, total path of OUTPUT folder
+        output_path = string, path of file name of figure to be saved
+        ----------------------------------------------------------------
+        '''
+        fig, ax = plt.subplots()
+        plt.scatter(age_per, imm_rates, s=40, c='red', marker='d')
+        plt.plot(age_per, imm_rates)
+        # for the minor ticks, use no labels; default NullFormatter
+        minorLocator   = MultipleLocator(1)
+        ax.xaxis.set_minor_locator(minorLocator)
+        plt.grid(b=True, which='major', color='0.65',linestyle='-')
+        # plt.title('Fitted immigration rates by age ($i_{s}$), residual',
+        #     fontsize=20)
+        plt.xlabel(r'Age $s$ (model periods)')
+        plt.ylabel(r'Imm. rate $i_{s}$')
+        plt.xlim((0, totpers+1))
+        # Create directory if OUTPUT directory does not already exist
+        output_fldr = "OUTPUT/Demographics"
+        output_dir = os.path.join(cur_path, output_fldr)
+        if os.access(output_dir, os.F_OK) == False:
+            os.makedirs(output_dir)
+        output_path = os.path.join(output_dir, "imm_rates_orig")
+        plt.savefig(output_path)
+        # plt.show()
 
-
-def rate_graphs(S, starting_age, ending_age, imm, fert, surv, child_imm,
-                child_fert, child_mort, output_dir="./OUTPUT"):
-    domain = np.arange(child_fert.shape[0] + S) + 1
-    mort = mort_data.mort_rate
-    domain2 = np.arange(mort.shape[0]) + 1
-    domain4 = np.arange(child_imm.shape[0] + imm.shape[0]) + 1
-
-    # Graph of fertility rates
-    plt.figure()
-    plt.plot(
-        domain, list(child_fert)+list(fert), linewidth=2, color='blue')
-    plt.xlabel(r'age $s$')
-    plt.ylabel(r'fertility $f_s$')
-    fert_rates = os.path.join(output_dir, "Demographics/fert_rates")
-    plt.savefig(fert_rates)
-
-    # Graph of mortality rates
-    plt.figure()
-    plt.plot(domain2[:ending_age-1], (1-np.array(list(child_mort)+list(surv)))[:-1], color='blue', linewidth=2)
-    plt.plot(domain2[ending_age:], mort[
-        ending_age:], color='blue', linestyle='--', linewidth=2)
-    plt.axvline(x=ending_age, color='red', linestyle='-', linewidth=1)
-    plt.xlabel(r'age $s$')
-    plt.ylabel(r'mortality $\rho_s$')
-    mort_rates = os.path.join(output_dir, "Demographics/mort_rates")
-    plt.savefig(mort_rates)
-
-    cum_surv_arr = np.cumprod(surv)
-    domain3 = np.arange(surv.shape[0]) + 1
-
-    # Graph of cumulative mortality rates
-    plt.figure()
-    plt.plot(domain3, cum_surv_arr)
-    plt.xlabel(r'age $s$')
-    plt.ylabel(r'survival rate $1-\rho_s$')
-    surv_rates = os.path.join(output_dir, "Demographics/survival_rates")
-    plt.savefig(surv_rates)
-    cum_mort_rate = 1-cum_surv_arr
-    plt.figure()
-    plt.plot(domain3, cum_mort_rate)
-    plt.xlabel(r'age $s$')
-    plt.ylabel(r'cumulative mortality rate')
-    cum_mort_rates = os.path.join(output_dir, "Demographics/cum_mort_rate")
-    plt.savefig(cum_mort_rates)
-
-    # Graph of immigration rates
-    plt.figure()
-    plt.plot(domain4, list(
-        child_imm)+list(imm), linewidth=2, color='blue')
-    plt.xlabel(r'age $s$')
-    plt.ylabel(r'immigration $i_s$')
-    imm_rates = os.path.join(output_dir, "Demographics/imm_rates")
-    plt.savefig(imm_rates)
-
-'''
-------------------------------------------------------------------------
-Generate graphs of Population
-------------------------------------------------------------------------
-'''
+    return imm_rates
 
 
-def pop_graphs(S, T, starting_age, ending_age, children, g_n, omega,
-               output_dir="./OUTPUT"):
-    N = omega[T].sum() + children[T].sum()
-    x = children.sum(1) + omega.sum(1)
-    x2 = 100 * np.diff(x)/x[:-1]
-
-    plt.figure()
-    plt.plot(np.arange(T+S)+1, x, 'b', linewidth=2)
-    plt.title('Population Size (as a percent of the initial population)')
-    plt.xlabel(r'Time $t$')
-    # plt.ylabel('Population size, as a percent of initial population')
-    pop = os.path.join(output_dir, "Demographics/imm_rates")
-    plt.savefig(pop)
-
-    plt.figure()
-    plt.plot(np.arange(T+S-1)+1, x2, 'b', linewidth=2)
-    plt.axhline(y=100 * g_n, color='r', linestyle='--', label=r'$\bar{g}_n$')
-    plt.legend(loc=0)
-    plt.xlabel(r'Time $t$')
-    plt.ylabel(r'Population growth rate $g_n$')
-    # plt.title('Population Growth rate over time')
-    pop_growth = os.path.join(output_dir, "Demographics/Population_growthrate")
-    plt.savefig(pop_growth)
-
-    plt.figure()
-    plt.plot(np.arange(S+int(starting_age * S / (
-        ending_age-starting_age)))+1, list(
-        children[0, :]) + list(
-        omega[0, :]), linewidth=2, color='blue')
-    plt.xlabel(r'age $s$')
-    plt.ylabel(r'$\omega_{s,1}$')
-    omega_init = os.path.join(output_dir, "Demographics/omega_init")
-    plt.savefig(omega_init)
-
-    plt.figure()
-    plt.plot(np.arange(S+int(starting_age * S / (
-        ending_age-starting_age)))+1, list(
-        children[T, :]/N) + list(
-        omega[T, :]/N), linewidth=2, color='blue')
-    plt.xlabel(r'age $s$')
-    plt.ylabel(r'$\overline{\omega}$')
-    omega_ss = os.path.join(output_dir, "Demographics/omega_ss")
-    plt.savefig(omega_ss)
-
-'''
-------------------------------------------------------------------------
-    Generate Demographics
-------------------------------------------------------------------------
-'''
-
-
-def get_omega(S, T, starting_age, ending_age, E, flag_graphs):
+def immsolve(imm_rates, *args):
     '''
-    Inputs:
-        S - Number of age cohorts (scalar)
-        T - number of time periods in TPI (scalar)
-        starting_age - initial age of cohorts (scalar)
-        ending_age = ending age of cohorts (scalar)
-        E = number of children (scalar)
-        flag_graphs = graph variables or not (bool)
-    Outputs:
-        omega_big = array of all population weights over time ((T+S)x1 array)
-        g_n_SS = steady state growth rate (scalar)
-        omega_SS = steady state population weights (Sx1 array)
-        surv_array = survival rates (Sx1 array)
-        rho = mortality rates (Sx1 array)
-        g_n_vec = population growth rate over time ((T+S)x1 array)
+    --------------------------------------------------------------------
+    This function generates a vector of errors representing the
+    difference in two consecutive periods stationary population
+    distributions. This vector of differences is the zero-function
+    objective used to solve for the immigration rates vector, similar to
+    the original immigration rates vector from get_imm_resid(), that
+    sets the steady-state population distribution by age equal to the
+    population distribution in period int(1.5*S)
+    --------------------------------------------------------------------
+    INPUTS:
+    imm_rates    = (totpers,) vector, immigration rates that correspond
+                   to each period of life
+    args         = length 5 tuple, (fert_rates, mort_rates,
+                   infmort_rate, omega_cur, g_n_SS)
+    fert_rates   = (totpers,) vector, fertility rates that correspond to
+                   each period of life
+    mort_rates   = (totpers,) vector, mortality rates that correspond to
+                   to each period of life
+    infmort_rate = scalar > 0, infant mortality rate from 2015 U.S. CIA
+                   World Factbook
+    omega_cur    = (totpers,) vector, population distribution (levels)
+                   by age in current period
+    g_n_SS       = scalar, steady-state growth rate from original OMEGA
+                   matrix
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    omega_cur_pct = (totpers,) vector, population distribution (pct) by
+                    age in current period
+    totpers       = integer >= 3, number of agent life periods (E+S)
+    OMEGA         = (totpers, totpers) matrix, transition matrix for
+                    population distribution law of motion
+    omega_new     = (totpers,) vector, population distribution (pct) by
+                    age in next period
+    omega_errs    = (totpers,) vector, difference between omega_new and
+                    omega_cur_pct
+
+    RETURNS: omega_errs
+    --------------------------------------------------------------------
     '''
-    data1 = data
-    pop_data = np.array(data1['2010'])
-    poly_pop = poly.polyfit(np.linspace(
-        0, pop_data.shape[0]-1, pop_data.shape[0]), pop_data, deg=11)
-    poly_int_pop = poly.polyint(poly_pop)
-    pop_int = poly.polyval(np.linspace(
-        starting_age, ending_age, S+1), poly_int_pop)
-    new_omega = pop_int[1:]-pop_int[:-1]
-    surv_array, children_rate = get_survival(S, starting_age, ending_age, E)
-    surv_array[-1] = 0.0
-    imm_array, children_im = get_immigration2(S, starting_age, ending_age, E)
-    imm_array *= 0.0
-    children_im *= 0.0
-    fert_rate, children_fertrate = get_fert(S, starting_age, ending_age, E)
-    cum_surv_rate = np.cumprod(surv_array)
-    if flag_graphs:
-        rate_graphs(S, starting_age, ending_age, imm_array, fert_rate, surv_array, children_im, children_fertrate, children_rate)
-    children_int = poly.polyval(np.linspace(0, starting_age, E + 1), poly_int_pop)
-    sum2010 = pop_int[-1] - children_int[0]
-    new_omega /= sum2010
-    children = np.diff(children_int)
-    children /= sum2010
-    children = np.tile(children.reshape(1, E), (T + S, 1))
-    omega_big = np.tile(new_omega.reshape(1, S), (T + S, 1))
-    # Generate the time path for each age group
-    for t in xrange(1, T + S):
-        # Children are born and then have to wait 20 years to enter the model
-        omega_big[t, 0] = children[t-1, -1] * (children_rate[-1] + children_im[-1])
-        omega_big[t, 1:] = omega_big[t-1, :-1] * (surv_array[:-1] + imm_array[:-1])
-        children[t, 1:] = children[t-1, :-1] * (children_rate[:-1] + children_im[:-1])
-        children[t, 0] = (omega_big[t-1, :] * fert_rate).sum(0) + (children[t-1] * children_fertrate).sum(0)
-    OMEGA = np.zeros(((S + E), (S + E)))
-    OMEGA[0, :] = np.array(list(children_fertrate) + list(fert_rate))
-    OMEGA += np.diag(np.array(list(children_rate) + list(surv_array[:-1])) + np.array(list(children_im) + list(imm_array[:-1])), -1)
-    eigvalues, eigvectors = np.linalg.eig(OMEGA)
-    mask = eigvalues.real != 0
-    eigvalues = eigvalues[mask]
-    mask2 = eigvalues.imag == 0
-    eigvalues = eigvalues[mask2].real
-    g_n_SS = eigvalues - 1
-    eigvectors = np.abs(eigvectors.T)
-    eigvectors = eigvectors[mask]
-    omega_SS = eigvectors[mask2].real
-    if eigvalues.shape[0] != 1:
-        ind = ((abs(omega_SS.T/omega_SS.T.sum(0) - np.array(list(children[-1, :]) + list(omega_big[-1, :])).reshape(S+E, 1)).sum(0))).argmin()
-        omega_SS = omega_SS[ind]
-        g_n_SS = [g_n_SS[ind]]
-    omega_SS = omega_SS[E:]
-    omega_SS /= omega_SS.sum()
-    # Creating the different ability level bins
-    if flag_graphs:
-        pop_graphs(S, T, starting_age, ending_age, children, g_n_SS[0], omega_big)
-    N_vector = omega_big.sum(1)
-    g_n_vec = N_vector[1:] / N_vector[:-1] -1.0
-    g_n_vec = np.append(g_n_vec, g_n_SS[0])
-    rho = 1.0 - surv_array
-    return omega_big, g_n_SS[0], omega_SS, surv_array, rho, g_n_vec
+    fert_rates, mort_rates, infmort_rate, omega_cur_lev, g_n_SS = args
+    omega_cur_pct = omega_cur_lev / omega_cur_lev.sum()
+    totpers = len(fert_rates)
+    OMEGA = np.zeros((totpers, totpers))
+    OMEGA[0, :] = ((1 - infmort_rate) * fert_rates +
+                  np.hstack((imm_rates[0], np.zeros(totpers-1))))
+    OMEGA[1:, :-1] += np.diag(1-mort_rates[:-1])
+    OMEGA[1:, 1:] += np.diag(imm_rates[1:])
+    omega_new = np.dot(OMEGA, omega_cur_pct) / (1 + g_n_SS)
+    omega_errs = omega_new - omega_cur_pct
+
+    return omega_errs
+
+
+def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
+    '''
+    --------------------------------------------------------------------
+    This function produces the demographics objects to be used in the
+    OG-USA model package.
+    --------------------------------------------------------------------
+    INPUTS:
+    E         = integer >= 1, number of model periods in which agent is
+                not economically active
+    S         = integer >= 3, number of model periods in which agent is
+                economically active
+    T         = integer > 2*S, number of periods to be simulated in TPI
+    min_yr    = integer >= 0, age in years at which agents are born,
+                minimum age
+    max_yr    = integer >= 4, age in years at which agents die with
+                certainty, maximum age
+    curr_year = integer >= 2016, current year for which analysis will
+                begin
+    GraphDiag = boolean, =True if want graphical output and printed
+                diagnostics
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
+        get_fert()
+        get_mort()
+        get_imm_resid()
+        utils.read_file()
+        pop_rebin()
+        immsolve()
+        pop_data.csv
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    age_per         = (E+S,) vector, age in years at each period of life
+    fert_rates      = (E+S,) vector, fertility rates that correspond to
+                      each model period of life
+    mort_rates      = (E+S,) vector, mortality rates that correspond to
+                      each model period of life
+    infmort_rate    = scalar > 0, infant mortality rate from 2015 U.S.
+                      CIA World Factbook
+    mort_rates_S    = (S,) vector, mortality rates that correspond to
+                      each economically active model period of life
+    imm_rates_orig  = (E+S,) vector, immigration rates by age estimated
+                      as residuals from get_imm_resid()
+    OMEGA_orig      = (E+S, E+S) matrix, transition matrix for
+                      population distribution law of motion
+    eigvalues       = (E+S,) vector, eigenvalues of OMEGA matrix
+    eigvectors      = (E+S, E+S) matrix, matrix of eigenvectors of OMEGA
+                      where each column is the eigenvector that goes
+                      with the corresponding eigenvalue in eigvalues
+    g_n_SS_orig     = scalar, steady-state population growth rate, which
+                      is the largest real part of the eigenvalues
+    eigvec_raw      = (E+S,) vector, nonnormalized eigenvector
+                      corresponding to the largest real-part eigenvalue
+    omega_SS_orig   = (E+S,) vector, steady-state population
+                      distribution which is normalized eigvec_raw
+    omega_path_orig = (E+S, T) matrix, time path of the population
+                      distribution from the current state to the steady-
+                      state
+    cur_path        = string, path in which calling file resides
+    pop_file        = string, path of population data source csv file
+    pop_data        = 101 x 5 DataFrame, Age, Pop2010, Pop2011, Pop2012,
+                      Pop2013, for ages 0 to 100
+    pop_data_samp   = 100 x 5 DataFrame, Age, Pop2010, Pop2011, Pop2012,
+                      Pop2013, for ages 0 to 99
+    age_year_all    = (100,) vector, ages by year from data, beg per=1
+    pop_2013        = (100,) vector, population for ages 0 to 99 in 2013
+    age_per_EpS     = (E+S,) vector, period numbers 1 through E+S
+    pop_2013_EpS    = (E+S,) vector, population distribution by model
+                      periods E + S in levels
+    pop_2013_pct    = (E+S,) vector, 2013 population distribution in
+                      percentages
+    pop_curr        = (E+S,) vector, current-period population
+                      distribution in percentages
+    data_year       = integer, most recent year in data
+
+    per             = integer, index for period
+    pop_next        = (E+S,) vector, next-period population distribution
+    imm_tol         = scalar > 0, tolerance for fsolve in immsolve()
+    fixper          = ?
+    omega_SSfx      = ?
+    imm_objs        = ?
+    imm_fulloutput  = ?
+    imm_rates_adj   = ?
+    imm_diagdict    = ?
+    omega_path_S    = ?
+    imm_rates_S     = ?
+    imm_rates_S_adj = ?
+
+    RETURNS: omega_path_S.T, g_n_SS,
+        omega_SSfx[-S:] / omega_SSfx[-S:].sum(), 1-mort_rates_S,
+        mort_rates_S, g_n_path, imm_rates_mat
+    --------------------------------------------------------------------
+    '''
+    age_per = np.linspace(min_yr, max_yr, E+S)
+    fert_rates = get_fert(E+S, min_yr, max_yr, graph=False)
+    mort_rates, infmort_rate = get_mort(E+S, min_yr, max_yr,
+                                        graph=False)
+    mort_rates_S = mort_rates[-S:]
+    # imm_rates_orig = get_imm_resid(E+S, min_yr, max_yr, graph=False)
+    imm_rates_orig = np.zeros(E+S)
+    imm_rates_S = imm_rates_orig[-S:]
+    OMEGA_orig = np.zeros((E+S, E+S))
+    OMEGA_orig[0, :] = ((1 - infmort_rate) * fert_rates +
+                  np.hstack((imm_rates_orig[0], np.zeros(E+S-1))))
+    OMEGA_orig[1:, :-1] += np.diag(1-mort_rates[:-1])
+    OMEGA_orig[1:, 1:] += np.diag(imm_rates_orig[1:])
+
+    # Solve for steady-state population growth rate and steady-state
+    # population distribution by age using eigenvalue and eigenvector
+    # decomposition
+    eigvalues, eigvectors = np.linalg.eig(OMEGA_orig)
+    g_n_SS = (eigvalues[np.isreal(eigvalues)].real).max() - 1
+    eigvec_raw = eigvectors[:,
+        (eigvalues[np.isreal(eigvalues)].real).argmax()].real
+    omega_SS_orig = eigvec_raw / eigvec_raw.sum()
+
+    # Generate time path of the nonstationary population distribution
+    omega_path_lev = np.zeros((E+S, T+S))
+    cur_path = os.path.split(os.path.abspath(__file__))[0]
+    pop_file = utils.read_file(cur_path,
+                "data/demographic/pop_data.csv")
+    pop_data = pd.read_table(pop_file, sep=',', thousands=',')
+    pop_data_samp = pop_data[(pop_data['Age']>=min_yr-1) &
+                    (pop_data['Age']<=max_yr-1)]
+    age_year_all = pop_data_samp['Age'] + 1
+    pop_2013 = np.array(pop_data_samp['2013'], dtype='f')
+    # Generate the current population distribution given that E+S might
+    # be less than max_yr-min_yr+1
+    age_per_EpS = np.arange(1, E+S+1)
+    pop_2013_EpS = pop_rebin(pop_2013, E+S)
+    pop_2013_pct = pop_2013_EpS / pop_2013_EpS.sum()
+    # Age most recent population data to the current year of analysis
+    pop_curr = pop_2013_EpS.copy()
+    data_year = 2013
+    for per in xrange(0, curr_year-data_year): # Age the data to
+                                               # the current year
+        pop_next = np.dot(OMEGA_orig, pop_curr)
+        pop_curr = pop_next
+    curr_dict = {"pop_" + str(curr_year) + "_pct":
+                pop_curr.copy() / pop_curr.sum()}
+
+    # Generate time path of the population distribution
+    omega_path_lev[:,0] = pop_curr.copy()
+    for per in xrange(1, T+S):
+        pop_next = np.dot(OMEGA_orig, pop_curr)
+        omega_path_lev[:, per] = pop_next.copy()
+        pop_curr = pop_next.copy()
+
+    # Force the population distribution after 1.5*S periods to be the
+    # steady-state distribution by adjusting immigration rates, holding
+    # constant mortality, fertility, and SS growth rates
+    imm_tol = 1e-14
+    fixper = int(1.5*S)
+    omega_SSfx = (omega_path_lev[:, fixper] /
+                 omega_path_lev[:, fixper].sum())
+    imm_objs = (fert_rates, mort_rates, infmort_rate,
+               omega_path_lev[:, fixper], g_n_SS)
+    imm_fulloutput = opt.fsolve(immsolve, imm_rates_orig,
+        args=(imm_objs), full_output=True, xtol=imm_tol)
+    # imm_rates_adj = imm_fulloutput[0]
+    imm_rates_adj = np.zeros(E+S)
+    imm_rates_S_adj = imm_rates_adj[-S:]
+    imm_diagdict = imm_fulloutput[1]
+    omega_path_S = (omega_path_lev[-S:, :] /
+        np.tile(omega_path_lev[-S:, :].sum(axis=0),(S, 1)))
+    # omega_path_S[:, fixper:] = \
+    #     np.tile(omega_path_S[:, fixper].reshape((S, 1)),
+    #     (1, T+S-fixper))
+    g_n_path = np.zeros(T+S)
+    g_n_path[1:] = ((omega_path_lev[-S:, 1:].sum(axis=0) -
+                    omega_path_lev[-S:, :-1].sum(axis=0)) /
+                    omega_path_lev[-S:, :-1].sum(axis=0))
+    g_n_path[fixper:] = g_n_SS
+    imm_rates_mat = np.hstack((
+        np.tile(np.reshape(imm_rates_orig[E:],(S,1)), (1, fixper)),
+        np.tile(np.reshape(imm_rates_adj[E:],(S,1)), (1, T+S-fixper))))
+
+    if GraphDiag == True:
+        # Check whether original SS population distribution is close to
+        # the period-T population distribution
+        omegaSSmaxdif = np.absolute(omega_SS_orig -
+                        (omega_path_lev[:,T] /
+                        omega_path_lev[:,T].sum())).max()
+        if omegaSSmaxdif > 0.0003:
+            print("POP. WARNING: Max. abs. dist. between original SS " +
+                "pop. dist'n and period-T pop. dist'n is greater than" +
+                  " 0.0003. It is " + str(omegaSSmaxdif) + ".")
+        else:
+            print("POP. SUCCESS: orig. SS pop. dist is very close to " +
+                  "period-T pop. dist'n. The maximum absolute " +
+                  "difference is " + str(omegaSSmaxdif) + ".")
+
+        # Plot the adjusted steady-state population distribution versus
+        # the original population distribution. The difference should be
+        # small
+        omegaSSvTmaxdiff = np.absolute(omega_SS_orig - omega_SSfx).max()
+        if omegaSSvTmaxdiff > 0.0003:
+            print("POP. WARNING: The maximimum absolute difference " +
+                  "between any two corresponding points in the original"
+                  + " and adjusted steady-state population " +
+                  "distributions is" + str(omegaSSvTmaxdiff) + ", "+
+                  "which is greater than 0.0003.")
+        else:
+            print("POP. SUCCESS: The maximum absolute difference " +
+                  "between any two corresponding points in the original"
+                  + " and adjusted steady-state population " +
+                  "distributions is " + str(omegaSSvTmaxdiff))
+        fig, ax = plt.subplots()
+        plt.plot(age_per_EpS, omega_SS_orig, label="Original Dist'n")
+        plt.plot(age_per_EpS, omega_SSfx, label="Fixed Dist'n")
+        # for the minor ticks, use no labels; default NullFormatter
+        minorLocator   = MultipleLocator(1)
+        ax.xaxis.set_minor_locator(minorLocator)
+        plt.grid(b=True, which='major', color='0.65',linestyle='-')
+        plt.title(
+            'Original steady-state population distribution vs. fixed',
+            fontsize=20)
+        plt.xlabel(r'Age $s$')
+        plt.ylabel(r"Pop. dist'n $\omega_{s}$")
+        plt.xlim((0, E+S+1))
+        plt.legend(loc='upper right')
+        # Create directory if OUTPUT directory does not already exist
+        '''
+        ----------------------------------------------------------------
+        output_fldr = string, path of the OUTPUT folder from cur_path
+        output_dir  = string, total path of OUTPUT folder
+        output_path = string, path of file name of figure to be saved
+        ----------------------------------------------------------------
+        '''
+        cur_path = os.path.split(os.path.abspath(__file__))[0]
+        output_fldr = "OUTPUT/Demographics"
+        output_dir = os.path.join(cur_path, output_fldr)
+        if os.access(output_dir, os.F_OK) == False:
+            os.makedirs(output_dir)
+        output_path = os.path.join(output_dir, "OrigVsFixSSpop")
+        plt.savefig(output_path)
+        plt.show()
+
+        # Print whether or not the adjusted immigration rates solved the
+        # zero condition
+        immtol_solved = \
+            np.absolute(imm_diagdict['fvec'].max()) < imm_tol
+        if immtol_solved == True:
+            print("POP. SUCCESS: Adjusted immigration rates solved " +
+                  "with maximum absolute error of " +
+                  str(np.absolute(imm_diagdict['fvec'].max())) +
+                  ", which is less than the tolerance of " +
+                  str(imm_tol))
+        else:
+            print("POP. WARNING: Adjusted immigration rates did not " +
+                  "solve. Maximum absolute error of " +
+                  str(np.absolute(imm_diagdict['fvec'].max())) +
+                  " is greater than the tolerance of " + str(imm_tol))
+
+        # Test whether the steady-state growth rates implied by the
+        # adjusted OMEGA matrix equals the steady-state growth rate of
+        # the original OMEGA matrix
+        OMEGA2 = np.zeros((E+S, E+S))
+        OMEGA2[0, :] = ((1 - infmort_rate) * fert_rates +
+                       np.hstack((imm_rates_adj[0], np.zeros(E+S-1))))
+        OMEGA2[1:, :-1] += np.diag(1-mort_rates[:-1])
+        OMEGA2[1:, 1:] += np.diag(imm_rates_adj[1:])
+        eigvalues2, eigvectors2 = np.linalg.eig(OMEGA2)
+        g_n_SS_adj = (eigvalues[np.isreal(eigvalues2)].real).max() - 1
+        if np.max(np.absolute(g_n_SS_adj - g_n_SS)) > 10 ** (-8):
+            print("FAILURE: The steady-state population growth rate" +
+                  " from adjusted OMEGA is different (diff is " +
+                  str(g_n_SS_adj - g_n_SS)  + ") than the steady-" +
+                  "state population growth rate from the original" +
+                  " OMEGA.")
+        elif np.max(np.absolute(g_n_SS_adj - g_n_SS)) <= 10 ** (-8):
+            print("SUCCESS: The steady-state population growth rate" +
+                  " from adjusted OMEGA is close to (diff is " +
+                  str(g_n_SS_adj - g_n_SS)  + ") the steady-" +
+                  "state population growth rate from the original" +
+                  " OMEGA.")
+
+        # Do another test of the adjusted immigration rates. Create the
+        # new OMEGA matrix implied by the new immigration rates. Plug in
+        # the adjusted steady-state population distribution. Hit is with
+        # the new OMEGA transition matrix and it should return the new
+        # steady-state population distribution
+        omega_new = np.dot(OMEGA2, omega_SSfx)
+        omega_errs = np.absolute(omega_new - omega_SSfx)
+        print("The maximum absolute difference between the adjusted " +
+              "steady-state population distribution and the " +
+              "distribution generated by hitting the adjusted OMEGA " +
+              "transition matrix is " + str(omega_errs.max()))
+
+        # Plot the original immigration rates versus the adjusted
+        # immigration rates
+        immratesmaxdiff = \
+            np.absolute(imm_rates_orig - imm_rates_adj).max()
+        print ("The maximum absolute distance between any two points " +
+               "of the original immigration rates and adjusted " +
+               "immigration rates is " + str(immratesmaxdiff))
+        fig, ax = plt.subplots()
+        plt.plot(age_per_EpS, imm_rates_orig, label="Original Imm. Rates")
+        plt.plot(age_per_EpS, imm_rates_adj, label="Adj. Imm. Rates")
+        # for the minor ticks, use no labels; default NullFormatter
+        minorLocator   = MultipleLocator(1)
+        ax.xaxis.set_minor_locator(minorLocator)
+        plt.grid(b=True, which='major', color='0.65',linestyle='-')
+        plt.title(
+            'Original immigration rates vs. adjusted',
+            fontsize=20)
+        plt.xlabel(r'Age $s$')
+        plt.ylabel(r"Imm. rates $i_{s}$")
+        plt.xlim((0, E+S+1))
+        plt.legend(loc='upper center')
+        # Create directory if OUTPUT directory does not already exist
+        output_path = os.path.join(output_dir, "OrigVsAdjImm")
+        plt.savefig(output_path)
+        plt.show()
+
+        # Plot population distributions for data_year, curr_year,
+        # curr_year+20, omega_SSfx, and omega_SS_orig
+        fig, ax = plt.subplots()
+        plt.plot(age_per_EpS, pop_2013_pct, label="2013 pop.")
+        plt.plot(age_per_EpS,
+            (omega_path_lev[:, 0] / omega_path_lev[:, 0].sum()),
+            label=str(curr_year)+" pop.")
+        plt.plot(age_per_EpS, (omega_path_lev[:, int(0.5 * S)] /
+            omega_path_lev[:, int(0.5 * S)].sum()),
+            label="T="+str(int(0.5 * S))+" pop.")
+        plt.plot(age_per_EpS, (omega_path_lev[:, int(S)] /
+            omega_path_lev[:, int(S)].sum()),
+            label="T="+str(int(S))+" pop.")
+        plt.plot(age_per_EpS, omega_SSfx, label="Adj. SS pop.")
+        # for the minor ticks, use no labels; default NullFormatter
+        minorLocator   = MultipleLocator(1)
+        ax.xaxis.set_minor_locator(minorLocator)
+        plt.grid(b=True, which='major', color='0.65',linestyle='-')
+        plt.title(
+            'Population distribution at points in time path',
+            fontsize=20)
+        plt.xlabel(r'Age $s$')
+        plt.ylabel(r"Pop. dist'n $\omega_{s}$")
+        plt.xlim((0, E+S+1))
+        plt.legend(loc='lower left')
+        # Create directory if OUTPUT directory does not already exist
+        output_path = os.path.join(output_dir, "PopDistPath")
+        plt.savefig(output_path)
+        plt.show()
+
+    # return omega_path_S, g_n_SS, omega_SSfx, survival rates,
+    # mort_rates_S, and g_n_path
+    return (omega_path_S.T, g_n_SS,
+        omega_SSfx[-S:] / omega_SSfx[-S:].sum(), 1-mort_rates_S,
+        mort_rates_S, g_n_path, imm_rates_mat)
