@@ -140,21 +140,27 @@ def get_I(b_splus1, K_p1, K, params):
     '''
     delta, g_y, omega, lambdas, imm_rates, g_n = params
 
-    aggI = ((1. + g_n) * np.exp(g_y)) * K_p1 - (1.0 - delta) * K
+    #1)
+    #aggI = ((1. + g_n) * np.exp(g_y)) * K_p1 - (1.0 - delta) * K
 
-    # aggI = ((((1.0 + g_n) * np.exp(g_y)) * Knext) - (1.0 - delta) * (Know + 
+    #2)
+    # aggI = ((((1.0 + g_n) * np.exp(g_y)) * K_p1) - (1.0 - delta) * (K + 
     #         ((1./(1+g_n))*(((lambdas*b_splus1)*(imm_rates*omega).reshape((np.shape(omega)[0],1))).sum()))))
 
+    #3)
     # part1 = (lambdas*b_splus1)*omega.reshape((np.shape(omega)[0],1))
     # imm_mask = imm_rates<0.0
     # part2 = (lambdas*b_splus1)*(imm_rates*omega*imm_mask).reshape((np.shape(omega)[0],1))
-    # aggI =   np.exp(g_y)*(part1 - part2).sum() - (1.0 - delta) * Know
+    # aggI =   np.exp(g_y)*(part1 - part2).sum() - (1.0 - delta) * K
 
+    #4)
+    part2 = (((lambdas*b_splus1)*(omega.reshape((omega.shape[0],))*imm_rates).reshape((np.shape(omega)[0],1))).sum())/(1+g_n)
+    aggI =   (1+g_n)*np.exp(g_y)*(K_p1 -  part2).sum() - (1.0 - delta) * K
+
+    #5)
     # part2 = (((lambdas*b_splus1)*(omega.reshape((omega.shape[0],))*imm_rates).reshape((np.shape(omega)[0],1))).sum())/(1+g_n)
-    # aggI =   (1+g_n)*np.exp(g_y)*(K_p1 -  part2).sum() - (1.0 - delta) * K
+    # aggI =   np.exp(g_y)*((1+g_n)*K_p1 -  part2).sum() - (1.0 - delta) * K
     
-
-    #aggI = (((1.0 + g_n) * np.exp(g_y)) * Knext - (1.0 - delta) * (Know))
 
     print 'imm rates:', imm_rates
     print 'pop growth: ', g_n

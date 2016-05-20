@@ -756,6 +756,14 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, baseline=
 
     maxiter, mindist_SS = iterative_params
 
+    # omega_diffs = omega_SS[1:] - (1/(1+g_n_ss))*(1-rho[:-1])*omega_SS[:-1] - (1/(1+g_n_ss))*imm_rates[1:]*omega_SS[1:]
+    # # omega_diffs = (omega_SS[1:] - 
+    # #     (1/(1+np.tile(np.reshape(g_n_ss[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(mort_rates_S[:-1],(S-1,1)),(1,T+S-1)))*omega_path_S[:-1,:-1] - 
+    # #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*imm_rates_mat[1:,:-1]*omega_path_S[1:,:-1])
+    # print omega_diffs
+    # quit()
+
+
     # First run SS simulation with guesses at initial values for b, n, w, r, etc
     # For inital guesses of b and n, we choose very small b, and medium n
     b_guess = np.ones((S, J)).flatten() * 0.05

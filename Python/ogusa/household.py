@@ -42,13 +42,21 @@ def get_K(b, params):
     Returns: K
     '''
 
+
     omega, lambdas, imm_rates, g_n, method = params 
 
-    #part1 = b * omega * lambdas
-    #part2 = (lambdas*b)*(omega.reshape((omega.shape[0],))*imm_rates).reshape((np.shape(omega)[0],1))
-    #K_presum = part1+part2
+    #1)
+    # part1 = b[:-1,:] * omega[:-1,:] * lambdas
+    # part2 = (lambdas*b[:-1,:])*(omega[1:].reshape((omega[1:].shape[0],))*imm_rates[1:]).reshape((np.shape(omega[1:])[0],1))
+    # K_presum = part1+part2
 
-    K_presum = b * omega * lambdas
+    #2)
+    # part1 = b[:,:] * omega[:,:] * lambdas
+    # part2 = (lambdas*b[:,:])*(omega[:].reshape((omega[:].shape[0],))*imm_rates[:]).reshape((np.shape(omega[:])[0],1))
+    # K_presum = part1+part2
+
+    #3)
+    #K_presum = b * omega * lambdas
     if method == 'SS':
         K = K_presum.sum()
     elif method == 'TPI':

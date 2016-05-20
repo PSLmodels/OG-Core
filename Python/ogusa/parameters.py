@@ -515,6 +515,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
    # Generate Income and Demographic parameters
     omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates = get_pop_objs(
         E, S, T, 1, 100, 2016, flag_graphs)
+
     # print 'Differences:'
     # print 'omega diffs: ', (np.absolute(omega-omega2)).max()
     # print 'g_n', g_n_ss, g_n_ss2
@@ -524,14 +525,15 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     # print 'g_n_TP diffs: ', (np.absolute(g_n_vector- g_n_vector2)).max()
     # quit()
     #print 'omega_SS shape: ', omega_SS.shape
-    g_n_ss = 0.0
-    surv_rate1 = np.ones((S,))# prob start at age S
-    surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
-    omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
-    omega_SS = omega_SS/omega_SS.sum()
+    # g_n_ss = 0.0
+    # surv_rate1 = np.ones((S,))# prob start at age S
+    # surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
+    # omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
+    # omega_SS = omega_SS/omega_SS.sum()
+    # imm_rates = np.zeros((S,1))
 
-    omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
-    g_n_vector = np.tile(g_n_ss,(T+S,))
+    # omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
+    # g_n_vector = np.tile(g_n_ss,(T+S,))
 
 
     e_hetero = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
