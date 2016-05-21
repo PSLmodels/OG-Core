@@ -56,7 +56,7 @@ def get_K(b, params):
     # K_presum = part1+part2
 
     #3)
-    #K_presum = b * omega * lambdas
+    K_presum = b * omega * lambdas
     if method == 'SS':
         K = K_presum.sum()
     elif method == 'TPI':

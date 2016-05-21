@@ -773,26 +773,28 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     g_n_path[1:] = ((omega_path_lev[-S:, 1:].sum(axis=0) -
                     omega_path_lev[-S:, :-1].sum(axis=0)) /
                     omega_path_lev[-S:, :-1].sum(axis=0))
-    g_n_path[fixper:] = g_n_SS
+    g_n_path[fixper+1:] = g_n_SS
+
 
     imm_rates_mat = np.hstack((
         np.tile(np.reshape(imm_rates_orig[E:],(S,1)), (1, fixper)),
         np.tile(np.reshape(imm_rates_adj[E:],(S,1)), (1, T+S-fixper))))
 
-    omega_diffs_orig = (omega_path_S[1:,1:] - 
-        (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(mort_rates_S[:-1],(S-1,1)),(1,T+S-1)))*omega_path_S[:-1,:-1] - 
-        (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*np.tile(np.reshape(imm_rates_orig[E+1:],(S-1,1)),(1,T+S-1))*omega_path_S[1:,:-1])
-    omega_diffs_adj = (omega_path_S[1:,1:] - 
-        (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(mort_rates_S[:-1],(S-1,1)),(1,T+S-1)))*omega_path_S[:-1,:-1] - 
-        (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*np.tile(np.reshape(imm_rates_adj[E+1:],(S-1,1)),(1,T+S-1))*omega_path_S[1:,:-1])
-    omega_diffs_mixed = (omega_path_S[1:,1:] - 
-        (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(mort_rates_S[:-1],(S-1,1)),(1,T+S-1)))*omega_path_S[:-1,:-1] - 
-        (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*imm_rates_mat[1:,:-1]*omega_path_S[1:,:-1])
-    np.savetxt('omega_diffs_orig.csv', omega_diffs_orig, delimiter=',')
-    np.savetxt('omega_diffs_adj.csv', omega_diffs_adj, delimiter=',')
-    np.savetxt('omega_diffs_mixed.csv', omega_diffs_mixed, delimiter=',')
+    # omega_diffs_orig = (omega_path_S[1:,1:] - 
+    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(mort_rates_S[:-1],(S-1,1)),(1,T+S-1)))*omega_path_S[:-1,:-1] - 
+    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*np.tile(np.reshape(imm_rates_orig[E+1:],(S-1,1)),(1,T+S-1))*omega_path_S[1:,:-1])
+    # omega_diffs_adj = (omega_path_S[1:,1:] - 
+    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(mort_rates_S[:-1],(S-1,1)),(1,T+S-1)))*omega_path_S[:-1,:-1] - 
+    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*np.tile(np.reshape(imm_rates_adj[E+1:],(S-1,1)),(1,T+S-1))*omega_path_S[1:,:-1])
+    # omega_diffs_mixed = (omega_path_S[1:,1:] - 
+    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(mort_rates_S[:-1],(S-1,1)),(1,T+S-1)))*omega_path_S[:-1,:-1] - 
+    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*imm_rates_mat[1:,:-1]*omega_path_S[1:,:-1])
+    # np.savetxt('omega_diffs_orig.csv', omega_diffs_orig, delimiter=',')
+    # np.savetxt('omega_diffs_adj.csv', omega_diffs_adj, delimiter=',')
+    # np.savetxt('omega_diffs_mixed.csv', omega_diffs_mixed, delimiter=',')
 
-    
+
+
 
     if GraphDiag == True:
         # Check whether original SS population distribution is close to
