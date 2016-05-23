@@ -19,6 +19,7 @@ import os
 import json
 import numpy as np
 from demographics import get_pop_objs
+from demographics_old import get_omega
 from income import get_e
 import pickle
 import txfunc
@@ -515,7 +516,10 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
    # Generate Income and Demographic parameters
     omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates = get_pop_objs(
         E, S, T, 1, 100, 2016, flag_graphs)
-
+    # print 'check1: ', imm_rates.min()
+    #omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates = get_omega(S, T, starting_age, ending_age, E, flag_graphs)
+    # print 'check2: ', imm_rates.min()
+    # quit()
     # print 'Differences:'
     # print 'omega diffs: ', (np.absolute(omega-omega2)).max()
     # print 'g_n', g_n_ss, g_n_ss2
