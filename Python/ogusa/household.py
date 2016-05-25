@@ -51,11 +51,6 @@ def get_K(b, params):
     # K_presum = part1+part2
 
     #2)
-    part1 = b[:,:] * omega[:,:] * lambdas
-    omega_extended = np.append(omega[1:,:],np.zeros((1,1)),axis=0)
-    imm_extended = np.append(imm_rates[1:],[0.0])
-    part2 = (lambdas*b[:,:])*(omega_extended[:].reshape((omega[:].shape[0],))*imm_extended[:]).reshape((np.shape(omega[:])[0],1))
-    K_presum = part1+part2
 
     # part1 = b[:,:] * omega[:,:] * lambdas
     # b_extended = np.append(np.zeros((1,7)),b[:-1,:],axis=0)
@@ -71,8 +66,18 @@ def get_K(b, params):
     #3)
     # K_presum = b * omega * lambdas
     if method == 'SS':
+        part1 = b* omega * lambdas
+        omega_extended = np.append(omega[1:],[0.0])
+        imm_extended = np.append(imm_rates[1:],[0.0])
+        part2 = b*(omega_extended*imm_extended).reshape(omega.shape[0],1)*lambdas
+        K_presum = part1+part2
         K = K_presum.sum()
     elif method == 'TPI':
+        part1 = b* omega * lambdas
+        omega_extended = np.append(omega[1:,:,:],np.zeros((1,omega.shape[1],omega.shape[2])),axis=0)
+        imm_extended = np.append(imm_rates[1:,:,:],np.zeros((1,imm_rates.shape[1],imm_rates.shape[2])),axis=0)
+        part2 = b*(omega_extended*imm_extended)*lambdas
+        K_presum = part1+part2
         K = K_presum.sum(1).sum(1)
     K /= (1.0 + g_n)
     return K

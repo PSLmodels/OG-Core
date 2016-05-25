@@ -517,7 +517,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates = get_pop_objs(
         E, S, T, 1, 100, 2016, flag_graphs)
     # print 'check1: ', imm_rates.min()
-    #omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates = get_omega(S, T, starting_age, ending_age, E, flag_graphs)
+    # omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates = get_omega(S, T, starting_age, ending_age, E, flag_graphs)
     # print 'check2: ', imm_rates.min()
     # quit()
     # print 'Differences:'

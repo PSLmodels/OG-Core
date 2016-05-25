@@ -968,4 +968,4 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     # mort_rates_S, and g_n_path
     return (omega_path_S.T, g_n_SS,
         omega_SSfx[-S:] / omega_SSfx[-S:].sum(), 1-mort_rates_S,
-        mort_rates_S, g_n_path, imm_rates_mat)
+        mort_rates_S, g_n_path, imm_rates_mat.T)
