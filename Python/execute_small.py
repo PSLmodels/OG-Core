@@ -74,7 +74,7 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
                 'mtry_params','tau_payroll', 'tau_bq',
                 'retire', 'mean_income_data', 'g_n_vector',
                 'h_wealth', 'p_wealth', 'm_wealth',
-                'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'imm_rates', 'e', 'rho']
+                'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'imm_rates', 'e', 'rho', 'omega_S_preTP']
 
     '''
     ------------------------------------------------------------------------
@@ -216,7 +216,7 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
                 'mtry_params','tau_payroll', 'tau_bq',
                 'retire', 'mean_income_data', 'g_n_vector',
                 'h_wealth', 'p_wealth', 'm_wealth',
-                'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'imm_rates', 'e', 'rho']
+                'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'imm_rates', 'e', 'rho', 'omega_S_preTP']
 
 
     '''

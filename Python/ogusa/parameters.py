@@ -485,7 +485,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     PLOT_TPI = False
     maxiter = 250
     mindist_SS = 1e-9
-    mindist_TPI = 2e-5
+    mindist_TPI = 1e-9 #2e-5
     nu = .4
     flag_graphs = False
     #   Calibration parameters
@@ -514,7 +514,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
 
    # Generate Income and Demographic parameters
-    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates = get_pop_objs(
+    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates, omega_S_preTP = get_pop_objs(
         E, S, T, 1, 100, 2016, flag_graphs)
     # print 'check1: ', imm_rates.min()
     # omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates = get_omega(S, T, starting_age, ending_age, E, flag_graphs)
@@ -534,9 +534,10 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     # surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
     # omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
     # omega_SS = omega_SS/omega_SS.sum()
-    # imm_rates = np.zeros((S,1))
+    # imm_rates = np.zeros((T+S,S))
 
     # omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
+    # omega_S_preTP = omega_SS
     # g_n_vector = np.tile(g_n_ss,(T+S,))
 
 

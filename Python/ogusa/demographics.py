@@ -738,6 +738,9 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     for per in xrange(0, curr_year-data_year): # Age the data to
                                                # the current year
         pop_next = np.dot(OMEGA_orig, pop_curr)
+        g_n_curr = ((pop_next[-S:].sum() - pop_curr[-S:].sum())/
+                    pop_curr[-S:].sum())
+        pop_past = pop_curr
         pop_curr = pop_next
     curr_dict = {"pop_" + str(curr_year) + "_pct":
                 pop_curr.copy() / pop_curr.sum()}
@@ -770,10 +773,12 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
         np.tile(omega_path_S[:, fixper].reshape((S, 1)),
         (1, T+S-fixper))
     g_n_path = np.zeros(T+S)
+    g_n_path[0] = g_n_curr.copy()
     g_n_path[1:] = ((omega_path_lev[-S:, 1:].sum(axis=0) -
                     omega_path_lev[-S:, :-1].sum(axis=0)) /
                     omega_path_lev[-S:, :-1].sum(axis=0))
     g_n_path[fixper+1:] = g_n_SS
+    omega_S_preTP = (pop_past.copy()[-S:])/(pop_past.copy()[-S:].sum())
 
 
     imm_rates_mat = np.hstack((
@@ -968,4 +973,4 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     # mort_rates_S, and g_n_path
     return (omega_path_S.T, g_n_SS,
         omega_SSfx[-S:] / omega_SSfx[-S:].sum(), 1-mort_rates_S,
-        mort_rates_S, g_n_path, imm_rates_mat.T)
+        mort_rates_S, g_n_path, imm_rates_mat.T, omega_S_preTP)

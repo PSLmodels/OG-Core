@@ -119,7 +119,8 @@ def create_tpi_params(**sim_params):
     '''
     # Get an initial distribution of capital with the initial population
     # distribution
-    K0_params = (omega[0].reshape(S, 1), lambdas, imm_rates[0].reshape(S,1), g_n_vector[0], 'SS')
+    #K0_params = (omega[0].reshape(S, 1), lambdas, np.zeros((S,1)), g_n_vector[0], 'SS')
+    K0_params = (sim_params['omega_S_preTP'].reshape(S, 1), lambdas, imm_rates[0].reshape(S,1), g_n_vector[0], 'SS')
     K0 = household.get_K(initial_b, K0_params)
 
     b_sinit = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_b[:-1]))
@@ -546,13 +547,13 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
         # Solve HH problem in inner loop
         euler_errors, b_mat, n_mat = inner_loop(guesses, outer_loop_vars, inner_loop_params)
 
-
         # if euler_errors.max() > 1e-6:
         #     print 't-loop:', euler_errors.max()
         # Force the initial distribution of capital to be as given above.
-        b_mat[0, :, :] = initial_b
-        K_params = (omega[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T].reshape(T,S,1), g_n_vector[:T], 'TPI')
-        K[:T] = household.get_K(b_mat[:T], K_params)
+        #b_mat[0, :, :] = initial_b
+        K_params = (omega[:T-1].reshape(T-1, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T-1].reshape(T-1,S,1), g_n_vector[1:T], 'TPI')
+        K[0] = K0
+        K[1:T] = household.get_K(b_mat[:T-1], K_params)
         L_params = (e.reshape(1, S, J), omega[:T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI')
         L[:T]  = firm.get_L(n_mat[:T], L_params)
 
@@ -566,8 +567,10 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
                     g_n_vector[:T].reshape(T, 1), 'TPI')
         BQnew = household.get_BQ(rnew[:T].reshape(T, 1), b_mat[:T,:,:], BQ_params)
         bmat_s = np.zeros((T, S, J))
-        bmat_s[:, 1:, :] = b_mat[:T, :-1, :]
+        # bmat_s[:, 1:, :] = b_mat[:T, :-1, :]
+        bmat_s = b_mat[:T,:,:]
         bmat_splus1 = np.zeros((T, S, J))
+        #bmat_splus1[:, :, :] = b_mat[1:T + 1, :, :]
         bmat_splus1[:, :, :] = b_mat[1:T + 1, :, :]
 
         TH_tax_params = np.zeros((T,S,J,etr_params.shape[2]))
@@ -578,6 +581,27 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
                 TH_tax_params, theta, tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
         T_H_new = np.array(list(tax.get_lump_sum(np.tile(rnew[:T].reshape(T, 1, 1),(1,S,J)), np.tile(wnew[:T].reshape(T, 1, 1),(1,S,J)),
                bmat_s, n_mat[:T,:,:], BQnew[:T].reshape(T, 1, J), factor, T_H_params)) + [T_Hss] * S)
+
+        '''
+        Temp code below to do RC at each iteration
+        '''
+        etr_params_path = np.zeros((T,S,J,etr_params.shape[2]))
+        for i in range(etr_params.shape[2]):
+            etr_params_path[:,:,:,i] = np.tile(np.reshape(np.transpose(etr_params[:,:T,i]),(T,S,1)),(1,1,J))
+        tax_path_params = (np.tile(e.reshape(1, S, J),(T,1,1)), lambdas, 'TPI', retire, etr_params_path, h_wealth, 
+                           p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
+        tax_path = tax.total_taxes(np.tile(r[:T].reshape(T, 1, 1),(1,S,J)), np.tile(w[:T].reshape(T, 1, 1),(1,S,J)), bmat_s, 
+                                   n_mat[:T,:,:], BQ[:T, :].reshape(T, 1, J), factor, T_H[:T].reshape(T, 1, 1), None, False, tax_path_params) 
+
+        cons_params = (e.reshape(1, S, J), lambdas.reshape(1, 1, J), g_y)
+        c_path = household.get_cons(r[:T].reshape(T, 1, 1), w[:T].reshape(T, 1, 1), bmat_s, bmat_splus1, n_mat[:T,:,:], 
+                       BQ[:T].reshape(T, 1, J), tax_path, cons_params)
+        C_params = (omega[:T].reshape(T, S, 1), lambdas, 'TPI')
+        C = household.get_C(c_path, C_params)
+        I_params = (delta, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
+        I = firm.get_I(bmat_s, K[1:T+1], K[:T], I_params)
+        print 'Resource Constraint Difference:', Y[:T] - C[:T] - I[:T]
+
 
         w[:T] = utils.convex_combo(wnew[:T], w[:T], nu)
         r[:T] = utils.convex_combo(rnew[:T], r[:T], nu)
@@ -615,11 +639,16 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     outer_loop_vars = (r, w, K, BQ, T_H)
     inner_loop_params = (income_tax_params, tpi_params, initial_values, theta, ind)
     euler_errors, b_mat, n_mat = inner_loop(guesses, outer_loop_vars, inner_loop_params)
-    b_mat[0, :, :] = initial_b
+    #b_mat[0, :, :] = initial_b
 
-    K_params = (omega[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T].reshape(T,S,1), g_n_vector[:T], 'TPI')
-    K[:T] = household.get_K(b_mat[:T], K_params) # this is what old code does, but it's strange - why use 
-    # b_mat -- what is going on with initial period, etc.
+
+    K_params = (omega[:T-1].reshape(T-1, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T-1].reshape(T-1,S,1), g_n_vector[1:T], 'TPI')
+    K[0] = K0
+    K[1:T] = household.get_K(b_mat[:T-1], K_params)
+
+    # K_params = (omega[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T].reshape(T,S,1), g_n_vector[:T], 'TPI')
+    # K[:T] = household.get_K(b_mat[:T], K_params) # this is what old code does, but it's strange - why use 
+    # # b_mat -- what is going on with initial period, etc.
 
     etr_params_path = np.zeros((T,S,J,etr_params.shape[2]))
     for i in range(etr_params.shape[2]):
