@@ -120,7 +120,9 @@ def create_tpi_params(**sim_params):
     # Get an initial distribution of capital with the initial population
     # distribution
     #K0_params = (omega[0].reshape(S, 1), lambdas, np.zeros((S,1)), g_n_vector[0], 'SS')
-    K0_params = (sim_params['omega_S_preTP'].reshape(S, 1), lambdas, imm_rates[0].reshape(S,1), g_n_vector[0], 'SS')
+    K0_params = (omega[0].reshape(S, 1), lambdas, imm_rates[0].reshape(S,1), g_n_vector[0], 'SS')
+    omega_S_preTP = sim_params['omega_S_preTP']
+    #K0_params = (omega_S_preTP.reshape(S, 1), lambdas, imm_rates[0].reshape(S,1), g_n_vector[0], 'SS')
     K0 = household.get_K(initial_b, K0_params)
 
     b_sinit = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_b[:-1]))
@@ -153,7 +155,7 @@ def create_tpi_params(**sim_params):
         1, J), tax0, c0_params)
 
     initial_values = (K0, b_sinit, b_splus1init, L0, Y0,
-            w0, r0, BQ0, T_H_0, factor, tax0, c0, initial_b, initial_n)
+            w0, r0, BQ0, T_H_0, factor, tax0, c0, initial_b, initial_n, omega_S_preTP)
 
     return (income_tax_params, tpi_params, iterative_params, initial_values, SS_values)
 
@@ -377,7 +379,7 @@ def inner_loop(guesses, outer_loop_vars, params):
                   g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,\
                   factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b, chi_n = tpi_params
     K0, b_sinit, b_splus1init, L0, Y0,\
-            w0, r0, BQ0, T_H_0, factor, tax0, c0, initial_b, initial_n = initial_values
+            w0, r0, BQ0, T_H_0, factor, tax0, c0, initial_b, initial_n, omega_S_preTP = initial_values
 
     guesses_b, guesses_n = guesses
     r, w, K, BQ, T_H = outer_loop_vars
@@ -467,7 +469,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
                   g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,\
                   factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b, chi_n = tpi_params
     K0, b_sinit, b_splus1init, L0, Y0,\
-            w0, r0, BQ0, T_H_0, factor, tax0, c0, initial_b, initial_n = initial_values
+            w0, r0, BQ0, T_H_0, factor, tax0, c0, initial_b, initial_n, omega_S_preTP = initial_values
     Kss, Lss, rss, wss, BQss, T_Hss, bssmat_splus1, nssmat = SS_values
 
 
@@ -547,12 +549,14 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
         # Solve HH problem in inner loop
         euler_errors, b_mat, n_mat = inner_loop(guesses, outer_loop_vars, inner_loop_params)
 
+
         # if euler_errors.max() > 1e-6:
         #     print 't-loop:', euler_errors.max()
         # Force the initial distribution of capital to be as given above.
-        #b_mat[0, :, :] = initial_b
+        b_mat[0, :, :] = initial_b
         K_params = (omega[:T-1].reshape(T-1, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T-1].reshape(T-1,S,1), g_n_vector[1:T], 'TPI')
         K[0] = K0
+
         K[1:T] = household.get_K(b_mat[:T-1], K_params)
         L_params = (e.reshape(1, S, J), omega[:T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI')
         L[:T]  = firm.get_L(n_mat[:T], L_params)
@@ -567,10 +571,8 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
                     g_n_vector[:T].reshape(T, 1), 'TPI')
         BQnew = household.get_BQ(rnew[:T].reshape(T, 1), b_mat[:T,:,:], BQ_params)
         bmat_s = np.zeros((T, S, J))
-        # bmat_s[:, 1:, :] = b_mat[:T, :-1, :]
-        bmat_s = b_mat[:T,:,:]
+        bmat_s[:, 1:, :] = b_mat[:T, :-1, :]
         bmat_splus1 = np.zeros((T, S, J))
-        #bmat_splus1[:, :, :] = b_mat[1:T + 1, :, :]
         bmat_splus1[:, :, :] = b_mat[1:T + 1, :, :]
 
         TH_tax_params = np.zeros((T,S,J,etr_params.shape[2]))
@@ -599,7 +601,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
         C_params = (omega[:T].reshape(T, S, 1), lambdas, 'TPI')
         C = household.get_C(c_path, C_params)
         I_params = (delta, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
-        I = firm.get_I(bmat_s, K[1:T+1], K[:T], I_params)
+        I = firm.get_I(bmat_splus1[:T], K[1:T+1], K[:T], I_params)
         print 'Resource Constraint Difference:', Y[:T] - C[:T] - I[:T]
 
 
@@ -639,7 +641,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     outer_loop_vars = (r, w, K, BQ, T_H)
     inner_loop_params = (income_tax_params, tpi_params, initial_values, theta, ind)
     euler_errors, b_mat, n_mat = inner_loop(guesses, outer_loop_vars, inner_loop_params)
-    #b_mat[0, :, :] = initial_b
+    b_mat[0, :, :] = initial_b
 
 
     K_params = (omega[:T-1].reshape(T-1, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T-1].reshape(T-1,S,1), g_n_vector[1:T], 'TPI')
