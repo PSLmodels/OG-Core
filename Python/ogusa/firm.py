@@ -168,9 +168,11 @@ def get_I(b_splus1, K_p1, K, params):
         part2 = (((b_splus1*(omega_extended*imm_extended).reshape(omega.shape[0],1))*lambdas).sum())/(1+g_n)
         aggI =   (1+g_n)*np.exp(g_y)*(K_p1 -  part2) - (1.0 - delta) * K
     elif method == 'TPI':
-        omega_extended = np.append(omega[1:,:,:],np.zeros((1,omega.shape[1],omega.shape[2])),axis=0)
-        imm_extended = np.append(imm_rates[1:,:,:],np.zeros((1,imm_rates.shape[1],imm_rates.shape[2])),axis=0)
-        part2 = ((b_splus1*omega_extended*imm_extended*lambdas).sum(1).sum(1))/(1+g_n)
+        # omega_extended = np.append(omega[1:,:,:],np.zeros((1,omega.shape[1],omega.shape[2])),axis=0)
+        # imm_extended = np.append(imm_rates[1:,:,:],np.zeros((1,imm_rates.shape[1],imm_rates.shape[2])),axis=0)
+        # part2 = ((b_splus1*omega_extended*imm_extended*lambdas).sum(1).sum(1))/(1+g_n)
+        omega_shift = np.append(omega[:,1:,:],np.zeros((omega.shape[0],1,omega.shape[2])),axis=1)
+        part2 = ((b_splus1*imm_rates*omega_shift*lambdas).sum(1).sum(1))/(1+g_n)
         aggI =   (1+g_n)*np.exp(g_y)*(K_p1 -  part2) - (1.0 - delta) * K
 
     # omega_extended = np.append(omega[1:],[0.0])
