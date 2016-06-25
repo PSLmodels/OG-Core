@@ -74,11 +74,12 @@ def get_K(b, params):
         K = K_presum.sum()
     elif method == 'TPI':
         part1 = b* omega * lambdas
-        # omega_extended = np.append(omega[1:,:,:],np.zeros((1,omega.shape[1],omega.shape[2])),axis=0)
+        #omega_extended = np.append(omega[1:,:,:],np.zeros((1,omega.shape[1],omega.shape[2])),axis=0)
         omega_shift = np.append(omega[:,1:,:],np.zeros((omega.shape[0],1,omega.shape[2])),axis=1)
-        # imm_extended = np.append(imm_rates[1:,:,:],np.zeros((1,imm_rates.shape[1],imm_rates.shape[2])),axis=0)
-        # part2 = b*(omega_extended*imm_extended)*lambdas
-        part2 = b*imm_rates*omega_shift*lambdas
+        #imm_extended = np.append(imm_rates[1:,:,:],np.zeros((1,imm_rates.shape[1],imm_rates.shape[2])),axis=0)
+        imm_shift = np.append(imm_rates[:,1:,:],np.zeros((imm_rates.shape[0],1,imm_rates.shape[2])),axis=1)
+        #part2 = b*(omega_extended*imm_extended)*lambdas
+        part2 = b*imm_shift*omega_shift*lambdas
         K_presum = part1+part2
         K = K_presum.sum(1).sum(1)
     K /= (1.0 + g_n)

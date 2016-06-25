@@ -461,7 +461,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     mtry_params[:,:,5] = 1.0
 
 
-    # make etrs and mtrs constnat over time
+    # make etrs and mtrs constant over time
     # etr_params[:,:,7] = dict_params['tfunc_avg_etr'][0]
     # mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx'][0]
     # mtry_params[:,:,7] = dict_params['tfunc_avg_mtry'][0]

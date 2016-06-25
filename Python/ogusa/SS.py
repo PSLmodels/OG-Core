@@ -600,13 +600,10 @@ def SS_fsolve(guesses, params):
 
     # Solve for the steady state levels of b and n, given w, r, T_H and
     # factor
-
     outer_loop_vars = (bssmat, nssmat, r, w, T_H, factor)
     inner_loop_params = (ss_params, income_tax_params, chi_params)
-
     euler_errors, bssmat, nssmat, new_r, new_w, \
          new_T_H, new_factor, new_BQ, average_income_model = inner_loop(outer_loop_vars, inner_loop_params)
-
 
     error1 = new_w - w
     error2 = new_r - r
