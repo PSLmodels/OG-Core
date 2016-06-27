@@ -548,6 +548,19 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     # omega_S_preTP = omega_SS
     # g_n_vector = np.tile(g_n_ss,(T+S,))
 
+    # Check demographics
+    # print 'shape g_n', g_n_vector.shape
+    # print 'shape rho: ', rho.shape
+    # print 'shape omega: ', omega.shape
+    # print 'shape imm_rates: ', imm_rates.shape
+    # omega_diffs_mixed = (omega.T[1:,1:] - 
+    #     (1/(1+np.tile(np.reshape(g_n_vector[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(rho[:-1],(S-1,1)),(1,T+S-1)))*omega.T[:-1,:-1] - 
+    #     (1/(1+np.tile(np.reshape(g_n_vector[1:],(1,T+S-1)),(S-1,1))))*imm_rates.T[1:,:-1]*omega.T[1:,:-1])
+    # np.savetxt('omega_diffs_mixed.csv', omega_diffs_mixed, delimiter=',')
+    # initial_diff = omega.T[1:,0] - (1/(1+g_n_vector[0]))*(1-rho[:-1])*omega_S_preTP[:-1] - (1/(1+g_n_vector[0]))*imm_rates.T[1:,0]*omega_S_preTP[1:]
+    # print 'initial pop diff: ', initial_diff
+    
+
 
     e_hetero = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
     e = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))
