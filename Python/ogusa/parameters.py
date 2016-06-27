@@ -560,7 +560,9 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     # initial_diff = omega.T[1:,0] - (1/(1+g_n_vector[0]))*(1-rho[:-1])*omega_S_preTP[:-1] - (1/(1+g_n_vector[0]))*imm_rates.T[1:,0]*omega_S_preTP[1:]
     # print 'initial pop diff: ', initial_diff
     
-
+    print 'omega sizes:', omega_SS.shape, omega.shape
+    print 'check omega: ', omega_SS[-S:] - omega[T,-S:]
+    quit()
 
     e_hetero = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
     e = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))

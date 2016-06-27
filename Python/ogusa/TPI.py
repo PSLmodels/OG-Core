@@ -646,25 +646,25 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
         T_H_new = np.array(list(tax.get_lump_sum(np.tile(rnew[:T].reshape(T, 1, 1),(1,S,J)), np.tile(wnew[:T].reshape(T, 1, 1),(1,S,J)),
                bmat_s, n_mat[:T,:,:], BQnew[:T].reshape(T, 1, J), factor, T_H_params)) + [T_Hss] * S)
 
-        '''
-        Temp code below to do RC at each iteration
-        '''
-        etr_params_path = np.zeros((T,S,J,etr_params.shape[2]))
-        for i in range(etr_params.shape[2]):
-            etr_params_path[:,:,:,i] = np.tile(np.reshape(np.transpose(etr_params[:,:T,i]),(T,S,1)),(1,1,J))
-        tax_path_params = (np.tile(e.reshape(1, S, J),(T,1,1)), lambdas, 'TPI', retire, etr_params_path, h_wealth, 
-                           p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
-        tax_path = tax.total_taxes(np.tile(r[:T].reshape(T, 1, 1),(1,S,J)), np.tile(w[:T].reshape(T, 1, 1),(1,S,J)), bmat_s, 
-                                   n_mat[:T,:,:], BQ[:T, :].reshape(T, 1, J), factor, T_H[:T].reshape(T, 1, 1), None, False, tax_path_params) 
+        # '''
+        # Temp code below to do RC at each iteration
+        # '''
+        # etr_params_path = np.zeros((T,S,J,etr_params.shape[2]))
+        # for i in range(etr_params.shape[2]):
+        #     etr_params_path[:,:,:,i] = np.tile(np.reshape(np.transpose(etr_params[:,:T,i]),(T,S,1)),(1,1,J))
+        # tax_path_params = (np.tile(e.reshape(1, S, J),(T,1,1)), lambdas, 'TPI', retire, etr_params_path, h_wealth, 
+        #                    p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
+        # tax_path = tax.total_taxes(np.tile(r[:T].reshape(T, 1, 1),(1,S,J)), np.tile(w[:T].reshape(T, 1, 1),(1,S,J)), bmat_s, 
+        #                            n_mat[:T,:,:], BQ[:T, :].reshape(T, 1, J), factor, T_H[:T].reshape(T, 1, 1), None, False, tax_path_params) 
 
-        cons_params = (e.reshape(1, S, J), lambdas.reshape(1, 1, J), g_y)
-        c_path = household.get_cons(r[:T].reshape(T, 1, 1), w[:T].reshape(T, 1, 1), bmat_s, bmat_splus1, n_mat[:T,:,:], 
-                       BQ[:T].reshape(T, 1, J), tax_path, cons_params)
-        C_params = (omega[:T].reshape(T, S, 1), lambdas, 'TPI')
-        C = household.get_C(c_path, C_params)
-        I_params = (delta, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
-        I = firm.get_I(bmat_splus1[:T], K[1:T+1], K[:T], I_params)
-        print 'Resource Constraint Difference:', Y[:T] - C[:T] - I[:T]
+        # cons_params = (e.reshape(1, S, J), lambdas.reshape(1, 1, J), g_y)
+        # c_path = household.get_cons(r[:T].reshape(T, 1, 1), w[:T].reshape(T, 1, 1), bmat_s, bmat_splus1, n_mat[:T,:,:], 
+        #                BQ[:T].reshape(T, 1, J), tax_path, cons_params)
+        # C_params = (omega[:T].reshape(T, S, 1), lambdas, 'TPI')
+        # C = household.get_C(c_path, C_params)
+        # I_params = (delta, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
+        # I = firm.get_I(bmat_splus1[:T], K[1:T+1], K[:T], I_params)
+        # print 'Resource Constraint Difference:', Y[:T] - C[:T] - I[:T]
 
 
         w[:T] = utils.convex_combo(wnew[:T], w[:T], nu)
