@@ -446,7 +446,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     # mtrx_params = dict_params['tfunc_mtrx_params_S'][:S,:BW,:]
     # mtry_params = dict_params['tfunc_mtry_params_S'][:S,:BW,:]
 
-    # set etrs and mtrs to constant rates over income/age
+    # set etrs and mtrs to constant rates over income/age by uncommenting following code block
     etr_params = np.zeros((S,BW,10))
     mtrx_params = np.zeros((S,BW,10))
     mtry_params = np.zeros((S,BW,10))
@@ -461,7 +461,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     mtry_params[:,:,5] = 1.0
 
 
-    # make etrs and mtrs constant over time
+    # make etrs and mtrs constant over time, uncomment following code block
     # etr_params[:,:,7] = dict_params['tfunc_avg_etr'][0]
     # mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx'][0]
     # mtry_params[:,:,7] = dict_params['tfunc_avg_mtry'][0]
@@ -524,45 +524,19 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
    # Generate Income and Demographic parameters
     omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates, omega_S_preTP = get_pop_objs(
         E, S, T, 1, 100, 2016, flag_graphs)
-    # print 'check1: ', imm_rates.min()
-    # omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates = get_omega(S, T, starting_age, ending_age, E, flag_graphs)
-    # print 'check2: ', imm_rates.min()
-    # quit()
-    # print 'Differences:'
-    # print 'omega diffs: ', (np.absolute(omega-omega2)).max()
-    # print 'g_n', g_n_ss, g_n_ss2
-    # print 'omega SS diffs: ', (np.absolute(omega_SS-omega_SS2)).max()
-    # print 'surv diffs: ', (np.absolute(surv_rate- surv_rate2)).max()
-    # print 'mort diffs: ', (np.absolute(rho- rho2)).max()
-    # print 'g_n_TP diffs: ', (np.absolute(g_n_vector- g_n_vector2)).max()
-    # quit()
-    #print 'omega_SS shape: ', omega_SS.shape
+
+    ## To shut off demographics, uncomment the following 9 lines of code
     # g_n_ss = 0.0
     # surv_rate1 = np.ones((S,))# prob start at age S
     # surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
     # omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
     # omega_SS = omega_SS/omega_SS.sum()
     # imm_rates = np.zeros((T+S,S))
-
     # omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
     # omega_S_preTP = omega_SS
     # g_n_vector = np.tile(g_n_ss,(T+S,))
 
-    # Check demographics
-    # print 'shape g_n', g_n_vector.shape
-    # print 'shape rho: ', rho.shape
-    # print 'shape omega: ', omega.shape
-    # print 'shape imm_rates: ', imm_rates.shape
-    # omega_diffs_mixed = (omega.T[1:,1:] - 
-    #     (1/(1+np.tile(np.reshape(g_n_vector[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(rho[:-1],(S-1,1)),(1,T+S-1)))*omega.T[:-1,:-1] - 
-    #     (1/(1+np.tile(np.reshape(g_n_vector[1:],(1,T+S-1)),(S-1,1))))*imm_rates.T[1:,:-1]*omega.T[1:,:-1])
-    # np.savetxt('omega_diffs_mixed.csv', omega_diffs_mixed, delimiter=',')
-    # initial_diff = omega.T[1:,0] - (1/(1+g_n_vector[0]))*(1-rho[:-1])*omega_S_preTP[:-1] - (1/(1+g_n_vector[0]))*imm_rates.T[1:,0]*omega_S_preTP[1:]
-    # print 'initial pop diff: ', initial_diff
-    
-    print 'omega sizes:', omega_SS.shape, omega.shape
-    print 'check omega: ', omega_SS[-S:] - omega[T,-S:]
-    quit()
+
 
     e_hetero = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
     e = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))
