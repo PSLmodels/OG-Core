@@ -398,7 +398,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     # Model Parameters
     S = int(80)
     J = int(7)
-    T = int(4 * S)
+    T = int(3 * S)
     BW = int(10)
     lambdas = np.array([.25, .25, .2, .1, .1, .09, .01])
     starting_age = 20

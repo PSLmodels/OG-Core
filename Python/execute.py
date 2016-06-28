@@ -115,6 +115,7 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
     ------------------------------------------------------------------------
     '''
 
+    sim_params['baseline'] = baseline
     sim_params['input_dir'] = output_base
     sim_params['baseline_dir'] = baseline_dir
 

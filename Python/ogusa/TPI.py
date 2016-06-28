@@ -68,9 +68,17 @@ def create_tpi_params(**sim_params):
     initial_b = ss_baseline_vars['bssmat_splus1']
     initial_n = ss_baseline_vars['nssmat']
 
-    SS_values = (ss_baseline_vars['Kss'],ss_baseline_vars['Lss'], ss_baseline_vars['rss'], 
+    if sim_params['baseline']==True:
+        SS_values = (ss_baseline_vars['Kss'],ss_baseline_vars['Lss'], ss_baseline_vars['rss'], 
                  ss_baseline_vars['wss'], ss_baseline_vars['BQss'], ss_baseline_vars['T_Hss'],
                  ss_baseline_vars['bssmat_splus1'], ss_baseline_vars['nssmat'])
+    elif sim_params['baseline']==False:
+        reform_ss = os.path.join(sim_params['input_dir'], "SS/SS_vars.pkl")
+        ss_reform_vars = pickle.load(open(reform_ss, "rb"))
+        SS_values = (ss_reform_vars['Kss'],ss_reform_vars['Lss'], ss_reform_vars['rss'], 
+                 ss_reform_vars['wss'], ss_reform_vars['BQss'], ss_reform_vars['T_Hss'],
+                 ss_reform_vars['bssmat_splus1'], ss_reform_vars['nssmat'])
+
 
     # Make a vector of all one dimensional parameters, to be used in the
     # following functions

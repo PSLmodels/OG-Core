@@ -63,20 +63,20 @@ def run_micro_macro(user_params):
     runner_SS(**kwargs)
 
 
-    '''
-    ------------------------------------------------------------------------
-        Run baseline
-    ------------------------------------------------------------------------
-    '''
-    output_base = BASELINE_DIR
-    input_dir = BASELINE_DIR
-    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'baseline':True, 'analytical_mtrs':False, 'age_specific':False,
-            'user_params':user_params,'guid':'38_mtr',
-            'run_micro':False}
-    #p1 = Process(target=runner, kwargs=kwargs)
-    #p1.start()
-    runner(**kwargs)
+    # '''
+    # ------------------------------------------------------------------------
+    #     Run baseline
+    # ------------------------------------------------------------------------
+    # '''
+    # output_base = BASELINE_DIR
+    # input_dir = BASELINE_DIR
+    # kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
+    #         'baseline':True, 'analytical_mtrs':False, 'age_specific':False,
+    #         'user_params':user_params,'guid':'38_mtr',
+    #         'run_micro':False}
+    # #p1 = Process(target=runner, kwargs=kwargs)
+    # #p1.start()
+    # runner(**kwargs)
 
     '''
     ------------------------------------------------------------------------
