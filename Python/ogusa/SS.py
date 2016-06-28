@@ -543,7 +543,7 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, fs
     ------------------------------------------------------------------------
     '''
 
-    output = {'Kss': Kss, 'bssmat': bssmat, 'Lss': Lss, 'Css':Css, 'nssmat': nssmat, 'Yss': Yss,
+    output = {'Kss': Kss, 'bssmat': bssmat, 'Lss': Lss, 'Css':Css, 'Iss':Iss, 'nssmat': nssmat, 'Yss': Yss,
               'wss': wss, 'rss': rss, 'theta': theta, 'BQss': BQss, 'factor_ss': factor_ss,
               'bssmat_s': bssmat_s, 'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
               'T_Hss': T_Hss, 'euler_savings': euler_savings,
