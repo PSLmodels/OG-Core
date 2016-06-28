@@ -351,7 +351,7 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     chi_n_guess = np.array([5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
     # Generate Income and Demographic parameters
-    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_mat_adj = get_pop_objs(
+    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates, omega_S_preTP = get_pop_objs(
         E, S, T, 1, 100, 2016, flag_graphs)
     e = np.array([[0.25, 1.25]] * 10)
     allvars = dict(locals())
