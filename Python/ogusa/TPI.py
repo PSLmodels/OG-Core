@@ -65,13 +65,20 @@ def create_tpi_params(**sim_params):
     baseline_ss = os.path.join(sim_params['baseline_dir'], "SS/SS_vars.pkl")
     ss_baseline_vars = pickle.load(open(baseline_ss, "rb"))
     factor = ss_baseline_vars['factor_ss']
-    #initial_b = ss_baseline_vars['bssmat_s'] + ss_baseline_vars['BQss']/lambdas
     initial_b = ss_baseline_vars['bssmat_splus1']
     initial_n = ss_baseline_vars['nssmat']
 
-    SS_values = (ss_baseline_vars['Kss'],ss_baseline_vars['Lss'], ss_baseline_vars['rss'], 
+    if sim_params['baseline']==True:
+        SS_values = (ss_baseline_vars['Kss'],ss_baseline_vars['Lss'], ss_baseline_vars['rss'], 
                  ss_baseline_vars['wss'], ss_baseline_vars['BQss'], ss_baseline_vars['T_Hss'],
                  ss_baseline_vars['bssmat_splus1'], ss_baseline_vars['nssmat'])
+    elif sim_params['baseline']==False:
+        reform_ss = os.path.join(sim_params['input_dir'], "SS/SS_vars.pkl")
+        ss_reform_vars = pickle.load(open(reform_ss, "rb"))
+        SS_values = (ss_reform_vars['Kss'],ss_reform_vars['Lss'], ss_reform_vars['rss'], 
+                 ss_reform_vars['wss'], ss_reform_vars['BQss'], ss_reform_vars['T_Hss'],
+                 ss_reform_vars['bssmat_splus1'], ss_reform_vars['nssmat'])
+
 
     # Make a vector of all one dimensional parameters, to be used in the
     # following functions
@@ -82,18 +89,19 @@ def create_tpi_params(**sim_params):
     N_tilde = sim_params['omega'].sum(1) #this should just be one in each year given how we've constructed omega
     sim_params['omega'] = sim_params['omega'] / N_tilde.reshape(sim_params['T'] + sim_params['S'], 1)
 
+
     tpi_params = [sim_params['J'], sim_params['S'], sim_params['T'], sim_params['BW'], 
                   sim_params['beta'], sim_params['sigma'], sim_params['alpha'], 
                   sim_params['Z'], sim_params['delta'], sim_params['ltilde'], 
                   sim_params['nu'], sim_params['g_y'], sim_params['g_n_vector'], 
                   sim_params['tau_payroll'], sim_params['tau_bq'], sim_params['rho'], sim_params['omega'], N_tilde,
-                  sim_params['lambdas'], sim_params['e'], sim_params['retire'], sim_params['mean_income_data'], factor] + \
+                  sim_params['lambdas'], sim_params['imm_rates'], sim_params['e'], sim_params['retire'], sim_params['mean_income_data'], factor] + \
                   wealth_tax_params + ellipse_params + chi_params
     iterative_params = [sim_params['maxiter'], sim_params['mindist_SS'], sim_params['mindist_TPI']]
     
 
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, e, retire, mean_income_data,\
+                  g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,\
                   factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b, chi_n = tpi_params
 
     ## Assumption for tax functions is that policy in last year of BW is 
@@ -119,40 +127,14 @@ def create_tpi_params(**sim_params):
     '''
     # Get an initial distribution of capital with the initial population
     # distribution
-    K0_params = (omega[0].reshape(S, 1), lambdas, g_n_vector[0], 'SS')
+    omega_S_preTP = sim_params['omega_S_preTP']
+    K0_params = (omega_S_preTP.reshape(S, 1), lambdas, imm_rates[0].reshape(S,1), g_n_vector[0], 'SS')
     K0 = household.get_K(initial_b, K0_params)
 
     b_sinit = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_b[:-1]))
     b_splus1init = initial_b
-    L0_params = (e, omega[0].reshape(S, 1), lambdas, 'SS')
-    L0 = firm.get_L(initial_n, L0_params)
-    Y0_params = (alpha, Z)
-    Y0 = firm.get_Y(K0, L0, Y0_params)
-    w0 = firm.get_w(Y0, L0, alpha)
-    r0_params = (alpha, delta)
-    r0 = firm.get_r(Y0, K0, r0_params)
 
-    BQ0_params = (omega[0].reshape(S, 1), lambdas, rho.reshape(S, 1), g_n_vector[0], 'SS')
-    BQ0 = household.get_BQ(r0, initial_b, BQ0_params)
-
-    theta_params = (e, J, omega[0].reshape(S, 1), lambdas)
-    theta = tax.replacement_rate_vals(initial_n, w0, factor, theta_params)
-
-    T_H_params = (e, lambdas, omega[0].reshape(S, 1), 'SS', etr_params_TP[:,0,:], 
-                    theta, tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
-    T_H_0 = tax.get_lump_sum(r0, w0, b_sinit, initial_n, BQ0, factor, T_H_params)
-
-    etr_params_3D = np.tile(np.reshape(etr_params_TP[:,0,:],(S,1,etr_params_TP.shape[2])),(1,J,1))
-    tax0_params = (e, lambdas, 'SS', retire, etr_params_3D, h_wealth, p_wealth, m_wealth, 
-                    tau_payroll, theta, tau_bq, J, S)
-    tax0 = tax.total_taxes(r0, w0, b_sinit, initial_n, BQ0, factor, T_H_0, None, False, tax0_params)
-
-    c0_params = (e, lambdas.reshape(1, J), g_y)
-    c0 = household.get_cons(r0, w0, b_sinit, b_splus1init, initial_n, BQ0.reshape(
-        1, J), tax0, c0_params)
-
-    initial_values = (K0, b_sinit, b_splus1init, L0, Y0,
-            w0, r0, BQ0, T_H_0, factor, tax0, c0, initial_b, initial_n)
+    initial_values = (K0, b_sinit, b_splus1init, factor, initial_b, initial_n, omega_S_preTP)
 
     return (income_tax_params, tpi_params, iterative_params, initial_values, SS_values)
 
@@ -182,7 +164,7 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params):
     income_tax_params, tpi_params, initial_b = params
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, e, retire, mean_income_data,\
+                  g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,\
                   factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b, chi_n = tpi_params
 
 
@@ -261,7 +243,7 @@ def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params):
     income_tax_params, tpi_params, initial_b = params
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, e, retire, mean_income_data,\
+                  g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,\
                   factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b, chi_n = tpi_params
 
     length = len(guesses) / 2
@@ -287,6 +269,8 @@ def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params):
     BQ_splus1 = BQ[t + 1:t + length + 1]
     T_H_s = T_H[t:t + length]
     T_H_splus1 = T_H[t + 1:t + length + 1]
+
+
     # Savings euler equations
 
     # theta_params = (e[-1, j], 1, omega[0].reshape(S, 1), lambdas[j])
@@ -294,6 +278,7 @@ def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params):
     theta = np.zeros((J,)) 
 
     tax_s_params = (e_s, lambdas[j], 'TPI', retire, etr_params, h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
+
     tax_s = tax.total_taxes(r_s, w_s, b_s, n_s, BQ_s, factor, T_H_s, j, False, tax_s_params) 
 
     etr_params_sp1 = np.append(etr_params,np.reshape(etr_params[-1,:],(1,etr_params.shape[1])),axis=0)[1:,:]
@@ -318,8 +303,11 @@ def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params):
     mtr_capital_params = (e_extended, etr_params_sp1, mtry_params_sp1, analytical_mtrs)
     deriv_savings = 1 + r_splus1 * (1 - tax.MTR_capital(r_splus1, w_splus1, b_splus1, n_extended, factor, mtr_capital_params))
 
-    error1 = household.marg_ut_cons(cons_s, sigma) - beta * (1 - rho[-(length):]) * np.exp(-sigma * g_y) * deriv_savings * household.marg_ut_cons(
+    #Note equation below accounts for savings in last period because here rho=1 - so second term drops out.  Which means tax rates after last 
+    # period of life don't matter
+    error1= household.marg_ut_cons(cons_s, sigma) - beta * (1 - rho[-(length):]) * np.exp(-sigma * g_y) * deriv_savings * household.marg_ut_cons(
         cons_splus1, sigma) - savings_ut
+
     # Labor leisure euler equations
     income_s = (r_s * b_s + w_s * e_s * n_s) * factor
     
@@ -340,6 +328,7 @@ def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params):
     mask4 = b_guess <= 0
     error2[mask4] += 1e12
     mask5 = cons_splus1 < 0
+    mask5[-1] = b_splus1[-1] < 0
     error2[mask5] += 1e12
     return list(error1.flatten()) + list(error2.flatten())
 
@@ -373,10 +362,9 @@ def inner_loop(guesses, outer_loop_vars, params):
     income_tax_params, tpi_params, initial_values, theta, ind = params
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, e, retire, mean_income_data,\
+                  g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,\
                   factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b, chi_n = tpi_params
-    K0, b_sinit, b_splus1init, L0, Y0,\
-            w0, r0, BQ0, T_H_0, factor, tax0, c0, initial_b, initial_n = initial_values
+    K0, b_sinit, b_splus1init, factor, initial_b, initial_n, omega_S_preTP = initial_values
 
     guesses_b, guesses_n = guesses
     r, w, K, BQ, T_H = outer_loop_vars
@@ -388,25 +376,26 @@ def inner_loop(guesses, outer_loop_vars, params):
 
     for j in xrange(J):
             first_doughnut_params = (income_tax_params, tpi_params, initial_b)
-            b_mat[1, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(firstdoughnutring, [guesses_b[1, -1, j], guesses_n[0, -1, j]],
-                                                                   args=(r[1], w[1], initial_b, BQ[1, j], T_H[1], j, 
+            b_mat[0, -1, j], n_mat[0, -1, j] = np.array(opt.fsolve(firstdoughnutring, [guesses_b[0, -1, j], guesses_n[0, -1, j]],
+                                                                   args=(r[0], w[0], initial_b, BQ[0, j], T_H[0], j, 
                                                                    first_doughnut_params), xtol=MINIMIZER_TOL))
 
             for s in xrange(S - 2):  # Upper triangle
                 ind2 = np.arange(s + 2)
                 b_guesses_to_use = np.diag(
-                    guesses_b[1:S + 1, :, j], S - (s + 2))
+                    guesses_b[:S, :, j], S - (s + 2))
                 n_guesses_to_use = np.diag(guesses_n[:S, :, j], S - (s + 2))
 
                 # initialize array of diagonal elements
-                length_diag = (np.diag(np.transpose(etr_params[:S,:,0]),S-(s+2))).shape[0]
+                length_diag = (np.diag(np.transpose(etr_params[:,:S,0]),S-(s+2))).shape[0]
                 etr_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
                 mtrx_params_to_use = np.zeros((length_diag,mtrx_params.shape[2]))
                 mtry_params_to_use = np.zeros((length_diag,mtry_params.shape[2]))
                 for i in range(etr_params.shape[2]):
-                    etr_params_to_use[:,i] = np.diag(np.transpose(etr_params[:S,:,i]),S-(s+2))
-                    mtrx_params_to_use[:,i] = np.diag(np.transpose(mtrx_params[:S,:,i]),S-(s+2))
-                    mtry_params_to_use[:,i] = np.diag(np.transpose(mtry_params[:S,:,i]),S-(s+2))
+                    etr_params_to_use[:,i] = np.diag(np.transpose(etr_params[:,:S,i]),S-(s+2))
+                    mtrx_params_to_use[:,i] = np.diag(np.transpose(mtrx_params[:,:S,i]),S-(s+2))
+                    mtry_params_to_use[:,i] = np.diag(np.transpose(mtry_params[:,:S,i]),S-(s+2))
+
 
                 inc_tax_params_upper = (analytical_mtrs, etr_params_to_use, mtrx_params_to_use, mtry_params_to_use)
 
@@ -416,17 +405,20 @@ def inner_loop(guesses, outer_loop_vars, params):
                     r, w, BQ[:, j], T_H, j, s, 0, TPI_solver_params), xtol=MINIMIZER_TOL)
 
                 b_vec = solutions[:len(solutions) / 2]
-                b_mat[1 + ind2, S - (s + 2) + ind2, j] = b_vec
+                b_mat[ind2, S - (s + 2) + ind2, j] = b_vec
                 n_vec = solutions[len(solutions) / 2:]
                 n_mat[ind2, S - (s + 2) + ind2, j] = n_vec
 
+
             for t in xrange(0, T):
+                # b_guesses_to_use = .75 * \
+                #     np.diag(guesses_b[t + 1:t + S + 1, :, j])
                 b_guesses_to_use = .75 * \
-                    np.diag(guesses_b[t + 1:t + S + 1, :, j])
+                    np.diag(guesses_b[t:t + S, :, j])
                 n_guesses_to_use = np.diag(guesses_n[t:t + S, :, j])
 
                 # initialize array of diagonal elements
-                length_diag = (np.diag(np.transpose(etr_params[:,t:t+S,i]))).shape[0]
+                length_diag = (np.diag(np.transpose(etr_params[:,t:t+S,0]))).shape[0]
                 etr_params_to_use = np.zeros((length_diag,etr_params.shape[2]))
                 mtrx_params_to_use = np.zeros((length_diag,mtrx_params.shape[2]))
                 mtry_params_to_use = np.zeros((length_diag,mtry_params.shape[2]))
@@ -445,14 +437,10 @@ def inner_loop(guesses, outer_loop_vars, params):
                 euler_errors[t, :, j] = infodict['fvec']
 
                 b_vec = solutions[:S]
-                b_mat[t + 1 + ind, ind, j] = b_vec
+                b_mat[t + ind, ind, j] = b_vec
                 n_vec = solutions[S:]
                 n_mat[t + ind, ind, j] = n_vec
-                # inputs = list(solutions)
 
-                # TPI_solver_params = (inc_tax_params_TP, tpi_params, None)
-                # euler_errors[t, :, j] = np.abs(opt.fsolve(twist_doughnut, inputs, args=(
-                #     r, w, BQ[:, j], T_H, j, None, t, TPI_solver_params), xtol=MINIMIZER_TOL))
 
     return euler_errors, b_mat, n_mat
 
@@ -463,10 +451,11 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
     maxiter, mindist_SS, mindist_TPI = iterative_params
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, e, retire, mean_income_data,\
+                  g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,\
                   factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b, chi_n = tpi_params
-    K0, b_sinit, b_splus1init, L0, Y0,\
-            w0, r0, BQ0, T_H_0, factor, tax0, c0, initial_b, initial_n = initial_values
+    # K0, b_sinit, b_splus1init, L0, Y0,\
+    #         w0, r0, BQ0, T_H_0, factor, tax0, c0, initial_b, initial_n, omega_S_preTP = initial_values
+    K0, b_sinit, b_splus1init, factor, initial_b, initial_n, omega_S_preTP = initial_values
     Kss, Lss, rss, wss, BQss, T_Hss, bssmat_splus1, nssmat = SS_values
 
 
@@ -486,10 +475,12 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     r_params = (alpha, delta)
     r = firm.get_r(Y, K, r_params)
     BQ = np.zeros((T + S, J))
+    BQ0_params = (omega_S_preTP.reshape(S, 1), lambdas, rho.reshape(S, 1), g_n_vector[0], 'SS')
+    BQ0 = household.get_BQ(r[0], initial_b, BQ0_params)
     for j in xrange(J):
         BQ[:, j] = list(np.linspace(BQ0[j], BQss[j], T)) + [BQss[j]] * S
     BQ = np.array(BQ)
-    if T_Hss < 1e-13 and T_Hss > 0.0 :
+    if np.abs(T_Hss) < 1e-13 :
         T_Hss2 = 0.0 # sometimes SS is very small but not zero, even if taxes are zero, this get's rid of the approximation error, which affects the perc changes below
     else:
         T_Hss2 = T_Hss   
@@ -530,10 +521,6 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
             plt.plot(np.arange(
                 T + 10), Kpath_plot[:T + 10], 'b', linewidth=2, label=r"TPI time path $\hat{K}_t$")
             plt.savefig(os.path.join(TPI_FIG_DIR, "TPI_K"))
-        # Uncomment the following print statements to make sure all euler equations are converging.
-        # If they don't, then you'll have negative consumption or consumption spikes.  If they don't,
-        # it is the initial guesses.  You might need to scale them differently.  It is rather delicate for the first
-        # few periods and high ability groups.
 
         # theta_params = (e[-1, j], 1, omega[0].reshape(S, 1), lambdas[j])
         # theta = tax.replacement_rate_vals(n, w, factor, theta_params)
@@ -546,13 +533,15 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
         # Solve HH problem in inner loop
         euler_errors, b_mat, n_mat = inner_loop(guesses, outer_loop_vars, inner_loop_params)
 
+        bmat_s = np.zeros((T, S, J))
+        bmat_s[0, 1:, :] = initial_b[:-1, :]
+        bmat_s[1:, 1:, :] = b_mat[:T-1, :-1, :]
+        bmat_splus1 = np.zeros((T, S, J))
+        bmat_splus1[:, :, :] = b_mat[:T, :, :]
 
-        # if euler_errors.max() > 1e-6:
-        #     print 't-loop:', euler_errors.max()
-        # Force the initial distribution of capital to be as given above.
-        b_mat[0, :, :] = initial_b
-        K_params = (omega[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), g_n_vector[:T], 'TPI')
-        K[:T] = household.get_K(b_mat[:T], K_params)
+        K[0] = K0
+        K_params = (omega[:T-1].reshape(T-1, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T-1].reshape(T-1,S,1), g_n_vector[1:T], 'TPI')
+        K[1:T] = household.get_K(bmat_splus1[:T-1], K_params)
         L_params = (e.reshape(1, S, J), omega[:T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI')
         L[:T]  = firm.get_L(n_mat[:T], L_params)
 
@@ -562,13 +551,11 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
         r_params = (alpha, delta)
         rnew = firm.get_r(Ynew[:T], K[:T], r_params)
 
-        BQ_params = (omega[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1), 
-                    g_n_vector[:T].reshape(T, 1), 'TPI')
-        BQnew = household.get_BQ(rnew[:T].reshape(T, 1), b_mat[:T,:,:], BQ_params)
-        bmat_s = np.zeros((T, S, J))
-        bmat_s[:, 1:, :] = b_mat[:T, :-1, :]
-        bmat_splus1 = np.zeros((T, S, J))
-        bmat_splus1[:, :, :] = b_mat[1:T + 1, :, :]
+        omega_shift = np.append(omega_S_preTP.reshape(1,S),omega[:T-1,:],axis=0)
+        BQ_params = (omega_shift.reshape(T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1), 
+                     g_n_vector[:T].reshape(T, 1), 'TPI')
+        b_mat_shift = np.append(np.reshape(initial_b,(1,S,J)),b_mat[:T-1,:,:],axis=0)
+        BQnew = household.get_BQ(rnew[:T].reshape(T, 1), b_mat_shift, BQ_params)
 
         TH_tax_params = np.zeros((T,S,J,etr_params.shape[2]))
         for i in range(etr_params.shape[2]):
@@ -590,7 +577,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
                 utils.pct_diff_func(wnew[:T], w[:T])) + list(utils.pct_diff_func(T_H_new[:T], T_H[:T]))).max()
         else:
             TPIdist = np.array(list(utils.pct_diff_func(rnew[:T], r[:T])) + list(utils.pct_diff_func(BQnew[:T], BQ[:T]).flatten()) + list(
-                utils.pct_diff_func(wnew[:T], w[:T])) + list(np.abs(T_H_new[:T], T_H[:T]))).max()
+                utils.pct_diff_func(wnew[:T], w[:T])) + list(np.abs(T_H[:T]))).max()
         TPIdist_vec[TPIiter] = TPIdist
         # After T=10, if cycling occurs, drop the value of nu
         # wait til after T=10 or so, because sometimes there is a jump up
@@ -615,11 +602,40 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     outer_loop_vars = (r, w, K, BQ, T_H)
     inner_loop_params = (income_tax_params, tpi_params, initial_values, theta, ind)
     euler_errors, b_mat, n_mat = inner_loop(guesses, outer_loop_vars, inner_loop_params)
-    b_mat[0, :, :] = initial_b
 
-    K_params = (omega[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), g_n_vector[:T], 'TPI')
-    K[:T] = household.get_K(b_mat[:T], K_params) # this is what old code does, but it's strange - why use 
-    # b_mat -- what is going on with initial period, etc.
+    bmat_s = np.zeros((T, S, J))
+    bmat_s[0, 1:, :] = initial_b[:-1, :]
+    bmat_s[1:, 1:, :] = b_mat[:T-1, :-1, :]
+    bmat_splus1 = np.zeros((T, S, J))
+    bmat_splus1[:, :, :] = b_mat[:T, :, :]
+
+    K[0] = K0
+    K_params = (omega[:T-1].reshape(T-1, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T-1].reshape(T-1,S,1), g_n_vector[1:T], 'TPI')
+    K[1:T] = household.get_K(bmat_splus1[:T-1], K_params)
+    L_params = (e.reshape(1, S, J), omega[:T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI')
+    L[:T]  = firm.get_L(n_mat[:T], L_params)
+
+    Y_params = (alpha, Z)
+    Ynew = firm.get_Y(K[:T], L[:T], Y_params)
+    wnew = firm.get_w(Ynew[:T], L[:T], alpha)
+    r_params = (alpha, delta)
+    rnew = firm.get_r(Ynew[:T], K[:T], r_params)
+
+    omega_shift = np.append(omega_S_preTP.reshape(1,S),omega[:T-1,:],axis=0)
+    BQ_params = (omega_shift.reshape(T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1), 
+                 g_n_vector[:T].reshape(T, 1), 'TPI')
+    b_mat_shift = np.append(np.reshape(initial_b,(1,S,J)),b_mat[:T-1,:,:],axis=0)
+    BQnew = household.get_BQ(rnew[:T].reshape(T, 1), b_mat_shift, BQ_params)
+
+    TH_tax_params = np.zeros((T,S,J,etr_params.shape[2]))
+    for i in range(etr_params.shape[2]):
+        TH_tax_params[:,:,:,i] = np.tile(np.reshape(np.transpose(etr_params[:,:T,i]),(T,S,1)),(1,1,J))
+
+    T_H_params = (np.tile(e.reshape(1, S, J),(T,1,1)), lambdas.reshape(1, 1, J), omega[:T].reshape(T, S, 1), 'TPI', 
+            TH_tax_params, theta, tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
+    T_H_new = np.array(list(tax.get_lump_sum(np.tile(rnew[:T].reshape(T, 1, 1),(1,S,J)), np.tile(wnew[:T].reshape(T, 1, 1),(1,S,J)),
+           bmat_s, n_mat[:T,:,:], BQnew[:T].reshape(T, 1, J), factor, T_H_params)) + [T_Hss] * S)
+
 
     etr_params_path = np.zeros((T,S,J,etr_params.shape[2]))
     for i in range(etr_params.shape[2]):
@@ -634,9 +650,14 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
                    BQ[:T].reshape(T, 1, J), tax_path, cons_params)
     C_params = (omega[:T].reshape(T, S, 1), lambdas, 'TPI')
     C = household.get_C(c_path, C_params)
-    I_params = (delta, g_y, g_n_vector[:T])
-    I = firm.get_I(K[1:T+1], K[:T], I_params)
-    print 'Resource Constraint Difference:', Y[:T] - C[:T] - I[:T]
+    I_params = (delta, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
+    I = firm.get_I(bmat_splus1[:T], K[1:T+1], K[:T], I_params)
+    rc_error = Y[:T] - C[:T] - I[:T]
+    print 'Resource Constraint Difference:', rc_error
+
+    if ((np.any(np.absolute(rc_error) >= 1e-6))
+        and ENFORCE_SOLUTION_CHECKS):
+        raise RuntimeError("Transition path equlibrium not found")
 
 
     print'Checking time path for violations of constaints.'

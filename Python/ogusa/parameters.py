@@ -19,6 +19,7 @@ import os
 import json
 import numpy as np
 from demographics import get_pop_objs
+from demographics_old import get_omega
 from income import get_e
 import pickle
 import txfunc
@@ -173,6 +174,7 @@ J            = integer, number of different ability groups
 T            = integer, number of time periods until steady state is reached
 BW           = integer, number of time periods in the budget window
 lambdas      = [J,] vector, percentiles for ability groups
+imm_rates    = [J,T+S] array, immigration rates by age and year
 starting_age = integer, age agents enter population
 ending age   = integer, maximum age agents can live until
 E            = integer, age agents become economically active
@@ -349,7 +351,7 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     chi_n_guess = np.array([5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
     # Generate Income and Demographic parameters
-    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_mat_adj = get_pop_objs(
+    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates, omega_S_preTP = get_pop_objs(
         E, S, T, 1, 100, 2016, flag_graphs)
     e = np.array([[0.25, 1.25]] * 10)
     allvars = dict(locals())
@@ -396,7 +398,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     # Model Parameters
     S = int(80)
     J = int(7)
-    T = int(2 * S)
+    T = int(3 * S)
     BW = int(10)
     lambdas = np.array([.25, .25, .2, .1, .1, .09, .01])
     starting_age = 20
@@ -444,7 +446,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     # mtrx_params = dict_params['tfunc_mtrx_params_S'][:S,:BW,:]
     # mtry_params = dict_params['tfunc_mtry_params_S'][:S,:BW,:]
 
-    # set etrs and mtrs to constant rates over income/age
+    # set etrs and mtrs to constant rates over income/age by uncommenting following code block
     etr_params = np.zeros((S,BW,10))
     mtrx_params = np.zeros((S,BW,10))
     mtry_params = np.zeros((S,BW,10))
@@ -458,6 +460,14 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     mtrx_params[:,:,5] = 1.0
     mtry_params[:,:,5] = 1.0
 
+
+    # make etrs and mtrs constant over time, uncomment following code block
+    # etr_params[:,:,7] = dict_params['tfunc_avg_etr'][0]
+    # mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx'][0]
+    # mtry_params[:,:,7] = dict_params['tfunc_avg_mtry'][0]
+    # etr_params[:,:,9] = dict_params['tfunc_avg_etr'][0]
+    # mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx'][0]
+    # mtry_params[:,:,9] = dict_params['tfunc_avg_mtry'][0]
 
     # To zero out income taxes, uncomment the following 3 lines:
     # etr_params[:,:,6:] = 0.0
@@ -483,7 +493,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     PLOT_TPI = False
     maxiter = 250
     mindist_SS = 1e-9
-    mindist_TPI = 2e-5
+    mindist_TPI = 1e-9 #2e-5
     nu = .4
     flag_graphs = False
     #   Calibration parameters
@@ -512,25 +522,20 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
 
    # Generate Income and Demographic parameters
-    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates_mat = get_pop_objs(
+    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates, omega_S_preTP = get_pop_objs(
         E, S, T, 1, 100, 2016, flag_graphs)
-    # print 'Differences:'
-    # print 'omega diffs: ', (np.absolute(omega-omega2)).max()
-    # print 'g_n', g_n_ss, g_n_ss2
-    # print 'omega SS diffs: ', (np.absolute(omega_SS-omega_SS2)).max()
-    # print 'surv diffs: ', (np.absolute(surv_rate- surv_rate2)).max()
-    # print 'mort diffs: ', (np.absolute(rho- rho2)).max()
-    # print 'g_n_TP diffs: ', (np.absolute(g_n_vector- g_n_vector2)).max()
-    # quit()
-    #print 'omega_SS shape: ', omega_SS.shape
-    g_n_ss = 0.0
-    surv_rate1 = np.ones((S,))# prob start at age S
-    surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
-    omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
-    omega_SS = omega_SS/omega_SS.sum()
 
-    omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
-    g_n_vector = np.tile(g_n_ss,(T+S,))
+    ## To shut off demographics, uncomment the following 9 lines of code
+    # g_n_ss = 0.0
+    # surv_rate1 = np.ones((S,))# prob start at age S
+    # surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
+    # omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
+    # omega_SS = omega_SS/omega_SS.sum()
+    # imm_rates = np.zeros((T+S,S))
+    # omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
+    # omega_S_preTP = omega_SS
+    # g_n_vector = np.tile(g_n_ss,(T+S,))
+
 
 
     e_hetero = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)

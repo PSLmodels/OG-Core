@@ -699,8 +699,8 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     mort_rates, infmort_rate = get_mort(E+S, min_yr, max_yr,
                                         graph=False)
     mort_rates_S = mort_rates[-S:]
-    # imm_rates_orig = get_imm_resid(E+S, min_yr, max_yr, graph=False)
-    imm_rates_orig = np.zeros(E+S)
+    imm_rates_orig = get_imm_resid(E+S, min_yr, max_yr, graph=False)
+    #imm_rates_orig = np.zeros(E+S)
     imm_rates_S = imm_rates_orig[-S:]
     OMEGA_orig = np.zeros((E+S, E+S))
     OMEGA_orig[0, :] = ((1 - infmort_rate) * fert_rates +
@@ -738,6 +738,9 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     for per in xrange(0, curr_year-data_year): # Age the data to
                                                # the current year
         pop_next = np.dot(OMEGA_orig, pop_curr)
+        g_n_curr = ((pop_next[-S:].sum() - pop_curr[-S:].sum())/
+                    pop_curr[-S:].sum())
+        pop_past = pop_curr
         pop_curr = pop_next
     curr_dict = {"pop_" + str(curr_year) + "_pct":
                 pop_curr.copy() / pop_curr.sum()}
@@ -760,23 +763,43 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
                omega_path_lev[:, fixper], g_n_SS)
     imm_fulloutput = opt.fsolve(immsolve, imm_rates_orig,
         args=(imm_objs), full_output=True, xtol=imm_tol)
-    # imm_rates_adj = imm_fulloutput[0]
-    imm_rates_adj = np.zeros(E+S)
+    imm_rates_adj = imm_fulloutput[0]
+    #imm_rates_adj = np.zeros(E+S)
     imm_rates_S_adj = imm_rates_adj[-S:]
     imm_diagdict = imm_fulloutput[1]
     omega_path_S = (omega_path_lev[-S:, :] /
         np.tile(omega_path_lev[-S:, :].sum(axis=0),(S, 1)))
-    # omega_path_S[:, fixper:] = \
-    #     np.tile(omega_path_S[:, fixper].reshape((S, 1)),
-    #     (1, T+S-fixper))
+    omega_path_S[:, fixper:] = \
+        np.tile(omega_path_S[:, fixper].reshape((S, 1)),
+        (1, T+S-fixper))
     g_n_path = np.zeros(T+S)
+    g_n_path[0] = g_n_curr.copy()
     g_n_path[1:] = ((omega_path_lev[-S:, 1:].sum(axis=0) -
                     omega_path_lev[-S:, :-1].sum(axis=0)) /
                     omega_path_lev[-S:, :-1].sum(axis=0))
-    g_n_path[fixper:] = g_n_SS
+    g_n_path[fixper+1:] = g_n_SS
+    omega_S_preTP = (pop_past.copy()[-S:])/(pop_past.copy()[-S:].sum())
+
+
     imm_rates_mat = np.hstack((
         np.tile(np.reshape(imm_rates_orig[E:],(S,1)), (1, fixper)),
         np.tile(np.reshape(imm_rates_adj[E:],(S,1)), (1, T+S-fixper))))
+
+    # omega_diffs_orig = (omega_path_S[1:,1:] - 
+    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(mort_rates_S[:-1],(S-1,1)),(1,T+S-1)))*omega_path_S[:-1,:-1] - 
+    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*np.tile(np.reshape(imm_rates_orig[E+1:],(S-1,1)),(1,T+S-1))*omega_path_S[1:,:-1])
+    # omega_diffs_adj = (omega_path_S[1:,1:] - 
+    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(mort_rates_S[:-1],(S-1,1)),(1,T+S-1)))*omega_path_S[:-1,:-1] - 
+    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*np.tile(np.reshape(imm_rates_adj[E+1:],(S-1,1)),(1,T+S-1))*omega_path_S[1:,:-1])
+    # omega_diffs_mixed = (omega_path_S[1:,1:] - 
+    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(mort_rates_S[:-1],(S-1,1)),(1,T+S-1)))*omega_path_S[:-1,:-1] - 
+    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*imm_rates_mat[1:,:-1]*omega_path_S[1:,:-1])
+    # np.savetxt('omega_diffs_orig.csv', omega_diffs_orig, delimiter=',')
+    # np.savetxt('omega_diffs_adj.csv', omega_diffs_adj, delimiter=',')
+    # np.savetxt('omega_diffs_mixed.csv', omega_diffs_mixed, delimiter=',')
+
+
+
 
     if GraphDiag == True:
         # Check whether original SS population distribution is close to
@@ -950,4 +973,4 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     # mort_rates_S, and g_n_path
     return (omega_path_S.T, g_n_SS,
         omega_SSfx[-S:] / omega_SSfx[-S:].sum(), 1-mort_rates_S,
-        mort_rates_S, g_n_path, imm_rates_mat)
+        mort_rates_S, g_n_path, imm_rates_mat.T, omega_S_preTP)

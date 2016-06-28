@@ -47,25 +47,9 @@ def run_micro_macro(user_params):
 
     user_params = {'frisch':0.41, 'start_year':2015}
 
-    # '''
-    # ------------------------------------------------------------------------
-    #     Run SS for Baseline first - so can run baseline and reform in parallel if want 
-    # ------------------------------------------------------------------------
-    # '''
-    # output_base = BASELINE_DIR
-    # input_dir = BASELINE_DIR
-    # kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-    #         'baseline':True, 'analytical_mtrs':False, 'age_specific':False,
-    #         'user_params':user_params,'guid':'38_mtr',
-    #         'run_micro':False}
-    # #p1 = Process(target=runner, kwargs=kwargs)
-    # #p1.start()
-    # runner_SS(**kwargs)
-
-
     '''
     ------------------------------------------------------------------------
-        Run baseline
+        Run SS for Baseline first - so can run baseline and reform in parallel if want 
     ------------------------------------------------------------------------
     '''
     output_base = BASELINE_DIR
@@ -76,7 +60,23 @@ def run_micro_macro(user_params):
             'run_micro':False}
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
-    runner(**kwargs)
+    runner_SS(**kwargs)
+
+
+    # '''
+    # ------------------------------------------------------------------------
+    #     Run baseline
+    # ------------------------------------------------------------------------
+    # '''
+    # output_base = BASELINE_DIR
+    # input_dir = BASELINE_DIR
+    # kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
+    #         'baseline':True, 'analytical_mtrs':False, 'age_specific':False,
+    #         'user_params':user_params,'guid':'38_mtr',
+    #         'run_micro':False}
+    # #p1 = Process(target=runner, kwargs=kwargs)
+    # #p1.start()
+    # runner(**kwargs)
 
     '''
     ------------------------------------------------------------------------
