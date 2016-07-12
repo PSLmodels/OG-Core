@@ -60,7 +60,7 @@ weighted = np.nansum((lab_mat_basic * weights), axis=1)
 '''
 
 
-def labor_data_moments(flag_graphs, output_dir="./OUTPUT"):
+def labor_data_moments(flag_graphs, baseline_dir):
     '''
     Pickles the labor particpation rates for the data (Sx1 array) and generates graphs,
     depending on if flag_graphs is True or False (True means it graphs).
@@ -95,7 +95,7 @@ def labor_data_moments(flag_graphs, output_dir="./OUTPUT"):
         plt.ylabel(r'individual labor supply $/bar{l}_s$')
         plt.legend()
         plt.savefig(os.path.join(
-            output_dir, 'Demographics/labor_dist_data_withfit.png'))
+            baseline_dir, 'Demographics/labor_dist_data_withfit.png'))
 
         fig10 = plt.figure()
         ax10 = fig10.gca(projection='3d')
@@ -104,11 +104,6 @@ def labor_data_moments(flag_graphs, output_dir="./OUTPUT"):
         ax10.set_xlabel(r'age-$s$')
         ax10.set_ylabel(r'ability type -$j$')
         ax10.set_zlabel(r'labor $e_j(s)$')
-        plt.savefig(os.path.join(output_dir, 'Demographics/data_labor_dist'))
-
-    var_names = ['labor_dist_data']
-    dictionary = {}
-    for key in var_names:
-        dictionary[key] = locals()[key]
-    pickle.dump(dictionary, open(os.path.join(
-        output_dir, "Saved_moments/labor_data_moments.pkl"), "wb"))
+        plt.savefig(os.path.join(baseline_dir, 'Demographics/data_labor_dist'))
+    
+    return labor_dist_data

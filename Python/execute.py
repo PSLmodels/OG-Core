@@ -9,6 +9,7 @@ import numpy as np
 import time
 
 import ogusa
+from ogusa import calibrate
 ogusa.parameters.DATASET = 'REAL'
 
 
@@ -193,18 +194,6 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
 
     from ogusa import SS, TPI
 
-    '''
-    ****
-    CALL CALIBRATION here if boolean flagged
-
-    ****
-    '''
-    calibrate_model = False
-    # if calibrate_model:
-    #     chi_b, chi_n = calibrate.(income_tax_params, ss_params, iterative_params, chi_params, baseline,
-    #                                  calibrate_model, output_dir=output_base, baseline_dir=baseline_dir)
-
-
 
     # List of parameter names that will not be changing (unless we decide to
     # change them for a tax experiment)
@@ -234,6 +223,15 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
     sim_params['run_params'] = run_params
 
     income_tax_params, ss_params, iterative_params, chi_params= SS.create_steady_state_parameters(**sim_params)
+
+    '''
+    ****
+    CALL CALIBRATION here if boolean flagged
+    ****
+    '''
+    calibrate_model = True
+    if calibrate_model:
+        chi_params = calibrate.chi_estimate(income_tax_params, ss_params, iterative_params, chi_params, baseline_dir=baseline_dir)
 
     ss_outputs = SS.run_SS(income_tax_params, ss_params, iterative_params, chi_params, baseline,
                                      baseline_dir=baseline_dir)

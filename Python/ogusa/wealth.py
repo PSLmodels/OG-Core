@@ -93,7 +93,7 @@ def wealth_data_graphs(output_dir):
 data2 = np.array(data)[:, 1:-1]
 
 
-def get_wealth_data(bin_weights, J, flag_graphs, output_dir):
+def get_wealth_data(bin_weights, J, flag_graphs):
     '''
     Inputs:
         bin_weights = ability weights (Jx1 array)
@@ -116,11 +116,13 @@ def get_wealth_data(bin_weights, J, flag_graphs, output_dir):
     for j in xrange(1, J):
         wealth_data_array[:, j] = data2[
             :, perc_array[j - 1]:perc_array[j]].mean(axis=1)
-    var_names = ['wealth_data_array']
-    dictionary = {}
-    for key in var_names:
-        dictionary[key] = locals()[key]
-    saved_moments_dir = os.path.join(output_dir, "Saved_moments")
-    utils.mkdirs(saved_moments_dir)
-    pkl_path = os.path.join(saved_moments_dir, "wealth_data_moments.pkl")
-    pickle.dump(dictionary, open(pkl_path, "wb"))
+
+    # Look at the percent difference between the fits for the first age group (20-44) and second age group (45-65)
+    #   The wealth_data_array moment indices are shifted because they start at age 18
+    # The :: indices is so that we look at the 2 moments for the lowest group,
+    # the 2 moments for the second lowest group, etc in order
+    wealth_moments = np.zeros(2 * J)
+    wealth_moments[0::2] = np.mean(wealth_data_array[2:26],axis=0)
+    wealth_moments[1::2] = np.mean(wealth_data_array[26:47],axis=0)
+
+    return wealth_moments
