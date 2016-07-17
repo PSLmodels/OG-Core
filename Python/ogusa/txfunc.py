@@ -888,7 +888,8 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
 
         # Create an array of the different ages in the data
         min_age = int(np.maximum(data_trnc['Age'].min(), s_min))
-        max_age = int(np.minimum(data_trnc['Age'].max(), s_max))
+        #max_age = int(np.minimum(data_trnc['Age'].max(), s_max))
+        max_age = 80
         if age_specific:
             ages_list = np.arange(min_age, max_age+1)
         else:
@@ -956,9 +957,9 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
                 ------------------------------------------------------------
                 '''
                 NoData_cnt += 1
-                etrparam_arr[s-21, t-beg_yr, :] = np.nan
-                mtrxparam_arr[s-21, t-beg_yr, :] = np.nan
-                mtryparam_arr[s-21, t-beg_yr, :] = np.nan
+                etrparam_arr[s-s_min, t-beg_yr, :] = np.nan
+                mtrxparam_arr[s-s_min, t-beg_yr, :] = np.nan
+                mtryparam_arr[s-s_min, t-beg_yr, :] = np.nan
 
             elif df.shape[0] < 600 and s == max_age:
                 '''
@@ -973,16 +974,22 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
                 ------------------------------------------------------------
                 '''
                 NoData_cnt += 1
-                lastp_etr = etrparam_arr[s-NoData_cnt-21, t-beg_yr, :]
-                etrparam_arr[s-NoData_cnt-20:, t-beg_yr, :] = \
+                lastp_etr = etrparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
+                print 'here'
+                print NoData_cnt
+                print etrparam_arr[s-NoData_cnt-s_min+1:, t-beg_yr, :].shape
+                print etrparam_arr.shape
+                print lastp_etr.shape
+                print 's: ', s, min_age, max_age
+                etrparam_arr[s-NoData_cnt-s_min+1:, t-beg_yr, :] = \
                     np.tile(lastp_etr.reshape((1, 10)),
                     (NoData_cnt, 1))
-                lastp_mtrx = mtrxparam_arr[s-NoData_cnt-21, t-beg_yr, :]
-                mtrxparam_arr[s-NoData_cnt-20:, t-beg_yr, :] = \
+                lastp_mtrx = mtrxparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
+                mtrxparam_arr[s-NoData_cnt-s_min+1:, t-beg_yr, :] = \
                     np.tile(lastp_mtrx.reshape((1, 10)),
                     (NoData_cnt, 1))
-                lastp_mtry = mtryparam_arr[s-NoData_cnt-21, t-beg_yr, :]
-                mtryparam_arr[s-NoData_cnt-20:, t-beg_yr, :] = \
+                lastp_mtry = mtryparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
+                mtryparam_arr[s-NoData_cnt-s_min+1:, t-beg_yr, :] = \
                     np.tile(lastp_mtry.reshape((1, 10)),
                     (NoData_cnt, 1))
 
@@ -1186,8 +1193,8 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
                     tol=1e-15)
                 (Atil, Btil, Ctil, Dtil, Etil, F, maxetr_x, minetr_x,
                     maxetr_y, minetr_y) = etrparams_til.x
-                etr_sumsq_arr[s-21, t-beg_yr] = etrparams_til.fun
-                etr_obs_arr[s-21, t-beg_yr] = df_trnc.shape[0]
+                etr_sumsq_arr[s-s_min, t-beg_yr] = etrparams_til.fun
+                etr_obs_arr[s-s_min, t-beg_yr] = df_trnc.shape[0]
                 Gtil = etrparams_til.x[:5].sum()
                 P_num = (np.dot(varmat_hat[:, :-1], etrparams_til.x[:5])
                         + Gtil)
@@ -1201,7 +1208,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
                 A, B, C, D, E = etrparams[:5]
                 etrparams[5] = F
                 etrparams[6:] = [maxetr_x, minetr_x, maxetr_y, minetr_y]
-                etrparam_arr[s-21, t-beg_yr, :] = etrparams
+                etrparam_arr[s-s_min, t-beg_yr, :] = etrparams
 
                 '''
                 ------------------------------------------------------------
@@ -1285,8 +1292,8 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
                     tol=1e-15)
                 (Htil, Itil, Jtil, Ktil, Ltil, M, maxmtrx_x, minmtrx_x,
                     maxmtrx_y, minmtrx_y) = mtrxparams_til.x
-                mtrx_sumsq_arr[s-21, t-beg_yr] = mtrxparams_til.fun
-                mtrx_obs_arr[s-21, t-beg_yr] = df_trnc.shape[0]
+                mtrx_sumsq_arr[s-s_min, t-beg_yr] = mtrxparams_til.fun
+                mtrx_obs_arr[s-s_min, t-beg_yr] = df_trnc.shape[0]
                 Ntil = mtrxparams_til.x[:5].sum()
                 P_num = (np.dot(varmat_hat[:, :-1], mtrxparams_til.x[:5])
                         + Ntil)
@@ -1299,7 +1306,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
                 H, I, J, K, L = mtrxparams[:5]
                 mtrxparams[5] = M
                 mtrxparams[6:] = [maxmtrx_x, minmtrx_x, maxmtrx_y, minmtrx_y]
-                mtrxparam_arr[s-21, t-beg_yr, :] = mtrxparams
+                mtrxparam_arr[s-s_min, t-beg_yr, :] = mtrxparams
 
                 '''
                 ------------------------------------------------------------
@@ -1383,8 +1390,8 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
                     tol=1e-15)
                 (Htil, Itil, Jtil, Ktil, Ltil, M, maxmtry_x, minmtry_x,
                     maxmtry_y, minmtry_y) = mtryparams_til.x
-                mtry_sumsq_arr[s-21, t-beg_yr] = mtryparams_til.fun
-                mtry_obs_arr[s-21, t-beg_yr] = df_trnc.shape[0]
+                mtry_sumsq_arr[s-s_min, t-beg_yr] = mtryparams_til.fun
+                mtry_obs_arr[s-s_min, t-beg_yr] = df_trnc.shape[0]
                 Ntil = mtryparams_til.x[:5].sum()
                 P_num = (np.dot(varmat_hat[:, :-1], mtryparams_til.x[:5])
                         + Ntil)
@@ -1397,23 +1404,23 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
                 H, I, J, K, L = mtryparams[:5]
                 mtryparams[5] = M
                 mtryparams[6:] = [maxmtry_x, minmtry_x, maxmtry_y, minmtry_y]
-                mtryparam_arr[s-21, t-beg_yr, :] = mtryparams
+                mtryparam_arr[s-s_min, t-beg_yr, :] = mtryparams
 
-                if NoData_cnt > 0 & NoData_cnt == s-21:
+                if NoData_cnt > 0 & NoData_cnt == s-s_min:
                     '''
                     --------------------------------------------------------
                     Fill in initial blanks with first positive data
                     estimates
                     --------------------------------------------------------
                     '''
-                    etrparam_arr[:s-21, t-beg_yr, :] = \
-                        np.tile(etrparams.reshape((1, 10)), (s-21, 1))
-                    mtrxparam_arr[:s-21, t-beg_yr, :] = \
-                        np.tile(mtrxparams.reshape((1, 10)), (s-21, 1))
-                    mtryparam_arr[:s-21, t-beg_yr, :] = \
-                        np.tile(mtryparams.reshape((1, 10)), (s-21, 1))
+                    etrparam_arr[:s-s_min, t-beg_yr, :] = \
+                        np.tile(etrparams.reshape((1, 10)), (s-s_min, 1))
+                    mtrxparam_arr[:s-s_min, t-beg_yr, :] = \
+                        np.tile(mtrxparams.reshape((1, 10)), (s-s_min, 1))
+                    mtryparam_arr[:s-s_min, t-beg_yr, :] = \
+                        np.tile(mtryparams.reshape((1, 10)), (s-s_min, 1))
 
-                elif NoData_cnt > 0 & NoData_cnt < s-21:
+                elif NoData_cnt > 0 & NoData_cnt < s-s_min:
                     '''
                     --------------------------------------------------------
                     Fill in interior data gaps with linear interpolation
@@ -1448,7 +1455,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
                     lin_int_etr = \
                         (x0_etr + tvals[1:-1].reshape((NoData_cnt, 1))
                         * (x1_etr - x0_etr))
-                    etrparam_arr[s-NoData_cnt-21:s-21, t-beg_yr, :] = \
+                    etrparam_arr[s-NoData_cnt-s_min:s-s_min, t-beg_yr, :] = \
                         lin_int_etr
                     x0_mtrx = np.tile(mtrxparam_arr[
                         s-NoData_cnt-22, t-beg_yr, :].reshape((1, 10)),
@@ -1458,7 +1465,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
                     lin_int_mtrx = \
                         (x0_mtrx + tvals[1:-1].reshape((NoData_cnt, 1))
                         * (x1_mtrx - x0_mtrx))
-                    mtrxparam_arr[s-NoData_cnt-21:s-21, t-beg_yr, :] = \
+                    mtrxparam_arr[s-NoData_cnt-s_min:s-s_min, t-beg_yr, :] = \
                         lin_int_mtrx
                     x0_mtry = np.tile(mtryparam_arr[
                         s-NoData_cnt-22, t-beg_yr, :].reshape((1, 10)),
@@ -1468,7 +1475,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
                     lin_int_mtry = \
                         (x0_mtry + tvals[1:-1].reshape((NoData_cnt, 1))
                         * (x1_mtry - x0_mtry))
-                    mtryparam_arr[s-NoData_cnt-21:s-21, t-beg_yr, :] = \
+                    mtryparam_arr[s-NoData_cnt-s_min:s-s_min, t-beg_yr, :] = \
                         lin_int_mtry
 
                 NoData_cnt == 0
@@ -1744,7 +1751,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
     --------------------------------------------------------------------
     '''
     if age_specific:
-        age_sup = np.linspace(21, 100, 80)
+        age_sup = np.linspace(s_min, s_max, s_max-s_min+1)
         se_mult = 3.5
 
         etr_sse_big = find_outliers(etr_sumsq_arr / etr_obs_arr,
@@ -1823,9 +1830,9 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
         print 'Big S: ', S
         print 'max age, min age: ', s_max, s_min
     else:
-        etrparam_arr_S = np.tile(np.reshape(etrparam_arr[s-21,:,:],(1,BW,etrparam_arr.shape[2])),(S,1,1))
-        mtrxparam_arr_S = np.tile(np.reshape(mtrxparam_arr[s-21,:,:],(1,BW,mtrxparam_arr.shape[2])),(S,1,1))
-        mtryparam_arr_S = np.tile(np.reshape(mtryparam_arr[s-21,:,:],(1,BW,mtryparam_arr.shape[2])),(S,1,1))
+        etrparam_arr_S = np.tile(np.reshape(etrparam_arr[s-s_min,:,:],(1,BW,etrparam_arr.shape[2])),(S,1,1))
+        mtrxparam_arr_S = np.tile(np.reshape(mtrxparam_arr[s-s_min,:,:],(1,BW,mtrxparam_arr.shape[2])),(S,1,1))
+        mtryparam_arr_S = np.tile(np.reshape(mtryparam_arr[s-s_min,:,:],(1,BW,mtryparam_arr.shape[2])),(S,1,1))
 
 
     # Save tax function parameters array and computation time in pickle
