@@ -21,8 +21,6 @@ This py-file creates the following other file(s):
 '''
 
 import sys
-import sys
-sys.path.insert(0, '/Users/jasondebacker/repos/tax-calculator')
 import taxcalc
 from taxcalc import *
 import pandas as pd

@@ -55,32 +55,32 @@ def run_micro_macro(user_params):
         Run SS for Baseline first - so can run baseline and reform in parallel if want
     ------------------------------------------------------------------------
     '''
-    # output_base = BASELINE_DIR
-    # input_dir = BASELINE_DIR
-    # kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-    #         'baseline':True, 'analytical_mtrs':True, 'age_specific':True,
-    #         'user_params':user_params,'guid':'ice',
-    #         'run_micro':False}
-    # #p1 = Process(target=runner, kwargs=kwargs)
-    # #p1.start()
-    # runner_SS(**kwargs)
-    # #quit()
+    output_base = BASELINE_DIR
+    input_dir = BASELINE_DIR
+    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
+            'baseline':True, 'analytical_mtrs':True, 'age_specific':True,
+            'user_params':user_params,'guid':'ice',
+            'run_micro':True}
+    #p1 = Process(target=runner, kwargs=kwargs)
+    #p1.start()
+    runner_SS(**kwargs)
+    #quit()
 
 
-    # '''
-    # ------------------------------------------------------------------------
-    #     Run baseline
-    # ------------------------------------------------------------------------
-    # '''
-    # output_base = BASELINE_DIR
-    # input_dir = BASELINE_DIR
-    # kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-    #         'baseline':True, 'analytical_mtrs':True, 'age_specific':True,
-    #         'user_params':user_params,'guid':'ice',
-    #         'run_micro':False}
-    # #p1 = Process(target=runner, kwargs=kwargs)
-    # #p1.start()
-    # runner(**kwargs)
+    '''
+    ------------------------------------------------------------------------
+        Run baseline
+    ------------------------------------------------------------------------
+    '''
+    output_base = BASELINE_DIR
+    input_dir = BASELINE_DIR
+    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
+            'baseline':True, 'analytical_mtrs':True, 'age_specific':True,
+            'user_params':user_params,'guid':'ice',
+            'run_micro':False}
+    #p1 = Process(target=runner, kwargs=kwargs)
+    #p1.start()
+    runner(**kwargs)
 
     '''
     ------------------------------------------------------------------------
