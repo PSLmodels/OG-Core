@@ -590,9 +590,6 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
         print '\tIteration:', TPIiter
         print '\t\tDistance:', TPIdist
 
-    if ((TPIiter >= maxiter) or (np.absolute(TPIdist) > mindist_TPI)) and ENFORCE_SOLUTION_CHECKS :
-        raise RuntimeError("Transition path equlibrium not found")
-
 
     Y[:T] = Ynew
 
@@ -655,10 +652,6 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     rc_error = Y[:T] - C[:T] - I[:T]
     print 'Resource Constraint Difference:', rc_error
 
-    if ((np.any(np.absolute(rc_error) >= 1e-6))
-        and ENFORCE_SOLUTION_CHECKS):
-        raise RuntimeError("Transition path equlibrium not found")
-
 
     print'Checking time path for violations of constaints.'
     for t in xrange(T):
@@ -671,10 +664,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     print 'Max Euler error, savings: ', eul_savings
     print 'Max Euler error labor supply: ', eul_laborleisure
 
-    if ((np.any(np.absolute(eul_savings) >= mindist_TPI) or
-        (np.any(np.absolute(eul_laborleisure) > mindist_TPI)))
-        and ENFORCE_SOLUTION_CHECKS):
-        raise RuntimeError("Transition path equlibrium not found")
+    
 
     '''
     ------------------------------------------------------------------------
@@ -695,6 +685,19 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     macro_output = {'Y': Y, 'K': K, 'L': L, 'C': C, 'I': I,
                     'BQ': BQ, 'T_H': T_H, 'r': r, 'w': w, 
                     'tax_path': tax_path}
+
+
+    if ((TPIiter >= maxiter) or (np.absolute(TPIdist) > mindist_TPI)) and ENFORCE_SOLUTION_CHECKS :
+        raise RuntimeError("Transition path equlibrium not found")
+        
+    if ((np.any(np.absolute(rc_error) >= 1e-6))
+        and ENFORCE_SOLUTION_CHECKS):
+        raise RuntimeError("Transition path equlibrium not found")
+
+    if ((np.any(np.absolute(eul_savings) >= mindist_TPI) or
+        (np.any(np.absolute(eul_laborleisure) > mindist_TPI)))
+        and ENFORCE_SOLUTION_CHECKS):
+        raise RuntimeError("Transition path equlibrium not found")
 
     # Non-stationary output
     # macro_ns_output = {'K_ns_path': K_ns_path, 'C_ns_path': C_ns_path, 'I_ns_path': I_ns_path,
