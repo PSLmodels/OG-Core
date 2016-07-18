@@ -498,10 +498,10 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     flag_graphs = False
     #   Calibration parameters
     # These guesses are close to the calibrated values
-    chi_b_guess = np.ones((J,)) * 80.0
+    #chi_b_guess = np.ones((J,)) * 80.0
     #chi_b_guess = np.array([0.7, 0.7, 1.0, 1.2, 1.2, 1.2, 1.4])
     #chi_b_guess = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 4.0, 10.0])
-    #chi_b_guess = np.array([5, 10, 90, 250, 250, 250, 250])
+    chi_b_guess = np.array([5, 10, 90, 250, 250, 250, 250])
     #chi_b_guess = np.array([2, 10, 90, 350, 1700, 22000, 120000])
     chi_n_guess = np.array([38.12000874, 33.22762421, 25.34842241, 26.67954008, 24.41097278,
                             23.15059004, 22.46771332, 21.85495452, 21.46242013, 22.00364263,
@@ -539,8 +539,10 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
 
     e_hetero = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
-    e = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))
-    e /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
+    e = e_hetero
+    ## To shut off hetero earnings processes, uncomment following two lines
+    # e = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))
+    # e /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
 
 
     allvars = dict(locals())
