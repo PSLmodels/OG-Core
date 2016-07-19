@@ -768,10 +768,14 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
     AvgMTRy = np.zeros(tpers)
     TotPop_yr = np.zeros(tpers)
     PopPct_age = np.zeros((s_max-s_min+1, tpers))
-    desc_data = False
-    graph_data = False
-    graph_est = False
-    dmtrgr_est = False
+    # desc_data = False
+    # graph_data = False
+    # graph_est = False
+    # dmtrgr_est = False
+    desc_data = True
+    graph_data = True
+    graph_est = True
+    dmtrgr_est = True
     cmap1 = matplotlib.cm.get_cmap('summer')
     # cmap1 = matplotlib.cm.get_cmap('jet')
     # cmap1 = matplotlib.cm.get_cmap('coolwarm')
@@ -788,14 +792,15 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
     '''
 
     # call tax caculator and get microdata
-    micro_data = get_micro_data.get_data(baseline=baseline, start_year=beg_yr, reform=reform)
-    """if reform:
+    #micro_data = get_micro_data.get_data(baseline=baseline, start_year=beg_yr, reform=reform)
+    if reform:
         micro_data = pickle.load( open( "micro_data_policy.pkl", "rb" ) )
     else:
-        micro_data = pickle.load( open( "micro_data_baseline.pkl", "rb" ) )"""
+        micro_data = pickle.load( open( "micro_data_baseline.pkl", "rb" ) )
 
 
-    for t in years_list: #range(2024, 2025): #
+
+    for t in range(2016, 2017): #years_list:
         '''
         --------------------------------------------------------------------
         Load OSPC Tax Calculator Data into a Dataframe
@@ -898,7 +903,8 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
 
         # Each age s must be done in serial, but each year can be done in
         # parallel
-        for s in ages_list: #range(43, 46):
+        #for s in ages_list: #range(43, 46):
+        for s in range(43, 46):
             '''
             ----------------------------------------------------------------
             Load OSPC Tax Calculator Data into a Dataframe

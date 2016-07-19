@@ -396,9 +396,9 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     --------------------------------------------------------------------
     '''
     # Model Parameters
-    S = int(80)
+    S = int(20)
     J = int(7)
-    T = int(4 * S)
+    T = int(6 * S)
     BW = int(10)
     lambdas = np.array([.25, .25, .2, .1, .1, .09, .01])
     starting_age = 20
@@ -541,8 +541,11 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     e_hetero = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
     e = e_hetero
     ## To shut off hetero earnings processes, uncomment following two lines
-    # e = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))
-    # e /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
+    e_full = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))
+    e_full /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
+    chi_b_guess = np.ones((J,)) * 80.0
+    J = 1
+    e = e_full[:,0]
 
 
     allvars = dict(locals())
