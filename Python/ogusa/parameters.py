@@ -18,6 +18,7 @@ Import Packages
 import os
 import json
 import numpy as np
+import scipy.ndimage.filters as filter
 from demographics import get_pop_objs
 from demographics_old import get_omega
 from income import get_e
@@ -274,10 +275,10 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     starting_age = 40
     ending_age = 50
     S = int(ending_age-starting_age)
-    J = int(2)
+    J = int(1)
     T = int(2 * S)
     BW = int(10)
-    lambdas = np.array([.50, .50])
+    lambdas = np.array([1.])
     E = int(starting_age * (S / float(ending_age - starting_age)))
     beta_annual = .96 # Carroll (JME, 2009)
     beta = beta_annual ** (float(ending_age - starting_age) / S)
@@ -396,11 +397,14 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     --------------------------------------------------------------------
     '''
     # Model Parameters
-    S = int(20)
-    J = int(7)
+    S = int(40)
+    J = int(1)
     T = int(6 * S)
     BW = int(10)
-    lambdas = np.array([.25, .25, .2, .1, .1, .09, .01])
+    #lambdas = np.array([.25, .25, .2, .1, .1, .09, .01])
+    #lambdas = np.array([0.5, 0.5])
+    lambdas = np.array([1.,])
+
     starting_age = 20
     ending_age = 100
     E = int(starting_age * (S / float(ending_age - starting_age)))
@@ -498,12 +502,12 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     flag_graphs = False
     #   Calibration parameters
     # These guesses are close to the calibrated values
-    #chi_b_guess = np.ones((J,)) * 80.0
+    chi_b_guess = np.ones((J,)) * 80.0
     #chi_b_guess = np.array([0.7, 0.7, 1.0, 1.2, 1.2, 1.2, 1.4])
     #chi_b_guess = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 4.0, 10.0])
-    chi_b_guess = np.array([5, 10, 90, 250, 250, 250, 250])
+    #chi_b_guess = np.array([5, 10, 90, 250, 250, 250, 250])
     #chi_b_guess = np.array([2, 10, 90, 350, 1700, 22000, 120000])
-    chi_n_guess = np.array([38.12000874, 33.22762421, 25.34842241, 26.67954008, 24.41097278,
+    chi_n_guess_80 = np.array([38.12000874, 33.22762421, 25.34842241, 26.67954008, 24.41097278,
                             23.15059004, 22.46771332, 21.85495452, 21.46242013, 22.00364263,
                             21.57322063, 21.53371545, 21.29828515, 21.10144524, 20.8617942,
                             20.57282, 20.47473172, 20.31111347, 19.04137299, 18.92616951,
@@ -519,6 +523,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
                             43.37786072, 45.38166073, 46.22395387, 50.21419653, 51.05246704,
                             53.86896121, 53.90029708, 61.83586775, 64.87563699, 66.91207845,
                             68.07449767, 71.27919965, 73.57195873, 74.95045988, 76.62308152])
+    chi_n_guess = filter.uniform_filter(chi_n_guess_80,size=int(80/J))[::int(80/J)]
 
 
    # Generate Income and Demographic parameters
@@ -537,16 +542,23 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     # g_n_vector = np.tile(g_n_ss,(T+S,))
 
 
-
-    e_hetero = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
-    e = e_hetero
-    ## To shut off hetero earnings processes, uncomment following two lines
-    e_full = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))
-    e_full /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
-    chi_b_guess = np.ones((J,)) * 80.0
-    J = 1
-    e = e_full[:,0]
-
+    # income.get_e() must be hardcoded since relies on regression output 
+    # from DeBacker, Evans, Philips, and Ramnath (2015)
+    # e = get_e(80, 7, 20, 100, lambdas = np.array([.25, .25, .2, .1, .1, .09, .01]), flag_graphs)
+    # # need to turn 80x7 array into SxJ array
+    # e_final
+    # e_final /= (e_final * omega_SS.reshape(S, 1)
+    #             * bin_weights.reshape(1, J)).sum()
+    # ## To shut off hetero earnings processes, uncomment following two lines
+    # e_full = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))
+    # e_full /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
+    # chi_b_guess = np.ones((J,)) * 80.0
+    # J = 1
+    # e = e_full[:,0]
+    e = np.ones((S,J))/(np.ones((S,J)) * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
+    # print 'lambdas', lambdas[0]
+    # print 'e shape: ', e.shape
+    # quit()
 
     allvars = dict(locals())
 
