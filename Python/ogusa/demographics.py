@@ -798,6 +798,9 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     # np.savetxt('omega_diffs_adj.csv', omega_diffs_adj, delimiter=',')
     # np.savetxt('omega_diffs_mixed.csv', omega_diffs_mixed, delimiter=',')
 
+    # print "max error: ", np.absolute(omega_diffs_orig).max(), np.absolute(omega_diffs_adj).max(), np.absolute(omega_diffs_mixed).max()
+    # quit()
+
 
 
 

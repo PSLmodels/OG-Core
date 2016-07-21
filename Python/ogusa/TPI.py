@@ -652,7 +652,6 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     rc_error = Y[:T] - C[:T] - I[:T]
     print 'Resource Constraint Difference:', rc_error
 
-
     print'Checking time path for violations of constaints.'
     for t in xrange(T):
         household.constraint_checker_TPI(
@@ -689,7 +688,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
 
     if ((TPIiter >= maxiter) or (np.absolute(TPIdist) > mindist_TPI)) and ENFORCE_SOLUTION_CHECKS :
         raise RuntimeError("Transition path equlibrium not found")
-        
+
     if ((np.any(np.absolute(rc_error) >= 1e-6))
         and ENFORCE_SOLUTION_CHECKS):
         raise RuntimeError("Transition path equlibrium not found")

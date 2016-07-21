@@ -397,9 +397,9 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     --------------------------------------------------------------------
     '''
     # Model Parameters
-    S = int(40)
+    S = int(30) #S<30 won't meet necessary tolerances
     J = int(1)
-    T = int(6 * S)
+    T = int(10 * S)
     BW = int(10)
     #lambdas = np.array([.25, .25, .2, .1, .1, .09, .01])
     #lambdas = np.array([0.5, 0.5])
@@ -433,14 +433,14 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
         baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      baseline_pckl)
-        print 'using baseline2 tax parameters'
+        print 'using baseline tax parameters'
         dict_params = read_tax_func_estimate(estimate_file, baseline_pckl)
 
     else:
         policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                      policy_pckl)
-        print 'using policy2 tax parameters'
+        print 'using policy tax parameters'
         dict_params = read_tax_func_estimate(estimate_file, policy_pckl)
 
 
@@ -450,19 +450,29 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     mtrx_params = dict_params['tfunc_mtrx_params_S'][:S,:BW,:]
     mtry_params = dict_params['tfunc_mtry_params_S'][:S,:BW,:]
 
-    # set etrs and mtrs to constant rates over income/age by uncommenting following code block
+
     # etr_params = np.zeros((S,BW,10))
     # mtrx_params = np.zeros((S,BW,10))
     # mtry_params = np.zeros((S,BW,10))
-    # etr_params[:,:,7] = dict_params['tfunc_avg_etr']
-    # mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx']
-    # mtry_params[:,:,7] = dict_params['tfunc_avg_mtry']
-    # etr_params[:,:,9] = dict_params['tfunc_avg_etr']
-    # mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx']
-    # mtry_params[:,:,9] = dict_params['tfunc_avg_mtry']
-    # etr_params[:,:,5] = 1.0
-    # mtrx_params[:,:,5] = 1.0
-    # mtry_params[:,:,5] = 1.0
+    # etr_params[:,:,:] = dict_params['tfunc_etr_params_S'][20,:BW,:]
+    # mtrx_params[:,:,:] = dict_params['tfunc_mtrx_params_S'][20,:BW,:]
+    # mtry_params[:,:,:] = dict_params['tfunc_mtry_params_S'][20,:BW,:]
+
+
+
+    # set etrs and mtrs to constant rates over income/age by uncommenting following code block
+    etr_params = np.zeros((S,BW,10))
+    mtrx_params = np.zeros((S,BW,10))
+    mtry_params = np.zeros((S,BW,10))
+    etr_params[:,:,7] = dict_params['tfunc_avg_etr']
+    mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx']
+    mtry_params[:,:,7] = dict_params['tfunc_avg_mtry']
+    etr_params[:,:,9] = dict_params['tfunc_avg_etr']
+    mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx']
+    mtry_params[:,:,9] = dict_params['tfunc_avg_mtry']
+    etr_params[:,:,5] = 1.0
+    mtrx_params[:,:,5] = 1.0
+    mtry_params[:,:,5] = 1.0
 
 
     # make etrs and mtrs constant over time, uncomment following code block
@@ -531,15 +541,15 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
         E, S, T, 1, 100, 2016, flag_graphs)
 
     ## To shut off demographics, uncomment the following 9 lines of code
-    # g_n_ss = 0.0
-    # surv_rate1 = np.ones((S,))# prob start at age S
-    # surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
-    # omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
-    # omega_SS = omega_SS/omega_SS.sum()
-    # imm_rates = np.zeros((T+S,S))
-    # omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
-    # omega_S_preTP = omega_SS
-    # g_n_vector = np.tile(g_n_ss,(T+S,))
+    g_n_ss = 0.0
+    surv_rate1 = np.ones((S,))# prob start at age S
+    surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
+    omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
+    omega_SS = omega_SS/omega_SS.sum()
+    imm_rates = np.zeros((T+S,S))
+    omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
+    omega_S_preTP = omega_SS
+    g_n_vector = np.tile(g_n_ss,(T+S,))
 
 
     # income.get_e() must be hardcoded since relies on regression output 
