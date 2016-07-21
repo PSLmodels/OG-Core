@@ -451,28 +451,27 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     mtry_params = dict_params['tfunc_mtry_params_S'][:S,:BW,:]
 
 
-    # etr_params = np.zeros((S,BW,10))
-    # mtrx_params = np.zeros((S,BW,10))
-    # mtry_params = np.zeros((S,BW,10))
-    # etr_params[:,:,:] = dict_params['tfunc_etr_params_S'][20,:BW,:]
-    # mtrx_params[:,:,:] = dict_params['tfunc_mtrx_params_S'][20,:BW,:]
-    # mtry_params[:,:,:] = dict_params['tfunc_mtry_params_S'][20,:BW,:]
-
-
-
-    # set etrs and mtrs to constant rates over income/age by uncommenting following code block
     etr_params = np.zeros((S,BW,10))
     mtrx_params = np.zeros((S,BW,10))
     mtry_params = np.zeros((S,BW,10))
-    etr_params[:,:,7] = dict_params['tfunc_avg_etr']
-    mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx']
-    mtry_params[:,:,7] = dict_params['tfunc_avg_mtry']
-    etr_params[:,:,9] = dict_params['tfunc_avg_etr']
-    mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx']
-    mtry_params[:,:,9] = dict_params['tfunc_avg_mtry']
-    etr_params[:,:,5] = 1.0
-    mtrx_params[:,:,5] = 1.0
-    mtry_params[:,:,5] = 1.0
+    etr_params[:,:,:] = dict_params['tfunc_etr_params_S'][20,-1,:]
+    mtrx_params[:,:,:] = dict_params['tfunc_mtrx_params_S'][20,-1,:]
+    mtry_params[:,:,:] = dict_params['tfunc_mtry_params_S'][20,-1,:]
+
+
+    # set etrs and mtrs to constant rates over income/age by uncommenting following code block
+    # etr_params = np.zeros((S,BW,10))
+    # mtrx_params = np.zeros((S,BW,10))
+    # mtry_params = np.zeros((S,BW,10))
+    # etr_params[:,:,7] = dict_params['tfunc_avg_etr']
+    # mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx']
+    # mtry_params[:,:,7] = dict_params['tfunc_avg_mtry']
+    # etr_params[:,:,9] = dict_params['tfunc_avg_etr']
+    # mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx']
+    # mtry_params[:,:,9] = dict_params['tfunc_avg_mtry']
+    # etr_params[:,:,5] = 1.0
+    # mtrx_params[:,:,5] = 1.0
+    # mtry_params[:,:,5] = 1.0
 
 
     # make etrs and mtrs constant over time, uncomment following code block
