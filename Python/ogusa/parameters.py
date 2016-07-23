@@ -275,7 +275,7 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     starting_age = 40
     ending_age = 50
     S = int(ending_age-starting_age)
-    J = int(1)
+    J = int(2)
     T = int(2 * S)
     BW = int(10)
     lambdas = np.array([1.])
