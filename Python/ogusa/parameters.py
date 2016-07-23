@@ -454,16 +454,42 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     etr_params = np.zeros((S,BW,10))
     mtrx_params = np.zeros((S,BW,10))
     mtry_params = np.zeros((S,BW,10))
-    etr_params[:,:,:] = dict_params['tfunc_etr_params_S'][20,-1,:]
-    mtrx_params[:,:,:] = dict_params['tfunc_mtrx_params_S'][20,-1,:]
-    mtry_params[:,:,:] = dict_params['tfunc_mtry_params_S'][20,-1,:]
+    etr_params[:,:,:] = dict_params['tfunc_etr_params_S'][20,0,:]
+    mtrx_params[:,:,:] = dict_params['tfunc_mtrx_params_S'][20,0,:]
+    mtry_params[:,:,:] = dict_params['tfunc_mtry_params_S'][20,0,:]
+
+
+    mtrx_params[:,:,1] = 0.
+    mtrx_params[:,:,2] = 0.
+    mtrx_params[:,:,4] = 0.
+    mtrx_params[:,:,8] = 0.
+    mtrx_params[:,:,9] = 0.
+
+    mtry_params[:,:,0] = 0.
+    mtry_params[:,:,2] = 0.
+    mtry_params[:,:,3] = 0.
+    mtry_params[:,:,6] = 0.
+    mtry_params[:,:,7] = 0.
+    
+    # # unocmmenting the block below ensures no tax rates are negative
+    # etr_params[:,:,7] = 0.
+    # mtrx_params[:,:,7] = 0.
+    # mtry_params[:,:,7] = 0.
+    # etr_params[:,:,9] = 0.
+    # mtrx_params[:,:,9] = 0.
+    # mtry_params[:,:,9] = 0.
+
+    # print 'tax diffs: ', np.absolute(etr_params-etr_params.mean(axis=(0,1))).max()
+    # quit()
+
+
 
 
     # set etrs and mtrs to constant rates over income/age by uncommenting following code block
-    # etr_params = np.zeros((S,BW,10))
+    etr_params = np.zeros((S,BW,10))
     # mtrx_params = np.zeros((S,BW,10))
     # mtry_params = np.zeros((S,BW,10))
-    # etr_params[:,:,7] = dict_params['tfunc_avg_etr']
+    etr_params[:,:,7] = dict_params['tfunc_avg_etr']
     # mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx']
     # mtry_params[:,:,7] = dict_params['tfunc_avg_mtry']
     # etr_params[:,:,9] = dict_params['tfunc_avg_etr']
@@ -473,12 +499,26 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     # mtrx_params[:,:,5] = 1.0
     # mtry_params[:,:,5] = 1.0
 
+    # etr_params = np.zeros((S,BW,10))
+    # mtrx_params = np.zeros((S,BW,10))
+    # mtry_params = np.zeros((S,BW,10))
+    # for i in xrange(S):
+    #     etr_params[:,:,7] = 0.005*i
+    #     mtrx_params[:,:,7] = 0.005*i
+    #     mtry_params[:,:,7] = 0.005*i
+    #     etr_params[:,:,9] = 0.005*i
+    #     mtrx_params[:,:,9] = 0.005*i
+    #     mtry_params[:,:,9] = 0.005*i
+    # etr_params[:,:,5] = 1.0
+    # mtrx_params[:,:,5] = 1.0
+    # mtry_params[:,:,5] = 1.0
+
 
     # make etrs and mtrs constant over time, uncomment following code block
-    # etr_params[:,:,7] = dict_params['tfunc_avg_etr'][0]
+    etr_params[:,:,7] = dict_params['tfunc_avg_etr'][0]
     # mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx'][0]
     # mtry_params[:,:,7] = dict_params['tfunc_avg_mtry'][0]
-    # etr_params[:,:,9] = dict_params['tfunc_avg_etr'][0]
+    etr_params[:,:,9] = dict_params['tfunc_avg_etr'][0]
     # mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx'][0]
     # mtry_params[:,:,9] = dict_params['tfunc_avg_mtry'][0]
 
@@ -486,6 +526,68 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     # etr_params[:,:,6:] = 0.0
     # mtrx_params[:,:,6:] = 0.0
     # mtry_params[:,:,6:] = 0.0
+
+
+    # #plot some tax functions
+    # cap_income = np.array([0.0,1000., 10000., 100000., 1000000.]) # fix capital income
+    # N = 1000 # number of points in income grids
+    # labinc_sup = np.linspace(5, 1000000, N)
+    # capinc_sup = np.linspace(5, 1000000, N)
+
+    # A = mtrx_params[0,0,0]
+    # B = mtrx_params[0,0,1]
+    # C = mtrx_params[0,0,2]
+    # D = mtrx_params[0,0,3]
+    # E = mtrx_params[0,0,4]
+    # F = mtrx_params[0,0,5]
+    # max_x = mtrx_params[0,0,6]
+    # min_x = mtrx_params[0,0,7]
+    # max_y = mtrx_params[0,0,8]
+    # min_y = mtrx_params[0,0,9]
+
+    # analytical_mtrs=True
+    # marginal_rates = np.zeros((5,N))
+
+    # for i in xrange((5)):
+    #     y = cap_income[i] # fix capital income
+    #     x = labinc_sup # labor income varies
+    #     I = x+y
+
+    #     if analytical_mtrs:
+    #         num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
+    #         denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
+    #         Lambda = num/denom
+
+    #         d_num = (2*A*x + C*y + D)*F
+    #         d_denom = ((A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F)**2
+    #         d_Lambda = d_num/d_denom
+
+    #         marginal_rates[i,:] =  (max_x-min_x)*Lambda + (x*(max_x-min_x) + y*(max_y-min_y))*d_Lambda + min_x
+
+    #     else:
+
+    #         phi = x/I
+    #         Phi = phi*(max_x-min_x) + (1-phi)*(max_y-min_y)
+    #         K = phi*min_x + (1-phi)*min_y
+
+    #         num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
+    #         denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
+            
+    #         marginal_rates[i,:]  =  (Phi*(num/denom)) + K
+   
+
+    # plt.plot(labinc_sup, marginal_rates[0,:], label='cap inc=0')
+    # plt.plot(labinc_sup, marginal_rates[1,:], label='cap inc=1,000')
+    # plt.plot(labinc_sup, marginal_rates[2,:], label='cap inc=10,000')
+    # plt.plot(labinc_sup, marginal_rates[3,:], label='cap inc=100,000')
+    # plt.plot(labinc_sup, marginal_rates[4,:], label='cap inc=1,000,000')
+    # plt.legend(loc='center right')
+    # plt.title('MTRx by labor income')
+    # plt.xlabel(r'Labor Income')
+    # plt.ylabel(r'MTR')
+    # plt.show()
+    # quit()
+
 
 
     #   Wealth tax params

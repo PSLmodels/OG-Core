@@ -774,6 +774,16 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, baseline=
 
     # First run SS simulation with guesses at initial values for b, n, w, r, etc
     # For inital guesses of b and n, we choose very small b, and medium n
+
+    # tpi_jason_base2 = pickle.load(open( '/Users/jasondebacker/repos/dynamic/Python/OUTPUT_BASELINE/TPI/TPI_vars.pkl', "rb" ))
+    # b_guess = tpi_jason_base2['b_mat'][T-1,:,:]
+    # n_guess = tpi_jason_base2['n_mat'][T-1,:,:]
+    # print b_guess.reshape(S, J)
+    # print b_guess
+    # print tpi_jason_base2['b_mat'].shape
+    # np.savetxt('bmat_test.csv',np.reshape(tpi_jason_base2['b_mat'],(330,S)),delimiter=',')
+    # quit()
+
     b_guess = np.ones((S, J)).flatten() * 0.05
     n_guess = np.ones((S, J)).flatten() * .4 * ltilde
     # For initial guesses of w, r, T_H, and factor, we use values that are close
@@ -784,6 +794,14 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, baseline=
         rguess = .06
         T_Hguess = 0.12 
         factorguess = 70000
+        # tpi_jason_base = pickle.load(open( '/Users/jasondebacker/repos/dynamic/Python/OUTPUT_BASELINE/TPI/TPI_macro_vars.pkl', "rb" ))
+        # wguess = tpi_jason_base['w'][-1]
+        # rguess = tpi_jason_base['r'][-1]
+        # T_Hguess = tpi_jason_base['T_H'][-1]
+        # tpi_jason_base_ss = pickle.load(open( '/Users/jasondebacker/repos/dynamic/Python/OUTPUT_BASELINE/SS/ss_vars.pkl', "rb" ))
+        # factorguess = tpi_jason_base_ss['factor_ss']
+        # print "Initial values: ", wguess, rguess, T_Hguess, factorguess
+
         ss_params_baseline = [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params]
         guesses = [wguess, rguess, T_Hguess, factorguess]
         [solutions_fsolve, infodict, ier, message] = opt.fsolve(SS_fsolve, guesses, args=ss_params_baseline, xtol=mindist_SS, full_output=True)
@@ -794,6 +812,8 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, baseline=
         # Return SS values of variables
         solution_params= [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params]
         output = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), wss, rss, T_Hss, factor_ss, solution_params, baseline, fsolve_flag)
+        # print "solved output", wss, rss, T_Hss, factor_ss
+        print 'analytical mtrs in SS: ', analytical_mtrs
     else:
         baseline_ss_dir = os.path.join(
             baseline_dir, "SS/SS_vars.pkl")
