@@ -184,6 +184,7 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params):
     cons = household.get_cons(r, w, b_s, b_splus1, n, BQ, tax1, cons_params)
 
     bequest_ut = rho[-1] * np.exp(-sigma * g_y) * chi_b[j] * b_splus1 ** (-sigma)
+
     error1 = household.marg_ut_cons(cons, sigma) - bequest_ut
     # Euler 2 equations
     income2 = (r * b_s + w * e[-1, j] * n) * factor
@@ -307,6 +308,7 @@ def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params):
     # period of life don't matter
     error1= household.marg_ut_cons(cons_s, sigma) - beta * (1 - rho[-(length):]) * np.exp(-sigma * g_y) * deriv_savings * household.marg_ut_cons(
         cons_splus1, sigma) - savings_ut
+
 
     # Labor leisure euler equations
     income_s = (r_s * b_s + w_s * e_s * n_s) * factor
@@ -508,6 +510,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     euler_errors = np.zeros((T, 2 * S, J))
     TPIdist_vec = np.zeros(maxiter)
 
+    print 'analytical mtrs in tpi = ', analytical_mtrs
 
     while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
         # Plot TPI for K for each iteration, so we can see if there is a
@@ -590,9 +593,6 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
         print '\tIteration:', TPIiter
         print '\t\tDistance:', TPIdist
 
-    if ((TPIiter >= maxiter) or (np.absolute(TPIdist) > mindist_TPI)) and ENFORCE_SOLUTION_CHECKS :
-        raise RuntimeError("Transition path equlibrium not found")
-
 
     Y[:T] = Ynew
 
@@ -655,11 +655,6 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     rc_error = Y[:T] - C[:T] - I[:T]
     print 'Resource Constraint Difference:', rc_error
 
-    if ((np.any(np.absolute(rc_error) >= 1e-6))
-        and ENFORCE_SOLUTION_CHECKS):
-        raise RuntimeError("Transition path equlibrium not found")
-
-
     print'Checking time path for violations of constaints.'
     for t in xrange(T):
         household.constraint_checker_TPI(
@@ -671,10 +666,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     print 'Max Euler error, savings: ', eul_savings
     print 'Max Euler error labor supply: ', eul_laborleisure
 
-    if ((np.any(np.absolute(eul_savings) >= mindist_TPI) or
-        (np.any(np.absolute(eul_laborleisure) > mindist_TPI)))
-        and ENFORCE_SOLUTION_CHECKS):
-        raise RuntimeError("Transition path equlibrium not found")
+    
 
     '''
     ------------------------------------------------------------------------
@@ -695,6 +687,19 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     macro_output = {'Y': Y, 'K': K, 'L': L, 'C': C, 'I': I,
                     'BQ': BQ, 'T_H': T_H, 'r': r, 'w': w, 
                     'tax_path': tax_path}
+
+
+    if ((TPIiter >= maxiter) or (np.absolute(TPIdist) > mindist_TPI)) and ENFORCE_SOLUTION_CHECKS :
+        raise RuntimeError("Transition path equlibrium not found")
+
+    if ((np.any(np.absolute(rc_error) >= 1e-6))
+        and ENFORCE_SOLUTION_CHECKS):
+        raise RuntimeError("Transition path equlibrium not found")
+
+    if ((np.any(np.absolute(eul_savings) >= mindist_TPI) or
+        (np.any(np.absolute(eul_laborleisure) > mindist_TPI)))
+        and ENFORCE_SOLUTION_CHECKS):
+        raise RuntimeError("Transition path equlibrium not found")
 
     # Non-stationary output
     # macro_ns_output = {'K_ns_path': K_ns_path, 'C_ns_path': C_ns_path, 'I_ns_path': I_ns_path,

@@ -55,29 +55,29 @@ def run_micro_macro(user_params):
     output_base = BASELINE_DIR
     input_dir = BASELINE_DIR
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'baseline':True, 'analytical_mtrs':False, 'age_specific':False,
+            'baseline':True, 'analytical_mtrs':True, 'age_specific':False,
             'user_params':user_params,'guid':'38_mtr',
             'run_micro':False}
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
     runner_SS(**kwargs)
+
+
+    '''
+    ------------------------------------------------------------------------
+        Run baseline
+    ------------------------------------------------------------------------
+    '''
+    output_base = BASELINE_DIR
+    input_dir = BASELINE_DIR
+    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
+            'baseline':True, 'analytical_mtrs':True, 'age_specific':False,
+            'user_params':user_params,'guid':'38_mtr',
+            'run_micro':False}
+    #p1 = Process(target=runner, kwargs=kwargs)
+    #p1.start()
+    runner(**kwargs)
     quit()
-
-
-    # '''
-    # ------------------------------------------------------------------------
-    #     Run baseline
-    # ------------------------------------------------------------------------
-    # '''
-    # output_base = BASELINE_DIR
-    # input_dir = BASELINE_DIR
-    # kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-    #         'baseline':True, 'analytical_mtrs':False, 'age_specific':False,
-    #         'user_params':user_params,'guid':'38_mtr',
-    #         'run_micro':False}
-    # #p1 = Process(target=runner, kwargs=kwargs)
-    # #p1.start()
-    # runner(**kwargs)
 
     '''
     ------------------------------------------------------------------------
@@ -89,7 +89,8 @@ def run_micro_macro(user_params):
     guid_iter = 'reform_' + str(0)
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
             'baseline':False, 'analytical_mtrs':False, 'age_specific':False, 
-            'reform':reform, 'user_params':user_params,'guid':'38_mtr', 'run_micro':False}
+            'reform':reform, 'user_params':user_params,'guid':'38_mtr', 
+            'run_micro':False}
     #p2 = Process(target=runner, kwargs=kwargs)
     #p2.start()
     runner(**kwargs)

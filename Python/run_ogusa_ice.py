@@ -58,13 +58,13 @@ def run_micro_macro(user_params):
     output_base = BASELINE_DIR
     input_dir = BASELINE_DIR
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'baseline':True, 'analytical_mtrs':True, 'age_specific':True,
+            'baseline':True, 'analytical_mtrs':False, 'age_specific':False,
             'user_params':user_params,'guid':'ice',
-            'run_micro':True}
+            'run_micro':False}
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
     runner_SS(**kwargs)
-    # quit()
+    #quit()
 
 
     '''
@@ -75,12 +75,12 @@ def run_micro_macro(user_params):
     output_base = BASELINE_DIR
     input_dir = BASELINE_DIR
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'baseline':True, 'analytical_mtrs':True, 'age_specific':True,
+            'baseline':True, 'analytical_mtrs':False, 'age_specific':False,
             'user_params':user_params,'guid':'ice',
             'run_micro':False}
-    #p1 = Process(target=runner, kwargs=kwargs)
-    #p1.start()
-    runner(**kwargs)
+    p1 = Process(target=runner, kwargs=kwargs)
+    p1.start()
+    # runner(**kwargs)
 
     '''
     ------------------------------------------------------------------------
@@ -91,18 +91,18 @@ def run_micro_macro(user_params):
     input_dir = REFORM_DIR
     guid_iter = 'reform_' + str(0)
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'baseline':False, 'analytical_mtrs':True, 'age_specific':True,
-            'reform':reform, 'user_params':user_params,'guid':'ice', 'run_micro':True}
-    #p2 = Process(target=runner, kwargs=kwargs)
-    #p2.start()
-    runner(**kwargs)
+            'baseline':False, 'analytical_mtrs':False, 'age_specific':False,
+            'reform':reform, 'user_params':user_params,'guid':'ice', 'run_micro':False}
+    p2 = Process(target=runner, kwargs=kwargs)
+    p2.start()
+    #runner(**kwargs)
 
 
 
 
-    #p1.join()
+    p1.join()
     print "just joined"
-    #p2.join()
+    p2.join()
 
     time.sleep(0.5)
 
