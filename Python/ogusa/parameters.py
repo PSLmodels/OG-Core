@@ -495,7 +495,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     # etr_params[:,:,9] = dict_params['tfunc_avg_etr']
     # mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx']
     # mtry_params[:,:,9] = dict_params['tfunc_avg_mtry']
-    # etr_params[:,:,5] = 1.0
+    etr_params[:,:,5] = 1.0
     # mtrx_params[:,:,5] = 1.0
     # mtry_params[:,:,5] = 1.0
 
