@@ -117,8 +117,13 @@ def calc_moments(ss_output, lambdas, S, J):
 
     wealth_model = ss_output['bssmat']
     factor_model = ss_output['factor_ss']
+    pop_dist = ss_output['omega_SS']
 
     # wealth moments
+    print 'Start the ginis:\n'
+    gini_coeff = gini_nocol(wealth_model, pop_dist)
+
+
     # Convert wealth levels from model to dollar terms
     wealth_model_dollars = wealth_model * factor_model
     model_wealth_moments = np.zeros(2 * J)
@@ -138,4 +143,39 @@ def calc_moments(ss_output, lambdas, S, J):
 
 
     return model_moments
+
+def gini_nocol(path, omega):
+    '''
+    --------------------------------------------------------------------
+    This function calculates the gini coefficient for inputs formatted like
+    the model output: dimensions of (T,S,J) and a weight matrix of the same
+    dimension.
+
+    RETURNS: gini coeff
+    --------------------------------------------------------------------
+    '''
+
+    pathx = np.copy(path)
+    mask = pathx < 0
+    pathx[mask] = 0
+    pathx = pathx.reshape(T, S*J)
+    total = pathx.sum(1)
+    pathx /= total.reshape(T, 1)
+    omega = omega.reshape(T, S*J)
+    idx = np.argsort(pathx-omega, axis=1)
+    path2 = pathx[:, idx][np.eye(T,T, dtype=bool)]
+    omega_sorted = omega[:, idx][np.eye(T,T, dtype=bool)]
+    cum_levels = np.zeros((T, S*J))
+    cum_omega = np.zeros((T, S*J))
+    cum_omega[:, 0] = omega_sorted[:, 0]
+    cum_levels[:, 0] = path2[:, 0]
+    for i in xrange(1, S*J):
+        cum_levels[:, i] = path2[:, i] + cum_levels[:, i-1]
+        cum_omega[:, i] = omega_sorted[:, i] + cum_omega[:, i-1]
+    cum_levels[:, 1:] = cum_levels[:, :-1]
+    cum_levels[:, 0] = 0
+    G = 2 * (.5-(cum_levels * omega_sorted).sum(1))
+    print G[-1]
+    return G
+
 
