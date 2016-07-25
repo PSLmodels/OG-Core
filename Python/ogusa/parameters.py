@@ -398,12 +398,12 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     '''
     # Model Parameters
     S = int(30) #S<30 won't meet necessary tolerances
-    J = int(1)
+    J = int(7)
     T = int(10 * S)
     BW = int(10)
-    #lambdas = np.array([.25, .25, .2, .1, .1, .09, .01])
+    lambdas = np.array([.25, .25, .2, .1, .1, .09, .01])
     #lambdas = np.array([0.5, 0.5])
-    lambdas = np.array([1.,])
+    #lambdas = np.array([1.,])
 
     starting_age = 20
     ending_age = 100

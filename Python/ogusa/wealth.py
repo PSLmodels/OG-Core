@@ -38,20 +38,13 @@ WEALTH_DIR = os.path.join(cur_path, "data", "wealth")
 ------------------------------------------------------------------------
 '''
 
-# data = pd.read_table(os.path.join(WEALTH_DIR, "scf2007to2013_wealth_age_all_percentiles.csv"),
-# sep=',', header=0)
-# wealth_file = utils.read_file(
-#     cur_path, "data/wealth/scf2007to2013_wealth_age_all_percentiles.csv")
-# data = pd.read_table(wealth_file, sep=',', header=0)
+# read in SCF data collapsed by age and percentile for graphs
+wealth_file = utils.read_file(
+    cur_path, "data/wealth/scf2007to2013_wealth_age_all_percentiles.csv")
+data = pd.read_table(wealth_file, sep=',', header=0)
 
-# use "rscfp2013.dta", clear ;
-# append using "rscfp2010.dta" ; /* append 2010 data  - note it's already in 2013 dollars*/
-# append using "rscfp2007.dta" ; /* append 2007 data  - note it's already in 2013 dollars*/
-
-
+# read in raw SCF data to calculate moments
 fileDir = os.path.dirname(os.path.realpath('__file__'))
-
-#For accessing the file inside a sibling folder.
 year_list = [2013, 2010, 2007]
 scf_dict = {}
 for year in year_list:
@@ -60,7 +53,8 @@ for year in year_list:
     print 'filename = ', filename
     scf_dict[str(year)] = pd.read_stata(filename)
 
-scf = scf_dict['2013'].append(scf_dict['2010'].append(scf_dict['2007']))
+scf = scf_dict['2013'].append(scf_dict['2010'].append(scf_dict['2007'],ignore_index=True),ignore_index=True)
+
 
 
 '''
@@ -121,6 +115,49 @@ def get_wealth_data(bin_weights, J, flag_graphs):
     '''
     if flag_graphs:
         wealth_data_graphs(output_dir)
+
+
+    # calculate percentile shares (percentiles based on lambdas input)
+    scf.sort(columns='networth', ascending=True, inplace=True)
+    scf['weight_networth'] = scf['wgt']*scf['networth']
+    total_weight_wealth = scf.weight_networth.sum()
+    cumsum = scf.wgt.cumsum()
+    pct_wealth = np.zeros((bin_weights.shape[0],))
+    top_pct_wealth = np.zeros((bin_weights.shape[0],))
+    wealth = np.zeros((bin_weights.shape[0],))
+    cum_weights = bin_weights.cumsum()
+    for i in range(bin_weights.shape[0]):
+        cutoff = scf.wgt.sum() / (1./cum_weights[i])
+        pct_wealth[i] = scf.networth[cumsum >= cutoff].iloc[0]
+        top_pct_wealth[i] = 1 - ((scf.weight_networth[cumsum < cutoff].sum())/total_weight_wealth)
+        wealth[i] = ((scf.weight_networth[cumsum < cutoff].sum())/total_weight_wealth)
+
+
+    wealth_share = np.zeros((bin_weights.shape[0],))
+    wealth_share[0] = wealth[0]
+    wealth_share[1:] = wealth[1:]-wealth[0:-1]
+
+    # print 'Weighted percentiles: ', pct_wealth
+    # print 'Weighted shares: ', top_pct_wealth
+    # print 'Wealth by group: ', wealth_share
+    # print cum_weights
+
+    cutoff = scf.wgt.sum() / (1./.1)
+    pct_10 = scf.networth[cumsum >= cutoff].iloc[0]
+    cutoff = scf.wgt.sum() / (1./.9)
+    pct_90 = scf.networth[cumsum >= cutoff].iloc[0]
+    top_10_share = 1 - ((scf.weight_networth[cumsum < cutoff].sum())/total_weight_wealth)
+    ratio_90_10 = pct_90/pct_10 
+    cutoff = scf.wgt.sum() / (1./.99)
+    pct_99 = scf.networth[cumsum >= cutoff].iloc[0]
+    top_1_share = 1 - ((scf.weight_networth[cumsum < cutoff].sum())/total_weight_wealth)
+
+
+    print ratio_90_10, top_10_share, top_1_share
+    quit()
+
+
+
     perc_array = np.zeros(J)
     # convert bin_weights to integers to index the array of data moments
     bins2 = (bin_weights * 100).astype(int)
