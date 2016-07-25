@@ -40,9 +40,27 @@ WEALTH_DIR = os.path.join(cur_path, "data", "wealth")
 
 # data = pd.read_table(os.path.join(WEALTH_DIR, "scf2007to2013_wealth_age_all_percentiles.csv"),
 # sep=',', header=0)
-wealth_file = utils.read_file(
-    cur_path, "data/wealth/scf2007to2013_wealth_age_all_percentiles.csv")
-data = pd.read_table(wealth_file, sep=',', header=0)
+# wealth_file = utils.read_file(
+#     cur_path, "data/wealth/scf2007to2013_wealth_age_all_percentiles.csv")
+# data = pd.read_table(wealth_file, sep=',', header=0)
+
+# use "rscfp2013.dta", clear ;
+# append using "rscfp2010.dta" ; /* append 2010 data  - note it's already in 2013 dollars*/
+# append using "rscfp2007.dta" ; /* append 2007 data  - note it's already in 2013 dollars*/
+
+
+fileDir = os.path.dirname(os.path.realpath('__file__'))
+
+#For accessing the file inside a sibling folder.
+year_list = [2013, 2010, 2007]
+scf_dict = {}
+for year in year_list:
+    filename = os.path.join(fileDir, '../Data/Survey_of_Consumer_Finances/rscfp'+str(year)+'.dta')
+    filename = os.path.abspath(os.path.realpath(filename))
+    print 'filename = ', filename
+    scf_dict[str(year)] = pd.read_stata(filename)
+
+scf = scf_dict['2013'].append(scf_dict['2010'].append(scf_dict['2007']))
 
 
 '''
@@ -86,12 +104,10 @@ def wealth_data_graphs(output_dir):
 
 '''
 ------------------------------------------------------------------------
-    Get wealth moments of a desired percentile
+    Get wealth moments
 ------------------------------------------------------------------------
 '''
 # Restrict the data: it has other columns that give weights and indexes the age
-data2 = np.array(data)[:, 1:-1]
-
 
 def get_wealth_data(bin_weights, J, flag_graphs):
     '''
