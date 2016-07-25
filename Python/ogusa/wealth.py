@@ -51,7 +51,7 @@ for year in year_list:
     filename = os.path.join(fileDir, '../Data/Survey_of_Consumer_Finances/rscfp'+str(year)+'.dta')
     filename = os.path.abspath(os.path.realpath(filename))
     print 'filename = ', filename
-    scf_dict[str(year)] = pd.read_stata(filename)
+    scf_dict[str(year)] = pd.read_stata(filename, columns=['networth', 'wgt'])
 
 scf = scf_dict['2013'].append(scf_dict['2010'].append(scf_dict['2007'],ignore_index=True),ignore_index=True)
 
@@ -96,6 +96,36 @@ def wealth_data_graphs(output_dir):
     plt.savefig(os.path.join(
         outputdir, '/Demographics/distribution_of_wealth_data_log'))
 
+
+
+# '''
+# ------------------------------------------------------------------------
+#     Compute Gini
+# ------------------------------------------------------------------------
+# '''
+# def gini_wgt(df):
+#     '''
+#     Inputs:
+#         list_of_values = series to compute gini from
+#     Output:
+#         gini coefficient
+#     '''
+#     sorted_list = sorted(list_of_values)
+
+#     print 'sorted list: ', type(sorted_list), sorted_list[:5]
+#     print 'weights', type(weights), weights[:5], weights[sorted_list][:5]
+#     quit()
+
+#     weights = weights[sorted_list]/weights.sum()
+#     p = weights.cumsum()
+#     nu = (weights[sorted_list]*sorted_list).cumsum()
+#     print 'nu shape: ', nu, nu.shape
+#     nu = nu/nu[-1]
+
+#     return (nu[1:]*p[:-1]).sum() - (nu[:-1] * p[1:]).sum()
+
+
+
 '''
 ------------------------------------------------------------------------
     Get wealth moments
@@ -137,11 +167,7 @@ def get_wealth_data(bin_weights, J, flag_graphs):
     wealth_share[0] = wealth[0]
     wealth_share[1:] = wealth[1:]-wealth[0:-1]
 
-    # print 'Weighted percentiles: ', pct_wealth
-    # print 'Weighted shares: ', top_pct_wealth
-    # print 'Wealth by group: ', wealth_share
-    # print cum_weights
-
+    # compute 90/10 ratio, top 10% share, top 1% share
     cutoff = scf.wgt.sum() / (1./.1)
     pct_10 = scf.networth[cumsum >= cutoff].iloc[0]
     cutoff = scf.wgt.sum() / (1./.9)
@@ -153,29 +179,22 @@ def get_wealth_data(bin_weights, J, flag_graphs):
     top_1_share = 1 - ((scf.weight_networth[cumsum < cutoff].sum())/total_weight_wealth)
 
 
-    print ratio_90_10, top_10_share, top_1_share
-    quit()
+    # compute gini coeff
+    scf.sort(columns='networth', ascending=True, inplace=True)
+    p = (scf.wgt.cumsum()/scf.wgt.sum()).as_matrix()
+    nu = ((scf.wgt*scf.networth).cumsum()).as_matrix()
+    nu = nu/nu[-1]
+    gini_coeff = (nu[1:]*p[:-1]).sum() - (nu[:-1] * p[1:]).sum()
 
 
+    # compute variance in logs
+    df = scf.drop(scf[scf['networth'] <=0.0].index)
+    df['ln_networth'] = np.log(df['networth'])
+    df.sort(columns='ln_networth', ascending=True, inplace=True)
+    weight_mean = ((df.ln_networth*df.wgt).sum())/(df.wgt.sum())
+    var_ln_wealth = ((df.wgt*((df.ln_networth-weight_mean)**2)).sum())*(1./(df.wgt.sum()-1))
 
-    perc_array = np.zeros(J)
-    # convert bin_weights to integers to index the array of data moments
-    bins2 = (bin_weights * 100).astype(int)
-    perc_array = np.cumsum(bins2)
-    perc_array -= 1
-    wealth_data_array = np.zeros((78, J))
-    wealth_data_array[:, 0] = data2[:, :perc_array[0]].mean(axis=1)
-    # pull out the data moments for each percentile
-    for j in xrange(1, J):
-        wealth_data_array[:, j] = data2[
-            :, perc_array[j - 1]:perc_array[j]].mean(axis=1)
 
-    # Look at the percent difference between the fits for the first age group (20-44) and second age group (45-65)
-    #   The wealth_data_array moment indices are shifted because they start at age 18
-    # The :: indices is so that we look at the 2 moments for the lowest group,
-    # the 2 moments for the second lowest group, etc in order
-    wealth_moments = np.zeros(2 * J)
-    wealth_moments[0::2] = np.mean(wealth_data_array[2:26],axis=0)
-    wealth_moments[1::2] = np.mean(wealth_data_array[26:47],axis=0)
+    wealth_moments = [wealth_share, gini_coeff, var_ln_wealth]
 
     return wealth_moments
