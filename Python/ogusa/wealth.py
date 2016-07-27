@@ -39,23 +39,24 @@ WEALTH_DIR = os.path.join(cur_path, "data", "wealth")
 '''
 
 # read in SCF data collapsed by age and percentile for graphs
-wealth_file = utils.read_file(
-    cur_path, "data/wealth/scf2007to2013_wealth_age_all_percentiles.csv")
-data = pd.read_table(wealth_file, sep=',', header=0)
+def get_wealth_data():
+    wealth_file = utils.read_file(
+        cur_path, "data/wealth/scf2007to2013_wealth_age_all_percentiles.csv")
+    data = pd.read_table(wealth_file, sep=',', header=0)
 
-# read in raw SCF data to calculate moments
-fileDir = os.path.dirname(os.path.realpath('__file__'))
-year_list = [2013, 2010, 2007]
-scf_dict = {}
-for year in year_list:
-    filename = os.path.join(fileDir, '../Data/Survey_of_Consumer_Finances/rscfp'+str(year)+'.dta')
-    filename = os.path.abspath(os.path.realpath(filename))
-    print 'filename = ', filename
-    scf_dict[str(year)] = pd.read_stata(filename, columns=['networth', 'wgt'])
+    # read in raw SCF data to calculate moments
+    fileDir = os.path.dirname(os.path.realpath('__file__'))
+    year_list = [2013, 2010, 2007]
+    scf_dict = {}
+    for year in year_list:
+        filename = os.path.join(fileDir, '../Data/Survey_of_Consumer_Finances/rscfp'+str(year)+'.dta')
+        filename = os.path.abspath(os.path.realpath(filename))
+        print 'filename = ', filename
+        scf_dict[str(year)] = pd.read_stata(filename, columns=['networth', 'wgt'])
 
-scf = scf_dict['2013'].append(scf_dict['2010'].append(scf_dict['2007'],ignore_index=True),ignore_index=True)
+    scf = scf_dict['2013'].append(scf_dict['2010'].append(scf_dict['2007'],ignore_index=True),ignore_index=True)
 
-
+    return scf, data
 
 '''
 ------------------------------------------------------------------------
@@ -64,7 +65,7 @@ scf = scf_dict['2013'].append(scf_dict['2010'].append(scf_dict['2007'],ignore_in
 '''
 
 
-def wealth_data_graphs(output_dir):
+def wealth_data_graphs(data, output_dir):
     '''
     Graphs wealth distribution and its log
     '''
@@ -143,9 +144,10 @@ def get_wealth_data(bin_weights, J, flag_graphs):
     Output:
         Saves a pickle of the desired wealth percentiles.  Graphs those levels.
     '''
-    if flag_graphs:
-        wealth_data_graphs(output_dir)
+    scf, data = get_wealth_data()    
 
+    if flag_graphs:
+        wealth_data_graphs(data, output_dir)
 
     # calculate percentile shares (percentiles based on lambdas input)
     scf.sort(columns='networth', ascending=True, inplace=True)
