@@ -57,11 +57,9 @@ def chi_estimate(income_tax_params, ss_params, iterative_params, chi_guesses, ba
 
     # call minimizer
     bnds = np.tile(np.array([1e-12, None]),(S+J,1)) # Need (1e-12, None) S+J times
-    #min_args = () data_moments
     chi_guesses_flat = list(chi_b_guess.flatten()) + list(chi_n_guess.flatten())
+
     min_args = data_moments, income_tax_params, ss_params, iterative_params, chi_guesses_flat, baseline_dir
-    print 'size of chi: ', len(chi_guesses_flat)
-    print 'bnds size: ', bnds.shape
     est_output = opt.minimize(minstat, chi_guesses_flat, args=(min_args), method="L-BFGS-B", bounds=bnds,
                     tol=1e-15)
     chi_params = est_output.x
@@ -93,7 +91,7 @@ def minstat(chi_guesses, *args):
     chi_params = (chi_b, chi_n)
     ss_output = SS.run_SS(income_tax_params, ss_params, iterative_params, chi_params, True, baseline_dir)
 
-    model_moments = calc_moments(ss_output, lambdas, S, J)
+    model_moments = calc_moments(ss_output, omega_SS, lambdas, S, J)
 
     # distance with levels
     distance = ((np.array(model_moments) - np.array(data_moments))**2).sum()
@@ -105,7 +103,7 @@ def minstat(chi_guesses, *args):
     return distance
 
 
-def calc_moments(ss_output, lambdas, S, J):
+def calc_moments(ss_output, omega_SS, lambdas, S, J):
     '''
     --------------------------------------------------------------------
     This function calculates moments from the SS output that correspond
@@ -114,68 +112,101 @@ def calc_moments(ss_output, lambdas, S, J):
     RETURNS: model_moments
     --------------------------------------------------------------------
     '''
-
-    wealth_model = ss_output['bssmat']
-    factor_model = ss_output['factor_ss']
-    pop_dist = ss_output['omega_SS']
+    # unpack relevant SS variables
+    bssmat = ss_output['bssmat']
+    factor = ss_output['factor_ss']
+    n = ss_output['nssmat']
 
     # wealth moments
-    print 'Start the ginis:\n'
-    gini_coeff = gini_nocol(wealth_model, pop_dist)
-
-
-    # Convert wealth levels from model to dollar terms
-    wealth_model_dollars = wealth_model * factor_model
-    model_wealth_moments = np.zeros(2 * J)
-    # Look at the percent difference between the fits for the first age group (20-44) and second age group (45-65)
-    #   The wealth_data_array moment indices are shifted because they start at age 18
-    # The :: indices is so that we look at the 2 moments for the lowest group,
-    # the 2 moments for the second lowest group, etc in order
-    model_wealth_moments[0::2] = np.mean(wealth_model_dollars[:24],axis=0)
-    model_wealth_moments[1::2] = np.mean(wealth_model_dollars[24:45],axis=0)
+    model_wealth_moments = the_inequalizer(bssmat, omega_SS, lambdas, factor, S, J)
 
     # labor moments
-    n = ss_output['nssmat']
     model_labor_moments = (n.reshape(S, J) * lambdas.reshape(1, J)).sum(axis=1)
 
     # combine moments
     model_moments = list(model_wealth_moments.flatten()) + list(model_labor_moments.flatten())
 
-
     return model_moments
 
-def gini_nocol(path, omega):
-    '''
-    --------------------------------------------------------------------
-    This function calculates the gini coefficient for inputs formatted like
-    the model output: dimensions of (T,S,J) and a weight matrix of the same
-    dimension.
 
-    RETURNS: gini coeff
-    --------------------------------------------------------------------
+def the_inequalizer(dist, pop_weights, ability_weights, factor, S, J):
+    '''
+    Generates three measures of inequality.
+
+    Inputs:
+        dist            = [S,J] array, distribution of endogenous variables over age and lifetime income group
+        params          = length 4 tuple, (pop_weights, ability_weights, S, J)
+        pop_weights     = [S,] vector, fraction of population by each age
+        ability_weights = [J,] vector, fraction of population for each lifetime income group
+        S               = integer, number of economically active periods in lifetime
+        J               = integer, number of ability types 
+
+    Functions called: None
+
+    Objects in function:
+        weights           = [S,J] array, fraction of population for each age and lifetime income group
+        flattened_dist    = [S*J,] vector, vectorized dist
+        flattened_weights = [S*J,] vector, vectorized weights
+        sort_dist         = [S*J,] vector, ascending order vector of dist
+        loc_90th          = integer, index of 90th percentile
+        loc_10th          = integer, index of 10th percentile
+        loc_99th          = integer, index of 99th percentile
+
+    Returns: N/A
     '''
 
-    pathx = np.copy(path)
-    mask = pathx < 0
-    pathx[mask] = 0
-    pathx = pathx.reshape(T, S*J)
-    total = pathx.sum(1)
-    pathx /= total.reshape(T, 1)
-    omega = omega.reshape(T, S*J)
-    idx = np.argsort(pathx-omega, axis=1)
-    path2 = pathx[:, idx][np.eye(T,T, dtype=bool)]
-    omega_sorted = omega[:, idx][np.eye(T,T, dtype=bool)]
-    cum_levels = np.zeros((T, S*J))
-    cum_omega = np.zeros((T, S*J))
-    cum_omega[:, 0] = omega_sorted[:, 0]
-    cum_levels[:, 0] = path2[:, 0]
-    for i in xrange(1, S*J):
-        cum_levels[:, i] = path2[:, i] + cum_levels[:, i-1]
-        cum_omega[:, i] = omega_sorted[:, i] + cum_omega[:, i-1]
-    cum_levels[:, 1:] = cum_levels[:, :-1]
-    cum_levels[:, 0] = 0
-    G = 2 * (.5-(cum_levels * omega_sorted).sum(1))
-    print G[-1]
-    return G
+    weights = np.tile(pop_weights.reshape(S, 1), (1, J)) * \
+    ability_weights.reshape(1, J)
+    flattened_dist = dist.flatten()
+    flattened_weights = weights.flatten()
+    idx = np.argsort(flattened_dist)
+    sort_dist = flattened_dist[idx]
+    sort_weights = flattened_weights[idx]
+    cum_weights = np.cumsum(sort_weights)
+
+    # gini
+    p = cum_weights/cum_weights.sum()
+    nu = np.cumsum(sort_dist*sort_weights)
+    nu = nu/nu[-1]
+    gini_coeff = (nu[1:]*p[:-1]).sum() - (nu[:-1] * p[1:]).sum()
+
+
+    # variance
+    ln_dist = np.log(sort_dist*factor) # not scale invariant
+    weight_mean = (ln_dist*sort_weights).sum()/sort_weights.sum()
+    var_ln_dist = ((sort_weights*((ln_dist-weight_mean)**2)).sum())*(1./(sort_weights.sum()))
+
+
+    # 90/10 ratio
+    loc_90th = np.argmin(np.abs(cum_weights - .9))
+    loc_10th = np.argmin(np.abs(cum_weights - .1))
+    ratio_90_10 = sort_dist[loc_90th] / sort_dist[loc_10th]
+
+    # top 10% share
+    top_10_share= (sort_dist[loc_90th:] * sort_weights[loc_90th:]
+           ).sum() / (sort_dist * sort_weights).sum()
+    
+    # top 1% share
+    loc_99th = np.argmin(np.abs(cum_weights - .99))
+    top_1_share = (sort_dist[loc_99th:] * sort_weights[loc_99th:]
+           ).sum() / (sort_dist * sort_weights).sum()
+
+    # calculate percentile shares (percentiles based on lambdas input)
+    dist_weight = (sort_weights*sort_dist)
+    total_dist_weight = dist_weight.sum()
+    cumsum = np.cumsum(sort_weights)
+    dist_sum = np.zeros((J,))
+    cum_weights = ability_weights.cumsum()
+    for i in range(J):
+        cutoff = sort_weights.sum() / (1./cum_weights[i])
+        dist_sum[i] = ((dist_weight[cumsum < cutoff].sum())/total_dist_weight)
+
+
+    dist_share = np.zeros((J,))
+    dist_share[0] = dist_sum[0]
+    dist_share[1:] = dist_sum[1:]-dist_sum[0:-1]
+
+    return np.append([dist_share], [gini_coeff,var_ln_dist])
+
 
 

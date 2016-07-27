@@ -397,9 +397,9 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     --------------------------------------------------------------------
     '''
     # Model Parameters
-    S = int(30) #S<30 won't meet necessary tolerances
+    S = int(80) #S<30 won't meet necessary tolerances
     J = int(7)
-    T = int(10 * S)
+    T = int(4 * S)
     BW = int(10)
     lambdas = np.array([.25, .25, .2, .1, .1, .09, .01])
     #lambdas = np.array([0.5, 0.5])
@@ -634,7 +634,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
                             43.37786072, 45.38166073, 46.22395387, 50.21419653, 51.05246704,
                             53.86896121, 53.90029708, 61.83586775, 64.87563699, 66.91207845,
                             68.07449767, 71.27919965, 73.57195873, 74.95045988, 76.62308152])
-    chi_n_guess = filter.uniform_filter(chi_n_guess_80,size=int(80/J))[::int(80/J)]
+    chi_n_guess = filter.uniform_filter(chi_n_guess_80,size=int(80/S))[::int(80/S)]
 
 
    # Generate Income and Demographic parameters

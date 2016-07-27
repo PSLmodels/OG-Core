@@ -195,6 +195,7 @@ def get_wealth_data(bin_weights, J, flag_graphs):
     var_ln_wealth = ((df.wgt*((df.ln_networth-weight_mean)**2)).sum())*(1./(df.wgt.sum()-1))
 
 
-    wealth_moments = [wealth_share, gini_coeff, var_ln_wealth]
+    wealth_moments = np.append([wealth_share], [gini_coeff,var_ln_wealth])
+
 
     return wealth_moments
