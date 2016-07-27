@@ -37,9 +37,8 @@ WEALTH_DIR = os.path.join(cur_path, "data", "wealth")
     Import Data
 ------------------------------------------------------------------------
 '''
-
-# read in SCF data collapsed by age and percentile for graphs
 def get_wealth_data():
+    # read in SCF data collapsed by age and percentile for graphs
     wealth_file = utils.read_file(
         cur_path, "data/wealth/scf2007to2013_wealth_age_all_percentiles.csv")
     data = pd.read_table(wealth_file, sep=',', header=0)
@@ -51,7 +50,6 @@ def get_wealth_data():
     for year in year_list:
         filename = os.path.join(fileDir, '../Data/Survey_of_Consumer_Finances/rscfp'+str(year)+'.dta')
         filename = os.path.abspath(os.path.realpath(filename))
-        print 'filename = ', filename
         scf_dict[str(year)] = pd.read_stata(filename, columns=['networth', 'wgt'])
 
     scf = scf_dict['2013'].append(scf_dict['2010'].append(scf_dict['2007'],ignore_index=True),ignore_index=True)
@@ -63,8 +61,6 @@ def get_wealth_data():
     Graph Data
 ------------------------------------------------------------------------
 '''
-
-
 def wealth_data_graphs(data, output_dir):
     '''
     Graphs wealth distribution and its log
@@ -72,6 +68,9 @@ def wealth_data_graphs(data, output_dir):
     import matplotlib
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
+
+    scf, data = get_wealth_data() 
+
     to_graph = np.array(data)[:, 1:-1]
 
     domain = np.linspace(18, 95, 78)
@@ -98,32 +97,34 @@ def wealth_data_graphs(data, output_dir):
         outputdir, '/Demographics/distribution_of_wealth_data_log'))
 
 
+def VCV_moments(scf, n, bin_weights, J):
+    '''
+    ------------------------------------------------------------------------
+        Compute Variance-Covariance matrix for wealth moments by 
+        bootstrapping data
 
-# '''
-# ------------------------------------------------------------------------
-#     Compute Gini
-# ------------------------------------------------------------------------
-# '''
-# def gini_wgt(df):
-#     '''
-#     Inputs:
-#         list_of_values = series to compute gini from
-#     Output:
-#         gini coefficient
-#     '''
-#     sorted_list = sorted(list_of_values)
+        Inputs:
+            scf         = pandas DF, raw data from SCF
+            n           = interger, number of bootstrap iterations to run
+            bin_weights = ability weights (Jx1 array)
+            J           = number of ability groups (scalar)
+        Objects created in the function:
+            wealth_moments_boot = [n,S] array, bootstrapped wealth moments
+            boot = pandas DF, boostrapped dataframe
+            VCV  = [J+2,J+2] array, variance-covariance matrix of wealth moments
+        Output:
+            VCV
 
-#     print 'sorted list: ', type(sorted_list), sorted_list[:5]
-#     print 'weights', type(weights), weights[:5], weights[sorted_list][:5]
-#     quit()
+    ------------------------------------------------------------------------
+    '''
+    wealth_moments_boot = np.zeros((n,J+2))
+    for i in range(n):
+        boot = scf[np.random.randint(2, size=len(scf.index)).astype(bool)]
+        wealth_moments_boot[i,:] = compute_wealth_moments(boot, bin_weights, J)
 
-#     weights = weights[sorted_list]/weights.sum()
-#     p = weights.cumsum()
-#     nu = (weights[sorted_list]*sorted_list).cumsum()
-#     print 'nu shape: ', nu, nu.shape
-#     nu = nu/nu[-1]
+    VCV = np.cov(wealth_moments_boot.T)
 
-#     return (nu[1:]*p[:-1]).sum() - (nu[:-1] * p[1:]).sum()
+    return VCV
 
 
 
@@ -132,22 +133,21 @@ def wealth_data_graphs(data, output_dir):
     Get wealth moments
 ------------------------------------------------------------------------
 '''
-# Restrict the data: it has other columns that give weights and indexes the age
-
-def get_wealth_data(bin_weights, J, flag_graphs):
+def compute_wealth_moments(scf, bin_weights, J):
     '''
+    ------------------------------------------------------------------------
     Inputs:
+        scf         = pandas DF, raw data from SCF
         bin_weights = ability weights (Jx1 array)
         J = number of ability groups (scalar)
         flag_graphs = whether or not to graph distribution (bool)
-        output_dir = path to the starting data
-    Output:
-        Saves a pickle of the desired wealth percentiles.  Graphs those levels.
-    '''
-    scf, data = get_wealth_data()    
+    Objects created in the function:
 
-    if flag_graphs:
-        wealth_data_graphs(data, output_dir)
+    Returns:
+        [J+2,] array of wealth moments
+    ------------------------------------------------------------------------
+    '''  
+
 
     # calculate percentile shares (percentiles based on lambdas input)
     scf.sort(columns='networth', ascending=True, inplace=True)

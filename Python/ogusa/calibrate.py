@@ -15,7 +15,7 @@ chi_estimate() = returns chi_n, chi_b
 
 '''
 ------------------------------------------------------------------------
-Last updated: 4/11/2016
+Last updated: 7/27/2016
 
 Uses a simulated method of moments to calibrate the chi_n adn chi_b 
 parameters of OG-USA.
@@ -36,6 +36,47 @@ import labor
 import SS
 
 def chi_estimate(income_tax_params, ss_params, iterative_params, chi_guesses, baseline_dir="./OUTPUT"):
+    '''
+    --------------------------------------------------------------------
+    This function calls others to obtain the data momements and then
+    runs the simulated method of moments estimation by calling the 
+    minimization routine.
+
+    INPUTS:
+    income_tax_parameters = length 4 tuple, (analytical_mtrs, etr_params, mtrx_params, mtry_params)
+    ss_parameters         = length 21 tuple, (J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
+                            g_n_ss, tau_payroll, retire, mean_income_data,\
+                            h_wealth, p_wealth, m_wealth, b_ellipse, upsilon)
+    iterative_params      = [2,] vector, vector with max iterations and tolerance 
+                             for SS solution
+    chi_guesses           = [J+S,] vector, initial guesses of chi_b and chi_n stacked together
+    baseline_dir          = string, path where baseline results located
+
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
+    wealth.compute_wealth_moments()
+    labor.labor_data_moments()
+    minstat()
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    wealth_moments     = [J+2,] array, wealth moments from data
+    labor_moments      = [S,] array, labor moments from data
+    data_moments       = [J+2+S,] array, wealth and labor moments stacked
+    bnds               = [S+J,] array, bounds for parameter estimates
+    chi_guesses_flat   =  [J+S,] vector, initial guesses of chi_b and chi_n stacked 
+    min_arg            = length 6 tuple, variables needed for minimizer
+    est_output         = dictionary, output from minimizer
+    chi_params         = [J+S,] vector, parameters estimates for chi_b and chi_n stacked
+    objective_func_min = scalar, minimum of statistical objective function
+
+
+    OUTPUT:
+    ./baseline_dir/Calibration/chi_estimation.pkl
+    
+
+    RETURNS: chi_params
+    --------------------------------------------------------------------
+    '''
 
     # unpack tuples of parameters
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
@@ -46,11 +87,18 @@ def chi_estimate(income_tax_params, ss_params, iterative_params, chi_guesses, ba
 
     flag_graphs = False
 
+    # specify bootstrap iterations
+    n = 2
+
     # Generate Wealth data moments
-    wealth_moments = wealth.get_wealth_data(lambdas, J, flag_graphs)
+    scf, data = wealth.get_wealth_data()  
+    wealth_moments = wealth.compute_wealth_moments(scf, lambdas, J)
+    VCV_wealth_moments = wealth.VCV_moments(scf,n, lambdas, J)
 
     # Generate labor data moments
-    labor_moments = labor.labor_data_moments(flag_graphs,baseline_dir)
+    cps, weighted = labor.get_labor_data()
+    labor_moments = labor.compute_labor_moments(cps,flag_graphs,baseline_dir)
+    VCV_labor_moments = labor.VCV_moments(cps,n, lambdas, J)
 
     # combine moments
     data_moments = list(wealth_moments.flatten()) + list(labor_moments.flatten())
@@ -61,9 +109,14 @@ def chi_estimate(income_tax_params, ss_params, iterative_params, chi_guesses, ba
 
     min_args = data_moments, income_tax_params, ss_params, iterative_params, chi_guesses_flat, baseline_dir
     est_output = opt.minimize(minstat, chi_guesses_flat, args=(min_args), method="L-BFGS-B", bounds=bnds,
-                    tol=1e-15)
+                    tol=1e-15, options={'maxfun': 2, 'maxiter': 2, 'maxls': 2})
     chi_params = est_output.x
-    objective_func_min = est_out.fun 
+    objective_func_min = est_output.fun 
+
+    # pickle output
+    utils.mkdirs(os.path.join(baseline_dir, "Calibration"))
+    est_dir = os.path.join(baseline_dir, "Calibration/chi_estimation.pkl")
+    pickle.dump(est_output, open(est_dir, "wb"))
 
     return chi_params
 
@@ -76,8 +129,21 @@ def minstat(chi_guesses, *args):
     This function generates the weighted sum of squared differences
     between the model and data moments.
 
+    INPUTS:
+    chi_guesses = [J+S,] vector, initial guesses of chi_b and chi_n stacked together
+    arg         = length 6 tuple, variables needed for minimizer
 
-    RETURNS: wssqdev
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
+    SS.run_SS()
+    calc_moments()
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    ss_output     = dictionary, variables from SS of model
+    model_moments = [J+2+S,] array, moments from the model solution
+    distance      = scalar, weighted, squared deviation between data and model moments
+
+    RETURNS: distance
     --------------------------------------------------------------------
     '''
 
@@ -109,6 +175,24 @@ def calc_moments(ss_output, omega_SS, lambdas, S, J):
     This function calculates moments from the SS output that correspond
     to the data moments used for estimation.
 
+    INPUTS:
+    ss_output = dictionary, variables from SS of model
+    omega_SS  = [S,] array, SS population distribution over age
+    lambdas   = [J,] array, proportion of population of each ability type
+    S         = integer, number of ages
+    J         = integer, number of ability types
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
+    the_inequalizer()
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    model_wealth_moments = [J+2,] array, wealth moments from the model
+    model_labor_moments  = [S,] array, labor moments from the model
+    model_moments        = [J+2+S,] array, wealth and data moments from the model solution
+    distance             = scalar, weighted, squared deviation between data and model moments
+
+    RETURNS: distance
+
     RETURNS: model_moments
     --------------------------------------------------------------------
     '''
@@ -131,13 +215,14 @@ def calc_moments(ss_output, omega_SS, lambdas, S, J):
 
 def the_inequalizer(dist, pop_weights, ability_weights, factor, S, J):
     '''
+    --------------------------------------------------------------------
     Generates three measures of inequality.
 
     Inputs:
         dist            = [S,J] array, distribution of endogenous variables over age and lifetime income group
-        params          = length 4 tuple, (pop_weights, ability_weights, S, J)
         pop_weights     = [S,] vector, fraction of population by each age
         ability_weights = [J,] vector, fraction of population for each lifetime income group
+        factor          = scalar, factor relating model units to dollars
         S               = integer, number of economically active periods in lifetime
         J               = integer, number of ability types 
 
@@ -152,7 +237,8 @@ def the_inequalizer(dist, pop_weights, ability_weights, factor, S, J):
         loc_10th          = integer, index of 10th percentile
         loc_99th          = integer, index of 99th percentile
 
-    Returns: N/A
+    Returns: measure of inequality
+    --------------------------------------------------------------------
     '''
 
     weights = np.tile(pop_weights.reshape(S, 1), (1, J)) * \
