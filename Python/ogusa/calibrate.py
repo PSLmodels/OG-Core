@@ -4,7 +4,7 @@ This module should be organized as follows:
 
 Main function:
 chi_estimate() = returns chi_n, chi_b
-    - calls: 
+    - calls:
         wealth.get_wealth_data() - returns data moments on wealth distribution
         labor.labor_data_moments() - returns data moments on labor supply
         minstat() - returns min of statistical objective function
@@ -17,7 +17,7 @@ chi_estimate() = returns chi_n, chi_b
 ------------------------------------------------------------------------
 Last updated: 7/27/2016
 
-Uses a simulated method of moments to calibrate the chi_n adn chi_b 
+Uses a simulated method of moments to calibrate the chi_n adn chi_b
 parameters of OG-USA.
 
 This py-file calls the following other file(s):
@@ -39,7 +39,7 @@ def chi_estimate(income_tax_params, ss_params, iterative_params, chi_guesses, ba
     '''
     --------------------------------------------------------------------
     This function calls others to obtain the data momements and then
-    runs the simulated method of moments estimation by calling the 
+    runs the simulated method of moments estimation by calling the
     minimization routine.
 
     INPUTS:
@@ -47,7 +47,7 @@ def chi_estimate(income_tax_params, ss_params, iterative_params, chi_guesses, ba
     ss_parameters         = length 21 tuple, (J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
                             g_n_ss, tau_payroll, retire, mean_income_data,\
                             h_wealth, p_wealth, m_wealth, b_ellipse, upsilon)
-    iterative_params      = [2,] vector, vector with max iterations and tolerance 
+    iterative_params      = [2,] vector, vector with max iterations and tolerance
                              for SS solution
     chi_guesses           = [J+S,] vector, initial guesses of chi_b and chi_n stacked together
     baseline_dir          = string, path where baseline results located
@@ -63,7 +63,7 @@ def chi_estimate(income_tax_params, ss_params, iterative_params, chi_guesses, ba
     labor_moments      = [S,] array, labor moments from data
     data_moments       = [J+2+S,] array, wealth and labor moments stacked
     bnds               = [S+J,] array, bounds for parameter estimates
-    chi_guesses_flat   =  [J+S,] vector, initial guesses of chi_b and chi_n stacked 
+    chi_guesses_flat   =  [J+S,] vector, initial guesses of chi_b and chi_n stacked
     min_arg            = length 6 tuple, variables needed for minimizer
     est_output         = dictionary, output from minimizer
     chi_params         = [J+S,] vector, parameters estimates for chi_b and chi_n stacked
@@ -72,7 +72,7 @@ def chi_estimate(income_tax_params, ss_params, iterative_params, chi_guesses, ba
 
     OUTPUT:
     ./baseline_dir/Calibration/chi_estimation.pkl
-    
+
 
     RETURNS: chi_params
     --------------------------------------------------------------------
@@ -88,30 +88,43 @@ def chi_estimate(income_tax_params, ss_params, iterative_params, chi_guesses, ba
     flag_graphs = False
 
     # specify bootstrap iterations
-    n = 2
+    n = 10000
 
     # Generate Wealth data moments
-    scf, data = wealth.get_wealth_data()  
+    scf, data = wealth.get_wealth_data()
     wealth_moments = wealth.compute_wealth_moments(scf, lambdas, J)
-    VCV_wealth_moments = wealth.VCV_moments(scf,n, lambdas, J)
+    VCV_wealth_moments = wealth.VCV_moments(scf, n, lambdas, J)
 
     # Generate labor data moments
-    cps, weighted = labor.get_labor_data()
-    labor_moments = labor.compute_labor_moments(cps,flag_graphs,baseline_dir)
-    VCV_labor_moments = labor.VCV_moments(cps,n, lambdas, J)
+    cps = labor.get_labor_data()
+    labor_moments = labor.compute_labor_moments(cps, S)
+    VCV_labor_moments = labor.VCV_moments(cps, n, lambdas, S)
+
 
     # combine moments
     data_moments = list(wealth_moments.flatten()) + list(labor_moments.flatten())
+    VCV_data_moments = np.zeros((J+2+S,J+2+S))
+    VCV_data_moments[:J+2,:J+2] = VCV_wealth_moments
+    VCV_data_moments[J+2:,J+2:] = VCV_labor_moments
+
+    # determine weighting matrix
+    optimal_weight = True
+    if optimal_weight:
+        W = np.linalg.inv(VCV_data_moments)
+    else:
+        W = np.identity(J+2+S)
+
 
     # call minimizer
     bnds = np.tile(np.array([1e-12, None]),(S+J,1)) # Need (1e-12, None) S+J times
     chi_guesses_flat = list(chi_b_guess.flatten()) + list(chi_n_guess.flatten())
 
-    min_args = data_moments, income_tax_params, ss_params, iterative_params, chi_guesses_flat, baseline_dir
+    min_args = data_moments, W, income_tax_params, ss_params, \
+               iterative_params, chi_guesses_flat, baseline_dir
     est_output = opt.minimize(minstat, chi_guesses_flat, args=(min_args), method="L-BFGS-B", bounds=bnds,
-                    tol=1e-15, options={'maxfun': 2, 'maxiter': 2, 'maxls': 2})
+                    tol=1e-15, options={'maxfun': 1, 'maxiter': 1, 'maxls': 1})
     chi_params = est_output.x
-    objective_func_min = est_output.fun 
+    objective_func_min = est_output.fun
 
     # pickle output
     utils.mkdirs(os.path.join(baseline_dir, "Calibration"))
@@ -147,7 +160,7 @@ def minstat(chi_guesses, *args):
     --------------------------------------------------------------------
     '''
 
-    data_moments, income_tax_params, ss_params, iterative_params, chi_params, baseline_dir = args
+    data_moments, W, income_tax_params, ss_params, iterative_params, chi_params, baseline_dir = args
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
                   g_n_ss, tau_payroll, tau_bq, rho, omega_SS, lambdas, \
                   imm_rates, e, retire, mean_income_data, h_wealth, p_wealth,\
@@ -160,7 +173,9 @@ def minstat(chi_guesses, *args):
     model_moments = calc_moments(ss_output, omega_SS, lambdas, S, J)
 
     # distance with levels
-    distance = ((np.array(model_moments) - np.array(data_moments))**2).sum()
+    distance = np.dot(np.dot(np.array(model_moments) - np.array(data_moments),W),
+                   np.array(model_moments) - np.array(data_moments))
+    #distance = ((np.array(model_moments) - np.array(data_moments))**2).sum()
     print 'DATA and MODEL DISTANCE: ', distance
 
     # # distance with percentage diffs
@@ -224,7 +239,7 @@ def the_inequalizer(dist, pop_weights, ability_weights, factor, S, J):
         ability_weights = [J,] vector, fraction of population for each lifetime income group
         factor          = scalar, factor relating model units to dollars
         S               = integer, number of economically active periods in lifetime
-        J               = integer, number of ability types 
+        J               = integer, number of ability types
 
     Functions called: None
 
@@ -271,7 +286,7 @@ def the_inequalizer(dist, pop_weights, ability_weights, factor, S, J):
     # top 10% share
     top_10_share= (sort_dist[loc_90th:] * sort_weights[loc_90th:]
            ).sum() / (sort_dist * sort_weights).sum()
-    
+
     # top 1% share
     loc_99th = np.argmin(np.abs(cum_weights - .99))
     top_1_share = (sort_dist[loc_99th:] * sort_weights[loc_99th:]
@@ -293,6 +308,3 @@ def the_inequalizer(dist, pop_weights, ability_weights, factor, S, J):
     dist_share[1:] = dist_sum[1:]-dist_sum[0:-1]
 
     return np.append([dist_share], [gini_coeff,var_ln_dist])
-
-
-

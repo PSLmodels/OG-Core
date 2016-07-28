@@ -69,7 +69,7 @@ def wealth_data_graphs(data, output_dir):
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
 
-    scf, data = get_wealth_data() 
+    scf, data = get_wealth_data()
 
     to_graph = np.array(data)[:, 1:-1]
 
@@ -100,7 +100,7 @@ def wealth_data_graphs(data, output_dir):
 def VCV_moments(scf, n, bin_weights, J):
     '''
     ------------------------------------------------------------------------
-        Compute Variance-Covariance matrix for wealth moments by 
+        Compute Variance-Covariance matrix for wealth moments by
         bootstrapping data
 
         Inputs:
@@ -146,11 +146,11 @@ def compute_wealth_moments(scf, bin_weights, J):
     Returns:
         [J+2,] array of wealth moments
     ------------------------------------------------------------------------
-    '''  
+    '''
 
 
     # calculate percentile shares (percentiles based on lambdas input)
-    scf.sort(columns='networth', ascending=True, inplace=True)
+    scf.sort_values(by='networth', ascending=True, inplace=True)
     scf['weight_networth'] = scf['wgt']*scf['networth']
     total_weight_wealth = scf.weight_networth.sum()
     cumsum = scf.wgt.cumsum()
@@ -175,14 +175,14 @@ def compute_wealth_moments(scf, bin_weights, J):
     cutoff = scf.wgt.sum() / (1./.9)
     pct_90 = scf.networth[cumsum >= cutoff].iloc[0]
     top_10_share = 1 - ((scf.weight_networth[cumsum < cutoff].sum())/total_weight_wealth)
-    ratio_90_10 = pct_90/pct_10 
+    ratio_90_10 = pct_90/pct_10
     cutoff = scf.wgt.sum() / (1./.99)
     pct_99 = scf.networth[cumsum >= cutoff].iloc[0]
     top_1_share = 1 - ((scf.weight_networth[cumsum < cutoff].sum())/total_weight_wealth)
 
 
     # compute gini coeff
-    scf.sort(columns='networth', ascending=True, inplace=True)
+    scf.sort_values(by='networth', ascending=True, inplace=True)
     p = (scf.wgt.cumsum()/scf.wgt.sum()).as_matrix()
     nu = ((scf.wgt*scf.networth).cumsum()).as_matrix()
     nu = nu/nu[-1]
@@ -192,7 +192,7 @@ def compute_wealth_moments(scf, bin_weights, J):
     # compute variance in logs
     df = scf.drop(scf[scf['networth'] <=0.0].index)
     df['ln_networth'] = np.log(df['networth'])
-    df.sort(columns='ln_networth', ascending=True, inplace=True)
+    df.sort_values(by='ln_networth', ascending=True, inplace=True)
     weight_mean = ((df.ln_networth*df.wgt).sum())/(df.wgt.sum())
     var_ln_wealth = ((df.wgt*((df.ln_networth-weight_mean)**2)).sum())*(1./(df.wgt.sum()-1))
 
