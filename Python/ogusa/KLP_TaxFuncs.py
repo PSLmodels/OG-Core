@@ -8,7 +8,6 @@
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
-from KLP_TaxFuncs import TaxFuncCES
 
 # def TaxFuncCD(x, y, par):
 
@@ -61,55 +60,3 @@ def TaxFuncCES(x, y, par):
     adj = alf*minx + (1-alf)*miny
     tau = tau + adj
     return tau
-
-
-# Declare Function Parameters
-A = 1.0
-B = 1.0
-C = 1.0
-D = 1.0
-E = 1.0
-F = 1.0
-minx = -.1
-miny = -.1
-maxx = .5
-maxy = .25
-alf = .5
-eta = 2.0
-par = np.array([A, B, C, D, E, F, minx, miny, maxx, maxy, alf, eta])
-
-# Grid Size
-xsize = 10
-ysize = 10
-
-# Initialize Matrix of Inputs and Tax Rates
-Xmat = np.zeros((xsize,ysize))
-Ymat = np.zeros((xsize,ysize))
-tauCD = np.zeros((xsize,ysize))
-tauCES = np.zeros((xsize,ysize))
-
-# Calculate Taxes
-for x in range(0, xsize):
-    for y in range(0, ysize):
-        Xmat[x, y] = x
-        Ymat[x, y] = y
-        # tauCD[x, y] = TaxFuncCD(x, y, par)
-        tauCES[x, y] = TaxFuncCES(x, y, par)
-
-# Plot Surface Plot of Tax Rates
-# # Twice as wide as it is tall.
-# fig = plt.figure(figsize=plt.figaspect(0.5))
-
-# # CD plot
-# ax = fig.add_subplot(1, 2, 1, projection='3d')
-# surf = ax.plot_wireframe(Xmat, Ymat, tauCD)
-# plt.title('Cobb-Douglas')
-
-# CES plot
-fig = plt.figure()
-ax = fig.gca(projection='3d')
-# ax = fig.add_subplot(1, 2, 2, projection='3d')
-surf = ax.plot_wireframe(Xmat, Ymat, tauCES)
-plt.title('CES')
-
-plt.show()
