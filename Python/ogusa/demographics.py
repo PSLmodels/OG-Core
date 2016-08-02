@@ -16,13 +16,12 @@ This module defines the following function(s):
 import os
 import numpy as np
 import scipy.optimize as opt
+import scipy.interpolate as si
 import pandas as pd
+import utils
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
-import scipy.interpolate as interp
-import scipy.optimize as opt
-import utils
 
 '''
 ------------------------------------------------------------------------
@@ -122,7 +121,7 @@ def get_fert(totpers, min_yr, max_yr, graph=False):
     age_midp = np.array([9, 10, 12, 16, 18.5, 22, 27, 32, 37, 42, 47,
                55, 56])
     # Generate interpolation functions for fertility rates
-    fert_func = interp.interp1d(age_midp, fert_data, kind='cubic')
+    fert_func = si.interp1d(age_midp, fert_data, kind='cubic')
     # Calculate average fertility rate in each age bin using trapezoid
     # method with a large number of points in each bin.
     binsize = (max_yr - min_yr + 1) / totpers
@@ -160,7 +159,7 @@ def get_fert(totpers, min_yr, max_yr, graph=False):
                          leading and trailing zeros
         age_mid_new    = (totpers,) vector, midpoint age of each model
                          period age bin
-        output_fldr    = string, path of the OUTPUT folder from cur_path
+        output_fldr    = string, folder in current path to save files
         output_dir     = string, total path of OUTPUT folder
         output_path    = string, path of file name of figure to be saved
         ----------------------------------------------------------------
@@ -303,7 +302,7 @@ def get_mort(totpers, min_yr, max_yr, graph=False):
         ----------------------------------------------------------------
         age_mid_new = (totpers,) vector, midpoint age of each model
                       period age bin
-        output_fldr = string, path of the OUTPUT folder from cur_path
+        output_fldr = string, folder in current path to save files
         output_dir  = string, total path of OUTPUT folder
         output_path = string, path of file name of figure to be saved
         ----------------------------------------------------------------
@@ -785,21 +784,18 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
         np.tile(np.reshape(imm_rates_orig[E:],(S,1)), (1, fixper)),
         np.tile(np.reshape(imm_rates_adj[E:],(S,1)), (1, T+S-fixper))))
 
-    # omega_diffs_orig = (omega_path_S[1:,1:] - 
-    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(mort_rates_S[:-1],(S-1,1)),(1,T+S-1)))*omega_path_S[:-1,:-1] - 
+    # omega_diffs_orig = (omega_path_S[1:,1:] -
+    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(mort_rates_S[:-1],(S-1,1)),(1,T+S-1)))*omega_path_S[:-1,:-1] -
     #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*np.tile(np.reshape(imm_rates_orig[E+1:],(S-1,1)),(1,T+S-1))*omega_path_S[1:,:-1])
-    # omega_diffs_adj = (omega_path_S[1:,1:] - 
-    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(mort_rates_S[:-1],(S-1,1)),(1,T+S-1)))*omega_path_S[:-1,:-1] - 
+    # omega_diffs_adj = (omega_path_S[1:,1:] -
+    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(mort_rates_S[:-1],(S-1,1)),(1,T+S-1)))*omega_path_S[:-1,:-1] -
     #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*np.tile(np.reshape(imm_rates_adj[E+1:],(S-1,1)),(1,T+S-1))*omega_path_S[1:,:-1])
-    # omega_diffs_mixed = (omega_path_S[1:,1:] - 
-    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(mort_rates_S[:-1],(S-1,1)),(1,T+S-1)))*omega_path_S[:-1,:-1] - 
+    # omega_diffs_mixed = (omega_path_S[1:,1:] -
+    #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*(1-np.tile(np.reshape(mort_rates_S[:-1],(S-1,1)),(1,T+S-1)))*omega_path_S[:-1,:-1] -
     #     (1/(1+np.tile(np.reshape(g_n_path[1:],(1,T+S-1)),(S-1,1))))*imm_rates_mat[1:,:-1]*omega_path_S[1:,:-1])
     # np.savetxt('omega_diffs_orig.csv', omega_diffs_orig, delimiter=',')
     # np.savetxt('omega_diffs_adj.csv', omega_diffs_adj, delimiter=',')
     # np.savetxt('omega_diffs_mixed.csv', omega_diffs_mixed, delimiter=',')
-
-    # print "max error: ", np.absolute(omega_diffs_orig).max(), np.absolute(omega_diffs_adj).max(), np.absolute(omega_diffs_mixed).max()
-    # quit()
 
 
 
@@ -977,3 +973,4 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     return (omega_path_S.T, g_n_SS,
         omega_SSfx[-S:] / omega_SSfx[-S:].sum(), 1-mort_rates_S,
         mort_rates_S, g_n_path, imm_rates_mat.T, omega_S_preTP)
+
