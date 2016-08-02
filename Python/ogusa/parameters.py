@@ -1,8 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 4/8/2015
-
-This file sets parameters for the model run.
+This file sets parameters for the OG-USA model run.
 
 This py-file calls the following other file(s):
             income.py
@@ -19,6 +17,7 @@ import os
 import json
 import numpy as np
 import scipy.ndimage.filters as filter
+import scipy.interpolate as si
 from demographics import get_pop_objs
 from demographics_old import get_omega
 from income import get_e
@@ -227,8 +226,17 @@ flag_graphs  = boolean, =True if produce graphs in demographic, income,
                wealth, and labor files (True=graph)
 chi_b_guess  = [J,] vector, initial guess of \chi^{b}_{j} parameters
                (if no calibration occurs, these are the values that will be used for \chi^{b}_{j})
-chi_n_guess  = [S,] vector, initial guess of \chi^{n}_{s} parameters
-               (if no calibration occurs, these are the values that will be used for \chi^{n}_{s})
+chi_n_guess_80 = (80,) vector, initial guess of chi_{n,s} parameters for
+                 80 one-year-period ages from 21 to 100
+chi_n_guess    = (S,) vector, interpolated initial guess of chi^{n,s}
+                 parameters (if no calibration occurs, these are the
+                 values that will be used
+age_midp_80    = (80,) vector, midpoints of age bins for 80 one-year-
+                 period ages from 21 to 100 for interpolation
+chi_n_interp   = function, interpolation function for chi_n_guess
+newstep        = scalar > 1, duration in years of each life period
+age_midp_S     = (S,) vector, midpoints of age bins for S one-year-
+                 period ages from 21 to 100 for interpolation
 ------------------------------------------------------------------------
 Demographics and Ability variables:
 ------------------------------------------------------------------------
@@ -470,7 +478,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     mtry_params[:,:,3] = 0.
     mtry_params[:,:,6] = 0.
     mtry_params[:,:,7] = 0.
-    
+
     # # unocmmenting the block below ensures no tax rates are negative
     # etr_params[:,:,7] = 0.
     # mtrx_params[:,:,7] = 0.
@@ -572,9 +580,9 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
     #         num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
     #         denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
-            
+
     #         marginal_rates[i,:]  =  (Phi*(num/denom)) + K
-   
+
 
     # plt.plot(labinc_sup, marginal_rates[0,:], label='cap inc=0')
     # plt.plot(labinc_sup, marginal_rates[1,:], label='cap inc=1,000')
@@ -618,23 +626,33 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     #chi_b_guess = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 4.0, 10.0])
     #chi_b_guess = np.array([5, 10, 90, 250, 250, 250, 250])
     #chi_b_guess = np.array([2, 10, 90, 350, 1700, 22000, 120000])
-    chi_n_guess_80 = np.array([38.12000874, 33.22762421, 25.34842241, 26.67954008, 24.41097278,
-                            23.15059004, 22.46771332, 21.85495452, 21.46242013, 22.00364263,
-                            21.57322063, 21.53371545, 21.29828515, 21.10144524, 20.8617942,
-                            20.57282, 20.47473172, 20.31111347, 19.04137299, 18.92616951,
-                            20.58517969, 20.48761429, 20.21744847, 19.9577682, 19.66931057,
-                            19.6878927, 19.63107201, 19.63390543, 19.5901486, 19.58143606,
-                            19.58005578, 19.59073213, 19.60190899, 19.60001831, 21.67763741,
-                            21.70451784, 21.85430468, 21.97291208, 21.97017228, 22.25518398,
-                            22.43969757, 23.21870602, 24.18334822, 24.97772026, 26.37663164,
-                            29.65075992, 30.46944758, 31.51634777, 33.13353793, 32.89186997,
-                            38.07083882, 39.2992811, 40.07987878, 35.19951571, 35.97943562,
-                            37.05601334, 37.42979341, 37.91576867, 38.62775142, 39.4885405,
-                            37.10609921, 40.03988031, 40.86564363, 41.73645892, 42.6208256,
-                            43.37786072, 45.38166073, 46.22395387, 50.21419653, 51.05246704,
-                            53.86896121, 53.90029708, 61.83586775, 64.87563699, 66.91207845,
-                            68.07449767, 71.27919965, 73.57195873, 74.95045988, 76.62308152])
-    chi_n_guess = filter.uniform_filter(chi_n_guess_80,size=int(80/S))[::int(80/S)]
+    chi_n_guess_80 = np.array(
+        [38.12000874, 33.22762421, 25.3484224, 26.67954008, 24.41097278,
+        23.15059004, 22.46771332, 21.85495452, 21.46242013, 22.00364263,
+        21.57322063, 21.53371545, 21.29828515, 21.10144524, 20.8617942,
+        20.57282, 20.47473172, 20.31111347, 19.04137299, 18.92616951,
+        20.58517969, 20.48761429, 20.21744847, 19.9577682, 19.66931057,
+        19.6878927, 19.63107201, 19.63390543, 19.5901486, 19.58143606,
+        19.58005578, 19.59073213, 19.60190899, 19.60001831, 21.67763741,
+        21.70451784, 21.85430468, 21.97291208, 21.97017228, 22.25518398,
+        22.43969757, 23.21870602, 24.18334822, 24.97772026, 26.37663164,
+        29.65075992, 30.46944758, 31.51634777, 33.13353793, 32.89186997,
+        38.07083882, 39.2992811, 40.07987878, 35.19951571, 35.97943562,
+        37.05601334, 37.42979341, 37.91576867, 38.62775142, 39.4885405,
+        37.10609921, 40.03988031, 40.86564363, 41.73645892, 42.6208256,
+        43.37786072, 45.38166073, 46.22395387, 50.21419653, 51.05246704,
+        53.86896121, 53.90029708, 61.83586775, 64.87563699, 66.91207845,
+        68.07449767, 71.27919965, 73.57195873, 74.95045988, 76.6230815])
+    if S == 80:
+        chi_n_guess = chi_n_guess_80.copy()
+    elif S < 80:
+        age_midp_80 = np.linspace(20.5, 99.5, 80)
+        chi_n_interp = si.interp1d(age_midp_80, chi_n_guess_80,
+                       kind='cubic')
+        newstep = 80.0 / S
+        age_midp_S = np.linspace(20 + 0.5 * newstep,
+                     100 - 0.5 * newstep, S)
+        chi_n_guess = chi_n_interp(age_midp_S)
 
 
    # Generate Income and Demographic parameters
@@ -653,7 +671,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     g_n_vector = np.tile(g_n_ss,(T+S,))
 
 
-    # income.get_e() must be hardcoded since relies on regression output 
+    # income.get_e() must be hardcoded since relies on regression output
     # from DeBacker, Evans, Philips, and Ramnath (2015)
     # e = get_e(80, 7, 20, 100, lambdas = np.array([.25, .25, .2, .1, .1, .09, .01]), flag_graphs)
     # # need to turn 80x7 array into SxJ array
