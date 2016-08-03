@@ -464,30 +464,30 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
     mean_income_data = dict_params['tfunc_avginc'][0]
 
-    etr_params = dict_params['tfunc_etr_params_S'][:S,:BW,:]
-    mtrx_params = dict_params['tfunc_mtrx_params_S'][:S,:BW,:]
-    mtry_params = dict_params['tfunc_mtry_params_S'][:S,:BW,:]
-
-
-    etr_params = np.zeros((S,BW,10))
-    mtrx_params = np.zeros((S,BW,10))
-    mtry_params = np.zeros((S,BW,10))
-    etr_params[:,:,:] = dict_params['tfunc_etr_params_S'][20,0,:]
-    mtrx_params[:,:,:] = dict_params['tfunc_mtrx_params_S'][20,0,:]
-    mtry_params[:,:,:] = dict_params['tfunc_mtry_params_S'][20,0,:]
-
-
-    mtrx_params[:,:,1] = 0.
-    mtrx_params[:,:,2] = 0.
-    mtrx_params[:,:,4] = 0.
-    mtrx_params[:,:,8] = 0.
-    mtrx_params[:,:,9] = 0.
-
-    mtry_params[:,:,0] = 0.
-    mtry_params[:,:,2] = 0.
-    mtry_params[:,:,3] = 0.
-    mtry_params[:,:,6] = 0.
-    mtry_params[:,:,7] = 0.
+    # etr_params = dict_params['tfunc_etr_params_S'][:S,:BW,:]
+    # mtrx_params = dict_params['tfunc_mtrx_params_S'][:S,:BW,:]
+    # mtry_params = dict_params['tfunc_mtry_params_S'][:S,:BW,:]
+    #
+    #
+    # etr_params = np.zeros((S,BW,10))
+    # mtrx_params = np.zeros((S,BW,10))
+    # mtry_params = np.zeros((S,BW,10))
+    # etr_params[:,:,:] = dict_params['tfunc_etr_params_S'][20,0,:]
+    # mtrx_params[:,:,:] = dict_params['tfunc_mtrx_params_S'][20,0,:]
+    # mtry_params[:,:,:] = dict_params['tfunc_mtry_params_S'][20,0,:]
+    #
+    #
+    # mtrx_params[:,:,1] = 0.
+    # mtrx_params[:,:,2] = 0.
+    # mtrx_params[:,:,4] = 0.
+    # mtrx_params[:,:,8] = 0.
+    # mtrx_params[:,:,9] = 0.
+    #
+    # mtry_params[:,:,0] = 0.
+    # mtry_params[:,:,2] = 0.
+    # mtry_params[:,:,3] = 0.
+    # mtry_params[:,:,6] = 0.
+    # mtry_params[:,:,7] = 0.
 
     # # unocmmenting the block below ensures no tax rates are negative
     # etr_params[:,:,7] = 0.
@@ -500,22 +500,19 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     # print 'tax diffs: ', np.absolute(etr_params-etr_params.mean(axis=(0,1))).max()
     # quit()
 
-
-
-
     # set etrs and mtrs to constant rates over income/age by uncommenting following code block
-    # etr_params = np.zeros((S,BW,10))
-    # mtrx_params = np.zeros((S,BW,10))
-    # mtry_params = np.zeros((S,BW,10))
+    etr_params = np.zeros((S,BW,10))
+    mtrx_params = np.zeros((S,BW,10))
+    mtry_params = np.zeros((S,BW,10))
     etr_params[:,:,7] = dict_params['tfunc_avg_etr']
-    # mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx']
-    # mtry_params[:,:,7] = dict_params['tfunc_avg_mtry']
-    # etr_params[:,:,9] = dict_params['tfunc_avg_etr']
-    # mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx']
-    # mtry_params[:,:,9] = dict_params['tfunc_avg_mtry']
+    mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx']
+    mtry_params[:,:,7] = dict_params['tfunc_avg_mtry']
+    etr_params[:,:,9] = dict_params['tfunc_avg_etr']
+    mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx']
+    mtry_params[:,:,9] = dict_params['tfunc_avg_mtry']
     etr_params[:,:,5] = 1.0
-    # mtrx_params[:,:,5] = 1.0
-    # mtry_params[:,:,5] = 1.0
+    mtrx_params[:,:,5] = 1.0
+    mtry_params[:,:,5] = 1.0
 
     # etr_params = np.zeros((S,BW,10))
     # mtrx_params = np.zeros((S,BW,10))
@@ -534,11 +531,11 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
     # make etrs and mtrs constant over time, uncomment following code block
     etr_params[:,:,7] = dict_params['tfunc_avg_etr'][0]
-    # mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx'][0]
-    # mtry_params[:,:,7] = dict_params['tfunc_avg_mtry'][0]
+    mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx'][0]
+    mtry_params[:,:,7] = dict_params['tfunc_avg_mtry'][0]
     etr_params[:,:,9] = dict_params['tfunc_avg_etr'][0]
-    # mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx'][0]
-    # mtry_params[:,:,9] = dict_params['tfunc_avg_mtry'][0]
+    mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx'][0]
+    mtry_params[:,:,9] = dict_params['tfunc_avg_mtry'][0]
 
     # To zero out income taxes, uncomment the following 3 lines:
     # etr_params[:,:,6:] = 0.0
@@ -689,7 +686,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     # omega_S_preTP = omega_SS
     # g_n_vector = np.tile(g_n_ss,(T+S,))
 
-    e = inc.get_e_interp(S, omega_SS, omega_SS_80, lambdas, plot=True)
+    e = inc.get_e_interp(S, omega_SS, omega_SS_80, lambdas, plot=False)
     # e_hetero = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
     # e = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))
     # e /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
