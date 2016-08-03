@@ -292,10 +292,11 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     starting_age = 40
     ending_age = 50
     S = int(ending_age-starting_age)
-    J = int(2)
+    lambdas = np.array([.50, .50])
+    J = lambdas.shape[0]
     T = int(2 * S)
     BW = int(10)
-    lambdas = np.array([.50, .50])
+
     E = int(starting_age * (S / float(ending_age - starting_age)))
     beta_annual = .96 # Carroll (JME, 2009)
     beta = beta_annual ** (float(ending_age - starting_age) / S)
