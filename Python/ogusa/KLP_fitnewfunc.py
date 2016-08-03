@@ -22,7 +22,7 @@ def TaxSSD(x, y, par, nobs):
         pred = TaxFuncCES(x[i], y[i], par)
         SSD = SSD + (ATR[i] - pred)**2
 
-    print(par, SSD)
+    # print(par, SSD)
 
     return SSD
 
@@ -44,20 +44,21 @@ dimen = data.shape
 nobs = dimen[0]
 
 # choose guesses for parameter starting values
-parguess = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 1.0,
-                     0.0, 0.0, .35, .35,
+parguess = np.array([1.0E-10, .0001, 1.0E-10, .0001,
+                     -.1, 0.0, .35, .25,
                      .5, 2.0])
 
 # choose min and max values for each parameter
-eps = .1
-parbounds = ((eps, None), (eps, None), (eps, None), (eps, None), (eps, None), (eps, None),
+eps = .000000001
+parbounds = ((eps, None), (eps, None), (eps, None), (eps, None),
           (eps - 1.0, 1.0 - eps), (eps - 1.0, 1.0 - eps), (eps - 1.0, 1.0 - eps), (eps - 1.0, 1.0 - eps),
-          (eps, 1.0 - eps), (1 + eps, None))
+          (eps, 1.0 - eps), (eps, None))
 
 # Lambda Function for Finding par using fmincon
 SSD = lambda par:TaxSSD(x, y, par, nobs)
-
 look = TaxSSD(x, y, parguess, nobs)
+print(look)
 
 # find best fitting parameters
 parfit = opt.minimize(SSD, parguess, bounds = parbounds, method = 'L-BFGS-B')
+print(parfit)
