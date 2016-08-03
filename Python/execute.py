@@ -229,7 +229,7 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
     CALL CALIBRATION here if boolean flagged
     ****
     '''
-    calibrate_model = True
+    calibrate_model = False
     if calibrate_model:
         chi_params = calibrate.chi_estimate(income_tax_params, ss_params, iterative_params, chi_params, baseline_dir=baseline_dir)
 

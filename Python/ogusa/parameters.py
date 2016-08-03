@@ -2,9 +2,19 @@
 ------------------------------------------------------------------------
 This file sets parameters for the OG-USA model run.
 
-This py-file calls the following other file(s):
-            income.py
-            demographics.py
+This module calls the following other module(s):
+    demographics.py
+    income.py
+    txfunc.py
+    elliptical_u_est.py
+
+This module defines the following function(s):
+    read_parameter_metadata()
+    read_tax_func_estimate()
+    get_parameters_from_file()
+    get_parameters()
+    get_reduced_parameters()
+    get_full_parameters()
 ------------------------------------------------------------------------
 '''
 
@@ -16,14 +26,12 @@ Import Packages
 import os
 import json
 import numpy as np
-import scipy.ndimage.filters as filter
 import scipy.interpolate as si
-from demographics import get_pop_objs
-from demographics_old import get_omega
-from income import get_e
+import demographics as dem
+import income as inc
 import pickle
 import txfunc
-import elliptical_u_est
+import elliptical_u_est as ellip
 import matplotlib.pyplot as plt
 
 
@@ -267,7 +275,7 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
 
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
     read_tax_func_estimate()
-    elliptical_u_est.estimation()
+    ellip.estimation()
     read_parameter_metadata()
 
     OBJECTS CREATED WITHIN FUNCTION:
@@ -280,6 +288,7 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     --------------------------------------------------------------------
     '''
     # Model Parameters
+    start_year = 2016
     starting_age = 40
     ending_age = 50
     S = int(ending_age-starting_age)
@@ -300,7 +309,7 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     g_y = (1 + g_y_annual)**(float(ending_age - starting_age) / S) - 1
     #   Ellipse parameters
     frisch = 0.4 # Frisch elasticity consistent with Altonji (JPE, 1996) and Peterman (Econ Inquiry, 2016)
-    b_ellipse, upsilon = elliptical_u_est.estimation(frisch,ltilde)
+    b_ellipse, upsilon = ellip.estimation(frisch,ltilde)
     k_ellipse = 0 # this parameter is just a level shifter in utlitiy - irrelevant for analysis
 
     # Tax parameters:
@@ -360,8 +369,9 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     chi_n_guess = np.array([5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
     # Generate Income and Demographic parameters
-    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates, omega_S_preTP = get_pop_objs(
-        E, S, T, 1, 100, 2016, flag_graphs)
+    (omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates,
+        omega_S_preTP) = dem.get_pop_objs(E, S, T, 1, 100, start_year,
+        flag_graphs)
     e = np.array([[0.25, 1.25]] * 10)
     allvars = dict(locals())
 
@@ -392,7 +402,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
     read_tax_func_estimate()
-    elliptical_u_est.estimation()
+    ellip.estimation()
     read_parameter_metadata()
 
     OBJECTS CREATED WITHIN FUNCTION:
@@ -405,14 +415,13 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     --------------------------------------------------------------------
     '''
     # Model Parameters
-    S = int(80) #S<30 won't meet necessary tolerances
-    J = int(7)
+    S = int(80)
+    lambdas = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
+    J = lambdas.shape[0]
     T = int(4 * S)
     BW = int(10)
-    lambdas = np.array([.25, .25, .2, .1, .1, .09, .01])
-    #lambdas = np.array([0.5, 0.5])
-    #lambdas = np.array([1.,])
 
+    start_year = 2016
     starting_age = 20
     ending_age = 100
     E = int(starting_age * (S / float(ending_age - starting_age)))
@@ -428,7 +437,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     g_y = (1 + g_y_annual)**(float(ending_age - starting_age) / S) - 1
     #   Ellipse parameters
     frisch = 0.4 # Frisch elasticity consistent with Altonji (JPE, 1996) and Peterman (Econ Inquiry, 2016)
-    b_ellipse, upsilon = elliptical_u_est.estimation(frisch,ltilde)
+    b_ellipse, upsilon = ellip.estimation(frisch,ltilde)
     k_ellipse = 0 # this parameter is just a level shifter in utlitiy - irrelevant for analysis
 
     # Tax parameters:
@@ -494,7 +503,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
 
     # set etrs and mtrs to constant rates over income/age by uncommenting following code block
-    etr_params = np.zeros((S,BW,10))
+    # etr_params = np.zeros((S,BW,10))
     # mtrx_params = np.zeros((S,BW,10))
     # mtry_params = np.zeros((S,BW,10))
     etr_params[:,:,7] = dict_params['tfunc_avg_etr']
@@ -643,8 +652,16 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
         43.37786072, 45.38166073, 46.22395387, 50.21419653, 51.05246704,
         53.86896121, 53.90029708, 61.83586775, 64.87563699, 66.91207845,
         68.07449767, 71.27919965, 73.57195873, 74.95045988, 76.6230815])
+
+    # Generate Income and Demographic parameters
+    (omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates,
+        omega_S_preTP) = dem.get_pop_objs(E, S, T, 1, 100, start_year,
+        flag_graphs)
+
+    # Interpolate chi_n_guesses and create omega_SS_80 if necessary
     if S == 80:
         chi_n_guess = chi_n_guess_80.copy()
+        omega_SS_80 = omega_SS.copy()
     elif S < 80:
         age_midp_80 = np.linspace(20.5, 99.5, 80)
         chi_n_interp = si.interp1d(age_midp_80, chi_n_guess_80,
@@ -653,41 +670,29 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
         age_midp_S = np.linspace(20 + 0.5 * newstep,
                      100 - 0.5 * newstep, S)
         chi_n_guess = chi_n_interp(age_midp_S)
+        (_, _, omega_SS_80, _, _, _, _,_) = dem.get_pop_objs(20, 80,
+            320, 1, 100, start_year, False)
 
 
-   # Generate Income and Demographic parameters
-    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates, omega_S_preTP = get_pop_objs(
-        E, S, T, 1, 100, 2016, flag_graphs)
+
+
 
     ## To shut off demographics, uncomment the following 9 lines of code
-    g_n_ss = 0.0
-    surv_rate1 = np.ones((S,))# prob start at age S
-    surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
-    omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
-    omega_SS = omega_SS/omega_SS.sum()
-    imm_rates = np.zeros((T+S,S))
-    omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
-    omega_S_preTP = omega_SS
-    g_n_vector = np.tile(g_n_ss,(T+S,))
+    # g_n_ss = 0.0
+    # surv_rate1 = np.ones((S,))# prob start at age S
+    # surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
+    # omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
+    # omega_SS = omega_SS/omega_SS.sum()
+    # imm_rates = np.zeros((T+S,S))
+    # omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
+    # omega_S_preTP = omega_SS
+    # g_n_vector = np.tile(g_n_ss,(T+S,))
 
+    e = inc.get_e_interp(S, omega_SS, omega_SS_80, lambdas, plot=True)
+    # e_hetero = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
+    # e = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))
+    # e /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
 
-    # income.get_e() must be hardcoded since relies on regression output
-    # from DeBacker, Evans, Philips, and Ramnath (2015)
-    # e = get_e(80, 7, 20, 100, lambdas = np.array([.25, .25, .2, .1, .1, .09, .01]), flag_graphs)
-    # # need to turn 80x7 array into SxJ array
-    # e_final
-    # e_final /= (e_final * omega_SS.reshape(S, 1)
-    #             * bin_weights.reshape(1, J)).sum()
-    # ## To shut off hetero earnings processes, uncomment following two lines
-    # e_full = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))
-    # e_full /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
-    # chi_b_guess = np.ones((J,)) * 80.0
-    # J = 1
-    # e = e_full[:,0]
-    e = np.ones((S,J))/(np.ones((S,J)) * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
-    # print 'lambdas', lambdas[0]
-    # print 'e shape: ', e.shape
-    # quit()
 
     allvars = dict(locals())
 

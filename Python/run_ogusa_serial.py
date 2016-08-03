@@ -49,15 +49,15 @@ def run_micro_macro(user_params):
 
     '''
     ------------------------------------------------------------------------
-        Run SS for Baseline first - so can run baseline and reform in parallel if want 
+        Run SS for Baseline first - so can run baseline and reform in parallel if want
     ------------------------------------------------------------------------
     '''
     output_base = BASELINE_DIR
     input_dir = BASELINE_DIR
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'baseline':True, 'analytical_mtrs':True, 'age_specific':False,
-            'user_params':user_params,'guid':'38_mtr',
-            'run_micro':False}
+            'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
+            'user_params':user_params,'guid':'test2',
+            'run_micro':True}
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
     runner_SS(**kwargs)
@@ -71,45 +71,45 @@ def run_micro_macro(user_params):
     output_base = BASELINE_DIR
     input_dir = BASELINE_DIR
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'baseline':True, 'analytical_mtrs':True, 'age_specific':False,
-            'user_params':user_params,'guid':'38_mtr',
+            'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
+            'user_params':user_params,'guid':'test2',
             'run_micro':False}
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
     runner(**kwargs)
-    quit()
+    # quit()
 
     '''
     ------------------------------------------------------------------------
-        Run reform 
+        Run reform
     ------------------------------------------------------------------------
     '''
-    output_base = REFORM_DIR
-    input_dir = REFORM_DIR
-    guid_iter = 'reform_' + str(0)
-    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'baseline':False, 'analytical_mtrs':False, 'age_specific':False, 
-            'reform':reform, 'user_params':user_params,'guid':'38_mtr', 
-            'run_micro':False}
-    #p2 = Process(target=runner, kwargs=kwargs)
-    #p2.start()
-    runner(**kwargs)
+    # output_base = REFORM_DIR
+    # input_dir = REFORM_DIR
+    # guid_iter = 'reform_' + str(0)
+    # kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
+    #         'baseline':False, 'analytical_mtrs':False, 'age_specific':False,
+    #         'reform':reform, 'user_params':user_params,'guid':'38_mtr',
+    #         'run_micro':False}
+    # #p2 = Process(target=runner, kwargs=kwargs)
+    # #p2.start()
+    # runner(**kwargs)
 
 
 
 
     #p1.join()
-    print "just joined"
+    # print "just joined"
     #p2.join()
 
-    time.sleep(0.5)
+    # time.sleep(0.5)
 
-    ans = postprocess.create_diff(baseline_dir=BASELINE_DIR, policy_dir=REFORM_DIR)
+    # ans = postprocess.create_diff(baseline_dir=BASELINE_DIR, policy_dir=REFORM_DIR)
 
     print "total time was ", (time.time() - start_time)
-    print ans
+    # print ans
 
-    return ans
+    # return ans
 
 if __name__ == "__main__":
     run_micro_macro(user_params={})
