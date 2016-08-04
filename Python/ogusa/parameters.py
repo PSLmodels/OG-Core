@@ -416,8 +416,9 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     --------------------------------------------------------------------
     '''
     # Model Parameters
-    S = int(80)
-    lambdas = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
+    S = int(30)
+    lambdas = np.array([0.6, 0.4])
+    # lambdas = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
     J = lambdas.shape[0]
     T = int(4 * S)
     BW = int(10)
@@ -464,14 +465,42 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
     mean_income_data = dict_params['tfunc_avginc'][0]
 
-    # etr_params = dict_params['tfunc_etr_params_S'][:S,:BW,:]
-    # mtrx_params = dict_params['tfunc_mtrx_params_S'][:S,:BW,:]
-    # mtry_params = dict_params['tfunc_mtry_params_S'][:S,:BW,:]
+    etr_params = dict_params['tfunc_etr_params_S'][:S,:BW,:]
+    mtrx_params = dict_params['tfunc_mtrx_params_S'][:S,:BW,:]
+    mtry_params = dict_params['tfunc_mtry_params_S'][:S,:BW,:]
+
+    # # Make all ETRs equal the average
+    # etr_params = np.zeros((S, BW, 10))
+    # etr_params[:,:,7] = dict_params['tfunc_avg_etr']
+    # etr_params[:,:,9] = dict_params['tfunc_avg_etr']
+    # etr_params[:,:,5] = 1.0
+
+    # # Make all MTRx equal the average
+    # mtrx_params = np.zeros((S, BW, 10))
+    # mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx']
+    # mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx']
+    # mtrx_params[:,:,5] = 1.0
+
+    # # Make all MTRx equal the average
+    # mtry_params = np.zeros((S, BW, 10))
+    # mtry_params[:,:,7] = dict_params['tfunc_avg_mtry']
+    # mtry_params[:,:,9] = dict_params['tfunc_avg_mtry']
+    # mtry_params[:,:,5] = 1.0
+
+    # # Make MTRx depend only on labor income
+    # mtrx_params[:, :, 8:9] = 0
+    # mtrx_params[:, :, 1:2] = 0
+    # mtrx_params[:, :, 4] = 0
+
+    # # Make MTRy depend only on capital income
+    # mtry_params[:, :, 6:7] = 0
+    # mtry_params[:, :, 0] = 0
+    # mtry_params[:, :, 2:3] = 0
+
     #
     #
-    # etr_params = np.zeros((S,BW,10))
-    # mtrx_params = np.zeros((S,BW,10))
-    # mtry_params = np.zeros((S,BW,10))
+    #
+    #
     # etr_params[:,:,:] = dict_params['tfunc_etr_params_S'][20,0,:]
     # mtrx_params[:,:,:] = dict_params['tfunc_mtrx_params_S'][20,0,:]
     # mtry_params[:,:,:] = dict_params['tfunc_mtry_params_S'][20,0,:]
@@ -501,18 +530,9 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     # quit()
 
     # set etrs and mtrs to constant rates over income/age by uncommenting following code block
-    etr_params = np.zeros((S,BW,10))
-    mtrx_params = np.zeros((S,BW,10))
-    mtry_params = np.zeros((S,BW,10))
-    etr_params[:,:,7] = dict_params['tfunc_avg_etr']
-    mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx']
-    mtry_params[:,:,7] = dict_params['tfunc_avg_mtry']
-    etr_params[:,:,9] = dict_params['tfunc_avg_etr']
-    mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx']
-    mtry_params[:,:,9] = dict_params['tfunc_avg_mtry']
-    etr_params[:,:,5] = 1.0
-    mtrx_params[:,:,5] = 1.0
-    mtry_params[:,:,5] = 1.0
+    # etr_params = np.zeros((S,BW,10))
+    # mtrx_params = np.zeros((S,BW,10))
+    # mtry_params = np.zeros((S,BW,10))
 
     # etr_params = np.zeros((S,BW,10))
     # mtrx_params = np.zeros((S,BW,10))
@@ -530,12 +550,12 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
 
     # make etrs and mtrs constant over time, uncomment following code block
-    etr_params[:,:,7] = dict_params['tfunc_avg_etr'][0]
-    mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx'][0]
-    mtry_params[:,:,7] = dict_params['tfunc_avg_mtry'][0]
-    etr_params[:,:,9] = dict_params['tfunc_avg_etr'][0]
-    mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx'][0]
-    mtry_params[:,:,9] = dict_params['tfunc_avg_mtry'][0]
+    # etr_params[:,:,7] = dict_params['tfunc_avg_etr'][0]
+    # mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx'][0]
+    # mtry_params[:,:,7] = dict_params['tfunc_avg_mtry'][0]
+    # etr_params[:,:,9] = dict_params['tfunc_avg_etr'][0]
+    # mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx'][0]
+    # mtry_params[:,:,9] = dict_params['tfunc_avg_mtry'][0]
 
     # To zero out income taxes, uncomment the following 3 lines:
     # etr_params[:,:,6:] = 0.0
