@@ -1,12 +1,20 @@
 '''
 ------------------------------------------------------------------------
-Last updated 4/8/2015
+This file sets parameters for the OG-USA model run.
 
-This file sets parameters for the model run.
+This module calls the following other module(s):
+    demographics.py
+    income.py
+    txfunc.py
+    elliptical_u_est.py
 
-This py-file calls the following other file(s):
-            income.py
-            demographics.py
+This module defines the following function(s):
+    read_parameter_metadata()
+    read_tax_func_estimate()
+    get_parameters_from_file()
+    get_parameters()
+    get_reduced_parameters()
+    get_full_parameters()
 ------------------------------------------------------------------------
 '''
 
@@ -18,13 +26,12 @@ Import Packages
 import os
 import json
 import numpy as np
-import scipy.ndimage.filters as filter
-from demographics import get_pop_objs
-from demographics_old import get_omega
-from income import get_e
+import scipy.interpolate as si
+import demographics as dem
+import income as inc
 import pickle
 import txfunc
-import elliptical_u_est
+import elliptical_u_est as ellip
 import matplotlib.pyplot as plt
 
 
@@ -227,8 +234,17 @@ flag_graphs  = boolean, =True if produce graphs in demographic, income,
                wealth, and labor files (True=graph)
 chi_b_guess  = [J,] vector, initial guess of \chi^{b}_{j} parameters
                (if no calibration occurs, these are the values that will be used for \chi^{b}_{j})
-chi_n_guess  = [S,] vector, initial guess of \chi^{n}_{s} parameters
-               (if no calibration occurs, these are the values that will be used for \chi^{n}_{s})
+chi_n_guess_80 = (80,) vector, initial guess of chi_{n,s} parameters for
+                 80 one-year-period ages from 21 to 100
+chi_n_guess    = (S,) vector, interpolated initial guess of chi^{n,s}
+                 parameters (if no calibration occurs, these are the
+                 values that will be used
+age_midp_80    = (80,) vector, midpoints of age bins for 80 one-year-
+                 period ages from 21 to 100 for interpolation
+chi_n_interp   = function, interpolation function for chi_n_guess
+newstep        = scalar > 1, duration in years of each life period
+age_midp_S     = (S,) vector, midpoints of age bins for S one-year-
+                 period ages from 21 to 100 for interpolation
 ------------------------------------------------------------------------
 Demographics and Ability variables:
 ------------------------------------------------------------------------
@@ -259,7 +275,7 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
 
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
     read_tax_func_estimate()
-    elliptical_u_est.estimation()
+    ellip.estimation()
     read_parameter_metadata()
 
     OBJECTS CREATED WITHIN FUNCTION:
@@ -272,13 +288,15 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     --------------------------------------------------------------------
     '''
     # Model Parameters
+    start_year = 2016
     starting_age = 40
     ending_age = 50
     S = int(ending_age-starting_age)
-    J = int(2)
+    lambdas = np.array([.50, .50])
+    J = lambdas.shape[0]
     T = int(2 * S)
     BW = int(10)
-    lambdas = np.array([.50, .50])
+
     E = int(starting_age * (S / float(ending_age - starting_age)))
     beta_annual = .96 # Carroll (JME, 2009)
     beta = beta_annual ** (float(ending_age - starting_age) / S)
@@ -292,7 +310,7 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     g_y = (1 + g_y_annual)**(float(ending_age - starting_age) / S) - 1
     #   Ellipse parameters
     frisch = 0.4 # Frisch elasticity consistent with Altonji (JPE, 1996) and Peterman (Econ Inquiry, 2016)
-    b_ellipse, upsilon = elliptical_u_est.estimation(frisch,ltilde)
+    b_ellipse, upsilon = ellip.estimation(frisch,ltilde)
     k_ellipse = 0 # this parameter is just a level shifter in utlitiy - irrelevant for analysis
 
     # Tax parameters:
@@ -352,8 +370,9 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     chi_n_guess = np.array([5, 6, 7, 8, 9, 10, 11, 12, 13, 14])
 
     # Generate Income and Demographic parameters
-    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates, omega_S_preTP = get_pop_objs(
-        E, S, T, 1, 100, 2016, flag_graphs)
+    (omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates,
+        omega_S_preTP) = dem.get_pop_objs(E, S, T, 1, 100, start_year,
+        flag_graphs)
     e = np.array([[0.25, 1.25]] * 10)
     allvars = dict(locals())
 
@@ -384,7 +403,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
     read_tax_func_estimate()
-    elliptical_u_est.estimation()
+    ellip.estimation()
     read_parameter_metadata()
 
     OBJECTS CREATED WITHIN FUNCTION:
@@ -397,14 +416,14 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     --------------------------------------------------------------------
     '''
     # Model Parameters
-    S = int(80) #S<30 won't meet necessary tolerances
-    J = int(7)
+    S = int(30)
+    lambdas = np.array([0.6, 0.4])
+    # lambdas = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
+    J = lambdas.shape[0]
     T = int(4 * S)
     BW = int(10)
-    lambdas = np.array([.25, .25, .2, .1, .1, .09, .01])
-    #lambdas = np.array([0.5, 0.5])
-    #lambdas = np.array([1.,])
 
+    start_year = 2016
     starting_age = 20
     ending_age = 100
     E = int(starting_age * (S / float(ending_age - starting_age)))
@@ -420,7 +439,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     g_y = (1 + g_y_annual)**(float(ending_age - starting_age) / S) - 1
     #   Ellipse parameters
     frisch = 0.4 # Frisch elasticity consistent with Altonji (JPE, 1996) and Peterman (Econ Inquiry, 2016)
-    b_ellipse, upsilon = elliptical_u_est.estimation(frisch,ltilde)
+    b_ellipse, upsilon = ellip.estimation(frisch,ltilde)
     k_ellipse = 0 # this parameter is just a level shifter in utlitiy - irrelevant for analysis
 
     # Tax parameters:
@@ -450,27 +469,55 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     mtrx_params = dict_params['tfunc_mtrx_params_S'][:S,:BW,:]
     mtry_params = dict_params['tfunc_mtry_params_S'][:S,:BW,:]
 
+    # # Make all ETRs equal the average
+    # etr_params = np.zeros((S, BW, 10))
+    # etr_params[:,:,7] = dict_params['tfunc_avg_etr']
+    # etr_params[:,:,9] = dict_params['tfunc_avg_etr']
+    # etr_params[:,:,5] = 1.0
 
-    etr_params = np.zeros((S,BW,10))
-    mtrx_params = np.zeros((S,BW,10))
-    mtry_params = np.zeros((S,BW,10))
-    etr_params[:,:,:] = dict_params['tfunc_etr_params_S'][20,0,:]
-    mtrx_params[:,:,:] = dict_params['tfunc_mtrx_params_S'][20,0,:]
-    mtry_params[:,:,:] = dict_params['tfunc_mtry_params_S'][20,0,:]
+    # # Make all MTRx equal the average
+    # mtrx_params = np.zeros((S, BW, 10))
+    # mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx']
+    # mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx']
+    # mtrx_params[:,:,5] = 1.0
 
+    # # Make all MTRx equal the average
+    # mtry_params = np.zeros((S, BW, 10))
+    # mtry_params[:,:,7] = dict_params['tfunc_avg_mtry']
+    # mtry_params[:,:,9] = dict_params['tfunc_avg_mtry']
+    # mtry_params[:,:,5] = 1.0
 
-    mtrx_params[:,:,1] = 0.
-    mtrx_params[:,:,2] = 0.
-    mtrx_params[:,:,4] = 0.
-    mtrx_params[:,:,8] = 0.
-    mtrx_params[:,:,9] = 0.
+    # # Make MTRx depend only on labor income
+    # mtrx_params[:, :, 8:9] = 0
+    # mtrx_params[:, :, 1:2] = 0
+    # mtrx_params[:, :, 4] = 0
 
-    mtry_params[:,:,0] = 0.
-    mtry_params[:,:,2] = 0.
-    mtry_params[:,:,3] = 0.
-    mtry_params[:,:,6] = 0.
-    mtry_params[:,:,7] = 0.
-    
+    # # Make MTRy depend only on capital income
+    # mtry_params[:, :, 6:7] = 0
+    # mtry_params[:, :, 0] = 0
+    # mtry_params[:, :, 2:3] = 0
+
+    #
+    #
+    #
+    #
+    # etr_params[:,:,:] = dict_params['tfunc_etr_params_S'][20,0,:]
+    # mtrx_params[:,:,:] = dict_params['tfunc_mtrx_params_S'][20,0,:]
+    # mtry_params[:,:,:] = dict_params['tfunc_mtry_params_S'][20,0,:]
+    #
+    #
+    # mtrx_params[:,:,1] = 0.
+    # mtrx_params[:,:,2] = 0.
+    # mtrx_params[:,:,4] = 0.
+    # mtrx_params[:,:,8] = 0.
+    # mtrx_params[:,:,9] = 0.
+    #
+    # mtry_params[:,:,0] = 0.
+    # mtry_params[:,:,2] = 0.
+    # mtry_params[:,:,3] = 0.
+    # mtry_params[:,:,6] = 0.
+    # mtry_params[:,:,7] = 0.
+
     # # unocmmenting the block below ensures no tax rates are negative
     # etr_params[:,:,7] = 0.
     # mtrx_params[:,:,7] = 0.
@@ -482,22 +529,10 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     # print 'tax diffs: ', np.absolute(etr_params-etr_params.mean(axis=(0,1))).max()
     # quit()
 
-
-
-
     # set etrs and mtrs to constant rates over income/age by uncommenting following code block
-    etr_params = np.zeros((S,BW,10))
+    # etr_params = np.zeros((S,BW,10))
     # mtrx_params = np.zeros((S,BW,10))
     # mtry_params = np.zeros((S,BW,10))
-    etr_params[:,:,7] = dict_params['tfunc_avg_etr']
-    # mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx']
-    # mtry_params[:,:,7] = dict_params['tfunc_avg_mtry']
-    # etr_params[:,:,9] = dict_params['tfunc_avg_etr']
-    # mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx']
-    # mtry_params[:,:,9] = dict_params['tfunc_avg_mtry']
-    etr_params[:,:,5] = 1.0
-    # mtrx_params[:,:,5] = 1.0
-    # mtry_params[:,:,5] = 1.0
 
     # etr_params = np.zeros((S,BW,10))
     # mtrx_params = np.zeros((S,BW,10))
@@ -515,10 +550,10 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
 
     # make etrs and mtrs constant over time, uncomment following code block
-    etr_params[:,:,7] = dict_params['tfunc_avg_etr'][0]
+    # etr_params[:,:,7] = dict_params['tfunc_avg_etr'][0]
     # mtrx_params[:,:,7] = dict_params['tfunc_avg_mtrx'][0]
     # mtry_params[:,:,7] = dict_params['tfunc_avg_mtry'][0]
-    etr_params[:,:,9] = dict_params['tfunc_avg_etr'][0]
+    # etr_params[:,:,9] = dict_params['tfunc_avg_etr'][0]
     # mtrx_params[:,:,9] = dict_params['tfunc_avg_mtrx'][0]
     # mtry_params[:,:,9] = dict_params['tfunc_avg_mtry'][0]
 
@@ -572,9 +607,9 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
     #         num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
     #         denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
-            
+
     #         marginal_rates[i,:]  =  (Phi*(num/denom)) + K
-   
+
 
     # plt.plot(labinc_sup, marginal_rates[0,:], label='cap inc=0')
     # plt.plot(labinc_sup, marginal_rates[1,:], label='cap inc=1,000')
@@ -618,58 +653,64 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     #chi_b_guess = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 4.0, 10.0])
     #chi_b_guess = np.array([5, 10, 90, 250, 250, 250, 250])
     #chi_b_guess = np.array([2, 10, 90, 350, 1700, 22000, 120000])
-    chi_n_guess_80 = np.array([38.12000874, 33.22762421, 25.34842241, 26.67954008, 24.41097278,
-                            23.15059004, 22.46771332, 21.85495452, 21.46242013, 22.00364263,
-                            21.57322063, 21.53371545, 21.29828515, 21.10144524, 20.8617942,
-                            20.57282, 20.47473172, 20.31111347, 19.04137299, 18.92616951,
-                            20.58517969, 20.48761429, 20.21744847, 19.9577682, 19.66931057,
-                            19.6878927, 19.63107201, 19.63390543, 19.5901486, 19.58143606,
-                            19.58005578, 19.59073213, 19.60190899, 19.60001831, 21.67763741,
-                            21.70451784, 21.85430468, 21.97291208, 21.97017228, 22.25518398,
-                            22.43969757, 23.21870602, 24.18334822, 24.97772026, 26.37663164,
-                            29.65075992, 30.46944758, 31.51634777, 33.13353793, 32.89186997,
-                            38.07083882, 39.2992811, 40.07987878, 35.19951571, 35.97943562,
-                            37.05601334, 37.42979341, 37.91576867, 38.62775142, 39.4885405,
-                            37.10609921, 40.03988031, 40.86564363, 41.73645892, 42.6208256,
-                            43.37786072, 45.38166073, 46.22395387, 50.21419653, 51.05246704,
-                            53.86896121, 53.90029708, 61.83586775, 64.87563699, 66.91207845,
-                            68.07449767, 71.27919965, 73.57195873, 74.95045988, 76.62308152])
-    chi_n_guess = filter.uniform_filter(chi_n_guess_80,size=int(80/S))[::int(80/S)]
+    chi_n_guess_80 = np.array(
+        [38.12000874, 33.22762421, 25.3484224, 26.67954008, 24.41097278,
+        23.15059004, 22.46771332, 21.85495452, 21.46242013, 22.00364263,
+        21.57322063, 21.53371545, 21.29828515, 21.10144524, 20.8617942,
+        20.57282, 20.47473172, 20.31111347, 19.04137299, 18.92616951,
+        20.58517969, 20.48761429, 20.21744847, 19.9577682, 19.66931057,
+        19.6878927, 19.63107201, 19.63390543, 19.5901486, 19.58143606,
+        19.58005578, 19.59073213, 19.60190899, 19.60001831, 21.67763741,
+        21.70451784, 21.85430468, 21.97291208, 21.97017228, 22.25518398,
+        22.43969757, 23.21870602, 24.18334822, 24.97772026, 26.37663164,
+        29.65075992, 30.46944758, 31.51634777, 33.13353793, 32.89186997,
+        38.07083882, 39.2992811, 40.07987878, 35.19951571, 35.97943562,
+        37.05601334, 37.42979341, 37.91576867, 38.62775142, 39.4885405,
+        37.10609921, 40.03988031, 40.86564363, 41.73645892, 42.6208256,
+        43.37786072, 45.38166073, 46.22395387, 50.21419653, 51.05246704,
+        53.86896121, 53.90029708, 61.83586775, 64.87563699, 66.91207845,
+        68.07449767, 71.27919965, 73.57195873, 74.95045988, 76.6230815])
+
+    # Generate Income and Demographic parameters
+    (omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates,
+        omega_S_preTP) = dem.get_pop_objs(E, S, T, 1, 100, start_year,
+        flag_graphs)
+
+    # Interpolate chi_n_guesses and create omega_SS_80 if necessary
+    if S == 80:
+        chi_n_guess = chi_n_guess_80.copy()
+        omega_SS_80 = omega_SS.copy()
+    elif S < 80:
+        age_midp_80 = np.linspace(20.5, 99.5, 80)
+        chi_n_interp = si.interp1d(age_midp_80, chi_n_guess_80,
+                       kind='cubic')
+        newstep = 80.0 / S
+        age_midp_S = np.linspace(20 + 0.5 * newstep,
+                     100 - 0.5 * newstep, S)
+        chi_n_guess = chi_n_interp(age_midp_S)
+        (_, _, omega_SS_80, _, _, _, _,_) = dem.get_pop_objs(20, 80,
+            320, 1, 100, start_year, False)
 
 
-   # Generate Income and Demographic parameters
-    omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates, omega_S_preTP = get_pop_objs(
-        E, S, T, 1, 100, 2016, flag_graphs)
+
+
 
     ## To shut off demographics, uncomment the following 9 lines of code
-    g_n_ss = 0.0
-    surv_rate1 = np.ones((S,))# prob start at age S
-    surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
-    omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
-    omega_SS = omega_SS/omega_SS.sum()
-    imm_rates = np.zeros((T+S,S))
-    omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
-    omega_S_preTP = omega_SS
-    g_n_vector = np.tile(g_n_ss,(T+S,))
+    # g_n_ss = 0.0
+    # surv_rate1 = np.ones((S,))# prob start at age S
+    # surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
+    # omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
+    # omega_SS = omega_SS/omega_SS.sum()
+    # imm_rates = np.zeros((T+S,S))
+    # omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
+    # omega_S_preTP = omega_SS
+    # g_n_vector = np.tile(g_n_ss,(T+S,))
 
+    e = inc.get_e_interp(S, omega_SS, omega_SS_80, lambdas, plot=False)
+    # e_hetero = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
+    # e = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))
+    # e /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
 
-    # income.get_e() must be hardcoded since relies on regression output 
-    # from DeBacker, Evans, Philips, and Ramnath (2015)
-    # e = get_e(80, 7, 20, 100, lambdas = np.array([.25, .25, .2, .1, .1, .09, .01]), flag_graphs)
-    # # need to turn 80x7 array into SxJ array
-    # e_final
-    # e_final /= (e_final * omega_SS.reshape(S, 1)
-    #             * bin_weights.reshape(1, J)).sum()
-    # ## To shut off hetero earnings processes, uncomment following two lines
-    # e_full = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))
-    # e_full /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
-    # chi_b_guess = np.ones((J,)) * 80.0
-    # J = 1
-    # e = e_full[:,0]
-    e = np.ones((S,J))/(np.ones((S,J)) * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
-    # print 'lambdas', lambdas[0]
-    # print 'e shape: ', e.shape
-    # quit()
 
     allvars = dict(locals())
 
