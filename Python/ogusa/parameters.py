@@ -416,9 +416,8 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     --------------------------------------------------------------------
     '''
     # Model Parameters
-    S = int(30)
-    lambdas = np.array([0.6, 0.4])
-    # lambdas = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
+    S = int(80)
+    lambdas = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
     J = lambdas.shape[0]
     T = int(4 * S)
     BW = int(10)
