@@ -3,23 +3,22 @@
 This script reads in data generated from the OSPC Tax Calculator and
 the 2009 IRS PUF. It then estimates tax functions tau_{s,t}(x,y), where
 tau_{s,t} is the effective tax rate, marginal tax rate on labor income,
-or the marginal tax rate on capital income, for a given age (s) in a particular
-year (t). x is total labor income, and y is total capital income.
+or the marginal tax rate on capital income, for a given age (s) in a
+particular year (t). x is total labor income, and y is total capital
+income.
+
 This module defines the following functions:
-    gen_etr_grid()
-    gen_mtrx_grid_impl()
-    gen_mtry_grid_impl()
-    gen_mtrx_grid_est()
-    gen_mtry_grid_est()
-    gen_dmtrx_grid()
-    gen_dmtry_grid()
+    gen_rate_grid()
     wsumsq()
     find_outliers()
     replace_outliers()
+
     tax_func_estimate()
     get_tax_func_estimate()
-This Python script calls the following functions:
+
+This Python script calls the following modules:
     get_micro_data.py
+    utils.py
 
 This Python script outputs the following:
     ./TAX_ESTIMATE_PATH/TxFuncEst_baseline{}.pkl
@@ -44,6 +43,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 
 import get_micro_data
+import utils
 
 TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
 
@@ -53,384 +53,286 @@ Define Functions
 ------------------------------------------------------------------------
 '''
 
-def gen_etr_grid(X, Y, params):
+def gen_rate_grid(X, Y, params):
     '''
     --------------------------------------------------------------------
-    This function generates a grid of effective tax rates from a grid of
-    total labor income (X) and a grid of total capital income (Y).
+    This function generates a grid of tax rates (ETR, MTRx, or MTRy)
+    from a grid of total labor income (X) and a grid of total capital
+    income (Y).
+
+    tau(X) = (max_x - min_x) * ((AX^2 + BX) / (AX^2 + BX + 1)) + min_x
+
+    tau(Y) = (max_y - min_y) * ((CY^2 + DY) / (CY^2 + DY + 1)) + min_y
+
+    rate(X,Y) =
+    ((tau(X) + shift_x)^share) * ((tau(Y) + shift_y)^(1-share))) + shift
     --------------------------------------------------------------------
     INPUTS:
-    X      = (N x N) matrix, discretized support (N elements) of inc_lab
-             as row vector copied down N rows
-    Y      = (N x N) matrix, discretized support (N elements) of inc_cap
-             as column vector copied across N columns
-    params = (10,) vector, estimated parameters
-             (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
-    A      = scalar > 0, polynomial coefficient on X**2
-    B      = scalar > 0, polynomial coefficient on Y**2
-    C      = scalar > 0, polynomial coefficient on X*Y
-    D      = scalar > 0, polynomial coefficient on X
-    E      = scalar > 0, polynomial coefficient on Y
-    F      = scalar > 0, polynomial constant
-    max_x  = scalar > 0, maximum effective tax rate for X given Y=0
-    min_x  = scalar, minimum effective tax rate for X given Y=0
-    max_y  = scalar > 0, maximum effective tax rate for Y given X=0
-    min_y  = scalar, minimum effective tax rate for Y given X=0
+    X       = (N, N) matrix, discretized support (N elements) of labor
+              income as row vector copied down N rows
+    Y       = (N, N) matrix, discretized support (N elements) of capital
+              income as column vector copied across N columns
+    params  = (12,) vector, estimated parameters (A, B, C, D, max_x,
+              min_x, max_y, min_y, shift_x, shift_y, shift, share)
+    A       = scalar > 0, polynomial coefficient on X**2
+    B       = scalar > 0, polynomial coefficient on X
+    C       = scalar > 0, polynomial coefficient on Y**2
+    D       = scalar > 0, polynomial coefficient on Y
+    max_x   = scalar > 0, maximum tax rate for X given Y=0
+    min_x   = scalar, minimum effective tax rate for X given Y=0
+    max_y   = scalar > 0, maximum effective tax rate for Y given X=0
+    min_y   = scalar, minimum effective tax rate for Y given X=0
+    shift_x = scalar, adds to tau(X) to assure value in rate(X,Y) term
+              is strictly positive
+    shift_y = scalar, adds to tau(Y) to assure value in rate(X,Y) term
+              is strictly positive
+    shift   = scalar, adds to the Cobb-Douglas function to capture
+              negative tax rates
+    share   = scalar in [0, 1], share parameter in Cobb-Douglas function
+
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
     OBJECTS CREATED WITHIN FUNCTION:
-    phi      = (N x N) matrix, labor income as percent of total income
-    P_num    = (N x N) matrix, numerator values in ratio of polynomials
-    P_den    = (N x N) matrix, denominator values in ratio of
-               polynomials
-    etr_grid = (N x N) matrix, predicted effective tax rates given labor
-               income grid (X) and capital income grid (Y)
-    RETURNS: etr_grid
+    X2        = (N, N) matrix, X squared
+    Y2        = (N, N) matrix, Y squared
+    tau_x     = (N, N) matrix, ratio of polynomials function tau(X)
+                evaluated at grid points X
+    tau_x     = (N, N) matrix, ratio of polynomials function tau(Y)
+                evaluated at grid points Y
+    rate_grid = (N, N) matrix, predicted tax rates given labor income
+                grid (X) and capital income grid (Y)
+
+    RETURNS: rate_grid
     --------------------------------------------------------------------
     '''
-    A, B, C, D, E, F, max_x, min_x, max_y, min_y = params
-    phi = X / (X + Y)
-    P_num = A * (X ** 2) + B * (Y ** 2) + C * (X * Y) + D * X + E * Y
-    P_den = (A * (X ** 2) + B * (Y ** 2) + C * (X * Y) + D * X + E * Y
-            + F)
-    etr_grid = ((phi * (max_x - min_x) + (1 - phi) * (max_y - min_y)) *
-        (P_num / P_den) + (phi * min_x + (1 - phi) * min_y))
-    return etr_grid
+    (A, B, C, D, max_x, min_x, max_y, min_y, shift_x, shift_y, shift,
+        share) = params
+    X2 = X ** 2
+    Y2 = Y ** 2
+    tau_x = (((max_x - min_x) * (A * X2 + B * X) / (A * X2 + B * X + 1))
+        + min_x)
+    tau_y = (((max_y - min_y) * (C * Y2 + D * Y) / (C * Y2 + D * Y + 1))
+        + min_y)
+    rate_grid = (((tau_x + shift_x) ** share) *
+        ((tau_y + shift_y) ** (1 - share))) + shift
+
+    return rate_grid
 
 
-def gen_mtrx_grid_impl(X, Y, params):
+def gen_3Dscatters_hist(df, s, t, output_dir):
     '''
     --------------------------------------------------------------------
-    This function generates a grid of marginal tax rates with respect to
-    labor income from a grid of total labor income and a grid of total
-    capital income. This is the implied grid because it is derived from
-    the estimated effective tax rate function
+    Create 3-D scatterplots and corresponding 3D histogram of ETR, MTRx,
+    and MTRy as functions of labor income and capital income with
+    truncated data in the income dimension
     --------------------------------------------------------------------
     INPUTS:
-    X      = (N x N) matrix, discretized support (N elements) of inc_lab
-             as row vector copied down N rows
-    Y      = (N x N) matrix, discretized support (N elements) of inc_cap
-             as column vector copied across N columns
-    params = (10,) vector, estimated parameters
-             (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
-    A      = scalar > 0, polynomial coefficient on X**2
-    B      = scalar > 0, polynomial coefficient on Y**2
-    C      = scalar > 0, polynomial coefficient on X*Y
-    D      = scalar > 0, polynomial coefficient on X
-    E      = scalar > 0, polynomial coefficient on Y
-    F      = scalar > 0, polynomial constant
-    max_x  = scalar > 0, maximum effective tax rate for X given Y=0
-    min_x  = scalar, minimum effective tax rate for X given Y=0
-    max_y  = scalar > 0, maximum effective tax rate for Y given X=0
-    min_y  = scalar, minimum effective tax rate for Y given X=0
+    df         = (N1, 11) DataFrame, 11 variables with N observations
+    s          = integer >= 21, age of individual
+    t          = integer >= 2016, year of analysis
+    output_dir = string, output directory for saving plot files
+
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
     OBJECTS CREATED WITHIN FUNCTION:
-    Omega     = (N x N) matrix, ratio of polynomials
-    dOMdx     = (N x N) matrix, derivative of ratio of polynomials
-                (Omega) with respect to labor income (X)
-    mtrx_grid = (N x N) matrix, derivative of total tax liability with
-                respect to labor income (X)
-    RETURNS: mtrx_grid
-    --------------------------------------------------------------------
-    '''
-    A, B, C, D, E, F, max_x, min_x, max_y, min_y = params
-    Omega = ((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
-            (E * Y)) / ((A * X ** 2) + (B * Y ** 2) + (C * X * Y) +
-            (D * X) + (E * Y) + F)
-    dOMdx = ((F * ((2 * A * X) + (C * Y) + D)) /
-            (((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
-            (E * Y) + F) **2))
-    mtrx_grid = ((max_x - min_x) * Omega + ((max_x - min_x) * X +
-                (max_y - min_y) * Y) * dOMdx + min_x)
-    return mtrx_grid
+    df_trnc   = (N2 x 6) DataFrame, truncated data for 3D graph
+    inc_lab   = (N2 x 1) vector, total labor income for 3D graph
+    inc_cap   = (N2 x 1) vector, total capital income for 3D graph
+    etr_data  = (N2 x 1) vector, effective tax rate data
+    mtrx_data = (N2 x 1) vector, marginal tax rate of labor income data
+    mtry_data = (N2 x 1) vector, marginal tax rate of capital income
+                data
+    filename  = string, name of image file
+    fullpath  = string, full path of file
+    bin_num   = integer >= 2, number of bins along each axis for 3D
+                histogram
+    hist      = (bin_num, bin_num) matrix, bin percentages
+    xedges    = (bin_num+1,) vector, bin edge values in x-dimension
+    yedges    = (bin_num+1,) vector, bin edge values in y-dimension
+    x_midp    = (bin_num,) vector, midpoints of bins in x-dimension
+    y_midp    = (bin_num,) vector, midpoints of bins in y-dimension
+    elements  = integer, total number of 3D histogram bins
+    xpos      = (bin_num * bin_num) vector, x-coordinates of each bin
+    ypos      = (bin_num * bin_num) vector, y-coordinates of each bin
+    zpos      = (bin_num * bin_num) vector, zeros or z-coordinates of
+                origin of each bin
+    dx        = (bin_num,) vector, x-width of each bin
+    dy        = (bin_num,) vector, y-width of each bin
+    dz        = (bin_num * bin_num) vector, height of each bin
 
+    FILES SAVED BY THIS FUNCTION:
+        output_dir/ETR_Age_[age]_Year_[year]_data.png
+        output_dir/MTRx_Age_[age]_Year_[year]_data.png
+        output_dir/MTRy_Age_[age]_Year_[year]_data.png
+        output_dir/Hist_Age_[age]_Year_[year].png
 
-def gen_mtry_grid_impl(X, Y, params):
-    '''
-    --------------------------------------------------------------------
-    This function generates a grid of marginal tax rates with respect to
-    labor income from a grid of total labor income and a grid of total
-    capital income. This is the implied grid because it is derived from
-    the estimated effective tax rate function
-    --------------------------------------------------------------------
-    INPUTS:
-    X      = (N x N) matrix, discretized support (N elements) of inc_lab
-             as row vector copied down N rows
-    Y      = (N x N) matrix, discretized support (N elements) of inc_cap
-             as column vector copied across N columns
-    params = (10,) vector, estimated parameters
-             (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
-    A      = scalar > 0, polynomial coefficient on X**2
-    B      = scalar > 0, polynomial coefficient on Y**2
-    C      = scalar > 0, polynomial coefficient on X*Y
-    D      = scalar > 0, polynomial coefficient on X
-    E      = scalar > 0, polynomial coefficient on Y
-    F      = scalar > 0, polynomial constant
-    max_x  = scalar > 0, maximum effective tax rate for X given Y=0
-    min_x  = scalar, minimum effective tax rate for X given Y=0
-    max_y  = scalar > 0, maximum effective tax rate for Y given X=0
-    min_y  = scalar, minimum effective tax rate for Y given X=0
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
-    OBJECTS CREATED WITHIN FUNCTION:
-    Omega     = (N x N) matrix, ratio of polynomials
-    dOMdx     = (N x N) matrix, derivative of ratio of polynomials
-                (Omega) with respect to labor income (X)
-    mtrx_grid = (N x N) matrix, derivative of total tax liability with
-                respect to labor income (X)
-    RETURNS: mtrx_grid
+    RETURNS: None
     --------------------------------------------------------------------
     '''
-    A, B, C, D, E, F, max_x, min_x, max_y, min_y = params
-    Omega = ((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
-            (E * Y)) / ((A * X ** 2) + (B * Y ** 2) + (C * X * Y) +
-            (D * X) + (E * Y) + F)
-    dOMdy = ((F * ((2 * B * Y) + (C * X) + E)) /
-            (((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
-            (E * Y) + F) **2))
-    mtry_grid = ((max_x - min_x) * Omega + ((max_x - min_x) * X +
-                (max_y - min_y) * Y) * dOMdy + min_x)
-    return mtry_grid
+    # Truncate the data
+    df_trnc = df[(df['Total Labor Income'] > 5) &
+        (df['Total Labor Income'] < 500000) &
+        (df['Total Capital Income'] > 5) &
+        (df['Total Capital Income'] < 500000)]
+    inc_lab = df_trnc['Total Labor Income']
+    inc_cap = df_trnc['Total Capital Income']
+    etr_data = df_trnc['Effective Tax Rate']
+    mtrx_data = df_trnc['MTR Labor']
+    mtry_data = df_trnc['MTR capital income']
 
+    # Plot 3D scatterplot of ETR data
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection ='3d')
+    ax.scatter(inc_lab, inc_cap, etr_data, c='r', marker='o')
+    ax.set_xlabel('Total Labor Income')
+    ax.set_ylabel('Total Capital Income')
+    ax.set_zlabel('Effective Tax Rate')
+    plt.title('ETR, Lab. Inc., and Cap. Inc., Age=' + str(s) + ', Year='
+        + str(t))
+    filename = ("ETR_Age_" + str(s) + "_Year_" + str(t) + "_data.png")
+    fullpath = os.path.join(output_dir, filename)
+    fig.savefig(fullpath, bbox_inches='tight')
+    plt.close()
 
-def gen_mtrx_grid_est(X, Y, params):
-    '''
-    --------------------------------------------------------------------
-    This function generates a grid of marginal tax rates with respect to
-    labor income from a grid of total labor income and a grid of total
-    capital income. This is the estimated grid because it is re-
-    estimated using the same functional form as the effective tax rate
-    --------------------------------------------------------------------
-    INPUTS:
-    X      = (N x N) matrix, discretized support (N elements) of inc_lab
-             as row vector copied down N rows
-    Y      = (N x N) matrix, discretized support (N elements) of inc_cap
-             as column vector copied across N columns
-    params = (10,) vector, estimated parameters
-             (H, I, J, K, L, M, max_x, min_x, max_y, min_y)
-    H      = scalar > 0, polynomial coefficient on X**2
-    I      = scalar > 0, polynomial coefficient on Y**2
-    J      = scalar > 0, polynomial coefficient on X*Y
-    K      = scalar > 0, polynomial coefficient on X
-    L      = scalar > 0, polynomial coefficient on Y
-    M      = scalar > 0, polynomial constant
-    max_x  = scalar > 0, maximum effective tax rate for X given Y=0
-    min_x  = scalar, minimum effective tax rate for X given Y=0
-    max_y  = scalar > 0, maximum effective tax rate for Y given X=0
-    min_y  = scalar, minimum effective tax rate for Y given X=0
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
-    OBJECTS CREATED WITHIN FUNCTION:
-    phi       = (N x N) matrix, labor income as percent of total income
-    P_num     = (N x N) matrix, numerator values in ratio of polynomials
-    P_den     = (N x N) matrix, denominator values in ratio of
-                polynomials
-    mtrx_grid = (N x N) matrix, derivative of total tax liability with
-                respect to labor income (X)
-    RETURNS: mtrx_grid
-    --------------------------------------------------------------------
-    '''
-    H, I, J, K, L, M, max_x, min_x, max_y, min_y = params
-    phi = X / (X + Y)
-    P_num = H * (X ** 2) + I * (Y ** 2) + J * (X * Y) + K * X + L * Y
-    P_den = (H * (X ** 2) + I * (Y ** 2) + J * (X * Y) + K * X + L * Y
-            + M)
-    mtrx_grid = ((phi * (max_x - min_x) + (1 - phi) * (max_y - min_y)) *
-        (P_num / P_den) + (phi * min_x + (1 - phi) * min_y))
-    return mtrx_grid
+    # Plot 3D histogram for all data
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection ='3d')
+    bin_num = int(30)
+    hist, xedges, yedges = np.histogram2d(inc_lab, inc_cap,
+        bins=bin_num)
+    hist = hist / hist.sum()
+    x_midp = xedges[:-1] + 0.5 * (xedges[1] - xedges[0])
+    y_midp = yedges[:-1] + 0.5 * (yedges[1] - yedges[0])
+    elements = (len(xedges) - 1) * (len(yedges) - 1)
+    ypos, xpos = np.meshgrid(y_midp, x_midp)
+    xpos = xpos.flatten()
+    ypos = ypos.flatten()
+    zpos = np.zeros(elements)
+    dx = (xedges[1] - xedges[0]) * np.ones_like(bin_num)
+    dy = (yedges[1] - yedges[0]) * np.ones_like(bin_num)
+    dz = hist.flatten()
+    ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color='b', zsort='average')
+    ax.set_xlabel('Total Labor Income')
+    ax.set_ylabel('Total Capital Income')
+    ax.set_zlabel('Percent of obs.')
+    plt.title('Histogram by lab. inc., and cap. inc., Age=' + str(s) +
+        ', Year=' + str(t))
+    filename = ("Hist_Age_" + str(s) + "_Year_" + str(t) + ".png")
+    fullpath = os.path.join(output_dir, filename)
+    fig.savefig(fullpath, bbox_inches='tight')
+    plt.close()
 
+    # Plot 3D scatterplot of MTRx data
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection ='3d')
+    ax.scatter(inc_lab, inc_cap, mtrx_data, c='r', marker='o')
+    ax.set_xlabel('Total Labor Income')
+    ax.set_ylabel('Total Capital Income')
+    ax.set_zlabel('Marginal Tax Rate, Labor Inc.)')
+    plt.title("MTR Labor Income, Lab. Inc., and Cap. Inc., Age=" +
+        str(s) + ", Year=" + str(t))
+    filename = ("MTRx_Age_"+ str(s) + "_Year_" + str(t) + "_data.png")
+    fullpath = os.path.join(output_dir, filename)
+    fig.savefig(fullpath, bbox_inches='tight')
+    plt.close()
 
-def gen_mtry_grid_est(X, Y, params):
-    '''
-    --------------------------------------------------------------------
-    This function generates a grid of marginal tax rates with respect to
-    capital income from a grid of total labor income and a grid of total
-    capital income. This is the estimated grid because it is re-
-    estimated using the same functional form as the effective tax rate
-    --------------------------------------------------------------------
-    INPUTS:
-    X      = (N x N) matrix, discretized support (N elements) of inc_lab
-             as row vector copied down N rows
-    Y      = (N x N) matrix, discretized support (N elements) of inc_cap
-             as column vector copied across N columns
-    params = (10,) vector, estimated parameters
-             (H, I, J, K, L, M, max_x, min_x, max_y, min_y)
-    H      = scalar > 0, polynomial coefficient on X**2
-    I      = scalar > 0, polynomial coefficient on Y**2
-    J      = scalar > 0, polynomial coefficient on X*Y
-    K      = scalar > 0, polynomial coefficient on X
-    L      = scalar > 0, polynomial coefficient on Y
-    M      = scalar > 0, polynomial constant
-    max_x  = scalar > 0, maximum effective tax rate for X given Y=0
-    min_x  = scalar, minimum effective tax rate for X given Y=0
-    max_y  = scalar > 0, maximum effective tax rate for Y given X=0
-    min_y  = scalar, minimum effective tax rate for Y given X=0
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
-    OBJECTS CREATED WITHIN FUNCTION:
-    phi       = (N x N) matrix, labor income as percent of total income
-    P_num     = (N x N) matrix, numerator values in ratio of polynomials
-    P_den     = (N x N) matrix, denominator values in ratio of
-                polynomials
-    mtry_grid = (N x N) matrix, derivative of total tax liability with
-                respect to capital income (Y)
-    RETURNS: mtry_grid
-    --------------------------------------------------------------------
-    '''
-    H, I, J, K, L, M, max_x, min_x, max_y, min_y = params
-    phi = X / (X + Y)
-    P_num = H * (X ** 2) + I * (Y ** 2) + J * (X * Y) + K * X + L * Y
-    P_den = (H * (X ** 2) + I * (Y ** 2) + J * (X * Y) + K * X + L * Y
-            + M)
-    mtry_grid = ((phi * (max_x - min_x) + (1 - phi) * (max_y - min_y)) *
-        (P_num / P_den) + (phi * min_x + (1 - phi) * min_y))
-    return mtry_grid
-
-
-def gen_dmtrx_grid(X, Y, params):
-    '''
-    --------------------------------------------------------------------
-    This function generates a grid of derivatives of marginal tax rates
-    with respect to labor income from a grid of total labor income and a
-    grid of total capital income
-    --------------------------------------------------------------------
-    INPUTS:
-    X      = (N x N) matrix, discretized support (N elements) of inc_lab
-             as row vector copied down N rows
-    Y      = (N x N) matrix, discretized support (N elements) of inc_cap
-             as column vector copied across N columns
-    params = (10,) vector, estimated parameters
-             (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
-    A      = scalar > 0, polynomial coefficient on X**2
-    B      = scalar > 0, polynomial coefficient on Y**2
-    C      = scalar > 0, polynomial coefficient on X*Y
-    D      = scalar > 0, polynomial coefficient on X
-    E      = scalar > 0, polynomial coefficient on Y
-    F      = scalar > 0, polynomial constant
-    max_x  = scalar > 0, maximum effective tax rate for X given Y=0
-    min_x  = scalar, minimum effective tax rate for X given Y=0
-    max_y  = scalar > 0, maximum effective tax rate for Y given X=0
-    min_y  = scalar, minimum effective tax rate for Y given X=0
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
-    OBJECTS CREATED WITHIN FUNCTION:
-    dOMdx      = (N x N) matrix, derivative of ratio of polynomials
-                 (Omega) with respect to labor income (X)
-    d2OMd2x    = (N x N) matrix, second derivative of ratio of
-                 polynomials (Omega) with respect to labor income (X)
-    dmtrx_grid = (N x N) matrix, second derivative of total tax
-                 liability with respect to labor income (X)
-    RETURNS: dmtrx_grid
-    --------------------------------------------------------------------
-    '''
-    A, B, C, D, E, F, max_x, min_x, max_y, min_y = params
-    dOMdx = ((F * ((2 * A * X) + (C * Y) + D)) /
-            (((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
-            (E * Y) + F) **2))
-    d2OMd2x = ((2 * F * ((-3 * (A ** 2) * (X ** 2)) +
-        ((A * B - C ** 2) * (Y ** 2)) - (3 * A * C * X * Y) -
-        (3 * A * D * X) + ((A * E - 2 * C * D) * Y) + (A * F - D ** 2)))
-        / (((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
-        (E * Y) + F) ** 3))
-    dmtrx_grid = (2 * (max_x - min_x) * dOMdx +
-                 ((max_x - min_x) * X + (max_y - min_y) * Y) * d2OMd2x)
-    return dmtrx_grid
-
-
-def gen_dmtry_grid(X, Y, params):
-    '''
-    --------------------------------------------------------------------
-    This function generates a grid of derivatives of marginal tax rates
-    with respect to capital income from a grid of total labor income and
-    a grid of total capital income
-    --------------------------------------------------------------------
-    INPUTS:
-    X      = (N x N) matrix, discretized support (N elements) of
-             inc_lab as row vector copied down N rows
-    Y      = (N x N) matrix, discretized support (N elements) of
-             inc_cap as column vector copied across N columns
-    params = (10,) vector, estimated parameters
-             (A, B, C, D, E, F, max_x, min_x, max_y, min_y)
-    A      = scalar > 0, polynomial coefficient on X**2
-    B      = scalar > 0, polynomial coefficient on Y**2
-    C      = scalar > 0, polynomial coefficient on X*Y
-    D      = scalar > 0, polynomial coefficient on X
-    E      = scalar > 0, polynomial coefficient on Y
-    F      = scalar > 0, polynomial constant
-    max_x  = scalar > 0, maximum effective tax rate for X given Y=0
-    min_x  = scalar, minimum effective tax rate for X given Y=0
-    max_y  = scalar > 0, maximum effective tax rate for Y given X=0
-    min_y  = scalar, minimum effective tax rate for Y given X=0
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
-    OBJECTS CREATED WITHIN FUNCTION:
-    dOMdy      = (N x N) matrix, derivative of ratio of polynomials
-                 (Omega) with respect to capital income (Y)
-    d2OMd2y    = (N x N) matrix, second derivative of ratio of
-                 polynomials (Omega) with respect to capital income (Y)
-    dmtry_grid = (N x N) matrix, second derivative of total tax
-                 liability with respect to capital income (Y)
-    RETURNS: dmtry_grid
-    --------------------------------------------------------------------
-    '''
-    A, B, C, D, E, F, max_x, min_x, max_y, min_y = params
-    dOMdy = ((F * ((2 * B * Y) + (C * X) + E)) /
-            (((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
-            (E * Y) + F) **2))
-    d2OMd2y = ((2 * F * ((-3 * (B ** 2) * (Y ** 2)) +
-        ((A * B - C ** 2) * (X ** 2)) - (3 * B * C * X * Y) -
-        (3 * B * E * Y) + ((B * D - 2 * C * E) * X) + (B * F - E ** 2)))
-        / (((A * X ** 2) + (B * Y ** 2) + (C * X * Y) + (D * X) +
-        (E * Y) + F) ** 3))
-    dmtry_grid = (2 * (max_y - min_y) * dOMdy +
-                 ((max_x - min_x) * X + (max_y - min_y) * Y) * d2OMd2y)
-    return dmtry_grid
+    # Plot 3D scatterplot of MTRy data
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection ='3d')
+    ax.scatter(inc_lab, inc_cap, mtry_data, c='r', marker='o')
+    ax.set_xlabel('Total Labor Income')
+    ax.set_ylabel('Total Capital Income')
+    ax.set_zlabel('Marginal Tax Rate (Capital Inc.)')
+    plt.title("MTR Capital Income, Cap. Inc., and Cap. Inc., Age=" +
+        str(s) + ", Year=" + str(t))
+    filename = ("MTRy_Age_"+ str(s) + "_Year_" + str(t) + "_data.png")
+    fullpath = os.path.join(output_dir, filename)
+    fig.savefig(fullpath, bbox_inches='tight')
+    plt.close()
 
 
 def wsumsq(params, *args):
     '''
     --------------------------------------------------------------------
     This function generates the weighted sum of squared deviations of
-    predicted values of either effective or marginal tax rates from the
-    effective or marginal tax rates from the data.
+    predicted values of tax rates (ETR, MTRx, or MTRy) from the tax
+    rates from the data for the Cobb-Douglas functional form of the tax
+    function.
     --------------------------------------------------------------------
     INPUTS:
-    params     = (10,) vector, guesses for (Coef1, Coef2, Coef3, Coef4,
-                 Coef5, Coef6, max_x, min_x, max_y, min_y)
-    args       = length 5 tuple,
-                 (varmat_hat, txrates, wgts, varmat_bar, phi)
-    varmat_hat = (N x 6) matrix, percent deviation from mean
-                 transformation of original variables (varmat)
-    txrates    = (N x 1) vector, either effective tax rate data or
-                 marginal tax rate data for parameter estimation
-    wgts       = (N x 1) vector, population weights for each observation
-                 for parameter estimation
-    varmat_bar = (5,) vector, vector of means of the levels of the
-                 first 5 variables in varmat_hat [X1,...X5]
-    phi        = (N,) vector, percent of total income that is labor
-                 income x/(x+y) for each observation
-    max_x      = scalar > 0, maximum effective tax rate for X given Y=0
-    min_x      = scalar, minimum effective tax rate for X given Y=0
-    max_y      = scalar > 0, maximum effective tax rate for Y given X=0
-    min_y      = scalar, minimum effective tax rate for Y given X=0
+    params  = (7,) vector, guesses for (coef1, coef2, coef3, coef4,
+              max_x, max_y, share)
+    coef1   = scalar > 0, adjusted coefficient on \hat{X^2} term
+    coef2   = scalar > 0, adjusted coefficient on \hat{X} term
+    coef3   = scalar > 0, adjusted coefficient on \hat{Y^2} term
+    coef4   = scalar > 0, adjusted coefficient on \hat{Y} term
+    max_x   = scalar > 0, maximum asymptotic tax rate when y=0
+    max_y   = scalar > 0, maximum asymptotic tax rate when x=0
+    share   = scalar in [0,1], share parameter in Cobb-Douglas function
+    args    = length 7 tuple, (X, Y, min_x, min_y, shift, txrates, wgts)
+    X       = (N,) Series, X (labor income) data
+    Y       = (N,) Series, Y (capital income) data
+    min_x   = scalar < max_x, minimum value of tax rate when y=0
+    min_y   = scalar < max_y, minimum value of tax rate when x=0
+    shift   = scalar, shifts the entire tax rate function
+    txrates = (N,) Series, tax rate data (ETR, MTRx, or MTRy)
+    wgts    = (N,) Series, population weights for each observation
+
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
     OBJECTS CREATED WITHIN FUNCTION:
-    Coef7       = scalar > 0, sum of Coef1 through Coef5 coefficients
-    P_num       = (N x N) matrix, numerator values in ratio of
-                  polynomials
-    P_den       = (N x N) matrix, denominator values in ratio of
-                  polynomials
-    txrates_est = (N,) vector, predicted effective or marginal tax rate
-                  for each observation
-    errors      = (N,) vector, difference between predicted tax rates
+    X2          = (N,) Series, X^2 (labor income ** 2) data
+    Y2          = (N,) Series, Y^2 (capital income ** 2) data
+    X2bar       = scalar > 0, weighted average of X2 (labor income^2)
+    Xbar        = scalar > 0, weighted average of X (labor income)
+    Y2bar       = scalar > 0, weighted average of Y2 (capital income^2)
+    Ybar        = scalar > 0, weighted average of Y (capital income)
+    shift_x     = scalar, shifter to make tau(x) in CES positive
+    shift_y     = scalar, shifter to make tau(y) in CES positive
+    X2til       = (N,) Series, X2 percent deviation from weighted mean
+    Xtil        = (N,) Series, X percent deviation from weighted mean
+    Y2til       = (N,) Series, Y2 percent deviation from weighted mean
+    Ytil        = (N,) Series, Y percent deviation from weighted mean
+    Etil        = scalar > 0, constant term in adjusted X polynomial
+    Ftil        = scalar > 0, constant term in adjusted Y polynomial
+    tau_x       = (N,) Series, ratio of polynomials function tau(X)
+                  evaluated at points X
+    tau_y       = (N,) Series, ratio of polynomials function tau(Y)
+                  evaluated at points Y
+    txrates_est = (N,) Series, predicted tax rates (ETR, MTRx, MTRy) for
+                  each observation
+    errors      = (N,) Series, difference between predicted tax rates
                   and the tax rates from the data
-    wssqdev     = scalar > 0, weighted sum of squared errors
+    wssqdev     = scalar > 0, weighted sum of squared deviations
+
     RETURNS: wssqdev
     --------------------------------------------------------------------
     '''
-    varmat_hat, txrates, wgts, varmat_bar, phi = args
-    max_x, min_x, max_y, min_y = params[-4:]
-    Coef7 = params[:5].sum()
-    P_num = np.dot(varmat_hat[:,:-1], params[:5]) + Coef7
-    P_den = np.dot(varmat_hat, params[:6]) + Coef7
-    txrates_est = ((phi * (max_x - min_x) + (1 - phi) * (max_y - min_y))
-        * (P_num / P_den) + (phi * min_x + (1 - phi) * min_y))
+    coef1, coef2, coef3, coef4, max_x, max_y, share = params
+    X, Y, min_x, min_y, shift, txrates, wgts = args
+    X2 = X ** 2
+    Y2 = Y ** 2
+    X2bar = (X2 * wgts).sum() / wgts.sum()
+    Xbar = (X * wgts).sum() / wgts.sum()
+    Y2bar = (Y2 * wgts).sum() / wgts.sum()
+    Ybar = (Y * wgts).sum() / wgts.sum()
+    shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
+    shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
+    X2til = (X2 - X2bar) / X2bar
+    Xtil = (X - Xbar) / Xbar
+    Y2til = (Y2 - Y2bar) / Y2bar
+    Ytil = (Y - Ybar) / Ybar
+    Etil = coef1 + coef2
+    Ftil = coef3 + coef4
+    tau_x = (((max_x - min_x) * (coef1 * X2til + coef2 * Xtil + Etil) /
+        (coef1 * X2til + coef2 * Xtil + Etil + 1)) + min_x)
+    tau_y = (((max_y - min_y) * (coef3 * Y2til + coef4 * Ytil + Ftil) /
+        (coef3 * Y2til + coef4 * Ytil + Ftil + 1)) + min_y)
+    txrates_est = (((tau_x + shift_x) ** share) *
+                  ((tau_y + shift_y) ** (1 - share))) + shift
     errors = txrates_est - txrates
     wssqdev = (wgts * (errors ** 2)).sum()
+
     return wssqdev
 
 
@@ -591,6 +493,7 @@ def replace_outliers(param_arr, sse_big_mat):
     RETURNS: param_arr_adj
     --------------------------------------------------------------------
     '''
+    numparams = param_arr.shape[2]
     age_ind = np.arange(0, sse_big_mat.shape[0])
     param_arr_adj = param_arr.copy()
     for t in xrange(0, sse_big_mat.shape[1]):
@@ -608,7 +511,7 @@ def replace_outliers(param_arr, sse_big_mat):
                 # one was and this string of outliers is at the beginning
                 # ages, set the outliers equal to this period's tax function
                 param_arr_adj[:big_cnt, t, :] = \
-                    np.tile(param_arr_adj[s, t, :].reshape((1, 1, 10)),
+                    np.tile(param_arr_adj[s, t, :].reshape((1, 1, numparams)),
                     (big_cnt, 1, 1))
                 big_cnt = 0
             if (sse_big_mat[s, t] == False and big_cnt > 0 and
@@ -620,8 +523,8 @@ def replace_outliers(param_arr, sse_big_mat):
                 slopevec = ((param_arr_adj[s, t, :] -
                     param_arr_adj[s-big_cnt-1, t, :]) / (big_cnt + 1))
                 interceptvec = (param_arr_adj[s-big_cnt-1, t, :])
-                param_arr_adj[s-big_cnt:s, t, :] = (np.tile(interceptvec.reshape(1,10),(big_cnt,1)) +
-                    np.tile(slopevec.reshape(1,10),(big_cnt,1))*np.tile(np.reshape(np.arange(1,big_cnt+1),(big_cnt,1)),(1,10)))
+                param_arr_adj[s-big_cnt:s, t, :] = (np.tile(interceptvec.reshape(1,numparams),(big_cnt,1)) +
+                    np.tile(slopevec.reshape(1,numparams),(big_cnt,1))*np.tile(np.reshape(np.arange(1,big_cnt+1),(big_cnt,1)),(1,numparams)))
                 big_cnt = 0
             if sse_big_mat[s, t] == True and s == sse_big_mat.shape[0]-1:
                 # When the last ages are outliers, set the parameters equal
@@ -629,98 +532,362 @@ def replace_outliers(param_arr, sse_big_mat):
                 big_cnt += 1
                 param_arr_adj[s, t, :] = np.nan
                 param_arr_adj[s-big_cnt+1:, t, :] = \
-                    np.tile(param_arr_adj[s-big_cnt, t, :].reshape((1, 1, 10)),
+                    np.tile(param_arr_adj[s-big_cnt, t, :].reshape((1, 1, numparams)),
                     (big_cnt, 1, 1))
 
     return param_arr_adj
 
 
-def tax_func_estimate(baseline=False, analytical_mtrs=True,
-  age_specific=False, start_year=2016,reform={}):
+def txfunc_est(df, s, t, rate_type, output_dir, graph):
     '''
     --------------------------------------------------------------------
-    This function estimates functions for the ETR, MTR on Labor Income,
-    and MTR on Capital Income.
+    This function uses tax tax rate and income data for individuals of a
+    particular age (s) and a particular year (t) to estimate the
+    parameters of a Cobb-Douglas aggregation function of two ratios of
+    polynomials in labor income and capital income, respectively.
     --------------------------------------------------------------------
-
     INPUTS:
-    baseline        = boolean, =True if baseline tax policy, =False if reform
-    analytical_mtrs = boolean, =True if use analytical_mtrs, =False if
-                      use estimated MTRs
-    age_specific    = boolean, =True if estimate tax functions separately
-                      for each age, =False if estimate a single tax function
-                      to represent all ages in a given budget year
-    start_year      = integer, first year of budget window
-    reform          = dictionary, reform parameters
+    df         = (N, 11) DataFrame, data variables indexed by 11
+                 variable names
+    s          = integer >= 21, age
+    t          = integer >= 2016, year
+    rate_type  = string, either 'etr', 'mtrx', or 'mtry'
+    output_dir = string, output directory in which to save plots
+    graph      = Boolean, =True graphs the estimated functions compared
+                 to the data
+
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
-    get_micro_data.get_data
-    gen_etr_grid()
-    gen_mtrx_grid_impl()
-    gen_mtry_grid_impl()
-    gen_mtrx_grid_est()
-    gen_mtry_grid_est()
-    gen_dmtrx_grid()
-    gen_dmtry_grid()
-    wsumsq()
-    find_outliers()
-    replace_outliers()
+        wsumsq()
+        utils.mkdirs()
+        gen_rate_grid()
+
     OBJECTS CREATED WITHIN FUNCTION:
-    See comments in this function
-    dict_params = dictionary, contains numpy arrays of estimated parameters
-                   and other statistics describing data and estimation
+    X           = (N,) Series, labor income data
+    Y           = (N,) Series, capital income data
+    wgts        = (N,) Series, population weights on the data
+    X2          = (N,) Series, labor income squared (X^2)
+    Y2          = (N,) Series, capital income squared (Y^2)
+    X2bar       = scalar > 0, population weighted mean of X2
+    Xbar        = scalar > 0, population weighted mean of X
+    Y2bar       = scalar > 0, population weighted mean of Y2
+    Ybar        = scalar > 0, population weighted mean of Y
+    txrates     = (N,) vector, tax rates from data (ETR, MTRx, or MTRy)
+    x_10pctl    = scalar > 0, 10th percentile of labor income data
+    y_10pctl    = scalar > 0, 10th percentile of capital income data
+    x_20pctl    = scalar > 0, 20th percentile of labor income data
+    y_20pctl    = scalar > 0, 20th percentile of capital income data
+    min_x       = scalar, minimum tax rate for X given Y=0
+    min_y       = scalar, minimum tax rate for Y given X=0
+    Atil_init   = scalar > 0, initial guess for coefficient on \hat{X^2}
+    Btil_init   = scalar > 0, initial guess for coefficient on \hat{X}
+    Ctil_init   = scalar > 0, initial guess for coefficient on \hat{Y^2}
+    Dtil_init   = scalar > 0, initial guess for coefficient on \hat{Y}
+    ub_max_x    = scalar > 0, maximum amount of capital income at the
+                  low range of capital income used to calculate the
+                  asymptotic maximum tax rate when capital income is
+                  close to zero
+    ub_max_y    = scalar > 0, maximum amount of labor income at the low
+                  range of labor income used to calculate the asymptotic
+                  maximum tax rate when labor income is close to zero
+    max_x_init  = scalar > 0, initial guess for maximum tax rate for X
+                  given Y=0
+    max_y_init  = scalar > 0, initial guess for maximum tax rate for Y
+                  given X=0
+    shift       = scalar, adds to the Cobb-Douglas function to capture
+                  negative tax rates
+    share_init  = scalar in [0,1], share parameter in Cobb-Douglas
+                  function
+    numparams   = integer > 1, number of parameters to characterize
+                  function
+    params_init = (7,) vector, parameters for minimization function
+                  (Atil_init, Btil_init, Ctil_init, Dtil_init,
+                  max_x_init, max_y_init, share_init)
+    tx_objs     = length 7 tuple, arguments to be passed in to minimizer
+                  (X, Y, min_x, min_y, shift, txrates, wgts)
+    lb_max_x    = scalar > 0, lower bound for max_x. Must be greater
+                  than min_x
+    lb_max_y    = scalar > 0, lower bound for max_y. Must be greater
+                  than min_y
+    bnds        = length 7 tuple, max and min parameter bounds
+    params_til  = dictionary, output from minimization
+    Atil        = scalar, estimated coefficient on \hat{X^2} term
+    Btil        = scalar, estimated coefficient on \hat{X} term
+    Ctil        = scalar, estimated coefficient on \hat{Y^2} term
+    Dtil        = scalar, estimated coefficient on \hat{Y} term
+    max_x       = scalar > 0, estimated value for max_x (labor income)
+    max_y       = scalar > 0, estimated value for max_y (capital income)
+    share       = scalar in [0, 1], estimated Cobb-Douglas share param
+    wsse        = scalar > 0, weighted sum of squared deviations from
+                  minimization
+    obs         = integer > 600, number of obervations in the data (N)
+    shift_x     = scalar, adds to tau(Y) to assure value in rate(X,Y)
+                  term is strictly positive
+    shift_y     = scalar, adds to tau(Y) to assure value in rate(X,Y)
+                  term is strictly positive
+    params      = (12,) vector, all parameters for Cobb-Douglas
+                  functional form, both estimated and calibrated (A, B,
+                  C, D, max_x, min_x, max_y, min_y, shift_x, shift_y,
+                  shift, share)
+
+    RETURNS: params, wsse, obs
+    --------------------------------------------------------------------
+    '''
+    X = df['Total Labor Income']
+    Y = df['Total Capital Income']
+    wgts = df['Weights']
+    X2 = X ** 2
+    Y2 = Y ** 2
+    X2bar = (X2 * wgts).sum() / wgts.sum()
+    Xbar = (X * wgts).sum() / wgts.sum()
+    Y2bar = (Y2 * wgts).sum() / wgts.sum()
+    Ybar = (Y * wgts).sum() / wgts.sum()
+    if rate_type == 'etr':
+        txrates = df['Effective Tax Rate']
+    elif rate_type == 'mtrx':
+        txrates = df['MTR Labor']
+    elif rate_type == 'mtry':
+        txrates = df['MTR capital income']
+    x_10pctl = df['Total Labor Income'].quantile(0.1)
+    y_10pctl = df['Total Capital Income'].quantile(0.1)
+    x_20pctl = df['Total Labor Income'].quantile(.2)
+    y_20pctl = df['Total Capital Income'].quantile(.2)
+    min_x = txrates[(df['Total Capital Income'] < y_10pctl)].min()
+    min_y = txrates[(df['Total Labor Income'] < x_10pctl)].min()
+    Atil_init = 1.0
+    Btil_init = 1.0
+    Ctil_init = 1.0
+    Dtil_init = 1.0
+    max_x_init = txrates[(df['Total Capital Income']
+        < y_20pctl)].max()
+    max_y_init = txrates[(df['Total Labor Income']
+        < x_20pctl)].max()
+    shift = txrates[(df['Total Labor Income'] < x_20pctl) |
+        (df['Total Capital Income'] < y_20pctl)].min()
+    share_init = 0.5
+    numparams = int(12)
+    params_init = np.array([Atil_init, Btil_init, Ctil_init,
+        Dtil_init, max_x_init, max_y_init, share_init])
+    tx_objs = (X, Y, min_x, min_y, shift, txrates, wgts)
+    lb_max_x = np.maximum(min_x, 0.0) + 1e-4
+    lb_max_y = np.maximum(min_y, 0.0) + 1e-4
+    bnds = ((1e-12, None), (1e-12, None), (1e-12, None), (1e-12, None),
+        (lb_max_x, None), (lb_max_y, None), (0, 1))
+    params_til = opt.minimize(wsumsq, params_init,
+        args=(tx_objs), method="L-BFGS-B", bounds=bnds, tol=1e-15)
+    Atil, Btil, Ctil, Dtil, max_x, max_y, share = params_til.x
+    # message = ("(max_x, min_x)=(" + str(max_x) + ", " + str(min_x) +
+    #     "), (max_y, min_y)=(" + str(max_y) + ", " + str(min_y) + ")")
+    # print message
+    wsse = params_til.fun
+    obs = df.shape[0]
+    shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
+    shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
+    params = np.zeros(numparams)
+    params[:4] = (np.array([Atil, Btil, Ctil, Dtil]) /
+        np.array([X2bar, Xbar, Y2bar, Ybar]))
+    params[4:] = np.array([max_x, min_x, max_y, min_y, shift_x,
+        shift_y, shift, share])
+
+    if graph:
+        '''
+        ----------------------------------------------------------------
+        cmap1       = color map object for matplotlib 3D plots
+        tx_label    = string, text representing type of tax rate
+        gridpts     = scalar > 2, number of grid points in X and Y
+                      dimensions
+        X_vec       = (gridpts,) vector, discretized log support of X
+        Y_vec       = (gridpts,) vector, discretized log support of Y
+        X_grid      = (gridpts, gridpts) matrix, ?
+        Y_grid      = (gridpts, gridpts) matrix, ?
+        txrate_grid = (gridpts, gridpts) matrix, ?
+        filename    = string, name of plot to be saved
+        fullpath    = string, full path name of file to be saved
+        df_trnc_gph = (Nb, 11) DataFrame, truncated data for plotting
+        X_gph       = (Nb,) Series, truncated labor income data
+        Y_gph       = (Nb,) Series, truncated capital income data
+        txrates_gph = (Nb,) Series, truncated tax rate (ETR, MTRx, or
+                      MTRy) data
+        ----------------------------------------------------------------
+        '''
+        cmap1 = matplotlib.cm.get_cmap('summer')
+
+        # Make comparison plot with full income domains
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection ='3d')
+        ax.scatter(X, Y, txrates, c='r', marker='o')
+        ax.set_xlabel('Total Labor Income')
+        ax.set_ylabel('Total Capital Income')
+        if rate_type == 'etr':
+            tx_label = 'ETR'
+        elif rate_type == 'mtrx':
+            tx_label = 'MTRx'
+        elif rate_type == 'mtry':
+            tx_label = 'MTRy'
+        ax.set_zlabel(tx_label)
+        plt.title(tx_label + ' vs. Predicted ' + tx_label + ': Age=' +
+            str(s) + ', Year=' + str(t))
+
+        gridpts = 50
+        X_vec = np.exp(np.linspace(np.log(5), np.log(X.max()), gridpts))
+        Y_vec = np.exp(np.linspace(np.log(5), np.log(Y.max()), gridpts))
+        X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
+        txrate_grid = gen_rate_grid(X_grid, Y_grid, params)
+        ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
+            linewidth=0)
+        filename = (tx_label + '_Age_' + str(s) + '_Year_' + str(t) +
+            '_vsPred.png')
+        fullpath = os.path.join(output_dir, filename)
+        fig.savefig(fullpath, bbox_inches='tight')
+        plt.close()
+
+        # Make comparison plot with truncated income domains
+        df_trnc_gph = df[(df['Total Labor Income'] > 5) &
+            (df['Total Labor Income'] < 800000) &
+            (df['Total Capital Income'] > 5) &
+            (df['Total Capital Income'] < 800000)]
+        X_gph = df_trnc_gph['Total Labor Income']
+        Y_gph = df_trnc_gph['Total Capital Income']
+        if rate_type == 'etr':
+            txrates_gph = df_trnc_gph['Effective Tax Rate']
+        elif rate_type == 'mtrx':
+            txrates_gph = df_trnc_gph['MTR Labor']
+        elif rate_type == 'mtry':
+            txrates_gph = df_trnc_gph['MTR capital income']
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection ='3d')
+        ax.scatter(X_gph, Y_gph, txrates_gph, c='r', marker='o')
+        ax.set_xlabel('Total Labor Income')
+        ax.set_ylabel('Total Capital Income')
+        ax.set_zlabel(tx_label)
+        plt.title('Truncated ' + tx_label + ', Lab. Inc., and Cap. ' +
+            'Inc., Age=' + str(s) + ', Year=' + str(t))
+
+        gridpts = 50
+        X_vec = np.exp(np.linspace(np.log(5), np.log(X_gph.max()),
+            gridpts))
+        Y_vec = np.exp(np.linspace(np.log(5), np.log(Y_gph.max()),
+            gridpts))
+        X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
+        txrate_grid = gen_rate_grid(X_grid, Y_grid, params)
+        ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
+            linewidth=0)
+        filename = (tx_label + 'trunc_Age_' + str(s) + '_Year_' + str(t) +
+            '_vsPred.png')
+        fullpath = os.path.join(output_dir, filename)
+        fig.savefig(fullpath, bbox_inches='tight')
+        plt.close()
+
+    return params, wsse, obs
+
+
+def tax_func_estimate(beg_yr=2016, baseline=True, analytical_mtrs=False,
+  age_specific=True, reform={}):
+    '''
+    --------------------------------------------------------------------
+    This function performs analysis on the source data from Tax-
+    Calculator and estimates functions for the effective tax rate (ETR),
+    marginal tax rate on labor income (MTRx), and marginal tax rate on
+    capital income (MTRy).
+    --------------------------------------------------------------------
+    INPUTS:
+    beg_yr          = integer >= 2016, current year for analysis
+    baseline        = Boolean, =True performs baseline analysis in
+                      getting tax micro data from Tax-Calculator
+    analytical_mtrs = Boolean, =True if use analytical_mtrs, =False if
+                      use estimated MTRs
+    age_specific    = Boolean, =True calculates tax functions for each
+                      age, =False calculates an average over all ages
+    reform          = dictionary, Tax-Calculator reform values to be
+                      passed in to get_micro_data.get_data() function
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
+        utils.mkdirs()
+        get_micro_data.get_data()
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    (See comments within this function)
+    dict_params = dictionary,
+
     RETURNS: dict_params
-    ------------------------------------------------------------------------
+    --------------------------------------------------------------------
     Set parameters and create objects for output
-    ------------------------------------------------------------------------
-    S           = integer >= 3, number of periods an individual can live. S
-                  represents the lifespan in years between s_min and s_max
-    s_min       = integer > 0, minimum age relevant to the model
-    s_max       = integer > s_min, maximum age relevant to the model
-    tpers       = integer > 0, number of years to forecast
-    numparams   = integer > 0, number of parameters to estimate for the tax
-                  function for each age s and year t
-    etrparam_arr  = (s_max-s_min+1 x tpers x numparams) array, parameter
-                    values for the estimated effective tax rate functions
-                    for each age s and year t
-    mtrxparam_arr = (s_max-s_min+1 x tpers x numparams) array, parameter
-                    values for the estimated marginal tax rate functions of
-                    labor income for each age s and year t
-    AvgInc      = (tpers,) vector, average income in each year
-    TotPop_yr   = (tpers,) vector, total population according to Weights
-                  variable in each year
-    PopPct_age  = (s_max-s_min+1, tpers) matrix, population percent of each
-                  age as percent of total population in each year
-    desc_data   = boolean, =True if print descriptive stats for each age s
-                  and year t
-    graph_data  = boolean, =True if print 3D graph of data for each age s
-                  and year t
-    graph_est   = boolean, =True if print 3D graph of data and estimated tax
-                  function for each age s and year t
-    dmtrgr_est  = boolean, =True if print 3D graph of derivative of
-                  estimated marginal tax rates for each age s and year t
-    cmap1       = matplotlib setting, set color map for 3D surface plots
-    beg_yr      = integer >= 2015, beginning year for forecasts
-    end_yr      = integer >= beg_yr, ending year for forecasts
-    years_list  = [beg_yr-end_yr+1,] vector, iterable list of years to be
-                  forecast
-    data_folder = string, path of hard drive folder where data files reside
-    start_time  = scalar, current processor time in seconds (float)
-    ------------------------------------------------------------------------
+    --------------------------------------------------------------------
+    S               = integer >= 3, number of periods an individual can
+                      live. S represents the lifespan in years between
+                      s_min and s_max
+    tpers           = integer >= 1, number of years in budget window to
+                      estimate tax functions
+    s_min           = integer > 0, minimum economically active age
+                      (years)
+    s_max           = integer > s_min, maximum age (years)
+    end_yr          = integer >= beg_yr, ending year for analysis
+    numparams       = integer > 0, number of parameters to estimate for
+                      the tax function for each age s and year t
+    desc_data       = Boolean, =True if print descriptive stats for data
+                      each age (s) and year (t)
+    graph_data      = Boolean, =True if print 3D scatterplots of data
+                      for each age (s) and year (t)
+    graph_est       = Boolean, =True if print 3D plot of data and
+                      estimated tax function for each age s and year t
+    etrparam_arr    = (s_max-s_min+1, tpers, numparams) array, parameter
+                      values for the estimated effective tax rate
+                      functions for each age s and year t
+    mtrxparam_arr   = (s_max-s_min+1, tpers, numparams) array, parameter
+                      values for the estimated marginal tax rate funcs
+                      of labor income for each age s and year t
+    mtryparam_arr   = (s_max-s_min+1, tpers, numparams) array, parameter
+                      values for the estimated marginal tax rate funcs
+                      of capital income for each age s and year t
+    etr_wsumsq_arr  = (s_max-s_min+1, tpers) matrix, weighted sum of
+                      squared deviations from ETR estimations for each
+                      year (t) and age (s)
+    etr_obs_arr     = (s_max-s_min+1, tpers) matrix, number of
+                      observations for ETR estimations for each year (t)
+                      and age (s)
+    mtrx_wsumsq_arr = (s_max-s_min+1, tpers) matrix, weighted sum of
+                      squared deviations from MTRx estimations for each
+                      year (t) and age (s)
+    mtrx_obs_arr    = (s_max-s_min+1, tpers) matrix, number of
+                      observations for MTRx estimations for each year
+                      (t) and age (s)
+    mtry_wsumsq_arr = (s_max-s_min+1, tpers) matrix, weighted sum of
+                      squared deviations from MTRy estimations for each
+                      year (t) and age (s)
+    mtry_obs_arr    = (s_max-s_min+1, tpers) matrix, number of
+                      observations for MTRy estimations for each year
+                      (t) and age (s)
+    AvgInc          = (tpers,) vector, average income in each year
+    AvgETR          = (tpers,) vector, average ETR in each year
+    AvgMTRx         = (tpers,) vector, average MTRx in each year
+    AvgMTRy         = (tpers,) vector, average MTRy in each year
+    TotPop_yr       = (tpers,) vector, total population according to
+                      weights variable in each year
+    PopPct_age      = (s_max-s_min+1, tpers) matrix, population percent
+                      of each age in each year
+    years_list      = [beg_yr-end_yr+1,] vector, iterable list of years
+                      to be forecast
+    --------------------------------------------------------------------
     '''
     S = int(80)
-    BW = int(10)
+    tpers = int(10)
     s_min = int(21)
     s_max = int(100)
-    tpers = int(10)
-    numparams = int(10)
+    beg_yr = int(beg_yr)
+    end_yr = int(beg_yr + tpers - 1)
+    numparams = int(12)
+    desc_data = False
+    graph_data = False
+    graph_est = False
+    # A, B, C, D, maxx, minx, maxy, miny, shift_x, shift_y, shift, share
     etrparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
     mtrxparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
     mtryparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
-    etr_sumsq_arr = np.zeros((s_max - s_min + 1, tpers))
+    etr_wsumsq_arr = np.zeros((s_max - s_min + 1, tpers))
     etr_obs_arr = np.zeros((s_max - s_min + 1, tpers))
-    mtrx_sumsq_arr = np.zeros((s_max - s_min + 1, tpers))
+    mtrx_wsumsq_arr = np.zeros((s_max - s_min + 1, tpers))
     mtrx_obs_arr = np.zeros((s_max - s_min + 1, tpers))
-    mtry_sumsq_arr = np.zeros((s_max - s_min + 1, tpers))
+    mtry_wsumsq_arr = np.zeros((s_max - s_min + 1, tpers))
     mtry_obs_arr = np.zeros((s_max - s_min + 1, tpers))
     AvgInc = np.zeros(tpers)
     AvgETR = np.zeros(tpers)
@@ -728,63 +895,55 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
     AvgMTRy = np.zeros(tpers)
     TotPop_yr = np.zeros(tpers)
     PopPct_age = np.zeros((s_max-s_min+1, tpers))
-    # desc_data = False
-    # graph_data = False
-    # graph_est = False
-    # dmtrgr_est = False
-    desc_data = False
-    graph_data = False
-    graph_est = False
-    dmtrgr_est = False
-    cmap1 = matplotlib.cm.get_cmap('summer')
-    # cmap1 = matplotlib.cm.get_cmap('jet')
-    # cmap1 = matplotlib.cm.get_cmap('coolwarm')
-
-    beg_yr = int(start_year)
-    end_yr = int(beg_yr+BW-1)
     years_list = np.arange(beg_yr, end_yr + 1)
-    start_time = time.clock()
 
     '''
-    ------------------------------------------------------------------------
+    --------------------------------------------------------------------
     Solve for tax functions for each year (t) and each age (s)
-    ------------------------------------------------------------------------
+    --------------------------------------------------------------------
+    start_time = scalar, current processor time in seconds (float)
+    output_dir = string, directory to which plots will be saved
+    micro_data = dictionary, tpers (one for each year) DataFrames,
+                 each of which has variables with observations from
+                 Tax-Calculator
+    t          = integer >= beg_yr, index for year of analysis
+    --------------------------------------------------------------------
     '''
+    start_time = time.clock()
+    output_dir = "./OUTPUT/txfuncs"
+    utils.mkdirs(output_dir)
 
     # call tax caculator and get microdata
-    micro_data = get_micro_data.get_data(baseline=baseline, start_year=beg_yr, reform=reform)
+    micro_data = get_micro_data.get_data(baseline=baseline,
+        start_year=beg_yr, reform=reform)
     # if reform:
-    #     micro_data = pickle.load( open( "micro_data_policy.pkl", "rb" ) )
+    #     micro_data = pickle.load(open("micro_data_policy.pkl", "rb"))
     # else:
-    #     micro_data = pickle.load( open( "micro_data_baseline.pkl", "rb" ) )
+    #     micro_data = pickle.load(open("micro_data_baseline.pkl", "rb"))
 
-
-
-    for t in years_list:
+    for t in years_list: #for t in np.arange(2016, 2017):
         '''
-        --------------------------------------------------------------------
-        Load OSPC Tax Calculator Data into a Dataframe
-        --------------------------------------------------------------------
-        t          = integer >= 2015, current year of tax functions being
-                     estimated
-        data_file  = string, name of data file for current year tax data
-        data_path  = string, path to directory address of data file
-        data_orig  = (I x 12) DataFrame, I observations, 12 variables
-        data       = (I x 6) DataFrame, I observations, 6 variables
-        data_trnc  = (I2 x 6) DataFrame, I2 observations (I2<I), 6 variables
-        min_age    = integer, minimum age in data_trnc that is at least
-                     s_min
-        max_age    = integer, maximum age in data_trnc that is at most s_max
-        ages_list  = [age_max-age_min+1,] vector, iterable list of relevant
-                     ages in data_trnc
+        ----------------------------------------------------------------
+        Clean up the data
+        ----------------------------------------------------------------
+        data_orig  = (N1, 11) DataFrame, original micro tax data from
+                     Tax-Calculator for particular year
+        data       = (N1, 8) DataFrame, new variables dataset
+        data_trnc  = (N2, 8) DataFrame, truncated observations dataset
+        min_age    = integer >= 1, minimum age in micro data that is
+                     relevant to model
+        max_age    = integer >= min_age, maximum age in micro data that
+                     is relevant to model
         NoData_cnt = integer >= 0, number of consecutive ages with
-                     insufficient data to estimate parameters
-        --------------------------------------------------------------------
+                     insufficient data to estimate tax functions
+        ----------------------------------------------------------------
         '''
         data_orig = micro_data[str(t)]
-        data_orig['Total Labor Income'] = (data_orig['Wage and Salaries'] +
+        data_orig['Total Labor Income'] = \
+            (data_orig['Wage and Salaries'] +
             data_orig['Self-Employed Income'])
-        data_orig['Effective Tax Rate'] = (data_orig['Total Tax Liability']/
+        data_orig['Effective Tax Rate'] = \
+            (data_orig['Total Tax Liability'] /
             data_orig["Adjusted Total income"])
         data_orig["Total Capital Income"] = \
             (data_orig['Adjusted Total income'] -
@@ -793,13 +952,15 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
         # SE income may be negative
         data_orig['MTR Labor'] = \
             (data_orig['MTR wage'] * (data_orig['Wage and Salaries'] /
-            (data_orig['Wage and Salaries'].abs()+data_orig['Self-Employed Income'].abs())) +
+            (data_orig['Wage and Salaries'].abs() +
+            data_orig['Self-Employed Income'].abs())) +
             data_orig['MTR self-employed Wage'] *
             (data_orig['Self-Employed Income'].abs() /
-            (data_orig['Wage and Salaries'].abs()+data_orig['Self-Employed Income'].abs())))
-        data = data_orig[['Age', 'MTR Labor', 'MTR capital income','Total Labor Income',
-            'Total Capital Income', 'Adjusted Total income',
-            'Effective Tax Rate', 'Weights']]
+            (data_orig['Wage and Salaries'].abs() +
+            data_orig['Self-Employed Income'].abs())))
+        data = data_orig[['Age', 'MTR Labor', 'MTR capital income',
+            'Total Labor Income', 'Total Capital Income',
+            'Adjusted Total income', 'Effective Tax Rate', 'Weights']]
 
         # Calculate average total income in each year
         AvgInc[t-beg_yr] = \
@@ -809,905 +970,332 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
         # Calculate average ETR and MTRs (weight by population weights
         #    and income) for each year
         AvgETR[t-beg_yr] = \
-            (((data['Effective Tax Rate']*data['Adjusted Total income'] * data['Weights']).sum())
-            / (data['Adjusted Total income']*data['Weights']).sum())
+            (((data['Effective Tax Rate']*data['Adjusted Total income']
+            * data['Weights']).sum()) /
+            (data['Adjusted Total income']*data['Weights']).sum())
 
         AvgMTRx[t-beg_yr] = \
-            (((data['MTR Labor']*data['Adjusted Total income'] * data['Weights']).sum())
-            / (data['Adjusted Total income']*data['Weights']).sum())
+            (((data['MTR Labor']*data['Adjusted Total income'] *
+            data['Weights']).sum()) /
+            (data['Adjusted Total income']*data['Weights']).sum())
 
         AvgMTRy[t-beg_yr] = \
-            (((data['MTR capital income']*data['Adjusted Total income'] * data['Weights']).sum())
-            / (data['Adjusted Total income']*data['Weights']).sum())
-
+            (((data['MTR capital income'] *
+            data['Adjusted Total income'] * data['Weights']).sum()) /
+            (data['Adjusted Total income']*data['Weights']).sum())
 
         # Calculate total population in each year
         TotPop_yr[t-beg_yr] = data['Weights'].sum()
 
         # Clean up the data by dropping outliers
         # drop all obs with ETR > 0.65
-        data_trnc = data.drop(data[data['Effective Tax Rate'] >0.65].index)
-        # drop all obs with ETR < -0.15
-        data_trnc = data_trnc.drop(data_trnc[data_trnc['Effective Tax Rate']
-                    < -0.15].index)
-        # drop all obs with ATI < $5
         data_trnc = \
-            data_trnc.drop(data_trnc[data_trnc['Adjusted Total income'] < 5]
-            .index)
+            data.drop(data[data['Effective Tax Rate'] >0.65].index)
+        # drop all obs with ETR < -0.15
+        data_trnc = \
+            data_trnc.drop(data_trnc[data_trnc['Effective Tax Rate']
+            < -0.15].index)
+        # drop all obs with ATI, TLI, TCI < $5
+        data_trnc = data_trnc[(data_trnc['Adjusted Total income'] >= 5)
+            & (data_trnc['Total Labor Income'] >= 5) &
+            (data_trnc['Total Capital Income'] >= 5)]
 
-        # If not using analytical derivatives, also drop MTR outliers
-        if not analytical_mtrs:
+        if analytical_mtrs==False:
             # drop all obs with MTR on capital income > 10.99
-            data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR capital income'] >0.99].index)
+            data_trnc = \
+                data_trnc.drop(data_trnc[data_trnc['MTR capital income']
+                > 0.99].index)
             # drop all obs with MTR on capital income < -0.45
-            data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR capital income']
-                        < -0.45].index)
+            data_trnc = \
+                data_trnc.drop(data_trnc[data_trnc['MTR capital income']
+                < -0.45].index)
             # drop all obs with MTR on labor income > 10.99
-            data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR Labor'] >0.99].index)
+            data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR Labor']
+                        > 0.99].index)
             # drop all obs with MTR on labor income < -0.45
             data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR Labor']
                         < -0.45].index)
 
-
-
-
         # Create an array of the different ages in the data
         min_age = int(np.maximum(data_trnc['Age'].min(), s_min))
-        #max_age = int(np.minimum(data_trnc['Age'].max(), s_max))
-        max_age = 80
+        max_age = int(np.minimum(data_trnc['Age'].max(), s_max))
         if age_specific:
             ages_list = np.arange(min_age, max_age+1)
         else:
             ages_list = np.arange(0,1)
-        NoData_cnt = 0
 
-        # Each age s must be done in serial, but each year can be done in
-        # parallel
-        for s in ages_list: #range(43, 46):
-            '''
-            ----------------------------------------------------------------
-            Load OSPC Tax Calculator Data into a Dataframe
-            ----------------------------------------------------------------
-            s            = integer >= s_min, current age of tax function
-                           estimation
-            df           = (I3 x 6) DataFrame, data_trnc for age=s
-            df_trnc      = (I5 x 6) DataFrame, truncated data for parameter
-                           estimation
-            inc_lab      = (I5 x 1) vector, total labor income for parameter
-                           estimation
-            inc_cap      = (I5 x 1) vector, total capital income for
-                           parameter estimation
-            etr          = (I5 x 1) vector, effective tax rate data for
-                           parameter estimation
-            mtrx         = (I5 x 1) vector, marginal tax rate data with
-                           respect to labor for parameter estimation
-            wgts         = (I5 x 1) vector, population weights for each
-                           observation for parameter estimation
-            Obs          = integer, number of observations in sample
-            X1           = (Obs x 1) vector, lab_inc ** 2
-            X2           = (Obs x 1) vector, cap_inc ** 2
-            X3           = (Obs x 1) vector, lab_inc * cap_inc
-            X4           = (Obs x 1) vector, lab_inc
-            X5           = (Obs x 1) vector, cap_inc
-            X6           = (Obs x 1) vector of ones
-            phi          = (Obs,) vector, percent of total income that is
-                           labor income x/(x+y) for each observation
-            varmat       = (Obs x 6) matrix, variables [X1,...X6]
-            varmat_bar   = (6,) vector, mean values of each column of varmat
-            varmat_barm1 = (5,) vector, vector of means of [X1,...X5]
-            varmat_hat   = (Obs x 6) matrix, percent deviation from mean
-                           transformation of varmat
-            elapsed_time = scalar > 0, seconds to finish computation
-            dict_params  = length 3 dictionary, saves param_arr, AvgInc, and
-                           elapsed_time
-            ----------------------------------------------------------------
-            '''
+        NoData_cnt = np.min(min_age - s_min, 0)
 
+        # Each age s must be done in serial, but each year can be done
+        # in parallel
+
+        for s in ages_list: # for s in np.array([23, 24, 60, 63, 64, 65, 66, 67, 70, 71, 74, 79]):
             if age_specific:
                 print "year=", t, "Age=", s
                 df = data_trnc[data_trnc['Age'] == s]
-                PopPct_age[s-s_min, t-beg_yr] = \
+                PopPct_age[s-min_age, t-beg_yr] = \
                     df['Weights'].sum() / TotPop_yr[t-beg_yr]
+                df_etr = df[['MTR Labor', 'MTR capital income',
+                    'Total Labor Income', 'Total Capital Income',
+                    'Effective Tax Rate', 'Weights']]
+                df_etr = df_etr[
+                    (np.isfinite(df_etr['Effective Tax Rate'])) &
+                    (np.isfinite(df_etr['Total Labor Income'])) &
+                    (np.isfinite(df_etr['Total Capital Income'])) &
+                    (np.isfinite(df_etr['Weights']))]
+                df_mtrx = df[['MTR Labor', 'Total Labor Income',
+                    'Total Capital Income', 'Weights']]
+                df_mtrx = df_mtrx[
+                    (np.isfinite(df_etr['MTR Labor'])) &
+                    (np.isfinite(df_etr['Total Labor Income'])) &
+                    (np.isfinite(df_etr['Total Capital Income'])) &
+                    (np.isfinite(df_etr['Weights']))]
+                df_mtry = df[['MTR capital income', 'Total Labor Income',
+                    'Total Capital Income', 'Weights']]
+                df_mtry = df_mtry[
+                    (np.isfinite(df_etr['MTR capital income'])) &
+                    (np.isfinite(df_etr['Total Labor Income'])) &
+                    (np.isfinite(df_etr['Total Capital Income'])) &
+                    (np.isfinite(df_etr['Weights']))]
+                df_minobs = np.min([df_etr.shape[0], df_mtrx.shape[0],
+                    df_mtry.shape[0]])
+
             else:
                 print "year=", t, "Age= all ages"
                 df = data_trnc
                 PopPct_age[0, t-beg_yr] = \
                     df['Weights'].sum() / TotPop_yr[t-beg_yr]
 
-            if df.shape[0] < 600 and s < max_age:
+            # 240 is 8 parameters to estimate times 30 obs per parameter
+            if df_minobs < 240 and s < max_age:
                 '''
-                ------------------------------------------------------------
-                Don't estimate function on this iteration if obs < 600.
+                --------------------------------------------------------
+                Don't estimate function on this iteration if obs < 500.
                 Will fill in later with interpolated values
-                ------------------------------------------------------------
+                --------------------------------------------------------
                 '''
+                message = ("Insuff. sample size for age " + str(s) +
+                    " in year " + str(t))
+                print message
                 NoData_cnt += 1
                 etrparam_arr[s-s_min, t-beg_yr, :] = np.nan
                 mtrxparam_arr[s-s_min, t-beg_yr, :] = np.nan
                 mtryparam_arr[s-s_min, t-beg_yr, :] = np.nan
 
-            elif df.shape[0] < 600 and s == max_age:
+            elif df_minobs < 240 and s == max_age:
                 '''
-                ------------------------------------------------------------
-                If last period does not have sufficient data, fill in final
-                missing age data with last positive year
-                ------------------------------------------------------------
-                lastp_etr  = (10,) vector, vector of parameter estimates
-                             from previous age with sufficient observations
-                lastp_mtrx = (10,) vector, vector of parameter estimates
-                             from previous age with sufficient observations
-                ------------------------------------------------------------
+                --------------------------------------------------------
+                If last period does not have sufficient data, fill in
+                final missing age data with last positive year
+                --------------------------------------------------------
+                lastp_etr  = (numparams,) vector, vector of parameter
+                             estimates from previous age with sufficient
+                             observations
+                lastp_mtrx = (numparams,) vector, vector of parameter
+                             estimates from previous age with sufficient
+                             observations
+                lastp_mtry = (numparams,) vector, vector of parameter
+                             estimates from previous age with sufficient
+                             observations
+                --------------------------------------------------------
                 '''
+                message = ("Max age (s=" + str(s) + ") insuff. data in"
+                    + " year " + str(t) + ". Fill in final ages with " +
+                    "insuff. data with most recent successful " +
+                    "estimate.")
+                print message
                 NoData_cnt += 1
-                lastp_etr = etrparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
-                print 'here'
-                print NoData_cnt
-                print etrparam_arr[s-NoData_cnt-s_min+1:, t-beg_yr, :].shape
-                print etrparam_arr.shape
-                print lastp_etr.shape
-                print 's: ', s, min_age, max_age
+                lastp_etr = \
+                    etrparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
                 etrparam_arr[s-NoData_cnt-s_min+1:, t-beg_yr, :] = \
-                    np.tile(lastp_etr.reshape((1, 10)),
-                    (NoData_cnt, 1))
-                lastp_mtrx = mtrxparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
+                    np.tile(lastp_etr.reshape((1, numparams)),
+                    (NoData_cnt+s_max-max_age, 1))
+                lastp_mtrx = \
+                    mtrxparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
                 mtrxparam_arr[s-NoData_cnt-s_min+1:, t-beg_yr, :] = \
-                    np.tile(lastp_mtrx.reshape((1, 10)),
-                    (NoData_cnt, 1))
-                lastp_mtry = mtryparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
+                    np.tile(lastp_mtrx.reshape((1, numparams)),
+                    (NoData_cnt+s_max-max_age, 1))
+                lastp_mtry = \
+                    mtryparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
                 mtryparam_arr[s-NoData_cnt-s_min+1:, t-beg_yr, :] = \
-                    np.tile(lastp_mtry.reshape((1, 10)),
-                    (NoData_cnt, 1))
-
+                    np.tile(lastp_mtry.reshape((1, numparams)),
+                    (NoData_cnt+s_max-max_age, 1))
 
             else:
                 # Estimate parameters for age with sufficient data
-                if desc_data == True:
+                if desc_data:
                     # print some desciptive stats
-                    print 'Descriptive Statistics for age == ', s
-                    print df.describe()
+                    message = ("Descriptive ETR statistics for age=" +
+                        str(s) + " in year " + str(t))
+                    print message
+                    print df_etr.describe()
+                    message = ("Descriptive MTRx statistics for age=" +
+                        str(s) + " in year " + str(t))
+                    print message
+                    print df_mtrx.describe()
+                    message = ("Descriptive MTRy statistics for age=" +
+                        str(s) + " in year " + str(t))
+                    print message
+                    print df_mtry.describe()
 
-                if graph_data == True:
-                    '''
-                    --------------------------------------------------------
-                    Create 3-D scatterplot of effective tax rate as a
-                    function of labor income and capital income
-                    --------------------------------------------------------
-                    df_trnc_gph  = (I4 x 6) DataFrame, truncated data for 3D
-                                   graph
-                    inc_lab_gph  = (I4 x 1) vector, total labor income for
-                                   3D graph
-                    inc_cap_gph  = (I4 x 1) vector, total capital income for
-                                   3D graph
-                    etr_data_gph = (I4 x 1) vector, effective tax rate data
-                                   for 3D graph
-                    --------------------------------------------------------
-                    '''
-                    df_trnc_gph = df[(df['Total Labor Income'] > 5) &
-                                  (df['Total Labor Income'] < 500000) &
-                                  (df['Total Capital Income'] > 5) &
-                                  (df['Total Capital Income'] < 500000)]
-                    inc_lab_gph = df_trnc_gph['Total Labor Income']
-                    inc_cap_gph = df_trnc_gph['Total Capital Income']
-                    etr_data_gph = df_trnc_gph['Effective Tax Rate']
+                if graph_data:
+                    gen_3Dscatters_hist(df, s, t, output_dir)
 
-                    fig = plt.figure()
-                    ax = fig.add_subplot(111, projection ='3d')
-                    ax.scatter(inc_lab_gph, inc_cap_gph, etr_data_gph,
-                        c='r', marker='o')
-                    ax.set_xlabel('Total Labor Income')
-                    ax.set_ylabel('Total Capital Income')
-                    ax.set_zlabel('Effective Tax Rate')
-                    plt.title('ETR, Lab. Inc., and Cap. Inc., Age=' + str(s) + ', Year=' + str(t))
-                    plt.show()
-                    fig.savefig('ETR_Age_'+ str(s) + '_Year_' + str(t) +'_data.png', bbox_inches='tight')
-                    plt.close()
-
-                    '''
-                    --------------------------------------------------------
-                    Create 3-D scatterplot of marginal tax rate on labor
-                    income as a function of labor income and capital income
-                    --------------------------------------------------------
-                    mtrx_data_gph = (I4 x 1) vector, marginal tax rate data
-                                    for 3D graph
-                    --------------------------------------------------------
-                    '''
-                    mtrx_data_gph = df_trnc_gph['MTR Labor']
-
-                    fig = plt.figure()
-                    ax = fig.add_subplot(111, projection ='3d')
-                    ax.scatter(inc_lab_gph, inc_cap_gph, mtrx_data_gph,
-                        c='r', marker='o')
-                    ax.set_xlabel('Total Labor Income')
-                    ax.set_ylabel('Total Capital Income')
-                    ax.set_zlabel('Marginal Tax Rate, Labor Inc.)')
-                    plt.title('MTR Labor Income, Lab. Inc., and Cap. Inc., Age=' + str(s) + ', Year=' + str(t))
-                    plt.show()
-                    fig.savefig('MTRx_Age_'+ str(s) + '_Year_' + str(t) +'_data.png', bbox_inches='tight')
-                    plt.close()
-
-                    '''
-                    --------------------------------------------------------
-                    Create 3-D scatterplot of marginal tax rate on capital
-                    income as a function of labor income and capital income
-                    --------------------------------------------------------
-                    mtry_data_gph = (I4 x 1) vector, marginal tax rate data
-                                    for 3D graph
-                    --------------------------------------------------------
-                    '''
-                    mtry_data_gph = df_trnc_gph['MTR capital income']
-
-                    fig = plt.figure()
-                    ax = fig.add_subplot(111, projection ='3d')
-                    ax.scatter(inc_lab_gph, inc_cap_gph, mtry_data_gph,
-                        c='r', marker='o')
-                    ax.set_xlabel('Total Labor Income')
-                    ax.set_ylabel('Total Capital Income')
-                    ax.set_zlabel('Marginal Tax Rate (Capital Inc.)')
-                    plt.title('MTR Capital Income, Cap. Inc., and Cap. Inc., Age=' + str(s) + ', Year=' + str(t))
-                    plt.show()
-                    fig.savefig('MTRy_Age_'+ str(s) + '_Year_' + str(t) +'_data.png', bbox_inches='tight')
-                    plt.close()
-
-                df_trnc = df[(df['Total Labor Income'] > 5) &
-                          (df['Total Capital Income'] > 5)]
-                inc_lab = df_trnc['Total Labor Income']
-                inc_cap = df_trnc['Total Capital Income']
-                etr = df_trnc['Effective Tax Rate']
-                mtrx = df_trnc['MTR Labor']
-                mtry = df_trnc['MTR capital income']
-                wgts = df_trnc['Weights']
-                Obs = inc_lab.shape[0]
-                X1 = (inc_lab ** 2).reshape((Obs, 1))
-                X2 = (inc_cap ** 2).reshape((Obs, 1))
-                X3 = (inc_lab * inc_cap).reshape((Obs, 1))
-                X4 = inc_lab.reshape((Obs, 1))
-                X5 = inc_cap.reshape((Obs, 1))
-                X6 = np.ones((Obs, 1))
-                phi = (X4 / (X4 + X5)).reshape(Obs)
-                varmat = np.hstack((X1, X2, X3, X4, X5, X6))
-                varmat_bar = varmat.mean(axis=0)
-                varmat_barm1 = varmat_bar[:-1]
-                varmat_hat = (varmat - varmat_bar)/varmat_bar
-                varmat_hat[:, 5] = np.ones(Obs)
-
-                '''
-                ------------------------------------------------------------
-                Estimate effective tax rate function tau(x,y)
-                ------------------------------------------------------------
-                Atil_init      = scalar > 0, initial guess for A tilde
-                Btil_init      = scalar > 0, initial guess for B tilde
-                Ctil_init      = scalar > 0, initial guess for C tilde
-                Dtil_init      = scalar > 0, initial guess for D tilde
-                Etil_init      = scalar > 0, initial guess for E tilde
-                F_init         = scalar > 0, initial guess for F constant
-                maxetr_x_init  = scalar > 0, initial guess for max_x (labor
-                                 income)
-                minetr_x_init  = scalar > 0, initial guess for min_x (labor
-                                 income)
-                maxetr_y_init  = scalar > 0, initial guess for max_y
-                                 (capital income)
-                minetr_y_init  = scalar > 0, initial guess for min_y
-                                 (capital income)
-                etrparams_init = (10,) vector, initial parameter guesses
-                etr_objs       = length 5 tuple, inputs for minimizer
-                                 (varmat_hat, etr, wgts, varmat_barm1, phi)
-                bnds           = length 10 tuple, max and min parameter
-                                 bounds
-                etrparams_til  = length 8 tuple, output from minimizer.
-                                 Object with the estimated param values is
-                                 etrparams_til.x
-                Atil           = scalar > 0, estimated value for A tilde
-                Btil           = scalar > 0, estimated value for B tilde
-                Ctil           = scalar > 0, estimated value for C tilde
-                Dtil           = scalar > 0, estimated value for D tilde
-                Etil           = scalar > 0, estimated value for E tilde
-                F              = scalar > 0, estimated value for F constant
-                maxetr_x       = scalar > 0, estimated value for max_x
-                                 (labor income)
-                minetr_x       = scalar, estimated value for min_x (labor
-                                 income)
-                maxetr_y       = scalar > 0, estimated value for max_y
-                                 (capital income)
-                minetr_y       = scalar, estimated value for min_y (capital
-                                 income)
-                Gtil           = scalar > 0, sum of Atil through Etil
-                P_num          = (Obs,) vector, value of the numerator of
-                                 the ratio of polynomials for each obs
-                P_den          = (Obs,) vector, value of the denominator of
-                                 the ratio of polynomials for each obs
-                etr_est        = (Obs,) vector, predicted effective tax
-                                 rates for each observation
-                etrparams      = (10,) vector, estimated parameters (A, B,
-                                 C, D, E, F, max_x, min_x, max_y, min_y)
-                A              = scalar > 0, estimated polynomial
-                                 coefficient on x**2
-                B              = scalar > 0, estimated polynomial
-                                 coefficient on y**2
-                C              = scalar > 0, estimated polynomial
-                                 coefficient on x*y
-                D              = scalar > 0, estimated polynomial
-                                 coefficient on x
-                E              = scalar > 0, estimated polynomial
-                                 coefficient on y
-                ------------------------------------------------------------
-                '''
-                Atil_init = 0.5
-                Btil_init = 0.5
-                Ctil_init = 0.5
-                Dtil_init = 0.5
-                Etil_init = 0.5
-                F_init = 0.5
-                maxetr_x_init = etr[(df_trnc['Total Capital Income']
-                                <3000)].max()
-                minetr_x_init = etr[(df_trnc['Total Capital Income']
-                                <3000)].min()
-                maxetr_y_init = etr[(df_trnc['Total Labor Income']
-                                <3000)].max()
-                minetr_y_init = etr[(df_trnc['Total Labor Income']
-                                <3000)].min()
-                etrparams_init = np.array([Atil_init, Btil_init, Ctil_init,
-                    Dtil_init, Etil_init, F_init, maxetr_x_init,
-                    minetr_x_init, maxetr_y_init, minetr_y_init])
-                etr_objs = (varmat_hat, etr, wgts, varmat_barm1, phi)
-                bnds = ((1e-12, None), (1e-12, None), (1e-12, None),
-                       (1e-12, None), (1e-12, None), (1e-12, None),
-                       (1e-12, None), (None, None), (1e-12, None),
-                       (None, None))
-                etrparams_til = opt.minimize(wsumsq, etrparams_init,
-                    args=(etr_objs), method="L-BFGS-B", bounds=bnds,
-                    tol=1e-15)
-                (Atil, Btil, Ctil, Dtil, Etil, F, maxetr_x, minetr_x,
-                    maxetr_y, minetr_y) = etrparams_til.x
-                etr_sumsq_arr[s-s_min, t-beg_yr] = etrparams_til.fun
-                etr_obs_arr[s-s_min, t-beg_yr] = df_trnc.shape[0]
-                Gtil = etrparams_til.x[:5].sum()
-                P_num = (np.dot(varmat_hat[:, :-1], etrparams_til.x[:5])
-                        + Gtil)
-                P_den = np.dot(varmat_hat, etrparams_til.x[:6]) + Gtil
-                etr_est = \
-                    ((phi * (maxetr_x - minetr_x) + (1 - phi) * (maxetr_y
-                    - minetr_y)) * (P_num / P_den) + (phi * minetr_x +
-                    (1 - phi) * minetr_y))
-                etrparams = np.zeros(numparams)
-                etrparams[:5] = etrparams_til.x[:5] / varmat_bar[:5]
-                A, B, C, D, E = etrparams[:5]
-                etrparams[5] = F
-                etrparams[6:] = [maxetr_x, minetr_x, maxetr_y, minetr_y]
+                # Estimate effective tax rate function ETR(x,y)
+                (etrparams, etr_wsumsq_arr[s-s_min, t-beg_yr],
+                    etr_obs_arr[s-s_min, t-beg_yr]) = \
+                    txfunc_est(df_etr, s, t, 'etr', output_dir,
+                        graph_est)
                 etrparam_arr[s-s_min, t-beg_yr, :] = etrparams
 
-                '''
-                ------------------------------------------------------------
-                Estimate marg. tax rate of labor income function MTRx(x,y)
-                ------------------------------------------------------------
-                Htil_init       = scalar > 0, initial guess for H tilde
-                Itil_init       = scalar > 0, initial guess for I tilde
-                Jtil_init       = scalar > 0, initial guess for J tilde
-                Ktil_init       = scalar > 0, initial guess for K tilde
-                Ltil_init       = scalar > 0, initial guess for L tilde
-                M_init          = scalar > 0, initial guess for M constant
-                maxmtrx_x_init  = scalar > 0, initial guess for max_x (labor
-                                  income)
-                minmtrx_x_init  = scalar > 0, initial guess for min_x (labor
-                                  income)
-                maxmtrx_y_init  = scalar > 0, initial guess for max_y
-                                  (capital income)
-                minmtrx_y_init  = scalar > 0, initial guess for min_y
-                                  (capital income)
-                mtrxparams_init = (10,) vector, initial parameter guesses
-                mtrx_objs       = length 5 tuple, inputs for minimizer
-                                  (varmat_hat,mtrx,wgts,varmat_barm1,phi)
-                mtrxparams_til  = length 8 tuple, output from minimizer.
-                                  Object with the estimated param values is
-                                  mtrxparams_til.x
-                Htil            = scalar > 0, estimated value for H tilde
-                Itil            = scalar > 0, estimated value for I tilde
-                Jtil            = scalar > 0, estimated value for J tilde
-                Ktil            = scalar > 0, estimated value for K tilde
-                Ltil            = scalar > 0, estimated value for L tilde
-                M               = scalar > 0, estimated value for M constant
-                maxmtrx_x       = scalar > 0, estimated value for max_x
-                                  (labor income)
-                minmtrx_x       = scalar, estimated value for min_x (labor
-                                  income)
-                maxmtrx_y       = scalar > 0, estimated value for max_y
-                                  (capital income)
-                minmtrx_y       = scalar, estimated value for min_y (capital
-                                  income)
-                Ntil            = scalar > 0, sum of Htil through Ltil
-                P_num           = (Obs,) vector, value of the numerator of
-                                  the ratio of polynomials for each obs
-                P_den           = (Obs,) vector, value of the denominator of
-                                  the ratio of polynomials for each obs
-                mtrx_est        = (Obs,) vector, predicted marginal tax
-                                  rates of labor income for each obs
-                mtrxparams      = (10,) vector, estimated parameters (H, I,
-                                  J, K, L, M, max_x, min_x, max_y, min_y)
-                H               = scalar > 0, estimated polynomial
-                                  coefficient on x**2
-                I               = scalar > 0, estimated polynomial
-                                  coefficient on y**2
-                J               = scalar > 0, estimated polynomial
-                                  coefficient on x*y
-                K               = scalar > 0, estimated polynomial
-                                  coefficient on x
-                L               = scalar > 0, estimated polynomial
-                                  coefficient on y
-                ------------------------------------------------------------
-                '''
-                Htil_init = 0.5
-                Itil_init = 0.5
-                Jtil_init = 0.5
-                Ktil_init = 0.5
-                Ltil_init = 0.5
-                M_init = 0.5
-                maxmtrx_x_init = mtrx[(df_trnc['Total Capital Income']
-                                 <3000)].max()
-                minmtrx_x_init = mtrx[(df_trnc['Total Capital Income']
-                                 <3000)].min()
-                maxmtrx_y_init = mtrx[(df_trnc['Total Labor Income']
-                                 <3000)].max()
-                minmtrx_y_init = mtrx[(df_trnc['Total Labor Income']
-                                 <3000)].min()
-                mtrxparams_init = np.array([Htil_init, Itil_init, Jtil_init,
-                    Ktil_init, Ltil_init, M_init, maxmtrx_x_init,
-                    minmtrx_x_init, maxmtrx_y_init, minmtrx_y_init])
-                mtrx_objs = (varmat_hat, mtrx, wgts, varmat_barm1, phi)
-                mtrxparams_til = opt.minimize(wsumsq, mtrxparams_init,
-                    args=(mtrx_objs), method="L-BFGS-B", bounds=bnds,
-                    tol=1e-15)
-                (Htil, Itil, Jtil, Ktil, Ltil, M, maxmtrx_x, minmtrx_x,
-                    maxmtrx_y, minmtrx_y) = mtrxparams_til.x
-                mtrx_sumsq_arr[s-s_min, t-beg_yr] = mtrxparams_til.fun
-                mtrx_obs_arr[s-s_min, t-beg_yr] = df_trnc.shape[0]
-                Ntil = mtrxparams_til.x[:5].sum()
-                P_num = (np.dot(varmat_hat[:, :-1], mtrxparams_til.x[:5])
-                        + Ntil)
-                P_den = np.dot(varmat_hat, mtrxparams_til.x[:6]) + Ntil
-                mtrx_est = ((phi * (maxmtrx_x - minmtrx_x) +
-                    (1 - phi) * (maxmtrx_y - minmtrx_y)) * (P_num / P_den) +
-                    (phi * minmtrx_x + (1 - phi) * minmtrx_y))
-                mtrxparams = np.zeros(numparams)
-                mtrxparams[:5] = mtrxparams_til.x[:5] / varmat_bar[:5]
-                H, I, J, K, L = mtrxparams[:5]
-                mtrxparams[5] = M
-                mtrxparams[6:] = [maxmtrx_x, minmtrx_x, maxmtrx_y, minmtrx_y]
+                # Estimate marginal tax rate of labor income function
+                # MTRx(x,y)
+                (mtrxparams, mtrx_wsumsq_arr[s-s_min, t-beg_yr],
+                    mtrx_obs_arr[s-s_min, t-beg_yr]) = \
+                    txfunc_est(df_mtrx, s, t, 'mtrx', output_dir,
+                        graph_est)
                 mtrxparam_arr[s-s_min, t-beg_yr, :] = mtrxparams
 
-                '''
-                ------------------------------------------------------------
-                Estimate marg. tax rate of capital income function MTRy(x,y)
-                ------------------------------------------------------------
-                Htil_init       = scalar > 0, initial guess for H tilde
-                Itil_init       = scalar > 0, initial guess for I tilde
-                Jtil_init       = scalar > 0, initial guess for J tilde
-                Ktil_init       = scalar > 0, initial guess for K tilde
-                Ltil_init       = scalar > 0, initial guess for L tilde
-                M_init          = scalar > 0, initial guess for M constant
-                maxmtrx_x_init  = scalar > 0, initial guess for max_x (labor
-                                  income)
-                minmtrx_x_init  = scalar > 0, initial guess for min_x (labor
-                                  income)
-                maxmtrx_y_init  = scalar > 0, initial guess for max_y
-                                  (capital income)
-                minmtrx_y_init  = scalar > 0, initial guess for min_y
-                                  (capital income)
-                mtrxparams_init = (10,) vector, initial parameter guesses
-                mtrx_objs       = length 5 tuple, inputs for minimizer
-                                  (varmat_hat,mtrx,wgts,varmat_barm1,phi)
-                mtrxparams_til  = length 8 tuple, output from minimizer.
-                                  Object with the estimated param values is
-                                  mtrxparams_til.x
-                Htil            = scalar > 0, estimated value for H tilde
-                Itil            = scalar > 0, estimated value for I tilde
-                Jtil            = scalar > 0, estimated value for J tilde
-                Ktil            = scalar > 0, estimated value for K tilde
-                Ltil            = scalar > 0, estimated value for L tilde
-                M               = scalar > 0, estimated value for M constant
-                maxmtrx_x       = scalar > 0, estimated value for max_x
-                                  (labor income)
-                minmtrx_x       = scalar, estimated value for min_x (labor
-                                  income)
-                maxmtrx_y       = scalar > 0, estimated value for max_y
-                                  (capital income)
-                minmtrx_y       = scalar, estimated value for min_y (capital
-                                  income)
-                Ntil            = scalar > 0, sum of Htil through Ltil
-                P_num           = (Obs,) vector, value of the numerator of
-                                  the ratio of polynomials for each obs
-                P_den           = (Obs,) vector, value of the denominator of
-                                  the ratio of polynomials for each obs
-                mtrx_est        = (Obs,) vector, predicted marginal tax
-                                  rates of labor income for each obs
-                mtrxparams      = (10,) vector, estimated parameters (H, I,
-                                  J, K, L, M, max_x, min_x, max_y, min_y)
-                H               = scalar > 0, estimated polynomial
-                                  coefficient on x**2
-                I               = scalar > 0, estimated polynomial
-                                  coefficient on y**2
-                J               = scalar > 0, estimated polynomial
-                                  coefficient on x*y
-                K               = scalar > 0, estimated polynomial
-                                  coefficient on x
-                L               = scalar > 0, estimated polynomial
-                                  coefficient on y
-                ------------------------------------------------------------
-                '''
-                Htil_init = 0.5
-                Itil_init = 0.5
-                Jtil_init = 0.5
-                Ktil_init = 0.5
-                Ltil_init = 0.5
-                M_init = 0.5
-                maxmtry_x_init = mtry[(df_trnc['Total Capital Income']
-                                 <3000)].max()
-                minmtry_x_init = mtry[(df_trnc['Total Capital Income']
-                                 <3000)].min()
-                maxmtry_y_init = mtry[(df_trnc['Total Labor Income']
-                                 <3000)].max()
-                minmtry_y_init = mtry[(df_trnc['Total Labor Income']
-                                 <3000)].min()
-                mtryparams_init = np.array([Htil_init, Itil_init, Jtil_init,
-                    Ktil_init, Ltil_init, M_init, maxmtry_x_init,
-                    minmtry_x_init, maxmtry_y_init, minmtry_y_init])
-                mtry_objs = (varmat_hat, mtry, wgts, varmat_barm1, phi)
-                mtryparams_til = opt.minimize(wsumsq, mtryparams_init,
-                    args=(mtry_objs), method="L-BFGS-B", bounds=bnds,
-                    tol=1e-15)
-                (Htil, Itil, Jtil, Ktil, Ltil, M, maxmtry_x, minmtry_x,
-                    maxmtry_y, minmtry_y) = mtryparams_til.x
-                mtry_sumsq_arr[s-s_min, t-beg_yr] = mtryparams_til.fun
-                mtry_obs_arr[s-s_min, t-beg_yr] = df_trnc.shape[0]
-                Ntil = mtryparams_til.x[:5].sum()
-                P_num = (np.dot(varmat_hat[:, :-1], mtryparams_til.x[:5])
-                        + Ntil)
-                P_den = np.dot(varmat_hat, mtryparams_til.x[:6]) + Ntil
-                mtry_est = ((phi * (maxmtry_x - minmtry_x) +
-                    (1 - phi) * (maxmtry_y - minmtry_y)) * (P_num / P_den) +
-                    (phi * minmtry_x + (1 - phi) * minmtry_y))
-                mtryparams = np.zeros(numparams)
-                mtryparams[:5] = mtryparams_til.x[:5] / varmat_bar[:5]
-                H, I, J, K, L = mtryparams[:5]
-                mtryparams[5] = M
-                mtryparams[6:] = [maxmtry_x, minmtry_x, maxmtry_y, minmtry_y]
+                # Estimate marginal tax rate of capital income function
+                # MTRy(x,y)
+                (mtryparams, mtry_wsumsq_arr[s-s_min, t-beg_yr],
+                    mtry_obs_arr[s-s_min, t-beg_yr]) = \
+                    txfunc_est(df_mtry, s, t, 'mtry', output_dir,
+                        graph_est)
                 mtryparam_arr[s-s_min, t-beg_yr, :] = mtryparams
 
                 if NoData_cnt > 0 & NoData_cnt == s-s_min:
                     '''
-                    --------------------------------------------------------
+                    ----------------------------------------------------
                     Fill in initial blanks with first positive data
-                    estimates
-                    --------------------------------------------------------
+                    estimates. This includes the case in which
+                    min_age > s_min
+                    ----------------------------------------------------
                     '''
+                    message = "Fill in all previous blank ages"
+                    print message
                     etrparam_arr[:s-s_min, t-beg_yr, :] = \
-                        np.tile(etrparams.reshape((1, 10)), (s-s_min, 1))
+                        np.tile(etrparams.reshape((1, numparams)),
+                        (s-s_min, 1))
                     mtrxparam_arr[:s-s_min, t-beg_yr, :] = \
-                        np.tile(mtrxparams.reshape((1, 10)), (s-s_min, 1))
+                        np.tile(mtrxparams.reshape((1, numparams)),
+                        (s-s_min, 1))
                     mtryparam_arr[:s-s_min, t-beg_yr, :] = \
-                        np.tile(mtryparams.reshape((1, 10)), (s-s_min, 1))
+                        np.tile(mtryparams.reshape((1, numparams)),
+                        (s-s_min, 1))
 
                 elif NoData_cnt > 0 & NoData_cnt < s-s_min:
                     '''
-                    --------------------------------------------------------
+                    ----------------------------------------------------
                     Fill in interior data gaps with linear interpolation
-                    between bracketing positive data ages
-                    --------------------------------------------------------
-                    tvals        = (NoData_cnt+2,) vector, linearly space
-                                   points between 0 and 1
+                    between bracketing positive data ages. In all of
+                    these cases min_age < s <= max_age.
+                    ----------------------------------------------------
+                    tvals        = (NoData_cnt+2,) vector, linearly
+                                   space points between 0 and 1
                     x0_etr       = (NoData_cnt x 10) matrix, positive
-                                   estimates at beginning of no data spell
+                                   estimates at beginning of no data
+                                   spell
                     x1_etr       = (NoData_cnt x 10) matrix, positive
-                                   estimates at end (current period) of no
-                                   data spell
+                                   estimates at end (current period) of
+                                   no data spell
                     lin_int_etr  = (NoData_cnt x 10) matrix, linearly
                                    interpolated etr parameters between
                                    x0_etr and x1_etr
                     x0_mtrx      = (NoData_cnt x 10) matrix, positive
-                                   estimates at beginning of no data spell
+                                   estimates at beginning of no data
+                                   spell
                     x1_mtrx      = (NoData_cnt x 10) matrix, positive
-                                   estimates at end (current period) of no
-                                   data spell
+                                   estimates at end (current period) of
+                                   no data spell
                     lin_int_mtrx = (NoData_cnt x 10) matrix, linearly
                                    interpolated mtrx parameters between
                                    x0_mtrx and x1_mtrx
-                    --------------------------------------------------------
+                    ----------------------------------------------------
                     '''
+                    message = ("Linearly interpolate previous blank " +
+                        "tax functions")
+                    print message
                     tvals = np.linspace(0, 1, NoData_cnt+2)
-                    x0_etr = np.tile(etrparam_arr[
-                             s-NoData_cnt-22, t-beg_yr, :].reshape((1, 10)),
-                             (NoData_cnt, 1))
-                    x1_etr = np.tile(etrparams.reshape((1, 10)),
+                    x0_etr = np.tile(etrparam_arr[s-NoData_cnt-s_min-1,
+                        t-beg_yr, :].reshape((1, numparams)),
+                        (NoData_cnt, 1))
+                    x1_etr = np.tile(etrparams.reshape((1, numparams)),
                              (NoData_cnt, 1))
                     lin_int_etr = \
                         (x0_etr + tvals[1:-1].reshape((NoData_cnt, 1))
                         * (x1_etr - x0_etr))
-                    etrparam_arr[s-NoData_cnt-s_min:s-s_min, t-beg_yr, :] = \
-                        lin_int_etr
-                    x0_mtrx = np.tile(mtrxparam_arr[
-                        s-NoData_cnt-22, t-beg_yr, :].reshape((1, 10)),
+                    etrparam_arr[s-NoData_cnt-min_age:s-min_age,
+                        t-beg_yr, :] = lin_int_etr
+                    x0_mtrx = np.tile(
+                        mtrxparam_arr[s-NoData_cnt-s_min-1, t-beg_yr,
+                        :].reshape((1, numparams)),(NoData_cnt, 1))
+                    x1_mtrx = np.tile(
+                        mtrxparams.reshape((1, numparams)),
                         (NoData_cnt, 1))
-                    x1_mtrx = np.tile(mtrxparams.reshape((1, 10)),
-                              (NoData_cnt, 1))
                     lin_int_mtrx = \
                         (x0_mtrx + tvals[1:-1].reshape((NoData_cnt, 1))
                         * (x1_mtrx - x0_mtrx))
-                    mtrxparam_arr[s-NoData_cnt-s_min:s-s_min, t-beg_yr, :] = \
-                        lin_int_mtrx
-                    x0_mtry = np.tile(mtryparam_arr[
-                        s-NoData_cnt-22, t-beg_yr, :].reshape((1, 10)),
+                    mtrxparam_arr[s-NoData_cnt-min_age:s-min_age,
+                        t-beg_yr, :] = lin_int_mtrx
+                    x0_mtry = np.tile(
+                        mtryparam_arr[s-NoData_cnt-s_min-1, t-beg_yr,
+                        :].reshape((1, numparams)), (NoData_cnt, 1))
+                    x1_mtry = np.tile(
+                        mtryparams.reshape((1, numparams)),
                         (NoData_cnt, 1))
-                    x1_mtry = np.tile(mtryparams.reshape((1, 10)),
-                              (NoData_cnt, 1))
                     lin_int_mtry = \
                         (x0_mtry + tvals[1:-1].reshape((NoData_cnt, 1))
                         * (x1_mtry - x0_mtry))
-                    mtryparam_arr[s-NoData_cnt-s_min:s-s_min, t-beg_yr, :] = \
-                        lin_int_mtry
+                    mtryparam_arr[s-NoData_cnt-min_age:s-min_age,
+                        t-beg_yr, :] = lin_int_mtry
 
                 NoData_cnt == 0
 
                 if s == max_age and max_age < s_max:
-                    etrparam_arr[s-20:, t-beg_yr, :] = \
-                        np.tile(etrparams.reshape((1, 10)),
+                    '''
+                    ----------------------------------------------------
+                    If the last age estimates, and max_age< s_max, fill
+                    in the remaining ages with these last estimates
+                    ----------------------------------------------------
+                    '''
+                    message = "Fill in all old tax functions."
+                    print message
+                    etrparam_arr[s-s_min+1:, t-beg_yr, :] = \
+                        np.tile(etrparams.reshape((1, numparams)),
                         (s_max-max_age, 1))
-                    mtrxparam_arr[s-20:, t-beg_yr, :] = \
-                        np.tile(mtrxparams.reshape((1, 10)),
+                    mtrxparam_arr[s-s_min+1:, t-beg_yr, :] = \
+                        np.tile(mtrxparams.reshape((1, numparams)),
                         (s_max-max_age, 1))
-                    mtryparam_arr[s-20:, t-beg_yr, :] = \
-                        np.tile(mtryparams.reshape((1, 10)),
+                    mtryparam_arr[s-s_min+1:, t-beg_yr, :] = \
+                        np.tile(mtryparams.reshape((1, numparams)),
                         (s_max-max_age, 1))
 
-                if graph_est == True:
-                    '''
-                    --------------------------------------------------------
-                    Generate 3-D graph of predicted surface and scatterplot
-                    of data
-                    --------------------------------------------------------
-                    gridpts      = integer >= 2, number of gridpoint in
-                                   each dimension to plot
-                    inc_lab_vec  = (gridpts,) vector, points in support of
-                                   inc_lab to plot
-                    inc_cap_vec  = (gridpts,) vector, points in support of
-                                   inc_cap to plot
-                    inc_lab_grid = (gridpts x gridpts) matrix, row vector of
-                                   inc_lab_vec copied down gridpts rows
-                    inc_cap_grid = (gridpts x gridpts) matrix, column vector
-                                   of inc_cap_vec copied across gridpts
-                                   columns
-                    etr_grid     = (gridpts x gridpts) matrix, predicted
-                                   effective tax rates given inc_lab_grid
-                                   and inc_cap_grid
-                    --------------------------------------------------------
-                    '''
-                    fig = plt.figure()
-                    ax = fig.add_subplot(111, projection ='3d')
-                    ax.scatter(inc_lab, inc_cap, etr, c='r', marker='o')
-                    ax.set_xlabel('Total Labor Income')
-                    ax.set_ylabel('Total Capital Income')
-                    ax.set_zlabel('Effective Tax Rate')
-                    plt.title('ETR vs. Predicted ETR: Age=' + str(s) + ', Year=' + str(t))
-                    plt.close()
-
-                    gridpts = 50
-                    inc_lab_vec = np.exp(np.linspace(np.log(5),
-                                  np.log(inc_lab.max()), gridpts))
-                    inc_cap_vec = np.exp(np.linspace(np.log(5),
-                                  np.log(inc_cap.max()), gridpts))
-                    inc_lab_grid, inc_cap_grid = np.meshgrid(inc_lab_vec,
-                                                 inc_cap_vec)
-                    etr_grid = gen_etr_grid(inc_lab_grid, inc_cap_grid,
-                               etrparams)
-                    ax.plot_surface(inc_lab_grid, inc_cap_grid, etr_grid,
-                        cmap=cmap1, linewidth=0)
-                    plt.show()
-                    fig.savefig('ETR_Age_'+ str(s) + '_Year_' + str(t) +'_vsPred.png', bbox_inches='tight')
-                    plt.close()
-
-                if dmtrgr_est == True:
-                    '''
-                    --------------------------------------------------------
-                    Generate 3-D graph of predicted derivative of marginal
-                    tax rates
-                    --------------------------------------------------------
-                    gridpts      = integer >= 2, number of gridpoint in
-                                   each dimension to plot
-                    inc_lab_vec  = (gridpts,) vector, points in support of
-                                   inc_lab to plot
-                    inc_cap_vec  = (gridpts,) vector, points in support of
-                                   inc_cap to plot
-                    inc_lab_grid = (gridpts x gridpts) matrix, row vector of
-                                   inc_lab_vec copied down gridpts rows
-                    inc_cap_grid = (gridpts x gridpts) matrix, column vector
-                                   of inc_cap_vec copied across gridpts
-                                   columns
-                    dmtrx_grid   = (gridpts x gridpts) matrix, predicted
-                                   derivative of marginal tax rates with
-                                   respect to labor income given
-                                   inc_lab_grid and inc_cap_grid
-                    dmtry_grid   = (gridpts x gridpts) matrix, predicted
-                                   derivative of marginal tax rates with
-                                   respect to capital income given
-                                   inc_lab_grid and inc_cap_grid
-                    --------------------------------------------------------
-                    '''
-                    df_trnc_gph = df[(df['Total Labor Income'] > 5) &
-                                  (df['Total Labor Income'] < 500000) &
-                                  (df['Total Capital Income'] > 5) &
-                                  (df['Total Capital Income'] < 500000)]
-                    inc_lab_gph = df_trnc_gph['Total Labor Income']
-                    inc_cap_gph = df_trnc_gph['Total Capital Income']
-                    mtrx_gph = df_trnc_gph['MTR Labor']
-                    gridpts = 50
-                    # inc_lab_vec = np.exp(np.linspace(np.log(5),
-                    #               np.log(inc_lab.max()), gridpts))
-                    # inc_cap_vec = np.exp(np.linspace(np.log(5),
-                    #               np.log(inc_cap.max()), gridpts))
-                    inc_lab_vec = np.exp(np.linspace(np.log(5),
-                                  np.log(500000), gridpts))
-                    inc_cap_vec = np.exp(np.linspace(np.log(5),
-                                  np.log(500000), gridpts))
-                    inc_lab_grid, inc_cap_grid = np.meshgrid(inc_lab_vec,
-                                                 inc_cap_vec)
-
-                    mtrx_grid_impl = \
-                        gen_mtrx_grid_impl(inc_lab_grid, inc_cap_grid,
-                        etrparams)
-                    mtrx_grid_est = \
-                        gen_mtrx_grid_est(inc_lab_grid, inc_cap_grid,
-                        mtrxparams)
-                    fig = plt.figure()
-                    ax = fig.add_subplot(111, projection ='3d')
-                    ax.scatter(inc_lab_gph, inc_cap_gph, mtrx_gph, c='r', marker='o')
-                    ax.set_xlabel('Total Labor Income')
-                    ax.set_ylabel('Total Capital Income')
-                    ax.set_zlabel('MTR Labor Inc.')
-                    plt.title('Implied MTR labor Inc.: Age=' + str(s) + ', Year=' + str(t))
-                    ax.plot_surface(inc_lab_grid, inc_cap_grid, mtrx_grid_impl,
-                        cmap=cmap1, linewidth=0)
-                    print mtrx_grid_impl.min(), mtrx_grid_impl.max()
-                    plt.show()
-                    fig.savefig('ImpMTRx_Age_'+ str(s) + '_Year_' + str(t) +'.png', bbox_inches='tight')
-                    plt.close()
-
-                    fig = plt.figure()
-                    ax = fig.add_subplot(111, projection ='3d')
-                    ax.scatter(inc_lab_gph, inc_cap_gph, mtrx_gph, c='r', marker='o')
-                    ax.set_xlabel('Total Labor Income')
-                    ax.set_ylabel('Total Capital Income')
-                    ax.set_zlabel('MTR Labor Inc.')
-                    plt.title('Estimated MTR labor Inc.: Age=' + str(s) + ', Year=' + str(t))
-                    ax.plot_surface(inc_lab_grid, inc_cap_grid, mtrx_grid_est,
-                        cmap=cmap1, linewidth=0)
-                    print mtrx_grid_est.min(), mtrx_grid_est.max()
-                    plt.show()
-                    fig.savefig('EstMTRx_Age_'+ str(s) + '_Year_' + str(t) +'.png', bbox_inches='tight')
-                    plt.close()
-
-                    dmtrx_grid = gen_dmtrx_grid(inc_lab_grid, inc_cap_grid,
-                                 etrparams)
-                    fig = plt.figure()
-                    ax = fig.add_subplot(111, projection ='3d')
-                    ax.plot_surface(inc_lab_grid, inc_cap_grid, dmtrx_grid,
-                        cmap=cmap1, linewidth=0)
-                    ax.set_xlabel('Total Labor Income')
-                    ax.set_ylabel('Total Capital Income')
-                    ax.set_zlabel('d MTR labor Inc.')
-                    plt.title('d MTR labor Inc.: Age=' + str(s) + ', Year=' + str(t))
-                    print dmtrx_grid.min(), dmtrx_grid.max()
-                    plt.show()
-                    fig.savefig('dMTRx_Age_'+ str(s) + '_Year_' + str(t) +'.png', bbox_inches='tight')
-                    plt.close()
-
-                    dmtry_grid = gen_dmtry_grid(inc_lab_grid, inc_cap_grid,
-                                 etrparams)
-                    fig = plt.figure()
-                    ax = fig.add_subplot(111, projection ='3d')
-                    ax.plot_surface(inc_lab_grid, inc_cap_grid, dmtry_grid,
-                        cmap=cmap1, linewidth=0)
-                    ax.set_xlabel('Total Labor Income')
-                    ax.set_ylabel('Total Capital Income')
-                    ax.set_zlabel('d MTR capital Inc.')
-                    plt.title('d MTR capital Inc.: Age=' + str(s) + ', Year=' + str(t))
-                    print dmtry_grid.min(), dmtry_grid.max()
-                    plt.show()
-                    fig.savefig('dMTRy_Age_'+ str(s) + '_Year_' + str(t) +'.png', bbox_inches='tight')
-                    plt.close()
-
-                    df_trnc_gph = df[(df['Total Labor Income'] > 5) &
-                                  (df['Total Labor Income'] < 500000) &
-                                  (df['Total Capital Income'] > 5) &
-                                  (df['Total Capital Income'] < 500000)]
-                    inc_lab_gph = df_trnc_gph['Total Labor Income']
-                    inc_cap_gph = df_trnc_gph['Total Capital Income']
-                    mtry_gph = df_trnc_gph['MTR capital income']
-                    gridpts = 50
-                    # inc_lab_vec = np.exp(np.linspace(np.log(5),
-                    #               np.log(inc_lab.max()), gridpts))
-                    # inc_cap_vec = np.exp(np.linspace(np.log(5),
-                    #               np.log(inc_cap.max()), gridpts))
-                    inc_lab_vec = np.exp(np.linspace(np.log(5),
-                                  np.log(500000), gridpts))
-                    inc_cap_vec = np.exp(np.linspace(np.log(5),
-                                  np.log(500000), gridpts))
-                    inc_lab_grid, inc_cap_grid = np.meshgrid(inc_lab_vec,
-                                                 inc_cap_vec)
-
-                    mtry_grid_impl = \
-                        gen_mtry_grid_impl(inc_lab_grid, inc_cap_grid,
-                        etrparams)
-                    mtry_grid_est = \
-                        gen_mtry_grid_est(inc_lab_grid, inc_cap_grid,
-                        mtryparams)
-                    fig = plt.figure()
-                    ax = fig.add_subplot(111, projection ='3d')
-                    ax.scatter(inc_lab_gph, inc_cap_gph, mtry_gph, c='r', marker='o')
-                    ax.set_xlabel('Total Labor Income')
-                    ax.set_ylabel('Total Capital Income')
-                    ax.set_zlabel('MTR Capital Inc.')
-                    plt.title('Implied MTR Capital Inc.: Age=' + str(s) + ', Year=' + str(t))
-                    ax.plot_surface(inc_lab_grid, inc_cap_grid, mtry_grid_impl,
-                        cmap=cmap1, linewidth=0)
-                    print mtry_grid_impl.min(), mtry_grid_impl.max()
-                    plt.show()
-                    fig.savefig('ImpMTRy_Age_'+ str(s) + '_Year_' + str(t) +'.png', bbox_inches='tight')
-                    plt.close()
-
-                    fig = plt.figure()
-                    ax = fig.add_subplot(111, projection ='3d')
-                    ax.scatter(inc_lab_gph, inc_cap_gph, mtry_gph, c='r', marker='o')
-                    ax.set_xlabel('Total Labor Income')
-                    ax.set_ylabel('Total Capital Income')
-                    ax.set_zlabel('MTR Capital Inc.')
-                    plt.title('Estimated MTR Capital Inc.: Age=' + str(s) + ', Year=' + str(t))
-                    ax.plot_surface(inc_lab_grid, inc_cap_grid, mtry_grid_est,
-                        cmap=cmap1, linewidth=0)
-                    print mtry_grid_est.min(), mtry_grid_est.max()
-                    plt.show()
-                    fig.savefig('EstMTRy_Age_'+ str(s) + '_Year_' + str(t) +'.png', bbox_inches='tight')
-                    plt.close()
-
-                    dmtry_grid = gen_dmtry_grid(inc_lab_grid, inc_cap_grid,
-                                 etrparams)
-                    fig = plt.figure()
-                    ax = fig.add_subplot(111, projection ='3d')
-                    ax.plot_surface(inc_lab_grid, inc_cap_grid, dmtrx_grid,
-                        cmap=cmap1, linewidth=0)
-                    ax.set_xlabel('Total Labor Income')
-                    ax.set_ylabel('Total Capital Income')
-                    ax.set_zlabel('d MTR Capital Inc.')
-                    plt.title('d MTR Capital Inc.: Age=' + str(s) + ', Year=' + str(t))
-                    print dmtry_grid.min(), dmtry_grid.max()
-                    plt.show()
-                    fig.savefig('dMTRy_Age_'+ str(s) + '_Year_' + str(t) +'.png', bbox_inches='tight')
-                    plt.close()
-
-                    dmtry_grid = gen_dmtry_grid(inc_lab_grid, inc_cap_grid,
-                                 etrparams)
-                    fig = plt.figure()
-                    ax = fig.add_subplot(111, projection ='3d')
-                    ax.plot_surface(inc_lab_grid, inc_cap_grid, dmtry_grid,
-                        cmap=cmap1, linewidth=0)
-                    ax.set_xlabel('Total Labor Income')
-                    ax.set_ylabel('Total Capital Income')
-                    ax.set_zlabel('d MTR Capital Inc.')
-                    plt.title('d MTR Capital Inc.: Age=' + str(s) + ', Year=' + str(t))
-                    print dmtry_grid.min(), dmtry_grid.max()
-                    plt.show()
-                    fig.savefig('dMTRy_Age_'+ str(s) + '_Year_' + str(t) +'.png', bbox_inches='tight')
-                    plt.close()
-
-
-    print "finished this loop"
-    #import pdb;pdb.set_trace()
+    message = ("Finished tax function loop through " +
+        str(len(years_list)) + " years and " + str(len(ages_list)) +
+        " ages per year.")
+    print message
     elapsed_time = time.clock() - start_time
 
     # Print tax function computation time
-    if elapsed_time < 60: # seconds
+    if elapsed_time < 60: # less than a minute
         secs = round(elapsed_time, 3)
-        print 'Tax function estimation time: ', secs, ' sec.'
-    elif elapsed_time >= 60 and elapsed_time < 3600: # minutes
+        message = "Tax function estimation time: " + str(secs) + " sec"
+        print message
+    elif elapsed_time >= 60 and elapsed_time < 3600: # less than hour
         mins = int(elapsed_time / 60)
         secs = round(((elapsed_time / 60) - mins) * 60, 1)
-        print 'Tax function estimation time: ', mins, ' min, ', secs, ' sec'
+        message = ("Tax function estimation time: " + str(mins) +
+            " min, " + str(secs) + " sec")
+        print message
+    elif elapsed_time >= 3600 and elapsed_time < 86400: # less than day
+        hours = int(elapsed_time / (60 * 60))
+        mins = int((elapsed_time  - (hours * 60 * 60))/ 60)
+        secs = round(elapsed_time - (hours * 60 * 60) - (mins * 60), 1)
+        secs = round(((elapsed_time / 60) - mins) * 60, 1)
+        message = ("Tax function estimation time: " + str(hours) +
+            " hour(s), "+ str(mins) + " min(s), " + str(secs) + " sec(s)")
+        print message
 
     '''
     --------------------------------------------------------------------
@@ -1719,31 +1307,31 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
         age_sup = np.linspace(s_min, s_max, s_max-s_min+1)
         se_mult = 3.5
 
-        etr_sse_big = find_outliers(etr_sumsq_arr / etr_obs_arr,
-            age_sup, se_mult, start_year, "ETR")
+        etr_sse_big = find_outliers(etr_wsumsq_arr / etr_obs_arr,
+            age_sup, se_mult, beg_yr, "ETR")
         if etr_sse_big.sum() > 0:
             etrparam_arr_adj = replace_outliers(etrparam_arr, etr_sse_big)
         elif etr_sse_big.sum() == 0:
             etrparam_arr_adj = etrparam_arr
 
-        mtrx_sse_big = find_outliers(mtrx_sumsq_arr / mtrx_obs_arr,
-            age_sup, se_mult, start_year, "MTRx")
+        mtrx_sse_big = find_outliers(mtrx_wsumsq_arr / mtrx_obs_arr,
+            age_sup, se_mult, beg_yr, "MTRx")
         if mtrx_sse_big.sum() > 0:
             mtrxparam_arr_adj = replace_outliers(mtrxparam_arr, mtrx_sse_big)
         elif mtrx_sse_big.sum() == 0:
             mtrxparam_arr_adj = mtrxparam_arr
 
-        mtry_sse_big = find_outliers(mtry_sumsq_arr / mtry_obs_arr,
-            age_sup, se_mult, start_year, "MTRy")
+        mtry_sse_big = find_outliers(mtry_wsumsq_arr / mtry_obs_arr,
+            age_sup, se_mult, beg_yr, "MTRy")
         if mtry_sse_big.sum() > 0:
             mtryparam_arr_adj = replace_outliers(mtryparam_arr, mtry_sse_big)
         elif mtry_sse_big.sum() == 0:
             mtryparam_arr_adj = mtryparam_arr
 
     '''
-    ------------------------------------------------------------------------
+    --------------------------------------------------------------------
     Generate tax function parameters for S < s_max - s_min + 1
-    ------------------------------------------------------------------------
+    --------------------------------------------------------------------
     etrparam_arr_S  = S x tpers x 10 array, this is an array in which S is
                       less-than-or-equal-to s_max-s_min+1. We use weighted
                       averages of parameters in relevant age groups
@@ -1758,7 +1346,7 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
     rmndr_pct_ub = scalar in [0,1], discounted weight on upper bound age
     age_wgts     = ages x tpers x 10 array, age weights for each age in each
                    year copied back 10 times in the 3rd dimension
-    ------------------------------------------------------------------------
+    --------------------------------------------------------------------
     '''
     if age_specific:
         if S == s_max - s_min + 1:
@@ -1795,31 +1383,35 @@ def tax_func_estimate(baseline=False, analytical_mtrs=True,
         print 'Big S: ', S
         print 'max age, min age: ', s_max, s_min
     else:
-        etrparam_arr_S = np.tile(np.reshape(etrparam_arr[s-s_min,:,:],(1,BW,etrparam_arr.shape[2])),(S,1,1))
-        mtrxparam_arr_S = np.tile(np.reshape(mtrxparam_arr[s-s_min,:,:],(1,BW,mtrxparam_arr.shape[2])),(S,1,1))
-        mtryparam_arr_S = np.tile(np.reshape(mtryparam_arr[s-s_min,:,:],(1,BW,mtryparam_arr.shape[2])),(S,1,1))
+        etrparam_arr_S = np.tile(np.reshape(etrparam_arr[s-s_min, :, :],
+            (1, tpers, etrparam_arr.shape[2])), (S, 1, 1))
+        mtrxparam_arr_S = np.tile(
+            np.reshape(mtrxparam_arr[s-s_min, :, :],
+            (1, tpers, mtrxparam_arr.shape[2])), (S, 1, 1))
+        mtryparam_arr_S = np.tile(
+            np.reshape(mtryparam_arr[s-s_min, :, :],
+            (1, tpers, mtryparam_arr.shape[2])), (S, 1, 1))
 
 
-    # Save tax function parameters array and computation time in pickle
+    # Save tax function parameters array and computation time in
+    # dictionary
     dict_params = dict([('tfunc_etr_params_S', etrparam_arr_S),
         ('tfunc_mtrx_params_S', mtrxparam_arr_S),
         ('tfunc_mtry_params_S', mtryparam_arr_S),
         ('tfunc_avginc', AvgInc), ('tfunc_avg_etr', AvgETR),
         ('tfunc_avg_mtrx', AvgMTRx), ('tfunc_avg_mtry', AvgMTRy),
-        ('tfunc_etr_sumsq', etr_sumsq_arr),
-        ('tfunc_mtrx_sumsq', mtrx_sumsq_arr),
-        ('tfunc_mtry_sumsq', mtry_sumsq_arr),
+        ('tfunc_etr_sumsq', etr_wsumsq_arr),
+        ('tfunc_mtrx_sumsq', mtrx_wsumsq_arr),
+        ('tfunc_mtry_sumsq', mtry_wsumsq_arr),
         ('tfunc_etr_obs', etr_obs_arr),
         ('tfunc_mtrx_obs', mtrx_obs_arr),
         ('tfunc_mtry_obs', mtry_obs_arr),
         ('tfunc_time', elapsed_time)])
 
-    #import pdb;pdb.set_trace()
-
     return dict_params
 
 
-def get_tax_func_estimate(baseline=False, analytical_mtrs=True,
+def get_tax_func_estimate(baseline=False, analytical_mtrs=False,
   age_specific=False, start_year=2016, reform={}, guid=''):
     '''
     --------------------------------------------------------------------
@@ -1849,8 +1441,8 @@ def get_tax_func_estimate(baseline=False, analytical_mtrs=True,
     --------------------------------------------------------------------
     '''
     # Code to run manually from here:
-    dict_params = tax_func_estimate(baseline, analytical_mtrs,
-                  age_specific, start_year, reform)
+    dict_params = tax_func_estimate(start_year, baseline,
+        analytical_mtrs, age_specific, reform)
     if baseline:
         baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         pkl_path = os.path.join(TAX_ESTIMATE_PATH, baseline_pckl)
