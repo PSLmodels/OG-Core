@@ -657,10 +657,10 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
     Btil_init = 1.0
     Ctil_init = 1.0
     Dtil_init = 1.0
-    max_x_init = txrates[(df['Total Capital Income']
-        < y_20pctl)].max()
-    max_y_init = txrates[(df['Total Labor Income']
-        < x_20pctl)].max()
+    max_x_init = np.minimum(
+        txrates[(df['Total Capital Income'] < y_20pctl)].max(), 0.7)
+    max_y_init = np.minimum(
+        txrates[(df['Total Labor Income'] < x_20pctl)].max(), 0.7)
     shift = txrates[(df['Total Labor Income'] < x_20pctl) |
         (df['Total Capital Income'] < y_20pctl)].min()
     share_init = 0.5
@@ -671,7 +671,7 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
     lb_max_x = np.maximum(min_x, 0.0) + 1e-4
     lb_max_y = np.maximum(min_y, 0.0) + 1e-4
     bnds = ((1e-12, None), (1e-12, None), (1e-12, None), (1e-12, None),
-        (lb_max_x, None), (lb_max_y, None), (0, 1))
+        (lb_max_x, 0.8), (lb_max_y, 0.8), (0, 1))
     params_til = opt.minimize(wsumsq, params_init,
         args=(tx_objs), method="L-BFGS-B", bounds=bnds, tol=1e-15)
     Atil, Btil, Ctil, Dtil, max_x, max_y, share = params_til.x
