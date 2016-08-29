@@ -251,6 +251,127 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     plt.close()
 
 
+def plot_txfunc_v_data(tx_params, data, params):
+    '''
+    --------------------------------------------------------------------
+    This function plots a single estimated tax function against its
+    corresponding data
+    --------------------------------------------------------------------
+    cmap1       = color map object for matplotlib 3D plots
+    tx_label    = string, text representing type of tax rate
+    gridpts     = scalar > 2, number of grid points in X and Y
+                  dimensions
+    X_vec       = (gridpts,) vector, discretized log support of X
+    Y_vec       = (gridpts,) vector, discretized log support of Y
+    X_grid      = (gridpts, gridpts) matrix, ?
+    Y_grid      = (gridpts, gridpts) matrix, ?
+    txrate_grid = (gridpts, gridpts) matrix, ?
+    filename    = string, name of plot to be saved
+    fullpath    = string, full path name of file to be saved
+    df_trnc_gph = (Nb, 11) DataFrame, truncated data for plotting
+    X_gph       = (Nb,) Series, truncated labor income data
+    Y_gph       = (Nb,) Series, truncated capital income data
+    txrates_gph = (Nb,) Series, truncated tax rate (ETR, MTRx, or MTRy)
+                  data
+    --------------------------------------------------------------------
+    '''
+    X_data = data['Total Labor Income']
+    Y_data = data['Total Capital Income']
+    (s, t, rate_type, plot_full, plot_trunc, show_plots, save_plots,
+        output_dir) = params
+
+    cmap1 = matplotlib.cm.get_cmap('summer')
+
+    if plot_full:
+        if rate_type == 'etr':
+            txrate_data = data['Effective Tax Rate']
+            tx_label = 'ETR'
+        elif rate_type == 'mtrx':
+            txrate_data = data['MTR Labor']
+            tx_label = 'MTRx'
+        elif rate_type == 'mtry':
+            txrate_data = data['MTR capital income']
+            tx_label = 'MTRy'
+        # Make comparison plot with full income domains
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection ='3d')
+        ax.scatter(X_data, Y_data, txrate_data, c='r', marker='o')
+        ax.set_xlabel('Total Labor Income')
+        ax.set_ylabel('Total Capital Income')
+        ax.set_zlabel(tx_label)
+        plt.title(tx_label + ' vs. Predicted ' + tx_label + ': Age=' +
+            str(s) + ', Year=' + str(t))
+
+        gridpts = 50
+        X_vec = np.exp(np.linspace(np.log(1), np.log(X_data.max()),
+            gridpts))
+        Y_vec = np.exp(np.linspace(np.log(1), np.log(Y_data.max()),
+            gridpts))
+        X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
+        txrate_grid = gen_rate_grid(X_grid, Y_grid, tx_params)
+        ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
+            linewidth=0)
+
+        if save_plots:
+            filename = (tx_label + '_Age_' + str(s) + '_Year_' + str(t) +
+                '_vsPred.png')
+            fullpath = os.path.join(output_dir, filename)
+            fig.savefig(fullpath, bbox_inches='tight')
+
+        if show_plots:
+            plt.show()
+
+        plt.close()
+
+    if plot_trunc:
+        # Make comparison plot with truncated income domains
+        data_trnc = data[(data['Total Labor Income'] > 5) &
+            (data['Total Labor Income'] < 800000) &
+            (data['Total Capital Income'] > 5) &
+            (data['Total Capital Income'] < 800000)]
+        X_trnc = data_trnc['Total Labor Income']
+        Y_trnc = data_trnc['Total Capital Income']
+        if rate_type == 'etr':
+            txrates_trnc = data_trnc['Effective Tax Rate']
+            tx_label = 'ETR'
+        elif rate_type == 'mtrx':
+            txrates_trnc = data_trnc['MTR Labor']
+            tx_label = 'MTRx'
+        elif rate_type == 'mtry':
+            txrates_trnc = data_trnc['MTR capital income']
+            tx_label = 'MTRy'
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection ='3d')
+        ax.scatter(X_trnc, Y_trnc, txrates_trnc, c='r', marker='o')
+        ax.set_xlabel('Total Labor Income')
+        ax.set_ylabel('Total Capital Income')
+        ax.set_zlabel(tx_label)
+        plt.title('Truncated ' + tx_label + ', Lab. Inc., and Cap. ' +
+            'Inc., Age=' + str(s) + ', Year=' + str(t))
+
+        gridpts = 50
+        X_vec = np.exp(np.linspace(np.log(1), np.log(X_trnc.max()),
+            gridpts))
+        Y_vec = np.exp(np.linspace(np.log(1), np.log(Y_trnc.max()),
+            gridpts))
+        X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
+        txrate_grid = gen_rate_grid(X_grid, Y_grid, tx_params)
+        ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
+            linewidth=0)
+
+        if save_plots:
+            filename = (tx_label + 'trunc_Age_' + str(s) + '_Year_' +
+                str(t) + '_vsPred.png')
+            fullpath = os.path.join(output_dir, filename)
+            fig.savefig(fullpath, bbox_inches='tight')
+
+        if show_plots:
+            plt.show()
+
+        plt.close()
+
+
 def wsumsq(params, *args):
     '''
     --------------------------------------------------------------------
@@ -1292,7 +1413,6 @@ def tax_func_estimate(beg_yr=2016, baseline=True, analytical_mtrs=False,
         hours = int(elapsed_time / (60 * 60))
         mins = int((elapsed_time  - (hours * 60 * 60))/ 60)
         secs = round(elapsed_time - (hours * 60 * 60) - (mins * 60), 1)
-        secs = round(((elapsed_time / 60) - mins) * 60, 1)
         message = ("Tax function estimation time: " + str(hours) +
             " hour(s), "+ str(mins) + " min(s), " + str(secs) + " sec(s)")
         print message
