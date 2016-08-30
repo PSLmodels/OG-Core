@@ -14,7 +14,7 @@ ogusa.parameters.DATASET = 'REAL'
 
 
 def runner(output_base, baseline_dir, baseline=False,
-  analytical_mtrs=True, age_specific=False, reform={}, user_params={},
+  analytical_mtrs=False, age_specific=False, reform={}, user_params={},
   guid='', run_micro=True):
 
     #from ogusa import parameters, wealth, labor, demographics, income
@@ -150,7 +150,7 @@ def runner(output_base, baseline_dir, baseline=False,
 
 
 def runner_SS(output_base, baseline_dir, baseline=False,
-  analytical_mtrs=True, age_specific=False, reform={}, user_params={},
+  analytical_mtrs=False, age_specific=False, reform={}, user_params={},
   guid='', run_micro=True):
 
     from ogusa import parameters, demographics, income, utils
