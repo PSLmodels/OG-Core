@@ -1,8 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 4/7/2016
-
-Household functions for taxes in the steady state and along the 
+Household functions for taxes in the steady state and along the
 transition path..
 
 This file calls the following files:
@@ -26,10 +24,10 @@ def get_K(b, params):
     Calculates aggregate capital supplied.
 
     Inputs:
-        b           = [T,S,J] array, distribution of wealth/capital holdings 
+        b           = [T,S,J] array, distribution of wealth/capital holdings
         params      = length 4 tuple, (omega, lambdas, g_n, method)
-        omega       = [S,T] array, population weights 
-        lambdas     = [J,] vector, fraction in each lifetime income group 
+        omega       = [S,T] array, population weights
+        lambdas     = [J,] vector, fraction in each lifetime income group
         g_n         = [T,] vector, population growth rate
         method      = string, 'SS' or 'TPI'
 
@@ -42,7 +40,7 @@ def get_K(b, params):
     Returns: K
     '''
 
-    omega, lambdas, imm_rates, g_n, method = params 
+    omega, lambdas, imm_rates, g_n, method = params
 
     if method == 'SS':
         part1 = b* omega * lambdas
@@ -73,8 +71,8 @@ def get_BQ(r, b_splus1, params):
         r           = [T,] vector, interest rates
         b_splus1    = [T,S,J] array, distribution of wealth/capital holdings one period ahead
         params      = length 5 tuple, (omega, lambdas, rho, g_n, method)
-        omega       = [S,T] array, population weights 
-        lambdas     = [J,] vector, fraction in each lifetime income group 
+        omega       = [S,T] array, population weights
+        lambdas     = [J,] vector, fraction in each lifetime income group
         rho         = [S,] vector, mortality rates
         g_n         = scalar, population growth rate
         method      = string, 'SS' or 'TPI'
@@ -87,7 +85,7 @@ def get_BQ(r, b_splus1, params):
 
     Returns: BQ
     '''
-    omega, lambdas, rho, g_n, method = params 
+    omega, lambdas, rho, g_n, method = params
 
     BQ_presum = b_splus1 * omega * rho * lambdas
     if method == 'SS':
@@ -126,7 +124,7 @@ def marg_ut_labor(n, params):
         n         = [T,S,J] array, household labor supply
         params    = length 4 tuple (b_ellipse, upsilon, ltilde, chi_n)
         b_ellipse = scalar, scaling parameter in elliptical utility function
-        upsilon   = curvature parameter in elliptical utility function 
+        upsilon   = curvature parameter in elliptical utility function
         ltilde    = scalar, upper bound of household labor supply
         chi_n     = [S,] vector, utility weights on disutility of labor
 
@@ -171,7 +169,7 @@ def get_cons(r, w, b, b_splus1, n, BQ, net_tax, params):
         e        = [S,J] array, effective labor units by age and lifetime income group
         lambdas  = [S,] vector, fraction of population in each lifetime income group
         g_y      = scalar, exogenous labor augmenting technological growth
-    
+
     Functions called: None
 
     Objects in function:
@@ -180,7 +178,7 @@ def get_cons(r, w, b, b_splus1, n, BQ, net_tax, params):
     Returns: cons
     '''
     e, lambdas, g_y = params
-    
+
     cons = (1 + r) * b + w * e * n + BQ / \
         lambdas - b_splus1 * np.exp(g_y) - net_tax
     return cons
@@ -195,7 +193,7 @@ def get_C(c, params):
         params      = length 3 tuple (omega, lambdas, method)
         omega       = [S,T] array, population weights by age (Sx1 array)
         lambdas     = [J,1] vector, lifetime income group weights
-        method      = string, 'SS' or 'TPI' 
+        method      = string, 'SS' or 'TPI'
 
     Functions called: None
 
@@ -218,9 +216,9 @@ def get_C(c, params):
 
 def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, params):
     '''
-    Computes Euler errors for the FOC for savings in the steady state.  
+    Computes Euler errors for the FOC for savings in the steady state.
     This function is usually looped through over J, so it does one lifetime income group at a time.
-    
+
     Inputs:
         r           = scalar, interest rate
         w           = scalar, wage rate
@@ -231,8 +229,8 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, params):
         BQ          = [J,] vector, aggregate bequests by lifetime income group
         factor      = scalar, scaling factor to convert model income to dollars
         T_H         = scalar, lump sum transfer
-        params      = length 18 tuple (e, sigma, beta, g_y, chi_b, theta, tau_bq, rho, lambdas, 
-                                    J, S, etr_params, mtry_params, h_wealth, p_wealth, 
+        params      = length 18 tuple (e, sigma, beta, g_y, chi_b, theta, tau_bq, rho, lambdas,
+                                    J, S, etr_params, mtry_params, h_wealth, p_wealth,
                                     m_wealth, tau_payroll, tau_bq)
         e           = [S,J] array, effective labor units
         sigma       = scalar, coefficient of relative risk aversion
@@ -245,15 +243,15 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, params):
         lambdas     = [J,] vector, ability weights
         J           = integer, number of lifetime income groups
         S           = integer, number of economically active periods in lifetime
-        etr_params  = [S,10] array, parameters of effective income tax rate function
-        mtry_params = [S,10] array, parameters of marginal tax rate on capital income function
+        etr_params  = [S,12] array, parameters of effective income tax rate function
+        mtry_params = [S,12] array, parameters of marginal tax rate on capital income function
         h_wealth    = scalar, parameter in wealth tax function
         p_wealth    = scalar, parameter in wealth tax function
         m_wealth    = scalar, parameter in wealth tax function
         tau_payroll = scalar, payroll tax rate
         tau_bq      = scalar, bequest tax rate
 
-    Functions called:   
+    Functions called:
         get_cons
         marg_ut_cons
         tax.total_taxes
@@ -288,11 +286,11 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, params):
         n_extended = np.array(list(n) + [0])
         etr_params_to_use = np.append(etr_params,np.reshape(etr_params[-1,:],(1,etr_params.shape[1])),axis=0)[1:,:]
         mtry_params_to_use = np.append(mtry_params,np.reshape(mtry_params[-1,:],(1,mtry_params.shape[1])),axis=0)[1:,:]
-    
+
     # tax1_params = (e, lambdas, method, retire, etr_params, h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
     # tax1 = tax.total_taxes(r, w, b, n, BQ, factor, T_H, None, False, tax1_params)
-    # tax2_params = (e_extended[1:], lambdas, method, retire, 
-    #                np.append(etr_params,np.reshape(etr_params[-1,:],(1,etr_params.shape[1])),axis=0)[1:,:], 
+    # tax2_params = (e_extended[1:], lambdas, method, retire,
+    #                np.append(etr_params,np.reshape(etr_params[-1,:],(1,etr_params.shape[1])),axis=0)[1:,:],
     #                h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
     # tax2 = tax.total_taxes(r, w, b_splus1, n_extended[1:], BQ, factor, T_H, None, True, tax2_params)
     # cons1_params = (e, lambdas, g_y)
@@ -306,7 +304,7 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, params):
 
     tax1_params = (e, lambdas, method, retire, etr_params, h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
     tax1 = tax.total_taxes(r, w, b, n, BQ, factor, T_H, None, False, tax1_params)
-    tax2_params = (e_extended[1:], lambdas, method, retire, 
+    tax2_params = (e_extended[1:], lambdas, method, retire,
                    etr_params_to_use, h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
     tax2 = tax.total_taxes(r, w, b_splus1, n_extended[1:], BQ, factor, T_H, None, True, tax2_params)
     cons1_params = (e, lambdas, g_y)
@@ -326,13 +324,12 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, params):
     euler = marg_ut_cons(cons1, sigma) - beta * (1 - rho) * deriv * marg_ut_cons(
         cons2, sigma) * np.exp(-sigma * g_y) - savings_ut
 
-
     return euler
 
 
 def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, params):
     '''
-    Computes Euler errors for the FOC for labor supply in the steady state.  
+    Computes Euler errors for the FOC for labor supply in the steady state.
     This function is usually looped through over J, so it does one lifetime income group at a time.
 
     Inputs:
@@ -344,16 +341,16 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, params):
         BQ          = [J,] vector, aggregate bequests by lifetime income group
         factor      = scalar, scaling factor to convert model income to dollars
         T_H         = scalar, lump sum transfer
-        params      = length 19 tuple (e, sigma, g_y, theta, b_ellipse, upsilon, ltilde, 
+        params      = length 19 tuple (e, sigma, g_y, theta, b_ellipse, upsilon, ltilde,
                                     chi_n, tau_bq, lambdas, J, S,
-                                    etr_params, mtrx_params, h_wealth, p_wealth, 
+                                    etr_params, mtrx_params, h_wealth, p_wealth,
                                     m_wealth, tau_payroll, tau_bq)
         e           = [S,J] array, effective labor units
         sigma       = scalar, coefficient of relative risk aversion
         g_y         = scalar, exogenous labor augmenting technological growth
         theta       = [J,] vector, replacement rate for each lifetime income group
         b_ellipse   = scalar, scaling parameter in elliptical utility function
-        upsilon     = curvature parameter in elliptical utility function 
+        upsilon     = curvature parameter in elliptical utility function
         chi_n       = [S,] vector, utility weights on disutility of labor
         ltilde      = scalar, upper bound of household labor supply
         tau_bq      = scalar, bequest tax rate (scalar)
@@ -368,7 +365,7 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, params):
         tau_payroll = scalar, payroll tax rate
         tau_bq      = scalar, bequest tax rate
 
-    Functions called:   
+    Functions called:
         get_cons
         marg_ut_cons
         marg_ut_labor
@@ -386,14 +383,14 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, params):
     e, sigma, g_y, theta, b_ellipse, upsilon, chi_n, ltilde, tau_bq, lambdas, J, S, \
         analytical_mtrs, etr_params, mtrx_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire, method  = params
 
-    tax1_params = (e, lambdas, method, retire, etr_params, h_wealth, p_wealth, 
+    tax1_params = (e, lambdas, method, retire, etr_params, h_wealth, p_wealth,
                   m_wealth, tau_payroll, theta, tau_bq, J, S)
     tax1 = tax.total_taxes(r, w, b, n, BQ, factor, T_H, None, False, tax1_params)
     cons_params = (e, lambdas, g_y)
-    cons = get_cons(r, w, b, b_splus1, n, BQ, tax1, cons_params)  
+    cons = get_cons(r, w, b, b_splus1, n, BQ, tax1, cons_params)
     mtr_lab_params = (e, etr_params, mtrx_params, analytical_mtrs)
-    deriv = (1 - tau_payroll - tax.MTR_labor(r, b, w, n, factor, mtr_lab_params))
-        
+    deriv = (1 - tau_payroll - tax.MTR_labor(r, w, b, n, factor, mtr_lab_params))
+
     lab_params = (b_ellipse, upsilon, ltilde, chi_n)
     euler = marg_ut_cons(cons, sigma) * w * deriv * e - \
         marg_ut_labor(n, lab_params)
@@ -416,11 +413,11 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, ltilde):
     Objects in function:
         flag2 = boolean, indicates if labor supply constraints violated (=False if not)
 
-    Returns: 
+    Returns:
         # Prints warnings for violations of capital, labor, and
             consumption constraints.
     '''
-    print 'Checking constraints on capital, labor, and consumption.' 
+    print 'Checking constraints on capital, labor, and consumption.'
 
     if (bssmat < 0).any():
         print '\tWARNING: There is negative capital stock'
@@ -446,8 +443,8 @@ def constraint_checker_TPI(b_dist, n_dist, c_dist, t, ltilde):
 
     Inputs:
         b_dist = [S,J] array, distribution of capital
-        n_dist = [S,J] array, distribution of labor 
-        c_dist = [S,J] array, distribution of consumption 
+        n_dist = [S,J] array, distribution of labor
+        c_dist = [S,J] array, distribution of consumption
         t      = integer, time period
         ltilde = scalar, upper bound of household labor supply
 
@@ -455,7 +452,7 @@ def constraint_checker_TPI(b_dist, n_dist, c_dist, t, ltilde):
 
     Objects in function: None
 
-    Returns: 
+    Returns:
         # Prints warnings for violations of capital, labor, and
             consumption constraints.
     '''

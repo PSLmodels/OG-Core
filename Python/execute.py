@@ -13,7 +13,9 @@ from ogusa import calibrate
 ogusa.parameters.DATASET = 'REAL'
 
 
-def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_specific=False, reform={}, user_params={}, guid='', run_micro=True):
+def runner(output_base, baseline_dir, baseline=False,
+  analytical_mtrs=False, age_specific=False, reform={}, user_params={},
+  guid='', run_micro=True):
 
     #from ogusa import parameters, wealth, labor, demographics, income
     from ogusa import parameters, demographics, income, utils
@@ -147,7 +149,9 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_
     print "took {0} seconds to get that part done.".format(time.time() - tick)
 
 
-def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, age_specific=False, reform={}, user_params={}, guid='', run_micro=True):
+def runner_SS(output_base, baseline_dir, baseline=False,
+  analytical_mtrs=False, age_specific=False, reform={}, user_params={},
+  guid='', run_micro=True):
 
     from ogusa import parameters, demographics, income, utils
     from ogusa import txfunc
@@ -249,4 +253,3 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=True, a
         utils.mkdirs(os.path.join(output_base, "SS"))
         ss_dir = os.path.join(output_base, "SS/SS_vars.pkl")
         pickle.dump(ss_outputs, open(ss_dir, "wb"))
-

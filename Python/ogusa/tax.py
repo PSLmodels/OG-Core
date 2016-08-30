@@ -1,9 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 4/7/2016
-
 Functions for taxes in the steady state and along the transition path.
-
 ------------------------------------------------------------------------
 '''
 
@@ -21,27 +18,22 @@ import cPickle as pickle
 def replacement_rate_vals(nssmat, wss, factor_ss, params):
     '''
     Calculates replacement rate values for the payroll tax.
-
     Inputs:
         nssmat    = [S,J] array, steady state labor supply
         wss       = scalar, steady state wage rate
-        factor_ss = scalar, factor that converts model income to dollars 
+        factor_ss = scalar, factor that converts model income to dollars
         params    = length 4 tuple, (e, J, omega_SS, lambdas)
-        e         = [S,J] array, effective labor units 
-        J         = integer, number of ability types 
-        omega_SS  = [S,] vector, population weights by age 
+        e         = [S,J] array, effective labor units
+        J         = integer, number of ability types
+        omega_SS  = [S,] vector, population weights by age
         lambdas   = [J,] vector, lifetime income group weights
-
     Functions called: None
-
     Objects in function:
         AIME       = [J,] vector, average indexed monthly earnings by lifetime income group
         PIA        = [J,] vector, primary insurance amount by lifetime income group
         maxpayment = scalar, maximum replacement rate
         theta      = [J,] vector, replacement rates by lifetime income group
-
     Returns: theta
-
     '''
     e, J, omega_SS, lambdas = params
 
@@ -84,24 +76,20 @@ def replacement_rate_vals(nssmat, wss, factor_ss, params):
 def tau_wealth(b, params):
     '''
     Calculates the effective tax rate on wealth.
-
     Inputs:
         b        = [T,S,J] array, wealth holdings
         params   = length 3 tuple, (h_wealth, p_wealth, m_wealth)
         h_wealth = scalar, parameter of wealth tax function
         p_wealth = scalar, parameter of wealth tax function
         m_wealth = scalar, parameter of wealth tax function
-
     Functions called: None
-
     Objects in function:
-        tau_w = [T,S,J] array, effective tax rate on wealth 
-
+        tau_w = [T,S,J] array, effective tax rate on wealth
     Returns: tau_w
-        
+
     '''
     h_wealth, p_wealth, m_wealth = params
-    
+
     h = h_wealth
     m = m_wealth
     p = p_wealth
@@ -112,21 +100,16 @@ def tau_wealth(b, params):
 def tau_w_prime(b, params):
     '''
     Calculates the marginal tax rate on wealth from the wealth tax.
-
     Inputs:
         b        = [T,S,J] array, wealth holdings
         params   = length 3 tuple, (h_wealth, p_wealth, m_wealth)
         h_wealth = scalar, parameter of wealth tax function
         p_wealth = scalar, parameter of wealth tax function
         m_wealth = scalar, parameter of wealth tax function
-
     Functions called: None
-
     Objects in function:
         tau_w_prime = [T,S,J] array, marginal tax rate on wealth from wealth tax
-
     Returns: tau_w_prime
-
     '''
     h_wealth, p_wealth, m_wealth = params
 
@@ -139,306 +122,347 @@ def tau_w_prime(b, params):
 
 def tau_income(r, w, b, n, factor, params):
     '''
-    Calculate personal income tax liability.
-    
-    Inputs:
-        r          = [T,] vector, interest rate 
-        w          = [T,] vector, wage rate 
-        b          = [T,S,J] array, wealth holdings 
-        n          = [T,S,J] array, labor supply
-        factor     = scalar, model income scaling factor
-        params     = length 2 tuple, (e, etr_params)
-        e          = [T,S,J] array, effective labor units
-        etr_params = [T,S,J] array, effective tax rate function parameters
+    --------------------------------------------------------------------
+    Calculates effective personal income tax rate.
+    --------------------------------------------------------------------
+    INPUTS:
+    r          = [T,] vector, interest rate
+    w          = [T,] vector, wage rate
+    b          = [T,S,J] array, wealth holdings
+    n          = [T,S,J] array, labor supply
+    factor     = scalar, model income scaling factor
+    params     = length 2 tuple, (e, etr_params)
+    e          = [T,S,J] array, effective labor units
+    etr_params = [T,S,J] array, effective tax rate function parameters
 
-    Functions called: None
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
 
-    Objects in function:
-        A     = [T,S,J] array, polynomial coefficient on x**2
-        B     = [T,S,J] array, polynomial coefficient on y**2
-        C     = [T,S,J] array, polynomial coefficient on x*y
-        D     = [T,S,J] array, polynomial coefficient on x
-        E     = [T,S,J] array, polynomial coefficient on y
-        F     = [T,S,J] array, polynomial constant
-        max_x = [T,S,J] array, maximum effective tax rate for x given y=0
-        min_x = [T,S,J] array, minimum effective tax rate for x given y=0
-        max_y = [T,S,J] array, maximum effective tax rate for y given x=0
-        min_y = [T,S,J] array, minimum effective tax rate for y given x=0
-        x     = [T,S,J] array, labor income
-        y     = [T,S,J] array, capital income
-        I     = [T,S,J] array, total income (capital plus labor income)
-        phi   = [T,S,J] array, fraction of total income that is labor income
-        tau   = [T,S,J] array, personal income tax liability
+    OBJECTS CREATED WITHIN FUNCTION:
+    A       = [T,S,J] array, polynomial coefficient on x**2
+    B       = [T,S,J] array, polynomial coefficient on x
+    C       = [T,S,J] array, polynomial coefficient on y**2
+    D       = [T,S,J] array, polynomial coefficient on y
+    max_x   = [T,S,J] array, maximum effective tax rate for x given y=0
+    min_x   = [T,S,J] array, minimum effective tax rate for x given y=0
+    max_y   = [T,S,J] array, maximum effective tax rate for y given x=0
+    min_y   = [T,S,J] array, minimum effective tax rate for y given x=0
+    shift_x = (T, S, J) array, shift parameter on labor income in Cobb-
+              Douglas function
+    shift_y = (T, S, J) array, shift parameter on capital income in
+              Cobb-Douglas function
+    shift   = (T, S, J) array, shift parameter on total function in
+              Cobb-Douglas function
+    share   = (T, S, J) array, share parameter (exponent) in Cobb-
+              Douglas functions
+    X       = [T,S,J] array, labor income
+    Y       = [T,S,J] array, capital income
+    X2      = [T,S,J] array, labor income squared X**2
+    Y2      = [T,S,J] array, capital income squared Y**2
+    tau_x   = [T,S,J] array, labor income portion of the function with
+              ratio of polynomials
+    tau_y   = [T,S,J] array, capital income portion of the function with
+              ratio of polynomials
+    tau     = [T,S,J] array, effective personal income tax rate
 
-    Returns: tau
+    RETURNS: tau
+    --------------------------------------------------------------------
     '''
     e, etr_params = params
 
-    if etr_params.ndim == 4: 
+    if etr_params.ndim == 4:
         A = etr_params[:,:,:,0]
         B = etr_params[:,:,:,1]
         C = etr_params[:,:,:,2]
         D = etr_params[:,:,:,3]
-        E = etr_params[:,:,:,4]
-        F = etr_params[:,:,:,5]
-        max_x = etr_params[:,:,:,6]
-        min_x = etr_params[:,:,:,7]
-        max_y = etr_params[:,:,:,8]
-        min_y = etr_params[:,:,:,9]
-    if etr_params.ndim == 3: 
+        max_x = etr_params[:,:,:,4]
+        min_x = etr_params[:,:,:,5]
+        max_y = etr_params[:,:,:,6]
+        min_y = etr_params[:,:,:,7]
+        shift_x = etr_params[:,:,:,8]
+        shift_y = etr_params[:,:,:,9]
+        shift = etr_params[:,:,:,10]
+        share = etr_params[:,:,:,11]
+    if etr_params.ndim == 3:
         A = etr_params[:,:,0]
         B = etr_params[:,:,1]
         C = etr_params[:,:,2]
         D = etr_params[:,:,3]
-        E = etr_params[:,:,4]
-        F = etr_params[:,:,5]
-        max_x = etr_params[:,:,6]
-        min_x = etr_params[:,:,7]
-        max_y = etr_params[:,:,8]
-        min_y = etr_params[:,:,9]
-    if etr_params.ndim == 2: 
+        max_x = etr_params[:,:,4]
+        min_x = etr_params[:,:,5]
+        max_y = etr_params[:,:,6]
+        min_y = etr_params[:,:,7]
+        shift_x = etr_params[:,:,8]
+        shift_y = etr_params[:,:,9]
+        shift = etr_params[:,:,10]
+        share = etr_params[:,:,11]
+    if etr_params.ndim == 2:
         A = etr_params[:,0]
         B = etr_params[:,1]
         C = etr_params[:,2]
         D = etr_params[:,3]
-        E = etr_params[:,4]
-        F = etr_params[:,5]
-        max_x = etr_params[:,6]
-        min_x = etr_params[:,7]
-        max_y = etr_params[:,8]
-        min_y = etr_params[:,9]
-    if etr_params.ndim == 1: 
+        max_x = etr_params[:,4]
+        min_x = etr_params[:,5]
+        max_y = etr_params[:,6]
+        min_y = etr_params[:,7]
+        shift_x = etr_params[:,8]
+        shift_y = etr_params[:,9]
+        shift = etr_params[:,10]
+        share = etr_params[:,11]
+    if etr_params.ndim == 1:
         A = etr_params[0]
         B = etr_params[1]
         C = etr_params[2]
         D = etr_params[3]
-        E = etr_params[4]
-        F = etr_params[5]
-        max_x = etr_params[6]
-        min_x = etr_params[7]
-        max_y = etr_params[8]
-        min_y = etr_params[9]
+        max_x = etr_params[4]
+        min_x = etr_params[5]
+        max_y = etr_params[6]
+        min_y = etr_params[7]
+        shift_x = etr_params[8]
+        shift_y = etr_params[9]
+        shift = etr_params[10]
+        share = etr_params[11]
 
-    x = (w*e*n)*factor
-    y = (r*b)*factor
-    I = x+y
+    X = (w*e*n)*factor
+    Y = (r*b)*factor
+    X2 = X ** 2
+    Y2 = Y ** 2
+    tau_x = ((max_x - min_x) * (A * X2 + B * X) /
+        (A * X2 + B * X + 1) + min_x)
+    tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
+        (C * Y2 + D * Y + 1) + min_y)
+    tau = (((tau_x + shift_x) ** share) *
+        ((tau_y + shift_y) ** (1 - share))) + shift
 
-    phi = x/I
-    Phi = phi*(max_x-min_x) + (1-phi)*(max_y-min_y)
-    K = phi*min_x + (1-phi)*min_y
-
-    num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
-    denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
-    tau =  (Phi*(num/denom)) + K
     return tau
 
 
 
-## Note that since when we use the same functional form, one could
-# use just one tax function for ATR, MTR_lab, MTR_cap, just with different parameters input
+# Note that since when we use the same functional form, one could use
+# just one tax function for ETR, MTR_lab, MTR_cap, just with different
+# parameters input
+
 def MTR_capital(r, w, b, n, factor, params):
     '''
+    --------------------------------------------------------------------
     Generates the marginal tax rate on capital income for households.
-    
-    Inputs:
-        r               = [T,] vector, interest rate 
-        w               = [T,] vector, wage rate 
-        b               = [T,S,J] array, wealth holdings 
-        n               = [T,S,J] array, labor supply
-        factor          = scalar, model income scaling factor
-        params          = length 3 tuple, (e, mtry_params, analytical_mtrs)
-        e               = [T,S,J] array, effective labor units
-        mtry_params     = [T,S,J] array, marginal tax rate on capital income function parameters
-        analytical_mtrs = boolean, =True if use analytical mtrs rather than estimated mtrs
+    --------------------------------------------------------------------
+    INPUTS:
+    r               = [T,] vector, interest rate
+    w               = [T,] vector, wage rate
+    b               = [T,S,J] array, wealth holdings
+    n               = [T,S,J] array, labor supply
+    factor          = scalar, model income scaling factor
+    params          = length 3 tuple, (e, mtry_params, analytical_mtrs)
+    e               = [T,S,J] array, effective labor units
+    mtry_params     = [T,S,J] array, marginal tax rate on capital income
+                      function parameters
+    analytical_mtrs = boolean, =True if use analytical mtrs rather than
+                      estimated mtrs
 
-    Functions called: None
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
 
-    Objects in function:
-        A     = [T,S,J] array, polynomial coefficient on x**2
-        B     = [T,S,J] array, polynomial coefficient on y**2
-        C     = [T,S,J] array, polynomial coefficient on x*y
-        D     = [T,S,J] array, polynomial coefficient on x
-        E     = [T,S,J] array, polynomial coefficient on y
-        F     = [T,S,J] array, polynomial constant
-        max_x = [T,S,J] array, maximum effective tax rate for x given y=0
-        min_x = [T,S,J] array, minimum effective tax rate for x given y=0
-        max_y = [T,S,J] array, maximum effective tax rate for y given x=0
-        min_y = [T,S,J] array, minimum effective tax rate for y given x=0
-        x     = [T,S,J] array, labor income
-        y     = [T,S,J] array, capital income
-        I     = [T,S,J] array, total income (capital plus labor income)
-        phi   = [T,S,J] array, fraction of total income that is labor income
-        tau   = [T,S,J] array, marginal tax rate on capital income 
+    OBJECTS CREATED WITHIN FUNCTION:
+    A       = [T,S,J] array, polynomial coefficient on x**2
+    B       = [T,S,J] array, polynomial coefficient on x
+    C       = [T,S,J] array, polynomial coefficient on y**2
+    D       = [T,S,J] array, polynomial coefficient on y
+    max_x   = [T,S,J] array, maximum effective tax rate for x given y=0
+    min_x   = [T,S,J] array, minimum effective tax rate for x given y=0
+    max_y   = [T,S,J] array, maximum effective tax rate for y given x=0
+    min_y   = [T,S,J] array, minimum effective tax rate for y given x=0
+    shift_x = (T, S, J) array, shift parameter on labor income in Cobb-
+              Douglas function
+    shift_y = (T, S, J) array, shift parameter on capital income in
+              Cobb-Douglas function
+    shift   = (T, S, J) array, shift parameter on total function in
+              Cobb-Douglas function
+    share   = (T, S, J) array, share parameter (exponent) in Cobb-
+              Douglas functions
+    X       = [T,S,J] array, labor income
+    Y       = [T,S,J] array, capital income
+    X2      = [T,S,J] array, labor income squared X**2
+    Y2      = [T,S,J] array, capital income squared Y**2
+    tau_x   = [T,S,J] array, labor income portion of the function with
+              ratio of polynomials
+    tau_y   = [T,S,J] array, capital income portion of the function with
+              ratio of polynomials
+    tau     = [T,S,J] array, marginal tax rate on capital income
 
-    Returns: tau
+    RETURNS: tau
+    --------------------------------------------------------------------
     '''
-
     e, etr_params, mtry_params, analytical_mtrs = params
 
-    if mtry_params.ndim == 3: 
-        A = mtry_params[:,:,0]
-        B = mtry_params[:,:,1]
-        C = mtry_params[:,:,2]
-        D = mtry_params[:,:,3]
-        E = mtry_params[:,:,4]
-        F = mtry_params[:,:,5]
-        max_x = mtry_params[:,:,6]
-        min_x = mtry_params[:,:,7]
-        max_y = mtry_params[:,:,8]
-        min_y = mtry_params[:,:,9]
-    if mtry_params.ndim == 2: 
-        A = mtry_params[:,0]
-        B = mtry_params[:,1]
-        C = mtry_params[:,2]
-        D = mtry_params[:,3]
-        E = mtry_params[:,4]
-        F = mtry_params[:,5]
-        max_x = mtry_params[:,6]
-        min_x = mtry_params[:,7]
-        max_y = mtry_params[:,8]
-        min_y = mtry_params[:,9]
-    if mtry_params.ndim == 1: 
-        A = mtry_params[0]
-        B = mtry_params[1]
-        C = mtry_params[2]
-        D = mtry_params[3]
-        E = mtry_params[4]
-        F = mtry_params[5]
-        max_x = mtry_params[6]
-        min_x = mtry_params[7]
-        max_y = mtry_params[8]
-        min_y = mtry_params[9]
-
     if analytical_mtrs:
-        x = (w*e*n)*factor
-        y = (r*b)*factor
-        I = x+y
+        # We would have to add this.
+        err = ("MTR_capital() is not set up to handle " +
+            "analytical_mtrs=True.")
+        raise RuntimeError(err)
 
-        num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
-        denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
-        Lambda = num/denom
-
-        d_num = (2*B*y + C*x + E)*F
-        d_denom = ((A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F)**2
-        d_Lambda = d_num/d_denom
-
-        tau =  (max_y-min_y)*Lambda + (x*(max_x-min_x) + y*(max_y-min_y))*d_Lambda + min_y
     else:
-        x = (w*e*n)*factor
-        y = (r*b)*factor
-        I = x+y
+        if mtry_params.ndim == 3:
+            A = mtry_params[:,:,0]
+            B = mtry_params[:,:,1]
+            C = mtry_params[:,:,2]
+            D = mtry_params[:,:,3]
+            max_x = mtry_params[:,:,4]
+            min_x = mtry_params[:,:,5]
+            max_y = mtry_params[:,:,6]
+            min_y = mtry_params[:,:,7]
+            shift_x = mtry_params[:,:,8]
+            shift_y = mtry_params[:,:,9]
+            shift = mtry_params[:,:,10]
+            share = mtry_params[:,:,11]
+        if mtry_params.ndim == 2:
+            A = mtry_params[:,0]
+            B = mtry_params[:,1]
+            C = mtry_params[:,2]
+            D = mtry_params[:,3]
+            max_x = mtry_params[:,4]
+            min_x = mtry_params[:,5]
+            max_y = mtry_params[:,6]
+            min_y = mtry_params[:,7]
+            shift_x = mtry_params[:,8]
+            shift_y = mtry_params[:,9]
+            shift = mtry_params[:,10]
+            share = mtry_params[:,11]
+        if mtry_params.ndim == 1:
+            A = mtry_params[0]
+            B = mtry_params[1]
+            C = mtry_params[2]
+            D = mtry_params[3]
+            max_x = mtry_params[4]
+            min_x = mtry_params[5]
+            max_y = mtry_params[6]
+            min_y = mtry_params[7]
+            shift_x = mtry_params[8]
+            shift_y = mtry_params[9]
+            shift = mtry_params[10]
+            share = mtry_params[11]
 
-        phi = x/I
-        Phi = phi*(max_x-min_x) + (1-phi)*(max_y-min_y)
-        K = phi*min_x + (1-phi)*min_y
-
-        num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
-        denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
-        tau =  (Phi*(num/denom)) + K
+        X = (w*e*n)*factor
+        Y = (r*b)*factor
+        X2 = X ** 2
+        Y2 = Y ** 2
+        tau_x = ((max_x - min_x) * (A * X2 + B * X) /
+            (A * X2 + B * X + 1) + min_x)
+        tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
+            (C * Y2 + D * Y + 1) + min_y)
+        tau = (((tau_x + shift_x) ** share) *
+            ((tau_y + shift_y) ** (1 - share))) + shift
 
     return tau
 
 
 def MTR_labor(r, w, b, n, factor, params):
     '''
+    --------------------------------------------------------------------
     Generates the marginal tax rate on labor income for households.
-    
-    Inputs:
-        r               = [T,] vector, interest rate 
-        w               = [T,] vector, wage rate 
-        b               = [T,S,J] array, wealth holdings 
-        n               = [T,S,J] array, labor supply
-        factor          = scalar, model income scaling factor
-        params          = length 3 tuple, (e, mtry_params, analytical_mtrs)
-        e               = [T,S,J] array, effective labor units
-        mtrx_params     = [T,S,J] array, marginal tax rate on capital income function parameters
-        analytical_mtrs = boolean, =True if use analytical mtrs rather than estimated mtrs
+    --------------------------------------------------------------------
+    INPUTS:
+    r               = [T,] vector, interest rate
+    w               = [T,] vector, wage rate
+    b               = [T,S,J] array, wealth holdings
+    n               = [T,S,J] array, labor supply
+    factor          = scalar, model income scaling factor
+    params          = length 3 tuple, (e, mtry_params, analytical_mtrs)
+    e               = [T,S,J] array, effective labor units
+    mtrx_params     = [T,S,J] array, marginal tax rate on capital income
+                      function parameters
+    analytical_mtrs = boolean, =True if use analytical mtrs rather than
+                      estimated mtrs
 
-    Functions called: None
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
 
-    Objects in function:
-        A     = [T,S,J] array, polynomial coefficient on x**2
-        B     = [T,S,J] array, polynomial coefficient on y**2
-        C     = [T,S,J] array, polynomial coefficient on x*y
-        D     = [T,S,J] array, polynomial coefficient on x
-        E     = [T,S,J] array, polynomial coefficient on y
-        F     = [T,S,J] array, polynomial constant
-        max_x = [T,S,J] array, maximum effective tax rate for x given y=0
-        min_x = [T,S,J] array, minimum effective tax rate for x given y=0
-        max_y = [T,S,J] array, maximum effective tax rate for y given x=0
-        min_y = [T,S,J] array, minimum effective tax rate for y given x=0
-        x     = [T,S,J] array, labor income
-        y     = [T,S,J] array, capital income
-        I     = [T,S,J] array, total income (capital plus labor income)
-        phi   = [T,S,J] array, fraction of total income that is labor income
-        tau   = [T,S,J] array, marginal tax rate on labor income 
+    OBJECTS CREATED WITHIN FUNCTION:
+    A       = [T,S,J] array, polynomial coefficient on x**2
+    B       = [T,S,J] array, polynomial coefficient on x
+    C       = [T,S,J] array, polynomial coefficient on y**2
+    D       = [T,S,J] array, polynomial coefficient on y
+    max_x   = [T,S,J] array, maximum effective tax rate for x given y=0
+    min_x   = [T,S,J] array, minimum effective tax rate for x given y=0
+    max_y   = [T,S,J] array, maximum effective tax rate for y given x=0
+    min_y   = [T,S,J] array, minimum effective tax rate for y given x=0
+    shift_x = (T, S, J) array, shift parameter on labor income in Cobb-
+              Douglas function
+    shift_y = (T, S, J) array, shift parameter on capital income in
+              Cobb-Douglas function
+    shift   = (T, S, J) array, shift parameter on total function in
+              Cobb-Douglas function
+    share   = (T, S, J) array, share parameter (exponent) in Cobb-
+              Douglas functions
+    X       = [T,S,J] array, labor income
+    Y       = [T,S,J] array, capital income
+    X2      = [T,S,J] array, labor income squared X**2
+    Y2      = [T,S,J] array, capital income squared Y**2
+    tau_x   = [T,S,J] array, labor income portion of the function with
+              ratio of polynomials
+    tau_y   = [T,S,J] array, capital income portion of the function with
+              ratio of polynomials
+    tau     = [T,S,J] array, marginal tax rate on labor income
 
-    Returns: tau
+    RETURNS: tau
+    --------------------------------------------------------------------
     '''
-
     e, etr_params, mtrx_params, analytical_mtrs = params
 
-    if etr_params.ndim == 3: 
-        A = etr_params[:,:,0]
-        B = etr_params[:,:,1]
-        C = etr_params[:,:,2]
-        D = etr_params[:,:,3]
-        E = etr_params[:,:,4]
-        F = etr_params[:,:,5]
-        max_x = etr_params[:,:,6]
-        min_x = etr_params[:,:,7]
-        max_y = etr_params[:,:,8]
-        min_y = etr_params[:,:,9]
-    if etr_params.ndim == 2: 
-        A = etr_params[:,0]
-        B = etr_params[:,1]
-        C = etr_params[:,2]
-        D = etr_params[:,3]
-        E = etr_params[:,4]
-        F = etr_params[:,5]
-        max_x = etr_params[:,6]
-        min_x = etr_params[:,7]
-        max_y = etr_params[:,8]
-        min_y = etr_params[:,9]
-    if etr_params.ndim == 1: 
-        A = etr_params[0]
-        B = etr_params[1]
-        C = etr_params[2]
-        D = etr_params[3]
-        E = etr_params[4]
-        F = etr_params[5]
-        max_x = etr_params[6]
-        min_x = etr_params[7]
-        max_y = etr_params[8]
-        min_y = etr_params[9]
-
     if analytical_mtrs:
-        x = (w*e*n)*factor
-        y = (r*b)*factor
-        I = x+y
-
-        num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
-        denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
-        Lambda = num/denom
-
-        d_num = (2*A*x + C*y + D)*F
-        d_denom = ((A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F)**2
-        d_Lambda = d_num/d_denom
-
-        tau =  (max_x-min_x)*Lambda + (x*(max_x-min_x) + y*(max_y-min_y))*d_Lambda + min_x
+        # We would have to add this.
+        err = ("MTR_labor() is not set up to handle " +
+            "analytical_mtrs=True.")
+        raise RuntimeError(err)
 
     else:
-        x = (w*e*n)*factor
-        y = (r*b)*factor
-        I = x+y
+        if mtrx_params.ndim == 3:
+            A = mtrx_params[:,:,0]
+            B = mtrx_params[:,:,1]
+            C = mtrx_params[:,:,2]
+            D = mtrx_params[:,:,3]
+            max_x = mtrx_params[:,:,4]
+            min_x = mtrx_params[:,:,5]
+            max_y = mtrx_params[:,:,6]
+            min_y = mtrx_params[:,:,7]
+            shift_x = mtrx_params[:,:,8]
+            shift_y = mtrx_params[:,:,9]
+            shift = mtrx_params[:,:,10]
+            share = mtrx_params[:,:,11]
+        if mtrx_params.ndim == 2:
+            A = mtrx_params[:,0]
+            B = mtrx_params[:,1]
+            C = mtrx_params[:,2]
+            D = mtrx_params[:,3]
+            max_x = mtrx_params[:,4]
+            min_x = mtrx_params[:,5]
+            max_y = mtrx_params[:,6]
+            min_y = mtrx_params[:,7]
+            shift_x = mtrx_params[:,8]
+            shift_y = mtrx_params[:,9]
+            shift = mtrx_params[:,10]
+            share = mtrx_params[:,11]
+        if mtrx_params.ndim == 1:
+            A = mtrx_params[0]
+            B = mtrx_params[1]
+            C = mtrx_params[2]
+            D = mtrx_params[3]
+            max_x = mtrx_params[4]
+            min_x = mtrx_params[5]
+            max_y = mtrx_params[6]
+            min_y = mtrx_params[7]
+            shift_x = mtrx_params[8]
+            shift_y = mtrx_params[9]
+            shift = mtrx_params[10]
+            share = mtrx_params[11]
 
-        phi = x/I
-        Phi = phi*(max_x-min_x) + (1-phi)*(max_y-min_y)
-        K = phi*min_x + (1-phi)*min_y
-
-        num = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y)
-        denom = (A*(x**2)) + (B*(y**2)) + (C*x*y) + (D*x) + (E*y) + F
-        tau =  (Phi*(num/denom)) + K
+        X = (w*e*n)*factor
+        Y = (r*b)*factor
+        X2 = X ** 2
+        Y2 = Y ** 2
+        tau_x = (((max_x - min_x) * (A * X2 + B * X) /
+            (A * X2 + B * X + 1)) + min_x)
+        tau_y = (((max_y - min_y) * (C * Y2 + D * Y) /
+        (C * Y2 + D * Y + 1)) + min_y)
+        tau = (((tau_x + shift_x) ** share) *
+            ((tau_y + shift_y) ** (1 - share))) + shift
 
     return tau
 
@@ -446,16 +470,15 @@ def MTR_labor(r, w, b, n, factor, params):
 def get_lump_sum(r, w, b, n, BQ, factor, params):
     '''
     Gives lump sum transfer value.
-
     Inputs:
-        r           = [T,] vector, interest rate 
-        w           = [T,] vector, wage rate 
-        b           = [T,S,J] array, wealth holdings 
+        r           = [T,] vector, interest rate
+        w           = [T,] vector, wage rate
+        b           = [T,S,J] array, wealth holdings
         n           = [T,S,J] array, labor supply
         BQ          = [T,J] array, bequest amounts
         factor      = scalar, model income scaling factor
-        params      = length 12 tuple, (e, lambdas, omega, method, etr_params, 
-                                        theta, tau_bq, tau_payroll, h_wealth, 
+        params      = length 12 tuple, (e, lambdas, omega, method, etr_params,
+                                        theta, tau_bq, tau_payroll, h_wealth,
                                         p_wealth, m_wealth, retire, T, S, J)
         e           = [T,S,J] array, effective labor units
         lambdas     = [J,] vector, population weights by lifetime income group
@@ -463,7 +486,7 @@ def get_lump_sum(r, w, b, n, BQ, factor, params):
         method      = string, 'SS' or 'TPI'
         etr_params  = [T,S,J] array, effective tax rate function parameters
         theta       = [J,] vector, replacement rate values by lifetime income group
-        tau_bq      = scalar, bequest tax rate 
+        tau_bq      = scalar, bequest tax rate
         h_wealth    = scalar, wealth tax function parameter
         p_wealth    = scalar, wealth tax function parameter
         m_wealth    = scalar, wealth tax function parameter
@@ -471,30 +494,27 @@ def get_lump_sum(r, w, b, n, BQ, factor, params):
         retire      = integer, retirement age
         T           = integer, number of periods in transition path
         S           = integer, number of age groups
-        J           = integer, number of lifetime income groups 
-
-    Functions called: 
+        J           = integer, number of lifetime income groups
+    Functions called:
         tau_income
         tau_wealth
-
     Objects in function:
         I    = [T,S,J] array, total income
         T_I  = [T,S,J] array, total income taxes
         T_P  = [T,S,J] array, total payroll taxes
         T_W  = [T,S,J] array, total wealth taxes
         T_BQ = [T,S,J] array, total bequest taxes
-        T_H  = [T,] vector, lump sum transfer amount(s) 
-
+        T_H  = [T,] vector, lump sum transfer amount(s)
     Returns: T_H
-    
+
     '''
 
     e, lambdas, omega, method, etr_params, theta, tau_bq, \
         tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J = params
 
     I = r * b + w * e * n
-    
-    if I.ndim == 2: 
+
+    if I.ndim == 2:
         T_I = np.zeros((S,J))
         for j in xrange(J):
             TI_params = (e[:,j], etr_params)
@@ -507,7 +527,7 @@ def get_lump_sum(r, w, b, n, BQ, factor, params):
             if etr_params.ndim == 4:
                 tau_inc_params3D = etr_params[:,:,j,:]
             TI_params = (e[:,:,j], tau_inc_params3D)
-            T_I[:,:,j] = tau_income(r[:,:,j], w[:,:,j], b[:,:,j], n[:,:,j], factor, TI_params) * I[:,:,j]  
+            T_I[:,:,j] = tau_income(r[:,:,j], w[:,:,j], b[:,:,j], n[:,:,j], factor, TI_params) * I[:,:,j]
     T_P = tau_payroll * w * e * n
     TW_params = (h_wealth, p_wealth, m_wealth)
     T_W = tau_wealth(b, TW_params) * b
@@ -521,22 +541,21 @@ def get_lump_sum(r, w, b, n, BQ, factor, params):
         T_H = (omega * lambdas * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1)
     return T_H
 
-    
+
 def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
     '''
     Gives net taxes paid values.
-
     Inputs:
-        r          = [T,] vector, interest rate 
-        w          = [T,] vector, wage rate 
-        b          = [T,S,J] array, wealth holdings 
+        r          = [T,] vector, interest rate
+        w          = [T,] vector, wage rate
+        b          = [T,S,J] array, wealth holdings
         n          = [T,S,J] array, labor supply
         BQ         = [T,J] vector,  bequest amounts
         factor     = scalar, model income scaling factor
-        T_H        = [T,] vector, lump sum transfer amount(s) 
+        T_H        = [T,] vector, lump sum transfer amount(s)
         j          = integer, lifetime incoem group being computed
         shift      = boolean, computing for periods 0--s or 1--(s+1) (bool) (True for 1--(s+1))
-        params = length 13 tuple, (e, lambdas, method, retire, etr_params, h_wealth, p_wealth, 
+        params = length 13 tuple, (e, lambdas, method, retire, etr_params, h_wealth, p_wealth,
                                    m_wealth, tau_payroll, theta, tau_bq, J, S)
         e           = [T,S,J] array, effective labor units
         lambdas     = [J,] vector, population weights by lifetime income group
@@ -548,14 +567,12 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
         m_wealth    = scalar, wealth tax function parameter
         tau_payroll = scalar, payroll tax rate
         theta       = [J,] vector, replacement rate values by lifetime income group
-        tau_bq      = scalar, bequest tax rate 
+        tau_bq      = scalar, bequest tax rate
         S           = integer, number of age groups
-        J           = integer, number of lifetime income groups 
-
-    Functions called: 
+        J           = integer, number of lifetime income groups
+    Functions called:
         tau_income
         tau_wealth
-
     Objects in function:
         I           = [T,S,J] array, total income
         T_I         = [T,S,J] array, total income taxes
@@ -563,10 +580,9 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
         T_W         = [T,S,J] array, total wealth taxes
         T_BQ        = [T,S,J] array, total bequest taxes
         retireTPI   = integer, =(retire - S)
-        total_taxes = [T,] vector, net taxes 
-
+        total_taxes = [T,] vector, net taxes
     Returns: total_taxes
-    
+
     '''
 
     e, lambdas, method, retire, etr_params, h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S = params

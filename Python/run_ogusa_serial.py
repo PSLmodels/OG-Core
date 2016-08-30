@@ -45,7 +45,7 @@ def run_micro_macro(user_params):
     BASELINE_DIR = "./OUTPUT_BASELINE"
 
 
-    user_params = {'frisch':0.41, 'start_year':2015}
+    user_params = {'frisch':0.41, 'start_year':2016}
 
     '''
     ------------------------------------------------------------------------
@@ -56,7 +56,7 @@ def run_micro_macro(user_params):
     input_dir = BASELINE_DIR
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
             'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
-            'user_params':user_params,'guid':'test2',
+            'user_params':user_params,'guid':'test',
             'run_micro':True}
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
@@ -72,7 +72,7 @@ def run_micro_macro(user_params):
     input_dir = BASELINE_DIR
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
             'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
-            'user_params':user_params,'guid':'test2',
+            'user_params':user_params,'guid':'test',
             'run_micro':False}
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
