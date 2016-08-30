@@ -122,35 +122,50 @@ def tau_w_prime(b, params):
 
 def tau_income(r, w, b, n, factor, params):
     '''
-    Calculate personal income tax liability.
+    --------------------------------------------------------------------
+    Calculates effective personal income tax rate.
+    --------------------------------------------------------------------
+    INPUTS:
+    r          = [T,] vector, interest rate
+    w          = [T,] vector, wage rate
+    b          = [T,S,J] array, wealth holdings
+    n          = [T,S,J] array, labor supply
+    factor     = scalar, model income scaling factor
+    params     = length 2 tuple, (e, etr_params)
+    e          = [T,S,J] array, effective labor units
+    etr_params = [T,S,J] array, effective tax rate function parameters
 
-    Inputs:
-        r          = [T,] vector, interest rate
-        w          = [T,] vector, wage rate
-        b          = [T,S,J] array, wealth holdings
-        n          = [T,S,J] array, labor supply
-        factor     = scalar, model income scaling factor
-        params     = length 2 tuple, (e, etr_params)
-        e          = [T,S,J] array, effective labor units
-        etr_params = [T,S,J] array, effective tax rate function parameters
-    Functions called: None
-    Objects in function:
-        A     = [T,S,J] array, polynomial coefficient on x**2
-        B     = [T,S,J] array, polynomial coefficient on y**2
-        C     = [T,S,J] array, polynomial coefficient on x*y
-        D     = [T,S,J] array, polynomial coefficient on x
-        E     = [T,S,J] array, polynomial coefficient on y
-        F     = [T,S,J] array, polynomial constant
-        max_x = [T,S,J] array, maximum effective tax rate for x given y=0
-        min_x = [T,S,J] array, minimum effective tax rate for x given y=0
-        max_y = [T,S,J] array, maximum effective tax rate for y given x=0
-        min_y = [T,S,J] array, minimum effective tax rate for y given x=0
-        x     = [T,S,J] array, labor income
-        y     = [T,S,J] array, capital income
-        I     = [T,S,J] array, total income (capital plus labor income)
-        phi   = [T,S,J] array, fraction of total income that is labor income
-        tau   = [T,S,J] array, personal income tax liability
-    Returns: tau
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    A       = [T,S,J] array, polynomial coefficient on x**2
+    B       = [T,S,J] array, polynomial coefficient on x
+    C       = [T,S,J] array, polynomial coefficient on y**2
+    D       = [T,S,J] array, polynomial coefficient on y
+    max_x   = [T,S,J] array, maximum effective tax rate for x given y=0
+    min_x   = [T,S,J] array, minimum effective tax rate for x given y=0
+    max_y   = [T,S,J] array, maximum effective tax rate for y given x=0
+    min_y   = [T,S,J] array, minimum effective tax rate for y given x=0
+    shift_x = (T, S, J) array, shift parameter on labor income in Cobb-
+              Douglas function
+    shift_y = (T, S, J) array, shift parameter on capital income in
+              Cobb-Douglas function
+    shift   = (T, S, J) array, shift parameter on total function in
+              Cobb-Douglas function
+    share   = (T, S, J) array, share parameter (exponent) in Cobb-
+              Douglas functions
+    X       = [T,S,J] array, labor income
+    Y       = [T,S,J] array, capital income
+    X2      = [T,S,J] array, labor income squared X**2
+    Y2      = [T,S,J] array, capital income squared Y**2
+    tau_x   = [T,S,J] array, labor income portion of the function with
+              ratio of polynomials
+    tau_y   = [T,S,J] array, capital income portion of the function with
+              ratio of polynomials
+    tau     = [T,S,J] array, effective personal income tax rate
+
+    RETURNS: tau
+    --------------------------------------------------------------------
     '''
     e, etr_params = params
 
@@ -222,42 +237,60 @@ def tau_income(r, w, b, n, factor, params):
 
 
 
-## Note that since when we use the same functional form, one could
-# use just one tax function for ATR, MTR_lab, MTR_cap, just with different parameters input
+# Note that since when we use the same functional form, one could use
+# just one tax function for ETR, MTR_lab, MTR_cap, just with different
+# parameters input
+
 def MTR_capital(r, w, b, n, factor, params):
     '''
+    --------------------------------------------------------------------
     Generates the marginal tax rate on capital income for households.
+    --------------------------------------------------------------------
+    INPUTS:
+    r               = [T,] vector, interest rate
+    w               = [T,] vector, wage rate
+    b               = [T,S,J] array, wealth holdings
+    n               = [T,S,J] array, labor supply
+    factor          = scalar, model income scaling factor
+    params          = length 3 tuple, (e, mtry_params, analytical_mtrs)
+    e               = [T,S,J] array, effective labor units
+    mtry_params     = [T,S,J] array, marginal tax rate on capital income
+                      function parameters
+    analytical_mtrs = boolean, =True if use analytical mtrs rather than
+                      estimated mtrs
 
-    Inputs:
-        r               = [T,] vector, interest rate
-        w               = [T,] vector, wage rate
-        b               = [T,S,J] array, wealth holdings
-        n               = [T,S,J] array, labor supply
-        factor          = scalar, model income scaling factor
-        params          = length 3 tuple, (e, mtry_params, analytical_mtrs)
-        e               = [T,S,J] array, effective labor units
-        mtry_params     = [T,S,J] array, marginal tax rate on capital income function parameters
-        analytical_mtrs = boolean, =True if use analytical mtrs rather than estimated mtrs
-    Functions called: None
-    Objects in function:
-        A     = [T,S,J] array, polynomial coefficient on x**2
-        B     = [T,S,J] array, polynomial coefficient on y**2
-        C     = [T,S,J] array, polynomial coefficient on x*y
-        D     = [T,S,J] array, polynomial coefficient on x
-        E     = [T,S,J] array, polynomial coefficient on y
-        F     = [T,S,J] array, polynomial constant
-        max_x = [T,S,J] array, maximum effective tax rate for x given y=0
-        min_x = [T,S,J] array, minimum effective tax rate for x given y=0
-        max_y = [T,S,J] array, maximum effective tax rate for y given x=0
-        min_y = [T,S,J] array, minimum effective tax rate for y given x=0
-        x     = [T,S,J] array, labor income
-        y     = [T,S,J] array, capital income
-        I     = [T,S,J] array, total income (capital plus labor income)
-        phi   = [T,S,J] array, fraction of total income that is labor income
-        tau   = [T,S,J] array, marginal tax rate on capital income
-    Returns: tau
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    A       = [T,S,J] array, polynomial coefficient on x**2
+    B       = [T,S,J] array, polynomial coefficient on x
+    C       = [T,S,J] array, polynomial coefficient on y**2
+    D       = [T,S,J] array, polynomial coefficient on y
+    max_x   = [T,S,J] array, maximum effective tax rate for x given y=0
+    min_x   = [T,S,J] array, minimum effective tax rate for x given y=0
+    max_y   = [T,S,J] array, maximum effective tax rate for y given x=0
+    min_y   = [T,S,J] array, minimum effective tax rate for y given x=0
+    shift_x = (T, S, J) array, shift parameter on labor income in Cobb-
+              Douglas function
+    shift_y = (T, S, J) array, shift parameter on capital income in
+              Cobb-Douglas function
+    shift   = (T, S, J) array, shift parameter on total function in
+              Cobb-Douglas function
+    share   = (T, S, J) array, share parameter (exponent) in Cobb-
+              Douglas functions
+    X       = [T,S,J] array, labor income
+    Y       = [T,S,J] array, capital income
+    X2      = [T,S,J] array, labor income squared X**2
+    Y2      = [T,S,J] array, capital income squared Y**2
+    tau_x   = [T,S,J] array, labor income portion of the function with
+              ratio of polynomials
+    tau_y   = [T,S,J] array, capital income portion of the function with
+              ratio of polynomials
+    tau     = [T,S,J] array, marginal tax rate on capital income
+
+    RETURNS: tau
+    --------------------------------------------------------------------
     '''
-
     e, etr_params, mtry_params, analytical_mtrs = params
 
     if analytical_mtrs:
@@ -323,38 +356,54 @@ def MTR_capital(r, w, b, n, factor, params):
 
 def MTR_labor(r, w, b, n, factor, params):
     '''
+    --------------------------------------------------------------------
     Generates the marginal tax rate on labor income for households.
+    --------------------------------------------------------------------
+    INPUTS:
+    r               = [T,] vector, interest rate
+    w               = [T,] vector, wage rate
+    b               = [T,S,J] array, wealth holdings
+    n               = [T,S,J] array, labor supply
+    factor          = scalar, model income scaling factor
+    params          = length 3 tuple, (e, mtry_params, analytical_mtrs)
+    e               = [T,S,J] array, effective labor units
+    mtrx_params     = [T,S,J] array, marginal tax rate on capital income
+                      function parameters
+    analytical_mtrs = boolean, =True if use analytical mtrs rather than
+                      estimated mtrs
 
-    Inputs:
-        r               = [T,] vector, interest rate
-        w               = [T,] vector, wage rate
-        b               = [T,S,J] array, wealth holdings
-        n               = [T,S,J] array, labor supply
-        factor          = scalar, model income scaling factor
-        params          = length 3 tuple, (e, mtry_params, analytical_mtrs)
-        e               = [T,S,J] array, effective labor units
-        mtrx_params     = [T,S,J] array, marginal tax rate on capital income function parameters
-        analytical_mtrs = boolean, =True if use analytical mtrs rather than estimated mtrs
-    Functions called: None
-    Objects in function:
-        A     = [T,S,J] array, polynomial coefficient on x**2
-        B     = [T,S,J] array, polynomial coefficient on y**2
-        C     = [T,S,J] array, polynomial coefficient on x*y
-        D     = [T,S,J] array, polynomial coefficient on x
-        E     = [T,S,J] array, polynomial coefficient on y
-        F     = [T,S,J] array, polynomial constant
-        max_x = [T,S,J] array, maximum effective tax rate for x given y=0
-        min_x = [T,S,J] array, minimum effective tax rate for x given y=0
-        max_y = [T,S,J] array, maximum effective tax rate for y given x=0
-        min_y = [T,S,J] array, minimum effective tax rate for y given x=0
-        x     = [T,S,J] array, labor income
-        y     = [T,S,J] array, capital income
-        I     = [T,S,J] array, total income (capital plus labor income)
-        phi   = [T,S,J] array, fraction of total income that is labor income
-        tau   = [T,S,J] array, marginal tax rate on labor income
-    Returns: tau
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    A       = [T,S,J] array, polynomial coefficient on x**2
+    B       = [T,S,J] array, polynomial coefficient on x
+    C       = [T,S,J] array, polynomial coefficient on y**2
+    D       = [T,S,J] array, polynomial coefficient on y
+    max_x   = [T,S,J] array, maximum effective tax rate for x given y=0
+    min_x   = [T,S,J] array, minimum effective tax rate for x given y=0
+    max_y   = [T,S,J] array, maximum effective tax rate for y given x=0
+    min_y   = [T,S,J] array, minimum effective tax rate for y given x=0
+    shift_x = (T, S, J) array, shift parameter on labor income in Cobb-
+              Douglas function
+    shift_y = (T, S, J) array, shift parameter on capital income in
+              Cobb-Douglas function
+    shift   = (T, S, J) array, shift parameter on total function in
+              Cobb-Douglas function
+    share   = (T, S, J) array, share parameter (exponent) in Cobb-
+              Douglas functions
+    X       = [T,S,J] array, labor income
+    Y       = [T,S,J] array, capital income
+    X2      = [T,S,J] array, labor income squared X**2
+    Y2      = [T,S,J] array, capital income squared Y**2
+    tau_x   = [T,S,J] array, labor income portion of the function with
+              ratio of polynomials
+    tau_y   = [T,S,J] array, capital income portion of the function with
+              ratio of polynomials
+    tau     = [T,S,J] array, marginal tax rate on labor income
+
+    RETURNS: tau
+    --------------------------------------------------------------------
     '''
-
     e, etr_params, mtrx_params, analytical_mtrs = params
 
     if analytical_mtrs:

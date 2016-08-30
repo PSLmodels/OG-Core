@@ -251,7 +251,7 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     plt.close()
 
 
-def plot_txfunc_v_data(tx_params, data, params):
+def plot_txfunc_v_data(tx_params, data, params): #This isn't in use yet
     '''
     --------------------------------------------------------------------
     This function plots a single estimated tax function against its

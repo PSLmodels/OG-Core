@@ -389,7 +389,7 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, params):
     cons_params = (e, lambdas, g_y)
     cons = get_cons(r, w, b, b_splus1, n, BQ, tax1, cons_params)
     mtr_lab_params = (e, etr_params, mtrx_params, analytical_mtrs)
-    deriv = (1 - tau_payroll - tax.MTR_labor(r, b, w, n, factor, mtr_lab_params))
+    deriv = (1 - tau_payroll - tax.MTR_labor(r, w, b, n, factor, mtr_lab_params))
 
     lab_params = (b_ellipse, upsilon, ltilde, chi_n)
     euler = marg_ut_cons(cons, sigma) * w * deriv * e - \
