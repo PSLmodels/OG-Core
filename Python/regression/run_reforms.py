@@ -7,6 +7,7 @@ sys.path.append("../")
 from multiprocessing import Process
 import time
 import json
+import uuid
 from ogusa import SS
 from ogusa import TPI
 
@@ -16,13 +17,14 @@ import pandas as pd
 from execute_small import runner
 
 VERSION = "0.5.5"
+QUICK_RUN = False
 
 
-def run_micro_macro(reform, user_params, guid):
+def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
 
     # Turn off checks for now
-    SS.ENFORCE_SOLUTION_CHECKS = False
-    TPI.ENFORCE_SOLUTION_CHECKS = False
+    SS.ENFORCE_SOLUTION_CHECKS = solution_checks
+    TPI.ENFORCE_SOLUTION_CHECKS = solution_checks
 
     start_time = time.time()
 
@@ -37,24 +39,25 @@ def run_micro_macro(reform, user_params, guid):
 
     kwargs={'output_base':BASELINE_DIR, 'baseline_dir':BASELINE_DIR,
             'baseline':True, 'analytical_mtrs':False, 'age_specific':False,
-            'user_params':user_params, 'guid':'', 'run_micro':False}
+            'user_params':user_params, 'guid':guid, 'run_micro':run_micro}
 
-    p1 = Process(target=runner, kwargs=kwargs)
-    p1.start()
-    #runner(**kwargs)
+    #p1 = Process(target=runner, kwargs=kwargs)
+    #p1.start()
+    runner(**kwargs)
 
     kwargs={'output_base':REFORM_DIR, 'baseline_dir':BASELINE_DIR, 
              'baseline':False, 'analytical_mtrs':False, 'user_params':user_params,
-             'reform':reform, 'age_specific':False, 'guid':guid,'run_micro':False}
+             'reform':reform, 'age_specific':False, 'guid':guid,'run_micro':run_micro}
 
-    p2 = Process(target=runner, kwargs=kwargs)
-    p2.start()
+    #p2 = Process(target=runner, kwargs=kwargs)
+    #p2.start()
+    runner(**kwargs)
 
-    p1.join()
-    print("just joined")
-    p2.join()
+    #p1.join()
+    #print("just joined")
+    #p2.join()
 
-    time.sleep(0.5)
+    #time.sleep(0.5)
 
     ans = postprocess.create_diff(baseline_dir=BASELINE_DIR, policy_dir=REFORM_DIR)
 
@@ -69,7 +72,18 @@ if __name__ == "__main__":
 
     reform_num = sys.argv[1]
     # Run the given reform
-    ans = run_micro_macro(reform=reforms[reform_num], user_params={}, guid='')
+    if QUICK_RUN:
+        guid = ''
+        solution_checks = False
+        run_micro = False
+    else:
+        guid = uuid.uuid1().hex
+        solution_checks = True
+        run_micro = True
+
+    ans = run_micro_macro(reform=reforms[reform_num], user_params={}, guid=guid,
+                          solution_checks=solution_checks,
+                          run_micro=run_micro)
     as_percent = ans * 100
 
     # Dump a "pretty print" version of the answer provided to the web app
