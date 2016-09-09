@@ -345,8 +345,8 @@ def MTR_capital(r, w, b, n, factor, params):
         tau_x_y = (((tau_x + shift_x) ** share) *
             ((tau_y + shift_y) ** (1 - share))) + shift
 
-        tau = ((X+Y)*(tau_x**share)*(1-share)*(max_y-min_y)*\
-               ((2*C*X+D)/((C*X2+D*x+1)**2))*(tau_y**(-share)) + tau_x_y)
+        tau = ((X+Y)*((tau_x+shift_x)**share)*(1-share)*(max_y-min_y)*\
+               ((2*C*X+D)/((C*X2+D*X+1)**2))*((tau_y+shift_y)**(-share)) + tau_x_y)
 
     else:
         if mtry_params.ndim == 3:
@@ -507,8 +507,8 @@ def MTR_labor(r, w, b, n, factor, params):
         tau_x_y = (((tau_x + shift_x) ** share) *
             ((tau_y + shift_y) ** (1 - share))) + shift
 
-        tau = ((X+Y)*share*(tau_x**(share-1))*(max_x-min_x)*\
-               ((2*A*X+B)/((A*X2+B*x+1)**2))*(tau_y**(1-share)) + tau_x_y)
+        tau = ((X+Y)*share*((tau_x+shift_x)**(share-1))*(max_x-min_x)*\
+               ((2*A*X+B)/((A*X2+B*X+1)**2))*((tau_y+shift_y)**(1-share)) + tau_x_y)
 
     else:
         if mtrx_params.ndim == 3:
