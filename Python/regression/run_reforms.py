@@ -13,8 +13,8 @@ from ogusa import TPI
 
 import postprocess
 import pandas as pd
-#from execute import runner # change here for small jobs
-from execute_small import runner
+from execute import runner # change here for small jobs
+#from execute_small import runner
 
 VERSION = "0.5.5"
 QUICK_RUN = False
