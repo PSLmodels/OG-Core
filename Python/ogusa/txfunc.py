@@ -1156,36 +1156,37 @@ def tax_func_estimate(beg_yr=2016, baseline=True, analytical_mtrs=False,
                 df = data_trnc[data_trnc['Age'] == s]
                 PopPct_age[s-min_age, t-beg_yr] = \
                     df['Weights'].sum() / TotPop_yr[t-beg_yr]
-                df_etr = df[['MTR Labor', 'MTR capital income',
-                    'Total Labor Income', 'Total Capital Income',
-                    'Effective Tax Rate', 'Weights']]
-                df_etr = df_etr[
-                    (np.isfinite(df_etr['Effective Tax Rate'])) &
-                    (np.isfinite(df_etr['Total Labor Income'])) &
-                    (np.isfinite(df_etr['Total Capital Income'])) &
-                    (np.isfinite(df_etr['Weights']))]
-                df_mtrx = df[['MTR Labor', 'Total Labor Income',
-                    'Total Capital Income', 'Weights']]
-                df_mtrx = df_mtrx[
-                    (np.isfinite(df_etr['MTR Labor'])) &
-                    (np.isfinite(df_etr['Total Labor Income'])) &
-                    (np.isfinite(df_etr['Total Capital Income'])) &
-                    (np.isfinite(df_etr['Weights']))]
-                df_mtry = df[['MTR capital income', 'Total Labor Income',
-                    'Total Capital Income', 'Weights']]
-                df_mtry = df_mtry[
-                    (np.isfinite(df_etr['MTR capital income'])) &
-                    (np.isfinite(df_etr['Total Labor Income'])) &
-                    (np.isfinite(df_etr['Total Capital Income'])) &
-                    (np.isfinite(df_etr['Weights']))]
-                df_minobs = np.min([df_etr.shape[0], df_mtrx.shape[0],
-                    df_mtry.shape[0]])
 
             else:
                 print "year=", t, "Age= all ages"
                 df = data_trnc
                 PopPct_age[0, t-beg_yr] = \
                     df['Weights'].sum() / TotPop_yr[t-beg_yr]
+
+            df_etr = df[['MTR Labor', 'MTR capital income',
+                'Total Labor Income', 'Total Capital Income',
+                'Effective Tax Rate', 'Weights']]
+            df_etr = df_etr[
+                (np.isfinite(df_etr['Effective Tax Rate'])) &
+                (np.isfinite(df_etr['Total Labor Income'])) &
+                (np.isfinite(df_etr['Total Capital Income'])) &
+                (np.isfinite(df_etr['Weights']))]
+            df_mtrx = df[['MTR Labor', 'Total Labor Income',
+                'Total Capital Income', 'Weights']]
+            df_mtrx = df_mtrx[
+                (np.isfinite(df_etr['MTR Labor'])) &
+                (np.isfinite(df_etr['Total Labor Income'])) &
+                (np.isfinite(df_etr['Total Capital Income'])) &
+                (np.isfinite(df_etr['Weights']))]
+            df_mtry = df[['MTR capital income', 'Total Labor Income',
+                'Total Capital Income', 'Weights']]
+            df_mtry = df_mtry[
+                (np.isfinite(df_etr['MTR capital income'])) &
+                (np.isfinite(df_etr['Total Labor Income'])) &
+                (np.isfinite(df_etr['Total Capital Income'])) &
+                (np.isfinite(df_etr['Weights']))]
+            df_minobs = np.min([df_etr.shape[0], df_mtrx.shape[0],
+                df_mtry.shape[0]])
 
             # 240 is 8 parameters to estimate times 30 obs per parameter
             if df_minobs < 240 and s < max_age:
