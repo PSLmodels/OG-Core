@@ -81,7 +81,9 @@ if __name__ == "__main__":
         solution_checks = True
         run_micro = True
 
-    ans = run_micro_macro(reform=reforms[reform_num], user_params={}, guid=guid,
+    reform = {int(k):v for k,v in reforms[reform_num].items()}
+
+    ans = run_micro_macro(reform=reform, user_params={}, guid=guid,
                           solution_checks=solution_checks,
                           run_micro=run_micro)
     as_percent = ans * 100
