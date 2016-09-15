@@ -1,6 +1,12 @@
+# Note jinja template variables added by staged-recipes
+# Do not commit statements like: {% set name="some_name" %}
 package:
-  name: ogusa
-  version: 0.1
+  name: {{ name }}
+  version: {{ version }}
+
+source:
+  url: {{ source_url }}
+  sha256: {{ sha256 }}
 
 requirements:
   build:
@@ -8,7 +14,7 @@ requirements:
     - scipy
     - matplotlib
     - numpy
-    - pandas <=0.16.2
+    - pandas >=0.18.0
     - pytest
     - python 2.7.10
 
@@ -18,9 +24,15 @@ requirements:
     - taxcalc
     - matplotlib
     - numpy
-    - pandas <=0.16.2
+    - pandas >=0.18.0
     - pytest
     - python 2.7.10
 
 about:
   home: https://github.com/open-source-economics/OG-USA/
+  summary: Dynamic Tax Scoring Model
+
+extra:
+  recipe-maintainers:
+   - Peter Steinberg
+   - TJ Alumbaugh
