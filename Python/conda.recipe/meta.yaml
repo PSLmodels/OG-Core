@@ -18,7 +18,7 @@ requirements:
     - scipy
     - matplotlib
     - numpy
-    - pandas >=0.18.0
+    - pandas ==0.18.1
     - pytest
     - python 2.7.10
 
@@ -28,7 +28,7 @@ requirements:
     - taxcalc
     - matplotlib
     - numpy
-    - pandas >=0.18.0
+    - pandas ==0.18.1
     - pytest
     - python 2.7.10
 
