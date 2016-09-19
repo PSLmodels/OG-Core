@@ -20,7 +20,7 @@ requirements:
     - numpy
     - pandas ==0.18.1
     - pytest
-    - python ==2.7
+    - python ==2.7*
 
   run:
     - setuptools
@@ -30,7 +30,7 @@ requirements:
     - numpy
     - pandas ==0.18.1
     - pytest
-    - python ==2.7
+    - python ==2.7*
 
 about:
   home: https://github.com/open-source-economics/OG-USA/
