@@ -1,9 +1,9 @@
 '''
 ------------------------------------------------------------------------
-Last updated 4/7/2015
+Last updated 9/8/2016
 
 Firm functions for firms in the steady state and along the transition 
-path.
+path, including functions for small open economy firms which take r as given.
 
 ------------------------------------------------------------------------
 '''
@@ -155,3 +155,27 @@ def get_I(b_splus1, K_p1, K, params):
         aggI =   (1+g_n)*np.exp(g_y)*(K_p1 -  part2) - (1.0 - delta) * K
 
     return aggI
+    
+def get_K(L, r, params):
+    '''
+    Generates vector of aggregate capital. Use with small open economy option.
+
+    Inputs:
+        L      = [T+S,] vector, aggregate labor 
+        r      = [T+S,] vector, exogenous rental rate of the firm
+        params = length 3 tuple, (alpha, delta, z)
+        alpha  = scalar, capital's share of output
+        delta  = scalar, rate of depreciation of capital
+        Z      = scalar, total factor productivity
+
+    Functions called: None
+
+    Objects in function:
+        K = [T+S,] vector, aggregate capital 
+
+    Returns: r
+    '''
+
+    alpha, delta , Z = params
+    K = (alpha*Z/(r+delta))**(1/(1-alpha)) * L
+    return K
