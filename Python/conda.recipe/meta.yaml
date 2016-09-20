@@ -25,7 +25,7 @@ requirements:
   run:
     - setuptools
     - scipy
-    - taxcalc
+    - taxcalc =={{ taxcalc_version }}
     - matplotlib
     - numpy
     - pandas ==0.18.1
