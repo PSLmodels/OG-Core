@@ -35,6 +35,7 @@ import utils
 import household
 import firm
 import os
+import csv
 
 
 '''
@@ -676,17 +677,18 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         InvestmentPlaceholder = np.zeros(bmat_splus1[:T].shape)
         I_params = (delta, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
         I = firm.get_I(InvestmentPlaceholder, K[1:T+1], K[:T], I_params)
-        B_params = (omega[:T-1].reshape(T-1, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T-1].reshape(T-1,S,1), g_n_vector[1:T], 'TPI')
+        B_params = (omega[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T].reshape(T,S,1), g_n_vector[1:T+1], 'TPI')
         B = np.zeros(K.shape)
-        B[1:T] = household.get_K(bmat_splus1[:T-1], B_params)
-        BI_params = (delta, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
+        B[0] = K0 # baseline placeholder value
+        B[1:T+1] = household.get_K(bmat_splus1[:T], B_params)
+        BI_params = (0.0, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
         BI = firm.get_I(bmat_splus1[:T], B[1:T+1], B[:T], BI_params)
         rc_error = Y[:T] - (C[:T] + BI[:T]) + (tpi_hh_r[:T] * B[:T] - (delta + tpi_firm_r[:T]) * K[:T])
-        print 'Y(T):', Y[T], '\n','C(T):', C[T], '\n','K(T):', K[T], '\n','B(T):', B[T], '\n','BI(T):', BI[T], '\n','I(T):', I[T]
+        print 'Y(T-1):', Y[T-1], '\n','C(T-1):', C[T-1], '\n','K(T-1):', K[T-1], '\n','B(T-1):', B[T-1], '\n','BI(T-1):', BI[T-1], '\n','I(T-1):', I[T-1]
     
     print 'Resource Constraint Difference:', rc_error
 
-    print'Checking time path for violations of constaints.'
+    print'Checking time path for violations of constraints.'
     for t in xrange(T):
         household.constraint_checker_TPI(
             b_mat[t], n_mat[t], c_path[t], t, ltilde)
@@ -718,6 +720,18 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     macro_output = {'Y': Y, 'K': K, 'L': L, 'C': C, 'I': I,
                     'BQ': BQ, 'T_H': T_H, 'r': r, 'w': w, 
                     'tax_path': tax_path}
+                    
+    with open('TPI_output.csv', 'wb') as csvfile:
+        tpiwriter = csv.writer(csvfile)
+        tpiwriter.writerow(Y)
+        tpiwriter.writerow(L)
+        tpiwriter.writerow(C)
+        tpiwriter.writerow(K)
+        tpiwriter.writerow(I)
+        tpiwriter.writerow(B)
+        tpiwriter.writerow(BI)
+        tpiwriter.writerow(w)
+        tpiwriter.writerow(rc_error)
 
 
     if ((TPIiter >= maxiter) or (np.absolute(TPIdist) > mindist_TPI)) and ENFORCE_SOLUTION_CHECKS :
