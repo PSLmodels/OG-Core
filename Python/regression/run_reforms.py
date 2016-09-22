@@ -1,18 +1,20 @@
 #!/usr/bin/env python
 from __future__ import print_function
-import ogusa
+from multiprocessing import Process
+import argparse
+import json
 import os
 import sys
-sys.path.append("../")
-from multiprocessing import Process
 import time
-import json
 import uuid
+sys.path.append("../")
+
+import pandas as pd
+
+import ogusa
 from ogusa import SS
 from ogusa import TPI
-
 import postprocess
-import pandas as pd
 from execute import runner # change here for small jobs
 #from execute_small import runner
 
@@ -45,7 +47,7 @@ def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
     #p1.start()
     runner(**kwargs)
 
-    kwargs={'output_base':REFORM_DIR, 'baseline_dir':BASELINE_DIR, 
+    kwargs={'output_base':REFORM_DIR, 'baseline_dir':BASELINE_DIR,
              'baseline':False, 'analytical_mtrs':False, 'user_params':user_params,
              'reform':reform, 'age_specific':False, 'guid':guid,'run_micro':run_micro}
 
@@ -66,11 +68,34 @@ def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
 
     return ans
 
-if __name__ == "__main__":
+def cli():
+    parser = argparse.ArgumentParser(description='Run reforms baseline or difference result sets')
+    parser.add_argument('reform', help='Reform name such as "reform0"')
+    parser.add_argument('--against-taxcalc', default='0.6.6', help="Tax-Calculator version as basis for differencing")
+    parser.add_argument('--against-ogusa', default='0.5.5', help='OG-USA version as basis for differencing')
+    parser.add_argument('--diff', action='store_true', help='Run difference')
+    args = parser.parse_args()
+    args.folder = os.path.join(os.path.dirname(os.path.abspath(__file__)),
+                               'standards',
+                               'tc{}_og{}'.format(args.against_taxcalc,
+                                                  args.against_ogusa))
+    if args.diff:
+        args.standard = os.path.join(args.folder, 'results_data_{}.csv'.format(args.reform))
+        if not os.path.exists(args.folder):
+            raise ValueError('Cannot diff against Tax-Calculator {} '
+                             'and OG-USA {} because {} does not '
+                             'exist'.format(args.against_taxcalc,
+                                            args.against_ogusa,
+                                            args.standard))
+    return args
+
+
+def main():
+    args = cli()
     with open("reforms.json", "r") as f:
         reforms = json.loads(f.read())
 
-    reform_num = sys.argv[1]
+    reform_num = args.reform
     # Run the given reform
     if QUICK_RUN:
         guid = ''
@@ -100,13 +125,15 @@ if __name__ == "__main__":
     # Dump the actual data
     df.to_csv("results_data_{}.csv".format(reform_num))
 
-    if len(sys.argv) > 2 and sys.argv[2] == "diff":
-        regression_data = "results_data_{0}_{1}.csv".format(VERSION, reform_num)
-        df_released = pd.read_csv(regression_data, index_col=0)
+    if args.diff:
+        df_released = pd.read_csv(args.standard, index_col=0)
         df_diff = df_released - df
         # Dump the diff data
-        df_diff.to_csv("diff_{0}_v{1}_to_master.csv".format(reform_num, VERSION))
+        fname = "diff_{0}_tc{1}_og{2}_to_master.csv".format(args.reform, args.against_taxcalc, args.against_ogusa)
+        df_diff.to_csv(fname)
 
     print("END")
 
 
+if __name__ == "__main__":
+    main()
