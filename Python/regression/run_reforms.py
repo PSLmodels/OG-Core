@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+'''
+
+'''
 from __future__ import print_function
 from multiprocessing import Process
 import argparse
@@ -21,7 +24,12 @@ from execute import runner # change here for small jobs
 VERSION = "0.5.5"
 QUICK_RUN = False
 
-
+REFORM_SPEC_HELP = '''Over time, code renaming and API changes have
+required what was "reforms.json" to change
+formats in order to continue expecting the same
+results in regression testing.  new_reforms.json was
+added on Oct 10, 2016 for this reason and is
+now the default reform-spec'''
 def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
 
     # Turn off checks for now
@@ -74,6 +82,7 @@ def cli():
     parser.add_argument('--against-taxcalc', default='0.6.6', help="Tax-Calculator version as basis for differencing")
     parser.add_argument('--against-ogusa', default='0.5.5', help='OG-USA version as basis for differencing')
     parser.add_argument('--diff', action='store_true', help='Run difference')
+    parser.add_argument('--reform-specs-json', default='new_reforms.json', help=REFORM_SPEC_HELP)
     args = parser.parse_args()
     args.folder = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                'standards',
@@ -92,7 +101,7 @@ def cli():
 
 def main():
     args = cli()
-    with open("reforms.json", "r") as f:
+    with open(args.reform_specs_json, "r") as f:
         reforms = json.loads(f.read())
 
     reform_num = args.reform
