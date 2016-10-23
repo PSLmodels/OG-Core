@@ -210,10 +210,7 @@ def get_data(baseline=False, start_year=2016, reform={}):
                                   'Adjusted Total income','Total Tax Liability','Year', 'Weights'])
         print 'year: ', str(calc1.current_year)
         #mean_mtr_capinc = (mtr_combined_capinc * calc1.records.s006).sum()/calc1.records.s006.sum()
-        mean_mtr_capinc = np.nanmean(mtr_combined_capinc)
 
-        print mean_mtr_capinc
-    quit()
     if reform:
         pkl_path = "micro_data_policy.pkl"
     else:
