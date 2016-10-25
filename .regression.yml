@@ -8,4 +8,4 @@ reform_specs_json: reforms.json
 
 # Just check if you can download and install
 # the specs above and import * from run_reforms.py
-dry_run_imports_installs_only: True
+dry_run_imports_installs_only: True 
