@@ -1,3 +1,2 @@
-cd Python/regression
-bash run_reforms_bash.sh
-
+sh '''cd Python/regression
+bash run_reforms_bash.sh'''
