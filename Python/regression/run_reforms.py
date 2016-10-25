@@ -7,6 +7,7 @@ from multiprocessing import Process
 import argparse
 import json
 import os
+from pprint import pformat
 import sys
 import time
 import uuid
@@ -19,6 +20,7 @@ from ogusa import SS
 from ogusa import TPI
 import postprocess
 from execute import runner # change here for small jobs
+from checkout_build_sources import checkout_build_sources, REGRESSION_CONFIG
 #from execute_small import runner
 
 VERSION = "0.5.5"
@@ -76,31 +78,32 @@ def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
 
     return ans
 
-def cli():
-    parser = argparse.ArgumentParser(description='Run reforms baseline or difference result sets')
-    parser.add_argument('reform', help='Reform name such as "reform0"')
-    parser.add_argument('--against-taxcalc', default='0.6.6', help="Tax-Calculator version as basis for differencing")
-    parser.add_argument('--against-ogusa', default='0.5.5', help='OG-USA version as basis for differencing')
-    parser.add_argument('--diff', action='store_true', help='Run difference')
-    parser.add_argument('--reform-specs-json', default='new_reforms.json', help=REFORM_SPEC_HELP)
-    args = parser.parse_args()
+def make_args_from_regression_config():
+    parser = argparse.ArgumentParser(description='Take reform id from command line and .regression.yml config from top level of repo')
+    parser.add_argument('reform', help='Reform such as "reform0", "reform1", "t1", or "t2"')
+    args = argparse.Namespace(**REGRESSION_CONFIG)
+    vars(args).update(vars(parser.parse_args()))
     args.folder = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                'standards',
-                               'tc{}_og{}'.format(args.against_taxcalc,
-                                                  args.against_ogusa))
+                               'tc{}_og{}'.format(args.compare_taxcalc_version,
+                                                  args.compare_ogusa_version))
     if args.diff:
         args.standard = os.path.join(args.folder, 'results_data_{}.csv'.format(args.reform))
         if not os.path.exists(args.folder):
             raise ValueError('Cannot diff against Tax-Calculator {} '
                              'and OG-USA {} because {} does not '
-                             'exist'.format(args.against_taxcalc,
-                                            args.against_ogusa,
+                             'exist'.format(args.compare_taxcalc_version,
+                                            args.compare_ogusa_version,
                                             args.standard))
+    print('RUN_REFORMS WITH REGRESSION_CONFIG:\n\n{}'.format(pformat(vars(args))))
     return args
 
 
 def main():
-    args = cli()
+    args = make_args_from_regression_config()
+    if getattr(args, 'dry_run_imports_installs_only', False):
+        print("DRY_RUN_IMPORTS_INSTALLS_ONLY OK")
+        return
     with open(args.reform_specs_json, "r") as f:
         reforms = json.loads(f.read())
 
@@ -138,7 +141,7 @@ def main():
         df_released = pd.read_csv(args.standard, index_col=0)
         df_diff = df_released - df
         # Dump the diff data
-        fname = "diff_{0}_tc{1}_og{2}_to_master.csv".format(args.reform, args.against_taxcalc, args.against_ogusa)
+        fname = "diff_{0}_tc{1}_og{2}_to_master.csv".format(args.reform, args.compare_taxcalc_version, args.compare_ogusa_version)
         df_diff.to_csv(fname)
 
     print("END")
