@@ -13,6 +13,8 @@ import time
 import uuid
 sys.path.append("../")
 
+import matplotlib
+matplotlib.use('Agg')
 import pandas as pd
 
 import ogusa
@@ -20,7 +22,9 @@ from ogusa import SS
 from ogusa import TPI
 import postprocess
 from execute import runner # change here for small jobs
-from checkout_build_sources import checkout_build_sources, REGRESSION_CONFIG
+from checkout_build_sources import (checkout_build_sources,
+                                    REGRESSION_CONFIG,
+                                    run_cmd)
 #from execute_small import runner
 
 VERSION = "0.5.5"
@@ -96,6 +100,8 @@ def make_args_from_regression_config():
                                             args.compare_ogusa_version,
                                             args.standard))
     print('RUN_REFORMS WITH REGRESSION_CONFIG:\n\n{}'.format(pformat(vars(args))))
+    print('RUNNING ON CONDA LIST:\n\n{}'.format(run_cmd('conda list')))
+    print('RUNNING ON PIP FREEZE:\n\n{}'.format(run_cmd('pip freeze')))
     return args
 
 
