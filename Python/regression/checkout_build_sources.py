@@ -68,7 +68,7 @@ def checkout_build_sources():
     regression_tmp = os.path.join('..', 'regression')
     if os.path.exists(regression_tmp):
         shutil.rmtree(regression_tmp)
-    src = os.path.abspath('Python', 'regression')
+    src = os.path.join('Python', 'regression')
     shutil.copytree(src, regression_tmp)
     run_cmd('git checkout {}'.format(install_ogusa_version))
     shutil.copytree(regression_tmp, src)
