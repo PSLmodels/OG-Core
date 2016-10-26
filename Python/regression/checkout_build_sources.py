@@ -1,3 +1,4 @@
+from __future__ import print_function
 import os
 import shutil
 import subprocess as sp
@@ -12,7 +13,7 @@ def run_cmd(args, cwd='.', raise_err=True):
     lines = []
     while proc.poll() is None:
         line = proc.stdout.readline().decode()
-        print(line)
+        print(line, end='')
         lines.append(line)
     new_lines = proc.stdout.readlines()
     print(''.join(new_lines))
@@ -40,17 +41,20 @@ OGUSA_ENV_PATH = os.path.join(os.environ['WORKSPACE'], 'ogusa_env')
 
 
 def checkout_build_sources():
+    print('CHECKOUT_BUILD_SOURCES')
     run_cmd('wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh')
     miniconda_path = os.path.join(os.environ['WORKSPACE'], 'miniconda')
     run_cmd('bash miniconda.sh -b -p {}'.format(miniconda_path))
     run_cmd('conda config --set always_yes yes --set changeps1 no')
     run_cmd('conda update conda -n root')
-    if os.path.exists(OGUSA_ENV_PATH):
-        shutil.rmtree(OGUSA_ENV_PATH)
+    lines = ' '.join(run_cmd('conda env list')).lower()
+    if 'ogusa_env' in lines:
+        run_cmd('conda env remove --name ogusa_env')
     run_cmd('conda install nomkl')
-    run_cmd('conda create --force python=2.7 --path {}'.format(OGUSA_ENV_PATH))
-
-    conda_path = os.path.join(OGUSA_ENV_PATH, 'bin', 'conda')
+    run_cmd('conda create --force python=2.7 --name ogusa_env')
+    line = [line for line in run_cmd('conda env list')
+            if 'ogusa_env' in line][0]
+    conda_path = line.strip().split()[-1].strip()
     run_cmd('{} install --force -c ospc openblas pytest toolz scipy numpy={} pandas=0.18.1 matplotlib'.format(conda_path, numpy_vers))
     run_cmd('{} remove mkl mkl-service'.format(conda_path), raise_err=False)
     run_cmd('{} install -c ospc taxcalc={} --force'.format(conda_path, install_taxcalc_version))
@@ -79,6 +83,7 @@ def checkout_build_sources():
     with open(mfile, 'w') as f:
         f.write('backend    : Agg')
     cwd = os.path.join(cwd, 'Python', 'regression')
+    print("CHECKOUT_BUILD_SOURCES OK")
     return cwd
 
 
