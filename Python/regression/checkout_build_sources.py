@@ -12,7 +12,7 @@ def run_cmd(args, cwd='.', raise_err=True):
     proc =  sp.Popen(args, stdout=sp.PIPE, stderr=sp.STDOUT, cwd=cwd)
     lines = []
     while proc.poll() is None:
-        line = proc.stdout.readline().decode()
+        line = proc.stdout.readline()
         print(line, end='')
         lines.append(line)
     new_lines = proc.stdout.readlines()
