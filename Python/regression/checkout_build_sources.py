@@ -4,7 +4,6 @@ import shutil
 import subprocess as sp
 import sys
 
-import matplotlib
 import yaml
 
 def run_cmd(args, cwd='.', raise_err=True):
