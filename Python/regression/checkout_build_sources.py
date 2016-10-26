@@ -102,6 +102,6 @@ def customize_ogusa_env(args):
 if __name__ == "__main__":
     args = cli()
     if args.action == 'make_ogusa_env':
-        make_ogusa_env()
+        make_ogusa_env(args)
     else:
-        customize_ogusa_env()
+        customize_ogusa_env(args)
