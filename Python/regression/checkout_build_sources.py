@@ -59,7 +59,7 @@ def make_ogusa_env(args):
     if 'ogusa_env' in lines:
         run_cmd('conda env remove --name ogusa_env')
     run_cmd('conda install nomkl')
-    run_cmd('conda create --force python=2.7 --name ogusa_env yaml')
+    run_cmd('conda create --name ogusa_env --force python=2.7 yaml')
     line = [line for line in run_cmd('conda env list')
             if 'ogusa_env' in line][0]
     conda_path = os.path.join(line.strip().split()[-1].strip(), 'bin', 'conda')
