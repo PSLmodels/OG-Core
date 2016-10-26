@@ -62,8 +62,7 @@ def make_ogusa_env(args):
     run_cmd('conda create --name ogusa_env --force python=2.7 yaml')
     line = [line for line in run_cmd('conda env list')
             if 'ogusa_env' in line][0]
-    conda_path = os.path.join(line.strip().split()[-1].strip(), 'bin', 'conda')
-    print('Using conda {}'.format(conda_path))
+
 
 def customize_ogusa_env(args):
 
