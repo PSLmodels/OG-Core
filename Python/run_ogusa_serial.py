@@ -93,7 +93,7 @@ def run_micro_macro(user_params):
             'reform': reform, 'run_micro':False, 'small_open': False}  # need to add back 
     #p2 = Process(target=runner, kwargs=kwargs)
     #p2.start()
-    #runner(**kwargs)
+    runner(**kwargs)
 
 
 
