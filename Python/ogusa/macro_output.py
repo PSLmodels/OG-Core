@@ -72,7 +72,7 @@ def dump_diff_output(baseline_dir, policy_dir):
     baseline_macros = np.zeros((7,T))
     baseline_macros[0,:] = tpi_macro_vars_baseline['Y'][:T]
     baseline_macros[1,:] = tpi_macro_vars_baseline['C'][:T]
-    baseline_macros[2,:] = tpi_macro_vars_baseline['K'][:T]
+    baseline_macros[2,:] = tpi_macro_vars_baseline['I'][:T]
     baseline_macros[3,:] = tpi_macro_vars_baseline['L'][:T]
     baseline_macros[4,:] = tpi_macro_vars_baseline['w'][:T]
     baseline_macros[5,:] = tpi_macro_vars_baseline['r'][:T]
@@ -81,7 +81,7 @@ def dump_diff_output(baseline_dir, policy_dir):
     policy_macros = np.zeros((7,T))
     policy_macros[0,:] = tpi_macro_vars_policy['Y'][:T]
     policy_macros[1,:] = tpi_macro_vars_policy['C'][:T]
-    policy_macros[2,:] = tpi_macro_vars_policy['K'][:T]
+    policy_macros[2,:] = tpi_macro_vars_policy['I'][:T]
     policy_macros[3,:] = tpi_macro_vars_policy['L'][:T]
     policy_macros[4,:] = tpi_macro_vars_policy['w'][:T]
     policy_macros[5,:] = tpi_macro_vars_policy['r'][:T]
@@ -101,7 +101,7 @@ def dump_diff_output(baseline_dir, policy_dir):
     # pct changes in macro aggregates in SS
     pct_changes[0,11] = (ss_policy['Yss']-ss_baseline['Yss'])/ss_baseline['Yss']
     pct_changes[1,11] = (ss_policy['Css']-ss_baseline['Css'])/ss_baseline['Css']
-    pct_changes[2,11] = (ss_policy['Kss']-ss_baseline['Kss'])/ss_baseline['Kss']
+    pct_changes[2,11] = (ss_policy['Iss']-ss_baseline['Iss'])/ss_baseline['Iss']
     pct_changes[3,11] = (ss_policy['Lss']-ss_baseline['Lss'])/ss_baseline['Lss']
     pct_changes[4,11] = (ss_policy['wss']-ss_baseline['wss'])/ss_baseline['wss']
     pct_changes[5,11] = (ss_policy['rss']-ss_baseline['rss'])/ss_baseline['rss']
