@@ -63,8 +63,6 @@ def checkout_build_sources():
     run_cmd('{} install --force -c ospc openblas pytest toolz scipy numpy={} pandas=0.18.1 matplotlib'.format(conda_path, numpy_vers))
     run_cmd('{} remove mkl mkl-service'.format(conda_path), raise_err=False)
     run_cmd('{} install -c ospc taxcalc={} --force'.format(conda_path, install_taxcalc_version))
-    run_cmd('git clone https://github.com/open-source-economics/OG-USA OG-USA')
-    cwd = os.path.join(os.path.dirname(__file__), 'OG-USA')
     run_cmd('git fetch --all', cwd=cwd)
     run_cmd('git checkout regression', cwd=cwd)
     regression_tmp = os.path.join(cwd, '..', 'regression')
