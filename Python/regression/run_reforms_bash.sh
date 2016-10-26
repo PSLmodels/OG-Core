@@ -7,10 +7,11 @@ export r=reform
 submit_jobs(){
     for reform in ${r}0 ;
        do
-          export token_part="?token=${REMOTE_BUILD_TOKEN}&cause=Cause+CI+Build"
-          export branch="?ogusabranch=${OGUSA_BRANCH}"
+          export token_part="token=${REMOTE_BUILD_TOKEN}"
+          export cause="cause=Cause+CI+Build"
+          export branch="ogusabranch=${OGUSA_BRANCH}"
           export middle="/job/ci-mode-${reform}/build"
-          export JENKINS_URL="${JENKINS_DOMAIN}${middle}${token_part}${branch}"
+          export JENKINS_URL="${JENKINS_DOMAIN}${middle}?${token_part}&${branch}&{cause}"
           echo Attempt to curl $JENKINS_URL with OSPC_API_KEY secret
           if [ "$OSPC_API_KEY" = "" ];then
               echo OSPC_API_KEY is empty - wont work
