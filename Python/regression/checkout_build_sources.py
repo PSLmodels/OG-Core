@@ -87,3 +87,5 @@ def checkout_build_sources():
     return cwd
 
 
+if __name__ == "__main__":
+    checkout_build_sources()
