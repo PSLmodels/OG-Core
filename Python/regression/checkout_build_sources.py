@@ -63,14 +63,14 @@ def checkout_build_sources():
     run_cmd('{} install --force -c ospc openblas pytest toolz scipy numpy={} pandas=0.18.1 matplotlib'.format(conda_path, numpy_vers))
     run_cmd('{} remove mkl mkl-service'.format(conda_path), raise_err=False)
     run_cmd('{} install -c ospc taxcalc={} --force'.format(conda_path, install_taxcalc_version))
-    run_cmd('git fetch --all', cwd=cwd)
-    run_cmd('git checkout regression', cwd=cwd)
+    run_cmd('git fetch --all')
+    run_cmd('git checkout regression')
     regression_tmp = os.path.join(cwd, '..', 'regression')
     if os.path.exists(regression_tmp):
         shutil.rmtree(regression_tmp)
     shutil.copytree(os.path.join(cwd, 'Python', 'regression'), regression_tmp)
-    run_cmd('git checkout {}'.format(install_ogusa_version), cwd=cwd)
-    run_cmd('python setup.py install', cwd=cwd)
+    run_cmd('git checkout {}'.format(install_ogusa_version))
+    run_cmd('python setup.py install')
     puf_choices = (os.path.join(cwd, '..', '..', 'puf.csv'),
                    os.path.join('Python', 'regression', 'puf.csv'),
                    os.path.join('/home', 'ubuntu', 'deploy', 'puf.csv'))
