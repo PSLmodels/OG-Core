@@ -89,7 +89,7 @@ def make_args_from_regression_config():
     args = argparse.Namespace(**REGRESSION_CONFIG)
     args2 = parser.parse_args()
     args.reform = args2.reform
-    args.install_ogusa_version = args.ogusabranch
+    args.install_ogusa_version = args2.ogusabranch
     args.folder = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                'standards',
                                'tc{}_og{}'.format(args.compare_taxcalc_version,
