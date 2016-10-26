@@ -4,6 +4,6 @@ node {
         sh '''echo About to checkout scm'''
         checkout scm
         sh '''echo Checked out scm'''
-        sh "export OSPC_API_KEY=$OSPC_API_KEY && env | sort && echo pwd is `pwd` && cd Python/regression && bash run_reforms_bash.sh"
+        sh "env | sort && echo pwd is `pwd` && cd Python/regression && bash run_reforms_bash.sh"
     }
 }
