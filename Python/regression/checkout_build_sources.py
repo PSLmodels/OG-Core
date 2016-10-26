@@ -2,6 +2,7 @@ from __future__ import print_function
 import os
 import shutil
 import subprocess as sp
+import sys
 
 import matplotlib
 import yaml
@@ -9,15 +10,15 @@ import yaml
 def run_cmd(args, cwd='.', raise_err=True):
     if isinstance(args, str):
         args = args.split()
-    print("RUN CMD", args, flush=True)
+    print("RUN CMD", args, file=sys.stderr)
     proc =  sp.Popen(args, stdout=sp.PIPE, stderr=sp.STDOUT, cwd=cwd)
     lines = []
     while proc.poll() is None:
         line = proc.stdout.readline()
-        print(line, end='', flush=True)
+        print(line, end='', file=sys.stderr)
         lines.append(line)
     new_lines = proc.stdout.readlines()
-    print(''.join(new_lines), flush=True)
+    print(''.join(new_lines), file=sys.stderr)
     if proc.poll() and raise_err:
         raise ValueError("Subprocess failed {}".format(proc.poll()))
     return lines
