@@ -1,5 +1,5 @@
 node {
-    withCredentials([[$class: 'StringBinding', credentialsId: OSPC_API_KEY, variable: 'OSPC_API_KEY']]) {
+    withCredentials([[$class: 'StringBinding', credentialsId: 'OSPC_API_KEY', variable: 'OSPC_API_KEY']]) {
 
         sh '''echo About to checkout scm'''
         checkout scm
