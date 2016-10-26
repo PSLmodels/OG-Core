@@ -564,11 +564,11 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, ba
 
     if small_open == False:
         resource_constraint = Yss - (Css + Iss)
-        print 'Yss= ', Yss, '\n', 'Css= ', Css, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss
+        print 'Yss= ', Yss, '\n', 'Css= ', Css, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'Z = ', Z
     else:
         # include term for current account        
         resource_constraint = Yss - (Css + BIss) + (ss_hh_r * Bss - (delta + ss_firm_r) * Kss)
-        print 'Yss= ', Yss, '\n', 'Css= ', Css, '\n', 'Bss = ', Bss, '\n', 'BIss = ', BIss, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss
+        print 'Yss= ', Yss, '\n', 'Css= ', Css, '\n', 'Bss = ', Bss, '\n', 'BIss = ', BIss, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'Z = ', Z
 
 
     print 'Resource Constraint Difference:', resource_constraint

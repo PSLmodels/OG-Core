@@ -57,7 +57,7 @@ def run_micro_macro(user_params):
 #    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
 #            'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
 #            'user_params':user_params,'guid':'',
-#            'run_micro':False, 'small_open': True}
+#            'run_micro':False, 'small_open': False}
 #    #p1 = Process(target=runner, kwargs=kwargs)
 #    #p1.start()
 #    runner_SS(**kwargs)
@@ -73,7 +73,7 @@ def run_micro_macro(user_params):
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
             'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
             'user_params':user_params,'guid':'',
-            'run_micro':False, 'small_open': True}
+            'run_micro':False, 'small_open': False}
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
     runner(**kwargs)
@@ -84,16 +84,16 @@ def run_micro_macro(user_params):
         Run reform
     ------------------------------------------------------------------------
     '''
-    # output_base = REFORM_DIR
-    # input_dir = REFORM_DIR
-    # guid_iter = 'reform_' + str(0)
-    # kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-    #         'baseline':False, 'analytical_mtrs':False, 'age_specific':False,
-    #         'reform':reform, 'user_params':user_params,'guid':'38_mtr',
-    #         'run_micro':False}
-    # #p2 = Process(target=runner, kwargs=kwargs)
-    # #p2.start()
-    # runner(**kwargs)
+    output_base = REFORM_DIR
+    input_dir = REFORM_DIR
+    guid_iter = 'reform_' + str(0)
+    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
+            'baseline':False, 'analytical_mtrs':False, 'age_specific':False,
+            'user_params':user_params,'guid':'_alt',
+            'reform': reform, 'run_micro':False, 'small_open': False}  # need to add back 
+    #p2 = Process(target=runner, kwargs=kwargs)
+    #p2.start()
+    #runner(**kwargs)
 
 
 
@@ -104,7 +104,7 @@ def run_micro_macro(user_params):
 
     # time.sleep(0.5)
 
-    # ans = postprocess.create_diff(baseline_dir=BASELINE_DIR, policy_dir=REFORM_DIR)
+    ans = postprocess.create_diff(baseline_dir=BASELINE_DIR, policy_dir=REFORM_DIR)
 
     print "total time was ", (time.time() - start_time)
     # print ans

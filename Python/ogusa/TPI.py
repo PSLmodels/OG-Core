@@ -720,7 +720,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     macro_output = {'Y': Y, 'K': K, 'L': L, 'C': C, 'I': I,
                     'BQ': BQ, 'T_H': T_H, 'r': r, 'w': w, 
                     'tax_path': tax_path}
-                    
+    
     with open('TPI_output.csv', 'wb') as csvfile:
         tpiwriter = csv.writer(csvfile)
         tpiwriter.writerow(Y)
@@ -728,8 +728,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         tpiwriter.writerow(C)
         tpiwriter.writerow(K)
         tpiwriter.writerow(I)
-        tpiwriter.writerow(B)
-        tpiwriter.writerow(BI)
+        if small_open == True:
+            tpiwriter.writerow(B)
+            tpiwriter.writerow(BI)
         tpiwriter.writerow(w)
         tpiwriter.writerow(rc_error)
 
