@@ -6,7 +6,7 @@ export r=reform
 submit_jobs(){
     for reform in ${r}0 ;
        do
-          export token_part="&token=${REMOTE_BUILD_TOKEN}&cause=Cause+CI+Build"
+          export token_part="?token=${REMOTE_BUILD_TOKEN}&cause=Cause+CI+Build"
           export JENKINS_URL="${JENKINS_DOMAIN}/job/ci-mode-${reform}/build${token_part}"
           echo Attempt to curl $JENKINS_URL with OSPC_API_KEY secret
           if [ "$OSPC_API_KEY" = "" ];then
