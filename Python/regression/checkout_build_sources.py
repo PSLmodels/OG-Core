@@ -9,14 +9,15 @@ import yaml
 def run_cmd(args, cwd='.', raise_err=True):
     if isinstance(args, str):
         args = args.split()
+    print("RUN CMD", args, flush=True)
     proc =  sp.Popen(args, stdout=sp.PIPE, stderr=sp.STDOUT, cwd=cwd)
     lines = []
     while proc.poll() is None:
         line = proc.stdout.readline()
-        print(line, end='')
+        print(line, end='', flush=True)
         lines.append(line)
     new_lines = proc.stdout.readlines()
-    print(''.join(new_lines))
+    print(''.join(new_lines), flush=True)
     if proc.poll() and raise_err:
         raise ValueError("Subprocess failed {}".format(proc.poll()))
     return lines
@@ -59,8 +60,8 @@ def checkout_build_sources():
     run_cmd('conda create --force python=2.7 --name ogusa_env')
     line = [line for line in run_cmd('conda env list')
             if 'ogusa_env' in line][0]
-    conda_path = line.strip().split()[-1].strip()
-
+    conda_path = os.path.join(line.strip().split()[-1].strip(), 'bin', 'conda')
+    print('Using conda {}'.format(conda_path))
     run_cmd('{} install --force -c ospc openblas pytest toolz scipy numpy={} pandas=0.18.1 matplotlib'.format(conda_path, numpy_vers))
     run_cmd('{} remove mkl mkl-service'.format(conda_path), raise_err=False)
     run_cmd('{} install -c ospc taxcalc={} --force'.format(conda_path, install_taxcalc_version))
