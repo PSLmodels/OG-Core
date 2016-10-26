@@ -68,12 +68,12 @@ def checkout_build_sources():
     regression_tmp = os.path.join('..', 'regression')
     if os.path.exists(regression_tmp):
         shutil.rmtree(regression_tmp)
-    src = os.path.join('Python', 'regression')
+    src = os.path.abspath('.')
     shutil.copytree(src, regression_tmp)
     run_cmd('git checkout {}'.format(install_ogusa_version))
     shutil.copytree(regression_tmp, src)
     run_cmd('python setup.py install')
-    puf_choices = (os.path.join(cwd, '..', '..', 'puf.csv'),
+    puf_choices = (os.path.join('..', '..', 'puf.csv'),
                    os.path.join('Python', 'regression', 'puf.csv'),
                    os.path.join('/home', 'ubuntu', 'deploy', 'puf.csv'))
 
