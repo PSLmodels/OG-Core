@@ -84,7 +84,7 @@ def checkout_build_sources():
     puf = puf[0]
     shutil.copy(puf, os.path.join('Python', 'regression', 'puf.csv'))
     print("CHECKOUT_BUILD_SOURCES OK")
-    return cwd
+    return 0
 
 
 if __name__ == "__main__":
