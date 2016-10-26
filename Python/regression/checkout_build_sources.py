@@ -23,10 +23,6 @@ def run_cmd(args, cwd='.', raise_err=True):
         raise ValueError("Subprocess failed {}".format(proc.poll()))
     return lines
 
-def get_ogusa_git_branch():
-    return [line for line in run_cmd('git branch')
-            if line.strip() and '*' == line.strip()[0]][0]
-
 _d = os.path.dirname
 REGRESSION_CONFIG = os.path.join(_d(_d(_d(os.path.abspath(__file__)))), '.regression.yml')
 REGRESSION_CONFIG = yaml.load(open(REGRESSION_CONFIG))
