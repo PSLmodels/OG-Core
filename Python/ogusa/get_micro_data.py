@@ -209,7 +209,6 @@ def get_data(baseline=False, start_year=2016, reform={}):
                                   'Wage and Salaries', 'Self-Employed Income','Wage + Self-Employed Income',
                                   'Adjusted Total income','Total Tax Liability','Year', 'Weights'])
         print 'year: ', str(calc1.current_year)
-        #mean_mtr_capinc = (mtr_combined_capinc * calc1.records.s006).sum()/calc1.records.s006.sum()
 
     if reform:
         pkl_path = "micro_data_policy.pkl"
@@ -244,13 +243,13 @@ def cap_inc_mtr(calc1):
     record_columns = [getattr(calc1.records, income_source) for income_source in capital_income_sources]
     # weighted average of all those MTRs
     #total = sum(map(abs,record_columns)) + (calc1.records.e02000-np.maximum(0,calc1.records.e26270))
-    total = sum(map(abs,record_columns)) + np.abs(calc1.records.e02000-np.maximum(0,calc1.records.e26270))
+    total = sum(map(abs,record_columns)) + np.abs(calc1.records.e02000-calc1.records.e26270)
     # i.e., capital_gain_mtr = (e00300 * mtr_iit_300 + e00400 * mtr_iit_400 + ... + e23250 * mtr_iit_23250) /
     #                           sum_of_all_ten_variables
     # Note that all_mtrs gives fica (0), iit (1), and combined (2) mtrs  - we'll use the combined - hence all_mtrs[source][2]
     capital_mtr = [ abs(col) * all_mtrs[source][2] for col, source in zip(record_columns, capital_income_sources_taxed)]
     mtr_combined_capinc = (sum(capital_mtr + (calc1.mtr('e02000')[2]*
-            np.abs(calc1.records.e02000-np.maximum(0,calc1.records.e26270)))) / total)
+            np.abs(calc1.records.e02000-calc1.records.e26270))) / total)
 
     #if every item in capital_income_sources == 0: # no capital income taxpayers
     if np.all(total == 0): # no capital income taxpayers
