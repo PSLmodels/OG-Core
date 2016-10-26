@@ -41,6 +41,11 @@ OGUSA_ENV_PATH = os.path.join(os.environ['WORKSPACE'], 'ogusa_env')
 
 
 def checkout_build_sources():
+    numpy_vers = REGRESSION_CONFIG['numpy_version']
+    install_ogusa_version = REGRESSION_CONFIG['install_ogusa_version']
+    install_taxcalc_version = REGRESSION_CONFIG['install_taxcalc_version']
+    compare_ogusa_version = REGRESSION_CONFIG['compare_ogusa_version']
+    compare_taxcalc_version = REGRESSION_CONFIG['compare_taxcalc_version']
     print('CHECKOUT_BUILD_SOURCES')
     run_cmd('wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh')
     miniconda_path = os.path.join(os.environ['WORKSPACE'], 'miniconda')
@@ -55,6 +60,7 @@ def checkout_build_sources():
     line = [line for line in run_cmd('conda env list')
             if 'ogusa_env' in line][0]
     conda_path = line.strip().split()[-1].strip()
+
     run_cmd('{} install --force -c ospc openblas pytest toolz scipy numpy={} pandas=0.18.1 matplotlib'.format(conda_path, numpy_vers))
     run_cmd('{} remove mkl mkl-service'.format(conda_path), raise_err=False)
     run_cmd('{} install -c ospc taxcalc={} --force'.format(conda_path, install_taxcalc_version))
@@ -79,10 +85,6 @@ def checkout_build_sources():
         if os.path.exists(puf):
             print('puf from', puf)
         shutil.copy(puf, os.path.join('Python', 'regression', 'puf.csv'))
-    mfile = matplotlib.matplotlib_fname()
-    with open(mfile, 'w') as f:
-        f.write('backend    : Agg')
-    cwd = os.path.join(cwd, 'Python', 'regression')
     print("CHECKOUT_BUILD_SOURCES OK")
     return cwd
 
