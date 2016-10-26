@@ -10,7 +10,7 @@ submit_jobs(){
           export cause="cause=Cause+CI+Build"
           export branch="ogusabranch=${BRANCH_NAME}"
           export middle="/job/ci-mode-${reform}/build"
-          export JENKINS_URL="${JENKINS_DOMAIN}${middle}?${token_part}&${branch}&{cause}"
+          export JENKINS_URL="${JENKINS_DOMAIN}${middle}?${token_part}&${branch}&${cause}"
           echo Attempt to curl $JENKINS_URL with OSPC_API_KEY secret
           if [ "$OSPC_API_KEY" = "" ];then
               echo OSPC_API_KEY is empty - wont work
