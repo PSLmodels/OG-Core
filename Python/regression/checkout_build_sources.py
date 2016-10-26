@@ -1,4 +1,5 @@
 from __future__ import print_function
+import argparse
 import os
 import shutil
 import subprocess as sp
@@ -32,14 +33,15 @@ REQUIRED = set(('compare_taxcalc_version',
                 'numpy_version'))
 if not set(REGRESSION_CONFIG) >= REQUIRED:
     raise ValueError('.regression.yml at top level of repo needs to define: '.format(REQUIRED - set(REGRESSION_CONFIG)))
-REGRESSION_CONFIG['install_ogusa_version'] = os.environ.get('OGUSA_BRANCH', None)
 
 OGUSA_ENV_PATH = os.path.join(os.environ['WORKSPACE'], 'ogusa_env')
 
 
 def checkout_build_sources():
+    parser = argparse.ArgumentParser(description='Get install OG-USA branch')
+    parser.add_argument('ogusabranch')
     numpy_vers = REGRESSION_CONFIG['numpy_version']
-    install_ogusa_version = REGRESSION_CONFIG['install_ogusa_version']
+    install_ogusa_version = parser.parse_args().ogusabranch
     install_taxcalc_version = REGRESSION_CONFIG['install_taxcalc_version']
     compare_ogusa_version = REGRESSION_CONFIG['compare_ogusa_version']
     compare_taxcalc_version = REGRESSION_CONFIG['compare_taxcalc_version']
