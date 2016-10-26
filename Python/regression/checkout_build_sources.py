@@ -37,7 +37,9 @@ REQUIRED = set(('compare_taxcalc_version',
                 'numpy_version'))
 if not set(REGRESSION_CONFIG) >= REQUIRED:
     raise ValueError('.regression.yml at top level of repo needs to define: '.format(REQUIRED - set(REGRESSION_CONFIG)))
-REGRESSION_CONFIG['install_ogusa_version'] = get_ogusa_git_branch()
+if not 'OGUSA_BRANCH' in os.environ:
+    raise ValueError('Expected OGUSA_BRANCH in environ vars - see parametrized build')
+REGRESSION_CONFIG['install_ogusa_version'] = os.environ['OGUSA_BRANCH']
 
 OGUSA_ENV_PATH = os.path.join(os.environ['WORKSPACE'], 'ogusa_env')
 
