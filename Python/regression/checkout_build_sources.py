@@ -36,12 +36,16 @@ if not set(REGRESSION_CONFIG) >= REQUIRED:
 
 OGUSA_ENV_PATH = os.path.join(os.environ['WORKSPACE'], 'ogusa_env')
 
-
-def checkout_build_sources():
+def cli():
     parser = argparse.ArgumentParser(description='Get install OG-USA branch')
+    parser.add_argument('action', choices=['make_ogusa_env', 'customize_ogusa_env'])
     parser.add_argument('ogusabranch')
+    return parser.parse_args()
+
+
+def make_ogusa_env(args):
     numpy_vers = REGRESSION_CONFIG['numpy_version']
-    install_ogusa_version = parser.parse_args().ogusabranch
+    install_ogusa_version = args.ogusabranch
     install_taxcalc_version = REGRESSION_CONFIG['install_taxcalc_version']
     compare_ogusa_version = REGRESSION_CONFIG['compare_ogusa_version']
     compare_taxcalc_version = REGRESSION_CONFIG['compare_taxcalc_version']
@@ -60,9 +64,17 @@ def checkout_build_sources():
             if 'ogusa_env' in line][0]
     conda_path = os.path.join(line.strip().split()[-1].strip(), 'bin', 'conda')
     print('Using conda {}'.format(conda_path))
-    run_cmd('{} install --force -c ospc openblas pytest toolz scipy numpy={} pandas=0.18.1 matplotlib'.format(conda_path, numpy_vers))
-    run_cmd('{} remove mkl mkl-service'.format(conda_path), raise_err=False)
-    run_cmd('{} install -c ospc taxcalc={} --force'.format(conda_path, install_taxcalc_version))
+
+def customize_ogusa_env(args):
+
+    numpy_vers = REGRESSION_CONFIG['numpy_version']
+    install_ogusa_version = args.ogusabranch
+    install_taxcalc_version = REGRESSION_CONFIG['install_taxcalc_version']
+    compare_ogusa_version = REGRESSION_CONFIG['compare_ogusa_version']
+    compare_taxcalc_version = REGRESSION_CONFIG['compare_taxcalc_version']
+    run_cmd('conda install --force -c ospc openblas pytest toolz scipy numpy={} pandas=0.18.1 matplotlib'.format(numpy_vers))
+    run_cmd('conda remove mkl mkl-service', raise_err=False)
+    run_cmd('conda install -c ospc taxcalc={} --force'.format(install_taxcalc_version))
     run_cmd('git fetch --all')
     run_cmd('git checkout regression')
     regression_tmp = os.path.join('..', 'regression')
@@ -88,4 +100,8 @@ def checkout_build_sources():
 
 
 if __name__ == "__main__":
-    checkout_build_sources()
+    args = cli()
+    if args.action == 'make_ogusa_env':
+        make_ogusa_env()
+    else:
+        customize_ogusa_env()
