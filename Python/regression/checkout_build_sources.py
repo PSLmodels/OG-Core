@@ -5,6 +5,21 @@ import subprocess as sp
 import matplotlib
 import yaml
 
+def run_cmd(args, cwd='.', raise_err=True):
+    if isinstance(args, str):
+        args = args.split()
+    proc =  sp.Popen(args, stdout=sp.PIPE, stderr=sp.STDOUT, cwd=cwd)
+    lines = []
+    while proc.poll() is None:
+        line = proc.stdout.readline().decode()
+        print(line)
+        lines.append(line)
+    new_lines = proc.stdout.readlines()
+    print(''.join(new_lines))
+    if proc.poll() and raise_err:
+        raise ValueError("Subprocess failed {}".format(proc.poll()))
+    return lines
+
 def get_ogusa_git_branch():
     return [line for line in run_cmd('git branch')
             if line.strip() and '*' == line.strip()[0]][0]
@@ -22,21 +37,6 @@ if not set(REGRESSION_CONFIG) >= REQUIRED:
 REGRESSION_CONFIG['install_ogusa_version'] = get_ogusa_git_branch()
 
 OGUSA_ENV_PATH = os.path.join(os.environ['WORKSPACE'], 'ogusa_env')
-
-def run_cmd(args, cwd='.', raise_err=True):
-    if isinstance(args, str):
-        args = args.split()
-    proc =  sp.Popen(args, stdout=sp.PIPE, stderr=sp.STDOUT, cwd=cwd)
-    lines = []
-    while proc.poll() is None:
-        line = proc.stdout.readline().decode()
-        print(line)
-        lines.append(line)
-    new_lines = proc.stdout.readlines()
-    print(''.join(new_lines))
-    if proc.poll() and raise_err:
-        raise ValueError("Subprocess failed {}".format(proc.poll()))
-    return lines
 
 
 def checkout_build_sources():
