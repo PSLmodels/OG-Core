@@ -2,7 +2,7 @@
 # TODO also these reforms: ${r}1 ${r}2 ${r}3 ${r}4 ${r}5 ${r}6 ${r}7 ${r}8 ${r}9 t1 t2
 
 export JENKINS_DOMAIN="http://54.159.16.16:8080"
-
+export OGUSA_BRANCH=$(git branch | grep "*" | sed 's/ //' | sed 's/\*//')
 export r=reform
 submit_jobs(){
     for reform in ${r}0 ;
