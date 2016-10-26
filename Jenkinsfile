@@ -12,6 +12,7 @@ node {
               OGUSA_BRANCH = m[0][1]
               return
          }
+         return
     }
     withCredentials([[$class: 'StringBinding', credentialsId: 'OSPC_API_KEY', variable: 'OSPC_API_KEY']]) {
         withCredentials([[$class: 'StringBinding', credentialsId: 'REMOTE_BUILD_TOKEN', variable: 'REMOTE_BUILD_TOKEN']]) {
