@@ -63,8 +63,6 @@ def checkout_build_sources():
     run_cmd('{} install --force -c ospc openblas pytest toolz scipy numpy={} pandas=0.18.1 matplotlib'.format(conda_path, numpy_vers))
     run_cmd('{} remove mkl mkl-service'.format(conda_path), raise_err=False)
     run_cmd('{} install -c ospc taxcalc={} --force'.format(conda_path, install_taxcalc_version))
-    if not install_ogusa_version:
-        raise ValueError('Expected OGUSA_BRANCH in environ vars')
     run_cmd('{} install -c ospc ogusa={}'.format(conda_path, install_ogusa_version))
     run_cmd('git clone https://github.com/open-source-economics/OG-USA OG-USA')
     cwd = os.path.join(os.path.dirname(__file__), 'OG-USA')
@@ -75,8 +73,7 @@ def checkout_build_sources():
         shutil.rmtree(regression_tmp)
     shutil.copytree(os.path.join(cwd, 'Python', 'regression'), regression_tmp)
     run_cmd('git checkout {}'.format(install_ogusa_version), cwd=cwd)
-    if ogusainstallmethod == 'git':
-        run_cmd('python setup.py install', cwd=cwd)
+    run_cmd('python setup.py install', cwd=cwd)
     puf_choices = (os.path.join(cwd, '..', '..', 'puf.csv'),
                    os.path.join('Python', 'regression', 'puf.csv'),
                    os.path.join('/home', 'ubuntu', 'deploy', 'puf.csv'))
