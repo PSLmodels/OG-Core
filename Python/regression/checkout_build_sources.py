@@ -33,9 +33,7 @@ REQUIRED = set(('compare_taxcalc_version',
                 'numpy_version'))
 if not set(REGRESSION_CONFIG) >= REQUIRED:
     raise ValueError('.regression.yml at top level of repo needs to define: '.format(REQUIRED - set(REGRESSION_CONFIG)))
-if not 'OGUSA_BRANCH' in os.environ:
-    raise ValueError('Expected OGUSA_BRANCH in environ vars - see parametrized build')
-REGRESSION_CONFIG['install_ogusa_version'] = os.environ['OGUSA_BRANCH']
+REGRESSION_CONFIG['install_ogusa_version'] = os.environ.get('OGUSA_BRANCH', None)
 
 OGUSA_ENV_PATH = os.path.join(os.environ['WORKSPACE'], 'ogusa_env')
 
@@ -65,6 +63,8 @@ def checkout_build_sources():
     run_cmd('{} remove mkl mkl-service'.format(conda_path), raise_err=False)
     run_cmd('{} install -c ospc taxcalc={} --force'.format(conda_path, install_taxcalc_version))
     if ogusainstallmethod == 'conda':
+        if not install_ogusa_version:
+            raise ValueError('Expected OGUSA_BRANCH in environ vars')
         run_cmd('{} install -c ospc ogusa={}'.format(conda_path, install_ogusa_version))
     run_cmd('git clone https://github.com/open-source-economics/OG-USA OG-USA')
     cwd = os.path.join(os.path.dirname(__file__), 'OG-USA')

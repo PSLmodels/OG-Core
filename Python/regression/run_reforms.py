@@ -83,10 +83,13 @@ def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
     return ans
 
 def make_args_from_regression_config():
-    parser = argparse.ArgumentParser(description='Take reform id from command line and .regression.yml config from top level of repo')
+    parser = argparse.ArgumentParser(description='Take reform id, branch from command line and .regression.yml config from top level of repo')
     parser.add_argument('reform', help='Reform such as "reform0", "reform1", "t1", or "t2"')
+    parser.add_argument('ogusabranch', help='Git branch to install')
     args = argparse.Namespace(**REGRESSION_CONFIG)
-    vars(args).update(vars(parser.parse_args()))
+    args2 = parser.parse_args()
+    args.reform = args2.reform
+    args.install_ogusa_version = args.ogusabranch
     args.folder = os.path.join(os.path.dirname(os.path.abspath(__file__)),
                                'standards',
                                'tc{}_og{}'.format(args.compare_taxcalc_version,
