@@ -84,10 +84,6 @@ def get_Y(K, L, params):
     '''
     alpha, Z = params
     Y = Z * (K ** alpha) * (L ** (1 - alpha))
-    print 'K:', K
-    print 'L:', L
-    print 'Z:', Z
-    print 'Y:', Y
     return Y
 
 
