@@ -77,10 +77,11 @@ def checkout_build_sources():
                    os.path.join('Python', 'regression', 'puf.csv'),
                    os.path.join('/home', 'ubuntu', 'deploy', 'puf.csv'))
 
-    for puf in puf_choices:
-        if os.path.exists(puf):
-            print('puf from', puf)
-        shutil.copy(puf, os.path.join('Python', 'regression', 'puf.csv'))
+    puf = [puf for puf in puf_choices if os.path.exists(puf)]
+    if not puf:
+        raise ValueError('Could not find puf.csv at {}'.format(puf_choices))
+    puf = puf[0]
+    shutil.copy(puf, os.path.join('Python', 'regression', 'puf.csv'))
     print("CHECKOUT_BUILD_SOURCES OK")
     return cwd
 
