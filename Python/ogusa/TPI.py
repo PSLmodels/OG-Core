@@ -686,7 +686,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         rc_error = Y[:T] - (C[:T] + BI[:T]) + (tpi_hh_r[:T] * B[:T] - (delta + tpi_firm_r[:T]) * K[:T])
         print 'Y(T-1):', Y[T-1], '\n','C(T-1):', C[T-1], '\n','K(T-1):', K[T-1], '\n','B(T-1):', B[T-1], '\n','BI(T-1):', BI[T-1], '\n','I(T-1):', I[T-1]
     
-    print 'Resource Constraint Difference:', rc_error
+   # print 'Resource Constraint Difference:', rc_error
 
     print'Checking time path for violations of constraints.'
     for t in xrange(T):
@@ -696,8 +696,8 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     eul_savings = euler_errors[:, :S, :].max(1).max(1)
     eul_laborleisure = euler_errors[:, S:, :].max(1).max(1)
 
-    print 'Max Euler error, savings: ', eul_savings
-    print 'Max Euler error labor supply: ', eul_laborleisure
+   # print 'Max Euler error, savings: ', eul_savings
+   # print 'Max Euler error labor supply: ', eul_laborleisure
 
     
 
