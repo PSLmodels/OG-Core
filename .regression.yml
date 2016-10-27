@@ -1,5 +1,5 @@
 # It is best in yaml to put quotes on versions, so they dont
-# become floating points
+# become floating points, e.g. numpy_version: 1.10 would not work
 install_taxcalc_version: "0.6.8"
 compare_ogusa_version: "0.5.5"
 compare_taxcalc_version: "0.6.6"

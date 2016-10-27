@@ -36,14 +36,19 @@ if not set(REGRESSION_CONFIG) >= REQUIRED:
 
 OGUSA_ENV_PATH = os.path.join(os.environ['WORKSPACE'], 'ogusa_env')
 
+MINICONDA_PATH = os.path.join(os.environ['WORKSPACE'], 'miniconda')
+
+
 def cli():
     parser = argparse.ArgumentParser(description='Get install OG-USA branch')
-    parser.add_argument('action', choices=['make_ogusa_env', 'customize_ogusa_env'])
+    parser.add_argument('action', choices=['get_miniconda',
+                                           'make_ogusa_env',
+                                           'customize_ogusa_env'])
     parser.add_argument('ogusabranch')
     return parser.parse_args()
 
 
-def make_ogusa_env(args):
+def get_miniconda(args):
     numpy_vers = REGRESSION_CONFIG['numpy_version']
     install_ogusa_version = args.ogusabranch
     install_taxcalc_version = REGRESSION_CONFIG['install_taxcalc_version']
@@ -51,8 +56,10 @@ def make_ogusa_env(args):
     compare_taxcalc_version = REGRESSION_CONFIG['compare_taxcalc_version']
     print('CHECKOUT_BUILD_SOURCES')
     run_cmd('wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh')
-    miniconda_path = os.path.join(os.environ['WORKSPACE'], 'miniconda')
-    run_cmd('bash miniconda.sh -b -p {}'.format(miniconda_path))
+    run_cmd('bash miniconda.sh -b -p {}'.format(MINICONDA_PATH))
+
+def make_ogusa_env(args):
+
     run_cmd('conda config --set always_yes yes --set changeps1 no')
     run_cmd('conda update conda -n root')
     lines = ' '.join(run_cmd('conda env list')).lower()
@@ -62,7 +69,6 @@ def make_ogusa_env(args):
     run_cmd('conda create --name ogusa_env --force python=2.7 yaml')
     line = [line for line in run_cmd('conda env list')
             if 'ogusa_env' in line][0]
-
 
 def customize_ogusa_env(args):
 
@@ -100,7 +106,9 @@ def customize_ogusa_env(args):
 
 if __name__ == "__main__":
     args = cli()
-    if args.action == 'make_ogusa_env':
+    if args.action == 'get_miniconda':
+        get_miniconda(args)
+    elif args.action == 'make_ogusa_env':
         make_ogusa_env(args)
     else:
         customize_ogusa_env(args)
