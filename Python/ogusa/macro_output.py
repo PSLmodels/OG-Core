@@ -110,6 +110,3 @@ def dump_diff_output(baseline_dir, policy_dir):
     #print 'pct changes: ', pct_changes
     #macro_out = (pct_changes, baseline_macros, policy_macros)
     return pct_changes, baseline_macros, policy_macros
-
-
-### NEED TO FIX: TPI is all I, SS is K.
