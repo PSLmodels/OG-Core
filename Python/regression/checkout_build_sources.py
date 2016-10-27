@@ -1,6 +1,7 @@
 from __future__ import print_function
 import argparse
 import os
+import pipes
 import shutil
 import subprocess as sp
 import sys
@@ -11,7 +12,8 @@ def run_cmd(args, cwd='.', raise_err=True):
     if isinstance(args, str):
         args = args.split()
     print("RUN CMD", args, file=sys.stderr)
-    proc =  sp.Popen(args, shell=True, stdout=sp.PIPE, stderr=sp.STDOUT, cwd=cwd, env=os.environ)
+    cmd = " ".join(pipes.quote(arg) for arg in args)
+    proc =  sp.Popen(cmd, shell=True, stdout=sp.PIPE, stderr=sp.STDOUT, cwd=cwd, env=os.environ)
     lines = []
     while proc.poll() is None:
         line = proc.stdout.readline()
