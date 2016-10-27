@@ -39,6 +39,8 @@ OGUSA_ENV_PATH = os.path.join(os.environ['WORKSPACE'], 'ogusa_env')
 # Should be set by build script:
 MINICONDA_ROOT = os.environ['MINICONDA_ROOT']
 
+CONDA = os.path.join(MINICONDA_ROOT, 'bin', 'conda')
+PYTHON = os.path.join(MINICONDA_ROOT, 'bin', 'python')
 
 def cli():
     parser = argparse.ArgumentParser(description='Get install OG-USA branch')
@@ -47,6 +49,7 @@ def cli():
                                            'customize_ogusa_env'])
     parser.add_argument('ogusabranch')
     return parser.parse_args()
+
 
 
 def get_miniconda(args):
@@ -61,15 +64,14 @@ def get_miniconda(args):
 
 def make_ogusa_env(args):
 
-    run_cmd('conda config --set always_yes yes --set changeps1 no')
-    run_cmd('conda update conda -n root')
-    lines = ' '.join(run_cmd('conda env list')).lower()
+    run_cmd('{} config --set always_yes yes --set changeps1 no'.format(CONDA))
+    run_cmd('{} update conda -n root'.format(CONDA))
+    lines = ' '.join(run_cmd('{} env list'.format(CONDA))).lower()
     if 'ogusa_env' in lines:
-        run_cmd('conda env remove --name ogusa_env')
-    run_cmd('conda install nomkl')
-    run_cmd('conda create --name ogusa_env --force python=2.7 yaml')
-    line = [line for line in run_cmd('conda env list')
-            if 'ogusa_env' in line][0]
+        run_cmd('{} env remove --name ogusa_env'.format(CONDA))
+    run_cmd('{} install nomkl'.format(CONDA))
+    run_cmd('{} create --name ogusa_env --force python=2.7 yaml'.format(CONDA))
+
 
 def customize_ogusa_env(args):
 
@@ -78,9 +80,9 @@ def customize_ogusa_env(args):
     install_taxcalc_version = REGRESSION_CONFIG['install_taxcalc_version']
     compare_ogusa_version = REGRESSION_CONFIG['compare_ogusa_version']
     compare_taxcalc_version = REGRESSION_CONFIG['compare_taxcalc_version']
-    run_cmd('conda install --force -c ospc openblas pytest toolz scipy numpy={} pandas=0.18.1 matplotlib'.format(numpy_vers))
-    run_cmd('conda remove mkl mkl-service', raise_err=False)
-    run_cmd('conda install -c ospc taxcalc={} --force'.format(install_taxcalc_version))
+    run_cmd('{} install --force -c ospc openblas pytest toolz scipy numpy={} pandas=0.18.1 matplotlib'.format(CONDA, numpy_vers))
+    run_cmd('{} remove mkl mkl-service'.format(CONDA), raise_err=False)
+    run_cmd('{} install -c ospc taxcalc={} --force'.format(CONDA, install_taxcalc_version))
     run_cmd('git fetch --all')
     run_cmd('git checkout regression')
     regression_tmp = os.path.join('..', 'regression')
@@ -91,7 +93,7 @@ def customize_ogusa_env(args):
     run_cmd('git checkout {}'.format(install_ogusa_version))
     if not os.path.exists(src):
         shutil.copytree(regression_tmp, src)
-    run_cmd('python setup.py install')
+    run_cmd('{} setup.py install'.format(PYTHON))
     puf_choices = (os.path.join('..', '..', 'puf.csv'),
                    os.path.join('Python', 'regression', 'puf.csv'),
                    os.path.join('/home', 'ubuntu', 'deploy', 'puf.csv'))
