@@ -11,7 +11,7 @@ def run_cmd(args, cwd='.', raise_err=True):
     if isinstance(args, str):
         args = args.split()
     print("RUN CMD", args, file=sys.stderr)
-    proc =  sp.Popen(args, stdout=sp.PIPE, stderr=sp.STDOUT, cwd=cwd)
+    proc =  sp.Popen(args, stdout=sp.PIPE, stderr=sp.STDOUT, cwd=cwd, env=os.environ)
     lines = []
     while proc.poll() is None:
         line = proc.stdout.readline()
@@ -60,7 +60,6 @@ def get_miniconda(args):
     install_taxcalc_version = REGRESSION_CONFIG['install_taxcalc_version']
     compare_ogusa_version = REGRESSION_CONFIG['compare_ogusa_version']
     compare_taxcalc_version = REGRESSION_CONFIG['compare_taxcalc_version']
-    print('CHECKOUT_BUILD_SOURCES')
     run_cmd('wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh')
     run_cmd('bash miniconda.sh -b -p {}'.format(MINICONDA_ROOT))
     print("GET MINICONDA OK")
@@ -74,9 +73,10 @@ def make_ogusa_env(args):
         run_cmd('{} env remove --path {}'.format(CONDA_ROOT, MINICONDA_ENV))
     run_cmd('{} install nomkl'.format(CONDA_ROOT))
     run_cmd('{} create -p {} python=2.7 yaml'.format(CONDA_ROOT, MINICONDA_ENV))
-
+    print('MAKE OGUSA ENV OK')
 
 def customize_ogusa_env(args):
+    print('CUSTOMIZE OGUSA ENV')
 
     numpy_vers = REGRESSION_CONFIG['numpy_version']
     install_ogusa_version = args.ogusabranch
@@ -106,7 +106,7 @@ def customize_ogusa_env(args):
         raise ValueError('Could not find puf.csv at {}'.format(puf_choices))
     puf = puf[0]
     shutil.copy(puf, os.path.join('Python', 'regression', 'puf.csv'))
-    print("CHECKOUT_BUILD_SOURCES OK")
+    print('CUSTOMIZE OGUSA ENV OK')
     return 0
 
 
