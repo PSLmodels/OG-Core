@@ -38,9 +38,9 @@ OGUSA_ENV_PATH = os.path.join(os.environ['WORKSPACE'], 'ogusa_env')
 
 # Should be set by build script:
 MINICONDA_ROOT = os.environ['MINICONDA_ROOT']
-
-CONDA = os.path.join(MINICONDA_ROOT, 'bin', 'conda')
-PYTHON = os.path.join(MINICONDA_ROOT, 'bin', 'python')
+MINICONDA_ENV = os.environ['MINICONDA_ENV']
+CONDA = os.path.join(MINICONDA_ENV, 'bin', 'conda')
+PYTHON = os.path.join(MINICONDA_ENV, 'bin', 'python')
 
 def cli():
     parser = argparse.ArgumentParser(description='Get install OG-USA branch')
@@ -68,7 +68,7 @@ def make_ogusa_env(args):
     run_cmd('{} update conda -n root'.format(CONDA))
     lines = ' '.join(run_cmd('{} env list'.format(CONDA))).lower()
     if 'ogusa_env' in lines:
-        run_cmd('{} env remove --name ogusa_env'.format(CONDA))
+        run_cmd('{} env remove --path {}'.format(CONDA, MINICONDA_ENV))
     run_cmd('{} install nomkl'.format(CONDA))
     run_cmd('{} create --name ogusa_env --force python=2.7 yaml'.format(CONDA))
 
