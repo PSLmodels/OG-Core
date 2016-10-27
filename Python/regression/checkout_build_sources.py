@@ -36,7 +36,8 @@ if not set(REGRESSION_CONFIG) >= REQUIRED:
 
 OGUSA_ENV_PATH = os.path.join(os.environ['WORKSPACE'], 'ogusa_env')
 
-MINICONDA_PATH = os.path.join(os.environ['WORKSPACE'], 'miniconda')
+# Should be set by build script:
+MINICONDA_ROOT = os.environ['MINICONDA_ROOT']
 
 
 def cli():
@@ -56,7 +57,7 @@ def get_miniconda(args):
     compare_taxcalc_version = REGRESSION_CONFIG['compare_taxcalc_version']
     print('CHECKOUT_BUILD_SOURCES')
     run_cmd('wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh')
-    run_cmd('bash miniconda.sh -b -p {}'.format(MINICONDA_PATH))
+    run_cmd('bash miniconda.sh -b -p {}'.format(MINICONDA_ROOT))
 
 def make_ogusa_env(args):
 
