@@ -11,7 +11,7 @@ def run_cmd(args, cwd='.', raise_err=True):
     if isinstance(args, str):
         args = args.split()
     print("RUN CMD", args, file=sys.stderr)
-    proc =  sp.Popen(args, stdout=sp.PIPE, stderr=sp.STDOUT, cwd=cwd, env=os.environ)
+    proc =  sp.Popen(args, shell=True, stdout=sp.PIPE, stderr=sp.STDOUT, cwd=cwd, env=os.environ)
     lines = []
     while proc.poll() is None:
         line = proc.stdout.readline()
