@@ -73,7 +73,7 @@ def make_ogusa_env(args):
     if 'ogusa_env' in lines:
         run_cmd('{} env remove --path {}'.format(CONDA_ROOT, MINICONDA_ENV))
     run_cmd('{} install nomkl'.format(CONDA_ROOT))
-    run_cmd('{} create --path {} --force python=2.7 yaml'.format(CONDA_ROOT, MINICONDA_ENV))
+    run_cmd('{} create -p {} python=2.7 yaml'.format(CONDA_ROOT, MINICONDA_ENV))
 
 
 def customize_ogusa_env(args):
