@@ -39,6 +39,7 @@ OGUSA_ENV_PATH = os.path.join(os.environ['WORKSPACE'], 'ogusa_env')
 # Should be set by build script:
 MINICONDA_ROOT = os.environ['MINICONDA_ROOT']
 MINICONDA_ENV = os.environ['MINICONDA_ENV']
+CONDA_ROOT = os.path.join(MINICONDA_ROOT, 'bin', 'conda')
 CONDA = os.path.join(MINICONDA_ENV, 'bin', 'conda')
 PYTHON = os.path.join(MINICONDA_ENV, 'bin', 'python')
 
@@ -53,6 +54,7 @@ def cli():
 
 
 def get_miniconda(args):
+    print("GET MINICONDA")
     numpy_vers = REGRESSION_CONFIG['numpy_version']
     install_ogusa_version = args.ogusabranch
     install_taxcalc_version = REGRESSION_CONFIG['install_taxcalc_version']
@@ -61,16 +63,17 @@ def get_miniconda(args):
     print('CHECKOUT_BUILD_SOURCES')
     run_cmd('wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh')
     run_cmd('bash miniconda.sh -b -p {}'.format(MINICONDA_ROOT))
+    print("GET MINICONDA OK")
 
 def make_ogusa_env(args):
-
-    run_cmd('{} config --set always_yes yes --set changeps1 no'.format(CONDA))
-    run_cmd('{} update conda -n root'.format(CONDA))
-    lines = ' '.join(run_cmd('{} env list'.format(CONDA))).lower()
+    print('MAKE OGUSA ENV')
+    run_cmd('{} config --set always_yes yes --set changeps1 no'.format(CONDA_ROOT))
+    run_cmd('{} update conda -n root'.format(CONDA_ROOT))
+    lines = ' '.join(run_cmd('{} env list'.format(CONDA_ROOT))).lower()
     if 'ogusa_env' in lines:
-        run_cmd('{} env remove --path {}'.format(CONDA, MINICONDA_ENV))
-    run_cmd('{} install nomkl'.format(CONDA))
-    run_cmd('{} create --name ogusa_env --force python=2.7 yaml'.format(CONDA))
+        run_cmd('{} env remove --path {}'.format(CONDA_ROOT, MINICONDA_ENV))
+    run_cmd('{} install nomkl'.format(CONDA_ROOT))
+    run_cmd('{} create --path {} --force python=2.7 yaml'.format(CONDA_ROOT, MINICONDA_ENV))
 
 
 def customize_ogusa_env(args):
