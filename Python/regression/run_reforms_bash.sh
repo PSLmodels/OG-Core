@@ -9,7 +9,7 @@ submit_jobs(){
           export token_part="token=${REMOTE_BUILD_TOKEN}"
           export cause="cause=Cause+CI+Build"
           export branch="ogusabranch=${BRANCH_NAME}"
-          export middle="/job/ci-mode-${reform}/buildWithParameters"
+          export middle="/job/ci-mode-simple-${reform}/buildWithParameters"
           export JENKINS_URL="${JENKINS_DOMAIN}${middle}?${token_part}&${branch}&${cause}"
           echo Attempt to curl $JENKINS_URL with OSPC_API_KEY secret
           if [ "$OSPC_API_KEY" = "" ];then

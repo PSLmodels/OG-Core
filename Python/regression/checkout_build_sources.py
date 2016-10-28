@@ -85,7 +85,7 @@ def customize_ogusa_env(args):
     install_taxcalc_version = REGRESSION_CONFIG['install_taxcalc_version']
     compare_ogusa_version = REGRESSION_CONFIG['compare_ogusa_version']
     compare_taxcalc_version = REGRESSION_CONFIG['compare_taxcalc_version']
-    run_cmd('{} install --force -c ospc openblas pytest toolz scipy numpy={} pandas=0.18.1 matplotlib'.format(CONDA, numpy_vers))
+    run_cmd('{} install --force openblas pytest toolz scipy numpy={} pandas=0.18.1 matplotlib'.format(CONDA, numpy_vers))
     run_cmd('{} remove mkl mkl-service'.format(CONDA), raise_err=False)
     run_cmd('{} install -c ospc taxcalc={} --force'.format(CONDA, install_taxcalc_version))
     run_cmd('git fetch --all')
