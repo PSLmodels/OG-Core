@@ -41,9 +41,9 @@ now the default reform-spec'''
 
 
 _d = os.path.dirname
-REGRESSION_CONFIG = os.path.join(_d(_d(_d(os.path.abspath(__file__)))), '.regression.txt')
+REGRESSION_CONFIG_FILE = os.path.join(_d(_d(_d(os.path.abspath(__file__)))), '.regression.txt')
 REGRESSION_CONFIG = {}
-for line in open(REGRESSION_CONFIG).readlines():
+for line in open(REGRESSION_CONFIG_FILE).readlines():
     line = line.strip()
     if line:
         line = line.split()
@@ -55,16 +55,11 @@ REQUIRED = set(('compare_taxcalc_version',
                 'diff',
                 'numpy_version'))
 if not set(REGRESSION_CONFIG) >= REQUIRED:
-    raise ValueError('.regression.yml at top level of repo needs to define: '.format(REQUIRED - set(REGRESSION_CONFIG)))
+    raise ValueError('.regression.txt at top level of repo needs to define: '.format(REQUIRED - set(REGRESSION_CONFIG)))
 
 OGUSA_ENV_PATH = os.path.join(os.environ['WORKSPACE'], 'ogusa_env')
 
-# Should be set by build script:
-MINICONDA_ROOT = os.environ['MINICONDA_ROOT']
-MINICONDA_ENV = os.environ['MINICONDA_ENV']
-CONDA_ROOT = os.path.join(MINICONDA_ROOT, 'bin', 'conda')
-CONDA = os.path.join(MINICONDA_ENV, 'bin', 'conda')
-PYTHON = os.path.join(MINICONDA_ENV, 'bin', 'python')
+
 def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
 
     # Turn off checks for now
@@ -132,8 +127,6 @@ def make_args_from_regression_config():
                                             args.compare_ogusa_version,
                                             args.standard))
     print('RUN_REFORMS WITH REGRESSION_CONFIG:\n\n{}'.format(pformat(vars(args))))
-    print('RUNNING ON CONDA LIST:\n\n{}'.format(run_cmd('conda list')))
-    print('RUNNING ON PIP FREEZE:\n\n{}'.format(run_cmd('pip freeze')))
     return args
 
 
