@@ -45,9 +45,9 @@ REGRESSION_CONFIG_FILE = os.path.join(_d(_d(_d(os.path.abspath(__file__)))), '.r
 REGRESSION_CONFIG = {}
 for line in open(REGRESSION_CONFIG_FILE).readlines():
     line = line.strip()
-    if line:
-        line = line.split()
-        k, v = (p.split() for p in line)
+    parts = tuple(p.strip() for p in line)
+    if len(parts) == 2:
+        k, v = parts
         REGRESSION_CONFIG[k] = v
 REQUIRED = set(('compare_taxcalc_version',
                 'compare_ogusa_version',
@@ -56,9 +56,6 @@ REQUIRED = set(('compare_taxcalc_version',
                 'numpy_version'))
 if not set(REGRESSION_CONFIG) >= REQUIRED:
     raise ValueError('.regression.txt at top level of repo needs to define: '.format(REQUIRED - set(REGRESSION_CONFIG)))
-
-OGUSA_ENV_PATH = os.path.join(os.environ['WORKSPACE'], 'ogusa_env')
-
 
 def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
 
