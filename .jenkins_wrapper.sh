@@ -26,18 +26,12 @@ conda install --no-deps -c ospc taxcalc=$install_taxcalc_version --force
 if [ "$ogusainstallmethod" = "conda" ];then
     conda install -c ospc ogusa=$ogusaversion
 fi
-mv .regression.txt ../.regression.txt
-git checkout $ogusaversion
-mv ../.regression.txt .regression.txt
-
 if [ "$ogusainstallmethod" = "git" ];then
     python setup.py install
 fi
 
 conda install nomkl
 
-rm -rf Python/regression
-mv ../regression Python/regression
 export puf=`pwd`/../../puf.csv
 ls $puf && cp $puf Python/regression/puf.csv || cp /home/ubuntu/deploy/puf.csv Python/regression/puf.csv
 cd Python/regression
