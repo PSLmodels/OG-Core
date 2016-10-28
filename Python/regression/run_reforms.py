@@ -2,9 +2,9 @@
 '''
 
 '''
+from __future__ import print_function
 run_cmd = None
 try:
-    from __future__ import print_function
     import traceback
     from multiprocessing import Process
     import argparse
