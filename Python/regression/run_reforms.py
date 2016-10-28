@@ -53,9 +53,11 @@ REQUIRED = set(('compare_taxcalc_version',
                 'compare_ogusa_version',
                 'install_taxcalc_version',
                 'diff',
-                'numpy_version'))
-if not set(REGRESSION_CONFIG) >= REQUIRED:
-    raise ValueError('.regression.txt at top level of repo needs to define: '.format(REQUIRED - set(REGRESSION_CONFIG)))
+                'numpy_version',
+                'reform_specs_json'))
+missing = [r for r in REQUIRED if not r in REGRESSION_CONFIG]
+if missing:
+    raise ValueError('.regression.txt at top level of repo needs to define: '.format(missing))
 
 def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
 
