@@ -2,29 +2,40 @@
 '''
 
 '''
-from __future__ import print_function
-from multiprocessing import Process
-import argparse
-import json
-import os
-from pprint import pformat
-import sys
-import time
-import uuid
-sys.path.append("../")
+run_cmd = None
+try:
+    from __future__ import print_function
+    import traceback
+    from multiprocessing import Process
+    import argparse
+    import json
+    import os
+    from pprint import pformat
+    import sys
+    import time
+    import uuid
+    sys.path.append("../")
+    from checkout_build_sources import (checkout_build_sources,
+                                        REGRESSION_CONFIG,
+                                        run_cmd)
+    import matplotlib
+    matplotlib.use('Agg')
+    import pandas as pd
 
-import matplotlib
-matplotlib.use('Agg')
-import pandas as pd
-
-import ogusa
-from ogusa import SS
-from ogusa import TPI
-import postprocess
-from execute import runner # change here for small jobs
-from checkout_build_sources import (checkout_build_sources,
-                                    REGRESSION_CONFIG,
-                                    run_cmd)
+    import ogusa
+    from ogusa import SS
+    from ogusa import TPI
+    import postprocess
+    from execute import runner # change here for small jobs
+except Exception as e:
+    if run_cmd is not None:
+        lines = " ".join(run_cmd('conda env list'))
+    else:
+        lines = ""
+    pref = sys.prefix
+    exc = traceback.format_exc()
+    print('CONDA LIST\n\n', lines,file=sys.stderr)
+    raise ValueError("Failed on sys.prefix {} on imports with {} - {}".format(pref, repr(e), exc))
 #from execute_small import runner
 
 VERSION = "0.5.5"
