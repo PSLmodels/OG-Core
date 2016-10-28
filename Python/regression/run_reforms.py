@@ -3,7 +3,6 @@
 
 '''
 from __future__ import print_function
-run_cmd = None
 try:
     import traceback
     from multiprocessing import Process
@@ -15,8 +14,6 @@ try:
     import time
     import uuid
     sys.path.append("../")
-    from checkout_build_sources import (REGRESSION_CONFIG,
-                                        run_cmd)
     import matplotlib
     matplotlib.use('Agg')
     import pandas as pd
@@ -27,13 +24,8 @@ try:
     import postprocess
     from execute import runner # change here for small jobs
 except Exception as e:
-    if run_cmd is not None:
-        lines = " ".join(run_cmd('conda env list'))
-    else:
-        lines = ""
     pref = sys.prefix
     exc = traceback.format_exc()
-    print('CONDA LIST\n\n', lines,file=sys.stderr)
     raise ValueError("Failed on sys.prefix {} on imports with {} - {}".format(pref, repr(e), exc))
 #from execute_small import runner
 
@@ -46,6 +38,33 @@ formats in order to continue expecting the same
 results in regression testing.  new_reforms.json was
 added on Oct 10, 2016 for this reason and is
 now the default reform-spec'''
+
+
+_d = os.path.dirname
+REGRESSION_CONFIG = os.path.join(_d(_d(_d(os.path.abspath(__file__)))), '.regression.txt')
+REGRESSION_CONFIG = {}
+for line in open(REGRESSION_CONFIG).readlines():
+    line = line.strip()
+    if line:
+        line = line.split()
+        k, v = (p.split() for p in line)
+        REGRESSION_CONFIG[k] = v
+REQUIRED = set(('compare_taxcalc_version',
+                'compare_ogusa_version',
+                'install_taxcalc_version',
+                'diff',
+                'numpy_version'))
+if not set(REGRESSION_CONFIG) >= REQUIRED:
+    raise ValueError('.regression.yml at top level of repo needs to define: '.format(REQUIRED - set(REGRESSION_CONFIG)))
+
+OGUSA_ENV_PATH = os.path.join(os.environ['WORKSPACE'], 'ogusa_env')
+
+# Should be set by build script:
+MINICONDA_ROOT = os.environ['MINICONDA_ROOT']
+MINICONDA_ENV = os.environ['MINICONDA_ENV']
+CONDA_ROOT = os.path.join(MINICONDA_ROOT, 'bin', 'conda')
+CONDA = os.path.join(MINICONDA_ENV, 'bin', 'conda')
+PYTHON = os.path.join(MINICONDA_ENV, 'bin', 'python')
 def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
 
     # Turn off checks for now
