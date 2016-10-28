@@ -15,8 +15,7 @@ try:
     import time
     import uuid
     sys.path.append("../")
-    from checkout_build_sources import (checkout_build_sources,
-                                        REGRESSION_CONFIG,
+    from checkout_build_sources import (REGRESSION_CONFIG,
                                         run_cmd)
     import matplotlib
     matplotlib.use('Agg')
