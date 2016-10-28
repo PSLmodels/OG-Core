@@ -14,7 +14,6 @@ reform_specs_json reforms.json
 dry_run_imports_installs_only True
 
 
-# The next line has the literal - reforms_to_run,
-# then all the names of reforms to run, separated by spaces
+# The next line names to run, separated by spaces
 # do not put a comment on the end of it
 reforms_to_run t1 t2
