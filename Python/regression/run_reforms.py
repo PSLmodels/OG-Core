@@ -45,7 +45,7 @@ REGRESSION_CONFIG_FILE = os.path.join(_d(_d(_d(os.path.abspath(__file__)))), '.r
 REGRESSION_CONFIG = {}
 for line in open(REGRESSION_CONFIG_FILE).readlines():
     line = line.strip()
-    parts = tuple(p.strip() for p in line)
+    parts = tuple(p.strip() for p in line.split())
     if len(parts) == 2:
         k, v = parts
         REGRESSION_CONFIG[k] = v
@@ -57,7 +57,7 @@ REQUIRED = set(('compare_taxcalc_version',
                 'reform_specs_json'))
 missing = [r for r in REQUIRED if not r in REGRESSION_CONFIG]
 if missing:
-    raise ValueError('.regression.txt at top level of repo needs to define: '.format(missing))
+    raise ValueError('.regression.txt at top level of repo needs to define: {}'.format(missing))
 
 def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
 
