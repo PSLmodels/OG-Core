@@ -25,5 +25,5 @@ submit_jobs(){
     fi
 }
 echo Submit REFORMS_TO_RUN: $REFORMS_TO_RUN
-submit_jobs && conda install beautifulsoup4 requests && echo Begin Polling && python polling_jobs.py ${REFORMS_TO_RUN}
+submit_jobs && conda install beautifulsoup4 lxml requests && echo Begin Polling && python polling_jobs.py ${REFORMS_TO_RUN}
 
