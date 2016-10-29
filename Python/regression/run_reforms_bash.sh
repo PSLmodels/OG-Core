@@ -24,6 +24,18 @@ submit_jobs(){
            done
     fi
 }
+setup_miniconda(){
+    wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh;
+    rm -rf miniconda;
+    rm -rf OG-USA;
+    bash miniconda.sh -b -p miniconda;
+    export PATH=`pwd`/miniconda/bin:$PATH;
+    conda config --set always_yes yes --set changeps1 no;
+    conda install beautifulsoup4 lxml requests;
+}
+poll(){
+    echo Begin Polling && python polling_jobs.py ${REFORMS_TO_RUN}
+}
 echo Submit REFORMS_TO_RUN: $REFORMS_TO_RUN
-submit_jobs && conda install beautifulsoup4 lxml requests && echo Begin Polling && python polling_jobs.py ${REFORMS_TO_RUN}
+submit_jobs && setup_miniconda && poll
 
