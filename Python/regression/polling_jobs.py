@@ -44,7 +44,7 @@ def get_diff_files(reform):
     if not os.path.exists('artifacts'):
         os.mkdir('artifacts')
     content = get_workspace_main(reform)
-    for a in bs4.BeautifulSoup(content, 'html5lib').find_all('a'):
+    for a in bs4.BeautifulSoup(content, 'lxml').find_all('a'):
         href = a.get('href', '')
         if 'txt' in href  or 'csv' in href:
             if '*view*' in href:
@@ -77,7 +77,7 @@ def find_build_number(reform, max_wait=300, build_num='lastBuild'):
     content = request('{}/job/ci-mode-simple-{}/lastBuild/'.format(JENKINS_DOMAIN, reform))
     if build_num == 0:
         build_num = 'lastBuild'
-    for h1 in bs4.BeautifulSoup(content, 'html5lib').find_all('h1'):
+    for h1 in bs4.BeautifulSoup(content, 'lxml').find_all('h1'):
         txt = h1.get_text()
         mat = re.search('Build\s+#\s*(\d+)\s+', txt)
         if bool(mat):
