@@ -43,6 +43,7 @@ push_artifacts(){
     export org=OpenSourcePolicyCenter;
     export pkg=${org}/OGUSAregression;
     export summary="Regression artifacts from $VERSION";
+    echo tar cjvf artifacts.tar.bz2 artifacts/* \&\& anaconda --token ${ANACONDA_OSPC_TOKEN} upload --user $org --version $VERSION --package $pkg --package-type file --summary "$summary" artifacts.tar.bz2;
     tar cjvf artifacts.tar.bz2 artifacts/* && anaconda --token ${ANACONDA_OSPC_TOKEN} upload --user $org --version $VERSION --package $pkg --package-type file --summary "$summary" artifacts.tar.bz2;
 }
 
