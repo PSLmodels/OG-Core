@@ -10,7 +10,7 @@ submit_jobs(){
 
         for reform in $(echo ${REFORMS_TO_RUN} | tr " " "\n");
            do
-              export BUILD_CAUSE="Change on ${BRANCH_NAME} at $(date)"
+              export BUILD_CAUSE="$VERSION"
               export token_part="token=${REMOTE_BUILD_TOKEN}";
               export cause="cause=$(echo $BUILD_CAUSE | tr " " "+")";
               export branch="ogusabranch=${BRANCH_NAME}";
@@ -38,14 +38,15 @@ poll(){
 }
 push_artifacts(){
     echo Push artifacts;
-    export VERSION="${BRANCH_NAME} $(date)";
-    export VERSION=$(echo $VERSION | sed 's/:/_/g' | sed 's/ /_/g');
-    export org=OpenSourcePolicyCenter;
-    export pkg=${org}/OGUSAregression;
+    export org=opensourcepolicycenter;
+    export pkg=ogusaregression;
     export summary="Regression artifacts from $VERSION";
-    echo tar cjvf artifacts.tar.bz2 artifacts/* \&\& anaconda --token ${ANACONDA_OSPC_TOKEN} upload --user $org --version $VERSION --package $pkg --package-type file --summary "$summary" artifacts.tar.bz2;
-    tar cjvf artifacts.tar.bz2 artifacts/* && anaconda --token ${ANACONDA_OSPC_TOKEN} upload --user $org --version $VERSION --package $pkg --package-type file --summary "$summary" artifacts.tar.bz2;
+    mv artifacts $VERSION
+    echo tar cjvf ${VERSION}.tar.bz2 ${VERSION}/* \&\& anaconda --token ${ANACONDA_OSPC_TOKEN} upload --user $org --version $VERSION --package $pkg --package-type file --summary \"$summary\" ${VERSION}.tar.bz2;
+    tar cjvf ${VERSION}.tar.bz2 ${VERSION}/* && anaconda --token ${ANACONDA_OSPC_TOKEN} upload --user $org --version $VERSION --package $pkg --package-type file --summary "$summary" ${VERSION}.tar.bz2;
 }
+export VERSION="${BRANCH_NAME} $(date)";
+export VERSION=$(echo $VERSION | sed 's/:/_/g' | sed 's/ /_/g');
 
 echo Submit REFORMS_TO_RUN: $REFORMS_TO_RUN
 set +x
