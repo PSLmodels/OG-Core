@@ -5,9 +5,10 @@ import re
 
 import bs4
 import requests
+import pandas as pd
 from requests.auth import HTTPBasicAuth
 
-POLL_INTERVAL = 30 # seconds
+POLL_INTERVAL = 18 # seconds
 OSPC_API_KEY = os.environ['OSPC_API_KEY']
 JENKINS_DOMAIN= os.environ.get("JENKINS_DOMAIN", "http://54.159.16.16:8080")
 
@@ -62,7 +63,6 @@ def get_diff_files(reform):
 
 def is_started_finished(reform, build_num='lastBuild'):
     log = get_log(reform, build_num=build_num)
-    print(log)
     lines = filter(None, log.splitlines())
     if lines:
         first, last = lines[0], lines[-1]
@@ -125,6 +125,8 @@ def get_results():
     for reform in args.reforms:
         print('Get diff / results files for {}'.format(reform))
         get_diff_files(reform)
+
+    results_data_files = []
     for root, dirs, files in os.walk('artifacts'):
         for f in files:
             f = os.path.abspath(os.path.join(root, f))
@@ -132,6 +134,19 @@ def get_results():
                 with open(f) as f2:
                     content = f2.read()
                 print('From artifact {}:\n\n{}\n\n'.format(f, content))
+            if f.startswith('results_data') and f.endswith('.csv'):
+                results_data_files.append(f)
+    if not os.path.exists('artifacts'):
+        os.mkdir('artifacts')
+    if results_data_files:
+        dataframes = [pd.read_csv(d, index_col=0) for d in results_data_files]
+        keys = [os.path.basename(d).replace('results_data_', '').replace('.csv', '') for di in ds]
+        df = pd.concat(dataframes, keys=keys)
+        df.index.names = 'reform', 'category'
+        df.to_csv('artifacts/results_data_concat.csv')
+    else:
+        with open('artifacts/results_data_concat.csv', 'w') as f:
+            f.write('No artifacts')
     print('ok')
 
 if __name__ == '__main__':

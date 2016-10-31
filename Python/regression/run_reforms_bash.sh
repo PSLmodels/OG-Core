@@ -31,11 +31,17 @@ setup_miniconda(){
     bash miniconda.sh -b -p miniconda;
     export PATH=`pwd`/miniconda/bin:$PATH;
     conda config --set always_yes yes --set changeps1 no;
-    conda install beautifulsoup4 lxml requests;
+    conda install beautifulsoup4 lxml requests pandas;
 }
 poll(){
-    echo Begin Polling && python polling_jobs.py ${REFORMS_TO_RUN}
+    echo Begin Polling && python polling_jobs.py ${REFORMS_TO_RUN} && echo End Polling;
+}
+push_artifacts(){
+    echo Push artifacts;
+    export VERSION="${BRANCH_NAME} $(date)"
+    export VERSION=$(echo $VERSION | sed 's/:/_/g' | sed 's/ /_/g')
+    anaconda --token ${ANACONDA_OSPC_TOKEN} upload --user OpenSourcePolicyCenter --version $VERSION --package OpenSourcePolicyCenter/OGUSAregression artifacts/*
 }
 echo Submit REFORMS_TO_RUN: $REFORMS_TO_RUN
-submit_jobs && setup_miniconda && poll
+submit_jobs && setup_miniconda && poll && push_artifacts
 
