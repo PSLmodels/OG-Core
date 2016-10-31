@@ -31,7 +31,7 @@ setup_miniconda(){
     bash miniconda.sh -b -p miniconda;
     export PATH=`pwd`/miniconda/bin:$PATH;
     conda config --set always_yes yes --set changeps1 no;
-    conda install beautifulsoup4 lxml requests pandas;
+    conda install beautifulsoup4 lxml requests pandas anaconda-client;
 }
 poll(){
     echo Begin Polling && python polling_jobs.py ${REFORMS_TO_RUN} && echo End Polling;
