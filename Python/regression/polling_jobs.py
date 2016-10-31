@@ -105,9 +105,14 @@ def get_results():
         build_nums[reform] = find_build_number(reform)
     reforms_outstanding = set(args.reforms)
     poll = POLL_INTERVAL / 6
+    last_print = time.time()
     while reforms_outstanding:
         for reform in tuple(reforms_outstanding):
             lines, started, finished = is_started_finished(reform, build_num=build_nums[reform])
+            if time.time() - last_print > 60 * 2:
+                # Avoid build getting killed for lack of IO
+                print('Polling...')
+                last_print = time.time()
             if not started:
                 print("WARNING: Expected started to be True - lines : {}".format('\n'.join(lines)))
             if finished:
