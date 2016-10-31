@@ -38,9 +38,11 @@ poll(){
 }
 push_artifacts(){
     echo Push artifacts;
-    export VERSION="${BRANCH_NAME} $(date)"
-    export VERSION=$(echo $VERSION | sed 's/:/_/g' | sed 's/ /_/g')
-    anaconda --token ${ANACONDA_OSPC_TOKEN} upload --user OpenSourcePolicyCenter --version $VERSION --package OpenSourcePolicyCenter/OGUSAregression artifacts/*
+    export VERSION="${BRANCH_NAME} $(date)";
+    export VERSION=$(echo $VERSION | sed 's/:/_/g' | sed 's/ /_/g');
+    zip -r artifacts.zip artifacts/*;
+    export pkg=OpenSourcePolicyCenter/OGUSAregression
+    anaconda --token ${ANACONDA_OSPC_TOKEN} upload --user OpenSourcePolicyCenter --version $VERSION --package $pkg --package-type file artifacts.zip
 }
 echo Submit REFORMS_TO_RUN: $REFORMS_TO_RUN
 submit_jobs && setup_miniconda && poll && push_artifacts
