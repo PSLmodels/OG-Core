@@ -49,7 +49,7 @@ for line in open(REGRESSION_CONFIG_FILE).readlines():
     if len(parts) == 2:
         k, v = parts
         if k in ('diff', 'dry_run_imports_installs_only'):
-            v = bool(v)
+            v = v.lower() == 'true'
         REGRESSION_CONFIG[k] = v
 REQUIRED = set(('compare_taxcalc_version',
                 'compare_ogusa_version',

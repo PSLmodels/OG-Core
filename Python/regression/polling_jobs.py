@@ -102,7 +102,14 @@ def get_results():
     args = cli()
     build_nums = {}
     for reform in args.reforms:
-        build_nums[reform] = find_build_number(reform)
+        for retries in range(30):
+            try:
+                build_nums[reform] = find_build_number(reform)
+                break
+            except Exception as e:
+                time.sleep(10)
+        if not reform in build_nums:
+            raise
     reforms_outstanding = set(args.reforms)
     poll = POLL_INTERVAL / 6
     last_print = time.time()
