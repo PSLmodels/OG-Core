@@ -33,10 +33,10 @@ fi
 conda install nomkl
 
 cd Python/regression
-
+cp $WORKSPACE/puf.csv ./puf.csv
 echo RUN REFORMS
 conda env list
 conda list
-ls puf.csv && python run_reforms.py $reform $ogusabranch
+python run_reforms.py $reform $ogusabranch
 
 
