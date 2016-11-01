@@ -37,6 +37,7 @@ cp $WORKSPACE/puf.csv ./puf.csv
 echo RUN REFORMS
 conda env list
 conda list
+ls -lrth
 python run_reforms.py $reform $ogusabranch
 
 
