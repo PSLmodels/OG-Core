@@ -85,15 +85,23 @@ def find_build_number(reform, max_wait=300, build_num='lastBuild'):
                 build_num = mat.groups()[0]
 
             start = time.time()
+            retries = 0
             while True:
-                lines, started, finished = is_started_finished(reform, build_num)
-                if lines and BUILD_CAUSE.lower() in ' '.join(lines).lower():
-                    print('Found build number is {}'.format(build_num))
-                    break
-                print('Failed to find build_num', build_num)
-                build_num = find_build_number(reform,
-                                              max_wait=max_wait,
-                                              build_num=int(build_num)-1)
+                try:
+                    lines, started, finished = is_started_finished(reform, build_num)
+                    if lines and BUILD_CAUSE.lower() in ' '.join(lines).lower():
+                        print('Found build number is {}'.format(build_num))
+                        break
+                    print('Failed to find build_num', build_num)
+                    build_num = find_build_number(reform,
+                                                  max_wait=max_wait,
+                                                  build_num=int(build_num)-1)
+
+                except:
+                    if retries > 100:
+                        raise
+                    retries += 1
+                    time.sleep(10)
     return build_num
 
 
@@ -102,14 +110,7 @@ def get_results():
     args = cli()
     build_nums = {}
     for reform in args.reforms:
-        for retries in range(30):
-            try:
-                build_nums[reform] = find_build_number(reform)
-                break
-            except Exception as e:
-                time.sleep(10)
-        if not reform in build_nums:
-            raise
+        build_nums[reform] = find_build_number(reform)
     reforms_outstanding = set(args.reforms)
     poll = POLL_INTERVAL / 6
     last_print = time.time()
