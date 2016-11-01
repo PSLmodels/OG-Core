@@ -11,9 +11,9 @@ reform_specs_json reforms.json
 
 # Just check if you can download and install
 # the specs above and import * from run_reforms.py
-dry_run_imports_installs_only True
+dry_run_imports_installs_only False
 
 
 # The next line names to run, separated by spaces
 # do not put a comment on the end of it
-reforms_to_run t1 t2
+reforms_to_run reform0 reform1 reform2 reform3 reform4 reform5 reform6 reform7 reform8 reform9  t1 t2

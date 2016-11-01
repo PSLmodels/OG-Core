@@ -48,6 +48,8 @@ for line in open(REGRESSION_CONFIG_FILE).readlines():
     parts = tuple(p.strip() for p in line.split())
     if len(parts) == 2:
         k, v = parts
+        if k in ('diff', 'dry_run_imports_installs_only'):
+            v = bool(v)
         REGRESSION_CONFIG[k] = v
 REQUIRED = set(('compare_taxcalc_version',
                 'compare_ogusa_version',
@@ -131,7 +133,7 @@ def make_args_from_regression_config():
 
 def main():
     args = make_args_from_regression_config()
-    if getattr(args, 'dry_run_imports_installs_only', False):
+    if bool(getattr(args, 'dry_run_imports_installs_only', False)):
         print("DRY_RUN_IMPORTS_INSTALLS_ONLY OK")
         return
     with open(args.reform_specs_json, "r") as f:
