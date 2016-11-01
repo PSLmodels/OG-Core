@@ -32,12 +32,25 @@ fi
 
 conda install nomkl
 
-export puf=`pwd`/../../puf.csv
-ls $puf && cp $puf Python/regression/puf.csv || cp /home/ubuntu/deploy/puf.csv Python/regression/puf.csv || cp /home/ec2-user/puf.csv Python/regression/puf.csv
+export puf=/home/ubuntu/puf.csv
+if [ -e "$puf" ];then
+    echo $puf
+else
+    export puf=/home/ec2-user/puf.csv
+    if [ -e "$puf" ];then
+        echo $puf
+    else
+        export puf=no_puf
+    fi
+fi
 cd Python/regression
-
-echo RUN REFORMS
-conda env list
-conda list
-python run_reforms.py $reform $ogusabranch
+if [ "$puf" = "no_puf" ];then
+    echo Failure puf.csv is not here
+    ls $puf # force build failure
+else
+    echo RUN REFORMS
+    conda env list
+    conda list
+    python run_reforms.py $reform $ogusabranch
+fi
 
