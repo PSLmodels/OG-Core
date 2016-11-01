@@ -33,7 +33,7 @@ fi
 conda install nomkl
 
 export puf=`pwd`/../../puf.csv
-ls $puf && cp $puf Python/regression/puf.csv || cp /home/ubuntu/deploy/puf.csv Python/regression/puf.csv
+ls $puf && cp $puf Python/regression/puf.csv || cp /home/ubuntu/deploy/puf.csv Python/regression/puf.csv || cp /home/ec2-user/puf.csv Python/regression/puf.csv
 cd Python/regression
 
 echo RUN REFORMS

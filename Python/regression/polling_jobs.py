@@ -95,9 +95,11 @@ def find_build_number(reform, max_wait=300, build_num='lastBuild'):
                     print('Failed to find build_num', build_num)
                     build_num = find_build_number(reform,
                                                   max_wait=max_wait,
-                                                  build_num=int(build_num)-1)
+                                                  build_num=build_num)
+                    build_num -= 1
 
                 except:
+                    build_num = 'lastBuild'
                     if retries > 100:
                         raise
                     retries += 1
