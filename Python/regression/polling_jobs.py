@@ -73,7 +73,9 @@ def is_started_finished(reform, build_num='lastBuild'):
     return lines, started, finished
 
 
-def find_build_number(reform, max_wait=300, build_num='lastBuild'):
+def find_build_number(reform, max_wait=300,
+                      build_num='lastBuild',
+                      try_once=False):
     content = request('{}/job/ci-mode-simple-{}/lastBuild/'.format(JENKINS_DOMAIN, reform))
     if build_num == 0:
         build_num = 'lastBuild'
@@ -95,12 +97,13 @@ def find_build_number(reform, max_wait=300, build_num='lastBuild'):
                     print('Failed to find build_num', build_num)
                     build_num = find_build_number(reform,
                                                   max_wait=max_wait,
-                                                  build_num=build_num)
+                                                  build_num=build_num,
+                                                  try_once=True)
                     build_num -= 1
 
                 except:
                     build_num = 'lastBuild'
-                    if retries > 100:
+                    if retries > 100 or try_once:
                         raise
                     retries += 1
                     time.sleep(10)
