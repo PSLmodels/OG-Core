@@ -39,5 +39,5 @@ cd Python/regression
 echo RUN REFORMS
 conda env list
 conda list
-$WORKSPACE/miniconda/envs/ogusa_env/bin/python run_reforms.py $reform $ogusabranch
+python run_reforms.py $reform $ogusabranch
 
