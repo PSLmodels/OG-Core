@@ -9,8 +9,8 @@ node {
                     sh '''echo About to checkout scm'''
                     checkout scm
                     sh '''echo Checked out scm'''
-                    sh '''cp $PUF_FILE Python/regression'''
-                    sh '''cd Python/regression && bash run_reforms_bash.sh'''
+                    sh '''cp $PUF_FILE Python/regression/puf.csv'''
+                    sh '''cd Python/regression && ls -lrth puf.csv && bash run_reforms_bash.sh'''
                 }
             }
         }
