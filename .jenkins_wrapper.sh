@@ -10,7 +10,6 @@ from_config compare_taxcalc_version
 
 wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
 rm -rf $WORKSPACE/miniconda
-rm -rf OG-USA
 bash miniconda.sh -b -p $WORKSPACE/miniconda
 export PATH="$WORKSPACE/miniconda/bin:$PATH"
 conda config --set always_yes yes --set changeps1 no
