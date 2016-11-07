@@ -36,6 +36,9 @@ echo RUN REFORMS
 conda env list
 conda list
 ls -lrth
+stat puf.csv
+head -n 1 puf.csv
+md5sum puf.csv
 python run_reforms.py $reform $ogusabranch
 
 
