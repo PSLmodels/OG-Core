@@ -32,7 +32,6 @@ fi
 conda install nomkl
 
 cd Python/regression
-cp $WORKSPACE/puf.csv ./puf.csv
 echo RUN REFORMS
 conda env list
 conda list
