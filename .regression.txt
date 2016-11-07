@@ -16,4 +16,4 @@ dry_run_imports_installs_only False
 
 # The next line names to run, separated by spaces
 # do not put a comment on the end of it
-reforms_to_run reform0 t1
+reforms_to_run reform0
