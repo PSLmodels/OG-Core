@@ -1,4 +1,7 @@
 '''
+This file, rather than execute.py, is used in Travis CI testing of pull
+requests. It needs to be updated in parallel with execute.py.
+
 A 'smoke test' for the ogusa package. Uses a fake data set to run the
 baseline
 '''
@@ -12,7 +15,9 @@ import ogusa
 ogusa.parameters.DATASET = 'SMALL'
 
 
-def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=False, age_specific=False, reform={}, user_params={}, guid='', run_micro=True):
+def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=False, 
+  age_specific=False, reform={}, user_params={}, guid='', 
+  run_micro=True, small_open=False):
 
     #from ogusa import parameters, wealth, labor, demographics, income
     from ogusa import parameters, demographics, income, utils
@@ -38,6 +43,7 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=False, age
     print ("in runner, baseline is ", baseline)
     run_params = ogusa.parameters.get_parameters(baseline=baseline, guid=guid)
     run_params['analytical_mtrs'] = analytical_mtrs
+    run_params['small_open'] = small_open
 
     # Modify ogusa parameters based on user input
     if 'frisch' in user_params:
@@ -70,6 +76,7 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=False, age
                 'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
                 'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
                 'analytical_mtrs', 'b_ellipse', 'k_ellipse', 'upsilon',
+                'small_open', 'ss_firm_r', 'ss_hh_r', 'tpi_firm_r', 'tpi_hh_r',
                 'chi_b_guess', 'chi_n_guess','etr_params','mtrx_params',
                 'mtry_params','tau_payroll', 'tau_bq',
                 'retire', 'mean_income_data', 'g_n_vector',
@@ -89,9 +96,9 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=False, age
     sim_params['output_dir'] = output_base
     sim_params['run_params'] = run_params
 
-    income_tax_params, ss_parameters, iterative_params, chi_params = SS.create_steady_state_parameters(**sim_params)
+    income_tax_params, ss_parameters, iterative_params, chi_params, small_open_params = SS.create_steady_state_parameters(**sim_params)
 
-    ss_outputs = SS.run_SS(income_tax_params, ss_parameters, iterative_params, chi_params, baseline,
+    ss_outputs = SS.run_SS(income_tax_params, ss_parameters, iterative_params, chi_params, small_open_params, baseline,
                                      baseline_dir=baseline_dir)
 
     '''
@@ -119,10 +126,10 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=False, age
     sim_params['baseline_dir'] = baseline_dir
 
 
-    income_tax_params, tpi_params, iterative_params, initial_values, SS_values = TPI.create_tpi_params(**sim_params)
+    income_tax_params, tpi_params, iterative_params, small_open_params, initial_values, SS_values = TPI.create_tpi_params(**sim_params)
 
     tpi_output, macro_output = TPI.run_TPI(income_tax_params,
-        tpi_params, iterative_params, initial_values, SS_values, output_dir=output_base)
+        tpi_params, iterative_params, small_open_params, initial_values, SS_values, output_dir=output_base)
 
 
     '''
@@ -145,7 +152,9 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=False, age
     print "took {0} seconds to get that part done.".format(time.time() - tick)
 
 
-def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=False, age_specific=False, reform={}, user_params={}, guid='', run_micro=True):
+def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=False, 
+  age_specific=False, reform={}, user_params={}, 
+  guid='', run_micro=True, small_open=False):
 
     from ogusa import parameters, demographics, income, utils
     from ogusa import txfunc
@@ -170,6 +179,7 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=False, 
     print ("in runner, baseline is ", baseline)
     run_params = ogusa.parameters.get_parameters(baseline=baseline, guid=guid)
     run_params['analytical_mtrs'] = analytical_mtrs
+    run_params['small_open'] = small_open
 
     # Modify ogusa parameters based on user input
     if 'frisch' in user_params:
@@ -212,6 +222,7 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=False, 
                 'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
                 'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
                 'analytical_mtrs', 'b_ellipse', 'k_ellipse', 'upsilon',
+                'small_open', 'ss_firm_r', 'ss_hh_r', 'tpi_firm_r', 'tpi_hh_r',
                 'chi_b_guess', 'chi_n_guess','etr_params','mtrx_params',
                 'mtry_params','tau_payroll', 'tau_bq',
                 'retire', 'mean_income_data', 'g_n_vector',
@@ -232,9 +243,9 @@ def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=False, 
     sim_params['output_dir'] = output_base
     sim_params['run_params'] = run_params
 
-    income_tax_params, ss_params, iterative_params, chi_params= SS.create_steady_state_parameters(**sim_params)
+    income_tax_params, ss_params, iterative_params, chi_params, small_open_params= SS.create_steady_state_parameters(**sim_params)
 
-    ss_outputs = SS.run_SS(income_tax_params, ss_params, iterative_params, chi_params, baseline,
+    ss_outputs = SS.run_SS(income_tax_params, ss_params, iterative_params, chi_params, small_open_params, baseline,
                                      baseline_dir=baseline_dir)
 
     '''
