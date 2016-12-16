@@ -35,11 +35,11 @@ cd Python/regression
 echo RUN REFORMS
 conda env list
 conda list
+cp $WORKSPACE/puf.csv ./puf.csv
 ls -lrth
 stat puf.csv
 head -n 1 puf.csv
 md5sum puf.csv
-
 python run_reforms.py $reform $ogusabranch
 
 
