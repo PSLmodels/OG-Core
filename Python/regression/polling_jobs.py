@@ -10,7 +10,7 @@ from requests.auth import HTTPBasicAuth
 
 POLL_INTERVAL = 18 # seconds
 OSPC_API_KEY = os.environ['OSPC_API_KEY']
-JENKINS_DOMAIN= os.environ.get("JENKINS_DOMAIN", "http://54.159.16.16:8080")
+JENKINS_DOMAIN= os.environ["JENKINS_DOMAIN"]
 
 BUILD_CAUSE = os.environ['BUILD_CAUSE']
 

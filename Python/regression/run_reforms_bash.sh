@@ -1,7 +1,5 @@
 #!/bin/bash
 
-export JENKINS_DOMAIN="http://54.159.16.16:8080"
-
 submit_jobs(){
     export REFORMS_TO_RUN=$(cat ../../.regression.txt | grep reforms_to_run | sed 's/reforms_to_run//');
     if [ "${REFORMS_TO_RUN}" = "" ];then
