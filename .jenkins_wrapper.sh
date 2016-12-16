@@ -6,7 +6,7 @@ from_config numpy_version
 from_config install_taxcalc_version
 from_config compare_ogusa_version
 from_config compare_taxcalc_version
-
+from_config ogusainstallmethod
 
 wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
 rm -rf $WORKSPACE/miniconda
