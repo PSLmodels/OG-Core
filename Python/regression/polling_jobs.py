@@ -79,7 +79,7 @@ def find_build_number(reform, max_wait=300,
     content = request('{}/job/ci-mode-simple-{}/lastBuild/'.format(JENKINS_DOMAIN, reform))
     if build_num == 0:
         build_num = 'lastBuild'
-    for h1 in bs4.BeautifulSoup(content, 'lxml').find_all('h1'):
+    for h1 in bs4.BeautifulSoup(content, 'html.parser').find_all('h1'):
         txt = h1.get_text()
         mat = re.search('Build\s+#\s*(\d+)\s+', txt)
         if bool(mat):
