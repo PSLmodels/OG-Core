@@ -45,7 +45,7 @@ def get_diff_files(reform):
     if not os.path.exists('artifacts'):
         os.mkdir('artifacts')
     content = get_workspace_main(reform)
-    for a in bs4.BeautifulSoup(content, 'lxml').find_all('a'):
+    for a in bs4.BeautifulSoup(content, 'html.parser').find_all('a'):
         href = a.get('href', '')
         if 'txt' in href  or 'csv' in href:
             if '*view*' in href:
