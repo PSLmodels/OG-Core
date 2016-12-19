@@ -124,7 +124,7 @@ def get_results():
     build_nums = {}
     started = time.time()
     while set(build_nums) < set(args.reforms):
-        for reform in set(args.reform) - set(build_nums):
+        for reform in set(args.reforms) - set(build_nums):
             try:
                 build_nums[reform] = find_build_number(reform)
             except Exception as e:
