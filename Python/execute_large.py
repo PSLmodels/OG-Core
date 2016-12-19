@@ -1,4 +1,6 @@
 '''
+This file is no longer actively used. - SFurth, 11/10/2016
+
 A 'smoke test' for the ogusa package. Uses a fake data set to run the
 baseline
 '''

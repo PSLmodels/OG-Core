@@ -99,6 +99,7 @@ def read_tax_func_estimate(pickle_path, pickle_file):
     --------------------------------------------------------------------
     '''
     if os.path.exists(pickle_path):
+        print 'pickle path exists'
         with open(pickle_path) as pfile:
             dict_params = pickle.load(pfile)
     else:
@@ -203,6 +204,15 @@ frisch       = scalar, Frisch elasticity that is used to fit ellipitcal utility
 b_ellipse    = scalar, value of b for elliptical fit of utility function
 k_ellipse    = scalar, value of k for elliptical fit of utility function
 upsilon      = scalar, value of omega for elliptical fit of utility function
+------------------------------------------------------------------------
+Small Open Economy Parameters:
+------------------------------------------------------------------------
+
+ss_firm_r   = scalar, world interest rate available to firms in the steady state
+ss_hh_r     = scalar, world interest rate available to households in the steady state
+tpi_firm_r  = [T+S,] vector, world interest rate (firm). Must be ss_firm_r in last period.
+tpi_hh_r    = [T+S,] vector, world interest rate (household). Must be ss_firm_r in last period.
+
 ------------------------------------------------------------------------
 Tax Parameters:
 ------------------------------------------------------------------------
@@ -312,6 +322,14 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     frisch = 0.4 # Frisch elasticity consistent with Altonji (JPE, 1996) and Peterman (Econ Inquiry, 2016)
     b_ellipse, upsilon = ellip.estimation(frisch,ltilde)
     k_ellipse = 0 # this parameter is just a level shifter in utlitiy - irrelevant for analysis
+    
+    # Small Open Economy parameters. Currently these are placeholders. Can introduce a 
+    # borrow/lend spread and a time path from t=0 to t=T-1. However, from periods T through 
+    # T+S, the steady state rate should hold.
+    ss_firm_r   = 0.04
+    ss_hh_r     = 0.04
+    tpi_firm_r  = np.ones(T+S)*ss_firm_r
+    tpi_hh_r    = np.ones(T+S)*ss_hh_r
 
     # Tax parameters:
     #   Income Tax Parameters
@@ -440,6 +458,16 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     frisch = 0.4 # Frisch elasticity consistent with Altonji (JPE, 1996) and Peterman (Econ Inquiry, 2016)
     b_ellipse, upsilon = ellip.estimation(frisch,ltilde)
     k_ellipse = 0 # this parameter is just a level shifter in utlitiy - irrelevant for analysis
+    
+    # Small Open Economy parameters. Currently these are placeholders. Can introduce a 
+    # borrow/lend spread and a time path from t=0 to t=T-1. However, from periods T through 
+    # T+S, the steady state rate should hold.
+    ss_firm_r_annual   =  0.04
+    ss_hh_r_annual     =  0.04
+    ss_firm_r          = (1 + ss_firm_r_annual) ** (float(ending_age - starting_age) / S) - 1
+    ss_hh_r            = (1 + ss_hh_r_annual)   ** (float(ending_age - starting_age) / S) - 1
+    tpi_firm_r         = np.ones(T+S)*ss_firm_r
+    tpi_hh_r           = np.ones(T+S)*ss_hh_r
 
     # Tax parameters:
     #   Income Tax Parameters
@@ -667,7 +695,6 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     (omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates,
         omega_S_preTP) = dem.get_pop_objs(E, S, T, 1, 100, start_year,
         flag_graphs)
-
     # Interpolate chi_n_guesses and create omega_SS_80 if necessary
     if S == 80:
         chi_n_guess = chi_n_guess_80.copy()
