@@ -326,8 +326,8 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     # Small Open Economy parameters. Currently these are placeholders. Can introduce a 
     # borrow/lend spread and a time path from t=0 to t=T-1. However, from periods T through 
     # T+S, the steady state rate should hold.
-    ss_firm_r   = 0.03
-    ss_hh_r     = 0.03
+    ss_firm_r   = 0.04
+    ss_hh_r     = 0.04
     tpi_firm_r  = np.ones(T+S)*ss_firm_r
     tpi_hh_r    = np.ones(T+S)*ss_hh_r
 
@@ -434,9 +434,8 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     --------------------------------------------------------------------
     '''
     # Model Parameters
-    S = int(25)
-    #lambdas = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
-    lambdas = np.array([0.6,0.4])
+    S = int(80)
+    lambdas = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
     J = lambdas.shape[0]
     T = int(4 * S)
     BW = int(10)
@@ -463,8 +462,8 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     # Small Open Economy parameters. Currently these are placeholders. Can introduce a 
     # borrow/lend spread and a time path from t=0 to t=T-1. However, from periods T through 
     # T+S, the steady state rate should hold.
-    ss_firm_r_annual   =  0.05
-    ss_hh_r_annual     =  0.05
+    ss_firm_r_annual   =  0.04
+    ss_hh_r_annual     =  0.04
     ss_firm_r          = (1 + ss_firm_r_annual) ** (float(ending_age - starting_age) / S) - 1
     ss_hh_r            = (1 + ss_hh_r_annual)   ** (float(ending_age - starting_age) / S) - 1
     tpi_firm_r         = np.ones(T+S)*ss_firm_r
