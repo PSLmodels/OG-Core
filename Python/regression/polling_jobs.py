@@ -77,19 +77,16 @@ def is_started_finished(reform, build_num='lastBuild'):
     return lines, started, finished
 
 
-_printed = {}
-_limit = 10
 def max_print(*args, **kwargs):
-    global _printed
-    global _limit
+    _limit = 10
     key = repr((args, kwargs))
     if not key in _printed:
         _printed[key] = 0
     _printed[key] += 1
     if _printed[key] < _limit:
         print(*args, **kwargs)
-        _printed[key] = 0
-        _limit *= 4
+    elif _printed[key] == _limit:
+        print("LAST PRINT", *args, **kwargs)
 
 def find_build_number(reform, max_wait=300,
                       build_num='lastBuild',
