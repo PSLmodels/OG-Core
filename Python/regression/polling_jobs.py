@@ -109,7 +109,6 @@ def find_build_number(reform, max_wait=300,
             if lines and BUILD_CAUSE.lower() in ' '.join(lines).lower():
                 print('Found build number is {}'.format(build_num))
                 break
-            max_print('Failed to find build_num', build_num)
             build_num = find_build_number(reform,
                                           max_wait=max_wait,
                                           build_num=build_num,
@@ -125,8 +124,10 @@ def get_results():
     started = time.time()
     while set(build_nums) < set(args.reforms):
         for reform in set(args.reforms) - set(build_nums):
+            print('SEARCH', reform)
             try:
                 build_nums[reform] = find_build_number(reform)
+                print('Found', reform, '=', build_nums[reform])
             except Exception as e:
                 if time.time() - started > TIMEOUT_BEFORE_START:
                     print('Never found', set(args.reforms) - set(build_nums))
