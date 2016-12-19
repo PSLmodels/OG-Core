@@ -108,7 +108,5 @@ def dump_diff_output(baseline_dir, policy_dir):
     pct_changes[6,11] = (ss_policy['T_Hss']-ss_baseline['T_Hss'])/ss_baseline['T_Hss']
 
     #print 'pct changes: ', pct_changes
-
-    return pct_changes
-
-
+    #macro_out = (pct_changes, baseline_macros, policy_macros)
+    return pct_changes, baseline_macros, policy_macros

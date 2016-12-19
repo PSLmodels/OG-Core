@@ -35,6 +35,7 @@ import utils
 import household
 import firm
 import os
+import csv
 
 
 '''
@@ -98,7 +99,8 @@ def create_tpi_params(**sim_params):
                   sim_params['lambdas'], sim_params['imm_rates'], sim_params['e'], sim_params['retire'], sim_params['mean_income_data'], factor] + \
                   wealth_tax_params + ellipse_params + chi_params
     iterative_params = [sim_params['maxiter'], sim_params['mindist_SS'], sim_params['mindist_TPI']]
-    
+    small_open_params = [sim_params['small_open'], sim_params['tpi_firm_r'], sim_params['tpi_hh_r']]
+
 
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
                   g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,\
@@ -136,7 +138,7 @@ def create_tpi_params(**sim_params):
 
     initial_values = (K0, b_sinit, b_splus1init, factor, initial_b, initial_n, omega_S_preTP)
 
-    return (income_tax_params, tpi_params, iterative_params, initial_values, SS_values)
+    return (income_tax_params, tpi_params, iterative_params, small_open_params, initial_values, SS_values)
 
 
 def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params):
@@ -447,7 +449,7 @@ def inner_loop(guesses, outer_loop_vars, params):
     return euler_errors, b_mat, n_mat
 
 
-def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_values, output_dir="./OUTPUT"):
+def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, initial_values, SS_values, output_dir="./OUTPUT"):
 
     # unpack tuples of parameters
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
@@ -457,25 +459,31 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
                   factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b, chi_n = tpi_params
     # K0, b_sinit, b_splus1init, L0, Y0,\
     #         w0, r0, BQ0, T_H_0, factor, tax0, c0, initial_b, initial_n, omega_S_preTP = initial_values
+    small_open, tpi_firm_r, tpi_hh_r = small_open_params
     K0, b_sinit, b_splus1init, factor, initial_b, initial_n, omega_S_preTP = initial_values
     Kss, Lss, rss, wss, BQss, T_Hss, bssmat_splus1, nssmat = SS_values
-
 
     TPI_FIG_DIR = output_dir
     # Initialize guesses at time paths
     domain = np.linspace(0, T, T)
-    K_init = (-1 / (domain + 1)) * (Kss - K0) + Kss
-    K_init[-1] = Kss
-    K_init = np.array(list(K_init) + list(np.ones(S) * Kss))
-    L_init = np.ones(T + S) * Lss
-
+    L_init = np.ones(T + S) * Lss  #NOTE: this initial guess could be improved by using guess_n, computed just below here.
+    if small_open == False:    
+        K_init = (-1 / (domain + 1)) * (Kss - K0) + Kss
+        K_init[-1] = Kss
+        K_init = np.array(list(K_init) + list(np.ones(S) * Kss))
+    else:
+        K_params = (alpha, delta, Z)
+        K_init = firm.get_K(L_init, tpi_firm_r, K_params)
     K = K_init
     L = L_init
     Y_params = (alpha, Z)
     Y = firm.get_Y(K, L, Y_params)
     w = firm.get_w(Y, L, alpha)
-    r_params = (alpha, delta)
-    r = firm.get_r(Y, K, r_params)
+    if small_open == False:
+        r_params = (alpha, delta)
+        r = firm.get_r(Y, K, r_params)
+    else:
+        r = tpi_hh_r
     BQ = np.zeros((T + S, J))
     BQ0_params = (omega_S_preTP.reshape(S, 1), lambdas, rho.reshape(S, 1), g_n_vector[0], 'SS')
     BQ0 = household.get_BQ(r[0], initial_b, BQ0_params)
@@ -502,7 +510,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     b_mat = np.zeros((T + S, S, J))
     n_mat = np.zeros((T + S, S, J))
     ind = np.arange(S)
-
+    
     TPIiter = 0
     TPIdist = 10
     PLOT_TPI = False
@@ -542,18 +550,23 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
         bmat_splus1 = np.zeros((T, S, J))
         bmat_splus1[:, :, :] = b_mat[:T, :, :]
 
-        K[0] = K0
-        K_params = (omega[:T-1].reshape(T-1, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T-1].reshape(T-1,S,1), g_n_vector[1:T], 'TPI')
-        K[1:T] = household.get_K(bmat_splus1[:T-1], K_params)
         L_params = (e.reshape(1, S, J), omega[:T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI')
         L[:T]  = firm.get_L(n_mat[:T], L_params)
-
+        if small_open == False:
+            K[0] = K0
+            K_params = (omega[:T-1].reshape(T-1, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T-1].reshape(T-1,S,1), g_n_vector[1:T], 'TPI')
+            K[1:T] = household.get_K(bmat_splus1[:T-1], K_params)
+        else:
+            # K_params previously set to = (alpha, delta, Z)
+            K[:T] = firm.get_K(L[:T], tpi_firm_r[:T], K_params)
         Y_params = (alpha, Z)
         Ynew = firm.get_Y(K[:T], L[:T], Y_params)
         wnew = firm.get_w(Ynew[:T], L[:T], alpha)
-        r_params = (alpha, delta)
-        rnew = firm.get_r(Ynew[:T], K[:T], r_params)
-
+        if small_open == False:
+            r_params = (alpha, delta)
+            rnew = firm.get_r(Ynew[:T], K[:T], r_params)
+        else:
+            rnew = r
         omega_shift = np.append(omega_S_preTP.reshape(1,S),omega[:T-1,:],axis=0)
         BQ_params = (omega_shift.reshape(T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1), 
                      g_n_vector[:T].reshape(T, 1), 'TPI')
@@ -596,7 +609,6 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
 
     Y[:T] = Ynew
 
-
     # Solve HH problem in inner loop
     guesses = (guesses_b, guesses_n)
     outer_loop_vars = (r, w, K, BQ, T_H)
@@ -608,18 +620,24 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     bmat_s[1:, 1:, :] = b_mat[:T-1, :-1, :]
     bmat_splus1 = np.zeros((T, S, J))
     bmat_splus1[:, :, :] = b_mat[:T, :, :]
-
-    K[0] = K0
-    K_params = (omega[:T-1].reshape(T-1, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T-1].reshape(T-1,S,1), g_n_vector[1:T], 'TPI')
-    K[1:T] = household.get_K(bmat_splus1[:T-1], K_params)
+    
     L_params = (e.reshape(1, S, J), omega[:T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI')
     L[:T]  = firm.get_L(n_mat[:T], L_params)
-
+    if small_open == False:
+        K[0] = K0
+        K_params = (omega[:T-1].reshape(T-1, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T-1].reshape(T-1,S,1), g_n_vector[1:T], 'TPI')
+        K[1:T] = household.get_K(bmat_splus1[:T-1], K_params)
+    else:
+        # K_params previously set to = (alpha, delta, Z)
+        K[:T] = firm.get_K(L[:T], tpi_firm_r[:T], K_params)
     Y_params = (alpha, Z)
     Ynew = firm.get_Y(K[:T], L[:T], Y_params)
     wnew = firm.get_w(Ynew[:T], L[:T], alpha)
-    r_params = (alpha, delta)
-    rnew = firm.get_r(Ynew[:T], K[:T], r_params)
+    if small_open == False:
+        r_params = (alpha, delta)
+        rnew = firm.get_r(Ynew[:T], K[:T], r_params)
+    else:
+        rnew = r
 
     omega_shift = np.append(omega_S_preTP.reshape(1,S),omega[:T-1,:],axis=0)
     BQ_params = (omega_shift.reshape(T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1), 
@@ -650,12 +668,27 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
                    BQ[:T].reshape(T, 1, J), tax_path, cons_params)
     C_params = (omega[:T].reshape(T, S, 1), lambdas, 'TPI')
     C = household.get_C(c_path, C_params)
-    I_params = (delta, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
-    I = firm.get_I(bmat_splus1[:T], K[1:T+1], K[:T], I_params)
-    rc_error = Y[:T] - C[:T] - I[:T]
-    print 'Resource Constraint Difference:', rc_error
+    
+    if small_open == False:
+        I_params = (delta, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
+        I = firm.get_I(bmat_splus1[:T], K[1:T+1], K[:T], I_params)
+        rc_error = Y[:T] - C[:T] - I[:T]
+    else:
+        InvestmentPlaceholder = np.zeros(bmat_splus1[:T].shape)
+        I_params = (delta, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
+        I = firm.get_I(InvestmentPlaceholder, K[1:T+1], K[:T], I_params)
+        B_params = (omega[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T].reshape(T,S,1), g_n_vector[1:T+1], 'TPI')
+        B = np.zeros(K.shape)
+        B[0] = K0 # baseline placeholder value
+        B[1:T+1] = household.get_K(bmat_splus1[:T], B_params)
+        BI_params = (0.0, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
+        BI = firm.get_I(bmat_splus1[:T], B[1:T+1], B[:T], BI_params)
+        rc_error = Y[:T] - (C[:T] + BI[:T]) + (tpi_hh_r[:T] * B[:T] - (delta + tpi_firm_r[:T]) * K[:T])
+        print 'Y(T-1):', Y[T-1], '\n','C(T-1):', C[T-1], '\n','K(T-1):', K[T-1], '\n','B(T-1):', B[T-1], '\n','BI(T-1):', BI[T-1], '\n','I(T-1):', I[T-1]
+    
+   # print 'Resource Constraint Difference:', rc_error
 
-    print'Checking time path for violations of constaints.'
+    print'Checking time path for violations of constraints.'
     for t in xrange(T):
         household.constraint_checker_TPI(
             b_mat[t], n_mat[t], c_path[t], t, ltilde)
@@ -663,8 +696,8 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     eul_savings = euler_errors[:, :S, :].max(1).max(1)
     eul_laborleisure = euler_errors[:, S:, :].max(1).max(1)
 
-    print 'Max Euler error, savings: ', eul_savings
-    print 'Max Euler error labor supply: ', eul_laborleisure
+   # print 'Max Euler error, savings: ', eul_savings
+   # print 'Max Euler error labor supply: ', eul_laborleisure
 
     
 
@@ -687,6 +720,19 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, initial_values, SS_
     macro_output = {'Y': Y, 'K': K, 'L': L, 'C': C, 'I': I,
                     'BQ': BQ, 'T_H': T_H, 'r': r, 'w': w, 
                     'tax_path': tax_path}
+    
+    with open('TPI_output.csv', 'wb') as csvfile:
+        tpiwriter = csv.writer(csvfile)
+        tpiwriter.writerow(Y)
+        tpiwriter.writerow(L)
+        tpiwriter.writerow(C)
+        tpiwriter.writerow(K)
+        tpiwriter.writerow(I)
+        if small_open == True:
+            tpiwriter.writerow(B)
+            tpiwriter.writerow(BI)
+        tpiwriter.writerow(w)
+        tpiwriter.writerow(rc_error)
 
 
     if ((TPIiter >= maxiter) or (np.absolute(TPIdist) > mindist_TPI)) and ENFORCE_SOLUTION_CHECKS :
