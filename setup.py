@@ -12,7 +12,7 @@ config = {
     'download_url': 'https://github.com/open-source-economics/OG-USA/',
     'description': 'ogusa',
     'package_dir': {'': 'Python'},
-    'install_requires': ['scipy', 'numpy'],
+    'install_requires': [],
     'version': '0.1',
     'license': 'MIT',
     'packages': ['ogusa'],
