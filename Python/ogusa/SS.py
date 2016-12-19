@@ -563,7 +563,7 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, ba
 def SS_fsolve(guesses, params):
     '''
     Solves for the steady state distribution of capital, labor, as well as
-    w, r, T_H and the scaling factor, using an a root finder.
+    w, r, T_H and the scaling factor, using a root finder.
     Inputs:
         b_guess_init = guesses for b (SxJ array)
         n_guess_init = guesses for n (SxJ array)
