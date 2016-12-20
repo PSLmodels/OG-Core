@@ -122,6 +122,7 @@ def create_steady_state_parameters(**sim_params):
                   sim_params['Z'], sim_params['delta'], sim_params['ltilde'],
                   sim_params['nu'], sim_params['g_y'], sim_params['g_n_ss'],
                   sim_params['tau_payroll'], sim_params['tau_bq'], sim_params['rho'], sim_params['omega_SS'],
+                  sim_params['alpha_T'],
                   sim_params['lambdas'], sim_params['imm_rates'][-1,:], sim_params['e'], sim_params['retire'], sim_params['mean_income_data']] + \
                   wealth_tax_params + ellipse_params
     iterative_params = [sim_params['maxiter'], sim_params['mindist_SS']]
@@ -282,7 +283,8 @@ def inner_loop(outer_loop_vars, params, baseline):
     ss_params, income_tax_params, chi_params, small_open_params = params
 
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, lambdas, imm_rates, e, retire, mean_income_data,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, alpha_T,\
+                  lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
@@ -309,7 +311,7 @@ def inner_loop(outer_loop_vars, params, baseline):
                                    args=euler_params, xtol=MINIMIZER_TOL, full_output=True)
 
         euler_errors[:,j] = infodict['fvec']
-        print 'Max Euler errors: ', np.absolute(euler_errors[:,j]).max()
+        #print 'Max Euler errors: ', np.absolute(euler_errors[:,j]).max()
 
         bssmat[:, j] = solutions[:S]
         nssmat[:, j] = solutions[S:]
@@ -341,12 +343,17 @@ def inner_loop(outer_loop_vars, params, baseline):
 
     BQ_params = (omega_SS.reshape(S, 1), lambdas.reshape(1, J), rho.reshape(S, 1), g_n_ss, 'SS')
     new_BQ = household.get_BQ(new_r, bssmat, BQ_params)
-    theta_params = (e, J, omega_SS.reshape(S, 1), lambdas)
-    theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, theta_params)
 
-    T_H_params = (e, lambdas.reshape(1, J), omega_SS.reshape(S, 1), 'SS', etr_params, theta, tau_bq,
-                      tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
-    new_T_H = tax.get_lump_sum(new_r, new_w, b_s, nssmat, new_BQ, factor, T_H_params)
+    # First cut: introducing G in a balanced-budget context with T_H=alpha_T*Y. G may be negative. Furth 12/20/16.
+    new_T_H = alpha_T * Y
+    
+#    theta_params = (e, J, omega_SS.reshape(S, 1), lambdas)
+#    theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, theta_params)
+#    lump_sum_params = (e, lambdas.reshape(1, J), omega_SS.reshape(S, 1), 'SS', etr_params, theta, tau_bq,
+#                      tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
+#    gov_resources = tax.get_lump_sum(new_r, new_w, b_s, nssmat, new_BQ, factor, lump_sum_params)
+#    G = gov_resources - new_T_H
+    
 
     return euler_errors, bssmat, nssmat, new_r, new_w, \
              new_T_H, new_factor, new_BQ, average_income_model
@@ -421,7 +428,8 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, ba
     bssmat, nssmat, chi_params, ss_params, income_tax_params, iterative_params, small_open_params = params
 
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, lambdas, imm_rates, e, retire, mean_income_data,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, alpha_T,\
+                  lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
@@ -495,6 +503,7 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, ba
     rss = r
     factor_ss = factor
     T_Hss = T_H
+    
 
     Lss_params = (e, omega_SS.reshape(S, 1), lambdas, 'SS')
     Lss = firm.get_L(nssmat, Lss_params)
@@ -521,11 +530,31 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, ba
 
     Yss_params = (alpha, Z)
     Yss = firm.get_Y(Kss, Lss, Yss_params)
-
+    
+    # Verify that T_Hss = alpha_T*Yss
+    transfer_error = T_Hss - alpha_T*Yss
+    if np.absolute(transfer_error) > mindist_SS:
+        print 'Transfers exceed alpha_T percent of GDP by:', transfer_error
+        err = "Transfers do not match correct share of GDP in SS_solver"
+        raise RuntimeError(err)
+        
     BQss = new_BQ
     theta = np.zeros(J) # zero out payroll taxes since included in tax functions
     # # theta_params = (e, J, omega_SS.reshape(S, 1), lambdas)
     # # tax.replacement_rate_vals(nssmat, wss, factor_ss, theta_params)
+    
+    # Next 5 lines pulled out of inner_loop where they used to calculate T_H. Now calculating G to balance gov't budget.
+#    theta_params = (e, J, omega_SS.reshape(S, 1), lambdas)
+#    theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, theta_params)
+    b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
+    lump_sum_params = (e, lambdas.reshape(1, J), omega_SS.reshape(S, 1), 'SS', etr_params, theta, tau_bq,
+                      tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
+    gov_resources = tax.get_lump_sum(new_r, new_w, b_s, nssmat, new_BQ, factor, lump_sum_params)
+    Gss = gov_resources - T_Hss
+    gss = Gss / Yss
+    print 'Government non-transfer spending in the steady state is:', Gss
+    print 'Government non-transfer spendings share of GDP is:', gss
+
 
     # solve resource constraint
     etr_params_3D = np.tile(np.reshape(etr_params,(S,1,etr_params.shape[1])),(1,J,1))
@@ -563,12 +592,12 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, ba
     Css = household.get_C(cssmat, Css_params)
 
     if small_open == False:
-        resource_constraint = Yss - (Css + Iss)
+        resource_constraint = Yss - (Css + Iss + Gss)
         #print 'Yss= ', Yss, '\n', 'Css= ', Css, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'Z = ', Z
     else:
         # include term for current account        
-        resource_constraint = Yss - (Css + BIss) + (ss_hh_r * Bss - (delta + ss_firm_r) * Kss)
-        print 'Yss= ', Yss, '\n', 'Css= ', Css, '\n', 'Bss = ', Bss, '\n', 'BIss = ', BIss, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'Z = ', Z
+        resource_constraint = Yss - (Css + BIss + Gss) + (ss_hh_r * Bss - (delta + ss_firm_r) * Kss)
+        print 'Yss= ', Yss, '\n', 'Gss= ', Gss,'\n', 'Css= ', Css, '\n', 'Bss = ', Bss, '\n', 'BIss = ', BIss, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'Z = ', Z
 
     if ENFORCE_SOLUTION_CHECKS and np.absolute(resource_constraint) > 1e-8:
         print 'Resource Constraint Difference:', resource_constraint
@@ -627,7 +656,8 @@ def SS_fsolve(guesses, params):
     bssmat, nssmat, chi_params, ss_params, income_tax_params, iterative_params, small_open_params = params
 
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, lambdas, imm_rates, e, retire, mean_income_data,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, alpha_T,\
+                  lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
@@ -656,12 +686,12 @@ def SS_fsolve(guesses, params):
     error3 = new_T_H - T_H
     error4 = new_factor/1000000 - factor/1000000
 
-    print 'mean income in model and data: ', average_income_model, mean_income_data
+  #  print 'mean income in model and data: ', average_income_model, mean_income_data
     print 'model income with factor: ', average_income_model*factor
 
-    print 'errors: ', error1, error2, error3, error4
+  #  print 'errors: ', error1, error2, error3, error4
     print 'T_H: ', new_T_H
-    print 'factor: ', new_factor
+  #  print 'factor: ', new_factor
     print 'interest rate: ', new_r
 
     # Check and punish violations
@@ -793,7 +823,8 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, small_ope
     --------------------------------------------------------------------
     '''
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, lambdas, imm_rates, e, retire, mean_income_data,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, alpha_T,\
+                  lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params

@@ -214,6 +214,12 @@ tpi_firm_r  = [T+S,] vector, world interest rate (firm). Must be ss_firm_r in la
 tpi_hh_r    = [T+S,] vector, world interest rate (household). Must be ss_firm_r in last period.
 
 ------------------------------------------------------------------------
+Fiscal imbalance Parameters:
+------------------------------------------------------------------------
+
+alpha_T          = scalar, share of GDP that goes to transfers.
+
+------------------------------------------------------------------------
 Tax Parameters:
 ------------------------------------------------------------------------
 mean_income_data = scalar, mean income from IRS data file used to calibrate income tax
@@ -330,6 +336,9 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     ss_hh_r     = 0.04
     tpi_firm_r  = np.ones(T+S)*ss_firm_r
     tpi_hh_r    = np.ones(T+S)*ss_hh_r
+
+    # Fiscal imbalance parameters. These allow government deficits, debt, and savings.
+    alpha_T = 0.3  # share of GDP that goes to transfers each period.
 
     # Tax parameters:
     #   Income Tax Parameters
@@ -468,6 +477,9 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     ss_hh_r            = (1 + ss_hh_r_annual)   ** (float(ending_age - starting_age) / S) - 1
     tpi_firm_r         = np.ones(T+S)*ss_firm_r
     tpi_hh_r           = np.ones(T+S)*ss_hh_r
+
+    # Fiscal imbalance parameters. These allow government deficits, debt, and savings.
+    alpha_T = 0.1  # share of GDP that goes to transfers each period.
 
     # Tax parameters:
     #   Income Tax Parameters
