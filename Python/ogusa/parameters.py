@@ -482,7 +482,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
     # Fiscal imbalance parameters. These allow government deficits, debt, and savings.
     alpha_T            = 0.1  # share of GDP that goes to transfers each period.
-    debt_ratio_ss      = 0.7  # assumed steady-state debt/GDP ratio.
+    debt_ratio_ss      = 1.2  # assumed steady-state debt/GDP ratio.
 
     # Tax parameters:
     #   Income Tax Parameters

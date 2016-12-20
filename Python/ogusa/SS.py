@@ -325,8 +325,7 @@ def inner_loop(outer_loop_vars, params, baseline):
     if small_open == False:
         K_params = (omega_SS.reshape(S, 1), lambdas.reshape(1, J), imm_rates, g_n_ss, 'SS')
         assets = household.get_K(bssmat, K_params)
-        debt_ss = debt_ratio_ss * Y 
-        K = assets - debt_ss
+        K = assets - debt_ratio_ss*Y 
     else:
         K_params = (alpha, delta, Z)
         K = firm.get_K(L, ss_firm_r, K_params)
@@ -546,12 +545,12 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, ba
     b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
     lump_sum_params = (e, lambdas.reshape(1, J), omega_SS.reshape(S, 1), 'SS', etr_params, theta, tau_bq,
                       tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
-    gov_resources_ss = tax.get_lump_sum(new_r, new_w, b_s, nssmat, new_BQ, factor, lump_sum_params)
+    revenue_ss = tax.get_lump_sum(new_r, new_w, b_s, nssmat, new_BQ, factor, lump_sum_params)
     r_gov_ss = rss
     debt_service_ss = r_gov_ss*debt_ratio_ss*Yss
-    Gss = gov_resources_ss - (T_Hss + debt_service_ss)
-    gss = Gss / Yss
-    print 'Government non-transfer spendings share of GDP is:', gss
+    new_borrowing = debt_ratio_ss*Yss*((1+g_n_ss)*np.exp(g_y)-1) 
+    # government spends such that it expands its debt at the same rate as GDP
+    Gss = revenue_ss + new_borrowing - (T_Hss + debt_service_ss)
     
     # solve resource constraint
     etr_params_3D = np.tile(np.reshape(etr_params,(S,1,etr_params.shape[1])),(1,J,1))
@@ -589,12 +588,12 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, ba
     Css = household.get_C(cssmat, Css_params)
 
     if small_open == False:
-        resource_constraint = Yss - (Css + Iss + Gss)  # debt service does not enter here because it is paid to households.
+        resource_constraint = Yss - (Css + Iss + Gss) 
         print 'Yss= ', Yss, '\n', 'Gss= ', Gss, '\n', 'Css= ', Css, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'Debt service = ', debt_service_ss
     else:
         # include term for current account        
-        resource_constraint = Yss - (Css + BIss + Gss + debt_service_ss) + (ss_hh_r * Bss - (delta + ss_firm_r) * Kss)
-        print 'Yss= ', Yss, '\n', 'Gss= ', Gss,'\n', 'Css= ', Css, '\n', 'Bss = ', Bss, '\n', 'BIss = ', BIss, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'Z = ', Z
+        resource_constraint = Yss + new_borrowing  - (Css + BIss + Gss) + (ss_hh_r * Bss - (delta + ss_firm_r) * Kss - debt_service_ss)
+        print 'Yss= ', Yss, '\n', 'Gss= ', Gss,'\n', 'Css= ', Css, '\n', 'Bss = ', Bss, '\n', 'BIss = ', BIss, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'Debt service = ', debt_service_ss
 
     if ENFORCE_SOLUTION_CHECKS and np.absolute(resource_constraint) > 1e-8:
         print 'Resource Constraint Difference:', resource_constraint
