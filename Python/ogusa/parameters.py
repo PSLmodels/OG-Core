@@ -218,6 +218,7 @@ Fiscal imbalance Parameters:
 ------------------------------------------------------------------------
 
 alpha_T          = scalar, share of GDP that goes to transfers.
+debt_ratio_ss    = scalar, steady state debt/GDP.
 
 ------------------------------------------------------------------------
 Tax Parameters:
@@ -338,7 +339,8 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     tpi_hh_r    = np.ones(T+S)*ss_hh_r
 
     # Fiscal imbalance parameters. These allow government deficits, debt, and savings.
-    alpha_T = 0.3  # share of GDP that goes to transfers each period.
+    alpha_T            = 0.1  # share of GDP that goes to transfers each period.
+    debt_ratio_ss      = 0.7  # assumed steady-state debt/GDP ratio.
 
     # Tax parameters:
     #   Income Tax Parameters
@@ -479,7 +481,8 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     tpi_hh_r           = np.ones(T+S)*ss_hh_r
 
     # Fiscal imbalance parameters. These allow government deficits, debt, and savings.
-    alpha_T = 0.1  # share of GDP that goes to transfers each period.
+    alpha_T            = 0.1  # share of GDP that goes to transfers each period.
+    debt_ratio_ss      = 0.7  # assumed steady-state debt/GDP ratio.
 
     # Tax parameters:
     #   Income Tax Parameters
