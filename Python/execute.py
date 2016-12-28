@@ -75,11 +75,13 @@ def runner(output_base, baseline_dir, baseline=False,
                 'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
                 'analytical_mtrs', 'b_ellipse', 'k_ellipse', 'upsilon',
                 'small_open', 'ss_firm_r', 'ss_hh_r', 'tpi_firm_r', 'tpi_hh_r',
+                'alpha_T', 'alpha_G','tG1','tG2', 
                 'chi_b_guess', 'chi_n_guess','etr_params','mtrx_params',
                 'mtry_params','tau_payroll', 'tau_bq',
                 'retire', 'mean_income_data', 'g_n_vector',
                 'h_wealth', 'p_wealth', 'm_wealth',
-                'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'imm_rates','e', 'rho', 'omega_S_preTP']
+                'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'imm_rates','e', 'rho', 
+                'initial_debt','omega_S_preTP']
 
     '''
     ------------------------------------------------------------------------

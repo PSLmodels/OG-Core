@@ -71,14 +71,14 @@ def create_tpi_params(**sim_params):
 
     if sim_params['baseline']==True:
         SS_values = (ss_baseline_vars['Kss'],ss_baseline_vars['Lss'], ss_baseline_vars['rss'], 
-                 ss_baseline_vars['wss'], ss_baseline_vars['BQss'], ss_baseline_vars['T_Hss'],
-                 ss_baseline_vars['bssmat_splus1'], ss_baseline_vars['nssmat'])
+                 ss_baseline_vars['wss'], ss_baseline_vars['BQss'], ss_baseline_vars['T_Hss'], ss_baseline_vars['revenue_ss'],
+                 ss_baseline_vars['bssmat_splus1'], ss_baseline_vars['nssmat'], ss_baseline_vars['Yss'])
     elif sim_params['baseline']==False:
         reform_ss = os.path.join(sim_params['input_dir'], "SS/SS_vars.pkl")
         ss_reform_vars = pickle.load(open(reform_ss, "rb"))
         SS_values = (ss_reform_vars['Kss'],ss_reform_vars['Lss'], ss_reform_vars['rss'], 
-                 ss_reform_vars['wss'], ss_reform_vars['BQss'], ss_reform_vars['T_Hss'],
-                 ss_reform_vars['bssmat_splus1'], ss_reform_vars['nssmat'])
+                 ss_reform_vars['wss'], ss_reform_vars['BQss'], ss_reform_vars['T_Hss'], ss_reform_vars['revenue_ss'],
+                 ss_reform_vars['bssmat_splus1'], ss_reform_vars['nssmat'], ss_reform_vars['Yss'])
 
 
     # Make a vector of all one dimensional parameters, to be used in the
@@ -124,21 +124,35 @@ def create_tpi_params(**sim_params):
 
     '''
     ------------------------------------------------------------------------
+    Set government finance parameters
+    ------------------------------------------------------------------------
+    '''
+    
+    alpha_T       = sim_params['alpha_T']
+    alpha_G       = sim_params['alpha_G']
+    tG1           = sim_params['tG1']
+    tG2           = sim_params['tG2']
+    fiscal_params = (alpha_T, alpha_G, tG1, tG2)
+    
+    initial_debt  = sim_params['initial_debt']
+
+    '''
+    ------------------------------------------------------------------------
     Set other parameters and initial values
     ------------------------------------------------------------------------
     '''
-    # Get an initial distribution of capital with the initial population
-    # distribution
+    # Get an initial distribution of wealth with the initial population
+    # distribution. When small_open=True, the value of K0 is used as a placeholder for first-period wealth (B0)
     omega_S_preTP = sim_params['omega_S_preTP']
-    K0_params = (omega_S_preTP.reshape(S, 1), lambdas, imm_rates[0].reshape(S,1), g_n_vector[0], 'SS')
-    K0 = household.get_K(initial_b, K0_params)
+    B0_params = (omega_S_preTP.reshape(S, 1), lambdas, imm_rates[0].reshape(S,1), g_n_vector[0], 'SS')
+    B0 = household.get_K(initial_b, B0_params)
 
     b_sinit = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_b[:-1]))
     b_splus1init = initial_b
 
-    initial_values = (K0, b_sinit, b_splus1init, factor, initial_b, initial_n, omega_S_preTP)
+    initial_values = (B0, b_sinit, b_splus1init, factor, initial_b, initial_n, omega_S_preTP, initial_debt)
 
-    return (income_tax_params, tpi_params, iterative_params, small_open_params, initial_values, SS_values)
+    return (income_tax_params, tpi_params, iterative_params, small_open_params, initial_values, SS_values, fiscal_params)
 
 
 def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params):
@@ -340,7 +354,7 @@ def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params):
 def inner_loop(guesses, outer_loop_vars, params):
     '''
     Solves inner loop of TPI.  Given path of economic aggregates and factor prices, solves
-    househld problem 
+    household problem 
 
     Inputs:
         r          = [T,] vector, interest rate 
@@ -447,6 +461,19 @@ def inner_loop(guesses, outer_loop_vars, params):
 
 
     return euler_errors, b_mat, n_mat
+    
+def initial_GDP_level(y_guess, y_inputs):
+    # Solve for first-period output given debt ratio, wealth, labor input, and production function.
+    # The solution arises from a 3-unknown, 3-equation system that is simplified below.
+    # (1) initial_debt = D/Y by assumption.
+    # (2) Y = f(K,L)
+    # (3) K = B - D, where B is household wealth
+    # This could easily be modified to allow for an initial level of foreign bondholding.
+    # Salim Furth, 12/28/2016
+    
+    alpha, Z, initial_debt, B, L = y_inputs
+    error = y_guess - Z * ((B - initial_debt*y_guess) ** alpha) * (L ** (1 - alpha))
+    return error
 
 
 def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, initial_values, SS_values, output_dir="./OUTPUT"):
@@ -460,14 +487,21 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     # K0, b_sinit, b_splus1init, L0, Y0,\
     #         w0, r0, BQ0, T_H_0, factor, tax0, c0, initial_b, initial_n, omega_S_preTP = initial_values
     small_open, tpi_firm_r, tpi_hh_r = small_open_params
-    K0, b_sinit, b_splus1init, factor, initial_b, initial_n, omega_S_preTP = initial_values
-    Kss, Lss, rss, wss, BQss, T_Hss, bssmat_splus1, nssmat = SS_values
+    B0, b_sinit, b_splus1init, factor, initial_b, initial_n, omega_S_preTP, initial_debt = initial_values
+    Kss, Lss, rss, wss, BQss, T_Hss, revenue_ss, bssmat_splus1, nssmat, Yss = SS_values
 
     TPI_FIG_DIR = output_dir
     # Initialize guesses at time paths
     domain = np.linspace(0, T, T)
-    L_init = np.ones(T + S) * Lss  #NOTE: this initial guess could be improved by using guess_n, computed just below here.
+    L_init = np.ones(T + S) * Lss  #NOTE: this initial guess could be improved by using guesses_n, computed just below here.
+    
     if small_open == False:    
+        # solve for root to calibrate Y, debt, K given initial guesses
+        Y_params = (alpha, Z)
+        y_guess = firm.get_Y((3-initial_debt/3)*B0,L_init[0],Y_params)
+        y_inputs = (alpha,Z,initial_debt, B0, L_init[0])
+        [Y0, infodict, ier, message] = opt.fsolve(initial_GDP_level, y_guess, args=y_inputs, xtol=mindist_TPI, full_output=True)
+        K0 = B0 - initial_debt*Y0
         K_init = (-1 / (domain + 1)) * (Kss - K0) + Kss
         K_init[-1] = Kss
         K_init = np.array(list(K_init) + list(np.ones(S) * Kss))
@@ -490,11 +524,15 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     for j in xrange(J):
         BQ[:, j] = list(np.linspace(BQ0[j], BQss[j], T)) + [BQss[j]] * S
     BQ = np.array(BQ)
-    if np.abs(T_Hss) < 1e-13 :
-        T_Hss2 = 0.0 # sometimes SS is very small but not zero, even if taxes are zero, this get's rid of the approximation error, which affects the perc changes below
-    else:
-        T_Hss2 = T_Hss   
-    T_H = np.ones(T + S) * T_Hss2
+#    if np.abs(T_Hss) < 1e-13 :
+#        T_Hss2 = 0.0 # sometimes SS is very small but not zero, even if taxes are zero, this get's rid of the approximation error, which affects the perc changes below
+#    else:
+#        T_Hss2 = T_Hss   
+#    T_H = np.ones(T + S) * T_Hss2
+    T_H = alpha_T * Y
+    
+    # Use the SS average total tax rate to guess a path of revenues
+    REVENUE = Y * (revenue_ss / Yss)
 
     # Make array of initial guesses for labor supply and savings
     domain2 = np.tile(domain.reshape(T, 1, 1), (1, S, J))

@@ -218,6 +218,9 @@ Fiscal imbalance Parameters:
 ------------------------------------------------------------------------
 
 alpha_T          = scalar, share of GDP that goes to transfers.
+alpha_G          = scalar, share of GDP that goes to gov't spending in early years.
+tG1             = scalar < t_G2, period at which change government spending rule from alpha_G*Y to glide toward SS debt ratio
+tG2             = scalar < T, period at which change gov't spending rule with final discrete jump to achieve SS debt ratio
 debt_ratio_ss    = scalar, steady state debt/GDP.
 
 ------------------------------------------------------------------------
@@ -340,7 +343,11 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
 
     # Fiscal imbalance parameters. These allow government deficits, debt, and savings.
     alpha_T            = 0.1  # share of GDP that goes to transfers each period.
-    debt_ratio_ss      = 0.7  # assumed steady-state debt/GDP ratio.
+    alpha_G            = 0.1  # share of GDP of government spending for periods t<t_G1
+    tG1                = int(T/3)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
+    tG2                = int(2*T/3)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
+    debt_ratio_ss      = 1.2  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
+    initial_debt       = 0.7  # first-period debt/GDP ratio. Savings would be a negative number.
 
     # Tax parameters:
     #   Income Tax Parameters
@@ -482,7 +489,12 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
     # Fiscal imbalance parameters. These allow government deficits, debt, and savings.
     alpha_T            = 0.1  # share of GDP that goes to transfers each period.
-    debt_ratio_ss      = 1.2  # assumed steady-state debt/GDP ratio.
+    alpha_G            = 0.1  # share of GDP of government spending for periods t<tG1
+    tG1                = int(T/3)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
+    tG2                = int(2*T/3)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
+    debt_ratio_ss      = 1.2  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
+    initial_debt       = 0.7  # first-period debt/GDP ratio. Savings would be a negative number.
+    
 
     # Tax parameters:
     #   Income Tax Parameters

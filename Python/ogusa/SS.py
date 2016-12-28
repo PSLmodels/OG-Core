@@ -353,8 +353,6 @@ def inner_loop(outer_loop_vars, params, baseline):
              new_Y, new_factor, new_BQ, average_income_model
 
 
-
-
 def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, baseline, fsolve_flag=False):
     '''
     --------------------------------------------------------------------
@@ -615,7 +613,7 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, ba
     output = {'Kss': Kss, 'bssmat': bssmat, 'Lss': Lss, 'Css':Css, 'Iss':Iss, 'nssmat': nssmat, 'Yss': Yss,
               'wss': wss, 'rss': rss, 'theta': theta, 'BQss': BQss, 'factor_ss': factor_ss,
               'bssmat_s': bssmat_s, 'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
-              'T_Hss': T_Hss, 'euler_savings': euler_savings,
+              'T_Hss': T_Hss, 'revenue_ss': revenue_ss, 'euler_savings': euler_savings,
               'euler_labor_leisure': euler_labor_leisure, 'chi_n': chi_n,
               'chi_b': chi_b}
 
@@ -769,7 +767,7 @@ def SS_fsolve_reform(guesses, params):
     error2 = new_r - r
     error3 = new_Y - Y
     print 'errors: ', error1, error2, error3
-    print 'Y: ', new_T
+    print 'Y: ', new_Y
 
 
     # Check and punish violations
