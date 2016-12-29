@@ -346,8 +346,18 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     alpha_G            = 0.1  # share of GDP of government spending for periods t<t_G1
     tG1                = int(T/3)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
     tG2                = int(2*T/3)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
+    rho_G              = 0.2  # transition speed for periods [tG1, tG2-1]
     debt_ratio_ss      = 1.2  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
     initial_debt       = 0.7  # first-period debt/GDP ratio. Savings would be a negative number.
+    
+    if tG1 > tG2:
+        print 'The first government spending rule change date, (', tG1, ') is after the second one (', tG2, ').'
+        err = "Gov't spending rule dates are inconsistent"
+        raise RuntimeError(err)
+    if tG2 > T:
+        print 'The second government spending rule change date, (', tG2, ') is after time T (', T, ').'
+        err = "Gov't spending rule dates are inconsistent"
+        raise RuntimeError(err)
 
     # Tax parameters:
     #   Income Tax Parameters
@@ -492,8 +502,19 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     alpha_G            = 0.1  # share of GDP of government spending for periods t<tG1
     tG1                = int(T/3)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
     tG2                = int(2*T/3)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
+    rho_G              = 0.2  # transition speed for periods [tG1, tG2-1]
     debt_ratio_ss      = 1.2  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
     initial_debt       = 0.7  # first-period debt/GDP ratio. Savings would be a negative number.
+    
+    if tG1 > tG2:
+        print 'The first government spending rule change date, (', tG1, ') is after the second one (', tG2, ').'
+        err = "Gov't spending rule dates are inconsistent"
+        raise RuntimeError(err)
+    if tG2 > T:
+        print 'The second government spending rule change date, (', tG2, ') is after time T (', T, ').'
+        err = "Gov't spending rule dates are inconsistent"
+        raise RuntimeError(err)
+
     
 
     # Tax parameters:
