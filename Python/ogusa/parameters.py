@@ -342,13 +342,13 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     tpi_hh_r    = np.ones(T+S)*ss_hh_r
 
     # Fiscal imbalance parameters. These allow government deficits, debt, and savings.
-    alpha_T            = 0.1  # share of GDP that goes to transfers each period.
-    alpha_G            = 0.1  # share of GDP of government spending for periods t<t_G1
-    tG1                = int(T/3)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
-    tG2                = int(2*T/3)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
+    alpha_T            = 0.12  # share of GDP that goes to transfers each period.
+    alpha_G            = 0.05  # share of GDP of government spending for periods t<t_G1
+    tG1                = int(T/4)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
+    tG2                = int(T/2)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
     rho_G              = 0.2  # transition speed for periods [tG1, tG2-1]
-    debt_ratio_ss      = 1.2  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
-    initial_debt       = 0.7  # first-period debt/GDP ratio. Savings would be a negative number.
+    debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
+    initial_debt       = 0.2  # first-period debt/GDP ratio. Savings would be a negative number.
     
     if tG1 > tG2:
         print 'The first government spending rule change date, (', tG1, ') is after the second one (', tG2, ').'
@@ -462,7 +462,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     --------------------------------------------------------------------
     '''
     # Model Parameters
-    S = int(80)
+    S = int(30)
     lambdas = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
     J = lambdas.shape[0]
     T = int(4 * S)
@@ -498,13 +498,13 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     tpi_hh_r           = np.ones(T+S)*ss_hh_r
 
     # Fiscal imbalance parameters. These allow government deficits, debt, and savings.
-    alpha_T            = 0.1  # share of GDP that goes to transfers each period.
-    alpha_G            = 0.1  # share of GDP of government spending for periods t<tG1
-    tG1                = int(T/3)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
-    tG2                = int(2*T/3)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
+    alpha_T            = 0.12  # share of GDP that goes to transfers each period.
+    alpha_G            = 0.05  # share of GDP of government spending for periods t<tG1
+    tG1                = int(T/4)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
+    tG2                = int(T/2)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
     rho_G              = 0.2  # transition speed for periods [tG1, tG2-1]
-    debt_ratio_ss      = 1.2  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
-    initial_debt       = 0.7  # first-period debt/GDP ratio. Savings would be a negative number.
+    debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
+    initial_debt       = 0.2  # first-period debt/GDP ratio. Savings would be a negative number.
     
     if tG1 > tG2:
         print 'The first government spending rule change date, (', tG1, ') is after the second one (', tG2, ').'
@@ -703,7 +703,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     #   Bequest and Payroll Taxes
     tau_bq = np.zeros(J)
     tau_payroll = 0.0 #0.15 # were are inluding payroll taxes in tax functions for now
-    retire = np.round(9.0 * S / 16.0) - 1
+    retire = np.int(np.round(9.0 * S / 16.0) - 1)
 
     # Simulation Parameters
     MINIMIZER_TOL = 1e-14
@@ -711,7 +711,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     PLOT_TPI = False
     maxiter = 250
     mindist_SS = 1e-9
-    mindist_TPI = 1e-9 #2e-5
+    mindist_TPI = 2e-5 #1e-9
     nu = .4
     flag_graphs = False
     #   Calibration parameters

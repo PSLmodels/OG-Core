@@ -324,8 +324,8 @@ def inner_loop(outer_loop_vars, params, baseline):
     L = firm.get_L(nssmat, L_params)
     if small_open == False:
         K_params = (omega_SS.reshape(S, 1), lambdas.reshape(1, J), imm_rates, g_n_ss, 'SS')
-        assets = household.get_K(bssmat, K_params)
-        K = assets - debt_ratio_ss*Y 
+        B = household.get_K(bssmat, K_params)
+        K = B - debt_ratio_ss*Y 
     else:
         K_params = (alpha, delta, Z)
         K = firm.get_K(L, ss_firm_r, K_params)
@@ -501,9 +501,9 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, ba
     Lss = firm.get_L(nssmat, Lss_params)
     if small_open == False:
         Kss_params = (omega_SS.reshape(S, 1), lambdas, imm_rates, g_n_ss, 'SS')
-        assets_ss = household.get_K(bssmat_splus1, Kss_params)
+        Bss = household.get_K(bssmat_splus1, Kss_params)
         debt_ss = debt_ratio_ss*Y
-        Kss = assets_ss - debt_ss
+        Kss = Bss - debt_ss
         Iss_params = (delta, g_y, omega_SS, lambdas, imm_rates, g_n_ss, 'SS')
         Iss = firm.get_I(bssmat_splus1, Kss, Kss, Iss_params)
     else:
@@ -610,7 +610,7 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, ba
     ------------------------------------------------------------------------
     '''
 
-    output = {'Kss': Kss, 'bssmat': bssmat, 'Lss': Lss, 'Css':Css, 'Iss':Iss, 'nssmat': nssmat, 'Yss': Yss,
+    output = {'Kss': Kss, 'bssmat': bssmat, 'Bss': Bss, 'Lss': Lss, 'Css':Css, 'Iss':Iss, 'nssmat': nssmat, 'Yss': Yss,
               'wss': wss, 'rss': rss, 'theta': theta, 'BQss': BQss, 'factor_ss': factor_ss,
               'bssmat_s': bssmat_s, 'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
               'T_Hss': T_Hss, 'revenue_ss': revenue_ss, 'euler_savings': euler_savings,
