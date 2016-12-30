@@ -345,8 +345,8 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     alpha_T            = 0.12  # share of GDP that goes to transfers each period.
     alpha_G            = 0.05  # share of GDP of government spending for periods t<t_G1
     tG1                = int(T/4)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
-    tG2                = int(T/2)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
-    rho_G              = 0.2  # transition speed for periods [tG1, tG2-1]
+    tG2                = int(T*0.75)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
+    rho_G              = 0.3  # transition speed for periods [tG1, tG2-1]
     debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
     initial_debt       = 0.2  # first-period debt/GDP ratio. Savings would be a negative number.
     
@@ -501,8 +501,8 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     alpha_T            = 0.12  # share of GDP that goes to transfers each period.
     alpha_G            = 0.05  # share of GDP of government spending for periods t<tG1
     tG1                = int(T/4)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
-    tG2                = int(T/2)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
-    rho_G              = 0.2  # transition speed for periods [tG1, tG2-1]
+    tG2                = int(T*0.75)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
+    rho_G              = 0.3  # transition speed for periods [tG1, tG2-1]
     debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
     initial_debt       = 0.2  # first-period debt/GDP ratio. Savings would be a negative number.
     
