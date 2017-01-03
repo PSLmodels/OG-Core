@@ -547,7 +547,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     G[0]    = alpha_G * Y[0]
     D[0]    = initial_debt * Y[0]
     # Loop over years to create initial path of debt and gov't spending.
-    other_dg_params = (T, S, r, g_n_vector, g_y)
+    other_dg_params = (T, r, g_n_vector, g_y)
     dg_fixed_values = (Y, REVENUE, T_H, D[0],G[0])
     D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params)
     
@@ -575,7 +575,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     TPIdist_vec = np.zeros(maxiter)
 
     print 'analytical mtrs in tpi = ', analytical_mtrs
-
+    
     while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
                 
         # Plot TPI for K for each iteration, so we can see if there is a
@@ -662,7 +662,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         # Loop through years to calculate debt and gov't spending. The re-assignment of G0 & D0 is necessary because Y0 may change in the TPI loop.
         G[0]    = alpha_G * Ynew[0]
         D[0]    = initial_debt * Ynew[0]
-        other_dg_params = (T, S, r, g_n_vector, g_y)
+        other_dg_params = (T, r, g_n_vector, g_y)
         dg_fixed_values = (Ynew, REVENUE, T_H, D[0],G[0])
         D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params)
 
@@ -767,7 +767,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     
     G[0]    = alpha_G * Y[0]
     D[0]    = initial_debt * Y[0]
-    other_dg_params = (T, S, r, g_n_vector, g_y)
+    other_dg_params = (T, r, g_n_vector, g_y)
     dg_fixed_values = (Y, REVENUE, T_H, D[0],G[0])
     D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params)
 

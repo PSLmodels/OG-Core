@@ -346,7 +346,7 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     alpha_G            = 0.05  # share of GDP of government spending for periods t<t_G1
     tG1                = int(T/4)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
     tG2                = int(T*0.75)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
-    rho_G              = 0.3  # transition speed for periods [tG1, tG2-1]
+    rho_G              = 0.1  # 0 < rho_G < 1 is transition speed for periods [tG1, tG2-1]. Lower rho_G => slower convergence.
     debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
     initial_debt       = 0.2  # first-period debt/GDP ratio. Savings would be a negative number.
     
@@ -462,7 +462,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     --------------------------------------------------------------------
     '''
     # Model Parameters
-    S = int(30)
+    S = int(80)
     lambdas = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
     J = lambdas.shape[0]
     T = int(4 * S)
@@ -498,13 +498,13 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     tpi_hh_r           = np.ones(T+S)*ss_hh_r
 
     # Fiscal imbalance parameters. These allow government deficits, debt, and savings.
-    alpha_T            = 0.12  # share of GDP that goes to transfers each period.
+    alpha_T            = 0.15  # share of GDP that goes to transfers each period.
     alpha_G            = 0.05  # share of GDP of government spending for periods t<tG1
     tG1                = int(T/4)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
     tG2                = int(T*0.75)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
-    rho_G              = 0.3  # transition speed for periods [tG1, tG2-1]
-    debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
-    initial_debt       = 0.2  # first-period debt/GDP ratio. Savings would be a negative number.
+    rho_G              = 0.1  # 0 < rho_G < 1 is transition speed for periods [tG1, tG2-1]. Lower rho_G => slower convergence.
+    debt_ratio_ss      = 0.6  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
+    initial_debt       = 0.6  # first-period debt/GDP ratio. Savings would be a negative number.
     
     if tG1 > tG2:
         print 'The first government spending rule change date, (', tG1, ') is after the second one (', tG2, ').'
@@ -711,7 +711,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     PLOT_TPI = False
     maxiter = 250
     mindist_SS = 1e-9
-    mindist_TPI = 2e-5 #1e-9
+    mindist_TPI = 1e-9 #2e-5 
     nu = .4
     flag_graphs = False
     #   Calibration parameters
