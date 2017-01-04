@@ -785,9 +785,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         B[1:T+1] = household.get_K(bmat_splus1[:T], B_params)
         BI_params = (0.0, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
         BI = firm.get_I(bmat_splus1[:T], B[1:T+1], B[:T], BI_params)
-        new_borrowing = D[1:T+1]*(1+g_n_vector)*np.exp(g_y) - D[:T]
-        rc_error = Y[:T] + new_borrowing - (C[:T] + BI[:T] + G[:T] ) + (tpi_hh_r[:T] * B[:T] - (delta + tpi_firm_r[:T])*K[:T] - tpi_hh_r[:T]*D[:T])
-        print 'Y(T-1):', Y[T-1], '\n','C(T-1):', C[T-1], '\n','K(T-1):', K[T-1], '\n','B(T-1):', B[T-1], '\n','BI(T-1):', BI[T-1], '\n','I(T-1):', I[T-1]
+        new_borrowing = D[1:T]*(1+g_n_vector[:T-1])*np.exp(g_y) - D[:T-1]
+        rc_error = Y[:T-1] + new_borrowing - (C[:T-1] + BI[:T-1] + G[:T-1] ) + (tpi_hh_r[:T-1] * B[:T-1] - (delta + tpi_firm_r[:T-1])*K[:T-1] - tpi_hh_r[:T-1]*D[:T-1])
+        #print 'Y(T-1):', Y[T-1], '\n','C(T-1):', C[T-1], '\n','K(T-1):', K[T-1], '\n','B(T-1):', B[T-1], '\n','BI(T-1):', BI[T-1], '\n','I(T-1):', I[T-1]
     
    # print 'Resource Constraint Difference:', rc_error
 
