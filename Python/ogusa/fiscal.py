@@ -27,7 +27,7 @@ def D_G_path(dg_fixed_values, fiscal_params, other_dg_params):
     T, r_gov, g_n_vector, g_y = other_dg_params
     Y, REVENUE, T_H, D0, G0 = dg_fixed_values
     
-    D = np.zeros(T)
+    D = np.zeros(T+1)
     D[0] = D0
     G = alpha_G * Y[:T]
     G[0] = G0
@@ -48,4 +48,5 @@ def D_G_path(dg_fixed_values, fiscal_params, other_dg_params):
     D[t] = (1/growth[t]) * ((1+r_gov[t-1])*D[t-1] + G[t-1] + T_H[t-1] - REVENUE[t-1])
     #debt_service = r_gov[t]*D[t]
     G[t] = growth[t] * (debt_ratio_ss*Y[t]) - (1+r_gov[t])*D[t] + REVENUE[t] - T_H[t]
+    D[t+1] = (1/growth[t+1]) * ((1+r_gov[t])*D[t] + G[t] + T_H[t] - REVENUE[t])
     return D, G
