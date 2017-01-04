@@ -781,7 +781,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         I = firm.get_I(InvestmentPlaceholder, K[1:T+1], K[:T], I_params)
         B_params = (omega[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T].reshape(T,S,1), g_n_vector[1:T+1], 'TPI')
         B = np.zeros(K.shape)
-        B[0] = K0 # baseline placeholder value
+        B[0] = B0 # baseline placeholder value
         B[1:T+1] = household.get_K(bmat_splus1[:T], B_params)
         BI_params = (0.0, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
         BI = firm.get_I(bmat_splus1[:T], B[1:T+1], B[:T], BI_params)
