@@ -69,32 +69,32 @@ def run_micro_macro(user_params):
     ------------------------------------------------------------------------
     '''
 
-    output_base = BASELINE_DIR
-    input_dir = BASELINE_DIR
-    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
-            'user_params':user_params,'guid':'',
-            'run_micro':False, 'small_open': True}
-    #p1 = Process(target=runner, kwargs=kwargs)
-    #p1.start()
-    runner(**kwargs)
-    # quit()
+#    output_base = BASELINE_DIR
+#    input_dir = BASELINE_DIR
+#    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
+#            'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
+#            'user_params':user_params,'guid':'',
+#            'run_micro':False, 'small_open': True}
+#    #p1 = Process(target=runner, kwargs=kwargs)
+#    #p1.start()
+#    runner(**kwargs)
+#    # quit()
 
     '''
     ------------------------------------------------------------------------
         Run reform
     ------------------------------------------------------------------------
     '''
-#    output_base = REFORM_DIR
-#    input_dir = REFORM_DIR
-#    guid_iter = 'reform_' + str(0)
-#    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-#            'baseline':False, 'analytical_mtrs':False, 'age_specific':False,
-#            'user_params':user_params,'guid':'_alt',
-#            'reform': , 'run_micro':False, 'small_open': True} 
-#    #p2 = Process(target=runner, kwargs=kwargs)
-#    #p2.start()
-#    runner(**kwargs)
+    output_base = REFORM_DIR
+    input_dir = REFORM_DIR
+    guid_iter = 'reform_' + str(0)
+    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
+            'baseline':False, 'analytical_mtrs':False, 'age_specific':False,
+            'user_params':user_params,'guid':'_alt',
+            'reform':reform , 'run_micro':False, 'small_open': True} 
+    #p2 = Process(target=runner, kwargs=kwargs)
+    #p2.start()
+    runner(**kwargs)
 #
 #
 

@@ -569,7 +569,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     TPIiter = 0
     TPIdist = 10
     PLOT_TPI = False
-    report_tG1 = True
+    report_tG1 = False
 
     euler_errors = np.zeros((T, 2 * S, J))
     TPIdist_vec = np.zeros(maxiter)
@@ -673,18 +673,6 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         guesses_b = utils.convex_combo(b_mat, guesses_b, nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, nu)
         
-#        with open('TPI_diagnostics.csv', 'wb') as csvfile:
-#            tpiwriter = csv.writer(csvfile)
-#            tpiwriter.writerow(Ynew)
-#            tpiwriter.writerow(D)
-#            tpiwriter.writerow(REVENUE)
-#            tpiwriter.writerow(G)
-#            tpiwriter.writerow(K)
-#            tpiwriter.writerow(rnew)
-#            tpiwriter.writerow(wnew)
-#            tpiwriter.writerow(BQnew)
-#            tpiwriter.writerow(T_H_new)
-
         if T_H.all() != 0:
             TPIdist = np.array(list(utils.pct_diff_func(rnew[:T], r[:T])) + list(utils.pct_diff_func(BQnew[:T], BQ[:T]).flatten()) + list(
                 utils.pct_diff_func(wnew[:T], w[:T])) + list(utils.pct_diff_func(T_H_new[:T], T_H[:T]))).max()
@@ -727,11 +715,17 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     else:
         # K_params previously set to = (alpha, delta, Z)
         K[:T] = firm.get_K(L[:T], tpi_firm_r[:T], K_params)
-    Y_params = (alpha, Z)
+    # Y_params previously set to = (alpha, Z)
     Ynew = firm.get_Y(K[:T], L[:T], Y_params)
+    
+    # testing for change in Y
+    ydiff = Ynew[:T] - Y[:T]
+    ydiff_max = np.amax(np.abs(ydiff))
+    print 'ydiff_max = ', ydiff_max
+    
     wnew = firm.get_w(Ynew[:T], L[:T], alpha)
     if small_open == False:
-        r_params = (alpha, delta)
+        # r_params previously set to = (alpha,delta)
         rnew = firm.get_r(Ynew[:T], K[:T], r_params)
     else:
         rnew = r
@@ -776,16 +770,12 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         I = firm.get_I(bmat_splus1[:T], K[1:T+1], K[:T], I_params)
         rc_error = Y[:T] - C[:T] - I[:T] - G[:T]
     else:
-        InvestmentPlaceholder = np.zeros(bmat_splus1[:T].shape)
-        I_params = (delta, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
-        I = firm.get_I(InvestmentPlaceholder, K[1:T+1], K[:T], I_params)
-        B_params = (omega[:T].reshape(T, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T].reshape(T,S,1), g_n_vector[1:T+1], 'TPI')
-        B = np.zeros(K.shape)
-        B[0] = B0 # baseline placeholder value
-        B[1:T+1] = household.get_K(bmat_splus1[:T], B_params)
+        #InvestmentPlaceholder = np.zeros(bmat_splus1[:T].shape)
+        #I_params = (delta, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
+        I = (1+g_n_vector[:T])*np.exp(g_y)*K[1:T+1] - (1.0 - delta) * K[:T] #firm.get_I(InvestmentPlaceholder, K[1:T+1], K[:T], I_params)
         BI_params = (0.0, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
         BI = firm.get_I(bmat_splus1[:T], B[1:T+1], B[:T], BI_params)
-        new_borrowing = D[1:T]*(1+g_n_vector[:T-1])*np.exp(g_y) - D[:T-1]
+        new_borrowing = D[1:T]*(1+g_n_vector[1:T])*np.exp(g_y) - D[:T-1]
         rc_error = Y[:T-1] + new_borrowing - (C[:T-1] + BI[:T-1] + G[:T-1] ) + (tpi_hh_r[:T-1] * B[:T-1] - (delta + tpi_firm_r[:T-1])*K[:T-1] - tpi_hh_r[:T-1]*D[:T-1])
         #print 'Y(T-1):', Y[T-1], '\n','C(T-1):', C[T-1], '\n','K(T-1):', K[T-1], '\n','B(T-1):', B[T-1], '\n','BI(T-1):', BI[T-1], '\n','I(T-1):', I[T-1]
     
@@ -825,6 +815,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
                     'BQ': BQ, 'T_H': T_H, 'r': r, 'w': w, 
                     'tax_path': tax_path}
     
+    growth = (1+g_n_vector)*np.exp(g_y)
     with open('TPI_output.csv', 'wb') as csvfile:
         tpiwriter = csv.writer(csvfile)
         tpiwriter.writerow(Y)
@@ -839,6 +830,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
             tpiwriter.writerow(B)
             tpiwriter.writerow(BI)
             tpiwriter.writerow(new_borrowing)
+        tpiwriter.writerow(growth)
         tpiwriter.writerow(rc_error)
 
 
