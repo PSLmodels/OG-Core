@@ -347,8 +347,8 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     tG1                = int(T/5)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
     tG2                = int(T*0.8)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
     rho_G              = 0.1  # 0 < rho_G < 1 is transition speed for periods [tG1, tG2-1]. Lower rho_G => slower convergence.
-    debt_ratio_ss      = 0.75  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
-    initial_debt       = 1.25  # first-period debt/GDP ratio. Savings would be a negative number.
+    debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
+    initial_debt       = 0.2  # first-period debt/GDP ratio. Savings would be a negative number.
     
     if tG1 > tG2:
         print 'The first government spending rule change date, (', tG1, ') is after the second one (', tG2, ').'
@@ -503,8 +503,8 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     tG1                = int(T/5)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
     tG2                = int(T*0.8)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
     rho_G              = 0.1  # 0 < rho_G < 1 is transition speed for periods [tG1, tG2-1]. Lower rho_G => slower convergence.
-    debt_ratio_ss      = 0.6  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
-    initial_debt       = 0.6  # first-period debt/GDP ratio. Savings would be a negative number.
+    debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
+    initial_debt       = 0.2  # first-period debt/GDP ratio. Savings would be a negative number.
     
     if tG1 > tG2:
         print 'The first government spending rule change date, (', tG1, ') is after the second one (', tG2, ').'
