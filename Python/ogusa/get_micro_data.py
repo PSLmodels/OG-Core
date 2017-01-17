@@ -99,7 +99,7 @@ def get_calculator(baseline, calculator_start_year, reform=None, data=None, weig
     calc1 = Calculator(records=records1, policy=policy1)
 
     if growth_assumptions:
-        calc1.growth.update_economic_growth(growth_assumptions)
+        calc1.growth.update_growth(growth_assumptions)
 
     # this increment_year function extrapolates all PUF variables to the next year
     # so this step takes the calculator to the start_year
