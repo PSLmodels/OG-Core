@@ -214,6 +214,16 @@ tpi_firm_r  = [T+S,] vector, world interest rate (firm). Must be ss_firm_r in la
 tpi_hh_r    = [T+S,] vector, world interest rate (household). Must be ss_firm_r in last period.
 
 ------------------------------------------------------------------------
+Fiscal imbalance Parameters:
+------------------------------------------------------------------------
+
+alpha_T          = scalar, share of GDP that goes to transfers.
+alpha_G          = scalar, share of GDP that goes to gov't spending in early years.
+tG1             = scalar < t_G2, period at which change government spending rule from alpha_G*Y to glide toward SS debt ratio
+tG2             = scalar < T, period at which change gov't spending rule with final discrete jump to achieve SS debt ratio
+debt_ratio_ss    = scalar, steady state debt/GDP.
+
+------------------------------------------------------------------------
 Tax Parameters:
 ------------------------------------------------------------------------
 mean_income_data = scalar, mean income from IRS data file used to calibrate income tax
@@ -330,6 +340,24 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     ss_hh_r     = 0.04
     tpi_firm_r  = np.ones(T+S)*ss_firm_r
     tpi_hh_r    = np.ones(T+S)*ss_hh_r
+
+    # Fiscal imbalance parameters. These allow government deficits, debt, and savings.
+    alpha_T            = 0.13  # share of GDP that goes to transfers each period.
+    alpha_G            = 0.06  # share of GDP of government spending for periods t<tG1
+    tG1                = int(T/5)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
+    tG2                = int(T*0.8)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
+    rho_G              = 0.1  # 0 < rho_G < 1 is transition speed for periods [tG1, tG2-1]. Lower rho_G => slower convergence.
+    debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
+    initial_debt       = 0.2  # first-period debt/GDP ratio. Savings would be a negative number.
+    
+    if tG1 > tG2:
+        print 'The first government spending rule change date, (', tG1, ') is after the second one (', tG2, ').'
+        err = "Gov't spending rule dates are inconsistent"
+        raise RuntimeError(err)
+    if tG2 > T:
+        print 'The second government spending rule change date, (', tG2, ') is after time T (', T, ').'
+        err = "Gov't spending rule dates are inconsistent"
+        raise RuntimeError(err)
 
     # Tax parameters:
     #   Income Tax Parameters
@@ -468,6 +496,26 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     ss_hh_r            = (1 + ss_hh_r_annual)   ** (float(ending_age - starting_age) / S) - 1
     tpi_firm_r         = np.ones(T+S)*ss_firm_r
     tpi_hh_r           = np.ones(T+S)*ss_hh_r
+
+    # Fiscal imbalance parameters. These allow government deficits, debt, and savings.
+    alpha_T            = 0.13  # share of GDP that goes to transfers each period.
+    alpha_G            = 0.06  # share of GDP of government spending for periods t<tG1
+    tG1                = int(T/5)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
+    tG2                = int(T*0.8)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
+    rho_G              = 0.1  # 0 < rho_G < 1 is transition speed for periods [tG1, tG2-1]. Lower rho_G => slower convergence.
+    debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
+    initial_debt       = 0.2  # first-period debt/GDP ratio. Savings would be a negative number.
+    
+    if tG1 > tG2:
+        print 'The first government spending rule change date, (', tG1, ') is after the second one (', tG2, ').'
+        err = "Gov't spending rule dates are inconsistent"
+        raise RuntimeError(err)
+    if tG2 > T:
+        print 'The second government spending rule change date, (', tG2, ') is after time T (', T, ').'
+        err = "Gov't spending rule dates are inconsistent"
+        raise RuntimeError(err)
+
+    
 
     # Tax parameters:
     #   Income Tax Parameters
@@ -655,7 +703,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     #   Bequest and Payroll Taxes
     tau_bq = np.zeros(J)
     tau_payroll = 0.0 #0.15 # were are inluding payroll taxes in tax functions for now
-    retire = np.round(9.0 * S / 16.0) - 1
+    retire = np.int(np.round(9.0 * S / 16.0) - 1)
 
     # Simulation Parameters
     MINIMIZER_TOL = 1e-14
@@ -663,7 +711,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     PLOT_TPI = False
     maxiter = 250
     mindist_SS = 1e-9
-    mindist_TPI = 1e-9 #2e-5
+    mindist_TPI =  1e-9# 2e-5
     nu = .4
     flag_graphs = False
     #   Calibration parameters
