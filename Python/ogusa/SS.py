@@ -627,6 +627,9 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, ba
         print 'Yss= ', Yss, '\n', 'Gss= ', Gss,'\n', 'Css= ', Css, '\n', 'Bss = ', Bss, '\n', 'BIss = ', BIss, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'Debt service = ', debt_service_ss
         print 'resource constraint: ', resource_constraint
 
+    if Gss < 0:
+        print 'Steady state government spending is negative to satisfy budget'
+
     if ENFORCE_SOLUTION_CHECKS and np.absolute(resource_constraint) > 1e-8:
         print 'Resource Constraint Difference:', resource_constraint
         err = "Steady state aggregate resource constraint not satisfied"
