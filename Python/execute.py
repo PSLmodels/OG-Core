@@ -15,7 +15,7 @@ ogusa.parameters.DATASET = 'REAL'
 
 def runner(output_base, baseline_dir, baseline=False,
   analytical_mtrs=False, age_specific=False, reform={}, user_params={},
-  guid='', run_micro=True, small_open=False):
+  guid='', run_micro=True, small_open=False, budget_balance=False):
 
     #from ogusa import parameters, wealth, labor, demographics, income
     from ogusa import parameters, demographics, income, utils
@@ -42,6 +42,7 @@ def runner(output_base, baseline_dir, baseline=False,
     run_params = ogusa.parameters.get_parameters(baseline=baseline, guid=guid)
     run_params['analytical_mtrs'] = analytical_mtrs
     run_params['small_open'] = small_open
+    run_params['budget_balance'] = budget_balance
 
     # Modify ogusa parameters based on user input
     if 'frisch' in user_params:
@@ -74,13 +75,13 @@ def runner(output_base, baseline_dir, baseline=False,
                 'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
                 'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
                 'analytical_mtrs', 'b_ellipse', 'k_ellipse', 'upsilon',
-                'small_open', 'ss_firm_r', 'ss_hh_r', 'tpi_firm_r', 'tpi_hh_r',
+                'small_open', 'budget_balance', 'ss_firm_r', 'ss_hh_r', 'tpi_firm_r', 'tpi_hh_r',
                 'alpha_T', 'alpha_G', 'tG1', 'tG2', 'rho_G', 'debt_ratio_ss',
                 'chi_b_guess', 'chi_n_guess','etr_params','mtrx_params',
                 'mtry_params','tau_payroll', 'tau_bq',
                 'retire', 'mean_income_data', 'g_n_vector',
                 'h_wealth', 'p_wealth', 'm_wealth',
-                'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'imm_rates','e', 'rho', 
+                'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'imm_rates','e', 'rho',
                 'initial_debt','omega_S_preTP']
 
     '''
@@ -155,7 +156,7 @@ def runner(output_base, baseline_dir, baseline=False,
 
 def runner_SS(output_base, baseline_dir, baseline=False,
   analytical_mtrs=False, age_specific=False, reform={}, user_params={},
-  guid='', run_micro=True, small_open=False):
+  guid='', run_micro=True, small_open=False, budget_balance=True):
 
     from ogusa import parameters, demographics, income, utils
     from ogusa import txfunc
@@ -181,6 +182,7 @@ def runner_SS(output_base, baseline_dir, baseline=False,
     run_params = ogusa.parameters.get_parameters(baseline=baseline, guid=guid)
     run_params['analytical_mtrs'] = analytical_mtrs
     run_params['small_open'] = small_open
+    run_params['budget_balance'] = budget_balance
     #run_params['g_y'] = 0.0
     #run_params['g_n_ss']= 0.0
 
@@ -213,7 +215,7 @@ def runner_SS(output_base, baseline_dir, baseline=False,
                 'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
                 'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
                 'analytical_mtrs', 'b_ellipse', 'k_ellipse', 'upsilon',
-                'small_open', 'ss_firm_r', 'ss_hh_r', 'tpi_firm_r', 'tpi_hh_r',
+                'small_open', 'budget_balance','ss_firm_r', 'ss_hh_r', 'tpi_firm_r', 'tpi_hh_r',
                 'alpha_T', 'debt_ratio_ss',
                 'chi_b_guess', 'chi_n_guess','etr_params','mtrx_params',
                 'mtry_params','tau_payroll', 'tau_bq',
@@ -227,14 +229,14 @@ def runner_SS(output_base, baseline_dir, baseline=False,
         Run SS
     ------------------------------------------------------------------------
     '''
-    
+
     sim_params = {}
     for key in param_names:
         sim_params[key] = run_params[key]
 
     sim_params['output_dir'] = output_base
     sim_params['run_params'] = run_params
-    
+
     income_tax_params, ss_params, iterative_params, chi_params, small_open_params= SS.create_steady_state_parameters(**sim_params)
 
     '''
