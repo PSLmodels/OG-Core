@@ -52,6 +52,8 @@ def runner(output_base, baseline_dir, baseline=False,
         run_params['b_ellipse'] = b_ellipse
         run_params['upsilon'] = upsilon
         run_params.update(user_params)
+    if 'debt_ratio_ss' in user_params:
+        run_params['debt_ratio_ss']=user_params['debt_ratio_ss']
 
     # Modify ogusa parameters based on user input
     if 'g_y_annual' in user_params:
