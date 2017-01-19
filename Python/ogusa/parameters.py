@@ -462,17 +462,17 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     --------------------------------------------------------------------
     '''
     # Model Parameters
-    S = int(80)
-    lambdas = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
-    J = lambdas.shape[0]
-    T = int(4 * S)
-    BW = int(10)
-
-    # S = int(40)
-    # lambdas = np.array([0.6,0.4])
+    # S = int(80)
+    # lambdas = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
     # J = lambdas.shape[0]
     # T = int(4 * S)
     # BW = int(10)
+
+    S = int(80)
+    lambdas = np.array([0.6,0.4])
+    J = lambdas.shape[0]
+    T = int(4 * S)
+    BW = int(10)
 
     start_year = 2016
     starting_age = 20
