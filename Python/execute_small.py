@@ -159,7 +159,7 @@ def runner(output_base, baseline_dir, baseline=False, analytical_mtrs=False,
 
 def runner_SS(output_base, baseline_dir, baseline=False, analytical_mtrs=False,
   age_specific=False, reform={}, user_params={},
-  guid='', run_micro=True, small_open=False):
+  guid='', run_micro=True, small_open=False, budget_balance=True):
 
     from ogusa import parameters, demographics, income, utils
     from ogusa import txfunc
