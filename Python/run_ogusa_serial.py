@@ -74,7 +74,7 @@ def run_micro_macro(user_params):
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
             'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
             'user_params':user_params,'guid':'',
-            'run_micro':False, 'small_open': True, 'budget_balance':True}
+            'run_micro':False, 'small_open': True, 'budget_balance':False}
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
     runner(**kwargs)
