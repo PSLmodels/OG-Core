@@ -332,9 +332,9 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     frisch = 0.4 # Frisch elasticity consistent with Altonji (JPE, 1996) and Peterman (Econ Inquiry, 2016)
     b_ellipse, upsilon = ellip.estimation(frisch,ltilde)
     k_ellipse = 0 # this parameter is just a level shifter in utlitiy - irrelevant for analysis
-    
-    # Small Open Economy parameters. Currently these are placeholders. Can introduce a 
-    # borrow/lend spread and a time path from t=0 to t=T-1. However, from periods T through 
+
+    # Small Open Economy parameters. Currently these are placeholders. Can introduce a
+    # borrow/lend spread and a time path from t=0 to t=T-1. However, from periods T through
     # T+S, the steady state rate should hold.
     ss_firm_r   = 0.04
     ss_hh_r     = 0.04
@@ -349,7 +349,7 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     rho_G              = 0.1  # 0 < rho_G < 1 is transition speed for periods [tG1, tG2-1]. Lower rho_G => slower convergence.
     debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
     initial_debt       = 0.2  # first-period debt/GDP ratio. Savings would be a negative number.
-    
+
     if tG1 > tG2:
         print 'The first government spending rule change date, (', tG1, ') is after the second one (', tG2, ').'
         err = "Gov't spending rule dates are inconsistent"
@@ -468,6 +468,12 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     T = int(4 * S)
     BW = int(10)
 
+    # S = int(40)
+    # lambdas = np.array([0.6,0.4])
+    # J = lambdas.shape[0]
+    # T = int(4 * S)
+    # BW = int(10)
+
     start_year = 2016
     starting_age = 20
     ending_age = 100
@@ -486,9 +492,9 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     frisch = 0.4 # Frisch elasticity consistent with Altonji (JPE, 1996) and Peterman (Econ Inquiry, 2016)
     b_ellipse, upsilon = ellip.estimation(frisch,ltilde)
     k_ellipse = 0 # this parameter is just a level shifter in utlitiy - irrelevant for analysis
-    
-    # Small Open Economy parameters. Currently these are placeholders. Can introduce a 
-    # borrow/lend spread and a time path from t=0 to t=T-1. However, from periods T through 
+
+    # Small Open Economy parameters. Currently these are placeholders. Can introduce a
+    # borrow/lend spread and a time path from t=0 to t=T-1. However, from periods T through
     # T+S, the steady state rate should hold.
     ss_firm_r_annual   =  0.04
     ss_hh_r_annual     =  0.04
@@ -505,7 +511,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     rho_G              = 0.1  # 0 < rho_G < 1 is transition speed for periods [tG1, tG2-1]. Lower rho_G => slower convergence.
     debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
     initial_debt       = 0.2  # first-period debt/GDP ratio. Savings would be a negative number.
-    
+
     if tG1 > tG2:
         print 'The first government spending rule change date, (', tG1, ') is after the second one (', tG2, ').'
         err = "Gov't spending rule dates are inconsistent"
@@ -515,7 +521,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
         err = "Gov't spending rule dates are inconsistent"
         raise RuntimeError(err)
 
-    
+
 
     # Tax parameters:
     #   Income Tax Parameters
@@ -545,16 +551,16 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     mtry_params = dict_params['tfunc_mtry_params_S'][:S,:BW,:]
 
     # # Make all ETRs equal the average
-    # etr_params = np.zeros(etr_params.shape)
-    # etr_params[:, :, 10] = dict_params['tfunc_avg_etr'] # set shift to average rate
+    etr_params = np.zeros(etr_params.shape)
+    etr_params[:, :, 10] = dict_params['tfunc_avg_etr'] # set shift to average rate
 
     # # Make all MTRx equal the average
-    # mtrx_params = np.zeros(mtrx_params.shape)
-    # mtrx_params[:, :, 10] = dict_params['tfunc_avg_mtrx'] # set shift to average rate
+    mtrx_params = np.zeros(mtrx_params.shape)
+    mtrx_params[:, :, 10] = dict_params['tfunc_avg_mtrx'] # set shift to average rate
 
     # # Make all MTRy equal the average
-    # mtry_params = np.zeros(mtry_params.shape)
-    # mtry_params[:, :, 10] = dict_params['tfunc_avg_mtry'] # set shift to average rate
+    mtry_params = np.zeros(mtry_params.shape)
+    mtry_params[:, :, 10] = dict_params['tfunc_avg_mtry'] # set shift to average rate
 
     # # Make MTRx depend only on labor income
     # mtrx_params[:, :, 11] = 1.0 # set share parameter to 1
