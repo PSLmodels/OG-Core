@@ -39,12 +39,10 @@ def replacement_rate_vals(nssmat, wss, factor_ss, params):
     dim2 = 1
     if nssmat.ndim==2:
         dim2 = J
-    start_last_35 = retire-int(round((S/80)*35))
-    AIME = (e *(wss * nssmat * factor_ss).reshape(S,dim2))[start_last_35:retire,:].sum(0) / ((12.0*(S/80))*int(round((S/80)*35)))
-    # try:
-    #     AIME = (e *(wss * nssmat * factor_ss).reshape(S,1))[start_last_35:retire,:].sum(0) / ((12.0*(S/80))*int(round((S/80)*35)))
-    # except:
-    #     AIME = (e *(wss * nssmat * factor_ss).reshape(S,J))[start_last_35:retire,:].sum(0) / ((12.0*(S/80))*int(round((S/80)*35)))
+    # get highest earning 35 years
+    earnings = (e *(wss * nssmat * factor_ss).reshape(S,dim2))
+    highest_35_earn = -1.0*np.partition(-earnings, int(round((S/80)*35)),axis=0)
+    AIME = highest_35_earn.sum(0) / ((12.0*(S/80))*int(round((S/80)*35)))
     PIA = np.zeros(J)
     # Bins from data for each level of replacement
     for j in xrange(J):
@@ -55,7 +53,7 @@ def replacement_rate_vals(nssmat, wss, factor_ss, params):
         else:
             PIA[j] = 1879.86 + .15 * (AIME[j] - 4517.0)
     # Set the maximum replacment rate to be $30,000
-    maxpayment = 30000.0
+    maxpayment = 3501.00 #30000.0/12.0
     PIA[PIA > maxpayment] = maxpayment
     theta = (PIA*(12.0*S/80)) / (factor_ss*wss)
     return theta
