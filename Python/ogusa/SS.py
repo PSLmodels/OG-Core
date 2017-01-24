@@ -617,6 +617,7 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, ba
     if small_open == False:
         resource_constraint = Yss - (Css + Iss + Gss)
         print 'Yss= ', Yss, '\n', 'Gss= ', Gss, '\n', 'Css= ', Css, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'Debt service = ', debt_service_ss
+        print 'D/Y:', debt_ss/Yss, 'T/Y:', T_Hss/Yss, 'G/Y:', Gss/Yss, 'Int payments to GDP:', (rss*debt_ss)/Yss
         print 'resource constraint: ', resource_constraint
     else:
         # include term for current account
@@ -643,11 +644,10 @@ def SS_solver(b_guess_init, n_guess_init, wss, rss, T_Hss, factor_ss, params, ba
         Return dictionary of SS results
     ------------------------------------------------------------------------
     '''
-
     output = {'Kss': Kss, 'bssmat': bssmat, 'Bss': Bss, 'Lss': Lss, 'Css':Css, 'Iss':Iss, 'nssmat': nssmat, 'Yss': Yss,
               'wss': wss, 'rss': rss, 'theta': theta, 'BQss': BQss, 'factor_ss': factor_ss,
               'bssmat_s': bssmat_s, 'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
-              'T_Hss': T_Hss, 'revenue_ss': revenue_ss, 'euler_savings': euler_savings,
+              'T_Hss': T_Hss, 'Gss': Gss, 'revenue_ss': revenue_ss, 'euler_savings': euler_savings,
               'euler_labor_leisure': euler_labor_leisure, 'chi_n': chi_n,
               'chi_b': chi_b}
 

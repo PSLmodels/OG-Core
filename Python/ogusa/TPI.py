@@ -73,14 +73,13 @@ def create_tpi_params(**sim_params):
     if sim_params['baseline']==True:
         SS_values = (ss_baseline_vars['Kss'], ss_baseline_vars['Bss'], ss_baseline_vars['Lss'], ss_baseline_vars['rss'],
                  ss_baseline_vars['wss'], ss_baseline_vars['BQss'], ss_baseline_vars['T_Hss'], ss_baseline_vars['revenue_ss'],
-                 ss_baseline_vars['bssmat_splus1'], ss_baseline_vars['nssmat'], ss_baseline_vars['Yss'])
+                 ss_baseline_vars['bssmat_splus1'], ss_baseline_vars['nssmat'], ss_baseline_vars['Yss'], ss_baseline_vars['Gss'])
     elif sim_params['baseline']==False:
         reform_ss = os.path.join(sim_params['input_dir'], "SS/SS_vars.pkl")
         ss_reform_vars = pickle.load(open(reform_ss, "rb"))
         SS_values = (ss_reform_vars['Kss'],ss_reform_vars['Bss'], ss_reform_vars['Lss'], ss_reform_vars['rss'],
                  ss_reform_vars['wss'], ss_reform_vars['BQss'], ss_reform_vars['T_Hss'], ss_reform_vars['revenue_ss'],
-                 ss_reform_vars['bssmat_splus1'], ss_reform_vars['nssmat'], ss_reform_vars['Yss'])
-
+                 ss_reform_vars['bssmat_splus1'], ss_reform_vars['nssmat'], ss_reform_vars['Yss'], ss_reform_vars['Gss'])
 
     # Make a vector of all one dimensional parameters, to be used in the
     # following functions
@@ -485,37 +484,69 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     #         w0, r0, BQ0, T_H_0, factor, tax0, c0, initial_b, initial_n, omega_S_preTP = initial_values
     small_open, tpi_firm_r, tpi_hh_r = small_open_params
     B0, b_sinit, b_splus1init, factor, initial_b, initial_n, omega_S_preTP, initial_debt = initial_values
-    Kss, Bss, Lss, rss, wss, BQss, T_Hss, revenue_ss, bssmat_splus1, nssmat, Yss = SS_values
+    Kss, Bss, Lss, rss, wss, BQss, T_Hss, revenue_ss, bssmat_splus1, nssmat, Yss, Gss = SS_values
     budget_balance, alpha_T, alpha_G, tG1, tG2, rho_G, debt_ratio_ss = fiscal_params
 
     print 'Government spending breakpoints are tG1: ', tG1, '; and tG2:', tG2
 
     TPI_FIG_DIR = output_dir
     # Initialize guesses at time paths
+    # Make array of initial guesses for labor supply and savings
     domain = np.linspace(0, T, T)
-    L_init = np.ones(T + S) * Lss  #NOTE: this initial guess could be improved by using guesses_n, computed just below here.
+    domain2 = np.tile(domain.reshape(T, 1, 1), (1, S, J))
+    ending_b = bssmat_splus1
+    guesses_b = (-1 / (domain2 + 1)) * (ending_b - initial_b) + ending_b
+    ending_b_tail = np.tile(ending_b.reshape(1, S, J), (S, 1, 1))
+    guesses_b = np.append(guesses_b, ending_b_tail, axis=0)
+
+    domain3 = np.tile(np.linspace(0, 1, T).reshape(T, 1, 1), (1, S, J))
+    guesses_n = domain3 * (nssmat - initial_n) + initial_n
+    ending_n_tail = np.tile(nssmat.reshape(1, S, J), (S, 1, 1))
+    guesses_n = np.append(guesses_n, ending_n_tail, axis=0)
+    b_mat = guesses_b#np.zeros((T + S, S, J))
+    n_mat = guesses_n#np.zeros((T + S, S, J))
+    ind = np.arange(S)
+
+    L_init = np.ones((T+S,))*Lss
+    B_init = np.ones((T+S,))*Bss
+    L_params = (e.reshape(1, S, J), omega[:T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI')
+    L_init[:T]  = firm.get_L(n_mat[:T], L_params)
+    B_params = (omega[:T-1].reshape(T-1, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T-1].reshape(T-1,S,1), g_n_vector[1:T], 'TPI')
+    B_init[1:T] = household.get_K(b_mat[:T-1], B_params)
+    B_init[0] = B0
 
     if small_open == False:
         # solve for root to calibrate Y, debt, K given initial guesses
         if budget_balance:
-            K0 = B0
-            K_init = (-1 / (domain + 1)) * (Kss - K0) + Kss
-            K_init[-1] = Kss
-            K_init = np.array(list(K_init) + list(np.ones(S) * Kss))
+            # K0 = B0
+            # K_init = (-1 / (domain + 1)) * (Kss - K0) + Kss
+            # K_init[-1] = Kss
+            # K_init = np.array(list(K_init) + list(np.ones(S) * Kss))
+            # B_init = K_init
+            K_init = B_init
         else:
-            Y_params = (alpha, Z)
-            y_guess = firm.get_Y((3-initial_debt/3)*B0,L_init[0],Y_params)
-            y_inputs = (alpha,Z,initial_debt, B0, L_init[0])
-            [Y0, infodict, ier, message] = opt.fsolve(initial_GDP_level, y_guess, args=y_inputs, xtol=mindist_TPI, full_output=True)
-            K0 = B0 - initial_debt*Y0
-            K_init = (-1 / (domain + 1)) * (Kss - K0) + Kss
-            K_init[-1] = Kss
-            K_init = np.array(list(K_init) + list(np.ones(S) * Kss))
+            # Y_params = (alpha, Z)
+            # y_guess = firm.get_Y((3-initial_debt/3)*B0,L_init[0],Y_params)
+            # y_inputs = (alpha,Z,initial_debt, B0, L_init[0])
+            # [Y0, infodict, ier, message] = opt.fsolve(initial_GDP_level, y_guess, args=y_inputs, xtol=mindist_TPI, full_output=True)
+            # K0 = B0 - initial_debt*Y0
+            # B_init = (-1 / (domain + 1)) * (Bss - B0) + Bss
+            # B_init[-1] = Bss
+            # B_init[0] = B0
+            # B_init = np.array(list(B_init) + list(np.ones(S) * Bss))
+            # D_init = B_init*((debt_ratio_ss*Yss)/Bss)
+            # D_init[0]= initial_debt*Y0
+            # K_init = B_init-D_init
+            # K_init[0] = K0
+            K_init = B_init * Kss/Bss
     else:
         K_params = (alpha, delta, Z)
         K_init = firm.get_K(L_init, tpi_firm_r, K_params)
+
+
     K = K_init
     L = L_init
+    B = B_init
     Y_params = (alpha, Z)
     Y = firm.get_Y(K, L, Y_params)
     w = firm.get_w(Y, L, alpha)
@@ -524,8 +555,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         r = firm.get_r(Y, K, r_params)
     else:
         r = tpi_hh_r
-    B  = np.ones(T+S)*Bss
-    B[0] = B0
+
 
     BQ = np.zeros((T + S, J))
     BQ0_params = (omega_S_preTP.reshape(S, 1), lambdas, rho.reshape(S, 1), g_n_vector[0], 'SS')
@@ -545,31 +575,29 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     else:
         T_H = alpha_T * Y
         # Use the SS average total tax rate to guess a path of revenues
-        REVENUE = Y * (revenue_ss / Yss)
-        G       = np.zeros(T+S)
-        D       = np.zeros(T+S)
-        G[0]    = alpha_G * Y[0]
-        D[0]    = initial_debt * Y[0]
-        # Loop over years to create initial path of debt and gov't spending.
-        other_dg_params = (T, r, g_n_vector, g_y)
-        dg_fixed_values = (Y, REVENUE, T_H, D[0],G[0])
-        D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params)
+        # REVENUE = Y * (revenue_ss / Yss)
+        # growth = (1+g_n_vector)*np.exp(g_y)
+        # G       = np.zeros(T+S)
+        # D = D_init
+        # G[:T] = (D[1:T+1]*growth[1:T+1]) - (1+r[:T])*D[:T] - T_H[:T] + REVENUE[:T]
+        # G[T:] = Gss
+
+        # G       = np.zeros(T+S)
+        # D       = np.zeros(T+S)
+        # G[0]    = alpha_G * Y[0]
+        # D[0]    = initial_debt * Y[0]
+        # # Loop over years to create initial path of debt and gov't spending.
+        # other_dg_params = (T, r, g_n_vector, g_y)
+        # dg_fixed_values = (Y, REVENUE, T_H, D[0],G[0])
+        # D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params)
 
 
-    # Make array of initial guesses for labor supply and savings
-    domain2 = np.tile(domain.reshape(T, 1, 1), (1, S, J))
-    ending_b = bssmat_splus1
-    guesses_b = (-1 / (domain2 + 1)) * (ending_b - initial_b) + ending_b
-    ending_b_tail = np.tile(ending_b.reshape(1, S, J), (S, 1, 1))
-    guesses_b = np.append(guesses_b, ending_b_tail, axis=0)
+    # print 'D/Y:', D[:T]/Y[:T]
+    # print 'T/Y:', T_H[:T]/Y[:T]
+    # print 'G/Y:', G[:T]/Y[:T]
+    # print 'Int payments to GDP:', (r[:T]*D[:T])/Y[:T]
+    # quit()
 
-    domain3 = np.tile(np.linspace(0, 1, T).reshape(T, 1, 1), (1, S, J))
-    guesses_n = domain3 * (nssmat - initial_n) + initial_n
-    ending_n_tail = np.tile(nssmat.reshape(1, S, J), (S, 1, 1))
-    guesses_n = np.append(guesses_n, ending_n_tail, axis=0)
-    b_mat = np.zeros((T + S, S, J))
-    n_mat = np.zeros((T + S, S, J))
-    ind = np.arange(S)
 
     TPIiter = 0
     TPIdist = 10
@@ -624,10 +652,29 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
             print 'B[T-2:T]:', B[T-2,T]
 
         if small_open == False:
-            K[:T] = B[:T] - D[:T]
-            if np.any(K < 0):
-                print 'K has negative elements. Setting them positive to prevent NAN.'
-                K[:T] = np.fmax(K[:T], 0.05*B[:T])
+            if budget_balance:
+                K[:T] = B[:T]
+            else:
+                Y = T_H/alpha_T
+
+                tax_params = np.zeros((T,S,J,etr_params.shape[2]))
+                for i in range(etr_params.shape[2]):
+                    tax_params[:,:,:,i] = np.tile(np.reshape(np.transpose(etr_params[:,:T,i]),(T,S,1)),(1,1,J))
+
+                REVENUE_params = (np.tile(e.reshape(1, S, J),(T,1,1)), lambdas.reshape(1, 1, J), omega[:T].reshape(T, S, 1), 'TPI',
+                        tax_params, theta, tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
+                REVENUE = np.array(list(tax.get_lump_sum(np.tile(r[:T].reshape(T, 1, 1),(1,S,J)), np.tile(w[:T].reshape(T, 1, 1),(1,S,J)),
+                       bmat_s, n_mat[:T,:,:], BQ[:T].reshape(T, 1, J), factor, REVENUE_params)) + [revenue_ss] * S)
+
+                G_0    = alpha_G * Y[0]
+                D_0    = initial_debt * Y[0]
+                other_dg_params = (T, r, g_n_vector, g_y)
+                dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
+                D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params)
+                K[:T] = B[:T] - D[:T]
+                if np.any(K < 0):
+                    print 'K has negative elements. Setting them positive to prevent NAN.'
+                    K[:T] = np.fmax(K[:T], 0.05*B[:T])
         else:
             # K_params previously set to = (alpha, delta, Z)
             K[:T] = firm.get_K(L[:T], tpi_firm_r[:T], K_params)
@@ -639,8 +686,6 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
             rnew = firm.get_r(Ynew[:T], K[:T], r_params)
         else:
             rnew = r
-        K_max = np.amax(K)
-        K_min = np.amin(K)
 
         omega_shift = np.append(omega_S_preTP.reshape(1,S),omega[:T-1,:],axis=0)
         BQ_params = (omega_shift.reshape(T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1),
@@ -696,6 +741,16 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         print 'Iteration:', TPIiter
         print '\tDistance:', TPIdist
 
+        # print 'D/Y:', (D[:T]/Ynew[:T]).max(), (D[:T]/Ynew[:T]).min(), np.median(D[:T]/Ynew[:T])
+        # print 'T/Y:', (T_H_new[:T]/Ynew[:T]).max(), (T_H_new[:T]/Ynew[:T]).min(), np.median(T_H_new[:T]/Ynew[:T])
+        # print 'G/Y:', (G[:T]/Ynew[:T]).max(), (G[:T]/Ynew[:T]).min(), np.median(G[:T]/Ynew[:T])
+        # print 'Int payments to GDP:', ((r[:T]*D[:T])/Ynew[:T]).max(), ((r[:T]*D[:T])/Ynew[:T]).min(), np.median((r[:T]*D[:T])/Ynew[:T])
+        #
+        # print 'D/Y:', (D[:T]/Ynew[:T])
+        # print 'T/Y:', (T_H_new[:T]/Ynew[:T])
+        # print 'G/Y:', (G[:T]/Ynew[:T])
+        #
+        # print 'deficit: ', REVENUE[:T] - T_H_new[:T] - G[:T]
 
     Y[:T] = Ynew
 
