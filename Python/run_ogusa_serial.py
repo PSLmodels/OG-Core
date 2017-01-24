@@ -45,7 +45,7 @@ def run_micro_macro(user_params):
     BASELINE_DIR = "./OUTPUT_BASELINE"
 
 
-    user_params = {'frisch':0.41, 'start_year':2016, 'debt_ratio_ss':0.4}
+    user_params = {'frisch':0.41, 'start_year':2016, 'debt_ratio_ss':1.0}
 
     '''
     ------------------------------------------------------------------------
