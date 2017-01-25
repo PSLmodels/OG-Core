@@ -45,23 +45,23 @@ def run_micro_macro(user_params):
     BASELINE_DIR = "./OUTPUT_BASELINE"
 
 
-    user_params = {'frisch':0.41, 'start_year':2016, 'debt_ratio_ss':0.4}
+    user_params = {'frisch':0.41, 'start_year':2016, 'debt_ratio_ss':1.0}
 
     '''
     ------------------------------------------------------------------------
         Run SS for Baseline first - so can run baseline and reform in parallel if want
     ------------------------------------------------------------------------
     '''
-    output_base = BASELINE_DIR
-    input_dir = BASELINE_DIR
-    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-           'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
-           'user_params':user_params,'guid':'test',
-           'run_micro':False, 'small_open':False, 'budget_balance':False}
-    #p1 = Process(target=runner, kwargs=kwargs)
-    #p1.start()
-    runner_SS(**kwargs)
-    quit()
+    # output_base = BASELINE_DIR
+    # input_dir = BASELINE_DIR
+    # kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
+    #        'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
+    #        'user_params':user_params,'guid':'test',
+    #        'run_micro':False, 'small_open':False, 'budget_balance':False}
+    # #p1 = Process(target=runner, kwargs=kwargs)
+    # #p1.start()
+    # runner_SS(**kwargs)
+    # quit()
 
 
     '''

@@ -35,41 +35,27 @@ def replacement_rate_vals(nssmat, wss, factor_ss, params):
         theta      = [J,] vector, replacement rates by lifetime income group
     Returns: theta
     '''
-    e, J, omega_SS, lambdas = params
-
-    # Do a try/except, depending on whether the arrays are 1 or 2 dimensional
-    try:
-        AIME = ((wss * factor_ss * e * nssmat) *
-                omega_SS).sum(0) * lambdas / 12.0
-        PIA = np.zeros(J)
-        # Bins from data for each level of replacement
-        for j in xrange(J):
-            if AIME[j] < 749.0:
-                PIA[j] = .9 * AIME[j]
-            elif AIME[j] < 4517.0:
-                PIA[j] = 674.1 + .32 * (AIME[j] - 749.0)
-            else:
-                PIA[j] = 1879.86 + .15 * (AIME[j] - 4517.0)
-        theta = PIA * (e * nssmat).mean(0) / AIME
-        # Set the maximum replacment rate to be $30,000
-        maxpayment = 30000.0 / (factor_ss * wss)
-        theta[theta > maxpayment] = maxpayment
-    except:
-        AIME = ((wss * factor_ss * e * nssmat) *
-                omega_SS).sum() * lambdas / 12.0
-        PIA = 0
-        if AIME < 749.0:
-            PIA = .9 * AIME
-        elif AIME < 4517.0:
-            PIA = 674.1 + .32 * (AIME - 749.0)
+    e, S, J, omega_SS, lambdas, retire = params
+    dim2 = 1
+    if nssmat.ndim==2:
+        dim2 = J
+    # get highest earning 35 years
+    earnings = (e *(wss * nssmat * factor_ss).reshape(S,dim2))
+    highest_35_earn = -1.0*np.partition(-earnings, int(round((S/80)*35)),axis=0)
+    AIME = highest_35_earn.sum(0) / ((12.0*(S/80))*int(round((S/80)*35)))
+    PIA = np.zeros(J)
+    # Bins from data for each level of replacement
+    for j in xrange(J):
+        if AIME[j] < 749.0:
+            PIA[j] = .9 * AIME[j]
+        elif AIME[j] < 4517.0:
+            PIA[j] = 674.1 + .32 * (AIME[j] - 749.0)
         else:
-            PIA = 1879.86 + .15 * (AIME - 4517.0)
-        theta = PIA * (e * nssmat).mean(0) / AIME
-        # Set the maximum replacment rate to be $30,000
-        maxpayment = 30000.0 / (factor_ss * wss)
-        if theta > maxpayment:
-            theta = maxpayment
-    theta = 0  # setting theta = 0 since we are including social security income in capital income (CHECK)
+            PIA[j] = 1879.86 + .15 * (AIME[j] - 4517.0)
+    # Set the maximum replacment rate to be $30,000
+    maxpayment = 3501.00 #30000.0/12.0
+    PIA[PIA > maxpayment] = maxpayment
+    theta = (PIA*(12.0*S/80)) / (factor_ss*wss)
     return theta
 
 
