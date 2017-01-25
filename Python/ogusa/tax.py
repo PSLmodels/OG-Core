@@ -551,7 +551,25 @@ def MTR_labor(r, w, b, n, factor, params):
     return tau
 
 
-def get_lump_sum(r, w, b, n, BQ, factor, params):
+def get_biz_tax(w, Y, L, K, params):
+    '''
+    Finds total business income tax receipts
+    Inputs:
+        r           = [T,] vector, interest rate
+        Y           = [T,] vector, aggregate output
+        L           = [T,] vector, aggregate labor demand
+        K           = [T,] vector, aggregate capital demand
+    Objects in function:
+        business_revenue    = [T,] vector, total revenue from business income taxes
+    Returns: T_H
+
+    '''
+
+    tau_b, delta_tau = params
+    business_revenue = tau_b*(Y-w*L) - tau_b*delta_tau*K
+    return business_revenue
+
+def revenue(r, w, b, n, BQ, Y, L, K, factor, params):
     '''
     Gives lump sum transfer value.
     Inputs:
@@ -594,7 +612,8 @@ def get_lump_sum(r, w, b, n, BQ, factor, params):
     '''
 
     e, lambdas, omega, method, etr_params, theta, tau_bq, \
-        tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J = params
+        tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J,\
+        tau_b, delta_tau = params
 
     I = r * b + w * e * n
 
@@ -615,15 +634,17 @@ def get_lump_sum(r, w, b, n, BQ, factor, params):
     T_P = tau_payroll * w * e * n
     TW_params = (h_wealth, p_wealth, m_wealth)
     T_W = tau_wealth(b, TW_params) * b
+    biz_params = (tau_b, delta_tau)
+    business_revenue = get_biz_tax(w, Y, L, K, biz_params)
     if method == 'SS':
         T_P[retire:] -= theta * w
         T_BQ = tau_bq * BQ / lambdas
-        T_H = (omega * lambdas * (T_I + T_P + T_BQ + T_W)).sum()
+        REVENUE = (omega * lambdas * (T_I + T_P + T_BQ + T_W)).sum() + business_revenue
     elif method == 'TPI':
         T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w[:,retire:,:]
         T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
-        T_H = (omega * lambdas * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1)
-    return T_H
+        REVENUE = (omega * lambdas * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1) + business_revenue
+    return REVENUE
 
 
 def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
