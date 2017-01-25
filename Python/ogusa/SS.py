@@ -128,6 +128,7 @@ def create_steady_state_parameters(**sim_params):
                   sim_params['nu'], sim_params['g_y'], sim_params['g_n_ss'],
                   sim_params['tau_payroll'], sim_params['tau_bq'], sim_params['rho'], sim_params['omega_SS'],
                   sim_params['budget_balance'], sim_params['alpha_T'], sim_params['debt_ratio_ss'],
+                  sim_params['tau_b'], sim_params['delta_tau'],
                   sim_params['lambdas'], sim_params['imm_rates'][-1,:], sim_params['e'], sim_params['retire'], sim_params['mean_income_data']] + \
                   wealth_tax_params + ellipse_params
     iterative_params = [sim_params['maxiter'], sim_params['mindist_SS']]
