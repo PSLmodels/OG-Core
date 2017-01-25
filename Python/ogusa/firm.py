@@ -38,7 +38,7 @@ def get_r(Y, K, params):
     '''
 
     alpha, delta, tau_b, delta_tau = params
-    r = (alpha * Y / K) - delta + tau_b*delta_tau
+    r = (1-tau_b)*(alpha * Y / K) - delta + tau_b*delta_tau
     return r
 
 
@@ -177,5 +177,5 @@ def get_K(L, r, params):
     '''
 
     alpha, delta, Z, tau_b, delta_tau = params
-    K = (alpha*Z/(r+delta-(tau_b*delta_tau)))**(1/(1-alpha)) * L
+    K = (((1-tau_b)*alpha*Z)/(r+delta-(tau_b*delta_tau)))**(1/(1-alpha)) * L
     return K
