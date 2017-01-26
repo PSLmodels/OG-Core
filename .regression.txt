@@ -20,3 +20,8 @@ reforms_to_run reform0
 
 # Budget balance for OG-USA execute - runner
 budget_balance True
+
+# The Jenkins jobs (all reforms considered)
+# must be completed within the following
+# number of HOURS
+all_jenkins_jobs_timeout 96

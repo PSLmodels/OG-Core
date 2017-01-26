@@ -82,7 +82,8 @@ def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
 
     kwargs={'output_base':BASELINE_DIR, 'baseline_dir':BASELINE_DIR,
             'baseline':True, 'analytical_mtrs':False, 'age_specific':False,
-            'user_params':user_params, 'guid':guid, 'run_micro':run_micro}
+            'user_params':user_params, 'guid':guid, 'run_micro':run_micro,
+            'budget_balance': budget_balance}
 
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
@@ -90,7 +91,8 @@ def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
 
     kwargs={'output_base':REFORM_DIR, 'baseline_dir':BASELINE_DIR,
              'baseline':False, 'analytical_mtrs':False, 'user_params':user_params,
-             'reform':reform, 'age_specific':False, 'guid':guid,'run_micro':run_micro}
+             'reform':reform, 'age_specific':False, 'guid':guid,'run_micro':run_micro,
+             'budget_balance': budget_balance}
 
     #p2 = Process(target=runner, kwargs=kwargs)
     #p2.start()
