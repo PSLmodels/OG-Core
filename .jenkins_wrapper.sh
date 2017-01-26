@@ -1,3 +1,5 @@
+set -x
+
 from_config(){
 
     export $1=$(cat .regression.txt | grep $1 | sed 's/\s+//g' | cut -d" " -f2);
