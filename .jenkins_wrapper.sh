@@ -21,11 +21,13 @@ export PATH="$WORKSPACE/miniconda/bin:$PATH"
 conda config --set always_yes yes --set changeps1 no
 conda update conda -n root
 conda env list | grep ogusa_env && conda env remove -n ogusa_env || echo Didnt have to remove env
-conda create --force -n ogusa_env python=2.7
+conda install nomkl
+conda create --force -n ogusa_env python=2.7 nomkl
 
 source activate ogusa_env
 conda install -c $TAXPUF_CHANNEL taxpuf
-conda install --force yaml llvmlite enum34 funcsigs singledispatch libgfortran libpng openblas numba pytz pytest six toolz dateutil cycler scipy numpy=$numpy_version pyparsing pandas=0.18.1 matplotlib
+conda install --force yaml llvmlite enum34 funcsigs singledispatch libgfortran libpng openblas numba pytz pytest six toolz dateutil cycler scipy numpy=$numpy_version pyparsing pandas=0.18.1 matplotlib nomkl
+conda remove mkl mkl-service || echo didnt have to remove mkl mkl-service
 conda install --no-deps -c ospc taxcalc=$install_taxcalc_version --force
 if [ "$ogusainstallmethod" = "conda" ];then
     conda install -c ospc ogusa=$ogusaversion
@@ -34,6 +36,7 @@ if [ "$ogusainstallmethod" = "git" ];then
     python setup.py install
 fi
 
+conda install nomkl
 
 cd Python/regression
 echo WRITE puf.csv.gz to `pwd`
