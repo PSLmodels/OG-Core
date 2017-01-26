@@ -722,10 +722,10 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
 
         # Loop through years to calculate debt and gov't spending. The re-assignment of G0 & D0 is necessary because Y0 may change in the TPI loop.
         if budget_balance == False:
-            G[0]    = alpha_G * Ynew[0]
-            D[0]    = initial_debt * Ynew[0]
+            G_0    = alpha_G * Ynew[0]
+            D_0    = initial_debt * Ynew[0]
             other_dg_params = (T, r, g_n_vector, g_y)
-            dg_fixed_values = (Ynew, REVENUE, T_H, D[0],G[0])
+            dg_fixed_values = (Ynew, REVENUE, T_H, D_0,G_0)
             D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params)
 
         w[:T] = utils.convex_combo(wnew[:T], w[:T], nu)
