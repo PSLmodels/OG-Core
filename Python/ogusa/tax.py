@@ -634,15 +634,17 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, params):
     T_P = tau_payroll * w * e * n
     TW_params = (h_wealth, p_wealth, m_wealth)
     T_W = tau_wealth(b, TW_params) * b
-    biz_params = (tau_b, delta_tau)
-    business_revenue = get_biz_tax(w, Y, L, K, biz_params)
     if method == 'SS':
         T_P[retire:] -= theta * w
         T_BQ = tau_bq * BQ / lambdas
+        biz_params = (tau_b, delta_tau)
+        business_revenue = get_biz_tax(w, Y, L, K, biz_params)
         REVENUE = (omega * lambdas * (T_I + T_P + T_BQ + T_W)).sum() + business_revenue
     elif method == 'TPI':
         T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w[:,retire:,:]
         T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
+        biz_params = (tau_b, delta_tau)
+        business_revenue = get_biz_tax(w[:T,0,0], Y, L, K, biz_params)
         REVENUE = (omega * lambdas * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1) + business_revenue
     return REVENUE
 

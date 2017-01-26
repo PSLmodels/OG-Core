@@ -131,10 +131,10 @@ def runner(output_base, baseline_dir, baseline=False,
     sim_params['baseline_dir'] = baseline_dir
 
 
-    income_tax_params, tpi_params, iterative_params, small_open_params, initial_values, SS_values, fiscal_params = TPI.create_tpi_params(**sim_params)
+    income_tax_params, tpi_params, iterative_params, small_open_params, initial_values, SS_values, fiscal_params, biz_tax_params = TPI.create_tpi_params(**sim_params)
 
     tpi_output, macro_output = TPI.run_TPI(income_tax_params,
-        tpi_params, iterative_params, small_open_params, initial_values, SS_values, fiscal_params, output_dir=output_base)
+        tpi_params, iterative_params, small_open_params, initial_values, SS_values, fiscal_params, biz_tax_params, output_dir=output_base)
 
 
     '''
