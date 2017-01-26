@@ -9,7 +9,7 @@ from_config install_taxcalc_version
 from_config compare_ogusa_version
 from_config compare_taxcalc_version
 
-if [ "$OSPC_ANACONDA_TOKEN" = "" ];
+if [ "$OSPC_ANACONDA_TOKEN" = "" ]; then
     echo CANNOT DOWNLOAD taxpuf PACKAGE - WILL FAIL
 fi
 
