@@ -27,8 +27,8 @@ conda install nomkl
 conda create --force -n ogusa_env python=2.7 nomkl
 
 source activate ogusa_env
-conda install -c $TAXPUF_CHANNEL taxpuf nomkl
-conda install --force yaml llvmlite enum34 funcsigs singledispatch libgfortran libpng openblas numba pytz pytest six toolz dateutil cycler scipy numpy=$numpy_version pyparsing pandas=0.18.1 matplotlib nomkl
+conda remove mkl mkl-service || echo didnt have to remove mkl mkl-service
+conda install -c $TAXPUF_CHANNEL --force yaml llvmlite enum34 funcsigs singledispatch libgfortran libpng openblas numba pytz pytest six toolz dateutil cycler scipy numpy=$numpy_version pyparsing pandas=0.18.1 matplotlib nomkl taxpuf
 conda remove mkl mkl-service || echo didnt have to remove mkl mkl-service
 conda install --no-deps -c ospc taxcalc=$install_taxcalc_version --force
 if [ "$ogusainstallmethod" = "conda" ];then
