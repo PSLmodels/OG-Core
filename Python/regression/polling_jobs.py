@@ -15,7 +15,7 @@ JENKINS_DOMAIN= os.environ["JENKINS_DOMAIN"]
 
 BUILD_CAUSE = os.environ['BUILD_CAUSE']
 
-TIMEOUT_BEFORE_START = os.environ.get('all_jenkins_jobs_timeout', 24)
+TIMEOUT_BEFORE_START = os.environ.get('ALL_JENKINS_JOBS_TIMEOUT', 24)
 TIMEOUT_BEFORE_START = float(TIMEOUT_BEFORE_START) * 3600
 
 HASHES = {}
