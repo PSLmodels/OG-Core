@@ -41,6 +41,7 @@ cd Python/regression
 echo WRITE puf.csv.gz to `pwd`
 echo Which Python: $(which python)
 write-latest-taxpuf
+gunzip -k puf.csv.gz
 echo RUN REFORMS
 conda env list
 conda list
