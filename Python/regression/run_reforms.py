@@ -79,7 +79,7 @@ def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
     user_params['start_year'] = start_year
 
     input_dir = BASELINE_DIR
-
+    budget_balance = REGRESSION_CONFIG['budget_balance']
     kwargs={'output_base':BASELINE_DIR, 'baseline_dir':BASELINE_DIR,
             'baseline':True, 'analytical_mtrs':False, 'age_specific':False,
             'user_params':user_params, 'guid':guid, 'run_micro':run_micro,
