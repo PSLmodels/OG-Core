@@ -16,7 +16,7 @@ if [ "$OSPC_ANACONDA_TOKEN" = "" ]; then
 fi
 
 
-export PANDAS_VERSION=0.18.0
+export PANDAS_VERSION=0.16.2
 export TAXPUF_CHANNEL="https://conda.anaconda.org/t/${OSPC_ANACONDA_TOKEN}/opensourcepolicycenter"
 wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
 rm -rf $WORKSPACE/miniconda
