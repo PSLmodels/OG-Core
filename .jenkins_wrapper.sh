@@ -38,6 +38,7 @@ if [ "$ogusainstallmethod" = "git" ];then
 fi
 
 cd Python/regression
+cp ../../.regression.txt regression_testing_config_used.txt
 echo WRITE puf.csv.gz to `pwd`
 echo Which Python: $(which python)
 write-latest-taxpuf
