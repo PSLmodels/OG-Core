@@ -90,7 +90,7 @@ def create_tpi_params(**sim_params):
     N_tilde = sim_params['omega'].sum(1) #this should just be one in each year given how we've constructed omega
     sim_params['omega'] = sim_params['omega'] / N_tilde.reshape(sim_params['T'] + sim_params['S'], 1)
 
-    theta_params = (sim_params['e'], sim_params['S'], sim_params['J'], sim_params['omega_SS'].reshape(sim_params['S'], 1), sim_params['lambdas'],sim_params['retire'])
+    theta_params = (sim_params['e'], sim_params['S'], sim_params['retire'])
     theta = tax.replacement_rate_vals(ss_baseline_vars['nssmat'], ss_baseline_vars['wss'], factor, theta_params)
 
     tpi_params = [sim_params['J'], sim_params['S'], sim_params['T'], sim_params['BW'],
