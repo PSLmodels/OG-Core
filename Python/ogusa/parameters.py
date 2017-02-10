@@ -191,7 +191,7 @@ beta_annual  = scalar, discount factor as an annual rate
 beta         = scalar, discount factor for model period
 sigma        = scalar, coefficient of relative risk aversion
 alpha        = scalar, capital share of income
-Z            = scalar, total factor productivity parameter in firms' production
+A            = scalar, total factor productivity parameter in firms' production
                function
 delta_annual = scalar, depreciation rate as an annual rate
 delta        = scalar, depreciation rate for model period
@@ -322,7 +322,7 @@ def get_reduced_parameters(baseline, guid, user_modifiable, metadata):
     beta = beta_annual ** (float(ending_age - starting_age) / S)
     sigma = 1.5 # value from Attanasio, Banks, Meghir and Weber (JEBS, 1999)
     alpha = .35 # many use 0.33, but many find that capitals share is increasing (e.g. Elsby, Hobijn, and Sahin (BPEA, 2013))
-    Z = 1.0
+    A = 1.0
     delta_annual = .05 # approximately the value from Kehoe calibration exercise: http://www.econ.umn.edu/~tkehoe/classes/calibration-04.pdf
     delta = 1 - ((1 - delta_annual) ** (float(ending_age - starting_age) / S))
     ltilde = 1.0
@@ -478,17 +478,32 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     starting_age = 20
     ending_age = 100
     E = int(starting_age * (S / float(ending_age - starting_age)))
+
+    # Household preference parameters
     beta_annual = .96 # Carroll (JME, 2009)
     beta = beta_annual ** (float(ending_age - starting_age) / S)
     sigma = 1.5 # value from Attanasio, Banks, Meghir and Weber (JEBS, 1999)
-    alpha = .35 # many use 0.33, but many find that capitals share is increasing (e.g. Elsby, Hobijn, and Sahin (BPEA, 2013))
-    Z = 1.0
+    alpha = 1.0#np.array([0.29, 1.0-0.29]) # preference parameter - share of good i in composite consumption, shape =(I,), shares must sum to 1
+    cbar = 0.0#np.array([0.000, 0.000]) # min cons of each of I goods, shape =(I,)
+    I = 1 #alpha.shape[0]
+
+
+    # Firm parameters
+    #alpha = .35 # many use 0.33, but many find that capitals share is increasing (e.g. Elsby, Hobijn, and Sahin (BPEA, 2013))
+    gamma = 0.35
+    epsilon = 0.6
+    A = 1.0
     delta_annual = .05 # approximately the value from Kehoe calibration exercise: http://www.econ.umn.edu/~tkehoe/classes/calibration-04.pdf
     delta = 1 - ((1 - delta_annual) ** (float(ending_age - starting_age) / S))
-    ltilde = 1.0
     g_y_annual = 0.03
     g_y = (1 + g_y_annual)**(float(ending_age - starting_age) / S) - 1
-    #   Ellipse parameters
+    M = 1#gamma.shape[0] # number of production industries
+    xi = 1.0#np.array([[0.2, 0.6, 0.2],[0.0, 0.2, 0.8], [0.6, 0.2, 0.2] ]) # fixed coeff input-output matrix, shape =(M,M)
+    pi = 1.0#np.array([[0.4, 0.3, 0.3],[0.1, 0.8, 0.1]]) # fixed coeff pce-bridge matrix relating output and cons goods, shape =(I,M)
+
+
+    #   labor supply parameters
+    ltilde = 1.0
     frisch = 0.4 # Frisch elasticity consistent with Altonji (JPE, 1996) and Peterman (Econ Inquiry, 2016)
     b_ellipse, upsilon = ellip.estimation(frisch,ltilde)
     k_ellipse = 0 # this parameter is just a level shifter in utlitiy - irrelevant for analysis
@@ -722,28 +737,30 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     flag_graphs = False
     #   Calibration parameters
     # These guesses are close to the calibrated values
-    chi_b_guess = np.ones((J,)) * 80.0
+    chi_b_guess = np.ones((J,))
+    # chi_b_guess = np.ones((J,)) * 80.0
     #chi_b_guess = np.array([0.7, 0.7, 1.0, 1.2, 1.2, 1.2, 1.4])
     #chi_b_guess = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 4.0, 10.0])
     #chi_b_guess = np.array([5, 10, 90, 250, 250, 250, 250])
     #chi_b_guess = np.array([2, 10, 90, 350, 1700, 22000, 120000])
-    chi_n_guess_80 = np.array(
-        [38.12000874, 33.22762421, 25.3484224, 26.67954008, 24.41097278,
-        23.15059004, 22.46771332, 21.85495452, 21.46242013, 22.00364263,
-        21.57322063, 21.53371545, 21.29828515, 21.10144524, 20.8617942,
-        20.57282, 20.47473172, 20.31111347, 19.04137299, 18.92616951,
-        20.58517969, 20.48761429, 20.21744847, 19.9577682, 19.66931057,
-        19.6878927, 19.63107201, 19.63390543, 19.5901486, 19.58143606,
-        19.58005578, 19.59073213, 19.60190899, 19.60001831, 21.67763741,
-        21.70451784, 21.85430468, 21.97291208, 21.97017228, 22.25518398,
-        22.43969757, 23.21870602, 24.18334822, 24.97772026, 26.37663164,
-        29.65075992, 30.46944758, 31.51634777, 33.13353793, 32.89186997,
-        38.07083882, 39.2992811, 40.07987878, 35.19951571, 35.97943562,
-        37.05601334, 37.42979341, 37.91576867, 38.62775142, 39.4885405,
-        37.10609921, 40.03988031, 40.86564363, 41.73645892, 42.6208256,
-        43.37786072, 45.38166073, 46.22395387, 50.21419653, 51.05246704,
-        53.86896121, 53.90029708, 61.83586775, 64.87563699, 66.91207845,
-        68.07449767, 71.27919965, 73.57195873, 74.95045988, 76.6230815])
+    chi_n_guess_80 = np.ones((S,))
+    # chi_n_guess_80 = np.array(
+    #     [38.12000874, 33.22762421, 25.3484224, 26.67954008, 24.41097278,
+    #     23.15059004, 22.46771332, 21.85495452, 21.46242013, 22.00364263,
+    #     21.57322063, 21.53371545, 21.29828515, 21.10144524, 20.8617942,
+    #     20.57282, 20.47473172, 20.31111347, 19.04137299, 18.92616951,
+    #     20.58517969, 20.48761429, 20.21744847, 19.9577682, 19.66931057,
+    #     19.6878927, 19.63107201, 19.63390543, 19.5901486, 19.58143606,
+    #     19.58005578, 19.59073213, 19.60190899, 19.60001831, 21.67763741,
+    #     21.70451784, 21.85430468, 21.97291208, 21.97017228, 22.25518398,
+    #     22.43969757, 23.21870602, 24.18334822, 24.97772026, 26.37663164,
+    #     29.65075992, 30.46944758, 31.51634777, 33.13353793, 32.89186997,
+    #     38.07083882, 39.2992811, 40.07987878, 35.19951571, 35.97943562,
+    #     37.05601334, 37.42979341, 37.91576867, 38.62775142, 39.4885405,
+    #     37.10609921, 40.03988031, 40.86564363, 41.73645892, 42.6208256,
+    #     43.37786072, 45.38166073, 46.22395387, 50.21419653, 51.05246704,
+    #     53.86896121, 53.90029708, 61.83586775, 64.87563699, 66.91207845,
+    #     68.07449767, 71.27919965, 73.57195873, 74.95045988, 76.6230815])
 
     # Generate Income and Demographic parameters
     (omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates,
@@ -769,20 +786,22 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
 
 
     ## To shut off demographics, uncomment the following 9 lines of code
-    # g_n_ss = 0.0
-    # surv_rate1 = np.ones((S,))# prob start at age S
-    # surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
-    # omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
-    # omega_SS = omega_SS/omega_SS.sum()
-    # imm_rates = np.zeros((T+S,S))
-    # omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
-    # omega_S_preTP = omega_SS
-    # g_n_vector = np.tile(g_n_ss,(T+S,))
+    g_n_ss = 0.0
+    surv_rate1 = np.ones((S,))# prob start at age S
+    surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
+    omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
+    omega_SS = omega_SS/omega_SS.sum()
+    imm_rates = np.zeros((T+S,S))
+    omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
+    omega_S_preTP = omega_SS
+    g_n_vector = np.tile(g_n_ss,(T+S,))
 
     e = inc.get_e_interp(S, omega_SS, omega_SS_80, lambdas, plot=False)
     # e_hetero = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
     # e = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))
     # e /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
+    e = np.tile(np.reshape(e[:,3],(S,1)),(1,J))
+    e /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
 
 
     allvars = dict(locals())
