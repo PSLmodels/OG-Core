@@ -508,7 +508,7 @@ def get_full_parameters(baseline, guid, user_modifiable, metadata):
     alpha_G            = 0.05 #0.06  # share of GDP of government spending for periods t<tG1
     tG1                = 20#int(T/5)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
     tG2                = int(T*0.8)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
-    rho_G              = 0.03#0.1  # 0 < rho_G < 1 is transition speed for periods [tG1, tG2-1]. Lower rho_G => slower convergence.
+    rho_G              = 0.1  # 0 < rho_G < 1 is transition speed for periods [tG1, tG2-1]. Lower rho_G => slower convergence.
     debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
     initial_debt       = 0.59 #0.2  # first-period debt/GDP ratio. Savings would be a negative number.
 
