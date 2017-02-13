@@ -471,8 +471,15 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
     e = inc.get_e_interp(S, omega_SS, omega_SS_80, lambdas, plot=False)
     # e_hetero = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
     # e = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))
+    # e = np.tile(e[:,0].reshape(S,1),(1,J))
     # e /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
 
+    # print 'g_y: ', g_y
+    # print 'e: ', e
+    # print 'chi_n_guess: ', chi_n_guess
+    # print 'chi_b_guess: ', chi_b_guess
+    # print 'delta, beta: ', delta, beta
+    # quit()
 
     allvars = dict(locals())
 

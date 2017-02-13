@@ -35,14 +35,15 @@ def replacement_rate_vals(nssmat, wss, factor_ss, params):
     Returns: theta
     '''
     e, S, retire = params
+    equiv_35 = int(round((S/80.0)*35)) - 1 # adjusts 35 year work history for any S
     if e.ndim == 2:
         dim2 = e.shape[1]
     else:
         dim2 = 1
     earnings = (e *(wss * nssmat * factor_ss)).reshape(S,dim2)
     # get highest earning 35 years
-    highest_35_earn = (-1.0*np.sort(-1.0*earnings[:retire,:] ,axis=0))[:int(round((S/80)*35))]
-    AIME = highest_35_earn.sum(0) / ((12.0*(S/80))*int(round((S/80)*35)))
+    highest_35_earn = (-1.0*np.sort(-1.0*earnings[:retire,:] ,axis=0))[:equiv_35]
+    AIME = highest_35_earn.sum(0) / ((12.0*(S/80.0))*equiv_35)
     PIA = np.zeros(dim2)
     # Bins from data for each level of replacement
     for j in xrange(dim2):
@@ -55,7 +56,7 @@ def replacement_rate_vals(nssmat, wss, factor_ss, params):
     # Set the maximum monthly replacment rate from SS benefits tables
     maxpayment = 3501.00
     PIA[PIA > maxpayment] = maxpayment
-    theta = (PIA*(12.0*S/80)) / (factor_ss*wss)
+    theta = (PIA*(12.0*S/80.0)) / (factor_ss*wss)
     return theta
 
 
