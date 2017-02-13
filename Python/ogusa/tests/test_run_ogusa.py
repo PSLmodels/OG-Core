@@ -17,7 +17,7 @@ import uuid
 import time
 
 import postprocess
-from executeimport runner
+from execute import runner
 SS.ENFORCE_SOLUTION_CHECKS = False
 TPI.ENFORCE_SOLUTION_CHECKS = False
 
@@ -46,7 +46,7 @@ def run_micro_macro(reform, user_params, guid):
     '''
     output_base = BASELINE_DIR
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR, 'test':True,
-            'time_path':True, 'baseline':True, 'analytical_mtrs':False, 
+            'time_path':True, 'baseline':True, 'analytical_mtrs':False,
             'user_params':user_params, 'age_specific':False, 'run_micro':False,
             'guid':guid}
     runner(**kwargs)
