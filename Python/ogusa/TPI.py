@@ -902,7 +902,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     if ((TPIiter >= maxiter) or (np.absolute(TPIdist) > mindist_TPI)) and ENFORCE_SOLUTION_CHECKS :
         raise RuntimeError("Transition path equlibrium not found")
 
-    if ((np.any(np.absolute(rc_error) >= 1e-4))
+    if ((np.any(np.absolute(rc_error) >= mindist_TPI))
         and ENFORCE_SOLUTION_CHECKS):
         raise RuntimeError("Transition path equlibrium not found")
 
