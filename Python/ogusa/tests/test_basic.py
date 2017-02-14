@@ -73,15 +73,15 @@ def test_import_ok():
 
 
 def test_run_small():
-    from execute_small import runner, runner_SS
+    from execute import runner
     # Monkey patch enforcement flag since small data won't pass checks
     SS.ENFORCE_SOLUTION_CHECKS = False
     TPI.ENFORCE_SOLUTION_CHECKS = False
     output_base = "./OUTPUT"
     input_dir = "./OUTPUT"
     user_params = {'frisch':0.41, 'debt_ratio_ss':0.4}
-    runner_SS(output_base=output_base, baseline_dir=input_dir, baseline=True, user_params=user_params, run_micro=False, small_open=False, budget_balance=False)
-    runner(output_base=output_base, baseline_dir=input_dir, baseline=True, user_params=user_params, run_micro=False, small_open=False, budget_balance=False)
+    runner(output_base=output_base, baseline_dir=input_dir, test=True, time_path=False, baseline=True, user_params=user_params, run_micro=False, small_open=False, budget_balance=False)
+    runner(output_base=output_base, baseline_dir=input_dir, test=True, time_path=True, baseline=True, user_params=user_params, run_micro=False, small_open=False, budget_balance=False)
 
 
 def test_compare_pickle_file_bad(picklefile1, picklefile2):
