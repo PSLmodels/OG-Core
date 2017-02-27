@@ -1,13 +1,13 @@
 # This file configures regression testing
 # (It is not a yaml because it is grepped by bash and used by Python)
 
-install_taxcalc_version 0.7.4
+install_taxcalc_version 0.6.6
 compare_ogusa_version 0.5.5
 compare_taxcalc_version 0.6.6
 diff True
-numpy_version 1.10
+numpy_version 1.11.2
 # Path to new_reforms.json relative to Python/regression
-reform_specs_json new_reforms.json
+reform_specs_json reforms.json
 
 # Just check if you can download and install
 # the specs above and import * from run_reforms.py
@@ -19,7 +19,7 @@ dry_run_imports_installs_only False
 reforms_to_run reform0
 
 # Budget balance for OG-USA execute - runner
-budget_balance False
+budget_balance True
 
 # The Jenkins jobs (all reforms considered)
 # must be completed within the following
