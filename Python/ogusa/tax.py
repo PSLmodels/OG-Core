@@ -22,11 +22,10 @@ def replacement_rate_vals(nssmat, wss, factor_ss, params):
         nssmat    = [S,J] array, steady state labor supply
         wss       = scalar, steady state wage rate
         factor_ss = scalar, factor that converts model income to dollars
-        params    = length 4 tuple, (e, J, omega_SS, lambdas)
+        params    = length 3 tuple, (e, S, retire)
         e         = [S,J] array, effective labor units
-        J         = integer, number of ability types
-        omega_SS  = [S,] vector, population weights by age
-        lambdas   = [J,] vector, lifetime income group weights
+        S         = integer, length of economic life
+        retire    = integer, retirement age
     Functions called: None
     Objects in function:
         AIME       = [J,] vector, average indexed monthly earnings by lifetime income group
@@ -35,27 +34,29 @@ def replacement_rate_vals(nssmat, wss, factor_ss, params):
         theta      = [J,] vector, replacement rates by lifetime income group
     Returns: theta
     '''
-    e, S, J, omega_SS, lambdas, retire = params
-    dim2 = 1
-    if nssmat.ndim==2:
-        dim2 = J
+    e, S, retire = params
+    equiv_35 = int(round((S/80.0)*35)) - 1 # adjusts 35 year work history for any S
+    if e.ndim == 2:
+        dim2 = e.shape[1]
+    else:
+        dim2 = 1
+    earnings = (e *(wss * nssmat * factor_ss)).reshape(S,dim2)
     # get highest earning 35 years
-    earnings = (e *(wss * nssmat * factor_ss).reshape(S,dim2))
-    highest_35_earn = -1.0*np.partition(-earnings, int(round((S/80)*35)),axis=0)
-    AIME = highest_35_earn.sum(0) / ((12.0*(S/80))*int(round((S/80)*35)))
-    PIA = np.zeros(J)
+    highest_35_earn = (-1.0*np.sort(-1.0*earnings[:retire,:] ,axis=0))[:equiv_35]
+    AIME = highest_35_earn.sum(0) / ((12.0*(S/80.0))*equiv_35)
+    PIA = np.zeros(dim2)
     # Bins from data for each level of replacement
-    for j in xrange(J):
+    for j in xrange(dim2):
         if AIME[j] < 749.0:
             PIA[j] = .9 * AIME[j]
         elif AIME[j] < 4517.0:
             PIA[j] = 674.1 + .32 * (AIME[j] - 749.0)
         else:
             PIA[j] = 1879.86 + .15 * (AIME[j] - 4517.0)
-    # Set the maximum replacment rate to be $30,000
-    maxpayment = 3501.00 #30000.0/12.0
+    # Set the maximum monthly replacment rate from SS benefits tables
+    maxpayment = 3501.00
     PIA[PIA > maxpayment] = maxpayment
-    theta = (PIA*(12.0*S/80)) / (factor_ss*wss)
+    theta = (PIA*(12.0*S/80.0)) / (factor_ss*wss)
     return theta
 
 
