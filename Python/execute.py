@@ -38,7 +38,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
     if run_micro:
         txfunc.get_tax_func_estimate(baseline=baseline, analytical_mtrs=analytical_mtrs, age_specific=age_specific,
                                      start_year=user_params['start_year'], reform=reform, guid=guid)
-    print ("in runner, baseline is ", baseline)
+    print 'In runner, baseline is ', baseline
     run_params = ogusa.parameters.get_parameters(test=test, baseline=baseline, guid=guid)
     run_params['analytical_mtrs'] = analytical_mtrs
     run_params['small_open'] = small_open
@@ -46,7 +46,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
 
     # Modify ogusa parameters based on user input
     if 'frisch' in user_params:
-        print "updating fricsh and associated"
+        print "updating frisch and associated"
         b_ellipse, upsilon = ogusa.elliptical_u_est.estimation(user_params['frisch'],
                                                                run_params['ltilde'])
         run_params['b_ellipse'] = b_ellipse
@@ -65,9 +65,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
         run_params['g_y'] = g_y
         run_params.update(user_params)
 
-
     from ogusa import SS, TPI
-
 
     calibrate_model = False
     # List of parameter names that will not be changing (unless we decide to
@@ -98,10 +96,9 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
 
     sim_params['output_dir'] = output_base
     sim_params['run_params'] = run_params
-
     income_tax_params, ss_parameters, iterative_params, chi_params, small_open_params = SS.create_steady_state_parameters(**sim_params)
 
-    ss_outputs = SS.run_SS(income_tax_params, ss_parameters, iterative_params, chi_params, small_open_params, baseline,
+    ss_outputs = SS.run_SS(income_tax_params, ss_parameters, iterative_params, chi_params, small_open_params, baseline, baseline_spending,
                                      baseline_dir=baseline_dir)
 
     '''
@@ -128,7 +125,6 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
         sim_params['baseline'] = baseline
         sim_params['input_dir'] = output_base
         sim_params['baseline_dir'] = baseline_dir
-        sim_params['baseline_spending'] = baseline_spending
 
 
         income_tax_params, tpi_params, iterative_params, small_open_params, initial_values, SS_values, fiscal_params = TPI.create_tpi_params(**sim_params)
@@ -153,5 +149,5 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
         pickle.dump(macro_output, open(tpi_vars, "wb"))
 
 
-    print "Time path iteration complete.  It"
-    print "took {0} seconds to get that part done.".format(time.time() - tick)
+        print "Time path iteration complete."
+    print "It took {0} seconds to get that part done.".format(time.time() - tick)

@@ -363,7 +363,7 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
     #  will call tax function estimation function here...
     # do output such that each parameters is in a separate SxBW array
     # read in estimated parameters
-    print 'baselines is:', baseline
+    #print 'baseline is:', baseline
     if baseline:
         baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,
