@@ -90,7 +90,7 @@ def run_micro_macro(user_params):
     guid_iter = 'reform_' + str(0)
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
             'test':True, 'time_path':False, 'baseline':False, 'analytical_mtrs':False, 'age_specific':True,
-            'baseline_spending':True, 'user_params':user_params,'guid':'_alt',
+            'baseline_spending':False, 'user_params':user_params,'guid':'_alt',
             'reform': '', 'run_micro':False, 'small_open': False, 'budget_balance':False}
     #p2 = Process(target=runner, kwargs=kwargs)
     #p2.start()
