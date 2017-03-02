@@ -23,13 +23,13 @@ def D_G_path(dg_fixed_values, fiscal_params, other_dg_params):
     '''
     Calculate the time paths of debt and government spending
     '''
-    budget_balance, alpha_T, alpha_G, tG1, tG2, rho_G, debt_ratio_ss = fiscal_params
+    budget_balance, ALPHA_T, ALPHA_G, tG1, tG2, rho_G, debt_ratio_ss = fiscal_params
     T, r_gov, g_n_vector, g_y = other_dg_params
     Y, REVENUE, T_H, D0, G0 = dg_fixed_values
 
     D = np.zeros(T+1)
     D[0] = D0
-    G = alpha_G * Y[:T]
+    G = ALPHA_G * Y[:T]
     G[0] = G0
     growth = (1+g_n_vector)*np.exp(g_y)
 

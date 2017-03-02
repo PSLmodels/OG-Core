@@ -320,7 +320,7 @@ def inner_loop(outer_loop_vars, params, baseline):
                                    args=euler_params, xtol=MINIMIZER_TOL, full_output=True)
 
         euler_errors[:,j] = infodict['fvec']
-        print 'Max Euler errors: ', np.absolute(euler_errors[:,j]).max()
+      #  print 'Max Euler errors: ', np.absolute(euler_errors[:,j]).max()
 
         bssmat[:, j] = solutions[:S]
         nssmat[:, j] = solutions[S:]
@@ -348,7 +348,7 @@ def inner_loop(outer_loop_vars, params, baseline):
     else:
         new_r = ss_hh_r
     new_w = firm.get_w(Y, L, alpha)
-    print 'inner factor prices: ', new_r, new_w
+    #print 'inner factor prices: ', new_r, new_w
     b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
     average_income_model = ((new_r * b_s + new_w * e * nssmat) *
                             omega_SS.reshape(S, 1) *

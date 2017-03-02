@@ -330,13 +330,22 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
     tpi_hh_r           = np.ones(T+S)*ss_hh_r
 
     # Fiscal imbalance parameters. These allow government deficits, debt, and savings.
-    alpha_T            = 0.09 #0.13  # share of GDP that goes to transfers each period.
-    alpha_G            = 0.05 #0.06  # share of GDP of government spending for periods t<tG1
-    tG1                = 20#int(T/5)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
+    tG1                = 20#int(T/4)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
     tG2                = int(T*0.8)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
+    alpha_T            = 0.09 # share of GDP that goes to transfers each period. This ratio will hold in later baseline periods & SS.
+    alpha_G            = 0.05  # share of GDP of government spending for periods t<tG1
+    ALPHA_T            = np.ones(T+S)*alpha_T  # Periods can be assigned different %-of-GDP rates for the baseline. Assignment after tG1 is not recommended.
+    ALPHA_G            = np.ones(T)*alpha_G  # Early periods (up to tG1) can be assigned different %-of-GDP rates for the baseline
+
+    # Assign any deviations from constant share of GDP in pre-tG1 ALPHA_T and ALPHA_G. Move this out to user-controlled area after testing.
+    ALPHA_T[2:10]      = 0.1
+    ALPHA_T[10:15]     = 0.095
+    ALPHA_G[0:3]       = 0.06
+    ALPHA_G[3:6]       = 0.055
+    
     rho_G              = 0.1  # 0 < rho_G < 1 is transition speed for periods [tG1, tG2-1]. Lower rho_G => slower convergence.
     debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
-    initial_debt       = 0.59 #0.2  # first-period debt/GDP ratio. Savings would be a negative number.
+    initial_debt       = 0.59 # first-period debt/GDP ratio. Savings would be a negative number.
 
     if tG1 > tG2:
         print 'The first government spending rule change date, (', tG1, ') is after the second one (', tG2, ').'

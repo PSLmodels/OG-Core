@@ -30,12 +30,12 @@ def run_micro_macro(user_params):
     #     '_II_rt1': [0.045]
     # }, }
 
-    reform = {
-    2017: {
-        '_II_rt5': [.3],
-        '_II_rt6': [.3],
-        '_II_rt7': [0.3],
-    }, }
+#    reform = {
+#    2017: {
+#        '_II_rt5': [.3],
+#        '_II_rt6': [.3],
+#        '_II_rt7': [0.3],
+#    }, }
 
 
     start_time = time.time()
@@ -54,12 +54,12 @@ def run_micro_macro(user_params):
     # output_base = BASELINE_DIR
     # input_dir = BASELINE_DIR
     # kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-    #        'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
+    #        'test':False, 'time_path':False, 'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
     #        'user_params':user_params,'guid':'test',
     #        'run_micro':False, 'small_open':False, 'budget_balance':False}
     # #p1 = Process(target=runner, kwargs=kwargs)
     # #p1.start()
-    # runner_SS(**kwargs)
+    # runner(**kwargs)
     # quit()
 
 
@@ -89,14 +89,14 @@ def run_micro_macro(user_params):
 #    input_dir = REFORM_DIR
 #    guid_iter = 'reform_' + str(0)
 #    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-#            'baseline':False, 'analytical_mtrs':False, 'age_specific':False,
-#            'user_params':user_params,'guid':'_alt',
+#            'test':True, 'baseline':False, 'analytical_mtrs':False, 'age_specific':True,
+#            'baseline_spending':True, 'user_params':user_params,'guid':'_alt',
 #            'reform':reform , 'run_micro':False, 'small_open': True}
 #    #p2 = Process(target=runner, kwargs=kwargs)
 #    #p2.start()
 #    runner(**kwargs)
-#
-#
+
+
 
 
     #p1.join()
