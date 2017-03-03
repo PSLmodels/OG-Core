@@ -22,6 +22,14 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
     from ogusa import txfunc
 
     tick = time.time()
+    
+    # Make sure options are internally consistent
+    if baseline==True and baseline_spending==True:
+        print 'Inconsistent options. Setting <baseline_spending> to False, leaving <baseline> True.'
+        baseline_spending = False
+    if budget_balance==True and baseline_spending==True:
+        print 'Inconsistent options. Setting <baseline_spending> to False, leaving <budget_balance> True.'
+        baseline_spending = False
 
     #Create output directory structure
     saved_moments_dir = os.path.join(output_base, "Saved_moments")
@@ -123,6 +131,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
         '''
 
         sim_params['baseline'] = baseline
+        sim_params['baseline_spending'] = baseline_spending
         sim_params['input_dir'] = output_base
         sim_params['baseline_dir'] = baseline_dir
 
@@ -130,7 +139,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
         income_tax_params, tpi_params, iterative_params, small_open_params, initial_values, SS_values, fiscal_params = TPI.create_tpi_params(**sim_params)
 
         tpi_output, macro_output = TPI.run_TPI(income_tax_params,
-            tpi_params, iterative_params, small_open_params, initial_values, SS_values, fiscal_params, output_dir=output_base, baseline_spending)
+            tpi_params, iterative_params, small_open_params, initial_values, SS_values, fiscal_params, output_dir=output_base, baseline_spending=baseline_spending)
 
 
         '''
