@@ -338,7 +338,7 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
         K = firm.get_K(L, ss_firm_r, K_params)
     Y_params = (alpha, Z)
     new_Y = firm.get_Y(K, L, Y_params)
-    print 'inner K, L, Y: ', K, L, new_Y
+    #print 'inner K, L, Y: ', K, L, new_Y
     if budget_balance:
         Y = new_Y
     if small_open == False:
@@ -613,14 +613,15 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, Yss, factor_ss, param
 
     if small_open == False:
         resource_constraint = Yss - (Css + Iss + Gss)
-        print 'Yss= ', Yss, '\n', 'Gss= ', Gss, '\n', 'Css= ', Css, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'Debt service = ', debt_service_ss
+        print 'Yss= ', Yss, '\n', 'Css= ', Css, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'T_H = ', T_H, '\n', 'Gss= ', Gss
         print 'D/Y:', debt_ss/Yss, 'T/Y:', T_Hss/Yss, 'G/Y:', Gss/Yss, 'Rev/Y:', revenue_ss/Yss, 'Int payments to GDP:', (rss*debt_ss)/Yss
         print 'Check SS budget: ', Gss - (np.exp(g_y)*(1+g_n_ss)-1-rss)*debt_ss - revenue_ss + T_Hss
         print 'resource constraint: ', resource_constraint
     else:
         # include term for current account
         resource_constraint = Yss + new_borrowing  - (Css + BIss + Gss) + (ss_hh_r * Bss - (delta + ss_firm_r) * Kss - debt_service_ss)
-        print 'Yss= ', Yss, '\n', 'Gss= ', Gss,'\n', 'Css= ', Css, '\n', 'Bss = ', Bss, '\n', 'BIss = ', BIss, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'Debt service = ', debt_service_ss
+        print 'Yss= ', Yss, '\n', 'Css= ', Css, '\n', 'Bss = ', Bss, '\n', 'BIss = ', BIss, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'T_H = ', T_H, 'Gss= ', Gss,'\n'
+        print 'D/Y:', debt_ss/Yss, 'T/Y:', T_Hss/Yss, 'G/Y:', Gss/Yss, 'Rev/Y:', revenue_ss/Yss, 'Int payments to GDP:', (rss*debt_ss)/Yss
         print 'resource constraint: ', resource_constraint
 
     if Gss < 0:
@@ -720,12 +721,12 @@ def SS_fsolve(guesses, params):
     error4 = new_factor/1000000 - factor/1000000
 
   #  print 'mean income in model and data: ', average_income_model, mean_income_data
-    print 'model income with factor: ', average_income_model*factor
+  #  print 'model income with factor: ', average_income_model*factor
 
-    print 'errors: ', error1, error2, error3, error4
+  #  print 'errors: ', error1, error2, error3, error4
     print 'Y: ', new_Y
   #  print 'factor: ', new_factor
-    print 'factor prices: ', new_r, new_w
+  #  print 'factor prices: ', new_r, new_w
 
 
     # Check and punish violations
@@ -769,10 +770,10 @@ def SS_fsolve_reform(guesses, params):
         solutions = steady state values of b, n, w, r, factor,
                     T_H ((2*S*J+4)x1 array)
     '''
-    bssmat, nssmat, chi_params, ss_params, income_tax_params, iterative_params, T_H, factor, small_open_params = params
-
+    bssmat, nssmat, chi_params, ss_params, income_tax_params, iterative_params, T_H, factor, small_open_params, baseline_spending = params
+    
     J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance, debt_ratio_ss,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance, alpha_T, debt_ratio_ss,\
                   lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
@@ -783,13 +784,10 @@ def SS_fsolve_reform(guesses, params):
     maxiter, mindist_SS = iterative_params
 
     baseline = False
-    print 'Checkpoint 01'
     # Rename the inputs
     r = guesses[0]
     w = guesses[1]
     Y = guesses[2]
-
-    print 'Reform SS factor is: ', factor
 
     # Solve for the steady state levels of b and n, given w, r, T_H and
     # factor
@@ -806,8 +804,8 @@ def SS_fsolve_reform(guesses, params):
     error2 = new_w - w
     error3 = new_Y - Y
     
-    print 'errors: ', error1, error2, error3
-    print 'factor prices: ', r, w
+   # print 'errors: ', error1, error2, error3
+   # print 'factor prices: ', r, w
 
     # Check and punish violations
     if r <= 0:
@@ -896,13 +894,13 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, small_ope
         solution_params= [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params, small_open_params]
         output = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), rss, wss, T_Hss, Yss, factor_ss, solution_params, baseline, fsolve_flag)
         # print "solved output", wss, rss, T_Hss, factor_ss
-        print 'analytical mtrs in SS: ', analytical_mtrs
+     #   print 'analytical mtrs in SS: ', analytical_mtrs
     else:
         baseline_ss_dir = os.path.join(
             baseline_dir, "SS/SS_vars.pkl")
         ss_solutions = pickle.load(open(baseline_ss_dir, "rb"))
-        [rguess, wguess, T_Hss, Yguess, factor] = [ss_solutions['wss'], ss_solutions['rss'], ss_solutions['T_Hss'], ss_solutions['Yss'], ss_solutions['factor_ss']]
-        ss_params_reform = [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params, T_Hss, factor, small_open_params]
+        [wguess, rguess, T_Hss, Yguess, factor] = [ss_solutions['wss'], ss_solutions['rss'], ss_solutions['T_Hss'], ss_solutions['Yss'], ss_solutions['factor_ss']]
+        ss_params_reform = [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params, T_Hss, factor, small_open_params, baseline_spending]
         guesses = [rguess, wguess, Yguess]
         [solutions_fsolve, infodict, ier, message] = opt.fsolve(SS_fsolve_reform, guesses, args=ss_params_reform, xtol=mindist_SS, full_output=True)
         if ENFORCE_SOLUTION_CHECKS and not ier == 1:
@@ -915,5 +913,4 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, small_ope
         # Return SS values of variables
         solution_params= [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params, small_open_params]
         output = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), rss, wss, T_Hss, Yss, factor, solution_params, baseline, fsolve_flag, baseline_spending)
-        print 'Checkpoint 4'
     return output
