@@ -320,7 +320,7 @@ def inner_loop(outer_loop_vars, params, baseline):
                                    args=euler_params, xtol=MINIMIZER_TOL, full_output=True)
 
         euler_errors[:,j] = infodict['fvec']
-        print 'Max Euler errors: ', np.absolute(euler_errors[:,j]).max()
+#        print 'Max Euler errors: ', np.absolute(euler_errors[:,j]).max()
 
         bssmat[:, j] = solutions[:S]
         nssmat[:, j] = solutions[S:]
@@ -789,8 +789,6 @@ def SS_fsolve_reform(guesses, params):
     w = guesses[1]
     T_H = guesses[2]
 
-    print 'Reform SS factor is: ', factor
-
     # Solve for the steady state levels of b and n, given w, r, T_H and
     # factor
     if budget_balance:
@@ -809,8 +807,8 @@ def SS_fsolve_reform(guesses, params):
         error3 = new_T_H - T_H
     else:
         error3 = new_Y - Y
-    print 'errors: ', error1, error2, error3
-    print 'factor prices: ', r, w
+#    print 'errors: ', error1, error2, error3
+#    print 'factor prices: ', r, w
 
     # Check and punish violations
     if r <= 0:
@@ -903,7 +901,7 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, small_ope
         baseline_ss_dir = os.path.join(
             baseline_dir, "SS/SS_vars.pkl")
         ss_solutions = pickle.load(open(baseline_ss_dir, "rb"))
-        [rguess, wguess, T_Hguess, factor] = [ss_solutions['wss'], ss_solutions['rss'], ss_solutions['T_Hss'], ss_solutions['factor_ss']]
+        [wguess, rguess, T_Hguess, factor] = [ss_solutions['wss'], ss_solutions['rss'], ss_solutions['T_Hss'], ss_solutions['factor_ss']]
         ss_params_reform = [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params, factor, small_open_params]
         guesses = [rguess, wguess, T_Hguess]
         [solutions_fsolve, infodict, ier, message] = opt.fsolve(SS_fsolve_reform, guesses, args=ss_params_reform, xtol=mindist_SS, full_output=True)
