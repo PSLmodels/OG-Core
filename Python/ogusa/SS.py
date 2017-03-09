@@ -613,7 +613,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, Yss, factor_ss, param
 
     if small_open == False:
         resource_constraint = Yss - (Css + Iss + Gss)
-        print 'Yss= ', Yss, '\n', 'Css= ', Css, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'T_H = ', T_H, '\n', 'Gss= ', Gss
+        print 'Yss= ', Yss, '\n', 'Css= ', Css, '\n', 'Bss = ', Bss, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'T_H = ', T_H, '\n', 'Gss= ', Gss
         print 'D/Y:', debt_ss/Yss, 'T/Y:', T_Hss/Yss, 'G/Y:', Gss/Yss, 'Rev/Y:', revenue_ss/Yss, 'Int payments to GDP:', (rss*debt_ss)/Yss
         print 'Check SS budget: ', Gss - (np.exp(g_y)*(1+g_n_ss)-1-rss)*debt_ss - revenue_ss + T_Hss
         print 'resource constraint: ', resource_constraint

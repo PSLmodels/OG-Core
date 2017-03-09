@@ -274,12 +274,12 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
         lambdas = np.array([0.6,0.4])
         J = lambdas.shape[0]
         # Simulation Parameters
-        MINIMIZER_TOL = 1e-3
+        MINIMIZER_TOL = 1e-6
         MINIMIZER_OPTIONS = {'maxiter': 1}
         PLOT_TPI = False
-        maxiter = 10
-        mindist_SS = 1e-3
-        mindist_TPI = 1e-2#1e-3
+        maxiter = 20
+        mindist_SS = 1e-6
+        mindist_TPI = 1e-3#1e-3
         nu = .4
         flag_graphs = False
     else:
@@ -338,8 +338,8 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
     ALPHA_G            = np.ones(T)*alpha_G  # Early periods (up to tG1) can be assigned different %-of-GDP rates for the baseline
 
     # Assign any deviations from constant share of GDP in pre-tG1 ALPHA_T and ALPHA_G. Move this out to user-controlled area after testing.
-    ALPHA_T[2:10]      = 0.1
-    ALPHA_T[10:15]     = 0.095
+    ALPHA_T[2:10]      = 0.04
+    ALPHA_T[10:15]     = 0.06
     ALPHA_G[0:3]       = 0.06
     ALPHA_G[3:6]       = 0.055
     
