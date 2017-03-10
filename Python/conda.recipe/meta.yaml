@@ -4,23 +4,24 @@ package:
 
 requirements:
   build:
-    - setuptools
-    - scipy
     - matplotlib
     - numpy
     - pandas
     - pytest
     - python
+    - scipy
+    - setuptools
+    - taxcalc
 
   run:
-    - setuptools
-    - scipy
-    - taxcalc
     - matplotlib
     - numpy
     - pandas
     - pytest
     - python
+    - scipy
+    - setuptools
+    - taxcalc
 
 about:
   home: https://github.com/open-source-economics/OG-USA/
@@ -29,9 +30,7 @@ test:
   imports:
     - ogusa
     - ogusa.SS
-    - ogusa.SS_graphs
     - ogusa.TPI
-    - ogusa.TPI_graphs
     - ogusa.calibrate
     - ogusa.demographics
     - ogusa.demographics_old
