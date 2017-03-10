@@ -550,6 +550,11 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, Yss, factor_ss, param
         Bss = household.get_K(bssmat_splus1, Bss_params)
         BIss_params = (0.0, g_y, omega_SS, lambdas, imm_rates, g_n_ss, 'SS')
         BIss = firm.get_I(bssmat_splus1, Bss, Bss, BIss_params)
+        if budget_balance:
+            debt_ss = 0.0
+        else:
+            debt_ss = debt_ratio_ss*Y
+
 
     Yss_params = (alpha, Z)
     Yss = firm.get_Y(Kss, Lss, Yss_params)
