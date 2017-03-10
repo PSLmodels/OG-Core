@@ -693,7 +693,6 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
             T_H_new = ALPHA_T[:T] * Ynew
         # If baseline_spending==True, no need to update T_H, which remains fixed.
 
-            
         # Loop through years to calculate debt and gov't spending. The re-assignment of G0 & D0 is necessary because Y0 may change in the TPI loop.
 #        D_0    = initial_debt * Y[0]
 #        other_dg_params = (T, r, g_n_vector, g_y)
@@ -753,9 +752,6 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     bmat_splus1 = np.zeros((T, S, J))
     bmat_splus1[:, :, :] = b_mat[:T, :, :]
     
-    K_old = K
-    B_old = B
-    L_old = L
     L_params = (e.reshape(1, S, J), omega[:T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI')
     L[:T]  = firm.get_L(n_mat[:T], L_params)
     B_params = (omega[:T-1].reshape(T-1, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T-1].reshape(T-1,S,1), g_n_vector[1:T], 'TPI')
@@ -770,18 +766,6 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     Ynew = firm.get_Y(K[:T], L[:T], Y_params)
 
     # testing for change in Y
-    ldiff = L[:T] - L_old[:T]
-    ldiff_max = np.amax(np.abs(ldiff))
-    print 'ldiff_max = ', ldiff_max
-    
-    bdiff = B[:T] - B_old[:T]
-    bdiff_max = np.amax(np.abs(bdiff))
-    print 'bdiff_max = ', bdiff_max
-    
-    kdiff = K[:T] - K_old[:T]
-    kdiff_max = np.amax(np.abs(kdiff))
-    print 'kdiff_max = ', kdiff_max    
-    
     ydiff = Ynew[:T] - Y[:T]
     ydiff_max = np.amax(np.abs(ydiff))
     print 'ydiff_max = ', ydiff_max
@@ -792,6 +776,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         rnew = firm.get_r(Ynew[:T], K[:T], r_params)
     else:
         rnew = r
+    
+    # Note: previously, Y was not reassigned to equal Ynew at this point. But in test runs, there's still a small difference between them.
+    Y = Ynew[:]
 
     omega_shift = np.append(omega_S_preTP.reshape(1,S),omega[:T-1,:],axis=0)
     BQ_params = (omega_shift.reshape(T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1),
@@ -822,22 +809,12 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     C_params = (omega[:T].reshape(T, S, 1), lambdas, 'TPI')
     C = household.get_C(c_path, C_params)
 
-    D_old = D
-    G_old = G
     D_0    = initial_debt * Y[0]
     other_dg_params = (T, r, g_n_vector, g_y)
     if baseline_spending==False:
         G_0    = ALPHA_G[0] * Y[0]
     dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
     D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
-    
-    ddiff = D[:T] - D_old[:T]
-    ddiff_max = np.amax(np.abs(ddiff))
-    print 'ddiff_max = ', ddiff_max
-    
-    gdiff = G[:T] - G_old[:T]
-    gdiff_max = np.amax(np.abs(gdiff))
-    print 'gdiff_max = ', gdiff_max
 
 
     if small_open == False:
@@ -854,7 +831,8 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         rc_error = Y[:T-1] + new_borrowing - (C[:T-1] + BI[:T-1] + G[:T-1] ) + (tpi_hh_r[:T-1] * B[:T-1] - (delta + tpi_firm_r[:T-1])*K[:T-1] - tpi_hh_r[:T-1]*D[:T-1])
         #print 'Y(T-1):', Y[T-1], '\n','C(T-1):', C[T-1], '\n','K(T-1):', K[T-1], '\n','B(T-1):', B[T-1], '\n','BI(T-1):', BI[T-1], '\n','I(T-1):', I[T-1]
 
-    print 'Resource Constraint Difference:', rc_error
+    rce_max = np.amax(np.abs(rc_error))
+    print 'Max absolute value resource constraint error:', rce_max
 
     print'Checking time path for violations of constraints.'
     for t in xrange(T):
@@ -917,7 +895,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     if ((TPIiter >= maxiter) or (np.absolute(TPIdist) > mindist_TPI)) and ENFORCE_SOLUTION_CHECKS :
         raise RuntimeError("Transition path equlibrium not found (TPIdist)")
 
-    if ((np.any(np.absolute(rc_error) >= mindist_TPI))
+    if ((np.any(np.absolute(rc_error) >= mindist_TPI*10.0))
         and ENFORCE_SOLUTION_CHECKS):
         raise RuntimeError("Transition path equlibrium not found (rc_error)")
 

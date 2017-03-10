@@ -899,7 +899,7 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, small_ope
         baseline_ss_dir = os.path.join(
             baseline_dir, "SS/SS_vars.pkl")
         ss_solutions = pickle.load(open(baseline_ss_dir, "rb"))
-        [wguess, rguess, T_Hss, Yguess, factor] = [ss_solutions['wss'], ss_solutions['rss'], ss_solutions['T_Hss'], ss_solutions['Yss'], ss_solutions['factor_ss']]
+        [rguess, wguess, T_Hss, Yguess, factor] = [ss_solutions['rss'], ss_solutions['wss'], ss_solutions['T_Hss'], ss_solutions['Yss'], ss_solutions['factor_ss']]
         ss_params_reform = [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params, T_Hss, factor, small_open_params, baseline_spending]
         guesses = [rguess, wguess, Yguess]
         [solutions_fsolve, infodict, ier, message] = opt.fsolve(SS_fsolve_reform, guesses, args=ss_params_reform, xtol=mindist_SS, full_output=True)

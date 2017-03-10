@@ -72,6 +72,18 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
         g_y = (1 + user_params['g_y_annual'])**(float(ending_age - starting_age) / S) - 1
         run_params['g_y'] = g_y
         run_params.update(user_params)
+        
+    # Modify transfer & spending ratios based on user input.
+    if 'T_shifts' in user_params:
+        if baseline_spending==False:
+            print 'updating ALPHA_T with T_shifts in first', user_params['T_shifts'].size, 'periods.'                                            
+            T_shifts = np.concatenate((user_params['T_shifts'], np.zeros(run_params['ALPHA_T'].size - user_params['T_shifts'].size)), axis=0)
+            run_params['ALPHA_T'] = run_params['ALPHA_T'] + T_shifts
+    if 'G_shifts' in user_params:
+        if baseline_spending==False:
+            print 'updating ALPHA_G with G_shifts in first', user_params['G_shifts'].size, 'periods.'                                            
+            G_shifts = np.concatenate((user_params['G_shifts'], np.zeros(run_params['ALPHA_G'].size - user_params['G_shifts'].size)), axis=0)
+            run_params['ALPHA_G'] = run_params['ALPHA_G'] + G_shifts
 
     from ogusa import SS, TPI
 

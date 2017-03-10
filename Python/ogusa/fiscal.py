@@ -55,6 +55,9 @@ def D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=
     #debt_service = r_gov[t]*D[t]
     G[t] = growth[t] * (debt_ratio_ss*Y[t]) - (1+r_gov[t])*D[t] + REVENUE[t] - T_H[t]
     D[t+1] = (1/growth[t+1]) * ((1+r_gov[t])*D[t] + G[t] + T_H[t] - REVENUE[t])
+    D_ratio_max = np.amax(D[:T] / Y[:T])
+    print 'Maximum debt ratio: ', D_ratio_max
+
     return D, G
 
 
