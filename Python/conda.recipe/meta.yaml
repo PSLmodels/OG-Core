@@ -1,6 +1,6 @@
 package:
   name: ogusa
-  version: 0.1
+  version: {{ environ.get("GIT_DESCRIBE_TAG", "NOTAG")}}
 
 requirements:
   build:
@@ -8,9 +8,9 @@ requirements:
     - scipy
     - matplotlib
     - numpy
-    - pandas <=0.16.2
+    - pandas
     - pytest
-    - python 2.7.10
+    - python
 
   run:
     - setuptools
@@ -18,9 +18,9 @@ requirements:
     - taxcalc
     - matplotlib
     - numpy
-    - pandas <=0.16.2
+    - pandas
     - pytest
-    - python 2.7.10
+    - python 
 
 about:
   home: https://github.com/open-source-economics/OG-USA/
