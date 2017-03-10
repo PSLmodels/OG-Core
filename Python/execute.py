@@ -46,7 +46,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
 
     # Modify ogusa parameters based on user input
     if 'frisch' in user_params:
-        print "updating fricsh and associated"
+        print "updating frisch and associated"
         b_ellipse, upsilon = ogusa.elliptical_u_est.estimation(user_params['frisch'],
                                                                run_params['ltilde'])
         run_params['b_ellipse'] = b_ellipse
