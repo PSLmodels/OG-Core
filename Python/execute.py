@@ -97,6 +97,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
                 'analytical_mtrs', 'b_ellipse', 'k_ellipse', 'upsilon',
                 'small_open', 'budget_balance', 'ss_firm_r', 'ss_hh_r', 'tpi_firm_r', 'tpi_hh_r',
                 'tG1', 'tG2', 'alpha_T', 'alpha_G', 'ALPHA_T', 'ALPHA_G', 'rho_G', 'debt_ratio_ss',
+                'tau_b', 'delta_tau',
                 'chi_b_guess', 'chi_n_guess','etr_params','mtrx_params',
                 'mtry_params','tau_payroll', 'tau_bq',
                 'retire', 'mean_income_data', 'g_n_vector',
@@ -148,11 +149,15 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
         sim_params['baseline_dir'] = baseline_dir
 
 
-        income_tax_params, tpi_params, iterative_params, small_open_params, initial_values, SS_values, fiscal_params = TPI.create_tpi_params(**sim_params)
+        income_tax_params, tpi_params, iterative_params, small_open_params, initial_values, SS_values, fiscal_params, biz_tax_params = TPI.create_tpi_params(**sim_params)
 
         tpi_output, macro_output = TPI.run_TPI(income_tax_params,
+<<<<<<< HEAD
             tpi_params, iterative_params, small_open_params, initial_values, SS_values, fiscal_params, output_dir=output_base, baseline_spending=baseline_spending)
 
+=======
+            tpi_params, iterative_params, small_open_params, initial_values, SS_values, fiscal_params, biz_tax_params, output_dir=output_base)
+>>>>>>> upstream/master
 
         '''
         ------------------------------------------------------------------------

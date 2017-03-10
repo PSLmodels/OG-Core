@@ -343,6 +343,11 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
     debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
     initial_debt       = 0.59 # first-period debt/GDP ratio. Savings would be a negative number.
 
+    # Business tax parameters
+    tau_b = 0.20 # business income tax rate
+    delta_tau_annual = .027# from B-Tax
+    delta_tau = 1 - ((1 - delta_annual) ** (float(ending_age - starting_age) / S))
+
     if tG1 > tG2:
         print 'The first government spending rule change date, (', tG1, ') is after the second one (', tG2, ').'
         err = "Gov't spending rule dates are inconsistent"
