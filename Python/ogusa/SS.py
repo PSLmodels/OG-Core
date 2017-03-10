@@ -366,15 +366,10 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
 
     if budget_balance:
         T_H_params = (e, lambdas.reshape(1, J), omega_SS.reshape(S, 1), 'SS', etr_params, theta, tau_bq,
-<<<<<<< HEAD
-                          tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
-        new_T_H = tax.get_lump_sum(new_r, new_w, b_s, nssmat, new_BQ, factor, T_H_params)
-    elif baseline_spending:
-        new_T_H = T_H
-=======
                           tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J, tau_b, delta_tau)
         new_T_H = tax.revenue(new_r, new_w, b_s, nssmat, new_BQ, new_Y, L, K, factor, T_H_params)
->>>>>>> upstream/master
+    elif baseline_spending:
+        new_T_H = T_H
     else:
         new_T_H = alpha_T*new_Y
 
@@ -624,13 +619,8 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, Yss, factor_ss, param
 
     if small_open == False:
         resource_constraint = Yss - (Css + Iss + Gss)
-<<<<<<< HEAD
-        print 'Yss= ', Yss, '\n', 'Css= ', Css, '\n', 'Bss = ', Bss, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'T_H = ', T_H, '\n', 'Gss= ', Gss
-        print 'D/Y:', debt_ss/Yss, 'T/Y:', T_Hss/Yss, 'G/Y:', Gss/Yss, 'Rev/Y:', revenue_ss/Yss, 'Int payments to GDP:', (rss*debt_ss)/Yss
-=======
         print 'Yss= ', Yss, '\n', 'Gss= ', Gss, '\n', 'Css= ', Css, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'Debt service = ', debt_service_ss
         print 'D/Y:', debt_ss/Yss, 'T/Y:', T_Hss/Yss, 'G/Y:', Gss/Yss, 'Rev/Y:', revenue_ss/Yss, 'business rev/Y: ', business_revenue/Yss, 'Int payments to GDP:', (rss*debt_ss)/Yss
->>>>>>> upstream/master
         print 'Check SS budget: ', Gss - (np.exp(g_y)*(1+g_n_ss)-1-rss)*debt_ss - revenue_ss + T_Hss
         print 'resource constraint: ', resource_constraint
     else:
