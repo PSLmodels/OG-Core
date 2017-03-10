@@ -14,8 +14,8 @@ ogusa.parameters.DATASET = 'REAL'
 
 
 def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False,
-  analytical_mtrs=False, age_specific=False, baseline_spending=False, reform={}, user_params={},
-  guid='', run_micro=True, small_open=False, budget_balance=False):
+  analytical_mtrs=False, age_specific=False, reform={}, user_params={},
+  guid='', run_micro=True, small_open=False, budget_balance=False, baseline_spending=False):
 
     #from ogusa import parameters, wealth, labor, demographics, income
     from ogusa import parameters, demographics, income, utils
@@ -151,13 +151,8 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
 
         income_tax_params, tpi_params, iterative_params, small_open_params, initial_values, SS_values, fiscal_params, biz_tax_params = TPI.create_tpi_params(**sim_params)
 
-        tpi_output, macro_output = TPI.run_TPI(income_tax_params,
-<<<<<<< HEAD
-            tpi_params, iterative_params, small_open_params, initial_values, SS_values, fiscal_params, output_dir=output_base, baseline_spending=baseline_spending)
-
-=======
-            tpi_params, iterative_params, small_open_params, initial_values, SS_values, fiscal_params, biz_tax_params, output_dir=output_base)
->>>>>>> upstream/master
+        tpi_output, macro_output = TPI.run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, initial_values, 
+                                               SS_values, fiscal_params, biz_tax_params, output_dir=output_base, baseline_spending=baseline_spending)
 
         '''
         ------------------------------------------------------------------------
