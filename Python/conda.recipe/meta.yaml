@@ -1,6 +1,6 @@
 package:
   name: ogusa
-  version: {{ environ.get("GIT_DESCRIBE_TAG", "NOTAG")}}
+  version: 0.4
 
 requirements:
   build:
@@ -10,7 +10,7 @@ requirements:
     - numpy
     - pandas
     - pytest
-    - python
+    - python ==2.7
 
   run:
     - setuptools
@@ -20,7 +20,7 @@ requirements:
     - numpy
     - pandas
     - pytest
-    - python 
+    - python ==2.7
 
 about:
   home: https://github.com/open-source-economics/OG-USA/
