@@ -17,7 +17,7 @@ import uuid
 import time
 
 import postprocess
-from execute_small import runner, runner_SS # change here for small jobs
+from execute import runner
 SS.ENFORCE_SOLUTION_CHECKS = False
 TPI.ENFORCE_SOLUTION_CHECKS = False
 
@@ -45,9 +45,10 @@ def run_micro_macro(reform, user_params, guid):
     ------------------------------------------------------------------------
     '''
     output_base = BASELINE_DIR
-    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR, 'baseline':True,
-            'analytical_mtrs':False, 'user_params':user_params, 'age_specific':False,
-            'run_micro':False, 'guid':guid}
+    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR, 'test':True,
+            'time_path':True, 'baseline':True, 'analytical_mtrs':False,
+            'user_params':user_params, 'age_specific':False, 'run_micro':False,
+            'guid':guid}
     runner(**kwargs)
 
     '''
@@ -58,7 +59,8 @@ def run_micro_macro(reform, user_params, guid):
 
     output_base = REFORM_DIR
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'baseline':False, 'analytical_mtrs':False, 'reform':reform, 'user_params':user_params,
+            'test':True, 'time_path':True, 'baseline':False,
+            'analytical_mtrs':False, 'reform':reform, 'user_params':user_params,
             'age_specific':False, 'guid': guid, 'run_micro':False}
     runner(**kwargs)
 
@@ -71,7 +73,7 @@ def run_micro_macro(reform, user_params, guid):
 def test_run_micro_macro():
 
     reform = {
-    2016: {
+    2017: {
         '_II_rt1': [.09],
         '_II_rt2': [.135],
         '_II_rt3': [.225],
@@ -81,5 +83,3 @@ def test_run_micro_macro():
         '_II_rt7': [0.3564],
     }, }
     run_micro_macro(reform=reform, user_params={'frisch': 0.44, 'g_y_annual': 0.021}, guid='abc')
-
-
