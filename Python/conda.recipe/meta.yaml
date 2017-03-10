@@ -10,7 +10,7 @@ requirements:
     - numpy
     - pandas
     - pytest
-    - python ==2.7
+    - python
 
   run:
     - setuptools
@@ -20,7 +20,33 @@ requirements:
     - numpy
     - pandas
     - pytest
-    - python ==2.7
+    - python
 
 about:
   home: https://github.com/open-source-economics/OG-USA/
+
+test:
+  imports:
+    - ogusa
+    - ogusa.SS
+    - ogusa.SS_graphs
+    - ogusa.TPI
+    - ogusa.TPI_graphs
+    - ogusa.calibrate
+    - ogusa.demographics
+    - ogusa.demographics_old
+    - ogusa.elliptical_u_est
+    - ogusa.firm
+    - ogusa.fiscal
+    - ogusa.get_micro_data
+    - ogusa.household
+    - ogusa.income
+    - ogusa.labor
+    - ogusa.macro_output
+    - ogusa.parameters
+    - ogusa.tax
+    - ogusa.txfunc
+    - ogusa.utils
+    - ogusa.wealth
+    - ogusa.wealthinit
+
