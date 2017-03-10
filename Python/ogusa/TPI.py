@@ -564,7 +564,6 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
             T_Hss2 = T_Hss
         T_H = np.ones(T + S) * T_Hss2
         REVENUE = T_H
-        D = np.zeros(T + S)
         G = np.zeros(T + S)
     elif baseline_spending==False:
         T_H = ALPHA_T * Y
@@ -573,6 +572,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         T_H_new = T_H   # Need to set T_H_new for later reference
         G   = Gbaseline
         G_0 = Gbaseline[0]
+    D = np.zeros(T + S)
 
     # print 'D/Y:', D[:T]/Y[:T]
     # print 'T/Y:', T_H[:T]/Y[:T]
@@ -595,7 +595,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
 
         # Plot TPI for K for each iteration, so we can see if there is a
         # problem
-        if PLOT_TPI is True and TPIiter > 0:
+        if PLOT_TPI is True:
             #K_plot = list(K) + list(np.ones(10) * Kss)
             D_plot = list(D) + list(np.ones(10) * Yss * debt_ratio_ss)
             plt.figure()
@@ -610,8 +610,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
             print '\t\tG = ', G[tG1-1]
             print '\t\tK = ', K[tG1-1]
             print '\t\tr = ', r[tG1-1]
-            if TPIiter > 0:
-                print '\t\tD = ', D[tG1-1]
+            print '\t\tD = ', D[tG1-1]
 
 
         guesses = (guesses_b, guesses_n)
@@ -644,7 +643,8 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
                 tax_params = np.zeros((T,S,J,etr_params.shape[2]))
                 for i in range(etr_params.shape[2]):
                     tax_params[:,:,:,i] = np.tile(np.reshape(np.transpose(etr_params[:,:T,i]),(T,S,1)),(1,1,J))
-
+                
+                # Take REVENUE_params out of the loop?
                 REVENUE_params = (np.tile(e.reshape(1, S, J),(T,1,1)), lambdas.reshape(1, 1, J), omega[:T].reshape(T, S, 1), 'TPI',
                         tax_params, theta, tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
                 REVENUE = np.array(list(tax.get_lump_sum(np.tile(r[:T].reshape(T, 1, 1),(1,S,J)), np.tile(w[:T].reshape(T, 1, 1),(1,S,J)),
@@ -655,26 +655,29 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
                 if baseline_spending==False:
                     G_0    = ALPHA_G[0] * Y[0]
                 dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
-                D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
-                K[:T] = B[:T] - D[:T]
+                Dnew, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
+                K[:T] = B[:T] - Dnew[:T]
                 if np.any(K < 0):
                     print 'K has negative elements. Setting them positive to prevent NAN.'
                     K[:T] = np.fmax(K[:T], 0.05*B[:T])
         else:
             # K_params previously set to = (alpha, delta, Z)
             K[:T] = firm.get_K(L[:T], tpi_firm_r[:T], K_params)
+
         Y_params = (alpha, Z)
-        Ynew = firm.get_Y(K[:T], L[:T], Y_params)
-        wnew = firm.get_w(Ynew[:T], L[:T], alpha)
+        Y = firm.get_Y(K[:T], L[:T], Y_params)
+        wnew = firm.get_w(Y[:T], L[:T], alpha)
         if small_open == False:
             r_params = (alpha, delta)
-            rnew = firm.get_r(Ynew[:T], K[:T], r_params)
+            rnew = firm.get_r(Y[:T], K[:T], r_params)
         else:
-            rnew = r
-
+            rnew = r.copy()
+        
+        # Take the next two rows out of the loop?
         omega_shift = np.append(omega_S_preTP.reshape(1,S),omega[:T-1,:],axis=0)
         BQ_params = (omega_shift.reshape(T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1),
                      g_n_vector[:T].reshape(T, 1), 'TPI')
+        
         b_mat_shift = np.append(np.reshape(initial_b,(1,S,J)),b_mat[:T-1,:,:],axis=0)
         BQnew = household.get_BQ(rnew[:T].reshape(T, 1), b_mat_shift, BQ_params)
 
@@ -682,6 +685,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         for i in range(etr_params.shape[2]):
             tax_params[:,:,:,i] = np.tile(np.reshape(np.transpose(etr_params[:,:T,i]),(T,S,1)),(1,1,J))
 
+        # Take REVENUE_params out of the loop?
         REVENUE_params = (np.tile(e.reshape(1, S, J),(T,1,1)), lambdas.reshape(1, 1, J), omega[:T].reshape(T, S, 1), 'TPI',
                 tax_params, theta, tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
         REVENUE = np.array(list(tax.get_lump_sum(np.tile(rnew[:T].reshape(T, 1, 1),(1,S,J)), np.tile(wnew[:T].reshape(T, 1, 1),(1,S,J)),
@@ -690,31 +694,41 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         if budget_balance:
             T_H_new = REVENUE
         elif baseline_spending==False:
-            T_H_new = ALPHA_T[:T] * Ynew
+            T_H_new = ALPHA_T[:T] * Y
         # If baseline_spending==True, no need to update T_H, which remains fixed.
-
-        # Loop through years to calculate debt and gov't spending. The re-assignment of G0 & D0 is necessary because Y0 may change in the TPI loop.
-#        D_0    = initial_debt * Y[0]
-#        other_dg_params = (T, r, g_n_vector, g_y)
-#        if baseline_spending==False:
-#            G_0    = ALPHA_G[0] * Y[0]
-#        dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
-#        D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
+        
 
         w[:T] = utils.convex_combo(wnew[:T], w[:T], nu)
         r[:T] = utils.convex_combo(rnew[:T], r[:T], nu)
         BQ[:T] = utils.convex_combo(BQnew[:T], BQ[:T], nu)
+        D[:T] = utils.convex_combo(Dnew[:T], D[:T], nu)
         if baseline_spending==False:
             T_H[:T] = utils.convex_combo(T_H_new[:T], T_H[:T], nu)
         guesses_b = utils.convex_combo(b_mat, guesses_b, nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, nu)
+        
+        #if small_open==True and budget_balance==False:
+        # Loop through years to calculate debt and gov't spending. This is done earlier when small_open=False.
+        print 'Y: ', Y[0:6]
+        D_0    = initial_debt * Y[0]
+        other_dg_params = (T, r, g_n_vector, g_y)
+        if baseline_spending==False:
+            G_0    = ALPHA_G[0] * Y[0]
+        dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
+        D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
 
-        if T_H.all() != 0:
-            TPIdist = np.array(list(utils.pct_diff_func(rnew[:T], r[:T])) + list(utils.pct_diff_func(BQnew[:T], BQ[:T]).flatten()) + list(
-                utils.pct_diff_func(wnew[:T], w[:T])) + list(utils.pct_diff_func(T_H_new[:T], T_H[:T]))).max()
+        if baseline_spending==False:
+            if T_H.all() != 0:
+                TPIdist = np.array(list(utils.pct_diff_func(rnew[:T], r[:T])) + list(utils.pct_diff_func(BQnew[:T], BQ[:T]).flatten()) + list(
+                    utils.pct_diff_func(wnew[:T], w[:T])) + list(utils.pct_diff_func(T_H_new[:T], T_H[:T]))).max()
+            else:
+                TPIdist = np.array(list(utils.pct_diff_func(rnew[:T], r[:T])) + list(utils.pct_diff_func(BQnew[:T], BQ[:T]).flatten()) + list(
+                    utils.pct_diff_func(wnew[:T], w[:T])) + list(np.abs(T_H[:T]))).max()
         else:
             TPIdist = np.array(list(utils.pct_diff_func(rnew[:T], r[:T])) + list(utils.pct_diff_func(BQnew[:T], BQ[:T]).flatten()) + list(
-                utils.pct_diff_func(wnew[:T], w[:T])) + list(np.abs(T_H[:T]))).max()
+                utils.pct_diff_func(wnew[:T], w[:T])) + list(utils.pct_diff_func(Dnew[:T], D[:T]))).max()
+                
+                
         TPIdist_vec[TPIiter] = TPIdist
         # After T=10, if cycling occurs, drop the value of nu
         # wait til after T=10 or so, because sometimes there is a jump up
@@ -737,8 +751,14 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         # print 'G/Y:', (G[:T]/Ynew[:T])
         #
         # print 'deficit: ', REVENUE[:T] - T_H_new[:T] - G[:T]
-
-    Y[:T] = Ynew
+    
+    # Loop through years to calculate debt and gov't spending. The re-assignment of G0 & D0 is necessary because Y0 may change in the TPI loop.
+    D_0    = initial_debt * Y[0]
+    other_dg_params = (T, r, g_n_vector, g_y)
+    if baseline_spending==False:
+        G_0    = ALPHA_G[0] * Y[0]
+    dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
+    D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
 
     # Solve HH problem in inner loop
     guesses = (guesses_b, guesses_n)
@@ -809,12 +829,12 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     C_params = (omega[:T].reshape(T, S, 1), lambdas, 'TPI')
     C = household.get_C(c_path, C_params)
 
-    D_0    = initial_debt * Y[0]
-    other_dg_params = (T, r, g_n_vector, g_y)
-    if baseline_spending==False:
-        G_0    = ALPHA_G[0] * Y[0]
-    dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
-    D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
+#    D_0    = initial_debt * Y[0]
+#    other_dg_params = (T, r, g_n_vector, g_y)
+#    if baseline_spending==False:
+#        G_0    = ALPHA_G[0] * Y[0]
+#    dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
+#    D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
 
 
     if small_open == False:
@@ -895,7 +915,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     if ((TPIiter >= maxiter) or (np.absolute(TPIdist) > mindist_TPI)) and ENFORCE_SOLUTION_CHECKS :
         raise RuntimeError("Transition path equlibrium not found (TPIdist)")
 
-    if ((np.any(np.absolute(rc_error) >= mindist_TPI*10.0))
+    if ((np.any(np.absolute(rc_error) >= mindist_TPI))
         and ENFORCE_SOLUTION_CHECKS):
         raise RuntimeError("Transition path equlibrium not found (rc_error)")
 
