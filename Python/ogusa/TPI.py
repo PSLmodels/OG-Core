@@ -587,6 +587,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         
     # Initialize some inputs
     D = np.zeros(T + S)
+    Dnew = D
     omega_shift = np.append(omega_S_preTP.reshape(1,S),omega[:T-1,:],axis=0)
     BQ_params = (omega_shift.reshape(T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1),
                      g_n_vector[:T].reshape(T, 1), 'TPI')
