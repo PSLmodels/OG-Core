@@ -631,7 +631,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, Yss, factor_ss, param
     else:
         # include term for current account
         resource_constraint = Yss + new_borrowing  - (Css + BIss + Gss) + (ss_hh_r * Bss - (delta + ss_firm_r) * Kss - debt_service_ss)
-        print 'Yss= ', Yss, '\n', 'Css= ', Css, '\n', 'Bss = ', Bss, '\n', 'BIss = ', BIss, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'T_H = ', T_H, 'Gss= ', Gss,'\n'
+        print 'Yss= ', Yss, '\n', 'Css= ', Css, '\n', 'Bss = ', Bss, '\n', 'BIss = ', BIss, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'T_H = ', T_H,'\n', 'Gss= ', Gss
         print 'D/Y:', debt_ss/Yss, 'T/Y:', T_Hss/Yss, 'G/Y:', Gss/Yss, 'Rev/Y:', revenue_ss/Yss, 'Int payments to GDP:', (rss*debt_ss)/Yss
         print 'resource constraint: ', resource_constraint
 

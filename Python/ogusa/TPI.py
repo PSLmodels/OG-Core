@@ -772,12 +772,13 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         # print 'deficit: ', REVENUE[:T] - T_H_new[:T] - G[:T]
     
     # Loop through years to calculate debt and gov't spending. The re-assignment of G0 & D0 is necessary because Y0 may change in the TPI loop.
-    D_0    = initial_debt * Y[0]
-    other_dg_params = (T, r, g_n_vector, g_y)
-    if baseline_spending==False:
-        G_0    = ALPHA_G[0] * Y[0]
-    dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
-    D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
+    if budget_balance == False:
+        D_0    = initial_debt * Y[0]
+        other_dg_params = (T, r, g_n_vector, g_y)
+        if baseline_spending==False:
+            G_0    = ALPHA_G[0] * Y[0]
+        dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
+        D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
 
     # Solve HH problem in inner loop
     guesses = (guesses_b, guesses_n)
@@ -848,12 +849,13 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     C_params = (omega[:T].reshape(T, S, 1), lambdas, 'TPI')
     C = household.get_C(c_path, C_params)
 
-    D_0    = initial_debt * Y[0]
-    other_dg_params = (T, r, g_n_vector, g_y)
-    if baseline_spending==False:
-        G_0    = ALPHA_G[0] * Y[0]
-    dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
-    D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
+    if budget_balance == False:
+        D_0    = initial_debt * Y[0]
+        other_dg_params = (T, r, g_n_vector, g_y)
+        if baseline_spending==False:
+            G_0    = ALPHA_G[0] * Y[0]
+        dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
+        D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
 
 
     if small_open == False:
