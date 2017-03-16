@@ -8,9 +8,9 @@ import time
 
 #sys.path.append(OGUSA_PATH)
 
-import postprocess
+from ogusa.scripts import postprocess
 #from execute import runner # change here for small jobs
-from execute_large import runner
+from ogusa.scripts.execute_large import runner
 
 
 def run_micro_macro(user_params):
