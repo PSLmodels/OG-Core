@@ -1,7 +1,5 @@
 import os
 import sys
-CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-sys.path.append(os.path.join(CUR_PATH, "../../"))
 import pytest
 import tempfile
 import pickle
@@ -73,7 +71,7 @@ def test_import_ok():
 
 
 def test_run_small():
-    from execute import runner
+    from ogusa.scripts.execute import runner
     # Monkey patch enforcement flag since small data won't pass checks
     SS.ENFORCE_SOLUTION_CHECKS = False
     TPI.ENFORCE_SOLUTION_CHECKS = False

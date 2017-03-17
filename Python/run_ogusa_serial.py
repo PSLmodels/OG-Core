@@ -8,8 +8,8 @@ import time
 
 #sys.path.append(OGUSA_PATH)
 
-import postprocess
-from execute import runner
+from ogusa.scripts import postprocess
+from ogusa.scripts.execute import runner
 
 
 def run_micro_macro(user_params):
