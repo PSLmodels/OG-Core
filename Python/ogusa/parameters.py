@@ -307,9 +307,9 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
     beta_annual = .96 # Carroll (JME, 2009)
     beta = beta_annual ** (float(ending_age - starting_age) / S)
     sigma = 1.5 # value from Attanasio, Banks, Meghir and Weber (JEBS, 1999)
-    alpha = .35 # many use 0.33, but many find that capitals share is increasing (e.g. Elsby, Hobijn, and Sahin (BPEA, 2013))
-    gamma = 0.35
-    epsilon = 0.6
+    alpha = .35
+    gamma = 0.35 # many use 0.33, but many find that capitals share is increasing (e.g. Elsby, Hobijn, and Sahin (BPEA, 2013))
+    epsilon = 1.0 #0.6 ##Note: If note =1, then careful w calibration
     Z = 1.0
     delta_annual = 0.05 # approximately the value from Kehoe calibration exercise: http://www.econ.umn.edu/~tkehoe/classes/calibration-04.pdf
     delta = 1 - ((1 - delta_annual) ** (float(ending_age - starting_age) / S))
