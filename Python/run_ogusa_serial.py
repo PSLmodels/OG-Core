@@ -8,8 +8,8 @@ import time
 
 #sys.path.append(OGUSA_PATH)
 
-import postprocess
-from execute import runner
+from ogusa.scripts import postprocess
+from ogusa.scripts.execute import runner
 
 
 def run_micro_macro(user_params):
@@ -96,6 +96,19 @@ def run_micro_macro(user_params):
     #p2.start()
     runner(**kwargs)
 
+
+#    output_base = REFORM_DIR
+#    input_dir = REFORM_DIR
+#    guid_iter = 'reform_' + str(0)
+#    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
+#            'test':True, 'time_path':True, 'baseline':False, 'analytical_mtrs':False, 'age_specific':True,
+#            'user_params':user_params,'guid':'_alt', 'reform':reform ,
+#            'run_micro':False, 'small_open': False, 'budget_balance':False}
+#    #p2 = Process(target=runner, kwargs=kwargs)
+#    #p2.start()
+#    runner(**kwargs)
+#
+#
 
 
 

@@ -129,6 +129,7 @@ def create_steady_state_parameters(**sim_params):
                   sim_params['nu'], sim_params['g_y'], sim_params['g_n_ss'],
                   sim_params['tau_payroll'], sim_params['tau_bq'], sim_params['rho'], sim_params['omega_SS'],
                   sim_params['budget_balance'], sim_params['alpha_T'], sim_params['debt_ratio_ss'],
+                  sim_params['tau_b'], sim_params['delta_tau'],
                   sim_params['lambdas'], sim_params['imm_rates'][-1,:], sim_params['e'], sim_params['retire'], sim_params['mean_income_data']] + \
                   wealth_tax_params + ellipse_params
     iterative_params = [sim_params['maxiter'], sim_params['mindist_SS']]
@@ -273,7 +274,7 @@ def inner_loop(outer_loop_vars, params, baseline):
         firm.get_w()
         household.get_BQ()
         tax.replacement_rate_vals()
-        tax.get_lump_sum()
+        tax.revenue()
 
     Objects in function:
 
@@ -286,7 +287,8 @@ def inner_loop(outer_loop_vars, params, baseline):
     # unpack variables and parameters pass to function
     ss_params, income_tax_params, chi_params, small_open_params = params
     J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance, alpha_T, debt_ratio_ss,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance, \
+                  alpha_T, debt_ratio_ss, tau_b, delta_tau,\
                   lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
@@ -336,7 +338,7 @@ def inner_loop(outer_loop_vars, params, baseline):
         else:
             K = B - debt_ratio_ss*Y
     else:
-        K_params = (Z, gamma, epsilon, delta)
+        K_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
         K = firm.get_K(L, ss_firm_r, K_params)
     # Y_params = (alpha, Z)
     Y_params = (Z, gamma, epsilon)
@@ -345,8 +347,7 @@ def inner_loop(outer_loop_vars, params, baseline):
     if budget_balance:
         Y = new_Y
     if small_open == False:
-        # r_params = (alpha, delta)
-        r_params = (Z, gamma, epsilon, delta)
+        r_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
         new_r = firm.get_r(Y, K, r_params)
     else:
         new_r = ss_hh_r
@@ -369,8 +370,8 @@ def inner_loop(outer_loop_vars, params, baseline):
 
     if budget_balance:
         T_H_params = (e, lambdas.reshape(1, J), omega_SS.reshape(S, 1), 'SS', etr_params, theta, tau_bq,
-                          tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
-        new_T_H = tax.get_lump_sum(new_r, new_w, b_s, nssmat, new_BQ, factor, T_H_params)
+                          tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J, tau_b, delta_tau)
+        new_T_H = tax.revenue(new_r, new_w, b_s, nssmat, new_BQ, new_Y, L, K, factor, T_H_params)
     else:
         new_T_H = alpha_T*new_Y
 
@@ -413,7 +414,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, params, ba
     firm.get_w()
     household.get_BQ()
     tax.replacement_rate_vals()
-    tax.get_lump_sum()
+    tax.revenue()
     utils.convex_combo()
     utils.pct_diff_func()
 
@@ -443,9 +444,9 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, params, ba
     '''
 
     bssmat, nssmat, chi_params, ss_params, income_tax_params, iterative_params, small_open_params = params
-
     J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance, alpha_T, debt_ratio_ss,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance, \
+                  alpha_T, debt_ratio_ss, tau_b, delta_tau,\
                   lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
@@ -542,7 +543,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, params, ba
         Iss = firm.get_I(bssmat_splus1, Kss, Kss, Iss_params)
     else:
         # Compute capital (K) and wealth (B) separately
-        Kss_params = (Z, gamma, epsilon, delta)
+        Kss_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
         Kss = firm.get_K(Lss, ss_firm_r, Kss_params)
         Iss_params = (delta, g_y, omega_SS, lambdas, imm_rates, g_n_ss, 'SS')
         InvestmentPlaceholder = np.zeros(bssmat_splus1.shape)
@@ -570,8 +571,8 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, params, ba
     # Next 5 lines pulled out of inner_loop where they used to calculate T_H. Now calculating G to balance gov't budget.
     b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
     lump_sum_params = (e, lambdas.reshape(1, J), omega_SS.reshape(S, 1), 'SS', etr_params, theta, tau_bq,
-                      tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J)
-    revenue_ss = tax.get_lump_sum(new_r, new_w, b_s, nssmat, new_BQ, factor, lump_sum_params)
+                      tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J, tau_b, delta_tau)
+    revenue_ss = tax.revenue(new_r, new_w, b_s, nssmat, new_BQ, Yss, Lss, Kss, factor, lump_sum_params)
     r_gov_ss = rss
     debt_service_ss = r_gov_ss*debt_ratio_ss*Yss
     new_borrowing = debt_ratio_ss*Yss*((1+g_n_ss)*np.exp(g_y)-1)
@@ -613,13 +614,16 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, params, ba
     cssmat = household.get_cons(rss, wss, bssmat_s, bssmat_splus1, nssmat, BQss.reshape(
         1, J), taxss, css_params)
 
+    biz_params = (tau_b, delta_tau)
+    business_revenue = tax.get_biz_tax(wss, Yss, Lss, Kss, biz_params)
+
     Css_params = (omega_SS.reshape(S, 1), lambdas, 'SS')
     Css = household.get_C(cssmat, Css_params)
 
     if small_open == False:
         resource_constraint = Yss - (Css + Iss + Gss)
         print 'Yss= ', Yss, '\n', 'Gss= ', Gss, '\n', 'Css= ', Css, '\n', 'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss, '\n', 'Debt service = ', debt_service_ss
-        print 'D/Y:', debt_ss/Yss, 'T/Y:', T_Hss/Yss, 'G/Y:', Gss/Yss, 'Rev/Y:', revenue_ss/Yss, 'Int payments to GDP:', (rss*debt_ss)/Yss
+        print 'D/Y:', debt_ss/Yss, 'T/Y:', T_Hss/Yss, 'G/Y:', Gss/Yss, 'Rev/Y:', revenue_ss/Yss, 'business rev/Y: ', business_revenue/Yss, 'Int payments to GDP:', (rss*debt_ss)/Yss
         print 'Check SS budget: ', Gss - (np.exp(g_y)*(1+g_n_ss)-1-rss)*debt_ss - revenue_ss + T_Hss
         print 'resource constraint: ', resource_constraint
     else:
@@ -685,9 +689,9 @@ def SS_fsolve(guesses, params):
     '''
 
     bssmat, nssmat, chi_params, ss_params, income_tax_params, iterative_params, small_open_params = params
-
     J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance, alpha_T, debt_ratio_ss,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance,\
+                  alpha_T, debt_ratio_ss, tau_b, delta_tau,\
                   lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
@@ -778,9 +782,9 @@ def SS_fsolve_reform(guesses, params):
                     T_H ((2*S*J+4)x1 array)
     '''
     bssmat, nssmat, chi_params, ss_params, income_tax_params, iterative_params, factor, small_open_params = params
-
     J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance, alpha_T, debt_ratio_ss,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance,\
+                  alpha_T, debt_ratio_ss, tau_b, delta_tau,\
                   lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
@@ -874,7 +878,8 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, small_ope
     --------------------------------------------------------------------
     '''
     J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance, alpha_T, debt_ratio_ss,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance,\
+                  alpha_T, debt_ratio_ss, tau_b, delta_tau,\
                   lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 

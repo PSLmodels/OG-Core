@@ -8,9 +8,9 @@ import time
 
 #sys.path.append(OGUSA_PATH)
 
-import postprocess
+from ogusa.scripts import postprocess
 #from execute import runner # change here for small jobs
-from execute_large import runner, runner_SS
+from ogusa.scripts.execute_large import runner, runner_SS
 
 
 def run_micro_macro(user_params):
@@ -53,17 +53,17 @@ def run_micro_macro(user_params):
 
     reform6 = {
     2016: {
-        '_STD': [ [6100*2, 12200*2, 6100*2, 8950*2, 12200*2, 6100*2, 1000*2], 
+        '_STD': [ [6100*2, 12200*2, 6100*2, 8950*2, 12200*2, 6100*2, 1000*2],
                     [6200*2, 12400*2, 6200*2, 9100*2, 12400*2, 6200*2, 1000*2],
                     [6300*2, 12600*2, 6300*2, 9250*2, 12600*2, 6300*2, 1050*2]],
-    }, }  
+    }, }
 
     reform7 = {
     2016: {
-        '_STD': [ [6100*2.1, 12200*2.1, 6100*2.1, 8950*2.1, 12200*2.1, 6100*2.1, 1000*2.1], 
+        '_STD': [ [6100*2.1, 12200*2.1, 6100*2.1, 8950*2.1, 12200*2.1, 6100*2.1, 1000*2.1],
                     [6200*2.1, 12400*2.1, 6200*2.1, 9100*2.1, 12400*2.1, 6200*2.1, 1000*2.1],
                     [6300*2.1, 12600*2.1, 6300*2.1, 9250*2.1, 12600*2.1, 6300*2.1, 1050*2.1]],
-    }, }    
+    }, }
 
     reform8 = {
     2016: {
@@ -73,7 +73,7 @@ def run_micro_macro(user_params):
         '_II_brk5':[[250000, 250000, 125000, 250000, 250000, 250000]]
     }, }
 
-    
+
     reform9 = {
     2016: {
             '_STD': [[12600, 25200, 12600, 18600, 25300, 12600, 2100]],
@@ -94,7 +94,7 @@ def run_micro_macro(user_params):
 
     '''
     ------------------------------------------------------------------------
-        Run SS for Baseline first - so can run baseline and reform in parallel if want 
+        Run SS for Baseline first - so can run baseline and reform in parallel if want
     ------------------------------------------------------------------------
     '''
     output_base = BASELINE_DIR
@@ -127,20 +127,20 @@ def run_micro_macro(user_params):
     '''
     reforms = (reform0, reform1, reform2, reform3, reform4, reform5, reform6, reform7, reform8, reform9)
 
-    counter = 0 
+    counter = 0
     for x in reforms:
         print 'Running reform ', counter
 
         REFORM_DIR = './OUTPUT_REFORM/' + str(counter) + '/'
 
-        reform = x 
+        reform = x
         guid_iter = 'reform_' + str(counter)
 
         output_base = REFORM_DIR
         input_dir = REFORM_DIR
         guid_iter = 'reform_' + str(counter)
         kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'baseline':False, 'analytical_mtrs':False, 'age_specific':False, 
+            'baseline':False, 'analytical_mtrs':False, 'age_specific':False,
             'reform':reform, 'user_params':user_params,'guid':guid_iter, 'run_micro':True}
         runner(**kwargs)
 

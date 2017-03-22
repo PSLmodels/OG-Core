@@ -28,37 +28,6 @@ import copy
 import numba
 import pickle
 
-def only_growth_assumptions(user_mods, start_year):
-    """
-    Extract any reform parameters that are pertinent to growth
-    assumptions
-    """
-    growth_dd = taxcalc.growth.Growth.default_data(start_year=start_year)
-    ga = {}
-    for year, reforms in user_mods.items():
-        overlap = set(growth_dd.keys()) & set(reforms.keys())
-        if overlap:
-            ga[year] = {param:reforms[param] for param in overlap}
-    return ga
-
-
-def only_reform_mods(user_mods, start_year):
-    """
-    Extract parameters that are just for policy reforms
-    """
-    pol_refs = {}
-    beh_dd = Behavior.default_data(start_year=start_year)
-    growth_dd = taxcalc.growth.Growth.default_data(start_year=start_year)
-    policy_dd = taxcalc.policy.Policy.default_data(start_year=start_year)
-    for year, reforms in user_mods.items():
-        all_cpis = {p for p in reforms.keys() if p.endswith("_cpi") and
-                    p[:-4] in policy_dd.keys()}
-        pols = set(reforms.keys()) - set(beh_dd.keys()) - set(growth_dd.keys())
-        pols &= set(policy_dd.keys())
-        pols ^= all_cpis
-        if pols:
-            pol_refs[year] = {param:reforms[param] for param in pols}
-    return pol_refs
 
 def get_calculator(baseline, calculator_start_year, reform=None, data=None, weights=None, records_start_year=None):
     '''
@@ -89,17 +58,11 @@ def get_calculator(baseline, calculator_start_year, reform=None, data=None, weig
         #Should not be a reform if baseline is True
         assert not reform
 
-    growth_assumptions = only_growth_assumptions(reform, calculator_start_year)
-    reform_mods = only_reform_mods(reform, calculator_start_year)
-
     if not baseline:
-        policy1.implement_reform(reform_mods)
+        policy1.implement_reform(reform)
 
     # the default set up increments year to 2013
     calc1 = Calculator(records=records1, policy=policy1)
-
-    if growth_assumptions:
-        calc1.growth.update_growth(growth_assumptions)
 
     # this increment_year function extrapolates all PUF variables to the next year
     # so this step takes the calculator to the start_year

@@ -1,7 +1,5 @@
 import os
 import sys
-CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-sys.path.append(os.path.join(CUR_PATH, "../../"))
 import pytest
 import tempfile
 import pickle
@@ -17,7 +15,7 @@ import uuid
 import time
 
 import postprocess
-from execute import runner
+from ogusa.scripts.execute import runner
 SS.ENFORCE_SOLUTION_CHECKS = False
 TPI.ENFORCE_SOLUTION_CHECKS = False
 
@@ -73,7 +71,7 @@ def run_micro_macro(reform, user_params, guid):
 def test_run_micro_macro():
 
     reform = {
-    2016: {
+    2017: {
         '_II_rt1': [.09],
         '_II_rt2': [.135],
         '_II_rt3': [.225],
