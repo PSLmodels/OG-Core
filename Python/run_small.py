@@ -19,7 +19,7 @@ from ogusa import txfunc
 
 #txfunc.get_tax_func_estimate(baseline=False)
 
-from execute import runner
+from ogusa.scripts.execute import runner
 
 if __name__ == "__main__":
     output_base = "./OUTPUT"
