@@ -95,6 +95,7 @@ def create_tpi_params(**sim_params):
 
     tpi_params = [sim_params['J'], sim_params['S'], sim_params['T'], sim_params['BW'],
                   sim_params['beta'], sim_params['sigma'], sim_params['alpha'],
+                  sim_params['gamma'], sim_params['epsilon'],
                   sim_params['Z'], sim_params['delta'], sim_params['ltilde'],
                   sim_params['nu'], sim_params['g_y'], sim_params['g_n_vector'],
                   sim_params['tau_payroll'], sim_params['tau_bq'], sim_params['rho'], sim_params['omega'], N_tilde,
@@ -104,7 +105,7 @@ def create_tpi_params(**sim_params):
     small_open_params = [sim_params['small_open'], sim_params['tpi_firm_r'], sim_params['tpi_hh_r']]
 
 
-    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
+    J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde, nu, g_y,\
                   g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,\
                   factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b, chi_n, theta = tpi_params
 
@@ -183,7 +184,7 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params):
     # unpack tuples of parameters
     income_tax_params, tpi_params, initial_b = params
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
-    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
+    J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde, nu, g_y,\
                   g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,\
                   factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b, chi_n, theta = tpi_params
 
@@ -260,7 +261,7 @@ def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params):
 
     income_tax_params, tpi_params, initial_b = params
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
-    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
+    J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde, nu, g_y,\
                   g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,\
                   factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b, chi_n, theta = tpi_params
 
@@ -375,7 +376,7 @@ def inner_loop(guesses, outer_loop_vars, params):
     #unpack variables and parameters pass to function
     income_tax_params, tpi_params, initial_values, ind = params
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
-    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
+    J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde, nu, g_y,\
                   g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,\
                   factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b, chi_n, theta = tpi_params
     K0, b_sinit, b_splus1init, factor, initial_b, initial_n, omega_S_preTP, initial_debt = initial_values
@@ -458,7 +459,7 @@ def inner_loop(guesses, outer_loop_vars, params):
 
     return euler_errors, b_mat, n_mat
 
-def initial_GDP_level(y_guess, alpha, Z, initial_debt, B, L):
+def initial_GDP_level(y_guess, gamma, epsilon, Z, initial_debt, B, L):
     # Solve for first-period output given debt ratio, wealth, labor input, and production function.
     # The solution arises from a 3-unknown, 3-equation system that is simplified below.
     # (1) initial_debt = D/Y by assumption.
@@ -467,8 +468,16 @@ def initial_GDP_level(y_guess, alpha, Z, initial_debt, B, L):
     # This could easily be modified to allow for an initial level of foreign bondholding.
     # Salim Furth, 12/28/2016
 
-    #alpha, Z, initial_debt, B, L = y_inputs
-    error = y_guess - Z * ((B - initial_debt*y_guess) ** alpha) * (L ** (1 - alpha))
+    #alpha, gamma, epsilon, Z, initial_debt, B, L = y_inputs
+    # error = y_guess - Z * ((B - initial_debt*y_guess) ** alpha) * (L ** (1 - alpha))
+    if epsilon == 1:
+        error = y_guess - Z*((B - initial_debt*y_guess)**gamma)*(L**(1-gamma))
+    elif epsilon == 0:
+        error = y_guess - Z*(gamma*(B - initial_debt*y_guess) + (1-gamma)*L)
+    else:
+        error = y_guess - (Z * (((gamma**(1/epsilon))*((B - initial_debt*y_guess)**((epsilon-1)/epsilon))) +
+          (((1-gamma)**(1/epsilon))*(L**((epsilon-1)/epsilon))))**(epsilon/(epsilon-1)))
+
     return error
 
 
@@ -477,7 +486,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     # unpack tuples of parameters
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
     maxiter, mindist_SS, mindist_TPI = iterative_params
-    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
+    J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde, nu, g_y,\
                   g_n_vector, tau_payroll, tau_bq, rho, omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,\
                   factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b, chi_n, theta = tpi_params
     # K0, b_sinit, b_splus1init, L0, Y0,\
@@ -525,7 +534,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
             # B_init = K_init
             K_init = B_init
         else:
-            # Y_params = (alpha, Z)
+            # Y_params = (Z, gamma, epsilon)
             # y_guess = firm.get_Y((3-initial_debt/3)*B0,L_init[0],Y_params)
             # y_inputs = (alpha,Z,initial_debt, B0, L_init[0])
             # [Y0, infodict, ier, message] = opt.fsolve(initial_GDP_level, y_guess, args=y_inputs, xtol=mindist_TPI, full_output=True)
@@ -540,18 +549,19 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
             # K_init[0] = K0
             K_init = B_init * Kss/Bss
     else:
-        K_params = (alpha, delta, Z)
+        K_params = (Z, gamma, epsilon, delta)
         K_init = firm.get_K(L_init, tpi_firm_r, K_params)
 
 
     K = K_init
     L = L_init
     B = B_init
-    Y_params = (alpha, Z)
+    Y_params = (Z, gamma, epsilon)
     Y = firm.get_Y(K, L, Y_params)
-    w = firm.get_w(Y, L, alpha)
+    w_params = (Z, gamma, epsilon)
+    w = firm.get_w(Y, L, w_params)
     if small_open == False:
-        r_params = (alpha, delta)
+        r_params = (Z, gamma, epsilon, delta)
         r = firm.get_r(Y, K, r_params)
     else:
         r = tpi_hh_r
@@ -676,13 +686,14 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
                     print 'K has negative elements. Setting them positive to prevent NAN.'
                     K[:T] = np.fmax(K[:T], 0.05*B[:T])
         else:
-            # K_params previously set to = (alpha, delta, Z)
+            # K_params previously set to =  (Z, gamma, epsilon, delta)
             K[:T] = firm.get_K(L[:T], tpi_firm_r[:T], K_params)
-        Y_params = (alpha, Z)
+        Y_params = (Z, gamma, epsilon)
         Ynew = firm.get_Y(K[:T], L[:T], Y_params)
-        wnew = firm.get_w(Ynew[:T], L[:T], alpha)
+        w_params = (Z, gamma, epsilon)
+        wnew = firm.get_w(Ynew[:T], L[:T], w_params)
         if small_open == False:
-            r_params = (alpha, delta)
+            r_params = (Z, gamma, epsilon, delta)
             rnew = firm.get_r(Ynew[:T], K[:T], r_params)
         else:
             rnew = r
@@ -773,9 +784,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     if small_open == False:
         K[:T] = B[:T] - D[:T]
     else:
-        # K_params previously set to = (alpha, delta, Z)
+        # K_params previously set to = (Z, gamma, epsilon, delta)
         K[:T] = firm.get_K(L[:T], tpi_firm_r[:T], K_params)
-    # Y_params previously set to = (alpha, Z)
+    # Y_params previously set to = (Z, gamma, epsilon)
     Ynew = firm.get_Y(K[:T], L[:T], Y_params)
 
     # testing for change in Y
@@ -783,9 +794,10 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     ydiff_max = np.amax(np.abs(ydiff))
     print 'ydiff_max = ', ydiff_max
 
-    wnew = firm.get_w(Ynew[:T], L[:T], alpha)
+    w_params = (Z, gamma, epsilon)
+    wnew = firm.get_w(Ynew[:T], L[:T], w_params)
     if small_open == False:
-        # r_params previously set to = (alpha,delta)
+        # r_params previously set to = (Z, gamma, epsilon, delta)
         rnew = firm.get_r(Ynew[:T], K[:T], r_params)
     else:
         rnew = r
