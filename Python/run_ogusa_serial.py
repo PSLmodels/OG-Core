@@ -72,12 +72,13 @@ def run_micro_macro(user_params):
     output_base = BASELINE_DIR
     input_dir = BASELINE_DIR
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'test':False, 'time_path':True, 'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
+            'test':True, 'time_path':True, 'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
             'user_params':user_params,'guid':'',
             'run_micro':False, 'small_open': False, 'budget_balance':False}
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
     runner(**kwargs)
+    # quit()
 
 
     '''
@@ -89,12 +90,13 @@ def run_micro_macro(user_params):
     input_dir = REFORM_DIR
     guid_iter = 'reform_' + str(0)
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-           'test':False, 'time_path':True, 'baseline':False, 'analytical_mtrs':False, 'age_specific':True,
+           'test':True, 'time_path':True, 'baseline':False, 'analytical_mtrs':False, 'age_specific':True,
            'user_params':user_params,'guid':'',
            'reform':reform , 'run_micro':False, 'small_open': False, 'budget_balance': False}
     #p2 = Process(target=runner, kwargs=kwargs)
     #p2.start()
     runner(**kwargs)
+
 
 
 #    output_base = REFORM_DIR
@@ -121,7 +123,7 @@ def run_micro_macro(user_params):
     ans = postprocess.create_diff(baseline_dir=BASELINE_DIR, policy_dir=REFORM_DIR)
 
     print "total time was ", (time.time() - start_time)
-    print ans
+    print 'Percentage changes in aggregates:', ans
 
     # return ans
 
