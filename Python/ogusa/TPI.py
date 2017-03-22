@@ -752,6 +752,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         else:
             TPIdist = np.array(list(utils.pct_diff_func(rnew[:T], r[:T])) + list(utils.pct_diff_func(BQnew[:T], BQ[:T]).flatten()) + list(
                 utils.pct_diff_func(wnew[:T], w[:T])) + list(np.abs(T_H[:T]))).max()
+
         TPIdist_vec[TPIiter] = TPIdist
         # After T=10, if cycling occurs, drop the value of nu
         # wait til after T=10 or so, because sometimes there is a jump up
@@ -844,6 +845,8 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     C = household.get_C(c_path, C_params)
 
     if budget_balance==False:
+        G       = np.zeros((T,1))
+        D       = np.zeros((T,1))
         G[0]    = alpha_G * Y[0]
         D[0]    = initial_debt * Y[0]
         other_dg_params = (T, r, g_n_vector, g_y)
