@@ -825,7 +825,7 @@ def SS_fsolve_reform(guesses, params):
     print 'factor prices: ', r, w
 
     # Check and punish violations
-    if r <= 0:
+    if r+delta <= 0:
         error1 = 1e9
     #if r > 1:
     #    error1 += 1e9
