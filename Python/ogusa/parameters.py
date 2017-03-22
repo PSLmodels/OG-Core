@@ -309,9 +309,9 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
     sigma = 1.5 # value from Attanasio, Banks, Meghir and Weber (JEBS, 1999)
     alpha = .35 # many use 0.33, but many find that capitals share is increasing (e.g. Elsby, Hobijn, and Sahin (BPEA, 2013))
     gamma = 0.35
-    epsilon = 0.9#0.6
+    epsilon = 0.6
     Z = 1.0
-    delta_annual = 0.02#.05 # approximately the value from Kehoe calibration exercise: http://www.econ.umn.edu/~tkehoe/classes/calibration-04.pdf
+    delta_annual = 0.05 # approximately the value from Kehoe calibration exercise: http://www.econ.umn.edu/~tkehoe/classes/calibration-04.pdf
     delta = 1 - ((1 - delta_annual) ** (float(ending_age - starting_age) / S))
     ltilde = 1.0
     g_y_annual = 0.03
@@ -460,15 +460,15 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
 
 
     ## To shut off demographics, uncomment the following 9 lines of code
-    g_n_ss = 0.0
-    surv_rate1 = np.ones((S,))# prob start at age S
-    surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
-    omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
-    omega_SS = omega_SS/omega_SS.sum()
-    imm_rates = np.zeros((T+S,S))
-    omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
-    omega_S_preTP = omega_SS
-    g_n_vector = np.tile(g_n_ss,(T+S,))
+    # g_n_ss = 0.0
+    # surv_rate1 = np.ones((S,))# prob start at age S
+    # surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
+    # omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
+    # omega_SS = omega_SS/omega_SS.sum()
+    # imm_rates = np.zeros((T+S,S))
+    # omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
+    # omega_S_preTP = omega_SS
+    # g_n_vector = np.tile(g_n_ss,(T+S,))
 
     e = inc.get_e_interp(S, omega_SS, omega_SS_80, lambdas, plot=False)
     # e_hetero = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)

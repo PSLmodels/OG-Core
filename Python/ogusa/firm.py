@@ -44,8 +44,7 @@ def get_r(Y, K, params):
         r = gamma - delta
     else:
         r = ((Z**((epsilon-1)/epsilon))*(((gamma*Y)/K)**(1/epsilon))) - delta
-    print 'r, r+delta = ', r, r+delta
-
+        
     return r
 
 
@@ -198,7 +197,16 @@ def get_K(L, r, params):
     Returns: r
     '''
 
-    alpha, delta , Z = params
+    Z, gamma, epsilon, delta = params
     print 'USING firm.getK()'
-    K = (alpha*Z/(r+delta))**(1/(1-alpha)) * L
+    if epsilon == 1:
+        K = (gamma*Z/(r+delta))**(1/(1-gamma)) * L
+    elif epsilon == 0:
+        K = (1-((1-gamma)*L))/gamma
+    else:
+        K = (((1-gamma)**(1/(epsilon-1)))*(((((r+delta)**(epsilon-1))*(gamma**((1-epsilon)/epsilon))
+             *(Z**(1-epsilon)))-(gamma**(1/epsilon)))**(epsilon/(1-epsilon)))*L)
+
+    print 'USING firm.getK()'
+
     return K

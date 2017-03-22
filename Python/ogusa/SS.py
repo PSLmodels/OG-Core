@@ -336,7 +336,7 @@ def inner_loop(outer_loop_vars, params, baseline):
         else:
             K = B - debt_ratio_ss*Y
     else:
-        K_params = (alpha, delta, Z)
+        K_params = (Z, gamma, epsilon, delta)
         K = firm.get_K(L, ss_firm_r, K_params)
     # Y_params = (alpha, Z)
     Y_params = (Z, gamma, epsilon)
@@ -542,7 +542,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, params, ba
         Iss = firm.get_I(bssmat_splus1, Kss, Kss, Iss_params)
     else:
         # Compute capital (K) and wealth (B) separately
-        Kss_params = (alpha, delta, Z)
+        Kss_params = (Z, gamma, epsilon, delta)
         Kss = firm.get_K(Lss, ss_firm_r, Kss_params)
         Iss_params = (delta, g_y, omega_SS, lambdas, imm_rates, g_n_ss, 'SS')
         InvestmentPlaceholder = np.zeros(bssmat_splus1.shape)
@@ -735,7 +735,7 @@ def SS_fsolve(guesses, params):
 
 
     # Check and punish violations
-    if r <= 0:
+    if r+delta <= 0:
         error1 = 1e9
     #if r > 1:
     #    error1 += 1e9
