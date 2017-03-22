@@ -14,7 +14,7 @@ from ogusa import TPI
 import uuid
 import time
 
-import postprocess
+from ogusa.scripts import postprocess
 from ogusa.scripts.execute import runner
 SS.ENFORCE_SOLUTION_CHECKS = False
 TPI.ENFORCE_SOLUTION_CHECKS = False
