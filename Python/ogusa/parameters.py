@@ -274,11 +274,11 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
         lambdas = np.array([0.6,0.4])
         J = lambdas.shape[0]
         # Simulation Parameters
-        MINIMIZER_TOL = 1e-3
+        MINIMIZER_TOL = 1e-6
         MINIMIZER_OPTIONS = {'maxiter': 1}
         PLOT_TPI = False
-        maxiter = 10
-        mindist_SS = 1e-3
+        maxiter = 20
+        mindist_SS = 1e-6
         mindist_TPI = 1e-2#1e-3
         nu = .4
         flag_graphs = False
@@ -332,13 +332,18 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
     tpi_hh_r           = np.ones(T+S)*ss_hh_r
 
     # Fiscal imbalance parameters. These allow government deficits, debt, and savings.
-    alpha_T            = 0.09 #0.13  # share of GDP that goes to transfers each period.
-    alpha_G            = 0.05 #0.06  # share of GDP of government spending for periods t<tG1
-    tG1                = 20#int(T/5)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
+    tG1                = 20#int(T/4)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
     tG2                = int(T*0.8)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
+    alpha_T            = 0.09 # share of GDP that goes to transfers each period. This ratio will hold in later baseline periods & SS.
+    alpha_G            = 0.05  # share of GDP of government spending for periods t<tG1
+    ALPHA_T            = np.ones(T+S)*alpha_T  # Periods can be assigned different %-of-GDP rates for the baseline. Assignment after tG1 is not recommended.
+    ALPHA_G            = np.ones(T)*alpha_G  # Early periods (up to tG1) can be assigned different %-of-GDP rates for the baseline
+
+    # Assign any deviations from constant share of GDP in pre-tG1 ALPHA_T and ALPHA_G in the user dashboard of run_ogusa_serial.
+    
     rho_G              = 0.1  # 0 < rho_G < 1 is transition speed for periods [tG1, tG2-1]. Lower rho_G => slower convergence.
     debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
-    initial_debt       = 0.59 #0.2  # first-period debt/GDP ratio. Savings would be a negative number.
+    initial_debt       = 0.59 # first-period debt/GDP ratio. Savings would be a negative number.
 
     # Business tax parameters
     tau_b = 0.20 # business income tax rate
@@ -361,7 +366,7 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
     #  will call tax function estimation function here...
     # do output such that each parameters is in a separate SxBW array
     # read in estimated parameters
-    print 'baselines is:', baseline
+    #print 'baseline is:', baseline
     if baseline:
         baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         estimate_file = os.path.join(TAX_ESTIMATE_PATH,

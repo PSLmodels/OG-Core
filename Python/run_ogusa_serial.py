@@ -3,6 +3,7 @@ import os
 import sys
 from multiprocessing import Process
 import time
+import numpy as np
 
 #OGUSA_PATH = os.environ.get("OGUSA_PATH", "../../ospc-dynamic/dynamic/Python")
 
@@ -32,9 +33,9 @@ def run_micro_macro(user_params):
 
     reform = {
     2017: {
-        '_II_rt5': [.3],
-        '_II_rt6': [.3],
-        '_II_rt7': [0.3],
+       '_II_rt5': [.3],
+       '_II_rt6': [.3],
+       '_II_rt7': [0.3],
     }, }
 
 
@@ -43,23 +44,28 @@ def run_micro_macro(user_params):
     REFORM_DIR = "./OUTPUT_REFORM"
     BASELINE_DIR = "./OUTPUT_BASELINE"
 
-
-    user_params = {'frisch':0.41, 'start_year':2016, 'debt_ratio_ss':1.0}
+    T_shifts = np.zeros(50)
+    T_shifts[2:10] = 0.01
+    T_shifts[10:40]= -0.01
+    G_shifts = np.zeros(6)
+    G_shifts[0:3]  = -0.01
+    G_shifts[3:6]  = -0.005
+    user_params = {'frisch':0.41, 'start_year':2017, 'debt_ratio_ss':1.0, 'T_shifts':T_shifts, 'G_shifts':G_shifts}
 
     '''
     ------------------------------------------------------------------------
         Run SS for Baseline first - so can run baseline and reform in parallel if want
     ------------------------------------------------------------------------
     '''
-    # output_base = BASELINE_DIR
-    # input_dir = BASELINE_DIR
-    # kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-    #        'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
-    #        'user_params':user_params,'guid':'test',
-    #        'run_micro':False, 'small_open':False, 'budget_balance':False}
-    # #p1 = Process(target=runner, kwargs=kwargs)
-    # #p1.start()
-    # runner_SS(**kwargs)
+    output_base = BASELINE_DIR
+    input_dir = BASELINE_DIR
+    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
+           'test':False, 'time_path':False, 'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
+           'user_params':user_params,'guid':'',
+           'run_micro':False, 'small_open':False, 'budget_balance':False, 'baseline_spending':False}
+    #p1 = Process(target=runner, kwargs=kwargs)
+    #p1.start()
+    runner(**kwargs)
     # quit()
 
 
@@ -69,12 +75,13 @@ def run_micro_macro(user_params):
     ------------------------------------------------------------------------
     '''
 
+
     output_base = BASELINE_DIR
     input_dir = BASELINE_DIR
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
             'test':False, 'time_path':True, 'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
             'user_params':user_params,'guid':'',
-            'run_micro':False, 'small_open': False, 'budget_balance':False}
+            'run_micro':False, 'small_open': False, 'budget_balance':False, 'baseline_spending':False}
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
     runner(**kwargs)
@@ -90,27 +97,12 @@ def run_micro_macro(user_params):
     input_dir = REFORM_DIR
     guid_iter = 'reform_' + str(0)
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-           'test':False, 'time_path':True, 'baseline':False, 'analytical_mtrs':False, 'age_specific':True,
-           'user_params':user_params,'guid':'',
-           'reform':reform , 'run_micro':False, 'small_open': False, 'budget_balance': False}
+            'test':False, 'time_path':True, 'baseline':False, 'analytical_mtrs':False, 'age_specific':True,
+            'user_params':user_params,'guid':'', 'reform':reform ,
+            'run_micro':False, 'small_open': False, 'budget_balance':False, 'baseline_spending':False}
     #p2 = Process(target=runner, kwargs=kwargs)
     #p2.start()
     runner(**kwargs)
-
-
-
-#    output_base = REFORM_DIR
-#    input_dir = REFORM_DIR
-#    guid_iter = 'reform_' + str(0)
-#    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-#            'test':True, 'time_path':True, 'baseline':False, 'analytical_mtrs':False, 'age_specific':True,
-#            'user_params':user_params,'guid':'_alt', 'reform':reform ,
-#            'run_micro':False, 'small_open': False, 'budget_balance':False}
-#    #p2 = Process(target=runner, kwargs=kwargs)
-#    #p2.start()
-#    runner(**kwargs)
-#
-#
 
 
 
