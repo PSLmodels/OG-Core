@@ -725,7 +725,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         if budget_balance:
             T_H_new = REVENUE
         elif baseline_spending==False:
-            T_H_new = ALPHA_T[:T] * Y
+            T_H_new = ALPHA_T[:T] * Y[:T]
         # If baseline_spending==True, no need to update T_H, which remains fixed.
 
         if small_open==True and budget_balance==False:
