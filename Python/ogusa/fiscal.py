@@ -19,18 +19,24 @@ import numpy as np
 
 
 
-def D_G_path(dg_fixed_values, fiscal_params, other_dg_params):
+def D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=False):
     '''
     Calculate the time paths of debt and government spending
     '''
-    budget_balance, alpha_T, alpha_G, tG1, tG2, rho_G, debt_ratio_ss = fiscal_params
+    if baseline_spending==False:
+        budget_balance, ALPHA_T, ALPHA_G, tG1, tG2, rho_G, debt_ratio_ss = fiscal_params
+    else:
+        budget_balance, ALPHA_T, ALPHA_G, tG1, tG2, rho_G, debt_ratio_ss, T_Hbaseline, Gbaseline = fiscal_params
     T, r_gov, g_n_vector, g_y = other_dg_params
     Y, REVENUE, T_H, D0, G0 = dg_fixed_values
 
     D = np.zeros(T+1)
     D[0] = D0
-    G = alpha_G * Y[:T]
-    G[0] = G0
+    if baseline_spending==False:
+        G = ALPHA_G * Y[:T]
+        G[0] = G0
+    else:
+        G = Gbaseline
     growth = (1+g_n_vector)*np.exp(g_y)
 
     t = 1
@@ -49,4 +55,9 @@ def D_G_path(dg_fixed_values, fiscal_params, other_dg_params):
     #debt_service = r_gov[t]*D[t]
     G[t] = growth[t] * (debt_ratio_ss*Y[t]) - (1+r_gov[t])*D[t] + REVENUE[t] - T_H[t]
     D[t+1] = (1/growth[t+1]) * ((1+r_gov[t])*D[t] + G[t] + T_H[t] - REVENUE[t])
+    D_ratio_max = np.amax(D[:T] / Y[:T])
+    print 'Maximum debt ratio: ', D_ratio_max
+
     return D, G
+
+

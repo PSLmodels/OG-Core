@@ -21,8 +21,8 @@ try:
     import ogusa
     from ogusa import SS
     from ogusa import TPI
-    import postprocess
-    from execute import runner # change here for small jobs
+    from ogusa.scripts import postprocess
+    from ogusa.scripts.execute import runner # change here for small jobs
 except Exception as e:
     pref = sys.prefix
     exc = traceback.format_exc()
