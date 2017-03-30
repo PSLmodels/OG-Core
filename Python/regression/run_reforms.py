@@ -43,12 +43,13 @@ now the default reform-spec'''
 _d = os.path.dirname
 REGRESSION_CONFIG_FILE = os.path.join(_d(_d(_d(os.path.abspath(__file__)))), '.regression.txt')
 REGRESSION_CONFIG = {}
+bool_fields = ('diff', 'dry_run_imports_installs_only', 'budget_balance')
 for line in open(REGRESSION_CONFIG_FILE).readlines():
     line = line.strip()
     parts = tuple(p.strip() for p in line.split())
     if len(parts) == 2:
         k, v = parts
-        if k in ('diff', 'dry_run_imports_installs_only'):
+        if k in bool_fields:
             v = v.lower() == 'true'
         REGRESSION_CONFIG[k] = v
 REQUIRED = set(('compare_taxcalc_version',
@@ -56,7 +57,8 @@ REQUIRED = set(('compare_taxcalc_version',
                 'install_taxcalc_version',
                 'diff',
                 'numpy_version',
-                'reform_specs_json'))
+                'reform_specs_json',
+                'budget_balance'))
 missing = [r for r in REQUIRED if not r in REGRESSION_CONFIG]
 if missing:
     raise ValueError('.regression.txt at top level of repo needs to define: {}'.format(missing))
@@ -77,10 +79,11 @@ def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
     user_params['start_year'] = start_year
 
     input_dir = BASELINE_DIR
-
+    budget_balance = REGRESSION_CONFIG['budget_balance']
     kwargs={'output_base':BASELINE_DIR, 'baseline_dir':BASELINE_DIR,
             'baseline':True, 'analytical_mtrs':False, 'age_specific':False,
-            'user_params':user_params, 'guid':guid, 'run_micro':run_micro}
+            'user_params':user_params, 'guid':guid, 'run_micro':run_micro,
+            'budget_balance': budget_balance}
 
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
@@ -88,7 +91,8 @@ def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
 
     kwargs={'output_base':REFORM_DIR, 'baseline_dir':BASELINE_DIR,
              'baseline':False, 'analytical_mtrs':False, 'user_params':user_params,
-             'reform':reform, 'age_specific':False, 'guid':guid,'run_micro':run_micro}
+             'reform':reform, 'age_specific':False, 'guid':guid,'run_micro':run_micro,
+             'budget_balance': budget_balance}
 
     #p2 = Process(target=runner, kwargs=kwargs)
     #p2.start()
