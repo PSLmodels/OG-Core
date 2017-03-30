@@ -57,16 +57,16 @@ def run_micro_macro(user_params):
         Run SS for Baseline first - so can run baseline and reform in parallel if want
     ------------------------------------------------------------------------
     '''
-    output_base = BASELINE_DIR
-    input_dir = BASELINE_DIR
-    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-           'test':False, 'time_path':False, 'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
-           'user_params':user_params,'guid':'',
-           'run_micro':False, 'small_open':False, 'budget_balance':True, 'baseline_spending':False}
-    #p1 = Process(target=runner, kwargs=kwargs)
-    #p1.start()
-    runner(**kwargs)
-    # quit()
+    # output_base = BASELINE_DIR
+    # input_dir = BASELINE_DIR
+    # kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
+    #        'test':False, 'time_path':False, 'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
+    #        'user_params':user_params,'guid':'',
+    #        'run_micro':False, 'small_open':False, 'budget_balance':False, 'baseline_spending':False}
+    # #p1 = Process(target=runner, kwargs=kwargs)
+    # #p1.start()
+    # runner(**kwargs)
+    # # quit()
 
 
     '''
@@ -85,7 +85,7 @@ def run_micro_macro(user_params):
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
     runner(**kwargs)
-    # quit()
+    quit()
 
 
     '''
@@ -97,12 +97,13 @@ def run_micro_macro(user_params):
     input_dir = REFORM_DIR
     guid_iter = 'reform_' + str(0)
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'test':False, 'time_path':True, 'baseline':False, 'analytical_mtrs':False, 'age_specific':True,
+            'test':False, 'time_path':False, 'baseline':False, 'analytical_mtrs':False, 'age_specific':True,
             'user_params':user_params,'guid':'', 'reform':reform ,
             'run_micro':False, 'small_open': False, 'budget_balance':False, 'baseline_spending':False}
     #p2 = Process(target=runner, kwargs=kwargs)
     #p2.start()
     runner(**kwargs)
+    quit()
 
 
 

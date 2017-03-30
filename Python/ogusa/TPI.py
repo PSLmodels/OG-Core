@@ -589,7 +589,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         G = np.zeros(T + S)
     elif baseline_spending==False:
         T_H = ALPHA_T * Y
-    else:
+    elif baseline_spending==True:
         T_H = T_Hbaseline
         T_H_new = T_H   # Need to set T_H_new for later reference
         G   = Gbaseline
@@ -673,7 +673,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
             if budget_balance:
                 K[:T] = B[:T]
             else:
-                #Y = T_H/ALPHA_T  #SBF 3/3: This seems totally unnecessary as both these variables are defined above.
+                Y = T_H/ALPHA_T  #SBF 3/3: This seems totally unnecessary as both these variables are defined above.
 
 #                tax_params = np.zeros((T,S,J,etr_params.shape[2]))
 #                for i in range(etr_params.shape[2]):
@@ -699,6 +699,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
             K[:T] = firm.get_K(L[:T], tpi_firm_r[:T], K_params)
         Y_params = (Z, gamma, epsilon)
         Ynew = firm.get_Y(K[:T], L[:T], Y_params)
+        Y = Ynew
         w_params = (Z, gamma, epsilon)
         wnew = firm.get_w(Ynew[:T], L[:T], w_params)
         if small_open == False:
@@ -707,6 +708,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         else:
             rnew = r.copy()
 
+        print 'Y and T_H: ', Y[3], T_H[3]
 #        omega_shift = np.append(omega_S_preTP.reshape(1,S),omega[:T-1,:],axis=0)  # defined above
 #        BQ_params = (omega_shift.reshape(T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1),
 #                     g_n_vector[:T].reshape(T, 1), 'TPI')  # defined above
@@ -746,6 +748,11 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         guesses_b = utils.convex_combo(b_mat, guesses_b, nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, nu)
 
+        print 'r diff: ', (rnew[:T]-r[:T]).max(), (rnew[:T]-r[:T]).min()
+        print 'w diff: ', (wnew[:T]-w[:T]).max(), (wnew[:T]-w[:T]).min()
+        print 'BQ diff: ', (BQnew[:T]-BQ[:T]).max(), (BQnew[:T]-BQ[:T]).min()
+        print 'T_H diff: ', (T_H_new[:T]-T_H[:T]).max(), (T_H_new[:T]-T_H[:T]).min()
+
         if baseline_spending==False:
             if T_H.all() != 0:
                 TPIdist = np.array(list(utils.pct_diff_func(rnew[:T], r[:T])) + list(utils.pct_diff_func(BQnew[:T], BQ[:T]).flatten()) + list(
@@ -769,14 +776,14 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         print 'Iteration:', TPIiter
         print '\tDistance:', TPIdist
 
-        # print 'D/Y:', (D[:T]/Y[:T]).max(), (D[:T]/Y[:T]).min(), np.median(D[:T]/Y[:T])
-        # print 'T/Y:', (T_H_new[:T]/Y[:T]).max(), (T_H_new[:T]/Y[:T]).min(), np.median(T_H_new[:T]/Y[:T])
-        # print 'G/Y:', (G[:T]/Y[:T]).max(), (G[:T]/Y[:T]).min(), np.median(G[:T]/Y[:T])
-        # print 'Int payments to GDP:', ((r[:T]*D[:T])/Y[:T]).max(), ((r[:T]*D[:T])/Y[:T]).min(), np.median((r[:T]*D[:T])/Y[:T])
+        # print 'D/Y:', (D[:T]/Ynew[:T]).max(), (D[:T]/Ynew[:T]).min(), np.median(D[:T]/Ynew[:T])
+        # print 'T/Y:', (T_H_new[:T]/Ynew[:T]).max(), (T_H_new[:T]/Ynew[:T]).min(), np.median(T_H_new[:T]/Ynew[:T])
+        # print 'G/Y:', (G[:T]/Ynew[:T]).max(), (G[:T]/Ynew[:T]).min(), np.median(G[:T]/Ynew[:T])
+        # print 'Int payments to GDP:', ((r[:T]*D[:T])/Ynew[:T]).max(), ((r[:T]*D[:T])/Ynew[:T]).min(), np.median((r[:T]*D[:T])/Ynew[:T])
         #
-        # print 'D/Y:', (D[:T]/Y[:T])
-        # print 'T/Y:', (T_H_new[:T]/Y[:T])
-        # print 'G/Y:', (G[:T]/Y[:T])
+        # print 'D/Y:', (D[:T]/Ynew[:T])
+        # print 'T/Y:', (T_H_new[:T]/Ynew[:T])
+        # print 'G/Y:', (G[:T]/Ynew[:T])
         #
         # print 'deficit: ', REVENUE[:T] - T_H_new[:T] - G[:T]
 
