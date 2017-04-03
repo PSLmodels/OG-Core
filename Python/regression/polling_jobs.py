@@ -1,3 +1,4 @@
+from __future__ import print_function
 import argparse
 import time
 import os
@@ -14,6 +15,9 @@ JENKINS_DOMAIN= os.environ["JENKINS_DOMAIN"]
 
 BUILD_CAUSE = os.environ['BUILD_CAUSE']
 
+TIMEOUT_BEFORE_START = os.environ.get('ALL_JENKINS_JOBS_TIMEOUT', 24)
+TIMEOUT_BEFORE_START = float(TIMEOUT_BEFORE_START) * 3600
+
 HASHES = {}
 
 def cli():
@@ -23,7 +27,7 @@ def cli():
 
 
 def request(url, requests_method='get', **kwargs):
-    print('Request', url)
+    max_print('Request', url)
     kw = dict(auth=HTTPBasicAuth('ospctaxbrain', OSPC_API_KEY), **kwargs)
     req = getattr(requests, requests_method)(url, **kw)
     content = req._content
@@ -45,7 +49,7 @@ def get_diff_files(reform):
     if not os.path.exists('artifacts'):
         os.mkdir('artifacts')
     content = get_workspace_main(reform)
-    for a in bs4.BeautifulSoup(content, 'lxml').find_all('a'):
+    for a in bs4.BeautifulSoup(content, 'html.parser').find_all('a'):
         href = a.get('href', '')
         if 'txt' in href  or 'csv' in href:
             if '*view*' in href:
@@ -61,6 +65,7 @@ def get_diff_files(reform):
                     f.write(content)
                 print('Wrote {}'.format(os.path.abspath(fname)))
 
+
 def is_started_finished(reform, build_num='lastBuild'):
     log = get_log(reform, build_num=build_num)
     lines = filter(None, log.splitlines())
@@ -73,13 +78,24 @@ def is_started_finished(reform, build_num='lastBuild'):
     return lines, started, finished
 
 
+def max_print(*args, **kwargs):
+    _limit = 10
+    key = repr((args, kwargs))
+    if not key in _printed:
+        _printed[key] = 0
+    _printed[key] += 1
+    if _printed[key] < _limit:
+        print(*args, **kwargs)
+    elif _printed[key] == _limit:
+        print("LAST PRINT", *args, **kwargs)
+
 def find_build_number(reform, max_wait=300,
                       build_num='lastBuild',
                       try_once=False):
     content = request('{}/job/ci-mode-simple-{}/lastBuild/'.format(JENKINS_DOMAIN, reform))
     if build_num == 0:
         build_num = 'lastBuild'
-    for h1 in bs4.BeautifulSoup(content, 'lxml').find_all('h1'):
+    for h1 in bs4.BeautifulSoup(content, 'html.parser').find_all('h1'):
         txt = h1.get_text()
         mat = re.search('Build\s+#\s*(\d+)\s+', txt)
         if bool(mat):
@@ -87,26 +103,15 @@ def find_build_number(reform, max_wait=300,
                 build_num = mat.groups()[0]
 
             start = time.time()
-            retries = 0
-            while True:
-                try:
-                    lines, started, finished = is_started_finished(reform, build_num)
-                    if lines and BUILD_CAUSE.lower() in ' '.join(lines).lower():
-                        print('Found build number is {}'.format(build_num))
-                        break
-                    print('Failed to find build_num', build_num)
-                    build_num = find_build_number(reform,
-                                                  max_wait=max_wait,
-                                                  build_num=build_num,
-                                                  try_once=True)
-                    build_num -= 1
-
-                except:
-                    build_num = 'lastBuild'
-                    if retries > 100 or try_once:
-                        raise
-                    retries += 1
-                    time.sleep(10)
+            lines, started, finished = is_started_finished(reform, build_num)
+            if lines and BUILD_CAUSE.lower() in ' '.join(lines).lower():
+                print('Found build number is {}'.format(build_num))
+                break
+            build_num = find_build_number(reform,
+                                          max_wait=max_wait,
+                                          build_num=build_num,
+                                          try_once=True)
+            build_num -= 1
     return build_num
 
 
@@ -114,8 +119,18 @@ def get_results():
     global HASHES
     args = cli()
     build_nums = {}
-    for reform in args.reforms:
-        build_nums[reform] = find_build_number(reform)
+    started = time.time()
+    while set(build_nums) < set(args.reforms):
+        max_print('Have\'nt started yet:', set(build_nums) < set(args.reforms))
+        for reform in set(args.reforms) - set(build_nums):
+            try:
+                build_nums[reform] = find_build_number(reform)
+                print('Found', reform, '=', build_nums[reform])
+            except Exception as e:
+                if time.time() - started > TIMEOUT_BEFORE_START:
+                    print('Never found', set(args.reforms) - set(build_nums))
+                    raise
+
     reforms_outstanding = set(args.reforms)
     poll = POLL_INTERVAL / 6
     last_print = time.time()

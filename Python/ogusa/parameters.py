@@ -292,7 +292,7 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
         PLOT_TPI = False
         maxiter = 250
         mindist_SS = 1e-9
-        mindist_TPI =  1e-9
+        mindist_TPI =  1e-6
         nu = .4
         flag_graphs = False
 

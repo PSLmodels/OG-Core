@@ -32,6 +32,7 @@ setup_miniconda(){
     conda install beautifulsoup4 lxml requests pandas anaconda-client;
 }
 poll(){
+    export ALL_JENKINS_JOBS_TIMEOUT=$(cat ../../.regression.txt | grep -i all_jenkins_jobs_timeout)
     echo Begin Polling && python polling_jobs.py ${REFORMS_TO_RUN} && echo End Polling;
 }
 push_artifacts(){
