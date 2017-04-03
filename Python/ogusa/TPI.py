@@ -673,7 +673,8 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
             if budget_balance:
                 K[:T] = B[:T]
             else:
-                Y = T_H/ALPHA_T  #SBF 3/3: This seems totally unnecessary as both these variables are defined above.
+                if baseline_spending == False:
+                    Y = T_H/ALPHA_T  #SBF 3/3: This seems totally unnecessary as both these variables are defined above.
 
 #                tax_params = np.zeros((T,S,J,etr_params.shape[2]))
 #                for i in range(etr_params.shape[2]):
@@ -742,7 +743,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         w[:T] = utils.convex_combo(wnew[:T], w[:T], nu)
         r[:T] = utils.convex_combo(rnew[:T], r[:T], nu)
         BQ[:T] = utils.convex_combo(BQnew[:T], BQ[:T], nu)
-        D[:T] = utils.convex_combo(Dnew[:T], D[:T], nu)
+        # D[:T] = utils.convex_combo(Dnew[:T], D[:T], nu)
+        D = Dnew
+        Y[:T] = utils.convex_combo(Ynew[:T], Y[:T], nu)
         if baseline_spending==False:
             T_H[:T] = utils.convex_combo(T_H_new[:T], T_H[:T], nu)
         guesses_b = utils.convex_combo(b_mat, guesses_b, nu)
@@ -761,8 +764,10 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
                 TPIdist = np.array(list(utils.pct_diff_func(rnew[:T], r[:T])) + list(utils.pct_diff_func(BQnew[:T], BQ[:T]).flatten()) + list(
                     utils.pct_diff_func(wnew[:T], w[:T])) + list(np.abs(T_H[:T]))).max()
         else:
+            # TPIdist = np.array(list(utils.pct_diff_func(rnew[:T], r[:T])) + list(utils.pct_diff_func(BQnew[:T], BQ[:T]).flatten()) + list(
+            #     utils.pct_diff_func(wnew[:T], w[:T])) + list(utils.pct_diff_func(Dnew[:T], D[:T]))).max()
             TPIdist = np.array(list(utils.pct_diff_func(rnew[:T], r[:T])) + list(utils.pct_diff_func(BQnew[:T], BQ[:T]).flatten()) + list(
-                utils.pct_diff_func(wnew[:T], w[:T])) + list(utils.pct_diff_func(Dnew[:T], D[:T]))).max()
+                utils.pct_diff_func(wnew[:T], w[:T])) + list(utils.pct_diff_func(Ynew[:T], Y[:T]))).max()
 
         TPIdist_vec[TPIiter] = TPIdist
         # After T=10, if cycling occurs, drop the value of nu
