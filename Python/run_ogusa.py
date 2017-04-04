@@ -11,6 +11,7 @@ import time
 from ogusa.scripts import postprocess
 #from execute import runner # change here for small jobs
 from ogusa.scripts.execute_large import runner
+from ogusa.utils import REFORM_DIR, BASELINE_DIR
 
 
 def run_micro_macro(user_params):
@@ -27,9 +28,6 @@ def run_micro_macro(user_params):
     }, }
 
     start_time = time.time()
-
-    REFORM_DIR = "./OUTPUT_REFORM"
-    BASELINE_DIR = "./OUTPUT_BASELINE"
 
     output_base = REFORM_DIR
     input_dir = REFORM_DIR
