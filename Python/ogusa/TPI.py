@@ -75,16 +75,19 @@ def create_tpi_params(**sim_params):
         T_Hbaseline = tpi_baseline_vars['T_H']
         Gbaseline   = tpi_baseline_vars['G']
 
+    theta_params = (sim_params['e'], sim_params['S'], sim_params['retire'])
     if sim_params['baseline']==True:
         SS_values = (ss_baseline_vars['Kss'], ss_baseline_vars['Bss'], ss_baseline_vars['Lss'], ss_baseline_vars['rss'],
                  ss_baseline_vars['wss'], ss_baseline_vars['BQss'], ss_baseline_vars['T_Hss'], ss_baseline_vars['revenue_ss'],
                  ss_baseline_vars['bssmat_splus1'], ss_baseline_vars['nssmat'], ss_baseline_vars['Yss'], ss_baseline_vars['Gss'])
+        theta = tax.replacement_rate_vals(ss_baseline_vars['nssmat'], ss_baseline_vars['wss'], factor, theta_params)
     elif sim_params['baseline']==False:
         reform_ss = os.path.join(sim_params['input_dir'], "SS/SS_vars.pkl")
         ss_reform_vars = pickle.load(open(reform_ss, "rb"))
         SS_values = (ss_reform_vars['Kss'],ss_reform_vars['Bss'], ss_reform_vars['Lss'], ss_reform_vars['rss'],
                  ss_reform_vars['wss'], ss_reform_vars['BQss'], ss_reform_vars['T_Hss'], ss_reform_vars['revenue_ss'],
                  ss_reform_vars['bssmat_splus1'], ss_reform_vars['nssmat'], ss_reform_vars['Yss'], ss_reform_vars['Gss'])
+        theta = tax.replacement_rate_vals(ss_reform_vars['nssmat'], ss_reform_vars['wss'], factor, theta_params)
 
     # Make a vector of all one dimensional parameters, to be used in the
     # following functions
@@ -95,8 +98,7 @@ def create_tpi_params(**sim_params):
     N_tilde = sim_params['omega'].sum(1) #this should just be one in each year given how we've constructed omega
     sim_params['omega'] = sim_params['omega'] / N_tilde.reshape(sim_params['T'] + sim_params['S'], 1)
 
-    theta_params = (sim_params['e'], sim_params['S'], sim_params['retire'])
-    theta = tax.replacement_rate_vals(ss_baseline_vars['nssmat'], ss_baseline_vars['wss'], factor, theta_params)
+
 
     tpi_params = [sim_params['J'], sim_params['S'], sim_params['T'], sim_params['BW'],
                   sim_params['beta'], sim_params['sigma'], sim_params['alpha'],
@@ -596,8 +598,8 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         G_0 = Gbaseline[0]
 
     # Initialize some inputs
-    D = np.zeros(T + S)
-    Dnew = D
+    # D = np.zeros(T + S)
+    D = debt_ratio_ss*Y
     omega_shift = np.append(omega_S_preTP.reshape(1,S),omega[:T-1,:],axis=0)
     BQ_params = (omega_shift.reshape(T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1),
                      g_n_vector[:T].reshape(T, 1), 'TPI')

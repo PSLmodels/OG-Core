@@ -582,7 +582,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, Yss, param
     theta_params = (e, S, retire)
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, theta_params)
 
-    # Next 5 lines pulled out of inner_loop where they used to calculate T_H. Now calculating G to balance gov't budget.
+    # Next 5 lines pulled out of inner_loop where they are used to calculate tax revenue. Now calculating G to balance gov't budget.
     b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
     lump_sum_params = (e, lambdas.reshape(1, J), omega_SS.reshape(S, 1), 'SS', etr_params, theta, tau_bq,
                       tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J, tau_b, delta_tau)
@@ -805,6 +805,7 @@ def SS_fsolve_reform(guesses, params):
                   lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
+
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
 
     chi_b, chi_n = chi_params
@@ -835,6 +836,7 @@ def SS_fsolve_reform(guesses, params):
         error3 = new_T_H - T_H
     else:
         error3 = new_Y - Y
+
 
     print 'errors: ', error1, error2, error3
    # print 'factor prices: ', r, w
@@ -882,6 +884,7 @@ def SS_fsolve_reform_baselinespend(guesses, params):
                   alpha_T, debt_ratio_ss, tau_b, delta_tau,\
                   lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
+
 
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
 
@@ -969,6 +972,7 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, small_ope
                   alpha_T, debt_ratio_ss, tau_b, delta_tau,\
                   lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
+
 
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
 
