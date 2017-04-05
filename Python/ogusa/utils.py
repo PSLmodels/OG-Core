@@ -20,6 +20,13 @@ from pkg_resources import resource_stream, Requirement
 EPSILON = 1e-10
 PATH_EXISTS_ERRNO = 17
 
+REFORM_DIR = "./OUTPUT_REFORM"
+BASELINE_DIR = "./OUTPUT_BASELINE"
+
+for f in (REFORM_DIR, BASELINE_DIR):
+    if not os.path.exists(f):
+        os.mkdir(f)
+
 
 def mkdirs(path):
     '''
@@ -50,7 +57,7 @@ def pct_diff_func(simul, data):
     Inputs:
         simul = any shape, model moments
         data  = same shape as simul, data moments
-    
+
     Functions called: None
 
     Objects in function:
@@ -73,7 +80,7 @@ def convex_combo(var1, var2, nu):
         var1 = any shape, variable 1
         var2 = same shape as var1, variable 2
         nu   = scalar, weight on var1 in convex combination
-    
+
     Functions called: None
 
     Objects in function:
@@ -126,10 +133,10 @@ def pickle_file_compare(fname1, fname2, tol=1e-3, exceptions={}, relative=False)
         fname1  = string, file name of file 1
         fname2  = string, file name of file 2
         tol     = scalar, tolerance
-        exceptions = dictionary, exceptions 
-        relative = boolean, 
+        exceptions = dictionary, exceptions
+        relative = boolean,
 
-    Functions called: 
+    Functions called:
         dict_compare
 
     Objects in function:
@@ -152,15 +159,15 @@ def comp_array(name, a, b, tol, unequal, exceptions={}, relative=False):
     Return True if | a - b | < tol, False otherwise
     If not equal, add items to the unequal list
     name: the name of the value being compared
-    
-    Inputs:
-        
 
-    Functions called: 
-        
+    Inputs:
+
+
+    Functions called:
+
 
     Objects in function:
-        
+
 
     Returns: Boolean
 

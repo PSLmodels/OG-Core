@@ -23,12 +23,12 @@ import os
 def dump_diff_output(baseline_dir, policy_dir):
     '''
     --------------------------------------------------------------------
-    This function reads the pickles with the SS and time path results 
-    from the baseline and reform and then calculates the percentage 
-    differences between the two for each year in the 10-year budget 
+    This function reads the pickles with the SS and time path results
+    from the baseline and reform and then calculates the percentage
+    differences between the two for each year in the 10-year budget
     window, over the entire budget window, and in the SS.
     --------------------------------------------------------------------
-    
+
     INPUTS:
     baseline_dir = string, path for directory with baseline policy results
     policy_dir   = string, path for directory with reform policy results
@@ -36,26 +36,26 @@ def dump_diff_output(baseline_dir, policy_dir):
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
 
     OBJECTS CREATED WITHIN FUNCTION:
-    tpi_macro_vars_policy_path   = string, path to pickle with time path 
+    tpi_macro_vars_policy_path   = string, path to pickle with time path
                                     results for reform
-    tpi_macro_vars_policy        = dictionary, dictionary with numpy arrays of 
+    tpi_macro_vars_policy        = dictionary, dictionary with numpy arrays of
                                     results from transition path equilibrium for reform
-    tpi_macro_vars_baseline_path = string, path to pickle with time path 
+    tpi_macro_vars_baseline_path = string, path to pickle with time path
                                     results for baseline policy
-    tpi_macro_vars_baseline      = dictionary, dictionary with numpy arrays of 
+    tpi_macro_vars_baseline      = dictionary, dictionary with numpy arrays of
                                     results from transition path equilibrium for baseline policy
-    baseline_macros              = [7,T] array, numpy array with time path for relevant macro 
+    baseline_macros              = [7,T] array, numpy array with time path for relevant macro
                                     variables from baseline equilibrium
-    policy_macros                = [7,T] array, numpy array with time path for relevant macro 
+    policy_macros                = [7,T] array, numpy array with time path for relevant macro
                                     variables from reform equilibrium
-    pct_changes                  = [7,12] array, numpy array with pct changes in macro variables 
-                                    from baseline to reform for each year 
+    pct_changes                  = [7,12] array, numpy array with pct changes in macro variables
+                                    from baseline to reform for each year
                                     in the budget window (10 years), over all 10 years, and in the SS
     ss_policy_path               = string, path to pickle of SS results for reform
-    ss_policy                    = dictionary, dictionary with numpy arrays of results from 
+    ss_policy                    = dictionary, dictionary with numpy arrays of results from
                                     SS equilibrium for reform
     ss_baseline_path             = string, path to pickle of SS results for baseline
-    ss_baseline                  = dictionary, dictionary with numpy arrays of results from 
+    ss_baseline                  = dictionary, dictionary with numpy arrays of results from
                                     SS equilibrium for baseline
 
     RETURNS: pct_changes
@@ -63,10 +63,13 @@ def dump_diff_output(baseline_dir, policy_dir):
     '''
 
     # read macro output
-    tpi_macro_vars_policy_path = os.path.join(policy_dir, "TPI", "TPI_macro_vars.pkl")
-    tpi_macro_vars_policy = pickle.load(open( tpi_macro_vars_policy_path, "rb" ))
-    tpi_macro_vars_baseline_path = os.path.join(baseline_dir, "TPI", "TPI_macro_vars.pkl")
-    tpi_macro_vars_baseline = pickle.load(open( tpi_macro_vars_baseline_path, "rb" ) )
+    tpi_dir = os.path.join(policy_dir, "TPI")
+    if not os.path.exists(tpi_dir):
+        os.mkdir(tpi_dir)
+    tpi_macro_vars_policy_path = os.path.join(tpi_dir, "TPI_macro_vars.pkl")
+    tpi_macro_vars_policy = pickle.load(open(tpi_macro_vars_policy_path, "rb"))
+    tpi_macro_vars_baseline_path = os.path.join(tpi_dir, "TPI_macro_vars.pkl")
+    tpi_macro_vars_baseline = pickle.load(open(tpi_macro_vars_baseline_path, "rb"))
 
     T = len(tpi_macro_vars_baseline['C'])
     baseline_macros = np.zeros((7,T))
@@ -92,7 +95,7 @@ def dump_diff_output(baseline_dir, policy_dir):
     pct_changes[:,:10] = ((policy_macros-baseline_macros)/policy_macros)[:,:10]
     # pct changes over entire budget window
     pct_changes[:,10] = ((policy_macros[:,:10].sum(axis=1)-baseline_macros[:,:10].sum(axis=1))/policy_macros[:,:10].sum(axis=1))
-    
+
     ## Load SS results
     ss_policy_path = os.path.join(policy_dir, "SS", "SS_vars.pkl")
     ss_policy = pickle.load(open( ss_policy_path, "rb" ))

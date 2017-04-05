@@ -23,6 +23,7 @@ try:
     from ogusa import TPI
     from ogusa.scripts import postprocess
     from ogusa.scripts.execute import runner # change here for small jobs
+    from ogusa.utils import REFORM_DIR, BASELINE_DIR
 except Exception as e:
     pref = sys.prefix
     exc = traceback.format_exc()
@@ -69,16 +70,16 @@ def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
 
     start_time = time.time()
 
-    REFORM_DIR = "./OUTPUT_REFORM" + guid
-    BASELINE_DIR = "./OUTPUT_BASELINE" + guid
+    reform_dir = "./OUTPUT_REFORM" + guid
+    baseline_dir = "./OUTPUT_BASELINE" + guid
 
     # Add start year from reform to user parameters
     start_year = sorted(reform.keys())[0]
     user_params['start_year'] = start_year
 
-    input_dir = BASELINE_DIR
+    input_dir = baseline_dir
 
-    kwargs={'output_base':BASELINE_DIR, 'baseline_dir':BASELINE_DIR,
+    kwargs={'output_base':baseline_dir, 'baseline_dir':baseline_dir,
             'baseline':True, 'analytical_mtrs':False, 'age_specific':False,
             'user_params':user_params, 'guid':guid, 'run_micro':run_micro}
 
@@ -86,7 +87,7 @@ def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
     #p1.start()
     runner(**kwargs)
 
-    kwargs={'output_base':REFORM_DIR, 'baseline_dir':BASELINE_DIR,
+    kwargs={'output_base':reform_dir, 'baseline_dir':baseline_dir,
              'baseline':False, 'analytical_mtrs':False, 'user_params':user_params,
              'reform':reform, 'age_specific':False, 'guid':guid,'run_micro':run_micro}
 
@@ -100,7 +101,7 @@ def run_micro_macro(reform, user_params, guid, solution_checks, run_micro):
 
     #time.sleep(0.5)
 
-    ans = postprocess.create_diff(baseline_dir=BASELINE_DIR, policy_dir=REFORM_DIR)
+    ans = postprocess.create_diff(baseline_dir=baseline_dir, policy_dir=reform_dir)
 
     print("total time was ", (time.time() - start_time))
     print(ans)

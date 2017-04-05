@@ -34,8 +34,7 @@ Dynamic Scoring Model Contributors
 
 Citing the Dynamic Scoring Model
 ===============================
-DeBacker, Jason, Richard W. Evans, Evan Magnusson, Kerk Phillips, and Isaac Swift (2016),
-OG-USA (Version 0.5.5)[Source code], https://github.com/open-source-economics/OG-USA
+OG-USA (Version 0.5.6)[Source code], https://github.com/open-source-economics/OG-USA
 
 About OSPC
 ==========
