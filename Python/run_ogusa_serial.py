@@ -79,13 +79,12 @@ def run_micro_macro(user_params):
     output_base = BASELINE_DIR
     input_dir = BASELINE_DIR
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'test':False, 'time_path':True, 'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
+            'test':True, 'time_path':False, 'baseline':False, 'analytical_mtrs':False, 'age_specific':True,
             'user_params':user_params,'guid':'',
             'run_micro':False, 'small_open': False, 'budget_balance':False, 'baseline_spending':False}
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
     runner(**kwargs)
-    quit()
 
 
     '''
@@ -97,13 +96,16 @@ def run_micro_macro(user_params):
     input_dir = REFORM_DIR
     guid_iter = 'reform_' + str(0)
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'test':False, 'time_path':False, 'baseline':False, 'analytical_mtrs':False, 'age_specific':True,
-            'user_params':user_params,'guid':'', 'reform':reform ,
+            'test':True, 'time_path':True, 'baseline':False, 'analytical_mtrs':False, 'age_specific':True,
+            'user_params':user_params,'guid':'PT_reform', 'reform':reform ,
             'run_micro':False, 'small_open': False, 'budget_balance':False, 'baseline_spending':False}
     #p2 = Process(target=runner, kwargs=kwargs)
     #p2.start()
     runner(**kwargs)
-    quit()
+
+
+
+
 
 
 
