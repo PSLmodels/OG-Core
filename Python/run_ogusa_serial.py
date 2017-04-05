@@ -31,12 +31,12 @@ def run_micro_macro(user_params):
     #     '_II_rt1': [0.045]
     # }, }
 
-#    reform = {
-#    2017: {
-#        '_II_rt5': [.3],
-#        '_II_rt6': [.3],
-#        '_II_rt7': [0.3],
-#    }, }
+    reform = {
+    2017: {
+       '_II_rt5': [.3],
+       '_II_rt6': [.3],
+       '_II_rt7': [0.3],
+    }, }
 
 
     start_time = time.time()
@@ -47,7 +47,7 @@ def run_micro_macro(user_params):
     G_shifts = np.zeros(6)
     G_shifts[0:3]  = -0.01
     G_shifts[3:6]  = -0.005
-    user_params = {'frisch':0.41, 'start_year':2016, 'debt_ratio_ss':1.0, 'T_shifts':T_shifts, 'G_shifts':G_shifts}
+    user_params = {'frisch':0.41, 'start_year':2017, 'debt_ratio_ss':1.0, 'T_shifts':T_shifts, 'G_shifts':G_shifts}
 
     '''
     ------------------------------------------------------------------------
@@ -58,12 +58,12 @@ def run_micro_macro(user_params):
     # input_dir = BASELINE_DIR
     # kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
     #        'test':False, 'time_path':False, 'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
-    #        'user_params':user_params,'guid':'test',
-    #        'run_micro':False, 'small_open':False, 'budget_balance':False}
+    #        'user_params':user_params,'guid':'',
+    #        'run_micro':False, 'small_open':False, 'budget_balance':False, 'baseline_spending':False}
     # #p1 = Process(target=runner, kwargs=kwargs)
     # #p1.start()
     # runner(**kwargs)
-    # quit()
+    # # quit()
 
 
     '''
@@ -79,11 +79,11 @@ def run_micro_macro(user_params):
             'test':True, 'time_path':True, 'baseline':True,
             'analytical_mtrs':False, 'age_specific':True,
             'user_params':user_params,'guid':'',
-            'run_micro':False, 'small_open': True, 'budget_balance':False}
+            'run_micro':False, 'small_open': False, 'budget_balance':False, 'baseline_spending':False}
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
     runner(**kwargs)
-    #quit()
+
 
     '''
     ------------------------------------------------------------------------
@@ -106,16 +106,19 @@ def run_micro_macro(user_params):
 
 
 
+
+
+
     #p1.join()
     # print "just joined"
     #p2.join()
 
     # time.sleep(0.5)
 
-#    ans = postprocess.create_diff(baseline_dir=BASELINE_DIR, policy_dir=REFORM_DIR)
+    ans = postprocess.create_diff(baseline_dir=BASELINE_DIR, policy_dir=REFORM_DIR)
 
     print "total time was ", (time.time() - start_time)
-    # print ans
+    print 'Percentage changes in aggregates:', ans
 
     # return ans
 

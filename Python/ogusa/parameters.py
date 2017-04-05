@@ -277,9 +277,9 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
         MINIMIZER_TOL = 1e-6
         MINIMIZER_OPTIONS = {'maxiter': 1}
         PLOT_TPI = False
-        maxiter = 20
+        maxiter = 35
         mindist_SS = 1e-6
-        mindist_TPI = 1e-2#1e-3
+        mindist_TPI = 1e-3
         nu = .4
         flag_graphs = False
     else:
@@ -292,7 +292,7 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
         PLOT_TPI = False
         maxiter = 250
         mindist_SS = 1e-9
-        mindist_TPI =  1e-9
+        mindist_TPI =  1e-5#1e-9
         nu = .4
         flag_graphs = False
 
@@ -307,9 +307,11 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
     beta_annual = .96 # Carroll (JME, 2009)
     beta = beta_annual ** (float(ending_age - starting_age) / S)
     sigma = 1.5 # value from Attanasio, Banks, Meghir and Weber (JEBS, 1999)
-    alpha = .35 # many use 0.33, but many find that capitals share is increasing (e.g. Elsby, Hobijn, and Sahin (BPEA, 2013))
+    alpha = .35
+    gamma = 0.35 # many use 0.33, but many find that capitals share is increasing (e.g. Elsby, Hobijn, and Sahin (BPEA, 2013))
+    epsilon = 1.0#0.6 ##Note: If note =1, then careful w calibration
     Z = 1.0
-    delta_annual = .05 # approximately the value from Kehoe calibration exercise: http://www.econ.umn.edu/~tkehoe/classes/calibration-04.pdf
+    delta_annual = 0.05 # approximately the value from Kehoe calibration exercise: http://www.econ.umn.edu/~tkehoe/classes/calibration-04.pdf
     delta = 1 - ((1 - delta_annual) ** (float(ending_age - starting_age) / S))
     ltilde = 1.0
     g_y_annual = 0.03
@@ -338,7 +340,7 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
     ALPHA_G            = np.ones(T)*alpha_G  # Early periods (up to tG1) can be assigned different %-of-GDP rates for the baseline
 
     # Assign any deviations from constant share of GDP in pre-tG1 ALPHA_T and ALPHA_G in the user dashboard of run_ogusa_serial.
-    
+
     rho_G              = 0.1  # 0 < rho_G < 1 is transition speed for periods [tG1, tG2-1]. Lower rho_G => slower convergence.
     debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
     initial_debt       = 0.59 # first-period debt/GDP ratio. Savings would be a negative number.

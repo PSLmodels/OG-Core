@@ -92,7 +92,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
     # change them for a tax experiment)
 
     param_names = ['S', 'J', 'T', 'BW', 'lambdas', 'starting_age', 'ending_age',
-                'beta', 'sigma', 'alpha', 'nu', 'Z', 'delta', 'E',
+                'beta', 'sigma', 'alpha', 'gamma', 'epsilon', 'nu', 'Z', 'delta', 'E',
                 'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
                 'analytical_mtrs', 'b_ellipse', 'k_ellipse', 'upsilon',
                 'small_open', 'budget_balance', 'ss_firm_r', 'ss_hh_r', 'tpi_firm_r', 'tpi_hh_r',

@@ -36,9 +36,12 @@ def get_r(Y, K, params):
 
     Returns: r
     '''
+    Z, gamma, epsilon, delta, tau_b, delta_tau = params
+    if epsilon == 0:
+        r = (1-tau_b)*gamma - delta
+    else:
+        r = (1-tau_b)*((Z**((epsilon-1)/epsilon))*(((gamma*Y)/K)**(1/epsilon))) - delta + tau_b*delta_tau
 
-    alpha, delta, tau_b, delta_tau = params
-    r = (1-tau_b)*(alpha * Y / K) - delta + tau_b*delta_tau
     return r
 
 
@@ -59,8 +62,14 @@ def get_w(Y, L, params):
 
     Returns: w
     '''
-    alpha = params
-    w = (1 - alpha) * Y / L
+    # alpha = params
+    # w = (1 - alpha) * Y / L
+    Z, gamma, epsilon = params
+    if epsilon == 0:
+        w = 1-gamma
+    else:
+        w = ((Z**((epsilon-1)/epsilon))*((((1-gamma)*Y)/L)**(1/epsilon)))
+
     return w
 
 
@@ -82,8 +91,17 @@ def get_Y(K, L, params):
 
     Returns: Y
     '''
-    alpha, Z = params
-    Y = Z * (K ** alpha) * (L ** (1 - alpha))
+    # alpha, Z = params
+    # Y = Z * (K ** alpha) * (L ** (1 - alpha))
+    Z, gamma, epsilon = params
+    if epsilon == 1:
+        Y = Z*(K**gamma)*(L**(1-gamma))
+    elif epsilon == 0:
+        Y = Z*(gamma*K + (1-gamma)*L)
+    else:
+        Y = (Z * (((gamma**(1/epsilon))*(K**((epsilon-1)/epsilon))) +
+          (((1-gamma)**(1/epsilon))*(L**((epsilon-1)/epsilon))))**(epsilon/(epsilon-1)))
+
     return Y
 
 
@@ -176,6 +194,16 @@ def get_K(L, r, params):
     Returns: r
     '''
 
-    alpha, delta, Z, tau_b, delta_tau = params
-    K = (((1-tau_b)*alpha*Z)/(r+delta-(tau_b*delta_tau)))**(1/(1-alpha)) * L
+    Z, gamma, epsilon, delta, tau_b, delta_tau = params
+    print 'USING firm.getK()'
+    if epsilon == 1:
+        K = ((1-tau_b)*gamma*Z/(r+delta-(tau_b*delta_tau)))**(1/(1-gamma)) * L
+    elif epsilon == 0:
+        K = (1-((1-gamma)*L))/gamma
+    else:
+        K = (((1-gamma)**(1/(epsilon-1)))*((((((r+delta-(tau_b*delta_tau))/(1-tau_b))**(epsilon-1))*(gamma**((1-epsilon)/epsilon))
+             *(Z**(1-epsilon)))-(gamma**(1/epsilon)))**(epsilon/(1-epsilon)))*L)
+
+    print 'USING firm.getK()'
+
     return K

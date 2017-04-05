@@ -124,6 +124,7 @@ def create_steady_state_parameters(**sim_params):
 
     ss_params = [sim_params['J'], sim_params['S'], sim_params['T'], sim_params['BW'],
                   sim_params['beta'], sim_params['sigma'], sim_params['alpha'],
+                  sim_params['gamma'], sim_params['epsilon'],
                   sim_params['Z'], sim_params['delta'], sim_params['ltilde'],
                   sim_params['nu'], sim_params['g_y'], sim_params['g_n_ss'],
                   sim_params['tau_payroll'], sim_params['tau_bq'], sim_params['rho'], sim_params['omega_SS'],
@@ -285,9 +286,9 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
 
     # unpack variables and parameters pass to function
     ss_params, income_tax_params, chi_params, small_open_params = params
-    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance, alpha_T, \
-                  debt_ratio_ss, tau_b, delta_tau,\
+    J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde, nu, g_y,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance, \
+                  alpha_T, debt_ratio_ss, tau_b, delta_tau,\
                   lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
@@ -336,20 +337,23 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
         else:
             K = B - debt_ratio_ss*Y
     else:
-        K_params = (alpha, delta, Z, tau_b, delta_tau)
+        K_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
         K = firm.get_K(L, ss_firm_r, K_params)
-    Y_params = (alpha, Z)
+    # Y_params = (alpha, Z)
+    Y_params = (Z, gamma, epsilon)
     new_Y = firm.get_Y(K, L, Y_params)
     #print 'inner K, L, Y: ', K, L, new_Y
     if budget_balance:
         Y = new_Y
     if small_open == False:
-        r_params = (alpha, delta, tau_b, delta_tau)
+        r_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
         new_r = firm.get_r(Y, K, r_params)
     else:
         new_r = ss_hh_r
-    new_w = firm.get_w(Y, L, alpha)
-    #print 'inner factor prices: ', new_r, new_w
+    w_params = (Z, gamma, epsilon)
+    new_w = firm.get_w(Y, L, w_params)
+    print 'inner factor prices: ', new_r, new_w
+
     b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
     average_income_model = ((new_r * b_s + new_w * e * nssmat) *
                             omega_SS.reshape(S, 1) *
@@ -377,7 +381,7 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
          new_T_H, new_Y, new_factor, new_BQ, average_income_model
 
 
-def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, Yss, factor_ss, params, baseline, fsolve_flag=False, baseline_spending=False):
+def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, Yss, params, baseline, fsolve_flag=False, baseline_spending=False):
     '''
     --------------------------------------------------------------------
     Solves for the steady state distribution of capital, labor, as well as
@@ -442,10 +446,9 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, Yss, factor_ss, param
     '''
 
     bssmat, nssmat, chi_params, ss_params, income_tax_params, iterative_params, small_open_params = params
-
-    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance, alpha_T,\
-                  debt_ratio_ss, tau_b, delta_tau,\
+    J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde, nu, g_y,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance, \
+                  alpha_T, debt_ratio_ss, tau_b, delta_tau,\
                   lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
@@ -461,8 +464,12 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, Yss, factor_ss, param
     r = rss
     w = wss
     T_H = T_Hss
-    Y = Yss
     factor = factor_ss
+    if budget_balance == False:
+        if baseline_spending == True:
+            Y = Yss
+        else:
+            Y = T_H / alpha_T
     if small_open == True:
         r = ss_hh_r
 
@@ -490,6 +497,10 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, Yss, factor_ss, param
         factor = utils.convex_combo(new_factor, factor, nu)
         if budget_balance:
             T_H = utils.convex_combo(new_T_H, T_H, nu)
+            dist = np.array([utils.pct_diff_func(new_r, r)] +
+                            [utils.pct_diff_func(new_w, w)] +
+                            [utils.pct_diff_func(new_T_H, T_H)] +
+                            [utils.pct_diff_func(new_factor, factor)]).max()
         else:
             Y = utils.convex_combo(new_Y, Y, nu)
             if Y != 0:
@@ -541,7 +552,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, Yss, factor_ss, param
         Iss = firm.get_I(bssmat_splus1, Kss, Kss, Iss_params)
     else:
         # Compute capital (K) and wealth (B) separately
-        Kss_params = (alpha, delta, Z, tau_b, delta_tau)
+        Kss_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
         Kss = firm.get_K(Lss, ss_firm_r, Kss_params)
         Iss_params = (delta, g_y, omega_SS, lambdas, imm_rates, g_n_ss, 'SS')
         InvestmentPlaceholder = np.zeros(bssmat_splus1.shape)
@@ -556,7 +567,8 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, Yss, factor_ss, param
             debt_ss = debt_ratio_ss*Y
 
 
-    Yss_params = (alpha, Z)
+    # Yss_params = (alpha, Z)
+    Yss_params = (Z, gamma, epsilon)
     Yss = firm.get_Y(Kss, Lss, Yss_params)
 
     # Verify that T_Hss = alpha_T*Yss
@@ -570,7 +582,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, Yss, factor_ss, param
     theta_params = (e, S, retire)
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, theta_params)
 
-    # Next 5 lines pulled out of inner_loop where they used to calculate T_H. Now calculating G to balance gov't budget.
+    # Next 5 lines pulled out of inner_loop where they are used to calculate tax revenue. Now calculating G to balance gov't budget.
     b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
     lump_sum_params = (e, lambdas.reshape(1, J), omega_SS.reshape(S, 1), 'SS', etr_params, theta, tau_bq,
                       tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J, tau_b, delta_tau)
@@ -692,10 +704,9 @@ def SS_fsolve(guesses, params):
     '''
 
     bssmat, nssmat, chi_params, ss_params, income_tax_params, iterative_params, small_open_params = params
-
-    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance, alpha_T,\
-                  debt_ratio_ss, tau_b, delta_tau,\
+    J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde, nu, g_y,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance,\
+                  alpha_T, debt_ratio_ss, tau_b, delta_tau,\
                   lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
 
@@ -712,6 +723,8 @@ def SS_fsolve(guesses, params):
     w = guesses[1]
     T_H = guesses[2]
     factor = guesses[3]
+
+    print 'r, w at outset: ', r, w
 
     # Solve for the steady state levels of b and n, given w, r, T_H and
     # factor
@@ -736,13 +749,14 @@ def SS_fsolve(guesses, params):
   #  print 'model income with factor: ', average_income_model*factor
 
   #  print 'errors: ', error1, error2, error3, error4
+
     print 'Y: ', new_Y
   #  print 'factor: ', new_factor
   #  print 'factor prices: ', new_r, new_w
 
 
     # Check and punish violations
-    if r <= 0:
+    if r+delta <= 0:
         error1 = 1e9
     #if r > 1:
     #    error1 += 1e9
@@ -750,6 +764,8 @@ def SS_fsolve(guesses, params):
         error2 = 1e9
     if factor <= 0:
         error4 = 1e9
+
+    print 'errors: ', error1, error2, error3, error4
 
     return [error1, error2, error3, error4]
 
@@ -782,13 +798,93 @@ def SS_fsolve_reform(guesses, params):
         solutions = steady state values of b, n, w, r, factor,
                     T_H ((2*S*J+4)x1 array)
     '''
-    bssmat, nssmat, chi_params, ss_params, income_tax_params, iterative_params, T_H, factor, small_open_params, baseline_spending = params
-    
-    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance, alpha_T,\
-                  debt_ratio_ss, tau_b, delta_tau,\
+    bssmat, nssmat, chi_params, ss_params, income_tax_params, iterative_params, factor, small_open_params = params
+    J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde, nu, g_y,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance,\
+                  alpha_T, debt_ratio_ss, tau_b, delta_tau,\
                   lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
+
+
+    analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
+
+    chi_b, chi_n = chi_params
+
+    maxiter, mindist_SS = iterative_params
+
+    baseline = False
+    # Rename the inputs
+    r = guesses[0]
+    w = guesses[1]
+    T_H = guesses[2]
+
+    # Solve for the steady state levels of b and n, given w, r, T_H and
+    # factor
+    if budget_balance:
+        outer_loop_vars = (bssmat, nssmat, r, w, T_H, factor)
+    else:
+        Y = T_H / alpha_T
+        outer_loop_vars = (bssmat, nssmat, r, w, Y, T_H, factor)
+    inner_loop_params = (ss_params, income_tax_params, chi_params, small_open_params)
+
+    euler_errors, bssmat, nssmat, new_r, new_w, \
+        new_T_H, new_Y, new_factor, new_BQ, average_income_model = inner_loop(outer_loop_vars, inner_loop_params, baseline, False)
+
+    error1 = new_r - r
+    error2 = new_w - w
+    if budget_balance:
+        error3 = new_T_H - T_H
+    else:
+        error3 = new_Y - Y
+
+
+    print 'errors: ', error1, error2, error3
+   # print 'factor prices: ', r, w
+
+    # Check and punish violations
+    if r+delta <= 0:
+        error1 = 1e9
+    #if r > 1:
+    #    error1 += 1e9
+    if w <= 0:
+        error2 = 1e9
+
+    return [error1, error2, error3]
+
+def SS_fsolve_reform_baselinespend(guesses, params):
+    '''
+    Solves for the steady state distribution of capital, labor, as well as
+    w, r, and Y, using a root finder. This solves for the
+    reform SS when baseline_speding=True and so takes the factor and gov't
+    transfers (T_H) from the baseline SS as an input.
+    Inputs:
+        b_guess_init = guesses for b (SxJ array)
+        n_guess_init = guesses for n (SxJ array)
+        wguess = guess for wage rate (scalar)
+        rguess = guess for rental rate (scalar)
+        T_Hguess = guess for lump sum tax (scalar)
+        factor = scaling factor to dollars (scalar)
+        chi_n = chi^n_s (Sx1 array)
+        chi_b = chi^b_j (Jx1 array)
+        params = list of parameters (list)
+        iterative_params = list of parameters that determine the convergence
+                           of the while loop (list)
+        tau_bq = bequest tax rate (Jx1 array)
+        rho = mortality rates (Sx1 array)
+        lambdas = ability weights (Jx1 array)
+        omega_SS = population weights (Sx1 array)
+        e = ability levels (SxJ array)
+    Outputs:
+        solutions = steady state values of b, n, w, r, factor,
+                    T_H ((2*S*J+4)x1 array)
+    '''
+    bssmat, nssmat, T_Hss, chi_params, ss_params, income_tax_params, iterative_params, factor, small_open_params = params
+    J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde, nu, g_y,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance,\
+                  alpha_T, debt_ratio_ss, tau_b, delta_tau,\
+                  lambdas, imm_rates, e, retire, mean_income_data,\
+                  h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
+
 
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
 
@@ -804,24 +900,22 @@ def SS_fsolve_reform(guesses, params):
 
     # Solve for the steady state levels of b and n, given w, r, T_H and
     # factor
-    if budget_balance:
-        outer_loop_vars = (bssmat, nssmat, r, w, T_H, factor)
-    else:
-        outer_loop_vars = (bssmat, nssmat, r, w, Y, T_H, factor)
+    T_H = T_Hss
+    outer_loop_vars = (bssmat, nssmat, r, w, Y, T_H, factor)
     inner_loop_params = (ss_params, income_tax_params, chi_params, small_open_params)
 
     euler_errors, bssmat, nssmat, new_r, new_w, \
-        new_T_H, new_Y, new_factor, new_BQ, average_income_model = inner_loop(outer_loop_vars, inner_loop_params, baseline, baseline_spending)
+        new_T_H, new_Y, new_factor, new_BQ, average_income_model = inner_loop(outer_loop_vars, inner_loop_params, baseline, True)
 
     error1 = new_r - r
     error2 = new_w - w
     error3 = new_Y - Y
-    
-   # print 'errors: ', error1, error2, error3
+
+    print 'errors: ', error1, error2, error3
    # print 'factor prices: ', r, w
 
     # Check and punish violations
-    if r <= 0:
+    if r+delta <= 0:
         error1 = 1e9
     #if r > 1:
     #    error1 += 1e9
@@ -840,7 +934,7 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, small_ope
 
     INPUTS:
     income_tax_parameters = length 4 tuple, (analytical_mtrs, etr_params, mtrx_params, mtry_params)
-    ss_parameters = length 21 tuple, (J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
+    ss_parameters = length 21 tuple, (J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde, nu, g_y,\
                   g_n_ss, tau_payroll, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon)
     iterative_params  = [2,] vector, vector with max iterations and tolerance
@@ -873,12 +967,12 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, small_ope
     OUTPUT: None
     --------------------------------------------------------------------
     '''
-
-    J, S, T, BW, beta, sigma, alpha, Z, delta, ltilde, nu, g_y,\
-                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance, alpha_T,\
-                  debt_ratio_ss, tau_b, delta_tau,\
+    J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde, nu, g_y,\
+                  g_n_ss, tau_payroll, tau_bq, rho, omega_SS, budget_balance,\
+                  alpha_T, debt_ratio_ss, tau_b, delta_tau,\
                   lambdas, imm_rates, e, retire, mean_income_data,\
                   h_wealth, p_wealth, m_wealth, b_ellipse, upsilon = ss_params
+
 
     analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
 
@@ -891,7 +985,7 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, small_ope
     # For initial guesses of w, r, T_H, and factor, we use values that are close
     # to some steady state values.
     if baseline:
-        rguess = 0.01 + delta
+        rguess = 0.04#0.01 + delta
         wguess = 1.2
         T_Hguess = 0.12
         factorguess = 70000
@@ -902,29 +996,35 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, small_ope
         if ENFORCE_SOLUTION_CHECKS and not ier == 1:
             raise RuntimeError("Steady state equilibrium not found")
         [rss, wss, T_Hss, factor_ss] = solutions_fsolve
-        Yss = T_Hss/alpha_T
+        Yss = T_Hss/alpha_T #may not be right - if budget_balance = True, but that's ok - will be fixed in SS_solver
         fsolve_flag = True
         # Return SS values of variables
         solution_params= [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params, small_open_params]
-        output = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), rss, wss, T_Hss, Yss, factor_ss, solution_params, baseline, fsolve_flag)
+        output = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), rss, wss, T_Hss, factor_ss, Yss, solution_params, baseline, fsolve_flag, baseline_spending)
         # print "solved output", wss, rss, T_Hss, factor_ss
      #   print 'analytical mtrs in SS: ', analytical_mtrs
     else:
         baseline_ss_dir = os.path.join(
             baseline_dir, "SS/SS_vars.pkl")
         ss_solutions = pickle.load(open(baseline_ss_dir, "rb"))
-        [rguess, wguess, T_Hss, Yguess, factor] = [ss_solutions['rss'], ss_solutions['wss'], ss_solutions['T_Hss'], ss_solutions['Yss'], ss_solutions['factor_ss']]
-        ss_params_reform = [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params, T_Hss, factor, small_open_params, baseline_spending]
-        guesses = [rguess, wguess, Yguess]
-        [solutions_fsolve, infodict, ier, message] = opt.fsolve(SS_fsolve_reform, guesses, args=ss_params_reform, xtol=mindist_SS, full_output=True)
+        [rguess, wguess, T_Hguess, Yguess, factor] = [ss_solutions['rss'], ss_solutions['wss'], ss_solutions['T_Hss'], ss_solutions['Yss'], ss_solutions['factor_ss']]
+        if baseline_spending:
+            T_Hss = T_Hguess
+            ss_params_reform = [b_guess.reshape(S, J), n_guess.reshape(S, J), T_Hss, chi_params, ss_params, income_tax_params, iterative_params, factor, small_open_params]
+            guesses = [rguess, wguess, Yguess]
+            [solutions_fsolve, infodict, ier, message] = opt.fsolve(SS_fsolve_reform_baselinespend, guesses, args=ss_params_reform, xtol=mindist_SS, full_output=True)
+            [rss, wss, Yss] = solutions_fsolve
+        else:
+            ss_params_reform = [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params, factor, small_open_params]
+            guesses = [rguess, wguess, T_Hguess]
+            [solutions_fsolve, infodict, ier, message] = opt.fsolve(SS_fsolve_reform, guesses, args=ss_params_reform, xtol=mindist_SS, full_output=True)
+            [rss, wss, T_Hss] = solutions_fsolve
+            Yss = T_Hss/alpha_T #may not be right - if budget_balance = True, but that's ok - will be fixed in SS_solver
         if ENFORCE_SOLUTION_CHECKS and not ier == 1:
             raise RuntimeError("Steady state equilibrium not found")
         # Return SS values of variables
-        [rss, wss, Yss] = solutions_fsolve
-        if baseline_spending==False:
-            T_Hss = alpha_T*Yss
         fsolve_flag = True
         # Return SS values of variables
         solution_params= [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params, small_open_params]
-        output = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), rss, wss, T_Hss, Yss, factor, solution_params, baseline, fsolve_flag, baseline_spending)
+        output = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), rss, wss, T_Hss, factor, Yss, solution_params, baseline, fsolve_flag, baseline_spending)
     return output
