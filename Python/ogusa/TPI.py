@@ -930,7 +930,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     pickle.dump(output, open(tpi_vars, "wb"))
 
     macro_output = {'Y': Y, 'K': K, 'L': L, 'C': C, 'I': I,
-                    'BQ': BQ, 'T_H': T_H, 'r': r, 'w': w,
+                    'BQ': BQ, 'REVENUE': REVENUE, 'T_H': T_H, 'r': r, 'w': w,
                     'tax_path': tax_path}
 
     growth = (1+g_n_vector)*np.exp(g_y)
