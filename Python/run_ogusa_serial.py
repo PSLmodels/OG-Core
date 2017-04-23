@@ -35,8 +35,8 @@ def run_micro_macro(user_params):
     2017: {
        '_II_rt5': [.3],
        '_II_rt6': [.3],
-       '_II_rt7': [0.3],
-    }, }
+       '_II_rt7': [0.3]
+    } }
 
 
     start_time = time.time()
@@ -96,9 +96,9 @@ def run_micro_macro(user_params):
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
             'test':True, 'time_path':True, 'baseline':False,
             'analytical_mtrs':False, 'age_specific':True,
-            'user_params':user_params,'guid':'_alt', 'reform':'' ,
-            'run_micro':False, 'small_open': True, 'budget_balance':False,
-            'baseline_spending':True}
+            'user_params':user_params,'guid':'_alt', 'reform':reform ,
+            'run_micro':False, 'small_open': False, 'budget_balance':False,
+            'baseline_spending':False}
     #p2 = Process(target=runner, kwargs=kwargs)
     #p2.start()
     runner(**kwargs)
