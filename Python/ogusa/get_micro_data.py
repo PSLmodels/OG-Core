@@ -128,10 +128,10 @@ def get_data(baseline=False, start_year=2016, reform={}):
     temp[:,2] = mtr_combined_capinc
     temp[:,3] = calc1.records.age_head
     temp[:,4] = calc1.records.e00200
-    temp[:,5] = calc1.records._sey
-    temp[:,6] = calc1.records._sey + calc1.records.e00200
-    temp[:,7] = calc1.records._expanded_income
-    temp[:,8] = calc1.records._combined
+    temp[:,5] = calc1.records.sey
+    temp[:,6] = calc1.records.sey + calc1.records.e00200
+    temp[:,7] = calc1.records.expanded_income
+    temp[:,8] = calc1.records.combined
     temp[:,9] = calc1.current_year * np.ones(length)
     temp[:,10] = calc1.records.s006
 
@@ -160,10 +160,10 @@ def get_data(baseline=False, start_year=2016, reform={}):
         temp[:,2] = mtr_combined_capinc
         temp[:,3] = calc1.records.age_head
         temp[:,4] = calc1.records.e00200
-        temp[:,5] = calc1.records._sey
-        temp[:,6] = calc1.records._sey + calc1.records.e00200
-        temp[:,7] = calc1.records._expanded_income
-        temp[:,8] = calc1.records._combined
+        temp[:,5] = calc1.records.sey
+        temp[:,6] = calc1.records.sey + calc1.records.e00200
+        temp[:,7] = calc1.records.expanded_income
+        temp[:,8] = calc1.records.combined
         temp[:,9] = calc1.current_year * np.ones(length)
         temp[:,10] = calc1.records.s006
 
