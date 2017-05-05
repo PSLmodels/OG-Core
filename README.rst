@@ -20,22 +20,8 @@ to release. Stay tuned for an upcoming release!
 
 Using OG-USA
 ===============================
+To be completed.
 
-
-OG-USA Contributors
-==================================
-
-- Jason DeBacker
-
-- Richard W. Evans
-
-- Salim Furth
-
-- Evan Magnusson
-
-- Kerk Phillips
-
-- Isaac Swift
 
 
 Citing OG-USA
