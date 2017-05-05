@@ -1,10 +1,3 @@
-=================================
-BYU/OSPC Dynamic Tax Scoring Model
-=================================
-
-A Brigham Young University Macroeconomics and Computational Laboratory project in conjunction with the Open Source Policy Center.
-
-This repository includes the data used to calibrate the model along with all the necessary Python code to solve and simulate.
 
 The Model
 =========
@@ -24,6 +17,8 @@ Dynamic Scoring Model Contributors
 - Jason DeBacker
 
 - Richard W. Evans
+
+- Salim Furth
 
 - Evan Magnusson
 
