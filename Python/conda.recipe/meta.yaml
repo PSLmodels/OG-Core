@@ -5,8 +5,8 @@ package:
 requirements:
   build:
     - matplotlib
-    - numpy
-    - pandas
+    - numpy >=1.12.1
+    - pandas >=0.20.1
     - pytest
     - python
     - scipy
@@ -15,8 +15,8 @@ requirements:
 
   run:
     - matplotlib
-    - numpy
-    - pandas
+    - numpy >=1.12.1
+    - pandas >=0.20.1
     - pytest
     - python
     - scipy
