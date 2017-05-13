@@ -7,7 +7,7 @@ node {
 
                     sh '''if [ "$REMOTE_BUILD_TOKEN" = "" ];then echo WONT WORK - REMOTE_BUILD_TOKEN not there;fi '''
                     sh '''if [ "$OSPC_API_KEY" = "" ];then echo WONT WORK - OSPC_API_KEY not there;fi '''
-                    sh '''''if [ "$JENKINS_DOMAIN" = "" ];then echo WONT WORK NO JENKINS_DOMAIN;fi'''
+                    sh '''if [ "$JENKINS_DOMAIN" = "" ];then echo WONT WORK NO JENKINS_DOMAIN;fi '''
                     sh '''echo About to checkout scm'''
                     checkout scm
                     sh '''echo Checked out scm'''

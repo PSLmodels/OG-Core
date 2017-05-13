@@ -6,7 +6,7 @@ from_config numpy_version
 from_config install_taxcalc_version
 from_config compare_ogusa_version
 from_config compare_taxcalc_version
-
+from_config ogusainstallmethod
 
 wget http://repo.continuum.io/miniconda/Miniconda-latest-Linux-x86_64.sh -O miniconda.sh
 rm -rf $WORKSPACE/miniconda
@@ -35,11 +35,11 @@ cd Python/regression
 echo RUN REFORMS
 conda env list
 conda list
+cp $WORKSPACE/puf.csv ./puf.csv
 ls -lrth
 stat puf.csv
 head -n 1 puf.csv
 md5sum puf.csv
-
 python run_reforms.py $reform $ogusabranch
 
 
