@@ -76,7 +76,7 @@ def run_micro_macro(user_params):
     output_base = BASELINE_DIR
     input_dir = BASELINE_DIR
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'test':True, 'time_path':True, 'baseline':True,
+            'test':False, 'time_path':True, 'baseline':True,
             'analytical_mtrs':False, 'age_specific':True,
             'user_params':user_params,'guid':'',
             'run_micro':False, 'small_open': False, 'budget_balance':False, 'baseline_spending':False}
@@ -96,7 +96,7 @@ def run_micro_macro(user_params):
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
             'test':True, 'time_path':True, 'baseline':False,
             'analytical_mtrs':False, 'age_specific':True,
-            'user_params':user_params,'guid':'_alt', 'reform':reform ,
+            'user_params':user_params,'guid':'', 'reform':reform ,
             'run_micro':False, 'small_open': False, 'budget_balance':False,
             'baseline_spending':False}
     #p2 = Process(target=runner, kwargs=kwargs)
