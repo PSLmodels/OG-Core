@@ -43,7 +43,7 @@ Set paths, define user modifiable parameters
 PARAMS_FILE = os.path.join(os.path.dirname(__file__), 'default_full_parameters.json')
 PARAMS_FILE_METADATA_NAME = 'parameters_metadata.json'
 PARAMS_FILE_METADATA_PATH = os.path.join(os.path.dirname(__file__), PARAMS_FILE_METADATA_NAME)
-TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
+TAX_ESTIMATE_PATH = os.getcwd()
 USER_MODIFIABLE_PARAMS = ['g_y_annual', 'frisch']
 
 

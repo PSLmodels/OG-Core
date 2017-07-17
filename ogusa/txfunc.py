@@ -45,7 +45,7 @@ from matplotlib import cm
 import get_micro_data
 import utils
 
-TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
+TAX_ESTIMATE_PATH = os.getcwd()
 
 '''
 ------------------------------------------------------------------------
