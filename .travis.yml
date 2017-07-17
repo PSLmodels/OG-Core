@@ -13,11 +13,11 @@ install:
   - conda update conda
   - conda create -n test-environment python=$TRAVIS_PYTHON_VERSION pytest nomkl scipy=0.18.1 numpy=1.11.2 pandas=0.18.0 matplotlib
   - conda install -n test-environment -c ospc taxcalc=0.8.3
-  - conda install -n test-environment numba 
+  - conda install -n test-environment numba
   - source activate test-environment
   - python setup.py install
 
 
 # command to run tests, e.g. python setup.py test
 script:
-  - cd Python; py.test -s -v -m 'not full_run'
+  - cd ogusa; py.test -s -v -m 'not full_run'

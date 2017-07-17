@@ -1,7 +1,7 @@
 #!/bin/bash
 
 submit_jobs(){
-    export REFORMS_TO_RUN=$(cat ../../.regression.txt | grep reforms_to_run | sed 's/reforms_to_run//');
+    export REFORMS_TO_RUN=$(cat ../.regression.txt | grep reforms_to_run | sed 's/reforms_to_run//');
     if [ "${REFORMS_TO_RUN}" = "" ];then
         echo Error - Must set REFORMS_TO_RUN env var - space separated list of reform strings;
     else

@@ -1,2 +1,2 @@
 include versioneer.py
-include Python/ogusa/_version.py
+include ogusa/_version.py

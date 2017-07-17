@@ -26,16 +26,16 @@ newfiles = [os.path.join(TEST_OUTPUT, "SSinit/ss_init_tpi_vars.pkl"),
             os.path.join(TEST_OUTPUT, "Saved_moments/wealth_data_moments.pkl"),
             os.path.join(TEST_OUTPUT, "TPIinit/TPIinit_vars.pkl")]
 
-oldfiles = [os.path.join(CUR_PATH, "../../../Python/OUTPUT/SSinit/ss_init_tpi_vars.pkl"),
+oldfiles = [os.path.join(CUR_PATH, "../../../OUTPUT/SSinit/ss_init_tpi_vars.pkl"),
             os.path.join(
-                CUR_PATH, "../../../Python/OUTPUT/SSinit/ss_init_vars.pkl"),
+                CUR_PATH, "../../../OUTPUT/SSinit/ss_init_vars.pkl"),
             os.path.join(
-                CUR_PATH, "../../../Python/OUTPUT/Saved_moments/SS_init_solutions.pkl"),
+                CUR_PATH, "../../../OUTPUT/Saved_moments/SS_init_solutions.pkl"),
             os.path.join(
-                CUR_PATH, "../../../Python/OUTPUT/Saved_moments/labor_data_moments.pkl"),
+                CUR_PATH, "../../../OUTPUT/Saved_moments/labor_data_moments.pkl"),
             os.path.join(
-                CUR_PATH, "../../../Python/OUTPUT/Saved_moments/wealth_data_moments.pkl"),
-            os.path.join(CUR_PATH, "../../../Python/OUTPUT/TPIinit/TPIinit_vars.pkl")]
+                CUR_PATH, "../../../OUTPUT/Saved_moments/wealth_data_moments.pkl"),
+            os.path.join(CUR_PATH, "../../../OUTPUT/TPIinit/TPIinit_vars.pkl")]
 
 
 @pytest.mark.full_run

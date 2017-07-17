@@ -31,7 +31,7 @@ fi
 
 conda install nomkl
 
-cd Python/regression
+cd regression
 echo RUN REFORMS
 conda env list
 conda list
@@ -41,5 +41,3 @@ head -n 1 puf.csv
 md5sum puf.csv
 
 python run_reforms.py $reform $ogusabranch
-
-

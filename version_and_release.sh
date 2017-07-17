@@ -16,7 +16,7 @@ echo "FINISHED git archive"
 cd ~/code/
 tar xvf og.tar
 echo "FINISHED tar extract"
-cd ogusa/Python/conda.recipe
+cd ogusa/conda.recipe
 sed -i '' 's/version: 0.1/version: '${1}'/g' meta.yaml
 echo "FINISHED changing meta.yaml"
 conda build --python 2.7 .

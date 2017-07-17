@@ -4,7 +4,7 @@ import sys
 from multiprocessing import Process
 import time
 
-#OGUSA_PATH = os.environ.get("OGUSA_PATH", "../../ospc-dynamic/dynamic/Python")
+#OGUSA_PATH = os.environ.get("OGUSA_PATH", "../../ospc-dynamic/dynamic")
 
 #sys.path.append(OGUSA_PATH)
 
