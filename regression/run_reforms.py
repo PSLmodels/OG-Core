@@ -42,7 +42,7 @@ now the default reform-spec'''
 
 
 _d = os.path.dirname
-REGRESSION_CONFIG_FILE = os.path.join(_d(_d(_d(os.path.abspath(__file__)))), '.regression.txt')
+REGRESSION_CONFIG_FILE = os.path.join(_d(_d(os.path.abspath(__file__))), '.regression.txt')
 REGRESSION_CONFIG = {}
 for line in open(REGRESSION_CONFIG_FILE).readlines():
     line = line.strip()

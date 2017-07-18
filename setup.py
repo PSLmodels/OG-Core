@@ -11,12 +11,19 @@ config = {
     'url': 'https://github.com/open-source-economics/OG-USA/',
     'download_url': 'https://github.com/open-source-economics/OG-USA/',
     'description': 'ogusa',
-    'package_dir': {'': 'Python'},
     'install_requires': [],
     'license': 'MIT',
     'packages': ['ogusa', 'ogusa.scripts'],
-    'package_dir': {'ogusa': 'Python/ogusa'},
-    'package_data': {'ogusa': ['../TxFuncEst_baseline.pkl', 'parameters_metadata.json', 'data/ability/*', 'data/demographic/*', 'data/labor/*', 'data/wealth/*']},
+    'package_data': {
+                     'ogusa': [
+                               '../TxFuncEst_baseline.pkl',
+                               '../TxFuncEst_policy.pkl',
+                               'parameters_metadata.json',
+                               'data/ability/*',
+                               'data/demographic/*',
+                               'data/labor/*',
+                               'data/wealth/*']
+                     },
     'include_package_data': True,
     'name': 'ogusa',
     'version': versioneer.get_version(),

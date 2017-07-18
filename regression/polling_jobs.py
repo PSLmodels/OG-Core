@@ -36,7 +36,7 @@ def get_log(reform, build_num='lastBuild'):
     return request(url)
 
 def workspace_url(reform):
-    return '{}/job/ci-mode-simple-{}/ws/OG-USA/Python/regression/'.format(JENKINS_DOMAIN, reform)
+    return '{}/job/ci-mode-simple-{}/ws/OG-USA/regression/'.format(JENKINS_DOMAIN, reform)
 
 def get_workspace_main(reform):
     return request(workspace_url(reform))

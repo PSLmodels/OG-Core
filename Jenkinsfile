@@ -11,7 +11,7 @@ node {
                     sh '''echo About to checkout scm'''
                     checkout scm
                     sh '''echo Checked out scm'''
-                    sh '''cd Python/regression && bash run_reforms_bash.sh'''
+                    sh '''cd regression && bash run_reforms_bash.sh'''
                 }
             }
         }
