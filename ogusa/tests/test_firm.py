@@ -76,7 +76,7 @@ def test_get_Y():
 
 
 def test_get_L():
-    T = 150
+    T = 160
     s, j = 40, 2
     n = 10 * np.random.rand(s, j)
     e = 10 * np.random.rand(s, j)
@@ -89,17 +89,28 @@ def test_get_L():
             L_test[i, k] *= omega[i, 0] * lam[0, k] * n[i, k] * e[i, k]
 
     method = 'SS'
-    print(L_test.sum(), L_test.sum(axis=0))
     L = firm.get_L(n, (e, omega, lam, method))
     assert (np.allclose(L, L_test.sum()))
     # print("LSHAPE1", L.shape, L.ndim)
 
 
     method = 'TPI'
-    L_test_tile = np.tile(L_test, (T, 1, 1))
-    n_tile = np.tile(n, (T, 1, 1))
+
+    L_test1 = np.ones(T * s * j).reshape(T, s, j)
+    n_T = np.array([10 * np.random.rand(s, j) for t in range(T)])
     e_tile = np.tile(e, (T, 1, 1))
 
-    L = firm.get_L(n_tile, (e_tile, omega, lam, method))
-    assert (np.allclose(L, L_test_tile.sum(1).sum(1)))
+    for t in range(T):
+        for i in range(s):
+            for k in range(j):
+                L_test1[t, i, k] *= (omega[i, 0] * lam[0, k] *
+                                     n_T[t, i, k] * e_tile[t, i, k])
+
+
+
+    L = firm.get_L(n_T, (e_tile, omega, lam, method))
+    assert (np.allclose(L, L_test1.sum(1).sum(1)))
     # print("LSHAPE2", L.shape, L.ndim)
+
+# def test_get_I():
+#     T = 160
