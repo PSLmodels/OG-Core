@@ -76,31 +76,30 @@ def test_get_Y():
 
 
 def test_get_L():
-    # Looks like I need to add another dimension of length T
-    # Not sure how the matrices should be set up
+    T = 150
     s, j = 40, 2
     n = 10 * np.random.rand(s, j)
     e = 10 * np.random.rand(s, j)
     omega = np.array([np.random.rand(s)]).T
     lam = np.array([np.random.rand(j)])
 
-    mult_res = np.ones(s * j).reshape(s, j)
+    L_test = np.ones(s * j).reshape(s, j)
     for i in range(s):
         for k in range(j):
-            mult_res[i, k] *= omega[i, 0] * lam[0, k] * n[i, k] * e[i, k]
+            L_test[i, k] *= omega[i, 0] * lam[0, k] * n[i, k] * e[i, k]
 
     method = 'SS'
+    print(L_test.sum(), L_test.sum(axis=0))
     L = firm.get_L(n, (e, omega, lam, method))
-    assert (np.allclose(L, mult_res.sum()))
+    assert (np.allclose(L, L_test.sum()))
+    # print("LSHAPE1", L.shape, L.ndim)
 
-    # What dimensions are we expecting here?
-    # throws error
-    # firm.py:142: in get_L
-    #     L = L_presum.sum(1).sum(1)
-    #
-    #     E       ValueError: 'axis' entry is out of bounds
-    #
-    #     /anaconda/envs/ospcdyn/lib/python2.7/site-packages/numpy/core/_methods.py:32: ValueError
-    # method = 'TPI'
-    # L = firm.get_L(n, (e, omega, lam, method))
-    # assert (np.allclose(L, mult_res.sum(1).sum(1)))
+
+    method = 'TPI'
+    L_test_tile = np.tile(L_test, (T, 1, 1))
+    n_tile = np.tile(n, (T, 1, 1))
+    e_tile = np.tile(e, (T, 1, 1))
+
+    L = firm.get_L(n_tile, (e_tile, omega, lam, method))
+    assert (np.allclose(L, L_test_tile.sum(1).sum(1)))
+    # print("LSHAPE2", L.shape, L.ndim)
