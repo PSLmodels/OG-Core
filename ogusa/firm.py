@@ -40,7 +40,9 @@ def get_r(Y, K, params):
     if epsilon == 0:
         r = (1-tau_b)*gamma - delta
     else:
-        r = (1-tau_b)*((Z**((epsilon-1)/epsilon))*(((gamma*Y)/K)**(1/epsilon))) - delta + tau_b*delta_tau
+        r = ((1-tau_b)*((Z**((epsilon-1)/epsilon)) *
+             (((gamma*Y)/K)**(1/epsilon)))
+             - delta + tau_b*delta_tau)
 
     return r
 
@@ -100,7 +102,8 @@ def get_Y(K, L, params):
         Y = Z*(gamma*K + (1-gamma)*L)
     else:
         Y = (Z * (((gamma**(1/epsilon))*(K**((epsilon-1)/epsilon))) +
-          (((1-gamma)**(1/epsilon))*(L**((epsilon-1)/epsilon))))**(epsilon/(epsilon-1)))
+             (((1-gamma)**(1/epsilon)) *
+             (L**((epsilon-1)/epsilon))))**(epsilon/(epsilon-1)))
 
     return Y
 
@@ -157,20 +160,27 @@ def get_I(b_splus1, K_p1, K, params):
 
     '''
     delta, g_y, omega, lambdas, imm_rates, g_n, method = params
-
     if method == 'SS':
-        omega_extended = np.append(omega[1:],[0.0])
-        imm_extended = np.append(imm_rates[1:],[0.0])
-        part2 = (((b_splus1*(omega_extended*imm_extended).reshape(omega.shape[0],1))*lambdas).sum())/(1+g_n)
-        aggI =   (1+g_n)*np.exp(g_y)*(K_p1 -  part2) - (1.0 - delta) * K
+        omega_extended = np.append(omega[1:], [0.0])
+        imm_extended = np.append(imm_rates[1:], [0.0])
+        part2 = ((((b_splus1 *
+                   (omega_extended*imm_extended).reshape(omega.shape[0], 1)) *
+                   lambdas).sum())/(1+g_n))
+        aggI = (1+g_n)*np.exp(g_y)*(K_p1 - part2) - (1.0 - delta) * K
     elif method == 'TPI':
         # omega_extended = np.append(omega[1:,:,:],np.zeros((1,omega.shape[1],omega.shape[2])),axis=0)
         # imm_extended = np.append(imm_rates[1:,:,:],np.zeros((1,imm_rates.shape[1],imm_rates.shape[2])),axis=0)
         # part2 = ((b_splus1*omega_extended*imm_extended*lambdas).sum(1).sum(1))/(1+g_n)
-        omega_shift = np.append(omega[:,1:,:],np.zeros((omega.shape[0],1,omega.shape[2])),axis=1)
-        imm_shift = np.append(imm_rates[:,1:,:],np.zeros((imm_rates.shape[0],1,imm_rates.shape[2])),axis=1)
-        part2 = ((b_splus1*imm_shift*omega_shift*lambdas).sum(1).sum(1))/(1+g_n)
-        aggI =   (1+g_n)*np.exp(g_y)*(K_p1 -  part2) - (1.0 - delta) * K
+        omega_shift = np.append(omega[:, 1:, :],
+                                np.zeros((omega.shape[0], 1, omega.shape[2]))
+                                , axis=1)
+        imm_shift = np.append(imm_rates[:, 1:, :],
+                              np.zeros((imm_rates.shape[0],
+                                       1, imm_rates.shape[2])),
+                              axis=1)
+        part2 = (((b_splus1*imm_shift*omega_shift*lambdas).sum(1).sum(1)) /
+                 (1+g_n))
+        aggI = (1+g_n)*np.exp(g_y)*(K_p1 - part2) - (1.0 - delta) * K
 
     return aggI
 
@@ -195,14 +205,19 @@ def get_K(L, r, params):
     '''
 
     Z, gamma, epsilon, delta, tau_b, delta_tau = params
-    print 'USING firm.getK()'
     if epsilon == 1:
         K = ((1-tau_b)*gamma*Z/(r+delta-(tau_b*delta_tau)))**(1/(1-gamma)) * L
     elif epsilon == 0:
         K = (1-((1-gamma)*L))/gamma
     else:
-        K = (((1-gamma)**(1/(epsilon-1)))*((((((r+delta-(tau_b*delta_tau))/(1-tau_b))**(epsilon-1))*(gamma**((1-epsilon)/epsilon))
-             *(Z**(1-epsilon)))-(gamma**(1/epsilon)))**(epsilon/(1-epsilon)))*L)
+        K = (L *
+             ((1-gamma)**(1/(epsilon-1))) *
+             (((
+                (((r+delta-(tau_b*delta_tau))/(1 - tau_b))**(epsilon-1)) *
+                (gamma**((1-epsilon)/epsilon)) * (Z**(1-epsilon))
+                ) -
+              gamma**(1/epsilon))) ** (epsilon/(1-epsilon))
+             )
 
     print 'USING firm.getK()'
 
