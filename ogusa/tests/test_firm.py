@@ -5,7 +5,7 @@ import numpy as np
 
 def test_get_r():
     """
-        choose values to simplify the calculations that are similar to
+        choose values that simplify the calculations and are similar to
         observed values
     """
     Z = 0.5
@@ -29,7 +29,7 @@ def test_get_r():
 
 def test_get_w():
     """
-        choose values to simplify the calculations that are similar to
+        choose values that simplify the calculations and are similar to
         observed values
     """
     Z = 0.5
@@ -48,7 +48,7 @@ def test_get_w():
 
 def test_get_Y():
     """
-        choose values to simplify the calculations that are similar to
+        choose values that simplify the calculations and are similar to
         observed values
     """
     Z = 2.0
@@ -167,7 +167,7 @@ def test_get_I():
 
 def test_get_K():
     """
-        choose values to simplify the calculations that are similar to
+        choose values that simplify the calculations and are similar to
         observed values
     """
     L = np.array([2.0, 2.0])
