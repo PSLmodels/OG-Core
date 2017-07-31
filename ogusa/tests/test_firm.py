@@ -12,7 +12,7 @@ def test_get_r():
     gamma = 0.5
     delta = 0.25
     tau_b = 0.5
-    delta_tau = 1.0
+    delta_tau = 0.35
 
     Y = np.array([2.0, 2.0])
     K = np.array([1.0, 1.0])
@@ -24,7 +24,7 @@ def test_get_r():
     epsilon = 0.5
     delta = 0.5
     r = firm.get_r(Y, K, (Z, gamma, epsilon, delta, tau_b, delta_tau))
-    assert (np.allclose(r, np.array([1.0, 1.0])))
+    assert (np.allclose(r, np.array([0.675, 0.675])))
 
 
 def test_get_w():
@@ -174,13 +174,13 @@ def test_get_K():
     r = np.array([1.0, 1.0])
     gamma = 0.5
     tau_b = 0.75
-    delta = 4.0
-    delta_tau = 4.0/3.0
+    delta = 0.15
+    delta_tau = 0.2 * delta
     Z = 2.0
 
     epsilon = 1
     K = firm.get_K(L, r, (Z, gamma, epsilon, delta, tau_b, delta_tau))
-    assert (np.allclose(K, np.array([2./(16**2), 2./(16**2)])))
+    assert (np.allclose(K, np.array([0.09832793, 0.09832793])))
 
     epsilon = 0
     K = firm.get_K(L, r, (Z, gamma, epsilon, delta, tau_b, delta_tau))
@@ -188,8 +188,8 @@ def test_get_K():
 
     epsilon = 0.5
     Z = 4.0
-    tau_b = 0.0
+    tau_b = 0.5
     delta_tau = 2.0
     delta = 3.0
     K = firm.get_K(L, r, (Z, gamma, epsilon, delta, tau_b, delta_tau))
-    assert (np.allclose(K, np.array([2.0, 2.0])))
+    assert (np.allclose(K, np.array([1.26598632, 1.26598632])))
