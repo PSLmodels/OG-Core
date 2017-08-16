@@ -175,7 +175,7 @@ def euler_equation_solver(guesses, params):
     household.FOC_savings()
     household.FOC_labor()
     tax.total_taxes()
-    aggr.get_Cons()
+    household.get_cons()
 
     OBJECTS CREATED WITHIN FUNCTION:
     b_guess = [S,] vector, initial guess at household savings
@@ -241,7 +241,7 @@ def euler_equation_solver(guesses, params):
                    m_wealth, tau_payroll, theta, tau_bq[j], J, S)
     tax1 = tax.total_taxes(r, w, b_s, n_guess, BQ, factor, T_H, None, False, tax1_params)
     cons_params = (e[:, j], lambdas[j], g_y)
-    cons = aggr.get_Cons(r, w, b_s, b_splus1, n_guess, BQ, tax1, cons_params)
+    cons = household.get_cons(r, w, b_s, b_splus1, n_guess, BQ, tax1, cons_params)
     mask6 = cons < 0
     error1[mask6] = 1e14
 
@@ -626,7 +626,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, Yss, param
                     h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
     taxss = tax.total_taxes(rss, wss, bssmat_s, nssmat, BQss, factor_ss, T_Hss, None, False, taxss_params)
     css_params = (e, lambdas.reshape(1, J), g_y)
-    cssmat = aggr.get_Cons(rss, wss, bssmat_s, bssmat_splus1, nssmat, BQss.reshape(
+    cssmat = household.get_cons(rss, wss, bssmat_s, bssmat_splus1, nssmat, BQss.reshape(
         1, J), taxss, css_params)
 
     biz_params = (tau_b, delta_tau)

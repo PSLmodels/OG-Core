@@ -220,7 +220,7 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params):
     tax1 = tax.total_taxes(r, w, b_s, n, BQ, factor, T_H, j, False, tax1_params)
 
     cons_params = (e[-1, j], lambdas[j], g_y)
-    cons = aggr.get_Cons(r, w, b_s, b_splus1, n, BQ, tax1, cons_params)
+    cons = household.get_cons(r, w, b_s, b_splus1, n, BQ, tax1, cons_params)
 
     bequest_ut = rho[-1] * np.exp(-sigma * g_y) * chi_b[j] * b_splus1 ** (-sigma)
 
@@ -323,11 +323,11 @@ def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params):
 
 
     cons_s_params = (e_s, lambdas[j], g_y)
-    cons_s = aggr.get_Cons(r_s, w_s, b_s, b_splus1, n_s,
+    cons_s = household.get_cons(r_s, w_s, b_s, b_splus1, n_s,
                    BQ_s, tax_s, cons_s_params)
 
     cons_sp1_params = (e_extended, lambdas[j], g_y)
-    cons_splus1 = aggr.get_Cons(r_splus1, w_splus1, b_splus1, b_splus2, n_extended,
+    cons_splus1 = household.get_cons(r_splus1, w_splus1, b_splus1, b_splus2, n_extended,
                    BQ_splus1, tax_splus1, cons_sp1_params)
 
     income_splus1 = (r_splus1 * b_splus1 + w_splus1 *
@@ -869,7 +869,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
                                n_mat[:T,:,:], BQ[:T, :].reshape(T, 1, J), factor, T_H[:T].reshape(T, 1, 1), None, False, tax_path_params)
 
     cons_params = (e.reshape(1, S, J), lambdas.reshape(1, 1, J), g_y)
-    c_path = aggr.get_Cons(r[:T].reshape(T, 1, 1), w[:T].reshape(T, 1, 1), bmat_s, bmat_splus1, n_mat[:T,:,:],
+    c_path = household.get_cons(r[:T].reshape(T, 1, 1), w[:T].reshape(T, 1, 1), bmat_s, bmat_splus1, n_mat[:T,:,:],
                    BQ[:T].reshape(T, 1, J), tax_path, cons_params)
     C_params = (omega[:T].reshape(T, S, 1), lambdas, 'TPI')
     C = aggr.get_C(c_path, C_params)
