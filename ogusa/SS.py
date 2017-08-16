@@ -25,6 +25,7 @@ import cPickle as pickle
 
 from . import tax
 from . import household
+from . import aggregates as aggr
 import firm
 import utils
 import os
@@ -169,12 +170,12 @@ def euler_equation_solver(guesses, params):
                        capital income function
 
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
-    household.get_BQ()
+    aggr.get_BQ()
     tax.replacement_rate_vals()
     household.FOC_savings()
     household.FOC_labor()
     tax.total_taxes()
-    household.get_cons()
+    aggr.get_Cons()
 
     OBJECTS CREATED WITHIN FUNCTION:
     b_guess = [S,] vector, initial guess at household savings
@@ -209,7 +210,7 @@ def euler_equation_solver(guesses, params):
     b_splus2 = np.array(list(b_guess[1:]) + [0])
 
     BQ_params = (omega_SS, lambdas[j], rho, g_n_ss, 'SS')
-    BQ = household.get_BQ(r, b_splus1, BQ_params)
+    BQ = aggr.get_BQ(r, b_splus1, BQ_params)
     theta_params = (e[:,j], S, retire)
     theta = tax.replacement_rate_vals(n_guess, w, factor, theta_params)
 
@@ -240,7 +241,7 @@ def euler_equation_solver(guesses, params):
                    m_wealth, tau_payroll, theta, tau_bq[j], J, S)
     tax1 = tax.total_taxes(r, w, b_s, n_guess, BQ, factor, T_H, None, False, tax1_params)
     cons_params = (e[:, j], lambdas[j], g_y)
-    cons = household.get_cons(r, w, b_s, b_splus1, n_guess, BQ, tax1, cons_params)
+    cons = aggr.get_Cons(r, w, b_s, b_splus1, n_guess, BQ, tax1, cons_params)
     mask6 = cons < 0
     error1[mask6] = 1e14
 
@@ -267,12 +268,12 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
 
     Functions called:
         euler_equation_solver()
-        household.get_K()
-        firm.get_L()
+        aggr.get_K()
+        aggr.get_L()
         firm.get_Y()
         firm.get_r()
         firm.get_w()
-        household.get_BQ()
+        aggr.get_BQ()
         tax.replacement_rate_vals()
         tax.revenue()
 
@@ -328,10 +329,10 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
         nssmat[:, j] = solutions[S:]
 
     L_params = (e, omega_SS.reshape(S, 1), lambdas.reshape(1, J), 'SS')
-    L = firm.get_L(nssmat, L_params)
+    L = aggr.get_L(nssmat, L_params)
     if small_open == False:
         K_params = (omega_SS.reshape(S, 1), lambdas.reshape(1, J), imm_rates, g_n_ss, 'SS')
-        B = household.get_K(bssmat, K_params)
+        B = aggr.get_K(bssmat, K_params)
         if budget_balance:
             K = B
         else:
@@ -364,7 +365,7 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
         new_factor = factor
 
     BQ_params = (omega_SS.reshape(S, 1), lambdas.reshape(1, J), rho.reshape(S, 1), g_n_ss, 'SS')
-    new_BQ = household.get_BQ(new_r, bssmat, BQ_params)
+    new_BQ = aggr.get_BQ(new_r, bssmat, BQ_params)
     theta_params = (e, S, retire)
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, theta_params)
 
@@ -409,12 +410,12 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, Yss, param
 
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
     euler_equation_solver()
-    household.get_K()
-    firm.get_L()
+    aggr.get_K()
+    aggr.get_L()
     firm.get_Y()
     firm.get_r()
     firm.get_w()
-    household.get_BQ()
+    aggr.get_BQ()
     tax.replacement_rate_vals()
     tax.revenue()
     utils.convex_combo()
@@ -539,28 +540,28 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, Yss, param
     T_Hss = T_H
 
     Lss_params = (e, omega_SS.reshape(S, 1), lambdas, 'SS')
-    Lss = firm.get_L(nssmat, Lss_params)
+    Lss = aggr.get_L(nssmat, Lss_params)
     if small_open == False:
         Kss_params = (omega_SS.reshape(S, 1), lambdas, imm_rates, g_n_ss, 'SS')
-        Bss = household.get_K(bssmat_splus1, Kss_params)
+        Bss = aggr.get_K(bssmat_splus1, Kss_params)
         if budget_balance:
             debt_ss = 0.0
         else:
             debt_ss = debt_ratio_ss*Y
         Kss = Bss - debt_ss
         Iss_params = (delta, g_y, omega_SS, lambdas, imm_rates, g_n_ss, 'SS')
-        Iss = firm.get_I(bssmat_splus1, Kss, Kss, Iss_params)
+        Iss = aggr.get_I(bssmat_splus1, Kss, Kss, Iss_params)
     else:
         # Compute capital (K) and wealth (B) separately
         Kss_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
         Kss = firm.get_K(Lss, ss_firm_r, Kss_params)
         Iss_params = (delta, g_y, omega_SS, lambdas, imm_rates, g_n_ss, 'SS')
         InvestmentPlaceholder = np.zeros(bssmat_splus1.shape)
-        Iss = firm.get_I(InvestmentPlaceholder, Kss, Kss, Iss_params)
+        Iss = aggr.get_I(InvestmentPlaceholder, Kss, Kss, Iss_params)
         Bss_params = (omega_SS.reshape(S, 1), lambdas, imm_rates, g_n_ss, 'SS')
-        Bss = household.get_K(bssmat_splus1, Bss_params)
+        Bss = aggr.get_K(bssmat_splus1, Bss_params)
         BIss_params = (0.0, g_y, omega_SS, lambdas, imm_rates, g_n_ss, 'SS')
-        BIss = firm.get_I(bssmat_splus1, Bss, Bss, BIss_params)
+        BIss = aggr.get_I(bssmat_splus1, Bss, Bss, BIss_params)
         if budget_balance:
             debt_ss = 0.0
         else:
@@ -625,14 +626,14 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, Yss, param
                     h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
     taxss = tax.total_taxes(rss, wss, bssmat_s, nssmat, BQss, factor_ss, T_Hss, None, False, taxss_params)
     css_params = (e, lambdas.reshape(1, J), g_y)
-    cssmat = household.get_cons(rss, wss, bssmat_s, bssmat_splus1, nssmat, BQss.reshape(
+    cssmat = aggr.get_Cons(rss, wss, bssmat_s, bssmat_splus1, nssmat, BQss.reshape(
         1, J), taxss, css_params)
 
     biz_params = (tau_b, delta_tau)
     business_revenue = tax.get_biz_tax(wss, Yss, Lss, Kss, biz_params)
 
     Css_params = (omega_SS.reshape(S, 1), lambdas, 'SS')
-    Css = household.get_C(cssmat, Css_params)
+    Css = aggr.get_C(cssmat, Css_params)
 
     if small_open == False:
         resource_constraint = Yss - (Css + Iss + Gss)

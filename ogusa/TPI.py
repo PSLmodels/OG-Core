@@ -35,6 +35,7 @@ import utils
 import household
 import firm
 import fiscal
+import aggregates as aggr
 import os
 import csv
 
@@ -171,7 +172,7 @@ def create_tpi_params(**sim_params):
     # distribution. When small_open=True, the value of K0 is used as a placeholder for first-period wealth (B0)
     omega_S_preTP = sim_params['omega_S_preTP']
     B0_params = (omega_S_preTP.reshape(S, 1), lambdas, imm_rates[0].reshape(S,1), g_n_vector[0], 'SS')
-    B0 = household.get_K(initial_b, B0_params)
+    B0 = aggr.get_K(initial_b, B0_params)
 
     b_sinit = np.array(list(np.zeros(J).reshape(1, J)) + list(initial_b[:-1]))
     b_splus1init = initial_b
@@ -219,7 +220,7 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params):
     tax1 = tax.total_taxes(r, w, b_s, n, BQ, factor, T_H, j, False, tax1_params)
 
     cons_params = (e[-1, j], lambdas[j], g_y)
-    cons = household.get_cons(r, w, b_s, b_splus1, n, BQ, tax1, cons_params)
+    cons = aggr.get_Cons(r, w, b_s, b_splus1, n, BQ, tax1, cons_params)
 
     bequest_ut = rho[-1] * np.exp(-sigma * g_y) * chi_b[j] * b_splus1 ** (-sigma)
 
@@ -322,11 +323,11 @@ def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params):
 
 
     cons_s_params = (e_s, lambdas[j], g_y)
-    cons_s = household.get_cons(r_s, w_s, b_s, b_splus1, n_s,
+    cons_s = aggr.get_Cons(r_s, w_s, b_s, b_splus1, n_s,
                    BQ_s, tax_s, cons_s_params)
 
     cons_sp1_params = (e_extended, lambdas[j], g_y)
-    cons_splus1 = household.get_cons(r_splus1, w_splus1, b_splus1, b_splus2, n_extended,
+    cons_splus1 = aggr.get_Cons(r_splus1, w_splus1, b_splus1, b_splus2, n_extended,
                    BQ_splus1, tax_splus1, cons_sp1_params)
 
     income_splus1 = (r_splus1 * b_splus1 + w_splus1 *
@@ -544,9 +545,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     L_init = np.ones((T+S,))*Lss
     B_init = np.ones((T+S,))*Bss
     L_params = (e.reshape(1, S, J), omega[:T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI')
-    L_init[:T]  = firm.get_L(n_mat[:T], L_params)
+    L_init[:T]  = aggr.get_L(n_mat[:T], L_params)
     B_params = (omega[:T-1].reshape(T-1, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T-1].reshape(T-1,S,1), g_n_vector[1:T], 'TPI')
-    B_init[1:T] = household.get_K(b_mat[:T-1], B_params)
+    B_init[1:T] = aggr.get_K(b_mat[:T-1], B_params)
     B_init[0] = B0
 
     if small_open == False:
@@ -577,7 +578,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
 
     BQ = np.zeros((T + S, J))
     BQ0_params = (omega_S_preTP.reshape(S, 1), lambdas, rho.reshape(S, 1), g_n_vector[0], 'SS')
-    BQ0 = household.get_BQ(r[0], initial_b, BQ0_params)
+    BQ0 = aggr.get_BQ(r[0], initial_b, BQ0_params)
     for j in xrange(J):
         BQ[:, j] = list(np.linspace(BQ0[j], BQss[j], T)) + [BQss[j]] * S
     BQ = np.array(BQ)
@@ -664,9 +665,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         bmat_splus1[:, :, :] = b_mat[:T, :, :]
 
         #L_params = (e.reshape(1, S, J), omega[:T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI') # defined above
-        L[:T]  = firm.get_L(n_mat[:T], L_params)
+        L[:T]  = aggr.get_L(n_mat[:T], L_params)
         #B_params = (omega[:T-1].reshape(T-1, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T-1].reshape(T-1,S,1), g_n_vector[1:T], 'TPI') # defined above
-        B[1:T] = household.get_K(bmat_splus1[:T-1], B_params)
+        B[1:T] = aggr.get_K(bmat_splus1[:T-1], B_params)
         if np.any(B) < 0:
             print 'B has negative elements. B[0:9]:', B[0:9]
             print 'B[T-2:T]:', B[T-2,T]
@@ -716,7 +717,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
 #        BQ_params = (omega_shift.reshape(T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1),
 #                     g_n_vector[:T].reshape(T, 1), 'TPI')  # defined above
         b_mat_shift = np.append(np.reshape(initial_b,(1,S,J)),b_mat[:T-1,:,:],axis=0)
-        BQnew = household.get_BQ(rnew[:T].reshape(T, 1), b_mat_shift, BQ_params)
+        BQnew = aggr.get_BQ(rnew[:T].reshape(T, 1), b_mat_shift, BQ_params)
 
 #        tax_params = np.zeros((T,S,J,etr_params.shape[2]))
 #        for i in range(etr_params.shape[2]):
@@ -816,9 +817,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     bmat_splus1[:, :, :] = b_mat[:T, :, :]
 
     #L_params = (e.reshape(1, S, J), omega[:T, :].reshape(T, S, 1), lambdas.reshape(1, 1, J), 'TPI') # defined above
-    L[:T]  = firm.get_L(n_mat[:T], L_params)
+    L[:T]  = aggr.get_L(n_mat[:T], L_params)
     #B_params = (omega[:T-1].reshape(T-1, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T-1].reshape(T-1,S,1), g_n_vector[1:T], 'TPI') # defined above
-    B[1:T] = household.get_K(bmat_splus1[:T-1], B_params)
+    B[1:T] = aggr.get_K(bmat_splus1[:T-1], B_params)
 
     if small_open == False:
         K[:T] = B[:T] - D[:T]
@@ -848,7 +849,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
 #    BQ_params = (omega_shift.reshape(T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1),
 #                 g_n_vector[:T].reshape(T, 1), 'TPI')
     b_mat_shift = np.append(np.reshape(initial_b,(1,S,J)),b_mat[:T-1,:,:],axis=0)
-    BQnew = household.get_BQ(rnew[:T].reshape(T, 1), b_mat_shift, BQ_params)
+    BQnew = aggr.get_BQ(rnew[:T].reshape(T, 1), b_mat_shift, BQ_params)
 
 #    tax_params = np.zeros((T,S,J,etr_params.shape[2]))
 #    for i in range(etr_params.shape[2]):
@@ -868,10 +869,10 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
                                n_mat[:T,:,:], BQ[:T, :].reshape(T, 1, J), factor, T_H[:T].reshape(T, 1, 1), None, False, tax_path_params)
 
     cons_params = (e.reshape(1, S, J), lambdas.reshape(1, 1, J), g_y)
-    c_path = household.get_cons(r[:T].reshape(T, 1, 1), w[:T].reshape(T, 1, 1), bmat_s, bmat_splus1, n_mat[:T,:,:],
+    c_path = aggr.get_Cons(r[:T].reshape(T, 1, 1), w[:T].reshape(T, 1, 1), bmat_s, bmat_splus1, n_mat[:T,:,:],
                    BQ[:T].reshape(T, 1, J), tax_path, cons_params)
     C_params = (omega[:T].reshape(T, S, 1), lambdas, 'TPI')
-    C = household.get_C(c_path, C_params)
+    C = aggr.get_C(c_path, C_params)
 
     if budget_balance==False:
         D_0    = initial_debt * Y[0]
@@ -884,14 +885,14 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
 
     if small_open == False:
         I_params = (delta, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
-        I = firm.get_I(bmat_splus1[:T], K[1:T+1], K[:T], I_params)
+        I = aggr.get_I(bmat_splus1[:T], K[1:T+1], K[:T], I_params)
         rc_error = Y[:T] - C[:T] - I[:T] - G[:T]
     else:
         #InvestmentPlaceholder = np.zeros(bmat_splus1[:T].shape)
         #I_params = (delta, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
-        I = (1+g_n_vector[:T])*np.exp(g_y)*K[1:T+1] - (1.0 - delta) * K[:T] #firm.get_I(InvestmentPlaceholder, K[1:T+1], K[:T], I_params)
+        I = (1+g_n_vector[:T])*np.exp(g_y)*K[1:T+1] - (1.0 - delta) * K[:T] #aggr.get_I(InvestmentPlaceholder, K[1:T+1], K[:T], I_params)
         BI_params = (0.0, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
-        BI = firm.get_I(bmat_splus1[:T], B[1:T+1], B[:T], BI_params)
+        BI = aggr.get_I(bmat_splus1[:T], B[1:T+1], B[:T], BI_params)
         new_borrowing = D[1:T]*(1+g_n_vector[1:T])*np.exp(g_y) - D[:T-1]
         rc_error = Y[:T-1] + new_borrowing - (C[:T-1] + BI[:T-1] + G[:T-1] ) + (tpi_hh_r[:T-1] * B[:T-1] - (delta + tpi_firm_r[:T-1])*K[:T-1] - tpi_hh_r[:T-1]*D[:T-1])
         #print 'Y(T-1):', Y[T-1], '\n','C(T-1):', C[T-1], '\n','K(T-1):', K[T-1], '\n','B(T-1):', B[T-1], '\n','BI(T-1):', BI[T-1], '\n','I(T-1):', I[T-1]
