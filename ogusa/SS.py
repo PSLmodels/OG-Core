@@ -275,7 +275,7 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
         firm.get_w()
         aggr.get_BQ()
         tax.replacement_rate_vals()
-        tax.revenue()
+        aggr.revenue()
 
     Objects in function:
 
@@ -372,7 +372,7 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
     if budget_balance:
         T_H_params = (e, lambdas.reshape(1, J), omega_SS.reshape(S, 1), 'SS', etr_params, theta, tau_bq,
                           tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J, tau_b, delta_tau)
-        new_T_H = tax.revenue(new_r, new_w, b_s, nssmat, new_BQ, new_Y, L, K, factor, T_H_params)
+        new_T_H = aggr.revenue(new_r, new_w, b_s, nssmat, new_BQ, new_Y, L, K, factor, T_H_params)
     elif baseline_spending:
         new_T_H = T_H
     else:
@@ -417,7 +417,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, Yss, param
     firm.get_w()
     aggr.get_BQ()
     tax.replacement_rate_vals()
-    tax.revenue()
+    aggr.revenue()
     utils.convex_combo()
     utils.pct_diff_func()
 
@@ -587,7 +587,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, Yss, param
     b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
     lump_sum_params = (e, lambdas.reshape(1, J), omega_SS.reshape(S, 1), 'SS', etr_params, theta, tau_bq,
                       tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J, tau_b, delta_tau)
-    revenue_ss = tax.revenue(new_r, new_w, b_s, nssmat, new_BQ, Yss, Lss, Kss, factor, lump_sum_params)
+    revenue_ss = aggr.revenue(new_r, new_w, b_s, nssmat, new_BQ, Yss, Lss, Kss, factor, lump_sum_params)
     r_gov_ss = rss
     debt_service_ss = r_gov_ss*debt_ratio_ss*Yss
     new_borrowing = debt_ratio_ss*Yss*((1+g_n_ss)*np.exp(g_y)-1)
