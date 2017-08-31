@@ -1,8 +1,11 @@
 import pytest
-from ogusa import aggregates as aggr
 import numpy as np
 import pandas as pd
-np.random.seed(10)
+import os
+
+from ogusa import aggregates as aggr
+
+CURR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
 def test_get_L():
@@ -188,21 +191,36 @@ def test_revenue():
     T = 160
     s, j = 40, 2
     dim4 = 12
+    # need to reset seed everyt time np.rand.random function is called
+    np.random.seed(10)
     r = 0.067 + (0.086 - 0.067) * np.random.rand(T * s * j).reshape(T, s, j)
+    np.random.seed(10)
     w = 0.866 + (0.927 - 0.866) * np.random.rand(T * s * j).reshape(T, s, j)
+    np.random.seed(10)
     b = 0.0 + (6.94 - 0.0) * np.random.rand(T * s * j).reshape(T, s, j)
+    np.random.seed(10)
     n = 0.191 + (0.503 - 0.191) * np.random.rand(T * s * j).reshape(T, s, j)
+    np.random.seed(10)
     BQ = 0.032 + (0.055 - 0.032) * np.random.rand(T * s * j).reshape(T, s, j)
+    np.random.seed(10)
     Y = 0.561 + (0.602 - 0.561) * np.random.rand(T).reshape(T)
+    np.random.seed(10)
     L = 0.416 + (0.423 - 0.416) * np.random.rand(T).reshape(T)
+    np.random.seed(10)
     K = 0.957 + (1.163 - 0.957) * np.random.rand(T).reshape(T)
     factor = 140000.0
+    np.random.seed(10)
     e = 0.263 + (2.024 - 0.263) * np.random.rand(T * s * j).reshape(T, s, j)
+    np.random.seed(10)
     lambdas = 0.4 + (0.6 - 0.4) * np.random.rand(1 * 1 * j).reshape(1, 1, j)
+    np.random.seed(10)
     omega = 0.0 + (0.039 - 0.0) * np.random.rand(T * s * 1).reshape(T, s, 1)
+    np.random.seed(10)
     etr_params = (0.0 + (0.22 - 0.0) *
                   np.random.rand(T * s * j * dim4).reshape(T, s, j, dim4))
+    np.random.seed(10)
     theta = 0.101 + (0.156 - 0.101) * np.random.rand(j)
+    np.random.seed(10)
     tau_bq = np.random.rand(j)
     tau_payroll = 0.5
     h_wealth = 0.1
@@ -212,6 +230,8 @@ def test_revenue():
     tau_b = 0.2
     delta_tau = 0.0975
 
+    results_path = os.path.join(CURR_PATH, 'test_revenue_result.csv')
+
     # SS cases
     # case where I.ndim == 2 and etr_params.ndim == 2
     method = "SS"
@@ -220,7 +240,7 @@ def test_revenue():
               T, s, j, tau_b, delta_tau)
     res = aggr.revenue(r[0, 0, 0], w[0, 0, 0], b[0], n[0], BQ[0], Y[0], L[0],
                        K[0], factor, params)
-    assert(np.allclose(res, 0.48262471425641323))
+    assert(np.allclose(res, 0.44685203069166168))
 
     # case where I.ndim == 3 and etr_params.ndim == 1
     method = "SS"
@@ -229,8 +249,9 @@ def test_revenue():
               retire, T, s, j, tau_b, delta_tau)
     res = aggr.revenue(r[0, 0, 0], w[0, 0, 0], b[0], n[0], BQ[0], Y[0], L[0],
                        K[0], factor, params)
-    assert(np.allclose(res, 0.44215216429920967))
-    df = pd.read_csv('test_revenue_result.csv')
+    assert(np.allclose(res,  0.41586387808755482))
+
+    df = pd.read_csv(results_path)
 
     # TPI cases
     # case where I.ndim == 3 and etr_params.ndim == 3
@@ -253,4 +274,4 @@ def test_revenue():
     # result data
     # df = pd.DataFrame(np.array([res0, res1]).T, columns=['revenue_result_0',
     #                                                      'revenue_result_1'])
-    # df.to_csv("test_revenue_result.csv", print_index=False)
+    # df.to_csv(results_path, print_index=False)
