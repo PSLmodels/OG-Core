@@ -1,6 +1,8 @@
 import pytest
 from ogusa import aggregates as aggr
 import numpy as np
+import pandas as pd
+np.random.seed(10)
 
 # def rand_array_generator(v):
 #     if isinstance(v, np.ndarray):
@@ -190,9 +192,9 @@ def test_revenue():
                   np.random.rand(T * s * j * dim4).reshape(T, s, j, dim4))
     theta = 0.101 + (0.156 - 0.101) * np.random.rand(j)
     tau_bq = np.random.rand(j)
-    tau_payroll = 0.0
+    tau_payroll = 0.5
     h_wealth = 0.1
-    p_wealth = 0.0
+    p_wealth = 0.2
     m_wealth = 1.0
     retire = 21
     tau_b = 0.2
@@ -202,16 +204,36 @@ def test_revenue():
     params = (e, lambdas, omega, method, etr_params, theta, tau_bq,
               tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, s, j,
               tau_b, delta_tau)
-    aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, params)
+    res = aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, params)
+    # instead of keeping the list, we could keep the sum?
+    # df = pd.DataFrame(res, columns=['revenue_result_0'])
+    # df.to_csv("test_revenue_result.csv", print_index=False)
+    df = pd.read_csv('test_revenue_result.csv')
+    assert(np.allclose(df.revenue_result_0, res))
 
     method = "SS"
-    params = (e[0], lambdas[0], omega[0], method, etr_params[0, :, 0, dim4-1], theta, tau_bq,
+    params = (e[0], lambdas[0], omega[0], method, etr_params[0, :s, 0, :dim4], theta, tau_bq,
               tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, s, j,
               tau_b, delta_tau)
-    aggr.revenue(r[0], w[0], b[0], n[0], BQ[0], Y[0], L[0], K[0], factor, params)
+    res = aggr.revenue(r[0,0,0], w[0,0,0], b[0], n[0], BQ[0], Y[0], L[0], K[0], factor, params)
+    print('res', res)
+    assert(np.allclose(res, 0.48262471425641323))
 
     method = "SS"
-    params = (e[0], lambdas[0], omega[0], method, etr_params[0], theta, tau_bq,
+    params = (e[0], lambdas[0], omega[0], method, etr_params[0, 0, 0, :dim4], theta, tau_bq,
               tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, s, j,
               tau_b, delta_tau)
-    aggr.revenue(r[0], w[0], b[0], n[0], BQ[0], Y[0], L[0], K[0], factor, params)
+    res = aggr.revenue(r[0,0,0], w[0,0,0], b[0], n[0], BQ[0], Y[0], L[0], K[0], factor, params)
+    print('res', res)
+    assert(np.allclose(res, 0.44215216429920967))
+
+    # doesn't pass yet
+    # trying to get the case where I.ndim == 3 and etr_params.ndim == 3
+    method = "TPI"
+    params = (e, lambdas, omega, method, etr_params[:, 0, :, :], theta, tau_bq,
+              tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, s, j,
+              tau_b, delta_tau)
+    res = aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, params)
+    print('res', res)
+    # need to get result first
+    # assert(np.allclose(res, df.revenue_result_1))
