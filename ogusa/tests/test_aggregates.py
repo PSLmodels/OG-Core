@@ -4,17 +4,6 @@ import numpy as np
 import pandas as pd
 np.random.seed(10)
 
-# def rand_array_generator(v):
-#     if isinstance(v, np.ndarray):
-#         s = "{} + ({} - {}) * np.random.rand(" \
-#             + "*".join(["{}"]*len(v.shape)) \
-#             + ").reshape(" + ",".join(["{}"]*len(v.shape)) + ")"
-#         args = tuple([round(v.min(), 3), round(v.max(), 3), round(v.min(), 3)]
-#                      + list(v.shape) + list(v.shape))
-#         return s.format(*args)
-#     else:
-#         return v
-
 
 def test_get_L():
     """
@@ -28,6 +17,7 @@ def test_get_L():
     n = np.random.rand(T * s * j).reshape(T, s, j)
     e = np.tile(np.random.rand(s, j), (T, 1, 1))
 
+    # test matrix multiplication in 3 dimensions works as expected
     L_loop = np.ones(T * s * j).reshape(T, s, j)
     for t in range(T):
         for i in range(s):
@@ -38,10 +28,12 @@ def test_get_L():
     L_matrix = e * omega * lambdas * n
     assert (np.allclose(L_loop, L_matrix))
 
+    # test SS
     method = 'SS'
     L = aggr.get_L(n[0], (e[0], omega, lambdas, method))
     assert (np.allclose(L, L_loop[0].sum()))
 
+    # test TPI
     method = 'TPI'
     L = aggr.get_L(n, (e, omega, lambdas, method))
     assert (np.allclose(L, L_loop.sum(1).sum(1)))
@@ -62,6 +54,7 @@ def test_get_I():
     delta = np.random.rand()
     g_y = np.random.rand()
 
+    # make sure array shifting works as expected
     def shifted_arr():
         arr_t = []
         arr_shift_t = []
@@ -87,20 +80,23 @@ def test_get_I():
     for t in range(T):
         for i in range(s):
             for k in range(j):
-                res_loop[t, i, k] *= (omega_shift[t, i, 0] * imm_shift[t, i, 0] *
-                                      lambdas[k] * b_splus1[t, i, k])
+                res_loop[t, i, k] *= (omega_shift[t, i, 0] * imm_shift[t, i, 0]
+                                      * lambdas[k] * b_splus1[t, i, k])
 
     res_matrix = (b_splus1 * (imm_shift * omega_shift) * lambdas)
 
     assert (np.allclose(res_loop, res_matrix))
 
+    # test SS
     aggI_SS_test = ((1 + g_n[0]) * np.exp(g_y) *
                     (K_p1[0] - res_matrix[0].sum() / (1 + g_n[0])) -
                     (1.0 - delta) * K[0])
     aggI_SS = aggr.get_I(b_splus1[0], K_p1[0], K[0],
-                         (delta, g_y, omega[0], lambdas, imm_rates[0], g_n[0], 'SS'))
+                         (delta, g_y, omega[0], lambdas, imm_rates[0], g_n[0],
+                          'SS'))
     assert (np.allclose(aggI_SS, aggI_SS_test))
 
+    # test TPI
     aggI_TPI_test = ((1 + g_n) * np.exp(g_y) *
                      (K_p1 - res_matrix.sum(1).sum(1) / (1 + g_n)) -
                      (1.0 - delta) * K)
@@ -110,6 +106,9 @@ def test_get_I():
 
 
 def test_get_K():
+    """
+    Simulate data similar to observed
+    """
     T = 160
     s, j = 40, 2
 
@@ -133,6 +132,9 @@ def test_get_K():
 
 
 def test_get_BQ():
+    """
+    Simulate data similar to observed
+    """
     T = 160
     s, j = 40, 2
 
@@ -146,16 +148,21 @@ def test_get_BQ():
     BQ_presum = b_splus1 * omega * rho * lambdas
     factor = (1.0 + r) / (1.0 + g_n)
 
+    # test SS
     BQ = aggr.get_BQ(r[0], b_splus1[0],
                      (omega[0], lambdas[0], rho[0], g_n[0], "SS"))
     assert np.allclose(BQ_presum[0].sum(0) * factor[0], BQ)
 
+    # test TPI
     BQ = aggr.get_BQ(r, b_splus1,
                      (omega, lambdas, rho, g_n, "TPI"))
     assert np.allclose(BQ_presum.sum(1) * factor, BQ)
 
 
 def test_get_C():
+    """
+    Simulate data similar to observed
+    """
     T = 160
     s, j = 40, 2
 
@@ -165,14 +172,19 @@ def test_get_C():
 
     aggC_presum = c * omega * lambdas
 
+    # test SS
     aggC = aggr.get_C(c[0], (omega[0], lambdas, "SS"))
     assert np.allclose(aggC_presum[0].sum(), aggC)
-
+    # test TPI
     aggC = aggr.get_C(c, (omega, lambdas, "TPI"))
     assert np.allclose(aggC_presum.sum(1).sum(1), aggC)
 
 
 def test_revenue():
+    """
+    Simulate data similar to observed and compare current results with saved
+    results
+    """
     T = 160
     s, j = 40, 2
     dim4 = 12
@@ -200,40 +212,45 @@ def test_revenue():
     tau_b = 0.2
     delta_tau = 0.0975
 
+    # SS cases
+    # case where I.ndim == 2 and etr_params.ndim == 2
+    method = "SS"
+    params = (e[0], lambdas[0], omega[0], method, etr_params[0, :s, 0, :dim4],
+              theta, tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth, retire,
+              T, s, j, tau_b, delta_tau)
+    res = aggr.revenue(r[0, 0, 0], w[0, 0, 0], b[0], n[0], BQ[0], Y[0], L[0],
+                       K[0], factor, params)
+    assert(np.allclose(res, 0.48262471425641323))
+
+    # case where I.ndim == 3 and etr_params.ndim == 1
+    method = "SS"
+    params = (e[0], lambdas[0], omega[0], method, etr_params[0, 0, 0, :dim4],
+              theta, tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth,
+              retire, T, s, j, tau_b, delta_tau)
+    res = aggr.revenue(r[0, 0, 0], w[0, 0, 0], b[0], n[0], BQ[0], Y[0], L[0],
+                       K[0], factor, params)
+    assert(np.allclose(res, 0.44215216429920967))
+    df = pd.read_csv('test_revenue_result.csv')
+
+    # TPI cases
+    # case where I.ndim == 3 and etr_params.ndim == 3
+    method = "TPI"
+    params = (e, lambdas, omega, method, etr_params[0, :, :, :], theta, tau_bq,
+              tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, s, j,
+              tau_b, delta_tau)
+    res0 = aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, params)
+    assert(np.allclose(res0, df.revenue_result_0))
+
+    # case where I.ndim == 3 and etr_params.ndim == 4
     method = "TPI"
     params = (e, lambdas, omega, method, etr_params, theta, tau_bq,
               tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, s, j,
               tau_b, delta_tau)
-    res = aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, params)
-    # instead of keeping the list, we could keep the sum?
-    # df = pd.DataFrame(res, columns=['revenue_result_0'])
+    res1 = aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, params)
+    assert(np.allclose(df.revenue_result_1, res1))
+
+    # if we update the simulated data, uncomment this part to create new test
+    # result data
+    # df = pd.DataFrame(np.array([res0, res1]).T, columns=['revenue_result_0',
+    #                                                      'revenue_result_1'])
     # df.to_csv("test_revenue_result.csv", print_index=False)
-    df = pd.read_csv('test_revenue_result.csv')
-    assert(np.allclose(df.revenue_result_0, res))
-
-    method = "SS"
-    params = (e[0], lambdas[0], omega[0], method, etr_params[0, :s, 0, :dim4], theta, tau_bq,
-              tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, s, j,
-              tau_b, delta_tau)
-    res = aggr.revenue(r[0,0,0], w[0,0,0], b[0], n[0], BQ[0], Y[0], L[0], K[0], factor, params)
-    print('res', res)
-    assert(np.allclose(res, 0.48262471425641323))
-
-    method = "SS"
-    params = (e[0], lambdas[0], omega[0], method, etr_params[0, 0, 0, :dim4], theta, tau_bq,
-              tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, s, j,
-              tau_b, delta_tau)
-    res = aggr.revenue(r[0,0,0], w[0,0,0], b[0], n[0], BQ[0], Y[0], L[0], K[0], factor, params)
-    print('res', res)
-    assert(np.allclose(res, 0.44215216429920967))
-
-    # doesn't pass yet
-    # trying to get the case where I.ndim == 3 and etr_params.ndim == 3
-    method = "TPI"
-    params = (e, lambdas, omega, method, etr_params[:, 0, :, :], theta, tau_bq,
-              tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, s, j,
-              tau_b, delta_tau)
-    res = aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, params)
-    print('res', res)
-    # need to get result first
-    # assert(np.allclose(res, df.revenue_result_1))
