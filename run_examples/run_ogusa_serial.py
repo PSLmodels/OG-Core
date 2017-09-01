@@ -94,7 +94,7 @@ def run_micro_macro(user_params):
     input_dir = REFORM_DIR
     guid_iter = 'reform_' + str(0)
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'test':True, 'time_path':True, 'baseline':False,
+            'test':False, 'time_path':True, 'baseline':False,
             'analytical_mtrs':False, 'age_specific':True,
             'user_params':user_params,'guid':'', 'reform':reform ,
             'run_micro':False, 'small_open': False, 'budget_balance':False,
