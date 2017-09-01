@@ -186,7 +186,6 @@ def test_revenue():
     T = 30
     s, j = 20, 2
     dim4 = 12
-    # need to reset seed everyt time np.rand.random function is called
     random_state = np.random.RandomState(10)
     r = 0.067 + (0.086 - 0.067) * random_state.rand(T * s * j).reshape(T, s, j)
     w = 0.866 + (0.927 - 0.866) * random_state.rand(T * s * j).reshape(T, s, j)
@@ -212,8 +211,6 @@ def test_revenue():
     tau_b = 0.2
     delta_tau = 0.0975
 
-    # results_path = os.path.join(CURR_PATH, 'test_revenue_result.csv')
-
     # SS cases
     # case where I.ndim == 2 and etr_params.ndim == 2
     method = "SS"
@@ -224,7 +221,7 @@ def test_revenue():
                        K[0], factor, params)
     assert(np.allclose(res,  0.221949490018))
 
-    # case where I.ndim == 3 and etr_params.ndim == 1
+    # case where I.ndim == 2 and etr_params.ndim == 1
     method = "SS"
     params = (e[0], lambdas[0], omega[0], method, etr_params[0, 0, 0, :dim4],
               theta, tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth,
@@ -234,7 +231,7 @@ def test_revenue():
     assert(np.allclose(res,  0.254125941336))
 
     # TPI cases
-    # case where I.ndim == 2 and etr_params.ndim == 3
+    # case where I.ndim == 3 and etr_params.ndim == 3
     method = "TPI"
     params = (e, lambdas, omega, method, etr_params[0, :, :, :], theta, tau_bq,
               tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, s, j,
