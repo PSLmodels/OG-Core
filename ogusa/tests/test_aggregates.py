@@ -1,11 +1,6 @@
 import pytest
 import numpy as np
-import pandas as pd
-import os
-
 from ogusa import aggregates as aggr
-
-CURR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
 def test_get_L():
@@ -188,8 +183,8 @@ def test_revenue():
     Simulate data similar to observed and compare current results with saved
     results
     """
-    T = 160
-    s, j = 40, 2
+    T = 30
+    s, j = 20, 2
     dim4 = 12
     # need to reset seed everyt time np.rand.random function is called
     random_state = np.random.RandomState(10)
@@ -217,7 +212,7 @@ def test_revenue():
     tau_b = 0.2
     delta_tau = 0.0975
 
-    results_path = os.path.join(CURR_PATH, 'test_revenue_result.csv')
+    # results_path = os.path.join(CURR_PATH, 'test_revenue_result.csv')
 
     # SS cases
     # case where I.ndim == 2 and etr_params.ndim == 2
@@ -227,7 +222,7 @@ def test_revenue():
               T, s, j, tau_b, delta_tau)
     res = aggr.revenue(r[0, 0, 0], w[0, 0, 0], b[0], n[0], BQ[0], Y[0], L[0],
                        K[0], factor, params)
-    # assert(np.allclose(res,  0.48262471425641323))
+    assert(np.allclose(res,  0.221949490018))
 
     # case where I.ndim == 3 and etr_params.ndim == 1
     method = "SS"
@@ -236,29 +231,33 @@ def test_revenue():
               retire, T, s, j, tau_b, delta_tau)
     res = aggr.revenue(r[0, 0, 0], w[0, 0, 0], b[0], n[0], BQ[0], Y[0], L[0],
                        K[0], factor, params)
-    assert(np.allclose(res,  0.44215216429920967))
-
-    df = pd.read_csv(results_path)
+    assert(np.allclose(res,  0.254125941336))
 
     # TPI cases
-    # case where I.ndim == 3 and etr_params.ndim == 3
+    # case where I.ndim == 2 and etr_params.ndim == 3
     method = "TPI"
     params = (e, lambdas, omega, method, etr_params[0, :, :, :], theta, tau_bq,
               tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, s, j,
               tau_b, delta_tau)
     res0 = aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, params)
-    assert(np.allclose(res0, df.revenue_result_0))
+    test0 = [0.22043565, 0.3688958, 0.29645767, 0.25988231, 0.29425131,
+             0.31272687, 0.2974872, 0.31896531, 0.29513251, 0.28490669,
+             0.34631065, 0.36188691, 0.32066874, 0.29802613, 0.32527218,
+             0.3542139, 0.2871554, 0.3162814, 0.3588464, 0.33117283,
+             0.22091549, 0.32796384, 0.36482154, 0.3471811, 0.29565409,
+             0.3154847, 0.27197068, 0.29355459, 0.33674227, 0.32027113]
+    assert(np.allclose(res0, test0))
 
     # case where I.ndim == 3 and etr_params.ndim == 4
     method = "TPI"
+    test1 = [0.22043565, 0.37972086, 0.29705049, 0.26463557, 0.29375724,
+             0.3108769, 0.28792989, 0.32174668, 0.28536477, 0.2971027,
+             0.34452219, 0.35935444, 0.32545748, 0.30298923, 0.33078302,
+             0.34243649, 0.28907686, 0.31725882, 0.35382608, 0.33404404,
+             0.21309185, 0.33376603, 0.36214014, 0.35571628, 0.29830538,
+             0.32687803, 0.26711088, 0.30278754, 0.33376401, 0.31110024]
     params = (e, lambdas, omega, method, etr_params, theta, tau_bq,
               tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, s, j,
               tau_b, delta_tau)
     res1 = aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, params)
-    assert(np.allclose(df.revenue_result_1, res1))
-
-    # if we update the simulated data, uncomment this part to create new test
-    # result data
-    # df = pd.DataFrame(np.array([res0, res1]).T, columns=['revenue_result_0',
-    #                                                      'revenue_result_1'])
-    # df.to_csv(results_path, print_index=False)
+    assert(np.allclose(res1, test1))
