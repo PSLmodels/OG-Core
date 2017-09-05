@@ -10,8 +10,15 @@ def test_get_L():
     """
     T = 160
     s, j = 40, 2
+
+    # normalize across S and J axes
     omega = np.random.rand(s).reshape(s, 1)
+    omega = omega/omega.sum()
     lambdas = np.random.rand(j).reshape(1, j)
+    lambdas = lambdas/lambdas.sum()
+    assert np.allclose(lambdas.sum(), 1.0)
+    assert np.allclose(omega.sum(), 1.0)
+
     n = np.random.rand(T * s * j).reshape(T, s, j)
     e = np.tile(np.random.rand(s, j), (T, 1, 1))
 
@@ -53,11 +60,13 @@ def test_get_I():
     g_y = np.random.rand()
 
     # make sure array shifting works as expected
-    def shifted_arr():
+    def shifted_arr(normalize=False):
         arr_t = []
         arr_shift_t = []
         for t in range(T):
             arr = np.random.rand(s).reshape(s, 1)
+            if normalize:
+                arr = arr/arr.sum()
             arr_shift = np.append(arr[1:], [0.0])
 
             arr_t.append(arr)
@@ -66,11 +75,15 @@ def test_get_I():
         return (np.array(arr_t).reshape(T, s, 1),
                 np.array(arr_shift_t).reshape(T, s, 1))
 
-    lambdas = np.random.rand(2)
     imm_rates, imm_shift = shifted_arr()
     imm_rates = imm_rates - 0.5
     imm_shift = imm_shift - 0.5
-    omega, omega_shift = shifted_arr()
+    # normalize across S and J axes
+    lambdas = np.random.rand(2)
+    lambdas = lambdas/lambdas.sum()
+    omega, omega_shift = shifted_arr(normalize=True)
+    assert np.allclose(lambdas.sum(), 1.0)
+    assert np.allclose(omega.sum(), T)
 
     g_n = np.random.rand(T)
 
@@ -111,8 +124,14 @@ def test_get_K():
     s, j = 40, 2
 
     b = -0.1 + (7 * np.random.rand(T * s * j).reshape(T, s, j))
+    # normalize across S and J axes
     omega = 0.5 * np.random.rand(T * s).reshape(T, s, 1)
+    omega = omega/omega.sum(axis=1).reshape(T, 1, 1)
     lambdas = 0.4 + (0.2 * np.random.rand(j).reshape(1, 1, j))
+    lambdas = lambdas/lambdas.sum()
+    assert np.allclose(lambdas.sum(), 1.0)
+    assert np.allclose(omega.sum(), T)
+
     g_n = 0.1 * np.random.rand(T)
     imm_rates = -0.1 + np.random.rand(T * s * 1).reshape(T, s, 1)
 
@@ -138,8 +157,14 @@ def test_get_BQ():
 
     r = 0.5 + 0.5 * np.random.rand(T).reshape(T, 1)
     b_splus1 = 0.06 + 7 * np.random.rand(T, s, j)
-    omega = 0.5 * np.random.rand(T, s, 1)
+    # normalize across S and J axes
+    omega = 0.5 * np.random.rand(T * s).reshape(T, s, 1)
+    omega = omega/omega.sum(axis=1).reshape(T, 1, 1)
     lambdas = 0.4 + 0.2 * np.random.rand(j).reshape(1,1,j)
+    lambdas = lambdas/lambdas.sum()
+    assert np.allclose(lambdas.sum(), 1.0)
+    assert np.allclose(omega.sum(), T)
+
     rho = np.random.rand(s).reshape(1,s,1)
     g_n = 0.1 * np.random.rand(T).reshape(T, 1)
 
@@ -165,8 +190,14 @@ def test_get_C():
     s, j = 40, 2
 
     c = 0.1 + 0.5 * np.random.rand(T * s * j).reshape(T, s, j)
+    # normalize across S and J axes
     omega = 0.5 * np.random.rand(T * s).reshape(T, s, 1)
+    omega = omega/omega.sum(axis=1).reshape(T, 1, 1)
     lambdas = np.random.rand(j)
+    lambdas = lambdas/lambdas.sum()
+    assert np.allclose(lambdas.sum(), 1.0)
+    assert np.allclose(omega.sum(), T)
+
 
     aggC_presum = c * omega * lambdas
 
@@ -197,8 +228,14 @@ def test_revenue():
     K = 0.957 + (1.163 - 0.957) * random_state.rand(T).reshape(T)
     factor = 140000.0
     e = 0.263 + (2.024 - 0.263) * random_state.rand(T * s * j).reshape(T, s, j)
+    # normalize across S and J axes
     lambdas = 0.4 + (0.6 - 0.4) * random_state.rand(1 * 1 * j).reshape(1, 1, j)
+    lambdas = lambdas/lambdas.sum()
     omega = 0.0 + (0.039 - 0.0) * random_state.rand(T * s * 1).reshape(T, s, 1)
+    omega = omega/omega.sum(axis=1).reshape(T, 1, 1)
+    assert np.allclose(lambdas.sum(), 1.0)
+    assert np.allclose(omega.sum(), T)
+
     etr_params = (0.0 + (0.22 - 0.0) *
                   random_state.rand(T * s * j * dim4).reshape(T, s, j, dim4))
     theta = 0.101 + (0.156 - 0.101) * random_state.rand(j)
@@ -219,7 +256,7 @@ def test_revenue():
               T, s, j, tau_b, delta_tau)
     res = aggr.revenue(r[0, 0, 0], w[0, 0, 0], b[0], n[0], BQ[0], Y[0], L[0],
                        K[0], factor, params)
-    assert(np.allclose(res,  0.221949490018))
+    assert(np.allclose(res,  0.62811573441331581))
 
     # case where I.ndim == 2 and etr_params.ndim == 1
     method = "SS"
@@ -228,7 +265,7 @@ def test_revenue():
               retire, T, s, j, tau_b, delta_tau)
     res = aggr.revenue(r[0, 0, 0], w[0, 0, 0], b[0], n[0], BQ[0], Y[0], L[0],
                        K[0], factor, params)
-    assert(np.allclose(res,  0.254125941336))
+    assert(np.allclose(res,  0.72406672579590448))
 
     # TPI cases
     # case where I.ndim == 3 and etr_params.ndim == 3
@@ -236,25 +273,25 @@ def test_revenue():
     params = (e, lambdas, omega, method, etr_params[0, :, :, :], theta, tau_bq,
               tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, s, j,
               tau_b, delta_tau)
-    res0 = aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, params)
-    test0 = [0.22043565, 0.3688958, 0.29645767, 0.25988231, 0.29425131,
-             0.31272687, 0.2974872, 0.31896531, 0.29513251, 0.28490669,
-             0.34631065, 0.36188691, 0.32066874, 0.29802613, 0.32527218,
-             0.3542139, 0.2871554, 0.3162814, 0.3588464, 0.33117283,
-             0.22091549, 0.32796384, 0.36482154, 0.3471811, 0.29565409,
-             0.3154847, 0.27197068, 0.29355459, 0.33674227, 0.32027113]
-    assert(np.allclose(res0, test0))
+    res = aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, params)
+    test = [0.62360144, 0.74817083, 0.71287424, 0.68285447, 0.64298028,
+            0.69488446, 0.70770547, 0.66313781, 0.7175277, 0.64296948,
+            0.67107476, 0.69960495, 0.63951371, 0.73104403, 0.68674457,
+            0.66307339, 0.66636669, 0.64870362, 0.75359951, 0.68470411,
+            0.50771554, 0.71878888, 0.6983747, 0.62996017, 0.67288954,
+            0.69745476, 0.64180526, 0.6668633, 0.72454797, 0.71758819]
+    assert(np.allclose(res, test))
 
     # case where I.ndim == 3 and etr_params.ndim == 4
     method = "TPI"
-    test1 = [0.22043565, 0.37972086, 0.29705049, 0.26463557, 0.29375724,
-             0.3108769, 0.28792989, 0.32174668, 0.28536477, 0.2971027,
-             0.34452219, 0.35935444, 0.32545748, 0.30298923, 0.33078302,
-             0.34243649, 0.28907686, 0.31725882, 0.35382608, 0.33404404,
-             0.21309185, 0.33376603, 0.36214014, 0.35571628, 0.29830538,
-             0.32687803, 0.26711088, 0.30278754, 0.33376401, 0.31110024]
+    test = [0.62360144, 0.7705223, 0.71433003, 0.69590516, 0.64187822,
+            0.69069099, 0.68437605, 0.66896378, 0.69317402, 0.67131389,
+            0.66756797, 0.69466778, 0.64910748, 0.74363875, 0.6986025,
+            0.64086681, 0.67091728, 0.65072774, 0.74296341, 0.69073292,
+            0.48942517, 0.73170343, 0.69319158, 0.64553276, 0.67911291,
+            0.72327757, 0.63002155, 0.68856491, 0.71801762, 0.69659916]
     params = (e, lambdas, omega, method, etr_params, theta, tau_bq,
               tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, s, j,
               tau_b, delta_tau)
-    res1 = aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, params)
-    assert(np.allclose(res1, test1))
+    res = aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, params)
+    assert(np.allclose(res, test))
