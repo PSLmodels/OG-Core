@@ -54,12 +54,12 @@ def create_diff(baseline_dir, policy_dir, dump_output=False):
     out = macro_output.dump_diff_output(baseline_dir, policy_dir)
     pct_changes, baseline_macros, policy_macros = out
 
-    np.savetxt('ClosedEconPctChanges.csv',pct_changes,delimiter=",")
+    np.savetxt(policy_dir + '/ClosedEconPctChanges.csv',pct_changes,delimiter=",")
     if dump_output:
         pickle.dump(pct_changes, open("ogusa_output.pkl", "wb"))
 
-    np.savetxt('ClosedEconBaseline.csv',baseline_macros,delimiter=",")
-    np.savetxt('ClosedEconPolicy.csv',policy_macros,delimiter=",")
+    np.savetxt(baseline_dir + '/ClosedEconBaseline.csv',baseline_macros,delimiter=",")
+    np.savetxt(policy_dir + '/ClosedEconPolicy.csv',policy_macros,delimiter=",")
 
     return pct_changes
 

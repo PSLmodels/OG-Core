@@ -935,7 +935,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
                     'tax_path': tax_path}
 
     growth = (1+g_n_vector)*np.exp(g_y)
-    with open('TPI_output.csv', 'wb') as csvfile:
+    with open(output_dir + '/TPI_output.csv', 'wb') as csvfile:
         tpiwriter = csv.writer(csvfile)
         tpiwriter.writerow(Y)
         tpiwriter.writerow(D)
