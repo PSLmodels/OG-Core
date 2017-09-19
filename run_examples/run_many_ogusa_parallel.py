@@ -1,36 +1,94 @@
 import ogusa
 import os
 import sys
-from multiprocessing import Process
+from multiprocessing import Process, Pool
 import time
-
-#OGUSA_PATH = os.environ.get("OGUSA_PATH", "../../ospc-dynamic/dynamic")
-
-#sys.path.append(OGUSA_PATH)
+import numpy as np
+import pandas as pd
 
 from ogusa.scripts import postprocess
-#from execute import runner # change here for small jobs
-from ogusa.scripts.execute_large import runner, runner_SS
+from ogusa.scripts.execute import runner
+from ogusa.utils import REFORM_DIR, BASELINE_DIR
+
+CUR_PATH = os.path.abspath(os.path.dirname(__file__))
+PUF_PATH = os.path.join(CUR_PATH, '../ogusa/puf.csv')
+
+CPU_COUNT = 4
+
+def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
+                    reform_dir=REFORM_DIR, guid='', data=PUF_PATH):
+
+    start_time = time.time()
+
+    T_shifts = np.zeros(50)
+    T_shifts[2:10] = 0.01
+    T_shifts[10:40]= -0.01
+    G_shifts = np.zeros(6)
+    G_shifts[0:3]  = -0.01
+    G_shifts[3:6]  = -0.005
+    user_params = {'frisch':0.41, 'start_year':2017, 'debt_ratio_ss':1.0, 'T_shifts':T_shifts, 'G_shifts':G_shifts}
+
+    '''
+    ------------------------------------------------------------------------
+        Run baseline
+    ------------------------------------------------------------------------
+    '''
+
+    if not os.path.exists(baseline_dir):
+        output_base = baseline_dir
+        input_dir = baseline_dir
+        kwargs={'output_base':output_base, 'baseline_dir':baseline_dir,
+                'test':False, 'time_path':True, 'baseline':True,
+                'analytical_mtrs':False, 'age_specific':True,
+                'user_params':user_params,'guid':'baseline',
+                'run_micro':True, 'small_open': False, 'budget_balance':False,
+                'baseline_spending':False, 'data': data}
+        #p1 = Process(target=runner, kwargs=kwargs)
+        #p1.start()
+        runner(**kwargs)
 
 
-def run_micro_macro(user_params):
+    '''
+    ------------------------------------------------------------------------
+        Run reform
+    ------------------------------------------------------------------------
+    '''
+    output_base = reform_dir
+    input_dir = reform_dir
+    guid_iter = 'reform_' + str(0)
+    kwargs={'output_base':output_base, 'baseline_dir':baseline_dir,
+            'test':False, 'time_path':True, 'baseline':False,
+            'analytical_mtrs':False, 'age_specific':True,
+            'user_params':user_params,'guid':guid, 'reform':reform ,
+            'run_micro':True, 'small_open': False, 'budget_balance':False,
+            'baseline_spending':False, 'data': data}
+    runner(**kwargs)
 
+    ans = postprocess.create_diff(baseline_dir=baseline_dir, policy_dir=reform_dir)
+
+    print "total time was ", (time.time() - start_time)
+    print 'Percentage changes in aggregates:', ans
+
+    # return ans
+
+if __name__ == "__main__":
+    data = pd.read_csv(PUF_PATH)
     reform0 = {
-    2016: {
-        '_II_rt1': [.09],
-        '_II_rt2': [.135],
-        '_II_rt3': [.225],
-        '_II_rt4': [.252],
-        '_II_rt5': [.297],
-        '_II_rt6': [.315],
-        '_II_rt7': [0.3564],
-    }, }
-
+        2016: {
+            '_II_rt1': [.09],
+            '_II_rt2': [.135],
+            '_II_rt3': [.225],
+            '_II_rt4': [.252],
+            '_II_rt5': [.297],
+            '_II_rt6': [.315],
+            '_II_rt7': [0.3564],
+        },
+    }
     reform1 = {
-    2016: {
-        '_II_rt7': [0.35],
-    }, }
-
+        2016: {
+            '_II_rt7': [0.35],
+        },
+    }
     reform2 = {
     2016: {
         '_II_rt7': [0.34],
@@ -83,71 +141,24 @@ def run_micro_macro(user_params):
            '_AMT_trt2': [.0]
     },}
 
+    reforms = [reform0, reform1, reform2, reform3, reform4, reform5, reform6,
+               reform7, reform8, reform9]
 
-    start_time = time.time()
+    pool = Pool(processes=CPU_COUNT)
+    results = []
+    for i in range(len(reforms)):
+        args = ({},
+                reforms[i],
+                "./OUTPUT_BASELINE",
+                "./OUTPUT_REFORM_" + str(i),
+                str(i),
+                data,)
 
-    BASELINE_DIR = "./OUTPUT_BASELINE"
-    output_base = BASELINE_DIR
-    input_dir = BASELINE_DIR
+        async_result = pool.apply_async(run_micro_macro, args)
+        results.append(async_result)
 
-    user_params = {'frisch':0.41, 'start_year':2016}
+    for result in results:
+        result.get()
 
-    '''
-    ------------------------------------------------------------------------
-        Run SS for Baseline first - so can run baseline and reform in parallel if want
-    ------------------------------------------------------------------------
-    '''
-    output_base = BASELINE_DIR
-    input_dir = BASELINE_DIR
-    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'baseline':True, 'analytical_mtrs':False, 'age_specific':False,
-            'user_params':user_params,'guid':'_base_flattax',
-            'run_micro':True}
-    runner_SS(**kwargs)
-
-
-    '''
-    ------------------------------------------------------------------------
-        Run baseline
-    ------------------------------------------------------------------------
-    '''
-    output_base = BASELINE_DIR
-    input_dir = BASELINE_DIR
-    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'baseline':True, 'analytical_mtrs':False, 'age_specific':False,
-            'user_params':user_params,'guid':'_base_flattax',
-            'run_micro':False}
-    runner(**kwargs)
-
-
-    '''
-    ------------------------------------------------------------------------
-        Run reforms
-    ------------------------------------------------------------------------
-    '''
-    reforms = (reform0, reform1, reform2, reform3, reform4, reform5, reform6, reform7, reform8, reform9)
-
-    counter = 0
-    for x in reforms:
-        print 'Running reform ', counter
-
-        REFORM_DIR = './OUTPUT_REFORM/' + str(counter) + '/'
-
-        reform = x
-        guid_iter = 'reform_' + str(counter)
-
-        output_base = REFORM_DIR
-        input_dir = REFORM_DIR
-        guid_iter = 'reform_' + str(counter)
-        kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'baseline':False, 'analytical_mtrs':False, 'age_specific':False,
-            'reform':reform, 'user_params':user_params,'guid':guid_iter, 'run_micro':True}
-        runner(**kwargs)
-
-        counter = counter + 1
-
-    print "total time was ", (time.time() - start_time)
-
-
-if __name__ == "__main__":
-    run_micro_macro(user_params={})
+    pool.close()
+    pool.join()

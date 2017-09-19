@@ -50,7 +50,7 @@ def get_calculator(baseline, calculator_start_year, reform=None, data=None, weig
     # create a calculator
     policy1 = Policy()
     if data is not None:
-        records1 = Records(data=data, weights=weights, start_year=records_start_year)
+        records1 = Records(data=data, weights=weights)#, start_year=records_start_year)
     else:
         records1 = Records()
 
@@ -72,7 +72,7 @@ def get_calculator(baseline, calculator_start_year, reform=None, data=None, weig
     return calc1
 
 
-def get_data(baseline=False, start_year=2016, reform={}):
+def get_data(baseline=False, start_year=2016, reform={}, data=None):
     '''
     --------------------------------------------------------------------
     This function creates dataframes of micro data from the
@@ -97,9 +97,8 @@ def get_data(baseline=False, start_year=2016, reform={}):
     RETURNS: micro_data_dict
     --------------------------------------------------------------------
     '''
-
     calc1 = get_calculator(baseline=baseline, calculator_start_year=start_year,
-                           reform=reform)
+                           reform=reform, data=data)
 
     # running all the functions and calculates taxes
     calc1.calc_all()

@@ -1,34 +1,19 @@
 import ogusa
 import os
 import sys
-from multiprocessing import Process, Pool
 import time
 import numpy as np
-
-#OGUSA_PATH = os.environ.get("OGUSA_PATH", "../../ospc-dynamic/dynamic")
-
-#sys.path.append(OGUSA_PATH)
+import pandas as pd
 
 from ogusa.scripts import postprocess
 from ogusa.scripts.execute import runner
 from ogusa.utils import REFORM_DIR, BASELINE_DIR
 
-CPU_COUNT = 4
+CUR_PATH = os.path.abspath(os.path.dirname(__file__))
+PUF_PATH = os.path.join(CUR_PATH, '../ogusa/puf.csv')
 
-def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR, reform_dir=REFORM_DIR):
-
-    # reform = {
-    # 2015: {
-    #     '_II_rt1': [0.045]
-    # }, }
-
-    # reform = {
-    # 2017: {
-    #    '_II_rt5': [.3],
-    #    '_II_rt6': [.3],
-    #    '_II_rt7': [0.3]
-    # } }
-
+def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
+                    reform_dir=REFORM_DIR, guid='', data=PUF_PATH):
 
     start_time = time.time()
 
@@ -42,38 +27,22 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR, reform_
 
     '''
     ------------------------------------------------------------------------
-        Run SS for Baseline first - so can run baseline and reform in parallel if want
-    ------------------------------------------------------------------------
-    '''
-    # output_base = BASELINE_DIR
-    # input_dir = BASELINE_DIR
-    # kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-    #        'test':False, 'time_path':False, 'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
-    #        'user_params':user_params,'guid':'',
-    #        'run_micro':False, 'small_open':False, 'budget_balance':False, 'baseline_spending':False}
-    # #p1 = Process(target=runner, kwargs=kwargs)
-    # #p1.start()
-    # runner(**kwargs)
-    # # quit()
-
-
-    '''
-    ------------------------------------------------------------------------
         Run baseline
     ------------------------------------------------------------------------
     '''
 
-
-    output_base = baseline_dir
-    input_dir = baseline_dir
-    kwargs={'output_base':output_base, 'baseline_dir':baseline_dir,
-            'test':False, 'time_path':True, 'baseline':True,
-            'analytical_mtrs':False, 'age_specific':True,
-            'user_params':user_params,'guid':'',
-            'run_micro':False, 'small_open': False, 'budget_balance':False, 'baseline_spending':False}
-    #p1 = Process(target=runner, kwargs=kwargs)
-    #p1.start()
-    runner(**kwargs)
+    if not os.path.exists(baseline_dir):
+        output_base = baseline_dir
+        input_dir = baseline_dir
+        kwargs={'output_base':output_base, 'baseline_dir':baseline_dir,
+                'test':False, 'time_path':True, 'baseline':True,
+                'analytical_mtrs':False, 'age_specific':True,
+                'user_params':user_params,'guid':'baseline',
+                'run_micro':True, 'small_open': False, 'budget_balance':False,
+                'baseline_spending':False, 'data': data}
+        #p1 = Process(target=runner, kwargs=kwargs)
+        #p1.start()
+        runner(**kwargs)
 
 
     '''
@@ -87,18 +56,10 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR, reform_
     kwargs={'output_base':output_base, 'baseline_dir':baseline_dir,
             'test':False, 'time_path':True, 'baseline':False,
             'analytical_mtrs':False, 'age_specific':True,
-            'user_params':user_params,'guid':'', 'reform':reform ,
-            'run_micro':False, 'small_open': False, 'budget_balance':False,
-            'baseline_spending':False}
-    #p2 = Process(target=runner, kwargs=kwargs)
-    #p2.start()
+            'user_params':user_params,'guid':guid, 'reform':reform ,
+            'run_micro':True, 'small_open': False, 'budget_balance':False,
+            'baseline_spending':False, 'data': data}
     runner(**kwargs)
-
-    #p1.join()
-    # print "just joined"
-    #p2.join()
-
-    # time.sleep(0.5)
 
     ans = postprocess.create_diff(baseline_dir=baseline_dir, policy_dir=reform_dir)
 
@@ -108,6 +69,7 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR, reform_
     # return ans
 
 if __name__ == "__main__":
+    data = pd.read_csv(PUF_PATH)
     reform0 = {
         2016: {
             '_II_rt1': [.09],
@@ -179,61 +141,10 @@ if __name__ == "__main__":
     reforms = [reform0, reform1, reform2, reform3, reform4, reform5, reform6,
                reform7, reform8, reform9]
 
-    pool = Pool(processes=CPU_COUNT)
-    results = []
     for i in range(len(reforms)):
-        args = ({},
-                reforms[i],
-                "./OUTPUT_BASELINE_" + str(i),
-                "./OUTPUT_REFORM_" + str(i), )
-
-        async_result = pool.apply_async(run_micro_macro, args)
-        results.append(async_result)
-
-    for result in results:
-        result.get()
-
-    pool.close()
-    pool.join()
-
-
-    # run_micro_macro(user_params={},
-    #                 reform=reform0,
-    #                 baseline_dir="./OUTPUT_BASELINE_0",
-    #                 reform_dir="./OUTPUT_REFORM_0")
-    # run_micro_macro(user_params={},
-    #                 reform=reform1,
-    #                 baseline_dir="./OUTPUT_BASELINE_1",
-    #                 reform_dir="./OUTPUT_REFORM_1")
-    # run_micro_macro(user_params={},
-    #                 reform=reform2,
-    #                 baseline_dir="./OUTPUT_BASELINE_2",
-    #                 reform_dir="./OUTPUT_REFORM_2")
-    # run_micro_macro(user_params={},
-    #                 reform=reform3,
-    #                 baseline_dir="./OUTPUT_BASELINE_3",
-    #                 reform_dir="./OUTPUT_REFORM_3")
-    # run_micro_macro(user_params={},
-    #                 reform=reform4,
-    #                 baseline_dir="./OUTPUT_BASELINE_4",
-    #                 reform_dir="./OUTPUT_REFORM_4")
-    # run_micro_macro(user_params={},
-    #                 reform=reform5,
-    #                 baseline_dir="./OUTPUT_BASELINE_5",
-    #                 reform_dir="./OUTPUT_REFORM_5")
-    # run_micro_macro(user_params={},
-    #                 reform=reform6,
-    #                 baseline_dir="./OUTPUT_BASELINE_6",
-    #                 reform_dir="./OUTPUT_REFORM_6")
-    # run_micro_macro(user_params={},
-    #                 reform=reform7,
-    #                 baseline_dir="./OUTPUT_BASELINE_7",
-    #                 reform_dir="./OUTPUT_REFORM_7")
-    # run_micro_macro(user_params={},
-    #                 reform=reform8,
-    #                 baseline_dir="./OUTPUT_BASELINE_8",
-    #                 reform_dir="./OUTPUT_REFORM_8")
-    # run_micro_macro(user_params={},
-    #                 reform=reform9,
-    #                 baseline_dir="./OUTPUT_BASELINE_9",
-    #                 reform_dir="./OUTPUT_REFORM_9")
+        run_micro_macro({},
+                        reforms[i],
+                        "./OUTPUT_BASELINE",
+                        "./OUTPUT_REFORM_" + str(i),
+                        str(i),
+                        data)
