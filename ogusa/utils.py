@@ -23,9 +23,9 @@ PATH_EXISTS_ERRNO = 17
 REFORM_DIR = "./OUTPUT_REFORM"
 BASELINE_DIR = "./OUTPUT_BASELINE"
 
-for f in (REFORM_DIR, BASELINE_DIR):
-    if not os.path.exists(f):
-        os.mkdir(f)
+# for f in (REFORM_DIR, BASELINE_DIR):
+#     if not os.path.exists(f):
+#         os.mkdir(f)
 
 
 def mkdirs(path):

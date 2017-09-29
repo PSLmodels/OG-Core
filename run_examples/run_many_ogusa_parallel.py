@@ -16,7 +16,8 @@ PUF_PATH = os.path.join(CUR_PATH, '../ogusa/puf.csv')
 CPU_COUNT = 4
 
 def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
-                    reform_dir=REFORM_DIR, guid='', data=PUF_PATH):
+                    reform_dir=REFORM_DIR, guid='', data=PUF_PATH,
+                    ok_to_run_baseline=True):
 
     start_time = time.time()
 
@@ -33,11 +34,11 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
         Run baseline
     ------------------------------------------------------------------------
     '''
-
-    if not os.path.exists(baseline_dir):
+    print('path exists', not os.path.exists(baseline_dir), ok_to_run_baseline)
+    if not os.path.exists(baseline_dir) and ok_to_run_baseline:
         output_base = baseline_dir
         input_dir = baseline_dir
-        kwargs={'output_base':output_base, 'baseline_dir':baseline_dir,
+        kwargs={'output_base':baseline_dir, 'baseline_dir':baseline_dir,
                 'test':False, 'time_path':True, 'baseline':True,
                 'analytical_mtrs':False, 'age_specific':True,
                 'user_params':user_params,'guid':'baseline',
@@ -55,7 +56,6 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
     '''
     output_base = reform_dir
     input_dir = reform_dir
-    guid_iter = 'reform_' + str(0)
     kwargs={'output_base':output_base, 'baseline_dir':baseline_dir,
             'test':False, 'time_path':True, 'baseline':False,
             'analytical_mtrs':False, 'age_specific':True,
@@ -111,16 +111,16 @@ if __name__ == "__main__":
 
     reform6 = {
     2016: {
-        '_STD': [ [6100*2, 12200*2, 6100*2, 8950*2, 12200*2, 6100*2, 1000*2],
-                    [6200*2, 12400*2, 6200*2, 9100*2, 12400*2, 6200*2, 1000*2],
-                    [6300*2, 12600*2, 6300*2, 9250*2, 12600*2, 6300*2, 1050*2]],
+        '_STD': [ [6100*2, 12200*2, 6100*2, 8950*2, 12200*2],
+                    [6200*2, 12400*2, 6200*2, 9100*2, 12400*2],
+                    [6300*2, 12600*2, 6300*2, 9250*2, 12600*2]]
     }, }
 
     reform7 = {
     2016: {
-        '_STD': [ [6100*2.1, 12200*2.1, 6100*2.1, 8950*2.1, 12200*2.1, 6100*2.1, 1000*2.1],
-                    [6200*2.1, 12400*2.1, 6200*2.1, 9100*2.1, 12400*2.1, 6200*2.1, 1000*2.1],
-                    [6300*2.1, 12600*2.1, 6300*2.1, 9250*2.1, 12600*2.1, 6300*2.1, 1050*2.1]],
+        '_STD': [ [6100*2.1, 12200*2.1, 6100*2.1, 8950*2.1, 12200*2.1],
+                    [6200*2.1, 12400*2.1, 6200*2.1, 9100*2.1, 12400*2.1],
+                    [6300*2.1, 12600*2.1, 6300*2.1, 9250*2.1, 12600*2.1]]
     }, }
 
     reform8 = {
@@ -128,31 +128,44 @@ if __name__ == "__main__":
         '_II_rt3': [.15],
         '_II_rt4': [.15],
         '_II_rt5': [.15],
-        '_II_brk5':[[250000, 250000, 125000, 250000, 250000, 250000]]
+        '_II_brk5':[[250000, 250000, 125000, 250000, 250000]]
     }, }
 
 
     reform9 = {
     2016: {
-            '_STD': [[12600, 25200, 12600, 18600, 25300, 12600, 2100]],
-            '_II_brk1': [[27825, 55650, 27825, 39750, 55650, 27825]],
-            '_II_brk2': [[65005, 130010, 65005, 88180, 130010, 65005]],
-            '_AMT_trt1': [.0],
-           '_AMT_trt2': [.0]
+            '_STD': [[12600, 25200, 12600, 18600, 25300]],
+            '_II_brk1': [[27825, 55650, 27825, 39750, 55650]],
+            '_II_brk2': [[65005, 130010, 65005, 88180, 130010]],
+            '_AMT_rt1': [.0],
+           '_AMT_rt2': [.0]
     },}
 
     reforms = [reform0, reform1, reform2, reform3, reform4, reform5, reform6,
                reform7, reform8, reform9]
 
+    # make sure we have a baseline result before other reforms are run
+    ok_to_run_baseline = True
+    run_micro_macro({},
+                    reforms[0],
+                    "./OUTPUT_BASELINE",
+                    "./OUTPUT_REFORM_" + str(0),
+                    str(0),
+                    data,
+                    ok_to_run_baseline,)
+    # run reforms in parallel
     pool = Pool(processes=CPU_COUNT)
     results = []
-    for i in range(len(reforms)):
+
+    ok_to_run_baseline = False
+    for i in range(1, len(reforms)):
         args = ({},
                 reforms[i],
                 "./OUTPUT_BASELINE",
                 "./OUTPUT_REFORM_" + str(i),
                 str(i),
-                data,)
+                data,
+                ok_to_run_baseline,)
 
         async_result = pool.apply_async(run_micro_macro, args)
         results.append(async_result)

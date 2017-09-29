@@ -49,7 +49,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
                                      start_year=user_params['start_year'], reform=reform, guid=guid, data=data,
                                      tx_func_est_path=os.path.join(output_base,'TxFuncEst_{}.pkl'.format(guid)))
     print 'In runner, baseline is ', baseline
-    run_params = ogusa.parameters.get_parameters(test=test, baseline=baseline, guid=guid)
+    run_params = ogusa.parameters.get_parameters(test=test, baseline=baseline, guid=guid, tx_func_est_path=os.path.join(output_base,'TxFuncEst_{}.pkl'.format(guid)))
     run_params['analytical_mtrs'] = analytical_mtrs
     run_params['small_open'] = small_open
     run_params['budget_balance'] = budget_balance
