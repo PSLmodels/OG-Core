@@ -47,7 +47,12 @@ def run_micro_macro(user_params):
     G_shifts = np.zeros(6)
     G_shifts[0:3]  = -0.01
     G_shifts[3:6]  = -0.005
-    user_params = {'frisch':0.41, 'start_year':2017, 'debt_ratio_ss':1.0, 'T_shifts':T_shifts, 'G_shifts':G_shifts}
+    small_open  = dict(world_int_rate=0.04)  # Alternatively
+                                             # small_open can be False/None
+                                             # (if False/None then 0.04 is used)
+    user_params = {'frisch':0.41, 'start_year':2017, 'debt_ratio_ss':1.0,
+                  'T_shifts':T_shifts, 'G_shifts':G_shifts,
+                  'small_open': small_open}
 
     '''
     ------------------------------------------------------------------------
@@ -75,11 +80,13 @@ def run_micro_macro(user_params):
 
     output_base = BASELINE_DIR
     input_dir = BASELINE_DIR
+
     kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
             'test':False, 'time_path':True, 'baseline':True,
             'analytical_mtrs':False, 'age_specific':True,
             'user_params':user_params,'guid':'',
-            'run_micro':False, 'small_open': False, 'budget_balance':False, 'baseline_spending':False}
+            'run_micro':False, 'small_open': small_open,
+            'budget_balance':False, 'baseline_spending':False}
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
     runner(**kwargs)
@@ -97,7 +104,7 @@ def run_micro_macro(user_params):
             'test':True, 'time_path':True, 'baseline':False,
             'analytical_mtrs':False, 'age_specific':True,
             'user_params':user_params,'guid':'', 'reform':reform ,
-            'run_micro':False, 'small_open': False, 'budget_balance':False,
+            'run_micro':False, 'small_open': small_open, 'budget_balance':False,
             'baseline_spending':False}
     #p2 = Process(target=runner, kwargs=kwargs)
     #p2.start()
