@@ -50,6 +50,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
     print 'In runner, baseline is ', baseline
     if small_open and (not isinstance(small_open, dict) or not all(key in small_open for key in SMALL_OPEN_KEYS)):
         raise ValueError('small_open must be False/None or a dict with keys: {}'.format(SMALL_OPEN_KEYS))
+    small_open = small_open or {}
     run_params = ogusa.parameters.get_parameters(test=test, baseline=baseline, guid=guid, **small_open)
     run_params['analytical_mtrs'] = analytical_mtrs
     run_params['small_open'] = bool(small_open)
