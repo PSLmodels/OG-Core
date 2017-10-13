@@ -10,6 +10,7 @@ import time
 
 import ogusa
 from ogusa import calibrate
+from ogusa.parameters import DEFAULT_WORLD_INT_RATE
 ogusa.parameters.DATASET = 'REAL'
 
 SMALL_OPEN_KEYS = ['world_int_rate']
@@ -55,7 +56,8 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
     run_params['analytical_mtrs'] = analytical_mtrs
     run_params['small_open'] = bool(small_open)
     run_params['budget_balance'] = budget_balance
-    run_params['world_int_rate'] = small_open['world_int_rate']
+    run_params['world_int_rate'] = small_open.get('world_int_rate',
+                                                  DEFAULT_WORLD_INT_RATE)
 
     # Modify ogusa parameters based on user input
     if 'frisch' in user_params:
