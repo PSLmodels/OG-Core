@@ -49,7 +49,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
         txfunc.get_tax_func_estimate(baseline=baseline, analytical_mtrs=analytical_mtrs, age_specific=age_specific,
                                      start_year=user_params['start_year'], reform=reform, guid=guid)
     print 'In runner, baseline is ', baseline
-    if small_open and (not isinstance(small_open, dict) or not all(key in small_open for key in SMALL_OPEN_KEYS)):
+    if small_open and (not isinstance(small_open, dict)):
         raise ValueError('small_open must be False/None or a dict with keys: {}'.format(SMALL_OPEN_KEYS))
     small_open = small_open or {}
     run_params = ogusa.parameters.get_parameters(test=test, baseline=baseline, guid=guid, **small_open)
