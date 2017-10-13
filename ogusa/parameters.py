@@ -327,7 +327,8 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False,
     # Small Open Economy parameters based on world interest rate.  Can introduce a
     # borrow/lend spread and a time path from t=0 to t=T-1. However, from periods T through
     # T+S, the steady state rate should hold.
-    ss_firm_r_annual   = small_open.get('world_int_rate', 0.04)
+    world_int_rate = small_open.get('world_int_rate', 0.04)
+    ss_firm_r_annual   = world_int_rate
     ss_hh_r_annual     = ss_firm_r_annual
     ss_firm_r          = (1 + ss_firm_r_annual) ** (float(ending_age - starting_age) / S) - 1
     ss_hh_r            = (1 + ss_hh_r_annual)   ** (float(ending_age - starting_age) / S) - 1
