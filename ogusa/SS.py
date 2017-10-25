@@ -29,7 +29,7 @@ from . import aggregates as aggr
 import firm
 import utils
 import os
-
+import warnings
 
 '''
 Set minimizer tolerance
@@ -1028,4 +1028,6 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params, small_ope
         # Return SS values of variables
         solution_params= [b_guess.reshape(S, J), n_guess.reshape(S, J), chi_params, ss_params, income_tax_params, iterative_params, small_open_params]
         output = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J), rss, wss, T_Hss, factor, Yss, solution_params, baseline, fsolve_flag, baseline_spending)
+    if output['Gss'] < 0.:
+        warnings.warn('Warning: The combination of the tax policy you specified and your target debt-to-GDP ratio results in an infeasible amount of government spending in order to close the budget (i.e., G < 0)')
     return output
