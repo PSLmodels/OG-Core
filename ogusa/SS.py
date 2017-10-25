@@ -304,6 +304,8 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
 
     euler_errors = np.zeros((2*S,J))
 
+    w_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
+    w = firm.get_w_from_r(r, w_params)
 
 
     for j in xrange(J):
@@ -341,16 +343,18 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
         K_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
         K = firm.get_K(L, ss_firm_r, K_params)
     # Y_params = (alpha, Z)
-    Y_params = (Z, gamma, epsilon)
-    new_Y = firm.get_Y(K, L, Y_params)
     #print 'inner K, L, Y: ', K, L, new_Y
     if budget_balance:
         Y = new_Y
     if small_open == False:
         r_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
         new_r = firm.get_r(Y, K, r_params)
+        w_params = (Z, gamma, epsilon)
+        new_w = firm.get_w(Y, L, w_params)
     else:
         new_r = ss_hh_r
+    Y_params = (Z, gamma, epsilon)
+    new_Y = firm.get_Y(K, L, Y_params)
     w_params = (Z, gamma, epsilon)
     new_w = firm.get_w(Y, L, w_params)
     print 'inner factor prices: ', new_r, new_w
