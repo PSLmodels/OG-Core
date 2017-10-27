@@ -54,16 +54,16 @@ def run_micro_macro(user_params):
         Run SS for Baseline first - so can run baseline and reform in parallel if want
     ------------------------------------------------------------------------
     '''
-    # output_base = BASELINE_DIR
-    # input_dir = BASELINE_DIR
-    # kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-    #        'test':False, 'time_path':False, 'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
-    #        'user_params':user_params,'guid':'',
-    #        'run_micro':False, 'small_open':False, 'budget_balance':False, 'baseline_spending':False}
-    # #p1 = Process(target=runner, kwargs=kwargs)
-    # #p1.start()
-    # runner(**kwargs)
-    # # quit()
+    output_base = BASELINE_DIR
+    input_dir = BASELINE_DIR
+    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
+           'test':False, 'time_path':False, 'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
+           'user_params':user_params,'guid':'',
+           'run_micro':False, 'small_open':True, 'budget_balance':False, 'baseline_spending':False}
+    #p1 = Process(target=runner, kwargs=kwargs)
+    #p1.start()
+    runner(**kwargs)
+    quit()
 
 
     '''
@@ -79,7 +79,7 @@ def run_micro_macro(user_params):
             'test':False, 'time_path':True, 'baseline':True,
             'analytical_mtrs':False, 'age_specific':True,
             'user_params':user_params,'guid':'',
-            'run_micro':False, 'small_open': False, 'budget_balance':False, 'baseline_spending':False}
+            'run_micro':True, 'small_open': False, 'budget_balance':False, 'baseline_spending':False}
     #p1 = Process(target=runner, kwargs=kwargs)
     #p1.start()
     runner(**kwargs)
