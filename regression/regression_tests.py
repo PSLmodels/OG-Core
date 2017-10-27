@@ -1,15 +1,19 @@
 from ogusa.macro_output import dump_diff_output
 import matplotlib.pyplot as plt
+import numpy as np
 
-def get_macros():
-    baseline_dir = '../run_examples/OUTPUT_BASELINE'
-    output_dir = '../run_examples/OUTPUT_REFORM_{id}'
+REG_BASELINE = '../regression/REG_OUTPUT_BASELINE'
+REG_OUTPUT = '../regression/REG_OUTPUT_REFORM_{id}'
+REF_IDXS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
+
+def get_macros(baseline_dir=REG_BASELINE, output_dir=REG_OUTPUT,
+               ref_idxs=REF_IDXS):
     pct_changes = []
     baseline_macros = []
     policy_macros = []
 
-    for i in range(0, 10):
+    for i in ref_idxs:
         res = dump_diff_output(
             baseline_dir,
             output_dir.format(id=i)
@@ -19,6 +23,28 @@ def get_macros():
         policy_macros.append(res[2])
 
     return pct_changes, baseline_macros, policy_macros
+
+
+def comp(baseline_dir, output_dir, ref_idxs=REF_IDXS):
+    """
+    Currently only compares macro output but in the future will compare
+    all ouput
+    """
+    pct_changes, baseline_macros, policy_macros = get_macros(ref_idxs=ref_idxs)
+    (reg_pct_changes,
+        reg_baseline_macros,
+        reg_policy_macros) = get_macros(baseline_dir, output_dir,
+                                        ref_idxs=ref_idxs)
+
+    output_vars = ["Y", "C", "I", "L", "w", "r", "Revenue"]
+
+    for ref_idx in ref_idxs:
+        for i in range(len(output_vars)):
+            assert np.allclose(
+                pct_changes[ref_idx][i,:], reg_pct_changes[ref_idx][i,:],
+                atol=0.0, rtol=0.001
+            )
+
 
 def plot_reforms(r1_ix, r2_ix=None, r3_ix=None):
     plot_vars = ["Y", "C", "I", "L", "w", "r", "Revenue"]
