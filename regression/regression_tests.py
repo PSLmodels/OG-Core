@@ -1,49 +1,69 @@
 from ogusa.macro_output import dump_diff_output
 import matplotlib.pyplot as plt
 import numpy as np
+import pickle
+import pytest
 
 REG_BASELINE = '../regression/REG_OUTPUT_BASELINE'
-REG_OUTPUT = '../regression/REG_OUTPUT_REFORM_{id}'
+REG_REFORM = '../regression/REG_OUTPUT_REFORM_{id}'
 REF_IDXS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
+#SWAP TO NEW DIRECTORY -- for test development only!!!!
+BASELINE = REG_BASELINE
+REFORM = REG_REFORM
 
-def get_macros(baseline_dir=REG_BASELINE, output_dir=REG_OUTPUT,
-               ref_idxs=REF_IDXS):
-    pct_changes = []
-    baseline_macros = []
-    policy_macros = []
-
-    for i in ref_idxs:
-        res = dump_diff_output(
-            baseline_dir,
-            output_dir.format(id=i)
-        )
-        pct_changes.append(res[0])
-        baseline_macros.append(res[1])
-        policy_macros.append(res[2])
-
-    return pct_changes, baseline_macros, policy_macros
-
-
-def comp(baseline_dir, output_dir, ref_idxs=REF_IDXS):
-    """
-    Currently only compares macro output but in the future will compare
-    all ouput
-    """
-    pct_changes, baseline_macros, policy_macros = get_macros(ref_idxs=ref_idxs)
+@pytest.fixture(scope="module", params=REF_IDXS)
+def macro_outputs(request):
+    (pct_changes,
+        baseline_macros,
+        policy_macros) = dump_diff_output(BASELINE,
+                                          REFORM.format(id=request.param))
     (reg_pct_changes,
         reg_baseline_macros,
-        reg_policy_macros) = get_macros(baseline_dir, output_dir,
-                                        ref_idxs=ref_idxs)
+        reg_policy_macros) = dump_diff_output(REG_BASELINE,
+                                              REG_REFORM.format(id=request.param))
 
-    output_vars = ["Y", "C", "I", "L", "w", "r", "Revenue"]
+    return {"new":{
+                   "pct_changes": pct_changes,
+                   "baseline_macros": baseline_macros,
+                   "policy_macros": policy_macros
+                  },
+            "reg": {
+                    "pct_changes": reg_pct_changes,
+                    "baseline_macros": reg_baseline_macros,
+                    "policy_macros": reg_policy_macros
+                    },
+            }
 
-    for ref_idx in ref_idxs:
-        for i in range(len(output_vars)):
-            assert np.allclose(
-                pct_changes[ref_idx][i,:], reg_pct_changes[ref_idx][i,:],
-                atol=0.0, rtol=0.001
-            )
+OUTPUT_VARS = ["Y", "C", "I", "L", "w", "r", "Revenue"]
+@pytest.mark.parametrize("output_var_idx", np.arange(len(OUTPUT_VARS)))
+def test_macro_output(macro_outputs, output_var_idx):
+    """
+    Compare macro output
+
+    baseline_dir: directory for baseline input to compare to regression results
+    reform_dir: directory for reform input to compare to regression results
+    """
+
+    # output_vars = ["Y", "C", "I", "L", "w", "r", "Revenue"]
+
+    # for i in range(len(output_vars)):
+    assert np.allclose(
+        macro_outputs["new"]["pct_changes"][output_var_idx, :],
+        macro_outputs["reg"]["pct_changes"][output_var_idx, :],
+        atol=0.0, rtol=0.001
+    )
+
+# def get_tpi_vars(path):
+#     with open(path, 'rb') as f:
+#         return pickle.loads(path)
+#
+# def comp_TPI_vars(baseline_dir, output_dir, ref_idx=0):
+#     """
+#     Compare TPI_vars
+#     """
+#     tpi = get_tpi_vars(path=REG )
+
 
 
 def plot_reforms(r1_ix, r2_ix=None, r3_ix=None):
@@ -64,7 +84,7 @@ def plot_reforms(r1_ix, r2_ix=None, r3_ix=None):
     plt.figure()
 
 
-if __name__ == '__main__':
-    pct_changes, baseline_macros, policy_macros = get_macros()
-
-    plot_reforms(9)
+# if __name__ == '__main__':
+#     pct_changes, baseline_macros, policy_macros = get_macros()
+#
+#     plot_reforms(9)
