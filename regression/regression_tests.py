@@ -74,7 +74,50 @@ TPI_VARS = ['C', 'D', 'G', 'REVENUE', 'I', 'K', 'tax_path', 'L',
 def test_tpi_vars(tpi_output, tpi_var):
     """
     Compare TPI_vars
+
+    baseline_dir: directory for baseline input to compare to regression results
+    reform_dir: directory for reform input to compare to regression results
     """
     reg = tpi_output[0][tpi_var]
     new = tpi_output[1][tpi_var]
+    assert np.allclose(reg, new, atol=0.0, rtol=0.001)
+
+
+@pytest.fixture(scope="module", params=REF_IDXS + ["baseline"])
+def txfunc_output(request):
+    def get_txfunc_output(path):
+        with open(path, 'rb') as f:
+            return pickle.load(f)
+
+    ref_idx = request.param
+    if ref_idx == "baseline":
+        reg_path = REG_BASELINE + "/TxFuncEst_{idx}.pkl".format(idx=ref_idx)
+        path = BASELINE + "/TxFuncEst_{idx}.pkl".format(idx=ref_idx)
+
+        return (get_txfunc_output(reg_path), get_txfunc_output(path))
+
+    else:
+        reg_path = (REG_REFORM.format(ref_idx=ref_idx) +
+                    "/TxFuncEst_{idx}.pkl".format(idx=ref_idx))
+        path = (REFORM.format(ref_idx=ref_idx) +
+                "/TxFuncEst_{idx}.pkl".format(idx=ref_idx))
+
+        return (get_txfunc_output(reg_path), get_txfunc_output(path))
+
+
+TXFUNC_VARS = ['tfunc_mtrx_params_S', 'tfunc_avg_etr',
+               'tfunc_avg_mtry', 'tfunc_mtrx_obs', 'tfunc_avg_mtrx',
+               'tfunc_mtry_obs', 'tfunc_etr_sumsq', 'tfunc_mtrx_sumsq',
+               'tfunc_avginc', 'tfunc_etr_obs', 'tfunc_etr_params_S',
+               'tfunc_mtry_sumsq', 'tfunc_mtry_params_S']
+@pytest.mark.parametrize("txfunc_var", TXFUNC_VARS)
+def test_txfunc_vars(txfunc_output, txfunc_var):
+    """
+    Compare tax function variables
+
+    baseline_dir: directory for baseline input to compare to regression results
+    reform_dir: directory for reform input to compare to regression results
+    """
+    reg = txfunc_output[0][txfunc_var]
+    new = txfunc_output[1][txfunc_var]
     assert np.allclose(reg, new, atol=0.0, rtol=0.001)
