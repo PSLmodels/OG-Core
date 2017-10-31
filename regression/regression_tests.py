@@ -35,18 +35,23 @@ def macro_outputs(request):
                     },
             }
 
-OUTPUT_VARS = ["Y", "C", "I", "L", "w", "r", "Revenue"]
-@pytest.mark.parametrize("output_var_idx", np.arange(len(OUTPUT_VARS)))
-def test_macro_output(macro_outputs, output_var_idx):
+
+MACRO_VARS = ["Y", "C", "I", "L", "w", "r", "Revenue"]
+
+
+@pytest.mark.parametrize("macro_var_idx", np.arange(len(MACRO_VARS)))
+def test_macro_output(macro_outputs, macro_var_idx):
     """
     Compare macro output
 
-    baseline_dir: directory for baseline input to compare to regression results
-    reform_dir: directory for reform input to compare to regression results
+    macro_outputs: output as read from TPI/TPI_macro_vars.pkl using
+                   macro_output.dump_diff_output
+                   created in TPI.run_TPI
+    macro_var_idx: index of TPI macro ouptut variable from OUTPUT_VARS
     """
     assert np.allclose(
-        macro_outputs["new"]["pct_changes"][output_var_idx, :],
-        macro_outputs["reg"]["pct_changes"][output_var_idx, :],
+        macro_outputs["new"]["pct_changes"][macro_var_idx, :],
+        macro_outputs["reg"]["pct_changes"][macro_var_idx, :],
         atol=0.0, rtol=0.001
     )
 
@@ -75,8 +80,9 @@ def test_tpi_vars(tpi_output, tpi_var):
     """
     Compare TPI_vars
 
-    baseline_dir: directory for baseline input to compare to regression results
-    reform_dir: directory for reform input to compare to regression results
+    tpi_output: output read from TPI/TPI_vars.pkl
+                created in TPI.run_TPI
+    tpi_var: TPI output variable from TPI_VARS
     """
     reg = tpi_output[0][tpi_var]
     new = tpi_output[1][tpi_var]
@@ -110,13 +116,16 @@ TXFUNC_VARS = ['tfunc_mtrx_params_S', 'tfunc_avg_etr',
                'tfunc_mtry_obs', 'tfunc_etr_sumsq', 'tfunc_mtrx_sumsq',
                'tfunc_avginc', 'tfunc_etr_obs', 'tfunc_etr_params_S',
                'tfunc_mtry_sumsq', 'tfunc_mtry_params_S']
+
+
 @pytest.mark.parametrize("txfunc_var", TXFUNC_VARS)
 def test_txfunc_vars(txfunc_output, txfunc_var):
     """
     Compare tax function variables
 
-    baseline_dir: directory for baseline input to compare to regression results
-    reform_dir: directory for reform input to compare to regression results
+    txfunc_output: output read from TxFuncEst_*.pkl
+                   created in txfunc.tax_func_estimate
+    txfunc_var: tax function output variable from TXFUNC_VARS
     """
     reg = txfunc_output[0][txfunc_var]
     new = txfunc_output[1][txfunc_var]
