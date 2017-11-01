@@ -11,9 +11,8 @@ REG_BASELINE = os.path.join(CURDIR, 'REG_OUTPUT_BASELINE')
 REG_REFORM = os.path.join(CURDIR, 'REG_OUTPUT_REFORM_{ref_idx}')
 REF_IDXS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
-#SWAP TO NEW DIRECTORY -- for test development only!!!!
-BASELINE = REG_BASELINE
-REFORM = REG_REFORM
+BASELINE = os.path.join(CURDIR, 'OUTPUT_BASELINE')
+REFORM = os.path.join(CURDIR, 'OUTPUT_REFORM_{ref_idx}')
 
 @pytest.fixture(scope="module", params=REF_IDXS)
 def macro_outputs(request):
