@@ -42,6 +42,7 @@ def macro_outputs(request):
 MACRO_VARS = ["Y", "C", "I", "L", "w", "r", "Revenue"]
 
 
+@pytest.mark.regression
 @pytest.mark.parametrize("macro_var_idx", np.arange(len(MACRO_VARS)))
 def test_macro_output(macro_outputs, macro_var_idx):
     """
@@ -78,6 +79,7 @@ TPI_VARS = ['C', 'D', 'G', 'REVENUE', 'I', 'K', 'tax_path', 'L',
             'eul_savings', 'c_path', 'b_mat']
 
 
+@pytest.mark.regression
 @pytest.mark.parametrize("tpi_var", TPI_VARS)
 def test_tpi_vars(tpi_output, tpi_var):
     """
@@ -121,6 +123,7 @@ TXFUNC_VARS = ['tfunc_mtrx_params_S', 'tfunc_avg_etr',
                'tfunc_mtry_sumsq', 'tfunc_mtry_params_S']
 
 
+@pytest.mark.regression
 @pytest.mark.parametrize("txfunc_var", TXFUNC_VARS)
 def test_txfunc_vars(txfunc_output, txfunc_var):
     """
