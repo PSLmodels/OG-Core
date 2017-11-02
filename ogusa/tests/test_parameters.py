@@ -67,7 +67,6 @@ def test_tx_func_est_path(monkeypatch, baseline, guid, tx_func_est_path,
     baseline_policy = "baseline" if baseline else "policy"
 
     def read_tax_func_estimate_mock(pickle_path, pickle_file):
-        print('fn', tx_func_est_path, exp_tx_func_est_path)
         assert (
             pickle_path == exp_tx_func_est_path.format(baseline_policy) and
             pickle_file == "TxFuncEst_{0}{1}.pkl".format(baseline_policy,

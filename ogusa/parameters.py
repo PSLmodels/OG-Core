@@ -370,7 +370,6 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
     #print 'baseline is:', baseline
     if baseline:
         if tx_func_est_path is None:
-            print('base')
             baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
             estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                          baseline_pckl)
@@ -382,7 +381,6 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
 
     else:
         if tx_func_est_path is None:
-            print('policy')
             policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
             estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                          policy_pckl)
