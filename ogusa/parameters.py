@@ -387,7 +387,7 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
             estimate_file = os.path.join(TAX_ESTIMATE_PATH,
                                          policy_pckl)
         else:
-            policy_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
+            policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
             estimate_file = tx_func_est_path
         print 'using policy tax parameters'
         dict_params = read_tax_func_estimate(estimate_file, policy_pckl)
