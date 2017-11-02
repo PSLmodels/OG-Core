@@ -25,6 +25,7 @@ import cPickle as pickle
 
 from . import tax
 from . import household
+from . import aggregates as aggr
 import firm
 import utils
 import os
@@ -169,7 +170,7 @@ def euler_equation_solver(guesses, params):
                        capital income function
 
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
-    household.get_BQ()
+    aggr.get_BQ()
     tax.replacement_rate_vals()
     household.FOC_savings()
     household.FOC_labor()
@@ -209,7 +210,7 @@ def euler_equation_solver(guesses, params):
     b_splus2 = np.array(list(b_guess[1:]) + [0])
 
     BQ_params = (omega_SS, lambdas[j], rho, g_n_ss, 'SS')
-    BQ = household.get_BQ(r, b_splus1, BQ_params)
+    BQ = aggr.get_BQ(r, b_splus1, BQ_params)
     theta_params = (e[:,j], S, retire)
     theta = tax.replacement_rate_vals(n_guess, w, factor, theta_params)
 
@@ -267,14 +268,14 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
 
     Functions called:
         euler_equation_solver()
-        household.get_K()
-        firm.get_L()
+        aggr.get_K()
+        aggr.get_L()
         firm.get_Y()
         firm.get_r()
         firm.get_w()
-        household.get_BQ()
+        aggr.get_BQ()
         tax.replacement_rate_vals()
-        tax.revenue()
+        aggr.revenue()
 
     Objects in function:
 
@@ -328,10 +329,10 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
         nssmat[:, j] = solutions[S:]
 
     L_params = (e, omega_SS.reshape(S, 1), lambdas.reshape(1, J), 'SS')
-    L = firm.get_L(nssmat, L_params)
+    L = aggr.get_L(nssmat, L_params)
     if small_open == False:
         K_params = (omega_SS.reshape(S, 1), lambdas.reshape(1, J), imm_rates, g_n_ss, 'SS')
-        B = household.get_K(bssmat, K_params)
+        B = aggr.get_K(bssmat, K_params)
         if budget_balance:
             K = B
         else:
@@ -364,14 +365,14 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
         new_factor = factor
 
     BQ_params = (omega_SS.reshape(S, 1), lambdas.reshape(1, J), rho.reshape(S, 1), g_n_ss, 'SS')
-    new_BQ = household.get_BQ(new_r, bssmat, BQ_params)
+    new_BQ = aggr.get_BQ(new_r, bssmat, BQ_params)
     theta_params = (e, S, retire)
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, theta_params)
 
     if budget_balance:
         T_H_params = (e, lambdas.reshape(1, J), omega_SS.reshape(S, 1), 'SS', etr_params, theta, tau_bq,
                           tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J, tau_b, delta_tau)
-        new_T_H = tax.revenue(new_r, new_w, b_s, nssmat, new_BQ, new_Y, L, K, factor, T_H_params)
+        new_T_H = aggr.revenue(new_r, new_w, b_s, nssmat, new_BQ, new_Y, L, K, factor, T_H_params)
     elif baseline_spending:
         new_T_H = T_H
     else:
@@ -409,14 +410,14 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, Yss, param
 
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
     euler_equation_solver()
-    household.get_K()
-    firm.get_L()
+    aggr.get_K()
+    aggr.get_L()
     firm.get_Y()
     firm.get_r()
     firm.get_w()
-    household.get_BQ()
+    aggr.get_BQ()
     tax.replacement_rate_vals()
-    tax.revenue()
+    aggr.revenue()
     utils.convex_combo()
     utils.pct_diff_func()
 
@@ -539,28 +540,28 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, Yss, param
     T_Hss = T_H
 
     Lss_params = (e, omega_SS.reshape(S, 1), lambdas, 'SS')
-    Lss = firm.get_L(nssmat, Lss_params)
+    Lss = aggr.get_L(nssmat, Lss_params)
     if small_open == False:
         Kss_params = (omega_SS.reshape(S, 1), lambdas, imm_rates, g_n_ss, 'SS')
-        Bss = household.get_K(bssmat_splus1, Kss_params)
+        Bss = aggr.get_K(bssmat_splus1, Kss_params)
         if budget_balance:
             debt_ss = 0.0
         else:
             debt_ss = debt_ratio_ss*Y
         Kss = Bss - debt_ss
         Iss_params = (delta, g_y, omega_SS, lambdas, imm_rates, g_n_ss, 'SS')
-        Iss = firm.get_I(bssmat_splus1, Kss, Kss, Iss_params)
+        Iss = aggr.get_I(bssmat_splus1, Kss, Kss, Iss_params)
     else:
         # Compute capital (K) and wealth (B) separately
         Kss_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
         Kss = firm.get_K(Lss, ss_firm_r, Kss_params)
         Iss_params = (delta, g_y, omega_SS, lambdas, imm_rates, g_n_ss, 'SS')
         InvestmentPlaceholder = np.zeros(bssmat_splus1.shape)
-        Iss = firm.get_I(InvestmentPlaceholder, Kss, Kss, Iss_params)
+        Iss = aggr.get_I(InvestmentPlaceholder, Kss, Kss, Iss_params)
         Bss_params = (omega_SS.reshape(S, 1), lambdas, imm_rates, g_n_ss, 'SS')
-        Bss = household.get_K(bssmat_splus1, Bss_params)
+        Bss = aggr.get_K(bssmat_splus1, Bss_params)
         BIss_params = (0.0, g_y, omega_SS, lambdas, imm_rates, g_n_ss, 'SS')
-        BIss = firm.get_I(bssmat_splus1, Bss, Bss, BIss_params)
+        BIss = aggr.get_I(bssmat_splus1, Bss, Bss, BIss_params)
         if budget_balance:
             debt_ss = 0.0
         else:
@@ -586,7 +587,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, Yss, param
     b_s = np.array(list(np.zeros(J).reshape(1, J)) + list(bssmat[:-1, :]))
     lump_sum_params = (e, lambdas.reshape(1, J), omega_SS.reshape(S, 1), 'SS', etr_params, theta, tau_bq,
                       tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J, tau_b, delta_tau)
-    revenue_ss = tax.revenue(new_r, new_w, b_s, nssmat, new_BQ, Yss, Lss, Kss, factor, lump_sum_params)
+    revenue_ss = aggr.revenue(new_r, new_w, b_s, nssmat, new_BQ, Yss, Lss, Kss, factor, lump_sum_params)
     r_gov_ss = rss
     debt_service_ss = r_gov_ss*debt_ratio_ss*Yss
     new_borrowing = debt_ratio_ss*Yss*((1+g_n_ss)*np.exp(g_y)-1)
@@ -632,7 +633,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, wss, T_Hss, factor_ss, Yss, param
     business_revenue = tax.get_biz_tax(wss, Yss, Lss, Kss, biz_params)
 
     Css_params = (omega_SS.reshape(S, 1), lambdas, 'SS')
-    Css = household.get_C(cssmat, Css_params)
+    Css = aggr.get_C(cssmat, Css_params)
 
     if small_open == False:
         resource_constraint = Yss - (Css + Iss + Gss)
