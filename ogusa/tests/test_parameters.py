@@ -75,7 +75,6 @@ def test_tx_func_est_path(monkeypatch, baseline, guid, tx_func_est_path,
         return mocked_fn(pickle_path, pickle_file)
 
     monkeypatch.setattr(parameters, "read_tax_func_estimate", read_tax_func_estimate_mock)
-    print(tx_func_est_path, exp_tx_func_est_path)
     try:
         parameters.get_parameters(test=False, baseline=baseline, guid=guid,
                                   tx_func_est_path=tx_func_est_path)
