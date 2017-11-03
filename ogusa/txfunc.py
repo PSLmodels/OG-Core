@@ -903,7 +903,7 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
 
 
 def tax_func_estimate(beg_yr=2016, baseline=True, analytical_mtrs=False,
-  age_specific=True, reform={}):
+  age_specific=True, reform={}, data=None):
     '''
     --------------------------------------------------------------------
     This function performs analysis on the source data from Tax-
@@ -1036,7 +1036,7 @@ def tax_func_estimate(beg_yr=2016, baseline=True, analytical_mtrs=False,
 
     # call tax caculator and get microdata
     micro_data = get_micro_data.get_data(baseline=baseline,
-        start_year=beg_yr, reform=reform)
+        start_year=beg_yr, reform=reform, data=data)
     # if reform:
     #     micro_data = pickle.load(open("micro_data_policy.pkl", "rb"))
     # else:
@@ -1533,7 +1533,7 @@ def tax_func_estimate(beg_yr=2016, baseline=True, analytical_mtrs=False,
 
 
 def get_tax_func_estimate(baseline=False, analytical_mtrs=False,
-  age_specific=False, start_year=2016, reform={}, guid=''):
+  age_specific=False, start_year=2016, reform={}, guid='', data=None):
     '''
     --------------------------------------------------------------------
     This function calls the tax function estimation routine and saves
@@ -1563,7 +1563,7 @@ def get_tax_func_estimate(baseline=False, analytical_mtrs=False,
     '''
     # Code to run manually from here:
     dict_params = tax_func_estimate(start_year, baseline,
-        analytical_mtrs, age_specific, reform)
+        analytical_mtrs, age_specific, reform, data=data)
     if baseline:
         baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         pkl_path = os.path.join(TAX_ESTIMATE_PATH, baseline_pckl)
