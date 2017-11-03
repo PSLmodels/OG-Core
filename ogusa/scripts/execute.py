@@ -52,7 +52,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
             age_specific=age_specific, start_year=user_params['start_year'],
             reform=reform, guid=guid,
             tx_func_est_path=os.path.join(
-                output_base,'TxFuncEst_{}.pkl'.format(guid))
+                output_base,'TxFuncEst_{}.pkl'.format(guid)
             )
         )
     print 'In runner, baseline is ', baseline
