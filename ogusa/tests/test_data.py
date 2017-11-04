@@ -11,7 +11,7 @@ def test_cps():
     reform = {2017: {"_II_em": [10000]}}
 
     calc = get_micro_data.get_calculator(baseline, start_year, reform=reform,
-                                         data="cps")
+                                         records_start_year=2009, data="cps")
     # blind_head is only in the CPS file and e00700 is only in the PUF.
     # See taxcalc/records_variables.json
     assert (calc.records.blind_head.sum() > 0 and
@@ -34,6 +34,7 @@ def test_set_path():
     # this could change. So I think it's best to catch both errors
     with pytest.raises((IOError, ValueError), match="notapath.csv"):
         get_micro_data.get_calculator(baseline, start_year, reform=reform,
+                                      records_start_year=2009,
                                       data="notapath.csv")
 
 
@@ -48,6 +49,7 @@ def test_puf_path():
     cur_dir = os.path.abspath(os.path.dirname(__file__))
     puf_path = os.path.join(cur_dir, "../puf.csv")
     calc = get_micro_data.get_calculator(baseline, start_year, reform=reform,
+                                         records_start_year=2009,
                                          data=puf_path)
     # blind_head is only in the CPS file and e00700 is only in the PUF.
     # See taxcalc/records_variables.json
