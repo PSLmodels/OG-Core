@@ -1,13 +1,13 @@
 import pytest
-
+import os
 
 def test_cps():
     """
     Check that setting `data` to 'cps' uses cps data
     """
     from ogusa import get_micro_data
-    baseline=False
-    start_year=2016
+    baseline = False
+    start_year = 2016
     reform = {2017: {"_II_em": [10000]}}
 
     calc = get_micro_data.get_calculator(baseline, start_year, reform=reform,
@@ -24,8 +24,8 @@ def test_set_path():
     containing 'notapath.csv' is sufficient proof for this
     """
     from ogusa import get_micro_data
-    baseline=False
-    start_year=2016
+    baseline = False
+    start_year = 2016
     reform = {2017: {"_II_em": [10000]}}
 
     # In theory this path doesn't exist so there should be an IOError
@@ -37,17 +37,18 @@ def test_set_path():
                                       data="notapath.csv")
 
 
-def test_no_path_specified():
+def test_puf_path():
     """
     Check that setting `data` to None uses the puf file
     """
     from ogusa import get_micro_data
     baseline=False
-    start_year=2016
+    start_year = 2016
     reform = {2017: {"_II_em": [10000]}}
-
+    cur_dir = os.path.abspath(os.path.dirname(__file__))
+    puf_path = os.path.join(cur_dir, "../puf.csv")
     calc = get_micro_data.get_calculator(baseline, start_year, reform=reform,
-                                         data=None)
+                                         data=puf_path)
     # blind_head is only in the CPS file and e00700 is only in the PUF.
     # See taxcalc/records_variables.json
     assert (calc.records.blind_head.sum() == 0 and
