@@ -740,10 +740,10 @@ def SS_solver(b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss,
         print('resource constraint: ', resource_constraint)
 
     if Gss < 0:
-        print 'Steady state government spending is negative to satisfy budget'
+        print('Steady state government spending is negative to satisfy budget')
 
     if ENFORCE_SOLUTION_CHECKS and np.absolute(resource_constraint) > mindist_SS:
-        print 'Resource Constraint Difference:', resource_constraint
+        print('Resource Constraint Difference:', resource_constraint)
         err = "Steady state aggregate resource constraint not satisfied"
         raise RuntimeError(err)
 
