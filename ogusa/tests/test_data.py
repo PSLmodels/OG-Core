@@ -6,9 +6,6 @@ def test_cps():
     Check that setting `data` to 'cps' uses cps data
     """
     from ogusa import get_micro_data
-    import taxcalc
-    print("TC VERSION", taxcalc.__version__)
-    assert taxcalc.__version__ == "0.12.0"
     baseline = False
     start_year = 2016
     reform = {2017: {"_II_em": [10000]}}
