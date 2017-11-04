@@ -12,7 +12,7 @@ install:
   - conda config --set always_yes yes --set changeps1 no
   - conda update conda
   - conda create -n test-environment python=$TRAVIS_PYTHON_VERSION pytest nomkl scipy=0.18.1 numpy=1.11.2 pandas=0.18.0 matplotlib
-  - conda install -n test-environment -c ospc taxcalc=0.8.3
+  - conda env update -f environment.yml
   - conda install -n test-environment numba
   - source activate test-environment
   - python setup.py install
