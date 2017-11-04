@@ -63,6 +63,8 @@ def runner(output_base, baseline_dir, test=False, time_path=True, baseline=False
         run_params.update(user_params)
     if 'debt_ratio_ss' in user_params:
         run_params['debt_ratio_ss']=user_params['debt_ratio_ss']
+    if 'tau_b' in user_params:
+        run_params['tau_b']=user_params['tau_b']
 
     # Modify ogusa parameters based on user input
     if 'g_y_annual' in user_params:
