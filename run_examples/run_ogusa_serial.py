@@ -47,7 +47,9 @@ def run_micro_macro(user_params):
     G_shifts = np.zeros(6)
     G_shifts[0:3]  = -0.01
     G_shifts[3:6]  = -0.005
-    user_params = {'frisch':0.41, 'start_year':2017, 'debt_ratio_ss':1.0, 'T_shifts':T_shifts, 'G_shifts':G_shifts}
+    user_params = {'frisch':0.41, 'start_year':2017, 'tau_b':0.20,
+                   'debt_ratio_ss':1.0, 'T_shifts':T_shifts,
+                   'G_shifts':G_shifts}
 
     '''
     ------------------------------------------------------------------------
