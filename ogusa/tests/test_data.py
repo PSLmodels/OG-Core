@@ -46,12 +46,23 @@ def test_puf_path():
     baseline=False
     start_year = 2016
     reform = {2017: {"_II_em": [10000]}}
+
+    # get path to puf if puf.csv in ogusa/ directory
     cur_dir = os.path.abspath(os.path.dirname(__file__))
     puf_path = os.path.join(cur_dir, "../puf.csv")
-    calc = get_micro_data.get_calculator(baseline, start_year, reform=reform,
-                                         records_start_year=2009,
-                                         data=puf_path)
-    # blind_head is only in the CPS file and e00700 is only in the PUF.
-    # See taxcalc/records_variables.json
-    assert (calc.records.blind_head.sum() == 0 and
-            calc.records.e00700.sum() > 0)
+
+    # puf.csv in ogusa/
+    if os.path.exists(puf_path):
+        calc = get_micro_data.get_calculator(baseline, start_year, reform=reform,
+                                     data=puf_path)
+        # blind_head is only in the CPS file and e00700 is only in the PUF.
+        # See taxcalc/records_variables.json
+        assert (calc.records.blind_head.sum() == 0 and
+                calc.records.e00700.sum() > 0)
+    # we do not have puf.csv
+    else:
+        # make sure TC is looking for puf.csv
+        with pytest.raises((IOError, ValueError), match="puf.csv"):
+            get_micro_data.get_calculator(baseline, start_year, reform=reform,
+                                          records_start_year=2009,
+                                          data=None)
