@@ -69,8 +69,11 @@ def get_calculator(baseline, calculator_start_year, reform=None, data=None,
 
     # this increment_year function extrapolates all PUF variables to the next year
     # so this step takes the calculator to the start_year
-    for i in range(calculator_start_year-2013):
+    while calc1.current_year < calculator_start_year:
         calc1.increment_year()
+
+    # running all the functions and calculates taxes
+    calc1.calc_all()
 
     return calc1
 
@@ -100,12 +103,8 @@ def get_data(baseline=False, start_year=2016, reform={}, data=None):
     RETURNS: micro_data_dict
     --------------------------------------------------------------------
     '''
-
     calc1 = get_calculator(baseline=baseline, calculator_start_year=start_year,
                            reform=reform, data=data)
-
-    # running all the functions and calculates taxes
-    calc1.calc_all()
 
     # running marginal tax rate function for wage and salaries of primary
     # three results returned for fica tax, iit tax, and combined
@@ -148,7 +147,8 @@ def get_data(baseline=False, start_year=2016, reform={}, data=None):
 
 
     # repeat the process for each year
-    for i in range(1,10):
+    # go increment 10 years into the future but not beyond 2026
+    for i in range(0, min(10, 2026 - start_year)):
         calc1.increment_year()
 
         [mtr_fica, mtr_iit, mtr_combined] = calc1.mtr('e00200p')
