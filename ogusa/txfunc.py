@@ -633,7 +633,7 @@ def replace_outliers(param_arr, sse_big_mat):
                 # ages, set the outliers equal to this period's tax function
                 param_arr_adj[:big_cnt, t, :] = \
                     np.tile(param_arr_adj[s, t, :].reshape((1, 1, numparams)),
-                    (big_cnt, 1, 1))
+                    (big_cnt, 1))
                 big_cnt = 0
             if (sse_big_mat[s, t] == False and big_cnt > 0 and
               s > big_cnt):
@@ -654,7 +654,7 @@ def replace_outliers(param_arr, sse_big_mat):
                 param_arr_adj[s, t, :] = np.nan
                 param_arr_adj[s-big_cnt+1:, t, :] = \
                     np.tile(param_arr_adj[s-big_cnt, t, :].reshape((1, 1, numparams)),
-                    (big_cnt, 1, 1))
+                    (big_cnt, 1))
 
     return param_arr_adj
 
