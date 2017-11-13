@@ -148,7 +148,7 @@ def get_data(baseline=False, start_year=2016, reform={}, data=None):
 
     # repeat the process for each year
     # go increment 10 years into the future but not beyond 2026
-    for i in range(0, min(10, 2026 - start_year)):
+    for i in range(0, min(10, 2027 - start_year)):
         calc1.increment_year()
 
         [mtr_fica, mtr_iit, mtr_combined] = calc1.mtr('e00200p')
