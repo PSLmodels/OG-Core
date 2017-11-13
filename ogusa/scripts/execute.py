@@ -54,7 +54,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
             tx_func_est_path=os.path.join(
                 output_base,'TxFuncEst_{}.pkl'.format(guid)
             ),
-            data=None
+            data=data
         )
     print 'In runner, baseline is ', baseline
     run_params = ogusa.parameters.get_parameters(
