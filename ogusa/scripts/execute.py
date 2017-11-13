@@ -50,7 +50,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         txfunc.get_tax_func_estimate(
             baseline=baseline, analytical_mtrs=analytical_mtrs,
             age_specific=age_specific,
-            start_year=user_params.get('start_year', None),
+            start_year=user_params.get('start_year', 2018),
             reform=reform, guid=guid,
             tx_func_est_path=os.path.join(
                 output_base,'TxFuncEst_{}.pkl'.format(guid)
@@ -60,7 +60,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     print 'In runner, baseline is ', baseline
     run_params = ogusa.parameters.get_parameters(
         test=test, baseline=baseline, guid=guid,
-        start_year=user_params.get('start_year', None),
+        start_year=user_params.get('start_year', 2018),
         tx_func_est_path=os.path.join(
             output_base,'TxFuncEst_{}.pkl'.format(guid)
         )
