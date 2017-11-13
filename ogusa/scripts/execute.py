@@ -61,7 +61,8 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         test=test, baseline=baseline, guid=guid,
         tx_func_est_path=os.path.join(
             output_base,'TxFuncEst_{}.pkl'.format(guid)
-        )
+        ),
+        start_year=user_params['start_year']
     )
     run_params['analytical_mtrs'] = analytical_mtrs
     run_params['small_open'] = small_open
