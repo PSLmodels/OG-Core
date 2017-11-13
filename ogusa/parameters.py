@@ -136,7 +136,8 @@ def get_parameters_from_file():
         return j
 
 
-def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, metadata=False):
+def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, metadata=False,
+                   tx_func_est_path=None):
     '''
     --------------------------------------------------------------------
     This function returns the model parameters.
@@ -368,19 +369,26 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
     # read in estimated parameters
     #print 'baseline is:', baseline
     if baseline:
-        baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
-        estimate_file = os.path.join(TAX_ESTIMATE_PATH,
-                                     baseline_pckl)
+        if tx_func_est_path is None:
+            baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
+            estimate_file = os.path.join(TAX_ESTIMATE_PATH,
+                                         baseline_pckl)
+        else:
+            baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
+            estimate_file = tx_func_est_path
         print 'using baseline tax parameters'
         dict_params = read_tax_func_estimate(estimate_file, baseline_pckl)
 
     else:
-        policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
-        estimate_file = os.path.join(TAX_ESTIMATE_PATH,
-                                     policy_pckl)
+        if tx_func_est_path is None:
+            policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
+            estimate_file = os.path.join(TAX_ESTIMATE_PATH,
+                                         policy_pckl)
+        else:
+            policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
+            estimate_file = tx_func_est_path
         print 'using policy tax parameters'
         dict_params = read_tax_func_estimate(estimate_file, policy_pckl)
-
 
     mean_income_data = dict_params['tfunc_avginc'][0]
 

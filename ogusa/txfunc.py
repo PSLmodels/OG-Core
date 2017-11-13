@@ -1533,7 +1533,8 @@ def tax_func_estimate(beg_yr=2016, baseline=True, analytical_mtrs=False,
 
 
 def get_tax_func_estimate(baseline=False, analytical_mtrs=False,
-  age_specific=False, start_year=2016, reform={}, guid=''):
+                          age_specific=False, start_year=2016, reform={},
+                          guid='', tx_func_est_path=None):
     '''
     --------------------------------------------------------------------
     This function calls the tax function estimation routine and saves
@@ -1565,10 +1566,10 @@ def get_tax_func_estimate(baseline=False, analytical_mtrs=False,
     dict_params = tax_func_estimate(start_year, baseline,
         analytical_mtrs, age_specific, reform)
     if baseline:
-        baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
+        baseline_pckl = tx_func_est_path or "TxFuncEst_baseline{}.pkl".format(guid)
         pkl_path = os.path.join(TAX_ESTIMATE_PATH, baseline_pckl)
     else:
-        policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
+        policy_pckl = tx_func_est_path or "TxFuncEst_policy{}.pkl".format(guid)
         pkl_path = os.path.join(TAX_ESTIMATE_PATH, policy_pckl)
 
     pickle.dump(dict_params, open(pkl_path, "wb"))
