@@ -1546,7 +1546,7 @@ def tax_func_estimate(beg_yr=2016, baseline=True, analytical_mtrs=False,
 
 
 def get_tax_func_estimate(baseline=False, analytical_mtrs=False,
-                          age_specific=False, start_year=2016, reform={},
+                          age_specific=False, start_year=2018, reform={},
                           guid='', tx_func_est_path=None, data=None):
     '''
     --------------------------------------------------------------------

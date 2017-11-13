@@ -78,7 +78,7 @@ def get_calculator(baseline, calculator_start_year, reform=None, data=None,
     return calc1
 
 
-def get_data(baseline=False, start_year=2016, reform={}, data=None):
+def get_data(baseline=False, start_year=2018, reform={}, data=None):
     '''
     --------------------------------------------------------------------
     This function creates dataframes of micro data from the
