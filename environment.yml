@@ -5,12 +5,12 @@ dependencies:
 - ipython
 - ipython-notebook
 - setuptools
-- nomkl
-- scipy=0.18.1
+- mkl
+- scipy>=0.18.1
 - matplotlib
-- taxcalc=0.8.3
+- taxcalc>=0.12.0
 - numba
-- numpy=1.11.2
-- pandas==0.18.0
+- numpy>=1.12.1
+- pandas>=0.20.1
 - pytest
 - python=2.7

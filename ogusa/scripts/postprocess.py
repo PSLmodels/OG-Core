@@ -15,6 +15,7 @@ This py-file creates the following other file(s):
 
 import pickle
 import numpy as np
+import os
 
 import ogusa
 from ogusa import macro_output
@@ -53,13 +54,16 @@ def create_diff(baseline_dir, policy_dir, dump_output=False):
     '''
     out = macro_output.dump_diff_output(baseline_dir, policy_dir)
     pct_changes, baseline_macros, policy_macros = out
-
-    np.savetxt(policy_dir + '/ClosedEconPctChanges.csv',pct_changes,delimiter=",")
+    pct_changes_path = os.path.join(policy_dir, 'ClosedEconPctChanges.csv')
+    np.savetxt(pct_changes_path, pct_changes, delimiter=",")
     if dump_output:
         pickle.dump(pct_changes, open("ogusa_output.pkl", "wb"))
 
-    np.savetxt(baseline_dir + '/ClosedEconBaseline.csv',baseline_macros,delimiter=",")
-    np.savetxt(policy_dir + '/ClosedEconPolicy.csv',policy_macros,delimiter=",")
+    closed_econ_base_path = os.path.join(baseline_dir, 'ClosedEconBaseline.csv')
+    np.savetxt(closed_econ_base_path, baseline_macros, delimiter=",")
+
+    closed_econ_policy_path = os.path.join(policy_dir, 'ClosedEconPolicy.csv')
+    np.savetxt(closed_econ_policy_path, policy_macros, delimiter=",")
 
     return pct_changes
 
