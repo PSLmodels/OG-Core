@@ -75,6 +75,38 @@ def get_w(Y, L, params):
     return w
 
 
+
+def get_w_from_r(r, params):
+    '''
+    --------------------------------------------------------------------
+    Solve for steady-state wage w or time path of wages w_t
+    --------------------------------------------------------------------
+    INPUTS:
+    params = length 4 tuple, (Z, alpha, delta, tau_c)
+    Z      = scalar > 0, total factor productivity
+    alpha  = scalar in (0, 1), capital share of income
+    delta  = scalar in (0, 1), per period depreciation rate
+    r      = scalar or (T+S-2) vector, real interest rate
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+    OBJECTS CREATED WITHIN FUNCTION:
+    w = scalar > 0 or (T+S-2) vector, steady-state wage or time path of
+        wage
+    FILES CREATED BY THIS FUNCTION: None
+    RETURNS: w
+    --------------------------------------------------------------------
+    '''
+    Z, gamma, epsilon, delta, tau_b, delta_tau = params
+    if epsilon == 0:
+        w = 1 - gamma
+    else:
+        w = ((1 - gamma) * Z * ((gamma * Z * (1 - tau_b)) /
+                                (r+delta-(tau_b*delta_tau))) **
+             (gamma / (1 - gamma)))
+
+
+    return w
+
+
 def get_Y(K, L, params):
     '''
     Generates vector of aggregate output.
