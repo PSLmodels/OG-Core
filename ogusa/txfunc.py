@@ -631,30 +631,43 @@ def replace_outliers(param_arr, sse_big_mat):
                 # When the current function is not an outlier but the last
                 # one was and this string of outliers is at the beginning
                 # ages, set the outliers equal to this period's tax function
-                param_arr_adj[:big_cnt, t, :] = \
-                    np.tile(param_arr_adj[s, t, :].reshape((1, 1, numparams)),
-                    (big_cnt, 1, 1))
+                reshaped = param_arr_adj[s, t, :].reshape((1, 1, numparams))
+                param_arr_adj[:big_cnt, t, :] = np.tile(reshaped, (big_cnt, 1))
                 big_cnt = 0
+
             if (sse_big_mat[s, t] == False and big_cnt > 0 and
-              s > big_cnt):
+                s > big_cnt):
                 # When the current function is not an outlier but the last
                 # one was and this string of outliers is in the interior of
                 # ages, set the outliers equal to a linear interpolation
                 # between the two bounding non-outlier functions
-                slopevec = ((param_arr_adj[s, t, :] -
-                    param_arr_adj[s-big_cnt-1, t, :]) / (big_cnt + 1))
-                interceptvec = (param_arr_adj[s-big_cnt-1, t, :])
-                param_arr_adj[s-big_cnt:s, t, :] = (np.tile(interceptvec.reshape(1,numparams),(big_cnt,1)) +
-                    np.tile(slopevec.reshape(1,numparams),(big_cnt,1))*np.tile(np.reshape(np.arange(1,big_cnt+1),(big_cnt,1)),(1,numparams)))
+                diff = (param_arr_adj[s, t, :] -
+                        param_arr_adj[s-big_cnt-1, t, :])
+                slopevec = diff / (big_cnt + 1)
+                slopevec = slopevec.reshape(1, numparams)
+                tiled_slopevec = np.tile(slopevec, (big_cnt, 1))
+
+                interceptvec = \
+                    param_arr_adj[s-big_cnt-1, t, :].reshape(1, numparams)
+                tiled_intvec = np.tile(interceptvec, (big_cnt, 1))
+
+                reshaped_arange = np.arange(1, big_cnt+1).reshape(big_cnt, 1)
+                tiled_reshape_arange = np.tile(reshaped_arange, (1, numparams))
+
+                param_arr_adj[s-big_cnt:s, t, :] = (
+                    tiled_intvec + tiled_slopevec * tiled_reshape_arange
+                )
+
                 big_cnt = 0
             if sse_big_mat[s, t] == True and s == sse_big_mat.shape[0]-1:
                 # When the last ages are outliers, set the parameters equal
                 # to the most recent non-outlier tax function
                 big_cnt += 1
                 param_arr_adj[s, t, :] = np.nan
-                param_arr_adj[s-big_cnt+1:, t, :] = \
-                    np.tile(param_arr_adj[s-big_cnt, t, :].reshape((1, 1, numparams)),
-                    (big_cnt, 1, 1))
+                reshaped = \
+                    param_arr_adj[s-big_cnt, t, :].reshape(1, 1, numparams)
+                param_arr_adj[s-big_cnt+1:, t, :] = np.tile(reshaped,
+                                                            (big_cnt, 1))
 
     return param_arr_adj
 
@@ -903,7 +916,7 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
 
 
 def tax_func_estimate(beg_yr=2016, baseline=True, analytical_mtrs=False,
-  age_specific=True, reform={}):
+  age_specific=True, reform={}, data=None):
     '''
     --------------------------------------------------------------------
     This function performs analysis on the source data from Tax-
@@ -1036,7 +1049,7 @@ def tax_func_estimate(beg_yr=2016, baseline=True, analytical_mtrs=False,
 
     # call tax caculator and get microdata
     micro_data = get_micro_data.get_data(baseline=baseline,
-        start_year=beg_yr, reform=reform)
+        start_year=beg_yr, reform=reform, data=data)
     # if reform:
     #     micro_data = pickle.load(open("micro_data_policy.pkl", "rb"))
     # else:
@@ -1533,8 +1546,8 @@ def tax_func_estimate(beg_yr=2016, baseline=True, analytical_mtrs=False,
 
 
 def get_tax_func_estimate(baseline=False, analytical_mtrs=False,
-                          age_specific=False, start_year=2016, reform={},
-                          guid='', tx_func_est_path=None):
+                          age_specific=False, start_year=2018, reform={},
+                          guid='', tx_func_est_path=None, data=None):
     '''
     --------------------------------------------------------------------
     This function calls the tax function estimation routine and saves
@@ -1564,7 +1577,7 @@ def get_tax_func_estimate(baseline=False, analytical_mtrs=False,
     '''
     # Code to run manually from here:
     dict_params = tax_func_estimate(start_year, baseline,
-        analytical_mtrs, age_specific, reform)
+        analytical_mtrs, age_specific, reform, data=data)
     if baseline:
         baseline_pckl = tx_func_est_path or "TxFuncEst_baseline{}.pkl".format(guid)
         pkl_path = os.path.join(TAX_ESTIMATE_PATH, baseline_pckl)

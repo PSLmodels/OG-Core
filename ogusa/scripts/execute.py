@@ -17,7 +17,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
            baseline=False, analytical_mtrs=False, age_specific=False,
            reform={}, user_params={}, guid='', run_micro=True,
            small_open=False, budget_balance=False,
-           baseline_spending=False):
+           baseline_spending=False, data=None):
 
     from ogusa import parameters, demographics, income, utils
     from ogusa import txfunc
@@ -49,15 +49,18 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     if run_micro:
         txfunc.get_tax_func_estimate(
             baseline=baseline, analytical_mtrs=analytical_mtrs,
-            age_specific=age_specific, start_year=user_params['start_year'],
+            age_specific=age_specific,
+            start_year=user_params.get('start_year', 2018),
             reform=reform, guid=guid,
             tx_func_est_path=os.path.join(
                 output_base,'TxFuncEst_{}.pkl'.format(guid)
-            )
+            ),
+            data=data
         )
     print 'In runner, baseline is ', baseline
     run_params = ogusa.parameters.get_parameters(
         test=test, baseline=baseline, guid=guid,
+        start_year=user_params.get('start_year', 2018),
         tx_func_est_path=os.path.join(
             output_base,'TxFuncEst_{}.pkl'.format(guid)
         )

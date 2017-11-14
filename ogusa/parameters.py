@@ -137,7 +137,7 @@ def get_parameters_from_file():
 
 
 def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, metadata=False,
-                   tx_func_est_path=None):
+                   tx_func_est_path=None, start_year=2018):
     '''
     --------------------------------------------------------------------
     This function returns the model parameters.
@@ -301,7 +301,6 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
     T = int(4 * S)
     BW = int(10)
 
-    start_year = 2016
     starting_age = 20
     ending_age = 100
     E = int(starting_age * (S / float(ending_age - starting_age)))
