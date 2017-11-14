@@ -29,7 +29,8 @@ import numba
 import pickle
 
 
-def get_calculator(baseline, calculator_start_year, reform=None, data=None, weights=None, records_start_year=None):
+def get_calculator(baseline, calculator_start_year, reform=None, data=None,
+                   weights=None, records_start_year=2009):
     '''
     --------------------------------------------------------------------
     This function creates the tax calculator object for the microsim
@@ -49,7 +50,9 @@ def get_calculator(baseline, calculator_start_year, reform=None, data=None, weig
     '''
     # create a calculator
     policy1 = Policy()
-    if data is not None:
+    if data is not None and "cps" in data:
+        records1 = Records.cps_constructor()
+    elif data is not None:
         records1 = Records(data=data, weights=weights, start_year=records_start_year)
     else:
         records1 = Records()
@@ -66,13 +69,16 @@ def get_calculator(baseline, calculator_start_year, reform=None, data=None, weig
 
     # this increment_year function extrapolates all PUF variables to the next year
     # so this step takes the calculator to the start_year
-    for i in range(calculator_start_year-2013):
+    while calc1.current_year < calculator_start_year:
         calc1.increment_year()
+
+    # running all the functions and calculates taxes
+    calc1.calc_all()
 
     return calc1
 
 
-def get_data(baseline=False, start_year=2016, reform={}):
+def get_data(baseline=False, start_year=2018, reform={}, data=None):
     '''
     --------------------------------------------------------------------
     This function creates dataframes of micro data from the
@@ -97,12 +103,8 @@ def get_data(baseline=False, start_year=2016, reform={}):
     RETURNS: micro_data_dict
     --------------------------------------------------------------------
     '''
-
     calc1 = get_calculator(baseline=baseline, calculator_start_year=start_year,
-                           reform=reform)
-
-    # running all the functions and calculates taxes
-    calc1.calc_all()
+                           reform=reform, data=data)
 
     # running marginal tax rate function for wage and salaries of primary
     # three results returned for fica tax, iit tax, and combined
@@ -145,7 +147,8 @@ def get_data(baseline=False, start_year=2016, reform={}):
 
 
     # repeat the process for each year
-    for i in range(1,10):
+    # go increment 10 years into the future but not beyond 2027
+    for i in range(0, min(10, 2027 - start_year)):
         calc1.increment_year()
 
         [mtr_fica, mtr_iit, mtr_combined] = calc1.mtr('e00200p')
