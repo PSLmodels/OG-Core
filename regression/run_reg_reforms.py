@@ -196,7 +196,7 @@ if __name__ == "__main__":
     ref_idxs = args.ref_idxs
     if ref_idxs != REF_IDXS:
         ref_idxs = [int(idx) for idx in ref_idxs.split(',')]
-    path_prefix = "REG_" if args.set_reg_data else ""
+    path_prefix = "regression_results/REG_" if args.set_reg_data else ""
     cpu_count = args.cpu_count
 
     run_reforms(ref_idxs=ref_idxs,
