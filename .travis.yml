@@ -19,4 +19,4 @@ install:
 
 # command to run tests, e.g. python setup.py test
 script:
-  - cd ogusa; py.test -s -v -m 'not full_run'
+  - cd ogusa; py.test -s -v -m 'not full_run and not regression'
