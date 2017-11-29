@@ -11,6 +11,7 @@ import time
 import ogusa
 from ogusa import calibrate
 ogusa.parameters.DATASET = 'REAL'
+from ogusa.utils import DEFAULT_START_YEAR
 
 
 
@@ -51,7 +52,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         txfunc.get_tax_func_estimate(
             baseline=baseline, analytical_mtrs=analytical_mtrs,
             age_specific=age_specific,
-            start_year=user_params.get('start_year', 2018),
+            start_year=user_params.get('start_year', DEFAULT_START_YEAR),
             reform=reform, guid=guid,
             tx_func_est_path=os.path.join(
                 output_base,'TxFuncEst_{}.pkl'.format(guid)
@@ -61,7 +62,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     print 'In runner, baseline is ', baseline
     run_params = ogusa.parameters.get_parameters(
         test=test, baseline=baseline, guid=guid,
-        start_year=user_params.get('start_year', 2018),
+        start_year=user_params.get('start_year', DEFAULT_START_YEAR),
         tx_func_est_path=os.path.join(
             output_base,'TxFuncEst_{}.pkl'.format(guid)
         )
