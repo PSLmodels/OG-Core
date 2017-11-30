@@ -33,7 +33,7 @@ import pickle
 import txfunc
 import elliptical_u_est as ellip
 import matplotlib.pyplot as plt
-
+from ogusa.utils import DEFAULT_START_YEAR
 
 '''
 ------------------------------------------------------------------------
@@ -137,7 +137,7 @@ def get_parameters_from_file():
 
 
 def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, metadata=False,
-                   tx_func_est_path=None, start_year=2018):
+                   tx_func_est_path=None, start_year=DEFAULT_START_YEAR):
     '''
     --------------------------------------------------------------------
     This function returns the model parameters.

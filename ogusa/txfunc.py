@@ -44,6 +44,7 @@ from matplotlib import cm
 
 import get_micro_data
 import utils
+from utils import DEFAULT_START_YEAR
 
 TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
 
@@ -1546,7 +1547,7 @@ def tax_func_estimate(beg_yr=2016, baseline=True, analytical_mtrs=False,
 
 
 def get_tax_func_estimate(baseline=False, analytical_mtrs=False,
-                          age_specific=False, start_year=2018, reform={},
+                          age_specific=False, start_year=DEFAULT_START_YEAR, reform={},
                           guid='', tx_func_est_path=None, data=None):
     '''
     --------------------------------------------------------------------

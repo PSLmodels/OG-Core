@@ -27,6 +27,7 @@ import numpy as np
 import copy
 import numba
 import pickle
+from ogusa.utils import DEFAULT_START_YEAR
 
 
 def get_calculator(baseline, calculator_start_year, reform=None, data=None,
@@ -78,7 +79,7 @@ def get_calculator(baseline, calculator_start_year, reform=None, data=None,
     return calc1
 
 
-def get_data(baseline=False, start_year=2018, reform={}, data=None):
+def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={}, data=None):
     '''
     --------------------------------------------------------------------
     This function creates dataframes of micro data from the

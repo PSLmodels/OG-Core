@@ -23,6 +23,9 @@ PATH_EXISTS_ERRNO = 17
 REFORM_DIR = "./OUTPUT_REFORM"
 BASELINE_DIR = "./OUTPUT_BASELINE"
 
+# Default year for model runs
+DEFAULT_START_YEAR = 2018
+
 # for f in (REFORM_DIR, BASELINE_DIR):
 #     if not os.path.exists(f):
 #         os.mkdir(f)
