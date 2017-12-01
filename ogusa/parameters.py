@@ -136,8 +136,10 @@ def get_parameters_from_file():
         return j
 
 
-def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, metadata=False,
-                   tx_func_est_path=None, start_year=DEFAULT_START_YEAR):
+def get_parameters(test=False, baseline=False, guid='',
+                   user_modifiable=False, metadata=False,
+                   tx_func_est_path=None, start_year=DEFAULT_START_YEAR,
+                   constant_rates=True):
     '''
     --------------------------------------------------------------------
     This function returns the model parameters.
@@ -395,17 +397,19 @@ def get_parameters(test=False, baseline=False, guid='', user_modifiable=False, m
     mtrx_params = dict_params['tfunc_mtrx_params_S'][:S,:BW,:]
     mtry_params = dict_params['tfunc_mtry_params_S'][:S,:BW,:]
 
-    # # Make all ETRs equal the average
-    etr_params = np.zeros(etr_params.shape)
-    etr_params[:, :, 10] = dict_params['tfunc_avg_etr'] # set shift to average rate
+    if constant_rates:
+        print 'USINGconstant rates!'
+        # # Make all ETRs equal the average
+        etr_params = np.zeros(etr_params.shape)
+        etr_params[:, :, 10] = dict_params['tfunc_avg_etr'] # set shift to average rate
 
-    # # Make all MTRx equal the average
-    mtrx_params = np.zeros(mtrx_params.shape)
-    mtrx_params[:, :, 10] = dict_params['tfunc_avg_mtrx'] # set shift to average rate
+        # # Make all MTRx equal the average
+        mtrx_params = np.zeros(mtrx_params.shape)
+        mtrx_params[:, :, 10] = dict_params['tfunc_avg_mtrx'] # set shift to average rate
 
-    # # Make all MTRy equal the average
-    mtry_params = np.zeros(mtry_params.shape)
-    mtry_params[:, :, 10] = dict_params['tfunc_avg_mtry'] # set shift to average rate
+        # # Make all MTRy equal the average
+        mtry_params = np.zeros(mtry_params.shape)
+        mtry_params[:, :, 10] = dict_params['tfunc_avg_mtry'] # set shift to average rate
 
     # # Make MTRx depend only on labor income
     # mtrx_params[:, :, 11] = 1.0 # set share parameter to 1
