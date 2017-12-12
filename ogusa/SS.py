@@ -1139,12 +1139,6 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
             # budget_balance = True, but that's ok - will be fixed in SS_solver
         if ENFORCE_SOLUTION_CHECKS and not ier == 1:
             raise RuntimeError("Steady state equilibrium not found")
-        if output['Gss'] < 0.:
-            warnings.warn('Warning: The combination of the tax policy '
-                          + 'you specified and your target debt-to-GDP '
-                          + 'ratio results in an infeasible amount of '
-                          + 'government spending in order to close the '
-                          + 'budget (i.e., G < 0)')
         # Return SS values of variables
         fsolve_flag = True
         # Return SS values of variables
@@ -1154,4 +1148,10 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
         output = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J),
                            rss, T_Hss, factor, Yss, solution_params,
                            baseline, fsolve_flag, baseline_spending)
+        if output['Gss'] < 0.:
+            warnings.warn('Warning: The combination of the tax policy '
+                          + 'you specified and your target debt-to-GDP '
+                          + 'ratio results in an infeasible amount of '
+                          + 'government spending in order to close the '
+                          + 'budget (i.e., G < 0)')
     return output
