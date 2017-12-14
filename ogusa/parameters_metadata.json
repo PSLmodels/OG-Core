@@ -13,5 +13,13 @@
         "notes": "",
         "col_label": ["Frisch elasticity"],
         "validations": {"min": 0.1, "max": 0.8 }
+      },
+      "world_int_rate":{
+        "long_name": "World interest rate",
+        "description": "World interest rate",
+        "irs_ref": "",
+        "notes": "",
+        "col_label": ["World interest rate"],
+        "validations": {"min": -0.8, "max": 0.8 }
     }
 }

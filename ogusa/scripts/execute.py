@@ -10,8 +10,10 @@ import time
 
 import ogusa
 from ogusa import calibrate
+from ogusa.parameters import DEFAULT_WORLD_INT_RATE
 ogusa.parameters.DATASET = 'REAL'
 from ogusa.utils import DEFAULT_START_YEAR
+SMALL_OPEN_KEYS = ['world_int_rate']
 
 
 
@@ -60,16 +62,20 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
             data=data
         )
     print 'In runner, baseline is ', baseline
+    if small_open and (not isinstance(small_open, dict)):
+        raise ValueError('small_open must be False/None or a dict with keys: {}'.format(SMALL_OPEN_KEYS))
+    small_open = small_open or {}
     run_params = ogusa.parameters.get_parameters(
         test=test, baseline=baseline, guid=guid,
         start_year=user_params.get('start_year', DEFAULT_START_YEAR),
         tx_func_est_path=os.path.join(
             output_base,'TxFuncEst_{}.pkl'.format(guid),
-        ), constant_rates=True
-    )
+        ), constant_rates=True, **small_open)
     run_params['analytical_mtrs'] = analytical_mtrs
-    run_params['small_open'] = small_open
+    run_params['small_open'] = bool(small_open)
     run_params['budget_balance'] = budget_balance
+    run_params['world_int_rate'] = small_open.get('world_int_rate',
+                                                  DEFAULT_WORLD_INT_RATE)
 
     # Modify ogusa parameters based on user input
     if 'frisch' in user_params:

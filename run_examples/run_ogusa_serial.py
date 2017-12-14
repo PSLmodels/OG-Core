@@ -19,13 +19,16 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
 
     T_shifts = np.zeros(50)
     T_shifts[2:10] = 0.01
-    T_shifts[10:40]= -0.01
+    T_shifts[10:40] = -0.01
     G_shifts = np.zeros(6)
-    G_shifts[0:3]  = -0.01
-    G_shifts[3:6]  = -0.005
-    user_params = {'frisch':0.41, 'start_year':2017, 'tau_b':0.20,
-                   'debt_ratio_ss':1.0, 'T_shifts':T_shifts,
-                   'G_shifts':G_shifts}
+    G_shifts[0:3] = -0.01
+    G_shifts[3:6] = -0.005
+    small_open = dict(world_int_rate=0.04)  # Alternatively
+                                            # small_open can be False/None
+                                            # (if False/None then 0.04 is used)
+    user_params = {'frisch': 0.41, 'start_year': 2017, 'tau_b': 0.20,
+                   'debt_ratio_ss': 1.0, 'T_shifts': T_shifts,
+                   'G_shifts': G_shifts, 'small_open': small_open}
 
     '''
     ------------------------------------------------------------------------
@@ -34,14 +37,13 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
     '''
     output_base = BASELINE_DIR
     input_dir = BASELINE_DIR
-    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-           'test':False, 'time_path':True, 'baseline':True, 'analytical_mtrs':False, 'age_specific':True,
-           'user_params':user_params,'guid':'',
-           'run_micro':False, 'small_open':False, 'budget_balance':False, 'baseline_spending':False}
-    #p1 = Process(target=runner, kwargs=kwargs)
-    #p1.start()
+    kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
+              'test': False, 'time_path': True, 'baseline': True,
+              'analytical_mtrs': False, 'age_specific': True,
+              'user_params': user_params, 'guid': '', 'run_micro': False,
+              'small_open': small_open, 'budget_balance': False,
+              'baseline_spending': False}
     runner(**kwargs)
-    quit()
 
 
     '''
@@ -53,14 +55,13 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
     if not os.path.exists(baseline_dir):
         output_base = baseline_dir
         input_dir = baseline_dir
-        kwargs={'output_base':output_base, 'baseline_dir':baseline_dir,
-                'test':False, 'time_path':True, 'baseline':True,
-                'analytical_mtrs':False, 'age_specific':True,
-                'user_params':user_params,'guid':'baseline',
-                'run_micro':True, 'small_open': False, 'budget_balance':False,
-                'baseline_spending':False, 'data': data}
-        #p1 = Process(target=runner, kwargs=kwargs)
-        #p1.start()
+        kwargs = {'output_base': output_base, 'baseline_dir': baseline_dir,
+                  'test': False, 'time_path': True, 'baseline': True,
+                  'analytical_mtrs': False, 'age_specific': True,
+                  'user_params': user_params, 'guid': 'baseline',
+                  'run_micro': True, 'small_open': small_open,
+                  'budget_balance': False, 'baseline_spending': False,
+                  'data': data}
         runner(**kwargs)
 
 
@@ -72,16 +73,20 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
     output_base = reform_dir
     input_dir = reform_dir
     guid_iter = 'reform_' + str(0)
-    kwargs={'output_base':output_base, 'baseline_dir':baseline_dir,
-            'test':False, 'time_path':True, 'baseline':False,
-            'analytical_mtrs':False, 'age_specific':True,
-            'user_params':user_params,'guid':guid, 'reform':reform ,
-            'run_micro':True, 'small_open': False, 'budget_balance':False,
-            'baseline_spending':False, 'data': data}
+    user_params = {'frisch': 0.41, 'start_year': 2017, 'tau_b': 0.20,
+                   'debt_ratio_ss': 1.0, 'T_shifts': T_shifts,
+                   'G_shifts': G_shifts, 'small_open': small_open}
+    kwargs = {'output_base': output_base, 'baseline_dir': baseline_dir,
+              'test': False, 'time_path': True, 'baseline': False,
+              'analytical_mtrs': False, 'age_specific': True,
+              'user_params': user_params, 'guid': guid, 'reform': reform,
+              'run_micro': True, 'small_open': small_open,
+              'budget_balance': False, 'baseline_spending': False,
+              'data': data}
     runner(**kwargs)
-    quit()
 
-    ans = postprocess.create_diff(baseline_dir=baseline_dir, policy_dir=reform_dir)
+    ans = postprocess.create_diff(baseline_dir=baseline_dir,
+                                  policy_dir=reform_dir)
 
     print "total time was ", (time.time() - start_time)
     print 'Percentage changes in aggregates:', ans
