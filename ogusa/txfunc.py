@@ -1443,7 +1443,7 @@ def tax_func_estimate(beg_yr=DEFAULT_START_YEAR, baseline=True,
     pool = multiprocessing.Pool()
     for t in years_list:
         results[t] = pool.apply_async(tax_func_loop,
-                                      args=(t, microdata[t], beg_yr
+                                      args=(t, microdata[t], beg_yr,
                                             s_min, s_max, age_specific,
                                             desc_data, graph_data,
                                             graph_est, output_dir,
