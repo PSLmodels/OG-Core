@@ -31,6 +31,7 @@ import os
 import numpy as np
 import numpy.random as rnd
 import scipy.optimize as opt
+import multiprocessing
 try:
     import cPickle as pickle
 except:
@@ -916,8 +917,389 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
     return params, wsse, obs
 
 
-def tax_func_estimate(beg_yr=DEFAULT_START_YEAR, baseline=True, analytical_mtrs=False,
-  age_specific=True, reform={}, data=None):
+def tax_func_loop(t, microdata, beg_yr, s_min, s_max, age_specific,
+                  desc_data, graph_data, graph_est, output_dir,
+                  numparams, tpers):
+    '''
+    ----------------------------------------------------------------
+    Clean up the data
+    ----------------------------------------------------------------
+    data_orig  = (N1, 11) DataFrame, original micro tax data from
+                 Tax-Calculator for particular year
+    data       = (N1, 8) DataFrame, new variables dataset
+    data_trnc  = (N2, 8) DataFrame, truncated observations dataset
+    min_age    = integer >= 1, minimum age in micro data that is
+                 relevant to model
+    max_age    = integer >= min_age, maximum age in micro data that
+                 is relevant to model
+    NoData_cnt = integer >= 0, number of consecutive ages with
+                 insufficient data to estimate tax functions
+    ----------------------------------------------------------------
+    '''
+
+    # initialize arrays for output
+    etrparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
+    mtrxparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
+    mtryparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
+    etr_wsumsq_arr = np.zeros((s_max - s_min + 1, tpers))
+    etr_obs_arr = np.zeros((s_max - s_min + 1, tpers))
+    mtrx_wsumsq_arr = np.zeros((s_max - s_min + 1, tpers))
+    mtrx_obs_arr = np.zeros((s_max - s_min + 1, tpers))
+    mtry_wsumsq_arr = np.zeros((s_max - s_min + 1, tpers))
+    mtry_obs_arr = np.zeros((s_max - s_min + 1, tpers))
+    AvgInc = np.zeros(tpers)
+    AvgETR = np.zeros(tpers)
+    AvgMTRx = np.zeros(tpers)
+    AvgMTRy = np.zeros(tpers)
+    TotPop_yr = np.zeros(tpers)
+    PopPct_age = np.zeros((s_max-s_min+1, tpers))
+
+    data_orig = micro_data
+    data_orig['Total Labor Income'] = \
+        (data_orig['Wage and Salaries'] +
+        data_orig['Self-Employed Income'])
+    data_orig['Effective Tax Rate'] = \
+        (data_orig['Total Tax Liability'] /
+        data_orig["Adjusted Total income"])
+    data_orig["Total Capital Income"] = \
+        (data_orig['Adjusted Total income'] -
+        data_orig['Total Labor Income'])
+    # use weighted avg for MTR labor - abs value because
+    # SE income may be negative
+    data_orig['MTR Labor'] = \
+        (data_orig['MTR wage'] * (data_orig['Wage and Salaries'] /
+        (data_orig['Wage and Salaries'].abs() +
+        data_orig['Self-Employed Income'].abs())) +
+        data_orig['MTR self-employed Wage'] *
+        (data_orig['Self-Employed Income'].abs() /
+        (data_orig['Wage and Salaries'].abs() +
+        data_orig['Self-Employed Income'].abs())))
+    data = data_orig[['Age', 'MTR Labor', 'MTR capital income',
+        'Total Labor Income', 'Total Capital Income',
+        'Adjusted Total income', 'Effective Tax Rate', 'Weights']]
+
+    # Calculate average total income in each year
+    AvgInc[t-beg_yr] = \
+        (((data['Adjusted Total income'] * data['Weights']).sum())
+        / data['Weights'].sum())
+
+    # Calculate average ETR and MTRs (weight by population weights
+    #    and income) for each year
+    AvgETR[t-beg_yr] = \
+        (((data['Effective Tax Rate']*data['Adjusted Total income']
+        * data['Weights']).sum()) /
+        (data['Adjusted Total income']*data['Weights']).sum())
+
+    AvgMTRx[t-beg_yr] = \
+        (((data['MTR Labor']*data['Adjusted Total income'] *
+        data['Weights']).sum()) /
+        (data['Adjusted Total income']*data['Weights']).sum())
+
+    AvgMTRy[t-beg_yr] = \
+        (((data['MTR capital income'] *
+        data['Adjusted Total income'] * data['Weights']).sum()) /
+        (data['Adjusted Total income']*data['Weights']).sum())
+
+    # Calculate total population in each year
+    TotPop_yr[t-beg_yr] = data['Weights'].sum()
+
+    # Clean up the data by dropping outliers
+    # drop all obs with ETR > 0.65
+    data_trnc = \
+        data.drop(data[data['Effective Tax Rate'] >0.65].index)
+    # drop all obs with ETR < -0.15
+    data_trnc = \
+        data_trnc.drop(data_trnc[data_trnc['Effective Tax Rate']
+        < -0.15].index)
+    # drop all obs with ATI, TLI, TCI < $5
+    data_trnc = data_trnc[(data_trnc['Adjusted Total income'] >= 5)
+        & (data_trnc['Total Labor Income'] >= 5) &
+        (data_trnc['Total Capital Income'] >= 5)]
+
+    if analytical_mtrs==False:
+        # drop all obs with MTR on capital income > 10.99
+        data_trnc = \
+            data_trnc.drop(data_trnc[data_trnc['MTR capital income']
+            > 0.99].index)
+        # drop all obs with MTR on capital income < -0.45
+        data_trnc = \
+            data_trnc.drop(data_trnc[data_trnc['MTR capital income']
+            < -0.45].index)
+        # drop all obs with MTR on labor income > 10.99
+        data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR Labor']
+                    > 0.99].index)
+        # drop all obs with MTR on labor income < -0.45
+        data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR Labor']
+                    < -0.45].index)
+
+    # Create an array of the different ages in the data
+    min_age = int(np.maximum(data_trnc['Age'].min(), s_min))
+    max_age = int(np.minimum(data_trnc['Age'].max(), s_max))
+    if age_specific:
+        ages_list = np.arange(min_age, max_age+1)
+    else:
+        ages_list = np.arange(0,1)
+
+    NoData_cnt = np.min(min_age - s_min, 0)
+
+    # Each age s must be done in serial, but each year can be done
+    # in parallel
+
+    for s in ages_list:
+        if age_specific:
+            print "year=", t, "Age=", s
+            df = data_trnc[data_trnc['Age'] == s]
+            PopPct_age[s-min_age, t-beg_yr] = \
+                df['Weights'].sum() / TotPop_yr[t-beg_yr]
+
+        else:
+            print "year=", t, "Age= all ages"
+            df = data_trnc
+            PopPct_age[0, t-beg_yr] = \
+                df['Weights'].sum() / TotPop_yr[t-beg_yr]
+
+        df_etr = df[['MTR Labor', 'MTR capital income',
+            'Total Labor Income', 'Total Capital Income',
+            'Effective Tax Rate', 'Weights']]
+        df_etr = df_etr[
+            (np.isfinite(df_etr['Effective Tax Rate'])) &
+            (np.isfinite(df_etr['Total Labor Income'])) &
+            (np.isfinite(df_etr['Total Capital Income'])) &
+            (np.isfinite(df_etr['Weights']))]
+        df_mtrx = df[['MTR Labor', 'Total Labor Income',
+            'Total Capital Income', 'Weights']]
+        df_mtrx = df_mtrx[
+            (np.isfinite(df_etr['MTR Labor'])) &
+            (np.isfinite(df_etr['Total Labor Income'])) &
+            (np.isfinite(df_etr['Total Capital Income'])) &
+            (np.isfinite(df_etr['Weights']))]
+        df_mtry = df[['MTR capital income', 'Total Labor Income',
+            'Total Capital Income', 'Weights']]
+        df_mtry = df_mtry[
+            (np.isfinite(df_etr['MTR capital income'])) &
+            (np.isfinite(df_etr['Total Labor Income'])) &
+            (np.isfinite(df_etr['Total Capital Income'])) &
+            (np.isfinite(df_etr['Weights']))]
+        df_minobs = np.min([df_etr.shape[0], df_mtrx.shape[0],
+            df_mtry.shape[0]])
+
+        # 240 is 8 parameters to estimate times 30 obs per parameter
+        if df_minobs < 240 and s < max_age:
+            '''
+            --------------------------------------------------------
+            Don't estimate function on this iteration if obs < 500.
+            Will fill in later with interpolated values
+            --------------------------------------------------------
+            '''
+            message = ("Insuff. sample size for age " + str(s) +
+                " in year " + str(t))
+            print message
+            NoData_cnt += 1
+            etrparam_arr[s-s_min, t-beg_yr, :] = np.nan
+            mtrxparam_arr[s-s_min, t-beg_yr, :] = np.nan
+            mtryparam_arr[s-s_min, t-beg_yr, :] = np.nan
+
+        elif df_minobs < 240 and s == max_age:
+            '''
+            --------------------------------------------------------
+            If last period does not have sufficient data, fill in
+            final missing age data with last positive year
+            --------------------------------------------------------
+            lastp_etr  = (numparams,) vector, vector of parameter
+                         estimates from previous age with sufficient
+                         observations
+            lastp_mtrx = (numparams,) vector, vector of parameter
+                         estimates from previous age with sufficient
+                         observations
+            lastp_mtry = (numparams,) vector, vector of parameter
+                         estimates from previous age with sufficient
+                         observations
+            --------------------------------------------------------
+            '''
+            message = ("Max age (s=" + str(s) + ") insuff. data in"
+                + " year " + str(t) + ". Fill in final ages with " +
+                "insuff. data with most recent successful " +
+                "estimate.")
+            print message
+            NoData_cnt += 1
+            lastp_etr = \
+                etrparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
+            etrparam_arr[s-NoData_cnt-s_min+1:, t-beg_yr, :] = \
+                np.tile(lastp_etr.reshape((1, numparams)),
+                (NoData_cnt+s_max-max_age, 1))
+            lastp_mtrx = \
+                mtrxparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
+            mtrxparam_arr[s-NoData_cnt-s_min+1:, t-beg_yr, :] = \
+                np.tile(lastp_mtrx.reshape((1, numparams)),
+                (NoData_cnt+s_max-max_age, 1))
+            lastp_mtry = \
+                mtryparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
+            mtryparam_arr[s-NoData_cnt-s_min+1:, t-beg_yr, :] = \
+                np.tile(lastp_mtry.reshape((1, numparams)),
+                (NoData_cnt+s_max-max_age, 1))
+
+        else:
+            # Estimate parameters for age with sufficient data
+            if desc_data:
+                # print some desciptive stats
+                message = ("Descriptive ETR statistics for age=" +
+                    str(s) + " in year " + str(t))
+                print message
+                print df_etr.describe()
+                message = ("Descriptive MTRx statistics for age=" +
+                    str(s) + " in year " + str(t))
+                print message
+                print df_mtrx.describe()
+                message = ("Descriptive MTRy statistics for age=" +
+                    str(s) + " in year " + str(t))
+                print message
+                print df_mtry.describe()
+
+            if graph_data:
+                gen_3Dscatters_hist(df, s, t, output_dir)
+
+            # Estimate effective tax rate function ETR(x,y)
+            (etrparams, etr_wsumsq_arr[s-s_min, t-beg_yr],
+                etr_obs_arr[s-s_min, t-beg_yr]) = \
+                txfunc_est(df_etr, s, t, 'etr', output_dir,
+                    graph_est)
+            etrparam_arr[s-s_min, t-beg_yr, :] = etrparams
+
+            # Estimate marginal tax rate of labor income function
+            # MTRx(x,y)
+            (mtrxparams, mtrx_wsumsq_arr[s-s_min, t-beg_yr],
+                mtrx_obs_arr[s-s_min, t-beg_yr]) = \
+                txfunc_est(df_mtrx, s, t, 'mtrx', output_dir,
+                    graph_est)
+            mtrxparam_arr[s-s_min, t-beg_yr, :] = mtrxparams
+
+            # Estimate marginal tax rate of capital income function
+            # MTRy(x,y)
+            (mtryparams, mtry_wsumsq_arr[s-s_min, t-beg_yr],
+                mtry_obs_arr[s-s_min, t-beg_yr]) = \
+                txfunc_est(df_mtry, s, t, 'mtry', output_dir,
+                    graph_est)
+            mtryparam_arr[s-s_min, t-beg_yr, :] = mtryparams
+
+            if NoData_cnt > 0 & NoData_cnt == s-s_min:
+                '''
+                ----------------------------------------------------
+                Fill in initial blanks with first positive data
+                estimates. This includes the case in which
+                min_age > s_min
+                ----------------------------------------------------
+                '''
+                message = "Fill in all previous blank ages"
+                print message
+                etrparam_arr[:s-s_min, t-beg_yr, :] = \
+                    np.tile(etrparams.reshape((1, numparams)),
+                    (s-s_min, 1))
+                mtrxparam_arr[:s-s_min, t-beg_yr, :] = \
+                    np.tile(mtrxparams.reshape((1, numparams)),
+                    (s-s_min, 1))
+                mtryparam_arr[:s-s_min, t-beg_yr, :] = \
+                    np.tile(mtryparams.reshape((1, numparams)),
+                    (s-s_min, 1))
+
+            elif NoData_cnt > 0 & NoData_cnt < s-s_min:
+                '''
+                ----------------------------------------------------
+                Fill in interior data gaps with linear interpolation
+                between bracketing positive data ages. In all of
+                these cases min_age < s <= max_age.
+                ----------------------------------------------------
+                tvals        = (NoData_cnt+2,) vector, linearly
+                               space points between 0 and 1
+                x0_etr       = (NoData_cnt x 10) matrix, positive
+                               estimates at beginning of no data
+                               spell
+                x1_etr       = (NoData_cnt x 10) matrix, positive
+                               estimates at end (current period) of
+                               no data spell
+                lin_int_etr  = (NoData_cnt x 10) matrix, linearly
+                               interpolated etr parameters between
+                               x0_etr and x1_etr
+                x0_mtrx      = (NoData_cnt x 10) matrix, positive
+                               estimates at beginning of no data
+                               spell
+                x1_mtrx      = (NoData_cnt x 10) matrix, positive
+                               estimates at end (current period) of
+                               no data spell
+                lin_int_mtrx = (NoData_cnt x 10) matrix, linearly
+                               interpolated mtrx parameters between
+                               x0_mtrx and x1_mtrx
+                ----------------------------------------------------
+                '''
+                message = ("Linearly interpolate previous blank " +
+                    "tax functions")
+                print message
+                tvals = np.linspace(0, 1, NoData_cnt+2)
+                x0_etr = np.tile(etrparam_arr[s-NoData_cnt-s_min-1,
+                    t-beg_yr, :].reshape((1, numparams)),
+                    (NoData_cnt, 1))
+                x1_etr = np.tile(etrparams.reshape((1, numparams)),
+                         (NoData_cnt, 1))
+                lin_int_etr = \
+                    (x0_etr + tvals[1:-1].reshape((NoData_cnt, 1))
+                    * (x1_etr - x0_etr))
+                etrparam_arr[s-NoData_cnt-min_age:s-min_age,
+                    t-beg_yr, :] = lin_int_etr
+                x0_mtrx = np.tile(
+                    mtrxparam_arr[s-NoData_cnt-s_min-1, t-beg_yr,
+                    :].reshape((1, numparams)),(NoData_cnt, 1))
+                x1_mtrx = np.tile(
+                    mtrxparams.reshape((1, numparams)),
+                    (NoData_cnt, 1))
+                lin_int_mtrx = \
+                    (x0_mtrx + tvals[1:-1].reshape((NoData_cnt, 1))
+                    * (x1_mtrx - x0_mtrx))
+                mtrxparam_arr[s-NoData_cnt-min_age:s-min_age,
+                    t-beg_yr, :] = lin_int_mtrx
+                x0_mtry = np.tile(
+                    mtryparam_arr[s-NoData_cnt-s_min-1, t-beg_yr,
+                    :].reshape((1, numparams)), (NoData_cnt, 1))
+                x1_mtry = np.tile(
+                    mtryparams.reshape((1, numparams)),
+                    (NoData_cnt, 1))
+                lin_int_mtry = \
+                    (x0_mtry + tvals[1:-1].reshape((NoData_cnt, 1))
+                    * (x1_mtry - x0_mtry))
+                mtryparam_arr[s-NoData_cnt-min_age:s-min_age,
+                    t-beg_yr, :] = lin_int_mtry
+
+            NoData_cnt == 0
+
+            if s == max_age and max_age < s_max:
+                '''
+                ----------------------------------------------------
+                If the last age estimates, and max_age< s_max, fill
+                in the remaining ages with these last estimates
+                ----------------------------------------------------
+                '''
+                message = "Fill in all old tax functions."
+                print message
+                etrparam_arr[s-s_min+1:, t-beg_yr, :] = \
+                    np.tile(etrparams.reshape((1, numparams)),
+                    (s_max-max_age, 1))
+                mtrxparam_arr[s-s_min+1:, t-beg_yr, :] = \
+                    np.tile(mtrxparams.reshape((1, numparams)),
+                    (s_max-max_age, 1))
+                mtryparam_arr[s-s_min+1:, t-beg_yr, :] = \
+                    np.tile(mtryparams.reshape((1, numparams)),
+                    (s_max-max_age, 1))
+
+    return TotPop_yr[t-beg_yr], PopPct_age[:, t-beg_yr],\
+        AvgInc[t-beg_yr], AvgETR[t-beg_yr], AvgMTRx[t-beg_yr],\
+        AvgMTRy[t-beg_yr], etrparam_arr[:, t-beg_yr, :],\
+        etr_wsumsq_arr[:, t-beg_yr], etr_obs_arr[:, t-beg_yr],\
+        mtrxparam_arr[:, t-beg_yr, :], mtrx_wsumsq_arr[:, t-beg_yr],\
+        mtrx_obs_arr[:, t-beg_yr], mtryparam_arr[:, t-beg_yr, :],\
+        mtry_wsumsq_arr[:, t-beg_yr], mtryparam_arr_obs_arr[:, t-beg_yr]
+
+
+def tax_func_estimate(beg_yr=DEFAULT_START_YEAR, baseline=True,
+                      analytical_mtrs=False, age_specific=True,
+                      reform={}, data=None):
     '''
     --------------------------------------------------------------------
     This function performs analysis on the source data from Tax-
@@ -1014,7 +1396,8 @@ def tax_func_estimate(beg_yr=DEFAULT_START_YEAR, baseline=True, analytical_mtrs=
     desc_data = False
     graph_data = False
     graph_est = False
-    # A, B, C, D, maxx, minx, maxy, miny, shift_x, shift_y, shift, share
+    years_list = np.arange(beg_yr, end_yr + 1)
+    # initialize arrays for output
     etrparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
     mtrxparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
     mtryparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
@@ -1030,7 +1413,7 @@ def tax_func_estimate(beg_yr=DEFAULT_START_YEAR, baseline=True, analytical_mtrs=
     AvgMTRy = np.zeros(tpers)
     TotPop_yr = np.zeros(tpers)
     PopPct_age = np.zeros((s_max-s_min+1, tpers))
-    years_list = np.arange(beg_yr, end_yr + 1)
+
 
     '''
     --------------------------------------------------------------------
@@ -1056,360 +1439,28 @@ def tax_func_estimate(beg_yr=DEFAULT_START_YEAR, baseline=True, analytical_mtrs=
     # else:
     #     micro_data = pickle.load(open("micro_data_baseline.pkl", "rb"))
 
+
+    pool = multiprocessing.Pool()
     for t in years_list:
-        '''
-        ----------------------------------------------------------------
-        Clean up the data
-        ----------------------------------------------------------------
-        data_orig  = (N1, 11) DataFrame, original micro tax data from
-                     Tax-Calculator for particular year
-        data       = (N1, 8) DataFrame, new variables dataset
-        data_trnc  = (N2, 8) DataFrame, truncated observations dataset
-        min_age    = integer >= 1, minimum age in micro data that is
-                     relevant to model
-        max_age    = integer >= min_age, maximum age in micro data that
-                     is relevant to model
-        NoData_cnt = integer >= 0, number of consecutive ages with
-                     insufficient data to estimate tax functions
-        ----------------------------------------------------------------
-        '''
-        data_orig = micro_data[str(t)]
-        data_orig['Total Labor Income'] = \
-            (data_orig['Wage and Salaries'] +
-            data_orig['Self-Employed Income'])
-        data_orig['Effective Tax Rate'] = \
-            (data_orig['Total Tax Liability'] /
-            data_orig["Adjusted Total income"])
-        data_orig["Total Capital Income"] = \
-            (data_orig['Adjusted Total income'] -
-            data_orig['Total Labor Income'])
-        # use weighted avg for MTR labor - abs value because
-        # SE income may be negative
-        data_orig['MTR Labor'] = \
-            (data_orig['MTR wage'] * (data_orig['Wage and Salaries'] /
-            (data_orig['Wage and Salaries'].abs() +
-            data_orig['Self-Employed Income'].abs())) +
-            data_orig['MTR self-employed Wage'] *
-            (data_orig['Self-Employed Income'].abs() /
-            (data_orig['Wage and Salaries'].abs() +
-            data_orig['Self-Employed Income'].abs())))
-        data = data_orig[['Age', 'MTR Labor', 'MTR capital income',
-            'Total Labor Income', 'Total Capital Income',
-            'Adjusted Total income', 'Effective Tax Rate', 'Weights']]
-
-        # Calculate average total income in each year
-        AvgInc[t-beg_yr] = \
-            (((data['Adjusted Total income'] * data['Weights']).sum())
-            / data['Weights'].sum())
-
-        # Calculate average ETR and MTRs (weight by population weights
-        #    and income) for each year
-        AvgETR[t-beg_yr] = \
-            (((data['Effective Tax Rate']*data['Adjusted Total income']
-            * data['Weights']).sum()) /
-            (data['Adjusted Total income']*data['Weights']).sum())
-
-        AvgMTRx[t-beg_yr] = \
-            (((data['MTR Labor']*data['Adjusted Total income'] *
-            data['Weights']).sum()) /
-            (data['Adjusted Total income']*data['Weights']).sum())
-
-        AvgMTRy[t-beg_yr] = \
-            (((data['MTR capital income'] *
-            data['Adjusted Total income'] * data['Weights']).sum()) /
-            (data['Adjusted Total income']*data['Weights']).sum())
-
-        # Calculate total population in each year
-        TotPop_yr[t-beg_yr] = data['Weights'].sum()
-
-        # Clean up the data by dropping outliers
-        # drop all obs with ETR > 0.65
-        data_trnc = \
-            data.drop(data[data['Effective Tax Rate'] >0.65].index)
-        # drop all obs with ETR < -0.15
-        data_trnc = \
-            data_trnc.drop(data_trnc[data_trnc['Effective Tax Rate']
-            < -0.15].index)
-        # drop all obs with ATI, TLI, TCI < $5
-        data_trnc = data_trnc[(data_trnc['Adjusted Total income'] >= 5)
-            & (data_trnc['Total Labor Income'] >= 5) &
-            (data_trnc['Total Capital Income'] >= 5)]
-
-        if analytical_mtrs==False:
-            # drop all obs with MTR on capital income > 10.99
-            data_trnc = \
-                data_trnc.drop(data_trnc[data_trnc['MTR capital income']
-                > 0.99].index)
-            # drop all obs with MTR on capital income < -0.45
-            data_trnc = \
-                data_trnc.drop(data_trnc[data_trnc['MTR capital income']
-                < -0.45].index)
-            # drop all obs with MTR on labor income > 10.99
-            data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR Labor']
-                        > 0.99].index)
-            # drop all obs with MTR on labor income < -0.45
-            data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR Labor']
-                        < -0.45].index)
-
-        # Create an array of the different ages in the data
-        min_age = int(np.maximum(data_trnc['Age'].min(), s_min))
-        max_age = int(np.minimum(data_trnc['Age'].max(), s_max))
-        if age_specific:
-            ages_list = np.arange(min_age, max_age+1)
-        else:
-            ages_list = np.arange(0,1)
-
-        NoData_cnt = np.min(min_age - s_min, 0)
-
-        # Each age s must be done in serial, but each year can be done
-        # in parallel
-
-        for s in ages_list: # for s in np.array([23, 24, 60, 63, 64, 65, 66, 67, 70, 71, 74, 79]):
-            if age_specific:
-                print "year=", t, "Age=", s
-                df = data_trnc[data_trnc['Age'] == s]
-                PopPct_age[s-min_age, t-beg_yr] = \
-                    df['Weights'].sum() / TotPop_yr[t-beg_yr]
-
-            else:
-                print "year=", t, "Age= all ages"
-                df = data_trnc
-                PopPct_age[0, t-beg_yr] = \
-                    df['Weights'].sum() / TotPop_yr[t-beg_yr]
-
-            df_etr = df[['MTR Labor', 'MTR capital income',
-                'Total Labor Income', 'Total Capital Income',
-                'Effective Tax Rate', 'Weights']]
-            df_etr = df_etr[
-                (np.isfinite(df_etr['Effective Tax Rate'])) &
-                (np.isfinite(df_etr['Total Labor Income'])) &
-                (np.isfinite(df_etr['Total Capital Income'])) &
-                (np.isfinite(df_etr['Weights']))]
-            df_mtrx = df[['MTR Labor', 'Total Labor Income',
-                'Total Capital Income', 'Weights']]
-            df_mtrx = df_mtrx[
-                (np.isfinite(df_etr['MTR Labor'])) &
-                (np.isfinite(df_etr['Total Labor Income'])) &
-                (np.isfinite(df_etr['Total Capital Income'])) &
-                (np.isfinite(df_etr['Weights']))]
-            df_mtry = df[['MTR capital income', 'Total Labor Income',
-                'Total Capital Income', 'Weights']]
-            df_mtry = df_mtry[
-                (np.isfinite(df_etr['MTR capital income'])) &
-                (np.isfinite(df_etr['Total Labor Income'])) &
-                (np.isfinite(df_etr['Total Capital Income'])) &
-                (np.isfinite(df_etr['Weights']))]
-            df_minobs = np.min([df_etr.shape[0], df_mtrx.shape[0],
-                df_mtry.shape[0]])
-
-            # 240 is 8 parameters to estimate times 30 obs per parameter
-            if df_minobs < 240 and s < max_age:
-                '''
-                --------------------------------------------------------
-                Don't estimate function on this iteration if obs < 500.
-                Will fill in later with interpolated values
-                --------------------------------------------------------
-                '''
-                message = ("Insuff. sample size for age " + str(s) +
-                    " in year " + str(t))
-                print message
-                NoData_cnt += 1
-                etrparam_arr[s-s_min, t-beg_yr, :] = np.nan
-                mtrxparam_arr[s-s_min, t-beg_yr, :] = np.nan
-                mtryparam_arr[s-s_min, t-beg_yr, :] = np.nan
-
-            elif df_minobs < 240 and s == max_age:
-                '''
-                --------------------------------------------------------
-                If last period does not have sufficient data, fill in
-                final missing age data with last positive year
-                --------------------------------------------------------
-                lastp_etr  = (numparams,) vector, vector of parameter
-                             estimates from previous age with sufficient
-                             observations
-                lastp_mtrx = (numparams,) vector, vector of parameter
-                             estimates from previous age with sufficient
-                             observations
-                lastp_mtry = (numparams,) vector, vector of parameter
-                             estimates from previous age with sufficient
-                             observations
-                --------------------------------------------------------
-                '''
-                message = ("Max age (s=" + str(s) + ") insuff. data in"
-                    + " year " + str(t) + ". Fill in final ages with " +
-                    "insuff. data with most recent successful " +
-                    "estimate.")
-                print message
-                NoData_cnt += 1
-                lastp_etr = \
-                    etrparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
-                etrparam_arr[s-NoData_cnt-s_min+1:, t-beg_yr, :] = \
-                    np.tile(lastp_etr.reshape((1, numparams)),
-                    (NoData_cnt+s_max-max_age, 1))
-                lastp_mtrx = \
-                    mtrxparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
-                mtrxparam_arr[s-NoData_cnt-s_min+1:, t-beg_yr, :] = \
-                    np.tile(lastp_mtrx.reshape((1, numparams)),
-                    (NoData_cnt+s_max-max_age, 1))
-                lastp_mtry = \
-                    mtryparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
-                mtryparam_arr[s-NoData_cnt-s_min+1:, t-beg_yr, :] = \
-                    np.tile(lastp_mtry.reshape((1, numparams)),
-                    (NoData_cnt+s_max-max_age, 1))
-
-            else:
-                # Estimate parameters for age with sufficient data
-                if desc_data:
-                    # print some desciptive stats
-                    message = ("Descriptive ETR statistics for age=" +
-                        str(s) + " in year " + str(t))
-                    print message
-                    print df_etr.describe()
-                    message = ("Descriptive MTRx statistics for age=" +
-                        str(s) + " in year " + str(t))
-                    print message
-                    print df_mtrx.describe()
-                    message = ("Descriptive MTRy statistics for age=" +
-                        str(s) + " in year " + str(t))
-                    print message
-                    print df_mtry.describe()
-
-                if graph_data:
-                    gen_3Dscatters_hist(df, s, t, output_dir)
-
-                # Estimate effective tax rate function ETR(x,y)
-                (etrparams, etr_wsumsq_arr[s-s_min, t-beg_yr],
-                    etr_obs_arr[s-s_min, t-beg_yr]) = \
-                    txfunc_est(df_etr, s, t, 'etr', output_dir,
-                        graph_est)
-                etrparam_arr[s-s_min, t-beg_yr, :] = etrparams
-
-                # Estimate marginal tax rate of labor income function
-                # MTRx(x,y)
-                (mtrxparams, mtrx_wsumsq_arr[s-s_min, t-beg_yr],
-                    mtrx_obs_arr[s-s_min, t-beg_yr]) = \
-                    txfunc_est(df_mtrx, s, t, 'mtrx', output_dir,
-                        graph_est)
-                mtrxparam_arr[s-s_min, t-beg_yr, :] = mtrxparams
-
-                # Estimate marginal tax rate of capital income function
-                # MTRy(x,y)
-                (mtryparams, mtry_wsumsq_arr[s-s_min, t-beg_yr],
-                    mtry_obs_arr[s-s_min, t-beg_yr]) = \
-                    txfunc_est(df_mtry, s, t, 'mtry', output_dir,
-                        graph_est)
-                mtryparam_arr[s-s_min, t-beg_yr, :] = mtryparams
-
-                if NoData_cnt > 0 & NoData_cnt == s-s_min:
-                    '''
-                    ----------------------------------------------------
-                    Fill in initial blanks with first positive data
-                    estimates. This includes the case in which
-                    min_age > s_min
-                    ----------------------------------------------------
-                    '''
-                    message = "Fill in all previous blank ages"
-                    print message
-                    etrparam_arr[:s-s_min, t-beg_yr, :] = \
-                        np.tile(etrparams.reshape((1, numparams)),
-                        (s-s_min, 1))
-                    mtrxparam_arr[:s-s_min, t-beg_yr, :] = \
-                        np.tile(mtrxparams.reshape((1, numparams)),
-                        (s-s_min, 1))
-                    mtryparam_arr[:s-s_min, t-beg_yr, :] = \
-                        np.tile(mtryparams.reshape((1, numparams)),
-                        (s-s_min, 1))
-
-                elif NoData_cnt > 0 & NoData_cnt < s-s_min:
-                    '''
-                    ----------------------------------------------------
-                    Fill in interior data gaps with linear interpolation
-                    between bracketing positive data ages. In all of
-                    these cases min_age < s <= max_age.
-                    ----------------------------------------------------
-                    tvals        = (NoData_cnt+2,) vector, linearly
-                                   space points between 0 and 1
-                    x0_etr       = (NoData_cnt x 10) matrix, positive
-                                   estimates at beginning of no data
-                                   spell
-                    x1_etr       = (NoData_cnt x 10) matrix, positive
-                                   estimates at end (current period) of
-                                   no data spell
-                    lin_int_etr  = (NoData_cnt x 10) matrix, linearly
-                                   interpolated etr parameters between
-                                   x0_etr and x1_etr
-                    x0_mtrx      = (NoData_cnt x 10) matrix, positive
-                                   estimates at beginning of no data
-                                   spell
-                    x1_mtrx      = (NoData_cnt x 10) matrix, positive
-                                   estimates at end (current period) of
-                                   no data spell
-                    lin_int_mtrx = (NoData_cnt x 10) matrix, linearly
-                                   interpolated mtrx parameters between
-                                   x0_mtrx and x1_mtrx
-                    ----------------------------------------------------
-                    '''
-                    message = ("Linearly interpolate previous blank " +
-                        "tax functions")
-                    print message
-                    tvals = np.linspace(0, 1, NoData_cnt+2)
-                    x0_etr = np.tile(etrparam_arr[s-NoData_cnt-s_min-1,
-                        t-beg_yr, :].reshape((1, numparams)),
-                        (NoData_cnt, 1))
-                    x1_etr = np.tile(etrparams.reshape((1, numparams)),
-                             (NoData_cnt, 1))
-                    lin_int_etr = \
-                        (x0_etr + tvals[1:-1].reshape((NoData_cnt, 1))
-                        * (x1_etr - x0_etr))
-                    etrparam_arr[s-NoData_cnt-min_age:s-min_age,
-                        t-beg_yr, :] = lin_int_etr
-                    x0_mtrx = np.tile(
-                        mtrxparam_arr[s-NoData_cnt-s_min-1, t-beg_yr,
-                        :].reshape((1, numparams)),(NoData_cnt, 1))
-                    x1_mtrx = np.tile(
-                        mtrxparams.reshape((1, numparams)),
-                        (NoData_cnt, 1))
-                    lin_int_mtrx = \
-                        (x0_mtrx + tvals[1:-1].reshape((NoData_cnt, 1))
-                        * (x1_mtrx - x0_mtrx))
-                    mtrxparam_arr[s-NoData_cnt-min_age:s-min_age,
-                        t-beg_yr, :] = lin_int_mtrx
-                    x0_mtry = np.tile(
-                        mtryparam_arr[s-NoData_cnt-s_min-1, t-beg_yr,
-                        :].reshape((1, numparams)), (NoData_cnt, 1))
-                    x1_mtry = np.tile(
-                        mtryparams.reshape((1, numparams)),
-                        (NoData_cnt, 1))
-                    lin_int_mtry = \
-                        (x0_mtry + tvals[1:-1].reshape((NoData_cnt, 1))
-                        * (x1_mtry - x0_mtry))
-                    mtryparam_arr[s-NoData_cnt-min_age:s-min_age,
-                        t-beg_yr, :] = lin_int_mtry
-
-                NoData_cnt == 0
-
-                if s == max_age and max_age < s_max:
-                    '''
-                    ----------------------------------------------------
-                    If the last age estimates, and max_age< s_max, fill
-                    in the remaining ages with these last estimates
-                    ----------------------------------------------------
-                    '''
-                    message = "Fill in all old tax functions."
-                    print message
-                    etrparam_arr[s-s_min+1:, t-beg_yr, :] = \
-                        np.tile(etrparams.reshape((1, numparams)),
-                        (s_max-max_age, 1))
-                    mtrxparam_arr[s-s_min+1:, t-beg_yr, :] = \
-                        np.tile(mtrxparams.reshape((1, numparams)),
-                        (s_max-max_age, 1))
-                    mtryparam_arr[s-s_min+1:, t-beg_yr, :] = \
-                        np.tile(mtryparams.reshape((1, numparams)),
-                        (s_max-max_age, 1))
+        results[t] = pool.apply_async(tax_func_loop,
+                                      args=(t, microdata[t], beg_yr
+                                            s_min, s_max, age_specific,
+                                            desc_data, graph_data,
+                                            graph_est, output_dir,
+                                            numparams, tpers))
+    pool.close()
+    pool.join()
+    for i, result in results.items():
+        TotPop_yr[i], PopPct_age[:, i], AvgInc[i], AvgETR[i],\
+            AvgMTRx[i], AvgMTRy[i], etrparam_arr[:, i, :],\
+            etr_wsumsq_arr[:, i], etr_obs_arr[:, i], mtrxparam_arr[:, i, :],\
+            mtrx_wsumsq_arr[:, i], mtrx_obs_arr[:, i],\
+            mtryparam_arr[:, i, :], mtry_wsumsq_arr[:, i],\
+            mtryparam_arr_obs_arr[:, i] = result.get()
 
     message = ("Finished tax function loop through " +
-        str(len(years_list)) + " years and " + str(len(ages_list)) +
-        " ages per year.")
+               str(len(years_list)) + " years and " + str(len(ages_list)) +
+               " ages per year.")
     print message
     elapsed_time = time.clock() - start_time
 
