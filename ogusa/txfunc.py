@@ -916,7 +916,7 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
     return params, wsse, obs
 
 
-def tax_func_estimate(beg_yr=2016, baseline=True, analytical_mtrs=False,
+def tax_func_estimate(beg_yr=DEFAULT_START_YEAR, baseline=True, analytical_mtrs=False,
   age_specific=True, reform={}, data=None):
     '''
     --------------------------------------------------------------------
@@ -1056,7 +1056,7 @@ def tax_func_estimate(beg_yr=2016, baseline=True, analytical_mtrs=False,
     # else:
     #     micro_data = pickle.load(open("micro_data_baseline.pkl", "rb"))
 
-    for t in years_list: #for t in np.arange(2016, 2017):
+    for t in years_list:
         '''
         ----------------------------------------------------------------
         Clean up the data
