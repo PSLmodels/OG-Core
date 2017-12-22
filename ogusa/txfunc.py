@@ -1431,7 +1431,7 @@ def tax_func_estimate(beg_yr=DEFAULT_START_YEAR, baseline=True,
     t          = integer >= beg_yr, index for year of analysis
     --------------------------------------------------------------------
     '''
-    start_time = time.clock()
+    start_time = time.time()
     output_dir = "./OUTPUT/txfuncs"
     utils.mkdirs(output_dir)
 
@@ -1467,7 +1467,7 @@ def tax_func_estimate(beg_yr=DEFAULT_START_YEAR, baseline=True,
                str(len(years_list)) + " years and " + str(len(ages_list)) +
                " ages per year.")
     print message
-    elapsed_time = time.clock() - start_time
+    elapsed_time = time.time() - start_time
 
     # Print tax function computation time
     if elapsed_time < 60: # less than a minute
