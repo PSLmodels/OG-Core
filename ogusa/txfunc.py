@@ -917,9 +917,9 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
     return params, wsse, obs
 
 
-def tax_func_loop(t, microdata, beg_yr, s_min, s_max, age_specific,
-                  desc_data, graph_data, graph_est, output_dir,
-                  numparams, tpers):
+def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
+                  analytical_mtrs, desc_data, graph_data, graph_est,
+                  output_dir, numparams, tpers):
     '''
     ----------------------------------------------------------------
     Clean up the data
@@ -1294,7 +1294,7 @@ def tax_func_loop(t, microdata, beg_yr, s_min, s_max, age_specific,
         etr_wsumsq_arr[:, t-beg_yr], etr_obs_arr[:, t-beg_yr],\
         mtrxparam_arr[:, t-beg_yr, :], mtrx_wsumsq_arr[:, t-beg_yr],\
         mtrx_obs_arr[:, t-beg_yr], mtryparam_arr[:, t-beg_yr, :],\
-        mtry_wsumsq_arr[:, t-beg_yr], mtryparam_arr_obs_arr[:, t-beg_yr]
+        mtry_wsumsq_arr[:, t-beg_yr], mtry_obs_arr[:, t-beg_yr]
 
 
 def tax_func_estimate(beg_yr=DEFAULT_START_YEAR, baseline=True,
@@ -1397,6 +1397,10 @@ def tax_func_estimate(beg_yr=DEFAULT_START_YEAR, baseline=True,
     graph_data = False
     graph_est = False
     years_list = np.arange(beg_yr, end_yr + 1)
+    if age_specific:
+        ages_list = np.arange(s_min, s_max+1)
+    else:
+        ages_list = np.arange(0,1)
     # initialize arrays for output
     etrparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
     mtrxparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
@@ -1432,31 +1436,32 @@ def tax_func_estimate(beg_yr=DEFAULT_START_YEAR, baseline=True,
     utils.mkdirs(output_dir)
 
     # call tax caculator and get microdata
-    micro_data = get_micro_data.get_data(baseline=baseline,
-        start_year=beg_yr, reform=reform, data=data)
-    # if reform:
-    #     micro_data = pickle.load(open("micro_data_policy.pkl", "rb"))
-    # else:
-    #     micro_data = pickle.load(open("micro_data_baseline.pkl", "rb"))
+    # micro_data = get_micro_data.get_data(baseline=baseline,
+    #     start_year=beg_yr, reform=reform, data=data)
+    if reform:
+        micro_data = pickle.load(open("micro_data_policy.pkl", "rb"))
+    else:
+        micro_data = pickle.load(open("micro_data_baseline.pkl", "rb"))
 
 
     pool = multiprocessing.Pool()
+    results = {}  # initialize results dictionary
     for t in years_list:
         results[t] = pool.apply_async(tax_func_loop,
-                                      args=(t, microdata[t], beg_yr,
+                                      args=(t, micro_data[str(t)], beg_yr,
                                             s_min, s_max, age_specific,
-                                            desc_data, graph_data,
-                                            graph_est, output_dir,
+                                            analytical_mtrs, desc_data,
+                                            graph_data, graph_est, output_dir,
                                             numparams, tpers))
     pool.close()
     pool.join()
     for i, result in results.items():
-        TotPop_yr[i], PopPct_age[:, i], AvgInc[i], AvgETR[i],\
-            AvgMTRx[i], AvgMTRy[i], etrparam_arr[:, i, :],\
-            etr_wsumsq_arr[:, i], etr_obs_arr[:, i], mtrxparam_arr[:, i, :],\
-            mtrx_wsumsq_arr[:, i], mtrx_obs_arr[:, i],\
-            mtryparam_arr[:, i, :], mtry_wsumsq_arr[:, i],\
-            mtryparam_arr_obs_arr[:, i] = result.get()
+        TotPop_yr[i-beg_yr], PopPct_age[:, i-beg_yr], AvgInc[i-beg_yr], AvgETR[i-beg_yr],\
+            AvgMTRx[i-beg_yr], AvgMTRy[i-beg_yr], etrparam_arr[:, i-beg_yr, :],\
+            etr_wsumsq_arr[:, i-beg_yr], etr_obs_arr[:, i-beg_yr], mtrxparam_arr[:, i-beg_yr, :],\
+            mtrx_wsumsq_arr[:, i-beg_yr], mtrx_obs_arr[:, i-beg_yr],\
+            mtryparam_arr[:, i-beg_yr, :], mtry_wsumsq_arr[:, i-beg_yr],\
+            mtry_obs_arr[:, i-beg_yr] = result.get()
 
     message = ("Finished tax function loop through " +
                str(len(years_list)) + " years and " + str(len(ages_list)) +
@@ -1569,13 +1574,13 @@ def tax_func_estimate(beg_yr=DEFAULT_START_YEAR, baseline=True,
         print 'Big S: ', S
         print 'max age, min age: ', s_max, s_min
     else:
-        etrparam_arr_S = np.tile(np.reshape(etrparam_arr[s-s_min, :, :],
+        etrparam_arr_S = np.tile(np.reshape(etrparam_arr[0-s_min, :, :],
             (1, tpers, etrparam_arr.shape[2])), (S, 1, 1))
         mtrxparam_arr_S = np.tile(
-            np.reshape(mtrxparam_arr[s-s_min, :, :],
+            np.reshape(mtrxparam_arr[0-s_min, :, :],
             (1, tpers, mtrxparam_arr.shape[2])), (S, 1, 1))
         mtryparam_arr_S = np.tile(
-            np.reshape(mtryparam_arr[s-s_min, :, :],
+            np.reshape(mtryparam_arr[0-s_min, :, :],
             (1, tpers, mtryparam_arr.shape[2])), (S, 1, 1))
 
 
