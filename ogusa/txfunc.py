@@ -1436,12 +1436,12 @@ def tax_func_estimate(beg_yr=DEFAULT_START_YEAR, baseline=True,
     utils.mkdirs(output_dir)
 
     # call tax caculator and get microdata
-    # micro_data = get_micro_data.get_data(baseline=baseline,
-    #     start_year=beg_yr, reform=reform, data=data)
-    if reform:
-        micro_data = pickle.load(open("micro_data_policy.pkl", "rb"))
-    else:
-        micro_data = pickle.load(open("micro_data_baseline.pkl", "rb"))
+    micro_data = get_micro_data.get_data(baseline=baseline,
+        start_year=beg_yr, reform=reform, data=data)
+    # if reform:
+    #     micro_data = pickle.load(open("micro_data_policy.pkl", "rb"))
+    # else:
+    #     micro_data = pickle.load(open("micro_data_baseline.pkl", "rb"))
 
 
     pool = multiprocessing.Pool()
