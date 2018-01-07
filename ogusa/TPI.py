@@ -71,19 +71,19 @@ def create_tpi_params(**sim_params):
     factor = ss_baseline_vars['factor_ss']
     initial_b = ss_baseline_vars['bssmat_splus1']
     initial_n = ss_baseline_vars['nssmat']
-    if sim_params['baseline_spending']==True:
+    if sim_params['baseline_spending']:
         baseline_tpi = os.path.join(sim_params['baseline_dir'], "TPI/TPI_vars.pkl")
         tpi_baseline_vars = pickle.load(open(baseline_tpi, "rb"))
         T_Hbaseline = tpi_baseline_vars['T_H']
         Gbaseline   = tpi_baseline_vars['G']
 
     theta_params = (sim_params['e'], sim_params['S'], sim_params['retire'])
-    if sim_params['baseline']==True:
+    if sim_params['baseline']:
         SS_values = (ss_baseline_vars['Kss'], ss_baseline_vars['Bss'], ss_baseline_vars['Lss'], ss_baseline_vars['rss'],
                  ss_baseline_vars['wss'], ss_baseline_vars['BQss'], ss_baseline_vars['T_Hss'], ss_baseline_vars['revenue_ss'],
                  ss_baseline_vars['bssmat_splus1'], ss_baseline_vars['nssmat'], ss_baseline_vars['Yss'], ss_baseline_vars['Gss'])
         theta = tax.replacement_rate_vals(ss_baseline_vars['nssmat'], ss_baseline_vars['wss'], factor, theta_params)
-    elif sim_params['baseline']==False:
+    elif not sim_params['baseline']:
         reform_ss = os.path.join(sim_params['input_dir'], "SS/SS_vars.pkl")
         ss_reform_vars = pickle.load(open(reform_ss, "rb"))
         SS_values = (ss_reform_vars['Kss'],ss_reform_vars['Bss'], ss_reform_vars['Lss'], ss_reform_vars['rss'],
@@ -147,7 +147,7 @@ def create_tpi_params(**sim_params):
     tG2            = sim_params['tG2']
     rho_G          = sim_params['rho_G']
     debt_ratio_ss  = sim_params['debt_ratio_ss']
-    if sim_params['baseline_spending']==False:
+    if not sim_params['baseline_spending']:
         fiscal_params  = (budget_balance, ALPHA_T, ALPHA_G, tG1, tG2, rho_G, debt_ratio_ss)
     else:
         fiscal_params  = (budget_balance, ALPHA_T, ALPHA_G, tG1, tG2, rho_G, debt_ratio_ss, T_Hbaseline, Gbaseline)
@@ -522,7 +522,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     B0, b_sinit, b_splus1init, factor, initial_b, initial_n, omega_S_preTP, initial_debt = initial_values
     Kss, Bss, Lss, rss, wss, BQss, T_Hss, revenue_ss, bssmat_splus1, nssmat, Yss, Gss = SS_values
     tau_b, delta_tau = biz_tax_params
-    if baseline_spending==False:
+    if not baseline_spending:
         budget_balance, ALPHA_T, ALPHA_G, tG1, tG2, rho_G, debt_ratio_ss = fiscal_params
     else:
         budget_balance, ALPHA_T, ALPHA_G, tG1, tG2, rho_G, debt_ratio_ss, T_Hbaseline, Gbaseline = fiscal_params
@@ -555,7 +555,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     B_init[1:T] = aggr.get_K(b_mat[:T-1], B_params)
     B_init[0] = B0
 
-    if small_open == False:
+    if not small_open:
         if budget_balance:
             K_init = B_init
         else:
@@ -596,9 +596,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         T_H = np.ones(T + S) * T_Hss2
         REVENUE = T_H
         G = np.zeros(T + S)
-    elif baseline_spending==False:
+    elif not baseline_spending:
         T_H = ALPHA_T * Y
-    elif baseline_spending==True:
+    elif baseline_spending:
         T_H = T_Hbaseline
         T_H_new = T_H   # Need to set T_H_new for later reference
         G   = Gbaseline
@@ -678,11 +678,11 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
             print 'B has negative elements. B[0:9]:', B[0:9]
             print 'B[T-2:T]:', B[T-2,T]
 
-        if small_open == False:
+        if not small_open:
             if budget_balance:
                 K[:T] = B[:T]
             else:
-                if baseline_spending == False:
+                if not baseline_spending:
                     Y = T_H/ALPHA_T  #SBF 3/3: This seems totally unnecessary as both these variables are defined above.
 
 #                tax_params = np.zeros((T,S,J,etr_params.shape[2]))
@@ -696,7 +696,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
 
                 D_0    = initial_debt * Y[0]
                 other_dg_params = (T, r, g_n_vector, g_y)
-                if baseline_spending==False:
+                if not baseline_spending:
                     G_0 = ALPHA_G[0] * Y[0]
                 dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
                 Dnew, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
@@ -710,7 +710,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         Y_params = (Z, gamma, epsilon)
         Ynew = firm.get_Y(K[:T], L[:T], Y_params)
         Y = Ynew
-        if small_open == False:
+        if not small_open:
             r_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
             rnew = firm.get_r(Ynew[:T], K[:T], r_params)
         else:
@@ -737,15 +737,15 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
 
         if budget_balance:
             T_H_new = REVENUE
-        elif baseline_spending==False:
+        elif not baseline_spending:
             T_H_new = ALPHA_T[:T] * Y[:T]
         # If baseline_spending==True, no need to update T_H, which remains fixed.
 
-        if small_open==True and budget_balance==False:
+        if small_open and not budget_balance:
             # Loop through years to calculate debt and gov't spending. This is done earlier when small_open=False.
             D_0    = initial_debt * Y[0]
             other_dg_params = (T, r, g_n_vector, g_y)
-            if baseline_spending==False:
+            if not baseline_spending:
                 G_0    = ALPHA_G[0] * Y[0]
             dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
             Dnew, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
@@ -756,7 +756,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         # D[:T] = utils.convex_combo(Dnew[:T], D[:T], nu)
         D = Dnew
         Y[:T] = utils.convex_combo(Ynew[:T], Y[:T], nu)
-        if baseline_spending==False:
+        if not baseline_spending:
             T_H[:T] = utils.convex_combo(T_H_new[:T], T_H[:T], nu)
         guesses_b = utils.convex_combo(b_mat, guesses_b, nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, nu)
@@ -765,7 +765,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         print 'BQ diff: ', (BQnew[:T]-BQ[:T]).max(), (BQnew[:T]-BQ[:T]).min()
         print 'T_H diff: ', (T_H_new[:T]-T_H[:T]).max(), (T_H_new[:T]-T_H[:T]).min()
 
-        if baseline_spending==False:
+        if not baseline_spending:
             if T_H.all() != 0:
                 TPIdist = np.array(list(utils.pct_diff_func(rnew[:T], r[:T])) + list(utils.pct_diff_func(BQnew[:T], BQ[:T]).flatten()) + list(
                     utils.pct_diff_func(wnew[:T], w[:T])) + list(utils.pct_diff_func(T_H_new[:T], T_H[:T]))).max()
@@ -802,10 +802,10 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         # print 'deficit: ', REVENUE[:T] - T_H_new[:T] - G[:T]
 
     # Loop through years to calculate debt and gov't spending. The re-assignment of G0 & D0 is necessary because Y0 may change in the TPI loop.
-    if budget_balance == False:
+    if not budget_balance:
         D_0    = initial_debt * Y[0]
         other_dg_params = (T, r, g_n_vector, g_y)
-        if baseline_spending==False:
+        if not baseline_spending:
             G_0    = ALPHA_G[0] * Y[0]
         dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
         D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
@@ -827,7 +827,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     #B_params = (omega[:T-1].reshape(T-1, S, 1), lambdas.reshape(1, 1, J), imm_rates[:T-1].reshape(T-1,S,1), g_n_vector[1:T], 'TPI') # defined above
     B[1:T] = aggr.get_K(bmat_splus1[:T-1], B_params)
 
-    if small_open == False:
+    if not small_open:
         K[:T] = B[:T] - D[:T]
     else:
         # K_params previously set to = (Z, gamma, epsilon, delta, tau_b, delta_tau)
@@ -840,7 +840,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     ydiff_max = np.amax(np.abs(ydiff))
     print 'ydiff_max = ', ydiff_max
 
-    if small_open == False:
+    if not small_open:
         # r_params previously set to = (Z, gamma, epsilon, delta, tau_b, delta_tau)
         rnew = firm.get_r(Ynew[:T], K[:T], r_params)
     else:
@@ -881,16 +881,16 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     C_params = (omega[:T].reshape(T, S, 1), lambdas, 'TPI')
     C = aggr.get_C(c_path, C_params)
 
-    if budget_balance==False:
+    if not budget_balance:
         D_0    = initial_debt * Y[0]
         other_dg_params = (T, r, g_n_vector, g_y)
-        if baseline_spending==False:
+        if not baseline_spending:
             G_0    = ALPHA_G[0] * Y[0]
         dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
         D, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
 
 
-    if small_open == False:
+    if not small_open:
         I_params = (delta, g_y, omega[:T].reshape(T, S, 1), lambdas, imm_rates[:T].reshape(T, S, 1), g_n_vector[1:T+1], 'TPI')
         I = aggr.get_I(bmat_splus1[:T], K[1:T+1], K[:T], I_params)
         rc_error = Y[:T] - C[:T] - I[:T] - G[:T]
@@ -954,7 +954,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         tpiwriter.writerow(K)
         tpiwriter.writerow(I)
         tpiwriter.writerow(r)
-        if small_open == True:
+        if small_open:
             tpiwriter.writerow(B)
             tpiwriter.writerow(BI)
             tpiwriter.writerow(new_borrowing)
