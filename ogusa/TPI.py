@@ -750,6 +750,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
             dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
             Dnew, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
 
+        if budget_balance:
+            Dnew = D
+
         w[:T] = wnew[:T]
         r[:T] = utils.convex_combo(rnew[:T], r[:T], nu)
         BQ[:T] = utils.convex_combo(BQnew[:T], BQ[:T], nu)
