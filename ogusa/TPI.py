@@ -606,7 +606,10 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
 
     # Initialize some inputs
     # D = np.zeros(T + S)
-    D = debt_ratio_ss*Y
+    if budget_balance:
+        D = 0.0*Y
+    else:
+        D = debt_ratio_ss*Y
     omega_shift = np.append(omega_S_preTP.reshape(1,S),omega[:T-1,:],axis=0)
     BQ_params = (omega_shift.reshape(T, S, 1), lambdas.reshape(1, 1, J), rho.reshape(1, S, 1),
                      g_n_vector[:T].reshape(T, 1), 'TPI')
@@ -709,7 +712,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
             K[:T] = firm.get_K(L[:T], tpi_firm_r[:T], K_params)
         Y_params = (Z, gamma, epsilon)
         Ynew = firm.get_Y(K[:T], L[:T], Y_params)
-        Y = Ynew
+        # Y = Ynew
         if not small_open:
             r_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
             rnew = firm.get_r(Ynew[:T], K[:T], r_params)
@@ -733,12 +736,12 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
 #        REVENUE_params = (np.tile(e.reshape(1, S, J),(T,1,1)), lambdas.reshape(1, 1, J), omega[:T].reshape(T, S, 1), 'TPI',
 #                tax_params, theta, tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J, tau_b, delta_tau) # defined above
         REVENUE = np.array(list(aggr.revenue(np.tile(rnew[:T].reshape(T, 1, 1),(1,S,J)), np.tile(wnew[:T].reshape(T, 1, 1),(1,S,J)),
-               bmat_s, n_mat[:T,:,:], BQnew[:T].reshape(T, 1, J), Y[:T], L[:T], K[:T], factor, REVENUE_params)) + [revenue_ss] * S)
+               bmat_s, n_mat[:T,:,:], BQnew[:T].reshape(T, 1, J), Ynew[:T], L[:T], K[:T], factor, REVENUE_params)) + [revenue_ss] * S)
 
         if budget_balance:
             T_H_new = REVENUE
         elif not baseline_spending:
-            T_H_new = ALPHA_T[:T] * Y[:T]
+            T_H_new = ALPHA_T[:T] * Ynew[:T]
         # If baseline_spending==True, no need to update T_H, which remains fixed.
 
         if small_open and not budget_balance:
@@ -746,8 +749,8 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
             D_0    = initial_debt * Y[0]
             other_dg_params = (T, r, g_n_vector, g_y)
             if not baseline_spending:
-                G_0    = ALPHA_G[0] * Y[0]
-            dg_fixed_values = (Y, REVENUE, T_H, D_0,G_0)
+                G_0    = ALPHA_G[0] * Ynew[0]
+            dg_fixed_values = (Ynew, REVENUE, T_H, D_0,G_0)
             Dnew, G = fiscal.D_G_path(dg_fixed_values, fiscal_params, other_dg_params, baseline_spending=baseline_spending)
 
         if budget_balance:
@@ -767,6 +770,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         print 'r diff: ', (rnew[:T]-r[:T]).max(), (rnew[:T]-r[:T]).min()
         print 'BQ diff: ', (BQnew[:T]-BQ[:T]).max(), (BQnew[:T]-BQ[:T]).min()
         print 'T_H diff: ', (T_H_new[:T]-T_H[:T]).max(), (T_H_new[:T]-T_H[:T]).min()
+        print 'Y diff: ', (Ynew[:T]-Y[:T]).max(), (Ynew[:T]-Y[:T]).min()
 
         if not baseline_spending:
             if T_H.all() != 0:
@@ -972,7 +976,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     if ((TPIiter >= maxiter) or (np.absolute(TPIdist) > mindist_TPI)) and ENFORCE_SOLUTION_CHECKS :
         raise RuntimeError("Transition path equlibrium not found (TPIdist)")
 
-    if ((np.any(np.absolute(rc_error) >= mindist_TPI))
+    if ((np.any(np.absolute(rc_error) >= mindist_TPI * 10))
         and ENFORCE_SOLUTION_CHECKS):
         raise RuntimeError("Transition path equlibrium not found (rc_error)")
 
