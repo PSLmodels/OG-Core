@@ -70,6 +70,8 @@ def get_calculator(baseline, calculator_start_year, reform=None, data=None,
 
     # this increment_year function extrapolates all PUF variables to the next year
     # so this step takes the calculator to the start_year
+    if calculator_start_year > 2027:
+        raise RuntimeError("Start year is beyond data extrapolation.")
     while calc1.current_year < calculator_start_year:
         calc1.increment_year()
 
@@ -148,8 +150,8 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={}, data=None
 
 
     # repeat the process for each year
-    # go increment 10 years into the future but not beyond 2027
-    for i in range(0, min(10, 2027 - start_year)):
+    # go increment years into the future but not beyond 2027
+    for i in range(2027 - start_year):
         calc1.increment_year()
 
         [mtr_fica, mtr_iit, mtr_combined] = calc1.mtr('e00200p')
