@@ -356,7 +356,7 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
                        full_output=True)
 
         euler_errors[:, j] = infodict['fvec']
-      # print 'Max Euler errors: ', np.absolute(euler_errors[:,j]).max()
+        # print('Max Euler errors: ', np.absolute(euler_errors[:,j]).max())
 
         bssmat[:, j] = solutions[:S]
         nssmat[:, j] = solutions[S:]
@@ -374,21 +374,17 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
     else:
         K_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
         K = firm.get_K(L, ss_firm_r, K_params)
-    # Y_params = (alpha, Z)
-    #print('inner K, L, Y: ', K, L, new_Y)
+    Y_params = (Z, gamma, epsilon)
+    new_Y = firm.get_Y(K, L, Y_params)
     if budget_balance:
         Y = new_Y
     if not small_open:
         r_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
         new_r = firm.get_r(Y, K, r_params)
-        w_params = (Z, gamma, epsilon)
-        new_w = firm.get_w(Y, L, w_params)
+        new_w = firm.get_w_from_r(new_r, w_params)
     else:
         new_r = ss_hh_r
-    Y_params = (Z, gamma, epsilon)
-    new_Y = firm.get_Y(K, L, Y_params)
-    w_params = (Z, gamma, epsilon)
-    new_w = firm.get_w(Y, L, w_params)
+    new_w = firm.get_w_from_r(new_r, w_params)
     print('inner factor prices: ', new_r, new_w)
 
     b_s = np.array(list(np.zeros(J).reshape(1, J)) +
@@ -418,7 +414,7 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
     elif baseline_spending:
         new_T_H = T_H
     else:
-        new_T_H = alpha_T*new_Y
+        new_T_H = alpha_T * new_Y
 
     return euler_errors, bssmat, nssmat, new_r, new_w, \
         new_T_H, new_Y, new_factor, new_BQ, average_income_model
@@ -593,7 +589,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss,
         if budget_balance:
             debt_ss = 0.0
         else:
-            debt_ss = debt_ratio_ss*Y
+            debt_ss = debt_ratio_ss * Y
         Kss = Bss - debt_ss
         Iss_params = (delta, g_y, omega_SS, lambdas, imm_rates,
                       g_n_ss, 'SS')
