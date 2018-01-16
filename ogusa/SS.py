@@ -589,7 +589,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss,
         if budget_balance:
             debt_ss = 0.0
         else:
-            debt_ss = debt_ratio_ss*Y
+            debt_ss = debt_ratio_ss * Y
         Kss = Bss - debt_ss
         Iss_params = (delta, g_y, omega_SS, lambdas, imm_rates,
                       g_n_ss, 'SS')
