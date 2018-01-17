@@ -911,6 +911,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         rc_error = Y[:T-1] + new_borrowing - (C[:T-1] + BI[:T-1] + G[:T-1] ) + (tpi_hh_r[:T-1] * B[:T-1] - (delta + tpi_firm_r[:T-1])*K[:T-1] - tpi_hh_r[:T-1]*D[:T-1])
         #print 'Y(T-1):', Y[T-1], '\n','C(T-1):', C[T-1], '\n','K(T-1):', K[T-1], '\n','B(T-1):', B[T-1], '\n','BI(T-1):', BI[T-1], '\n','I(T-1):', I[T-1]
 
+    # Compute total investment (not just domestic)
+    I_total = K[1:] - (1 - delta) * K[:-1]
+
     rce_max = np.amax(np.abs(rc_error))
     print 'Max absolute value resource constraint error:', rce_max
 
@@ -933,7 +936,8 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     ------------------------------------------------------------------------
     '''
 
-    output = {'Y': Y, 'K': K, 'L': L, 'C': C, 'I': I, 'BQ': BQ,
+    output = {'Y': Y, 'B': B, 'K': K, 'L': L, 'C': C, 'I': I,
+              'I_total': I_total, 'BQ': BQ,
               'REVENUE': REVENUE, 'T_H': T_H, 'G': G, 'D': D,
               'r': r, 'w': w, 'b_mat': b_mat, 'n_mat': n_mat,
               'c_path': c_path, 'tax_path': tax_path,
