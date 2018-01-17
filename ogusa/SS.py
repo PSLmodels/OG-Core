@@ -760,7 +760,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss,
     '''
     output = {'Kss': Kss, 'bssmat': bssmat, 'Bss': Bss, 'Lss': Lss,
               'Css': Css, 'Iss': Iss, 'Iss_total': Iss_total,
-              'nssmat': nssmat, 'Yss': Yss, 'Dss'; debt_ss,
+              'nssmat': nssmat, 'Yss': Yss, 'Dss': debt_ss,
               'wss': wss, 'rss': rss, 'theta': theta, 'BQss': BQss,
               'factor_ss': factor_ss, 'bssmat_s': bssmat_s,
               'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
