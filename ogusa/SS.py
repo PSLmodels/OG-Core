@@ -693,6 +693,9 @@ def SS_solver(b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss,
     # np.savetxt("mtr_ss_capital.csv", mtry_ss, delimiter=",")
     # np.savetxt("mtr_ss_labor.csv", mtrx_ss, delimiter=",")
 
+    # Compute total investment (not just domestic)
+    Iss_total = delta * Kss
+
     # solve resource constraint
     taxss_params = (e, lambdas, 'SS', retire, etr_params_3D, h_wealth,
                     p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
@@ -756,7 +759,8 @@ def SS_solver(b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss,
     ------------------------------------------------------------------------
     '''
     output = {'Kss': Kss, 'bssmat': bssmat, 'Bss': Bss, 'Lss': Lss,
-              'Css': Css, 'Iss': Iss, 'nssmat': nssmat, 'Yss': Yss,
+              'Css': Css, 'Iss': Iss, 'Iss_total': Iss_total,
+              'nssmat': nssmat, 'Yss': Yss,
               'wss': wss, 'rss': rss, 'theta': theta, 'BQss': BQss,
               'factor_ss': factor_ss, 'bssmat_s': bssmat_s,
               'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
