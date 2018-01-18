@@ -708,6 +708,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss,
 
     biz_params = (tau_b, delta_tau)
     business_revenue = tax.get_biz_tax(wss, Yss, Lss, Kss, biz_params)
+    IITpayroll_revenue = revenue_ss - business_revenue
 
     Css_params = (omega_SS.reshape(S, 1), lambdas, 'SS')
     Css = aggr.get_C(cssmat, Css_params)
@@ -765,6 +766,8 @@ def SS_solver(b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss,
               'factor_ss': factor_ss, 'bssmat_s': bssmat_s,
               'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
               'T_Hss': T_Hss, 'Gss': Gss, 'revenue_ss': revenue_ss,
+              'business_revenue': business_revenue,
+              'IITpayroll_revenue': IITpayroll_revenue,
               'euler_savings': euler_savings,
               'euler_labor_leisure': euler_labor_leisure, 'chi_n': chi_n,
               'chi_b': chi_b}

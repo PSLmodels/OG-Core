@@ -914,6 +914,11 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     # Compute total investment (not just domestic)
     I_total = K[1:] - (1 - delta) * K[:-1]
 
+    # Compute business and invidiual income tax revenue
+    biz_params = (tau_b, delta_tau)
+    business_revenue = tax.get_biz_tax(w[:T], Y[:T], L[:T], K[:T], biz_params)
+    IITpayroll_revenue = REVENUE[:T] - business_revenue[:T]
+
     rce_max = np.amax(np.abs(rc_error))
     print 'Max absolute value resource constraint error:', rce_max
 
@@ -938,10 +943,12 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
 
     output = {'Y': Y, 'B': B, 'K': K, 'L': L, 'C': C, 'I': I,
               'I_total': I_total, 'BQ': BQ,
-              'REVENUE': REVENUE, 'T_H': T_H, 'G': G, 'D': D,
-              'r': r, 'w': w, 'b_mat': b_mat, 'n_mat': n_mat,
-              'c_path': c_path, 'tax_path': tax_path,
-              'eul_savings': eul_savings, 'eul_laborleisure': eul_laborleisure}
+              'REVENUE': REVENUE, 'business_revenue': business_revenue,
+              'IITpayroll_revenue': IITpayroll_revenue, 'T_H': T_H,
+              'G': G, 'D': D, 'r': r, 'w': w, 'b_mat': b_mat,
+              'n_mat': n_mat, 'c_path': c_path, 'tax_path': tax_path,
+              'eul_savings': eul_savings,
+              'eul_laborleisure': eul_laborleisure}
 
     tpi_dir = os.path.join(output_dir, "TPI")
     utils.mkdirs(tpi_dir)
