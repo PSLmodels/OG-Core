@@ -14,8 +14,8 @@ def test_cps():
                                          records_start_year=2009, data="cps")
     # blind_head is only in the CPS file and e00700 is only in the PUF.
     # See taxcalc/records_variables.json
-    assert (calc.records.blind_head.sum() > 0 and
-            calc.records.e00700.sum() == 0)
+    assert (calc.array("blind_head").sum() > 0 and
+            calc.array("e00700").sum() == 0)
 
 
 def test_set_path():
