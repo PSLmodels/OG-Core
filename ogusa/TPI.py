@@ -911,6 +911,14 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
         rc_error = Y[:T-1] + new_borrowing - (C[:T-1] + BI[:T-1] + G[:T-1] ) + (tpi_hh_r[:T-1] * B[:T-1] - (delta + tpi_firm_r[:T-1])*K[:T-1] - tpi_hh_r[:T-1]*D[:T-1])
         #print 'Y(T-1):', Y[T-1], '\n','C(T-1):', C[T-1], '\n','K(T-1):', K[T-1], '\n','B(T-1):', B[T-1], '\n','BI(T-1):', BI[T-1], '\n','I(T-1):', I[T-1]
 
+    # Compute total investment (not just domestic)
+    I_total = K[1:] - (1 - delta) * K[:-1]
+
+    # Compute business and invidiual income tax revenue
+    biz_params = (tau_b, delta_tau)
+    business_revenue = tax.get_biz_tax(w[:T], Y[:T], L[:T], K[:T], biz_params)
+    IITpayroll_revenue = REVENUE[:T] - business_revenue[:T]
+
     rce_max = np.amax(np.abs(rc_error))
     print 'Max absolute value resource constraint error:', rce_max
 
@@ -933,20 +941,23 @@ def run_TPI(income_tax_params, tpi_params, iterative_params, small_open_params, 
     ------------------------------------------------------------------------
     '''
 
-    output = {'Y': Y, 'K': K, 'L': L, 'C': C, 'I': I, 'BQ': BQ,
-              'REVENUE': REVENUE, 'T_H': T_H, 'G': G, 'D': D,
-              'r': r, 'w': w, 'b_mat': b_mat, 'n_mat': n_mat,
-              'c_path': c_path, 'tax_path': tax_path,
-              'eul_savings': eul_savings, 'eul_laborleisure': eul_laborleisure}
+    output = {'Y': Y, 'B': B, 'K': K, 'L': L, 'C': C, 'I': I,
+              'I_total': I_total, 'BQ': BQ,
+              'REVENUE': REVENUE, 'business_revenue': business_revenue,
+              'IITpayroll_revenue': IITpayroll_revenue, 'T_H': T_H,
+              'G': G, 'D': D, 'r': r, 'w': w, 'b_mat': b_mat,
+              'n_mat': n_mat, 'c_path': c_path, 'tax_path': tax_path,
+              'eul_savings': eul_savings,
+              'eul_laborleisure': eul_laborleisure}
 
     tpi_dir = os.path.join(output_dir, "TPI")
     utils.mkdirs(tpi_dir)
     tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
     pickle.dump(output, open(tpi_vars, "wb"))
 
-    macro_output = {'Y': Y, 'K': K, 'L': L, 'C': C, 'I': I,
-                    'BQ': BQ, 'REVENUE': REVENUE, 'T_H': T_H, 'r': r, 'w': w,
-                    'tax_path': tax_path}
+    macro_output = {'Y': Y, 'B': B, 'K': K, 'L': L, 'C': C, 'I': I,
+                    'I_total': I_total, 'BQ': BQ, 'REVENUE': REVENUE,
+                    'T_H': T_H, 'r': r, 'w': w, 'tax_path': tax_path}
 
     growth = (1+g_n_vector)*np.exp(g_y)
     tpi_output_path = os.path.join(output_dir, 'TPI_output.csv')
