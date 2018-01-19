@@ -170,18 +170,23 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         Pickle SS results
     ------------------------------------------------------------------------
     '''
+    model_params = sim_params
     if baseline:
         utils.mkdirs(os.path.join(baseline_dir, "SS"))
         ss_dir = os.path.join(baseline_dir, "SS/SS_vars.pkl")
         pickle.dump(ss_outputs, open(ss_dir, "wb"))
         # Save pickle with parameter values for the run
-        pickle.dump(run_params, open(baseline_dir, 'wb'))
+        # param_dir = os.path.join(baseline_dir, "model_params.pkl")
+        # pkl_rep = pickle.dumps(model_params, -1)
+        # pickle.dump(pkl_rep , open(param_dir, "wb"))
     else:
         utils.mkdirs(os.path.join(output_base, "SS"))
         ss_dir = os.path.join(output_base, "SS/SS_vars.pkl")
         pickle.dump(ss_outputs, open(ss_dir, "wb"))
         # Save pickle with parameter values for the run
-        pickle.dump(run_params, open(output_base, 'wb'))
+        # param_dir = os.path.join(output_base, "model_params.pkl")
+        # pkl_rep = pickle.dumps(model_params, -1)
+        # pickle.dump(pkl_rep , open(param_dir, "wb"))
 
     if time_path:
         '''
