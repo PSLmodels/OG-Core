@@ -64,10 +64,9 @@ def test_sstpi():
     # Generate Wealth data moments
     output_dir = TEST_OUTPUT
     input_dir = "./OUTPUT"
-    wealth.get_wealth_data(lambdas, J, flag_graphs, output_dir)
+    wealth.get_wealth_data()
 
     # Generate labor data moments
-    labor.labor_data_moments(flag_graphs, output_dir=output_dir)
 
     get_baseline = True
     calibrate_model = False
