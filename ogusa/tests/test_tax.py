@@ -88,49 +88,94 @@ def test_tau_income():
 
 def test_MTR_capital():
     # Test the MTR on capital income function
-    r = np.array([0.5, 0.5, 0.5, 0.5])
-    w = np.array([0.5, 0.5, 0.5, 0.5])
-    b = np.array([0.5, 0.5, 0.5, 0.5])
-    n = np.array([0.5, 0.5, 0.5, 0.5])
-    factor = 1
-    e = np.array([0.5, 0.5, 0.5, 0.5])
-    etr_params = np.array([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
-    mtry_params = np.array([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
-    analytical_mtrs = 1
+    r = 0.04
+    w = 1.2
+    b = np.array([0.4, 0.3, 0.5])
+    n = np.array([0.8, 0.4, 0.7])
+    e = np.array([0.5, 0.45, 0.3])
+    factor = 110000
+    etr_params = np.array([[0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
+                           -0.15, 0.15, 0.16, -0.15, 0.83],
+                           [0.002, 0.001, 0.002, 0.04, 0.8, -0.14, 0.8,
+                            -0.15, 0.15, 0.16, -0.15, 0.83],
+                           [0.011, 0.001, 0.003, 0.06, 0.8, -0.14, 0.8,
+                            -0.15, 0.15, 0.16, -0.15, 0.83]])
+    mtry_params = np.array([[0.001, 0.002, 0.003, 0.0015, 0.68, -0.17, 0.8,
+                           -0.42, 0.18, 0.43, -0.42, 0.96],
+                           [0.001, 0.002, 0.003, 0.0015, 0.65, -0.17, 0.8,
+                            -0.42, 0.18, 0.33, -0.12, 0.90],
+                           [0.001, 0.002, 0.003, 0.0015, 0.56, -0.17, 0.8,
+                            -0.42, 0.18, 0.38, -0.22, 0.65]])
 
-    test_MTR_capital = tax.MTR_capital(r, w, b, n, factor, (e, etr_params, mtry_params, analytical_mtrs))
-    assert (np.allclose(test_MTR_capital, np.array([1.5, 1.5, 1.5, 1.5])))
+    # Test with analytical MTR = True
+    analytical_mtrs = True
+    mtr_capital = tax.MTR_capital(r, w, b, n, factor, (e, etr_params,
+                                                       mtry_params,
+                                                       analytical_mtrs))
+    assert np.allclose(mtr_capital, np.array([0.80167516, 0.80164698,
+                                                   0.80168175]))
+
+    # Test with analytical MTR = False
+    analytical_mtrs = False
+    mtr_capital = tax.MTR_capital(r, w, b, n, factor, (e, etr_params,
+                                                       mtry_params,
+                                                       analytical_mtrs))
+    assert np.allclose(mtr_capital, np.array([0.45239409, 0.73598958,
+                                                   0.65126073]))
 
 
 def test_MTR_labor():
+    # Test the MTR on labor income function
+    r = 0.04
+    w = 1.2
+    b = np.array([0.4, 0.3, 0.5])
+    n = np.array([0.8, 0.4, 0.7])
+    e = np.array([0.5, 0.45, 0.3])
+    factor = 110000
+    etr_params = np.array([[0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
+                           -0.15, 0.15, 0.16, -0.15, 0.83],
+                           [0.002, 0.001, 0.002, 0.04, 0.8, -0.14, 0.8,
+                            -0.15, 0.15, 0.16, -0.15, 0.83],
+                           [0.011, 0.001, 0.003, 0.06, 0.8, -0.14, 0.8,
+                            -0.15, 0.15, 0.16, -0.15, 0.83]])
+    mtrx_params = np.array([[0.001, 0.002, 0.003, 0.0015, 0.68, -0.17, 0.8,
+                           -0.42, 0.18, 0.43, -0.42, 0.96],
+                           [0.001, 0.002, 0.003, 0.0015, 0.65, -0.17, 0.8,
+                            -0.42, 0.18, 0.33, -0.12, 0.90],
+                           [0.001, 0.002, 0.003, 0.0015, 0.56, -0.17, 0.8,
+                            -0.42, 0.18, 0.38, -0.22, 0.65]])
 
-	r = np.array([0.5, 0.5, 0.5, 0.5])
-	w = np.array([0.5, 0.5, 0.5, 0.5])
-	b = np.array([0.5, 0.5, 0.5, 0.5])
-	n = np.array([0.5, 0.5, 0.5, 0.5])
-	factor = 1
-	e = np.array([0.5, 0.5, 0.5, 0.5])
-	etr_params = np.array([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
-	mtry_params = np.array([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
-	analytical_mtrs = 1
+    # Test with analytical MTR = True
+    analytical_mtrs = True
+    mtr_labor = tax.MTR_labor(r, w, b, n, factor, (e, etr_params,
+                                                   mtrx_params,
+                                                   analytical_mtrs))
+    assert np.allclose(mtr_labor, np.array([0.80167516, 0.80164698,
+                                            0.80168175]))
 
-	test_MTR_labor = tax.MTR_labor(r, w, b, n, factor, (e, etr_params, mtry_params, analytical_mtrs))
-	assert (np.allclose(test_MTR_labor, np.array([1.5, 1.5, 1.5, 1.5])))
+    # Test with analytical MTR = False
+    analytical_mtrs = False
+    mtr_labor = tax.MTR_labor(r, w, b, n, factor, (e, etr_params,
+                                                   mtrx_params,
+                                                   analytical_mtrs))
+    assert np.allclose(mtr_labor, np.array([0.45239409, 0.73598958,
+                                            0.65126073]))
+
 
 def test_get_biz_tax():
+    # Test function for business tax receipts
+    w = np.array([1.2, 1.1])
+    Y = np.array([3.0, 7.0])
+    L = np.array([2.0, 3.0])
+    K = np.array([5.0, 6.0])
+    tau_b = 0.20
+    delta_tau = 0.06
+    biz_tax = tax.get_biz_tax(w, Y, L, K, (tau_b, delta_tau))
+    assert np.allclose(biz_tax, np.array([0.06, 0.668]))
 
-	w = np.array([0.5, 0.5])
-	Y = np.array([2.0, 2.0])
-	L = np.array([1.0, 1.0])
-	K = np.array([1.0, 1.0])
-	tau_b = 1
-	delta_tau = 1
-	biz_tax = tax.get_biz_tax(w, Y, L, K, (tau_b, delta_tau))
-	assert (np.allclose(biz_tax, np.array([0.5, 0.5])))
 
-
-def	test_total_taxes():
-
+def test_total_taxes():
+    # Test function that computes total net taxes for the household
     r = np.array([0.5, 0.5, 0.5, 0.5])
     w = np.array([0.5, 0.5, 0.5, 0.5])
     b = np.array([0.5, 0.5, 0.5, 0.5])
