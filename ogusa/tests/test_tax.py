@@ -59,50 +59,47 @@ def test_tau_w_prime():
 
 def test_tau_income():
     # Test income tax function
-	r = np.array([0.5])
-	w = np.array([0.5])
-	b = np.array([0.5])
-	n = np.array([0.5])
-	factor = 1
-	e = np.array([0.5])
-	etr_params = np.array([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
-	test_tau_income= tax.tau_income(r, w, b, n, factor, (e, etr_params))
-	assert (np.allclose(test_tau_income, np.array([1.5])))
+    r = 0.04
+    w = 1.2
+    b = np.array([0.4, 0.4])
+    n = np.array([0.5, 0.4])
+    factor = 100000
+    e = np.array([0.5, 0.45])
+    etr_params = np.array([0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
+                           -0.15, 0.15, 0.16, -0.15, 0.83])
+    test_tau_income = tax.tau_income(r, w, b, n, factor, (e, etr_params))
+    assert np.allclose(test_tau_income, np.array([0.80167091, 0.80167011]))
 
-    # etr_params has dimensions from 1 to 4
-	etr_params= np.array([[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
-						  [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]])
-	test_tau_income = tax.tau_income(r, w, b, n, factor, (e, etr_params))
-	assert (np.allclose(test_tau_income, np.array([1.5, 1.5])))
-
-	etr_params = np.array([[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
-						   [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
-						   [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]])
-	test_tau_income = tax.tau_income(r, w, b, n, factor, (e, etr_params))
-	assert (np.allclose(test_tau_income, np.array([1.5, 1.5, 1.5,])))
-
-	etr_params = np.array([[0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
-						   [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
-						   [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5],
-						   [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]])
-	test_tau_income = tax.tau_income(r, w, b, n, factor, (e, etr_params))
-	assert (np.allclose(test_tau_income, np.array([1.5, 1.5, 1.5, 1.5])))
+    # Test etr_params having dimension greater than 1
+    b = np.array([0.4, 0.3, 0.5])
+    n = np.array([0.8, 0.4, 0.7])
+    e = np.array([0.5, 0.45, 0.3])
+    etr_params = np.array([[0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
+                           -0.15, 0.15, 0.16, -0.15, 0.83],
+                           [0.002, 0.001, 0.002, 0.04, 0.8, -0.14, 0.8,
+                            -0.15, 0.15, 0.16, -0.15, 0.83],
+                           [0.011, 0.001, 0.003, 0.06, 0.8, -0.14, 0.8,
+                            -0.15, 0.15, 0.16, -0.15, 0.83]])
+    test_tau_income = tax.tau_income(r, w, b, n, factor, (e, etr_params))
+    assert np.allclose(test_tau_income, np.array([0.80167144,
+                                                  0.80163711,
+                                                  0.8016793]))
 
 
 def test_MTR_capital():
+    # Test the MTR on capital income function
+    r = np.array([0.5, 0.5, 0.5, 0.5])
+    w = np.array([0.5, 0.5, 0.5, 0.5])
+    b = np.array([0.5, 0.5, 0.5, 0.5])
+    n = np.array([0.5, 0.5, 0.5, 0.5])
+    factor = 1
+    e = np.array([0.5, 0.5, 0.5, 0.5])
+    etr_params = np.array([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
+    mtry_params = np.array([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
+    analytical_mtrs = 1
 
-	r = np.array([0.5, 0.5, 0.5, 0.5])
-	w = np.array([0.5, 0.5, 0.5, 0.5])
-	b = np.array([0.5, 0.5, 0.5, 0.5])
-	n = np.array([0.5, 0.5, 0.5, 0.5])
-	factor = 1
-	e = np.array([0.5, 0.5, 0.5, 0.5])
-	etr_params = np.array([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
-	mtry_params = np.array([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
-	analytical_mtrs = 1
-
-	test_MTR_capital = tax.MTR_capital(r, w, b, n, factor, (e, etr_params, mtry_params, analytical_mtrs))
-	assert (np.allclose(test_MTR_capital, np.array([1.5, 1.5, 1.5, 1.5])))
+    test_MTR_capital = tax.MTR_capital(r, w, b, n, factor, (e, etr_params, mtry_params, analytical_mtrs))
+    assert (np.allclose(test_MTR_capital, np.array([1.5, 1.5, 1.5, 1.5])))
 
 
 def test_MTR_labor():
