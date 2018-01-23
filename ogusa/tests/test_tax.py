@@ -4,7 +4,7 @@ from ogusa import tax
 
 
 def test_replacement_rate_vals():
-	# Test replacement rate function, making sure to trigger all three
+    # Test replacement rate function, making sure to trigger all three
     # cases of AIME
     nssmat = np.array([0.5, 0.5, 0.5, 0.5])
     wss = 0.5
@@ -12,8 +12,7 @@ def test_replacement_rate_vals():
     retire = 3
     S = 4
     e = np.array([0.1, 0.3, 0.5, 0.2])
-    theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, (e, S,
-                                                               retire))
+    theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, (e, S, retire))
     assert np.allclose(theta, np.array([0.042012]))
 
     # e has two dimensions
@@ -32,34 +31,34 @@ def test_replacement_rate_vals():
     # hit AIME case1
     factor_ss = 1000
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, (e, S, retire))
-    assert np.allclose(theta, np.array([0.1755, 0.126 ]))
+    assert np.allclose(theta, np.array([0.1755, 0.126]))
 
 
 def test_tau_wealth():
+    # Test wealth tax computation
+    b = np.array([0.1, 0.5, 0.9])
+    h_wealth = 2
+    p_wealth = 3
+    m_wealth = 4
+    tau_w_prime = tax.tau_wealth(b, (h_wealth, p_wealth, m_wealth))
 
-	b = np.array([0.5, 0.5, 0.5])
-	h_wealth = 2
-	p_wealth = 3
-	m_wealth = 4
-	tau_w_prime = tax.tau_wealth(b, (h_wealth, p_wealth, m_wealth))
-
-	assert (np.allclose(tau_w_prime, np.array([ 0.6, 0.6, 0.6])))
-
+    assert np.allclose(tau_w_prime, np.array([0.6 / 4.2, 0.5, 5.4 / 5.8]))
 
 
 def test_tau_w_prime():
+    # Test marginal tax rate on wealth
+    b = np.array([0.2, 0.6, 0.8])
+    h_wealth = 3
+    p_wealth = 4
+    m_wealth = 5
+    tau_w_prime = tax.tau_w_prime(b, (h_wealth, p_wealth, m_wealth))
 
-	b = np.array([0.5, 0.5, 0.5])
-	h_wealth = 2
-	p_wealth = 3
-	m_wealth = 4
-	tau_w_prime = tax.tau_w_prime(b, (h_wealth, p_wealth, m_wealth))
-
-	assert (np.allclose(tau_w_prime, np.array([ 0.96, 0.96, 0.96])))
+    assert np.allclose(tau_w_prime, np.array([1.91326531, 1.29757785,
+                                           1.09569028]))
 
 
 def test_tau_income():
-
+    # Test income tax function
 	r = np.array([0.5])
 	w = np.array([0.5])
 	b = np.array([0.5])
