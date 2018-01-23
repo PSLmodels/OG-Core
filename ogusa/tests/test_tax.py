@@ -2,54 +2,38 @@ import numpy as np
 import pytest
 from ogusa import tax
 
-# This is a good start.  I left some comments below
-
-# I try to use different values for different variables.  That way they do not get mixed
-# up somehow. In test_replacement_vals, nssmat having the same value for each entry in
-# the array is fine. But e being the same as nssmat is not.
-# Sometimes using different values makes the math more complicated. If it gets too
-# complicated then it isn't worth it.
 
 def test_replacement_rate_vals():
-	# it would be nice if we could hit the three cases for AIME[j]
+	# Test replacement rate function, making sure to trigger all three
+    # cases of AIME
     nssmat = np.array([0.5, 0.5, 0.5, 0.5])
     wss = 0.5
-    factor_ss = 0.5
-    retire = 5
+    factor_ss = 100000
+    retire = 3
     S = 4
-
-    e = np.array([0.5, 0.5, 0.5, 0.5])
-    theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, (e, S, retire))
-    assert (np.allclose(theta, np.array([ 0.225])))
-
+    e = np.array([0.1, 0.3, 0.5, 0.2])
+    theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, (e, S,
+                                                               retire))
+    assert np.allclose(theta, np.array([0.042012]))
 
     # e has two dimensions
-    nssmat= np.array([[1, 1], [1, 1],[1, 1],[1, 1]])
-    e = np.array([[1, 1], [1, 1],[1, 1],[1, 1]])
+    nssmat = np.array([[0.4, 0.4], [0.4, 0.4], [0.4, 0.4], [0.4, 0.4]])
+    e = np.array([[0.4, 0.3], [0.5, 0.4], [.6, .4], [.4, .3]])
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, (e, S, retire))
-    assert (np.allclose(theta, np.array([0.9])))
-
+    assert np.allclose(theta, np.array([0.042012, 0.03842772]))
 
     # hit AIME case2
-    nssmat = np.array([[1000, 1000], [1000, 1000],[1000, 1000],[1000, 1000]])
-    wss = 5
-    factor_ss = 5
-    retire = 5
-    S = 4
-    e = np.array([[1, 1], [1, 1],[1, 1],[1, 1]])
+    nssmat = np.array([[0.3, .35], [0.3, .35], [0.3, .35], [0.3, .35]])
+    # wss = 5
+    e = np.array([[0.35, 0.3], [0.55, 0.4], [.65, .4], [.45, .3]])
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, (e, S, retire))
-    assert (np.allclose(theta, np.array([84.024])))
+    assert np.allclose(theta, np.array([0.1145304, 0.0969304]))
 
-    # hit AIME case3
-
-    nssmat = np.array([[5000, 5000], [5000, 5000], [5000, 5000], [5000, 5000]])
-    wss = 5
-    factor_ss = 5
-    retire = 5
-    S = 4
-    e = np.array([[1, 1], [1, 1], [1, 1], [1, 1]])
+    # hit AIME case1
+    factor_ss = 1000
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, (e, S, retire))
-    assert (np.allclose(theta, np.array([84.024])))
+    assert np.allclose(theta, np.array([0.1755, 0.126 ]))
+
 
 def test_tau_wealth():
 
