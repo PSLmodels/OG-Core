@@ -225,7 +225,7 @@ def test_total_taxes():
     w = np.array([1.2, 1.3, 1.1])
     b = np.array([[0.4, 0.3, 0.5], [0.4, 0.35, 0.52], [0.4, 0.45, 0.55]])
     n = np.array([[0.8, 0.4, 0.7], [0.75, 0.35, 0.6], [0.66, 0.44, 0.77]])
-    BQ = np.array([0.3, 0.35, 0.25])
+    BQ = np.array([0.3])
     T_H = np.array([0.12, 0.1, 0.11])
     etr_params = np.array([[0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
                            -0.15, 0.15, 0.16, -0.15, 0.83],
@@ -238,42 +238,72 @@ def test_total_taxes():
                                    etr_params, h_wealth, p_wealth,
                                    m_wealth, tau_payroll, theta, tau_bq,
                                    J, S))
-    assert np.allclose(total_taxes, np.array([1.59285714, 1.59285714, 1.59285714, 1.59285714]))
+    assert np.allclose(total_taxes,
+                       np.array([[0.47374766, -0.07444251, 0.05122862],
+                                 [0.44519744, -0.08188462, 0.03124387],
+                                 [0.39380703, 0.01608769, 0.1023818]]))
 
-
-    # shift = 0
+    # shift = False
     method = 'TPI'
     shift = False
-    total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, (
-    e, lambdas, method, retire, etr_params, h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S))
-    assert (np.allclose(total_taxes, np.array([[1.59285714, 1.59285714, 1.59285714, 1.59285714],[1.59285714, 1.59285714, 1.59285714, 1.59285714],[1.59285714, 1.59285714, 1.59285714, 1.59285714]])))
-
+    total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, j, shift,
+                                  (e, lambdas, method, retire,
+                                   etr_params, h_wealth, p_wealth,
+                                   m_wealth, tau_payroll, theta, tau_bq,
+                                   J, S))
+    assert np.allclose(total_taxes,
+                       np.array([[0.47374766, 0.21805749, 0.05122862],
+                                 [0.44519744, 0.21061538, 0.03124387],
+                                 [0.39380703, 0.30858769, 0.1023818]]))
 
     # b.shape =3
-    r = np.array([[0.5, 0.5, 0.5],[0.5, 0.5, 0.5],[0.5, 0.5, 0.5]])
-    w = np.array([[0.5, 0.5, 0.5],[0.5, 0.5, 0.5],[0.5, 0.5, 0.5]])
-    b = np.array([[0.5, 0.5, 0.5],[0.5, 0.5, 0.5],[0.5, 0.5, 0.5]])
-    n = np.array([[0.5, 0.5, 0.5],[0.5, 0.5, 0.5],[0.5, 0.5, 0.5]])
-    BQ = np.array([[0.5, 0.5, 0.5],[0.5, 0.5, 0.5],[0.5, 0.5, 0.5]])
-    factor = 1
-    T_H = np.array([[0.5, 0.5, 0.5],[0.5, 0.5, 0.5],[0.5, 0.5, 0.5]])
-    j = 0
-    shift = 0
-    e= np.array([[0.5, 0.5, 0.5],[0.5, 0.5, 0.5],[0.5, 0.5, 0.5]])
-    lambdas = np.array([[0.5, 0.5, 0.5],[0.5, 0.5, 0.5],[0.5, 0.5, 0.5]])
+    b = np.array([[[0.2, 0.3], [0.3, 0.35], [0.4, 0.35]],
+                  [[0.4, 0.3], [0.4, 0.35], [0.5, 0.35]],
+                  [[0.6, 0.4], [0.3, 0.4], [0.4, 0.22]]])
+    n = np.array([[[0.6, 0.5], [0.5, 0.55], [0.7, 0.8]],
+                  [[0.4, 0.43], [0.5, 0.66], [0.7, 0.7]],
+                  [[0.46, 0.44], [0.63, 0.64], [0.74, 0.72]]])
+    e = np.array([[0.3, 0.2], [0.5, 0.4], [0.45, 0.3]])
+    BQ = np.array([[0.3, 0.35], [0.25, 0.3], [0.4, 0.45]])
+    T_H = np.array([0.12, 0.1, 0.11])
+    etr_params = np.array([[0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
+                           -0.15, 0.15, 0.16, -0.15, 0.83],
+                           [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
+                            -0.15, 0.15, 0.16, -0.15, 0.83],
+                           [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
+                            -0.15, 0.15, 0.16, -0.15, 0.83]])
+    lambdas = np.array([0.65, 0.35])
+    theta = np.array([0.225, 0.3])
+    tau_bq = np.array([0.1, 0.12])
+    J = 2
+    S = 3
+    T = 3
     retire = 2
-    etr_params = np.array([0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5])
-    h_wealth = 1
-    p_wealth = 2
-    m_wealth = 3
-    tau_payroll = 4
-    theta = np.array([0.225])
-    tau_bq = np.array([1])
-    J = 1
-    S = 1
-    method="TPI"
+    j = 0
+    shift = True
 
-    total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, (e, lambdas, method, retire, etr_params, h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S))
-    assert (np.allclose(total_taxes, np.array([[ 1.59285714, 1.59285714, 1.59285714],
-                                               [ 1.59285714, 1.59285714, 1.59285714],
-                                               [ 1.59285714, 1.59285714, 1.59285714]])))
+    num_tax_params = etr_params.shape[1]
+    etr_params_path = np.tile(np.reshape(etr_params, (T, 1, 1,
+                                                      num_tax_params)),
+                              (1, S, J, 1))
+
+    total_taxes = tax.total_taxes(np.tile(r[:T].reshape(T, 1, 1), (1, S, J)),
+                                  np.tile(w[:T].reshape(T, 1, 1), (1, S, J)),
+                                  b, n, BQ[:T, :].reshape(T, 1, J),
+                                  factor, T_H[:T].reshape(T, 1, 1), j,
+                                  shift,
+                                  (np.tile(e.reshape(1, S, J), (T, 1, 1)),
+                                   lambdas, method, retire,
+                                   etr_params_path, h_wealth, p_wealth,
+                                   m_wealth, tau_payroll, theta, tau_bq,
+                                   J, S))
+    assert np.allclose(total_taxes,
+                       np.array([[[0.16311573, 0.1783638],
+                                  [0.27581667, 0.33559773],
+                                  [0.12283074, -0.00156221]],
+                                 [[0.1954706, 0.17462065],
+                                  [0.3563044, 0.41523182],
+                                  [0.19657058, -0.04157569]],
+                                 [[0.31524401, 0.2433513],
+                                  [0.34545346, 0.41922119],
+                                  [0.15958077, -0.02249081]]]))
