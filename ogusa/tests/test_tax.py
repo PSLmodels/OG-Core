@@ -23,7 +23,7 @@ def test_replacement_rate_vals():
 
     # hit AIME case2
     nssmat = np.array([[0.3, .35], [0.3, .35], [0.3, .35], [0.3, .35]])
-    # wss = 5
+    factor_ss = 10000
     e = np.array([[0.35, 0.3], [0.55, 0.4], [.65, .4], [.45, .3]])
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, (e, S, retire))
     assert np.allclose(theta, np.array([0.1145304, 0.0969304]))
@@ -42,7 +42,7 @@ def test_tau_wealth():
     m_wealth = 4
     tau_w_prime = tax.tau_wealth(b, (h_wealth, p_wealth, m_wealth))
 
-    assert np.allclose(tau_w_prime, np.array([0.6 / 4.2, 0.5, 5.4 / 5.8]))
+    assert np.allclose(tau_w_prime, np.array([0.14285714, 0.6, 0.93103448]))
 
 
 def test_tau_w_prime():
@@ -221,11 +221,12 @@ def test_total_taxes():
 
     # method = TPI
     method = 'TPI'
+    shift = True
     r = np.array([0.04, 0.045, 0.04])
     w = np.array([1.2, 1.3, 1.1])
-    b = np.array([[0.4, 0.3, 0.5], [0.4, 0.35, 0.52], [0.4, 0.45, 0.55]])
-    n = np.array([[0.8, 0.4, 0.7], [0.75, 0.35, 0.6], [0.66, 0.44, 0.77]])
-    BQ = np.array([0.3])
+    b = np.array([0.4, 0.3, 0.5])
+    n = np.array([0.8, 0.4, 0.7])
+    BQ = np.array([0.3, 0.4, 0.45])
     T_H = np.array([0.12, 0.1, 0.11])
     etr_params = np.array([[0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
                            -0.15, 0.15, 0.16, -0.15, 0.83],
@@ -239,9 +240,7 @@ def test_total_taxes():
                                    m_wealth, tau_payroll, theta, tau_bq,
                                    J, S))
     assert np.allclose(total_taxes,
-                       np.array([[0.47374766, -0.07444251, 0.05122862],
-                                 [0.44519744, -0.08188462, 0.03124387],
-                                 [0.39380703, 0.01608769, 0.1023818]]))
+                       np.array([0.47374766, -0.06444251, 0.06622862]))
 
     # shift = False
     method = 'TPI'
@@ -252,9 +251,7 @@ def test_total_taxes():
                                    m_wealth, tau_payroll, theta, tau_bq,
                                    J, S))
     assert np.allclose(total_taxes,
-                       np.array([[0.47374766, 0.21805749, 0.05122862],
-                                 [0.44519744, 0.21061538, 0.03124387],
-                                 [0.39380703, 0.30858769, 0.1023818]]))
+                       np.array([0.47374766, 0.22805749, 0.06622862]))
 
     # b.shape =3
     b = np.array([[[0.2, 0.3], [0.3, 0.35], [0.4, 0.35]],
