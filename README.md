@@ -1,7 +1,7 @@
 
 OG-USA
 =========
-OG-USA is an overlapping-generations (OG) model of the economy of the United States (USA) that allows for dynamic general equilibrium analysis of federal tax policy. The model outputs focus on the change in macroeconomics aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues changes over time. Careful documentation of the model, its output, and solution method is available in this repository at [https://github.com/rickecon/OG-USA/blob/doc/documentation/OGUSAdoc.pdf](https://github.com/rickecon/OG-USA/blob/doc/documentation/OGUSAdoc.pdf) and is regularly updated.
+OG-USA is an overlapping-generations (OG) model of the economy of the United States (USA) that allows for dynamic general equilibrium analysis of federal tax policy. The model output focuses changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Careful documentation of the model--its output, and solution method--is available [here](https://github.com/rickecon/OG-USA/blob/doc/documentation/OGUSAdoc.pdf) and is regularly updated.
 
 Disclaimer
 ==========
