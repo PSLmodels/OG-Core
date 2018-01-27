@@ -206,8 +206,9 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, params):
     cons2 = get_cons(r, w, b_splus1, b_splus2, n_extended[1:], BQ, tax2, cons2_params)
 
     mtr_cap_params = (e_extended[1:], etr_params_to_use,
-                      mtry_params_to_use,analytical_mtrs)
-    deriv = (1+r) - r*(tax.MTR_capital(r, w, b_splus1, n_extended[1:], factor, mtr_cap_params))
+                      mtry_params_to_use, analytical_mtrs)
+    deriv = (1+r) - r*(tax.MTR_capital(r, w, b_splus1, n_extended[1:],
+                                       factor, mtr_cap_params))
 
     savings_ut = rho * np.exp(-sigma * g_y) * chi_b * b_splus1 ** (-sigma)
 
