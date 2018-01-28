@@ -58,9 +58,10 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         raise ValueError('small_open must be False/None or a dict with keys: {}'.format(SMALL_OPEN_KEYS))
     small_open = small_open or {}
     run_params = ogusa.parameters.get_parameters(
-        output_base, test=test, baseline=baseline, guid=guid,
-        start_year=start_year,
-        run_micro=True, constant_rates=True, **small_open)
+        output_base, reform=reform, test=test, baseline=baseline,
+        guid=guid, run_micro=run_micro, constant_rates=constant_rates,
+        analytical_mtrs=analytical_mtrs, age_specific=age_specific,
+        start_year=start_year, data=data, **small_open)
     run_params['analytical_mtrs'] = analytical_mtrs
     run_params['small_open'] = bool(small_open)
     run_params['budget_balance'] = budget_balance
