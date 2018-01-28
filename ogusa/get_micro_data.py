@@ -27,7 +27,7 @@ import numpy as np
 import copy
 import numba
 import pickle
-from ogusa.utils import DEFAULT_START_YEAR
+from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR
 
 
 def get_calculator(baseline, calculator_start_year, reform=None, data=None,
@@ -70,7 +70,7 @@ def get_calculator(baseline, calculator_start_year, reform=None, data=None,
 
     # this increment_year function extrapolates all PUF variables to the next year
     # so this step takes the calculator to the start_year
-    if calculator_start_year > 2027:
+    if calculator_start_year > TC_LAST_YEAR:
         raise RuntimeError("Start year is beyond data extrapolation.")
     while calc1.current_year < calculator_start_year:
         calc1.increment_year()
@@ -126,7 +126,8 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={}, data=None
 
     # most variables can be retrieved from calculator's Record class
     # by add the variable name after (calc.records._____)
-    # most e-variable definition can be found here https://docs.google.com/spreadsheets/d/1WlgbgEAMwhjMI8s9eG117bBEKFioXUY0aUTfKwHwXdA/edit#gid=1029315862
+    # most e-variable definition can be found here
+    # https://docs.google.com/spreadsheets/d/1WlgbgEAMwhjMI8s9eG117bBEKFioXUY0aUTfKwHwXdA/edit#gid=1029315862
     # e00200 - wage and salaries, _sey - self-employed income
     temp[:,0] = mtr_combined
     temp[:,1] = mtr_combined_sey
@@ -150,8 +151,8 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={}, data=None
 
 
     # repeat the process for each year
-    # go increment years into the future but not beyond 2027
-    for i in range(2027 - start_year):
+    # go increment years into the future but not beyond TC_LAST_YEAR
+    for i in range(TC_LAST_YEAR - start_year):
         calc1.increment_year()
 
         [mtr_fica, mtr_iit, mtr_combined] = calc1.mtr('e00200p')
