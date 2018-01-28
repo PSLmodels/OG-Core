@@ -374,7 +374,7 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
         output_base, 'TxFuncEst_{}.pkl'.format(guid),
     )
     if run_micro:
-        txfunc.get_tax_func_estimate(
+        txfunc.get_tax_func_estimate(S, 
             baseline=baseline, analytical_mtrs=analytical_mtrs,
             age_specific=age_specific, start_year=start_year,
             reform=reform, guid=guid, tx_func_est_path=tx_func_est_path
