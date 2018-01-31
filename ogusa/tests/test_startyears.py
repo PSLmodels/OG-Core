@@ -13,9 +13,9 @@ def test_diff_start_year():
     TPI.ENFORCE_SOLUTION_CHECKS = False
     output_base = "./OUTPUT"
     input_dir = "./OUTPUT"
-    for year in range(2016, 2020):
+    for year in [2013, 2017, 2026]:
         print('year = ', year)
-        user_params = {'frisch':0.41, 'debt_ratio_ss':1.0,
+        user_params = {'frisch': 0.41, 'debt_ratio_ss': 1.0,
                        'start_year': year}
         runner(output_base=output_base, baseline_dir=input_dir, test=True,
                time_path=True, baseline=True, age_specific=False,
