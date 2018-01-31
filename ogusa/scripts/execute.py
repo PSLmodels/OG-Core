@@ -12,7 +12,7 @@ import ogusa
 from ogusa import calibrate
 from ogusa.parameters import DEFAULT_WORLD_INT_RATE
 ogusa.parameters.DATASET = 'REAL'
-from ogusa.utils import DEFAULT_START_YEAR
+from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR
 SMALL_OPEN_KEYS = ['world_int_rate']
 
 
