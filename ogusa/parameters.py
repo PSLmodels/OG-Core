@@ -309,6 +309,7 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
     # Time parameters
     T = int(4 * S)
     BW = int(min(10, TC_LAST_YEAR - start_year + 1))
+    print "BW = ", BW, 'star year = ', start_year
 
     starting_age = 20
     ending_age = 100
@@ -375,12 +376,13 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
     )
     if run_micro:
         txfunc.get_tax_func_estimate(BW, S, starting_age, ending_age,
-            baseline=baseline, analytical_mtrs=analytical_mtrs,
-            age_specific=age_specific, start_year=start_year,
-            reform=reform, guid=guid, tx_func_est_path=tx_func_est_path
-            ),
-            data=data
-        )
+                                     baseline=baseline,
+                                     analytical_mtrs=analytical_mtrs,
+                                     age_specific=age_specific,
+                                     start_year=start_year,
+                                     reform=reform, guid=guid,
+                                     tx_func_est_path=tx_func_est_path,
+                                     data=data)
     if baseline:
         baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         estimate_file = tx_func_est_path
@@ -395,12 +397,12 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
 
     mean_income_data = dict_params['tfunc_avginc'][0]
 
-    etr_params = dict_params['tfunc_etr_params_S'][:S,:BW,:]
-    mtrx_params = dict_params['tfunc_mtrx_params_S'][:S,:BW,:]
-    mtry_params = dict_params['tfunc_mtry_params_S'][:S,:BW,:]
+    etr_params = dict_params['tfunc_etr_params_S'][:S, :BW, :]
+    mtrx_params = dict_params['tfunc_mtrx_params_S'][:S, :BW, :]
+    mtry_params = dict_params['tfunc_mtry_params_S'][:S, :BW, :]
 
     if constant_rates:
-        print 'USINGconstant rates!'
+        print 'Using constant rates!'
         # # Make all ETRs equal the average
         etr_params = np.zeros(etr_params.shape)
         etr_params[:, :, 10] = dict_params['tfunc_avg_etr'] # set shift to average rate
