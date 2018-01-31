@@ -733,7 +733,11 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     # Age most recent population data to the current year of analysis
     pop_curr = pop_2013_EpS.copy()
     data_year = 2013
-    for per in range(0, curr_year-data_year): # Age the data to
+    pop_next = np.dot(OMEGA_orig, pop_curr)
+    g_n_curr = ((pop_next[-S:].sum() - pop_curr[-S:].sum())/
+                pop_curr[-S:].sum())  # g_n in 2013
+    pop_past = pop_curr  # assume 2012-2013 pop
+    for per in range(curr_year - data_year): # Age the data to
                                                # the current year
         pop_next = np.dot(OMEGA_orig, pop_curr)
         g_n_curr = ((pop_next[-S:].sum() - pop_curr[-S:].sum())/
