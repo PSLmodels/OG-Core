@@ -1392,6 +1392,7 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     s_max = ending_age
     beg_yr = int(beg_yr)
     end_yr = int(beg_yr + tpers - 1)
+    print 'BW = ', BW, "begin year = ", beg_yr, "end year = ", end_yr
     numparams = int(12)
     desc_data = False
     graph_data = False
