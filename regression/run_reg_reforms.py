@@ -158,8 +158,30 @@ def run_reforms(ref_idxs=REF_IDXS, path_prefix="", cpu_count=CPU_COUNT,
                     str(0),
                     data,
                     ok_to_run_baseline,)
-    # run reforms in parallel
-    pool = Pool(processes=cpu_count)
+    # # run reforms in parallel
+    # pool = Pool(processes=cpu_count)
+    # results = []
+    #
+    # ok_to_run_baseline = False
+    # for i in range(1, len(reforms)):
+    #     args = ({},
+    #             reforms[i],
+    #             "./{0}OUTPUT_BASELINE".format(path_prefix),
+    #             "./{0}OUTPUT_REFORM_{1}".format(path_prefix, i),
+    #             str(i),
+    #             data,
+    #             ok_to_run_baseline,)
+    #
+    #     async_result = pool.apply_async(run_micro_macro, args)
+    #     results.append(async_result)
+    #
+    # for result in results:
+    #     result.get()
+    #
+    # pool.close()
+    # pool.join()
+
+    # run reforms in serial
     results = []
 
     ok_to_run_baseline = False
@@ -172,14 +194,7 @@ def run_reforms(ref_idxs=REF_IDXS, path_prefix="", cpu_count=CPU_COUNT,
                 data,
                 ok_to_run_baseline,)
 
-        async_result = pool.apply_async(run_micro_macro, args)
-        results.append(async_result)
-
-    for result in results:
-        result.get()
-
-    pool.close()
-    pool.join()
+        run_micro_macro(args)
 
 
 if __name__ == "__main__":
