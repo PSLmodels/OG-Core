@@ -6,6 +6,7 @@ from ogusa import SS, TPI
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 PUF_PATH = os.path.join(CUR_PATH, '../puf.csv')
 
+@pytest.mark.full_run
 def test_frisch():
     from ogusa.scripts.execute import runner
     output_base = "./OUTPUT"
@@ -19,6 +20,7 @@ def test_frisch():
                user_params=user_params, run_micro=False,
                small_open=False, budget_balance=False, data=PUF_PATH)
 
+@pytest.mark.full_run
 def test_gy():
     from ogusa.scripts.execute import runner
     # # Monkey patch enforcement flag since small data won't pass checks
