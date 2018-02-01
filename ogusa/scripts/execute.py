@@ -50,6 +50,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         except OSError as oe:
             pass
 
+    tx_func_est_path = None
     if run_micro:
         txfunc.get_tax_func_estimate(
             baseline=baseline, analytical_mtrs=analytical_mtrs,
@@ -68,9 +69,8 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     run_params = ogusa.parameters.get_parameters(
         test=test, baseline=baseline, guid=guid,
         start_year=user_params.get('start_year', DEFAULT_START_YEAR),
-        tx_func_est_path=os.path.join(
-            output_base,'TxFuncEst_{}.pkl'.format(guid),
-        ), constant_rates=True, **small_open)
+        tx_func_est_path=tx_func_est_path, constant_rates=True,
+        **small_open)
     run_params['analytical_mtrs'] = analytical_mtrs
     run_params['small_open'] = bool(small_open)
     run_params['budget_balance'] = budget_balance
