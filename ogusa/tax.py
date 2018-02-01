@@ -6,7 +6,6 @@ Functions for taxes in the steady state and along the transition path.
 
 # Packages
 import numpy as np
-import cPickle as pickle
 
 '''
 ------------------------------------------------------------------------
@@ -28,25 +27,30 @@ def replacement_rate_vals(nssmat, wss, factor_ss, params):
         retire    = integer, retirement age
     Functions called: None
     Objects in function:
-        AIME       = [J,] vector, average indexed monthly earnings by lifetime income group
-        PIA        = [J,] vector, primary insurance amount by lifetime income group
+        AIME       = [J,] vector, average indexed monthly earnings by
+                          lifetime income group
+        PIA        = [J,] vector, primary insurance amount by lifetime
+                          income group
         maxpayment = scalar, maximum replacement rate
-        theta      = [J,] vector, replacement rates by lifetime income group
+        theta      = [J,] vector, replacement rates by lifetime income
+                          group
     Returns: theta
     '''
     e, S, retire = params
-    equiv_35 = int(round((S/80.0)*35)) - 1 # adjusts 35 year work history for any S
+    # adjust 35 yr work history for any S
+    equiv_35 = int(round((S / 80.0) * 35)) - 1
     if e.ndim == 2:
         dim2 = e.shape[1]
     else:
         dim2 = 1
-    earnings = (e *(wss * nssmat * factor_ss)).reshape(S,dim2)
+    earnings = (e * (wss * nssmat * factor_ss)).reshape(S, dim2)
     # get highest earning 35 years
-    highest_35_earn = (-1.0*np.sort(-1.0*earnings[:retire,:] ,axis=0))[:equiv_35]
-    AIME = highest_35_earn.sum(0) / ((12.0*(S/80.0))*equiv_35)
+    highest_35_earn =\
+        (-1.0 * np.sort(-1.0 * earnings[:retire, :], axis=0))[:equiv_35]
+    AIME = highest_35_earn.sum(0) / ((12.0 * (S / 80.0)) * equiv_35)
     PIA = np.zeros(dim2)
     # Bins from data for each level of replacement
-    for j in xrange(dim2):
+    for j in range(dim2):
         if AIME[j] < 749.0:
             PIA[j] = .9 * AIME[j]
         elif AIME[j] < 4517.0:
@@ -56,7 +60,7 @@ def replacement_rate_vals(nssmat, wss, factor_ss, params):
     # Set the maximum monthly replacment rate from SS benefits tables
     maxpayment = 3501.00
     PIA[PIA > maxpayment] = maxpayment
-    theta = (PIA*(12.0*S/80.0)) / (factor_ss*wss)
+    theta = (PIA * (12.0 * S / 80.0)) / (factor_ss * wss)
     return theta
 
 
@@ -95,7 +99,8 @@ def tau_w_prime(b, params):
         m_wealth = scalar, parameter of wealth tax function
     Functions called: None
     Objects in function:
-        tau_w_prime = [T,S,J] array, marginal tax rate on wealth from wealth tax
+        tau_w_prime = [T,S,J] array, marginal tax rate on wealth from
+                                     wealth tax
     Returns: tau_w_prime
     '''
     h_wealth, p_wealth, m_wealth = params
@@ -103,8 +108,8 @@ def tau_w_prime(b, params):
     h = h_wealth
     m = m_wealth
     p = p_wealth
-    tau_w_prime = h * m * p / (b * h + m) ** 2
-    return tau_w_prime
+    tau_prime = h * m * p / (b * h + m) ** 2
+    return tau_prime
 
 
 def tau_income(r, w, b, n, factor, params):
@@ -156,77 +161,36 @@ def tau_income(r, w, b, n, factor, params):
     '''
     e, etr_params = params
 
-    if etr_params.ndim == 4:
-        A = etr_params[:,:,:,0]
-        B = etr_params[:,:,:,1]
-        C = etr_params[:,:,:,2]
-        D = etr_params[:,:,:,3]
-        max_x = etr_params[:,:,:,4]
-        min_x = etr_params[:,:,:,5]
-        max_y = etr_params[:,:,:,6]
-        min_y = etr_params[:,:,:,7]
-        shift_x = etr_params[:,:,:,8]
-        shift_y = etr_params[:,:,:,9]
-        shift = etr_params[:,:,:,10]
-        share = etr_params[:,:,:,11]
-    if etr_params.ndim == 3:
-        A = etr_params[:,:,0]
-        B = etr_params[:,:,1]
-        C = etr_params[:,:,2]
-        D = etr_params[:,:,3]
-        max_x = etr_params[:,:,4]
-        min_x = etr_params[:,:,5]
-        max_y = etr_params[:,:,6]
-        min_y = etr_params[:,:,7]
-        shift_x = etr_params[:,:,8]
-        shift_y = etr_params[:,:,9]
-        shift = etr_params[:,:,10]
-        share = etr_params[:,:,11]
-    if etr_params.ndim == 2:
-        A = etr_params[:,0]
-        B = etr_params[:,1]
-        C = etr_params[:,2]
-        D = etr_params[:,3]
-        max_x = etr_params[:,4]
-        min_x = etr_params[:,5]
-        max_y = etr_params[:,6]
-        min_y = etr_params[:,7]
-        shift_x = etr_params[:,8]
-        shift_y = etr_params[:,9]
-        shift = etr_params[:,10]
-        share = etr_params[:,11]
-    if etr_params.ndim == 1:
-        A = etr_params[0]
-        B = etr_params[1]
-        C = etr_params[2]
-        D = etr_params[3]
-        max_x = etr_params[4]
-        min_x = etr_params[5]
-        max_y = etr_params[6]
-        min_y = etr_params[7]
-        shift_x = etr_params[8]
-        shift_y = etr_params[9]
-        shift = etr_params[10]
-        share = etr_params[11]
+    A = etr_params[..., 0]
+    B = etr_params[..., 1]
+    C = etr_params[..., 2]
+    D = etr_params[..., 3]
+    max_x = etr_params[..., 4]
+    min_x = etr_params[..., 5]
+    max_y = etr_params[..., 6]
+    min_y = etr_params[..., 7]
+    shift_x = etr_params[..., 8]
+    shift_y = etr_params[..., 9]
+    shift = etr_params[..., 10]
+    share = etr_params[..., 11]
 
-    X = (w*e*n)*factor
-    Y = (r*b)*factor
+    X = (w * e * n) * factor
+    Y = (r * b) * factor
     X2 = X ** 2
     Y2 = Y ** 2
     tau_x = ((max_x - min_x) * (A * X2 + B * X) /
-        (A * X2 + B * X + 1) + min_x)
+             (A * X2 + B * X + 1) + min_x)
     tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
-        (C * Y2 + D * Y + 1) + min_y)
+             (C * Y2 + D * Y + 1) + min_y)
     tau = (((tau_x + shift_x) ** share) *
-        ((tau_y + shift_y) ** (1 - share))) + shift
+           ((tau_y + shift_y) ** (1 - share))) + shift
 
     return tau
 
-
-
-# Note that since when we use the same functional form, one could use
+# Note that since when we the same functional form, one could use
 # just one tax function for ETR, MTR_lab, MTR_cap, just with different
 # parameters input
+
 
 def MTR_capital(r, w, b, n, factor, params):
     '''
@@ -281,111 +245,59 @@ def MTR_capital(r, w, b, n, factor, params):
     e, etr_params, mtry_params, analytical_mtrs = params
 
     if analytical_mtrs:
-        if etr_params.ndim == 3:
-            A = etr_params[:,:,0]
-            B = etr_params[:,:,1]
-            C = etr_params[:,:,2]
-            D = etr_params[:,:,3]
-            max_x = etr_params[:,:,4]
-            min_x = etr_params[:,:,5]
-            max_y = etr_params[:,:,6]
-            min_y = etr_params[:,:,7]
-            shift_x = etr_params[:,:,8]
-            shift_y = etr_params[:,:,9]
-            shift = etr_params[:,:,10]
-            share = etr_params[:,:,11]
-        if etr_params.ndim == 2:
-            A = etr_params[:,0]
-            B = etr_params[:,1]
-            C = etr_params[:,2]
-            D = etr_params[:,3]
-            max_x = etr_params[:,4]
-            min_x = etr_params[:,5]
-            max_y = etr_params[:,6]
-            min_y = etr_params[:,7]
-            shift_x = etr_params[:,8]
-            shift_y = etr_params[:,9]
-            shift = etr_params[:,10]
-            share = etr_params[:,11]
-        if etr_params.ndim == 1:
-            A = etr_params[0]
-            B = etr_params[1]
-            C = etr_params[2]
-            D = etr_params[3]
-            max_x = etr_params[4]
-            min_x = etr_params[5]
-            max_y = etr_params[6]
-            min_y = etr_params[7]
-            shift_x = etr_params[8]
-            shift_y = etr_params[9]
-            shift = etr_params[10]
-            share = etr_params[11]
+        A = etr_params[..., 0]
+        B = etr_params[..., 1]
+        C = etr_params[..., 2]
+        D = etr_params[..., 3]
+        max_x = etr_params[..., 4]
+        min_x = etr_params[..., 5]
+        max_y = etr_params[..., 6]
+        min_y = etr_params[..., 7]
+        shift_x = etr_params[..., 8]
+        shift_y = etr_params[..., 9]
+        shift = etr_params[..., 10]
+        share = etr_params[..., 11]
 
-        X = (w*e*n)*factor
-        Y = (r*b)*factor
+        X = (w * e * n) * factor
+        Y = (r * b) * factor
         X2 = X ** 2
         Y2 = Y ** 2
         tau_x = ((max_x - min_x) * (A * X2 + B * X) /
-            (A * X2 + B * X + 1) + min_x)
+                 (A * X2 + B * X + 1) + min_x)
         tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
-            (C * Y2 + D * Y + 1) + min_y)
+                 (C * Y2 + D * Y + 1) + min_y)
         tau_x_y = (((tau_x + shift_x) ** share) *
-            ((tau_y + shift_y) ** (1 - share))) + shift
+                   ((tau_y + shift_y) ** (1 - share))) + shift
 
-        tau = ((X+Y)*((tau_x+shift_x)**share)*(1-share)*(max_y-min_y)*\
-               ((2*C*X+D)/((C*X2+D*X+1)**2))*((tau_y+shift_y)**(-share)) + tau_x_y)
+        tau = ((X + Y) * ((tau_x + shift_x) ** share) * (1 - share) *
+               (max_y - min_y) * ((2 * C * X + D)/((C * X2 + D * X + 1)
+                                                   ** 2)) *
+               ((tau_y + shift_y) ** (-share)) + tau_x_y)
 
     else:
-        if mtry_params.ndim == 3:
-            A = mtry_params[:,:,0]
-            B = mtry_params[:,:,1]
-            C = mtry_params[:,:,2]
-            D = mtry_params[:,:,3]
-            max_x = mtry_params[:,:,4]
-            min_x = mtry_params[:,:,5]
-            max_y = mtry_params[:,:,6]
-            min_y = mtry_params[:,:,7]
-            shift_x = mtry_params[:,:,8]
-            shift_y = mtry_params[:,:,9]
-            shift = mtry_params[:,:,10]
-            share = mtry_params[:,:,11]
-        if mtry_params.ndim == 2:
-            A = mtry_params[:,0]
-            B = mtry_params[:,1]
-            C = mtry_params[:,2]
-            D = mtry_params[:,3]
-            max_x = mtry_params[:,4]
-            min_x = mtry_params[:,5]
-            max_y = mtry_params[:,6]
-            min_y = mtry_params[:,7]
-            shift_x = mtry_params[:,8]
-            shift_y = mtry_params[:,9]
-            shift = mtry_params[:,10]
-            share = mtry_params[:,11]
-        if mtry_params.ndim == 1:
-            A = mtry_params[0]
-            B = mtry_params[1]
-            C = mtry_params[2]
-            D = mtry_params[3]
-            max_x = mtry_params[4]
-            min_x = mtry_params[5]
-            max_y = mtry_params[6]
-            min_y = mtry_params[7]
-            shift_x = mtry_params[8]
-            shift_y = mtry_params[9]
-            shift = mtry_params[10]
-            share = mtry_params[11]
+        A = mtry_params[..., 0]
+        B = mtry_params[..., 1]
+        C = mtry_params[..., 2]
+        D = mtry_params[..., 3]
+        max_x = mtry_params[..., 4]
+        min_x = mtry_params[..., 5]
+        max_y = mtry_params[..., 6]
+        min_y = mtry_params[..., 7]
+        shift_x = mtry_params[..., 8]
+        shift_y = mtry_params[..., 9]
+        shift = mtry_params[..., 10]
+        share = mtry_params[..., 11]
 
-        X = (w*e*n)*factor
-        Y = (r*b)*factor
+        X = (w * e * n) * factor
+        Y = (r * b) * factor
         X2 = X ** 2
         Y2 = Y ** 2
         tau_x = ((max_x - min_x) * (A * X2 + B * X) /
-            (A * X2 + B * X + 1) + min_x)
+                 (A * X2 + B * X + 1) + min_x)
         tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
-            (C * Y2 + D * Y + 1) + min_y)
+                 (C * Y2 + D * Y + 1) + min_y)
         tau = (((tau_x + shift_x) ** share) *
-            ((tau_y + shift_y) ** (1 - share))) + shift
+               ((tau_y + shift_y) ** (1 - share))) + shift
 
     return tau
 
@@ -443,111 +355,59 @@ def MTR_labor(r, w, b, n, factor, params):
     e, etr_params, mtrx_params, analytical_mtrs = params
 
     if analytical_mtrs:
-        if etr_params.ndim == 3:
-            A = etr_params[:,:,0]
-            B = etr_params[:,:,1]
-            C = etr_params[:,:,2]
-            D = etr_params[:,:,3]
-            max_x = etr_params[:,:,4]
-            min_x = etr_params[:,:,5]
-            max_y = etr_params[:,:,6]
-            min_y = etr_params[:,:,7]
-            shift_x = etr_params[:,:,8]
-            shift_y = etr_params[:,:,9]
-            shift = etr_params[:,:,10]
-            share = etr_params[:,:,11]
-        if etr_params.ndim == 2:
-            A = etr_params[:,0]
-            B = etr_params[:,1]
-            C = etr_params[:,2]
-            D = etr_params[:,3]
-            max_x = etr_params[:,4]
-            min_x = etr_params[:,5]
-            max_y = etr_params[:,6]
-            min_y = etr_params[:,7]
-            shift_x = etr_params[:,8]
-            shift_y = etr_params[:,9]
-            shift = etr_params[:,10]
-            share = etr_params[:,11]
-        if etr_params.ndim == 1:
-            A = etr_params[0]
-            B = etr_params[1]
-            C = etr_params[2]
-            D = etr_params[3]
-            max_x = etr_params[4]
-            min_x = etr_params[5]
-            max_y = etr_params[6]
-            min_y = etr_params[7]
-            shift_x = etr_params[8]
-            shift_y = etr_params[9]
-            shift = etr_params[10]
-            share = etr_params[11]
+        A = etr_params[..., 0]
+        B = etr_params[..., 1]
+        C = etr_params[..., 2]
+        D = etr_params[..., 3]
+        max_x = etr_params[..., 4]
+        min_x = etr_params[..., 5]
+        max_y = etr_params[..., 6]
+        min_y = etr_params[..., 7]
+        shift_x = etr_params[..., 8]
+        shift_y = etr_params[..., 9]
+        shift = etr_params[..., 10]
+        share = etr_params[..., 11]
 
-        X = (w*e*n)*factor
-        Y = (r*b)*factor
+        X = (w * e * n) * factor
+        Y = (r * b) * factor
         X2 = X ** 2
         Y2 = Y ** 2
         tau_x = ((max_x - min_x) * (A * X2 + B * X) /
-            (A * X2 + B * X + 1) + min_x)
+                 (A * X2 + B * X + 1) + min_x)
         tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
-            (C * Y2 + D * Y + 1) + min_y)
+                 (C * Y2 + D * Y + 1) + min_y)
         tau_x_y = (((tau_x + shift_x) ** share) *
-            ((tau_y + shift_y) ** (1 - share))) + shift
+                   ((tau_y + shift_y) ** (1 - share))) + shift
 
-        tau = ((X+Y)*share*((tau_x+shift_x)**(share-1))*(max_x-min_x)*\
-               ((2*A*X+B)/((A*X2+B*X+1)**2))*((tau_y+shift_y)**(1-share)) + tau_x_y)
+        tau = ((X + Y) * share * ((tau_x + shift_x) ** (share - 1)) *
+               (max_x - min_x) * ((2 * A * X + B) / ((A * X2 + B * X + 1)
+                                                     ** 2)) *
+               ((tau_y + shift_y) ** (1 - share)) + tau_x_y)
 
     else:
-        if mtrx_params.ndim == 3:
-            A = mtrx_params[:,:,0]
-            B = mtrx_params[:,:,1]
-            C = mtrx_params[:,:,2]
-            D = mtrx_params[:,:,3]
-            max_x = mtrx_params[:,:,4]
-            min_x = mtrx_params[:,:,5]
-            max_y = mtrx_params[:,:,6]
-            min_y = mtrx_params[:,:,7]
-            shift_x = mtrx_params[:,:,8]
-            shift_y = mtrx_params[:,:,9]
-            shift = mtrx_params[:,:,10]
-            share = mtrx_params[:,:,11]
-        if mtrx_params.ndim == 2:
-            A = mtrx_params[:,0]
-            B = mtrx_params[:,1]
-            C = mtrx_params[:,2]
-            D = mtrx_params[:,3]
-            max_x = mtrx_params[:,4]
-            min_x = mtrx_params[:,5]
-            max_y = mtrx_params[:,6]
-            min_y = mtrx_params[:,7]
-            shift_x = mtrx_params[:,8]
-            shift_y = mtrx_params[:,9]
-            shift = mtrx_params[:,10]
-            share = mtrx_params[:,11]
-        if mtrx_params.ndim == 1:
-            A = mtrx_params[0]
-            B = mtrx_params[1]
-            C = mtrx_params[2]
-            D = mtrx_params[3]
-            max_x = mtrx_params[4]
-            min_x = mtrx_params[5]
-            max_y = mtrx_params[6]
-            min_y = mtrx_params[7]
-            shift_x = mtrx_params[8]
-            shift_y = mtrx_params[9]
-            shift = mtrx_params[10]
-            share = mtrx_params[11]
+        A = mtrx_params[..., 0]
+        B = mtrx_params[..., 1]
+        C = mtrx_params[..., 2]
+        D = mtrx_params[..., 3]
+        max_x = mtrx_params[..., 4]
+        min_x = mtrx_params[..., 5]
+        max_y = mtrx_params[..., 6]
+        min_y = mtrx_params[..., 7]
+        shift_x = mtrx_params[..., 8]
+        shift_y = mtrx_params[..., 9]
+        shift = mtrx_params[..., 10]
+        share = mtrx_params[..., 11]
 
-        X = (w*e*n)*factor
-        Y = (r*b)*factor
+        X = (w * e * n) * factor
+        Y = (r * b) * factor
         X2 = X ** 2
         Y2 = Y ** 2
         tau_x = (((max_x - min_x) * (A * X2 + B * X) /
-            (A * X2 + B * X + 1)) + min_x)
+                  (A * X2 + B * X + 1)) + min_x)
         tau_y = (((max_y - min_y) * (C * Y2 + D * Y) /
-        (C * Y2 + D * Y + 1)) + min_y)
+                  (C * Y2 + D * Y + 1)) + min_y)
         tau = (((tau_x + shift_x) ** share) *
-            ((tau_y + shift_y) ** (1 - share))) + shift
+               ((tau_y + shift_y) ** (1 - share))) + shift
 
     return tau
 
@@ -561,16 +421,15 @@ def get_biz_tax(w, Y, L, K, params):
         L           = [T,] vector, aggregate labor demand
         K           = [T,] vector, aggregate capital demand
     Objects in function:
-        business_revenue    = [T,] vector, total revenue from business income taxes
+        business_revenue    = [T,] vector, total revenue from business
+                                           income taxes
     Returns: T_H
 
     '''
 
     tau_b, delta_tau = params
-    business_revenue = tau_b*(Y-w*L) - tau_b*delta_tau*K
+    business_revenue = tau_b * (Y - w * L) - tau_b * delta_tau * K
     return business_revenue
-
-
 
 
 def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
@@ -585,9 +444,12 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
         factor     = scalar, model income scaling factor
         T_H        = [T,] vector, lump sum transfer amount(s)
         j          = integer, lifetime incoem group being computed
-        shift      = boolean, computing for periods 0--s or 1--(s+1) (bool) (True for 1--(s+1))
-        params = length 13 tuple, (e, lambdas, method, retire, etr_params, h_wealth, p_wealth,
-                                   m_wealth, tau_payroll, theta, tau_bq, J, S)
+        shift      = boolean, computing for periods 0--s or 1--(s+1)
+                              (bool) (True for 1--(s+1))
+        params = length 13 tuple, (e, lambdas, method, retire,
+                                   etr_params, h_wealth, p_wealth,
+                                   m_wealth, tau_payroll, theta, tau_bq,
+                                   J, S)
         e           = [T,S,J] array, effective labor units
         lambdas     = [J,] vector, population weights by lifetime income group
         method      = string, 'SS' or 'TPI'
@@ -597,7 +459,8 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
         p_wealth    = scalar, wealth tax function parameter
         m_wealth    = scalar, wealth tax function parameter
         tau_payroll = scalar, payroll tax rate
-        theta       = [J,] vector, replacement rate values by lifetime income group
+        theta       = [J,] vector, replacement rate values by lifetime
+                                   income group
         tau_bq      = scalar, bequest tax rate
         S           = integer, number of age groups
         J           = integer, number of lifetime income groups
@@ -616,7 +479,8 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
 
     '''
 
-    e, lambdas, method, retire, etr_params, h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S = params
+    (e, lambdas, method, retire, etr_params, h_wealth, p_wealth,
+     m_wealth, tau_payroll, theta, tau_bq, J, S) = params
 
     I = r * b + w * e * n
     TI_params = (e, etr_params)
@@ -638,9 +502,10 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
         T_BQ = tau_bq * BQ / lambdas
     elif method == 'TPI':
         if shift is False:
-            # retireTPI is different from retire, because in TPI we are counting backwards
-            # with different length lists.  This will always be the correct location
-            # of retirement, depending on the shape of the lists.
+            # retireTPI is different from retire, because in TPI we are
+            # counting backwards with different length lists.  This will
+            # always be the correct location of retirement, depending
+            # on the shape of the lists.
             retireTPI = (retire - S)
         else:
             retireTPI = (retire - 1 - S)
@@ -648,15 +513,13 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
             T_P[retireTPI:] -= theta[j] * w[retireTPI:]
             T_BQ = tau_bq[j] * BQ / lambdas
         else:
-            T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w[:,retire:,:]
+            T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w[:, retire:, :]
             T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
     elif method == 'TPI_scalar':
-        # The above methods won't work if scalars are used.  This option is only called by the
-        # SS_TPI_firstdoughnutring function in TPI.
-        #T_P -= theta[j] * w
-        T_P = 0.
+        # The above methods won't work if scalars are used.  This option
+        # is only called by the SS_TPI_firstdoughnutring function in TPI.
+        T_P -= theta[j] * w
         T_BQ = tau_bq[j] * BQ / lambdas
-    total_taxes = T_I + T_P + T_BQ + T_W - T_H
+    total_tax = T_I + T_P + T_BQ + T_W - T_H
 
-
-    return total_taxes
+    return total_tax
