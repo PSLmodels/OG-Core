@@ -58,8 +58,8 @@ def test_parameters_metadata_baseline():
     [('', None, "./TxFuncEst_{}.pkl"),
      ('', "test.pkl", "test.pkl"),
      (9, None, "./TxFuncEst_{}9.pkl")])
-def test_tx_func_est_path((monkeypatch, baseline, guid, tx_func_est_path,
-                          exp_tx_func_est_path)):
+def test_tx_func_est_path(monkeypatch, baseline, guid, tx_func_est_path,
+                          exp_tx_func_est_path):
     """
     Make sure tax parameter paths work as expected
     monkeypatch is a pytest plugin that mocks functions and modules
@@ -78,7 +78,6 @@ def test_tx_func_est_path((monkeypatch, baseline, guid, tx_func_est_path,
 
     monkeypatch.setattr(parameters, "read_tax_func_estimate", read_tax_func_estimate_mock)
     try:
-        parameters.get_parameters(output_base, test=False, baseline=baseline, guid=guid,
-                                  tx_func_est_path=tx_func_est_path)
+        parameters.get_parameters(output_base, test=False, baseline=baseline, guid=guid)
     except IOError: #file doesn't exist
         pass
