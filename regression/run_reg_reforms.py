@@ -87,7 +87,7 @@ reform9 = {
        '_AMT_rt2': [.0]
 },}
 
-REFORMS = [reform0, reform1, reform2, reform3, reform4, reform5, reform6,
+reforms = [reform0, reform1, reform2, reform3, reform4, reform5, reform6,
            reform7, reform8, reform9]
 
 
@@ -158,8 +158,8 @@ def run_reforms(ref_idxs=REF_IDXS, path_prefix="", cpu_count=CPU_COUNT,
                     str(0),
                     data,
                     ok_to_run_baseline,)
-    # # run reforms in parallel
-    # pool = Pool(processes=cpu_count)
+    # run reforms in parallel
+    pool = Pool(processes=cpu_count)
     # results = []
     #
     # ok_to_run_baseline = False
