@@ -6,7 +6,7 @@ from ogusa import SS, TPI
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 PUF_PATH = os.path.join(CUR_PATH, '../puf.csv')
 
-
+@pytest.mark.full_run
 @pytest.mark.parametrize(
         'year',
         [2013, 2017, 2026],
