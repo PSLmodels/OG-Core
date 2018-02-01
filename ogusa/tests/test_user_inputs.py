@@ -8,8 +8,8 @@ PUF_PATH = os.path.join(CUR_PATH, '../puf.csv')
 
 
 @pytest.mark.full_run
-@pytest.mark.parametrize('frisch', [0.1, 0.4, 0.8],
-                         ids=['Frisch 0.1', 'Frisch 0.4', 'Frisch 0.8'])
+@pytest.mark.parametrize('frisch', [0.15, 0.4, 0.8],
+                         ids=['Frisch 0.15', 'Frisch 0.4', 'Frisch 0.8'])
 def test_frisch(frisch):
     from ogusa.scripts.execute import runner
     output_base = "./OUTPUT"
@@ -22,13 +22,10 @@ def test_frisch(frisch):
 
 
 @pytest.mark.full_run
-@pytest.mark.parametrize('g_y_annual', [-0.01,  0.0, 0.03, 0.08, 0.2, 1.0],
-                         ids=['-0.01', '0.0', '0.03', '0.08', '0.2', '1.0'])
+@pytest.mark.parametrize('g_y_annual', [-0.01, 0.05],
+                         ids=['-0.01', '0.05'])
 def test_gy(g_y_annual):
     from ogusa.scripts.execute import runner
-    # # Monkey patch enforcement flag since small data won't pass checks
-    # SS.ENFORCE_SOLUTION_CHECKS = True
-    # TPI.ENFORCE_SOLUTION_CHECKS = True
     output_base = "./OUTPUT"
     input_dir = "./OUTPUT"
     user_params = {'frisch': 0.41, 'debt_ratio_ss': 1.0,
