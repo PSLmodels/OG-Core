@@ -52,32 +52,32 @@ def test_parameters_metadata_baseline():
     assert 'validations' in dd_meta['frisch']
 
 
-@pytest.mark.parametrize("baseline", [True, False])
-@pytest.mark.parametrize(
-    "guid,tx_func_est_path,exp_tx_func_est_path",
-    [('', None, "./TxFuncEst_{}.pkl"),
-     ('', "test.pkl", "test.pkl"),
-     (9, None, "./TxFuncEst_{}9.pkl")])
-def test_tx_func_est_path(monkeypatch, baseline, guid, tx_func_est_path,
-                          exp_tx_func_est_path):
-    """
-    Make sure tax parameter paths work as expected
-    monkeypatch is a pytest plugin that mocks functions and modules
-    """
-    output_base = "./OUTPUT"
-    mocked_fn = parameters.read_tax_func_estimate
-    baseline_policy = "baseline" if baseline else "policy"
-
-    def read_tax_func_estimate_mock(pickle_path, pickle_file):
-        assert (
-            pickle_path == exp_tx_func_est_path.format(baseline_policy) and
-            pickle_file == "TxFuncEst_{0}{1}.pkl".format(baseline_policy,
-                                                         guid)
-        )
-        return mocked_fn(pickle_path, pickle_file)
-
-    monkeypatch.setattr(parameters, "read_tax_func_estimate", read_tax_func_estimate_mock)
-    try:
-        parameters.get_parameters(output_base, test=False, baseline=baseline, guid=guid)
-    except IOError: #file doesn't exist
-        pass
+# @pytest.mark.parametrize("baseline", [True, False])
+# @pytest.mark.parametrize(
+#     "guid,tx_func_est_path,exp_tx_func_est_path",
+#     [('', None, "./TxFuncEst_{}.pkl"),
+#      ('', "test.pkl", "test.pkl"),
+#      (9, None, "./TxFuncEst_{}9.pkl")])
+# def test_tx_func_est_path(monkeypatch, baseline, guid, tx_func_est_path,
+#                           exp_tx_func_est_path):
+#     """
+#     Make sure tax parameter paths work as expected
+#     monkeypatch is a pytest plugin that mocks functions and modules
+#     """
+#     output_base = "./OUTPUT"
+#     mocked_fn = parameters.read_tax_func_estimate
+#     baseline_policy = "baseline" if baseline else "policy"
+#
+#     def read_tax_func_estimate_mock(pickle_path, pickle_file):
+#         assert (
+#             pickle_path == exp_tx_func_est_path.format(baseline_policy) and
+#             pickle_file == "TxFuncEst_{0}{1}.pkl".format(baseline_policy,
+#                                                          guid)
+#         )
+#         return mocked_fn(pickle_path, pickle_file)
+#
+#     monkeypatch.setattr(parameters, "read_tax_func_estimate", read_tax_func_estimate_mock)
+#     try:
+#         parameters.get_parameters(output_base, test=False, baseline=baseline, guid=guid)
+#     except IOError: #file doesn't exist
+#         pass
