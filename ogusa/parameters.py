@@ -371,9 +371,14 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
         raise RuntimeError(err)
 
     # Income Tax Parameters
-    tx_func_est_path = os.path.join(
-        output_base, 'TxFuncEst_{}.pkl'.format(guid),
-    )
+    if baseline:
+        tx_func_est_path = os.path.join(
+            output_base, 'TxFuncEst_baseline{}.pkl'.format(guid),
+        )
+    else:
+        tx_func_est_path = os.path.join(
+            output_base, 'TxFuncEst_policy{}.pkl'.format(guid),
+        )
     if run_micro:
         txfunc.get_tax_func_estimate(BW, S, starting_age, ending_age,
                                      baseline=baseline,
