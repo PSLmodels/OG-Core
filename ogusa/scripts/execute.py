@@ -12,7 +12,7 @@ import ogusa
 from ogusa import calibrate
 from ogusa.parameters import DEFAULT_WORLD_INT_RATE
 ogusa.parameters.DATASET = 'REAL'
-from ogusa.utils import DEFAULT_START_YEAR
+from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR
 SMALL_OPEN_KEYS = ['world_int_rate']
 
 
@@ -24,21 +24,24 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
            baseline_spending=False, data=None):
 
     from ogusa import parameters, demographics, income, utils
-    from ogusa import txfunc
 
     tick = time.time()
 
+    start_year = user_params.get('start_year', DEFAULT_START_YEAR)
+    if start_year > TC_LAST_YEAR:
+        raise RuntimeError("Start year is beyond data extrapolation.")
+
     # Make sure options are internally consistent
-    if baseline==True and baseline_spending==True:
-        print ("Inconsistent options. Setting <baseline_spending> to False, "
-               "leaving <baseline> True.'")
+    if baseline and baseline_spending:
+        print("Inconsistent options. Setting <baseline_spending> to False, "
+              "leaving <baseline> True.'")
         baseline_spending = False
-    if budget_balance==True and baseline_spending==True:
-        print ("Inconsistent options. Setting <baseline_spending> to False, "
-               "leaving <budget_balance> True.")
+    if budget_balance and baseline_spending:
+        print("Inconsistent options. Setting <baseline_spending> to False, "
+              "leaving <budget_balance> True.")
         baseline_spending = False
 
-    #Create output directory structure
+    # Create output directory structure
     saved_moments_dir = os.path.join(output_base, "Saved_moments")
     ss_dir = os.path.join(output_base, "SS")
     tpi_dir = os.path.join(output_base, "TPI")
@@ -50,27 +53,15 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         except OSError as oe:
             pass
 
-    tx_func_est_path = None
-    if run_micro:
-        txfunc.get_tax_func_estimate(
-            baseline=baseline, analytical_mtrs=analytical_mtrs,
-            age_specific=age_specific,
-            start_year=user_params.get('start_year', DEFAULT_START_YEAR),
-            reform=reform, guid=guid,
-            tx_func_est_path=os.path.join(
-                output_base,'TxFuncEst_{}.pkl'.format(guid)
-            ),
-            data=data
-        )
     print 'In runner, baseline is ', baseline
     if small_open and (not isinstance(small_open, dict)):
         raise ValueError('small_open must be False/None or a dict with keys: {}'.format(SMALL_OPEN_KEYS))
     small_open = small_open or {}
     run_params = ogusa.parameters.get_parameters(
-        test=test, baseline=baseline, guid=guid,
-        start_year=user_params.get('start_year', DEFAULT_START_YEAR),
-        tx_func_est_path=tx_func_est_path, constant_rates=True,
-        **small_open)
+        output_base, reform=reform, test=test, baseline=baseline,
+        guid=guid, run_micro=run_micro, constant_rates=constant_rates,
+        analytical_mtrs=analytical_mtrs, age_specific=age_specific,
+        start_year=start_year, data=data, **small_open)
     run_params['analytical_mtrs'] = analytical_mtrs
     run_params['small_open'] = bool(small_open)
     run_params['budget_balance'] = budget_balance
@@ -98,15 +89,15 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         ending_age = run_params['ending_age']
         starting_age = run_params['starting_age']
         S = run_params['S']
-        g_y = ((1 + user_params['g_y_annual'])**
+        g_y = ((1 + user_params['g_y_annual']) **
                (float(ending_age - starting_age) / S) - 1)
         run_params['g_y'] = g_y
         run_params.update(user_params)
 
     # Modify transfer & spending ratios based on user input.
     if 'T_shifts' in user_params:
-        if baseline_spending==False:
-            print ('updating ALPHA_T with T_shifts in first',
+        if not baseline_spending:
+            print('updating ALPHA_T with T_shifts in first',
                    user_params['T_shifts'].size, 'periods.')
             T_shifts = np.concatenate(
                 (user_params['T_shifts'],
@@ -115,8 +106,8 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
             )
             run_params['ALPHA_T'] = run_params['ALPHA_T'] + T_shifts
     if 'G_shifts' in user_params:
-        if baseline_spending==False:
-            print ('updating ALPHA_G with G_shifts in first',
+        if not baseline_spending:
+            print('updating ALPHA_G with G_shifts in first',
                    user_params['G_shifts'].size, 'periods.')
             G_shifts = np.concatenate(
                 (user_params['G_shifts'],

@@ -33,7 +33,8 @@ import pickle
 import txfunc
 import elliptical_u_est as ellip
 import matplotlib.pyplot as plt
-from ogusa.utils import DEFAULT_START_YEAR
+from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR
+from ogusa import txfunc
 
 
 '''
@@ -44,7 +45,6 @@ Set paths, define user modifiable parameters
 PARAMS_FILE = os.path.join(os.path.dirname(__file__), 'default_full_parameters.json')
 PARAMS_FILE_METADATA_NAME = 'parameters_metadata.json'
 PARAMS_FILE_METADATA_PATH = os.path.join(os.path.dirname(__file__), PARAMS_FILE_METADATA_NAME)
-TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
 USER_MODIFIABLE_PARAMS = ['g_y_annual', 'frisch', 'world_int_rate']
 DEFAULT_WORLD_INT_RATE = 0.04
 
@@ -130,7 +130,7 @@ def get_parameters_from_file():
     RETURNS: j
     --------------------------------------------------------------------
     '''
-    with open(PARAMS_FILE,'r') as f:
+    with open(PARAMS_FILE, 'r') as f:
         j = json.load(f)
         for key in j:
             if isinstance(j[key], list):
@@ -138,10 +138,13 @@ def get_parameters_from_file():
         return j
 
 
-def get_parameters(test=False, baseline=False, guid='',
-                   user_modifiable=False, metadata=False,
-                   tx_func_est_path=None, start_year=DEFAULT_START_YEAR,
-                   constant_rates=True, **small_open):
+def get_parameters(output_base, reform={}, test=False, baseline=False,
+                   guid='', user_modifiable=False, metadata=False,
+                   run_micro=False, constant_rates=True,
+                   analytical_mtrs=False, age_specific=False,
+                   start_year=DEFAULT_START_YEAR, data=None,
+                   **small_open):
+
     '''
     --------------------------------------------------------------------
     This function returns the model parameters.
@@ -305,7 +308,8 @@ def get_parameters(test=False, baseline=False, guid='',
 
     # Time parameters
     T = int(4 * S)
-    BW = int(10)
+    BW = int(min(10, TC_LAST_YEAR - start_year + 1))
+    print "BW = ", BW, 'star year = ', start_year
 
     starting_age = 20
     ending_age = 100
@@ -366,44 +370,44 @@ def get_parameters(test=False, baseline=False, guid='',
         err = "Gov't spending rule dates are inconsistent"
         raise RuntimeError(err)
 
-
-
-    # Tax parameters:
-    #   Income Tax Parameters
-    #  will call tax function estimation function here...
-    # do output such that each parameters is in a separate SxBW array
-    # read in estimated parameters
-    #print 'baseline is:', baseline
+    # Income Tax Parameters
     if baseline:
-        if tx_func_est_path is None:
-            baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
-            estimate_file = os.path.join(TAX_ESTIMATE_PATH,
-                                         baseline_pckl)
-        else:
-            baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
-            estimate_file = tx_func_est_path
+        tx_func_est_path = os.path.join(
+            output_base, 'TxFuncEst_baseline{}.pkl'.format(guid),
+        )
+    else:
+        tx_func_est_path = os.path.join(
+            output_base, 'TxFuncEst_policy{}.pkl'.format(guid),
+        )
+    if run_micro:
+        txfunc.get_tax_func_estimate(BW, S, starting_age, ending_age,
+                                     baseline=baseline,
+                                     analytical_mtrs=analytical_mtrs,
+                                     age_specific=age_specific,
+                                     start_year=start_year,
+                                     reform=reform, guid=guid,
+                                     tx_func_est_path=tx_func_est_path,
+                                     data=data)
+    if baseline:
+        baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
+        estimate_file = tx_func_est_path
         print 'using baseline tax parameters'
         dict_params = read_tax_func_estimate(estimate_file, baseline_pckl)
 
     else:
-        if tx_func_est_path is None:
-            policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
-            estimate_file = os.path.join(TAX_ESTIMATE_PATH,
-                                         policy_pckl)
-        else:
-            policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
-            estimate_file = tx_func_est_path
+        policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
+        estimate_file = tx_func_est_path
         print 'using policy tax parameters'
         dict_params = read_tax_func_estimate(estimate_file, policy_pckl)
 
     mean_income_data = dict_params['tfunc_avginc'][0]
 
-    etr_params = dict_params['tfunc_etr_params_S'][:S,:BW,:]
-    mtrx_params = dict_params['tfunc_mtrx_params_S'][:S,:BW,:]
-    mtry_params = dict_params['tfunc_mtry_params_S'][:S,:BW,:]
+    etr_params = dict_params['tfunc_etr_params_S'][:S, :BW, :]
+    mtrx_params = dict_params['tfunc_mtrx_params_S'][:S, :BW, :]
+    mtry_params = dict_params['tfunc_mtry_params_S'][:S, :BW, :]
 
     if constant_rates:
-        print 'USINGconstant rates!'
+        print 'Using constant rates!'
         # # Make all ETRs equal the average
         etr_params = np.zeros(etr_params.shape)
         etr_params[:, :, 10] = dict_params['tfunc_avg_etr'] # set shift to average rate
