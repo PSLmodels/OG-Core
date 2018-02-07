@@ -1297,8 +1297,9 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
         mtry_wsumsq_arr[:, t-beg_yr], mtry_obs_arr[:, t-beg_yr]
 
 
-def tax_func_estimate(beg_yr=DEFAULT_START_YEAR, baseline=True,
-                      analytical_mtrs=False, age_specific=True,
+def tax_func_estimate(BW, S, starting_age, ending_age,
+                      beg_yr=DEFAULT_START_YEAR, baseline=True,
+                      analytical_mtrs=False, age_specific=False,
                       reform={}, data=None):
     '''
     --------------------------------------------------------------------
@@ -1386,12 +1387,12 @@ def tax_func_estimate(beg_yr=DEFAULT_START_YEAR, baseline=True,
                       to be forecast
     --------------------------------------------------------------------
     '''
-    S = int(80)
-    tpers = int(10)
-    s_min = int(21)
-    s_max = int(100)
+    tpers = BW
+    s_min = starting_age + 1
+    s_max = ending_age
     beg_yr = int(beg_yr)
     end_yr = int(beg_yr + tpers - 1)
+    print 'BW = ', BW, "begin year = ", beg_yr, "end year = ", end_yr
     numparams = int(12)
     desc_data = False
     graph_data = False
@@ -1602,8 +1603,10 @@ def tax_func_estimate(beg_yr=DEFAULT_START_YEAR, baseline=True,
     return dict_params
 
 
-def get_tax_func_estimate(baseline=False, analytical_mtrs=False,
-                          age_specific=False, start_year=DEFAULT_START_YEAR, reform={},
+def get_tax_func_estimate(BW, S, starting_age, ending_age,
+                          baseline=False, analytical_mtrs=False,
+                          age_specific=False,
+                          start_year=DEFAULT_START_YEAR, reform={},
                           guid='', tx_func_est_path=None, data=None):
     '''
     --------------------------------------------------------------------
@@ -1633,8 +1636,10 @@ def get_tax_func_estimate(baseline=False, analytical_mtrs=False,
     --------------------------------------------------------------------
     '''
     # Code to run manually from here:
-    dict_params = tax_func_estimate(start_year, baseline,
-        analytical_mtrs, age_specific, reform, data=data)
+    dict_params = tax_func_estimate(BW, S, starting_age, ending_age,
+                                    start_year, baseline,
+                                    analytical_mtrs, age_specific,
+                                    reform, data=data)
     if baseline:
         baseline_pckl = tx_func_est_path or "TxFuncEst_baseline{}.pkl".format(guid)
         pkl_path = os.path.join(TAX_ESTIMATE_PATH, baseline_pckl)

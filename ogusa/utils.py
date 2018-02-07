@@ -26,6 +26,9 @@ BASELINE_DIR = "./OUTPUT_BASELINE"
 # Default year for model runs
 DEFAULT_START_YEAR = 2018
 
+# Latest year TaxData extrapolates to
+TC_LAST_YEAR = 2027
+
 # for f in (REFORM_DIR, BASELINE_DIR):
 #     if not os.path.exists(f):
 #         os.mkdir(f)
