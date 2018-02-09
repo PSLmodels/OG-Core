@@ -41,7 +41,7 @@ def test_marg_ut_labor(n, params, expected):
     assert np.allclose(test_value, expected)
 
 
-# vars are in order: r, w, b, b_splus1, n, BQ, net_tax
+# model_vars are in order: r, w, b, b_splus1, n, BQ, net_tax
 # params are in order: e, lambdas, g_y
 test_data = [((0.05, 1.2, 0.5, 0.55, 0.8, 0.1, 0.02), (0.99, 0.25, 0.03),
               1.288650006),
@@ -102,27 +102,113 @@ test_data = [((0.05, 1.2, 0.5, 0.55, 0.8, 0.1, 0.02), (0.99, 0.25, 0.03),
                                   [1.975646512, 7.253454853]])]))]
 
 
-@pytest.mark.parametrize('vars,params,expected', test_data,
+@pytest.mark.parametrize('model_vars,params,expected', test_data,
                          ids=['scalar', 'vector', 'matrix', '3D array'])
-def test_get_cons(vars, params, expected):
+def test_get_cons(model_vars, params, expected):
     # Test consumption calculation
-    r, w, b, b_splus1, n, BQ, net_tax = vars
+    r, w, b, b_splus1, n, BQ, net_tax = model_vars
     test_value = household.get_cons(r, w, b, b_splus1, n, BQ, net_tax,
                                     params)
 
     assert np.allclose(test_value, expected)
 
 
-# def test_FOC_savings():
-#
-#     assert np.allclose()
-#
-#
-# def test_FOC_labor():
-#
-#     assert np.allclose()
-#
-#
+# model_vars in order: r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H
+# params in order: e, sigma, beta, g_y, chi_b, theta, tau_bq, rho,
+# lambdas, j, J, S, analytical_mtrs, etr_params, mtry_params, h_wealth,
+# p_wealth, m_wealth, tau_payroll, retire, method
+# Define variables for test of SS version
+e = np.array([1.0, 0.9, 1.4])
+sigma = 2.0
+beta = 0.96
+g_y = 0.03
+chi_b = 1.5
+theta = np.array([0.1])
+tau_bq = np.array([0.0])
+rho = np.array([0.1, 0.2, 1.0])
+lambdas = 1.0
+j = 0
+J = 1
+S = 3
+analytical_mtrs = False
+etr_params = np.array([np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.33, 0],
+                                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.25, 0],
+                                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.20, 0]]),
+                       np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0],
+                                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.9, 0],
+                                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.5, 0]]),
+                       np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.1, 0],
+                                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.15, 0],
+                                 [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.45, 0]])])
+mtry_params = np.array([np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.3, 0],
+                                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.45, 0],
+                                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.28, 0]]),
+                        np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.11, 0],
+                                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.0, 0],
+                                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.49, 0]]),
+                        np.array([[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.05, 0],
+                                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.32, 0],
+                                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.70, 0]])])
+h_wealth = 0.1
+m_wealth = 1.0
+p_wealth = 0.0
+tau_payroll = 0.15
+retire = 2
+method = 'SS'
+test_params_ss = (e, sigma, beta, g_y, chi_b, theta, tau_bq, rho, lambdas,
+               j, J, S, analytical_mtrs, etr_params[-1,:,:],
+               mtry_params[-1,:,:], h_wealth, p_wealth, m_wealth,
+               tau_payroll, retire, method)
+r = 0.05
+w = 1.2
+b = np.array([0.0, 0.8, 0.5])
+b_splus1 = np.array([0.8, 0.5, 0.1])
+b_splus2 = np.array([0.5, 0.1, 0.0])
+n = np.array([0.9, 0.8, 0.5])
+BQ = 0.1
+factor = 120000
+T_H = 0.22
+test_vars_ss = (r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H)
+expected_ss = np.array([9.940309897, -1.004780793, -140.5545878])
+
+# Define variables/params for test of TPI version
+method_tpi = 'TPI'
+etr_params_tpi = np.empty((S, etr_params.shape[2]))
+mtry_params_tpi = np.empty((S, mtry_params.shape[2]))
+for i in range(etr_params.shape[2]):
+    etr_params_tpi[:, i] = np.diag(np.transpose(etr_params[:, :S, i]))
+    mtry_params_tpi[:, i] = np.diag(np.transpose(mtry_params[:, :S, i]))
+test_params_tpi = (e, sigma, beta, g_y, chi_b, theta, tau_bq, rho,
+                   lambdas, j, J, S, analytical_mtrs, etr_params_tpi,
+                   mtry_params_tpi, h_wealth, p_wealth, m_wealth,
+                   tau_payroll, retire, method_tpi)
+r_vec = np.array([0.05, 0.03, 0.04])
+w_vec = np.array([1.2, 0.9, 0.8])
+BQ_vec = np.array([0.1, 0.05, 0.15])
+T_H_vec = np.array([0.22, 0.15, 0.0])
+test_vars_tpi = (r_vec, w_vec, b, b_splus1, b_splus2, n, BQ_vec, factor,
+                 T_H_vec)
+expected_tpi = np.array([300.977031, 2.719866638, -139.9187228])
+
+test_data = [(test_vars_ss, test_params_ss, expected_ss),
+             (test_vars_tpi, test_params_tpi, expected_tpi)]
+
+@pytest.mark.parametrize('model_vars,params,expected', test_data,
+                         ids=['SS', 'TPI'])
+def test_FOC_savings(model_vars, params, expected):
+    # Test FOC condition for household's choice of savings
+    r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H = model_vars
+    test_value = household.FOC_savings(r, w, b, b_splus1, b_splus2, n,
+                                       BQ, factor, T_H, params)
+
+    assert np.allclose(test_value, expected)
+
+
+def test_FOC_labor():
+
+    assert np.allclose()
+
+
 # def test_constraint_checker_SS():
 #
 #     assert np.allclose()
