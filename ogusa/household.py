@@ -263,12 +263,12 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, params):
 
     Returns: euler
     '''
-    e, sigma, g_y, theta, b_ellipse, upsilon, chi_n, ltilde, tau_bq, lambdas, J, S, \
+    e, sigma, g_y, theta, b_ellipse, upsilon, chi_n, ltilde, tau_bq, lambdas, j, J, S, \
         analytical_mtrs, etr_params, mtrx_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire, method  = params
 
     tax1_params = (e, lambdas, method, retire, etr_params, h_wealth, p_wealth,
                   m_wealth, tau_payroll, theta, tau_bq, J, S)
-    tax1 = tax.total_taxes(r, w, b, n, BQ, factor, T_H, None, False, tax1_params)
+    tax1 = tax.total_taxes(r, w, b, n, BQ, factor, T_H, j, False, tax1_params)
     cons_params = (e, lambdas, g_y)
     cons = get_cons(r, w, b, b_splus1, n, BQ, tax1, cons_params)
     mtr_lab_params = (e, etr_params, mtrx_params, analytical_mtrs)
