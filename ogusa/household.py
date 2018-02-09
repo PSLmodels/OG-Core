@@ -161,7 +161,7 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, params):
 
     Returns: euler
     '''
-    e, sigma, beta, g_y, chi_b, theta, tau_bq, rho, lambdas, J, S, \
+    e, sigma, beta, g_y, chi_b, theta, tau_bq, rho, lambdas, j, J, S, \
         analytical_mtrs, etr_params, mtry_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire, method = params
 
     # In order to not have 2 savings euler equations (one that solves the first S-1 equations, and one that solves the last one),
@@ -169,45 +169,34 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, params):
     # e and n matrix.  We append a zero on the end of both of these so they will be the right size.  We could append any value to them,
     # since in the euler equation, the coefficient on the marginal utility of
     # consumption for this term will be zero (since rho is one).
-    if method == 'TPI_scalar':
-        e_extended = np.array([e] + [0])
-        n_extended = np.array([n] + [0])
-        etr_params_to_use = etr_params
-        mtry_params_to_use = mtry_params
-    else:
-        e_extended = np.array(list(e) + [0])
-        n_extended = np.array(list(n) + [0])
-        etr_params_to_use = np.append(etr_params,np.reshape(etr_params[-1,:],(1,etr_params.shape[1])),axis=0)[1:,:]
-        mtry_params_to_use = np.append(mtry_params,np.reshape(mtry_params[-1,:],(1,mtry_params.shape[1])),axis=0)[1:,:]
-
-    # tax1_params = (e, lambdas, method, retire, etr_params, h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
-    # tax1 = tax.total_taxes(r, w, b, n, BQ, factor, T_H, None, False, tax1_params)
-    # tax2_params = (e_extended[1:], lambdas, method, retire,
-    #                np.append(etr_params,np.reshape(etr_params[-1,:],(1,etr_params.shape[1])),axis=0)[1:,:],
-    #                h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
-    # tax2 = tax.total_taxes(r, w, b_splus1, n_extended[1:], BQ, factor, T_H, None, True, tax2_params)
-    # cons1_params = (e, lambdas, g_y)
-    # cons1 = get_cons(r, w, b, b_splus1, n, BQ, tax1, cons1_params)
-    # cons2_params = (e_extended[1:], lambdas, g_y)
-    # cons2 = get_cons(r, w, b_splus1, b_splus2, n_extended[1:], BQ, tax2, cons2_params)
-
-    # mtr_cap_params = (e_extended[1:], np.append(etr_params,np.reshape(etr_params[-1,:],(1,etr_params.shape[1])),axis=0)[1:,:],
-    #                   np.append(mtry_params,np.reshape(mtry_params[-1,:],(1,mtry_params.shape[1])),axis=0)[1:,:],analytical_mtrs)
-    # deriv = (1+r) - r*(tax.MTR_capital(r, w, b_splus1, n_extended[1:], factor, mtr_cap_params))
+    e_extended = np.array(list(e) + [0])
+    n_extended = np.array(list(n) + [0])
+    etr_params_extended = np.append(etr_params,np.reshape(etr_params[-1,:],(1,etr_params.shape[1])),axis=0)[1:,:]
+    mtry_params_extended = np.append(mtry_params,np.reshape(mtry_params[-1,:],(1,mtry_params.shape[1])),axis=0)[1:,:]
+    if method == 'TPI':
+        r_extended = np.append(r, r[-1])
+        w_extended = np.append(w, w[-1])  # doesn't matter what put at end of these - just to get shapes to conform
+        BQ_extended = np.append(BQ, BQ[-1])
+        T_H_extended = np.append(T_H, T_H[-1])
+    elif method == 'SS':
+        r_extended = np.array([r, r])
+        w_extended = np.array([w, w])
+        BQ_extended = np.array([BQ, BQ])
+        T_H_extended = np.array([T_H, T_H])
 
     tax1_params = (e, lambdas, method, retire, etr_params, h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
-    tax1 = tax.total_taxes(r, w, b, n, BQ, factor, T_H, None, False, tax1_params)
+    tax1 = tax.total_taxes(r, w, b, n, BQ, factor, T_H, j, False, tax1_params)
     tax2_params = (e_extended[1:], lambdas, method, retire,
-                   etr_params_to_use, h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
-    tax2 = tax.total_taxes(r, w, b_splus1, n_extended[1:], BQ, factor, T_H, None, True, tax2_params)
+                   etr_params_extended, h_wealth, p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
+    tax2 = tax.total_taxes(r_extended[1:], w_extended[1:], b_splus1, n_extended[1:], BQ_extended[1:], factor, T_H_extended[1:], j, True, tax2_params)
     cons1_params = (e, lambdas, g_y)
     cons1 = get_cons(r, w, b, b_splus1, n, BQ, tax1, cons1_params)
     cons2_params = (e_extended[1:], lambdas, g_y)
-    cons2 = get_cons(r, w, b_splus1, b_splus2, n_extended[1:], BQ, tax2, cons2_params)
-
-    mtr_cap_params = (e_extended[1:], etr_params_to_use,
-                      mtry_params_to_use, analytical_mtrs)
-    deriv = (1+r) - r*(tax.MTR_capital(r, w, b_splus1, n_extended[1:],
+    cons2 = get_cons(r_extended[1:], w_extended[1:], b_splus1, b_splus2, n_extended[1:], BQ_extended[1:], tax2, cons2_params)
+    cons2[-1] = 0.01  # set to small positive number to avoid exception errors when negative b/c this period value doesn't matter - it's consumption after the last period of life
+    mtr_cap_params = (e_extended[1:], etr_params_extended,
+                      mtry_params_extended, analytical_mtrs)
+    deriv = (1+r_extended[1:]) - r_extended[1:]*(tax.MTR_capital(r_extended[1:], w_extended[1:], b_splus1, n_extended[1:],
                                        factor, mtr_cap_params))
 
     savings_ut = rho * np.exp(-sigma * g_y) * chi_b * b_splus1 ** (-sigma)
