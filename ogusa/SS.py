@@ -47,6 +47,7 @@ ENFORCE_SOLUTION_CHECKS = True
 ------------------------------------------------------------------------
 '''
 
+
 def create_steady_state_parameters(**sim_params):
     '''
     --------------------------------------------------------------------
@@ -56,7 +57,8 @@ def create_steady_state_parameters(**sim_params):
     --------------------------------------------------------------------
 
     INPUTS:
-    sim_params       = dictionary, dict containing variables for simulation
+    sim_params       = dictionary, dict containing variables for
+                        simulation
     analytical_mtrs  = boolean, =True if use analytical_mtrs, =False if
                        use estimated MTRs
     etr_params       = [S,BW,#tax params] array, parameters for effective

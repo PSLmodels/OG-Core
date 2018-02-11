@@ -156,9 +156,9 @@ tau_payroll = 0.15
 retire = 2
 method = 'SS'
 test_params_ss = (e, sigma, beta, g_y, chi_b, theta, tau_bq, rho, lambdas,
-               j, J, S, analytical_mtrs, etr_params[-1,:,:],
-               mtry_params[-1,:,:], h_wealth, p_wealth, m_wealth,
-               tau_payroll, retire, method)
+                  j, J, S, analytical_mtrs, etr_params[-1, :, :],
+                  mtry_params[-1, :, :], h_wealth, p_wealth, m_wealth,
+                  tau_payroll, retire, method)
 r = 0.05
 w = 1.2
 b = np.array([0.0, 0.8, 0.5])
@@ -192,6 +192,7 @@ expected_tpi = np.array([300.977031, 2.719866638, -139.9187228])
 
 test_data = [(test_vars_ss, test_params_ss, expected_ss),
              (test_vars_tpi, test_params_tpi, expected_tpi)]
+
 
 @pytest.mark.parametrize('model_vars,params,expected', test_data,
                          ids=['SS', 'TPI'])
@@ -270,9 +271,9 @@ for i in range(etr_params.shape[2]):
     etr_params_tpi[:, i] = np.diag(np.transpose(etr_params[:, :S, i]))
     mtrx_params_tpi[:, i] = np.diag(np.transpose(mtrx_params[:, :S, i]))
 test_params_tpi = (e, sigma, g_y, theta, b_ellipse, upsilon, chi_n,
-                  l_tilde, tau_bq, lambdas, j, J, S, analytical_mtrs,
-                  etr_params_tpi, mtrx_params_tpi, h_wealth,
-                  p_wealth, m_wealth, tau_payroll, retire, method_tpi)
+                   l_tilde, tau_bq, lambdas, j, J, S, analytical_mtrs,
+                   etr_params_tpi, mtrx_params_tpi, h_wealth,
+                   p_wealth, m_wealth, tau_payroll, retire, method_tpi)
 r_vec = np.array([0.05, 0.03, 0.04])
 w_vec = np.array([1.2, 0.9, 0.8])
 BQ_vec = np.array([0.1, 0.05, 0.15])
@@ -283,13 +284,14 @@ expected_tpi = np.array([69.39898495, 1.930915718, -0.133902455])
 test_data = [(test_vars_ss, test_params_ss, expected_ss),
              (test_vars_tpi, test_params_tpi, expected_tpi)]
 
+
 @pytest.mark.parametrize('model_vars,params,expected', test_data,
                          ids=['SS', 'TPI'])
 def test_FOC_labor(model_vars, params, expected):
     # Test FOC condition for household's choice of labor supply
     r, w, b, b_splus1, n, BQ, factor, T_H = model_vars
     test_value = household.FOC_labor(r, w, b, b_splus1, n, BQ, factor,
-                                       T_H, params)
+                                     T_H, params)
 
     assert np.allclose(test_value, expected)
 
