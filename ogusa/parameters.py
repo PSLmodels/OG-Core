@@ -426,8 +426,10 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
     # # Make MTRy depend only on capital income
     # mtry_params[:, :, 11] = 0.0 # set share parameter to 0
 
-    # # set all MTRx parameters equal to the 43-yr-old values from 2016
-    # mtrx_params = np.tile(mtrx_params[11, 0, :], (S, 10, 1))
+    # # set all tax parameters equal to the 43-yr-old values from start_year
+    # etr_params = np.tile(etr_params[11, 0, :], (S, BW, 1))
+    # mtrx_params = np.tile(mtrx_params[11, 0, :], (S, BW, 1))
+    # mtry_params = np.tile(mtry_params[11, 0, :], (S, BW, 1))
 
     #   Wealth tax params
     #       These are non-calibrated values, h and m just need

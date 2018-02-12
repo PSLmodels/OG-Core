@@ -60,11 +60,10 @@ def marg_ut_labor(n, params):
     '''
     b_ellipse, upsilon, ltilde, chi_n = params
 
-    try:
-        deriv = (b_ellipse * (1.0 / ltilde) * ((1.0 - (n / ltilde) **
-                                                upsilon) **
-                                               ((1.0 / upsilon) - 1.0))
-                 * (n / ltilde) ** (upsilon - 1.0))
+    deriv = (b_ellipse * (1.0 / ltilde) *
+             ((1.0 - (n / ltilde) ** upsilon) **
+              ((1.0 / upsilon) - 1.0)) *
+             (n / ltilde) ** (upsilon - 1.0))
 
     output = chi_n * deriv
     return output
