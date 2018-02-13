@@ -121,7 +121,7 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={}, data=None
     mtr_combined_capinc = cap_inc_mtr(calc1)
 
     # create a temporary array to save all variables we need
-    length = len(calc1.records.s006)
+    length = len(calc1.array('s006'))
     temp = np.empty([length, 11]) # 11 is b/c length of budget window is 10 years
 
     # most variables can be retrieved from calculator's Record class
@@ -132,14 +132,14 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={}, data=None
     temp[:,0] = mtr_combined
     temp[:,1] = mtr_combined_sey
     temp[:,2] = mtr_combined_capinc
-    temp[:,3] = calc1.records.age_head
-    temp[:,4] = calc1.records.e00200
-    temp[:,5] = calc1.records.sey
-    temp[:,6] = calc1.records.sey + calc1.records.e00200
-    temp[:,7] = calc1.records.expanded_income
-    temp[:,8] = calc1.records.combined
+    temp[:,3] = calc1.array('age_head')
+    temp[:,4] = calc1.array('e00200')
+    temp[:,5] = calc1.array('sey')
+    temp[:,6] = calc1.array('sey') + calc1.array('e00200')
+    temp[:,7] = calc1.array('expanded_income')
+    temp[:,8] = calc1.array('combined')
     temp[:,9] = calc1.current_year * np.ones(length)
-    temp[:,10] = calc1.records.s006
+    temp[:,10] = calc1.array('s006')
 
     # dictionary of data frames to return
     micro_data_dict = {}
@@ -165,14 +165,14 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={}, data=None
         temp[:,0] = mtr_combined
         temp[:,1] = mtr_combined_sey
         temp[:,2] = mtr_combined_capinc
-        temp[:,3] = calc1.records.age_head
-        temp[:,4] = calc1.records.e00200
-        temp[:,5] = calc1.records.sey
-        temp[:,6] = calc1.records.sey + calc1.records.e00200
-        temp[:,7] = calc1.records.expanded_income
-        temp[:,8] = calc1.records.combined
+        temp[:,3] = calc1.array('age_head')
+        temp[:,4] = calc1.array('e00200')
+        temp[:,5] = calc1.array('sey')
+        temp[:,6] = calc1.array('sey') + calc1.array('e00200')
+        temp[:,7] = calc1.array('expanded_income')
+        temp[:,8] = calc1.array('combined')
         temp[:,9] = calc1.current_year * np.ones(length)
-        temp[:,10] = calc1.records.s006
+        temp[:,10] = calc1.array('s006')
 
         micro_data_dict[str(calc1.current_year)] = DataFrame(data = temp,
                        columns = ['MTR wage', 'MTR self-employed Wage','MTR capital income','Age',
@@ -210,19 +210,19 @@ def cap_inc_mtr(calc1):
     # calculating MTRs separately - can skip items with zero tax
     all_mtrs = {income_source: calc1.mtr(income_source) for income_source in capital_income_sources_taxed}
     # Get each column of income sources - need to include non-taxable capital income
-    record_columns = [getattr(calc1.records, income_source) for income_source in capital_income_sources]
+    # record_columns = [getattr(calc1.array, income_source) for income_source in capital_income_sources]
+    record_columns = [calc1.array(x) for x in capital_income_sources]
     # weighted average of all those MTRs
-    #total = sum(map(abs,record_columns)) + (calc1.records.e02000-np.maximum(0,calc1.records.e26270))
-    total = sum(map(abs,record_columns)) + np.abs(calc1.records.e02000-calc1.records.e26270)
+    total = sum(map(abs,record_columns)) + np.abs(calc1.array('e02000')-calc1.array('e26270'))
     # i.e., capital_gain_mtr = (e00300 * mtr_iit_300 + e00400 * mtr_iit_400 + ... + e23250 * mtr_iit_23250) /
     #                           sum_of_all_ten_variables
     # Note that all_mtrs gives fica (0), iit (1), and combined (2) mtrs  - we'll use the combined - hence all_mtrs[source][2]
     capital_mtr = [ abs(col) * all_mtrs[source][2] for col, source in zip(record_columns, capital_income_sources_taxed)]
-    mtr_combined_capinc = (sum(capital_mtr + (calc1.mtr('e02000')[2]*
-            np.abs(calc1.records.e02000-calc1.records.e26270))) / total)
+    mtr_combined_capinc = np.zeros_like(total)
+    mtr_combined_capinc[total!=0] = (sum(capital_mtr + (calc1.mtr('e02000')[2]*
+            np.abs(calc1.array('e02000')-calc1.array('e26270'))))[total!=0] / total[total!=0])
 
-    #if every item in capital_income_sources == 0: # no capital income taxpayers
-    if np.all(total == 0): # no capital income taxpayers
-        mtr_combined_capinc = all_mtrs['e00300'][2] # give all the weight to interest income
+    # no capital income taxpayers
+    mtr_combined_capinc[total==0] = all_mtrs['e00300'][2][total==0] # give all the weight to interest income
 
     return mtr_combined_capinc
