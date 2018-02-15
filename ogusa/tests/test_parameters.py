@@ -13,6 +13,7 @@ from ogusa.parameters import (get_parameters, read_tax_func_estimate,
                               USER_MODIFIABLE_PARAMS)
 from ogusa import parameters
 
+
 def test_parameters_user_modifiable():
     output_base = "./OUTPUT"
     dd = get_parameters(output_base, test=False, guid='', user_modifiable=True, metadata=False)
@@ -34,6 +35,7 @@ def test_parameters_metadata_policy():
 
     assert set(dd_meta.keys()) == set(USER_MODIFIABLE_PARAMS)
     assert 'validations' in dd_meta['frisch']
+
 
 def test_parameters_metadata_baseline():
     output_base = "./OUTPUT"
