@@ -25,11 +25,11 @@ import numpy as np
 import copy
 import numba
 import pickle
-from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR
+from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR, RECORDS_START_YEAR
 
 
 def get_calculator(baseline, calculator_start_year, reform=None,
-                   data=None, weights=None, records_start_year=2009):
+                   data=None, weights=None, records_start_year=RECORDS_START_YEAR):
     '''
     --------------------------------------------------------------------
     This function creates the tax calculator object for the microsim
