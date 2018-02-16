@@ -194,7 +194,7 @@ def run_reforms(ref_idxs=REF_IDXS, path_prefix="", cpu_count=CPU_COUNT,
                 data,
                 ok_to_run_baseline,)
 
-        run_micro_macro(args)
+        run_micro_macro(*args)
 
 
 if __name__ == "__main__":
