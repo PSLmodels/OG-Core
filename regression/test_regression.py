@@ -14,6 +14,7 @@ REF_IDXS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 BASELINE = os.path.join(CURDIR, 'OUTPUT_BASELINE')
 REFORM = os.path.join(CURDIR, 'OUTPUT_REFORM_{ref_idx}')
 
+
 @pytest.fixture(scope="module", params=REF_IDXS)
 def macro_outputs(request):
     (pct_changes,
