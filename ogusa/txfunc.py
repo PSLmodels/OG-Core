@@ -1438,7 +1438,8 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
 
     # call tax caculator and get microdata
     micro_data = get_micro_data.get_data(baseline=baseline,
-        start_year=beg_yr, reform=reform, data=data)
+                                         start_year=beg_yr,
+                                         reform=reform, data=data)
     # if reform:
     #     micro_data = pickle.load(open("micro_data_policy.pkl", "rb"))
     # else:

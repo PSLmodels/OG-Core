@@ -150,14 +150,14 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
 def run_reforms(ref_idxs=REF_IDXS, path_prefix="", cpu_count=CPU_COUNT,
                 data=DATA):
     # make sure we have a baseline result before other reforms are run
-    ok_to_run_baseline = True
-    run_micro_macro({},
-                    reforms[0],
-                    "./{0}OUTPUT_BASELINE".format(path_prefix),
-                    "./{0}OUTPUT_REFORM_{1}".format(path_prefix, 0),
-                    str(0),
-                    data,
-                    ok_to_run_baseline,)
+    # ok_to_run_baseline = True
+    # run_micro_macro({},
+    #                 reforms[0],
+    #                 "./{0}OUTPUT_BASELINE".format(path_prefix),
+    #                 "./{0}OUTPUT_REFORM_{1}".format(path_prefix, 0),
+    #                 str(0),
+    #                 data,
+    #                 ok_to_run_baseline,)
     # run reforms in parallel
     pool = Pool(processes=cpu_count)
     # results = []
@@ -185,7 +185,7 @@ def run_reforms(ref_idxs=REF_IDXS, path_prefix="", cpu_count=CPU_COUNT,
     results = []
 
     ok_to_run_baseline = False
-    for i in range(1, len(reforms)):
+    for i in range(0, len(reforms)):
         args = ({},
                 reforms[i],
                 "./{0}OUTPUT_BASELINE".format(path_prefix),
@@ -194,7 +194,7 @@ def run_reforms(ref_idxs=REF_IDXS, path_prefix="", cpu_count=CPU_COUNT,
                 data,
                 ok_to_run_baseline,)
 
-        run_micro_macro(args)
+        run_micro_macro(*args)
 
 
 if __name__ == "__main__":

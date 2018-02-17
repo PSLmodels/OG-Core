@@ -47,6 +47,7 @@ ENFORCE_SOLUTION_CHECKS = True
 ------------------------------------------------------------------------
 '''
 
+
 def create_steady_state_parameters(**sim_params):
     '''
     --------------------------------------------------------------------
@@ -56,7 +57,8 @@ def create_steady_state_parameters(**sim_params):
     --------------------------------------------------------------------
 
     INPUTS:
-    sim_params       = dictionary, dict containing variables for simulation
+    sim_params       = dictionary, dict containing variables for
+                        simulation
     analytical_mtrs  = boolean, =True if use analytical_mtrs, =False if
                        use estimated MTRs
     etr_params       = [S,BW,#tax params] array, parameters for effective
@@ -234,14 +236,14 @@ def euler_equation_solver(guesses, params):
     theta = tax.replacement_rate_vals(n_guess, w, factor, theta_params)
 
     foc_save_parms = (e[:, j], sigma, beta, g_y, chi_b[j], theta,
-                      tau_bq[j], rho, lambdas[j], J, S, analytical_mtrs,
+                      tau_bq[j], rho, lambdas[j], j, J, S, analytical_mtrs,
                       etr_params, mtry_params, h_wealth, p_wealth,
                       m_wealth, tau_payroll, retire, 'SS')
     error1 = household.FOC_savings(r, w, b_s, b_splus1, b_splus2,
                                    n_guess, BQ, factor, T_H,
                                    foc_save_parms)
     foc_labor_params = (e[:, j], sigma, g_y, theta, b_ellipse, upsilon,
-                        chi_n, ltilde, tau_bq[j], lambdas[j], J, S,
+                        chi_n, ltilde, tau_bq[j], lambdas[j], j, J, S,
                         analytical_mtrs, etr_params, mtrx_params,
                         h_wealth, p_wealth, m_wealth, tau_payroll,
                         retire, 'SS')

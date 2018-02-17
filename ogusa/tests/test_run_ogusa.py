@@ -19,6 +19,7 @@ from ogusa.scripts.execute import runner
 SS.ENFORCE_SOLUTION_CHECKS = False
 TPI.ENFORCE_SOLUTION_CHECKS = False
 
+
 def run_micro_macro(reform, user_params, guid):
 
     guid = ''
@@ -35,7 +36,6 @@ def run_micro_macro(reform, user_params, guid):
         f.write("guid: {}\n".format(guid))
         f.write("reform: {}\n".format(reform))
         f.write("user_params: {}\n".format(user_params))
-
 
     '''
     ------------------------------------------------------------------------
@@ -68,6 +68,7 @@ def run_micro_macro(reform, user_params, guid):
 
     return ans
 
+
 def test_run_micro_macro():
 
     reform = {
@@ -80,4 +81,6 @@ def test_run_micro_macro():
         '_II_rt6': [.315],
         '_II_rt7': [0.3564],
     }, }
-    run_micro_macro(reform=reform, user_params={'frisch': 0.44, 'g_y_annual': 0.021}, guid='abc')
+    run_micro_macro(reform=reform, user_params={'frisch': 0.44,
+                                                'g_y_annual': 0.021},
+                    guid='abc')

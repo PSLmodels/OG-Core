@@ -29,6 +29,9 @@ DEFAULT_START_YEAR = 2018
 # Latest year TaxData extrapolates to
 TC_LAST_YEAR = 2027
 
+# Year of data used (e.g. PUF or CPS year)
+RECORDS_START_YEAR = 2011
+
 # for f in (REFORM_DIR, BASELINE_DIR):
 #     if not os.path.exists(f):
 #         os.mkdir(f)
