@@ -33,11 +33,39 @@ def test_SS_fsolve():
     # Test SS.SS_fsolve function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     input_tuple = pickle.load(open(os.path.join(
-        CUR_PATH, 'SS_fsolve_inputs.pkl'), 'rb'))
+        CUR_PATH, 'test_io_data/SS_fsolve_inputs.pkl'), 'rb'))
     guesses, params = input_tuple
     test_list = SS.SS_fsolve(guesses, params)
 
     expected_list = pickle.load(open(os.path.join(
-        CUR_PATH, 'SS_fsolve_outputs.pkl'), 'rb'))
+        CUR_PATH, 'test_io_data/SS_fsolve_outputs.pkl'), 'rb'))
+
+    assert(np.allclose(np.array(test_list), np.array(expected_list)))
+
+
+def test_SS_fsolve_reform():
+    # Test SS.SS_fsolve_reform function.  Provide inputs to function and
+    # ensure that output returned matches what it has been before.
+    input_tuple = pickle.load(open(os.path.join(
+        CUR_PATH, 'test_io_data/SS_fsolve_reform_inputs.pkl'), 'rb'))
+    guesses, params = input_tuple
+    test_list = SS.SS_fsolve_reform(guesses, params)
+
+    expected_list = pickle.load(open(os.path.join(
+        CUR_PATH, 'test_io_data/SS_fsolve_reform_outputs.pkl'), 'rb'))
+
+    assert(np.allclose(np.array(test_list), np.array(expected_list)))
+
+
+def test_SS_fsolve_reform_baselinespend():
+    # Test SS.SS_fsolve_reform function.  Provide inputs to function and
+    # ensure that output returned matches what it has been before.
+    input_tuple = pickle.load(open(os.path.join(
+        CUR_PATH, 'test_io_data/SS_fsolve_reform_baselinespend_inputs.pkl'), 'rb'))
+    guesses, params = input_tuple
+    test_list = SS.SS_fsolve_reform_baselinespend(guesses, params)
+
+    expected_list = pickle.load(open(os.path.join(
+        CUR_PATH, 'test_io_data/SS_fsolve_reform_baselinespend_outputs.pkl'), 'rb'))
 
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
