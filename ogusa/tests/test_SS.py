@@ -104,3 +104,17 @@ def test_inner_loop():
 
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_dict[i], v))
+
+
+def test_euler_equation_solver():
+    # Test SS.inner_loop function.  Provide inputs to function and
+    # ensure that output returned matches what it has been before.
+    input_tuple = pickle.load(open(os.path.join(
+        CUR_PATH, 'test_io_data/euler_eqn_solver_inputs.pkl'), 'rb'))
+    (guesses, params) = input_tuple
+    test_list = SS.euler_equation_solver(guesses, params)
+
+    expected_list = pickle.load(open(os.path.join(
+        CUR_PATH, 'test_io_data/euler_eqn_solver_outputs.pkl'), 'rb'))
+
+    assert(np.allclose(np.array(test_list), np.array(expected_list)))
