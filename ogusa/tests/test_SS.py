@@ -58,8 +58,9 @@ def test_SS_fsolve_reform():
 
 
 def test_SS_fsolve_reform_baselinespend():
-    # Test SS.SS_fsolve_reform function.  Provide inputs to function and
-    # ensure that output returned matches what it has been before.
+    # Test SS.SS_fsolve_reform_baselinespend function.  Provide inputs
+    # to function and ensure that output returned matches what it has
+    # been before.
     input_tuple = pickle.load(open(os.path.join(
         CUR_PATH, 'test_io_data/SS_fsolve_reform_baselinespend_inputs.pkl'), 'rb'))
     guesses, params = input_tuple
@@ -69,3 +70,21 @@ def test_SS_fsolve_reform_baselinespend():
         CUR_PATH, 'test_io_data/SS_fsolve_reform_baselinespend_outputs.pkl'), 'rb'))
 
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
+
+
+def test_SS_solver():
+    # Test SS.SS_solver function.  Provide inputs to function and
+    # ensure that output returned matches what it has been before.
+    input_tuple = pickle.load(open(os.path.join(
+        CUR_PATH, 'test_io_data/SS_solver_inputs.pkl'), 'rb'))
+    (b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss, params,
+     baseline, fsolve_flag, baseline_spending) = input_tuple
+    test_dict = SS.SS_solver(
+        b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss, params,
+        baseline, fsolve_flag, baseline_spending)
+
+    expected_dict = pickle.load(open(os.path.join(
+        CUR_PATH, 'test_io_data/SS_solver_outputs.pkl'), 'rb'))
+
+    for k, v in expected_dict.iteritems():
+        assert(np.allclose(test_dict[k], v))
