@@ -88,3 +88,19 @@ def test_SS_solver():
 
     for k, v in expected_dict.iteritems():
         assert(np.allclose(test_dict[k], v))
+
+
+def test_inner_loop():
+    # Test SS.inner_loop function.  Provide inputs to function and
+    # ensure that output returned matches what it has been before.
+    input_tuple = pickle.load(open(os.path.join(
+        CUR_PATH, 'test_io_data/inner_loop_inputs.pkl'), 'rb'))
+    (outer_loop_vars, params, baseline, baseline_spending) = input_tuple
+    test_dict = SS.inner_loop(
+         outer_loop_vars, params, baseline, baseline_spending)
+
+    expected_tuple = pickle.load(open(os.path.join(
+        CUR_PATH, 'test_io_data/inner_loop_outputs.pkl'), 'rb'))
+
+    for i, v in enumerate(expected_tuple):
+        assert(np.allclose(test_dict[i], v))
