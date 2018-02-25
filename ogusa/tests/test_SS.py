@@ -120,18 +120,42 @@ def test_euler_equation_solver():
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
-def test_create_steady_state_parameters():
-    # Test that SS parameters creates same objects with same inputs.
-    input_dict = pickle.load(open(os.path.join(
-        CUR_PATH, 'test_io_data/create_params_inputs.pkl'), 'rb'))
-    test_tuple = SS.create_steady_state_parameters(**input_dict)
+# def test_create_steady_state_parameters():
+#     # Test that SS parameters creates same objects with same inputs.
+#     input_dict = pickle.load(open(os.path.join(
+#         CUR_PATH, 'test_io_data/create_params_inputs.pkl'), 'rb'))
+#     test_tuple = SS.create_steady_state_parameters(**input_dict)
+#
+#     expected_tuple = pickle.load(open(os.path.join(
+#         CUR_PATH, 'test_io_data/create_params_outputs.pkl'), 'rb'))
+#
+#     for i, v in enumerate(expected_tuple):
+#         for i2, v2 in enumerate(v):
+#             try:
+#                 assert(all(test_tuple[i][i2]==v2))
+#             except:
+#                 assert(test_tuple[i][i2]==v2)
 
-    expected_tuple = pickle.load(open(os.path.join(
-        CUR_PATH, 'test_io_data/create_params_outputs.pkl'), 'rb'))
 
-    for i, v in enumerate(expected_tuple):
-        for i2, v2 in enumerate(v):
-            try:
-                assert(all(test_tuple[i][i2]==v2))
-            except:
-                assert(test_tuple[i][i2]==v2)
+@pytest.mark.parametrize('input_path,expected_path',
+                         [('run_SS_open_unbal_inputs.pkl',
+                           'run_SS_open_unbal_outputs.pkl'),
+                          ('run_SS_closed_balanced_inputs.pkl',
+                           'run_SS_closed_balanced_outputs.pkl')],
+                         ids=['Open, Unbalanced', 'Closed Balanced'])
+def test_run_SS(input_path, expected_path):
+    # Test SS.run_SS function.  Provide inputs to function and
+    # ensure that output returned matches what it has been before.
+    input_tuple = pickle.load(open(os.path.join(
+        CUR_PATH, 'test_io_data', input_path), 'rb'))
+    (income_tax_params, ss_params, iterative_params, chi_params,
+     small_open_params, baseline, baseline_spending, baseline_dir) = input_tuple
+    test_dict = SS.run_SS(
+        income_tax_params, ss_params, iterative_params, chi_params,
+        small_open_params, baseline, baseline_spending, baseline_dir)
+
+    expected_dict = pickle.load(open(os.path.join(
+        CUR_PATH, 'test_io_data', expected_path), 'rb'))
+
+    for k, v in expected_dict.iteritems():
+        assert(np.allclose(test_dict[k], v))
