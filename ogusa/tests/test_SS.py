@@ -96,14 +96,14 @@ def test_inner_loop():
     input_tuple = pickle.load(open(os.path.join(
         CUR_PATH, 'test_io_data/inner_loop_inputs.pkl'), 'rb'))
     (outer_loop_vars, params, baseline, baseline_spending) = input_tuple
-    test_dict = SS.inner_loop(
+    test_tuple = SS.inner_loop(
          outer_loop_vars, params, baseline, baseline_spending)
 
     expected_tuple = pickle.load(open(os.path.join(
         CUR_PATH, 'test_io_data/inner_loop_outputs.pkl'), 'rb'))
 
     for i, v in enumerate(expected_tuple):
-        assert(np.allclose(test_dict[i], v))
+        assert(np.allclose(test_tuple[i], v))
 
 
 def test_euler_equation_solver():
@@ -118,3 +118,20 @@ def test_euler_equation_solver():
         CUR_PATH, 'test_io_data/euler_eqn_solver_outputs.pkl'), 'rb'))
 
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
+
+
+def test_create_steady_state_parameters():
+    # Test that SS parameters creates same objects with same inputs.
+    input_dict = pickle.load(open(os.path.join(
+        CUR_PATH, 'test_io_data/create_params_inputs.pkl'), 'rb'))
+    test_tuple = SS.create_steady_state_parameters(**input_dict)
+
+    expected_tuple = pickle.load(open(os.path.join(
+        CUR_PATH, 'test_io_data/create_params_outputs.pkl'), 'rb'))
+
+    for i, v in enumerate(expected_tuple):
+        for i2, v2 in enumerate(v):
+            try:
+                assert(all(test_tuple[i][i2]==v2))
+            except:
+                assert(test_tuple[i][i2]==v2)
