@@ -120,21 +120,23 @@ def test_euler_equation_solver():
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
-# def test_create_steady_state_parameters():
-#     # Test that SS parameters creates same objects with same inputs.
-#     input_dict = pickle.load(open(os.path.join(
-#         CUR_PATH, 'test_io_data/create_params_inputs.pkl'), 'rb'))
-#     test_tuple = SS.create_steady_state_parameters(**input_dict)
-#
-#     expected_tuple = pickle.load(open(os.path.join(
-#         CUR_PATH, 'test_io_data/create_params_outputs.pkl'), 'rb'))
-#
-#     for i, v in enumerate(expected_tuple):
-#         for i2, v2 in enumerate(v):
-#             try:
-#                 assert(all(test_tuple[i][i2]==v2))
-#             except:
-#                 assert(test_tuple[i][i2]==v2)
+def test_create_steady_state_parameters():
+    # Test that SS parameters creates same objects with same inputs.
+    input_dict = pickle.load(open(os.path.join(
+        CUR_PATH, 'test_io_data/create_params_inputs.pkl'), 'rb'))
+    test_tuple = SS.create_steady_state_parameters(**input_dict)
+
+    expected_tuple = pickle.load(open(os.path.join(
+        CUR_PATH, 'test_io_data/create_params_outputs.pkl'), 'rb'))
+
+    for i, v in enumerate(expected_tuple):
+        for i2, v2 in enumerate(v):
+            try:
+                assert(all(test_tuple[i][i2]==v2))
+            except ValueError:
+                assert((test_tuple[i][i2]==v2).all())
+            except TypeError:
+                assert(test_tuple[i][i2]==v2)
 
 
 @pytest.mark.parametrize('input_path,expected_path',
