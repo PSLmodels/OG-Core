@@ -1,5 +1,7 @@
 import pytest
 import os
+from ogusa.utils import RECORDS_START_YEAR
+
 
 def test_cps():
     """
@@ -10,8 +12,9 @@ def test_cps():
     start_year = 2016
     reform = {2017: {"_II_em": [10000]}}
 
-    calc = get_micro_data.get_calculator(baseline, start_year, reform=reform,
-                                         records_start_year=2009, data="cps")
+    calc = get_micro_data.get_calculator(
+        baseline, start_year, reform=reform,
+        records_start_year=RECORDS_START_YEAR, data="cps")
     # blind_head is only in the CPS file and e00700 is only in the PUF.
     # See taxcalc/records_variables.json
     assert (calc.array("blind_head").sum() > 0 and
@@ -33,9 +36,9 @@ def test_set_path():
     # to read from an egg file. This raises a ValueError. At some point,
     # this could change. So I think it's best to catch both errors
     with pytest.raises((IOError, ValueError), match="notapath.csv"):
-        get_micro_data.get_calculator(baseline, start_year, reform=reform,
-                                      records_start_year=2009,
-                                      data="notapath.csv")
+        get_micro_data.get_calculator(
+            baseline, start_year, reform=reform,
+            records_start_year=RECORDS_START_YEAR, data="notapath.csv")
 
 
 def test_puf_path():
@@ -53,16 +56,16 @@ def test_puf_path():
 
     # puf.csv in ogusa/
     if os.path.exists(puf_path):
-        calc = get_micro_data.get_calculator(baseline, start_year, reform=reform,
-                                     data=puf_path)
+        calc = get_micro_data.get_calculator(
+            baseline, start_year, reform=reform, data=puf_path)
         # blind_head is only in the CPS file and e00700 is only in the PUF.
         # See taxcalc/records_variables.json
-        assert (calc.records.blind_head.sum() == 0 and
-                calc.records.e00700.sum() > 0)
+        assert (calc.array('blind_head').sum() == 0 and
+                calc.array('e00700').sum() > 0)
     # we do not have puf.csv
     else:
         # make sure TC is looking for puf.csv
         with pytest.raises((IOError, ValueError), match="puf.csv"):
-            get_micro_data.get_calculator(baseline, start_year, reform=reform,
-                                          records_start_year=2009,
-                                          data=None)
+            get_micro_data.get_calculator(
+                baseline, start_year, reform=reform,
+                records_start_year=RECORDS_START_YEAR, data=None)
