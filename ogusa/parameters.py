@@ -309,7 +309,7 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
     # Time parameters
     T = int(4 * S)
     BW = int(min(10, TC_LAST_YEAR - start_year + 1))
-    print "BW = ", BW, 'star year = ', start_year
+    print "BW = ", BW, 'start year = ', start_year
 
     starting_age = 20
     ending_age = 100
