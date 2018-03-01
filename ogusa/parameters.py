@@ -391,13 +391,13 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
     if baseline:
         baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         estimate_file = tx_func_est_path
-        print 'using baseline tax parameters'
+        print 'using baseline tax parameters', tx_func_est_path
         dict_params = read_tax_func_estimate(estimate_file, baseline_pckl)
 
     else:
         policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
         estimate_file = tx_func_est_path
-        print 'using policy tax parameters'
+        print 'using policy tax parameters', tx_func_est_path
         dict_params = read_tax_func_estimate(estimate_file, policy_pckl)
 
     mean_income_data = dict_params['tfunc_avginc'][0]
