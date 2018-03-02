@@ -127,8 +127,7 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
 
     # create a temporary array to save all variables we need
     length = len(calc1.array('s006'))
-    temp = np.empty([length, TC_LAST_YEAR - start_year + 1])
-
+    temp = np.empty((length, 11))
     # Put values of variables in temp array
     # most e-variable definition can be found here
     # https://docs.google.com/spreadsheets/d/1WlgbgEAMwhjMI8s9eG117bBEKFioXUY0aUTfKwHwXdA/edit#gid=1029315862
@@ -167,7 +166,7 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
         mtr_combined_capinc = cap_inc_mtr(calc1)
 
 
-        temp = np.empty([length, 11])
+        temp = np.empty((length, 11))
         temp[:, 0] = mtr_combined
         temp[:, 1] = mtr_combined_sey
         temp[:, 2] = mtr_combined_capinc
