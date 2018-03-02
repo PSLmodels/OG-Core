@@ -17,8 +17,8 @@ def test_diff_start_year(year):
     # Monkey patch enforcement flag since small data won't pass checks
     SS.ENFORCE_SOLUTION_CHECKS = False
     TPI.ENFORCE_SOLUTION_CHECKS = False
-    output_base = "./OUTPUT"
-    input_dir = "./OUTPUT"
+    output_base = os.path.join(CUR_PATH, "STARTYEAR_OUTPUT")
+    input_dir = os.path.join(CUR_PATH, "STARTYEAR_OUTPUT")
     user_params = {'frisch': 0.41, 'debt_ratio_ss': 1.0,
                    'start_year': year}
     runner(output_base=output_base, baseline_dir=input_dir, test=True,
