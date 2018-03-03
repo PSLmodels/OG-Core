@@ -22,50 +22,84 @@ import tax
 def marg_ut_cons(c, sigma):
     '''
     Computation of marginal utility of consumption.
-
     Inputs:
         c     = [T,S,J] array, household consumption
         sigma = scalar, coefficient of relative risk aversion
-
     Functions called: None
-
     Objects in function:
         output = [T,S,J] array, marginal utility of consumption
-
     Returns: output
     '''
-    output = c**(-sigma)
+    if np.ndim(c) == 0:
+        c = np.array([c])
+    epsilon = 0.0001
+    cvec_cnstr = c < epsilon
+    MU_c = np.zeros(c.shape)
+    MU_c[~cvec_cnstr] = c[~cvec_cnstr] ** (-sigma)
+    b2 = (-sigma * (epsilon ** (-sigma - 1))) / 2
+    b1 = (epsilon ** (-sigma)) - 2 * b2 * epsilon
+    MU_c[cvec_cnstr] = 2 * b2 * c[cvec_cnstr] + b1
+    output = MU_c
+    output = np.squeeze(output)
+
     return output
 
 
 def marg_ut_labor(n, params):
     '''
     Computation of marginal disutility of labor.
-
     Inputs:
         n         = [T,S,J] array, household labor supply
         params    = length 4 tuple (b_ellipse, upsilon, ltilde, chi_n)
-        b_ellipse = scalar, scaling parameter in elliptical utility
-                    function
+        b_ellipse = scalar, scaling parameter in elliptical utility function
         upsilon   = curvature parameter in elliptical utility function
         ltilde    = scalar, upper bound of household labor supply
         chi_n     = [S,] vector, utility weights on disutility of labor
-
     Functions called: None
-
     Objects in function:
         output = [T,S,J] array, marginal disutility of labor supply
-
     Returns: output
     '''
     b_ellipse, upsilon, ltilde, chi_n = params
 
-    deriv = (b_ellipse * (1.0 / ltilde) *
-             ((1.0 - (n / ltilde) ** upsilon) **
-              ((1.0 / upsilon) - 1.0)) *
-             (n / ltilde) ** (upsilon - 1.0))
+    b_ellip = b_ellipse
+    nvec = n
+    if np.ndim(nvec) == 0:
+        nvec = np.array([nvec])
+    eps_low = 0.000001
+    eps_high = ltilde - 0.000001
+    nvec_low = nvec < eps_low
+    nvec_high = nvec > eps_high
+    nvec_uncstr = np.logical_and(~nvec_low, ~nvec_high)
+    MDU_n = np.zeros(nvec.shape)
+    MDU_n[nvec_uncstr] = (
+        (b_ellip / ltilde) *
+        ((nvec[nvec_uncstr] / ltilde) ** (upsilon - 1)) *
+        ((1 - ((nvec[nvec_uncstr] / ltilde) ** upsilon)) **
+         ((1 - upsilon) / upsilon)))
+    b2 = (0.5 * b_ellip * (ltilde ** (-upsilon)) * (upsilon - 1) *
+          (eps_low ** (upsilon - 2)) *
+          ((1 - ((eps_low / ltilde) ** upsilon)) **
+          ((1 - upsilon) / upsilon)) *
+          (1 + ((eps_low / ltilde) ** upsilon) *
+          ((1 - ((eps_low / ltilde) ** upsilon)) ** (-1))))
+    b1 = ((b_ellip / ltilde) * ((eps_low / ltilde) ** (upsilon - 1)) *
+          ((1 - ((eps_low / ltilde) ** upsilon)) **
+          ((1 - upsilon) / upsilon)) - (2 * b2 * eps_low))
+    MDU_n[nvec_low] = 2 * b2 * nvec[nvec_low] + b1
+    d2 = (0.5 * b_ellip * (ltilde ** (-upsilon)) * (upsilon - 1) *
+          (eps_high ** (upsilon - 2)) *
+          ((1 - ((eps_high / ltilde) ** upsilon)) **
+          ((1 - upsilon) / upsilon)) *
+          (1 + ((eps_high / ltilde) ** upsilon) *
+          ((1 - ((eps_high / ltilde) ** upsilon)) ** (-1))))
+    d1 = ((b_ellip / ltilde) * ((eps_high / ltilde) **
+          (upsilon - 1)) * ((1 - ((eps_high / ltilde) ** upsilon)) **
+          ((1 - upsilon) / upsilon)) - (2 * d2 * eps_high))
+    MDU_n[nvec_high] = 2 * d2 * nvec[nvec_high] + d1
+    output = MDU_n*chi_n
+    output = np.squeeze(output)
 
-    output = chi_n * deriv
     return output
 
 

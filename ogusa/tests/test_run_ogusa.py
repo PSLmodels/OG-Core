@@ -72,7 +72,7 @@ def run_micro_macro(reform, user_params, guid):
 def test_run_micro_macro():
 
     reform = {
-    2017: {
+    2018: {
         '_II_rt1': [.09],
         '_II_rt2': [.135],
         '_II_rt3': [.225],

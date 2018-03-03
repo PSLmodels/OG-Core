@@ -308,8 +308,8 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
 
     # Time parameters
     T = int(4 * S)
-    BW = int(min(10, TC_LAST_YEAR - start_year + 1))
-    print "BW = ", BW, 'star year = ', start_year
+    BW = int(TC_LAST_YEAR - start_year + 1)
+    print "BW = ", BW, 'start year = ', start_year
 
     starting_age = 20
     ending_age = 100
@@ -391,13 +391,13 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
     if baseline:
         baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         estimate_file = tx_func_est_path
-        print 'using baseline tax parameters'
+        print 'using baseline tax parameters', tx_func_est_path
         dict_params = read_tax_func_estimate(estimate_file, baseline_pckl)
 
     else:
         policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
         estimate_file = tx_func_est_path
-        print 'using policy tax parameters'
+        print 'using policy tax parameters', tx_func_est_path
         dict_params = read_tax_func_estimate(estimate_file, policy_pckl)
 
     mean_income_data = dict_params['tfunc_avginc'][0]

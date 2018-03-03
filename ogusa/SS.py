@@ -29,6 +29,7 @@ import firm
 import utils
 import os
 import warnings
+import json
 
 
 '''
@@ -122,6 +123,7 @@ def create_steady_state_parameters(**sim_params):
     # Put income tax parameters in a tuple
     # Assumption here is that tax parameters of last year of budget
     # window continue forever and so will be SS values
+
     income_tax_params = (sim_params['analytical_mtrs'],
                          sim_params['etr_params'][:, -1, :],
                          sim_params['mtrx_params'][:, -1, :],
@@ -155,6 +157,7 @@ def create_steady_state_parameters(**sim_params):
     chi_params = (sim_params['chi_b_guess'], sim_params['chi_n_guess'])
     small_open_params = [sim_params['small_open'], sim_params['ss_firm_r'],
                          sim_params['ss_hh_r']]
+
     return (income_tax_params, ss_params, iterative_params, chi_params,
             small_open_params)
 
@@ -217,7 +220,6 @@ def euler_equation_solver(guesses, params):
     OUTPUT: None
     --------------------------------------------------------------------
     '''
-
     (r, w, T_H, factor, j, J, S, beta, sigma, ltilde, g_y, g_n_ss,
      tau_payroll, retire, mean_income_data, h_wealth, p_wealth,
      m_wealth, b_ellipse, upsilon, j, chi_b, chi_n, tau_bq, rho, lambdas,
@@ -316,7 +318,6 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
              new_T_H, new_factor, new_BQ
 
     '''
-
     # unpack variables and parameters pass to function
     ss_params, income_tax_params, chi_params, small_open_params = params
     (J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde,
@@ -487,7 +488,6 @@ def SS_solver(b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss,
     OUTPUT: None
     --------------------------------------------------------------------
     '''
-
     (bssmat, nssmat, chi_params, ss_params, income_tax_params,
      iterative_params, small_open_params) = params
     (J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde,
@@ -802,7 +802,6 @@ def SS_fsolve(guesses, params):
         solutions = steady state values of b, n, w, r, factor,
                     T_H ((2*S*J+4)x1 array)
     '''
-
     (bssmat, nssmat, chi_params, ss_params, income_tax_params,
      iterative_params, small_open_params) = params
     (J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde,
