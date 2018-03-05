@@ -47,11 +47,25 @@ def test_firstdoughnutring():
         expected_list = pickle.load(f)
 
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
-#
-#
-# def test_twist_doughnut():
-#
-#
+
+
+def test_twist_doughnut():
+    # Test TPI.twist_doughnut function.  Provide inputs to function and
+    # ensure that output returned matches what it has been before.
+    with open(os.path.join(CUR_PATH,
+                           'test_io_data/twist_doughnut_inputs.pkl'),
+              'rb') as f:
+        input_tuple = pickle.load(f)
+    guesses, r, w, BQ, T_H, j, s, t, params = input_tuple
+    test_list = TPI.twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params)
+
+    with open(os.path.join(CUR_PATH,
+                           'test_io_data/twist_doughnut_outputs.pkl'),
+              'rb') as f:
+        expected_list = pickle.load(f)
+
+    assert(np.allclose(np.array(test_list), np.array(expected_list)))
+
 # def test_inner_loop():
 #
 #
