@@ -66,7 +66,30 @@ def test_twist_doughnut():
 
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
-# def test_inner_loop():
-#
-#
+
+def test_inner_loop():
+    # Test TPI.inner_loop function.  Provide inputs to function and
+    # ensure that output returned matches what it has been before.
+    with open(os.path.join(CUR_PATH,
+                           'test_io_data/tpi_inner_loop_inputs.pkl'),
+              'rb') as f:
+        input_tuple = pickle.load(f)
+    guesses, outer_loop_vars, params = input_tuple
+    test_tuple = TPI.inner_loop(guesses, outer_loop_vars, params)
+
+    with open(os.path.join(CUR_PATH,
+                           'test_io_data/tpi_inner_loop_outputs.pkl'),
+              'rb') as f:
+        expected_tuple = pickle.load(f)
+
+    for i, v in enumerate(expected_tuple):
+        for i2, v2 in enumerate(v):
+            try:
+                assert(all(test_tuple[i][i2] == v2))
+            except ValueError:
+                assert((test_tuple[i][i2] == v2).all())
+            except TypeError:
+                assert(test_tuple[i][i2] == v2)
+
+
 # def test_run_TPI():
