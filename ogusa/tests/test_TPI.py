@@ -67,6 +67,7 @@ def test_twist_doughnut():
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
+@pytest.mark.full_run
 def test_inner_loop():
     # Test TPI.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
@@ -92,6 +93,7 @@ def test_inner_loop():
                 assert(test_tuple[i][i2] == v2)
 
 
+@pytest.mark.full_run
 def test_run_TPI():
     # Test TPI.run_TPI function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
