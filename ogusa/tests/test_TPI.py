@@ -92,4 +92,26 @@ def test_inner_loop():
                 assert(test_tuple[i][i2] == v2)
 
 
-# def test_run_TPI():
+def test_run_TPI():
+    # Test TPI.run_TPI function.  Provide inputs to function and
+    # ensure that output returned matches what it has been before.
+    with open(os.path.join(CUR_PATH, 'test_io_data/run_TPI_inputs.pkl'),
+              'rb') as f:
+        input_tuple = pickle.load(f)
+    (income_tax_params, tpi_params, iterative_params, small_open_params,
+     initial_values, SS_values, fiscal_params, biz_tax_params,
+     output_dir, baseline_spending) = input_tuple
+    test_dict, not_test_dict = TPI.run_TPI(
+        income_tax_params, tpi_params, iterative_params,
+        small_open_params, initial_values, SS_values, fiscal_params,
+        biz_tax_params, output_dir, baseline_spending)
+
+    with open(os.path.join(CUR_PATH, 'test_io_data/run_TPI_outputs.pkl'),
+              'rb') as f:
+        expected_dict = pickle.load(f)
+
+    for k, v in expected_dict.iteritems():
+        assert(np.allclose(test_dict[k], v))
+
+
+# def test_initial_GDP_level():
