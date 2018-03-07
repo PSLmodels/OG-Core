@@ -15,6 +15,7 @@ install:
   - source activate ospcdyn
   - conda env update -f environment.yml
   - python setup.py install
+  - travis_wait mvn install
   
 
 # command to run tests, e.g. python setup.py test
