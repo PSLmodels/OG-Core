@@ -139,11 +139,11 @@ def test_create_steady_state_parameters():
     for i, v in enumerate(expected_tuple):
         for i2, v2 in enumerate(v):
             try:
-                assert(all(test_tuple[i][i2]==v2))
+                assert(all(test_tuple[i][i2] == v2))
             except ValueError:
-                assert((test_tuple[i][i2]==v2).all())
+                assert((test_tuple[i][i2] == v2).all())
             except TypeError:
-                assert(test_tuple[i][i2]==v2)
+                assert(test_tuple[i][i2] == v2)
 
 
 @pytest.mark.parametrize('input_path,expected_path',
