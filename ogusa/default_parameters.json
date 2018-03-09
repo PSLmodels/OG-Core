@@ -1,0 +1,32 @@
+{
+    "frisch": {
+        "long_name": "Frisch elasticity of labor supply",
+        "description": "Frisch elasticity of labor supply",
+        "notes": "See Altonji (JPE, 1996) and Peterman (Econ Inquiry, 2016) for estimates of the Frisch elasticity",
+        "col_var": "",
+        "col_label": "",
+        "boolean_value": false,
+        "integer_value": false,
+        "value": [0.4],
+        "range": {"min": 0.02, "max": 0.06},
+        "out_of_range_minmsg": "",
+        "out_of_range_maxmsg": "",
+        "out_of_range_action": "stop",
+        "compatible_data": {"puf": true, "cps": true}
+    },
+    "g_y_annual": {
+        "long_name": "Exogenous growth rate of labor augmenting technological change",
+        "description": "Growth rate of labor augmenting technological change",
+        "notes": "",
+        "col_var": "",
+        "col_label": "",
+        "boolean_value": false,
+        "integer_value": false,
+        "value": [0.03],
+        "range": {"min": -0.01, "max": 0.04},
+        "out_of_range_minmsg": "",
+        "out_of_range_maxmsg": "",
+        "out_of_range_action": "stop",
+        "compatible_data": {"puf": true, "cps": true}
+    },
+}
