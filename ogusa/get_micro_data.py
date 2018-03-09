@@ -147,13 +147,13 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
     micro_data_dict = {}
 
     micro_data_dict[str(start_year)] = DataFrame(
-        data=temp, columns=['MTR wage', 'MTR self-employed Wage',
+        data=temp, columns=['MTR wage income', 'MTR SE income',
                             'MTR capital income', 'Age',
-                            'Wage and Salaries',
-                            'Self-Employed Income',
-                            'Wage + Self-Employed Income',
-                            'Adjusted Total income',
-                            'Total Tax Liability', 'Year', 'Weights'])
+                            'Wage income',
+                            'SE income',
+                            'Wage + SE income',
+                            'Adjusted total income',
+                            'Total tax liability', 'Year', 'Weights'])
 
     # Repeat the process for each year
     # Increment years into the future but not beyond TC_LAST_YEAR
@@ -180,13 +180,13 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
         temp[:, 10] = calc1.array('s006')
 
         micro_data_dict[str(calc1.current_year)] = DataFrame(
-            data=temp, columns=['MTR wage', 'MTR self-employed Wage',
+            data=temp, columns=['MTR wage income', 'MTR SE income',
                                 'MTR capital income', 'Age',
-                                'Wage and Salaries',
-                                'Self-Employed Income',
-                                'Wage + Self-Employed Income',
-                                'Adjusted Total income',
-                                'Total Tax Liability', 'Year',
+                                'Wage income',
+                                'SE income',
+                                'Wage + SE income',
+                                'Adjusted total income',
+                                'Total tax liability', 'Year',
                                 'Weights'])
         print 'year: ', str(calc1.current_year)
 
