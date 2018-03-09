@@ -172,23 +172,23 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     --------------------------------------------------------------------
     '''
     # Truncate the data
-    df_trnc = df[(df['Total Labor Income'] > 5) &
-        (df['Total Labor Income'] < 500000) &
-        (df['Total Capital Income'] > 5) &
-        (df['Total Capital Income'] < 500000)]
-    inc_lab = df_trnc['Total Labor Income']
-    inc_cap = df_trnc['Total Capital Income']
-    etr_data = df_trnc['Effective Tax Rate']
-    mtrx_data = df_trnc['MTR Labor']
+    df_trnc = df[(df['Total labor income'] > 5) &
+        (df['Total labor income'] < 500000) &
+        (df['Total capital income'] > 5) &
+        (df['Total capital income'] < 500000)]
+    inc_lab = df_trnc['Total labor income']
+    inc_cap = df_trnc['Total capital income']
+    etr_data = df_trnc['ETR']
+    mtrx_data = df_trnc['MTR labor income']
     mtry_data = df_trnc['MTR capital income']
 
     # Plot 3D scatterplot of ETR data
     fig = plt.figure()
     ax = fig.add_subplot(111, projection ='3d')
     ax.scatter(inc_lab, inc_cap, etr_data, c='r', marker='o')
-    ax.set_xlabel('Total Labor Income')
-    ax.set_ylabel('Total Capital Income')
-    ax.set_zlabel('Effective Tax Rate')
+    ax.set_xlabel('Total labor income')
+    ax.set_ylabel('Total capital income')
+    ax.set_zlabel('ETR')
     plt.title('ETR, Lab. Inc., and Cap. Inc., Age=' + str(s) + ', Year='
         + str(t))
     filename = ("ETR_Age_" + str(s) + "_Year_" + str(t) + "_data.png")
@@ -214,8 +214,8 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     dy = (yedges[1] - yedges[0]) * np.ones_like(bin_num)
     dz = hist.flatten()
     ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color='b', zsort='average')
-    ax.set_xlabel('Total Labor Income')
-    ax.set_ylabel('Total Capital Income')
+    ax.set_xlabel('Total labor income')
+    ax.set_ylabel('Total capital income')
     ax.set_zlabel('Percent of obs.')
     plt.title('Histogram by lab. inc., and cap. inc., Age=' + str(s) +
         ', Year=' + str(t))
@@ -228,10 +228,10 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection ='3d')
     ax.scatter(inc_lab, inc_cap, mtrx_data, c='r', marker='o')
-    ax.set_xlabel('Total Labor Income')
-    ax.set_ylabel('Total Capital Income')
+    ax.set_xlabel('Total labor income')
+    ax.set_ylabel('Total capital income')
     ax.set_zlabel('Marginal Tax Rate, Labor Inc.)')
-    plt.title("MTR Labor Income, Lab. Inc., and Cap. Inc., Age=" +
+    plt.title("MTR labor income Income, Lab. Inc., and Cap. Inc., Age=" +
         str(s) + ", Year=" + str(t))
     filename = ("MTRx_Age_"+ str(s) + "_Year_" + str(t) + "_data.png")
     fullpath = os.path.join(output_dir, filename)
@@ -242,8 +242,8 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     fig = plt.figure()
     ax = fig.add_subplot(111, projection ='3d')
     ax.scatter(inc_lab, inc_cap, mtry_data, c='r', marker='o')
-    ax.set_xlabel('Total Labor Income')
-    ax.set_ylabel('Total Capital Income')
+    ax.set_xlabel('Total labor income')
+    ax.set_ylabel('Total capital income')
     ax.set_zlabel('Marginal Tax Rate (Capital Inc.)')
     plt.title("MTR Capital Income, Cap. Inc., and Cap. Inc., Age=" +
         str(s) + ", Year=" + str(t))
@@ -277,8 +277,8 @@ def plot_txfunc_v_data(tx_params, data, params): #This isn't in use yet
                   data
     --------------------------------------------------------------------
     '''
-    X_data = data['Total Labor Income']
-    Y_data = data['Total Capital Income']
+    X_data = data['Total labor income']
+    Y_data = data['Total capital income']
     (s, t, rate_type, plot_full, plot_trunc, show_plots, save_plots,
         output_dir) = params
 
@@ -286,10 +286,10 @@ def plot_txfunc_v_data(tx_params, data, params): #This isn't in use yet
 
     if plot_full:
         if rate_type == 'etr':
-            txrate_data = data['Effective Tax Rate']
+            txrate_data = data['ETR']
             tx_label = 'ETR'
         elif rate_type == 'mtrx':
-            txrate_data = data['MTR Labor']
+            txrate_data = data['MTR labor income']
             tx_label = 'MTRx'
         elif rate_type == 'mtry':
             txrate_data = data['MTR capital income']
@@ -298,8 +298,8 @@ def plot_txfunc_v_data(tx_params, data, params): #This isn't in use yet
         fig = plt.figure()
         ax = fig.add_subplot(111, projection ='3d')
         ax.scatter(X_data, Y_data, txrate_data, c='r', marker='o')
-        ax.set_xlabel('Total Labor Income')
-        ax.set_ylabel('Total Capital Income')
+        ax.set_xlabel('Total labor income')
+        ax.set_ylabel('Total capital income')
         ax.set_zlabel(tx_label)
         plt.title(tx_label + ' vs. Predicted ' + tx_label + ': Age=' +
             str(s) + ', Year=' + str(t))
@@ -327,17 +327,17 @@ def plot_txfunc_v_data(tx_params, data, params): #This isn't in use yet
 
     if plot_trunc:
         # Make comparison plot with truncated income domains
-        data_trnc = data[(data['Total Labor Income'] > 5) &
-            (data['Total Labor Income'] < 800000) &
-            (data['Total Capital Income'] > 5) &
-            (data['Total Capital Income'] < 800000)]
-        X_trnc = data_trnc['Total Labor Income']
-        Y_trnc = data_trnc['Total Capital Income']
+        data_trnc = data[(data['Total labor income'] > 5) &
+            (data['Total labor income'] < 800000) &
+            (data['Total capital income'] > 5) &
+            (data['Total capital income'] < 800000)]
+        X_trnc = data_trnc['Total labor income']
+        Y_trnc = data_trnc['Total capital income']
         if rate_type == 'etr':
-            txrates_trnc = data_trnc['Effective Tax Rate']
+            txrates_trnc = data_trnc['ETR']
             tx_label = 'ETR'
         elif rate_type == 'mtrx':
-            txrates_trnc = data_trnc['MTR Labor']
+            txrates_trnc = data_trnc['MTR labor income']
             tx_label = 'MTRx'
         elif rate_type == 'mtry':
             txrates_trnc = data_trnc['MTR capital income']
@@ -346,8 +346,8 @@ def plot_txfunc_v_data(tx_params, data, params): #This isn't in use yet
         fig = plt.figure()
         ax = fig.add_subplot(111, projection ='3d')
         ax.scatter(X_trnc, Y_trnc, txrates_trnc, c='r', marker='o')
-        ax.set_xlabel('Total Labor Income')
-        ax.set_ylabel('Total Capital Income')
+        ax.set_xlabel('Total labor income')
+        ax.set_ylabel('Total capital income')
         ax.set_zlabel(tx_label)
         plt.title('Truncated ' + tx_label + ', Lab. Inc., and Cap. ' +
             'Inc., Age=' + str(s) + ', Year=' + str(t))
@@ -768,8 +768,8 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
     RETURNS: params, wsse, obs
     --------------------------------------------------------------------
     '''
-    X = df['Total Labor Income']
-    Y = df['Total Capital Income']
+    X = df['Total labor income']
+    Y = df['Total capital income']
     wgts = df['Weights']
     X2 = X ** 2
     Y2 = Y ** 2
@@ -778,27 +778,27 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
     Y2bar = (Y2 * wgts).sum() / wgts.sum()
     Ybar = (Y * wgts).sum() / wgts.sum()
     if rate_type == 'etr':
-        txrates = df['Effective Tax Rate']
+        txrates = df['ETR']
     elif rate_type == 'mtrx':
-        txrates = df['MTR Labor']
+        txrates = df['MTR labor income']
     elif rate_type == 'mtry':
         txrates = df['MTR capital income']
-    x_10pctl = df['Total Labor Income'].quantile(0.1)
-    y_10pctl = df['Total Capital Income'].quantile(0.1)
-    x_20pctl = df['Total Labor Income'].quantile(.2)
-    y_20pctl = df['Total Capital Income'].quantile(.2)
-    min_x = txrates[(df['Total Capital Income'] < y_10pctl)].min()
-    min_y = txrates[(df['Total Labor Income'] < x_10pctl)].min()
+    x_10pctl = df['Total labor income'].quantile(0.1)
+    y_10pctl = df['Total capital income'].quantile(0.1)
+    x_20pctl = df['Total labor income'].quantile(.2)
+    y_20pctl = df['Total capital income'].quantile(.2)
+    min_x = txrates[(df['Total capital income'] < y_10pctl)].min()
+    min_y = txrates[(df['Total labor income'] < x_10pctl)].min()
     Atil_init = 1.0
     Btil_init = 1.0
     Ctil_init = 1.0
     Dtil_init = 1.0
     max_x_init = np.minimum(
-        txrates[(df['Total Capital Income'] < y_20pctl)].max(), 0.7)
+        txrates[(df['Total capital income'] < y_20pctl)].max(), 0.7)
     max_y_init = np.minimum(
-        txrates[(df['Total Labor Income'] < x_20pctl)].max(), 0.7)
-    shift = txrates[(df['Total Labor Income'] < x_20pctl) |
-        (df['Total Capital Income'] < y_20pctl)].min()
+        txrates[(df['Total labor income'] < x_20pctl)].max(), 0.7)
+    shift = txrates[(df['Total labor income'] < x_20pctl) |
+        (df['Total capital income'] < y_20pctl)].min()
     share_init = 0.5
     numparams = int(12)
     params_init = np.array([Atil_init, Btil_init, Ctil_init,
@@ -851,8 +851,8 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
         fig = plt.figure()
         ax = fig.add_subplot(111, projection ='3d')
         ax.scatter(X, Y, txrates, c='r', marker='o')
-        ax.set_xlabel('Total Labor Income')
-        ax.set_ylabel('Total Capital Income')
+        ax.set_xlabel('Total labor income')
+        ax.set_ylabel('Total capital income')
         if rate_type == 'etr':
             tx_label = 'ETR'
         elif rate_type == 'mtrx':
@@ -877,24 +877,24 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
         plt.close()
 
         # Make comparison plot with truncated income domains
-        df_trnc_gph = df[(df['Total Labor Income'] > 5) &
-            (df['Total Labor Income'] < 800000) &
-            (df['Total Capital Income'] > 5) &
-            (df['Total Capital Income'] < 800000)]
-        X_gph = df_trnc_gph['Total Labor Income']
-        Y_gph = df_trnc_gph['Total Capital Income']
+        df_trnc_gph = df[(df['Total labor income'] > 5) &
+            (df['Total labor income'] < 800000) &
+            (df['Total capital income'] > 5) &
+            (df['Total capital income'] < 800000)]
+        X_gph = df_trnc_gph['Total labor income']
+        Y_gph = df_trnc_gph['Total capital income']
         if rate_type == 'etr':
-            txrates_gph = df_trnc_gph['Effective Tax Rate']
+            txrates_gph = df_trnc_gph['ETR']
         elif rate_type == 'mtrx':
-            txrates_gph = df_trnc_gph['MTR Labor']
+            txrates_gph = df_trnc_gph['MTR labor income']
         elif rate_type == 'mtry':
             txrates_gph = df_trnc_gph['MTR capital income']
 
         fig = plt.figure()
         ax = fig.add_subplot(111, projection ='3d')
         ax.scatter(X_gph, Y_gph, txrates_gph, c='r', marker='o')
-        ax.set_xlabel('Total Labor Income')
-        ax.set_ylabel('Total Capital Income')
+        ax.set_xlabel('Total labor income')
+        ax.set_ylabel('Total capital income')
         ax.set_zlabel(tx_label)
         plt.title('Truncated ' + tx_label + ', Lab. Inc., and Cap. ' +
             'Inc., Age=' + str(s) + ', Year=' + str(t))
@@ -955,50 +955,50 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
     PopPct_age = np.zeros((s_max-s_min+1, tpers))
 
     data_orig = micro_data
-    data_orig['Total Labor Income'] = \
-        (data_orig['Wage and Salaries'] +
-        data_orig['Self-Employed Income'])
-    data_orig['Effective Tax Rate'] = \
-        (data_orig['Total Tax Liability'] /
-        data_orig["Adjusted Total income"])
-    data_orig["Total Capital Income"] = \
-        (data_orig['Adjusted Total income'] -
-        data_orig['Total Labor Income'])
+    data_orig['Total labor income'] = \
+        (data_orig['Wage income'] +
+        data_orig['SE income'])
+    data_orig['ETR'] = \
+        (data_orig['Total tax liability'] /
+        data_orig["Adjusted total income"])
+    data_orig["Total capital income"] = \
+        (data_orig['Adjusted total income'] -
+        data_orig['Total labor income'])
     # use weighted avg for MTR labor - abs value because
     # SE income may be negative
-    data_orig['MTR Labor'] = \
-        (data_orig['MTR wage'] * (data_orig['Wage and Salaries'] /
-        (data_orig['Wage and Salaries'].abs() +
-        data_orig['Self-Employed Income'].abs())) +
-        data_orig['MTR self-employed Wage'] *
-        (data_orig['Self-Employed Income'].abs() /
-        (data_orig['Wage and Salaries'].abs() +
-        data_orig['Self-Employed Income'].abs())))
-    data = data_orig[['Age', 'MTR Labor', 'MTR capital income',
-        'Total Labor Income', 'Total Capital Income',
-        'Adjusted Total income', 'Effective Tax Rate', 'Weights']]
+    data_orig['MTR labor income'] = \
+        (data_orig['MTR wage'] * (data_orig['Wage income'] /
+        (data_orig['Wage income'].abs() +
+        data_orig['SE income'].abs())) +
+        data_orig['MTR SE income'] *
+        (data_orig['SE income'].abs() /
+        (data_orig['Wage income'].abs() +
+        data_orig['SE income'].abs())))
+    data = data_orig[['Age', 'MTR labor income', 'MTR capital income',
+        'Total labor income', 'Total capital income',
+        'Adjusted total income', 'ETR', 'Weights']]
 
     # Calculate average total income in each year
     AvgInc[t-beg_yr] = \
-        (((data['Adjusted Total income'] * data['Weights']).sum())
+        (((data['Adjusted total income'] * data['Weights']).sum())
         / data['Weights'].sum())
 
     # Calculate average ETR and MTRs (weight by population weights
     #    and income) for each year
     AvgETR[t-beg_yr] = \
-        (((data['Effective Tax Rate']*data['Adjusted Total income']
+        (((data['ETR']*data['Adjusted total income']
         * data['Weights']).sum()) /
-        (data['Adjusted Total income']*data['Weights']).sum())
+        (data['Adjusted total income']*data['Weights']).sum())
 
     AvgMTRx[t-beg_yr] = \
-        (((data['MTR Labor']*data['Adjusted Total income'] *
+        (((data['MTR labor income']*data['Adjusted total income'] *
         data['Weights']).sum()) /
-        (data['Adjusted Total income']*data['Weights']).sum())
+        (data['Adjusted total income']*data['Weights']).sum())
 
     AvgMTRy[t-beg_yr] = \
         (((data['MTR capital income'] *
-        data['Adjusted Total income'] * data['Weights']).sum()) /
-        (data['Adjusted Total income']*data['Weights']).sum())
+        data['Adjusted total income'] * data['Weights']).sum()) /
+        (data['Adjusted total income']*data['Weights']).sum())
 
     # Calculate total population in each year
     TotPop_yr[t-beg_yr] = data['Weights'].sum()
@@ -1006,15 +1006,15 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
     # Clean up the data by dropping outliers
     # drop all obs with ETR > 0.65
     data_trnc = \
-        data.drop(data[data['Effective Tax Rate'] >0.65].index)
+        data.drop(data[data['ETR'] >0.65].index)
     # drop all obs with ETR < -0.15
     data_trnc = \
-        data_trnc.drop(data_trnc[data_trnc['Effective Tax Rate']
+        data_trnc.drop(data_trnc[data_trnc['ETR']
         < -0.15].index)
     # drop all obs with ATI, TLI, TCI < $5
-    data_trnc = data_trnc[(data_trnc['Adjusted Total income'] >= 5)
-        & (data_trnc['Total Labor Income'] >= 5) &
-        (data_trnc['Total Capital Income'] >= 5)]
+    data_trnc = data_trnc[(data_trnc['Adjusted total income'] >= 5)
+        & (data_trnc['Total labor income'] >= 5) &
+        (data_trnc['Total capital income'] >= 5)]
 
     if analytical_mtrs==False:
         # drop all obs with MTR on capital income > 10.99
@@ -1026,10 +1026,10 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
             data_trnc.drop(data_trnc[data_trnc['MTR capital income']
             < -0.45].index)
         # drop all obs with MTR on labor income > 10.99
-        data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR Labor']
+        data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR labor income']
                     > 0.99].index)
         # drop all obs with MTR on labor income < -0.45
-        data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR Labor']
+        data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR labor income']
                     < -0.45].index)
 
     # Create an array of the different ages in the data
@@ -1058,27 +1058,27 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
             PopPct_age[0, t-beg_yr] = \
                 df['Weights'].sum() / TotPop_yr[t-beg_yr]
 
-        df_etr = df[['MTR Labor', 'MTR capital income',
-            'Total Labor Income', 'Total Capital Income',
-            'Effective Tax Rate', 'Weights']]
+        df_etr = df[['MTR labor income', 'MTR capital income',
+            'Total labor income', 'Total capital income',
+            'ETR', 'Weights']]
         df_etr = df_etr[
-            (np.isfinite(df_etr['Effective Tax Rate'])) &
-            (np.isfinite(df_etr['Total Labor Income'])) &
-            (np.isfinite(df_etr['Total Capital Income'])) &
+            (np.isfinite(df_etr['ETR'])) &
+            (np.isfinite(df_etr['Total labor income'])) &
+            (np.isfinite(df_etr['Total capital income'])) &
             (np.isfinite(df_etr['Weights']))]
-        df_mtrx = df[['MTR Labor', 'Total Labor Income',
-            'Total Capital Income', 'Weights']]
+        df_mtrx = df[['MTR labor income', 'Total labor income',
+            'Total capital income', 'Weights']]
         df_mtrx = df_mtrx[
-            (np.isfinite(df_etr['MTR Labor'])) &
-            (np.isfinite(df_etr['Total Labor Income'])) &
-            (np.isfinite(df_etr['Total Capital Income'])) &
+            (np.isfinite(df_etr['MTR labor income'])) &
+            (np.isfinite(df_etr['Total labor income'])) &
+            (np.isfinite(df_etr['Total capital income'])) &
             (np.isfinite(df_etr['Weights']))]
-        df_mtry = df[['MTR capital income', 'Total Labor Income',
-            'Total Capital Income', 'Weights']]
+        df_mtry = df[['MTR capital income', 'Total labor income',
+            'Total capital income', 'Weights']]
         df_mtry = df_mtry[
             (np.isfinite(df_etr['MTR capital income'])) &
-            (np.isfinite(df_etr['Total Labor Income'])) &
-            (np.isfinite(df_etr['Total Capital Income'])) &
+            (np.isfinite(df_etr['Total labor income'])) &
+            (np.isfinite(df_etr['Total capital income'])) &
             (np.isfinite(df_etr['Weights']))]
         df_minobs = np.min([df_etr.shape[0], df_mtrx.shape[0],
             df_mtry.shape[0]])
