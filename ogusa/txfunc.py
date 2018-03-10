@@ -956,49 +956,47 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
 
     data_orig = micro_data
     data_orig['Total labor income'] = \
-        (data_orig['Wage income'] +
-        data_orig['SE income'])
+        (data_orig['Wage income'] + data_orig['SE income'])
     data_orig['ETR'] = \
         (data_orig['Total tax liability'] /
-        data_orig["Adjusted total income"])
+         data_orig["Adjusted total income"])
     data_orig["Total capital income"] = \
         (data_orig['Adjusted total income'] -
-        data_orig['Total labor income'])
+         data_orig['Total labor income'])
     # use weighted avg for MTR labor - abs value because
     # SE income may be negative
     data_orig['MTR labor income'] = \
         (data_orig['MTR wage'] * (data_orig['Wage income'] /
-        (data_orig['Wage income'].abs() +
-        data_orig['SE income'].abs())) +
-        data_orig['MTR SE income'] *
-        (data_orig['SE income'].abs() /
-        (data_orig['Wage income'].abs() +
-        data_orig['SE income'].abs())))
+                                  (data_orig['Wage income'].abs() +
+                                   data_orig['SE income'].abs())) +
+         data_orig['MTR SE income'] * (data_orig['SE income'].abs() /
+                                       (data_orig['Wage income'].abs() +
+                                        data_orig['SE income'].abs())))
     data = data_orig[['Age', 'MTR labor income', 'MTR capital income',
-        'Total labor income', 'Total capital income',
-        'Adjusted total income', 'ETR', 'Weights']]
+                      'Total labor income', 'Total capital income',
+                      'Adjusted total income', 'ETR', 'Weights']]
 
     # Calculate average total income in each year
     AvgInc[t-beg_yr] = \
         (((data['Adjusted total income'] * data['Weights']).sum())
-        / data['Weights'].sum())
+         / data['Weights'].sum())
 
     # Calculate average ETR and MTRs (weight by population weights
     #    and income) for each year
     AvgETR[t-beg_yr] = \
         (((data['ETR']*data['Adjusted total income']
-        * data['Weights']).sum()) /
-        (data['Adjusted total income']*data['Weights']).sum())
+           * data['Weights']).sum()) /
+         (data['Adjusted total income']*data['Weights']).sum())
 
     AvgMTRx[t-beg_yr] = \
         (((data['MTR labor income']*data['Adjusted total income'] *
-        data['Weights']).sum()) /
-        (data['Adjusted total income']*data['Weights']).sum())
+           data['Weights']).sum()) /
+         (data['Adjusted total income']*data['Weights']).sum())
 
     AvgMTRy[t-beg_yr] = \
         (((data['MTR capital income'] *
-        data['Adjusted total income'] * data['Weights']).sum()) /
-        (data['Adjusted total income']*data['Weights']).sum())
+           data['Adjusted total income'] * data['Weights']).sum()) /
+         (data['Adjusted total income']*data['Weights']).sum())
 
     # Calculate total population in each year
     TotPop_yr[t-beg_yr] = data['Weights'].sum()
@@ -1006,39 +1004,37 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
     # Clean up the data by dropping outliers
     # drop all obs with ETR > 0.65
     data_trnc = \
-        data.drop(data[data['ETR'] >0.65].index)
+        data.drop(data[data['ETR'] > 0.65].index)
     # drop all obs with ETR < -0.15
     data_trnc = \
         data_trnc.drop(data_trnc[data_trnc['ETR']
         < -0.15].index)
     # drop all obs with ATI, TLI, TCI < $5
     data_trnc = data_trnc[(data_trnc['Adjusted total income'] >= 5)
-        & (data_trnc['Total labor income'] >= 5) &
-        (data_trnc['Total capital income'] >= 5)]
+                          & (data_trnc['Total labor income'] >= 5) &
+                          (data_trnc['Total capital income'] >= 5)]
 
     if analytical_mtrs==False:
-        # drop all obs with MTR on capital income > 10.99
-        data_trnc = \
-            data_trnc.drop(data_trnc[data_trnc['MTR capital income']
-            > 0.99].index)
+        # drop all obs with MTR on capital income > 0.99
+        data_trnc = data_trnc.drop(
+            data_trnc[data_trnc['MTR capital income'] > 0.99].index)
         # drop all obs with MTR on capital income < -0.45
-        data_trnc = \
-            data_trnc.drop(data_trnc[data_trnc['MTR capital income']
-            < -0.45].index)
-        # drop all obs with MTR on labor income > 10.99
-        data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR labor income']
-                    > 0.99].index)
+        data_trnc = data_trnc.drop(
+            data_trnc[data_trnc['MTR capital income'] < -0.45].index)
+        # drop all obs with MTR on labor income > 0.99
+        data_trnc = data_trnc.drop(
+            data_trnc[data_trnc['MTR labor income'] > 0.99].index)
         # drop all obs with MTR on labor income < -0.45
-        data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR labor income']
-                    < -0.45].index)
+        data_trnc = data_trnc.drop(
+            data_trnc[data_trnc['MTR labor income'] < -0.45].index)
 
     # Create an array of the different ages in the data
     min_age = int(np.maximum(data_trnc['Age'].min(), s_min))
     max_age = int(np.minimum(data_trnc['Age'].max(), s_max))
     if age_specific:
-        ages_list = np.arange(min_age, max_age+1)
+        ages_list = np.arange(min_age, max_age + 1)
     else:
-        ages_list = np.arange(0,1)
+        ages_list = np.arange(0, 1)
 
     NoData_cnt = np.min(min_age - s_min, 0)
 
@@ -1059,29 +1055,29 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                 df['Weights'].sum() / TotPop_yr[t-beg_yr]
 
         df_etr = df[['MTR labor income', 'MTR capital income',
-            'Total labor income', 'Total capital income',
-            'ETR', 'Weights']]
+                     'Total labor income', 'Total capital income',
+                     'ETR', 'Weights']]
         df_etr = df_etr[
             (np.isfinite(df_etr['ETR'])) &
             (np.isfinite(df_etr['Total labor income'])) &
             (np.isfinite(df_etr['Total capital income'])) &
             (np.isfinite(df_etr['Weights']))]
         df_mtrx = df[['MTR labor income', 'Total labor income',
-            'Total capital income', 'Weights']]
+                      'Total capital income', 'Weights']]
         df_mtrx = df_mtrx[
             (np.isfinite(df_etr['MTR labor income'])) &
             (np.isfinite(df_etr['Total labor income'])) &
             (np.isfinite(df_etr['Total capital income'])) &
             (np.isfinite(df_etr['Weights']))]
         df_mtry = df[['MTR capital income', 'Total labor income',
-            'Total capital income', 'Weights']]
+                      'Total capital income', 'Weights']]
         df_mtry = df_mtry[
             (np.isfinite(df_etr['MTR capital income'])) &
             (np.isfinite(df_etr['Total labor income'])) &
             (np.isfinite(df_etr['Total capital income'])) &
             (np.isfinite(df_etr['Weights']))]
         df_minobs = np.min([df_etr.shape[0], df_mtrx.shape[0],
-            df_mtry.shape[0]])
+                            df_mtry.shape[0]])
 
         # 240 is 8 parameters to estimate times 30 obs per parameter
         if df_minobs < 240 and s < max_age:
@@ -1092,7 +1088,7 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
             --------------------------------------------------------
             '''
             message = ("Insuff. sample size for age " + str(s) +
-                " in year " + str(t))
+                       " in year " + str(t))
             print message
             NoData_cnt += 1
             etrparam_arr[s-s_min, t-beg_yr, :] = np.nan
@@ -1117,9 +1113,10 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
             --------------------------------------------------------
             '''
             message = ("Max age (s=" + str(s) + ") insuff. data in"
-                + " year " + str(t) + ". Fill in final ages with " +
-                "insuff. data with most recent successful " +
-                "estimate.")
+                       + " year " + str(t) +
+                       ". Fill in final ages with " +
+                       "insuff. data with most recent successful " +
+                       "estimate.")
             print message
             NoData_cnt += 1
             lastp_etr = \

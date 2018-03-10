@@ -25,11 +25,13 @@ import numpy as np
 import copy
 import numba
 import pickle
-from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR, RECORDS_START_YEAR
+from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR
+from ogusa.utils import RECORDS_START_YEAR
 
 
 def get_calculator(baseline, calculator_start_year, reform=None,
-                   data=None, weights=None, records_start_year=RECORDS_START_YEAR):
+                   data=None, weights=None,
+                   records_start_year=RECORDS_START_YEAR):
     '''
     --------------------------------------------------------------------
     This function creates the tax calculator object for the microsim
@@ -38,9 +40,10 @@ def get_calculator(baseline, calculator_start_year, reform=None,
     baseline                 = boolean, True if baseline tax policy
     calculator_start_year    = integer, first year of budget window
     reform                   = dictionary, reform parameters
-    data                     = DataFrame for Records object (opt.)
-    weights                  = weights DataFrame for Records object (opt.)
-    records_start_year       = the start year for the data and weights dfs
+    data                     = DataFrame for Records object
+    weights                  = weights DataFrame for Records object
+    records_start_year       = the start year for the data and weights
+                               dfs
 
     RETURNS: Calculator object with a current_year equal to
              calculator_start_year
@@ -148,10 +151,8 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
 
     micro_data_dict[str(start_year)] = DataFrame(
         data=temp, columns=['MTR wage income', 'MTR SE income',
-                            'MTR capital income', 'Age',
-                            'Wage income',
-                            'SE income',
-                            'Wage + SE income',
+                            'MTR capital income', 'Age', 'Wage income',
+                            'SE income', 'Wage + SE income',
                             'Adjusted total income',
                             'Total tax liability', 'Year', 'Weights'])
 
@@ -182,8 +183,7 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
         micro_data_dict[str(calc1.current_year)] = DataFrame(
             data=temp, columns=['MTR wage income', 'MTR SE income',
                                 'MTR capital income', 'Age',
-                                'Wage income',
-                                'SE income',
+                                'Wage income', 'SE income',
                                 'Wage + SE income',
                                 'Adjusted total income',
                                 'Total tax liability', 'Year',
