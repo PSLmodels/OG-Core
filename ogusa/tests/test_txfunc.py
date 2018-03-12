@@ -6,6 +6,33 @@ import os
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
+
+def test_gen_rate_grid():
+    # Test txfunc.gen_rate_grid() function.
+    A = 0.01
+    B = 0.02
+    C = 0.1
+    D = 1.1
+    max_x = 0.55
+    min_x = 0.17
+    max_y = 0.46
+    min_y = 0.04
+    shift_x = 0.1
+    shift_y = 0.2
+    shift = 0.04
+    share = 0.8
+    params = (A, B, C, D, max_x, min_x, max_y, min_y, shift_x, shift_y,
+              shift, share)
+    X = np.array([44, 22, 0.8, 0.1])
+    Y = np.array([33, 1.6, 1.2, 0.9])
+    test_grid = txfunc.gen_rate_grid(X, Y, params)
+
+    expected = np.array([0.677035443, 0.615050593, 0.351602558,
+                         0.340701331])
+
+    assert(np.allclose(test_grid, expected))
+
+
 def test_replace_outliers():
     """
     4 cases:
