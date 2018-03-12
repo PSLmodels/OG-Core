@@ -109,7 +109,7 @@ def gen_rate_grid(X, Y, params):
     --------------------------------------------------------------------
     '''
     (A, B, C, D, max_x, min_x, max_y, min_y, shift_x, shift_y, shift,
-        share) = params
+     share) = params
     X2 = X ** 2
     Y2 = Y ** 2
     tau_x = (((max_x - min_x) * (A * X2 + B * X) /
