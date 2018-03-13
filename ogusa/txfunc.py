@@ -384,12 +384,12 @@ def wsumsq(params, *args):
     function.
     --------------------------------------------------------------------
     INPUTS:
-    params  = (7,) vector, guesses for (coef1, coef2, coef3, coef4,
+    params  = (7,) vector, guesses for (A, B, C, D,
               max_x, max_y, share)
-    coef1   = scalar > 0, adjusted coefficient on \hat{X^2} term
-    coef2   = scalar > 0, adjusted coefficient on \hat{X} term
-    coef3   = scalar > 0, adjusted coefficient on \hat{Y^2} term
-    coef4   = scalar > 0, adjusted coefficient on \hat{Y} term
+    A   = scalar > 0, adjusted coefficient on \hat{X^2} term
+    B   = scalar > 0, adjusted coefficient on \hat{X} term
+    C   = scalar > 0, adjusted coefficient on \hat{Y^2} term
+    D   = scalar > 0, adjusted coefficient on \hat{Y} term
     max_x   = scalar > 0, maximum asymptotic tax rate when y=0
     max_y   = scalar > 0, maximum asymptotic tax rate when x=0
     share   = scalar in [0,1], share parameter in Cobb-Douglas function
@@ -432,7 +432,7 @@ def wsumsq(params, *args):
     RETURNS: wssqdev
     --------------------------------------------------------------------
     '''
-    coef1, coef2, coef3, coef4, max_x, max_y, share = params
+    A, B, C, D, max_x, max_y, share = params
     X, Y, min_x, min_y, shift, txrates, wgts = args
     X2 = X ** 2
     Y2 = Y ** 2
@@ -446,12 +446,12 @@ def wsumsq(params, *args):
     Xtil = (X - Xbar) / Xbar
     Y2til = (Y2 - Y2bar) / Y2bar
     Ytil = (Y - Ybar) / Ybar
-    Etil = coef1 + coef2
-    Ftil = coef3 + coef4
-    tau_x = (((max_x - min_x) * (coef1 * X2til + coef2 * Xtil + Etil) /
-              (coef1 * X2til + coef2 * Xtil + Etil + 1)) + min_x)
-    tau_y = (((max_y - min_y) * (coef3 * Y2til + coef4 * Ytil + Ftil) /
-              (coef3 * Y2til + coef4 * Ytil + Ftil + 1)) + min_y)
+    Etil = A + B
+    Ftil = C + D
+    tau_x = (((max_x - min_x) * (A * X2til + B * Xtil + Etil) /
+              (A * X2til + B * Xtil + Etil + 1)) + min_x)
+    tau_y = (((max_y - min_y) * (C * Y2til + D * Ytil + Ftil) /
+              (C * Y2til + D * Ytil + Ftil + 1)) + min_y)
     txrates_est = (((tau_x + shift_x) ** share) *
                    ((tau_y + shift_y) ** (1 - share))) + shift
     errors = txrates_est - txrates
