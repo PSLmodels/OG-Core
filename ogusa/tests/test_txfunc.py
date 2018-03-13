@@ -33,6 +33,30 @@ def test_gen_rate_grid():
     assert(np.allclose(test_grid, expected))
 
 
+def test_wsumsq():
+    A = 0.01
+    B = 0.02
+    C = 0.1
+    D = 1.1
+    max_x = 0.55
+    min_x = 0.17
+    max_y = 0.46
+    min_y = 0.04
+    shift_x = 0.1
+    shift_y = 0.2
+    shift = 0.04
+    share = 0.8
+    X = np.array([32.0, 44.0, 1.6, 0.4])
+    Y = np.array([32.0, 55.0, 0.9, 0.03])
+    txrates = np.array([0.6, 0.5, 0.3, 0.25])
+    wgts = np.array([0.1, 0.25, 0.55, 0.1])
+    params = A, B, C, D, max_x, max_y, share
+    args = X, Y, min_x, min_y, shift, txrates, wgts
+    test_val = txfunc.wsumsq(params, *args)
+
+    assert(np.allclose(test_val, 0.032749763))
+
+
 def test_replace_outliers():
     """
     4 cases:
