@@ -57,6 +57,15 @@ def test_wsumsq():
     assert(np.allclose(test_val, 0.032749763))
 
 
+# def test_find_outliers():
+
+    test_mat = txfunc.find_outliers(sse_mat, age_vec, se_mult,
+                                    start_year, varstr, False)
+
+    expected_mat =
+
+    assert(np.allclose(test_mat, expected_mat))
+
 def test_replace_outliers():
     """
     4 cases:
@@ -111,3 +120,16 @@ def test_replace_outliers():
             [0.45630455, 0.82612284, 0.25137413]]]
 
     assert np.allclose(act, exp)
+
+
+# def test_txfunc_est():
+
+
+# def test_tax_func_loop():
+
+
+# def test_tax_func_estimate():
+
+
+# def test_get_tax_func_estimate():
+# saves a pickle file
