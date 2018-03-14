@@ -14,9 +14,9 @@ from ogusa import TPI
 TOL = 1e-5
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-TAXDATA_PATH = os.path.join(CUR_PATH, '..', '..', 'test_data', 'puf91taxdata.csv.gz')
+TAXDATA_PATH = os.path.join(CUR_PATH, '..', '..', 'test_data', 'cps.csv.gz')
 TAXDATA = pd.read_csv(TAXDATA_PATH, compression='gzip')
-WEIGHTS_PATH = os.path.join(CUR_PATH, '..', '..', 'test_data', 'puf91weights.csv.gz')
+WEIGHTS_PATH = os.path.join(CUR_PATH, '..', '..', 'test_data', 'cps_weights.csv.gz')
 WEIGHTS = pd.read_csv(WEIGHTS_PATH, compression='gzip')
 
 
