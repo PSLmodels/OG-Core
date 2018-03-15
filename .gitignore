@@ -28,3 +28,5 @@ dist/*
 .DS_Store
 *puf.csv
 */OUTPUT/*
+envs/
+*.egg-info/
