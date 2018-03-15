@@ -471,7 +471,7 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
     INPUTS:
     sse_mat    = [S,BW] array, SSE for each estimated tax function
     age_vec    = [S,] vector, vector of ages
-    se_mult    = scalar, multiple of standard devitiosn before consider
+    se_mult    = scalar, multiple of standard deviations before consider
                   estimate an outlier
     start_year = integer, first year of budget window
     varstr     = string, name of tax function being evaluated
