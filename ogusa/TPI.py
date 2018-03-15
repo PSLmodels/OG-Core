@@ -548,34 +548,6 @@ def inner_loop(guesses, outer_loop_vars, params):
     return euler_errors, b_mat, n_mat
 
 
-def initial_GDP_level(y_guess, gamma, epsilon, Z, initial_debt, B, L):
-    '''
-    Solve for first-period output given debt ratio, wealth, labor input,
-    and production function.
-
-    The solution arises from a 3-unknown, 3-equation system that is
-    simplified below.
-    (1) initial_debt = D/Y by assumption.
-    (2) Y = f(K,L)
-    (3) K = B - D, where B is household wealth
-    This could easily be modified to allow for an initial level of
-    foreign bondholding.
-    '''
-    if epsilon == 1:
-        error = y_guess - Z*((B - initial_debt*y_guess)**gamma)*(L**(1-gamma))
-    elif epsilon == 0:
-        error = y_guess - Z*(gamma*(B - initial_debt*y_guess) + (1-gamma)*L)
-    else:
-        error = y_guess - (Z * (((gamma ** (1 / epsilon)) *
-                                 ((B - initial_debt * y_guess) **
-                                  ((epsilon - 1) / epsilon))) +
-                                (((1 - gamma) ** (1 / epsilon)) *
-                                 (L ** ((epsilon - 1) / epsilon)))) **
-                           (epsilon / (epsilon - 1)))
-
-    return error
-
-
 def run_TPI(income_tax_params, tpi_params, iterative_params,
             small_open_params, initial_values, SS_values, fiscal_params,
             biz_tax_params, output_dir="./OUTPUT",
