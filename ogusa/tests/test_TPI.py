@@ -82,9 +82,11 @@ def test_inner_loop():
               'rb') as f:
         input_tuple = pickle.load(f)
     guesses, outer_loop_vars, params = input_tuple
-    income_tax_params, tpi_params, initial_b = params
+    income_tax_params, tpi_params, initial_values, ind = params
+    initial_values = initial_values + (0.0,)
     tpi_params = tpi_params + [True]
-    params = (income_tax_params, tpi_params, initial_b)
+
+    params = (income_tax_params, tpi_params, initial_values, ind)
     test_tuple = TPI.inner_loop(guesses, outer_loop_vars, params)
 
     with open(os.path.join(CUR_PATH,
@@ -113,6 +115,7 @@ def test_run_TPI():
      initial_values, SS_values, fiscal_params, biz_tax_params,
      output_dir, baseline_spending) = input_tuple
     tpi_params = tpi_params + [True]
+    initial_values = initial_values + (0.0,)
     test_dict, not_test_dict = TPI.run_TPI(
         income_tax_params, tpi_params, iterative_params,
         small_open_params, initial_values, SS_values, fiscal_params,
