@@ -1,5 +1,6 @@
 from ogusa import txfunc
 
+import pytest
 import numpy as np
 import pickle
 import os
@@ -57,12 +58,22 @@ def test_wsumsq():
     assert(np.allclose(test_val, 0.032749763))
 
 
-# def test_find_outliers():
-
+@pytest.mark.parametrize('se_mult,expected_mat',
+                         [(2,
+                           np.array([[False, False], [False, False],
+                                     [False, True]])),
+                          (8,
+                           np.array([[False, False], [False, False],
+                                     [False, False]]))],
+                         ids=['2', '8'])
+def test_find_outliers(se_mult, expected_mat):
+    # Test the find outliers function
+    sse_mat = np.array([[21.0, 22.0], [20.0, 32.0], [20.0, 100.0]])
+    age_vec = np.array([40, 41])
+    start_year = 2018
+    varstr = 'MTRy'
     test_mat = txfunc.find_outliers(sse_mat, age_vec, se_mult,
                                     start_year, varstr, False)
-
-    expected_mat =
 
     assert(np.allclose(test_mat, expected_mat))
 
