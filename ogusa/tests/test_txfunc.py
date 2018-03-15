@@ -1,10 +1,81 @@
 from ogusa import txfunc
 
+import pytest
 import numpy as np
 import pickle
 import os
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
+
+
+def test_gen_rate_grid():
+    # Test txfunc.gen_rate_grid() function.
+    A = 0.01
+    B = 0.02
+    C = 0.1
+    D = 1.1
+    max_x = 0.55
+    min_x = 0.17
+    max_y = 0.46
+    min_y = 0.04
+    shift_x = 0.1
+    shift_y = 0.2
+    shift = 0.04
+    share = 0.8
+    params = (A, B, C, D, max_x, min_x, max_y, min_y, shift_x, shift_y,
+              shift, share)
+    X = np.array([44, 22, 0.8, 0.1])
+    Y = np.array([33, 1.6, 1.2, 0.9])
+    test_grid = txfunc.gen_rate_grid(X, Y, params)
+
+    expected = np.array([0.677035443, 0.615050593, 0.351602558,
+                         0.340701331])
+
+    assert(np.allclose(test_grid, expected))
+
+
+def test_wsumsq():
+    A = 0.01
+    B = 0.02
+    C = 0.1
+    D = 1.1
+    max_x = 0.55
+    min_x = 0.17
+    max_y = 0.46
+    min_y = 0.04
+    shift_x = 0.1
+    shift_y = 0.2
+    shift = 0.04
+    share = 0.8
+    X = np.array([32.0, 44.0, 1.6, 0.4])
+    Y = np.array([32.0, 55.0, 0.9, 0.03])
+    txrates = np.array([0.6, 0.5, 0.3, 0.25])
+    wgts = np.array([0.1, 0.25, 0.55, 0.1])
+    params = A, B, C, D, max_x, max_y, share
+    args = X, Y, min_x, min_y, shift, txrates, wgts
+    test_val = txfunc.wsumsq(params, *args)
+
+    assert(np.allclose(test_val, 0.032749763))
+
+
+@pytest.mark.parametrize('se_mult,expected_mat',
+                         [(2,
+                           np.array([[False, False], [False, False],
+                                     [False, True]])),
+                          (8,
+                           np.array([[False, False], [False, False],
+                                     [False, False]]))],
+                         ids=['2', '8'])
+def test_find_outliers(se_mult, expected_mat):
+    # Test the find outliers function
+    sse_mat = np.array([[21.0, 22.0], [20.0, 32.0], [20.0, 100.0]])
+    age_vec = np.array([40, 41])
+    start_year = 2018
+    varstr = 'MTRy'
+    test_mat = txfunc.find_outliers(sse_mat, age_vec, se_mult,
+                                    start_year, varstr, False)
+
+    assert(np.allclose(test_mat, expected_mat))
 
 def test_replace_outliers():
     """
@@ -60,3 +131,16 @@ def test_replace_outliers():
             [0.45630455, 0.82612284, 0.25137413]]]
 
     assert np.allclose(act, exp)
+
+
+# def test_txfunc_est():
+
+
+# def test_tax_func_loop():
+
+
+# def test_tax_func_estimate():
+
+
+# def test_get_tax_func_estimate():
+# saves a pickle file

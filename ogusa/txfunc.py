@@ -55,6 +55,7 @@ Define Functions
 ------------------------------------------------------------------------
 '''
 
+
 def gen_rate_grid(X, Y, params):
     '''
     --------------------------------------------------------------------
@@ -108,15 +109,15 @@ def gen_rate_grid(X, Y, params):
     --------------------------------------------------------------------
     '''
     (A, B, C, D, max_x, min_x, max_y, min_y, shift_x, shift_y, shift,
-        share) = params
+     share) = params
     X2 = X ** 2
     Y2 = Y ** 2
-    tau_x = (((max_x - min_x) * (A * X2 + B * X) / (A * X2 + B * X + 1))
-        + min_x)
-    tau_y = (((max_y - min_y) * (C * Y2 + D * Y) / (C * Y2 + D * Y + 1))
-        + min_y)
+    tau_x = (((max_x - min_x) * (A * X2 + B * X) /
+              (A * X2 + B * X + 1)) + min_x)
+    tau_y = (((max_y - min_y) * (C * Y2 + D * Y) /
+              (C * Y2 + D * Y + 1)) + min_y)
     rate_grid = (((tau_x + shift_x) ** share) *
-        ((tau_y + shift_y) ** (1 - share))) + shift
+                 ((tau_y + shift_y) ** (1 - share))) + shift
 
     return rate_grid
 
@@ -172,25 +173,25 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     --------------------------------------------------------------------
     '''
     # Truncate the data
-    df_trnc = df[(df['Total Labor Income'] > 5) &
-        (df['Total Labor Income'] < 500000) &
-        (df['Total Capital Income'] > 5) &
-        (df['Total Capital Income'] < 500000)]
-    inc_lab = df_trnc['Total Labor Income']
-    inc_cap = df_trnc['Total Capital Income']
-    etr_data = df_trnc['Effective Tax Rate']
-    mtrx_data = df_trnc['MTR Labor']
+    df_trnc = df[(df['Total labor income'] > 5) &
+                 (df['Total labor income'] < 500000) &
+                 (df['Total capital income'] > 5) &
+                 (df['Total capital income'] < 500000)]
+    inc_lab = df_trnc['Total labor income']
+    inc_cap = df_trnc['Total capital income']
+    etr_data = df_trnc['ETR']
+    mtrx_data = df_trnc['MTR labor income']
     mtry_data = df_trnc['MTR capital income']
 
     # Plot 3D scatterplot of ETR data
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection ='3d')
+    ax = fig.add_subplot(111, projection='3d')
     ax.scatter(inc_lab, inc_cap, etr_data, c='r', marker='o')
-    ax.set_xlabel('Total Labor Income')
-    ax.set_ylabel('Total Capital Income')
-    ax.set_zlabel('Effective Tax Rate')
-    plt.title('ETR, Lab. Inc., and Cap. Inc., Age=' + str(s) + ', Year='
-        + str(t))
+    ax.set_xlabel('Total labor income')
+    ax.set_ylabel('Total capital income')
+    ax.set_zlabel('ETR')
+    plt.title('ETR, Lab. Inc., and Cap. Inc., Age=' + str(s) +
+              ', Year=' + str(t))
     filename = ("ETR_Age_" + str(s) + "_Year_" + str(t) + "_data.png")
     fullpath = os.path.join(output_dir, filename)
     fig.savefig(fullpath, bbox_inches='tight')
@@ -198,10 +199,10 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
 
     # Plot 3D histogram for all data
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection ='3d')
+    ax = fig.add_subplot(111, projection='3d')
     bin_num = int(30)
     hist, xedges, yedges = np.histogram2d(inc_lab, inc_cap,
-        bins=bin_num)
+                                          bins=bin_num)
     hist = hist / hist.sum()
     x_midp = xedges[:-1] + 0.5 * (xedges[1] - xedges[0])
     y_midp = yedges[:-1] + 0.5 * (yedges[1] - yedges[0])
@@ -214,11 +215,11 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     dy = (yedges[1] - yedges[0]) * np.ones_like(bin_num)
     dz = hist.flatten()
     ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color='b', zsort='average')
-    ax.set_xlabel('Total Labor Income')
-    ax.set_ylabel('Total Capital Income')
+    ax.set_xlabel('Total labor income')
+    ax.set_ylabel('Total capital income')
     ax.set_zlabel('Percent of obs.')
     plt.title('Histogram by lab. inc., and cap. inc., Age=' + str(s) +
-        ', Year=' + str(t))
+              ', Year=' + str(t))
     filename = ("Hist_Age_" + str(s) + "_Year_" + str(t) + ".png")
     fullpath = os.path.join(output_dir, filename)
     fig.savefig(fullpath, bbox_inches='tight')
@@ -226,34 +227,34 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
 
     # Plot 3D scatterplot of MTRx data
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection ='3d')
+    ax = fig.add_subplot(111, projection='3d')
     ax.scatter(inc_lab, inc_cap, mtrx_data, c='r', marker='o')
-    ax.set_xlabel('Total Labor Income')
-    ax.set_ylabel('Total Capital Income')
+    ax.set_xlabel('Total labor income')
+    ax.set_ylabel('Total capital income')
     ax.set_zlabel('Marginal Tax Rate, Labor Inc.)')
-    plt.title("MTR Labor Income, Lab. Inc., and Cap. Inc., Age=" +
-        str(s) + ", Year=" + str(t))
-    filename = ("MTRx_Age_"+ str(s) + "_Year_" + str(t) + "_data.png")
+    plt.title("MTR labor income Income, Lab. Inc., and Cap. Inc., Age="
+              + str(s) + ", Year=" + str(t))
+    filename = ("MTRx_Age_" + str(s) + "_Year_" + str(t) + "_data.png")
     fullpath = os.path.join(output_dir, filename)
     fig.savefig(fullpath, bbox_inches='tight')
     plt.close()
 
     # Plot 3D scatterplot of MTRy data
     fig = plt.figure()
-    ax = fig.add_subplot(111, projection ='3d')
+    ax = fig.add_subplot(111, projection='3d')
     ax.scatter(inc_lab, inc_cap, mtry_data, c='r', marker='o')
-    ax.set_xlabel('Total Labor Income')
-    ax.set_ylabel('Total Capital Income')
+    ax.set_xlabel('Total labor income')
+    ax.set_ylabel('Total capital income')
     ax.set_zlabel('Marginal Tax Rate (Capital Inc.)')
     plt.title("MTR Capital Income, Cap. Inc., and Cap. Inc., Age=" +
-        str(s) + ", Year=" + str(t))
-    filename = ("MTRy_Age_"+ str(s) + "_Year_" + str(t) + "_data.png")
+              str(s) + ", Year=" + str(t))
+    filename = ("MTRy_Age_" + str(s) + "_Year_" + str(t) + "_data.png")
     fullpath = os.path.join(output_dir, filename)
     fig.savefig(fullpath, bbox_inches='tight')
     plt.close()
 
 
-def plot_txfunc_v_data(tx_params, data, params): #This isn't in use yet
+def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
     '''
     --------------------------------------------------------------------
     This function plots a single estimated tax function against its
@@ -277,8 +278,8 @@ def plot_txfunc_v_data(tx_params, data, params): #This isn't in use yet
                   data
     --------------------------------------------------------------------
     '''
-    X_data = data['Total Labor Income']
-    Y_data = data['Total Capital Income']
+    X_data = data['Total labor income']
+    Y_data = data['Total capital income']
     (s, t, rate_type, plot_full, plot_trunc, show_plots, save_plots,
         output_dir) = params
 
@@ -286,37 +287,37 @@ def plot_txfunc_v_data(tx_params, data, params): #This isn't in use yet
 
     if plot_full:
         if rate_type == 'etr':
-            txrate_data = data['Effective Tax Rate']
+            txrate_data = data['ETR']
             tx_label = 'ETR'
         elif rate_type == 'mtrx':
-            txrate_data = data['MTR Labor']
+            txrate_data = data['MTR labor income']
             tx_label = 'MTRx'
         elif rate_type == 'mtry':
             txrate_data = data['MTR capital income']
             tx_label = 'MTRy'
         # Make comparison plot with full income domains
         fig = plt.figure()
-        ax = fig.add_subplot(111, projection ='3d')
+        ax = fig.add_subplot(111, projection='3d')
         ax.scatter(X_data, Y_data, txrate_data, c='r', marker='o')
-        ax.set_xlabel('Total Labor Income')
-        ax.set_ylabel('Total Capital Income')
+        ax.set_xlabel('Total labor income')
+        ax.set_ylabel('Total capital income')
         ax.set_zlabel(tx_label)
         plt.title(tx_label + ' vs. Predicted ' + tx_label + ': Age=' +
-            str(s) + ', Year=' + str(t))
+                  str(s) + ', Year=' + str(t))
 
         gridpts = 50
         X_vec = np.exp(np.linspace(np.log(1), np.log(X_data.max()),
-            gridpts))
+                                   gridpts))
         Y_vec = np.exp(np.linspace(np.log(1), np.log(Y_data.max()),
-            gridpts))
+                                   gridpts))
         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
         txrate_grid = gen_rate_grid(X_grid, Y_grid, tx_params)
         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
-            linewidth=0)
+                        linewidth=0)
 
         if save_plots:
-            filename = (tx_label + '_Age_' + str(s) + '_Year_' + str(t) +
-                '_vsPred.png')
+            filename = (tx_label + '_Age_' + str(s) + '_Year_' + str(t)
+                        + '_vsPred.png')
             fullpath = os.path.join(output_dir, filename)
             fig.savefig(fullpath, bbox_inches='tight')
 
@@ -327,44 +328,44 @@ def plot_txfunc_v_data(tx_params, data, params): #This isn't in use yet
 
     if plot_trunc:
         # Make comparison plot with truncated income domains
-        data_trnc = data[(data['Total Labor Income'] > 5) &
-            (data['Total Labor Income'] < 800000) &
-            (data['Total Capital Income'] > 5) &
-            (data['Total Capital Income'] < 800000)]
-        X_trnc = data_trnc['Total Labor Income']
-        Y_trnc = data_trnc['Total Capital Income']
+        data_trnc = data[(data['Total labor income'] > 5) &
+                         (data['Total labor income'] < 800000) &
+                         (data['Total capital income'] > 5) &
+                         (data['Total capital income'] < 800000)]
+        X_trnc = data_trnc['Total labor income']
+        Y_trnc = data_trnc['Total capital income']
         if rate_type == 'etr':
-            txrates_trnc = data_trnc['Effective Tax Rate']
+            txrates_trnc = data_trnc['ETR']
             tx_label = 'ETR'
         elif rate_type == 'mtrx':
-            txrates_trnc = data_trnc['MTR Labor']
+            txrates_trnc = data_trnc['MTR labor income']
             tx_label = 'MTRx'
         elif rate_type == 'mtry':
             txrates_trnc = data_trnc['MTR capital income']
             tx_label = 'MTRy'
 
         fig = plt.figure()
-        ax = fig.add_subplot(111, projection ='3d')
+        ax = fig.add_subplot(111, projection='3d')
         ax.scatter(X_trnc, Y_trnc, txrates_trnc, c='r', marker='o')
-        ax.set_xlabel('Total Labor Income')
-        ax.set_ylabel('Total Capital Income')
+        ax.set_xlabel('Total labor income')
+        ax.set_ylabel('Total capital income')
         ax.set_zlabel(tx_label)
         plt.title('Truncated ' + tx_label + ', Lab. Inc., and Cap. ' +
-            'Inc., Age=' + str(s) + ', Year=' + str(t))
+                  'Inc., Age=' + str(s) + ', Year=' + str(t))
 
         gridpts = 50
         X_vec = np.exp(np.linspace(np.log(1), np.log(X_trnc.max()),
-            gridpts))
+                                   gridpts))
         Y_vec = np.exp(np.linspace(np.log(1), np.log(Y_trnc.max()),
-            gridpts))
+                                   gridpts))
         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
         txrate_grid = gen_rate_grid(X_grid, Y_grid, tx_params)
         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
-            linewidth=0)
+                        linewidth=0)
 
         if save_plots:
             filename = (tx_label + 'trunc_Age_' + str(s) + '_Year_' +
-                str(t) + '_vsPred.png')
+                        str(t) + '_vsPred.png')
             fullpath = os.path.join(output_dir, filename)
             fig.savefig(fullpath, bbox_inches='tight')
 
@@ -383,12 +384,12 @@ def wsumsq(params, *args):
     function.
     --------------------------------------------------------------------
     INPUTS:
-    params  = (7,) vector, guesses for (coef1, coef2, coef3, coef4,
+    params  = (7,) vector, guesses for (A, B, C, D,
               max_x, max_y, share)
-    coef1   = scalar > 0, adjusted coefficient on \hat{X^2} term
-    coef2   = scalar > 0, adjusted coefficient on \hat{X} term
-    coef3   = scalar > 0, adjusted coefficient on \hat{Y^2} term
-    coef4   = scalar > 0, adjusted coefficient on \hat{Y} term
+    A   = scalar > 0, adjusted coefficient on \hat{X^2} term
+    B   = scalar > 0, adjusted coefficient on \hat{X} term
+    C   = scalar > 0, adjusted coefficient on \hat{Y^2} term
+    D   = scalar > 0, adjusted coefficient on \hat{Y} term
     max_x   = scalar > 0, maximum asymptotic tax rate when y=0
     max_y   = scalar > 0, maximum asymptotic tax rate when x=0
     share   = scalar in [0,1], share parameter in Cobb-Douglas function
@@ -431,7 +432,7 @@ def wsumsq(params, *args):
     RETURNS: wssqdev
     --------------------------------------------------------------------
     '''
-    coef1, coef2, coef3, coef4, max_x, max_y, share = params
+    A, B, C, D, max_x, max_y, share = params
     X, Y, min_x, min_y, shift, txrates, wgts = args
     X2 = X ** 2
     Y2 = Y ** 2
@@ -445,14 +446,14 @@ def wsumsq(params, *args):
     Xtil = (X - Xbar) / Xbar
     Y2til = (Y2 - Y2bar) / Y2bar
     Ytil = (Y - Ybar) / Ybar
-    Etil = coef1 + coef2
-    Ftil = coef3 + coef4
-    tau_x = (((max_x - min_x) * (coef1 * X2til + coef2 * Xtil + Etil) /
-        (coef1 * X2til + coef2 * Xtil + Etil + 1)) + min_x)
-    tau_y = (((max_y - min_y) * (coef3 * Y2til + coef4 * Ytil + Ftil) /
-        (coef3 * Y2til + coef4 * Ytil + Ftil + 1)) + min_y)
+    Etil = A + B
+    Ftil = C + D
+    tau_x = (((max_x - min_x) * (A * X2til + B * Xtil + Etil) /
+              (A * X2til + B * Xtil + Etil + 1)) + min_x)
+    tau_y = (((max_y - min_y) * (C * Y2til + D * Ytil + Ftil) /
+              (C * Y2til + D * Ytil + Ftil + 1)) + min_y)
     txrates_est = (((tau_x + shift_x) ** share) *
-                  ((tau_y + shift_y) ** (1 - share))) + shift
+                   ((tau_y + shift_y) ** (1 - share))) + shift
     errors = txrates_est - txrates
     wssqdev = (wgts * (errors ** 2)).sum()
 
@@ -460,7 +461,7 @@ def wsumsq(params, *args):
 
 
 def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
-  graph=False):
+                  graph=False):
     '''
     --------------------------------------------------------------------
     This function takes a matrix of sum of squared errors (SSE) from
@@ -470,7 +471,7 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
     INPUTS:
     sse_mat    = [S,BW] array, SSE for each estimated tax function
     age_vec    = [S,] vector, vector of ages
-    se_mult    = scalar, multiple of standard devitiosn before consider
+    se_mult    = scalar, multiple of standard deviations before consider
                   estimate an outlier
     start_year = integer, first year of budget window
     varstr     = string, name of tax function being evaluated
@@ -484,29 +485,29 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
     --------------------------------------------------------------------
     '''
     # Mark outliers from estimated MTRx functions
-    thresh = (sse_mat[sse_mat>0].mean() +
-             se_mult * sse_mat[sse_mat>0].std())
+    thresh = (sse_mat[sse_mat > 0].mean() +
+              se_mult * sse_mat[sse_mat > 0].std())
     sse_big_mat = sse_mat > thresh
     print varstr, ": ", str(sse_big_mat.sum()), \
-          " observations tagged as outliers."
-    if graph == True:
+        " observations tagged as outliers."
+    if graph:
         # Plot sum of squared errors of tax functions over age for each
         # year of budget window
         fig, ax = plt.subplots()
-        plt.plot(age_vec, sse_mat[:,0], label=str(start_year))
-        plt.plot(age_vec, sse_mat[:,1], label=str(start_year+1))
-        plt.plot(age_vec, sse_mat[:,2], label=str(start_year+2))
-        plt.plot(age_vec, sse_mat[:,3], label=str(start_year+3))
-        plt.plot(age_vec, sse_mat[:,4], label=str(start_year+4))
-        plt.plot(age_vec, sse_mat[:,5], label=str(start_year+5))
-        plt.plot(age_vec, sse_mat[:,6], label=str(start_year+6))
-        plt.plot(age_vec, sse_mat[:,7], label=str(start_year+7))
-        plt.plot(age_vec, sse_mat[:,8], label=str(start_year+8))
-        plt.plot(age_vec, sse_mat[:,9], label=str(start_year+9))
+        plt.plot(age_vec, sse_mat[:, 0], label=str(start_year))
+        plt.plot(age_vec, sse_mat[:, 1], label=str(start_year + 1))
+        plt.plot(age_vec, sse_mat[:, 2], label=str(start_year + 2))
+        plt.plot(age_vec, sse_mat[:, 3], label=str(start_year + 3))
+        plt.plot(age_vec, sse_mat[:, 4], label=str(start_year + 4))
+        plt.plot(age_vec, sse_mat[:, 5], label=str(start_year + 5))
+        plt.plot(age_vec, sse_mat[:, 6], label=str(start_year + 6))
+        plt.plot(age_vec, sse_mat[:, 7], label=str(start_year + 7))
+        plt.plot(age_vec, sse_mat[:, 8], label=str(start_year + 8))
+        plt.plot(age_vec, sse_mat[:, 9], label=str(start_year + 9))
         # for the minor ticks, use no labels; default NullFormatter
-        minorLocator   = MultipleLocator(1)
+        minorLocator = MultipleLocator(1)
         ax.xaxis.set_minor_locator(minorLocator)
-        plt.grid(b=True, which='major', color='0.65',linestyle='-')
+        plt.grid(b=True, which='major', color='0.65', linestyle='-')
         plt.legend(loc='upper left')
         titletext = "Sum of Squared Errors by Age and Tax Year: " + varstr
         plt.title(titletext)
@@ -516,7 +517,7 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
         cur_path = os.path.split(os.path.abspath(__file__))[0]
         output_fldr = "OUTPUT/TaxFunctions"
         output_dir = os.path.join(cur_path, output_fldr)
-        if os.access(output_dir, os.F_OK) == False:
+        if not os.access(output_dir, os.F_OK):
             os.makedirs(output_dir)
         graphname = "SSE_" + varstr
         output_path = os.path.join(output_dir, graphname)
@@ -527,33 +528,42 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
         # new outliers in a second sweep
         sse_mat_new = sse_mat.copy()
         sse_mat_new[sse_big_mat] = np.nan
-        thresh2 = (sse_mat_new[sse_mat_new>0].mean() +
-                  se_mult * sse_mat_new[sse_mat_new>0].std())
+        thresh2 = (sse_mat_new[sse_mat_new > 0].mean() + se_mult *
+                   sse_mat_new[sse_mat_new > 0].std())
         sse_big_mat += sse_mat_new > thresh2
         print varstr, ": ", "After second round, ", \
             str(sse_big_mat.sum()), \
             " observations tagged as outliers (cumulative)."
-        if graph == True:
+        if graph:
             # Plot sum of squared errors of tax functions over age for
             # each year of budget window
             fig, ax = plt.subplots()
-            plt.plot(age_vec, sse_mat_new[:,0], label=str(start_year))
-            plt.plot(age_vec, sse_mat_new[:,1], label=str(start_year+1))
-            plt.plot(age_vec, sse_mat_new[:,2], label=str(start_year+2))
-            plt.plot(age_vec, sse_mat_new[:,3], label=str(start_year+3))
-            plt.plot(age_vec, sse_mat_new[:,4], label=str(start_year+4))
-            plt.plot(age_vec, sse_mat_new[:,5], label=str(start_year+5))
-            plt.plot(age_vec, sse_mat_new[:,6], label=str(start_year+6))
-            plt.plot(age_vec, sse_mat_new[:,7], label=str(start_year+7))
-            plt.plot(age_vec, sse_mat_new[:,8], label=str(start_year+8))
-            plt.plot(age_vec, sse_mat_new[:,9], label=str(start_year+9))
+            plt.plot(age_vec, sse_mat_new[:, 0], label=str(start_year))
+            plt.plot(age_vec, sse_mat_new[:, 1],
+                     label=str(start_year + 1))
+            plt.plot(age_vec, sse_mat_new[:, 2],
+                     label=str(start_year + 2))
+            plt.plot(age_vec, sse_mat_new[:, 3],
+                     label=str(start_year + 3))
+            plt.plot(age_vec, sse_mat_new[:, 4],
+                     label=str(start_year + 4))
+            plt.plot(age_vec, sse_mat_new[:, 5],
+                     label=str(start_year + 5))
+            plt.plot(age_vec, sse_mat_new[:, 6],
+                     label=str(start_year + 6))
+            plt.plot(age_vec, sse_mat_new[:, 7],
+                     label=str(start_year + 7))
+            plt.plot(age_vec, sse_mat_new[:, 8],
+                     label=str(start_year + 8))
+            plt.plot(age_vec, sse_mat_new[:, 9],
+                     label=str(start_year + 9))
             # for the minor ticks, use no labels; default NullFormatter
-            minorLocator   = MultipleLocator(1)
+            minorLocator = MultipleLocator(1)
             ax.xaxis.set_minor_locator(minorLocator)
-            plt.grid(b=True, which='major', color='0.65',linestyle='-')
+            plt.grid(b=True, which='major', color='0.65', linestyle='-')
             plt.legend(loc='upper left')
             titletext = ("Sum of Squared Errors by Age and Tax Year" +
-                        " minus outliers (round 1): " + varstr)
+                         " minus outliers (round 1): " + varstr)
             plt.title(titletext)
             plt.xlabel(r'Age $s$')
             plt.ylabel(r'SSE')
@@ -565,27 +575,37 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
             # Mark the outliers from the second sweep above
             sse_mat_new2 = sse_mat_new.copy()
             sse_mat_new2[sse_big_mat] = np.nan
-            if graph == True:
+            if graph:
                 # Plot sum of squared errors of tax functions over age
                 # for each year of budget window
                 fig, ax = plt.subplots()
-                plt.plot(age_vec, sse_mat_new2[:,0], label=str(start_year))
-                plt.plot(age_vec, sse_mat_new2[:,1], label=str(start_year+1))
-                plt.plot(age_vec, sse_mat_new2[:,2], label=str(start_year+2))
-                plt.plot(age_vec, sse_mat_new2[:,3], label=str(start_year+3))
-                plt.plot(age_vec, sse_mat_new2[:,4], label=str(start_year+4))
-                plt.plot(age_vec, sse_mat_new2[:,5], label=str(start_year+5))
-                plt.plot(age_vec, sse_mat_new2[:,6], label=str(start_year+6))
-                plt.plot(age_vec, sse_mat_new2[:,7], label=str(start_year+7))
-                plt.plot(age_vec, sse_mat_new2[:,8], label=str(start_year+8))
-                plt.plot(age_vec, sse_mat_new2[:,9], label=str(start_year+9))
+                plt.plot(age_vec, sse_mat_new2[:, 0], label=str(start_year))
+                plt.plot(age_vec, sse_mat_new2[:, 1],
+                         label=str(start_year + 1))
+                plt.plot(age_vec, sse_mat_new2[:, 2],
+                         label=str(start_year + 2))
+                plt.plot(age_vec, sse_mat_new2[:, 3],
+                         label=str(start_year + 3))
+                plt.plot(age_vec, sse_mat_new2[:, 4],
+                         label=str(start_year + 4))
+                plt.plot(age_vec, sse_mat_new2[:, 5],
+                         label=str(start_year + 5))
+                plt.plot(age_vec, sse_mat_new2[:, 6],
+                         label=str(start_year + 6))
+                plt.plot(age_vec, sse_mat_new2[:, 7],
+                         label=str(start_year + 7))
+                plt.plot(age_vec, sse_mat_new2[:, 8],
+                         label=str(start_year + 8))
+                plt.plot(age_vec, sse_mat_new2[:, 9],
+                         label=str(start_year + 9))
                 # for the minor ticks, use no labels; default NullFormatter
-                minorLocator   = MultipleLocator(1)
+                minorLocator = MultipleLocator(1)
                 ax.xaxis.set_minor_locator(minorLocator)
-                plt.grid(b=True, which='major', color='0.65',linestyle='-')
+                plt.grid(b=True, which='major', color='0.65',
+                         linestyle='-')
                 plt.legend(loc='upper left')
                 titletext = ("Sum of Squared Errors by Age and Tax Year"
-                            + " minus outliers (round 2): " + varstr)
+                             + " minus outliers (round 2): " + varstr)
                 plt.title(titletext)
                 plt.xlabel(r'Age $s$')
                 plt.ylabel(r'SSE')
@@ -609,10 +629,13 @@ def replace_outliers(param_arr, sse_big_mat):
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
     OBJECTS CREATED WITHIN FUNCTION:
     age_ind       = [S,] list, list of ages
-    param_arr_adj = [S,BW,#tax params] array, estimated and interpolated tax function parameters
+    param_arr_adj = [S,BW,#tax params] array, estimated and interpolated
+                    tax function parameters
     big_cnt       = integer, number of outliers replaced
-    slopevec      = [1,1,#tax params] array, slope used for linear interpolation of outliers
-    interceptvec  = [1,1,#tax params] array, intercept used for linear interpolation of outliers
+    slopevec      = [1,1,#tax params] array, slope used for linear
+                    interpolation of outliers
+    interceptvec  = [1,1,#tax params] array, intercept used for linear
+                    interpolation of outliers
     RETURNS: param_arr_adj
     --------------------------------------------------------------------
     '''
@@ -623,22 +646,22 @@ def replace_outliers(param_arr, sse_big_mat):
         big_cnt = 0
         for s in age_ind:
             # Smooth out ETR tax function outliers
-            if sse_big_mat[s, t] == True and s < sse_big_mat.shape[0]-1:
+            if sse_big_mat[s, t] and s < sse_big_mat.shape[0]-1:
                 # For all outlier observations, increase the big_cnt by
                 # 1 and set the param_arr_adj equal to nan
                 big_cnt += 1
                 param_arr_adj[s, t, :] = np.nan
-            if (sse_big_mat[s, t] == False and big_cnt > 0 and
-              s == big_cnt):
+            if not sse_big_mat[s, t] and big_cnt > 0 and s == big_cnt:
                 # When the current function is not an outlier but the last
                 # one was and this string of outliers is at the beginning
                 # ages, set the outliers equal to this period's tax function
-                reshaped = param_arr_adj[s, t, :].reshape((1, 1, numparams))
-                param_arr_adj[:big_cnt, t, :] = np.tile(reshaped, (big_cnt, 1))
+                reshaped = param_arr_adj[s, t, :].reshape((1, 1,
+                                                           numparams))
+                param_arr_adj[:big_cnt, t, :] = np.tile(reshaped,
+                                                        (big_cnt, 1))
                 big_cnt = 0
 
-            if (sse_big_mat[s, t] == False and big_cnt > 0 and
-                s > big_cnt):
+            if not sse_big_mat[s, t] and big_cnt > 0 and s > big_cnt:
                 # When the current function is not an outlier but the last
                 # one was and this string of outliers is in the interior of
                 # ages, set the outliers equal to a linear interpolation
@@ -650,26 +673,31 @@ def replace_outliers(param_arr, sse_big_mat):
                 tiled_slopevec = np.tile(slopevec, (big_cnt, 1))
 
                 interceptvec = \
-                    param_arr_adj[s-big_cnt-1, t, :].reshape(1, numparams)
+                    param_arr_adj[s-big_cnt-1, t, :].reshape(1,
+                                                             numparams)
                 tiled_intvec = np.tile(interceptvec, (big_cnt, 1))
 
-                reshaped_arange = np.arange(1, big_cnt+1).reshape(big_cnt, 1)
-                tiled_reshape_arange = np.tile(reshaped_arange, (1, numparams))
+                reshaped_arange =\
+                    np.arange(1, big_cnt+1).reshape(big_cnt, 1)
+                tiled_reshape_arange =\
+                    np.tile(reshaped_arange, (1, numparams))
 
                 param_arr_adj[s-big_cnt:s, t, :] = (
                     tiled_intvec + tiled_slopevec * tiled_reshape_arange
                 )
 
                 big_cnt = 0
-            if sse_big_mat[s, t] == True and s == sse_big_mat.shape[0]-1:
+            if sse_big_mat[s, t] and s == sse_big_mat.shape[0] - 1:
                 # When the last ages are outliers, set the parameters equal
                 # to the most recent non-outlier tax function
                 big_cnt += 1
                 param_arr_adj[s, t, :] = np.nan
                 reshaped = \
-                    param_arr_adj[s-big_cnt, t, :].reshape(1, 1, numparams)
+                    param_arr_adj[s-big_cnt, t, :].reshape(1, 1,
+                                                           numparams)
                 param_arr_adj[s-big_cnt+1:, t, :] = np.tile(reshaped,
-                                                            (big_cnt, 1))
+                                                            (big_cnt,
+                                                             1))
 
     return param_arr_adj
 
@@ -768,8 +796,8 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
     RETURNS: params, wsse, obs
     --------------------------------------------------------------------
     '''
-    X = df['Total Labor Income']
-    Y = df['Total Capital Income']
+    X = df['Total labor income']
+    Y = df['Total capital income']
     wgts = df['Weights']
     X2 = X ** 2
     Y2 = Y ** 2
@@ -778,38 +806,39 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
     Y2bar = (Y2 * wgts).sum() / wgts.sum()
     Ybar = (Y * wgts).sum() / wgts.sum()
     if rate_type == 'etr':
-        txrates = df['Effective Tax Rate']
+        txrates = df['ETR']
     elif rate_type == 'mtrx':
-        txrates = df['MTR Labor']
+        txrates = df['MTR labor income']
     elif rate_type == 'mtry':
         txrates = df['MTR capital income']
-    x_10pctl = df['Total Labor Income'].quantile(0.1)
-    y_10pctl = df['Total Capital Income'].quantile(0.1)
-    x_20pctl = df['Total Labor Income'].quantile(.2)
-    y_20pctl = df['Total Capital Income'].quantile(.2)
-    min_x = txrates[(df['Total Capital Income'] < y_10pctl)].min()
-    min_y = txrates[(df['Total Labor Income'] < x_10pctl)].min()
+    x_10pctl = df['Total labor income'].quantile(0.1)
+    y_10pctl = df['Total capital income'].quantile(0.1)
+    x_20pctl = df['Total labor income'].quantile(.2)
+    y_20pctl = df['Total capital income'].quantile(.2)
+    min_x = txrates[(df['Total capital income'] < y_10pctl)].min()
+    min_y = txrates[(df['Total labor income'] < x_10pctl)].min()
     Atil_init = 1.0
     Btil_init = 1.0
     Ctil_init = 1.0
     Dtil_init = 1.0
     max_x_init = np.minimum(
-        txrates[(df['Total Capital Income'] < y_20pctl)].max(), 0.7)
+        txrates[(df['Total capital income'] < y_20pctl)].max(), 0.7)
     max_y_init = np.minimum(
-        txrates[(df['Total Labor Income'] < x_20pctl)].max(), 0.7)
-    shift = txrates[(df['Total Labor Income'] < x_20pctl) |
-        (df['Total Capital Income'] < y_20pctl)].min()
+        txrates[(df['Total labor income'] < x_20pctl)].max(), 0.7)
+    shift = txrates[(df['Total labor income'] < x_20pctl) |
+                    (df['Total capital income'] < y_20pctl)].min()
     share_init = 0.5
     numparams = int(12)
     params_init = np.array([Atil_init, Btil_init, Ctil_init,
-        Dtil_init, max_x_init, max_y_init, share_init])
+                            Dtil_init, max_x_init, max_y_init,
+                            share_init])
     tx_objs = (X, Y, min_x, min_y, shift, txrates, wgts)
     lb_max_x = np.maximum(min_x, 0.0) + 1e-4
     lb_max_y = np.maximum(min_y, 0.0) + 1e-4
     bnds = ((1e-12, None), (1e-12, None), (1e-12, None), (1e-12, None),
-        (lb_max_x, 0.8), (lb_max_y, 0.8), (0, 1))
-    params_til = opt.minimize(wsumsq, params_init,
-        args=(tx_objs), method="L-BFGS-B", bounds=bnds, tol=1e-15)
+            (lb_max_x, 0.8), (lb_max_y, 0.8), (0, 1))
+    params_til = opt.minimize(wsumsq, params_init, args=(tx_objs),
+                              method="L-BFGS-B", bounds=bnds, tol=1e-15)
     Atil, Btil, Ctil, Dtil, max_x, max_y, share = params_til.x
     # message = ("(max_x, min_x)=(" + str(max_x) + ", " + str(min_x) +
     #     "), (max_y, min_y)=(" + str(max_y) + ", " + str(min_y) + ")")
@@ -820,9 +849,9 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
     shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
     params = np.zeros(numparams)
     params[:4] = (np.array([Atil, Btil, Ctil, Dtil]) /
-        np.array([X2bar, Xbar, Y2bar, Ybar]))
-    params[4:] = np.array([max_x, min_x, max_y, min_y, shift_x,
-        shift_y, shift, share])
+                  np.array([X2bar, Xbar, Y2bar, Ybar]))
+    params[4:] = np.array([max_x, min_x, max_y, min_y, shift_x, shift_y,
+                           shift, share])
 
     if graph:
         '''
@@ -849,10 +878,10 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
 
         # Make comparison plot with full income domains
         fig = plt.figure()
-        ax = fig.add_subplot(111, projection ='3d')
+        ax = fig.add_subplot(111, projection='3d')
         ax.scatter(X, Y, txrates, c='r', marker='o')
-        ax.set_xlabel('Total Labor Income')
-        ax.set_ylabel('Total Capital Income')
+        ax.set_xlabel('Total labor income')
+        ax.set_ylabel('Total capital income')
         if rate_type == 'etr':
             tx_label = 'ETR'
         elif rate_type == 'mtrx':
@@ -861,7 +890,7 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
             tx_label = 'MTRy'
         ax.set_zlabel(tx_label)
         plt.title(tx_label + ' vs. Predicted ' + tx_label + ': Age=' +
-            str(s) + ', Year=' + str(t))
+                  str(s) + ', Year=' + str(t))
 
         gridpts = 50
         X_vec = np.exp(np.linspace(np.log(5), np.log(X.max()), gridpts))
@@ -869,47 +898,47 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
         txrate_grid = gen_rate_grid(X_grid, Y_grid, params)
         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
-            linewidth=0)
+                        linewidth=0)
         filename = (tx_label + '_Age_' + str(s) + '_Year_' + str(t) +
-            '_vsPred.png')
+                    '_vsPred.png')
         fullpath = os.path.join(output_dir, filename)
         fig.savefig(fullpath, bbox_inches='tight')
         plt.close()
 
         # Make comparison plot with truncated income domains
-        df_trnc_gph = df[(df['Total Labor Income'] > 5) &
-            (df['Total Labor Income'] < 800000) &
-            (df['Total Capital Income'] > 5) &
-            (df['Total Capital Income'] < 800000)]
-        X_gph = df_trnc_gph['Total Labor Income']
-        Y_gph = df_trnc_gph['Total Capital Income']
+        df_trnc_gph = df[(df['Total labor income'] > 5) &
+                         (df['Total labor income'] < 800000) &
+                         (df['Total capital income'] > 5) &
+                         (df['Total capital income'] < 800000)]
+        X_gph = df_trnc_gph['Total labor income']
+        Y_gph = df_trnc_gph['Total capital income']
         if rate_type == 'etr':
-            txrates_gph = df_trnc_gph['Effective Tax Rate']
+            txrates_gph = df_trnc_gph['ETR']
         elif rate_type == 'mtrx':
-            txrates_gph = df_trnc_gph['MTR Labor']
+            txrates_gph = df_trnc_gph['MTR labor income']
         elif rate_type == 'mtry':
             txrates_gph = df_trnc_gph['MTR capital income']
 
         fig = plt.figure()
-        ax = fig.add_subplot(111, projection ='3d')
+        ax = fig.add_subplot(111, projection='3d')
         ax.scatter(X_gph, Y_gph, txrates_gph, c='r', marker='o')
-        ax.set_xlabel('Total Labor Income')
-        ax.set_ylabel('Total Capital Income')
+        ax.set_xlabel('Total labor income')
+        ax.set_ylabel('Total capital income')
         ax.set_zlabel(tx_label)
         plt.title('Truncated ' + tx_label + ', Lab. Inc., and Cap. ' +
-            'Inc., Age=' + str(s) + ', Year=' + str(t))
+                  'Inc., Age=' + str(s) + ', Year=' + str(t))
 
         gridpts = 50
         X_vec = np.exp(np.linspace(np.log(5), np.log(X_gph.max()),
-            gridpts))
+                                   gridpts))
         Y_vec = np.exp(np.linspace(np.log(5), np.log(Y_gph.max()),
-            gridpts))
+                                   gridpts))
         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
         txrate_grid = gen_rate_grid(X_grid, Y_grid, params)
         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
-            linewidth=0)
-        filename = (tx_label + 'trunc_Age_' + str(s) + '_Year_' + str(t) +
-            '_vsPred.png')
+                        linewidth=0)
+        filename = (tx_label + 'trunc_Age_' + str(s) + '_Year_' +
+                    str(t) + '_vsPred.png')
         fullpath = os.path.join(output_dir, filename)
         fig.savefig(fullpath, bbox_inches='tight')
         plt.close()
@@ -936,7 +965,6 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                  insufficient data to estimate tax functions
     ----------------------------------------------------------------
     '''
-
     # initialize arrays for output
     etrparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
     mtrxparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
@@ -952,53 +980,51 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
     AvgMTRx = np.zeros(tpers)
     AvgMTRy = np.zeros(tpers)
     TotPop_yr = np.zeros(tpers)
-    PopPct_age = np.zeros((s_max-s_min+1, tpers))
+    PopPct_age = np.zeros((s_max - s_min + 1, tpers))
 
     data_orig = micro_data
-    data_orig['Total Labor Income'] = \
-        (data_orig['Wage and Salaries'] +
-        data_orig['Self-Employed Income'])
-    data_orig['Effective Tax Rate'] = \
-        (data_orig['Total Tax Liability'] /
-        data_orig["Adjusted Total income"])
-    data_orig["Total Capital Income"] = \
-        (data_orig['Adjusted Total income'] -
-        data_orig['Total Labor Income'])
+    data_orig['Total labor income'] = \
+        (data_orig['Wage income'] + data_orig['SE income'])
+    data_orig['ETR'] = \
+        (data_orig['Total tax liability'] /
+         data_orig["Adjusted total income"])
+    data_orig["Total capital income"] = \
+        (data_orig['Adjusted total income'] -
+         data_orig['Total labor income'])
     # use weighted avg for MTR labor - abs value because
     # SE income may be negative
-    data_orig['MTR Labor'] = \
-        (data_orig['MTR wage'] * (data_orig['Wage and Salaries'] /
-        (data_orig['Wage and Salaries'].abs() +
-        data_orig['Self-Employed Income'].abs())) +
-        data_orig['MTR self-employed Wage'] *
-        (data_orig['Self-Employed Income'].abs() /
-        (data_orig['Wage and Salaries'].abs() +
-        data_orig['Self-Employed Income'].abs())))
-    data = data_orig[['Age', 'MTR Labor', 'MTR capital income',
-        'Total Labor Income', 'Total Capital Income',
-        'Adjusted Total income', 'Effective Tax Rate', 'Weights']]
+    data_orig['MTR labor income'] = \
+        (data_orig['MTR wage'] * (data_orig['Wage income'] /
+                                  (data_orig['Wage income'].abs() +
+                                   data_orig['SE income'].abs())) +
+         data_orig['MTR SE income'] * (data_orig['SE income'].abs() /
+                                       (data_orig['Wage income'].abs() +
+                                        data_orig['SE income'].abs())))
+    data = data_orig[['Age', 'MTR labor income', 'MTR capital income',
+                      'Total labor income', 'Total capital income',
+                      'Adjusted total income', 'ETR', 'Weights']]
 
     # Calculate average total income in each year
     AvgInc[t-beg_yr] = \
-        (((data['Adjusted Total income'] * data['Weights']).sum())
-        / data['Weights'].sum())
+        (((data['Adjusted total income'] * data['Weights']).sum())
+         / data['Weights'].sum())
 
     # Calculate average ETR and MTRs (weight by population weights
     #    and income) for each year
     AvgETR[t-beg_yr] = \
-        (((data['Effective Tax Rate']*data['Adjusted Total income']
-        * data['Weights']).sum()) /
-        (data['Adjusted Total income']*data['Weights']).sum())
+        (((data['ETR']*data['Adjusted total income']
+           * data['Weights']).sum()) /
+         (data['Adjusted total income']*data['Weights']).sum())
 
     AvgMTRx[t-beg_yr] = \
-        (((data['MTR Labor']*data['Adjusted Total income'] *
-        data['Weights']).sum()) /
-        (data['Adjusted Total income']*data['Weights']).sum())
+        (((data['MTR labor income']*data['Adjusted total income'] *
+           data['Weights']).sum()) /
+         (data['Adjusted total income']*data['Weights']).sum())
 
     AvgMTRy[t-beg_yr] = \
         (((data['MTR capital income'] *
-        data['Adjusted Total income'] * data['Weights']).sum()) /
-        (data['Adjusted Total income']*data['Weights']).sum())
+           data['Adjusted total income'] * data['Weights']).sum()) /
+         (data['Adjusted total income']*data['Weights']).sum())
 
     # Calculate total population in each year
     TotPop_yr[t-beg_yr] = data['Weights'].sum()
@@ -1006,39 +1032,36 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
     # Clean up the data by dropping outliers
     # drop all obs with ETR > 0.65
     data_trnc = \
-        data.drop(data[data['Effective Tax Rate'] >0.65].index)
+        data.drop(data[data['ETR'] > 0.65].index)
     # drop all obs with ETR < -0.15
     data_trnc = \
-        data_trnc.drop(data_trnc[data_trnc['Effective Tax Rate']
-        < -0.15].index)
+        data_trnc.drop(data_trnc[data_trnc['ETR'] < -0.15].index)
     # drop all obs with ATI, TLI, TCI < $5
-    data_trnc = data_trnc[(data_trnc['Adjusted Total income'] >= 5)
-        & (data_trnc['Total Labor Income'] >= 5) &
-        (data_trnc['Total Capital Income'] >= 5)]
+    data_trnc = data_trnc[(data_trnc['Adjusted total income'] >= 5)
+                          & (data_trnc['Total labor income'] >= 5) &
+                          (data_trnc['Total capital income'] >= 5)]
 
-    if analytical_mtrs==False:
-        # drop all obs with MTR on capital income > 10.99
-        data_trnc = \
-            data_trnc.drop(data_trnc[data_trnc['MTR capital income']
-            > 0.99].index)
+    if not analytical_mtrs:
+        # drop all obs with MTR on capital income > 0.99
+        data_trnc = data_trnc.drop(
+            data_trnc[data_trnc['MTR capital income'] > 0.99].index)
         # drop all obs with MTR on capital income < -0.45
-        data_trnc = \
-            data_trnc.drop(data_trnc[data_trnc['MTR capital income']
-            < -0.45].index)
-        # drop all obs with MTR on labor income > 10.99
-        data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR Labor']
-                    > 0.99].index)
+        data_trnc = data_trnc.drop(
+            data_trnc[data_trnc['MTR capital income'] < -0.45].index)
+        # drop all obs with MTR on labor income > 0.99
+        data_trnc = data_trnc.drop(
+            data_trnc[data_trnc['MTR labor income'] > 0.99].index)
         # drop all obs with MTR on labor income < -0.45
-        data_trnc = data_trnc.drop(data_trnc[data_trnc['MTR Labor']
-                    < -0.45].index)
+        data_trnc = data_trnc.drop(
+            data_trnc[data_trnc['MTR labor income'] < -0.45].index)
 
     # Create an array of the different ages in the data
     min_age = int(np.maximum(data_trnc['Age'].min(), s_min))
     max_age = int(np.minimum(data_trnc['Age'].max(), s_max))
     if age_specific:
-        ages_list = np.arange(min_age, max_age+1)
+        ages_list = np.arange(min_age, max_age + 1)
     else:
-        ages_list = np.arange(0,1)
+        ages_list = np.arange(0, 1)
 
     NoData_cnt = np.min(min_age - s_min, 0)
 
@@ -1058,30 +1081,30 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
             PopPct_age[0, t-beg_yr] = \
                 df['Weights'].sum() / TotPop_yr[t-beg_yr]
 
-        df_etr = df[['MTR Labor', 'MTR capital income',
-            'Total Labor Income', 'Total Capital Income',
-            'Effective Tax Rate', 'Weights']]
+        df_etr = df[['MTR labor income', 'MTR capital income',
+                     'Total labor income', 'Total capital income',
+                     'ETR', 'Weights']]
         df_etr = df_etr[
-            (np.isfinite(df_etr['Effective Tax Rate'])) &
-            (np.isfinite(df_etr['Total Labor Income'])) &
-            (np.isfinite(df_etr['Total Capital Income'])) &
+            (np.isfinite(df_etr['ETR'])) &
+            (np.isfinite(df_etr['Total labor income'])) &
+            (np.isfinite(df_etr['Total capital income'])) &
             (np.isfinite(df_etr['Weights']))]
-        df_mtrx = df[['MTR Labor', 'Total Labor Income',
-            'Total Capital Income', 'Weights']]
+        df_mtrx = df[['MTR labor income', 'Total labor income',
+                      'Total capital income', 'Weights']]
         df_mtrx = df_mtrx[
-            (np.isfinite(df_etr['MTR Labor'])) &
-            (np.isfinite(df_etr['Total Labor Income'])) &
-            (np.isfinite(df_etr['Total Capital Income'])) &
+            (np.isfinite(df_etr['MTR labor income'])) &
+            (np.isfinite(df_etr['Total labor income'])) &
+            (np.isfinite(df_etr['Total capital income'])) &
             (np.isfinite(df_etr['Weights']))]
-        df_mtry = df[['MTR capital income', 'Total Labor Income',
-            'Total Capital Income', 'Weights']]
+        df_mtry = df[['MTR capital income', 'Total labor income',
+                      'Total capital income', 'Weights']]
         df_mtry = df_mtry[
             (np.isfinite(df_etr['MTR capital income'])) &
-            (np.isfinite(df_etr['Total Labor Income'])) &
-            (np.isfinite(df_etr['Total Capital Income'])) &
+            (np.isfinite(df_etr['Total labor income'])) &
+            (np.isfinite(df_etr['Total capital income'])) &
             (np.isfinite(df_etr['Weights']))]
         df_minobs = np.min([df_etr.shape[0], df_mtrx.shape[0],
-            df_mtry.shape[0]])
+                            df_mtry.shape[0]])
 
         # 240 is 8 parameters to estimate times 30 obs per parameter
         if df_minobs < 240 and s < max_age:
@@ -1092,7 +1115,7 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
             --------------------------------------------------------
             '''
             message = ("Insuff. sample size for age " + str(s) +
-                " in year " + str(t))
+                       " in year " + str(t))
             print message
             NoData_cnt += 1
             etrparam_arr[s-s_min, t-beg_yr, :] = np.nan
@@ -1117,41 +1140,42 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
             --------------------------------------------------------
             '''
             message = ("Max age (s=" + str(s) + ") insuff. data in"
-                + " year " + str(t) + ". Fill in final ages with " +
-                "insuff. data with most recent successful " +
-                "estimate.")
+                       + " year " + str(t) +
+                       ". Fill in final ages with " +
+                       "insuff. data with most recent successful " +
+                       "estimate.")
             print message
             NoData_cnt += 1
             lastp_etr = \
                 etrparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
             etrparam_arr[s-NoData_cnt-s_min+1:, t-beg_yr, :] = \
                 np.tile(lastp_etr.reshape((1, numparams)),
-                (NoData_cnt+s_max-max_age, 1))
+                        (NoData_cnt+s_max-max_age, 1))
             lastp_mtrx = \
                 mtrxparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
             mtrxparam_arr[s-NoData_cnt-s_min+1:, t-beg_yr, :] = \
                 np.tile(lastp_mtrx.reshape((1, numparams)),
-                (NoData_cnt+s_max-max_age, 1))
+                        (NoData_cnt+s_max-max_age, 1))
             lastp_mtry = \
                 mtryparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
             mtryparam_arr[s-NoData_cnt-s_min+1:, t-beg_yr, :] = \
                 np.tile(lastp_mtry.reshape((1, numparams)),
-                (NoData_cnt+s_max-max_age, 1))
+                        (NoData_cnt+s_max-max_age, 1))
 
         else:
             # Estimate parameters for age with sufficient data
             if desc_data:
                 # print some desciptive stats
                 message = ("Descriptive ETR statistics for age=" +
-                    str(s) + " in year " + str(t))
+                           str(s) + " in year " + str(t))
                 print message
                 print df_etr.describe()
                 message = ("Descriptive MTRx statistics for age=" +
-                    str(s) + " in year " + str(t))
+                           str(s) + " in year " + str(t))
                 print message
                 print df_mtrx.describe()
                 message = ("Descriptive MTRy statistics for age=" +
-                    str(s) + " in year " + str(t))
+                           str(s) + " in year " + str(t))
                 print message
                 print df_mtry.describe()
 
@@ -1161,24 +1185,21 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
             # Estimate effective tax rate function ETR(x,y)
             (etrparams, etr_wsumsq_arr[s-s_min, t-beg_yr],
                 etr_obs_arr[s-s_min, t-beg_yr]) = \
-                txfunc_est(df_etr, s, t, 'etr', output_dir,
-                    graph_est)
+                txfunc_est(df_etr, s, t, 'etr', output_dir, graph_est)
             etrparam_arr[s-s_min, t-beg_yr, :] = etrparams
 
             # Estimate marginal tax rate of labor income function
             # MTRx(x,y)
             (mtrxparams, mtrx_wsumsq_arr[s-s_min, t-beg_yr],
                 mtrx_obs_arr[s-s_min, t-beg_yr]) = \
-                txfunc_est(df_mtrx, s, t, 'mtrx', output_dir,
-                    graph_est)
+                txfunc_est(df_mtrx, s, t, 'mtrx', output_dir, graph_est)
             mtrxparam_arr[s-s_min, t-beg_yr, :] = mtrxparams
 
             # Estimate marginal tax rate of capital income function
             # MTRy(x,y)
             (mtryparams, mtry_wsumsq_arr[s-s_min, t-beg_yr],
                 mtry_obs_arr[s-s_min, t-beg_yr]) = \
-                txfunc_est(df_mtry, s, t, 'mtry', output_dir,
-                    graph_est)
+                txfunc_est(df_mtry, s, t, 'mtry', output_dir, graph_est)
             mtryparam_arr[s-s_min, t-beg_yr, :] = mtryparams
 
             if NoData_cnt > 0 & NoData_cnt == s-s_min:
@@ -1193,13 +1214,13 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                 print message
                 etrparam_arr[:s-s_min, t-beg_yr, :] = \
                     np.tile(etrparams.reshape((1, numparams)),
-                    (s-s_min, 1))
+                            (s-s_min, 1))
                 mtrxparam_arr[:s-s_min, t-beg_yr, :] = \
                     np.tile(mtrxparams.reshape((1, numparams)),
-                    (s-s_min, 1))
+                            (s-s_min, 1))
                 mtryparam_arr[:s-s_min, t-beg_yr, :] = \
                     np.tile(mtryparams.reshape((1, numparams)),
-                    (s-s_min, 1))
+                            (s-s_min, 1))
 
             elif NoData_cnt > 0 & NoData_cnt < s-s_min:
                 '''
@@ -1231,41 +1252,44 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                 ----------------------------------------------------
                 '''
                 message = ("Linearly interpolate previous blank " +
-                    "tax functions")
+                           "tax functions")
                 print message
                 tvals = np.linspace(0, 1, NoData_cnt+2)
-                x0_etr = np.tile(etrparam_arr[s-NoData_cnt-s_min-1,
-                    t-beg_yr, :].reshape((1, numparams)),
+                x0_etr = np.tile(
+                    etrparam_arr[s-NoData_cnt-s_min-1,
+                                 t-beg_yr, :].reshape((1, numparams)),
                     (NoData_cnt, 1))
                 x1_etr = np.tile(etrparams.reshape((1, numparams)),
-                         (NoData_cnt, 1))
+                                 (NoData_cnt, 1))
                 lin_int_etr = \
-                    (x0_etr + tvals[1:-1].reshape((NoData_cnt, 1))
-                    * (x1_etr - x0_etr))
+                    (x0_etr + tvals[1:-1].reshape((NoData_cnt, 1)) *
+                     (x1_etr - x0_etr))
                 etrparam_arr[s-NoData_cnt-min_age:s-min_age,
-                    t-beg_yr, :] = lin_int_etr
+                             t-beg_yr, :] = lin_int_etr
                 x0_mtrx = np.tile(
-                    mtrxparam_arr[s-NoData_cnt-s_min-1, t-beg_yr,
-                    :].reshape((1, numparams)),(NoData_cnt, 1))
+                    mtrxparam_arr[s-NoData_cnt-s_min-1,
+                                  t-beg_yr, :].reshape((1, numparams)),
+                    (NoData_cnt, 1))
                 x1_mtrx = np.tile(
                     mtrxparams.reshape((1, numparams)),
                     (NoData_cnt, 1))
                 lin_int_mtrx = \
-                    (x0_mtrx + tvals[1:-1].reshape((NoData_cnt, 1))
-                    * (x1_mtrx - x0_mtrx))
+                    (x0_mtrx + tvals[1:-1].reshape((NoData_cnt, 1)) *
+                     (x1_mtrx - x0_mtrx))
                 mtrxparam_arr[s-NoData_cnt-min_age:s-min_age,
-                    t-beg_yr, :] = lin_int_mtrx
+                              t-beg_yr, :] = lin_int_mtrx
                 x0_mtry = np.tile(
-                    mtryparam_arr[s-NoData_cnt-s_min-1, t-beg_yr,
-                    :].reshape((1, numparams)), (NoData_cnt, 1))
+                    mtryparam_arr[s-NoData_cnt-s_min-1,
+                                  t-beg_yr, :].reshape((1, numparams)),
+                    (NoData_cnt, 1))
                 x1_mtry = np.tile(
                     mtryparams.reshape((1, numparams)),
                     (NoData_cnt, 1))
                 lin_int_mtry = \
-                    (x0_mtry + tvals[1:-1].reshape((NoData_cnt, 1))
-                    * (x1_mtry - x0_mtry))
+                    (x0_mtry + tvals[1:-1].reshape((NoData_cnt, 1)) *
+                     (x1_mtry - x0_mtry))
                 mtryparam_arr[s-NoData_cnt-min_age:s-min_age,
-                    t-beg_yr, :] = lin_int_mtry
+                              t-beg_yr, :] = lin_int_mtry
 
             NoData_cnt == 0
 
@@ -1280,21 +1304,21 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                 print message
                 etrparam_arr[s-s_min+1:, t-beg_yr, :] = \
                     np.tile(etrparams.reshape((1, numparams)),
-                    (s_max-max_age, 1))
+                            (s_max-max_age, 1))
                 mtrxparam_arr[s-s_min+1:, t-beg_yr, :] = \
                     np.tile(mtrxparams.reshape((1, numparams)),
-                    (s_max-max_age, 1))
+                            (s_max-max_age, 1))
                 mtryparam_arr[s-s_min+1:, t-beg_yr, :] = \
                     np.tile(mtryparams.reshape((1, numparams)),
-                    (s_max-max_age, 1))
+                            (s_max-max_age, 1))
 
-    return TotPop_yr[t-beg_yr], PopPct_age[:, t-beg_yr],\
-        AvgInc[t-beg_yr], AvgETR[t-beg_yr], AvgMTRx[t-beg_yr],\
-        AvgMTRy[t-beg_yr], etrparam_arr[:, t-beg_yr, :],\
-        etr_wsumsq_arr[:, t-beg_yr], etr_obs_arr[:, t-beg_yr],\
-        mtrxparam_arr[:, t-beg_yr, :], mtrx_wsumsq_arr[:, t-beg_yr],\
-        mtrx_obs_arr[:, t-beg_yr], mtryparam_arr[:, t-beg_yr, :],\
-        mtry_wsumsq_arr[:, t-beg_yr], mtry_obs_arr[:, t-beg_yr]
+    return (TotPop_yr[t-beg_yr], PopPct_age[:, t-beg_yr],
+            AvgInc[t-beg_yr], AvgETR[t-beg_yr], AvgMTRx[t-beg_yr],
+            AvgMTRy[t-beg_yr], etrparam_arr[:, t-beg_yr, :],
+            etr_wsumsq_arr[:, t-beg_yr], etr_obs_arr[:, t-beg_yr],
+            mtrxparam_arr[:, t-beg_yr, :], mtrx_wsumsq_arr[:, t-beg_yr],
+            mtrx_obs_arr[:, t-beg_yr], mtryparam_arr[:, t-beg_yr, :],
+            mtry_wsumsq_arr[:, t-beg_yr], mtry_obs_arr[:, t-beg_yr])
 
 
 def tax_func_estimate(BW, S, starting_age, ending_age,
@@ -1401,7 +1425,7 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     if age_specific:
         ages_list = np.arange(s_min, s_max+1)
     else:
-        ages_list = np.arange(0,1)
+        ages_list = np.arange(0, 1)
     # initialize arrays for output
     etrparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
     mtrxparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
@@ -1440,30 +1464,26 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     micro_data = get_micro_data.get_data(baseline=baseline,
                                          start_year=beg_yr,
                                          reform=reform, data=data)
-    # if reform:
-    #     micro_data = pickle.load(open("micro_data_policy.pkl", "rb"))
-    # else:
-    #     micro_data = pickle.load(open("micro_data_baseline.pkl", "rb"))
-
 
     pool = multiprocessing.Pool()
     results = {}  # initialize results dictionary
     for t in years_list:
-        results[t] = pool.apply_async(tax_func_loop,
-                                      args=(t, micro_data[str(t)], beg_yr,
-                                            s_min, s_max, age_specific,
-                                            analytical_mtrs, desc_data,
-                                            graph_data, graph_est, output_dir,
-                                            numparams, tpers))
+        results[t] = pool.apply_async(
+            tax_func_loop, args=(t, micro_data[str(t)], beg_yr,
+                                 s_min, s_max, age_specific,
+                                 analytical_mtrs, desc_data, graph_data,
+                                 graph_est, output_dir, numparams,
+                                 tpers))
     pool.close()
     pool.join()
     for i, result in results.items():
-        TotPop_yr[i-beg_yr], PopPct_age[:, i-beg_yr], AvgInc[i-beg_yr], AvgETR[i-beg_yr],\
-            AvgMTRx[i-beg_yr], AvgMTRy[i-beg_yr], etrparam_arr[:, i-beg_yr, :],\
-            etr_wsumsq_arr[:, i-beg_yr], etr_obs_arr[:, i-beg_yr], mtrxparam_arr[:, i-beg_yr, :],\
-            mtrx_wsumsq_arr[:, i-beg_yr], mtrx_obs_arr[:, i-beg_yr],\
-            mtryparam_arr[:, i-beg_yr, :], mtry_wsumsq_arr[:, i-beg_yr],\
-            mtry_obs_arr[:, i-beg_yr] = result.get()
+        (TotPop_yr[i-beg_yr], PopPct_age[:, i-beg_yr], AvgInc[i-beg_yr],
+         AvgETR[i-beg_yr], AvgMTRx[i-beg_yr], AvgMTRy[i-beg_yr],
+         etrparam_arr[:, i-beg_yr, :], etr_wsumsq_arr[:, i-beg_yr],
+         etr_obs_arr[:, i-beg_yr], mtrxparam_arr[:, i-beg_yr, :],
+         mtrx_wsumsq_arr[:, i-beg_yr], mtrx_obs_arr[:, i-beg_yr],
+         mtryparam_arr[:, i-beg_yr, :], mtry_wsumsq_arr[:, i-beg_yr],
+         mtry_obs_arr[:, i-beg_yr]) = result.get()
 
     message = ("Finished tax function loop through " +
                str(len(years_list)) + " years and " + str(len(ages_list)) +
@@ -1472,22 +1492,23 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     elapsed_time = time.time() - start_time
 
     # Print tax function computation time
-    if elapsed_time < 60: # less than a minute
+    if elapsed_time < 60:  # less than a minute
         secs = round(elapsed_time, 3)
         message = "Tax function estimation time: " + str(secs) + " sec"
         print message
-    elif elapsed_time >= 60 and elapsed_time < 3600: # less than hour
+    elif elapsed_time >= 60 and elapsed_time < 3600:  # less than hour
         mins = int(elapsed_time / 60)
         secs = round(((elapsed_time / 60) - mins) * 60, 1)
         message = ("Tax function estimation time: " + str(mins) +
-            " min, " + str(secs) + " sec")
+                   " min, " + str(secs) + " sec")
         print message
-    elif elapsed_time >= 3600 and elapsed_time < 86400: # less than day
+    elif elapsed_time >= 3600 and elapsed_time < 86400:  # less than day
         hours = int(elapsed_time / (60 * 60))
-        mins = int((elapsed_time  - (hours * 60 * 60))/ 60)
+        mins = int((elapsed_time - (hours * 60 * 60)) / 60)
         secs = round(elapsed_time - (hours * 60 * 60) - (mins * 60), 1)
         message = ("Tax function estimation time: " + str(hours) +
-            " hour(s), "+ str(mins) + " min(s), " + str(secs) + " sec(s)")
+                   " hour(s), " + str(mins) + " min(s), " + str(secs) +
+                   " sec(s)")
         print message
 
     '''
@@ -1501,23 +1522,26 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
         se_mult = 3.5
 
         etr_sse_big = find_outliers(etr_wsumsq_arr / etr_obs_arr,
-            age_sup, se_mult, beg_yr, "ETR")
+                                    age_sup, se_mult, beg_yr, "ETR")
         if etr_sse_big.sum() > 0:
-            etrparam_arr_adj = replace_outliers(etrparam_arr, etr_sse_big)
+            etrparam_arr_adj = replace_outliers(etrparam_arr,
+                                                etr_sse_big)
         elif etr_sse_big.sum() == 0:
             etrparam_arr_adj = etrparam_arr
 
         mtrx_sse_big = find_outliers(mtrx_wsumsq_arr / mtrx_obs_arr,
-            age_sup, se_mult, beg_yr, "MTRx")
+                                     age_sup, se_mult, beg_yr, "MTRx")
         if mtrx_sse_big.sum() > 0:
-            mtrxparam_arr_adj = replace_outliers(mtrxparam_arr, mtrx_sse_big)
+            mtrxparam_arr_adj = replace_outliers(mtrxparam_arr,
+                                                 mtrx_sse_big)
         elif mtrx_sse_big.sum() == 0:
             mtrxparam_arr_adj = mtrxparam_arr
 
         mtry_sse_big = find_outliers(mtry_wsumsq_arr / mtry_obs_arr,
-            age_sup, se_mult, beg_yr, "MTRy")
+                                     age_sup, se_mult, beg_yr, "MTRy")
         if mtry_sse_big.sum() > 0:
-            mtryparam_arr_adj = replace_outliers(mtryparam_arr, mtry_sse_big)
+            mtryparam_arr_adj = replace_outliers(mtryparam_arr,
+                                                 mtry_sse_big)
         elif mtry_sse_big.sum() == 0:
             mtryparam_arr_adj = mtryparam_arr
 
@@ -1525,20 +1549,22 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     --------------------------------------------------------------------
     Generate tax function parameters for S < s_max - s_min + 1
     --------------------------------------------------------------------
-    etrparam_arr_S  = S x tpers x 10 array, this is an array in which S is
-                      less-than-or-equal-to s_max-s_min+1. We use weighted
-                      averages of parameters in relevant age groups
-    mtrxparam_arr_S = S x tpers x 10 array, this is an array in which S is
-                      less-than-or-equal-to s_max-s_min+1. We use weighted
-                      averages of parameters in relevant age groups
+    etrparam_arr_S  = S x tpers x 10 array, this is an array in which S
+                      is less-than-or-equal-to s_max-s_min+1. We use
+                      weighted averages of parameters in relevant age
+                      groups
+    mtrxparam_arr_S = S x tpers x 10 array, this is an array in which S
+                      is less-than-or-equal-to s_max-s_min+1. We use
+                      weighted averages of parameters in relevant age
+                      groups
     age_cuts     = (S+1,) vector, linspace of age cutoffs of S+1 points
                    between 0 and S+1
     yrcut_lb     = integer >= 0, index of lower bound age for S bin
     yrcut_ub     = integer >= 0, index of upper bound age for S bin
     rmndr_pct_lb = scalar in [0,1], discounted weight on lower bound age
     rmndr_pct_ub = scalar in [0,1], discounted weight on upper bound age
-    age_wgts     = ages x tpers x 10 array, age weights for each age in each
-                   year copied back 10 times in the 3rd dimension
+    age_wgts     = ages x tpers x 10 array, age weights for each age in
+                   each year copied back 10 times in the 3rd dimension
     --------------------------------------------------------------------
     '''
     if age_specific:
@@ -1554,22 +1580,29 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
             etrparam_arr_S = np.zeros((S, tpers, numparams))
             mtrxparam_arr_S = np.zeros((S, tpers, numparams))
             mtryparam_arr_S = np.zeros((S, tpers, numparams))
-            age_cuts = np.linspace(0, s_max-s_min+1, S+1)
+            age_cuts = np.linspace(0, s_max - s_min + 1, S + 1)
             yrcut_lb = int(age_cuts[0])
             rmndr_pct_lb = 1.
             for s in np.arange(S):
-                yrcut_ub = int(np.floor(age_cuts[s+1]))
-                rmndr_pct_ub = age_cuts[s+1] - np.floor(age_cuts[s+1])
+                yrcut_ub = int(np.floor(age_cuts[s + 1]))
+                rmndr_pct_ub = (age_cuts[s + 1] -
+                                np.floor(age_cuts[s + 1]))
                 if rmndr_pct_ub == 0.:
                     rmndr_pct_ub = 1.
                     yrcut_ub -= 1
-                age_wgts = np.dstack([PopPct_age[yrcut_lb:yrcut_ub+1, :]]*10)
-                # print yrcut_lb, yrcut_ub, rmndr_pct_lb, rmndr_pct_ub, age_wgts.shape
+                age_wgts = np.dstack(
+                    [PopPct_age[yrcut_lb:yrcut_ub + 1, :]] * 10)
                 age_wgts[0, :, :] *= rmndr_pct_lb
                 age_wgts[yrcut_ub-yrcut_lb, :, :] *= rmndr_pct_ub
-                etrparam_arr_S[s, :, :] = (etrparam_arr_adj[yrcut_lb:yrcut_ub+1, :, :] * age_wgts).sum(axis=0)
-                mtrxparam_arr_S[s, :, :] = (mtrxparam_arr_adj[yrcut_lb:yrcut_ub+1, :, :] * age_wgts).sum(axis=0)
-                mtryparam_arr_S[s, :, :] = (mtryparam_arr_adj[yrcut_lb:yrcut_ub+1, :, :] * age_wgts).sum(axis=0)
+                etrparam_arr_S[s, :, :] = (
+                    etrparam_arr_adj[yrcut_lb:yrcut_ub + 1, :, :] *
+                    age_wgts).sum(axis=0)
+                mtrxparam_arr_S[s, :, :] = (
+                    mtrxparam_arr_adj[yrcut_lb:yrcut_ub + 1, :, :] *
+                    age_wgts).sum(axis=0)
+                mtryparam_arr_S[s, :, :] = (
+                    mtryparam_arr_adj[yrcut_lb:yrcut_ub + 1, :, :] *
+                    age_wgts).sum(axis=0)
                 yrcut_lb = yrcut_ub
                 rmndr_pct_lb = 1 - rmndr_pct_ub
 
@@ -1577,29 +1610,33 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
         print 'max age, min age: ', s_max, s_min
     else:
         etrparam_arr_S = np.tile(np.reshape(etrparam_arr[0-s_min, :, :],
-            (1, tpers, etrparam_arr.shape[2])), (S, 1, 1))
+                                            (1, tpers,
+                                             etrparam_arr.shape[2])),
+                                 (S, 1, 1))
         mtrxparam_arr_S = np.tile(
             np.reshape(mtrxparam_arr[0-s_min, :, :],
-            (1, tpers, mtrxparam_arr.shape[2])), (S, 1, 1))
+                       (1, tpers, mtrxparam_arr.shape[2])), (S, 1, 1))
         mtryparam_arr_S = np.tile(
             np.reshape(mtryparam_arr[0-s_min, :, :],
-            (1, tpers, mtryparam_arr.shape[2])), (S, 1, 1))
+                       (1, tpers, mtryparam_arr.shape[2])), (S, 1, 1))
 
 
     # Save tax function parameters array and computation time in
     # dictionary
     dict_params = dict([('tfunc_etr_params_S', etrparam_arr_S),
-        ('tfunc_mtrx_params_S', mtrxparam_arr_S),
-        ('tfunc_mtry_params_S', mtryparam_arr_S),
-        ('tfunc_avginc', AvgInc), ('tfunc_avg_etr', AvgETR),
-        ('tfunc_avg_mtrx', AvgMTRx), ('tfunc_avg_mtry', AvgMTRy),
-        ('tfunc_etr_sumsq', etr_wsumsq_arr),
-        ('tfunc_mtrx_sumsq', mtrx_wsumsq_arr),
-        ('tfunc_mtry_sumsq', mtry_wsumsq_arr),
-        ('tfunc_etr_obs', etr_obs_arr),
-        ('tfunc_mtrx_obs', mtrx_obs_arr),
-        ('tfunc_mtry_obs', mtry_obs_arr),
-        ('tfunc_time', elapsed_time)])
+                        ('tfunc_mtrx_params_S', mtrxparam_arr_S),
+                        ('tfunc_mtry_params_S', mtryparam_arr_S),
+                        ('tfunc_avginc', AvgInc),
+                        ('tfunc_avg_etr', AvgETR),
+                        ('tfunc_avg_mtrx', AvgMTRx),
+                        ('tfunc_avg_mtry', AvgMTRy),
+                        ('tfunc_etr_sumsq', etr_wsumsq_arr),
+                        ('tfunc_mtrx_sumsq', mtrx_wsumsq_arr),
+                        ('tfunc_mtry_sumsq', mtry_wsumsq_arr),
+                        ('tfunc_etr_obs', etr_obs_arr),
+                        ('tfunc_mtrx_obs', mtrx_obs_arr),
+                        ('tfunc_mtry_obs', mtry_obs_arr),
+                        ('tfunc_time', elapsed_time)])
 
     return dict_params
 
@@ -1617,12 +1654,14 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
     --------------------------------------------------------------------
 
     INPUTS:
-    baseline        = boolean, =True if baseline tax policy, =False if reform
+    baseline        = boolean, =True if baseline tax policy, =False if
+                      reform
     analytical_mtrs = boolean, =True if use analytical_mtrs, =False if
                       use estimated MTRs
-    age_specific    = boolean, =True if estimate tax functions separately
-                      for each age, =False if estimate a single tax function
-                      to represent all ages in a given budget year
+    age_specific    = boolean, =True if estimate tax functions
+                      separately for each age, =False if estimate a
+                      single tax function to represent all ages in a
+                      given budget year
     start_year      = integer, first year of budget window
     reform          = dictionary, reform parameters
     guid            = string, id for reform run
@@ -1642,10 +1681,12 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
                                     analytical_mtrs, age_specific,
                                     reform, data=data)
     if baseline:
-        baseline_pckl = tx_func_est_path or "TxFuncEst_baseline{}.pkl".format(guid)
+        baseline_pckl = (tx_func_est_path or
+                         "TxFuncEst_baseline{}.pkl".format(guid))
         pkl_path = os.path.join(TAX_ESTIMATE_PATH, baseline_pckl)
     else:
-        policy_pckl = tx_func_est_path or "TxFuncEst_policy{}.pkl".format(guid)
+        policy_pckl = (tx_func_est_path or
+                       "TxFuncEst_policy{}.pkl".format(guid))
         pkl_path = os.path.join(TAX_ESTIMATE_PATH, policy_pckl)
 
     pickle.dump(dict_params, open(pkl_path, "wb"))
