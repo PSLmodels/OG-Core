@@ -387,8 +387,8 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
                                      start_year=start_year,
                                      reform=reform, guid=guid,
                                      tx_func_est_path=tx_func_est_path,
-                                     data=data, client=None,
-                                     num_workers=1)
+                                     data=data, client=client,
+                                     num_workers=num_workers)
     if baseline:
         baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         estimate_file = tx_func_est_path

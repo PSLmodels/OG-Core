@@ -1470,13 +1470,14 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     micro_data = get_micro_data.get_data(baseline=baseline,
                                          start_year=beg_yr,
                                          reform=reform, data=data)
-
+    # client = client
+    print 'Number of workers in txfunc.py = ', num_workers
     lazy_values = []
     for t in years_list:
         args = (t, micro_data[str(t)], beg_yr, s_min, s_max,
                 age_specific, analytical_mtrs, desc_data, graph_data,
                 graph_est, output_dir, numparams, tpers)
-        lazy_values.append(delayed(tax_func_loop)(args))
+        lazy_values.append(delayed(tax_func_loop)(*args))
 
     results = compute(*lazy_values, get=dask.multiprocessing.get,
                       num_workers=num_workers)
@@ -1685,8 +1686,8 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
     dict_params = tax_func_estimate(BW, S, starting_age, ending_age,
                                     start_year, baseline,
                                     analytical_mtrs, age_specific,
-                                    reform, data=data, client=None,
-                                    num_workers=1)
+                                    reform, data=data, client=client,
+                                    num_workers=num_workers)
     if baseline:
         baseline_pckl = (tx_func_est_path or
                          "TxFuncEst_baseline{}.pkl".format(guid))
