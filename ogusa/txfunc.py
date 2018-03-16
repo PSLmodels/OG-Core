@@ -994,7 +994,7 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
     # use weighted avg for MTR labor - abs value because
     # SE income may be negative
     data_orig['MTR labor income'] = \
-        (data_orig['MTR wage'] * (data_orig['Wage income'] /
+        (data_orig['MTR wage income'] * (data_orig['Wage income'] /
                                   (data_orig['Wage income'].abs() +
                                    data_orig['SE income'].abs())) +
          data_orig['MTR SE income'] * (data_orig['SE income'].abs() /
@@ -1457,8 +1457,11 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     --------------------------------------------------------------------
     '''
     start_time = time.time()
-    output_dir = "./OUTPUT/txfuncs"
-    utils.mkdirs(output_dir)
+    cur_path = os.path.split(os.path.abspath(__file__))[0]
+    output_fldr = "OUTPUT/TaxFunctions"
+    output_dir = os.path.join(cur_path, output_fldr)
+    if not os.access(output_dir, os.F_OK):
+        os.makedirs(output_dir)
 
     # call tax caculator and get microdata
     micro_data = get_micro_data.get_data(baseline=baseline,
