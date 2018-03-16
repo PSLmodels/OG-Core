@@ -994,7 +994,7 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
     # use weighted avg for MTR labor - abs value because
     # SE income may be negative
     data_orig['MTR labor income'] = \
-        (data_orig['MTR wage'] * (data_orig['Wage income'] /
+        (data_orig['MTR wage income'] * (data_orig['Wage income'] /
                                   (data_orig['Wage income'].abs() +
                                    data_orig['SE income'].abs())) +
          data_orig['MTR SE income'] * (data_orig['SE income'].abs() /
