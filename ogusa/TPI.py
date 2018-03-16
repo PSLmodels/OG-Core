@@ -760,7 +760,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
                 if baseline:
                     D_0 = initial_debt * Y[0]
                 else:
-                    B_0 = D0
+                    D_0 = D0
                 other_dg_params = (T, r, g_n_vector, g_y)
                 if not baseline_spending:
                     G_0 = ALPHA_G[0] * Y[0]
@@ -886,7 +886,10 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
     # The re-assignment of G0 & D0 is necessary because Y0 may change
     # in the TPI loop.
     if not budget_balance:
-        D_0 = initial_debt * Y[0]
+        if baseline:
+            D_0 = initial_debt * Y[0]
+        else:
+            D_0 = D0
         other_dg_params = (T, r, g_n_vector, g_y)
         if not baseline_spending:
             G_0 = ALPHA_G[0] * Y[0]
@@ -970,7 +973,10 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
     C = aggr.get_C(c_path, C_params)
 
     if not budget_balance:
-        D_0 = initial_debt * Y[0]
+        if baseline:
+            D_0 = initial_debt * Y[0]
+        else:
+            D_0 = D0
         other_dg_params = (T, r, g_n_vector, g_y)
         if not baseline_spending:
             G_0 = ALPHA_G[0] * Y[0]
