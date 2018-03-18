@@ -1470,26 +1470,27 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     micro_data = get_micro_data.get_data(baseline=baseline,
                                          start_year=beg_yr,
                                          reform=reform, data=data)
-    # client = client
-    print 'Number of workers in txfunc.py = ', num_workers
+
     lazy_values = []
     for t in years_list:
         args = (t, micro_data[str(t)], beg_yr, s_min, s_max,
                 age_specific, analytical_mtrs, desc_data, graph_data,
                 graph_est, output_dir, numparams, tpers)
-        lazy_values.append(delayed(tax_func_loop)(*args))
-
+        lazy_values.append(delayed(tax_func_loop)(t, micro_data[str(t)], beg_yr, s_min, s_max,
+                age_specific, analytical_mtrs, desc_data, graph_data,
+                graph_est, output_dir, numparams, tpers))
     results = compute(*lazy_values, get=dask.multiprocessing.get,
                       num_workers=num_workers)
 
-    for i, result in results.items():
-        (TotPop_yr[i-beg_yr], PopPct_age[:, i-beg_yr], AvgInc[i-beg_yr],
-         AvgETR[i-beg_yr], AvgMTRx[i-beg_yr], AvgMTRy[i-beg_yr],
-         etrparam_arr[:, i-beg_yr, :], etr_wsumsq_arr[:, i-beg_yr],
-         etr_obs_arr[:, i-beg_yr], mtrxparam_arr[:, i-beg_yr, :],
-         mtrx_wsumsq_arr[:, i-beg_yr], mtrx_obs_arr[:, i-beg_yr],
-         mtryparam_arr[:, i-beg_yr, :], mtry_wsumsq_arr[:, i-beg_yr],
-         mtry_obs_arr[:, i-beg_yr]) = result.get()
+    # for i, result in results.items():
+    for i, result in enumerate(results):
+        (TotPop_yr[i], PopPct_age[:, i], AvgInc[i],
+         AvgETR[i], AvgMTRx[i], AvgMTRy[i],
+         etrparam_arr[:, i, :], etr_wsumsq_arr[:, i],
+         etr_obs_arr[:, i], mtrxparam_arr[:, i, :],
+         mtrx_wsumsq_arr[:, i], mtrx_obs_arr[:, i],
+         mtryparam_arr[:, i, :], mtry_wsumsq_arr[:, i],
+         mtry_obs_arr[:, i]) = result
 
     message = ("Finished tax function loop through " +
                str(len(years_list)) + " years and " + str(len(ages_list)) +
