@@ -21,7 +21,9 @@ This py-file creates the following other file(s):
 import numpy as np
 import scipy.optimize as opt
 import cPickle as pickle
-
+from dask.distributed import Client
+from dask import compute, delayed
+import dask.multiprocessing
 from . import tax
 from . import household
 from . import aggregates as aggr
@@ -340,29 +342,57 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
     w_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
     w = firm.get_w_from_r(r, w_params)
 
+    # for j in range(J):
+    #     # Solve the euler equations
+    #     if j == 0:
+    #         guesses = np.append(bssmat[:, j], nssmat[:, j])
+    #     else:
+    #         guesses = np.append(bssmat[:, j-1], nssmat[:, j-1])
+    #     euler_params = [r, w, T_H, factor, j, J, S, beta, sigma, ltilde,
+    #                     g_y, g_n_ss, tau_payroll, retire,
+    #                     mean_income_data, h_wealth, p_wealth, m_wealth,
+    #                     b_ellipse, upsilon, j, chi_b, chi_n, tau_bq, rho,
+    #                     lambdas, omega_SS, e, analytical_mtrs,
+    #                     etr_params, mtrx_params, mtry_params]
+    #
+    #     [solutions, infodict, ier, message] =\
+    #         opt.fsolve(euler_equation_solver, guesses * .9,
+    #                    args=euler_params, xtol=MINIMIZER_TOL,
+    #                    full_output=True)
+    #
+    #
+    #     euler_errors[:, j] = infodict['fvec']
+    #     # print('Max Euler errors: ', np.absolute(euler_errors[:,j]).max())
+    #
+    #     bssmat[:, j] = solutions[:S]
+    #     nssmat[:, j] = solutions[S:]
+
+    client = Client(processes=False)
+    num_workers = 1
+    lazy_values = []
     for j in range(J):
-        # Solve the euler equations
-        if j == 0:
-            guesses = np.append(bssmat[:, j], nssmat[:, j])
-        else:
-            guesses = np.append(bssmat[:, j-1], nssmat[:, j-1])
+        guesses = np.append(bssmat[:, j], nssmat[:, j])
         euler_params = [r, w, T_H, factor, j, J, S, beta, sigma, ltilde,
                         g_y, g_n_ss, tau_payroll, retire,
                         mean_income_data, h_wealth, p_wealth, m_wealth,
                         b_ellipse, upsilon, j, chi_b, chi_n, tau_bq, rho,
                         lambdas, omega_SS, e, analytical_mtrs,
                         etr_params, mtrx_params, mtry_params]
+        lazy_values.append(delayed(opt.fsolve)(euler_equation_solver,
+                                               guesses * .9,
+                                               args=euler_params,
+                                               xtol=MINIMIZER_TOL,
+                                               full_output=True))
+    results = compute(*lazy_values, get=dask.multiprocessing.get,
+                      num_workers=num_workers)
 
-        [solutions, infodict, ier, message] =\
-            opt.fsolve(euler_equation_solver, guesses * .9,
-                       args=euler_params, xtol=MINIMIZER_TOL,
-                       full_output=True)
-
+    # for j, result in results.items():
+    for j, result in enumerate(results):
+        [solutions, infodict, ier, message] = result
         euler_errors[:, j] = infodict['fvec']
-        # print('Max Euler errors: ', np.absolute(euler_errors[:,j]).max())
-
         bssmat[:, j] = solutions[:S]
         nssmat[:, j] = solutions[S:]
+
 
     L_params = (e, omega_SS.reshape(S, 1), lambdas.reshape(1, J), 'SS')
     L = aggr.get_L(nssmat, L_params)
