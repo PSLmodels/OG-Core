@@ -422,9 +422,6 @@ def inner_loop(outer_loop_vars, params, baseline,
     else:
         new_T_H = alpha_T * new_Y
 
-    # print('OUTPUTS: ', euler_errors, bssmat, nssmat, new_r, new_w,
-    #     new_T_H, new_Y, new_factor, new_BQ, average_income_model)
-    # quit()
     return euler_errors, bssmat, nssmat, new_r, new_w, \
         new_T_H, new_Y, new_factor, new_BQ, average_income_model
 
@@ -929,7 +926,7 @@ def SS_fsolve_reform(guesses, params):
         Y = T_H / alpha_T
         outer_loop_vars = (bssmat, nssmat, r, Y, T_H, factor)
     inner_loop_params = (ss_params, income_tax_params, chi_params,
-                         small_open_params, client, num_workers)
+                         small_open_params)
 
     (euler_errors, bssmat, nssmat, new_r, new_w, new_T_H, new_Y,
      new_factor, new_BQ, average_income_model) =\
@@ -1006,7 +1003,7 @@ def SS_fsolve_reform_baselinespend(guesses, params):
     T_H = T_Hss
     outer_loop_vars = (bssmat, nssmat, r, Y, T_H, factor)
     inner_loop_params = (ss_params, income_tax_params, chi_params,
-                         small_open_params, client, num_workers)
+                         small_open_params)
 
     (euler_errors, bssmat, nssmat, new_r, new_w, new_T_H, new_Y,
      new_factor, new_BQ, average_income_model) =\
