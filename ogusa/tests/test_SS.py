@@ -3,7 +3,15 @@ import json
 import pickle
 import numpy as np
 import os
+import multiprocessing
+from multiprocessing import Process
+from dask.distributed import Client
 from ogusa import SS
+
+# Define parameters to use for multiprocessing
+# client = Client(processes=False)
+# # num_workers = int(os.cpu_count())  # not in os on Python 2.7?
+# num_workers = multiprocessing.cpu_count()
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
@@ -16,13 +24,14 @@ def test_SS_fsolve():
               'rb') as f:
         input_tuple = pickle.load(f)
     guesses, params = input_tuple
+    params = params + (None, 1)
     test_list = SS.SS_fsolve(guesses, params)
 
     with open(os.path.join(CUR_PATH,
                            'test_io_data/SS_fsolve_outputs.pkl'),
               'rb') as f:
         expected_list = pickle.load(f)
-
+    print 'outputs = ', np.absolute(np.array(test_list) - np.array(expected_list)).max()
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
@@ -34,6 +43,7 @@ def test_SS_fsolve_reform():
               'rb') as f:
         input_tuple = pickle.load(f)
     guesses, params = input_tuple
+    params = params + (None, 1)
     test_list = SS.SS_fsolve_reform(guesses, params)
 
     with open(os.path.join(CUR_PATH,
@@ -53,6 +63,7 @@ def test_SS_fsolve_reform_baselinespend():
               'rb') as f:
         input_tuple = pickle.load(f)
     guesses, params = input_tuple
+    params = params + (None, 1)
     test_list = SS.SS_fsolve_reform_baselinespend(guesses, params)
 
     with open(os.path.join(CUR_PATH,
@@ -100,8 +111,9 @@ def test_inner_loop():
                            'test_io_data/inner_loop_outputs.pkl'),
               'rb') as f:
         expected_tuple = pickle.load(f)
-
+    # print 'test and expected: ', test_tuple[3:7], expected_tuple[3:7]
     for i, v in enumerate(expected_tuple):
+        # print 'test and expected: ', test_tuple[i], v
         assert(np.allclose(test_tuple[i], v))
 
 
