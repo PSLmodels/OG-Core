@@ -143,7 +143,7 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
                    run_micro=False, constant_rates=True,
                    analytical_mtrs=False, age_specific=False,
                    start_year=DEFAULT_START_YEAR, data=None,
-                   **small_open):
+                   client=None, num_workers=1, **small_open):
 
     '''
     --------------------------------------------------------------------
@@ -387,7 +387,8 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
                                      start_year=start_year,
                                      reform=reform, guid=guid,
                                      tx_func_est_path=tx_func_est_path,
-                                     data=data)
+                                     data=data, client=client,
+                                     num_workers=num_workers)
     if baseline:
         baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
         estimate_file = tx_func_est_path

@@ -21,7 +21,8 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
            baseline=False, constant_rates=True, analytical_mtrs=False,
            age_specific=False, reform={}, user_params={}, guid='',
            run_micro=True, small_open=False, budget_balance=False,
-           baseline_spending=False, data=None):
+           baseline_spending=False, data=None, client=None,
+           num_workers=1):
 
     from ogusa import parameters, demographics, income, utils
 
@@ -61,7 +62,8 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         output_base, reform=reform, test=test, baseline=baseline,
         guid=guid, run_micro=run_micro, constant_rates=constant_rates,
         analytical_mtrs=analytical_mtrs, age_specific=age_specific,
-        start_year=start_year, data=data, **small_open)
+        start_year=start_year, data=data, client=client,
+        num_workers=num_workers, **small_open)
     run_params['analytical_mtrs'] = analytical_mtrs
     run_params['small_open'] = bool(small_open)
     run_params['budget_balance'] = budget_balance
