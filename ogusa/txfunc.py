@@ -31,7 +31,10 @@ import os
 import numpy as np
 import numpy.random as rnd
 import scipy.optimize as opt
-import multiprocessing
+from dask.distributed import Client
+from dask import compute, delayed
+import dask.multiprocessing
+
 try:
     import cPickle as pickle
 except:
@@ -1324,7 +1327,7 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
 def tax_func_estimate(BW, S, starting_age, ending_age,
                       beg_yr=DEFAULT_START_YEAR, baseline=True,
                       analytical_mtrs=False, age_specific=False,
-                      reform={}, data=None):
+                      reform={}, data=None, client=None, num_workers=1):
     '''
     --------------------------------------------------------------------
     This function performs analysis on the source data from Tax-
@@ -1457,33 +1460,37 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     --------------------------------------------------------------------
     '''
     start_time = time.time()
-    output_dir = "./OUTPUT/txfuncs"
-    utils.mkdirs(output_dir)
+    cur_path = os.path.split(os.path.abspath(__file__))[0]
+    output_fldr = "OUTPUT/TaxFunctions"
+    output_dir = os.path.join(cur_path, output_fldr)
+    if not os.access(output_dir, os.F_OK):
+        os.makedirs(output_dir)
 
     # call tax caculator and get microdata
     micro_data = get_micro_data.get_data(baseline=baseline,
                                          start_year=beg_yr,
                                          reform=reform, data=data)
 
-    pool = multiprocessing.Pool()
-    results = {}  # initialize results dictionary
+    lazy_values = []
     for t in years_list:
-        results[t] = pool.apply_async(
-            tax_func_loop, args=(t, micro_data[str(t)], beg_yr,
-                                 s_min, s_max, age_specific,
-                                 analytical_mtrs, desc_data, graph_data,
-                                 graph_est, output_dir, numparams,
-                                 tpers))
-    pool.close()
-    pool.join()
-    for i, result in results.items():
-        (TotPop_yr[i-beg_yr], PopPct_age[:, i-beg_yr], AvgInc[i-beg_yr],
-         AvgETR[i-beg_yr], AvgMTRx[i-beg_yr], AvgMTRy[i-beg_yr],
-         etrparam_arr[:, i-beg_yr, :], etr_wsumsq_arr[:, i-beg_yr],
-         etr_obs_arr[:, i-beg_yr], mtrxparam_arr[:, i-beg_yr, :],
-         mtrx_wsumsq_arr[:, i-beg_yr], mtrx_obs_arr[:, i-beg_yr],
-         mtryparam_arr[:, i-beg_yr, :], mtry_wsumsq_arr[:, i-beg_yr],
-         mtry_obs_arr[:, i-beg_yr]) = result.get()
+        args = (t, micro_data[str(t)], beg_yr, s_min, s_max,
+                age_specific, analytical_mtrs, desc_data, graph_data,
+                graph_est, output_dir, numparams, tpers)
+        lazy_values.append(delayed(tax_func_loop)(t, micro_data[str(t)], beg_yr, s_min, s_max,
+                age_specific, analytical_mtrs, desc_data, graph_data,
+                graph_est, output_dir, numparams, tpers))
+    results = compute(*lazy_values, get=dask.multiprocessing.get,
+                      num_workers=num_workers)
+
+    # for i, result in results.items():
+    for i, result in enumerate(results):
+        (TotPop_yr[i], PopPct_age[:, i], AvgInc[i],
+         AvgETR[i], AvgMTRx[i], AvgMTRy[i],
+         etrparam_arr[:, i, :], etr_wsumsq_arr[:, i],
+         etr_obs_arr[:, i], mtrxparam_arr[:, i, :],
+         mtrx_wsumsq_arr[:, i], mtrx_obs_arr[:, i],
+         mtryparam_arr[:, i, :], mtry_wsumsq_arr[:, i],
+         mtry_obs_arr[:, i]) = result
 
     message = ("Finished tax function loop through " +
                str(len(years_list)) + " years and " + str(len(ages_list)) +
@@ -1645,7 +1652,8 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
                           baseline=False, analytical_mtrs=False,
                           age_specific=False,
                           start_year=DEFAULT_START_YEAR, reform={},
-                          guid='', tx_func_est_path=None, data=None):
+                          guid='', tx_func_est_path=None, data=None,
+                          client=None, num_workers=1):
     '''
     --------------------------------------------------------------------
     This function calls the tax function estimation routine and saves
@@ -1679,7 +1687,8 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
     dict_params = tax_func_estimate(BW, S, starting_age, ending_age,
                                     start_year, baseline,
                                     analytical_mtrs, age_specific,
-                                    reform, data=data)
+                                    reform, data=data, client=client,
+                                    num_workers=num_workers)
     if baseline:
         baseline_pckl = (tx_func_est_path or
                          "TxFuncEst_baseline{}.pkl".format(guid))
