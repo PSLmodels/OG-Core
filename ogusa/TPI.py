@@ -134,7 +134,8 @@ def create_tpi_params(**sim_params):
                   sim_params['lambdas'], sim_params['imm_rates'],
                   sim_params['e'], sim_params['retire'],
                   sim_params['mean_income_data'], factor] + \
-        wealth_tax_params + ellipse_params + chi_params + [theta]
+        wealth_tax_params + ellipse_params + chi_params + [theta] + \
+        [sim_params['baseline']]
     iterative_params = [sim_params['maxiter'], sim_params['mindist_SS'],
                         sim_params['mindist_TPI']]
     small_open_params = [sim_params['small_open'],
@@ -145,7 +146,7 @@ def create_tpi_params(**sim_params):
      nu, g_y, g_n_vector, tau_b, delta_tau, tau_payroll, tau_bq, rho,
      omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,
      factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b,
-     chi_n, theta) = tpi_params
+     chi_n, theta, baseline) = tpi_params
 
     # Assumption for tax functions is that policy in last year of BW is
     # extended permanently
@@ -189,8 +190,6 @@ def create_tpi_params(**sim_params):
         fiscal_params = (budget_balance, ALPHA_T, ALPHA_G, tG1, tG2,
                          rho_G, debt_ratio_ss, T_Hbaseline, Gbaseline)
 
-    initial_debt = sim_params['initial_debt']
-
     '''
     ------------------------------------------------------------------------
     Set business tax parameters
@@ -199,7 +198,6 @@ def create_tpi_params(**sim_params):
     tau_b = sim_params['tau_b']
     delta_tau = sim_params['delta_tau']
     biz_tax_params = (tau_b, delta_tau)
-    initial_debt = sim_params['initial_debt']
 
     '''
     ------------------------------------------------------------------------
@@ -218,8 +216,18 @@ def create_tpi_params(**sim_params):
                        list(initial_b[:-1]))
     b_splus1init = initial_b
 
+    # Intial gov't debt must match that in the baseline
+    initial_debt = sim_params['initial_debt']
+    if not sim_params['baseline']:
+        baseline_tpi = os.path.join(sim_params['baseline_dir'],
+                                    "TPI/TPI_vars.pkl")
+        tpi_baseline_vars = pickle.load(open(baseline_tpi, "rb"))
+        D0 = tpi_baseline_vars['D'][0]
+    else:
+        D0 = 0.0
+
     initial_values = (B0, b_sinit, b_splus1init, factor, initial_b,
-                      initial_n, omega_S_preTP, initial_debt)
+                      initial_n, omega_S_preTP, initial_debt, D0)
 
     return (income_tax_params, tpi_params, iterative_params,
             small_open_params, initial_values, SS_values, fiscal_params,
@@ -255,7 +263,7 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params):
      nu, g_y, g_n_vector, tau_b, delta_tau, tau_payroll, tau_bq, rho,
      omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,
      factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b,
-     chi_n, theta) = tpi_params
+     chi_n, theta, baseline) = tpi_params
 
     b_splus1 = float(guesses[0])
     n = float(guesses[1])
@@ -332,7 +340,7 @@ def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params):
      nu, g_y, g_n_vector, tau_b, delta_tau, tau_payroll, tau_bq, rho,
      omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,
      factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b,
-     chi_n, theta) = tpi_params
+     chi_n, theta, baseline) = tpi_params
 
     length = len(guesses) / 2
     b_guess = np.array(guesses[:length])
@@ -421,9 +429,9 @@ def inner_loop(guesses, outer_loop_vars, params):
      nu, g_y, g_n_vector, tau_b, delta_tau, tau_payroll, tau_bq, rho,
      omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,
      factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b,
-     chi_n, theta) = tpi_params
+     chi_n, theta, baseline) = tpi_params
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n,
-     omega_S_preTP, initial_debt) = initial_values
+     omega_S_preTP, initial_debt, D0) = initial_values
 
     guesses_b, guesses_n = guesses
     r, K, BQ, T_H = outer_loop_vars
@@ -540,34 +548,6 @@ def inner_loop(guesses, outer_loop_vars, params):
     return euler_errors, b_mat, n_mat
 
 
-def initial_GDP_level(y_guess, gamma, epsilon, Z, initial_debt, B, L):
-    '''
-    Solve for first-period output given debt ratio, wealth, labor input,
-    and production function.
-
-    The solution arises from a 3-unknown, 3-equation system that is
-    simplified below.
-    (1) initial_debt = D/Y by assumption.
-    (2) Y = f(K,L)
-    (3) K = B - D, where B is household wealth
-    This could easily be modified to allow for an initial level of
-    foreign bondholding.
-    '''
-    if epsilon == 1:
-        error = y_guess - Z*((B - initial_debt*y_guess)**gamma)*(L**(1-gamma))
-    elif epsilon == 0:
-        error = y_guess - Z*(gamma*(B - initial_debt*y_guess) + (1-gamma)*L)
-    else:
-        error = y_guess - (Z * (((gamma ** (1 / epsilon)) *
-                                 ((B - initial_debt * y_guess) **
-                                  ((epsilon - 1) / epsilon))) +
-                                (((1 - gamma) ** (1 / epsilon)) *
-                                 (L ** ((epsilon - 1) / epsilon)))) **
-                           (epsilon / (epsilon - 1)))
-
-    return error
-
-
 def run_TPI(income_tax_params, tpi_params, iterative_params,
             small_open_params, initial_values, SS_values, fiscal_params,
             biz_tax_params, output_dir="./OUTPUT",
@@ -580,12 +560,10 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
      nu, g_y, g_n_vector, tau_b, delta_tau, tau_payroll, tau_bq, rho,
      omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,
      factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b,
-     chi_n, theta) = tpi_params
-    # (K0, b_sinit, b_splus1init, L0, Y0, w0, r0, BQ0, T_H_0, factor,
-    # tax0, c0, initial_b, initial_n, omega_S_preTP) = initial_values
+     chi_n, theta, baseline) = tpi_params
     small_open, tpi_firm_r, tpi_hh_r = small_open_params
     (B0, b_sinit, b_splus1init, factor, initial_b, initial_n,
-     omega_S_preTP, initial_debt) = initial_values
+     omega_S_preTP, initial_debt, D0) = initial_values
     (Kss, Bss, Lss, rss, wss, BQss, T_Hss, revenue_ss, bssmat_splus1,
      nssmat, Yss, Gss) = SS_values
     tau_b, delta_tau = biz_tax_params
@@ -778,8 +756,11 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
                                  n_mat[:T, :, :], BQ[:T].reshape(T, 1, J),
                                  Y[:T], L[:T], K[:T], factor,
                                  REVENUE_params)) + [revenue_ss] * S)
-
-                D_0 = initial_debt * Y[0]
+                # set intial debt value
+                if baseline:
+                    D_0 = initial_debt * Y[0]
+                else:
+                    D_0 = D0
                 other_dg_params = (T, r, g_n_vector, g_y)
                 if not baseline_spending:
                     G_0 = ALPHA_G[0] * Y[0]
@@ -832,7 +813,10 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
         if small_open and not budget_balance:
             # Loop through years to calculate debt and gov't spending.
             # This is done earlier when small_open=False.
-            D_0 = initial_debt * Y[0]
+            if baseline:
+                D_0 = initial_debt * Y[0]
+            else:
+                D_0 = D0
             other_dg_params = (T, r, g_n_vector, g_y)
             if not baseline_spending:
                 G_0 = ALPHA_G[0] * Ynew[0]
@@ -902,7 +886,10 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
     # The re-assignment of G0 & D0 is necessary because Y0 may change
     # in the TPI loop.
     if not budget_balance:
-        D_0 = initial_debt * Y[0]
+        if baseline:
+            D_0 = initial_debt * Y[0]
+        else:
+            D_0 = D0
         other_dg_params = (T, r, g_n_vector, g_y)
         if not baseline_spending:
             G_0 = ALPHA_G[0] * Y[0]
@@ -986,7 +973,10 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
     C = aggr.get_C(c_path, C_params)
 
     if not budget_balance:
-        D_0 = initial_debt * Y[0]
+        if baseline:
+            D_0 = initial_debt * Y[0]
+        else:
+            D_0 = D0
         other_dg_params = (T, r, g_n_vector, g_y)
         if not baseline_spending:
             G_0 = ALPHA_G[0] * Y[0]
