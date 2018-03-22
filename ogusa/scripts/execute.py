@@ -154,9 +154,13 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         iterative_params, chi_params,
         small_open_params) = SS.create_steady_state_parameters(**sim_params)
 
-    ss_outputs = SS.run_SS(income_tax_params, ss_parameters, iterative_params,
-                           chi_params, small_open_params, baseline,
-                           baseline_spending, baseline_dir=baseline_dir)
+    ss_outputs = SS.run_SS(income_tax_params, ss_parameters,
+                           iterative_params,
+                           chi_params, small_open_params,
+                           baseline, baseline_spending,
+                           baseline_dir=baseline_dir,
+                           client=client,
+                           num_workers=num_workers)
 
     '''
     ------------------------------------------------------------------------

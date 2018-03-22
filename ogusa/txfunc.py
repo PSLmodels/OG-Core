@@ -34,7 +34,6 @@ import scipy.optimize as opt
 from dask.distributed import Client
 from dask import compute, delayed
 import dask.multiprocessing
-
 try:
     import cPickle as pickle
 except:

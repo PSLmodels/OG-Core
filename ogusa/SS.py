@@ -21,7 +21,9 @@ This py-file creates the following other file(s):
 import numpy as np
 import scipy.optimize as opt
 import cPickle as pickle
-
+from dask.distributed import Client
+from dask import compute, delayed
+import dask.multiprocessing
 from . import tax
 from . import household
 from . import aggregates as aggr
@@ -282,7 +284,8 @@ def euler_equation_solver(guesses, params):
     return list(error1.flatten()) + list(error2.flatten())
 
 
-def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
+def inner_loop(outer_loop_vars, params, baseline,
+               baseline_spending=False, client=None, num_workers=1):
     '''
     This function solves for the inner loop of
     the SS.  That is, given the guesses of the
@@ -340,27 +343,27 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
     w_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
     w = firm.get_w_from_r(r, w_params)
 
+    lazy_values = []
     for j in range(J):
-        # Solve the euler equations
-        if j == 0:
-            guesses = np.append(bssmat[:, j], nssmat[:, j])
-        else:
-            guesses = np.append(bssmat[:, j-1], nssmat[:, j-1])
+        guesses = np.append(bssmat[:, j], nssmat[:, j])
         euler_params = [r, w, T_H, factor, j, J, S, beta, sigma, ltilde,
                         g_y, g_n_ss, tau_payroll, retire,
                         mean_income_data, h_wealth, p_wealth, m_wealth,
                         b_ellipse, upsilon, j, chi_b, chi_n, tau_bq, rho,
                         lambdas, omega_SS, e, analytical_mtrs,
                         etr_params, mtrx_params, mtry_params]
+        lazy_values.append(delayed(opt.fsolve)(euler_equation_solver,
+                                               guesses * .9,
+                                               args=euler_params,
+                                               xtol=MINIMIZER_TOL,
+                                               full_output=True))
+    results = compute(*lazy_values, get=dask.multiprocessing.get,
+                      num_workers=num_workers)
 
-        [solutions, infodict, ier, message] =\
-            opt.fsolve(euler_equation_solver, guesses * .9,
-                       args=euler_params, xtol=MINIMIZER_TOL,
-                       full_output=True)
-
+    # for j, result in results.items():
+    for j, result in enumerate(results):
+        [solutions, infodict, ier, message] = result
         euler_errors[:, j] = infodict['fvec']
-        # print('Max Euler errors: ', np.absolute(euler_errors[:,j]).max())
-
         bssmat[:, j] = solutions[:S]
         nssmat[:, j] = solutions[S:]
 
@@ -424,7 +427,8 @@ def inner_loop(outer_loop_vars, params, baseline, baseline_spending=False):
 
 
 def SS_solver(b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss,
-              params, baseline, fsolve_flag=False, baseline_spending=False):
+              params, baseline, fsolve_flag=False,
+              baseline_spending=False, client=None, num_workers=1):
     '''
     --------------------------------------------------------------------
     Solves for the steady state distribution of capital, labor, as well
@@ -536,7 +540,7 @@ def SS_solver(b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss,
         (euler_errors, bssmat, nssmat, new_r, new_w, new_T_H, new_Y,
          new_factor, new_BQ, average_income_model) =\
             inner_loop(outer_loop_vars, inner_loop_params, baseline,
-                       baseline_spending)
+                       baseline_spending, client, num_workers)
 
         r = utils.convex_combo(new_r, r, nu)
         factor = utils.convex_combo(new_factor, factor, nu)
@@ -803,7 +807,7 @@ def SS_fsolve(guesses, params):
                     T_H ((2*S*J+4)x1 array)
     '''
     (bssmat, nssmat, chi_params, ss_params, income_tax_params,
-     iterative_params, small_open_params) = params
+     iterative_params, small_open_params, client, num_workers) = params
     (J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde,
      nu, g_y, g_n_ss, tau_payroll, tau_bq, rho, omega_SS,
      budget_balance, alpha_T, debt_ratio_ss, tau_b, delta_tau, lambdas,
@@ -834,7 +838,8 @@ def SS_fsolve(guesses, params):
                          small_open_params)
     (euler_errors, bssmat, nssmat, new_r, new_w, new_T_H, new_Y,
      new_factor, new_BQ, average_income_model) =\
-        inner_loop(outer_loop_vars, inner_loop_params, baseline)
+        inner_loop(outer_loop_vars, inner_loop_params, baseline, False,
+                   client, num_workers)
 
     error1 = new_r - r
     if budget_balance:
@@ -894,7 +899,8 @@ def SS_fsolve_reform(guesses, params):
                     T_H ((2*S*J+4)x1 array)
     '''
     (bssmat, nssmat, chi_params, ss_params, income_tax_params,
-     iterative_params, factor, small_open_params) = params
+     iterative_params, factor, small_open_params, client, num_workers)\
+        = params
     (J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde,
      nu, g_y, g_n_ss, tau_payroll, tau_bq, rho, omega_SS,
      budget_balance, alpha_T, debt_ratio_ss, tau_b, delta_tau, lambdas,
@@ -924,7 +930,8 @@ def SS_fsolve_reform(guesses, params):
 
     (euler_errors, bssmat, nssmat, new_r, new_w, new_T_H, new_Y,
      new_factor, new_BQ, average_income_model) =\
-        inner_loop(outer_loop_vars, inner_loop_params, baseline, False)
+        inner_loop(outer_loop_vars, inner_loop_params, baseline, False,
+                   client, num_workers)
 
     error1 = new_r - r
     if budget_balance:
@@ -972,7 +979,8 @@ def SS_fsolve_reform_baselinespend(guesses, params):
                     T_H ((2*S*J+4)x1 array)
     '''
     (bssmat, nssmat, T_Hss, chi_params, ss_params, income_tax_params,
-     iterative_params, factor, small_open_params) = params
+     iterative_params, factor, small_open_params, client, num_workers)\
+        = params
     (J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde,
      nu, g_y, g_n_ss, tau_payroll, tau_bq, rho, omega_SS,
      budget_balance, alpha_T, debt_ratio_ss, tau_b, delta_tau, lambdas,
@@ -999,7 +1007,8 @@ def SS_fsolve_reform_baselinespend(guesses, params):
 
     (euler_errors, bssmat, nssmat, new_r, new_w, new_T_H, new_Y,
      new_factor, new_BQ, average_income_model) =\
-        inner_loop(outer_loop_vars, inner_loop_params, baseline, True)
+        inner_loop(outer_loop_vars, inner_loop_params, baseline, True,
+                   client, num_workers)
 
     error1 = new_r - r
     error2 = new_Y - Y
@@ -1018,7 +1027,7 @@ def SS_fsolve_reform_baselinespend(guesses, params):
 
 def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
            small_open_params, baseline=True, baseline_spending=False,
-           baseline_dir="./OUTPUT"):
+           baseline_dir="./OUTPUT", client=None, num_workers=1):
     '''
     --------------------------------------------------------------------
     Solve for SS of OG-USA.
@@ -1073,7 +1082,6 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
     chi_b, chi_n = chi_params
 
     maxiter, mindist_SS = iterative_params
-
     b_guess = np.ones((S, J)).flatten() * 0.05
     n_guess = np.ones((S, J)).flatten() * .4 * ltilde
     # For initial guesses of w, r, T_H, and factor, we use values that
@@ -1087,7 +1095,8 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
         ss_params_baseline = [b_guess.reshape(S, J),
                               n_guess.reshape(S, J), chi_params,
                               ss_params, income_tax_params,
-                              iterative_params, small_open_params]
+                              iterative_params, small_open_params,
+                              client, num_workers]
         guesses = [rguess, T_Hguess, factorguess]
         [solutions_fsolve, infodict, ier, message] =\
             opt.fsolve(SS_fsolve, guesses, args=ss_params_baseline,
@@ -1105,7 +1114,7 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
         output = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J),
                            rss, T_Hss, factor_ss, Yss,
                            solution_params, baseline, fsolve_flag,
-                           baseline_spending)
+                           baseline_spending, client, num_workers)
         # print("solved output", wss, rss, T_Hss, factor_ss)
         # print('analytical mtrs in SS: ', analytical_mtrs)
     else:
@@ -1120,7 +1129,7 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
                                 n_guess.reshape(S, J), T_Hss, chi_params,
                                 ss_params, income_tax_params,
                                 iterative_params, factor,
-                                small_open_params]
+                                small_open_params, client, num_workers]
             guesses = [rguess, Yguess]
             [solutions_fsolve, infodict, ier, message] =\
                 opt.fsolve(SS_fsolve_reform_baselinespend, guesses,
@@ -1132,7 +1141,7 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
                                 n_guess.reshape(S, J), chi_params,
                                 ss_params, income_tax_params,
                                 iterative_params, factor,
-                                small_open_params]
+                                small_open_params, client, num_workers]
             guesses = [rguess, T_Hguess]
             [solutions_fsolve, infodict, ier, message] =\
                 opt.fsolve(SS_fsolve_reform, guesses,
@@ -1148,10 +1157,11 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
         # Return SS values of variables
         solution_params = [b_guess.reshape(S, J), n_guess.reshape(S, J),
                            chi_params, ss_params, income_tax_params,
-                           iterative_params, small_open_params]
+                           iterative_params, small_open_params, ]
         output = SS_solver(b_guess.reshape(S, J), n_guess.reshape(S, J),
                            rss, T_Hss, factor, Yss, solution_params,
-                           baseline, fsolve_flag, baseline_spending)
+                           baseline, fsolve_flag, baseline_spending,
+                           client, num_workers)
         if output['Gss'] < 0.:
             warnings.warn('Warning: The combination of the tax policy '
                           + 'you specified and your target debt-to-GDP '
