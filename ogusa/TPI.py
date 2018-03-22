@@ -1068,30 +1068,6 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
     tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
     pickle.dump(output, open(tpi_vars, "wb"))
 
-    macro_output = {'Y': Y, 'B': B, 'K': K, 'L': L, 'C': C, 'I': I,
-                    'I_total': I_total, 'BQ': BQ, 'REVENUE': REVENUE,
-                    'T_H': T_H, 'r': r, 'w': w, 'tax_path': tax_path}
-
-    growth = (1+g_n_vector)*np.exp(g_y)
-    tpi_output_path = os.path.join(output_dir, 'TPI_output.csv')
-    with open(tpi_output_path, 'wb') as csvfile:
-        tpiwriter = csv.writer(csvfile)
-        tpiwriter.writerow(Y)
-        tpiwriter.writerow(D)
-        tpiwriter.writerow(REVENUE)
-        tpiwriter.writerow(G)
-        tpiwriter.writerow(T_H)
-        tpiwriter.writerow(C)
-        tpiwriter.writerow(K)
-        tpiwriter.writerow(I)
-        tpiwriter.writerow(r)
-        if small_open:
-            tpiwriter.writerow(B)
-            tpiwriter.writerow(BI)
-            tpiwriter.writerow(new_borrowing)
-        tpiwriter.writerow(growth)
-        tpiwriter.writerow(rc_error)
-        tpiwriter.writerow(ydiff)
 
     if np.any(G) < 0:
         print('Government spending is negative along transition path' +
@@ -1113,12 +1089,4 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
         raise RuntimeError('Transition path equlibrium not found ' +
                            '(eulers)')
 
-    # Non-stationary output
-    # macro_ns_output = {'K_ns_path': K_ns_path, 'C_ns_path': C_ns_path,
-    #                    'I_ns_path': I_ns_path, 'L_ns_path': L_ns_path,
-    #                    'BQ_ns_path': BQ_ns_path, 'rinit': rinit,
-    #                    'Y_ns_path': Y_ns_path,
-    #                    'T_H_ns_path': T_H_ns_path,
-    #                    'w_ns_path': w_ns_path}
-
-    return output, macro_output
+    return output

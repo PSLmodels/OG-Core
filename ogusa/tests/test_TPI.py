@@ -108,7 +108,7 @@ def test_run_TPI():
      output_dir, baseline_spending) = input_tuple
     tpi_params = tpi_params + [True]
     initial_values = initial_values + (0.0,)
-    test_dict, not_test_dict = TPI.run_TPI(
+    test_dict = TPI.run_TPI(
         income_tax_params, tpi_params, iterative_params,
         small_open_params, initial_values, SS_values, fiscal_params,
         biz_tax_params, output_dir, baseline_spending)
