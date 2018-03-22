@@ -39,6 +39,9 @@ def test_firstdoughnutring():
               'rb') as f:
         input_tuple = pickle.load(f)
     guesses, r, w, b, BQ, T_H, j, params = input_tuple
+    income_tax_params, tpi_params, initial_b = params
+    tpi_params = tpi_params + [True]
+    params = (income_tax_params, tpi_params, initial_b)
     test_list = TPI.firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params)
 
     with open(os.path.join(CUR_PATH,
@@ -57,6 +60,9 @@ def test_twist_doughnut():
               'rb') as f:
         input_tuple = pickle.load(f)
     guesses, r, w, BQ, T_H, j, s, t, params = input_tuple
+    income_tax_params, tpi_params, initial_b = params
+    tpi_params = tpi_params + [True]
+    params = (income_tax_params, tpi_params, initial_b)
     test_list = TPI.twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params)
 
     with open(os.path.join(CUR_PATH,
@@ -76,6 +82,11 @@ def test_inner_loop():
               'rb') as f:
         input_tuple = pickle.load(f)
     guesses, outer_loop_vars, params = input_tuple
+    income_tax_params, tpi_params, initial_values, ind = params
+    initial_values = initial_values + (0.0,)
+    tpi_params = tpi_params + [True]
+
+    params = (income_tax_params, tpi_params, initial_values, ind)
     test_tuple = TPI.inner_loop(guesses, outer_loop_vars, params)
 
     with open(os.path.join(CUR_PATH,
@@ -103,6 +114,8 @@ def test_run_TPI():
     (income_tax_params, tpi_params, iterative_params, small_open_params,
      initial_values, SS_values, fiscal_params, biz_tax_params,
      output_dir, baseline_spending) = input_tuple
+    tpi_params = tpi_params + [True]
+    initial_values = initial_values + (0.0,)
     test_dict, not_test_dict = TPI.run_TPI(
         income_tax_params, tpi_params, iterative_params,
         small_open_params, initial_values, SS_values, fiscal_params,
@@ -114,20 +127,3 @@ def test_run_TPI():
 
     for k, v in expected_dict.iteritems():
         assert(np.allclose(test_dict[k], v))
-
-
-@pytest.mark.parametrize('input_tuple,expected',
-                         [((1.3, 0.4, 0.0, 0.9, 0.59, 1.9, 3.3),
-                           -0.88988),
-                          ((0.9, 0.2, 1.0, 1.2, 0.7, 2.3, 4.4),
-                           -3.449974203),
-                          ((2.0, 0.8, 0.6, 1.1, 1.22, 5, 6.6),
-                           -2.554169241)],
-                         ids=['epsilon=0', 'epsilon=1', 'epsilon=0.6'])
-def test_initial_GDP_level(input_tuple, expected):
-    # Test TPI.initial_GDP_level.  3 cases: epsilon=1, 0, in (0,1).
-    y_guess, gamma, epsilon, Z, initial_debt, B, L = input_tuple
-    test_error = TPI.initial_GDP_level(y_guess, gamma, epsilon, Z,
-                                       initial_debt, B, L)
-
-    assert(np.allclose(np.array(test_error), np.array(expected)))
