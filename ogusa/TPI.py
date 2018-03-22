@@ -545,6 +545,7 @@ def inner_loop(guesses, outer_loop_vars, params, j):
         n_mat[t + ind, ind] = n_vec
 
     print('Type ', j, ' max euler error = ', euler_errors.max())
+
     return euler_errors, b_mat, n_mat
 
 def run_TPI(income_tax_params, tpi_params, iterative_params,
