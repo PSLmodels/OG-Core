@@ -8,7 +8,7 @@ particular year (t). x is total labor income, and y is total capital
 income.
 
 This module defines the following functions:
-    gen_rate_grid()
+    get_tax_rates()
     wsumsq()
     find_outliers()
     replace_outliers()
@@ -56,72 +56,6 @@ TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
 Define Functions
 ------------------------------------------------------------------------
 '''
-
-
-def gen_rate_grid(X, Y, params):
-    '''
-    --------------------------------------------------------------------
-    This function generates a grid of tax rates (ETR, MTRx, or MTRy)
-    from a grid of total labor income (X) and a grid of total capital
-    income (Y).
-
-    tau(X) = (max_x - min_x) * ((AX^2 + BX) / (AX^2 + BX + 1)) + min_x
-
-    tau(Y) = (max_y - min_y) * ((CY^2 + DY) / (CY^2 + DY + 1)) + min_y
-
-    rate(X,Y) =
-    ((tau(X) + shift_x)^share) * ((tau(Y) + shift_y)^(1-share))) + shift
-    --------------------------------------------------------------------
-    INPUTS:
-    X       = (N, N) matrix, discretized support (N elements) of labor
-              income as row vector copied down N rows
-    Y       = (N, N) matrix, discretized support (N elements) of capital
-              income as column vector copied across N columns
-    params  = (12,) vector, estimated parameters (A, B, C, D, max_x,
-              min_x, max_y, min_y, shift_x, shift_y, shift, share)
-    A       = scalar > 0, polynomial coefficient on X**2
-    B       = scalar > 0, polynomial coefficient on X
-    C       = scalar > 0, polynomial coefficient on Y**2
-    D       = scalar > 0, polynomial coefficient on Y
-    max_x   = scalar > 0, maximum tax rate for X given Y=0
-    min_x   = scalar, minimum effective tax rate for X given Y=0
-    max_y   = scalar > 0, maximum effective tax rate for Y given X=0
-    min_y   = scalar, minimum effective tax rate for Y given X=0
-    shift_x = scalar, adds to tau(X) to assure value in rate(X,Y) term
-              is strictly positive
-    shift_y = scalar, adds to tau(Y) to assure value in rate(X,Y) term
-              is strictly positive
-    shift   = scalar, adds to the Cobb-Douglas function to capture
-              negative tax rates
-    share   = scalar in [0, 1], share parameter in Cobb-Douglas function
-
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
-
-    OBJECTS CREATED WITHIN FUNCTION:
-    X2        = (N, N) matrix, X squared
-    Y2        = (N, N) matrix, Y squared
-    tau_x     = (N, N) matrix, ratio of polynomials function tau(X)
-                evaluated at grid points X
-    tau_x     = (N, N) matrix, ratio of polynomials function tau(Y)
-                evaluated at grid points Y
-    rate_grid = (N, N) matrix, predicted tax rates given labor income
-                grid (X) and capital income grid (Y)
-
-    RETURNS: rate_grid
-    --------------------------------------------------------------------
-    '''
-    (A, B, C, D, max_x, min_x, max_y, min_y, shift_x, shift_y, shift,
-     share) = params
-    X2 = X ** 2
-    Y2 = Y ** 2
-    tau_x = (((max_x - min_x) * (A * X2 + B * X) /
-              (A * X2 + B * X + 1)) + min_x)
-    tau_y = (((max_y - min_y) * (C * Y2 + D * Y) /
-              (C * Y2 + D * Y + 1)) + min_y)
-    rate_grid = (((tau_x + shift_x) ** share) *
-                 ((tau_y + shift_y) ** (1 - share))) + shift
-
-    return rate_grid
 
 
 def gen_3Dscatters_hist(df, s, t, output_dir):
@@ -313,7 +247,8 @@ def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
         Y_vec = np.exp(np.linspace(np.log(1), np.log(Y_data.max()),
                                    gridpts))
         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-        txrate_grid = gen_rate_grid(X_grid, Y_grid, tx_params)
+        txrate_grid = get_tax_rates(tx_params, X_grid, Y_grid, None,
+                                    tax_func_type, for_estimation=False)
         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
                         linewidth=0)
 
@@ -361,7 +296,8 @@ def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
         Y_vec = np.exp(np.linspace(np.log(1), np.log(Y_trnc.max()),
                                    gridpts))
         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-        txrate_grid = gen_rate_grid(X_grid, Y_grid, tx_params)
+        txrate_grid = get_tax_rates(tx_params, X_grid, Y_grid, None,
+                                    tax_func_type, for_estimation=False)
         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
                         linewidth=0)
 
@@ -376,36 +312,36 @@ def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
 
         plt.close()
 
-def get_tax_rates(params, fixed_tax_func_params, X, Y, txrates, wgts,
-                  tax_func_type, for_estimation=True):
+
+def get_tax_rates(params, X, Y, wgts, tax_func_type,
+                  for_estimation=True):
     X2 = X ** 2
     Y2 = Y ** 2
-    X2bar = (X2 * wgts).sum() / wgts.sum()
-    Xbar = (X * wgts).sum() / wgts.sum()
-    Y2bar = (Y2 * wgts).sum() / wgts.sum()
-    Ybar = (Y * wgts).sum() / wgts.sum()
-    X2til = (X2 - X2bar) / X2bar
-    Xtil = (X - Xbar) / Xbar
-    Y2til = (Y2 - Y2bar) / Y2bar
-    Ytil = (Y - Ybar) / Ybar
     if tax_func_type == 'GS':
         phi0, phi1, phi2 = params
         I = X + Y
         txrates = ((phi0*(I - (I**(-phi1) + phi2)**(-1/phi1)))/I)
     else:
-        A, B, C, D, max_x, max_y, share = params
-        X, Y, min_x, min_y, shift = fixed_tax_func_params
+        A, B, C, D, max_x, max_y, share, min_x, min_y, shift = params
         shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
         shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
         Etil = A + B
         Ftil = C + D
         if for_estimation:
+            X2bar = (X2 * wgts).sum() / wgts.sum()
+            Xbar = (X * wgts).sum() / wgts.sum()
+            Y2bar = (Y2 * wgts).sum() / wgts.sum()
+            Ybar = (Y * wgts).sum() / wgts.sum()
+            X2til = (X2 - X2bar) / X2bar
+            Xtil = (X - Xbar) / Xbar
+            Y2til = (Y2 - Y2bar) / Y2bar
+            Ytil = (Y - Ybar) / Ybar
             tau_x = (((max_x - min_x) * (A * X2til + B * Xtil + Etil) /
                       (A * X2til + B * Xtil + Etil + 1)) + min_x)
             tau_y = (((max_y - min_y) * (C * Y2til + D * Ytil + Ftil) /
                       (C * Y2til + D * Ytil + Ftil + 1)) + min_y)
             txrates = (((tau_x + shift_x) ** share) *
-                           ((tau_y + shift_y) ** (1 - share))) + shift
+                       ((tau_y + shift_y) ** (1 - share))) + shift
         else:
             tau_x = (((max_x - min_x) * (A * X2 + B * X) /
                       (A * X2 + B * X + 1)) + min_x)
@@ -475,8 +411,8 @@ def wsumsq(params, *args):
     --------------------------------------------------------------------
     '''
     fixed_tax_func_params, txrates, wgts, tax_func_type = args
-    txrates_est = get_tax_rates(params, fixed_tax_func_params, X, Y,
-                                txrates, wgts, tax_func_type)
+    params = params + fixed_tax_func_params
+    txrates_est = get_tax_rates(params, X, Y, wgts, tax_func_type)
     errors = txrates_est - txrates
     wssqdev = (wgts * (errors ** 2)).sum()
 
@@ -914,11 +850,6 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, output_dir, graph):
         raise RuntimeError("Choice of tax function is not in the set of"
                            + " possible tax functions.  Please select"
                            + " from: DEP, GS, linear.")
-
-
-
-
-
     if graph:
         '''
         ----------------------------------------------------------------
@@ -962,7 +893,8 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, output_dir, graph):
         X_vec = np.exp(np.linspace(np.log(5), np.log(X.max()), gridpts))
         Y_vec = np.exp(np.linspace(np.log(5), np.log(Y.max()), gridpts))
         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-        txrate_grid = gen_rate_grid(X_grid, Y_grid, params)
+        txrate_grid = get_tax_rates(params, X_grid, Y_grid, None,
+                          tax_func_type, for_estimation=False)
         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
                         linewidth=0)
         filename = (tx_label + '_Age_' + str(s) + '_Year_' + str(t) +
@@ -1000,7 +932,8 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, output_dir, graph):
         Y_vec = np.exp(np.linspace(np.log(5), np.log(Y_gph.max()),
                                    gridpts))
         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-        txrate_grid = gen_rate_grid(X_grid, Y_grid, params)
+        txrate_grid = get_tax_rates(params, X_grid, Y_grid, None,
+                                    tax_func_type, for_estimation=False)
         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
                         linewidth=0)
         filename = (tx_label + 'trunc_Age_' + str(s) + '_Year_' +
