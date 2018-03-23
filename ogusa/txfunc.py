@@ -662,7 +662,8 @@ def replace_outliers(param_arr, sse_big_mat):
     return param_arr_adj
 
 
-def txfunc_est(df, s, t, rate_type, tax_func_type, output_dir, graph):
+def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
+               output_dir, graph):
     '''
     --------------------------------------------------------------------
     This function uses tax tax rate and income data for individuals of a
@@ -756,7 +757,6 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, output_dir, graph):
     RETURNS: params, wsse, obs
     --------------------------------------------------------------------
     '''
-    numparams = int(12)
     X = df['Total labor income']
     Y = df['Total capital income']
     wgts = df['Weights']
@@ -1182,7 +1182,8 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
             # Estimate effective tax rate function ETR(x,y)
             (etrparams, etr_wsumsq_arr[s-s_min, t-beg_yr],
                 etr_obs_arr[s-s_min, t-beg_yr]) = \
-                txfunc_est(df_etr, s, t, 'etr', output_dir, graph_est)
+                txfunc_est(df_etr, s, t, 'etr', tax_func_type,
+                           numparams, output_dir, graph_est)
             etrparam_arr[s-s_min, t-beg_yr, :] = etrparams
 
             # Estimate marginal tax rate of labor income function
@@ -1190,7 +1191,7 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
             (mtrxparams, mtrx_wsumsq_arr[s-s_min, t-beg_yr],
                 mtrx_obs_arr[s-s_min, t-beg_yr]) = \
                 txfunc_est(df_mtrx, s, t, 'mtrx', tax_func_type,
-                           output_dir, graph_est)
+                           numparams, output_dir, graph_est)
             mtrxparam_arr[s-s_min, t-beg_yr, :] = mtrxparams
 
             # Estimate marginal tax rate of capital income function
@@ -1198,7 +1199,7 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
             (mtryparams, mtry_wsumsq_arr[s-s_min, t-beg_yr],
                 mtry_obs_arr[s-s_min, t-beg_yr]) = \
                 txfunc_est(df_mtry, s, t, 'mtry', tax_func_type,
-                           output_dir, graph_est)
+                           numparams, output_dir, graph_est)
             mtryparam_arr[s-s_min, t-beg_yr, :] = mtryparams
 
             if NoData_cnt > 0 & NoData_cnt == s-s_min:
