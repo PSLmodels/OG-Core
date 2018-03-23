@@ -1,3 +1,4 @@
+from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 This program extracts tax rate and income data from the microsimulation
@@ -15,7 +16,6 @@ This py-file creates the following other file(s):
     ./TAX_ESTIMATE_PATH/TxFuncEst_policy{}.pkl
 ------------------------------------------------------------------------
 '''
-from __future__ import print_function
 import sys
 import taxcalc
 from taxcalc import *

@@ -1,3 +1,4 @@
+from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 This file sets parameters for the OG-USA model run.
@@ -23,7 +24,6 @@ This module defines the following function(s):
 Import Packages
 ------------------------------------------------------------------------
 '''
-from __future__ import print_function
 import os
 import json
 import numpy as np

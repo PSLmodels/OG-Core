@@ -1,3 +1,4 @@
+from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 This script reads in data generated from the OSPC Tax Calculator and
@@ -26,7 +27,6 @@ This Python script outputs the following:
 ------------------------------------------------------------------------
 '''
 # Import packages
-from __future__ import print_function
 import time
 import os
 import numpy as np
