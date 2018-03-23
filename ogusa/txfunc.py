@@ -349,7 +349,7 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type,
             tau_y = (((max_y - min_y) * (C * Y2 + D * Y) /
                       (C * Y2 + D * Y + 1)) + min_y)
             txrates = (((tau_x + shift_x) ** share) *
-                         ((tau_y + shift_y) ** (1 - share))) + shift
+                       ((tau_y + shift_y) ** (1 - share))) + shift
 
     return txrates
 
