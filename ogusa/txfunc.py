@@ -1043,19 +1043,18 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                           & (data_trnc['Total labor income'] >= 5) &
                           (data_trnc['Total capital income'] >= 5)]
 
-    if not analytical_mtrs:
-        # drop all obs with MTR on capital income > 0.99
-        data_trnc = data_trnc.drop(
-            data_trnc[data_trnc['MTR capital income'] > 0.99].index)
-        # drop all obs with MTR on capital income < -0.45
-        data_trnc = data_trnc.drop(
-            data_trnc[data_trnc['MTR capital income'] < -0.45].index)
-        # drop all obs with MTR on labor income > 0.99
-        data_trnc = data_trnc.drop(
-            data_trnc[data_trnc['MTR labor income'] > 0.99].index)
-        # drop all obs with MTR on labor income < -0.45
-        data_trnc = data_trnc.drop(
-            data_trnc[data_trnc['MTR labor income'] < -0.45].index)
+    # drop all obs with MTR on capital income > 0.99
+    data_trnc = data_trnc.drop(
+        data_trnc[data_trnc['MTR capital income'] > 0.99].index)
+    # drop all obs with MTR on capital income < -0.45
+    data_trnc = data_trnc.drop(
+        data_trnc[data_trnc['MTR capital income'] < -0.45].index)
+    # drop all obs with MTR on labor income > 0.99
+    data_trnc = data_trnc.drop(
+        data_trnc[data_trnc['MTR labor income'] > 0.99].index)
+    # drop all obs with MTR on labor income < -0.45
+    data_trnc = data_trnc.drop(
+        data_trnc[data_trnc['MTR labor income'] < -0.45].index)
 
     # Create an array of the different ages in the data
     min_age = int(np.maximum(data_trnc['Age'].min(), s_min))
