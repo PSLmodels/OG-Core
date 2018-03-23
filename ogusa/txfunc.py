@@ -704,7 +704,7 @@ def replace_outliers(param_arr, sse_big_mat):
     return param_arr_adj
 
 
-def txfunc_est(df, s, t, rate_type, output_dir, graph):
+def txfunc_est(df, s, t, rate_type, tax_func_type, output_dir, graph):
     '''
     --------------------------------------------------------------------
     This function uses tax tax rate and income data for individuals of a
@@ -798,6 +798,7 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
     RETURNS: params, wsse, obs
     --------------------------------------------------------------------
     '''
+    numparams = int(12)
     X = df['Total labor income']
     Y = df['Total capital income']
     wgts = df['Weights']
@@ -819,41 +820,102 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
     y_20pctl = df['Total capital income'].quantile(.2)
     min_x = txrates[(df['Total capital income'] < y_10pctl)].min()
     min_y = txrates[(df['Total labor income'] < x_10pctl)].min()
-    Atil_init = 1.0
-    Btil_init = 1.0
-    Ctil_init = 1.0
-    Dtil_init = 1.0
-    max_x_init = np.minimum(
-        txrates[(df['Total capital income'] < y_20pctl)].max(), 0.7)
-    max_y_init = np.minimum(
-        txrates[(df['Total labor income'] < x_20pctl)].max(), 0.7)
-    shift = txrates[(df['Total labor income'] < x_20pctl) |
-                    (df['Total capital income'] < y_20pctl)].min()
-    share_init = 0.5
-    numparams = int(12)
-    params_init = np.array([Atil_init, Btil_init, Ctil_init,
-                            Dtil_init, max_x_init, max_y_init,
-                            share_init])
-    tx_objs = (X, Y, min_x, min_y, shift, txrates, wgts)
-    lb_max_x = np.maximum(min_x, 0.0) + 1e-4
-    lb_max_y = np.maximum(min_y, 0.0) + 1e-4
-    bnds = ((1e-12, None), (1e-12, None), (1e-12, None), (1e-12, None),
-            (lb_max_x, 0.8), (lb_max_y, 0.8), (0, 1))
-    params_til = opt.minimize(wsumsq, params_init, args=(tx_objs),
-                              method="L-BFGS-B", bounds=bnds, tol=1e-15)
-    Atil, Btil, Ctil, Dtil, max_x, max_y, share = params_til.x
-    # message = ("(max_x, min_x)=(" + str(max_x) + ", " + str(min_x) +
-    #     "), (max_y, min_y)=(" + str(max_y) + ", " + str(min_y) + ")")
-    # print message
-    wsse = params_til.fun
-    obs = df.shape[0]
-    shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
-    shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
-    params = np.zeros(numparams)
-    params[:4] = (np.array([Atil, Btil, Ctil, Dtil]) /
-                  np.array([X2bar, Xbar, Y2bar, Ybar]))
-    params[4:] = np.array([max_x, min_x, max_y, min_y, shift_x, shift_y,
-                           shift, share])
+
+    if tax_func_type == 'DEP':
+        '''
+        Estimate DeBacker, Evans, Phillips (2018) ratio of polynomial
+        tax functions.
+        '''
+        Atil_init = 1.0
+        Btil_init = 1.0
+        Ctil_init = 1.0
+        Dtil_init = 1.0
+        max_x_init = np.minimum(
+            txrates[(df['Total capital income'] < y_20pctl)].max(), 0.7)
+        max_y_init = np.minimum(
+            txrates[(df['Total labor income'] < x_20pctl)].max(), 0.7)
+        shift = txrates[(df['Total labor income'] < x_20pctl) |
+                        (df['Total capital income'] < y_20pctl)].min()
+        share_init = 0.5
+        params_init = np.array([Atil_init, Btil_init, Ctil_init,
+                                Dtil_init, max_x_init, max_y_init,
+                                share_init])
+        tx_objs = (X, Y, min_x, min_y, shift, txrates, wgts)
+        lb_max_x = np.maximum(min_x, 0.0) + 1e-4
+        lb_max_y = np.maximum(min_y, 0.0) + 1e-4
+        bnds = ((1e-12, None), (1e-12, None), (1e-12, None), (1e-12, None),
+                (lb_max_x, 0.8), (lb_max_y, 0.8), (0, 1))
+        params_til = opt.minimize(wsumsq, params_init, args=(tx_objs),
+                                  method="L-BFGS-B", bounds=bnds, tol=1e-15)
+        Atil, Btil, Ctil, Dtil, max_x, max_y, share = params_til.x
+        # message = ("(max_x, min_x)=(" + str(max_x) + ", " + str(min_x) +
+        #     "), (max_y, min_y)=(" + str(max_y) + ", " + str(min_y) + ")")
+        # print message
+        wsse = params_til.fun
+        obs = df.shape[0]
+        shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
+        shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
+        params = np.zeros(numparams)
+        params[:4] = (np.array([Atil, Btil, Ctil, Dtil]) /
+                      np.array([X2bar, Xbar, Y2bar, Ybar]))
+        params[4:] = np.array([max_x, min_x, max_y, min_y, shift_x, shift_y,
+                               shift, share])
+    elif tax_func_type == "GS":
+        '''
+        Estimate Gouveia-Strauss parameters via least squares.
+        Need to use a different functional form than for DEP function.
+        '''
+        Atil_init = 1.0
+        Btil_init = 1.0
+        Ctil_init = 1.0
+        Dtil_init = 1.0
+        max_x_init = np.minimum(
+            txrates[(df['Total capital income'] < y_20pctl)].max(), 0.7)
+        max_y_init = np.minimum(
+            txrates[(df['Total labor income'] < x_20pctl)].max(), 0.7)
+        shift = txrates[(df['Total labor income'] < x_20pctl) |
+                        (df['Total capital income'] < y_20pctl)].min()
+        share_init = 0.5
+        params_init = np.array([Atil_init, Btil_init, Ctil_init,
+                                Dtil_init, max_x_init, max_y_init,
+                                share_init])
+        tx_objs = (X, Y, min_x, min_y, shift, txrates, wgts)
+        lb_max_x = np.maximum(min_x, 0.0) + 1e-4
+        lb_max_y = np.maximum(min_y, 0.0) + 1e-4
+        bnds = ((1e-12, None), (1e-12, None), (1e-12, None), (1e-12, None),
+                (lb_max_x, 0.8), (lb_max_y, 0.8), (0, 1))
+        params_til = opt.minimize(wsumsq, params_init, args=(tx_objs),
+                                  method="L-BFGS-B", bounds=bnds, tol=1e-15)
+        Atil, Btil, Ctil, Dtil, max_x, max_y, share = params_til.x
+        # message = ("(max_x, min_x)=(" + str(max_x) + ", " + str(min_x) +
+        #     "), (max_y, min_y)=(" + str(max_y) + ", " + str(min_y) + ")")
+        # print message
+        wsse = params_til.fun
+        obs = df.shape[0]
+        shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
+        shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
+        params = np.zeros(numparams)
+        params[:4] = (np.array([Atil, Btil, Ctil, Dtil]) /
+                      np.array([X2bar, Xbar, Y2bar, Ybar]))
+        params[4:] = np.array([max_x, min_x, max_y, min_y, shift_x, shift_y,
+                               shift, share])
+
+    elif tax_func_type == "linear":
+        '''
+        For linear rates, just take the mean ETR or MTR by age-year.
+        Can use DEP form and set all parameters except for the shift
+        parameter to zero.
+        '''
+        params = np.zeros(numparams)
+        params[10] = txrates.mean()
+    else:
+        raise RuntimeError("Choice of tax function is not in the set of"
+                           + " possible tax functions.  Please select"
+                           + " from: DEP, GS, linear.")
+
+
+
+
 
     if graph:
         '''
@@ -949,8 +1011,8 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
 
 
 def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
-                  analytical_mtrs, desc_data, graph_data, graph_est,
-                  output_dir, numparams, tpers):
+                  tax_func_type, analytical_mtrs, desc_data, graph_data,
+                  graph_est, output_dir, numparams, tpers):
     '''
     ----------------------------------------------------------------
     Clean up the data
@@ -1066,9 +1128,7 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
 
     NoData_cnt = np.min(min_age - s_min, 0)
 
-    # Each age s must be done in serial, but each year can be done
-    # in parallel
-
+    # Each age s must be done in serial
     for s in ages_list:
         if age_specific:
             print "year=", t, "Age=", s
@@ -1193,14 +1253,16 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
             # MTRx(x,y)
             (mtrxparams, mtrx_wsumsq_arr[s-s_min, t-beg_yr],
                 mtrx_obs_arr[s-s_min, t-beg_yr]) = \
-                txfunc_est(df_mtrx, s, t, 'mtrx', output_dir, graph_est)
+                txfunc_est(df_mtrx, s, t, 'mtrx', tax_func_type,
+                           output_dir, graph_est)
             mtrxparam_arr[s-s_min, t-beg_yr, :] = mtrxparams
 
             # Estimate marginal tax rate of capital income function
             # MTRy(x,y)
             (mtryparams, mtry_wsumsq_arr[s-s_min, t-beg_yr],
                 mtry_obs_arr[s-s_min, t-beg_yr]) = \
-                txfunc_est(df_mtry, s, t, 'mtry', output_dir, graph_est)
+                txfunc_est(df_mtry, s, t, 'mtry', tax_func_type,
+                           output_dir, graph_est)
             mtryparam_arr[s-s_min, t-beg_yr, :] = mtryparams
 
             if NoData_cnt > 0 & NoData_cnt == s-s_min:
@@ -1324,8 +1386,9 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
 
 def tax_func_estimate(BW, S, starting_age, ending_age,
                       beg_yr=DEFAULT_START_YEAR, baseline=True,
-                      analytical_mtrs=False, age_specific=False,
-                      reform={}, data=None, client=None, num_workers=1):
+                      analytical_mtrs=False, tax_func_type='DEP',
+                      age_specific=False, reform={}, data=None,
+                      client=None, num_workers=1):
     '''
     --------------------------------------------------------------------
     This function performs analysis on the source data from Tax-
@@ -1472,11 +1535,14 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     lazy_values = []
     for t in years_list:
         args = (t, micro_data[str(t)], beg_yr, s_min, s_max,
-                age_specific, analytical_mtrs, desc_data, graph_data,
-                graph_est, output_dir, numparams, tpers)
-        lazy_values.append(delayed(tax_func_loop)(t, micro_data[str(t)], beg_yr, s_min, s_max,
-                age_specific, analytical_mtrs, desc_data, graph_data,
-                graph_est, output_dir, numparams, tpers))
+                age_specific, tax_func_type, analytical_mtrs, desc_data,
+                graph_data, graph_est, output_dir, numparams, tpers)
+        lazy_values.append(
+            delayed(tax_func_loop)(t, micro_data[str(t)], beg_yr, s_min,
+                                   s_max, age_specific, tax_func_type,
+                                   analytical_mtrs, desc_data,
+                                   graph_data, graph_est, output_dir,
+                                   numparams, tpers))
     results = compute(*lazy_values, get=dask.multiprocessing.get,
                       num_workers=num_workers)
 
@@ -1648,7 +1714,7 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
 
 def get_tax_func_estimate(BW, S, starting_age, ending_age,
                           baseline=False, analytical_mtrs=False,
-                          age_specific=False,
+                          tax_func_type='DEP', age_specific=False,
                           start_year=DEFAULT_START_YEAR, reform={},
                           guid='', tx_func_est_path=None, data=None,
                           client=None, num_workers=1):
@@ -1684,8 +1750,9 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
     # Code to run manually from here:
     dict_params = tax_func_estimate(BW, S, starting_age, ending_age,
                                     start_year, baseline,
-                                    analytical_mtrs, age_specific,
-                                    reform, data=data, client=client,
+                                    analytical_mtrs, tax_func_type,
+                                    age_specific, reform, data=data,
+                                    client=client,
                                     num_workers=num_workers)
     if baseline:
         baseline_pckl = (tx_func_est_path or
