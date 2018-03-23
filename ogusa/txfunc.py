@@ -376,6 +376,46 @@ def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
 
         plt.close()
 
+def get_tax_rates(params, fixed_tax_func_params, X, Y, txrates, wgts,
+                  tax_func_type, for_estimation=True):
+    X2 = X ** 2
+    Y2 = Y ** 2
+    X2bar = (X2 * wgts).sum() / wgts.sum()
+    Xbar = (X * wgts).sum() / wgts.sum()
+    Y2bar = (Y2 * wgts).sum() / wgts.sum()
+    Ybar = (Y * wgts).sum() / wgts.sum()
+    X2til = (X2 - X2bar) / X2bar
+    Xtil = (X - Xbar) / Xbar
+    Y2til = (Y2 - Y2bar) / Y2bar
+    Ytil = (Y - Ybar) / Ybar
+    if tax_func_type == 'GS':
+        phi0, phi1, phi2 = params
+        I = X + Y
+        txrates = ((phi0*(I - (I**(-phi1) + phi2)**(-1/phi1)))/I)
+    else:
+        A, B, C, D, max_x, max_y, share = params
+        X, Y, min_x, min_y, shift = fixed_tax_func_params
+        shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
+        shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
+        Etil = A + B
+        Ftil = C + D
+        if for_estimation:
+            tau_x = (((max_x - min_x) * (A * X2til + B * Xtil + Etil) /
+                      (A * X2til + B * Xtil + Etil + 1)) + min_x)
+            tau_y = (((max_y - min_y) * (C * Y2til + D * Ytil + Ftil) /
+                      (C * Y2til + D * Ytil + Ftil + 1)) + min_y)
+            txrates = (((tau_x + shift_x) ** share) *
+                           ((tau_y + shift_y) ** (1 - share))) + shift
+        else:
+            tau_x = (((max_x - min_x) * (A * X2 + B * X) /
+                      (A * X2 + B * X + 1)) + min_x)
+            tau_y = (((max_y - min_y) * (C * Y2 + D * Y) /
+                      (C * Y2 + D * Y + 1)) + min_y)
+            txrates = (((tau_x + shift_x) ** share) *
+                         ((tau_y + shift_y) ** (1 - share))) + shift
+
+    return txrates
+
 
 def wsumsq(params, *args):
     '''
@@ -434,28 +474,9 @@ def wsumsq(params, *args):
     RETURNS: wssqdev
     --------------------------------------------------------------------
     '''
-    A, B, C, D, max_x, max_y, share = params
-    X, Y, min_x, min_y, shift, txrates, wgts = args
-    X2 = X ** 2
-    Y2 = Y ** 2
-    X2bar = (X2 * wgts).sum() / wgts.sum()
-    Xbar = (X * wgts).sum() / wgts.sum()
-    Y2bar = (Y2 * wgts).sum() / wgts.sum()
-    Ybar = (Y * wgts).sum() / wgts.sum()
-    shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
-    shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
-    X2til = (X2 - X2bar) / X2bar
-    Xtil = (X - Xbar) / Xbar
-    Y2til = (Y2 - Y2bar) / Y2bar
-    Ytil = (Y - Ybar) / Ybar
-    Etil = A + B
-    Ftil = C + D
-    tau_x = (((max_x - min_x) * (A * X2til + B * Xtil + Etil) /
-              (A * X2til + B * Xtil + Etil + 1)) + min_x)
-    tau_y = (((max_y - min_y) * (C * Y2til + D * Ytil + Ftil) /
-              (C * Y2til + D * Ytil + Ftil + 1)) + min_y)
-    txrates_est = (((tau_x + shift_x) ** share) *
-                   ((tau_y + shift_y) ** (1 - share))) + shift
+    fixed_tax_func_params, txrates, wgts, tax_func_type = args
+    txrates_est = get_tax_rates(params, fixed_tax_func_params, X, Y,
+                                txrates, wgts, tax_func_type)
     errors = txrates_est - txrates
     wssqdev = (wgts * (errors ** 2)).sum()
 
@@ -840,7 +861,7 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, output_dir, graph):
         params_init = np.array([Atil_init, Btil_init, Ctil_init,
                                 Dtil_init, max_x_init, max_y_init,
                                 share_init])
-        tx_objs = (X, Y, min_x, min_y, shift, txrates, wgts)
+        tx_objs = ((X, Y, min_x, min_y, shift), txrates, wgts, tax_func_type)
         lb_max_x = np.maximum(min_x, 0.0) + 1e-4
         lb_max_y = np.maximum(min_y, 0.0) + 1e-4
         bnds = ((1e-12, None), (1e-12, None), (1e-12, None), (1e-12, None),
@@ -865,41 +886,20 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, output_dir, graph):
         Estimate Gouveia-Strauss parameters via least squares.
         Need to use a different functional form than for DEP function.
         '''
-        Atil_init = 1.0
-        Btil_init = 1.0
-        Ctil_init = 1.0
-        Dtil_init = 1.0
-        max_x_init = np.minimum(
-            txrates[(df['Total capital income'] < y_20pctl)].max(), 0.7)
-        max_y_init = np.minimum(
-            txrates[(df['Total labor income'] < x_20pctl)].max(), 0.7)
-        shift = txrates[(df['Total labor income'] < x_20pctl) |
-                        (df['Total capital income'] < y_20pctl)].min()
-        share_init = 0.5
-        params_init = np.array([Atil_init, Btil_init, Ctil_init,
-                                Dtil_init, max_x_init, max_y_init,
-                                share_init])
-        tx_objs = (X, Y, min_x, min_y, shift, txrates, wgts)
-        lb_max_x = np.maximum(min_x, 0.0) + 1e-4
-        lb_max_y = np.maximum(min_y, 0.0) + 1e-4
-        bnds = ((1e-12, None), (1e-12, None), (1e-12, None), (1e-12, None),
-                (lb_max_x, 0.8), (lb_max_y, 0.8), (0, 1))
+        phi0_init = 1.0
+        phi1_init = 1.0
+        phi2_init = 1.0
+        params_init = np.array([phi0_init, phi1_init, phi2_init])
+        tx_objs = (None, txrates, wgts, tax_func_type)
+        bnds = ((1e-12, None), (1e-12, None), (1e-12, None))
         params_til = opt.minimize(wsumsq, params_init, args=(tx_objs),
                                   method="L-BFGS-B", bounds=bnds, tol=1e-15)
-        Atil, Btil, Ctil, Dtil, max_x, max_y, share = params_til.x
-        # message = ("(max_x, min_x)=(" + str(max_x) + ", " + str(min_x) +
-        #     "), (max_y, min_y)=(" + str(max_y) + ", " + str(min_y) + ")")
-        # print message
+        phi0til, phi1til, phi2til = params_til.x
         wsse = params_til.fun
         obs = df.shape[0]
-        shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
-        shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
         params = np.zeros(numparams)
-        params[:4] = (np.array([Atil, Btil, Ctil, Dtil]) /
+        params[:2] = (np.array([phi0til, phi1til, phi2til]) /
                       np.array([X2bar, Xbar, Y2bar, Ybar]))
-        params[4:] = np.array([max_x, min_x, max_y, min_y, shift_x, shift_y,
-                               shift, share])
-
     elif tax_func_type == "linear":
         '''
         For linear rates, just take the mean ETR or MTR by age-year.
@@ -907,6 +907,8 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, output_dir, graph):
         parameter to zero.
         '''
         params = np.zeros(numparams)
+        wsse = 0.0
+        obs = df.shape[0]
         params[10] = txrates.mean()
     else:
         raise RuntimeError("Choice of tax function is not in the set of"
