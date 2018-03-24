@@ -319,7 +319,7 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type,
     X2 = X ** 2
     Y2 = Y ** 2
     if tax_func_type == 'GS':
-        phi0, phi1, phi2 = params
+        phi0, phi1, phi2 = params[:-1]
         I = X + Y
         txrates = ((phi0*(I - (I**(-phi1) + phi2)**(-1/phi1)))/I)
     else:
@@ -411,9 +411,9 @@ def wsumsq(params, *args):
     RETURNS: wssqdev
     --------------------------------------------------------------------
     '''
-    fixed_tax_func_params, txrates, wgts, tax_func_type = args
-    params = params + fixed_tax_func_params
-    txrates_est = get_tax_rates(params, X, Y, wgts, tax_func_type)
+    fixed_tax_func_params, X, Y, txrates, wgts, tax_func_type = args
+    params_all = np.append(params, fixed_tax_func_params)
+    txrates_est = get_tax_rates(params_all, X, Y, wgts, tax_func_type)
     errors = txrates_est - txrates
     wssqdev = (wgts * (errors ** 2)).sum()
 
@@ -798,7 +798,8 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         params_init = np.array([Atil_init, Btil_init, Ctil_init,
                                 Dtil_init, max_x_init, max_y_init,
                                 share_init])
-        tx_objs = ((X, Y, min_x, min_y, shift), txrates, wgts, tax_func_type)
+        tx_objs = (np.array([min_x, min_y, shift]), X, Y, txrates, wgts,
+                   tax_func_type)
         lb_max_x = np.maximum(min_x, 0.0) + 1e-4
         lb_max_y = np.maximum(min_y, 0.0) + 1e-4
         bnds = ((1e-12, None), (1e-12, None), (1e-12, None), (1e-12, None),
@@ -827,7 +828,7 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         phi1_init = 1.0
         phi2_init = 1.0
         params_init = np.array([phi0_init, phi1_init, phi2_init])
-        tx_objs = (None, txrates, wgts, tax_func_type)
+        tx_objs = (np.array([None]), X, Y, txrates, wgts, tax_func_type)
         bnds = ((1e-12, None), (1e-12, None), (1e-12, None))
         params_til = opt.minimize(wsumsq, params_init, args=(tx_objs),
                                   method="L-BFGS-B", bounds=bnds, tol=1e-15)
@@ -835,8 +836,7 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         wsse = params_til.fun
         obs = df.shape[0]
         params = np.zeros(numparams)
-        params[:2] = (np.array([phi0til, phi1til, phi2til]) /
-                      np.array([X2bar, Xbar, Y2bar, Ybar]))
+        params[:3] = np.array([phi0til, phi1til, phi2til])
     elif tax_func_type == "linear":
         '''
         For linear rates, just take the mean ETR or MTR by age-year.
