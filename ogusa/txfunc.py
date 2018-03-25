@@ -319,7 +319,7 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type,
     X2 = X ** 2
     Y2 = Y ** 2
     if tax_func_type == 'GS':
-        phi0, phi1, phi2 = params[:-1]
+        phi0, phi1, phi2 = params[:3]
         I = X + Y
         txrates = ((phi0*(I - (I**(-phi1) + phi2)**(-1/phi1)))/I)
     else:
@@ -834,6 +834,7 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
                                   method="L-BFGS-B", bounds=bnds, tol=1e-15)
         phi0til, phi1til, phi2til = params_til.x
         wsse = params_til.fun
+        print('GS WSSE: ', wsse)
         obs = df.shape[0]
         params = np.zeros(numparams)
         params[:3] = np.array([phi0til, phi1til, phi2til])
@@ -895,7 +896,7 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         Y_vec = np.exp(np.linspace(np.log(5), np.log(Y.max()), gridpts))
         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
         txrate_grid = get_tax_rates(params, X_grid, Y_grid, None,
-                          tax_func_type, for_estimation=False)
+                                    tax_func_type, for_estimation=False)
         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
                         linewidth=0)
         filename = (tx_label + '_Age_' + str(s) + '_Year_' + str(t) +
@@ -1528,7 +1529,6 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     if age_specific:
         age_sup = np.linspace(s_min, s_max, s_max-s_min+1)
         se_mult = 3.5
-
         etr_sse_big = find_outliers(etr_wsumsq_arr / etr_obs_arr,
                                     age_sup, se_mult, beg_yr, "ETR")
         if etr_sse_big.sum() > 0:
@@ -1577,11 +1577,14 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     '''
     if age_specific:
         if S == s_max - s_min + 1:
+            print('This ONE')
             etrparam_arr_S = etrparam_arr_adj
             mtrxparam_arr_S = mtrxparam_arr_adj
             mtryparam_arr_S = mtryparam_arr_adj
-
+        elif S > s_max - s_min + 1:
+            # Need to handle S > age range in data...
         elif S < s_max - s_min + 1:
+            print('HERE')
             etrparam_arr_S = etrparam_arr_adj
             mtrxparam_arr_S = mtrxparam_arr_adj
             mtryparam_arr_S = mtryparam_arr_adj
@@ -1627,7 +1630,6 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
         mtryparam_arr_S = np.tile(
             np.reshape(mtryparam_arr[0-s_min, :, :],
                        (1, tpers, mtryparam_arr.shape[2])), (S, 1, 1))
-
 
     # Save tax function parameters array and computation time in
     # dictionary
