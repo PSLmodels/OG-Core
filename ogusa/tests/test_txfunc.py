@@ -33,8 +33,10 @@ def test_gen_rate_grid():
 
     assert(np.allclose(test_grid, expected))
 
-
-def test_wsumsq():
+@pytest.mark.parametrize('tax_func_type,expected_mat',
+                         [('DEP', 0.032749763), ('DS', 1.475619188)],
+                         ids=['DEP', 'GS'])
+def test_wsumsq(tax_func_type, expected):
     A = 0.01
     B = 0.02
     C = 0.1
@@ -47,15 +49,22 @@ def test_wsumsq():
     shift_y = 0.2
     shift = 0.04
     share = 0.8
+    phi0 = 0.396
+    phi1 = 0.7
+    phi2 = 0.9
     X = np.array([32.0, 44.0, 1.6, 0.4])
     Y = np.array([32.0, 55.0, 0.9, 0.03])
     txrates = np.array([0.6, 0.5, 0.3, 0.25])
     wgts = np.array([0.1, 0.25, 0.55, 0.1])
-    params = A, B, C, D, max_x, max_y, share
-    args = X, Y, min_x, min_y, shift, txrates, wgts
+    if tax_func_type == 'DEP':
+        params = A, B, C, D, max_x, max_y, share
+        args = (min_x, min_y, shift), X, Y, txrates, wgts, tax_func_type
+    elif tax_func_type == 'GS':
+        params = phi0, phi1, phi2
+        args = None, X, Y, txrates, wgts, tax_func_type
     test_val = txfunc.wsumsq(params, *args)
 
-    assert(np.allclose(test_val, 0.032749763))
+    assert(np.allclose(test_val, expected))
 
 
 @pytest.mark.parametrize('se_mult,expected_mat',
@@ -76,6 +85,7 @@ def test_find_outliers(se_mult, expected_mat):
                                     start_year, varstr, False)
 
     assert(np.allclose(test_mat, expected_mat))
+
 
 def test_replace_outliers():
     """
@@ -137,6 +147,9 @@ def test_replace_outliers():
 
 
 # def test_tax_func_loop():
+
+
+# def test_get_tax_rates():
 
 
 # def test_tax_func_estimate():
