@@ -321,13 +321,13 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
     I = X + Y
     if tax_func_type == 'GS':
         phi0, phi1, phi2 = params[:3]
-        if rate_type = 'etr':
+        if rate_type == 'etr':
             txrates = (
                 (phi0 * (I - ((I ** -phi1) + phi2) ** (-1 / phi1))) / I)
         else:  # marginal tax rate function
             txrates = (phi0*(1 - (I ** (-phi1 - 1) * ((I ** -phi1) + phi2)
                                   ** ((-1 - phi1) / phi1))))
-    elif tx_func_type == 'DEP':
+    elif tax_func_type == 'DEP':
         A, B, C, D, max_x, max_y, share, min_x, min_y, shift = params
         shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
         shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
@@ -355,7 +355,7 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
                       (C * Y2 + D * Y + 1)) + min_y)
             txrates = (((tau_x + shift_x) ** share) *
                        ((tau_y + shift_y) ** (1 - share))) + shift
-    elif tx_func_type == 'DEP_totalinc':
+    elif tax_func_type == 'DEP_totalinc':
         A, B, max_I, min_I, shift = params
         shift_I = np.maximum(-min_I, 0.0) + 0.01 * (max_I - min_I)
         Etil = A + B
@@ -790,6 +790,10 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
     Xbar = (X * wgts).sum() / wgts.sum()
     Y2bar = (Y2 * wgts).sum() / wgts.sum()
     Ybar = (Y * wgts).sum() / wgts.sum()
+    I  = X + Y
+    I2 = I ** 2
+    Ibar = (I * wgts).sum() / wgts.sum()
+    I2bar = (I2 * wgts).sum() / wgts.sum()
     if rate_type == 'etr':
         txrates = df['ETR']
     elif rate_type == 'mtrx':
@@ -843,7 +847,7 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
                       np.array([X2bar, Xbar, Y2bar, Ybar]))
         params[4:] = np.array([max_x, min_x, max_y, min_y, shift_x, shift_y,
                                shift, share])
-    if tax_func_type == 'DEP_totalinc':
+    elif tax_func_type == 'DEP_totalinc':
         '''
         Estimate DeBacker, Evans, Phillips (2018) ratio of polynomial
         tax functions as a function of total income.
@@ -1634,14 +1638,10 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     '''
     if age_specific:
         if S == s_max - s_min + 1:
-            print('This ONE')
             etrparam_arr_S = etrparam_arr_adj
             mtrxparam_arr_S = mtrxparam_arr_adj
             mtryparam_arr_S = mtryparam_arr_adj
-        elif S > s_max - s_min + 1:
-            # Need to handle S > age range in data...
         elif S < s_max - s_min + 1:
-            print('HERE')
             etrparam_arr_S = etrparam_arr_adj
             mtrxparam_arr_S = mtrxparam_arr_adj
             mtryparam_arr_S = mtryparam_arr_adj
