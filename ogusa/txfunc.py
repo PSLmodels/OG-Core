@@ -314,14 +314,19 @@ def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
         plt.close()
 
 
-def get_tax_rates(params, X, Y, wgts, tax_func_type,
+def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
                   for_estimation=True):
     X2 = X ** 2
     Y2 = Y ** 2
     if tax_func_type == 'GS':
         phi0, phi1, phi2 = params[:3]
         I = X + Y
-        txrates = ((phi0*(I - (I**(-phi1) + phi2)**(-1/phi1)))/I)
+        if rate_type = 'etr'
+            txrates = (
+                (phi0 * (I - ((I ** -phi1) + phi2) ** (-1 / phi1))) / I)
+        else:  # marginal tax rate function
+            txrates = (phi0*(1 - (I ** (-phi1 - 1) * ((I ** -phi1) + phi2)
+                                  ** ((-1 - phi1) / phi1))))
     else:
         A, B, C, D, max_x, max_y, share, min_x, min_y, shift = params
         shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
@@ -411,9 +416,11 @@ def wsumsq(params, *args):
     RETURNS: wssqdev
     --------------------------------------------------------------------
     '''
-    fixed_tax_func_params, X, Y, txrates, wgts, tax_func_type = args
+    (fixed_tax_func_params, X, Y, txrates, wgts, tax_func_type,
+     rate_type) = args
     params_all = np.append(params, fixed_tax_func_params)
-    txrates_est = get_tax_rates(params_all, X, Y, wgts, tax_func_type)
+    txrates_est = get_tax_rates(params_all, X, Y, wgts, tax_func_type,
+                                rate_type)
     errors = txrates_est - txrates
     wssqdev = (wgts * (errors ** 2)).sum()
 
@@ -799,7 +806,7 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
                                 Dtil_init, max_x_init, max_y_init,
                                 share_init])
         tx_objs = (np.array([min_x, min_y, shift]), X, Y, txrates, wgts,
-                   tax_func_type)
+                   tax_func_type, rate_type)
         lb_max_x = np.maximum(min_x, 0.0) + 1e-4
         lb_max_y = np.maximum(min_y, 0.0) + 1e-4
         bnds = ((1e-12, None), (1e-12, None), (1e-12, None), (1e-12, None),
@@ -828,7 +835,8 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         phi1_init = 1.0
         phi2_init = 1.0
         params_init = np.array([phi0_init, phi1_init, phi2_init])
-        tx_objs = (np.array([None]), X, Y, txrates, wgts, tax_func_type)
+        tx_objs = (np.array([None]), X, Y, txrates, wgts, tax_func_type,
+                   rate_type)
         bnds = ((1e-12, None), (1e-12, None), (1e-12, None))
         params_til = opt.minimize(wsumsq, params_init, args=(tx_objs),
                                   method="L-BFGS-B", bounds=bnds, tol=1e-15)
