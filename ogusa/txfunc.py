@@ -318,16 +318,16 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
                   for_estimation=True):
     X2 = X ** 2
     Y2 = Y ** 2
+    I = X + Y
     if tax_func_type == 'GS':
         phi0, phi1, phi2 = params[:3]
-        I = X + Y
-        if rate_type = 'etr'
+        if rate_type = 'etr':
             txrates = (
                 (phi0 * (I - ((I ** -phi1) + phi2) ** (-1 / phi1))) / I)
         else:  # marginal tax rate function
             txrates = (phi0*(1 - (I ** (-phi1 - 1) * ((I ** -phi1) + phi2)
                                   ** ((-1 - phi1) / phi1))))
-    else:
+    elif tx_func_type == 'DEP':
         A, B, C, D, max_x, max_y, share, min_x, min_y, shift = params
         shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
         shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
@@ -355,6 +355,23 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
                       (C * Y2 + D * Y + 1)) + min_y)
             txrates = (((tau_x + shift_x) ** share) *
                        ((tau_y + shift_y) ** (1 - share))) + shift
+    elif tx_func_type == 'DEP_totalinc':
+        A, B, max_I, min_I, shift = params
+        shift_I = np.maximum(-min_I, 0.0) + 0.01 * (max_I - min_I)
+        Etil = A + B
+        I2 = I ** 2
+        if for_estimation:
+            I2bar = (I2 * wgts).sum() / wgts.sum()
+            Ibar = (I * wgts).sum() / wgts.sum()
+            I2til = (I2 - I2bar) / I2bar
+            Itil = (I - Ibar) / Ibar
+            tau_I = (((max_I - min_I) * (A * I2til + B * Itil + Etil) /
+                      (A * I2til + B * Itil + Etil + 1)) + min_I)
+            txrates = tau_I + shift_I + shift
+        else:
+            tau_I = (((max_I - min_I) * (A * I2 + B * I) /
+                      (A * I2 + B * I + 1)) + min_I)
+            txrates = tau_I + shift_I + shift
 
     return txrates
 
@@ -826,6 +843,38 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
                       np.array([X2bar, Xbar, Y2bar, Ybar]))
         params[4:] = np.array([max_x, min_x, max_y, min_y, shift_x, shift_y,
                                shift, share])
+    if tax_func_type == 'DEP_totalinc':
+        '''
+        Estimate DeBacker, Evans, Phillips (2018) ratio of polynomial
+        tax functions as a function of total income.
+        '''
+        Atil_init = 1.0
+        Btil_init = 1.0
+        max_x_init = np.minimum(
+            txrates[(df['Total capital income'] < y_20pctl)].max(), 0.7)
+        max_y_init = np.minimum(
+            txrates[(df['Total labor income'] < x_20pctl)].max(), 0.7)
+        max_I_init = max(max_x_init, max_y_init)
+        min_I = min(min_x, min_y)
+        shift = txrates[(df['Total labor income'] < x_20pctl) |
+                        (df['Total capital income'] < y_20pctl)].min()
+        share_init = 0.5
+        params_init = np.array([Atil_init, Btil_init, max_I_init])
+        tx_objs = (np.array([min_I, shift]), X, Y, txrates, wgts,
+                   tax_func_type, rate_type)
+        lb_max_I = np.maximum(min_I, 0.0) + 1e-4
+        bnds = ((1e-12, None), (1e-12, None), (lb_max_I, 0.8))
+        params_til = opt.minimize(wsumsq, params_init, args=(tx_objs),
+                                  method="L-BFGS-B", bounds=bnds, tol=1e-15)
+        Atil, Btil, max_I = params_til.x
+        wsse = params_til.fun
+        obs = df.shape[0]
+        shift_I = np.maximum(-min_I, 0.0) + 0.01 * (max_I - min_I)
+        params = np.zeros(numparams)
+        params[:4] = (np.array([Atil, Btil, 0.0, 0.0]) /
+                      np.array([I2bar, Ibar, Y2bar, Ybar]))
+        params[4:] = np.array([max_I, min_I, 0.0, 0.0, shift_I, 0.0,
+                               shift, 1.0])
     elif tax_func_type == "GS":
         '''
         Estimate Gouveia-Strauss parameters via least squares.
@@ -859,7 +908,7 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
     else:
         raise RuntimeError("Choice of tax function is not in the set of"
                            + " possible tax functions.  Please select"
-                           + " from: DEP, GS, linear.")
+                           + " from: DEP, DEP_totalinc, GS, linear.")
     if graph:
         '''
         ----------------------------------------------------------------
