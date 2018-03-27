@@ -14,21 +14,6 @@
         "out_of_range_action": "stop",
         "compatible_data": {"puf": true, "cps": true}
     },
-    "MINIMIZER_OPTIONS": {
-        "long_name": "Options used in root finders to solve household FOCs",
-        "description": "Options used in root finders to solve household FOCs",
-        "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "value": [None],
-        "range": {"min": , "max": },
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
-    },
     "PLOT_TPI": {
         "long_name": "Flag to plot TPI output",
         "description": "Flag to plot TPI output",
