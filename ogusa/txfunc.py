@@ -1673,6 +1673,11 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
                     age_wgts).sum(axis=0)
                 yrcut_lb = yrcut_ub
                 rmndr_pct_lb = 1 - rmndr_pct_ub
+        else:
+            print('S is larger than the difference between the minimum'
+                  + ' age and the maximum age specified.  Please choose'
+                  + ' and S such that a model period equals at least'
+                  + ' one calendar year.')
 
         print('Big S: ', S)
         print('max age, min age: ', s_max, s_min)
