@@ -206,10 +206,6 @@ def ETR_income(r, w, b, n, factor, params):
 
     return tau
 
-# Note that since when we the same functional form, one could use
-# just one tax function for ETR, MTR_lab, MTR_cap, just with different
-# parameters input
-
 
 def MTR_income(r, w, b, n, factor, params):
     '''
