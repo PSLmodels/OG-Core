@@ -18,11 +18,11 @@ SMALL_OPEN_KEYS = ['world_int_rate']
 
 
 def runner(output_base, baseline_dir, test=False, time_path=True,
-           baseline=False, constant_rates=True, analytical_mtrs=False,
-           age_specific=False, reform={}, user_params={}, guid='',
-           run_micro=True, small_open=False, budget_balance=False,
-           baseline_spending=False, data=None, client=None,
-           num_workers=1):
+           baseline=False, constant_rates=True, tax_func_type='DEP',
+           analytical_mtrs=False, age_specific=False, reform={},
+           user_params={}, guid='', run_micro=True, small_open=False,
+           budget_balance=False, baseline_spending=False, data=None,
+           client=None, num_workers=1):
 
     from ogusa import parameters, demographics, income, utils
 
@@ -124,19 +124,22 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     # List of parameter names that will not be changing (unless we decide to
     # change them for a tax experiment)
 
-    param_names = ['S', 'J', 'T', 'BW', 'lambdas', 'starting_age', 'ending_age',
-                'beta', 'sigma', 'alpha', 'gamma', 'epsilon', 'nu', 'Z', 'delta',
-                'E', 'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
-                'analytical_mtrs', 'b_ellipse', 'k_ellipse', 'upsilon',
-                'small_open', 'budget_balance', 'ss_firm_r', 'ss_hh_r',
-                'tpi_firm_r', 'tpi_hh_r', 'tG1', 'tG2', 'alpha_T', 'alpha_G',
-                'ALPHA_T', 'ALPHA_G', 'rho_G', 'debt_ratio_ss', 'tau_b',
-                'delta_tau', 'chi_b_guess', 'chi_n_guess','etr_params',
-                'mtrx_params', 'mtry_params','tau_payroll', 'tau_bq',
-                'retire', 'mean_income_data', 'g_n_vector',
-                'h_wealth', 'p_wealth', 'm_wealth',
-                'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'imm_rates','e',
-                'rho', 'initial_debt','omega_S_preTP']
+    param_names = ['S', 'J', 'T', 'BW', 'lambdas', 'starting_age',
+                   'ending_age', 'beta', 'sigma', 'alpha', 'gamma',
+                   'epsilon', 'nu', 'Z', 'delta', 'E', 'ltilde', 'g_y',
+                   'maxiter', 'mindist_SS', 'mindist_TPI',
+                   'tax_func_type', 'analytical_mtrs', 'b_ellipse',
+                   'k_ellipse', 'upsilon', 'small_open',
+                   'budget_balance', 'ss_firm_r', 'ss_hh_r',
+                   'tpi_firm_r', 'tpi_hh_r', 'tG1', 'tG2', 'alpha_T',
+                   'alpha_G', 'ALPHA_T', 'ALPHA_G', 'rho_G',
+                   'debt_ratio_ss', 'tau_b', 'delta_tau', 'chi_b_guess',
+                   'chi_n_guess', 'etr_params', 'mtrx_params',
+                   'mtry_params', 'tau_payroll', 'tau_bq', 'retire',
+                   'mean_income_data', 'g_n_vector', 'h_wealth',
+                   'p_wealth', 'm_wealth', 'omega', 'g_n_ss',
+                   'omega_SS', 'surv_rate', 'imm_rates', 'e', 'rho',
+                   'initial_debt', 'omega_S_preTP']
 
     '''
     ------------------------------------------------------------------------
