@@ -159,31 +159,50 @@ def tau_income(r, w, b, n, factor, params):
     RETURNS: tau
     --------------------------------------------------------------------
     '''
-    e, etr_params = params
-
-    A = etr_params[..., 0]
-    B = etr_params[..., 1]
-    C = etr_params[..., 2]
-    D = etr_params[..., 3]
-    max_x = etr_params[..., 4]
-    min_x = etr_params[..., 5]
-    max_y = etr_params[..., 6]
-    min_y = etr_params[..., 7]
-    shift_x = etr_params[..., 8]
-    shift_y = etr_params[..., 9]
-    shift = etr_params[..., 10]
-    share = etr_params[..., 11]
+    e, etr_params, tax_func_type = params
 
     X = (w * e * n) * factor
     Y = (r * b) * factor
     X2 = X ** 2
     Y2 = Y ** 2
-    tau_x = ((max_x - min_x) * (A * X2 + B * X) /
-             (A * X2 + B * X + 1) + min_x)
-    tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
-             (C * Y2 + D * Y + 1) + min_y)
-    tau = (((tau_x + shift_x) ** share) *
-           ((tau_y + shift_y) ** (1 - share))) + shift
+    I = X + Y
+    I2 = I ** 2
+
+    if tax_func_type == 'GS':
+        phi0 = etr_params[..., 0]
+        phi1 = etr_params[..., 1]
+        phi2 = etr_params[..., 2]
+        tau = (phi0 * (I - ((I ** -phi1) + phi2) ** (-1 / phi1))) / I
+    elif tax_func_type == 'DEP_totalinc':
+        A = etr_params[..., 0]
+        B = etr_params[..., 1]
+        max_I = etr_params[..., 4]
+        min_I = etr_params[..., 5]
+        shift_I = etr_params[..., 8]
+        shift = etr_params[..., 10]
+        tau_I = (((max_I - min_I) * (A * I2 + B * I) /
+                  (A * I2 + B * I + 1)) + min_I)
+        tau = tau_I + shift_I + shift
+    else:  # DEP or linear
+        A = etr_params[..., 0]
+        B = etr_params[..., 1]
+        C = etr_params[..., 2]
+        D = etr_params[..., 3]
+        max_x = etr_params[..., 4]
+        min_x = etr_params[..., 5]
+        max_y = etr_params[..., 6]
+        min_y = etr_params[..., 7]
+        shift_x = etr_params[..., 8]
+        shift_y = etr_params[..., 9]
+        shift = etr_params[..., 10]
+        share = etr_params[..., 11]
+
+        tau_x = ((max_x - min_x) * (A * X2 + B * X) /
+                 (A * X2 + B * X + 1) + min_x)
+        tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
+                 (C * Y2 + D * Y + 1) + min_y)
+        tau = (((tau_x + shift_x) ** share) *
+               ((tau_y + shift_y) ** (1 - share))) + shift
 
     return tau
 
@@ -203,10 +222,12 @@ def MTR_capital(r, w, b, n, factor, params):
     b               = [T,S,J] array, wealth holdings
     n               = [T,S,J] array, labor supply
     factor          = scalar, model income scaling factor
-    params          = length 3 tuple, (e, mtry_params, analytical_mtrs)
+    params          = length 4 tuple, (e, mtry_params, tax_func_type,
+                      analytical_mtrs)
     e               = [T,S,J] array, effective labor units
     mtry_params     = [T,S,J] array, marginal tax rate on capital income
                       function parameters
+    tax_func_type   = string, type of tax function
     analytical_mtrs = boolean, =True if use analytical mtrs rather than
                       estimated mtrs
 
@@ -242,62 +263,89 @@ def MTR_capital(r, w, b, n, factor, params):
     RETURNS: tau
     --------------------------------------------------------------------
     '''
-    e, etr_params, mtry_params, analytical_mtrs = params
+    e, etr_params, mtry_params, tax_func_type, analytical_mtrs = params
 
-    if analytical_mtrs:
-        A = etr_params[..., 0]
-        B = etr_params[..., 1]
-        C = etr_params[..., 2]
-        D = etr_params[..., 3]
-        max_x = etr_params[..., 4]
-        min_x = etr_params[..., 5]
-        max_y = etr_params[..., 6]
-        min_y = etr_params[..., 7]
-        shift_x = etr_params[..., 8]
-        shift_y = etr_params[..., 9]
-        shift = etr_params[..., 10]
-        share = etr_params[..., 11]
+    X = (w * e * n) * factor
+    Y = (r * b) * factor
+    X2 = X ** 2
+    Y2 = Y ** 2
+    I = X + Y
 
-        X = (w * e * n) * factor
-        Y = (r * b) * factor
-        X2 = X ** 2
-        Y2 = Y ** 2
-        tau_x = ((max_x - min_x) * (A * X2 + B * X) /
-                 (A * X2 + B * X + 1) + min_x)
-        tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
-                 (C * Y2 + D * Y + 1) + min_y)
-        tau_x_y = (((tau_x + shift_x) ** share) *
+    if tax_func_type == 'GS':
+        if analytical_mtrs:
+            phi0 = etr_params[..., 0]
+            phi1 = etr_params[..., 1]
+            phi2 = etr_params[..., 2]
+        else:
+            phi0 = mtry_params[..., 0]
+            phi1 = mtry_params[..., 1]
+            phi2 = mtry_params[..., 2]
+        tau = (phi0*(1 - (I ** (-phi1 - 1) * ((I ** -phi1) + phi2)
+                          ** ((-1 - phi1) / phi1))))
+    elif tax_func_type == 'DEP_totalinc':
+        if analytical_mtrs:
+            A = etr_params[..., 0]
+            B = etr_params[..., 1]
+            max_I = etr_params[..., 4]
+            min_I = etr_params[..., 5]
+            shift_I = etr_params[..., 8]
+            shift = etr_params[..., 10]
+        else:
+            A = mtry_params[..., 0]
+            B = mtry_params[..., 1]
+            max_I = mtry_params[..., 4]
+            min_I = mtry_params[..., 5]
+            shift_I = mtry_params[..., 8]
+            shift = mtry_params[..., 10]
+        tau_I = (((max_I - min_I) * (A * I2 + B * I) /
+                  (A * I2 + B * I + 1)) + min_I)
+        tau = tau_I + shift_I + shift
+    else:  # DEP or linear
+        if analytical_mtrs:
+            A = etr_params[..., 0]
+            B = etr_params[..., 1]
+            C = etr_params[..., 2]
+            D = etr_params[..., 3]
+            max_x = etr_params[..., 4]
+            min_x = etr_params[..., 5]
+            max_y = etr_params[..., 6]
+            min_y = etr_params[..., 7]
+            shift_x = etr_params[..., 8]
+            shift_y = etr_params[..., 9]
+            shift = etr_params[..., 10]
+            share = etr_params[..., 11]
+
+            tau_x = ((max_x - min_x) * (A * X2 + B * X) /
+                     (A * X2 + B * X + 1) + min_x)
+            tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
+                     (C * Y2 + D * Y + 1) + min_y)
+            tau_x_y = (((tau_x + shift_x) ** share) *
+                       ((tau_y + shift_y) ** (1 - share))) + shift
+            tau = ((X + Y) * ((tau_x + shift_x) ** share) * (1 - share) *
+                   (max_y - min_y) * ((2 * C * X + D)/((C * X2 + D * X + 1)
+                                                       ** 2)) *
+                   ((tau_y + shift_y) ** (-share)) + tau_x_y)
+
+        else:
+            A = mtry_params[..., 0]
+            B = mtry_params[..., 1]
+            C = mtry_params[..., 2]
+            D = mtry_params[..., 3]
+            max_x = mtry_params[..., 4]
+            min_x = mtry_params[..., 5]
+            max_y = mtry_params[..., 6]
+            min_y = mtry_params[..., 7]
+            shift_x = mtry_params[..., 8]
+            shift_y = mtry_params[..., 9]
+            shift = mtry_params[..., 10]
+            share = mtry_params[..., 11]
+
+            tau_x = ((max_x - min_x) * (A * X2 + B * X) /
+                     (A * X2 + B * X + 1) + min_x)
+            tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
+                     (C * Y2 + D * Y + 1) + min_y)
+            tau = (((tau_x + shift_x) ** share) *
                    ((tau_y + shift_y) ** (1 - share))) + shift
-
-        tau = ((X + Y) * ((tau_x + shift_x) ** share) * (1 - share) *
-               (max_y - min_y) * ((2 * C * X + D)/((C * X2 + D * X + 1)
-                                                   ** 2)) *
-               ((tau_y + shift_y) ** (-share)) + tau_x_y)
-
-    else:
-        A = mtry_params[..., 0]
-        B = mtry_params[..., 1]
-        C = mtry_params[..., 2]
-        D = mtry_params[..., 3]
-        max_x = mtry_params[..., 4]
-        min_x = mtry_params[..., 5]
-        max_y = mtry_params[..., 6]
-        min_y = mtry_params[..., 7]
-        shift_x = mtry_params[..., 8]
-        shift_y = mtry_params[..., 9]
-        shift = mtry_params[..., 10]
-        share = mtry_params[..., 11]
-
-        X = (w * e * n) * factor
-        Y = (r * b) * factor
-        X2 = X ** 2
-        Y2 = Y ** 2
-        tau_x = ((max_x - min_x) * (A * X2 + B * X) /
-                 (A * X2 + B * X + 1) + min_x)
-        tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
-                 (C * Y2 + D * Y + 1) + min_y)
-        tau = (((tau_x + shift_x) ** share) *
-               ((tau_y + shift_y) ** (1 - share))) + shift
 
     return tau
 
@@ -313,10 +361,12 @@ def MTR_labor(r, w, b, n, factor, params):
     b               = [T,S,J] array, wealth holdings
     n               = [T,S,J] array, labor supply
     factor          = scalar, model income scaling factor
-    params          = length 3 tuple, (e, mtry_params, analytical_mtrs)
+    params          = length 4 tuple, (e, mtry_params, tax_func_type,
+                      analytical_mtrs)
     e               = [T,S,J] array, effective labor units
     mtrx_params     = [T,S,J] array, marginal tax rate on capital income
                       function parameters
+    tax_func_type   = string, type of tax function used
     analytical_mtrs = boolean, =True if use analytical mtrs rather than
                       estimated mtrs
 
@@ -352,62 +402,89 @@ def MTR_labor(r, w, b, n, factor, params):
     RETURNS: tau
     --------------------------------------------------------------------
     '''
-    e, etr_params, mtrx_params, analytical_mtrs = params
+    e, etr_params, mtrx_params, tax_func_type, analytical_mtrs = params
 
-    if analytical_mtrs:
-        A = etr_params[..., 0]
-        B = etr_params[..., 1]
-        C = etr_params[..., 2]
-        D = etr_params[..., 3]
-        max_x = etr_params[..., 4]
-        min_x = etr_params[..., 5]
-        max_y = etr_params[..., 6]
-        min_y = etr_params[..., 7]
-        shift_x = etr_params[..., 8]
-        shift_y = etr_params[..., 9]
-        shift = etr_params[..., 10]
-        share = etr_params[..., 11]
+    X = (w * e * n) * factor
+    Y = (r * b) * factor
+    X2 = X ** 2
+    Y2 = Y ** 2
+    I = X + Y
 
-        X = (w * e * n) * factor
-        Y = (r * b) * factor
-        X2 = X ** 2
-        Y2 = Y ** 2
-        tau_x = ((max_x - min_x) * (A * X2 + B * X) /
-                 (A * X2 + B * X + 1) + min_x)
-        tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
-                 (C * Y2 + D * Y + 1) + min_y)
-        tau_x_y = (((tau_x + shift_x) ** share) *
+    if tax_func_type == 'GS':
+        if analytical_mtrs:
+            phi0 = etr_params[..., 0]
+            phi1 = etr_params[..., 1]
+            phi2 = etr_params[..., 2]
+        else:
+            phi0 = mtrx_params[..., 0]
+            phi1 = mtrx_params[..., 1]
+            phi2 = mtrx_params[..., 2]
+        tau = (phi0*(1 - (I ** (-phi1 - 1) * ((I ** -phi1) + phi2)
+                          ** ((-1 - phi1) / phi1))))
+    elif tax_func_type == 'DEP_totalinc':
+        if analytical_mtrs:
+            A = etr_params[..., 0]
+            B = etr_params[..., 1]
+            max_I = etr_params[..., 4]
+            min_I = etr_params[..., 5]
+            shift_I = etr_params[..., 8]
+            shift = etr_params[..., 10]
+        else:
+            A = mtrx_params[..., 0]
+            B = mtrx_params[..., 1]
+            max_I = mtrx_params[..., 4]
+            min_I = mtrx_params[..., 5]
+            shift_I = mtrx_params[..., 8]
+            shift = mtrx_params[..., 10]
+        tau_I = (((max_I - min_I) * (A * I2 + B * I) /
+                  (A * I2 + B * I + 1)) + min_I)
+        tau = tau_I + shift_I + shift
+    else:  # DEP or linear
+        if analytical_mtrs:
+            A = etr_params[..., 0]
+            B = etr_params[..., 1]
+            C = etr_params[..., 2]
+            D = etr_params[..., 3]
+            max_x = etr_params[..., 4]
+            min_x = etr_params[..., 5]
+            max_y = etr_params[..., 6]
+            min_y = etr_params[..., 7]
+            shift_x = etr_params[..., 8]
+            shift_y = etr_params[..., 9]
+            shift = etr_params[..., 10]
+            share = etr_params[..., 11]
+
+            tau_x = ((max_x - min_x) * (A * X2 + B * X) /
+                     (A * X2 + B * X + 1) + min_x)
+            tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
+                     (C * Y2 + D * Y + 1) + min_y)
+            tau_x_y = (((tau_x + shift_x) ** share) *
+                       ((tau_y + shift_y) ** (1 - share))) + shift
+            tau = ((X + Y) * ((tau_x + shift_x) ** share) * (1 - share) *
+                   (max_y - min_y) * ((2 * C * X + D)/((C * X2 + D * X + 1)
+                                                       ** 2)) *
+                   ((tau_y + shift_y) ** (-share)) + tau_x_y)
+
+        else:
+            A = mtrx_params[..., 0]
+            B = mtrx_params[..., 1]
+            C = mtrx_params[..., 2]
+            D = mtrx_params[..., 3]
+            max_x = mtrx_params[..., 4]
+            min_x = mtrx_params[..., 5]
+            max_y = mtrx_params[..., 6]
+            min_y = mtrx_params[..., 7]
+            shift_x = mtrx_params[..., 8]
+            shift_y = mtrx_params[..., 9]
+            shift = mtrx_params[..., 10]
+            share = mtrx_params[..., 11]
+
+            tau_x = ((max_x - min_x) * (A * X2 + B * X) /
+                     (A * X2 + B * X + 1) + min_x)
+            tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
+                     (C * Y2 + D * Y + 1) + min_y)
+            tau = (((tau_x + shift_x) ** share) *
                    ((tau_y + shift_y) ** (1 - share))) + shift
-
-        tau = ((X + Y) * share * ((tau_x + shift_x) ** (share - 1)) *
-               (max_x - min_x) * ((2 * A * X + B) / ((A * X2 + B * X + 1)
-                                                     ** 2)) *
-               ((tau_y + shift_y) ** (1 - share)) + tau_x_y)
-
-    else:
-        A = mtrx_params[..., 0]
-        B = mtrx_params[..., 1]
-        C = mtrx_params[..., 2]
-        D = mtrx_params[..., 3]
-        max_x = mtrx_params[..., 4]
-        min_x = mtrx_params[..., 5]
-        max_y = mtrx_params[..., 6]
-        min_y = mtrx_params[..., 7]
-        shift_x = mtrx_params[..., 8]
-        shift_y = mtrx_params[..., 9]
-        shift = mtrx_params[..., 10]
-        share = mtrx_params[..., 11]
-
-        X = (w * e * n) * factor
-        Y = (r * b) * factor
-        X2 = X ** 2
-        Y2 = Y ** 2
-        tau_x = (((max_x - min_x) * (A * X2 + B * X) /
-                  (A * X2 + B * X + 1)) + min_x)
-        tau_y = (((max_y - min_y) * (C * Y2 + D * Y) /
-                  (C * Y2 + D * Y + 1)) + min_y)
-        tau = (((tau_x + shift_x) ** share) *
-               ((tau_y + shift_y) ** (1 - share))) + shift
 
     return tau
 
