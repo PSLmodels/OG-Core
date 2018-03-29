@@ -211,146 +211,7 @@ def ETR_income(r, w, b, n, factor, params):
 # parameters input
 
 
-def MTR_capital(r, w, b, n, factor, params):
-    '''
-    --------------------------------------------------------------------
-    Generates the marginal tax rate on capital income for households.
-    --------------------------------------------------------------------
-    INPUTS:
-    r               = [T,] vector, interest rate
-    w               = [T,] vector, wage rate
-    b               = [T,S,J] array, wealth holdings
-    n               = [T,S,J] array, labor supply
-    factor          = scalar, model income scaling factor
-    params          = length 4 tuple, (e, mtry_params, tax_func_type,
-                      analytical_mtrs)
-    e               = [T,S,J] array, effective labor units
-    mtry_params     = [T,S,J] array, marginal tax rate on capital income
-                      function parameters
-    tax_func_type   = string, type of tax function
-    analytical_mtrs = boolean, =True if use analytical mtrs rather than
-                      estimated mtrs
-
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
-
-    OBJECTS CREATED WITHIN FUNCTION:
-    A       = [T,S,J] array, polynomial coefficient on x**2
-    B       = [T,S,J] array, polynomial coefficient on x
-    C       = [T,S,J] array, polynomial coefficient on y**2
-    D       = [T,S,J] array, polynomial coefficient on y
-    max_x   = [T,S,J] array, maximum effective tax rate for x given y=0
-    min_x   = [T,S,J] array, minimum effective tax rate for x given y=0
-    max_y   = [T,S,J] array, maximum effective tax rate for y given x=0
-    min_y   = [T,S,J] array, minimum effective tax rate for y given x=0
-    shift_x = (T, S, J) array, shift parameter on labor income in Cobb-
-              Douglas function
-    shift_y = (T, S, J) array, shift parameter on capital income in
-              Cobb-Douglas function
-    shift   = (T, S, J) array, shift parameter on total function in
-              Cobb-Douglas function
-    share   = (T, S, J) array, share parameter (exponent) in Cobb-
-              Douglas functions
-    X       = [T,S,J] array, labor income
-    Y       = [T,S,J] array, capital income
-    X2      = [T,S,J] array, labor income squared X**2
-    Y2      = [T,S,J] array, capital income squared Y**2
-    tau_x   = [T,S,J] array, labor income portion of the function with
-              ratio of polynomials
-    tau_y   = [T,S,J] array, capital income portion of the function with
-              ratio of polynomials
-    tau     = [T,S,J] array, marginal tax rate on capital income
-
-    RETURNS: tau
-    --------------------------------------------------------------------
-    '''
-    e, etr_params, mtry_params, tax_func_type, analytical_mtrs = params
-
-    X = (w * e * n) * factor
-    Y = (r * b) * factor
-    X2 = X ** 2
-    Y2 = Y ** 2
-    I = X + Y
-
-    if tax_func_type == 'GS':
-        if analytical_mtrs:
-            phi0 = etr_params[..., 0]
-            phi1 = etr_params[..., 1]
-            phi2 = etr_params[..., 2]
-        else:
-            phi0 = mtry_params[..., 0]
-            phi1 = mtry_params[..., 1]
-            phi2 = mtry_params[..., 2]
-        tau = (phi0*(1 - (I ** (-phi1 - 1) * ((I ** -phi1) + phi2)
-                          ** ((-1 - phi1) / phi1))))
-    elif tax_func_type == 'DEP_totalinc':
-        if analytical_mtrs:
-            A = etr_params[..., 0]
-            B = etr_params[..., 1]
-            max_I = etr_params[..., 4]
-            min_I = etr_params[..., 5]
-            shift_I = etr_params[..., 8]
-            shift = etr_params[..., 10]
-        else:
-            A = mtry_params[..., 0]
-            B = mtry_params[..., 1]
-            max_I = mtry_params[..., 4]
-            min_I = mtry_params[..., 5]
-            shift_I = mtry_params[..., 8]
-            shift = mtry_params[..., 10]
-        tau_I = (((max_I - min_I) * (A * I2 + B * I) /
-                  (A * I2 + B * I + 1)) + min_I)
-        tau = tau_I + shift_I + shift
-    else:  # DEP or linear
-        if analytical_mtrs:
-            A = etr_params[..., 0]
-            B = etr_params[..., 1]
-            C = etr_params[..., 2]
-            D = etr_params[..., 3]
-            max_x = etr_params[..., 4]
-            min_x = etr_params[..., 5]
-            max_y = etr_params[..., 6]
-            min_y = etr_params[..., 7]
-            shift_x = etr_params[..., 8]
-            shift_y = etr_params[..., 9]
-            shift = etr_params[..., 10]
-            share = etr_params[..., 11]
-
-            tau_x = ((max_x - min_x) * (A * X2 + B * X) /
-                     (A * X2 + B * X + 1) + min_x)
-            tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
-                     (C * Y2 + D * Y + 1) + min_y)
-            tau_x_y = (((tau_x + shift_x) ** share) *
-                       ((tau_y + shift_y) ** (1 - share))) + shift
-            tau = ((X + Y) * ((tau_x + shift_x) ** share) * (1 - share) *
-                   (max_y - min_y) * ((2 * C * X + D)/((C * X2 + D * X + 1)
-                                                       ** 2)) *
-                   ((tau_y + shift_y) ** (-share)) + tau_x_y)
-
-        else:
-            A = mtry_params[..., 0]
-            B = mtry_params[..., 1]
-            C = mtry_params[..., 2]
-            D = mtry_params[..., 3]
-            max_x = mtry_params[..., 4]
-            min_x = mtry_params[..., 5]
-            max_y = mtry_params[..., 6]
-            min_y = mtry_params[..., 7]
-            shift_x = mtry_params[..., 8]
-            shift_y = mtry_params[..., 9]
-            shift = mtry_params[..., 10]
-            share = mtry_params[..., 11]
-
-            tau_x = ((max_x - min_x) * (A * X2 + B * X) /
-                     (A * X2 + B * X + 1) + min_x)
-            tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
-                     (C * Y2 + D * Y + 1) + min_y)
-            tau = (((tau_x + shift_x) ** share) *
-                   ((tau_y + shift_y) ** (1 - share))) + shift
-
-    return tau
-
-
-def MTR_labor(r, w, b, n, factor, params):
+def MTR_income(r, w, b, n, factor, params):
     '''
     --------------------------------------------------------------------
     Generates the marginal tax rate on labor income for households.
@@ -364,8 +225,8 @@ def MTR_labor(r, w, b, n, factor, params):
     params          = length 4 tuple, (e, mtry_params, tax_func_type,
                       analytical_mtrs)
     e               = [T,S,J] array, effective labor units
-    mtrx_params     = [T,S,J] array, marginal tax rate on capital income
-                      function parameters
+    mtr_params      = [T,S,J] array, marginal tax rate on labor/capital
+                      income function parameters
     tax_func_type   = string, type of tax function used
     analytical_mtrs = boolean, =True if use analytical mtrs rather than
                       estimated mtrs
@@ -402,7 +263,7 @@ def MTR_labor(r, w, b, n, factor, params):
     RETURNS: tau
     --------------------------------------------------------------------
     '''
-    e, etr_params, mtrx_params, tax_func_type, analytical_mtrs = params
+    e, etr_params, mtr_params, tax_func_type, analytical_mtrs = params
 
     X = (w * e * n) * factor
     Y = (r * b) * factor
@@ -416,9 +277,9 @@ def MTR_labor(r, w, b, n, factor, params):
             phi1 = etr_params[..., 1]
             phi2 = etr_params[..., 2]
         else:
-            phi0 = mtrx_params[..., 0]
-            phi1 = mtrx_params[..., 1]
-            phi2 = mtrx_params[..., 2]
+            phi0 = mtr_params[..., 0]
+            phi1 = mtr_params[..., 1]
+            phi2 = mtr_params[..., 2]
         tau = (phi0*(1 - (I ** (-phi1 - 1) * ((I ** -phi1) + phi2)
                           ** ((-1 - phi1) / phi1))))
     elif tax_func_type == 'DEP_totalinc':
@@ -430,12 +291,12 @@ def MTR_labor(r, w, b, n, factor, params):
             shift_I = etr_params[..., 8]
             shift = etr_params[..., 10]
         else:
-            A = mtrx_params[..., 0]
-            B = mtrx_params[..., 1]
-            max_I = mtrx_params[..., 4]
-            min_I = mtrx_params[..., 5]
-            shift_I = mtrx_params[..., 8]
-            shift = mtrx_params[..., 10]
+            A = mtr_params[..., 0]
+            B = mtr_params[..., 1]
+            max_I = mtr_params[..., 4]
+            min_I = mtr_params[..., 5]
+            shift_I = mtr_params[..., 8]
+            shift = mtr_params[..., 10]
         tau_I = (((max_I - min_I) * (A * I2 + B * I) /
                   (A * I2 + B * I + 1)) + min_I)
         tau = tau_I + shift_I + shift
@@ -466,18 +327,18 @@ def MTR_labor(r, w, b, n, factor, params):
                    ((tau_y + shift_y) ** (-share)) + tau_x_y)
 
         else:
-            A = mtrx_params[..., 0]
-            B = mtrx_params[..., 1]
-            C = mtrx_params[..., 2]
-            D = mtrx_params[..., 3]
-            max_x = mtrx_params[..., 4]
-            min_x = mtrx_params[..., 5]
-            max_y = mtrx_params[..., 6]
-            min_y = mtrx_params[..., 7]
-            shift_x = mtrx_params[..., 8]
-            shift_y = mtrx_params[..., 9]
-            shift = mtrx_params[..., 10]
-            share = mtrx_params[..., 11]
+            A = mtr_params[..., 0]
+            B = mtr_params[..., 1]
+            C = mtr_params[..., 2]
+            D = mtr_params[..., 3]
+            max_x = mtr_params[..., 4]
+            min_x = mtr_params[..., 5]
+            max_y = mtr_params[..., 6]
+            min_y = mtr_params[..., 7]
+            shift_x = mtr_params[..., 8]
+            shift_y = mtr_params[..., 9]
+            shift = mtr_params[..., 10]
+            share = mtr_params[..., 11]
 
             tau_x = ((max_x - min_x) * (A * X2 + B * X) /
                      (A * X2 + B * X + 1) + min_x)

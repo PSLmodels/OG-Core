@@ -697,12 +697,12 @@ def SS_solver(b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss,
     # mtry_ss_params = (e_extended[1:, :], etr_params_extended_3D,
     #                   mtry_params_extended_3D, tax_func_type,
     #                   analytical_mtrs)
-    # mtry_ss = tax.MTR_capital(rss, wss, bssmat_splus1,
+    # mtry_ss = tax.MTR_income(rss, wss, bssmat_splus1,
     #                           nss_extended[1:, :], factor_ss,
     #                           mtry_ss_params)
     # mtrx_ss_params = (e, etr_params_3D, mtrx_params_3D, tax_func_type,
     #                   analytical_mtrs)
-    # mtrx_ss = tax.MTR_labor(rss, wss, bssmat_s, nssmat, factor_ss,
+    # mtrx_ss = tax.MTR_income(rss, wss, bssmat_s, nssmat, factor_ss,
     #                         mtrx_ss_params)
 
     # np.savetxt("mtr_ss_capital.csv", mtry_ss, delimiter=",")
