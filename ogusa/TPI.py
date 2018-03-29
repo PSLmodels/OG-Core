@@ -971,8 +971,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
             (1, 1, J))
     tax_path_params = (np.tile(
         e.reshape(1, S, J), (T, 1, 1)), lambdas, 'TPI', retire,
-                       etr_params_path, h_wealth, p_wealth, m_wealth,
-                       tau_payroll, theta, tau_bq, J, S)
+                       etr_params_path, tax_func_type, h_wealth,
+                       p_wealth, m_wealth, tau_payroll, theta, tau_bq,
+                       J, S)
     tax_path = tax.total_taxes(
         np.tile(r[:T].reshape(T, 1, 1), (1, S, J)),
         np.tile(w[:T].reshape(T, 1, 1), (1, S, J)), bmat_s,

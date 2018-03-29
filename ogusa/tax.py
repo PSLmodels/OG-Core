@@ -556,11 +556,11 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
 
     '''
 
-    (e, lambdas, method, retire, etr_params, h_wealth, p_wealth,
-     m_wealth, tau_payroll, theta, tau_bq, J, S) = params
+    (e, lambdas, method, retire, etr_params, tax_func_type, h_wealth,
+     p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S) = params
 
     I = r * b + w * e * n
-    TI_params = (e, etr_params)
+    TI_params = (e, etr_params, tax_func_type)
     T_I = tau_income(r, w, b, n, factor, TI_params) * I
 
     T_P = tau_payroll * w * e * n

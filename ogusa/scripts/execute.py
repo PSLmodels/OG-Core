@@ -128,7 +128,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
                    'ending_age', 'beta', 'sigma', 'alpha', 'gamma',
                    'epsilon', 'nu', 'Z', 'delta', 'E', 'ltilde', 'g_y',
                    'maxiter', 'mindist_SS', 'mindist_TPI',
-                   'tax_func_type', 'analytical_mtrs', 'b_ellipse',
+                   'analytical_mtrs', 'b_ellipse',
                    'k_ellipse', 'upsilon', 'small_open',
                    'budget_balance', 'ss_firm_r', 'ss_hh_r',
                    'tpi_firm_r', 'tpi_hh_r', 'tG1', 'tG2', 'alpha_T',
@@ -153,6 +153,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
 
     sim_params['output_dir'] = output_base
     sim_params['run_params'] = run_params
+    sim_params['tax_func_type'] = tax_func_type
     (income_tax_params, ss_parameters,
         iterative_params, chi_params,
         small_open_params) = SS.create_steady_state_parameters(**sim_params)
