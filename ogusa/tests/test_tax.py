@@ -34,13 +34,13 @@ def test_replacement_rate_vals():
     assert np.allclose(theta, np.array([0.1755, 0.126]))
 
 
-def test_tau_wealth():
+def test_ETR_wealth():
     # Test wealth tax computation
     b = np.array([0.1, 0.5, 0.9])
     h_wealth = 2
     p_wealth = 3
     m_wealth = 4
-    tau_w_prime = tax.tau_wealth(b, (h_wealth, p_wealth, m_wealth))
+    tau_w_prime = tax.ETR_wealth(b, (h_wealth, p_wealth, m_wealth))
 
     assert np.allclose(tau_w_prime, np.array([0.14285714, 0.6, 0.93103448]))
 

@@ -231,7 +231,7 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, params):
         J           = integer, number of lifetime income groups
     Functions called:
         tau_income
-        tau_wealth
+        ETR_wealth
     Objects in function:
         I    = [T,S,J] array, total income
         T_I  = [T,S,J] array, total income taxes
@@ -265,7 +265,7 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, params):
             T_I[:,:,j] = tax.tau_income(r[:,:,j], w[:,:,j], b[:,:,j], n[:,:,j], factor, TI_params) * I[:,:,j]
     T_P = tau_payroll * w * e * n
     TW_params = (h_wealth, p_wealth, m_wealth)
-    T_W = tax.tau_wealth(b, TW_params) * b
+    T_W = tax.ETR_wealth(b, TW_params) * b
     if method == 'SS':
         T_P[retire:] -= theta * w
         T_BQ = tau_bq * BQ / lambdas

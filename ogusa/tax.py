@@ -64,7 +64,7 @@ def replacement_rate_vals(nssmat, wss, factor_ss, params):
     return theta
 
 
-def tau_wealth(b, params):
+def ETR_wealth(b, params):
     '''
     Calculates the effective tax rate on wealth.
     Inputs:
@@ -88,7 +88,7 @@ def tau_wealth(b, params):
     return tau_w
 
 
-def tau_w_prime(b, params):
+def MTR_wealth(b, params):
     '''
     Calculates the marginal tax rate on wealth from the wealth tax.
     Inputs:
@@ -543,7 +543,7 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
         J           = integer, number of lifetime income groups
     Functions called:
         tau_income
-        tau_wealth
+        ETR_wealth
     Objects in function:
         I           = [T,S,J] array, total income
         T_I         = [T,S,J] array, total income taxes
@@ -565,7 +565,7 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
 
     T_P = tau_payroll * w * e * n
     TW_params = (h_wealth, p_wealth, m_wealth)
-    T_W = tau_wealth(b, TW_params) * b
+    T_W = ETR_wealth(b, TW_params) * b
 
     if method == 'SS':
         # Depending on if we are looking at b_s or b_s+1, the
