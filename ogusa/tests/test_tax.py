@@ -57,7 +57,7 @@ def test_tau_w_prime():
                                            1.09569028]))
 
 
-def test_tau_income():
+def test_ETR_income():
     # Test income tax function
     r = 0.04
     w = 1.2
@@ -67,8 +67,8 @@ def test_tau_income():
     e = np.array([0.5, 0.45])
     etr_params = np.array([0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
                            -0.15, 0.15, 0.16, -0.15, 0.83])
-    test_tau_income = tax.tau_income(r, w, b, n, factor, (e, etr_params))
-    assert np.allclose(test_tau_income, np.array([0.80167091, 0.80167011]))
+    test_ETR_income = tax.ETR_income(r, w, b, n, factor, (e, etr_params))
+    assert np.allclose(test_ETR_income, np.array([0.80167091, 0.80167011]))
 
     # Test etr_params having dimension greater than 1
     b = np.array([0.4, 0.3, 0.5])
@@ -80,8 +80,8 @@ def test_tau_income():
                             -0.15, 0.15, 0.16, -0.15, 0.83],
                            [0.011, 0.001, 0.003, 0.06, 0.8, -0.14, 0.8,
                             -0.15, 0.15, 0.16, -0.15, 0.83]])
-    test_tau_income = tax.tau_income(r, w, b, n, factor, (e, etr_params))
-    assert np.allclose(test_tau_income, np.array([0.80167144,
+    test_ETR_income = tax.ETR_income(r, w, b, n, factor, (e, etr_params))
+    assert np.allclose(test_ETR_income, np.array([0.80167144,
                                                   0.80163711,
                                                   0.8016793]))
 

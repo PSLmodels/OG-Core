@@ -230,7 +230,7 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, params):
         S           = integer, number of age groups
         J           = integer, number of lifetime income groups
     Functions called:
-        tau_income
+        ETR_income
         ETR_wealth
     Objects in function:
         I    = [T,S,J] array, total income
@@ -253,7 +253,7 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, params):
         T_I = np.zeros((S,J))
         for j in xrange(J):
             TI_params = (e[:,j], etr_params, tax_func_type)
-            T_I[:,j] = tax.tau_income(r, w, b[:,j], n[:,j], factor, TI_params) * I[:,j]
+            T_I[:,j] = tax.ETR_income(r, w, b[:,j], n[:,j], factor, TI_params) * I[:,j]
     if I.ndim == 3:
         T_I = np.zeros((T,S,J))
         for j in xrange(J):
@@ -262,7 +262,7 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, params):
             if etr_params.ndim == 4:
                 tau_inc_params3D = etr_params[:,:,j,:]
             TI_params = (e[:,:,j], tau_inc_params3D, tax_func_type)
-            T_I[:,:,j] = tax.tau_income(r[:,:,j], w[:,:,j], b[:,:,j], n[:,:,j], factor, TI_params) * I[:,:,j]
+            T_I[:,:,j] = tax.ETR_income(r[:,:,j], w[:,:,j], b[:,:,j], n[:,:,j], factor, TI_params) * I[:,:,j]
     T_P = tau_payroll * w * e * n
     TW_params = (h_wealth, p_wealth, m_wealth)
     T_W = tax.ETR_wealth(b, TW_params) * b
