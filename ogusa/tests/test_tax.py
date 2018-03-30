@@ -45,20 +45,21 @@ def test_ETR_wealth():
     assert np.allclose(tau_w_prime, np.array([0.14285714, 0.6, 0.93103448]))
 
 
-def test_tau_w_prime():
+def test_MTR_wealth():
     # Test marginal tax rate on wealth
     b = np.array([0.2, 0.6, 0.8])
     h_wealth = 3
     p_wealth = 4
     m_wealth = 5
-    tau_w_prime = tax.tau_w_prime(b, (h_wealth, p_wealth, m_wealth))
+    tau_w_prime = tax.MTR_wealth(b, (h_wealth, p_wealth, m_wealth))
 
     assert np.allclose(tau_w_prime, np.array([1.91326531, 1.29757785,
-                                           1.09569028]))
+                                              1.09569028]))
 
 
 def test_ETR_income():
     # Test income tax function
+    tax_func_type = 'DEP'
     r = 0.04
     w = 1.2
     b = np.array([0.4, 0.4])
@@ -67,7 +68,8 @@ def test_ETR_income():
     e = np.array([0.5, 0.45])
     etr_params = np.array([0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
                            -0.15, 0.15, 0.16, -0.15, 0.83])
-    test_ETR_income = tax.ETR_income(r, w, b, n, factor, (e, etr_params))
+    test_ETR_income = tax.ETR_income(r, w, b, n, factor,
+                                     (e, etr_params, tax_func_type))
     assert np.allclose(test_ETR_income, np.array([0.80167091, 0.80167011]))
 
     # Test etr_params having dimension greater than 1
@@ -80,7 +82,8 @@ def test_ETR_income():
                             -0.15, 0.15, 0.16, -0.15, 0.83],
                            [0.011, 0.001, 0.003, 0.06, 0.8, -0.14, 0.8,
                             -0.15, 0.15, 0.16, -0.15, 0.83]])
-    test_ETR_income = tax.ETR_income(r, w, b, n, factor, (e, etr_params))
+    test_ETR_income = tax.ETR_income(r, w, b, n, factor,
+                                     (e, etr_params, tax_func_type))
     assert np.allclose(test_ETR_income, np.array([0.80167144,
                                                   0.80163711,
                                                   0.8016793]))
@@ -94,6 +97,7 @@ def test_ETR_income():
                          ids=['Analytical_mtr=True', 'Analytical_mtr=False'])
 def test_MTR_income(analytical_mtrs, expected):
     # Test the MTR on income function
+    tax_func_type = 'DEP'
     r = 0.04
     w = 1.2
     b = np.array([0.4, 0.3, 0.5])
@@ -115,9 +119,10 @@ def test_MTR_income(analytical_mtrs, expected):
 
     test_mtr = tax.MTR_income(r, w, b, n, factor, (e, etr_params,
                                                    mtr_params,
+                                                   tax_func_type,
                                                    analytical_mtrs))
 
-    assert np.allclose(test_mtr, expected))
+    assert np.allclose(test_mtr, expected)
 
 
 def test_get_biz_tax():
@@ -134,6 +139,7 @@ def test_get_biz_tax():
 
 def test_total_taxes():
     # Test function that computes total net taxes for the household
+    tax_func_type = 'DEP'
     r = 0.04
     w = 1.2
     factor = 105000
@@ -161,9 +167,9 @@ def test_total_taxes():
     method = 'SS'
     total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, j, shift,
                                   (e, lambdas, method, retire,
-                                   etr_params, h_wealth, p_wealth,
-                                   m_wealth, tau_payroll, theta, tau_bq,
-                                   J, S))
+                                   etr_params, tax_func_type, h_wealth,
+                                   p_wealth, m_wealth, tau_payroll,
+                                   theta, tau_bq, J, S))
     assert np.allclose(total_taxes, np.array([0.47374766, -0.09027663,
                                               0.03871394]))
 
@@ -171,9 +177,9 @@ def test_total_taxes():
     method = 'TPI_scalar'
     total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, j, shift,
                                   (e, lambdas, method, retire,
-                                   etr_params, h_wealth, p_wealth,
-                                   m_wealth, tau_payroll, theta, tau_bq,
-                                   J, S))
+                                   etr_params, tax_func_type, h_wealth,
+                                   p_wealth, m_wealth, tau_payroll,
+                                   theta, tau_bq, J, S))
     assert np.allclose(total_taxes, np.array([0.20374766, -0.09027663,
                                               0.03871394]))
 
@@ -194,9 +200,9 @@ def test_total_taxes():
                             -0.15, 0.15, 0.16, -0.15, 0.83]])
     total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, j, shift,
                                   (e, lambdas, method, retire,
-                                   etr_params, h_wealth, p_wealth,
-                                   m_wealth, tau_payroll, theta, tau_bq,
-                                   J, S))
+                                   etr_params, tax_func_type, h_wealth,
+                                   p_wealth, m_wealth, tau_payroll,
+                                   theta, tau_bq, J, S))
     assert np.allclose(total_taxes,
                        np.array([0.47374766, -0.06444251, 0.06622862]))
 
@@ -205,9 +211,9 @@ def test_total_taxes():
     shift = False
     total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, j, shift,
                                   (e, lambdas, method, retire,
-                                   etr_params, h_wealth, p_wealth,
-                                   m_wealth, tau_payroll, theta, tau_bq,
-                                   J, S))
+                                   etr_params, tax_func_type, h_wealth,
+                                   p_wealth, m_wealth, tau_payroll,
+                                   theta, tau_bq, J, S))
     assert np.allclose(total_taxes,
                        np.array([0.47374766, 0.22805749, 0.06622862]))
 
@@ -249,8 +255,9 @@ def test_total_taxes():
                                   shift,
                                   (np.tile(e.reshape(1, S, J), (T, 1, 1)),
                                    lambdas, method, retire,
-                                   etr_params_path, h_wealth, p_wealth,
-                                   m_wealth, tau_payroll, theta, tau_bq,
+                                   etr_params_path, tax_func_type,
+                                   h_wealth, p_wealth, m_wealth,
+                                   tau_payroll, theta, tau_bq,
                                    J, S))
     assert np.allclose(total_taxes,
                        np.array([[[0.16311573, 0.1783638],
