@@ -102,8 +102,9 @@ def read_tax_func_estimate(pickle_path, pickle_file):
     '''
     if os.path.exists(pickle_path):
         print('pickle path exists')
-        with open(pickle_path) as pfile:
-            dict_params = pickle.load(pfile)
+        with open(pickle_path, 'rb') as pfile:
+            print(pfile, type(pfile))
+            dict_params = pickle.load(pfile, encoding='latin1')
     else:
         from pkg_resources import resource_stream, Requirement
         path_in_egg = pickle_file

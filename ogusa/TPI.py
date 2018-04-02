@@ -34,12 +34,12 @@ import scipy.optimize as opt
 from dask.distributed import Client
 from dask import compute, delayed
 import dask.multiprocessing
-import tax
-import utils
-import household
-import firm
-import fiscal
-import aggregates as aggr
+from . import tax
+from . import utils
+from . import household
+from . import firm
+from . import fiscal
+from . import aggregates as aggr
 import os
 import csv
 
