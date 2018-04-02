@@ -46,9 +46,9 @@ from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 
-import get_micro_data
-import utils
-from utils import DEFAULT_START_YEAR
+from . import get_micro_data
+from . import utils
+from ogusa.utils import DEFAULT_START_YEAR
 
 TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
 

@@ -32,7 +32,7 @@ from .  import demographics as dem
 from .  import income as inc
 import pickle
 from . import txfunc
-import elliptical_u_est as ellip
+from . import elliptical_u_est as ellip
 import matplotlib.pyplot as plt
 from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR
 
