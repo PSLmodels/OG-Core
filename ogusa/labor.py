@@ -23,7 +23,10 @@ This py-file creates the following other file(s):
 import os
 import numpy as np
 import pandas as pd
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 import utils
 import scipy.ndimage.filters as filter
 

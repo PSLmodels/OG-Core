@@ -20,7 +20,10 @@ This py-file creates the following other file(s):
 # Packages
 import numpy as np
 import scipy.optimize as opt
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 from dask.distributed import Client
 from dask import compute, delayed
 import dask.multiprocessing

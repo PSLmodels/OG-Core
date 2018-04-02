@@ -18,7 +18,10 @@ This py-file creates the following other file(s): None
 
 # Packages
 import numpy as np
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 import os
 
 def dump_diff_output(baseline_dir, policy_dir):

@@ -27,7 +27,10 @@ import pandas as pd
 import utils
 import os
 from scipy import stats
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 WEALTH_DIR = os.path.join(cur_path, "data", "wealth")

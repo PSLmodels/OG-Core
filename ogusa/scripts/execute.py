@@ -4,7 +4,10 @@ A 'smoke test' for the ogusa package. Uses a fake data set to run the
 baseline
 '''
 
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 import os
 import numpy as np
 import time

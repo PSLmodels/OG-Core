@@ -26,7 +26,10 @@ This py-file creates the following other file(s):
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 import scipy.optimize as opt
 from dask.distributed import Client
 from dask import compute, delayed
