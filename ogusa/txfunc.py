@@ -644,7 +644,7 @@ def replace_outliers(param_arr, sse_big_mat):
     numparams = param_arr.shape[2]
     age_ind = np.arange(0, sse_big_mat.shape[0])
     param_arr_adj = param_arr.copy()
-    for t in xrange(0, sse_big_mat.shape[1]):
+    for t in range(0, sse_big_mat.shape[1]):
         big_cnt = 0
         for s in age_ind:
             # Smooth out ETR tax function outliers

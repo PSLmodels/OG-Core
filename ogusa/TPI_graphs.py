@@ -79,16 +79,16 @@ y_mat_init = c_path_init + inv_mat_init
 
 # Lifetime Utility Graphs:
 c_ut_init = np.zeros((S, S, J))
-for s in xrange(S - 1):
+for s in range(S - 1):
     c_ut_init[:, s + 1, :] = c_path_init[s + 1:s + 1 + S, s + 1, :]
 c_ut_init[:, 0, :] = c_path_init[:S, 0, :]
 L_ut_init = np.zeros((S, S, J))
-for s in xrange(S - 1):
+for s in range(S - 1):
     L_ut_init[:, s + 1, :] = n_mat_init[s + 1:s + 1 + S, s + 1, :]
 L_ut_init[:, 0, :] = n_mat_init[:S, 0, :]
 B_ut_init = BQpath_TPIbase[S:T]
 b_ut_init = np.zeros((S, S, J))
-for s in xrange(S):
+for s in range(S):
     b_ut_init[:, s, :] = b_mat_init[s:s + S, s, :]
 
 beq_ut = chi_b.reshape(1, S, J) * (rho.reshape(1, S, 1)) * \
@@ -97,7 +97,7 @@ utility = ((c_ut_init ** (1 - sigma) - 1) / (1 - sigma)) + chi_n.reshape(1, S, 1
     b_ellipse * (1 - (L_ut_init / ltilde)**upsilon) ** (1 / upsilon) + k_ellipse)
 utility += beq_ut
 beta_string = np.ones(S) * beta
-for i in xrange(S):
+for i in range(S):
     beta_string[i] = beta_string[i] ** i
 utility *= beta_string.reshape(1, S, 1)
 cum_morts = np.cumprod(1 - rho)
@@ -149,16 +149,16 @@ y_mat = c_path + inv_mat
 
 # Lifetime Utility
 c_ut = np.zeros((S, S, J))
-for s in xrange(S - 1):
+for s in range(S - 1):
     c_ut[:, s + 1, :] = c_path[s + 1:s + 1 + S, s + 1, :]
 c_ut[:, 0, :] = c_path[:S, 0, :]
 L_ut = np.zeros((S, S, J))
-for s in xrange(S - 1):
+for s in range(S - 1):
     L_ut[:, s + 1, :] = n_mat[s + 1:s + 1 + S, s + 1, :]
 L_ut[:, 0, :] = n_mat[:S, 0, :]
 B_ut = BQpath_TPI[S:T]
 b_ut = np.zeros((S, S, J))
-for s in xrange(S):
+for s in range(S):
     b_ut[:, s, :] = b_mat[s:s + S, s, :]
 
 beq_ut = chi_b.reshape(1, S, J) * (rho.reshape(1, S, 1)) * \
@@ -167,7 +167,7 @@ utility = ((c_ut ** (1 - sigma) - 1) / (1 - sigma)) + chi_n.reshape(1, S, 1) * (
     b_ellipse * (1 - (L_ut / ltilde)**upsilon) ** (1 / upsilon) + k_ellipse)
 utility += beq_ut
 beta_string = np.ones(S) * beta
-for i in xrange(S):
+for i in range(S):
     beta_string[i] = beta_string[i] ** i
 utility *= beta_string.reshape(1, S, 1)
 utility *= cum_morts.reshape(1, S, 1)
@@ -347,7 +347,7 @@ Plot Timepath for B
 ------------------------------------------------------------------------
 '''
 
-for i in xrange(J):
+for i in range(J):
     plt.figure()
     plt.plot(np.arange(
         T), BQpath_TPIbase[:T, i], linewidth=2, color='b', label="Base TPI time path for group j={}".format(i + 1))
@@ -730,7 +730,7 @@ plt.savefig(gini_c_nocol)
 
 domain = np.linspace(starting_age, ending_age, S)
 Jgrid = np.zeros(J)
-for j in xrange(J):
+for j in range(J):
     Jgrid[j:] += lambdas[j]
 cmap1 = matplotlib.cm.get_cmap('summer')
 cmap2 = matplotlib.cm.get_cmap('jet')
@@ -741,7 +741,7 @@ print 'Starting movies'
 # top zlim is for the income tax, bottom zlim is for the wealth tax
 
 
-# for t in xrange(60):
+# for t in range(60):
 
 #     fig5 = plt.figure()
 #     ax5 = fig5.gca(projection='3d')

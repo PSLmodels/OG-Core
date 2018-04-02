@@ -116,7 +116,7 @@ def compute_labor_moments(cps, S):
 
     labor_dist_data = np.zeros(80)
     labor_dist_data[:60] = by_age['frac_work']
-    labor_dist_data[60:] = by_age['frac_work'][-1] + slope*xrange(20)
+    labor_dist_data[60:] = by_age['frac_work'][-1] + slope*range(20)
 
     # the above computes moments if the model period is a year
     # the following adjusts those moments in case it is smaller

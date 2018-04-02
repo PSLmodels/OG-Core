@@ -53,7 +53,7 @@ def the_inequalizer(dist, pop_weights, ability_weights, S, J):
         pop_weights     = [S,] vector, fraction of population by each age
         ability_weights = [J,] vector, fraction of population for each lifetime income group
         S               = integer, number of economically active periods in lifetime
-        J               = integer, number of ability types 
+        J               = integer, number of ability types
 
     Functions called: None
 
@@ -172,7 +172,7 @@ the_inequalizer(income_init, omega_SS, lambdas, S, J)
 
 domain = np.linspace(starting_age, ending_age, S)
 Jgrid = np.zeros(J)
-for j in xrange(J):
+for j in range(J):
     Jgrid[j:] += lambdas[j]
 cmap1 = matplotlib.cm.get_cmap('summer')
 cmap2 = matplotlib.cm.get_cmap('jet')
@@ -640,7 +640,7 @@ wealth_model_tograph = factor_ss_init * bssmatinit[:76] / 1000000
 
 whichpercentile = [25, 50, 70, 80, 90, 99, 100]
 
-for j in xrange(J):
+for j in range(J):
     plt.figure()
     plt.plot(domain, wealth_data_tograph[:, j], label='Data')
     plt.plot(domain, wealth_model_tograph[:, j], label='Model', linestyle='--')
@@ -764,7 +764,7 @@ plt.savefig(income_dollars)
 '''
 
 # change percentile, as needed
-# for j in xrange(J):
+# for j in range(J):
 #     print 'j=', j
 #     # For age 20-44:
 #     print np.mean(wealth_data_tograph[:24, j])

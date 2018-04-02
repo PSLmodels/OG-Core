@@ -540,7 +540,7 @@ def get_e_orig(age_wgts, abil_wgts, plot=False):
                    [70.5229181668, 0.0701993896947, -6.37746859905],
                    [35, .06, -5],
                    [35, .06, -5]])
-    for j in xrange(7):
+    for j in range(7):
         e_orig[60:, j] = arctan_fit(e_orig[59, j], one[j], two[j],
                           three[j], abil_deprec[j], init_guesses[j])
 
