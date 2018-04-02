@@ -11,7 +11,7 @@ This file calls the following files:
 
 # Packages
 import numpy as np
-import tax
+from . import tax
 
 '''
 ------------------------------------------------------------------------
@@ -392,7 +392,7 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, ltilde):
               'constraints.')
         flag2 = True
     if (nssmat > ltilde).any():
-        print()'\tWARNING: Labor suppy violates the ltilde constraint.')
+        print('\tWARNING: Labor suppy violates the ltilde constraint.')
         flag2 = True
     if flag2 is False:
         print('\tThere were no violations of the constraints on labor',

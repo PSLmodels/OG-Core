@@ -24,7 +24,7 @@ This py-file creates the following other file(s):
 
 import numpy as np
 import pandas as pd
-import utils
+from . import utils
 import os
 from scipy import stats
 try:

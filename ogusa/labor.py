@@ -27,7 +27,7 @@ try:
     import cPickle as pickle
 except ImportError:
     import pickle
-import utils
+from . import utils
 import scipy.ndimage.filters as filter
 
 

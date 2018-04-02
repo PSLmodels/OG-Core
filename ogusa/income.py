@@ -21,7 +21,7 @@ This module defines the following function(s):
 import numpy as np
 import scipy.optimize as opt
 import scipy.interpolate as si
-import utils
+from . import utils
 import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D

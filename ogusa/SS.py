@@ -30,8 +30,8 @@ import dask.multiprocessing
 from . import tax
 from . import household
 from . import aggregates as aggr
-import firm
-import utils
+from . import firm
+from . import utils
 import os
 import warnings
 import json

@@ -1,3 +1,4 @@
+from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 This script reads in data generated from the OSPC Tax Calculator and
@@ -490,8 +491,8 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
     thresh = (sse_mat[sse_mat > 0].mean() +
               se_mult * sse_mat[sse_mat > 0].std())
     sse_big_mat = sse_mat > thresh
-    print varstr, ": ", str(sse_big_mat.sum()), \
-        " observations tagged as outliers."
+    print(varstr, ": ", str(sse_big_mat.sum()),
+          " observations tagged as outliers.")
     if graph:
         # Plot sum of squared errors of tax functions over age for each
         # year of budget window
@@ -533,9 +534,9 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
         thresh2 = (sse_mat_new[sse_mat_new > 0].mean() + se_mult *
                    sse_mat_new[sse_mat_new > 0].std())
         sse_big_mat += sse_mat_new > thresh2
-        print varstr, ": ", "After second round, ", \
-            str(sse_big_mat.sum()), \
-            " observations tagged as outliers (cumulative)."
+        print(varstr, ": ", "After second round, ",
+              str(sse_big_mat.sum()),
+              " observations tagged as outliers (cumulative).")
         if graph:
             # Plot sum of squared errors of tax functions over age for
             # each year of budget window
@@ -844,7 +845,7 @@ def txfunc_est(df, s, t, rate_type, output_dir, graph):
     Atil, Btil, Ctil, Dtil, max_x, max_y, share = params_til.x
     # message = ("(max_x, min_x)=(" + str(max_x) + ", " + str(min_x) +
     #     "), (max_y, min_y)=(" + str(max_y) + ", " + str(min_y) + ")")
-    # print message
+    # print(message)
     wsse = params_til.fun
     obs = df.shape[0]
     shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
@@ -1072,13 +1073,13 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
 
     for s in ages_list:
         if age_specific:
-            print "year=", t, "Age=", s
+            print("year=", t, "Age=", s)
             df = data_trnc[data_trnc['Age'] == s]
             PopPct_age[s-min_age, t-beg_yr] = \
                 df['Weights'].sum() / TotPop_yr[t-beg_yr]
 
         else:
-            print "year=", t, "Age= all ages"
+            print("year=", t, "Age= all ages")
             df = data_trnc
             PopPct_age[0, t-beg_yr] = \
                 df['Weights'].sum() / TotPop_yr[t-beg_yr]
@@ -1118,7 +1119,7 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
             '''
             message = ("Insuff. sample size for age " + str(s) +
                        " in year " + str(t))
-            print message
+            print(message)
             NoData_cnt += 1
             etrparam_arr[s-s_min, t-beg_yr, :] = np.nan
             mtrxparam_arr[s-s_min, t-beg_yr, :] = np.nan
@@ -1146,7 +1147,7 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                        ". Fill in final ages with " +
                        "insuff. data with most recent successful " +
                        "estimate.")
-            print message
+            print(message)
             NoData_cnt += 1
             lastp_etr = \
                 etrparam_arr[s-NoData_cnt-s_min, t-beg_yr, :]
@@ -1170,16 +1171,16 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                 # print some desciptive stats
                 message = ("Descriptive ETR statistics for age=" +
                            str(s) + " in year " + str(t))
-                print message
-                print df_etr.describe()
+                print(message)
+                print(df_etr.describe())
                 message = ("Descriptive MTRx statistics for age=" +
                            str(s) + " in year " + str(t))
-                print message
-                print df_mtrx.describe()
+                print(message)
+                print(df_mtrx.describe())
                 message = ("Descriptive MTRy statistics for age=" +
                            str(s) + " in year " + str(t))
-                print message
-                print df_mtry.describe()
+                print(message)
+                print(df_mtry.describe())
 
             if graph_data:
                 gen_3Dscatters_hist(df, s, t, output_dir)
@@ -1213,7 +1214,7 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                 ----------------------------------------------------
                 '''
                 message = "Fill in all previous blank ages"
-                print message
+                print(message)
                 etrparam_arr[:s-s_min, t-beg_yr, :] = \
                     np.tile(etrparams.reshape((1, numparams)),
                             (s-s_min, 1))
@@ -1255,7 +1256,7 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                 '''
                 message = ("Linearly interpolate previous blank " +
                            "tax functions")
-                print message
+                print(message)
                 tvals = np.linspace(0, 1, NoData_cnt+2)
                 x0_etr = np.tile(
                     etrparam_arr[s-NoData_cnt-s_min-1,
@@ -1303,7 +1304,7 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                 ----------------------------------------------------
                 '''
                 message = "Fill in all old tax functions."
-                print message
+                print(message)
                 etrparam_arr[s-s_min+1:, t-beg_yr, :] = \
                     np.tile(etrparams.reshape((1, numparams)),
                             (s_max-max_age, 1))
@@ -1418,7 +1419,7 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     s_max = ending_age
     beg_yr = int(beg_yr)
     end_yr = int(beg_yr + tpers - 1)
-    print 'BW = ', BW, "begin year = ", beg_yr, "end year = ", end_yr
+    print('BW = ', BW, "begin year = ", beg_yr, "end year = ", end_yr)
     numparams = int(12)
     desc_data = False
     graph_data = False
@@ -1494,20 +1495,20 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     message = ("Finished tax function loop through " +
                str(len(years_list)) + " years and " + str(len(ages_list)) +
                " ages per year.")
-    print message
+    print(message)
     elapsed_time = time.time() - start_time
 
     # Print tax function computation time
     if elapsed_time < 60:  # less than a minute
         secs = round(elapsed_time, 3)
         message = "Tax function estimation time: " + str(secs) + " sec"
-        print message
+        print(message)
     elif elapsed_time >= 60 and elapsed_time < 3600:  # less than hour
         mins = int(elapsed_time / 60)
         secs = round(((elapsed_time / 60) - mins) * 60, 1)
         message = ("Tax function estimation time: " + str(mins) +
                    " min, " + str(secs) + " sec")
-        print message
+        print(message)
     elif elapsed_time >= 3600 and elapsed_time < 86400:  # less than day
         hours = int(elapsed_time / (60 * 60))
         mins = int((elapsed_time - (hours * 60 * 60)) / 60)
@@ -1515,7 +1516,7 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
         message = ("Tax function estimation time: " + str(hours) +
                    " hour(s), " + str(mins) + " min(s), " + str(secs) +
                    " sec(s)")
-        print message
+        print(message)
 
     '''
     --------------------------------------------------------------------
@@ -1612,8 +1613,8 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
                 yrcut_lb = yrcut_ub
                 rmndr_pct_lb = 1 - rmndr_pct_ub
 
-        print 'Big S: ', S
-        print 'max age, min age: ', s_max, s_min
+        print('Big S: ', S)
+        print('max age, min age: ', s_max, s_min)
     else:
         etrparam_arr_S = np.tile(np.reshape(etrparam_arr[0-s_min, :, :],
                                             (1, tpers,

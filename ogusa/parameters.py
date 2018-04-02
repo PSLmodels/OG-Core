@@ -28,14 +28,14 @@ import os
 import json
 import numpy as np
 import scipy.interpolate as si
-import demographics as dem
-import income as inc
+from .  import demographics as dem
+from .  import income as inc
 import pickle
-import txfunc
+from . import txfunc
 import elliptical_u_est as ellip
 import matplotlib.pyplot as plt
 from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR
-from ogusa import txfunc
+
 
 
 '''

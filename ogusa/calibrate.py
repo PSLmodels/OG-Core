@@ -34,11 +34,14 @@ import numpy as np
 import scipy.optimize as opt
 import pandas as pd
 import os
-import pickle
-import wealth
-import labor
-import SS
-import utils
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+from . import wealth
+from . import labor
+from . import SS
+from . import utils
 
 def chi_estimate(income_tax_params, ss_params, iterative_params, chi_guesses, baseline_dir="./OUTPUT"):
     '''
