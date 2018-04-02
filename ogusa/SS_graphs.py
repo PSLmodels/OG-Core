@@ -1,3 +1,4 @@
+from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 Last updated 4/8/2016
@@ -78,18 +79,18 @@ def the_inequalizer(dist, pop_weights, ability_weights, S, J):
     sort_weights = flattened_weights[idx]
     cum_weights = np.cumsum(sort_weights)
     # variance
-    print np.var(np.log(dist * weights))
+    print(np.var(np.log(dist * weights)))
     # 90/10 ratio
     loc_90th = np.argmin(np.abs(cum_weights - .9))
     loc_10th = np.argmin(np.abs(cum_weights - .1))
-    print sort_dist[loc_90th] / sort_dist[loc_10th]
+    print(sort_dist[loc_90th] / sort_dist[loc_10th])
     # 10% ratio
-    print (sort_dist[loc_90th:] * sort_weights[loc_90th:]
-           ).sum() / (sort_dist * sort_weights).sum()
+    print((sort_dist[loc_90th:] * sort_weights[loc_90th:]
+           ).sum() / (sort_dist * sort_weights).sum())
     # 1% ratio
     loc_99th = np.argmin(np.abs(cum_weights - .99))
-    print (sort_dist[loc_99th:] * sort_weights[loc_99th:]
-           ).sum() / (sort_dist * sort_weights).sum()
+    print((sort_dist[loc_99th:] * sort_weights[loc_99th:]
+           ).sum() / (sort_dist * sort_weights).sum())
 
 '''
 ------------------------------------------------------------------------
@@ -155,12 +156,12 @@ Lss_init = Lss
 Css_init = household.get_C(cssmat, omega_SS.reshape(S, 1), lambdas, 'SS')
 iss_init = firm.get_I(bssmat_splus1, bssmat_splus1, delta, g_y, g_n_ss)
 income_init = cssmat + iss_init
-# print (income_init*omega_SS).sum()
-# print Css + delta * Kss
-# print Kss
-# print Lss
-# print Css_init
-# print (utility_init * omega_SS).sum()
+# print((income_init*omega_SS).sum())
+# print(Css + delta * Kss)
+# print(Kss)
+# print(Lss)
+# print(Css_init)
+# print()(utility_init * omega_SS).sum())
 the_inequalizer(income_init, omega_SS, lambdas, S, J)
 
 
@@ -367,8 +368,8 @@ plt.savefig(euler_errors_laborleisure_SS)
 
 # # If you want to see the average capital stock levels to calibrate the
 # # wealth tax, uncomment the following:
-# # print (bssmat2*omega_SS).sum(0)/lambdas
-# # print factor_ss
+# # print((bssmat2*omega_SS).sum(0)/lambdas)
+# # print(factor_ss)
 
 # savings = np.copy(bssmat_splus1)
 # beq_ut = chi_b.reshape(S, J) * (rho.reshape(S, 1)) * \
@@ -381,15 +382,15 @@ plt.savefig(euler_errors_laborleisure_SS)
 # Css = household.get_C(cssmat, omega_SS.reshape(S, 1), lambdas, 'SS')
 # iss = firm.get_I(bssmat_splus1, bssmat_splus1, delta, g_y, g_n_ss)
 # income = cssmat + iss
-# # print (income*omega_SS).sum()
-# # print Css + delta * Kss
-# # print Kss
-# # print Lss
-# # print Css
-# # print (utility * omega_SS).sum()
+# # print((income*omega_SS).sum())
+# # print(Css + delta * Kss)
+# # print(Kss)
+# # print(Lss)
+# # print(Css)
+# # print((utility * omega_SS).sum())
 # # the_inequalizer(yss, omega_SS, lambdas, S, J)
 
-# print (Lss - Lss_init) / Lss_init
+# print((Lss - Lss_init) / Lss_init)
 
 # '''
 # ------------------------------------------------------------------------
@@ -765,15 +766,19 @@ plt.savefig(income_dollars)
 
 # change percentile, as needed
 # for j in range(J):
-#     print 'j=', j
+#     print('j=', j)
 #     # For age 20-44:
-#     print np.mean(wealth_data_tograph[:24, j])
-#     print np.mean(wealth_model_tograph[2:26, j])
+#     print(np.mean(wealth_data_tograph[:24, j]))
+#     print(np.mean(wealth_model_tograph[2:26, j]))
 
 #     # For age 45-65:
-#     print np.mean(wealth_data_tograph[24:45, j])
-#     print np.mean(wealth_model_tograph[26:47, j])
+#     print(np.mean(wealth_data_tograph[24:45, j]))
+#     print(np.mean(wealth_model_tograph[26:47, j]))
 
 #     # Percent differences
-#     print (np.mean(wealth_model_tograph[:24, j]) - np.mean(wealth_data_tograph[2:26, j])) / np.mean(wealth_data_tograph[2:26, j])
-#     print (np.mean(wealth_model_tograph[24:45, j]) - np.mean(wealth_data_tograph[26:47, j])) / np.mean(wealth_data_tograph[26:47, j])
+#     print((np.mean(wealth_model_tograph[:24, j]) -
+#           np.mean(wealth_data_tograph[2:26, j])) /
+#           np.mean(wealth_data_tograph[2:26, j]))
+#     print((np.mean(wealth_model_tograph[24:45, j]) -
+#           np.mean(wealth_data_tograph[26:47, j])) /
+#           np.mean(wealth_data_tograph[26:47, j]))

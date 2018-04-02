@@ -1,3 +1,4 @@
+from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 Last updated 6/19/2015
@@ -417,7 +418,7 @@ def gini_cols(path, omega):
     cum_levels[:, 1:] = cum_levels[:, :-1]
     cum_levels[:, 0] = 0
     G = 2 * (.5 - (cum_levels * omega_sorted).sum(1))
-    print G[-1]
+    print(G[-1])
     return G
 
 
@@ -438,7 +439,7 @@ def gini_colj(path, omega):
     cum_levels[:, 1:] = cum_levels[:, :-1]
     cum_levels[:, 0] = 0
     G = 2 * (.5 - (cum_levels * omega_sorted).sum(1))
-    print G[-1]
+    print(G[-1])
     return G
 
 

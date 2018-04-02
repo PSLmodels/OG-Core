@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import pytest
 import json
 import pickle
@@ -31,7 +33,8 @@ def test_SS_fsolve():
                            'test_io_data/SS_fsolve_outputs.pkl'),
               'rb') as f:
         expected_list = pickle.load(f)
-    print 'outputs = ', np.absolute(np.array(test_list) - np.array(expected_list)).max()
+    print('outputs = ', np.absolute(np.array(test_list) -
+                                    np.array(expected_list)).max())
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
@@ -111,9 +114,7 @@ def test_inner_loop():
                            'test_io_data/inner_loop_outputs.pkl'),
               'rb') as f:
         expected_tuple = pickle.load(f)
-    # print 'test and expected: ', test_tuple[3:7], expected_tuple[3:7]
     for i, v in enumerate(expected_tuple):
-        # print 'test and expected: ', test_tuple[i], v
         assert(np.allclose(test_tuple[i], v))
 
 

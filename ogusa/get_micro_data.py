@@ -1,3 +1,4 @@
+from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 This program extracts tax rate and income data from the microsimulation
@@ -188,7 +189,7 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
                                 'Adjusted total income',
                                 'Total tax liability', 'Year',
                                 'Weights'])
-        print 'year: ', str(calc1.current_year)
+        print('year: ', str(calc1.current_year))
 
     if reform:
         pkl_path = "micro_data_policy.pkl"

@@ -1,3 +1,4 @@
+from __future__ import print_function
 
 '''
 This module should be organized as follows:
@@ -235,7 +236,7 @@ def minstat(chi_guesses, *args):
     distance = np.dot(np.dot((np.array(model_moments) - np.array(data_moments)).T,W),
                    np.array(model_moments) - np.array(data_moments))
     #distance = ((np.array(model_moments) - np.array(data_moments))**2).sum()
-    print 'DATA and MODEL DISTANCE: ', distance
+    print('DATA and MODEL DISTANCE: ', distance)
 
     # # distance with percentage diffs
     # distance = (((model_moments - data_moments)/data_moments)**2).sum()
