@@ -3,12 +3,7 @@ import sys
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 sys.path.append(os.path.join(CUR_PATH, "../../"))
 import pytest
-import tempfile
 import pickle
-import numpy as np
-from ogusa.utils import comp_array
-from ogusa.utils import comp_scalar
-from ogusa.utils import dict_compare
 from ogusa.parameters import (get_parameters, read_tax_func_estimate,
                               USER_MODIFIABLE_PARAMS)
 from ogusa import parameters
