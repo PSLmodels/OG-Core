@@ -76,8 +76,12 @@ def test_run_small():
     output_base = "./OUTPUT"
     input_dir = "./OUTPUT"
     user_params = {'frisch':0.41, 'debt_ratio_ss':0.4}
-    runner(output_base=output_base, baseline_dir=input_dir, test=True, time_path=False, baseline=True, user_params=user_params, run_micro=False, small_open=False, budget_balance=False)
-    runner(output_base=output_base, baseline_dir=input_dir, test=True, time_path=True, baseline=True, user_params=user_params, run_micro=False, small_open=False, budget_balance=False)
+    runner(output_base=output_base, baseline_dir=input_dir, test=True,
+           time_path=False, baseline=True, user_params=user_params,
+           run_micro=False, small_open=False, budget_balance=False)
+    runner(output_base=output_base, baseline_dir=input_dir, test=True,
+           time_path=True, baseline=True, user_params=user_params,
+           run_micro=False, small_open=False, budget_balance=False)
 
 
 def test_compare_pickle_file_bad(picklefile1, picklefile2):
