@@ -117,5 +117,5 @@ def test_run_TPI():
               'rb') as f:
         expected_dict = pickle.load(f, encoding='latin1')
 
-    for k, v in expected_dict.iteritems():
+    for k, v in expected_dict.items():
         assert(np.allclose(test_dict[k], v))

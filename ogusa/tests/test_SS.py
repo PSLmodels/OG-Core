@@ -95,7 +95,7 @@ def test_SS_solver():
               'rb') as f:
         expected_dict = pickle.load(f, encoding='latin1')
 
-    for k, v in expected_dict.iteritems():
+    for k, v in expected_dict.items():
         assert(np.allclose(test_dict[k], v))
 
 
@@ -182,5 +182,5 @@ def test_run_SS(input_path, expected_path):
               'rb') as f:
         expected_dict = pickle.load(f, encoding='latin1')
 
-    for k, v in expected_dict.iteritems():
+    for k, v in expected_dict.items():
         assert(np.allclose(test_dict[k], v))
