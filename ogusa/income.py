@@ -308,7 +308,9 @@ def arctan_fit(first_point, coef1, coef2, coef3, abil_deprec,
     --------------------------------------------------------------------
     '''
     params = [first_point, coef1, coef2, coef3, abil_deprec]
-    a, b, c = opt.fsolve(arc_error, init_guesses, params)
+    solution = opt.root(arc_error, init_guesses,
+                        args=params, method='lm')
+    [a, b, c] = solution.x
     old_ages = np.linspace(81, 100, 20)
     abil_last = arctan_func(old_ages, a, b, c)
     return abil_last
@@ -515,7 +517,8 @@ def get_e_orig(age_wgts, abil_wgts, plot=False):
     ages_short = np.tile(np.linspace(21, 80, 60).reshape((60, 1)),
                          (1, 7))
     log_abil_paths = (const + (one * ages_short) +
-        (two * (ages_short ** 2)) + (three * (ages_short ** 3)))
+                      (two * (ages_short ** 2)) +
+                      (three * (ages_short ** 3)))
     abil_paths = np.exp(log_abil_paths)
     e_orig = np.zeros((80, 7))
     e_orig[:60, :] = abil_paths
