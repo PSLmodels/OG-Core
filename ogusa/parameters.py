@@ -108,10 +108,10 @@ def read_tax_func_estimate(pickle_path, pickle_file):
     else:
         from pkg_resources import resource_stream, Requirement
         path_in_egg = pickle_file
-        buf = resource_stream(Requirement.parse('ogusa'), path_in_egg)
-        as_bytes = buf.read()
-        as_string = as_bytes.decode("utf-8")
-        dict_params = pickle.loads(as_string)
+        pkl_path = os.path.join(os.path.dirname(__file__), '..', path_in_egg)
+        with open(pkl_path, 'rb') as pfile:
+            print(pfile, type(pfile))
+            dict_params = pickle.load(pfile, encoding='latin1')
 
     return dict_params
 
@@ -528,7 +528,7 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
 
     if metadata:
         params_meta = read_parameter_metadata()
-        for k,v in allvars.iteritems():
+        for k,v in allvars.items():
             params_meta[k]["value"] = v
         allvars = params_meta
 
