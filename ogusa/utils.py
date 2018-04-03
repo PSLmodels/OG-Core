@@ -159,8 +159,8 @@ def pickle_file_compare(fname1, fname2, tol=1e-3, exceptions={}, relative=False)
     Returns: difference between dictionaries
     '''
 
-    pkl1 = pickle.load(open(fname1, 'rb'))
-    pkl2 = pickle.load(open(fname2, 'rb'))
+    pkl1 = pickle.load(open(fname1, 'rb'), encoding='latin1')
+    pkl2 = pickle.load(open(fname2, 'rb'), encoding='latin1')
 
     return dict_compare(fname1, pkl1, fname2, pkl2, tol=tol,
                         exceptions=exceptions, relative=relative)
