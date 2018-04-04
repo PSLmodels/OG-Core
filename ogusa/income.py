@@ -410,7 +410,7 @@ def get_e_interp(S, age_wgts, age_wgts_80, abil_wgts, plot=False):
 
         emat_j_midp = np.array([0.125, 0.375, 0.600, 0.750, 0.850,
                                 0.945, 0.995])
-        emat_s_midp = np.linspace(20.5,99.5,80)
+        emat_s_midp = np.linspace(20.5, 99.5, 80)
         emat_j_mesh, emat_s_mesh = np.meshgrid(emat_j_midp, emat_s_midp)
         newstep = 80 / S
         new_s_midp = np.linspace(20 + 0.5 * newstep,
