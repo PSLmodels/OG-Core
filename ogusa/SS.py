@@ -1104,10 +1104,6 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
         [solutions_fsolve, infodict, ier, message] =\
             opt.fsolve(SS_fsolve, guesses, args=ss_params_baseline,
                        xtol=mindist_SS, full_output=True)
-        # solution = opt.root(SS_fsolve, guesses, args=ss_params_baseline,
-        #                     method='lm', tol=mindist_SS)
-        # [rss, T_Hss, factor_ss] = solution.x
-        # if ENFORCE_SOLUTION_CHECKS and not solution.success:
         if ENFORCE_SOLUTION_CHECKS and not ier == 1:
             raise RuntimeError("Steady state equilibrium not found")
         [rss, T_Hss, factor_ss] = solutions_fsolve
@@ -1143,10 +1139,6 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
                            args=ss_params_reform, xtol=mindist_SS,
                            full_output=True)
             [rss, Yss] = solutions_fsolve
-            # solution = opt.root(SS_fsolve_reform_baselinespend, guesses,
-            #                     args=ss_params_reform, method='lm',
-            #                     tol=mindist_SS)
-            # [rss, Yss] = solution.x
         else:
             ss_params_reform = [b_guess.reshape(S, J),
                                 n_guess.reshape(S, J), chi_params,
@@ -1158,11 +1150,6 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
                 opt.fsolve(SS_fsolve_reform, guesses,
                            args=ss_params_reform, xtol=mindist_SS,
                            full_output=True)
-            # # [rss, T_Hss] = solutions_fsolve
-            # solution = opt.root(SS_fsolve_reform, guesses,
-            #                     args=ss_params_reform, method='lm',
-            #                     tol=mindist_SS)
-            # [rss, T_Hss] = solution.x
             Yss = T_Hss/alpha_T  # may not be right - if
             # budget_balance = True, but that's ok - will be fixed in SS_solver
         # if ENFORCE_SOLUTION_CHECKS and not solution.success == 1:
