@@ -21,8 +21,8 @@ This Python script calls the following modules:
     utils.py
 
 This Python script outputs the following:
-    ./TAX_ESTIMATE_PATH/TxFuncEst_baseline{}.pkl
-    ./TAX_ESTIMATE_PATH/TxFuncEst_policy{}.pkl
+    ./TAX_ESTIMATE_PATH/TxFuncEst_baseline{}.json
+    ./TAX_ESTIMATE_PATH/TxFuncEst_policy{}.json
 ------------------------------------------------------------------------
 '''
 # Import packages
@@ -34,10 +34,7 @@ import scipy.optimize as opt
 from dask.distributed import Client
 from dask import compute, delayed
 import dask.multiprocessing
-try:
-    import cPickle as pickle
-except:
-    import pickle
+import json
 import pandas as pd
 import matplotlib
 import matplotlib.pyplot as plt
@@ -1656,7 +1653,7 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
     '''
     --------------------------------------------------------------------
     This function calls the tax function estimation routine and saves
-    the resulting dictionary in pickle files corresponding to the
+    the resulting dictionary in JSON files corresponding to the
     baseline or reform policy.
     --------------------------------------------------------------------
 
@@ -1678,8 +1675,8 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
     RETURNS: N/A
 
     OUTPUT:
-    ./TAX_ESTIMATE_PATH/TxFuncEst_baseline{}.pkl
-    ./TAX_ESTIMATE_PATH/TxFuncEst_policy{}.pkl
+    ./TAX_ESTIMATE_PATH/TxFuncEst_baseline{}.json
+    ./TAX_ESTIMATE_PATH/TxFuncEst_policy{}.json
     --------------------------------------------------------------------
     '''
     # Code to run manually from here:
@@ -1690,11 +1687,12 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
                                     num_workers=num_workers)
     if baseline:
         baseline_pckl = (tx_func_est_path or
-                         "TxFuncEst_baseline{}.pkl".format(guid))
-        pkl_path = os.path.join(TAX_ESTIMATE_PATH, baseline_pckl)
+                         "TxFuncEst_baseline{}.json".format(guid))
+        json_path = os.path.join(TAX_ESTIMATE_PATH, baseline_pckl)
     else:
         policy_pckl = (tx_func_est_path or
-                       "TxFuncEst_policy{}.pkl".format(guid))
-        pkl_path = os.path.join(TAX_ESTIMATE_PATH, policy_pckl)
+                       "TxFuncEst_policy{}.json".format(guid))
+        json_path = os.path.join(TAX_ESTIMATE_PATH, policy_pckl)
 
-    pickle.dump(dict_params, open(pkl_path, "wb"))
+    with open(json_path, 'w') as fp:
+        json.dump(dict_params, fp, sort_keys=True, indent=4)
