@@ -3,10 +3,10 @@ A 'smoke test' for the ogusa package. Uses a fake data set to run the
 baseline
 '''
 
-import cPickle as pickle
 import os
 import numpy as np
 import time
+import json
 
 import ogusa
 from ogusa import calibrate
@@ -164,7 +164,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
 
     '''
     ------------------------------------------------------------------------
-        Pickle SS results
+        Save SS results to JSON file
     ------------------------------------------------------------------------
     '''
     model_params = {}
@@ -172,18 +172,19 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         model_params[key] = sim_params[key]
     if baseline:
         utils.mkdirs(os.path.join(baseline_dir, "SS"))
-        ss_dir = os.path.join(baseline_dir, "SS/SS_vars.pkl")
-        pickle.dump(ss_outputs, open(ss_dir, "wb"))
-        # Save pickle with parameter values for the run
-        param_dir = os.path.join(baseline_dir, "model_params.pkl")
-        pickle.dump(model_params, open(param_dir, "wb"))
+        ss_dir = os.path.join(baseline_dir, "SS/SS_vars.json")
+        param_dir = os.path.join(baseline_dir, "model_params.json")
+
     else:
         utils.mkdirs(os.path.join(output_base, "SS"))
-        ss_dir = os.path.join(output_base, "SS/SS_vars.pkl")
-        pickle.dump(ss_outputs, open(ss_dir, "wb"))
-        # Save pickle with parameter values for the run
-        param_dir = os.path.join(output_base, "model_params.pkl")
-        pickle.dump(model_params, open(param_dir, "wb"))
+        ss_dir = os.path.join(output_base, "SS/SS_vars.json")
+        param_dir = os.path.join(output_base, "model_params.json")
+    # Save SS output
+    with open(ss_dir, 'w') as fp:
+        json.dump(ss_outputs, fp, sort_keys=True, indent=4)
+    # Save model parameters
+    with open(param_dir, 'w') as fp:
+        json.dump(model_params, fp, sort_keys=True, indent=4)
 
     if time_path:
         '''
@@ -211,13 +212,13 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
 
         '''
         ------------------------------------------------------------------------
-            Pickle TPI results
+            Save TPI results to JSON file
         ------------------------------------------------------------------------
         '''
-        tpi_dir = os.path.join(output_base, "TPI")
-        utils.mkdirs(tpi_dir)
-        tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
-        pickle.dump(tpi_output, open(tpi_vars, "wb"))
+        utils.mkdirs(os.path.join(output_base, "TPI"))
+        tpi_dir = os.path.join(output_base, "TPI/TPI_vars.json")
+        with open(tpi_dir, 'w') as fp:
+            json.dump(tpi_output, fp, sort_keys=True, indent=4)
 
         print "Time path iteration complete."
     print "It took {0} seconds to get that part done.".format(time.time() - tick)
