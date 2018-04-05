@@ -10,15 +10,15 @@ This py-file calls the following other file(s):
             utils.py
             household.py
             firm.py
-            OUTPUT/SS/ss_vars.pkl
-            OUTPUT/Saved_moments/params_given.pkl
-            OUTPUT/Saved_moments/params_changed.pkl
+            OUTPUT/SS/ss_vars.json
+            OUTPUT/Saved_moments/params_given.json
+            OUTPUT/Saved_moments/params_changed.json
 
 
 This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
-            OUTPUT/TPIinit/TPIinit_vars.pkl
-            OUTPUT/TPI/TPI_vars.pkl
+            OUTPUT/TPIinit/TPIinit_vars.json
+            OUTPUT/TPI/TPI_vars.json
 ------------------------------------------------------------------------
 '''
 
@@ -26,7 +26,7 @@ This py-file creates the following other file(s):
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-import cPickle as pickle
+import json
 import scipy.optimize as opt
 from dask.distributed import Client
 from dask import compute, delayed
@@ -38,7 +38,6 @@ import firm
 import fiscal
 import aggregates as aggr
 import os
-import csv
 
 
 '''
@@ -55,7 +54,7 @@ ENFORCE_SOLUTION_CHECKS = True
 '''
 ------------------------------------------------------------------------
 Import steady state distribution, parameters and other objects from
-steady state computation in ss_vars.pkl
+steady state computation in ss_vars.json
 ------------------------------------------------------------------------
 '''
 
@@ -63,50 +62,55 @@ steady state computation in ss_vars.pkl
 def create_tpi_params(**sim_params):
 
     '''
-    ------------------------------------------------------------------------
+    --------------------------------------------------------------------
     Set factor and initial capital stock to SS from baseline
-    ------------------------------------------------------------------------
+    --------------------------------------------------------------------
     '''
     baseline_ss = os.path.join(sim_params['baseline_dir'],
-                               "SS/SS_vars.pkl")
-    ss_baseline_vars = pickle.load(open(baseline_ss, "rb"))
+                               "SS/SS_vars.json")
+    with open(baseline_ss, 'r') as fp:
+        ss_baseline_vars = json.load(fp)
     factor = ss_baseline_vars['factor_ss']
-    initial_b = ss_baseline_vars['bssmat_splus1']
-    initial_n = ss_baseline_vars['nssmat']
+    initial_b = np.array(ss_baseline_vars['bssmat_splus1'])
+    initial_n = np.array(ss_baseline_vars['nssmat'])
     if sim_params['baseline_spending']:
         baseline_tpi = os.path.join(sim_params['baseline_dir'],
-                                    "TPI/TPI_vars.pkl")
-        tpi_baseline_vars = pickle.load(open(baseline_tpi, "rb"))
-        T_Hbaseline = tpi_baseline_vars['T_H']
-        Gbaseline = tpi_baseline_vars['G']
+                                    "TPI/TPI_vars.json")
+        with open(baseline_tpi, 'r') as fp:
+            tpi_baseline_vars = json.load(fp)
+        T_Hbaseline = np.array(tpi_baseline_vars['T_H'])
+        Gbaseline = np.array(tpi_baseline_vars['G'])
 
     theta_params = (sim_params['e'], sim_params['S'],
                     sim_params['retire'])
     if sim_params['baseline']:
         SS_values = (ss_baseline_vars['Kss'], ss_baseline_vars['Bss'],
                      ss_baseline_vars['Lss'], ss_baseline_vars['rss'],
-                     ss_baseline_vars['wss'], ss_baseline_vars['BQss'],
+                     ss_baseline_vars['wss'],
+                     np.array(ss_baseline_vars['BQss']),
                      ss_baseline_vars['T_Hss'],
                      ss_baseline_vars['revenue_ss'],
-                     ss_baseline_vars['bssmat_splus1'],
-                     ss_baseline_vars['nssmat'],
+                     np.array(ss_baseline_vars['bssmat_splus1']),
+                     np.array(ss_baseline_vars['nssmat']),
                      ss_baseline_vars['Yss'], ss_baseline_vars['Gss'])
-        theta = tax.replacement_rate_vals(ss_baseline_vars['nssmat'],
+        theta = tax.replacement_rate_vals(np.array(ss_baseline_vars['nssmat']),
                                           ss_baseline_vars['wss'],
                                           factor, theta_params)
     elif not sim_params['baseline']:
         reform_ss = os.path.join(sim_params['input_dir'],
-                                 "SS/SS_vars.pkl")
-        ss_reform_vars = pickle.load(open(reform_ss, "rb"))
+                                 "SS/SS_vars.json")
+        with open(reform_ss, 'r') as fp:
+            ss_reform_vars = json.load(fp)
         SS_values = (ss_reform_vars['Kss'], ss_reform_vars['Bss'],
                      ss_reform_vars['Lss'], ss_reform_vars['rss'],
-                     ss_reform_vars['wss'], ss_reform_vars['BQss'],
+                     ss_reform_vars['wss'],
+                     np.array(ss_reform_vars['BQss']),
                      ss_reform_vars['T_Hss'],
                      ss_reform_vars['revenue_ss'],
-                     ss_reform_vars['bssmat_splus1'],
-                     ss_reform_vars['nssmat'], ss_reform_vars['Yss'],
-                     ss_reform_vars['Gss'])
-        theta = tax.replacement_rate_vals(ss_reform_vars['nssmat'],
+                     np.array(ss_reform_vars['bssmat_splus1']),
+                     np.array(ss_reform_vars['nssmat']),
+                     ss_reform_vars['Yss'], ss_reform_vars['Gss'])
+        theta = tax.replacement_rate_vals(np.array(ss_reform_vars['nssmat']),
                                           ss_reform_vars['wss'], factor,
                                           theta_params)
 
@@ -222,8 +226,9 @@ def create_tpi_params(**sim_params):
     initial_debt = sim_params['initial_debt']
     if not sim_params['baseline']:
         baseline_tpi = os.path.join(sim_params['baseline_dir'],
-                                    "TPI/TPI_vars.pkl")
-        tpi_baseline_vars = pickle.load(open(baseline_tpi, "rb"))
+                                    "TPI/TPI_vars.json")
+        with open(baseline_tpi, 'r') as fp:
+            tpi_baseline_vars = json.load(fp)
         D0 = tpi_baseline_vars['D'][0]
     else:
         D0 = 0.0
@@ -1062,12 +1067,6 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
               'n_mat': n_mat, 'c_path': c_path, 'tax_path': tax_path,
               'eul_savings': eul_savings,
               'eul_laborleisure': eul_laborleisure}
-
-    tpi_dir = os.path.join(output_dir, "TPI")
-    utils.mkdirs(tpi_dir)
-    tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
-    pickle.dump(output, open(tpi_vars, "wb"))
-
 
     if np.any(G) < 0:
         print('Government spending is negative along transition path' +

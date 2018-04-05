@@ -9,18 +9,17 @@ This py-file calls the following other file(s):
             household.py
             firm.py
             utils.py
-            OUTPUT/SS/ss_vars.pkl
+            OUTPUT/SS/ss_vars.json
 
 This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
-            OUTPUT/SS/ss_vars.pkl
+            OUTPUT/SS/ss_vars.json
 ------------------------------------------------------------------------
 '''
 
 # Packages
 import numpy as np
 import scipy.optimize as opt
-import cPickle as pickle
 from dask.distributed import Client
 from dask import compute, delayed
 import dask.multiprocessing
@@ -54,9 +53,7 @@ ENFORCE_SOLUTION_CHECKS = True
 def create_steady_state_parameters(**sim_params):
     '''
     --------------------------------------------------------------------
-    This function calls the tax function estimation routine and saves
-    the resulting dictionary in pickle files corresponding to the
-    baseline or reform policy.
+    This function reads in the parameters to be used for the SS solution.
     --------------------------------------------------------------------
 
     INPUTS:
@@ -1118,8 +1115,9 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
         # print("solved output", wss, rss, T_Hss, factor_ss)
         # print('analytical mtrs in SS: ', analytical_mtrs)
     else:
-        baseline_ss_dir = os.path.join(baseline_dir, "SS/SS_vars.pkl")
-        ss_solutions = pickle.load(open(baseline_ss_dir, "rb"))
+        baseline_ss_dir = os.path.join(baseline_dir, "SS/SS_vars.json")
+        with open(baseline_ss_dir, 'r') as fp:
+            ss_solutions = json.load(fp)
         [rguess, T_Hguess, Yguess, factor] =\
             [ss_solutions['rss'], ss_solutions['T_Hss'],
              ss_solutions['Yss'], ss_solutions['factor_ss']]
