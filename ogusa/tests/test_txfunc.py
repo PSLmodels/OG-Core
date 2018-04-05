@@ -124,6 +124,22 @@ def test_replace_outliers():
 
 
 # def test_tax_func_loop():
+    # Test txfunc.tax_func_loop() function.  The test is that given
+    # inputs from previous run, the outputs are unchanged.
+    with open(os.path.join(CUR_PATH,
+                           'test_io_data/tax_func_loop_inputs.pkl'),
+              'rb') as f:
+        input_tuple = pickle.load(f)
+    guesses, params = input_tuple
+    params = params + (None, 1)
+    test_list = SS.SS_fsolve(guesses, params)
+
+    with open(os.path.join(CUR_PATH,
+                           'test_io_data/tax_func_loop_outputs.pkl'),
+              'rb') as f:
+        expected_list = pickle.load(f)
+    print 'outputs = ', np.absolute(np.array(test_list) - np.array(expected_list)).max()
+    assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 A = 0.02
 B = 0.01
