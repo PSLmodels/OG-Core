@@ -29,7 +29,6 @@ import numpy as np
 import scipy.interpolate as si
 import demographics as dem
 import income as inc
-import pickle
 import txfunc
 import elliptical_u_est as ellip
 import matplotlib.pyplot as plt
@@ -80,18 +79,18 @@ def read_parameter_metadata():
     return params_dict
 
 
-def read_tax_func_estimate(pickle_path, pickle_file):
+def read_tax_func_estimate(json_path, json_file):
     '''
     --------------------------------------------------------------------
     This function reads in tax function parameters
     --------------------------------------------------------------------
 
     INPUTS:
-    pickle_path = string, path to pickle with tax function parameter estimates
-    pickle_file = string, name of pickle file with tax function parmaeter estimates
+    json_path = string, path to json with tax function parameter estimates
+    json_file = string, name of json file with tax function parmaeter estimates
 
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
-    /picklepath/ = pickle file with dictionary of tax function estimated parameters
+    /jsonpath/ = json file with dictionary of tax function estimated parameters
 
     OBJECTS CREATED WITHIN FUNCTION:
     dict_params = dictionary, contains numpy arrays of tax function estimates
@@ -99,17 +98,17 @@ def read_tax_func_estimate(pickle_path, pickle_file):
     RETURNS: dict_params
     --------------------------------------------------------------------
     '''
-    if os.path.exists(pickle_path):
-        print 'pickle path exists'
-        with open(pickle_path) as pfile:
-            dict_params = pickle.load(pfile)
+    if os.path.exists(json_path):
+        print 'json path exists'
+        with open(json_path, 'r') as pfile:
+            dict_params = json.load(pfile)
     else:
         from pkg_resources import resource_stream, Requirement
-        path_in_egg = pickle_file
+        path_in_egg = json_file
         buf = resource_stream(Requirement.parse('ogusa'), path_in_egg)
         as_bytes = buf.read()
         as_string = as_bytes.decode("utf-8")
-        dict_params = pickle.loads(as_string)
+        dict_params = json.loads(as_string)
 
     return dict_params
 
@@ -373,11 +372,11 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
     # Income Tax Parameters
     if baseline:
         tx_func_est_path = os.path.join(
-            output_base, 'TxFuncEst_baseline{}.pkl'.format(guid),
+            output_base, 'TxFuncEst_baseline{}.json'.format(guid),
         )
     else:
         tx_func_est_path = os.path.join(
-            output_base, 'TxFuncEst_policy{}.pkl'.format(guid),
+            output_base, 'TxFuncEst_policy{}.json'.format(guid),
         )
     if run_micro:
         txfunc.get_tax_func_estimate(BW, S, starting_age, ending_age,
@@ -390,22 +389,22 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
                                      data=data, client=client,
                                      num_workers=num_workers)
     if baseline:
-        baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
+        baseline_pckl = "TxFuncEst_baseline{}.json".format(guid)
         estimate_file = tx_func_est_path
         print 'using baseline tax parameters', tx_func_est_path
         dict_params = read_tax_func_estimate(estimate_file, baseline_pckl)
 
     else:
-        policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
+        policy_pckl = "TxFuncEst_policy{}.json".format(guid)
         estimate_file = tx_func_est_path
         print 'using policy tax parameters', tx_func_est_path
         dict_params = read_tax_func_estimate(estimate_file, policy_pckl)
 
     mean_income_data = dict_params['tfunc_avginc'][0]
 
-    etr_params = dict_params['tfunc_etr_params_S'][:S, :BW, :]
-    mtrx_params = dict_params['tfunc_mtrx_params_S'][:S, :BW, :]
-    mtry_params = dict_params['tfunc_mtry_params_S'][:S, :BW, :]
+    etr_params = np.array(dict_params['tfunc_etr_params_S'])[:S, :BW, :]
+    mtrx_params = np.array(dict_params['tfunc_mtrx_params_S'])[:S, :BW, :]
+    mtry_params = np.array(dict_params['tfunc_mtry_params_S'])[:S, :BW, :]
 
     if constant_rates:
         print 'Using constant rates!'
