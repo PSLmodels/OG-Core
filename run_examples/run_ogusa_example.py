@@ -20,10 +20,7 @@ def run_micro_macro(user_params):
     rec = Records()
     pol = Policy()
     calc = Calculator(policy=pol, records=rec)
-    # ref = calc.read_json_param_objects(
-    #     '../../tax-calculator/taxcalc/reforms/2017_law.json', None)
-    ref = calc.read_json_param_objects(
-        taxcalc.reforms.2017_law.json, None)
+    ref = calc.read_json_param_objects(2017_law.json, None)
     reform = ref['policy']
 
     # Define parameters to use for multiprocessing
