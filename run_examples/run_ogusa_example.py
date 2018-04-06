@@ -20,15 +20,18 @@ def run_micro_macro(user_params):
     rec = Records()
     pol = Policy()
     calc = Calculator(policy=pol, records=rec)
+    # ref = calc.read_json_param_objects(
+    #     '../../tax-calculator/taxcalc/reforms/2017_law.json', None)
     ref = calc.read_json_param_objects(
-        '../../tax-calculator/taxcalc/reforms/2017_law.json', None)
+        taxcalc.reforms.2017_law.json, None)
     reform = ref['policy']
 
     # Define parameters to use for multiprocessing
     client = Client(processes=False)
     num_workers = multiprocessing.cpu_count()
     print('Number of workers = ', num_workers)
-
+    print('GOT HERE')
+    quit()
     start_time = time.time()
 
     # Set some model parameters
@@ -56,13 +59,14 @@ def run_micro_macro(user_params):
     output_base = BASELINE_DIR
     input_dir = BASELINE_DIR
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
-              'test': False, 'time_path': False, 'baseline': True,
+              'test': False, 'time_path': True, 'baseline': True,
               'constant_rates': False,
               'analytical_mtrs': False, 'age_specific': True,
               'user_params': user_params, 'guid': '_example',
               'run_micro': True, 'small_open': small_open,
               'budget_balance': False, 'baseline_spending': False,
-              'data': 'cps', 'client': client, 'num_workers': num_workers}
+              'data': 'cps', 'client': client,
+              'num_workers': num_workers}
 
     start_time = time.time()
     runner(**kwargs)
@@ -87,8 +91,8 @@ def run_micro_macro(user_params):
               'age_specific': True, 'user_params': user_params,
               'guid': '_example', 'reform': reform, 'run_micro': True,
               'small_open': small_open, 'budget_balance': False,
-              'baseline_spending': False, 'client': client,
-              'num_workers': num_workers}
+              'baseline_spending': False, 'data': 'cps',
+              'client': client, 'num_workers': num_workers}
 
     # return ans - the percentage changes in macro aggregates and prices
     # due to policy changes from the baseline to the reform
