@@ -120,26 +120,50 @@ def test_replace_outliers():
     assert np.allclose(act, exp)
 
 
-# def test_txfunc_est():
-
-
-# def test_tax_func_loop():
-    # Test txfunc.tax_func_loop() function.  The test is that given
+def test_txfunc_est():
+    # Test txfunc.txfunc_est() function.  The test is that given
     # inputs from previous run, the outputs are unchanged.
     with open(os.path.join(CUR_PATH,
-                           'test_io_data/tax_func_loop_inputs.pkl'),
+                           'test_io_data/txfunc_est_inputs.pkl'),
               'rb') as f:
         input_tuple = pickle.load(f)
-    guesses, params = input_tuple
-    params = params + (None, 1)
-    test_list = SS.SS_fsolve(guesses, params)
-
+    (df, s, t, rate_type, output_dir, graph) = input_tuple
+    tax_func_type = 'DEP'
+    numparams = 12
+    test_tuple = txfunc.txfunc_est(df, s, t, rate_type,
+                                      tax_func_type, numparams,
+                                      output_dir, graph)
     with open(os.path.join(CUR_PATH,
-                           'test_io_data/tax_func_loop_outputs.pkl'),
+                           'test_io_data/txfunc_est_outputs.pkl'),
               'rb') as f:
-        expected_list = pickle.load(f)
-    print 'outputs = ', np.absolute(np.array(test_list) - np.array(expected_list)).max()
-    assert(np.allclose(np.array(test_list), np.array(expected_list)))
+        expected_tuple = pickle.load(f)
+    for i, v in enumerate(expected_tuple):
+        assert(np.allclose(test_tuple[i], v))
+
+
+# @pytest.mark.full_run
+# def test_tax_func_loop():
+#     # Test txfunc.tax_func_loop() function.  The test is that given
+#     # inputs from previous run, the outputs are unchanged.
+#     with open(os.path.join(CUR_PATH,
+#                            'test_io_data/tax_func_loop_inputs.pkl'),
+#               'rb') as f:
+#         input_tuple = pickle.load(f)
+#     (t, micro_data, beg_yr, s_min, s_max, age_specific, analytical_mtrs,
+#      desc_data, graph_data, graph_est, output_dir, numparams,
+#      tpers) = input_tuple
+#     tax_func_type = 'DEP'
+#     test_tuple = txfunc.tax_func_loop(
+#         t, micro_data, beg_yr, s_min, s_max, age_specific,
+#         tax_func_type, analytical_mtrs, desc_data, graph_data,
+#         graph_est, output_dir, numparams, tpers)
+#     with open(os.path.join(CUR_PATH,
+#                            'test_io_data/tax_func_loop_outputs.pkl'),
+#               'rb') as f:
+#         expected_tuple = pickle.load(f)
+#     for i, v in enumerate(expected_tuple):
+#         assert(np.allclose(test_tuple[i], v))
+
 
 A = 0.02
 B = 0.01
@@ -207,9 +231,34 @@ def test_get_tax_rates(tax_func_type, rate_type, params, for_estimation,
 
     assert np.allclose(test_txrates, expected)
 
-
-# def test_tax_func_estimate():
+@pytest.mark.full_run
+def test_tax_func_estimate():
+    # Test txfunc.tax_func_loop() function.  The test is that given
+    # inputs from previous run, the outputs are unchanged.
+    with open(os.path.join(CUR_PATH,
+                           'test_io_data/tax_func_estimate_inputs.pkl'),
+              'rb') as f:
+        input_tuple = pickle.load(f)
+    (BW, S, starting_age, ending_age, beg_yr, baseline,
+     analytical_mtrs, age_specific, reform, data, client,
+     num_workers) = input_tuple
+    tax_func_type = 'DEP'
+    test_dict = txfunc.tax_func_estimate(
+        BW, S, starting_age, ending_age, beg_yr, baseline,
+        analytical_mtrs, tax_func_type, age_specific, reform, data,
+        client, num_workers)
+    with open(os.path.join(CUR_PATH,
+                           'test_io_data/tax_func_estimate_outputs.pkl'),
+              'rb') as f:
+        expected_dict = pickle.load(f)
+    for k, v in expected_dict.items():
+        try:
+            assert(np.allclose(test_dict[k], v))
+        except TypeError:
+            assert(test_tuple[i][i2] == v2)
 
 
 # def test_get_tax_func_estimate():
 # saves a pickle file
+# skipping since these results are confirmed in the above, other than
+# saving output to pickle
