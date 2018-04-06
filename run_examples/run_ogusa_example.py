@@ -27,8 +27,6 @@ def run_micro_macro(user_params):
     client = Client(processes=False)
     num_workers = multiprocessing.cpu_count()
     print('Number of workers = ', num_workers)
-    print('GOT HERE')
-    quit()
     start_time = time.time()
 
     # Set some model parameters
