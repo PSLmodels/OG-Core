@@ -42,6 +42,8 @@ to release. Stay tuned for an upcoming release!
 
 Note that, depending on your machine, a full model run (solving for the full time path equilibrium for the baseline and reform policies) can take from a few to several hours of compute time.
 
+If you run into errors running the example script, please open a new issue in the OG-USA repo with a description of the issue and any relevant tracebacks you receive.
+
 
 ## Citing OG-USA
 
