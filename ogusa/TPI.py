@@ -914,12 +914,20 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
                                baseline_spending=baseline_spending)
 
     # Solve HH problem in inner loop
-    guesses = (guesses_b, guesses_n)
     outer_loop_vars = (r, K, BQ, T_H)
-    inner_loop_params = (income_tax_params, tpi_params, initial_values,
-                         ind)
-    euler_errors, b_mat, n_mat = inner_loop(guesses, outer_loop_vars,
-                                            inner_loop_params)
+    inner_loop_params = (income_tax_params, tpi_params,
+                         initial_values, ind)
+    euler_errors = np.zeros((T, 2 * S, J))
+    lazy_values = []
+    for j in range(J):
+        guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
+        lazy_values.append(
+            delayed(inner_loop)(guesses, outer_loop_vars,
+                                inner_loop_params, j))
+    results = compute(*lazy_values, get=dask.multiprocessing.get,
+                      num_workers=num_workers)
+    for j, result in enumerate(results):
+        euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result
 
     bmat_s = np.zeros((T, S, J))
     bmat_s[0, 1:, :] = initial_b[:-1, :]
