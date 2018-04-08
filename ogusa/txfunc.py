@@ -331,7 +331,6 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
         A, B, C, D, max_x, max_y, share, min_x, min_y, shift = params
         shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
         shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
-        print('Shift x and shift y = ', shift_x, shift_y)
         Etil = A + B
         Ftil = C + D
         if for_estimation:
@@ -347,8 +346,6 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
                       (A * X2til + B * Xtil + Etil + 1)) + min_x)
             tau_y = (((max_y - min_y) * (C * Y2til + D * Ytil + Ftil) /
                       (C * Y2til + D * Ytil + Ftil + 1)) + min_y)
-            print('tau_x = ', tau_x)
-            print('tau_y = ', tau_y)
             txrates = (((tau_x + shift_x) ** share) *
                        ((tau_y + shift_y) ** (1 - share))) + shift
         else:
@@ -356,8 +353,6 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
                       (A * X2 + B * X + 1)) + min_x)
             tau_y = (((max_y - min_y) * (C * Y2 + D * Y) /
                       (C * Y2 + D * Y + 1)) + min_y)
-            print('tau_x = ', tau_x)
-            print('tau_y = ', tau_y)
             txrates = (((tau_x + shift_x) ** share) *
                        ((tau_y + shift_y) ** (1 - share))) + shift
     elif tax_func_type == 'DEP_totalinc':
@@ -900,7 +895,6 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
                                   method="L-BFGS-B", bounds=bnds, tol=1e-15)
         phi0til, phi1til, phi2til = params_til.x
         wsse = params_til.fun
-        print('GS WSSE: ', wsse)
         obs = df.shape[0]
         params = np.zeros(numparams)
         params[:3] = np.array([phi0til, phi1til, phi2til])
