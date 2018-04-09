@@ -288,11 +288,9 @@ def MTR_income(r, w, b, n, factor, params, mtr_capital):
             shift_I = etr_params[..., 8]
             shift = etr_params[..., 10]
             d_etr = ((max_I - min_I) * ((2 * A * I + B) /
-                                      (A * I2 + B * I + 1)) +
-                     (((A * I2 + B * I) * (2 * I + B))) /
-                     ((A * I2 + B * I + 1) ** 2))
-            etr = (((max_I - min_I) * (A * I2 + B * I) /
-                   (A * I2 + B * I + 1)) + min_I) + shift_I + shift
+                     ((A * I2 + B * I + 1) ** 2)))
+            etr = (((max_I - min_I) * ((A * I2 + B * I) /
+                   (A * I2 + B * I + 1)) + min_I) + shift_I + shift)
             tau = (d_etr * I) + (etr)
         else:
             A = mtr_params[..., 0]
@@ -323,19 +321,22 @@ def MTR_income(r, w, b, n, factor, params, mtr_capital):
                      (A * X2 + B * X + 1) + min_x)
             tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
                      (C * Y2 + D * Y + 1) + min_y)
-            tau_x_y = (((tau_x + shift_x) ** share) *
+            etr = (((tau_x + shift_x) ** share) *
                        ((tau_y + shift_y) ** (1 - share))) + shift
             if mtr_capital:
-                tau = ((X + Y) * share * ((tau_x + shift_x) **
-                                          (share - 1)) *
-                       (max_x - min_x) * ((2 * A * X + B) /
-                                          ((A * X2 + B * X + 1) ** 2)) *
-                       ((tau_y + shift_y) ** (1 - share)) + tau_x_y)
+                d_etr = ((1-share) * ((tau_y + shift_y) ** (-share)) *
+                         (max_y - min_y) * ((2 * C * Y + D) /
+                                            ((C * Y2 + D * Y + 1)
+                                             ** 2)) *
+                         ((tau_x + shift_x) ** share))
+                tau = d_etr * I + etr
             else:
-                tau = ((X + Y) * ((tau_x + shift_x) ** share) *
-                       (1 - share) * (max_y - min_y) *
-                       ((2 * C * X + D) / ((C * X2 + D * X + 1) ** 2)) *
-                       ((tau_y + shift_y) ** (-share)) + tau_x_y)
+                d_etr = (share * ((tau_x + shift_x) ** (share - 1)) *
+                         (max_x - min_x) * ((2 * A * X + B) /
+                                            ((A * X2 + B * X + 1)
+                                             ** 2)) *
+                         ((tau_y + shift_y) ** (1 - share)))
+                tau = d_etr * I + etr
         else:
             A = mtr_params[..., 0]
             B = mtr_params[..., 1]

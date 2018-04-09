@@ -97,7 +97,7 @@ def test_ETR_income(b, n, e, tax_func_type, etr_params, expected):
     assert np.allclose(test_ETR_income, expected)
 
 
-@pytest.mark.parametrize('tax_func_type,analytical_mtrs,etr_params,mtr_params,expected',
+@pytest.mark.parametrize('tax_func_type,analytical_mtrs,etr_params,mtr_params,mtr_capital,expected',
                          [('DEP', True,
                            np.array([
                                [0.001, 0.002, 0.003, 0.0015, 0.8,
@@ -116,9 +116,30 @@ def test_ETR_income(b, n, e, tax_func_type, etr_params, expected):
                                 0.90],
                                [0.001, 0.002, 0.003, 0.0015, 0.56,
                                 -0.17, 0.8, -0.42, 0.18, 0.38, -0.22,
-                                0.65]]),
-                           np.array([0.80167516, 0.80164698,
-                                     0.80168175])),
+                                0.65]]), False,
+                           np.array([0.801675428, 0.801647645,
+                                     0.801681744])),
+                          ('DEP', True,
+                            np.array([
+                                [0.001, 0.002, 0.003, 0.0015, 0.8,
+                                 -0.14, 0.8, -0.15, 0.15, 0.16, -0.15,
+                                 0.83],
+                                [0.002, 0.001, 0.002, 0.04, 0.8, -0.14,
+                                 0.8, -0.15, 0.15, 0.16, -0.15, 0.83],
+                                [0.011, 0.001, 0.003, 0.06, 0.8, -0.14,
+                                 0.8, -0.15, 0.15, 0.16, -0.15, 0.83]]),
+                            np.array([
+                                [0.001, 0.002, 0.003, 0.0015, 0.68,
+                                 -0.17, 0.8, -0.42, 0.18, 0.43, -0.42,
+                                 0.96],
+                                [0.001, 0.002, 0.003, 0.0015, 0.65,
+                                 -0.17, 0.8, -0.42, 0.18, 0.33, -0.12,
+                                 0.90],
+                                [0.001, 0.002, 0.003, 0.0015, 0.56,
+                                 -0.17, 0.8, -0.42, 0.18, 0.38, -0.22,
+                                 0.65]]), True,
+                            np.array([0.8027427, 0.80335305,
+                                      0.80197745])),
                           ('DEP', False,
                            np.array([
                                [0.001, 0.002, 0.003, 0.0015, 0.8,
@@ -137,7 +158,7 @@ def test_ETR_income(b, n, e, tax_func_type, etr_params, expected):
                                 0.90],
                                [0.001, 0.002, 0.003, 0.0015, 0.56,
                                 -0.17, 0.8, -0.42, 0.18, 0.38, -0.22,
-                                0.65]]),
+                                0.65]]), False,
                            np.array([0.45239409, 0.73598958,
                                      0.65126073])),
                           ('GS', False,
@@ -154,9 +175,30 @@ def test_ETR_income(b, n, e, tax_func_type, etr_params, expected):
                                [0.396, 0.7, 0.9, 0, 0, 0, 0, 0, 0, 0, 0,
                                 0],
                                [0.6, 0.5, 0.6, 0, 0, 0, 0, 0, 0, 0, 0,
-                                0]]),
+                                0]]), False,
                            np.array([0.395999995, 0.395999983,
                                      0.599999478])),
+                          ('DEP_totalinc', True,
+                           np.array([
+                               [0.001, 0.002, 0.003, 0.0015, 0.8,
+                                -0.14, 0.8, -0.15, 0.15, 0.16, -0.15,
+                                0.83],
+                               [0.002, 0.001, 0.002, 0.04, 0.8, -0.14,
+                                0.8, -0.15, 0.15, 0.16, -0.15, 0.83],
+                               [0.011, 0.001, 0.003, 0.06, 0.8, -0.14,
+                                0.8, -0.15, 0.15, 0.16, -0.15, 0.83]]),
+                           np.array([
+                               [0.001, 0.002, 0.003, 0.0015, 0.68,
+                                -0.17, 0.8, -0.42, 0.18, 0.43, -0.42,
+                                0.96],
+                               [0.001, 0.002, 0.003, 0.0015, 0.65,
+                                -0.17, 0.8, -0.42, 0.18, 0.33, -0.12,
+                                0.90],
+                               [0.001, 0.002, 0.003, 0.0015, 0.56,
+                                -0.17, 0.8, -0.42, 0.18, 0.38, -0.22,
+                                0.65]]), False,
+                           np.array([0.800001028, 0.800002432,
+                                     0.800000311])),
                           ('DEP_totalinc', False,
                            np.array([
                                [0.001, 0.002, 0.003, 0.0015, 0.8,
@@ -175,14 +217,16 @@ def test_ETR_income(b, n, e, tax_func_type, etr_params, expected):
                                 0.90],
                                [0.001, 0.002, 0.003, 0.0015, 0.56,
                                 -0.17, 0.8, -0.42, 0.18, 0.38, -0.22,
-                                0.65]]),
+                                0.65]]), False,
                            np.array([0.439999714, 0.709998696,
                                      0.519999185]))],
-                         ids=['DEP, analytical mtr',
+                         ids=['DEP, analytical mtr, labor income',
+                              'DEP, analytical mtr, capital income',
                               'DEP, not analytical mtr', 'GS',
-                              'DEP_totalinc'])
+                              'DEP_totalinc, analytical mtr',
+                              'DEP_totalinc, not analytical mtr'])
 def test_MTR_income(tax_func_type, analytical_mtrs, etr_params,
-                    mtr_params, expected):
+                    mtr_params, mtr_capital, expected):
     # Test the MTR on income function
     r = 0.04
     w = 1.2
@@ -194,7 +238,8 @@ def test_MTR_income(tax_func_type, analytical_mtrs, etr_params,
     test_mtr = tax.MTR_income(r, w, b, n, factor, (e, etr_params,
                                                    mtr_params,
                                                    tax_func_type,
-                                                   analytical_mtrs))
+                                                   analytical_mtrs),
+                                                   mtr_capital)
 
     assert np.allclose(test_mtr, expected)
 
