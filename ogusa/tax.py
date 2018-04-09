@@ -266,6 +266,7 @@ def MTR_income(r, w, b, n, factor, params):
     X2 = X ** 2
     Y2 = Y ** 2
     I = X + Y
+    I2 = I ** 2
 
     if tax_func_type == 'GS':
         if analytical_mtrs:
