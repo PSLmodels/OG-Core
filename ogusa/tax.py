@@ -207,7 +207,7 @@ def ETR_income(r, w, b, n, factor, params):
     return tau
 
 
-def MTR_income(r, w, b, n, factor, params):
+def MTR_income(r, w, b, n, factor, params, mtr_capital):
     '''
     --------------------------------------------------------------------
     Generates the marginal tax rate on labor income for households.
@@ -287,6 +287,13 @@ def MTR_income(r, w, b, n, factor, params):
             min_I = etr_params[..., 5]
             shift_I = etr_params[..., 8]
             shift = etr_params[..., 10]
+            d_etr = ((max_I - min_I) * ((2 * A * I + B) /
+                                      (A * I2 + B * I + 1)) +
+                   (((A * I2 + B * I) * (2 * I + B))) /
+                   ((A * I2 + B * I + 1) ** 2))
+            etr = (((max_I - min_I) * (A * I2 + B * I) /
+                      (A * I2 + B * I + 1)) + min_I) + shift_I + shift
+            tau = (d_etr * I) + (etr)
         else:
             A = mtr_params[..., 0]
             B = mtr_params[..., 1]
@@ -294,9 +301,9 @@ def MTR_income(r, w, b, n, factor, params):
             min_I = mtr_params[..., 5]
             shift_I = mtr_params[..., 8]
             shift = mtr_params[..., 10]
-        tau_I = (((max_I - min_I) * (A * I2 + B * I) /
+            tau_I = (((max_I - min_I) * (A * I2 + B * I) /
                   (A * I2 + B * I + 1)) + min_I)
-        tau = tau_I + shift_I + shift
+            tau = tau_I + shift_I + shift
     else:  # DEP or linear
         if analytical_mtrs:
             A = etr_params[..., 0]
@@ -318,11 +325,16 @@ def MTR_income(r, w, b, n, factor, params):
                      (C * Y2 + D * Y + 1) + min_y)
             tau_x_y = (((tau_x + shift_x) ** share) *
                        ((tau_y + shift_y) ** (1 - share))) + shift
-            tau = ((X + Y) * ((tau_x + shift_x) ** share) * (1 - share) *
+            if mtr_capital:
+                tau = ((X + Y) * share * ((tau_x + shift_x) ** (share - 1)) *
+                       (max_x - min_x) * ((2 * A * X + B) / ((A * X2 + B * X + 1)
+                                                             ** 2)) *
+                       ((tau_y + shift_y) ** (1 - share)) + tau_x_y)
+            else:
+                tau = ((X + Y) * ((tau_x + shift_x) ** share) * (1 - share) *
                    (max_y - min_y) * ((2 * C * X + D)/((C * X2 + D * X + 1)
                                                        ** 2)) *
                    ((tau_y + shift_y) ** (-share)) + tau_x_y)
-
         else:
             A = mtr_params[..., 0]
             B = mtr_params[..., 1]
