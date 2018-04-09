@@ -264,7 +264,8 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H,
                       analytical_mtrs)
     deriv = ((1 + r_extended[1:]) - r_extended[1:] *
              (tax.MTR_income(r_extended[1:], w_extended[1:], b_splus1,
-                              n_extended[1:], factor, mtr_cap_params)))
+                              n_extended[1:], factor, mtr_cap_params,
+                              True)))
 
     savings_ut = (rho * np.exp(-sigma * g_y) * chi_b * b_splus1 **
                   (-sigma))
@@ -356,7 +357,7 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, params):
     mtr_lab_params = (e, etr_params, mtrx_params, tax_func_type,
                       analytical_mtrs)
     deriv = (1 - tau_payroll - tax.MTR_income(r, w, b, n, factor,
-                                             mtr_lab_params))
+                                             mtr_lab_params, False))
 
     lab_params = (b_ellipse, upsilon, ltilde, chi_n)
     FOC_error = (marg_ut_cons(cons, sigma) * w * deriv * e -
