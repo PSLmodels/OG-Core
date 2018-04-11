@@ -67,9 +67,9 @@ def dump_diff_output(baseline_dir, policy_dir):
     tpi_policy_dir = os.path.join(policy_dir, "TPI")
     if not os.path.exists(tpi_policy_dir):
         os.mkdir(tpi_policy_dir)
-    tpi_macro_vars_policy_path = os.path.join(tpi_policy_dir, "TPI_macro_vars.pkl")
+    tpi_macro_vars_policy_path = os.path.join(tpi_policy_dir, "TPI_vars.pkl")
     tpi_macro_vars_policy = pickle.load(open(tpi_macro_vars_policy_path, "rb"))
-    tpi_macro_vars_baseline_path = os.path.join(tpi_baseline_dir, "TPI_macro_vars.pkl")
+    tpi_macro_vars_baseline_path = os.path.join(tpi_baseline_dir, "TPI_vars.pkl")
     tpi_macro_vars_baseline = pickle.load(open(tpi_macro_vars_baseline_path, "rb"))
 
     T = len(tpi_macro_vars_baseline['C'])

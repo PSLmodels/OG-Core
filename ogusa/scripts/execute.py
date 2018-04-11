@@ -201,18 +201,17 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         sim_params['input_dir'] = output_base
         sim_params['baseline_dir'] = baseline_dir
 
-
         (income_tax_params, tpi_params,
-            iterative_params, small_open_params,
-            initial_values, SS_values,
-            fiscal_params, biz_tax_params) = TPI.create_tpi_params(**sim_params)
+         iterative_params, small_open_params, initial_values, SS_values,
+         fiscal_params, biz_tax_params) =\
+            TPI.create_tpi_params(**sim_params)
 
-        tpi_output, macro_output = TPI.run_TPI(income_tax_params, tpi_params,
-                                               iterative_params, small_open_params,
-                                               initial_values, SS_values,
-                                               fiscal_params, biz_tax_params,
-                                               output_dir=output_base,
-                                               baseline_spending=baseline_spending)
+        tpi_output = TPI.run_TPI(
+            income_tax_params, tpi_params, iterative_params,
+            small_open_params, initial_values, SS_values, fiscal_params,
+            biz_tax_params, output_dir=output_base,
+            baseline_spending=baseline_spending, client=client,
+            num_workers=num_workers)
 
         '''
         ------------------------------------------------------------------------
@@ -223,12 +222,6 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         utils.mkdirs(tpi_dir)
         tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
         pickle.dump(tpi_output, open(tpi_vars, "wb"))
-
-        tpi_dir = os.path.join(output_base, "TPI")
-        utils.mkdirs(tpi_dir)
-        tpi_vars = os.path.join(tpi_dir, "TPI_macro_vars.pkl")
-        pickle.dump(macro_output, open(tpi_vars, "wb"))
-
 
         print "Time path iteration complete."
     print "It took {0} seconds to get that part done.".format(time.time() - tick)

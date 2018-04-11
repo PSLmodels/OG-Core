@@ -83,7 +83,7 @@ def test_inner_loop():
                            'test_io_data/tpi_inner_loop_inputs.pkl'),
               'rb') as f:
         input_tuple = pickle.load(f)
-    guesses, outer_loop_vars, params = input_tuple
+    guesses, outer_loop_vars, params, j = input_tuple
     income_tax_params, tpi_params, initial_values, ind = params
     initial_values = initial_values + (0.0,)
     tpi_params = tpi_params + [True]
