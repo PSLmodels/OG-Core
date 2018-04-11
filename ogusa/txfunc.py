@@ -790,7 +790,7 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
     Xbar = (X * wgts).sum() / wgts.sum()
     Y2bar = (Y2 * wgts).sum() / wgts.sum()
     Ybar = (Y * wgts).sum() / wgts.sum()
-    I  = X + Y
+    I = X + Y
     I2 = I ** 2
     Ibar = (I * wgts).sum() / wgts.sum()
     I2bar = (I2 * wgts).sum() / wgts.sum()
