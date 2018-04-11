@@ -85,12 +85,12 @@ def test_inner_loop():
         input_tuple = pickle.load(f)
     guesses, outer_loop_vars, params, j = input_tuple
     income_tax_params, tpi_params, initial_values, ind = params
-    initial_values = initial_values + (0.0,)
-    tpi_params = tpi_params + [True]
+    initial_values = initial_values #+ (0.0,)
+    tpi_params = tpi_params #+ [True]
     income_tax_params = ('DEP',) + income_tax_params
     params = (income_tax_params, tpi_params, initial_values, ind)
-    guesses = (guesses[0][:, :, 0], guesses[1][:, :, 0])
-    test_tuple = TPI.inner_loop(guesses, outer_loop_vars, params, 0)
+    guesses = (guesses[0], guesses[1])
+    test_tuple = TPI.inner_loop(guesses, outer_loop_vars, params, j)
 
     with open(os.path.join(CUR_PATH,
                            'test_io_data/tpi_inner_loop_outputs.pkl'),
@@ -98,7 +98,7 @@ def test_inner_loop():
         expected_tuple = pickle.load(f)
 
     for i, v in enumerate(expected_tuple):
-        assert(np.allclose(test_tuple[i], v[:, :, 0]))
+        assert(np.allclose(test_tuple[i], v))
 
 
 @pytest.mark.full_run
@@ -114,7 +114,7 @@ def test_run_TPI():
     tpi_params = tpi_params + [True]
     initial_values = initial_values + (0.0,)
     income_tax_params = ('DEP',) + income_tax_params
-    test_dict, not_test_dict = TPI.run_TPI(
+    test_dict = TPI.run_TPI(
         income_tax_params, tpi_params, iterative_params,
         small_open_params, initial_values, SS_values, fiscal_params,
         biz_tax_params, output_dir, baseline_spending)
