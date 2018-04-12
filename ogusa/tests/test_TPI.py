@@ -41,6 +41,7 @@ def test_firstdoughnutring():
     guesses, r, w, b, BQ, T_H, j, params = input_tuple
     income_tax_params, tpi_params, initial_b = params
     tpi_params = tpi_params + [True]
+    income_tax_params = ('DEP',) + income_tax_params
     params = (income_tax_params, tpi_params, initial_b)
     test_list = TPI.firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params)
 
@@ -62,6 +63,7 @@ def test_twist_doughnut():
     guesses, r, w, BQ, T_H, j, s, t, params = input_tuple
     income_tax_params, tpi_params, initial_b = params
     tpi_params = tpi_params + [True]
+    income_tax_params = ('DEP',) + income_tax_params
     params = (income_tax_params, tpi_params, initial_b)
     test_list = TPI.twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params)
 
@@ -83,8 +85,11 @@ def test_inner_loop():
         input_tuple = pickle.load(f)
     guesses, outer_loop_vars, params, j = input_tuple
     income_tax_params, tpi_params, initial_values, ind = params
-
+    initial_values = initial_values #+ (0.0,)
+    tpi_params = tpi_params #+ [True]
+    income_tax_params = ('DEP',) + income_tax_params
     params = (income_tax_params, tpi_params, initial_values, ind)
+    guesses = (guesses[0], guesses[1])
     test_tuple = TPI.inner_loop(guesses, outer_loop_vars, params, j)
 
     with open(os.path.join(CUR_PATH,
@@ -108,6 +113,7 @@ def test_run_TPI():
      output_dir, baseline_spending) = input_tuple
     tpi_params = tpi_params + [True]
     initial_values = initial_values + (0.0,)
+    income_tax_params = ('DEP',) + income_tax_params
     test_dict = TPI.run_TPI(
         income_tax_params, tpi_params, iterative_params,
         small_open_params, initial_values, SS_values, fiscal_params,

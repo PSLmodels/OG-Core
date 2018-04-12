@@ -156,7 +156,7 @@ tau_payroll = 0.15
 retire = 2
 method = 'SS'
 test_params_ss = (e, sigma, beta, g_y, chi_b, theta, tau_bq, rho, lambdas,
-                  j, J, S, analytical_mtrs, etr_params[-1, :, :],
+                  j, J, S, 'DEP', analytical_mtrs, etr_params[-1, :, :],
                   mtry_params[-1, :, :], h_wealth, p_wealth, m_wealth,
                   tau_payroll, retire, method)
 r = 0.05
@@ -179,9 +179,9 @@ for i in range(etr_params.shape[2]):
     etr_params_tpi[:, i] = np.diag(np.transpose(etr_params[:, :S, i]))
     mtry_params_tpi[:, i] = np.diag(np.transpose(mtry_params[:, :S, i]))
 test_params_tpi = (e, sigma, beta, g_y, chi_b, theta, tau_bq, rho,
-                   lambdas, j, J, S, analytical_mtrs, etr_params_tpi,
-                   mtry_params_tpi, h_wealth, p_wealth, m_wealth,
-                   tau_payroll, retire, method_tpi)
+                   lambdas, j, J, S, 'DEP', analytical_mtrs,
+                   etr_params_tpi, mtry_params_tpi, h_wealth, p_wealth,
+                   m_wealth, tau_payroll, retire, method_tpi)
 r_vec = np.array([0.05, 0.03, 0.04])
 w_vec = np.array([1.2, 0.9, 0.8])
 BQ_vec = np.array([0.1, 0.05, 0.15])
@@ -189,7 +189,6 @@ T_H_vec = np.array([0.22, 0.15, 0.0])
 test_vars_tpi = (r_vec, w_vec, b, b_splus1, b_splus2, n, BQ_vec, factor,
                  T_H_vec)
 expected_tpi = np.array([300.977031, 2.719866638, -139.9187228])
-
 test_data = [(test_vars_ss, test_params_ss, expected_ss),
              (test_vars_tpi, test_params_tpi, expected_tpi)]
 
@@ -206,8 +205,9 @@ def test_FOC_savings(model_vars, params, expected):
 
 # model_vars in order: r, w, b, b_splus1, n, BQ, factor, T_H
 # params in order: e, sigma, g_y, theta, b_ellipse, upsilon, chi_n,
-# ltilde, tau_bq, lambdas, j, J, S, analytical_mtrs, etr_params,
-# mtrx_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire, method
+# ltilde, tau_bq, lambdas, j, J, S, tax_func_type, analytical_mtrs,
+# etr_params, mtrx_params, h_wealth, p_wealth, m_wealth, tau_payroll,
+# retire, method
 # Define variables for test of SS version
 e = np.array([1.0, 0.9, 1.4])
 sigma = 1.5
@@ -248,9 +248,10 @@ tau_payroll = 0.15
 retire = 2
 method = 'SS'
 test_params_ss = (e, sigma, g_y, theta, b_ellipse, upsilon, chi_n,
-                  l_tilde, tau_bq, lambdas, j, J, S, analytical_mtrs,
-                  etr_params[-1, :, :], mtrx_params[-1, :, :], h_wealth,
-                  p_wealth, m_wealth, tau_payroll, retire, method)
+                  l_tilde, tau_bq, lambdas, j, J, S, 'DEP',
+                  analytical_mtrs, etr_params[-1, :, :],
+                  mtrx_params[-1, :, :], h_wealth, p_wealth, m_wealth,
+                  tau_payroll, retire, method)
 r = 0.05
 w = 1.2
 b = np.array([0.0, 0.8, 0.5])
@@ -271,9 +272,10 @@ for i in range(etr_params.shape[2]):
     etr_params_tpi[:, i] = np.diag(np.transpose(etr_params[:, :S, i]))
     mtrx_params_tpi[:, i] = np.diag(np.transpose(mtrx_params[:, :S, i]))
 test_params_tpi = (e, sigma, g_y, theta, b_ellipse, upsilon, chi_n,
-                   l_tilde, tau_bq, lambdas, j, J, S, analytical_mtrs,
-                   etr_params_tpi, mtrx_params_tpi, h_wealth,
-                   p_wealth, m_wealth, tau_payroll, retire, method_tpi)
+                   l_tilde, tau_bq, lambdas, j, J, S, 'DEP',
+                   analytical_mtrs, etr_params_tpi, mtrx_params_tpi,
+                   h_wealth, p_wealth, m_wealth, tau_payroll, retire,
+                   method_tpi)
 r_vec = np.array([0.05, 0.03, 0.04])
 w_vec = np.array([1.2, 0.9, 0.8])
 BQ_vec = np.array([0.1, 0.05, 0.15])

@@ -62,6 +62,7 @@ def create_steady_state_parameters(**sim_params):
     INPUTS:
     sim_params       = dictionary, dict containing variables for
                         simulation
+    tax_func_type    = string, type of tax function used
     analytical_mtrs  = boolean, =True if use analytical_mtrs, =False if
                        use estimated MTRs
     etr_params       = [S,BW,#tax params] array, parameters for effective
@@ -105,8 +106,8 @@ def create_steady_state_parameters(**sim_params):
     OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
 
     OBJECTS CREATED WITHIN FUNCTION:
-    income_tax_params = length 3 tuple, (analytical_mtrs, etr_params,
-                        mtrx_params,mtry_params)
+    income_tax_params = length 4 tuple, (tax_func_type, analytical_mtrs,
+                        etr_params, mtrx_params,mtry_params)
     wealth_tax_params = [3,] vector, contains values of three parameters
                         of wealth tax function
     ellipse_params    = [2,] vector, vector with b_ellipse and upsilon
@@ -126,7 +127,8 @@ def create_steady_state_parameters(**sim_params):
     # Assumption here is that tax parameters of last year of budget
     # window continue forever and so will be SS values
 
-    income_tax_params = (sim_params['analytical_mtrs'],
+    income_tax_params = (sim_params['tax_func_type'],
+                         sim_params['analytical_mtrs'],
                          sim_params['etr_params'][:, -1, :],
                          sim_params['mtrx_params'][:, -1, :],
                          sim_params['mtry_params'][:, -1, :])
@@ -185,8 +187,9 @@ def euler_equation_solver(guesses, params):
     lambdas = [J,] vector, fraction of population with each ability type
     omega_SS = [S,] vector, stationary population weights
     e =  [S,J] array, effective labor units by age and ability type
-    tax_params = length 4 tuple, (analytical_mtrs, etr_params,
-                 mtrx_params, mtry_params)
+    tax_params = length 5 tuple, (tax_func_type, analytical_mtrs,
+                 etr_params, mtrx_params, mtry_params)
+    tax_func_type   = string, type of tax function used
     analytical_mtrs = boolean, =True if use analytical_mtrs, =False if
                        use estimated MTRs
     etr_params      = [S,BW,#tax params] array, parameters for effective
@@ -225,7 +228,7 @@ def euler_equation_solver(guesses, params):
     (r, w, T_H, factor, j, J, S, beta, sigma, ltilde, g_y, g_n_ss,
      tau_payroll, retire, mean_income_data, h_wealth, p_wealth,
      m_wealth, b_ellipse, upsilon, j, chi_b, chi_n, tau_bq, rho, lambdas,
-     omega_SS, e, analytical_mtrs, etr_params, mtrx_params,
+     omega_SS, e, tax_func_type, analytical_mtrs, etr_params, mtrx_params,
      mtry_params) = params
 
     b_guess = np.array(guesses[:S])
@@ -240,17 +243,18 @@ def euler_equation_solver(guesses, params):
     theta = tax.replacement_rate_vals(n_guess, w, factor, theta_params)
 
     foc_save_parms = (e[:, j], sigma, beta, g_y, chi_b[j], theta,
-                      tau_bq[j], rho, lambdas[j], j, J, S, analytical_mtrs,
-                      etr_params, mtry_params, h_wealth, p_wealth,
-                      m_wealth, tau_payroll, retire, 'SS')
+                      tau_bq[j], rho, lambdas[j], j, J, S,
+                      tax_func_type, analytical_mtrs, etr_params,
+                      mtry_params, h_wealth, p_wealth, m_wealth,
+                      tau_payroll, retire, 'SS')
     error1 = household.FOC_savings(r, w, b_s, b_splus1, b_splus2,
                                    n_guess, BQ, factor, T_H,
                                    foc_save_parms)
     foc_labor_params = (e[:, j], sigma, g_y, theta, b_ellipse, upsilon,
                         chi_n, ltilde, tau_bq[j], lambdas[j], j, J, S,
-                        analytical_mtrs, etr_params, mtrx_params,
-                        h_wealth, p_wealth, m_wealth, tau_payroll,
-                        retire, 'SS')
+                        tax_func_type, analytical_mtrs, etr_params,
+                        mtrx_params, h_wealth, p_wealth, m_wealth,
+                        tau_payroll, retire, 'SS')
     error2 = household.FOC_labor(r, w, b_s, b_splus1, n_guess, BQ,
                                  factor, T_H, foc_labor_params)
 
@@ -271,8 +275,8 @@ def euler_equation_solver(guesses, params):
     error2[mask4] = 1e14
 
     tax1_params = (e[:, j], lambdas[j], 'SS', retire, etr_params,
-                   h_wealth, p_wealth, m_wealth, tau_payroll, theta,
-                   tau_bq[j], J, S)
+                   tax_func_type, h_wealth, p_wealth, m_wealth,
+                   tau_payroll, theta, tau_bq[j], J, S)
     tax1 = tax.total_taxes(r, w, b_s, n_guess, BQ, factor, T_H, None,
                            False, tax1_params)
     cons_params = (e[:, j], lambdas[j], g_y)
@@ -329,7 +333,8 @@ def inner_loop(outer_loop_vars, params, baseline,
      retire, mean_income_data, h_wealth, p_wealth, m_wealth, b_ellipse,
      upsilon) = ss_params
 
-    analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
+    (tax_func_type, analytical_mtrs, etr_params, mtrx_params,
+     mtry_params) = income_tax_params
     chi_b, chi_n = chi_params
 
     small_open, ss_firm_r, ss_hh_r = small_open_params
@@ -350,8 +355,9 @@ def inner_loop(outer_loop_vars, params, baseline,
                         g_y, g_n_ss, tau_payroll, retire,
                         mean_income_data, h_wealth, p_wealth, m_wealth,
                         b_ellipse, upsilon, j, chi_b, chi_n, tau_bq, rho,
-                        lambdas, omega_SS, e, analytical_mtrs,
-                        etr_params, mtrx_params, mtry_params]
+                        lambdas, omega_SS, e, tax_func_type,
+                        analytical_mtrs, etr_params, mtrx_params,
+                        mtry_params]
         lazy_values.append(delayed(opt.fsolve)(euler_equation_solver,
                                                guesses * .9,
                                                args=euler_params,
@@ -412,9 +418,9 @@ def inner_loop(outer_loop_vars, params, baseline,
 
     if budget_balance:
         T_H_params = (e, lambdas.reshape(1, J), omega_SS.reshape(S, 1),
-                      'SS', etr_params, theta, tau_bq, tau_payroll,
-                      h_wealth, p_wealth, m_wealth, retire, T, S, J,
-                      tau_b, delta_tau)
+                      'SS', etr_params, tax_func_type, theta, tau_bq,
+                      tau_payroll, h_wealth, p_wealth, m_wealth,
+                      retire, T, S, J, tau_b, delta_tau)
         new_T_H = aggr.revenue(new_r, new_w, b_s, nssmat, new_BQ, new_Y,
                                L, K, factor, T_H_params)
     elif baseline_spending:
@@ -500,7 +506,8 @@ def SS_solver(b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss,
      imm_rates, e, retire, mean_income_data, h_wealth, p_wealth,
      m_wealth, b_ellipse, upsilon) = ss_params
 
-    analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
+    (tax_func_type, analytical_mtrs, etr_params, mtrx_params,
+     mtry_params) = income_tax_params
 
     chi_b, chi_n = chi_params
 
@@ -639,9 +646,9 @@ def SS_solver(b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss,
     b_s = np.array(list(np.zeros(J).reshape(1, J)) +
                    list(bssmat[:-1, :]))
     lump_sum_params = (e, lambdas.reshape(1, J), omega_SS.reshape(S, 1),
-                       'SS', etr_params, theta, tau_bq, tau_payroll,
-                       h_wealth, p_wealth, m_wealth, retire, T, S, J,
-                       tau_b, delta_tau)
+                       'SS', etr_params, tax_func_type, theta, tau_bq,
+                       tau_payroll, h_wealth, p_wealth, m_wealth,
+                       retire, T, S, J, tau_b, delta_tau)
     revenue_ss = aggr.revenue(rss, wss, b_s, nssmat, BQss, Yss,
                               Lss, Kss, factor, lump_sum_params)
     r_gov_ss = rss
@@ -688,12 +695,14 @@ def SS_solver(b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss,
     # e_extended = np.array(list(e) + list(np.zeros(J).reshape(1, J)))
     # nss_extended = np.array(list(nssmat) + list(np.zeros(J).reshape(1, J)))
     # mtry_ss_params = (e_extended[1:, :], etr_params_extended_3D,
-    #                   mtry_params_extended_3D, analytical_mtrs)
-    # mtry_ss = tax.MTR_capital(rss, wss, bssmat_splus1,
+    #                   mtry_params_extended_3D, tax_func_type,
+    #                   analytical_mtrs)
+    # mtry_ss = tax.MTR_income(rss, wss, bssmat_splus1,
     #                           nss_extended[1:, :], factor_ss,
     #                           mtry_ss_params)
-    # mtrx_ss_params = (e, etr_params_3D, mtrx_params_3D, analytical_mtrs)
-    # mtrx_ss = tax.MTR_labor(rss, wss, bssmat_s, nssmat, factor_ss,
+    # mtrx_ss_params = (e, etr_params_3D, mtrx_params_3D, tax_func_type,
+    #                   analytical_mtrs)
+    # mtrx_ss = tax.MTR_income(rss, wss, bssmat_s, nssmat, factor_ss,
     #                         mtrx_ss_params)
 
     # np.savetxt("mtr_ss_capital.csv", mtry_ss, delimiter=",")
@@ -703,8 +712,9 @@ def SS_solver(b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss,
     Iss_total = delta * Kss
 
     # solve resource constraint
-    taxss_params = (e, lambdas, 'SS', retire, etr_params_3D, h_wealth,
-                    p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
+    taxss_params = (e, lambdas, 'SS', retire, etr_params_3D,
+                    tax_func_type, h_wealth, p_wealth, m_wealth,
+                    tau_payroll, theta, tau_bq, J, S)
     taxss = tax.total_taxes(rss, wss, bssmat_s, nssmat, BQss, factor_ss,
                             T_Hss, None, False, taxss_params)
     css_params = (e, lambdas.reshape(1, J), g_y)
@@ -814,7 +824,8 @@ def SS_fsolve(guesses, params):
      imm_rates, e, retire, mean_income_data, h_wealth, p_wealth,
      m_wealth, b_ellipse, upsilon) = ss_params
 
-    analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
+    (tax_func_type, analytical_mtrs, etr_params, mtrx_params,
+     mtry_params) = income_tax_params
 
     chi_b, chi_n = chi_params
 
@@ -907,7 +918,8 @@ def SS_fsolve_reform(guesses, params):
      imm_rates, e, retire, mean_income_data, h_wealth, p_wealth,
      m_wealth, b_ellipse, upsilon) = ss_params
 
-    analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
+    (tax_func_type, analytical_mtrs, etr_params, mtrx_params,
+     mtry_params) = income_tax_params
 
     chi_b, chi_n = chi_params
 
@@ -987,7 +999,8 @@ def SS_fsolve_reform_baselinespend(guesses, params):
      imm_rates, e, retire, mean_income_data, h_wealth, p_wealth,
      m_wealth, b_ellipse, upsilon) = ss_params
 
-    analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
+    (tax_func_type, analytical_mtrs, etr_params, mtrx_params,
+     mtry_params) = income_tax_params
 
     chi_b, chi_n = chi_params
 
@@ -1034,7 +1047,8 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
     --------------------------------------------------------------------
 
     INPUTS:
-    income_tax_parameters = length 4 tuple, (analytical_mtrs, etr_params,
+    income_tax_parameters = length 5 tuple, (tax_func_type,
+                            analytical_mtrs, etr_params,
                             mtrx_params, mtry_params)
     ss_parameters = length 21 tuple, (J, S, T, BW, beta, sigma, alpha,
                     gamma, epsilon, Z, delta, ltilde, nu, g_y, g_n_ss,
@@ -1077,7 +1091,8 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
      imm_rates, e, retire, mean_income_data, h_wealth, p_wealth,
      m_wealth, b_ellipse, upsilon) = ss_params
 
-    analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
+    (tax_func_type, analytical_mtrs, etr_params, mtrx_params,
+     mtry_params) = income_tax_params
 
     chi_b, chi_n = chi_params
 
@@ -1117,6 +1132,7 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
                            baseline_spending, client, num_workers)
         # print("solved output", wss, rss, T_Hss, factor_ss)
         # print('analytical mtrs in SS: ', analytical_mtrs)
+        # print('tax function type in SS: ', tax_func_type)
     else:
         baseline_ss_dir = os.path.join(baseline_dir, "SS/SS_vars.pkl")
         ss_solutions = pickle.load(open(baseline_ss_dir, "rb"))

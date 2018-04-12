@@ -170,7 +170,8 @@ def create_tpi_params(**sim_params):
         np.reshape(sim_params['mtry_params'][:, BW-1, :],
                    (S, 1, sim_params['mtry_params'].shape[2]))
 
-    income_tax_params = (sim_params['analytical_mtrs'], etr_params_TP,
+    income_tax_params = (sim_params['tax_func_type'],
+                         sim_params['analytical_mtrs'], etr_params_TP,
                          mtrx_params_TP, mtry_params_TP)
 
     '''
@@ -260,7 +261,8 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params):
 
     # unpack tuples of parameters
     income_tax_params, tpi_params, initial_b = params
-    analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
+    (tax_func_type, analytical_mtrs, etr_params, mtrx_params,
+     mtry_params) = income_tax_params
     (J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde,
      nu, g_y, g_n_vector, tau_b, delta_tau, tau_payroll, tau_bq, rho,
      omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,
@@ -277,7 +279,7 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params):
     # Note using method = "SS" below because just for one period
     foc_save_params = (np.array([e[-1, j]]), sigma, beta, g_y, chi_b[j],
                        theta[j], tau_bq[j], rho[-1], lambdas[j], j, J,
-                       S, analytical_mtrs,
+                       S, tax_func_type, analytical_mtrs,
                        np.reshape(etr_params[-1, 0, :],
                                   (1, etr_params.shape[2])),
                        np.reshape(mtry_params[-1, 0, :],
@@ -290,7 +292,8 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params):
 
     foc_labor_params = (np.array([e[-1, j]]), sigma, g_y, theta[j],
                         b_ellipse, upsilon, chi_n[-1], ltilde,
-                        tau_bq[j], lambdas[j], j, J, S, analytical_mtrs,
+                        tau_bq[j], lambdas[j], j, J, S, tax_func_type,
+                        analytical_mtrs,
                         np.reshape(etr_params[-1, 0, :],
                                    (1, etr_params.shape[2])),
                         np.reshape(mtrx_params[-1, 0, :],
@@ -337,7 +340,8 @@ def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params):
     '''
 
     income_tax_params, tpi_params, initial_b = params
-    analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
+    (tax_func_type, analytical_mtrs, etr_params, mtrx_params,
+     mtry_params) = income_tax_params
     (J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde,
      nu, g_y, g_n_vector, tau_b, delta_tau, tau_payroll, tau_bq, rho,
      omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,
@@ -371,9 +375,9 @@ def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params):
     # Errors from FOC for savings
     foc_save_params = (e_s, sigma, beta, g_y, chi_b[j], theta, tau_bq,
                        rho[-(length):], lambdas[j], j, J, S,
-                       analytical_mtrs, etr_params, mtry_params,
-                       h_wealth, p_wealth, m_wealth, tau_payroll,
-                       retire, 'TPI')
+                       tax_func_type, analytical_mtrs, etr_params,
+                       mtry_params, h_wealth, p_wealth, m_wealth,
+                       tau_payroll, retire, 'TPI')
     error1 = household.FOC_savings(r_s, w_s, b_s, b_splus1, b_splus2,
                                    n_s, BQ_s, factor, T_H_s,
                                    foc_save_params)
@@ -381,9 +385,9 @@ def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params):
     # Errors from FOC for labor supply
     foc_labor_params = (e_s, sigma, g_y, theta, b_ellipse, upsilon,
                         chi_n[-length:], ltilde, tau_bq, lambdas[j], j,
-                        J, S, analytical_mtrs, etr_params, mtrx_params,
-                        h_wealth, p_wealth, m_wealth, tau_payroll,
-                        retire, 'TPI')
+                        J, S, tax_func_type, analytical_mtrs,
+                        etr_params, mtrx_params, h_wealth, p_wealth,
+                        m_wealth, tau_payroll, retire, 'TPI')
     error2 = household.FOC_labor(r_s, w_s, b_s, b_splus1, n_s, BQ_s,
                                  factor, T_H_s, foc_labor_params)
 
@@ -426,7 +430,8 @@ def inner_loop(guesses, outer_loop_vars, params, j):
     '''
     #unpack variables and parameters pass to function
     income_tax_params, tpi_params, initial_values, ind = params
-    analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
+    (tax_func_type, analytical_mtrs, etr_params, mtrx_params,
+     mtry_params) = income_tax_params
     (J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde,
      nu, g_y, g_n_vector, tau_b, delta_tau, tau_payroll, tau_bq, rho,
      omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,
@@ -485,7 +490,7 @@ def inner_loop(guesses, outer_loop_vars, params, j):
                 np.diag(np.transpose(mtry_params[:, :S, i]),
                         S - (s + 2))
 
-        inc_tax_params_upper = (analytical_mtrs,
+        inc_tax_params_upper = (tax_func_type, analytical_mtrs,
                                 etr_params_to_use,
                                 mtrx_params_to_use,
                                 mtry_params_to_use)
@@ -526,7 +531,8 @@ def inner_loop(guesses, outer_loop_vars, params, j):
             mtry_params_to_use[:, i] =\
                 np.diag(np.transpose(mtry_params[:, t:t+S, i]))
 
-        inc_tax_params_TP = (analytical_mtrs, etr_params_to_use,
+        inc_tax_params_TP = (tax_func_type, analytical_mtrs,
+                             etr_params_to_use,
                              mtrx_params_to_use,
                              mtry_params_to_use)
 
@@ -554,7 +560,8 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
             baseline_spending=False, client=None, num_workers=1):
 
     # unpack tuples of parameters
-    analytical_mtrs, etr_params, mtrx_params, mtry_params = income_tax_params
+    (tax_func_type, analytical_mtrs, etr_params, mtrx_params,
+     mtry_params) = income_tax_params
     maxiter, mindist_SS, mindist_TPI = iterative_params
     (J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde,
      nu, g_y, g_n_vector, tau_b, delta_tau, tau_payroll, tau_bq, rho,
@@ -679,8 +686,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
     REVENUE_params = (np.tile(e.reshape(1, S, J), (T, 1, 1)),
                       lambdas.reshape(1, 1, J),
                       omega[:T].reshape(T, S, 1), 'TPI', tax_params,
-                      theta, tau_bq, tau_payroll, h_wealth, p_wealth,
-                      m_wealth, retire, T, S, J, tau_b, delta_tau)
+                      tax_func_type, theta, tau_bq, tau_payroll,
+                      h_wealth, p_wealth, m_wealth, retire, T, S, J,
+                      tau_b, delta_tau)
 
     TPIiter = 0
     TPIdist = 10
@@ -691,6 +699,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
     TPIdist_vec = np.zeros(maxiter)
 
     print('analytical mtrs in tpi = ', analytical_mtrs)
+    print('tax function type in tpi = ', tax_func_type)
 
     # TPI loop
     while (TPIiter < maxiter) and (TPIdist >= mindist_TPI):
@@ -969,8 +978,9 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
             (1, 1, J))
     tax_path_params = (np.tile(
         e.reshape(1, S, J), (T, 1, 1)), lambdas, 'TPI', retire,
-                       etr_params_path, h_wealth, p_wealth, m_wealth,
-                       tau_payroll, theta, tau_bq, J, S)
+                       etr_params_path, tax_func_type, h_wealth,
+                       p_wealth, m_wealth, tau_payroll, theta, tau_bq,
+                       J, S)
     tax_path = tax.total_taxes(
         np.tile(r[:T].reshape(T, 1, 1), (1, S, J)),
         np.tile(w[:T].reshape(T, 1, 1), (1, S, J)), bmat_s,

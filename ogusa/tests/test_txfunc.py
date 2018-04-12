@@ -8,8 +8,11 @@ import os
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
-def test_gen_rate_grid():
-    # Test txfunc.gen_rate_grid() function.
+@pytest.mark.parametrize('tax_func_type,expected',
+                         [('DEP', 0.032749763), ('GS', 0.007952744)],
+                         ids=['DEP', 'GS'])
+def test_wsumsq(tax_func_type, expected):
+    rate_type = 'etr'
     A = 0.01
     B = 0.02
     C = 0.1
@@ -22,40 +25,23 @@ def test_gen_rate_grid():
     shift_y = 0.2
     shift = 0.04
     share = 0.8
-    params = (A, B, C, D, max_x, min_x, max_y, min_y, shift_x, shift_y,
-              shift, share)
-    X = np.array([44, 22, 0.8, 0.1])
-    Y = np.array([33, 1.6, 1.2, 0.9])
-    test_grid = txfunc.gen_rate_grid(X, Y, params)
-
-    expected = np.array([0.677035443, 0.615050593, 0.351602558,
-                         0.340701331])
-
-    assert(np.allclose(test_grid, expected))
-
-
-def test_wsumsq():
-    A = 0.01
-    B = 0.02
-    C = 0.1
-    D = 1.1
-    max_x = 0.55
-    min_x = 0.17
-    max_y = 0.46
-    min_y = 0.04
-    shift_x = 0.1
-    shift_y = 0.2
-    shift = 0.04
-    share = 0.8
+    phi0 = 0.396
+    phi1 = 0.7
+    phi2 = 0.9
     X = np.array([32.0, 44.0, 1.6, 0.4])
     Y = np.array([32.0, 55.0, 0.9, 0.03])
     txrates = np.array([0.6, 0.5, 0.3, 0.25])
     wgts = np.array([0.1, 0.25, 0.55, 0.1])
-    params = A, B, C, D, max_x, max_y, share
-    args = X, Y, min_x, min_y, shift, txrates, wgts
+    if tax_func_type == 'DEP':
+        params = A, B, C, D, max_x, max_y, share
+        args = ((min_x, min_y, shift), X, Y, txrates, wgts,
+                tax_func_type, rate_type)
+    elif tax_func_type == 'GS':
+        params = phi0, phi1, phi2
+        args = None, X, Y, txrates, wgts, tax_func_type, rate_type
     test_val = txfunc.wsumsq(params, *args)
 
-    assert(np.allclose(test_val, 0.032749763))
+    assert(np.allclose(test_val, expected))
 
 
 @pytest.mark.parametrize('se_mult,expected_mat',
@@ -76,6 +62,7 @@ def test_find_outliers(se_mult, expected_mat):
                                     start_year, varstr, False)
 
     assert(np.allclose(test_mat, expected_mat))
+
 
 def test_replace_outliers():
     """
@@ -133,14 +120,149 @@ def test_replace_outliers():
     assert np.allclose(act, exp)
 
 
-# def test_txfunc_est():
+def test_txfunc_est():
+    # Test txfunc.txfunc_est() function.  The test is that given
+    # inputs from previous run, the outputs are unchanged.
+    with open(os.path.join(CUR_PATH,
+                           'test_io_data/txfunc_est_inputs.pkl'),
+              'rb') as f:
+        input_tuple = pickle.load(f)
+    (df, s, t, rate_type, output_dir, graph) = input_tuple
+    tax_func_type = 'DEP'
+    numparams = 12
+    test_tuple = txfunc.txfunc_est(df, s, t, rate_type,
+                                      tax_func_type, numparams,
+                                      output_dir, graph)
+    with open(os.path.join(CUR_PATH,
+                           'test_io_data/txfunc_est_outputs.pkl'),
+              'rb') as f:
+        expected_tuple = pickle.load(f)
+    for i, v in enumerate(expected_tuple):
+        assert(np.allclose(test_tuple[i], v))
 
 
+# @pytest.mark.full_run
 # def test_tax_func_loop():
+#     # Test txfunc.tax_func_loop() function.  The test is that given
+#     # inputs from previous run, the outputs are unchanged.
+#     with open(os.path.join(CUR_PATH,
+#                            'test_io_data/tax_func_loop_inputs.pkl'),
+#               'rb') as f:
+#         input_tuple = pickle.load(f)
+#     (t, micro_data, beg_yr, s_min, s_max, age_specific, analytical_mtrs,
+#      desc_data, graph_data, graph_est, output_dir, numparams,
+#      tpers) = input_tuple
+#     tax_func_type = 'DEP'
+#     test_tuple = txfunc.tax_func_loop(
+#         t, micro_data, beg_yr, s_min, s_max, age_specific,
+#         tax_func_type, analytical_mtrs, desc_data, graph_data,
+#         graph_est, output_dir, numparams, tpers)
+#     with open(os.path.join(CUR_PATH,
+#                            'test_io_data/tax_func_loop_outputs.pkl'),
+#               'rb') as f:
+#         expected_tuple = pickle.load(f)
+#     for i, v in enumerate(expected_tuple):
+#         assert(np.allclose(test_tuple[i], v))
 
 
+A = 0.02
+B = 0.01
+C = 0.003
+D = 3.2
+max_x = 0.6
+min_x = 0.05
+max_y = 0.8
+min_y = 0.05
+shift = 0.03
+share = 0.7
+phi0 = 0.6
+phi1 = 0.5
+phi2 = 0.6
+@pytest.mark.parametrize('tax_func_type,rate_type,params,for_estimation,expected',
+                         [('DEP', 'etr',
+                           np.array([A, B, C, D, max_x, max_y, share,
+                                     min_x, min_y, shift]), True,
+                           np.array([0.1894527, 0.216354953,
+                                     0.107391574, 0.087371974])),
+                          ('DEP', 'etr',
+                           np.array([A, B, C, D, max_x, max_y, share,
+                                     min_x, min_y, shift]), False,
+                           np.array([0.669061481, 0.678657921,
+                                     0.190301075, 0.103958946])),
+                          ('GS', 'etr',
+                           np.array([phi0, phi1, phi2]), False,
+                           np.array([0.58216409, 0.5876492, 0.441995766,
+                                     0.290991255])),
+                          ('GS', 'mtrx',
+                           np.array([phi0, phi1, phi2]), False,
+                           np.array([0.596924843, 0.598227987,
+                                     0.518917438, 0.37824137])),
+                          ('DEP_totalinc', 'etr',
+                           np.array([A, B, max_x, min_x, shift]), True,
+                           np.array([0.110821747, 0.134980034,
+                                     0.085945843, 0.085573318])),
+                          ('DEP_totalinc', 'etr',
+                           np.array([A, B, max_x, min_x, shift]),
+                           False,
+                           np.array([0.628917903, 0.632722363,
+                                     0.15723913, 0.089863997]))],
+                         ids=['DEP for estimation',
+                              'DEP not for estimation', 'GS, etr',
+                              'GS, mtr', 'DEP_totalinc for estimation',
+                              'DEP_totalinc not for estimation'])
+def test_get_tax_rates(tax_func_type, rate_type, params, for_estimation,
+                       expected):
+    '''
+    Teset of txfunc.get_tax_rates() function.  There are 6 cases to
+    test:
+    1) DEP function, for estimation
+    2) DEP function, not for estimation
+    3) GS function, etr
+    4) GS function, mtr
+    5) DEP_totalinc function, for estimation
+    6) DEP_totalinc function, not for estimation
+    '''
+    wgts = np.array([0.1, 0.25, 0.55, 0.1])
+    X = np.array([32.0, 44.0, 1.6, 0.4])
+    Y = np.array([32.0, 55.0, 0.9, 0.03])
+    test_txrates = txfunc.get_tax_rates(params, X, Y, wgts,
+                                        tax_func_type, rate_type,
+                                        for_estimation)
+
+    assert np.allclose(test_txrates, expected)
+
+
+# @pytest.mark.full_run
 # def test_tax_func_estimate():
+#     # Test txfunc.tax_func_loop() function.  The test is that given
+#     # inputs from previous run, the outputs are unchanged.
+#     with open(os.path.join(CUR_PATH,
+#                            'test_io_data/tax_func_estimate_inputs.pkl'),
+#               'rb') as f:
+#         input_tuple = pickle.load(f)
+#     (BW, S, starting_age, ending_age, beg_yr, baseline,
+#      analytical_mtrs, age_specific, reform, data, client,
+#      num_workers) = input_tuple
+#     tax_func_type = 'DEP'
+#     test_dict = txfunc.tax_func_estimate(
+#         BW, S, starting_age, ending_age, beg_yr, baseline,
+#         analytical_mtrs, tax_func_type, age_specific, reform, data,
+#         client, num_workers)
+#     with open(os.path.join(CUR_PATH,
+#                            'test_io_data/tax_func_estimate_outputs.pkl'),
+#               'rb') as f:
+#         expected_dict = pickle.load(f)
+#     expected_dict['tax_func_type'] = 'DEP'
+#     for k, v in expected_dict.items():
+#         try:
+#             assert(all(test_dict[k] == v))
+#         except ValueError:
+#             assert((test_dict[k] == v).all())
+#         except TypeError:
+#             assert(test_dict[k] == v)
 
 
 # def test_get_tax_func_estimate():
 # saves a pickle file
+# skipping since these results are confirmed in the above, other than
+# saving output to pickle

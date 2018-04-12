@@ -1,3 +1,4 @@
+from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 Last updated 4/7/2015
@@ -14,7 +15,10 @@ This python files calls:
 import os
 from io import StringIO
 import numpy as np
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 from pkg_resources import resource_stream, Requirement
 
 EPSILON = 1e-10
@@ -187,7 +191,7 @@ def comp_array(name, a, b, tol, unequal, exceptions={}, relative=False):
         tol = exceptions[name]
 
     if not a.shape == b.shape:
-        print "unequal shpaes for {0} comparison ".format(str(name))
+        print("unequal shpaes for {0} comparison ".format(str(name)))
         unequal.append((str(name), a, b))
         return False
 
@@ -204,11 +208,11 @@ def comp_array(name, a, b, tol, unequal, exceptions={}, relative=False):
             err = np.max(abs(a - b))
 
         if not err < tol:
-            print "diff for {0} is {1} which is NOT OK".format(str(name), err)
+            print("diff for {0} is {1} which is NOT OK".format(str(name), err))
             unequal.append((str(name), a, b))
             return False
         else:
-            print "err is {0} which is OK".format(err)
+            print("err is {0} which is OK".format(err))
             return True
 
 
@@ -231,15 +235,16 @@ def comp_scalar(name, a, b, tol, unequal, exceptions={}, relative=False):
         err = abs(a - b)
 
     if not err < tol:
-        print "err for {0} is {1} which is NOT OK".format(str(name), err)
+        print("err for {0} is {1} which is NOT OK".format(str(name), err))
         unequal.append((str(name), str(a), str(b)))
         return False
     else:
-        print "err is {0} which is OK".format(err)
+        print("err is {0} which is OK".format(err))
         return True
 
 
-def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False, exceptions={}, relative=False):
+def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False,
+                 exceptions={}, relative=False):
     '''
     Compare two dictionaries. The values of each dict are either
     numpy arrays
@@ -257,8 +262,8 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False, exceptions={}, 
             extra1 = keys1 - keys2
             extra2 = keys2 - keys1
             msg1 = "extra items in {0}: {1}"
-            print msg1.format(fname1, extra1)
-            print msg1.format(fname2, extra2)
+            print(msg1.format(fname1, extra1))
+            print(msg1.format(fname2, extra2))
             return False
         elif len(keys1) > len(keys2):
             bigger = keys1
@@ -270,7 +275,7 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False, exceptions={}, 
             smaller = keys1
         res = bigger - smaller
         msg = "more items in {0}: {1}"
-        print msg.format(bigger_file, res)
+        print(msg.format(bigger_file, res))
         return False
     else:
         unequal_items = []
@@ -287,10 +292,10 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False, exceptions={}, 
                                         unequal_items, exceptions=exceptions,
                                         relative=relative)
 
-        if verbose == True and unequal_items:
+        if verbose and unequal_items:
             frmt = "Name {0}"
             res = [frmt.format(x[0]) for x in unequal_items]
-            print "Different arrays: ", res
+            print("Different arrays: ", res)
             return False
 
     return check
