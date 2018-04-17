@@ -1007,6 +1007,8 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
     print('Params = ', params)
     print('wsse = ', wsse)
     print('obs = ', obs)
+    print('tax function type = ', tax_func_type)
+    print('Checking Y = ', Ybar, Y2bar)
     quit()
     return params, wsse, obs
 
