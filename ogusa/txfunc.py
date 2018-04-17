@@ -843,6 +843,7 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         shift_x = np.maximum(-min_x, 0.0) + 0.01 * (max_x - min_x)
         shift_y = np.maximum(-min_y, 0.0) + 0.01 * (max_y - min_y)
         params = np.zeros(numparams)
+        print('Raw param estimates = ', np.array([Atil, Btil, Ctil, Dtil]))
         params[:4] = (np.array([Atil, Btil, Ctil, Dtil]) /
                       np.array([X2bar, Xbar, Y2bar, Ybar]))
         params[4:] = np.array([max_x, min_x, max_y, min_y, shift_x, shift_y,
