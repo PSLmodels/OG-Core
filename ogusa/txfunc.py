@@ -832,6 +832,10 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         lb_max_y = np.maximum(min_y, 0.0) + 1e-4
         bnds = ((1e-12, None), (1e-12, None), (1e-12, None), (1e-12, None),
                 (lb_max_x, 0.8), (lb_max_y, 0.8), (0, 1))
+        print('Param_init = ', params_init)
+        print('mins and shift = ', np.array([min_x, min_y, shift]))
+        print('Data means = ', X.mean(), Y.mean(), txrates.mean(), wgts.mean())
+        print('Tax func type etc = ', tax_func_type, rate_type)
         params_til = opt.minimize(wsumsq, params_init, args=(tx_objs),
                                   method="L-BFGS-B", bounds=bnds, tol=1e-15)
         Atil, Btil, Ctil, Dtil, max_x, max_y, share = params_til.x
