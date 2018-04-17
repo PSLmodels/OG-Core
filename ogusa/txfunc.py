@@ -1004,6 +1004,10 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         fig.savefig(fullpath, bbox_inches='tight')
         plt.close()
 
+    print('Params = ', params)
+    print('wsse = ', wsse)
+    print('obs = ', obs)
+    quit()
     return params, wsse, obs
 
 
