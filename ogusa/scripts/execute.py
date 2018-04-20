@@ -61,9 +61,9 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     run_params = ogusa.parameters.get_parameters(
         output_base, reform=reform, test=test, baseline=baseline,
         guid=guid, run_micro=run_micro, constant_rates=constant_rates,
-        analytical_mtrs=analytical_mtrs, age_specific=age_specific,
-        start_year=start_year, data=data, client=client,
-        num_workers=num_workers, **small_open)
+        analytical_mtrs=analytical_mtrs, tax_func_type=tax_func_type,
+        age_specific=age_specific, start_year=start_year, data=data,
+        client=client, num_workers=num_workers, **small_open)
     run_params['analytical_mtrs'] = analytical_mtrs
     run_params['small_open'] = bool(small_open)
     run_params['budget_balance'] = budget_balance
