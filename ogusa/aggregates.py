@@ -252,8 +252,8 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, params):
     if I.ndim == 2:
         T_I = np.zeros((S,J))
         for j in range(J):
-            TI_params = (e[:,j], etr_params)
-            T_I[:,j] = tax.tau_income(r, w, b[:,j], n[:,j], factor, TI_params) * I[:,j]
+            TI_params = (e[:,j], etr_params, tax_func_type)
+            T_I[:,j] = tax.ETR_income(r, w, b[:,j], n[:,j], factor, TI_params) * I[:,j]
     if I.ndim == 3:
         T_I = np.zeros((T,S,J))
         for j in range(J):
