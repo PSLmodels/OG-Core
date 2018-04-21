@@ -243,7 +243,8 @@ def comp_scalar(name, a, b, tol, unequal, exceptions={}, relative=False):
         return True
 
 
-def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False, exceptions={}, relative=False):
+def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False,
+                 exceptions={}, relative=False):
     '''
     Compare two dictionaries. The values of each dict are either
     numpy arrays
@@ -291,7 +292,7 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False, exceptions={}, 
                                         unequal_items, exceptions=exceptions,
                                         relative=relative)
 
-        if verbose == True and unequal_items:
+        if verbose and unequal_items:
             frmt = "Name {0}"
             res = [frmt.format(x[0]) for x in unequal_items]
             print("Different arrays: ", res)

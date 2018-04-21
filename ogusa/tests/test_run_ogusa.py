@@ -59,6 +59,7 @@ def run_micro_macro(reform, user_params, guid):
     return ans
 
 
+@pytest.mark.full_run
 def test_run_micro_macro():
 
     reform = {

@@ -15,20 +15,36 @@ will have released versions, which will be checked against existing code prior
 to release. Stay tuned for an upcoming release!
 
 
-## Using OG-USA
+## Using/contributing to OG-USA
 
-To be completed.
+* Install the [Anaconda distribution](https://www.anaconda.com/distribution/) of Python
+* Clone this repository to a directory on your computer
+* From the terminal (or Conda command prompt), navigate to the directory to which you cloned this repository and run `conda env create -f environment.yml`
+* Then, `source activate ospcdyn`
+* Then install by `python setup.py install` (use `python setup.py develop` if you would like to modifty the code base and run the updated model)
+* Navigate to `./run_examples`
+* Run the model with an example reform from terminal/command prompt by typing `python run_ogusa_example.py`
+* You can adjust the `./run_examples/run_ogusa_example.py` by adjusting the individual income tax reform (using a dictionary or JSON file in a format that is consistent with [Tax Calculator](https://github.com/open-source-economics/Tax-Calculator)) or other model parameters specified in the `user_params` or `kwargs` dictionaries.
+* Model outputs will be saved in the following files:
+  * `./run_examples/OUTPUT_BASELINE/model_params.pkl`
+    * Model parameters used in the baseline run
+    * See `execute.py` for items in the dictionary object in this pickle file
+  * `./run_examples/OUTPUT_BASELINE/TxFuncEst_baseline_'guid'.pkl`
+    * Tax function parameters used for the baseline model run
+    * See `txfunc.py` for what is in the dictionary object in this pickle file
+  * `./run_examples/OUTPUT_BASELINE/SS/SS_vars.pkl`
+    * Outputs from the model steady state solution under the baseline policy
+    * See `SS.py` for what is in the dictionary object in this pickle file
+  * `./run_examples/OUTPUT_BASELINE/TPI/TPI_vars.pkl`
+    * Outputs from the model timepath solution under the baseline policy
+    * See `SS.py` for what is in the dictionary object in this pickle file
+  * An analogous set of files in the `./run_examples/OUTPUT_REFORM` directory, which represent objects from the simulation of the reform policy
+
+Note that, depending on your machine, a full model run (solving for the full time path equilibrium for the baseline and reform policies) can take from a few to several hours of compute time.
+
+If you run into errors running the example script, please open a new issue in the OG-USA repo with a description of the issue and any relevant tracebacks you receive.
 
 
 ## Citing OG-USA
 
 OG-USA (Version 0.5.7)[Source code], https://github.com/open-source-economics/OG-USA
-
-
-## Contributing
-
-To get up and running with the project, run the following commands:
-
-* `conda env create -f environment.yml`
-* `source activate ospcdyn`
-* `python setup.py install`

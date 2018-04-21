@@ -147,9 +147,9 @@ def get_parameters_from_file():
 def get_parameters(output_base, reform={}, test=False, baseline=False,
                    guid='', user_modifiable=False, metadata=False,
                    run_micro=False, constant_rates=True,
-                   analytical_mtrs=False, age_specific=False,
-                   start_year=DEFAULT_START_YEAR, data=None,
-                   client=None, num_workers=1, **small_open):
+                   analytical_mtrs=False, tax_func_type='DEP',
+                   age_specific=False, start_year=DEFAULT_START_YEAR,
+                   data=None, client=None, num_workers=1, **small_open):
 
     '''
     --------------------------------------------------------------------
@@ -391,6 +391,7 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
         txfunc.get_tax_func_estimate(BW, S, starting_age, ending_age,
                                      baseline=baseline,
                                      analytical_mtrs=analytical_mtrs,
+                                     tax_func_type=tax_func_type,
                                      age_specific=age_specific,
                                      start_year=start_year,
                                      reform=reform, guid=guid,
@@ -497,10 +498,6 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
         (_, _, omega_SS_80, _, _, _, _,_) = dem.get_pop_objs(20, 80,
             320, 1, 100, start_year, False)
 
-
-
-
-
     ## To shut off demographics, uncomment the following 9 lines of code
     # g_n_ss = 0.0
     # surv_rate1 = np.ones((S,))# prob start at age S
@@ -518,17 +515,10 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
     # e = np.tile(e[:,0].reshape(S,1),(1,J))
     # e /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
 
-    # print('g_y: ', g_y)
-    # print('e: ', e)
-    # print('chi_n_guess: ', chi_n_guess)
-    # print('chi_b_guess: ', chi_b_guess)
-    # print('delta, beta: ', delta, beta)
-    # quit()
-
     allvars = dict(locals())
 
     if user_modifiable:
-        allvars = {k:allvars[k] for k in USER_MODIFIABLE_PARAMS}
+        allvars = {k: allvars[k] for k in USER_MODIFIABLE_PARAMS}
 
     if metadata:
         params_meta = read_parameter_metadata()

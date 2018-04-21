@@ -218,6 +218,7 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, params):
         omega       = [T,S] array, population weights by age
         method      = string, 'SS' or 'TPI'
         etr_params  = [T,S,J] array, effective tax rate function parameters
+        tax_func_types = string, type of tax function used
         theta       = [J,] vector, replacement rate values by lifetime income group
         tau_bq      = scalar, bequest tax rate
         h_wealth    = scalar, wealth tax function parameter
@@ -229,8 +230,8 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, params):
         S           = integer, number of age groups
         J           = integer, number of lifetime income groups
     Functions called:
-        tau_income
-        tau_wealth
+        ETR_income
+        ETR_wealth
     Objects in function:
         I    = [T,S,J] array, total income
         T_I  = [T,S,J] array, total income taxes
@@ -242,7 +243,7 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, params):
 
     '''
 
-    e, lambdas, omega, method, etr_params, theta, tau_bq, \
+    e, lambdas, omega, method, etr_params, tax_func_type, theta, tau_bq, \
         tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J,\
         tau_b, delta_tau = params
 
@@ -260,11 +261,11 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, params):
                 tau_inc_params3D = etr_params[:,j,:]
             if etr_params.ndim == 4:
                 tau_inc_params3D = etr_params[:,:,j,:]
-            TI_params = (e[:,:,j], tau_inc_params3D)
-            T_I[:,:,j] = tax.tau_income(r[:,:,j], w[:,:,j], b[:,:,j], n[:,:,j], factor, TI_params) * I[:,:,j]
+            TI_params = (e[:,:,j], tau_inc_params3D, tax_func_type)
+            T_I[:,:,j] = tax.ETR_income(r[:,:,j], w[:,:,j], b[:,:,j], n[:,:,j], factor, TI_params) * I[:,:,j]
     T_P = tau_payroll * w * e * n
     TW_params = (h_wealth, p_wealth, m_wealth)
-    T_W = tax.tau_wealth(b, TW_params) * b
+    T_W = tax.ETR_wealth(b, TW_params) * b
     if method == 'SS':
         T_P[retire:] -= theta * w
         T_BQ = tau_bq * BQ / lambdas
