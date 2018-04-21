@@ -1166,6 +1166,7 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
                 opt.fsolve(SS_fsolve_reform, guesses,
                            args=ss_params_reform, xtol=mindist_SS,
                            full_output=True)
+            [rss, T_Hss] = solutions_fsolve
             Yss = T_Hss/alpha_T  # may not be right - if
             # budget_balance = True, but that's ok - will be fixed in SS_solver
         # if ENFORCE_SOLUTION_CHECKS and not solution.success == 1:
