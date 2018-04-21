@@ -120,6 +120,7 @@ def test_replace_outliers():
     assert np.allclose(act, exp)
 
 
+@pytest.mark.full_run
 def test_txfunc_est():
     # Test txfunc.txfunc_est() function.  The test is that given
     # inputs from previous run, the outputs are unchanged.

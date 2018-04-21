@@ -142,9 +142,9 @@ def get_parameters_from_file():
 def get_parameters(output_base, reform={}, test=False, baseline=False,
                    guid='', user_modifiable=False, metadata=False,
                    run_micro=False, constant_rates=True,
-                   analytical_mtrs=False, age_specific=False,
-                   start_year=DEFAULT_START_YEAR, data=None,
-                   client=None, num_workers=1, **small_open):
+                   analytical_mtrs=False, tax_func_type='DEP',
+                   age_specific=False, start_year=DEFAULT_START_YEAR,
+                   data=None, client=None, num_workers=1, **small_open):
 
     '''
     --------------------------------------------------------------------
@@ -386,6 +386,7 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
         txfunc.get_tax_func_estimate(BW, S, starting_age, ending_age,
                                      baseline=baseline,
                                      analytical_mtrs=analytical_mtrs,
+                                     tax_func_type=tax_func_type,
                                      age_specific=age_specific,
                                      start_year=start_year,
                                      reform=reform, guid=guid,
