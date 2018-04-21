@@ -128,7 +128,7 @@ def test_txfunc_est():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/txfunc_est_inputs.pkl'),
               'rb') as f:
-        input_tuple = pickle.load(f)
+        input_tuple = pickle.load(f, encoding='latin1')
     (df, s, t, rate_type, output_dir, graph) = input_tuple
     tax_func_type = 'DEP'
     numparams = 12
@@ -138,7 +138,7 @@ def test_txfunc_est():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/txfunc_est_outputs.pkl'),
               'rb') as f:
-        expected_tuple = pickle.load(f)
+        expected_tuple = pickle.load(f, encoding='latin1')
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
 
@@ -150,7 +150,7 @@ def test_txfunc_est():
 #     with open(os.path.join(CUR_PATH,
 #                            'test_io_data/tax_func_loop_inputs.pkl'),
 #               'rb') as f:
-#         input_tuple = pickle.load(f)
+#         input_tuple = pickle.load(f, encoding='latin1')
 #     (t, micro_data, beg_yr, s_min, s_max, age_specific, analytical_mtrs,
 #      desc_data, graph_data, graph_est, output_dir, numparams,
 #      tpers) = input_tuple
@@ -162,7 +162,7 @@ def test_txfunc_est():
 #     with open(os.path.join(CUR_PATH,
 #                            'test_io_data/tax_func_loop_outputs.pkl'),
 #               'rb') as f:
-#         expected_tuple = pickle.load(f)
+#         expected_tuple = pickle.load(f, encoding='latin1')
 #     for i, v in enumerate(expected_tuple):
 #         assert(np.allclose(test_tuple[i], v))
 
@@ -241,7 +241,7 @@ def test_get_tax_rates(tax_func_type, rate_type, params, for_estimation,
 #     with open(os.path.join(CUR_PATH,
 #                            'test_io_data/tax_func_estimate_inputs.pkl'),
 #               'rb') as f:
-#         input_tuple = pickle.load(f)
+#         input_tuple = pickle.load(f, encoding='latin1')
 #     (BW, S, starting_age, ending_age, beg_yr, baseline,
 #      analytical_mtrs, age_specific, reform, data, client,
 #      num_workers) = input_tuple
@@ -253,7 +253,7 @@ def test_get_tax_rates(tax_func_type, rate_type, params, for_estimation,
 #     with open(os.path.join(CUR_PATH,
 #                            'test_io_data/tax_func_estimate_outputs.pkl'),
 #               'rb') as f:
-#         expected_dict = pickle.load(f)
+#         expected_dict = pickle.load(f, encoding='latin1')
 #     expected_dict['tax_func_type'] = 'DEP'
 #     for k, v in expected_dict.items():
 #         try:
