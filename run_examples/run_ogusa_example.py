@@ -17,7 +17,7 @@ def run_micro_macro(user_params):
     # Grab a reform JSON file already in Tax-Calculator
     # In this example the 'reform' is a change to 2017 law (the
     # baseline policy is tax law in 2018)
-    rec = Records()
+    rec = Records.cps_constructor()
     pol = Policy()
     calc = Calculator(policy=pol, records=rec)
     ref = calc.read_json_param_objects('2017_law.json', None)

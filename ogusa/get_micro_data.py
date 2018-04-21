@@ -54,6 +54,12 @@ def get_calculator(baseline, calculator_start_year, reform=None,
     policy1 = Policy()
     if data is not None and "cps" in data:
         records1 = Records.cps_constructor()
+        # impute short and long term capital gains if using CPS data
+        # in 2012 SOI data 6.587% of CG as short-term gains
+        records1.p22250 = 0.06587 * records1.e01100
+        records1.p23250 = (1 - 0.06587) * records1.e01100
+        # set total capital gains to zero
+        records1.e01100 = np.zeros(records1.e01100.shape[0])
     elif data is not None:
         records1 = Records(data=data, weights=weights,
                            start_year=records_start_year)

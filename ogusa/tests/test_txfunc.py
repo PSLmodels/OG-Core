@@ -119,8 +119,9 @@ def test_replace_outliers():
 
     assert np.allclose(act, exp)
 
-
-@pytest.mark.full_run
+@pytest.mark.full_run  # only marking as full run because platform
+# affects results from scipy.opt that is called in this test - so it'll
+# pass if run on Mac with MKL, but not necessarily on other platforms
 def test_txfunc_est():
     # Test txfunc.txfunc_est() function.  The test is that given
     # inputs from previous run, the outputs are unchanged.
