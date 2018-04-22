@@ -2,8 +2,6 @@ name: ospcdyn
 channels:
 - ospc
 dependencies:
-- ipython
-- ipython-notebook
 - setuptools
 - mkl
 - scipy>=0.18.1
