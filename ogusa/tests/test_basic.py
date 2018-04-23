@@ -23,7 +23,7 @@ WEIGHTS = pd.read_csv(WEIGHTS_PATH, compression='gzip')
 def picklefile1():
     x = {'a': 1}
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
-    pickle.dump(x, pfile)
+    pickle.dump(x, open(pfile.name, 'wb'))
     pfile.close()
     # must close and then yield for Windows platform
     yield pfile
@@ -35,7 +35,7 @@ def picklefile2():
     y = {'a': 1, 'b': 2}
 
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
-    pickle.dump(y, pfile)
+    pickle.dump(y, open(pfile.name, 'wb'))
     pfile.close()
     # must close and then yield for Windows platform
     yield pfile
@@ -46,7 +46,7 @@ def picklefile2():
 def picklefile3():
     x = {'a': np.array([100., 200., 300.]), 'b': 2}
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
-    pickle.dump(x, pfile)
+    pickle.dump(x, open(pfile.name, 'wb'))
     pfile.close()
     # must close and then yield for Windows platform
     yield pfile
@@ -57,7 +57,7 @@ def picklefile3():
 def picklefile4():
     x = {'a': np.array([100., 200., 300.1]), 'b': 2}
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
-    pickle.dump(x, pfile)
+    pickle.dump(x, open(pfile.name, 'wb'))
     pfile.close()
     # must close and then yield for Windows platform
     yield pfile
