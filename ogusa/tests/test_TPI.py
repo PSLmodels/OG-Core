@@ -37,7 +37,10 @@ def test_firstdoughnutring():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/firstdoughnutring_inputs.pkl'),
               'rb') as f:
-        input_tuple = pickle.load(f, encoding='latin1')
+        try:
+            input_tuple = pickle.load(f, encoding='latin1')
+        except TypeError:
+            input_tuple = pickle.load(f)
     guesses, r, w, b, BQ, T_H, j, params = input_tuple
     income_tax_params, tpi_params, initial_b = params
     tpi_params = tpi_params + [True]
@@ -48,7 +51,10 @@ def test_firstdoughnutring():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/firstdoughnutring_outputs.pkl'),
               'rb') as f:
-        expected_list = pickle.load(f, encoding='latin1')
+        try:
+            expected_list = pickle.load(f, encoding='latin1')
+        except TypeError:
+            expected_list = pickle.load(f)
 
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
@@ -59,7 +65,10 @@ def test_twist_doughnut():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/twist_doughnut_inputs.pkl'),
               'rb') as f:
-        input_tuple = pickle.load(f, encoding='latin1')
+        try:
+            input_tuple = pickle.load(f, encoding='latin1')
+        except TypeError:
+            input_tuple = pickle.load(f)
     guesses, r, w, BQ, T_H, j, s, t, params = input_tuple
     income_tax_params, tpi_params, initial_b = params
     tpi_params = tpi_params + [True]
@@ -70,7 +79,10 @@ def test_twist_doughnut():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/twist_doughnut_outputs.pkl'),
               'rb') as f:
-        expected_list = pickle.load(f, encoding='latin1')
+        try:
+            expected_list = pickle.load(f, encoding='latin1')
+        except TypeError:
+            expected_list = pickle.load(f)
 
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
@@ -82,7 +94,10 @@ def test_inner_loop():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/tpi_inner_loop_inputs.pkl'),
               'rb') as f:
-        input_tuple = pickle.load(f, encoding='latin1')
+        try:
+            input_tuple = pickle.load(f, encoding='latin1')
+        except TypeError:
+            input_tuple = pickle.load(f)
     guesses, outer_loop_vars, params, j = input_tuple
     income_tax_params, tpi_params, initial_values, ind = params
     initial_values = initial_values #+ (0.0,)
@@ -95,7 +110,10 @@ def test_inner_loop():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/tpi_inner_loop_outputs.pkl'),
               'rb') as f:
-        expected_tuple = pickle.load(f, encoding='latin1')
+        try:
+            expected_tuple = pickle.load(f, encoding='latin1')
+        except TypeError:
+            expected_tuple = pickle.load(f)
 
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
@@ -107,7 +125,10 @@ def test_run_TPI():
     # ensure that output returned matches what it has been before.
     with open(os.path.join(CUR_PATH, 'test_io_data/run_TPI_inputs.pkl'),
               'rb') as f:
-        input_tuple = pickle.load(f, encoding='latin1')
+        try:
+            input_tuple = pickle.load(f, encoding='latin1')
+        except TypeError:
+            input_tuple = pickle.load(f)
     (income_tax_params, tpi_params, iterative_params, small_open_params,
      initial_values, SS_values, fiscal_params, biz_tax_params,
      output_dir, baseline_spending) = input_tuple
@@ -121,7 +142,10 @@ def test_run_TPI():
 
     with open(os.path.join(CUR_PATH, 'test_io_data/run_TPI_outputs.pkl'),
               'rb') as f:
-        expected_dict = pickle.load(f, encoding='latin1')
+        try:
+            expected_dict = pickle.load(f, encoding='latin1')
+        except TypeError:
+            expected_dict = pickle.load(f)
 
     for k, v in expected_dict.items():
         assert(np.allclose(test_dict[k], v))

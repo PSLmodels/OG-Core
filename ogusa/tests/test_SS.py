@@ -24,7 +24,10 @@ def test_SS_fsolve():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/SS_fsolve_inputs.pkl'),
               'rb') as f:
-        input_tuple = pickle.load(f, encoding='latin1')
+        try:
+            input_tuple = pickle.load(f, encoding='latin1')
+        except TypeError:
+            input_tuple = pickle.load(f)
     guesses, params = input_tuple
     params = params + (None, 1)
     (bssmat, nssmat, chi_params, ss_params, income_tax_params,
@@ -37,7 +40,10 @@ def test_SS_fsolve():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/SS_fsolve_outputs.pkl'),
               'rb') as f:
-        expected_list = pickle.load(f, encoding='latin1')
+        try:
+            expected_list = pickle.load(f, encoding='latin1')
+        except TypeError:
+            expected_list = pickle.load(f)
     print('outputs = ', np.absolute(np.array(test_list) -
                                     np.array(expected_list)).max())
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
@@ -49,7 +55,10 @@ def test_SS_fsolve_reform():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/SS_fsolve_reform_inputs.pkl'),
               'rb') as f:
-        input_tuple = pickle.load(f, encoding='latin1')
+        try:
+            input_tuple = pickle.load(f, encoding='latin1')
+        except TypeError:
+            input_tuple = pickle.load(f)
     guesses, params = input_tuple
     params = params + (None, 1)
     (bssmat, nssmat, chi_params, ss_params, income_tax_params,
@@ -64,7 +73,10 @@ def test_SS_fsolve_reform():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/SS_fsolve_reform_outputs.pkl'),
               'rb') as f:
-        expected_list = pickle.load(f, encoding='latin1')
+        try:
+            expected_list = pickle.load(f, encoding='latin1')
+        except TypeError:
+            expected_list = pickle.load(f)
 
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
@@ -76,7 +88,10 @@ def test_SS_fsolve_reform_baselinespend():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/SS_fsolve_reform_baselinespend_inputs.pkl'),
               'rb') as f:
-        input_tuple = pickle.load(f, encoding='latin1')
+        try:
+            input_tuple = pickle.load(f, encoding='latin1')
+        except TypeError:
+            input_tuple = pickle.load(f)
     guesses, params = input_tuple
     params = params + (None, 1)
     (bssmat, nssmat, T_Hss, chi_params, ss_params, income_tax_params,
@@ -91,7 +106,10 @@ def test_SS_fsolve_reform_baselinespend():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/SS_fsolve_reform_baselinespend_outputs.pkl'),
               'rb') as f:
-        expected_list = pickle.load(f, encoding='latin1')
+        try:
+            expected_list = pickle.load(f, encoding='latin1')
+        except TypeError:
+            expected_list = pickle.load(f)
 
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
@@ -102,7 +120,10 @@ def test_SS_solver():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/SS_solver_inputs.pkl'),
               'rb') as f:
-        input_tuple = pickle.load(f, encoding='latin1')
+        try:
+            input_tuple = pickle.load(f, encoding='latin1')
+        except TypeError:
+            input_tuple = pickle.load(f)
     (b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss, params,
      baseline, fsolve_flag, baseline_spending) = input_tuple
     (bssmat, nssmat, chi_params, ss_params, income_tax_params,
@@ -117,7 +138,10 @@ def test_SS_solver():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/SS_solver_outputs.pkl'),
               'rb') as f:
-        expected_dict = pickle.load(f, encoding='latin1')
+        try:
+            expected_dict = pickle.load(f, encoding='latin1')
+        except TypeError:
+            expected_dict = pickle.load(f)
 
     for k, v in expected_dict.items():
         assert(np.allclose(test_dict[k], v))
@@ -129,7 +153,10 @@ def test_inner_loop():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/inner_loop_inputs.pkl'),
               'rb') as f:
-        input_tuple = pickle.load(f, encoding='latin1')
+        try:
+            input_tuple = pickle.load(f, encoding='latin1')
+        except TypeError:
+            input_tuple = pickle.load(f)
     (outer_loop_vars, params, baseline, baseline_spending) = input_tuple
     ss_params, income_tax_params, chi_params, small_open_params = params
     income_tax_params = ('DEP',) + income_tax_params
@@ -141,7 +168,10 @@ def test_inner_loop():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/inner_loop_outputs.pkl'),
               'rb') as f:
-        expected_tuple = pickle.load(f, encoding='latin1')
+        try:
+            expected_tuple = pickle.load(f, encoding='latin1')
+        except TypeError:
+            expected_tuple = pickle.load(f)
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
 
@@ -152,7 +182,10 @@ def test_euler_equation_solver():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/euler_eqn_solver_inputs.pkl'),
               'rb') as f:
-        input_tuple = pickle.load(f, encoding='latin1')
+        try:
+            input_tuple = pickle.load(f, encoding='latin1')
+        except TypeError:
+            input_tuple = pickle.load(f)
     (guesses, params) = input_tuple
     (r, w, T_H, factor, j, J, S, beta, sigma, ltilde, g_y, g_n_ss,
      tau_payroll, retire, mean_income_data, h_wealth, p_wealth,
@@ -170,7 +203,10 @@ def test_euler_equation_solver():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/euler_eqn_solver_outputs.pkl'),
               'rb') as f:
-        expected_list = pickle.load(f, encoding='latin1')
+        try:
+            expected_list = pickle.load(f, encoding='latin1')
+        except TypeError:
+            expected_list = pickle.load(f)
 
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
@@ -180,14 +216,20 @@ def test_create_steady_state_parameters():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/create_params_inputs.pkl'),
               'rb') as f:
-        input_dict = pickle.load(f, encoding='latin1')
+        try:
+            input_dict = pickle.load(f, encoding='latin1')
+        except TypeError:
+            input_dict = pickle.load(f)
         input_dict['tax_func_type'] = 'DEP'
     test_tuple = SS.create_steady_state_parameters(**input_dict)
 
     with open(os.path.join(CUR_PATH,
                            'test_io_data/create_params_outputs.pkl'),
               'rb') as f:
-        expected_tuple = pickle.load(f, encoding='latin1')
+        try:
+            expected_tuple = pickle.load(f, encoding='latin1')
+        except TypeError:
+            expected_tuple = pickle.load(f)
         (income_tax_params, ss_params, iterative_params, chi_params,
          small_open_params) = expected_tuple
         income_tax_params = ('DEP', ) + income_tax_params
@@ -215,7 +257,10 @@ def test_run_SS(input_path, expected_path):
     # ensure that output returned matches what it has been before.
     with open(os.path.join(CUR_PATH, 'test_io_data', input_path),
               'rb') as f:
-        input_tuple = pickle.load(f, encoding='latin1')
+        try:
+            input_tuple = pickle.load(f, encoding='latin1')
+        except TypeError:
+            input_tuple = pickle.load(f)
     (income_tax_params, ss_params, iterative_params, chi_params,
      small_open_params, baseline, baseline_spending, baseline_dir) =\
         input_tuple
@@ -226,7 +271,10 @@ def test_run_SS(input_path, expected_path):
 
     with open(os.path.join(CUR_PATH, 'test_io_data', expected_path),
               'rb') as f:
-        expected_dict = pickle.load(f, encoding='latin1')
+        try:
+            expected_dict = pickle.load(f, encoding='latin1')
+        except TypeError:
+            expected_dict = pickle.load(f)
 
     for k, v in expected_dict.items():
         assert(np.allclose(test_dict[k], v))

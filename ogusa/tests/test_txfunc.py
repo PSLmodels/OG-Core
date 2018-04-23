@@ -128,7 +128,10 @@ def test_txfunc_est():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/txfunc_est_inputs.pkl'),
               'rb') as f:
-        input_tuple = pickle.load(f, encoding='latin1')
+        try:
+            input_tuple = pickle.load(f, encoding='latin1')
+        except TypeError:
+            input_tuple = pickle.load(f)
     (df, s, t, rate_type, output_dir, graph) = input_tuple
     tax_func_type = 'DEP'
     numparams = 12
@@ -138,7 +141,10 @@ def test_txfunc_est():
     with open(os.path.join(CUR_PATH,
                            'test_io_data/txfunc_est_outputs.pkl'),
               'rb') as f:
-        expected_tuple = pickle.load(f, encoding='latin1')
+        try:
+            expected_tuple = pickle.load(f, encoding='latin1')
+        except TypeError:
+            expected_tuple = pickle.load(f)
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
 
