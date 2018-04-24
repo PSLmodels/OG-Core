@@ -304,3 +304,15 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False,
             return False
 
     return check
+
+
+def safe_read_pickle(file_path):
+    '''
+    This function reads a pickle from Python 2 into Python 2 or Python 3
+    '''
+    with open(file_path, 'rb') as f:
+        try:
+            obj = pickle.load(f, encoding='latin1')
+        except TypeError:
+            obj = pickle.load(f)
+    return obj
