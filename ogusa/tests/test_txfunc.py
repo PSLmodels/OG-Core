@@ -4,6 +4,7 @@ import pytest
 import numpy as np
 import pickle
 import os
+from ogusa import utils
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
@@ -125,26 +126,16 @@ def test_replace_outliers():
 def test_txfunc_est():
     # Test txfunc.txfunc_est() function.  The test is that given
     # inputs from previous run, the outputs are unchanged.
-    with open(os.path.join(CUR_PATH,
-                           'test_io_data/txfunc_est_inputs.pkl'),
-              'rb') as f:
-        try:
-            input_tuple = pickle.load(f, encoding='latin1')
-        except TypeError:
-            input_tuple = pickle.load(f)
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/txfunc_est_inputs.pkl'))
     (df, s, t, rate_type, output_dir, graph) = input_tuple
     tax_func_type = 'DEP'
     numparams = 12
     test_tuple = txfunc.txfunc_est(df, s, t, rate_type,
                                       tax_func_type, numparams,
                                       output_dir, graph)
-    with open(os.path.join(CUR_PATH,
-                           'test_io_data/txfunc_est_outputs.pkl'),
-              'rb') as f:
-        try:
-            expected_tuple = pickle.load(f, encoding='latin1')
-        except TypeError:
-            expected_tuple = pickle.load(f)
+    expected_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/txfunc_est_outputs.pkl'))
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
 
