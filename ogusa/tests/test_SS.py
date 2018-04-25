@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import pytest
 import json
 import pickle
@@ -6,7 +8,7 @@ import os
 import multiprocessing
 from multiprocessing import Process
 from dask.distributed import Client
-from ogusa import SS
+from ogusa import SS, utils
 
 # Define parameters to use for multiprocessing
 # client = Client(processes=False)
@@ -19,10 +21,8 @@ CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 def test_SS_fsolve():
     # Test SS.SS_fsolve function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    with open(os.path.join(CUR_PATH,
-                           'test_io_data/SS_fsolve_inputs.pkl'),
-              'rb') as f:
-        input_tuple = pickle.load(f)
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_inputs.pkl'))
     guesses, params = input_tuple
     params = params + (None, 1)
     (bssmat, nssmat, chi_params, ss_params, income_tax_params,
@@ -32,21 +32,18 @@ def test_SS_fsolve():
               iterative_params, small_open_params, client, num_workers)
     test_list = SS.SS_fsolve(guesses, params)
 
-    with open(os.path.join(CUR_PATH,
-                           'test_io_data/SS_fsolve_outputs.pkl'),
-              'rb') as f:
-        expected_list = pickle.load(f)
-    print 'outputs = ', np.absolute(np.array(test_list) - np.array(expected_list)).max()
+    expected_list = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_outputs.pkl'))
+    print('outputs = ', np.absolute(np.array(test_list) -
+                                    np.array(expected_list)).max())
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
 def test_SS_fsolve_reform():
     # Test SS.SS_fsolve_reform function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    with open(os.path.join(CUR_PATH,
-                           'test_io_data/SS_fsolve_reform_inputs.pkl'),
-              'rb') as f:
-        input_tuple = pickle.load(f)
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_reform_inputs.pkl'))
     guesses, params = input_tuple
     params = params + (None, 1)
     (bssmat, nssmat, chi_params, ss_params, income_tax_params,
@@ -58,10 +55,8 @@ def test_SS_fsolve_reform():
               num_workers)
     test_list = SS.SS_fsolve_reform(guesses, params)
 
-    with open(os.path.join(CUR_PATH,
-                           'test_io_data/SS_fsolve_reform_outputs.pkl'),
-              'rb') as f:
-        expected_list = pickle.load(f)
+    expected_list = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_reform_outputs.pkl'))
 
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
@@ -70,10 +65,8 @@ def test_SS_fsolve_reform_baselinespend():
     # Test SS.SS_fsolve_reform_baselinespend function.  Provide inputs
     # to function and ensure that output returned matches what it has
     # been before.
-    with open(os.path.join(CUR_PATH,
-                           'test_io_data/SS_fsolve_reform_baselinespend_inputs.pkl'),
-              'rb') as f:
-        input_tuple = pickle.load(f)
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_reform_baselinespend_inputs.pkl'))
     guesses, params = input_tuple
     params = params + (None, 1)
     (bssmat, nssmat, T_Hss, chi_params, ss_params, income_tax_params,
@@ -85,10 +78,8 @@ def test_SS_fsolve_reform_baselinespend():
               small_open_params, client, num_workers)
     test_list = SS.SS_fsolve_reform_baselinespend(guesses, params)
 
-    with open(os.path.join(CUR_PATH,
-                           'test_io_data/SS_fsolve_reform_baselinespend_outputs.pkl'),
-              'rb') as f:
-        expected_list = pickle.load(f)
+    expected_list = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_reform_baselinespend_outputs.pkl'))
 
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
@@ -96,10 +87,8 @@ def test_SS_fsolve_reform_baselinespend():
 def test_SS_solver():
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    with open(os.path.join(CUR_PATH,
-                           'test_io_data/SS_solver_inputs.pkl'),
-              'rb') as f:
-        input_tuple = pickle.load(f)
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/SS_solver_inputs.pkl'))
     (b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss, params,
      baseline, fsolve_flag, baseline_spending) = input_tuple
     (bssmat, nssmat, chi_params, ss_params, income_tax_params,
@@ -111,22 +100,18 @@ def test_SS_solver():
         b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss, params,
         baseline, fsolve_flag, baseline_spending)
 
-    with open(os.path.join(CUR_PATH,
-                           'test_io_data/SS_solver_outputs.pkl'),
-              'rb') as f:
-        expected_dict = pickle.load(f)
+    expected_dict = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/SS_solver_outputs.pkl'))
 
-    for k, v in expected_dict.iteritems():
+    for k, v in expected_dict.items():
         assert(np.allclose(test_dict[k], v))
 
 
 def test_inner_loop():
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    with open(os.path.join(CUR_PATH,
-                           'test_io_data/inner_loop_inputs.pkl'),
-              'rb') as f:
-        input_tuple = pickle.load(f)
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/inner_loop_inputs.pkl'))
     (outer_loop_vars, params, baseline, baseline_spending) = input_tuple
     ss_params, income_tax_params, chi_params, small_open_params = params
     income_tax_params = ('DEP',) + income_tax_params
@@ -135,10 +120,9 @@ def test_inner_loop():
     test_tuple = SS.inner_loop(
          outer_loop_vars, params, baseline, baseline_spending)
 
-    with open(os.path.join(CUR_PATH,
-                           'test_io_data/inner_loop_outputs.pkl'),
-              'rb') as f:
-        expected_tuple = pickle.load(f)
+    expected_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/inner_loop_outputs.pkl'))
+
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
 
@@ -146,10 +130,8 @@ def test_inner_loop():
 def test_euler_equation_solver():
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    with open(os.path.join(CUR_PATH,
-                           'test_io_data/euler_eqn_solver_inputs.pkl'),
-              'rb') as f:
-        input_tuple = pickle.load(f)
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/euler_eqn_solver_inputs.pkl'))
     (guesses, params) = input_tuple
     (r, w, T_H, factor, j, J, S, beta, sigma, ltilde, g_y, g_n_ss,
      tau_payroll, retire, mean_income_data, h_wealth, p_wealth,
@@ -164,32 +146,27 @@ def test_euler_equation_solver():
               analytical_mtrs, etr_params, mtrx_params, mtry_params)
     test_list = SS.euler_equation_solver(guesses, params)
 
-    with open(os.path.join(CUR_PATH,
-                           'test_io_data/euler_eqn_solver_outputs.pkl'),
-              'rb') as f:
-        expected_list = pickle.load(f)
+    expected_list = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/euler_eqn_solver_outputs.pkl'))
 
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
 def test_create_steady_state_parameters():
     # Test that SS parameters creates same objects with same inputs.
-    with open(os.path.join(CUR_PATH,
-                           'test_io_data/create_params_inputs.pkl'),
-              'rb') as f:
-        input_dict = pickle.load(f)
+    input_dict = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/create_params_inputs.pkl'))
     input_dict['tax_func_type'] = 'DEP'
     test_tuple = SS.create_steady_state_parameters(**input_dict)
 
-    with open(os.path.join(CUR_PATH,
-                           'test_io_data/create_params_outputs.pkl'),
-              'rb') as f:
-        expected_tuple = pickle.load(f)
+    expected_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/create_params_outputs.pkl'))
     (income_tax_params, ss_params, iterative_params, chi_params,
      small_open_params) = expected_tuple
     income_tax_params = ('DEP', ) + income_tax_params
     expected_tuple = (income_tax_params, ss_params, iterative_params,
                       chi_params, small_open_params)
+
     for i, v in enumerate(expected_tuple):
         for i2, v2 in enumerate(v):
             try:
@@ -209,9 +186,8 @@ def test_create_steady_state_parameters():
 def test_run_SS(input_path, expected_path):
     # Test SS.run_SS function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    with open(os.path.join(CUR_PATH, 'test_io_data', input_path),
-              'rb') as f:
-        input_tuple = pickle.load(f)
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data', input_path))
     (income_tax_params, ss_params, iterative_params, chi_params,
      small_open_params, baseline, baseline_spending, baseline_dir) =\
         input_tuple
@@ -220,9 +196,8 @@ def test_run_SS(input_path, expected_path):
         income_tax_params, ss_params, iterative_params, chi_params,
         small_open_params, baseline, baseline_spending, baseline_dir)
 
-    with open(os.path.join(CUR_PATH, 'test_io_data', expected_path),
-              'rb') as f:
-        expected_dict = pickle.load(f)
+    expected_dict = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data', expected_path))
 
-    for k, v in expected_dict.iteritems():
+    for k, v in expected_dict.items():
         assert(np.allclose(test_dict[k], v))

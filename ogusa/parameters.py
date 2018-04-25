@@ -28,14 +28,14 @@ import os
 import json
 import numpy as np
 import scipy.interpolate as si
-import demographics as dem
-import income as inc
+from .  import demographics as dem
+from .  import income as inc
 import pickle
-import txfunc
-import elliptical_u_est as ellip
+from . import txfunc
+from . import elliptical_u_est as ellip
 import matplotlib.pyplot as plt
 from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR
-from ogusa import txfunc
+
 
 
 '''
@@ -102,15 +102,20 @@ def read_tax_func_estimate(pickle_path, pickle_file):
     '''
     if os.path.exists(pickle_path):
         print('pickle path exists')
-        with open(pickle_path) as pfile:
-            dict_params = pickle.load(pfile)
+        with open(pickle_path, 'rb') as pfile:
+            try:
+                dict_params = pickle.load(pfile, encoding='latin1')
+            except TypeError:
+                dict_params = pickle.load(pfile)
     else:
         from pkg_resources import resource_stream, Requirement
         path_in_egg = pickle_file
-        buf = resource_stream(Requirement.parse('ogusa'), path_in_egg)
-        as_bytes = buf.read()
-        as_string = as_bytes.decode("utf-8")
-        dict_params = pickle.loads(as_string)
+        pkl_path = os.path.join(os.path.dirname(__file__), '..', path_in_egg)
+        with open(pkl_path, 'rb') as pfile:
+            try:
+                dict_params = pickle.load(pfile, encoding='latin1')
+            except TypeError:
+                dict_params = pickle.load(pfile)
 
     return dict_params
 
@@ -363,13 +368,13 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
     delta_tau = 1 - ((1 - delta_annual) ** (float(ending_age - starting_age) / S))
 
     if tG1 > tG2:
-        print('The first government spending rule change date, (',
-              tG1, ') is after the second one (', tG2, ').')
+        print('The first government spending rule change date, (', tG1,
+              ') is after the second one (', tG2, ').')
         err = "Gov't spending rule dates are inconsistent"
         raise RuntimeError(err)
     if tG2 > T:
-        print('The second government spending rule change date, (',
-              tG2, ') is after time T (', T, ').')
+        print('The second government spending rule change date, (', tG2,
+              ') is after time T (', T, ').')
         err = "Gov't spending rule dates are inconsistent"
         raise RuntimeError(err)
 
@@ -517,7 +522,7 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
 
     if metadata:
         params_meta = read_parameter_metadata()
-        for k, v in allvars.iteritems():
+        for k,v in allvars.items():
             params_meta[k]["value"] = v
         allvars = params_meta
 

@@ -1,3 +1,4 @@
+from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 Household functions for taxes in the steady state and along the
@@ -10,7 +11,7 @@ This file calls the following files:
 
 # Packages
 import numpy as np
-import tax
+from . import tax
 
 '''
 ------------------------------------------------------------------------
@@ -387,27 +388,27 @@ def constraint_checker_SS(bssmat, nssmat, cssmat, ltilde):
         # Prints warnings for violations of capital, labor, and
             consumption constraints.
     '''
-    print 'Checking constraints on capital, labor, and consumption.'
+    print('Checking constraints on capital, labor, and consumption.')
 
     if (bssmat < 0).any():
-        print '\tWARNING: There is negative capital stock'
+        print('\tWARNING: There is negative capital stock')
     flag2 = False
     if (nssmat < 0).any():
-        print '\tWARNING: Labor supply violates nonnegativity ' +\
-            'constraints.'
+        print('\tWARNING: Labor supply violates nonnegativity ',
+              'constraints.')
         flag2 = True
     if (nssmat > ltilde).any():
-        print '\tWARNING: Labor suppy violates the ltilde constraint.'
+        print('\tWARNING: Labor suppy violates the ltilde constraint.')
         flag2 = True
     if flag2 is False:
-        print '\tThere were no violations of the constraints on labor'\
-         + ' supply.'
+        print('\tThere were no violations of the constraints on labor',
+              ' supply.')
     if (cssmat < 0).any():
-        print '\tWARNING: Consumption violates nonnegativity' +\
-            ' constraints.'
+        print('\tWARNING: Consumption violates nonnegativity',
+              ' constraints.')
     else:
-        print '\tThere were no violations of the constraints on' +\
-            ' consumption.'
+        print('\tThere were no violations of the constraints on',
+              ' consumption.')
 
 
 def constraint_checker_TPI(b_dist, n_dist, c_dist, t, ltilde):
@@ -431,14 +432,14 @@ def constraint_checker_TPI(b_dist, n_dist, c_dist, t, ltilde):
             consumption constraints.
     '''
     if (b_dist <= 0).any():
-        print '\tWARNING: Aggregate capital is less than or equal to '\
-            'zero in period %.f.' % t
+        print('\tWARNING: Aggregate capital is less than or equal to ',
+              'zero in period %.f.' % t)
     if (n_dist < 0).any():
-        print '\tWARNING: Labor supply violates nonnegativity' +\
-            ' constraints in period %.f.' % t
+        print('\tWARNING: Labor supply violates nonnegativity',
+              ' constraints in period %.f.' % t)
     if (n_dist > ltilde).any():
-        print '\tWARNING: Labor suppy violates the ltilde constraint' +\
-            ' in period %.f.' % t
+        print('\tWARNING: Labor suppy violates the ltilde constraint',
+              ' in period %.f.' % t)
     if (c_dist < 0).any():
-        print '\tWARNING: Consumption violates nonnegativity' +\
-            ' constraints in period %.f.' % t
+        print('\tWARNING: Consumption violates nonnegativity',
+              ' constraints in period %.f.' % t)

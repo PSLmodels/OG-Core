@@ -1,17 +1,7 @@
-import os
-import sys
+from __future__ import print_function
 import pytest
-import tempfile
-import pickle
-import numpy as np
-import pandas as pd
-from ogusa.utils import comp_array
-from ogusa.utils import comp_scalar
-from ogusa.utils import dict_compare
-from ogusa.get_micro_data import get_calculator
 from ogusa import SS
 from ogusa import TPI
-import uuid
 import time
 
 from ogusa.scripts import postprocess
@@ -64,7 +54,7 @@ def run_micro_macro(reform, user_params, guid):
 
     time.sleep(0.5)
     ans = postprocess.create_diff(baseline_dir=BASELINE_DIR, policy_dir=REFORM_DIR)
-    print "total time was ", (time.time() - start_time)
+    print("total time was ", (time.time() - start_time))
 
     return ans
 

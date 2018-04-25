@@ -8,8 +8,8 @@ PUF_PATH = os.path.join(CUR_PATH, '../puf.csv')
 
 
 @pytest.mark.full_run
-@pytest.mark.parametrize('frisch', [0.2, 0.4, 0.6],
-                         ids=['Frisch 0.15', 'Frisch 0.4', 'Frisch 0.7'])
+@pytest.mark.parametrize('frisch', [0.3, 0.4, 0.6],
+                         ids=['Frisch 0.3', 'Frisch 0.4', 'Frisch 0.6'])
 def test_frisch(frisch):
     from ogusa.scripts.execute import runner
     output_base = os.path.join(CUR_PATH, "OUTPUT")
@@ -22,8 +22,8 @@ def test_frisch(frisch):
 
 
 @pytest.mark.full_run
-@pytest.mark.parametrize('g_y_annual', [-0.01, 0.04],
-                         ids=['-0.01', '0.04'])
+@pytest.mark.parametrize('g_y_annual', [0.0, 0.04],
+                         ids=['0.0', '0.04'])
 def test_gy(g_y_annual):
     from ogusa.scripts.execute import runner
     output_base = os.path.join(CUR_PATH, "OUTPUT")

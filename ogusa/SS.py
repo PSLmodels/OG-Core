@@ -20,15 +20,18 @@ This py-file creates the following other file(s):
 # Packages
 import numpy as np
 import scipy.optimize as opt
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 from dask.distributed import Client
 from dask import compute, delayed
 import dask.multiprocessing
 from . import tax
 from . import household
 from . import aggregates as aggr
-import firm
-import utils
+from . import firm
+from . import utils
 import os
 import warnings
 import json
@@ -1166,6 +1169,7 @@ def run_SS(income_tax_params, ss_params, iterative_params, chi_params,
             [rss, T_Hss] = solutions_fsolve
             Yss = T_Hss/alpha_T  # may not be right - if
             # budget_balance = True, but that's ok - will be fixed in SS_solver
+        # if ENFORCE_SOLUTION_CHECKS and not solution.success == 1:
         if ENFORCE_SOLUTION_CHECKS and not ier == 1:
             raise RuntimeError("Steady state equilibrium not found")
         # Return SS values of variables

@@ -1,5 +1,4 @@
 import os
-import sys
 import pytest
 import tempfile
 import pickle
@@ -24,7 +23,7 @@ WEIGHTS = pd.read_csv(WEIGHTS_PATH, compression='gzip')
 def picklefile1():
     x = {'a': 1}
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
-    pickle.dump(x, pfile)
+    pickle.dump(x, open(pfile.name, 'wb'))
     pfile.close()
     # must close and then yield for Windows platform
     yield pfile
@@ -36,7 +35,7 @@ def picklefile2():
     y = {'a': 1, 'b': 2}
 
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
-    pickle.dump(y, pfile)
+    pickle.dump(y, open(pfile.name, 'wb'))
     pfile.close()
     # must close and then yield for Windows platform
     yield pfile
@@ -47,7 +46,7 @@ def picklefile2():
 def picklefile3():
     x = {'a': np.array([100., 200., 300.]), 'b': 2}
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
-    pickle.dump(x, pfile)
+    pickle.dump(x, open(pfile.name, 'wb'))
     pfile.close()
     # must close and then yield for Windows platform
     yield pfile
@@ -58,7 +57,7 @@ def picklefile3():
 def picklefile4():
     x = {'a': np.array([100., 200., 300.1]), 'b': 2}
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
-    pickle.dump(x, pfile)
+    pickle.dump(x, open(pfile.name, 'wb'))
     pfile.close()
     # must close and then yield for Windows platform
     yield pfile
@@ -77,8 +76,12 @@ def test_run_small():
     output_base = "./OUTPUT"
     input_dir = "./OUTPUT"
     user_params = {'frisch':0.41, 'debt_ratio_ss':0.4}
-    runner(output_base=output_base, baseline_dir=input_dir, test=True, time_path=False, baseline=True, user_params=user_params, run_micro=False, small_open=False, budget_balance=False)
-    runner(output_base=output_base, baseline_dir=input_dir, test=True, time_path=True, baseline=True, user_params=user_params, run_micro=False, small_open=False, budget_balance=False)
+    runner(output_base=output_base, baseline_dir=input_dir, test=True,
+           time_path=False, baseline=True, user_params=user_params,
+           run_micro=False, small_open=False, budget_balance=False)
+    runner(output_base=output_base, baseline_dir=input_dir, test=True,
+           time_path=True, baseline=True, user_params=user_params,
+           run_micro=False, small_open=False, budget_balance=False)
 
 
 def test_compare_pickle_file_bad(picklefile1, picklefile2):

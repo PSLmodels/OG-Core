@@ -1,9 +1,13 @@
+from __future__ import print_function
 '''
 A 'smoke test' for the ogusa package. Uses a fake data set to run the
 baseline
 '''
 
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 import os
 import numpy as np
 import time
@@ -49,12 +53,12 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     dirs = [saved_moments_dir, ss_dir, tpi_dir]
     for _dir in dirs:
         try:
-            print "making dir: ", _dir
+            print("making dir: ", _dir)
             os.makedirs(_dir)
         except OSError as oe:
             pass
 
-    print 'In runner, baseline is ', baseline
+    print('In runner, baseline is ', baseline)
     if small_open and (not isinstance(small_open, dict)):
         raise ValueError('small_open must be False/None or a dict with keys: {}'.format(SMALL_OPEN_KEYS))
     small_open = small_open or {}
@@ -72,7 +76,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
 
     # Modify ogusa parameters based on user input
     if 'frisch' in user_params:
-        print "updating frisch and associated"
+        print("updating frisch and associated")
         b_ellipse, upsilon = ogusa.elliptical_u_est.estimation(
             user_params['frisch'],
             run_params['ltilde']
@@ -87,7 +91,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
 
     # Modify ogusa parameters based on user input
     if 'g_y_annual' in user_params:
-        print "updating g_y_annual and associated"
+        print("updating g_y_annual and associated")
         ending_age = run_params['ending_age']
         starting_age = run_params['starting_age']
         S = run_params['S']
@@ -223,5 +227,5 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
         pickle.dump(tpi_output, open(tpi_vars, "wb"))
 
-        print "Time path iteration complete."
-    print "It took {0} seconds to get that part done.".format(time.time() - tick)
+        print("Time path iteration complete.")
+    print("It took {0} seconds to get that part done.".format(time.time() - tick))

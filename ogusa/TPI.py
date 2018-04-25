@@ -26,17 +26,20 @@ This py-file creates the following other file(s):
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 import scipy.optimize as opt
 from dask.distributed import Client
 from dask import compute, delayed
 import dask.multiprocessing
-import tax
-import utils
-import household
-import firm
-import fiscal
-import aggregates as aggr
+from . import tax
+from . import utils
+from . import household
+from . import firm
+from . import fiscal
+from . import aggregates as aggr
 import os
 import csv
 
@@ -348,7 +351,7 @@ def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params):
      factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b,
      chi_n, theta, baseline) = tpi_params
 
-    length = len(guesses) / 2
+    length = int(len(guesses) / 2)
     b_guess = np.array(guesses[:length])
     n_guess = np.array(guesses[length:])
 
@@ -504,9 +507,9 @@ def inner_loop(guesses, outer_loop_vars, params, j):
                                      0, TPI_solver_params),
                                xtol=MINIMIZER_TOL)
 
-        b_vec = solutions[:len(solutions) / 2]
+        b_vec = solutions[:int(len(solutions) / 2)]
         b_mat[ind2, S - (s + 2) + ind2] = b_vec
-        n_vec = solutions[len(solutions) / 2:]
+        n_vec = solutions[int(len(solutions) / 2):]
         n_mat[ind2, S - (s + 2) + ind2] = n_vec
 
     for t in range(0, T):

@@ -1,11 +1,12 @@
+from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 Last updated 4/7/2016
 
-This script takes a Frisch elasticity parameter from the OSPC's Tax Brain 
+This script takes a Frisch elasticity parameter from the OSPC's Tax Brain
 and then estimates the parameters of the elliptical utility fuction that
 correspond to a constant Frisch elasticity function with a Frisch elasticity
-as input into Tax Brain. 
+as input into Tax Brain.
 
 This Python script calls the following functions:
 
@@ -33,7 +34,7 @@ from matplotlib import cm
 def sumsq(params, *objs):
     '''
     --------------------------------------------------------------------
-    This function generates the sum of squared deviations between the 
+    This function generates the sum of squared deviations between the
     constant Frisch elasticity function and the elliptical utility function
     --------------------------------------------------------------------
     Inputs:
@@ -107,20 +108,20 @@ def sumsq_MU(params, *objs):
 def estimation(frisch, l_tilde):
     '''
     --------------------------------------------------------------------
-    This function estimates the parameters of an elliptical utility 
+    This function estimates the parameters of an elliptical utility
     funcion that fits a constant frisch elasticty function
 
     Inputs:
         frisch  = scalar, Frisch elasticity of labor supply
         l_tilde = scalar, maximum amount of labor supply
 
-    Functions called: 
+    Functions called:
         sumsq_MU
         sumsq
 
     Objects in function:
         theta               = inverse of the Frisch elasticity of labor supply
-        l_tilde             = max labor supply 
+        l_tilde             = max labor supply
         N                   = number of grid points used in function estimation
         graph               = boolean, =True if print graph with CFE and elliptical functions
         start_time          = scalar, current processor time in seconds (float)
@@ -134,7 +135,7 @@ def estimation(frisch, l_tilde):
         ellipse_params_init = length 3 tuple, initial guesses for parameter values
         n_grid              = [N,] vector, grid of labor supply values over which function evaluated
         ellipse_obj         = length 3 tuple, objects passed to minimizer function
-        bnds                = length 3 tuple, bounds for parameters of elliptical utility 
+        bnds                = length 3 tuple, bounds for parameters of elliptical utility
         ellipse_params_til  = tuple with full output of minimizer
         b_til               = scalar > 0, estimate of b
         k_til               = scalar, estimate of k
@@ -193,14 +194,17 @@ def estimation(frisch, l_tilde):
     # Print tax function computation time
     # if elapsed_time < 60: # seconds
     #     secs = round(elapsed_time, 3)
-    #     print 'Elliptical utility estimation time: ', secs, ' sec.'
+    #     print('Elliptical utility estimation time: ', secs, ' sec.')
     # elif elapsed_time >= 60 and elapsed_time < 3600: # minutes
     #     mins = int(elapsed_time / 60)
     #     secs = round(((elapsed_time / 60) - mins) * 60, 1)
-    #     print 'Elliptical utility estimation time: ', mins, ' min, ', secs, ' sec'
+    #     print('Elliptical utility estimation time: ', mins, ' min, ',
+    #           secs, ' sec')
 
-    #print 'Ellipse parameters; b, k, upsilon: ', b_til, k_til, upsilon_til, ellipse_params_til
-    #print 'Ellipse MU parameters; b, upsilon: ', b_MU_til, upsilon_MU_til, ellipse_MU_params_til
+    # print('Ellipse parameters; b, k, upsilon: ', b_til, k_til,
+    #       upsilon_til, ellipse_params_til)
+    # print('Ellipse MU parameters; b, upsilon: ', b_MU_til,
+    #       upsilon_MU_til, ellipse_MU_params_til)
 
 
     if graph == True:
@@ -227,7 +231,7 @@ def estimation(frisch, l_tilde):
 
 
         CFE_MU = (1.0/l_tilde)*((n_grid/l_tilde)**theta)
-        ellipse_MU = (1.0*b_MU_til * (1.0 / l_tilde) * ((1.0 - (n_grid / l_tilde) ** upsilon_MU_til) 
+        ellipse_MU = (1.0*b_MU_til * (1.0 / l_tilde) * ((1.0 - (n_grid / l_tilde) ** upsilon_MU_til)
                      ** ((1.0 / upsilon_MU_til) - 1.0)) * (n_grid / l_tilde) ** (upsilon_MU_til - 1.0))
         fig, ax = plt.subplots()
         plt.plot(n_grid, CFE_MU, 'r--', label='CFE')
