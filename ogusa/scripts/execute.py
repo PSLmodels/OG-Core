@@ -47,10 +47,9 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         baseline_spending = False
 
     # Create output directory structure
-    saved_moments_dir = os.path.join(output_base, "Saved_moments")
     ss_dir = os.path.join(output_base, "SS")
     tpi_dir = os.path.join(output_base, "TPI")
-    dirs = [saved_moments_dir, ss_dir, tpi_dir]
+    dirs = [ss_dir, tpi_dir]
     for _dir in dirs:
         try:
             print("making dir: ", _dir)
