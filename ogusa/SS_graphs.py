@@ -10,10 +10,6 @@ This py-file calls the following other file(s):
             household.py
             SSinit/ss_init_vars.pkl
             SS/ss_vars.pkl
-            OUTPUT/Saved_moments/params_given.pkl
-            OUTPUT/Saved_moments/params_changed.pkl
-            OUTPUT/Saved_moments/labor_data_moments
-            OUTPUT/Saved_moments/wealth_data_moments.pkl
 ------------------------------------------------------------------------
 '''
 
@@ -106,11 +102,6 @@ ss_init = os.path.join(SS_FIG_DIR, "SSinit/ss_init_vars.pkl")
 variables = pickle.load(open(ss_init, "rb"))
 for key in variables:
     globals()[key] = variables[key]
-# params_given = os.path.join(SS_FIG_DIR, "Saved_moments/params_given.pkl")
-# variables = pickle.load(open(params_given, "rb"))
-# for key in variables:
-#     globals()[key] = variables[key]
-
 
 #globals().update(ogusa.parameters.get_parameters_from_file())
 globals().update(parameters.get_parameters())
@@ -241,11 +232,6 @@ labor_dist = os.path.join(SS_FIG_DIR, "SSinit/labor_dist")
 plt.savefig(labor_dist)
 
 # Plot 2d comparison of labor distribution to data
-# First import the labor data
-labor = os.path.join(COMPARISON_DIR, "Saved_moments/labor_data_moments.pkl")
-variables = pickle.load(open(labor, "rb"))
-for key in variables:
-    globals()[key] = variables[key]
 
 plt.figure()
 plt.plot(np.arange(80) + 20, (nssmat * lambdas).sum(1),
@@ -358,11 +344,6 @@ plt.savefig(euler_errors_laborleisure_SS)
 # '''
 # ssvars = os.path.join(COMPARISON_DIR, "SS/ss_vars.pkl")
 # variables = pickle.load(open(ssvars, "rb"))
-# for key in variables:
-#     globals()[key] = variables[key]
-# params_changed = os.path.join(
-#     COMPARISON_DIR, "Saved_moments/params_changed.pkl")
-# variables = pickle.load(open(params_changed, "rb"))
 # for key in variables:
 #     globals()[key] = variables[key]
 
@@ -622,12 +603,6 @@ plt.savefig(euler_errors_laborleisure_SS)
 ------------------------------------------------------------------------
 '''
 domain = np.linspace(20, 95, 76)
-
-wealth_data_moments = os.path.join(
-    COMPARISON_DIR, "Saved_moments/wealth_data_moments.pkl")
-variables = pickle.load(open(wealth_data_moments, "rb"))
-for key in variables:
-    globals()[key] = variables[key]
 
 wealth_data_tograph = wealth_data_array[2:] / 1000000
 wealth_model_tograph = factor_ss_init * bssmatinit[:76] / 1000000

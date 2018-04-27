@@ -5,9 +5,6 @@ Last updated 4/7/2015
 
 Miscellaneous functions for SS.py and TPI.py.
 
-This python files calls:
-    OUTPUT/Saved_moments/wealth_data_moments.pkl
-
 ------------------------------------------------------------------------
 '''
 

@@ -10,10 +10,7 @@ This py-file calls the following other file(s):
             utils.py
             household.py
             firm.py
-            OUTPUT/SS/ss_vars.json
-            OUTPUT/Saved_moments/params_given.json
-            OUTPUT/Saved_moments/params_changed.json
-
+            OUTPUT/SS/ss_vars.pkl
 
 This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
