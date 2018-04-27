@@ -1,3 +1,4 @@
+from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 Last updated 8/15/2017
@@ -175,6 +176,6 @@ def get_K(L, r, params):
               gamma**(1/epsilon))) ** (epsilon/(1-epsilon))
              )
 
-    print 'USING firm.getK()'
+    print('USING firm.getK()')
 
     return K

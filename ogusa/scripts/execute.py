@@ -1,13 +1,11 @@
+from __future__ import print_function
 '''
-A 'smoke test' for the ogusa package. Uses a fake data set to run the
-baseline
+This script run the OG-USA model.
 '''
-
 import os
 import numpy as np
 import time
 import json
-
 import ogusa
 from ogusa import calibrate
 from ogusa.parameters import DEFAULT_WORLD_INT_RATE
@@ -16,13 +14,12 @@ from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR
 SMALL_OPEN_KEYS = ['world_int_rate']
 
 
-
 def runner(output_base, baseline_dir, test=False, time_path=True,
-           baseline=False, constant_rates=True, analytical_mtrs=False,
-           age_specific=False, reform={}, user_params={}, guid='',
-           run_micro=True, small_open=False, budget_balance=False,
-           baseline_spending=False, data=None, client=None,
-           num_workers=1):
+           baseline=False, constant_rates=True, tax_func_type='DEP',
+           analytical_mtrs=False, age_specific=False, reform={},
+           user_params={}, guid='', run_micro=True, small_open=False,
+           budget_balance=False, baseline_spending=False, data=None,
+           client=None, num_workers=1):
 
     from ogusa import parameters, demographics, income, utils
 
@@ -49,21 +46,21 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     dirs = [saved_moments_dir, ss_dir, tpi_dir]
     for _dir in dirs:
         try:
-            print "making dir: ", _dir
+            print("making dir: ", _dir)
             os.makedirs(_dir)
         except OSError as oe:
             pass
 
-    print 'In runner, baseline is ', baseline
+    print('In runner, baseline is ', baseline)
     if small_open and (not isinstance(small_open, dict)):
         raise ValueError('small_open must be False/None or a dict with keys: {}'.format(SMALL_OPEN_KEYS))
     small_open = small_open or {}
     run_params = ogusa.parameters.get_parameters(
         output_base, reform=reform, test=test, baseline=baseline,
         guid=guid, run_micro=run_micro, constant_rates=constant_rates,
-        analytical_mtrs=analytical_mtrs, age_specific=age_specific,
-        start_year=start_year, data=data, client=client,
-        num_workers=num_workers, **small_open)
+        analytical_mtrs=analytical_mtrs, tax_func_type=tax_func_type,
+        age_specific=age_specific, start_year=start_year, data=data,
+        client=client, num_workers=num_workers, **small_open)
     run_params['analytical_mtrs'] = analytical_mtrs
     run_params['small_open'] = bool(small_open)
     run_params['budget_balance'] = budget_balance
@@ -72,7 +69,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
 
     # Modify ogusa parameters based on user input
     if 'frisch' in user_params:
-        print "updating frisch and associated"
+        print("updating frisch and associated")
         b_ellipse, upsilon = ogusa.elliptical_u_est.estimation(
             user_params['frisch'],
             run_params['ltilde']
@@ -87,7 +84,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
 
     # Modify ogusa parameters based on user input
     if 'g_y_annual' in user_params:
-        print "updating g_y_annual and associated"
+        print("updating g_y_annual and associated")
         ending_age = run_params['ending_age']
         starting_age = run_params['starting_age']
         S = run_params['S']
@@ -103,7 +100,8 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
                    user_params['T_shifts'].size, 'periods.')
             T_shifts = np.concatenate(
                 (user_params['T_shifts'],
-                 np.zeros(run_params['ALPHA_T'].size - user_params['T_shifts'].size)),
+                 np.zeros(run_params['ALPHA_T'].size -
+                          user_params['T_shifts'].size)),
                  axis=0
             )
             run_params['ALPHA_T'] = run_params['ALPHA_T'] + T_shifts
@@ -113,7 +111,8 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
                    user_params['G_shifts'].size, 'periods.')
             G_shifts = np.concatenate(
                 (user_params['G_shifts'],
-                 np.zeros(run_params['ALPHA_G'].size - user_params['G_shifts'].size)),
+                 np.zeros(run_params['ALPHA_G'].size -
+                          user_params['G_shifts'].size)),
                  axis=0
             )
             run_params['ALPHA_G'] = run_params['ALPHA_G'] + G_shifts
@@ -124,24 +123,27 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     # List of parameter names that will not be changing (unless we decide to
     # change them for a tax experiment)
 
-    param_names = ['S', 'J', 'T', 'BW', 'lambdas', 'starting_age', 'ending_age',
-                'beta', 'sigma', 'alpha', 'gamma', 'epsilon', 'nu', 'Z', 'delta',
-                'E', 'ltilde', 'g_y', 'maxiter', 'mindist_SS', 'mindist_TPI',
-                'analytical_mtrs', 'b_ellipse', 'k_ellipse', 'upsilon',
-                'small_open', 'budget_balance', 'ss_firm_r', 'ss_hh_r',
-                'tpi_firm_r', 'tpi_hh_r', 'tG1', 'tG2', 'alpha_T', 'alpha_G',
-                'ALPHA_T', 'ALPHA_G', 'rho_G', 'debt_ratio_ss', 'tau_b',
-                'delta_tau', 'chi_b_guess', 'chi_n_guess','etr_params',
-                'mtrx_params', 'mtry_params','tau_payroll', 'tau_bq',
-                'retire', 'mean_income_data', 'g_n_vector',
-                'h_wealth', 'p_wealth', 'm_wealth',
-                'omega', 'g_n_ss', 'omega_SS', 'surv_rate', 'imm_rates','e',
-                'rho', 'initial_debt','omega_S_preTP']
+    param_names = ['S', 'J', 'T', 'BW', 'lambdas', 'starting_age',
+                   'ending_age', 'beta', 'sigma', 'alpha', 'gamma',
+                   'epsilon', 'nu', 'Z', 'delta', 'E', 'ltilde', 'g_y',
+                   'maxiter', 'mindist_SS', 'mindist_TPI',
+                   'analytical_mtrs', 'b_ellipse',
+                   'k_ellipse', 'upsilon', 'small_open',
+                   'budget_balance', 'ss_firm_r', 'ss_hh_r',
+                   'tpi_firm_r', 'tpi_hh_r', 'tG1', 'tG2', 'alpha_T',
+                   'alpha_G', 'ALPHA_T', 'ALPHA_G', 'rho_G',
+                   'debt_ratio_ss', 'tau_b', 'delta_tau', 'chi_b_guess',
+                   'chi_n_guess', 'etr_params', 'mtrx_params',
+                   'mtry_params', 'tau_payroll', 'tau_bq', 'retire',
+                   'mean_income_data', 'g_n_vector', 'h_wealth',
+                   'p_wealth', 'm_wealth', 'omega', 'g_n_ss',
+                   'omega_SS', 'surv_rate', 'imm_rates', 'e', 'rho',
+                   'initial_debt', 'omega_S_preTP']
 
     '''
-    ------------------------------------------------------------------------
+    --------------------------------------------------------------------
         Run SS
-    ------------------------------------------------------------------------
+    --------------------------------------------------------------------
     '''
 
     sim_params = {}
@@ -150,6 +152,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
 
     sim_params['output_dir'] = output_base
     sim_params['run_params'] = run_params
+    sim_params['tax_func_type'] = tax_func_type
     (income_tax_params, ss_parameters,
         iterative_params, chi_params,
         small_open_params) = SS.create_steady_state_parameters(**sim_params)
@@ -163,9 +166,9 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
                            num_workers=num_workers)
 
     '''
-    ------------------------------------------------------------------------
+    --------------------------------------------------------------------
         Save SS results to JSON file
-    ------------------------------------------------------------------------
+    --------------------------------------------------------------------
     '''
     model_params = {}
     for key in param_names:
@@ -188,9 +191,9 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
 
     if time_path:
         '''
-        ------------------------------------------------------------------------
+        ----------------------------------------------------------------
             Run the TPI simulation
-        ------------------------------------------------------------------------
+        ----------------------------------------------------------------
         '''
 
         sim_params['baseline'] = baseline
@@ -211,14 +214,15 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
             num_workers=num_workers)
 
         '''
-        ------------------------------------------------------------------------
+        ----------------------------------------------------------------
             Save TPI results to JSON file
-        ------------------------------------------------------------------------
+        ----------------------------------------------------------------
         '''
         utils.mkdirs(os.path.join(output_base, "TPI"))
         tpi_dir = os.path.join(output_base, "TPI/TPI_vars.json")
         with open(tpi_dir, 'w') as fp:
             json.dump(tpi_output, fp, sort_keys=True, indent=4)
 
-        print "Time path iteration complete."
-    print "It took {0} seconds to get that part done.".format(time.time() - tick)
+        print("Time path iteration complete.")
+    print("It took {0} seconds to get that part done.".format(time.time()
+                                                              - tick))

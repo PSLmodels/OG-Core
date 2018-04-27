@@ -1,3 +1,4 @@
+from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 Last updated 4/8/2016
@@ -17,7 +18,10 @@ This py-file creates the following other file(s): None
 
 # Packages
 import numpy as np
-import cPickle as pickle
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
 import os
 
 def dump_diff_output(baseline_dir, policy_dir):
@@ -111,6 +115,6 @@ def dump_diff_output(baseline_dir, policy_dir):
     pct_changes[5,11] = (ss_policy['rss']-ss_baseline['rss'])/ss_baseline['rss']
     pct_changes[6,11] = (ss_policy['revenue_ss']-ss_baseline['revenue_ss'])/ss_baseline['revenue_ss']
 
-    #print 'pct changes: ', pct_changes
+    #print('pct changes: ', pct_changes)
     #macro_out = (pct_changes, baseline_macros, policy_macros)
     return pct_changes, baseline_macros, policy_macros

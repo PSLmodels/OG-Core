@@ -1,3 +1,4 @@
+from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 This file sets parameters for the OG-USA model run.
@@ -33,8 +34,6 @@ import txfunc
 import elliptical_u_est as ellip
 import matplotlib.pyplot as plt
 from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR
-from ogusa import txfunc
-
 
 '''
 ------------------------------------------------------------------------
@@ -140,9 +139,9 @@ def get_parameters_from_file():
 def get_parameters(output_base, reform={}, test=False, baseline=False,
                    guid='', user_modifiable=False, metadata=False,
                    run_micro=False, constant_rates=True,
-                   analytical_mtrs=False, age_specific=False,
-                   start_year=DEFAULT_START_YEAR, data=None,
-                   client=None, num_workers=1, **small_open):
+                   analytical_mtrs=False, tax_func_type='DEP',
+                   age_specific=False, start_year=DEFAULT_START_YEAR,
+                   data=None, client=None, num_workers=1, **small_open):
 
     '''
     --------------------------------------------------------------------
@@ -308,7 +307,7 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
     # Time parameters
     T = int(4 * S)
     BW = int(TC_LAST_YEAR - start_year + 1)
-    print "BW = ", BW, 'start year = ', start_year
+    print("BW = ", BW, 'start year = ', start_year)
 
     starting_age = 20
     ending_age = 100
@@ -361,11 +360,13 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
     delta_tau = 1 - ((1 - delta_annual) ** (float(ending_age - starting_age) / S))
 
     if tG1 > tG2:
-        print 'The first government spending rule change date, (', tG1, ') is after the second one (', tG2, ').'
+        print('The first government spending rule change date, (', tG1,
+              ') is after the second one (', tG2, ').')
         err = "Gov't spending rule dates are inconsistent"
         raise RuntimeError(err)
     if tG2 > T:
-        print 'The second government spending rule change date, (', tG2, ') is after time T (', T, ').'
+        print('The second government spending rule change date, (', tG2,
+              ') is after time T (', T, ').')
         err = "Gov't spending rule dates are inconsistent"
         raise RuntimeError(err)
 
@@ -382,6 +383,7 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
         txfunc.get_tax_func_estimate(BW, S, starting_age, ending_age,
                                      baseline=baseline,
                                      analytical_mtrs=analytical_mtrs,
+                                     tax_func_type=tax_func_type,
                                      age_specific=age_specific,
                                      start_year=start_year,
                                      reform=reform, guid=guid,
@@ -391,13 +393,13 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
     if baseline:
         baseline_pckl = "TxFuncEst_baseline{}.json".format(guid)
         estimate_file = tx_func_est_path
-        print 'using baseline tax parameters', tx_func_est_path
+        print('using baseline tax parameters', tx_func_est_path)
         dict_params = read_tax_func_estimate(estimate_file, baseline_pckl)
 
     else:
         policy_pckl = "TxFuncEst_policy{}.json".format(guid)
         estimate_file = tx_func_est_path
-        print 'using policy tax parameters', tx_func_est_path
+        print('using policy tax parameters', tx_func_est_path)
         dict_params = read_tax_func_estimate(estimate_file, policy_pckl)
 
     mean_income_data = dict_params['tfunc_avginc'][0]
@@ -407,7 +409,7 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
     mtry_params = np.array(dict_params['tfunc_mtry_params_S'])[:S, :BW, :]
 
     if constant_rates:
-        print 'Using constant rates!'
+        print('Using constant rates!')
         # # Make all ETRs equal the average
         etr_params = np.zeros(etr_params.shape)
         etr_params[:, :, 10] = dict_params['tfunc_avg_etr'] # set shift to average rate
@@ -488,10 +490,6 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
         (_, _, omega_SS_80, _, _, _, _,_) = dem.get_pop_objs(20, 80,
             320, 1, 100, start_year, False)
 
-
-
-
-
     ## To shut off demographics, uncomment the following 9 lines of code
     # g_n_ss = 0.0
     # surv_rate1 = np.ones((S,))# prob start at age S
@@ -509,21 +507,14 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
     # e = np.tile(e[:,0].reshape(S,1),(1,J))
     # e /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
 
-    # print 'g_y: ', g_y
-    # print 'e: ', e
-    # print 'chi_n_guess: ', chi_n_guess
-    # print 'chi_b_guess: ', chi_b_guess
-    # print 'delta, beta: ', delta, beta
-    # quit()
-
     allvars = dict(locals())
 
     if user_modifiable:
-        allvars = {k:allvars[k] for k in USER_MODIFIABLE_PARAMS}
+        allvars = {k: allvars[k] for k in USER_MODIFIABLE_PARAMS}
 
     if metadata:
         params_meta = read_parameter_metadata()
-        for k,v in allvars.iteritems():
+        for k,v in allvars.items():
             params_meta[k]["value"] = v
         allvars = params_meta
 

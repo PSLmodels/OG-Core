@@ -1,3 +1,4 @@
+from __future__ import print_function
 
 '''
 This module should be organized as follows:
@@ -33,11 +34,14 @@ import numpy as np
 import scipy.optimize as opt
 import pandas as pd
 import os
-import pickle
-import wealth
-import labor
-import SS
-import utils
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+from . import wealth
+from . import labor
+from . import SS
+from . import utils
 
 def chi_estimate(income_tax_params, ss_params, iterative_params, chi_guesses, baseline_dir="./OUTPUT"):
     '''
@@ -235,7 +239,7 @@ def minstat(chi_guesses, *args):
     distance = np.dot(np.dot((np.array(model_moments) - np.array(data_moments)).T,W),
                    np.array(model_moments) - np.array(data_moments))
     #distance = ((np.array(model_moments) - np.array(data_moments))**2).sum()
-    print 'DATA and MODEL DISTANCE: ', distance
+    print('DATA and MODEL DISTANCE: ', distance)
 
     # # distance with percentage diffs
     # distance = (((model_moments - data_moments)/data_moments)**2).sum()

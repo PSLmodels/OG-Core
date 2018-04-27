@@ -252,18 +252,20 @@ def test_revenue():
     # SS cases
     # case where I.ndim == 2 and etr_params.ndim == 2
     method = "SS"
-    params = (e[0], lambdas[0], omega[0], method, etr_params[0, :S, 0, :dim4],
-              theta, tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth, retire,
-              T, S, J, tau_b, delta_tau)
+    params = (e[0], lambdas[0], omega[0], method,
+              etr_params[0, :S, 0, :dim4], 'DEP', theta, tau_bq,
+              tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S,
+              J, tau_b, delta_tau)
     res = aggr.revenue(r[0, 0, 0], w[0, 0, 0], b[0], n[0], BQ[0], Y[0], L[0],
                        K[0], factor, params)
     assert(np.allclose(res,  0.62811573441331581))
 
     # case where I.ndim == 2 and etr_params.ndim == 1
     method = "SS"
-    params = (e[0], lambdas[0], omega[0], method, etr_params[0, 0, 0, :dim4],
-              theta, tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth,
-              retire, T, S, J, tau_b, delta_tau)
+    params = (e[0], lambdas[0], omega[0], method,
+              etr_params[0, 0, 0, :dim4], 'DEP', theta, tau_bq,
+              tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S,
+              J, tau_b, delta_tau)
     res = aggr.revenue(r[0, 0, 0], w[0, 0, 0], b[0], n[0], BQ[0], Y[0], L[0],
                        K[0], factor, params)
     assert(np.allclose(res,  0.72406672579590448))
@@ -271,9 +273,9 @@ def test_revenue():
     # TPI cases
     # case where I.ndim == 3 and etr_params.ndim == 3
     method = "TPI"
-    params = (e, lambdas, omega, method, etr_params[0, :, :, :], theta, tau_bq,
-              tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J,
-              tau_b, delta_tau)
+    params = (e, lambdas, omega, method, etr_params[0, :, :, :], 'DEP',
+              theta, tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth,
+              retire, T, S, J, tau_b, delta_tau)
     res = aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, params)
     test = [0.62360144, 0.74817083, 0.71287424, 0.68285447, 0.64298028,
             0.69488446, 0.70770547, 0.66313781, 0.7175277, 0.64296948,
@@ -291,8 +293,8 @@ def test_revenue():
             0.64086681, 0.67091728, 0.65072774, 0.74296341, 0.69073292,
             0.48942517, 0.73170343, 0.69319158, 0.64553276, 0.67911291,
             0.72327757, 0.63002155, 0.68856491, 0.71801762, 0.69659916]
-    params = (e, lambdas, omega, method, etr_params, theta, tau_bq,
-              tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J,
-              tau_b, delta_tau)
+    params = (e, lambdas, omega, method, etr_params, 'DEP', theta,
+              tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth, retire,
+              T, S, J, tau_b, delta_tau)
     res = aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, params)
     assert(np.allclose(res, test))

@@ -21,7 +21,7 @@ This module defines the following function(s):
 import numpy as np
 import scipy.optimize as opt
 import scipy.interpolate as si
-import utils
+from . import utils
 import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -308,7 +308,9 @@ def arctan_fit(first_point, coef1, coef2, coef3, abil_deprec,
     --------------------------------------------------------------------
     '''
     params = [first_point, coef1, coef2, coef3, abil_deprec]
-    a, b, c = opt.fsolve(arc_error, init_guesses, params)
+    solution = opt.root(arc_error, init_guesses,
+                        args=params, method='lm')
+    [a, b, c] = solution.x
     old_ages = np.linspace(81, 100, 20)
     abil_last = arctan_func(old_ages, a, b, c)
     return abil_last
@@ -408,7 +410,7 @@ def get_e_interp(S, age_wgts, age_wgts_80, abil_wgts, plot=False):
 
         emat_j_midp = np.array([0.125, 0.375, 0.600, 0.750, 0.850,
                                 0.945, 0.995])
-        emat_s_midp = np.linspace(20.5,99.5,80)
+        emat_s_midp = np.linspace(20.5, 99.5, 80)
         emat_j_mesh, emat_s_mesh = np.meshgrid(emat_j_midp, emat_s_midp)
         newstep = 80 / S
         new_s_midp = np.linspace(20 + 0.5 * newstep,
@@ -515,7 +517,8 @@ def get_e_orig(age_wgts, abil_wgts, plot=False):
     ages_short = np.tile(np.linspace(21, 80, 60).reshape((60, 1)),
                          (1, 7))
     log_abil_paths = (const + (one * ages_short) +
-        (two * (ages_short ** 2)) + (three * (ages_short ** 3)))
+                      (two * (ages_short ** 2)) +
+                      (three * (ages_short ** 3)))
     abil_paths = np.exp(log_abil_paths)
     e_orig = np.zeros((80, 7))
     e_orig[:60, :] = abil_paths
@@ -540,7 +543,7 @@ def get_e_orig(age_wgts, abil_wgts, plot=False):
                    [70.5229181668, 0.0701993896947, -6.37746859905],
                    [35, .06, -5],
                    [35, .06, -5]])
-    for j in xrange(7):
+    for j in range(7):
         e_orig[60:, j] = arctan_fit(e_orig[59, j], one[j], two[j],
                           three[j], abil_deprec[j], init_guesses[j])
 

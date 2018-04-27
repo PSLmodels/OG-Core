@@ -2,8 +2,6 @@ name: ospcdyn
 channels:
 - ospc
 dependencies:
-- ipython
-- ipython-notebook
 - setuptools
 - mkl
 - scipy>=0.18.1
@@ -13,5 +11,6 @@ dependencies:
 - numpy>=1.12.1
 - pandas>=0.20.1
 - pytest
-- python=2.7
+- pytest-pep8
+- pytest-xdist
 - dask
