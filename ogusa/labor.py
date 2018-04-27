@@ -11,7 +11,6 @@ This py-file creates the following other file(s):
     (make sure that an OUTPUT folder exists)
             OUTPUT/Demographics/labor_dist_data_withfit.png
             OUTPUT/Demographics/data_labor_dist.png
-            OUTPUT/Saved_moments/labor_data_moments.pkl
 ------------------------------------------------------------------------
 '''
 

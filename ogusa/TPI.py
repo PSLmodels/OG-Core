@@ -11,8 +11,6 @@ This py-file calls the following other file(s):
             household.py
             firm.py
             OUTPUT/SS/ss_vars.pkl
-            OUTPUT/Saved_moments/params_given.pkl
-            OUTPUT/Saved_moments/params_changed.pkl
 
 
 This py-file creates the following other file(s):

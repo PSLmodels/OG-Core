@@ -11,8 +11,6 @@ This py-file calls the following other file(s):
             TPIinit/TPIinit_vars.pkl
             SS/ss_vars.pkl
             TPI/TPI_vars.pkl
-            OUTPUT/Saved_moments/params_given.pkl
-            OUTPUT/Saved_moments/params_changed.pkl
 ------------------------------------------------------------------------
 '''
 
@@ -44,10 +42,6 @@ for key in variables:
     globals()[key] = variables[key]
 tpi_init = os.path.join(VAR_DIR, "TPIinit/TPIinit_vars.pkl")
 variables = pickle.load(open(tpi_init, "rb"))
-for key in variables:
-    globals()[key] = variables[key]
-params_given = os.path.join(VAR_DIR, "Saved_moments/params_given.pkl")
-variables = pickle.load(open(params_given, "rb"))
 for key in variables:
     globals()[key] = variables[key]
 
@@ -128,10 +122,6 @@ for key in variables:
     globals()[key] = variables[key]
 tpi_vars = os.path.join(VAR_DIR, "TPI/TPI_vars.pkl")
 variables = pickle.load(open(tpi_vars, "rb"))
-for key in variables:
-    globals()[key] = variables[key]
-params_changed = os.path.join(VAR_DIR, "Saved_moments/params_changed.pkl")
-variables = pickle.load(open(params_changed, "rb"))
 for key in variables:
     globals()[key] = variables[key]
 
