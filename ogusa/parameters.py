@@ -98,7 +98,7 @@ def read_tax_func_estimate(json_path, json_file):
     --------------------------------------------------------------------
     '''
     if os.path.exists(json_path):
-        print 'json path exists'
+        print('json path exists')
         with open(json_path, 'r') as pfile:
             dict_params = json.load(pfile)
     else:
