@@ -14,4 +14,3 @@ dependencies:
 - pytest-pep8
 - pytest-xdist
 - dask
-- json
