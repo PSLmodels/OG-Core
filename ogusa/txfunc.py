@@ -1528,7 +1528,9 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     # call tax caculator and get microdata
     micro_data = get_micro_data.get_data(baseline=baseline,
                                          start_year=beg_yr,
-                                         reform=reform, data=data)
+                                         reform=reform, data=data,
+                                         client=client,
+                                         num_workers=num_workers)
 
     lazy_values = []
     for t in years_list:
