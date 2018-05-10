@@ -2,6 +2,7 @@ name: ospcdyn
 channels:
 - ospc
 dependencies:
+- python>=3.6
 - setuptools
 - mkl
 - scipy>=0.18.1
