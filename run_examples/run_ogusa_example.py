@@ -89,6 +89,10 @@ def run_micro_macro(user_params):
               'baseline_spending': False, 'data': 'cps',
               'client': client, 'num_workers': num_workers}
 
+    start_time = time.time()
+    runner(**kwargs)
+    print('run time = ', time.time()-start_time)
+
     # return ans - the percentage changes in macro aggregates and prices
     # due to policy changes from the baseline to the reform
     ans = postprocess.create_diff(baseline_dir=BASELINE_DIR,
