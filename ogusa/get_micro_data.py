@@ -65,13 +65,17 @@ def get_calculator(baseline, calculator_start_year, reform=None,
         records1 = Records()
 
     if baseline:
-        # Should not be a reform if baseline is True
-        assert not reform
-
-    if not baseline:
-        print("REFORM", reform)
-        print("TYPE", type(reform))
-        policy1.implement_reform(reform)
+        if not reform:
+            print("Running current law policy baseline")
+        else:
+            print("Baseline policy is: ", reform)
+    else:
+        if not reform:
+            print("Running with current law as reform")
+        else:
+            print("Reform policy is: ", reform)
+            print("TYPE", type(reform))
+    policy1.implement_reform(reform)
 
     # the default set up increments year to 2013
     calc1 = Calculator(records=records1, policy=policy1)
