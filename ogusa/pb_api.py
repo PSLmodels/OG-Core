@@ -298,7 +298,7 @@ def reform_warnings_errors(user_mods):
     rtn_dict = {'ogusa': {'warnings': '', 'errors': ''}}
 
     # create Specifications object and implement reform
-    specs = Specifications()
+    specs = Specifications(2017)
     specs._ignore_errors = True
     try:
         specs.update_specifications(user_mods['ogusa'], raise_errors=False)
