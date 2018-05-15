@@ -10,11 +10,9 @@ def test_create_specs_object():
 def test_implement_reform():
     specs = Specifications(2017)
     new_specs = {
-        2017: {
-            'tG1': [30],
-            'T': [80],
-            'frisch': [0.03]
-        }
+        'tG1': [30],
+        'T': [80],
+        'frisch': [0.03]
     }
 
     specs.update_specifications(new_specs)
@@ -29,21 +27,19 @@ def test_implement_bad_reform():
     specs = Specifications(2017)
     # tG1 has an upper bound at T / 2
     new_specs = {
-        2017: {
-            'tG1': [50],
-            'T': [80]
-        }
+        'tG1': [50],
+        'T': [80]
     }
 
     specs.update_specifications(new_specs, raise_errors=False)
 
     assert len(specs.parameter_errors) > 0
-    assert specs.parameter_errors == 'ERROR: 2013 tG1 value 50 > max value 40\n'
+    assert specs.parameter_errors == 'ERROR: tG1 value 50 > max value 40.0\n'
     assert len(specs.parameter_warnings) == 0
 
 
 def test_reform_warnings_errors():
-    user_mods = {'ogusa': {2017: {'frisch': [0.03]}}}
+    user_mods = {'ogusa': {'frisch': [0.03]}}
 
     ew = reform_warnings_errors(user_mods)
     assert len(ew['ogusa']['errors']) == 0
