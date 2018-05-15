@@ -1,10 +1,37 @@
+import os
+import tempfile
 import pytest
 
 from ogusa.pb_api import Specifications, reform_warnings_errors
 
+
+JSON_REVISION_FILE = """{
+    "revision": {
+        "frisch": [0.03]
+    }
+}"""
+
+@pytest.fixture(scope='module')
+def revision_file():
+    f = tempfile.NamedTemporaryFile(mode="a", delete=False)
+    f.write(JSON_REVISION_FILE)
+    f.close()
+    # Must close and then yield for Windows platform
+    yield f
+    os.remove(f.name)
+
+
 def test_create_specs_object():
     specs = Specifications(2017)
     assert specs
+
+
+def test_read_json_params_objects(revision_file):
+    exp = {"revision": {"frisch": [0.03]}}
+    act1 = Specifications.read_json_param_objects(JSON_REVISION_FILE)
+    assert exp == act1
+    act2 = Specifications.read_json_param_objects(JSON_REVISION_FILE)
+    assert exp == act2
 
 
 def test_implement_reform():

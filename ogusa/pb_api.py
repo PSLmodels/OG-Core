@@ -2,6 +2,7 @@ import json
 import os
 import collections as collect
 import six
+import re
 import numpy as np
 
 from taxcalc.growfactors import Growfactors
@@ -94,8 +95,39 @@ class Specifications(ParametersBase):
         if self.parameter_errors and raise_errors:
             raise ValueError('\n' + self.parameter_errors)
 
-    def read_json_parameters_object(self, parameters):
-        raise NotImplementedError()
+    @staticmethod
+    def read_json_param_objects(revision):
+        # next process first reform parameter
+        if revision is None:
+            rev_dict = dict()
+        elif isinstance(revision, six.string_types):
+            if os.path.isfile(revision):
+                txt = open(revision, 'r').read()
+            else:
+                txt = revision
+            # strip out //-comments without changing line numbers
+            json_str = re.sub('//.*', ' ', txt)
+            # convert JSON text into a Python dictionary
+            try:
+                rev_dict = json.loads(json_str)
+            except ValueError as valerr:
+                msg = 'Policy reform text below contains invalid JSON:\n'
+                msg += str(valerr) + '\n'
+                msg += 'Above location of the first error may be approximate.\n'
+                msg += 'The invalid JSON reform text is between the lines:\n'
+                bline = 'XX----.----1----.----2----.----3----.----4'
+                bline += '----.----5----.----6----.----7'
+                msg += bline + '\n'
+                linenum = 0
+                for line in json_str.split('\n'):
+                    linenum += 1
+                    msg += '{:02d}{}'.format(linenum, line) + '\n'
+                msg += bline + '\n'
+                raise ValueError(msg)
+        else:
+            raise ValueError('reform is neither None nor string')
+
+        return rev_dict
 
     def _validate_parameter_names_types(self, revision):
         """
@@ -274,20 +306,18 @@ def reform_warnings_errors(user_mods):
         rtn_dict['ogusa']['errors'] = valerr_msg.__str__()
     return rtn_dict
 
-if __name__ == '__main__':
-    specs = Specifications(2017)
-    specs._ignore_errors = True
-    reform = {
-        2017: {
-            "tG1": [50],
-            "T": [80]
-        }
-    }
-    specs.update_specifications(reform, raise_errors=False)
-    print('errors', specs.parameter_errors)
-    print('warnings', specs.parameter_warnings)
-
-    for name in specs._vals:
-        item = getattr(specs, name[1:], None)
-        if item is not None:
-            print(name, item)
+# if __name__ == '__main__':
+#     specs = Specifications(2017)
+#     specs._ignore_errors = True
+#     reform = {
+#         "tG1": [50],
+#         "T": [80]
+#     }
+#     specs.update_specifications(reform, raise_errors=False)
+#     print('errors', specs.parameter_errors)
+#     print('warnings', specs.parameter_warnings)
+#
+#     for name in specs._vals:
+#         item = getattr(specs, name[1:], None)
+#         if item is not None:
+#             print(name, item)
