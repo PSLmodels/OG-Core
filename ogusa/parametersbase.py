@@ -410,72 +410,7 @@ class ParametersBase(object):
                 x = np.array(x, np.bool_)
             else:
                 x = np.array(x, np.float64)
-        if ParametersBase.EXPAND:
-            if len(x.shape) == 1:
-                return ParametersBase._expand_1D(x, inflate, inflation_rates,
-                                                 num_years)
-            elif len(x.shape) == 2:
-                return ParametersBase._expand_2D(x, inflate, inflation_rates,
-                                                 num_years)
-            else:
-                raise ValueError('_expand_array expects a 1D or 2D array')
-        else:
-            return x
-
-    @staticmethod
-    def _expand_1D(x, inflate, inflation_rates, num_years):
-        """
-        Private method called only from _expand_array method.
-        Expand the given data x to account for given number of budget years.
-        If necessary, pad out additional years by increasing the last given
-        year using the given inflation_rates list.
-        """
-        if not isinstance(x, np.ndarray):
-            raise ValueError('_expand_1D expects x to be a numpy array')
-        if len(x) >= num_years:
-            return x
-        else:
-            ans = np.zeros(num_years, dtype=x.dtype)
-            ans[:len(x)] = x
-            if inflate:
-                extra = []
-                cur = x[-1]
-                for i in range(0, num_years - len(x)):
-                    cur *= (1. + inflation_rates[i + len(x) - 1])
-                    cur = round(cur, 2) if cur < 9e99 else 9e99
-                    extra.append(cur)
-            else:
-                extra = [float(x[-1]) for i in
-                         range(1, num_years - len(x) + 1)]
-            ans[len(x):] = extra
-            return ans
-
-    @staticmethod
-    def _expand_2D(x, inflate, inflation_rates, num_years):
-        """
-        Private method called only from _expand_array method.
-        Expand the given data to account for the given number of budget years.
-        For 2D arrays, we expand out the number of rows until we have num_years
-        number of rows. For each expanded row, we inflate using the given
-        inflation rates list.
-        """
-        if not isinstance(x, np.ndarray):
-            raise ValueError('_expand_2D expects x to be a numpy array')
-        if x.shape[0] >= num_years:
-            return x
-        else:
-            ans = np.zeros((num_years, x.shape[1]), dtype=x.dtype)
-            ans[:len(x), :] = x
-            for i in range(x.shape[0], ans.shape[0]):
-                for j in range(ans.shape[1]):
-                    if inflate:
-                        cur = (ans[i - 1, j] *
-                               (1. + inflation_rates[i - 1]))
-                        cur = round(cur, 2) if cur < 9e99 else 9e99
-                        ans[i, j] = cur
-                    else:
-                        ans[i, j] = ans[i - 1, j]
-            return ans
+        return x
 
     def _indexing_rates_for_update(self, param_name,
                                    calyear, num_years_to_expand):
