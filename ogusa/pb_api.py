@@ -9,6 +9,7 @@ from taxcalc.policy import Policy
 
 import ogusa
 from ogusa.parametersbase import ParametersBase
+from ogusa import elliptical_u_est
 
 class Specifications(ParametersBase):
     DEFAULTS_FILENAME = 'default_parameters.json'
@@ -42,11 +43,11 @@ class Specifications(ParametersBase):
         """
         Does cheap calculations such as calculating/applying growth rates
         """
-        # self.b_ellipse, self.upsilon = ogusa.elliptical_u_est.estimation(
-        #     self.frisch[0],
-        #     self.ltilde[0]
-        # )
-        # call some more functions
+        self.b_ellipse, self.upsilon = elliptical_u_est.estimation(
+            self.frisch[0],
+            self.ltilde[0]
+        )
+        #call some more functions
         pass
 
     def estimate_parameters(self, data=None, reform={}):
