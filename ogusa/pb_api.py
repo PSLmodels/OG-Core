@@ -10,9 +10,6 @@ from taxcalc.policy import Policy
 import ogusa
 from ogusa.parametersbase import ParametersBase
 
-# We don't want ParametersBase to extend parameters through the budget window
-ParametersBase.EXPAND = True
-
 class Specifications(ParametersBase):
     DEFAULTS_FILENAME = 'default_parameters.json'
     LAST_BUDGET_YEAR = 2027  # increases by one every calendar year

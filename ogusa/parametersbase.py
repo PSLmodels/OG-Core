@@ -23,7 +23,6 @@ class ParametersBase(object):
     __metaclass__ = abc.ABCMeta
 
     DEFAULTS_FILENAME = None
-    EXPAND = True
 
     @classmethod
     def default_data(cls, metadata=False, start_year=None):
