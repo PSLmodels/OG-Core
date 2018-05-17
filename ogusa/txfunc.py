@@ -249,7 +249,8 @@ def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
                                    gridpts))
         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
         txrate_grid = get_tax_rates(tx_params, X_grid, Y_grid, None,
-                                    tax_func_type, for_estimation=False)
+                                    tax_func_type, rate_type,
+                                    for_estimation=False)
         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
                         linewidth=0)
 
@@ -298,7 +299,8 @@ def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
                                    gridpts))
         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
         txrate_grid = get_tax_rates(tx_params, X_grid, Y_grid, None,
-                                    tax_func_type, for_estimation=False)
+                                    tax_func_type, rate_type,
+                                    for_estimation=False)
         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
                         linewidth=0)
 
@@ -956,7 +958,8 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         Y_vec = np.exp(np.linspace(np.log(5), np.log(Y.max()), gridpts))
         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
         txrate_grid = get_tax_rates(params, X_grid, Y_grid, None,
-                                    tax_func_type, for_estimation=False)
+                                    tax_func_type, rate_type,
+                                    for_estimation=False)
         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
                         linewidth=0)
         filename = (tx_label + '_Age_' + str(s) + '_Year_' + str(t) +
@@ -995,7 +998,8 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
                                    gridpts))
         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
         txrate_grid = get_tax_rates(params, X_grid, Y_grid, None,
-                                    tax_func_type, for_estimation=False)
+                                    tax_func_type, rate_type,
+                                    for_estimation=False)
         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
                         linewidth=0)
         filename = (tx_label + 'trunc_Age_' + str(s) + '_Year_' +
