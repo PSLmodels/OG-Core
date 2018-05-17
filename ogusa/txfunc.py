@@ -849,6 +849,9 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
                       np.array([X2bar, Xbar, Y2bar, Ybar]))
         params[4:] = np.array([max_x, min_x, max_y, min_y, shift_x, shift_y,
                                shift, share])
+        params_to_plot = np.append(params[:4],
+                                   np.array([max_x, max_y, share, min_x,
+                                             min_y, shift]))
     elif tax_func_type == 'DEP_totalinc':
         '''
         Estimate DeBacker, Evans, Phillips (2018) ratio of polynomial
@@ -881,6 +884,9 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
                       np.array([I2bar, Ibar, Y2bar, Ybar]))
         params[4:] = np.array([max_I, min_I, 0.0, 0.0, shift_I, 0.0,
                                shift, 1.0])
+        params_to_plot = np.append(params[:4],
+                                   np.array([max_x, max_y, share, min_x,
+                                             min_y, shift]))
     elif tax_func_type == "GS":
         '''
         Estimate Gouveia-Strauss parameters via least squares.
@@ -900,6 +906,7 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         obs = df.shape[0]
         params = np.zeros(numparams)
         params[:3] = np.array([phi0til, phi1til, phi2til])
+        params_to_plot = params
     elif tax_func_type == "linear":
         '''
         For linear rates, just take the mean ETR or MTR by age-year.
@@ -910,6 +917,7 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         wsse = 0.0
         obs = df.shape[0]
         params[10] = txrates.mean()
+        params_to_plot = params[1:11]
     else:
         raise RuntimeError("Choice of tax function is not in the set of"
                            + " possible tax functions.  Please select"
@@ -957,7 +965,7 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         X_vec = np.exp(np.linspace(np.log(5), np.log(X.max()), gridpts))
         Y_vec = np.exp(np.linspace(np.log(5), np.log(Y.max()), gridpts))
         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-        txrate_grid = get_tax_rates(params, X_grid, Y_grid, None,
+        txrate_grid = get_tax_rates(params_to_plot, X_grid, Y_grid, None,
                                     tax_func_type, rate_type,
                                     for_estimation=False)
         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
@@ -997,7 +1005,7 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         Y_vec = np.exp(np.linspace(np.log(5), np.log(Y_gph.max()),
                                    gridpts))
         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-        txrate_grid = get_tax_rates(params, X_grid, Y_grid, None,
+        txrate_grid = get_tax_rates(params_to_plot, X_grid, Y_grid, None,
                                     tax_func_type, rate_type,
                                     for_estimation=False)
         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
