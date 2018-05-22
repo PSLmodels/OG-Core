@@ -6,6 +6,12 @@ requirements:
   build:
     - python
     - pip
+    - matplotlib
+    - numpy >=1.12.1
+    - pandas >=0.20.1
+    - scipy
+    - setuptools
+    - taxcalc
 
   run:
     - matplotlib
