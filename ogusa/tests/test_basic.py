@@ -4,7 +4,7 @@ import tempfile
 import pickle
 import numpy as np
 import pandas as pd
-from ogusa.utils import RECORDS_START_YEAR
+from ogusa.utils import CPS_START_YEAR
 from ogusa.utils import comp_array, comp_scalar, dict_compare
 from ogusa.get_micro_data import get_calculator
 from ogusa import SS
@@ -190,7 +190,7 @@ def test_get_micro_data_get_calculator():
     calc = get_calculator(baseline=False, calculator_start_year=2017,
                           reform=reform, data=TAXDATA,
                           weights=WEIGHTS,
-                          records_start_year=RECORDS_START_YEAR)
+                          records_start_year=CPS_START_YEAR)
     assert calc.current_year == 2017
 
     reform = {
@@ -207,5 +207,5 @@ def test_get_micro_data_get_calculator():
     calc2 = get_calculator(baseline=False, calculator_start_year=2017,
                            reform=reform, data=TAXDATA,
                            weights=WEIGHTS,
-                           records_start_year=RECORDS_START_YEAR)
+                           records_start_year=CPS_START_YEAR)
     assert calc2.current_year == 2017

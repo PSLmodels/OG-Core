@@ -12,6 +12,7 @@ Miscellaneous functions for SS.py and TPI.py.
 import os
 from io import StringIO
 import numpy as np
+import taxcalc
 try:
     import cPickle as pickle
 except ImportError:
@@ -31,7 +32,8 @@ DEFAULT_START_YEAR = 2018
 TC_LAST_YEAR = 2027
 
 # Year of data used (e.g. PUF or CPS year)
-RECORDS_START_YEAR = 2011
+CPS_START_YEAR = taxcalc.Records.CPSCSV_YEAR
+PUF_START_YEAR = taxcalc.Records.PUFCSV_YEAR
 
 # for f in (REFORM_DIR, BASELINE_DIR):
 #     if not os.path.exists(f):

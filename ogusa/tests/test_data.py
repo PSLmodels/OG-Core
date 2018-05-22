@@ -1,6 +1,6 @@
 import pytest
 import os
-from ogusa.utils import RECORDS_START_YEAR
+from ogusa.utils import CPS_START_YEAR
 
 
 def test_cps():
@@ -14,7 +14,7 @@ def test_cps():
 
     calc = get_micro_data.get_calculator(
         baseline, start_year, reform=reform,
-        records_start_year=RECORDS_START_YEAR, data="cps")
+        records_start_year=CPS_START_YEAR, data="cps")
     # blind_head is only in the CPS file and e00700 is only in the PUF.
     # See taxcalc/records_variables.json
     assert (calc.array("blind_head").sum() > 0 and
@@ -38,7 +38,7 @@ def test_set_path():
     with pytest.raises((IOError, ValueError), match="notapath.csv"):
         get_micro_data.get_calculator(
             baseline, start_year, reform=reform,
-            records_start_year=RECORDS_START_YEAR, data="notapath.csv")
+            records_start_year=CPS_START_YEAR, data="notapath.csv")
 
 
 def test_puf_path():
@@ -68,4 +68,4 @@ def test_puf_path():
         with pytest.raises((IOError, ValueError), match="puf.csv"):
             get_micro_data.get_calculator(
                 baseline, start_year, reform=reform,
-                records_start_year=RECORDS_START_YEAR, data=None)
+                records_start_year=CPS_START_YEAR, data=None)
