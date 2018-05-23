@@ -23,13 +23,12 @@ from dask import compute, delayed
 import dask.multiprocessing
 import numpy as np
 import pickle
-from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR
-from ogusa.utils import RECORDS_START_YEAR
+from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR, PUF_START_YEAR
 
 
 def get_calculator(baseline, calculator_start_year, reform=None,
                    data=None, weights=None,
-                   records_start_year=RECORDS_START_YEAR):
+                   records_start_year=PUF_START_YEAR):
     '''
     --------------------------------------------------------------------
     This function creates the tax calculator object for the microsim
@@ -41,7 +40,8 @@ def get_calculator(baseline, calculator_start_year, reform=None,
     data                     = DataFrame for Records object
     weights                  = weights DataFrame for Records object
     records_start_year       = the start year for the data and weights
-                               dfs
+                               dfs (default is set to the PUF start year
+                               as defined in the Tax-Calculator project)
 
     RETURNS: Calculator object with a current_year equal to
              calculator_start_year

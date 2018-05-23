@@ -1,14 +1,14 @@
 package:
   name: ogusa
-  version: 0.4
+  version: 0.5.10
 
 requirements:
   build:
+    - python
+    - pip
     - matplotlib
     - numpy >=1.12.1
     - pandas >=0.20.1
-    - pytest
-    - python
     - scipy
     - setuptools
     - taxcalc
@@ -22,6 +22,7 @@ requirements:
     - scipy
     - setuptools
     - taxcalc
+    - dask
 
 about:
   home: https://github.com/open-source-economics/OG-USA/
@@ -33,7 +34,6 @@ test:
     - ogusa.TPI
     - ogusa.calibrate
     - ogusa.demographics
-    - ogusa.demographics_old
     - ogusa.elliptical_u_est
     - ogusa.firm
     - ogusa.fiscal
@@ -48,4 +48,3 @@ test:
     - ogusa.utils
     - ogusa.wealth
     - ogusa.wealthinit
-

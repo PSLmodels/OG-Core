@@ -19,12 +19,14 @@ This py-file calls the following other file(s):
     Packages
 ------------------------------------------------------------------------
 '''
+import os
+import pickle
 
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-import cPickle as pickle
+# import cPickle as pickle
 
 import firm
 
@@ -450,7 +452,7 @@ def gini_nocol(path, omega):
     cum_levels[:, 1:] = cum_levels[:, :-1]
     cum_levels[:, 0] = 0
     G = 2 * (.5 - (cum_levels * omega_sorted).sum(1))
-    print G[-1]
+    print(G[-1])
     return G
 
 '''
@@ -728,7 +730,7 @@ cmap2 = matplotlib.cm.get_cmap('jet')
 X, Y = np.meshgrid(domain, Jgrid)
 
 
-print 'Starting movies'
+print('Starting movies')
 # top zlim is for the income tax, bottom zlim is for the wealth tax
 
 
