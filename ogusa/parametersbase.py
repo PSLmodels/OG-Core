@@ -44,26 +44,6 @@ class ParametersBase(object):
     def __init__(self):
         pass
 
-    def initialize(self, ):
-        """
-        Called from subclass __init__ function.
-        Added expand=True option to turn off expansion of arrays
-        """
-        self.set_default_vals()
-
-    def set_default_vals(self, known_years=999999):
-        """
-        Called by initialize method and from some subclass methods.
-        """
-        if hasattr(self, '_vals'):
-            for name, data in self._vals.items():
-                intg_val = data.get('integer_value', None)
-                bool_val = data.get('boolean_value', None)
-                values = data.get('value', None)
-                if values:
-                    setattr(self, name,
-                            self._expand_array(values, intg_val, bool_val))
-
     # ----- begin private methods of ParametersBase class -----
 
     @classmethod
