@@ -11,14 +11,12 @@ import abc
 import ast
 import collections as collect
 import numpy as np
-from taxcalc.utils import read_egg_json
 
 
 class ParametersBase(object):
     """
-    Inherit from this class for Policy, Behavior, Consumption, Growdiff, and
-    other groups of parameters that need to have a set_year method.
-    Override this __init__ method and DEFAULTS_FILENAME.
+    Inherit from this class for OG-USA parameter classes. Override this
+    __init__ method and DEFAULTS_FILENAME.
     """
     __metaclass__ = abc.ABCMeta
 
@@ -49,7 +47,6 @@ class ParametersBase(object):
     def initialize(self, ):
         """
         Called from subclass __init__ function.
-
         Added expand=True option to turn off expansion of arrays
         """
         self.set_default_vals()
@@ -90,10 +87,6 @@ class ParametersBase(object):
             with open(path) as pfile:
                 params_dict = json.load(pfile,
                                         object_pairs_hook=collect.OrderedDict)
-        else:
-            # cannot call read_egg_ function in unit tests
-            params_dict = read_egg_json(
-                cls.DEFAULTS_FILENAME)  # pragma: no cover
         return params_dict
 
     def _update(self, mods):
@@ -178,7 +171,12 @@ class ParametersBase(object):
                     applied to the parameter value and the scalar value.
             2. `param_name` -- simply return the parameter value that is retrieved
                     from the object
-        returns: float used for validation
+        Parameters
+        ----------
+        param_string : string of form `param op scalar` or `param`
+        Returns
+        -------
+        float used for validation
         """
         pieces = param_string.split(' ')
         validate_against = pieces[0]
