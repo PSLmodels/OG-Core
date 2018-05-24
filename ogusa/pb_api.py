@@ -4,10 +4,17 @@ import collections as collect
 import six
 import re
 import numpy as np
+import pickle
+import scipy.interpolate as si
 
 # import ogusa
 from ogusa.parametersbase import ParametersBase
+from ogusa import elliptical_u_est
+from ogusa import demographics
+from ogusa import income
+from ogusa.utils import REFORM_DIR, BASELINE_DIR
 # from ogusa import elliptical_u_est
+
 
 class Specifications(ParametersBase):
     """
@@ -16,27 +23,30 @@ class Specifications(ParametersBase):
     DEFAULTS_FILENAME = 'default_parameters.json'
 
     def __init__(self,
-                 get_micro=False):
+                 run_micro=False, output_base=BASELINE_DIR,
+                 baseline_dir=BASELINE_DIR, test=False, time_path=True,
+                 baseline=False, reform={}, guid='', data=None,
+                 client=None, num_workers=1):
         super(Specifications, self).__init__()
 
         # reads in default data
         self._vals = self._params_dict_from_json_file()
 
         # does cheap calculations such as growth
-        self.initialize(get_micro=get_micro)
+        self.initialize(run_micro=run_micro)
 
         self.parameter_warnings = ''
         self.parameter_errors = ''
         self._ignore_errors = False
 
-    def initialize(self, get_micro=False):
+    def initialize(self, run_micro=False):
         """
         ParametersBase reads JSON file and sets attributes to self
         Next call self.compute_default_params for further initialization
         If estimate_params is true, then run long running estimation routines
         Parameters:
         -----------
-        get_micro: boolean that indicates whether to estimate tax funtions
+        run_micro: boolean that indicates whether to estimate tax funtions
                    from microsim model
         """
         for name, data in self._vals.items():
@@ -47,24 +57,177 @@ class Specifications(ParametersBase):
                 setattr(self, name,
                         self._expand_array(values, intg_val, bool_val))
         self.compute_default_params()
-        if get_micro:
-            self.get_micro_parameters()
+
+        # Income tax parameters
+        if self.baseline:
+            tx_func_est_path = os.path.join(
+                self.output_base, 'TxFuncEst_baseline{}.pkl'.format(self.guid),
+            )
+        else:
+            tx_func_est_path = os.path.join(
+                self.output_base, 'TxFuncEst_policy{}.pkl'.format(self.guid),
+            )
+        if run_micro:
+            self.run_tax_function_estimation()
+        if self.baseline:
+            baseline_pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
+            estimate_file = tx_func_est_path
+            print('using baseline tax parameters', tx_func_est_path)
+            dict_params = self.read_tax_func_estimate(estimate_file,
+                                                      baseline_pckl)
+
+        else:
+            policy_pckl = "TxFuncEst_policy{}.pkl".format(self.guid)
+            estimate_file = tx_func_est_path
+            print('using policy tax parameters', tx_func_est_path)
+            dict_params = self.read_tax_func_estimate(estimate_file,
+                                                      policy_pckl)
+
+        self.mean_income_data = dict_params['tfunc_avginc'][0]
+
+        self.etr_params =\
+            dict_params['tfunc_etr_params_S'][:self.S, :self.BW, :]
+        self.mtrx_params =\
+            dict_params['tfunc_mtrx_params_S'][:self.S, :self.BW, :]
+        self.mtry_params =\
+            dict_params['tfunc_mtry_params_S'][:self.S, :self.BW, :]
+
+        if self.constant_rates:
+            print('Using constant rates!')
+            # # Make all ETRs equal the average
+            self.etr_params = np.zeros(self.etr_params.shape)
+            # set shift to average rate
+            self.etr_params[:, :, 10] = dict_params['tfunc_avg_etr']
+
+            # # Make all MTRx equal the average
+            self.mtrx_params = np.zeros(self.mtrx_params.shape)
+            # set shift to average rate
+            self.mtrx_params[:, :, 10] = dict_params['tfunc_avg_mtrx']
+
+            # # Make all MTRy equal the average
+            self.mtry_params = np.zeros(self.mtry_params.shape)
+            # set shift to average rate
+            self.mtry_params[:, :, 10] = dict_params['tfunc_avg_mtry']
 
     def compute_default_params(self):
         """
         Does cheap calculations to return parameter values
         """
-        # self.b_ellipse, self.upsilon = elliptical_u_est.estimation(
-        #     self.frisch[0],
-        #     self.ltilde[0]
-        # )
-        #call some more functions
-        pass
+        # get parameters of elliptical utility function
+        self.b_ellipse, self.upsilon = elliptical_u_est.estimation(
+            self.frisch,
+            self.ltilde
+        )
+        # determine length of budget window from start year and last
+        # year in TC
+        self.BW = int(self.TC_LAST_YEAR - self.start_year + 1)
+        # Find number of economically active periods of life
+        self.E = int(self.starting_age * (self.S / (self.ending_age -
+                                                    self.starting_age)))
+        # Find rates in model periods from annualized rates
+        self.beta = (self.beta_annual ** ((self.ending_age -
+                                          self.starting_age) / self.S))
+        self.delta = (1 - ((1 - self.delta_annual) **
+                           ((self.ending_age - self.starting_age) / self.S)))
+        self.g_y = ((1 + self.g_y_annual) ** ((self.ending_age -
+                                               self.starting_age) /
+                                              self.S) - 1)
+        self.delta_tau = (1 - ((1 - self.delta_annual) **
+                               ((self.ending_age - self.starting_age) /
+                                self.S)))
+        # open economy parameters
+        self.ss_firm_r_annual = self.world_int_rate
+        self.ss_hh_r_annual = self.ss_firm_r_annual
+        self.ss_firm_r = ((1 + self.ss_firm_r_annual) **
+                          ((self.ending_age - self.starting_age) /
+                           self.S) - 1)
+        self.ss_hh_r = ((1 + self.ss_hh_r_annual) **
+                        ((self.ending_age - self.starting_age) /
+                         self.S) - 1)
+        self.tpi_firm_r = np.ones(self.T+self.S) * self.ss_firm_r
+        self.tpi_hh_r = np.ones(self.T+self.S) * self.ss_hh_r
+        self.tG2 = int(self.T * 0.8)
+        self.ALPHA_T = np.ones(self.T + self.S) * self.alpha_T
+        self.ALPHA_G = np.ones(self.T) * self.alpha_G
 
-    def get_micro_parameters(self, data=None, reform={}):
+        # set period of retirement
+        # SHOULD BE UPDATED TO BE ENTERED AS Retirement age in defaults
+        # then converted to model year here
+        self.retire = np.int(np.round(9.0 * self.S / 16.0) - 1)
+
+        # get population objects
+        (self.omega, self.g_n_ss, self.omega_SS, self.surv_rate,
+         self.rho, self.g_n_vector, self.imm_rates,
+         self.omega_S_preTP) = demographics.get_pop_objs(
+                self.E, self.S, self.T, 1, 100, self.start_year,
+                self.flag_graphs)
+
+        # Interpolate chi_n and create omega_SS_80 if necessary
+        if self.S == 80:
+            self.omega_SS_80 = self.omega_SS
+        elif self.S < 80:
+            self.age_midp_80 = np.linspace(20.5, 99.5, 80)
+            self.chi_n_interp = si.interp1d(self.age_midp_80,
+                                            self.chi_n,
+                                            kind='cubic')
+            self.newstep = 80.0 / self.S
+            self.age_midp_S = np.linspace(20 + 0.5 * self.newstep,
+                                          100 - 0.5 * self.newstep,
+                                          self.S)
+            self.chi_n = self.chi_n_interp(self.age_midp_S)
+            (_, _, self.omega_SS_80, _, _, _, _, _) = \
+                demographics.get_pop_objs(20, 80, 320, 1, 100,
+                                          self.start_year, False)
+        self.e = income.get_e_interp(
+            self.S, self.omega_SS, self.omega_SS_80, self.lambdas,
+            plot=False)
+
+    def read_tax_func_estimate(pickle_path, pickle_file):
+        '''
+        --------------------------------------------------------------------
+        This function reads in tax function parameters
+        --------------------------------------------------------------------
+
+        INPUTS:
+        pickle_path = string, path to pickle with tax function parameter
+                      estimates
+        pickle_file = string, name of pickle file with tax function
+                      parmaeter estimates
+
+        OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
+        /picklepath/ = pickle file with dictionary of tax function
+                       estimated parameters
+
+        OBJECTS CREATED WITHIN FUNCTION:
+        dict_params = dictionary, contains numpy arrays of tax function
+                      estimates
+
+        RETURNS: dict_params
+        --------------------------------------------------------------------
+        '''
+        if os.path.exists(pickle_path):
+            print('pickle path exists')
+            with open(pickle_path, 'rb') as pfile:
+                try:
+                    dict_params = pickle.load(pfile, encoding='latin1')
+                except TypeError:
+                    dict_params = pickle.load(pfile)
+        else:
+            from pkg_resources import resource_stream, Requirement
+            path_in_egg = pickle_file
+            pkl_path = os.path.join(os.path.dirname(__file__), '..',
+                                    path_in_egg)
+            with open(pkl_path, 'rb') as pfile:
+                try:
+                    dict_params = pickle.load(pfile, encoding='latin1')
+                except TypeError:
+                    dict_params = pickle.load(pfile)
+
+        return dict_params
+
+    def run_tax_function_estimation(self, data=None, reform={}):
         """
-        Runs long running parameter estimatation routines such as estimating
-        tax function parameters
+        Runs estimation of tax function parameters
         Parameters:
         ------------
         data: not sure what this is yet...
@@ -77,7 +240,12 @@ class Specifications(ParametersBase):
         #                                 self.start_year, self.baseline,
         #                                 self.analytical_mtrs, self.age_specific,
         #                                 reform=None, data=data)
-        pass
+        ogusa.txfunc.get_tax_func_estimate(
+            self.BW, self.S, self.starting_age, self.ending_age,
+            self.baseline, self.analytical_mtrs, self.tax_func_type,
+            self.age_specific, self.start_year, self.reform, self.guid,
+            self.tx_func_est_path, self.data, self.client,
+            self.num_workers)
 
     def default_parameters(self):
         """
