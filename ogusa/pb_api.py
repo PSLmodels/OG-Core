@@ -32,12 +32,12 @@ class Specifications(ParametersBase):
     def initialize(self, get_micro=False):
         """
         ParametersBase reads JSON file and sets attributes to self
-        Next call self.ogusa_set_default_vals for further initialization
+        Next call self.compute_default_params for further initialization
         If estimate_params is true, then run long running estimation routines
         Parameters:
         -----------
-        initial_estimates: boolean that indicates whether to do long-running
-                estimation routines or not
+        get_micro: boolean that indicates whether to estimate tax funtions
+                   from microsim model
         """
         for name, data in self._vals.items():
             intg_val = data.get('integer_value', None)
@@ -46,13 +46,13 @@ class Specifications(ParametersBase):
             if values:
                 setattr(self, name,
                         self._expand_array(values, intg_val, bool_val))
-        self.ogusa_set_default_vals()
+        self.compute_default_params()
         if get_micro:
             self.get_micro_parameters()
 
-    def ogusa_set_default_vals(self):
+    def compute_default_params(self):
         """
-        Does cheap calculations such as calculating/applying growth rates
+        Does cheap calculations to return parameter values
         """
         # self.b_ellipse, self.upsilon = elliptical_u_est.estimation(
         #     self.frisch[0],
@@ -199,36 +199,26 @@ class Specifications(ParametersBase):
         -----
         copied from taxcalc.Behavior._validate_parameter_names_types
         """
-        # pylint: disable=too-many-branches,too-many-nested-blocks
-        # pylint: disable=too-many-locals
         param_names = set(self._vals.keys())
-        for name in revision:
-            if name not in param_names:
+        revision_param_names = list(revision.keys())
+        for param_name in revision_param_names:
+            if param_name not in param_names:
                 msg = '{} unknown parameter name'
                 self.parameter_errors += (
-                    'ERROR: ' + msg.format(name) + '\n'
+                    'ERROR: ' + msg.format(param_name) + '\n'
                 )
             else:
                 # check parameter value type avoiding use of isinstance
                 # because isinstance(True, (int,float)) is True, which
                 # makes it impossible to check float parameters
-                bool_param_type = self._vals[name]['boolean_value']
-                int_param_type = self._vals[name]['integer_value']
-                assert isinstance(revision[name], list)
-                pvalue = revision[name][0]
-                if isinstance(pvalue, list):
-                    scalar = False  # parameter value is a list
+                bool_param_type = self._vals[param_name]['boolean_value']
+                int_param_type = self._vals[param_name]['integer_value']
+                if isinstance(revision[param_name], list):
+                    param_value = revision[param_name]
                 else:
-                    scalar = True  # parameter value is a scalar
-                    pvalue = [pvalue]  # make scalar a single-item list
-                # pylint: disable=consider-using-enumerate
-                for idx in range(0, len(pvalue)):
-                    if scalar:
-                        pname = name
-                    else:
-                        pname = '{}_{}'.format(name, idx)
-                    pval = pvalue[idx]
-                    # pylint: disable=unidiomatic-typecheck
+                    param_value = [revision[param_name]]
+                for idx in range(0, len(param_value)):
+                    pval = param_value[idx]
                     pval_is_bool = type(pval) == bool
                     pval_is_int = type(pval) == int
                     pval_is_float = type(pval) == float
@@ -237,7 +227,7 @@ class Specifications(ParametersBase):
                             msg = '{} value {} is not boolean'
                             self.parameter_errors += (
                                 'ERROR: ' +
-                                msg.format(pname, pval) +
+                                msg.format(param_name, pval) +
                                 '\n'
                             )
                     elif int_param_type:
@@ -245,7 +235,7 @@ class Specifications(ParametersBase):
                             msg = '{} value {} is not integer'
                             self.parameter_errors += (
                                 'ERROR: ' +
-                                msg.format(pname, pval) +
+                                msg.format(param_name, pval) +
                                 '\n'
                             )
                     else:  # param is float type
@@ -253,7 +243,7 @@ class Specifications(ParametersBase):
                             msg = '{} value {} is not a number'
                             self.parameter_errors += (
                                 'ERROR: ' +
-                                msg.format(pname, pval) +
+                                msg.format(param_name, pval) +
                                 '\n'
                             )
         del param_names
@@ -273,75 +263,40 @@ class Specifications(ParametersBase):
         -----
         copied from taxcalc.Policy._validate_parameter_values
         """
-        # pylint: disable=too-many-locals
-        # pylint: disable=too-many-branches
-        # pylint: disable=too-many-nested-blocks
         rounding_error = 100.0
         # above handles non-rounding of inflation-indexed parameter values
         dp = self.default_parameters()
         parameters = sorted(parameters_set)
-        for pname in parameters:
-            ###################################
-            # don't need this part
-            # if pname.endswith('_cpi'):
-            #     continue  # *_cpi parameter values validated elsewhere
-            ###################################
-            pvalue = getattr(self, pname)
-            for vop, vval in self._vals[pname]['range'].items():
-                if isinstance(vval, six.string_types):
-                    if vval == 'default':
-                        vvalue = getattr(dp, pname)
-                        if vop == 'min':
-                            vvalue -= rounding_error
-                        # the follow branch can never be reached, so it
-                        # is commented out because it can never be tested
-                        # (see test_range_infomation in test_policy.py)
-                        # --> elif vop == 'max':
-                        # -->    vvalue += rounding_error
-                    else:
-                        vvalue = self.simple_eval(vval)
+        for param_name in parameters:
+            param_value = getattr(self, param_name)
+            if not hasattr(param_value, 'shape'):  # value is not a numpy array
+                param_value = np.array([param_value])
+            for validation_op, validation_value in self._vals[param_name]['range'].items():
+                if isinstance(validation_value, six.string_types):
+                    validation_value = self.simple_eval(validation_value)
                 else:
-                    vvalue = np.full(pvalue.shape, vval)
-                assert pvalue.shape == vvalue.shape
-                assert len(pvalue.shape) <= 2
-                if len(pvalue.shape) == 2:
-                    scalar = False  # parameter value is a list
-                else:
-                    scalar = True  # parameter value is a scalar
-                for idx in np.ndindex(pvalue.shape):
+                    validation_value = np.full(param_value.shape, validation_value)
+                assert param_value.shape == validation_value.shape
+                for idx in np.ndindex(param_value.shape):
                     out_of_range = False
-                    if vop == 'min' and pvalue[idx] < vvalue[idx]:
+                    if validation_op == 'min' and param_value[idx] < validation_value[idx]:
                         out_of_range = True
                         msg = '{} value {} < min value {}'
-                        extra = self._vals[pname]['out_of_range_minmsg']
+                        extra = self._vals[param_name]['out_of_range_minmsg']
                         if extra:
                             msg += ' {}'.format(extra)
-                    if vop == 'max' and pvalue[idx] > vvalue[idx]:
+                    if validation_op == 'max' and param_value[idx] > validation_value[idx]:
                         out_of_range = True
                         msg = '{} value {} > max value {}'
-                        extra = self._vals[pname]['out_of_range_maxmsg']
+                        extra = self._vals[param_name]['out_of_range_maxmsg']
                         if extra:
                             msg += ' {}'.format(extra)
                     if out_of_range:
-                        action = self._vals[pname]['out_of_range_action']
-                        if scalar:
-                            name = pname
-                        else:
-                            name = '{}_{}'.format(pname, idx[1])
-                            if extra:
-                                msg += '_{}'.format(idx[1])
-                        if action == 'warn':
-                            self.parameter_warnings += (
-                                'WARNING: ' + msg.format(name,
-                                                         pvalue[idx],
-                                                         vvalue[idx]) + '\n'
-                            )
-                        if action == 'stop':
-                            self.parameter_errors += (
-                                'ERROR: ' + msg.format(name,
-                                                       pvalue[idx],
-                                                       vvalue[idx]) + '\n'
-                            )
+                        self.parameter_errors += (
+                            'ERROR: ' + msg.format(param_name,
+                                                   param_value[idx],
+                                                   validation_value[idx]) + '\n'
+                        )
         del dp
         del parameters
 
