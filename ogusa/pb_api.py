@@ -32,12 +32,12 @@ class Specifications(ParametersBase):
     def initialize(self, get_micro=False):
         """
         ParametersBase reads JSON file and sets attributes to self
-        Next call self.ogusa_set_default_vals for further initialization
+        Next call self.compute_default_params for further initialization
         If estimate_params is true, then run long running estimation routines
         Parameters:
         -----------
-        initial_estimates: boolean that indicates whether to do long-running
-                estimation routines or not
+        get_micro: boolean that indicates whether to estimate tax funtions
+                   from microsim model
         """
         for name, data in self._vals.items():
             intg_val = data.get('integer_value', None)
@@ -46,13 +46,13 @@ class Specifications(ParametersBase):
             if values:
                 setattr(self, name,
                         self._expand_array(values, intg_val, bool_val))
-        self.ogusa_set_default_vals()
+        self.compute_default_params()
         if get_micro:
             self.get_micro_parameters()
 
-    def ogusa_set_default_vals(self):
+    def compute_default_params(self):
         """
-        Does cheap calculations such as calculating/applying growth rates
+        Does cheap calculations to return parameter values
         """
         # self.b_ellipse, self.upsilon = elliptical_u_est.estimation(
         #     self.frisch[0],
