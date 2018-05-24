@@ -16,20 +16,20 @@ class Specifications(ParametersBase):
     DEFAULTS_FILENAME = 'default_parameters.json'
 
     def __init__(self,
-                 initial_estimates=False):
+                 get_micro=False):
         super(Specifications, self).__init__()
 
         # reads in default data
         self._vals = self._params_dict_from_json_file()
 
         # does cheap calculations such as growth
-        self.initialize(initial_estimates=False)
+        self.initialize(get_micro=get_micro)
 
         self.parameter_warnings = ''
         self.parameter_errors = ''
         self._ignore_errors = False
 
-    def initialize(self, initial_estimates=False):
+    def initialize(self, get_micro=False):
         """
         ParametersBase reads JSON file and sets attributes to self
         Next call self.ogusa_set_default_vals for further initialization
@@ -39,10 +39,16 @@ class Specifications(ParametersBase):
         initial_estimates: boolean that indicates whether to do long-running
                 estimation routines or not
         """
-        super(Specifications, self).initialize()
+        for name, data in self._vals.items():
+            intg_val = data.get('integer_value', None)
+            bool_val = data.get('boolean_value', None)
+            values = data.get('value', None)
+            if values:
+                setattr(self, name,
+                        self._expand_array(values, intg_val, bool_val))
         self.ogusa_set_default_vals()
-        if initial_estimates:
-            self.estimate_parameters()
+        if get_micro:
+            self.get_micro_parameters()
 
     def ogusa_set_default_vals(self):
         """
@@ -55,7 +61,7 @@ class Specifications(ParametersBase):
         #call some more functions
         pass
 
-    def estimate_parameters(self, data=None, reform={}):
+    def get_micro_parameters(self, data=None, reform={}):
         """
         Runs long running parameter estimatation routines such as estimating
         tax function parameters
