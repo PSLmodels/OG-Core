@@ -5,7 +5,6 @@ import six
 import re
 import numpy as np
 
-from taxcalc.growfactors import Growfactors
 from taxcalc.policy import Policy
 
 import ogusa
