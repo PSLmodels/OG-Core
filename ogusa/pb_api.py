@@ -5,13 +5,14 @@ import six
 import re
 import numpy as np
 
-from taxcalc.policy import Policy
-
-import ogusa
+# import ogusa
 from ogusa.parametersbase import ParametersBase
-from ogusa import elliptical_u_est
+# from ogusa import elliptical_u_est
 
 class Specifications(ParametersBase):
+    """
+    Inherits ParametersBase. Implements the PolicyBrain API for OG-USA
+    """
     DEFAULTS_FILENAME = 'default_parameters.json'
 
     def __init__(self,
@@ -33,6 +34,10 @@ class Specifications(ParametersBase):
         ParametersBase reads JSON file and sets attributes to self
         Next call self.ogusa_set_default_vals for further initialization
         If estimate_params is true, then run long running estimation routines
+        Parameters:
+        -----------
+        initial_estimates: boolean that indicates whether to do long-running
+                estimation routines or not
         """
         super(Specifications, self).initialize()
         self.ogusa_set_default_vals()
@@ -43,10 +48,10 @@ class Specifications(ParametersBase):
         """
         Does cheap calculations such as calculating/applying growth rates
         """
-        self.b_ellipse, self.upsilon = elliptical_u_est.estimation(
-            self.frisch[0],
-            self.ltilde[0]
-        )
+        # self.b_ellipse, self.upsilon = elliptical_u_est.estimation(
+        #     self.frisch[0],
+        #     self.ltilde[0]
+        # )
         #call some more functions
         pass
 
@@ -54,6 +59,13 @@ class Specifications(ParametersBase):
         """
         Runs long running parameter estimatation routines such as estimating
         tax function parameters
+        Parameters:
+        ------------
+        data: not sure what this is yet...
+        reform: Tax-Calculator Policy reform
+        Returns:
+        --------
+        nothing: void
         """
         # self.tax_func_estimate = tax_func_estimate(self.BW, self.S, self.starting_age, self.ending_age,
         #                                 self.start_year, self.baseline,
@@ -64,13 +76,46 @@ class Specifications(ParametersBase):
     def default_parameters(self):
         """
         Return Policy object same as self except with current-law policy.
+        Returns
+        -------
+        Specifications: Specifications instance with the default configuration
         """
         dp = Specifications()
         return dp
 
     def update_specifications(self, revision, raise_errors=True):
         """
-        copied from TC behavior.py-update_behavior
+        Updates parameter specification with values in revision dictionary
+        Parameters
+        ----------
+        reform: dictionary of one or more PARAM:VALUE pairs
+        raise_errors: boolean
+            if True (the default), raises ValueError when parameter_errors
+                    exists;
+            if False, does not raise ValueError when parameter_errors exists
+                    and leaves error handling to caller of
+                    update_specifications.
+        Raises
+        ------
+        ValueError:
+            if raise_errors is True AND
+              _validate_parameter_names_types generates errors OR
+              _validate_parameter_values generates errors.
+        Returns
+        -------
+        nothing: void
+        Notes
+        -----
+        Given a reform dictionary, typical usage of the Policy class
+        is as follows::
+            specs = Specifications()
+            specs.update_specifications(reform)
+        An example of a multi-parameter specification is as follows::
+            spec = {
+                frisch: [0.03]
+            }
+        This method was adapted from the Tax-Calculator
+        behavior.py-update_behavior method.
         """
         # check that all revisions dictionary keys are integers
         if not isinstance(revision, dict):
@@ -96,6 +141,12 @@ class Specifications(ParametersBase):
 
     @staticmethod
     def read_json_param_objects(revision):
+        """
+        Read JSON file and convert to dictionary
+        Returns
+        -------
+        rev_dict: formatted dictionary
+        """
         # next process first reform parameter
         if revision is None:
             rev_dict = dict()
@@ -132,7 +183,14 @@ class Specifications(ParametersBase):
         """
         Check validity of parameter names and parameter types used
         in the specified revision dictionary.
-
+        Parameters
+        ----------
+        revision: parameter dictionary of form {parameter_name: [value]}
+        Returns:
+        --------
+        nothing: void
+        Notes
+        -----
         copied from taxcalc.Behavior._validate_parameter_names_types
         """
         # pylint: disable=too-many-branches,too-many-nested-blocks
@@ -199,7 +257,14 @@ class Specifications(ParametersBase):
         """
         Check values of parameters in specified parameter_set using
         range information from the current_law_policy.json file.
-
+        Parameters:
+        -----------
+        parameters_set: set of parameters whose values need to be validated
+        Returns:
+        --------
+        nothing: void
+        Notes
+        -----
         copied from taxcalc.Policy._validate_parameter_values
         """
         # pylint: disable=too-many-locals
@@ -278,19 +343,13 @@ class Specifications(ParametersBase):
 # changes
 def reform_warnings_errors(user_mods):
     """
-    The reform_warnings_errors function assumes user_mods is a dictionary
-    returned by the Calculator.read_json_param_objects() function.
-    This function returns a dictionary containing two STR:STR pairs:
-    {'warnings': '<empty-or-message(s)>', 'errors': '<empty-or-message(s)>'}
-    In each pair the second string is empty if there are no messages.
-    Any returned messages are generated using current_law_policy.json
-    information on known policy parameter names and parameter value ranges.
-    Note that this function will return one or more error messages if
-    the user_mods['policy'] dictionary contains any unknown policy
-    parameter names or if any *_cpi parameters have values other than
-    True or False.  These situations prevent implementing the policy
-    reform specified in user_mods, and therefore, no range-related
-    warnings or errors will be returned in this case.
+    Generate warnings and errors for OG-USA parameter specifications
+    Parameters:
+    -----------
+    user_mods : dict created by read_json_param_objects
+    Return
+    ------
+    rtn_dict : dict with endpoint specific warning and error messages
     """
     rtn_dict = {'ogusa': {'warnings': '', 'errors': ''}}
 
@@ -304,19 +363,3 @@ def reform_warnings_errors(user_mods):
     except ValueError as valerr_msg:
         rtn_dict['ogusa']['errors'] = valerr_msg.__str__()
     return rtn_dict
-
-# if __name__ == '__main__':
-#     specs = Specifications(2017)
-#     specs._ignore_errors = True
-#     reform = {
-#         "tG1": [50],
-#         "T": [80]
-#     }
-#     specs.update_specifications(reform, raise_errors=False)
-#     print('errors', specs.parameter_errors)
-#     print('warnings', specs.parameter_warnings)
-#
-#     for name in specs._vals:
-#         item = getattr(specs, name[1:], None)
-#         if item is not None:
-#             print(name, item)
