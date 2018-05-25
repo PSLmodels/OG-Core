@@ -7,7 +7,7 @@ from ogusa.pb_api import Specifications, reform_warnings_errors
 
 JSON_REVISION_FILE = """{
     "revision": {
-        "frisch": 0.03
+        "frisch": 0.3
     }
 }"""
 
@@ -22,12 +22,12 @@ def revision_file():
 
 
 def test_create_specs_object():
-    specs = Specifications(2017)
+    specs = Specifications()
     assert specs
 
 
 def test_read_json_params_objects(revision_file):
-    exp = {"revision": {"frisch": 0.03}}
+    exp = {"revision": {"frisch": 0.3}}
     act1 = Specifications.read_json_param_objects(JSON_REVISION_FILE)
     assert exp == act1
     act2 = Specifications.read_json_param_objects(JSON_REVISION_FILE)
@@ -35,27 +35,29 @@ def test_read_json_params_objects(revision_file):
 
 
 def test_implement_reform():
-    specs = Specifications(2017)
+    specs = Specifications()
     new_specs = {
         'tG1': 30,
         'T': 80,
-        'frisch': 0.03
+        'frisch': 0.3,
+        'tax_func_type': 'DEP'
     }
 
     specs.update_specifications(new_specs)
-    assert specs.frisch == 0.03
+    assert specs.frisch == 0.3
     assert specs.tG1 == 30
     assert specs.T == 80
+    assert specs.tax_func_type == 'DEP'
     assert len(specs.parameter_errors) == 0
     assert len(specs.parameter_warnings) == 0
 
 
-def test_implement_bad_reform():
-    specs = Specifications(2017)
+def test_implement_bad_reform1():
+    specs = Specifications()
     # tG1 has an upper bound at T / 2
     new_specs = {
         'tG1': 50,
-        'T': 80
+        'T': 80,
     }
 
     specs.update_specifications(new_specs, raise_errors=False)
@@ -65,8 +67,23 @@ def test_implement_bad_reform():
     assert len(specs.parameter_warnings) == 0
 
 
+def test_implement_bad_reform2():
+    specs = Specifications()
+    # tG1 has an upper bound at T / 2
+    new_specs = {
+        'T': 80,
+        'tax_func_type': 'not_a_functional_form'
+    }
+
+    specs.update_specifications(new_specs, raise_errors=False)
+
+    assert len(specs.parameter_errors) > 0
+    assert specs.parameter_errors == "ERROR: tax_func_type value ['not_a_functional_form'] not in possible values ['DEP', 'DEP_totalinc', 'GS', 'linear']\n"
+    assert len(specs.parameter_warnings) == 0
+
+
 def test_reform_warnings_errors():
-    user_mods = {'ogusa': {'frisch': 0.03}}
+    user_mods = {'ogusa': {'frisch': 0.3}}
 
     ew = reform_warnings_errors(user_mods)
     assert len(ew['ogusa']['errors']) == 0
@@ -80,7 +97,7 @@ def test_reform_warnings_errors():
 
 
 def test_simple_eval():
-    specs = Specifications(2017)
+    specs = Specifications()
     specs.T = 100
     assert specs.simple_eval('T / 2') == 50
     assert specs.simple_eval('T * 2') == 200
