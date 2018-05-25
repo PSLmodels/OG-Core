@@ -117,14 +117,14 @@ def get_K(b, params):
     omega, lambdas, imm_rates, g_n, method = params
 
     if method == 'SS':
-        part1 = b* omega * lambdas
+        part1 = b * omega * lambdas
         omega_extended = np.append(omega[1:],[0.0])
         imm_extended = np.append(imm_rates[1:],[0.0])
         part2 = b*(omega_extended*imm_extended).reshape(omega.shape[0],1)*lambdas
         K_presum = part1+part2
         K = K_presum.sum()
     elif method == 'TPI':
-        part1 = b* omega * lambdas
+        part1 = b * omega * lambdas
         #omega_extended = np.append(omega[1:,:,:],np.zeros((1,omega.shape[1],omega.shape[2])),axis=0)
         omega_shift = np.append(omega[:,1:,:],np.zeros((omega.shape[0],1,omega.shape[2])),axis=1)
         #imm_extended = np.append(imm_rates[1:,:,:],np.zeros((1,imm_rates.shape[1],imm_rates.shape[2])),axis=0)
@@ -137,7 +137,7 @@ def get_K(b, params):
     return K
 
 
-def get_BQ(r, b_splus1, params):
+def get_BQ(r, b_splus1, j, p, method):
     '''
     Calculation of bequests to each lifetime income group.
 
@@ -159,14 +159,15 @@ def get_BQ(r, b_splus1, params):
 
     Returns: BQ
     '''
-    omega, lambdas, rho, g_n, method = params
-
-    BQ_presum = b_splus1 * omega * rho * lambdas
+    if j is not None:
+        BQ_presum = p.omega * p.rho * b_splus1 * p.lambdas[j]
+    else:
+        BQ_presum = p.omega * p.rho * b_splus1 * p.lambdas
     if method == 'SS':
         BQ = BQ_presum.sum(0)
     elif method == 'TPI':
         BQ = BQ_presum.sum(1)
-    BQ *= (1.0 + r) / (1.0 + g_n)
+    BQ *= (1.0 + r) / (1.0 + p.g_n)
     return BQ
 
 

@@ -359,7 +359,7 @@ def get_parameters(output_base, reform={}, test=False, baseline=False,
     # Assign any deviations from constant share of GDP in pre-tG1 ALPHA_T and ALPHA_G in the user dashboard of run_ogusa_serial.
 
     rho_G              = 0.1  # 0 < rho_G < 1 is transition speed for periods [tG1, tG2-1]. Lower rho_G => slower convergence.
-    debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
+    debt_ratio_ss      = 1.0  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
     initial_debt       = 0.59 # first-period debt/GDP ratio. Savings would be a negative number.
 
     # Business tax parameters

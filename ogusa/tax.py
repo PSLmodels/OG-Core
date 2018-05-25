@@ -14,7 +14,7 @@ import numpy as np
 '''
 
 
-def replacement_rate_vals(nssmat, wss, factor_ss, params):
+def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
     '''
     Calculates replacement rate values for the payroll tax.
     Inputs:
@@ -36,18 +36,21 @@ def replacement_rate_vals(nssmat, wss, factor_ss, params):
                           group
     Returns: theta
     '''
-    e, S, retire = params
+    if j:
+        e = p.e[:, j]
+    else:
+        e = p.e
     # adjust 35 yr work history for any S
-    equiv_35 = int(round((S / 80.0) * 35)) - 1
+    equiv_35 = int(round((p.S / 80.0) * 35)) - 1
     if e.ndim == 2:
         dim2 = e.shape[1]
     else:
         dim2 = 1
-    earnings = (e * (wss * nssmat * factor_ss)).reshape(S, dim2)
+    earnings = (e * (wss * nssmat * factor_ss)).reshape(p.S, dim2)
     # get highest earning 35 years
     highest_35_earn =\
-        (-1.0 * np.sort(-1.0 * earnings[:retire, :], axis=0))[:equiv_35]
-    AIME = highest_35_earn.sum(0) / ((12.0 * (S / 80.0)) * equiv_35)
+        (-1.0 * np.sort(-1.0 * earnings[:p.retire, :], axis=0))[:equiv_35]
+    AIME = highest_35_earn.sum(0) / ((12.0 * (p.S / 80.0)) * equiv_35)
     PIA = np.zeros(dim2)
     # Bins from data for each level of replacement
     for j in range(dim2):
@@ -60,11 +63,11 @@ def replacement_rate_vals(nssmat, wss, factor_ss, params):
     # Set the maximum monthly replacment rate from SS benefits tables
     maxpayment = 3501.00
     PIA[PIA > maxpayment] = maxpayment
-    theta = (PIA * (12.0 * S / 80.0)) / (factor_ss * wss)
+    theta = (PIA * (12.0 * p.S / 80.0)) / (factor_ss * wss)
     return theta
 
 
-def ETR_wealth(b, params):
+def ETR_wealth(b, p):
     '''
     Calculates the effective tax rate on wealth.
     Inputs:
@@ -79,12 +82,7 @@ def ETR_wealth(b, params):
     Returns: tau_w
 
     '''
-    h_wealth, p_wealth, m_wealth = params
-
-    h = h_wealth
-    m = m_wealth
-    p = p_wealth
-    tau_w = p * h * b / (h * b + m)
+    tau_w = (p.p_wealth * p.h_wealth * b) / (p.h_wealth * b + p.m_wealth)
     return tau_w
 
 
@@ -381,7 +379,8 @@ def get_biz_tax(w, Y, L, K, params):
     return business_revenue
 
 
-def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
+def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift,
+                etr_params, p, method):
     '''
     Gives net taxes paid values.
     Inputs:
@@ -427,17 +426,19 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
     Returns: total_taxes
 
     '''
-
-    (e, lambdas, method, retire, etr_params, tax_func_type, h_wealth,
-     p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S) = params
+    if j:
+        e = p.e[:, j]
+        lambdas = p.lambdas[j]
+    else:
+        e = p.e
+        lambdas = p.lambdas
 
     I = r * b + w * e * n
-    TI_params = (e, etr_params, tax_func_type)
+    TI_params = (e, etr_params, p.tax_func_type)
     T_I = ETR_income(r, w, b, n, factor, TI_params) * I
 
-    T_P = tau_payroll * w * e * n
-    TW_params = (h_wealth, p_wealth, m_wealth)
-    T_W = ETR_wealth(b, TW_params) * b
+    T_P = p.tau_payroll * w * e * n
+    T_W = ETR_wealth(b, p) * b
 
     if method == 'SS':
         # Depending on if we are looking at b_s or b_s+1, the
@@ -445,30 +446,31 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
         # The shift boolean makes sure we start replacement rates
         # at the correct age.
         if shift is False:
-            T_P[retire:] -= theta * w
+            T_P[p.retire:] -= theta * w
         else:
-            T_P[retire - 1:] -= theta * w
-        T_BQ = tau_bq * BQ / lambdas
+            T_P[p.retire - 1:] -= theta * w
+        T_BQ = p.tau_bq * BQ / lambdas
     elif method == 'TPI':
-        if shift is False:
+        if not shift:
             # retireTPI is different from retire, because in TPI we are
             # counting backwards with different length lists.  This will
             # always be the correct location of retirement, depending
             # on the shape of the lists.
-            retireTPI = (retire - S)
+            retireTPI = (p.retire - p.S)
         else:
-            retireTPI = (retire - 1 - S)
+            retireTPI = (p.retire - 1 - p.S)
         if len(b.shape) != 3:
             T_P[retireTPI:] -= theta[j] * w[retireTPI:]
-            T_BQ = tau_bq[j] * BQ / lambdas
+            T_BQ = p.tau_bq[j] * BQ / lambdas
         else:
-            T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w[:, retire:, :]
-            T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
+            T_P[:, p.retire:, :] -= (theta.reshape(1, 1, p.J) *
+                                     w[:, p.retire:, :])
+            T_BQ = p.tau_bq.reshape(1, 1, p.J) * BQ / lambdas
     elif method == 'TPI_scalar':
         # The above methods won't work if scalars are used.  This option
         # is only called by the SS_TPI_firstdoughnutring function in TPI.
-        T_P -= theta[j] * w
-        T_BQ = tau_bq[j] * BQ / lambdas
+        T_P -= theta * w
+        T_BQ = p.tau_bq * BQ / lambdas
     total_tax = T_I + T_P + T_BQ + T_W - T_H
 
     return total_tax
