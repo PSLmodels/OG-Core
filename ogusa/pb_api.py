@@ -26,7 +26,7 @@ class Specifications(ParametersBase):
     def __init__(self,
                  run_micro=False, output_base=BASELINE_DIR,
                  baseline_dir=BASELINE_DIR, test=False, time_path=True,
-                 baseline=False, reform={}, guid='', data=None,
+                 baseline=False, reform={}, guid='', data='cps',
                  flag_graphs=False, client=None, num_workers=1):
         super(Specifications, self).__init__()
 
@@ -502,7 +502,7 @@ def reform_warnings_errors(user_mods):
     rtn_dict = {'ogusa': {'warnings': '', 'errors': ''}}
 
     # create Specifications object and implement reform
-    specs = Specifications(2017)
+    specs = Specifications()
     specs._ignore_errors = True
     try:
         specs.update_specifications(user_mods['ogusa'], raise_errors=False)

@@ -134,6 +134,8 @@ class ParametersBase(object):
                 x = x
             else:
                 x = np.array(x, np.float64)
+            if x.ndim == 1:
+                x = x.reshape(x.shape[0], 1)
         else:
             if x_int:
                 x = np.int32(x)
