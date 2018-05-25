@@ -12,7 +12,8 @@ from ogusa.parametersbase import ParametersBase
 from ogusa import elliptical_u_est
 from ogusa import demographics
 from ogusa import income
-from ogusa.utils import REFORM_DIR, BASELINE_DIR
+from ogusa import txfunc
+from ogusa.utils import REFORM_DIR, BASELINE_DIR, TC_LAST_YEAR
 # from ogusa import elliptical_u_est
 
 
@@ -26,20 +27,34 @@ class Specifications(ParametersBase):
                  run_micro=False, output_base=BASELINE_DIR,
                  baseline_dir=BASELINE_DIR, test=False, time_path=True,
                  baseline=False, reform={}, guid='', data=None,
-                 client=None, num_workers=1):
+                 flag_graphs=False, client=None, num_workers=1):
         super(Specifications, self).__init__()
 
-        # reads in default data
+        # reads in default parameter values
         self._vals = self._params_dict_from_json_file()
 
-        # does cheap calculations such as growth
-        self.initialize(run_micro=run_micro)
+        self.output_base = output_base
+        self.baseline_dir = baseline_dir
+        self.test = test
+        self.time_path = time_path
+        self.baseline = baseline
+        self.reform = reform
+        self.guid = guid
+        self.data = data
+        self.flag_graphs = flag_graphs
+        self.client = client
+        self.num_workers = num_workers
+
+        # does cheap calculations to find parameter values
+        self.initialize()
+        if run_micro:
+            self.get_tax_function_parameters(run_micro=True)
 
         self.parameter_warnings = ''
         self.parameter_errors = ''
         self._ignore_errors = False
 
-    def initialize(self, run_micro=False):
+    def initialize(self):
         """
         ParametersBase reads JSON file and sets attributes to self
         Next call self.compute_default_params for further initialization
@@ -52,62 +67,11 @@ class Specifications(ParametersBase):
         for name, data in self._vals.items():
             intg_val = data.get('integer_value', None)
             bool_val = data.get('boolean_value', None)
+            string_val = data.get('string_value', None)
             values = data.get('value', None)
-            if values:
-                setattr(self, name,
-                        self._expand_array(values, intg_val, bool_val))
+            setattr(self, name, self._expand_array(values, intg_val,
+                                                   bool_val, string_val))
         self.compute_default_params()
-
-        # Income tax parameters
-        if self.baseline:
-            tx_func_est_path = os.path.join(
-                self.output_base, 'TxFuncEst_baseline{}.pkl'.format(self.guid),
-            )
-        else:
-            tx_func_est_path = os.path.join(
-                self.output_base, 'TxFuncEst_policy{}.pkl'.format(self.guid),
-            )
-        if run_micro:
-            self.run_tax_function_estimation()
-        if self.baseline:
-            baseline_pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
-            estimate_file = tx_func_est_path
-            print('using baseline tax parameters', tx_func_est_path)
-            dict_params = self.read_tax_func_estimate(estimate_file,
-                                                      baseline_pckl)
-
-        else:
-            policy_pckl = "TxFuncEst_policy{}.pkl".format(self.guid)
-            estimate_file = tx_func_est_path
-            print('using policy tax parameters', tx_func_est_path)
-            dict_params = self.read_tax_func_estimate(estimate_file,
-                                                      policy_pckl)
-
-        self.mean_income_data = dict_params['tfunc_avginc'][0]
-
-        self.etr_params =\
-            dict_params['tfunc_etr_params_S'][:self.S, :self.BW, :]
-        self.mtrx_params =\
-            dict_params['tfunc_mtrx_params_S'][:self.S, :self.BW, :]
-        self.mtry_params =\
-            dict_params['tfunc_mtry_params_S'][:self.S, :self.BW, :]
-
-        if self.constant_rates:
-            print('Using constant rates!')
-            # # Make all ETRs equal the average
-            self.etr_params = np.zeros(self.etr_params.shape)
-            # set shift to average rate
-            self.etr_params[:, :, 10] = dict_params['tfunc_avg_etr']
-
-            # # Make all MTRx equal the average
-            self.mtrx_params = np.zeros(self.mtrx_params.shape)
-            # set shift to average rate
-            self.mtrx_params[:, :, 10] = dict_params['tfunc_avg_mtrx']
-
-            # # Make all MTRy equal the average
-            self.mtry_params = np.zeros(self.mtry_params.shape)
-            # set shift to average rate
-            self.mtry_params[:, :, 10] = dict_params['tfunc_avg_mtry']
 
     def compute_default_params(self):
         """
@@ -120,7 +84,7 @@ class Specifications(ParametersBase):
         )
         # determine length of budget window from start year and last
         # year in TC
-        self.BW = int(self.TC_LAST_YEAR - self.start_year + 1)
+        self.BW = int(TC_LAST_YEAR - self.start_year + 1)
         # Find number of economically active periods of life
         self.E = int(self.starting_age * (self.S / (self.ending_age -
                                                     self.starting_age)))
@@ -182,7 +146,64 @@ class Specifications(ParametersBase):
             self.S, self.omega_SS, self.omega_SS_80, self.lambdas,
             plot=False)
 
-    def read_tax_func_estimate(pickle_path, pickle_file):
+    def get_tax_function_parameters(self, run_micro=False):
+        # Income tax parameters
+        if self.baseline:
+            tx_func_est_path = os.path.join(
+                self.output_base, 'TxFuncEst_baseline{}.pkl'.format(self.guid),
+            )
+        else:
+            tx_func_est_path = os.path.join(
+                self.output_base, 'TxFuncEst_policy{}.pkl'.format(self.guid),
+            )
+        if run_micro:
+            txfunc.get_tax_func_estimate(
+                self.BW, self.S, self.starting_age, self.ending_age,
+                self.baseline, self.analytical_mtrs, self.tax_func_type,
+                self.age_specific, self.start_year, self.reform, self.guid,
+                tx_func_est_path, self.data, self.client,
+                self.num_workers)
+        if self.baseline:
+            baseline_pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
+            estimate_file = tx_func_est_path
+            print('Using baseline tax parameters from ', tx_func_est_path)
+            dict_params = self.read_tax_func_estimate(estimate_file,
+                                                      baseline_pckl)
+
+        else:
+            policy_pckl = "TxFuncEst_policy{}.pkl".format(self.guid)
+            estimate_file = tx_func_est_path
+            print('Using reform policy tax parameters from ', tx_func_est_path)
+            dict_params = self.read_tax_func_estimate(estimate_file,
+                                                      policy_pckl)
+
+        self.mean_income_data = dict_params['tfunc_avginc'][0]
+
+        self.etr_params =\
+            dict_params['tfunc_etr_params_S'][:self.S, :self.BW, :]
+        self.mtrx_params =\
+            dict_params['tfunc_mtrx_params_S'][:self.S, :self.BW, :]
+        self.mtry_params =\
+            dict_params['tfunc_mtry_params_S'][:self.S, :self.BW, :]
+
+        if self.constant_rates:
+            print('Using constant rates!')
+            # # Make all ETRs equal the average
+            self.etr_params = np.zeros(self.etr_params.shape)
+            # set shift to average rate
+            self.etr_params[:, :, 10] = dict_params['tfunc_avg_etr']
+
+            # # Make all MTRx equal the average
+            self.mtrx_params = np.zeros(self.mtrx_params.shape)
+            # set shift to average rate
+            self.mtrx_params[:, :, 10] = dict_params['tfunc_avg_mtrx']
+
+            # # Make all MTRy equal the average
+            self.mtry_params = np.zeros(self.mtry_params.shape)
+            # set shift to average rate
+            self.mtry_params[:, :, 10] = dict_params['tfunc_avg_mtry']
+
+    def read_tax_func_estimate(self, pickle_path, pickle_file):
         '''
         --------------------------------------------------------------------
         This function reads in tax function parameters
@@ -224,28 +245,6 @@ class Specifications(ParametersBase):
                     dict_params = pickle.load(pfile)
 
         return dict_params
-
-    def run_tax_function_estimation(self, data=None, reform={}):
-        """
-        Runs estimation of tax function parameters
-        Parameters:
-        ------------
-        data: not sure what this is yet...
-        reform: Tax-Calculator Policy reform
-        Returns:
-        --------
-        nothing: void
-        """
-        # self.tax_func_estimate = tax_func_estimate(self.BW, self.S, self.starting_age, self.ending_age,
-        #                                 self.start_year, self.baseline,
-        #                                 self.analytical_mtrs, self.age_specific,
-        #                                 reform=None, data=data)
-        ogusa.txfunc.get_tax_func_estimate(
-            self.BW, self.S, self.starting_age, self.ending_age,
-            self.baseline, self.analytical_mtrs, self.tax_func_type,
-            self.age_specific, self.start_year, self.reform, self.guid,
-            self.tx_func_est_path, self.data, self.client,
-            self.num_workers)
 
     def default_parameters(self):
         """
@@ -381,6 +380,7 @@ class Specifications(ParametersBase):
                 # makes it impossible to check float parameters
                 bool_param_type = self._vals[param_name]['boolean_value']
                 int_param_type = self._vals[param_name]['integer_value']
+                string_param_type = self._vals[param_name]['string_value']
                 if isinstance(revision[param_name], list):
                     param_value = revision[param_name]
                 else:
@@ -390,6 +390,7 @@ class Specifications(ParametersBase):
                     pval_is_bool = type(pval) == bool
                     pval_is_int = type(pval) == int
                     pval_is_float = type(pval) == float
+                    pval_is_string = type(pval) == str
                     if bool_param_type:
                         if not pval_is_bool:
                             msg = '{} value {} is not boolean'
@@ -401,6 +402,14 @@ class Specifications(ParametersBase):
                     elif int_param_type:
                         if not pval_is_int:  # pragma: no cover
                             msg = '{} value {} is not integer'
+                            self.parameter_errors += (
+                                'ERROR: ' +
+                                msg.format(param_name, pval) +
+                                '\n'
+                            )
+                    elif string_param_type:
+                        if not pval_is_string:  # pragma: no cover
+                            msg = '{} value {} is not string'
                             self.parameter_errors += (
                                 'ERROR: ' +
                                 msg.format(param_name, pval) +
@@ -431,8 +440,6 @@ class Specifications(ParametersBase):
         -----
         copied from taxcalc.Policy._validate_parameter_values
         """
-        rounding_error = 100.0
-        # above handles non-rounding of inflation-indexed parameter values
         dp = self.default_parameters()
         parameters = sorted(parameters_set)
         for param_name in parameters:
@@ -440,31 +447,43 @@ class Specifications(ParametersBase):
             if not hasattr(param_value, 'shape'):  # value is not a numpy array
                 param_value = np.array([param_value])
             for validation_op, validation_value in self._vals[param_name]['range'].items():
-                if isinstance(validation_value, six.string_types):
-                    validation_value = self.simple_eval(validation_value)
+                if validation_op == 'possible_values':
+                    if param_value not in validation_value:
+                        out_of_range = True
+                        msg = '{} value {} not in possible values {}'
+                        if out_of_range:
+                            self.parameter_errors += (
+                                'ERROR: ' + msg.format(param_name,
+                                                       param_value,
+                                                       validation_value) + '\n'
+                                )
                 else:
-                    validation_value = np.full(param_value.shape, validation_value)
-                assert param_value.shape == validation_value.shape
-                for idx in np.ndindex(param_value.shape):
-                    out_of_range = False
-                    if validation_op == 'min' and param_value[idx] < validation_value[idx]:
-                        out_of_range = True
-                        msg = '{} value {} < min value {}'
-                        extra = self._vals[param_name]['out_of_range_minmsg']
-                        if extra:
-                            msg += ' {}'.format(extra)
-                    if validation_op == 'max' and param_value[idx] > validation_value[idx]:
-                        out_of_range = True
-                        msg = '{} value {} > max value {}'
-                        extra = self._vals[param_name]['out_of_range_maxmsg']
-                        if extra:
-                            msg += ' {}'.format(extra)
-                    if out_of_range:
-                        self.parameter_errors += (
-                            'ERROR: ' + msg.format(param_name,
-                                                   param_value[idx],
-                                                   validation_value[idx]) + '\n'
-                        )
+                    print(validation_op, param_value, validation_value)
+                    if isinstance(validation_value, six.string_types):
+                        validation_value = self.simple_eval(validation_value)
+                    else:
+                        validation_value = np.full(param_value.shape, validation_value)
+                    assert param_value.shape == validation_value.shape
+                    for idx in np.ndindex(param_value.shape):
+                        out_of_range = False
+                        if validation_op == 'min' and param_value[idx] < validation_value[idx]:
+                            out_of_range = True
+                            msg = '{} value {} < min value {}'
+                            extra = self._vals[param_name]['out_of_range_minmsg']
+                            if extra:
+                                msg += ' {}'.format(extra)
+                        if validation_op == 'max' and param_value[idx] > validation_value[idx]:
+                            out_of_range = True
+                            msg = '{} value {} > max value {}'
+                            extra = self._vals[param_name]['out_of_range_maxmsg']
+                            if extra:
+                                msg += ' {}'.format(extra)
+                        if out_of_range:
+                            self.parameter_errors += (
+                                'ERROR: ' + msg.format(param_name,
+                                                       param_value[idx],
+                                                       validation_value[idx]) + '\n'
+                            )
         del dp
         del parameters
 
