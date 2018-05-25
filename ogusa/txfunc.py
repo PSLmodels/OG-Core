@@ -1772,10 +1772,10 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
     if baseline:
         baseline_pckl = (tx_func_est_path or
                          "TxFuncEst_baseline{}.pkl".format(guid))
-        pkl_path = os.path.join(TAX_ESTIMATE_PATH, baseline_pckl)
+        pkl_path = os.path.join(baseline_pckl)
     else:
         policy_pckl = (tx_func_est_path or
                        "TxFuncEst_policy{}.pkl".format(guid))
-        pkl_path = os.path.join(TAX_ESTIMATE_PATH, policy_pckl)
+        pkl_path = os.path.join(policy_pckl)
 
     pickle.dump(dict_params, open(pkl_path, "wb"))
