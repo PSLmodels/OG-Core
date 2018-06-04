@@ -77,7 +77,7 @@ def get_w(Y, L, params):
 
 
 
-def get_w_from_r(r, params):
+def get_w_from_r(r, p):
     '''
     --------------------------------------------------------------------
     Solve for steady-state wage w or time path of wages w_t
@@ -96,14 +96,13 @@ def get_w_from_r(r, params):
     RETURNS: w
     --------------------------------------------------------------------
     '''
-    Z, gamma, epsilon, delta, tau_b, delta_tau = params
-    if epsilon == 0:
-        w = 1 - gamma
+    if p.epsilon == 0:
+        w = 1 - p.gamma
     else:
-        w = ((1 - gamma) * Z * ((gamma * Z * (1 - tau_b)) /
-                                (r+delta-(tau_b*delta_tau))) **
-             (gamma / (1 - gamma)))
-
+        w = ((1 - p.gamma) * p.Z * ((p.gamma * p.Z * (1 - p.tau_b)) /
+                                    (r + p.delta - (p.tau_b *
+                                                    p.delta_tau))) **
+             (p.gamma / (1 - p.gamma)))
 
     return w
 

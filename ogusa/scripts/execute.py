@@ -1,7 +1,6 @@
 from __future__ import print_function
 '''
-A 'smoke test' for the ogusa package. Uses a fake data set to run the
-baseline
+This module defines the runner() function, whic is used to run OG-USA
 '''
 
 try:
@@ -12,10 +11,11 @@ import os
 import numpy as np
 import time
 
-from pb_api import Specifications
+
 import ogusa
 from ogusa import SS, TPI
-ogusa.parameters.DATASET = 'REAL'
+# ogusa.parameters.DATASET = 'REAL'
+from ogusa.pb_api import Specifications
 from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR
 
 
@@ -58,11 +58,11 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     print('In runner, baseline is ', baseline)
 
     # Get parameter class
-    spec = Specifications(baseline_dir=baseline_dir, client=client,
-                          num_workers=num_workers)
+    spec = Specifications(baseline_dir=baseline_dir, baseline=True,
+                          client=client, num_workers=num_workers)
     spec.update_specifications({'age_specific': False})
     print('path for tax functions: ', spec.output_base)
-    spec.get_tax_function_parameters(run_micro=True)
+    spec.get_tax_function_parameters(run_micro=False)
 
     # ogusa_05242018 = ogusaclass(spec1, spec2)
     # ogusa_05242018.runner()

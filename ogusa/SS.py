@@ -810,7 +810,7 @@ def run_SS(p):
         # print('tax function type in SS: ', tax_func_type)
     else:
         baseline_ss_dir = os.path.join(p.baseline_dir, "SS/SS_vars.pkl")
-        ss_solutions = pickle.load(open(baseline_ss_dir, "rb"))
+        ss_solutions = pickle.load(open(baseline_ss_dir, "rb"), encoding="latin1")
         (rguess, T_Hguess, Yguess, factor) =\
             (ss_solutions['rss'], ss_solutions['T_Hss'],
              ss_solutions['Yss'], ss_solutions['factor_ss'])
