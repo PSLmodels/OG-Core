@@ -202,13 +202,11 @@ def inner_loop(outer_loop_vars, p):
     for j in range(p.J):
         guesses = np.append(bssmat[:, j], nssmat[:, j])
         euler_args = (r, w, T_H, factor, j, p)
-        lazy_values.append(client.submit(opt.fsolve)(euler_equation_solver,
-                                               guesses * .9,
-                                               args=euler_args,
-                                               xtol=MINIMIZER_TOL,
-                                               full_output=True))
-    results = client.gather(*lazy_values, get=dask.multiprocessing.get,
-                      num_workers=p.num_workers)
+        lazy_values[j] = p.client.submit(opt.fsolve,
+                           euler_equation_solver, guesses * .9,
+                            args=euler_args, xtol=MINIMIZER_TOL,
+                            full_output=True)
+    results = p.client.gather(lazy_values)
     #     lazy_values.append(delayed(opt.fsolve)(euler_equation_solver,
     #                                            guesses * .9,
     #                                            args=euler_args,
