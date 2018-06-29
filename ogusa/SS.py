@@ -152,7 +152,7 @@ def euler_equation_solver(guesses, *args):
     return list(error1.flatten()) + list(error2.flatten())
 
 
-def inner_loop(outer_loop_vars, p):
+def inner_loop(outer_loop_vars, p, client):
     '''
     This function solves for the inner loop of
     the SS.  That is, given the guesses of the
@@ -198,22 +198,25 @@ def inner_loop(outer_loop_vars, p):
 
     w = firm.get_w_from_r(r, p)
 
+    # lazy_values = []
+    # for j in range(p.J):
+    #     guesses = np.append(bssmat[:, j], nssmat[:, j])
+    #     euler_args = (r, w, T_H, factor, j, p)
+    #     lazy_values[j] = p.client.submit(opt.fsolve,
+    #                        euler_equation_solver, guesses * .9,
+    #                         args=euler_args, xtol=MINIMIZER_TOL,
+    #                         full_output=True)
+    # results = p.client.gather(lazy_values)
+
     lazy_values = []
     for j in range(p.J):
         guesses = np.append(bssmat[:, j], nssmat[:, j])
         euler_args = (r, w, T_H, factor, j, p)
-        lazy_values[j] = p.client.submit(opt.fsolve,
-                           euler_equation_solver, guesses * .9,
-                            args=euler_args, xtol=MINIMIZER_TOL,
-                            full_output=True)
-    results = p.client.gather(lazy_values)
-    #     lazy_values.append(delayed(opt.fsolve)(euler_equation_solver,
-    #                                            guesses * .9,
-    #                                            args=euler_args,
-    #                                            xtol=MINIMIZER_TOL,
-    #                                            full_output=True))
-    # results = compute(*lazy_values, get=dask.multiprocessing.get,
-    #                   num_workers=p.num_workers)
+        lazy_values.append(client.submit(
+            opt.fsolve, euler_equation_solver, guesses * 0.9,
+            args=euler_args, xtol=MINIMIZER_TOL, full_output=True))
+
+    results = client.gather(lazy_values)
 
     for j, result in enumerate(results):
         [solutions, infodict, ier, message] = result
@@ -585,7 +588,7 @@ def SS_fsolve(guesses, *args):
         solutions = steady state values of b, n, w, r, factor,
                     T_H ((2*S*J+4)x1 array)
     '''
-    (bssmat, nssmat, p) = args
+    (bssmat, nssmat, p, client) = args
 
     # Rename the inputs
     r = guesses[0]
@@ -601,7 +604,7 @@ def SS_fsolve(guesses, *args):
         outer_loop_vars = (bssmat, nssmat, r, Y, T_H, factor)
     (euler_errors, bssmat, nssmat, new_r, new_w, new_T_H, new_Y,
      new_factor, new_BQ, average_income_model) =\
-        inner_loop(outer_loop_vars, p)
+        inner_loop(outer_loop_vars, p, client)
 
     error1 = new_r - r
     if p.budget_balance:
@@ -740,7 +743,7 @@ def SS_fsolve_reform_baselinespend(guesses, *args):
     return [error1, error2]
 
 
-def run_SS(p):
+def run_SS(p, client=None):
     '''
     --------------------------------------------------------------------
     Solve for SS of OG-USA.
@@ -796,7 +799,7 @@ def run_SS(p):
         T_Hguess = 0.12
         factorguess = 70000
 
-        ss_params_baseline = (b_guess, n_guess, p)
+        ss_params_baseline = (b_guess, n_guess, p, client)
         guesses = [rguess, T_Hguess, factorguess]
         [solutions_fsolve, infodict, ier, message] =\
             opt.fsolve(SS_fsolve, guesses, args=ss_params_baseline,

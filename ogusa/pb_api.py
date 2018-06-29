@@ -42,7 +42,6 @@ class Specifications(ParametersBase):
         self.guid = guid
         self.data = data
         self.flag_graphs = flag_graphs
-        self.client = client
         self.num_workers = num_workers
 
         # does cheap calculations to find parameter values
@@ -121,7 +120,7 @@ class Specifications(ParametersBase):
 
         # get population objects
         (self.omega, self.g_n_ss, self.omega_SS, self.surv_rate,
-         self.rho, self.g_n_vector, self.imm_rates,
+         self.rho, self.g_n, self.imm_rates,
          self.omega_S_preTP) = demographics.get_pop_objs(
                 self.E, self.S, self.T, 1, 100, self.start_year,
                 self.flag_graphs)
@@ -161,8 +160,7 @@ class Specifications(ParametersBase):
                 self.BW, self.S, self.starting_age, self.ending_age,
                 self.baseline, self.analytical_mtrs, self.tax_func_type,
                 self.age_specific, self.start_year, self.reform, self.guid,
-                tx_func_est_path, self.data, self.client,
-                self.num_workers)
+                tx_func_est_path, self.data, self.num_workers, client)
         if self.baseline:
             baseline_pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
             estimate_file = tx_func_est_path
