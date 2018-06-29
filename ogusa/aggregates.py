@@ -165,9 +165,10 @@ def get_BQ(r, b_splus1, j, p, method):
         BQ_presum = p.omega * p.rho * b_splus1 * p.lambdas
     if method == 'SS':
         BQ = BQ_presum.sum(0)
+        BQ *= (1.0 + r) / (1.0 + p.g_n_ss)
     elif method == 'TPI':
         BQ = BQ_presum.sum(1)
-    BQ *= (1.0 + r) / (1.0 + p.g_n)
+        BQ *= (1.0 + r) / (1.0 + p.g_n)
     return BQ
 
 
