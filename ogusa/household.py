@@ -95,7 +95,7 @@ def marg_ut_labor(n, p):
           (p.upsilon - 1)) * ((1 - ((eps_high / p.ltilde) ** p.upsilon)) **
           ((1 - p.upsilon) / p.upsilon)) - (2 * d2 * eps_high))
     MDU_n[nvec_high] = 2 * d2 * nvec[nvec_high] + d1
-    output = MDU_n * p.chi_n
+    output = MDU_n * np.squeeze(p.chi_n)
     output = np.squeeze(output)
 
     return output
@@ -131,8 +131,7 @@ def get_cons(r, w, b, b_splus1, n, BQ, net_tax, j, e, p):
     if j is not None:
         lambdas = p.lambdas[j]
     else:
-        lambdas = p.lambdas
-
+        lambdas = np.transpose(p.lambdas)
     cons = ((1 + r) * b + w * e * n + BQ / lambdas - b_splus1 *
             np.exp(p.g_y) - net_tax)
     return cons
@@ -222,13 +221,13 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, theta,
     e_extended = np.array(list(e) + [0])
     n_extended = np.array(list(n) + [0])
     etr_params_extended = np.append(
-        p.etr_params, np.reshape(p.etr_params[-1, :],
-                                 (1, p.etr_params.shape[1])),
-        axis=0)[1:, :]
+        np.reshape(p.etr_params[:, -1, :], (p.S, p.etr_params.shape[2])), np.reshape(p.etr_params[-1, -1, :],
+                                 (1, p.etr_params.shape[2])),
+        axis=0)[1:, :]  # this only works for SS - taking last period of BW
     mtry_params_extended = np.append(
-        p.mtry_params, np.reshape(p.mtry_params[-1, :],
-                                  (1, p.mtry_params.shape[1])),
-        axis=0)[1:, :]
+        np.reshape(p.mtry_params[:, -1, :], (p.S, p.mtry_params.shape[2])), np.reshape(p.mtry_params[-1, -1, :],
+                                 (1, p.mtry_params.shape[2])),
+        axis=0)[1:, :] # this only works for SS - taking last period of BW
     if method == 'TPI':
         r_extended = np.append(r, r[-1])
         w_extended = np.append(w, w[-1])
@@ -241,7 +240,7 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, theta,
         T_H_extended = np.array([T_H, T_H])
 
     tax1 = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
-                           p.etr_params, p, method)
+                           p.etr_params[:, -1, :], p, method)
     tax2 = tax.total_taxes(r_extended[1:], w_extended[1:], b_splus1,
                            n_extended[1:], BQ_extended[1:], factor,
                            T_H_extended[1:], theta, j, True,
@@ -261,7 +260,7 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, theta,
                              n_extended[1:], factor, mtr_cap_params,
                              True)))
 
-    savings_ut = (p.rho * np.exp(-p.sigma * p.g_y) * p.chi_b *
+    savings_ut = (p.rho * np.exp(-p.sigma * p.g_y) * p.chi_b[j] *
                   b_splus1 ** (-p.sigma))
 
     euler_error = (marg_ut_cons(cons1, p.sigma) - p.beta * (1 - p.rho) *
@@ -341,11 +340,10 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, j, p,
         e = p.e[:, j]
     else:
         e = p.e
-    tax1 = tax.total_taxes(r, w, b, n, BQ, factor, T_H, j, False,
-                           p.etr_params, p, method)
+    tax1 = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
+                           p.etr_params[:, -1, :], p, method)  # this only works with SS as written bc of tax params
     cons = get_cons(r, w, b, b_splus1, n, BQ, tax1, j, e, p)
-    mtr_lab_params = (e, p.etr_params, p.mtrx_params, p.tax_func_type,
-                      p.analytical_mtrs)
+    mtr_lab_params = (e, p.etr_params[:, -1, :], p.mtrx_params[:, -1, :], p) # this only works with SS as written bc of tax params
     deriv = (1 - p.tau_payroll - tax.MTR_income(r, w, b, n, factor,
                                                 mtr_lab_params, False))
 

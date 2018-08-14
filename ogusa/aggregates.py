@@ -17,7 +17,7 @@ from . import tax
 ------------------------------------------------------------------------
 '''
 
-def get_L(n, params):
+def get_L(n, p, method):
     '''
     Generates vector of aggregate labor supply.
 
@@ -38,17 +38,18 @@ def get_L(n, params):
     Returns: L
 
     '''
-    e, omega, lambdas, method = params
 
-    L_presum = e * omega * lambdas * n
+
     if method == 'SS':
+        L_presum = p.e * np.transpose(p.omega_SS * p.lambdas) * n
         L = L_presum.sum()
     elif method == 'TPI':
+        L_presum = p.e * p.omega * p.lambdas * n
         L = L_presum.sum(1).sum(1)
     return L
 
 
-def get_I(b_splus1, K_p1, K, params):
+def get_I(b_splus1, K_p1, K, p, method):
     '''
     Generates vector of aggregate investment.
 
@@ -68,32 +69,29 @@ def get_I(b_splus1, K_p1, K, params):
     Returns: aggI
 
     '''
-    delta, g_y, omega, lambdas, imm_rates, g_n, method = params
     if method == 'SS':
-        omega_extended = np.append(omega[1:], [0.0])
-        imm_extended = np.append(imm_rates[1:], [0.0])
-        part2 = ((((b_splus1 *
-                   (omega_extended*imm_extended).reshape(omega.shape[0], 1)) *
-                   lambdas).sum())/(1+g_n))
-        aggI = (1+g_n)*np.exp(g_y)*(K_p1 - part2) - (1.0 - delta) * K
+        omega_extended = np.append(p.omega_SS[1:], [0.0])
+        imm_extended = np.append(p.imm_rates[-1, 1:], [0.0])
+        part2 = (((b_splus1 *
+                   np.transpose((omega_extended * imm_extended) *
+                   p.lambdas)).sum()) / (1 + p.g_n_ss))
+        aggI = (1 + p.g_n_ss) * np.exp(p.g_y) * (K_p1 - part2) - (1.0 - p.delta) * K
     elif method == 'TPI':
-        # omega_extended = np.append(omega[1:,:,:],np.zeros((1,omega.shape[1],omega.shape[2])),axis=0)
-        # imm_extended = np.append(imm_rates[1:,:,:],np.zeros((1,imm_rates.shape[1],imm_rates.shape[2])),axis=0)
-        # part2 = ((b_splus1*omega_extended*imm_extended*lambdas).sum(1).sum(1))/(1+g_n)
-        omega_shift = np.append(omega[:, 1:, :],
-                                np.zeros((omega.shape[0], 1, omega.shape[2]))
+        omega_shift = np.append(p.omega[:, 1:, :],
+                                np.zeros((p.omega.shape[0], 1, p.omega.shape[2]))
                                 , axis=1)
-        imm_shift = np.append(imm_rates[:, 1:, :],
-                              np.zeros((imm_rates.shape[0],
-                                       1, imm_rates.shape[2])),
+        imm_shift = np.append(p.imm_rates[:, 1:, :],
+                              np.zeros((p.imm_rates.shape[0],
+                                       1, p.imm_rates.shape[2])),
                               axis=1)
-        part2 = (((b_splus1*imm_shift*omega_shift*lambdas).sum(1).sum(1)) /
-                 (1+g_n))
-        aggI = (1+g_n)*np.exp(g_y)*(K_p1 - part2) - (1.0 - delta) * K
+        part2 = (((b_splus1 * imm_shift * omega_shift * p.lambdas).sum(1).sum(1)) /
+                 (1 + p.g_n_ss))
+        aggI = (1 + p.g_n_ss) * np.exp(p.g_y) * (K_p1 - part2) - (1.0 - p.delta) * K
 
     return aggI
 
-def get_K(b, params):
+
+def get_K(b, p, method):
     '''
     Calculates aggregate capital supplied.
 
@@ -114,26 +112,25 @@ def get_K(b, params):
     Returns: K
     '''
 
-    omega, lambdas, imm_rates, g_n, method = params
-
     if method == 'SS':
-        part1 = b * omega * lambdas
-        omega_extended = np.append(omega[1:],[0.0])
-        imm_extended = np.append(imm_rates[1:],[0.0])
-        part2 = b*(omega_extended*imm_extended).reshape(omega.shape[0],1)*lambdas
-        K_presum = part1+part2
+        part1 = b * np.transpose(p.omega_SS * p.lambdas)
+        omega_extended = np.append(p.omega_SS[1:], [0.0])
+        imm_extended = np.append(p.imm_rates[-1, 1:], [0.0])
+        part2 = b * np.transpose(omega_extended * imm_extended * p.lambdas)
+        K_presum = part1 + part2
         K = K_presum.sum()
+        K /= (1.0 + p.g_n_ss)
     elif method == 'TPI':
-        part1 = b * omega * lambdas
+        part1 = b * p.omega * p.lambdas
         #omega_extended = np.append(omega[1:,:,:],np.zeros((1,omega.shape[1],omega.shape[2])),axis=0)
-        omega_shift = np.append(omega[:,1:,:],np.zeros((omega.shape[0],1,omega.shape[2])),axis=1)
+        omega_shift = np.append(p.omega[:, 1:, :], np.zeros((p.omega.shape[0], 1, p.omega.shape[2])), axis=1)
         #imm_extended = np.append(imm_rates[1:,:,:],np.zeros((1,imm_rates.shape[1],imm_rates.shape[2])),axis=0)
-        imm_shift = np.append(imm_rates[:,1:,:],np.zeros((imm_rates.shape[0],1,imm_rates.shape[2])),axis=1)
+        imm_shift = np.append(p.imm_rates[:, 1:, :], np.zeros((p.imm_rates.shape[0], 1, p.imm_rates.shape[2])), axis=1)
         #part2 = b*(omega_extended*imm_extended)*lambdas
-        part2 = b*imm_shift*omega_shift*lambdas
-        K_presum = part1+part2
+        part2 = b * imm_shift * omega_shift * p.lambdas
+        K_presum = part1 + part2
         K = K_presum.sum(1).sum(1)
-    K /= (1.0 + g_n)
+        K /= (1.0 + p.g_n)
     return K
 
 
@@ -159,20 +156,24 @@ def get_BQ(r, b_splus1, j, p, method):
 
     Returns: BQ
     '''
-    if j is not None:
-        BQ_presum = p.omega * p.rho * b_splus1 * p.lambdas[j]
-    else:
-        BQ_presum = p.omega * p.rho * b_splus1 * p.lambdas
     if method == 'SS':
+        if j is not None:
+            BQ_presum = p.omega_SS * p.rho * b_splus1 * p.lambdas[j]
+        else:
+            BQ_presum = np.transpose(p.omega_SS * (p.rho * p.lambdas)) * b_splus1
         BQ = BQ_presum.sum(0)
         BQ *= (1.0 + r) / (1.0 + p.g_n_ss)
     elif method == 'TPI':
+        if j is not None:
+            BQ_presum = p.omega * p.rho * b_splus1 * p.lambdas[j]
+        else:
+            BQ_presum = p.omega * p.rho * b_splus1 * p.lambdas
         BQ = BQ_presum.sum(1)
         BQ *= (1.0 + r) / (1.0 + p.g_n)
     return BQ
 
 
-def get_C(c, params):
+def get_C(c, p, method):
     '''
     Calculation of aggregate consumption.
 
@@ -192,17 +193,14 @@ def get_C(c, params):
     Returns: aggC
     '''
 
-    omega, lambdas, method = params
-
-    aggC_presum = c * omega * lambdas
     if method == 'SS':
-        aggC = aggC_presum.sum()
+        aggC = (c * np.transpose(p.omega_SS * p.lambdas)).sum()
     elif method == 'TPI':
-        aggC = aggC_presum.sum(1).sum(1)
+        aggC = (c * p.omega * p.lambdas).sum(1).sum(1)
     return aggC
 
 
-def revenue(r, w, b, n, BQ, Y, L, K, factor, params):
+def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, p, method):
     '''
     Gives lump sum transfer value.
     Inputs:
@@ -244,40 +242,32 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, params):
     Returns: T_H
 
     '''
-
-    e, lambdas, omega, method, etr_params, tax_func_type, theta, tau_bq, \
-        tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S, J,\
-        tau_b, delta_tau = params
-
-    I = r * b + w * e * n
+    I = r * b + w * p.e * n
 
     if I.ndim == 2:
-        T_I = np.zeros((S,J))
-        for j in range(J):
-            TI_params = (e[:,j], etr_params, tax_func_type)
-            T_I[:,j] = tax.ETR_income(r, w, b[:,j], n[:,j], factor, TI_params) * I[:,j]
+        T_I = np.zeros((p.S, p.J))
+        for j in range(p.J):
+            TI_params = (p.e[:, j], p.etr_params[:, -1, :], p.tax_func_type) ## this is written for SS - check if ever go here in TPI
+            T_I[:, j] = tax.ETR_income(r, w, b[:, j], n[:, j], factor, TI_params) * I[:, j]
     if I.ndim == 3:
-        T_I = np.zeros((T,S,J))
-        for j in range(J):
-            if etr_params.ndim == 3:
-                tau_inc_params3D = etr_params[:,j,:]
-            if etr_params.ndim == 4:
-                tau_inc_params3D = etr_params[:,:,j,:]
-            TI_params = (e[:,:,j], tau_inc_params3D, tax_func_type)
-            T_I[:,:,j] = tax.ETR_income(r[:,:,j], w[:,:,j], b[:,:,j], n[:,:,j], factor, TI_params) * I[:,:,j]
-    T_P = tau_payroll * w * e * n
-    TW_params = (h_wealth, p_wealth, m_wealth)
-    T_W = tax.ETR_wealth(b, TW_params) * b
+        T_I = np.zeros((p.T, p.S, p.J))
+        for j in range(p.J):
+            if p.etr_params.ndim == 3:
+                tau_inc_params3D = p.etr_params[:, j, :]
+            if p.etr_params.ndim == 4:
+                tau_inc_params3D = p.etr_params[:, :, j, :]
+            TI_params = (p.e[:, :, j], tau_inc_params3D, p.tax_func_type)
+            T_I[:, :, j] = tax.ETR_income(r[:, : , j], w[:, :, j], b[:, :, j], n[: ,: ,j], factor, TI_params) * I[:, :, j]
+    T_P = p.tau_payroll * w * p.e * n
+    T_W = tax.ETR_wealth(b, p) * b
     if method == 'SS':
-        T_P[retire:] -= theta * w
-        T_BQ = tau_bq * BQ / lambdas
-        biz_params = (tau_b, delta_tau)
-        business_revenue = tax.get_biz_tax(w, Y, L, K, biz_params)
-        REVENUE = (omega * lambdas * (T_I + T_P + T_BQ + T_W)).sum() + business_revenue
+        T_P[p.retire:] -= theta * w
+        T_BQ = p.tau_bq * (BQ / np.transpose(p.lambdas))
+        business_revenue = tax.get_biz_tax(w, Y, L, K, p)
+        REVENUE = (np.transpose(p.omega_SS * p.lambdas) * (T_I + T_P + T_BQ + T_W)).sum() + business_revenue
     elif method == 'TPI':
-        T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w[:,retire:,:]
-        T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
-        biz_params = (tau_b, delta_tau)
-        business_revenue = tax.get_biz_tax(w[:T,0,0], Y, L, K, biz_params)
-        REVENUE = (omega * lambdas * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1) + business_revenue
+        T_P[:, p.retire:, :] -= theta.reshape(1, 1, p.J) * w[:, p.retire:, :]
+        T_BQ = p.tau_bq.reshape(1, 1, p.J) * BQ / p.lambdas
+        business_revenue = tax.get_biz_tax(w[:p.T, 0, 0], Y, L, K, p)
+        REVENUE = (p.omega * p.lambdas * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1) + business_revenue
     return REVENUE

@@ -144,12 +144,12 @@ def euler_equation_solver(guesses, *args):
     error2[mask4] = 1e14
 
     tax1 = tax.total_taxes(r, w, b_s, n_guess, BQ, factor, T_H, theta, j, False,
-                           p, 'SS')
-    cons = household.get_cons(r, w, b_s, b_splus1, n_guess, BQ, tax1, j, p)
+                           p.etr_params[:, -1, :], p, 'SS')   ## only works with SS because of etr params
+    cons = household.get_cons(r, w, b_s, b_splus1, n_guess, BQ, tax1, j, p.e[:, j], p)
     mask6 = cons < 0
     error1[mask6] = 1e14
 
-    return list(error1.flatten()) + list(error2.flatten())
+    return np.hstack((error1, error2))#list(error1.flatten()) + list(error2.flatten())
 
 
 def inner_loop(outer_loop_vars, p, client):
@@ -208,21 +208,34 @@ def inner_loop(outer_loop_vars, p, client):
     #                         full_output=True)
     # results = p.client.gather(lazy_values)
 
+    # lazy_values = []
+    # for j in range(p.J):
+    #     # guesses = np.append(bssmat[:, j], nssmat[:, j])
+    #     guesses = np.hstack((bssmat[:, j], nssmat[:, j]))
+    #     print('length guesses: ', guesses.shape)
+    #     euler_args = (r, w, T_H, factor, j, p)
+    #     lazy_values.append(client.submit(
+    #         opt.fsolve, euler_equation_solver, guesses * 0.9,
+    #         args=euler_args, xtol=MINIMIZER_TOL, full_output=True))
+    #
+    # results = client.gather(lazy_values)
+    #
+    # for j, result in enumerate(results):
+    #     [solutions, infodict, ier, message] = result
+    #     euler_errors[:, j] = infodict['fvec']
+    #     bssmat[:, j] = solutions[:p.S]
+    #     nssmat[:, j] = solutions[p.S:]
     lazy_values = []
     for j in range(p.J):
-        guesses = np.append(bssmat[:, j], nssmat[:, j])
+        # guesses = np.append(bssmat[:, j], nssmat[:, j])
+        guesses = np.hstack((bssmat[:, j], nssmat[:, j]))
         euler_args = (r, w, T_H, factor, j, p)
-        lazy_values.append(client.submit(
-            opt.fsolve, euler_equation_solver, guesses * 0.9,
-            args=euler_args, xtol=MINIMIZER_TOL, full_output=True))
-
-    results = client.gather(lazy_values)
-
-    for j, result in enumerate(results):
-        [solutions, infodict, ier, message] = result
-        euler_errors[:, j] = infodict['fvec']
-        bssmat[:, j] = solutions[:p.S]
-        nssmat[:, j] = solutions[p.S:]
+        results = opt.root(euler_equation_solver, guesses * 0.9,
+                           method='lm', args=euler_args,
+                           tol=MINIMIZER_TOL)
+        bssmat[:, j] = results.x[:p.S]
+        nssmat[:, j] = results.x[p.S:]
+        euler_errors[:, j] = results.fun
 
     L = aggr.get_L(nssmat, p, 'SS')
     if not p.small_open:
@@ -236,7 +249,7 @@ def inner_loop(outer_loop_vars, p, client):
     new_Y = firm.get_Y(K, L, p)
     if p.budget_balance:
         Y = new_Y
-    if not p.mall_open:
+    if not p.small_open:
         new_r = firm.get_r(Y, K, p)
         # new_w = firm.get_w_from_r(new_r, p)
     else:
@@ -253,8 +266,8 @@ def inner_loop(outer_loop_vars, p, client):
         new_factor = p.mean_income_data / average_income_model
     else:
         new_factor = factor
-    new_BQ = aggr.get_BQ(new_r, bssmat, p, 'SS')
-    theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, p)
+    new_BQ = aggr.get_BQ(new_r, bssmat, None, p, 'SS')
+    theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
 
     if p.budget_balance:
         new_T_H = aggr.revenue(new_r, new_w, b_s, nssmat, new_BQ, new_Y,
@@ -268,7 +281,7 @@ def inner_loop(outer_loop_vars, p, client):
         new_T_H, new_Y, new_factor, new_BQ, average_income_model
 
 
-def SS_solver(bmat, nmat, r, T_H, factor, Y, p, fsolve_flag=False):
+def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
     '''
     --------------------------------------------------------------------
     Solves for the steady state distribution of capital, labor, as well
@@ -357,7 +370,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, fsolve_flag=False):
             outer_loop_vars = (bmat, nmat, r, Y, T_H, factor)
         (euler_errors, new_bmat, new_nmat, new_r, new_w, new_T_H, new_Y,
          new_factor, new_BQ, average_income_model) =\
-            inner_loop(outer_loop_vars, p)
+            inner_loop(outer_loop_vars, p, client)
 
         r = utils.convex_combo(new_r, r, nu_ss)
         factor = utils.convex_combo(new_factor, factor, nu_ss)
@@ -414,7 +427,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, fsolve_flag=False):
         else:
             debt_ss = p.debt_ratio_ss * Y
         Kss = Bss - debt_ss
-        Iss = aggr.get_I(bssmat_splus1, p, 'SS')
+        Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS')
     else:
         # Compute capital (K) and wealth (B) separately
         Kss = firm.get_K(Lss, p.ss_firm_r, p)
@@ -429,7 +442,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, fsolve_flag=False):
 
     Yss = firm.get_Y(Kss, Lss, p)
     BQss = new_BQ
-    theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, p)
+    theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
 
     revenue_ss = aggr.revenue(rss, wss, bssmat_s, nssmat, BQss, Yss,
                               Lss, Kss, factor, theta, p, 'SS')
@@ -444,7 +457,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, fsolve_flag=False):
 
     # solve resource constraint
     etr_params_3D = np.tile(np.reshape(
-        p.etr_params, (p.S, 1, p.etr_params.shape[1])), (1, p.J, 1))
+        p.etr_params[:, -1, :], (p.S, 1, p.etr_params.shape[2])), (1, p.J, 1))
     # mtrx_params_3D = np.tile(
     #     np.reshape(p.mtrx_params, (p.S, 1, p.mtrx_params.shape[1])), (1, p.J, 1))
 
@@ -492,14 +505,14 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, fsolve_flag=False):
 
     # solve resource constraint
     taxss = tax.total_taxes(rss, wss, bssmat_s, nssmat, BQss, factor_ss,
-                            T_Hss, theta, None, False, p, etr_params_3D, 'SS')
+                            T_Hss, theta, None, False, etr_params_3D, p, 'SS')
     cssmat = household.get_cons(rss, wss, bssmat_s, bssmat_splus1,
-                                nssmat, BQss.reshape(1, p.J), taxss,
-                                p, p.lambdas.reshape(1, p.J))
+                                nssmat, BQss.reshape(1, p.J), taxss, None,
+                                p.e, p)
     business_revenue = tax.get_biz_tax(wss, Yss, Lss, Kss, p)
     IITpayroll_revenue = revenue_ss - business_revenue
 
-    Css = aggr.get_C(cssmat, p.omega_SS.reshape(p.S, 1), p.lambdas, 'SS')
+    Css = aggr.get_C(cssmat, p, 'SS')
 
     # solve resource constraint
     if p.small_open:
@@ -653,7 +666,7 @@ def SS_fsolve_reform(guesses, *args):
         solutions = steady state values of b, n, w, r, factor,
                     T_H ((2*S*J+4)x1 array)
     '''
-    (bssmat, nssmat, factor, p) = args
+    (bssmat, nssmat, factor, p, client) = args
 
     # Rename the inputs
     r = guesses[0]
@@ -669,7 +682,7 @@ def SS_fsolve_reform(guesses, *args):
 
     (euler_errors, bssmat, nssmat, new_r, new_w, new_T_H, new_Y,
      new_factor, new_BQ, average_income_model) =\
-        inner_loop(outer_loop_vars, p)
+        inner_loop(outer_loop_vars, p, client)
     error1 = new_r - r
     if p.budget_balance:
         error2 = new_T_H - T_H
@@ -715,7 +728,7 @@ def SS_fsolve_reform_baselinespend(guesses, *args):
         solutions = steady state values of b, n, w, r, factor,
                     T_H ((2*S*J+4)x1 array)
     '''
-    (bssmat, nssmat, T_Hss, factor_ss, p) = args
+    (bssmat, nssmat, T_Hss, factor_ss, p, client) = args
 
     # Rename the inputs
     r = guesses[0]
@@ -726,7 +739,7 @@ def SS_fsolve_reform_baselinespend(guesses, *args):
     outer_loop_vars = (bssmat, nssmat, r, Y, T_Hss, factor_ss)
     (euler_errors, bssmat, nssmat, new_r, new_w, new_T_H, new_Y,
      new_factor, new_BQ, average_income_model) =\
-        inner_loop(outer_loop_vars, p)
+        inner_loop(outer_loop_vars, p, client)
 
     error1 = new_r - r
     error2 = new_Y - Y
@@ -812,7 +825,7 @@ def run_SS(p, client=None):
         fsolve_flag = True
         # Return SS values of variables
         output = SS_solver(b_guess, n_guess, rss, T_Hss, factor_ss, Yss, p,
-                           fsolve_flag)
+                           client, fsolve_flag)
         # print("solved output", wss, rss, T_Hss, factor_ss)
         # print('analytical mtrs in SS: ', analytical_mtrs)
         # print('tax function type in SS: ', tax_func_type)
@@ -824,7 +837,7 @@ def run_SS(p, client=None):
              ss_solutions['Yss'], ss_solutions['factor_ss'])
         if p.baseline_spending:
             T_Hss = T_Hguess
-            ss_params_reform = [b_guess, n_guess, T_Hss, factor, p]
+            ss_params_reform = [b_guess, n_guess, T_Hss, factor, p, client]
             guesses = [rguess, Yguess]
             [solutions_fsolve, infodict, ier, message] =\
                 opt.fsolve(SS_fsolve_reform_baselinespend, guesses,
@@ -832,7 +845,7 @@ def run_SS(p, client=None):
                            full_output=True)
             [rss, Yss] = solutions_fsolve
         else:
-            ss_params_reform = [b_guess, n_guess, factor, p]
+            ss_params_reform = [b_guess, n_guess, factor, p, client]
             guesses = [rguess, T_Hguess]
             [solutions_fsolve, infodict, ier, message] =\
                 opt.fsolve(SS_fsolve_reform, guesses,
@@ -848,7 +861,7 @@ def run_SS(p, client=None):
         fsolve_flag = True
         # Return SS values of variables
         output = SS_solver(b_guess, n_guess, rss, T_Hss, factor, Yss, p,
-                           fsolve_flag)
+                           client, fsolve_flag)
         if output['Gss'] < 0.:
             warnings.warn('Warning: The combination of the tax policy '
                           + 'you specified and your target debt-to-GDP '

@@ -36,7 +36,7 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
                           group
     Returns: theta
     '''
-    if j:
+    if j is not None:
         e = p.e[:, j]
     else:
         e = p.e
@@ -86,7 +86,7 @@ def ETR_wealth(b, p):
     return tau_w
 
 
-def MTR_wealth(b, params):
+def MTR_wealth(b, p):
     '''
     Calculates the marginal tax rate on wealth from the wealth tax.
     Inputs:
@@ -101,12 +101,8 @@ def MTR_wealth(b, params):
                                      wealth tax
     Returns: tau_w_prime
     '''
-    h_wealth, p_wealth, m_wealth = params
-
-    h = h_wealth
-    m = m_wealth
-    p = p_wealth
-    tau_prime = h * m * p / (b * h + m) ** 2
+    tau_prime = (p.h_wealth * p.m_wealth * p.p_wealth/
+                 (b * p.h_wealth + p.m_wealth) ** 2)
     return tau_prime
 
 
@@ -257,7 +253,7 @@ def MTR_income(r, w, b, n, factor, params, mtr_capital):
     RETURNS: tau
     --------------------------------------------------------------------
     '''
-    e, etr_params, mtr_params, tax_func_type, analytical_mtrs = params
+    e, etr_params, mtr_params, p = params
 
     X = (w * e * n) * factor
     Y = (r * b) * factor
@@ -266,8 +262,8 @@ def MTR_income(r, w, b, n, factor, params, mtr_capital):
     I = X + Y
     I2 = I ** 2
 
-    if tax_func_type == 'GS':
-        if analytical_mtrs:
+    if p.tax_func_type == 'GS':
+        if p.analytical_mtrs:
             phi0 = etr_params[..., 0]
             phi1 = etr_params[..., 1]
             phi2 = etr_params[..., 2]
@@ -277,8 +273,8 @@ def MTR_income(r, w, b, n, factor, params, mtr_capital):
             phi2 = mtr_params[..., 2]
         tau = (phi0*(1 - (I ** (-phi1 - 1) * ((I ** -phi1) + phi2)
                           ** ((-1 - phi1) / phi1))))
-    elif tax_func_type == 'DEP_totalinc':
-        if analytical_mtrs:
+    elif p.tax_func_type == 'DEP_totalinc':
+        if p.analytical_mtrs:
             A = etr_params[..., 0]
             B = etr_params[..., 1]
             max_I = etr_params[..., 4]
@@ -301,7 +297,7 @@ def MTR_income(r, w, b, n, factor, params, mtr_capital):
                      (A * I2 + B * I + 1)) + min_I)
             tau = tau_I + shift_I + shift
     else:  # DEP or linear
-        if analytical_mtrs:
+        if p.analytical_mtrs:
             A = etr_params[..., 0]
             B = etr_params[..., 1]
             C = etr_params[..., 2]
@@ -359,7 +355,7 @@ def MTR_income(r, w, b, n, factor, params, mtr_capital):
     return tau
 
 
-def get_biz_tax(w, Y, L, K, params):
+def get_biz_tax(w, Y, L, K, p):
     '''
     Finds total business income tax receipts
     Inputs:
@@ -373,9 +369,7 @@ def get_biz_tax(w, Y, L, K, params):
     Returns: T_H
 
     '''
-
-    tau_b, delta_tau = params
-    business_revenue = tau_b * (Y - w * L) - tau_b * delta_tau * K
+    business_revenue = p.tau_b * (Y - w * L) - p.tau_b * p.delta_tau * K
     return business_revenue
 
 
@@ -426,12 +420,12 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift,
     Returns: total_taxes
 
     '''
-    if j:
+    if j is not None:
         e = p.e[:, j]
         lambdas = p.lambdas[j]
     else:
         e = p.e
-        lambdas = p.lambdas
+        lambdas = np.transpose(p.lambdas)
 
     I = r * b + w * e * n
     TI_params = (e, etr_params, p.tax_func_type)
@@ -449,7 +443,7 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift,
             T_P[p.retire:] -= theta * w
         else:
             T_P[p.retire - 1:] -= theta * w
-        T_BQ = p.tau_bq * BQ / lambdas
+        T_BQ = p.tau_bq * (BQ / lambdas)
     elif method == 'TPI':
         if not shift:
             # retireTPI is different from retire, because in TPI we are
