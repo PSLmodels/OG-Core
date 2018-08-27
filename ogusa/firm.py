@@ -64,7 +64,7 @@ def get_w(Y, L, p):
 
     Returns: w
     '''
-    if epsilon == 0:
+    if p.epsilon == 0:
         w = 1 - p.gamma
     else:
         w = ((p.Z ** ((p.epsilon - 1) / p.epsilon)) * ((((1 - p.gamma) * Y) / L) ** (1 / p.epsilon)))
@@ -122,7 +122,7 @@ def get_Y(K, L, p):
     '''
     if p.epsilon == 1:
         Y = p.Z * (K ** p.gamma) * (L ** (1 - p.gamma))
-    elif epsilon == 0:
+    elif p.epsilon == 0:
         Y = p.Z * (p.gamma * K + (1 - p.gamma) * L)
     else:
         Y = (p.Z * (((p.gamma ** (1 / p.epsilon)) * (K ** ((p.epsilon - 1) / p.epsilon))) +
