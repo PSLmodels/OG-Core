@@ -38,13 +38,13 @@ def get_L(n, p, method):
     Returns: L
 
     '''
-
-
     if method == 'SS':
         L_presum = p.e * np.transpose(p.omega_SS * p.lambdas) * n
         L = L_presum.sum()
     elif method == 'TPI':
-        L_presum = p.e * p.omega * p.lambdas * n
+        L_presum = ((n * (p.e * np.squeeze(p.lambdas))) *
+                    np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
+                            (1, 1, p.J)))
         L = L_presum.sum(1).sum(1)
     return L
 
@@ -75,18 +75,20 @@ def get_I(b_splus1, K_p1, K, p, method):
         part2 = (((b_splus1 *
                    np.transpose((omega_extended * imm_extended) *
                    p.lambdas)).sum()) / (1 + p.g_n_ss))
-        aggI = (1 + p.g_n_ss) * np.exp(p.g_y) * (K_p1 - part2) - (1.0 - p.delta) * K
+        aggI = ((1 + p.g_n_ss) * np.exp(p.g_y) * (K_p1 - part2) -
+                (1.0 - p.delta) * K)
     elif method == 'TPI':
-        omega_shift = np.append(p.omega[:, 1:, :],
-                                np.zeros((p.omega.shape[0], 1, p.omega.shape[2]))
-                                , axis=1)
-        imm_shift = np.append(p.imm_rates[:, 1:, :],
-                              np.zeros((p.imm_rates.shape[0],
-                                       1, p.imm_rates.shape[2])),
+        omega_shift = np.append(p.omega[:p.T, 1:], np.zeros((p.T, 1)),
+                                axis=1)
+        imm_shift = np.append(p.imm_rates[:p.T, 1:], np.zeros((p.T, 1)),
                               axis=1)
-        part2 = (((b_splus1 * imm_shift * omega_shift * p.lambdas).sum(1).sum(1)) /
-                 (1 + p.g_n_ss))
-        aggI = (1 + p.g_n_ss) * np.exp(p.g_y) * (K_p1 - part2) - (1.0 - p.delta) * K
+        part2 = ((((b_splus1 * np.squeeze(p.lambdas)) *
+                   np.tile(np.reshape(imm_shift * omega_shift,
+                                      (p.T, p.S, 1)),
+                           (1, 1, p.J))).sum(1).sum(1)) /
+                 (1 + np.squeeze(p.g_n[:p.T])))
+        aggI = ((1 + np.squeeze(p.g_n[:p.T])) * np.exp(p.g_y) *
+                (K_p1 - part2) - (1.0 - p.delta) * K)
 
     return aggI
 
@@ -121,16 +123,19 @@ def get_K(b, p, method):
         K = K_presum.sum()
         K /= (1.0 + p.g_n_ss)
     elif method == 'TPI':
-        part1 = b * p.omega * p.lambdas
-        #omega_extended = np.append(omega[1:,:,:],np.zeros((1,omega.shape[1],omega.shape[2])),axis=0)
-        omega_shift = np.append(p.omega[:, 1:, :], np.zeros((p.omega.shape[0], 1, p.omega.shape[2])), axis=1)
-        #imm_extended = np.append(imm_rates[1:,:,:],np.zeros((1,imm_rates.shape[1],imm_rates.shape[2])),axis=0)
-        imm_shift = np.append(p.imm_rates[:, 1:, :], np.zeros((p.imm_rates.shape[0], 1, p.imm_rates.shape[2])), axis=1)
-        #part2 = b*(omega_extended*imm_extended)*lambdas
-        part2 = b * imm_shift * omega_shift * p.lambdas
+        part1 = ((b * np.squeeze(p.lambdas)) *
+                 np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
+                         (1, 1, p.J)))
+        omega_shift = np.append(p.omega[:p.T, 1:], np.zeros((p.T, 1)),
+                                axis=1)
+        imm_shift = np.append(p.imm_rates[:p.T, 1:], np.zeros((p.T, 1)),
+                              axis=1)
+        part2 = ((b * np.squeeze(p.lambdas)) *
+                 np.tile(np.reshape(imm_shift * omega_shift,
+                                    (p.T, p.S, 1)), (1, 1, p.J)))
         K_presum = part1 + part2
         K = K_presum.sum(1).sum(1)
-        K /= (1.0 + p.g_n)
+        K /= (1.0 + p.g_n[:p.T])
     return K
 
 
@@ -160,16 +165,24 @@ def get_BQ(r, b_splus1, j, p, method):
         if j is not None:
             BQ_presum = p.omega_SS * p.rho * b_splus1 * p.lambdas[j]
         else:
-            BQ_presum = np.transpose(p.omega_SS * (p.rho * p.lambdas)) * b_splus1
+            BQ_presum = (np.transpose(p.omega_SS *
+                                      (p.rho * p.lambdas)) * b_splus1)
         BQ = BQ_presum.sum(0)
         BQ *= (1.0 + r) / (1.0 + p.g_n_ss)
     elif method == 'TPI':
         if j is not None:
-            BQ_presum = p.omega * p.rho * b_splus1 * p.lambdas[j]
+            BQ_presum = ((b_splus1 * p.lambdas[j]) *
+                         (p.omega[:p.T, :] * p.rho))
+            BQ = BQ_presum.sum(1)
+            BQ *= (1.0 + r) / (1.0 + p.g_n[:p.T])
         else:
-            BQ_presum = p.omega * p.rho * b_splus1 * p.lambdas
-        BQ = BQ_presum.sum(1)
-        BQ *= (1.0 + r) / (1.0 + p.g_n)
+            BQ_presum = ((b_splus1 * np.squeeze(p.lambdas)) *
+                         np.tile(np.reshape(p.omega[:p.T, :] *
+                                            p.rho, (p.T, p.S, 1)),
+                                 (1, 1, p.J)))
+            BQ = BQ_presum.sum(1)
+            BQ *= np.tile(np.reshape((1.0 + r) / (1.0 + p.g_n[:p.T]),
+                                     (p.T, 1)), (1, p.J))
     return BQ
 
 
@@ -196,7 +209,9 @@ def get_C(c, p, method):
     if method == 'SS':
         aggC = (c * np.transpose(p.omega_SS * p.lambdas)).sum()
     elif method == 'TPI':
-        aggC = (c * p.omega * p.lambdas).sum(1).sum(1)
+        aggC = ((c * np.squeeze(p.lambdas)) *
+                np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
+                        (1, 1, p.J))).sum(1).sum(1)
     return aggC
 
 
@@ -242,6 +257,7 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, p, method):
     Returns: T_H
 
     '''
+    print('SHAPES == ', r.shape, b.shape, w.shape, p.e.shape, n.shape)
     I = r * b + w * p.e * n
 
     if I.ndim == 2:
