@@ -11,6 +11,7 @@ def test_get_r():
     """
     p = Specifications()
     new_param_values = {
+        'Z': 0.5,
         'gamma': 0.5,
         'delta_annual': 0.25,
         'tau_b': 0.5,
@@ -123,7 +124,7 @@ def test_get_K():
         'gamma': 0.5,
         'tau_b': 0.75,
         'delta_annual': 0.15,
-        'delta_tau_annual': 0.3,
+        'delta_tau_annual': 0.03,
         'Z': 2.0,
         'epsilon': 1.0
     }
