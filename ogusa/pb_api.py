@@ -95,7 +95,7 @@ class Specifications(ParametersBase):
         self.g_y = ((1 + self.g_y_annual) ** ((self.ending_age -
                                                self.starting_age) /
                                               self.S) - 1)
-        self.delta_tau = (1 - ((1 - self.delta_annual) **
+        self.delta_tau = (1 - ((1 - self.delta_tau_annual) **
                                ((self.ending_age - self.starting_age) /
                                 self.S)))
         # open economy parameters
@@ -309,6 +309,7 @@ class Specifications(ParametersBase):
         self._validate_parameter_values(revision_parameters)
         if self.parameter_errors and raise_errors:
             raise ValueError('\n' + self.parameter_errors)
+        self.compute_default_params()
 
     @staticmethod
     def read_json_param_objects(revision):
