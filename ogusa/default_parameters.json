@@ -511,7 +511,7 @@
         "out_of_range_action": "stop",
         "compatible_data": {"puf": true, "cps": true}
     },
-    "chi_n": {
+    "chi_n_80": {
         "long_name": "Utility weight on disutility of labor supply",
         "description": "Household utility weight on on disutility of labor supply",
         "notes": "",

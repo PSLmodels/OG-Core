@@ -131,7 +131,7 @@ class Specifications(ParametersBase):
         elif self.S < 80:
             self.age_midp_80 = np.linspace(20.5, 99.5, 80)
             self.chi_n_interp = si.interp1d(self.age_midp_80,
-                                            self.chi_n,
+                                            np.squeeze(self.chi_n_80),
                                             kind='cubic')
             self.newstep = 80.0 / self.S
             self.age_midp_S = np.linspace(20 + 0.5 * self.newstep,
