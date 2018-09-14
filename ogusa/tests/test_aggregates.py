@@ -260,6 +260,10 @@ def test_revenue():
     p.update_specifications(new_param_values, raise_errors=False)
     p.e = 0.263 + (2.024 - 0.263) * random_state.rand(p.S * p.J).reshape(p.S, p.J)
     test_etr_params = (0.22 * random_state.rand(p.T * p.S * dim4).reshape(p.T, p.S, dim4))
+
+    etr_params = (0.22 *
+                  random_state.rand(T * S * J * dim4).reshape(T, S, J, dim4))
+
     p.retire = 21  # do this here because doesn't work with update_specifications because retirement not in the default parameters json
 
     # Assign values to variables for tests
