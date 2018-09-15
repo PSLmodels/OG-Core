@@ -263,17 +263,13 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, p, method):
     if I.ndim == 2:
         T_I = np.zeros((p.S, p.J))
         for j in range(p.J):
-            TI_params = (p.e[:, j], p.etr_params[:, -1, :], p.tax_func_type) ## this is written for SS - check if ever go here in TPI
+            TI_params = (p.e[:, j], p.etr_params[-1:, :, :], p.tax_func_type) ## this is written for SS - check if ever go here in TPI
             T_I[:, j] = tax.ETR_income(r, w, b[:, j], n[:, j], factor, TI_params) * I[:, j]
     if I.ndim == 3:
         T_I = np.zeros((p.T, p.S, p.J))
         for j in range(p.J):
-            if p.etr_params.ndim == 3:
-                tau_inc_params3D = p.etr_params[:, j, :]
-            if p.etr_params.ndim == 4:
-                tau_inc_params3D = p.etr_params[:, :, j, :]
-            TI_params = (p.e[:, :, j], tau_inc_params3D, p.tax_func_type)
-            T_I[:, :, j] = tax.ETR_income(r[:, : , j], w[:, :, j], b[:, :, j], n[: ,: ,j], factor, TI_params) * I[:, :, j]
+            TI_params = (p.e[:, :, j], p.etr_params, p.tax_func_type)
+            T_I[:, :, j] = tax.ETR_income(r, w, b[:, :, j], n[: ,: ,j], factor, TI_params) * I[:, :, j]
     T_P = p.tau_payroll * w * p.e * n
     T_W = tax.ETR_wealth(b, p) * b
     if method == 'SS':
