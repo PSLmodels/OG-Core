@@ -300,43 +300,52 @@ def test_revenue():
     res = aggr.revenue(r[0], w[0], b[0, :, :], n[0, :, :], BQ[0, :, :], Y[0], L[0],
                        K[0], factor, theta, p, method)
     print('Result 1 = ', res)
-    assert(np.allclose(res,  0.5975982884926914))
+    # assert(np.allclose(res,  0.5975982884926914))
 
-    # # case where I.ndim == 2 and etr_params.ndim == 1
-    # method = "SS"
-    # params = (e[0], lambdas[0], omega[0], method,
+    # case where I.ndim == 2 and etr_params.ndim == 1
+    method = "SS"
+    # params = (p.e[0], lambdas[0], omega[0], method,
     #           etr_params[0, 0, 0, :dim4], 'DEP', theta, tau_bq,
     #           tau_payroll, h_wealth, p_wealth, m_wealth, retire, T, S,
     #           J, tau_b, delta_tau)
     # res = aggr.revenue(r[0, 0, 0], w[0, 0, 0], b[0], n[0], BQ[0], Y[0], L[0],
     #                    K[0], factor, params)
+    res = aggr.revenue(r[0], w[0], b[0, :, :], n[0, :, :], BQ[0, :, :], Y[0], L[0],
+                       K[0], factor, theta, p, method)
+    print('Result 2 = ', res)
     # assert(np.allclose(res,  0.72406672579590448))
-    #
-    # # TPI cases
-    # # case where I.ndim == 3 and etr_params.ndim == 3
-    # method = "TPI"
+
+    # TPI cases
+    # case where I.ndim == 3 and etr_params.ndim == 3
+    method = "TPI"
     # params = (e, lambdas, omega, method, etr_params[0, :, :, :], 'DEP',
     #           theta, tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth,
     #           retire, T, S, J, tau_b, delta_tau)
     # res = aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, params)
-    # test = [0.62360144, 0.74817083, 0.71287424, 0.68285447, 0.64298028,
-    #         0.69488446, 0.70770547, 0.66313781, 0.7175277, 0.64296948,
-    #         0.67107476, 0.69960495, 0.63951371, 0.73104403, 0.68674457,
-    #         0.66307339, 0.66636669, 0.64870362, 0.75359951, 0.68470411,
-    #         0.50771554, 0.71878888, 0.6983747, 0.62996017, 0.67288954,
-    #         0.69745476, 0.64180526, 0.6668633, 0.72454797, 0.71758819]
+    res = aggr.revenue(r, w, b, n, BQ, Y, L,
+                       K, factor, theta, p, method)
+    test = [0.62360144, 0.74817083, 0.71287424, 0.68285447, 0.64298028,
+            0.69488446, 0.70770547, 0.66313781, 0.7175277, 0.64296948,
+            0.67107476, 0.69960495, 0.63951371, 0.73104403, 0.68674457,
+            0.66307339, 0.66636669, 0.64870362, 0.75359951, 0.68470411,
+            0.50771554, 0.71878888, 0.6983747, 0.62996017, 0.67288954,
+            0.69745476, 0.64180526, 0.6668633, 0.72454797, 0.71758819]
+    print('Result 3 = ', res)
     # assert(np.allclose(res, test))
-    #
-    # # case where I.ndim == 3 and etr_params.ndim == 4
-    # method = "TPI"
-    # test = [0.62360144, 0.7705223, 0.71433003, 0.69590516, 0.64187822,
-    #         0.69069099, 0.68437605, 0.66896378, 0.69317402, 0.67131389,
-    #         0.66756797, 0.69466778, 0.64910748, 0.74363875, 0.6986025,
-    #         0.64086681, 0.67091728, 0.65072774, 0.74296341, 0.69073292,
-    #         0.48942517, 0.73170343, 0.69319158, 0.64553276, 0.67911291,
-    #         0.72327757, 0.63002155, 0.68856491, 0.71801762, 0.69659916]
+
+    # case where I.ndim == 3 and etr_params.ndim == 4
+    method = "TPI"
+    test = [0.62360144, 0.7705223, 0.71433003, 0.69590516, 0.64187822,
+            0.69069099, 0.68437605, 0.66896378, 0.69317402, 0.67131389,
+            0.66756797, 0.69466778, 0.64910748, 0.74363875, 0.6986025,
+            0.64086681, 0.67091728, 0.65072774, 0.74296341, 0.69073292,
+            0.48942517, 0.73170343, 0.69319158, 0.64553276, 0.67911291,
+            0.72327757, 0.63002155, 0.68856491, 0.71801762, 0.69659916]
     # params = (e, lambdas, omega, method, etr_params, 'DEP', theta,
     #           tau_bq, tau_payroll, h_wealth, p_wealth, m_wealth, retire,
     #           T, S, J, tau_b, delta_tau)
     # res = aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, params)
-    # assert(np.allclose(res, test))
+    res = aggr.revenue(r, w, b, n, BQ, Y, L,
+                       K, factor, theta, p, method)
+    print('Result 4 = ', res)
+    assert(np.allclose(res, test))
