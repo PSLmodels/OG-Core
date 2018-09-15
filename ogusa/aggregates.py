@@ -257,29 +257,36 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, p, method):
     Returns: T_H
 
     '''
-    print('SHAPES == ', r.shape, b.shape, w.shape, p.e.shape, n.shape)
-    I = r * b + w * p.e * n
-
-    if I.ndim == 2:
-        T_I = np.zeros((p.S, p.J))
+    if method == 'SS':
+        I = r * b + w * p.e * n
+        T_I = np.zeros_like(I)
         for j in range(p.J):
             TI_params = (p.e[:, j], p.etr_params[-1:, :, :], p.tax_func_type) ## this is written for SS - check if ever go here in TPI
             T_I[:, j] = tax.ETR_income(r, w, b[:, j], n[:, j], factor, TI_params) * I[:, j]
-    if I.ndim == 3:
-        T_I = np.zeros((p.T, p.S, p.J))
-        for j in range(p.J):
-            TI_params = (p.e[:, :, j], p.etr_params, p.tax_func_type)
-            T_I[:, :, j] = tax.ETR_income(r, w, b[:, :, j], n[: ,: ,j], factor, TI_params) * I[:, :, j]
-    T_P = p.tau_payroll * w * p.e * n
-    T_W = tax.ETR_wealth(b, p) * b
-    if method == 'SS':
+        T_P = p.tau_payroll * w * p.e * n
         T_P[p.retire:] -= theta * w
+        T_W = tax.ETR_wealth(b, p) * b
         T_BQ = p.tau_bq * (BQ / np.transpose(p.lambdas))
         business_revenue = tax.get_biz_tax(w, Y, L, K, p)
         REVENUE = (np.transpose(p.omega_SS * p.lambdas) * (T_I + T_P + T_BQ + T_W)).sum() + business_revenue
     elif method == 'TPI':
-        T_P[:, p.retire:, :] -= theta.reshape(1, 1, p.J) * w[:, p.retire:, :]
-        T_BQ = p.tau_bq.reshape(1, 1, p.J) * BQ / p.lambdas
-        business_revenue = tax.get_biz_tax(w[:p.T, 0, 0], Y, L, K, p)
-        REVENUE = (p.omega * p.lambdas * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1) + business_revenue
+        I = ((np.tile(np.reshape(r, (p.T, 1, 1)), (1, p.S, p.J)) * b) +
+             (np.tile(np.reshape(w, (p.T, 1, 1)), (1, p.S, p.J)) *
+              (n * p.e)))
+        T_I = np.zeros_like(I)
+        for j in range(p.J):
+            TI_params = (p.e[:, j], p.etr_params, p.tax_func_type)
+            T_I[:, :, j] = tax.ETR_income(np.tile(np.reshape(r, (p.T, 1)), (1, p.S)), np.tile(np.reshape(w, (p.T, 1)), (1, p.S)), b[:, :, j], n[: ,: , j], factor, TI_params) * I[:, :, j]
+        T_P = (p.tau_payroll * (np.tile(np.reshape(w, (p.T, 1, 1)),
+                                        (1, p.S, p.J)) * (n * p.e)))
+        T_P[:, p.retire:, :] -= theta.reshape(1, 1, p.J) * np.tile(np.reshape(w, (p.T, 1, 1)), (1, p.S, p.J))[:, p.retire:, :]
+        T_W = tax.ETR_wealth(b, p) * b
+        T_BQ = p.tau_bq * BQ / np.squeeze(p.lambdas)
+        business_revenue = tax.get_biz_tax(w, Y, L, K, p)
+        REVENUE = ((((np.squeeze(p.lambdas)) *
+                   np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
+                           (1, 1, p.J)))
+                   * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1) +
+                   business_revenue)
+
     return REVENUE
