@@ -177,12 +177,26 @@ class Specifications(ParametersBase):
 
         self.mean_income_data = dict_params['tfunc_avginc'][0]
 
-        self.etr_params =\
-            dict_params['tfunc_etr_params_S'][:self.S, :self.BW, :]
-        self.mtrx_params =\
-            dict_params['tfunc_mtrx_params_S'][:self.S, :self.BW, :]
-        self.mtry_params =\
-            dict_params['tfunc_mtry_params_S'][:self.S, :self.BW, :]
+        # Reorder indices of tax function and tile for all years after
+        # budget window ends
+        num_etr_params = dict_params['tfunc_etr_params_S'].shape[2]
+        num_mtrx_params = dict_params['tfunc_mtrx_params_S'].shape[2]
+        num_mtry_params = dict_params['tfunc_mtry_params_S'].shape[2]
+        self.etr_params = np.empty((self.T, self.S, num_etr_params))
+        self.mtrx_params = np.empty((self.T, self.S, num_mtrx_params))
+        self.mtry_params = np.empty((self.T, self.S, num_mtry_params))
+        self.etr_params[:BW, :, :] =\
+            np.transpose(dict_params['tfunc_etr_params_S'][:self.S, :self.BW, :], axes=[1, 0, 2])
+        self.etr_params[BW:, :, :] =\
+            np.transpose(dict_params['tfunc_etr_params_S'][:self.S, -1, :], axes=[1, 0, 2])
+        self.mtrx_params[:BW, :, :] =\
+            np.transpose(dict_params['tfunc_mtrx_params_S'][:self.S, :self.BW, :], axes=[1, 0, 2])
+        self.mtrx_params[BW:, :, :] =\
+            np.transpose(dict_params['tfunc_mtrx_params_S'][:self.S, -1, :], axes=[1, 0, 2])
+        self.mtry_params[:BW, :, :] =\
+            np.transpose(dict_params['tfunc_mtry_params_S'][:self.S, :self.BW, :], axes=[1, 0, 2])
+        self.mtry_params[BW:, :, :] =\
+            np.transpose(dict_params['tfunc_mtry_params_S'][:self.S, -1, :], axes=[1, 0, 2])
 
         if self.constant_rates:
             print('Using constant rates!')
