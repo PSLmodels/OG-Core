@@ -46,6 +46,7 @@ class Specifications(ParametersBase):
 
         # does cheap calculations to find parameter values
         self.initialize()
+        # does more costly tax function estimation
         if run_micro:
             self.get_tax_function_parameters(run_micro=True)
 
@@ -57,7 +58,6 @@ class Specifications(ParametersBase):
         """
         ParametersBase reads JSON file and sets attributes to self
         Next call self.compute_default_params for further initialization
-        If estimate_params is true, then run long running estimation routines
         Parameters:
         -----------
         run_micro: boolean that indicates whether to estimate tax funtions
@@ -380,6 +380,7 @@ class Specifications(ParametersBase):
         copied from taxcalc.Behavior._validate_parameter_names_types
         """
         param_names = set(self._vals.keys())
+        print('Parameter names = ', param_names)
         revision_param_names = list(revision.keys())
         for param_name in revision_param_names:
             if param_name not in param_names:
