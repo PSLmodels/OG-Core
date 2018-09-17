@@ -242,13 +242,12 @@ def test_revenue():
     p = Specifications()
     dim4 = 12
     random_state = np.random.RandomState(10)
-    print('the value of retirement as a default is: ', p.retire)
     new_param_values = {
         'T': 30,
         'S': 20,
         'J': 2,
         'lambdas': [0.6, 0.4],
-        'tau_bq': random_state.rand(),
+        'tau_bq': 0.17,
         'tau_payroll': 0.5,
         'h_wealth': 0.1,
         'p_wealth': 0.2,
@@ -257,6 +256,9 @@ def test_revenue():
         'delta_tau_annual': float(1 - ((1 - 0.0975) ** (20 / (p.ending_age - p.starting_age))))
     }
     # update parameters instance with new values for test
+    p.omega = 0.039 * random_state.rand(30 * 20 * 1).reshape(30, 20)
+    p.omega = p.omega/p.omega.sum(axis=1).reshape(30, 1)
+    p.omega_SS = p.omega[-1, :]
     p.update_specifications(new_param_values, raise_errors=False)
     p.e = 0.263 + (2.024 - 0.263) * random_state.rand(p.S * p.J).reshape(p.S, p.J)
     # test_etr_params = (0.22 * random_state.rand(p.T * p.S * dim4).reshape(p.T, p.S, dim4))
@@ -265,7 +267,7 @@ def test_revenue():
                     random_state.rand(p.T * p.S * dim4).reshape(p.T, p.S,
                                                                 dim4))
 
-    p.retire = 21  # do this here because doesn't work with update_specifications because retirement not in the default parameters json
+    # p.retire = 21  # do this here because doesn't work with update_specifications because retirement not in the default parameters json
 
     # Assign values to variables for tests
     r = 0.067 + (0.086 - 0.067) * random_state.rand(p.T)
