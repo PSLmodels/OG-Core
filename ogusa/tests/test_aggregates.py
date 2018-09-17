@@ -256,8 +256,8 @@ def test_revenue():
         'delta_tau_annual': float(1 - ((1 - 0.0975) ** (20 / (p.ending_age - p.starting_age))))
     }
     # update parameters instance with new values for test
-    p.omega = 0.039 * random_state.rand(30 * 20 * 1).reshape(30, 20)
-    p.omega = p.omega/p.omega.sum(axis=1).reshape(30, 1)
+    p.omega = 0.039 * random_state.rand(p.T * p.S).reshape(p.T, p.S)
+    p.omega = p.omega/p.omega.sum(axis=1).reshape(p.T, 1)
     p.omega_SS = p.omega[-1, :]
     p.update_specifications(new_param_values, raise_errors=False)
     p.e = 0.263 + (2.024 - 0.263) * random_state.rand(p.S * p.J).reshape(p.S, p.J)
@@ -266,8 +266,6 @@ def test_revenue():
     p.etr_params = (0.22 *
                     random_state.rand(p.T * p.S * dim4).reshape(p.T, p.S,
                                                                 dim4))
-
-    # p.retire = 21  # do this here because doesn't work with update_specifications because retirement not in the default parameters json
 
     # Assign values to variables for tests
     r = 0.067 + (0.086 - 0.067) * random_state.rand(p.T)
@@ -298,7 +296,10 @@ def test_revenue():
     #           J, tau_b, delta_tau)
     # res = aggr.revenue(r[0, 0, 0], w[0, 0, 0], b[0], n[0], BQ[0], Y[0], L[0],
     #                    K[0], factor, params)
-
+    print('param values, theta = ', theta)
+    print(' omega_SS = ', p.omega_SS)
+    print(' e[2,1] = ', p.e[2, 1], ' e[4, 0] = ', p.e[4, 0], ' e[10, 1] = ', p.e[10, 1])
+    print(' etr[3, 2,1] = ', p.etr_params[3, 2, 1], ' etr[4, 6, 10] = ', p.etr_params[4, 6, 10], ' etr[10, 4, 6] = ', p.etr_params[10, 4, 6])
     res = aggr.revenue(r[0], w[0], b[0, :, :], n[0, :, :], BQ[0, :, :], Y[0], L[0],
                        K[0], factor, theta, p, method)
     print('Result 1 = ', res)
