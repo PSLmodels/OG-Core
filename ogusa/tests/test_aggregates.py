@@ -242,6 +242,7 @@ def test_revenue():
     p = Specifications()
     dim4 = 12
     random_state = np.random.RandomState(10)
+
     new_param_values = {
         'T': 30,
         'S': 20,
@@ -255,17 +256,6 @@ def test_revenue():
         'tau_b': 0.2,
         'delta_tau_annual': float(1 - ((1 - 0.0975) ** (20 / (p.ending_age - p.starting_age))))
     }
-    # update parameters instance with new values for test
-    p.omega = 0.039 * random_state.rand(p.T * p.S).reshape(p.T, p.S)
-    p.omega = p.omega/p.omega.sum(axis=1).reshape(p.T, 1)
-    p.omega_SS = p.omega[-1, :]
-    p.update_specifications(new_param_values, raise_errors=False)
-    p.e = 0.263 + (2.024 - 0.263) * random_state.rand(p.S * p.J).reshape(p.S, p.J)
-    # test_etr_params = (0.22 * random_state.rand(p.T * p.S * dim4).reshape(p.T, p.S, dim4))
-
-    p.etr_params = (0.22 *
-                    random_state.rand(p.T * p.S * dim4).reshape(p.T, p.S,
-                                                                dim4))
 
     # Assign values to variables for tests
     r = 0.067 + (0.086 - 0.067) * random_state.rand(p.T)
@@ -277,8 +267,20 @@ def test_revenue():
     Y = 0.561 + (0.602 - 0.561) * random_state.rand(p.T).reshape(p.T)
     L = 0.416 + (0.423 - 0.416) * random_state.rand(p.T).reshape(p.T)
     K = 0.957 + (1.163 - 0.957) * random_state.rand(p.T).reshape(p.T)
-    theta = 0.101 + (0.156 - 0.101) * random_state.rand(p.J)
     factor = 140000.0
+
+
+    # update parameters instance with new values for test
+    p.e = 0.263 + (2.024 - 0.263) * random_state.rand(p.S * p.J).reshape(p.S, p.J)
+    p.omega = 0.039 * random_state.rand(p.T * p.S * 1).reshape(p.T, p.S)
+    p.omega = p.omega/p.omega.sum(axis=1).reshape(p.T, 1)
+    p.omega_SS = p.omega[-1, :]
+    p.update_specifications(new_param_values, raise_errors=False)
+
+    p.etr_params = (0.22 *
+                    random_state.rand(p.T * p.S * dim4).reshape(p.T, p.S,
+                                                                dim4))
+    theta = 0.101 + (0.156 - 0.101) * random_state.rand(p.J)
 
     # check that distributional parameters sum to one
     assert np.allclose(p.lambdas.sum(), 1.0)
@@ -296,6 +298,8 @@ def test_revenue():
     #           J, tau_b, delta_tau)
     # res = aggr.revenue(r[0, 0, 0], w[0, 0, 0], b[0], n[0], BQ[0], Y[0], L[0],
     #                    K[0], factor, params)
+    print(' interest rates = ', r[:5])
+    print(' wages = ', w[:5])
     print('param values, theta = ', theta)
     print(' omega_SS = ', p.omega_SS)
     print(' e[2,1] = ', p.e[2, 1], ' e[4, 0] = ', p.e[4, 0], ' e[10, 1] = ', p.e[10, 1])
