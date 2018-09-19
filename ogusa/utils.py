@@ -306,6 +306,10 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False,
 
 
 def to_timepath_shape(some_array, p):
+    '''
+    This function takes an vector of length T and tiles it to fill a
+    TxSxJ array for time path computations.
+    '''
     tp_array = np.tile(np.reshape(some_array, (p.T, 1, 1)), (1, p.S, p.J))
     return tp_array
 
