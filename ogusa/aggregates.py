@@ -9,7 +9,7 @@ Functions to compute economic aggregates.
 
 # Packages
 import numpy as np
-from . import tax
+from . import tax, utils
 
 '''
 ------------------------------------------------------------------------
@@ -270,16 +270,16 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, p, method):
         business_revenue = tax.get_biz_tax(w, Y, L, K, p)
         REVENUE = (np.transpose(p.omega_SS * p.lambdas) * (T_I + T_P + T_BQ + T_W)).sum() + business_revenue
     elif method == 'TPI':
-        I = ((np.tile(np.reshape(r, (p.T, 1, 1)), (1, p.S, p.J)) * b) +
-             (np.tile(np.reshape(w, (p.T, 1, 1)), (1, p.S, p.J)) *
-              (n * p.e)))
+        r_array = utils.to_timepath_shape(r, p)
+        w_array = utils.to_timepath_shape(w, p)
+        I = r_array * b + w_array * n * p.e
         T_I = np.zeros_like(I)
         for j in range(p.J):
             TI_params = (p.e[:, j], p.etr_params, p.tax_func_type)
-            T_I[:, :, j] = tax.ETR_income(np.tile(np.reshape(r, (p.T, 1)), (1, p.S)), np.tile(np.reshape(w, (p.T, 1)), (1, p.S)), b[:, :, j], n[: ,: , j], factor, TI_params) * I[:, :, j]
+            T_I[:, :, j] = tax.ETR_income(r_array[:, :, j], w_array[:, :, j], b[:, :, j], n[: ,: , j], factor, TI_params) * I[:, :, j]
         T_P = (p.tau_payroll * (np.tile(np.reshape(w, (p.T, 1, 1)),
                                         (1, p.S, p.J)) * (n * p.e)))
-        T_P[:, p.retire:, :] -= theta.reshape(1, 1, p.J) * np.tile(np.reshape(w, (p.T, 1, 1)), (1, p.S, p.J))[:, p.retire:, :]
+        T_P[:, p.retire:, :] -= theta.reshape(1, 1, p.J) * w_array[:, p.retire:, :]
         T_W = tax.ETR_wealth(b, p) * b
         T_BQ = p.tau_bq * BQ / np.squeeze(p.lambdas)
         business_revenue = tax.get_biz_tax(w, Y, L, K, p)

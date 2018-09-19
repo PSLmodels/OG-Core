@@ -305,6 +305,11 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False,
     return check
 
 
+def to_timepath_shape(some_array, p):
+    tp_array = np.tile(np.reshape(some_array, (p.T, 1, 1)), (1, p.S, p.J))
+    return tp_array
+
+
 def safe_read_pickle(file_path):
     '''
     This function reads a pickle from Python 2 into Python 2 or Python 3
