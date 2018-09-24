@@ -273,7 +273,7 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, p, method):
         I = r_array * b + w_array * n * p.e
         T_I = np.zeros_like(I)
         T_I = tax.ETR_income(r_array, w_array, b, n, factor, method, None, p) * I
-        T_P = (p.tau_payroll * (w_array * (n * p.e)))
+        T_P = p.tau_payroll * w_array * n * p.e
         T_P[:, p.retire:, :] -= theta.reshape(1, 1, p.J) * w_array[:, p.retire:, :]
         T_W = tax.ETR_wealth(b, p) * b
         T_BQ = p.tau_bq * BQ / np.squeeze(p.lambdas)

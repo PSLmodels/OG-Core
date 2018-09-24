@@ -174,7 +174,6 @@ def ETR_income(r, w, b, n, factor, method, j, p):
     Y2 = Y ** 2
     I = X + Y
     I2 = I ** 2
-    print('sizes == ', X.shape, Y.shape, e.shape, etr_params.shape, r.shape, w.shape, n.shape, b.shape, p.e.shape)
 
     if p.tax_func_type == 'GS':
         phi0 = etr_params[..., 0]
