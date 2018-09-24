@@ -176,33 +176,33 @@ def ETR_income(r, w, b, n, factor, method, j, p):
     I2 = I ** 2
 
     if p.tax_func_type == 'GS':
-        phi0 = etr_params[..., 0]
-        phi1 = etr_params[..., 1]
-        phi2 = etr_params[..., 2]
+        phi0 = np.squeeze(etr_params[..., 0])
+        phi1 = np.squeeze(etr_params[..., 1])
+        phi2 = np.squeeze(etr_params[..., 2])
         tau = (phi0 * (I - ((I ** -phi1) + phi2) ** (-1 / phi1))) / I
     elif p.tax_func_type == 'DEP_totalinc':
-        A = etr_params[..., 0]
-        B = etr_params[..., 1]
-        max_I = etr_params[..., 4]
-        min_I = etr_params[..., 5]
-        shift_I = etr_params[..., 8]
-        shift = etr_params[..., 10]
+        A = np.squeeze(etr_params[..., 0])
+        B = np.squeeze(etr_params[..., 1])
+        max_I = np.squeeze(etr_params[..., 4])
+        min_I = np.squeeze(etr_params[..., 5])
+        shift_I = np.squeeze(etr_params[..., 8])
+        shift = np.squeeze(etr_params[..., 10])
         tau_I = (((max_I - min_I) * (A * I2 + B * I) /
                   (A * I2 + B * I + 1)) + min_I)
         tau = tau_I + shift_I + shift
     else:  # DEP or linear
-        A = etr_params[..., 0]
-        B = etr_params[..., 1]
-        C = etr_params[..., 2]
-        D = etr_params[..., 3]
-        max_x = etr_params[..., 4]
-        min_x = etr_params[..., 5]
-        max_y = etr_params[..., 6]
-        min_y = etr_params[..., 7]
-        shift_x = etr_params[..., 8]
-        shift_y = etr_params[..., 9]
-        shift = etr_params[..., 10]
-        share = etr_params[..., 11]
+        A = np.squeeze(etr_params[..., 0])
+        B = np.squeeze(etr_params[..., 1])
+        C = np.squeeze(etr_params[..., 2])
+        D = np.squeeze(etr_params[..., 3])
+        max_x = np.squeeze(etr_params[..., 4])
+        min_x = np.squeeze(etr_params[..., 5])
+        max_y = np.squeeze(etr_params[..., 6])
+        min_y = np.squeeze(etr_params[..., 7])
+        shift_x = np.squeeze(etr_params[..., 8])
+        shift_y = np.squeeze(etr_params[..., 9])
+        shift = np.squeeze(etr_params[..., 10])
+        share = np.squeeze(etr_params[..., 11])
 
         tau_x = ((max_x - min_x) * (A * X2 + B * X) /
                  (A * X2 + B * X + 1) + min_x)
