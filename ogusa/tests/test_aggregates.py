@@ -3,6 +3,7 @@ import numpy as np
 from ogusa import aggregates as aggr
 from ogusa.pb_api import Specifications, reform_warnings_errors
 
+
 def test_get_L():
     """
         Simulate data similar to observed and carry out get_L

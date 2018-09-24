@@ -260,9 +260,7 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, p, method):
     if method == 'SS':
         I = r * b + w * p.e * n
         T_I = np.zeros_like(I)
-        for j in range(p.J):
-            TI_params = (p.e[:, j], p.etr_params[-1:, :, :], p.tax_func_type) ## this is written for SS - check if ever go here in TPI
-            T_I[:, j] = tax.ETR_income(r, w, b[:, j], n[:, j], factor, TI_params) * I[:, j]
+        T_I = tax.ETR_income(r, w, b, n, factor, method, None, p) * I
         T_P = p.tau_payroll * w * p.e * n
         T_P[p.retire:] -= theta * w
         T_W = tax.ETR_wealth(b, p) * b
@@ -274,11 +272,8 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, p, method):
         w_array = utils.to_timepath_shape(w, p)
         I = r_array * b + w_array * n * p.e
         T_I = np.zeros_like(I)
-        for j in range(p.J):
-            TI_params = (p.e[:, j], p.etr_params, p.tax_func_type)
-            T_I[:, :, j] = tax.ETR_income(r_array[:, :, j], w_array[:, :, j], b[:, :, j], n[: ,: , j], factor, TI_params) * I[:, :, j]
-        T_P = (p.tau_payroll * (np.tile(np.reshape(w, (p.T, 1, 1)),
-                                        (1, p.S, p.J)) * (n * p.e)))
+        T_I = tax.ETR_income(r_array, w_array, b, n, factor, method, None, p) * I
+        T_P = (p.tau_payroll * (w_array * (n * p.e)))
         T_P[:, p.retire:, :] -= theta.reshape(1, 1, p.J) * w_array[:, p.retire:, :]
         T_W = tax.ETR_wealth(b, p) * b
         T_BQ = p.tau_bq * BQ / np.squeeze(p.lambdas)

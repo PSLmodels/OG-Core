@@ -106,7 +106,7 @@ def MTR_wealth(b, p):
     return tau_prime
 
 
-def ETR_income(r, w, b, n, factor, params):
+def ETR_income(r, w, b, n, factor, method, j, p):
     '''
     --------------------------------------------------------------------
     Calculates effective personal income tax rate.
@@ -153,7 +153,20 @@ def ETR_income(r, w, b, n, factor, params):
     RETURNS: tau
     --------------------------------------------------------------------
     '''
-    e, etr_params, tax_func_type = params
+    # e, etr_params, tax_func_type = params
+
+    if j is not None:
+        e = p.e[:, j]
+        if method == 'SS':
+            etr_params = p.etr_params[-1, :, :]
+        else:
+            etr_params = p.etr_params
+    else:
+        e = p.e
+        if method == 'SS':
+            etr_params = np.tile(np.reshape(p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[-1])), (1, p.J, 1))
+        else:
+            etr_params = np.tile(np.reshape(p.etr_params, (p.T, p.S, 1, p.etr_params.shape[-1])), (1, 1, p.J, 1))
 
     X = (w * e * n) * factor
     Y = (r * b) * factor
@@ -161,13 +174,14 @@ def ETR_income(r, w, b, n, factor, params):
     Y2 = Y ** 2
     I = X + Y
     I2 = I ** 2
+    print('sizes == ', X.shape, Y.shape, e.shape, etr_params.shape, r.shape, w.shape, n.shape, b.shape, p.e.shape)
 
-    if tax_func_type == 'GS':
+    if p.tax_func_type == 'GS':
         phi0 = etr_params[..., 0]
         phi1 = etr_params[..., 1]
         phi2 = etr_params[..., 2]
         tau = (phi0 * (I - ((I ** -phi1) + phi2) ** (-1 / phi1))) / I
-    elif tax_func_type == 'DEP_totalinc':
+    elif p.tax_func_type == 'DEP_totalinc':
         A = etr_params[..., 0]
         B = etr_params[..., 1]
         max_I = etr_params[..., 4]
