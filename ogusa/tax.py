@@ -153,8 +153,6 @@ def ETR_income(r, w, b, n, factor, method, j, p):
     RETURNS: tau
     --------------------------------------------------------------------
     '''
-    # e, etr_params, tax_func_type = params
-
     if j is not None:
         e = p.e[:, j]
         if method == 'SS':
@@ -214,7 +212,7 @@ def ETR_income(r, w, b, n, factor, method, j, p):
     return tau
 
 
-def MTR_income(r, w, b, n, factor, params, mtr_capital):
+def MTR_income(r, w, b, n, factor, income_source, method, j, p):
     '''
     --------------------------------------------------------------------
     Generates the marginal tax rate on labor income for households.
@@ -266,7 +264,27 @@ def MTR_income(r, w, b, n, factor, params, mtr_capital):
     RETURNS: tau
     --------------------------------------------------------------------
     '''
-    e, etr_params, mtr_params, p = params
+    # Use appropriate marginal tax rate parameters for income source
+    if income_source is 'capital':
+        mtr_to_use = p.mtry_params
+    else:
+        mtr_to_use = p.mtrx_params
+    if j is not None:
+        e = p.e[:, j]
+        if method == 'SS':
+            etr_params = p.etr_params[-1, :, :]
+            mtr_params = mtr_to_use[-1, :, :]
+        else:
+            etr_params = p.etr_params
+            mtr_params = mtr_to_use
+    else:
+        e = p.e
+        if method == 'SS':
+            etr_params = np.tile(np.reshape(p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[-1])), (1, p.J, 1))
+            mtr_params = np.tile(np.reshape(mtr_to_use[-1, :, :], (p.S, 1, mtr_to_use.shape[-1])), (1, p.J, 1))
+        else:
+            etr_params = np.tile(np.reshape(p.etr_params, (p.T, p.S, 1, p.etr_params.shape[-1])), (1, 1, p.J, 1))
+            mtr_params = np.tile(np.reshape(mtr_to_use, (p.T, p.S, 1, mtr_to_use.shape[-1])), (1, 1, p.J, 1))
 
     X = (w * e * n) * factor
     Y = (r * b) * factor
@@ -277,52 +295,52 @@ def MTR_income(r, w, b, n, factor, params, mtr_capital):
 
     if p.tax_func_type == 'GS':
         if p.analytical_mtrs:
-            phi0 = etr_params[..., 0]
-            phi1 = etr_params[..., 1]
-            phi2 = etr_params[..., 2]
+            phi0 = np.squeeze(etr_params[..., 0])
+            phi1 = np.squeeze(etr_params[..., 1])
+            phi2 = np.squeeze(etr_params[..., 2])
         else:
-            phi0 = mtr_params[..., 0]
-            phi1 = mtr_params[..., 1]
-            phi2 = mtr_params[..., 2]
+            phi0 = np.squeeze(mtr_params[..., 0])
+            phi1 = np.squeeze(mtr_params[..., 1])
+            phi2 = np.squeeze(mtr_params[..., 2])
         tau = (phi0*(1 - (I ** (-phi1 - 1) * ((I ** -phi1) + phi2)
                           ** ((-1 - phi1) / phi1))))
     elif p.tax_func_type == 'DEP_totalinc':
         if p.analytical_mtrs:
-            A = etr_params[..., 0]
-            B = etr_params[..., 1]
-            max_I = etr_params[..., 4]
-            min_I = etr_params[..., 5]
-            shift_I = etr_params[..., 8]
-            shift = etr_params[..., 10]
+            A = np.squeeze(etr_params[..., 0])
+            B = np.squeeze(etr_params[..., 1])
+            max_I = np.squeeze(etr_params[..., 4])
+            min_I = np.squeeze(etr_params[..., 5])
+            shift_I = np.squeeze(etr_params[..., 8])
+            shift = np.squeeze(etr_params[..., 10])
             d_etr = ((max_I - min_I) * ((2 * A * I + B) /
                      ((A * I2 + B * I + 1) ** 2)))
             etr = (((max_I - min_I) * ((A * I2 + B * I) /
                    (A * I2 + B * I + 1)) + min_I) + shift_I + shift)
             tau = (d_etr * I) + (etr)
         else:
-            A = mtr_params[..., 0]
-            B = mtr_params[..., 1]
-            max_I = mtr_params[..., 4]
-            min_I = mtr_params[..., 5]
-            shift_I = mtr_params[..., 8]
-            shift = mtr_params[..., 10]
+            A = np.squeeze(mtr_params[..., 0])
+            B = np.squeeze(mtr_params[..., 1])
+            max_I = np.squeeze(mtr_params[..., 4])
+            min_I = np.squeeze(mtr_params[..., 5])
+            shift_I = np.squeeze(mtr_params[..., 8])
+            shift = np.squeeze(mtr_params[..., 10])
             tau_I = (((max_I - min_I) * (A * I2 + B * I) /
                      (A * I2 + B * I + 1)) + min_I)
             tau = tau_I + shift_I + shift
     else:  # DEP or linear
         if p.analytical_mtrs:
-            A = etr_params[..., 0]
-            B = etr_params[..., 1]
-            C = etr_params[..., 2]
-            D = etr_params[..., 3]
-            max_x = etr_params[..., 4]
-            min_x = etr_params[..., 5]
-            max_y = etr_params[..., 6]
-            min_y = etr_params[..., 7]
-            shift_x = etr_params[..., 8]
-            shift_y = etr_params[..., 9]
-            shift = etr_params[..., 10]
-            share = etr_params[..., 11]
+            A = np.squeeze(etr_params[..., 0])
+            B = np.squeeze(etr_params[..., 1])
+            C = np.squeeze(etr_params[..., 2])
+            D = np.squeeze(etr_params[..., 3])
+            max_x = np.squeeze(etr_params[..., 4])
+            min_x = np.squeeze(etr_params[..., 5])
+            max_y = np.squeeze(etr_params[..., 6])
+            min_y = np.squeeze(etr_params[..., 7])
+            shift_x = np.squeeze(etr_params[..., 8])
+            shift_y = np.squeeze(etr_params[..., 9])
+            shift = np.squeeze(etr_params[..., 10])
+            share = np.squeeze(etr_params[..., 11])
 
             tau_x = ((max_x - min_x) * (A * X2 + B * X) /
                      (A * X2 + B * X + 1) + min_x)
@@ -345,18 +363,18 @@ def MTR_income(r, w, b, n, factor, params, mtr_capital):
                          ((tau_y + shift_y) ** (1 - share)))
                 tau = d_etr * I + etr
         else:
-            A = mtr_params[..., 0]
-            B = mtr_params[..., 1]
-            C = mtr_params[..., 2]
-            D = mtr_params[..., 3]
-            max_x = mtr_params[..., 4]
-            min_x = mtr_params[..., 5]
-            max_y = mtr_params[..., 6]
-            min_y = mtr_params[..., 7]
-            shift_x = mtr_params[..., 8]
-            shift_y = mtr_params[..., 9]
-            shift = mtr_params[..., 10]
-            share = mtr_params[..., 11]
+            A = np.squeeze(mtr_params[..., 0])
+            B = np.squeeze(mtr_params[..., 1])
+            C = np.squeeze(mtr_params[..., 2])
+            D = np.squeeze(mtr_params[..., 3])
+            max_x = np.squeeze(mtr_params[..., 4])
+            min_x = np.squeeze(mtr_params[..., 5])
+            max_y = np.squeeze(mtr_params[..., 6])
+            min_y = np.squeeze(mtr_params[..., 7])
+            shift_x = np.squeeze(mtr_params[..., 8])
+            shift_y = np.squeeze(mtr_params[..., 9])
+            shift = np.squeeze(mtr_params[..., 10])
+            share = np.squeeze(mtr_params[..., 11])
 
             tau_x = ((max_x - min_x) * (A * X2 + B * X) /
                      (A * X2 + B * X + 1) + min_x)
