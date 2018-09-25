@@ -323,20 +323,21 @@ def test_MTR_income(params, mtr_capital, expected):
                               j, params)
 
     assert np.allclose(test_mtr, expected)
-#
-#
-# def test_get_biz_tax():
-#     # Test function for business tax receipts
-#     w = np.array([1.2, 1.1])
-#     Y = np.array([3.0, 7.0])
-#     L = np.array([2.0, 3.0])
-#     K = np.array([5.0, 6.0])
-#     tau_b = 0.20
-#     delta_tau = 0.06
-#     biz_tax = tax.get_biz_tax(w, Y, L, K, (tau_b, delta_tau))
-#     assert np.allclose(biz_tax, np.array([0.06, 0.668]))
-#
-#
+
+
+def test_get_biz_tax():
+    # Test function for business tax receipts
+    w = np.array([1.2, 1.1])
+    Y = np.array([3.0, 7.0])
+    L = np.array([2.0, 3.0])
+    K = np.array([5.0, 6.0])
+    p = Specifications()
+    p.tau_b = 0.20
+    p.delta_tau = 0.06
+    biz_tax = tax.get_biz_tax(w, Y, L, K, p)
+    assert np.allclose(biz_tax, np.array([0.06, 0.668]))
+
+
 # def test_total_taxes():
 #     # Test function that computes total net taxes for the household
 #     tax_func_type = 'DEP'
