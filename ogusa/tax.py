@@ -404,8 +404,7 @@ def get_biz_tax(w, Y, L, K, p):
     return business_revenue
 
 
-def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift,
-                etr_params, p, method):
+def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method, p):
     '''
     Gives net taxes paid values.
     Inputs:
@@ -459,8 +458,9 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift,
         lambdas = np.transpose(p.lambdas)
 
     I = r * b + w * e * n
-    TI_params = (e, etr_params, p.tax_func_type)
-    T_I = ETR_income(r, w, b, n, factor, TI_params) * I
+    # TI_params = (e, etr_params, p.tax_func_type)
+    # T_I = ETR_income(r, w, b, n, factor, TI_params) * I
+    T_I = ETR_income(r, w, b, n, factor, method, j, p) * I
 
     T_P = p.tau_payroll * w * e * n
     T_W = ETR_wealth(b, p) * b
