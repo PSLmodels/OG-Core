@@ -212,7 +212,7 @@ def ETR_income(r, w, b, n, factor, method, j, p):
     return tau
 
 
-def MTR_income(r, w, b, n, factor, income_source, method, j, p):
+def MTR_income(r, w, b, n, factor, mtr_capital, method, j, p):
     '''
     --------------------------------------------------------------------
     Generates the marginal tax rate on labor income for households.
@@ -265,7 +265,7 @@ def MTR_income(r, w, b, n, factor, income_source, method, j, p):
     --------------------------------------------------------------------
     '''
     # Use appropriate marginal tax rate parameters for income source
-    if income_source is 'capital':
+    if mtr_capital:
         mtr_to_use = p.mtry_params
     else:
         mtr_to_use = p.mtrx_params
