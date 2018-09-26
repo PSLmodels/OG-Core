@@ -6,6 +6,7 @@ Functions for taxes in the steady state and along the transition path.
 
 # Packages
 import numpy as np
+from ogusa import utils
 
 '''
 ------------------------------------------------------------------------
@@ -450,16 +451,29 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method, p):
     Returns: total_taxes
 
     '''
+
+        # T_H = utils.to_timepath_shape(T_H, p)
     if j is not None:
         e = p.e[:, j]
         lambdas = p.lambdas[j]
+        if method == 'TPI':
+            r = np.squeeze(utils.to_timepath_shape(r, p)[:, j])
+            w = np.squeeze(utils.to_timepath_shape(w, p)[:, j])
+            T_H = np.squeeze(utils.to_timepath_shape(T_H, p)[:, j])
     else:
         e = p.e
         lambdas = np.transpose(p.lambdas)
+        if method == 'TPI':
+            r = utils.to_timepath_shape(r, p)
+            w = utils.to_timepath_shape(w, p)
+            T_H = utils.to_timepath_shape(T_H, p)
 
+    print('shapes = ', b.shape, n.shape, e.shape)
+    print('interest rate = ', type(r))
+    print('interest rate = ', r, w)
+    print('shapes2 == ', (r*b).shape, (w*e*n).shape)
+    print('j == ', j)
     I = r * b + w * e * n
-    # TI_params = (e, etr_params, p.tax_func_type)
-    # T_I = ETR_income(r, w, b, n, factor, TI_params) * I
     T_I = ETR_income(r, w, b, n, factor, method, j, p) * I
 
     T_P = p.tau_payroll * w * e * n
@@ -490,7 +504,7 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method, p):
         else:
             T_P[:, p.retire:, :] -= (theta.reshape(1, 1, p.J) *
                                      w[:, p.retire:, :])
-            T_BQ = p.tau_bq.reshape(1, 1, p.J) * BQ / lambdas
+            T_BQ = p.tau_bq * BQ / lambdas
     elif method == 'TPI_scalar':
         # The above methods won't work if scalars are used.  This option
         # is only called by the SS_TPI_firstdoughnutring function in TPI.
