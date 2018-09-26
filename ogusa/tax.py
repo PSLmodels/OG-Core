@@ -468,11 +468,6 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method, p):
             w = utils.to_timepath_shape(w, p)
             T_H = utils.to_timepath_shape(T_H, p)
 
-    print('shapes = ', b.shape, n.shape, e.shape)
-    print('interest rate = ', type(r))
-    print('interest rate = ', r, w)
-    print('shapes2 == ', (r*b).shape, (w*e*n).shape)
-    print('j == ', j)
     I = r * b + w * e * n
     T_I = ETR_income(r, w, b, n, factor, method, j, p) * I
 
