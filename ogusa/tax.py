@@ -495,7 +495,7 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method, p):
             retireTPI = (p.retire - 1 - p.S)
         if len(b.shape) != 3:
             T_P[retireTPI:] -= theta[j] * w[retireTPI:]
-            T_BQ = p.tau_bq[j] * BQ / lambdas
+            T_BQ = p.tau_bq * BQ / lambdas
         else:
             T_P[:, p.retire:, :] -= (theta.reshape(1, 1, p.J) *
                                      w[:, p.retire:, :])
