@@ -101,7 +101,7 @@ def marg_ut_labor(n, p):
     return output
 
 
-def get_cons(r, w, b, b_splus1, n, BQ, net_tax, j, e, p):
+def get_cons(r, w, b, b_splus1, n, BQ, net_tax, j, p):
     '''
     Calculation of househld consumption.
 
@@ -130,8 +130,10 @@ def get_cons(r, w, b, b_splus1, n, BQ, net_tax, j, e, p):
     '''
     if j is not None:
         lambdas = p.lambdas[j]
+        e = p.e[:, j]
     else:
         lambdas = np.transpose(p.lambdas)
+        e = p.e
     cons = ((1 + r) * b + w * e * n + BQ / lambdas - b_splus1 *
             np.exp(p.g_y) - net_tax)
     return cons
@@ -240,25 +242,27 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, theta,
         T_H_extended = np.array([T_H, T_H])
 
     tax1 = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
-                           p.etr_params[:, -1, :], p, method)
+                           method, p)
     tax2 = tax.total_taxes(r_extended[1:], w_extended[1:], b_splus1,
                            n_extended[1:], BQ_extended[1:], factor,
-                           T_H_extended[1:], theta, j, True,
-                           etr_params_extended, p, method)
+                           T_H_extended[1:], theta, j, True, method, p) ## had etr_params_extended - what do I need to adjust with passing just p...
     # cons1_params = (e, lambdas, g_y)
-    cons1 = get_cons(r, w, b, b_splus1, n, BQ, tax1, j, e, p)
+    cons1 = get_cons(r, w, b, b_splus1, n, BQ, tax1, j, p)
     cons2 = get_cons(r_extended[1:], w_extended[1:], b_splus1, b_splus2,
-                     n_extended[1:], BQ_extended[1:], tax2, j,
-                     e_extended[1:], p)
+                     n_extended[1:], BQ_extended[1:], tax2, j, p)  ## e_extended[1:] - what do I need to do to adjust for passing p...
     cons2[-1] = 0.01  # set to small positive number to avoid exception
     # errors when negative b/c this period value doesn't matter -
     # it's consumption after the last period of life
-    mtr_cap_params = (e_extended[1:], etr_params_extended,
-                      mtry_params_extended, p)
+    # mtr_cap_params = (e_extended[1:], etr_params_extended,
+    #                   mtry_params_extended, p)
+    # deriv = ((1 + r_extended[1:]) - r_extended[1:] *
+    #          (tax.MTR_income(r_extended[1:], w_extended[1:], b_splus1,
+    #                          n_extended[1:], factor, mtr_cap_params,
+    #                          True)))
     deriv = ((1 + r_extended[1:]) - r_extended[1:] *
              (tax.MTR_income(r_extended[1:], w_extended[1:], b_splus1,
-                             n_extended[1:], factor, mtr_cap_params,
-                             True)))
+                             n_extended[1:], factor,
+                             True, method, j, p)))  ## how deal with extended vars with p...
 
     savings_ut = (p.rho * np.exp(-p.sigma * p.g_y) * p.chi_b[j] *
                   b_splus1 ** (-p.sigma))
