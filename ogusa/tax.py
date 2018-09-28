@@ -155,18 +155,19 @@ def ETR_income(r, w, b, n, factor, method, j, p):
     --------------------------------------------------------------------
     '''
     if j is not None:
-        e = p.e[:, j]
+        e = np.squeeze(p.e[:, j])
         if method == 'SS':
             etr_params = p.etr_params[-1, :, :]
         else:
             etr_params = p.etr_params
     else:
-        e = p.e
+        e = np.squeeze(p.e)
         if method == 'SS':
             etr_params = np.tile(np.reshape(p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[-1])), (1, p.J, 1))
         else:
             etr_params = np.tile(np.reshape(p.etr_params, (p.T, p.S, 1, p.etr_params.shape[-1])), (1, 1, p.J, 1))
 
+    print('Initial etr size = ', p.etr_params.shape, etr_params.shape, np.squeeze(etr_params[..., 0]).shape)
     X = (w * e * n) * factor
     Y = (r * b) * factor
     X2 = X ** 2
@@ -209,6 +210,7 @@ def ETR_income(r, w, b, n, factor, method, j, p):
                  (C * Y2 + D * Y + 1) + min_y)
         tau = (((tau_x + shift_x) ** share) *
                ((tau_y + shift_y) ** (1 - share))) + shift
+    print('tau shape = ', tau.shape, p.tax_func_type, A.shape)
 
     return tau
 
@@ -271,7 +273,7 @@ def MTR_income(r, w, b, n, factor, mtr_capital, method, j, p):
     else:
         mtr_to_use = p.mtrx_params
     if j is not None:
-        e = p.e[:, j]
+        e = np.squeeze(p.e[:, j])
         if method == 'SS':
             etr_params = p.etr_params[-1, :, :]
             mtr_params = mtr_to_use[-1, :, :]
@@ -279,7 +281,7 @@ def MTR_income(r, w, b, n, factor, mtr_capital, method, j, p):
             etr_params = p.etr_params
             mtr_params = mtr_to_use
     else:
-        e = p.e
+        e = np.squeeze(p.e)
         if method == 'SS':
             etr_params = np.tile(np.reshape(p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[-1])), (1, p.J, 1))
             mtr_params = np.tile(np.reshape(mtr_to_use[-1, :, :], (p.S, 1, mtr_to_use.shape[-1])), (1, p.J, 1))
@@ -454,25 +456,30 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method, p):
 
         # T_H = utils.to_timepath_shape(T_H, p)
     if j is not None:
-        e = p.e[:, j]
+        e = np.squeeze(p.e[:, j])
         lambdas = p.lambdas[j]
         if method == 'TPI':
             r = np.squeeze(utils.to_timepath_shape(r, p)[:, j])
             w = np.squeeze(utils.to_timepath_shape(w, p)[:, j])
             T_H = np.squeeze(utils.to_timepath_shape(T_H, p)[:, j])
+            print('Is is r shape: ', r.shape)
     else:
-        e = p.e
+        e = np.squeeze(p.e)
         lambdas = np.transpose(p.lambdas)
         if method == 'TPI':
             r = utils.to_timepath_shape(r, p)
             w = utils.to_timepath_shape(w, p)
             T_H = utils.to_timepath_shape(T_H, p)
+            print('Is is r shape: ', r.shape)
 
     I = r * b + w * e * n
     T_I = ETR_income(r, w, b, n, factor, method, j, p) * I
+    print('T_I shape = ', T_I.shape)
 
     T_P = p.tau_payroll * w * e * n
+    print('T_P shape = ', T_P.shape)
     T_W = ETR_wealth(b, p) * b
+    print('T_W shape = ', T_W.shape)
 
     if method == 'SS':
         # Depending on if we are looking at b_s or b_s+1, the

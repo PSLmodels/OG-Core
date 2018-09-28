@@ -175,14 +175,14 @@ def test_get_cons(model_args, expected):
 # p_wealth, m_wealth, tau_payroll, retire, method
 # Define variables for test of SS version
 p1 = Specifications()
-p1.e = np.array([1.0, 0.9, 1.4])
+p1.e = np.array([1.0, 0.9, 1.4]).reshape(3, 1)
 p1.sigma = 2.0
 p1.beta = 0.96
 p1.g_y = 0.03
 p1.chi_b = np.array([1.5])
 p1.tau_bq = 0.0
 p1.rho = np.array([0.1, 0.2, 1.0])
-p1.lambdas = 1.0
+p1.lambdas = np.array([1.0])
 p1.J = 1
 p1.S = 3
 p1.T = 3
@@ -238,7 +238,9 @@ method_tpi = 'TPI'
 #                    lambdas, j, J, S, 'DEP', analytical_mtrs,
 #                    etr_params_tpi, mtry_params_tpi, h_wealth, p_wealth,
 #                    m_wealth, tau_payroll, retire, method_tpi)
+
 test_params_tpi = p1
+j = 0
 r_vec = np.array([0.05, 0.03, 0.04])
 w_vec = np.array([1.2, 0.9, 0.8])
 BQ_vec = np.array([0.1, 0.05, 0.15])

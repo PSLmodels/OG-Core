@@ -130,10 +130,10 @@ def get_cons(r, w, b, b_splus1, n, BQ, net_tax, j, p):
     '''
     if j is not None:
         lambdas = p.lambdas[j]
-        e = p.e[:, j]
+        e = np.squeeze(p.e[:, j])
     else:
         lambdas = np.transpose(p.lambdas)
-        e = p.e
+        e = np.squeeze(p.e)
     cons = ((1 + r) * b + w * e * n + BQ / lambdas - b_splus1 *
             np.exp(p.g_y) - net_tax)
     return cons
@@ -217,9 +217,15 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, theta,
     # utility of consumption for this term will be zero (since rho is
     # one).
     if j is not None:
-        e = p.e[:, j]
+        e = np.squeeze(p.e[:, j])
+        euler_error = np.zeros(p.S)
+        chi_b = p.chi_b[j]
     else:
-        e = p.e
+        e = np.squeeze(p.e)
+        euler_error = np.squeeze(np.zeros((p.S, p.J)))
+        chi_b = p.chi_b
+
+
     e_extended = np.array(list(e) + [0])
     n_extended = np.array(list(n) + [0])
     etr_params_extended = np.append(
@@ -230,6 +236,8 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, theta,
         np.reshape(p.mtry_params[:, -1, :], (p.S, p.mtry_params.shape[2])), np.reshape(p.mtry_params[-1, -1, :],
                                  (1, p.mtry_params.shape[2])),
         axis=0)[1:, :] # this only works for SS - taking last period of BW
+
+
     if method == 'TPI':
         r_extended = np.append(r, r[-1])
         w_extended = np.append(w, w[-1])
@@ -240,13 +248,19 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, theta,
         w_extended = np.array([w, w])
         BQ_extended = np.array([BQ, BQ])
         T_H_extended = np.array([T_H, T_H])
-
+    if method == 'TPI':
+        print('taxes objects shapes: ', r.shape, w.shape, b.shape, BQ.shape, n.shape, T_H.shape, theta.shape)
+    taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
+                            method, p)
     tax1 = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
                            method, p)
     tax2 = tax.total_taxes(r_extended[1:], w_extended[1:], b_splus1,
                            n_extended[1:], BQ_extended[1:], factor,
                            T_H_extended[1:], theta, j, True, method, p) ## had etr_params_extended - what do I need to adjust with passing just p...
     # cons1_params = (e, lambdas, g_y)
+    # if method == 'TPI':
+    #     print('cons object shapes: ', r.shape, w.shape, b.shape, b_splus1.shape, n.shape, taxes.shape)
+    cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, j, p)
     cons1 = get_cons(r, w, b, b_splus1, n, BQ, tax1, j, p)
     cons2 = get_cons(r_extended[1:], w_extended[1:], b_splus1, b_splus2,
                      n_extended[1:], BQ_extended[1:], tax2, j, p)  ## e_extended[1:] - what do I need to do to adjust for passing p...
@@ -259,17 +273,32 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, theta,
     #          (tax.MTR_income(r_extended[1:], w_extended[1:], b_splus1,
     #                          n_extended[1:], factor, mtr_cap_params,
     #                          True)))
-    deriv = ((1 + r_extended[1:]) - r_extended[1:] *
-             (tax.MTR_income(r_extended[1:], w_extended[1:], b_splus1,
-                             n_extended[1:], factor,
-                             True, method, j, p)))  ## how deal with extended vars with p...
 
-    savings_ut = (p.rho * np.exp(-p.sigma * p.g_y) * p.chi_b[j] *
+
+
+    # deriv = ((1 + r_extended[1:]) - r_extended[1:] *
+    #          (tax.MTR_income(r_extended[1:], w_extended[1:], b_splus1,
+    #                          n_extended[1:], factor,
+    #                          True, method, j, p)))  ## how deal with extended vars with p...
+    deriv = ((1 + r) - r *
+             (tax.MTR_income(r, w, b,
+                             n, factor,
+                             True, method, j, p)))
+
+    savings_ut = (p.rho * np.exp(-p.sigma * p.g_y) * chi_b *
                   b_splus1 ** (-p.sigma))
 
-    euler_error = (marg_ut_cons(cons1, p.sigma) - p.beta * (1 - p.rho) *
-                   deriv * marg_ut_cons(cons2, p.sigma) *
-                   np.exp(-p.sigma * p.g_y) - savings_ut)
+    print('SHAPES = ', euler_error[:-1].shape, cons[:-1].shape, p.rho[:-1].shape, deriv[1:].shape, savings_ut[1:].shape)
+    print('Shape of b and b+1 = ', b.shape, b_splus1.shape)
+    print('first and last elements of b = ', b[0], b[-1])
+    print('first and last elements of bsp1 = ', b_splus1[0], b_splus1[-2], b_splus1[-1])
+    euler_error[:-1] = (marg_ut_cons(cons[:-1], p.sigma) - p.beta * (1 - p.rho[:-1]) *
+                   deriv[1:] * marg_ut_cons(cons[1:], p.sigma) *
+                   np.exp(-p.sigma * p.g_y) - savings_ut[:-1])
+    euler_error[-1] = (marg_ut_cons(cons[-1], p.sigma) - savings_ut[-1])
+    # euler_error = (marg_ut_cons(cons1, p.sigma) - p.beta * (1 - p.rho) *
+    #                deriv * marg_ut_cons(cons2, p.sigma) *
+    #                np.exp(-p.sigma * p.g_y) - savings_ut)
 
     return euler_error
 
