@@ -97,7 +97,6 @@ def marg_ut_labor(n, p):
     MDU_n[nvec_high] = 2 * d2 * nvec[nvec_high] + d1
     output = MDU_n * np.squeeze(p.chi_n)
     output = np.squeeze(output)
-
     return output
 
 
@@ -139,7 +138,7 @@ def get_cons(r, w, b, b_splus1, n, BQ, net_tax, j, p):
     return cons
 
 
-def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, theta,
+def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
                 etr_params, mtry_params, j, p, method):
     '''
     Computes Euler errors for the FOC for savings in the steady state.
@@ -230,8 +229,8 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H, theta,
     return euler_error
 
 
-def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, j, p,
-              method):
+def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, etr_params,
+              mtrx_params, j, p, method):
     '''
     Computes Euler errors for the FOC for labor supply in the steady
     state.  This function is usually looped through over J, so it does
@@ -297,16 +296,15 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, j, p,
     Returns: euler
     '''
     if j is not None:
-        e = p.e[:, j]
+        e = np.squeeze(p.e[:, j])
     else:
-        e = p.e
-    tax1 = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
-                           p.etr_params[:, -1, :], p, method)  # this only works with SS as written bc of tax params
-    cons = get_cons(r, w, b, b_splus1, n, BQ, tax1, j, e, p)
-    mtr_lab_params = (e, p.etr_params[:, -1, :], p.mtrx_params[:, -1, :], p) # this only works with SS as written bc of tax params
+        e = np.squeeze(p.e)
+    taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
+                            method, etr_params, p)
+    cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, j, p)
     deriv = (1 - p.tau_payroll - tax.MTR_income(r, w, b, n, factor,
-                                                mtr_lab_params, False))
-
+                                                False, j, etr_params,
+                                                mtrx_params, p))
     FOC_error = (marg_ut_cons(cons, p.sigma) * w * deriv * e -
                  marg_ut_labor(n, p))
 
