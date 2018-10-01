@@ -107,7 +107,7 @@ def MTR_wealth(b, p):
     return tau_prime
 
 
-def ETR_income(r, w, b, n, factor, method, j, p):
+def ETR_income(r, w, b, n, factor, j, etr_params, p):
     '''
     --------------------------------------------------------------------
     Calculates effective personal income tax rate.
@@ -156,18 +156,18 @@ def ETR_income(r, w, b, n, factor, method, j, p):
     '''
     if j is not None:
         e = np.squeeze(p.e[:, j])
-        if method == 'SS':
-            etr_params = p.etr_params[-1, :, :]
-        else:
-            etr_params = p.etr_params
+        # if method == 'SS':
+        #     etr_params = p.etr_params[-1, :, :]
+        # else:
+        #     etr_params = p.etr_params
     else:
         e = np.squeeze(p.e)
-        if method == 'SS':
-            etr_params = np.tile(np.reshape(p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[-1])), (1, p.J, 1))
-        else:
-            etr_params = np.tile(np.reshape(p.etr_params, (p.T, p.S, 1, p.etr_params.shape[-1])), (1, 1, p.J, 1))
+        # if method == 'SS':
+        #     etr_params = np.tile(np.reshape(p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[-1])), (1, p.J, 1))
+        # else:
+        #     etr_params = np.tile(np.reshape(p.etr_params, (p.T, p.S, 1, p.etr_params.shape[-1])), (1, 1, p.J, 1))
 
-    print('Initial etr size = ', p.etr_params.shape, etr_params.shape, np.squeeze(etr_params[..., 0]).shape)
+    # print('Initial etr size = ', p.etr_params.shape, etr_params.shape, np.squeeze(etr_params[..., 0]).shape)
     X = (w * e * n) * factor
     Y = (r * b) * factor
     X2 = X ** 2
@@ -204,18 +204,20 @@ def ETR_income(r, w, b, n, factor, method, j, p):
         shift = np.squeeze(etr_params[..., 10])
         share = np.squeeze(etr_params[..., 11])
 
+        print('max_x shape = ', max_x.shape)
+        print('X shape = ', X.shape)
         tau_x = ((max_x - min_x) * (A * X2 + B * X) /
                  (A * X2 + B * X + 1) + min_x)
         tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
                  (C * Y2 + D * Y + 1) + min_y)
         tau = (((tau_x + shift_x) ** share) *
                ((tau_y + shift_y) ** (1 - share))) + shift
-    print('tau shape = ', tau.shape, p.tax_func_type, A.shape)
 
     return tau
 
 
-def MTR_income(r, w, b, n, factor, mtr_capital, method, j, p):
+def MTR_income(r, w, b, n, factor, mtr_capital, j, etr_params,
+               mtr_params, p):
     '''
     --------------------------------------------------------------------
     Generates the marginal tax rate on labor income for households.
@@ -268,26 +270,26 @@ def MTR_income(r, w, b, n, factor, mtr_capital, method, j, p):
     --------------------------------------------------------------------
     '''
     # Use appropriate marginal tax rate parameters for income source
-    if mtr_capital:
-        mtr_to_use = p.mtry_params
-    else:
-        mtr_to_use = p.mtrx_params
+    # if mtr_capital:
+    #     mtr_to_use = p.mtry_params
+    # else:
+    #     mtr_to_use = p.mtrx_params
     if j is not None:
         e = np.squeeze(p.e[:, j])
-        if method == 'SS':
-            etr_params = p.etr_params[-1, :, :]
-            mtr_params = mtr_to_use[-1, :, :]
-        else:
-            etr_params = p.etr_params
-            mtr_params = mtr_to_use
+        # if method == 'SS':
+        #     etr_params = p.etr_params[-1, :, :]
+        #     mtr_params = mtr_to_use[-1, :, :]
+        # else:
+        #     etr_params = p.etr_params
+        #     mtr_params = mtr_to_use
     else:
         e = np.squeeze(p.e)
-        if method == 'SS':
-            etr_params = np.tile(np.reshape(p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[-1])), (1, p.J, 1))
-            mtr_params = np.tile(np.reshape(mtr_to_use[-1, :, :], (p.S, 1, mtr_to_use.shape[-1])), (1, p.J, 1))
-        else:
-            etr_params = np.tile(np.reshape(p.etr_params, (p.T, p.S, 1, p.etr_params.shape[-1])), (1, 1, p.J, 1))
-            mtr_params = np.tile(np.reshape(mtr_to_use, (p.T, p.S, 1, mtr_to_use.shape[-1])), (1, 1, p.J, 1))
+        # if method == 'SS':
+        #     etr_params = np.tile(np.reshape(p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[-1])), (1, p.J, 1))
+        #     mtr_params = np.tile(np.reshape(mtr_to_use[-1, :, :], (p.S, 1, mtr_to_use.shape[-1])), (1, p.J, 1))
+        # else:
+        #     etr_params = np.tile(np.reshape(p.etr_params, (p.T, p.S, 1, p.etr_params.shape[-1])), (1, 1, p.J, 1))
+        #     mtr_params = np.tile(np.reshape(mtr_to_use, (p.T, p.S, 1, mtr_to_use.shape[-1])), (1, 1, p.J, 1))
 
     X = (w * e * n) * factor
     Y = (r * b) * factor
@@ -407,7 +409,8 @@ def get_biz_tax(w, Y, L, K, p):
     return business_revenue
 
 
-def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method, p):
+def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
+                etr_params, p):
     '''
     Gives net taxes paid values.
     Inputs:
@@ -454,7 +457,7 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method, p):
 
     '''
 
-        # T_H = utils.to_timepath_shape(T_H, p)
+    # T_H = utils.to_timepath_shape(T_H, p)
     if j is not None:
         e = np.squeeze(p.e[:, j])
         lambdas = p.lambdas[j]
@@ -473,7 +476,7 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method, p):
             print('Is is r shape: ', r.shape)
 
     I = r * b + w * e * n
-    T_I = ETR_income(r, w, b, n, factor, method, j, p) * I
+    T_I = ETR_income(r, w, b, n, factor, j, etr_params, p) * I
     print('T_I shape = ', T_I.shape)
 
     T_P = p.tau_payroll * w * e * n
@@ -502,16 +505,16 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method, p):
             retireTPI = (p.retire - 1 - p.S)
         if len(b.shape) != 3:
             T_P[retireTPI:] -= theta[j] * w[retireTPI:]
-            T_BQ = p.tau_bq * BQ / lambdas
         else:
             T_P[:, p.retire:, :] -= (theta.reshape(1, 1, p.J) *
                                      w[:, p.retire:, :])
-            T_BQ = p.tau_bq * BQ / lambdas
+        T_BQ = p.tau_bq * BQ / lambdas
     elif method == 'TPI_scalar':
         # The above methods won't work if scalars are used.  This option
         # is only called by the SS_TPI_firstdoughnutring function in TPI.
         T_P -= theta * w
         T_BQ = p.tau_bq * BQ / lambdas
     total_tax = T_I + T_P + T_BQ + T_W - T_H
+    print('Total taxes shape = ', total_tax.shape)
 
     return total_tax
