@@ -156,18 +156,9 @@ def ETR_income(r, w, b, n, factor, j, etr_params, p):
     '''
     if j is not None:
         e = np.squeeze(p.e[:, j])
-        # if method == 'SS':
-        #     etr_params = p.etr_params[-1, :, :]
-        # else:
-        #     etr_params = p.etr_params
     else:
         e = np.squeeze(p.e)
-        # if method == 'SS':
-        #     etr_params = np.tile(np.reshape(p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[-1])), (1, p.J, 1))
-        # else:
-        #     etr_params = np.tile(np.reshape(p.etr_params, (p.T, p.S, 1, p.etr_params.shape[-1])), (1, 1, p.J, 1))
 
-    # print('Initial etr size = ', p.etr_params.shape, etr_params.shape, np.squeeze(etr_params[..., 0]).shape)
     X = (w * e * n) * factor
     Y = (r * b) * factor
     X2 = X ** 2
@@ -204,8 +195,6 @@ def ETR_income(r, w, b, n, factor, j, etr_params, p):
         shift = np.squeeze(etr_params[..., 10])
         share = np.squeeze(etr_params[..., 11])
 
-        print('max_x shape = ', max_x.shape)
-        print('X shape = ', X.shape)
         tau_x = ((max_x - min_x) * (A * X2 + B * X) /
                  (A * X2 + B * X + 1) + min_x)
         tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
@@ -269,27 +258,10 @@ def MTR_income(r, w, b, n, factor, mtr_capital, j, etr_params,
     RETURNS: tau
     --------------------------------------------------------------------
     '''
-    # Use appropriate marginal tax rate parameters for income source
-    # if mtr_capital:
-    #     mtr_to_use = p.mtry_params
-    # else:
-    #     mtr_to_use = p.mtrx_params
     if j is not None:
         e = np.squeeze(p.e[:, j])
-        # if method == 'SS':
-        #     etr_params = p.etr_params[-1, :, :]
-        #     mtr_params = mtr_to_use[-1, :, :]
-        # else:
-        #     etr_params = p.etr_params
-        #     mtr_params = mtr_to_use
     else:
         e = np.squeeze(p.e)
-        # if method == 'SS':
-        #     etr_params = np.tile(np.reshape(p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[-1])), (1, p.J, 1))
-        #     mtr_params = np.tile(np.reshape(mtr_to_use[-1, :, :], (p.S, 1, mtr_to_use.shape[-1])), (1, p.J, 1))
-        # else:
-        #     etr_params = np.tile(np.reshape(p.etr_params, (p.T, p.S, 1, p.etr_params.shape[-1])), (1, 1, p.J, 1))
-        #     mtr_params = np.tile(np.reshape(mtr_to_use, (p.T, p.S, 1, mtr_to_use.shape[-1])), (1, 1, p.J, 1))
 
     X = (w * e * n) * factor
     Y = (r * b) * factor
