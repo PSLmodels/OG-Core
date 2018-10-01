@@ -271,16 +271,16 @@ def test_revenue():
     K = 0.957 + (1.163 - 0.957) * random_state.rand(p.T).reshape(p.T)
     factor = 140000.0
 
-
     # update parameters instance with new values for test
     p.e = 0.263 + (2.024 - 0.263) * random_state.rand(p.S * p.J).reshape(p.S, p.J)
     p.omega = 0.039 * random_state.rand(p.T * p.S * 1).reshape(p.T, p.S)
     p.omega = p.omega/p.omega.sum(axis=1).reshape(p.T, 1)
     p.omega_SS = p.omega[-1, :]
 
-    p.etr_params = (0.22 *
+    etr_params = (0.22 *
                     random_state.rand(p.T * p.S * dim4).reshape(p.T, p.S,
                                                                 dim4))
+    etr_params = np.tile(np.reshape(etr_params, (p.T, p.S, 1, dim4)), (1, 1, p.J, 1))
     theta = 0.101 + (0.156 - 0.101) * random_state.rand(p.J)
 
     # check that distributional parameters sum to one
@@ -290,19 +290,17 @@ def test_revenue():
     # SS case
     method = "SS"
     res = aggr.revenue(r[0], w[0], b[0, :, :], n[0, :, :], BQ[0, :, :], Y[0], L[0],
-                       K[0], factor, theta, p, method)
-    print('Result 1 = ', res)
+                       K[0], factor, theta, etr_params[-1, :, :, :], p, method)
     assert(np.allclose(res,  0.5562489534339288))
 
     # TPI case
     method = "TPI"
-    res = aggr.revenue(r, w, b, n, BQ, Y, L,
-                       K, factor, theta, p, method)
+    res = aggr.revenue(r, w, b, n, BQ, Y, L, K, factor, theta,
+                       etr_params, p, method)
     test = [0.52178543, 0.49977116, 0.52015768, 0.52693363, 0.59695398,
             0.61360011, 0.54679056, 0.54096669, 0.56301133, 0.5729165,
             0.52734917, 0.51432562, 0.50060814, 0.5633982,  0.51509517,
             0.60189683, 0.56766507, 0.56439768, 0.68919173, 0.57765917,
             0.60292137, 0.56621788, 0.51913478, 0.48952262, 0.52142782,
             0.5735005, 0.51166718, 0.57939994, 0.52585236, 0.53767652]
-    print('Result 3 = ', res)
     assert(np.allclose(res, test))
