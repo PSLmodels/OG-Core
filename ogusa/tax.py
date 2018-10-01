@@ -437,7 +437,6 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
             r = np.squeeze(utils.to_timepath_shape(r, p)[:, j])
             w = np.squeeze(utils.to_timepath_shape(w, p)[:, j])
             T_H = np.squeeze(utils.to_timepath_shape(T_H, p)[:, j])
-            print('Is is r shape: ', r.shape)
     else:
         e = np.squeeze(p.e)
         lambdas = np.transpose(p.lambdas)
@@ -445,16 +444,11 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
             r = utils.to_timepath_shape(r, p)
             w = utils.to_timepath_shape(w, p)
             T_H = utils.to_timepath_shape(T_H, p)
-            print('Is is r shape: ', r.shape)
 
     I = r * b + w * e * n
     T_I = ETR_income(r, w, b, n, factor, j, etr_params, p) * I
-    print('T_I shape = ', T_I.shape)
-
     T_P = p.tau_payroll * w * e * n
-    print('T_P shape = ', T_P.shape)
     T_W = ETR_wealth(b, p) * b
-    print('T_W shape = ', T_W.shape)
 
     if method == 'SS':
         # Depending on if we are looking at b_s or b_s+1, the
@@ -487,6 +481,5 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
         T_P -= theta * w
         T_BQ = p.tau_bq * BQ / lambdas
     total_tax = T_I + T_P + T_BQ + T_W - T_H
-    print('Total taxes shape = ', total_tax.shape)
 
     return total_tax
