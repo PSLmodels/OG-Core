@@ -128,6 +128,7 @@ class Specifications(ParametersBase):
         # Interpolate chi_n and create omega_SS_80 if necessary
         if self.S == 80:
             self.omega_SS_80 = self.omega_SS
+            self.chi_n = self.chi_n_80
         elif self.S < 80:
             self.age_midp_80 = np.linspace(20.5, 99.5, 80)
             self.chi_n_interp = si.interp1d(self.age_midp_80,
