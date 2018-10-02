@@ -83,23 +83,20 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         Pickle SS results
     ------------------------------------------------------------------------
     '''
-    model_params = {}
-    for key in param_names:
-        model_params[key] = sim_params[key]
     if baseline:
         utils.mkdirs(os.path.join(baseline_dir, "SS"))
         ss_dir = os.path.join(baseline_dir, "SS/SS_vars.pkl")
         pickle.dump(ss_outputs, open(ss_dir, "wb"))
         # Save pickle with parameter values for the run
         param_dir = os.path.join(baseline_dir, "model_params.pkl")
-        pickle.dump(model_params, open(param_dir, "wb"))
+        pickle.dump(spec, open(param_dir, "wb"))
     else:
         utils.mkdirs(os.path.join(output_base, "SS"))
         ss_dir = os.path.join(output_base, "SS/SS_vars.pkl")
         pickle.dump(ss_outputs, open(ss_dir, "wb"))
         # Save pickle with parameter values for the run
         param_dir = os.path.join(output_base, "model_params.pkl")
-        pickle.dump(model_params, open(param_dir, "wb"))
+        pickle.dump(spec, open(param_dir, "wb"))
 
     if time_path:
         '''
