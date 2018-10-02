@@ -98,7 +98,6 @@ def euler_equation_solver(guesses, *args):
     n_guess = [S,] vector, initial guess at household labor supply
     b_s = [S,] vector, wealth enter period with
     b_splus1 = [S,] vector, household savings
-    b_splus2 = [S,] vector, household savings one period ahead
     BQ = scalar, aggregate bequests to lifetime income group
     theta = scalar, replacement rate for social security benenfits
     error1 = [S,] vector, errors from FOC for savings
@@ -117,15 +116,17 @@ def euler_equation_solver(guesses, *args):
     n_guess = np.array(guesses[p.S:])
     b_s = np.array([0] + list(b_guess[:-1]))
     b_splus1 = b_guess
-    b_splus2 = np.array(list(b_guess[1:]) + [0])
 
     BQ = aggr.get_BQ(r, b_splus1, j, p, 'SS')
     theta = tax.replacement_rate_vals(n_guess, w, factor, j, p)
 
-    error1 = household.FOC_savings(r, w, b_s, b_splus1, b_splus2, n_guess, BQ,
-                                   factor, T_H, theta, j, p, 'SS')
+    error1 = household.FOC_savings(r, w, b_s, b_splus1, n_guess, BQ,
+                                   factor, T_H, theta,
+                                   p.etr_params[-1, :, :],
+                                   p.mtry_params[-1, :, :], j, p, 'SS')
     error2 = household.FOC_labor(r, w, b_s, b_splus1, n_guess, BQ, factor, T_H,
-                                 theta, j, p, 'SS')
+                                 theta, p.etr_params[-1, :, :],
+                                 p.mtrx_params[-1, :, :], j, p, 'SS')
 
     # Put in constraints for consumption and savings.
     # According to the euler equations, they can be negative.  When
@@ -143,13 +144,15 @@ def euler_equation_solver(guesses, *args):
     error1[mask5] = 1e14
     error2[mask4] = 1e14
 
-    tax1 = tax.total_taxes(r, w, b_s, n_guess, BQ, factor, T_H, theta, j, False,
-                           p.etr_params[:, -1, :], p, 'SS')   ## only works with SS because of etr params
-    cons = household.get_cons(r, w, b_s, b_splus1, n_guess, BQ, tax1, j, p.e[:, j], p)
+    taxes = tax.total_taxes(r, w, b_s, n_guess, BQ, factor, T_H, theta,
+                            j, False, 'SS', p.etr_params[-1, :, :], p)
+    cons = household.get_cons(r, w, b_s, b_splus1, n_guess, BQ, taxes,
+                              j, p)
+
     mask6 = cons < 0
     error1[mask6] = 1e14
 
-    return np.hstack((error1, error2))#list(error1.flatten()) + list(error2.flatten())
+    return np.hstack((error1, error2))
 
 
 def inner_loop(outer_loop_vars, p, client):
@@ -444,8 +447,12 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
     BQss = new_BQ
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
 
+    etr_params_3D = np.tile(np.reshape(
+        p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])), (1, p.J, 1))
     revenue_ss = aggr.revenue(rss, wss, bssmat_s, nssmat, BQss, Yss,
-                              Lss, Kss, factor, theta, p, 'SS')
+                              Lss, Kss, factor, theta,
+                              etr_params_3D, p, 'SS')
+
     r_gov_ss = rss
     debt_service_ss = r_gov_ss * p.debt_ratio_ss * Yss
     new_borrowing = p.debt_ratio_ss * Yss * ((1 + p.g_n_ss) * np.exp(p.g_y) - 1)
@@ -456,8 +463,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
         Gss = revenue_ss + new_borrowing - (T_Hss + debt_service_ss)
 
     # solve resource constraint
-    etr_params_3D = np.tile(np.reshape(
-        p.etr_params[:, -1, :], (p.S, 1, p.etr_params.shape[2])), (1, p.J, 1))
+
     # mtrx_params_3D = np.tile(
     #     np.reshape(p.mtrx_params, (p.S, 1, p.mtrx_params.shape[1])), (1, p.J, 1))
 
@@ -505,10 +511,12 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
 
     # solve resource constraint
     taxss = tax.total_taxes(rss, wss, bssmat_s, nssmat, BQss, factor_ss,
-                            T_Hss, theta, None, False, etr_params_3D, p, 'SS')
+                            T_Hss, theta, None, False, 'SS',
+                            etr_params_3D, p)
     cssmat = household.get_cons(rss, wss, bssmat_s, bssmat_splus1,
-                                nssmat, BQss.reshape(1, p.J), taxss, None,
-                                p.e, p)
+                                nssmat, BQss.reshape(1, p.J), taxss,
+                                None, p)
+
     business_revenue = tax.get_biz_tax(wss, Yss, Lss, Kss, p)
     IITpayroll_revenue = revenue_ss - business_revenue
 
