@@ -185,18 +185,18 @@ class Specifications(ParametersBase):
         self.etr_params = np.empty((self.T, self.S, num_etr_params))
         self.mtrx_params = np.empty((self.T, self.S, num_mtrx_params))
         self.mtry_params = np.empty((self.T, self.S, num_mtry_params))
-        self.etr_params[:BW, :, :] =\
+        self.etr_params[:self.BW, :, :] =\
             np.transpose(dict_params['tfunc_etr_params_S'][:self.S, :self.BW, :], axes=[1, 0, 2])
-        self.etr_params[BW:, :, :] =\
-            np.transpose(dict_params['tfunc_etr_params_S'][:self.S, -1, :], axes=[1, 0, 2])
-        self.mtrx_params[:BW, :, :] =\
+        self.etr_params[self.BW:, :, :] =\
+            np.tile(np.transpose(dict_params['tfunc_etr_params_S'][:self.S, -1, :].reshape(self.S, 1, num_etr_params), axes=[1, 0, 2]), (self.T - self.BW, 1, 1))
+        self.mtrx_params[:self.BW, :, :] =\
             np.transpose(dict_params['tfunc_mtrx_params_S'][:self.S, :self.BW, :], axes=[1, 0, 2])
-        self.mtrx_params[BW:, :, :] =\
-            np.transpose(dict_params['tfunc_mtrx_params_S'][:self.S, -1, :], axes=[1, 0, 2])
-        self.mtry_params[:BW, :, :] =\
+        self.mtrx_params[self.BW:, :, :] =\
+            np.transpose(dict_params['tfunc_mtrx_params_S'][:self.S, -1, :].reshape(self.S, 1, num_mtrx_params), axes=[1, 0, 2])
+        self.mtry_params[:self.BW, :, :] =\
             np.transpose(dict_params['tfunc_mtry_params_S'][:self.S, :self.BW, :], axes=[1, 0, 2])
-        self.mtry_params[BW:, :, :] =\
-            np.transpose(dict_params['tfunc_mtry_params_S'][:self.S, -1, :], axes=[1, 0, 2])
+        self.mtry_params[self.BW:, :, :] =\
+            np.transpose(dict_params['tfunc_mtry_params_S'][:self.S, -1, :].reshape(self.S, 1, num_mtry_params), axes=[1, 0, 2])
 
         if self.constant_rates:
             print('Using constant rates!')
