@@ -215,7 +215,6 @@ def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
 
     taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
                             method, etr_params, p)
-
     cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, j, p)
     deriv = ((1 + r) - r * (tax.MTR_income(r, w, b, n, factor, True, j,
                                            etr_params, mtry_params, p)))

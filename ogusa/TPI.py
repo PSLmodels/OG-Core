@@ -61,7 +61,7 @@ steady state computation in ss_vars.pkl
 '''
 
 
-def create_tpi_params(**sim_params):
+def create_tpi_params(**sim_params, p):
 
     '''
     ------------------------------------------------------------------------
@@ -72,7 +72,7 @@ def create_tpi_params(**sim_params):
                                "SS/SS_vars.pkl")
     ss_baseline_vars = pickle.load(open(baseline_ss, "rb"))
     factor = ss_baseline_vars['factor_ss']
-    initial_b = ss_baseline_vars['bssmat_splus1']
+    p.initial_b = ss_baseline_vars['bssmat_splus1']
     initial_n = ss_baseline_vars['nssmat']
     if sim_params['baseline_spending']:
         baseline_tpi = os.path.join(sim_params['baseline_dir'],
@@ -238,7 +238,7 @@ def create_tpi_params(**sim_params):
             biz_tax_params)
 
 
-def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params):
+def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, p):
     '''
     Solves the first entries of the upper triangle of the twist
     doughnut.  This is separate from the main TPI function because the
@@ -259,52 +259,56 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params):
     Output:
         euler errors (2x1 list)
     '''
-
-    # unpack tuples of parameters
-    income_tax_params, tpi_params, initial_b = params
-    (tax_func_type, analytical_mtrs, etr_params, mtrx_params,
-     mtry_params) = income_tax_params
-    (J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde,
-     nu, g_y, g_n_vector, tau_b, delta_tau, tau_payroll, tau_bq, rho,
-     omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,
-     factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b,
-     chi_n, theta, baseline) = tpi_params
-
     b_splus1 = float(guesses[0])
     n = float(guesses[1])
-    b_s = float(initial_b[-2, j])
+    b_s = float(p.initial_b[-2, j])
 
     # Find errors from FOC for savings and FOC for labor supply
     retire_fd = 0  # this sets retire to true in these agents who are
     # in last period in life
     # Note using method = "SS" below because just for one period
-    foc_save_params = (np.array([e[-1, j]]), sigma, beta, g_y, chi_b[j],
-                       theta[j], tau_bq[j], rho[-1], lambdas[j], j, J,
-                       S, tax_func_type, analytical_mtrs,
-                       np.reshape(etr_params[-1, 0, :],
-                                  (1, etr_params.shape[2])),
-                       np.reshape(mtry_params[-1, 0, :],
-                                  (1, mtry_params.shape[2])), h_wealth,
-                       p_wealth, m_wealth, tau_payroll, retire_fd, 'SS')
-    error1 = household.FOC_savings(np.array([r]), np.array([w]), b_s,
-                                   b_splus1, 0., np.array([n]),
-                                   np.array([BQ]), factor,
-                                   np.array([T_H]), foc_save_params)
 
-    foc_labor_params = (np.array([e[-1, j]]), sigma, g_y, theta[j],
-                        b_ellipse, upsilon, chi_n[-1], ltilde,
-                        tau_bq[j], lambdas[j], j, J, S, tax_func_type,
-                        analytical_mtrs,
-                        np.reshape(etr_params[-1, 0, :],
-                                   (1, etr_params.shape[2])),
-                        np.reshape(mtrx_params[-1, 0, :],
-                                   (1, mtrx_params.shape[2])), h_wealth,
-                        p_wealth, m_wealth, tau_payroll, retire_fd,
-                        'SS')
-    error2 = household.FOC_labor(np.array([r]), np.array([w]), b_s,
-                                 b_splus1, np.array([n]),
-                                 np.array([BQ]), factor,
-                                 np.array([T_H]), foc_labor_params)
+
+    # foc_save_params = (np.array([e[-1, j]]), sigma, beta, g_y, chi_b[j],
+    #                    theta[j], tau_bq[j], rho[-1], lambdas[j], j, J,
+    #                    S, tax_func_type, analytical_mtrs,
+    #                    np.reshape(etr_params[-1, 0, :],
+    #                               (1, etr_params.shape[2])),
+    #                    np.reshape(mtry_params[-1, 0, :],
+    #                               (1, mtry_params.shape[2])), h_wealth,
+    #                    p_wealth, m_wealth, tau_payroll, retire_fd, 'SS')
+    # error1 = household.FOC_savings(np.array([r]), np.array([w]), b_s,
+    #                                b_splus1, 0., np.array([n]),
+    #                                np.array([BQ]), factor,
+    #                                np.array([T_H]), foc_save_params)
+
+
+    # In the below, need to think about how get last year of life for
+    # e and rho that is passed to the FOC
+    error1 = household.FOC_savings(r, w, b, b_splus1, n, BQ, factor,
+                                   T_H, theta[j], etr_params[0, -1, :],
+                                   mtry_params[0, -1, :], j, p, 'SS')
+
+    # foc_labor_params = (np.array([e[-1, j]]), sigma, g_y, theta[j],
+    #                     b_ellipse, upsilon, chi_n[-1], ltilde,
+    #                     tau_bq[j], lambdas[j], j, J, S, tax_func_type,
+    #                     analytical_mtrs,
+    #                     np.reshape(etr_params[-1, 0, :],
+    #                                (1, etr_params.shape[2])),
+    #                     np.reshape(mtrx_params[-1, 0, :],
+    #                                (1, mtrx_params.shape[2])), h_wealth,
+    #                     p_wealth, m_wealth, tau_payroll, retire_fd,
+    #                     'SS')
+    # error2 = household.FOC_labor(np.array([r]), np.array([w]), b_s,
+    #                              b_splus1, np.array([n]),
+    #                              np.array([BQ]), factor,
+    #                              np.array([T_H]), foc_labor_params)
+
+    # In the below, need to think about how get last year of life for
+    # e and rho that is passed to the FOC
+    error2 = household.FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H,
+                                 theta[j], etr_params[0, -1, :],
+                                 mtrx_params[0, -1, :], j, p, 'SS')
 
     if n <= 0 or n >= 1:
         error2 += 1e12
@@ -315,7 +319,7 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params):
     return [np.squeeze(error1)] + [np.squeeze(error2)]
 
 
-def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params):
+def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, p):
     '''
     Parameters:
         guesses = distribution of capital and labor (various length list)
@@ -339,58 +343,61 @@ def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params):
     Output:
         Value of Euler error (various length list)
     '''
-
-    income_tax_params, tpi_params, initial_b = params
-    (tax_func_type, analytical_mtrs, etr_params, mtrx_params,
-     mtry_params) = income_tax_params
-    (J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde,
-     nu, g_y, g_n_vector, tau_b, delta_tau, tau_payroll, tau_bq, rho,
-     omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,
-     factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b,
-     chi_n, theta, baseline) = tpi_params
-
     length = int(len(guesses) / 2)
     b_guess = np.array(guesses[:length])
     n_guess = np.array(guesses[length:])
 
-    if length == S:
+    if length == p.S:
         b_s = np.array([0] + list(b_guess[:-1]))
     else:
-        b_s = np.array([(initial_b[-(s + 3), j])] + list(b_guess[:-1]))
+        b_s = np.array([(p.initial_b[-(s + 3), j])] + list(b_guess[:-1]))
 
     b_splus1 = b_guess
-    b_splus2 = np.array(list(b_guess[1:]) + [0])
+    # b_splus2 = np.array(list(b_guess[1:]) + [0])
     w_s = w[t:t + length]
-    w_splus1 = w[t + 1:t + length + 1]
+    # w_splus1 = w[t + 1:t + length + 1]
     r_s = r[t:t + length]
-    r_splus1 = r[t + 1:t + length + 1]
+    # r_splus1 = r[t + 1:t + length + 1]
     n_s = n_guess
-    n_extended = np.array(list(n_guess[1:]) + [0])
+    # n_extended = np.array(list(n_guess[1:]) + [0])
     e_s = e[-length:, j]
-    e_extended = np.array(list(e[-length + 1:, j]) + [0])
+    # e_extended = np.array(list(e[-length + 1:, j]) + [0])
     BQ_s = BQ[t:t + length]
-    BQ_splus1 = BQ[t + 1:t + length + 1]
+    # BQ_splus1 = BQ[t + 1:t + length + 1]
     T_H_s = T_H[t:t + length]
-    T_H_splus1 = T_H[t + 1:t + length + 1]
+    # T_H_splus1 = T_H[t + 1:t + length + 1]
 
     # Errors from FOC for savings
-    foc_save_params = (e_s, sigma, beta, g_y, chi_b[j], theta, tau_bq,
-                       rho[-(length):], lambdas[j], j, J, S,
-                       tax_func_type, analytical_mtrs, etr_params,
-                       mtry_params, h_wealth, p_wealth, m_wealth,
-                       tau_payroll, retire, 'TPI')
-    error1 = household.FOC_savings(r_s, w_s, b_s, b_splus1, b_splus2,
-                                   n_s, BQ_s, factor, T_H_s,
-                                   foc_save_params)
+    # foc_save_params = (e_s, sigma, beta, g_y, chi_b[j], theta, tau_bq,
+    #                    rho[-(length):], lambdas[j], j, J, S,
+    #                    tax_func_type, analytical_mtrs, etr_params,
+    #                    mtry_params, h_wealth, p_wealth, m_wealth,
+    #                    tau_payroll, retire, 'TPI')
+    # error1 = household.FOC_savings(r_s, w_s, b_s, b_splus1, b_splus2,
+    #                                n_s, BQ_s, factor, T_H_s,
+    #                                foc_save_params)
+
+    # In the below, need to think about how get -length: in the S-dim for
+    # e and rho that is passed to the FOC
+    ## also see how need to do etr and mtr params - prob need to pull diagonals...
+    error1 = household.FOC_savings(r_s, w_s, b_s, b_splus1, n_s, BQ_s,
+                                   factor, T_H_s, theta[j], etr_params,
+                                   mtry_params, j, p, 'TPI')
 
     # Errors from FOC for labor supply
-    foc_labor_params = (e_s, sigma, g_y, theta, b_ellipse, upsilon,
-                        chi_n[-length:], ltilde, tau_bq, lambdas[j], j,
-                        J, S, tax_func_type, analytical_mtrs,
-                        etr_params, mtrx_params, h_wealth, p_wealth,
-                        m_wealth, tau_payroll, retire, 'TPI')
-    error2 = household.FOC_labor(r_s, w_s, b_s, b_splus1, n_s, BQ_s,
-                                 factor, T_H_s, foc_labor_params)
+    # foc_labor_params = (e_s, sigma, g_y, theta, b_ellipse, upsilon,
+    #                     chi_n[-length:], ltilde, tau_bq, lambdas[j], j,
+    #                     J, S, tax_func_type, analytical_mtrs,
+    #                     etr_params, mtrx_params, h_wealth, p_wealth,
+    #                     m_wealth, tau_payroll, retire, 'TPI')
+    # error2 = household.FOC_labor(r_s, w_s, b_s, b_splus1, n_s, BQ_s,
+    #                              factor, T_H_s, foc_labor_params)
+
+    # In the below, need to think about how get -length: in the S-dim for
+    # e and rho that is passed to the FOC
+    error2 = household.FOC_labor(r_s, w_s, b_S, b_splus1, n_S, BQ_S,
+                                 factor, T_H_s, theta[j], etr_params,
+                                 mtrx_params, j, p, 'SS')
 
     # Check and punish constraint violations
     mask1 = n_guess < 0
@@ -430,14 +437,6 @@ def inner_loop(guesses, outer_loop_vars, params, j):
     Returns: euler_errors, b_mat, n_mat
     '''
     #unpack variables and parameters pass to function
-    income_tax_params, tpi_params, initial_values, ind = params
-    (tax_func_type, analytical_mtrs, etr_params, mtrx_params,
-     mtry_params) = income_tax_params
-    (J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde,
-     nu, g_y, g_n_vector, tau_b, delta_tau, tau_payroll, tau_bq, rho,
-     omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,
-     factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b,
-     chi_n, theta, baseline) = tpi_params
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n,
      omega_S_preTP, initial_debt, D0) = initial_values
 
@@ -445,30 +444,33 @@ def inner_loop(guesses, outer_loop_vars, params, j):
     r, K, BQ, T_H = outer_loop_vars
 
     # compute w
-    w_params = (Z, gamma, epsilon, delta, tau_b, delta_tau)
-    w = firm.get_w_from_r(r, w_params)
+    w = firm.get_w_from_r(r, p)
 
     # initialize arrays
-    b_mat = np.zeros((T + S, S))
-    n_mat = np.zeros((T + S, S))
-    euler_errors = np.zeros((T, 2 * S))
+    b_mat = np.zeros((p.T + p.S, p.S))
+    n_mat = np.zeros((p.T + p.S, p.S))
+    euler_errors = np.zeros((p.T, 2 * p.S))
 
-    first_doughnut_params = (income_tax_params, tpi_params, initial_b)
+    # first_doughnut_params = (income_tax_params, tpi_params, initial_b)
+    # b_mat[0, -1], n_mat[0, -1] =\
+    #     np.array(opt.fsolve(firstdoughnutring,
+    #                         [guesses_b[0, -1],
+    #                          guesses_n[0, -1]],
+    #                         args=(r[0], w[0], initial_b,
+    #                               BQ[0, j], T_H[0], j,
+    #                               first_doughnut_params),
+    #                         xtol=MINIMIZER_TOL))
+
     b_mat[0, -1], n_mat[0, -1] =\
-        np.array(opt.fsolve(firstdoughnutring,
-                            [guesses_b[0, -1],
-                             guesses_n[0, -1]],
-                            args=(r[0], w[0], initial_b,
-                                  BQ[0, j], T_H[0], j,
-                                  first_doughnut_params),
+        np.array(opt.fsolve(firstdoughnutring, [guesses_b[0, -1],
+                                                guesses_n[0, -1]],
+                            args=(r[0], w[0], BQ[0, j], T_H[0], j, p),
                             xtol=MINIMIZER_TOL))
 
-    for s in range(S - 2):  # Upper triangle
+    for s in range(p.S - 2):  # Upper triangle
         ind2 = np.arange(s + 2)
-        b_guesses_to_use = np.diag(
-            guesses_b[:S, :], S - (s + 2))
-        n_guesses_to_use = np.diag(guesses_n[:S, :], S -
-                                   (s + 2))
+        b_guesses_to_use = np.diag(guesses_b[:S, :], p.S - (s + 2))
+        n_guesses_to_use = np.diag(guesses_n[:p.S, :], p.S - (s + 2))
 
         # initialize array of diagonal elements
         length_diag =\
@@ -554,6 +556,7 @@ def inner_loop(guesses, outer_loop_vars, params, j):
     print('Type ', j, ' max euler error = ', euler_errors.max())
 
     return euler_errors, b_mat, n_mat
+
 
 def run_TPI(income_tax_params, tpi_params, iterative_params,
             small_open_params, initial_values, SS_values, fiscal_params,
