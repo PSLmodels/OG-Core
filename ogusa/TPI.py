@@ -61,29 +61,26 @@ steady state computation in ss_vars.pkl
 '''
 
 
-def create_tpi_params(**sim_params, p):
+def create_tpi_params(baseline_dir, p):
 
     '''
     ------------------------------------------------------------------------
     Set factor and initial capital stock to SS from baseline
     ------------------------------------------------------------------------
     '''
-    baseline_ss = os.path.join(sim_params['baseline_dir'],
+    baseline_ss = os.path.join(p.baseline_dir,
                                "SS/SS_vars.pkl")
     ss_baseline_vars = pickle.load(open(baseline_ss, "rb"))
     factor = ss_baseline_vars['factor_ss']
-    p.initial_b = ss_baseline_vars['bssmat_splus1']
+    initial_b = ss_baseline_vars['bssmat_splus1']
     initial_n = ss_baseline_vars['nssmat']
-    if sim_params['baseline_spending']:
-        baseline_tpi = os.path.join(sim_params['baseline_dir'],
-                                    "TPI/TPI_vars.pkl")
+    if p.baseline_spending:
+        baseline_tpi = os.path.join(p.baseline_dir, "TPI/TPI_vars.pkl")
         tpi_baseline_vars = pickle.load(open(baseline_tpi, "rb"))
         T_Hbaseline = tpi_baseline_vars['T_H']
         Gbaseline = tpi_baseline_vars['G']
 
-    theta_params = (sim_params['e'], sim_params['S'],
-                    sim_params['retire'])
-    if sim_params['baseline']:
+    if p.baseline:
         SS_values = (ss_baseline_vars['Kss'], ss_baseline_vars['Bss'],
                      ss_baseline_vars['Lss'], ss_baseline_vars['rss'],
                      ss_baseline_vars['wss'], ss_baseline_vars['BQss'],
@@ -92,12 +89,11 @@ def create_tpi_params(**sim_params, p):
                      ss_baseline_vars['bssmat_splus1'],
                      ss_baseline_vars['nssmat'],
                      ss_baseline_vars['Yss'], ss_baseline_vars['Gss'])
-        theta = tax.replacement_rate_vals(ss_baseline_vars['nssmat'],
-                                          ss_baseline_vars['wss'],
-                                          factor, theta_params)
-    elif not sim_params['baseline']:
-        reform_ss = os.path.join(sim_params['input_dir'],
-                                 "SS/SS_vars.pkl")
+        theta = tax.replacement_rate_vals(
+            ss_baseline_vars['nssmat'], ss_baseline_vars['wss'], factor,
+            None, p)
+    elif not p.baseline:
+        reform_ss = os.path.join(p.input_dir, "SS/SS_vars.pkl")
         ss_reform_vars = pickle.load(open(reform_ss, "rb"))
         SS_values = (ss_reform_vars['Kss'], ss_reform_vars['Bss'],
                      ss_reform_vars['Lss'], ss_reform_vars['rss'],
@@ -107,101 +103,14 @@ def create_tpi_params(**sim_params, p):
                      ss_reform_vars['bssmat_splus1'],
                      ss_reform_vars['nssmat'], ss_reform_vars['Yss'],
                      ss_reform_vars['Gss'])
-        theta = tax.replacement_rate_vals(ss_reform_vars['nssmat'],
-                                          ss_reform_vars['wss'], factor,
-                                          theta_params)
+        theta = tax.replacement_rate_vals(
+            ss_reform_vars['nssmat'], ss_reform_vars['wss'], factor,
+            None, p)
 
-    # Make a vector of all one dimensional parameters, to be used in the
-    # following functions
-    wealth_tax_params = [sim_params['h_wealth'], sim_params['p_wealth'],
-                         sim_params['m_wealth']]
-    ellipse_params = [sim_params['b_ellipse'], sim_params['upsilon']]
-    chi_params = [sim_params['chi_b_guess'], sim_params['chi_n_guess']]
-
-    N_tilde = sim_params['omega'].sum(1)  # this should equal one in
+    ## What is going on here?  Whatever it is, why not done in pb_api.py???
+    N_tilde = p.omega.sum(1)  # this should equal one in
     # each year given how we've constructed omega
-    sim_params['omega'] = (sim_params['omega'] /
-                           N_tilde.reshape(sim_params['T'] +
-                                           sim_params['S'], 1))
-
-    tpi_params = [sim_params['J'], sim_params['S'], sim_params['T'],
-                  sim_params['BW'], sim_params['beta'],
-                  sim_params['sigma'], sim_params['alpha'],
-                  sim_params['gamma'], sim_params['epsilon'],
-                  sim_params['Z'], sim_params['delta'],
-                  sim_params['ltilde'], sim_params['nu'],
-                  sim_params['g_y'], sim_params['g_n_vector'],
-                  sim_params['tau_b'], sim_params['delta_tau'],
-                  sim_params['tau_payroll'], sim_params['tau_bq'],
-                  sim_params['rho'], sim_params['omega'], N_tilde,
-                  sim_params['lambdas'], sim_params['imm_rates'],
-                  sim_params['e'], sim_params['retire'],
-                  sim_params['mean_income_data'], factor] + \
-        wealth_tax_params + ellipse_params + chi_params + [theta] + \
-        [sim_params['baseline']]
-    iterative_params = [sim_params['maxiter'], sim_params['mindist_SS'],
-                        sim_params['mindist_TPI']]
-    small_open_params = [sim_params['small_open'],
-                         sim_params['tpi_firm_r'],
-                         sim_params['tpi_hh_r']]
-
-    (J, S, T, BW, beta, sigma, alpha, gamma, epsilon, Z, delta, ltilde,
-     nu, g_y, g_n_vector, tau_b, delta_tau, tau_payroll, tau_bq, rho,
-     omega, N_tilde, lambdas, imm_rates, e, retire, mean_income_data,
-     factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b,
-     chi_n, theta, baseline) = tpi_params
-
-    # Assumption for tax functions is that policy in last year of BW is
-    # extended permanently
-    etr_params_TP = np.zeros((S, T+S, sim_params['etr_params'].shape[2]))
-    etr_params_TP[:, :BW, :] = sim_params['etr_params']
-    etr_params_TP[:, BW:, :] =\
-        np.reshape(sim_params['etr_params'][:, BW-1, :],
-                   (S, 1, sim_params['etr_params'].shape[2]))
-
-    mtrx_params_TP = np.zeros((S, T+S, sim_params['mtrx_params'].shape[2]))
-    mtrx_params_TP[:, :BW, :] = sim_params['mtrx_params']
-    mtrx_params_TP[:, BW:, :] =\
-        np.reshape(sim_params['mtrx_params'][:, BW-1, :],
-                   (S, 1, sim_params['mtrx_params'].shape[2]))
-
-    mtry_params_TP = np.zeros((S, T+S, sim_params['mtry_params'].shape[2]))
-    mtry_params_TP[:, :BW, :] = sim_params['mtry_params']
-    mtry_params_TP[:, BW:, :] =\
-        np.reshape(sim_params['mtry_params'][:, BW-1, :],
-                   (S, 1, sim_params['mtry_params'].shape[2]))
-
-    income_tax_params = (sim_params['tax_func_type'],
-                         sim_params['analytical_mtrs'], etr_params_TP,
-                         mtrx_params_TP, mtry_params_TP)
-
-    '''
-    ------------------------------------------------------------------------
-    Set government finance parameters
-    ------------------------------------------------------------------------
-    '''
-    budget_balance = sim_params['budget_balance']
-    ALPHA_T = sim_params['ALPHA_T']
-    ALPHA_G = sim_params['ALPHA_G']
-    tG1 = sim_params['tG1']
-    tG2 = sim_params['tG2']
-    rho_G = sim_params['rho_G']
-    debt_ratio_ss = sim_params['debt_ratio_ss']
-    if not sim_params['baseline_spending']:
-        fiscal_params = (budget_balance, ALPHA_T, ALPHA_G, tG1, tG2,
-                         rho_G, debt_ratio_ss)
-    else:
-        fiscal_params = (budget_balance, ALPHA_T, ALPHA_G, tG1, tG2,
-                         rho_G, debt_ratio_ss, T_Hbaseline, Gbaseline)
-
-    '''
-    ------------------------------------------------------------------------
-    Set business tax parameters
-    ------------------------------------------------------------------------
-    '''
-    tau_b = sim_params['tau_b']
-    delta_tau = sim_params['delta_tau']
-    biz_tax_params = (tau_b, delta_tau)
+    p.omega = p.omega / N_tilde.reshape(p.T + p.S, 1)
 
     '''
     ------------------------------------------------------------------------
@@ -211,20 +120,21 @@ def create_tpi_params(**sim_params, p):
     # Get an initial distribution of wealth with the initial population
     # distribution. When small_open=True, the value of K0 is used as a
     # placeholder for first-period wealth (B0)
-    omega_S_preTP = sim_params['omega_S_preTP']
-    B0_params = (omega_S_preTP.reshape(S, 1), lambdas,
-                 imm_rates[0].reshape(S, 1), g_n_vector[0], 'SS')
-    B0 = aggr.get_K(initial_b, B0_params)
+    # omega_S_preTP = sim_params['omega_S_preTP']
+    # B0_params = (omega_S_preTP.reshape(S, 1), lambdas,
+    #              imm_rates[0].reshape(S, 1), g_n_vector[0], 'SS')
 
-    b_sinit = np.array(list(np.zeros(J).reshape(1, J)) +
+    ## Need this to use omega_S_preTP...
+    B0 = aggr.get_K(initial_b, p, 'SS')
+
+    b_sinit = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
                        list(initial_b[:-1]))
     b_splus1init = initial_b
 
     # Intial gov't debt must match that in the baseline
-    initial_debt = sim_params['initial_debt']
-    if not sim_params['baseline']:
-        baseline_tpi = os.path.join(sim_params['baseline_dir'],
-                                    "TPI/TPI_vars.pkl")
+    initial_debt = p.initial_debt
+    if not p.baseline:
+        baseline_tpi = os.path.join(baseline_dir, "TPI/TPI_vars.pkl")
         tpi_baseline_vars = pickle.load(open(baseline_tpi, "rb"))
         D0 = tpi_baseline_vars['D'][0]
     else:
@@ -233,9 +143,7 @@ def create_tpi_params(**sim_params, p):
     initial_values = (B0, b_sinit, b_splus1init, factor, initial_b,
                       initial_n, omega_S_preTP, initial_debt, D0)
 
-    return (income_tax_params, tpi_params, iterative_params,
-            small_open_params, initial_values, SS_values, fiscal_params,
-            biz_tax_params)
+    return (initial_values, SS_values, p)
 
 
 def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, p):
@@ -761,6 +669,7 @@ def run_TPI(initial_values, SS_values, p,
         #             lambdas.reshape(1, 1, J),
         #             imm_rates[:T-1].reshape(T-1,S,1),
         #             g_n_vector[1:T], 'TPI')  # defined above
+        ## Note the shift here -- need to be able to deal with this in get_K -- maybe easiest to just return a T length vector and keep only the [1:] elements
         B[1:p.T] = aggr.get_K(bmat_splus1[:p.T - 1], p)
         if np.any(B) < 0:
             print('B has negative elements. B[0:9]:', B[0:9])
