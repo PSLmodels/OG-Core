@@ -228,7 +228,7 @@ def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
     return euler_error
 
 
-def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, etr_params,
+def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, e, etr_params,
               mtrx_params, j, p, method):
     '''
     Computes Euler errors for the FOC for labor supply in the steady
@@ -294,10 +294,10 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, etr_params,
 
     Returns: euler
     '''
-    if j is not None:
-        e = np.squeeze(p.e[:, j])
-    else:
-        e = np.squeeze(p.e)
+    # if j is not None:
+    #     e = np.squeeze(p.e[:, j])
+    # else:
+    #     e = np.squeeze(p.e)
     taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
                             method, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, j, p)
