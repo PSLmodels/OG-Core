@@ -20,7 +20,7 @@ from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR
 
 
 def runner(output_base, baseline_dir, test=False, time_path=True,
-           baseline=False, constant_rates=True, tax_func_type='DEP',
+           baseline=True, constant_rates=True, tax_func_type='DEP',
            analytical_mtrs=False, age_specific=False, reform={},
            user_params={}, guid='', run_micro=True, small_open=False,
            budget_balance=False, baseline_spending=False, data=None,
@@ -58,7 +58,8 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     print('In runner, baseline is ', baseline)
 
     # Get parameter class
-    spec = Specifications(baseline_dir=baseline_dir, baseline=True,
+    spec = Specifications(output_base=output_base,
+                          baseline_dir=baseline_dir, baseline=baseline,
                           client=client, num_workers=num_workers)
     spec.update_specifications({'age_specific': False})
     print('path for tax functions: ', spec.output_base)

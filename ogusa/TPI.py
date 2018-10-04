@@ -503,7 +503,7 @@ def run_TPI(p, client=None):
     print('Government spending breakpoints are tG1: ', p.tG1,
           '; and tG2:', p.tG2)
 
-    TPI_FIG_DIR = output_dir
+    TPI_FIG_DIR = p.output_base
     # Initialize guesses at time paths
     # Make array of initial guesses for labor supply and savings
     domain = np.linspace(0, p.T, p.T)
@@ -981,7 +981,7 @@ def run_TPI(p, client=None):
               'eul_savings': eul_savings,
               'eul_laborleisure': eul_laborleisure}
 
-    tpi_dir = os.path.join(output_dir, "TPI")
+    tpi_dir = os.path.join(p.output_base, "TPI")
     utils.mkdirs(tpi_dir)
     tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
     pickle.dump(output, open(tpi_vars, "wb"))
