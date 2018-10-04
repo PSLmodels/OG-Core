@@ -121,11 +121,12 @@ def euler_equation_solver(guesses, *args):
     theta = tax.replacement_rate_vals(n_guess, w, factor, j, p)
 
     error1 = household.FOC_savings(r, w, b_s, b_splus1, n_guess, BQ,
-                                   factor, T_H, theta,
+                                   factor, T_H, theta, p.e[:, j], p.retire,
                                    p.etr_params[-1, :, :],
                                    p.mtry_params[-1, :, :], j, p, 'SS')
     error2 = household.FOC_labor(r, w, b_s, b_splus1, n_guess, BQ, factor, T_H,
-                                 theta, p.e[:, j], p.etr_params[-1, :, :],
+                                 theta, p.e[:, j], p.retire,
+                                 p.etr_params[-1, :, :],
                                  p.mtrx_params[-1, :, :], j, p, 'SS')
 
     # Put in constraints for consumption and savings.

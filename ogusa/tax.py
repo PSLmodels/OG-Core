@@ -382,7 +382,7 @@ def get_biz_tax(w, Y, L, K, p):
 
 
 def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
-                etr_params, p):
+                e, retire, etr_params, p):
     '''
     Gives net taxes paid values.
     Inputs:
@@ -431,14 +431,14 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
 
     # T_H = utils.to_timepath_shape(T_H, p)
     if j is not None:
-        e = np.squeeze(p.e[:, j])
+        # e = np.squeeze(p.e[:, j])
         lambdas = p.lambdas[j]
         if method == 'TPI':
             r = np.squeeze(utils.to_timepath_shape(r, p)[:, j])
             w = np.squeeze(utils.to_timepath_shape(w, p)[:, j])
             T_H = np.squeeze(utils.to_timepath_shape(T_H, p)[:, j])
     else:
-        e = np.squeeze(p.e)
+        # e = np.squeeze(p.e)
         lambdas = np.transpose(p.lambdas)
         if method == 'TPI':
             r = utils.to_timepath_shape(r, p)

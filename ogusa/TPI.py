@@ -194,7 +194,7 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, theta, factor, j, initial_b, p)
     # In the below, need to think about how get last year of life for
     # e and rho that is passed to the FOC
     error1 = household.FOC_savings(r, w, b_s, b_splus1, n, BQ, factor,
-                                   T_H, theta[j], p.etr_params[0, -1, :],
+                                   T_H, theta[j], p.e[-1, j], 0, p.etr_params[0, -1, :],
                                    p.mtry_params[0, -1, :], j, p, 'SS')
 
     # foc_labor_params = (np.array([e[-1, j]]), sigma, g_y, theta[j],
@@ -215,7 +215,7 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, theta, factor, j, initial_b, p)
     # In the below, need to think about how get last year of life for
     # e and rho that is passed to the FOC
     error2 = household.FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H,
-                                 theta[j], p.e[-1, j], p.etr_params[0, -1, :],
+                                 theta[j], p.e[-1, j], 0, p.etr_params[0, -1, :],
                                  p.mtrx_params[0, -1, :], j, p, 'SS')
 
     if n <= 0 or n >= 1:
@@ -290,7 +290,8 @@ def twist_doughnut(guesses, r, w, BQ, T_H, theta, factor, j, s, t, etr_params,
     # e and rho that is passed to the FOC
     ## also see how need to do etr and mtr params - prob need to pull diagonals...
     error1 = household.FOC_savings(r_s, w_s, b_s, b_splus1, n_s, BQ_s,
-                                   factor, T_H_s, theta[j], etr_params,
+                                   factor, T_H_s, theta[j], e_s,
+                                   p.retire, etr_params,
                                    mtry_params, j, p, 'TPI')
 
     # Errors from FOC for labor supply
@@ -305,7 +306,8 @@ def twist_doughnut(guesses, r, w, BQ, T_H, theta, factor, j, s, t, etr_params,
     # In the below, need to think about how get -length: in the S-dim for
     # e and rho that is passed to the FOC
     error2 = household.FOC_labor(r_s, w_s, b_s, b_splus1, n_s, BQ_s,
-                                 factor, T_H_s, theta[j], e_s, etr_params,
+                                 factor, T_H_s, theta[j], e_s, p.retire,
+                                 etr_params,
                                  mtrx_params, j, p, 'SS')
 
     # Check and punish constraint violations

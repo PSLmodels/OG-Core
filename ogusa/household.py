@@ -100,7 +100,7 @@ def marg_ut_labor(n, p):
     return output
 
 
-def get_cons(r, w, b, b_splus1, n, BQ, net_tax, j, p):
+def get_cons(r, w, b, b_splus1, n, BQ, net_tax, e, j, p):
     '''
     Calculation of househld consumption.
 
@@ -129,17 +129,17 @@ def get_cons(r, w, b, b_splus1, n, BQ, net_tax, j, p):
     '''
     if j is not None:
         lambdas = p.lambdas[j]
-        e = np.squeeze(p.e[:, j])
+        # e = np.squeeze(p.e[:, j])
     else:
         lambdas = np.transpose(p.lambdas)
-        e = np.squeeze(p.e)
+        # e = np.squeeze(p.e)
     cons = ((1 + r) * b + w * e * n + BQ / lambdas - b_splus1 *
             np.exp(p.g_y) - net_tax)
     return cons
 
 
 def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
-                etr_params, mtry_params, j, p, method):
+                e, retire, etr_params, mtry_params, j, p, method):
     '''
     Computes Euler errors for the FOC for savings in the steady state.
     This function is usually looped through over J, so it does one
@@ -214,8 +214,8 @@ def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
         chi_b = p.chi_b
 
     taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
-                            method, etr_params, p)
-    cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, j, p)
+                            method, e, retire, etr_params, p)
+    cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, e, j, p)
     deriv = ((1 + r) - r * (tax.MTR_income(r, w, b, n, factor, True, j,
                                            etr_params, mtry_params, p)))
     savings_ut = (p.rho * np.exp(-p.sigma * p.g_y) * chi_b *
@@ -228,7 +228,7 @@ def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
     return euler_error
 
 
-def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, e, etr_params,
+def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, e, retire, etr_params,
               mtrx_params, j, p, method):
     '''
     Computes Euler errors for the FOC for labor supply in the steady
@@ -299,8 +299,8 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, e, etr_params,
     # else:
     #     e = np.squeeze(p.e)
     taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
-                            method, etr_params, p)
-    cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, j, p)
+                            method, e, retire, etr_params, p)
+    cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, e, j, p)
     deriv = (1 - p.tau_payroll - tax.MTR_income(r, w, b, n, factor,
                                                 False, j, etr_params,
                                                 mtrx_params, p))
