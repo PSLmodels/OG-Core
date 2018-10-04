@@ -167,9 +167,9 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
     '''
     if method == 'SS':
         if preTP:
-            omega = p.omega_SS
-        else:
             omega = p.omega_S_preTP
+        else:
+            omega = p.omega_SS
         if j is not None:
             BQ_presum = omega * p.rho * b_splus1 * p.lambdas[j]
         else:
