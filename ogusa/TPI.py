@@ -124,7 +124,7 @@ def get_initial_SS_values(p):
     #              imm_rates[0].reshape(S, 1), g_n_vector[0], 'SS')
 
     ## Need this to use omega_S_preTP...
-    B0 = aggr.get_K(initial_b, p, 'SS')
+    B0 = aggr.get_K(initial_b, p, 'SS', True)
 
     b_sinit = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
                        list(initial_b[:-1]))
@@ -523,14 +523,14 @@ def run_TPI(p, client=None):
 
     L_init = np.ones((p.T + p.S,)) * Lss
     B_init = np.ones((p.T + p.S,)) * Bss
-    L_params = (p.e.reshape(1, p.S, p.J), p.omega[:p.T, :].reshape(p.T, p.S, 1),
-                lambdas.reshape(1, 1, p.J), 'TPI')
-    L_init[:p.T] = aggr.get_L(n_mat[:p.T], L_params)
-    B_params = (omega[:p.T - 1].reshape(p.T - 1, p.S, 1),
-                p.lambdas.reshape(1, 1, p.J),
-                p.imm_rates[:p.T-1].reshape(p.T - 1, p.S, 1), g_n_vector[1:p.T],
-                'TPI')
-    B_init[1:p.T] = aggr.get_K(b_mat[:p.T - 1], B_params)
+    # L_params = (p.e.reshape(1, p.S, p.J), p.omega[:p.T, :].reshape(p.T, p.S, 1),
+    #             lambdas.reshape(1, 1, p.J), 'TPI')
+    L_init[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
+    # B_params = (omega[:p.T - 1].reshape(p.T - 1, p.S, 1),
+    #             p.lambdas.reshape(1, 1, p.J),
+    #             p.imm_rates[:p.T-1].reshape(p.T - 1, p.S, 1), g_n_vector[1:p.T],
+    #             'TPI')
+    B_init[1:p.T] = aggr.get_K(b_mat[:p.T], p, 'TPI', False)[:p.T - 1]
     B_init[0] = B0
 
     if not p.small_open:
@@ -560,7 +560,7 @@ def run_TPI(p, client=None):
     # BQ = np.zeros((p.T + p.S, p.J))
     # BQ0_params = (omega_S_preTP.reshape(p.S, 1), lambdas,
     #               rho.reshape(S, 1), g_n_vector[0], 'SS')
-    BQ0 = aggr.get_BQ(r[0], initial_b, None, p, 'SS') ### NEED to do omega_S_preTP here!!! How do that in function??  Need another arg..
+    BQ0 = aggr.get_BQ(r[0], initial_b, None, p, 'SS', True) ### NEED to do omega_S_preTP here!!! How do that in function??  Need another arg..
 
     for j in range(p.J):
         BQ[:, j] = list(np.linspace(BQ0[j], BQss[j], p.T)) + [BQss[j]] * p.S
@@ -662,13 +662,13 @@ def run_TPI(p, client=None):
 
         # L_params = (e.reshape(1, S, J), omega[:T, :].reshape(T, S, 1),
         #             lambdas.reshape(1, 1, J), 'TPI')  # defined above
-        L[:p.T] = aggr.get_L(n_mat[:p.T], p)
+        L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
         # B_params = (omega[:T-1].reshape(T-1, S, 1),
         #             lambdas.reshape(1, 1, J),
         #             imm_rates[:T-1].reshape(T-1,S,1),
         #             g_n_vector[1:T], 'TPI')  # defined above
         ## Note the shift here -- need to be able to deal with this in get_K -- maybe easiest to just return a T length vector and keep only the [1:] elements
-        B[1:p.T] = aggr.get_K(bmat_splus1[:p.T - 1], p)
+        B[1:p.T] = aggr.get_K(bmat_splus1[:p.T], p, 'TPI', False)[1:p.T - 1]
         if np.any(B) < 0:
             print('B has negative elements. B[0:9]:', B[0:9])
             print('B[T-2:T]:', B[p.T - 2, p.T])
@@ -723,7 +723,7 @@ def run_TPI(p, client=None):
         print('Y and T_H: ', Y[3], T_H[3])
         b_mat_shift = np.append(np.reshape(initial_b, (1, p.S, p.J)),
                                 b_mat[:p.T - 1, :, :], axis=0)
-        BQnew = aggr.get_BQ(rnew[:p.T], b_mat_shift, p)
+        BQnew = aggr.get_BQ(rnew[:p.T], b_mat_shift, None, p, 'TPI', False)
 
         ##Need to make sure BQ reshaped properly in revenue function
         REVENUE = np.array(list(
@@ -840,8 +840,8 @@ def run_TPI(p, client=None):
     bmat_splus1 = np.zeros((p.T, p.S, p.J))
     bmat_splus1[:, :, :] = b_mat[:p.T, :, :]
 
-    L[:p.T] = aggr.get_L(n_mat[:p.T], L_params)
-    B[1:p.T] = aggr.get_K(bmat_splus1[:p.T-1], B_params)
+    L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
+    B[1:p.T] = aggr.get_K(bmat_splus1[:p.T], p, 'TPI', 'False')[:p.T - 1]
 
     if not p.small_open:
         K[:p.T] = B[:p.T] - D[:p.T]
@@ -867,7 +867,7 @@ def run_TPI(p, client=None):
 
     b_mat_shift = np.append(np.reshape(initial_b, (1, p.S, p.J)),
                             b_mat[:p.T - 1, :, :], axis=0)
-    BQnew = aggr.get_BQ(rnew[:p.T].reshape(p.T, 1), b_mat_shift, BQ_params)
+    BQnew = aggr.get_BQ(rnew, b_mat_shift, None, p, 'TPI', False)
 
     ## Think about maybe more obvious way to fill in Revenue beyond T with SS values...
     REVENUE = np.array(

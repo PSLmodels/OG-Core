@@ -117,7 +117,7 @@ def euler_equation_solver(guesses, *args):
     b_s = np.array([0] + list(b_guess[:-1]))
     b_splus1 = b_guess
 
-    BQ = aggr.get_BQ(r, b_splus1, j, p, 'SS')
+    BQ = aggr.get_BQ(r, b_splus1, j, p, 'SS', False)
     theta = tax.replacement_rate_vals(n_guess, w, factor, j, p)
 
     error1 = household.FOC_savings(r, w, b_s, b_splus1, n_guess, BQ,
@@ -242,13 +242,13 @@ def inner_loop(outer_loop_vars, p, client):
 
     L = aggr.get_L(nssmat, p, 'SS')
     if not p.small_open:
-        B = aggr.get_K(bssmat, p, 'SS')
+        B = aggr.get_K(bssmat, p, 'SS', False)
         if p.budget_balance:
             K = B
         else:
             K = B - p.debt_ratio_ss * Y
     else:
-        K = firm.get_K(L, p)
+        K = firm.get_K(L, p, 'SS', False)
     new_Y = firm.get_Y(K, L, p)
     if p.budget_balance:
         Y = new_Y
@@ -269,7 +269,7 @@ def inner_loop(outer_loop_vars, p, client):
         new_factor = p.mean_income_data / average_income_model
     else:
         new_factor = factor
-    new_BQ = aggr.get_BQ(new_r, bssmat, None, p, 'SS')
+    new_BQ = aggr.get_BQ(new_r, bssmat, None, p, 'SS', False)
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
 
     if p.budget_balance:
@@ -424,7 +424,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
 
     Lss = aggr.get_L(nssmat, p, 'SS')
     if not p.small_open:
-        Bss = aggr.get_K(bssmat_splus1, p, 'SS')
+        Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
         if p.budget_balance:
             debt_ss = 0.0
         else:
@@ -433,10 +433,10 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
         Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS')
     else:
         # Compute capital (K) and wealth (B) separately
-        Kss = firm.get_K(Lss, p.ss_firm_r, p)
+        Kss = firm.get_K(Lss, p.ss_firm_r, p, 'SS', False)
         InvestmentPlaceholder = np.zeros(bssmat_splus1.shape)
         Iss = aggr.get_I(InvestmentPlaceholder, Kss, Kss, p, 'SS')
-        Bss = aggr.get_K(bssmat_splus1, p, 'SS')
+        Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
         BIss = aggr.get_I(bssmat_splus1, Bss, Bss, p, 'SS')
         if p.budget_balance:
             debt_ss = 0.0

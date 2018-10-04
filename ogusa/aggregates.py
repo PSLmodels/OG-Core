@@ -93,7 +93,7 @@ def get_I(b_splus1, K_p1, K, p, method):
     return aggI
 
 
-def get_K(b, p, method):
+def get_K(b, p, method, preTP):
     '''
     Calculates aggregate capital supplied.
 
@@ -116,8 +116,12 @@ def get_K(b, p, method):
 
     if method == 'SS':
         part1 = b * np.transpose(p.omega_SS * p.lambdas)
-        omega_extended = np.append(p.omega_SS[1:], [0.0])
-        imm_extended = np.append(p.imm_rates[-1, 1:], [0.0])
+        if preTP:
+            omega_extended = np.append(p.omega_S_preTP[1:], [0.0])
+            imm_extended = np.append(p.imm_rates[0, 1:], [0.0])
+        else:
+            omega_extended = np.append(p.omega_SS[1:], [0.0])
+            imm_extended = np.append(p.imm_rates[-1, 1:], [0.0])
         part2 = b * np.transpose(omega_extended * imm_extended * p.lambdas)
         K_presum = part1 + part2
         K = K_presum.sum()
@@ -139,7 +143,7 @@ def get_K(b, p, method):
     return K
 
 
-def get_BQ(r, b_splus1, j, p, method):
+def get_BQ(r, b_splus1, j, p, method, preTP):
     '''
     Calculation of bequests to each lifetime income group.
 
@@ -162,11 +166,15 @@ def get_BQ(r, b_splus1, j, p, method):
     Returns: BQ
     '''
     if method == 'SS':
-        if j is not None:
-            BQ_presum = p.omega_SS * p.rho * b_splus1 * p.lambdas[j]
+        if preTP:
+            omega = p.omega_SS
         else:
-            BQ_presum = (np.transpose(p.omega_SS *
-                                      (p.rho * p.lambdas)) * b_splus1)
+            omega = p.omega_S_preTP
+        if j is not None:
+            BQ_presum = omega * p.rho * b_splus1 * p.lambdas[j]
+        else:
+            BQ_presum = (np.transpose(omega * (p.rho * p.lambdas)) *
+                         b_splus1)
         BQ = BQ_presum.sum(0)
         BQ *= (1.0 + r) / (1.0 + p.g_n_ss)
     elif method == 'TPI':
