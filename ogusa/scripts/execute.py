@@ -104,7 +104,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
             Run the TPI simulation
         ------------------------------------------------------------------------
         '''
-        tpi_output = TPI.run_TPI(spec)
+        tpi_output = TPI.run_TPI(spec, client=client)
 
         '''
         ------------------------------------------------------------------------

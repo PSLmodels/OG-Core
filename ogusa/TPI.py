@@ -61,15 +61,14 @@ steady state computation in ss_vars.pkl
 '''
 
 
-def create_tpi_params(baseline_dir, p):
+def get_initial_SS_values(p):
 
     '''
     ------------------------------------------------------------------------
-    Set factor and initial capital stock to SS from baseline
+    Get values of variables for the initial period and the steady state.
     ------------------------------------------------------------------------
     '''
-    baseline_ss = os.path.join(p.baseline_dir,
-                               "SS/SS_vars.pkl")
+    baseline_ss = os.path.join(p.baseline_dir, "SS/SS_vars.pkl")
     ss_baseline_vars = pickle.load(open(baseline_ss, "rb"))
     factor = ss_baseline_vars['factor_ss']
     initial_b = ss_baseline_vars['bssmat_splus1']
@@ -93,7 +92,7 @@ def create_tpi_params(baseline_dir, p):
             ss_baseline_vars['nssmat'], ss_baseline_vars['wss'], factor,
             None, p)
     elif not p.baseline:
-        reform_ss = os.path.join(p.input_dir, "SS/SS_vars.pkl")
+        reform_ss = os.path.join(p.output_base, "SS/SS_vars.pkl")
         ss_reform_vars = pickle.load(open(reform_ss, "rb"))
         SS_values = (ss_reform_vars['Kss'], ss_reform_vars['Bss'],
                      ss_reform_vars['Lss'], ss_reform_vars['rss'],
@@ -134,7 +133,7 @@ def create_tpi_params(baseline_dir, p):
     # Intial gov't debt must match that in the baseline
     initial_debt = p.initial_debt
     if not p.baseline:
-        baseline_tpi = os.path.join(baseline_dir, "TPI/TPI_vars.pkl")
+        baseline_tpi = os.path.join(p.baseline_dir, "TPI/TPI_vars.pkl")
         tpi_baseline_vars = pickle.load(open(baseline_tpi, "rb"))
         D0 = tpi_baseline_vars['D'][0]
     else:
@@ -143,10 +142,10 @@ def create_tpi_params(baseline_dir, p):
     initial_values = (B0, b_sinit, b_splus1init, factor, initial_b,
                       initial_n, omega_S_preTP, initial_debt, D0)
 
-    return (initial_values, SS_values, p)
+    return initial_values, SS_values
 
 
-def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, p):
+def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, initial_b, p):
     '''
     Solves the first entries of the upper triangle of the twist
     doughnut.  This is separate from the main TPI function because the
@@ -169,7 +168,7 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, p):
     '''
     b_splus1 = float(guesses[0])
     n = float(guesses[1])
-    b_s = float(p.initial_b[-2, j])
+    b_s = float(initial_b[-2, j])
 
     # Find errors from FOC for savings and FOC for labor supply
     retire_fd = 0  # this sets retire to true in these agents who are
@@ -228,7 +227,7 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, j, p):
 
 
 def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, etr_params,
-                   mtrx_params, mtry_params, p):
+                   mtrx_params, mtry_params, initial_b, p):
     '''
     Parameters:
         guesses = distribution of capital and labor (various length list)
@@ -259,7 +258,7 @@ def twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, etr_params,
     if length == p.S:
         b_s = np.array([0] + list(b_guess[:-1]))
     else:
-        b_s = np.array([(p.initial_b[-(s + 3), j])] + list(b_guess[:-1]))
+        b_s = np.array([(initial_b[-(s + 3), j])] + list(b_guess[:-1]))
 
     b_splus1 = b_guess
     # b_splus2 = np.array(list(b_guess[1:]) + [0])
@@ -373,8 +372,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
     b_mat[0, -1], n_mat[0, -1] =\
         np.array(opt.fsolve(firstdoughnutring, [guesses_b[0, -1],
                                                 guesses_n[0, -1]],
-                            args=(r[0], w[0], BQ[0, j], T_H[0], j, p),
-                            xtol=MINIMIZER_TOL))
+                            args=(r[0], w[0], BQ[0, j], T_H[0], j,
+                                  initial_b, p), xtol=MINIMIZER_TOL))
 
     for s in range(p.S - 2):  # Upper triangle
         ind2 = np.arange(s + 2)
@@ -428,7 +427,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
                                args=(r, w, BQ[:, j], T_H, j, s,
                                      0, etr_params_to_use,
                                      mtrx_params_to_use,
-                                     mtry_params_to_use, p),
+                                     mtry_params_to_use, initial_b, p),
                                xtol=MINIMIZER_TOL)
 
         b_vec = solutions[:int(len(solutions) / 2)]
@@ -458,7 +457,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
                        list(n_guesses_to_use),
                        args=(r, w, BQ[:, j], T_H, j, None, t,
                              etr_params_to_use, mtrx_params_to_use,
-                             mtry_params_to_use, p),
+                             mtry_params_to_use, initial_b, p),
                        xtol=MINIMIZER_TOL, full_output=True)
         euler_errors[t, :] = infodict['fvec']
 
@@ -476,9 +475,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
 #             small_open_params, initial_values, SS_values, fiscal_params,
 #             biz_tax_params, output_dir="./OUTPUT",
 #             baseline_spending=False, client=None, num_workers=1):
-def run_TPI(initial_values, SS_values, p,
-            output_dir="./OUTPUT",
-            baseline_spending=False, client=None, num_workers=1):
+def run_TPI(p, client=None):
 
     # unpack tuples of parameters
     # (tax_func_type, analytical_mtrs, etr_params, mtrx_params,
@@ -490,6 +487,7 @@ def run_TPI(initial_values, SS_values, p,
     #  factor, h_wealth, p_wealth, m_wealth, b_ellipse, upsilon, chi_b,
     #  chi_n, theta, baseline) = tpi_params
     # small_open, tpi_firm_r, tpi_hh_r = small_open_params
+    initial_values, SS_values = get_initial_SS_values(p)
     (B0, b_sinit, b_splus1init, factor, initial_b, initial_n,
      omega_S_preTP, initial_debt, D0) = initial_values
     (Kss, Bss, Lss, rss, wss, BQss, T_Hss, revenue_ss, bssmat_splus1,
@@ -511,7 +509,7 @@ def run_TPI(initial_values, SS_values, p,
     domain = np.linspace(0, p.T, p.T)
     domain2 = np.tile(domain.reshape(p.T, 1, 1), (1, p.S, p.J))
     ending_b = bssmat_splus1
-    guesses_b = (-1 / (domain2 + 1)) * (ending_b - p.initial_b) + ending_b
+    guesses_b = (-1 / (domain2 + 1)) * (ending_b - initial_b) + ending_b
     ending_b_tail = np.tile(ending_b.reshape(1, p.S, p.J), (p.S, 1, 1))
     guesses_b = np.append(guesses_b, ending_b_tail, axis=0)
 
@@ -562,7 +560,7 @@ def run_TPI(initial_values, SS_values, p,
     # BQ = np.zeros((p.T + p.S, p.J))
     # BQ0_params = (omega_S_preTP.reshape(p.S, 1), lambdas,
     #               rho.reshape(S, 1), g_n_vector[0], 'SS')
-    BQ0 = aggr.get_BQ(r[0], p.initial_b, None, p, 'SS') ### NEED to do omega_S_preTP here!!! How do that in function??  Need another arg..
+    BQ0 = aggr.get_BQ(r[0], initial_b, None, p, 'SS') ### NEED to do omega_S_preTP here!!! How do that in function??  Need another arg..
 
     for j in range(p.J):
         BQ[:, j] = list(np.linspace(BQ0[j], BQss[j], p.T)) + [BQss[j]] * p.S
@@ -652,7 +650,7 @@ def run_TPI(initial_values, SS_values, p,
                 delayed(inner_loop)(guesses, outer_loop_vars,
                                     initial_values, j, ind, p))
         results = compute(*lazy_values, get=dask.multiprocessing.get,
-                          num_workers=num_workers)
+                          num_workers=p.num_workers)
         for j, result in enumerate(results):
             euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result
 
@@ -723,7 +721,7 @@ def run_TPI(initial_values, SS_values, p,
         wnew = firm.get_w_from_r(rnew[:p.T], p)
 
         print('Y and T_H: ', Y[3], T_H[3])
-        b_mat_shift = np.append(np.reshape(p.initial_b, (1, p.S, p.J)),
+        b_mat_shift = np.append(np.reshape(initial_b, (1, p.S, p.J)),
                                 b_mat[:p.T - 1, :, :], axis=0)
         BQnew = aggr.get_BQ(rnew[:p.T], b_mat_shift, p)
 
@@ -832,12 +830,12 @@ def run_TPI(initial_values, SS_values, p,
             delayed(inner_loop)(guesses, outer_loop_vars, initial_values,
                                 j, ind, p))
     results = compute(*lazy_values, get=dask.multiprocessing.get,
-                      num_workers=num_workers)
+                      num_workers=p.num_workers)
     for j, result in enumerate(results):
         euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result
 
     bmat_s = np.zeros((p.T, p.S, p.J))
-    bmat_s[0, 1:, :] = p.initial_b[:-1, :]
+    bmat_s[0, 1:, :] = initial_b[:-1, :]
     bmat_s[1:, 1:, :] = b_mat[:T-1, :-1, :]
     bmat_splus1 = np.zeros((p.T, p.S, p.J))
     bmat_splus1[:, :, :] = b_mat[:p.T, :, :]
