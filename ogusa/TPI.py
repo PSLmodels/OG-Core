@@ -146,7 +146,8 @@ def get_initial_SS_values(p):
     return initial_values, SS_values, baseline_values
 
 
-def firstdoughnutring(guesses, r, w, b, BQ, T_H, theta, factor, j, initial_b, p):
+def firstdoughnutring(guesses, r, w, BQ, T_H, theta, factor, j,
+                      initial_b, p):
     '''
     Solves the first entries of the upper triangle of the twist
     doughnut.  This is separate from the main TPI function because the
@@ -172,7 +173,7 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, theta, factor, j, initial_b, p)
     b_s = float(initial_b[-2, j])
 
     # Find errors from FOC for savings and FOC for labor supply
-    retire_fd = 0  # this sets retire to true in these agents who are
+    # retire_fd = 0  # this sets retire to true in these agents who are
     # in last period in life
     # Note using method = "SS" below because just for one period
 
@@ -193,8 +194,9 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, theta, factor, j, initial_b, p)
 
     # In the below, need to think about how get last year of life for
     # e and rho that is passed to the FOC
-    error1 = household.FOC_savings(r, w, b_s, b_splus1, n, BQ, factor,
-                                   T_H, theta[j], p.e[-1, j], 0, p.etr_params[0, -1, :],
+    error1 = household.FOC_savings(np.array([r]), np.array([w]), b_s, b_splus1, np.array([n]), np.array([BQ]), factor,
+                                   np.array([T_H]), theta[j], p.e[-1, j], p.rho[-1], 0,
+                                   p.etr_params[0, -1, :],
                                    p.mtry_params[0, -1, :], j, p, 'SS')
 
     # foc_labor_params = (np.array([e[-1, j]]), sigma, g_y, theta[j],
@@ -214,9 +216,11 @@ def firstdoughnutring(guesses, r, w, b, BQ, T_H, theta, factor, j, initial_b, p)
 
     # In the below, need to think about how get last year of life for
     # e and rho that is passed to the FOC
-    error2 = household.FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H,
-                                 theta[j], p.e[-1, j], 0, p.etr_params[0, -1, :],
+    error2 = household.FOC_labor(np.array([r]), np.array([w]), b_s, b_splus1, np.array([n]), np.array([BQ]), factor, np.array([T_H]),
+                                 theta[j], p.chi_n[-1], p.e[-1, j], 0, p.etr_params[0, -1, :],
                                  p.mtrx_params[0, -1, :], j, p, 'SS')
+    # print('1st donut error1 = ', error1.shape)
+    # print('1st donut error2 = ', error2.shape)
 
     if n <= 0 or n >= 1:
         error2 += 1e12
@@ -269,7 +273,9 @@ def twist_doughnut(guesses, r, w, BQ, T_H, theta, factor, j, s, t, etr_params,
     # r_splus1 = r[t + 1:t + length + 1]
     n_s = n_guess
     # n_extended = np.array(list(n_guess[1:]) + [0])
+    chi_n_s = p.chi_n[-length:]
     e_s = p.e[-length:, j]
+    rho_s = p.rho[-length:]
     # e_extended = np.array(list(e[-length + 1:, j]) + [0])
     BQ_s = BQ[t:t + length]
     # BQ_splus1 = BQ[t + 1:t + length + 1]
@@ -290,7 +296,7 @@ def twist_doughnut(guesses, r, w, BQ, T_H, theta, factor, j, s, t, etr_params,
     # e and rho that is passed to the FOC
     ## also see how need to do etr and mtr params - prob need to pull diagonals...
     error1 = household.FOC_savings(r_s, w_s, b_s, b_splus1, n_s, BQ_s,
-                                   factor, T_H_s, theta[j], e_s,
+                                   factor, T_H_s, theta, e_s, rho_s,
                                    p.retire, etr_params,
                                    mtry_params, j, p, 'TPI')
 
@@ -306,9 +312,9 @@ def twist_doughnut(guesses, r, w, BQ, T_H, theta, factor, j, s, t, etr_params,
     # In the below, need to think about how get -length: in the S-dim for
     # e and rho that is passed to the FOC
     error2 = household.FOC_labor(r_s, w_s, b_s, b_splus1, n_s, BQ_s,
-                                 factor, T_H_s, theta[j], e_s, p.retire,
+                                 factor, T_H_s, theta, chi_n_s, e_s, p.retire,
                                  etr_params,
-                                 mtrx_params, j, p, 'SS')
+                                 mtrx_params, j, p, 'TPI')
 
     # Check and punish constraint violations
     mask1 = n_guess < 0
@@ -349,7 +355,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
     '''
     #unpack variables and parameters pass to function
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n,
-     omega_S_preTP, initial_debt, D0) = initial_values
+     initial_debt, D0) = initial_values
 
     guesses_b, guesses_n = guesses
     r, K, BQ, T_H, theta = outer_loop_vars
@@ -428,7 +434,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
         solutions = opt.fsolve(twist_doughnut,
                                list(b_guesses_to_use) +
                                list(n_guesses_to_use),
-                               args=(r, w, BQ[:, j], T_H, j, s,
+                               args=(r, w, BQ[:, j], T_H, theta, factor,
+                                     j, s,
                                      0, etr_params_to_use,
                                      mtrx_params_to_use,
                                      mtry_params_to_use, initial_b, p),
@@ -445,15 +452,28 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
         n_guesses_to_use = np.diag(guesses_n[t:t + p.S, :])
 
         # initialize array of diagonal elements
+        etr_params_TP = np.zeros((p.T + p.S, p.S,  p.etr_params.shape[2]))
+        etr_params_TP[:p.T, :, :] = p.etr_params
+        etr_params_TP[p.T:, :, :] = p.etr_params[-1, :, :]
+
+        mtrx_params_TP = np.zeros((p.T + p.S, p.S,  p.mtrx_params.shape[2]))
+        mtrx_params_TP[:p.T, :, :] = p.mtrx_params
+        mtrx_params_TP[p.T:, :, :] = p.mtrx_params[-1, :, :]
+
+        mtry_params_TP = np.zeros((p.T + p.S, p.S,  p.mtry_params.shape[2]))
+        mtry_params_TP[:p.T, :, :] = p.mtry_params
+        mtry_params_TP[p.T:, :, :] = p.mtry_params[-1, :, :]
+
         length_diag =\
-            np.diag(p.etr_params[t:t + p.S, :, 0]).shape[0]
+            np.diag(etr_params_TP[t:t + p.S, :, 0]).shape[0]
         etr_params_to_use = np.zeros((length_diag, p.etr_params.shape[2]))
         mtrx_params_to_use = np.zeros((length_diag, p.mtrx_params.shape[2]))
         mtry_params_to_use = np.zeros((length_diag, p.mtry_params.shape[2]))
+
         for i in range(p.etr_params.shape[2]):
-            etr_params_to_use[:, i] = np.diag(p.etr_params[t:t + p.S, :, i])
-            mtrx_params_to_use[:, i] = np.diag(p.mtrx_params[t:t + p.S, :, i])
-            mtry_params_to_use[:, i] = np.diag(p.mtry_params[t:t + p.S, :, i])
+            etr_params_to_use[:, i] = np.diag(etr_params_TP[t:t + p.S, :, i])
+            mtrx_params_to_use[:, i] = np.diag(mtrx_params_TP[t:t + p.S, :, i])
+            mtry_params_to_use[:, i] = np.diag(mtry_params_TP[t:t + p.S, :, i])
         #
         # TPI_solver_params = (inc_tax_params_TP, tpi_params, None)
         [solutions, infodict, ier, message] =\
@@ -493,7 +513,7 @@ def run_TPI(p, client=None):
     # small_open, tpi_firm_r, tpi_hh_r = small_open_params
     initial_values, SS_values, baseline_values = get_initial_SS_values(p)
     (B0, b_sinit, b_splus1init, factor, initial_b, initial_n,
-     omega_S_preTP, initial_debt, D0) = initial_values
+     initial_debt, D0) = initial_values
     (Kss, Bss, Lss, rss, wss, BQss, T_Hss, revenue_ss, bssmat_splus1,
      nssmat, Yss, Gss, theta) = SS_values
     (T_Hbaseline, Gbaseline) = baseline_values
@@ -673,7 +693,7 @@ def run_TPI(p, client=None):
         #             imm_rates[:T-1].reshape(T-1,S,1),
         #             g_n_vector[1:T], 'TPI')  # defined above
         ## Note the shift here -- need to be able to deal with this in get_K -- maybe easiest to just return a T length vector and keep only the [1:] elements
-        B[1:p.T] = aggr.get_K(bmat_splus1[:p.T], p, 'TPI', False)[1:p.T - 1]
+        B[1:p.T] = aggr.get_K(bmat_splus1[:p.T], p, 'TPI', False)[:p.T - 1]
         if np.any(B) < 0:
             print('B has negative elements. B[0:9]:', B[0:9])
             print('B[T-2:T]:', B[p.T - 2, p.T])

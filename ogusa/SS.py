@@ -121,11 +121,11 @@ def euler_equation_solver(guesses, *args):
     theta = tax.replacement_rate_vals(n_guess, w, factor, j, p)
 
     error1 = household.FOC_savings(r, w, b_s, b_splus1, n_guess, BQ,
-                                   factor, T_H, theta, p.e[:, j], p.retire,
+                                   factor, T_H, theta, p.e[:, j], p.rho, p.retire,
                                    p.etr_params[-1, :, :],
                                    p.mtry_params[-1, :, :], j, p, 'SS')
     error2 = household.FOC_labor(r, w, b_s, b_splus1, n_guess, BQ, factor, T_H,
-                                 theta, p.e[:, j], p.retire,
+                                 theta, p.chi_n, p.e[:, j], p.retire,
                                  p.etr_params[-1, :, :],
                                  p.mtrx_params[-1, :, :], j, p, 'SS')
 
@@ -146,8 +146,8 @@ def euler_equation_solver(guesses, *args):
     error2[mask4] = 1e14
 
     taxes = tax.total_taxes(r, w, b_s, n_guess, BQ, factor, T_H, theta,
-                            j, False, 'SS', p.etr_params[-1, :, :], p)
-    cons = household.get_cons(r, w, b_s, b_splus1, n_guess, BQ, taxes,
+                            j, False, 'SS', p.e[:, j], p.retire, p.etr_params[-1, :, :], p)
+    cons = household.get_cons(r, w, b_s, b_splus1, n_guess, BQ, taxes, p.e[:, j],
                               j, p)
 
     mask6 = cons < 0
@@ -223,23 +223,41 @@ def inner_loop(outer_loop_vars, p, client):
     #         args=euler_args, xtol=MINIMIZER_TOL, full_output=True))
     #
     # results = client.gather(lazy_values)
+
+
+
+
     #
     # for j, result in enumerate(results):
     #     [solutions, infodict, ier, message] = result
     #     euler_errors[:, j] = infodict['fvec']
     #     bssmat[:, j] = solutions[:p.S]
     #     nssmat[:, j] = solutions[p.S:]
+    # lazy_values = []
+    # for j in range(p.J):
+    #     # guesses = np.append(bssmat[:, j], nssmat[:, j])
+    #     guesses = np.hstack((bssmat[:, j], nssmat[:, j]))
+    #     euler_args = (r, w, T_H, factor, j, p)
+    #     results = opt.root(euler_equation_solver, guesses * 0.9,
+    #                        method='lm', args=euler_args,
+    #                        tol=MINIMIZER_TOL)
+    #     bssmat[:, j] = results.x[:p.S]
+    #     nssmat[:, j] = results.x[p.S:]
+    #     euler_errors[:, j] = results.fun
     lazy_values = []
     for j in range(p.J):
-        # guesses = np.append(bssmat[:, j], nssmat[:, j])
-        guesses = np.hstack((bssmat[:, j], nssmat[:, j]))
+        guesses = np.append(bssmat[:, j], nssmat[:, j])
         euler_args = (r, w, T_H, factor, j, p)
-        results = opt.root(euler_equation_solver, guesses * 0.9,
-                           method='lm', args=euler_args,
-                           tol=MINIMIZER_TOL)
-        bssmat[:, j] = results.x[:p.S]
-        nssmat[:, j] = results.x[p.S:]
-        euler_errors[:, j] = results.fun
+        lazy_values.append(delayed(opt.root)(euler_equation_solver,
+                                             guesses * .9, method='lm',
+                                             args=euler_args,
+                                             tol=MINIMIZER_TOL))
+    results = compute(*lazy_values, get=dask.multiprocessing.get,
+                      num_workers=p.num_workers)
+    for j, result in enumerate(results):
+        euler_errors[:, j] = result.fun
+        bssmat[:, j] = result.X[:p.S]
+        nssmat[:, j] = results.X[p.S:]
 
     L = aggr.get_L(nssmat, p, 'SS')
     if not p.small_open:
@@ -513,10 +531,10 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
     # solve resource constraint
     taxss = tax.total_taxes(rss, wss, bssmat_s, nssmat, BQss, factor_ss,
                             T_Hss, theta, None, False, 'SS',
-                            etr_params_3D, p)
+                            p.e, p.retire, etr_params_3D, p)
     cssmat = household.get_cons(rss, wss, bssmat_s, bssmat_splus1,
                                 nssmat, BQss.reshape(1, p.J), taxss,
-                                None, p)
+                                p.e, None, p)
 
     business_revenue = tax.get_biz_tax(wss, Yss, Lss, Kss, p)
     IITpayroll_revenue = revenue_ss - business_revenue

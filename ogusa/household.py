@@ -46,7 +46,7 @@ def marg_ut_cons(c, sigma):
     return output
 
 
-def marg_ut_labor(n, p):
+def marg_ut_labor(n, chi_n, p):
     '''
     Computation of marginal disutility of labor.
     Inputs:
@@ -95,7 +95,7 @@ def marg_ut_labor(n, p):
           (p.upsilon - 1)) * ((1 - ((eps_high / p.ltilde) ** p.upsilon)) **
           ((1 - p.upsilon) / p.upsilon)) - (2 * d2 * eps_high))
     MDU_n[nvec_high] = 2 * d2 * nvec[nvec_high] + d1
-    output = MDU_n * np.squeeze(p.chi_n)
+    output = MDU_n * np.squeeze(chi_n)
     output = np.squeeze(output)
     return output
 
@@ -139,7 +139,7 @@ def get_cons(r, w, b, b_splus1, n, BQ, net_tax, e, j, p):
 
 
 def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
-                e, retire, etr_params, mtry_params, j, p, method):
+                e, rho, retire, etr_params, mtry_params, j, p, method):
     '''
     Computes Euler errors for the FOC for savings in the steady state.
     This function is usually looped through over J, so it does one
@@ -207,29 +207,41 @@ def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
     Returns: euler
     '''
     if j is not None:
-        euler_error = np.zeros(p.S)
+        # euler_error = np.zeros_like(n)
         chi_b = p.chi_b[j]
     else:
-        euler_error = np.squeeze(np.zeros((p.S, p.J)))
+        # euler_error = np.squeeze(np.zeros_like(n))
         chi_b = p.chi_b
 
+    # print('taxes elements shape = ', r.shape, w.shape,
+    #           n.shape, T_H.shape, theta.shape, e.shape, etr_params.shape)
     taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
                             method, e, retire, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, e, j, p)
-    deriv = ((1 + r) - r * (tax.MTR_income(r, w, b, n, factor, True, j,
+    # if method =='TPI':
+    #     print('Shapes ==', taxes.shape, r.shape, w.shape, cons.shape, b.shape, b_splus1.shape, n.shape, T_H.shape, theta.shape, BQ.shape, e.shape)
+    deriv = ((1 + r) - r * (tax.MTR_income(r, w, b, n, factor, True, e,
                                            etr_params, mtry_params, p)))
-    savings_ut = (p.rho * np.exp(-p.sigma * p.g_y) * chi_b *
+    savings_ut = (rho * np.exp(-p.sigma * p.g_y) * chi_b *
                   b_splus1 ** (-p.sigma))
-    euler_error[:-1] = (marg_ut_cons(cons[:-1], p.sigma) - p.beta * (1 - p.rho[:-1]) *
-                        deriv[1:] * marg_ut_cons(cons[1:], p.sigma) *
-                        np.exp(-p.sigma * p.g_y) - savings_ut[:-1])
-    euler_error[-1] = (marg_ut_cons(cons[-1], p.sigma) - savings_ut[-1])
+
+    euler_error = np.zeros_like(n)
+    # print('SHAPES = ', n.shape, cons.shape, deriv.shape, taxes.shape, savings_ut.shape)
+    # print('Euler errors zeros = ', euler_error)
+    if n.shape[0] > 1:
+        # print('Shapes === ', n.shape[0], marg_ut_cons(cons[:-1], p.sigma).shape, rho[:-1].shape, deriv[1:].shape, marg_ut_cons(cons[1:], p.sigma).shape, savings_ut[:-1].shape)
+        euler_error[:-1] = (marg_ut_cons(cons[:-1], p.sigma) - p.beta * (1 - rho[:-1]) *
+                            deriv[1:] * marg_ut_cons(cons[1:], p.sigma) *
+                            np.exp(-p.sigma * p.g_y) - savings_ut[:-1])
+        euler_error[-1] = (marg_ut_cons(cons[-1], p.sigma) - savings_ut[-1])
+    else:
+        euler_error[-1] = (marg_ut_cons(cons[-1], p.sigma) - savings_ut[-1])
 
     return euler_error
 
 
-def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, e, retire, etr_params,
-              mtrx_params, j, p, method):
+def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, chi_n, e,
+              retire, etr_params, mtrx_params, j, p, method):
     '''
     Computes Euler errors for the FOC for labor supply in the steady
     state.  This function is usually looped through over J, so it does
@@ -302,10 +314,12 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, e, retire, etr_param
                             method, e, retire, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, e, j, p)
     deriv = (1 - p.tau_payroll - tax.MTR_income(r, w, b, n, factor,
-                                                False, j, etr_params,
+                                                False, e, etr_params,
                                                 mtrx_params, p))
+    # print('Shapes = ', taxes.shape, cons.shape, deriv.shape)
     FOC_error = (marg_ut_cons(cons, p.sigma) * w * deriv * e -
-                 marg_ut_labor(n, p))
+                 marg_ut_labor(n, chi_n, p))
+    # print('FOC labor eror = ', FOC_error.shape)
 
     return FOC_error
 

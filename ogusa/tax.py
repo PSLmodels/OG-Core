@@ -107,7 +107,7 @@ def MTR_wealth(b, p):
     return tau_prime
 
 
-def ETR_income(r, w, b, n, factor, j, etr_params, p):
+def ETR_income(r, w, b, n, factor, e, etr_params, p):
     '''
     --------------------------------------------------------------------
     Calculates effective personal income tax rate.
@@ -154,10 +154,10 @@ def ETR_income(r, w, b, n, factor, j, etr_params, p):
     RETURNS: tau
     --------------------------------------------------------------------
     '''
-    if j is not None:
-        e = np.squeeze(p.e[:, j])
-    else:
-        e = np.squeeze(p.e)
+    # if j is not None:
+    #     e = np.squeeze(p.e[:, j])
+    # else:
+    #     e = np.squeeze(p.e)
 
     X = (w * e * n) * factor
     Y = (r * b) * factor
@@ -195,6 +195,7 @@ def ETR_income(r, w, b, n, factor, j, etr_params, p):
         shift = np.squeeze(etr_params[..., 10])
         share = np.squeeze(etr_params[..., 11])
 
+        # print('Shapes in ETR == ', I.shape, max_x.shape, np.array([b]).shape, n.shape, X.shape, A.shape, B.shape, min_x.shape, X2.shape)
         tau_x = ((max_x - min_x) * (A * X2 + B * X) /
                  (A * X2 + B * X + 1) + min_x)
         tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
@@ -205,7 +206,7 @@ def ETR_income(r, w, b, n, factor, j, etr_params, p):
     return tau
 
 
-def MTR_income(r, w, b, n, factor, mtr_capital, j, etr_params,
+def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params,
                mtr_params, p):
     '''
     --------------------------------------------------------------------
@@ -258,10 +259,10 @@ def MTR_income(r, w, b, n, factor, mtr_capital, j, etr_params,
     RETURNS: tau
     --------------------------------------------------------------------
     '''
-    if j is not None:
-        e = np.squeeze(p.e[:, j])
-    else:
-        e = np.squeeze(p.e)
+    # if j is not None:
+    #     e = np.squeeze(p.e[:, j])
+    # else:
+    #     e = np.squeeze(p.e)
 
     X = (w * e * n) * factor
     Y = (r * b) * factor
@@ -433,10 +434,12 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
     if j is not None:
         # e = np.squeeze(p.e[:, j])
         lambdas = p.lambdas[j]
-        if method == 'TPI':
-            r = np.squeeze(utils.to_timepath_shape(r, p)[:, j])
-            w = np.squeeze(utils.to_timepath_shape(w, p)[:, j])
-            T_H = np.squeeze(utils.to_timepath_shape(T_H, p)[:, j])
+        # if method == 'TPI':
+        #     # print('r shape == ', np.squeeze(utils.to_timepath_shape(r, p)).shape)
+        #     len(b.shape) == 2:
+        #         r = np.squeeze(utils.to_timepath_shape(r, p)[:, :, j])
+        #         w = np.squeeze(utils.to_timepath_shape(w, p)[:, :, j])
+        #         T_H = np.squeeze(utils.to_timepath_shape(T_H, p)[:, :, j])
     else:
         # e = np.squeeze(p.e)
         lambdas = np.transpose(p.lambdas)
@@ -445,8 +448,12 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
             w = utils.to_timepath_shape(w, p)
             T_H = utils.to_timepath_shape(T_H, p)
 
+    # if method == 'TPI':
+    #     print('Shapes in taxes === ', r.shape, w.shape,  b.shape, e.shape, n.shape)
     I = r * b + w * e * n
-    T_I = ETR_income(r, w, b, n, factor, j, etr_params, p) * I
+    # if method == 'TPI':
+    #     print('Shapes in total taxes = ', I.shape, e.shape, b.shape, r.shape, n.shape)
+    T_I = ETR_income(r, w, b, n, factor, e, etr_params, p) * I
     T_P = p.tau_payroll * w * e * n
     T_W = ETR_wealth(b, p) * b
 
@@ -456,9 +463,9 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
         # The shift boolean makes sure we start replacement rates
         # at the correct age.
         if shift is False:
-            T_P[p.retire:] -= theta * w
+            T_P[retire:] -= theta * w
         else:
-            T_P[p.retire - 1:] -= theta * w
+            T_P[retire - 1:] -= theta * w
         T_BQ = p.tau_bq * (BQ / lambdas)
     elif method == 'TPI':
         if not shift:
@@ -466,14 +473,14 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
             # counting backwards with different length lists.  This will
             # always be the correct location of retirement, depending
             # on the shape of the lists.
-            retireTPI = (p.retire - p.S)
+            retireTPI = (retire - p.S)
         else:
-            retireTPI = (p.retire - 1 - p.S)
+            retireTPI = (retire - 1 - p.S)
         if len(b.shape) != 3:
             T_P[retireTPI:] -= theta[j] * w[retireTPI:]
         else:
-            T_P[:, p.retire:, :] -= (theta.reshape(1, 1, p.J) *
-                                     w[:, p.retire:, :])
+            T_P[:, retire:, :] -= (theta.reshape(1, 1, p.J) *
+                                     w[:, retire:, :])
         T_BQ = p.tau_bq * BQ / lambdas
     elif method == 'TPI_scalar':
         # The above methods won't work if scalars are used.  This option

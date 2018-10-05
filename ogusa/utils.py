@@ -310,7 +310,10 @@ def to_timepath_shape(some_array, p):
     This function takes an vector of length T and tiles it to fill a
     TxSxJ array for time path computations.
     '''
-    tp_array = np.tile(np.reshape(some_array, (p.T, 1, 1)), (1, p.S, p.J))
+    # tp_array = np.tile(np.reshape(some_array,
+    #                               (some_array.shape[0], 1, 1)),
+    #                    (1, some_array.shape[0], p.J))
+    tp_array = np.some_array.reshape(some_array.shape[0], 1, 1)
     return tp_array
 
 
