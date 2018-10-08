@@ -32,7 +32,7 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
         G[0] = G0
     else:
         G = Gbaseline
-    growth = (1 + p.g_n_vector) * np.exp(p.g_y)
+    growth = (1 + p.g_n) * np.exp(p.g_y)
 
     t = 1
     while t < p.T-1:

@@ -698,6 +698,9 @@ def run_TPI(p, client=None):
             print('B has negative elements. B[0:9]:', B[0:9])
             print('B[T-2:T]:', B[p.T - 2, p.T])
 
+        etr_parms4D = np.tile(p.etr_params.reshape(p.T, p.S, 1, p.etr_params.shape[2]), (1, 1, p.J, 1))
+        BQ_3D = np.tile(BQ.reshape(BQ.shape[0], 1, BQ.shape[1]), (1, p.S, 1))
+
         if not p.small_open:
             if p.budget_balance:
                 K[:p.T] = B[:p.T]
@@ -708,9 +711,9 @@ def run_TPI(p, client=None):
                 ## Need to make sure BQ reshaped correctly in revenue function
                 REVENUE = np.array(list(
                     aggr.revenue(r[:p.T], w[:p.T], bmat_s,
-                                 n_mat[:p.T, :, :], BQ[:p.T], Y[:p.T],
+                                 n_mat[:p.T, :, :], BQ_3D[:p.T, :, :], Y[:p.T],
                                  L[:p.T], K[:p.T], factor, theta,
-                                 p.etr_params, p, 'TPI')) +
+                                 etr_parms4D, p, 'TPI')) +
                                    [revenue_ss] * p.S)
 
                 # set intial debt value
@@ -751,10 +754,11 @@ def run_TPI(p, client=None):
         BQnew = aggr.get_BQ(rnew[:p.T], b_mat_shift, None, p, 'TPI', False)
 
         ##Need to make sure BQ reshaped properly in revenue function
+        BQnew_3D = np.tile(BQnew.reshape(BQnew.shape[0], 1, BQnew.shape[1]), (1, p.S, 1))
         REVENUE = np.array(list(
             aggr.revenue(rnew[:p.T], wnew[:p.T], bmat_s,
-                         n_mat[:p.T, :, :], BQnew[:p.T], Ynew[:p.T],
-                         L[:p.T], K[:p.T], factor, theta, p.etr_params,
+                         n_mat[:p.T, :, :], BQnew_3D[:p.T, :, :], Ynew[:p.T],
+                         L[:p.T], K[:p.T], factor, theta, etr_parms4D,
                          p, 'TPI')) + [revenue_ss] * p.S)
 
         if p.budget_balance:
@@ -895,14 +899,15 @@ def run_TPI(p, client=None):
     BQnew = aggr.get_BQ(rnew, b_mat_shift, None, p, 'TPI', False)
 
     ## Think about maybe more obvious way to fill in Revenue beyond T with SS values...
+    BQnew_3D = np.tile(BQnew.reshape(BQnew.shape[0], 1, BQnew.shape[1]), (1, p.S, 1))
     REVENUE = np.array(
         list(aggr.revenue(rnew[:p.T], wnew[:p.T], bmat_s,
-                          n_mat[:p.T, :, :], BQnew[:p.T], Ynew[:p.T],
-                          L[:p.T], K[:p.T], factor, theta, p.etr_params,
+                          n_mat[:p.T, :, :], BQnew_3D[:p.T, :, :], Ynew[:p.T],
+                          L[:p.T], K[:p.T], factor, theta, etr_parms4D,
                           p, 'TPI')) + [revenue_ss] * p.S)
 
-    etr_params_path = np.tile(np.reshape(
-        p.etr_params, (p.T, p.S, 1, p.etr_params.shape[2])), (1, 1, p.J, 1))
+    # etr_params_path = np.tile(np.reshape(
+    #     p.etr_params, (p.T, p.S, 1, p.etr_params.shape[2])), (1, 1, p.J, 1))
     # tax_path_params = (np.tile(
     #     e.reshape(1, S, J), (T, 1, 1)), lambdas, 'TPI', retire,
     #                    etr_params_path, tax_func_type, h_wealth,
@@ -915,9 +920,9 @@ def run_TPI(p, client=None):
     #     T_H[:T].reshape(T, 1, 1), None, False, tax_path_params)
 
     tax_path = tax.total_taxes(r[:p.T], w[:p.T], bmat_s,
-                               n_mat[:p.T, :, :], BQ[:p.T, :], factor,
+                               n_mat[:p.T, :, :], BQ_3D[:p.T, :, :], factor,
                                T_H[:p.T], theta, None, False, 'TPI',
-                               etr_params_path, p)
+                               etr_parms4D, p)
 
     # cons_params = (e.reshape(1, S, J), lambdas.reshape(1, 1, J), g_y)
     # c_path = household.get_cons(
@@ -925,7 +930,7 @@ def run_TPI(p, client=None):
     #     bmat_splus1, n_mat[:T, :, :], BQ[:T].reshape(T, 1, J), tax_path,
     #     cons_params)
     c_path = household.get_cons(r[:p.T], w[:p.T], bmat_s, bmat_splus1,
-                                n_mat[:p.T, :, :], BQ[:p.T, :],
+                                n_mat[:p.T, :, :], BQ_3D[:p.T, :, :],
                                 tax_path, None, p)
     # C_params = (omega[:T].reshape(T, S, 1), lambdas, 'TPI')
     C = aggr.get_C(c_path, p, 'TPI')

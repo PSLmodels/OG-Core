@@ -282,10 +282,12 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p, method):
         T_I = np.zeros_like(I)
         T_I = tax.ETR_income(r_array, w_array, b, n, factor, p.e, etr_params, p) * I
         T_P = p.tau_payroll * w_array * n * p.e
-        T_P[:, p.retire:, :] -= theta.reshape(1, 1, p.J) * w_array[:, p.retire:, :]
+        print('Shapes = ', T_P.shape, (theta.reshape(1, 1, p.J)).shape, w_array.shape)
+        T_P[:, p.retire:, :] -= theta.reshape(1, 1, p.J) * w_array #w_array[:, p.retire:, :]
         T_W = tax.ETR_wealth(b, p) * b
         T_BQ = p.tau_bq * BQ / np.squeeze(p.lambdas)
         business_revenue = tax.get_biz_tax(w, Y, L, K, p)
+        print('Shapes of Ts == ', T_I.shape, T_P.shape, T_BQ.shape, T_W.shape)
         REVENUE = ((((np.squeeze(p.lambdas)) *
                    np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
                            (1, 1, p.J)))

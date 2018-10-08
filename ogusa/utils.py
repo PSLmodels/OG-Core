@@ -313,7 +313,7 @@ def to_timepath_shape(some_array, p):
     # tp_array = np.tile(np.reshape(some_array,
     #                               (some_array.shape[0], 1, 1)),
     #                    (1, some_array.shape[0], p.J))
-    tp_array = np.some_array.reshape(some_array.shape[0], 1, 1)
+    tp_array = some_array.reshape(some_array.shape[0], 1, 1)
     return tp_array
 
 
