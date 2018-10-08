@@ -234,30 +234,44 @@ def inner_loop(outer_loop_vars, p, client):
     #     bssmat[:, j] = solutions[:p.S]
     #     nssmat[:, j] = solutions[p.S:]
     # lazy_values = []
-    # for j in range(p.J):
-    #     # guesses = np.append(bssmat[:, j], nssmat[:, j])
-    #     guesses = np.hstack((bssmat[:, j], nssmat[:, j]))
-    #     euler_args = (r, w, T_H, factor, j, p)
-    #     results = opt.root(euler_equation_solver, guesses * 0.9,
-    #                        method='lm', args=euler_args,
-    #                        tol=MINIMIZER_TOL)
-    #     bssmat[:, j] = results.x[:p.S]
-    #     nssmat[:, j] = results.x[p.S:]
-    #     euler_errors[:, j] = results.fun
-    lazy_values = []
     for j in range(p.J):
-        guesses = np.append(bssmat[:, j], nssmat[:, j])
+        # guesses = np.append(bssmat[:, j], nssmat[:, j])
+        guesses = np.hstack((bssmat[:, j], nssmat[:, j]))
         euler_args = (r, w, T_H, factor, j, p)
-        lazy_values.append(delayed(opt.root)(euler_equation_solver,
-                                             guesses * .9, method='lm',
-                                             args=euler_args,
-                                             tol=MINIMIZER_TOL))
-    results = compute(*lazy_values, get=dask.multiprocessing.get,
-                      num_workers=p.num_workers)
-    for j, result in enumerate(results):
-        euler_errors[:, j] = result.fun
-        bssmat[:, j] = result.X[:p.S]
-        nssmat[:, j] = results.X[p.S:]
+        results = opt.root(euler_equation_solver, guesses * 0.9,
+                           method='lm', args=euler_args,
+                           tol=MINIMIZER_TOL)
+        bssmat[:, j] = results.x[:p.S]
+        nssmat[:, j] = results.x[p.S:]
+        euler_errors[:, j] = results.fun
+    # lazy_values = []
+    # for j in range(p.J):
+    #     guesses = np.append(bssmat[:, j], nssmat[:, j])
+    #     euler_args = (r, w, T_H, factor, j, p)
+    #     lazy_values.append(delayed(opt.root)(euler_equation_solver,
+    #                                          guesses * .9, method='lm',
+    #                                          args=euler_args,
+    #                                          tol=MINIMIZER_TOL))
+    # results = compute(*lazy_values, get=dask.multiprocessing.get,
+    #                   num_workers=p.num_workers)
+
+
+    # for j in range(p.J):
+    #     guesses = np.append(bssmat[:, j], nssmat[:, j])
+    #     euler_args = (r, w, T_H, factor, j, p)
+    #     lazy_values.append(delayed(opt.fsolve)(euler_equation_solver,
+    #                                            guesses * .9,
+    #                                            args=euler_args,
+    #                                            xtol=MINIMIZER_TOL,
+    #                                            full_output=True))
+    # results = compute(*lazy_values, get=dask.multiprocessing.get,
+    #                   num_workers=p.num_workers)
+
+
+    # for j, result in enumerate(results):
+    #     euler_errors[:, j] = result.fun
+    #     bssmat[:, j] = result.X[:p.S]
+    #     nssmat[:, j] = results.X[p.S:]
 
     L = aggr.get_L(nssmat, p, 'SS')
     if not p.small_open:
