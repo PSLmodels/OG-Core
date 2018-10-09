@@ -86,8 +86,8 @@ def get_I(b_splus1, K_p1, K, p, method):
                    np.tile(np.reshape(imm_shift * omega_shift,
                                       (p.T, p.S, 1)),
                            (1, 1, p.J))).sum(1).sum(1)) /
-                 (1 + np.squeeze(p.g_n[:p.T])))
-        aggI = ((1 + np.squeeze(p.g_n[:p.T])) * np.exp(p.g_y) *
+                 (1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))))
+        aggI = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss))) * np.exp(p.g_y) *
                 (K_p1 - part2) - (1.0 - p.delta) * K)
 
     return aggI
@@ -119,13 +119,15 @@ def get_K(b, p, method, preTP):
         if preTP:
             omega_extended = np.append(p.omega_S_preTP[1:], [0.0])
             imm_extended = np.append(p.imm_rates[0, 1:], [0.0])
+            pop_growth_rate = p.g_[0]
         else:
             omega_extended = np.append(p.omega_SS[1:], [0.0])
             imm_extended = np.append(p.imm_rates[-1, 1:], [0.0])
+            pop_growth_rate = p.g_n_ss
         part2 = b * np.transpose(omega_extended * imm_extended * p.lambdas)
         K_presum = part1 + part2
         K = K_presum.sum()
-        K /= (1.0 + p.g_n_ss)
+        K /= (1.0 + pop_growth_rate)
     elif method == 'TPI':
         part1 = ((b * np.squeeze(p.lambdas)) *
                  np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
@@ -139,7 +141,7 @@ def get_K(b, p, method, preTP):
                                     (p.T, p.S, 1)), (1, 1, p.J)))
         K_presum = part1 + part2
         K = K_presum.sum(1).sum(1)
-        K /= (1.0 + p.g_n[:p.T])
+        K /= (1.0 + np.hstack((p.g_n[1:p.T], p.g_n_ss)))
     return K
 
 
@@ -168,15 +170,17 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
     if method == 'SS':
         if preTP:
             omega = p.omega_S_preTP
+            pop_growth_rate = p.g_[0]
         else:
             omega = p.omega_SS
+            pop_growth_rate = p.g_n_ss
         if j is not None:
             BQ_presum = omega * p.rho * b_splus1 * p.lambdas[j]
         else:
             BQ_presum = (np.transpose(omega * (p.rho * p.lambdas)) *
                          b_splus1)
         BQ = BQ_presum.sum(0)
-        BQ *= (1.0 + r) / (1.0 + p.g_n_ss)
+        BQ *= (1.0 + r) / (1.0 + pop_growth_rate)
     elif method == 'TPI':
         if j is not None:
             BQ_presum = ((b_splus1 * p.lambdas[j]) *
