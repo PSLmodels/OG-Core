@@ -922,16 +922,18 @@ def run_TPI(p, client=None):
     tax_path = tax.total_taxes(r[:p.T], w[:p.T], bmat_s,
                                n_mat[:p.T, :, :], BQ_3D[:p.T, :, :], factor,
                                T_H[:p.T], theta, None, False, 'TPI',
-                               etr_parms4D, p)
+                               p.e, p.retire, etr_parms4D, p)
 
     # cons_params = (e.reshape(1, S, J), lambdas.reshape(1, 1, J), g_y)
     # c_path = household.get_cons(
     #     r[:T].reshape(T, 1, 1), w[:T].reshape(T, 1, 1), bmat_s,
     #     bmat_splus1, n_mat[:T, :, :], BQ[:T].reshape(T, 1, J), tax_path,
     #     cons_params)
-    c_path = household.get_cons(r[:p.T], w[:p.T], bmat_s, bmat_splus1,
+    rpath = utils.to_timepath_shape(r, p)
+    wpath = utils.to_timepath_shape(w, p)
+    c_path = household.get_cons(rpath[:p.T, :, :], wpath[:p.T, :, :], bmat_s, bmat_splus1,
                                 n_mat[:p.T, :, :], BQ_3D[:p.T, :, :],
-                                tax_path, None, p)
+                                tax_path, p.e, None, p)
     # C_params = (omega[:T].reshape(T, S, 1), lambdas, 'TPI')
     C = aggr.get_C(c_path, p, 'TPI')
 
@@ -959,7 +961,7 @@ def run_TPI(p, client=None):
         #            'TPI')
 
         ## Why isn't this a function
-        I = ((1 + p.g_n_vector[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
+        I = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
              (1.0 - p.delta) * K[:p.T])
         # aggr.get_I(InvestmentPlaceholder, K[1:T+1], K[:T], I_params)
         # BI_params = (0.0, g_y, omega[:T].reshape(T, S, 1), lambdas,
@@ -975,7 +977,7 @@ def run_TPI(p, client=None):
                      p.tpi_hh_r[:p.T - 1] * D[:p.T - 1]))
 
     # Compute total investment (not just domestic)
-    I_total = ((1 + p.g_n_vector[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
+    I_total = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
                (1.0 - p.delta) * K[:p.T])
 
     # Compute business and invidiual income tax revenue

@@ -479,9 +479,8 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
         if len(b.shape) != 3:
             T_P[retireTPI:] -= theta[j] * w[retireTPI:]
         else:
-            print('Shapes = ', T_P[:, retire:, :].shape, theta.reshape(1, 1, p.J).shape, w[:, retire:, :].shape)
-            T_P[:, retire:, :] -= (theta.reshape(1, 1, p.J) *
-                                   w[:, retire:, :])
+            T_P[:, retire:, :] -= (theta.reshape(1, 1, p.J) * w)
+                                   # w[:, retire:, :])
         T_BQ = p.tau_bq * BQ / lambdas
     elif method == 'TPI_scalar':
         # The above methods won't work if scalars are used.  This option
