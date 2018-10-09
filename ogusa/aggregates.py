@@ -87,7 +87,7 @@ def get_I(b_splus1, K_p1, K, p, method):
                                       (p.T, p.S, 1)),
                            (1, 1, p.J))).sum(1).sum(1)) /
                  (1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))))
-        aggI = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss))) * np.exp(p.g_y) *
+        aggI = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))) * np.exp(p.g_y) *
                 (K_p1 - part2) - (1.0 - p.delta) * K)
 
     return aggI
@@ -119,7 +119,7 @@ def get_K(b, p, method, preTP):
         if preTP:
             omega_extended = np.append(p.omega_S_preTP[1:], [0.0])
             imm_extended = np.append(p.imm_rates[0, 1:], [0.0])
-            pop_growth_rate = p.g_[0]
+            pop_growth_rate = p.g_n[0]
         else:
             omega_extended = np.append(p.omega_SS[1:], [0.0])
             imm_extended = np.append(p.imm_rates[-1, 1:], [0.0])
@@ -170,7 +170,7 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
     if method == 'SS':
         if preTP:
             omega = p.omega_S_preTP
-            pop_growth_rate = p.g_[0]
+            pop_growth_rate = p.g_n[0]
         else:
             omega = p.omega_SS
             pop_growth_rate = p.g_n_ss
