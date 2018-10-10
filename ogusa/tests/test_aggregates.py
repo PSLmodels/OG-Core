@@ -109,9 +109,10 @@ def test_get_I():
               np.tile(np.reshape(imm_shift * omega_shift,
                                  (p.T, p.S, 1)),
                       (1, 1, p.J))).sum(1).sum(1)) /
-             (1 + np.squeeze(p.g_n[:p.T])))
-    aggI_TPI_test = ((1 + np.squeeze(p.g_n[:p.T])) * np.exp(p.g_y) *
-                     (K_p1 - part2) - (1.0 - p.delta) * K)
+             (1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))))
+    aggI_TPI_test = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss))))
+                     * np.exp(p.g_y) * (K_p1 - part2) - (1.0 - p.delta)
+                     * K)
     aggI_TPI = aggr.get_I(b_splus1, K_p1, K, p, 'TPI')
     assert (np.allclose(aggI_TPI, aggI_TPI_test))
 
@@ -148,13 +149,13 @@ def test_get_K():
                np.tile(np.reshape(omega_extended *
                                   imm_extended, (p.T, p.S, 1)),
                        (1, 1, p.J))))
-    K = aggr.get_K(b[-1, :, :], p, "SS")
+    K = aggr.get_K(b[-1, :, :], p, "SS", False)
 
     assert np.allclose(K_test[-1, :, :].sum() / (1.0 + p.g_n_ss), K)
 
-    K = aggr.get_K(b, p, "TPI")
+    K = aggr.get_K(b, p, "TPI", False)
     assert np.allclose(K_test.sum(1).sum(1) /
-                       (1.0 + np.squeeze(p.g_n[:p.T])), K)
+                       (1.0 + np.hstack((p.g_n[1:p.T], p.g_n_ss))), K)
 
 
 def test_get_BQ():
@@ -185,21 +186,21 @@ def test_get_BQ():
     growth_adj = (1.0 + r) / (1.0 + p.g_n[:p.T])
 
     # test SS
-    BQ = aggr.get_BQ(r[-1], b_splus1[-1, :, :], None, p, "SS")
+    BQ = aggr.get_BQ(r[-1], b_splus1[-1, :, :], None, p, "SS", False)
     assert np.allclose(BQ_presum[-1, :, :].sum(0) * growth_adj[-1], BQ)
 
     # test SS for specific j
-    BQ = aggr.get_BQ(r[-1], b_splus1[-1, :, 1], 1, p, "SS")
+    BQ = aggr.get_BQ(r[-1], b_splus1[-1, :, 1], 1, p, "SS", False)
     assert np.allclose(BQ_presum[-1, :, 1].sum(0) * growth_adj[-1], BQ)
 
     # test TPI
-    BQ = aggr.get_BQ(r, b_splus1, None, p, "TPI")
+    BQ = aggr.get_BQ(r, b_splus1, None, p, "TPI", False)
     assert np.allclose(BQ_presum.sum(1) *
                        np.tile(np.reshape(growth_adj, (p.T, 1)),
                                (1, p.J)), BQ)
 
     # test TPI for specific j
-    BQ = aggr.get_BQ(r, b_splus1[:, :, 1], 1, p, "TPI")
+    BQ = aggr.get_BQ(r, b_splus1[:, :, 1], 1, p, "TPI", False)
     assert np.allclose(BQ_presum[:, :, 1].sum(1) * growth_adj, BQ)
 
 
