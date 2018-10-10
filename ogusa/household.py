@@ -207,29 +207,19 @@ def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
     Returns: euler
     '''
     if j is not None:
-        # euler_error = np.zeros_like(n)
         chi_b = p.chi_b[j]
     else:
-        # euler_error = np.squeeze(np.zeros_like(n))
         chi_b = p.chi_b
 
-    # print('taxes elements shape = ', r.shape, w.shape,
-    #           n.shape, T_H.shape, theta.shape, e.shape, etr_params.shape)
     taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
                             method, e, retire, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, e, j, p)
-    # if method =='TPI':
-    #     print('Shapes ==', taxes.shape, r.shape, w.shape, cons.shape, b.shape, b_splus1.shape, n.shape, T_H.shape, theta.shape, BQ.shape, e.shape)
     deriv = ((1 + r) - r * (tax.MTR_income(r, w, b, n, factor, True, e,
                                            etr_params, mtry_params, p)))
     savings_ut = (rho * np.exp(-p.sigma * p.g_y) * chi_b *
                   b_splus1 ** (-p.sigma))
-
     euler_error = np.zeros_like(n)
-    # print('SHAPES = ', n.shape, cons.shape, deriv.shape, taxes.shape, savings_ut.shape)
-    # print('Euler errors zeros = ', euler_error)
     if n.shape[0] > 1:
-        # print('Shapes === ', n.shape[0], marg_ut_cons(cons[:-1], p.sigma).shape, rho[:-1].shape, deriv[1:].shape, marg_ut_cons(cons[1:], p.sigma).shape, savings_ut[:-1].shape)
         euler_error[:-1] = (marg_ut_cons(cons[:-1], p.sigma) - p.beta * (1 - rho[:-1]) *
                             deriv[1:] * marg_ut_cons(cons[1:], p.sigma) *
                             np.exp(-p.sigma * p.g_y) - savings_ut[:-1])

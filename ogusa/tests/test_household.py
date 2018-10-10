@@ -60,7 +60,7 @@ test_data = [(0.87, p1, 2.825570309),
                          ids=['1', '2', '3', '4', '5', '6', '7', '8'])
 def test_marg_ut_labor(n, params, expected):
     # Test marginal utility of labor calculation
-    test_value = household.marg_ut_labor(n, params)
+    test_value = household.marg_ut_labor(n, params.chi_n, params)
 
     assert np.allclose(test_value, expected)
 
@@ -90,7 +90,6 @@ n2 = np.array([0.8, 3.2, 0.2])
 BQ2 = np.array([0.1, 2.4, 0.2])
 net_tax2 = np.array([0.02, 0.5, 1.4])
 j2 = None
-
 
 p3 = Specifications()
 p3.e = np.array([[1.0, 2.1], [0.4, 0.5], [1.6, 0.9]])
@@ -164,7 +163,7 @@ def test_get_cons(model_args, expected):
     # Test consumption calculation
     r, w, b, b_splus1, n, BQ, net_tax, j, p = model_args
     test_value = household.get_cons(r, w, b, b_splus1, n, BQ, net_tax,
-                                    j, p)
+                                    p.e, j, p)
 
     assert np.allclose(test_value, expected)
 
@@ -249,9 +248,14 @@ test_data = [(test_vars_ss, test_params_ss, expected_ss),
 def test_FOC_savings(model_vars, params, expected):
     # Test FOC condition for household's choice of savings
     r, w, b, b_splus1, n, BQ, factor, T_H, theta, etr_params, mtry_params, j, method = model_vars
-    test_value = household.FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
-                    etr_params, mtry_params, j, params, method)
+    if j is not None:
+        test_value = household.FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
+                    params.e[:, j], params.rho, params.retire, etr_params, mtry_params, j, params, method)
+    else:
+        test_value = household.FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
+                    np.squeeze(params.e), params.rho, params.retire, etr_params, mtry_params, j, params, method)
     assert np.allclose(test_value, expected)
+
 
 # model_vars in order: r, w, b, b_splus1, n, BQ, factor, T_H
 # params in order: e, sigma, g_y, theta, b_ellipse, upsilon, chi_n,
@@ -341,7 +345,7 @@ def test_FOC_labor(model_vars, params, expected):
     # Test FOC condition for household's choice of labor supply
     r, w, b, b_splus1, n, BQ, factor, T_H, theta, etr_params, mtrx_params, j, method = model_vars
     test_value = household.FOC_labor(r, w, b, b_splus1, n, BQ, factor,
-                                     T_H, theta, etr_params, mtrx_params,
+                                     T_H, theta, params.chi_n, params.e[:, j], params.retire, etr_params, mtrx_params,
                                      j, params, method)
 
     assert np.allclose(test_value, expected)
