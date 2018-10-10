@@ -136,10 +136,9 @@ def test_ETR_income(b, n, etr_params, params, expected):
     r = 0.04
     w = 1.2
     factor = 100000
-    j = None
     # test_ETR_income = tax.ETR_income(r, w, b, n, factor,
     #                                  (e, etr_params, tax_func_type))
-    test_ETR_income = tax.ETR_income(r, w, b, n, factor, j,
+    test_ETR_income = tax.ETR_income(r, w, b, n, factor, params.e,
                                      etr_params, params)
     assert np.allclose(test_ETR_income, expected)
 
@@ -325,8 +324,7 @@ def test_MTR_income(etr_params, mtr_params, params, mtr_capital, expected):
     j = None
 
     test_mtr = tax.MTR_income(r, w, b, n, factor, mtr_capital,
-                              j, etr_params, mtr_params, params)
-
+                              params.e, etr_params, mtr_params, params)
     assert np.allclose(test_mtr, expected)
 
 
@@ -376,14 +374,14 @@ def test_total_taxes():
     # method = ss
     method = 'SS'
     total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j,
-                                  shift, method, etr_params[-1, :, :], p)
+                                  shift, method, p.e[:, j], p.retire, etr_params[-1, :, :], p)
     assert np.allclose(total_taxes, np.array([0.47374766, -0.09027663,
                                               0.03871394]))
 
     # method = TPI_scalar
     method = 'TPI_scalar'
     total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j,
-                                  shift, method, etr_params, p)
+                                  shift, method, p.e[:, j], p.retire, etr_params, p)
     assert np.allclose(total_taxes, np.array([0.20374766, -0.09027663,
                                               0.03871394]))
 
@@ -403,14 +401,14 @@ def test_total_taxes():
                             -0.15, 0.15, 0.16, -0.15, 0.83],
                            [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
                             -0.15, 0.15, 0.16, -0.15, 0.83]])
-    total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method, etr_params, p)
+    total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method, p.e[:, j], p.retire, etr_params, p)
     assert np.allclose(total_taxes,
                        np.array([0.47374766, -0.06444251, 0.06622862]))
 
     # shift = False
     method = 'TPI'
     shift = False
-    total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method, etr_params, p)
+    total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method, p.e[:, j], p.retire, etr_params, p)
     assert np.allclose(total_taxes,
                        np.array([0.47374766, 0.22805749, 0.06622862]))
 
@@ -441,7 +439,7 @@ def test_total_taxes():
     j = None
     shift = True
     total_taxes = tax.total_taxes(r, w, b, n, BQ,
-                                  factor, T_H, theta, j, shift, method, etr_params, p)
+                                  factor, T_H, theta, j, shift, method, p.e, p.retire, etr_params, p)
     print('Total taxes result = ', total_taxes.shape)
     print('Expected = ',  np.array([[[0.16311573,  0.1583638],
                [0.26812436, 0.30131202],
