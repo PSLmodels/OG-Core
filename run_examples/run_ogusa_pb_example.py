@@ -63,7 +63,7 @@ def run_micro_macro(user_params):
     start_time = time.time()
     runner(**kwargs)
     print('run time = ', time.time()-start_time)
-
+    quit()
 
     '''
     ------------------------------------------------------------------------
