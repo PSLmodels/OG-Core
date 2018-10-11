@@ -96,6 +96,8 @@ def test_SS_fsolve_reform():
     p.chi_b, p.chi_n = chi_params
     p.small_open, p.ss_firm_r, p.ss_hh_r = small_open_params
     p.num_workers = 1
+    print('Bssmat in max and min = ', bssmat.max(), bssmat.min())
+    print('Nssmat in max and min = ', nssmat.max(), nssmat.min())
     args = (bssmat, nssmat, factor, p, client)
 
     test_list = SS.SS_fsolve_reform(guesses, *args)

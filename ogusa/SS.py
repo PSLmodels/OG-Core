@@ -723,6 +723,8 @@ def SS_fsolve_reform(guesses, *args):
                     T_H ((2*S*J+4)x1 array)
     '''
     (bssmat, nssmat, factor, p, client) = args
+    print('Bssmat 2 in max and min = ', bssmat.max(), bssmat.min())
+    print('Nssmat 2 in max and min = ', nssmat.max(), nssmat.min())
 
     # Rename the inputs
     r = guesses[0]
@@ -738,6 +740,28 @@ def SS_fsolve_reform(guesses, *args):
     (euler_errors, bssmat, nssmat, new_r, new_w, new_T_H, new_Y,
      new_factor, new_BQ, average_income_model) =\
         inner_loop(outer_loop_vars, p, client)
+
+
+    print('INPUTS = ')
+    print('bssmat max and min = ', outer_loop_vars[0].max(), outer_loop_vars[0].min())
+    print('nssmat max and min = ', outer_loop_vars[1].max(), outer_loop_vars[1].min())
+    print('r, T_H, factor = ', r, T_H, factor)
+    print('ETR params max and min = ', p.etr_params.max(), p.etr_params.min())
+    print('MTRx params max and min = ', p.mtrx_params.max(), p.mtrx_params.min())
+    print('MTRy params max and min = ', p.mtry_params.max(), p.mtry_params.min())
+    print('baseline = ', p.baseline)
+    print('Scalar params = ', p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma,
+          p.epsilon, p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, p.tau_payroll, p.tau_bq,
+          p.budget_balance, p.alpha_T, p.debt_ratio_ss, p.tau_b, p.delta_tau, p.lambdas,
+          p.retire, p.mean_income_data, p.h_wealth, p.p_wealth,
+          p.m_wealth, p.b_ellipse, p.upsilon)
+    print('OUTPUTS = ')
+    print('bssmat max and min = ', bssmat.max(), bssmat.min())
+    print('nssmat max and min = ', nssmat.max(), nssmat.min())
+    print('Scalar output = ', new_r, new_w, new_T_H, new_Y,
+          new_factor, new_BQ, average_income_model)
+
+
     error1 = new_r - r
     if p.budget_balance:
         error2 = new_T_H - T_H
