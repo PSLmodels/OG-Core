@@ -281,7 +281,7 @@ def inner_loop(outer_loop_vars, p, client):
         else:
             K = B - p.debt_ratio_ss * Y
     else:
-        K = firm.get_K(L, p, 'SS', False)
+        K = firm.get_K(L, r, p)
     new_Y = firm.get_Y(K, L, p)
     if p.budget_balance:
         Y = new_Y
@@ -404,14 +404,15 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
             outer_loop_vars = (bmat, nmat, r, T_H, factor)
         else:
             outer_loop_vars = (bmat, nmat, r, Y, T_H, factor)
+
         (euler_errors, new_bmat, new_nmat, new_r, new_w, new_T_H, new_Y,
          new_factor, new_BQ, average_income_model) =\
             inner_loop(outer_loop_vars, p, client)
 
         r = utils.convex_combo(new_r, r, nu_ss)
         factor = utils.convex_combo(new_factor, factor, nu_ss)
-        bmat = utils.convex_combo(new_bmat, bmat, nu_ss)
-        nmat = utils.convex_combo(new_nmat, nmat, nu_ss)
+        # bmat = utils.convex_combo(new_bmat, bmat, nu_ss)
+        # nmat = utils.convex_combo(new_nmat, nmat, nu_ss)
         if p.budget_balance:
             T_H = utils.convex_combo(new_T_H, T_H, nu_ss)
             dist = np.array([utils.pct_diff_func(new_r, r)] +
@@ -466,11 +467,11 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
         Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS')
     else:
         # Compute capital (K) and wealth (B) separately
-        Kss = firm.get_K(Lss, p.ss_firm_r, p, 'SS', False)
+        Kss = firm.get_K(Lss, p.ss_firm_r, p)
         InvestmentPlaceholder = np.zeros(bssmat_splus1.shape)
         Iss = aggr.get_I(InvestmentPlaceholder, Kss, Kss, p, 'SS')
         Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
-        BIss = aggr.get_I(bssmat_splus1, Bss, Bss, p, 'SS')
+        BIss = aggr.get_I(bssmat_splus1, Bss, Bss, p, 'SS') + p.delta * Bss
         if p.budget_balance:
             debt_ss = 0.0
         else:
@@ -482,7 +483,13 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
 
     etr_params_3D = np.tile(np.reshape(
         p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])), (1, p.J, 1))
-    revenue_ss = aggr.revenue(rss, wss, bssmat_s, nssmat, BQss, Yss,
+    # revenue_ss = aggr.revenue(rss, wss, bssmat_s, nssmat, BQss, Yss,
+    #                           Lss, Kss, factor, theta,
+    #                           etr_params_3D, p, 'SS')
+    # Should it be this or abovE??  b_s or bssmat_s??
+    b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
+                   list(bssmat_s[:-1, :]))
+    revenue_ss = aggr.revenue(rss, wss, b_s, nssmat, BQss, Yss,
                               Lss, Kss, factor, theta,
                               etr_params_3D, p, 'SS')
 
@@ -713,8 +720,7 @@ def SS_fsolve_reform(guesses, *args):
     r = guesses[0]
     T_H = guesses[1]
 
-    # Solve for the steady state levels of b and n, given w, r, T_H and
-    # factor
+    # Solve for the steady state levels of b and n, given w, r, T_H
     if p.budget_balance:
         outer_loop_vars = (bssmat, nssmat, r, T_H, factor)
     else:
@@ -746,7 +752,7 @@ def SS_fsolve_reform_baselinespend(guesses, *args):
     '''
     Solves for the steady state distribution of capital, labor, as
     well as w, r, and Y, using a root finder. This solves for the
-    reform SS when baseline_speding=True and so takes the factor and
+    reform SS when baseline_spending=True and so takes the factor and
     gov't transfers (T_H) from the baseline SS as an input.
     Inputs:
         b_guess_init = guesses for b (SxJ array)

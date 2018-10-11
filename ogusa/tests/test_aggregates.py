@@ -180,9 +180,11 @@ def test_get_BQ():
     assert np.allclose(p.lambdas.sum(), 1.0)
     assert np.allclose(p.omega[:p.T, :].sum(), p.T)
 
+    pop = np.append(p.omega_S_preTP.reshape(1, p.S),
+                    p.omega[:p.T - 1, :], axis=0)
     BQ_presum = ((b_splus1 * np.squeeze(p.lambdas)) *
-                 np.tile(np.reshape(p.rho * p.omega[:p.T, :],
-                                    (p.T, p.S, 1)), (1, 1, p.J)))
+                 np.tile(np.reshape(p.rho * pop, (p.T, p.S, 1)),
+                         (1, 1, p.J)))
     growth_adj = (1.0 + r) / (1.0 + p.g_n[:p.T])
 
     # test SS
