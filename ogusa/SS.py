@@ -508,6 +508,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
         Gss = 0.0
     else:
         Gss = revenue_ss + new_borrowing - (T_Hss + debt_service_ss)
+        print('G components = ', new_borrowing, T_Hss, debt_service_ss)
 
     # solve resource constraint
 
