@@ -62,49 +62,49 @@ def test_SS_fsolve():
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
-# def test_SS_fsolve_reform():
-#     # Test SS.SS_fsolve_reform function.  Provide inputs to function and
-#     # ensure that output returned matches what it has been before.
-#     input_tuple = utils.safe_read_pickle(
-#         os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_reform_inputs.pkl'))
-#     guesses, params = input_tuple
-#     params = params + (None, 1)
-#     (bssmat, nssmat, chi_params, ss_params, income_tax_params,
-#      iterative_params, factor, small_open_params, client,
-#      num_workers) = params
-#     p = Specifications()
-#     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-#      p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, p.tau_payroll,
-#      p.tau_bq, p.rho, p.omega_SS, p.budget_balance, p.alpha_T,
-#      p.debt_ratio_ss, p.tau_b, p.delta_tau, lambdas, imm_rates, p.e,
-#      p.retire, p.mean_income_data, p.h_wealth, p.p_wealth, p.m_wealth,
-#      p.b_ellipse, p.upsilon) = ss_params
-#     p.tau_bq = 0.0
-#     p.lambdas = lambdas.reshape(p.J, 1)
-#     p.imm_rates = imm_rates.reshape(1, p.S)
-#     p.tax_func_type = 'DEP'
-#     p.baseline = False
-#     p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
-#         income_tax_params
-#     p.etr_params = np.transpose(etr_params.reshape(
-#         p.S, 1, etr_params.shape[-1]), (1, 0, 2))
-#     p.mtrx_params = np.transpose(mtrx_params.reshape(
-#         p.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-#     p.mtry_params = np.transpose(mtry_params.reshape(
-#         p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
-#     p.maxiter, p.mindist_SS = iterative_params
-#     p.chi_b, p.chi_n = chi_params
-#     p.small_open, p.ss_firm_r, p.ss_hh_r = small_open_params
-#     p.num_workers = 1
-#     args = (bssmat, nssmat, factor, p, client)
-#
-#     test_list = SS.SS_fsolve_reform(guesses, *args)
-#
-#     expected_list = utils.safe_read_pickle(
-#         os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_reform_outputs.pkl'))
-#     print('Results = ', test_list)
-#     print('Expected = ', expected_list)
-#     assert(np.allclose(np.array(test_list), np.array(expected_list)))
+def test_SS_fsolve_reform():
+    # Test SS.SS_fsolve_reform function.  Provide inputs to function and
+    # ensure that output returned matches what it has been before.
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_reform_inputs.pkl'))
+    guesses, params = input_tuple
+    params = params + (None, 1)
+    (bssmat, nssmat, chi_params, ss_params, income_tax_params,
+     iterative_params, factor, small_open_params, client,
+     num_workers) = params
+    p = Specifications()
+    (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
+     p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, p.tau_payroll,
+     p.tau_bq, p.rho, p.omega_SS, p.budget_balance, p.alpha_T,
+     p.debt_ratio_ss, p.tau_b, p.delta_tau, lambdas, imm_rates, p.e,
+     p.retire, p.mean_income_data, p.h_wealth, p.p_wealth, p.m_wealth,
+     p.b_ellipse, p.upsilon) = ss_params
+    p.tau_bq = 0.0
+    p.lambdas = lambdas.reshape(p.J, 1)
+    p.imm_rates = imm_rates.reshape(1, p.S)
+    p.tax_func_type = 'DEP'
+    p.baseline = False
+    p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
+        income_tax_params
+    p.etr_params = np.transpose(etr_params.reshape(
+        p.S, 1, etr_params.shape[-1]), (1, 0, 2))
+    p.mtrx_params = np.transpose(mtrx_params.reshape(
+        p.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
+    p.mtry_params = np.transpose(mtry_params.reshape(
+        p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
+    p.maxiter, p.mindist_SS = iterative_params
+    p.chi_b, p.chi_n = chi_params
+    p.small_open, p.ss_firm_r, p.ss_hh_r = small_open_params
+    p.num_workers = 1
+    args = (bssmat, nssmat, factor, p, client)
+
+    test_list = SS.SS_fsolve_reform(guesses, *args)
+
+    expected_list = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_reform_outputs.pkl'))
+    print('Results = ', test_list)
+    print('Expected = ', expected_list)
+    assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
 # def test_SS_fsolve_reform_baselinespend():
@@ -191,14 +191,6 @@ def test_SS_solver():
     p.chi_b, p.chi_n = chi_params
     p.small_open, p.ss_firm_r, p.ss_hh_r = small_open_params
     p.num_workers = 1
-
-    # income_tax_params = ('DEP',) + income_tax_params
-    # params = (bssmat, nssmat, chi_params, ss_params, income_tax_params,
-    #           iterative_params, small_open_params)
-    # test_dict = SS.SS_solver(
-    #     b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss, params,
-    #     baseline, fsolve_flag, baseline_spending)
-
     test_dict = SS.SS_solver(b_guess_init, n_guess_init, rss, T_Hss,
                              factor_ss, Yss, p, None, fsolve_flag)
 

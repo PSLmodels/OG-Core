@@ -620,7 +620,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
     output = {'Kss': Kss, 'Bss': Bss, 'Lss': Lss, 'Css': Css, 'Iss': Iss,
               'Iss_total': Iss_total, 'nssmat': nssmat, 'Yss': Yss,
               'Dss': debt_ss, 'wss': wss, 'rss': rss, 'theta': theta,
-              'BQss': BQss, 'factor_ss': factor_ss, 'bssmat_s': bssmat_s,
+              'BQss': BQss, 'factor_ss': factor_ss, 'bssmat': bssmat_splus1, 'bssmat_s': bssmat_s,
               'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
               'T_Hss': T_Hss, 'Gss': Gss, 'revenue_ss': revenue_ss,
               'business_revenue': business_revenue,
