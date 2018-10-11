@@ -124,7 +124,7 @@ def get_initial_SS_values(p):
     # B0_params = (omega_S_preTP.reshape(S, 1), lambdas,
     #              imm_rates[0].reshape(S, 1), g_n_vector[0], 'SS')
 
-    ## Need this to use omega_S_preTP...
+
     B0 = aggr.get_K(initial_b, p, 'SS', True)
 
     b_sinit = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
@@ -194,8 +194,11 @@ def firstdoughnutring(guesses, r, w, BQ, T_H, theta, factor, j,
 
     # In the below, need to think about how get last year of life for
     # e and rho that is passed to the FOC
-    error1 = household.FOC_savings(np.array([r]), np.array([w]), b_s, b_splus1, np.array([n]), np.array([BQ]), factor,
-                                   np.array([T_H]), theta[j], p.e[-1, j], p.rho[-1], 0,
+    error1 = household.FOC_savings(np.array([r]), np.array([w]), b_s,
+                                   b_splus1, np.array([n]),
+                                   np.array([BQ]), factor,
+                                   np.array([T_H]), theta[j],
+                                   p.e[-1, j], p.rho[-1], 0,
                                    p.etr_params[0, -1, :],
                                    p.mtry_params[0, -1, :], j, p, 'SS')
 
@@ -216,9 +219,11 @@ def firstdoughnutring(guesses, r, w, BQ, T_H, theta, factor, j,
 
     # In the below, need to think about how get last year of life for
     # e and rho that is passed to the FOC
-    error2 = household.FOC_labor(np.array([r]), np.array([w]), b_s, b_splus1, np.array([n]), np.array([BQ]), factor, np.array([T_H]),
-                                 theta[j], p.chi_n[-1], p.e[-1, j], 0, p.etr_params[0, -1, :],
-                                 p.mtrx_params[0, -1, :], j, p, 'SS')
+    error2 = household.FOC_labor(
+        np.array([r]), np.array([w]), b_s, b_splus1, np.array([n]),
+        np.array([BQ]), factor, np.array([T_H]), theta[j], p.chi_n[-1],
+        p.e[-1, j], 0, p.etr_params[0, -1, :], p.mtrx_params[0, -1, :],
+        j, p, 'SS')
     # print('1st donut error1 = ', error1.shape)
     # print('1st donut error2 = ', error2.shape)
 
@@ -312,9 +317,9 @@ def twist_doughnut(guesses, r, w, BQ, T_H, theta, factor, j, s, t, etr_params,
     # In the below, need to think about how get -length: in the S-dim for
     # e and rho that is passed to the FOC
     error2 = household.FOC_labor(r_s, w_s, b_s, b_splus1, n_s, BQ_s,
-                                 factor, T_H_s, theta, chi_n_s, e_s, p.retire,
-                                 etr_params,
-                                 mtrx_params, j, p, 'TPI')
+                                 factor, T_H_s, theta, chi_n_s, e_s,
+                                 p.retire, etr_params, mtrx_params, j,
+                                 p, 'TPI')
 
     # Check and punish constraint violations
     mask1 = n_guess < 0
@@ -435,8 +440,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
                                list(b_guesses_to_use) +
                                list(n_guesses_to_use),
                                args=(r, w, BQ[:, j], T_H, theta, factor,
-                                     j, s,
-                                     0, etr_params_to_use,
+                                     j, s, 0, etr_params_to_use,
                                      mtrx_params_to_use,
                                      mtry_params_to_use, initial_b, p),
                                xtol=MINIMIZER_TOL)
@@ -479,9 +483,10 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
         [solutions, infodict, ier, message] =\
             opt.fsolve(twist_doughnut, list(b_guesses_to_use) +
                        list(n_guesses_to_use),
-                       args=(r, w, BQ[:, j], T_H, theta, factor, j, None, t,
-                             etr_params_to_use, mtrx_params_to_use,
-                             mtry_params_to_use, initial_b, p),
+                       args=(r, w, BQ[:, j], T_H, theta, factor, j,
+                             None, t, etr_params_to_use,
+                             mtrx_params_to_use, mtry_params_to_use,
+                             initial_b, p),
                        xtol=MINIMIZER_TOL, full_output=True)
         euler_errors[t, :] = infodict['fvec']
 
@@ -585,7 +590,7 @@ def run_TPI(p, client=None):
     BQ = np.zeros((p.T + p.S, p.J))
     # BQ0_params = (omega_S_preTP.reshape(p.S, 1), lambdas,
     #               rho.reshape(S, 1), g_n_vector[0], 'SS')
-    BQ0 = aggr.get_BQ(r[0], initial_b, None, p, 'SS', True) ### NEED to do omega_S_preTP here!!! How do that in function??  Need another arg..
+    BQ0 = aggr.get_BQ(r[0], initial_b, None, p, 'SS', True)
 
     for j in range(p.J):
         BQ[:, j] = list(np.linspace(BQ0[j], BQss[j], p.T)) + [BQss[j]] * p.S
@@ -692,7 +697,7 @@ def run_TPI(p, client=None):
         #             lambdas.reshape(1, 1, J),
         #             imm_rates[:T-1].reshape(T-1,S,1),
         #             g_n_vector[1:T], 'TPI')  # defined above
-        ## Note the shift here -- need to be able to deal with this in get_K -- maybe easiest to just return a T length vector and keep only the [1:] elements
+
         B[1:p.T] = aggr.get_K(bmat_splus1[:p.T], p, 'TPI', False)[:p.T - 1]
         if np.any(B) < 0:
             print('B has negative elements. B[0:9]:', B[0:9])
@@ -708,12 +713,11 @@ def run_TPI(p, client=None):
                 if not p.baseline_spending:
                     Y = T_H/p.ALPHA_T  # maybe unecessary
 
-                ## Need to make sure BQ reshaped correctly in revenue function
                 REVENUE = np.array(list(
                     aggr.revenue(r[:p.T], w[:p.T], bmat_s,
-                                 n_mat[:p.T, :, :], BQ_3D[:p.T, :, :], Y[:p.T],
-                                 L[:p.T], K[:p.T], factor, theta,
-                                 etr_parms4D, p, 'TPI')) +
+                                 n_mat[:p.T, :, :], BQ_3D[:p.T, :, :],
+                                 Y[:p.T], L[:p.T], K[:p.T], factor,
+                                 theta, etr_parms4D, p, 'TPI')) +
                                    [revenue_ss] * p.S)
 
                 # set intial debt value
@@ -920,9 +924,9 @@ def run_TPI(p, client=None):
     #     T_H[:T].reshape(T, 1, 1), None, False, tax_path_params)
 
     tax_path = tax.total_taxes(r[:p.T], w[:p.T], bmat_s,
-                               n_mat[:p.T, :, :], BQ_3D[:p.T, :, :], factor,
-                               T_H[:p.T], theta, None, False, 'TPI',
-                               p.e, p.retire, etr_parms4D, p)
+                               n_mat[:p.T, :, :], BQ_3D[:p.T, :, :],
+                               factor, T_H[:p.T], theta, None, False,
+                               'TPI', p.e, p.retire, etr_parms4D, p)
 
     # cons_params = (e.reshape(1, S, J), lambdas.reshape(1, 1, J), g_y)
     # c_path = household.get_cons(
@@ -931,9 +935,10 @@ def run_TPI(p, client=None):
     #     cons_params)
     rpath = utils.to_timepath_shape(r, p)
     wpath = utils.to_timepath_shape(w, p)
-    c_path = household.get_cons(rpath[:p.T, :, :], wpath[:p.T, :, :], bmat_s, bmat_splus1,
-                                n_mat[:p.T, :, :], BQ_3D[:p.T, :, :],
-                                tax_path, p.e, None, p)
+    c_path = household.get_cons(rpath[:p.T, :, :], wpath[:p.T, :, :],
+                                bmat_s, bmat_splus1, n_mat[:p.T, :, :],
+                                BQ_3D[:p.T, :, :], tax_path, p.e, None,
+                                p)
     # C_params = (omega[:T].reshape(T, S, 1), lambdas, 'TPI')
     C = aggr.get_C(c_path, p, 'TPI')
 
@@ -988,6 +993,7 @@ def run_TPI(p, client=None):
 
     rce_max = np.amax(np.abs(rc_error))
     print('Max absolute value resource constraint error:', rce_max)
+    print('RC errors = ', rc_error)
 
     print('Checking time path for violations of constraints.')
     for t in range(p.T):
