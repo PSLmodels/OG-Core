@@ -77,6 +77,15 @@ def get_I(b_splus1, K_p1, K, p, method):
                    p.lambdas)).sum()) / (1 + p.g_n_ss))
         aggI = ((1 + p.g_n_ss) * np.exp(p.g_y) * (K_p1 - part2) -
                 (1.0 - p.delta) * K)
+    if method == 'BI_SS':
+        delta = 0
+        omega_extended = np.append(p.omega_SS[1:], [0.0])
+        imm_extended = np.append(p.imm_rates[-1, 1:], [0.0])
+        part2 = (((b_splus1 *
+                   np.transpose((omega_extended * imm_extended) *
+                   p.lambdas)).sum()) / (1 + p.g_n_ss))
+        aggI = ((1 + p.g_n_ss) * np.exp(p.g_y) * (K_p1 - part2) -
+                (1.0 - delta) * K)
     elif method == 'TPI':
         omega_shift = np.append(p.omega[:p.T, 1:], np.zeros((p.T, 1)),
                                 axis=1)

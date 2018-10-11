@@ -471,7 +471,13 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
         InvestmentPlaceholder = np.zeros(bssmat_splus1.shape)
         Iss = aggr.get_I(InvestmentPlaceholder, Kss, Kss, p, 'SS')
         Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
-        BIss = aggr.get_I(bssmat_splus1, Bss, Bss, p, 'SS') + p.delta * Bss
+        BIss = aggr.get_I(bssmat_splus1, Bss, Bss, p, 'BI_SS') #+ p.delta * Bss
+
+        # BIss_params = (0.0, g_y, omega_SS, lambdas, imm_rates,
+        #                g_n_ss, 'SS')
+        # BIss = aggr.get_I(bssmat_splus1, Bss, Bss, BIss_params)
+
+
         if p.budget_balance:
             debt_ss = 0.0
         else:
@@ -483,15 +489,16 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
 
     etr_params_3D = np.tile(np.reshape(
         p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])), (1, p.J, 1))
-    # revenue_ss = aggr.revenue(rss, wss, bssmat_s, nssmat, BQss, Yss,
-    #                           Lss, Kss, factor, theta,
-    #                           etr_params_3D, p, 'SS')
-    # Should it be this or abovE??  b_s or bssmat_s??
-    b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
-                   list(bssmat_s[:-1, :]))
-    revenue_ss = aggr.revenue(rss, wss, b_s, nssmat, BQss, Yss,
+    revenue_ss = aggr.revenue(rss, wss, bssmat_s, nssmat, BQss, Yss,
                               Lss, Kss, factor, theta,
                               etr_params_3D, p, 'SS')
+
+    # lump_sum_params = (e, lambdas.reshape(1, J), omega_SS.reshape(S, 1),
+    #                    'SS', etr_params, tax_func_type, theta, tau_bq,
+    #                    tau_payroll, h_wealth, p_wealth, m_wealth,
+    #                    retire, T, S, J, tau_b, delta_tau)
+    # revenue_ss = aggr.revenue(rss, wss, b_s, nssmat, BQss, Yss,
+    #                           Lss, Kss, factor, lump_sum_params)
 
     r_gov_ss = rss
     debt_service_ss = r_gov_ss * p.debt_ratio_ss * Yss
