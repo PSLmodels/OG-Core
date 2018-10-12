@@ -760,6 +760,9 @@ def SS_fsolve_reform(guesses, *args):
     print('nssmat max and min = ', nssmat.max(), nssmat.min())
     print('Scalar output = ', new_r, new_w, new_T_H, new_Y,
           new_factor, new_BQ, average_income_model)
+    print('max euler error = ', euler_errors.max(), euler_errors.min())
+    print('e matrix', p.e.max(), p.e.min())
+    print('imm rates', p.imm_rates.max(), p.imm_rates.min())
 
 
     error1 = new_r - r
