@@ -56,7 +56,7 @@ def test_firstdoughnutring():
     p.tau_bq = 0.0
     p.lambdas = lambdas.reshape(p.J, 1)
     p.num_workers = 1
-    # test_list = TPI.firstdoughnutring(guesses, r, w, b, BQ, T_H, j, params)
+
     test_list = TPI.firstdoughnutring(guesses, r, w, BQ, T_H, theta,
                                       factor, j, initial_b, p)
 
@@ -66,24 +66,39 @@ def test_firstdoughnutring():
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
-# def test_twist_doughnut():
-#     # Test TPI.twist_doughnut function.  Provide inputs to function and
-#     # ensure that output returned matches what it has been before.
-#     input_tuple = utils.safe_read_pickle(
-#         os.path.join(CUR_PATH, 'test_io_data/twist_doughnut_inputs.pkl'))
-#     guesses, r, w, BQ, T_H, j, s, t, params = input_tuple
-#     income_tax_params, tpi_params, initial_b = params
-#     tpi_params = tpi_params + [True]
-#     income_tax_params = ('DEP',) + income_tax_params
-#     params = (income_tax_params, tpi_params, initial_b)
-#     test_list = TPI.twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params)
-#
-#     expected_list = utils.safe_read_pickle(
-#         os.path.join(CUR_PATH, 'test_io_data/twist_doughnut_outputs.pkl'))
-#
-#     assert(np.allclose(np.array(test_list), np.array(expected_list)))
-#
-#
+def test_twist_doughnut():
+    # Test TPI.twist_doughnut function.  Provide inputs to function and
+    # ensure that output returned matches what it has been before.
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/twist_doughnut_inputs.pkl'))
+    guesses, r, w, BQ, T_H, j, s, t, params = input_tuple
+    income_tax_params, tpi_params, initial_b = params
+    tpi_params = tpi_params + [True]
+    p = Specifications()
+    (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
+     p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, p.tau_b, p.delta_tau,
+     p.tau_payroll, p.tau_bq, p.rho, p.omega, N_tilde, lambdas,
+     p.imm_rates, p.e, p.retire, p.mean_income_data, factor, p.h_wealth,
+     p.p_wealth, p.m_wealth, p.b_ellipse, p.upsilon, p.chi_b, p.chi_n,
+     theta, p.baseline) = tpi_params
+    p.tax_func_type = 'DEP'
+    p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
+        income_tax_params
+    p.tau_bq = 0.0
+    p.lambdas = lambdas.reshape(p.J, 1)
+    p.num_workers = 1
+    # test_list = TPI.twist_doughnut(guesses, r, w, BQ, T_H, j, s, t, params)
+
+    test_list = TPI.twist_doughnut(guesses, r, w, BQ, T_H, theta,
+                                   factor, j, s, t, etr_params,
+                                   mtrx_params, mtry_params, initial_b,
+                                   p)
+    expected_list = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/twist_doughnut_outputs.pkl'))
+
+    assert(np.allclose(np.array(test_list), np.array(expected_list)))
+
+
 # @pytest.mark.full_run
 # def test_inner_loop():
 #     # Test TPI.inner_loop function.  Provide inputs to function and
