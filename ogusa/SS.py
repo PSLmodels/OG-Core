@@ -225,6 +225,24 @@ def inner_loop(outer_loop_vars, p, client):
     # results = client.gather(lazy_values)
 
 
+    lazy_values = []
+    for j in range(p.J):
+        guesses = np.append(bssmat[:, j], nssmat[:, j])
+        euler_params = (r, w, T_H, factor, j, p)
+        lazy_values.append(delayed(opt.fsolve)(euler_equation_solver,
+                                               guesses * .9,
+                                               args=euler_params,
+                                               xtol=MINIMIZER_TOL,
+                                               full_output=True))
+    results = compute(*lazy_values, get=dask.multiprocessing.get,
+                      num_workers=p.num_workers)
+
+    # for j, result in results.items():
+    for j, result in enumerate(results):
+        [solutions, infodict, ier, message] = result
+        euler_errors[:, j] = infodict['fvec']
+        bssmat[:, j] = solutions[:p.S]
+        nssmat[:, j] = solutions[p.S:]
 
 
     #
@@ -234,16 +252,23 @@ def inner_loop(outer_loop_vars, p, client):
     #     bssmat[:, j] = solutions[:p.S]
     #     nssmat[:, j] = solutions[p.S:]
     # lazy_values = []
-    for j in range(p.J):
-        # guesses = np.append(bssmat[:, j], nssmat[:, j])
-        guesses = np.hstack((bssmat[:, j], nssmat[:, j]))
-        euler_args = (r, w, T_H, factor, j, p)
-        results = opt.root(euler_equation_solver, guesses * 0.9,
-                           method='lm', args=euler_args,
-                           tol=MINIMIZER_TOL)
-        bssmat[:, j] = results.x[:p.S]
-        nssmat[:, j] = results.x[p.S:]
-        euler_errors[:, j] = results.fun
+
+
+
+    # for j in range(p.J):
+    #     # guesses = np.append(bssmat[:, j], nssmat[:, j])
+    #     guesses = np.hstack((bssmat[:, j], nssmat[:, j]))
+    #     euler_args = (r, w, T_H, factor, j, p)
+    #     results = opt.root(euler_equation_solver, guesses * 0.9,
+    #                        method='lm', args=euler_args,
+    #                        tol=MINIMIZER_TOL)
+    #     bssmat[:, j] = results.x[:p.S]
+    #     nssmat[:, j] = results.x[p.S:]
+    #     euler_errors[:, j] = results.fun
+
+
+
+
     # lazy_values = []
     # for j in range(p.J):
     #     guesses = np.append(bssmat[:, j], nssmat[:, j])
@@ -306,8 +331,12 @@ def inner_loop(outer_loop_vars, p, client):
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
 
     if p.budget_balance:
+        etr_params_3D = np.tile(np.reshape(
+            p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])),
+                                (1, p.J, 1))
         new_T_H = aggr.revenue(new_r, new_w, b_s, nssmat, new_BQ, new_Y,
-                               L, K, factor, theta, p, 'SS')
+                               L, K, factor, theta,
+                               etr_params_3D, p, 'SS')
     elif p.baseline_spending:
         new_T_H = T_H
     else:

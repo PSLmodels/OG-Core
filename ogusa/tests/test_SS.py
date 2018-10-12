@@ -109,52 +109,52 @@ def test_SS_fsolve_reform():
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
-# def test_SS_fsolve_reform_baselinespend():
-#     # Test SS.SS_fsolve_reform_baselinespend function.  Provide inputs
-#     # to function and ensure that output returned matches what it has
-#     # been before.
-#     input_tuple = utils.safe_read_pickle(
-#         os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_reform_baselinespend_inputs.pkl'))
-#     guesses, params = input_tuple
-#     params = params + (None, 1)
-#     (bssmat, nssmat, T_Hss, chi_params, ss_params, income_tax_params,
-#      iterative_params, factor_ss, small_open_params, client,
-#      num_workers) = params
-#     p = Specifications()
-#     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-#      p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, p.tau_payroll,
-#      p.tau_bq, p.rho, p.omega_SS, p.budget_balance, p.alpha_T,
-#      p.debt_ratio_ss, p.tau_b, p.delta_tau, lambdas, imm_rates, p.e,
-#      p.retire, p.mean_income_data, p.h_wealth, p.p_wealth, p.m_wealth,
-#      p.b_ellipse, p.upsilon) = ss_params
-#
-#     p.tau_bq = 0.0
-#     p.lambdas = lambdas.reshape(p.J, 1)
-#     p.imm_rates = imm_rates.reshape(1, p.S)
-#     p.tax_func_type = 'DEP'
-#     p.baseline = False
-#     p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
-#         income_tax_params
-#     p.etr_params = np.transpose(etr_params.reshape(
-#         p.S, 1, etr_params.shape[-1]), (1, 0, 2))
-#     p.mtrx_params = np.transpose(mtrx_params.reshape(
-#         p.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-#     p.mtry_params = np.transpose(mtry_params.reshape(
-#         p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
-#     p.maxiter, p.mindist_SS = iterative_params
-#     p.chi_b, p.chi_n = chi_params
-#     p.small_open, p.ss_firm_r, p.ss_hh_r = small_open_params
-#     p.num_workers = 1
-#
-#     args = (bssmat, nssmat, T_Hss, factor_ss, p, client)
-#     test_list = SS.SS_fsolve_reform_baselinespend(guesses, *args)
-#
-#     expected_list = utils.safe_read_pickle(
-#         os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_reform_baselinespend_outputs.pkl'))
-#     print('Results = ', test_list)
-#     print('Expected = ', expected_list)
-#     assert(np.allclose(np.array(test_list), np.array(expected_list)))
-#
+def test_SS_fsolve_reform_baselinespend():
+    # Test SS.SS_fsolve_reform_baselinespend function.  Provide inputs
+    # to function and ensure that output returned matches what it has
+    # been before.
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_reform_baselinespend_inputs.pkl'))
+    guesses, params = input_tuple
+    params = params + (None, 1)
+    (bssmat, nssmat, T_Hss, chi_params, ss_params, income_tax_params,
+     iterative_params, factor_ss, small_open_params, client,
+     num_workers) = params
+    p = Specifications()
+    (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
+     p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, p.tau_payroll,
+     p.tau_bq, p.rho, p.omega_SS, p.budget_balance, p.alpha_T,
+     p.debt_ratio_ss, p.tau_b, p.delta_tau, lambdas, imm_rates, p.e,
+     p.retire, p.mean_income_data, p.h_wealth, p.p_wealth, p.m_wealth,
+     p.b_ellipse, p.upsilon) = ss_params
+
+    p.tau_bq = 0.0
+    p.lambdas = lambdas.reshape(p.J, 1)
+    p.imm_rates = imm_rates.reshape(1, p.S)
+    p.tax_func_type = 'DEP'
+    p.baseline = False
+    p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
+        income_tax_params
+    p.etr_params = np.transpose(etr_params.reshape(
+        p.S, 1, etr_params.shape[-1]), (1, 0, 2))
+    p.mtrx_params = np.transpose(mtrx_params.reshape(
+        p.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
+    p.mtry_params = np.transpose(mtry_params.reshape(
+        p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
+    p.maxiter, p.mindist_SS = iterative_params
+    p.chi_b, p.chi_n = chi_params
+    p.small_open, p.ss_firm_r, p.ss_hh_r = small_open_params
+    p.num_workers = 1
+
+    args = (bssmat, nssmat, T_Hss, factor_ss, p, client)
+    test_list = SS.SS_fsolve_reform_baselinespend(guesses, *args)
+
+    expected_list = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_reform_baselinespend_outputs.pkl'))
+    print('Results = ', test_list)
+    print('Expected = ', expected_list)
+    assert(np.allclose(np.array(test_list), np.array(expected_list)))
+
 
 
 
@@ -276,27 +276,53 @@ def test_euler_equation_solver():
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
-# @pytest.mark.parametrize('input_path,expected_path',
-#                          [('run_SS_open_unbal_inputs.pkl',
-#                            'run_SS_open_unbal_outputs.pkl'),
-#                           ('run_SS_closed_balanced_inputs.pkl',
-#                            'run_SS_closed_balanced_outputs.pkl')],
-#                          ids=['Open, Unbalanced', 'Closed Balanced'])
-# def test_run_SS(input_path, expected_path):
-#     # Test SS.run_SS function.  Provide inputs to function and
-#     # ensure that output returned matches what it has been before.
-#     input_tuple = utils.safe_read_pickle(
-#         os.path.join(CUR_PATH, 'test_io_data', input_path))
-#     (income_tax_params, ss_params, iterative_params, chi_params,
-#      small_open_params, baseline, baseline_spending, baseline_dir) =\
-#         input_tuple
-#     income_tax_params = ('DEP',) + income_tax_params
-#     test_dict = SS.run_SS(
-#         income_tax_params, ss_params, iterative_params, chi_params,
-#         small_open_params, baseline, baseline_spending, baseline_dir)
-#
-#     expected_dict = utils.safe_read_pickle(
-#         os.path.join(CUR_PATH, 'test_io_data', expected_path))
-#
-#     for k, v in expected_dict.items():
-#         assert(np.allclose(test_dict[k], v))
+@pytest.mark.parametrize('input_path,expected_path',
+                         [('run_SS_open_unbal_inputs.pkl',
+                           'run_SS_open_unbal_outputs.pkl'),
+                          ('run_SS_closed_balanced_inputs.pkl',
+                           'run_SS_closed_balanced_outputs.pkl')],
+                         ids=['Open, Unbalanced', 'Closed Balanced'])
+def test_run_SS(input_path, expected_path):
+    # Test SS.run_SS function.  Provide inputs to function and
+    # ensure that output returned matches what it has been before.
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data', input_path))
+    (income_tax_params, ss_params, iterative_params, chi_params,
+     small_open_params, baseline, baseline_spending, baseline_dir) =\
+        input_tuple
+    p = Specifications()
+    (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
+     p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, p.tau_payroll,
+     p.tau_bq, p.rho, p.omega_SS, p.budget_balance, p.alpha_T,
+     p.debt_ratio_ss, p.tau_b, p.delta_tau, lambdas, imm_rates, p.e,
+     p.retire, p.mean_income_data, p.h_wealth, p.p_wealth, p.m_wealth,
+     p.b_ellipse, p.upsilon) = ss_params
+    p.tau_bq = 0.0
+    p.lambdas = lambdas.reshape(p.J, 1)
+    p.imm_rates = imm_rates.reshape(1, p.S)
+    p.tax_func_type = 'DEP'
+    p.baseline = baseline
+    p.baseline_spending = baseline_spending
+    p.baseline_dir = baseline_dir
+    p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
+        income_tax_params
+    p.etr_params = np.transpose(etr_params.reshape(
+        p.S, 1, etr_params.shape[-1]), (1, 0, 2))
+    p.mtrx_params = np.transpose(mtrx_params.reshape(
+        p.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
+    p.mtry_params = np.transpose(mtry_params.reshape(
+        p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
+    p.maxiter, p.mindist_SS = iterative_params
+    p.chi_b, p.chi_n = chi_params
+    p.small_open, p.ss_firm_r, p.ss_hh_r = small_open_params
+    p.num_workers = 1
+    # test_dict = SS.run_SS(
+    #     income_tax_params, ss_params, iterative_params, chi_params,
+    #     small_open_params, baseline, baseline_spending, baseline_dir)
+    test_dict = SS.run_SS(p, None)
+
+    expected_dict = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data', expected_path))
+
+    for k, v in expected_dict.items():
+        assert(np.allclose(test_dict[k], v))
