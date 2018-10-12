@@ -195,7 +195,7 @@ def firstdoughnutring(guesses, r, w, BQ, T_H, theta, factor, j,
     # In the below, need to think about how get last year of life for
     # e and rho that is passed to the FOC
     error1 = household.FOC_savings(np.array([r]), np.array([w]), b_s,
-                                   b_splus1, np.array([n]),
+                                   np.array([b_splus1]), np.array([n]),
                                    np.array([BQ]), factor,
                                    np.array([T_H]), theta[j],
                                    p.e[-1, j], p.rho[-1], 0,
