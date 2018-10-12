@@ -679,7 +679,7 @@
         "boolean_value": false,
         "integer_value": true,
         "string_value": false,
-        "value": 250,
+        "value": 2,
         "range": {"min": 2, "max": 500},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",

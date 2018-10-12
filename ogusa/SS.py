@@ -640,6 +640,10 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
 
     euler_savings = euler_errors[:p.S, :]
     euler_labor_leisure = euler_errors[p.S:, :]
+    print('Maximum error in labor FOC = ',
+          np.absolute(euler_labor_leisure).max())
+    print('Maximum error in savings FOC = ',
+          np.absolute(euler_savings).max())
 
     '''
     ------------------------------------------------------------------------
