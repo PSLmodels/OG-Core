@@ -67,7 +67,7 @@ class ParametersBase(object):
             with open(path) as pfile:
                 params_dict = json.load(pfile,
                                         object_pairs_hook=collect.OrderedDict)
-        return params_dict
+            return params_dict
 
     def _update(self, mods):
         """
