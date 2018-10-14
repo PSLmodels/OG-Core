@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from ogusa import household
-from ogusa.pb_api import Specifications, reform_warnings_errors
+from ogusa.pb_api import Specifications
 
 test_data = [(0.1, 1, 10),
              (0.2, 2.5, 55.90169944),
@@ -109,29 +109,28 @@ p4.e = np.array([[1.0, 2.1], [0.4, 0.5], [1.6, 0.9]])
 p4.lambdas = np.array([0.7, 0.3])
 p4.g_y = 0.05
 r4 = np.tile(np.reshape(np.array([0.11, 0.02, 0.08, 0.05]),
-                     (4, 1, 1)), (1, 3, 2))
+                        (4, 1, 1)), (1, 3, 2))
 w4 = np.tile(np.reshape(np.array([0.75, 1.3, 0.9, 0.7]),
-                   (4, 1, 1)), (1, 3, 2))
+                        (4, 1, 1)), (1, 3, 2))
 b4 = np.array([np.array([[0.5, 0.55], [0.6, 0.9], [0.9, .4]]),
-          np.array([[7.1, 8.0], [1.0, 2.1], [9.1, 0.1]]),
-          np.array([[0.4, 0.2], [0.34, 0.56], [0.3, 0.6]]),
-          np.array([[0.1, 0.2], [0.4, 0.5], [0.555, 0.76]])])
+               np.array([[7.1, 8.0], [1.0, 2.1], [9.1, 0.1]]),
+               np.array([[0.4, 0.2], [0.34, 0.56], [0.3, 0.6]]),
+               np.array([[0.1, 0.2], [0.4, 0.5], [0.555, 0.76]])])
 b_splus1_4 = np.array([np.array([[0.4, 0.2], [1.4, 1.5], [0.5, 0.6]]),
-          np.array([[7.1, 8.0], [0.4, 0.9], [9.1, 10]]),
-          np.array([[0.15, 0.52], [0.44, 0.85], [0.5, 0.6]]),
-          np.array([[4.1, 2.0], [0.65, 0.65], [0.25, 0.56]])])
+                       np.array([[7.1, 8.0], [0.4, 0.9], [9.1, 10]]),
+                       np.array([[0.15, 0.52], [0.44, 0.85], [0.5, 0.6]]),
+                       np.array([[4.1, 2.0], [0.65, 0.65], [0.25, 0.56]])])
 n4 = np.array([np.array([[0.8, 0.9], [0.4, 0.5], [0.55, 0.66]]),
-          np.array([[0.7, 0.8], [0.2, 0.1], [0, 0.4]]),
-          np.array([[0.1, 0.2], [1.4, 1.5], [0.5, 0.6]]),
-          np.array([[0.4, 0.6], [0.99, 0.44], [0.35, 0.65]])])
-BQ4 = np.tile(np.reshape(np.array([[0.1, 1.1], [0.4, 1.0],
-                             [0.6, 1.7], [0.9, 2.0]]),
-                   (4, 1, 2)), (1, 3, 1))
+               np.array([[0.7, 0.8], [0.2, 0.1], [0, 0.4]]),
+               np.array([[0.1, 0.2], [1.4, 1.5], [0.5, 0.6]]),
+               np.array([[0.4, 0.6], [0.99, 0.44], [0.35, 0.65]])])
+BQ4 = np.tile(np.reshape(np.array([[0.1, 1.1], [0.4, 1.0], [0.6, 1.7],
+                                   [0.9, 2.0]]), (4, 1, 2)), (1, 3, 1))
 net_tax4 = np.array([np.array([[0.01, 0.02], [0.4, 0.5], [0.05, 0.06]]),
-          np.array([[0.17, 0.18], [0.08, .02], [0.9, 0.10]]),
-          np.array([[1.0, 2.0], [0.04, 0.25], [0.15, 0.16]]),
-          np.array([[0.11, 0.021], [0.044, 0.025],
-                    [0.022, 0.032]])])
+                     np.array([[0.17, 0.18], [0.08, .02], [0.9, 0.10]]),
+                     np.array([[1.0, 2.0], [0.04, 0.25], [0.15, 0.16]]),
+                     np.array([[0.11, 0.021], [0.044, 0.025],
+                               [0.022, 0.032]])])
 j4 = None
 
 test_data = [((r1, w1, b1, b_splus1_1, n1, BQ1, net_tax1, j1, p1),
@@ -247,21 +246,21 @@ test_data = [(test_vars_ss, test_params_ss, expected_ss),
                          ids=['SS', 'TPI'])
 def test_FOC_savings(model_vars, params, expected):
     # Test FOC condition for household's choice of savings
-    r, w, b, b_splus1, n, BQ, factor, T_H, theta, etr_params, mtry_params, j, method = model_vars
+    (r, w, b, b_splus1, n, BQ, factor, T_H, theta, etr_params,
+     mtry_params, j, method) = model_vars
     if j is not None:
-        test_value = household.FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
-                    params.e[:, j], params.rho, params.retire, etr_params, mtry_params, j, params, method)
+        test_value = household.FOC_savings(
+            r, w, b, b_splus1, n, BQ, factor, T_H, theta,
+            params.e[:, j], params.rho, params.retire, etr_params,
+            mtry_params, j, params, method)
     else:
-        test_value = household.FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
-                    np.squeeze(params.e), params.rho, params.retire, etr_params, mtry_params, j, params, method)
+        test_value = household.FOC_savings(
+            r, w, b, b_splus1, n, BQ, factor, T_H, theta,
+            np.squeeze(params.e), params.rho, params.retire,
+            etr_params, mtry_params, j, params, method)
     assert np.allclose(test_value, expected)
 
 
-# model_vars in order: r, w, b, b_splus1, n, BQ, factor, T_H
-# params in order: e, sigma, g_y, theta, b_ellipse, upsilon, chi_n,
-# ltilde, tau_bq, lambdas, j, J, S, tax_func_type, analytical_mtrs,
-# etr_params, mtrx_params, h_wealth, p_wealth, m_wealth, tau_payroll,
-# retire, method
 # Define variables for test of SS version
 p1 = Specifications()
 p1.rho = np.array([0.1, 0.2, 1.0])
@@ -343,10 +342,12 @@ test_data = [(test_vars_ss, test_params_ss, expected_ss),
                          ids=['SS', 'TPI'])
 def test_FOC_labor(model_vars, params, expected):
     # Test FOC condition for household's choice of labor supply
-    r, w, b, b_splus1, n, BQ, factor, T_H, theta, etr_params, mtrx_params, j, method = model_vars
-    test_value = household.FOC_labor(r, w, b, b_splus1, n, BQ, factor,
-                                     T_H, theta, params.chi_n, params.e[:, j], params.retire, etr_params, mtrx_params,
-                                     j, params, method)
+    (r, w, b, b_splus1, n, BQ, factor, T_H, theta, etr_params,
+     mtrx_params, j, method) = model_vars
+    test_value = household.FOC_labor(
+        r, w, b, b_splus1, n, BQ, factor, T_H, theta, params.chi_n,
+        params.e[:, j], params.retire, etr_params, mtrx_params, j,
+        params, method)
 
     assert np.allclose(test_value, expected)
 

@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from ogusa import tax
-from ogusa.pb_api import Specifications, reform_warnings_errors
+from ogusa.pb_api import Specifications
 
 
 def test_replacement_rate_vals():
@@ -20,14 +20,12 @@ def test_replacement_rate_vals():
     nssmat = np.array([0.5, 0.5, 0.5, 0.5])
     wss = 0.5
     factor_ss = 100000
-    # theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, (e, S, retire))
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, 0, p)
     assert np.allclose(theta, np.array([0.042012]))
 
     # e has two dimensions
     nssmat = np.array([[0.4, 0.4], [0.4, 0.4], [0.4, 0.4], [0.4, 0.4]])
     p.e = np.array([[0.4, 0.3], [0.5, 0.4], [.6, .4], [.4, .3]])
-    # theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, (e, S, retire))
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
     assert np.allclose(theta, np.array([0.042012, 0.03842772]))
 
@@ -35,13 +33,11 @@ def test_replacement_rate_vals():
     nssmat = np.array([[0.3, .35], [0.3, .35], [0.3, .35], [0.3, .35]])
     factor_ss = 10000
     p.e = np.array([[0.35, 0.3], [0.55, 0.4], [.65, .4], [.45, .3]])
-    # theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, (e, S, retire))
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
     assert np.allclose(theta, np.array([0.1145304, 0.0969304]))
 
     # hit AIME case1
     factor_ss = 1000
-    # theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, (e, S, retire))
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
     assert np.allclose(theta, np.array([0.1755, 0.126]))
 
@@ -82,37 +78,42 @@ p1.S = 2
 p1.J = 1
 p1.e = np.array([0.5, 0.45])
 p1.tax_func_type = 'DEP'
-etr_params1 = np.reshape(np.array([[0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
-                          -0.15, 0.15, 0.16, -0.15, 0.83], [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
-                                                    -0.15, 0.15, 0.16, -0.15, 0.83]]), (1, p1.S, 12))
+etr_params1 = np.reshape(np.array([
+    [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
+     -0.15, 0.83], [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15,
+                    0.15, 0.16, -0.15, 0.83]]), (1, p1.S, 12))
 
 p2 = Specifications()
 p2.S = 2
 p2.J = 1
 p2.e = np.array([0.5, 0.45])
 p2.tax_func_type = 'GS'
-etr_params2 = np.reshape(np.array([[0.396, 0.7, 0.9, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0.396, 0.7, 0.9, 0, 0, 0, 0, 0, 0, 0, 0, 0]]), (1, p2.S, 12))
+etr_params2 = np.reshape(np.array([
+    [0.396, 0.7, 0.9, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0.396, 0.7, 0.9, 0, 0, 0, 0, 0, 0, 0, 0, 0]]), (1, p2.S, 12))
 
 p3 = Specifications()
 p3.S = 2
 p3.J = 1
 p3.e = np.array([0.5, 0.45])
 p3.tax_func_type = 'DEP_totalinc'
-etr_params3 = np.reshape(np.array([[0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
-                          -0.15, 0.15, 0.16, -0.15, 0.83], [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
-                                                    -0.15, 0.15, 0.16, -0.15, 0.83]]), (1, p3.S, 12))
+etr_params3 = np.reshape(np.array([
+    [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
+     -0.15, 0.83], [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
+                    -0.15, 0.15, 0.16, -0.15, 0.83]]), (1, p3.S, 12))
 
 p4 = Specifications()
 p4.S = 3
 p4.J = 1
 p4.e = np.array([0.5, 0.45, 0.3])
 p4.tax_func_type = 'DEP'
-etr_params4 = np.reshape(np.array([[0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
-                         -0.15, 0.15, 0.16, -0.15, 0.83],
-                         [0.002, 0.001, 0.002, 0.04, 0.8, -0.14, 0.8,
-                         -0.15, 0.15, 0.16, -0.15, 0.83],
-                         [0.011, 0.001, 0.003, 0.06, 0.8, -0.14, 0.8,
-                         -0.15, 0.15, 0.16, -0.15, 0.83]]), (1, p4.S, 12))
+etr_params4 = np.reshape(np.array([
+    [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
+     -0.15, 0.83],
+    [0.002, 0.001, 0.002, 0.04, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
+     -0.15, 0.83],
+    [0.011, 0.001, 0.003, 0.06, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
+     -0.15, 0.83]]), (1, p4.S, 12))
 
 
 @pytest.mark.parametrize('b,n,etr_params,params,expected',
@@ -130,7 +131,8 @@ etr_params4 = np.reshape(np.array([[0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8
                            etr_params4, p4,
                            np.array([0.80167144, 0.80163711, 0.8016793]))
                           ],
-                         ids=['DEP', 'GS', 'DEP_totalinc', 'DEP, >1 dim'])
+                         ids=['DEP', 'GS', 'DEP_totalinc',
+                              'DEP, >1 dim'])
 def test_ETR_income(b, n, etr_params, params, expected):
     # Test income tax function
     r = 0.04
@@ -321,7 +323,6 @@ def test_MTR_income(etr_params, mtr_params, params, mtr_capital, expected):
     b = np.array([0.4, 0.3, 0.5])
     n = np.array([0.8, 0.4, 0.7])
     factor = 110000
-    j = None
 
     test_mtr = tax.MTR_income(r, w, b, n, factor, mtr_capital,
                               params.e, etr_params, mtr_params, params)
@@ -349,10 +350,13 @@ def test_total_taxes():
     p.S = 3
     p.lambdas = np.array([1.0])
     p.e = np.array([0.5, 0.45, 0.3]).reshape(3, 1)
-    etr_params = np.reshape(np.array([[0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
-                           -0.15, 0.15, 0.16, -0.15, 0.83], [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
-                                                  -0.15, 0.15, 0.16, -0.15, 0.83], [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
-                                                                         -0.15, 0.15, 0.16, -0.15, 0.83]]), (1, p.S, 12))
+    etr_params = np.reshape(np.array([
+        [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
+         0.16, -0.15, 0.83],
+        [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
+         0.16, -0.15, 0.83],
+        [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
+         0.16, -0.15, 0.83]]), (1, p.S, 12))
 
     p.h_wealth = 1
     p.p_wealth = 2
@@ -374,14 +378,16 @@ def test_total_taxes():
     # method = ss
     method = 'SS'
     total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j,
-                                  shift, method, p.e[:, j], p.retire, etr_params[-1, :, :], p)
+                                  shift, method, p.e[:, j], p.retire,
+                                  etr_params[-1, :, :], p)
     assert np.allclose(total_taxes, np.array([0.47374766, -0.09027663,
                                               0.03871394]))
 
     # method = TPI_scalar
     method = 'TPI_scalar'
     total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j,
-                                  shift, method, p.e[:, j], p.retire, etr_params, p)
+                                  shift, method, p.e[:, j], p.retire,
+                                  etr_params, p)
     assert np.allclose(total_taxes, np.array([0.20374766, -0.09027663,
                                               0.03871394]))
 
@@ -401,14 +407,18 @@ def test_total_taxes():
                             -0.15, 0.15, 0.16, -0.15, 0.83],
                            [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
                             -0.15, 0.15, 0.16, -0.15, 0.83]])
-    total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method, p.e[:, j], p.retire, etr_params, p)
+    total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j,
+                                  shift, method, p.e[:, j], p.retire,
+                                  etr_params, p)
     assert np.allclose(total_taxes,
                        np.array([0.47374766, -0.06444251, 0.06622862]))
 
     # shift = False
     method = 'TPI'
     shift = False
-    total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method, p.e[:, j], p.retire, etr_params, p)
+    total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j,
+                                  shift, method, p.e[:, j], p.retire,
+                                  etr_params, p)
     assert np.allclose(total_taxes,
                        np.array([0.47374766, 0.22805749, 0.06622862]))
 
@@ -425,31 +435,34 @@ def test_total_taxes():
     p.J = 2
     p.S = 3
     p.T = 3
-    etr_params = np.tile(np.reshape(np.array([[0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
-                           -0.15, 0.15, 0.16, -0.15, 0.83],
-                           [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
-                            -0.15, 0.15, 0.16, -0.15, 0.83],
-                           [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8,
-                            -0.15, 0.15, 0.16, -0.15, 0.83]]), (1, p.S, 12)), (p.T, 1, 1))
-    etr_params = np.tile(np.reshape(etr_params, (p.T, p.S, 1, 12)), (1, 1, p.J, 1))
+    etr_params = np.tile(np.reshape(np.array([
+        [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
+         0.16, -0.15, 0.83],
+        [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
+         0.16, -0.15, 0.83],
+        [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
+         0.16, -0.15, 0.83]]), (1, p.S, 12)), (p.T, 1, 1))
+    etr_params = np.tile(np.reshape(etr_params, (p.T, p.S, 1, 12)),
+                         (1, 1, p.J, 1))
     p.lambdas = np.array([0.65, 0.35])
     theta = np.array([0.225, 0.3])
     p.tau_bq = np.array([0.1])
     p.retire = 2
     j = None
     shift = True
-    total_taxes = tax.total_taxes(r, w, b, n, BQ,
-                                  factor, T_H, theta, j, shift, method, p.e, p.retire, etr_params, p)
+    total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j,
+                                  shift, method, p.e, p.retire,
+                                  etr_params, p)
     print('Total taxes result = ', total_taxes.shape)
     print('Expected = ',  np.array([[[0.16311573,  0.1583638],
-               [0.26812436, 0.30131202],
-               [0.13821536, 0.00700922]],
-              [[0.2031629, 0.1717635],
-               [0.3563044, 0.39808896],
-               [0.2196475, -0.01586141]],
-              [[0.29985939, 0.18906559],
-               [0.32237654, 0.35064977],
-               [0.15958077, -0.0482051]]]).shape)
+                                     [0.26812436, 0.30131202],
+                                    [0.13821536, 0.00700922]],
+                                    [[0.2031629, 0.1717635],
+                                    [0.3563044, 0.39808896],
+                                    [0.2196475, -0.01586141]],
+                                    [[0.29985939, 0.18906559],
+                                    [0.32237654, 0.35064977],
+                                    [0.15958077, -0.0482051]]]).shape)
     assert np.allclose(total_taxes,
                        np.array([[[0.16311573,  0.1583638],
                                   [0.26812436, 0.30131202],

@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from ogusa import aggregates as aggr
-from ogusa.pb_api import Specifications, reform_warnings_errors
+from ogusa.pb_api import Specifications
 
 
 def test_get_L():
@@ -24,7 +24,6 @@ def test_get_L():
     assert np.allclose(p.omega_SS.sum(), 1.0)
 
     n = np.random.rand(p.T * p.S * p.J).reshape(p.T, p.S, p.J)
-    # e = np.tile(np.random.rand(S, J), (T, 1, 1))
 
     # test matrix multiplication in 3 dimensions works as expected
     L_loop = np.ones(p.T * p.S * p.J).reshape(p.T, p.S, p.J)
@@ -39,13 +38,11 @@ def test_get_L():
 
     # test SS
     method = 'SS'
-    # L = aggr.get_L(n[0], (e[0], omega, lambdas, method))
     L = aggr.get_L(n[-1, :, :], p, method)
     assert (np.allclose(L, L_loop[-1, :, :].sum()))
 
     # test TPI
     method = 'TPI'
-    # L = aggr.get_L(n, (e, omega, lambdas, method))
     L = aggr.get_L(n, p, method)
     assert (np.allclose(L, L_loop.sum(1).sum(1)))
 
@@ -257,7 +254,9 @@ def test_revenue():
         'p_wealth': 0.2,
         'm_wealth': 1.0,
         'tau_b': 0.2,
-        'delta_tau_annual': float(1 - ((1 - 0.0975) ** (20 / (p.ending_age - p.starting_age))))
+        'delta_tau_annual': float(1 - ((1 - 0.0975) **
+                                       (20 / (p.ending_age -
+                                              p.starting_age))))
     }
     p.update_specifications(new_param_values, raise_errors=False)
 
@@ -266,7 +265,8 @@ def test_revenue():
     r = 0.067 + (0.086 - 0.067) * random_state.rand(p.T)
     w = 0.866 + (0.927 - 0.866) * random_state.rand(p.T)
     b = 6.94 * random_state.rand(p.T * p.S * p.J).reshape(p.T, p.S, p.J)
-    n = 0.191 + (0.503 - 0.191) * random_state.rand(p.T * p.S * p.J).reshape(p.T, p.S, p.J)
+    n = (0.191 + (0.503 - 0.191) *
+         random_state.rand(p.T * p.S * p.J).reshape(p.T, p.S, p.J))
     BQ = (0.032 + (0.055 - 0.032) *
           random_state.rand(p.T * p.S * p.J).reshape(p.T, p.S, p.J))
     Y = 0.561 + (0.602 - 0.561) * random_state.rand(p.T).reshape(p.T)
@@ -275,15 +275,17 @@ def test_revenue():
     factor = 140000.0
 
     # update parameters instance with new values for test
-    p.e = 0.263 + (2.024 - 0.263) * random_state.rand(p.S * p.J).reshape(p.S, p.J)
+    p.e = (0.263 + (2.024 - 0.263) *
+           random_state.rand(p.S * p.J).reshape(p.S, p.J))
     p.omega = 0.039 * random_state.rand(p.T * p.S * 1).reshape(p.T, p.S)
     p.omega = p.omega/p.omega.sum(axis=1).reshape(p.T, 1)
     p.omega_SS = p.omega[-1, :]
 
     etr_params = (0.22 *
-                    random_state.rand(p.T * p.S * dim4).reshape(p.T, p.S,
-                                                                dim4))
-    etr_params = np.tile(np.reshape(etr_params, (p.T, p.S, 1, dim4)), (1, 1, p.J, 1))
+                  random_state.rand(p.T * p.S * dim4).reshape(p.T, p.S,
+                                                              dim4))
+    etr_params = np.tile(np.reshape(etr_params, (p.T, p.S, 1, dim4)),
+                         (1, 1, p.J, 1))
     theta = 0.101 + (0.156 - 0.101) * random_state.rand(p.J)
 
     # check that distributional parameters sum to one
@@ -292,8 +294,9 @@ def test_revenue():
 
     # SS case
     method = "SS"
-    res = aggr.revenue(r[0], w[0], b[0, :, :], n[0, :, :], BQ[0, :, :], Y[0], L[0],
-                       K[0], factor, theta, etr_params[-1, :, :, :], p, method)
+    res = aggr.revenue(r[0], w[0], b[0, :, :], n[0, :, :], BQ[0, :, :],
+                       Y[0], L[0], K[0], factor, theta,
+                       etr_params[-1, :, :, :], p, method)
     assert(np.allclose(res,  0.5562489534339288))
 
     # TPI case

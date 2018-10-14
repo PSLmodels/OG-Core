@@ -1,21 +1,9 @@
 from __future__ import print_function
-
 import pytest
-import json
-import pickle
 import numpy as np
 import os
-import multiprocessing
-from multiprocessing import Process
-from dask.distributed import Client
 from ogusa import SS, utils
-from ogusa.pb_api import Specifications, reform_warnings_errors
-
-# Define parameters to use for multiprocessing
-# client = Client(processes=False)
-# # num_workers = int(os.cpu_count())  # not in os on Python 2.7?
-# num_workers = multiprocessing.cpu_count()
-
+from ogusa.pb_api import Specifications
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -114,7 +102,9 @@ def test_SS_fsolve_reform_baselinespend():
     # to function and ensure that output returned matches what it has
     # been before.
     input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_reform_baselinespend_inputs.pkl'))
+        os.path.join(
+            CUR_PATH,
+            'test_io_data/SS_fsolve_reform_baselinespend_inputs.pkl'))
     guesses, params = input_tuple
     params = params + (None, 1)
     (bssmat, nssmat, T_Hss, chi_params, ss_params, income_tax_params,
@@ -150,12 +140,12 @@ def test_SS_fsolve_reform_baselinespend():
     test_list = SS.SS_fsolve_reform_baselinespend(guesses, *args)
 
     expected_list = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_reform_baselinespend_outputs.pkl'))
+        os.path.join(
+            CUR_PATH,
+            'test_io_data/SS_fsolve_reform_baselinespend_outputs.pkl'))
     print('Results = ', test_list)
     print('Expected = ', expected_list)
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
-
-
 
 
 def test_SS_solver():
@@ -316,9 +306,6 @@ def test_run_SS(input_path, expected_path):
     p.chi_b, p.chi_n = chi_params
     p.small_open, p.ss_firm_r, p.ss_hh_r = small_open_params
     p.num_workers = 1
-    # test_dict = SS.run_SS(
-    #     income_tax_params, ss_params, iterative_params, chi_params,
-    #     small_open_params, baseline, baseline_spending, baseline_dir)
     test_dict = SS.run_SS(p, None)
 
     expected_dict = utils.safe_read_pickle(

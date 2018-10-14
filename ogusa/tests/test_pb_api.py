@@ -11,6 +11,7 @@ JSON_REVISION_FILE = """{
     }
 }"""
 
+
 @pytest.fixture(scope='module')
 def revision_file():
     f = tempfile.NamedTemporaryFile(mode="a", delete=False)
