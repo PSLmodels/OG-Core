@@ -122,14 +122,14 @@ def get_K(b, p, method, preTP):
 
     Returns: K
     '''
-
     if method == 'SS':
-        part1 = b * np.transpose(p.omega_SS * p.lambdas)
         if preTP:
+            part1 = b * np.transpose(p.omega_S_preTP * p.lambdas)
             omega_extended = np.append(p.omega_S_preTP[1:], [0.0])
             imm_extended = np.append(p.imm_rates[0, 1:], [0.0])
             pop_growth_rate = p.g_n[0]
         else:
+            part1 = b * np.transpose(p.omega_SS * p.lambdas)
             omega_extended = np.append(p.omega_SS[1:], [0.0])
             imm_extended = np.append(p.imm_rates[-1, 1:], [0.0])
             pop_growth_rate = p.g_n_ss

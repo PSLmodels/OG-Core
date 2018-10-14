@@ -48,7 +48,7 @@ class Specifications(ParametersBase):
         self.initialize()
         # does more costly tax function estimation
         if run_micro:
-            self.get_tax_function_parameters(run_micro=True)
+            self.get_tax_function_parameters(self, client, run_micro=True)
 
         self.parameter_warnings = ''
         self.parameter_errors = ''
@@ -146,7 +146,7 @@ class Specifications(ParametersBase):
             self.S, self.omega_SS, self.omega_SS_80, self.lambdas,
             plot=False)
 
-    def get_tax_function_parameters(self, run_micro=False):
+    def get_tax_function_parameters(self, client, run_micro=False):
         # Income tax parameters
         if self.baseline:
             tx_func_est_path = os.path.join(
@@ -161,7 +161,7 @@ class Specifications(ParametersBase):
                 self.BW, self.S, self.starting_age, self.ending_age,
                 self.baseline, self.analytical_mtrs, self.tax_func_type,
                 self.age_specific, self.start_year, self.reform, self.guid,
-                tx_func_est_path, self.data, self.num_workers, client)
+                tx_func_est_path, self.data, client, self.num_workers)
         if self.baseline:
             baseline_pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
             estimate_file = tx_func_est_path

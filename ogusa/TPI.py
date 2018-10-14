@@ -98,6 +98,9 @@ def get_initial_SS_values(p):
     elif not p.baseline:
         reform_ss = os.path.join(p.output_base, "SS/SS_vars.pkl")
         ss_reform_vars = pickle.load(open(reform_ss, "rb"))
+        theta = tax.replacement_rate_vals(
+            ss_reform_vars['nssmat'], ss_reform_vars['wss'], factor,
+            None, p)
         SS_values = (ss_reform_vars['Kss'], ss_reform_vars['Bss'],
                      ss_reform_vars['Lss'], ss_reform_vars['rss'],
                      ss_reform_vars['wss'], ss_reform_vars['BQss'],
@@ -105,7 +108,7 @@ def get_initial_SS_values(p):
                      ss_reform_vars['revenue_ss'],
                      ss_reform_vars['bssmat_splus1'],
                      ss_reform_vars['nssmat'], ss_reform_vars['Yss'],
-                     ss_reform_vars['Gss'])
+                     ss_reform_vars['Gss'], theta)
 
     ## What is going on here?  Whatever it is, why not done in pb_api.py???
     N_tilde = p.omega.sum(1)  # this should equal one in

@@ -63,7 +63,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
                           client=client, num_workers=num_workers)
     spec.update_specifications({'age_specific': False})
     print('path for tax functions: ', spec.output_base)
-    spec.get_tax_function_parameters(run_micro=False)
+    spec.get_tax_function_parameters(client, run_micro)
 
     # ogusa_05242018 = ogusaclass(spec1, spec2)
     # ogusa_05242018.runner()
