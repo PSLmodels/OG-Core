@@ -187,17 +187,30 @@ class Specifications(ParametersBase):
         self.mtrx_params = np.empty((self.T, self.S, num_mtrx_params))
         self.mtry_params = np.empty((self.T, self.S, num_mtry_params))
         self.etr_params[:self.BW, :, :] =\
-            np.transpose(dict_params['tfunc_etr_params_S'][:self.S, :self.BW, :], axes=[1, 0, 2])
+            np.transpose(
+                dict_params['tfunc_etr_params_S'][:self.S, :self.BW, :],
+                axes=[1, 0, 2])
         self.etr_params[self.BW:, :, :] =\
-            np.tile(np.transpose(dict_params['tfunc_etr_params_S'][:self.S, -1, :].reshape(self.S, 1, num_etr_params), axes=[1, 0, 2]), (self.T - self.BW, 1, 1))
+            np.tile(np.transpose(
+                dict_params['tfunc_etr_params_S'][:self.S, -1, :].reshape(
+                    self.S, 1, num_etr_params), axes=[1, 0, 2]),
+                    (self.T - self.BW, 1, 1))
         self.mtrx_params[:self.BW, :, :] =\
-            np.transpose(dict_params['tfunc_mtrx_params_S'][:self.S, :self.BW, :], axes=[1, 0, 2])
+            np.transpose(
+                dict_params['tfunc_mtrx_params_S'][:self.S, :self.BW, :],
+                axes=[1, 0, 2])
         self.mtrx_params[self.BW:, :, :] =\
-            np.transpose(dict_params['tfunc_mtrx_params_S'][:self.S, -1, :].reshape(self.S, 1, num_mtrx_params), axes=[1, 0, 2])
+            np.transpose(
+                dict_params['tfunc_mtrx_params_S'][:self.S, -1, :].reshape(
+                    self.S, 1, num_mtrx_params), axes=[1, 0, 2])
         self.mtry_params[:self.BW, :, :] =\
-            np.transpose(dict_params['tfunc_mtry_params_S'][:self.S, :self.BW, :], axes=[1, 0, 2])
+            np.transpose(
+                dict_params['tfunc_mtry_params_S'][:self.S, :self.BW, :],
+                axes=[1, 0, 2])
         self.mtry_params[self.BW:, :, :] =\
-            np.transpose(dict_params['tfunc_mtry_params_S'][:self.S, -1, :].reshape(self.S, 1, num_mtry_params), axes=[1, 0, 2])
+            np.transpose(
+                dict_params['tfunc_mtry_params_S'][:self.S, -1, :].reshape(
+                    self.S, 1, num_mtry_params), axes=[1, 0, 2])
 
         if self.constant_rates:
             print('Using constant rates!')
@@ -440,7 +453,6 @@ class Specifications(ParametersBase):
                             )
         del param_names
 
-
     def _validate_parameter_values(self, parameters_set):
         """
         Check values of parameters in specified parameter_set using
@@ -477,17 +489,20 @@ class Specifications(ParametersBase):
                     if isinstance(validation_value, six.string_types):
                         validation_value = self.simple_eval(validation_value)
                     else:
-                        validation_value = np.full(param_value.shape, validation_value)
+                        validation_value = np.full(param_value.shape,
+                                                   validation_value)
                     assert param_value.shape == validation_value.shape
                     for idx in np.ndindex(param_value.shape):
                         out_of_range = False
-                        if validation_op == 'min' and param_value[idx] < validation_value[idx]:
+                        if validation_op == 'min' and (param_value[idx] <
+                                                       validation_value[idx]):
                             out_of_range = True
                             msg = '{} value {} < min value {}'
                             extra = self._vals[param_name]['out_of_range_minmsg']
                             if extra:
                                 msg += ' {}'.format(extra)
-                        if validation_op == 'max' and param_value[idx] > validation_value[idx]:
+                        if validation_op == 'max' and (param_value[idx] >
+                                                       validation_value[idx]):
                             out_of_range = True
                             msg = '{} value {} > max value {}'
                             extra = self._vals[param_name]['out_of_range_maxmsg']
@@ -495,12 +510,12 @@ class Specifications(ParametersBase):
                                 msg += ' {}'.format(extra)
                         if out_of_range:
                             self.parameter_errors += (
-                                'ERROR: ' + msg.format(param_name,
-                                                       param_value[idx],
-                                                       validation_value[idx]) + '\n'
-                            )
+                                'ERROR: ' + msg.format(
+                                    param_name, param_value[idx],
+                                    validation_value[idx]) + '\n')
         del dp
         del parameters
+
 
 # copied from taxcalc.tbi.tbi.reform_errors_warnings--probably needs further
 # changes

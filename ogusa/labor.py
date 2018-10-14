@@ -40,7 +40,9 @@ def get_labor_data():
     # read in "raw" CPS data to calculate moments
     # these data were actually cleaned in hours_data_cps_setup.do
     fileDir = os.path.dirname(os.path.realpath('__file__'))
-    filename = os.path.join(fileDir, '../Data/Current_Population_Survey/cps_est_ability_hours_1992to2013.dta')
+    filename = os.path.join(
+        fileDir,
+        '../Data/Current_Population_Survey/cps_est_ability_hours_1992to2013.dta')
     filename = os.path.abspath(os.path.realpath(filename))
     cps = pd.read_stata(filename, columns=['year', 'age', 'hours',
                                            'hours_unit', 'wtsupp'])
@@ -50,11 +52,13 @@ def get_labor_data():
 #     Need to:
 #     1) read in raw CPS files
 #     2) do collapsing
-#     3) return pandas DF with raw CPS data (just variables needed - age, hours, weight)
+#     3) return pandas DF with raw CPS data (just variables needed -
+#        age, hours, weight)
 #     4) return np array "weighted"
 #
 #     5) moments() will take CPS and calc moments
-#     6) VCV will boot strap CPS and call moments() with each boostrapped sample
+#     6) VCV will boot strap CPS and call moments() with each
+#        boostrapped sample
 # '''
 #
 #     # Create variables for number of age groups in data (S_labor) and number
@@ -76,13 +80,10 @@ def get_labor_data():
 #     weighted = np.nansum((lab_mat_basic * weights), axis=1)
 
 
-'''
-------------------------------------------------------------------------
-    Compute moments from labor data
-------------------------------------------------------------------------
-'''
 def compute_labor_moments(cps, S):
     '''
+    ------------------------------------------------------------------------
+        Compute moments from labor data
     ------------------------------------------------------------------------
     Inputs:
         cps         = pandas DF, raw data from SCF
@@ -109,8 +110,8 @@ def compute_labor_moments(cps, S):
     by_age['frac_work'] = by_age['avg_hours']/(365*16.)
 
     # Data have sufficient obs through age  80
-    # Fit a line to the last few years of the average labor participation which extends from
-    # ages 76 to 100.
+    # Fit a line to the last few years of the average labor
+    # participation which extends from ages 76 to 100.
     slope = (by_age['frac_work'][-1] - by_age['frac_work'][-15]) / (15.)
     # intercept = by_age['frac_work'][-1] - slope*len(by_age['frac_work'])
     # extension = slope * (np.linspace(56, 80, 23)) + intercept
@@ -122,7 +123,8 @@ def compute_labor_moments(cps, S):
 
     # the above computes moments if the model period is a year
     # the following adjusts those moments in case it is smaller
-    labor_dist_out = filter.uniform_filter(labor_dist_data,size=int(80/S))[::int(80/S)]
+    labor_dist_out = filter.uniform_filter(labor_dist_data,
+                                           size=int(80 / S))[::int(80 / S)]
 
     return labor_dist_out
 
@@ -147,14 +149,15 @@ def VCV_moments(cps, n, bin_weights, S):
 
     ------------------------------------------------------------------------
     '''
-    labor_moments_boot = np.zeros((n,S))
+    labor_moments_boot = np.zeros((n, S))
     for i in range(n):
         boot = cps[np.random.randint(2, size=len(cps.index)).astype(bool)]
-        labor_moments_boot[i,:] = compute_labor_moments(boot, S)
+        labor_moments_boot[i, :] = compute_labor_moments(boot, S)
 
     VCV = np.cov(labor_moments_boot.T)
 
     return VCV
+
 
 def labor_data_graphs(weighted, output_dir):
     '''
@@ -190,4 +193,5 @@ def labor_data_graphs(weighted, output_dir):
     ax10.set_xlabel(r'age-$s$')
     ax10.set_ylabel(r'ability type -$j$')
     ax10.set_zlabel(r'labor $e_j(s)$')
-    plt.savefig(os.path.join(baseline_dir, 'Demographics/data_labor_dist'))
+    plt.savefig(os.path.join(baseline_dir,
+                             'Demographics/data_labor_dist'))

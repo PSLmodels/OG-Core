@@ -466,7 +466,8 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
     OBJECTS CREATED WITHIN FUNCTION:
     thresh      = [S,BW] array, threshold values for SSE before consider
                    tax function outlier
-    sse_big_mat = [S,BW] array, indicators of weither tax function is outlier
+    sse_big_mat = [S,BW] array, indicators of weither tax function is
+                  outlier
     RETURNS: sse_big_mat
     --------------------------------------------------------------------
     '''
@@ -1068,11 +1069,13 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
     # SE income may be negative
     data_orig['MTR labor income'] = \
         (data_orig['MTR wage income'] * (data_orig['Wage income'] /
-                                  (data_orig['Wage income'].abs() +
-                                   data_orig['SE income'].abs())) +
-         data_orig['MTR SE income'] * (data_orig['SE income'].abs() /
-                                       (data_orig['Wage income'].abs() +
-                                        data_orig['SE income'].abs())))
+                                         (data_orig['Wage income'].abs()
+                                          +
+                                          data_orig['SE income'].abs()))
+         + data_orig['MTR SE income'] * (data_orig['SE income'].abs() /
+                                         (data_orig['Wage income'].abs()
+                                          +
+                                          data_orig['SE income'].abs())))
     data = data_orig[['Age', 'MTR labor income', 'MTR capital income',
                       'Total labor income', 'Total capital income',
                       'Adjusted total income', 'ETR', 'Weights']]

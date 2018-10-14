@@ -1,7 +1,6 @@
 from __future__ import print_function
 '''
 ------------------------------------------------------------------------
-Created 12/28/2016
 
 Fiscal policy functions for unbalanced budgeting. In particular, some
 functions require time-path calculation.

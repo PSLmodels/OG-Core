@@ -8,15 +8,9 @@ try:
 except ImportError:
     import pickle
 import os
-import numpy as np
 import time
-
-
-import ogusa
-from ogusa import SS, TPI
-# ogusa.parameters.DATASET = 'REAL'
+from ogusa import SS, TPI, utils
 from ogusa.pb_api import Specifications
-from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR
 
 
 def runner(output_base, baseline_dir, test=False, time_path=True,
@@ -26,24 +20,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
            budget_balance=False, baseline_spending=False, data=None,
            client=None, num_workers=1):
 
-    from ogusa import parameters, demographics, income, utils
-
     tick = time.time()
-
-    # start_year = user_params.get('start_year', DEFAULT_START_YEAR)
-    # if start_year > TC_LAST_YEAR:
-    #     raise RuntimeError("Start year is beyond data extrapolation.")
-    #
-    # # Make sure options are internally consistent
-    # if baseline and baseline_spending:
-    #     print("Inconsistent options. Setting <baseline_spending> to False, "
-    #           "leaving <baseline> True.'")
-    #     baseline_spending = False
-    # if budget_balance and baseline_spending:
-    #     print("Inconsistent options. Setting <baseline_spending> to False, "
-    #           "leaving <budget_balance> True.")
-    #     baseline_spending = False
-
     # Create output directory structure
     ss_dir = os.path.join(output_base, "SS")
     tpi_dir = os.path.join(output_base, "TPI")
@@ -64,12 +41,6 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     spec.update_specifications({'age_specific': False})
     print('path for tax functions: ', spec.output_base)
     spec.get_tax_function_parameters(client, run_micro)
-
-    # ogusa_05242018 = ogusaclass(spec1, spec2)
-    # ogusa_05242018.runner()
-    # pickle.dump(ogusa_05242018, open())
-    #
-    # ssresults = ogusa_05242018.ss_output
 
     '''
     ------------------------------------------------------------------------
@@ -118,4 +89,5 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         pickle.dump(tpi_output, open(tpi_vars, "wb"))
 
         print("Time path iteration complete.")
-    print("It took {0} seconds to get that part done.".format(time.time() - tick))
+    print("It took {0} seconds to get that part done.".format(
+        time.time() - tick))

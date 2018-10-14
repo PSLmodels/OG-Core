@@ -17,6 +17,7 @@ from . import tax, utils
 ------------------------------------------------------------------------
 '''
 
+
 def get_L(n, p, method):
     '''
     Generates vector of aggregate labor supply.
@@ -74,7 +75,7 @@ def get_I(b_splus1, K_p1, K, p, method):
         imm_extended = np.append(p.imm_rates[-1, 1:], [0.0])
         part2 = (((b_splus1 *
                    np.transpose((omega_extended * imm_extended) *
-                   p.lambdas)).sum()) / (1 + p.g_n_ss))
+                                p.lambdas)).sum()) / (1 + p.g_n_ss))
         aggI = ((1 + p.g_n_ss) * np.exp(p.g_y) * (K_p1 - part2) -
                 (1.0 - p.delta) * K)
     if method == 'BI_SS':
@@ -83,7 +84,7 @@ def get_I(b_splus1, K_p1, K, p, method):
         imm_extended = np.append(p.imm_rates[-1, 1:], [0.0])
         part2 = (((b_splus1 *
                    np.transpose((omega_extended * imm_extended) *
-                   p.lambdas)).sum()) / (1 + p.g_n_ss))
+                                p.lambdas)).sum()) / (1 + p.g_n_ss))
         aggI = ((1 + p.g_n_ss) * np.exp(p.g_y) * (K_p1 - part2) -
                 (1.0 - delta) * K)
     elif method == 'TPI':
@@ -96,8 +97,8 @@ def get_I(b_splus1, K_p1, K, p, method):
                                       (p.T, p.S, 1)),
                            (1, 1, p.J))).sum(1).sum(1)) /
                  (1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))))
-        aggI = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))) * np.exp(p.g_y) *
-                (K_p1 - part2) - (1.0 - p.delta) * K)
+        aggI = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))) *
+                np.exp(p.g_y) * (K_p1 - part2) - (1.0 - p.delta) * K)
 
     return aggI
 
@@ -117,7 +118,8 @@ def get_K(b, p, method, preTP):
     Functions called: None
 
     Objects in function:
-        K_presum = [T,S,J] array, weighted distribution of wealth/capital holdings
+        K_presum = [T,S,J] array, weighted distribution of wealth/capital
+                   holdings
         K        = [T,] vector, aggregate capital supply
 
     Returns: K
@@ -160,7 +162,8 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
 
     Inputs:
         r           = [T,] vector, interest rates
-        b_splus1    = [T,S,J] array, distribution of wealth/capital holdings one period ahead
+        b_splus1    = [T,S,J] array, distribution of wealth/capital
+                      holdings one period ahead
         params      = length 5 tuple, (omega, lambdas, rho, g_n, method)
         omega       = [S,T] array, population weights
         lambdas     = [J,] vector, fraction in each lifetime income group
@@ -171,7 +174,8 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
     Functions called: None
 
     Objects in function:
-        BQ_presum = [T,S,J] array, weighted distribution of wealth/capital holdings one period ahead
+        BQ_presum = [T,S,J] array, weighted distribution of
+                    wealth/capital holdings one period ahead
         BQ        = [T,J] array, aggregate bequests by lifetime income group
 
     Returns: BQ
@@ -256,7 +260,8 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p, method):
         method      = string, 'SS' or 'TPI'
         etr_params  = [T,S,J] array, effective tax rate function parameters
         tax_func_types = string, type of tax function used
-        theta       = [J,] vector, replacement rate values by lifetime income group
+        theta       = [J,] vector, replacement rate values by lifetime
+                      income group
         tau_bq      = scalar, bequest tax rate
         h_wealth    = scalar, wealth tax function parameter
         p_wealth    = scalar, wealth tax function parameter
@@ -288,13 +293,15 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p, method):
         T_W = tax.ETR_wealth(b, p) * b
         T_BQ = p.tau_bq * (BQ / np.transpose(p.lambdas))
         business_revenue = tax.get_biz_tax(w, Y, L, K, p)
-        REVENUE = (np.transpose(p.omega_SS * p.lambdas) * (T_I + T_P + T_BQ + T_W)).sum() + business_revenue
+        REVENUE = ((np.transpose(p.omega_SS * p.lambdas) *
+                    (T_I + T_P + T_BQ + T_W)).sum() + business_revenue)
     elif method == 'TPI':
         r_array = utils.to_timepath_shape(r, p)
         w_array = utils.to_timepath_shape(w, p)
         I = r_array * b + w_array * n * p.e
         T_I = np.zeros_like(I)
-        T_I = tax.ETR_income(r_array, w_array, b, n, factor, p.e, etr_params, p) * I
+        T_I = tax.ETR_income(r_array, w_array, b, n, factor, p.e,
+                             etr_params, p) * I
         T_P = p.tau_payroll * w_array * n * p.e
         T_P[:, p.retire:, :] -= theta.reshape(1, 1, p.J) * w_array
         T_W = tax.ETR_wealth(b, p) * b

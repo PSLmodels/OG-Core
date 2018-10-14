@@ -1,16 +1,12 @@
 from __future__ import print_function
 '''
 ------------------------------------------------------------------------
-Last updated 8/15/2017
 
 Firm functions for firms in the steady state and along the transition
 path, including functions for small open economy firms which take r as given.
 
 ------------------------------------------------------------------------
 '''
-
-# Packages
-import numpy as np
 
 '''
 ------------------------------------------------------------------------
@@ -67,7 +63,9 @@ def get_w(Y, L, p):
     if p.epsilon == 0:
         w = 1 - p.gamma
     else:
-        w = ((p.Z ** ((p.epsilon - 1) / p.epsilon)) * ((((1 - p.gamma) * Y) / L) ** (1 / p.epsilon)))
+        w = ((p.Z ** ((p.epsilon - 1) / p.epsilon)) * ((((1 - p.gamma)
+                                                         * Y) / L) **
+                                                       (1 / p.epsilon)))
 
     return w
 
@@ -125,9 +123,11 @@ def get_Y(K, L, p):
     elif p.epsilon == 0:
         Y = p.Z * (p.gamma * K + (1 - p.gamma) * L)
     else:
-        Y = (p.Z * (((p.gamma ** (1 / p.epsilon)) * (K ** ((p.epsilon - 1) / p.epsilon))) +
-             (((1 - p.gamma) ** (1 / p.epsilon)) *
-             (L ** ((p.epsilon - 1) / p.epsilon)))) ** (p.epsilon / (p.epsilon - 1)))
+        Y = (p.Z * (((p.gamma ** (1 / p.epsilon)) *
+                     (K ** ((p.epsilon - 1) / p.epsilon))) +
+                    (((1 - p.gamma) ** (1 / p.epsilon)) *
+                     (L ** ((p.epsilon - 1) / p.epsilon)))) **
+             (p.epsilon / (p.epsilon - 1)))
 
     return Y
 
@@ -152,18 +152,20 @@ def get_K(L, r, p):
     Returns: r
     '''
     if p.epsilon == 1:
-        K = ((1 - p.tau_b) * p.gamma * p.Z / (r + p.delta - (p.tau_b * p.delta_tau))) ** (1 / (1 - p.gamma)) * L
+        K = (((1 - p.tau_b) * p.gamma * p.Z /
+              (r + p.delta - (p.tau_b * p.delta_tau))) **
+             (1 / (1 - p.gamma)) * L)
     elif p.epsilon == 0:
         K = (1 - ((1 - p.gamma) * L)) / p.gamma
     else:
         K = (L *
              ((1-p.gamma) ** (1 / (p.epsilon - 1))) *
              (((
-                (((r + p.delta - (p.tau_b * p.delta_tau)) / (1 - p.tau_b)) ** (p.epsilon - 1)) *
-                (p.gamma ** ((1 - p.epsilon) / p.epsilon)) * (p.Z ** (1 - p.epsilon))
-                ) -
-              p.gamma ** (1 / p.epsilon))) ** (p.epsilon / (1 - p.epsilon))
-             )
+                (((r + p.delta - (p.tau_b * p.delta_tau)) /
+                  (1 - p.tau_b)) ** (p.epsilon - 1)) *
+                (p.gamma ** ((1 - p.epsilon) / p.epsilon)) *
+                (p.Z ** (1 - p.epsilon))) - p.gamma **
+               (1 / p.epsilon))) ** (p.epsilon / (1 - p.epsilon)))
 
     print('USING firm.getK()')
 

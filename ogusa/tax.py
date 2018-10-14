@@ -154,11 +154,6 @@ def ETR_income(r, w, b, n, factor, e, etr_params, p):
     RETURNS: tau
     --------------------------------------------------------------------
     '''
-    # if j is not None:
-    #     e = np.squeeze(p.e[:, j])
-    # else:
-    #     e = np.squeeze(p.e)
-
     X = (w * e * n) * factor
     Y = (r * b) * factor
     X2 = X ** 2
@@ -195,7 +190,6 @@ def ETR_income(r, w, b, n, factor, e, etr_params, p):
         shift = np.squeeze(etr_params[..., 10])
         share = np.squeeze(etr_params[..., 11])
 
-        # print('Shapes in ETR == ', I.shape, max_x.shape, np.array([b]).shape, n.shape, X.shape, A.shape, B.shape, min_x.shape, X2.shape)
         tau_x = ((max_x - min_x) * (A * X2 + B * X) /
                  (A * X2 + B * X + 1) + min_x)
         tau_y = ((max_y - min_y) * (C * Y2 + D * Y) /
@@ -259,11 +253,6 @@ def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params,
     RETURNS: tau
     --------------------------------------------------------------------
     '''
-    # if j is not None:
-    #     e = np.squeeze(p.e[:, j])
-    # else:
-    #     e = np.squeeze(p.e)
-
     X = (w * e * n) * factor
     Y = (r * b) * factor
     X2 = X ** 2
@@ -429,30 +418,16 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
     Returns: total_taxes
 
     '''
-
-    # T_H = utils.to_timepath_shape(T_H, p)
     if j is not None:
-        # e = np.squeeze(p.e[:, j])
         lambdas = p.lambdas[j]
-        # if method == 'TPI':
-        #     # print('r shape == ', np.squeeze(utils.to_timepath_shape(r, p)).shape)
-        #     len(b.shape) == 2:
-        #         r = np.squeeze(utils.to_timepath_shape(r, p)[:, :, j])
-        #         w = np.squeeze(utils.to_timepath_shape(w, p)[:, :, j])
-        #         T_H = np.squeeze(utils.to_timepath_shape(T_H, p)[:, :, j])
     else:
-        # e = np.squeeze(p.e)
         lambdas = np.transpose(p.lambdas)
         if method == 'TPI':
             r = utils.to_timepath_shape(r, p)
             w = utils.to_timepath_shape(w, p)
             T_H = utils.to_timepath_shape(T_H, p)
 
-    # if method == 'TPI':
-    #     print('Shapes in taxes === ', r.shape, w.shape,  b.shape, e.shape, n.shape)
     I = r * b + w * e * n
-    # if method == 'TPI':
-    #     print('Shapes in total taxes = ', I.shape, e.shape, b.shape, r.shape, n.shape)
     T_I = ETR_income(r, w, b, n, factor, e, etr_params, p) * I
     T_P = p.tau_payroll * w * e * n
     T_W = ETR_wealth(b, p) * b
@@ -480,7 +455,6 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
             T_P[retireTPI:] -= theta[j] * w[retireTPI:]
         else:
             T_P[:, retire:, :] -= (theta.reshape(1, 1, p.J) * w)
-                                   # w[:, retire:, :])
         T_BQ = p.tau_bq * BQ / lambdas
     elif method == 'TPI_scalar':
         # The above methods won't work if scalars are used.  This option

@@ -121,12 +121,12 @@ def euler_equation_solver(guesses, *args):
     theta = tax.replacement_rate_vals(n_guess, w, factor, j, p)
 
     error1 = household.FOC_savings(r, w, b_s, b_splus1, n_guess, BQ,
-                                   factor, T_H, theta, p.e[:, j], p.rho, p.retire,
-                                   p.etr_params[-1, :, :],
+                                   factor, T_H, theta, p.e[:, j], p.rho,
+                                   p.retire, p.etr_params[-1, :, :],
                                    p.mtry_params[-1, :, :], j, p, 'SS')
-    error2 = household.FOC_labor(r, w, b_s, b_splus1, n_guess, BQ, factor, T_H,
-                                 theta, p.chi_n, p.e[:, j], p.retire,
-                                 p.etr_params[-1, :, :],
+    error2 = household.FOC_labor(r, w, b_s, b_splus1, n_guess, BQ,
+                                 factor, T_H, theta, p.chi_n, p.e[:, j],
+                                 p.retire, p.etr_params[-1, :, :],
                                  p.mtrx_params[-1, :, :], j, p, 'SS')
 
     # Put in constraints for consumption and savings.
@@ -144,12 +144,11 @@ def euler_equation_solver(guesses, *args):
     error1[mask3] = 1e14
     error1[mask5] = 1e14
     error2[mask4] = 1e14
-
     taxes = tax.total_taxes(r, w, b_s, n_guess, BQ, factor, T_H, theta,
-                            j, False, 'SS', p.e[:, j], p.retire, p.etr_params[-1, :, :], p)
-    cons = household.get_cons(r, w, b_s, b_splus1, n_guess, BQ, taxes, p.e[:, j],
-                              j, p)
-
+                            j, False, 'SS', p.e[:, j], p.retire,
+                            p.etr_params[-1, :, :], p)
+    cons = household.get_cons(r, w, b_s, b_splus1, n_guess, BQ, taxes,
+                              p.e[:, j], j, p)
     mask6 = cons < 0
     error1[mask6] = 1e14
 
@@ -192,7 +191,7 @@ def inner_loop(outer_loop_vars, p, client):
              new_T_H, new_factor, new_BQ
 
     '''
-    # unpack variables and parameters pass to function
+    # unpack variables to pass to function
     if p.budget_balance:
         bssmat, nssmat, r, T_H, factor = outer_loop_vars
     else:
@@ -201,29 +200,6 @@ def inner_loop(outer_loop_vars, p, client):
     euler_errors = np.zeros((2 * p.S, p.J))
 
     w = firm.get_w_from_r(r, p)
-
-    # lazy_values = []
-    # for j in range(p.J):
-    #     guesses = np.append(bssmat[:, j], nssmat[:, j])
-    #     euler_args = (r, w, T_H, factor, j, p)
-    #     lazy_values[j] = p.client.submit(opt.fsolve,
-    #                        euler_equation_solver, guesses * .9,
-    #                         args=euler_args, xtol=MINIMIZER_TOL,
-    #                         full_output=True)
-    # results = p.client.gather(lazy_values)
-
-    # lazy_values = []
-    # for j in range(p.J):
-    #     # guesses = np.append(bssmat[:, j], nssmat[:, j])
-    #     guesses = np.hstack((bssmat[:, j], nssmat[:, j]))
-    #     print('length guesses: ', guesses.shape)
-    #     euler_args = (r, w, T_H, factor, j, p)
-    #     lazy_values.append(client.submit(
-    #         opt.fsolve, euler_equation_solver, guesses * 0.9,
-    #         args=euler_args, xtol=MINIMIZER_TOL, full_output=True))
-    #
-    # results = client.gather(lazy_values)
-
 
     lazy_values = []
     for j in range(p.J):
@@ -243,60 +219,6 @@ def inner_loop(outer_loop_vars, p, client):
         euler_errors[:, j] = infodict['fvec']
         bssmat[:, j] = solutions[:p.S]
         nssmat[:, j] = solutions[p.S:]
-
-
-    #
-    # for j, result in enumerate(results):
-    #     [solutions, infodict, ier, message] = result
-    #     euler_errors[:, j] = infodict['fvec']
-    #     bssmat[:, j] = solutions[:p.S]
-    #     nssmat[:, j] = solutions[p.S:]
-    # lazy_values = []
-
-
-
-    # for j in range(p.J):
-    #     # guesses = np.append(bssmat[:, j], nssmat[:, j])
-    #     guesses = np.hstack((bssmat[:, j], nssmat[:, j]))
-    #     euler_args = (r, w, T_H, factor, j, p)
-    #     results = opt.root(euler_equation_solver, guesses * 0.9,
-    #                        method='lm', args=euler_args,
-    #                        tol=MINIMIZER_TOL)
-    #     bssmat[:, j] = results.x[:p.S]
-    #     nssmat[:, j] = results.x[p.S:]
-    #     euler_errors[:, j] = results.fun
-
-
-
-
-    # lazy_values = []
-    # for j in range(p.J):
-    #     guesses = np.append(bssmat[:, j], nssmat[:, j])
-    #     euler_args = (r, w, T_H, factor, j, p)
-    #     lazy_values.append(delayed(opt.root)(euler_equation_solver,
-    #                                          guesses * .9, method='lm',
-    #                                          args=euler_args,
-    #                                          tol=MINIMIZER_TOL))
-    # results = compute(*lazy_values, get=dask.multiprocessing.get,
-    #                   num_workers=p.num_workers)
-
-
-    # for j in range(p.J):
-    #     guesses = np.append(bssmat[:, j], nssmat[:, j])
-    #     euler_args = (r, w, T_H, factor, j, p)
-    #     lazy_values.append(delayed(opt.fsolve)(euler_equation_solver,
-    #                                            guesses * .9,
-    #                                            args=euler_args,
-    #                                            xtol=MINIMIZER_TOL,
-    #                                            full_output=True))
-    # results = compute(*lazy_values, get=dask.multiprocessing.get,
-    #                   num_workers=p.num_workers)
-
-
-    # for j, result in enumerate(results):
-    #     euler_errors[:, j] = result.fun
-    #     bssmat[:, j] = result.X[:p.S]
-    #     nssmat[:, j] = results.X[p.S:]
 
     L = aggr.get_L(nssmat, p, 'SS')
     if not p.small_open:
@@ -346,7 +268,8 @@ def inner_loop(outer_loop_vars, p, client):
         new_T_H, new_Y, new_factor, new_BQ, average_income_model
 
 
-def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
+def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
+              fsolve_flag=False):
     '''
     --------------------------------------------------------------------
     Solves for the steady state distribution of capital, labor, as well
@@ -427,8 +350,8 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
         maxiter_ss = 1
 
     while (dist > p.mindist_SS) and (iteration < maxiter_ss):
-        # Solve for the steady state levels of b and n, given w, r, Y and
-        # factor
+        # Solve for the steady state levels of b and n, given w, r,
+        # Y and factor
         if p.budget_balance:
             outer_loop_vars = (bmat, nmat, r, T_H, factor)
         else:
@@ -521,28 +444,16 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
     revenue_ss = aggr.revenue(rss, wss, bssmat_s, nssmat, BQss, Yss,
                               Lss, Kss, factor, theta,
                               etr_params_3D, p, 'SS')
-
-    # lump_sum_params = (e, lambdas.reshape(1, J), omega_SS.reshape(S, 1),
-    #                    'SS', etr_params, tax_func_type, theta, tau_bq,
-    #                    tau_payroll, h_wealth, p_wealth, m_wealth,
-    #                    retire, T, S, J, tau_b, delta_tau)
-    # revenue_ss = aggr.revenue(rss, wss, b_s, nssmat, BQss, Yss,
-    #                           Lss, Kss, factor, lump_sum_params)
-
     r_gov_ss = rss
     debt_service_ss = r_gov_ss * p.debt_ratio_ss * Yss
-    new_borrowing = p.debt_ratio_ss * Yss * ((1 + p.g_n_ss) * np.exp(p.g_y) - 1)
+    new_borrowing = p.debt_ratio_ss * Yss * ((1 + p.g_n_ss) *
+                                             np.exp(p.g_y) - 1)
     # government spends such that it expands its debt at the same rate as GDP
     if p.budget_balance:
         Gss = 0.0
     else:
         Gss = revenue_ss + new_borrowing - (T_Hss + debt_service_ss)
         print('G components = ', new_borrowing, T_Hss, debt_service_ss)
-
-    # solve resource constraint
-
-    # mtrx_params_3D = np.tile(
-    #     np.reshape(p.mtrx_params, (p.S, 1, p.mtrx_params.shape[1])), (1, p.J, 1))
 
     '''
     ------------------------------------------------------------------------
@@ -622,15 +533,17 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
               Gss / Yss, 'Rev/Y:', revenue_ss / Yss, 'business rev/Y: ',
               business_revenue / Yss, 'Int payments to GDP:',
               (rss * debt_ss) / Yss)
-        print('Check SS budget: ', Gss - (np.exp(p.g_y) * (1 + p.g_n_ss) - 1
-                                          - rss) * debt_ss - revenue_ss
-              + T_Hss)
+        print('Check SS budget: ', Gss - (np.exp(p.g_y) *
+                                          (1 + p.g_n_ss) - 1 - rss) *
+              debt_ss - revenue_ss + T_Hss)
         print('resource constraint: ', resource_constraint)
 
     if Gss < 0:
-        print('Steady state government spending is negative to satisfy budget')
+        print('Steady state government spending is negative to satisfy'
+              + ' budget')
 
-    if ENFORCE_SOLUTION_CHECKS and np.absolute(resource_constraint) > p.mindist_SS:
+    if ENFORCE_SOLUTION_CHECKS and (np.absolute(resource_constraint) >
+                                    p.mindist_SS):
         print('Resource Constraint Difference:', resource_constraint)
         err = "Steady state aggregate resource constraint not satisfied"
         raise RuntimeError(err)
@@ -653,7 +566,8 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client, fsolve_flag=False):
     output = {'Kss': Kss, 'Bss': Bss, 'Lss': Lss, 'Css': Css, 'Iss': Iss,
               'Iss_total': Iss_total, 'nssmat': nssmat, 'Yss': Yss,
               'Dss': debt_ss, 'wss': wss, 'rss': rss, 'theta': theta,
-              'BQss': BQss, 'factor_ss': factor_ss, 'bssmat': bssmat_splus1, 'bssmat_s': bssmat_s,
+              'BQss': BQss, 'factor_ss': factor_ss,
+              'bssmat': bssmat_splus1, 'bssmat_s': bssmat_s,
               'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
               'T_Hss': T_Hss, 'Gss': Gss, 'revenue_ss': revenue_ss,
               'business_revenue': business_revenue,
@@ -774,30 +688,6 @@ def SS_fsolve_reform(guesses, *args):
      new_factor, new_BQ, average_income_model) =\
         inner_loop(outer_loop_vars, p, client)
 
-
-    print('INPUTS = ')
-    print('bssmat max and min = ', outer_loop_vars[0].max(), outer_loop_vars[0].min())
-    print('nssmat max and min = ', outer_loop_vars[1].max(), outer_loop_vars[1].min())
-    print('r, T_H, factor = ', r, T_H, factor)
-    print('ETR params max and min = ', p.etr_params.max(), p.etr_params.min())
-    print('MTRx params max and min = ', p.mtrx_params.max(), p.mtrx_params.min())
-    print('MTRy params max and min = ', p.mtry_params.max(), p.mtry_params.min())
-    print('baseline = ', p.baseline)
-    print('Scalar params = ', p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma,
-          p.epsilon, p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, p.tau_payroll, p.tau_bq,
-          p.budget_balance, p.alpha_T, p.debt_ratio_ss, p.tau_b, p.delta_tau, p.lambdas,
-          p.retire, p.mean_income_data, p.h_wealth, p.p_wealth,
-          p.m_wealth, p.b_ellipse, p.upsilon)
-    print('OUTPUTS = ')
-    print('bssmat max and min = ', bssmat.max(), bssmat.min())
-    print('nssmat max and min = ', nssmat.max(), nssmat.min())
-    print('Scalar output = ', new_r, new_w, new_T_H, new_Y,
-          new_factor, new_BQ, average_income_model)
-    print('max euler error = ', euler_errors.max(), euler_errors.min())
-    print('e matrix', p.e.max(), p.e.min())
-    print('imm rates', p.imm_rates.max(), p.imm_rates.min())
-
-
     error1 = new_r - r
     if p.budget_balance:
         error2 = new_T_H - T_H
@@ -805,7 +695,6 @@ def SS_fsolve_reform(guesses, *args):
         error2 = new_Y - Y
 
     print('errors: ', error1, error2)
-    # print('factor prices: ', r, w)
 
     # Check and punish violations
     if r + p.delta <= 0:
@@ -860,7 +749,6 @@ def SS_fsolve_reform_baselinespend(guesses, *args):
     error2 = new_Y - Y
 
     print('errors: ', error1, error2)
-    # print('factor prices: ', r, w)
 
     # Check and punish violations
     if r + p.delta <= 0:
@@ -923,7 +811,6 @@ def run_SS(p, client=None):
     # are close to some steady state values.
     if p.baseline:
         rguess = 0.04  # 0.01 + delta
-        # wguess = 1.2
         T_Hguess = 0.12
         factorguess = 70000
 
@@ -935,18 +822,16 @@ def run_SS(p, client=None):
         if ENFORCE_SOLUTION_CHECKS and not ier == 1:
             raise RuntimeError("Steady state equilibrium not found")
         [rss, T_Hss, factor_ss] = solutions_fsolve
-        Yss = T_Hss/p.alpha_T  # may not be right - if budget_balance = True,
-        # but that's ok - will be fixed in SS_solver
+        Yss = T_Hss/p.alpha_T  # may not be right - if budget_balance
+        # = True, but that's ok - will be fixed in SS_solver
         fsolve_flag = True
         # Return SS values of variables
         output = SS_solver(b_guess, n_guess, rss, T_Hss, factor_ss, Yss, p,
                            client, fsolve_flag)
-        # print("solved output", wss, rss, T_Hss, factor_ss)
-        # print('analytical mtrs in SS: ', analytical_mtrs)
-        # print('tax function type in SS: ', tax_func_type)
     else:
         baseline_ss_dir = os.path.join(p.baseline_dir, "SS/SS_vars.pkl")
-        ss_solutions = pickle.load(open(baseline_ss_dir, "rb"), encoding="latin1")
+        ss_solutions = pickle.load(open(baseline_ss_dir, "rb"),
+                                   encoding="latin1")
         (rguess, T_Hguess, Yguess, factor) =\
             (ss_solutions['rss'], ss_solutions['T_Hss'],
              ss_solutions['Yss'], ss_solutions['factor_ss'])
@@ -968,8 +853,8 @@ def run_SS(p, client=None):
                            full_output=True)
             [rss, T_Hss] = solutions_fsolve
             Yss = T_Hss/p.alpha_T  # may not be right - if
-            # budget_balance = True, but that's ok - will be fixed in SS_solver
-        # if ENFORCE_SOLUTION_CHECKS and not solution.success == 1:
+            # budget_balance = True, but that's ok - will be fixed in
+            # SS_solver
         if ENFORCE_SOLUTION_CHECKS and not ier == 1:
             raise RuntimeError("Steady state equilibrium not found")
         # Return SS values of variables

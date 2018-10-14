@@ -81,7 +81,8 @@ def marg_ut_labor(n, chi_n, p):
           ((1 - p.upsilon) / p.upsilon)) *
           (1 + ((eps_low / p.ltilde) ** p.upsilon) *
           ((1 - ((eps_low / p.ltilde) ** p.upsilon)) ** (-1))))
-    b1 = ((p.b_ellipse / p.ltilde) * ((eps_low / p.ltilde) ** (p.upsilon - 1)) *
+    b1 = ((p.b_ellipse / p.ltilde) * ((eps_low / p.ltilde) **
+                                      (p.upsilon - 1)) *
           ((1 - ((eps_low / p.ltilde) ** p.upsilon)) **
           ((1 - p.upsilon) / p.upsilon)) - (2 * b2 * eps_low))
     MDU_n[nvec_low] = 2 * b2 * nvec[nvec_low] + b1
@@ -129,10 +130,8 @@ def get_cons(r, w, b, b_splus1, n, BQ, net_tax, e, j, p):
     '''
     if j is not None:
         lambdas = p.lambdas[j]
-        # e = np.squeeze(p.e[:, j])
     else:
         lambdas = np.transpose(p.lambdas)
-        # e = np.squeeze(p.e)
     cons = ((1 + r) * b + w * e * n + BQ / lambdas - b_splus1 *
             np.exp(p.g_y) - net_tax)
     return cons
@@ -220,12 +219,15 @@ def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
                   b_splus1 ** (-p.sigma))
     euler_error = np.zeros_like(n)
     if n.shape[0] > 1:
-        euler_error[:-1] = (marg_ut_cons(cons[:-1], p.sigma) - p.beta * (1 - rho[:-1]) *
-                            deriv[1:] * marg_ut_cons(cons[1:], p.sigma) *
+        euler_error[:-1] = (marg_ut_cons(cons[:-1], p.sigma) - p.beta *
+                            (1 - rho[:-1]) * deriv[1:] *
+                            marg_ut_cons(cons[1:], p.sigma) *
                             np.exp(-p.sigma * p.g_y) - savings_ut[:-1])
-        euler_error[-1] = (marg_ut_cons(cons[-1], p.sigma) - savings_ut[-1])
+        euler_error[-1] = (marg_ut_cons(cons[-1], p.sigma) -
+                           savings_ut[-1])
     else:
-        euler_error[-1] = (marg_ut_cons(cons[-1], p.sigma) - savings_ut[-1])
+        euler_error[-1] = (marg_ut_cons(cons[-1], p.sigma) -
+                           savings_ut[-1])
 
     return euler_error
 
@@ -296,20 +298,14 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, chi_n, e,
 
     Returns: euler
     '''
-    # if j is not None:
-    #     e = np.squeeze(p.e[:, j])
-    # else:
-    #     e = np.squeeze(p.e)
     taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
                             method, e, retire, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, e, j, p)
     deriv = (1 - p.tau_payroll - tax.MTR_income(r, w, b, n, factor,
                                                 False, e, etr_params,
                                                 mtrx_params, p))
-    # print('Shapes = ', taxes.shape, cons.shape, deriv.shape)
     FOC_error = (marg_ut_cons(cons, p.sigma) * w * deriv * e -
                  marg_ut_labor(n, chi_n, p))
-    # print('FOC labor eror = ', FOC_error.shape)
 
     return FOC_error
 
