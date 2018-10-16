@@ -99,6 +99,5 @@ def run_micro_macro(user_params):
     print('Percentage changes in aggregates:', ans)
 
 
-
 if __name__ == "__main__":
     run_micro_macro(user_params={})
