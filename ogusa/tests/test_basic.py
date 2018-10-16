@@ -69,17 +69,31 @@ def test_import_ok():
     import ogusa
 
 
-def test_run_small():
+def test_run_small_SS():
     from ogusa.scripts.execute import runner
     # Monkey patch enforcement flag since small data won't pass checks
     SS.ENFORCE_SOLUTION_CHECKS = False
     TPI.ENFORCE_SOLUTION_CHECKS = False
+    SS.MINIMIZER_TOL = 1e-6
+    TPI.MINIMIZER_TOL = 1e-6
     output_base = "./OUTPUT"
     input_dir = "./OUTPUT"
     user_params = {'frisch': 0.41, 'debt_ratio_ss': 0.4}
     runner(output_base=output_base, baseline_dir=input_dir, test=True,
            time_path=False, baseline=True, user_params=user_params,
            run_micro=False, small_open=False, budget_balance=False)
+
+
+def test_run_small_TPI():
+    from ogusa.scripts.execute import runner
+    # Monkey patch enforcement flag since small data won't pass checks
+    SS.ENFORCE_SOLUTION_CHECKS = False
+    TPI.ENFORCE_SOLUTION_CHECKS = False
+    SS.MINIMIZER_TOL = 1e-6
+    TPI.MINIMIZER_TOL = 1e-6
+    output_base = "./OUTPUT"
+    input_dir = "./OUTPUT"
+    user_params = {'frisch': 0.41, 'debt_ratio_ss': 0.4}
     runner(output_base=output_base, baseline_dir=input_dir, test=True,
            time_path=True, baseline=True, user_params=user_params,
            run_micro=False, small_open=False, budget_balance=False)
