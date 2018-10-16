@@ -70,6 +70,16 @@ class Specifications(ParametersBase):
             values = data.get('value', None)
             setattr(self, name, self._expand_array(values, intg_val,
                                                    bool_val, string_val))
+        if self.test:
+            # Make smaller statespace for testing
+            self.S = int(40)
+            self.lambdas = np.array([0.6, 0.4]).reshape(2, 1)
+            self.J = self.lambdas.shape[0]
+            self.maxiter = 35
+            self.mindist_SS = 1e-6
+            self.mindist_TPI = 1e-3
+            self.nu = .4
+
         self.compute_default_params()
 
     def compute_default_params(self):
@@ -394,7 +404,7 @@ class Specifications(ParametersBase):
         copied from taxcalc.Behavior._validate_parameter_names_types
         """
         param_names = set(self._vals.keys())
-        print('Parameter names = ', param_names)
+        # print('Parameter names = ', param_names)
         revision_param_names = list(revision.keys())
         for param_name in revision_param_names:
             if param_name not in param_names:

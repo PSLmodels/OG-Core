@@ -35,9 +35,14 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     print('In runner, baseline is ', baseline)
 
     # Get parameter class
-    spec = Specifications(output_base=output_base,
-                          baseline_dir=baseline_dir, baseline=baseline,
+    # Note - set run_micro false when initially load class
+    # Update later with call to spec.get_tax_function_parameters()
+    spec = Specifications(run_micro=False, output_base=output_base,
+                          baseline_dir=baseline_dir, test=test,
+                          time_path=time_path, baseline=baseline,
+                          reform=reform, guid=guid, data=data,
                           client=client, num_workers=num_workers)
+
     spec.update_specifications({'age_specific': False})
     print('path for tax functions: ', spec.output_base)
     spec.get_tax_function_parameters(client, run_micro)
