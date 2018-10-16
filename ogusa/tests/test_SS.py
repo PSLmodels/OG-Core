@@ -266,6 +266,7 @@ def test_euler_equation_solver():
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
+@pytest.mark.full_run
 @pytest.mark.parametrize('input_path,expected_path',
                          [('run_SS_open_unbal_inputs.pkl',
                            'run_SS_open_unbal_outputs.pkl'),
