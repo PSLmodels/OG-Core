@@ -15,7 +15,7 @@ install:
   - conda create -n ospcdyn python=$TRAVIS_PYTHON_VERSION
   - source activate ospcdyn
   - conda env update -f environment.yml
-  - pip install -e
+  - pip install -e .
 
 
 # command to run tests, e.g. python setup.py test
