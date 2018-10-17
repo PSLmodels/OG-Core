@@ -4,7 +4,7 @@
         "end_header": null,
         "source": "https://github.com/open-source-economics/OG-USA",
         "type": "html",
-        "data": "<p>Dynamic Tax Scoring Model</p>"
+        "data": "<p>Overlapping-Generations Model for Evaluating Fiscal Policy in the United States</p>"
     },
     "key_features": {
         "start_header": null,
@@ -25,7 +25,7 @@
         "end_header": null,
         "source": "README.md",
         "type": "github_file",
-        "data": null
+        "data": "<p>Please cite the source of your analysis as \"OG-USA release #.#.#, author's calculations.\" If you wish to link to OG-USA, https://github.com/open-source-economics/OG-USA is preferred. Additionally, we strongly recommend that you describe the input data used, and provide a link to the materials required to replicate your analysis or, at least, note that those materials are available upon request.</p>"
     },
     "license": {
         "start_header": null,
@@ -88,7 +88,7 @@
         "end_header": "Citing OG-USA",
         "source": "README.md",
         "type": "github_file",
-        "data": null
+        "data": "<p>If you want to report a <b>bug</b>, create a new issue <a href=\"https://github.com/open-source-economics/OG-USA/issues\">here</a> providing details on what you think is wrong with OG-USA.</p><p>If you want to request <b>an enhancement</b>, create a new issue <a href=\"https://github.com/open-source-economics/OG-USA/issues\">here</a> providing details on what you think should be added to OG-USA. </p>"
     },
     "contributor_guide": {
         "start_header": null,
@@ -135,7 +135,7 @@
     "core_maintainers": {
         "start_header": null,
         "end_header": null,
-        "data": "<ul><li>Richard Evans</li><li>Jason DeBacker</li></ul>",
+        "data": "<ul><li><a href=\"https://sites.google.com/site/rickecon/\">Richard Evans</a></li><li><a href=\"http://jasondebacker.com\">Jason DeBacker</a></li></ul>",
         "source": null,
         "type": "html"
     },
