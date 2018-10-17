@@ -67,7 +67,7 @@ class ParametersBase(object):
             with open(path) as pfile:
                 params_dict = json.load(pfile,
                                         object_pairs_hook=collect.OrderedDict)
-        return params_dict
+            return params_dict
 
     def _update(self, mods):
         """
@@ -94,16 +94,19 @@ class ParametersBase(object):
         for name, values in mods.items():
             intg_val = self._vals[name].get('integer_value', None)
             bool_val = self._vals[name].get('boolean_value', None)
+            string_val = self._vals[name].get('string_value', None)
             # set post-reform values of parameter with name
             used_names.add(name)
             cval = getattr(self, name, None)
-            nval = self._expand_array(values, intg_val, bool_val)
+            print("Is this a string: ", string_val, name)
+            nval = self._expand_array(values, intg_val, bool_val,
+                                      string_val)
             setattr(self, name, nval)
         # confirm that all names have been used
         assert len(used_names) == len(all_names)
 
     @staticmethod
-    def _expand_array(x, x_int, x_bool):
+    def _expand_array(x, x_int, x_bool, x_string):
         """
         Private method called only within this abstract base class.
         Dispatch to either _expand_1D or _expand_2D given dimension of x.
@@ -127,13 +130,19 @@ class ParametersBase(object):
                 x = np.array(x, np.int32)
             elif x_bool:
                 x = np.array(x, np.bool_)
+            elif x_string:
+                x = x
             else:
                 x = np.array(x, np.float64)
+            if x.ndim == 1:
+                x = x.reshape(x.shape[0], 1)
         else:
             if x_int:
                 x = np.int32(x)
             elif x_bool:
                 x = np.bool_(x)
+            elif x_string:
+                x = x
             else:
                 x = np.float64(x)
         return x
