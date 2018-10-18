@@ -21,10 +21,10 @@
         "data": null
     },
     "citation": {
-        "start_header": "Citing OG-USA",
+        "start_header": null,
         "end_header": null,
-        "source": "README.md",
-        "type": "github_file",
+        "source": "https://github.com/open-source-economics/OG-USA#citing-og-usa",
+        "type": "html",
         "data": "<p>Please cite the source of your analysis as \"OG-USA release #.#.#, author's calculations.\" If you wish to link to OG-USA, https://github.com/open-source-economics/OG-USA is preferred. Additionally, we strongly recommend that you describe the input data used, and provide a link to the materials required to replicate your analysis or, at least, note that those materials are available upon request.</p>"
     },
     "license": {
@@ -84,10 +84,10 @@
         "data": null
     },
     "contributor_overview": {
-        "start_header": "Using/contributing to OG-USA",
-        "end_header": "Citing OG-USA",
-        "source": "README.md",
-        "type": "github_file",
+        "start_header": null,
+        "end_header": null,
+        "source": "https://github.com/open-source-economics/OG-USA#usingcontributing-to-og-usa",
+        "type": "html",
         "data": "<p>If you want to report a <b>bug</b>, create a new issue <a href=\"https://github.com/open-source-economics/OG-USA/issues\">here</a> providing details on what you think is wrong with OG-USA.</p><p>If you want to request <b>an enhancement</b>, create a new issue <a href=\"https://github.com/open-source-economics/OG-USA/issues\">here</a> providing details on what you think should be added to OG-USA. </p>"
     },
     "contributor_guide": {
