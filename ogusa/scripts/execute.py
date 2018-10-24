@@ -13,12 +13,11 @@ import numpy as np
 import time
 
 import ogusa
-from ogusa import calibrate
+from ogusa import calibrate, parameters, demographics, income, utils, SS, TPI
 from ogusa.parameters import DEFAULT_WORLD_INT_RATE
 ogusa.parameters.DATASET = 'REAL'
 from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR
 SMALL_OPEN_KEYS = ['world_int_rate']
-
 
 
 def runner(output_base, baseline_dir, test=False, time_path=True,
@@ -27,8 +26,6 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
            user_params={}, guid='', run_micro=True, small_open=False,
            budget_balance=False, baseline_spending=False, data=None,
            client=None, num_workers=1):
-
-    from ogusa import parameters, demographics, income, utils
 
     tick = time.time()
 
@@ -59,7 +56,8 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
 
     print('In runner, baseline is ', baseline)
     if small_open and (not isinstance(small_open, dict)):
-        raise ValueError('small_open must be False/None or a dict with keys: {}'.format(SMALL_OPEN_KEYS))
+        raise ValueError('small_open must be False/None or a dict ' +
+                         'with keys: {}'.format(SMALL_OPEN_KEYS))
     small_open = small_open or {}
     run_params = ogusa.parameters.get_parameters(
         output_base, reform=reform, test=test, baseline=baseline,
@@ -84,9 +82,9 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         run_params['upsilon'] = upsilon
         run_params.update(user_params)
     if 'debt_ratio_ss' in user_params:
-        run_params['debt_ratio_ss']=user_params['debt_ratio_ss']
+        run_params['debt_ratio_ss'] = user_params['debt_ratio_ss']
     if 'tau_b' in user_params:
-        run_params['tau_b']=user_params['tau_b']
+        run_params['tau_b'] = user_params['tau_b']
 
     # Modify ogusa parameters based on user input
     if 'g_y_annual' in user_params:
@@ -103,25 +101,29 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     if 'T_shifts' in user_params:
         if not baseline_spending:
             print('updating ALPHA_T with T_shifts in first',
-                   user_params['T_shifts'].size, 'periods.')
+                  user_params['T_shifts'].size, 'periods.')
             T_shifts = np.concatenate(
                 (user_params['T_shifts'],
-                 np.zeros(run_params['ALPHA_T'].size - user_params['T_shifts'].size)),
-                 axis=0
-            )
+                 np.zeros(run_params['ALPHA_T'].size -
+                          user_params['T_shifts'].size)), axis=0)
             run_params['ALPHA_T'] = run_params['ALPHA_T'] + T_shifts
     if 'G_shifts' in user_params:
         if not baseline_spending:
             print('updating ALPHA_G with G_shifts in first',
-                   user_params['G_shifts'].size, 'periods.')
+                  user_params['G_shifts'].size, 'periods.')
             G_shifts = np.concatenate(
                 (user_params['G_shifts'],
-                 np.zeros(run_params['ALPHA_G'].size - user_params['G_shifts'].size)),
-                 axis=0
-            )
+                 np.zeros(run_params['ALPHA_G'].size -
+                          user_params['G_shifts'].size)), axis=0)
             run_params['ALPHA_G'] = run_params['ALPHA_G'] + G_shifts
-
-    from ogusa import SS, TPI
+    if 'tG1' in user_params:
+        print('Updating tG1 to beginning year plus', user_params['tG1'],
+              ',which is', start_year + user_params['tG1'])
+        run_params['tG1'] = user_params['tG1']
+    if 'tG2' in user_params:
+        print('Updating tG2 to beginning year plus', user_params['tG2'],
+              ',which is', start_year + user_params['tG2'])
+        run_params['tG2'] = user_params['tG2']
 
     calibrate_model = False
     # List of parameter names that will not be changing (unless we decide to
@@ -227,4 +229,4 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         pickle.dump(tpi_output, open(tpi_vars, "wb"))
 
         print("Time path iteration complete.")
-    print("It took {0} seconds to get that part done.".format(time.time() - tick))
+    print('It took {0} seconds to get that part done.'.format(time.time() - tick))
