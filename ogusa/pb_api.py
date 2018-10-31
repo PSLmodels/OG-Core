@@ -26,17 +26,19 @@ class Specifications(ParametersBase):
     def __init__(self,
                  run_micro=False, output_base=BASELINE_DIR,
                  baseline_dir=BASELINE_DIR, test=False, time_path=True,
-                 baseline=False, reform={}, guid='', data='cps',
+                 baseline=False, constant_rates=True,
+                 tax_func_type='DEP', analytical_mtrs=False,
+                 age_specific=False, reform={}, guid='', data='cps',
                  flag_graphs=False, client=None, num_workers=1):
         super(Specifications, self).__init__()
 
         # reads in default parameter values
         self._vals = self._params_dict_from_json_file()
 
-        self.output_base = output_base
-        self.baseline_dir = baseline_dir
         self.test = test
         self.time_path = time_path
+        self.output_base = output_base
+        self.baseline_dir = baseline_dir
         self.baseline = baseline
         self.reform = reform
         self.guid = guid
@@ -46,6 +48,15 @@ class Specifications(ParametersBase):
 
         # does cheap calculations to find parameter values
         self.initialize()
+
+        # put anything in kwargs that is also in json file below
+        # initialize()
+        self.constant_rates = constant_rates
+        print('checking constant rates = ', self.constant_rates, constant_rates)
+        self.tax_func_type = tax_func_type
+        self.analytical_mtrs = analytical_mtrs
+        self.age_specific = age_specific
+
         # does more costly tax function estimation
         if run_micro:
             self.get_tax_function_parameters(self, client, run_micro=True)

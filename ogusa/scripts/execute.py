@@ -40,10 +40,14 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     spec = Specifications(run_micro=False, output_base=output_base,
                           baseline_dir=baseline_dir, test=test,
                           time_path=time_path, baseline=baseline,
+                          constant_rates=constant_rates,
+                          tax_func_type=tax_func_type,
+                          analytical_mtrs=analytical_mtrs,
+                          age_specific=age_specific,
                           reform=reform, guid=guid, data=data,
                           client=client, num_workers=num_workers)
 
-    spec.update_specifications({'age_specific': False})
+    spec.update_specifications({'age_specific': age_specific})
     print('path for tax functions: ', spec.output_base)
     spec.get_tax_function_parameters(client, run_micro)
 
