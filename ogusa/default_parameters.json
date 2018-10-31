@@ -680,7 +680,7 @@
         "integer_value": true,
         "string_value": false,
         "value": 2018,
-        "range": {"min": 2016, "max": 2026},
+        "range": {"min": 2013, "max": 2026},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",
         "out_of_range_action": "stop",
