@@ -515,7 +515,7 @@ def run_TPI(p, client=None):
             lazy_values.append(
                 delayed(inner_loop)(guesses, outer_loop_vars,
                                     initial_values, j, ind, p))
-        results = compute(*lazy_values, get=dask.multiprocessing.get,
+        results = compute(*lazy_values, scheduler=dask.multiprocessing.get,
                           num_workers=p.num_workers)
         for j, result in enumerate(results):
             euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result

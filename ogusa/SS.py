@@ -210,7 +210,7 @@ def inner_loop(outer_loop_vars, p, client):
                                                args=euler_params,
                                                xtol=MINIMIZER_TOL,
                                                full_output=True))
-    results = compute(*lazy_values, get=dask.multiprocessing.get,
+    results = compute(*lazy_values, scheduler=dask.multiprocessing.get,
                       num_workers=p.num_workers)
 
     # for j, result in results.items():
