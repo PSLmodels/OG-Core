@@ -367,7 +367,7 @@ def inner_loop(outer_loop_vars, params, baseline,
                                                xtol=MINIMIZER_TOL,
                                                full_output=True))
     results = compute(*lazy_values, get=dask.multiprocessing.get,
-                      num_workers=num_workers)
+                      num_workers=num_workers, scheduler=client)
 
     # for j, result in results.items():
     for j, result in enumerate(results):
