@@ -1,15 +1,13 @@
 from __future__ import print_function
 # import modules
 import multiprocessing
-from multiprocessing import Process
 from dask.distributed import Client
 import time
 import numpy as np
 
-from taxcalc import *
+from taxcalc import Calculator
 import ogusa
-from ogusa.scripts import postprocess
-from ogusa.scripts.execute import runner
+from ogusa.execute import runner
 from ogusa.utils import REFORM_DIR, BASELINE_DIR
 
 
@@ -49,7 +47,6 @@ def run_micro_macro(user_params):
     ------------------------------------------------------------------------
     '''
     output_base = BASELINE_DIR
-    input_dir = BASELINE_DIR
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': False, 'time_path': True, 'baseline': True,
               'constant_rates': False,
@@ -72,11 +69,9 @@ def run_micro_macro(user_params):
     '''
     user_params = {'frisch': 0.41, 'start_year': 2018,
                    'tau_b': (0.35 * 0.55) * (0.017 / 0.055),
-                   'debt_ratio_ss': 1.0, 'T_shifts': T_shifts,
-                   'G_shifts': G_shifts, 'small_open': small_open}
+                   'debt_ratio_ss': 1.0, 'T_shifts': T_shifts.tolist(),
+                   'G_shifts': G_shifts.tolist(), 'small_open': small_open}
     output_base = REFORM_DIR
-    input_dir = REFORM_DIR
-    guid_iter = 'reform_' + str(0)
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': False, 'time_path': True, 'baseline': False,
               'constant_rates': False, 'analytical_mtrs': False,
@@ -92,8 +87,8 @@ def run_micro_macro(user_params):
 
     # return ans - the percentage changes in macro aggregates and prices
     # due to policy changes from the baseline to the reform
-    ans = postprocess.create_diff(baseline_dir=BASELINE_DIR,
-                                  policy_dir=REFORM_DIR)
+    ans = ogusa.postprocess.create_diff(
+        baseline_dir=BASELINE_DIR, policy_dir=REFORM_DIR)
 
     print("total time was ", (time.time() - start_time))
     print('Percentage changes in aggregates:', ans)
