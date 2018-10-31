@@ -52,7 +52,6 @@ class Specifications(ParametersBase):
         # put anything in kwargs that is also in json file below
         # initialize()
         self.constant_rates = constant_rates
-        print('checking constant rates = ', self.constant_rates, constant_rates)
         self.tax_func_type = tax_func_type
         self.analytical_mtrs = analytical_mtrs
         self.age_specific = age_specific
