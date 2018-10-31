@@ -241,17 +241,23 @@ class Specifications(ParametersBase):
             # # Make all ETRs equal the average
             self.etr_params = np.zeros(self.etr_params.shape)
             # set shift to average rate
-            self.etr_params[:, :, 10] = dict_params['tfunc_avg_etr']
+            self.etr_params[:, :self.BW, 10] = dict_params['tfunc_avg_etr']
+            self.etr_params[:, self.BW:, 10] =\
+                dict_params['tfunc_avg_etr'][-1]
 
             # # Make all MTRx equal the average
             self.mtrx_params = np.zeros(self.mtrx_params.shape)
             # set shift to average rate
-            self.mtrx_params[:, :, 10] = dict_params['tfunc_avg_mtrx']
+            self.mtrx_params[:, :self.BW, 10] = dict_params['tfunc_avg_mtrx']
+            self.mtrx_params[:, self.BW:, 10] =\
+                dict_params['tfunc_avg_mtrx'][-1]
 
             # # Make all MTRy equal the average
             self.mtry_params = np.zeros(self.mtry_params.shape)
             # set shift to average rate
-            self.mtry_params[:, :, 10] = dict_params['tfunc_avg_mtry']
+            self.mtry_params[:, :self.BW, 10] = dict_params['tfunc_avg_mtry']
+            self.mtry_params[:, self.BW:, 10] =\
+                dict_params['tfunc_avg_mtry'][-1]
 
     def read_tax_func_estimate(self, pickle_path, pickle_file):
         '''

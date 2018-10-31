@@ -69,7 +69,7 @@ def test_import_ok():
 
 
 def test_run_small_SS():
-    from ogusa.scripts.execute import runner
+    from ogusa.execute import runner
     # Monkey patch enforcement flag since small data won't pass checks
     SS.ENFORCE_SOLUTION_CHECKS = False
     TPI.ENFORCE_SOLUTION_CHECKS = False
@@ -84,7 +84,7 @@ def test_run_small_SS():
 
 
 def test_run_small_TPI():
-    from ogusa.scripts.execute import runner
+    from ogusa.execute import runner
     # Monkey patch enforcement flag since small data won't pass checks
     SS.ENFORCE_SOLUTION_CHECKS = False
     TPI.ENFORCE_SOLUTION_CHECKS = False
