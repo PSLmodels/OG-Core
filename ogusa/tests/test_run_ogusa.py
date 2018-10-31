@@ -33,10 +33,10 @@ def run_micro_macro(reform, user_params, guid):
     ------------------------------------------------------------------------
     '''
     output_base = BASELINE_DIR
-    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR, 'test':True,
-            'time_path':True, 'baseline':True, 'analytical_mtrs':False,
-            'user_params':user_params, 'age_specific':False, 'run_micro':False,
-            'guid':guid}
+    kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
+              'test': True, 'time_path': True, 'baseline': True,
+              'analytical_mtrs': False, 'user_params': user_params,
+              'age_specific': False, 'run_micro': False, 'guid': guid}
     runner(**kwargs)
 
     '''
@@ -46,14 +46,15 @@ def run_micro_macro(reform, user_params, guid):
     '''
 
     output_base = REFORM_DIR
-    kwargs={'output_base':output_base, 'baseline_dir':BASELINE_DIR,
-            'test':True, 'time_path':True, 'baseline':False,
-            'analytical_mtrs':False, 'reform':reform, 'user_params':user_params,
-            'age_specific':False, 'guid': guid, 'run_micro':False}
+    kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
+              'test': True, 'time_path': True, 'baseline': False,
+              'analytical_mtrs': False, 'reform': reform,
+              'user_params': user_params, 'age_specific': False,
+              'guid': guid, 'run_micro': False}
     runner(**kwargs)
-
     time.sleep(0.5)
-    ans = postprocess.create_diff(baseline_dir=BASELINE_DIR, policy_dir=REFORM_DIR)
+    ans = postprocess.create_diff(baseline_dir=BASELINE_DIR,
+                                  policy_dir=REFORM_DIR)
     print("total time was ", (time.time() - start_time))
 
     return ans
@@ -63,15 +64,14 @@ def run_micro_macro(reform, user_params, guid):
 def test_run_micro_macro():
 
     reform = {
-    2018: {
-        '_II_rt1': [.09],
-        '_II_rt2': [.135],
-        '_II_rt3': [.225],
-        '_II_rt4': [.252],
-        '_II_rt5': [.297],
-        '_II_rt6': [.315],
-        '_II_rt7': [0.3564],
-    }, }
-    run_micro_macro(reform=reform, user_params={'frisch': 0.44,
-                                                'g_y_annual': 0.021},
-                    guid='abc')
+        2018: {
+            '_II_rt1': [.09],
+            '_II_rt2': [.135],
+            '_II_rt3': [.225],
+            '_II_rt4': [.252],
+            '_II_rt5': [.297],
+            '_II_rt6': [.315],
+            '_II_rt7': [0.3564],
+            }, }
+    run_micro_macro(reform=reform, user_params={
+        'frisch': 0.44, 'g_y_annual': 0.021}, guid='abc')

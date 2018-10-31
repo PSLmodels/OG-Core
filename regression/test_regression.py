@@ -1,5 +1,4 @@
 from ogusa.macro_output import dump_diff_output
-import matplotlib.pyplot as plt
 import numpy as np
 import pickle
 import pytest
@@ -23,14 +22,14 @@ def macro_outputs(request):
                                           REFORM.format(ref_idx=request.param))
     (reg_pct_changes,
         reg_baseline_macros,
-        reg_policy_macros) = dump_diff_output(REG_BASELINE,
-                                              REG_REFORM.format(ref_idx=request.param))
+        reg_policy_macros) = dump_diff_output(
+            REG_BASELINE, REG_REFORM.format(ref_idx=request.param))
 
-    return {"new":{
-                   "pct_changes": pct_changes,
-                   "baseline_macros": baseline_macros,
-                   "policy_macros": policy_macros
-                  },
+    return {"new": {
+                    "pct_changes": pct_changes,
+                    "baseline_macros": baseline_macros,
+                    "policy_macros": policy_macros
+                   },
             "reg": {
                     "pct_changes": reg_pct_changes,
                     "baseline_macros": reg_baseline_macros,

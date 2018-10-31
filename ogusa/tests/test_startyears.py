@@ -1,8 +1,7 @@
 import pytest
 import os
-import ogusa
 from ogusa import SS, TPI
-
+from ogusa.scripts.execute import runner
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 PUF_PATH = os.path.join(CUR_PATH, '../puf.csv')
 
@@ -13,7 +12,6 @@ PUF_PATH = os.path.join(CUR_PATH, '../puf.csv')
         [2013, 2017, 2026],
         ids=['2013', '2017', '2026'])
 def test_diff_start_year(year):
-    from ogusa.scripts.execute import runner
     # Monkey patch enforcement flag since small data won't pass checks
     SS.ENFORCE_SOLUTION_CHECKS = False
     TPI.ENFORCE_SOLUTION_CHECKS = False
