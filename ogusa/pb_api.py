@@ -129,9 +129,13 @@ class Specifications(ParametersBase):
                          self.S) - 1)
         self.tpi_firm_r = np.ones(self.T+self.S) * self.ss_firm_r
         self.tpi_hh_r = np.ones(self.T+self.S) * self.ss_hh_r
-        self.tG2 = int(self.T * 0.8)
-        self.ALPHA_T = np.ones(self.T + self.S) * self.alpha_T
-        self.ALPHA_G = np.ones(self.T) * self.alpha_G
+        T_shift = np.concatenate((
+            self.T_shifts, np.zeros((self.T + self.S -
+                                     self.T_shifts.size, 1))))
+        G_shift = np.concatenate((
+            self.G_shifts, np.zeros((self.T - self.G_shifts.size, 1))))
+        self.ALPHA_T = np.ones(self.T + self.S) * self.alpha_T + np.squeeze(T_shift)
+        self.ALPHA_G = np.ones(self.T) * self.alpha_G + np.squeeze(G_shift)
 
         # set period of retirement
         # SHOULD BE UPDATED TO BE ENTERED AS Retirement age in defaults
@@ -429,6 +433,7 @@ class Specifications(ParametersBase):
                 bool_param_type = self._vals[param_name]['boolean_value']
                 int_param_type = self._vals[param_name]['integer_value']
                 string_param_type = self._vals[param_name]['string_value']
+                # make scalars into single item lists
                 if isinstance(revision[param_name], list):
                     param_value = revision[param_name]
                 else:

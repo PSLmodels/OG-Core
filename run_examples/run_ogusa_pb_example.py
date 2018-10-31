@@ -40,8 +40,8 @@ def run_micro_macro(user_params):
     # if False/None then 0.04 is used
     user_params = {'frisch': 0.41, 'start_year': 2018,
                    'tau_b': (0.21 * 0.55) * (0.017 / 0.055),
-                   'debt_ratio_ss': 1.0, 'T_shifts': T_shifts,
-                   'G_shifts': G_shifts, 'small_open': small_open}
+                   'debt_ratio_ss': 1.0, 'T_shifts': T_shifts.tolist(),
+                   'G_shifts': G_shifts.tolist(), 'small_open': small_open}
 
     '''
     ------------------------------------------------------------------------
@@ -55,7 +55,7 @@ def run_micro_macro(user_params):
               'constant_rates': False,
               'analytical_mtrs': False, 'age_specific': True,
               'user_params': user_params, 'guid': '_example',
-              'run_micro': True, 'small_open': small_open,
+              'run_micro': False, 'small_open': small_open,
               'budget_balance': False, 'baseline_spending': False,
               'data': 'cps', 'client': client,
               'num_workers': num_workers}

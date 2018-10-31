@@ -351,6 +351,38 @@
         "out_of_range_action": "stop",
         "compatible_data": {"puf": true, "cps": true}
     },
+    "G_shifts": {
+        "long_name": "Shift in level of government spending in initial periods.",
+        "description": "Shift in level of government spending in initial periods.",
+        "notes": "",
+        "col_var": "",
+        "col_label": "",
+        "boolean_value": false,
+        "integer_value": false,
+        "string_value": false,
+        "value": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        "range": {"min": -10.0, "max": 10.0},
+        "out_of_range_minmsg": "",
+        "out_of_range_maxmsg": "",
+        "out_of_range_action": "stop",
+        "compatible_data": {"puf": true, "cps": true}
+    },
+    "T_shifts": {
+        "long_name": "Shift in level of government transfer spending in initial periods.",
+        "description": "Shift in level of government transfer spending in initial periods.",
+        "notes": "",
+        "col_var": "",
+        "col_label": "",
+        "boolean_value": false,
+        "integer_value": false,
+        "string_value": false,
+        "value": [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        "range": {"min": -10.0, "max": 10.0},
+        "out_of_range_minmsg": "",
+        "out_of_range_maxmsg": "",
+        "out_of_range_action": "stop",
+        "compatible_data": {"puf": true, "cps": true}
+    },
     "rho_G": {
         "long_name": "Speed of convergence to a stable government budget deficit for periods [tG1, tG2-1]",
         "description": "Speed of convergence to a stable government budget deficit for periods [tG1, tG2-1]",
