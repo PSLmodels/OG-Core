@@ -1,11 +1,8 @@
 from __future__ import print_function
 import pytest
-from ogusa import SS
-from ogusa import TPI
+from ogusa import SS, TPI, postprocess
 import time
-
-from ogusa.scripts import postprocess
-from ogusa.scripts.execute import runner
+from ogusa.execute import runner
 SS.ENFORCE_SOLUTION_CHECKS = False
 TPI.ENFORCE_SOLUTION_CHECKS = False
 
