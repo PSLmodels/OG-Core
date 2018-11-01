@@ -248,7 +248,6 @@ class Specifications(ParametersBase):
         self.etr_params = np.empty((self.T, self.S, num_etr_params))
         self.mtrx_params = np.empty((self.T, self.S, num_mtrx_params))
         self.mtry_params = np.empty((self.T, self.S, num_mtry_params))
-        print('S = ', self.S, ' BW = ', self.BW, ' etr_params = ', dict_params['tfunc_etr_params_S'].shape)
         self.etr_params[:self.BW, :, :] =\
             np.transpose(
                 dict_params['tfunc_etr_params_S'][:self.S, :self.BW, :],
