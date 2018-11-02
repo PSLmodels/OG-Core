@@ -1,23 +1,19 @@
-import ogusa
 import os
-import sys
 import multiprocessing
-from multiprocessing import Process, Pool
 from dask.distributed import Client
 import time
 import numpy as np
 import pandas as pd
 import argparse
-
-from ogusa.scripts import postprocess
-from ogusa.scripts.execute import runner
+from ogusa import postprocess
+from ogusa.execute import runner
 from ogusa.utils import REFORM_DIR, BASELINE_DIR
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 PUF_PATH = os.path.join(CUR_PATH, '../ogusa/puf.csv')
 
 client = Client(processes=False)
-CPU_COUNT = 4#multiprocessing.cpu_count()
+CPU_COUNT = 4  # multiprocessing.cpu_count()
 REF_IDXS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 DATA = pd.read_csv(PUF_PATH)
@@ -108,8 +104,8 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
     G_shifts[0:3] = -0.01
     G_shifts[3:6] = -0.005
     user_params = {'frisch': 0.41, 'start_year': 2017,
-                   'debt_ratio_ss': 1.0, 'T_shifts': T_shifts,
-                   'G_shifts': G_shifts}
+                   'debt_ratio_ss': 1.0, 'T_shifts': T_shifts.tolist(),
+                   'G_shifts': G_shifts.tolist()}
 
     '''
     ------------------------------------------------------------------------
@@ -163,7 +159,7 @@ def run_reforms(ref_idxs=REF_IDXS, path_prefix="", cpu_count=CPU_COUNT,
                     data,
                     ok_to_run_baseline,)
     # run reforms in parallel
-    pool = Pool(processes=cpu_count)
+    pool = multiprocessing.pool.ThreadPool(processes=2)
     results = []
     ok_to_run_baseline = False
     for i in range(1, len(reforms)):
@@ -180,21 +176,6 @@ def run_reforms(ref_idxs=REF_IDXS, path_prefix="", cpu_count=CPU_COUNT,
         result.get()
     pool.close()
     pool.join()
-
-    # # run reforms in serial
-    # results = []
-    #
-    # ok_to_run_baseline = False
-    # for i in range(0, len(reforms)):
-    #     args = ({},
-    #             reforms[i],
-    #             "./{0}OUTPUT_BASELINE".format(path_prefix),
-    #             "./{0}OUTPUT_REFORM_{1}".format(path_prefix, i),
-    #             str(i),
-    #             data,
-    #             ok_to_run_baseline,)
-    #
-    #     run_micro_macro(*args)
 
 
 if __name__ == "__main__":
