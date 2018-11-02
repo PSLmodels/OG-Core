@@ -26,7 +26,7 @@ class Specifications(ParametersBase):
     def __init__(self,
                  run_micro=False, output_base=BASELINE_DIR,
                  baseline_dir=BASELINE_DIR, test=False, time_path=True,
-                 baseline=False, constant_rates=True,
+                 baseline=False, constant_rates=False,
                  tax_func_type='DEP', analytical_mtrs=False,
                  age_specific=False, reform={}, guid='', data='cps',
                  flag_graphs=False, client=None, num_workers=1):
@@ -224,11 +224,14 @@ class Specifications(ParametersBase):
             if self.BW > BW_in_tax_params:
                 for item in params_list:
                     dict_params['tfunc_' + item + '_params_S'] =\
-                        np.concatenate((dict_params['tfunc_' + item + '_params_S'],
-                                 np.tile(dict_params['tfunc_' + item +
-                                                     '_params_S'][:, -1, :].reshape(S_in_tax_params, 1, num_etr_params),
-                                         (1, self.BW - BW_in_tax_params, 1))),
-                                 axis=1)
+                        np.concatenate(
+                            (dict_params['tfunc_' + item + '_params_S'],
+                             np.tile(
+                                 dict_params['tfunc_' + item +
+                                             '_params_S'][:, -1, :].reshape(
+                                     S_in_tax_params, 1, num_etr_params),
+                                 (1, self.BW - BW_in_tax_params, 1))),
+                            axis=1)
                     dict_params['tfunc_avg_' + item] =\
                         np.append(dict_params['tfunc_avg_' + item],
                                   np.tile(dict_params['tfunc_avg_' + item][-1],
