@@ -1,0 +1,156 @@
+{
+    "project_one_line": {
+        "start_header": null,
+        "end_header": null,
+        "source": "https://github.com/open-source-economics/OG-USA",
+        "type": "html",
+        "data": "<p>Overlapping-Generations Model for Evaluating Fiscal Policy in the United States</p>"
+    },
+    "key_features": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "project_overview": {
+        "start_header": "OG-USA",
+        "end_header": "Disclaimer",
+        "source": "README.md",
+        "type": "github_file",
+        "data": null
+    },
+    "citation": {
+        "start_header": null,
+        "end_header": null,
+        "source": "https://github.com/open-source-economics/OG-USA#citing-og-usa",
+        "type": "html",
+        "data": "<p>Please cite the source of your analysis as \"OG-USA release #.#.#, author's calculations.\" If you wish to link to OG-USA, https://github.com/open-source-economics/OG-USA is preferred. Additionally, we strongly recommend that you describe the input data used, and provide a link to the materials required to replicate your analysis or, at least, note that those materials are available upon request.</p>"
+    },
+    "license": {
+        "start_header": null,
+        "end_header": null,
+        "source": "https://github.com/open-source-economics/OG-USA/blob/master/LICENSE.md",
+        "data": "<p>CC0 1.0 Universal (CC0 1.0) Public Domain Dedication",
+        "type": "html"
+    },
+    "user_documentation": {
+        "start_header": null,
+        "end_header": null,
+        "source": "https://github.com/open-source-economics/OG-USA/blob/master/documentation/OGUSAdoc.pdf",
+        "type": "html",
+        "data": "<a href=\"https://github.com/open-source-economics/OG-USA/blob/master/documentation/OGUSAdoc.pdf\">Documentation</a>"
+    },
+    "user_changelog": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "user_changelog_recent": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "dev_changelog": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "disclaimer": {
+        "start_header": "Disclaimer",
+        "end_header": "Using/contributing to OG-USA",
+        "source": "README.md",
+        "type": "github_file",
+        "data": null
+    },
+    "user_case_studies": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "project_roadmap": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "contributor_overview": {
+        "start_header": null,
+        "end_header": null,
+        "source": "https://github.com/open-source-economics/OG-USA#usingcontributing-to-og-usa",
+        "type": "html",
+        "data": "<p>If you want to report a <b>bug</b>, create a new issue <a href=\"https://github.com/open-source-economics/OG-USA/issues\">here</a> providing details on what you think is wrong with OG-USA.</p><p>If you want to request <b>an enhancement</b>, create a new issue <a href=\"https://github.com/open-source-economics/OG-USA/issues\">here</a> providing details on what you think should be added to OG-USA. </p>"
+    },
+    "contributor_guide": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "governance_overview": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "public_funding": {
+        "start_header": null,
+        "end_header": null,
+        "source": null,
+        "type": null,
+        "data": null
+    },
+    "link_to_webapp": {
+        "data": null,
+        "source": null,
+        "type": null,
+        "start_header": null,
+        "end_header": null
+    },
+    "public_issue_tracker": {
+        "start_header": null,
+        "end_header": null,
+        "data": "<a href=\"https://github.com/open-source-economics/OG-USA/issues\">https://github.com/open-source-economics/OG-USA/issues</a>",
+        "source": null,
+        "type": "html"
+    },
+    "public_qanda": {
+        "start_header": null,
+        "end_header": null,
+        "data": "<a href=\"https://github.com/open-source-economics/OG-USA/issues\">https://github.com/open-source-economics/OG-USA/issues</a>",
+        "source": null,
+        "type": "html"
+    },
+    "core_maintainers": {
+        "start_header": null,
+        "end_header": null,
+        "data": "<ul><li><a href=\"https://sites.google.com/site/rickecon/\">Richard Evans</a></li><li><a href=\"http://jasondebacker.com\">Jason DeBacker</a></li></ul>",
+        "source": null,
+        "type": "html"
+    },
+    "unit_test": {
+        "start_header": null,
+        "end_header": null,
+        "data": "<a href=\"https://github.com/open-source-economics/OG-USA/tree/master/ogusa/tests\">https://github.com/open-source-economics/OG-USA/tree/master/ogusa/tests</a>",
+        "source": "https://github.com/open-source-economics/OG-USA/tree/master/ogusa/tests",
+        "type": "html"
+    },
+    "integration_test": {
+        "start_header": null,
+        "end_header": null,
+        "data": "<a href=\"https://github.com/open-source-economics/OG-USA/tree/master/ogusa/tests\">https://github.com/open-source-economics/OG-USA/tree/master/ogusa/tests</a>",
+        "source": "https://github.com/open-source-economics/OG-USA/tree/master/ogusa/tests",
+        "type": "html"
+    }
+}
