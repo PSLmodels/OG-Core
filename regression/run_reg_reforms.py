@@ -113,14 +113,15 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
     ------------------------------------------------------------------------
     '''
     print('path exists', not os.path.exists(baseline_dir), ok_to_run_baseline)
-    if not os.path.exists(baseline_dir) and ok_to_run_baseline:
+    # if not os.path.exists(baseline_dir) and ok_to_run_baseline:
+    if ok_to_run_baseline:
         output_base = baseline_dir
         kwargs = {'output_base': baseline_dir,
                   'baseline_dir': baseline_dir, 'test': False,
                   'time_path': True, 'baseline': True,
                   'analytical_mtrs': False, 'age_specific': True,
-                  'user_params': user_params, 'guid': 'baseline',
-                  'run_micro': True, 'small_open': False,
+                  'user_params': user_params, 'guid': '',
+                  'run_micro': False, 'small_open': False,
                   'budget_balance': False, 'baseline_spending': False,
                   'data': data, 'client': client, 'num_workers': 4}
         runner(**kwargs)
@@ -135,7 +136,7 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
               'test': False, 'time_path': True, 'baseline': False,
               'analytical_mtrs': False, 'age_specific': True,
               'user_params': user_params, 'guid': guid,
-              'reform': reform, 'run_micro': True, 'small_open': False,
+              'reform': reform, 'run_micro': False, 'small_open': False,
               'budget_balance': False, 'baseline_spending': False,
               'data': data, 'client': client, 'num_workers': 4}
     runner(**kwargs)
@@ -150,7 +151,7 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
 def run_reforms(ref_idxs=REF_IDXS, path_prefix="", cpu_count=CPU_COUNT,
                 data=DATA):
     # make sure we have a baseline result before other reforms are run
-    ok_to_run_baseline = True
+    ok_to_run_baseline = False
     run_micro_macro({},
                     reforms[0],
                     "./{0}OUTPUT_BASELINE".format(path_prefix),
