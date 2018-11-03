@@ -733,7 +733,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
             lazy_values.append(
                 delayed(inner_loop)(guesses, outer_loop_vars,
                                     inner_loop_params, j))
-        results = compute(*lazy_values, get=dask.multiprocessing.get,
+        results = compute(*lazy_values, scheduler=dask.multiprocessing.get,
                           num_workers=num_workers, scheduler=client)
         for j, result in enumerate(results):
             euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result
@@ -924,7 +924,7 @@ def run_TPI(income_tax_params, tpi_params, iterative_params,
         lazy_values.append(
             delayed(inner_loop)(guesses, outer_loop_vars,
                                 inner_loop_params, j))
-    results = compute(*lazy_values, get=dask.multiprocessing.get,
+    results = compute(*lazy_values, scheduler=dask.multiprocessing.get,
                       num_workers=num_workers, scheduler=client)
     for j, result in enumerate(results):
         euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result
