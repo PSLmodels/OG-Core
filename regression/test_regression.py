@@ -11,7 +11,7 @@ CURDIR = os.path.abspath(os.path.dirname(__file__))
 REG_BASELINE = os.path.join(CURDIR, 'regression_results/REG_OUTPUT_BASELINE')
 REG_REFORM = os.path.join(CURDIR, 'regression_results/REG_OUTPUT_REFORM_{ref_idx}')
 # REF_IDXS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
-REF_IDXS = [0, 1, 2]
+REF_IDXS = [0, 1, 2, 3, 4, 5, 6, 7]
 
 BASELINE = os.path.join(CURDIR, 'OUTPUT_BASELINE')
 REFORM = os.path.join(CURDIR, 'OUTPUT_REFORM_{ref_idx}')
