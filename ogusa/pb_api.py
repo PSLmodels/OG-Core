@@ -35,10 +35,10 @@ class Specifications(ParametersBase):
         # reads in default parameter values
         self._vals = self._params_dict_from_json_file()
 
-        self.test = test
-        self.time_path = time_path
         self.output_base = output_base
         self.baseline_dir = baseline_dir
+        self.test = test
+        self.time_path = time_path
         self.baseline = baseline
         self.reform = reform
         self.guid = guid
@@ -48,7 +48,6 @@ class Specifications(ParametersBase):
 
         # does cheap calculations to find parameter values
         self.initialize()
-
         # put anything in kwargs that is also in json file below
         # initialize()
         self.constant_rates = constant_rates
@@ -129,13 +128,16 @@ class Specifications(ParametersBase):
                          self.S) - 1)
         self.tpi_firm_r = np.ones(self.T+self.S) * self.ss_firm_r
         self.tpi_hh_r = np.ones(self.T+self.S) * self.ss_hh_r
+        self.tG2 = int(self.T * 0.8)
         T_shift = np.concatenate((
             self.T_shifts, np.zeros((self.T + self.S -
                                      self.T_shifts.size, 1))))
         G_shift = np.concatenate((
             self.G_shifts, np.zeros((self.T - self.G_shifts.size, 1))))
-        self.ALPHA_T = np.ones(self.T + self.S) * self.alpha_T + np.squeeze(T_shift)
-        self.ALPHA_G = np.ones(self.T) * self.alpha_G + np.squeeze(G_shift)
+        self.ALPHA_T = (np.ones(self.T + self.S) * self.alpha_T +
+                        np.squeeze(T_shift))
+        self.ALPHA_G = (np.ones(self.T) * self.alpha_G +
+                        np.squeeze(G_shift))
 
         # set period of retirement
         # SHOULD BE UPDATED TO BE ENTERED AS Retirement age in defaults
@@ -207,47 +209,6 @@ class Specifications(ParametersBase):
         num_etr_params = dict_params['tfunc_etr_params_S'].shape[2]
         num_mtrx_params = dict_params['tfunc_mtrx_params_S'].shape[2]
         num_mtry_params = dict_params['tfunc_mtry_params_S'].shape[2]
-        # First check to see if tax parameters that are used were
-        # estimated with a budget window and ages that are as long as
-        # the those implied based on the start year and model age.
-        # N.B. the tax parameters dictionary does not save the years
-        # that correspond to the parameter estimates, so the start year
-        # used there may name match what is used in a run that reads in
-        # some cached tax function parameters.  Likewise for age.
-        params_list = ['etr', 'mtrx', 'mtry']
-        BW_in_tax_params = dict_params['tfunc_etr_params_S'].shape[1]
-        S_in_tax_params = dict_params['tfunc_etr_params_S'].shape[0]
-        if self.BW != BW_in_tax_params:
-            print('Warning: There is a discrepency between the start' +
-                  ' year of the model and that of the tax functions!!')
-            # After printing warning, make it work by tiling
-            if self.BW > BW_in_tax_params:
-                for item in params_list:
-                    dict_params['tfunc_' + item + '_params_S'] =\
-                        np.concatenate(
-                            (dict_params['tfunc_' + item + '_params_S'],
-                             np.tile(
-                                 dict_params['tfunc_' + item +
-                                             '_params_S'][:, -1, :].reshape(
-                                     S_in_tax_params, 1, num_etr_params),
-                                 (1, self.BW - BW_in_tax_params, 1))),
-                            axis=1)
-                    dict_params['tfunc_avg_' + item] =\
-                        np.append(dict_params['tfunc_avg_' + item],
-                                  np.tile(dict_params['tfunc_avg_' + item][-1],
-                                          (self.BW - BW_in_tax_params)))
-        if self.S != S_in_tax_params:
-            print('Warning: There is a discrepency between the ages' +
-                  ' used in the model and those in the tax functions!!')
-            # After printing warning, make it work by tiling
-            if self.S > S_in_tax_params:
-                for item in params_list:
-                    dict_params['tfunc_' + item + '_params_S'] =\
-                        np.stack((dict_params['tfunc_' + item + '_params_S'],
-                                 np.tile(dict_params['tfunc_' + item + '_params_S'][-1, :, :].reshape(1, BW_in_tax_params, num_etr_params),
-                                         (self.S - S_in_tax_params, 1, 1))),
-                                 axis=0)
-
         self.etr_params = np.empty((self.T, self.S, num_etr_params))
         self.mtrx_params = np.empty((self.T, self.S, num_mtrx_params))
         self.mtry_params = np.empty((self.T, self.S, num_mtry_params))
@@ -282,23 +243,17 @@ class Specifications(ParametersBase):
             # # Make all ETRs equal the average
             self.etr_params = np.zeros(self.etr_params.shape)
             # set shift to average rate
-            self.etr_params[:, :self.BW, 10] = dict_params['tfunc_avg_etr']
-            self.etr_params[:, self.BW:, 10] =\
-                dict_params['tfunc_avg_etr'][-1]
+            self.etr_params[:, :, 10] = dict_params['tfunc_avg_etr']
 
             # # Make all MTRx equal the average
             self.mtrx_params = np.zeros(self.mtrx_params.shape)
             # set shift to average rate
-            self.mtrx_params[:, :self.BW, 10] = dict_params['tfunc_avg_mtrx']
-            self.mtrx_params[:, self.BW:, 10] =\
-                dict_params['tfunc_avg_mtrx'][-1]
+            self.mtrx_params[:, :, 10] = dict_params['tfunc_avg_mtrx']
 
             # # Make all MTRy equal the average
             self.mtry_params = np.zeros(self.mtry_params.shape)
             # set shift to average rate
-            self.mtry_params[:, :self.BW, 10] = dict_params['tfunc_avg_mtry']
-            self.mtry_params[:, self.BW:, 10] =\
-                dict_params['tfunc_avg_mtry'][-1]
+            self.mtry_params[:, :, 10] = dict_params['tfunc_avg_mtry']
 
     def read_tax_func_estimate(self, pickle_path, pickle_file):
         '''
@@ -480,7 +435,6 @@ class Specifications(ParametersBase):
                 bool_param_type = self._vals[param_name]['boolean_value']
                 int_param_type = self._vals[param_name]['integer_value']
                 string_param_type = self._vals[param_name]['string_value']
-                # make scalars into single item lists
                 if isinstance(revision[param_name], list):
                     param_value = revision[param_name]
                 else:
@@ -557,7 +511,7 @@ class Specifications(ParametersBase):
                                                        validation_value) + '\n'
                                 )
                 else:
-                    print(validation_op, param_value, validation_value)
+                    # print(validation_op, param_value, validation_value)
                     if isinstance(validation_value, six.string_types):
                         validation_value = self.simple_eval(validation_value)
                     else:
