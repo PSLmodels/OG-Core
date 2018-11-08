@@ -23,6 +23,8 @@ try:
 except ImportError:
     import pickle
 import os
+from ogusa.utils import safe_read_pickle
+
 
 def dump_diff_output(baseline_dir, policy_dir):
     '''
@@ -72,9 +74,9 @@ def dump_diff_output(baseline_dir, policy_dir):
     if not os.path.exists(tpi_policy_dir):
         os.mkdir(tpi_policy_dir)
     tpi_macro_vars_policy_path = os.path.join(tpi_policy_dir, "TPI_vars.pkl")
-    tpi_macro_vars_policy = pickle.load(open(tpi_macro_vars_policy_path, "rb"))
+    tpi_macro_vars_policy = safe_read_pickle(tpi_macro_vars_policy_path)
     tpi_macro_vars_baseline_path = os.path.join(tpi_baseline_dir, "TPI_vars.pkl")
-    tpi_macro_vars_baseline = pickle.load(open(tpi_macro_vars_baseline_path, "rb"))
+    tpi_macro_vars_baseline = safe_read_pickle(tpi_macro_vars_baseline_path)
 
     T = len(tpi_macro_vars_baseline['C'])
     baseline_macros = np.zeros((7,T))
@@ -103,9 +105,9 @@ def dump_diff_output(baseline_dir, policy_dir):
 
     ## Load SS results
     ss_policy_path = os.path.join(policy_dir, "SS", "SS_vars.pkl")
-    ss_policy = pickle.load(open( ss_policy_path, "rb" ))
+    ss_policy = safe_read_pickle(ss_policy_path)
     ss_baseline_path = os.path.join(baseline_dir, "SS", "SS_vars.pkl")
-    ss_baseline = pickle.load(open( ss_baseline_path, "rb" ) )
+    ss_baseline = safe_read_pickle( ss_baseline_path)
     # pct changes in macro aggregates in SS
     pct_changes[0,11] = (ss_policy['Yss']-ss_baseline['Yss'])/ss_baseline['Yss']
     pct_changes[1,11] = (ss_policy['Css']-ss_baseline['Css'])/ss_baseline['Css']

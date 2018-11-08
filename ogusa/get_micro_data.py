@@ -170,7 +170,7 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
     for year in range(start_year + 1, TC_LAST_YEAR + 1):
         lazy_values.append(
             delayed(taxcalc_advance)(calc1, year, length))
-    results = compute(*lazy_values, get=dask.multiprocessing.get,
+    results = compute(*lazy_values, scheduler=dask.multiprocessing.get,
                       num_workers=num_workers)
     # for i, result in results.items():
     for i, result in enumerate(results):

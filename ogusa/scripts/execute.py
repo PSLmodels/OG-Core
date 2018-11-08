@@ -21,7 +21,7 @@ SMALL_OPEN_KEYS = ['world_int_rate']
 
 
 def runner(output_base, baseline_dir, test=False, time_path=True,
-           baseline=False, constant_rates=True, tax_func_type='DEP',
+           baseline=False, constant_rates=False, tax_func_type='DEP',
            analytical_mtrs=False, age_specific=False, reform={},
            user_params={}, guid='', run_micro=True, small_open=False,
            budget_balance=False, baseline_spending=False, data=None,
