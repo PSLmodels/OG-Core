@@ -14,7 +14,7 @@ PUF_PATH = os.path.join(CUR_PATH, '../ogusa/puf.csv')
 
 client = Client(processes=False)
 CPU_COUNT = 4  # multiprocessing.cpu_count()
-REF_IDXS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+REF_IDXS = [0, 1, 2, 3, 4, 5, 6, 7]
 
 DATA = pd.read_csv(PUF_PATH)
 reform0 = {
@@ -88,7 +88,7 @@ reform9 = {
     }, }
 
 reforms = [reform0, reform1, reform2, reform3, reform4, reform5, reform6,
-           reform7, reform8, reform9]
+           reform7]
 
 
 def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
@@ -103,8 +103,9 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
     G_shifts = np.zeros(6)
     G_shifts[0:3] = -0.01
     G_shifts[3:6] = -0.005
-    user_params = {'frisch': 0.41, 'start_year': 2017,
-                   'debt_ratio_ss': 1.0, 'T_shifts': T_shifts.tolist(),
+    user_params = {'frisch': 0.41, 'start_year': 2017, 'tau_b': 0.20,
+                   'debt_ratio_ss': 1.0, 'delta_tau_annual': 0.05,
+                   'T_shifts': T_shifts.tolist(),
                    'G_shifts': G_shifts.tolist()}
 
     '''
@@ -113,8 +114,7 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
     ------------------------------------------------------------------------
     '''
     print('path exists', not os.path.exists(baseline_dir), ok_to_run_baseline)
-    # if not os.path.exists(baseline_dir) and ok_to_run_baseline:
-    if ok_to_run_baseline:
+    if not os.path.exists(baseline_dir) and ok_to_run_baseline:
         output_base = baseline_dir
         kwargs = {'output_base': baseline_dir,
                   'baseline_dir': baseline_dir, 'test': False,
@@ -151,7 +151,7 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
 def run_reforms(ref_idxs=REF_IDXS, path_prefix="", cpu_count=CPU_COUNT,
                 data=DATA):
     # make sure we have a baseline result before other reforms are run
-    ok_to_run_baseline = False
+    ok_to_run_baseline = True
     run_micro_macro({},
                     reforms[0],
                     "./{0}OUTPUT_BASELINE".format(path_prefix),
