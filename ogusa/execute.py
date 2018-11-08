@@ -56,7 +56,6 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         Run SS
     ------------------------------------------------------------------------
     '''
-
     ss_outputs = SS.run_SS(spec, client=client)
 
     '''
