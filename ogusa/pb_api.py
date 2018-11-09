@@ -26,7 +26,9 @@ class Specifications(ParametersBase):
     def __init__(self,
                  run_micro=False, output_base=BASELINE_DIR,
                  baseline_dir=BASELINE_DIR, test=False, time_path=True,
-                 baseline=False, reform={}, guid='', data='cps',
+                 baseline=False, constant_rates=False,
+                 tax_func_type='DEP', analytical_mtrs=False,
+                 age_specific=False, reform={}, guid='', data='cps',
                  flag_graphs=False, client=None, num_workers=1):
         super(Specifications, self).__init__()
 
@@ -46,6 +48,13 @@ class Specifications(ParametersBase):
 
         # does cheap calculations to find parameter values
         self.initialize()
+        # put anything in kwargs that is also in json file below
+        # initialize()
+        self.constant_rates = constant_rates
+        self.tax_func_type = tax_func_type
+        self.analytical_mtrs = analytical_mtrs
+        self.age_specific = age_specific
+
         # does more costly tax function estimation
         if run_micro:
             self.get_tax_function_parameters(self, client, run_micro=True)
@@ -120,8 +129,15 @@ class Specifications(ParametersBase):
         self.tpi_firm_r = np.ones(self.T+self.S) * self.ss_firm_r
         self.tpi_hh_r = np.ones(self.T+self.S) * self.ss_hh_r
         self.tG2 = int(self.T * 0.8)
-        self.ALPHA_T = np.ones(self.T + self.S) * self.alpha_T
-        self.ALPHA_G = np.ones(self.T) * self.alpha_G
+        T_shift = np.concatenate((
+            self.T_shifts, np.zeros((self.T + self.S -
+                                     self.T_shifts.size, 1))))
+        G_shift = np.concatenate((
+            self.G_shifts, np.zeros((self.T - self.G_shifts.size, 1))))
+        self.ALPHA_T = (np.ones(self.T + self.S) * self.alpha_T +
+                        np.squeeze(T_shift))
+        self.ALPHA_G = (np.ones(self.T) * self.alpha_G +
+                        np.squeeze(G_shift))
 
         # set period of retirement
         # SHOULD BE UPDATED TO BE ENTERED AS Retirement age in defaults
@@ -495,7 +511,7 @@ class Specifications(ParametersBase):
                                                        validation_value) + '\n'
                                 )
                 else:
-                    print(validation_op, param_value, validation_value)
+                    # print(validation_op, param_value, validation_value)
                     if isinstance(validation_value, six.string_types):
                         validation_value = self.simple_eval(validation_value)
                     else:

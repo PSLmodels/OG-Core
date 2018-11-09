@@ -7,8 +7,7 @@ import pandas as pd
 from ogusa.utils import CPS_START_YEAR
 from ogusa.utils import comp_array, comp_scalar, dict_compare
 from ogusa.get_micro_data import get_calculator
-from ogusa import SS
-from ogusa import TPI
+from ogusa import SS, TPI
 
 TOL = 1e-5
 
@@ -70,7 +69,7 @@ def test_import_ok():
 
 
 def test_run_small_SS():
-    from ogusa.scripts.execute import runner
+    from ogusa.execute import runner
     # Monkey patch enforcement flag since small data won't pass checks
     SS.ENFORCE_SOLUTION_CHECKS = False
     TPI.ENFORCE_SOLUTION_CHECKS = False
@@ -85,7 +84,7 @@ def test_run_small_SS():
 
 
 def test_run_small_TPI():
-    from ogusa.scripts.execute import runner
+    from ogusa.execute import runner
     # Monkey patch enforcement flag since small data won't pass checks
     SS.ENFORCE_SOLUTION_CHECKS = False
     TPI.ENFORCE_SOLUTION_CHECKS = False
