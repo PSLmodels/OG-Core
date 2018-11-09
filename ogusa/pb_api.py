@@ -209,6 +209,49 @@ class Specifications(ParametersBase):
         num_etr_params = dict_params['tfunc_etr_params_S'].shape[2]
         num_mtrx_params = dict_params['tfunc_mtrx_params_S'].shape[2]
         num_mtry_params = dict_params['tfunc_mtry_params_S'].shape[2]
+        # First check to see if tax parameters that are used were
+        # estimated with a budget window and ages that are as long as
+        # the those implied based on the start year and model age.
+        # N.B. the tax parameters dictionary does not save the years
+        # that correspond to the parameter estimates, so the start year
+        # used there may name match what is used in a run that reads in
+        # some cached tax function parameters.  Likewise for age.
+        params_list = ['etr', 'mtrx', 'mtry']
+        BW_in_tax_params = dict_params['tfunc_etr_params_S'].shape[1]
+        S_in_tax_params = dict_params['tfunc_etr_params_S'].shape[0]
+        if self.BW != BW_in_tax_params:
+            print('Warning: There is a discrepency between the start' +
+                  ' year of the model and that of the tax functions!!')
+        # After printing warning, make it work by tiling
+        if self.BW > BW_in_tax_params:
+            for item in params_list:
+                dict_params['tfunc_' + item + '_params_S'] =\
+                    np.concatenate(
+                        (dict_params['tfunc_' + item + '_params_S'],
+                         np.tile(dict_params['tfunc_' + item +
+                                             '_params_S'][:, -1, :].
+                                 reshape(S_in_tax_params, 1, num_etr_params),
+                                 (1, self.BW - BW_in_tax_params, 1))),
+                        axis=1)
+                dict_params['tfunc_avg_' + item] =\
+                    np.append(dict_params['tfunc_avg_' + item],
+                              np.tile(dict_params['tfunc_avg_' + item][-1],
+                                      (self.BW - BW_in_tax_params)))
+        if self.S != S_in_tax_params:
+            print('Warning: There is a discrepency between the ages' +
+                  ' used in the model and those in the tax functions!!')
+        # After printing warning, make it work by tiling
+        if self.S > S_in_tax_params:
+            for item in params_list:
+                    dict_params['tfunc_' + item + '_params_S'] =\
+                        np.stack(
+                            (dict_params['tfunc_' + item + '_params_S'],
+                             np.tile(dict_params['tfunc_' + item +
+                                                 '_params_S'][-1, :, :].
+                                     reshape(1, BW_in_tax_params,
+                                             num_etr_params),
+                                     (self.S - S_in_tax_params, 1, 1))),
+                            axis=0)
         self.etr_params = np.empty((self.T, self.S, num_etr_params))
         self.mtrx_params = np.empty((self.T, self.S, num_mtrx_params))
         self.mtry_params = np.empty((self.T, self.S, num_mtry_params))
