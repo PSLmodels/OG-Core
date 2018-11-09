@@ -283,7 +283,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
 
     Returns: euler_errors, b_mat, n_mat
     '''
-    #unpack variables and parameters pass to function
+    # unpack variables and parameters pass to function
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n,
      initial_debt, D0) = initial_values
     guesses_b, guesses_n = guesses
@@ -582,7 +582,8 @@ def run_TPI(p, client=None):
         b_mat_shift = np.append(np.reshape(initial_b, (1, p.S, p.J)),
                                 b_mat[:p.T - 1, :, :], axis=0)
         BQnew = aggr.get_BQ(rnew[:p.T], b_mat_shift, None, p, 'TPI', False)
-        BQnew_3D = np.tile(BQnew.reshape(BQnew.shape[0], 1, BQnew.shape[1]), (1, p.S, 1))
+        BQnew_3D = np.tile(BQnew.reshape(BQnew.shape[0], 1, BQnew.shape[1]),
+                           (1, p.S, 1))
         REVENUE = np.array(list(
             aggr.revenue(rnew[:p.T], wnew[:p.T], bmat_s,
                          n_mat[:p.T, :, :], BQnew_3D[:p.T, :, :], Ynew[:p.T],

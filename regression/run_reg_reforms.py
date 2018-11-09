@@ -114,7 +114,8 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
     ------------------------------------------------------------------------
     '''
     print('path exists', not os.path.exists(baseline_dir), ok_to_run_baseline)
-    if not os.path.exists(baseline_dir) and ok_to_run_baseline:
+    # if not os.path.exists(baseline_dir) and ok_to_run_baseline:
+    if ok_to_run_baseline:
         output_base = baseline_dir
         kwargs = {'output_base': baseline_dir,
                   'baseline_dir': baseline_dir, 'test': False,
@@ -144,7 +145,7 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
     ans = postprocess.create_diff(baseline_dir=baseline_dir,
                                   policy_dir=reform_dir)
 
-    print('Total time of run ', (time.time() - start_time))
+    print("total time was ", (time.time() - start_time))
     print('Percentage changes in aggregates:', ans)
 
 

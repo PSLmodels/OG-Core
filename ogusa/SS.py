@@ -808,7 +808,8 @@ def run_SS(p, client=None):
     # For initial guesses of w, r, T_H, and factor, we use values that
     # are close to some steady state values.
     if p.baseline:
-        rguess = 0.04  # 0.01 + delta
+        rguess = 0.06  # 0.01 + delta
+        # wguess = 1.2
         T_Hguess = 0.12
         factorguess = 70000
 

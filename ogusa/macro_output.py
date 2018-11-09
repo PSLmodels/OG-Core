@@ -25,6 +25,7 @@ except ImportError:
 import os
 from ogusa.utils import safe_read_pickle
 
+
 def dump_diff_output(baseline_dir, policy_dir):
     '''
     --------------------------------------------------------------------
