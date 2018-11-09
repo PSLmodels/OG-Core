@@ -1,24 +1,20 @@
-import ogusa
 import os
-import sys
 import multiprocessing
-from multiprocessing import Process, Pool
 from dask.distributed import Client
 import time
 import numpy as np
 import pandas as pd
 import argparse
-
-from ogusa.scripts import postprocess
-from ogusa.scripts.execute import runner
+from ogusa import postprocess
+from ogusa.execute import runner
 from ogusa.utils import REFORM_DIR, BASELINE_DIR
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 PUF_PATH = os.path.join(CUR_PATH, '../ogusa/puf.csv')
 
 client = Client(processes=False)
-CPU_COUNT = 4#multiprocessing.cpu_count()
-REF_IDXS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+CPU_COUNT = 4  # multiprocessing.cpu_count()
+REF_IDXS = [0, 1, 2, 3, 4, 5, 6, 7]
 
 DATA = pd.read_csv(PUF_PATH)
 reform0 = {
@@ -92,7 +88,7 @@ reform9 = {
     }, }
 
 reforms = [reform0, reform1, reform2, reform3, reform4, reform5, reform6,
-           reform7, reform8, reform9]
+           reform7]
 
 
 def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
@@ -107,9 +103,10 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
     G_shifts = np.zeros(6)
     G_shifts[0:3] = -0.01
     G_shifts[3:6] = -0.005
-    user_params = {'frisch': 0.41, 'start_year': 2017,
-                   'debt_ratio_ss': 1.0, 'T_shifts': T_shifts,
-                   'G_shifts': G_shifts}
+    user_params = {'frisch': 0.41, 'start_year': 2017, 'tau_b': 0.20,
+                   'debt_ratio_ss': 1.0, 'delta_tau_annual': 0.05,
+                   'T_shifts': T_shifts.tolist(),
+                   'G_shifts': G_shifts.tolist()}
 
     '''
     ------------------------------------------------------------------------
@@ -124,8 +121,8 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
                   'baseline_dir': baseline_dir, 'test': False,
                   'time_path': True, 'baseline': True,
                   'analytical_mtrs': False, 'age_specific': True,
-                  'user_params': user_params, 'guid': 'baseline',
-                  'run_micro': True, 'small_open': False,
+                  'user_params': user_params, 'guid': '',
+                  'run_micro': False, 'small_open': False,
                   'budget_balance': False, 'baseline_spending': False,
                   'data': data, 'client': client, 'num_workers': 4}
         runner(**kwargs)
@@ -140,7 +137,7 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
               'test': False, 'time_path': True, 'baseline': False,
               'analytical_mtrs': False, 'age_specific': True,
               'user_params': user_params, 'guid': guid,
-              'reform': reform, 'run_micro': True, 'small_open': False,
+              'reform': reform, 'run_micro': False, 'small_open': False,
               'budget_balance': False, 'baseline_spending': False,
               'data': data, 'client': client, 'num_workers': 4}
     runner(**kwargs)
@@ -164,7 +161,7 @@ def run_reforms(ref_idxs=REF_IDXS, path_prefix="", cpu_count=CPU_COUNT,
                     data,
                     ok_to_run_baseline,)
     # run reforms in parallel
-    pool = Pool(processes=cpu_count)
+    pool = multiprocessing.pool.ThreadPool(processes=2)
     results = []
     ok_to_run_baseline = False
     for i in range(1, len(reforms)):

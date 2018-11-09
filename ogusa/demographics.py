@@ -20,9 +20,8 @@ import scipy.optimize as opt
 import scipy.interpolate as si
 import pandas as pd
 from . import utils
-import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator, FormatStrFormatter
+from matplotlib.ticker import MultipleLocator
 
 '''
 ------------------------------------------------------------------------
@@ -114,7 +113,6 @@ def get_fert(totpers, min_yr, max_yr, graph=False):
     pop_data = pd.read_table(pop_file, sep=',', thousands=',')
     pop_data_samp = pop_data[(pop_data['Age'] >= min_yr - 1) &
                              (pop_data['Age'] <= max_yr - 1)]
-    # age_year_all = pop_data_samp['Age'] + 1
     curr_pop = np.array(pop_data_samp['2013'], dtype='f')
     curr_pop_pct = curr_pop / curr_pop.sum()
     # Get fertility rate by age-bin data
@@ -269,21 +267,21 @@ def get_mort(totpers, min_yr, max_yr, graph=False):
     --------------------------------------------------------------------
     '''
     # Get mortality rate by age data
-    infmort_rate = 0.00587 # taken from 2015 U.S. infant mortality rate
+    infmort_rate = 0.00587  # taken from 2015 U.S. infant mortality rate
     cur_path = os.path.split(os.path.abspath(__file__))[0]
-    mort_file = utils.read_file(cur_path,
-                'data/demographic/mort_rates2011.csv')
+    mort_file = utils.read_file(
+        cur_path, 'data/demographic/mort_rates2011.csv')
     mort_data = pd.read_table(mort_file, sep=',', thousands=',')
     age_year_all = mort_data['Age'] + 1
-    mort_rates_all = (((mort_data['Male Mort. Rate'] *
-        mort_data['Num. Male Lives']) + (mort_data['Female Mort. Rate']
-        * mort_data['Num. Female Lives'])) /
+    mort_rates_all = (
+        ((mort_data['Male Mort. Rate'] * mort_data['Num. Male Lives']) +
+         (mort_data['Female Mort. Rate'] *
+          mort_data['Num. Female Lives'])) /
         (mort_data['Num. Male Lives'] + mort_data['Num. Female Lives']))
     age_year_all = age_year_all[np.isfinite(mort_rates_all)]
     mort_rates_all = mort_rates_all[np.isfinite(mort_rates_all)]
     # Calculate implied mortality rates in sub-bins of mort_rates_all.
     mort_rates_mxyr = mort_rates_all[0:max_yr]
-    # binsize = (max_yr - min_yr + 1) / totpers
     num_sub_bins = int(100)
     len_subbins = ((np.float64((max_yr - min_yr + 1) * num_sub_bins)) /
                    totpers)
@@ -480,7 +478,6 @@ def get_imm_resid(totpers, min_yr, max_yr, graph=True):
     pop_data = pd.read_table(pop_file, sep=',', thousands=',')
     pop_data_samp = pop_data[(pop_data['Age'] >= min_yr - 1) &
                              (pop_data['Age'] <= max_yr - 1)]
-    # age_year_all = pop_data_samp['Age'] + 1
     pop_2010, pop_2011, pop_2012, pop_2013 = (
         np.array(pop_data_samp['2010'], dtype='f'),
         np.array(pop_data_samp['2011'], dtype='f'),
@@ -599,7 +596,7 @@ def immsolve(imm_rates, *args):
     OMEGA = np.zeros((totpers, totpers))
     OMEGA[0, :] = ((1 - infmort_rate) * fert_rates +
                    np.hstack((imm_rates[0], np.zeros(totpers-1))))
-    # OMEGA[1:, :-1] += np.diag(1 - mort_rates[:-1])
+    OMEGA[1:, :-1] += np.diag(1 - mort_rates[:-1])
     OMEGA[1:, 1:] += np.diag(imm_rates[1:])
     omega_new = np.dot(OMEGA, omega_cur_pct) / (1 + g_n_SS)
     omega_errs = omega_new - omega_cur_pct
@@ -705,7 +702,6 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
                                         graph=False)
     mort_rates_S = mort_rates[-S:]
     imm_rates_orig = get_imm_resid(E + S, min_yr, max_yr, graph=False)
-    # imm_rates_S = imm_rates_orig[-S:]
     OMEGA_orig = np.zeros((E + S, E + S))
     OMEGA_orig[0, :] = ((1 - infmort_rate) * fert_rates +
                         np.hstack((imm_rates_orig[0], np.zeros(E+S-1))))
@@ -730,7 +726,6 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     pop_data = pd.read_table(pop_file, sep=',', thousands=',')
     pop_data_samp = pop_data[(pop_data['Age'] >= min_yr - 1) &
                              (pop_data['Age'] <= max_yr - 1)]
-    # age_year_all = pop_data_samp['Age'] + 1
     pop_2013 = np.array(pop_data_samp['2013'], dtype='f')
     # Generate the current population distribution given that E+S might
     # be less than max_yr-min_yr+1
@@ -751,8 +746,6 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
                     pop_curr[-S:].sum())
         pop_past = pop_curr
         pop_curr = pop_next
-    # curr_dict = {"pop_" + str(curr_year) + "_pct": pop_curr.copy() /
-    #              pop_curr.sum()}
 
     # Generate time path of the population distribution
     omega_path_lev[:, 0] = pop_curr.copy()
@@ -774,8 +767,6 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
                                 args=(imm_objs), full_output=True,
                                 xtol=imm_tol)
     imm_rates_adj = imm_fulloutput[0]
-    #imm_rates_adj = np.zeros(E + S)
-    imm_rates_S_adj = imm_rates_adj[-S:]
     imm_diagdict = imm_fulloutput[1]
     omega_path_S = (omega_path_lev[-S:, :] /
                     np.tile(omega_path_lev[-S:, :].sum(axis=0), (S, 1)))

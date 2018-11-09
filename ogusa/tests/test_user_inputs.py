@@ -1,6 +1,6 @@
 import pytest
 import os
-from ogusa.scripts.execute import runner
+from ogusa.execute import runner
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 PUF_PATH = os.path.join(CUR_PATH, '../puf.csv')
 

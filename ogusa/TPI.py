@@ -514,7 +514,7 @@ def run_TPI(p, client=None):
             guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
             lazy_values.append(
                 delayed(inner_loop)(guesses, outer_loop_vars,
-                                    inner_loop_params, j))
+                                    initial_values, j, ind, p))
         results = compute(*lazy_values, scheduler=dask.multiprocessing.get,
                           num_workers=p.num_workers)
         for j, result in enumerate(results):
@@ -582,7 +582,8 @@ def run_TPI(p, client=None):
         b_mat_shift = np.append(np.reshape(initial_b, (1, p.S, p.J)),
                                 b_mat[:p.T - 1, :, :], axis=0)
         BQnew = aggr.get_BQ(rnew[:p.T], b_mat_shift, None, p, 'TPI', False)
-        BQnew_3D = np.tile(BQnew.reshape(BQnew.shape[0], 1, BQnew.shape[1]), (1, p.S, 1))
+        BQnew_3D = np.tile(BQnew.reshape(BQnew.shape[0], 1, BQnew.shape[1]),
+                           (1, p.S, 1))
         REVENUE = np.array(list(
             aggr.revenue(rnew[:p.T], wnew[:p.T], bmat_s,
                          n_mat[:p.T, :, :], BQnew_3D[:p.T, :, :], Ynew[:p.T],
@@ -683,8 +684,8 @@ def run_TPI(p, client=None):
     for j in range(p.J):
         guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
         lazy_values.append(
-            delayed(inner_loop)(guesses, outer_loop_vars,
-                                inner_loop_params, j))
+            delayed(inner_loop)(guesses, outer_loop_vars, initial_values,
+                                j, ind, p))
     results = compute(*lazy_values, scheduler=dask.multiprocessing.get,
                       num_workers=p.num_workers)
     for j, result in enumerate(results):

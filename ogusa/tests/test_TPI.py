@@ -169,7 +169,6 @@ def test_run_TPI():
      p.omega_S_preTP, initial_debt, D0) = initial_values
 
     # Need to run SS first to get results
-    print('Shpaes in  = ', p.rho.shape, p.S, p.J, p.T)
     ss_outputs = SS.run_SS(p, None)
 
     if p.baseline:

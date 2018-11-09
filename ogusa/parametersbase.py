@@ -98,7 +98,8 @@ class ParametersBase(object):
             # set post-reform values of parameter with name
             used_names.add(name)
             cval = getattr(self, name, None)
-            print("Is this a string: ", string_val, name)
+            # print("Is this a string: ", string_val, name)
+            print(name, ' has been updated to: ', values)
             nval = self._expand_array(values, intg_val, bool_val,
                                       string_val)
             setattr(self, name, nval)

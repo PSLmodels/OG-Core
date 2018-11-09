@@ -670,8 +670,6 @@ def SS_fsolve_reform(guesses, *args):
                     T_H ((2*S*J+4)x1 array)
     '''
     (bssmat, nssmat, factor, p, client) = args
-    print('Bssmat 2 in max and min = ', bssmat.max(), bssmat.min())
-    print('Nssmat 2 in max and min = ', nssmat.max(), nssmat.min())
 
     # Rename the inputs
     r = guesses[0]

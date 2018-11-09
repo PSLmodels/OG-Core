@@ -13,7 +13,7 @@ config = {
     'description': 'ogusa',
     'install_requires': [],
     'license': 'MIT',
-    'packages': ['ogusa', 'ogusa.scripts'],
+    'packages': ['ogusa'],
     'package_data': {
                      'ogusa': [
                                '../TxFuncEst_baseline.pkl',
