@@ -1,8 +1,7 @@
 import os
 import tempfile
 import pytest
-
-from ogusa.pb_api import Specifications, reform_warnings_errors
+from ogusa.parameters import Specifications, reform_warnings_errors
 
 
 JSON_REVISION_FILE = """{

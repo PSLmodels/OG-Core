@@ -3,7 +3,7 @@ import pytest
 import numpy as np
 import os
 from ogusa import SS, utils
-from ogusa.pb_api import Specifications
+from ogusa.parameters import Specifications
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 

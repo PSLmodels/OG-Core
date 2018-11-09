@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from ogusa import household
-from ogusa.pb_api import Specifications
+from ogusa.parameters import Specifications
 
 test_data = [(0.1, 1, 10),
              (0.2, 2.5, 55.90169944),

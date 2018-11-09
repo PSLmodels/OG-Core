@@ -10,7 +10,7 @@ except ImportError:
 import os
 import time
 from ogusa import SS, TPI, utils
-from ogusa.pb_api import Specifications
+from ogusa.parameters import Specifications
 
 
 def runner(output_base, baseline_dir, test=False, time_path=True,

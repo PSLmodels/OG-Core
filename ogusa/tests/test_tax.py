@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 from ogusa import tax
-from ogusa.pb_api import Specifications
+from ogusa.parameters import Specifications
 
 
 def test_replacement_rate_vals():

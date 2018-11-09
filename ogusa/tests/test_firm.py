@@ -1,7 +1,7 @@
 import pytest
 from ogusa import firm
 import numpy as np
-from ogusa.pb_api import Specifications
+from ogusa.parameters import Specifications
 
 
 def test_get_r():

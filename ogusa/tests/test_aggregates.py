@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 from ogusa import aggregates as aggr
-from ogusa.pb_api import Specifications
+from ogusa.parameters import Specifications
 
 
 def test_get_L():
