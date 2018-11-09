@@ -1,6 +1,5 @@
 from ogusa.macro_output import dump_diff_output
 import numpy as np
-import pickle
 import pytest
 import os
 
@@ -8,7 +7,8 @@ import os
 CURDIR = os.path.abspath(os.path.dirname(__file__))
 REG_BASELINE = os.path.join(CURDIR, 'regression_results/REG_OUTPUT_BASELINE')
 REG_REFORM = os.path.join(CURDIR, 'regression_results/REG_OUTPUT_REFORM_{ref_idx}')
-REF_IDXS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+# REF_IDXS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+REF_IDXS = [0, 1, 2, 3, 4, 5, 6, 7]
 
 BASELINE = os.path.join(CURDIR, 'OUTPUT_BASELINE')
 REFORM = os.path.join(CURDIR, 'OUTPUT_REFORM_{ref_idx}')
@@ -62,8 +62,7 @@ def test_macro_output(macro_outputs, macro_var_idx):
 @pytest.fixture(scope="module", params=REF_IDXS + ["baseline"])
 def tpi_output(request):
     def get_tpi_output(path):
-        with open(path + "/TPI/TPI_vars.pkl", 'rb') as f:
-            return pickle.load(f)
+        return safe_read_pickle(path + "/TPI/TPI_vars.pkl")
 
     ref_idx = request.param
     if ref_idx == "baseline":
@@ -96,8 +95,7 @@ def test_tpi_vars(tpi_output, tpi_var):
 @pytest.fixture(scope="module", params=REF_IDXS + ["baseline"])
 def txfunc_output(request):
     def get_txfunc_output(path):
-        with open(path, 'rb') as f:
-            return pickle.load(f)
+        return safe_read_pickle(path)
 
     ref_idx = request.param
     if ref_idx == "baseline":
@@ -108,9 +106,9 @@ def txfunc_output(request):
 
     else:
         reg_path = (REG_REFORM.format(ref_idx=ref_idx) +
-                    "/TxFuncEst_{idx}.pkl".format(idx=ref_idx))
+                    "/TxFuncEst_policy{idx}.pkl".format(idx=ref_idx))
         path = (REFORM.format(ref_idx=ref_idx) +
-                "/TxFuncEst_{idx}.pkl".format(idx=ref_idx))
+                "/TxFuncEst_policy{idx}.pkl".format(idx=ref_idx))
 
         return (get_txfunc_output(reg_path), get_txfunc_output(path))
 

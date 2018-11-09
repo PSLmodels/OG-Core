@@ -117,7 +117,8 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
     ------------------------------------------------------------------------
     '''
     print('path exists', not os.path.exists(baseline_dir), ok_to_run_baseline)
-    if not os.path.exists(baseline_dir) and ok_to_run_baseline:
+    # if not os.path.exists(baseline_dir) and ok_to_run_baseline:
+    if ok_to_run_baseline:
         output_base = baseline_dir
         kwargs = {'output_base': baseline_dir,
                   'baseline_dir': baseline_dir, 'test': False,
@@ -147,7 +148,7 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
     ans = postprocess.create_diff(baseline_dir=baseline_dir,
                                   policy_dir=reform_dir)
 
-    print('Total time of run ', (time.time() - start_time))
+    print("total time was ", (time.time() - start_time))
     print('Percentage changes in aggregates:', ans)
 
 
@@ -180,21 +181,6 @@ def run_reforms(ref_idxs=REF_IDXS, path_prefix="", cpu_count=CPU_COUNT,
         result.get()
     pool.close()
     pool.join()
-
-    # # run reforms in serial
-    # results = []
-    #
-    # ok_to_run_baseline = False
-    # for i in range(0, len(reforms)):
-    #     args = ({},
-    #             reforms[i],
-    #             "./{0}OUTPUT_BASELINE".format(path_prefix),
-    #             "./{0}OUTPUT_REFORM_{1}".format(path_prefix, i),
-    #             str(i),
-    #             data,
-    #             ok_to_run_baseline,)
-    #
-    #     run_micro_macro(*args)
 
 
 if __name__ == "__main__":

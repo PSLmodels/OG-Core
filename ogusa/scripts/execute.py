@@ -13,7 +13,7 @@ from ogusa import SS, TPI, utils
 from ogusa.pb_api import Specifications
 
 def runner(output_base, baseline_dir, test=False, time_path=True,
-           baseline=True, constant_rates=True, tax_func_type='DEP',
+           baseline=True, constant_rates=False, tax_func_type='DEP',
            analytical_mtrs=False, age_specific=False, reform={},
            user_params={}, guid='', run_micro=True, small_open=False,
            budget_balance=False, baseline_spending=False, data=None,

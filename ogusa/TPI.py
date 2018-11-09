@@ -283,7 +283,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
 
     Returns: euler_errors, b_mat, n_mat
     '''
-    #unpack variables and parameters pass to function
+    # unpack variables and parameters pass to function
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n,
      initial_debt, D0) = initial_values
     guesses_b, guesses_n = guesses
@@ -514,8 +514,8 @@ def run_TPI(p, client=None):
             guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
             lazy_values.append(
                 delayed(inner_loop)(guesses, outer_loop_vars,
-                                    initial_values, j, ind, p))
-        results = compute(*lazy_values, get=dask.multiprocessing.get,
+                                    inner_loop_params, j))
+        results = compute(*lazy_values, scheduler=dask.multiprocessing.get,
                           num_workers=p.num_workers)
         for j, result in enumerate(results):
             euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result
@@ -683,9 +683,9 @@ def run_TPI(p, client=None):
     for j in range(p.J):
         guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
         lazy_values.append(
-            delayed(inner_loop)(guesses, outer_loop_vars, initial_values,
-                                j, ind, p))
-    results = compute(*lazy_values, get=dask.multiprocessing.get,
+            delayed(inner_loop)(guesses, outer_loop_vars,
+                                inner_loop_params, j))
+    results = compute(*lazy_values, scheduler=dask.multiprocessing.get,
                       num_workers=p.num_workers)
     for j, result in enumerate(results):
         euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result

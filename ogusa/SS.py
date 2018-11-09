@@ -210,7 +210,7 @@ def inner_loop(outer_loop_vars, p, client):
                                                args=euler_params,
                                                xtol=MINIMIZER_TOL,
                                                full_output=True))
-    results = compute(*lazy_values, get=dask.multiprocessing.get,
+    results = compute(*lazy_values, scheduler=dask.multiprocessing.get,
                       num_workers=p.num_workers)
 
     # for j, result in results.items():
@@ -810,7 +810,8 @@ def run_SS(p, client=None):
     # For initial guesses of w, r, T_H, and factor, we use values that
     # are close to some steady state values.
     if p.baseline:
-        rguess = 0.04  # 0.01 + delta
+        rguess = 0.06  # 0.01 + delta
+        # wguess = 1.2
         T_Hguess = 0.12
         factorguess = 70000
 
