@@ -1,13 +1,9 @@
 from __future__ import print_function
 '''
 ------------------------------------------------------------------------
-Last updated 4/7/2015
-
-Miscellaneous functions for SS.py and TPI.py.
-
+Miscellaneous functions used in the OG-USA model.
 ------------------------------------------------------------------------
 '''
-
 # Packages
 import os
 from io import StringIO
@@ -34,10 +30,6 @@ TC_LAST_YEAR = 2027
 # Year of data used (e.g. PUF or CPS year)
 CPS_START_YEAR = taxcalc.Records.CPSCSV_YEAR
 PUF_START_YEAR = taxcalc.Records.PUFCSV_YEAR
-
-# for f in (REFORM_DIR, BASELINE_DIR):
-#     if not os.path.exists(f):
-#         os.mkdir(f)
 
 
 def mkdirs(path):
@@ -73,12 +65,13 @@ def pct_diff_func(simul, data):
     Functions called: None
 
     Objects in function:
-        frac   = same shape as simul, percent difference between data and model moments
-        output = same shape as simul, absolute percent difference between data and model moments
+        frac   = same shape as simul, percent difference between data
+                 and model moments
+        output = same shape as simul, absolute percent difference
+                 between data and model moments
 
     Returns: output
     '''
-
     frac = (simul - data) / data
     output = np.abs(frac)
     return output
@@ -100,11 +93,8 @@ def convex_combo(var1, var2, nu):
 
     Returns: combo
     '''
-
     combo = nu * var1 + (1 - nu) * var2
     return combo
-
-
 
 
 def read_file(path, fname):
@@ -135,7 +125,8 @@ def read_file(path, fname):
         return open(os.path.join(path, fname))
 
 
-def pickle_file_compare(fname1, fname2, tol=1e-3, exceptions={}, relative=False):
+def pickle_file_compare(fname1, fname2, tol=1e-3, exceptions={},
+                        relative=False):
     '''
     Read two pickle files and unpickle each. We assume that each resulting
     object is a dictionary. The values of each dict are either numpy arrays
@@ -195,7 +186,7 @@ def comp_array(name, a, b, tol, unequal, exceptions={}, relative=False):
         tol = exceptions[name]
 
     if not a.shape == b.shape:
-        print("unequal shpaes for {0} comparison ".format(str(name)))
+        print("unequal shapes for {0} comparison ".format(str(name)))
         unequal.append((str(name), a, b))
         return False
 
@@ -286,14 +277,17 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False,
         for k, v in pkl1.items():
             if type(v) == np.ndarray:
                 check &= comp_array(k, v, pkl2[k], tol, unequal_items,
-                                    exceptions=exceptions, relative=relative)
+                                    exceptions=exceptions,
+                                    relative=relative)
             else:
                 try:
                     check &= comp_scalar(k, v, pkl2[k], tol, unequal_items,
-                                         exceptions=exceptions, relative=relative)
+                                         exceptions=exceptions,
+                                         relative=relative)
                 except TypeError:
                     check &= comp_array(k, np.array(v), np.array(pkl2[k]), tol,
-                                        unequal_items, exceptions=exceptions,
+                                        unequal_items,
+                                        exceptions=exceptions,
                                         relative=relative)
 
         if verbose and unequal_items:
@@ -303,6 +297,15 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False,
             return False
 
     return check
+
+
+def to_timepath_shape(some_array, p):
+    '''
+    This function takes an vector of length T and tiles it to fill a
+    Tx1x1 array for time path computations.
+    '''
+    tp_array = some_array.reshape(some_array.shape[0], 1, 1)
+    return tp_array
 
 
 def safe_read_pickle(file_path):

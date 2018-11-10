@@ -46,7 +46,7 @@ def test_puf_path():
     Check that setting `data` to None uses the puf file
     """
     from ogusa import get_micro_data
-    baseline=False
+    baseline = False
     start_year = 2016
     reform = {2017: {"_II_em": [10000]}}
 

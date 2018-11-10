@@ -7,15 +7,15 @@ import pandas as pd
 from ogusa.utils import CPS_START_YEAR
 from ogusa.utils import comp_array, comp_scalar, dict_compare
 from ogusa.get_micro_data import get_calculator
-from ogusa import SS
-from ogusa import TPI
+from ogusa import SS, TPI
 
 TOL = 1e-5
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 TAXDATA_PATH = os.path.join(CUR_PATH, '..', '..', 'test_data', 'cps.csv.gz')
 TAXDATA = pd.read_csv(TAXDATA_PATH, compression='gzip')
-WEIGHTS_PATH = os.path.join(CUR_PATH, '..', '..', 'test_data', 'cps_weights.csv.gz')
+WEIGHTS_PATH = os.path.join(CUR_PATH, '..', '..', 'test_data',
+                            'cps_weights.csv.gz')
 WEIGHTS = pd.read_csv(WEIGHTS_PATH, compression='gzip')
 
 
@@ -68,17 +68,31 @@ def test_import_ok():
     import ogusa
 
 
-def test_run_small():
-    from ogusa.scripts.execute import runner
+def test_run_small_SS():
+    from ogusa.execute import runner
     # Monkey patch enforcement flag since small data won't pass checks
     SS.ENFORCE_SOLUTION_CHECKS = False
     TPI.ENFORCE_SOLUTION_CHECKS = False
+    SS.MINIMIZER_TOL = 1e-6
+    TPI.MINIMIZER_TOL = 1e-6
     output_base = "./OUTPUT"
     input_dir = "./OUTPUT"
-    user_params = {'frisch':0.41, 'debt_ratio_ss':0.4}
+    user_params = {'frisch': 0.41, 'debt_ratio_ss': 0.4}
     runner(output_base=output_base, baseline_dir=input_dir, test=True,
            time_path=False, baseline=True, user_params=user_params,
            run_micro=False, small_open=False, budget_balance=False)
+
+
+def test_run_small_TPI():
+    from ogusa.execute import runner
+    # Monkey patch enforcement flag since small data won't pass checks
+    SS.ENFORCE_SOLUTION_CHECKS = False
+    TPI.ENFORCE_SOLUTION_CHECKS = False
+    SS.MINIMIZER_TOL = 1e-6
+    TPI.MINIMIZER_TOL = 1e-6
+    output_base = "./OUTPUT"
+    input_dir = "./OUTPUT"
+    user_params = {'frisch': 0.41, 'debt_ratio_ss': 0.4}
     runner(output_base=output_base, baseline_dir=input_dir, test=True,
            time_path=True, baseline=True, user_params=user_params,
            run_micro=False, small_open=False, budget_balance=False)
@@ -177,15 +191,15 @@ def test_compare_dict_diff_ndarrays_relative():
 def test_get_micro_data_get_calculator():
 
     reform = {
-    2017: {
-        '_II_rt1': [.09],
-        '_II_rt2': [.135],
-        '_II_rt3': [.225],
-        '_II_rt4': [.252],
-        '_II_rt5': [.297],
-        '_II_rt6': [.315],
-        '_II_rt7': [0.3564],
-    }, }
+        2017: {
+            '_II_rt1': [.09],
+            '_II_rt2': [.135],
+            '_II_rt3': [.225],
+            '_II_rt4': [.252],
+            '_II_rt5': [.297],
+            '_II_rt6': [.315],
+            '_II_rt7': [0.3564],
+        }, }
 
     calc = get_calculator(baseline=False, calculator_start_year=2017,
                           reform=reform, data=TAXDATA,
@@ -194,15 +208,15 @@ def test_get_micro_data_get_calculator():
     assert calc.current_year == 2017
 
     reform = {
-    2017: {
-        '_II_rt1': [.09],
-        '_II_rt2': [.135],
-        '_II_rt3': [.225],
-        '_II_rt4': [.252],
-        '_II_rt5': [.297],
-        '_II_rt6': [.315],
-        '_II_rt7': [0.3564]
-    }, }
+        2017: {
+            '_II_rt1': [.09],
+            '_II_rt2': [.135],
+            '_II_rt3': [.225],
+            '_II_rt4': [.252],
+            '_II_rt5': [.297],
+            '_II_rt6': [.315],
+            '_II_rt7': [0.3564]
+        }, }
 
     calc2 = get_calculator(baseline=False, calculator_start_year=2017,
                            reform=reform, data=TAXDATA,

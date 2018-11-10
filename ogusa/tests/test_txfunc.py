@@ -1,5 +1,4 @@
 from ogusa import txfunc
-
 import pytest
 import numpy as np
 import pickle

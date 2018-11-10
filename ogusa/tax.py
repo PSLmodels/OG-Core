@@ -6,6 +6,7 @@ Functions for taxes in the steady state and along the transition path.
 
 # Packages
 import numpy as np
+from ogusa import utils
 
 '''
 ------------------------------------------------------------------------
@@ -14,7 +15,7 @@ import numpy as np
 '''
 
 
-def replacement_rate_vals(nssmat, wss, factor_ss, params):
+def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
     '''
     Calculates replacement rate values for the payroll tax.
     Inputs:
@@ -36,18 +37,21 @@ def replacement_rate_vals(nssmat, wss, factor_ss, params):
                           group
     Returns: theta
     '''
-    e, S, retire = params
+    if j is not None:
+        e = p.e[:, j]
+    else:
+        e = p.e
     # adjust 35 yr work history for any S
-    equiv_35 = int(round((S / 80.0) * 35)) - 1
+    equiv_35 = int(round((p.S / 80.0) * 35)) - 1
     if e.ndim == 2:
         dim2 = e.shape[1]
     else:
         dim2 = 1
-    earnings = (e * (wss * nssmat * factor_ss)).reshape(S, dim2)
+    earnings = (e * (wss * nssmat * factor_ss)).reshape(p.S, dim2)
     # get highest earning 35 years
     highest_35_earn =\
-        (-1.0 * np.sort(-1.0 * earnings[:retire, :], axis=0))[:equiv_35]
-    AIME = highest_35_earn.sum(0) / ((12.0 * (S / 80.0)) * equiv_35)
+        (-1.0 * np.sort(-1.0 * earnings[:p.retire, :], axis=0))[:equiv_35]
+    AIME = highest_35_earn.sum(0) / ((12.0 * (p.S / 80.0)) * equiv_35)
     PIA = np.zeros(dim2)
     # Bins from data for each level of replacement
     for j in range(dim2):
@@ -60,11 +64,11 @@ def replacement_rate_vals(nssmat, wss, factor_ss, params):
     # Set the maximum monthly replacment rate from SS benefits tables
     maxpayment = 3501.00
     PIA[PIA > maxpayment] = maxpayment
-    theta = (PIA * (12.0 * S / 80.0)) / (factor_ss * wss)
+    theta = (PIA * (12.0 * p.S / 80.0)) / (factor_ss * wss)
     return theta
 
 
-def ETR_wealth(b, params):
+def ETR_wealth(b, p):
     '''
     Calculates the effective tax rate on wealth.
     Inputs:
@@ -79,16 +83,11 @@ def ETR_wealth(b, params):
     Returns: tau_w
 
     '''
-    h_wealth, p_wealth, m_wealth = params
-
-    h = h_wealth
-    m = m_wealth
-    p = p_wealth
-    tau_w = p * h * b / (h * b + m)
+    tau_w = (p.p_wealth * p.h_wealth * b) / (p.h_wealth * b + p.m_wealth)
     return tau_w
 
 
-def MTR_wealth(b, params):
+def MTR_wealth(b, p):
     '''
     Calculates the marginal tax rate on wealth from the wealth tax.
     Inputs:
@@ -103,16 +102,12 @@ def MTR_wealth(b, params):
                                      wealth tax
     Returns: tau_w_prime
     '''
-    h_wealth, p_wealth, m_wealth = params
-
-    h = h_wealth
-    m = m_wealth
-    p = p_wealth
-    tau_prime = h * m * p / (b * h + m) ** 2
+    tau_prime = (p.h_wealth * p.m_wealth * p.p_wealth/
+                 (b * p.h_wealth + p.m_wealth) ** 2)
     return tau_prime
 
 
-def ETR_income(r, w, b, n, factor, params):
+def ETR_income(r, w, b, n, factor, e, etr_params, p):
     '''
     --------------------------------------------------------------------
     Calculates effective personal income tax rate.
@@ -159,8 +154,6 @@ def ETR_income(r, w, b, n, factor, params):
     RETURNS: tau
     --------------------------------------------------------------------
     '''
-    e, etr_params, tax_func_type = params
-
     X = (w * e * n) * factor
     Y = (r * b) * factor
     X2 = X ** 2
@@ -168,34 +161,34 @@ def ETR_income(r, w, b, n, factor, params):
     I = X + Y
     I2 = I ** 2
 
-    if tax_func_type == 'GS':
-        phi0 = etr_params[..., 0]
-        phi1 = etr_params[..., 1]
-        phi2 = etr_params[..., 2]
+    if p.tax_func_type == 'GS':
+        phi0 = np.squeeze(etr_params[..., 0])
+        phi1 = np.squeeze(etr_params[..., 1])
+        phi2 = np.squeeze(etr_params[..., 2])
         tau = (phi0 * (I - ((I ** -phi1) + phi2) ** (-1 / phi1))) / I
-    elif tax_func_type == 'DEP_totalinc':
-        A = etr_params[..., 0]
-        B = etr_params[..., 1]
-        max_I = etr_params[..., 4]
-        min_I = etr_params[..., 5]
-        shift_I = etr_params[..., 8]
-        shift = etr_params[..., 10]
+    elif p.tax_func_type == 'DEP_totalinc':
+        A = np.squeeze(etr_params[..., 0])
+        B = np.squeeze(etr_params[..., 1])
+        max_I = np.squeeze(etr_params[..., 4])
+        min_I = np.squeeze(etr_params[..., 5])
+        shift_I = np.squeeze(etr_params[..., 8])
+        shift = np.squeeze(etr_params[..., 10])
         tau_I = (((max_I - min_I) * (A * I2 + B * I) /
                   (A * I2 + B * I + 1)) + min_I)
         tau = tau_I + shift_I + shift
     else:  # DEP or linear
-        A = etr_params[..., 0]
-        B = etr_params[..., 1]
-        C = etr_params[..., 2]
-        D = etr_params[..., 3]
-        max_x = etr_params[..., 4]
-        min_x = etr_params[..., 5]
-        max_y = etr_params[..., 6]
-        min_y = etr_params[..., 7]
-        shift_x = etr_params[..., 8]
-        shift_y = etr_params[..., 9]
-        shift = etr_params[..., 10]
-        share = etr_params[..., 11]
+        A = np.squeeze(etr_params[..., 0])
+        B = np.squeeze(etr_params[..., 1])
+        C = np.squeeze(etr_params[..., 2])
+        D = np.squeeze(etr_params[..., 3])
+        max_x = np.squeeze(etr_params[..., 4])
+        min_x = np.squeeze(etr_params[..., 5])
+        max_y = np.squeeze(etr_params[..., 6])
+        min_y = np.squeeze(etr_params[..., 7])
+        shift_x = np.squeeze(etr_params[..., 8])
+        shift_y = np.squeeze(etr_params[..., 9])
+        shift = np.squeeze(etr_params[..., 10])
+        share = np.squeeze(etr_params[..., 11])
 
         tau_x = ((max_x - min_x) * (A * X2 + B * X) /
                  (A * X2 + B * X + 1) + min_x)
@@ -207,7 +200,8 @@ def ETR_income(r, w, b, n, factor, params):
     return tau
 
 
-def MTR_income(r, w, b, n, factor, params, mtr_capital):
+def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params,
+               mtr_params, p):
     '''
     --------------------------------------------------------------------
     Generates the marginal tax rate on labor income for households.
@@ -259,8 +253,6 @@ def MTR_income(r, w, b, n, factor, params, mtr_capital):
     RETURNS: tau
     --------------------------------------------------------------------
     '''
-    e, etr_params, mtr_params, tax_func_type, analytical_mtrs = params
-
     X = (w * e * n) * factor
     Y = (r * b) * factor
     X2 = X ** 2
@@ -268,54 +260,54 @@ def MTR_income(r, w, b, n, factor, params, mtr_capital):
     I = X + Y
     I2 = I ** 2
 
-    if tax_func_type == 'GS':
-        if analytical_mtrs:
-            phi0 = etr_params[..., 0]
-            phi1 = etr_params[..., 1]
-            phi2 = etr_params[..., 2]
+    if p.tax_func_type == 'GS':
+        if p.analytical_mtrs:
+            phi0 = np.squeeze(etr_params[..., 0])
+            phi1 = np.squeeze(etr_params[..., 1])
+            phi2 = np.squeeze(etr_params[..., 2])
         else:
-            phi0 = mtr_params[..., 0]
-            phi1 = mtr_params[..., 1]
-            phi2 = mtr_params[..., 2]
+            phi0 = np.squeeze(mtr_params[..., 0])
+            phi1 = np.squeeze(mtr_params[..., 1])
+            phi2 = np.squeeze(mtr_params[..., 2])
         tau = (phi0*(1 - (I ** (-phi1 - 1) * ((I ** -phi1) + phi2)
                           ** ((-1 - phi1) / phi1))))
-    elif tax_func_type == 'DEP_totalinc':
-        if analytical_mtrs:
-            A = etr_params[..., 0]
-            B = etr_params[..., 1]
-            max_I = etr_params[..., 4]
-            min_I = etr_params[..., 5]
-            shift_I = etr_params[..., 8]
-            shift = etr_params[..., 10]
+    elif p.tax_func_type == 'DEP_totalinc':
+        if p.analytical_mtrs:
+            A = np.squeeze(etr_params[..., 0])
+            B = np.squeeze(etr_params[..., 1])
+            max_I = np.squeeze(etr_params[..., 4])
+            min_I = np.squeeze(etr_params[..., 5])
+            shift_I = np.squeeze(etr_params[..., 8])
+            shift = np.squeeze(etr_params[..., 10])
             d_etr = ((max_I - min_I) * ((2 * A * I + B) /
                      ((A * I2 + B * I + 1) ** 2)))
             etr = (((max_I - min_I) * ((A * I2 + B * I) /
                    (A * I2 + B * I + 1)) + min_I) + shift_I + shift)
             tau = (d_etr * I) + (etr)
         else:
-            A = mtr_params[..., 0]
-            B = mtr_params[..., 1]
-            max_I = mtr_params[..., 4]
-            min_I = mtr_params[..., 5]
-            shift_I = mtr_params[..., 8]
-            shift = mtr_params[..., 10]
+            A = np.squeeze(mtr_params[..., 0])
+            B = np.squeeze(mtr_params[..., 1])
+            max_I = np.squeeze(mtr_params[..., 4])
+            min_I = np.squeeze(mtr_params[..., 5])
+            shift_I = np.squeeze(mtr_params[..., 8])
+            shift = np.squeeze(mtr_params[..., 10])
             tau_I = (((max_I - min_I) * (A * I2 + B * I) /
                      (A * I2 + B * I + 1)) + min_I)
             tau = tau_I + shift_I + shift
     else:  # DEP or linear
-        if analytical_mtrs:
-            A = etr_params[..., 0]
-            B = etr_params[..., 1]
-            C = etr_params[..., 2]
-            D = etr_params[..., 3]
-            max_x = etr_params[..., 4]
-            min_x = etr_params[..., 5]
-            max_y = etr_params[..., 6]
-            min_y = etr_params[..., 7]
-            shift_x = etr_params[..., 8]
-            shift_y = etr_params[..., 9]
-            shift = etr_params[..., 10]
-            share = etr_params[..., 11]
+        if p.analytical_mtrs:
+            A = np.squeeze(etr_params[..., 0])
+            B = np.squeeze(etr_params[..., 1])
+            C = np.squeeze(etr_params[..., 2])
+            D = np.squeeze(etr_params[..., 3])
+            max_x = np.squeeze(etr_params[..., 4])
+            min_x = np.squeeze(etr_params[..., 5])
+            max_y = np.squeeze(etr_params[..., 6])
+            min_y = np.squeeze(etr_params[..., 7])
+            shift_x = np.squeeze(etr_params[..., 8])
+            shift_y = np.squeeze(etr_params[..., 9])
+            shift = np.squeeze(etr_params[..., 10])
+            share = np.squeeze(etr_params[..., 11])
 
             tau_x = ((max_x - min_x) * (A * X2 + B * X) /
                      (A * X2 + B * X + 1) + min_x)
@@ -338,18 +330,18 @@ def MTR_income(r, w, b, n, factor, params, mtr_capital):
                          ((tau_y + shift_y) ** (1 - share)))
                 tau = d_etr * I + etr
         else:
-            A = mtr_params[..., 0]
-            B = mtr_params[..., 1]
-            C = mtr_params[..., 2]
-            D = mtr_params[..., 3]
-            max_x = mtr_params[..., 4]
-            min_x = mtr_params[..., 5]
-            max_y = mtr_params[..., 6]
-            min_y = mtr_params[..., 7]
-            shift_x = mtr_params[..., 8]
-            shift_y = mtr_params[..., 9]
-            shift = mtr_params[..., 10]
-            share = mtr_params[..., 11]
+            A = np.squeeze(mtr_params[..., 0])
+            B = np.squeeze(mtr_params[..., 1])
+            C = np.squeeze(mtr_params[..., 2])
+            D = np.squeeze(mtr_params[..., 3])
+            max_x = np.squeeze(mtr_params[..., 4])
+            min_x = np.squeeze(mtr_params[..., 5])
+            max_y = np.squeeze(mtr_params[..., 6])
+            min_y = np.squeeze(mtr_params[..., 7])
+            shift_x = np.squeeze(mtr_params[..., 8])
+            shift_y = np.squeeze(mtr_params[..., 9])
+            shift = np.squeeze(mtr_params[..., 10])
+            share = np.squeeze(mtr_params[..., 11])
 
             tau_x = ((max_x - min_x) * (A * X2 + B * X) /
                      (A * X2 + B * X + 1) + min_x)
@@ -361,7 +353,7 @@ def MTR_income(r, w, b, n, factor, params, mtr_capital):
     return tau
 
 
-def get_biz_tax(w, Y, L, K, params):
+def get_biz_tax(w, Y, L, K, p):
     '''
     Finds total business income tax receipts
     Inputs:
@@ -375,13 +367,12 @@ def get_biz_tax(w, Y, L, K, params):
     Returns: T_H
 
     '''
-
-    tau_b, delta_tau = params
-    business_revenue = tau_b * (Y - w * L) - tau_b * delta_tau * K
+    business_revenue = p.tau_b * (Y - w * L) - p.tau_b * p.delta_tau * K
     return business_revenue
 
 
-def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
+def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
+                e, retire, etr_params, p):
     '''
     Gives net taxes paid values.
     Inputs:
@@ -427,17 +418,19 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
     Returns: total_taxes
 
     '''
-
-    (e, lambdas, method, retire, etr_params, tax_func_type, h_wealth,
-     p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S) = params
+    if j is not None:
+        lambdas = p.lambdas[j]
+    else:
+        lambdas = np.transpose(p.lambdas)
+        if method == 'TPI':
+            r = utils.to_timepath_shape(r, p)
+            w = utils.to_timepath_shape(w, p)
+            T_H = utils.to_timepath_shape(T_H, p)
 
     I = r * b + w * e * n
-    TI_params = (e, etr_params, tax_func_type)
-    T_I = ETR_income(r, w, b, n, factor, TI_params) * I
-
-    T_P = tau_payroll * w * e * n
-    TW_params = (h_wealth, p_wealth, m_wealth)
-    T_W = ETR_wealth(b, TW_params) * b
+    T_I = ETR_income(r, w, b, n, factor, e, etr_params, p) * I
+    T_P = p.tau_payroll * w * e * n
+    T_W = ETR_wealth(b, p) * b
 
     if method == 'SS':
         # Depending on if we are looking at b_s or b_s+1, the
@@ -448,27 +441,26 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, j, shift, params):
             T_P[retire:] -= theta * w
         else:
             T_P[retire - 1:] -= theta * w
-        T_BQ = tau_bq * BQ / lambdas
+        T_BQ = p.tau_bq * (BQ / lambdas)
     elif method == 'TPI':
-        if shift is False:
+        if not shift:
             # retireTPI is different from retire, because in TPI we are
             # counting backwards with different length lists.  This will
             # always be the correct location of retirement, depending
             # on the shape of the lists.
-            retireTPI = (retire - S)
+            retireTPI = (retire - p.S)
         else:
-            retireTPI = (retire - 1 - S)
+            retireTPI = (retire - 1 - p.S)
         if len(b.shape) != 3:
             T_P[retireTPI:] -= theta[j] * w[retireTPI:]
-            T_BQ = tau_bq[j] * BQ / lambdas
         else:
-            T_P[:, retire:, :] -= theta.reshape(1, 1, J) * w[:, retire:, :]
-            T_BQ = tau_bq.reshape(1, 1, J) * BQ / lambdas
+            T_P[:, retire:, :] -= (theta.reshape(1, 1, p.J) * w)
+        T_BQ = p.tau_bq * BQ / lambdas
     elif method == 'TPI_scalar':
         # The above methods won't work if scalars are used.  This option
         # is only called by the SS_TPI_firstdoughnutring function in TPI.
-        T_P -= theta[j] * w
-        T_BQ = tau_bq[j] * BQ / lambdas
+        T_P -= theta * w
+        T_BQ = p.tau_bq * BQ / lambdas
     total_tax = T_I + T_P + T_BQ + T_W - T_H
 
     return total_tax

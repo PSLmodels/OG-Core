@@ -466,7 +466,8 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
     OBJECTS CREATED WITHIN FUNCTION:
     thresh      = [S,BW] array, threshold values for SSE before consider
                    tax function outlier
-    sse_big_mat = [S,BW] array, indicators of weither tax function is outlier
+    sse_big_mat = [S,BW] array, indicators of weither tax function is
+                  outlier
     RETURNS: sse_big_mat
     --------------------------------------------------------------------
     '''
@@ -1068,11 +1069,13 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
     # SE income may be negative
     data_orig['MTR labor income'] = \
         (data_orig['MTR wage income'] * (data_orig['Wage income'] /
-                                  (data_orig['Wage income'].abs() +
-                                   data_orig['SE income'].abs())) +
-         data_orig['MTR SE income'] * (data_orig['SE income'].abs() /
-                                       (data_orig['Wage income'].abs() +
-                                        data_orig['SE income'].abs())))
+                                         (data_orig['Wage income'].abs()
+                                          +
+                                          data_orig['SE income'].abs()))
+         + data_orig['MTR SE income'] * (data_orig['SE income'].abs() /
+                                         (data_orig['Wage income'].abs()
+                                          +
+                                          data_orig['SE income'].abs())))
     data = data_orig[['Age', 'MTR labor income', 'MTR capital income',
                       'Total labor income', 'Total capital income',
                       'Adjusted total income', 'ETR', 'Weights']]
@@ -1555,7 +1558,7 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
                                    analytical_mtrs, desc_data,
                                    graph_data, graph_est, output_dir,
                                    numparams, tpers))
-    results = compute(*lazy_values, get=dask.multiprocessing.get,
+    results = compute(*lazy_values, scheduler=dask.multiprocessing.get,
                       num_workers=num_workers)
 
     # for i, result in results.items():
@@ -1772,10 +1775,10 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
     if baseline:
         baseline_pckl = (tx_func_est_path or
                          "TxFuncEst_baseline{}.pkl".format(guid))
-        pkl_path = os.path.join(TAX_ESTIMATE_PATH, baseline_pckl)
+        pkl_path = os.path.join(baseline_pckl)
     else:
         policy_pckl = (tx_func_est_path or
                        "TxFuncEst_policy{}.pkl".format(guid))
-        pkl_path = os.path.join(TAX_ESTIMATE_PATH, policy_pckl)
+        pkl_path = os.path.join(policy_pckl)
 
     pickle.dump(dict_params, open(pkl_path, "wb"))
