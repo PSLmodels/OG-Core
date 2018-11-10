@@ -1,8 +1,6 @@
 from ogusa.macro_output import dump_diff_output
 from ogusa.utils import safe_read_pickle
-import matplotlib.pyplot as plt
 import numpy as np
-import pickle
 import pytest
 import os
 
@@ -21,18 +19,18 @@ REFORM = os.path.join(CURDIR, 'OUTPUT_REFORM_{ref_idx}')
 def macro_outputs(request):
     (pct_changes,
         baseline_macros,
-        policy_macros) = dump_diff_output(BASELINE,
-                                          REFORM.format(ref_idx=request.param))
+        policy_macros) = dump_diff_output(
+            BASELINE, REFORM.format(ref_idx=request.param))
     (reg_pct_changes,
         reg_baseline_macros,
-        reg_policy_macros) = dump_diff_output(REG_BASELINE,
-                                              REG_REFORM.format(ref_idx=request.param))
+        reg_policy_macros) = dump_diff_output(
+            REG_BASELINE, REG_REFORM.format(ref_idx=request.param))
 
-    return {"new":{
-                   "pct_changes": pct_changes,
-                   "baseline_macros": baseline_macros,
-                   "policy_macros": policy_macros
-                  },
+    return {"new": {
+                    "pct_changes": pct_changes,
+                    "baseline_macros": baseline_macros,
+                    "policy_macros": policy_macros
+                   },
             "reg": {
                     "pct_changes": reg_pct_changes,
                     "baseline_macros": reg_baseline_macros,
@@ -58,21 +56,21 @@ def test_macro_output(macro_outputs, macro_var_idx):
     assert np.allclose(
         macro_outputs["new"]["pct_changes"][macro_var_idx, :],
         macro_outputs["reg"]["pct_changes"][macro_var_idx, :],
-        atol=0.0, rtol=0.001
+        atol=0.001, rtol=0.001
     )
 
 
 @pytest.fixture(scope="module", params=REF_IDXS + ["baseline"])
 def tpi_output(request):
-    def get_tpi_output(path):
-        return safe_read_pickle(path + "/TPI/TPI_vars.pkl")
-
     ref_idx = request.param
     if ref_idx == "baseline":
-        return (get_tpi_output(REG_BASELINE), get_tpi_output(BASELINE))
+        return (safe_read_pickle(REG_BASELINE + "/TPI/TPI_vars.pkl"),
+                safe_read_pickle(BASELINE + "/TPI/TPI_vars.pkl"))
     else:
-        return (get_tpi_output(path=REG_REFORM.format(ref_idx=request.param)),
-                get_tpi_output(path=REFORM.format(ref_idx=request.param)))
+        return (safe_read_pickle(REG_REFORM.format(ref_idx=request.param)
+                                 + "/TPI/TPI_vars.pkl"),
+                safe_read_pickle(REFORM.format(ref_idx=request.param)
+                                 + "/TPI/TPI_vars.pkl"))
 
 
 TPI_VARS = ['C', 'D', 'G', 'REVENUE', 'I', 'K', 'tax_path', 'L',
@@ -92,20 +90,17 @@ def test_tpi_vars(tpi_output, tpi_var):
     """
     reg = tpi_output[0][tpi_var]
     new = tpi_output[1][tpi_var]
-    assert np.allclose(reg, new, atol=0.0, rtol=0.001)
+    assert np.allclose(reg, new, atol=0.001, rtol=0.001)
 
 
 @pytest.fixture(scope="module", params=REF_IDXS + ["baseline"])
 def txfunc_output(request):
-    def get_txfunc_output(path):
-        return safe_read_pickle(path)
-
     ref_idx = request.param
     if ref_idx == "baseline":
         reg_path = REG_BASELINE + "/TxFuncEst_{idx}.pkl".format(idx=ref_idx)
         path = BASELINE + "/TxFuncEst_{idx}.pkl".format(idx=ref_idx)
 
-        return (get_txfunc_output(reg_path), get_txfunc_output(path))
+        return (safe_read_pickle(reg_path), safe_read_pickle(path))
 
     else:
         reg_path = (REG_REFORM.format(ref_idx=ref_idx) +
@@ -113,7 +108,7 @@ def txfunc_output(request):
         path = (REFORM.format(ref_idx=ref_idx) +
                 "/TxFuncEst_policy{idx}.pkl".format(idx=ref_idx))
 
-        return (get_txfunc_output(reg_path), get_txfunc_output(path))
+        return (safe_read_pickle(reg_path), safe_read_pickle(path))
 
 
 TXFUNC_VARS = ['tfunc_mtrx_params_S', 'tfunc_avg_etr',
@@ -128,11 +123,42 @@ TXFUNC_VARS = ['tfunc_mtrx_params_S', 'tfunc_avg_etr',
 def test_txfunc_vars(txfunc_output, txfunc_var):
     """
     Compare tax function variables
-
     txfunc_output: output read from TxFuncEst_*.pkl
                    created in txfunc.tax_func_estimate
     txfunc_var: tax function output variable from TXFUNC_VARS
     """
     reg = txfunc_output[0][txfunc_var]
     new = txfunc_output[1][txfunc_var]
-    assert np.allclose(reg, new, atol=0.0, rtol=0.001)
+    assert np.allclose(reg, new, atol=0.001, rtol=0.001)
+
+
+@pytest.fixture(scope="module", params=REF_IDXS + ["baseline"])
+def parameter_read(request):
+    ref_idx = request.param
+    if ref_idx == "baseline":
+        return (safe_read_pickle(REG_BASELINE + "/model_params.pkl"),
+                safe_read_pickle(BASELINE + "/model_params.pkl"))
+    else:
+        return (safe_read_pickle(REG_REFORM.format(ref_idx=request.param)
+                                 + "/model_params.pkl"),
+                safe_read_pickle(REFORM.format(ref_idx=request.param)
+                                 + "/model_params.pkl"))
+
+
+@pytest.mark.regression
+def test_parameters_same(parameter_read):
+    reg = parameter_read[0]
+    new = parameter_read[1]
+    for k, v in reg.items():
+        print('Paramater = ', k)
+        try:
+            print('Diff in ', k, ' = ',
+                  np.absolute(v - np.squeeze(new.__dict__[k])).max())
+            assert(np.allclose(v, np.squeeze(new.__dict__[k])))
+        except KeyError:
+            print(k, ' is not in the parameters class')
+        except TypeError:
+            print('Master value = ', v, ' Dev value = ', new.__dict__[k])
+            assert(v == new.__dict__[k])
+        except ValueError:
+            pass

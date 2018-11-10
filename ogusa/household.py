@@ -46,7 +46,7 @@ def marg_ut_cons(c, sigma):
     return output
 
 
-def marg_ut_labor(n, params):
+def marg_ut_labor(n, chi_n, p):
     '''
     Computation of marginal disutility of labor.
     Inputs:
@@ -61,50 +61,47 @@ def marg_ut_labor(n, params):
         output = [T,S,J] array, marginal disutility of labor supply
     Returns: output
     '''
-    b_ellipse, upsilon, ltilde, chi_n = params
-
-    b_ellip = b_ellipse
     nvec = n
     if np.ndim(nvec) == 0:
         nvec = np.array([nvec])
     eps_low = 0.000001
-    eps_high = ltilde - 0.000001
+    eps_high = p.ltilde - 0.000001
     nvec_low = nvec < eps_low
     nvec_high = nvec > eps_high
     nvec_uncstr = np.logical_and(~nvec_low, ~nvec_high)
     MDU_n = np.zeros(nvec.shape)
     MDU_n[nvec_uncstr] = (
-        (b_ellip / ltilde) *
-        ((nvec[nvec_uncstr] / ltilde) ** (upsilon - 1)) *
-        ((1 - ((nvec[nvec_uncstr] / ltilde) ** upsilon)) **
-         ((1 - upsilon) / upsilon)))
-    b2 = (0.5 * b_ellip * (ltilde ** (-upsilon)) * (upsilon - 1) *
-          (eps_low ** (upsilon - 2)) *
-          ((1 - ((eps_low / ltilde) ** upsilon)) **
-          ((1 - upsilon) / upsilon)) *
-          (1 + ((eps_low / ltilde) ** upsilon) *
-          ((1 - ((eps_low / ltilde) ** upsilon)) ** (-1))))
-    b1 = ((b_ellip / ltilde) * ((eps_low / ltilde) ** (upsilon - 1)) *
-          ((1 - ((eps_low / ltilde) ** upsilon)) **
-          ((1 - upsilon) / upsilon)) - (2 * b2 * eps_low))
+        (p.b_ellipse / p.ltilde) *
+        ((nvec[nvec_uncstr] / p.ltilde) ** (p.upsilon - 1)) *
+        ((1 - ((nvec[nvec_uncstr] / p.ltilde) ** p.upsilon)) **
+         ((1 - p.upsilon) / p.upsilon)))
+    b2 = (0.5 * p.b_ellipse * (p.ltilde ** (-p.upsilon)) * (p.upsilon - 1) *
+          (eps_low ** (p.upsilon - 2)) *
+          ((1 - ((eps_low / p.ltilde) ** p.upsilon)) **
+          ((1 - p.upsilon) / p.upsilon)) *
+          (1 + ((eps_low / p.ltilde) ** p.upsilon) *
+          ((1 - ((eps_low / p.ltilde) ** p.upsilon)) ** (-1))))
+    b1 = ((p.b_ellipse / p.ltilde) * ((eps_low / p.ltilde) **
+                                      (p.upsilon - 1)) *
+          ((1 - ((eps_low / p.ltilde) ** p.upsilon)) **
+          ((1 - p.upsilon) / p.upsilon)) - (2 * b2 * eps_low))
     MDU_n[nvec_low] = 2 * b2 * nvec[nvec_low] + b1
-    d2 = (0.5 * b_ellip * (ltilde ** (-upsilon)) * (upsilon - 1) *
-          (eps_high ** (upsilon - 2)) *
-          ((1 - ((eps_high / ltilde) ** upsilon)) **
-          ((1 - upsilon) / upsilon)) *
-          (1 + ((eps_high / ltilde) ** upsilon) *
-          ((1 - ((eps_high / ltilde) ** upsilon)) ** (-1))))
-    d1 = ((b_ellip / ltilde) * ((eps_high / ltilde) **
-          (upsilon - 1)) * ((1 - ((eps_high / ltilde) ** upsilon)) **
-          ((1 - upsilon) / upsilon)) - (2 * d2 * eps_high))
+    d2 = (0.5 * p.b_ellipse * (p.ltilde ** (-p.upsilon)) * (p.upsilon - 1) *
+          (eps_high ** (p.upsilon - 2)) *
+          ((1 - ((eps_high / p.ltilde) ** p.upsilon)) **
+          ((1 - p.upsilon) / p.upsilon)) *
+          (1 + ((eps_high / p.ltilde) ** p.upsilon) *
+          ((1 - ((eps_high / p.ltilde) ** p.upsilon)) ** (-1))))
+    d1 = ((p.b_ellipse / p.ltilde) * ((eps_high / p.ltilde) **
+          (p.upsilon - 1)) * ((1 - ((eps_high / p.ltilde) ** p.upsilon)) **
+          ((1 - p.upsilon) / p.upsilon)) - (2 * d2 * eps_high))
     MDU_n[nvec_high] = 2 * d2 * nvec[nvec_high] + d1
-    output = MDU_n*chi_n
+    output = MDU_n * np.squeeze(chi_n)
     output = np.squeeze(output)
-
     return output
 
 
-def get_cons(r, w, b, b_splus1, n, BQ, net_tax, params):
+def get_cons(r, w, b, b_splus1, n, BQ, net_tax, e, j, p):
     '''
     Calculation of househld consumption.
 
@@ -131,15 +128,17 @@ def get_cons(r, w, b, b_splus1, n, BQ, net_tax, params):
 
     Returns: cons
     '''
-    e, lambdas, g_y = params
-
+    if j is not None:
+        lambdas = p.lambdas[j]
+    else:
+        lambdas = np.transpose(p.lambdas)
     cons = ((1 + r) * b + w * e * n + BQ / lambdas - b_splus1 *
-            np.exp(g_y) - net_tax)
+            np.exp(p.g_y) - net_tax)
     return cons
 
 
-def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H,
-                params):
+def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
+                e, rho, retire, etr_params, mtry_params, j, p, method):
     '''
     Computes Euler errors for the FOC for savings in the steady state.
     This function is usually looped through over J, so it does one
@@ -206,79 +205,35 @@ def FOC_savings(r, w, b, b_splus1, b_splus2, n, BQ, factor, T_H,
 
     Returns: euler
     '''
-    (e, sigma, beta, g_y, chi_b, theta, tau_bq, rho, lambdas, j, J, S,
-     tax_func_type, analytical_mtrs, etr_params, mtry_params, h_wealth,
-     p_wealth, m_wealth, tau_payroll, retire, method) = params
+    if j is not None:
+        chi_b = p.chi_b[j]
+    else:
+        chi_b = p.chi_b
 
-    # In order to not have 2 savings euler equations (one that solves
-    # the first S-1 equations, and one that solves the last one), we
-    # combine them.  In order to do this, we have to compute a
-    # consumption term in period t+1, which requires us to have a shifted
-    # e and n matrix.  We append a zero on the end of both of these so
-    # they will be the right size.  We could append any value to them,
-    # since in the euler equation, the coefficient on the marginal
-    # utility of consumption for this term will be zero (since rho is
-    # one).
-    e_extended = np.array(list(e) + [0])
-    n_extended = np.array(list(n) + [0])
-    etr_params_extended = np.append(etr_params,
-                                    np.reshape(etr_params[-1, :],
-                                               (1, etr_params.shape[1])),
-                                    axis=0)[1:, :]
-    mtry_params_extended = np.append(mtry_params,
-                                     np.reshape(mtry_params[-1, :],
-                                                (1, mtry_params.shape[1])),
-                                     axis=0)[1:, :]
-    if method == 'TPI':
-        r_extended = np.append(r, r[-1])
-        w_extended = np.append(w, w[-1])
-        BQ_extended = np.append(BQ, BQ[-1])
-        T_H_extended = np.append(T_H, T_H[-1])
-    elif method == 'SS':
-        r_extended = np.array([r, r])
-        w_extended = np.array([w, w])
-        BQ_extended = np.array([BQ, BQ])
-        T_H_extended = np.array([T_H, T_H])
-
-    tax1_params = (e, lambdas, method, retire, etr_params,
-                   tax_func_type, h_wealth, p_wealth, m_wealth,
-                   tau_payroll, theta, tau_bq, J, S)
-    tax1 = tax.total_taxes(r, w, b, n, BQ, factor, T_H, j, False,
-                           tax1_params)
-    tax2_params = (e_extended[1:], lambdas, method, retire,
-                   etr_params_extended, tax_func_type, h_wealth,
-                   p_wealth, m_wealth, tau_payroll, theta, tau_bq, J, S)
-    tax2 = tax.total_taxes(r_extended[1:], w_extended[1:], b_splus1,
-                           n_extended[1:], BQ_extended[1:], factor,
-                           T_H_extended[1:], j, True, tax2_params)
-    cons1_params = (e, lambdas, g_y)
-    cons1 = get_cons(r, w, b, b_splus1, n, BQ, tax1, cons1_params)
-    cons2_params = (e_extended[1:], lambdas, g_y)
-    cons2 = get_cons(r_extended[1:], w_extended[1:], b_splus1, b_splus2,
-                     n_extended[1:], BQ_extended[1:], tax2,
-                     cons2_params)
-    cons2[-1] = 0.01  # set to small positive number to avoid exception
-    # errors when negative b/c this period value doesn't matter -
-    # it's consumption after the last period of life
-    mtr_cap_params = (e_extended[1:], etr_params_extended,
-                      mtry_params_extended, tax_func_type,
-                      analytical_mtrs)
-    deriv = ((1 + r_extended[1:]) - r_extended[1:] *
-             (tax.MTR_income(r_extended[1:], w_extended[1:], b_splus1,
-                              n_extended[1:], factor, mtr_cap_params,
-                              True)))
-
-    savings_ut = (rho * np.exp(-sigma * g_y) * chi_b * b_splus1 **
-                  (-sigma))
-
-    euler_error = (marg_ut_cons(cons1, sigma) - beta * (1 - rho) *
-                   deriv * marg_ut_cons(cons2, sigma) *
-                   np.exp(-sigma * g_y) - savings_ut)
+    taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
+                            method, e, retire, etr_params, p)
+    cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, e, j, p)
+    deriv = ((1 + r) - r * (tax.MTR_income(r, w, b, n, factor, True, e,
+                                           etr_params, mtry_params, p)))
+    savings_ut = (rho * np.exp(-p.sigma * p.g_y) * chi_b *
+                  b_splus1 ** (-p.sigma))
+    euler_error = np.zeros_like(n)
+    if n.shape[0] > 1:
+        euler_error[:-1] = (marg_ut_cons(cons[:-1], p.sigma) - p.beta *
+                            (1 - rho[:-1]) * deriv[1:] *
+                            marg_ut_cons(cons[1:], p.sigma) *
+                            np.exp(-p.sigma * p.g_y) - savings_ut[:-1])
+        euler_error[-1] = (marg_ut_cons(cons[-1], p.sigma) -
+                           savings_ut[-1])
+    else:
+        euler_error[-1] = (marg_ut_cons(cons[-1], p.sigma) -
+                           savings_ut[-1])
 
     return euler_error
 
 
-def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, params):
+def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, chi_n, e,
+              retire, etr_params, mtrx_params, j, p, method):
     '''
     Computes Euler errors for the FOC for labor supply in the steady
     state.  This function is usually looped through over J, so it does
@@ -343,26 +298,14 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, params):
 
     Returns: euler
     '''
-    (e, sigma, g_y, theta, b_ellipse, upsilon, chi_n, ltilde, tau_bq,
-     lambdas, j, J, S, tax_func_type, analytical_mtrs, etr_params,
-     mtrx_params, h_wealth, p_wealth, m_wealth, tau_payroll, retire,
-     method) = params
-
-    tax1_params = (e, lambdas, method, retire, etr_params,
-                   tax_func_type, h_wealth, p_wealth, m_wealth,
-                   tau_payroll, theta, tau_bq, J, S)
-    tax1 = tax.total_taxes(r, w, b, n, BQ, factor, T_H, j, False,
-                           tax1_params)
-    cons_params = (e, lambdas, g_y)
-    cons = get_cons(r, w, b, b_splus1, n, BQ, tax1, cons_params)
-    mtr_lab_params = (e, etr_params, mtrx_params, tax_func_type,
-                      analytical_mtrs)
-    deriv = (1 - tau_payroll - tax.MTR_income(r, w, b, n, factor,
-                                             mtr_lab_params, False))
-
-    lab_params = (b_ellipse, upsilon, ltilde, chi_n)
-    FOC_error = (marg_ut_cons(cons, sigma) * w * deriv * e -
-                 marg_ut_labor(n, lab_params))
+    taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
+                            method, e, retire, etr_params, p)
+    cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, e, j, p)
+    deriv = (1 - p.tau_payroll - tax.MTR_income(r, w, b, n, factor,
+                                                False, e, etr_params,
+                                                mtrx_params, p))
+    FOC_error = (marg_ut_cons(cons, p.sigma) * w * deriv * e -
+                 marg_ut_labor(n, chi_n, p))
 
     return FOC_error
 

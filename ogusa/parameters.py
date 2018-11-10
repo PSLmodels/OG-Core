@@ -1,529 +1,612 @@
-from __future__ import print_function
-'''
-------------------------------------------------------------------------
-This file sets parameters for the OG-USA model run.
-
-This module calls the following other module(s):
-    demographics.py
-    income.py
-    txfunc.py
-    elliptical_u_est.py
-
-This module defines the following function(s):
-    read_parameter_metadata()
-    read_tax_func_estimate()
-    get_parameters_from_file()
-    get_parameters()
-    get_reduced_parameters()
-    get_full_parameters()
-------------------------------------------------------------------------
-'''
-
-'''
-------------------------------------------------------------------------
-Import Packages
-------------------------------------------------------------------------
-'''
-import os
 import json
+import os
+import collections as collect
+import six
+import re
 import numpy as np
-import scipy.interpolate as si
-from .  import demographics as dem
-from .  import income as inc
 import pickle
-from . import txfunc
-from . import elliptical_u_est as ellip
-import matplotlib.pyplot as plt
-from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR
+import scipy.interpolate as si
+
+# import ogusa
+from ogusa.parametersbase import ParametersBase
+from ogusa import elliptical_u_est
+from ogusa import demographics
+from ogusa import income
+from ogusa import txfunc
+from ogusa.utils import REFORM_DIR, BASELINE_DIR, TC_LAST_YEAR
+# from ogusa import elliptical_u_est
 
 
+class Specifications(ParametersBase):
+    """
+    Inherits ParametersBase. Implements the PolicyBrain API for OG-USA
+    """
+    DEFAULTS_FILENAME = 'default_parameters.json'
 
-'''
-------------------------------------------------------------------------
-Set paths, define user modifiable parameters
-------------------------------------------------------------------------
-'''
-PARAMS_FILE = os.path.join(os.path.dirname(__file__), 'default_full_parameters.json')
-PARAMS_FILE_METADATA_NAME = 'parameters_metadata.json'
-PARAMS_FILE_METADATA_PATH = os.path.join(os.path.dirname(__file__), PARAMS_FILE_METADATA_NAME)
-USER_MODIFIABLE_PARAMS = ['g_y_annual', 'frisch', 'world_int_rate']
-DEFAULT_WORLD_INT_RATE = 0.04
+    def __init__(self,
+                 run_micro=False, output_base=BASELINE_DIR,
+                 baseline_dir=BASELINE_DIR, test=False, time_path=True,
+                 baseline=False, constant_rates=False,
+                 tax_func_type='DEP', analytical_mtrs=False,
+                 age_specific=False, reform={}, guid='', data='cps',
+                 flag_graphs=False, client=None, num_workers=1):
+        super(Specifications, self).__init__()
 
+        # reads in default parameter values
+        self._vals = self._params_dict_from_json_file()
 
-def read_parameter_metadata():
-    '''
-    --------------------------------------------------------------------
-    This function reads in parameter metadata
-    --------------------------------------------------------------------
+        self.output_base = output_base
+        self.baseline_dir = baseline_dir
+        self.test = test
+        self.time_path = time_path
+        self.baseline = baseline
+        self.reform = reform
+        self.guid = guid
+        self.data = data
+        self.flag_graphs = flag_graphs
+        self.num_workers = num_workers
 
-    INPUTS: None
+        # does cheap calculations to find parameter values
+        self.initialize()
+        # put anything in kwargs that is also in json file below
+        # initialize()
+        self.constant_rates = constant_rates
+        self.tax_func_type = tax_func_type
+        self.analytical_mtrs = analytical_mtrs
+        self.age_specific = age_specific
 
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
-    /PARAMS_FILE_METADATA_PATH/ = json file with metadata
+        # does more costly tax function estimation
+        if run_micro:
+            self.get_tax_function_parameters(self, client, run_micro=True)
 
-    OBJECTS CREATED WITHIN FUNCTION:
-    params_dict = dictionary of metadata
+        self.parameter_warnings = ''
+        self.parameter_errors = ''
+        self._ignore_errors = False
 
-    RETURNS: params_dict
-    --------------------------------------------------------------------
-    '''
-    if os.path.exists(PARAMS_FILE_METADATA_PATH):
-        with open(PARAMS_FILE_METADATA_PATH) as pfile:
-            params_dict = json.load(pfile)
-    else:
-        from pkg_resources import resource_stream, Requirement
-        path_in_egg = os.path.join('ogusa', PARAMS_FILE_METADATA_NAME)
-        buf = resource_stream(Requirement.parse('ogusa'), path_in_egg)
-        as_bytes = buf.read()
-        as_string = as_bytes.decode("utf-8")
-        params_dict = json.loads(as_string)
+    def initialize(self):
+        """
+        ParametersBase reads JSON file and sets attributes to self
+        Next call self.compute_default_params for further initialization
+        Parameters:
+        -----------
+        run_micro: boolean that indicates whether to estimate tax funtions
+                   from microsim model
+        """
+        for name, data in self._vals.items():
+            intg_val = data.get('integer_value', None)
+            bool_val = data.get('boolean_value', None)
+            string_val = data.get('string_value', None)
+            values = data.get('value', None)
+            setattr(self, name, self._expand_array(values, intg_val,
+                                                   bool_val, string_val))
+        if self.test:
+            # Make smaller statespace for testing
+            self.S = int(40)
+            self.lambdas = np.array([0.6, 0.4]).reshape(2, 1)
+            self.J = self.lambdas.shape[0]
+            self.maxiter = 35
+            self.mindist_SS = 1e-6
+            self.mindist_TPI = 1e-3
+            self.nu = .4
 
-    return params_dict
+        self.compute_default_params()
 
-
-def read_tax_func_estimate(pickle_path, pickle_file):
-    '''
-    --------------------------------------------------------------------
-    This function reads in tax function parameters
-    --------------------------------------------------------------------
-
-    INPUTS:
-    pickle_path = string, path to pickle with tax function parameter estimates
-    pickle_file = string, name of pickle file with tax function parmaeter estimates
-
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
-    /picklepath/ = pickle file with dictionary of tax function estimated parameters
-
-    OBJECTS CREATED WITHIN FUNCTION:
-    dict_params = dictionary, contains numpy arrays of tax function estimates
-
-    RETURNS: dict_params
-    --------------------------------------------------------------------
-    '''
-    if os.path.exists(pickle_path):
-        print('pickle path exists')
-        with open(pickle_path, 'rb') as pfile:
-            try:
-                dict_params = pickle.load(pfile, encoding='latin1')
-            except TypeError:
-                dict_params = pickle.load(pfile)
-    else:
-        from pkg_resources import resource_stream, Requirement
-        path_in_egg = pickle_file
-        pkl_path = os.path.join(os.path.dirname(__file__), '..', path_in_egg)
-        with open(pkl_path, 'rb') as pfile:
-            try:
-                dict_params = pickle.load(pfile, encoding='latin1')
-            except TypeError:
-                dict_params = pickle.load(pfile)
-
-    return dict_params
-
-
-def get_parameters_from_file():
-    '''
-    --------------------------------------------------------------------
-    This function loads the json file with model parameters
-    --------------------------------------------------------------------
-
-    INPUTS: None
-
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
-    /PARAMS_FILE/ = json file with model parameters
-
-    OBJECTS CREATED WITHIN FUNCTION:
-
-    RETURNS: j
-    --------------------------------------------------------------------
-    '''
-    with open(PARAMS_FILE, 'r') as f:
-        j = json.load(f)
-        for key in j:
-            if isinstance(j[key], list):
-                j[key] = np.array(j[key])
-        return j
-
-
-def get_parameters(output_base, reform={}, test=False, baseline=False,
-                   guid='', user_modifiable=False, metadata=False,
-                   run_micro=False, constant_rates=True,
-                   analytical_mtrs=False, tax_func_type='DEP',
-                   age_specific=False, start_year=DEFAULT_START_YEAR,
-                   data=None, client=None, num_workers=1, **small_open):
-
-    '''
-    --------------------------------------------------------------------
-    This function returns the model parameters.
-    --------------------------------------------------------------------
-
-    INPUTS:
-    test            = boolean, =True if run test version with smaller state space
-    baseline        = boolean, =True if baseline tax policy, =False if reform
-    guid            = string, id for reform run
-    user_modifiable = boolean, =True if allow user modifiable parameters
-    metadata        = boolean, =True if use metadata file for parameter
-                       values (rather than what is entered in parameters below)
-    small_open      = dict or None/False - parameters for small open economy
-                      (currently only "world_int_rate")
-
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
-    read_tax_func_estimate()
-    ellip.estimation()
-    read_parameter_metadata()
-
-    OBJECTS CREATED WITHIN FUNCTION:
-    See parameters defined above
-    allvars = dictionary, dictionary with all parameters defined in this function
-
-    RETURNS: allvars, dictionary with model parameters
-    --------------------------------------------------------------------
-    '''
-    '''
-    ------------------------------------------------------------------------
-    Parameters
-    ------------------------------------------------------------------------
-    Model Parameters:
-    ------------------------------------------------------------------------
-    S            = integer, number of economically active periods an individual lives
-    J            = integer, number of different ability groups
-    T            = integer, number of time periods until steady state is reached
-    BW           = integer, number of time periods in the budget window
-    lambdas      = [J,] vector, percentiles for ability groups
-    imm_rates    = [J,T+S] array, immigration rates by age and year
-    starting_age = integer, age agents enter population
-    ending age   = integer, maximum age agents can live until
-    E            = integer, age agents become economically active
-    beta_annual  = scalar, discount factor as an annual rate
-    beta         = scalar, discount factor for model period
-    sigma        = scalar, coefficient of relative risk aversion
-    alpha        = scalar, capital share of income
-    Z            = scalar, total factor productivity parameter in firms' production
-                   function
-    delta_annual = scalar, depreciation rate as an annual rate
-    delta        = scalar, depreciation rate for model period
-    ltilde       = scalar, measure of time each individual is endowed with each
-                   period
-    g_y_annual   = scalar, annual growth rate of technology
-    g_y          = scalar, growth rate of technology for a model period
-    frisch       = scalar, Frisch elasticity that is used to fit ellipitcal utility
-                   to constant Frisch elasticity function
-    b_ellipse    = scalar, value of b for elliptical fit of utility function
-    k_ellipse    = scalar, value of k for elliptical fit of utility function
-    upsilon      = scalar, value of omega for elliptical fit of utility function
-    ------------------------------------------------------------------------
-    Small Open Economy Parameters:
-    ------------------------------------------------------------------------
-
-    ss_firm_r   = scalar, world interest rate available to firms in the steady state
-    ss_hh_r     = scalar, world interest rate available to households in the steady state
-    tpi_firm_r  = [T+S,] vector, world interest rate (firm). Must be ss_firm_r in last period.
-    tpi_hh_r    = [T+S,] vector, world interest rate (household). Must be ss_firm_r in last period.
-
-    ------------------------------------------------------------------------
-    Fiscal imbalance Parameters:
-    ------------------------------------------------------------------------
-
-    alpha_T          = scalar, share of GDP that goes to transfers.
-    alpha_G          = scalar, share of GDP that goes to gov't spending in early years.
-    tG1             = scalar < t_G2, period at which change government spending rule from alpha_G*Y to glide toward SS debt ratio
-    tG2             = scalar < T, period at which change gov't spending rule with final discrete jump to achieve SS debt ratio
-    debt_ratio_ss    = scalar, steady state debt/GDP.
-
-    ------------------------------------------------------------------------
-    Tax Parameters:
-    ------------------------------------------------------------------------
-    mean_income_data = scalar, mean income from IRS data file used to calibrate income tax
-    etr_params       = [S,BW,#tax params] array, parameters for effective tax rate function
-    mtrx_params      = [S,BW,#tax params] array, parameters for marginal tax rate on
-                        labor income function
-    mtry_params      = [S,BW,#tax params] array, parameters for marginal tax rate on
-                        capital income function
-    h_wealth         = scalar, wealth tax parameter h (scalar)
-    m_wealth         = scalar, wealth tax parameter m (scalar)
-    p_wealth         = scalar, wealth tax parameter p (scalar)
-    tau_bq           = [J,] vector, bequest tax
-    tau_payroll      = scalar, payroll tax rate
-    retire           = integer, age at which individuals eligible for retirement benefits
-    ------------------------------------------------------------------------
-    Simulation Parameters:
-    ------------------------------------------------------------------------
-    MINIMIZER_TOL = scalar, tolerance level for the minimizer in the calibration of chi parameters
-    MINIMIZER_OPTIONS = dictionary, dictionary for options to put into the minimizer, usually
-                        to set a max iteration
-    PLOT_TPI     = boolean, =Ture if plot the path of K as TPI iterates (for debugging purposes)
-    maxiter      = integer, maximum number of iterations that SS and TPI solution methods will undergo
-    mindist_SS   = scalar, tolerance for SS solution
-    mindist_TPI  = scalar, tolerance for TPI solution
-    nu           = scalar, contraction parameter in SS and TPI iteration process
-                   representing the weight on the new distribution
-    flag_graphs  = boolean, =True if produce graphs in demographic, income,
-                   wealth, and labor files (True=graph)
-    chi_b_guess  = [J,] vector, initial guess of \chi^{b}_{j} parameters
-                   (if no calibration occurs, these are the values that will be used for \chi^{b}_{j})
-    chi_n_guess_80 = (80,) vector, initial guess of chi_{n,s} parameters for
-                     80 one-year-period ages from 21 to 100
-    chi_n_guess    = (S,) vector, interpolated initial guess of chi^{n,s}
-                     parameters (if no calibration occurs, these are the
-                     values that will be used
-    age_midp_80    = (80,) vector, midpoints of age bins for 80 one-year-
-                     period ages from 21 to 100 for interpolation
-    chi_n_interp   = function, interpolation function for chi_n_guess
-    newstep        = scalar > 1, duration in years of each life period
-    age_midp_S     = (S,) vector, midpoints of age bins for S one-year-
-                     period ages from 21 to 100 for interpolation
-    ------------------------------------------------------------------------
-    Demographics and Ability variables:
-    ------------------------------------------------------------------------
-    omega        = [T+S,S] array, time path of stationary distribution of economically active population by age
-    g_n_ss       = scalar, steady state population growth rate
-    omega_SS     = [S,] vector, stationary steady state population distribution
-    surv_rate    = [S,] vector, survival rates by age
-    rho          = [S,] vector, mortality rates by age
-    g_n_vector   = [T+S,] vector, growth rate in economically active pop for each period in transition path
-    e            = [S,J] array, normalized effective labor units by age and ability type
-    ------------------------------------------------------------------------
-    '''
-    # Model Parameters
-    if test:
-        # size of state space
-        S = int(40)
-        lambdas = np.array([0.6,0.4])
-        J = lambdas.shape[0]
-        # Simulation Parameters
-        MINIMIZER_TOL = 1e-6
-        MINIMIZER_OPTIONS = {'maxiter': 1}
-        PLOT_TPI = False
-        maxiter = 35
-        mindist_SS = 1e-6
-        mindist_TPI = 1e-3
-        nu = .4
-        flag_graphs = False
-    else:
-        S = int(80)
-        lambdas = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
-        J = lambdas.shape[0]
-        # Simulation Parameters
-        MINIMIZER_TOL = 1e-14
-        MINIMIZER_OPTIONS = None
-        PLOT_TPI = False
-        maxiter = 250
-        mindist_SS = 1e-9
-        mindist_TPI =  1e-5#1e-9
-        nu = .4
-        flag_graphs = False
-
-    # Time parameters
-    T = int(4 * S)
-    BW = int(TC_LAST_YEAR - start_year + 1)
-    print("BW = ", BW, 'start year = ', start_year)
-
-    starting_age = 20
-    ending_age = 100
-    E = int(starting_age * (S / float(ending_age - starting_age)))
-    beta_annual = .96 # Carroll (JME, 2009)
-    beta = beta_annual ** (float(ending_age - starting_age) / S)
-    sigma = 1.5 # value from Attanasio, Banks, Meghir and Weber (JEBS, 1999)
-    alpha = .35
-    gamma = 0.35 # many use 0.33, but many find that capitals share is increasing (e.g. Elsby, Hobijn, and Sahin (BPEA, 2013))
-    epsilon = 1.0#0.6 ##Note: If note =1, then careful w calibration
-    Z = 1.0
-    delta_annual = 0.05 # approximately the value from Kehoe calibration exercise: http://www.econ.umn.edu/~tkehoe/classes/calibration-04.pdf
-    delta = 1 - ((1 - delta_annual) ** (float(ending_age - starting_age) / S))
-    ltilde = 1.0
-    g_y_annual = 0.03
-    g_y = (1 + g_y_annual)**(float(ending_age - starting_age) / S) - 1
-    #   Ellipse parameters
-    frisch = 0.4 # Frisch elasticity consistent with Altonji (JPE, 1996) and Peterman (Econ Inquiry, 2016)
-    b_ellipse, upsilon = ellip.estimation(frisch,ltilde)
-    k_ellipse = 0 # this parameter is just a level shifter in utlitiy - irrelevant for analysis
-
-    # Small Open Economy parameters based on world interest rate. Can introduce a
-    # borrow/lend spread and a time path from t=0 to t=T-1. However, from periods T through
-    # T+S, the steady state rate should hold.
-    world_int_rate = small_open.get('world_int_rate', DEFAULT_WORLD_INT_RATE)
-    ss_firm_r_annual   = world_int_rate
-    ss_hh_r_annual     = ss_firm_r_annual
-    ss_firm_r          = (1 + ss_firm_r_annual) ** (float(ending_age - starting_age) / S) - 1
-    ss_hh_r            = (1 + ss_hh_r_annual)   ** (float(ending_age - starting_age) / S) - 1
-    tpi_firm_r         = np.ones(T+S)*ss_firm_r
-    tpi_hh_r           = np.ones(T+S)*ss_hh_r
-
-    # Fiscal imbalance parameters. These allow government deficits, debt, and savings.
-    tG1                = 20#int(T/4)  # change government spending rule from alpha_G*Y to glide toward SS debt ratio
-    tG2                = int(T*0.8)  # change gov't spending rule with final discrete jump to achieve SS debt ratio
-    alpha_T            = 0.09 # share of GDP that goes to transfers each period. This ratio will hold in later baseline periods & SS.
-    alpha_G            = 0.05  # share of GDP of government spending for periods t<tG1
-    ALPHA_T            = np.ones(T+S)*alpha_T  # Periods can be assigned different %-of-GDP rates for the baseline. Assignment after tG1 is not recommended.
-    ALPHA_G            = np.ones(T)*alpha_G  # Early periods (up to tG1) can be assigned different %-of-GDP rates for the baseline
-
-    # Assign any deviations from constant share of GDP in pre-tG1 ALPHA_T and ALPHA_G in the user dashboard of run_ogusa_serial.
-
-    rho_G              = 0.1  # 0 < rho_G < 1 is transition speed for periods [tG1, tG2-1]. Lower rho_G => slower convergence.
-    debt_ratio_ss      = 0.4  # assumed steady-state debt/GDP ratio. Savings would be a negative number.
-    initial_debt       = 0.59 # first-period debt/GDP ratio. Savings would be a negative number.
-
-    # Business tax parameters
-    tau_b = 0.20 # business income tax rate
-    delta_tau_annual = .027# from B-Tax
-    delta_tau = 1 - ((1 - delta_annual) ** (float(ending_age - starting_age) / S))
-
-    if tG1 > tG2:
-        print('The first government spending rule change date, (', tG1,
-              ') is after the second one (', tG2, ').')
-        err = "Gov't spending rule dates are inconsistent"
-        raise RuntimeError(err)
-    if tG2 > T:
-        print('The second government spending rule change date, (', tG2,
-              ') is after time T (', T, ').')
-        err = "Gov't spending rule dates are inconsistent"
-        raise RuntimeError(err)
-
-    # Income Tax Parameters
-    if baseline:
-        tx_func_est_path = os.path.join(
-            output_base, 'TxFuncEst_baseline{}.pkl'.format(guid),
+    def compute_default_params(self):
+        """
+        Does cheap calculations to return parameter values
+        """
+        # get parameters of elliptical utility function
+        self.b_ellipse, self.upsilon = elliptical_u_est.estimation(
+            self.frisch,
+            self.ltilde
         )
-    else:
-        tx_func_est_path = os.path.join(
-            output_base, 'TxFuncEst_policy{}.pkl'.format(guid),
-        )
-    if run_micro:
-        txfunc.get_tax_func_estimate(BW, S, starting_age, ending_age,
-                                     baseline=baseline,
-                                     analytical_mtrs=analytical_mtrs,
-                                     tax_func_type=tax_func_type,
-                                     age_specific=age_specific,
-                                     start_year=start_year,
-                                     reform=reform, guid=guid,
-                                     tx_func_est_path=tx_func_est_path,
-                                     data=data, client=client,
-                                     num_workers=num_workers)
-    if baseline:
-        baseline_pckl = "TxFuncEst_baseline{}.pkl".format(guid)
-        estimate_file = tx_func_est_path
-        print('using baseline tax parameters', tx_func_est_path)
-        dict_params = read_tax_func_estimate(estimate_file, baseline_pckl)
+        # determine length of budget window from start year and last
+        # year in TC
+        self.BW = int(TC_LAST_YEAR - self.start_year + 1)
+        # Find number of economically active periods of life
+        self.E = int(self.starting_age * (self.S / (self.ending_age -
+                                                    self.starting_age)))
+        # Find rates in model periods from annualized rates
+        self.beta = (self.beta_annual ** ((self.ending_age -
+                                          self.starting_age) / self.S))
+        self.delta = (1 - ((1 - self.delta_annual) **
+                           ((self.ending_age - self.starting_age) / self.S)))
+        self.g_y = ((1 + self.g_y_annual) ** ((self.ending_age -
+                                               self.starting_age) /
+                                              self.S) - 1)
+        self.delta_tau = (1 - ((1 - self.delta_tau_annual) **
+                               ((self.ending_age - self.starting_age) /
+                                self.S)))
+        # open economy parameters
+        self.ss_firm_r_annual = self.world_int_rate
+        self.ss_hh_r_annual = self.ss_firm_r_annual
+        self.ss_firm_r = ((1 + self.ss_firm_r_annual) **
+                          ((self.ending_age - self.starting_age) /
+                           self.S) - 1)
+        self.ss_hh_r = ((1 + self.ss_hh_r_annual) **
+                        ((self.ending_age - self.starting_age) /
+                         self.S) - 1)
+        self.tpi_firm_r = np.ones(self.T+self.S) * self.ss_firm_r
+        self.tpi_hh_r = np.ones(self.T+self.S) * self.ss_hh_r
+        self.tG2 = int(self.T * 0.8)
+        T_shift = np.concatenate((
+            self.T_shifts, np.zeros((self.T + self.S -
+                                     self.T_shifts.size, 1))))
+        G_shift = np.concatenate((
+            self.G_shifts, np.zeros((self.T - self.G_shifts.size, 1))))
+        self.ALPHA_T = (np.ones(self.T + self.S) * self.alpha_T +
+                        np.squeeze(T_shift))
+        self.ALPHA_G = (np.ones(self.T) * self.alpha_G +
+                        np.squeeze(G_shift))
 
-    else:
-        policy_pckl = "TxFuncEst_policy{}.pkl".format(guid)
-        estimate_file = tx_func_est_path
-        print('using policy tax parameters', tx_func_est_path)
-        dict_params = read_tax_func_estimate(estimate_file, policy_pckl)
+        # set period of retirement
+        # SHOULD BE UPDATED TO BE ENTERED AS Retirement age in defaults
+        # then converted to model year here
+        self.retire = np.int(np.round(9.0 * self.S / 16.0) - 1)
 
-    mean_income_data = dict_params['tfunc_avginc'][0]
+        # get population objects
+        (self.omega, self.g_n_ss, self.omega_SS, self.surv_rate,
+         self.rho, self.g_n, self.imm_rates,
+         self.omega_S_preTP) = demographics.get_pop_objs(
+                self.E, self.S, self.T, 1, 100, self.start_year,
+                self.flag_graphs)
 
-    etr_params = dict_params['tfunc_etr_params_S'][:S, :BW, :]
-    mtrx_params = dict_params['tfunc_mtrx_params_S'][:S, :BW, :]
-    mtry_params = dict_params['tfunc_mtry_params_S'][:S, :BW, :]
+        # Interpolate chi_n and create omega_SS_80 if necessary
+        if self.S == 80:
+            self.omega_SS_80 = self.omega_SS
+            self.chi_n = self.chi_n_80
+        elif self.S < 80:
+            self.age_midp_80 = np.linspace(20.5, 99.5, 80)
+            self.chi_n_interp = si.interp1d(self.age_midp_80,
+                                            np.squeeze(self.chi_n_80),
+                                            kind='cubic')
+            self.newstep = 80.0 / self.S
+            self.age_midp_S = np.linspace(20 + 0.5 * self.newstep,
+                                          100 - 0.5 * self.newstep,
+                                          self.S)
+            self.chi_n = self.chi_n_interp(self.age_midp_S)
+            (_, _, self.omega_SS_80, _, _, _, _, _) = \
+                demographics.get_pop_objs(20, 80, 320, 1, 100,
+                                          self.start_year, False)
+        self.e = income.get_e_interp(
+            self.S, self.omega_SS, self.omega_SS_80, self.lambdas,
+            plot=False)
 
-    if constant_rates:
-        print('Using constant rates!')
-        # # Make all ETRs equal the average
-        etr_params = np.zeros(etr_params.shape)
-        etr_params[:, :, 10] = dict_params['tfunc_avg_etr'] # set shift to average rate
+    def get_tax_function_parameters(self, client, run_micro=False):
+        # Income tax parameters
+        if self.baseline:
+            tx_func_est_path = os.path.join(
+                self.output_base, 'TxFuncEst_baseline{}.pkl'.format(self.guid),
+            )
+        else:
+            tx_func_est_path = os.path.join(
+                self.output_base, 'TxFuncEst_policy{}.pkl'.format(self.guid),
+            )
+        if run_micro:
+            txfunc.get_tax_func_estimate(
+                self.BW, self.S, self.starting_age, self.ending_age,
+                self.baseline, self.analytical_mtrs, self.tax_func_type,
+                self.age_specific, self.start_year, self.reform, self.guid,
+                tx_func_est_path, self.data, client, self.num_workers)
+        if self.baseline:
+            baseline_pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
+            estimate_file = tx_func_est_path
+            print('Using baseline tax parameters from ', tx_func_est_path)
+            dict_params = self.read_tax_func_estimate(estimate_file,
+                                                      baseline_pckl)
 
-        # # Make all MTRx equal the average
-        mtrx_params = np.zeros(mtrx_params.shape)
-        mtrx_params[:, :, 10] = dict_params['tfunc_avg_mtrx'] # set shift to average rate
+        else:
+            policy_pckl = "TxFuncEst_policy{}.pkl".format(self.guid)
+            estimate_file = tx_func_est_path
+            print('Using reform policy tax parameters from ', tx_func_est_path)
+            dict_params = self.read_tax_func_estimate(estimate_file,
+                                                      policy_pckl)
 
-        # # Make all MTRy equal the average
-        mtry_params = np.zeros(mtry_params.shape)
-        mtry_params[:, :, 10] = dict_params['tfunc_avg_mtry'] # set shift to average rate
+        self.mean_income_data = dict_params['tfunc_avginc'][0]
 
-    # # Make MTRx depend only on labor income
-    # mtrx_params[:, :, 11] = 1.0 # set share parameter to 1
+        # Reorder indices of tax function and tile for all years after
+        # budget window ends
+        num_etr_params = dict_params['tfunc_etr_params_S'].shape[2]
+        num_mtrx_params = dict_params['tfunc_mtrx_params_S'].shape[2]
+        num_mtry_params = dict_params['tfunc_mtry_params_S'].shape[2]
+        # First check to see if tax parameters that are used were
+        # estimated with a budget window and ages that are as long as
+        # the those implied based on the start year and model age.
+        # N.B. the tax parameters dictionary does not save the years
+        # that correspond to the parameter estimates, so the start year
+        # used there may name match what is used in a run that reads in
+        # some cached tax function parameters.  Likewise for age.
+        params_list = ['etr', 'mtrx', 'mtry']
+        BW_in_tax_params = dict_params['tfunc_etr_params_S'].shape[1]
+        S_in_tax_params = dict_params['tfunc_etr_params_S'].shape[0]
+        if self.BW != BW_in_tax_params:
+            print('Warning: There is a discrepency between the start' +
+                  ' year of the model and that of the tax functions!!')
+        # After printing warning, make it work by tiling
+        if self.BW > BW_in_tax_params:
+            for item in params_list:
+                dict_params['tfunc_' + item + '_params_S'] =\
+                    np.concatenate(
+                        (dict_params['tfunc_' + item + '_params_S'],
+                         np.tile(dict_params['tfunc_' + item +
+                                             '_params_S'][:, -1, :].
+                                 reshape(S_in_tax_params, 1, num_etr_params),
+                                 (1, self.BW - BW_in_tax_params, 1))),
+                        axis=1)
+                dict_params['tfunc_avg_' + item] =\
+                    np.append(dict_params['tfunc_avg_' + item],
+                              np.tile(dict_params['tfunc_avg_' + item][-1],
+                                      (self.BW - BW_in_tax_params)))
+        if self.S != S_in_tax_params:
+            print('Warning: There is a discrepency between the ages' +
+                  ' used in the model and those in the tax functions!!')
+        # After printing warning, make it work by tiling
+        if self.S > S_in_tax_params:
+            for item in params_list:
+                    dict_params['tfunc_' + item + '_params_S'] =\
+                        np.stack(
+                            (dict_params['tfunc_' + item + '_params_S'],
+                             np.tile(dict_params['tfunc_' + item +
+                                                 '_params_S'][-1, :, :].
+                                     reshape(1, BW_in_tax_params,
+                                             num_etr_params),
+                                     (self.S - S_in_tax_params, 1, 1))),
+                            axis=0)
+        self.etr_params = np.empty((self.T, self.S, num_etr_params))
+        self.mtrx_params = np.empty((self.T, self.S, num_mtrx_params))
+        self.mtry_params = np.empty((self.T, self.S, num_mtry_params))
+        self.etr_params[:self.BW, :, :] =\
+            np.transpose(
+                dict_params['tfunc_etr_params_S'][:self.S, :self.BW, :],
+                axes=[1, 0, 2])
+        self.etr_params[self.BW:, :, :] =\
+            np.tile(np.transpose(
+                dict_params['tfunc_etr_params_S'][:self.S, -1, :].reshape(
+                    self.S, 1, num_etr_params), axes=[1, 0, 2]),
+                    (self.T - self.BW, 1, 1))
+        self.mtrx_params[:self.BW, :, :] =\
+            np.transpose(
+                dict_params['tfunc_mtrx_params_S'][:self.S, :self.BW, :],
+                axes=[1, 0, 2])
+        self.mtrx_params[self.BW:, :, :] =\
+            np.transpose(
+                dict_params['tfunc_mtrx_params_S'][:self.S, -1, :].reshape(
+                    self.S, 1, num_mtrx_params), axes=[1, 0, 2])
+        self.mtry_params[:self.BW, :, :] =\
+            np.transpose(
+                dict_params['tfunc_mtry_params_S'][:self.S, :self.BW, :],
+                axes=[1, 0, 2])
+        self.mtry_params[self.BW:, :, :] =\
+            np.transpose(
+                dict_params['tfunc_mtry_params_S'][:self.S, -1, :].reshape(
+                    self.S, 1, num_mtry_params), axes=[1, 0, 2])
 
-    # # Make MTRy depend only on capital income
-    # mtry_params[:, :, 11] = 0.0 # set share parameter to 0
+        if self.constant_rates:
+            print('Using constant rates!')
+            # # Make all ETRs equal the average
+            self.etr_params = np.zeros(self.etr_params.shape)
+            # set shift to average rate
+            self.etr_params[:, :, 10] = dict_params['tfunc_avg_etr']
 
-    # # set all tax parameters equal to the 43-yr-old values from start_year
-    # etr_params = np.tile(etr_params[11, 0, :], (S, BW, 1))
-    # mtrx_params = np.tile(mtrx_params[11, 0, :], (S, BW, 1))
-    # mtry_params = np.tile(mtry_params[11, 0, :], (S, BW, 1))
+            # # Make all MTRx equal the average
+            self.mtrx_params = np.zeros(self.mtrx_params.shape)
+            # set shift to average rate
+            self.mtrx_params[:, :, 10] = dict_params['tfunc_avg_mtrx']
 
-    #   Wealth tax params
-    #       These are non-calibrated values, h and m just need
-    #       need to be nonzero to avoid errors. When p_wealth
-    #       is zero, there is no wealth tax.
-    h_wealth = 0.1
-    m_wealth = 1.0
-    p_wealth = 0.0
-    #   Bequest and Payroll Taxes
-    tau_bq = np.zeros(J)
-    tau_payroll = 0.0 #0.15 # were are inluding payroll taxes in tax functions for now
-    retire = np.int(np.round(9.0 * S / 16.0) - 1)
+            # # Make all MTRy equal the average
+            self.mtry_params = np.zeros(self.mtry_params.shape)
+            # set shift to average rate
+            self.mtry_params[:, :, 10] = dict_params['tfunc_avg_mtry']
 
-    #   Calibration parameters
-    # These guesses are close to the calibrated values
-    chi_b_guess = np.ones((J,)) * 80.0
-    #chi_b_guess = np.array([0.7, 0.7, 1.0, 1.2, 1.2, 1.2, 1.4])
-    #chi_b_guess = np.array([1.0, 1.0, 1.0, 1.0, 1.0, 4.0, 10.0])
-    #chi_b_guess = np.array([5, 10, 90, 250, 250, 250, 250])
-    #chi_b_guess = np.array([2, 10, 90, 350, 1700, 22000, 120000])
-    chi_n_guess_80 = np.array(
-        [38.12000874, 33.22762421, 25.3484224, 26.67954008, 24.41097278,
-        23.15059004, 22.46771332, 21.85495452, 21.46242013, 22.00364263,
-        21.57322063, 21.53371545, 21.29828515, 21.10144524, 20.8617942,
-        20.57282, 20.47473172, 20.31111347, 19.04137299, 18.92616951,
-        20.58517969, 20.48761429, 20.21744847, 19.9577682, 19.66931057,
-        19.6878927, 19.63107201, 19.63390543, 19.5901486, 19.58143606,
-        19.58005578, 19.59073213, 19.60190899, 19.60001831, 21.67763741,
-        21.70451784, 21.85430468, 21.97291208, 21.97017228, 22.25518398,
-        22.43969757, 23.21870602, 24.18334822, 24.97772026, 26.37663164,
-        29.65075992, 30.46944758, 31.51634777, 33.13353793, 32.89186997,
-        38.07083882, 39.2992811, 40.07987878, 35.19951571, 35.97943562,
-        37.05601334, 37.42979341, 37.91576867, 38.62775142, 39.4885405,
-        37.10609921, 40.03988031, 40.86564363, 41.73645892, 42.6208256,
-        43.37786072, 45.38166073, 46.22395387, 50.21419653, 51.05246704,
-        53.86896121, 53.90029708, 61.83586775, 64.87563699, 66.91207845,
-        68.07449767, 71.27919965, 73.57195873, 74.95045988, 76.6230815])
+    def read_tax_func_estimate(self, pickle_path, pickle_file):
+        '''
+        --------------------------------------------------------------------
+        This function reads in tax function parameters
+        --------------------------------------------------------------------
 
-    # Generate Income and Demographic parameters
-    (omega, g_n_ss, omega_SS, surv_rate, rho, g_n_vector, imm_rates,
-        omega_S_preTP) = dem.get_pop_objs(E, S, T, 1, 100, start_year,
-        flag_graphs)
+        INPUTS:
+        pickle_path = string, path to pickle with tax function parameter
+                      estimates
+        pickle_file = string, name of pickle file with tax function
+                      parmaeter estimates
 
-    # Interpolate chi_n_guesses and create omega_SS_80 if necessary
-    if S == 80:
-        chi_n_guess = chi_n_guess_80.copy()
-        omega_SS_80 = omega_SS.copy()
-    elif S < 80:
-        age_midp_80 = np.linspace(20.5, 99.5, 80)
-        chi_n_interp = si.interp1d(age_midp_80, chi_n_guess_80,
-                       kind='cubic')
-        newstep = 80.0 / S
-        age_midp_S = np.linspace(20 + 0.5 * newstep,
-                     100 - 0.5 * newstep, S)
-        chi_n_guess = chi_n_interp(age_midp_S)
-        (_, _, omega_SS_80, _, _, _, _,_) = dem.get_pop_objs(20, 80,
-            320, 1, 100, start_year, False)
+        OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
+        /picklepath/ = pickle file with dictionary of tax function
+                       estimated parameters
 
-    ## To shut off demographics, uncomment the following 9 lines of code
-    # g_n_ss = 0.0
-    # surv_rate1 = np.ones((S,))# prob start at age S
-    # surv_rate1[1:] = np.cumprod(surv_rate[:-1], dtype=float)
-    # omega_SS = np.ones(S)*surv_rate1# number of each age alive at any time
-    # omega_SS = omega_SS/omega_SS.sum()
-    # imm_rates = np.zeros((T+S,S))
-    # omega = np.tile(np.reshape(omega_SS,(1,S)),(T+S,1))
-    # omega_S_preTP = omega_SS
-    # g_n_vector = np.tile(g_n_ss,(T+S,))
+        OBJECTS CREATED WITHIN FUNCTION:
+        dict_params = dictionary, contains numpy arrays of tax function
+                      estimates
 
-    e = inc.get_e_interp(S, omega_SS, omega_SS_80, lambdas, plot=False)
-    # e_hetero = get_e(S, J, starting_age, ending_age, lambdas, omega_SS, flag_graphs)
-    # e = np.tile(((e_hetero*lambdas).sum(axis=1)).reshape(S,1),(1,J))
-    # e = np.tile(e[:,0].reshape(S,1),(1,J))
-    # e /= (e * omega_SS.reshape(S, 1)* lambdas.reshape(1, J)).sum()
+        RETURNS: dict_params
+        --------------------------------------------------------------------
+        '''
+        if os.path.exists(pickle_path):
+            print('pickle path exists')
+            with open(pickle_path, 'rb') as pfile:
+                try:
+                    dict_params = pickle.load(pfile, encoding='latin1')
+                except TypeError:
+                    dict_params = pickle.load(pfile)
+        else:
+            from pkg_resources import resource_stream, Requirement
+            path_in_egg = pickle_file
+            pkl_path = os.path.join(os.path.dirname(__file__), '..',
+                                    path_in_egg)
+            with open(pkl_path, 'rb') as pfile:
+                try:
+                    dict_params = pickle.load(pfile, encoding='latin1')
+                except TypeError:
+                    dict_params = pickle.load(pfile)
 
-    allvars = dict(locals())
+        return dict_params
 
-    if user_modifiable:
-        allvars = {k: allvars[k] for k in USER_MODIFIABLE_PARAMS}
+    def default_parameters(self):
+        """
+        Return Policy object same as self except with current-law policy.
+        Returns
+        -------
+        Specifications: Specifications instance with the default configuration
+        """
+        dp = Specifications()
+        return dp
 
-    if metadata:
-        params_meta = read_parameter_metadata()
-        for k,v in allvars.items():
-            params_meta[k]["value"] = v
-        allvars = params_meta
+    def update_specifications(self, revision, raise_errors=True):
+        """
+        Updates parameter specification with values in revision dictionary
+        Parameters
+        ----------
+        reform: dictionary of one or more PARAM:VALUE pairs
+        raise_errors: boolean
+            if True (the default), raises ValueError when parameter_errors
+                    exists;
+            if False, does not raise ValueError when parameter_errors exists
+                    and leaves error handling to caller of
+                    update_specifications.
+        Raises
+        ------
+        ValueError:
+            if raise_errors is True AND
+              _validate_parameter_names_types generates errors OR
+              _validate_parameter_values generates errors.
+        Returns
+        -------
+        nothing: void
+        Notes
+        -----
+        Given a reform dictionary, typical usage of the Policy class
+        is as follows::
+            specs = Specifications()
+            specs.update_specifications(reform)
+        An example of a multi-parameter specification is as follows::
+            spec = {
+                frisch: [0.03]
+            }
+        This method was adapted from the Tax-Calculator
+        behavior.py-update_behavior method.
+        """
+        # check that all revisions dictionary keys are integers
+        if not isinstance(revision, dict):
+            raise ValueError('ERROR: revision is not a dictionary')
+        if not revision:
+            return  # no revision to implement
+        revision_years = sorted(list(revision.keys()))
+        # check range of remaining revision_years
+        # validate revision parameter names and types
+        self.parameter_errors = ''
+        self.parameter_warnings = ''
+        self._validate_parameter_names_types(revision)
+        if not self._ignore_errors and self.parameter_errors:
+            raise ValueError(self.parameter_errors)
+        # implement the revision
+        revision_parameters = set()
+        revision_parameters.update(revision.keys())
+        self._update(revision)
+        # validate revision parameter values
+        self._validate_parameter_values(revision_parameters)
+        if self.parameter_errors and raise_errors:
+            raise ValueError('\n' + self.parameter_errors)
+        self.compute_default_params()
 
-    return allvars
+    @staticmethod
+    def read_json_param_objects(revision):
+        """
+        Read JSON file and convert to dictionary
+        Returns
+        -------
+        rev_dict: formatted dictionary
+        """
+        # next process first reform parameter
+        if revision is None:
+            rev_dict = dict()
+        elif isinstance(revision, six.string_types):
+            if os.path.isfile(revision):
+                txt = open(revision, 'r').read()
+            else:
+                txt = revision
+            # strip out //-comments without changing line numbers
+            json_str = re.sub('//.*', ' ', txt)
+            # convert JSON text into a Python dictionary
+            try:
+                rev_dict = json.loads(json_str)
+            except ValueError as valerr:
+                msg = 'Policy reform text below contains invalid JSON:\n'
+                msg += str(valerr) + '\n'
+                msg += 'Above location of the first error may be approximate.\n'
+                msg += 'The invalid JSON reform text is between the lines:\n'
+                bline = 'XX----.----1----.----2----.----3----.----4'
+                bline += '----.----5----.----6----.----7'
+                msg += bline + '\n'
+                linenum = 0
+                for line in json_str.split('\n'):
+                    linenum += 1
+                    msg += '{:02d}{}'.format(linenum, line) + '\n'
+                msg += bline + '\n'
+                raise ValueError(msg)
+        else:
+            raise ValueError('reform is neither None nor string')
+
+        return rev_dict
+
+    def _validate_parameter_names_types(self, revision):
+        """
+        Check validity of parameter names and parameter types used
+        in the specified revision dictionary.
+        Parameters
+        ----------
+        revision: parameter dictionary of form {parameter_name: [value]}
+        Returns:
+        --------
+        nothing: void
+        Notes
+        -----
+        copied from taxcalc.Behavior._validate_parameter_names_types
+        """
+        param_names = set(self._vals.keys())
+        # print('Parameter names = ', param_names)
+        revision_param_names = list(revision.keys())
+        for param_name in revision_param_names:
+            if param_name not in param_names:
+                msg = '{} unknown parameter name'
+                self.parameter_errors += (
+                    'ERROR: ' + msg.format(param_name) + '\n'
+                )
+            else:
+                # check parameter value type avoiding use of isinstance
+                # because isinstance(True, (int,float)) is True, which
+                # makes it impossible to check float parameters
+                bool_param_type = self._vals[param_name]['boolean_value']
+                int_param_type = self._vals[param_name]['integer_value']
+                string_param_type = self._vals[param_name]['string_value']
+                if isinstance(revision[param_name], list):
+                    param_value = revision[param_name]
+                else:
+                    param_value = [revision[param_name]]
+                for idx in range(0, len(param_value)):
+                    pval = param_value[idx]
+                    pval_is_bool = type(pval) == bool
+                    pval_is_int = type(pval) == int
+                    pval_is_float = type(pval) == float
+                    pval_is_string = type(pval) == str
+                    if bool_param_type:
+                        if not pval_is_bool:
+                            msg = '{} value {} is not boolean'
+                            self.parameter_errors += (
+                                'ERROR: ' +
+                                msg.format(param_name, pval) +
+                                '\n'
+                            )
+                    elif int_param_type:
+                        if not pval_is_int:  # pragma: no cover
+                            msg = '{} value {} is not integer'
+                            self.parameter_errors += (
+                                'ERROR: ' +
+                                msg.format(param_name, pval) +
+                                '\n'
+                            )
+                    elif string_param_type:
+                        if not pval_is_string:  # pragma: no cover
+                            msg = '{} value {} is not string'
+                            self.parameter_errors += (
+                                'ERROR: ' +
+                                msg.format(param_name, pval) +
+                                '\n'
+                            )
+                    else:  # param is float type
+                        if not (pval_is_int or pval_is_float):
+                            msg = '{} value {} is not a number'
+                            self.parameter_errors += (
+                                'ERROR: ' +
+                                msg.format(param_name, pval) +
+                                '\n'
+                            )
+        del param_names
+
+    def _validate_parameter_values(self, parameters_set):
+        """
+        Check values of parameters in specified parameter_set using
+        range information from the current_law_policy.json file.
+        Parameters:
+        -----------
+        parameters_set: set of parameters whose values need to be validated
+        Returns:
+        --------
+        nothing: void
+        Notes
+        -----
+        copied from taxcalc.Policy._validate_parameter_values
+        """
+        dp = self.default_parameters()
+        parameters = sorted(parameters_set)
+        for param_name in parameters:
+            param_value = getattr(self, param_name)
+            if not hasattr(param_value, 'shape'):  # value is not a numpy array
+                param_value = np.array([param_value])
+            for validation_op, validation_value in self._vals[param_name]['range'].items():
+                if validation_op == 'possible_values':
+                    if param_value not in validation_value:
+                        out_of_range = True
+                        msg = '{} value {} not in possible values {}'
+                        if out_of_range:
+                            self.parameter_errors += (
+                                'ERROR: ' + msg.format(param_name,
+                                                       param_value,
+                                                       validation_value) + '\n'
+                                )
+                else:
+                    # print(validation_op, param_value, validation_value)
+                    if isinstance(validation_value, six.string_types):
+                        validation_value = self.simple_eval(validation_value)
+                    else:
+                        validation_value = np.full(param_value.shape,
+                                                   validation_value)
+                    assert param_value.shape == validation_value.shape
+                    for idx in np.ndindex(param_value.shape):
+                        out_of_range = False
+                        if validation_op == 'min' and (param_value[idx] <
+                                                       validation_value[idx]):
+                            out_of_range = True
+                            msg = '{} value {} < min value {}'
+                            extra = self._vals[param_name]['out_of_range_minmsg']
+                            if extra:
+                                msg += ' {}'.format(extra)
+                        if validation_op == 'max' and (param_value[idx] >
+                                                       validation_value[idx]):
+                            out_of_range = True
+                            msg = '{} value {} > max value {}'
+                            extra = self._vals[param_name]['out_of_range_maxmsg']
+                            if extra:
+                                msg += ' {}'.format(extra)
+                        if out_of_range:
+                            self.parameter_errors += (
+                                'ERROR: ' + msg.format(
+                                    param_name, param_value[idx],
+                                    validation_value[idx]) + '\n')
+        del dp
+        del parameters
+
+
+# copied from taxcalc.tbi.tbi.reform_errors_warnings--probably needs further
+# changes
+def reform_warnings_errors(user_mods):
+    """
+    Generate warnings and errors for OG-USA parameter specifications
+    Parameters:
+    -----------
+    user_mods : dict created by read_json_param_objects
+    Return
+    ------
+    rtn_dict : dict with endpoint specific warning and error messages
+    """
+    rtn_dict = {'ogusa': {'warnings': '', 'errors': ''}}
+
+    # create Specifications object and implement reform
+    specs = Specifications()
+    specs._ignore_errors = True
+    try:
+        specs.update_specifications(user_mods['ogusa'], raise_errors=False)
+        rtn_dict['ogusa']['warnings'] = specs.parameter_warnings
+        rtn_dict['ogusa']['errors'] = specs.parameter_errors
+    except ValueError as valerr_msg:
+        rtn_dict['ogusa']['errors'] = valerr_msg.__str__()
+    return rtn_dict

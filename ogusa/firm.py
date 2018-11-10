@@ -1,16 +1,12 @@
 from __future__ import print_function
 '''
 ------------------------------------------------------------------------
-Last updated 8/15/2017
 
 Firm functions for firms in the steady state and along the transition
 path, including functions for small open economy firms which take r as given.
 
 ------------------------------------------------------------------------
 '''
-
-# Packages
-import numpy as np
 
 '''
 ------------------------------------------------------------------------
@@ -19,7 +15,7 @@ import numpy as np
 '''
 
 
-def get_r(Y, K, params):
+def get_r(Y, K, p):
     '''
     Generates vector of interest rates.
 
@@ -37,18 +33,17 @@ def get_r(Y, K, params):
 
     Returns: r
     '''
-    Z, gamma, epsilon, delta, tau_b, delta_tau = params
-    if epsilon == 0:
-        r = (1-tau_b)*gamma - delta
+    if p.epsilon == 0:
+        r = (1 - p.tau_b) * p.gamma - p.delta
     else:
-        r = ((1-tau_b)*((Z**((epsilon-1)/epsilon)) *
-             (((gamma*Y)/K)**(1/epsilon)))
-             - delta + tau_b*delta_tau)
+        r = ((1 - p.tau_b) * ((p.Z ** ((p.epsilon - 1) / p.epsilon)) *
+             (((p.gamma * Y) / K) ** (1 / p.epsilon)))
+             - p.delta + p.tau_b * p.delta_tau)
 
     return r
 
 
-def get_w(Y, L, params):
+def get_w(Y, L, p):
     '''
     Generates vector of aggregate output.
 
@@ -65,19 +60,17 @@ def get_w(Y, L, params):
 
     Returns: w
     '''
-    # alpha = params
-    # w = (1 - alpha) * Y / L
-    Z, gamma, epsilon = params
-    if epsilon == 0:
-        w = 1-gamma
+    if p.epsilon == 0:
+        w = 1 - p.gamma
     else:
-        w = ((Z**((epsilon-1)/epsilon))*((((1-gamma)*Y)/L)**(1/epsilon)))
+        w = ((p.Z ** ((p.epsilon - 1) / p.epsilon)) * ((((1 - p.gamma)
+                                                         * Y) / L) **
+                                                       (1 / p.epsilon)))
 
     return w
 
 
-
-def get_w_from_r(r, params):
+def get_w_from_r(r, p):
     '''
     --------------------------------------------------------------------
     Solve for steady-state wage w or time path of wages w_t
@@ -96,19 +89,18 @@ def get_w_from_r(r, params):
     RETURNS: w
     --------------------------------------------------------------------
     '''
-    Z, gamma, epsilon, delta, tau_b, delta_tau = params
-    if epsilon == 0:
-        w = 1 - gamma
+    if p.epsilon == 0:
+        w = 1 - p.gamma
     else:
-        w = ((1 - gamma) * Z * ((gamma * Z * (1 - tau_b)) /
-                                (r+delta-(tau_b*delta_tau))) **
-             (gamma / (1 - gamma)))
-
+        w = ((1 - p.gamma) * p.Z * ((p.gamma * p.Z * (1 - p.tau_b)) /
+                                    (r + p.delta - (p.tau_b *
+                                                    p.delta_tau))) **
+             (p.gamma / (1 - p.gamma)))
 
     return w
 
 
-def get_Y(K, L, params):
+def get_Y(K, L, p):
     '''
     Generates vector of aggregate output.
 
@@ -126,22 +118,21 @@ def get_Y(K, L, params):
 
     Returns: Y
     '''
-    # alpha, Z = params
-    # Y = Z * (K ** alpha) * (L ** (1 - alpha))
-    Z, gamma, epsilon = params
-    if epsilon == 1:
-        Y = Z*(K**gamma)*(L**(1-gamma))
-    elif epsilon == 0:
-        Y = Z*(gamma*K + (1-gamma)*L)
+    if p.epsilon == 1:
+        Y = p.Z * (K ** p.gamma) * (L ** (1 - p.gamma))
+    elif p.epsilon == 0:
+        Y = p.Z * (p.gamma * K + (1 - p.gamma) * L)
     else:
-        Y = (Z * (((gamma**(1/epsilon))*(K**((epsilon-1)/epsilon))) +
-             (((1-gamma)**(1/epsilon)) *
-             (L**((epsilon-1)/epsilon))))**(epsilon/(epsilon-1)))
+        Y = (p.Z * (((p.gamma ** (1 / p.epsilon)) *
+                     (K ** ((p.epsilon - 1) / p.epsilon))) +
+                    (((1 - p.gamma) ** (1 / p.epsilon)) *
+                     (L ** ((p.epsilon - 1) / p.epsilon)))) **
+             (p.epsilon / (p.epsilon - 1)))
 
     return Y
 
 
-def get_K(L, r, params):
+def get_K(L, r, p):
     '''
     Generates vector of aggregate capital. Use with small open economy option.
 
@@ -160,21 +151,21 @@ def get_K(L, r, params):
 
     Returns: r
     '''
-
-    Z, gamma, epsilon, delta, tau_b, delta_tau = params
-    if epsilon == 1:
-        K = ((1-tau_b)*gamma*Z/(r+delta-(tau_b*delta_tau)))**(1/(1-gamma)) * L
-    elif epsilon == 0:
-        K = (1-((1-gamma)*L))/gamma
+    if p.epsilon == 1:
+        K = (((1 - p.tau_b) * p.gamma * p.Z /
+              (r + p.delta - (p.tau_b * p.delta_tau))) **
+             (1 / (1 - p.gamma)) * L)
+    elif p.epsilon == 0:
+        K = (1 - ((1 - p.gamma) * L)) / p.gamma
     else:
         K = (L *
-             ((1-gamma)**(1/(epsilon-1))) *
+             ((1-p.gamma) ** (1 / (p.epsilon - 1))) *
              (((
-                (((r+delta-(tau_b*delta_tau))/(1 - tau_b))**(epsilon-1)) *
-                (gamma**((1-epsilon)/epsilon)) * (Z**(1-epsilon))
-                ) -
-              gamma**(1/epsilon))) ** (epsilon/(1-epsilon))
-             )
+                (((r + p.delta - (p.tau_b * p.delta_tau)) /
+                  (1 - p.tau_b)) ** (p.epsilon - 1)) *
+                (p.gamma ** ((1 - p.epsilon) / p.epsilon)) *
+                (p.Z ** (1 - p.epsilon))) - p.gamma **
+               (1 / p.epsilon))) ** (p.epsilon / (1 - p.epsilon)))
 
     print('USING firm.getK()')
 
