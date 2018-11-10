@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 from ogusa import fiscal
+from ogusa.parameters import Specifications
 
 S = 80
 Y = np.append(np.array([
@@ -394,29 +395,27 @@ D2 = np.append(np.array([
                               'baseline_spending = True'])
 def test_D_G_path(baseline_spending, Y, T_H, REVENUE, Gbaseline,
                   D_expected, G_expected):
-    T = 320
-    debt_ratio_ss = 1.2
-    tG1 = 20
-    tG2 = int(T * 0.8)
-    ALPHA_T = np.ones(T) * 0.09
-    ALPHA_G = np.ones(T) * 0.05
-    rho_G = 0.1
-    r_gov = np.ones(T + S) * 0.03
-    g_n_vector = np.ones(T + S) * 0.02
-    g_y = 0.03
+    p = Specifications()
+    new_param_values = {
+        'T': 320,
+        'S': 80,
+        'debt_ratio_ss': 1.2,
+        'tG1': 20,
+        'tG2': 256,
+        'alpha_T': 0.09,
+        'alpha_G': 0.05,
+        'rho_G': 0.1,
+        'g_y_annual': 0.03,
+        'budget_balance': False,
+        'baseline_spending': baseline_spending
+    }
+    p.update_specifications(new_param_values, raise_errors=False)
+    r_gov = np.ones(p.T + p.S) * 0.03
+    p.g_n = np.ones(p.T + p.S) * 0.02
     D0 = 0.59
     G0 = 0.05
-    budget_balance = False
-    other_dg_params = (T, r_gov, g_n_vector, g_y)
     dg_fixed_values = (Y, REVENUE, T_H, D0, G0)
-    if baseline_spending is False:
-        fiscal_params = (budget_balance, ALPHA_T, ALPHA_G, tG1, tG2,
-                         rho_G, debt_ratio_ss)
-    else:
-        T_Hbaseline = None
-        fiscal_params = (budget_balance, ALPHA_T, ALPHA_G, tG1, tG2,
-                         rho_G, debt_ratio_ss, T_Hbaseline, Gbaseline)
-    test_D, test_G = fiscal.D_G_path(dg_fixed_values, fiscal_params,
-                                     other_dg_params, baseline_spending)
+    test_D, test_G = fiscal.D_G_path(r_gov, dg_fixed_values, Gbaseline,
+                                     p)
     assert np.allclose(test_D, D_expected)
     assert np.allclose(test_G, G_expected)
