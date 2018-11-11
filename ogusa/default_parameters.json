@@ -127,6 +127,22 @@
         "out_of_range_action": "stop",
         "compatible_data": {"puf": true, "cps": true}
     },
+    "constant_demographics": {
+        "long_name": "Use constant demographics.",
+        "description": "Use constant demographics.",
+        "notes": "This boolean allows one to use empirical mortality rates, but keep the population distribution constant across periods.  Note that immigration is shut off when this is true.",
+        "col_var": "",
+        "col_label": "",
+        "boolean_value": true,
+        "integer_value": false,
+        "string_value": false,
+        "value": false,
+        "range": {"min": false, "max": true},
+        "out_of_range_minmsg": "",
+        "out_of_range_maxmsg": "",
+        "out_of_range_action": "stop",
+        "compatible_data": {"puf": true, "cps": true}
+    },
     "beta_annual": {
         "long_name": "Annual rate of time preference for households",
         "description": "Annual rate of time preference for households",

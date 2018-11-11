@@ -150,6 +150,19 @@ class Specifications(ParametersBase):
          self.omega_S_preTP) = demographics.get_pop_objs(
                 self.E, self.S, self.T, 1, 100, self.start_year,
                 self.flag_graphs)
+        # for constant demographics
+        if self.constant_demographics:
+            self.g_n_ss = 0.0
+            self.g_n = np.zeros(self.T + self.S)
+            surv_rate1 = np.ones((self.S, ))  # prob start at age S
+            surv_rate1[1:] = np.cumprod(self.surv_rate[:-1], dtype=float)
+            # number of each age alive at any time
+            omega_SS = np.ones(self.S) * surv_rate1
+            self.omega_SS = omega_SS/omega_SS.sum()
+            self.imm_rates = np.zeros((self.T + self.S, self.S))
+            self.omega = np.tile(np.reshape(self.omega_SS, (1, self.S)),
+                                 (self.T + self.S, 1))
+            self.omega_S_preTP = self.omega_SS
 
         # Interpolate chi_n and create omega_SS_80 if necessary
         if self.S == 80:
