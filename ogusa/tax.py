@@ -41,29 +41,31 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
         e = p.e[:, j]
     else:
         e = p.e
-    # adjust 35 yr work history for any S
-    equiv_35 = int(round((p.S / 80.0) * 35)) - 1
+    # adjust number of calendar years AIME computed from int model periods
+    equiv_periods = int(round((p.S / 80.0) * p.AIME_num_years)) - 1
     if e.ndim == 2:
         dim2 = e.shape[1]
     else:
         dim2 = 1
     earnings = (e * (wss * nssmat * factor_ss)).reshape(p.S, dim2)
-    # get highest earning 35 years
-    highest_35_earn =\
-        (-1.0 * np.sort(-1.0 * earnings[:p.retire, :], axis=0))[:equiv_35]
-    AIME = highest_35_earn.sum(0) / ((12.0 * (p.S / 80.0)) * equiv_35)
+    # get highest earning years for number of years AIME computed from
+    highest_earn =\
+        (-1.0 * np.sort(-1.0 * earnings[:p.retire, :], axis=0))[:equiv_periods]
+    AIME = highest_earn.sum(0) / ((12.0 * (p.S / 80.0)) * equiv_periods)
     PIA = np.zeros(dim2)
-    # Bins from data for each level of replacement
+    # Compute level of replacement using AIME brackets and PIA rates
     for j in range(dim2):
-        if AIME[j] < 749.0:
-            PIA[j] = .9 * AIME[j]
-        elif AIME[j] < 4517.0:
-            PIA[j] = 674.1 + .32 * (AIME[j] - 749.0)
+        if AIME[j] < p.AIME_bkt_1:
+            PIA[j] = p.PIA_rate_bkt_1 * AIME[j]
+        elif AIME[j] < p.AIME_bkt_2:
+            PIA[j] = (p.PIA_rate_bkt_1 * p.AIME_bkt_1 +
+                      p.PIA_rate_bkt_2 * (AIME[j] - p.AIME_bkt_1))
         else:
-            PIA[j] = 1879.86 + .15 * (AIME[j] - 4517.0)
+            PIA[j] = (p.PIA_rate_bkt_1 * p.AIME_bkt_1 +
+                      p.PIA_rate_bkt_2 * (p.AIME_bkt_2 - p.AIME_bkt_1) +
+                      p.PIA_rate_bkt_3 * (AIME[j] - p.AIME_bkt_2))
     # Set the maximum monthly replacment rate from SS benefits tables
-    maxpayment = 3501.00
-    PIA[PIA > maxpayment] = maxpayment
+    PIA[PIA > p.PIA_maxpayment] = p.PIA_maxpayment
     theta = (PIA * (12.0 * p.S / 80.0)) / (factor_ss * wss)
     return theta
 
