@@ -622,6 +622,22 @@
         "out_of_range_action": "stop",
         "compatible_data": {"puf": true, "cps": true}
     },
+    "zero_taxes": {
+        "long_name": "Flag to run model without any individual income taxes.",
+        "description": "Flag to run model without any individual income taxes.",
+        "notes": "",
+        "col_var": "",
+        "col_label": "",
+        "boolean_value": true,
+        "integer_value": false,
+        "string_value": false,
+        "value": false,
+        "range": {"min": false, "max": true},
+        "out_of_range_minmsg": "",
+        "out_of_range_maxmsg": "",
+        "out_of_range_action": "stop",
+        "compatible_data": {"puf": true, "cps": true}
+    },
     "analytical_mtrs": {
         "long_name": "Flag to use analytically derived marginal tax rates in tax functions",
         "description": "Flag to use analytically derived marginal tax rates in tax functions",

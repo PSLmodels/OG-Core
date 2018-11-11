@@ -310,6 +310,11 @@ class Specifications(ParametersBase):
             self.mtry_params = np.zeros(self.mtry_params.shape)
             # set shift to average rate
             self.mtry_params[:, :, 10] = dict_params['tfunc_avg_mtry']
+        if self.zero_taxes:
+            print('Zero taxes!')
+            self.etr_params = np.zeros(self.etr_params.shape)
+            self.mtrx_params = np.zeros(self.mtrx_params.shape)
+            self.mtry_params = np.zeros(self.mtry_params.shape)
 
     def read_tax_func_estimate(self, pickle_path, pickle_file):
         '''
