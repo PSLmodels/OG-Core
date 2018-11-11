@@ -638,6 +638,22 @@
         "out_of_range_action": "stop",
         "compatible_data": {"puf": true, "cps": true}
     },
+    "retirement_age":{
+      "long_name": "Age at which agents can collect social security benefits.",
+      "description": "Age at which agents can collect social security benefits.",
+      "notes": "",
+      "col_var": "",
+      "col_label": "",
+      "boolean_value": false,
+      "integer_value": true,
+      "string_value": false,
+      "value": 65,
+      "range": {"min": "starting_age", "max": "ending_age"},
+      "out_of_range_minmsg": "",
+      "out_of_range_maxmsg": "",
+      "out_of_range_action": "stop",
+      "compatible_data": {"puf": true, "cps": true}
+    },
     "AIME_num_years":{
       "long_name": "Number of years used to compute average index monthly earnings (AIME).",
       "description": "Number of years used to compute average index monthly earnings (AIME).",
@@ -743,7 +759,7 @@
       "boolean_value": false,
       "integer_value": false,
       "string_value": false,
-      "value": 3501.00,
+      "value": 3501.0,
       "range": {"min": 0.0, "max": 9999999999999.9},
       "out_of_range_minmsg": "",
       "out_of_range_maxmsg": "",

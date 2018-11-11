@@ -140,9 +140,9 @@ class Specifications(ParametersBase):
                         np.squeeze(G_shift))
 
         # set period of retirement
-        # SHOULD BE UPDATED TO BE ENTERED AS Retirement age in defaults
-        # then converted to model year here
-        self.retire = np.int(np.round(9.0 * self.S / 16.0) - 1)
+        self.retire = np.int(np.round(((self.retirement_age -
+                                        self.starting_age) * self.S) /
+                                      80.0) - 1)
 
         # get population objects
         (self.omega, self.g_n_ss, self.omega_SS, self.surv_rate,
