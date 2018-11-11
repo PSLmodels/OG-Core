@@ -98,6 +98,28 @@ def test_run_small_TPI():
            run_micro=False, small_open=False, budget_balance=False)
 
 
+@pytest.mark.full_run
+def test_constant_demographics_TPI():
+    '''
+    This tests solves the model under the assumption of constant
+    demographics, a balanced budget, and tax functions that do not vary
+    over time.
+    In this case, given how initial guesss for the time
+    path are made, the time path should be solved for on the first
+    iteration and the values all along the time path should equal their
+    steady-state values.
+    '''
+    from ogusa.execute import runner
+    output_base = "./OUTPUT"
+    input_dir = "./OUTPUT"
+    user_params = {'constant_demographics': True,
+                   'budget_balance': True,
+                   'zero_taxes': True}
+    runner(output_base=output_base, baseline_dir=input_dir, test=True,
+           time_path=True, baseline=True, user_params=user_params,
+           run_micro=False, small_open=False, budget_balance=True)
+
+
 def test_compare_pickle_file_bad(picklefile1, picklefile2):
     from ogusa.utils import pickle_file_compare
     assert not pickle_file_compare(picklefile1.name, picklefile2.name)
