@@ -287,7 +287,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n,
      initial_debt, D0) = initial_values
     guesses_b, guesses_n = guesses
-    r, K, BQ, T_H, theta = outer_loop_vars
+    r, BQ, T_H, theta = outer_loop_vars
 
     # compute w
     w = firm.get_w_from_r(r, p)
@@ -504,7 +504,7 @@ def run_TPI(p, client=None):
             print('\t\tr = ', r[p.tG1 - 1])
             print('\t\tD = ', D[p.tG1 - 1])
 
-        outer_loop_vars = (r, K, BQ, T_H, theta)
+        outer_loop_vars = (r, BQ, T_H, theta)
         # inner_loop_params = (income_tax_params, tpi_params,
         #                      initial_values, ind)
 
@@ -678,7 +678,7 @@ def run_TPI(p, client=None):
         D, G = fiscal.D_G_path(r, dg_fixed_values, Gbaseline, p)
 
     # Solve HH problem in inner loop
-    outer_loop_vars = (r, K, BQ, T_H, theta)
+    outer_loop_vars = (r, BQ, T_H, theta)
     euler_errors = np.zeros((p.T, 2 * p.S, p.J))
     lazy_values = []
     for j in range(p.J):
