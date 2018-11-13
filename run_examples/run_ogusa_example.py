@@ -1,15 +1,13 @@
 from __future__ import print_function
 # import modules
 import multiprocessing
-from multiprocessing import Process
 from dask.distributed import Client
 import time
 import numpy as np
 
-from taxcalc import *
+from taxcalc import Calculator
 import ogusa
-from ogusa.scripts import postprocess
-from ogusa.scripts.execute import runner
+from ogusa.execute import runner
 from ogusa.utils import REFORM_DIR, BASELINE_DIR
 
 
@@ -17,10 +15,7 @@ def run_micro_macro(user_params):
     # Grab a reform JSON file already in Tax-Calculator
     # In this example the 'reform' is a change to 2017 law (the
     # baseline policy is tax law in 2018)
-    rec = Records.cps_constructor()
-    pol = Policy()
-    calc = Calculator(policy=pol, records=rec)
-    ref = calc.read_json_param_objects('2017_law.json', None)
+    ref = Calculator.read_json_param_objects('2017_law.json', None)
     reform = ref['policy']
 
     # Define parameters to use for multiprocessing
@@ -43,8 +38,8 @@ def run_micro_macro(user_params):
     # if False/None then 0.04 is used
     user_params = {'frisch': 0.41, 'start_year': 2018,
                    'tau_b': (0.21 * 0.55) * (0.017 / 0.055),
-                   'debt_ratio_ss': 1.0, 'T_shifts': T_shifts,
-                   'G_shifts': G_shifts, 'small_open': small_open}
+                   'debt_ratio_ss': 1.0, 'T_shifts': T_shifts.tolist(),
+                   'G_shifts': G_shifts.tolist(), 'small_open': small_open}
 
     '''
     ------------------------------------------------------------------------
@@ -52,13 +47,12 @@ def run_micro_macro(user_params):
     ------------------------------------------------------------------------
     '''
     output_base = BASELINE_DIR
-    input_dir = BASELINE_DIR
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': False, 'time_path': True, 'baseline': True,
               'constant_rates': False,
               'analytical_mtrs': False, 'age_specific': True,
               'user_params': user_params, 'guid': '_example',
-              'run_micro': True, 'small_open': small_open,
+              'run_micro': False, 'small_open': small_open,
               'budget_balance': False, 'baseline_spending': False,
               'data': 'cps', 'client': client,
               'num_workers': num_workers}
@@ -66,7 +60,7 @@ def run_micro_macro(user_params):
     start_time = time.time()
     runner(**kwargs)
     print('run time = ', time.time()-start_time)
-
+    quit()
 
     '''
     ------------------------------------------------------------------------
@@ -75,11 +69,9 @@ def run_micro_macro(user_params):
     '''
     user_params = {'frisch': 0.41, 'start_year': 2018,
                    'tau_b': (0.35 * 0.55) * (0.017 / 0.055),
-                   'debt_ratio_ss': 1.0, 'T_shifts': T_shifts,
-                   'G_shifts': G_shifts, 'small_open': small_open}
+                   'debt_ratio_ss': 1.0, 'T_shifts': T_shifts.tolist(),
+                   'G_shifts': G_shifts.tolist(), 'small_open': small_open}
     output_base = REFORM_DIR
-    input_dir = REFORM_DIR
-    guid_iter = 'reform_' + str(0)
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': False, 'time_path': True, 'baseline': False,
               'constant_rates': False, 'analytical_mtrs': False,
@@ -95,12 +87,11 @@ def run_micro_macro(user_params):
 
     # return ans - the percentage changes in macro aggregates and prices
     # due to policy changes from the baseline to the reform
-    ans = postprocess.create_diff(baseline_dir=BASELINE_DIR,
-                                  policy_dir=REFORM_DIR)
+    ans = ogusa.postprocess.create_diff(
+        baseline_dir=BASELINE_DIR, policy_dir=REFORM_DIR)
 
     print("total time was ", (time.time() - start_time))
     print('Percentage changes in aggregates:', ans)
-
 
 
 if __name__ == "__main__":
