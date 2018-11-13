@@ -140,9 +140,9 @@ class Specifications(ParametersBase):
                         np.squeeze(G_shift))
 
         # set period of retirement
-        # SHOULD BE UPDATED TO BE ENTERED AS Retirement age in defaults
-        # then converted to model year here
-        self.retire = np.int(np.round(9.0 * self.S / 16.0) - 1)
+        self.retire = np.int(np.round(((self.retirement_age -
+                                        self.starting_age) * self.S) /
+                                      80.0) - 1)
 
         # get population objects
         (self.omega, self.g_n_ss, self.omega_SS, self.surv_rate,
@@ -150,6 +150,19 @@ class Specifications(ParametersBase):
          self.omega_S_preTP) = demographics.get_pop_objs(
                 self.E, self.S, self.T, 1, 100, self.start_year,
                 self.flag_graphs)
+        # for constant demographics
+        if self.constant_demographics:
+            self.g_n_ss = 0.0
+            self.g_n = np.zeros(self.T + self.S)
+            surv_rate1 = np.ones((self.S, ))  # prob start at age S
+            surv_rate1[1:] = np.cumprod(self.surv_rate[:-1], dtype=float)
+            # number of each age alive at any time
+            omega_SS = np.ones(self.S) * surv_rate1
+            self.omega_SS = omega_SS/omega_SS.sum()
+            self.imm_rates = np.zeros((self.T + self.S, self.S))
+            self.omega = np.tile(np.reshape(self.omega_SS, (1, self.S)),
+                                 (self.T + self.S, 1))
+            self.omega_S_preTP = self.omega_SS
 
         # Interpolate chi_n and create omega_SS_80 if necessary
         if self.S == 80:
@@ -244,12 +257,11 @@ class Specifications(ParametersBase):
         if self.S > S_in_tax_params:
             for item in params_list:
                     dict_params['tfunc_' + item + '_params_S'] =\
-                        np.stack(
+                        np.concatenate(
                             (dict_params['tfunc_' + item + '_params_S'],
                              np.tile(dict_params['tfunc_' + item +
                                                  '_params_S'][-1, :, :].
-                                     reshape(1, BW_in_tax_params,
-                                             num_etr_params),
+                                     reshape(1, self.BW, num_etr_params),
                                      (self.S - S_in_tax_params, 1, 1))),
                             axis=0)
         self.etr_params = np.empty((self.T, self.S, num_etr_params))
@@ -297,6 +309,11 @@ class Specifications(ParametersBase):
             self.mtry_params = np.zeros(self.mtry_params.shape)
             # set shift to average rate
             self.mtry_params[:, :, 10] = dict_params['tfunc_avg_mtry']
+        if self.zero_taxes:
+            print('Zero taxes!')
+            self.etr_params = np.zeros(self.etr_params.shape)
+            self.mtrx_params = np.zeros(self.mtrx_params.shape)
+            self.mtry_params = np.zeros(self.mtry_params.shape)
 
     def read_tax_func_estimate(self, pickle_path, pickle_file):
         '''

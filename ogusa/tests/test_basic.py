@@ -7,7 +7,8 @@ import pandas as pd
 from ogusa.utils import CPS_START_YEAR
 from ogusa.utils import comp_array, comp_scalar, dict_compare
 from ogusa.get_micro_data import get_calculator
-from ogusa import SS, TPI
+from ogusa import SS, TPI, utils
+from ogusa.parameters import Specifications
 
 TOL = 1e-5
 
@@ -96,6 +97,64 @@ def test_run_small_TPI():
     runner(output_base=output_base, baseline_dir=input_dir, test=True,
            time_path=True, baseline=True, user_params=user_params,
            run_micro=False, small_open=False, budget_balance=False)
+
+
+@pytest.mark.full_run
+def test_constant_demographics_TPI():
+    '''
+    This tests solves the model under the assumption of constant
+    demographics, a balanced budget, and tax functions that do not vary
+    over time.
+    In this case, given how initial guesss for the time
+    path are made, the time path should be solved for on the first
+    iteration and the values all along the time path should equal their
+    steady-state values.
+    '''
+    output_base = "./OUTPUT"
+    baseline_dir = "./OUTPUT"
+    user_params = {'constant_demographics': True,
+                   'budget_balance': True,
+                   'zero_taxes': True,
+                   'maxiter': 2}
+    # Create output directory structure
+    ss_dir = os.path.join(output_base, "SS")
+    tpi_dir = os.path.join(output_base, "TPI")
+    dirs = [ss_dir, tpi_dir]
+    for _dir in dirs:
+        try:
+            print("making dir: ", _dir)
+            os.makedirs(_dir)
+        except OSError as oe:
+            pass
+    spec = Specifications(run_micro=False, output_base=output_base,
+                          baseline_dir=baseline_dir, test=False,
+                          time_path=True, baseline=True,
+                          constant_rates=False,
+                          tax_func_type='DEP',
+                          analytical_mtrs=False,
+                          age_specific=True,
+                          reform={}, guid='')
+    spec.update_specifications(user_params)
+    print('path for tax functions: ', spec.output_base)
+    spec.get_tax_function_parameters(None, False)
+    # Run SS
+    ss_outputs = SS.run_SS(spec, None)
+    # save SS results
+    utils.mkdirs(os.path.join(baseline_dir, "SS"))
+    ss_dir = os.path.join(baseline_dir, "SS/SS_vars.pkl")
+    pickle.dump(ss_outputs, open(ss_dir, "wb"))
+    # Save pickle with parameter values for the run
+    param_dir = os.path.join(baseline_dir, "model_params.pkl")
+    pickle.dump(spec, open(param_dir, "wb"))
+    tpi_output = TPI.run_TPI(spec, None)
+    print('Max diff btwn SS and TP bsplus1 = ',
+          np.absolute(tpi_output['b_mat'][:spec.T, :, :] -
+                      ss_outputs['bssmat_splus1']).max())
+    print('Max diff btwn SS and TP Y = ',
+          np.absolute(tpi_output['Y'][:spec.T] -
+                      ss_outputs['Yss']).max())
+    assert(np.allclose(tpi_output['b_mat'][:spec.T, :, :],
+                       ss_outputs['bssmat_splus1']))
 
 
 def test_compare_pickle_file_bad(picklefile1, picklefile2):

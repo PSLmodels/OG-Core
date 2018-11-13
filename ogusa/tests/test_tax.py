@@ -11,6 +11,13 @@ def test_replacement_rate_vals():
     new_param_values = {
         'S': 4,
         'J': 1,
+        'AIME_num_years': 35,
+        'AIME_bkt_1': 749.0,
+        'AIME_bkt_2': 4517.0,
+        'PIA_rate_bkt_1': 0.9,
+        'PIA_rate_bkt_2': 0.32,
+        'PIA_rate_bkt_3': 0.15,
+        'PIA_maxpayment': 3501.0,
     }
     p.update_specifications(new_param_values, raise_errors=False)
 
