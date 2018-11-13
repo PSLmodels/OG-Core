@@ -543,7 +543,7 @@ def run_TPI(p, client=None):
                 K[:p.T] = B[:p.T]
             else:
                 if not p.baseline_spending:
-                    Y = T_H/p.ALPHA_T  # maybe unecessary
+                    Y = T_H / p.ALPHA_T  # maybe unecessary
 
                 REVENUE = np.array(list(
                     aggr.revenue(r[:p.T], w[:p.T], bmat_s,
@@ -663,75 +663,8 @@ def run_TPI(p, client=None):
         print('Iteration:', TPIiter)
         print('\tDistance:', TPIdist)
 
-    # Loop through years to calculate debt and gov't spending.
-    # The re-assignment of G0 & D0 is necessary because Y0 may change
-    # in the TPI loop.
-    if not p.budget_balance:
-        if p.baseline:
-            D_0 = p.initial_debt_ratio * Y[0]
-        else:
-            D_0 = D0
-        if not p.baseline_spending:
-            G_0 = p.ALPHA_G[0] * Y[0]
-        dg_fixed_values = (Y, REVENUE, T_H, D_0, G_0)
-        D, G = fiscal.D_G_path(r, dg_fixed_values, Gbaseline, p)
-
-    # Solve HH problem in inner loop
-    outer_loop_vars = (r, BQ, T_H, theta)
-    euler_errors = np.zeros((p.T, 2 * p.S, p.J))
-    lazy_values = []
-    for j in range(p.J):
-        guesses = (guesses_b[:, :, j], guesses_n[:, :, j])
-        lazy_values.append(
-            delayed(inner_loop)(guesses, outer_loop_vars, initial_values,
-                                j, ind, p))
-    results = compute(*lazy_values, scheduler=dask.multiprocessing.get,
-                      num_workers=p.num_workers)
-    for j, result in enumerate(results):
-        euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result
-
-    bmat_s = np.zeros((p.T, p.S, p.J))
-    bmat_s[0, 1:, :] = initial_b[:-1, :]
-    bmat_s[1:, 1:, :] = b_mat[:p.T-1, :-1, :]
-    bmat_splus1 = np.zeros((p.T, p.S, p.J))
-    bmat_splus1[:, :, :] = b_mat[:p.T, :, :]
-
-    L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
-    B[1:p.T] = aggr.get_K(bmat_splus1[:p.T], p, 'TPI', 'False')[:p.T - 1]
-
-    if not p.small_open:
-        K[:p.T] = B[:p.T] - D[:p.T]
-    else:
-        K[:p.T] = firm.get_K(L[:p.T], p.tpi_firm_r[:p.T], p)
-    Ynew = firm.get_Y(K[:p.T], L[:p.T], p)
-
-    # testing for change in Y
-    ydiff = Ynew[:p.T] - Y[:p.T]
-    ydiff_max = np.amax(np.abs(ydiff))
-    print('ydiff_max = ', ydiff_max)
-
-    if not p.small_open:
-        rnew = firm.get_r(Ynew[:p.T], K[:p.T], p)
-    else:
-        rnew = r
-    # compute
-    wnew = firm.get_w_from_r(rnew[:p.T], p)
-
-    # Update Y
-    Y = Ynew[:]
-
-    b_mat_shift = np.append(np.reshape(initial_b, (1, p.S, p.J)),
-                            b_mat[:p.T - 1, :, :], axis=0)
-    BQnew = aggr.get_BQ(rnew, b_mat_shift, None, p, 'TPI', False)
-    BQnew_3D = np.tile(BQnew.reshape(BQnew.shape[0], 1,
-                                     BQnew.shape[1]), (1, p.S, 1))
-    REVENUE = np.array(
-        list(aggr.revenue(rnew[:p.T], wnew[:p.T], bmat_s,
-                          n_mat[:p.T, :, :], BQnew_3D[:p.T, :, :],
-                          Ynew[:p.T], L[:p.T], K[:p.T], factor, theta,
-                          etr_parms4D, p, 'TPI')) + [revenue_ss] * p.S)
     tax_path = tax.total_taxes(r[:p.T], w[:p.T], bmat_s,
-                               n_mat[:p.T, :, :], BQ_3D[:p.T, :, :],
+                               n_mat[:p.T, :, :], BQnew_3D[:p.T, :, :],
                                factor, T_H[:p.T], theta, None, False,
                                'TPI', p.e, p.retire, etr_parms4D, p)
     rpath = utils.to_timepath_shape(r, p)
@@ -741,16 +674,6 @@ def run_TPI(p, client=None):
                                 BQ_3D[:p.T, :, :], tax_path, p.e, None,
                                 p)
     C = aggr.get_C(c_path, p, 'TPI')
-
-    if not p.budget_balance:
-        if p.baseline:
-            D_0 = p.initial_debt_ratio * Y[0]
-        else:
-            D_0 = D0
-        if not p.baseline_spending:
-            G_0 = p.ALPHA_G[0] * Y[0]
-        dg_fixed_values = (Y, REVENUE, T_H, D_0, G_0)
-        D, G = fiscal.D_G_path(r, dg_fixed_values, Gbaseline, p)
 
     if not p.small_open:
         I = aggr.get_I(bmat_splus1[:p.T], K[1:p.T + 1], K[:p.T], p, 'TPI')
@@ -795,7 +718,7 @@ def run_TPI(p, client=None):
     ------------------------------------------------------------------------
     '''
 
-    output = {'Y': Y, 'B': B, 'K': K, 'L': L, 'C': C, 'I': I,
+    output = {'Y': Y[:p.T], 'B': B, 'K': K, 'L': L, 'C': C, 'I': I,
               'I_total': I_total, 'BQ': BQ,
               'REVENUE': REVENUE, 'business_revenue': business_revenue,
               'IITpayroll_revenue': IITpayroll_revenue, 'T_H': T_H,
