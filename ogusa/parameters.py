@@ -1,6 +1,5 @@
 import json
 import os
-import collections as collect
 import six
 import re
 import numpy as np
@@ -13,7 +12,7 @@ from ogusa import elliptical_u_est
 from ogusa import demographics
 from ogusa import income
 from ogusa import txfunc
-from ogusa.utils import REFORM_DIR, BASELINE_DIR, TC_LAST_YEAR
+from ogusa.utils import BASELINE_DIR, TC_LAST_YEAR
 # from ogusa import elliptical_u_est
 
 
@@ -26,9 +25,7 @@ class Specifications(ParametersBase):
     def __init__(self,
                  run_micro=False, output_base=BASELINE_DIR,
                  baseline_dir=BASELINE_DIR, test=False, time_path=True,
-                 baseline=False, constant_rates=False,
-                 tax_func_type='DEP', analytical_mtrs=False,
-                 age_specific=False, reform={}, guid='', data='cps',
+                 baseline=False, reform={}, guid='', data='cps',
                  flag_graphs=False, client=None, num_workers=1):
         super(Specifications, self).__init__()
 
@@ -48,12 +45,6 @@ class Specifications(ParametersBase):
 
         # does cheap calculations to find parameter values
         self.initialize()
-        # put anything in kwargs that is also in json file below
-        # initialize()
-        self.constant_rates = constant_rates
-        self.tax_func_type = tax_func_type
-        self.analytical_mtrs = analytical_mtrs
-        self.age_specific = age_specific
 
         # does more costly tax function estimation
         if run_micro:

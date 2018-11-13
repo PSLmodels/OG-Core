@@ -49,12 +49,8 @@ def run_micro_macro(user_params):
     output_base = BASELINE_DIR
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': False, 'time_path': True, 'baseline': True,
-              'constant_rates': False,
-              'analytical_mtrs': False, 'age_specific': True,
               'user_params': user_params, 'guid': '_example',
-              'run_micro': False, 'small_open': small_open,
-              'budget_balance': False, 'baseline_spending': False,
-              'data': 'cps', 'client': client,
+              'run_micro': False, 'data': 'cps', 'client': client,
               'num_workers': num_workers}
 
     start_time = time.time()
@@ -74,11 +70,8 @@ def run_micro_macro(user_params):
     output_base = REFORM_DIR
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': False, 'time_path': True, 'baseline': False,
-              'constant_rates': False, 'analytical_mtrs': False,
-              'age_specific': True, 'user_params': user_params,
-              'guid': '_example', 'reform': reform, 'run_micro': True,
-              'small_open': small_open, 'budget_balance': False,
-              'baseline_spending': False, 'data': 'cps',
+              'user_params': user_params, 'guid': '_example',
+              'reform': reform, 'run_micro': True, 'data': 'cps',
               'client': client, 'num_workers': num_workers}
 
     start_time = time.time()
