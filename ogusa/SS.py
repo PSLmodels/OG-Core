@@ -436,7 +436,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
 
     etr_params_3D = np.tile(np.reshape(
         p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])), (1, p.J, 1))
-    revenue_ss = aggr.revenue(rss, wss, bssmat_s, nssmat, BQss, Yss,
+    total_revenue_ss = aggr.revenue(rss, wss, bssmat_s, nssmat, BQss, Yss,
                               Lss, Kss, factor, theta,
                               etr_params_3D, p, 'SS')
     r_gov_ss = rss
@@ -447,7 +447,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
     if p.budget_balance:
         Gss = 0.0
     else:
-        Gss = revenue_ss + new_borrowing - (T_Hss + debt_service_ss)
+        Gss = total_revenue_ss + new_borrowing - (T_Hss + debt_service_ss)
         print('G components = ', new_borrowing, T_Hss, debt_service_ss)
 
     # Compute effective and marginal tax rates for all agents
@@ -476,7 +476,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
                                 p.e, None, p)
 
     business_revenue = tax.get_biz_tax(wss, Yss, Lss, Kss, p)
-    IITpayroll_revenue = revenue_ss - business_revenue
+    IITpayroll_revenue = total_revenue_ss - business_revenue
 
     Css = aggr.get_C(cssmat, p, 'SS')
 
@@ -491,7 +491,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
               Iss, '\n', 'Lss = ', Lss, '\n', 'T_H = ', T_H, '\n',
               'Gss= ', Gss)
         print('D/Y:', debt_ss / Yss, 'T/Y:', T_Hss / Yss, 'G/Y:',
-              Gss / Yss, 'Rev/Y:', revenue_ss / Yss,
+              Gss / Yss, 'Rev/Y:', total_revenue_ss / Yss,
               'Int payments to GDP:', (rss * debt_ss) / Yss)
         print('resource constraint: ', resource_constraint)
     else:
@@ -500,12 +500,12 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
               'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss,
               '\n', 'Debt service = ', debt_service_ss)
         print('D/Y:', debt_ss / Yss, 'T/Y:', T_Hss / Yss, 'G/Y:',
-              Gss / Yss, 'Rev/Y:', revenue_ss / Yss, 'business rev/Y: ',
+              Gss / Yss, 'Rev/Y:', total_revenue_ss / Yss, 'business rev/Y: ',
               business_revenue / Yss, 'Int payments to GDP:',
               (rss * debt_ss) / Yss)
         print('Check SS budget: ', Gss - (np.exp(p.g_y) *
                                           (1 + p.g_n_ss) - 1 - rss) *
-              debt_ss - revenue_ss + T_Hss)
+              debt_ss - total_revenue_ss + T_Hss)
         print('resource constraint: ', resource_constraint)
 
     if Gss < 0:
@@ -538,7 +538,8 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
               'Dss': debt_ss, 'wss': wss, 'rss': rss, 'theta': theta,
               'BQss': BQss, 'factor_ss': factor_ss, 'bssmat_s': bssmat_s,
               'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
-              'T_Hss': T_Hss, 'Gss': Gss, 'revenue_ss': revenue_ss,
+              'T_Hss': T_Hss, 'Gss': Gss,
+              'total_revenue_ss': total_revenue_ss,
               'business_revenue': business_revenue,
               'IITpayroll_revenue': IITpayroll_revenue,
               'euler_savings': euler_savings,

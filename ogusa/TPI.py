@@ -455,7 +455,7 @@ def run_TPI(p, client=None):
         else:
             T_Hss2 = T_Hss
         T_H = np.ones(p.T + p.S) * T_Hss2
-        REVENUE = T_H
+        total_revenue = T_H
         G = np.zeros(p.T + p.S)
     elif not p.baseline_spending:
         T_H = p.ALPHA_T * Y
@@ -532,7 +532,7 @@ def run_TPI(p, client=None):
             print('B has negative elements. B[0:9]:', B[0:9])
             print('B[T-2:T]:', B[p.T - 2, p.T])
 
-        etr_parms4D = np.tile(
+        etr_params_4D = np.tile(
             p.etr_params.reshape(p.T, p.S, 1, p.etr_params.shape[2]),
             (1, 1, p.J, 1))
         BQ_3D = np.tile(BQ.reshape(BQ.shape[0], 1, BQ.shape[1]),
@@ -545,11 +545,11 @@ def run_TPI(p, client=None):
                 if not p.baseline_spending:
                     Y = T_H / p.ALPHA_T  # maybe unecessary
 
-                REVENUE = np.array(list(
+                total_revenue = np.array(list(
                     aggr.revenue(r[:p.T], w[:p.T], bmat_s,
                                  n_mat[:p.T, :, :], BQ_3D[:p.T, :, :],
                                  Y[:p.T], L[:p.T], K[:p.T], factor,
-                                 theta, etr_parms4D, p, 'TPI')) +
+                                 theta, etr_params_4D, p, 'TPI')) +
                                    [revenue_ss] * p.S)
 
                 # set intial debt value
@@ -559,7 +559,7 @@ def run_TPI(p, client=None):
                     D_0 = D0
                 if not p.baseline_spending:
                     G_0 = p.ALPHA_G[0] * Y[0]
-                dg_fixed_values = (Y, REVENUE, T_H, D_0, G_0)
+                dg_fixed_values = (Y, total_revenue, T_H, D_0, G_0)
                 Dnew, G = fiscal.D_G_path(r, dg_fixed_values, Gbaseline,
                                           p)
 
@@ -583,14 +583,14 @@ def run_TPI(p, client=None):
         BQnew = aggr.get_BQ(rnew[:p.T], b_mat_shift, None, p, 'TPI', False)
         BQnew_3D = np.tile(BQnew.reshape(BQnew.shape[0], 1, BQnew.shape[1]),
                            (1, p.S, 1))
-        REVENUE = np.array(list(
+        total_revenue = np.array(list(
             aggr.revenue(rnew[:p.T], wnew[:p.T], bmat_s,
                          n_mat[:p.T, :, :], BQnew_3D[:p.T, :, :], Ynew[:p.T],
-                         L[:p.T], K[:p.T], factor, theta, etr_parms4D,
+                         L[:p.T], K[:p.T], factor, theta, etr_params_4D,
                          p, 'TPI')) + [revenue_ss] * p.S)
 
         if p.budget_balance:
-            T_H_new = REVENUE
+            T_H_new = total_revenue
         elif not p.baseline_spending:
             T_H_new = p.ALPHA_T[:p.T] * Ynew[:p.T]
         # If baseline_spending==True, no need to update T_H, it's fixed
@@ -604,7 +604,7 @@ def run_TPI(p, client=None):
                 D_0 = D0
             if not p.baseline_spending:
                 G_0 = p.ALPHA_G[0] * Ynew[0]
-            dg_fixed_values = (Ynew, REVENUE, T_H, D_0, G_0)
+            dg_fixed_values = (Ynew, total_revenue, T_H, D_0, G_0)
             Dnew, G = fiscal.D_G_path(r, dg_fixed_values, Gbaseline, p)
 
         if p.budget_balance:
@@ -663,10 +663,24 @@ def run_TPI(p, client=None):
         print('Iteration:', TPIiter)
         print('\tDistance:', TPIdist)
 
+    # Compute effective and marginal tax rates for all agents
+    mtrx_params_4D = np.tile(
+        p.mtrx_params.reshape(p.T, p.S, 1, p.mtrx_params.shape[2]),
+        (1, 1, p.J, 1))
+    mtry_params_4D = np.tile(
+        p.mtry_params.reshape(p.T, p.S, 1, p.mtry_params.shape[2]),
+        (1, 1, p.J, 1))
+    mtry_path = tax.MTR_income(rss, wss, bmat_s, nssmat, factor, True,
+                               p.e, etr_params_4D, mtry_params_4D, p)
+    mtrx_path = tax.MTR_income(rss, wss, bmat_s, nssmat, factor, False,
+                               p.e, etr_params_4D, mtrx_params_4D, p)
+    etr_path = tax.ETR_income(rss, wss, bmat_s, nssmat, factor, p.e,
+                              etr_params_4D, p)
+
     tax_path = tax.total_taxes(r[:p.T], w[:p.T], bmat_s,
                                n_mat[:p.T, :, :], BQnew_3D[:p.T, :, :],
                                factor, T_H[:p.T], theta, None, False,
-                               'TPI', p.e, p.retire, etr_parms4D, p)
+                               'TPI', p.e, p.retire, etr_params_4D, p)
     rpath = utils.to_timepath_shape(r, p)
     wpath = utils.to_timepath_shape(w, p)
     c_path = household.get_cons(rpath[:p.T, :, :], wpath[:p.T, :, :],
@@ -697,7 +711,7 @@ def run_TPI(p, client=None):
     # Compute business and invidiual income tax revenue
     business_revenue = tax.get_biz_tax(w[:p.T], Y[:p.T], L[:p.T],
                                        K[:p.T], p)
-    IITpayroll_revenue = REVENUE[:p.T] - business_revenue[:p.T]
+    IITpayroll_revenue = total_revenue[:p.T] - business_revenue[:p.T]
     rce_max = np.amax(np.abs(rc_error))
     print('Max absolute value resource constraint error:', rce_max)
 
@@ -719,13 +733,16 @@ def run_TPI(p, client=None):
     '''
 
     output = {'Y': Y[:p.T], 'B': B, 'K': K, 'L': L, 'C': C, 'I': I,
-              'I_total': I_total, 'BQ': BQ,
-              'REVENUE': REVENUE, 'business_revenue': business_revenue,
+              'I_total': I_total, 'BQ': BQ, 'total_revenue': total_revenue,
+              'business_revenue': business_revenue,
               'IITpayroll_revenue': IITpayroll_revenue, 'T_H': T_H,
-              'G': G, 'D': D, 'r': r, 'w': w, 'b_mat': b_mat,
-              'n_mat': n_mat, 'c_path': c_path, 'tax_path': tax_path,
-              'eul_savings': eul_savings,
-              'eul_laborleisure': eul_laborleisure}
+              'G': G, 'D': D, 'r': r, 'w': w, 'bmat_splus1': bmat_splus1,
+              'bmat_s': bmat_s, 'n_mat': n_mat, 'c_path': c_path,
+              'tax_path': tax_path, 'eul_savings': eul_savings,
+              'eul_laborleisure': eul_laborleisure,
+              'etr_path': etr_path, 'mtrx_path': mtrx_path,
+              'mtry_path': mtry_path}
+
 
     tpi_dir = os.path.join(p.output_base, "TPI")
     utils.mkdirs(tpi_dir)
