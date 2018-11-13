@@ -130,7 +130,6 @@ def get_initial_SS_values(p):
     b_splus1init = initial_b
 
     # Intial gov't debt must match that in the baseline
-    initial_debt = p.initial_debt
     if not p.baseline:
         baseline_tpi = os.path.join(p.baseline_dir, "TPI/TPI_vars.pkl")
         tpi_baseline_vars = pickle.load(open(baseline_tpi, "rb"))
@@ -139,7 +138,7 @@ def get_initial_SS_values(p):
         D0 = 0.0
 
     initial_values = (B0, b_sinit, b_splus1init, factor, initial_b,
-                      initial_n, initial_debt, D0)
+                      initial_n, D0)
 
     return initial_values, SS_values, baseline_values
 
@@ -285,7 +284,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
     '''
     # unpack variables and parameters pass to function
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n,
-     initial_debt, D0) = initial_values
+     D0) = initial_values
     guesses_b, guesses_n = guesses
     r, BQ, T_H, theta = outer_loop_vars
 
@@ -391,7 +390,7 @@ def run_TPI(p, client=None):
     # unpack tuples of parameters
     initial_values, SS_values, baseline_values = get_initial_SS_values(p)
     (B0, b_sinit, b_splus1init, factor, initial_b, initial_n,
-     initial_debt, D0) = initial_values
+     D0) = initial_values
     (Kss, Bss, Lss, rss, wss, BQss, T_Hss, revenue_ss, bssmat_splus1,
      nssmat, Yss, Gss, theta) = SS_values
     (T_Hbaseline, Gbaseline) = baseline_values
@@ -555,7 +554,7 @@ def run_TPI(p, client=None):
 
                 # set intial debt value
                 if p.baseline:
-                    D_0 = p.initial_debt * Y[0]
+                    D_0 = p.initial_debt_ratio * Y[0]
                 else:
                     D_0 = D0
                 if not p.baseline_spending:
@@ -600,7 +599,7 @@ def run_TPI(p, client=None):
             # Loop through years to calculate debt and gov't spending.
             # This is done earlier when small_open=False.
             if p.baseline:
-                D_0 = p.initial_debt * Y[0]
+                D_0 = p.initial_debt_ratio * Y[0]
             else:
                 D_0 = D0
             if not p.baseline_spending:
@@ -669,7 +668,7 @@ def run_TPI(p, client=None):
     # in the TPI loop.
     if not p.budget_balance:
         if p.baseline:
-            D_0 = p.initial_debt * Y[0]
+            D_0 = p.initial_debt_ratio * Y[0]
         else:
             D_0 = D0
         if not p.baseline_spending:
@@ -745,7 +744,7 @@ def run_TPI(p, client=None):
 
     if not p.budget_balance:
         if p.baseline:
-            D_0 = p.initial_debt * Y[0]
+            D_0 = p.initial_debt_ratio * Y[0]
         else:
             D_0 = D0
         if not p.baseline_spending:

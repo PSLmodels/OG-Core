@@ -102,7 +102,7 @@ def test_inner_loop():
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n,
      p.omega_S_preTP, initial_debt, D0) = initial_values
     initial_values_in = (K0, b_sinit, b_splus1init, factor, initial_b,
-                         initial_n, initial_debt, D0)
+                         initial_n, D0)
     (r, K, BQ, T_H) = outer_loop_vars
     outer_loop_vars_in = (r, BQ, T_H, theta)
 

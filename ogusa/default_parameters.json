@@ -431,7 +431,7 @@
         "out_of_range_action": "stop",
         "compatible_data": {"puf": true, "cps": true}
     },
-    "initial_debt": {
+    "initial_debt_ratio": {
         "long_name": "Debt to GDP ratio in the initial period",
         "description": "Debt to GDP ratio in the initial period",
         "notes": "Should be calibrated based on government debt held by the public to GDP in the model start year.",
