@@ -104,7 +104,7 @@ def test_inner_loop():
     initial_values_in = (K0, b_sinit, b_splus1init, factor, initial_b,
                          initial_n, initial_debt, D0)
     (r, K, BQ, T_H) = outer_loop_vars
-    outer_loop_vars_in = (r, K, BQ, T_H, theta)
+    outer_loop_vars_in = (r, BQ, T_H, theta)
 
     guesses = (guesses[0], guesses[1])
     test_tuple = TPI.inner_loop(guesses, outer_loop_vars_in,
