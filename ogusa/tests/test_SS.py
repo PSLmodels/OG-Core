@@ -189,6 +189,10 @@ def test_SS_solver():
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data/SS_solver_outputs.pkl'))
 
+    # delete values key-value pairs that are not in both dicts
+    del expected_dict['bssmat'], expected_dict['chi_n'], expected_dict['chi_b']
+    del test_dict['etr_ss'], test_dict['mtrx_ss'], test_dict['mtry_ss']
+
     for k, v in expected_dict.items():
         assert(np.allclose(test_dict[k], v))
 
@@ -311,6 +315,10 @@ def test_run_SS(input_path, expected_path):
 
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', expected_path))
+
+    # delete values key-value pairs that are not in both dicts
+    del expected_dict['bssmat'], expected_dict['chi_n'], expected_dict['chi_b']
+    del test_dict['etr_ss'], test_dict['mtrx_ss'], test_dict['mtry_ss']
 
     for k, v in expected_dict.items():
         assert(np.allclose(test_dict[k], v))
