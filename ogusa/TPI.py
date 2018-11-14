@@ -693,10 +693,8 @@ def run_TPI(p, client=None):
         I = aggr.get_I(bmat_splus1[:p.T], K[1:p.T + 1], K[:p.T], p, 'TPI')
         rc_error = Y[:p.T] - C[:p.T] - I[:p.T] - G[:p.T]
     else:
-        I = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
-             (1.0 - p.delta) * K[:p.T])
-        # I = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))) *
-        #      np.exp(p.g_y) * K[1:p.T + 1] - (1.0 - p.delta) * K[:p.T])
+        I = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))) *
+             np.exp(p.g_y) * K[1:p.T + 1] - (1.0 - p.delta) * K[:p.T])
         BI = aggr.get_I(bmat_splus1[:p.T], B[1:p.T + 1], B[:p.T], p, 'TPI')
         new_borrowing = (D[1:p.T] * (1 + p.g_n[1:p.T]) *
                          np.exp(p.g_y) - D[:p.T - 1])
