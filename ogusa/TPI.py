@@ -89,7 +89,7 @@ def get_initial_SS_values(p):
                      ss_baseline_vars['Lss'], ss_baseline_vars['rss'],
                      ss_baseline_vars['wss'], ss_baseline_vars['BQss'],
                      ss_baseline_vars['T_Hss'],
-                     ss_baseline_vars['revenue_ss'],
+                     ss_baseline_vars['total_revenue_ss'],
                      ss_baseline_vars['bssmat_splus1'],
                      ss_baseline_vars['nssmat'],
                      ss_baseline_vars['Yss'], ss_baseline_vars['Gss'],
@@ -105,7 +105,7 @@ def get_initial_SS_values(p):
                      ss_reform_vars['Lss'], ss_reform_vars['rss'],
                      ss_reform_vars['wss'], ss_reform_vars['BQss'],
                      ss_reform_vars['T_Hss'],
-                     ss_reform_vars['revenue_ss'],
+                     ss_reform_vars['total_revenue_ss'],
                      ss_reform_vars['bssmat_splus1'],
                      ss_reform_vars['nssmat'], ss_reform_vars['Yss'],
                      ss_reform_vars['Gss'], theta)
@@ -391,7 +391,7 @@ def run_TPI(p, client=None):
     initial_values, SS_values, baseline_values = get_initial_SS_values(p)
     (B0, b_sinit, b_splus1init, factor, initial_b, initial_n,
      D0) = initial_values
-    (Kss, Bss, Lss, rss, wss, BQss, T_Hss, revenue_ss, bssmat_splus1,
+    (Kss, Bss, Lss, rss, wss, BQss, T_Hss, total_revenue_ss, bssmat_splus1,
      nssmat, Yss, Gss, theta) = SS_values
     (T_Hbaseline, Gbaseline) = baseline_values
 
@@ -550,7 +550,7 @@ def run_TPI(p, client=None):
                                  n_mat[:p.T, :, :], BQ_3D[:p.T, :, :],
                                  Y[:p.T], L[:p.T], K[:p.T], factor,
                                  theta, etr_params_4D, p, 'TPI')) +
-                                   [revenue_ss] * p.S)
+                                   [total_revenue_ss] * p.S)
 
                 # set intial debt value
                 if p.baseline:
@@ -587,7 +587,7 @@ def run_TPI(p, client=None):
             aggr.revenue(rnew[:p.T], wnew[:p.T], bmat_s,
                          n_mat[:p.T, :, :], BQnew_3D[:p.T, :, :], Ynew[:p.T],
                          L[:p.T], K[:p.T], factor, theta, etr_params_4D,
-                         p, 'TPI')) + [revenue_ss] * p.S)
+                         p, 'TPI')) + [total_revenue_ss] * p.S)
 
         if p.budget_balance:
             T_H_new = total_revenue
@@ -695,6 +695,8 @@ def run_TPI(p, client=None):
     else:
         I = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
              (1.0 - p.delta) * K[:p.T])
+        # I = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))) *
+        #      np.exp(p.g_y) * K[1:p.T + 1] - (1.0 - p.delta) * K[:p.T])
         BI = aggr.get_I(bmat_splus1[:p.T], B[1:p.T + 1], B[:p.T], p, 'TPI')
         new_borrowing = (D[1:p.T] * (1 + p.g_n[1:p.T]) *
                          np.exp(p.g_y) - D[:p.T - 1])
@@ -736,8 +738,10 @@ def run_TPI(p, client=None):
               'I_total': I_total, 'BQ': BQ, 'total_revenue': total_revenue,
               'business_revenue': business_revenue,
               'IITpayroll_revenue': IITpayroll_revenue, 'T_H': T_H,
-              'G': G, 'D': D, 'r': r, 'w': w, 'bmat_splus1': bmat_splus1,
-              'bmat_s': bmat_s, 'n_mat': n_mat, 'c_path': c_path,
+              'G': G, 'D': D, 'r': r, 'w': w,
+              'bmat_splus1': bmat_splus1,
+              'bmat_s': bmat_s[:p.T, :, :], 'n_mat': n_mat[:p.T, :, :],
+              'c_path': c_path,
               'tax_path': tax_path, 'eul_savings': eul_savings,
               'eul_laborleisure': eul_laborleisure,
               'etr_path': etr_path, 'mtrx_path': mtrx_path,

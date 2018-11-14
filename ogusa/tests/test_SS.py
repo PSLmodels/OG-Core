@@ -192,6 +192,7 @@ def test_SS_solver():
     # delete values key-value pairs that are not in both dicts
     del expected_dict['bssmat'], expected_dict['chi_n'], expected_dict['chi_b']
     del test_dict['etr_ss'], test_dict['mtrx_ss'], test_dict['mtry_ss']
+    test_dict['revenue_ss'] = test_dict.pop('total_revenue_ss')
 
     for k, v in expected_dict.items():
         assert(np.allclose(test_dict[k], v))
@@ -319,6 +320,7 @@ def test_run_SS(input_path, expected_path):
     # delete values key-value pairs that are not in both dicts
     del expected_dict['bssmat'], expected_dict['chi_n'], expected_dict['chi_b']
     del test_dict['etr_ss'], test_dict['mtrx_ss'], test_dict['mtry_ss']
+    test_dict['revenue_ss'] = test_dict.pop('total_revenue_ss')
 
     for k, v in expected_dict.items():
         assert(np.allclose(test_dict[k], v))
