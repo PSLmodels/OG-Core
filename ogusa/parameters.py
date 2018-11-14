@@ -5,6 +5,7 @@ import re
 import numpy as np
 import pickle
 import scipy.interpolate as si
+import pkg_resources
 
 # import ogusa
 from ogusa.parametersbase import ParametersBase
@@ -42,6 +43,9 @@ class Specifications(ParametersBase):
         self.data = data
         self.flag_graphs = flag_graphs
         self.num_workers = num_workers
+
+        # put OG-USA version in parameters to save for reference
+        ogusa_version = pkg_resources.get_distribution("ogusa").version
 
         # does cheap calculations to find parameter values
         self.initialize()
