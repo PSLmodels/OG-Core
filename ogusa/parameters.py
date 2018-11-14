@@ -207,6 +207,10 @@ class Specifications(ParametersBase):
                                                       policy_pckl)
 
         self.mean_income_data = dict_params['tfunc_avginc'][0]
+        try:
+            self.taxcalc_version = dict_params['taxcalc_version']
+        except KeyError:
+            self.taxcalc_version = 'No version recorded'
 
         # Reorder indices of tax function and tile for all years after
         # budget window ends

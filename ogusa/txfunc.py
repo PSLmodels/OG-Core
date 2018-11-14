@@ -45,9 +45,7 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
-
-from . import get_micro_data
-from . import utils
+from ogusa import get_micro_data, utils
 from ogusa.utils import DEFAULT_START_YEAR
 
 TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
@@ -1541,11 +1539,9 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
         os.makedirs(output_dir)
 
     # call tax caculator and get microdata
-    micro_data = get_micro_data.get_data(baseline=baseline,
-                                         start_year=beg_yr,
-                                         reform=reform, data=data,
-                                         client=client,
-                                         num_workers=num_workers)
+    micro_data, taxcalc_version = get_micro_data.get_data(
+        baseline=baseline, start_year=beg_yr, reform=reform, data=data,
+        client=client, num_workers=num_workers)
 
     lazy_values = []
     for t in years_list:
@@ -1725,7 +1721,8 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
                         ('tfunc_mtrx_obs', mtrx_obs_arr),
                         ('tfunc_mtry_obs', mtry_obs_arr),
                         ('tfunc_time', elapsed_time),
-                        ('tax_func_type', tax_func_type)])
+                        ('tax_func_type', tax_func_type),
+                        ('taxcalc_version', taxcalc_version)])
 
     return dict_params
 
