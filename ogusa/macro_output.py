@@ -88,7 +88,7 @@ def dump_diff_output(baseline_dir, policy_dir):
     baseline_macros[3, :] = tpi_macro_vars_baseline['L'][:T]
     baseline_macros[4, :] = tpi_macro_vars_baseline['w'][:T]
     baseline_macros[5, :] = tpi_macro_vars_baseline['r'][:T]
-    baseline_macros[6, :] = tpi_macro_vars_baseline['REVENUE'][:T]
+    baseline_macros[6, :] = tpi_macro_vars_baseline['total_revenue'][:T]
 
     policy_macros = np.zeros((7, T))
     policy_macros[0, :] = tpi_macro_vars_policy['Y'][:T]
@@ -97,7 +97,7 @@ def dump_diff_output(baseline_dir, policy_dir):
     policy_macros[3, :] = tpi_macro_vars_policy['L'][:T]
     policy_macros[4, :] = tpi_macro_vars_policy['w'][:T]
     policy_macros[5, :] = tpi_macro_vars_policy['r'][:T]
-    policy_macros[6, :] = tpi_macro_vars_policy['REVENUE'][:T]
+    policy_macros[6, :] = tpi_macro_vars_policy['total_revenue'][:T]
 
     pct_changes = np.zeros((7, 12))
     # pct changes for each year in budget window
@@ -126,8 +126,8 @@ def dump_diff_output(baseline_dir, policy_dir):
                           ss_baseline['wss'])
     pct_changes[5, 11] = ((ss_policy['rss'] - ss_baseline['rss']) /
                           ss_baseline['rss'])
-    pct_changes[6, 11] = ((ss_policy['revenue_ss'] -
-                           ss_baseline['revenue_ss']) /
-                          ss_baseline['revenue_ss'])
+    pct_changes[6, 11] = ((ss_policy['total_revenue_ss'] -
+                           ss_baseline['total_revenue_ss']) /
+                          ss_baseline['total_revenue_ss'])
 
     return pct_changes, baseline_macros, policy_macros

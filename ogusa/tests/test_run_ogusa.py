@@ -32,8 +32,8 @@ def run_micro_macro(reform, user_params, guid):
     output_base = BASELINE_DIR
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': True, 'time_path': True, 'baseline': True,
-              'analytical_mtrs': False, 'user_params': user_params,
-              'age_specific': False, 'run_micro': False, 'guid': guid}
+              'user_params': user_params, 'run_micro': False,
+              'guid': guid}
     runner(**kwargs)
 
     '''
@@ -45,8 +45,7 @@ def run_micro_macro(reform, user_params, guid):
     output_base = REFORM_DIR
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': True, 'time_path': True, 'baseline': False,
-              'analytical_mtrs': False, 'reform': reform,
-              'user_params': user_params, 'age_specific': False,
+              'reform': reform, 'user_params': user_params,
               'guid': guid, 'run_micro': False}
     runner(**kwargs)
     time.sleep(0.5)
