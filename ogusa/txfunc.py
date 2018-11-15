@@ -1671,7 +1671,7 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
                     rmndr_pct_ub = 1.
                     yrcut_ub -= 1
                 age_wgts = np.dstack(
-                    [PopPct_age[yrcut_lb:yrcut_ub + 1, :]] * 10)
+                    [PopPct_age[yrcut_lb:yrcut_ub + 1, :]] * numparams)
                 age_wgts[0, :, :] *= rmndr_pct_lb
                 age_wgts[yrcut_ub-yrcut_lb, :, :] *= rmndr_pct_ub
                 etrparam_arr_S[s, :, :] = (
