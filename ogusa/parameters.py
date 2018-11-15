@@ -45,7 +45,7 @@ class Specifications(ParametersBase):
         self.num_workers = num_workers
 
         # put OG-USA version in parameters to save for reference
-        ogusa_version = pkg_resources.get_distribution("ogusa").version
+        self.ogusa_version = pkg_resources.get_distribution("ogusa").version
 
         # does cheap calculations to find parameter values
         self.initialize()
