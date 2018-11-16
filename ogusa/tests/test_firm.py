@@ -104,7 +104,7 @@ def test_get_w():
     L = np.array([1.0, 1.0])
 
     w = firm.get_w(Y, L, p)
-    assert (np.allclose(w, np.array([16., 16.], atol=1e-6)))
+    assert (np.allclose(w, np.array([16., 16.]), atol=1e-6))
 
     new_param_values = {
         'epsilon': 0.5
@@ -116,25 +116,25 @@ def test_get_w():
     assert (np.allclose(w, np.array([2.0, 2.0])))
 
 
-# def test_get_KLrat_from_r():
-#     """
-#         choose values that simplify the calculations and are similar to
-#         observed values
-#     """
-#     p = Specifications()
-#     new_param_values = {
-#         'Z': 0.5,
-#         'gamma': 0.4,
-#         'epsilon': 0.8,
-#         'delta_annual': 0.05,
-#         'delta_tau_annual': 0.35
-#     }
-#     # update parameters instance with new values for test
-#     p.update_specifications(new_param_values)
+def test_get_KLrat_from_r():
+    """
+        choose values that simplify the calculations and are similar to
+        observed values
+    """
+    p = Specifications()
+    new_param_values = {
+        'Z': 0.5,
+        'gamma': 0.4,
+        'epsilon': 0.8,
+        'delta_annual': 0.05,
+        'delta_tau_annual': 0.35
+    }
+    # update parameters instance with new values for test
+    p.update_specifications(new_param_values)
 
-#     r = np.array([0.04, 0.55])
-#     KLratio = firm.get_KLrat_from_r(r, p)
-#     assert (np.allclose(KLratio, ?))
+    r = np.array([0.04, 0.55])
+    KLratio = firm.get_KLrat_from_r(r, p)
+    assert (np.allclose(KLratio, ?))
 
 
 def test_get_K():
