@@ -23,6 +23,7 @@ from dask import compute, delayed
 import dask.multiprocessing
 import numpy as np
 import pickle
+import pkg_resources
 from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR, PUF_START_YEAR
 
 
@@ -190,7 +191,8 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
         pkl_path = "micro_data_baseline.pkl"
     pickle.dump(micro_data_dict, open(pkl_path, "wb"))
 
-    return micro_data_dict
+    taxcalc_version = pkg_resources.get_distribution("taxcalc").version
+    return micro_data_dict, taxcalc_version
 
 
 def taxcalc_advance(calc1, year, length):

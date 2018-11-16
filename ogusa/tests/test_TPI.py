@@ -102,9 +102,9 @@ def test_inner_loop():
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n,
      p.omega_S_preTP, initial_debt, D0) = initial_values
     initial_values_in = (K0, b_sinit, b_splus1init, factor, initial_b,
-                         initial_n, initial_debt, D0)
+                         initial_n, D0)
     (r, K, BQ, T_H) = outer_loop_vars
-    outer_loop_vars_in = (r, K, BQ, T_H, theta)
+    outer_loop_vars_in = (r, BQ, T_H, theta)
 
     guesses = (guesses[0], guesses[1])
     test_tuple = TPI.inner_loop(guesses, outer_loop_vars_in,
@@ -185,5 +185,15 @@ def test_run_TPI():
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data/run_TPI_outputs.pkl'))
 
+    # delete values key-value pairs that are not in both dicts
+    del test_dict['etr_path'], test_dict['mtrx_path'], test_dict['mtry_path']
+    del test_dict['bmat_s']
+    test_dict['b_mat'] = test_dict.pop('bmat_splus1')
+    test_dict['REVENUE'] = test_dict.pop('total_revenue')
+
     for k, v in expected_dict.items():
-        assert(np.allclose(test_dict[k], v, rtol=1e-04, atol=1e-04))
+        try:
+            assert(np.allclose(test_dict[k], v, rtol=1e-04, atol=1e-04))
+        except ValueError:
+            assert(np.allclose(test_dict[k], v[:p.T, :, :], rtol=1e-04,
+                               atol=1e-04))

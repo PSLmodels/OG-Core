@@ -14,11 +14,8 @@ from ogusa.parameters import Specifications
 
 
 def runner(output_base, baseline_dir, test=False, time_path=True,
-           baseline=True, constant_rates=False, tax_func_type='DEP',
-           analytical_mtrs=False, age_specific=False, reform={},
-           user_params={}, guid='', run_micro=True, small_open=False,
-           budget_balance=False, baseline_spending=False, data=None,
-           client=None, num_workers=1):
+           baseline=True, reform={}, user_params={}, guid='',
+           run_micro=True, data=None, client=None, num_workers=1):
 
     tick = time.time()
     # Create output directory structure
@@ -40,10 +37,6 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     spec = Specifications(run_micro=False, output_base=output_base,
                           baseline_dir=baseline_dir, test=test,
                           time_path=time_path, baseline=baseline,
-                          constant_rates=constant_rates,
-                          tax_func_type=tax_func_type,
-                          analytical_mtrs=analytical_mtrs,
-                          age_specific=age_specific,
                           reform=reform, guid=guid, data=data,
                           client=client, num_workers=num_workers)
 

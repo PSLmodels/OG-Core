@@ -1,11 +1,11 @@
 import json
 import os
-import collections as collect
 import six
 import re
 import numpy as np
 import pickle
 import scipy.interpolate as si
+import pkg_resources
 
 # import ogusa
 from ogusa.parametersbase import ParametersBase
@@ -13,7 +13,7 @@ from ogusa import elliptical_u_est
 from ogusa import demographics
 from ogusa import income
 from ogusa import txfunc
-from ogusa.utils import REFORM_DIR, BASELINE_DIR, TC_LAST_YEAR
+from ogusa.utils import BASELINE_DIR, TC_LAST_YEAR
 # from ogusa import elliptical_u_est
 
 
@@ -26,9 +26,7 @@ class Specifications(ParametersBase):
     def __init__(self,
                  run_micro=False, output_base=BASELINE_DIR,
                  baseline_dir=BASELINE_DIR, test=False, time_path=True,
-                 baseline=False, constant_rates=False,
-                 tax_func_type='DEP', analytical_mtrs=False,
-                 age_specific=False, reform={}, guid='', data='cps',
+                 baseline=False, reform={}, guid='', data='cps',
                  flag_graphs=False, client=None, num_workers=1):
         super(Specifications, self).__init__()
 
@@ -46,14 +44,11 @@ class Specifications(ParametersBase):
         self.flag_graphs = flag_graphs
         self.num_workers = num_workers
 
+        # put OG-USA version in parameters to save for reference
+        self.ogusa_version = pkg_resources.get_distribution("ogusa").version
+
         # does cheap calculations to find parameter values
         self.initialize()
-        # put anything in kwargs that is also in json file below
-        # initialize()
-        self.constant_rates = constant_rates
-        self.tax_func_type = tax_func_type
-        self.analytical_mtrs = analytical_mtrs
-        self.age_specific = age_specific
 
         # does more costly tax function estimation
         if run_micro:
@@ -216,6 +211,10 @@ class Specifications(ParametersBase):
                                                       policy_pckl)
 
         self.mean_income_data = dict_params['tfunc_avginc'][0]
+        try:
+            self.taxcalc_version = dict_params['taxcalc_version']
+        except KeyError:
+            self.taxcalc_version = 'No version recorded'
 
         # Reorder indices of tax function and tile for all years after
         # budget window ends
