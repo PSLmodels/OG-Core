@@ -47,7 +47,8 @@ def test_SS_fsolve():
     expected_list = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_outputs.pkl'))
 
-    assert(np.allclose(np.array(test_list), np.array(expected_list)))
+    assert(np.allclose(np.array(test_list), np.array(expected_list),
+                       atol=1e-6))
 
 
 def test_SS_fsolve_reform():
@@ -94,7 +95,8 @@ def test_SS_fsolve_reform():
         os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_reform_outputs.pkl'))
     print('Results = ', test_list)
     print('Expected = ', expected_list)
-    assert(np.allclose(np.array(test_list), np.array(expected_list)))
+    assert(np.allclose(np.array(test_list), np.array(expected_list),
+                       atol=1e-6))
 
 
 def test_SS_fsolve_reform_baselinespend():
@@ -145,7 +147,8 @@ def test_SS_fsolve_reform_baselinespend():
             'test_io_data/SS_fsolve_reform_baselinespend_outputs.pkl'))
     print('Results = ', test_list)
     print('Expected = ', expected_list)
-    assert(np.allclose(np.array(test_list), np.array(expected_list)))
+    assert(np.allclose(np.array(test_list), np.array(expected_list),
+                       atol=1e-6))
 
 
 def test_SS_solver():
