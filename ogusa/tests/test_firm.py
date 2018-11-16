@@ -19,7 +19,7 @@ def test_get_r():
         'epsilon': 0.2
     }
     # update parameters instance with new values for test
-    p.update_specifications(new_param_values, raise_errors=False)
+    p.update_specifications(new_param_values)
     # assign values for Y and K variables
     Y = np.array([2.0, 2.0])
     K = np.array([1.0, 1.0])
@@ -32,7 +32,7 @@ def test_get_r():
         'delta_annual': 0.5
     }
     # update parameters instance with new values for test
-    p.update_specifications(new_param_values, raise_errors=False)
+    p.update_specifications(new_param_values)
 
     r = firm.get_r(Y, K, p)
     assert (np.allclose(r, np.array([0.675, 0.675])))
@@ -50,7 +50,7 @@ def test_get_w():
         'epsilon': 0.2
     }
     # update parameters instance with new values for test
-    p.update_specifications(new_param_values, raise_errors=False)
+    p.update_specifications(new_param_values)
 
     Y = np.array([2.0, 2.0])
     L = np.array([1.0, 1.0])
@@ -62,7 +62,7 @@ def test_get_w():
         'epsilon': 0.5
     }
     # update parameters instance with new values for test
-    p.update_specifications(new_param_values, raise_errors=False)
+    p.update_specifications(new_param_values)
 
     w = firm.get_w(Y, L, p)
     assert (np.allclose(w, np.array([2.0, 2.0])))
@@ -80,7 +80,7 @@ def test_get_Y():
         'epsilon': 1.0
     }
     # update parameters instance with new values for test
-    p.update_specifications(new_param_values, raise_errors=False)
+    p.update_specifications(new_param_values)
 
     L = np.array([4.0, 4.0])
     K = np.array([9.0, 9.0])
@@ -94,7 +94,7 @@ def test_get_Y():
         'epsilon': 0.2
     }
     # update parameters instance with new values for test
-    p.update_specifications(new_param_values, raise_errors=False)
+    p.update_specifications(new_param_values)
 
     Y = firm.get_Y(K, L, p)
     assert (np.allclose(Y, np.array([13.0, 13.0])))
@@ -105,7 +105,7 @@ def test_get_Y():
         'epsilon': 0.2
     }
     # update parameters instance with new values for test
-    p.update_specifications(new_param_values, raise_errors=False)
+    p.update_specifications(new_param_values)
 
     L = np.array([1 / 12.0, 1 / 12.0])
     K = np.array([1 / 4.0, 1 / 4.0])
@@ -129,7 +129,7 @@ def test_get_K():
         'epsilon': 1.0
     }
     # update parameters instance with new values for test
-    p.update_specifications(new_param_values, raise_errors=False)
+    p.update_specifications(new_param_values)
 
     L = np.array([2.0, 2.0])
     r = np.array([1.0, 1.0])
@@ -141,7 +141,7 @@ def test_get_K():
         'epsilon': 0.2
     }
     # update parameters instance with new values for test
-    p.update_specifications(new_param_values, raise_errors=False)
+    p.update_specifications(new_param_values)
 
     K = firm.get_K(L, r, p)
     assert (np.allclose(K, np.array([0.0, 0.0])))
@@ -154,7 +154,7 @@ def test_get_K():
         'delta_annual': 3.0
     }
     # update parameters instance with new values for test
-    p.update_specifications(new_param_values, raise_errors=False)
+    p.update_specifications(new_param_values)
 
     K = firm.get_K(L, r, p)
     assert (np.allclose(K, np.array([2.0, 2.0])))
@@ -163,7 +163,7 @@ def test_get_K():
         'tau_b': 0.5
     }
     # update parameters instance with new values for test
-    p.update_specifications(new_param_values, raise_errors=False)
+    p.update_specifications(new_param_values)
 
     K = firm.get_K(L, r, p)
     assert (np.allclose(K, np.array([1.26598632, 1.26598632])))
