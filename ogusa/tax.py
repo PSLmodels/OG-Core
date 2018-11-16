@@ -104,7 +104,7 @@ def MTR_wealth(b, p):
                                      wealth tax
     Returns: tau_w_prime
     '''
-    tau_prime = (p.h_wealth * p.m_wealth * p.p_wealth/
+    tau_prime = (p.h_wealth * p.m_wealth * p.p_wealth /
                  (b * p.h_wealth + p.m_wealth) ** 2)
     return tau_prime
 

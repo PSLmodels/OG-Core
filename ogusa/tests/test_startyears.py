@@ -20,6 +20,5 @@ def test_diff_start_year(year):
     user_params = {'frisch': 0.41, 'debt_ratio_ss': 1.0,
                    'start_year': year}
     runner(output_base=output_base, baseline_dir=input_dir, test=True,
-           time_path=True, baseline=True, age_specific=False,
-           user_params=user_params, run_micro=True,
-           small_open=False, budget_balance=False, data=PUF_PATH)
+           time_path=True, baseline=True, user_params=user_params,
+           run_micro=True, data=PUF_PATH)

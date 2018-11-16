@@ -175,22 +175,6 @@
         "out_of_range_action": "stop",
         "compatible_data": {"puf": true, "cps": true}
     },
-    "alpha": {
-        "long_name": "Capital's share of output in firm production funtion",
-        "description": "Capital's share of output in firm production funtion",
-        "notes": "Histroical value in U.S. is about 0.33, but Elsby, Hobijn, and Sahin (BPEA, 2013) find capital's share is increasing, so default value is above this",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": 0.35,
-        "range": {"min": 0.0, "max": 1.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
-    },
     "gamma": {
       "long_name": "Capital's share of output in firm production funtion",
       "description": "Capital's share of output in firm production funtion",
@@ -431,7 +415,7 @@
         "out_of_range_action": "stop",
         "compatible_data": {"puf": true, "cps": true}
     },
-    "initial_debt": {
+    "initial_debt_ratio": {
         "long_name": "Debt to GDP ratio in the initial period",
         "description": "Debt to GDP ratio in the initial period",
         "notes": "Should be calibrated based on government debt held by the public to GDP in the model start year.",

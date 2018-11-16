@@ -425,11 +425,6 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
         Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
         BIss = aggr.get_I(bssmat_splus1, Bss, Bss, p, 'BI_SS') #+ p.delta * Bss
 
-        # BIss_params = (0.0, g_y, omega_SS, lambdas, imm_rates,
-        #                g_n_ss, 'SS')
-        # BIss = aggr.get_I(bssmat_splus1, Bss, Bss, BIss_params)
-
-
         if p.budget_balance:
             debt_ss = 0.0
         else:
@@ -441,7 +436,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
 
     etr_params_3D = np.tile(np.reshape(
         p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])), (1, p.J, 1))
-    revenue_ss = aggr.revenue(rss, wss, bssmat_s, nssmat, BQss, Yss,
+    total_revenue_ss = aggr.revenue(rss, wss, bssmat_s, nssmat, BQss, Yss,
                               Lss, Kss, factor, theta,
                               etr_params_3D, p, 'SS')
     r_gov_ss = rss
@@ -452,47 +447,22 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
     if p.budget_balance:
         Gss = 0.0
     else:
-        Gss = revenue_ss + new_borrowing - (T_Hss + debt_service_ss)
+        Gss = total_revenue_ss + new_borrowing - (T_Hss + debt_service_ss)
         print('G components = ', new_borrowing, T_Hss, debt_service_ss)
 
-    '''
-    ------------------------------------------------------------------------
-        The code below is to calulate and save model MTRs
-                - only exists to help debug
-    ------------------------------------------------------------------------
-    '''
-    # etr_params_extended = np.append(etr_params,
-    #                                 np.reshape(etr_params[-1, :],
-    #                                            (1, etr_params.shape[1])),
-    #                                 axis=0)[1:, :]
-    # etr_params_extended_3D = np.tile(np.reshape(etr_params_extended,
-    #                                             (S, 1,
-    #                                              etr_params_extended.shape[1])),
-    #                                  (1, J, 1))
-    # mtry_params_extended = np.append(mtry_params,
-    #                                  np.reshape(mtry_params[-1, :],
-    #                                             (1,
-    #                                              mtry_params.shape[1])),
-    #                                  axis=0)[1:, :]
-    # mtry_params_extended_3D = np.tile(np.reshape(mtry_params_extended,
-    #                                              (S, 1,
-    #                                               mtry_params_extended.shape[1])),
-    #                                   (1, J, 1))
-    # e_extended = np.array(list(e) + list(np.zeros(J).reshape(1, J)))
-    # nss_extended = np.array(list(nssmat) + list(np.zeros(J).reshape(1, J)))
-    # mtry_ss_params = (e_extended[1:, :], etr_params_extended_3D,
-    #                   mtry_params_extended_3D, tax_func_type,
-    #                   analytical_mtrs)
-    # mtry_ss = tax.MTR_income(rss, wss, bssmat_splus1,
-    #                           nss_extended[1:, :], factor_ss,
-    #                           mtry_ss_params)
-    # mtrx_ss_params = (e, etr_params_3D, mtrx_params_3D, tax_func_type,
-    #                   analytical_mtrs)
-    # mtrx_ss = tax.MTR_income(rss, wss, bssmat_s, nssmat, factor_ss,
-    #                         mtrx_ss_params)
-
-    # np.savetxt("mtr_ss_capital.csv", mtry_ss, delimiter=",")
-    # np.savetxt("mtr_ss_labor.csv", mtrx_ss, delimiter=",")
+    # Compute effective and marginal tax rates for all agents
+    mtrx_params_3D = np.tile(np.reshape(
+        p.mtrx_params[-1, :, :], (p.S, 1, p.mtrx_params.shape[2])),
+                             (1, p.J, 1))
+    mtry_params_3D = np.tile(np.reshape(
+        p.mtry_params[-1, :, :], (p.S, 1, p.mtry_params.shape[2])),
+                             (1, p.J, 1))
+    mtry_ss = tax.MTR_income(rss, wss, bssmat_s, nssmat, factor, True,
+                             p.e, etr_params_3D, mtry_params_3D, p)
+    mtrx_ss = tax.MTR_income(rss, wss, bssmat_s, nssmat, factor, False,
+                             p.e, etr_params_3D, mtrx_params_3D, p)
+    etr_ss = tax.ETR_income(rss, wss, bssmat_s, nssmat, factor, p.e,
+                            etr_params_3D, p)
 
     # Compute total investment (not just domestic)
     Iss_total = p.delta * Kss
@@ -506,7 +476,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
                                 p.e, None, p)
 
     business_revenue = tax.get_biz_tax(wss, Yss, Lss, Kss, p)
-    IITpayroll_revenue = revenue_ss - business_revenue
+    IITpayroll_revenue = total_revenue_ss - business_revenue
 
     Css = aggr.get_C(cssmat, p, 'SS')
 
@@ -521,7 +491,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
               Iss, '\n', 'Lss = ', Lss, '\n', 'T_H = ', T_H, '\n',
               'Gss= ', Gss)
         print('D/Y:', debt_ss / Yss, 'T/Y:', T_Hss / Yss, 'G/Y:',
-              Gss / Yss, 'Rev/Y:', revenue_ss / Yss,
+              Gss / Yss, 'Rev/Y:', total_revenue_ss / Yss,
               'Int payments to GDP:', (rss * debt_ss) / Yss)
         print('resource constraint: ', resource_constraint)
     else:
@@ -530,12 +500,12 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
               'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss,
               '\n', 'Debt service = ', debt_service_ss)
         print('D/Y:', debt_ss / Yss, 'T/Y:', T_Hss / Yss, 'G/Y:',
-              Gss / Yss, 'Rev/Y:', revenue_ss / Yss, 'business rev/Y: ',
+              Gss / Yss, 'Rev/Y:', total_revenue_ss / Yss, 'business rev/Y: ',
               business_revenue / Yss, 'Int payments to GDP:',
               (rss * debt_ss) / Yss)
         print('Check SS budget: ', Gss - (np.exp(p.g_y) *
                                           (1 + p.g_n_ss) - 1 - rss) *
-              debt_ss - revenue_ss + T_Hss)
+              debt_ss - total_revenue_ss + T_Hss)
         print('resource constraint: ', resource_constraint)
 
     if Gss < 0:
@@ -566,15 +536,15 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
     output = {'Kss': Kss, 'Bss': Bss, 'Lss': Lss, 'Css': Css, 'Iss': Iss,
               'Iss_total': Iss_total, 'nssmat': nssmat, 'Yss': Yss,
               'Dss': debt_ss, 'wss': wss, 'rss': rss, 'theta': theta,
-              'BQss': BQss, 'factor_ss': factor_ss,
-              'bssmat': bssmat_splus1, 'bssmat_s': bssmat_s,
+              'BQss': BQss, 'factor_ss': factor_ss, 'bssmat_s': bssmat_s,
               'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
-              'T_Hss': T_Hss, 'Gss': Gss, 'revenue_ss': revenue_ss,
+              'T_Hss': T_Hss, 'Gss': Gss,
+              'total_revenue_ss': total_revenue_ss,
               'business_revenue': business_revenue,
               'IITpayroll_revenue': IITpayroll_revenue,
               'euler_savings': euler_savings,
-              'euler_labor_leisure': euler_labor_leisure, 'chi_n': p.chi_n,
-              'chi_b': p.chi_b}
+              'euler_labor_leisure': euler_labor_leisure,
+              'etr_ss': etr_ss, 'mtrx_ss': mtrx_ss, 'mtry_ss': mtry_ss}
 
     return output
 
@@ -808,7 +778,7 @@ def run_SS(p, client=None):
     # For initial guesses of w, r, T_H, and factor, we use values that
     # are close to some steady state values.
     if p.baseline:
-        rguess = 0.06  # 0.01 + delta
+        rguess = 0.05  # 0.01 + delta
         # wguess = 1.2
         T_Hguess = 0.12
         factorguess = 70000
