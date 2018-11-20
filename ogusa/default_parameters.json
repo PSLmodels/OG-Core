@@ -216,7 +216,7 @@
         "boolean_value": false,
         "integer_value": false,
         "string_value": false,
-        "value": 1.0,
+        "value": [1.0, 1.1],
         "range": {"min": 0.0, "max": 5.0},
         "out_of_range_minmsg": "",
         "out_of_range_maxmsg": "",

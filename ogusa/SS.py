@@ -199,7 +199,7 @@ def inner_loop(outer_loop_vars, p, client):
 
     euler_errors = np.zeros((2 * p.S, p.J))
 
-    w = firm.get_w_from_r(r, p)
+    w = firm.get_w_from_r(r, p, 'SS')
 
     lazy_values = []
     for j in range(p.J):
@@ -228,16 +228,15 @@ def inner_loop(outer_loop_vars, p, client):
         else:
             K = B - p.debt_ratio_ss * Y
     else:
-        K = firm.get_K(L, r, p)
-    new_Y = firm.get_Y(K, L, p)
+        K = firm.get_K(L, r, p, 'SS')
+    new_Y = firm.get_Y(K, L, p, 'SS')
     if p.budget_balance:
         Y = new_Y
     if not p.small_open:
-        new_r = firm.get_r(Y, K, p)
-        # new_w = firm.get_w_from_r(new_r, p)
+        new_r = firm.get_r(Y, K, p, 'SS')
     else:
         new_r = p.ss_hh_r
-    new_w = firm.get_w_from_r(new_r, p)
+    new_w = firm.get_w_from_r(new_r, p, 'SS')
     print('inner factor prices: ', new_r, new_w)
 
     b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
@@ -392,7 +391,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
                 nu_ss /= 2.0
                 print('New value of nu:', nu_ss)
         iteration += 1
-        print("Iteration: %02d" % iteration, " Distance: ", dist)
+        print('Iteration: %02d' % iteration, ' Distance: ', dist)
 
     '''
     ------------------------------------------------------------------------
@@ -419,7 +418,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
         Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS')
     else:
         # Compute capital (K) and wealth (B) separately
-        Kss = firm.get_K(Lss, p.ss_firm_r, p)
+        Kss = firm.get_K(Lss, p.ss_firm_r, p, 'SS')
         InvestmentPlaceholder = np.zeros(bssmat_splus1.shape)
         Iss = aggr.get_I(InvestmentPlaceholder, Kss, Kss, p, 'SS')
         Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
@@ -430,7 +429,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
         else:
             debt_ss = p.debt_ratio_ss * Y
 
-    Yss = firm.get_Y(Kss, Lss, p)
+    Yss = firm.get_Y(Kss, Lss, p, 'SS')
     BQss = new_BQ
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
 
@@ -515,7 +514,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
     if ENFORCE_SOLUTION_CHECKS and (np.absolute(resource_constraint) >
                                     p.mindist_SS):
         print('Resource Constraint Difference:', resource_constraint)
-        err = "Steady state aggregate resource constraint not satisfied"
+        err = 'Steady state aggregate resource constraint not satisfied'
         raise RuntimeError(err)
 
     # check constraints
@@ -789,7 +788,7 @@ def run_SS(p, client=None):
             opt.fsolve(SS_fsolve, guesses, args=ss_params_baseline,
                        xtol=p.mindist_SS, full_output=True)
         if ENFORCE_SOLUTION_CHECKS and not ier == 1:
-            raise RuntimeError("Steady state equilibrium not found")
+            raise RuntimeError('Steady state equilibrium not found')
         [rss, T_Hss, factor_ss] = solutions_fsolve
         Yss = T_Hss/p.alpha_T  # may not be right - if budget_balance
         # = True, but that's ok - will be fixed in SS_solver
@@ -798,9 +797,9 @@ def run_SS(p, client=None):
         output = SS_solver(b_guess, n_guess, rss, T_Hss, factor_ss, Yss, p,
                            client, fsolve_flag)
     else:
-        baseline_ss_dir = os.path.join(p.baseline_dir, "SS/SS_vars.pkl")
-        ss_solutions = pickle.load(open(baseline_ss_dir, "rb"),
-                                   encoding="latin1")
+        baseline_ss_dir = os.path.join(p.baseline_dir, 'SS/SS_vars.pkl')
+        ss_solutions = pickle.load(open(baseline_ss_dir, 'rb'),
+                                   encoding='latin1')
         (rguess, T_Hguess, Yguess, factor) =\
             (ss_solutions['rss'], ss_solutions['T_Hss'],
              ss_solutions['Yss'], ss_solutions['factor_ss'])
@@ -825,7 +824,7 @@ def run_SS(p, client=None):
             # budget_balance = True, but that's ok - will be fixed in
             # SS_solver
         if ENFORCE_SOLUTION_CHECKS and not ier == 1:
-            raise RuntimeError("Steady state equilibrium not found")
+            raise RuntimeError('Steady state equilibrium not found')
         # Return SS values of variables
         fsolve_flag = True
         # Return SS values of variables

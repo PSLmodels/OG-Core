@@ -134,6 +134,11 @@ class Specifications(ParametersBase):
         self.ALPHA_G = (np.ones(self.T) * self.alpha_G +
                         np.squeeze(G_shift))
 
+        # Extend parameters that may vary over the time path
+        self.Z = np.concatenate((
+            self.Z, np.ones((self.T + self.S - self.Z.size, 1)) *
+            self.Z[-1]))
+
         # set period of retirement
         self.retire = np.int(np.round(((self.retirement_age -
                                         self.starting_age) * self.S) /
