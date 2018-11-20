@@ -231,15 +231,16 @@ def get_w_from_r(r, p, method):
     else:
         Z = np.squeeze(p.Z[:p.T])
     KLratio = get_KLratio_from_r(r, p, method)
-    eps = p.epsilon
-    if eps == 1:
+    if p.epsilon == 1:
         # Cobb-Douglas case
         w = (1 - p.gamma) * Z * (KLratio ** p.gamma)
     else:
         # General CES case
-        w = (((1 - p.gamma) ** (1 / eps)) * Z *
-             (((p.gamma ** (1 / eps)) * (KLratio ** ((eps - 1) / eps)) +
-               ((1 - p.gamma) ** (1 / eps))) ** (1 / (eps - 1))))
+        w = (((1 - p.gamma) ** (1 / p.epsilon)) * Z *
+             (((p.gamma ** (1 / p.epsilon)) *
+               (KLratio ** ((p.epsilon - 1) / p.epsilon)) +
+               ((1 - p.gamma) ** (1 / p.epsilon))) **
+              (1 / (p.epsilon - 1))))
     return w
 
 
@@ -264,25 +265,9 @@ def get_K(L, r, p, method):
 
     Returns: r
     --------------------------------------------------------------------
-    '''
-    if method == 'SS':
-        Z = p.Z[-1]
-    else:
-        Z = np.squeeze(p.Z[:p.T])
-    if p.epsilon == 1:
-        K = (((1 - p.tau_b) * p.gamma * Z /
-              (r + p.delta - (p.tau_b * p.delta_tau))) **
-             (1 / (1 - p.gamma)) * L)
-    elif p.epsilon == 0:
-        K = (1 - ((1 - p.gamma) * L)) / p.gamma
-    else:
-        K = (L * ((1 - p.gamma) ** (1 / (p.epsilon - 1))) *
-             (((
-                (((r + p.delta - (p.tau_b * p.delta_tau)) /
-                  (1 - p.tau_b)) ** (p.epsilon - 1)) *
-                (p.gamma ** ((1 - p.epsilon) / p.epsilon)) *
-                (Z ** (1 - p.epsilon))) - p.gamma **
-               (1 / p.epsilon))) ** (p.epsilon / (1 - p.epsilon)))
+    ''' 
+    KLratio = get_KLratio_from_r(r, p, method)
+    K = KLratio * L
 
     print('USING firm.getK()')
 
