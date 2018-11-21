@@ -209,7 +209,9 @@ def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
         chi_b = p.chi_b[j]
     else:
         chi_b = p.chi_b
-
+    # if type(r) is not float:
+    #     if type(b) is not float:
+    #         print('sizes from households = ', r.shape, b.shape, w.shape, n.shape, e.shape)
     taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
                             method, e, retire, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, e, j, p)

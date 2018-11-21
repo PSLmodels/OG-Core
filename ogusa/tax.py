@@ -428,6 +428,8 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
             r = utils.to_timepath_shape(r, p)
             w = utils.to_timepath_shape(w, p)
             T_H = utils.to_timepath_shape(T_H, p)
+    # if method == 'TPI':
+    #     print('sizes in tax.py = ', r.shape, b.shape, w.shape, n.shape, e.shape)
 
     I = r * b + w * e * n
     T_I = ETR_income(r, w, b, n, factor, e, etr_params, p) * I
