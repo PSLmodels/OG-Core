@@ -438,17 +438,17 @@ def run_TPI(p, client=None):
     B = B_init
     Y = np.zeros_like(K)
     Y[:p.T] = firm.get_Y(K[:p.T], L[:p.T], p, 'TPI')
-    Y[:p.T] = Yss
+    Y[p.T:] = Yss
     r = np.zeros_like(Y)
     if not p.small_open:
         r[:p.T] = firm.get_r(Y[:p.T], K[:p.T], p, 'TPI')
-        r[:p.T] = rss
+        r[p.T:] = rss
     else:
         r = p.tpi_hh_r
     # compute w
     w = np.zeros_like(r)
     w[:p.T] = firm.get_w_from_r(r[:p.T], p, 'TPI')
-    w[:p.T] = wss
+    w[p.T:] = wss
 
     BQ = np.zeros((p.T + p.S, p.J))
     BQ0 = aggr.get_BQ(r[0], initial_b, None, p, 'SS', True)
