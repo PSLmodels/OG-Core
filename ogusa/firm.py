@@ -265,7 +265,7 @@ def get_K(L, r, p, method):
 
     Returns: r
     --------------------------------------------------------------------
-    ''' 
+    '''
     KLratio = get_KLratio_from_r(r, p, method)
     K = KLratio * L
 
