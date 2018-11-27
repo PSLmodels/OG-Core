@@ -1,6 +1,6 @@
 name: ospcdyn
 channels:
-- ospc
+- PSLmodels
 dependencies:
 - python>=3.6
 - setuptools
