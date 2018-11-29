@@ -11,8 +11,8 @@ install:
   - export PATH="$HOME/miniconda/bin:$PATH"
   - conda config --set always_yes yes --set changeps1 no
   - conda update conda
-  - conda create -n ospcdyn python=$TRAVIS_PYTHON_VERSION
-  - source activate ospcdyn
+  - conda create -n ogusa-dev python=$TRAVIS_PYTHON_VERSION
+  - source activate ogusa-dev
   - conda env update -f environment.yml
   - pip install -e .
 

@@ -1,4 +1,4 @@
-name: ospcdyn
+name: ogusa-dev
 channels:
 - PSLmodels
 dependencies:
