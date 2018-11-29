@@ -20,7 +20,7 @@ to release. Stay tuned for an upcoming release!
 * Install the [Anaconda distribution](https://www.anaconda.com/distribution/) of Python
 * Clone this repository to a directory on your computer
 * From the terminal (or Conda command prompt), navigate to the directory to which you cloned this repository and run `conda env create -f environment.yml`
-* Then, `source activate ospcdyn` (on Mac/Linux) or `activate ospcdyn` on Windows.
+* Then, `source activate ogusa-dev` (on Mac/Linux) or `activate ogusa-dev` on Windows.
 * Then install by `pip install -e .`
 * Navigate to `./run_examples`
 * Run the model with an example reform from terminal/command prompt by typing `python run_ogusa_example.py`
