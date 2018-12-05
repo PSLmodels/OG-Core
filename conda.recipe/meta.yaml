@@ -1,27 +1,25 @@
 package:
   name: ogusa
-  version: 0.5.10
+  version: 0.0.0
+
+source:
+  path: ..
 
 requirements:
   build:
-    - python
-    - pip
-    - matplotlib
-    - numpy >=1.12.1
-    - pandas >=0.20.1
-    - scipy
-    - setuptools
+    - python=3.6
     - taxcalc
+    - setuptools
+    - scipy
+    - matplotlib
+    - dask
 
   run:
-    - matplotlib
-    - numpy >=1.12.1
-    - pandas >=0.20.1
-    - pytest
-    - python
-    - scipy
-    - setuptools
+    - python=3.6
     - taxcalc
+    - setuptools
+    - scipy
+    - matplotlib
     - dask
 
 about:
@@ -32,7 +30,6 @@ test:
     - ogusa
     - ogusa.SS
     - ogusa.TPI
-    - ogusa.calibrate
     - ogusa.demographics
     - ogusa.elliptical_u_est
     - ogusa.firm
@@ -46,5 +43,3 @@ test:
     - ogusa.tax
     - ogusa.txfunc
     - ogusa.utils
-    - ogusa.wealth
-    - ogusa.wealthinit

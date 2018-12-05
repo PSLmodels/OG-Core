@@ -1,6 +1,6 @@
 # OG-USA
 
-OG-USA is an overlapping-generations (OG) model of the economy of the United States (USA) that allows for dynamic general equilibrium analysis of federal tax policy. The model output focuses changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Careful documentation of the model--its output, and solution method--is available [here](https://github.com/rickecon/OG-USA/blob/doc/documentation/OGUSAdoc.pdf) and is regularly updated.
+OG-USA is an overlapping-generations (OG) model of the economy of the United States (USA) that allows for dynamic general equilibrium analysis of federal tax policy. The model output focuses changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Careful documentation of the model--its output, and solution method--is available [here](https://github.com/open-source-economics/OG-USA/blob/master/documentation/OGUSAdoc.pdf) and is regularly updated.
 
 
 ## Disclaimer
@@ -20,8 +20,8 @@ to release. Stay tuned for an upcoming release!
 * Install the [Anaconda distribution](https://www.anaconda.com/distribution/) of Python
 * Clone this repository to a directory on your computer
 * From the terminal (or Conda command prompt), navigate to the directory to which you cloned this repository and run `conda env create -f environment.yml`
-* Then, `source activate ospcdyn` (on Mac/Linux) or `conda activate ospcdyn` on Windows.
-* Then install by `python setup.py install` (use `python setup.py develop` if you would like to modifty the code base and run the updated model)
+* Then, `source activate ogusa-dev` (on Mac/Linux) or `activate ogusa-dev` on Windows.
+* Then install by `pip install -e .`
 * Navigate to `./run_examples`
 * Run the model with an example reform from terminal/command prompt by typing `python run_ogusa_example.py`
 * You can adjust the `./run_examples/run_ogusa_example.py` by adjusting the individual income tax reform (using a dictionary or JSON file in a format that is consistent with [Tax Calculator](https://github.com/open-source-economics/Tax-Calculator)) or other model parameters specified in the `user_params` or `kwargs` dictionaries.
