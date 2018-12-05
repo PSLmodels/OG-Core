@@ -120,6 +120,12 @@ class Specifications(ParametersBase):
         self.world_int_rate = np.squeeze(self.world_int_rate)
         self.delta_tau = np.squeeze(self.delta_tau)
         self.tau_b = np.squeeze(self.tau_b)
+        self.tau_bq = np.squeeze(self.tau_bq)
+        self.tau_payroll = np.squeeze(self.tau_payroll)
+        self.h_wealth = np.squeeze(self.h_wealth)
+        self.m_wealth = np.squeeze(self.m_wealth)
+        self.p_wealth = np.squeeze(self.p_wealth)
+        self.retirement_age = np.squeeze(self.retirement_age)
         self.alpha_G = np.concatenate((
             self.alpha_G, np.ones((self.T + self.S - self.alpha_G.size)) *
             self.alpha_G[-1]))
@@ -141,6 +147,30 @@ class Specifications(ParametersBase):
             self.tau_b,
             np.ones((self.T + self.S - self.tau_b.size))
             * self.tau_b[-1]))
+        self.tau_bq = np.concatenate((
+            self.tau_bq,
+            np.ones((self.T + self.S - self.tau_bq.size))
+            * self.tau_bq[-1]))
+        self.tau_payroll = np.concatenate((
+            self.tau_payroll,
+            np.ones((self.T + self.S - self.tau_payroll.size))
+            * self.tau_payroll[-1]))
+        self.h_wealth = np.concatenate((
+            self.h_wealth,
+            np.ones((self.T + self.S - self.h_wealth.size))
+            * self.h_wealth[-1]))
+        self.m_wealth = np.concatenate((
+            self.m_wealth,
+            np.ones((self.T + self.S - self.m_wealth.size))
+            * self.m_wealth[-1]))
+        self.p_wealth = np.concatenate((
+            self.p_wealth,
+            np.ones((self.T + self.S - self.p_wealth.size))
+            * self.p_wealth[-1]))
+        self.retirement_age = np.concatenate((
+            self.retirement_age,
+            np.ones((self.T + self.S - self.retirement_age.size))
+            * self.retirement_age[-1]))
 
         # open economy parameters
         firm_r_annual = self.world_int_rate
@@ -153,9 +183,12 @@ class Specifications(ParametersBase):
                          self.S) - 1)
 
         # set period of retirement
-        self.retire = np.int(np.round(((self.retirement_age -
+        # self.retire = np.int(np.round(((self.retirement_age -
+        #                                 self.starting_age) * self.S) /
+        #                               80.0) - 1)
+        self.retire = (np.round(((self.retirement_age -
                                         self.starting_age) * self.S) /
-                                      80.0) - 1)
+                                      80.0) - 1).astype(int)
 
         # get population objects
         (self.omega, self.g_n_ss, self.omega_SS, self.surv_rate,

@@ -122,11 +122,12 @@ def euler_equation_solver(guesses, *args):
 
     error1 = household.FOC_savings(r, w, b_s, b_splus1, n_guess, BQ,
                                    factor, T_H, theta, p.e[:, j], p.rho,
-                                   p.retire, p.etr_params[-1, :, :],
+                                   p.retire[-1], p.etr_params[-1, :, :],
                                    p.mtry_params[-1, :, :], j, p, 'SS')
     error2 = household.FOC_labor(r, w, b_s, b_splus1, n_guess, BQ,
                                  factor, T_H, theta, p.chi_n, p.e[:, j],
-                                 p.retire, p.etr_params[-1, :, :],
+                                 p.retire[-1], p.tau_payroll[-1],
+                                 p.etr_params[-1, :, :],
                                  p.mtrx_params[-1, :, :], j, p, 'SS')
 
     # Put in constraints for consumption and savings.
@@ -145,7 +146,7 @@ def euler_equation_solver(guesses, *args):
     error1[mask5] = 1e14
     error2[mask4] = 1e14
     taxes = tax.total_taxes(r, w, b_s, n_guess, BQ, factor, T_H, theta,
-                            j, False, 'SS', p.e[:, j], p.retire,
+                            j, False, 'SS', p.e[:, j], p.retire[-1],
                             p.etr_params[-1, :, :], p)
     cons = household.get_cons(r, w, b_s, b_splus1, n_guess, BQ, taxes,
                               p.e[:, j], j, p)
@@ -469,7 +470,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
     # solve resource constraint
     taxss = tax.total_taxes(rss, wss, bssmat_s, nssmat, BQss, factor_ss,
                             T_Hss, theta, None, False, 'SS',
-                            p.e, p.retire, etr_params_3D, p)
+                            p.e, p.retire[-1], etr_params_3D, p)
     cssmat = household.get_cons(rss, wss, bssmat_s, bssmat_splus1,
                                 nssmat, BQss.reshape(1, p.J), taxss,
                                 p.e, None, p)

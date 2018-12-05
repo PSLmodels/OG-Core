@@ -235,7 +235,7 @@ def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
 
 
 def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, chi_n, e,
-              retire, etr_params, mtrx_params, j, p, method):
+              retire, tau_payroll, etr_params, mtrx_params, j, p, method):
     '''
     Computes Euler errors for the FOC for labor supply in the steady
     state.  This function is usually looped through over J, so it does
@@ -303,7 +303,7 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, chi_n, e,
     taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
                             method, e, retire, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, e, j, p)
-    deriv = (1 - p.tau_payroll - tax.MTR_income(r, w, b, n, factor,
+    deriv = (1 - tau_payroll - tax.MTR_income(r, w, b, n, factor,
                                                 False, e, etr_params,
                                                 mtrx_params, p))
     FOC_error = (marg_ut_cons(cons, p.sigma) * w * deriv * e -

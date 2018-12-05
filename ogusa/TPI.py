@@ -184,8 +184,8 @@ def firstdoughnutring(guesses, r, w, BQ, T_H, theta, factor, j,
     error2 = household.FOC_labor(
         np.array([r]), np.array([w]), b_s, b_splus1, np.array([n]),
         np.array([BQ]), factor, np.array([T_H]), theta[j], p.chi_n[-1],
-        p.e[-1, j], 0, p.etr_params[0, -1, :], p.mtrx_params[0, -1, :],
-        j, p, 'SS')
+        p.e[-1, j], 0, p.tau_payroll[0], p.etr_params[0, -1, :],
+        p.mtrx_params[0, -1, :], j, p, 'SS')
 
     if n <= 0 or n >= 1:
         error2 += 1e12
@@ -237,18 +237,18 @@ def twist_doughnut(guesses, r, w, BQ, T_H, theta, factor, j, s, t, etr_params,
     rho_s = p.rho[-length:]
     BQ_s = BQ[t:t + length]
     T_H_s = T_H[t:t + length]
+    retire_s = p.retire[t:t + length]
+    tau_payroll_s = p.tau_payroll[t:t + length]
 
-    # print('sizes = ', r_s.shape, b_s.shape, w_s.shape, n_s.shape, e_s.shape)
-    # print('length = ', length, r.shape, w.shape, t)
     error1 = household.FOC_savings(r_s, w_s, b_s, b_splus1, n_s, BQ_s,
                                    factor, T_H_s, theta, e_s, rho_s,
-                                   p.retire, etr_params,
+                                   retire_s, etr_params,
                                    mtry_params, j, p, 'TPI')
 
     error2 = household.FOC_labor(r_s, w_s, b_s, b_splus1, n_s, BQ_s,
                                  factor, T_H_s, theta, chi_n_s, e_s,
-                                 p.retire, etr_params, mtrx_params, j,
-                                 p, 'TPI')
+                                 retire_s, tau_payroll_s, etr_params,
+                                 mtrx_params, j, p, 'TPI')
 
     # Check and punish constraint violations
     mask1 = n_guess < 0
@@ -688,7 +688,7 @@ def run_TPI(p, client=None):
     tax_path = tax.total_taxes(r[:p.T], w[:p.T], bmat_s,
                                n_mat[:p.T, :, :], BQnew_3D[:p.T, :, :],
                                factor, T_H[:p.T], theta, None, False,
-                               'TPI', p.e, p.retire, etr_params_4D, p)
+                               'TPI', p.e, p.retire[:p.T], etr_params_4D, p)
     rpath = utils.to_timepath_shape(r, p)
     wpath = utils.to_timepath_shape(w, p)
     c_path = household.get_cons(rpath[:p.T, :, :], wpath[:p.T, :, :],
