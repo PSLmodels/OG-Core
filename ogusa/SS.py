@@ -235,7 +235,7 @@ def inner_loop(outer_loop_vars, p, client):
     if not p.small_open:
         new_r = firm.get_r(Y, K, p, 'SS')
     else:
-        new_r = p.ss_hh_r
+        new_r = p.hh_r[-1]
     new_w = firm.get_w_from_r(new_r, p, 'SS')
     print('inner factor prices: ', new_r, new_w)
 
@@ -261,7 +261,7 @@ def inner_loop(outer_loop_vars, p, client):
     elif p.baseline_spending:
         new_T_H = T_H
     else:
-        new_T_H = p.alpha_T * new_Y
+        new_T_H = p.alpha_T[-1] * new_Y
 
     return euler_errors, bssmat, nssmat, new_r, new_w, \
         new_T_H, new_Y, new_factor, new_BQ, average_income_model
@@ -335,9 +335,9 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
     # Rename the inputs
     if not p.budget_balance:
         if not p.baseline_spending:
-            Y = T_H / p.alpha_T
+            Y = T_H / p.alpha_T[-1]
     if p.small_open:
-        r = p.ss_hh_r
+        r = p.ss_hh_r[-1]
 
     dist = 10
     iteration = 0
@@ -418,7 +418,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
         Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS')
     else:
         # Compute capital (K) and wealth (B) separately
-        Kss = firm.get_K(Lss, p.ss_firm_r, p, 'SS')
+        Kss = firm.get_K(Lss, p.ss_firm_r[-1], p, 'SS')
         InvestmentPlaceholder = np.zeros(bssmat_splus1.shape)
         Iss = aggr.get_I(InvestmentPlaceholder, Kss, Kss, p, 'SS')
         Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
@@ -435,9 +435,9 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
 
     etr_params_3D = np.tile(np.reshape(
         p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])), (1, p.J, 1))
-    total_revenue_ss = aggr.revenue(rss, wss, bssmat_s, nssmat, BQss, Yss,
-                              Lss, Kss, factor, theta,
-                              etr_params_3D, p, 'SS')
+    total_revenue_ss = aggr.revenue(
+        rss, wss, bssmat_s, nssmat, BQss, Yss, Lss, Kss, factor, theta,
+        etr_params_3D, p, 'SS')
     r_gov_ss = rss
     debt_service_ss = r_gov_ss * p.debt_ratio_ss * Yss
     new_borrowing = p.debt_ratio_ss * Yss * ((1 + p.g_n_ss) *
@@ -474,7 +474,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
                                 nssmat, BQss.reshape(1, p.J), taxss,
                                 p.e, None, p)
 
-    business_revenue = tax.get_biz_tax(wss, Yss, Lss, Kss, p)
+    business_revenue = tax.get_biz_tax(wss, Yss, Lss, Kss, p, 'SS')
     IITpayroll_revenue = total_revenue_ss - business_revenue
 
     Css = aggr.get_C(cssmat, p, 'SS')
@@ -483,7 +483,8 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
     if p.small_open:
         # include term for current account
         resource_constraint = (Yss + new_borrowing - (Css + BIss + Gss)
-                               + (p.ss_hh_r * Bss - (p.delta + p.ss_firm_r) *
+                               + (p.ss_hh_r[-1] * Bss -
+                                  (p.delta + p.ss_firm_r[-1]) *
                                   Kss - debt_service_ss))
         print('Yss= ', Yss, '\n', 'Css= ', Css, '\n', 'Bss = ', Bss,
               '\n', 'BIss = ', BIss, '\n', 'Kss = ', Kss, '\n', 'Iss = ',
@@ -585,7 +586,7 @@ def SS_fsolve(guesses, *args):
     if p.budget_balance:
         outer_loop_vars = (bssmat, nssmat, r, T_H, factor)
     else:
-        Y = T_H / p.alpha_T
+        Y = T_H / p.alpha_T[-1]
         outer_loop_vars = (bssmat, nssmat, r, Y, T_H, factor)
     (euler_errors, bssmat, nssmat, new_r, new_w, new_T_H, new_Y,
      new_factor, new_BQ, average_income_model) =\
@@ -648,7 +649,7 @@ def SS_fsolve_reform(guesses, *args):
     if p.budget_balance:
         outer_loop_vars = (bssmat, nssmat, r, T_H, factor)
     else:
-        Y = T_H / p.alpha_T
+        Y = T_H / p.alpha_T[-1]
         outer_loop_vars = (bssmat, nssmat, r, Y, T_H, factor)
 
     (euler_errors, bssmat, nssmat, new_r, new_w, new_T_H, new_Y,
@@ -790,7 +791,7 @@ def run_SS(p, client=None):
         if ENFORCE_SOLUTION_CHECKS and not ier == 1:
             raise RuntimeError('Steady state equilibrium not found')
         [rss, T_Hss, factor_ss] = solutions_fsolve
-        Yss = T_Hss/p.alpha_T  # may not be right - if budget_balance
+        Yss = T_Hss/p.alpha_T[-1]  # may not be right - if budget_balance
         # = True, but that's ok - will be fixed in SS_solver
         fsolve_flag = True
         # Return SS values of variables
@@ -820,7 +821,7 @@ def run_SS(p, client=None):
                            args=ss_params_reform, xtol=p.mindist_SS,
                            full_output=True)
             [rss, T_Hss] = solutions_fsolve
-            Yss = T_Hss/p.alpha_T  # may not be right - if
+            Yss = T_Hss/p.alpha_T[-1]  # may not be right - if
             # budget_balance = True, but that's ok - will be fixed in
             # SS_solver
         if ENFORCE_SOLUTION_CHECKS and not ier == 1:

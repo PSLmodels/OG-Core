@@ -112,32 +112,45 @@ class Specifications(ParametersBase):
         self.delta_tau = (1 - ((1 - self.delta_tau_annual) **
                                ((self.ending_age - self.starting_age) /
                                 self.S)))
-        # open economy parameters
-        self.ss_firm_r_annual = self.world_int_rate
-        self.ss_hh_r_annual = self.ss_firm_r_annual
-        self.ss_firm_r = ((1 + self.ss_firm_r_annual) **
-                          ((self.ending_age - self.starting_age) /
-                           self.S) - 1)
-        self.ss_hh_r = ((1 + self.ss_hh_r_annual) **
-                        ((self.ending_age - self.starting_age) /
-                         self.S) - 1)
-        self.tpi_firm_r = np.ones(self.T+self.S) * self.ss_firm_r
-        self.tpi_hh_r = np.ones(self.T+self.S) * self.ss_hh_r
-        self.tG2 = int(self.T * 0.8)
-        T_shift = np.concatenate((
-            self.T_shifts, np.zeros((self.T + self.S -
-                                     self.T_shifts.size, 1))))
-        G_shift = np.concatenate((
-            self.G_shifts, np.zeros((self.T - self.G_shifts.size, 1))))
-        self.ALPHA_T = (np.ones(self.T + self.S) * self.alpha_T +
-                        np.squeeze(T_shift))
-        self.ALPHA_G = (np.ones(self.T) * self.alpha_G +
-                        np.squeeze(G_shift))
 
         # Extend parameters that may vary over the time path
+        self.alpha_G = np.squeeze(self.alpha_G)
+        self.alpha_T = np.squeeze(self.alpha_T)
+        self.Z = np.squeeze(self.Z)
+        self.world_int_rate = np.squeeze(self.world_int_rate)
+        self.delta_tau = np.squeeze(self.delta_tau)
+        self.tau_b = np.squeeze(self.tau_b)
+        self.alpha_G = np.concatenate((
+            self.alpha_G, np.ones((self.T + self.S - self.alpha_G.size)) *
+            self.alpha_G[-1]))
+        self.alpha_T = np.concatenate((
+            self.alpha_T, np.ones((self.T + self.S - self.alpha_T.size)) *
+            self.alpha_T[-1]))
         self.Z = np.concatenate((
-            self.Z, np.ones((self.T + self.S - self.Z.size, 1)) *
+            self.Z, np.ones((self.T + self.S - self.Z.size)) *
             self.Z[-1]))
+        self.world_int_rate = np.concatenate((
+            self.world_int_rate,
+            np.ones((self.T + self.S - self.world_int_rate.size))
+            * self.world_int_rate[-1]))
+        self.delta_tau = np.concatenate((
+            self.delta_tau,
+            np.ones((self.T + self.S - self.delta_tau.size))
+            * self.delta_tau[-1]))
+        self.tau_b = np.concatenate((
+            self.tau_b,
+            np.ones((self.T + self.S - self.tau_b.size))
+            * self.tau_b[-1]))
+
+        # open economy parameters
+        firm_r_annual = self.world_int_rate
+        hh_r_annual = firm_r_annual
+        self.firm_r = ((1 + firm_r_annual) **
+                       ((self.ending_age - self.starting_age) /
+                           self.S) - 1)
+        self.hh_r = ((1 + hh_r_annual) **
+                     ((self.ending_age - self.starting_age) /
+                         self.S) - 1)
 
         # set period of retirement
         self.retire = np.int(np.round(((self.retirement_age -

@@ -53,7 +53,7 @@ def get_Y(K, L, p, method):
     if method == 'SS':
         Z = p.Z[-1]
     else:
-        Z = np.squeeze(p.Z[:p.T])
+        Z = p.Z[:p.T]
     if p.epsilon == 1:
         # Unit elasticity, Cobb-Douglas
         Y = Z * (K ** p.gamma) * (L ** (1 - p.gamma))
@@ -101,11 +101,15 @@ def get_r(Y, K, p, method):
     '''
     if method == 'SS':
         Z = p.Z[-1]
+        delta_tau = p.delta_tau[-1]
+        tau_b = p.tau_b[-1]
     else:
-        Z = np.squeeze(p.Z[:p.T])
-    r = ((1 - p.tau_b) * (Z ** ((p.epsilon - 1) / p.epsilon)) *
+        Z = p.Z[:p.T]
+        delta_tau = p.delta_tau[:p.T]
+        tau_b = p.tau_b[:p.T]
+    r = ((1 - tau_b) * (Z ** ((p.epsilon - 1) / p.epsilon)) *
          (((p.gamma * Y) / K) ** (1 / p.epsilon)) -
-         p.delta + p.tau_b * p.delta_tau)
+         p.delta + tau_b * delta_tau)
 
     return r
 
@@ -139,7 +143,7 @@ def get_w(Y, L, p, method):
     if method == 'SS':
         Z = p.Z[-1]
     else:
-        Z = np.squeeze(p.Z[:p.T])
+        Z = p.Z[:p.T]
     w = ((Z ** ((p.epsilon - 1) / p.epsilon)) *
          ((((1 - p.gamma) * Y) / L) ** (1 / p.epsilon)))
 
@@ -178,17 +182,21 @@ def get_KLratio_from_r(r, p, method):
     '''
     if method == 'SS':
         Z = p.Z[-1]
+        delta_tau = p.delta_tau[-1]
+        tau_b = p.tau_b[-1]
     else:
-        Z = np.squeeze(p.Z[:p.T])
+        Z = p.Z[:p.T]
+        delta_tau = p.delta_tau[:p.T]
+        tau_b = p.tau_b[:p.T]
     if p.epsilon == 1:
         # Cobb-Douglas case
-        bracket = (((1 - p.tau_b) * p.gamma * Z) /
-                   (r + p.delta - p.tau_b * p.delta_tau))
+        bracket = (((1 - tau_b) * p.gamma * Z) /
+                   (r + p.delta - tau_b * delta_tau))
         KLratio = bracket ** (1 / (1 - p.gamma))
     else:
         # General CES case
-        bracket = ((r + p.delta - (p.delta_tau * p.tau_b)) /
-                   ((1 - p.tau_b) * Z * (p.gamma ** (1 / p.epsilon))))
+        bracket = ((r + p.delta - (delta_tau * tau_b)) /
+                   ((1 - tau_b) * Z * (p.gamma ** (1 / p.epsilon))))
         KLratio = \
             ((((1 - p.gamma) ** (1 / p.epsilon)) /
               ((bracket ** (p.epsilon - 1)) -
@@ -229,7 +237,7 @@ def get_w_from_r(r, p, method):
     if method == 'SS':
         Z = p.Z[-1]
     else:
-        Z = np.squeeze(p.Z[:p.T])
+        Z = p.Z[:p.T]
     KLratio = get_KLratio_from_r(r, p, method)
     if p.epsilon == 1:
         # Cobb-Douglas case

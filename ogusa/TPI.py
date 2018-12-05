@@ -430,7 +430,7 @@ def run_TPI(p, client=None):
         else:
             K_init = B_init * Kss / Bss
     else:
-        K_init = firm.get_K(L_init, p.tpi_firm_r, p, 'TPI')
+        K_init = firm.get_K(L_init, p.firm_r, p, 'TPI')
 
     K = K_init
 
@@ -444,7 +444,7 @@ def run_TPI(p, client=None):
         r[:p.T] = firm.get_r(Y[:p.T], K[:p.T], p, 'TPI')
         r[p.T:] = rss
     else:
-        r = p.tpi_hh_r
+        r = p.hh_r
     # compute w
     w = np.zeros_like(r)
     w[:p.T] = firm.get_w_from_r(r[:p.T], p, 'TPI')
@@ -466,7 +466,7 @@ def run_TPI(p, client=None):
         total_revenue = T_H
         G = np.zeros(p.T + p.S)
     elif not p.baseline_spending:
-        T_H = p.ALPHA_T * Y
+        T_H = p.alpha_T * Y
     elif p.baseline_spending:
         T_H = T_Hbaseline
         T_H_new = p.T_H   # Need to set T_H_new for later reference
@@ -551,7 +551,7 @@ def run_TPI(p, client=None):
                 K[:p.T] = B[:p.T]
             else:
                 if not p.baseline_spending:
-                    Y = T_H / p.ALPHA_T  # maybe unecessary
+                    Y = T_H / p.alpha_T  # maybe unecessary
 
                 total_revenue = np.array(list(
                     aggr.revenue(r[:p.T], w[:p.T], bmat_s,
@@ -566,7 +566,7 @@ def run_TPI(p, client=None):
                 else:
                     D_0 = D0
                 if not p.baseline_spending:
-                    G_0 = p.ALPHA_G[0] * Y[0]
+                    G_0 = p.alpha_G[0] * Y[0]
                 dg_fixed_values = (Y, total_revenue, T_H, D_0, G_0)
                 Dnew, G = fiscal.D_G_path(r, dg_fixed_values, Gbaseline,
                                           p)
@@ -577,7 +577,7 @@ def run_TPI(p, client=None):
                           'positive to prevent NAN.')
                     K[:p.T] = np.fmax(K[:p.T], 0.05 * B[:p.T])
         else:
-            K[:p.T] = firm.get_K(L[:p.T], p.tpi_firm_r[:p.T], p, 'TPI')
+            K[:p.T] = firm.get_K(L[:p.T], p.firm_r[:p.T], p, 'TPI')
         Ynew = firm.get_Y(K[:p.T], L[:p.T], p, 'TPI')
         if not p.small_open:
             rnew = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
@@ -600,7 +600,7 @@ def run_TPI(p, client=None):
         if p.budget_balance:
             T_H_new = total_revenue
         elif not p.baseline_spending:
-            T_H_new = p.ALPHA_T[:p.T] * Ynew[:p.T]
+            T_H_new = p.alpha_T[:p.T] * Ynew[:p.T]
         # If baseline_spending==True, no need to update T_H, it's fixed
 
         if p.small_open and not p.budget_balance:
@@ -611,7 +611,7 @@ def run_TPI(p, client=None):
             else:
                 D_0 = D0
             if not p.baseline_spending:
-                G_0 = p.ALPHA_G[0] * Ynew[0]
+                G_0 = p.alpha_G[0] * Ynew[0]
             dg_fixed_values = (Ynew, total_revenue, T_H, D_0, G_0)
             Dnew, G = fiscal.D_G_path(r, dg_fixed_values, Gbaseline, p)
 
@@ -708,9 +708,9 @@ def run_TPI(p, client=None):
                          np.exp(p.g_y) - D[:p.T - 1])
         rc_error = (Y[:p.T - 1] + new_borrowing - (
             C[:p.T - 1] + BI[:p.T - 1] + G[:p.T - 1]) +
-                    (p.tpi_hh_r[:p.T - 1] * B[:p.T - 1] - (
-                        p.delta + p.tpi_firm_r[:p.T - 1]) * K[:p.T - 1] -
-                     p.tpi_hh_r[:p.T - 1] * D[:p.T - 1]))
+                    (p.hh_r[:p.T - 1] * B[:p.T - 1] - (
+                        p.delta + p.firm_r[:p.T - 1]) * K[:p.T - 1] -
+                     p.hh_r[:p.T - 1] * D[:p.T - 1]))
 
     # Compute total investment (not just domestic)
     I_total = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
@@ -718,7 +718,7 @@ def run_TPI(p, client=None):
 
     # Compute business and invidiual income tax revenue
     business_revenue = tax.get_biz_tax(w[:p.T], Y[:p.T], L[:p.T],
-                                       K[:p.T], p)
+                                       K[:p.T], p, 'TPI')
     IITpayroll_revenue = total_revenue[:p.T] - business_revenue[:p.T]
     rce_max = np.amax(np.abs(rc_error))
     print('Max absolute value resource constraint error:', rce_max)

@@ -292,7 +292,7 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p, method):
         T_P[p.retire:] -= theta * w
         T_W = tax.ETR_wealth(b, p) * b
         T_BQ = p.tau_bq * (BQ / np.transpose(p.lambdas))
-        business_revenue = tax.get_biz_tax(w, Y, L, K, p)
+        business_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
         REVENUE = ((np.transpose(p.omega_SS * p.lambdas) *
                     (T_I + T_P + T_BQ + T_W)).sum() + business_revenue)
     elif method == 'TPI':
@@ -306,7 +306,7 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p, method):
         T_P[:, p.retire:, :] -= theta.reshape(1, 1, p.J) * w_array
         T_W = tax.ETR_wealth(b, p) * b
         T_BQ = p.tau_bq * BQ / np.squeeze(p.lambdas)
-        business_revenue = tax.get_biz_tax(w, Y, L, K, p)
+        business_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
         REVENUE = ((((np.squeeze(p.lambdas)) *
                    np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
                            (1, 1, p.J)))

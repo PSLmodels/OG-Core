@@ -355,7 +355,7 @@ def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params,
     return tau
 
 
-def get_biz_tax(w, Y, L, K, p):
+def get_biz_tax(w, Y, L, K, p, method):
     '''
     Finds total business income tax receipts
     Inputs:
@@ -369,7 +369,13 @@ def get_biz_tax(w, Y, L, K, p):
     Returns: T_H
 
     '''
-    business_revenue = p.tau_b * (Y - w * L) - p.tau_b * p.delta_tau * K
+    if method == 'SS':
+        delta_tau = p.delta_tau[-1]
+        tau_b = p.tau_b[-1]
+    else:
+        delta_tau = p.delta_tau[:p.T]
+        tau_b = p.tau_b[:p.T]
+    business_revenue = tau_b * (Y - w * L) - tau_b * delta_tau * K
     return business_revenue
 
 
