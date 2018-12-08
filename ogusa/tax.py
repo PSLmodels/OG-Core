@@ -465,13 +465,17 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
         if len(b.shape) != 3:
             for t in range(T_P.shape[0]):
                 T_P[retireTPI[t]:] -= theta[j] * w[t]
+            T_W = (ETR_wealth(b, p.h_wealth[:length],
+                              p.m_wealth[:length],
+                              p.p_wealth[:length]) * b)
         else:
             for t in range(T_P.shape[0]):
                 T_P[t, retire[t]:, :] -= (theta.reshape(1, 1, p.J) * w[t])
-        T_BQ = p.tau_bq[:p.T].reshape(p.T, 1) * BQ / lambdas
-        T_W = (ETR_wealth(b, p.h_wealth[:length].reshape(length, 1, 1),
-                          p.m_wealth[:length].reshape(length, 1, 1),
-                          p.p_wealth[:length].reshape(length, 1, 1)) * b)
+                T_W = (ETR_wealth(
+                    b, p.h_wealth[:length].reshape(length, 1, 1),
+                    p.m_wealth[:length].reshape(length, 1, 1),
+                    p.p_wealth[:length].reshape(length, 1, 1)) * b)
+        T_BQ = p.tau_bq[:length] * BQ / lambdas
     elif method == 'TPI_scalar':
         # The above methods won't work if scalars are used.  This option
         # is only called by the SS_TPI_firstdoughnutring function in TPI.
