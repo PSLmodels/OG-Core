@@ -74,6 +74,7 @@ class Specifications(ParametersBase):
             values = data.get('value', None)
             setattr(self, name, self._expand_array(values, intg_val,
                                                    bool_val, string_val))
+
         if self.test:
             # Make smaller statespace for testing
             self.S = int(40)
@@ -114,18 +115,35 @@ class Specifications(ParametersBase):
                                 self.S)))
 
         # Extend parameters that may vary over the time path
-        self.alpha_G = np.squeeze(self.alpha_G)
-        self.alpha_T = np.squeeze(self.alpha_T)
-        self.Z = np.squeeze(self.Z)
-        self.world_int_rate = np.squeeze(self.world_int_rate)
-        self.delta_tau = np.squeeze(self.delta_tau)
-        self.tau_b = np.squeeze(self.tau_b)
-        self.tau_bq = np.squeeze(self.tau_bq)
-        self.tau_payroll = np.squeeze(self.tau_payroll)
-        self.h_wealth = np.squeeze(self.h_wealth)
-        self.m_wealth = np.squeeze(self.m_wealth)
-        self.p_wealth = np.squeeze(self.p_wealth)
-        self.retirement_age = np.squeeze(self.retirement_age)
+        # use something like self._vals[param_name] to loop over these vars???
+        if self.alpha_G.ndim > 1:
+            self.alpha_G = np.squeeze(self.alpha_G, axis=1)
+        if self.alpha_T.ndim > 1:
+            self.alpha_T = np.squeeze(self.alpha_T, axis=1)
+        if self.Z.ndim > 1:
+            self.Z = np.squeeze(self.Z, axis=1)
+        if self.world_int_rate.ndim > 1:
+            self.world_int_rate = np.squeeze(self.world_int_rate, axis=1)
+        if self.delta_tau.ndim > 1:
+            self.delta_tau = np.squeeze(self.delta_tau, axis=1)
+        if self.tau_b.ndim > 1:
+            self.tau_b = np.squeeze(self.tau_b, axis=1)
+        if self.tau_bq.ndim > 1:
+            self.tau_bq = np.squeeze(self.tau_bq, axis=1)
+        if self.tau_payroll.ndim > 1:
+            self.tau_payroll = np.squeeze(self.tau_payroll, axis=1)
+        if self.h_wealth.ndim > 1:
+            self.h_wealth = np.squeeze(self.h_wealth, axis=1)
+        if self.m_wealth.ndim > 1:
+            self.m_wealth = np.squeeze(self.m_wealth, axis=1)
+        print('Sizes p_wealth at 0 = ', self.p_wealth.shape)
+        if self.p_wealth.ndim > 1:
+            self.p_wealth = np.squeeze(self.p_wealth, axis=1)
+        print('Sizes retirement_age at 0 = ', self.retirement_age.shape)
+        if self.retirement_age.ndim > 1:
+            self.retirement_age = np.squeeze(self.retirement_age, axis=1)
+        print('Sizes retirement_age= ', self.retirement_age.shape)
+        print('Sizes p_wealth= ', self.p_wealth.shape)
         self.alpha_G = np.concatenate((
             self.alpha_G, np.ones((self.T + self.S - self.alpha_G.size)) *
             self.alpha_G[-1]))
@@ -187,8 +205,8 @@ class Specifications(ParametersBase):
         #                                 self.starting_age) * self.S) /
         #                               80.0) - 1)
         self.retire = (np.round(((self.retirement_age -
-                                        self.starting_age) * self.S) /
-                                      80.0) - 1).astype(int)
+                                  self.starting_age) * self.S) /
+                                80.0) - 1).astype(int)
 
         # get population objects
         (self.omega, self.g_n_ss, self.omega_SS, self.surv_rate,
@@ -204,7 +222,7 @@ class Specifications(ParametersBase):
             surv_rate1[1:] = np.cumprod(self.surv_rate[:-1], dtype=float)
             # number of each age alive at any time
             omega_SS = np.ones(self.S) * surv_rate1
-            self.omega_SS = omega_SS/omega_SS.sum()
+            self.omega_SS = omega_SS / omega_SS.sum()
             self.imm_rates = np.zeros((self.T + self.S, self.S))
             self.omega = np.tile(np.reshape(self.omega_SS, (1, self.S)),
                                  (self.T + self.S, 1))
@@ -627,9 +645,11 @@ class Specifications(ParametersBase):
                     else:
                         validation_value = np.full(param_value.shape,
                                                    validation_value)
+                    print('Parameter = ', param_name, ' shape = ', param_value.shape, validation_value.shape)
                     assert param_value.shape == validation_value.shape
                     for idx in np.ndindex(param_value.shape):
                         out_of_range = False
+                        # Ensure that parameter value is above minimum allowed
                         if validation_op == 'min' and (param_value[idx] <
                                                        validation_value[idx]):
                             out_of_range = True
@@ -637,6 +657,7 @@ class Specifications(ParametersBase):
                             extra = self._vals[param_name]['out_of_range_minmsg']
                             if extra:
                                 msg += ' {}'.format(extra)
+                        # Ensure that parameter value is below max allowed
                         if validation_op == 'max' and (param_value[idx] >
                                                        validation_value[idx]):
                             out_of_range = True
