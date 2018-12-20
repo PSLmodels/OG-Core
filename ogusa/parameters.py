@@ -110,85 +110,21 @@ class Specifications(ParametersBase):
         self.g_y = ((1 + self.g_y_annual) ** ((self.ending_age -
                                                self.starting_age) /
                                               self.S) - 1)
-        self.delta_tau = (1 - ((1 - self.delta_tau_annual) **
-                               ((self.ending_age - self.starting_age) /
-                                self.S)))
 
         # Extend parameters that may vary over the time path
-        # use something like self._vals[param_name] to loop over these vars???
-        if self.alpha_G.ndim > 1:
-            self.alpha_G = np.squeeze(self.alpha_G, axis=1)
-        if self.alpha_T.ndim > 1:
-            self.alpha_T = np.squeeze(self.alpha_T, axis=1)
-        if self.Z.ndim > 1:
-            self.Z = np.squeeze(self.Z, axis=1)
-        if self.world_int_rate.ndim > 1:
-            self.world_int_rate = np.squeeze(self.world_int_rate, axis=1)
-        if self.delta_tau.ndim > 1:
-            self.delta_tau = np.squeeze(self.delta_tau, axis=1)
-        if self.tau_b.ndim > 1:
-            self.tau_b = np.squeeze(self.tau_b, axis=1)
-        if self.tau_bq.ndim > 1:
-            self.tau_bq = np.squeeze(self.tau_bq, axis=1)
-        if self.tau_payroll.ndim > 1:
-            self.tau_payroll = np.squeeze(self.tau_payroll, axis=1)
-        if self.h_wealth.ndim > 1:
-            self.h_wealth = np.squeeze(self.h_wealth, axis=1)
-        if self.m_wealth.ndim > 1:
-            self.m_wealth = np.squeeze(self.m_wealth, axis=1)
-        print('Sizes p_wealth at 0 = ', self.p_wealth.shape)
-        if self.p_wealth.ndim > 1:
-            self.p_wealth = np.squeeze(self.p_wealth, axis=1)
-        print('Sizes retirement_age at 0 = ', self.retirement_age.shape)
-        if self.retirement_age.ndim > 1:
-            self.retirement_age = np.squeeze(self.retirement_age, axis=1)
-        print('Sizes retirement_age= ', self.retirement_age.shape)
-        print('Sizes p_wealth= ', self.p_wealth.shape)
-        self.alpha_G = np.concatenate((
-            self.alpha_G, np.ones((self.T + self.S - self.alpha_G.size)) *
-            self.alpha_G[-1]))
-        self.alpha_T = np.concatenate((
-            self.alpha_T, np.ones((self.T + self.S - self.alpha_T.size)) *
-            self.alpha_T[-1]))
-        self.Z = np.concatenate((
-            self.Z, np.ones((self.T + self.S - self.Z.size)) *
-            self.Z[-1]))
-        self.world_int_rate = np.concatenate((
-            self.world_int_rate,
-            np.ones((self.T + self.S - self.world_int_rate.size))
-            * self.world_int_rate[-1]))
-        self.delta_tau = np.concatenate((
-            self.delta_tau,
-            np.ones((self.T + self.S - self.delta_tau.size))
-            * self.delta_tau[-1]))
-        self.tau_b = np.concatenate((
-            self.tau_b,
-            np.ones((self.T + self.S - self.tau_b.size))
-            * self.tau_b[-1]))
-        self.tau_bq = np.concatenate((
-            self.tau_bq,
-            np.ones((self.T + self.S - self.tau_bq.size))
-            * self.tau_bq[-1]))
-        self.tau_payroll = np.concatenate((
-            self.tau_payroll,
-            np.ones((self.T + self.S - self.tau_payroll.size))
-            * self.tau_payroll[-1]))
-        self.h_wealth = np.concatenate((
-            self.h_wealth,
-            np.ones((self.T + self.S - self.h_wealth.size))
-            * self.h_wealth[-1]))
-        self.m_wealth = np.concatenate((
-            self.m_wealth,
-            np.ones((self.T + self.S - self.m_wealth.size))
-            * self.m_wealth[-1]))
-        self.p_wealth = np.concatenate((
-            self.p_wealth,
-            np.ones((self.T + self.S - self.p_wealth.size))
-            * self.p_wealth[-1]))
-        self.retirement_age = np.concatenate((
-            self.retirement_age,
-            np.ones((self.T + self.S - self.retirement_age.size))
-            * self.retirement_age[-1]))
+        tp_param_list = ['alpha_G', 'alpha_T', 'Z', 'world_int_rate',
+                         'delta_tau_annual', 'tau_b', 'tau_bq',
+                         'tau_payroll', 'h_wealth', 'm_wealth',
+                         'p_wealth', 'retirement_age']
+        for item in tp_param_list:
+            print('Working on attribute: ', item)
+            this_attr = getattr(self, item)
+            if this_attr.ndim > 1:
+                this_attr = np.squeeze(this_attr, axis=1)
+            this_attr = np.concatenate((
+                this_attr, np.ones((self.T + self.S - this_attr.size)) *
+                this_attr[-1]))
+            setattr(self, item, this_attr)
 
         # open economy parameters
         firm_r_annual = self.world_int_rate
@@ -207,6 +143,10 @@ class Specifications(ParametersBase):
         self.retire = (np.round(((self.retirement_age -
                                   self.starting_age) * self.S) /
                                 80.0) - 1).astype(int)
+
+        self.delta_tau = (1 - ((1 - self.delta_tau_annual) **
+                               ((self.ending_age - self.starting_age) /
+                                self.S)))
 
         # get population objects
         (self.omega, self.g_n_ss, self.omega_SS, self.surv_rate,
