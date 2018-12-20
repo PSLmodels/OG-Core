@@ -12,7 +12,7 @@ def test_replacement_rate_vals():
         'S': 4,
         'J': 1,
         'T': 4,
-        # sucks by need to enter all parameters that are extrapolated over time path...
+        # sucks that need to enter all parameters that are extrapolated over time path...
         'alpha_G': [0.05],
         'alpha_T': [0.09],
         'Z': [1.0],
