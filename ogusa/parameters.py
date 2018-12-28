@@ -117,10 +117,11 @@ class Specifications(ParametersBase):
                          'tau_payroll', 'h_wealth', 'm_wealth',
                          'p_wealth', 'retirement_age']
         for item in tp_param_list:
-            print('Working on attribute: ', item)
             this_attr = getattr(self, item)
             if this_attr.ndim > 1:
                 this_attr = np.squeeze(this_attr, axis=1)
+            if this_attr.size > self.T + self.S:
+                this_attr = this_attr[:self.T + self.S]
             this_attr = np.concatenate((
                 this_attr, np.ones((self.T + self.S - this_attr.size)) *
                 this_attr[-1]))
@@ -585,7 +586,6 @@ class Specifications(ParametersBase):
                     else:
                         validation_value = np.full(param_value.shape,
                                                    validation_value)
-                    print('Parameter = ', param_name, ' shape = ', param_value.shape, validation_value.shape)
                     assert param_value.shape == validation_value.shape
                     for idx in np.ndindex(param_value.shape):
                         out_of_range = False
