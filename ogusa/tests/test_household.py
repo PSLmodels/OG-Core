@@ -272,7 +272,6 @@ def test_FOC_savings(model_vars, params, expected):
             r, w, b, b_splus1, n, BQ, factor, T_H, theta,
             np.squeeze(params.e), params.rho,
             etr_params, mtry_params, t, j, params, method)
-    print('FOC savings = ', test_value)
     assert np.allclose(test_value, expected)
 
 

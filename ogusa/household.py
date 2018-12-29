@@ -218,7 +218,6 @@ def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
                   b_splus1 ** (-p.sigma))
     euler_error = np.zeros_like(n)
     if n.shape[0] > 1:
-        print('Sizes = ', cons.shape, deriv.shape, taxes.shape)
         euler_error[:-1] = (marg_ut_cons(cons[:-1], p.sigma) - p.beta *
                             (1 - rho[:-1]) * deriv[1:] *
                             marg_ut_cons(cons[1:], p.sigma) *

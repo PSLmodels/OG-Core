@@ -463,12 +463,10 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, shift, method,
             retireTPI = (p.retire[t: t + length] - 1 - p.S)
         if len(b.shape) == 1:
             T_P = p.tau_payroll[t: t + length] * w * e * n
-            print('These sizes = ', T_P[retireTPI[t]:].shape, w.shape, theta.shape)
             T_P[retireTPI[t]:] -= theta * w[retireTPI[t]:]
             T_W = (ETR_wealth(b, p.h_wealth[t:t + length],
                               p.m_wealth[t:t + length],
                               p.p_wealth[t:t + length]) * b)
-            print('BQ shape = ', BQ.shape, lambdas.shape)
             T_BQ = p.tau_bq[t:t + length] * BQ / lambdas
         elif len(b.shape) == 2:
             T_P = p.tau_payroll[t: t + length].reshape(length, 1) * w * e * n
@@ -487,7 +485,6 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, shift, method,
                 p.m_wealth[t:t + length].reshape(length, 1, 1),
                 p.p_wealth[t:t + length].reshape(length, 1, 1)) * b)
             T_BQ = p.tau_bq[t:t + length].reshape(length, 1, 1) * BQ / lambdas
-        print('Tax shapes TPI = ', T_I.shape, T_W.shape, T_BQ.shape, T_P.shape)
     elif method == 'TPI_scalar':
         # The above methods won't work if scalars are used.  This option
         # is only called by the SS_TPI_firstdoughnutring function in TPI.
