@@ -472,7 +472,7 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
         else:
             T_P = p.tau_payroll[:length].reshape(length, 1, 1) * w * e * n
             for t in range(T_P.shape[0]):
-                T_P[t, retire[t]:, :] -= (theta.reshape(1, p.J) * w[t, 0, 0])
+                T_P[t, retire[t]:, :] -= (theta.reshape(1, p.J) * w[t])
                 T_W = (ETR_wealth(
                     b, p.h_wealth[:length].reshape(length, 1, 1),
                     p.m_wealth[:length].reshape(length, 1, 1),
