@@ -379,8 +379,8 @@ def get_biz_tax(w, Y, L, K, p, method):
     return business_revenue
 
 
-def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
-                e, retire, etr_params, p):
+def total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, shift, method,
+                e, etr_params, p):
     '''
     Gives net taxes paid values.
     Inputs:
@@ -445,9 +445,9 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
         # at the correct age.
         T_P = p.tau_payroll[-1] * w * e * n
         if shift is False:
-            T_P[retire:] -= theta * w
+            T_P[p.retire[-1]:] -= theta * w
         else:
-            T_P[retire - 1:] -= theta * w
+            T_P[p.retire[-1] - 1:] -= theta * w
         T_BQ = p.tau_bq[-1] * (BQ / lambdas)
         T_W = (ETR_wealth(b, p.h_wealth[-1], p.m_wealth[-1],
                           p.p_wealth[-1]) * b)
@@ -458,26 +458,36 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
             # counting backwards with different length lists.  This will
             # always be the correct location of retirement, depending
             # on the shape of the lists.
-            retireTPI = (retire - p.S)
+            retireTPI = (p.retire[t: t + length] - p.S)
         else:
-            retireTPI = (retire - 1 - p.S)
-        if len(b.shape) != 3:
-            print('Going here')
-            T_P = p.tau_payroll[:length].reshape(length, 1) * w * e * n
-            for t in range(T_P.shape[0]):
-                T_P[t, retireTPI[t]:] -= theta * w[t]
-            T_W = (ETR_wealth(b, p.h_wealth[:length],
-                              p.m_wealth[:length],
-                              p.p_wealth[:length]) * b)
+            retireTPI = (p.retire[t: t + length] - 1 - p.S)
+        if len(b.shape) == 1:
+            T_P = p.tau_payroll[t: t + length] * w * e * n
+            print('These sizes = ', T_P[retireTPI[t]:].shape, w.shape, theta.shape)
+            T_P[retireTPI[t]:] -= theta * w[retireTPI[t]:]
+            T_W = (ETR_wealth(b, p.h_wealth[t:t + length],
+                              p.m_wealth[t:t + length],
+                              p.p_wealth[t:t + length]) * b)
+            print('BQ shape = ', BQ.shape, lambdas.shape)
+            T_BQ = p.tau_bq[t:t + length] * BQ / lambdas
+        elif len(b.shape) == 2:
+            T_P = p.tau_payroll[t: t + length].reshape(length, 1) * w * e * n
+            for tt in range(T_P.shape[0]):
+                T_P[tt, retireTPI[tt]:] -= theta * w[tt]
+            T_W = (ETR_wealth(b, p.h_wealth[t:t + length],
+                              p.m_wealth[t:t + length],
+                              p.p_wealth[t:t + length]) * b)
+            T_BQ = p.tau_bq[t:t + length].reshape(length, 1) * BQ / lambdas
         else:
-            T_P = p.tau_payroll[:length].reshape(length, 1, 1) * w * e * n
-            for t in range(T_P.shape[0]):
-                T_P[t, retire[t]:, :] -= (theta.reshape(1, p.J) * w[t])
-                T_W = (ETR_wealth(
-                    b, p.h_wealth[:length].reshape(length, 1, 1),
-                    p.m_wealth[:length].reshape(length, 1, 1),
-                    p.p_wealth[:length].reshape(length, 1, 1)) * b)
-        T_BQ = p.tau_bq[:length].reshape(length, 1, 1) * BQ / lambdas
+            T_P = p.tau_payroll[t:t + length].reshape(length, 1, 1) * w * e * n
+            for tt in range(T_P.shape[0]):
+                T_P[tt, retireTPI[tt]:, :] -= (theta.reshape(1, p.J) * w[tt])
+            T_W = (ETR_wealth(
+                b, p.h_wealth[t:t + length].reshape(length, 1, 1),
+                p.m_wealth[t:t + length].reshape(length, 1, 1),
+                p.p_wealth[t:t + length].reshape(length, 1, 1)) * b)
+            T_BQ = p.tau_bq[t:t + length].reshape(length, 1, 1) * BQ / lambdas
+        print('Tax shapes TPI = ', T_I.shape, T_W.shape, T_BQ.shape, T_P.shape)
     elif method == 'TPI_scalar':
         # The above methods won't work if scalars are used.  This option
         # is only called by the SS_TPI_firstdoughnutring function in TPI.

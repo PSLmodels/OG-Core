@@ -138,7 +138,7 @@ def get_cons(r, w, b, b_splus1, n, BQ, net_tax, e, j, p):
 
 
 def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
-                e, rho, retire, etr_params, mtry_params, j, p, method):
+                e, rho, etr_params, mtry_params, t, j, p, method):
     '''
     Computes Euler errors for the FOC for savings in the steady state.
     This function is usually looped through over J, so it does one
@@ -209,11 +209,8 @@ def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
         chi_b = p.chi_b[j]
     else:
         chi_b = p.chi_b
-    # if type(r) is not float:
-    #     if type(b) is not float:
-    #         print('sizes from households = ', r.shape, b.shape, w.shape, n.shape, e.shape)
-    taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
-                            method, e, retire, etr_params, p)
+    taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, False,
+                            method, e, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, e, j, p)
     deriv = ((1 + r) - r * (tax.MTR_income(r, w, b, n, factor, True, e,
                                            etr_params, mtry_params, p)))
@@ -221,6 +218,7 @@ def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
                   b_splus1 ** (-p.sigma))
     euler_error = np.zeros_like(n)
     if n.shape[0] > 1:
+        print('Sizes = ', cons.shape, deriv.shape, taxes.shape)
         euler_error[:-1] = (marg_ut_cons(cons[:-1], p.sigma) - p.beta *
                             (1 - rho[:-1]) * deriv[1:] *
                             marg_ut_cons(cons[1:], p.sigma) *
@@ -235,7 +233,7 @@ def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
 
 
 def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, chi_n, e,
-              retire, tau_payroll, etr_params, mtrx_params, j, p, method):
+              etr_params, mtrx_params, t, j, p, method):
     '''
     Computes Euler errors for the FOC for labor supply in the steady
     state.  This function is usually looped through over J, so it does
@@ -300,8 +298,13 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, chi_n, e,
 
     Returns: euler
     '''
-    taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, False,
-                            method, e, retire, etr_params, p)
+    if method == 'SS':
+        tau_payroll = p.tau_payroll[-1]
+    else:
+        length = r.shape[0]
+        tau_payroll = p.tau_payroll[t:t + length]
+    taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, False,
+                            method, e, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, e, j, p)
     deriv = (1 - tau_payroll - tax.MTR_income(r, w, b, n, factor,
                                                 False, e, etr_params,
