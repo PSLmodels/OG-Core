@@ -120,6 +120,11 @@ class Specifications(ParametersBase):
             this_attr = getattr(self, item)
             if this_attr.ndim > 1:
                 this_attr = np.squeeze(this_attr, axis=1)
+            # the next if statement is a quick fix to avoid having to
+            # update all these time varying parameters if change T or S
+            # ideally, the default json values are read in again and the
+            # extension done is here done again with those defaults and
+            # the new T and S values...
             if this_attr.size > self.T + self.S:
                 this_attr = this_attr[:self.T + self.S]
             this_attr = np.concatenate((
