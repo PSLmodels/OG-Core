@@ -458,7 +458,7 @@ etr_params = np.tile(np.reshape(np.array([
 etr_params5 = np.tile(np.reshape(etr_params, (p5.T, p5.S, 1, 12)),
                       (1, 1, p5.J, 1))
 j5 = None
-shift5 = True
+shift5 = False
 method5 = 'TPI'
 
 factor = 105000
@@ -477,30 +477,29 @@ expected5 = np.array([[[0.16311573,  0.1583638], [0.26812436, 0.30131202],
                       [[0.29985939, 0.18906559], [0.32237654, 0.35064977],
                        [0.15958077, -0.0482051]]])
 
-test_data = [(r1, w1, b1, n1, BQ1, factor, T_H1, theta1, j1, shift1,
-              method1, p1.e[:, j1], p1.retire[-1], etr_params1[-1, :, :],
+test_data = [(r1, w1, b1, n1, BQ1, factor, T_H1, theta1, None, j1, shift1,
+              method1, p1.e[:, j1], etr_params1[-1, :, :],
               p1, expected1),
-             (r2, w2, b2, n2, BQ2, factor, T_H2, theta2, j2, shift2,
-              method2, p2.e[:, j2], p2.retire, etr_params2, p2, expected2),
+             (r2, w2, b2, n2, BQ2, factor, T_H2, theta2, None, j2, shift2,
+              method2, p2.e[:, j2], etr_params2, p2, expected2),
              (r3, w3, b3[:, :, j3], n3[:, :, j3], BQ3, factor, T_H3,
-              theta3, j3, shift3, method3, p3.e[:, j3],
-              p3.retire[:p3.T], etr_params3, p3, expected3),
+              theta3, 0, j3, shift3, method3, p3.e[:, j3], etr_params3, p3,
+              expected3),
              (r4, w4, b4[:, :, j4], n4[:, :, j4], BQ4, factor, T_H4,
-              theta4, j4, shift4, method4, p4.e[:, j4], p4.retire,
+              theta4, 0, j4, shift4, method4, p4.e[:, j4],
               etr_params4, p4, expected4),
-             (r5, w5, b5, n5, BQ5, factor, T_H5, theta5, j5, shift5,
-              method5, p5.e, p5.retire[:p5.T], etr_params5, p5, expected5)]
+             (r5, w5, b5, n5, BQ5, factor, T_H5, theta5, 0, j5, shift5,
+              method5, p5.e, etr_params5, p5, expected5)]
 
 
-@pytest.mark.parametrize('r,w,b,n,BQ,factor,T_H,theta,j,shift,method,e,retire,etr_params,p,expected',
+@pytest.mark.parametrize('r,w,b,n,BQ,factor,T_H,theta,t,j,shift,method,e,etr_params,p,expected',
                          test_data, ids=['SS', 'TPI Scalar',
                                          'TPI shift = True',
                                          'TPI shift = False', 'TPI 3D'])
-def test_total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift,
-                     method, e, retire, etr_params, p, expected):
+def test_total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, shift,
+                     method, e, etr_params, p, expected):
     # Test function that computes total net taxes for the household
     # method = ss
-    total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, j,
-                                  shift, method, e, retire, etr_params,
-                                  p)
+    total_taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, t,
+                                  j, shift, method, e, etr_params, p)
     assert np.allclose(total_taxes, expected)
