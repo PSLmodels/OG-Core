@@ -303,16 +303,16 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p, method):
         T_I = np.zeros_like(I)
         T_I = tax.ETR_income(r_array, w_array, b, n, factor, p.e,
                              etr_params, p) * I
-        T_P = p.tau_payroll[:p.T] * w_array * n * p.e
+        T_P = p.tau_payroll[:p.T].reshape(p.T, 1, 1) * w_array * n * p.e
         for t in range(T_P.shape[0]):
-            T_P[t, p.retire[t]:, :] -= (theta.reshape(1, 1, p.J) *
-                                        w_array[t, :, :])
+            T_P[t, p.retire[t]:, :] -= (theta.reshape(1, p.J) *
+                                        w_array[t])
         # T_P[:, p.retire:, :] -= theta.reshape(1, 1, p.J) * w_array
         # T_W = tax.ETR_wealth(b, p) * b
         T_W = (tax.ETR_wealth(b, p.h_wealth[:p.T].reshape(p.T, 1, 1),
                               p.m_wealth[:p.T].reshape(p.T, 1, 1),
                               p.p_wealth[:p.T].reshape(p.T, 1, 1)) * b)
-        T_BQ = p.tau_bq[:p.T].reshape(p.T, 1) * BQ / np.squeeze(p.lambdas)
+        T_BQ = p.tau_bq[:p.T].reshape(p.T, 1, 1) * BQ / np.squeeze(p.lambdas)
         business_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
         REVENUE = ((((np.squeeze(p.lambdas)) *
                    np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
