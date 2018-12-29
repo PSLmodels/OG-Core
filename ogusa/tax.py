@@ -453,7 +453,6 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
                           p.p_wealth[-1]) * b)
     elif method == 'TPI':
         length = w.shape[0]
-        T_P = p.tau_payroll[:length] * w * e * n
         if not shift:
             # retireTPI is different from retire, because in TPI we are
             # counting backwards with different length lists.  This will
@@ -463,23 +462,26 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, j, shift, method,
         else:
             retireTPI = (retire - 1 - p.S)
         if len(b.shape) != 3:
+            print('Going here')
+            T_P = p.tau_payroll[:length].reshape(length, 1) * w * e * n
             for t in range(T_P.shape[0]):
-                T_P[retireTPI[t]:] -= theta[j] * w[t]
+                T_P[t, retireTPI[t]:] -= theta * w[t]
             T_W = (ETR_wealth(b, p.h_wealth[:length],
                               p.m_wealth[:length],
                               p.p_wealth[:length]) * b)
         else:
+            T_P = p.tau_payroll[:length].reshape(length, 1, 1) * w * e * n
             for t in range(T_P.shape[0]):
-                T_P[t, retire[t]:, :] -= (theta.reshape(1, 1, p.J) * w[t])
+                T_P[t, retire[t]:, :] -= (theta.reshape(1, p.J) * w[t, 0, 0])
                 T_W = (ETR_wealth(
                     b, p.h_wealth[:length].reshape(length, 1, 1),
                     p.m_wealth[:length].reshape(length, 1, 1),
                     p.p_wealth[:length].reshape(length, 1, 1)) * b)
-        T_BQ = p.tau_bq[:length] * BQ / lambdas
+        T_BQ = p.tau_bq[:length].reshape(length, 1, 1) * BQ / lambdas
     elif method == 'TPI_scalar':
         # The above methods won't work if scalars are used.  This option
         # is only called by the SS_TPI_firstdoughnutring function in TPI.
-        print('using TPI scalar case')
+        T_P = p.tau_payroll[0] * w * e * n
         T_P -= theta * w
         T_BQ = p.tau_bq[0] * BQ / lambdas
         T_W = (ETR_wealth(b, p.h_wealth[0], p.m_wealth[0],
