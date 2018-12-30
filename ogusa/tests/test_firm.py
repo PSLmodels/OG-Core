@@ -70,9 +70,9 @@ p1 = Specifications()
 new_param_values1 = {
     'Z': [0.5],
     'gamma': 0.5,
-    'delta_annual': 0.25,
-    'tau_b': 0.5,
-    'delta_tau_annual': 0.35,
+    'delta_annual': [0.25],
+    'tau_b': [0.5],
+    'delta_tau_annual': [0.35],
     'epsilon': 1.2
 }
 # update parameters instance with new values for test
@@ -85,10 +85,10 @@ p2 = Specifications()
 new_param_values2 = {
     'Z': [0.5],
     'gamma': 0.5,
-    'tau_b': 0.5,
-    'delta_tau_annual': 0.35,
+    'tau_b': [0.5],
+    'delta_tau_annual': [0.35],
     'epsilon': 0.5,
-    'delta_annual': 0.5
+    'delta_annual': [0.5]
 }
 # update parameters instance with new values for test
 p2.update_specifications(new_param_values2)
@@ -97,10 +97,10 @@ p3 = Specifications()
 new_param_values3 = {
     'Z': [0.5],
     'gamma': 0.5,
-    'tau_b': 0.5,
-    'delta_tau_annual': 0.35,
+    'tau_b': [0.5],
+    'delta_tau_annual': [0.35],
     'epsilon': 1.0,
-    'delta_annual': 0.5
+    'delta_annual': [0.5]
 }
 # update parameters instance with new values for test
 p3.update_specifications(new_param_values3)
@@ -109,10 +109,10 @@ p4 = Specifications()
 new_param_values4 = {
     'Z': [0.5],
     'gamma': 0.5,
-    'tau_b': 0.5,
-    'delta_tau_annual': 0.35,
+    'tau_b': [0.5],
+    'delta_tau_annual': [0.35],
     'epsilon': 1.2,
-    'delta_annual': 0.5,
+    'delta_annual': [0.5],
     'T': 3,
     'S': 3
 }
@@ -204,9 +204,9 @@ new_param_values1 = {
     'Z': [0.5],
     'gamma': 0.4,
     'epsilon': 0.8,
-    'delta_annual': 0.05,
-    'delta_tau_annual': 0.35,
-    'tau_b': 0.0357
+    'delta_annual': [0.05],
+    'delta_tau_annual': [0.35],
+    'tau_b': [0.0357]
 }
 # update parameters instance with new values for test
 p1.update_specifications(new_param_values1)
@@ -216,10 +216,10 @@ p2 = Specifications()
 new_param_values2 = {
     'Z': [0.5],
     'gamma': 0.4,
-    'delta_annual': 0.05,
-    'delta_tau_annual': 0.35,
+    'delta_annual': [0.05],
+    'delta_tau_annual': [0.35],
     'epsilon': 1.2,
-    'tau_b': 0.0357
+    'tau_b': [0.0357]
 }
 # update parameters instance with new values for test
 p2.update_specifications(new_param_values2)
@@ -228,10 +228,10 @@ p3 = Specifications()
 new_param_values3 = {
     'Z': [0.5],
     'gamma': 0.4,
-    'delta_annual': 0.05,
-    'delta_tau_annual': 0.35,
+    'delta_annual': [0.05],
+    'delta_tau_annual': [0.35],
     'epsilon': 1.0,
-    'tau_b': 0.0357
+    'tau_b': [0.0357]
 }
 # update parameters instance with new values for test
 p3.update_specifications(new_param_values3)
@@ -240,10 +240,10 @@ p4 = Specifications()
 new_param_values4 = {
     'Z': [0.5, 0.1, 1.1],
     'gamma': 0.4,
-    'delta_annual': 0.05,
-    'delta_tau_annual': 0.35,
+    'delta_annual': [0.05],
+    'delta_tau_annual': [0.35],
     'epsilon': 0.5,
-    'tau_b': 0.0357,
+    'tau_b': [0.0357],
     'T': 3,
     'S': 3
 }
@@ -274,9 +274,9 @@ new_param_values1 = {
     'Z': [0.5],
     'gamma': 0.4,
     'epsilon': 0.8,
-    'delta_annual': 0.05,
-    'delta_tau_annual': 0.35,
-    'tau_b': 0.0357
+    'delta_annual': [0.05],
+    'delta_tau_annual': [0.35],
+    'tau_b': [0.0357]
 }
 # update parameters instance with new values for test
 p1.update_specifications(new_param_values1)
@@ -286,10 +286,10 @@ p2 = Specifications()
 new_param_values2 = {
     'Z': [0.5],
     'gamma': 0.4,
-    'delta_annual': 0.05,
-    'delta_tau_annual': 0.35,
+    'delta_annual': [0.05],
+    'delta_tau_annual': [0.35],
     'epsilon': 1.0,
-    'tau_b': 0.0357
+    'tau_b': [0.0357]
 }
 # update parameters instance with new values for test
 p2.update_specifications(new_param_values2)
@@ -298,10 +298,10 @@ p3 = Specifications()
 new_param_values3 = {
     'Z': [0.5],
     'gamma': 0.4,
-    'delta_annual': 0.05,
-    'delta_tau_annual': 0.35,
+    'delta_annual': [0.05],
+    'delta_tau_annual': [0.35],
     'epsilon': 1.2,
-    'tau_b': 0.0357
+    'tau_b': [0.0357]
 }
 # update parameters instance with new values for test
 p3.update_specifications(new_param_values3)
@@ -310,10 +310,10 @@ p4 = Specifications()
 new_param_values4 = {
     'Z': [0.5, 1.0, 4.0],
     'gamma': 0.4,
-    'delta_annual': 0.05,
-    'delta_tau_annual': 0.35,
+    'delta_annual': [0.05],
+    'delta_tau_annual': [0.35],
     'epsilon': 1.2,
-    'tau_b': 0.0357,
+    'tau_b': [0.0357],
     'T': 3,
     'S': 3
 }
@@ -342,9 +342,9 @@ def test_get_w_from_r(r, p, method, expected):
 p1 = Specifications()
 new_param_values1 = {
     'gamma': 0.5,
-    'tau_b': 0.75,
-    'delta_annual': 0.15,
-    'delta_tau_annual': 0.03,
+    'tau_b': [0.75],
+    'delta_annual': [0.15],
+    'delta_tau_annual': [0.03],
     'Z': [2.0],
     'epsilon': 1.2
 }
@@ -356,9 +356,9 @@ expected1 = np.array([0.325726586])
 p2 = Specifications()
 new_param_values2 = {
     'gamma': 0.5,
-    'tau_b': 0.75,
-    'delta_annual': 0.15,
-    'delta_tau_annual': 0.03,
+    'tau_b': [0.75],
+    'delta_annual': [0.15],
+    'delta_tau_annual': [0.03],
     'Z': [2.0],
     'epsilon': 1.0
 }
@@ -370,9 +370,9 @@ new_param_values3 = {
     'gamma': 0.5,
     'epsilon': 0.4,
     'Z': [4.0],
-    'tau_b': 0.0,
-    'delta_tau_annual': 0.5,
-    'delta_annual': 0.05
+    'tau_b': [0.0],
+    'delta_tau_annual': [0.5],
+    'delta_annual': [0.05]
 }
 # update parameters instance with new values for test
 p3.update_specifications(new_param_values3)
@@ -382,9 +382,9 @@ new_param_values4 = {
     'gamma': 0.5,
     'epsilon': 0.4,
     'Z': [4.0, 3.0],
-    'delta_tau_annual': 0.5,
-    'delta_annual': 0.05,
-    'tau_b': 0.5,
+    'delta_tau_annual': [0.5],
+    'delta_annual': [0.05],
+    'tau_b': [0.5],
     'T': 3,
     'S': 3
 }
