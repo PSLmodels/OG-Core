@@ -18,12 +18,21 @@ def test_SS_fsolve():
      iterative_params, small_open_params, client, num_workers) = params
     p = Specifications()
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, p.tau_payroll,
-     p.tau_bq, p.rho, p.omega_SS, p.budget_balance, p.alpha_T,
-     p.debt_ratio_ss, p.tau_b, p.delta_tau, lambdas, imm_rates, p.e,
-     p.retire, p.mean_income_data, p.h_wealth, p.p_wealth, p.m_wealth,
+     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, tau_payroll,
+     tau_bq, p.rho, p.omega_SS, p.budget_balance, alpha_T,
+     p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
+     retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
      p.b_ellipse, p.upsilon) = ss_params
-    p.tau_bq = 0.0
+    p.Z = np.ones(p.T + p.S) * Z
+    p.tau_bq = np.ones(p.T + p.S) * 0.0
+    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
+    p.alpha_T = np.ones(p.T + p.S) * alpha_T
+    p.tau_b = np.ones(p.T + p.S) * tau_b
+    p.delta_tau = np.ones(p.T + p.S) * delta_tau
+    p.h_wealth = np.ones(p.T + p.S) * h_wealth
+    p.p_wealth = np.ones(p.T + p.S) * p_wealth
+    p.m_wealth = np.ones(p.T + p.S) * m_wealth
+    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
     p.lambdas = lambdas.reshape(p.J, 1)
     p.imm_rates = imm_rates.reshape(1, p.S)
     p.tax_func_type = 'DEP'
@@ -38,7 +47,9 @@ def test_SS_fsolve():
         p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
     p.maxiter, p.mindist_SS = iterative_params
     p.chi_b, p.chi_n = chi_params
-    p.small_open, p.ss_firm_r, p.ss_hh_r = small_open_params
+    p.small_open, ss_firm_r, ss_hh_r = small_open_params
+    p.ss_firm_r = np.ones(p.T + p.S) * ss_firm_r
+    p.ss_hh_r = np.ones(p.T + p.S) * ss_hh_r
     p.num_workers = 1
     args = (bssmat, nssmat, p, client)
 
@@ -63,12 +74,21 @@ def test_SS_fsolve_reform():
      num_workers) = params
     p = Specifications()
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, p.tau_payroll,
-     p.tau_bq, p.rho, p.omega_SS, p.budget_balance, p.alpha_T,
-     p.debt_ratio_ss, p.tau_b, p.delta_tau, lambdas, imm_rates, p.e,
-     p.retire, p.mean_income_data, p.h_wealth, p.p_wealth, p.m_wealth,
+     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, tau_payroll,
+     tau_bq, p.rho, p.omega_SS, p.budget_balance, alpha_T,
+     p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
+     retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
      p.b_ellipse, p.upsilon) = ss_params
-    p.tau_bq = 0.0
+    p.Z = np.ones(p.T + p.S) * Z
+    p.tau_bq = np.ones(p.T + p.S) * 0.0
+    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
+    p.alpha_T = np.ones(p.T + p.S) * alpha_T
+    p.tau_b = np.ones(p.T + p.S) * tau_b
+    p.delta_tau = np.ones(p.T + p.S) * delta_tau
+    p.h_wealth = np.ones(p.T + p.S) * h_wealth
+    p.p_wealth = np.ones(p.T + p.S) * p_wealth
+    p.m_wealth = np.ones(p.T + p.S) * m_wealth
+    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
     p.lambdas = lambdas.reshape(p.J, 1)
     p.imm_rates = imm_rates.reshape(1, p.S)
     p.tax_func_type = 'DEP'
@@ -83,7 +103,9 @@ def test_SS_fsolve_reform():
         p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
     p.maxiter, p.mindist_SS = iterative_params
     p.chi_b, p.chi_n = chi_params
-    p.small_open, p.ss_firm_r, p.ss_hh_r = small_open_params
+    p.small_open, ss_firm_r, ss_hh_r = small_open_params
+    p.ss_firm_r = np.ones(p.T + p.S) * ss_firm_r
+    p.ss_hh_r = np.ones(p.T + p.S) * ss_hh_r
     p.num_workers = 1
     print('Bssmat in max and min = ', bssmat.max(), bssmat.min())
     print('Nssmat in max and min = ', nssmat.max(), nssmat.min())
@@ -114,13 +136,21 @@ def test_SS_fsolve_reform_baselinespend():
      num_workers) = params
     p = Specifications()
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, p.tau_payroll,
-     p.tau_bq, p.rho, p.omega_SS, p.budget_balance, p.alpha_T,
-     p.debt_ratio_ss, p.tau_b, p.delta_tau, lambdas, imm_rates, p.e,
-     p.retire, p.mean_income_data, p.h_wealth, p.p_wealth, p.m_wealth,
+     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, tau_payroll,
+     tau_bq, p.rho, p.omega_SS, p.budget_balance, alpha_T,
+     p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
+     retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
      p.b_ellipse, p.upsilon) = ss_params
-
-    p.tau_bq = 0.0
+    p.Z = np.ones(p.T + p.S) * Z
+    p.tau_bq = np.ones(p.T + p.S) * 0.0
+    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
+    p.alpha_T = np.ones(p.T + p.S) * alpha_T
+    p.tau_b = np.ones(p.T + p.S) * tau_b
+    p.delta_tau = np.ones(p.T + p.S) * delta_tau
+    p.h_wealth = np.ones(p.T + p.S) * h_wealth
+    p.p_wealth = np.ones(p.T + p.S) * p_wealth
+    p.m_wealth = np.ones(p.T + p.S) * m_wealth
+    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
     p.lambdas = lambdas.reshape(p.J, 1)
     p.imm_rates = imm_rates.reshape(1, p.S)
     p.tax_func_type = 'DEP'
@@ -135,7 +165,9 @@ def test_SS_fsolve_reform_baselinespend():
         p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
     p.maxiter, p.mindist_SS = iterative_params
     p.chi_b, p.chi_n = chi_params
-    p.small_open, p.ss_firm_r, p.ss_hh_r = small_open_params
+    p.small_open, ss_firm_r, ss_hh_r = small_open_params
+    p.ss_firm_r = np.ones(p.T + p.S) * ss_firm_r
+    p.ss_hh_r = np.ones(p.T + p.S) * ss_hh_r
     p.num_workers = 1
 
     args = (bssmat, nssmat, T_Hss, factor_ss, p, client)
@@ -163,12 +195,21 @@ def test_SS_solver():
 
     p = Specifications()
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, p.tau_payroll,
-     p.tau_bq, p.rho, p.omega_SS, p.budget_balance, p.alpha_T,
-     p.debt_ratio_ss, p.tau_b, p.delta_tau, lambdas, imm_rates, p.e,
-     p.retire, p.mean_income_data, p.h_wealth, p.p_wealth, p.m_wealth,
+     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, tau_payroll,
+     tau_bq, p.rho, p.omega_SS, p.budget_balance, alpha_T,
+     p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
+     retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
      p.b_ellipse, p.upsilon) = ss_params
-    p.tau_bq = 0.0
+    p.Z = np.ones(p.T + p.S) * Z
+    p.tau_bq = np.ones(p.T + p.S) * 0.0
+    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
+    p.alpha_T = np.ones(p.T + p.S) * alpha_T
+    p.tau_b = np.ones(p.T + p.S) * tau_b
+    p.delta_tau = np.ones(p.T + p.S) * delta_tau
+    p.h_wealth = np.ones(p.T + p.S) * h_wealth
+    p.p_wealth = np.ones(p.T + p.S) * p_wealth
+    p.m_wealth = np.ones(p.T + p.S) * m_wealth
+    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
     p.lambdas = lambdas.reshape(p.J, 1)
     p.imm_rates = imm_rates.reshape(1, p.S)
     p.tax_func_type = 'DEP'
@@ -184,7 +225,9 @@ def test_SS_solver():
         p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
     p.maxiter, p.mindist_SS = iterative_params
     p.chi_b, p.chi_n = chi_params
-    p.small_open, p.ss_firm_r, p.ss_hh_r = small_open_params
+    p.small_open, ss_firm_r, ss_hh_r = small_open_params
+    p.ss_firm_r = np.ones(p.T + p.S) * ss_firm_r
+    p.ss_hh_r = np.ones(p.T + p.S) * ss_hh_r
     p.num_workers = 1
     test_dict = SS.SS_solver(b_guess_init, n_guess_init, rss, T_Hss,
                              factor_ss, Yss, p, None, fsolve_flag)
@@ -210,12 +253,21 @@ def test_inner_loop():
     ss_params, income_tax_params, chi_params, small_open_params = params
     p = Specifications()
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, p.tau_payroll,
-     p.tau_bq, p.rho, p.omega_SS, p.budget_balance, p.alpha_T,
-     p.debt_ratio_ss, p.tau_b, p.delta_tau, lambdas, imm_rates, p.e,
-     p.retire, p.mean_income_data, p.h_wealth, p.p_wealth, p.m_wealth,
+     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, tau_payroll,
+     tau_bq, p.rho, p.omega_SS, p.budget_balance, alpha_T,
+     p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
+     retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
      p.b_ellipse, p.upsilon) = ss_params
-    p.tau_bq = 0.0
+    p.Z = np.ones(p.T + p.S) * Z
+    p.tau_bq = np.ones(p.T + p.S) * 0.0
+    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
+    p.alpha_T = np.ones(p.T + p.S) * alpha_T
+    p.tau_b = np.ones(p.T + p.S) * tau_b
+    p.delta_tau = np.ones(p.T + p.S) * delta_tau
+    p.h_wealth = np.ones(p.T + p.S) * h_wealth
+    p.p_wealth = np.ones(p.T + p.S) * p_wealth
+    p.m_wealth = np.ones(p.T + p.S) * m_wealth
+    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
     p.lambdas = lambdas.reshape(p.J, 1)
     p.imm_rates = imm_rates.reshape(1, p.S)
     p.tax_func_type = 'DEP'
@@ -230,7 +282,9 @@ def test_inner_loop():
     p.mtry_params = np.transpose(mtry_params.reshape(
         p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
     p.chi_b, p.chi_n = chi_params
-    p.small_open, p.ss_firm_r, p.ss_hh_r = small_open_params
+    p.small_open, ss_firm_r, ss_hh_r = small_open_params
+    p.ss_firm_r = np.ones(p.T + p.S) * ss_firm_r
+    p.ss_hh_r = np.ones(p.T + p.S) * ss_hh_r
     p.num_workers = 1
 
     test_tuple = SS.inner_loop(outer_loop_vars, p, None)
@@ -250,11 +304,16 @@ def test_euler_equation_solver():
     (guesses, params) = input_tuple
     p = Specifications()
     (r, w, T_H, factor, j, p.J, p.S, p.beta, p.sigma, p.ltilde, p.g_y,
-     p.g_n_ss, p.tau_payroll, p.retire, p.mean_income_data, p.h_wealth,
-     p.p_wealth, p.m_wealth, p.b_ellipse, p.upsilon, j, p.chi_b,
-     p.chi_n, p.tau_bq, p.rho, lambdas, p.omega_SS, p.e,
+     p.g_n_ss, tau_payroll, retire, p.mean_income_data, h_wealth,
+     p_wealth, m_wealth, p.b_ellipse, p.upsilon, j, p.chi_b,
+     p.chi_n, tau_bq, p.rho, lambdas, p.omega_SS, p.e,
      p.analytical_mtrs, etr_params, mtrx_params, mtry_params) = params
-
+    p.tau_bq = np.ones(p.T + p.S) * 0.0
+    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
+    p.h_wealth = np.ones(p.T + p.S) * h_wealth
+    p.p_wealth = np.ones(p.T + p.S) * p_wealth
+    p.m_wealth = np.ones(p.T + p.S) * m_wealth
+    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
     p.etr_params = np.transpose(etr_params.reshape(
         p.S, 1, etr_params.shape[-1]), (1, 0, 2))
     p.mtrx_params = np.transpose(mtrx_params.reshape(
@@ -262,7 +321,6 @@ def test_euler_equation_solver():
     p.mtry_params = np.transpose(mtry_params.reshape(
         p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
     p.tax_func_type = 'DEP'
-    p.tau_bq = 0.0
     p.lambdas = lambdas.reshape(p.J, 1)
 
     args = (r, w, T_H, factor, j, p)
@@ -291,12 +349,21 @@ def test_run_SS(input_path, expected_path):
         input_tuple
     p = Specifications()
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, p.tau_payroll,
-     p.tau_bq, p.rho, p.omega_SS, p.budget_balance, p.alpha_T,
-     p.debt_ratio_ss, p.tau_b, p.delta_tau, lambdas, imm_rates, p.e,
-     p.retire, p.mean_income_data, p.h_wealth, p.p_wealth, p.m_wealth,
+     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, tau_payroll,
+     tau_bq, p.rho, p.omega_SS, p.budget_balance, alpha_T,
+     p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
+     retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
      p.b_ellipse, p.upsilon) = ss_params
-    p.tau_bq = 0.0
+    p.Z = np.ones(p.T + p.S) * Z
+    p.tau_bq = np.ones(p.T + p.S) * 0.0
+    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
+    p.alpha_T = np.ones(p.T + p.S) * alpha_T
+    p.tau_b = np.ones(p.T + p.S) * tau_b
+    p.delta_tau = np.ones(p.T + p.S) * delta_tau
+    p.h_wealth = np.ones(p.T + p.S) * h_wealth
+    p.p_wealth = np.ones(p.T + p.S) * p_wealth
+    p.m_wealth = np.ones(p.T + p.S) * m_wealth
+    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
     p.lambdas = lambdas.reshape(p.J, 1)
     p.imm_rates = imm_rates.reshape(1, p.S)
     p.tax_func_type = 'DEP'
@@ -313,7 +380,9 @@ def test_run_SS(input_path, expected_path):
         p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
     p.maxiter, p.mindist_SS = iterative_params
     p.chi_b, p.chi_n = chi_params
-    p.small_open, p.ss_firm_r, p.ss_hh_r = small_open_params
+    p.small_open, ss_firm_r, ss_hh_r = small_open_params
+    p.ss_firm_r = np.ones(p.T + p.S) * ss_firm_r
+    p.ss_hh_r = np.ones(p.T + p.S) * ss_hh_r
     p.num_workers = 1
     test_dict = SS.run_SS(p, None)
 
