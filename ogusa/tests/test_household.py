@@ -363,12 +363,27 @@ expected_tpi = np.array([[6.93989849e+01, 1.59678369e+00, -1.31919379e-01],
                          [1.37813431e+07, 1.93091572e+00, -1.13697692e-01],
                          [2.38837849e+01, 1.33686011e+00, -1.33902455e-01]])
 
+# Define variables/params for test of TPI version
+method_tpi = 'TPI'
+test_params_tau_pay = copy.deepcopy(p1)
+test_params_tau_pay.retire = np.array([2, 2, 2]).astype(int)
+test_params_tau_pay.h_wealth = np.array([0.1, 0.1, 0.1])
+test_params_tau_pay.m_wealth = np.array([1.0, 1.0, 1.0])
+test_params_tau_pay.p_wealth = np.array([0.0, 0.0, 0.0])
+test_params_tau_pay.tau_payroll = np.array([0.11, 0.05, 0.33])
+test_params_tau_pay.tau_bq = np.array([0.0, 0.0, 0.0])
+expected_tau_pay = np.array(
+    [[28.3370314, 1.66694815e+00, -3.83302383e-01],
+     [2.25826293e+01, 1.732799323, -3.95013543e-01],
+     [1.15312035e+09, 2.34816829e+00, -0.415072835]])
+
 test_data = [(test_vars_ss, test_params_ss, expected_ss),
-             (test_vars_tpi, test_params_tpi, expected_tpi)]
+             (test_vars_tpi, test_params_tpi, expected_tpi),
+             (test_vars_tpi, test_params_tau_pay, expected_tau_pay)]
 
 
 @pytest.mark.parametrize('model_vars,params,expected', test_data,
-                         ids=['SS', 'TPI'])
+                         ids=['SS', 'TPI', 'vary tau_payroll'])
 def test_FOC_labor(model_vars, params, expected):
     # Test FOC condition for household's choice of labor supply
     (r, w, b, b_splus1, n, BQ, factor, T_H, theta,
