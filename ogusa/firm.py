@@ -60,9 +60,9 @@ def get_Y(K, L, p, method):
     else:
         # General case
         Y = (Z * (((p.gamma ** (1 / p.epsilon)) *
-                     (K ** ((p.epsilon - 1) / p.epsilon))) +
-                    (((1 - p.gamma) ** (1 / p.epsilon)) *
-                     (L ** ((p.epsilon - 1) / p.epsilon)))) **
+                   (K ** ((p.epsilon - 1) / p.epsilon))) +
+                  (((1 - p.gamma) ** (1 / p.epsilon)) *
+                   (L ** ((p.epsilon - 1) / p.epsilon)))) **
              (p.epsilon / (p.epsilon - 1)))
 
     return Y
