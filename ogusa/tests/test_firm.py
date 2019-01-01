@@ -48,15 +48,28 @@ p4.update_specifications(new_param_values4)
 L4 = np.array([4.0, 4.0, 4.0])
 K4 = np.array([9.0, 9.0, 9.0])
 expected4 = np.array([12.0, 12.0, 12.0])
+p5 = Specifications()
+new_param_values5 = {
+    'Z': [1.5, 2.5, 0.6],
+    'gamma': 0.5,
+    'epsilon': 1.0,
+    'T': 3,
+    'S': 3
+}
+# update parameters instance with new values for test
+p5.update_specifications(new_param_values5)
+expected5 = np.array([9.0, 15.0, 3.6])
 
 
 @pytest.mark.parametrize('K,L,p,method,expected',
                          [(K1, L1, p1, 'SS', expected1),
                           (K1, L1, p2, 'SS', expected2),
                           (K3, L3, p3, 'SS', expected3),
-                          (K4, L4, p4, 'TPI', expected4)],
+                          (K4, L4, p4, 'TPI', expected4),
+                          (K4, L4, p5, 'TPI', expected5)],
                          ids=['epsilon=1.0,SS', 'epsilon=0.2,SS',
-                              'epsilon=1.2,SS', 'epsilon=1.0,TP'])
+                              'epsilon=1.2,SS', 'epsilon=1.0,TP',
+                              'epsilon=1.0,TP,varyZ'])
 def test_get_Y(K, L, p, method, expected):
     """
         choose values that simplify the calculations and are similar to
@@ -122,14 +135,31 @@ Y4 = np.array([3.0, 3.2, 3.8])
 K4 = np.array([1.8, 1.2, 1.0])
 expected4 = np.array([-0.117344327, 0.066121991, 0.260484002])
 
+p5 = Specifications()
+new_param_values5 = {
+    'Z': [1.5, 2.5, 0.6],
+    'gamma': 0.5,
+    'tau_b': [0.2, 0.0, 0.5],
+    'delta_tau_annual': [0.35, 0.2, 0.1],
+    'epsilon': 1.2,
+    'delta_annual': [0.5],
+    'T': 3,
+    'S': 3
+}
+# update parameters instance with new values for test
+p5.update_specifications(new_param_values5)
+expected5 = np.array([-0.064719663, 0.480604113, 0.25383862])
+
 
 @pytest.mark.parametrize('Y,K,p,method,expected',
                          [(Y1, K1, p1, 'SS', expected1),
                           (Y1, K1, p2, 'SS', expected2),
                           (Y1, K1, p3, 'SS', expected3),
-                          (Y4, K4, p4, 'TPI', expected4)],
+                          (Y4, K4, p4, 'TPI', expected4),
+                          (Y4, K4, p5, 'TPI', expected5)],
                          ids=['epsilon=1.2,SS', 'epsilon=0.5,SS',
-                              'epsilon=1.0,SS', 'epsilon=1.2,TP'])
+                              'epsilon=1.0,SS', 'epsilon=1.2,TP',
+                              'epsilon=1.2,TP,varyParams'])
 def test_get_r(Y, K, p, method, expected):
     """
         choose values that simplify the calculations and are similar to
