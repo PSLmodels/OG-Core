@@ -299,6 +299,8 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, chi_n, e,
     '''
     if method == 'SS':
         tau_payroll = p.tau_payroll[-1]
+    elif method == 'TPI_scalar':  # for 1st donut ring onlye
+        tau_payroll = p.tau_payroll[0]
     else:
         length = r.shape[0]
         tau_payroll = p.tau_payroll[t:t + length]

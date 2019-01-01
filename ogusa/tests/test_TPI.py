@@ -2,7 +2,7 @@ import pytest
 import pickle
 import numpy as np
 import os
-from ogusa import SS, TPI, utils
+from ogusa import SS, TPI, utils, firm
 from ogusa.parameters import Specifications
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -18,18 +18,26 @@ def test_firstdoughnutring():
     tpi_params = tpi_params + [True]
     p = Specifications()
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, p.tau_b, p.delta_tau,
-     p.tau_payroll, p.tau_bq, p.rho, p.omega, N_tilde, lambdas,
-     p.imm_rates, p.e, p.retire, p.mean_income_data, factor, p.h_wealth,
-     p.p_wealth, p.m_wealth, p.b_ellipse, p.upsilon, p.chi_b, p.chi_n,
+     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, tau_b, delta_tau,
+     tau_payroll, tau_bq, p.rho, p.omega, N_tilde, lambdas,
+     p.imm_rates, p.e, retire, p.mean_income_data, factor, h_wealth,
+     p_wealth, m_wealth, p.b_ellipse, p.upsilon, p.chi_b, p.chi_n,
      theta, p.baseline) = tpi_params
+    p.Z = np.ones(p.T + p.S) * Z
+    p.tau_bq = np.ones(p.T + p.S) * 0.0
+    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
+    p.tau_b = np.ones(p.T + p.S) * tau_b
+    p.delta_tau = np.ones(p.T + p.S) * delta_tau
+    p.h_wealth = np.ones(p.T + p.S) * h_wealth
+    p.p_wealth = np.ones(p.T + p.S) * p_wealth
+    p.m_wealth = np.ones(p.T + p.S) * m_wealth
+    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
     p.tax_func_type = 'DEP'
     p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
         income_tax_params
     p.etr_params = np.transpose(etr_params, (1, 0, 2))
     p.mtrx_params = np.transpose(mtrx_params, (1, 0, 2))
     p.mtry_params = np.transpose(mtry_params, (1, 0, 2))
-    p.tau_bq = 0.0
     p.lambdas = lambdas.reshape(p.J, 1)
     p.num_workers = 1
 
@@ -52,15 +60,23 @@ def test_twist_doughnut():
     tpi_params = tpi_params + [True]
     p = Specifications()
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, p.tau_b, p.delta_tau,
-     p.tau_payroll, p.tau_bq, p.rho, p.omega, N_tilde, lambdas,
-     p.imm_rates, p.e, p.retire, p.mean_income_data, factor, p.h_wealth,
-     p.p_wealth, p.m_wealth, p.b_ellipse, p.upsilon, p.chi_b, p.chi_n,
+     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, tau_b, delta_tau,
+     tau_payroll, tau_bq, p.rho, p.omega, N_tilde, lambdas,
+     p.imm_rates, p.e, retire, p.mean_income_data, factor, h_wealth,
+     p_wealth, m_wealth, p.b_ellipse, p.upsilon, p.chi_b, p.chi_n,
      theta, p.baseline) = tpi_params
+    p.Z = np.ones(p.T + p.S) * Z
+    p.tau_bq = np.ones(p.T + p.S) * 0.0
+    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
+    p.tau_b = np.ones(p.T + p.S) * tau_b
+    p.delta_tau = np.ones(p.T + p.S) * delta_tau
+    p.h_wealth = np.ones(p.T + p.S) * h_wealth
+    p.p_wealth = np.ones(p.T + p.S) * p_wealth
+    p.m_wealth = np.ones(p.T + p.S) * m_wealth
+    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
     p.tax_func_type = 'DEP'
     p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
         income_tax_params
-    p.tau_bq = 0.0
     p.lambdas = lambdas.reshape(p.J, 1)
     p.num_workers = 1
     test_list = TPI.twist_doughnut(guesses, r, w, BQ, T_H, theta,
@@ -85,18 +101,26 @@ def test_inner_loop():
     tpi_params = tpi_params
     p = Specifications()
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, p.tau_b, p.delta_tau,
-     p.tau_payroll, p.tau_bq, p.rho, p.omega, N_tilde, lambdas,
-     p.imm_rates, p.e, p.retire, p.mean_income_data, factor, p.h_wealth,
-     p.p_wealth, p.m_wealth, p.b_ellipse, p.upsilon, p.chi_b, p.chi_n,
+     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, tau_b, delta_tau,
+     tau_payroll, tau_bq, p.rho, p.omega, N_tilde, lambdas,
+     p.imm_rates, p.e, retire, p.mean_income_data, factor, h_wealth,
+     p_wealth, m_wealth, p.b_ellipse, p.upsilon, p.chi_b, p.chi_n,
      theta, p.baseline) = tpi_params
+    p.Z = np.ones(p.T + p.S) * Z
+    p.tau_bq = np.ones(p.T + p.S) * 0.0
+    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
+    p.tau_b = np.ones(p.T + p.S) * tau_b
+    p.delta_tau = np.ones(p.T + p.S) * delta_tau
+    p.h_wealth = np.ones(p.T + p.S) * h_wealth
+    p.p_wealth = np.ones(p.T + p.S) * p_wealth
+    p.m_wealth = np.ones(p.T + p.S) * m_wealth
+    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
     p.tax_func_type = 'DEP'
     p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
         income_tax_params
     p.etr_params = np.transpose(etr_params, (1, 0, 2))[:p.T, :, :]
     p.mtrx_params = np.transpose(mtrx_params, (1, 0, 2))[:p.T, :, :]
     p.mtry_params = np.transpose(mtry_params, (1, 0, 2))[:p.T, :, :]
-    p.tau_bq = 0.0
     p.lambdas = lambdas.reshape(p.J, 1)
     p.num_workers = 1
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n,
@@ -104,7 +128,10 @@ def test_inner_loop():
     initial_values_in = (K0, b_sinit, b_splus1init, factor, initial_b,
                          initial_n, D0)
     (r, K, BQ, T_H) = outer_loop_vars
-    outer_loop_vars_in = (r, BQ, T_H, theta)
+    wss = firm.get_w_from_r(r[-1], p, 'SS')
+    w = np.ones(p.T + p.S) * wss
+    w[:p.T] = firm.get_w_from_r(r[:p.T], p, 'TPI')
+    outer_loop_vars_in = (r, w, BQ, T_H, theta)
 
     guesses = (guesses[0], guesses[1])
     test_tuple = TPI.inner_loop(guesses, outer_loop_vars_in,
@@ -131,10 +158,10 @@ def test_run_TPI():
 
     p = Specifications()
     (J, S, T, BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, p.tau_b, p.delta_tau,
-     p.tau_payroll, p.tau_bq, p.rho, p.omega, N_tilde, lambdas,
-     p.imm_rates, p.e, p.retire, p.mean_income_data, factor, p.h_wealth,
-     p.p_wealth, p.m_wealth, p.b_ellipse, p.upsilon, p.chi_b, p.chi_n,
+     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, tau_b, delta_tau,
+     tau_payroll, tau_bq, p.rho, p.omega, N_tilde, lambdas,
+     p.imm_rates, p.e, retire, p.mean_income_data, factor, h_wealth,
+     p_wealth, m_wealth, p.b_ellipse, p.upsilon, p.chi_b, p.chi_n,
      theta, p.baseline) = tpi_params
 
     new_param_values = {
@@ -145,22 +172,36 @@ def test_run_TPI():
     # update parameters instance with new values for test
     p.update_specifications(new_param_values, raise_errors=False)
     (J, S, T, BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     p.Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, p.tau_b, p.delta_tau,
-     p.tau_payroll, p.tau_bq, p.rho, p.omega, N_tilde, lambdas,
-     p.imm_rates, p.e, p.retire, p.mean_income_data, factor, p.h_wealth,
-     p.p_wealth, p.m_wealth, p.b_ellipse, p.upsilon, p.chi_b, p.chi_n,
+     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, tau_b, delta_tau,
+     tau_payroll, tau_bq, p.rho, p.omega, N_tilde, lambdas,
+     p.imm_rates, p.e, retire, p.mean_income_data, factor, h_wealth,
+     p_wealth, m_wealth, p.b_ellipse, p.upsilon, p.chi_b, p.chi_n,
      theta, p.baseline) = tpi_params
-    p.small_open, p.tpi_firm_r, p.tpi_hh_r_params = small_open_params
+    p.Z = np.ones(p.T + p.S) * Z
+    p.tau_bq = np.ones(p.T + p.S) * 0.0
+    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
+    p.tau_b = np.ones(p.T + p.S) * tau_b
+    p.delta_tau = np.ones(p.T + p.S) * delta_tau
+    p.h_wealth = np.ones(p.T + p.S) * h_wealth
+    p.p_wealth = np.ones(p.T + p.S) * p_wealth
+    p.m_wealth = np.ones(p.T + p.S) * m_wealth
+    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
+    p.small_open, ss_firm_r, ss_hh_r = small_open_params
+    p.ss_firm_r = np.ones(p.T + p.S) * ss_firm_r
+    p.ss_hh_r = np.ones(p.T + p.S) * ss_hh_r
     p.maxiter, p.mindist_SS, p.mindist_TPI = iterative_params
-    (p.budget_balance, p.ALPHA_T, p.ALPHA_G, p.tG1, p.tG2, p.rho_G,
+    (p.budget_balance, alpha_T, alpha_G, p.tG1, p.tG2, p.rho_G,
      p.debt_ratio_ss) = fiscal_params
-    (p.tau_b, p.delta_tau) = biz_tax_params
+    p.alpha_T = np.concatenate((alpha_T, np.ones(40) * alpha_T[-1]))
+    p.alpha_G = np.concatenate((alpha_G, np.ones(40) * alpha_G[-1]))
+    (tau_b, delta_tau) = biz_tax_params
+    p.tau_b = np.ones(p.T + p.S) * tau_b
+    p.delta_tau = np.ones(p.T + p.S) * delta_tau
     p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
         income_tax_params
     p.etr_params = np.transpose(etr_params, (1, 0, 2))[:p.T, :, :]
     p.mtrx_params = np.transpose(mtrx_params, (1, 0, 2))[:p.T, :, :]
     p.mtry_params = np.transpose(mtry_params, (1, 0, 2))[:p.T, :, :]
-    p.tau_bq = 0.0
     p.lambdas = lambdas.reshape(p.J, 1)
     p.output = output_dir
     p.baseline_spending = baseline_spending

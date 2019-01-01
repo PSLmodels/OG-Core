@@ -463,7 +463,11 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, shift, method,
             retireTPI = (p.retire[t: t + length] - 1 - p.S)
         if len(b.shape) == 1:
             T_P = p.tau_payroll[t: t + length] * w * e * n
-            T_P[retireTPI[t]:] -= theta * w[retireTPI[t]:]
+            if not shift:
+                retireTPI = p.retire[t] - p.S
+            else:
+                retireTPI = p.retire[t] - 1- p.S
+            T_P[retireTPI:] -= theta[j] * w[retireTPI:]
             T_W = (ETR_wealth(b, p.h_wealth[t:t + length],
                               p.m_wealth[t:t + length],
                               p.p_wealth[t:t + length]) * b)

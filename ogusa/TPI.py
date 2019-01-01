@@ -177,15 +177,15 @@ def firstdoughnutring(guesses, r, w, BQ, T_H, theta, factor, j,
                                    np.array([b_splus1]), np.array([n]),
                                    np.array([BQ]), factor,
                                    np.array([T_H]), theta[j],
-                                   p.e[-1, j], p.rho[-1], 0,
+                                   p.e[-1, j], p.rho[-1],
                                    p.etr_params[0, -1, :],
-                                   p.mtry_params[0, -1, :], j, p, 'SS')
-
+                                   p.mtry_params[0, -1, :], None, j, p,
+                                   'TPI_scalar')
     error2 = household.FOC_labor(
         np.array([r]), np.array([w]), b_s, b_splus1, np.array([n]),
         np.array([BQ]), factor, np.array([T_H]), theta[j], p.chi_n[-1],
-        p.e[-1, j], 0, p.tau_payroll[0], p.etr_params[0, -1, :],
-        p.mtrx_params[0, -1, :], j, p, 'SS')
+        p.e[-1, j], p.etr_params[0, -1, :],
+        p.mtrx_params[0, -1, :], None, j, p, 'TPI_scalar')
 
     if n <= 0 or n >= 1:
         error2 += 1e12
@@ -237,18 +237,14 @@ def twist_doughnut(guesses, r, w, BQ, T_H, theta, factor, j, s, t, etr_params,
     rho_s = p.rho[-length:]
     BQ_s = BQ[t:t + length]
     T_H_s = T_H[t:t + length]
-    retire_s = p.retire[t:t + length]
-    tau_payroll_s = p.tau_payroll[t:t + length]
 
     error1 = household.FOC_savings(r_s, w_s, b_s, b_splus1, n_s, BQ_s,
                                    factor, T_H_s, theta, e_s, rho_s,
-                                   retire_s, etr_params,
-                                   mtry_params, j, p, 'TPI')
-
+                                   etr_params, mtry_params, t, j, p,
+                                   'TPI')
     error2 = household.FOC_labor(r_s, w_s, b_s, b_splus1, n_s, BQ_s,
                                  factor, T_H_s, theta, chi_n_s, e_s,
-                                 retire_s, tau_payroll_s, etr_params,
-                                 mtrx_params, j, p, 'TPI')
+                                 etr_params, mtrx_params, t, j, p, 'TPI')
 
     # Check and punish constraint violations
     mask1 = n_guess < 0
@@ -365,8 +361,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
             etr_params_to_use[:, i] = np.diag(etr_params_TP[t:t + p.S, :, i])
             mtrx_params_to_use[:, i] = np.diag(mtrx_params_TP[t:t + p.S, :, i])
             mtry_params_to_use[:, i] = np.diag(mtry_params_TP[t:t + p.S, :, i])
-        #
-        # TPI_solver_params = (inc_tax_params_TP, tpi_params, None)
+
         [solutions, infodict, ier, message] =\
             opt.fsolve(twist_doughnut, list(b_guesses_to_use) +
                        list(n_guesses_to_use),
@@ -687,8 +682,8 @@ def run_TPI(p, client=None):
 
     tax_path = tax.total_taxes(r[:p.T], w[:p.T], bmat_s,
                                n_mat[:p.T, :, :], BQnew_3D[:p.T, :, :],
-                               factor, T_H[:p.T], theta, None, False,
-                               'TPI', p.e, p.retire[:p.T], etr_params_4D, p)
+                               factor, T_H[:p.T], theta, 0, None, False,
+                               'TPI', p.e, etr_params_4D, p)
     rpath = utils.to_timepath_shape(r, p)
     wpath = utils.to_timepath_shape(w, p)
     c_path = household.get_cons(rpath[:p.T, :, :], wpath[:p.T, :, :],
