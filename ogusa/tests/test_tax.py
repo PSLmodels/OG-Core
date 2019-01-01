@@ -49,37 +49,81 @@ def test_replacement_rate_vals(n, w, factor, j, p, expected):
     assert np.allclose(theta, expected)
 
 
-def test_ETR_wealth():
+b1 = np.array([0.1, 0.5, 0.9])
+p1 = Specifications()
+new_param_values = {
+    'S': 3,
+    'J': 1,
+    'T': 3,
+    'h_wealth': [2],
+    'p_wealth': [3],
+    'm_wealth': [4]
+}
+p1.update_specifications(new_param_values)
+expected1 = np.array([0.14285714, 0.6, 0.93103448])
+p2 = Specifications()
+new_param_values2 = {
+    'S': 3,
+    'J': 1,
+    'T': 3,
+    'h_wealth': [1.2, 1.1, 2.3],
+    'p_wealth': [2.2, 2.3, 1.8],
+    'm_wealth': [3, 4, 3]
+}
+p2.update_specifications(new_param_values2)
+expected2 = np.array([0.084615385, 0.278021978, 0.734911243])
+
+test_data = [(b1, p1, expected1),
+             (b1, p2, expected2)]
+
+
+@pytest.mark.parametrize('b,p,expected', test_data,
+                         ids=['constant params', 'vary params'])
+def test_ETR_wealth(b, p, expected):
     # Test wealth tax computation
-    p = Specifications()
-    new_param_values = {
-        'h_wealth': [2],
-        'p_wealth': [3],
-        'm_wealth': [4]
-    }
-    p.update_specifications(new_param_values)
-    b = np.array([0.1, 0.5, 0.9])
-    tau_w_prime = tax.ETR_wealth(b, p.h_wealth[:3], p.m_wealth[:3],
-                                 p.p_wealth[:3])
+    tau_w = tax.ETR_wealth(b, p.h_wealth[:p.T], p.m_wealth[:p.T],
+                           p.p_wealth[:p.T])
 
-    assert np.allclose(tau_w_prime, np.array([0.14285714, 0.6, 0.93103448]))
+    assert np.allclose(tau_w, expected)
 
 
-def test_MTR_wealth():
+b1 = np.array([0.2, 0.6, 0.8])
+p1 = Specifications()
+new_param_values = {
+    'S': 3,
+    'J': 1,
+    'T': 3,
+    'h_wealth': [3],
+    'p_wealth': [4],
+    'm_wealth': [5]
+}
+p1.update_specifications(new_param_values)
+expected1 = np.array([1.91326531, 1.29757785, 1.09569028])
+b2 = np.array([0.1, 0.5, 0.9])
+p2 = Specifications()
+new_param_values2 = {
+    'S': 3,
+    'J': 1,
+    'T': 3,
+    'h_wealth': [1.2, 1.1, 2.3],
+    'p_wealth': [2.2, 2.3, 1.8],
+    'm_wealth': [3, 4, 3]
+}
+p2.update_specifications(new_param_values2)
+expected2 = np.array([0.813609467, 0.488829851, 0.483176359])
+
+test_data = [(b1, p1, expected1),
+             (b2, p2, expected2)]
+
+
+@pytest.mark.parametrize('b,p,expected', test_data,
+                         ids=['constant params', 'vary params'])
+def test_MTR_wealth(b, p, expected):
     # Test marginal tax rate on wealth
-    p = Specifications()
-    new_param_values = {
-        'h_wealth': [3],
-        'p_wealth': [4],
-        'm_wealth': [5]
-    }
-    p.update_specifications(new_param_values, raise_errors=False)
-    b = np.array([0.2, 0.6, 0.8])
-    tau_w_prime = tax.MTR_wealth(b, p.h_wealth[:3], p.m_wealth[:3],
-                                 p.p_wealth[:3])
+    tau_w_prime = tax.MTR_wealth(b, p.h_wealth[:p.T], p.m_wealth[:p.T],
+                                 p.p_wealth[:p.T])
 
-    assert np.allclose(tau_w_prime, np.array([1.91326531, 1.29757785,
-                                              1.09569028]))
+    assert np.allclose(tau_w_prime, expected)
 
 
 p1 = Specifications()
@@ -492,7 +536,8 @@ test_data = [(r1, w1, b1, n1, BQ1, factor, T_H1, theta1, None, j1, shift1,
               method5, p5.e, etr_params5, p5, expected5)]
 
 
-@pytest.mark.parametrize('r,w,b,n,BQ,factor,T_H,theta,t,j,shift,method,e,etr_params,p,expected',
+@pytest.mark.parametrize('r,w,b,n,BQ,factor,T_H,theta,t,j,shift,method,'
+                         + 'e,etr_params,p,expected',
                          test_data, ids=['SS', 'TPI Scalar',
                                          'TPI shift = True',
                                          'TPI shift = False', 'TPI 3D'])
