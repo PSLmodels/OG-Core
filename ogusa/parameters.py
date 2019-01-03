@@ -588,9 +588,7 @@ class Specifications(ParametersBase):
                     # print(validation_op, param_value, validation_value)
                     if isinstance(validation_value, six.string_types):
                         validation_value = self.simple_eval(validation_value)
-                    else:
-                        validation_value = np.full(param_value.shape,
-                                                   validation_value)
+                    validation_value = np.full(param_value.shape, validation_value)
                     assert param_value.shape == validation_value.shape
                     for idx in np.ndindex(param_value.shape):
                         out_of_range = False

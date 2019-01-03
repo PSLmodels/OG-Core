@@ -632,7 +632,7 @@
       "integer_value": true,
       "string_value": false,
       "value": [65],
-      "range": {"min": 20, "max": 100},
+      "range": {"min": "starting_age", "max": "ending_age"},
       "out_of_range_minmsg": "",
       "out_of_range_maxmsg": "",
       "out_of_range_action": "stop",
