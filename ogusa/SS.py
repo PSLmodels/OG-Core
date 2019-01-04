@@ -257,9 +257,9 @@ def inner_loop(outer_loop_vars, p, client):
         etr_params_3D = np.tile(np.reshape(
             p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])),
                                 (1, p.J, 1))
-        new_T_H, _, _, _, _, = aggr.revenue(new_r, new_w, b_s, nssmat, new_BQ, new_Y,
-                               L, K, factor, theta,
-                               etr_params_3D, p, 'SS')
+        new_T_H, _, _, _, _, _ = aggr.revenue(
+            new_r, new_w, b_s, nssmat, new_BQ, new_Y, L, K, factor,
+            theta, etr_params_3D, p, 'SS')
     elif p.baseline_spending:
         new_T_H = T_H
     else:

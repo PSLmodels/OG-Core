@@ -548,14 +548,13 @@ def run_TPI(p, client=None):
                 if not p.baseline_spending:
                     Y = T_H / p.alpha_T  # maybe unecessary
 
-                (total_revenue, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
-                 business_revenue) = np.array(list(
-                    aggr.revenue(r[:p.T], w[:p.T], bmat_s,
-                                 n_mat[:p.T, :, :], BQ_3D[:p.T, :, :],
-                                 Y[:p.T], L[:p.T], K[:p.T], factor,
-                                 theta, etr_params_4D, p, 'TPI')) +
-                                   [total_revenue_ss] * p.S)
-
+                (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
+                 business_revenue) = aggr.revenue(
+                     r[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
+                     BQ_3D[:p.T, :, :], Y[:p.T], L[:p.T], K[:p.T],
+                     factor, theta, etr_params_4D, p, 'TPI')
+                total_revenue = np.array(list(total_rev) +
+                                         [total_revenue_ss] * p.S)
                 # set intial debt value
                 if p.baseline:
                     D_0 = p.initial_debt_ratio * Y[0]
@@ -587,12 +586,14 @@ def run_TPI(p, client=None):
         BQnew = aggr.get_BQ(rnew[:p.T], b_mat_shift, None, p, 'TPI', False)
         BQnew_3D = np.tile(BQnew.reshape(BQnew.shape[0], 1, BQnew.shape[1]),
                            (1, p.S, 1))
-        (total_revenue, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
-         business_revenue) = np.array(list(
-            aggr.revenue(rnew[:p.T], wnew[:p.T], bmat_s,
-                         n_mat[:p.T, :, :], BQnew_3D[:p.T, :, :], Ynew[:p.T],
-                         L[:p.T], K[:p.T], factor, theta, etr_params_4D,
-                         p, 'TPI')) + [total_revenue_ss] * p.S)
+
+        (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
+         business_revenue) = aggr.revenue(
+             rnew[:p.T], wnew[:p.T], bmat_s, n_mat[:p.T, :, :],
+             BQnew_3D[:p.T, :, :], Ynew[:p.T], L[:p.T], K[:p.T],
+             factor, theta, etr_params_4D, p, 'TPI')
+        total_revenue = np.array(list(total_rev) +
+                                 [total_revenue_ss] * p.S)
 
         if p.budget_balance:
             T_H_new = total_revenue
