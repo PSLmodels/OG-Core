@@ -231,6 +231,9 @@ def test_run_TPI():
     del test_dict['bmat_s']
     test_dict['b_mat'] = test_dict.pop('bmat_splus1')
     test_dict['REVENUE'] = test_dict.pop('total_revenue')
+    test_dict['IITpayroll_revenue'] = (test_dict['REVENUE'][:160] -
+                                       test_dict['business_revenue'])
+    del test_dict['T_P'], test_dict['T_BQ'], test_dict['T_W']
 
     for k, v in expected_dict.items():
         try:
