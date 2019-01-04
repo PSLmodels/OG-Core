@@ -74,6 +74,7 @@ class Specifications(ParametersBase):
             values = data.get('value', None)
             setattr(self, name, self._expand_array(values, intg_val,
                                                    bool_val, string_val))
+
         if self.test:
             # Make smaller statespace for testing
             self.S = int(40)
@@ -109,35 +110,49 @@ class Specifications(ParametersBase):
         self.g_y = ((1 + self.g_y_annual) ** ((self.ending_age -
                                                self.starting_age) /
                                               self.S) - 1)
+
+        # Extend parameters that may vary over the time path
+        tp_param_list = ['alpha_G', 'alpha_T', 'Z', 'world_int_rate',
+                         'delta_tau_annual', 'tau_b', 'tau_bq',
+                         'tau_payroll', 'h_wealth', 'm_wealth',
+                         'p_wealth', 'retirement_age']
+        for item in tp_param_list:
+            this_attr = getattr(self, item)
+            if this_attr.ndim > 1:
+                this_attr = np.squeeze(this_attr, axis=1)
+            # the next if statement is a quick fix to avoid having to
+            # update all these time varying parameters if change T or S
+            # ideally, the default json values are read in again and the
+            # extension done is here done again with those defaults and
+            # the new T and S values...
+            if this_attr.size > self.T + self.S:
+                this_attr = this_attr[:self.T + self.S]
+            this_attr = np.concatenate((
+                this_attr, np.ones((self.T + self.S - this_attr.size)) *
+                this_attr[-1]))
+            setattr(self, item, this_attr)
+
+        # open economy parameters
+        firm_r_annual = self.world_int_rate
+        hh_r_annual = firm_r_annual
+        self.firm_r = ((1 + firm_r_annual) **
+                       ((self.ending_age - self.starting_age) /
+                           self.S) - 1)
+        self.hh_r = ((1 + hh_r_annual) **
+                     ((self.ending_age - self.starting_age) /
+                         self.S) - 1)
+
+        # set period of retirement
+        # self.retire = np.int(np.round(((self.retirement_age -
+        #                                 self.starting_age) * self.S) /
+        #                               80.0) - 1)
+        self.retire = (np.round(((self.retirement_age -
+                                  self.starting_age) * self.S) /
+                                80.0) - 1).astype(int)
+
         self.delta_tau = (1 - ((1 - self.delta_tau_annual) **
                                ((self.ending_age - self.starting_age) /
                                 self.S)))
-        # open economy parameters
-        self.ss_firm_r_annual = self.world_int_rate
-        self.ss_hh_r_annual = self.ss_firm_r_annual
-        self.ss_firm_r = ((1 + self.ss_firm_r_annual) **
-                          ((self.ending_age - self.starting_age) /
-                           self.S) - 1)
-        self.ss_hh_r = ((1 + self.ss_hh_r_annual) **
-                        ((self.ending_age - self.starting_age) /
-                         self.S) - 1)
-        self.tpi_firm_r = np.ones(self.T+self.S) * self.ss_firm_r
-        self.tpi_hh_r = np.ones(self.T+self.S) * self.ss_hh_r
-        self.tG2 = int(self.T * 0.8)
-        T_shift = np.concatenate((
-            self.T_shifts, np.zeros((self.T + self.S -
-                                     self.T_shifts.size, 1))))
-        G_shift = np.concatenate((
-            self.G_shifts, np.zeros((self.T - self.G_shifts.size, 1))))
-        self.ALPHA_T = (np.ones(self.T + self.S) * self.alpha_T +
-                        np.squeeze(T_shift))
-        self.ALPHA_G = (np.ones(self.T) * self.alpha_G +
-                        np.squeeze(G_shift))
-
-        # set period of retirement
-        self.retire = np.int(np.round(((self.retirement_age -
-                                        self.starting_age) * self.S) /
-                                      80.0) - 1)
 
         # get population objects
         (self.omega, self.g_n_ss, self.omega_SS, self.surv_rate,
@@ -153,7 +168,7 @@ class Specifications(ParametersBase):
             surv_rate1[1:] = np.cumprod(self.surv_rate[:-1], dtype=float)
             # number of each age alive at any time
             omega_SS = np.ones(self.S) * surv_rate1
-            self.omega_SS = omega_SS/omega_SS.sum()
+            self.omega_SS = omega_SS / omega_SS.sum()
             self.imm_rates = np.zeros((self.T + self.S, self.S))
             self.omega = np.tile(np.reshape(self.omega_SS, (1, self.S)),
                                  (self.T + self.S, 1))
@@ -573,12 +588,11 @@ class Specifications(ParametersBase):
                     # print(validation_op, param_value, validation_value)
                     if isinstance(validation_value, six.string_types):
                         validation_value = self.simple_eval(validation_value)
-                    else:
-                        validation_value = np.full(param_value.shape,
-                                                   validation_value)
+                    validation_value = np.full(param_value.shape, validation_value)
                     assert param_value.shape == validation_value.shape
                     for idx in np.ndindex(param_value.shape):
                         out_of_range = False
+                        # Ensure that parameter value is above minimum allowed
                         if validation_op == 'min' and (param_value[idx] <
                                                        validation_value[idx]):
                             out_of_range = True
@@ -586,6 +600,7 @@ class Specifications(ParametersBase):
                             extra = self._vals[param_name]['out_of_range_minmsg']
                             if extra:
                                 msg += ' {}'.format(extra)
+                        # Ensure that parameter value is below max allowed
                         if validation_op == 'max' and (param_value[idx] >
                                                        validation_value[idx]):
                             out_of_range = True

@@ -248,15 +248,15 @@ def test_revenue():
         'S': 20,
         'J': 2,
         'lambdas': [0.6, 0.4],
-        'tau_bq': 0.17,
-        'tau_payroll': 0.5,
-        'h_wealth': 0.1,
-        'p_wealth': 0.2,
-        'm_wealth': 1.0,
-        'tau_b': 0.2,
-        'delta_tau_annual': float(1 - ((1 - 0.0975) **
+        'tau_bq': [0.17],
+        'tau_payroll': [0.5],
+        'h_wealth': [0.1],
+        'p_wealth': [0.2],
+        'm_wealth': [1.0],
+        'tau_b': [0.2],
+        'delta_tau_annual': [float(1 - ((1 - 0.0975) **
                                        (20 / (p.ending_age -
-                                              p.starting_age))))
+                                              p.starting_age))))]
     }
     p.update_specifications(new_param_values, raise_errors=False)
 

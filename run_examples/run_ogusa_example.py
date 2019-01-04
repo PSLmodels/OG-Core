@@ -20,26 +20,26 @@ def run_micro_macro(user_params):
 
     # Define parameters to use for multiprocessing
     client = Client(processes=False)
-    num_workers = multiprocessing.cpu_count()
+    num_workers = 1 # multiprocessing.cpu_count()
     print('Number of workers = ', num_workers)
     start_time = time.time()
 
     # Set some model parameters
     # See parameters.py for description of these parameters
-    T_shifts = np.zeros(50)
-    T_shifts[2:10] = 0.01
-    T_shifts[10:40] = -0.01
-    G_shifts = np.zeros(6)
-    G_shifts[0:3] = -0.01
-    G_shifts[3:6] = -0.005
+    alpha_T = np.zeros(50)
+    alpha_T[0:2] = 0.09
+    alpha_T[2:10] = 0.09 + 0.01
+    alpha_T[10:40] = 0.09 - 0.01
+    alpha_T[40:] = 0.09
+    alpha_G = np.zeros(7)
+    alpha_G[0:3] = 0.05 - 0.01
+    alpha_G[3:6] = 0.05 - 0.005
+    alpha_G[6:] = 0.05
     small_open = False
-    # small_open = dict(world_int_rate=0.04)
-    # Alternatively small_open can be False/None
-    # if False/None then 0.04 is used
     user_params = {'frisch': 0.41, 'start_year': 2018,
-                   'tau_b': (0.21 * 0.55) * (0.017 / 0.055),
-                   'debt_ratio_ss': 1.0, 'T_shifts': T_shifts.tolist(),
-                   'G_shifts': G_shifts.tolist(), 'small_open': small_open}
+                   'tau_b': [(0.21 * 0.55) * (0.017 / 0.055), (0.21 * 0.55) * (0.017 / 0.055)],
+                   'debt_ratio_ss': 1.0, 'alpha_T': alpha_T.tolist(),
+                   'alpha_G': alpha_G.tolist(), 'small_open': small_open}
 
     '''
     ------------------------------------------------------------------------

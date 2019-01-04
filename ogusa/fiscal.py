@@ -27,7 +27,7 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
     D = np.zeros(p.T + 1)
     D[0] = D0
     if not p.baseline_spending:
-        G = p.ALPHA_G * Y[:p.T]
+        G = p.alpha_G[:p.T] * Y[:p.T]
         G[0] = G0
     else:
         G = Gbaseline

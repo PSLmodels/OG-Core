@@ -1,6 +1,6 @@
 from __future__ import print_function
 '''
-This module defines the runner() function, whic is used to run OG-USA
+This module defines the runner() function, which is used to run OG-USA
 '''
 
 try:

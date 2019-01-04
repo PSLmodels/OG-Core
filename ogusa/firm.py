@@ -25,7 +25,7 @@ import numpy as np
 '''
 
 
-def get_Y(K, L, p):
+def get_Y(K, L, p, method):
     '''
     --------------------------------------------------------------------
     Generates aggregate output (GDP) from aggregate capital stock,
@@ -50,21 +50,25 @@ def get_Y(K, L, p):
     RETURNS: Y
     --------------------------------------------------------------------
     '''
+    if method == 'SS':
+        Z = p.Z[-1]
+    else:
+        Z = p.Z[:p.T]
     if p.epsilon == 1:
         # Unit elasticity, Cobb-Douglas
-        Y = p.Z * (K ** p.gamma) * (L ** (1 - p.gamma))
+        Y = Z * (K ** p.gamma) * (L ** (1 - p.gamma))
     else:
         # General case
-        Y = (p.Z * (((p.gamma ** (1 / p.epsilon)) *
-                     (K ** ((p.epsilon - 1) / p.epsilon))) +
-                    (((1 - p.gamma) ** (1 / p.epsilon)) *
-                     (L ** ((p.epsilon - 1) / p.epsilon)))) **
+        Y = (Z * (((p.gamma ** (1 / p.epsilon)) *
+                   (K ** ((p.epsilon - 1) / p.epsilon))) +
+                  (((1 - p.gamma) ** (1 / p.epsilon)) *
+                   (L ** ((p.epsilon - 1) / p.epsilon)))) **
              (p.epsilon / (p.epsilon - 1)))
 
     return Y
 
 
-def get_r(Y, K, p):
+def get_r(Y, K, p, method):
     '''
     --------------------------------------------------------------------
     This function computes the interest rate as a function of Y, K, and
@@ -95,14 +99,22 @@ def get_r(Y, K, p):
     RETURNS: r
     --------------------------------------------------------------------
     '''
-    r = ((1 - p.tau_b) * (p.Z ** ((p.epsilon - 1) / p.epsilon)) *
+    if method == 'SS':
+        Z = p.Z[-1]
+        delta_tau = p.delta_tau[-1]
+        tau_b = p.tau_b[-1]
+    else:
+        Z = p.Z[:p.T]
+        delta_tau = p.delta_tau[:p.T]
+        tau_b = p.tau_b[:p.T]
+    r = ((1 - tau_b) * (Z ** ((p.epsilon - 1) / p.epsilon)) *
          (((p.gamma * Y) / K) ** (1 / p.epsilon)) -
-         p.delta + p.tau_b * p.delta_tau)
+         p.delta + tau_b * delta_tau)
 
     return r
 
 
-def get_w(Y, L, p):
+def get_w(Y, L, p, method):
     '''
     --------------------------------------------------------------------
     This function computes the wage as a function of Y, L, and
@@ -128,13 +140,17 @@ def get_w(Y, L, p):
     RETURNS: w
     --------------------------------------------------------------------
     '''
-    w = ((p.Z ** ((p.epsilon - 1) / p.epsilon)) *
+    if method == 'SS':
+        Z = p.Z[-1]
+    else:
+        Z = p.Z[:p.T]
+    w = ((Z ** ((p.epsilon - 1) / p.epsilon)) *
          ((((1 - p.gamma) * Y) / L) ** (1 / p.epsilon)))
 
     return w
 
 
-def get_KLrat_from_r(r, p):
+def get_KLratio_from_r(r, p, method):
     '''
     --------------------------------------------------------------------
     This function solves for the capital-labor ratio given the interest
@@ -164,15 +180,23 @@ def get_KLrat_from_r(r, p):
     RETURNS: KLratio
     --------------------------------------------------------------------
     '''
+    if method == 'SS':
+        Z = p.Z[-1]
+        delta_tau = p.delta_tau[-1]
+        tau_b = p.tau_b[-1]
+    else:
+        Z = p.Z[:p.T]
+        delta_tau = p.delta_tau[:p.T]
+        tau_b = p.tau_b[:p.T]
     if p.epsilon == 1:
         # Cobb-Douglas case
-        bracket = (((1 - p.tau_b) * p.gamma * p.Z) /
-                   (r + p.delta - p.tau_b * p.delta_tau))
+        bracket = (((1 - tau_b) * p.gamma * Z) /
+                   (r + p.delta - tau_b * delta_tau))
         KLratio = bracket ** (1 / (1 - p.gamma))
     else:
         # General CES case
-        bracket = ((r + p.delta - (p.delta_tau * p.tau_b)) /
-                   ((1 - p.tau_b) * p.Z * (p.gamma ** (1 / p.epsilon))))
+        bracket = ((r + p.delta - (delta_tau * tau_b)) /
+                   ((1 - tau_b) * Z * (p.gamma ** (1 / p.epsilon))))
         KLratio = \
             ((((1 - p.gamma) ** (1 / p.epsilon)) /
               ((bracket ** (p.epsilon - 1)) -
@@ -181,7 +205,7 @@ def get_KLrat_from_r(r, p):
     return KLratio
 
 
-def get_w_from_r(r, p):
+def get_w_from_r(r, p, method):
     '''
     --------------------------------------------------------------------
     Solve for steady-state wage w or time path of wages w_t given
@@ -210,20 +234,25 @@ def get_w_from_r(r, p):
     RETURNS: w
     --------------------------------------------------------------------
     '''
-    KLratio = get_KLrat_from_r(r, p)
-    eps = p.epsilon
-    if eps == 1:
+    if method == 'SS':
+        Z = p.Z[-1]
+    else:
+        Z = p.Z[:p.T]
+    KLratio = get_KLratio_from_r(r, p, method)
+    if p.epsilon == 1:
         # Cobb-Douglas case
-        w = (1 - p.gamma) * p.Z * (KLratio ** p.gamma)
+        w = (1 - p.gamma) * Z * (KLratio ** p.gamma)
     else:
         # General CES case
-        w = (((1 - p.gamma) ** (1 / eps)) * p.Z *
-             (((p.gamma ** (1 / eps)) * (KLratio ** ((eps - 1) / eps)) +
-               ((1 - p.gamma) ** (1 / eps))) ** (1 / (eps - 1))))
+        w = (((1 - p.gamma) ** (1 / p.epsilon)) * Z *
+             (((p.gamma ** (1 / p.epsilon)) *
+               (KLratio ** ((p.epsilon - 1) / p.epsilon)) +
+               ((1 - p.gamma) ** (1 / p.epsilon))) **
+              (1 / (p.epsilon - 1))))
     return w
 
 
-def get_K(L, r, p):
+def get_K(L, r, p, method):
     '''
     --------------------------------------------------------------------
     Generates vector of aggregate capital. Use with small open economy
@@ -245,20 +274,8 @@ def get_K(L, r, p):
     Returns: r
     --------------------------------------------------------------------
     '''
-    if p.epsilon == 1:
-        K = (((1 - p.tau_b) * p.gamma * p.Z /
-              (r + p.delta - (p.tau_b * p.delta_tau))) **
-             (1 / (1 - p.gamma)) * L)
-    elif p.epsilon == 0:
-        K = (1 - ((1 - p.gamma) * L)) / p.gamma
-    else:
-        K = (L * ((1 - p.gamma) ** (1 / (p.epsilon - 1))) *
-             (((
-                (((r + p.delta - (p.tau_b * p.delta_tau)) /
-                  (1 - p.tau_b)) ** (p.epsilon - 1)) *
-                (p.gamma ** ((1 - p.epsilon) / p.epsilon)) *
-                (p.Z ** (1 - p.epsilon))) - p.gamma **
-               (1 / p.epsilon))) ** (p.epsilon / (1 - p.epsilon)))
+    KLratio = get_KLratio_from_r(r, p, method)
+    K = KLratio * L
 
     print('USING firm.getK()')
 
