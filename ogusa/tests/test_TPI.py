@@ -234,6 +234,7 @@ def test_run_TPI():
     test_dict['IITpayroll_revenue'] = (test_dict['REVENUE'][:160] -
                                        test_dict['business_revenue'])
     del test_dict['T_P'], test_dict['T_BQ'], test_dict['T_W']
+    del test_dict['resource_constraint_error']
 
     for k, v in expected_dict.items():
         try:

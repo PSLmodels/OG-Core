@@ -745,6 +745,7 @@ def run_TPI(p, client=None):
               'c_path': c_path,
               'tax_path': tax_path, 'eul_savings': eul_savings,
               'eul_laborleisure': eul_laborleisure,
+              'resource_constraint_error': rc_error,
               'etr_path': etr_path, 'mtrx_path': mtrx_path,
               'mtry_path': mtry_path}
 

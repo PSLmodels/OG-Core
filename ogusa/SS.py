@@ -544,6 +544,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
               'T_Pss': T_Pss, 'T_BQss': T_BQss, 'T_Wss': T_Wss,
               'euler_savings': euler_savings,
               'euler_labor_leisure': euler_labor_leisure,
+              'resource_constraint_error': resource_constraint, 
               'etr_ss': etr_ss, 'mtrx_ss': mtrx_ss, 'mtry_ss': mtry_ss}
 
     return output
