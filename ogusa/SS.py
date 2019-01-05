@@ -257,9 +257,9 @@ def inner_loop(outer_loop_vars, p, client):
         etr_params_3D = np.tile(np.reshape(
             p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])),
                                 (1, p.J, 1))
-        new_T_H = aggr.revenue(new_r, new_w, b_s, nssmat, new_BQ, new_Y,
-                               L, K, factor, theta,
-                               etr_params_3D, p, 'SS')
+        new_T_H, _, _, _, _, _ = aggr.revenue(
+            new_r, new_w, b_s, nssmat, new_BQ, new_Y, L, K, factor,
+            theta, etr_params_3D, p, 'SS')
     elif p.baseline_spending:
         new_T_H = T_H
     else:
@@ -437,9 +437,9 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
 
     etr_params_3D = np.tile(np.reshape(
         p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])), (1, p.J, 1))
-    total_revenue_ss = aggr.revenue(
-        rss, wss, bssmat_s, nssmat, BQss, Yss, Lss, Kss, factor, theta,
-        etr_params_3D, p, 'SS')
+    total_revenue_ss, T_Iss, T_Pss, T_BQss, T_Wss, business_revenue =\
+        aggr.revenue(rss, wss, bssmat_s, nssmat, BQss, Yss, Lss, Kss,
+                     factor, theta, etr_params_3D, p, 'SS')
     r_gov_ss = rss
     debt_service_ss = r_gov_ss * p.debt_ratio_ss * Yss
     new_borrowing = p.debt_ratio_ss * Yss * ((1 + p.g_n_ss) *
@@ -475,9 +475,6 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
     cssmat = household.get_cons(rss, wss, bssmat_s, bssmat_splus1,
                                 nssmat, BQss.reshape(1, p.J), taxss,
                                 p.e, None, p)
-
-    business_revenue = tax.get_biz_tax(wss, Yss, Lss, Kss, p, 'SS')
-    IITpayroll_revenue = total_revenue_ss - business_revenue
 
     Css = aggr.get_C(cssmat, p, 'SS')
 
@@ -543,9 +540,11 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
               'T_Hss': T_Hss, 'Gss': Gss,
               'total_revenue_ss': total_revenue_ss,
               'business_revenue': business_revenue,
-              'IITpayroll_revenue': IITpayroll_revenue,
+              'IITpayroll_revenue': T_Iss,
+              'T_Pss': T_Pss, 'T_BQss': T_BQss, 'T_Wss': T_Wss,
               'euler_savings': euler_savings,
               'euler_labor_leisure': euler_labor_leisure,
+              'resource_constraint_error': resource_constraint, 
               'etr_ss': etr_ss, 'mtrx_ss': mtrx_ss, 'mtry_ss': mtry_ss}
 
     return output
