@@ -785,7 +785,7 @@
     "replacement_rate_adjust":{
       "long_name": "Adjustment to the social security retirement benefits replacement rate.",
       "description": "Adjustment to the social security retirement benefits replacement rate.",
-      "notes": "",
+      "notes": "This parameter willy only vary along the time path.  It is assumed to be one in the steady state.  The steady state retirement rate can be adjusted by changing the parameters of the retirement benefits function.",
       "col_var": "",
       "col_label": "",
       "boolean_value": false,
