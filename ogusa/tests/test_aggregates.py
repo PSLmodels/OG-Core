@@ -250,11 +250,9 @@ new_param_values3 = {
                                            p3.starting_age))))]
 }
 p3.update_specifications(new_param_values3)
-p3.e = (0.263 + (2.024 - 0.263) *
-        random_state.rand(p3.S * p3.J).reshape(p3.S, p3.J))
-p3.omega = 0.039 * random_state.rand(p3.T * p3.S * 1).reshape(p3.T, p3.S)
-p3.omega = p3.omega/p3.omega.sum(axis=1).reshape(p3.T, 1)
-p3.omega_SS = p3.omega[-1, :]
+p3.e = p.e
+p3.omega = p.omega
+p3.omega_SS = p.omega_SS
 expected1 = 0.5562489534339288
 expected2 = [0.52178543, 0.49977116, 0.52015768, 0.52693363, 0.59695398,
              0.61360011, 0.54679056, 0.54096669, 0.56301133, 0.5729165,
@@ -262,9 +260,7 @@ expected2 = [0.52178543, 0.49977116, 0.52015768, 0.52693363, 0.59695398,
              0.60189683, 0.56766507, 0.56439768, 0.68919173, 0.57765917,
              0.60292137, 0.56621788, 0.51913478, 0.48952262, 0.52142782,
              0.5735005, 0.51166718, 0.57939994, 0.52585236, 0.53767652]
-expected3 = [0.52178543 - 0.031202712, 0.49977116 - 0.031373691,
-             0.52015768 - 0.036120921, 0.52693363 - 0.037569789,
-             0.59695398,
+expected3 = [0.49088403, 0.47079763, 0.488186, 0.4926552, 0.59695398,
              0.61360011, 0.54679056, 0.54096669, 0.56301133, 0.5729165,
              0.52734917, 0.51432562, 0.50060814, 0.5633982,  0.51509517,
              0.60189683, 0.56766507, 0.56439768, 0.68919173, 0.57765917,
@@ -290,23 +286,4 @@ def test_revenue(r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p,
     revenue, _, _, _, _, _ = aggr.revenue(r, w, b, n, BQ, Y, L, K,
                                           factor, theta, etr_params, p,
                                           method)
-    # print('theta = ', theta)
-    # print(' ability = ', (p.e[p.retire[0]:, 0] * p.omega[0,p.retire[0]:]).sum())
-    # print(' ability = ', (p.e[p.retire[0]:, 0] * p.omega[1,p.retire[0]:]).sum())
-    # print(' ability = ', (p.e[p.retire[0]:, 0] * p.omega[2,p.retire[0]:]).sum())
-    # print(' ability = ', (p.e[p.retire[0]:, 0] * p.omega[3,p.retire[0]:]).sum())
-    # print(' ability = ', (p.e[p.retire[0]:, 0] * p.omega[4,p.retire[0]:]).sum())
-    # print(' ability = ', (p.e[p.retire[0]:, 1] * p.omega[0,p.retire[0]:]).sum())
-    # print(' ability = ', (p.e[p.retire[0]:, 1] * p.omega[1,p.retire[0]:]).sum())
-    # print(' ability = ', (p.e[p.retire[0]:, 1] * p.omega[2,p.retire[0]:]).sum())
-    # print(' ability = ', (p.e[p.retire[0]:, 1] * p.omega[3,p.retire[0]:]).sum())
-    # print(' ability = ', (p.e[p.retire[0]:, 1] * p.omega[4,p.retire[0]:]).sum())
-    # print('omega, t= 1 sum = ', p.omega[0, p.retire[0]:].sum())
-    # print('omega, t= 1 sum = ', p.omega[1, p.retire[0]:].sum())
-    # print('omega, t= 1 sum = ', p.omega[2, p.retire[0]:].sum())
-    # print('omega, t= 1 sum = ', p.omega[3, p.retire[0]:].sum())
-    # print('omega, t= 1 sum = ', p.omega[4, p.retire[0]:].sum())
-    print('test = ', revenue[:5])
-    print('expected = ', expected[:5])
-    print('replace adjust = ', p.replacement_rate_adjust[:5])
     assert(np.allclose(revenue, expected))
