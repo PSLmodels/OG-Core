@@ -514,6 +514,9 @@ p7 = copy.deepcopy(p5)
 p7.tau_bq = np.array([0.05, 0.2, 0.0])
 p7.retire = (np.array([1, 2, 2])).astype(int)
 
+p8 = copy.deepcopy(p6)
+p8.replacement_rate_adjust = [1.5, 0.6, 1.0]
+
 factor = 105000
 expected1 = np.array([0.47374766, -0.09027663, 0.03871394])
 expected2 = np.array([0.20374766, -0.09027663, 0.03871394])
@@ -550,6 +553,17 @@ expected7 = np.array([[[0.16311573 - 0.023076923,
                       [[0.31524401 - 0.061538462, 0.21763702 - 0.12857143],
                        [0.34545346 - 0.061538462, 0.39350691 - 0.12857143],
                        [0.15958077 - 0.061538462, -0.0482051 - 0.12857143]]])
+expected8 = np.array([[[0.16311573 - 0.023076923,  0.1583638 - 0.05],
+                       [0.27581667 - 0.023076923, 0.31559773 - 0.05],
+                       [0.12283074 - 0.023076923 - 0.135,
+                        -0.02156221 - 0.05 - 0.18]],
+                      [[0.1954706 + 0.038461538, 0.15747779 + 0.085714286],
+                       [0.3563044 + 0.038461538, 0.39808896 + 0.085714286],
+                       [0.19657058 + 0.038461538 + 0.117,
+                        -0.05871855 + 0.085714286 + 0.156]],
+                      [[0.31524401 - 0.061538462, 0.21763702 - 0.12857143],
+                       [0.34545346 - 0.061538462, 0.39350691 - 0.12857143],
+                       [0.15958077 - 0.061538462, -0.0482051 - 0.12857143]]])
 
 test_data = [(r1, w1, b1, n1, BQ1, factor, T_H1, theta1, None, j1, shift1,
               method1, p1.e[:, j1], etr_params1[-1, :, :],
@@ -567,7 +581,9 @@ test_data = [(r1, w1, b1, n1, BQ1, factor, T_H1, theta1, None, j1, shift1,
              (r5, w5, b5, n5, BQ5, factor, T_H5, theta5, 0, j5, shift5,
               method5, p5.e, etr_params5, p6, expected6),
              (r5, w5, b5, n5, BQ5, factor, T_H5, theta5, 0, j5, shift5,
-              method5, p5.e, etr_params5, p7, expected7)]
+              method5, p5.e, etr_params5, p7, expected7),
+             (r5, w5, b5, n5, BQ5, factor, T_H5, theta5, 0, j5, shift5,
+              method5, p5.e, etr_params5, p8, expected8)]
 
 
 @pytest.mark.parametrize('r,w,b,n,BQ,factor,T_H,theta,t,j,shift,method,'
@@ -576,7 +592,8 @@ test_data = [(r1, w1, b1, n1, BQ1, factor, T_H1, theta1, None, j1, shift1,
                                          'TPI shift = True',
                                          'TPI shift = False', 'TPI 3D',
                                          'TPI 3D,vary tau_bq',
-                                         'TPI 3D,vary retire'])
+                                         'TPI 3D,vary retire',
+                                         'TPI 3D,vary replacement rate'])
 def test_total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, shift,
                      method, e, etr_params, p, expected):
     # Test function that computes total net taxes for the household
