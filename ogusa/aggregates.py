@@ -308,8 +308,17 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p, method):
             T_P[t, p.retire[t]:, :] -= (theta.reshape(1, p.J) *
                                         p.replacement_rate_adjust[t] *
                                         w_array[t])
-        # T_P[:, p.retire:, :] -= theta.reshape(1, 1, p.J) * w_array
-        # T_W = tax.ETR_wealth(b, p) * b
+            # print(' t = ', t, ' replace rate = ', p.replacement_rate_adjust[t])
+            print(' t = ', t, ' changed amount low = ', (theta[0] *
+                                        p.replacement_rate_adjust[t] *
+                                        w_array[t] * p.omega[p.retire[t]:, 0] * p.lambdas[0]).sum() -
+                  (theta[0] *
+                                              w_array[t] * p.omega[p.retire[t]:, 0] * p.lambdas[0]).sum())
+            print(' t = ', t, ' changed amount high = ', (theta[1] *
+                                        p.replacement_rate_adjust[t] *
+                                        w_array[t] * p.omega[p.retire[t]:, 1] * p.lambdas[1]).sum()
+                  - (theta[1] *
+                                              w_array[t] * p.omega[p.retire[t]:, 1] * p.lambdas[1]).sum())
         T_W = (tax.ETR_wealth(b, p.h_wealth[:p.T].reshape(p.T, 1, 1),
                               p.m_wealth[:p.T].reshape(p.T, 1, 1),
                               p.p_wealth[:p.T].reshape(p.T, 1, 1)) * b)
@@ -320,5 +329,6 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p, method):
                            (1, 1, p.J)))
                    * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1) +
                    business_revenue)
-
+    print('wages = ', w)
+    # print('omega_retire = ', p.omega[:, p.retire[0]:])
     return REVENUE, T_I, T_P, T_BQ, T_W, business_revenue
