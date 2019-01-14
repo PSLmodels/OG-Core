@@ -544,7 +544,7 @@ def SS_solver(bmat, nmat, r, T_H, factor, Y, p, client,
               'T_Pss': T_Pss, 'T_BQss': T_BQss, 'T_Wss': T_Wss,
               'euler_savings': euler_savings,
               'euler_labor_leisure': euler_labor_leisure,
-              'resource_constraint_error': resource_constraint, 
+              'resource_constraint_error': resource_constraint,
               'etr_ss': etr_ss, 'mtrx_ss': mtrx_ss, 'mtry_ss': mtry_ss}
 
     return output
@@ -575,42 +575,69 @@ def SS_fsolve(guesses, *args):
         solutions = steady state values of b, n, w, r, factor,
                     T_H ((2*S*J+4)x1 array)
     '''
-    (bssmat, nssmat, p, client) = args
+    (bssmat, nssmat, T_Hss, factor_ss, p, client) = args
 
     # Rename the inputs
-    r = guesses[0]
-    T_H = guesses[1]
-    factor = guesses[2]
+    if p.baseline:
+        r = guesses[0]
+        T_H = guesses[1]
+        factor = guesses[2]
+    else:
+        if p.baseline_spending:
+            r = guesses[0]
+            Y = guesses[1]
+        else:
+            r = guesses[0]
+            T_H = guesses[1]
+    # Create tuples of outler loop vars
+    if p.baseline:
+        if p.budget_balance:
+            outer_loop_vars = (bssmat, nssmat, r, T_H, factor)
+        else:
+            Y = T_H / p.alpha_T[-1]
+            outer_loop_vars = (bssmat, nssmat, r, Y, T_H, factor)
+    else:
+        if p.budget_balance:
+            outer_loop_vars = (bssmat, nssmat, r, T_H, factor_ss)
+        elif p.baseline_spending:
+            outer_loop_vars = (bssmat, nssmat, r, Y, T_Hss, factor_ss)
+        else:
+            Y = T_H / p.alpha_T[-1]
+            outer_loop_vars = (bssmat, nssmat, r, Y, T_H, factor_ss)
 
     # Solve for the steady state levels of b and n, given w, r, T_H and
     # factor
-    if p.budget_balance:
-        outer_loop_vars = (bssmat, nssmat, r, T_H, factor)
-    else:
-        Y = T_H / p.alpha_T[-1]
-        outer_loop_vars = (bssmat, nssmat, r, Y, T_H, factor)
     (euler_errors, bssmat, nssmat, new_r, new_w, new_T_H, new_Y,
      new_factor, new_BQ, average_income_model) =\
         inner_loop(outer_loop_vars, p, client)
 
+    # Create list of errors in general equilibrium variables
     error1 = new_r - r
-    if p.budget_balance:
-        error2 = new_T_H - T_H
+    if p.baseline:
+        if p.budget_balance:
+            error2 = new_T_H - T_H
+        else:
+            error2 = new_Y - Y
+        error3 = new_factor / 1000000 - factor / 1000000
+        print('GE loop errors = ', error1, error2, error2)
+        # Check and punish violations of the factor
+        if factor <= 0:
+            error3 = 1e9
+        errors = [error1, error2, error3]
     else:
-        error2 = new_Y - Y
-    error3 = new_factor / 1000000 - factor / 1000000
-
-    # Check and punish violations
+        if p.budget_balance:
+            error2 = new_T_H - T_H
+        elif p.baseline_spending:
+            error2 = new_Y - Y
+        else:
+            error2 = new_Y - Y
+        errors = [error1, error2]
+        print('GE loop errors = ', error1, error2)
+    # Check and punish violations of the bounds on the interest rate
     if r + p.delta <= 0:
-        error1 = 1e9
-    # if r > 1:
-    #    error1 += 1e9
-    if factor <= 0:
-        error3 = 1e9
+        errors[0] = 1e9
 
-    print('errors: ', error1, error2, error3)
-
-    return [error1, error2, error3]
+    return errors
 
 
 def SS_fsolve_reform(guesses, *args):
@@ -784,7 +811,7 @@ def run_SS(p, client=None):
         T_Hguess = 0.12
         factorguess = 70000
 
-        ss_params_baseline = (b_guess, n_guess, p, client)
+        ss_params_baseline = (b_guess, n_guess, None, None, p, client)
         guesses = [rguess, T_Hguess, factorguess]
         [solutions_fsolve, infodict, ier, message] =\
             opt.fsolve(SS_fsolve, guesses, args=ss_params_baseline,
@@ -807,18 +834,30 @@ def run_SS(p, client=None):
              ss_solutions['Yss'], ss_solutions['factor_ss'])
         if p.baseline_spending:
             T_Hss = T_Hguess
+            # ss_params_reform = (b_guess, n_guess, T_Hss, factor, p, client)
+            # guesses = [rguess, Yguess]
+            # [solutions_fsolve, infodict, ier, message] =\
+            #     opt.fsolve(SS_fsolve_reform_baselinespend, guesses,
+            #                args=ss_params_reform, xtol=p.mindist_SS,
+            #                full_output=True)
             ss_params_reform = (b_guess, n_guess, T_Hss, factor, p, client)
             guesses = [rguess, Yguess]
             [solutions_fsolve, infodict, ier, message] =\
-                opt.fsolve(SS_fsolve_reform_baselinespend, guesses,
+                opt.fsolve(SS_fsolve, guesses,
                            args=ss_params_reform, xtol=p.mindist_SS,
                            full_output=True)
             [rss, Yss] = solutions_fsolve
         else:
-            ss_params_reform = (b_guess, n_guess, factor, p, client)
+            # ss_params_reform = (b_guess, n_guess, factor, p, client)
+            # guesses = [rguess, T_Hguess]
+            # [solutions_fsolve, infodict, ier, message] =\
+            #     opt.fsolve(SS_fsolve_reform, guesses,
+            #                args=ss_params_reform, xtol=p.mindist_SS,
+            #                full_output=True)
+            ss_params_reform = (b_guess, n_guess, None, factor, p, client)
             guesses = [rguess, T_Hguess]
             [solutions_fsolve, infodict, ier, message] =\
-                opt.fsolve(SS_fsolve_reform, guesses,
+                opt.fsolve(SS_fsolve, guesses,
                            args=ss_params_reform, xtol=p.mindist_SS,
                            full_output=True)
             [rss, T_Hss] = solutions_fsolve
