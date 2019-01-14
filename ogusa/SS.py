@@ -597,13 +597,14 @@ def SS_fsolve(guesses, *args):
             Y = T_H / p.alpha_T[-1]
             outer_loop_vars = (bssmat, nssmat, r, Y, T_H, factor)
     else:
-        if p.budget_balance:
-            outer_loop_vars = (bssmat, nssmat, r, T_H, factor_ss)
-        elif p.baseline_spending:
+        if p.baseline_spending:
             outer_loop_vars = (bssmat, nssmat, r, Y, T_Hss, factor_ss)
         else:
-            Y = T_H / p.alpha_T[-1]
-            outer_loop_vars = (bssmat, nssmat, r, Y, T_H, factor_ss)
+            if p.budget_balance:
+                outer_loop_vars = (bssmat, nssmat, r, T_H, factor_ss)
+            else:
+                Y = T_H / p.alpha_T[-1]
+                outer_loop_vars = (bssmat, nssmat, r, Y, T_H, factor_ss)
 
     # Solve for the steady state levels of b and n, given w, r, T_H and
     # factor
@@ -619,18 +620,19 @@ def SS_fsolve(guesses, *args):
         else:
             error2 = new_Y - Y
         error3 = new_factor / 1000000 - factor / 1000000
-        print('GE loop errors = ', error1, error2, error2)
+        print('GE loop errors = ', error1, error2, error3)
         # Check and punish violations of the factor
         if factor <= 0:
             error3 = 1e9
         errors = [error1, error2, error3]
     else:
-        if p.budget_balance:
-            error2 = new_T_H - T_H
-        elif p.baseline_spending:
+        if p.baseline_spending:
             error2 = new_Y - Y
         else:
-            error2 = new_Y - Y
+            if p.budget_balance:
+                error2 = new_T_H - T_H
+            else:
+                error2 = new_Y - Y
         errors = [error1, error2]
         print('GE loop errors = ', error1, error2)
     # Check and punish violations of the bounds on the interest rate
@@ -638,121 +640,6 @@ def SS_fsolve(guesses, *args):
         errors[0] = 1e9
 
     return errors
-
-
-def SS_fsolve_reform(guesses, *args):
-    '''
-    Solves for the steady state distribution of capital, labor, as well
-    as w, r, and T_H and the scaling factor, using a root finder. This
-    solves for the reform SS and so takes the factor from the baseline
-    SS as an input.
-    Inputs:
-        b_guess_init = guesses for b (SxJ array)
-        n_guess_init = guesses for n (SxJ array)
-        wguess = guess for wage rate (scalar)
-        rguess = guess for rental rate (scalar)
-        T_Hguess = guess for lump sum tax (scalar)
-        factor = scaling factor to dollars (scalar)
-        chi_n = chi^n_s (Sx1 array)
-        chi_b = chi^b_j (Jx1 array)
-        params = list of parameters (list)
-        iterative_params = list of parameters that determine the
-                           convergence of the while loop (list)
-        tau_bq = bequest tax rate (Jx1 array)
-        rho = mortality rates (Sx1 array)
-        lambdas = ability weights (Jx1 array)
-        omega_SS = population weights (Sx1 array)
-        e = ability levels (SxJ array)
-    Outputs:
-        solutions = steady state values of b, n, w, r, factor,
-                    T_H ((2*S*J+4)x1 array)
-    '''
-    (bssmat, nssmat, factor, p, client) = args
-
-    # Rename the inputs
-    r = guesses[0]
-    T_H = guesses[1]
-
-    # Solve for the steady state levels of b and n, given w, r, T_H
-    if p.budget_balance:
-        outer_loop_vars = (bssmat, nssmat, r, T_H, factor)
-    else:
-        Y = T_H / p.alpha_T[-1]
-        outer_loop_vars = (bssmat, nssmat, r, Y, T_H, factor)
-
-    (euler_errors, bssmat, nssmat, new_r, new_w, new_T_H, new_Y,
-     new_factor, new_BQ, average_income_model) =\
-        inner_loop(outer_loop_vars, p, client)
-
-    error1 = new_r - r
-    if p.budget_balance:
-        error2 = new_T_H - T_H
-    else:
-        error2 = new_Y - Y
-
-    print('errors: ', error1, error2)
-
-    # Check and punish violations
-    if r + p.delta <= 0:
-        error1 = 1e9
-    # if r > 1:
-    #    error1 += 1e9
-
-    return [error1, error2]
-
-
-def SS_fsolve_reform_baselinespend(guesses, *args):
-    '''
-    Solves for the steady state distribution of capital, labor, as
-    well as w, r, and Y, using a root finder. This solves for the
-    reform SS when baseline_spending=True and so takes the factor and
-    gov't transfers (T_H) from the baseline SS as an input.
-    Inputs:
-        b_guess_init = guesses for b (SxJ array)
-        n_guess_init = guesses for n (SxJ array)
-        wguess = guess for wage rate (scalar)
-        rguess = guess for rental rate (scalar)
-        T_Hguess = guess for lump sum tax (scalar)
-        factor = scaling factor to dollars (scalar)
-        chi_n = chi^n_s (Sx1 array)
-        chi_b = chi^b_j (Jx1 array)
-        params = list of parameters (list)
-        iterative_params = list of parameters that determine the
-                           convergence of the while loop (list)
-        tau_bq = bequest tax rate (Jx1 array)
-        rho = mortality rates (Sx1 array)
-        lambdas = ability weights (Jx1 array)
-        omega_SS = population weights (Sx1 array)
-        e = ability levels (SxJ array)
-    Outputs:
-        solutions = steady state values of b, n, w, r, factor,
-                    T_H ((2*S*J+4)x1 array)
-    '''
-    (bssmat, nssmat, T_Hss, factor_ss, p, client) = args
-
-    # Rename the inputs
-    r = guesses[0]
-    Y = guesses[1]
-
-    # Solve for the steady state levels of b and n, given w, r, T_H and
-    # factor
-    outer_loop_vars = (bssmat, nssmat, r, Y, T_Hss, factor_ss)
-    (euler_errors, bssmat, nssmat, new_r, new_w, new_T_H, new_Y,
-     new_factor, new_BQ, average_income_model) =\
-        inner_loop(outer_loop_vars, p, client)
-
-    error1 = new_r - r
-    error2 = new_Y - Y
-
-    print('errors: ', error1, error2)
-
-    # Check and punish violations
-    if r + p.delta <= 0:
-        error1 = 1e9
-    # if r > 1:
-    #    error1 += 1e9
-
-    return [error1, error2]
 
 
 def run_SS(p, client=None):
