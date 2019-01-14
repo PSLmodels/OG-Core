@@ -306,9 +306,8 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p, method):
         T_P = p.tau_payroll[:p.T].reshape(p.T, 1, 1) * w_array * n * p.e
         for t in range(T_P.shape[0]):
             T_P[t, p.retire[t]:, :] -= (theta.reshape(1, p.J) *
+                                        p.replacement_rate_adjust[t] *
                                         w_array[t])
-        # T_P[:, p.retire:, :] -= theta.reshape(1, 1, p.J) * w_array
-        # T_W = tax.ETR_wealth(b, p) * b
         T_W = (tax.ETR_wealth(b, p.h_wealth[:p.T].reshape(p.T, 1, 1),
                               p.m_wealth[:p.T].reshape(p.T, 1, 1),
                               p.p_wealth[:p.T].reshape(p.T, 1, 1)) * b)
@@ -319,5 +318,4 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p, method):
                            (1, 1, p.J)))
                    * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1) +
                    business_revenue)
-
     return REVENUE, T_I, T_P, T_BQ, T_W, business_revenue

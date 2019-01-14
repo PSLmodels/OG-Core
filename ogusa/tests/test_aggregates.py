@@ -230,8 +230,37 @@ etr_params = (0.22 *
 etr_params = np.tile(np.reshape(etr_params, (p.T, p.S, 1, dim4)),
                      (1, 1, p.J, 1))
 theta = 0.101 + (0.156 - 0.101) * random_state.rand(p.J)
+
+p3 = Specifications()
+dim4 = 12
+new_param_values3 = {
+    'T': 30,
+    'S': 20,
+    'J': 2,
+    'lambdas': [0.6, 0.4],
+    'tau_bq': [0.17],
+    'tau_payroll': [0.5],
+    'h_wealth': [0.1],
+    'p_wealth': [0.2],
+    'm_wealth': [1.0],
+    'tau_b': [0.2],
+    'replacement_rate_adjust': [1.5, 1.5, 1.5, 1.6, 1.0],
+    'delta_tau_annual': [float(1 - ((1 - 0.0975) **
+                                    (20 / (p3.ending_age -
+                                           p3.starting_age))))]
+}
+p3.update_specifications(new_param_values3)
+p3.e = p.e
+p3.omega = p.omega
+p3.omega_SS = p.omega_SS
 expected1 = 0.5562489534339288
 expected2 = [0.52178543, 0.49977116, 0.52015768, 0.52693363, 0.59695398,
+             0.61360011, 0.54679056, 0.54096669, 0.56301133, 0.5729165,
+             0.52734917, 0.51432562, 0.50060814, 0.5633982,  0.51509517,
+             0.60189683, 0.56766507, 0.56439768, 0.68919173, 0.57765917,
+             0.60292137, 0.56621788, 0.51913478, 0.48952262, 0.52142782,
+             0.5735005, 0.51166718, 0.57939994, 0.52585236, 0.53767652]
+expected3 = [0.49088403, 0.47079763, 0.488186, 0.4926552, 0.59695398,
              0.61360011, 0.54679056, 0.54096669, 0.56301133, 0.5729165,
              0.52734917, 0.51432562, 0.50060814, 0.5633982,  0.51509517,
              0.60189683, 0.56766507, 0.56439768, 0.68919173, 0.57765917,
@@ -241,11 +270,14 @@ test_data = [(r[0], w[0], b[0, :, :], n[0, :, :], BQ[0, :, :], Y[0],
               L[0], K[0], factor, theta, etr_params[-1, :, :, :], p,
               'SS', expected1),
              (r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p,
-              'TPI', expected2)]
+              'TPI', expected2),
+             (r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p3,
+              'TPI', expected3)]
 
 
 @pytest.mark.parametrize('r,w,b,n,BQ,Y,L,K,factor,theta,etr_params,p,' +
-                         'method,expected', test_data, ids=['SS', 'TPI'])
+                         'method,expected', test_data,
+                         ids=['SS', 'TPI', 'TPI, replace rate adjust'])
 def test_revenue(r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p,
                  method, expected):
     """

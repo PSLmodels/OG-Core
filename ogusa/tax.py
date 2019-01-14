@@ -466,8 +466,9 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, shift, method,
             if not shift:
                 retireTPI = p.retire[t] - p.S
             else:
-                retireTPI = p.retire[t] - 1- p.S
-            T_P[retireTPI:] -= theta[j] * w[retireTPI:]
+                retireTPI = p.retire[t] - 1 - p.S
+            T_P[retireTPI:] -= (theta[j] * p.replacement_rate_adjust[t]
+                                * w[retireTPI:])
             T_W = (ETR_wealth(b, p.h_wealth[t:t + length],
                               p.m_wealth[t:t + length],
                               p.p_wealth[t:t + length]) * b)
@@ -475,7 +476,8 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, shift, method,
         elif len(b.shape) == 2:
             T_P = p.tau_payroll[t: t + length].reshape(length, 1) * w * e * n
             for tt in range(T_P.shape[0]):
-                T_P[tt, retireTPI[tt]:] -= theta * w[tt]
+                T_P[tt, retireTPI[tt]:] -= (
+                    theta * p.replacement_rate_adjust[t + tt] * w[tt])
             T_W = (ETR_wealth(b, p.h_wealth[t:t + length],
                               p.m_wealth[t:t + length],
                               p.p_wealth[t:t + length]) * b)
@@ -483,7 +485,9 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, shift, method,
         else:
             T_P = p.tau_payroll[t:t + length].reshape(length, 1, 1) * w * e * n
             for tt in range(T_P.shape[0]):
-                T_P[tt, retireTPI[tt]:, :] -= (theta.reshape(1, p.J) * w[tt])
+                T_P[tt, retireTPI[tt]:, :] -= (
+                    theta.reshape(1, p.J) *
+                    p.replacement_rate_adjust[t + tt] * w[tt])
             T_W = (ETR_wealth(
                 b, p.h_wealth[t:t + length].reshape(length, 1, 1),
                 p.m_wealth[t:t + length].reshape(length, 1, 1),
@@ -493,7 +497,7 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, shift, method,
         # The above methods won't work if scalars are used.  This option
         # is only called by the SS_TPI_firstdoughnutring function in TPI.
         T_P = p.tau_payroll[0] * w * e * n
-        T_P -= theta * w
+        T_P -= theta * p.replacement_rate_adjust[0] * w
         T_BQ = p.tau_bq[0] * BQ / lambdas
         T_W = (ETR_wealth(b, p.h_wealth[0], p.m_wealth[0],
                           p.p_wealth[0]) * b)
