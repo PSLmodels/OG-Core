@@ -11,7 +11,7 @@ This file calls the following files:
 
 # Packages
 import numpy as np
-from . import tax
+from . import tax, utils
 
 '''
 ------------------------------------------------------------------------
@@ -127,9 +127,17 @@ def get_bq(r, b_splus1, BQ, j, p, method, preTP):
     '''
     if p.use_zeta:
         if j is not None:
-            bq = p.zeta[:, j] * BQ
+            if method == 'SS':
+                bq = p.zeta[:, j] * BQ
+            else:
+                bq = (np.reshape(p.zeta[:, j], (1, p.S, 1)) *
+                      utils.to_timepath_shape(BQ, p))
         else:
-            bq = p.zeta * BQ
+            if method == 'SS':
+                bq = p.zeta * BQ
+            else:
+                bq = (np.reshape(p.zeta, (1, p.S, p.J)) *
+                      utils.to_timepath_shape(BQ, p))
     else:
         if method == 'SS':
             if preTP:
