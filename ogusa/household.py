@@ -101,6 +101,73 @@ def marg_ut_labor(n, chi_n, p):
     return output
 
 
+def get_bq(r, b_splus1, BQ, j, p, method, preTP):
+    '''
+    Calculation of bequests to each lifetime income group.
+
+    Inputs:
+        r           = [T,] vector, interest rates
+        b_splus1    = [T,S,J] array, distribution of wealth/capital
+                      holdings one period ahead
+        params      = length 5 tuple, (omega, lambdas, rho, g_n, method)
+        omega       = [S,T] array, population weights
+        lambdas     = [J,] vector, fraction in each lifetime income group
+        rho         = [S,] vector, mortality rates
+        g_n         = scalar, population growth rate
+        method      = string, 'SS' or 'TPI'
+
+    Functions called: None
+
+    Objects in function:
+        BQ_presum = [T,S,J] array, weighted distribution of
+                    wealth/capital holdings one period ahead
+        BQ        = [T,J] array, aggregate bequests by lifetime income group
+
+    Returns: BQ
+    '''
+    if p.use_zeta:
+        if j is not None:
+            bq = p.zeta[:, j] * BQ
+        else:
+            bq = p.zeta * BQ
+    else:
+        if method == 'SS':
+            if preTP:
+                omega = p.omega_S_preTP
+                pop_growth_rate = p.g_n[0]
+            else:
+                omega = p.omega_SS
+                pop_growth_rate = p.g_n_ss
+            if j is not None:
+                bq_presum = omega * p.rho * b_splus1 * p.lambdas[j]
+                bq = np.tile(bq_presum.sum(0), (p.S))
+            else:
+                bq_presum = (np.transpose(omega * (p.rho * p.lambdas)) *
+                             b_splus1)
+                bq = np.tile(np.reshape(bq_presum.sum(0), (1, p.J)), (p.S, 1))
+            bq *= (1.0 + r) / (1.0 + pop_growth_rate)
+        elif method == 'TPI':
+            pop = np.append(p.omega_S_preTP.reshape(1, p.S),
+                            p.omega[:p.T - 1, :], axis=0)
+            if j is not None:
+                bq_presum = ((b_splus1 * p.lambdas[j]) *
+                             (pop * p.rho))
+                # bq = bq_presum.sum(1)
+                bq = np.tile(np.reshape(bq_presum.sum(1), (p.T, 1)), (1, p.S))
+                bq *= np.tile(np.reshape((1.0 + r) / (1.0 + p.g_n[:p.T]),
+                                         (p.T, 1)), (1, p.S))
+                # bq *= (1.0 + r) / (1.0 + p.g_n[:p.T])
+            else:
+                bq_presum = ((b_splus1 * np.squeeze(p.lambdas)) *
+                             np.tile(np.reshape(pop * p.rho, (p.T, p.S, 1)),
+                                     (1, 1, p.J)))
+                bq = np.tile(np.reshape(bq_presum.sum(1),
+                                        (p.T, 1, p.J)), (1, p.S, 1))
+                bq *= np.tile(np.reshape((1.0 + r) / (1.0 + p.g_n[:p.T]),
+                                         (p.T, 1, 1)), (1, p.S, p.J))
+    return bq
+
+
 def get_cons(r, w, b, b_splus1, n, BQ, net_tax, e, j, p):
     '''
     Calculation of househld consumption.
