@@ -67,6 +67,40 @@ def test_marg_ut_labor(n, params, expected):
 
 
 p1 = Specifications()
+p1.zeta = np.array([[0.1, 0.3], [0.15, 0.4], [0.05, 0.0]])
+p1.S = 3
+p1.J = 2
+p1.T = 3
+BQ1 = 2.5
+p1.use_zeta = True
+expected1 = np.array([[0.25, 0.75], [0.375, 1.0], [0.125, 0.0]])
+expected2 = np.array([0.75, 1.0, 0.0])
+BQ2 = np.array([2.5, 0.8, 3.6])
+expected3 = np.array([[[0.25, 0.75], [0.375, 1.0], [0.125, 0.0]],
+                      [[0.08, 0.24], [0.12, 0.32], [0.04, 0.0]],
+                      [[0.36, 1.08], [0.54, 1.44], [0.18, 0.0]]])
+expected4 = np.array([[[0.75], [1.0], [0.0]], [[0.24], [0.32], [0.0]],
+                      [[1.08], [1.44], [0.0]]])
+test_data = [(None, None, BQ1, None, p1, 'SS', False, expected1),
+             (None, None, BQ1, 1, p1, 'SS', False, expected2),
+             (None, None, BQ2, None, p1, 'TPI', False, expected3),
+             (None, None, BQ2, 1, p1, 'TPI', False, expected4)]
+
+
+@pytest.mark.parametrize('r,b_splus1,BQ,j,p,method,preTP,expected',
+                         test_data,
+                         ids=['SS, use zeta, all j',
+                              'SS, use zeta, one j',
+                              'TPI, use zeta, all j',
+                              'TPI, use zeta, one j'])
+def test_get_bq(r, b_splus1, BQ, j, p, method, preTP, expected):
+    # Test the get_BQ function
+    test_value = household.get_bq(r, b_splus1, BQ, j, p, method, preTP)
+    print('Test value = ', test_value)
+    assert np.allclose(test_value, expected)
+
+
+p1 = Specifications()
 p1.e = 0.99
 p1.lambdas = np.array([0.25])
 p1.g_y = 0.03
