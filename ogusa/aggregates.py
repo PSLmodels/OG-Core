@@ -1,9 +1,6 @@
 '''
 ------------------------------------------------------------------------
-Last updated 8/15/2017
-
 Functions to compute economic aggregates.
-
 ------------------------------------------------------------------------
 '''
 
@@ -209,6 +206,11 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
             BQ = BQ_presum.sum(1)
             BQ *= np.tile(np.reshape((1.0 + r) / (1.0 + p.g_n[:p.T]),
                                      (p.T, 1)), (1, p.J))
+    if p.use_zeta:
+        if method == 'SS':
+            BQ = BQ.sum()
+        else:
+            BQ = BQ.sum(1)
     return BQ
 
 
@@ -241,7 +243,7 @@ def get_C(c, p, method):
     return aggC
 
 
-def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p, method):
+def revenue(r, w, b, n, bq, Y, L, K, factor, theta, etr_params, p, method):
     '''
     Gives lump sum transfer value.
     Inputs:
@@ -292,7 +294,7 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p, method):
         T_P[p.retire[-1]:] -= theta * w
         T_W = (tax.ETR_wealth(b, p.h_wealth[-1], p.m_wealth[-1],
                              p.p_wealth[-1]) * b)
-        T_BQ = p.tau_bq[-1] * (BQ / np.transpose(p.lambdas))
+        T_BQ = p.tau_bq[-1] * bq
         business_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
         REVENUE = ((np.transpose(p.omega_SS * p.lambdas) *
                     (T_I + T_P + T_BQ + T_W)).sum() + business_revenue)
@@ -311,7 +313,7 @@ def revenue(r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p, method):
         T_W = (tax.ETR_wealth(b, p.h_wealth[:p.T].reshape(p.T, 1, 1),
                               p.m_wealth[:p.T].reshape(p.T, 1, 1),
                               p.p_wealth[:p.T].reshape(p.T, 1, 1)) * b)
-        T_BQ = p.tau_bq[:p.T].reshape(p.T, 1, 1) * BQ / np.squeeze(p.lambdas)
+        T_BQ = p.tau_bq[:p.T].reshape(p.T, 1, 1) * bq
         business_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
         REVENUE = ((((np.squeeze(p.lambdas)) *
                    np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
