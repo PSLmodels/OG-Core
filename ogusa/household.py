@@ -101,7 +101,7 @@ def marg_ut_labor(n, chi_n, p):
     return output
 
 
-def get_bq(r, b_splus1, BQ, j, p, method, preTP):
+def get_bq(BQ, j, p, method):
     '''
     Calculation of bequests to each lifetime income group.
 
@@ -128,55 +128,38 @@ def get_bq(r, b_splus1, BQ, j, p, method, preTP):
     if p.use_zeta:
         if j is not None:
             if method == 'SS':
-                bq = p.zeta[:, j] * BQ
+                bq = (p.zeta[:, j] * BQ) / (p.lambdas[j] * p.omega_SS)
             else:
-                bq = (np.reshape(p.zeta[:, j], (1, p.S, 1)) *
-                      utils.to_timepath_shape(BQ, p))
+                bq = (((np.reshape(p.zeta[:, j], (1, p.S, 1)) *
+                      utils.to_timepath_shape(BQ, p))) /
+                      (p.lambdas[j] * p.omega[:p.T, :]))
         else:
             if method == 'SS':
-                bq = p.zeta * BQ
+                bq = ((p.zeta * BQ) / (p.lambdas.reshape((1, p.J)) *
+                                       p.omega_SS.reshape((p.S, 1))))
             else:
-                bq = (np.reshape(p.zeta, (1, p.S, p.J)) *
-                      utils.to_timepath_shape(BQ, p))
+                bq = ((np.reshape(p.zeta, (1, p.S, p.J)) *
+                      utils.to_timepath_shape(BQ, p)) /
+                      (p.lambdas.reshape((1, 1, p.J)) *
+                       p.omega.reshape((p.T, p.S, 1))))
     else:
-        if method == 'SS':
-            if preTP:
-                omega = p.omega_S_preTP
-                pop_growth_rate = p.g_n[0]
-            else:
-                omega = p.omega_SS
-                pop_growth_rate = p.g_n_ss
-            if j is not None:
-                bq_presum = omega * p.rho * b_splus1 * p.lambdas[j]
-                bq = np.tile(bq_presum.sum(0), (p.S))
-            else:
-                bq_presum = (np.transpose(omega * (p.rho * p.lambdas)) *
-                             b_splus1)
-                bq = np.tile(np.reshape(bq_presum.sum(0), (1, p.J)), (p.S, 1))
-            bq *= (1.0 + r) / (1.0 + pop_growth_rate)
-        elif method == 'TPI':
-            pop = np.append(p.omega_S_preTP.reshape(1, p.S),
-                            p.omega[:p.T - 1, :], axis=0)
-            if j is not None:
-                bq_presum = ((b_splus1 * p.lambdas[j]) *
-                             (pop * p.rho))
-                # bq = bq_presum.sum(1)
-                bq = np.tile(np.reshape(bq_presum.sum(1), (p.T, 1)), (1, p.S))
-                bq *= np.tile(np.reshape((1.0 + r) / (1.0 + p.g_n[:p.T]),
-                                         (p.T, 1)), (1, p.S))
-                # bq *= (1.0 + r) / (1.0 + p.g_n[:p.T])
-            else:
-                bq_presum = ((b_splus1 * np.squeeze(p.lambdas)) *
-                             np.tile(np.reshape(pop * p.rho, (p.T, p.S, 1)),
-                                     (1, 1, p.J)))
-                bq = np.tile(np.reshape(bq_presum.sum(1),
-                                        (p.T, 1, p.J)), (1, p.S, 1))
-                bq *= np.tile(np.reshape((1.0 + r) / (1.0 + p.g_n[:p.T]),
-                                         (p.T, 1, 1)), (1, p.S, p.J))
+        if j is not None:
+            if method == 'SS':
+                bq = np.tile(BQ[j], p.S) / p.lambdas[j]
+            if method == 'TPI':
+                bq = np.tile(BQ[j], p.S) / p.lambdas[j]
+        else:
+            if method == 'SS':
+                BQ_per = BQ / np.squeeze(p.lambdas)
+                bq = np.tile(np.reshape(BQ_per, (1, p.J)), (p.S, 1))
+            if method == 'TPI':
+                BQ_per = BQ / p.lambdas.reshape(1, p.J)
+                bq = np.tile(np.reshape(BQ_per, (p.T, 1, p.J)),
+                             (1, p.S, 1))
     return bq
 
 
-def get_cons(r, w, b, b_splus1, n, BQ, net_tax, e, j, p):
+def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, j, p):
     '''
     Calculation of househld consumption.
 
@@ -203,16 +186,12 @@ def get_cons(r, w, b, b_splus1, n, BQ, net_tax, e, j, p):
 
     Returns: cons
     '''
-    if j is not None:
-        lambdas = p.lambdas[j]
-    else:
-        lambdas = np.transpose(p.lambdas)
-    cons = ((1 + r) * b + w * e * n + BQ / lambdas - b_splus1 *
-            np.exp(p.g_y) - net_tax)
+    cons = ((1 + r) * b + w * e * n + bq - b_splus1 * np.exp(p.g_y) -
+            net_tax)
     return cons
 
 
-def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
+def FOC_savings(r, w, b, b_splus1, n, bq, factor, T_H, theta,
                 e, rho, etr_params, mtry_params, t, j, p, method):
     '''
     Computes Euler errors for the FOC for savings in the steady state.
@@ -284,9 +263,9 @@ def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
         chi_b = p.chi_b[j]
     else:
         chi_b = p.chi_b
-    taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, False,
+    taxes = tax.total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, False,
                             method, e, etr_params, p)
-    cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, e, j, p)
+    cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, j, p)
     deriv = ((1 + r) - r * (tax.MTR_income(r, w, b, n, factor, True, e,
                                            etr_params, mtry_params, p)))
     savings_ut = (rho * np.exp(-p.sigma * p.g_y) * chi_b *
@@ -306,7 +285,7 @@ def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
     return euler_error
 
 
-def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, chi_n, e,
+def FOC_labor(r, w, b, b_splus1, n, bq, factor, T_H, theta, chi_n, e,
               etr_params, mtrx_params, t, j, p, method):
     '''
     Computes Euler errors for the FOC for labor supply in the steady
@@ -379,12 +358,12 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, chi_n, e,
     else:
         length = r.shape[0]
         tau_payroll = p.tau_payroll[t:t + length]
-    taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, False,
+    taxes = tax.total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, False,
                             method, e, etr_params, p)
-    cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, e, j, p)
+    cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, j, p)
     deriv = (1 - tau_payroll - tax.MTR_income(r, w, b, n, factor,
-                                                False, e, etr_params,
-                                                mtrx_params, p))
+                                              False, e, etr_params,
+                                              mtrx_params, p))
     FOC_error = (marg_ut_cons(cons, p.sigma) * w * deriv * e -
                  marg_ut_labor(n, chi_n, p))
 
