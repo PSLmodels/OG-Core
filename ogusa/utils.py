@@ -308,6 +308,45 @@ def to_timepath_shape(some_array, p):
     return tp_array
 
 
+def get_initial_path(x1, xT, T, spec):
+    '''
+    --------------------------------------------------------------------
+    This function generates a path from point x1 to point xT such that
+    that the path x is a linear or quadratic function of time t.
+        linear:    x = d*t + e
+        quadratic: x = a*t^2 + b*t + c
+    The identifying assumptions for quadratic are the following:
+        (1) x1 is the value at time t=0: x1 = c
+        (2) xT is the value at time t=T-1: xT = a*(T-1)^2 + b*(T-1) + c
+        (3) the slope of the path at t=T-1 is 0: 0 = 2*a*(T-1) + b
+    --------------------------------------------------------------------
+    INPUTS:
+    x1 = scalar, initial value of the function x(t) at t=0
+    xT = scalar, value of the function x(t) at t=T-1
+    T  = integer >= 3, number of periods of the path
+    spec = string, "linear" or "quadratic"
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+    OBJECTS CREATED WITHIN FUNCTION:
+    cc    = scalar, constant coefficient in quadratic function
+    bb    = scalar, coefficient on t in quadratic function
+    aa    = scalar, coefficient on t^2 in quadratic function
+    xpath = (T,) vector, parabolic xpath from x1 to xT
+    FILES CREATED BY THIS FUNCTION: None
+    RETURNS: xpath
+    --------------------------------------------------------------------
+    '''
+    if spec == "linear":
+        xpath = np.linspace(x1, xT, T)
+    elif spec == "quadratic":
+        cc = x1
+        bb = 2 * (xT - x1) / (T - 1)
+        aa = (x1 - xT) / ((T - 1) ** 2)
+        xpath = (aa * (np.arange(0, T) ** 2) + (bb * np.arange(0, T)) +
+                 cc)
+
+    return xpath
+
+
 def safe_read_pickle(file_path):
     '''
     This function reads a pickle from Python 2 into Python 2 or Python 3
