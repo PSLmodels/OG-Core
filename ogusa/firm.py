@@ -1,4 +1,3 @@
-from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 Firm functions for firms in the steady state and along the transition
@@ -15,8 +14,6 @@ This Python module defines the following functions:
     get_K()
 ------------------------------------------------------------------------
 '''
-# Import packages
-import numpy as np
 
 '''
 ------------------------------------------------------------------------

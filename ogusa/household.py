@@ -1,4 +1,3 @@
-from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 Household functions for taxes in the steady state and along the
@@ -11,7 +10,7 @@ This file calls the following files:
 
 # Packages
 import numpy as np
-from . import tax, utils
+from ogusa import tax, utils
 
 '''
 ------------------------------------------------------------------------

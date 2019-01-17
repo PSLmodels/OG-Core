@@ -6,7 +6,7 @@ Functions to compute economic aggregates.
 
 # Packages
 import numpy as np
-from . import tax, utils
+from ogusa import tax, utils
 
 '''
 ------------------------------------------------------------------------

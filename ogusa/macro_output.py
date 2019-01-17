@@ -1,8 +1,5 @@
-from __future__ import print_function
 '''
 ------------------------------------------------------------------------
-Last updated 4/8/2016
-
 This program reads in the output from TPI.py and creates table of
 percentage changes between the baseline and policy results.
 
@@ -18,10 +15,6 @@ This py-file creates the following other file(s): None
 
 # Packages
 import numpy as np
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
 import os
 from ogusa.utils import safe_read_pickle
 

@@ -1,4 +1,3 @@
-from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 Calculates steady state of OG-USA model with S age cohorts and J
@@ -20,17 +19,11 @@ This py-file creates the following other file(s):
 # Packages
 import numpy as np
 import scipy.optimize as opt
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 from dask import compute, delayed
 import dask.multiprocessing
-from . import tax
-from . import household
-from . import aggregates as aggr
-from . import firm
-from . import utils
+from ogusa import tax, household, firm, utils
+from ogusa import aggregates as aggr
 import os
 import warnings
 

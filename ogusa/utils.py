@@ -1,4 +1,3 @@
-from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 Miscellaneous functions used in the OG-USA model.
@@ -9,10 +8,7 @@ import os
 from io import StringIO
 import numpy as np
 import taxcalc
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 from pkg_resources import resource_stream, Requirement
 
 EPSILON = 1e-10

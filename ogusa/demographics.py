@@ -1,4 +1,3 @@
-from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 Functions for generating demographic objects necessary for the OG-USA
@@ -19,7 +18,7 @@ import numpy as np
 import scipy.optimize as opt
 import scipy.interpolate as si
 import pandas as pd
-from . import utils
+from ogusa import utils
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 
