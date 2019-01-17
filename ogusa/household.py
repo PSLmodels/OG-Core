@@ -130,32 +130,36 @@ def get_bq(BQ, j, p, method):
             if method == 'SS':
                 bq = (p.zeta[:, j] * BQ) / (p.lambdas[j] * p.omega_SS)
             else:
+                len_T = BQ.shape[0]
                 bq = ((np.reshape(p.zeta[:, j], (1, p.S)) *
-                      BQ.reshape((p.T, 1))) /
-                      (p.lambdas[j] * p.omega[:p.T, :]))
+                      BQ.reshape((len_T, 1))) /
+                      (p.lambdas[j] * p.omega[:len_T, :]))
         else:
             if method == 'SS':
                 bq = ((p.zeta * BQ) / (p.lambdas.reshape((1, p.J)) *
                                        p.omega_SS.reshape((p.S, 1))))
             else:
+                len_T = BQ.shape[0]
                 bq = ((np.reshape(p.zeta, (1, p.S, p.J)) *
                       utils.to_timepath_shape(BQ, p)) /
                       (p.lambdas.reshape((1, 1, p.J)) *
-                       p.omega.reshape((p.T, p.S, 1))))
+                       p.omega.reshape((len_T, p.S, 1))))
     else:
         if j is not None:
             if method == 'SS':
                 bq = np.tile(BQ[j], p.S) / p.lambdas[j]
             if method == 'TPI':
+                len_T = BQ.shape[0]
                 bq = np.tile(np.reshape(BQ[:, j] / p.lambdas[j],
-                                        (p.T, 1)), (1, p.S))
+                                        (len_T, 1)), (1, p.S))
         else:
             if method == 'SS':
                 BQ_per = BQ / np.squeeze(p.lambdas)
                 bq = np.tile(np.reshape(BQ_per, (1, p.J)), (p.S, 1))
             if method == 'TPI':
+                len_T = BQ.shape[0]
                 BQ_per = BQ / p.lambdas.reshape(1, p.J)
-                bq = np.tile(np.reshape(BQ_per, (p.T, 1, p.J)),
+                bq = np.tile(np.reshape(BQ_per, (len_T, 1, p.J)),
                              (1, p.S, 1))
     return bq
 
