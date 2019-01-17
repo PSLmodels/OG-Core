@@ -475,11 +475,11 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     Iss_total = p.delta * Kss
 
     # solve resource constraint
-    taxss = tax.total_taxes(rss, wss, bssmat_s, nssmat, BQss, factor_ss,
+    taxss = tax.total_taxes(rss, wss, bssmat_s, nssmat, bqssmat, factor_ss,
                             T_Hss, theta, None, None, False, 'SS',
                             p.e, etr_params_3D, p)
     cssmat = household.get_cons(rss, wss, bssmat_s, bssmat_splus1,
-                                nssmat, BQss.reshape(1, p.J), taxss,
+                                nssmat, bqssmat, taxss,
                                 p.e, None, p)
 
     Css = aggr.get_C(cssmat, p, 'SS')
