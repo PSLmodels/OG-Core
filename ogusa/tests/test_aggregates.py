@@ -214,6 +214,7 @@ n = (0.191 + (0.503 - 0.191) *
      random_state.rand(p.T * p.S * p.J).reshape(p.T, p.S, p.J))
 BQ = (0.032 + (0.055 - 0.032) *
       random_state.rand(p.T * p.S * p.J).reshape(p.T, p.S, p.J))
+bq = BQ / p.lambdas.reshape(1, 1, p.J)
 Y = 0.561 + (0.602 - 0.561) * random_state.rand(p.T).reshape(p.T)
 L = 0.416 + (0.423 - 0.416) * random_state.rand(p.T).reshape(p.T)
 K = 0.957 + (1.163 - 0.957) * random_state.rand(p.T).reshape(p.T)
@@ -266,24 +267,24 @@ expected3 = [0.49088403, 0.47079763, 0.488186, 0.4926552, 0.59695398,
              0.60189683, 0.56766507, 0.56439768, 0.68919173, 0.57765917,
              0.60292137, 0.56621788, 0.51913478, 0.48952262, 0.52142782,
              0.5735005, 0.51166718, 0.57939994, 0.52585236, 0.53767652]
-test_data = [(r[0], w[0], b[0, :, :], n[0, :, :], BQ[0, :, :], Y[0],
+test_data = [(r[0], w[0], b[0, :, :], n[0, :, :], bq[0, :, :], Y[0],
               L[0], K[0], factor, theta, etr_params[-1, :, :, :], p,
               'SS', expected1),
-             (r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p,
+             (r, w, b, n, bq, Y, L, K, factor, theta, etr_params, p,
               'TPI', expected2),
-             (r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p3,
+             (r, w, b, n, bq, Y, L, K, factor, theta, etr_params, p3,
               'TPI', expected3)]
 
 
-@pytest.mark.parametrize('r,w,b,n,BQ,Y,L,K,factor,theta,etr_params,p,' +
+@pytest.mark.parametrize('r,w,b,n,bq,Y,L,K,factor,theta,etr_params,p,' +
                          'method,expected', test_data,
                          ids=['SS', 'TPI', 'TPI, replace rate adjust'])
-def test_revenue(r, w, b, n, BQ, Y, L, K, factor, theta, etr_params, p,
+def test_revenue(r, w, b, n, bq, Y, L, K, factor, theta, etr_params, p,
                  method, expected):
     """
     Test aggregate revenue function.
     """
-    revenue, _, _, _, _, _ = aggr.revenue(r, w, b, n, BQ, Y, L, K,
+    revenue, _, _, _, _, _ = aggr.revenue(r, w, b, n, bq, Y, L, K,
                                           factor, theta, etr_params, p,
                                           method)
     assert(np.allclose(revenue, expected))
