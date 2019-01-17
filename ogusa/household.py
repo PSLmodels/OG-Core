@@ -130,8 +130,8 @@ def get_bq(BQ, j, p, method):
             if method == 'SS':
                 bq = (p.zeta[:, j] * BQ) / (p.lambdas[j] * p.omega_SS)
             else:
-                bq = (((np.reshape(p.zeta[:, j], (1, p.S, 1)) *
-                      utils.to_timepath_shape(BQ, p))) /
+                bq = ((np.reshape(p.zeta[:, j], (1, p.S)) *
+                      BQ.reshape((p.T, 1))) /
                       (p.lambdas[j] * p.omega[:p.T, :]))
         else:
             if method == 'SS':
@@ -147,7 +147,8 @@ def get_bq(BQ, j, p, method):
             if method == 'SS':
                 bq = np.tile(BQ[j], p.S) / p.lambdas[j]
             if method == 'TPI':
-                bq = np.tile(BQ[j], p.S) / p.lambdas[j]
+                bq = np.tile(np.reshape(BQ[:, j] / p.lambdas[j],
+                                        (p.T, 1)), (1, p.S))
         else:
             if method == 'SS':
                 BQ_per = BQ / np.squeeze(p.lambdas)

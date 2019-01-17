@@ -71,31 +71,72 @@ p1.zeta = np.array([[0.1, 0.3], [0.15, 0.4], [0.05, 0.0]])
 p1.S = 3
 p1.J = 2
 p1.T = 3
+p1.lambdas = np.array([0.6, 0.4])
+p1.omega_SS = np.array([0.25, 0.25, 0.5])
+p1.omega = np.tile(p1.omega_SS.reshape((1, p1.S)), (p1.T, 1))
 BQ1 = 2.5
 p1.use_zeta = True
-expected1 = np.array([[0.25, 0.75], [0.375, 1.0], [0.125, 0.0]])
-expected2 = np.array([0.75, 1.0, 0.0])
+expected1 = np.array([[1.66666667, 7.5], [2.5, 10.0], [0.416666667, 0.0]])
+p2 = Specifications()
+p2.zeta = np.array([[0.1, 0.3], [0.15, 0.4], [0.05, 0.0]])
+p2.S = 3
+p2.J = 2
+p2.T = 3
+p2.lambdas = np.array([0.6, 0.4])
+p2.omega_SS = np.array([0.25, 0.25, 0.5])
+p2.omega = np.tile(p2.omega_SS.reshape((1, p2.S)), (p2.T, 1))
+p2.use_zeta = True
 BQ2 = np.array([2.5, 0.8, 3.6])
-expected3 = np.array([[[0.25, 0.75], [0.375, 1.0], [0.125, 0.0]],
-                      [[0.08, 0.24], [0.12, 0.32], [0.04, 0.0]],
-                      [[0.36, 1.08], [0.54, 1.44], [0.18, 0.0]]])
-expected4 = np.array([[[0.75], [1.0], [0.0]], [[0.24], [0.32], [0.0]],
-                      [[1.08], [1.44], [0.0]]])
-test_data = [(None, None, BQ1, None, p1, 'SS', False, expected1),
-             (None, None, BQ1, 1, p1, 'SS', False, expected2),
-             (None, None, BQ2, None, p1, 'TPI', False, expected3),
-             (None, None, BQ2, 1, p1, 'TPI', False, expected4)]
+expected2 = np.array([7.5, 10.0, 0.0])
+expected3 = np.array([[[1.666666667, 7.5], [2.5, 10.0], [0.416666667, 0.0]],
+                      [[0.533333333, 2.4], [0.8, 3.2], [0.133333333, 0.0]],
+                      [[2.4, 10.8], [3.6, 14.4], [0.6, 0.0]]])
+expected4 = np.array([[7.5, 10.0, 0.0], [2.4, 3.2, 0.0],
+                      [10.8, 14.4, 0.0]])
+p3 = Specifications()
+p3.S = 3
+p3.J = 2
+p3.T = 3
+p3.lambdas = np.array([0.6, 0.4])
+p3.omega_SS = np.array([0.25, 0.25, 0.5])
+p3.omega = np.tile(p2.omega_SS.reshape((1, p2.S)), (p2.T, 1))
+p3.use_zeta = False
+BQ3 = np.array([1.1, 0.8])
+BQ4 = np.array([[1.1, 0.8], [3.2, 4.6], [2.5, 0.1]])
+expected5 = np.array([[1.833333333, 2.0], [1.833333333, 2.0],
+                      [1.833333333, 2.0]])
+expected6 = np.array([2.0, 2.0, 2.0])
+expected7 = np.array([[[1.833333333, 2.0], [1.833333333, 2.0],
+                       [1.833333333, 2.0]],
+                      [[5.333333333, 11.5], [5.333333333, 11.5],
+                       [5.333333333, 11.5]],
+                      [[4.166666667, 0.25], [4.166666667, 0.25],
+                       [4.166666667, 0.25]]])
+expected8 = np.array([[2.0, 2.0, 2.0], [11.5, 11.5, 11.5],
+                      [0.25, 0.25, 0.25]])
+test_data = [(BQ1, None, p1, 'SS', expected1),
+             (BQ1, 1, p1, 'SS', expected2),
+             (BQ2, None, p2, 'TPI', expected3),
+             (BQ2, 1, p2, 'TPI', expected4),
+             (BQ3, None, p3, 'SS', expected5),
+             (BQ3, 1, p3, 'SS', expected6),
+             (BQ4, None, p3, 'TPI', expected7),
+             (BQ4, 1, p3, 'TPI', expected8)]
 
 
-@pytest.mark.parametrize('r,b_splus1,BQ,j,p,method,preTP,expected',
+@pytest.mark.parametrize('BQ,j,p,method,expected',
                          test_data,
                          ids=['SS, use zeta, all j',
                               'SS, use zeta, one j',
                               'TPI, use zeta, all j',
-                              'TPI, use zeta, one j'])
-def test_get_bq(r, b_splus1, BQ, j, p, method, preTP, expected):
+                              'TPI, use zeta, one j',
+                              'SS, not use zeta, all j',
+                              'SS, not use zeta, one j',
+                              'TPI, not use zeta, all j',
+                              'TPI, not use zeta, one j'])
+def test_get_bq(BQ, j, p, method, expected):
     # Test the get_BQ function
-    test_value = household.get_bq(r, b_splus1, BQ, j, p, method, preTP)
+    test_value = household.get_bq(BQ, j, p, method)
     print('Test value = ', test_value)
     assert np.allclose(test_value, expected)
 
@@ -110,6 +151,7 @@ b1 = 0.5
 b_splus1_1 = 0.55
 n1 = 0.8
 BQ1 = 0.1
+bq1 = BQ1 / p1.lambdas
 net_tax1 = 0.02
 j1 = None
 
@@ -117,12 +159,15 @@ p2 = Specifications()
 p2.e = np.array([0.99, 1.5, 0.2])
 p2.lambdas = np.array([0.25])
 p2.g_y = 0.03
+p2.T = 3
+p2.J = 1
 r2 = np.array([0.05, 0.04, 0.09])
 w2 = np.array([1.2, 0.8, 2.5])
 b2 = np.array([0.5, 0.99, 9])
 b_splus1_2 = np.array([0.55, 0.2, 4])
 n2 = np.array([0.8, 3.2, 0.2])
 BQ2 = np.array([0.1, 2.4, 0.2])
+bq2 = BQ2 / p2.lambdas
 net_tax2 = np.array([0.02, 0.5, 1.4])
 j2 = None
 
@@ -130,12 +175,15 @@ p3 = Specifications()
 p3.e = np.array([[1.0, 2.1], [0.4, 0.5], [1.6, 0.9]])
 p3.lambdas = np.array([0.4, 0.6])
 p3.g_y = 0.01
+p3.S = 3
+p3.J = 2
 r3 = 0.11
 w3 = 0.75
 b3 = np.array([[0.56, 0.7], [0.4, 0.95], [2.06, 1.7]])
 b_splus1_3 = np.array([[0.4, 0.6], [0.33, 1.95], [1.6, 2.7]])
 n3 = np.array([[0.9, 0.5], [0.8, 1.1], [0, 0.77]])
 BQ3 = np.array([1.3, 0.3])
+bq3 = BQ3 / p3.lambdas.reshape(p3.J)
 net_tax3 = np.array([[0.1, 1.1], [0.4, 0.44], [0.6, 1.7]])
 j3 = None
 
@@ -161,6 +209,7 @@ n4 = np.array([np.array([[0.8, 0.9], [0.4, 0.5], [0.55, 0.66]]),
                np.array([[0.4, 0.6], [0.99, 0.44], [0.35, 0.65]])])
 BQ4 = np.tile(np.reshape(np.array([[0.1, 1.1], [0.4, 1.0], [0.6, 1.7],
                                    [0.9, 2.0]]), (4, 1, 2)), (1, 3, 1))
+bq4 = BQ4 / p4.lambdas.reshape(1, 1, 2)
 net_tax4 = np.array([np.array([[0.01, 0.02], [0.4, 0.5], [0.05, 0.06]]),
                      np.array([[0.17, 0.18], [0.08, .02], [0.9, 0.10]]),
                      np.array([[1.0, 2.0], [0.04, 0.25], [0.15, 0.16]]),
@@ -168,15 +217,15 @@ net_tax4 = np.array([np.array([[0.01, 0.02], [0.4, 0.5], [0.05, 0.06]]),
                                [0.022, 0.032]])])
 j4 = None
 
-test_data = [((r1, w1, b1, b_splus1_1, n1, BQ1, net_tax1, j1, p1),
+test_data = [((r1, w1, b1, b_splus1_1, n1, bq1, net_tax1, j1, p1),
               1.288650006),
-             ((r2, w2, b2, b_splus1_2, n2, BQ2, net_tax2, j2, p2),
+             ((r2, w2, b2, b_splus1_2, n2, bq2, net_tax2, j2, p2),
               np.array([1.288650006, 13.76350909, 5.188181864])),
-             ((r3, w3, b3, b_splus1_3, n3, BQ3, net_tax3, j3, p3),
+             ((r3, w3, b3, b_splus1_3, n3, bq3, net_tax3, j3, p3),
               np.array([[4.042579933, 0.3584699],
                         [3.200683445, -0.442597826],
                         [3.320519733, -1.520385451]])),
-             ((r4, w4, b4, b_splus1_4, n4, BQ4, net_tax4, j4, p4),
+             ((r4, w4, b4, b_splus1_4, n4, bq4, net_tax4, j4, p4),
               np.array([np.array([[0.867348704, 5.464412447],
                                   [-0.942922392, 2.776260022],
                                   [1.226221595, 3.865404009]]),
@@ -195,8 +244,8 @@ test_data = [((r1, w1, b1, b_splus1_1, n1, BQ1, net_tax1, j1, p1),
                          ids=['scalar', 'vector', 'matrix', '3D array'])
 def test_get_cons(model_args, expected):
     # Test consumption calculation
-    r, w, b, b_splus1, n, BQ, net_tax, j, p = model_args
-    test_value = household.get_cons(r, w, b, b_splus1, n, BQ, net_tax,
+    r, w, b, b_splus1, n, bq, net_tax, j, p = model_args
+    test_value = household.get_cons(r, w, b, b_splus1, n, bq, net_tax,
                                     p.e, j, p)
 
     assert np.allclose(test_value, expected)
