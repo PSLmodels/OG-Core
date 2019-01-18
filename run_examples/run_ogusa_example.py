@@ -6,7 +6,7 @@ import time
 import numpy as np
 
 from taxcalc import Calculator
-import ogusa
+from ogusa import postprocess
 from ogusa.execute import runner
 from ogusa.utils import REFORM_DIR, BASELINE_DIR
 
@@ -20,7 +20,7 @@ def run_micro_macro(user_params):
 
     # Define parameters to use for multiprocessing
     client = Client(processes=False)
-    num_workers = 1 # multiprocessing.cpu_count()
+    num_workers = 1  # multiprocessing.cpu_count()
     print('Number of workers = ', num_workers)
     start_time = time.time()
 
@@ -56,7 +56,6 @@ def run_micro_macro(user_params):
     start_time = time.time()
     runner(**kwargs)
     print('run time = ', time.time()-start_time)
-    quit()
 
     '''
     ------------------------------------------------------------------------
@@ -64,14 +63,14 @@ def run_micro_macro(user_params):
     ------------------------------------------------------------------------
     '''
     user_params = {'frisch': 0.41, 'start_year': 2018,
-                   'tau_b': (0.35 * 0.55) * (0.017 / 0.055),
-                   'debt_ratio_ss': 1.0, 'T_shifts': T_shifts.tolist(),
-                   'G_shifts': G_shifts.tolist(), 'small_open': small_open}
+                   'tau_b': [(0.35 * 0.55) * (0.017 / 0.055)],
+                   'debt_ratio_ss': 1.0, 'alpha_T': alpha_T.tolist(),
+                   'alpha_G': alpha_G.tolist(), 'small_open': small_open}
     output_base = REFORM_DIR
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': False, 'time_path': True, 'baseline': False,
               'user_params': user_params, 'guid': '_example',
-              'reform': reform, 'run_micro': True, 'data': 'cps',
+              'reform': reform, 'run_micro': False, 'data': 'cps',
               'client': client, 'num_workers': num_workers}
 
     start_time = time.time()
@@ -80,7 +79,7 @@ def run_micro_macro(user_params):
 
     # return ans - the percentage changes in macro aggregates and prices
     # due to policy changes from the baseline to the reform
-    ans = ogusa.postprocess.create_diff(
+    ans = postprocess.create_diff(
         baseline_dir=BASELINE_DIR, policy_dir=REFORM_DIR)
 
     print("total time was ", (time.time() - start_time))
