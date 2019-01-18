@@ -1,7 +1,5 @@
 '''
 ------------------------------------------------------------------------
-Last updated 4/8/2016
-
 This function finds the percentage changes in macro variables that
 result from the tax reform.
 
