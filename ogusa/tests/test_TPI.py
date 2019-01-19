@@ -2,7 +2,7 @@ import pytest
 import pickle
 import numpy as np
 import os
-from ogusa import SS, TPI, utils, firm
+from ogusa import SS, TPI, utils, firm, household
 from ogusa.parameters import Specifications
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -40,8 +40,8 @@ def test_firstdoughnutring():
     p.mtry_params = np.transpose(mtry_params, (1, 0, 2))
     p.lambdas = lambdas.reshape(p.J, 1)
     p.num_workers = 1
-
-    test_list = TPI.firstdoughnutring(guesses, r, w, BQ, T_H, theta,
+    bq = BQ / p.lambdas[j]
+    test_list = TPI.firstdoughnutring(guesses, r, w, bq, T_H, theta,
                                       factor, j, initial_b, p)
 
     expected_list = utils.safe_read_pickle(
@@ -79,7 +79,9 @@ def test_twist_doughnut():
         income_tax_params
     p.lambdas = lambdas.reshape(p.J, 1)
     p.num_workers = 1
-    test_list = TPI.twist_doughnut(guesses, r, w, BQ, T_H, theta,
+    length = int(len(guesses) / 2)
+    bq = BQ[t:t + length] / p.lambdas[j]
+    test_list = TPI.twist_doughnut(guesses, r, w, bq, T_H, theta,
                                    factor, j, s, t, etr_params,
                                    mtrx_params, mtry_params, initial_b,
                                    p)
