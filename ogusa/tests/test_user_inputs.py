@@ -6,7 +6,7 @@ PUF_PATH = os.path.join(CUR_PATH, '../puf.csv')
 
 
 @pytest.mark.full_run
-@pytest.mark.parametrize('frisch', [0.3, 0.4, 0.6],
+@pytest.mark.parametrize('frisch', [0.3, 0.4, 0.62],
                          ids=['Frisch 0.3', 'Frisch 0.4', 'Frisch 0.6'])
 def test_frisch(frisch):
     output_base = os.path.join(CUR_PATH, "OUTPUT")
