@@ -163,9 +163,9 @@ def get_bq(BQ, j, p, method):
     return bq
 
 
-def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, j, p):
+def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
     '''
-    Calculation of househld consumption.
+    Calculation of household consumption.
 
     Inputs:
         r        = [T,] vector, interest rates
@@ -191,12 +191,12 @@ def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, j, p):
     Returns: cons
     '''
     cons = ((1 + r) * b + w * e * n + bq - b_splus1 * np.exp(p.g_y) -
-            net_tax)
+            net_tax) / (1 + tau_c)
     return cons
 
 
-def FOC_savings(r, w, b, b_splus1, n, bq, factor, T_H, theta,
-                e, rho, etr_params, mtry_params, t, j, p, method):
+def FOC_savings(r, w, b, b_splus1, n, bq, factor, T_H, theta, e, tau_c,
+                rho, etr_params, mtry_params, t, j, p, method):
     '''
     Computes Euler errors for the FOC for savings in the steady state.
     This function is usually looped through over J, so it does one
@@ -269,7 +269,7 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, T_H, theta,
         chi_b = p.chi_b
     taxes = tax.total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, False,
                             method, e, etr_params, p)
-    cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, j, p)
+    cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
     deriv = ((1 + r) - r * (tax.MTR_income(r, w, b, n, factor, True, e,
                                            etr_params, mtry_params, p)))
     savings_ut = (rho * np.exp(-p.sigma * p.g_y) * chi_b *
