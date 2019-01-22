@@ -1,4 +1,3 @@
-from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 This script reads in data generated from the OSPC Tax Calculator and
@@ -30,22 +29,16 @@ This Python script outputs the following:
 import time
 import os
 import numpy as np
-import numpy.random as rnd
 import scipy.optimize as opt
 from dask.distributed import Client
 from dask import compute, delayed
 import dask.multiprocessing
-try:
-    import cPickle as pickle
-except:
-    import pickle
-import pandas as pd
+import pickle
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FormatStrFormatter
 from mpl_toolkits.mplot3d import Axes3D
-from matplotlib import cm
-from ogusa import get_micro_data, utils
+from ogusa import get_micro_data
 from ogusa.utils import DEFAULT_START_YEAR
 
 TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")

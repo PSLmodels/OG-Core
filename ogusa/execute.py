@@ -1,12 +1,8 @@
-from __future__ import print_function
 '''
 This module defines the runner() function, which is used to run OG-USA
 '''
 
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 import os
 import time
 from ogusa import SS, TPI, utils
@@ -26,7 +22,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         try:
             print("making dir: ", _dir)
             os.makedirs(_dir)
-        except OSError as oe:
+        except OSError:
             pass
 
     print('In runner, baseline is ', baseline)

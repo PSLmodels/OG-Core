@@ -1,4 +1,3 @@
-from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 Household functions for taxes in the steady state and along the
@@ -11,7 +10,7 @@ This file calls the following files:
 
 # Packages
 import numpy as np
-from . import tax
+from ogusa import tax, utils
 
 '''
 ------------------------------------------------------------------------
@@ -101,7 +100,70 @@ def marg_ut_labor(n, chi_n, p):
     return output
 
 
-def get_cons(r, w, b, b_splus1, n, BQ, net_tax, e, j, p):
+def get_bq(BQ, j, p, method):
+    '''
+    Calculation of bequests to each lifetime income group.
+
+    Inputs:
+        r           = [T,] vector, interest rates
+        b_splus1    = [T,S,J] array, distribution of wealth/capital
+                      holdings one period ahead
+        params      = length 5 tuple, (omega, lambdas, rho, g_n, method)
+        omega       = [S,T] array, population weights
+        lambdas     = [J,] vector, fraction in each lifetime income group
+        rho         = [S,] vector, mortality rates
+        g_n         = scalar, population growth rate
+        method      = string, 'SS' or 'TPI'
+
+    Functions called: None
+
+    Objects in function:
+        BQ_presum = [T,S,J] array, weighted distribution of
+                    wealth/capital holdings one period ahead
+        BQ        = [T,J] array, aggregate bequests by lifetime income group
+
+    Returns: BQ
+    '''
+    if p.use_zeta:
+        if j is not None:
+            if method == 'SS':
+                bq = (p.zeta[:, j] * BQ) / (p.lambdas[j] * p.omega_SS)
+            else:
+                len_T = BQ.shape[0]
+                bq = ((np.reshape(p.zeta[:, j], (1, p.S)) *
+                      BQ.reshape((len_T, 1))) /
+                      (p.lambdas[j] * p.omega[:len_T, :]))
+        else:
+            if method == 'SS':
+                bq = ((p.zeta * BQ) / (p.lambdas.reshape((1, p.J)) *
+                                       p.omega_SS.reshape((p.S, 1))))
+            else:
+                len_T = BQ.shape[0]
+                bq = ((np.reshape(p.zeta, (1, p.S, p.J)) *
+                      utils.to_timepath_shape(BQ, p)) /
+                      (p.lambdas.reshape((1, 1, p.J)) *
+                       p.omega.reshape((len_T, p.S, 1))))
+    else:
+        if j is not None:
+            if method == 'SS':
+                bq = np.tile(BQ[j], p.S) / p.lambdas[j]
+            if method == 'TPI':
+                len_T = BQ.shape[0]
+                bq = np.tile(np.reshape(BQ[:, j] / p.lambdas[j],
+                                        (len_T, 1)), (1, p.S))
+        else:
+            if method == 'SS':
+                BQ_per = BQ / np.squeeze(p.lambdas)
+                bq = np.tile(np.reshape(BQ_per, (1, p.J)), (p.S, 1))
+            if method == 'TPI':
+                len_T = BQ.shape[0]
+                BQ_per = BQ / p.lambdas.reshape(1, p.J)
+                bq = np.tile(np.reshape(BQ_per, (len_T, 1, p.J)),
+                             (1, p.S, 1))
+    return bq
+
+
+def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, j, p):
     '''
     Calculation of househld consumption.
 
@@ -128,16 +190,12 @@ def get_cons(r, w, b, b_splus1, n, BQ, net_tax, e, j, p):
 
     Returns: cons
     '''
-    if j is not None:
-        lambdas = p.lambdas[j]
-    else:
-        lambdas = np.transpose(p.lambdas)
-    cons = ((1 + r) * b + w * e * n + BQ / lambdas - b_splus1 *
-            np.exp(p.g_y) - net_tax)
+    cons = ((1 + r) * b + w * e * n + bq - b_splus1 * np.exp(p.g_y) -
+            net_tax)
     return cons
 
 
-def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
+def FOC_savings(r, w, b, b_splus1, n, bq, factor, T_H, theta,
                 e, rho, etr_params, mtry_params, t, j, p, method):
     '''
     Computes Euler errors for the FOC for savings in the steady state.
@@ -209,9 +267,9 @@ def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
         chi_b = p.chi_b[j]
     else:
         chi_b = p.chi_b
-    taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, False,
+    taxes = tax.total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, False,
                             method, e, etr_params, p)
-    cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, e, j, p)
+    cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, j, p)
     deriv = ((1 + r) - r * (tax.MTR_income(r, w, b, n, factor, True, e,
                                            etr_params, mtry_params, p)))
     savings_ut = (rho * np.exp(-p.sigma * p.g_y) * chi_b *
@@ -231,7 +289,7 @@ def FOC_savings(r, w, b, b_splus1, n, BQ, factor, T_H, theta,
     return euler_error
 
 
-def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, chi_n, e,
+def FOC_labor(r, w, b, b_splus1, n, bq, factor, T_H, theta, chi_n, e,
               etr_params, mtrx_params, t, j, p, method):
     '''
     Computes Euler errors for the FOC for labor supply in the steady
@@ -304,12 +362,12 @@ def FOC_labor(r, w, b, b_splus1, n, BQ, factor, T_H, theta, chi_n, e,
     else:
         length = r.shape[0]
         tau_payroll = p.tau_payroll[t:t + length]
-    taxes = tax.total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, False,
+    taxes = tax.total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, False,
                             method, e, etr_params, p)
-    cons = get_cons(r, w, b, b_splus1, n, BQ, taxes, e, j, p)
+    cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, j, p)
     deriv = (1 - tau_payroll - tax.MTR_income(r, w, b, n, factor,
-                                                False, e, etr_params,
-                                                mtrx_params, p))
+                                              False, e, etr_params,
+                                              mtrx_params, p))
     FOC_error = (marg_ut_cons(cons, p.sigma) * w * deriv * e -
                  marg_ut_labor(n, chi_n, p))
 

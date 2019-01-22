@@ -1,4 +1,3 @@
-from __future__ import print_function
 '''
 ------------------------------------------------------------------------
 
@@ -16,14 +15,7 @@ This Python script outputs the following:
 # Import packages
 import numpy as np
 import scipy.optimize as opt
-try:
-    import cPickle as pickle
-except:
-    import pickle
-import matplotlib
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib import cm
 
 
 def sumsq(params, *objs):

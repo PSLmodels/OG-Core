@@ -379,7 +379,7 @@ def get_biz_tax(w, Y, L, K, p, method):
     return business_revenue
 
 
-def total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, shift, method,
+def total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, shift, method,
                 e, etr_params, p):
     '''
     Gives net taxes paid values.
@@ -448,7 +448,7 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, shift, method,
             T_P[p.retire[-1]:] -= theta * w
         else:
             T_P[p.retire[-1] - 1:] -= theta * w
-        T_BQ = p.tau_bq[-1] * (BQ / lambdas)
+        T_BQ = p.tau_bq[-1] * bq
         T_W = (ETR_wealth(b, p.h_wealth[-1], p.m_wealth[-1],
                           p.p_wealth[-1]) * b)
     elif method == 'TPI':
@@ -472,7 +472,7 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, shift, method,
             T_W = (ETR_wealth(b, p.h_wealth[t:t + length],
                               p.m_wealth[t:t + length],
                               p.p_wealth[t:t + length]) * b)
-            T_BQ = p.tau_bq[t:t + length] * BQ / lambdas
+            T_BQ = p.tau_bq[t:t + length] * bq
         elif len(b.shape) == 2:
             T_P = p.tau_payroll[t: t + length].reshape(length, 1) * w * e * n
             for tt in range(T_P.shape[0]):
@@ -481,7 +481,7 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, shift, method,
             T_W = (ETR_wealth(b, p.h_wealth[t:t + length],
                               p.m_wealth[t:t + length],
                               p.p_wealth[t:t + length]) * b)
-            T_BQ = p.tau_bq[t:t + length].reshape(length, 1) * BQ / lambdas
+            T_BQ = p.tau_bq[t:t + length].reshape(length, 1) * bq / lambdas
         else:
             T_P = p.tau_payroll[t:t + length].reshape(length, 1, 1) * w * e * n
             for tt in range(T_P.shape[0]):
@@ -492,13 +492,13 @@ def total_taxes(r, w, b, n, BQ, factor, T_H, theta, t, j, shift, method,
                 b, p.h_wealth[t:t + length].reshape(length, 1, 1),
                 p.m_wealth[t:t + length].reshape(length, 1, 1),
                 p.p_wealth[t:t + length].reshape(length, 1, 1)) * b)
-            T_BQ = p.tau_bq[t:t + length].reshape(length, 1, 1) * BQ / lambdas
+            T_BQ = p.tau_bq[t:t + length].reshape(length, 1, 1) * bq
     elif method == 'TPI_scalar':
         # The above methods won't work if scalars are used.  This option
         # is only called by the SS_TPI_firstdoughnutring function in TPI.
         T_P = p.tau_payroll[0] * w * e * n
         T_P -= theta * p.replacement_rate_adjust[0] * w
-        T_BQ = p.tau_bq[0] * BQ / lambdas
+        T_BQ = p.tau_bq[0] * bq
         T_W = (ETR_wealth(b, p.h_wealth[0], p.m_wealth[0],
                           p.p_wealth[0]) * b)
     total_tax = T_I + T_P + T_BQ + T_W - T_H

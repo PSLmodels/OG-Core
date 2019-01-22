@@ -1,7 +1,5 @@
 '''
 ------------------------------------------------------------------------
-Last updated 7/17/2015
-
 Computes the average labor participation rate for each age cohort.
 
 This py-file calls the following other file(s):
@@ -22,11 +20,8 @@ This py-file creates the following other file(s):
 import os
 import numpy as np
 import pandas as pd
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
-from . import utils
+import pickle
+from ogusa import utils
 import scipy.ndimage.filters as filter
 
 
@@ -35,6 +30,8 @@ import scipy.ndimage.filters as filter
     Import Data
 ------------------------------------------------------------------------
 '''
+
+
 def get_labor_data():
 
     # read in "raw" CPS data to calculate moments
