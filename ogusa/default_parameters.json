@@ -447,6 +447,22 @@
         "out_of_range_action": "stop",
         "compatible_data": {"puf": true, "cps": true}
     },
+    "tau_c": {
+        "long_name": "Consumption tax rate",
+        "description": "Consumption tax rate",
+        "notes": "This policy parameter represents the effective consumption tax rate from sales taxes, VATs, and excise taxes.  To capture exemptions of certain goods, this is assumed to vary by age and ability type.  It is thus a SxJ matrix.",
+        "col_var": "",
+        "col_label": "",
+        "boolean_value": false,
+        "integer_value": false,
+        "string_value": false,
+        "value": [0.0],
+        "range": {"min": 0.00, "max": 0.9},
+        "out_of_range_minmsg": "",
+        "out_of_range_maxmsg": "",
+        "out_of_range_action": "stop",
+        "compatible_data": {"puf": true, "cps": true}
+    },
     "delta_tau_annual": {
         "long_name": "Annual rate of depreciation of capital for tax purposes",
         "description": "Annual rate of depreciation of capital for tax purposes",
