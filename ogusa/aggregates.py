@@ -6,7 +6,7 @@ Functions to compute economic aggregates.
 
 # Packages
 import numpy as np
-from ogusa import tax, utils
+from ogusa import tax, household, utils
 
 '''
 ------------------------------------------------------------------------
@@ -243,7 +243,8 @@ def get_C(c, p, method):
     return aggC
 
 
-def revenue(r, w, b, n, bq, Y, L, K, factor, theta, etr_params, p, method):
+def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
+            p, method):
     '''
     Gives lump sum transfer value.
     Inputs:
@@ -293,11 +294,13 @@ def revenue(r, w, b, n, bq, Y, L, K, factor, theta, etr_params, p, method):
         T_P = p.tau_payroll[-1] * w * p.e * n
         T_P[p.retire[-1]:] -= theta * w
         T_W = (tax.ETR_wealth(b, p.h_wealth[-1], p.m_wealth[-1],
-                             p.p_wealth[-1]) * b)
+                              p.p_wealth[-1]) * b)
         T_BQ = p.tau_bq[-1] * bq
+        T_C = p.tau_c[-1, :, :] * c
         business_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
         REVENUE = ((np.transpose(p.omega_SS * p.lambdas) *
-                    (T_I + T_P + T_BQ + T_W)).sum() + business_revenue)
+                    (T_I + T_P + T_BQ + T_W + T_C)).sum() +
+                   business_revenue)
     elif method == 'TPI':
         r_array = utils.to_timepath_shape(r, p)
         w_array = utils.to_timepath_shape(w, p)
@@ -314,10 +317,11 @@ def revenue(r, w, b, n, bq, Y, L, K, factor, theta, etr_params, p, method):
                               p.m_wealth[:p.T].reshape(p.T, 1, 1),
                               p.p_wealth[:p.T].reshape(p.T, 1, 1)) * b)
         T_BQ = p.tau_bq[:p.T].reshape(p.T, 1, 1) * bq
+        T_C = p.tau_c[:p.T, :, :] * c
         business_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
         REVENUE = ((((np.squeeze(p.lambdas)) *
                    np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
                            (1, 1, p.J)))
-                   * (T_I + T_P + T_BQ + T_W)).sum(1).sum(1) +
+                   * (T_I + T_P + T_BQ + T_W + T_C)).sum(1).sum(1) +
                    business_revenue)
-    return REVENUE, T_I, T_P, T_BQ, T_W, business_revenue
+    return REVENUE, T_I, T_P, T_BQ, T_W, T_C, business_revenue

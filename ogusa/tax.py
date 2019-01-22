@@ -501,6 +501,6 @@ def total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, shift, method,
         T_BQ = p.tau_bq[0] * bq
         T_W = (ETR_wealth(b, p.h_wealth[0], p.m_wealth[0],
                           p.p_wealth[0]) * b)
-    total_tax = T_I + T_P + T_BQ + T_W - T_H
+    total_tax = T_I + T_P + T_BQ + T_W - T_H + T_C
 
     return total_tax
