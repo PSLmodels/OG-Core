@@ -114,11 +114,13 @@ def euler_equation_solver(guesses, *args):
 
     error1 = household.FOC_savings(r, w, b_s, b_splus1, n_guess, bq,
                                    factor, T_H, theta, p.e[:, j], p.rho,
+                                   p.tau_c[-1, :, j],
                                    p.etr_params[-1, :, :],
                                    p.mtry_params[-1, :, :], None, j, p,
                                    'SS')
     error2 = household.FOC_labor(r, w, b_s, b_splus1, n_guess, bq,
                                  factor, T_H, theta, p.chi_n, p.e[:, j],
+                                 p.tau_c[-1, :, j],
                                  p.etr_params[-1, :, :],
                                  p.mtrx_params[-1, :, :], None, j, p,
                                  'SS')
@@ -142,7 +144,7 @@ def euler_equation_solver(guesses, *args):
                             None, j, False, 'SS', p.e[:, j],
                             p.etr_params[-1, :, :], p)
     cons = household.get_cons(r, w, b_s, b_splus1, n_guess, bq, taxes,
-                              p.e[:, j], j, p)
+                              p.e[:, j], p.tau_c[-1, :, j], p)
     mask6 = cons < 0
     error1[mask6] = 1e14
 
@@ -251,9 +253,15 @@ def inner_loop(outer_loop_vars, p, client):
         etr_params_3D = np.tile(np.reshape(
             p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])),
                                 (1, p.J, 1))
+        taxss = tax.total_taxes(new_r, new_w, b_s, nssmat, new_bq,
+                                factor, T_H, theta, None, None, False,
+                                'SS', p.e, etr_params_3D, p)
+        cssmat = household.get_cons(new_r, new_w, b_s, bssmat,
+                                    nssmat, new_bq, taxss,
+                                    p.e, p.tau_c[-1, :, :], p)
         new_T_H, _, _, _, _, _ = aggr.revenue(
-            new_r, new_w, b_s, nssmat, new_bq, new_Y, L, K, factor,
-            theta, etr_params_3D, p, 'SS')
+            new_r, new_w, b_s, nssmat, new_bq, cssmat, new_Y, L, K,
+            factor, theta, etr_params_3D, p, 'SS')
     elif p.baseline_spending:
         new_T_H = T_H
     else:
@@ -434,23 +442,9 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     Yss = firm.get_Y(Kss, Lss, p, 'SS')
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
 
+    # Compute effective and marginal tax rates for all agents
     etr_params_3D = np.tile(np.reshape(
         p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])), (1, p.J, 1))
-    total_revenue_ss, T_Iss, T_Pss, T_BQss, T_Wss, business_revenue =\
-        aggr.revenue(rss, wss, bssmat_s, nssmat, bqssmat, Yss, Lss, Kss,
-                     factor, theta, etr_params_3D, p, 'SS')
-    r_gov_ss = rss
-    debt_service_ss = r_gov_ss * p.debt_ratio_ss * Yss
-    new_borrowing = p.debt_ratio_ss * Yss * ((1 + p.g_n_ss) *
-                                             np.exp(p.g_y) - 1)
-    # government spends such that it expands its debt at the same rate as GDP
-    if p.budget_balance:
-        Gss = 0.0
-    else:
-        Gss = total_revenue_ss + new_borrowing - (T_Hss + debt_service_ss)
-        print('G components = ', new_borrowing, T_Hss, debt_service_ss)
-
-    # Compute effective and marginal tax rates for all agents
     mtrx_params_3D = np.tile(np.reshape(
         p.mtrx_params[-1, :, :], (p.S, 1, p.mtrx_params.shape[2])),
                              (1, p.J, 1))
@@ -464,18 +458,30 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     etr_ss = tax.ETR_income(rss, wss, bssmat_s, nssmat, factor, p.e,
                             etr_params_3D, p)
 
-    # Compute total investment (not just domestic)
-    Iss_total = p.delta * Kss
-
-    # solve resource constraint
     taxss = tax.total_taxes(rss, wss, bssmat_s, nssmat, bqssmat, factor_ss,
                             T_Hss, theta, None, None, False, 'SS',
                             p.e, etr_params_3D, p)
     cssmat = household.get_cons(rss, wss, bssmat_s, bssmat_splus1,
                                 nssmat, bqssmat, taxss,
-                                p.e, None, p)
-
+                                p.e, p.tau_c[-1, :, :], p)
     Css = aggr.get_C(cssmat, p, 'SS')
+
+    total_revenue_ss, T_Iss, T_Pss, T_BQss, T_Wss, business_revenue =\
+        aggr.revenue(rss, wss, bssmat_s, nssmat, bqssmat, cssmat, Yss,
+                     Lss, Kss, factor, theta, etr_params_3D, p, 'SS')
+    r_gov_ss = rss
+    debt_service_ss = r_gov_ss * p.debt_ratio_ss * Yss
+    new_borrowing = p.debt_ratio_ss * Yss * ((1 + p.g_n_ss) *
+                                             np.exp(p.g_y) - 1)
+    # government spends such that it expands its debt at the same rate as GDP
+    if p.budget_balance:
+        Gss = 0.0
+    else:
+        Gss = total_revenue_ss + new_borrowing - (T_Hss + debt_service_ss)
+        print('G components = ', new_borrowing, T_Hss, debt_service_ss)
+
+    # Compute total investment (not just domestic)
+    Iss_total = p.delta * Kss
 
     # solve resource constraint
     if p.small_open:
