@@ -280,7 +280,7 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, T_H, theta, e, rho,
                             (1 / (1 + tau_c[:-1])) - p.beta *
                             (1 - rho[:-1]) * deriv[1:] *
                             marg_ut_cons(cons[1:], p.sigma) *
-                            (1 / tau_c[1:]) * np.exp(-p.sigma * p.g_y)
+                            (1 / (1 + tau_c[1:])) * np.exp(-p.sigma * p.g_y)
                             - savings_ut[:-1])
         euler_error[-1] = (marg_ut_cons(cons[-1], p.sigma) *
                            (1 / (1 + tau_c[-1])) - savings_ut[-1])
