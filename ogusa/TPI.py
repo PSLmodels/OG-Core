@@ -163,7 +163,7 @@ def firstdoughnutring(guesses, r, w, bq, T_H, theta, factor, j,
                                    np.array([bq]), factor,
                                    np.array([T_H]), theta[j],
                                    p.e[-1, j], p.rho[-1],
-                                   p.tau_c[0, -1, j],
+                                   np.array([p.tau_c[0, -1, j]]),
                                    p.etr_params[0, -1, :],
                                    p.mtry_params[0, -1, :], None, j, p,
                                    'TPI_scalar')
@@ -171,7 +171,7 @@ def firstdoughnutring(guesses, r, w, bq, T_H, theta, factor, j,
     error2 = household.FOC_labor(
         np.array([r]), np.array([w]), b_s, b_splus1, np.array([n]),
         np.array([bq]), factor, np.array([T_H]), theta[j], p.chi_n[-1],
-        p.e[-1, j], p.tau_c[0, -1, j], p.etr_params[0, -1, :],
+        p.e[-1, j], np.array([p.tau_c[0, -1, j]]), p.etr_params[0, -1, :],
         p.mtrx_params[0, -1, :], None, j, p, 'TPI_scalar')
 
     if n <= 0 or n >= 1:
@@ -520,6 +520,16 @@ def run_TPI(p, client=None):
             p.etr_params.reshape(p.T, p.S, 1, p.etr_params.shape[2]),
             (1, 1, p.J, 1))
         bqmat = household.get_bq(BQ, None, p, 'TPI')
+        tax_mat = tax.total_taxes(r[:p.T], w[:p.T], bmat_s,
+                                  n_mat[:p.T, :, :], bqmat[:p.T, :, :],
+                                  factor, T_H[:p.T], theta, 0, None,
+                                  False, 'TPI', p.e, etr_params_4D, p)
+        rpath = utils.to_timepath_shape(r, p)
+        wpath = utils.to_timepath_shape(w, p)
+        c_mat = household.get_cons(rpath[:p.T, :, :], wpath[:p.T, :, :],
+                                   bmat_s, bmat_splus1,
+                                   n_mat[:p.T, :, :], bqmat[:p.T, :, :],
+                                   tax_mat, p.e, p.tau_c[:p.T, :, :], p)
 
         if not p.small_open:
             if p.budget_balance:
@@ -529,10 +539,11 @@ def run_TPI(p, client=None):
                     Y = T_H / p.alpha_T  # maybe unecessary
 
                     (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
-                     business_revenue) = aggr.revenue(
+                     T_Cpath, business_revenue) = aggr.revenue(
                         r[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
-                        bqmat[:p.T, :, :], Y[:p.T], L[:p.T], K[:p.T],
-                        factor, theta, etr_params_4D, p, 'TPI')
+                        bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y[:p.T],
+                        L[:p.T], K[:p.T], factor, theta, etr_params_4D,
+                        p, 'TPI')
                     total_revenue = np.array(list(total_rev) +
                                              [total_revenue_ss] * p.S)
 
@@ -566,11 +577,11 @@ def run_TPI(p, client=None):
                                 b_mat[:p.T - 1, :, :], axis=0)
         BQnew = aggr.get_BQ(rnew[:p.T], b_mat_shift, None, p, 'TPI', False)
         bqmat_new = household.get_bq(BQnew, None, p, 'TPI')
-        (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
+        (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath, T_Cpath,
          business_revenue) = aggr.revenue(
                 rnew[:p.T], wnew[:p.T], bmat_s, n_mat[:p.T, :, :],
-                bqmat_new[:p.T, :, :], Ynew[:p.T], L[:p.T], K[:p.T],
-                factor, theta, etr_params_4D, p, 'TPI')
+                bqmat_new[:p.T, :, :], c_mat[:p.T, :, :], Ynew[:p.T],
+                L[:p.T], K[:p.T], factor, theta, etr_params_4D, p, 'TPI')
         total_revenue = np.array(list(total_rev) +
                                  [total_revenue_ss] * p.S)
 
@@ -661,17 +672,19 @@ def run_TPI(p, client=None):
                                p.e, etr_params_4D, mtrx_params_4D, p)
     etr_path = tax.ETR_income(rss, wss, bmat_s, nssmat, factor, p.e,
                               etr_params_4D, p)
-    tax_path = tax.total_taxes(r[:p.T], w[:p.T], bmat_s,
-                               n_mat[:p.T, :, :], bqmat_new[:p.T, :, :],
-                               factor, T_H[:p.T], theta, 0, None, False,
-                               'TPI', p.e, etr_params_4D, p)
-    rpath = utils.to_timepath_shape(r, p)
-    wpath = utils.to_timepath_shape(w, p)
-    c_path = household.get_cons(rpath[:p.T, :, :], wpath[:p.T, :, :],
-                                bmat_s, bmat_splus1, n_mat[:p.T, :, :],
-                                bqmat_new[:p.T, :, :], tax_path, p.e,
-                                p.tau_c[:p.T, :, :], p)
-    C = aggr.get_C(c_path, p, 'TPI')
+    # tax_path = tax.total_taxes(r[:p.T], w[:p.T], bmat_s,
+    #                            n_mat[:p.T, :, :], bqmat_new[:p.T, :, :],
+    #                            factor, T_H[:p.T], theta, 0, None, False,
+    #                            'TPI', p.e, etr_params_4D, p)
+    # tax_path = tax_mat
+    # rpath = utils.to_timepath_shape(r, p)
+    # wpath = utils.to_timepath_shape(w, p)
+    # c_path = household.get_cons(rpath[:p.T, :, :], wpath[:p.T, :, :],
+    #                             bmat_s, bmat_splus1, n_mat[:p.T, :, :],
+    #                             bqmat_new[:p.T, :, :], tax_path, p.e,
+    #                             p.tau_c[:p.T, :, :], p)
+    # c_path = c_mat
+    C = aggr.get_C(c_mat, p, 'TPI')
 
     if not p.small_open:
         I = aggr.get_I(bmat_splus1[:p.T], K[1:p.T + 1], K[:p.T], p, 'TPI')
@@ -698,7 +711,7 @@ def run_TPI(p, client=None):
     print('Checking time path for violations of constraints.')
     for t in range(p.T):
         household.constraint_checker_TPI(
-            b_mat[t], n_mat[t], c_path[t], t, p.ltilde)
+            b_mat[t], n_mat[t], c_mat[t], t, p.ltilde)
 
     eul_savings = euler_errors[:, :p.S, :].max(1).max(1)
     eul_laborleisure = euler_errors[:, p.S:, :].max(1).max(1)
@@ -717,11 +730,11 @@ def run_TPI(p, client=None):
               'business_revenue': business_revenue,
               'IITpayroll_revenue': T_Ipath, 'T_H': T_H,
               'T_P': T_Ppath, 'T_BQ': T_BQpath, 'T_W': T_Wpath,
-              'G': G, 'D': D, 'r': r, 'w': w,
+              'T_Cpath': T_Cpath, 'G': G, 'D': D, 'r': r, 'w': w,
               'bmat_splus1': bmat_splus1,
               'bmat_s': bmat_s[:p.T, :, :], 'n_mat': n_mat[:p.T, :, :],
-              'c_path': c_path, 'bq_path': bqmat,
-              'tax_path': tax_path, 'eul_savings': eul_savings,
+              'c_path': c_mat, 'bq_path': bqmat,
+              'tax_path': tax_mat, 'eul_savings': eul_savings,
               'eul_laborleisure': eul_laborleisure,
               'resource_constraint_error': rc_error,
               'etr_path': etr_path, 'mtrx_path': mtrx_path,

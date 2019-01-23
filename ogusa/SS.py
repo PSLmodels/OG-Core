@@ -259,7 +259,7 @@ def inner_loop(outer_loop_vars, p, client):
         cssmat = household.get_cons(new_r, new_w, b_s, bssmat,
                                     nssmat, new_bq, taxss,
                                     p.e, p.tau_c[-1, :, :], p)
-        new_T_H, _, _, _, _, _ = aggr.revenue(
+        new_T_H, _, _, _, _, _, _ = aggr.revenue(
             new_r, new_w, b_s, nssmat, new_bq, cssmat, new_Y, L, K,
             factor, theta, etr_params_3D, p, 'SS')
     elif p.baseline_spending:
@@ -466,7 +466,8 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
                                 p.e, p.tau_c[-1, :, :], p)
     Css = aggr.get_C(cssmat, p, 'SS')
 
-    total_revenue_ss, T_Iss, T_Pss, T_BQss, T_Wss, business_revenue =\
+    (total_revenue_ss, T_Iss, T_Pss, T_BQss, T_Wss, T_Css,
+     business_revenue) =\
         aggr.revenue(rss, wss, bssmat_s, nssmat, bqssmat, cssmat, Yss,
                      Lss, Kss, factor, theta, etr_params_3D, p, 'SS')
     r_gov_ss = rss
@@ -547,7 +548,7 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
               'business_revenue': business_revenue,
               'IITpayroll_revenue': T_Iss,
               'T_Pss': T_Pss, 'T_BQss': T_BQss, 'T_Wss': T_Wss,
-              'euler_savings': euler_savings,
+              'T_Css': T_Css, 'euler_savings': euler_savings,
               'euler_labor_leisure': euler_labor_leisure,
               'resource_constraint_error': resource_constraint,
               'etr_ss': etr_ss, 'mtrx_ss': mtrx_ss, 'mtry_ss': mtry_ss}
