@@ -132,6 +132,10 @@ class Specifications(ParametersBase):
                 this_attr, np.ones((self.T + self.S - this_attr.size)) *
                 this_attr[-1]))
             setattr(self, item, this_attr)
+        tau_c_to_set = self.tau_c
+        setattr(self, 'tau_c',
+                np.ones((self.T + self.S, self.S, self.J)) *
+                tau_c_to_set)
 
         # open economy parameters
         firm_r_annual = self.world_int_rate
