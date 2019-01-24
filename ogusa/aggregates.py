@@ -324,4 +324,5 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
                            (1, 1, p.J)))
                    * (T_I + T_P + T_BQ + T_W + T_C)).sum(1).sum(1) +
                    business_revenue)
+
     return REVENUE, T_I, T_P, T_BQ, T_W, T_C, business_revenue
