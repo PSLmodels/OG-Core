@@ -265,10 +265,6 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, T_H, theta, e, rho,
     '''
     if j is not None:
         chi_b = p.chi_b[j]
-        # if method == 'TPI':
-        #     r = r.reshape(r.shape[0], 1)
-        #     w = w.reshape(w.shape[0], 1)
-        #     T_H = T_H.reshape(T_H.shape[0], 1)
     else:
         chi_b = p.chi_b
         if method == 'TPI':
@@ -387,12 +383,12 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, T_H, theta, chi_n, e,
         length = r.shape[0]
         tau_payroll = p.tau_payroll[t:t + length]
     if method == 'TPI':
-        if j is not None:
+        if b.ndim == 2:
             r = r.reshape(r.shape[0], 1)
             w = w.reshape(w.shape[0], 1)
             T_H = T_H.reshape(T_H.shape[0], 1)
             tau_payroll = tau_payroll.reshape(tau_payroll.shape[0], 1)
-        else:
+        elif b.ndim == 3:
             r = utils.to_timepath_shape(r, p)
             w = utils.to_timepath_shape(w, p)
             T_H = utils.to_timepath_shape(T_H, p)
