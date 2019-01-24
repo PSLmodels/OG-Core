@@ -730,7 +730,7 @@ def run_TPI(p, client=None):
               'business_revenue': business_revenue,
               'IITpayroll_revenue': T_Ipath, 'T_H': T_H,
               'T_P': T_Ppath, 'T_BQ': T_BQpath, 'T_W': T_Wpath,
-              'T_Cpath': T_Cpath, 'G': G, 'D': D, 'r': r, 'w': w,
+              'T_C': T_Cpath, 'G': G, 'D': D, 'r': r, 'w': w,
               'bmat_splus1': bmat_splus1,
               'bmat_s': bmat_s[:p.T, :, :], 'n_mat': n_mat[:p.T, :, :],
               'c_path': c_mat, 'bq_path': bqmat,
