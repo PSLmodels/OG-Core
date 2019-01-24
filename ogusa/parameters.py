@@ -132,10 +132,25 @@ class Specifications(ParametersBase):
                 this_attr, np.ones((self.T + self.S - this_attr.size)) *
                 this_attr[-1]))
             setattr(self, item, this_attr)
-        tau_c_to_set = self.tau_c
-        setattr(self, 'tau_c',
-                np.ones((self.T + self.S, self.S, self.J)) *
-                tau_c_to_set)
+        # Try to deal with size of tau_c, but don't worry too much at
+        # this point, will change when we determine how calibrate and if
+        # add multiple consumption goods.
+        tau_c_to_set = getattr(self, 'tau_c')
+        if tau_c_to_set.size == 1:
+            setattr(self, 'tau_c', np.ones((self.T + self.S, self.S,
+                                            self.J)) * tau_c_to_set)
+        elif tau_c_to_set.ndim == 3:
+            if tau_c_to_set.shape[0] > self.T + self.S:
+                tau_c_to_set = tau_c_to_set[:self.T + self.S, :, :]
+            if tau_c_to_set.shape[1] > self.S:
+                tau_c_to_set = tau_c_to_set[:, :self.S, :]
+            if tau_c_to_set.shape[2] > self.J:
+                tau_c_to_set = tau_c_to_set[:, :, :self.J]
+            setattr(self, 'tau_c',  tau_c_to_set)
+        else:
+            print('please give a tau_c that is a single element or 3-D array')
+            quit()
+
 
         # open economy parameters
         firm_r_annual = self.world_int_rate
