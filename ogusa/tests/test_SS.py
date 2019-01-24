@@ -230,7 +230,7 @@ def test_SS_solver():
     test_dict['IITpayroll_revenue'] = (test_dict['total_revenue_ss'] -
                                        test_dict['business_revenue'])
     del test_dict['T_Pss'], test_dict['T_BQss'], test_dict['T_Wss']
-    del test_dict['bqssmat']
+    del test_dict['bqssmat'], test_dict['T_Css']
     test_dict['revenue_ss'] = test_dict.pop('total_revenue_ss')
 
     for k, v in expected_dict.items():
@@ -438,7 +438,7 @@ def test_run_SS(input_path, expected_path):
     test_dict['IITpayroll_revenue'] = (test_dict['total_revenue_ss'] -
                                        test_dict['business_revenue'])
     del test_dict['T_Pss'], test_dict['T_BQss'], test_dict['T_Wss']
-    del test_dict['resource_constraint_error']
+    del test_dict['resource_constraint_error'], test_dict['T_Css']
     test_dict['revenue_ss'] = test_dict.pop('total_revenue_ss')
 
     for k, v in expected_dict.items():
