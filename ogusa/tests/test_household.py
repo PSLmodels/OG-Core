@@ -336,8 +336,9 @@ n_path = np.tile(np.reshape(np.array([0.9, 0.8, 0.5]), (1, 3)),
                  (3, 1))
 BQ_vec = np.array([0.1, 0.05, 0.15])
 T_H_vec = np.array([0.22, 0.15, 0.0])
-tau_c_tpi = np.tile(np.reshape(np.array([0.09, 0.08, 0.05]), (1, 3)),
+tau_c_mat = np.tile(np.reshape(np.array([0.09, 0.08, 0.05]), (1, 3)),
                     (3, 1))
+tau_c_tpi = np.diag(tau_c_mat)
 etr_params_tpi = np.empty((p1.S, etr_params.shape[2]))
 mtry_params_tpi = np.empty((p1.S, mtry_params.shape[2]))
 for i in range(etr_params.shape[2]):
@@ -347,7 +348,7 @@ test_vars_tpi = (r_vec, w_vec, np.diag(b_path), np.diag(b_splus1_path),
                  np.diag(n_path), BQ_vec, factor, T_H_vec, theta,
                  tau_c_tpi, etr_params_tpi, mtry_params_tpi, 0, j,
                  method_tpi)
-expected_tpi = np.array([328.08482917, 3.06636521, -139.79758662])
+expected_tpi = np.array([328.1253524, 3.057420747, -139.8514249])
 test_data = [(test_vars_ss, test_params_ss, expected_ss),
              (test_vars_tpi, test_params_tpi, expected_tpi)]
 
@@ -361,7 +362,7 @@ def test_FOC_savings(model_vars, params, expected):
     if j is not None:
         test_value = household.FOC_savings(
             r, w, b, b_splus1, n, BQ, factor, T_H, theta,
-            params.e[:, j], params.rho, tau_c[:, j], etr_params,
+            params.e[:, j], params.rho, tau_c, etr_params,
             mtry_params, t, j, params, method)
     else:
         test_value = household.FOC_savings(
@@ -418,12 +419,12 @@ w = 1.2
 b = np.array([0.0, 0.8, 0.5])
 b_splus1 = np.array([0.8, 0.5, 0.1])
 n = np.array([0.9, 0.8, 0.5])
-BQ = 0.1
+bq = 0.1
 tau_c = np.array([0.09, 0.08, 0.05])
 factor = 120000
 T_H = 0.22
 test_params_ss = p1
-test_vars_ss = (r, w, b, b_splus1, n, BQ, factor, T_H, theta, tau_c,
+test_vars_ss = (r, w, b, b_splus1, n, bq, factor, T_H, theta, tau_c,
                 etr_params[-1, :, :], mtrx_params[-1, :, :], None, j,
                 method)
 expected_ss = np.array([5.004572473, 0.160123869, -0.139397744])
@@ -446,21 +447,20 @@ b_splus1_path = np.tile(np.reshape(np.array([0.8, 0.5, 0.1]), (1, 3)),
                         (3, 1))
 n_path = np.tile(np.reshape(np.array([0.9, 0.8, 0.5]), (1, 3)),
                  (3, 1))
-BQ_vec = np.array([0.1, 0.05, 0.15]).reshape(3, 1)
+bq_vec = np.tile(np.array([0.1, 0.05, 0.15]).reshape(3, 1), (1, 3))
 T_H_vec = np.array([0.22, 0.15, 0.0])
 tau_c_tpi = np.tile(np.reshape(np.array([0.09, 0.08, 0.05]), (1, 3)),
                     (3, 1))
 etr_params_tpi = np.empty((p1.S, etr_params.shape[2]))
 mtrx_params_tpi = np.empty((p1.S, mtrx_params.shape[2]))
-for i in range(etr_params.shape[2]):
-    etr_params_tpi[:, i] = np.diag(np.transpose(etr_params[:, :p1.S, i]))
-    mtrx_params_tpi[:, i] = np.diag(np.transpose(mtrx_params[:, :p1.S, i]))
-test_vars_tpi = (r_vec, w_vec, b_path, b_splus1_path, n_path, BQ_vec,
+etr_params_tpi = etr_params
+mtrx_params_tpi = mtrx_params
+test_vars_tpi = (r_vec, w_vec, b_path, b_splus1_path, n_path, bq_vec,
                  factor, T_H_vec, theta, tau_c_tpi, etr_params_tpi,
                  mtrx_params_tpi, 0, j, method_tpi)
-expected_tpi = np.array([[72.47245852, 2.020513233, -0.131132485],
-                         [1.37813431e+07, 1.93091572e+00, -1.13697692e-01],
-                         [2.38837849e+01, 1.33686011e+00, -1.33902455e-01]])
+expected_tpi = np.array([[72.47245852, 0.021159855, 0.448785988],
+                         [52.98670445, 2.020513233, -0.319957296],
+                         [1.00982611e+09, 0.238114178, -0.131132485]])
 
 # Define variables/params for test of TPI version
 method_tpi = 'TPI'
@@ -472,9 +472,9 @@ test_params_tau_pay.p_wealth = np.array([0.0, 0.0, 0.0])
 test_params_tau_pay.tau_payroll = np.array([0.11, 0.05, 0.33])
 test_params_tau_pay.tau_bq = np.array([0.0, 0.0, 0.0])
 expected_tau_pay = np.array(
-    [[28.3370314, 1.66694815e+00, -3.83302383e-01],
-     [2.25826293e+01, 1.732799323, -3.95013543e-01],
-     [1.15312035e+09, 2.34816829e+00, -0.415072835]])
+    [[29.60252043, 0.039791027, 0.464569438],
+     [15.37208418, 1.814624637, -0.179212251],
+     [1.43082652e+09, 0.158962139, -0.41924639]])
 
 test_data = [(test_vars_ss, test_params_ss, expected_ss),
              (test_vars_tpi, test_params_tpi, expected_tpi),
@@ -485,13 +485,13 @@ test_data = [(test_vars_ss, test_params_ss, expected_ss),
                          ids=['SS', 'TPI', 'vary tau_payroll'])
 def test_FOC_labor(model_vars, params, expected):
     # Test FOC condition for household's choice of labor supply
-    (r, w, b, b_splus1, n, BQ, factor, T_H, theta, tau_c,
+    (r, w, b, b_splus1, n, bq, factor, T_H, theta, tau_c,
      etr_params, mtrx_params, t, j, method) = model_vars
     test_value = household.FOC_labor(
-        r, w, b, b_splus1, n, BQ, factor, T_H, theta, params.chi_n,
+        r, w, b, b_splus1, n, bq, factor, T_H, theta, params.chi_n,
         params.e[:, j], tau_c, etr_params, mtrx_params, t, j, params,
         method)
-    print('Tau_c = ', tau_c)
+
     assert np.allclose(test_value, expected)
 
 

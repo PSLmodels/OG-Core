@@ -265,8 +265,17 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, T_H, theta, e, rho,
     '''
     if j is not None:
         chi_b = p.chi_b[j]
+        # if method == 'TPI':
+        #     r = r.reshape(r.shape[0], 1)
+        #     w = w.reshape(w.shape[0], 1)
+        #     T_H = T_H.reshape(T_H.shape[0], 1)
     else:
         chi_b = p.chi_b
+        if method == 'TPI':
+            r = utils.to_timepath_shape(r, p)
+            w = utils.to_timepath_shape(w, p)
+            T_H = utils.to_timepath_shape(T_H, p)
+
     taxes = tax.total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j,
                             False, method, e, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
@@ -356,6 +365,19 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, T_H, theta, chi_n, e,
         euler = [S,J] array, Euler error from FOC for labor supply
 
     Returns: euler
+
+        if j is not None:
+            chi_b = p.chi_b[j]
+            if method == 'TPI':
+                r = r.reshape(r.shape[0], 1)
+                w = w.reshape(w.shape[0], 1)
+                T_H = T_H.reshape(T_H.shape[0], 1)
+        else:
+            chi_b = p.chi_b
+            if method == 'TPI':
+                r = utils.to_timepath_shape(r, p)
+                w = utils.to_timepath_shape(w, p)
+                T_H = utils.to_timepath_shape(T_H, p)
     '''
     if method == 'SS':
         tau_payroll = p.tau_payroll[-1]
@@ -364,6 +386,18 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, T_H, theta, chi_n, e,
     else:
         length = r.shape[0]
         tau_payroll = p.tau_payroll[t:t + length]
+    if method == 'TPI':
+        if j is not None:
+            r = r.reshape(r.shape[0], 1)
+            w = w.reshape(w.shape[0], 1)
+            T_H = T_H.reshape(T_H.shape[0], 1)
+            tau_payroll = tau_payroll.reshape(tau_payroll.shape[0], 1)
+        else:
+            r = utils.to_timepath_shape(r, p)
+            w = utils.to_timepath_shape(w, p)
+            T_H = utils.to_timepath_shape(T_H, p)
+            tau_payroll = utils.to_timepath_shape(tau_payroll, p)
+
     taxes = tax.total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j,
                             False, method, e, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
