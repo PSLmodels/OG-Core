@@ -428,6 +428,11 @@ def total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, shift, method,
     '''
     if j is not None:
         lambdas = p.lambdas[j]
+        if method == 'TPI':
+            if b.ndim == 2:
+                r = r.reshape(r.shape[0], 1)
+                w = w.reshape(w.shape[0], 1)
+                T_H = T_H.reshape(T_H.shape[0], 1)
     else:
         lambdas = np.transpose(p.lambdas)
         if method == 'TPI':
