@@ -288,7 +288,7 @@ def test_inner_loop():
         os.path.join(CUR_PATH, 'test_io_data/inner_loop_outputs.pkl'))
 
     for i, v in enumerate(expected_tuple):
-        assert(np.allclose(test_tuple[i], v))
+        assert(np.allclose(test_tuple[i], v, atol=1e-05))
 
 
 def test_euler_equation_solver():
