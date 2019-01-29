@@ -50,7 +50,7 @@ def run_micro_macro(user_params):
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': False, 'time_path': True, 'baseline': True,
               'user_params': user_params, 'guid': '_example',
-              'run_micro': False, 'data': 'cps', 'client': client,
+              'run_micro': True, 'data': 'cps', 'client': client,
               'num_workers': num_workers}
 
     start_time = time.time()
@@ -70,7 +70,7 @@ def run_micro_macro(user_params):
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': False, 'time_path': True, 'baseline': False,
               'user_params': user_params, 'guid': '_example',
-              'reform': reform, 'run_micro': False, 'data': 'cps',
+              'reform': reform, 'run_micro': True, 'data': 'cps',
               'client': client, 'num_workers': num_workers}
 
     start_time = time.time()
