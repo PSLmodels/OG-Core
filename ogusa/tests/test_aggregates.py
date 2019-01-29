@@ -210,6 +210,7 @@ random_state = np.random.RandomState(10)
 r = 0.067 + (0.086 - 0.067) * random_state.rand(p.T)
 w = 0.866 + (0.927 - 0.866) * random_state.rand(p.T)
 b = 6.94 * random_state.rand(p.T * p.S * p.J).reshape(p.T, p.S, p.J)
+c = np.ones((p.T, p.S, p.J)) * 2.2
 n = (0.191 + (0.503 - 0.191) *
      random_state.rand(p.T * p.S * p.J).reshape(p.T, p.S, p.J))
 BQ = (0.032 + (0.055 - 0.032) *
@@ -255,36 +256,38 @@ p3.e = p.e
 p3.omega = p.omega
 p3.omega_SS = p.omega_SS
 expected1 = 0.5562489534339288
-expected2 = [0.52178543, 0.49977116, 0.52015768, 0.52693363, 0.59695398,
+expected2 = np.array(
+            [0.52178543, 0.49977116, 0.52015768, 0.52693363, 0.59695398,
              0.61360011, 0.54679056, 0.54096669, 0.56301133, 0.5729165,
              0.52734917, 0.51432562, 0.50060814, 0.5633982,  0.51509517,
              0.60189683, 0.56766507, 0.56439768, 0.68919173, 0.57765917,
              0.60292137, 0.56621788, 0.51913478, 0.48952262, 0.52142782,
-             0.5735005, 0.51166718, 0.57939994, 0.52585236, 0.53767652]
-expected3 = [0.49088403, 0.47079763, 0.488186, 0.4926552, 0.59695398,
+             0.5735005, 0.51166718, 0.57939994, 0.52585236, 0.53767652])
+expected3 = np.array(
+            [0.49088403, 0.47079763, 0.488186, 0.4926552, 0.59695398,
              0.61360011, 0.54679056, 0.54096669, 0.56301133, 0.5729165,
              0.52734917, 0.51432562, 0.50060814, 0.5633982,  0.51509517,
              0.60189683, 0.56766507, 0.56439768, 0.68919173, 0.57765917,
              0.60292137, 0.56621788, 0.51913478, 0.48952262, 0.52142782,
-             0.5735005, 0.51166718, 0.57939994, 0.52585236, 0.53767652]
-test_data = [(r[0], w[0], b[0, :, :], n[0, :, :], bq[0, :, :], Y[0],
-              L[0], K[0], factor, theta, etr_params[-1, :, :, :], p,
-              'SS', expected1),
-             (r, w, b, n, bq, Y, L, K, factor, theta, etr_params, p,
+             0.5735005, 0.51166718, 0.57939994, 0.52585236, 0.53767652])
+test_data = [(r[0], w[0], b[0, :, :], n[0, :, :], bq[0, :, :],
+              c[0, :, :], Y[0], L[0], K[0], factor, theta,
+              etr_params[-1, :, :, :], p, 'SS', expected1),
+             (r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p,
               'TPI', expected2),
-             (r, w, b, n, bq, Y, L, K, factor, theta, etr_params, p3,
+             (r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p3,
               'TPI', expected3)]
 
 
-@pytest.mark.parametrize('r,w,b,n,bq,Y,L,K,factor,theta,etr_params,p,' +
+@pytest.mark.parametrize('r,w,b,n,bq,c,Y,L,K,factor,theta,etr_params,p,' +
                          'method,expected', test_data,
                          ids=['SS', 'TPI', 'TPI, replace rate adjust'])
-def test_revenue(r, w, b, n, bq, Y, L, K, factor, theta, etr_params, p,
+def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p,
                  method, expected):
     """
     Test aggregate revenue function.
     """
-    revenue, _, _, _, _, _ = aggr.revenue(r, w, b, n, bq, Y, L, K,
-                                          factor, theta, etr_params, p,
-                                          method)
+    revenue, _, _, _, _, _, _ = aggr.revenue(
+        r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p, method)
+
     assert(np.allclose(revenue, expected))

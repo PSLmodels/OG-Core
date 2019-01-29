@@ -163,9 +163,9 @@ def get_bq(BQ, j, p, method):
     return bq
 
 
-def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, j, p):
+def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
     '''
-    Calculation of househld consumption.
+    Calculation of household consumption.
 
     Inputs:
         r        = [T,] vector, interest rates
@@ -191,12 +191,12 @@ def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, j, p):
     Returns: cons
     '''
     cons = ((1 + r) * b + w * e * n + bq - b_splus1 * np.exp(p.g_y) -
-            net_tax)
+            net_tax) / (1 + tau_c)
     return cons
 
 
-def FOC_savings(r, w, b, b_splus1, n, bq, factor, T_H, theta,
-                e, rho, etr_params, mtry_params, t, j, p, method):
+def FOC_savings(r, w, b, b_splus1, n, bq, factor, T_H, theta, e, rho,
+                tau_c, etr_params, mtry_params, t, j, p, method):
     '''
     Computes Euler errors for the FOC for savings in the steady state.
     This function is usually looped through over J, so it does one
@@ -267,30 +267,37 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, T_H, theta,
         chi_b = p.chi_b[j]
     else:
         chi_b = p.chi_b
-    taxes = tax.total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, False,
-                            method, e, etr_params, p)
-    cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, j, p)
+        if method == 'TPI':
+            r = utils.to_timepath_shape(r, p)
+            w = utils.to_timepath_shape(w, p)
+            T_H = utils.to_timepath_shape(T_H, p)
+
+    taxes = tax.total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j,
+                            False, method, e, etr_params, p)
+    cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
     deriv = ((1 + r) - r * (tax.MTR_income(r, w, b, n, factor, True, e,
                                            etr_params, mtry_params, p)))
     savings_ut = (rho * np.exp(-p.sigma * p.g_y) * chi_b *
                   b_splus1 ** (-p.sigma))
     euler_error = np.zeros_like(n)
     if n.shape[0] > 1:
-        euler_error[:-1] = (marg_ut_cons(cons[:-1], p.sigma) - p.beta *
+        euler_error[:-1] = (marg_ut_cons(cons[:-1], p.sigma) *
+                            (1 / (1 + tau_c[:-1])) - p.beta *
                             (1 - rho[:-1]) * deriv[1:] *
                             marg_ut_cons(cons[1:], p.sigma) *
-                            np.exp(-p.sigma * p.g_y) - savings_ut[:-1])
-        euler_error[-1] = (marg_ut_cons(cons[-1], p.sigma) -
-                           savings_ut[-1])
+                            (1 / (1 + tau_c[1:])) * np.exp(-p.sigma * p.g_y)
+                            - savings_ut[:-1])
+        euler_error[-1] = (marg_ut_cons(cons[-1], p.sigma) *
+                           (1 / (1 + tau_c[-1])) - savings_ut[-1])
     else:
-        euler_error[-1] = (marg_ut_cons(cons[-1], p.sigma) -
-                           savings_ut[-1])
+        euler_error[-1] = (marg_ut_cons(cons[-1], p.sigma) *
+                           (1 / (1 + tau_c[-1])) - savings_ut[-1])
 
     return euler_error
 
 
 def FOC_labor(r, w, b, b_splus1, n, bq, factor, T_H, theta, chi_n, e,
-              etr_params, mtrx_params, t, j, p, method):
+              tau_c, etr_params, mtrx_params, t, j, p, method):
     '''
     Computes Euler errors for the FOC for labor supply in the steady
     state.  This function is usually looped through over J, so it does
@@ -354,6 +361,19 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, T_H, theta, chi_n, e,
         euler = [S,J] array, Euler error from FOC for labor supply
 
     Returns: euler
+
+        if j is not None:
+            chi_b = p.chi_b[j]
+            if method == 'TPI':
+                r = r.reshape(r.shape[0], 1)
+                w = w.reshape(w.shape[0], 1)
+                T_H = T_H.reshape(T_H.shape[0], 1)
+        else:
+            chi_b = p.chi_b
+            if method == 'TPI':
+                r = utils.to_timepath_shape(r, p)
+                w = utils.to_timepath_shape(w, p)
+                T_H = utils.to_timepath_shape(T_H, p)
     '''
     if method == 'SS':
         tau_payroll = p.tau_payroll[-1]
@@ -362,14 +382,26 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, T_H, theta, chi_n, e,
     else:
         length = r.shape[0]
         tau_payroll = p.tau_payroll[t:t + length]
-    taxes = tax.total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, False,
-                            method, e, etr_params, p)
-    cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, j, p)
+    if method == 'TPI':
+        if b.ndim == 2:
+            r = r.reshape(r.shape[0], 1)
+            w = w.reshape(w.shape[0], 1)
+            T_H = T_H.reshape(T_H.shape[0], 1)
+            tau_payroll = tau_payroll.reshape(tau_payroll.shape[0], 1)
+        elif b.ndim == 3:
+            r = utils.to_timepath_shape(r, p)
+            w = utils.to_timepath_shape(w, p)
+            T_H = utils.to_timepath_shape(T_H, p)
+            tau_payroll = utils.to_timepath_shape(tau_payroll, p)
+
+    taxes = tax.total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j,
+                            False, method, e, etr_params, p)
+    cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
     deriv = (1 - tau_payroll - tax.MTR_income(r, w, b, n, factor,
                                               False, e, etr_params,
                                               mtrx_params, p))
-    FOC_error = (marg_ut_cons(cons, p.sigma) * w * deriv * e -
-                 marg_ut_labor(n, chi_n, p))
+    FOC_error = (marg_ut_cons(cons, p.sigma) * (1 / (1 + tau_c)) * w *
+                 deriv * e - marg_ut_labor(n, chi_n, p))
 
     return FOC_error
 

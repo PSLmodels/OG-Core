@@ -2,7 +2,7 @@ import pytest
 import pickle
 import numpy as np
 import os
-from ogusa import SS, TPI, utils, firm, household
+from ogusa import SS, TPI, utils, firm
 from ogusa.parameters import Specifications
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -67,6 +67,7 @@ def test_twist_doughnut():
      theta, p.baseline) = tpi_params
     p.Z = np.ones(p.T + p.S) * Z
     p.tau_bq = np.ones(p.T + p.S) * 0.0
+    p.tau_c = np.ones((p.T + p.S, p.S, p.J)) * 0.0
     p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
     p.tau_b = np.ones(p.T + p.S) * tau_b
     p.delta_tau = np.ones(p.T + p.S) * delta_tau
@@ -80,11 +81,12 @@ def test_twist_doughnut():
     p.lambdas = lambdas.reshape(p.J, 1)
     p.num_workers = 1
     length = int(len(guesses) / 2)
+    tau_c_to_use = np.diag(p.tau_c[:p.S, :, j], p.S - (s + 2))
     bq = BQ[t:t + length] / p.lambdas[j]
     test_list = TPI.twist_doughnut(guesses, r, w, bq, T_H, theta,
-                                   factor, j, s, t, etr_params,
-                                   mtrx_params, mtry_params, initial_b,
-                                   p)
+                                   factor, j, s, t, tau_c_to_use,
+                                   etr_params, mtrx_params, mtry_params,
+                                   initial_b, p)
     expected_list = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data/twist_doughnut_outputs.pkl'))
 
@@ -236,7 +238,7 @@ def test_run_TPI():
     test_dict['IITpayroll_revenue'] = (test_dict['REVENUE'][:160] -
                                        test_dict['business_revenue'])
     del test_dict['T_P'], test_dict['T_BQ'], test_dict['T_W']
-    del test_dict['resource_constraint_error']
+    del test_dict['resource_constraint_error'], test_dict['T_C']
 
     for k, v in expected_dict.items():
         try:
