@@ -13,14 +13,16 @@ new_param_values = {
 }
 p.update_specifications(new_param_values)
 p.retire = [3, 3, 3, 3, 3, 3, 3, 3]
-p1 = p
-p2 = p
-p3 = p
+p1 = copy.deepcopy(p)
+p2 = copy.deepcopy(p)
+p3 = copy.deepcopy(p)
 # Use just a column of e
 p1.e = np.transpose(np.array([[0.1, 0.3, 0.5, 0.2], [0.1, 0.3, 0.5, 0.2]]))
 # e has two dimensions
 p2.e = np.array([[0.4, 0.3], [0.5, 0.4], [.6, .4], [.4, .3]])
 p3.e = np.array([[0.35, 0.3], [0.55, 0.4], [.65, .4], [.45, .3]])
+p5 = copy.deepcopy(p3)
+p5.PIA_minpayment = 125.0
 wss = 0.5
 n1 = np.array([0.5, 0.5, 0.5, 0.5])
 n2 = nssmat = np.array([[0.4, 0.4], [0.4, 0.4], [0.4, 0.4], [0.4, 0.4]])
@@ -32,15 +34,18 @@ expected1 = np.array([0.042012])
 expected2 = np.array([0.042012, 0.03842772])
 expected3 = np.array([0.1145304, 0.0969304])
 expected4 = np.array([0.1755, 0.126])
+expected5 = np.array([0.1755, 0.126 * 1.1904761904761905])
 
 test_data = [(n1, wss, factor1, 0, p1, expected1),
              (n2, wss, factor1, None, p2, expected2),
              (n3, wss, factor3, None, p3, expected3),
-             (n3, wss, factor4, None, p3, expected4)]
+             (n3, wss, factor4, None, p3, expected4),
+             (n3, wss, factor4, None, p5, expected5)]
 
 
 @pytest.mark.parametrize('n,w,factor,j,p,expected', test_data,
-                         ids=['1D e', '2D e', 'AIME case 2', 'AIME case 3'])
+                         ids=['1D e', '2D e', 'AIME case 2',
+                              'AIME case 3', 'Min PIA case'])
 def test_replacement_rate_vals(n, w, factor, j, p, expected):
     # Test replacement rate function, making sure to trigger all three
     # cases of AIME
