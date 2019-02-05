@@ -32,7 +32,7 @@ def marg_ut_cons(c, sigma):
     '''
     if np.ndim(c) == 0:
         c = np.array([c])
-    epsilon = 0.0001
+    epsilon = 0.003
     cvec_cnstr = c < epsilon
     MU_c = np.zeros(c.shape)
     MU_c[~cvec_cnstr] = c[~cvec_cnstr] ** (-sigma)
