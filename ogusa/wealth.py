@@ -43,7 +43,7 @@ def get_wealth_data():
     # read in SCF data collapsed by age and percentile for graphs
     wealth_file = utils.read_file(
         cur_path, "data/wealth/scf2007to2013_wealth_age_all_percentiles.csv")
-    data = pd.read_table(wealth_file, sep=',', header=0)
+    data = pd.read_csv(wealth_file, sep=',', header=0)
 
     # read in raw SCF data to calculate moments
     fileDir = os.path.dirname(os.path.realpath('__file__'))
