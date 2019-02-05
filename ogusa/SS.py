@@ -698,10 +698,9 @@ def run_SS(p, client=None):
     # For initial guesses of w, r, T_H, and factor, we use values that
     # are close to some steady state values.
     if p.baseline:
-        b_guess = np.ones((p.S, p.J)) * 0.05
+        b_guess = np.ones((p.S, p.J)) * 0.07
         n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
-        rguess = 0.05  # 0.01 + delta
-        # wguess = 1.2
+        rguess = 0.09
         T_Hguess = 0.12
         factorguess = 70000
         BQguess = aggr.get_BQ(rguess, b_guess, None, p, 'SS', False)
