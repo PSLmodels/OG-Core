@@ -65,7 +65,7 @@ def get_labor_data():
 #
 #     labor_file = utils.read_file(cur_path,
 #                                  "data/labor/cps_hours_by_age_hourspct.txt")
-#     data = pd.read_table(labor_file, header=0)
+#     data = pd.read_csv(labor_file, header=0)
 #
 #     piv = data.pivot(index='age', columns='hours_pct', values='mean_hrs')
 #     lab_mat_basic = np.array(piv)
