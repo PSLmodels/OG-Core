@@ -460,7 +460,7 @@ test_vars_tpi = (r_vec, w_vec, b_path, b_splus1_path, n_path, bq_vec,
                  mtrx_params_tpi, 0, j, method_tpi)
 expected_tpi = np.array([[72.47245852, 0.021159855, 0.448785988],
                          [52.98670445, 2.020513233, -0.319957296],
-                         [1.00982611e+09, 0.238114178, -0.131132485]])
+                         [2.12409207e+05, 0.238114178, -0.131132485]])
 
 # Define variables/params for test of TPI version
 method_tpi = 'TPI'
@@ -474,7 +474,7 @@ test_params_tau_pay.tau_bq = np.array([0.0, 0.0, 0.0])
 expected_tau_pay = np.array(
     [[29.60252043, 0.039791027, 0.464569438],
      [15.37208418, 1.814624637, -0.179212251],
-     [1.43082652e+09, 0.158962139, -0.41924639]])
+     [2.95870445e+05, 0.158962139, -0.41924639]])
 
 test_data = [(test_vars_ss, test_params_ss, expected_ss),
              (test_vars_tpi, test_params_tpi, expected_tpi),

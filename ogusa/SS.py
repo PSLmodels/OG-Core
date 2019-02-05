@@ -698,15 +698,17 @@ def run_SS(p, client=None):
     # For initial guesses of w, r, T_H, and factor, we use values that
     # are close to some steady state values.
     if p.baseline:
-        b_guess = np.ones((p.S, p.J)) * 0.05
+        b_guess = np.ones((p.S, p.J)) * 0.07
         n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
-        rguess = 0.05  # 0.01 + delta
-        # wguess = 1.2
+        rguess = 0.09
         T_Hguess = 0.12
         factorguess = 70000
         BQguess = aggr.get_BQ(rguess, b_guess, None, p, 'SS', False)
         ss_params_baseline = (b_guess, n_guess, None, None, p, client)
-        guesses = [rguess] + list(BQguess) + [T_Hguess, factorguess]
+        if p.use_zeta:
+            guesses = [rguess] + list([BQguess]) + [T_Hguess, factorguess]
+        else:
+            guesses = [rguess] + list(BQguess) + [T_Hguess, factorguess]
         [solutions_fsolve, infodict, ier, message] =\
             opt.fsolve(SS_fsolve, guesses, args=ss_params_baseline,
                        xtol=p.mindist_SS, full_output=True)
@@ -734,14 +736,11 @@ def run_SS(p, client=None):
              ss_solutions['factor_ss'])
         if p.baseline_spending:
             T_Hss = T_Hguess
-            # ss_params_reform = (b_guess, n_guess, T_Hss, factor, p, client)
-            # guesses = [rguess, Yguess]
-            # [solutions_fsolve, infodict, ier, message] =\
-            #     opt.fsolve(SS_fsolve_reform_baselinespend, guesses,
-            #                args=ss_params_reform, xtol=p.mindist_SS,
-            #                full_output=True)
             ss_params_reform = (b_guess, n_guess, T_Hss, factor, p, client)
-            guesses = [rguess] + list(BQguess) + [Yguess]
+            if p.use_zeta:
+                guesses = [rguess] + list([BQguess]) + [Yguess]
+            else:
+                guesses = [rguess] + list(BQguess) + [Yguess]
             [solutions_fsolve, infodict, ier, message] =\
                 opt.fsolve(SS_fsolve, guesses,
                            args=ss_params_reform, xtol=p.mindist_SS,
@@ -750,14 +749,11 @@ def run_SS(p, client=None):
             BQss = solutions_fsolve[1:-1]
             Yss = solutions_fsolve[-1]
         else:
-            # ss_params_reform = (b_guess, n_guess, factor, p, client)
-            # guesses = [rguess, T_Hguess]
-            # [solutions_fsolve, infodict, ier, message] =\
-            #     opt.fsolve(SS_fsolve_reform, guesses,
-            #                args=ss_params_reform, xtol=p.mindist_SS,
-            #                full_output=True)
             ss_params_reform = (b_guess, n_guess, None, factor, p, client)
-            guesses = [rguess] + list(BQguess) + [T_Hguess]
+            if p.use_zeta:
+                guesses = [rguess] + list([BQguess]) + [T_Hguess]
+            else:
+                guesses = [rguess] + list(BQguess) + [T_Hguess]
             [solutions_fsolve, infodict, ier, message] =\
                 opt.fsolve(SS_fsolve, guesses,
                            args=ss_params_reform, xtol=p.mindist_SS,

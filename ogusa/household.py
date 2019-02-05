@@ -32,7 +32,7 @@ def marg_ut_cons(c, sigma):
     '''
     if np.ndim(c) == 0:
         c = np.array([c])
-    epsilon = 0.0001
+    epsilon = 0.003
     cvec_cnstr = c < epsilon
     MU_c = np.zeros(c.shape)
     MU_c[~cvec_cnstr] = c[~cvec_cnstr] ** (-sigma)
@@ -142,7 +142,7 @@ def get_bq(BQ, j, p, method):
                 bq = ((np.reshape(p.zeta, (1, p.S, p.J)) *
                       utils.to_timepath_shape(BQ, p)) /
                       (p.lambdas.reshape((1, 1, p.J)) *
-                       p.omega.reshape((len_T, p.S, 1))))
+                       p.omega[:len_T, :].reshape((len_T, p.S, 1))))
     else:
         if j is not None:
             if method == 'SS':
