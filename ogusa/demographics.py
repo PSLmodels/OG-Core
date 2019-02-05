@@ -109,7 +109,7 @@ def get_fert(totpers, min_yr, max_yr, graph=False):
     cur_path = os.path.split(os.path.abspath(__file__))[0]
     pop_file = utils.read_file(cur_path,
                                "data/demographic/pop_data.csv")
-    pop_data = pd.read_table(pop_file, sep=',', thousands=',')
+    pop_data = pd.read_csv(pop_file, sep=',', thousands=',')
     pop_data_samp = pop_data[(pop_data['Age'] >= min_yr - 1) &
                              (pop_data['Age'] <= max_yr - 1)]
     curr_pop = np.array(pop_data_samp['2013'], dtype='f')
@@ -270,7 +270,7 @@ def get_mort(totpers, min_yr, max_yr, graph=False):
     cur_path = os.path.split(os.path.abspath(__file__))[0]
     mort_file = utils.read_file(
         cur_path, 'data/demographic/mort_rates2011.csv')
-    mort_data = pd.read_table(mort_file, sep=',', thousands=',')
+    mort_data = pd.read_csv(mort_file, sep=',', thousands=',')
     age_year_all = mort_data['Age'] + 1
     mort_rates_all = (
         ((mort_data['Male Mort. Rate'] * mort_data['Num. Male Lives']) +
@@ -474,7 +474,7 @@ def get_imm_resid(totpers, min_yr, max_yr, graph=True):
     cur_path = os.path.split(os.path.abspath(__file__))[0]
     pop_file = utils.read_file(cur_path,
                                "data/demographic/pop_data.csv")
-    pop_data = pd.read_table(pop_file, sep=',', thousands=',')
+    pop_data = pd.read_csv(pop_file, sep=',', thousands=',')
     pop_data_samp = pop_data[(pop_data['Age'] >= min_yr - 1) &
                              (pop_data['Age'] <= max_yr - 1)]
     pop_2010, pop_2011, pop_2012, pop_2013 = (
@@ -722,7 +722,7 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     cur_path = os.path.split(os.path.abspath(__file__))[0]
     pop_file = utils.read_file(cur_path,
                                "data/demographic/pop_data.csv")
-    pop_data = pd.read_table(pop_file, sep=',', thousands=',')
+    pop_data = pd.read_csv(pop_file, sep=',', thousands=',')
     pop_data_samp = pop_data[(pop_data['Age'] >= min_yr - 1) &
                              (pop_data['Age'] <= max_yr - 1)]
     pop_2013 = np.array(pop_data_samp['2013'], dtype='f')
