@@ -446,16 +446,16 @@ def run_TPI(p, client=None):
     w[:p.T] = firm.get_w_from_r(r[:p.T], p, 'TPI')
     w[p.T:] = wss
 
-    BQ = np.zeros((p.T + p.S, p.J))
     BQ0 = aggr.get_BQ(r[0], initial_b, None, p, 'SS', True)
     if not p.use_zeta:
+        BQ = np.zeros((p.T + p.S, p.J))
         for j in range(p.J):
             BQ[:, j] = (list(np.linspace(BQ0[j], BQss[j], p.T)) +
                         [BQss[j]] * p.S)
         BQ = np.array(BQ)
     else:
-        BQ += BQss
-        BQ[0] = BQ0
+        BQ = (list(np.linspace(BQ0, BQss, p.T)) + [BQss] * p.S)
+        BQ = np.array(BQ)
     if p.budget_balance:
         if np.abs(T_Hss) < 1e-13:
             T_Hss2 = 0.0  # sometimes SS is very small but not zero,
