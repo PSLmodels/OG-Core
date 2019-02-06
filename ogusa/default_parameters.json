@@ -830,6 +830,22 @@
       "out_of_range_action": "stop",
       "compatible_data": {"puf": true, "cps": true}
     },
+    "PIA_minpayment":{
+      "long_name": "The minimum primary insurance amount (PIA) payment.",
+      "description": "The minimum primary insurance amount (PIA) payment.",
+      "notes": "",
+      "col_var": "",
+      "col_label": "",
+      "boolean_value": false,
+      "integer_value": false,
+      "string_value": false,
+      "value": 0.0,
+      "range": {"min": 0.0, "max": "PIA_maxpayment"},
+      "out_of_range_minmsg": "",
+      "out_of_range_maxmsg": "",
+      "out_of_range_action": "stop",
+      "compatible_data": {"puf": true, "cps": true}
+    },
     "replacement_rate_adjust":{
       "long_name": "Adjustment to the social security retirement benefits replacement rate.",
       "description": "Adjustment to the social security retirement benefits replacement rate.",
