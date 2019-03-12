@@ -15,7 +15,10 @@ def run_micro_macro(user_params):
     # Grab a reform JSON file already in Tax-Calculator
     # In this example the 'reform' is a change to 2017 law (the
     # baseline policy is tax law in 2018)
-    ref = Calculator.read_json_param_objects('2017_law.json', None)
+    reform_url = ('https://raw.githubusercontent.com/'
+                  'PSLmodels/Tax-Calculator/master/taxcalc/'
+                  'reforms/2017_law.json')
+    ref = Calculator.read_json_param_objects(reform_url, None)
     reform = ref['policy']
 
     # Define parameters to use for multiprocessing
