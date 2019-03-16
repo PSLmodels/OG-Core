@@ -59,3 +59,15 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
     print('Maximum debt ratio: ', D_ratio_max)
 
     return D, G
+
+
+def get_r_gov(r, p):
+    '''
+    Determine the interest rate on government debt
+    '''
+    if p.r_gov_scale * r - p.r_gov_shift >= 0:
+        r_gov = p.r_gov_scale * r - p.r_gov_shift
+    else:
+        r_gov = 0.0
+
+    return r_gov
