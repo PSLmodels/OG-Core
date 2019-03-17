@@ -435,7 +435,7 @@ def get_r_hh(r, r_gov, p):
     '''
     r_hh = (((p.gamma_s * (1 + r_gov) ** (p.epislon_s + 1)) +
             ((1 - p.gamma_s) * (1 + r_gov) ** (p.epislon_s + 1))) **
-            (1 / (p.epsilon_s + 1)))
+            (1 / (p.epsilon_s + 1)) - 1)
 
     return r_hh
 
