@@ -428,6 +428,18 @@ def get_debt_demand(r_gov, r_hh, b, p):
     return debt_demand
 
 
+def get_r_hh(r, r_gov, p):
+    '''
+    Determine the interest rate on the household portfolio that is
+    comprised of government debt and equity holdings.
+    '''
+    r_hh = (((p.gamma_s * (1 + r_gov) ** (p.epislon_s + 1)) +
+            ((1 - p.gamma_s) * (1 + r_gov) ** (p.epislon_s + 1))) **
+            (1 / (p.epsilon_s + 1)))
+
+    return r_hh
+
+
 def constraint_checker_SS(bssmat, nssmat, cssmat, ltilde):
     '''
     Checks constraints on consumption, savings, and labor supply in the
