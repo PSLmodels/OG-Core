@@ -22,7 +22,7 @@ import scipy.optimize as opt
 import pickle
 from dask import compute, delayed
 import dask.multiprocessing
-from ogusa import tax, household, firm, utils
+from ogusa import tax, household, firm, utils, fiscal
 from ogusa import aggregates as aggr
 import os
 import warnings
@@ -196,12 +196,14 @@ def inner_loop(outer_loop_vars, p, client):
     euler_errors = np.zeros((2 * p.S, p.J))
 
     w = firm.get_w_from_r(r, p, 'SS')
+    r_gov = fiscal.get_r_gov(r, p)
+    r_hh = household.get_r_hh(r, r_gov, p)
     bq = household.get_bq(BQ, None, p, 'SS')
 
     lazy_values = []
     for j in range(p.J):
         guesses = np.append(bssmat[:, j], nssmat[:, j])
-        euler_params = (r, w, bq[:, j], T_H, factor, j, p)
+        euler_params = (r_hh, w, bq[:, j], T_H, factor, j, p)
         lazy_values.append(delayed(opt.fsolve)(euler_equation_solver,
                                                guesses * .9,
                                                args=euler_params,
@@ -217,6 +219,8 @@ def inner_loop(outer_loop_vars, p, client):
         bssmat[:, j] = solutions[:p.S]
         nssmat[:, j] = solutions[p.S:]
 
+    equity_holdings = household.get_equity_demand(r, r_hh, bssmat, p)
+    debt_holdings = household.get_debt_demand(r, r_hh, bssmat, p)
     L = aggr.get_L(nssmat, p, 'SS')
     if not p.small_open:
         B = aggr.get_K(bssmat, p, 'SS', False)
@@ -232,20 +236,22 @@ def inner_loop(outer_loop_vars, p, client):
     if not p.small_open:
         new_r = firm.get_r(Y, K, p, 'SS')
     else:
-        new_r = p.hh_r[-1]
+        new_r = p.firm_r[-1]
     new_w = firm.get_w_from_r(new_r, p, 'SS')
     print('inner factor prices: ', new_r, new_w)
 
     b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
                    list(bssmat[:-1, :]))
-    average_income_model = ((new_r * b_s + new_w * p.e * nssmat) *
+    new_r_gov = fiscal.get_r_gov(new_r, p)
+    new_r_hh = household.get_r_hh(new_r, new_r_gov, p)
+    average_income_model = ((new_r_hh * b_s + new_w * p.e * nssmat) *
                             p.omega_SS.reshape(p.S, 1) *
                             p.lambdas.reshape(1, p.J)).sum()
     if p.baseline:
         new_factor = p.mean_income_data / average_income_model
     else:
         new_factor = factor
-    new_BQ = aggr.get_BQ(new_r, bssmat, None, p, 'SS', False)
+    new_BQ = aggr.get_BQ(new_r_hh, bssmat, None, p, 'SS', False)
     new_bq = household.get_bq(new_BQ, None, p, 'SS')
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
 
@@ -253,22 +259,22 @@ def inner_loop(outer_loop_vars, p, client):
         etr_params_3D = np.tile(np.reshape(
             p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])),
                                 (1, p.J, 1))
-        taxss = tax.total_taxes(new_r, new_w, b_s, nssmat, new_bq,
+        taxss = tax.total_taxes(new_r_hh, new_w, b_s, nssmat, new_bq,
                                 factor, T_H, theta, None, None, False,
                                 'SS', p.e, etr_params_3D, p)
-        cssmat = household.get_cons(new_r, new_w, b_s, bssmat,
+        cssmat = household.get_cons(new_r_hh, new_w, b_s, bssmat,
                                     nssmat, new_bq, taxss,
                                     p.e, p.tau_c[-1, :, :], p)
         new_T_H, _, _, _, _, _, _ = aggr.revenue(
-            new_r, new_w, b_s, nssmat, new_bq, cssmat, new_Y, L, K,
+            new_r_hh, new_w, b_s, nssmat, new_bq, cssmat, new_Y, L, K,
             factor, theta, etr_params_3D, p, 'SS')
     elif p.baseline_spending:
         new_T_H = T_H
     else:
         new_T_H = p.alpha_T[-1] * new_Y
 
-    return euler_errors, bssmat, nssmat, new_r, new_w, \
-        new_T_H, new_Y, new_factor, new_BQ, average_income_model
+    return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_hh, \
+        new_w, new_T_H, new_Y, new_factor, new_BQ, average_income_model
 
 
 def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
@@ -360,8 +366,9 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
         else:
             outer_loop_vars = (bmat, nmat, r, BQ, Y, T_H, factor)
 
-        (euler_errors, new_bmat, new_nmat, new_r, new_w, new_T_H, new_Y,
-         new_factor, new_BQ, average_income_model) =\
+        (euler_errors, new_bmat, new_nmat, new_r, new_r_gov, new_r_hh,
+         new_w, new_T_H, new_Y, new_factor, new_BQ,
+         average_income_model) =\
             inner_loop(outer_loop_vars, p, client)
 
         r = utils.convex_combo(new_r, r, nu_ss)
@@ -411,6 +418,8 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     nssmat = nmat
 
     rss = r
+    r_gov_ss = fiscal.get_r_gov(rss, p)
+    r_hh_ss = household.get_r_hh(rss, r_gov_ss, p)
     wss = new_w
     BQss = new_BQ
     factor_ss = factor
@@ -428,7 +437,7 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
         Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS')
     else:
         # Compute capital (K) and wealth (B) separately
-        Kss = firm.get_K(Lss, p.ss_firm_r[-1], p, 'SS')
+        Kss = firm.get_K(Lss, p.firm_r[-1], p, 'SS')
         InvestmentPlaceholder = np.zeros(bssmat_splus1.shape)
         Iss = aggr.get_I(InvestmentPlaceholder, Kss, Kss, p, 'SS')
         Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
@@ -458,19 +467,19 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     etr_ss = tax.ETR_income(rss, wss, bssmat_s, nssmat, factor, p.e,
                             etr_params_3D, p)
 
-    taxss = tax.total_taxes(rss, wss, bssmat_s, nssmat, bqssmat, factor_ss,
-                            T_Hss, theta, None, None, False, 'SS',
-                            p.e, etr_params_3D, p)
-    cssmat = household.get_cons(rss, wss, bssmat_s, bssmat_splus1,
+    taxss = tax.total_taxes(r_hh_ss, wss, bssmat_s, nssmat, bqssmat,
+                            factor_ss, T_Hss, theta, None, None, False,
+                            'SS', p.e, etr_params_3D, p)
+    cssmat = household.get_cons(r_hh_ss, wss, bssmat_s, bssmat_splus1,
                                 nssmat, bqssmat, taxss,
                                 p.e, p.tau_c[-1, :, :], p)
     Css = aggr.get_C(cssmat, p, 'SS')
 
     (total_revenue_ss, T_Iss, T_Pss, T_BQss, T_Wss, T_Css,
      business_revenue) =\
-        aggr.revenue(rss, wss, bssmat_s, nssmat, bqssmat, cssmat, Yss,
-                     Lss, Kss, factor, theta, etr_params_3D, p, 'SS')
-    r_gov_ss = rss
+        aggr.revenue(r_hh_ss, wss, bssmat_s, nssmat, bqssmat, cssmat,
+                     Yss, Lss, Kss, factor, theta, etr_params_3D, p,
+                     'SS')
     debt_service_ss = r_gov_ss * p.debt_ratio_ss * Yss
     new_borrowing = p.debt_ratio_ss * Yss * ((1 + p.g_n_ss) *
                                              np.exp(p.g_y) - 1)
@@ -488,8 +497,8 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     if p.small_open:
         # include term for current account
         resource_constraint = (Yss + new_borrowing - (Css + BIss + Gss)
-                               + (p.ss_hh_r[-1] * Bss -
-                                  (p.delta + p.ss_firm_r[-1]) *
+                               + (p.hh_r[-1] * Bss -
+                                  (p.delta + p.firm_r[-1]) *
                                   Kss - debt_service_ss))
         print('Yss= ', Yss, '\n', 'Css= ', Css, '\n', 'Bss = ', Bss,
               '\n', 'BIss = ', BIss, '\n', 'Kss = ', Kss, '\n', 'Iss = ',
@@ -497,7 +506,7 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
               'Gss= ', Gss)
         print('D/Y:', debt_ss / Yss, 'T/Y:', T_Hss / Yss, 'G/Y:',
               Gss / Yss, 'Rev/Y:', total_revenue_ss / Yss,
-              'Int payments to GDP:', (rss * debt_ss) / Yss)
+              'Int payments to GDP:', (r_gov_ss * debt_ss) / Yss)
         print('resource constraint: ', resource_constraint)
     else:
         resource_constraint = Yss - (Css + Iss + Gss)
@@ -507,10 +516,10 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
         print('D/Y:', debt_ss / Yss, 'T/Y:', T_Hss / Yss, 'G/Y:',
               Gss / Yss, 'Rev/Y:', total_revenue_ss / Yss, 'business rev/Y: ',
               business_revenue / Yss, 'Int payments to GDP:',
-              (rss * debt_ss) / Yss)
+              (r_gov_ss * debt_ss) / Yss)
         print('Check SS budget: ', Gss - (np.exp(p.g_y) *
-                                          (1 + p.g_n_ss) - 1 - rss) *
-              debt_ss - total_revenue_ss + T_Hss)
+                                          (1 + p.g_n_ss) - 1 - r_gov_ss)
+              * debt_ss - total_revenue_ss + T_Hss)
         print('resource constraint: ', resource_constraint)
 
     if Gss < 0:
@@ -540,7 +549,8 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     '''
     output = {'Kss': Kss, 'Bss': Bss, 'Lss': Lss, 'Css': Css, 'Iss': Iss,
               'Iss_total': Iss_total, 'nssmat': nssmat, 'Yss': Yss,
-              'Dss': debt_ss, 'wss': wss, 'rss': rss, 'theta': theta,
+              'Dss': debt_ss, 'wss': wss, 'rss': rss,
+              'r_gov_ss': r_gov_ss, 'r_hh_ss': r_hh_ss, 'theta': theta,
               'BQss': BQss, 'factor_ss': factor_ss, 'bssmat_s': bssmat_s,
               'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
               'bqssmat': bqssmat, 'T_Hss': T_Hss, 'Gss': Gss,
@@ -614,8 +624,8 @@ def SS_fsolve(guesses, *args):
 
     # Solve for the steady state levels of b and n, given w, r, T_H and
     # factor
-    (euler_errors, bssmat, nssmat, new_r, new_w, new_T_H, new_Y,
-     new_factor, new_BQ, average_income_model) =\
+    (euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_hh, new_w,
+     new_T_H, new_Y, new_factor, new_BQ, average_income_model) =\
         inner_loop(outer_loop_vars, p, client)
 
     # Create list of errors in general equilibrium variables
