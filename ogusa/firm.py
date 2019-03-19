@@ -277,3 +277,33 @@ def get_K(L, r, p, method):
     print('USING firm.getK()')
 
     return K
+
+
+def get_K_from_Y(Y, r, p, method):
+    '''
+    --------------------------------------------------------------------
+    Generates vector of aggregate capital. Use with small open economy
+    option.
+    --------------------------------------------------------------------
+    Inputs:
+        L      = [T+S,] vector, aggregate labor
+        r      = [T+S,] vector, exogenous rental rate of the firm
+        params = length 3 tuple, (alpha, delta, z)
+        alpha  = scalar, capital's share of output
+        delta  = scalar, rate of depreciation of capital
+        Z      = scalar, total factor productivity
+
+    Functions called: None
+
+    Objects in function:
+        K = [T+S,] vector, aggregate capital
+
+    Returns: r
+    --------------------------------------------------------------------
+    '''
+    KLratio = get_KLratio_from_r(r, p, method)
+    LKratio = KLratio ** -1
+    YKratio = get_Y(1, LKratio, p, method)
+    K = Y / YKratio
+
+    return K
