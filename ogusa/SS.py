@@ -197,7 +197,13 @@ def inner_loop(outer_loop_vars, p, client):
 
     w = firm.get_w_from_r(r, p, 'SS')
     r_gov = fiscal.get_r_gov(r, p)
-    r_hh = household.get_r_hh(r, r_gov, p)
+    if p.budget_balance:
+        r_hh = r
+    else:
+        D = p.debt_ratio_ss * Y
+        K = firm.get_K_from_Y(Y, r, p, 'SS')
+        r_hh = aggr.get_r_hh(r, r_gov, K, D)
+        # r_hh = household.get_r_hh(r, r_gov, p)
     bq = household.get_bq(BQ, None, p, 'SS')
 
     lazy_values = []
@@ -219,15 +225,13 @@ def inner_loop(outer_loop_vars, p, client):
         bssmat[:, j] = solutions[:p.S]
         nssmat[:, j] = solutions[p.S:]
 
-    equity_holdings = household.get_equity_demand(r, r_hh, bssmat, p)
-    debt_holdings = household.get_debt_demand(r, r_hh, bssmat, p)
     L = aggr.get_L(nssmat, p, 'SS')
     if not p.small_open:
         B = aggr.get_K(bssmat, p, 'SS', False)
         if p.budget_balance:
             K = B
         else:
-            K = B - p.debt_ratio_ss * Y
+            K = B - D
     else:
         K = firm.get_K(L, r, p, 'SS')
     new_Y = firm.get_Y(K, L, p, 'SS')
@@ -243,7 +247,8 @@ def inner_loop(outer_loop_vars, p, client):
     b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
                    list(bssmat[:-1, :]))
     new_r_gov = fiscal.get_r_gov(new_r, p)
-    new_r_hh = household.get_r_hh(new_r, new_r_gov, p)
+    # new_r_hh = household.get_r_hh(new_r, new_r_gov, p)
+    new_r_hh = aggr.get_r_hh(new_r, new_r_gov, K, D)
     average_income_model = ((new_r_hh * b_s + new_w * p.e * nssmat) *
                             p.omega_SS.reshape(p.S, 1) *
                             p.lambdas.reshape(1, p.J)).sum()
@@ -419,20 +424,14 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
 
     rss = r
     r_gov_ss = fiscal.get_r_gov(rss, p)
-    r_hh_ss = household.get_r_hh(rss, r_gov_ss, p)
-    wss = new_w
-    BQss = new_BQ
-    factor_ss = factor
-    T_Hss = T_H
-    bqssmat = household.get_bq(BQss, None, p, 'SS')
-
+    if p.budget_balance:
+        r_hh_ss = rss
+        debt_ss = 0.0
+    else:
+        debt_ss = p.debt_ratio_ss * Y
     Lss = aggr.get_L(nssmat, p, 'SS')
     if not p.small_open:
         Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
-        if p.budget_balance:
-            debt_ss = 0.0
-        else:
-            debt_ss = p.debt_ratio_ss * Y
         Kss = Bss - debt_ss
         Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS')
     else:
@@ -443,10 +442,17 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
         Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
         BIss = aggr.get_I(bssmat_splus1, Bss, Bss, p, 'BI_SS')
 
-        if p.budget_balance:
-            debt_ss = 0.0
-        else:
-            debt_ss = p.debt_ratio_ss * Y
+    if p.budget_balance:
+        r_hh_ss = rss
+    else:
+        r_hh_ss = aggr.get_r_hh(rss, r_gov_ss, Kss, debt_ss)
+        # r_hh = household.get_r_hh(r, r_gov, p)
+
+    wss = new_w
+    BQss = new_BQ
+    factor_ss = factor
+    T_Hss = T_H
+    bqssmat = household.get_bq(BQss, None, p, 'SS')
 
     Yss = firm.get_Y(Kss, Lss, p, 'SS')
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
@@ -460,11 +466,11 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     mtry_params_3D = np.tile(np.reshape(
         p.mtry_params[-1, :, :], (p.S, 1, p.mtry_params.shape[2])),
                              (1, p.J, 1))
-    mtry_ss = tax.MTR_income(rss, wss, bssmat_s, nssmat, factor, True,
+    mtry_ss = tax.MTR_income(r_hh_ss, wss, bssmat_s, nssmat, factor, True,
                              p.e, etr_params_3D, mtry_params_3D, p)
-    mtrx_ss = tax.MTR_income(rss, wss, bssmat_s, nssmat, factor, False,
+    mtrx_ss = tax.MTR_income(r_hh_ss, wss, bssmat_s, nssmat, factor, False,
                              p.e, etr_params_3D, mtrx_params_3D, p)
-    etr_ss = tax.ETR_income(rss, wss, bssmat_s, nssmat, factor, p.e,
+    etr_ss = tax.ETR_income(r_hh_ss, wss, bssmat_s, nssmat, factor, p.e,
                             etr_params_3D, p)
 
     taxss = tax.total_taxes(r_hh_ss, wss, bssmat_s, nssmat, bqssmat,
