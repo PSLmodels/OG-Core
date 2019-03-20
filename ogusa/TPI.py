@@ -438,7 +438,7 @@ def run_TPI(p, client=None):
         r[:p.T] = firm.get_r(Y[:p.T], K[:p.T], p, 'TPI')
         r[p.T:] = rss
     else:
-        r = p.hh_r
+        r = p.firm_r
     # compute w
     w = np.zeros_like(r)
     w[:p.T] = firm.get_w_from_r(r[:p.T], p, 'TPI')
@@ -448,6 +448,8 @@ def run_TPI(p, client=None):
         r_hh = r
     else:
         r_hh = aggr.get_r_hh(r, r_gov, K, p.debt_ratio_ss * Y)
+    if p.small_open:
+        r_hh = p.hh_r
 
     BQ0 = aggr.get_BQ(r[0], initial_b, None, p, 'SS', True)
     if not p.use_zeta:
@@ -494,10 +496,12 @@ def run_TPI(p, client=None):
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
         r_gov[:p.T] = fiscal.get_r_gov(r[:p.T], p)
         if p.budget_balance:
-            r_hh[:p.T] = r
+            r_hh[:p.T] = r[:p.T]
         else:
             K[:p.T] = firm.get_K_from_Y(Y[:p.T], r[:p.T], p, 'TPI')
             r_hh[:p.T] = aggr.get_r_hh(r[:p.T], r_gov[:p.T], K[:p.T], D[:p.T])
+        if p.small_open:
+            r_hh[:p.T] = p.hh_r[:p.T]
 
         outer_loop_vars = (r, w, r_hh, BQ, T_H, theta)
 
@@ -586,6 +590,8 @@ def run_TPI(p, client=None):
         else:
             r_hh_new = aggr.get_r_hh(rnew, r_gov_new, K[:p.T],
                                      Dnew[:p.T])
+        if p.small_open:
+            r_hh_new = p.hh_r[:p.T]
         # compute w
         wnew = firm.get_w_from_r(rnew[:p.T], p, 'TPI')
 
@@ -684,14 +690,18 @@ def run_TPI(p, client=None):
         p.mtry_params.reshape(p.T, p.S, 1, p.mtry_params.shape[2]),
         (1, 1, p.J, 1))
 
-    mtry_path = tax.MTR_income(r_hh[:p.T], w[:p.T], bmat_s,
+    e_3D = np.tile(p.e.reshape(1, p.S, p.J), (p.T, 1, 1))
+    mtry_path = tax.MTR_income(r_hh_path[:p.T], wpath[:p.T],
+                               bmat_s[:p.T, :, :],
                                n_mat[:p.T, :, :], factor, True,
-                               p.e, etr_params_4D, mtry_params_4D, p)
-    mtrx_path = tax.MTR_income(r_hh[:p.T], w[:p.T], bmat_s,
+                               e_3D, etr_params_4D, mtry_params_4D, p)
+    mtrx_path = tax.MTR_income(r_hh_path[:p.T], wpath[:p.T],
+                               bmat_s[:p.T, :, :],
                                n_mat[:p.T, :, :], factor, False,
-                               p.e, etr_params_4D, mtrx_params_4D, p)
-    etr_path = tax.ETR_income(r_hh[:p.T], w[:p.T], bmat_s,
-                              n_mat[:p.T, :, :], factor, p.e,
+                               e_3D, etr_params_4D, mtrx_params_4D, p)
+    etr_path = tax.ETR_income(r_hh_path[:p.T], wpath[:p.T],
+                              bmat_s[:p.T, :, :],
+                              n_mat[:p.T, :, :], factor, e_3D,
                               etr_params_4D, p)
 
     C = aggr.get_C(c_mat, p, 'TPI')

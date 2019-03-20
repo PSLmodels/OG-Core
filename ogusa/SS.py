@@ -199,11 +199,14 @@ def inner_loop(outer_loop_vars, p, client):
     r_gov = fiscal.get_r_gov(r, p)
     if p.budget_balance:
         r_hh = r
+        D = 0
     else:
         D = p.debt_ratio_ss * Y
         K = firm.get_K_from_Y(Y, r, p, 'SS')
         r_hh = aggr.get_r_hh(r, r_gov, K, D)
         # r_hh = household.get_r_hh(r, r_gov, p)
+    if p.small_open:
+        r_hh = p.hh_r[-1]
     bq = household.get_bq(BQ, None, p, 'SS')
 
     lazy_values = []
@@ -247,8 +250,11 @@ def inner_loop(outer_loop_vars, p, client):
     b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
                    list(bssmat[:-1, :]))
     new_r_gov = fiscal.get_r_gov(new_r, p)
-    # new_r_hh = household.get_r_hh(new_r, new_r_gov, p)
-    new_r_hh = aggr.get_r_hh(new_r, new_r_gov, K, D)
+    if p.small_open:
+        new_r_hh = p.hh_r[-1]
+    else:
+        new_r_hh = aggr.get_r_hh(new_r, new_r_gov, K, D)
+        # new_r_hh = household.get_r_hh(new_r, new_r_gov, p)
     average_income_model = ((new_r_hh * b_s + new_w * p.e * nssmat) *
                             p.omega_SS.reshape(p.S, 1) *
                             p.lambdas.reshape(1, p.J)).sum()
@@ -352,7 +358,7 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
         if not p.baseline_spending:
             Y = T_H / p.alpha_T[-1]
     if p.small_open:
-        r = p.ss_hh_r[-1]
+        r = p.hh_r[-1]
 
     dist = 10
     iteration = 0
@@ -447,7 +453,8 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     else:
         r_hh_ss = aggr.get_r_hh(rss, r_gov_ss, Kss, debt_ss)
         # r_hh = household.get_r_hh(r, r_gov, p)
-
+    if p.small_open:
+        r_hh_ss = p.hh_r[-1]
     wss = new_w
     BQss = new_BQ
     factor_ss = factor
@@ -716,7 +723,10 @@ def run_SS(p, client=None):
     if p.baseline:
         b_guess = np.ones((p.S, p.J)) * 0.07
         n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
-        rguess = 0.09
+        if p.small_open:
+            rguess = p.firm_r[-1]
+        else:
+            rguess = 0.09
         T_Hguess = 0.12
         factorguess = 70000
         BQguess = aggr.get_BQ(rguess, b_guess, None, p, 'SS', False)
