@@ -272,7 +272,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n,
      D0) = initial_values
     guesses_b, guesses_n = guesses
-    r, w, BQ, T_H, theta = outer_loop_vars
+    r, w, r_hh, BQ, T_H, theta = outer_loop_vars
 
     # compute w
     w[:p.T] = firm.get_w_from_r(r[:p.T], p, 'TPI')
@@ -287,7 +287,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
     b_mat[0, -1], n_mat[0, -1] =\
         np.array(opt.fsolve(firstdoughnutring, [guesses_b[0, -1],
                                                 guesses_n[0, -1]],
-                            args=(r[0], w[0], bq[0, -1, j], T_H[0],
+                            args=(r_hh[0], w[0], bq[0, -1, j], T_H[0],
                                   theta * p.replacement_rate_adjust[0],
                                   factor, j, initial_b, p),
                             xtol=MINIMIZER_TOL))
@@ -316,7 +316,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
         solutions = opt.fsolve(twist_doughnut,
                                list(b_guesses_to_use) +
                                list(n_guesses_to_use),
-                               args=(r, w, bq_to_use, T_H, theta_to_use,
+                               args=(r_hh, w, bq_to_use, T_H, theta_to_use,
                                      factor, j, s, 0, tau_c_to_use,
                                      etr_params_to_use,
                                      mtrx_params_to_use,
@@ -364,7 +364,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
         [solutions, infodict, ier, message] =\
             opt.fsolve(twist_doughnut, list(b_guesses_to_use) +
                        list(n_guesses_to_use),
-                       args=(r, w, bq_to_use, T_H,
+                       args=(r_hh, w, bq_to_use, T_H,
                              theta_to_use, factor,
                              j, None, t, tau_c_to_use,
                              etr_params_to_use, mtrx_params_to_use,
@@ -395,7 +395,6 @@ def run_TPI(p, client=None):
     print('Government spending breakpoints are tG1: ', p.tG1,
           '; and tG2:', p.tG2)
 
-    TPI_FIG_DIR = p.output_base
     # Initialize guesses at time paths
     # Make array of initial guesses for labor supply and savings
     domain = np.linspace(0, p.T, p.T)
@@ -444,6 +443,11 @@ def run_TPI(p, client=None):
     w = np.zeros_like(r)
     w[:p.T] = firm.get_w_from_r(r[:p.T], p, 'TPI')
     w[p.T:] = wss
+    r_gov = fiscal.get_r_gov(r, p)
+    if p.budget_balance:
+        r_hh = r
+    else:
+        r_hh = aggr.get_r_hh(r, r_gov, K, p.debt_ratio_ss * Y)
 
     BQ0 = aggr.get_BQ(r[0], initial_b, None, p, 'SS', True)
     if not p.use_zeta:
@@ -488,7 +492,14 @@ def run_TPI(p, client=None):
 
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
-        outer_loop_vars = (r, w, BQ, T_H, theta)
+        r_gov[:p.T] = fiscal.get_r_gov(r[:p.T], p)
+        if p.budget_balance:
+            r_hh[:p.T] = r
+        else:
+            K[:p.T] = firm.get_K_from_Y(Y[:p.T], r[:p.T], p, 'TPI')
+            r_hh[:p.T] = aggr.get_r_hh(r[:p.T], r_gov[:p.T], K[:p.T], D[:p.T])
+
+        outer_loop_vars = (r, w, r_hh, BQ, T_H, theta)
 
         euler_errors = np.zeros((p.T, 2 * p.S, p.J))
         lazy_values = []
@@ -519,13 +530,13 @@ def run_TPI(p, client=None):
             p.etr_params.reshape(p.T, p.S, 1, p.etr_params.shape[2]),
             (1, 1, p.J, 1))
         bqmat = household.get_bq(BQ, None, p, 'TPI')
-        tax_mat = tax.total_taxes(r[:p.T], w[:p.T], bmat_s,
+        tax_mat = tax.total_taxes(r_hh[:p.T], w[:p.T], bmat_s,
                                   n_mat[:p.T, :, :], bqmat[:p.T, :, :],
                                   factor, T_H[:p.T], theta, 0, None,
                                   False, 'TPI', p.e, etr_params_4D, p)
-        rpath = utils.to_timepath_shape(r, p)
+        r_hh_path = utils.to_timepath_shape(r_hh, p)
         wpath = utils.to_timepath_shape(w, p)
-        c_mat = household.get_cons(rpath[:p.T, :, :], wpath[:p.T, :, :],
+        c_mat = household.get_cons(r_hh_path[:p.T, :, :], wpath[:p.T, :, :],
                                    bmat_s, bmat_splus1,
                                    n_mat[:p.T, :, :], bqmat[:p.T, :, :],
                                    tax_mat, p.e, p.tau_c[:p.T, :, :], p)
@@ -539,7 +550,7 @@ def run_TPI(p, client=None):
 
                     (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
                      T_Cpath, business_revenue) = aggr.revenue(
-                        r[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
+                        r_hh[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
                         bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y[:p.T],
                         L[:p.T], K[:p.T], factor, theta, etr_params_4D,
                         p, 'TPI')
@@ -554,8 +565,8 @@ def run_TPI(p, client=None):
                 if not p.baseline_spending:
                     G_0 = p.alpha_G[0] * Y[0]
                 dg_fixed_values = (Y, total_revenue, T_H, D_0, G_0)
-                Dnew, G = fiscal.D_G_path(r, dg_fixed_values, Gbaseline,
-                                          p)
+                Dnew, G = fiscal.D_G_path(r_gov, dg_fixed_values,
+                                          Gbaseline, p)
 
                 K[:p.T] = B[:p.T] - Dnew[:p.T]
                 if np.any(K < 0):
@@ -569,16 +580,23 @@ def run_TPI(p, client=None):
             rnew = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
         else:
             rnew = r.copy()
+        r_gov_new = fiscal.get_r_gov(rnew, p)
+        if p.budget_balance:
+            r_hh_new = rnew[:p.T]
+        else:
+            r_hh_new = aggr.get_r_hh(rnew, r_gov_new, K[:p.T],
+                                     Dnew[:p.T])
         # compute w
         wnew = firm.get_w_from_r(rnew[:p.T], p, 'TPI')
 
         b_mat_shift = np.append(np.reshape(initial_b, (1, p.S, p.J)),
                                 b_mat[:p.T - 1, :, :], axis=0)
-        BQnew = aggr.get_BQ(rnew[:p.T], b_mat_shift, None, p, 'TPI', False)
+        BQnew = aggr.get_BQ(r_hh_new[:p.T], b_mat_shift, None, p,
+                            'TPI', False)
         bqmat_new = household.get_bq(BQnew, None, p, 'TPI')
         (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath, T_Cpath,
          business_revenue) = aggr.revenue(
-                rnew[:p.T], wnew[:p.T], bmat_s, n_mat[:p.T, :, :],
+                r_hh_new[:p.T], wnew[:p.T], bmat_s, n_mat[:p.T, :, :],
                 bqmat_new[:p.T, :, :], c_mat[:p.T, :, :], Ynew[:p.T],
                 L[:p.T], K[:p.T], factor, theta, etr_params_4D, p, 'TPI')
         total_revenue = np.array(list(total_rev) +
@@ -600,7 +618,7 @@ def run_TPI(p, client=None):
             if not p.baseline_spending:
                 G_0 = p.alpha_G[0] * Ynew[0]
             dg_fixed_values = (Ynew, total_revenue, T_H, D_0, G_0)
-            Dnew, G = fiscal.D_G_path(r, dg_fixed_values, Gbaseline, p)
+            Dnew, G = fiscal.D_G_path(r_gov_new, dg_fixed_values, Gbaseline, p)
 
         if p.budget_balance:
             Dnew = D
@@ -665,24 +683,17 @@ def run_TPI(p, client=None):
     mtry_params_4D = np.tile(
         p.mtry_params.reshape(p.T, p.S, 1, p.mtry_params.shape[2]),
         (1, 1, p.J, 1))
-    mtry_path = tax.MTR_income(rss, wss, bmat_s, nssmat, factor, True,
+
+    mtry_path = tax.MTR_income(r_hh[:p.T], w[:p.T], bmat_s,
+                               n_mat[:p.T, :, :], factor, True,
                                p.e, etr_params_4D, mtry_params_4D, p)
-    mtrx_path = tax.MTR_income(rss, wss, bmat_s, nssmat, factor, False,
+    mtrx_path = tax.MTR_income(r_hh[:p.T], w[:p.T], bmat_s,
+                               n_mat[:p.T, :, :], factor, False,
                                p.e, etr_params_4D, mtrx_params_4D, p)
-    etr_path = tax.ETR_income(rss, wss, bmat_s, nssmat, factor, p.e,
+    etr_path = tax.ETR_income(r_hh[:p.T], w[:p.T], bmat_s,
+                              n_mat[:p.T, :, :], factor, p.e,
                               etr_params_4D, p)
-    # tax_path = tax.total_taxes(r[:p.T], w[:p.T], bmat_s,
-    #                            n_mat[:p.T, :, :], bqmat_new[:p.T, :, :],
-    #                            factor, T_H[:p.T], theta, 0, None, False,
-    #                            'TPI', p.e, etr_params_4D, p)
-    # tax_path = tax_mat
-    # rpath = utils.to_timepath_shape(r, p)
-    # wpath = utils.to_timepath_shape(w, p)
-    # c_path = household.get_cons(rpath[:p.T, :, :], wpath[:p.T, :, :],
-    #                             bmat_s, bmat_splus1, n_mat[:p.T, :, :],
-    #                             bqmat_new[:p.T, :, :], tax_path, p.e,
-    #                             p.tau_c[:p.T, :, :], p)
-    # c_path = c_mat
+
     C = aggr.get_C(c_mat, p, 'TPI')
 
     if not p.small_open:
@@ -729,8 +740,8 @@ def run_TPI(p, client=None):
               'business_revenue': business_revenue,
               'IITpayroll_revenue': T_Ipath, 'T_H': T_H,
               'T_P': T_Ppath, 'T_BQ': T_BQpath, 'T_W': T_Wpath,
-              'T_C': T_Cpath, 'G': G, 'D': D, 'r': r, 'w': w,
-              'bmat_splus1': bmat_splus1,
+              'T_C': T_Cpath, 'G': G, 'D': D, 'r': r, 'r_gov': r_gov,
+              'r_hh': r_hh, 'w': w, 'bmat_splus1': bmat_splus1,
               'bmat_s': bmat_s[:p.T, :, :], 'n_mat': n_mat[:p.T, :, :],
               'c_path': c_mat, 'bq_path': bqmat,
               'tax_path': tax_mat, 'eul_savings': eul_savings,
