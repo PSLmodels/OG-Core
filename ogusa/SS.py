@@ -719,7 +719,7 @@ def run_SS(p, client=None):
     # are close to some steady state values.
     if p.baseline:
         b_guess = np.ones((p.S, p.J)) * 0.07
-        n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
+        n_guess = np.ones((p.S, p.J)) * .6 * p.ltilde
         if p.small_open:
             rguess = p.firm_r[-1]
         else:
