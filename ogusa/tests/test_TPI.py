@@ -135,7 +135,7 @@ def test_inner_loop():
     wss = firm.get_w_from_r(r[-1], p, 'SS')
     w = np.ones(p.T + p.S) * wss
     w[:p.T] = firm.get_w_from_r(r[:p.T], p, 'TPI')
-    outer_loop_vars_in = (r, w, BQ, T_H, theta)
+    outer_loop_vars_in = (r, w, r, BQ, T_H, theta)
 
     guesses = (guesses[0], guesses[1])
     test_tuple = TPI.inner_loop(guesses, outer_loop_vars_in,
@@ -239,6 +239,7 @@ def test_run_TPI():
                                        test_dict['business_revenue'])
     del test_dict['T_P'], test_dict['T_BQ'], test_dict['T_W']
     del test_dict['resource_constraint_error'], test_dict['T_C']
+    del test_dict['r_gov'], test_dict['r_hh']
 
     for k, v in expected_dict.items():
         try:

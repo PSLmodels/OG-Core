@@ -43,9 +43,9 @@ p1.mtry_params = np.transpose(mtry_params.reshape(
     p1.S, 1, mtry_params.shape[-1]), (1, 0, 2))
 p1.maxiter, p1.mindist_SS = iterative_params
 p1.chi_b, p1.chi_n = chi_params
-p1.small_open, ss_firm_r, ss_hh_r = small_open_params
-p1.ss_firm_r = np.ones(p1.T + p1.S) * ss_firm_r
-p1.ss_hh_r = np.ones(p1.T + p1.S) * ss_hh_r
+p1.small_open, firm_r, hh_r = small_open_params
+p1.firm_r = np.ones(p1.T + p1.S) * firm_r
+p1.hh_r = np.ones(p1.T + p1.S) * hh_r
 p1.num_workers = 1
 BQ1 = np.ones((p1.J)) * 0.00019646295986015257
 guesses1 = [guesses_in[0]] + list(BQ1) + [guesses_in[1]] + [guesses_in[2]]
@@ -92,9 +92,9 @@ p2.mtry_params = np.transpose(mtry_params.reshape(
     p2.S, 1, mtry_params.shape[-1]), (1, 0, 2))
 p2.maxiter, p2.mindist_SS = iterative_params
 p2.chi_b, p2.chi_n = chi_params
-p2.small_open, ss_firm_r, ss_hh_r = small_open_params
-p2.ss_firm_r = np.ones(p2.T + p2.S) * ss_firm_r
-p2.ss_hh_r = np.ones(p2.T + p2.S) * ss_hh_r
+p2.small_open, firm_r, hh_r = small_open_params
+p2.firm_r = np.ones(p2.T + p2.S) * firm_r
+p2.hh_r = np.ones(p2.T + p2.S) * hh_r
 p2.num_workers = 1
 BQ2 = np.ones((p2.J)) * 0.00019646295986015257
 guesses2 = [guesses_in2[0]] + list(BQ2) + [guesses_in2[1]]
@@ -144,9 +144,9 @@ p3.mtry_params = np.transpose(mtry_params.reshape(
     p3.S, 1, mtry_params.shape[-1]), (1, 0, 2))
 p3.maxiter, p3.mindist_SS = iterative_params
 p3.chi_b, p3.chi_n = chi_params
-p3.small_open, ss_firm_r, ss_hh_r = small_open_params
-p3.ss_firm_r = np.ones(p3.T + p3.S) * ss_firm_r
-p3.ss_hh_r = np.ones(p3.T + p3.S) * ss_hh_r
+p3.small_open, firm_r, hh_r = small_open_params
+p3.firm_r = np.ones(p3.T + p3.S) * firm_r
+p3.hh_r = np.ones(p3.T + p3.S) * hh_r
 p3.num_workers = 1
 BQ3 = np.ones((p3.J)) * 0.00019646295986015257
 guesses3 = [guesses_in3[0]] + list(BQ3) + [guesses_in3[1]]
@@ -212,9 +212,9 @@ def test_SS_solver():
         p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
     p.maxiter, p.mindist_SS = iterative_params
     p.chi_b, p.chi_n = chi_params
-    p.small_open, ss_firm_r, ss_hh_r = small_open_params
-    p.ss_firm_r = np.ones(p.T + p.S) * ss_firm_r
-    p.ss_hh_r = np.ones(p.T + p.S) * ss_hh_r
+    p.small_open, firm_r, hh_r = small_open_params
+    p.firm_r = np.ones(p.T + p.S) * firm_r
+    p.hh_r = np.ones(p.T + p.S) * hh_r
     p.num_workers = 1
 
     expected_dict = utils.safe_read_pickle(
@@ -276,13 +276,18 @@ def test_inner_loop():
     p.mtry_params = np.transpose(mtry_params.reshape(
         p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
     p.chi_b, p.chi_n = chi_params
-    p.small_open, ss_firm_r, ss_hh_r = small_open_params
-    p.ss_firm_r = np.ones(p.T + p.S) * ss_firm_r
-    p.ss_hh_r = np.ones(p.T + p.S) * ss_hh_r
+    p.small_open, firm_r, hh_r = small_open_params
+    p.firm_r = np.ones(p.T + p.S) * firm_r
+    p.hh_r = np.ones(p.T + p.S) * hh_r
     p.num_workers = 1
     BQ = np.ones(p.J) * 0.00019646295986015257
     outer_loop_vars = (bssmat, nssmat, r, BQ, Y, T_H, factor)
-    test_tuple = SS.inner_loop(outer_loop_vars, p, None)
+    (euler_errors, new_bmat, new_nmat, new_r, new_r_gov, new_r_hh,
+     new_w, new_T_H, new_Y, new_factor, new_BQ,
+     average_income_model) = SS.inner_loop(outer_loop_vars, p, None)
+    test_tuple = (euler_errors, new_bmat, new_nmat, new_r, new_w,
+                  new_T_H, new_Y, new_factor, new_BQ,
+                  average_income_model)
 
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data/inner_loop_outputs.pkl'))
@@ -423,9 +428,9 @@ def test_run_SS(input_path, expected_path):
         p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
     p.maxiter, p.mindist_SS = iterative_params
     p.chi_b, p.chi_n = chi_params
-    p.small_open, ss_firm_r, ss_hh_r = small_open_params
-    p.ss_firm_r = np.ones(p.T + p.S) * ss_firm_r
-    p.ss_hh_r = np.ones(p.T + p.S) * ss_hh_r
+    p.small_open, firm_r, hh_r = small_open_params
+    p.firm_r = np.ones(p.T + p.S) * firm_r
+    p.hh_r = np.ones(p.T + p.S) * hh_r
     p.num_workers = 1
     test_dict = SS.run_SS(p, None)
 
@@ -439,6 +444,7 @@ def test_run_SS(input_path, expected_path):
                                        test_dict['business_revenue'])
     del test_dict['T_Pss'], test_dict['T_BQss'], test_dict['T_Wss']
     del test_dict['resource_constraint_error'], test_dict['T_Css']
+    del test_dict['r_gov_ss'], test_dict['r_hh_ss']
     test_dict['revenue_ss'] = test_dict.pop('total_revenue_ss')
 
     for k, v in expected_dict.items():
