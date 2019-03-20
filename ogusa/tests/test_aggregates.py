@@ -291,3 +291,21 @@ def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p,
         r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p, method)
 
     assert(np.allclose(revenue, expected))
+
+
+test_data = [(0.04, 0.02, 2.0, 4.0, 0.026666667),
+             (np.array([0.05, 0.03]), np.array([0.02, 0.01]),
+              np.array([3.0, 4.0]), np.array([7.0, 6.0]),
+              np.array([0.029, 0.018])),
+             (0.04, 0.02, 2.0, 0.0, 0.04)]
+
+
+@pytest.mark.parametrize('r,r_gov,K,D,expected', test_data,
+                         ids=['scalar', 'vector', 'no debt'])
+def test_get_r_hh(r, r_gov, K, D, expected):
+    """
+    Test function to compute interet rate on household portfolio.
+    """
+    r_hh_test = aggr.get_r_hh(r, r_gov, K, D)
+
+    assert(np.allclose(r_hh_test, expected))
