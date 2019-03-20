@@ -204,7 +204,6 @@ def inner_loop(outer_loop_vars, p, client):
         D = p.debt_ratio_ss * Y
         K = firm.get_K_from_Y(Y, r, p, 'SS')
         r_hh = aggr.get_r_hh(r, r_gov, K, D)
-        # r_hh = household.get_r_hh(r, r_gov, p)
     if p.small_open:
         r_hh = p.hh_r[-1]
     bq = household.get_bq(BQ, None, p, 'SS')
@@ -254,7 +253,6 @@ def inner_loop(outer_loop_vars, p, client):
         new_r_hh = p.hh_r[-1]
     else:
         new_r_hh = aggr.get_r_hh(new_r, new_r_gov, K, D)
-        # new_r_hh = household.get_r_hh(new_r, new_r_gov, p)
     average_income_model = ((new_r_hh * b_s + new_w * p.e * nssmat) *
                             p.omega_SS.reshape(p.S, 1) *
                             p.lambdas.reshape(1, p.J)).sum()
@@ -452,7 +450,6 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
         r_hh_ss = rss
     else:
         r_hh_ss = aggr.get_r_hh(rss, r_gov_ss, Kss, debt_ss)
-        # r_hh = household.get_r_hh(r, r_gov, p)
     if p.small_open:
         r_hh_ss = p.hh_r[-1]
     wss = new_w

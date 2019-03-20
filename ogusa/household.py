@@ -406,40 +406,6 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, T_H, theta, chi_n, e,
     return FOC_error
 
 
-def get_equity_demand(r, r_hh, b, p):
-    '''
-    Uses CES function for portfolio problem to determine demand for
-    equity holdings from the household.
-    '''
-    equity_demand = (((1 + r) / (1 + r_hh)) ** p.epsilon_s *
-                     (1 - p.gamma_s) * b)
-
-    return equity_demand
-
-
-def get_debt_demand(r_gov, r_hh, b, p):
-    '''
-    Uses CES function for portfolio problem to determine demand for
-    debt holdings from the household.
-    '''
-    debt_demand = (((1 + r_gov) / (1 + r_hh)) ** p.epsilon_s *
-                   p.gamma_s * b)
-
-    return debt_demand
-
-
-def get_r_hh(r, r_gov, p):
-    '''
-    Determine the interest rate on the household portfolio that is
-    comprised of government debt and equity holdings.
-    '''
-    r_hh = (((p.gamma_s * (1 + r_gov) ** (p.epislon_s + 1)) +
-            ((1 - p.gamma_s) * (1 + r_gov) ** (p.epislon_s + 1))) **
-            (1 / (p.epsilon_s + 1)) - 1)
-
-    return r_hh
-
-
 def constraint_checker_SS(bssmat, nssmat, cssmat, ltilde):
     '''
     Checks constraints on consumption, savings, and labor supply in the
