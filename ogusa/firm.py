@@ -274,8 +274,6 @@ def get_K(L, r, p, method):
     KLratio = get_KLratio_from_r(r, p, method)
     K = KLratio * L
 
-    print('USING firm.getK()')
-
     return K
 
 
