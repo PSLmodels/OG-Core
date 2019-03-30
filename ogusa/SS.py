@@ -519,7 +519,9 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     Iss_total = p.delta * Kss
 
     # solve resource constraint
-    resource_constraint = (Yss - (Css + K_d_Iss + Gss + (r + p.delta) * K_f_ss))
+    # net foreign borrowing
+    f_borrow = D_f_ss * (np.exp(p.g_y) * (1 + p.g_n_ss) - 1 - r_gov_ss)
+    resource_constraint = (Yss - (Css + K_d_Iss + Gss + (r + p.delta) * K_f_ss) - f_borrow)
     if p.small_open:
         # include term for current account
         # resource_constraint = (Yss + new_borrowing - (Css + BIss + Gss)
