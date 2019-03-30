@@ -228,14 +228,20 @@ def inner_loop(outer_loop_vars, p, client):
         nssmat[:, j] = solutions[p.S:]
 
     L = aggr.get_L(nssmat, p, 'SS')
+    B = aggr.get_K(bssmat, p, 'SS', False)
+    K_demand = firm.get_K(L, r, p, 'SS')
+    D_f = p.zeta_D * D
+    D_d = D - D_f
     if not p.small_open:
-        B = aggr.get_K(bssmat, p, 'SS', False)
-        if p.budget_balance:
-            K = B
-        else:
-            K = B - D
+        K_d = B - D_d
+        K_f = p.zeta_K * (K_demand - B + D_d)
+        K = K_f + K_d
     else:
-        K = firm.get_K(L, r, p, 'SS')
+        # can remove this else statement by making small open the case where zeta_K = 1
+        K_d = B - D_d
+        K_f = K_demand - B + D_d
+        K = K_f + K_d
+    print('Capital market clearing as solve model = ', K - K_demand)
     new_Y = firm.get_Y(K, L, p, 'SS')
     if p.budget_balance:
         Y = new_Y
@@ -434,17 +440,26 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     else:
         debt_ss = p.debt_ratio_ss * Y
     Lss = aggr.get_L(nssmat, p, 'SS')
+    Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
+    K_demand_ss = firm.get_K(Lss, rss, p, 'SS')
+    D_f_ss = p.zeta_D * debt_ss
+    D_d_ss = debt_ss - D_f_ss
     if not p.small_open:
-        Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
-        Kss = Bss - debt_ss
-        Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS')
+        K_d_ss = Bss - D_d_ss
+        K_f_ss = p.zeta_K * (K_demand_ss - Bss + D_d_ss)
+        Kss = K_f_ss + K_d_ss
+        K_d_Iss = aggr.get_I(bssmat_splus1 * (K_d_ss / Bss), K_d_ss, K_d_ss, p, 'SS') # scaling bssmat to account for fraction household portfolio that is debt not capital
+        Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS') ## Check this
     else:
         # Compute capital (K) and wealth (B) separately
-        Kss = firm.get_K(Lss, p.firm_r[-1], p, 'SS')
+        K_d_ss = Bss - D_d_ss
+        K_f_ss = K_demand_ss - Bss + D_d_ss
+        Kss = K_f_ss + K_d_ss
+        # Kss = firm.get_K(Lss, p.firm_r[-1], p, 'SS')
         InvestmentPlaceholder = np.zeros(bssmat_splus1.shape)
         Iss = aggr.get_I(InvestmentPlaceholder, Kss, Kss, p, 'SS')
-        Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
         BIss = aggr.get_I(bssmat_splus1, Bss, Bss, p, 'BI_SS')
+        K_d_Iss = aggr.get_I(bssmat_splus1 * (K_d_ss / Bss), K_d_ss, K_d_ss, p, 'SS') # scaling bssmat to account for fraction household portfolio that is debt not capital
 
     if p.budget_balance:
         r_hh_ss = rss
@@ -504,12 +519,13 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     Iss_total = p.delta * Kss
 
     # solve resource constraint
+    resource_constraint = (Yss - (Css + K_d_Iss + Gss + (r + p.delta) * K_f_ss))
     if p.small_open:
         # include term for current account
-        resource_constraint = (Yss + new_borrowing - (Css + BIss + Gss)
-                               + (p.hh_r[-1] * Bss -
-                                  (p.delta + p.firm_r[-1]) *
-                                  Kss - debt_service_ss))
+        # resource_constraint = (Yss + new_borrowing - (Css + BIss + Gss)
+        #                        + (p.hh_r[-1] * Bss -
+        #                           (p.delta + p.firm_r[-1]) *
+        #                           Kss - debt_service_ss))
         print('Yss= ', Yss, '\n', 'Css= ', Css, '\n', 'Bss = ', Bss,
               '\n', 'BIss = ', BIss, '\n', 'Kss = ', Kss, '\n', 'Iss = ',
               Iss, '\n', 'Lss = ', Lss, '\n', 'T_H = ', T_H, '\n',
@@ -519,7 +535,7 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
               'Int payments to GDP:', (r_gov_ss * debt_ss) / Yss)
         print('resource constraint: ', resource_constraint)
     else:
-        resource_constraint = Yss - (Css + Iss + Gss)
+        # resource_constraint = Yss - (Css + Iss + Gss)
         print('Yss= ', Yss, '\n', 'Gss= ', Gss, '\n', 'Css= ', Css, '\n',
               'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss,
               '\n', 'Debt service = ', debt_service_ss)
