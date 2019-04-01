@@ -336,3 +336,14 @@ def get_r_hh(r, r_gov, K, D):
     r_hh = ((r * K) + (r_gov * D)) / (K + D)
 
     return r_hh
+
+
+def resource_constraint(Y, C, G, I, K_f, new_borrowing_f,
+                        debt_service_f, r, p):
+    '''
+    Compute the error in the resource constraint
+    '''
+    rc_error = (Y - C - I - G - (r + p.delta) * K_f + new_borrowing_f -
+                debt_service_f)
+
+    return rc_error
