@@ -445,16 +445,22 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     D_f_ss = p.zeta_D * debt_ss
     D_d_ss = debt_ss - D_f_ss
     K_d_ss = Bss - D_d_ss
-    K_f_ss = p.zeta_K * (K_demand_ss - Bss + D_d_ss)
-    Kss = K_f_ss + K_d_ss
-    I_d_ss = aggr.get_I(bssmat_splus1 * (K_d_ss / Bss), K_d_ss, K_d_ss,
-                        p, 'SS') # scaling bssmat to account for fraction household portfolio that is debt not capital
     if not p.small_open:
+        K_f_ss = p.zeta_K * (K_demand_ss - Bss + D_d_ss)
+        Kss = K_f_ss + K_d_ss
+        I_d_ss = aggr.get_I(bssmat_splus1 * (K_d_ss / Bss), K_d_ss, K_d_ss, p, 'SS') # scaling bssmat to account for fraction household portfolio that is debt not capital
         Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS') ## Check this
     else:
+        # Compute capital (K) and wealth (B) separately
+        K_d_ss = Bss - D_d_ss
+        K_f_ss = K_demand_ss - Bss + D_d_ss
+        Kss = K_f_ss + K_d_ss
+        # Kss = firm.get_K(Lss, p.firm_r[-1], p, 'SS')
         InvestmentPlaceholder = np.zeros(bssmat_splus1.shape)
         Iss = aggr.get_I(InvestmentPlaceholder, Kss, Kss, p, 'SS')
         BIss = aggr.get_I(bssmat_splus1, Bss, Bss, p, 'BI_SS')
+        I_d_ss = aggr.get_I(bssmat_splus1 * (K_d_ss / Bss), K_d_ss, K_d_ss, p, 'SS') # scaling bssmat to account for fraction household portfolio that is debt not capital
+
     if p.budget_balance:
         r_hh_ss = rss
     else:
@@ -511,17 +517,15 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
         print('G components = ', new_borrowing, T_Hss, debt_service_ss)
 
     # Compute total investment (not just domestic)
-    Iss_total = Kss * ((np.exp(p.g_y) * (1 + p.g_n_ss) - 1 + p.delta))
+    Iss_total = p.delta * Kss
 
     # solve resource constraint
     # net foreign borrowing
-    f_borrow = D_f_ss * (np.exp(p.g_y) * (1 + p.g_n_ss) - 1 - r_gov_ss)
-    RC = (Yss - (Css + I_d_ss + Gss + (r + p.delta) * K_f_ss) - f_borrow)
-    # new_borrowing_f = D_f_ss * (np.exp(p.g_y) * (1 + p.g_n_ss) - 1)
-    # debt_service_f = D_f_ss * r_gov_ss
-    # RC = aggr.resource_constraint(Yss, Css, Gss, I_d_ss, K_f_ss,
-    #                               new_borrowing_f, debt_service_f, rss,
-    #                               p)
+    new_borrowing_f = D_f_ss * (np.exp(p.g_y) * (1 + p.g_n_ss) - 1)
+    debt_service_f = D_f_ss * r_gov_ss
+    RC = aggr.resource_constraint(Yss, Css, Gss, I_d_ss, K_f_ss,
+                                  new_borrowing_f, debt_service_f, rss,
+                                  p)
     print('resource constraint: ', RC)
 
     if Gss < 0:
