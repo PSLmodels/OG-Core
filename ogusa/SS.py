@@ -444,23 +444,16 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     K_demand_ss = firm.get_K(Lss, rss, p, 'SS')
     D_f_ss = p.zeta_D * debt_ss
     D_d_ss = debt_ss - D_f_ss
+    K_d_ss = Bss - D_d_ss
+    K_f_ss = p.zeta_K * (K_demand_ss - Bss + D_d_ss)
+    Kss = K_f_ss + K_d_ss
+    K_d_Iss = aggr.get_I(bssmat_splus1 * (K_d_ss / Bss), K_d_ss, K_d_ss, p, 'SS') # scaling bssmat to account for fraction household portfolio that is debt not capital
     if not p.small_open:
-        K_d_ss = Bss - D_d_ss
-        K_f_ss = p.zeta_K * (K_demand_ss - Bss + D_d_ss)
-        Kss = K_f_ss + K_d_ss
-        K_d_Iss = aggr.get_I(bssmat_splus1 * (K_d_ss / Bss), K_d_ss, K_d_ss, p, 'SS') # scaling bssmat to account for fraction household portfolio that is debt not capital
         Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS') ## Check this
     else:
-        # Compute capital (K) and wealth (B) separately
-        K_d_ss = Bss - D_d_ss
-        K_f_ss = K_demand_ss - Bss + D_d_ss
-        Kss = K_f_ss + K_d_ss
-        # Kss = firm.get_K(Lss, p.firm_r[-1], p, 'SS')
         InvestmentPlaceholder = np.zeros(bssmat_splus1.shape)
         Iss = aggr.get_I(InvestmentPlaceholder, Kss, Kss, p, 'SS')
         BIss = aggr.get_I(bssmat_splus1, Bss, Bss, p, 'BI_SS')
-        K_d_Iss = aggr.get_I(bssmat_splus1 * (K_d_ss / Bss), K_d_ss, K_d_ss, p, 'SS') # scaling bssmat to account for fraction household portfolio that is debt not capital
-
     if p.budget_balance:
         r_hh_ss = rss
     else:
