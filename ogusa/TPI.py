@@ -560,12 +560,19 @@ def run_TPI(p, client=None):
         dg_fixed_values = (Y, total_revenue, T_H, D_0, G_0)
         Dnew, G = fiscal.D_G_path(r_gov, dg_fixed_values,
                                   Gbaseline, p)
+        # Initialize foreing debt holdings array
+        D_f = p.zeta_D * Dnew
+        D_f[0] = p.inital_foreign_debt_ratio * Dnew[0]
 
         L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
         B[1:p.T] = aggr.get_K(bmat_splus1[:p.T], p, 'TPI',
                               False)[:p.T - 1]
         K_demand = firm.get_K(L[:p.T], p.firm_r[:p.T], p, 'TPI')
-        D_f = p.zeta_D * Dnew
+        D_f[1:p.T+1] = (
+            D_f[:p.T] / (np.exp(p.g_y) * (1 + p.g_n[1:p.T]))
+            + p.zeta_D * (Dnew[1:p.T+1] - (D[:p.T] /
+                                           (np.exp(p.g_y) *
+                                            (1 + p.g_n[1:p.T])))))
         D_d = D - D_f
         K_d = B - D_d
         if np.any(K_d < 0):
