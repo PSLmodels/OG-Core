@@ -564,7 +564,7 @@ def run_TPI(p, client=None):
                                   Gbaseline, p)
         # Initialize foreing debt holdings array
         D_f = p.zeta_D * Dnew
-        D_f[0] = p.inital_foreign_debt_ratio * Dnew[0]
+        D_f[0] = p.initial_foreign_debt_ratio * Dnew[0]
 
         L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
         B[1:p.T] = aggr.get_K(bmat_splus1[:p.T], p, 'TPI',

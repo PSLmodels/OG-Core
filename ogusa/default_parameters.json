@@ -319,7 +319,7 @@
         "out_of_range_action": "stop",
         "compatible_data": {"puf": true, "cps": true}
     },
-    "inital_foreign_debt_ratio":{
+    "initial_foreign_debt_ratio":{
       "long_name": "Share of government debt held by foreigners in model start year",
       "description": "Share of government debt held by foreigners in model start year",
       "notes": "",
