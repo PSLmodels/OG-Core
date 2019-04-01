@@ -523,13 +523,6 @@ def run_TPI(p, client=None):
         bmat_splus1 = np.zeros((p.T, p.S, p.J))
         bmat_splus1[:, :, :] = b_mat[:p.T, :, :]
 
-        L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
-        B[1:p.T] = aggr.get_K(bmat_splus1[:p.T], p, 'TPI',
-                              False)[:p.T - 1]
-        if np.any(B) < 0:
-            print('B has negative elements. B[0:9]:', B[0:9])
-            print('B[T-2:T]:', B[p.T - 2, p.T])
-
         etr_params_4D = np.tile(
             p.etr_params.reshape(p.T, p.S, 1, p.etr_params.shape[2]),
             (1, 1, p.J, 1))
@@ -545,40 +538,47 @@ def run_TPI(p, client=None):
                                    n_mat[:p.T, :, :], bqmat[:p.T, :, :],
                                    tax_mat, p.e, p.tau_c[:p.T, :, :], p)
 
-        if not p.small_open:
-            if p.budget_balance:
-                K[:p.T] = B[:p.T]
-            else:
-                if not p.baseline_spending:
-                    Y = T_H / p.alpha_T  # maybe unecessary
+        if not p.baseline_spending:
+            Y = T_H / p.alpha_T  # maybe unecessary
 
-                    (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
-                     T_Cpath, business_revenue) = aggr.revenue(
-                        r_hh[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
-                        bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y[:p.T],
-                        L[:p.T], K[:p.T], factor, theta, etr_params_4D,
-                        p, 'TPI')
-                    total_revenue = np.array(list(total_rev) +
-                                             [total_revenue_ss] * p.S)
+            (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
+             T_Cpath, business_revenue) = aggr.revenue(
+                r_hh[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
+                bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y[:p.T],
+                L[:p.T], K[:p.T], factor, theta, etr_params_4D,
+                p, 'TPI')
+            total_revenue = np.array(list(total_rev) +
+                                     [total_revenue_ss] * p.S)
 
-                # set intial debt value
-                if p.baseline:
-                    D_0 = p.initial_debt_ratio * Y[0]
-                else:
-                    D_0 = D0
-                if not p.baseline_spending:
-                    G_0 = p.alpha_G[0] * Y[0]
-                dg_fixed_values = (Y, total_revenue, T_H, D_0, G_0)
-                Dnew, G = fiscal.D_G_path(r_gov, dg_fixed_values,
-                                          Gbaseline, p)
-
-                K[:p.T] = B[:p.T] - Dnew[:p.T]
-                if np.any(K < 0):
-                    print('K has negative elements. Setting them ' +
-                          'positive to prevent NAN.')
-                    K[:p.T] = np.fmax(K[:p.T], 0.05 * B[:p.T])
+        # set intial debt value
+        if p.baseline:
+            D_0 = p.initial_debt_ratio * Y[0]
         else:
-            K[:p.T] = firm.get_K(L[:p.T], p.firm_r[:p.T], p, 'TPI')
+            D_0 = D0
+        if not p.baseline_spending:
+            G_0 = p.alpha_G[0] * Y[0]
+        dg_fixed_values = (Y, total_revenue, T_H, D_0, G_0)
+        Dnew, G = fiscal.D_G_path(r_gov, dg_fixed_values,
+                                  Gbaseline, p)
+
+        L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
+        B[1:p.T] = aggr.get_K(bmat_splus1[:p.T], p, 'TPI',
+                              False)[:p.T - 1]
+        K_demand = firm.get_K(L[:p.T], p.firm_r[:p.T], p, 'TPI')
+        D_f = p.zeta_D * Dnew
+        D_d = D - D_f
+        K_d = B - D_d
+        if np.any(K_d < 0):
+            print('K_d has negative elements. Setting them ' +
+                  'positive to prevent NAN.')
+            K_d[:p.T] = np.fmax(K_d[:p.T], 0.05 * B[:p.T])
+        K_f = p.zeta_K * (K_demand - B + D_d)
+        K = K_f + K_d
+        if np.any(B) < 0:
+            print('B has negative elements. B[0:9]:', B[0:9])
+            print('B[T-2:T]:', B[p.T - 2, p.T])
+        if p.small_open:
+            K[:p.T] = K_demand
         Ynew = firm.get_Y(K[:p.T], L[:p.T], p, 'TPI')
         if not p.small_open:
             rnew = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
@@ -706,9 +706,11 @@ def run_TPI(p, client=None):
 
     C = aggr.get_C(c_mat, p, 'TPI')
 
+    K_d_I = aggr.get_I(bmat_splus1 * (K_d[:p.T] / B[:p.T]),
+                       K_d[1:p.T + 1], K_d[:p.T], p, 'TPI')
     if not p.small_open:
         I = aggr.get_I(bmat_splus1[:p.T], K[1:p.T + 1], K[:p.T], p, 'TPI')
-        rc_error = Y[:p.T] - C[:p.T] - I[:p.T] - G[:p.T]
+        rc_error = Y[:p.T] - C[:p.T] - K_d_I[:p.T] - G[:p.T]
     else:
         I = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))) *
              np.exp(p.g_y) * K[1:p.T + 1] - (1.0 - p.delta) * K[:p.T])
