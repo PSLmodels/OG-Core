@@ -537,6 +537,8 @@ def run_TPI(p, client=None):
                                    bmat_s, bmat_splus1,
                                    n_mat[:p.T, :, :], bqmat[:p.T, :, :],
                                    tax_mat, p.e, p.tau_c[:p.T, :, :], p)
+        y_before_tax_mat = (r_hh_path[:p.T, :, :] * bmat_s[:p.T, :, :] +
+                            wpath[:p.T, :, :] * p.e * n_mat[:p.T, :, :])
 
         if not p.baseline_spending:
             Y = T_H / p.alpha_T  # maybe unecessary
@@ -713,28 +715,25 @@ def run_TPI(p, client=None):
 
     C = aggr.get_C(c_mat, p, 'TPI')
 
-    K_d_I = aggr.get_I(bmat_splus1 * (K_d[:p.T] / B[:p.T]),
-                       K_d[1:p.T + 1], K_d[:p.T], p, 'TPI')
-    if not p.small_open:
-        I = aggr.get_I(bmat_splus1[:p.T], K[1:p.T + 1], K[:p.T], p, 'TPI')
-        rc_error = Y[:p.T] - C[:p.T] - K_d_I[:p.T] - G[:p.T]
-    else:
-        I = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))) *
-             np.exp(p.g_y) * K[1:p.T + 1] - (1.0 - p.delta) * K[:p.T])
-        BI = aggr.get_I(bmat_splus1[:p.T], B[1:p.T + 1], B[:p.T], p, 'TPI')
-        new_borrowing = (D[1:p.T] * (1 + p.g_n[1:p.T]) *
-                         np.exp(p.g_y) - D[:p.T - 1])
-        rc_error = (Y[:p.T - 1] + new_borrowing - (
-            C[:p.T - 1] + BI[:p.T - 1] + G[:p.T - 1]) +
-                    (p.hh_r[:p.T - 1] * B[:p.T - 1] - (
-                        p.delta + p.firm_r[:p.T - 1]) * K[:p.T - 1] -
-                     p.hh_r[:p.T - 1] * D[:p.T - 1]))
-
+    I_d = aggr.get_I(bmat_splus1[:p.T] * (K_d[:p.T] / B[:p.T]),
+                     K_d[1:p.T + 1], K_d[:p.T], p, 'TPI')
+    I = aggr.get_I(bmat_splus1[:p.T] * (K_d[:p.T] / B[:p.T]),
+                   K[1:p.T + 1], K[:p.T], p, 'TPI')
+    # solve resource constraint
+    # net foreign borrowing
+    new_borrowing_f = D_f * (np.exp(p.g_y) * (1 + p.g_n[1:p.T + 1]) - 1)
+    debt_service_f = D_f * r_gov
+    RC_error = aggr.resource_constraint(Y[:p.T - 1], C[:p.T - 1],
+                                        G[:p.T - 1], I_d[:p.T - 1],
+                                        K_f[:p.T - 1],
+                                        new_borrowing_f[:p.T - 1],
+                                        debt_service_f[:p.T - 1],
+                                        r[:p.T - 1], p)
     # Compute total investment (not just domestic)
     I_total = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
                (1.0 - p.delta) * K[:p.T])
 
-    rce_max = np.amax(np.abs(rc_error))
+    rce_max = np.amax(np.abs(RC_error))
     print('Max absolute value resource constraint error:', rce_max)
 
     print('Checking time path for violations of constraints.')
@@ -754,18 +753,24 @@ def run_TPI(p, client=None):
     ------------------------------------------------------------------------
     '''
 
-    output = {'Y': Y[:p.T], 'B': B, 'K': K, 'L': L, 'C': C, 'I': I,
-              'I_total': I_total, 'BQ': BQ, 'total_revenue': total_revenue,
+    output = {'Y': Y[:p.T], 'B': B, 'K': K, 'K_f': K_f, 'K_d': K_d,
+              'L': L, 'C': C, 'I': I,
+              'I_total': I_total, 'I_d': I_d, 'BQ': BQ,
+              'total_revenue': total_revenue,
               'business_revenue': business_revenue,
               'IITpayroll_revenue': T_Ipath, 'T_H': T_H,
               'T_P': T_Ppath, 'T_BQ': T_BQpath, 'T_W': T_Wpath,
-              'T_C': T_Cpath, 'G': G, 'D': D, 'r': r, 'r_gov': r_gov,
+              'T_C': T_Cpath, 'G': G, 'D': D, 'D_f': D_f, 'D_d': D_d,
+              'r': r, 'r_gov': r_gov,
               'r_hh': r_hh, 'w': w, 'bmat_splus1': bmat_splus1,
               'bmat_s': bmat_s[:p.T, :, :], 'n_mat': n_mat[:p.T, :, :],
               'c_path': c_mat, 'bq_path': bqmat,
+              'y_before_tax_mat': y_before_tax_mat,
               'tax_path': tax_mat, 'eul_savings': eul_savings,
               'eul_laborleisure': eul_laborleisure,
-              'resource_constraint_error': rc_error,
+              'resource_constraint_error': RC_error,
+              'new_borrowing_f': new_borrowing_f,
+              'debt_service_f': debt_service_f,
               'etr_path': etr_path, 'mtrx_path': mtrx_path,
               'mtry_path': mtry_path}
 
@@ -784,10 +789,10 @@ def run_TPI(p, client=None):
         raise RuntimeError('Transition path equlibrium not found' +
                            ' (TPIdist)')
 
-    if ((np.any(np.absolute(rc_error) >= p.mindist_TPI * 10)) and
+    if ((np.any(np.absolute(RC_error) >= p.mindist_TPI * 10)) and
         ENFORCE_SOLUTION_CHECKS):
         raise RuntimeError('Transition path equlibrium not found ' +
-                           '(rc_error)')
+                           '(RC_error)')
 
     if ((np.any(np.absolute(eul_savings) >= p.mindist_TPI) or
          (np.any(np.absolute(eul_laborleisure) > p.mindist_TPI))) and

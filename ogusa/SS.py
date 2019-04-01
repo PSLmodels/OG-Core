@@ -447,7 +447,8 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     K_d_ss = Bss - D_d_ss
     K_f_ss = p.zeta_K * (K_demand_ss - Bss + D_d_ss)
     Kss = K_f_ss + K_d_ss
-    K_d_Iss = aggr.get_I(bssmat_splus1 * (K_d_ss / Bss), K_d_ss, K_d_ss, p, 'SS') # scaling bssmat to account for fraction household portfolio that is debt not capital
+    I_d_ss = aggr.get_I(bssmat_splus1 * (K_d_ss / Bss), K_d_ss, K_d_ss,
+                        p, 'SS') # scaling bssmat to account for fraction household portfolio that is debt not capital
     if not p.small_open:
         Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS') ## Check this
     else:
@@ -491,6 +492,7 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     cssmat = household.get_cons(r_hh_ss, wss, bssmat_s, bssmat_splus1,
                                 nssmat, bqssmat, taxss,
                                 p.e, p.tau_c[-1, :, :], p)
+    yss_before_tax_mat = r_hh_ss * bssmat_s + wss * p.e * nssmat
     Css = aggr.get_C(cssmat, p, 'SS')
 
     (total_revenue_ss, T_Iss, T_Pss, T_BQss, T_Wss, T_Css,
@@ -509,47 +511,26 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
         print('G components = ', new_borrowing, T_Hss, debt_service_ss)
 
     # Compute total investment (not just domestic)
-    Iss_total = p.delta * Kss
+    Iss_total = Kss * ((np.exp(p.g_y) * (1 + p.g_n_ss) - 1 + p.delta))
 
     # solve resource constraint
     # net foreign borrowing
     f_borrow = D_f_ss * (np.exp(p.g_y) * (1 + p.g_n_ss) - 1 - r_gov_ss)
-    resource_constraint = (Yss - (Css + K_d_Iss + Gss + (r + p.delta) * K_f_ss) - f_borrow)
-    if p.small_open:
-        # include term for current account
-        # resource_constraint = (Yss + new_borrowing - (Css + BIss + Gss)
-        #                        + (p.hh_r[-1] * Bss -
-        #                           (p.delta + p.firm_r[-1]) *
-        #                           Kss - debt_service_ss))
-        print('Yss= ', Yss, '\n', 'Css= ', Css, '\n', 'Bss = ', Bss,
-              '\n', 'BIss = ', BIss, '\n', 'Kss = ', Kss, '\n', 'Iss = ',
-              Iss, '\n', 'Lss = ', Lss, '\n', 'T_H = ', T_H, '\n',
-              'Gss= ', Gss)
-        print('D/Y:', debt_ss / Yss, 'T/Y:', T_Hss / Yss, 'G/Y:',
-              Gss / Yss, 'Rev/Y:', total_revenue_ss / Yss,
-              'Int payments to GDP:', (r_gov_ss * debt_ss) / Yss)
-        print('resource constraint: ', resource_constraint)
-    else:
-        # resource_constraint = Yss - (Css + Iss + Gss)
-        print('Yss= ', Yss, '\n', 'Gss= ', Gss, '\n', 'Css= ', Css, '\n',
-              'Kss = ', Kss, '\n', 'Iss = ', Iss, '\n', 'Lss = ', Lss,
-              '\n', 'Debt service = ', debt_service_ss)
-        print('D/Y:', debt_ss / Yss, 'T/Y:', T_Hss / Yss, 'G/Y:',
-              Gss / Yss, 'Rev/Y:', total_revenue_ss / Yss, 'business rev/Y: ',
-              business_revenue / Yss, 'Int payments to GDP:',
-              (r_gov_ss * debt_ss) / Yss)
-        print('Check SS budget: ', Gss - (np.exp(p.g_y) *
-                                          (1 + p.g_n_ss) - 1 - r_gov_ss)
-              * debt_ss - total_revenue_ss + T_Hss)
-        print('resource constraint: ', resource_constraint)
+    RC = (Yss - (Css + I_d_ss + Gss + (r + p.delta) * K_f_ss) - f_borrow)
+    # new_borrowing_f = D_f_ss * (np.exp(p.g_y) * (1 + p.g_n_ss) - 1)
+    # debt_service_f = D_f_ss * r_gov_ss
+    # RC = aggr.resource_constraint(Yss, Css, Gss, I_d_ss, K_f_ss,
+    #                               new_borrowing_f, debt_service_f, rss,
+    #                               p)
+    print('resource constraint: ', RC)
 
     if Gss < 0:
         print('Steady state government spending is negative to satisfy'
               + ' budget')
 
-    if ENFORCE_SOLUTION_CHECKS and (np.absolute(resource_constraint) >
+    if ENFORCE_SOLUTION_CHECKS and (np.absolute(RC) >
                                     p.mindist_SS):
-        print('Resource Constraint Difference:', resource_constraint)
+        print('Resource Constraint Difference:', RC)
         err = 'Steady state aggregate resource constraint not satisfied'
         raise RuntimeError(err)
 
@@ -568,20 +549,27 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
         Return dictionary of SS results
     ------------------------------------------------------------------------
     '''
-    output = {'Kss': Kss, 'Bss': Bss, 'Lss': Lss, 'Css': Css, 'Iss': Iss,
-              'Iss_total': Iss_total, 'nssmat': nssmat, 'Yss': Yss,
-              'Dss': debt_ss, 'wss': wss, 'rss': rss,
+    output = {'Kss': Kss, 'K_f_ss': K_f_ss, 'K_d_ss': K_d_ss,
+              'Bss': Bss, 'Lss': Lss, 'Css': Css, 'Iss': Iss,
+              'Iss_total': Iss_total, 'I_d_ss': I_d_ss, 'nssmat': nssmat,
+              'Yss': Yss, 'Dss': debt_ss, 'D_f_ss': D_f_ss,
+              'D_d_ss': D_d_ss, 'wss': wss, 'rss': rss,
               'r_gov_ss': r_gov_ss, 'r_hh_ss': r_hh_ss, 'theta': theta,
               'BQss': BQss, 'factor_ss': factor_ss, 'bssmat_s': bssmat_s,
               'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
+              'yss_before_tax_mat': yss_before_tax_mat,
               'bqssmat': bqssmat, 'T_Hss': T_Hss, 'Gss': Gss,
               'total_revenue_ss': total_revenue_ss,
               'business_revenue': business_revenue,
               'IITpayroll_revenue': T_Iss,
               'T_Pss': T_Pss, 'T_BQss': T_BQss, 'T_Wss': T_Wss,
               'T_Css': T_Css, 'euler_savings': euler_savings,
+              'debt_service_f': debt_service_f,
+              'new_borrowing_f': new_borrowing_f,
+              'debt_service_ss': debt_service_ss,
+              'new_borrowing': new_borrowing,
               'euler_labor_leisure': euler_labor_leisure,
-              'resource_constraint_error': resource_constraint,
+              'resource_constraint_error': RC,
               'etr_ss': etr_ss, 'mtrx_ss': mtrx_ss, 'mtry_ss': mtry_ss}
 
     return output
