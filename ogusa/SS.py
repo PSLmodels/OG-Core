@@ -229,7 +229,7 @@ def inner_loop(outer_loop_vars, p, client):
 
     L = aggr.get_L(nssmat, p, 'SS')
     B = aggr.get_K(bssmat, p, 'SS', False)
-    K_demand = firm.get_K(L, r, p, 'SS')
+    K_demand = firm.get_K(L, p.firm_r[-1], p, 'SS')
     D_f = p.zeta_D * D
     D_d = D - D_f
     if not p.small_open:
@@ -440,7 +440,7 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
         debt_ss = p.debt_ratio_ss * Y
     Lss = aggr.get_L(nssmat, p, 'SS')
     Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
-    K_demand_ss = firm.get_K(Lss, rss, p, 'SS')
+    K_demand_ss = firm.get_K(Lss, p.firm_r[-1], p, 'SS')
     D_f_ss = p.zeta_D * debt_ss
     D_d_ss = debt_ss - D_f_ss
     K_d_ss = Bss - D_d_ss
@@ -518,6 +518,7 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     # solve resource constraint
     # net foreign borrowing
     print('Foreign debt holdings = ', D_f_ss)
+    print('Foreign capital holdings = ', K_f_ss)
     new_borrowing_f = D_f_ss * (np.exp(p.g_y) * (1 + p.g_n_ss) - 1)
     debt_service_f = D_f_ss * r_gov_ss
     RC = aggr.resource_constraint(Yss, Css, Gss, I_d_ss, K_f_ss,
