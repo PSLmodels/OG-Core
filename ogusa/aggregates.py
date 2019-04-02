@@ -326,3 +326,13 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
                    business_revenue)
 
     return REVENUE, T_I, T_P, T_BQ, T_W, T_C, business_revenue
+
+
+def get_r_hh(r, r_gov, K, D):
+    '''
+    Compute the interest rate on the household's portfolio of assets,
+    a mix of government debt and private equity
+    '''
+    r_hh = ((r * K) + (r_gov * D)) / (K + D)
+
+    return r_hh

@@ -419,3 +419,28 @@ def test_D_G_path(baseline_spending, Y, T_H, REVENUE, Gbaseline,
                                      p)
     assert np.allclose(test_D, D_expected)
     assert np.allclose(test_G, G_expected)
+
+
+p1 = Specifications()
+p1.r_gov_scale = 0.5
+p1.r_gov_shift = 0.0
+p2 = Specifications()
+p2.r_gov_scale = 0.5
+p2.r_gov_shift = 0.01
+p3 = Specifications()
+p3.r_gov_scale = 0.5
+p3.r_gov_shift = 0.03
+r = 0.04
+r_gov1 = 0.02
+r_gov2 = 0.01
+r_gov3 = 0.0
+
+
+@pytest.mark.parametrize('r,p,r_gov_expected',
+                         [(r, p1, r_gov1), (r, p2, r_gov2),
+                          (r, p3, r_gov3),],
+                         ids=['Scale only', 'Scale and shift',
+                              'r_gov < 0'])
+def test_get_r_gov(r, p, r_gov_expected):
+    r_gov = fiscal.get_r_gov(r, p)
+    assert np.allclose(r_gov, r_gov_expected)

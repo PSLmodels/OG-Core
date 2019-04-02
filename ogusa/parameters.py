@@ -151,16 +151,15 @@ class Specifications(ParametersBase):
             print('please give a tau_c that is a single element or 3-D array')
             quit()
 
-
         # open economy parameters
         firm_r_annual = self.world_int_rate
         hh_r_annual = firm_r_annual
         self.firm_r = ((1 + firm_r_annual) **
                        ((self.ending_age - self.starting_age) /
-                           self.S) - 1)
+                        self.S) - 1)
         self.hh_r = ((1 + hh_r_annual) **
                      ((self.ending_age - self.starting_age) /
-                         self.S) - 1)
+                      self.S) - 1)
 
         # set period of retirement
         # self.retire = np.int(np.round(((self.retirement_age -
