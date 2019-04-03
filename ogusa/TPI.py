@@ -700,11 +700,11 @@ def run_TPI(p, client=None):
     # wealth is all in the form of private capital
     I_d = aggr.get_I(bmat_splus1[:p.T], K_d[1:p.T + 1], K_d[:p.T], p,
                      'TPI')
-    I = aggr.get_I(bmat_splus1[:p.T] * (K_d[:p.T] / B[:p.T]),
-                   K[1:p.T + 1], K[:p.T], p, 'TPI')
+    I = aggr.get_I(bmat_splus1[:p.T], K[1:p.T + 1], K[:p.T], p, 'TPI')
     # solve resource constraint
     # net foreign borrowing
-    new_borrowing_f = D_f * (np.exp(p.g_y) * (1 + p.g_n[1:p.T + 1]) - 1)
+    new_borrowing_f = (D_f[1:p.T + 1] * np.exp(p.g_y) *
+                       (1 + p.g_n[1:p.T + 1]) - D_f[:p.T])
     debt_service_f = D_f * r_gov
     RC_error = aggr.resource_constraint(Y[:p.T - 1], C[:p.T - 1],
                                         G[:p.T - 1], I_d[:p.T - 1],
