@@ -435,18 +435,20 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     r_gov_ss = fiscal.get_r_gov(rss, p)
     if p.budget_balance:
         r_hh_ss = rss
-        debt_ss = 0.0
+        Dss = 0.0
     else:
-        debt_ss = p.debt_ratio_ss * Y
+        Dss = p.debt_ratio_ss * Y
     Lss = aggr.get_L(nssmat, p, 'SS')
     Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
     K_demand_ss = firm.get_K(Lss, p.firm_r[-1], p, 'SS')
-    D_f_ss = p.zeta_D * debt_ss
-    D_d_ss = debt_ss - D_f_ss
+    D_f_ss = p.zeta_D * Dss
+    D_d_ss = Dss - D_f_ss
     K_d_ss = Bss - D_d_ss
     if not p.small_open:
         K_f_ss = p.zeta_K * (K_demand_ss - Bss + D_d_ss)
         Kss = K_f_ss + K_d_ss
+        # Note that implicity in this computation is that immigrants'
+        # wealth is all in the form of private capital
         I_d_ss = aggr.get_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')
         Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS')
     else:
@@ -460,7 +462,7 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     if p.budget_balance:
         r_hh_ss = rss
     else:
-        r_hh_ss = aggr.get_r_hh(rss, r_gov_ss, Kss, debt_ss)
+        r_hh_ss = aggr.get_r_hh(rss, r_gov_ss, Kss, Dss)
     if p.small_open:
         r_hh_ss = p.hh_r[-1]
     wss = new_w
@@ -554,7 +556,7 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     output = {'Kss': Kss, 'K_f_ss': K_f_ss, 'K_d_ss': K_d_ss,
               'Bss': Bss, 'Lss': Lss, 'Css': Css, 'Iss': Iss,
               'Iss_total': Iss_total, 'I_d_ss': I_d_ss, 'nssmat': nssmat,
-              'Yss': Yss, 'Dss': debt_ss, 'D_f_ss': D_f_ss,
+              'Yss': Yss, 'Dss': Dss, 'D_f_ss': D_f_ss,
               'D_d_ss': D_d_ss, 'wss': wss, 'rss': rss,
               'r_gov_ss': r_gov_ss, 'r_hh_ss': r_hh_ss, 'theta': theta,
               'BQss': BQss, 'factor_ss': factor_ss, 'bssmat_s': bssmat_s,
