@@ -229,17 +229,17 @@ def inner_loop(outer_loop_vars, p, client):
 
     L = aggr.get_L(nssmat, p, 'SS')
     B = aggr.get_K(bssmat, p, 'SS', False)
-    K_demand = firm.get_K(L, p.firm_r[-1], p, 'SS')
-    D_f = p.zeta_D * D
+    K_demand_open = firm.get_K(L, p.firm_r[-1], p, 'SS')
+    D_f = p.zeta_D[-1] * D
     D_d = D - D_f
     if not p.small_open:
         K_d = B - D_d
-        K_f = p.zeta_K * (K_demand - B + D_d)
+        K_f = p.zeta_K[-1] * (K_demand_open - B + D_d)
         K = K_f + K_d
     else:
         # can remove this else statement by making small open the case where zeta_K = 1
         K_d = B - D_d
-        K_f = K_demand - B + D_d
+        K_f = K_demand_open - B + D_d
         K = K_f + K_d
     new_Y = firm.get_Y(K, L, p, 'SS')
     if p.budget_balance:
@@ -249,7 +249,6 @@ def inner_loop(outer_loop_vars, p, client):
     else:
         new_r = p.firm_r[-1]
     new_w = firm.get_w_from_r(new_r, p, 'SS')
-    print('inner factor prices: ', new_r, new_w)
 
     b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
                    list(bssmat[:-1, :]))
@@ -440,12 +439,12 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
         Dss = p.debt_ratio_ss * Y
     Lss = aggr.get_L(nssmat, p, 'SS')
     Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
-    K_demand_ss = firm.get_K(Lss, p.firm_r[-1], p, 'SS')
-    D_f_ss = p.zeta_D * Dss
+    K_demand_open_ss = firm.get_K(Lss, p.firm_r[-1], p, 'SS')
+    D_f_ss = p.zeta_D[-1] * Dss
     D_d_ss = Dss - D_f_ss
     K_d_ss = Bss - D_d_ss
     if not p.small_open:
-        K_f_ss = p.zeta_K * (K_demand_ss - Bss + D_d_ss)
+        K_f_ss = p.zeta_K[-1] * (K_demand_open_ss - Bss + D_d_ss)
         Kss = K_f_ss + K_d_ss
         # Note that implicity in this computation is that immigrants'
         # wealth is all in the form of private capital
@@ -453,7 +452,7 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
         Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS')
     else:
         K_d_ss = Bss - D_d_ss
-        K_f_ss = K_demand_ss - Bss + D_d_ss
+        K_f_ss = K_demand_open_ss - Bss + D_d_ss
         Kss = K_f_ss + K_d_ss
         InvestmentPlaceholder = np.zeros(bssmat_splus1.shape)
         Iss = aggr.get_I(InvestmentPlaceholder, Kss, Kss, p, 'SS')

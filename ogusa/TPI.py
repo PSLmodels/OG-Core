@@ -555,7 +555,7 @@ def run_TPI(p, client=None):
         D_f[0] = p.initial_foreign_debt_ratio * Dnew[0]
         D_f[1:p.T+1] = (
             D_f[:p.T] / (np.exp(p.g_y) * (1 + p.g_n[1:p.T + 1]))
-            + p.zeta_D * (Dnew[1:p.T+1] - (Dnew[:p.T] /
+            + p.zeta_D[:p.T] * (Dnew[1:p.T+1] - (Dnew[:p.T] /
                                            (np.exp(p.g_y) *
                                             (1 + p.g_n[1:p.T + 1])))))
         D_d[:p.T] = Dnew[:p.T] - D_f[:p.T]
@@ -564,7 +564,7 @@ def run_TPI(p, client=None):
             print('K_d has negative elements. Setting them ' +
                   'positive to prevent NAN.')
             K_d[:p.T] = np.fmax(K_d[:p.T], 0.05 * B[:p.T])
-        K_f[:p.T] = p.zeta_K * (K_demand_open - B[:p.T] + D_d[:p.T])
+        K_f[:p.T] = p.zeta_K[:p.T] * (K_demand_open - B[:p.T] + D_d[:p.T])
         K = K_f + K_d
         if np.any(B) < 0:
             print('B has negative elements. B[0:9]:', B[0:9])
