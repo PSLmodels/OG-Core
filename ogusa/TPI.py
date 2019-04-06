@@ -469,8 +469,12 @@ def run_TPI(p, client=None):
         D = np.zeros(p.T + p.S)
     else:
         D = np.ones(p.T + p.S) * ss_vars['Dss']
-    D_d = D * ss_vars['D_d_ss'] / ss_vars['Dss']
-    D_f = D * ss_vars['D_f_ss'] / ss_vars['Dss']
+    if ss_vars['Dss'] == 0:
+        D_d = np.zeros(p.T + p.S)
+        D_f = np.zeros(p.T + p.S)
+    else:
+        D_d = D * ss_vars['D_d_ss'] / ss_vars['Dss']
+        D_f = D * ss_vars['D_f_ss'] / ss_vars['Dss']
     total_revenue = np.ones(p.T + p.S) * ss_vars['total_revenue_ss']
 
     TPIiter = 0
@@ -527,7 +531,7 @@ def run_TPI(p, client=None):
                             wpath[:p.T, :, :] * p.e * n_mat[:p.T, :, :])
 
         if not p.baseline_spending:
-            Y = T_H / p.alpha_T  # maybe unecessary
+            Y[:p.T] = T_H[:p.T] / p.alpha_T[:p.T]  # maybe unecessary
 
             (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
              T_Cpath, business_revenue) = aggr.revenue(
@@ -553,11 +557,12 @@ def run_TPI(p, client=None):
         K_demand_open = firm.get_K(L[:p.T], p.firm_r[:p.T], p, 'TPI')
         # Fix initial amount of foreign debt holding
         D_f[0] = p.initial_foreign_debt_ratio * Dnew[0]
-        D_f[1:p.T+1] = (
-            D_f[:p.T] / (np.exp(p.g_y) * (1 + p.g_n[1:p.T + 1]))
-            + p.zeta_D[:p.T] * (Dnew[1:p.T+1] - (Dnew[:p.T] /
-                                           (np.exp(p.g_y) *
-                                            (1 + p.g_n[1:p.T + 1])))))
+        for t in range(1, p.T):
+            D_f[t + 1] = (D_f[t] / (np.exp(p.g_y) * (1 + p.g_n[t + 1]))
+                          + p.zeta_D[t] * (Dnew[t + 1] -
+                                           (Dnew[t] /
+                                            (np.exp(p.g_y) *
+                                             (1 + p.g_n[t + 1])))))
         D_d[:p.T] = Dnew[:p.T] - D_f[:p.T]
         K_d[:p.T] = B[:p.T] - D_d[:p.T]
         if np.any(K_d < 0):
