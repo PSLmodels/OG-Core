@@ -530,7 +530,7 @@ def run_TPI(p, client=None):
         y_before_tax_mat = (r_hh_path[:p.T, :, :] * bmat_s[:p.T, :, :] +
                             wpath[:p.T, :, :] * p.e * n_mat[:p.T, :, :])
 
-        if not p.baseline_spending:
+        if not p.baseline_spending and not p.budget_balance:
             Y[:p.T] = T_H[:p.T] / p.alpha_T[:p.T]  # maybe unecessary
 
             (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
@@ -540,30 +540,33 @@ def run_TPI(p, client=None):
                 L[:p.T], K[:p.T], factor, theta, etr_params_4D,
                 p, 'TPI')
             total_revenue[:p.T] = total_rev
+            # set intial debt value
+            if p.baseline:
+                D0 = p.initial_debt_ratio * Y[0]
+            if not p.baseline_spending:
+                G_0 = p.alpha_G[0] * Y[0]
+            dg_fixed_values = (Y, total_revenue, T_H, D0, G_0)
+            Dnew, G[:p.T] = fiscal.D_G_path(r_gov, dg_fixed_values,
+                                            Gbaseline, p)
+            # Fix initial amount of foreign debt holding
+            D_f[0] = p.initial_foreign_debt_ratio * Dnew[0]
+            for t in range(1, p.T):
+                D_f[t + 1] = (D_f[t] / (np.exp(p.g_y) * (1 + p.g_n[t + 1]))
+                              + p.zeta_D[t] * (Dnew[t + 1] -
+                                               (Dnew[t] /
+                                                (np.exp(p.g_y) *
+                                                 (1 + p.g_n[t + 1])))))
+            D_d[:p.T] = Dnew[:p.T] - D_f[:p.T]
+        else:  # if budget balance
+            Dnew = np.zeros(p.T + 1)
+            G[:p.T] = np.zeros(p.T)
+            D_f[:p.T] = np.zeros(p.T)
+            D_d[:p.T] = np.zeros(p.T)
 
-        # set intial debt value
-        if p.baseline:
-            D_0 = p.initial_debt_ratio * Y[0]
-        else:
-            D_0 = D0
-        if not p.baseline_spending:
-            G_0 = p.alpha_G[0] * Y[0]
-        dg_fixed_values = (Y, total_revenue, T_H, D_0, G_0)
-        Dnew, G = fiscal.D_G_path(r_gov, dg_fixed_values,
-                                  Gbaseline, p)
         L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
         B[1:p.T] = aggr.get_K(bmat_splus1[:p.T], p, 'TPI',
                               False)[:p.T - 1]
         K_demand_open = firm.get_K(L[:p.T], p.firm_r[:p.T], p, 'TPI')
-        # Fix initial amount of foreign debt holding
-        D_f[0] = p.initial_foreign_debt_ratio * Dnew[0]
-        for t in range(1, p.T):
-            D_f[t + 1] = (D_f[t] / (np.exp(p.g_y) * (1 + p.g_n[t + 1]))
-                          + p.zeta_D[t] * (Dnew[t + 1] -
-                                           (Dnew[t] /
-                                            (np.exp(p.g_y) *
-                                             (1 + p.g_n[t + 1])))))
-        D_d[:p.T] = Dnew[:p.T] - D_f[:p.T]
         K_d[:p.T] = B[:p.T] - D_d[:p.T]
         if np.any(K_d < 0):
             print('K_d has negative elements. Setting them ' +
@@ -610,31 +613,29 @@ def run_TPI(p, client=None):
             T_H_new = p.alpha_T[:p.T] * Ynew[:p.T]
         # If baseline_spending==True, no need to update T_H, it's fixed
 
-        if p.small_open and not p.budget_balance:
-            # Loop through years to calculate debt and gov't spending.
-            # This is done earlier when small_open=False.
-            if p.baseline:
-                D_0 = p.initial_debt_ratio * Y[0]
-            else:
-                D_0 = D0
-            if not p.baseline_spending:
-                G_0 = p.alpha_G[0] * Ynew[0]
-            dg_fixed_values = (Ynew, total_revenue, T_H, D_0, G_0)
-            Dnew, G = fiscal.D_G_path(r_gov_new, dg_fixed_values, Gbaseline, p)
+        # if p.small_open and not p.budget_balance:
+        #     # Loop through years to calculate debt and gov't spending.
+        #     # This is done earlier when small_open=False.
+        #     if p.baseline:
+        #         D0 = p.initial_debt_ratio * Y[0]
+        #     if not p.baseline_spending:
+        #         G_0 = p.alpha_G[0] * Ynew[0]
+        #     dg_fixed_values = (Ynew, total_revenue, T_H, D0, G_0)
+        #     Dnew, G = fiscal.D_G_path(r_gov_new, dg_fixed_values, Gbaseline, p)
+        #
+        # if p.budget_balance:
+        #     Dnew = D
 
-        if p.budget_balance:
-            Dnew = D
-
+        # update vars for next iteration
         w[:p.T] = wnew[:p.T]
         r[:p.T] = utils.convex_combo(rnew[:p.T], r[:p.T], p.nu)
         BQ[:p.T] = utils.convex_combo(BQnew[:p.T], BQ[:p.T], p.nu)
-        D = Dnew
+        D[:p.T] = Dnew[:p.T]
         Y[:p.T] = utils.convex_combo(Ynew[:p.T], Y[:p.T], p.nu)
         if not p.baseline_spending:
             T_H[:p.T] = utils.convex_combo(T_H_new[:p.T], T_H[:p.T], p.nu)
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
-
         print('r diff: ', (rnew[:p.T] - r[:p.T]).max(),
               (rnew[:p.T] - r[:p.T]).min())
         print('BQ diff: ', (BQnew[:p.T] - BQ[:p.T]).max(),
@@ -717,6 +718,7 @@ def run_TPI(p, client=None):
                                         new_borrowing_f[:p.T - 1],
                                         debt_service_f[:p.T - 1],
                                         r[:p.T - 1], p)
+
     # Compute total investment (not just domestic)
     I_total = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
                (1.0 - p.delta) * K[:p.T])
