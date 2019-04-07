@@ -458,13 +458,14 @@ def run_TPI(p, client=None):
         G = np.zeros(p.T + p.S)
     elif not p.baseline_spending:
         T_H = p.alpha_T * Y
+        G = np.ones(p.T + p.S) * ss_vars['Gss']
     elif p.baseline_spending:
         T_H = T_Hbaseline
         T_H_new = p.T_H   # Need to set T_H_new for later reference
         G = Gbaseline
         G_0 = Gbaseline[0]
 
-    # Initialize some starting value
+    # Initialize some starting values
     if p.budget_balance:
         D = np.zeros(p.T + p.S)
     else:
