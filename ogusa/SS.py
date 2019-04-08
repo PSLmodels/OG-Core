@@ -503,9 +503,8 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
         aggr.revenue(r_hh_ss, wss, bssmat_s, nssmat, bqssmat, cssmat,
                      Yss, Lss, Kss, factor, theta, etr_params_3D, p,
                      'SS')
-    debt_service_ss = r_gov_ss * p.debt_ratio_ss * Yss
-    new_borrowing = p.debt_ratio_ss * Yss * ((1 + p.g_n_ss) *
-                                             np.exp(p.g_y) - 1)
+    debt_service_ss = r_gov_ss * Dss
+    new_borrowing = Dss * ((1 + p.g_n_ss) * np.exp(p.g_y) - 1)
     # government spends such that it expands its debt at the same rate as GDP
     if p.budget_balance:
         Gss = 0.0
