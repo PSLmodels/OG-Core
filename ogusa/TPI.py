@@ -581,15 +581,16 @@ def run_TPI(p, client=None):
         if p.small_open:
             K[:p.T] = K_demand_open
         Ynew = firm.get_Y(K[:p.T], L[:p.T], p, 'TPI')
+        rnew = r.copy()
         if not p.small_open:
-            rnew = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
+            rnew[:p.T] = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
         else:
-            rnew = r.copy()
+            rnew[:p.T] = r[:p.T].copy()
         r_gov_new = fiscal.get_r_gov(rnew, p)
         if p.budget_balance:
             r_hh_new = rnew[:p.T]
         else:
-            r_hh_new = aggr.get_r_hh(rnew, r_gov_new, K[:p.T],
+            r_hh_new = aggr.get_r_hh(rnew[:p.T], r_gov_new[:p.T], K[:p.T],
                                      Dnew[:p.T])
         if p.small_open:
             r_hh_new = p.hh_r[:p.T]
@@ -613,19 +614,6 @@ def run_TPI(p, client=None):
         elif not p.baseline_spending:
             T_H_new = p.alpha_T[:p.T] * Ynew[:p.T]
         # If baseline_spending==True, no need to update T_H, it's fixed
-
-        # if p.small_open and not p.budget_balance:
-        #     # Loop through years to calculate debt and gov't spending.
-        #     # This is done earlier when small_open=False.
-        #     if p.baseline:
-        #         D0 = p.initial_debt_ratio * Y[0]
-        #     if not p.baseline_spending:
-        #         G_0 = p.alpha_G[0] * Ynew[0]
-        #     dg_fixed_values = (Ynew, total_revenue, T_H, D0, G_0)
-        #     Dnew, G = fiscal.D_G_path(r_gov_new, dg_fixed_values, Gbaseline, p)
-        #
-        # if p.budget_balance:
-        #     Dnew = D
 
         # update vars for next iteration
         w[:p.T] = wnew[:p.T]
