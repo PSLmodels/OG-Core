@@ -65,6 +65,6 @@ def get_r_gov(r, p):
     '''
     Determine the interest rate on government debt
     '''
-    r_gov = np.maximum(p.r_gov_scale * r - p.r_gov_shift, 0.005)
+    r_gov = np.maximum(p.r_gov_scale * r - p.r_gov_shift, 0.00)
 
     return r_gov
