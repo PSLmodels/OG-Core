@@ -253,10 +253,7 @@ def inner_loop(outer_loop_vars, p, client):
     b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
                    list(bssmat[:-1, :]))
     new_r_gov = fiscal.get_r_gov(new_r, p)
-    if p.small_open:
-        new_r_hh = p.hh_r[-1]
-    else:
-        new_r_hh = aggr.get_r_hh(new_r, new_r_gov, K, D)
+    new_r_hh = aggr.get_r_hh(new_r, new_r_gov, K, D)
     average_income_model = ((new_r_hh * b_s + new_w * p.e * nssmat) *
                             p.omega_SS.reshape(p.S, 1) *
                             p.lambdas.reshape(1, p.J)).sum()
@@ -458,12 +455,7 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
         Iss = aggr.get_I(InvestmentPlaceholder, Kss, Kss, p, 'SS')
         BIss = aggr.get_I(bssmat_splus1, Bss, Bss, p, 'BI_SS')
         I_d_ss = aggr.get_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')
-    if p.budget_balance:
-        r_hh_ss = rss
-    else:
-        r_hh_ss = aggr.get_r_hh(rss, r_gov_ss, Kss, Dss)
-    if p.small_open:
-        r_hh_ss = p.hh_r[-1]
+    r_hh_ss = aggr.get_r_hh(rss, r_gov_ss, Kss, Dss)
     wss = new_w
     BQss = new_BQ
     factor_ss = factor
