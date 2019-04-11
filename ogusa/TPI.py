@@ -700,13 +700,13 @@ def run_TPI(p, client=None):
     # net foreign borrowing
     new_borrowing_f = (D_f[1:p.T + 1] * np.exp(p.g_y) *
                        (1 + p.g_n[1:p.T + 1]) - D_f[:p.T])
-    debt_service_f = D_f * r_gov
+    debt_service_f = D_f * r_hh
     RC_error = aggr.resource_constraint(Y[:p.T - 1], C[:p.T - 1],
                                         G[:p.T - 1], I_d[:p.T - 1],
                                         K_f[:p.T - 1],
                                         new_borrowing_f[:p.T - 1],
                                         debt_service_f[:p.T - 1],
-                                        r[:p.T - 1], p)
+                                        r_hh[:p.T - 1], p)
 
     # Compute total investment (not just domestic)
     I_total = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -

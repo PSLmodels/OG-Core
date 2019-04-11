@@ -512,9 +512,9 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     print('Foreign debt holdings = ', D_f_ss)
     print('Foreign capital holdings = ', K_f_ss)
     new_borrowing_f = D_f_ss * (np.exp(p.g_y) * (1 + p.g_n_ss) - 1)
-    debt_service_f = D_f_ss * r_gov_ss
+    debt_service_f = D_f_ss * r_hh_ss
     RC = aggr.resource_constraint(Yss, Css, Gss, I_d_ss, K_f_ss,
-                                  new_borrowing_f, debt_service_f, rss,
+                                  new_borrowing_f, debt_service_f, r_hh_ss,
                                   p)
     print('resource constraint: ', RC)
 
