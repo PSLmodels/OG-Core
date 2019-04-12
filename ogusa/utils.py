@@ -353,3 +353,13 @@ def safe_read_pickle(file_path):
         except TypeError:
             obj = pickle.load(f)
     return obj
+
+
+def rate_conversion(annual_rate, start_age, end_age, s):
+    '''
+    This function converts annual rates to model period rates
+    '''
+    rate = (1 +  annual_rate) ** ((end_age - start_age)/s -1)
+    return rate
+
+    
