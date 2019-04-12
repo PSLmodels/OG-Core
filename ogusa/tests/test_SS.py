@@ -226,14 +226,19 @@ def test_SS_solver():
 
     # delete values key-value pairs that are not in both dicts
     del expected_dict['bssmat'], expected_dict['chi_n'], expected_dict['chi_b']
+    del expected_dict['Iss_total']
     del test_dict['etr_ss'], test_dict['mtrx_ss'], test_dict['mtry_ss']
     test_dict['IITpayroll_revenue'] = (test_dict['total_revenue_ss'] -
                                        test_dict['business_revenue'])
     del test_dict['T_Pss'], test_dict['T_BQss'], test_dict['T_Wss']
-    del test_dict['bqssmat'], test_dict['T_Css']
+    del test_dict['K_d_ss'], test_dict['K_f_ss'], test_dict['D_d_ss']
+    del test_dict['D_f_ss'], test_dict['I_d_ss']
+    del test_dict['debt_service_f'], test_dict['new_borrowing_f']
+    del test_dict['bqssmat'], test_dict['T_Css'], test_dict['Iss_total']
     test_dict['revenue_ss'] = test_dict.pop('total_revenue_ss')
 
     for k, v in expected_dict.items():
+        print('Testing ', k)
         assert(np.allclose(test_dict[k], v))
 
 
@@ -439,12 +444,16 @@ def test_run_SS(input_path, expected_path):
 
     # delete values key-value pairs that are not in both dicts
     del expected_dict['bssmat'], expected_dict['chi_n'], expected_dict['chi_b']
+    del expected_dict['Iss_total']
     del test_dict['etr_ss'], test_dict['mtrx_ss'], test_dict['mtry_ss']
     test_dict['IITpayroll_revenue'] = (test_dict['total_revenue_ss'] -
                                        test_dict['business_revenue'])
     del test_dict['T_Pss'], test_dict['T_BQss'], test_dict['T_Wss']
     del test_dict['resource_constraint_error'], test_dict['T_Css']
     del test_dict['r_gov_ss'], test_dict['r_hh_ss']
+    del test_dict['K_d_ss'], test_dict['K_f_ss'], test_dict['D_d_ss']
+    del test_dict['D_f_ss'], test_dict['I_d_ss'], test_dict['Iss_total']
+    del test_dict['debt_service_f'], test_dict['new_borrowing_f']
     test_dict['revenue_ss'] = test_dict.pop('total_revenue_ss')
 
     for k, v in expected_dict.items():

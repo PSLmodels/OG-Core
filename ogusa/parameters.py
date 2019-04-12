@@ -116,7 +116,7 @@ class Specifications(ParametersBase):
                          'delta_tau_annual', 'tau_b', 'tau_bq',
                          'tau_payroll', 'h_wealth', 'm_wealth',
                          'p_wealth', 'retirement_age',
-                         'replacement_rate_adjust']
+                         'replacement_rate_adjust', 'zeta_D', 'zeta_K']
         for item in tp_param_list:
             this_attr = getattr(self, item)
             if this_attr.ndim > 1:

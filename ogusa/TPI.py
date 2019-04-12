@@ -73,30 +73,11 @@ def get_initial_SS_values(p):
     baseline_values = (T_Hbaseline, Gbaseline)
 
     if p.baseline:
-        theta = ss_baseline_vars['theta']
-        SS_values = (ss_baseline_vars['Kss'], ss_baseline_vars['Bss'],
-                     ss_baseline_vars['Lss'], ss_baseline_vars['rss'],
-                     ss_baseline_vars['wss'], ss_baseline_vars['BQss'],
-                     ss_baseline_vars['T_Hss'],
-                     ss_baseline_vars['total_revenue_ss'],
-                     ss_baseline_vars['bssmat_splus1'],
-                     ss_baseline_vars['nssmat'],
-                     ss_baseline_vars['Yss'], ss_baseline_vars['Gss'],
-                     theta)
-
-    elif not p.baseline:
-        reform_ss = os.path.join(p.output_base, "SS/SS_vars.pkl")
-        ss_reform_vars = pickle.load(open(reform_ss, "rb"))
-        theta = ss_reform_vars['theta']
-        SS_values = (ss_reform_vars['Kss'], ss_reform_vars['Bss'],
-                     ss_reform_vars['Lss'], ss_reform_vars['rss'],
-                     ss_reform_vars['wss'], ss_reform_vars['BQss'],
-                     ss_reform_vars['T_Hss'],
-                     ss_reform_vars['total_revenue_ss'],
-                     ss_reform_vars['bssmat_splus1'],
-                     ss_reform_vars['nssmat'], ss_reform_vars['Yss'],
-                     ss_reform_vars['Gss'], theta)
-
+        ss_vars = ss_baseline_vars
+    else:
+        reform_ss_path = os.path.join(p.output_base, "SS/SS_vars.pkl")
+        ss_vars = pickle.load(open(reform_ss_path, "rb"))
+    theta = ss_vars['theta']
     ## What is going on here?  Whatever it is, why not done in pb_api.py???
     N_tilde = p.omega.sum(1)  # this should equal one in
     # each year given how we've constructed omega
@@ -127,7 +108,7 @@ def get_initial_SS_values(p):
     initial_values = (B0, b_sinit, b_splus1init, factor, initial_b,
                       initial_n, D0)
 
-    return initial_values, SS_values, baseline_values
+    return initial_values, ss_vars, theta, baseline_values
 
 
 def firstdoughnutring(guesses, r, w, bq, T_H, theta, factor, j,
@@ -385,11 +366,9 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
 def run_TPI(p, client=None):
 
     # unpack tuples of parameters
-    initial_values, SS_values, baseline_values = get_initial_SS_values(p)
+    initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
     (B0, b_sinit, b_splus1init, factor, initial_b, initial_n,
      D0) = initial_values
-    (Kss, Bss, Lss, rss, wss, BQss, T_Hss, total_revenue_ss, bssmat_splus1,
-     nssmat, Yss, Gss, theta) = SS_values
     (T_Hbaseline, Gbaseline) = baseline_values
 
     print('Government spending breakpoints are tG1: ', p.tG1,
@@ -399,21 +378,23 @@ def run_TPI(p, client=None):
     # Make array of initial guesses for labor supply and savings
     domain = np.linspace(0, p.T, p.T)
     domain2 = np.tile(domain.reshape(p.T, 1, 1), (1, p.S, p.J))
-    ending_b = bssmat_splus1
+    ending_b = ss_vars['bssmat_splus1']
     guesses_b = (-1 / (domain2 + 1)) * (ending_b - initial_b) + ending_b
     ending_b_tail = np.tile(ending_b.reshape(1, p.S, p.J), (p.S, 1, 1))
     guesses_b = np.append(guesses_b, ending_b_tail, axis=0)
 
-    domain3 = np.tile(np.linspace(0, 1, p.T).reshape(p.T, 1, 1), (1, p.S, p.J))
-    guesses_n = domain3 * (nssmat - initial_n) + initial_n
-    ending_n_tail = np.tile(nssmat.reshape(1, p.S, p.J), (p.S, 1, 1))
+    domain3 = np.tile(np.linspace(0, 1, p.T).reshape(p.T, 1, 1),
+                      (1, p.S, p.J))
+    guesses_n = domain3 * (ss_vars['nssmat'] - initial_n) + initial_n
+    ending_n_tail = np.tile(ss_vars['nssmat'].reshape(1, p.S, p.J),
+                            (p.S, 1, 1))
     guesses_n = np.append(guesses_n, ending_n_tail, axis=0)
-    b_mat = guesses_b  # np.zeros((p.T + p.S, p.S, p.J))
-    n_mat = guesses_n  # np.zeros((p.T + p.S, p.S, p.J))
+    b_mat = guesses_b
+    n_mat = guesses_n
     ind = np.arange(p.S)
 
-    L_init = np.ones((p.T + p.S,)) * Lss
-    B_init = np.ones((p.T + p.S,)) * Bss
+    L_init = np.ones((p.T + p.S,)) * ss_vars['Lss']
+    B_init = np.ones((p.T + p.S,)) * ss_vars['Bss']
     L_init[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
     B_init[1:p.T] = aggr.get_K(b_mat[:p.T], p, 'TPI', False)[:p.T - 1]
     B_init[0] = B0
@@ -422,32 +403,34 @@ def run_TPI(p, client=None):
         if p.budget_balance:
             K_init = B_init
         else:
-            K_init = B_init * Kss / Bss
+            K_init = B_init * ss_vars['Kss'] / ss_vars['Bss']
     else:
         K_init = firm.get_K(L_init, p.firm_r, p, 'TPI')
 
     K = K_init
+    K_d = K_init * ss_vars['K_d_ss'] / ss_vars['Kss']
+    K_f = K_init * ss_vars['K_f_ss'] / ss_vars['Kss']
 
     L = L_init
     B = B_init
     Y = np.zeros_like(K)
     Y[:p.T] = firm.get_Y(K[:p.T], L[:p.T], p, 'TPI')
-    Y[p.T:] = Yss
+    Y[p.T:] = ss_vars['Yss']
     r = np.zeros_like(Y)
     if not p.small_open:
         r[:p.T] = firm.get_r(Y[:p.T], K[:p.T], p, 'TPI')
-        r[p.T:] = rss
+        r[p.T:] = ss_vars['rss']
     else:
         r = p.firm_r
     # compute w
     w = np.zeros_like(r)
     w[:p.T] = firm.get_w_from_r(r[:p.T], p, 'TPI')
-    w[p.T:] = wss
+    w[p.T:] = ss_vars['wss']
     r_gov = fiscal.get_r_gov(r, p)
     if p.budget_balance:
         r_hh = r
     else:
-        r_hh = aggr.get_r_hh(r, r_gov, K, p.debt_ratio_ss * Y)
+        r_hh = aggr.get_r_hh(r, r_gov, K, ss_vars['Dss'])
     if p.small_open:
         r_hh = p.hh_r
 
@@ -455,42 +438,50 @@ def run_TPI(p, client=None):
     if not p.use_zeta:
         BQ = np.zeros((p.T + p.S, p.J))
         for j in range(p.J):
-            BQ[:, j] = (list(np.linspace(BQ0[j], BQss[j], p.T)) +
-                        [BQss[j]] * p.S)
+            BQ[:, j] = (list(np.linspace(BQ0[j],
+                                         ss_vars['BQss'][j], p.T)) +
+                        [ss_vars['BQss'][j]] * p.S)
         BQ = np.array(BQ)
     else:
-        BQ = (list(np.linspace(BQ0, BQss, p.T)) + [BQss] * p.S)
+        BQ = (list(np.linspace(BQ0, ss_vars['BQss'], p.T)) +
+              [ss_vars['BQss']] * p.S)
         BQ = np.array(BQ)
     if p.budget_balance:
-        if np.abs(T_Hss) < 1e-13:
+        if np.abs(ss_vars['T_Hss']) < 1e-13:
             T_Hss2 = 0.0  # sometimes SS is very small but not zero,
             # even if taxes are zero, this get's rid of the approximation
             # error, which affects the perc changes below
         else:
-            T_Hss2 = T_Hss
+            T_Hss2 = ss_vars['T_Hss']
         T_H = np.ones(p.T + p.S) * T_Hss2
         total_revenue = T_H
         G = np.zeros(p.T + p.S)
     elif not p.baseline_spending:
         T_H = p.alpha_T * Y
+        G = np.ones(p.T + p.S) * ss_vars['Gss']
     elif p.baseline_spending:
         T_H = T_Hbaseline
         T_H_new = p.T_H   # Need to set T_H_new for later reference
         G = Gbaseline
         G_0 = Gbaseline[0]
 
-    # Initialize some starting value
+    # Initialize some starting values
     if p.budget_balance:
-        D = 0.0 * Y
+        D = np.zeros(p.T + p.S)
     else:
-        D = p.debt_ratio_ss * Y
+        D = np.ones(p.T + p.S) * ss_vars['Dss']
+    if ss_vars['Dss'] == 0:
+        D_d = np.zeros(p.T + p.S)
+        D_f = np.zeros(p.T + p.S)
+    else:
+        D_d = D * ss_vars['D_d_ss'] / ss_vars['Dss']
+        D_f = D * ss_vars['D_f_ss'] / ss_vars['Dss']
+    total_revenue = np.ones(p.T + p.S) * ss_vars['total_revenue_ss']
+
     TPIiter = 0
     TPIdist = 10
     euler_errors = np.zeros((p.T, 2 * p.S, p.J))
     TPIdist_vec = np.zeros(p.maxiter)
-
-    print('analytical mtrs in tpi = ', p.analytical_mtrs)
-    print('tax function type in tpi = ', p.tax_func_type)
 
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
@@ -523,13 +514,6 @@ def run_TPI(p, client=None):
         bmat_splus1 = np.zeros((p.T, p.S, p.J))
         bmat_splus1[:, :, :] = b_mat[:p.T, :, :]
 
-        L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
-        B[1:p.T] = aggr.get_K(bmat_splus1[:p.T], p, 'TPI',
-                              False)[:p.T - 1]
-        if np.any(B) < 0:
-            print('B has negative elements. B[0:9]:', B[0:9])
-            print('B[T-2:T]:', B[p.T - 2, p.T])
-
         etr_params_4D = np.tile(
             p.etr_params.reshape(p.T, p.S, 1, p.etr_params.shape[2]),
             (1, 1, p.J, 1))
@@ -544,51 +528,69 @@ def run_TPI(p, client=None):
                                    bmat_s, bmat_splus1,
                                    n_mat[:p.T, :, :], bqmat[:p.T, :, :],
                                    tax_mat, p.e, p.tau_c[:p.T, :, :], p)
+        y_before_tax_mat = (r_hh_path[:p.T, :, :] * bmat_s[:p.T, :, :] +
+                            wpath[:p.T, :, :] * p.e * n_mat[:p.T, :, :])
 
-        if not p.small_open:
-            if p.budget_balance:
-                K[:p.T] = B[:p.T]
-            else:
-                if not p.baseline_spending:
-                    Y = T_H / p.alpha_T  # maybe unecessary
+        if not p.baseline_spending and not p.budget_balance:
+            Y[:p.T] = T_H[:p.T] / p.alpha_T[:p.T]  # maybe unecessary
 
-                    (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
-                     T_Cpath, business_revenue) = aggr.revenue(
-                        r_hh[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
-                        bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y[:p.T],
-                        L[:p.T], K[:p.T], factor, theta, etr_params_4D,
-                        p, 'TPI')
-                    total_revenue = np.array(list(total_rev) +
-                                             [total_revenue_ss] * p.S)
+            (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
+             T_Cpath, business_revenue) = aggr.revenue(
+                r_hh[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
+                bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y[:p.T],
+                L[:p.T], K[:p.T], factor, theta, etr_params_4D,
+                p, 'TPI')
+            total_revenue[:p.T] = total_rev
+            # set intial debt value
+            if p.baseline:
+                D0 = p.initial_debt_ratio * Y[0]
+            if not p.baseline_spending:
+                G_0 = p.alpha_G[0] * Y[0]
+            dg_fixed_values = (Y, total_revenue, T_H, D0, G_0)
+            Dnew, G[:p.T] = fiscal.D_G_path(r_gov, dg_fixed_values,
+                                            Gbaseline, p)
+            # Fix initial amount of foreign debt holding
+            D_f[0] = p.initial_foreign_debt_ratio * Dnew[0]
+            for t in range(1, p.T):
+                D_f[t + 1] = (D_f[t] / (np.exp(p.g_y) * (1 + p.g_n[t + 1]))
+                              + p.zeta_D[t] * (Dnew[t + 1] -
+                                               (Dnew[t] /
+                                                (np.exp(p.g_y) *
+                                                 (1 + p.g_n[t + 1])))))
+            D_d[:p.T] = Dnew[:p.T] - D_f[:p.T]
+        else:  # if budget balance
+            Dnew = np.zeros(p.T + 1)
+            G[:p.T] = np.zeros(p.T)
+            D_f[:p.T] = np.zeros(p.T)
+            D_d[:p.T] = np.zeros(p.T)
 
-                # set intial debt value
-                if p.baseline:
-                    D_0 = p.initial_debt_ratio * Y[0]
-                else:
-                    D_0 = D0
-                if not p.baseline_spending:
-                    G_0 = p.alpha_G[0] * Y[0]
-                dg_fixed_values = (Y, total_revenue, T_H, D_0, G_0)
-                Dnew, G = fiscal.D_G_path(r_gov, dg_fixed_values,
-                                          Gbaseline, p)
-
-                K[:p.T] = B[:p.T] - Dnew[:p.T]
-                if np.any(K < 0):
-                    print('K has negative elements. Setting them ' +
-                          'positive to prevent NAN.')
-                    K[:p.T] = np.fmax(K[:p.T], 0.05 * B[:p.T])
-        else:
-            K[:p.T] = firm.get_K(L[:p.T], p.firm_r[:p.T], p, 'TPI')
+        L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
+        B[1:p.T] = aggr.get_K(bmat_splus1[:p.T], p, 'TPI',
+                              False)[:p.T - 1]
+        K_demand_open = firm.get_K(L[:p.T], p.firm_r[:p.T], p, 'TPI')
+        K_d[:p.T] = B[:p.T] - D_d[:p.T]
+        if np.any(K_d < 0):
+            print('K_d has negative elements. Setting them ' +
+                  'positive to prevent NAN.')
+            K_d[:p.T] = np.fmax(K_d[:p.T], 0.05 * B[:p.T])
+        K_f[:p.T] = p.zeta_K[:p.T] * (K_demand_open - B[:p.T] + D_d[:p.T])
+        K = K_f + K_d
+        if np.any(B) < 0:
+            print('B has negative elements. B[0:9]:', B[0:9])
+            print('B[T-2:T]:', B[p.T - 2, p.T])
+        if p.small_open:
+            K[:p.T] = K_demand_open
         Ynew = firm.get_Y(K[:p.T], L[:p.T], p, 'TPI')
+        rnew = r.copy()
         if not p.small_open:
-            rnew = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
+            rnew[:p.T] = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
         else:
-            rnew = r.copy()
+            rnew[:p.T] = r[:p.T].copy()
         r_gov_new = fiscal.get_r_gov(rnew, p)
         if p.budget_balance:
             r_hh_new = rnew[:p.T]
         else:
-            r_hh_new = aggr.get_r_hh(rnew, r_gov_new, K[:p.T],
+            r_hh_new = aggr.get_r_hh(rnew[:p.T], r_gov_new[:p.T], K[:p.T],
                                      Dnew[:p.T])
         if p.small_open:
             r_hh_new = p.hh_r[:p.T]
@@ -605,8 +607,7 @@ def run_TPI(p, client=None):
                 r_hh_new[:p.T], wnew[:p.T], bmat_s, n_mat[:p.T, :, :],
                 bqmat_new[:p.T, :, :], c_mat[:p.T, :, :], Ynew[:p.T],
                 L[:p.T], K[:p.T], factor, theta, etr_params_4D, p, 'TPI')
-        total_revenue = np.array(list(total_rev) +
-                                 [total_revenue_ss] * p.S)
+        total_revenue[:p.T] = total_rev
 
         if p.budget_balance:
             T_H_new = total_revenue
@@ -614,31 +615,16 @@ def run_TPI(p, client=None):
             T_H_new = p.alpha_T[:p.T] * Ynew[:p.T]
         # If baseline_spending==True, no need to update T_H, it's fixed
 
-        if p.small_open and not p.budget_balance:
-            # Loop through years to calculate debt and gov't spending.
-            # This is done earlier when small_open=False.
-            if p.baseline:
-                D_0 = p.initial_debt_ratio * Y[0]
-            else:
-                D_0 = D0
-            if not p.baseline_spending:
-                G_0 = p.alpha_G[0] * Ynew[0]
-            dg_fixed_values = (Ynew, total_revenue, T_H, D_0, G_0)
-            Dnew, G = fiscal.D_G_path(r_gov_new, dg_fixed_values, Gbaseline, p)
-
-        if p.budget_balance:
-            Dnew = D
-
+        # update vars for next iteration
         w[:p.T] = wnew[:p.T]
         r[:p.T] = utils.convex_combo(rnew[:p.T], r[:p.T], p.nu)
         BQ[:p.T] = utils.convex_combo(BQnew[:p.T], BQ[:p.T], p.nu)
-        D = Dnew
+        D[:p.T] = Dnew[:p.T]
         Y[:p.T] = utils.convex_combo(Ynew[:p.T], Y[:p.T], p.nu)
         if not p.baseline_spending:
             T_H[:p.T] = utils.convex_combo(T_H_new[:p.T], T_H[:p.T], p.nu)
         guesses_b = utils.convex_combo(b_mat, guesses_b, p.nu)
         guesses_n = utils.convex_combo(n_mat, guesses_n, p.nu)
-
         print('r diff: ', (rnew[:p.T] - r[:p.T]).max(),
               (rnew[:p.T] - r[:p.T]).min())
         print('BQ diff: ', (BQnew[:p.T] - BQ[:p.T]).max(),
@@ -705,27 +691,28 @@ def run_TPI(p, client=None):
                               etr_params_4D, p)
 
     C = aggr.get_C(c_mat, p, 'TPI')
-
-    if not p.small_open:
-        I = aggr.get_I(bmat_splus1[:p.T], K[1:p.T + 1], K[:p.T], p, 'TPI')
-        rc_error = Y[:p.T] - C[:p.T] - I[:p.T] - G[:p.T]
-    else:
-        I = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))) *
-             np.exp(p.g_y) * K[1:p.T + 1] - (1.0 - p.delta) * K[:p.T])
-        BI = aggr.get_I(bmat_splus1[:p.T], B[1:p.T + 1], B[:p.T], p, 'TPI')
-        new_borrowing = (D[1:p.T] * (1 + p.g_n[1:p.T]) *
-                         np.exp(p.g_y) - D[:p.T - 1])
-        rc_error = (Y[:p.T - 1] + new_borrowing - (
-            C[:p.T - 1] + BI[:p.T - 1] + G[:p.T - 1]) +
-                    (p.hh_r[:p.T - 1] * B[:p.T - 1] - (
-                        p.delta + p.firm_r[:p.T - 1]) * K[:p.T - 1] -
-                     p.hh_r[:p.T - 1] * D[:p.T - 1]))
+    # Note that implicity in this computation is that immigrants'
+    # wealth is all in the form of private capital
+    I_d = aggr.get_I(bmat_splus1[:p.T], K_d[1:p.T + 1], K_d[:p.T], p,
+                     'TPI')
+    I = aggr.get_I(bmat_splus1[:p.T], K[1:p.T + 1], K[:p.T], p, 'TPI')
+    # solve resource constraint
+    # net foreign borrowing
+    new_borrowing_f = (D_f[1:p.T + 1] * np.exp(p.g_y) *
+                       (1 + p.g_n[1:p.T + 1]) - D_f[:p.T])
+    debt_service_f = D_f * r_hh
+    RC_error = aggr.resource_constraint(Y[:p.T - 1], C[:p.T - 1],
+                                        G[:p.T - 1], I_d[:p.T - 1],
+                                        K_f[:p.T - 1],
+                                        new_borrowing_f[:p.T - 1],
+                                        debt_service_f[:p.T - 1],
+                                        r_hh[:p.T - 1], p)
 
     # Compute total investment (not just domestic)
     I_total = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
                (1.0 - p.delta) * K[:p.T])
 
-    rce_max = np.amax(np.abs(rc_error))
+    rce_max = np.amax(np.abs(RC_error))
     print('Max absolute value resource constraint error:', rce_max)
 
     print('Checking time path for violations of constraints.')
@@ -745,18 +732,24 @@ def run_TPI(p, client=None):
     ------------------------------------------------------------------------
     '''
 
-    output = {'Y': Y[:p.T], 'B': B, 'K': K, 'L': L, 'C': C, 'I': I,
-              'I_total': I_total, 'BQ': BQ, 'total_revenue': total_revenue,
+    output = {'Y': Y[:p.T], 'B': B, 'K': K, 'K_f': K_f, 'K_d': K_d,
+              'L': L, 'C': C, 'I': I,
+              'I_total': I_total, 'I_d': I_d, 'BQ': BQ,
+              'total_revenue': total_revenue,
               'business_revenue': business_revenue,
               'IITpayroll_revenue': T_Ipath, 'T_H': T_H,
               'T_P': T_Ppath, 'T_BQ': T_BQpath, 'T_W': T_Wpath,
-              'T_C': T_Cpath, 'G': G, 'D': D, 'r': r, 'r_gov': r_gov,
+              'T_C': T_Cpath, 'G': G, 'D': D, 'D_f': D_f, 'D_d': D_d,
+              'r': r, 'r_gov': r_gov,
               'r_hh': r_hh, 'w': w, 'bmat_splus1': bmat_splus1,
               'bmat_s': bmat_s[:p.T, :, :], 'n_mat': n_mat[:p.T, :, :],
               'c_path': c_mat, 'bq_path': bqmat,
+              'y_before_tax_mat': y_before_tax_mat,
               'tax_path': tax_mat, 'eul_savings': eul_savings,
               'eul_laborleisure': eul_laborleisure,
-              'resource_constraint_error': rc_error,
+              'resource_constraint_error': RC_error,
+              'new_borrowing_f': new_borrowing_f,
+              'debt_service_f': debt_service_f,
               'etr_path': etr_path, 'mtrx_path': mtrx_path,
               'mtry_path': mtry_path}
 
@@ -775,10 +768,10 @@ def run_TPI(p, client=None):
         raise RuntimeError('Transition path equlibrium not found' +
                            ' (TPIdist)')
 
-    if ((np.any(np.absolute(rc_error) >= p.mindist_TPI * 10)) and
+    if ((np.any(np.absolute(RC_error) >= p.mindist_TPI * 10)) and
         ENFORCE_SOLUTION_CHECKS):
         raise RuntimeError('Transition path equlibrium not found ' +
-                           '(rc_error)')
+                           '(RC_error)')
 
     if ((np.any(np.absolute(eul_savings) >= p.mindist_TPI) or
          (np.any(np.absolute(eul_laborleisure) > p.mindist_TPI))) and

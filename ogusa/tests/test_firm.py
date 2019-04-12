@@ -420,8 +420,8 @@ new_param_values4 = {
 }
 # update parameters instance with new values for test
 p4.update_specifications(new_param_values4)
-L4 = np.array([2.0])
-r4 = np.array([1.0])
+L4 = np.array([2.0, 2.0, 2.0])
+r4 = np.array([1.0, 1.0, 1.0])
 expected4 = np.array([2.801139363, 2.303692012, 2.303692012])
 
 

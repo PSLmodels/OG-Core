@@ -231,6 +231,7 @@ def test_run_TPI():
         os.path.join(CUR_PATH, 'test_io_data/run_TPI_outputs.pkl'))
 
     # delete values key-value pairs that are not in both dicts
+    del expected_dict['I_total']
     del test_dict['etr_path'], test_dict['mtrx_path'], test_dict['mtry_path']
     del test_dict['bmat_s']
     test_dict['b_mat'] = test_dict.pop('bmat_splus1')
@@ -238,6 +239,9 @@ def test_run_TPI():
     test_dict['IITpayroll_revenue'] = (test_dict['REVENUE'][:160] -
                                        test_dict['business_revenue'])
     del test_dict['T_P'], test_dict['T_BQ'], test_dict['T_W']
+    del test_dict['y_before_tax_mat'], test_dict['K_f'], test_dict['K_d']
+    del test_dict['D_d'], test_dict['D_f']
+    del test_dict['new_borrowing_f'], test_dict['debt_service_f']
     del test_dict['resource_constraint_error'], test_dict['T_C']
     del test_dict['r_gov'], test_dict['r_hh']
 
