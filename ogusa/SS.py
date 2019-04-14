@@ -386,7 +386,7 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
         BQ = utils.convex_combo(new_BQ, BQ, nu_ss)
         # bmat = utils.convex_combo(new_bmat, bmat, nu_ss)
         # nmat = utils.convex_combo(new_nmat, nmat, nu_ss)
-        if p.budget_balance:
+        if not p.baseline_spending:
             T_H = utils.convex_combo(new_T_H, T_H, nu_ss)
             dist = np.array([utils.pct_diff_func(new_r, r)] +
                             list(utils.pct_diff_func(new_BQ, BQ)) +
@@ -402,7 +402,7 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
                                                      factor)]).max()
             else:
                 # If Y is zero (if there is no output), a percent difference
-                # will throw NaN's, so we use an absoluate difference
+                # will throw NaN's, so we use an absolute difference
                 dist = np.array([utils.pct_diff_func(new_r, r)] +
                                 list(utils.pct_diff_func(new_BQ, BQ)) +
                                 [abs(new_Y - Y)] +
@@ -635,10 +635,7 @@ def SS_fsolve(guesses, *args):
     error1 = new_r - r
     error2 = new_BQ - BQ
     if p.baseline:
-        if p.budget_balance:
-            error3 = new_T_H - T_H
-        else:
-            error3 = new_Y - Y
+        error3 = new_T_H - T_H
         error4 = new_factor / 1000000 - factor / 1000000
         print('GE loop errors = ', error1, error2, error3, error4)
         # Check and punish violations of the factor
@@ -649,10 +646,7 @@ def SS_fsolve(guesses, *args):
         if p.baseline_spending:
             error3 = new_Y - Y
         else:
-            if p.budget_balance:
-                error3 = new_T_H - T_H
-            else:
-                error3 = new_Y - Y
+            error3 = new_T_H - T_H
         errors = [error1] + list(error2) + [error3]
         print('GE loop errors = ', error1, error2, error3)
     # Check and punish violations of the bounds on the interest rate
