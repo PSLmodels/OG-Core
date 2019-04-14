@@ -311,14 +311,16 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
                   for_estimation=True):
     X2 = X ** 2
     Y2 = Y ** 2
-    I = X + Y
+    income = X + Y
     if tax_func_type == 'GS':
         phi0, phi1, phi2 = params[:3]
         if rate_type == 'etr':
             txrates = (
-                (phi0 * (I - ((I ** -phi1) + phi2) ** (-1 / phi1))) / I)
+                (phi0 * (income - ((income ** -phi1) + phi2) **
+                         (-1 / phi1))) / income)
         else:  # marginal tax rate function
-            txrates = (phi0*(1 - (I ** (-phi1 - 1) * ((I ** -phi1) + phi2)
+            txrates = (phi0*(1 - (income ** (-phi1 - 1) *
+                                  ((income ** -phi1) + phi2)
                                   ** ((-1 - phi1) / phi1))))
     elif tax_func_type == 'DEP':
         A, B, C, D, max_x, max_y, share, min_x, min_y, shift = params
@@ -349,22 +351,26 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
             txrates = (((tau_x + shift_x) ** share) *
                        ((tau_y + shift_y) ** (1 - share))) + shift
     elif tax_func_type == 'DEP_totalinc':
-        A, B, max_I, min_I, shift = params
-        shift_I = np.maximum(-min_I, 0.0) + 0.01 * (max_I - min_I)
+        A, B, max_income, min_income, shift = params
+        shift_income = (np.maximum(-min_income, 0.0) + 0.01 *
+                        (max_income - min_income))
         Etil = A + B
-        I2 = I ** 2
+        income2 = income ** 2
         if for_estimation:
-            I2bar = (I2 * wgts).sum() / wgts.sum()
-            Ibar = (I * wgts).sum() / wgts.sum()
-            I2til = (I2 - I2bar) / I2bar
-            Itil = (I - Ibar) / Ibar
-            tau_I = (((max_I - min_I) * (A * I2til + B * Itil + Etil) /
-                      (A * I2til + B * Itil + Etil + 1)) + min_I)
-            txrates = tau_I + shift_I + shift
+            income2bar = (income2 * wgts).sum() / wgts.sum()
+            Ibar = (income * wgts).sum() / wgts.sum()
+            income2til = (income2 - income2bar) / income2bar
+            Itil = (income - Ibar) / Ibar
+            tau_income = (((max_income - min_income) *
+                           (A * income2til + B * Itil + Etil) /
+                           (A * income2til + B * Itil + Etil + 1)) +
+                          min_income)
+            txrates = tau_income + shift_income + shift
         else:
-            tau_I = (((max_I - min_I) * (A * I2 + B * I) /
-                      (A * I2 + B * I + 1)) + min_I)
-            txrates = tau_I + shift_I + shift
+            tau_income = (((max_income - min_income) *
+                           (A * income2 + B * income) /
+                           (A * income2 + B * income + 1)) + min_income)
+            txrates = tau_income + shift_income + shift
 
     return txrates
 
@@ -784,10 +790,10 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
     Xbar = (X * wgts).sum() / wgts.sum()
     Y2bar = (Y2 * wgts).sum() / wgts.sum()
     Ybar = (Y * wgts).sum() / wgts.sum()
-    I = X + Y
-    I2 = I ** 2
-    Ibar = (I * wgts).sum() / wgts.sum()
-    I2bar = (I2 * wgts).sum() / wgts.sum()
+    income = X + Y
+    income2 = income ** 2
+    Ibar = (income * wgts).sum() / wgts.sum()
+    income2bar = (income2 * wgts).sum() / wgts.sum()
     if rate_type == 'etr':
         txrates = df['ETR']
     elif rate_type == 'mtrx':
@@ -855,27 +861,28 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
             txrates[(df['Total capital income'] < y_20pctl)].max(), 0.7)
         max_y_init = np.minimum(
             txrates[(df['Total labor income'] < x_20pctl)].max(), 0.7)
-        max_I_init = max(max_x_init, max_y_init)
-        min_I = min(min_x, min_y)
+        max_income_init = max(max_x_init, max_y_init)
+        min_income = min(min_x, min_y)
         shift = txrates[(df['Total labor income'] < x_20pctl) |
                         (df['Total capital income'] < y_20pctl)].min()
         share_init = 0.5
-        params_init = np.array([Atil_init, Btil_init, max_I_init])
-        tx_objs = (np.array([min_I, shift]), X, Y, txrates, wgts,
+        params_init = np.array([Atil_init, Btil_init, max_income_init])
+        tx_objs = (np.array([min_income, shift]), X, Y, txrates, wgts,
                    tax_func_type, rate_type)
-        lb_max_I = np.maximum(min_I, 0.0) + 1e-4
-        bnds = ((1e-12, None), (1e-12, None), (lb_max_I, 0.8))
+        lb_max_income = np.maximum(min_income, 0.0) + 1e-4
+        bnds = ((1e-12, None), (1e-12, None), (lb_max_income, 0.8))
         params_til = opt.minimize(wsumsq, params_init, args=(tx_objs),
                                   method="L-BFGS-B", bounds=bnds, tol=1e-15)
-        Atil, Btil, max_I = params_til.x
+        Atil, Btil, max_income = params_til.x
         wsse = params_til.fun
         obs = df.shape[0]
-        shift_I = np.maximum(-min_I, 0.0) + 0.01 * (max_I - min_I)
+        shift_income = (np.maximum(-min_income, 0.0) + 0.01 *
+                        (max_income - min_income))
         params = np.zeros(numparams)
         params[:4] = (np.array([Atil, Btil, 0.0, 0.0]) /
-                      np.array([I2bar, Ibar, Y2bar, Ybar]))
-        params[4:] = np.array([max_I, min_I, 0.0, 0.0, shift_I, 0.0,
-                               shift, 1.0])
+                      np.array([income2bar, Ibar, Y2bar, Ybar]))
+        params[4:] = np.array([max_income, min_income, 0.0, 0.0,
+                               shift_income, 0.0, shift, 1.0])
         params_to_plot = np.append(params[:4],
                                    np.array([max_x, max_y, share, min_x,
                                              min_y, shift]))
@@ -1103,7 +1110,7 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
     # drop all obs with ETR < -0.15
     data_trnc = \
         data_trnc.drop(data_trnc[data_trnc['ETR'] < -0.15].index)
-    # drop all obs with ATI, TLI, TCI < $5
+    # drop all obs with ATI, TLI, TCincome< $5
     data_trnc = data_trnc[(data_trnc['Adjusted total income'] >= 5)
                           & (data_trnc['Total labor income'] >= 5) &
                           (data_trnc['Total capital income'] >= 5)]
@@ -1511,7 +1518,6 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     TotPop_yr = np.zeros(tpers)
     PopPct_age = np.zeros((s_max-s_min+1, tpers))
 
-
     '''
     --------------------------------------------------------------------
     Solve for tax functions for each year (t) and each age (s)
@@ -1538,9 +1544,6 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
 
     lazy_values = []
     for t in years_list:
-        args = (t, micro_data[str(t)], beg_yr, s_min, s_max,
-                age_specific, tax_func_type, analytical_mtrs, desc_data,
-                graph_data, graph_est, output_dir, numparams, tpers)
         lazy_values.append(
             delayed(tax_func_loop)(t, micro_data[str(t)], beg_yr, s_min,
                                    s_max, age_specific, tax_func_type,
