@@ -639,7 +639,6 @@ def run_TPI(p, client=None):
                     list(utils.pct_diff_func(rnew[:p.T], r[:p.T])) +
                     list(utils.pct_diff_func(BQnew[:p.T],
                                              BQ[:p.T]).flatten()) +
-                    list(utils.pct_diff_func(wnew[:p.T], w[:p.T])) +
                     list(utils.pct_diff_func(T_H_new[:p.T],
                                              T_H[:p.T]))).max()
             else:
@@ -647,14 +646,12 @@ def run_TPI(p, client=None):
                     list(utils.pct_diff_func(rnew[:p.T], r[:p.T])) +
                     list(utils.pct_diff_func(BQnew[:p.T],
                                              BQ[:p.T]).flatten()) +
-                    list(utils.pct_diff_func(wnew[:p.T], w[:p.T])) +
                     list(np.abs(T_H[:p.T]))).max()
         else:
             TPIdist = np.array(
                 list(utils.pct_diff_func(rnew[:p.T], r[:p.T])) +
                 list(utils.pct_diff_func(BQnew[:p.T], BQ[:p.T]).flatten())
-                + list(utils.pct_diff_func(wnew[:p.T], w[:p.T])) +
-                list(utils.pct_diff_func(Ynew[:p.T], Y[:p.T]))).max()
+                + list(utils.pct_diff_func(Ynew[:p.T], Y[:p.T]))).max()
 
         TPIdist_vec[TPIiter] = TPIdist
         # After T=10, if cycling occurs, drop the value of nu
