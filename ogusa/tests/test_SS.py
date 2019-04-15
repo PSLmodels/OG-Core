@@ -52,7 +52,7 @@ guesses1 = [guesses_in[0]] + list(BQ1) + [guesses_in[1]] + [guesses_in[2]]
 args1 = (bssmat, nssmat, None, None, p1, client)
 expected1 = np.array([0.28753454, 0.01889046, 0.02472582, 0.02669199,
                       0.01631467, 0.01925092, 0.02206471, 0.00407802,
-                      -0.77940794, 0.00626609])
+                      -0.07014671494961716, 0.00626609])
 
 input_tuple = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_reform_inputs.pkl'))
@@ -101,7 +101,7 @@ guesses2 = [guesses_in2[0]] + list(BQ2) + [guesses_in2[1]]
 args2 = (bssmat, nssmat, None, factor, p2, client)
 expected2 = np.array([0.01325131, 0.01430768, 0.01938654, 0.02069931,
                       0.01232291, 0.0145351, 0.0171059, 0.00309562,
-                      0.01866492])
+                      0.0016798427500707008])
 
 input_tuple = utils.safe_read_pickle(
     os.path.join(
