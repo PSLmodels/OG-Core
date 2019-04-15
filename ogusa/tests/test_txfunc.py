@@ -119,6 +119,7 @@ def test_replace_outliers():
 
     assert np.allclose(act, exp)
 
+
 @pytest.mark.full_run  # only marking as full run because platform
 # affects results from scipy.opt that is called in this test - so it'll
 # pass if run on Mac with MKL, but not necessarily on other platforms
@@ -130,9 +131,8 @@ def test_txfunc_est():
     (df, s, t, rate_type, output_dir, graph) = input_tuple
     tax_func_type = 'DEP'
     numparams = 12
-    test_tuple = txfunc.txfunc_est(df, s, t, rate_type,
-                                      tax_func_type, numparams,
-                                      output_dir, graph)
+    test_tuple = txfunc.txfunc_est(df, s, t, rate_type, tax_func_type,
+                                   numparams, output_dir, graph)
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data/txfunc_est_outputs.pkl'))
     for i, v in enumerate(expected_tuple):
@@ -176,6 +176,8 @@ share = 0.7
 phi0 = 0.6
 phi1 = 0.5
 phi2 = 0.6
+
+
 @pytest.mark.parametrize('tax_func_type,rate_type,params,for_estimation,expected',
                          [('DEP', 'etr',
                            np.array([A, B, C, D, max_x, max_y, share,
