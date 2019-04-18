@@ -306,3 +306,70 @@ def get_K_from_Y(Y, r, p, method):
     K = Y / YKratio
 
     return K
+
+
+def adj_cost(K, Kp1, p):
+    '''
+    Firm capital adjstment costs
+
+    ..math::
+        \Psi(K_{t}, K_{t+1}) = \frac{\psi}{2}\biggr(\frac{\biggr(\frac{I_{t}}{K_{t}}-\mu\biggl)^{2}}{\frac{I_{t}}{K_{t}}}\biggl)
+
+    Args:
+        K (array-like): Current period capital stock
+        Kp1 (array-like): One-period ahead capital stock
+        p (OG-USA Parameters class object): Model parameters
+
+    Returns
+        Psi (array-like): Capital adjstment costs
+    '''
+    I = Kp1 - (1 - p.delta) * K
+    Psi = ((p.psi / 2) * (I / K - p.mu) ** 2) / (I / K)
+
+    return Psi
+
+
+def adj_cost_dK(K, Kp1, p):
+    '''
+    Derivative of firm capital adjstment costs with respect to current
+    period capital stock.
+
+    ..math::
+        \frac{\partial \Psi(K_{t}, K_{t}+1)}{\partial K_{t}} = -\psi \biggr(\frac{I_{t}}{K_{t}} - \mu\biggl)\frac{K_{t+1}}{I_{t}} - \frac{\psi}{2}\frac{\biggr(\frac{I_{t}}{K_{t}} - \mu\biggl)^{2}}{\frac{I_{t}^{2}K_{t+1}}{K_{t}^{3}}}
+
+    Args:
+        K (array-like): Current period capital stock
+        Kp1 (array-like): One-period ahead capital stock
+        p (OG-USA Parameters class object): Model parameters
+
+    Returns
+        dPsi (array-like): Derivative of capital adjstment costs
+    '''
+    I = Kp1 - (1 - p.delta) * K
+    dPsi = ((-p.psi * (I / K - p.mu) * Kp1) / I -
+            ((p.psi / 2) * (I / K - p.mu) ** 2) / ((I ** 2 * Kp1) / K ** 3))
+
+    return dPsi
+
+
+def adj_cost_dKp1(K, Kp1, p):
+    '''
+    Derivative of firm capital adjstment costs with respect to one
+    period-ahead capital stock.
+
+    ..math::
+        \frac{\partial \Psi(K_{t}, K_{t}+1)}{\partial K_{t}} = \psi \frac{\biggr(\frac{I_{t}}{K_{t}} - \mu\biggl)}{I_{t}} - \frac{\psi}{2}\frac{\biggr(\frac{I_{t}}{K_{t}} - \mu\biggl)^{2}}{\frac{I_{t}^{2}}{K_{t}^{3}}}
+
+    Args:
+        K (array-like): Current period capital stock
+        Kp1 (array-like): One-period ahead capital stock
+        p (OG-USA Parameters class object): Model parameters
+
+    Returns
+        dPsi (array-like): Derivative of capital adjstment costs
+    '''
+    I = Kp1 - (1 - p.delta) * K
+    dPsi = ((p.psi * (I / K - p.mu)) / I -
+            ((p.psi / 2) * (I / K - p.mu) ** 2) / (I ** 2 / K ** 3))
+
+    return dPsi
