@@ -193,6 +193,12 @@ class Specifications(ParametersBase):
                                  (self.T + self.S, 1))
             self.omega_S_preTP = self.omega_SS
 
+        # Set adjust cost parameter mu here so that it's a function
+        # of other parameters and adjustment costs always equal 0 in the
+        # steady-state
+        # mu = shift parameter in capital adjustment costs
+        self.mu = self.delta + np.exp(self.g_y) * (1 + self.g_n_ss) - 1
+
         # Interpolate chi_n and create omega_SS_80 if necessary
         if self.S == 80:
             self.omega_SS_80 = self.omega_SS
