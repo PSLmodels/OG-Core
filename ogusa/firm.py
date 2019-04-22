@@ -14,6 +14,7 @@ This Python module defines the following functions:
     get_K()
 ------------------------------------------------------------------------
 '''
+import numpy as np
 
 '''
 ------------------------------------------------------------------------
@@ -308,7 +309,7 @@ def get_K_from_Y(Y, r, p, method):
     return K
 
 
-def adj_cost(K, Kp1, p):
+def adj_cost(K, Kp1, p, method):
     '''
     Firm capital adjstment costs
 
@@ -323,13 +324,18 @@ def adj_cost(K, Kp1, p):
     Returns
         Psi (array-like): Capital adjstment costs
     '''
-    I = Kp1 - (1 - p.delta) * K
+    if method == 'SS':
+        g_n = p.g_n_ss
+    else:
+        length = K.shape[0]
+        g_n = p.g_n[:length]
+    I = Kp1 * np.exp(p.g_y) * (1 + g_n) - (1 - p.delta) * K
     Psi = ((p.psi / 2) * (I / K - p.mu) ** 2) / (I / K)
 
     return Psi
 
 
-def adj_cost_dK(K, Kp1, p):
+def adj_cost_dK(K, Kp1, p, method):
     '''
     Derivative of firm capital adjstment costs with respect to current
     period capital stock.
@@ -345,14 +351,19 @@ def adj_cost_dK(K, Kp1, p):
     Returns
         dPsi (array-like): Derivative of capital adjstment costs
     '''
-    I = Kp1 - (1 - p.delta) * K
+    if method == 'SS':
+        g_n = p.g_n_ss
+    else:
+        length = K.shape[0]
+        g_n = p.g_n[:length]
+    I = Kp1 * np.exp(p.g_y) * (1 + g_n) - (1 - p.delta) * K
     dPsi = ((-p.psi * (I / K - p.mu) * Kp1) / I -
             ((p.psi / 2) * (I / K - p.mu) ** 2) / ((I ** 2 * Kp1) / K ** 3))
 
     return dPsi
 
 
-def adj_cost_dKp1(K, Kp1, p):
+def adj_cost_dKp1(K, Kp1, p, method):
     '''
     Derivative of firm capital adjstment costs with respect to one
     period-ahead capital stock.
@@ -368,7 +379,12 @@ def adj_cost_dKp1(K, Kp1, p):
     Returns
         dPsi (array-like): Derivative of capital adjstment costs
     '''
-    I = Kp1 - (1 - p.delta) * K
+    if method == 'SS':
+        g_n = p.g_n_ss
+    else:
+        length = K.shape[0]
+        g_n = p.g_n[:length]
+    I = Kp1 * np.exp(p.g_y) * (1 + g_n) - (1 - p.delta) * K
     dPsi = ((p.psi * (I / K - p.mu)) / I -
             ((p.psi / 2) * (I / K - p.mu) ** 2) / (I ** 2 / K ** 3))
 
