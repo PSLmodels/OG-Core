@@ -359,7 +359,5 @@ def rate_conversion(annual_rate, start_age, end_age, s):
     '''
     This function converts annual rates to model period rates
     '''
-    rate = (1 +  annual_rate) ** ((end_age - start_age)/s -1)
+    rate = (1 +  annual_rate) ** ((end_age - start_age)/s) -1
     return rate
-
-    
