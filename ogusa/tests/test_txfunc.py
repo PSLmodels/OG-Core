@@ -21,8 +21,6 @@ def test_wsumsq(tax_func_type, expected):
     min_x = 0.17
     max_y = 0.46
     min_y = 0.04
-    shift_x = 0.1
-    shift_y = 0.2
     shift = 0.04
     share = 0.8
     phi0 = 0.396
