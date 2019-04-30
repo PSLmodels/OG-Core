@@ -255,5 +255,4 @@ def cap_inc_mtr(calc1):
     # no capital income taxpayers
     # give all the weight to interest income
     mtr_combined_capinc[total == 0] = all_mtrs['e00300'][2][total == 0]
-
     return mtr_combined_capinc

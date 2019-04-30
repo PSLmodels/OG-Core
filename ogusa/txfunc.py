@@ -1081,9 +1081,25 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                                          (micro_data['Wage income'].abs()
                                           +
                                           micro_data['SE income'].abs())))
+    print('Describe micro data, part 1 = ', micro_data[[
+        'MTR labor income', 'MTR capital income', 'Total labor income',
+        'SE income']].describe())
+    print('Describe micro data, part 2 = ', micro_data[[
+        'MTR wage income', 'MTR SE income',
+        'Total capital income', 'ETR', 'Weights'
+    ]].describe())
+    print('Describe micro data, part 3 = ', micro_data[[
+        'Wage income', 'SE income'
+    ]].describe())
+
     data = micro_data[['Age', 'MTR labor income', 'MTR capital income',
                        'Total labor income', 'Total capital income',
-                       'Adjusted total income', 'ETR', 'Weights']]
+                       'Adjusted total income', 'ETR', 'Weights']].copy()
+
+    print('Describe DATA before drops, part 1 = ', data[[
+        'MTR labor income', 'MTR capital income', 'Total labor income']].describe())
+    print('Describe DATA before drops, part 2 = ', data[[
+        'Total capital income', 'ETR', 'Weights']].describe())
 
     del micro_data
 
@@ -1115,25 +1131,36 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
     # Clean up the data by dropping outliers
     # drop all obs with ETR > 0.65
     data.drop(data[data['ETR'] > 0.65].index, inplace=True)
+    print('Obs 0 = ', data.shape[0])
     # drop all obs with ETR < -0.15
     data.drop(data[data['ETR'] < -0.15].index, inplace=True)
+    print('Obs 1 = ', data.shape[0])
     # drop all obs with ATI, TLI, TCincome< $5
     data.drop(data[(data['Adjusted total income'] >= 5) &
                    (data['Total labor income'] >= 5) &
                    (data['Total capital income'] >= 5)].index,
               inplace=True)
+    print('Obs 2 = ', data.shape[0])
 
     # drop all obs with MTR on capital income > 0.99
     data.drop(data[data['MTR capital income'] > 0.99].index,
               inplace=True)
+    print('Obs 3 = ', data.shape[0])
     # drop all obs with MTR on capital income < -0.45
     data.drop(data[data['MTR capital income'] < -0.45].index,
               inplace=True)
+    print('Obs 4 = ', data.shape[0])
     # drop all obs with MTR on labor income > 0.99
     data.drop(data[data['MTR labor income'] > 0.99].index, inplace=True)
+    print('Obs 5 = ', data.shape[0])
     # drop all obs with MTR on labor income < -0.45
     data.drop(data[data['MTR labor income'] < -0.45].index, inplace=True)
+    print('Obs 6 = ', data.shape[0])
 
+    print('Describe DATA = ', data[[
+        'MTR labor income', 'MTR capital income', 'Total labor income', 'Total capital income', 'ETR', 'Weights']].describe())
+
+    quit()
     # Create an array of the different ages in the data
     min_age = int(np.maximum(data['Age'].min(), s_min))
     max_age = int(np.minimum(data['Age'].max(), s_max))
@@ -1157,7 +1184,8 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
             df = data
             PopPct_age[0, t-beg_yr] = \
                 df['Weights'].sum() / TotPop_yr[t-beg_yr]
-
+        print('Describe dataframe = ', df[[
+            'MTR labor income', 'MTR capital income', 'Total labor income', 'Total capital income', 'ETR', 'Weights']].describe())
         df_etr = df.loc[df[
             (np.isfinite(df['ETR'])) &
             (np.isfinite(df['Total labor income'])) &
