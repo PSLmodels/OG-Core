@@ -1081,25 +1081,10 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                                          (micro_data['Wage income'].abs()
                                           +
                                           micro_data['SE income'].abs())))
-    print('Describe micro data, part 1 = ', micro_data[[
-        'MTR labor income', 'MTR capital income', 'Total labor income',
-        'SE income']].describe())
-    print('Describe micro data, part 2 = ', micro_data[[
-        'MTR wage income', 'MTR SE income',
-        'Total capital income', 'ETR', 'Weights'
-    ]].describe())
-    print('Describe micro data, part 3 = ', micro_data[[
-        'Wage income', 'SE income'
-    ]].describe())
 
     data = micro_data[['Age', 'MTR labor income', 'MTR capital income',
                        'Total labor income', 'Total capital income',
                        'Adjusted total income', 'ETR', 'Weights']].copy()
-
-    print('Describe DATA before drops, part 1 = ', data[[
-        'MTR labor income', 'MTR capital income', 'Total labor income']].describe())
-    print('Describe DATA before drops, part 2 = ', data[[
-        'Total capital income', 'ETR', 'Weights']].describe())
 
     del micro_data
 
@@ -1131,36 +1116,24 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
     # Clean up the data by dropping outliers
     # drop all obs with ETR > 0.65
     data.drop(data[data['ETR'] > 0.65].index, inplace=True)
-    print('Obs 0 = ', data.shape[0])
     # drop all obs with ETR < -0.15
     data.drop(data[data['ETR'] < -0.15].index, inplace=True)
-    print('Obs 1 = ', data.shape[0])
     # drop all obs with ATI, TLI, TCincome< $5
-    data.drop(data[(data['Adjusted total income'] >= 5) &
-                   (data['Total labor income'] >= 5) &
-                   (data['Total capital income'] >= 5)].index,
+    data.drop(data[(data['Adjusted total income'] < 5) |
+                   (data['Total labor income'] < 5) |
+                   (data['Total capital income'] < 5)].index,
               inplace=True)
-    print('Obs 2 = ', data.shape[0])
-
     # drop all obs with MTR on capital income > 0.99
     data.drop(data[data['MTR capital income'] > 0.99].index,
               inplace=True)
-    print('Obs 3 = ', data.shape[0])
     # drop all obs with MTR on capital income < -0.45
     data.drop(data[data['MTR capital income'] < -0.45].index,
               inplace=True)
-    print('Obs 4 = ', data.shape[0])
     # drop all obs with MTR on labor income > 0.99
     data.drop(data[data['MTR labor income'] > 0.99].index, inplace=True)
-    print('Obs 5 = ', data.shape[0])
     # drop all obs with MTR on labor income < -0.45
     data.drop(data[data['MTR labor income'] < -0.45].index, inplace=True)
-    print('Obs 6 = ', data.shape[0])
 
-    print('Describe DATA = ', data[[
-        'MTR labor income', 'MTR capital income', 'Total labor income', 'Total capital income', 'ETR', 'Weights']].describe())
-
-    quit()
     # Create an array of the different ages in the data
     min_age = int(np.maximum(data['Age'].min(), s_min))
     max_age = int(np.minimum(data['Age'].max(), s_max))
@@ -1184,8 +1157,6 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
             df = data
             PopPct_age[0, t-beg_yr] = \
                 df['Weights'].sum() / TotPop_yr[t-beg_yr]
-        print('Describe dataframe = ', df[[
-            'MTR labor income', 'MTR capital income', 'Total labor income', 'Total capital income', 'ETR', 'Weights']].describe())
         df_etr = df.loc[df[
             (np.isfinite(df['ETR'])) &
             (np.isfinite(df['Total labor income'])) &
@@ -1210,8 +1181,6 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                           'Total capital income', 'Weights']].copy()
         df_minobs = np.min([df_etr.shape[0], df_mtrx.shape[0],
                             df_mtry.shape[0]])
-        print('Observations = ', df_etr.shape[0], df_mtrx.shape[0],
-              df_mtry.shape[0])
         del df
         # 240 is 8 parameters to estimate times 30 obs per parameter
         if df_minobs < 240 and s < max_age:
@@ -1290,25 +1259,20 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                 gen_3Dscatters_hist(df_etr, s, t, output_dir)
 
             # Estimate effective tax rate function ETR(x,y)
-            print('size of data going in = ', df_etr.shape)
             (etrparams, etr_wsumsq_arr[s-s_min, t-beg_yr],
                 etr_obs_arr[s-s_min, t-beg_yr]) = \
                 txfunc_est(df_etr, s, t, 'etr', tax_func_type,
                            numparams, output_dir, graph_est)
             etrparam_arr[s-s_min, t-beg_yr, :] = etrparams
-            print('ETR params = ', etrparams)
             del df_etr
 
             # Estimate marginal tax rate of labor income function
             # MTRx(x,y)
-            print('mtrxparams = ', df_mtrx.shape)
             (mtrxparams, mtrx_wsumsq_arr[s-s_min, t-beg_yr],
                 mtrx_obs_arr[s-s_min, t-beg_yr]) = \
                 txfunc_est(df_mtrx, s, t, 'mtrx', tax_func_type,
                            numparams, output_dir, graph_est)
             mtrxparam_arr[s-s_min, t-beg_yr, :] = mtrxparams
-            print('MTRx params = ', mtrxparams)
-            quit()
             del df_mtrx
             # Estimate marginal tax rate of capital income function
             # MTRy(x,y)
@@ -1429,7 +1393,7 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                 mtryparam_arr[s-s_min+1:, t-beg_yr, :] = \
                     np.tile(mtryparams.reshape((1, numparams)),
                             (s_max-max_age, 1))
-        print('MTRY = ', mtryparam_arr[s, t-beg_yr, :])
+
     return (TotPop_yr[t-beg_yr], PopPct_age[:, t-beg_yr],
             AvgInc[t-beg_yr], AvgETR[t-beg_yr], AvgMTRx[t-beg_yr],
             AvgMTRy[t-beg_yr], etrparam_arr[:, t-beg_yr, :],
