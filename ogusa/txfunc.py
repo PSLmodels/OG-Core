@@ -1015,8 +1015,10 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         fig.savefig(fullpath, bbox_inches='tight')
         plt.close()
 
+        del df_trnc_gph
+
     # Garbage collection
-    del df, df_trnc_gph, txrates
+    del df, txrates
 
     return params, wsse, obs
 
