@@ -231,15 +231,14 @@ def test_compare_dict_diff_ndarrays_relative():
 
 def test_get_micro_data_get_calculator():
     reform = {
-        2017: {
-            'II_rt1': [.09],
-            'II_rt2': [.135],
-            'II_rt3': [.225],
-            'II_rt4': [.252],
-            'II_rt5': [.297],
-            'II_rt6': [.315],
-            'II_rt7': [0.3564],
-        }, }
+        'II_rt1': {2017: 0.09},
+        'II_rt2': {2017: 0.135},
+        'II_rt3': {2017: 0.225},
+        'II_rt4': {2017: 0.252},
+        'II_rt5': {2017: 0.297},
+        'II_rt6': {2017: 0.315},
+        'II_rt7': {2017: 0.3564}
+        }
 
     calc = get_calculator(baseline=False, calculator_start_year=2017,
                           reform=reform, data=TAXDATA,
