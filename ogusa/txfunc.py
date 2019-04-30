@@ -181,6 +181,9 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     fig.savefig(fullpath, bbox_inches='tight')
     plt.close()
 
+    # Garbage collection
+    del df, df_trnc, inc_lab, inc_cap, etr_data, mtrx_data, mtry_data
+
 
 def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
     '''
@@ -1155,31 +1158,33 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
             PopPct_age[0, t-beg_yr] = \
                 df['Weights'].sum() / TotPop_yr[t-beg_yr]
 
-        df_etr = df[['MTR labor income', 'MTR capital income',
-                     'Total labor income', 'Total capital income',
-                     'ETR', 'Weights']]
-        df_etr = df_etr[
-            (np.isfinite(df_etr['ETR'])) &
-            (np.isfinite(df_etr['Total labor income'])) &
-            (np.isfinite(df_etr['Total capital income'])) &
-            (np.isfinite(df_etr['Weights']))]
-        df_mtrx = df[['MTR labor income', 'Total labor income',
-                      'Total capital income', 'Weights']]
-        df_mtrx = df_mtrx[
-            (np.isfinite(df_etr['MTR labor income'])) &
-            (np.isfinite(df_etr['Total labor income'])) &
-            (np.isfinite(df_etr['Total capital income'])) &
-            (np.isfinite(df_etr['Weights']))]
-        df_mtry = df[['MTR capital income', 'Total labor income',
-                      'Total capital income', 'Weights']]
-        df_mtry = df_mtry[
-            (np.isfinite(df_etr['MTR capital income'])) &
-            (np.isfinite(df_etr['Total labor income'])) &
-            (np.isfinite(df_etr['Total capital income'])) &
-            (np.isfinite(df_etr['Weights']))]
+        df_etr = df.loc[df[
+            (np.isfinite(df['ETR'])) &
+            (np.isfinite(df['Total labor income'])) &
+            (np.isfinite(df['Total capital income'])) &
+            (np.isfinite(df['Weights']))].index,
+                        ['MTR labor income', 'MTR capital income',
+                         'Total labor income', 'Total capital income',
+                         'ETR', 'Weights']].copy()
+        df_mtrx = df.loc[df[
+            (np.isfinite(df['MTR labor income'])) &
+            (np.isfinite(df['Total labor income'])) &
+            (np.isfinite(df['Total capital income'])) &
+            (np.isfinite(df['Weights']))].index,
+                         ['MTR labor income', 'Total labor income',
+                          'Total capital income', 'Weights']].copy()
+        df_mtry = df.loc[df[
+            (np.isfinite(df['MTR capital income'])) &
+            (np.isfinite(df['Total labor income'])) &
+            (np.isfinite(df['Total capital income'])) &
+            (np.isfinite(df['Weights']))].index,
+                         ['MTR capital income', 'Total labor income',
+                          'Total capital income', 'Weights']].copy()
         df_minobs = np.min([df_etr.shape[0], df_mtrx.shape[0],
                             df_mtry.shape[0]])
-
+        print('Observations = ', df_etr.shape[0], df_mtrx.shape[0],
+              df_mtry.shape[0])
+        del df
         # 240 is 8 parameters to estimate times 30 obs per parameter
         if df_minobs < 240 and s < max_age:
             '''
@@ -1254,28 +1259,29 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                 print(df_mtry.describe())
 
             if graph_data:
-                gen_3Dscatters_hist(df, s, t, output_dir)
-
-            del df
+                gen_3Dscatters_hist(df_etr, s, t, output_dir)
 
             # Estimate effective tax rate function ETR(x,y)
+            print('size of data going in = ', df_etr.shape)
             (etrparams, etr_wsumsq_arr[s-s_min, t-beg_yr],
                 etr_obs_arr[s-s_min, t-beg_yr]) = \
                 txfunc_est(df_etr, s, t, 'etr', tax_func_type,
                            numparams, output_dir, graph_est)
             etrparam_arr[s-s_min, t-beg_yr, :] = etrparams
-
+            print('ETR params = ', etrparams)
             del df_etr
 
             # Estimate marginal tax rate of labor income function
             # MTRx(x,y)
+            print('mtrxparams = ', df_mtrx.shape)
             (mtrxparams, mtrx_wsumsq_arr[s-s_min, t-beg_yr],
                 mtrx_obs_arr[s-s_min, t-beg_yr]) = \
                 txfunc_est(df_mtrx, s, t, 'mtrx', tax_func_type,
                            numparams, output_dir, graph_est)
             mtrxparam_arr[s-s_min, t-beg_yr, :] = mtrxparams
-
-            del mtrx
+            print('MTRx params = ', mtrxparams)
+            quit()
+            del df_mtrx
             # Estimate marginal tax rate of capital income function
             # MTRy(x,y)
             (mtryparams, mtry_wsumsq_arr[s-s_min, t-beg_yr],
@@ -1395,7 +1401,7 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                 mtryparam_arr[s-s_min+1:, t-beg_yr, :] = \
                     np.tile(mtryparams.reshape((1, numparams)),
                             (s_max-max_age, 1))
-
+        print('MTRY = ', mtryparam_arr[s, t-beg_yr, :])
     return (TotPop_yr[t-beg_yr], PopPct_age[:, t-beg_yr],
             AvgInc[t-beg_yr], AvgETR[t-beg_yr], AvgMTRx[t-beg_yr],
             AvgMTRy[t-beg_yr], etrparam_arr[:, t-beg_yr, :],
