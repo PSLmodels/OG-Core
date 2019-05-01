@@ -145,7 +145,7 @@ def test_txfunc_est():
 #     # Test txfunc.tax_func_loop() function.  The test is that given
 #     # inputs from previous run, the outputs are unchanged.
 #     with open(os.path.join(CUR_PATH,
-#                            'test_io_data/tax_func_loop_inputs.pkl'),
+#                            'test_io_data/tax_func_loop_inputs_large.pkl'),
 #               'rb') as f:
 #         input_tuple = pickle.load(f, encoding='latin1')
 #     (t, micro_data, beg_yr, s_min, s_max, age_specific, analytical_mtrs,
@@ -261,9 +261,3 @@ def test_get_tax_rates(tax_func_type, rate_type, params, for_estimation,
 #             assert((test_dict[k] == v).all())
 #         except TypeError:
 #             assert(test_dict[k] == v)
-
-
-# def test_get_tax_func_estimate():
-# saves a pickle file
-# skipping since these results are confirmed in the above, other than
-# saving output to pickle
