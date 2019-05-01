@@ -29,7 +29,7 @@ def test_set_path():
     from ogusa import get_micro_data
     baseline = False
     start_year = 2016
-    reform = {2017: {"_II_em": [10000]}}
+    reform = {"II_em": {2017: 10000}}
 
     # In theory this path doesn't exist so there should be an IOError
     # But taxcalc checks if the path exists and if it doesn't, it tries
