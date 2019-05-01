@@ -131,8 +131,11 @@ def test_txfunc_est():
     numparams = 12
     test_tuple = txfunc.txfunc_est(df, s, t, rate_type, tax_func_type,
                                    numparams, output_dir, graph)
-    expected_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/txfunc_est_outputs.pkl'))
+    expected_tuple = (np.array([
+        6.37000261e-22, 2.73404765e-03, 1.62463424e-08, 1.48147213e-02,
+        2.32797191e-01, -3.69059719e-02, 1.00000000e-04, -1.01967001e-01,
+        3.96030035e-02, 1.02987671e-01, -1.30433574e-01,
+        1.00000000e+00]), 19527.162030047846, 3798)
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
 
