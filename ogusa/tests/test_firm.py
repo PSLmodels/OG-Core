@@ -433,9 +433,31 @@ expected4 = np.array([2.801139363, 2.303692012, 2.303692012])
                          ids=['epsilon=1.2,SS', 'epsilon=1.0,SS',
                               'epsilon=0.4,SS', 'epsilon=0.4,TP'])
 def test_get_K(L, r, p, method, expected):
-    """
-        choose values that simplify the calculations and are similar to
-        observed values
-    """
+    '''
+    Test of the fucntion that returns K from the firm's FOC
+    '''
     K = firm.get_K(L, r, p, method)
     assert (np.allclose(K, expected, atol=1e-6))
+
+
+p = Specifications()
+p.psi = 4.0
+p.g_n_ss = 0.01
+p.g_y = 0.03
+p.delta = 0.05
+p.mu = 0.090759079
+K = 5
+Kp1 = 5
+method = 'SS'
+expected = 0.0
+
+
+@pytest.mark.parametrize('K,Kp1,p,method,expected',
+                         [(K, Kp1, p, method, expected)],
+                         ids=['Zero cost'])
+def test_adj_cost(K, Kp1, p, method, expected):
+    '''
+    Test of the firm capital adjustment cost function.
+    '''
+    test_Psi = firm.adj_cost(K, Kp1, p, method)
+    assert np.allclose(test_Psi, expected)
