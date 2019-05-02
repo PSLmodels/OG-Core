@@ -449,15 +449,39 @@ p.mu = 0.090759079
 K = 5
 Kp1 = 5
 method = 'SS'
-expected = 0.0
+expected_Psi = 0.0
+expected_dPsidK = 0.0
+expected_dPsidKp1 = 0.0
 
 
 @pytest.mark.parametrize('K,Kp1,p,method,expected',
-                         [(K, Kp1, p, method, expected)],
+                         [(K, Kp1, p, method, expected_Psi)],
                          ids=['Zero cost'])
 def test_adj_cost(K, Kp1, p, method, expected):
     '''
     Test of the firm capital adjustment cost function.
     '''
-    test_Psi = firm.adj_cost(K, Kp1, p, method)
-    assert np.allclose(test_Psi, expected)
+    test_val = firm.adj_cost(K, Kp1, p, method)
+    assert np.allclose(test_val, expected)
+
+
+@pytest.mark.parametrize('K,Kp1,p,method,expected',
+                         [(K, Kp1, p, method, expected_dPsidK)],
+                         ids=['Zero cost'])
+def test_adj_cost_dK(K, Kp1, p, method, expected):
+    '''
+    Test of the firm capital adjustment cost function.
+    '''
+    test_val = firm.adj_cost_dK(K, Kp1, p, method)
+    assert np.allclose(test_val, expected)
+
+
+@pytest.mark.parametrize('K,Kp1,p,method,expected',
+                         [(K, Kp1, p, method, expected_dPsidKp1)],
+                         ids=['Zero cost'])
+def test_adj_cost_dKp1(K, Kp1, p, method, expected):
+    '''
+    Test of the firm capital adjustment cost function.
+    '''
+    test_val = firm.adj_cost_dKp1(K, Kp1, p, method)
+    assert np.allclose(test_val, expected)
