@@ -440,23 +440,35 @@ def test_get_K(L, r, p, method, expected):
     assert (np.allclose(K, expected, atol=1e-6))
 
 
-p = Specifications()
-p.psi = 4.0
-p.g_n_ss = 0.01
-p.g_y = 0.03
-p.delta = 0.05
-p.mu = 0.090759079
-K = 5
-Kp1 = 5
-method = 'SS'
-expected_Psi = 0.0
-expected_dPsidK = 0.0
-expected_dPsidKp1 = 0.0
+p1 = Specifications()
+p1.psi = 4.0
+p1.g_n_ss = 0.01
+p1.g_y = 0.03
+p1.delta = 0.05
+p1.mu = 0.090759079
+K_1 = 5
+Kp1_1 = 5
+expected_Psi_1 = 0.0
+expected_dPsidK_1 = 0.0
+expected_dPsidKp1_1 = 0.0
+
+p2 = Specifications()
+p2.psi = 2.0
+p2.g_n_ss = 0.0
+p2.g_y = 0.03
+p2.delta = 0.05
+p2.mu = 0.05
+K_2 = 5
+Kp1_2 = 6
+expected_Psi_2 = 0.19527006
+expected_dPsidK_2 = -0.363533436
+expected_dPsidKp1_2 = 0.193910481
 
 
 @pytest.mark.parametrize('K,Kp1,p,method,expected',
-                         [(K, Kp1, p, method, expected_Psi)],
-                         ids=['Zero cost'])
+                         [(K_1, Kp1_1, p1, 'SS', expected_Psi_1),
+                          (K_2, Kp1_2, p2, 'SS', expected_Psi_2)],
+                         ids=['Zero cost', 'Non-zero cost'])
 def test_adj_cost(K, Kp1, p, method, expected):
     '''
     Test of the firm capital adjustment cost function.
@@ -466,8 +478,9 @@ def test_adj_cost(K, Kp1, p, method, expected):
 
 
 @pytest.mark.parametrize('K,Kp1,p,method,expected',
-                         [(K, Kp1, p, method, expected_dPsidK)],
-                         ids=['Zero cost'])
+                         [(K_1, Kp1_1, p1, 'SS', expected_dPsidK_1),
+                          (K_2, Kp1_2, p2, 'SS', expected_dPsidK_2)],
+                         ids=['Zero cost', 'Non-zero cost'])
 def test_adj_cost_dK(K, Kp1, p, method, expected):
     '''
     Test of the firm capital adjustment cost function.
@@ -477,8 +490,9 @@ def test_adj_cost_dK(K, Kp1, p, method, expected):
 
 
 @pytest.mark.parametrize('K,Kp1,p,method,expected',
-                         [(K, Kp1, p, method, expected_dPsidKp1)],
-                         ids=['Zero cost'])
+                         [(K_1, Kp1_1, p1, 'SS', expected_dPsidKp1_1),
+                          (K_2, Kp1_2, p2, 'SS', expected_dPsidKp1_2)],
+                         ids=['Zero cost', 'Non-zero cost'])
 def test_adj_cost_dKp1(K, Kp1, p, method, expected):
     '''
     Test of the firm capital adjustment cost function.
