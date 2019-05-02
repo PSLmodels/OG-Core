@@ -357,8 +357,8 @@ def adj_cost_dK(K, Kp1, p, method):
         length = K.shape[0]
         g_n = p.g_n[:length]
     I = Kp1 * np.exp(p.g_y) * (1 + g_n) - (1 - p.delta) * K
-    dPsi = ((-p.psi * (I / K - p.mu) * Kp1) / I -
-            ((p.psi / 2) * (I / K - p.mu) ** 2) / ((I ** 2 * Kp1) / K ** 3))
+    dPsi = (((-p.psi * (I / K - p.mu) * Kp1) / (I * K)) *
+            ((I / K - p.mu) / (2 * I) - 1))
 
     return dPsi
 
@@ -385,7 +385,7 @@ def adj_cost_dKp1(K, Kp1, p, method):
         length = K.shape[0]
         g_n = p.g_n[:length]
     I = Kp1 * np.exp(p.g_y) * (1 + g_n) - (1 - p.delta) * K
-    dPsi = ((p.psi * (I / K - p.mu)) / I -
-            ((p.psi / 2) * (I / K - p.mu) ** 2) / (I ** 2 / K ** 3))
+    dPsi = (((p.psi * (I / K - p.mu)) / I) *
+            (1 - ((I / K - p.mu) / (2 * I / K))))
 
     return dPsi
