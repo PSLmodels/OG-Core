@@ -66,6 +66,34 @@ def get_Y(K, L, p, method):
     return Y
 
 
+def get_MPK(Y, K, p, method):
+    '''
+    Compute the marginal product of capital.
+    '''
+    if method == 'SS':
+        Z = p.Z[-1]
+    else:
+        Z = p.Z[:p.T]
+    MPK = ((Z ** ((p.epsilon - 1) / p.epsilon)) *
+           (((p.gamma * Y) / K) ** (1 / p.epsilon)))
+
+    return MPK
+
+
+def get_MPL(Y, L, p, method):
+    '''
+    Compute the marginal product of labor.
+    '''
+    if method == 'SS':
+        Z = p.Z[-1]
+    else:
+        Z = p.Z[:p.T]
+    MPL = ((Z ** ((p.epsilon - 1) / p.epsilon)) *
+           ((((1 - p.gamma) * Y) / L) ** (1 / p.epsilon)))
+
+    return MPL
+
+
 def get_r(Y, K, p, method):
     '''
     --------------------------------------------------------------------
@@ -98,16 +126,13 @@ def get_r(Y, K, p, method):
     --------------------------------------------------------------------
     '''
     if method == 'SS':
-        Z = p.Z[-1]
         delta_tau = p.delta_tau[-1]
         tau_b = p.tau_b[-1]
     else:
-        Z = p.Z[:p.T]
         delta_tau = p.delta_tau[:p.T]
         tau_b = p.tau_b[:p.T]
-    r = ((1 - tau_b) * (Z ** ((p.epsilon - 1) / p.epsilon)) *
-         (((p.gamma * Y) / K) ** (1 / p.epsilon)) -
-         p.delta + tau_b * delta_tau)
+    MPK = get_MPK(Y, K, p, method)
+    r = (1 - tau_b) * MPK - p.delta + tau_b * delta_tau
 
     return r
 
@@ -138,12 +163,7 @@ def get_w(Y, L, p, method):
     RETURNS: w
     --------------------------------------------------------------------
     '''
-    if method == 'SS':
-        Z = p.Z[-1]
-    else:
-        Z = p.Z[:p.T]
-    w = ((Z ** ((p.epsilon - 1) / p.epsilon)) *
-         ((((1 - p.gamma) * Y) / L) ** (1 / p.epsilon)))
+    w = get_MPL(Y, L, p, method)
 
     return w
 
