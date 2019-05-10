@@ -127,13 +127,64 @@ def get_r(Y, K, p, method):
     '''
     if method == 'SS':
         delta_tau = p.delta_tau[-1]
+        delta_tau_m1 = 0.0 #p.delta_tau[-1]
         tau_b = p.tau_b[-1]
     else:
         delta_tau = p.delta_tau[:p.T]
+        delta_tau_m1 = np.zeros(p.T)#np.append(p.delta_tau[0], p.delta_tau[:p.T - 1])
         tau_b = p.tau_b[:p.T]
     MPK = get_MPK(Y, K, p, method)
-    r = (1 - tau_b) * MPK - p.delta + tau_b * delta_tau
+    dPsidK = 0.0
+    dPsidKp1 = 0.0
+    r = ((((1 - tau_b) * MPK + 1 - p.delta + tau_b * delta_tau *
+          (1 - delta_tau_m1) - dPsidK) / (1 + dPsidKp1)) - 1)
+    return r
 
+
+def get_r_dyn(Y, K, Kp1, Kp2, p, method):
+    '''
+    --------------------------------------------------------------------
+    This function computes the interest rate as a function of Y, K, and
+    parameters using the firm's first order condition for capital demand
+    --------------------------------------------------------------------
+    INPUTS:
+    Y = scalar or (T+S,) vector, aggregate output
+    K = scalar or (T+S,) vector, aggregate capital
+    p = model parameters object
+
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    tau_b     = scalar in [0, 1], corporate income tax rate
+    Z         = scalar > 0, total factor productivity
+    epsilon   = scalar > 0, elasticity of substitution between capital
+                and labor
+    gamma     = scalar in [0, 1], share parameter in CES production
+                function (capital share of income in Cobb-Douglas case)
+    delta     = scalar in [0, 1], per-period capital depreciation rate
+    delta_tau = scalar >= 0, percent of capital depreciation rate
+                refunded at the corporate income tax rate
+    r         = scalar or (T+S,) vector, interest rate on (rental rate
+                of) capital
+
+    FILES CREATED BY THIS FUNCTION: None
+
+    RETURNS: r
+    --------------------------------------------------------------------
+    '''
+    if method == 'SS':
+        delta_tau = p.delta_tau[-1]
+        delta_tau_m1 = p.delta_tau[-1]
+        tau_b = p.tau_b[-1]
+    else:
+        delta_tau = p.delta_tau[:p.T]
+        delta_tau_m1 = np.append(p.delta_tau[0], p.delta_tau[:p.T - 1])
+        tau_b = p.tau_b[:p.T]
+    MPK = get_MPK(Y, K, p, method)
+    dPsidK = adj_cost_dK(Kp1, Kp2, p, method)
+    dPsidKp1 = adj_cost_dKp1(K, Kp1, p, method)
+    r = (((1 - tau_b) * MPK + 1 - p.delta + tau_b * delta_tau *
+          (1 - delta_tau_m1) - dPsidK) / (1 + dPsidKp1) - 1)
     return r
 
 
