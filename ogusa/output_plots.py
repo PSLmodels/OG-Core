@@ -75,8 +75,17 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
                      label='Reform ' + VAR_LABELS[v])
             ylabel = r'Model Units'
         elif plot_type == 'cbo':
-            plot_var = reform_tpi[v] - base_tpi[v]
-            ylabel = r'Billions of \$'
+            # This option is not complete.  Need to think about how to
+            # best load CBO forecasts
+            plt.plot(year_vec,
+                     base_tpi[v][start_index: start_index +
+                                 num_years_to_plot],
+                     label='Baseline ' + VAR_LABELS[v])
+            plt.plot(year_vec,
+                     reform_tpi[v][start_index: start_index +
+                                   num_years_to_plot],
+                     label='Reform ' + VAR_LABELS[v])
+            ylabel = r'Trillions of \$'
         else:
             print('Please enter a valid plot type')
             assert(False)
