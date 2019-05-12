@@ -1,5 +1,6 @@
 import numpy as np
 import os
+import pickle
 import matplotlib.pyplot as plt
 from ogusa.constants import VAR_LABELS, ToGDP_LABELS
 cur_path = os.path.split(os.path.abspath(__file__))[0]
@@ -289,3 +290,126 @@ def ss_profiles(base_ss, base_params, reform_ss=None,
     else:
         return fig1
     plt.close()
+
+
+def plot_all(base_output_path, reform_output_path, save_path):
+    '''
+    Function to plot all default output plots.
+
+    Args:
+
+    Returns:
+        None: All output figures saved to disk.
+    '''
+    # Read in data
+    # Read in TPI output and parameters
+    base_tpi = pickle.load(open(os.path.join(
+        base_output_path, 'TPI', 'TPI_vars.pkl'), 'rb'))
+    base_ss = pickle.load(open(os.path.join(
+        base_output_path, 'SS', 'SS_vars.pkl'), 'rb'))
+    base_params = pickle.load(open(os.path.join(
+        base_output_path, 'model_params.pkl'), 'rb'))
+    reform_tpi = pickle.load(open(os.path.join(
+        reform_output_path, 'TPI', 'TPI_vars.pkl'), 'rb'))
+    reform_ss = pickle.load(open(os.path.join(
+        reform_output_path, 'SS', 'SS_vars.pkl'), 'rb'))
+    reform_params = pickle.load(open(os.path.join(
+        reform_output_path, 'model_params.pkl'), 'rb'))
+    # Percentage changes in macro vars (Y, K, L, C)
+    plot_aggregates(base_tpi, base_params, reform_tpi=reform_tpi,
+                    reform_params=reform_params,
+                    var_list=['Y', 'K', 'L', 'C'], plot_type='pct_diff',
+                    num_years_to_plot=150,
+                    vertical_line_years=[
+                        base_params.start_year + base_params.tG1,
+                        base_params.start_year + base_params.tG2],
+                    plot_title='Percentage Changes in Macro Aggregates',
+                    path=os.path.join(save_path, 'MacroAgg_PctChange.png'))
+
+    # Percentage change in fiscal vars (D, G, T_H, Rev)
+    plot_aggregates(base_tpi, base_params, reform_tpi=reform_tpi,
+                    reform_params=reform_params,
+                    var_list=['D', 'G', 'T_H', 'total_revenue'],
+                    plot_type='pct_diff', num_years_to_plot=150,
+                    vertical_line_years=[
+                        base_params.start_year + base_params.tG1,
+                        base_params.start_year + base_params.tG2],
+                    plot_title='Percentage Changes in Fiscal Variables',
+                    path=os.path.join(save_path, 'Fiscal_PctChange.png'))
+
+    # r and w in baseline and reform -- vertical lines at tG1, tG2
+    plot_aggregates(base_tpi, base_params, reform_tpi=reform_tpi,
+                    reform_params=reform_params,
+                    var_list=['r'],
+                    plot_type='levels', num_years_to_plot=150,
+                    vertical_line_years=[
+                        base_params.start_year + base_params.tG1,
+                        base_params.start_year + base_params.tG2],
+                    plot_title='Real Interest Rates Under Baseline and Reform',
+                    path=os.path.join(save_path, 'InterestRates.png'))
+
+    plot_aggregates(base_tpi, base_params, reform_tpi=reform_tpi,
+                    reform_params=reform_params,
+                    var_list=['w'],
+                    plot_type='levels', num_years_to_plot=150,
+                    vertical_line_years=[
+                        base_params.start_year + base_params.tG1,
+                        base_params.start_year + base_params.tG2],
+                    plot_title='Wage Rates Under Baseline and Reform',
+                    path=os.path.join(save_path, 'WageRates.png'))
+
+    # Debt-GDP in base and reform-- vertical lines at tG1, tG2
+    plot_gdp_ratio(base_tpi, base_params, reform_tpi, reform_params,
+                   var_list=['D'], num_years_to_plot=150,
+                   start_year=2019, vertical_line_years=[
+                           base_params.start_year + base_params.tG1,
+                           base_params.start_year + base_params.tG2],
+                   plot_title='Debt-to-GDP',
+                   path=os.path.join(save_path, 'DebtGDPratio.png'))
+
+    # Tax revenue to GDP in base and reform-- vertical lines at tG1, tG2
+    plot_gdp_ratio(base_tpi, base_params, reform_tpi, reform_params,
+                   var_list=['total_revenue'], num_years_to_plot=150,
+                   start_year=2019, vertical_line_years=[
+                           base_params.start_year + base_params.tG1,
+                           base_params.start_year + base_params.tG2],
+                   plot_title='Tax Revenue to GDP',
+                   path=os.path.join(save_path, 'RevenueGDPratio.png'))
+
+    # Pct change in c, n, b, y, etr, mtrx, mtry by ability group over 10 years
+    var_list = ['c_path', 'n_mat', 'bmat_splus1', 'etr_path',
+                'mtrx_path', 'mtry_path']
+    title_list = ['consumption', 'labor supply', 'savings',
+                  'effective tax rates',
+                  'marginal tax rates on labor income',
+                  'marginal tax rates on capital income']
+    path_list = ['Cons', 'Labor', 'Save', 'ETR', 'MTRx', 'MTRy']
+    for i, v in enumerate(var_list):
+        ability_bar(base_tpi, base_params, reform_tpi, reform_params,
+                    var=v, num_years=10, start_year=2019,
+                    plot_title='Percentage changes in ' + title_list[i],
+                    path=os.path.join(save_path, 'PctChange' +
+                                      path_list[i] + '.png'))
+
+    # lifetime profiles, base vs reform, SS for c, n, b, y - not by j
+    var_list = ['cssmat', 'nssmat', 'bssmat_splus1', 'etr_ss',
+                'mtrx_ss', 'mtry_ss']
+    for i, v in enumerate(var_list):
+        ss_profiles(base_ss, base_params, reform_ss, reform_params,
+                    by_j=False, var=v,
+                    plot_title='Lifecycle Profile of ' + title_list[i],
+                    path=os.path.join(save_path, 'SSLifecycleProfile' +
+                                      path_list[i] + '.png'))
+
+    # lifetime profiles, c, n , b, y by j, separately for base and reform
+    for i, v in enumerate(var_list):
+        ss_profiles(base_ss, base_params,
+                    by_j=True, var=v,
+                    plot_title='Lifecycle Profile of ' + title_list[i],
+                    path=os.path.join(save_path, 'SSLifecycleProfile' +
+                                      path_list[i] + '_Baseline.png'))
+        ss_profiles(reform_ss, reform_params,
+                    by_j=True, var=v,
+                    plot_title='Lifecycle Profile of ' + title_list[i],
+                    path=os.path.join(save_path, 'SSLifecycleProfile' +
+                                      path_list[i] + '_Reform.png'))
