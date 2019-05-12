@@ -31,3 +31,28 @@ def plot_imm_rates(p, year=2019, path=None):
     else:
         fig_path = os.path.join(path, "imm_rates_orig")
         plt.savefig(fig_path)
+
+
+def plot_ability_profiles(p, path=None):
+    '''
+    Create a plot of earnings ability profiles.
+
+    Args:
+        p (OG-USA Specifications class): parameters object
+        path (string): path to save figure to
+
+    Returns:
+        fig (Matplotlib plot object): plot of earnings ability profiles
+    '''
+    age_vec = np.arange(p.starting_age, p.starting_age + p.S)
+    fig, ax = plt.subplots()
+    for j in range(p.J):
+        plt.plot(age_vec, p.e[:, j], label='j = ' + str(j))
+    plt.xlabel(r'Age')
+    plt.ylabel(r'Earnings ability')
+    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.1), ncol=2)
+    if path is None:
+        return fig
+    else:
+        fig_path = os.path.join(path, "imm_rates_orig")
+        plt.savefig(fig_path)
