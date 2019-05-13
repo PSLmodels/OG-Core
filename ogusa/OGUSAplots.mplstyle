@@ -1,0 +1,31 @@
+lines.linewidth : 1
+font.family         : serif
+font.style          : normal
+font.variant        : normal
+font.weight         : normal
+font.stretch        : normal
+axes.prop_cycle    : (cycler('color', 'brgcmykg')) + (cycler('linestyle', ["-","--","-.",":","-", "--", "-.", ":"]))
+                                           # color cycle for plot lines
+                                           # as list of string colorspecs:
+                                           # single letter, long name, or
+                                           # web-style hex
+# Remove the plot frame lines. They are unnecessary chartjunk.
+axes.spines.bottom  : False
+axes.spines.left    : False
+axes.spines.right   : False
+axes.spines.top     : False
+
+# ticks only on right and bottom
+xtick.bottom         : True   # draw ticks on the bottom side
+ytick.left           : True   # draw ticks on the left side
+
+### GRIDS
+axes.grid           : True   # display grid or not
+grid.color       :   k       # grid color
+grid.linestyle   :   :       # dotted
+grid.linewidth   :   0.5     # in points
+grid.alpha       :   0.2    # transparency, between 0.0 and 1.0
+
+# Remove the tick marks; they are unnecessary with the tick lines we just plotted.
+#plt.tick_params(axis="both", which="both", bottom="off", top="off",
+#                labelbottom="on", left="off", right="off", labelleft="on")

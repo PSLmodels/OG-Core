@@ -162,9 +162,6 @@ class Specifications(ParametersBase):
                       self.S) - 1)
 
         # set period of retirement
-        # self.retire = np.int(np.round(((self.retirement_age -
-        #                                 self.starting_age) * self.S) /
-        #                               80.0) - 1)
         self.retire = (np.round(((self.retirement_age -
                                   self.starting_age) * self.S) /
                                 80.0) - 1).astype(int)
