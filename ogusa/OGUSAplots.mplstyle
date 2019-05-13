@@ -4,7 +4,7 @@ font.style          : normal
 font.variant        : normal
 font.weight         : normal
 font.stretch        : normal
-axes.prop_cycle    : (cycler('color', 'rbgcmykg')) + (cycler('linestyle', ["-","--","-.",":","-", "--", "-.", ":"]))
+axes.prop_cycle    : (cycler('color', 'brgcmykg')) + (cycler('linestyle', ["-","--","-.",":","-", "--", "-.", ":"]))
                                            # color cycle for plot lines
                                            # as list of string colorspecs:
                                            # single letter, long name, or
