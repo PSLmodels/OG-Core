@@ -56,3 +56,51 @@ def plot_ability_profiles(p, path=None):
     else:
         fig_path = os.path.join(path, "imm_rates_orig")
         plt.savefig(fig_path)
+
+
+def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
+    '''
+    Create a plot of showing the fit of the elliptical utility function.
+
+    Args:
+        p (OG-USA Specifications class): parameters object
+        plot_MU (boolean): whether plot marginal utility or utility in
+            levels
+        path (string): path to save figure to
+
+    Returns:
+        fig (Matplotlib plot object): plot of elliptical vs CFE utility
+    '''
+    theta = 1 / p.frisch
+    N = 101
+    n_grid = np.linspace(0.01, 0.8, num=N)
+    if plot_MU:
+        CFE = (1.0 / p.ltilde) * ((n_grid / p.ltilde) ** theta)
+        ellipse = (1.0 * p.b_ellipse * (1.0 / p.ltilde) *
+                   ((1.0 - (n_grid / p.ltilde) ** p.upsilon) **
+                    ((1.0 / p.upsilon) - 1.0)) *
+                   (n_grid / p.ltilde) ** (p.upsilon - 1.0))
+    else:
+        CFE = ((n_grid / p.ltilde) ** (1 + theta)) / (1 + theta)
+        k = 1.0  # we don't estimate k, so not in parameters
+        ellipse = (p.b_ellipse * ((1 - ((n_grid / p.ltilde) ** p.upsilon))
+                          ** (1 / p.upsilon)) + k)
+    fig, ax = plt.subplots()
+    plt.plot(n_grid, CFE, label='CFE')
+    plt.plot(n_grid, ellipse, label='Elliptical U')
+    if include_title:
+        if plot_MU:
+            plt.title('Marginal Utility of CFE and Elliptical')
+        else:
+            plt.title('Constant Frisch Elasticity vs. Elliptical Utility')
+    plt.xlabel(r'Labor Supply')
+    if plot_MU:
+        plt.ylabel(r'Marginal Utility')
+    else:
+        plt.ylabel(r'Utility')
+    plt.legend(loc='center right')
+    if path is None:
+        return fig
+    else:
+        fig_path = os.path.join(path, "EllipseCFE")
+        plt.savefig(fig_path)
