@@ -46,6 +46,8 @@ def tax_rate_table(base_TxFuncEst, base_params, reform_TxFuncEst=None,
             raise ValueError(
                 'Value {!r} is not a valid rate_type'.format(rate_type))
         if rate_type == 'all':
+            # In case num_years is greater than number of years
+            # tax function estimates are for
             len_rates = len(etr_rates[start_index: start_index +
                                       num_years])
             table = {'Year': years[:len_rates],
