@@ -37,7 +37,10 @@ VAR_LABELS = {'Y': 'GDP ($Y_t$)', 'C': 'Consumption ($C_t$)',
               'mtrx_ss':
               'Marginal Tax Rate, Labor Income ($\\bar{MTRx}_{j,s}$)',
               'mtry_ss':
-              'Marginal Tax Rate, Capital Income ($\\bar{MTRy}_{j,s}$)'
+              'Marginal Tax Rate, Capital Income ($\\bar{MTRy}_{j,s}$)',
+              'ETR': 'Effective Tax Rates',
+              'MTRx': 'Marginal Tax Rates on Labor Income',
+              'MTRy': 'Marginal Tax Rates on Capital Income'
               }
 
 ToGDP_LABELS = {'D': 'Debt-to-GDP ($D_{t}/Y_t$)',
