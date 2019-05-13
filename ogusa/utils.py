@@ -353,3 +353,51 @@ def safe_read_pickle(file_path):
         except TypeError:
             obj = pickle.load(f)
     return obj
+
+
+def save_return_table(table_df, output_type, path, precision=0):
+    '''
+    Function to save or return a table of data.
+    Args:
+        table_df: DataFrame, table
+        output_type: string, specifies the type of file to save
+            table to:
+                - 'csv'
+                - 'tex'
+                - 'excel'
+                - 'json'
+        path: string, specifies path to save file with table to
+        precision: integer, number of significant digits to print
+    Returns:
+        table_df: DataFrame, table
+        or
+        None
+    '''
+    if path is None:
+        if output_type == 'tex':
+            tab_str = table_df.to_latex(
+                buf=path, index=False, na_rep='',
+                float_format='%.' + str(precision) + 'f%%')
+            return tab_str
+        elif output_type == 'json':
+            tab_str = table_df.to_json(
+                path_or_buf=path, double_precision=0)
+            return tab_str
+        else:
+            return table_df
+    else:
+        if output_type == 'tex':
+            table_df.to_latex(buf=path, index=False, na_rep='',
+                              float_format='%.' + str(precision) + 'f%%')
+        elif output_type == 'csv':
+            table_df.to_csv(path_or_buf=path, index=False, na_rep='',
+                            float_format='%.' + str(precision) + 'f%%')
+        elif output_type == 'json':
+            table_df.to_json(path_or_buf=path,
+                             double_precision=precision)
+        elif output_type == 'excel':
+            table_df.to_excel(excel_writer=path, index=False, na_rep='',
+                              float_format='%.' + str(precision) + 'f%%')
+        else:
+            print('Please enter a valid output format')
+            assert(False)
