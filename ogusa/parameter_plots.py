@@ -6,7 +6,7 @@ style_file = os.path.join(cur_path, 'OGUSAplots.mplstyle')
 plt.style.use(style_file)
 
 
-def plot_imm_rates(p, year=2019, path=None):
+def plot_imm_rates(p, year=2019, include_title=False, path=None):
     '''
     Create a plot of immigration rates from OG-USA parameterization.
 
@@ -18,6 +18,7 @@ def plot_imm_rates(p, year=2019, path=None):
     Returns:
         fig (Matplotlib plot object): plot of immigration rates
     '''
+    assert (isinstance(year, int))
     age_per = np.linspace(p.E, p.E + p.S, p.S)
     fig, ax = plt.subplots()
     plt.scatter(age_per, p.imm_rates[year - p.start_year, :], s=40,
@@ -25,7 +26,10 @@ def plot_imm_rates(p, year=2019, path=None):
     plt.plot(age_per, p.imm_rates[year - p.start_year, :])
     plt.xlabel(r'Age $s$ (model periods)')
     plt.ylabel(r'Imm. rate $i_{s}$')
-
+    vals = ax.get_yticks()
+    ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
+    if include_title:
+            plt.title('Immigration Rates in ' + str(year))
     if path is None:
         return fig
     else:
@@ -33,7 +37,68 @@ def plot_imm_rates(p, year=2019, path=None):
         plt.savefig(fig_path)
 
 
-def plot_ability_profiles(p, path=None):
+def plot_mort_rates(p, include_title=False, path=None):
+    '''
+    Create a plot of mortality rates from OG-USA parameterization.
+
+    Args:
+        p (OG-USA Specifications class): parameters object
+        path (string): path to save figure to
+
+    Returns:
+        fig (Matplotlib plot object): plot of immigration rates
+    '''
+    age_per = np.linspace(p.E, p.E + p.S, p.S)
+    fig, ax = plt.subplots()
+    plt.plot(age_per, p.rho)
+    plt.xlabel(r'Age $s$ (model periods)')
+    plt.ylabel(r'Mortality Rates $\rho_{s}$')
+    vals = ax.get_yticks()
+    ax.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
+    if include_title:
+            plt.title('Mortality Rates')
+    if path is None:
+        return fig
+    else:
+        fig_path = os.path.join(path, "mortality_rates")
+        plt.savefig(fig_path)
+
+
+def plot_pop_growth(p, start_year=2019, include_title=False,
+                    num_years_to_plot=150, path=None):
+    '''
+    Create a plot of population growth rates by year.
+
+    Args:
+        p (OG-USA Specifications class): parameters object
+        start_year (integer): year to begin plotting
+        num_years_to_plot (integer): number of years to plot
+        path (string): path to save figure to
+
+    Returns:
+        fig (Matplotlib plot object): plot of immigration rates
+    '''
+    assert (isinstance(start_year, int))
+    assert (isinstance(num_years_to_plot, int))
+    year_vec = np.arange(start_year, start_year + num_years_to_plot)
+    start_index = start_year - p.start_year
+    fig, ax = plt.subplots()
+    plt.plot(year_vec, p.g_n[start_index: start_index +
+                             num_years_to_plot])
+    plt.xlabel(r'Year $t$')
+    plt.ylabel(r'Population Growth Rate $g_{n, t}$')
+    vals = ax.get_yticks()
+    ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
+    if include_title:
+            plt.title('Population Growth Rates')
+    if path is None:
+        return fig
+    else:
+        fig_path = os.path.join(path, "pop_growth_rates")
+        plt.savefig(fig_path)
+
+
+def plot_ability_profiles(p, include_title=False, path=None):
     '''
     Create a plot of earnings ability profiles.
 
@@ -51,10 +116,12 @@ def plot_ability_profiles(p, path=None):
     plt.xlabel(r'Age')
     plt.ylabel(r'Earnings ability')
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.1), ncol=2)
+    if include_title:
+            plt.title('Lifecycle Profiles of Effective Labor Units')
     if path is None:
         return fig
     else:
-        fig_path = os.path.join(path, "imm_rates_orig")
+        fig_path = os.path.join(path, "ability_profiles")
         plt.savefig(fig_path)
 
 
@@ -83,8 +150,9 @@ def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
     else:
         CFE = ((n_grid / p.ltilde) ** (1 + theta)) / (1 + theta)
         k = 1.0  # we don't estimate k, so not in parameters
-        ellipse = (p.b_ellipse * ((1 - ((n_grid / p.ltilde) ** p.upsilon))
-                          ** (1 / p.upsilon)) + k)
+        ellipse = (p.b_ellipse * ((1 - ((n_grid / p.ltilde) **
+                                        p.upsilon)) **
+                                  (1 / p.upsilon)) + k)
     fig, ax = plt.subplots()
     plt.plot(n_grid, CFE, label='CFE')
     plt.plot(n_grid, ellipse, label='Elliptical U')
@@ -102,5 +170,5 @@ def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
     if path is None:
         return fig
     else:
-        fig_path = os.path.join(path, "EllipseCFE")
+        fig_path = os.path.join(path, "ellipse_v_CFE")
         plt.savefig(fig_path)
