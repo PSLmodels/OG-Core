@@ -42,11 +42,11 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
         fig (Matplotlib plot object): plot of immigration rates
     '''
     assert (isinstance(start_year, int))
+    assert (isinstance(num_years_to_plot, int))
     # Make sure both runs cover same time period
     if reform_tpi is not None:
         assert (base_params.start_year == reform_params.start_year)
-    year_vec = np.arange(base_params.start_year, base_params.start_year
-                         + num_years_to_plot)
+    year_vec = np.arange(start_year, start_year + num_years_to_plot)
     start_index = start_year - base_params.start_year
     # Check that reform included if doing pct_diff or diff plot
     if plot_type == 'pct_diff' or plot_type == 'diff':
@@ -138,11 +138,11 @@ def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
         fig (Matplotlib plot object): plot of immigration rates
     '''
     assert (isinstance(start_year, int))
+    assert (isinstance(num_years_to_plot, int))
     # Make sure both runs cover same time period
     if reform_tpi is not None:
         assert (base_params.start_year == reform_params.start_year)
-    year_vec = np.arange(base_params.start_year, base_params.start_year
-                         + num_years_to_plot)
+    year_vec = np.arange(start_year, start_year + num_years_to_plot)
     start_index = start_year - base_params.start_year
     fig1, ax1 = plt.subplots()
     for i, v in enumerate(var_list):
@@ -206,6 +206,7 @@ def ability_bar(base_tpi, base_params, reform_tpi,
         fig (Matplotlib plot object): plot of immigration rates
     '''
     assert (isinstance(start_year, int))
+    assert (isinstance(num_years, int))
     # Make sure both runs cover same time period
     if reform_tpi is not None:
         assert (base_params.start_year == reform_params.start_year)
