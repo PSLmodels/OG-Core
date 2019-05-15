@@ -309,3 +309,24 @@ def test_get_r_hh(r, r_gov, K, D, expected):
     r_hh_test = aggr.get_r_hh(r, r_gov, K, D)
 
     assert(np.allclose(r_hh_test, expected))
+
+
+def test_resource_constraint():
+    """
+    Test resource constraint equation.
+    """
+    p = Specifications()
+    p.delta = 0.05
+    Y = np.array([48, 55, 2, 99, 8])
+    C = np.array([33, 44, 0.4, 55, 6])
+    G = np.array([4, 5, 0.01, 22, 0])
+    I = np.array([20, 5, 0.6, 10, 1])
+    K_f = np.array([0, 0, 0.2, 3, 0.05])
+    new_borrowing_f = np.array([0, 0.1, 0.3, 4, 0.5])
+    debt_service_f = np.array([0.1, 0.1, 0.3, 2, 0.02])
+    r = np.array([0.03, 0.04, 0.03, 0.06, 0.01])
+    expected = np.array([-9.1, 1, 0.974, 13.67, 1.477])
+    test_RC = aggr.resource_constraint(Y, C, G, I, K_f, new_borrowing_f,
+                                       debt_service_f, r, p)
+
+    assert(np.allclose(test_RC, expected))

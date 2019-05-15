@@ -113,7 +113,7 @@ class Specifications(ParametersBase):
                          'delta_tau_annual', 'tau_b', 'tau_bq',
                          'tau_payroll', 'h_wealth', 'm_wealth',
                          'p_wealth', 'retirement_age',
-                         'replacement_rate_adjust']
+                         'replacement_rate_adjust', 'zeta_D', 'zeta_K']
         for item in tp_param_list:
             this_attr = getattr(self, item)
             if this_attr.ndim > 1:
@@ -154,9 +154,6 @@ class Specifications(ParametersBase):
         self.firm_r = rate_conversion(firm_r_annual, self.starting_age, self.ending_age, self.S)
         self.hh_r = rate_conversion(hh_r_annual, self.starting_age, self.ending_age, self.S)
         # set period of retirement
-        # self.retire = np.int(np.round(((self.retirement_age -
-        #                                 self.starting_age) * self.S) /
-        #                               80.0) - 1)
         self.retire = (np.round(((self.retirement_age -
                                   self.starting_age) * self.S) /
                                 80.0) - 1).astype(int)

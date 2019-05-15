@@ -182,9 +182,10 @@ def get_KLratio_from_r(r, p, method):
         delta_tau = p.delta_tau[-1]
         tau_b = p.tau_b[-1]
     else:
-        Z = p.Z[:p.T]
-        delta_tau = p.delta_tau[:p.T]
-        tau_b = p.tau_b[:p.T]
+        length = r.shape[0]
+        Z = p.Z[:length]
+        delta_tau = p.delta_tau[:length]
+        tau_b = p.tau_b[:length]
     if p.epsilon == 1:
         # Cobb-Douglas case
         bracket = (((1 - tau_b) * p.gamma * Z) /
@@ -273,8 +274,6 @@ def get_K(L, r, p, method):
     '''
     KLratio = get_KLratio_from_r(r, p, method)
     K = KLratio * L
-
-    print('USING firm.getK()')
 
     return K
 
