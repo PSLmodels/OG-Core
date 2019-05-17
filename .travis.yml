@@ -1,8 +1,10 @@
 sudo: false
 
+dist: xenial
 language: python
 python:
   - "3.6"
+  - "3.7"
 
 install:
   # Install conda
@@ -14,9 +16,15 @@ install:
   - conda create -n ogusa-dev python=$TRAVIS_PYTHON_VERSION
   - source activate ogusa-dev
   - conda env update -f environment.yml
-  - pip install -e .
-
+  - pip install pyyaml
+  - pip install pytest-pep8
+  - pip install coverage
+  - pip install codecov
+  - python setup.py install
 
 # command to run tests, e.g. python setup.py test
 script:
   - cd ogusa; py.test -s -v -m 'not full_run and not regression'
+
+after_success:
+  - codecov

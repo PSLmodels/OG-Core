@@ -7,16 +7,16 @@ source:
 
 requirements:
   build:
-    - python=3.6
-    - taxcalc
+    - python=
+    - "taxcalc>=2.1.0"
     - setuptools
     - scipy
     - matplotlib
     - dask
 
   run:
-    - python=3.6
-    - taxcalc
+    - python
+    - "taxcalc>=2.1.0"
     - setuptools
     - scipy
     - matplotlib
