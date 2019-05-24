@@ -25,7 +25,7 @@ def run_micro_macro(user_params):
     client = Client(processes=False)
     num_workers = 1  # multiprocessing.cpu_count()
     print('Number of workers = ', num_workers)
-    start_time = time.time()
+    run_start_time = time.time()
 
     # Set some model parameters
     # See parameters.py for description of these parameters
@@ -85,7 +85,7 @@ def run_micro_macro(user_params):
     ans = postprocess.create_diff(
         baseline_dir=BASELINE_DIR, policy_dir=REFORM_DIR)
 
-    print("total time was ", (time.time() - start_time))
+    print("total time was ", (time.time() - run_start_time))
     print('Percentage changes in aggregates:', ans)
 
 
