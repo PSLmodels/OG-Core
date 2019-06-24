@@ -9,6 +9,7 @@ from ogusa.utils import comp_array, comp_scalar, dict_compare
 from ogusa.get_micro_data import get_calculator
 from ogusa import SS, TPI, utils
 from ogusa.parameters import Specifications
+from taxcalc import Data, GrowFactors
 
 TOL = 1e-5
 
@@ -233,6 +234,6 @@ def test_get_micro_data_get_calculator():
 
     calc = get_calculator(baseline=False, calculator_start_year=2017,
                           reform=reform, data=TAXDATA,
-                          weights=WEIGHTS,
+                          gfactors=GrowFactors(), weights=WEIGHTS,
                           records_start_year=CPS_START_YEAR)
     assert calc.current_year == 2017
