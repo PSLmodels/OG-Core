@@ -1,22 +1,4 @@
-'''
-------------------------------------------------------------------------
-Calculates steady state of OG-USA model with S age cohorts and J
-ability types.
-
-This py-file calls the following other file(s):
-            tax.py
-            household.py
-            firm.py
-            utils.py
-            OUTPUT/SS/ss_vars.pkl
-
-This py-file creates the following other file(s):
-    (make sure that an OUTPUT folder exists)
-            OUTPUT/SS/ss_vars.pkl
-------------------------------------------------------------------------
-'''
-
-# Packages
+# imports
 import numpy as np
 import scipy.optimize as opt
 import pickle
@@ -566,14 +548,14 @@ def SS_fsolve(guesses, *args):
 
 def run_SS(p, client=None):
     '''
-    Solve for SS of OG-USA.
+    Solve for steady-state equilibrium of OG-USA.
 
     Args:
         p (OG-USA Specifcations object): model parameters
         client (Dask client object): client
 
     Returns:
-        output (dictionary): dictionary with steady state solution
+        output (dictionary): dictionary with steady-state solution
             results
 
     '''
