@@ -9,6 +9,7 @@ from ogusa.utils import comp_array, comp_scalar, dict_compare
 from ogusa.get_micro_data import get_calculator
 from ogusa import SS, TPI, utils
 from ogusa.parameters import Specifications
+from taxcalc import Data, GrowFactors
 
 TOL = 1e-5
 
@@ -110,14 +111,13 @@ def test_constant_demographics_TPI():
         try:
             print("making dir: ", _dir)
             os.makedirs(_dir)
-        except OSError as oe:
+        except OSError:
             pass
     spec = Specifications(run_micro=False, output_base=output_base,
                           baseline_dir=baseline_dir, test=False,
                           time_path=True, baseline=True, reform={},
                           guid='')
     spec.update_specifications(user_params)
-    print('path for tax functions: ', spec.output_base)
     spec.get_tax_function_parameters(None, False)
     # Run SS
     ss_outputs = SS.run_SS(spec, None)
@@ -125,16 +125,8 @@ def test_constant_demographics_TPI():
     utils.mkdirs(os.path.join(baseline_dir, "SS"))
     ss_dir = os.path.join(baseline_dir, "SS/SS_vars.pkl")
     pickle.dump(ss_outputs, open(ss_dir, "wb"))
-    # Save pickle with parameter values for the run
-    param_dir = os.path.join(baseline_dir, "model_params.pkl")
-    pickle.dump(spec, open(param_dir, "wb"))
+    # Run TPI
     tpi_output = TPI.run_TPI(spec, None)
-    print('Max diff btwn SS and TP bsplus1 = ',
-          np.absolute(tpi_output['bmat_splus1'][:spec.T, :, :] -
-                      ss_outputs['bssmat_splus1']).max())
-    print('Max diff btwn SS and TP Y = ',
-          np.absolute(tpi_output['Y'][:spec.T] -
-                      ss_outputs['Yss']).max())
     assert(np.allclose(tpi_output['bmat_splus1'][:spec.T, :, :],
                        ss_outputs['bssmat_splus1']))
 
@@ -242,6 +234,6 @@ def test_get_micro_data_get_calculator():
 
     calc = get_calculator(baseline=False, calculator_start_year=2017,
                           reform=reform, data=TAXDATA,
-                          weights=WEIGHTS,
+                          gfactors=GrowFactors(), weights=WEIGHTS,
                           records_start_year=CPS_START_YEAR)
     assert calc.current_year == 2017
