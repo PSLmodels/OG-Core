@@ -7,8 +7,8 @@ source:
 
 requirements:
   build:
-    - python=
-    - "taxcalc>=2.1.0"
+    - python
+    - "taxcalc>=2.4.0"
     - setuptools
     - scipy
     - matplotlib
@@ -16,7 +16,7 @@ requirements:
 
   run:
     - python
-    - "taxcalc>=2.1.0"
+    - "taxcalc>=2.4.0"
     - setuptools
     - scipy
     - matplotlib

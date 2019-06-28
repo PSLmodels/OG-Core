@@ -7,10 +7,7 @@ dependencies:
 - mkl
 - scipy>=0.18.1
 - matplotlib
-- taxcalc>=2.1.0
-- numba
-- numpy>=1.12.1
-- pandas>=0.22.0
+- taxcalc>=2.4.0
 - pytest
 - pytest-pep8
 - pytest-xdist
