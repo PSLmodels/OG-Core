@@ -21,7 +21,7 @@ install:
 
 # command to run tests, e.g. python setup.py test
 script:
-  - python -c "import ogusa"; coverage run -m pytest -s -v -v -m 'not full_run and not regression' --pep8
+  - python -c "import ogusa"; coverage run -m pytest -s -v -m 'not full_run and not regression' --pep8
 
 after_success:
   - codecov

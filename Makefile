@@ -13,7 +13,7 @@ help:
 	@echo "clean      : remove .pyc files and local ccc package"
 	@echo "package    : build and install local package"
 	@echo "pytest     : generate report for and cleanup after"
-	@echo "             pytest -W ignore -n4 -m ''"
+	@echo "             pytest -W ignore -m ''"
 	@echo "cstest     : generate coding-style errors using the"
 	@echo "             pycodestyle (nee pep8) tool"
 	@echo "coverage   : generate test coverage report"
@@ -32,7 +32,7 @@ package:
 
 .PHONY=pytest
 pytest:
-	@cd ogusa ; pytest -W ignore -n4
+	@cd ogusa ; pytest -W ignore
 
 OGUSA_JSON_FILES := $(shell ls -l ./ogusa/*json | awk '{print $$9}')
 
