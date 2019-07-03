@@ -17,11 +17,11 @@ install:
   - source activate ogusa-dev
   - conda env update -f environment.yml
   - pip install codecov
-  - pip install .
+  - pip install -e .
 
 # command to run tests, e.g. python setup.py test
 script:
-  - python -c "import ogusa"; coverage run -m pytest -s -v -m 'not full_run and not regression' --pep8
+  - python -c "import ogusa"; coverage run -m pytest -s -v -m 'not full_run and not regression'
 
 after_success:
   - codecov
