@@ -20,6 +20,22 @@ import numpy as np
 def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
     '''
     Calculate the time paths of debt and government spending
+
+    Args:
+        r_gov (Numpy array): interest rate on government debt over the
+            time path
+        dg_fixed_values (tuple): (Y, total_revenue, T_H, D0, G0) values
+            of variables that are taken as given in the government
+            budget constraint
+        Gbaseline (Numpy array): government spending over the time path
+            in the baseline equilibrium, used only if
+            baseline_spending=True
+        p (OG-USA Specifcations object): model parameters
+
+    Returns:
+        D (Numpy array): government debt over the time path
+        G (Numpy array): government spending over the time path
+
     '''
     Y, total_revenue, T_H, D0, G0 = dg_fixed_values
 
@@ -64,6 +80,19 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
 def get_r_gov(r, p):
     '''
     Determine the interest rate on government debt
+
+    .. math::
+        r_{gov,t} = \max\{\tau{g}r_{t} - shift, 0.0\}
+
+    Args:
+        r (array_like): interest rate on private capital debt over the
+            time path or in the steady state
+        p (OG-USA Specifcations object): model parameters
+
+    Returns:
+        r_gov (array_like): interest rate on government debt over the
+            time path or in the steady-state
+
     '''
     r_gov = np.maximum(p.r_gov_scale * r - p.r_gov_shift, 0.00)
 
