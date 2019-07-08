@@ -2,14 +2,6 @@
 ------------------------------------------------------------------------
 This program reads in the output from TPI.py and creates table of
 percentage changes between the baseline and policy results.
-
-This py-file calls the following other file(s):
-            /baseline_dir/TPI/TPI_macro_vars.pkl
-            /policy_dir/TPI/TPI_macro_vars.pkl
-            /baseline_dir/SSinit/ss_init_vars.pkl
-            /policy_dir/SSinit/ss_init_vars.pkl
-
-This py-file creates the following other file(s): None
 ------------------------------------------------------------------------
 '''
 
@@ -21,44 +13,25 @@ from ogusa.utils import safe_read_pickle
 
 def dump_diff_output(baseline_dir, policy_dir):
     '''
-    --------------------------------------------------------------------
     This function reads the pickles with the SS and time path results
     from the baseline and reform and then calculates the percentage
     differences between the two for each year in the 10-year budget
     window, over the entire budget window, and in the SS.
-    --------------------------------------------------------------------
 
-    INPUTS:
-    baseline_dir = string, path for directory with baseline policy results
-    policy_dir   = string, path for directory with reform policy results
+    Args:
+        baseline_dir (str): path for directory with baseline policy
+            results
+        policy_dir (str): path for directory with reform policy results
 
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+    Returns:
+    baseline_macros (Numpy array): time path for relevant macro
+        variables from baseline equilibrium, order of variables
+        is Y, C, I, L, w, r, total_revenue
+    policy_macros (Numpy array): time path for relevant macro
+        variables from reform equilibrium
+    pct_changes (Numpy array): percentage changes in macro variables
+        from baseline to reform for each year in the time path
 
-    OBJECTS CREATED WITHIN FUNCTION:
-    tpi_macro_vars_policy_path   = string, path to pickle with time path
-                                    results for reform
-    tpi_macro_vars_policy        = dictionary, dictionary with numpy arrays of
-                                    results from transition path equilibrium for reform
-    tpi_macro_vars_baseline_path = string, path to pickle with time path
-                                    results for baseline policy
-    tpi_macro_vars_baseline      = dictionary, dictionary with numpy arrays of
-                                    results from transition path equilibrium for baseline policy
-    baseline_macros              = [7,T] array, numpy array with time path for relevant macro
-                                    variables from baseline equilibrium
-    policy_macros                = [7,T] array, numpy array with time path for relevant macro
-                                    variables from reform equilibrium
-    pct_changes                  = [7,12] array, numpy array with pct changes in macro variables
-                                    from baseline to reform for each year
-                                    in the budget window (10 years), over all 10 years, and in the SS
-    ss_policy_path               = string, path to pickle of SS results for reform
-    ss_policy                    = dictionary, dictionary with numpy arrays of results from
-                                    SS equilibrium for reform
-    ss_baseline_path             = string, path to pickle of SS results for baseline
-    ss_baseline                  = dictionary, dictionary with numpy arrays of results from
-                                    SS equilibrium for baseline
-
-    RETURNS: pct_changes
-    --------------------------------------------------------------------
     '''
 
     # read macro output
