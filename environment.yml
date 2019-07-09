@@ -2,15 +2,12 @@ name: ogusa-dev
 channels:
 - PSLmodels
 dependencies:
-- python>=3.6
+- python
 - setuptools
 - mkl
 - scipy>=0.18.1
 - matplotlib
-- taxcalc>=0.22.1
-- numba
-- numpy>=1.12.1
-- pandas>=0.22.0
+- taxcalc>=2.4.0
 - pytest
 - pytest-pep8
 - pytest-xdist
