@@ -638,10 +638,10 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         graph (bool): whether to plot the estimated functions compared
             to the data
 
-    Returns: params, wsse, obs
-    params (Numpy array): vector of estimated parameters
-    wsse (scalar): weighted sum of squared deviations from minimization,
-    obs (int): number of obervations in the data, > 600
+    Returns:
+        params (Numpy array): vector of estimated parameters
+        wsse (scalar): weighted sum of squared deviations from minimization,
+        obs (int): number of obervations in the data, > 600
 
     '''
     X = df['Total labor income']
@@ -890,6 +890,55 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                   tax_func_type, analytical_mtrs, desc_data, graph_data,
                   graph_est, output_dir, numparams, tpers):
     '''
+    Function that is looped over.  Estimates tax functions for a
+    particular year.
+
+    Args:
+        t (int): year of tax data to estimated tax functions for
+        micro_data (Pandas DataFrame): tax return data for year t
+        beg_yr (int): first year of budget window
+        s_min (int): minimum age to estimate tax functions for
+        s_max (int): maximum age to estimate tax functions for
+        age_specific (bool): whether to estimate age specific tax
+            functions
+        tax_func_type (str): functional form of tax functions
+        analytical_mtrs (bool): whether to use the analytical derivation
+            of the marginal tax rates (and thus only need to estimate
+            the effective tax rate functions)
+        desc_data (bool): whether to print descriptive statistics
+        graph_data (bool): whether to plot data
+        graph_est (bool): whether to plot estimated coefficients
+        output_dir (str): path to save output to
+        numparams (int): number of parameters in tax functions
+        tpers (int): number of years in the budget window
+
+    Returns:
+        TotPop_yr (int): total population derived from micro data
+        Pct_age (Numpy array): fraction of observations that are in each
+            age bin
+        AvgInc (scalar): mean income in the data
+        AvgETR (scalar): mean effective tax rate in data
+        AvgMTRx (scalar): mean marginal tax rate on labor income in data
+        AvgMTRy (scalar): mean marginal tax rate on capital income in
+            data
+        etrparam_arr (Numpy array): parameters of the effective tax rate
+            functions
+        etr_wsumsq_arr (Numpy array): weighted sum of squares from
+            estimation of the effective tax rate functions
+        etr_obs_arr (Numpy array): weighted sum of squares from
+            estimation of the effective tax rate functions
+        mtrxparam_arr (Numpy array): parameters of the marginal tax rate
+            on labor income functions
+        mtrx_wsumsq_arr (Numpy array): weighted sum of squares from
+            estimation of the marginal tax rate on labor income functions
+        mtrx_obs_arr (Numpy array): weighted sum of squares from
+            estimation of the marginal tax rate on labor income functions
+        mtryparam_arr (Numpy array): parameters of the marginal tax rate
+            on capital income functions
+        mtry_wsumsq_arr (Numpy array): weighted sum of squares from
+            estimation of the marginal tax rate on capital income functions
+        mtry_obs_arr (Numpy array): weighted sum of squares from
+            estimation of the marginal tax rate on capital income functions
 
     '''
     # initialize arrays for output
@@ -1276,84 +1325,16 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
         tax_func_type (str): functional form of tax functions
         age_specific (bool): whether to estimate age specific tax
             functions
-        
-    beg_yr          = integer >= 2016, current year for analysis
-    baseline        = Boolean, =True performs baseline analysis in
-                      getting tax micro data from Tax-Calculator
-    analytical_mtrs = Boolean, =True if use analytical_mtrs, =False if
-                      use estimated MTRs
-    age_specific    = Boolean, =True calculates tax functions for each
-                      age, =False calculates an average over all ages
-    reform          = dictionary, Tax-Calculator reform values to be
-                      passed in to get_micro_data.get_data() function
+        reform (dict): policy reform dictionary for Tax-Calculator
+        data (str or Pandas DataFrame): path to or data to use in
+            Tax-Calculator
+        client (Dask client object): client
+        num_workers (int): number of workers to use for parallelization
+            with Dask
 
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
-        utils.mkdirs()
-        get_micro_data.get_data()
+    Returns:
+        dict_param (dict): dictionary with tax function parameters
 
-    OBJECTS CREATED WITHIN FUNCTION:
-    (See comments within this function)
-    dict_params = dictionary,
-
-    RETURNS: dict_params
-    --------------------------------------------------------------------
-    Set parameters and create objects for output
-    --------------------------------------------------------------------
-    S               = integer >= 3, number of periods an individual can
-                      live. S represents the lifespan in years between
-                      s_min and s_max
-    tpers           = integer >= 1, number of years in budget window to
-                      estimate tax functions
-    s_min           = integer > 0, minimum economically active age
-                      (years)
-    s_max           = integer > s_min, maximum age (years)
-    end_yr          = integer >= beg_yr, ending year for analysis
-    numparams       = integer > 0, number of parameters to estimate for
-                      the tax function for each age s and year t
-    desc_data       = Boolean, =True if print descriptive stats for data
-                      each age (s) and year (t)
-    graph_data      = Boolean, =True if print 3D scatterplots of data
-                      for each age (s) and year (t)
-    graph_est       = Boolean, =True if print 3D plot of data and
-                      estimated tax function for each age s and year t
-    etrparam_arr    = (s_max-s_min+1, tpers, numparams) array, parameter
-                      values for the estimated effective tax rate
-                      functions for each age s and year t
-    mtrxparam_arr   = (s_max-s_min+1, tpers, numparams) array, parameter
-                      values for the estimated marginal tax rate funcs
-                      of labor income for each age s and year t
-    mtryparam_arr   = (s_max-s_min+1, tpers, numparams) array, parameter
-                      values for the estimated marginal tax rate funcs
-                      of capital income for each age s and year t
-    etr_wsumsq_arr  = (s_max-s_min+1, tpers) matrix, weighted sum of
-                      squared deviations from ETR estimations for each
-                      year (t) and age (s)
-    etr_obs_arr     = (s_max-s_min+1, tpers) matrix, number of
-                      observations for ETR estimations for each year (t)
-                      and age (s)
-    mtrx_wsumsq_arr = (s_max-s_min+1, tpers) matrix, weighted sum of
-                      squared deviations from MTRx estimations for each
-                      year (t) and age (s)
-    mtrx_obs_arr    = (s_max-s_min+1, tpers) matrix, number of
-                      observations for MTRx estimations for each year
-                      (t) and age (s)
-    mtry_wsumsq_arr = (s_max-s_min+1, tpers) matrix, weighted sum of
-                      squared deviations from MTRy estimations for each
-                      year (t) and age (s)
-    mtry_obs_arr    = (s_max-s_min+1, tpers) matrix, number of
-                      observations for MTRy estimations for each year
-                      (t) and age (s)
-    AvgInc          = (tpers,) vector, average income in each year
-    AvgETR          = (tpers,) vector, average ETR in each year
-    AvgMTRx         = (tpers,) vector, average MTRx in each year
-    AvgMTRy         = (tpers,) vector, average MTRy in each year
-    TotPop_yr       = (tpers,) vector, total population according to
-                      weights variable in each year
-    PopPct_age      = (s_max-s_min+1, tpers) matrix, population percent
-                      of each age in each year
-    years_list      = [beg_yr-end_yr+1,] vector, iterable list of years
-                      to be forecast
-    --------------------------------------------------------------------
     '''
     tpers = BW
     s_min = starting_age + 1
@@ -1607,17 +1588,29 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
     baseline or reform policy.
 
     Args:
-    baseline        = boolean, =True if baseline tax policy, =False if
-                      reform
-    analytical_mtrs = boolean, =True if use analytical_mtrs, =False if
-                      use estimated MTRs
-    age_specific    = boolean, =True if estimate tax functions
-                      separately for each age, =False if estimate a
-                      single tax function to represent all ages in a
-                      given budget year
-    start_year      = integer, first year of budget window
-    reform          = dictionary, reform parameters
-    guid            = string, id for reform run
+        BW (int): number of years in the budget window (the period over
+            which tax policy is assumed to vary)
+        S (int): number of model periods a model agent is economically
+            active for
+        starting_age (int): minimum age to estimate tax functions for
+        ending_age (int): maximum age to estimate tax functions for
+        baseline (bool): whether these are the baseline tax functions
+        analytical_mtrs (bool): whether to use the analytical derivation
+            of the marginal tax rates (and thus only need to estimate
+            the effective tax rate functions)
+        tax_func_type (str): functional form of tax functions
+        age_specific (bool): whether to estimate age specific tax
+            functions
+        start_yr (int): first year of budget window
+        reform (dict): policy reform dictionary for Tax-Calculator
+        guid (str): id for the particular run
+        tx_func_est_path (str): path to save pickle with estimated tax
+            function parameters to
+        data (str or Pandas DataFrame): path to or data to use in
+            Tax-Calculator
+        client (Dask client object): client
+        num_workers (int): number of workers to use for parallelization
+            with Dask
 
     Returns:
         None
