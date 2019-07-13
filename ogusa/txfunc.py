@@ -6,23 +6,6 @@ tau_{s,t} is the effective tax rate, marginal tax rate on labor income,
 or the marginal tax rate on capital income, for a given age (s) in a
 particular year (t). x is total labor income, and y is total capital
 income.
-
-This module defines the following functions:
-    get_tax_rates()
-    wsumsq()
-    find_outliers()
-    replace_outliers()
-
-    tax_func_estimate()
-    get_tax_func_estimate()
-
-This Python script calls the following modules:
-    get_micro_data.py
-    utils.py
-
-This Python script outputs the following:
-    ./TAX_ESTIMATE_PATH/TxFuncEst_baseline{}.pkl
-    ./TAX_ESTIMATE_PATH/TxFuncEst_policy{}.pkl
 ------------------------------------------------------------------------
 '''
 # Import packages
@@ -52,53 +35,20 @@ Define Functions
 
 def gen_3Dscatters_hist(df, s, t, output_dir):
     '''
-    --------------------------------------------------------------------
     Create 3-D scatterplots and corresponding 3D histogram of ETR, MTRx,
     and MTRy as functions of labor income and capital income with
     truncated data in the income dimension
-    --------------------------------------------------------------------
-    INPUTS:
-    df         = (N1, 11) DataFrame, 11 variables with N observations
-    s          = integer >= 21, age of individual
-    t          = integer >= 2016, year of analysis
-    output_dir = string, output directory for saving plot files
 
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+    Args:
+        df (Pandas DataFrame): 11 variables with N observations of tax
+            rates
+        s (int): age of individual, >= 21
+        t (int): year of analysis, >= 2016
+        output_dir (str): output directory for saving plot files
 
-    OBJECTS CREATED WITHIN FUNCTION:
-    df_trnc   = (N2 x 6) DataFrame, truncated data for 3D graph
-    inc_lab   = (N2 x 1) vector, total labor income for 3D graph
-    inc_cap   = (N2 x 1) vector, total capital income for 3D graph
-    etr_data  = (N2 x 1) vector, effective tax rate data
-    mtrx_data = (N2 x 1) vector, marginal tax rate of labor income data
-    mtry_data = (N2 x 1) vector, marginal tax rate of capital income
-                data
-    filename  = string, name of image file
-    fullpath  = string, full path of file
-    bin_num   = integer >= 2, number of bins along each axis for 3D
-                histogram
-    hist      = (bin_num, bin_num) matrix, bin percentages
-    xedges    = (bin_num+1,) vector, bin edge values in x-dimension
-    yedges    = (bin_num+1,) vector, bin edge values in y-dimension
-    x_midp    = (bin_num,) vector, midpoints of bins in x-dimension
-    y_midp    = (bin_num,) vector, midpoints of bins in y-dimension
-    elements  = integer, total number of 3D histogram bins
-    xpos      = (bin_num * bin_num) vector, x-coordinates of each bin
-    ypos      = (bin_num * bin_num) vector, y-coordinates of each bin
-    zpos      = (bin_num * bin_num) vector, zeros or z-coordinates of
-                origin of each bin
-    dx        = (bin_num,) vector, x-width of each bin
-    dy        = (bin_num,) vector, y-width of each bin
-    dz        = (bin_num * bin_num) vector, height of each bin
+    Returns:
+        None
 
-    FILES SAVED BY THIS FUNCTION:
-        output_dir/ETR_Age_[age]_Year_[year]_data.png
-        output_dir/MTRx_Age_[age]_Year_[year]_data.png
-        output_dir/MTRy_Age_[age]_Year_[year]_data.png
-        output_dir/Hist_Age_[age]_Year_[year].png
-
-    RETURNS: None
-    --------------------------------------------------------------------
     '''
     # Truncate the data
     df_trnc = df[(df['Total labor income'] > 5) &
@@ -187,32 +137,33 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
 
 def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
     '''
-    --------------------------------------------------------------------
     This function plots a single estimated tax function against its
     corresponding data
-    --------------------------------------------------------------------
-    cmap1       = color map object for matplotlib 3D plots
-    tx_label    = string, text representing type of tax rate
-    gridpts     = scalar > 2, number of grid points in X and Y
-                  dimensions
-    X_vec       = (gridpts,) vector, discretized log support of X
-    Y_vec       = (gridpts,) vector, discretized log support of Y
-    X_grid      = (gridpts, gridpts) matrix, ?
-    Y_grid      = (gridpts, gridpts) matrix, ?
-    txrate_grid = (gridpts, gridpts) matrix, ?
-    filename    = string, name of plot to be saved
-    fullpath    = string, full path name of file to be saved
-    df_trnc_gph = (Nb, 11) DataFrame, truncated data for plotting
-    X_gph       = (Nb,) Series, truncated labor income data
-    Y_gph       = (Nb,) Series, truncated capital income data
-    txrates_gph = (Nb,) Series, truncated tax rate (ETR, MTRx, or MTRy)
-                  data
-    --------------------------------------------------------------------
+
+    Args:
+        tx_params (Numpy array):
+        data (Pandas DataFrame): 11 variables with N observations of tax
+            rates
+        params (tuple): containts (s, t, rate_type, plot_full,
+            plot_trunc, show_plots, save_plots, output_dir)
+        s (int): age of individual, >= 21
+        t (int): year of analysis, >= 2016
+        tax_func_type (str): functional form of tax functions
+        rate_type (str): type of tax rate: mtrx, mtry, etr
+        plot_full (bool): whether to plot all data points
+        plot_trunc (bool): whether to plot truncated data points
+        show_plots (bool): whether to show plots
+        save_plots (bool): whether to save plots
+        output_dir (str): output directory for saving plot files
+
+    Returns:
+        None
+
     '''
     X_data = data['Total labor income']
     Y_data = data['Total capital income']
-    (s, t, rate_type, plot_full, plot_trunc, show_plots, save_plots,
-        output_dir) = params
+    (s, t, tax_func_type, rate_type, plot_full, plot_trunc, show_plots,
+     save_plots, output_dir) = params
 
     cmap1 = matplotlib.cm.get_cmap('summer')
 
@@ -242,9 +193,9 @@ def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
         Y_vec = np.exp(np.linspace(np.log(1), np.log(Y_data.max()),
                                    gridpts))
         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-        txrate_grid = get_tax_rates(tx_params, X_grid, Y_grid, None,
-                                    tax_func_type, rate_type,
-                                    for_estimation=False)
+        txrate_grid = get_tax_rates(
+            tx_params, X_grid, Y_grid, None, tax_func_type, rate_type,
+            for_estimation=False)
         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
                         linewidth=0)
 
@@ -292,9 +243,9 @@ def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
         Y_vec = np.exp(np.linspace(np.log(1), np.log(Y_trnc.max()),
                                    gridpts))
         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-        txrate_grid = get_tax_rates(tx_params, X_grid, Y_grid, None,
-                                    tax_func_type, rate_type,
-                                    for_estimation=False)
+        txrate_grid = get_tax_rates(
+            tx_params, X_grid, Y_grid, None, tax_func_type, rate_type,
+            for_estimation=False)
         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
                         linewidth=0)
 
@@ -312,6 +263,26 @@ def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
 
 def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
                   for_estimation=True):
+    '''
+    Generates tax rates given income data and the parameters of the tax
+    functions.
+
+    Args:
+        params (tuple): parameters of the tax function, varies by
+            tax_func_type
+        X (array_like): labor income data
+        Y (array_like): capital income data
+        wgts (array_like): weights for data observations
+        tax_func_type (str): functional form of tax functions
+        rate_type (str): type of tax rate: mtrx, mtry, etr
+        for_estimation (bool): whether the results are used in
+            estimation, if True, then tax rates are computed as
+            deviations from the mean
+
+    Returns:
+        txrates (array_like): model tax rates for each observation
+
+    '''
     X2 = X ** 2
     Y2 = Y ** 2
     income = X + Y
@@ -380,60 +351,27 @@ def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
 
 def wsumsq(params, *args):
     '''
-    --------------------------------------------------------------------
     This function generates the weighted sum of squared deviations of
     predicted values of tax rates (ETR, MTRx, or MTRy) from the tax
     rates from the data for the Cobb-Douglas functional form of the tax
     function.
-    --------------------------------------------------------------------
-    INPUTS:
-    params  = (7,) vector, guesses for (A, B, C, D,
-              max_x, max_y, share)
-    A   = scalar > 0, adjusted coefficient on \hat{X^2} term
-    B   = scalar > 0, adjusted coefficient on \hat{X} term
-    C   = scalar > 0, adjusted coefficient on \hat{Y^2} term
-    D   = scalar > 0, adjusted coefficient on \hat{Y} term
-    max_x   = scalar > 0, maximum asymptotic tax rate when y=0
-    max_y   = scalar > 0, maximum asymptotic tax rate when x=0
-    share   = scalar in [0,1], share parameter in Cobb-Douglas function
-    args    = length 7 tuple, (X, Y, min_x, min_y, shift, txrates, wgts)
-    X       = (N,) Series, X (labor income) data
-    Y       = (N,) Series, Y (capital income) data
-    min_x   = scalar < max_x, minimum value of tax rate when y=0
-    min_y   = scalar < max_y, minimum value of tax rate when x=0
-    shift   = scalar, shifts the entire tax rate function
-    txrates = (N,) Series, tax rate data (ETR, MTRx, or MTRy)
-    wgts    = (N,) Series, population weights for each observation
 
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+    Args:
+        params (tuple): tax function parameter values
+        args (tuple): contains (fixed_tax_func_params, X, Y, txrates,
+            wgts, tax_func_type, rate_type)
+        fixed_tax_func_params (tuple): value of parameters of tax
+            functions that are not estimated
+        X (array_like): labor income data
+        Y (array_like): capital income data
+        txrates (array_like): tax rates data
+        wgts (array_like): weights for data observations
+        tax_func_type (str): functional form of tax functions
+        rate_type (str): type of tax rate: mtrx, mtry, etr
 
-    OBJECTS CREATED WITHIN FUNCTION:
-    X2          = (N,) Series, X^2 (labor income ** 2) data
-    Y2          = (N,) Series, Y^2 (capital income ** 2) data
-    X2bar       = scalar > 0, weighted average of X2 (labor income^2)
-    Xbar        = scalar > 0, weighted average of X (labor income)
-    Y2bar       = scalar > 0, weighted average of Y2 (capital income^2)
-    Ybar        = scalar > 0, weighted average of Y (capital income)
-    shift_x     = scalar, shifter to make tau(x) in CES positive
-    shift_y     = scalar, shifter to make tau(y) in CES positive
-    X2til       = (N,) Series, X2 percent deviation from weighted mean
-    Xtil        = (N,) Series, X percent deviation from weighted mean
-    Y2til       = (N,) Series, Y2 percent deviation from weighted mean
-    Ytil        = (N,) Series, Y percent deviation from weighted mean
-    Etil        = scalar > 0, constant term in adjusted X polynomial
-    Ftil        = scalar > 0, constant term in adjusted Y polynomial
-    tau_x       = (N,) Series, ratio of polynomials function tau(X)
-                  evaluated at points X
-    tau_y       = (N,) Series, ratio of polynomials function tau(Y)
-                  evaluated at points Y
-    txrates_est = (N,) Series, predicted tax rates (ETR, MTRx, MTRy) for
-                  each observation
-    errors      = (N,) Series, difference between predicted tax rates
-                  and the tax rates from the data
-    wssqdev     = scalar > 0, weighted sum of squared deviations
+    Returns:
+        wssqdev (scalar): weighted sum of squared deviations, >0
 
-    RETURNS: wssqdev
-    --------------------------------------------------------------------
     '''
     (fixed_tax_func_params, X, Y, txrates, wgts, tax_func_type,
      rate_type) = args
@@ -449,27 +387,24 @@ def wsumsq(params, *args):
 def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
                   graph=False):
     '''
-    --------------------------------------------------------------------
     This function takes a matrix of sum of squared errors (SSE) from
     tax function estimations for each age (s) in each year of the budget
     window (t) and marks estimations that have outlier SSE.
-    --------------------------------------------------------------------
-    INPUTS:
-    sse_mat    = [S,BW] array, SSE for each estimated tax function
-    age_vec    = [S,] vector, vector of ages
-    se_mult    = scalar, multiple of standard deviations before consider
-                  estimate an outlier
-    start_year = integer, first year of budget window
-    varstr     = string, name of tax function being evaluated
-    graph      = boolean, flag to output graphs
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
-    OBJECTS CREATED WITHIN FUNCTION:
-    thresh      = [S,BW] array, threshold values for SSE before consider
-                   tax function outlier
-    sse_big_mat = [S,BW] array, indicators of weither tax function is
-                  outlier
-    RETURNS: sse_big_mat
-    --------------------------------------------------------------------
+
+    Args:
+        sse_mat (Numpy array): SSE for each estimated tax function,
+            size is SxBW
+        age_vec (numpy array): vector of ages, length S
+        se_mult (scalar): multiple of standard deviations before
+            consider estimate an outlier
+    start_year (int): first year of budget window
+    varstr (str): name of tax function being evaluated
+    graph (bool): whether to output graphs
+
+    Returns:
+        sse_big_mat (Numpy array): indicators of weither tax function
+            is outlier, size is SxBW
+
     '''
     # Mark outliers from estimated MTRx functions
     thresh = (sse_mat[sse_mat > 0].mean() +
@@ -606,25 +541,19 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
 
 def replace_outliers(param_arr, sse_big_mat):
     '''
-    --------------------------------------------------------------------
     This function replaces outlier estimated tax function parameters
     with linearly interpolated tax function tax function parameters
-    --------------------------------------------------------------------
-    INPUTS:
-    sse_big_mat = [S,BW] array, indicators of weither tax function is outlier
-    param_arr   = [S,BW,#tax params] array, estimated tax function parameters
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
-    OBJECTS CREATED WITHIN FUNCTION:
-    age_ind       = [S,] list, list of ages
-    param_arr_adj = [S,BW,#tax params] array, estimated and interpolated
-                    tax function parameters
-    big_cnt       = integer, number of outliers replaced
-    slopevec      = [1,1,#tax params] array, slope used for linear
-                    interpolation of outliers
-    interceptvec  = [1,1,#tax params] array, intercept used for linear
-                    interpolation of outliers
-    RETURNS: param_arr_adj
-    --------------------------------------------------------------------
+
+    Args:
+        param_arr (Numpy array): estimated tax function parameters,
+            size is SxBWx#tax params
+        sse_big_mat (Numpy array): indicators of weither tax function
+            is outlier, size is SxBW
+
+    Returns:
+        param_arr_adj (Numpy array): estimated and interpolated tax
+            function parameters, size SxBWx#tax params
+
     '''
     numparams = param_arr.shape[2]
     age_ind = np.arange(0, sse_big_mat.shape[0])
@@ -692,97 +621,28 @@ def replace_outliers(param_arr, sse_big_mat):
 def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
                output_dir, graph):
     '''
-    --------------------------------------------------------------------
     This function uses tax tax rate and income data for individuals of a
     particular age (s) and a particular year (t) to estimate the
     parameters of a Cobb-Douglas aggregation function of two ratios of
     polynomials in labor income and capital income, respectively.
-    --------------------------------------------------------------------
-    INPUTS:
-    df         = (N, 11) DataFrame, data variables indexed by 11
-                 variable names
-    s          = integer >= 21, age
-    t          = integer >= 2016, year
-    rate_type  = string, either 'etr', 'mtrx', or 'mtry'
-    output_dir = string, output directory in which to save plots
-    graph      = Boolean, =True graphs the estimated functions compared
-                 to the data
 
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
-        wsumsq()
-        utils.mkdirs()
-        get_tax_rates()
+    Args:
+        df (Pandas DataFrame): 11 variables with N observations of tax
+            rates
+        s (int): age of individual, >= 21
+        t (int): year of analysis, >= 2016
+        rate_type (str): type of tax rate: mtrx, mtry, etr
+        tax_func_type (str): functional form of tax functions
+        numparams (int): number of parameters in the tax functions
+        output_dir (str): output directory for saving plot files
+        graph (bool): whether to plot the estimated functions compared
+            to the data
 
-    OBJECTS CREATED WITHIN FUNCTION:
-    X           = (N,) Series, labor income data
-    Y           = (N,) Series, capital income data
-    wgts        = (N,) Series, population weights on the data
-    X2          = (N,) Series, labor income squared (X^2)
-    Y2          = (N,) Series, capital income squared (Y^2)
-    X2bar       = scalar > 0, population weighted mean of X2
-    Xbar        = scalar > 0, population weighted mean of X
-    Y2bar       = scalar > 0, population weighted mean of Y2
-    Ybar        = scalar > 0, population weighted mean of Y
-    txrates     = (N,) vector, tax rates from data (ETR, MTRx, or MTRy)
-    x_10pctl    = scalar > 0, 10th percentile of labor income data
-    y_10pctl    = scalar > 0, 10th percentile of capital income data
-    x_20pctl    = scalar > 0, 20th percentile of labor income data
-    y_20pctl    = scalar > 0, 20th percentile of capital income data
-    min_x       = scalar, minimum tax rate for X given Y=0
-    min_y       = scalar, minimum tax rate for Y given X=0
-    Atil_init   = scalar > 0, initial guess for coefficient on \hat{X^2}
-    Btil_init   = scalar > 0, initial guess for coefficient on \hat{X}
-    Ctil_init   = scalar > 0, initial guess for coefficient on \hat{Y^2}
-    Dtil_init   = scalar > 0, initial guess for coefficient on \hat{Y}
-    ub_max_x    = scalar > 0, maximum amount of capital income at the
-                  low range of capital income used to calculate the
-                  asymptotic maximum tax rate when capital income is
-                  close to zero
-    ub_max_y    = scalar > 0, maximum amount of labor income at the low
-                  range of labor income used to calculate the asymptotic
-                  maximum tax rate when labor income is close to zero
-    max_x_init  = scalar > 0, initial guess for maximum tax rate for X
-                  given Y=0
-    max_y_init  = scalar > 0, initial guess for maximum tax rate for Y
-                  given X=0
-    shift       = scalar, adds to the Cobb-Douglas function to capture
-                  negative tax rates
-    share_init  = scalar in [0,1], share parameter in Cobb-Douglas
-                  function
-    numparams   = integer > 1, number of parameters to characterize
-                  function
-    params_init = (7,) vector, parameters for minimization function
-                  (Atil_init, Btil_init, Ctil_init, Dtil_init,
-                  max_x_init, max_y_init, share_init)
-    tx_objs     = length 7 tuple, arguments to be passed in to minimizer
-                  (X, Y, min_x, min_y, shift, txrates, wgts)
-    lb_max_x    = scalar > 0, lower bound for max_x. Must be greater
-                  than min_x
-    lb_max_y    = scalar > 0, lower bound for max_y. Must be greater
-                  than min_y
-    bnds        = length 7 tuple, max and min parameter bounds
-    params_til  = dictionary, output from minimization
-    Atil        = scalar, estimated coefficient on \hat{X^2} term
-    Btil        = scalar, estimated coefficient on \hat{X} term
-    Ctil        = scalar, estimated coefficient on \hat{Y^2} term
-    Dtil        = scalar, estimated coefficient on \hat{Y} term
-    max_x       = scalar > 0, estimated value for max_x (labor income)
-    max_y       = scalar > 0, estimated value for max_y (capital income)
-    share       = scalar in [0, 1], estimated Cobb-Douglas share param
-    wsse        = scalar > 0, weighted sum of squared deviations from
-                  minimization
-    obs         = integer > 600, number of obervations in the data (N)
-    shift_x     = scalar, adds to tau(Y) to assure value in rate(X,Y)
-                  term is strictly positive
-    shift_y     = scalar, adds to tau(Y) to assure value in rate(X,Y)
-                  term is strictly positive
-    params      = (12,) vector, all parameters for Cobb-Douglas
-                  functional form, both estimated and calibrated (A, B,
-                  C, D, max_x, min_x, max_y, min_y, shift_x, shift_y,
-                  shift, share)
+    Returns: params, wsse, obs
+    params (Numpy array): vector of estimated parameters
+    wsse (scalar): weighted sum of squared deviations from minimization,
+    obs (int): number of obervations in the data, > 600
 
-    RETURNS: params, wsse, obs
-    --------------------------------------------------------------------
     '''
     X = df['Total labor income']
     Y = df['Total capital income']
@@ -1030,20 +890,7 @@ def tax_func_loop(t, micro_data, beg_yr, s_min, s_max, age_specific,
                   tax_func_type, analytical_mtrs, desc_data, graph_data,
                   graph_est, output_dir, numparams, tpers):
     '''
-    ----------------------------------------------------------------
-    Clean up the data
-    ----------------------------------------------------------------
-    data_orig  = (N1, 11) DataFrame, original micro tax data from
-                 Tax-Calculator for particular year
-    data       = (N1, 8) DataFrame, new variables dataset
-    data_trnc  = (N2, 8) DataFrame, truncated observations dataset
-    min_age    = integer >= 1, minimum age in micro data that is
-                 relevant to model
-    max_age    = integer >= min_age, maximum age in micro data that
-                 is relevant to model
-    NoData_cnt = integer >= 0, number of consecutive ages with
-                 insufficient data to estimate tax functions
-    ----------------------------------------------------------------
+
     '''
     # initialize arrays for output
     etrparam_arr = np.zeros((s_max - s_min + 1, tpers, numparams))
@@ -1409,13 +1256,27 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
                       age_specific=False, reform={}, data=None,
                       client=None, num_workers=1):
     '''
-    --------------------------------------------------------------------
     This function performs analysis on the source data from Tax-
     Calculator and estimates functions for the effective tax rate (ETR),
     marginal tax rate on labor income (MTRx), and marginal tax rate on
     capital income (MTRy).
-    --------------------------------------------------------------------
-    INPUTS:
+
+    Args:
+        BW (int): number of years in the budget window (the period over
+            which tax policy is assumed to vary)
+        S (int): number of model periods a model agent is economically
+            active for
+        starting_age (int): minimum age to estimate tax functions for
+        ending_age (int): maximum age to estimate tax functions for
+        beg_yr (int): first year of budget window
+        baseline (bool): whether these are the baseline tax functions
+        analytical_mtrs (bool): whether to use the analytical derivation
+            of the marginal tax rates (and thus only need to estimate
+            the effective tax rate functions)
+        tax_func_type (str): functional form of tax functions
+        age_specific (bool): whether to estimate age specific tax
+            functions
+        
     beg_yr          = integer >= 2016, current year for analysis
     baseline        = Boolean, =True performs baseline analysis in
                       getting tax micro data from Tax-Calculator
@@ -1741,13 +1602,11 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
                           guid='', tx_func_est_path=None, data=None,
                           client=None, num_workers=1):
     '''
-    --------------------------------------------------------------------
     This function calls the tax function estimation routine and saves
     the resulting dictionary in pickle files corresponding to the
     baseline or reform policy.
-    --------------------------------------------------------------------
 
-    INPUTS:
+    Args:
     baseline        = boolean, =True if baseline tax policy, =False if
                       reform
     analytical_mtrs = boolean, =True if use analytical_mtrs, =False if
@@ -1759,15 +1618,10 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
     start_year      = integer, first year of budget window
     reform          = dictionary, reform parameters
     guid            = string, id for reform run
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
-    tax_func_estimate()
-    OBJECTS CREATED WITHIN FUNCTION:
-    RETURNS: N/A
 
-    OUTPUT:
-    ./TAX_ESTIMATE_PATH/TxFuncEst_baseline{}.pkl
-    ./TAX_ESTIMATE_PATH/TxFuncEst_policy{}.pkl
-    --------------------------------------------------------------------
+    Returns:
+        None
+
     '''
     # Code to run manually from here:
     dict_params = tax_func_estimate(BW, S, starting_age, ending_age,
