@@ -16,7 +16,7 @@ from ogusa import tax, utils
 
 
 def marg_ut_cons(c, sigma):
-    '''
+    r'''
     Compute the marginal utility of consumption.
 
     .. math::
@@ -46,7 +46,7 @@ def marg_ut_cons(c, sigma):
 
 
 def marg_ut_labor(n, chi_n, p):
-    '''
+    r'''
     Compute the marginal disutility of labor.
 
     .. math::
@@ -102,7 +102,7 @@ def marg_ut_labor(n, chi_n, p):
 
 
 def get_bq(BQ, j, p, method):
-    '''
+    r'''
     Calculate bequests to each household.
 
     .. math::
@@ -159,7 +159,7 @@ def get_bq(BQ, j, p, method):
 
 
 def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
-    '''
+    r'''
     Calculate household consumption.
 
     .. math::
@@ -188,7 +188,7 @@ def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
 
 def FOC_savings(r, w, b, b_splus1, n, bq, factor, T_H, theta, e, rho,
                 tau_c, etr_params, mtry_params, t, j, p, method):
-    '''
+    r'''
     Computes Euler errors for the FOC for savings in the steady state.
     This function is usually looped through over J, so it does one
     lifetime income group at a time.
@@ -260,7 +260,7 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, T_H, theta, e, rho,
 
 def FOC_labor(r, w, b, b_splus1, n, bq, factor, T_H, theta, chi_n, e,
               tau_c, etr_params, mtrx_params, t, j, p, method):
-    '''
+    r'''
     Computes errors for the FOC for labor supply in the steady
     state.  This function is usually looped through over J, so it does
     one lifetime income group at a time.
