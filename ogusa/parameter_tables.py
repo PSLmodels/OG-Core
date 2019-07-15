@@ -23,6 +23,7 @@ def tax_rate_table(base_TxFuncEst, base_params, reform_TxFuncEst=None,
 
     Returns:
         table (string or DataFrame): table of tax rates
+
     '''
     assert (isinstance(start_year, int))
     assert (isinstance(num_years, int))
