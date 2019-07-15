@@ -21,6 +21,18 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
     '''
     Calculate the time paths of debt and government spending
 
+    .. math::
+        \begin{split}
+        &G_t = g_{g,t}\:\alpha_{g}\: Y_t \\
+        &\text{where}\quad g_{g,t} =
+          \begin{cases}
+            1 \qquad\qquad\qquad\qquad\qquad\qquad\qquad\:\:\:\,\text{if}\quad t < T_{G1} \\
+            \frac{\left[\rho_{d}\alpha_{D}Y_{t} + (1-\rho_{d})D_{t}\right] - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t} \quad\text{if}\quad T_{G1}\leq t<T_{G2} \\
+            \frac{\alpha_{D}Y_{t} - (1+r_{t})D_{t} - TR_{t} + Rev_{t}}{\alpha_g Y_t} \qquad\qquad\quad\:\:\:\,\text{if}\quad t \geq T_{G2}
+          \end{cases} \\
+        &\quad\text{and}\quad g_{tr,t} = 1 \quad\forall t
+      \end{split}
+
     Args:
         r_gov (Numpy array): interest rate on government debt over the
             time path
@@ -82,7 +94,7 @@ def get_r_gov(r, p):
     Determine the interest rate on government debt
 
     .. math::
-        r_{gov,t} = \max\{\tau{g}r_{t} - shift, 0.0\}
+        r_{gov,t} = \max\{(1-\tau_{d,t}r_{t} - \mu_d, 0.0\}
 
     Args:
         r (array_like): interest rate on private capital debt over the
