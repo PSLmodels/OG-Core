@@ -254,12 +254,7 @@ def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
             fullpath = os.path.join(output_dir, filename)
             fig.savefig(fullpath, bbox_inches='tight')
 
-        if show_plots:
-            plt.show()
-
-        plt.close()
-
-    if plot_trunc:
+    else:
         # Make comparison plot with truncated income domains
         data_trnc = data[(data['Total labor income'] > 5) &
                          (data['Total labor income'] < 800000) &
@@ -308,8 +303,7 @@ def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
             plt.show()
 
         plt.close()
-
-
+   
 def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
                   for_estimation=True):
     X2 = X ** 2
