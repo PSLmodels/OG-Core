@@ -72,6 +72,9 @@ def ETR_wealth(b, h_wealth, m_wealth, p_wealth):
     '''
     Calculates the effective tax rate on wealth.
 
+    .. math::
+        T_{j,s,t}^{w} = \frac{h^{w}p_{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}
+
     Args:
         b (Numpy array): savings
         h_wealth (scalar): parameter of wealth tax function
@@ -89,6 +92,9 @@ def ETR_wealth(b, h_wealth, m_wealth, p_wealth):
 def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
     '''
     Calculates the marginal tax rate on wealth from the wealth tax.
+
+    .. math::
+        \frac{\partial T_{j,s,t}^{w}}{\partial b_{j,s,t}} = \frac{h^{w}m^{w}p_{w}}{(b_{j,s,t}h^{w}m^{w})^{2}}
 
     Args:
         b (Numpy array): savings
@@ -302,6 +308,8 @@ def get_biz_tax(w, Y, L, K, p, method):
     '''
     Finds total business income tax revenue.
 
+    .. math::
+        R_{t}^{b} = \tau_{t}^{b}(Y_{t} - w_{t}L_{t}) - \tau_{t}^{b}\delta_{t}^{\tau}K_{t}^{\tau}
     Args:
         r (array_like): real interest rate
         Y (array_like): aggregate output
