@@ -17,6 +17,7 @@ def plot_imm_rates(p, year=2019, include_title=False, path=None):
 
     Returns:
         fig (Matplotlib plot object): plot of immigration rates
+
     '''
     assert (isinstance(year, int))
     age_per = np.linspace(p.E, p.E + p.S, p.S)
@@ -47,6 +48,7 @@ def plot_mort_rates(p, include_title=False, path=None):
 
     Returns:
         fig (Matplotlib plot object): plot of immigration rates
+
     '''
     age_per = np.linspace(p.E, p.E + p.S, p.S)
     fig, ax = plt.subplots()
@@ -77,6 +79,7 @@ def plot_pop_growth(p, start_year=2019, include_title=False,
 
     Returns:
         fig (Matplotlib plot object): plot of immigration rates
+
     '''
     assert (isinstance(start_year, int))
     assert (isinstance(num_years_to_plot, int))
@@ -108,6 +111,7 @@ def plot_ability_profiles(p, include_title=False, path=None):
 
     Returns:
         fig (Matplotlib plot object): plot of earnings ability profiles
+
     '''
     age_vec = np.arange(p.starting_age, p.starting_age + p.S)
     fig, ax = plt.subplots()
@@ -137,6 +141,7 @@ def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
 
     Returns:
         fig (Matplotlib plot object): plot of elliptical vs CFE utility
+
     '''
     theta = 1 / p.frisch
     N = 101

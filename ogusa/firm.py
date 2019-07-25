@@ -2,16 +2,6 @@
 ------------------------------------------------------------------------
 Firm functions for firms in the steady state and along the transition
 path
-
-This Python module imports the following module(s): None
-
-This Python module defines the following functions:
-    get_Y()
-    get_r()
-    get_w()
-    get_KLrat_from_r()
-    get_w_from_r()
-    get_K()
 ------------------------------------------------------------------------
 '''
 
@@ -24,28 +14,22 @@ This Python module defines the following functions:
 
 def get_Y(K, L, p, method):
     '''
-    --------------------------------------------------------------------
     Generates aggregate output (GDP) from aggregate capital stock,
-    aggregate labor, and CES production function parameters
-    --------------------------------------------------------------------
-    INPUTS:
-    K = scalar or D dimensional array, aggregate capital stock
-    L = scalar or D dimensional array, aggregate labor
-    p = model parameters object
+    aggregate labor, and CES production function parameters.
 
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+    .. math::
+        Y_{t} = Z_{t}\[\gamma^{\frac{1}{\varepsilon}}K_{t}^{\frac{\varepsilon - 1}{\varepsilon}} + (1 - \gamma)^{\frac{1}{\varepsilon}}L_{t}^{\frac{\varepsilon - 1}{\varepsilon}}\]^{\frac{\varepsilon}{\varepsilon - 1}}
 
-    OBJECTS CREATED WITHIN FUNCTION:
-    epsilon = scalar >= 0, elasticity of substitution between capital
-              and labor
-    Z       = scalar > 0, total factor productivity
-    gamma   = scalar in [0, 1], CES production function share parameter
-    Y       = scalar or D dimensional array, aggregate output (GDP)
+    Args:
+        K (array_like): aggregate capital
+        L (array_like): aggregate labor
+        p (OG-USA Specifcations object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
 
-    FILES CREATED BY THIS FUNCTION: None
+    Returns:
+        Y (array_like): aggregate output
 
-    RETURNS: Y
-    --------------------------------------------------------------------
     '''
     if method == 'SS':
         Z = p.Z[-1]
@@ -67,34 +51,23 @@ def get_Y(K, L, p, method):
 
 def get_r(Y, K, p, method):
     '''
-    --------------------------------------------------------------------
     This function computes the interest rate as a function of Y, K, and
-    parameters using the firm's first order condition for capital demand
-    --------------------------------------------------------------------
-    INPUTS:
-    Y = scalar or (T+S,) vector, aggregate output
-    K = scalar or (T+S,) vector, aggregate capital
-    p = model parameters object
+    parameters using the firm's first order condition for capital
+    demand.
 
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+    .. math::
+        r_{t} = (1 - \tau^{corp})(Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[\gamma\frac{Y_t}{K_t}\right]^\frac{1}{\varepsilon} - \delta + \tau^{corp}\delta^\tau
 
-    OBJECTS CREATED WITHIN FUNCTION:
-    tau_b     = scalar in [0, 1], corporate income tax rate
-    Z         = scalar > 0, total factor productivity
-    epsilon   = scalar > 0, elasticity of substitution between capital
-                and labor
-    gamma     = scalar in [0, 1], share parameter in CES production
-                function (capital share of income in Cobb-Douglas case)
-    delta     = scalar in [0, 1], per-period capital depreciation rate
-    delta_tau = scalar >= 0, percent of capital depreciation rate
-                refunded at the corporate income tax rate
-    r         = scalar or (T+S,) vector, interest rate on (rental rate
-                of) capital
+    Args:
+        Y (array_like): aggregate output
+        K (array_like): aggregate capital
+        p (OG-USA Specifcations object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
 
-    FILES CREATED BY THIS FUNCTION: None
+    Returns:
+        r (array_like): the real interest rate
 
-    RETURNS: r
-    --------------------------------------------------------------------
     '''
     if method == 'SS':
         Z = p.Z[-1]
@@ -113,29 +86,22 @@ def get_r(Y, K, p, method):
 
 def get_w(Y, L, p, method):
     '''
-    --------------------------------------------------------------------
     This function computes the wage as a function of Y, L, and
-    parameters using the firm's first order condition for labor demand
-    --------------------------------------------------------------------
-    INPUTS:
-    Y = scalar or (T+S,) vector, aggregate output
-    L = scalar or (T+S,) vector, aggregate labor
-    p = model parameters object
+    parameters using the firm's first order condition for labor demand.
 
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+    .. math::
+        w_t = (Z_t)^\frac{\varepsilon-1}{\varepsilon}\left[(1-\gamma)\frac{\hat{Y}_t}{\hat{L}_t}\right]^\frac{1}{\varepsilon}
 
-    OBJECTS CREATED WITHIN FUNCTION:
-    Z       = scalar > 0, total factor productivity
-    epsilon = scalar > 0, elasticity of substitution between capital and
-              labor
-    gamma   = scalar in [0, 1], share parameter in CES production
-              function (capital share of income in Cobb-Douglas case)
-    w       = scalar or (T+S,) vector, wage
+    Args:
+        Y (array_like): aggregate output
+        L (array_like): aggregate labor
+        p (OG-USA Specifcations object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
 
-    FILES CREATED BY THIS FUNCTION: None
+    Returns:
+        w (array_like): the real wage rate
 
-    RETURNS: w
-    --------------------------------------------------------------------
     '''
     if method == 'SS':
         Z = p.Z[-1]
@@ -149,33 +115,21 @@ def get_w(Y, L, p, method):
 
 def get_KLratio_from_r(r, p, method):
     '''
-    --------------------------------------------------------------------
     This function solves for the capital-labor ratio given the interest
-    rate r and parameters
-    --------------------------------------------------------------------
-    INPUTS:
-    r = scalar or D dimensional array, aggregate labor
-    p = model parameters object
+    rate r and parameters.
 
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+    .. math::
+        \frac{K}{L} = \left(\frac{(1-\gamma)^\frac{1}{\varepislon}}{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})\gamma^\frac{1}{\varepislon}Z}\right]^{\varepislon-1} - \gamma^\frac{1}{\varepislon}}\right)^\frac{\varepislon}{\varepislon-1}
 
-    OBJECTS CREATED WITHIN FUNCTION:
-    tau_b     = scalar in [0, 1], corporate income tax rate
-    Z         = scalar > 0, total factor productivity
-    epsilon   = scalar > 0, elasticity of substitution between capital
-                and labor
-    gamma     = scalar in [0, 1], share parameter in CES production
-                function (capital share of income in Cobb-Douglas case)
-    delta     = scalar in [0, 1], per-period capital depreciation rate
-    delta_tau = scalar >= 0, percent of capital depreciation rate
-                refunded at the corporate income tax rate
-    bracket   = scalar or D dimensional array, value in bracket in
-                equation for capital-labor ratio
+    Args:
+        r (array_like): the real interest rate
+        p (OG-USA Specifcations object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
 
-    FILES CREATED BY THIS FUNCTION: None
+    Returns:
+        KLratio (array_like): the capital-labor ratio
 
-    RETURNS: KLratio
-    --------------------------------------------------------------------
     '''
     if method == 'SS':
         Z = p.Z[-1]
@@ -205,32 +159,21 @@ def get_KLratio_from_r(r, p, method):
 
 def get_w_from_r(r, p, method):
     '''
-    --------------------------------------------------------------------
     Solve for steady-state wage w or time path of wages w_t given
-    interest rate
-    --------------------------------------------------------------------
-    INPUTS:
-    r = scalar or D dimensional array, aggregate labor
-    p = model parameters object
+    interest rate.
 
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
-        get_KLrat_from_r()
+    .. math::
+        w = (1-\gamma)^\frac{1}{\varepislon}Z\left[(\gamma)^\frac{1}{\varepislon}\left(\frac{(1-\gamma)^\frac{1}{\varepislon}}{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})\gamma^\frac{1}{\varepislon}Z}\right]^{\varepislon-1} - \gamma^\frac{1}{\varepislon}}\right) + (1-\gamma)^\frac{1}{\varepislon}\right]^\frac{1}{\varepislon-1}
 
-    OBJECTS CREATED WITHIN FUNCTION:
-    KLratio = scalar or D dimensional array, capital-labor ratio
-              computed from interest rate and parameters
-    epsilon = scalar > 0, elasticity of substitution between capital and
-              labor
-    eps     = scalar > 0, epsilon
-    gamma   = scalar in [0, 1], share parameter in CES production
-              function (capital share of income in Cobb-Douglas case)
-    Z       = scalar > 0, total factor productivity
-    w       = scalar or D dimensional array, wage
+    Args:
+        r (array_like): the real interest rate
+        p (OG-USA Specifcations object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
 
-    FILES CREATED BY THIS FUNCTION: None
+    Returns:
+        w (array_like): the real wage rate
 
-    RETURNS: w
-    --------------------------------------------------------------------
     '''
     if method == 'SS':
         Z = p.Z[-1]
@@ -252,24 +195,21 @@ def get_w_from_r(r, p, method):
 
 def get_K(L, r, p, method):
     '''
-    --------------------------------------------------------------------
-    Generates vector of aggregate capital. Use with small open economy
-    option.
-    --------------------------------------------------------------------
+    Generates vector of aggregate capital. Use with the open economy
+    options.
+
+    .. math::
+        K_{t} = \frac{K_{t}}{L_{t}} \times L_{t}
+
     Inputs:
-        L      = [T+S,] vector, aggregate labor
-        r      = [T+S,] vector, exogenous rental rate of the firm
-        params = length 3 tuple, (alpha, delta, z)
-        alpha  = scalar, capital's share of output
-        delta  = scalar, rate of depreciation of capital
-        Z      = scalar, total factor productivity
+        L (array_like): aggregate labor
+        r (array_like): the real interest rate
+        p (OG-USA Specifcations object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
 
-    Functions called: None
-
-    Objects in function:
-        K = [T+S,] vector, aggregate capital
-
-    Returns: r
+    Returns:
+        K (array_like): aggregate capital demand
     --------------------------------------------------------------------
     '''
     KLratio = get_KLratio_from_r(r, p, method)
@@ -280,29 +220,26 @@ def get_K(L, r, p, method):
 
 def get_K_from_Y(Y, r, p, method):
     '''
-    --------------------------------------------------------------------
-    Generates vector of aggregate capital. Use with small open economy
-    option.
-    --------------------------------------------------------------------
-    Inputs:
-        L      = [T+S,] vector, aggregate labor
-        r      = [T+S,] vector, exogenous rental rate of the firm
-        params = length 3 tuple, (alpha, delta, z)
-        alpha  = scalar, capital's share of output
-        delta  = scalar, rate of depreciation of capital
-        Z      = scalar, total factor productivity
+    Generates vector of aggregate capital. Use with the open economy
+    options.
 
-    Functions called: None
+    .. math::
+        K_{t} = \frac{Y_{t}}{Y_{t}/K_{t}}
 
-    Objects in function:
-        K = [T+S,] vector, aggregate capital
+    Args:
+        Y (array_like): aggregate output
+        r (array_like): the real interest rate
+        p (OG-USA Specifcations object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
 
-    Returns: r
-    --------------------------------------------------------------------
+    Returns:
+        r (array_like): the real interest rate
+
     '''
     KLratio = get_KLratio_from_r(r, p, method)
     LKratio = KLratio ** -1
-    YKratio = get_Y(1, LKratio, p, method)
+    YKratio = get_Y(1, LKratio, p, method)  #can use get_Y because CRS
     K = Y / YKratio
 
     return K

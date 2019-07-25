@@ -20,34 +20,18 @@ import matplotlib.pyplot as plt
 
 def sumsq(params, *objs):
     '''
-    --------------------------------------------------------------------
     This function generates the sum of squared deviations between the
-    constant Frisch elasticity function and the elliptical utility function
-    --------------------------------------------------------------------
-    Inputs:
-        params  = length 3 tuple, (b, k, upsilon)
-        b       = scalar, scaling parameter for elliptical utility function
-        k       = scalar, shift parameter for elliptical utility function
-        upsilon = scalar, curvature parameter for elliptical utility function
-        objs    = lenght 3 tuple, (theta, l_tilde, n_grid)
-        theta   = scalar, inverse of the Frisch elasticity
-        l_tilde = scalar, max labor supply
-        n_grid  = [N,] vector, grid of labor supply values
+    constant Frisch elasticity function and the elliptical utility
+    function.
 
-    Functions called: None
+    Args:
+        params (tuple): parameters to estimate, (b, k, upsilon)
+        objs (tuple): other parameters of utility function,
+            (theta, l_tilde, n_grid)
 
-    Objects in function:
-        CFE      = [N,] vector, constant Frisch elasticity function
-                   evaluated at points on n_grid
-        ellipse = [N,] vector, elliptical utility function evaluated at
-                   points on n_grid
-        error    = [N,] vector, differences between CFE and ellipse on
-                   each point in n_grid
-        ssqdev   = [N,] vector, sum of squared errors between two
-                   utility functions at each point in n_grid
+    Returns:
+        ssqdev (scalar): sum of squared errors
 
-    Returns: ssqdev
-    --------------------------------------------------------------------
     '''
     theta, l_tilde, n_grid = objs
     b, k, upsilon = params
@@ -61,37 +45,17 @@ def sumsq(params, *objs):
 
 def sumsq_MU(params, *objs):
     '''
-    --------------------------------------------------------------------
     This function generates the sum of squared deviations between the
     marginals of the constant Frisch elasticity function and the
     elliptical utility function
-    --------------------------------------------------------------------
-    Inputs:
-        params  = length 3 tuple, (b, k, upsilon)
-        b       = scalar, scaling parameter for elliptical utility function
-        k       = scalar, shift parameter for elliptical utility function
-        upsilon = scalar, curvature parameter for elliptical utility function
-        objs    = lenght 3 tuple, (theta, l_tilde, n_grid)
-        theta   = scalar, inverse of the Frisch elasticity
-        l_tilde = scalar, max labor supply
-        n_grid  = [N,] vector, grid of labor supply values
+        Args:
+            params (tuple): parameters to estimate, (b, k, upsilon)
+            objs (tuple): other parameters of utility function,
+                (theta, l_tilde, n_grid)
 
-    Functions called: None
+        Returns:
+            ssqdev (scalar): sum of squared errors
 
-    Objects in function:
-        CFE_MU     = [N,] vector, marginal utility from the constant
-                     Frisch elasticity function evaluated at points on
-                     n_grid
-        ellipse_MU = [N,] vector, marginal utility from the elliptical
-                     utility function evaluated at points on n_grid
-        error      = [N,] vector, differences between the MU from the
-                     CFE and ellipse on each point in n_grid
-        ssqdev     = [N,] vector, sum of squared errors between
-                     marginals of the two utility functions at each
-                     point in n_grid
-
-    Returns: ssqdev
-    --------------------------------------------------------------------
     '''
     theta, l_tilde, n_grid = objs
     b, upsilon = params
@@ -107,55 +71,18 @@ def sumsq_MU(params, *objs):
 
 def estimation(frisch, l_tilde):
     '''
-    --------------------------------------------------------------------
     This function estimates the parameters of an elliptical utility
-    funcion that fits a constant frisch elasticty function
+    funcion that fits a constant frisch elasticty function.
 
-    Inputs:
-        frisch  = scalar, Frisch elasticity of labor supply
-        l_tilde = scalar, maximum amount of labor supply
+    Args:
+        frisch (scalar):  Frisch elasticity of labor supply
+        l_tilde (scalar): maximum amount of labor supply
 
-    Functions called:
-        sumsq_MU
-        sumsq
+    Returns:
+        b_MU_til (scalar): estimated b from ellipitical utility function
+        upsilon_MU_til (scalar): estimated upsilon from ellipitical
+            utility function
 
-    Objects in function:
-        theta               = inverse of the Frisch elasticity of labor
-                              supply
-        l_tilde             = max labor supply
-        N                   = number of grid points used in function
-                              estimation
-        graph               = boolean, =True if print graph with CFE and
-                              elliptical functions
-        start_time          = scalar, current processor time in seconds
-                              (float)
-        elapsed_time        = scalar, processor time for estimation
-        b                   = scalar >0, vertical radius of ellipitcal
-                              utility function
-        k                   = scalar, centroid of elliptical utility
-                              function
-        upsilon             = scalar > 0, curvature parameter in
-                              ellipitcal utility function
-        b_init              = scalar > 0, initial guess at b for minimizer
-        k_init              = scalar, initial guess at k for minimizer
-        upsilon_init        = scalar > 0, initial guess at upsilon for
-                              minimizer
-        ellipse_params_init = length 3 tuple, initial guesses for
-                              parameter values
-        n_grid              = [N,] vector, grid of labor supply values
-                              over which function evaluated
-        ellipse_obj         = length 3 tuple, objects passed to
-                              minimizer function
-        bnds                = length 3 tuple, bounds for parameters of
-                              elliptical utility
-        ellipse_params_til  = tuple with full output of minimizer
-        b_til               = scalar > 0, estimate of b
-        k_til               = scalar, estimate of k
-        upsilon_til         = scalar > 0, estimate of upsilon
-
-    Returns: b_MU_til, upsilon_MU_til
-
-    --------------------------------------------------------------------
     '''
 
     '''

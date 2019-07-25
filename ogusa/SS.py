@@ -1,22 +1,4 @@
-'''
-------------------------------------------------------------------------
-Calculates steady state of OG-USA model with S age cohorts and J
-ability types.
-
-This py-file calls the following other file(s):
-            tax.py
-            household.py
-            firm.py
-            utils.py
-            OUTPUT/SS/ss_vars.pkl
-
-This py-file creates the following other file(s):
-    (make sure that an OUTPUT folder exists)
-            OUTPUT/SS/ss_vars.pkl
-------------------------------------------------------------------------
-'''
-
-# Packages
+# imports
 import numpy as np
 import scipy.optimize as opt
 import pickle
@@ -47,61 +29,21 @@ ENFORCE_SOLUTION_CHECKS = True
 
 def euler_equation_solver(guesses, *args):
     '''
-    --------------------------------------------------------------------
-    Finds the euler errors for certain b and n, one ability type at a time.
-    --------------------------------------------------------------------
+    Finds the euler errors for certain b and n, one ability type at a
+    time.
 
-    INPUTS:
-    guesses = [2S,] vector, initial guesses for b and n
-    r = scalar, real interest rate
-    w = scalar, real wage rate
-    T_H = scalar, lump sum transfer
-    factor = scalar, scaling factor converting model units to dollars
-    j = integer, ability group
-    params = length 21 tuple, list of parameters
-    chi_b = [J,] vector, chi^b_j, the utility weight on bequests
-    chi_n = [S,] vector, chi^n_s utility weight on labor supply
-    tau_bq = scalar, bequest tax rate
-    rho = [S,] vector, mortality rates by age
-    lambdas = [J,] vector, fraction of population with each ability type
-    omega_SS = [S,] vector, stationary population weights
-    e =  [S,J] array, effective labor units by age and ability type
-    tax_params = length 5 tuple, (tax_func_type, analytical_mtrs,
-                 etr_params, mtrx_params, mtry_params)
-    tax_func_type   = string, type of tax function used
-    analytical_mtrs = boolean, =True if use analytical_mtrs, =False if
-                       use estimated MTRs
-    etr_params      = [S,BW,#tax params] array, parameters for effective
-                      tax rate function
-    mtrx_params     = [S,BW,#tax params] array, parameters for marginal
-                      tax rate on labor income function
-    mtry_params     = [S,BW,#tax params] array, parameters for marginal
-                      tax rate on capital income function
+    Args:
+        guesses (Numpy array): initial guesses for b and n, lenth 2S
+        args (tuple): tuple of arguments (r, w, bq, T_H, factor, j, p)
+        w (scalar): real wage rate
+        bq (Numpy array): bequest amounts by age, length S
+        T_H (scalar): lump sum transfer amount
+        factor (scalar): scaling factor converting model units to dollars
+        p (OG-USA Specifcations object): model parameters
 
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
-    aggr.get_BQ()
-    tax.replacement_rate_vals()
-    household.FOC_savings()
-    household.FOC_labor()
-    tax.total_taxes()
-    household.get_cons()
+    Returns:
+        errros (Numpy array): errors from FOCs, length 2S
 
-    OBJECTS CREATED WITHIN FUNCTION:
-    b_guess = [S,] vector, initial guess at household savings
-    n_guess = [S,] vector, initial guess at household labor supply
-    b_s = [S,] vector, wealth enter period with
-    b_splus1 = [S,] vector, household savings
-    BQ = scalar, aggregate bequests to lifetime income group
-    theta = scalar, replacement rate for social security benenfits
-    error1 = [S,] vector, errors from FOC for savings
-    error2 = [S,] vector, errors from FOC for labor supply
-    tax1 = [S,] vector, total income taxes paid
-    cons = [S,] vector, household consumption
-
-    RETURNS: 2Sx1 list of euler errors
-
-    OUTPUT: None
-    --------------------------------------------------------------------
     '''
     (r, w, bq, T_H, factor, j, p) = args
 
@@ -147,44 +89,45 @@ def euler_equation_solver(guesses, *args):
                               p.e[:, j], p.tau_c[-1, :, j], p)
     mask6 = cons < 0
     error1[mask6] = 1e14
+    errors = np.hstack((error1, error2))
 
-    return np.hstack((error1, error2))
+    return errors
 
 
 def inner_loop(outer_loop_vars, p, client):
     '''
-    This function solves for the inner loop of
-    the SS.  That is, given the guesses of the
-    outer loop variables (r, w, Y, factor)
-    this function solves the households'
-    problems in the SS.
+    This function solves for the inner loop of the SS.  That is, given
+    the guesses of the outer loop variables (r, w, T_H, factor) this
+    function solves the households' problems in the SS.
 
-    Inputs:
-        r          = [T,] vector, interest rate
-        w          = [T,] vector, wage rate
-        b          = [T,S,J] array, wealth holdings
-        n          = [T,S,J] array, labor supply
-        BQ         = [T,J] vector,  bequest amounts
-        factor     = scalar, model income scaling factor
-        Y        = [T,] vector, lump sum transfer amount(s)
+    Args:
+        outer_loop_vars (tuple): tuple of outer loop variables,
+            (bssmat, nssmat, r, BQ, T_H, factor) or
+            (bssmat, nssmat, r, BQ, Y, T_H, factor)
+        bssmat (Numpy array): initial guess at savings, size = SxJ
+        nssmat (Numpy array): initial guess at labor supply, size = SxJ
+        BQ (array_like): aggregate bequest amount(s)
+        Y (scalar): real GDP
+        T_H (scalar): lump sum transfer amount
+        factor (scalar): scaling factor converting model units to dollars
+        w (scalar): real wage rate
+        p (OG-USA Specifcations object): model parameters
+        client (Dask client object): client
 
-
-    Functions called:
-        euler_equation_solver()
-        aggr.get_K()
-        aggr.get_L()
-        firm.get_Y()
-        firm.get_r()
-        firm.get_w()
-        aggr.get_BQ()
-        tax.replacement_rate_vals()
-        aggr.revenue()
-
-    Objects in function:
-
-
-    Returns: euler_errors, bssmat, nssmat, new_r, new_w
-             new_T_H, new_factor, new_BQ
+    Returns:
+        euler_errors (Numpy array): errors terms from FOCs, size = 2SxJ
+        bssmat (Numpy array): savings, size = SxJ
+        nssmat (Numpy array): labor supply, size = SxJ
+        new_r (scalar): real interest rate on firm capital
+        new_r_gov (scalar): real interest rate on government debt
+        new_r_hh (scalar): real interest rate on household portfolio
+        new_w (scalar): real wage rate
+        new_T_H (scalar): lump sum transfer amount
+        new_Y (scalar): real GDP
+        new_factor (scalar): scaling factor converting model units to
+            dollars
+        new_BQ (array_like): aggregate bequest amount(s)
+        average_income_model (scalar): average income in model units
 
     '''
     # unpack variables to pass to function
@@ -237,7 +180,8 @@ def inner_loop(outer_loop_vars, p, client):
         K_f = p.zeta_K[-1] * (K_demand_open - B + D_d)
         K = K_f + K_d
     else:
-        # can remove this else statement by making small open the case where zeta_K = 1
+        # can remove this else statement by making small open the case
+        # where zeta_K = 1
         K_d = B - D_d
         K_f = K_demand_open - B + D_d
         K = K_f + K_d
@@ -290,67 +234,24 @@ def inner_loop(outer_loop_vars, p, client):
 def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
               fsolve_flag=False):
     '''
-    --------------------------------------------------------------------
     Solves for the steady state distribution of capital, labor, as well
-    as w, r, T_H and the scaling factor, using a bisection method
-    similar to TPI.
-    --------------------------------------------------------------------
+    as w, r, T_H and the scaling factor, using functional iteration.
 
-    INPUTS:
-    b_guess_init = [S,J] array, initial guesses for savings
-    n_guess_init = [S,J] array, initial guesses for labor supply
-    wguess = scalar, initial guess for SS real wage rate
-    rguess = scalar, initial guess for SS real interest rate
-    T_Hguess = scalar, initial guess for lump sum transfer
-    factorguess = scalar, initial guess for scaling factor to dollars
-    chi_b = [J,] vector, chi^b_j, the utility weight on bequests
-    chi_n = [S,] vector, chi^n_s utility weight on labor supply
-    params = length X tuple, list of parameters
-    iterative_params = length X tuple, list of parameters that determine
-                       the convergence of the while loop
-    tau_bq = [J,] vector, bequest tax rate
-    rho = [S,] vector, mortality rates by age
-    lambdas = [J,] vector, fraction of population with each ability type
-    omega = [S,] vector, stationary population weights
-    e =  [S,J] array, effective labor units by age and ability type
+    Args:
+        bmat (Numpy array): initial guess at savings, size = SxJ
+        nmat (Numpy array): initial guess at labor supply, size = SxJ
+        r (scalar): real interest rate
+        BQ (array_like): aggregate bequest amount(s)
+        T_H (scalar): lump sum transfer amount
+        factor (scalar): scaling factor converting model units to dollars
+        Y (scalar): real GDP
+        p (OG-USA Specifcations object): model parameters
+        client (Dask client object): client
 
+    Returns:
+        output (dictionary): dictionary with steady state solution
+            results
 
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
-    euler_equation_solver()
-    aggr.get_K()
-    aggr.get_L()
-    firm.get_Y()
-    firm.get_r()
-    firm.get_w()
-    aggr.get_BQ()
-    tax.replacement_rate_vals()
-    aggr.revenue()
-    utils.convex_combo()
-    utils.pct_diff_func()
-
-
-    OBJECTS CREATED WITHIN FUNCTION:
-    b_guess = [S,] vector, initial guess at household savings
-    n_guess = [S,] vector, initial guess at household labor supply
-    b_s = [S,] vector, wealth enter period with
-    b_splus1 = [S,] vector, household savings
-    b_splus2 = [S,] vector, household savings one period ahead
-    BQ = scalar, aggregate bequests to lifetime income group
-    theta = scalar, replacement rate for social security benenfits
-    error1 = [S,] vector, errors from FOC for savings
-    error2 = [S,] vector, errors from FOC for labor supply
-    tax1 = [S,] vector, total income taxes paid
-    cons = [S,] vector, household consumption
-
-    OBJECTS CREATED WITHIN FUNCTION - SMALL OPEN ONLY
-    Bss = scalar, aggregate household wealth in the steady state
-    BIss = scalar, aggregate household net investment in the steady state
-
-    RETURNS: solutions = steady state values of b, n, w, r, factor,
-                    T_H ((2*S*J+4)x1 array)
-
-    OUTPUT: None
-    --------------------------------------------------------------------
     '''
     # Rename the inputs
     if not p.budget_balance:
@@ -418,11 +319,7 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
         iteration += 1
         print('Iteration: %02d' % iteration, ' Distance: ', dist)
 
-    '''
-    ------------------------------------------------------------------------
-        Generate the SS values of variables, including euler errors
-    ------------------------------------------------------------------------
-    '''
+    # Generate the SS values of variables, including euler errors
     bssmat_s = np.append(np.zeros((1, p.J)), bmat[:-1, :], axis=0)
     bssmat_splus1 = bmat
     nssmat = nmat
@@ -453,7 +350,6 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
         Kss = K_f_ss + K_d_ss
         InvestmentPlaceholder = np.zeros(bssmat_splus1.shape)
         Iss = aggr.get_I(InvestmentPlaceholder, Kss, Kss, p, 'SS')
-        BIss = aggr.get_I(bssmat_splus1, Bss, Bss, p, 'BI_SS')
         I_d_ss = aggr.get_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')
     r_hh_ss = aggr.get_r_hh(rss, r_gov_ss, Kss, Dss)
     wss = new_w
@@ -538,11 +434,7 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     print('Maximum error in savings FOC = ',
           np.absolute(euler_savings).max())
 
-    '''
-    ------------------------------------------------------------------------
-        Return dictionary of SS results
-    ------------------------------------------------------------------------
-    '''
+    # Return dictionary of SS results
     output = {'Kss': Kss, 'K_f_ss': K_f_ss, 'K_d_ss': K_d_ss,
               'Bss': Bss, 'Lss': Lss, 'Css': Css, 'Iss': Iss,
               'Iss_total': Iss_total, 'I_d_ss': I_d_ss, 'nssmat': nssmat,
@@ -571,28 +463,26 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
 
 def SS_fsolve(guesses, *args):
     '''
-    Solves for the steady state distribution of capital, labor, as well as
-    w, r, T_H and the scaling factor, using a root finder.
-    Inputs:
-        b_guess_init = guesses for b (SxJ array)
-        n_guess_init = guesses for n (SxJ array)
-        wguess = guess for wage rate (scalar)
-        rguess = guess for rental rate (scalar)
-        T_Hguess = guess for lump sum tax (scalar)
-        factorguess = guess for scaling factor to dollars (scalar)
-        chi_n = chi^n_s (Sx1 array)
-        chi_b = chi^b_j (Jx1 array)
-        params = list of parameters (list)
-        iterative_params = list of parameters that determine the convergence
-                           of the while loop (list)
-        tau_bq = bequest tax rate (Jx1 array)
-        rho = mortality rates (Sx1 array)
-        lambdas = ability weights (Jx1 array)
-        omega_SS = population weights (Sx1 array)
-        e = ability levels (SxJ array)
-    Outputs:
-        solutions = steady state values of b, n, w, r, factor,
-                    T_H ((2*S*J+4)x1 array)
+        (bssmat, nssmat, T_Hss, factor_ss, p, client)
+    Solves for the steady state distribution of capital, labor, as well
+    as w, r, T_H and the scaling factor, using a root finder.
+
+    Args:
+        guesses (list): initial guesses outer loop variables (r, BQ,
+            T_H, factor)
+        args (tuple): tuple of arguments (bssmat, nssmat, T_Hss,
+            factor_ss, p, client)
+        bssmat (Numpy array): initial guess at savings, size = SxJ
+        nssmat (Numpy array): initial guess at labor supply, size = SxJ
+        T_Hss (scalar): lump sum transfer amount
+        factor_ss (scalar): scaling factor converting model units to dollars
+        p (OG-USA Specifcations object): model parameters
+        client (Dask client object): client
+
+    Returns:
+        errors (list): errors from differences between guessed and
+            implied outer loop variables
+
     '''
     (bssmat, nssmat, T_Hss, factor_ss, p, client) = args
 
@@ -658,49 +548,16 @@ def SS_fsolve(guesses, *args):
 
 def run_SS(p, client=None):
     '''
-    --------------------------------------------------------------------
-    Solve for SS of OG-USA.
-    --------------------------------------------------------------------
+    Solve for steady-state equilibrium of OG-USA.
 
-    INPUTS:
-    p = Specifications class with parameterization of model
-    income_tax_parameters = length 5 tuple, (tax_func_type,
-                            analytical_mtrs, etr_params,
-                            mtrx_params, mtry_params)
-    ss_parameters = length 21 tuple, (J, S, T, BW, beta, sigma, alpha,
-                    gamma, epsilon, Z, delta, ltilde, nu, g_y, g_n_ss,
-                    tau_payroll, retire, mean_income_data, h_wealth,
-                    p_wealth, m_wealth, b_ellipse, upsilon)
-    iterative_params  = [2,] vector, vector with max iterations and
-                        tolerance for SS solution
-    baseline = boolean, =True if run is for baseline tax policy
-    calibrate_model = boolean, =True if run calibration of chi parameters
-    output_dir = string, path to save output from current model run
-    baseline_dir = string, path where baseline results located
+    Args:
+        p (OG-USA Specifcations object): model parameters
+        client (Dask client object): client
 
+    Returns:
+        output (dictionary): dictionary with steady-state solution
+            results
 
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
-    SS_fsolve()
-    SS_fsolve_reform()
-    SS_solver
-
-    OBJECTS CREATED WITHIN FUNCTION:
-    chi_params = [J+S,] vector, chi_b and chi_n stacked together
-    b_guess = [S,J] array, initial guess at savings
-    n_guess = [S,J] array, initial guess at labor supply
-    wguess = scalar, initial guess at SS real wage rate
-    rguess = scalar, initial guess at SS real interest rate
-    T_Hguess = scalar, initial guess at SS lump sum transfers
-    factorguess = scalar, initial guess at SS factor adjustment (to
-                  scale model units to dollars)
-
-    output
-
-
-    RETURNS: output
-
-    OUTPUT: None
-    --------------------------------------------------------------------
     '''
     # For initial guesses of w, r, T_H, and factor, we use values that
     # are close to some steady state values.
