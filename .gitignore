@@ -2,6 +2,9 @@
 MANIFEST
 build/*
 dist/*
+.coverage
+.coveragerc
+htmlcov/*
 *.aux
 *.bbl
 *.blg

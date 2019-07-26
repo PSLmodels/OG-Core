@@ -1,28 +1,16 @@
 '''
 ------------------------------------------------------------------------
 Computes the average labor participation rate for each age cohort.
-
-This py-file calls the following other file(s):
-            data/labor/cps_hours_by_age_hourspct.txt
-
-This py-file creates the following other file(s):
-    (make sure that an OUTPUT folder exists)
-            OUTPUT/Demographics/labor_dist_data_withfit.png
-            OUTPUT/Demographics/data_labor_dist.png
 ------------------------------------------------------------------------
 '''
 
-'''
-------------------------------------------------------------------------
-    Packages
-------------------------------------------------------------------------
-'''
 import os
 import numpy as np
 import pandas as pd
-import pickle
-from ogusa import utils
 import scipy.ndimage.filters as filter
+import matplotlib
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 
 '''
@@ -33,9 +21,9 @@ import scipy.ndimage.filters as filter
 
 
 def get_labor_data():
-
-    # read in "raw" CPS data to calculate moments
-    # these data were actually cleaned in hours_data_cps_setup.do
+    '''
+    Read in "raw" CPS data to calculate moments.  These data were
+    cleaned in hours_data_cps_setup.do
     fileDir = os.path.dirname(os.path.realpath('__file__'))
     filename = os.path.join(
         fileDir,
@@ -43,9 +31,14 @@ def get_labor_data():
     filename = os.path.abspath(os.path.realpath(filename))
     cps = pd.read_stata(filename, columns=['year', 'age', 'hours',
                                            'hours_unit', 'wtsupp'])
-    return cps
 
-#     '''
+    Args:
+        None
+
+    Returns:
+        cps (Pandas DataFrame): CPS data to compute labor supply from
+
+    '''
 #     Need to:
 #     1) read in raw CPS files
 #     2) do collapsing
@@ -79,17 +72,16 @@ def get_labor_data():
 
 def compute_labor_moments(cps, S):
     '''
-    ------------------------------------------------------------------------
-        Compute moments from labor data
-    ------------------------------------------------------------------------
-    Inputs:
-        cps         = pandas DF, raw data from SCF
-    Objects created in the function:
-        labor_dist_data = [S,] array of labor moments
+    Compute moments from labor data.
+
+    Args:
+        cps (Pandas DataFrame): CPS data to compute labor supply from
+        S (int): number of periods of economic life for model households
 
     Returns:
-        labor_dist_data
-    ------------------------------------------------------------------------
+        labor_dist_out (Numpy array): fraction of time spent working
+            by age
+
     '''
 
     # Find fraction of total time people work on average by age
@@ -128,23 +120,19 @@ def compute_labor_moments(cps, S):
 
 def VCV_moments(cps, n, bin_weights, S):
     '''
-    ------------------------------------------------------------------------
-        Compute Variance-Covariance matrix for labor moments by
-        bootstrapping data
+    Compute Variance-Covariance matrix for labor moments by
+    bootstrapping data.
 
-        Inputs:
-            data        = pandas DF, raw data from CPS
-            n           = interger, number of bootstrap iterations to run
-            bin_weights = ability weights (Jx1 array)
-            J           = number of ability groups (scalar)
-        Objects created in the function:
-            labor_moments_boot = [n,S] array, bootstrapped labor moments
-            boot = pandas DF, boostrapped dataframe
-            VCV  = [S,S] array, variance-covariance matrix of labor moments
-        Output:
-            VCV
+    Args:
+        cps (Pandas DataFrame): CPS data to compute labor supply from
+        S (int): number of periods of economic life for model households
+        n (int): number of bootstrap iterations to run
+        bin_weights (Numpy array): ability weight, length J
 
-    ------------------------------------------------------------------------
+    Output:
+        VCV (Numpy array): = variance-covariance matrix of labor
+            moments, size SxS
+
     '''
     labor_moments_boot = np.zeros((n, S))
     for i in range(n):
@@ -156,18 +144,22 @@ def VCV_moments(cps, n, bin_weights, S):
     return VCV
 
 
-def labor_data_graphs(weighted, output_dir):
+def labor_data_graphs(weighted, S, J, output_dir):
     '''
-    ------------------------------------------------------------------------
-    Plot graphs
-    ------------------------------------------------------------------------
-    '''
-    import matplotlib
-    import matplotlib.pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D
+    Plot labor supply data.
 
-    domain = np.linspace(20, 80, S_labor)
-    Jgrid = np.linspace(1, 100, J_labor)
+    Args:
+        weighted (Numpy array):
+        S (int): number of periods of economic life for model households
+        J (int): number of lifetime income groups
+        output_dir (str): path to save figures to
+
+    Returns:
+        None
+
+    '''
+    domain = np.linspace(20, 80, S)
+    Jgrid = np.linspace(1, 100, J)
     X, Y = np.meshgrid(domain, Jgrid)
     cmap2 = matplotlib.cm.get_cmap('summer')
 

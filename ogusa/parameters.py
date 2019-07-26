@@ -18,9 +18,9 @@ from ogusa.utils import BASELINE_DIR, TC_LAST_YEAR
 
 
 class Specifications(ParametersBase):
-    """
+    '''
     Inherits ParametersBase. Implements the PolicyBrain API for OG-USA
-    """
+    '''
     DEFAULTS_FILENAME = 'default_parameters.json'
 
     def __init__(self,
@@ -59,14 +59,17 @@ class Specifications(ParametersBase):
         self._ignore_errors = False
 
     def initialize(self):
-        """
+        '''
         ParametersBase reads JSON file and sets attributes to self
         Next call self.compute_default_params for further initialization
-        Parameters:
-        -----------
-        run_micro: boolean that indicates whether to estimate tax funtions
-                   from microsim model
-        """
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        '''
         for name, data in self._vals.items():
             intg_val = data.get('integer_value', None)
             bool_val = data.get('boolean_value', None)
@@ -88,9 +91,16 @@ class Specifications(ParametersBase):
         self.compute_default_params()
 
     def compute_default_params(self):
-        """
+        '''
         Does cheap calculations to return parameter values
-        """
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        '''
         # get parameters of elliptical utility function
         self.b_ellipse, self.upsilon = elliptical_u_est.estimation(
             self.frisch,
@@ -218,6 +228,19 @@ class Specifications(ParametersBase):
             plot=False)
 
     def get_tax_function_parameters(self, client, run_micro=False):
+        '''
+        Reads pickle file of tax function parameters or estimates the
+        parameters from microsimulation model output.
+
+        Args:
+            client (Dask client object): client
+            run_micro (bool): whether to estimate parameters from
+                microsimulation model
+
+        Returns:
+            None
+
+        '''
         # Income tax parameters
         if self.baseline:
             tx_func_est_path = os.path.join(
@@ -365,26 +388,19 @@ class Specifications(ParametersBase):
 
     def read_tax_func_estimate(self, pickle_path, pickle_file):
         '''
-        --------------------------------------------------------------------
-        This function reads in tax function parameters
-        --------------------------------------------------------------------
+        This function reads in tax function parameters from pickle
+        files.
 
-        INPUTS:
-        pickle_path = string, path to pickle with tax function parameter
-                      estimates
-        pickle_file = string, name of pickle file with tax function
-                      parmaeter estimates
+        Args:
+            pickle_path (str): path to pickle with tax function
+                parameter estimates
+            pickle_file (str): name of pickle file with tax function
+                parameter estimates
 
-        OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
-        /picklepath/ = pickle file with dictionary of tax function
-                       estimated parameters
+        Returns:
+            dict_params (dict): dictionary containing arrays of tax
+                function parameters
 
-        OBJECTS CREATED WITHIN FUNCTION:
-        dict_params = dictionary, contains numpy arrays of tax function
-                      estimates
-
-        RETURNS: dict_params
-        --------------------------------------------------------------------
         '''
         if os.path.exists(pickle_path):
             print('pickle path exists')
@@ -394,7 +410,6 @@ class Specifications(ParametersBase):
                 except TypeError:
                     dict_params = pickle.load(pfile)
         else:
-            from pkg_resources import resource_stream, Requirement
             path_in_egg = pickle_file
             pkl_path = os.path.join(os.path.dirname(__file__), '..',
                                     path_in_egg)
@@ -407,55 +422,60 @@ class Specifications(ParametersBase):
         return dict_params
 
     def default_parameters(self):
-        """
+        '''
         Return Policy object same as self except with current-law policy.
         Returns
-        -------
-        Specifications: Specifications instance with the default configuration
-        """
+
+        Args:
+            None
+
+        Returns:
+            None
+
+        '''
         dp = Specifications()
         return dp
 
     def update_specifications(self, revision, raise_errors=True):
-        """
-        Updates parameter specification with values in revision dictionary
-        Parameters
-        ----------
-        reform: dictionary of one or more PARAM:VALUE pairs
-        raise_errors: boolean
-            if True (the default), raises ValueError when parameter_errors
-                    exists;
-            if False, does not raise ValueError when parameter_errors exists
-                    and leaves error handling to caller of
-                    update_specifications.
-        Raises
-        ------
-        ValueError:
-            if raise_errors is True AND
-              _validate_parameter_names_types generates errors OR
-              _validate_parameter_values generates errors.
-        Returns
-        -------
-        nothing: void
-        Notes
-        -----
-        Given a reform dictionary, typical usage of the Policy class
-        is as follows::
-            specs = Specifications()
-            specs.update_specifications(reform)
-        An example of a multi-parameter specification is as follows::
-            spec = {
-                frisch: [0.03]
-            }
-        This method was adapted from the Tax-Calculator
-        behavior.py-update_behavior method.
-        """
+        '''
+        Updates parameter specification with values in revision
+        dictionary.
+
+        Args:
+            revision (dict): dictionary or JSON string with one or more
+                `PARAM: VALUE` pairs
+            raise_errors (boolean):
+                    if True (the default), raises ValueError when
+                       `parameter_errors` exists;
+                    if False, does not raise ValueError when
+                       `parameter_errors` exists and leaves error
+                       handling to caller of the update_specifications
+                       method.
+
+        Returns:
+            None
+
+        Raises:
+            ValueError: if raise_errors is True AND
+              `_validate_parameter_names_types` generates errors OR
+              `_validate_parameter_values` generates errors.
+
+        Notes:
+            Given a reform dictionary, typical usage of the
+            Specifications class is as follows::
+                >>> specs = Specifications()
+                >>> specs.update_specifications(revision)
+            An example of a multi-parameter specification is as follows::
+                >>> revision = {
+                    frisch: [0.03]
+                }
+
+        '''
         # check that all revisions dictionary keys are integers
         if not isinstance(revision, dict):
             raise ValueError('ERROR: revision is not a dictionary')
         if not revision:
             return  # no revision to implement
-        revision_years = sorted(list(revision.keys()))
         # check range of remaining revision_years
         # validate revision parameter names and types
         self.parameter_errors = ''
@@ -475,12 +495,17 @@ class Specifications(ParametersBase):
 
     @staticmethod
     def read_json_param_objects(revision):
-        """
+        '''
         Read JSON file and convert to dictionary
-        Returns
-        -------
-        rev_dict: formatted dictionary
-        """
+
+        Args:
+            revision (str): r JSON string with one or more
+                `PARAM: VALUE` pairs
+
+        Returns:
+            rev_dict (dict): formatted dictionary of parameters
+
+        '''
         # next process first reform parameter
         if revision is None:
             rev_dict = dict()
@@ -514,19 +539,18 @@ class Specifications(ParametersBase):
         return rev_dict
 
     def _validate_parameter_names_types(self, revision):
-        """
+        '''
         Check validity of parameter names and parameter types used
         in the specified revision dictionary.
-        Parameters
-        ----------
-        revision: parameter dictionary of form {parameter_name: [value]}
+
+        Args:
+            revision (dict): dictionary or JSON string with one or more
+                `PARAM: VALUE` pairs
+
         Returns:
-        --------
-        nothing: void
-        Notes
-        -----
-        copied from taxcalc.Behavior._validate_parameter_names_types
-        """
+            None
+
+        '''
         param_names = set(self._vals.keys())
         # print('Parameter names = ', param_names)
         revision_param_names = list(revision.keys())
@@ -588,19 +612,18 @@ class Specifications(ParametersBase):
         del param_names
 
     def _validate_parameter_values(self, parameters_set):
-        """
+        '''
         Check values of parameters in specified parameter_set using
-        range information from the current_law_policy.json file.
-        Parameters:
-        -----------
-        parameters_set: set of parameters whose values need to be validated
+        range information from the default_parameters.json file.
+
+        Args:
+            parameters_set (dict): set of parameters whose values need
+                to be validated
+
         Returns:
-        --------
-        nothing: void
-        Notes
-        -----
-        copied from taxcalc.Policy._validate_parameter_values
-        """
+            None
+
+        '''
         dp = self.default_parameters()
         parameters = sorted(parameters_set)
         for param_name in parameters:
@@ -654,15 +677,16 @@ class Specifications(ParametersBase):
 # copied from taxcalc.tbi.tbi.reform_errors_warnings--probably needs further
 # changes
 def reform_warnings_errors(user_mods):
-    """
+    '''
     Generate warnings and errors for OG-USA parameter specifications
-    Parameters:
-    -----------
-    user_mods : dict created by read_json_param_objects
-    Return
-    ------
-    rtn_dict : dict with endpoint specific warning and error messages
-    """
+
+    Args:
+        user_mods (dict): created by read_json_param_objects
+
+    Returns:
+        rtn_dict (dict): with endpoint specific warning and error messages
+
+    '''
     rtn_dict = {'ogusa': {'warnings': '', 'errors': ''}}
 
     # create Specifications object and implement reform

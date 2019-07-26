@@ -1,25 +1,4 @@
-'''
-------------------------------------------------------------------------
-This program solves for transition path of the distribution of wealth
-and the aggregate capital stock using the time path iteration (TPI)
-method, where labor in inelastically supplied.
-
-This py-file calls the following other file(s):
-            tax.py
-            utils.py
-            household.py
-            firm.py
-            OUTPUT/SS/ss_vars.pkl
-
-
-This py-file creates the following other file(s):
-    (make sure that an OUTPUT folder exists)
-            OUTPUT/TPIinit/TPIinit_vars.pkl
-            OUTPUT/TPI/TPI_vars.pkl
-------------------------------------------------------------------------
-'''
-
-# Packages
+# imports
 import numpy as np
 import pickle
 import scipy.optimize as opt
@@ -42,20 +21,25 @@ Set flag for enforcement of solution check
 ENFORCE_SOLUTION_CHECKS = True
 
 
-'''
-------------------------------------------------------------------------
-Import steady state distribution, parameters and other objects from
-steady state computation in ss_vars.pkl
-------------------------------------------------------------------------
-'''
-
-
 def get_initial_SS_values(p):
-
     '''
-    ------------------------------------------------------------------------
-    Get values of variables for the initial period and the steady state.
-    ------------------------------------------------------------------------
+    Get values of variables for the initial period and the steady state
+    equlibrium values.
+
+    Args:
+        p (OG-USA Specifcations object): model parameters
+
+    Returns:
+        initial_values (tuple): initial period variable values,
+            (b_sinit, b_splus1init, factor, initial_b, initial_n, D0)
+        ss_vars (dictionary): dictionary with steady state solution
+            results
+        theta (Numpy array): steady-state retirement replacement rates,
+            length J
+        baseline_values (tuple): (T_Hbaseline, Gbaseline), lump sum
+            transfer and government spending amounts from the baseline
+            model run
+
     '''
     baseline_ss = os.path.join(p.baseline_dir, "SS/SS_vars.pkl")
     ss_baseline_vars = pickle.load(open(baseline_ss, "rb"))
@@ -78,7 +62,7 @@ def get_initial_SS_values(p):
         reform_ss_path = os.path.join(p.output_base, "SS/SS_vars.pkl")
         ss_vars = pickle.load(open(reform_ss_path, "rb"))
     theta = ss_vars['theta']
-    ## What is going on here?  Whatever it is, why not done in pb_api.py???
+    # What is going on here?  Whatever it is, why not done in parameters.py???
     N_tilde = p.omega.sum(1)  # this should equal one in
     # each year given how we've constructed omega
     p.omega = p.omega / N_tilde.reshape(p.T + p.S, 1)
@@ -118,20 +102,24 @@ def firstdoughnutring(guesses, r, w, bq, T_H, theta, factor, j,
     doughnut.  This is separate from the main TPI function because the
     values of b and n are scalars, so it is easier to just have a
     separate function for these cases.
-    Inputs:
-        guesses = guess for b and n (2x1 list)
-        winit = initial wage rate (scalar)
-        rinit = initial rental rate (scalar)
-        BQinit = initial aggregate bequest (scalar)
-        T_H_init = initial lump sum tax (scalar)
-        initial_b = initial distribution of capital (SxJ array)
-        factor = steady state scaling factor (scalar)
-        j = which ability type is being solved for (integer)
-        parameters = tuple of parameters (tuple)
-        theta = replacement rates (Jx1 array)
-        tau_bq = bequest tax rates (Jx1 array)
-    Output:
-        euler errors (2x1 list)
+
+    Args:
+        guesses (Numpy array): initial guesses for b and n, length 2
+        r (scalar): real interest rate
+        w (scalar): real wage rate
+        bq (scalar): bequest amounts by age
+        T_H (scalar): lump sum transfer amount
+        theta (Numpy array): retirement replacement rates, length J
+        factor (scalar): scaling factor converting model units to dollars
+        j (int): index of ability type
+        initial_b (Numpy array): savings of agents alive at T=0,
+            size = SxJ
+        p (OG-USA Specifcations object): model parameters
+
+    Returns:
+        euler errors (Numpy array): errors from first order conditions,
+            length 2
+
     '''
     b_splus1 = float(guesses[0])
     n = float(guesses[1])
@@ -165,27 +153,36 @@ def twist_doughnut(guesses, r, w, bq, T_H, theta, factor, j, s, t,
                    tau_c, etr_params, mtrx_params, mtry_params,
                    initial_b, p):
     '''
-    Parameters:
-        guesses = distribution of capital and labor (various length list)
-        w   = wage rate ((T+S)x1 array)
-        r   = rental rate ((T+S)x1 array)
-        BQ = aggregate bequests ((T+S)x1 array)
-        T_H = lump sum tax over time ((T+S)x1 array)
-        factor = scaling factor (scalar)
-        j = which ability type is being solved for (scalar)
-        s = which upper triangle loop is being solved for (scalar)
-        t = which diagonal is being solved for (scalar)
-        params = list of parameters (list)
-        theta = replacement rates (Jx1 array)
-        tau_bq = bequest tax rate (Jx1 array)
-        rho = mortalit rate (Sx1 array)
-        lambdas = ability weights (Jx1 array)
-        e = ability type (SxJ array)
-        initial_b = capital stock distribution in period 0 (SxJ array)
-        chi_b = chi^b_j (Jx1 array)
-        chi_n = chi^n_s (Sx1 array)
-    Output:
-        Value of Euler error (various length list)
+    Solves the upper triangle of time path iterations.  These are the
+    agents who are alive at time T=0 so that we do not solve for their
+    full lifetime (so of their life was before the model begins).
+
+    Args:
+        guesses (Numpy array): initial guesses for b and n, length 2s
+        r (scalar): real interest rate
+        w (scalar): real wage rate
+        bq (Numpy array): bequest amounts by age, length s
+        T_H (scalar): lump sum transfer amount
+        theta (Numpy array): retirement replacement rates, length J
+        factor (scalar): scaling factor converting model units to dollars
+        j (int): index of ability type
+        s (int): years of life remaining
+        t (int): model period
+        tau_c (Numpy array): consumption tax rates, size = sxJ
+        etr_params (Numpy array): ETR function parameters,
+            size = sxsxnum_params
+        mtrx_params (Numpy array): labor income MTR function parameters,
+            size = sxsxnum_params
+        mtry_params (Numpy array): capital income MTR function
+            parameters, size = sxsxnum_params
+        initial_b (Numpy array): savings of agents alive at T=0,
+            size = SxJ
+        p (OG-USA Specifcations object): model parameters
+
+    Returns:
+        euler errors (Numpy array): errors from first order conditions,
+            length 2s
+
     '''
     length = int(len(guesses) / 2)
     b_guess = np.array(guesses[:length])
@@ -229,25 +226,34 @@ def twist_doughnut(guesses, r, w, bq, T_H, theta, factor, j, s, t,
 
 def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
     '''
-    Solves inner loop of TPI.  Given path of economic aggregates and
-    factor prices, solves household problem.
+    Given path of economic aggregates and factor prices, solves
+    household problem.  This has been termed the inner-loop (in
+    constrast to the outer fixed point loop that soves for GE factor
+    prices and economic aggregates).
 
-    Inputs:
-        r          = [T,] vector, interest rate
-        w          = [T,] vector, wage rate
-        b          = [T,S,J] array, wealth holdings
-        n          = [T,S,J] array, labor supply
-        BQ         = [T,J] vector,  bequest amounts
-        factor     = scalar, model income scaling factor
-        T_H        = [T,] vector, lump sum transfer amount(s)
+    Args:
+        guesses (tuple): initial guesses for b and n, (guesses_b,
+            guesses_n)
+        outer_loop_vars (tuple): values for factor prices and economic
+            aggregates used in household problem (r, w, r_hh, BQ, T_H,
+            theta)
+        r (Numpy array): real interest rate on private capital
+        w (Numpy array): real wage rate
+        r (Numpy array): real interest rate on household portfolio
+        BQ (array_like): aggregate bequest amounts
+        T_H (Numpy array): lump sum transfer amount
+        theta (Numpy array): retirement replacement rates, length J
+        initial_values (tuple): initial period variable values,
+            (b_sinit, b_splus1init, factor, initial_b, initial_n, D0)
+        j (int): index of ability type
+        ind (Numpy array): integers from 0 to S-1
+        p (OG-USA Specifcations object): model parameters
 
-    Functions called:
-        firstdoughnutring()
-        twist_doughnut()
+    Returns:
+        euler_errors (Numpy array): errors from FOCs, size = Tx2S
+        b_mat (Numpy array): savings amounts, size = TxS
+        n_mat (Numpy array): labor supply amounts, size = TxS
 
-    Objects in function:
-
-    Returns: euler_errors, b_mat, n_mat
     '''
     # unpack variables and parameters pass to function
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n,
@@ -364,7 +370,18 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
 
 
 def run_TPI(p, client=None):
+    '''
+    Solve for transition path equilibrium of OG-USA.
 
+    Args:
+        p (OG-USA Specifcations object): model parameters
+        client (Dask client object): client
+
+    Returns:
+        output (dictionary): dictionary with transition path solution
+            results
+
+    '''
     # unpack tuples of parameters
     initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
     (B0, b_sinit, b_splus1init, factor, initial_b, initial_n,

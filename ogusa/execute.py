@@ -12,6 +12,33 @@ from ogusa.parameters import Specifications
 def runner(output_base, baseline_dir, test=False, time_path=True,
            baseline=True, reform={}, user_params={}, guid='',
            run_micro=True, data=None, client=None, num_workers=1):
+    '''
+    This function runs the OG-USA model, solving for the steady-state
+    and (optionally) the time path equilibrium.
+
+    Args:
+        output_base (str): path to save output to
+        baseline_dir (str): path where baseline model results are saved
+        test (bool): whether to run model in test mode (which has
+            a smaller state space and higher tolerances for solution)
+        time_path (bool): whether to solve for the time path equlibrium
+        baseline (bool): whether the model run is the baseline run
+        reform (dict): Tax-Calculator policy dictionary
+        user_params (dict): dictionary with updates to default
+            parameters in OG-USA
+        guid (str): id for OG-USA run
+        run_micro (bool): whether to estimate tax functions from micro
+            data or load saved parameters from pickle file
+        data (str or Pandas DataFrame): path to or data to use in
+            Tax-Calculator
+        client (Dask client object): client
+        num_workers (int): number of workers to use for parallelization
+            with Dask
+
+    Returns:
+        None
+
+    '''
 
     tick = time.time()
     # Create output directory structure
