@@ -171,7 +171,7 @@ def inner_loop(outer_loop_vars, p, client):
         nssmat[:, j] = solutions[p.S:]
 
     L = aggr.get_L(nssmat, p, 'SS')
-    B = aggr.get_K(bssmat, p, 'SS', False)
+    B = aggr.get_B(bssmat, p, 'SS', False)
     K_demand_open = firm.get_K(L, p.firm_r[-1], p, 'SS')
     D_f = p.zeta_D[-1] * D
     D_d = D - D_f
@@ -235,23 +235,65 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
               fsolve_flag=False):
     '''
     Solves for the steady state distribution of capital, labor, as well
-    as w, r, T_H and the scaling factor, using functional iteration.
+    as w, r, T_H and the scaling factor, using a bisection method
+    similar to TPI.
+    --------------------------------------------------------------------
 
-    Args:
-        bmat (Numpy array): initial guess at savings, size = SxJ
-        nmat (Numpy array): initial guess at labor supply, size = SxJ
-        r (scalar): real interest rate
-        BQ (array_like): aggregate bequest amount(s)
-        T_H (scalar): lump sum transfer amount
-        factor (scalar): scaling factor converting model units to dollars
-        Y (scalar): real GDP
-        p (OG-USA Specifcations object): model parameters
-        client (Dask client object): client
+    INPUTS:
+    b_guess_init = [S,J] array, initial guesses for savings
+    n_guess_init = [S,J] array, initial guesses for labor supply
+    wguess = scalar, initial guess for SS real wage rate
+    rguess = scalar, initial guess for SS real interest rate
+    T_Hguess = scalar, initial guess for lump sum transfer
+    factorguess = scalar, initial guess for scaling factor to dollars
+    chi_b = [J,] vector, chi^b_j, the utility weight on bequests
+    chi_n = [S,] vector, chi^n_s utility weight on labor supply
+    params = length X tuple, list of parameters
+    iterative_params = length X tuple, list of parameters that determine
+                       the convergence of the while loop
+    tau_bq = [J,] vector, bequest tax rate
+    rho = [S,] vector, mortality rates by age
+    lambdas = [J,] vector, fraction of population with each ability type
+    omega = [S,] vector, stationary population weights
+    e =  [S,J] array, effective labor units by age and ability type
 
-    Returns:
-        output (dictionary): dictionary with steady state solution
-            results
 
+    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION:
+    euler_equation_solver()
+    aggr.get_B()
+    aggr.get_L()
+    firm.get_Y()
+    firm.get_r()
+    firm.get_w()
+    aggr.get_BQ()
+    tax.replacement_rate_vals()
+    aggr.revenue()
+    utils.convex_combo()
+    utils.pct_diff_func()
+
+
+    OBJECTS CREATED WITHIN FUNCTION:
+    b_guess = [S,] vector, initial guess at household savings
+    n_guess = [S,] vector, initial guess at household labor supply
+    b_s = [S,] vector, wealth enter period with
+    b_splus1 = [S,] vector, household savings
+    b_splus2 = [S,] vector, household savings one period ahead
+    BQ = scalar, aggregate bequests to lifetime income group
+    theta = scalar, replacement rate for social security benenfits
+    error1 = [S,] vector, errors from FOC for savings
+    error2 = [S,] vector, errors from FOC for labor supply
+    tax1 = [S,] vector, total income taxes paid
+    cons = [S,] vector, household consumption
+
+    OBJECTS CREATED WITHIN FUNCTION - SMALL OPEN ONLY
+    Bss = scalar, aggregate household wealth in the steady state
+    BIss = scalar, aggregate household net investment in the steady state
+
+    RETURNS: solutions = steady state values of b, n, w, r, factor,
+                    T_H ((2*S*J+4)x1 array)
+
+    OUTPUT: None
+    --------------------------------------------------------------------
     '''
     # Rename the inputs
     if not p.budget_balance:
@@ -332,7 +374,7 @@ def SS_solver(bmat, nmat, r, BQ, T_H, factor, Y, p, client,
     else:
         Dss = p.debt_ratio_ss * Y
     Lss = aggr.get_L(nssmat, p, 'SS')
-    Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
+    Bss = aggr.get_B(bssmat_splus1, p, 'SS', False)
     K_demand_open_ss = firm.get_K(Lss, p.firm_r[-1], p, 'SS')
     D_f_ss = p.zeta_D[-1] * Dss
     D_d_ss = Dss - D_f_ss
