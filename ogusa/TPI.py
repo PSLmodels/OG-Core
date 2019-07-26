@@ -75,7 +75,7 @@ def get_initial_SS_values(p):
     # Get an initial distribution of wealth with the initial population
     # distribution. When small_open=True, the value of K0 is used as a
     # placeholder for first-period wealth
-    B0 = aggr.get_K(initial_b, p, 'SS', True)
+    B0 = aggr.get_B(initial_b, p, 'SS', True)
 
     b_sinit = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
                        list(initial_b[:-1]))
@@ -413,7 +413,7 @@ def run_TPI(p, client=None):
     L_init = np.ones((p.T + p.S,)) * ss_vars['Lss']
     B_init = np.ones((p.T + p.S,)) * ss_vars['Bss']
     L_init[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
-    B_init[1:p.T] = aggr.get_K(b_mat[:p.T], p, 'TPI', False)[:p.T - 1]
+    B_init[1:p.T] = aggr.get_B(b_mat[:p.T], p, 'TPI', False)[:p.T - 1]
     B_init[0] = B0
 
     if not p.small_open:
@@ -422,7 +422,7 @@ def run_TPI(p, client=None):
         else:
             K_init = B_init * ss_vars['Kss'] / ss_vars['Bss']
     else:
-        K_init = firm.get_K(L_init, p.firm_r, p, 'TPI')
+        K_init = firm.get_B(L_init, p.firm_r, p, 'TPI')
 
     K = K_init
     K_d = K_init * ss_vars['K_d_ss'] / ss_vars['Kss']
@@ -582,7 +582,7 @@ def run_TPI(p, client=None):
             D_d[:p.T] = np.zeros(p.T)
 
         L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
-        B[1:p.T] = aggr.get_K(bmat_splus1[:p.T], p, 'TPI',
+        B[1:p.T] = aggr.get_B(bmat_splus1[:p.T], p, 'TPI',
                               False)[:p.T - 1]
         K_demand_open = firm.get_K(L[:p.T], p.firm_r[:p.T], p, 'TPI')
         K_d[:p.T] = B[:p.T] - D_d[:p.T]
