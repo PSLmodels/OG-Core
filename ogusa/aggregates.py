@@ -1,4 +1,4 @@
-'''
+B'''
 ------------------------------------------------------------------------
 Functions to compute economic aggregates.
 ------------------------------------------------------------------------
@@ -43,7 +43,7 @@ def get_L(n, p, method):
     return L
 
 
-def get_I(b_splus1, K_p1, K, p, method):
+def get_I(b_splus1, B_p1, B, p, method):
     '''
     Calculate aggregate investment.
 
@@ -68,8 +68,8 @@ def get_I(b_splus1, K_p1, K, p, method):
         part2 = (((b_splus1 *
                    np.transpose((omega_extended * imm_extended) *
                                 p.lambdas)).sum()) / (1 + p.g_n_ss))
-        aggI = ((1 + p.g_n_ss) * np.exp(p.g_y) * (K_p1 - part2) -
-                (1.0 - p.delta) * K)
+        aggI = ((1 + p.g_n_ss) * np.exp(p.g_y) * (B_p1 - part2) -
+                (1.0 - p.delta) * B)
     if method == 'BI_SS':
         delta = 0
         omega_extended = np.append(p.omega_SS[1:], [0.0])
@@ -77,8 +77,8 @@ def get_I(b_splus1, K_p1, K, p, method):
         part2 = (((b_splus1 *
                    np.transpose((omega_extended * imm_extended) *
                                 p.lambdas)).sum()) / (1 + p.g_n_ss))
-        aggI = ((1 + p.g_n_ss) * np.exp(p.g_y) * (K_p1 - part2) -
-                (1.0 - delta) * K)
+        aggI = ((1 + p.g_n_ss) * np.exp(p.g_y) * (B_p1 - part2) -
+                (1.0 - delta) * B)
     elif method == 'TPI':
         omega_shift = np.append(p.omega[:p.T, 1:], np.zeros((p.T, 1)),
                                 axis=1)
@@ -90,12 +90,12 @@ def get_I(b_splus1, K_p1, K, p, method):
                            (1, 1, p.J))).sum(1).sum(1)) /
                  (1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))))
         aggI = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))) *
-                np.exp(p.g_y) * (K_p1 - part2) - (1.0 - p.delta) * K)
+                np.exp(p.g_y) * (B_p1 - part2) - (1.0 - p.delta) * B)
 
     return aggI
 
 
-def get_K(b, p, method, preTP):
+def get_B(b, p, method, preTP):
     '''
     Calculate aggregate savings
 
@@ -127,9 +127,9 @@ def get_K(b, p, method, preTP):
             imm_extended = np.append(p.imm_rates[-1, 1:], [0.0])
             pop_growth_rate = p.g_n_ss
         part2 = b * np.transpose(omega_extended * imm_extended * p.lambdas)
-        K_presum = part1 + part2
-        K = K_presum.sum()
-        K /= (1.0 + pop_growth_rate)
+        B_presum = part1 + part2
+        B = B_presum.sum()
+        B /= (1.0 + pop_growth_rate)
     elif method == 'TPI':
         part1 = ((b * np.squeeze(p.lambdas)) *
                  np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
@@ -141,10 +141,10 @@ def get_K(b, p, method, preTP):
         part2 = ((b * np.squeeze(p.lambdas)) *
                  np.tile(np.reshape(imm_shift * omega_shift,
                                     (p.T, p.S, 1)), (1, 1, p.J)))
-        K_presum = part1 + part2
-        K = K_presum.sum(1).sum(1)
-        K /= (1.0 + np.hstack((p.g_n[1:p.T], p.g_n_ss)))
-    return K
+        B_presum = part1 + part2
+        B = B_presum.sum(1).sum(1)
+        B /= (1.0 + np.hstack((p.g_n[1:p.T], p.g_n_ss)))
+    return B
 
 
 def get_BQ(r, b_splus1, j, p, method, preTP):
@@ -235,7 +235,7 @@ def get_C(c, p, method):
     return aggC
 
 
-def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
+def revenue(r, w, b, n, bq, c, Y, L, B, factor, theta, etr_params,
             p, method):
     '''
     Calculate aggregate tax revenue.
@@ -284,7 +284,7 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
                               p.p_wealth[-1]) * b)
         T_BQ = p.tau_bq[-1] * bq
         T_C = p.tau_c[-1, :, :] * c
-        business_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
+        business_revenue = tax.get_biz_tax(w, Y, L, B, p, method)
         REVENUE = ((np.transpose(p.omega_SS * p.lambdas) *
                     (T_I + T_P + T_BQ + T_W + T_C)).sum() +
                    business_revenue)
@@ -305,7 +305,7 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
                               p.p_wealth[:p.T].reshape(p.T, 1, 1)) * b)
         T_BQ = p.tau_bq[:p.T].reshape(p.T, 1, 1) * bq
         T_C = p.tau_c[:p.T, :, :] * c
-        business_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
+        business_revenue = tax.get_biz_tax(w, Y, L, B, p, method)
         REVENUE = ((((np.squeeze(p.lambdas)) *
                    np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
                            (1, 1, p.J)))
@@ -315,7 +315,7 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
     return REVENUE, T_I, T_P, T_BQ, T_W, T_C, business_revenue
 
 
-def get_r_hh(r, r_gov, K, D):
+def get_r_hh(r, r_gov, B, D):
     '''
     Compute the interest rate on the household's portfolio of assets,
     a mix of government debt and private equity.
@@ -334,7 +334,7 @@ def get_r_hh(r, r_gov, K, D):
             portfolio
 
     '''
-    r_hh = ((r * K) + (r_gov * D)) / (K + D)
+    r_hh = ((r * B) + (r_gov * D)) / (B + D)
 
     return r_hh
 
