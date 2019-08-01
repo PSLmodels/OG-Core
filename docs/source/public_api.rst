@@ -17,8 +17,6 @@ There is also a link to the source code for each documented member.
    :caption: API
 
    aggregates
-   calibrate
-   constants
    demographics
    elliptical_u_est
    execute

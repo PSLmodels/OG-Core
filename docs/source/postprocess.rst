@@ -1,7 +1,7 @@
 .. _postprocess:
 
 OG-USA Output Post-Processing Functions
-=================================================
+==========================================
 
 **OG-USA Output Post-Processing Functions**
 
