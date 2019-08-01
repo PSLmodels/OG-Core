@@ -1,14 +1,14 @@
-.. _post_process:
+.. _postprocess:
 
 OG-USA Output Post-Processing Functions
 =================================================
 
 **OG-USA Output Post-Processing Functions**
 
-ogusa.post_process
+ogusa.postprocess
 ------------------------------------------
 
-.. currentmodule:: ogusa.post_process
+.. currentmodule:: ogusa.postprocess
 
-.. automodule:: ogusa.post_process
+.. automodule:: ogusa.postprocess
   :members: create_diff
