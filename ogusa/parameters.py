@@ -401,7 +401,7 @@ class Specifications(ParametersBase):
             dict_params = safe_read_pickle(pickle_path)
         else:
             path_in_egg = pickle_file
-            pkl_path = os.path.join(os.path.dirname(__file__),
+            pkl_path = os.path.join(os.path.dirname(__file__), 'tests',
                                     path_in_egg)
             dict_params = dict_params = safe_read_pickle(pkl_path)
 
