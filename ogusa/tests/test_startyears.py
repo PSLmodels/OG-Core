@@ -3,7 +3,6 @@ import os
 from ogusa import SS, TPI
 from ogusa.execute import runner
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-PUF_PATH = os.path.join(CUR_PATH, '../puf.csv')
 
 
 @pytest.mark.full_run
@@ -21,4 +20,4 @@ def test_diff_start_year(year):
                    'start_year': year}
     runner(output_base=output_base, baseline_dir=input_dir, test=True,
            time_path=True, baseline=True, user_params=user_params,
-           run_micro=True, data=PUF_PATH)
+           run_micro=True, data='cps')
