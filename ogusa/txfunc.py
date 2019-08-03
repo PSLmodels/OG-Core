@@ -1143,8 +1143,8 @@ def tax_func_loop(t, micro_data, start_year, s_min, s_max, age_specific,
                 gen_3Dscatters_hist(df_etr, s, t, output_dir)
 
             # Estimate effective tax rate function ETR(x,y)
-            (etrparams, etr_wsumsq_arr[s-s_min, :],
-                etr_obs_arr[s-s_min, :]) = \
+            (etrparams, etr_wsumsq_arr[s-s_min],
+                etr_obs_arr[s-s_min]) = \
                 txfunc_est(df_etr, s, t, 'etr', tax_func_type,
                            numparams, output_dir, graph_est)
             etrparam_arr[s-s_min, :] = etrparams
