@@ -8,8 +8,8 @@ CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 @pytest.mark.full_run
 @pytest.mark.parametrize(
         'year',
-        [2013, 2017, 2026],
-        ids=['2013', '2017', '2026'])
+        [2014, 2017, 2026],
+        ids=['2014', '2017', '2026'])
 def test_diff_start_year(year):
     # Monkey patch enforcement flag since small data won't pass checks
     SS.ENFORCE_SOLUTION_CHECKS = False
