@@ -13,7 +13,7 @@ from ogusa import elliptical_u_est
 from ogusa import demographics
 from ogusa import income
 from ogusa import txfunc
-from ogusa.utils import BASELINE_DIR, TC_LAST_YEAR
+from ogusa.utils import BASELINE_DIR, TC_LAST_YEAR, safe_read_pickle
 # from ogusa import elliptical_u_est
 
 
@@ -404,20 +404,12 @@ class Specifications(ParametersBase):
         '''
         if os.path.exists(pickle_path):
             print('pickle path exists')
-            with open(pickle_path, 'rb') as pfile:
-                try:
-                    dict_params = pickle.load(pfile, encoding='latin1')
-                except TypeError:
-                    dict_params = pickle.load(pfile)
+            dict_params = safe_read_pickle(pickle_path)
         else:
             path_in_egg = pickle_file
-            pkl_path = os.path.join(os.path.dirname(__file__), '..',
+            pkl_path = os.path.join(os.path.dirname(__file__), 'tests',
                                     path_in_egg)
-            with open(pkl_path, 'rb') as pfile:
-                try:
-                    dict_params = pickle.load(pfile, encoding='latin1')
-                except TypeError:
-                    dict_params = pickle.load(pfile)
+            dict_params = dict_params = safe_read_pickle(pkl_path)
 
         return dict_params
 

@@ -148,20 +148,20 @@ def get_K(b, p, method, preTP):
 
 
 def get_BQ(r, b_splus1, j, p, method, preTP):
-    '''
+    r'''
     Calculation of aggregate bequests.  If `use_zeta` is False, then
     computes aggregate bequests within each lifetime income group.
 
     .. math::
         BQ_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\rho_{s}\omega_{s,t}\lambda_{j}b_{j,s+1,1}
 
-    Inputs:
+    Args:
         r (array_like): the real interest rate
         b_splus1 (numpy array): household savings one period ahead
         j (int): index of lifetime income group
         p (OG-USA Specifcations object): model parameters
-        method (str): adjusts calculation dimensions based on 'SS' or
-            'TPI'
+        method (str): adjusts calculation dimensions based on SS or
+            TPI
         preTP (bool): whether calculation is for the pre-time path
             period amount of savings.  If True, then need to use
             `omega_S_preTP`.
@@ -209,7 +209,7 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
 
 
 def get_C(c, p, method):
-    '''
+    r'''
     Calculation of aggregate consumption.
 
     .. math::
@@ -237,7 +237,7 @@ def get_C(c, p, method):
 
 def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
             p, method):
-    '''
+    r'''
     Calculate aggregate tax revenue.
 
     .. math::
@@ -266,8 +266,8 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
     Returns:
         REVENUE (array_like): aggregate tax revenue
         T_I (array_like): aggregate income tax revenue
-        T_P (array_like): aggregate net payroll tax revenue (revenues
-            minus social security benefits paid)
+        T_P (array_like): aggregate net payroll tax revenue, revenues
+            minus social security benefits paid
         T_BQ (array_like): aggregate bequest tax revenue
         T_W (array_like): aggregate wealth tax revenue
         T_C (array_like): aggregate consumption tax revenue
@@ -316,7 +316,7 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
 
 
 def get_r_hh(r, r_gov, K, D):
-    '''
+    r'''
     Compute the interest rate on the household's portfolio of assets,
     a mix of government debt and private equity.
 
@@ -330,7 +330,7 @@ def get_r_hh(r, r_gov, K, D):
         K (array_like): aggregate government debt
 
     Returns:
-        r_hh (array_like): the real interest rate on the household's
+        r_hh (array_like): the real interest rate on the households
             portfolio
 
     '''
