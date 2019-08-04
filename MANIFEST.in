@@ -1,3 +1,5 @@
-include ogusa/data/*
-include ccc/default_parameters.json
+include ogusa/data/ability/*
+include ogusa/data/demographic/*
+include ogusa/data/labor/*
+include ogusa/default_parameters.json
 include ogusa/OGUSAplots.mplstyle

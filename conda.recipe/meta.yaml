@@ -13,6 +13,7 @@ requirements:
     - scipy
     - matplotlib
     - dask
+    - mkl
 
   run:
     - python
@@ -21,6 +22,7 @@ requirements:
     - scipy
     - matplotlib
     - dask
+    - mkl
 
 about:
   home: https://github.com/PSLmodels/OG-USA/
