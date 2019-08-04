@@ -8,7 +8,7 @@ source:
 requirements:
   build:
     - python
-    - "taxcalc>=2.4.0"
+    - "taxcalc>=2.4.2"
     - setuptools
     - scipy
     - matplotlib
@@ -16,14 +16,14 @@ requirements:
 
   run:
     - python
-    - "taxcalc>=2.4.0"
+    - "taxcalc>=2.4.2"
     - setuptools
     - scipy
     - matplotlib
     - dask
 
 about:
-  home: https://github.com/open-source-economics/OG-USA/
+  home: https://github.com/PSLmodels/OG-USA/
 
 test:
   imports:

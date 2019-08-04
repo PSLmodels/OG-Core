@@ -1,2 +1,3 @@
-include versioneer.py
-include ogusa/_version.py
+include ogusa/data/*
+include ccc/default_parameters.json
+include ogusa/OGUSAplots.mplstyle
