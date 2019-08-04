@@ -1,6 +1,7 @@
 name: ogusa-dev
 channels:
 - PSLmodels
+- conda-forge
 dependencies:
 - python
 - setuptools
