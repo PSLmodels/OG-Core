@@ -30,16 +30,23 @@ test:
     - ogusa
     - ogusa.SS
     - ogusa.TPI
+    - ogusa.aggregates
+    - ogusa.constants
     - ogusa.demographics
     - ogusa.elliptical_u_est
+    - ogusa.execute
     - ogusa.firm
     - ogusa.fiscal
     - ogusa.get_micro_data
     - ogusa.household
     - ogusa.income
-    - ogusa.labor
     - ogusa.macro_output
+    - ogusa.output_plots
+    - ogusa.parameter_plots
+    - ogusa.parameter_tables
     - ogusa.parameters
+    - ogusa.parametersbase
+    - ogusa.postprocess
     - ogusa.tax
     - ogusa.txfunc
     - ogusa.utils

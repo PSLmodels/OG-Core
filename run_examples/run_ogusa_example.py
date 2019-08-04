@@ -23,7 +23,7 @@ def run_micro_macro(user_params):
 
     # Define parameters to use for multiprocessing
     client = Client(processes=False)
-    num_workers = 1  # multiprocessing.cpu_count()
+    num_workers = min(multiprocessing.cpu_count(), 7)
     print('Number of workers = ', num_workers)
     run_start_time = time.time()
 

@@ -3,21 +3,21 @@ try:
 except ImportError:
     from distutils.core import setup
 
-import versioneer
+with open('README.md') as f:
+        longdesc = f.read()
+
+version = '0.0.0'
 
 
 config = {
     'description': 'dynamic scoring model using Overlapping Generations model for the USA',
     'url': 'https://github.com/open-source-economics/OG-USA/',
     'download_url': 'https://github.com/open-source-economics/OG-USA/',
-    'description': 'ogusa',
-    'install_requires': [],
+    'install_requires': ['numpy', 'pandas', 'taxcalc'],
     'license': 'MIT',
     'packages': ['ogusa'],
     'package_data': {
                      'ogusa': [
-                               '../TxFuncEst_baseline.pkl',
-                               '../TxFuncEst_policy.pkl',
                                'parameters_metadata.json',
                                'data/ability/*',
                                'data/demographic/*',
@@ -26,8 +26,7 @@ config = {
                      },
     'include_package_data': True,
     'name': 'ogusa',
-    'version': versioneer.get_version(),
-    'cmdclass': versioneer.get_cmdclass(),
+    'version': version,
     'classifiers': [
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
