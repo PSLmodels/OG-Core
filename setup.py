@@ -10,6 +10,7 @@ version = '0.0.0'
 
 config = {
     'description': 'General equilibribum, overlapping generations model for the USA',
+    'long_description': longdesc,
     'url': 'https://github.com/PSLmodels/OG-USA/',
     'download_url': 'https://github.com/PLSmodels/OG-USA/',
     'version': version,
@@ -17,7 +18,7 @@ config = {
     'packages': ['ogusa'],
     'include_package_data': True,
     'name': 'ogusa',
-    'install_requires': ['numpy', 'pandas', 'taxcalc', 'dask', 'scipy', 'matplotlib'],
+    'install_requires': ['numpy', 'pandas', 'taxcalc', 'dask', 'scipy', 'matplotlib', 'mkl'],
     'package_data': {
                      'ogusa': [
                                'parameters_metadata.json',
