@@ -330,7 +330,7 @@ def get_biz_tax(w, Y, L, K, p, method):
     return business_revenue
 
 
-def total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, shift, method,
+def total_taxes(r, w, b, n, bq, factor, TR, theta, t, j, shift, method,
                 e, etr_params, p):
     '''
     Calculate net taxes paid for each household.
@@ -343,7 +343,7 @@ def total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, shift, method,
         bq (Numpy array): bequests received
         factor (scalar): scaling factor converting model units to
             dollars
-        T_H (Numpy array): government transfers to the household
+        TR (Numpy array): government transfers to the household
         theta (Numpy array): social security replacement rate value for
             lifetime income group j
         t (int): time period
@@ -366,13 +366,13 @@ def total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, shift, method,
             if b.ndim == 2:
                 r = r.reshape(r.shape[0], 1)
                 w = w.reshape(w.shape[0], 1)
-                T_H = T_H.reshape(T_H.shape[0], 1)
+                TR = TR.reshape(TR.shape[0], 1)
     else:
         lambdas = np.transpose(p.lambdas)
         if method == 'TPI':
             r = utils.to_timepath_shape(r, p)
             w = utils.to_timepath_shape(w, p)
-            T_H = utils.to_timepath_shape(T_H, p)
+            TR = utils.to_timepath_shape(TR, p)
 
     income = r * b + w * e * n
     T_I = ETR_income(r, w, b, n, factor, e, etr_params, p) * income
@@ -440,6 +440,6 @@ def total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, shift, method,
         T_BQ = p.tau_bq[0] * bq
         T_W = (ETR_wealth(b, p.h_wealth[0], p.m_wealth[0],
                           p.p_wealth[0]) * b)
-    total_tax = T_I + T_P + T_BQ + T_W - T_H
+    total_tax = T_I + T_P + T_BQ + T_W - TR
 
     return total_tax

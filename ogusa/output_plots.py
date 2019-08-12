@@ -333,10 +333,10 @@ def plot_all(base_output_path, reform_output_path, save_path):
                     plot_title='Percentage Changes in Macro Aggregates',
                     path=os.path.join(save_path, 'MacroAgg_PctChange.png'))
 
-    # Percentage change in fiscal vars (D, G, T_H, Rev)
+    # Percentage change in fiscal vars (D, G, TR, Rev)
     plot_aggregates(base_tpi, base_params, reform_tpi=reform_tpi,
                     reform_params=reform_params,
-                    var_list=['D', 'G', 'T_H', 'total_revenue'],
+                    var_list=['D', 'G', 'TR', 'total_revenue'],
                     plot_type='pct_diff', num_years_to_plot=150,
                     vertical_line_years=[
                         base_params.start_year + base_params.tG1,
