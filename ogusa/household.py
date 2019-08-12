@@ -106,7 +106,7 @@ def get_bq(BQ, j, p, method):
     Calculate bequests to each household.
 
     .. math::
-        bq_{j,s,t} = zeta_{j,s}BQ_{t}
+        bq_{j,s,t} = zeta_{j,s}\frac{BQ_{t}}{\lambda_{j}\omega_{s,t}}
 
     Args:
         BQ (array_like): aggregate bequests
@@ -156,6 +156,46 @@ def get_bq(BQ, j, p, method):
                 bq = np.tile(np.reshape(BQ_per, (len_T, 1, p.J)),
                              (1, p.S, 1))
     return bq
+
+
+def get_tr(TR, j, p, method):
+    r'''
+    Calculate transfers to each household.
+
+    .. math::
+        tr_{j,s,t} = zeta_{j,s}\frac{TR_{t}}{\lambda_{j}\omega_{s,t}}
+
+    Args:
+        TR (array_like): aggregate transfers
+        j (int): index of lifetime ability group
+        p (OG-USA Specifcations object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+
+    Returns:
+        tr (array_like): bequests received by each household
+
+    '''
+    if j is not None:
+        if method == 'SS':
+            tr = (p.eta[:, j] * TR) / (p.lambdas[j] * p.omega_SS)
+        else:
+            len_T = TR.shape[0]
+            tr = ((np.reshape(p.eta[:, j], (1, p.S)) *
+                  TR.reshape((len_T, 1))) /
+                  (p.lambdas[j] * p.omega[:len_T, :]))
+    else:
+        if method == 'SS':
+            tr = ((p.eta * TR) / (p.lambdas.reshape((1, p.J)) *
+                                  p.omega_SS.reshape((p.S, 1))))
+        else:
+            len_T = TR.shape[0]
+            tr = ((np.reshape(p.eta, (1, p.S, p.J)) *
+                  utils.to_timepath_shape(TR, p)) /
+                  (p.lambdas.reshape((1, 1, p.J)) *
+                   p.omega[:len_T, :].reshape((len_T, p.S, 1))))
+
+    return tr
 
 
 def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
