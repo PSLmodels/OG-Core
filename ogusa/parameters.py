@@ -593,6 +593,7 @@ class Specifications(ParametersBase):
                     pval_is_int = type(pval) == int
                     pval_is_float = type(pval) == float
                     pval_is_string = type(pval) == str
+                    pval_is_ndarray = type(pval) == np.ndarray
                     if bool_param_type:
                         if not pval_is_bool:
                             msg = '{} value {} is not boolean'
@@ -617,8 +618,9 @@ class Specifications(ParametersBase):
                                 msg.format(param_name, pval) +
                                 '\n'
                             )
-                    else:  # param is float type
-                        if not (pval_is_int or pval_is_float):
+                    else:  # param is float or array type
+                        if not (pval_is_int or
+                                pval_is_float or pval_is_ndarray):
                             msg = '{} value {} is not a number'
                             self.parameter_errors += (
                                 'ERROR: ' +
@@ -653,15 +655,16 @@ class Specifications(ParametersBase):
                         msg = '{} value {} not in possible values {}'
                         if out_of_range:
                             self.parameter_errors += (
-                                'ERROR: ' + msg.format(param_name,
-                                                       param_value,
-                                                       validation_value) + '\n'
+                                'ERROR: ' + msg.format(
+                                    param_name, param_value,
+                                    validation_value) + '\n'
                                 )
                 else:
                     # print(validation_op, param_value, validation_value)
                     if isinstance(validation_value, six.string_types):
                         validation_value = self.simple_eval(validation_value)
-                    validation_value = np.full(param_value.shape, validation_value)
+                    validation_value = np.full(param_value.shape,
+                                               validation_value)
                     assert param_value.shape == validation_value.shape
                     for idx in np.ndindex(param_value.shape):
                         out_of_range = False
