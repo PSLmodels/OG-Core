@@ -434,7 +434,7 @@ b1 = np.array([0.4, 0.3, 0.5])
 n1 = np.array([0.8, 0.4, 0.7])
 BQ1 = np.array([0.3])
 bq1 = BQ1 / p1.lambdas[0]
-TR1 = np.array([0.12])
+tr1 = np.array([0.12])
 theta1 = np.array([0.225])
 etr_params1 = np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
@@ -453,7 +453,7 @@ b2 = b1
 n2 = n1
 BQ2 = BQ1
 bq2 = bq1
-TR2 = TR1
+tr2 = tr1
 theta2 = theta1
 etr_params2 = etr_params1
 j2 = 0
@@ -468,7 +468,8 @@ n3 = np.tile(np.reshape(np.array([0.8, 0.4, 0.7]), (1, p3.S, 1)),
              (p3.T, 1, p3.J))
 BQ3 = np.array([0.3, 0.4, 0.45])
 bq3 = np.tile(np.reshape(BQ3 / p3.lambdas[0], (p3.T, 1)), (1, p3.S))
-TR3 = np.array([0.12, 0.1, 0.11])
+tr3 = np.tile(np.reshape(np.array([0.12, 0.1, 0.11]), (p3.T, 1)),
+              (1, p3.S))
 theta3 = theta1
 etr_params3 = np.tile(np.reshape(np.array(
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15, 0.16,
@@ -483,7 +484,7 @@ b4 = b3
 n4 = n3
 BQ4 = BQ3
 bq4 = bq3
-TR4 = TR3
+tr4 = tr3
 theta4 = theta1
 etr_params4 = etr_params3
 j4 = 0
@@ -502,7 +503,8 @@ BQ5 = np.tile(np.reshape(np.array([[0.3, 0.35], [0.25, 0.3],
                                    [0.4, 0.45]]), (p5.T, 1, p5.J)),
               (1, p5.S, 1))
 bq5 = BQ5 / p5.lambdas.reshape(1, 1, p5.J)
-TR5 = np.array([0.12, 0.1, 0.11])
+tr5 = np.tile(np.reshape(np.array([0.12, 0.1, 0.11]), (p5.T, 1, 1)),
+              (1, p5.S, p5.J))
 theta5 = np.array([0.225, 0.3])
 etr_params = np.tile(np.reshape(np.array([
     [0.001, 0.002, 0.003, 0.0015, 0.8, -0.14, 0.8, -0.15, 0.15,
@@ -575,28 +577,28 @@ expected8 = np.array([[[0.16311573 - 0.023076923,  0.1583638 - 0.05],
                        [0.34545346 - 0.061538462, 0.39350691 - 0.12857143],
                        [0.15958077 - 0.061538462, -0.0482051 - 0.12857143]]])
 
-test_data = [(r1, w1, b1, n1, bq1, factor, TR1, theta1, None, j1, shift1,
+test_data = [(r1, w1, b1, n1, bq1, factor, tr1, theta1, None, j1, shift1,
               method1, p1.e[:, j1], etr_params1[-1, :, :],
               p1, expected1),
-             (r2, w2, b2, n2, bq2, factor, TR2, theta2, None, j2, shift2,
+             (r2, w2, b2, n2, bq2, factor, tr2, theta2, None, j2, shift2,
               method2, p2.e[:, j2], etr_params2, p2, expected2),
-             (r3, w3, b3[:, :, j3], n3[:, :, j3], bq3, factor, TR3,
+             (r3, w3, b3[:, :, j3], n3[:, :, j3], bq3, factor, tr3,
               theta3, 0, j3, shift3, method3, p3.e[:, j3], etr_params3, p3,
               expected3),
-             (r4, w4, b4[:, :, j4], n4[:, :, j4], bq4, factor, TR4,
+             (r4, w4, b4[:, :, j4], n4[:, :, j4], bq4, factor, tr4,
               theta4, 0, j4, shift4, method4, p4.e[:, j4],
               etr_params4, p4, expected4),
-             (r5, w5, b5, n5, bq5, factor, TR5, theta5, 0, j5, shift5,
+             (r5, w5, b5, n5, bq5, factor, tr5, theta5, 0, j5, shift5,
               method5, p5.e, etr_params5, p5, expected5),
-             (r5, w5, b5, n5, bq5, factor, TR5, theta5, 0, j5, shift5,
+             (r5, w5, b5, n5, bq5, factor, tr5, theta5, 0, j5, shift5,
               method5, p5.e, etr_params5, p6, expected6),
-             (r5, w5, b5, n5, bq5, factor, TR5, theta5, 0, j5, shift5,
+             (r5, w5, b5, n5, bq5, factor, tr5, theta5, 0, j5, shift5,
               method5, p5.e, etr_params5, p7, expected7),
-             (r5, w5, b5, n5, bq5, factor, TR5, theta5, 0, j5, shift5,
+             (r5, w5, b5, n5, bq5, factor, tr5, theta5, 0, j5, shift5,
               method5, p5.e, etr_params5, p8, expected8)]
 
 
-@pytest.mark.parametrize('r,w,b,n,bq,factor,TR,theta,t,j,shift,method,'
+@pytest.mark.parametrize('r,w,b,n,bq,factor,tr,theta,t,j,shift,method,'
                          + 'e,etr_params,p,expected',
                          test_data, ids=['SS', 'TPI Scalar',
                                          'TPI shift = True',
@@ -604,10 +606,10 @@ test_data = [(r1, w1, b1, n1, bq1, factor, TR1, theta1, None, j1, shift1,
                                          'TPI 3D,vary tau_bq',
                                          'TPI 3D,vary retire',
                                          'TPI 3D,vary replacement rate'])
-def test_total_taxes(r, w, b, n, bq, factor, TR, theta, t, j, shift,
+def test_total_taxes(r, w, b, n, bq, factor, tr, theta, t, j, shift,
                      method, e, etr_params, p, expected):
     # Test function that computes total net taxes for the household
     # method = ss
-    total_taxes = tax.total_taxes(r, w, b, n, bq, factor, TR, theta, t,
+    total_taxes = tax.total_taxes(r, w, b, n, bq, factor, tr, theta, t,
                                   j, shift, method, e, etr_params, p)
     assert np.allclose(total_taxes, expected)
