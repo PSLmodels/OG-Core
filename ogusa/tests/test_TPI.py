@@ -13,7 +13,7 @@ def test_firstdoughnutring():
     # ensure that output returned matches what it has been before.
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', 'firstdoughnutring_inputs.pkl'))
-    guesses, r, w, b, BQ, T_H, j, params = input_tuple
+    guesses, r, w, b, BQ, TR, j, params = input_tuple
     income_tax_params, tpi_params, initial_b = params
     tpi_params = tpi_params + [True]
     p = Specifications()
@@ -41,7 +41,7 @@ def test_firstdoughnutring():
     p.lambdas = lambdas.reshape(p.J, 1)
     p.num_workers = 1
     bq = BQ / p.lambdas[j]
-    test_list = TPI.firstdoughnutring(guesses, r, w, bq, T_H, theta,
+    test_list = TPI.firstdoughnutring(guesses, r, w, bq, TR, theta,
                                       factor, j, initial_b, p)
 
     expected_list = utils.safe_read_pickle(
@@ -55,7 +55,7 @@ def test_twist_doughnut():
     # ensure that output returned matches what it has been before.
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', 'twist_doughnut_inputs.pkl'))
-    guesses, r, w, BQ, T_H, j, s, t, params = input_tuple
+    guesses, r, w, BQ, TR, j, s, t, params = input_tuple
     income_tax_params, tpi_params, initial_b = params
     tpi_params = tpi_params + [True]
     p = Specifications()
@@ -83,7 +83,7 @@ def test_twist_doughnut():
     length = int(len(guesses) / 2)
     tau_c_to_use = np.diag(p.tau_c[:p.S, :, j], p.S - (s + 2))
     bq = BQ[t:t + length] / p.lambdas[j]
-    test_list = TPI.twist_doughnut(guesses, r, w, bq, T_H, theta,
+    test_list = TPI.twist_doughnut(guesses, r, w, bq, TR, theta,
                                    factor, j, s, t, tau_c_to_use,
                                    etr_params, mtrx_params, mtry_params,
                                    initial_b, p)
@@ -131,11 +131,11 @@ def test_inner_loop():
      p.omega_S_preTP, initial_debt, D0) = initial_values
     initial_values_in = (K0, b_sinit, b_splus1init, factor, initial_b,
                          initial_n, D0)
-    (r, K, BQ, T_H) = outer_loop_vars
+    (r, K, BQ, TR) = outer_loop_vars
     wss = firm.get_w_from_r(r[-1], p, 'SS')
     w = np.ones(p.T + p.S) * wss
     w[:p.T] = firm.get_w_from_r(r[:p.T], p, 'TPI')
-    outer_loop_vars_in = (r, w, r, BQ, T_H, theta)
+    outer_loop_vars_in = (r, w, r, BQ, TR, theta)
 
     guesses = (guesses[0], guesses[1])
     test_tuple = TPI.inner_loop(guesses, outer_loop_vars_in,
@@ -236,6 +236,7 @@ def test_run_TPI():
     del test_dict['bmat_s']
     test_dict['b_mat'] = test_dict.pop('bmat_splus1')
     test_dict['REVENUE'] = test_dict.pop('total_revenue')
+    test_dict['T_H'] = test_dict.pop('TR')
     test_dict['IITpayroll_revenue'] = (test_dict['REVENUE'][:160] -
                                        test_dict['business_revenue'])
     del test_dict['T_P'], test_dict['T_BQ'], test_dict['T_W']
