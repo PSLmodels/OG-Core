@@ -355,7 +355,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     wss = new_w
     BQss = new_BQ
     factor_ss = factor
-    TRss = TR
+    TR_ss = TR
     bqssmat = household.get_bq(BQss, None, p, 'SS')
 
     Yss = firm.get_Y(Kss, Lss, p, 'SS')
@@ -378,7 +378,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
                             etr_params_3D, p)
 
     taxss = tax.total_taxes(r_hh_ss, wss, bssmat_s, nssmat, bqssmat,
-                            factor_ss, TRss, theta, None, None, False,
+                            factor_ss, TR_ss, theta, None, None, False,
                             'SS', p.e, etr_params_3D, p)
     cssmat = household.get_cons(r_hh_ss, wss, bssmat_s, bssmat_splus1,
                                 nssmat, bqssmat, taxss,
@@ -397,8 +397,8 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     if p.budget_balance:
         Gss = 0.0
     else:
-        Gss = total_revenue_ss + new_borrowing - (TRss + debt_service_ss)
-        print('G components = ', new_borrowing, TRss, debt_service_ss)
+        Gss = total_revenue_ss + new_borrowing - (TR_ss + debt_service_ss)
+        print('G components = ', new_borrowing, TR_ss, debt_service_ss)
 
     # Compute total investment (not just domestic)
     Iss_total = ((1 + p.g_n_ss) * np.exp(p.g_y) - 1 + p.delta) * Kss
@@ -444,7 +444,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
               'BQss': BQss, 'factor_ss': factor_ss, 'bssmat_s': bssmat_s,
               'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
               'yss_before_tax_mat': yss_before_tax_mat,
-              'bqssmat': bqssmat, 'TRss': TRss, 'Gss': Gss,
+              'bqssmat': bqssmat, 'TR_ss': TR_ss, 'Gss': Gss,
               'total_revenue_ss': total_revenue_ss,
               'business_revenue': business_revenue,
               'IITpayroll_revenue': T_Iss,
@@ -463,18 +463,18 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
 
 def SS_fsolve(guesses, *args):
     '''
-        (bssmat, nssmat, TRss, factor_ss, p, client)
+        (bssmat, nssmat, TR_ss, factor_ss, p, client)
     Solves for the steady state distribution of capital, labor, as well
     as w, r, TR and the scaling factor, using a root finder.
 
     Args:
         guesses (list): initial guesses outer loop variables (r, BQ,
             TR, factor)
-        args (tuple): tuple of arguments (bssmat, nssmat, TRss,
+        args (tuple): tuple of arguments (bssmat, nssmat, TR_ss,
             factor_ss, p, client)
         bssmat (Numpy array): initial guess at savings, size = SxJ
         nssmat (Numpy array): initial guess at labor supply, size = SxJ
-        TRss (scalar): lump sum transfer amount
+        TR_ss (scalar): lump sum transfer amount
         factor_ss (scalar): scaling factor converting model units to dollars
         p (OG-USA Specifcations object): model parameters
         client (Dask client object): client
@@ -484,7 +484,7 @@ def SS_fsolve(guesses, *args):
             implied outer loop variables
 
     '''
-    (bssmat, nssmat, TRss, factor_ss, p, client) = args
+    (bssmat, nssmat, TR_ss, factor_ss, p, client) = args
 
     # Rename the inputs
     r = guesses[0]
@@ -507,7 +507,7 @@ def SS_fsolve(guesses, *args):
             outer_loop_vars = (bssmat, nssmat, r, BQ, Y, TR, factor)
     else:
         if p.baseline_spending:
-            outer_loop_vars = (bssmat, nssmat, r, BQ, Y, TRss, factor_ss)
+            outer_loop_vars = (bssmat, nssmat, r, BQ, Y, TR_ss, factor_ss)
         else:
             if p.budget_balance:
                 outer_loop_vars = (bssmat, nssmat, r, BQ, TR, factor_ss)
@@ -583,13 +583,13 @@ def run_SS(p, client=None):
             raise RuntimeError('Steady state equilibrium not found')
         rss = solutions_fsolve[0]
         BQss = solutions_fsolve[1:-2]
-        TRss = solutions_fsolve[-2]
+        TR_ss = solutions_fsolve[-2]
         factor_ss = solutions_fsolve[-1]
-        Yss = TRss/p.alpha_T[-1]  # may not be right - if budget_balance
+        Yss = TR_ss/p.alpha_T[-1]  # may not be right - if budget_balance
         # = True, but that's ok - will be fixed in SS_solver
         fsolve_flag = True
         # Return SS values of variables
-        output = SS_solver(b_guess, n_guess, rss, BQss, TRss,
+        output = SS_solver(b_guess, n_guess, rss, BQss, TR_ss,
                            factor_ss, Yss, p, client, fsolve_flag)
     else:
         # Use the baseline solution to get starting values for the reform
@@ -599,11 +599,11 @@ def run_SS(p, client=None):
         (b_guess, n_guess, rguess, BQguess, TRguess, Yguess, factor) =\
             (ss_solutions['bssmat_splus1'], ss_solutions['nssmat'],
              ss_solutions['rss'], ss_solutions['BQss'],
-             ss_solutions['TRss'], ss_solutions['Yss'],
+             ss_solutions['TR_ss'], ss_solutions['Yss'],
              ss_solutions['factor_ss'])
         if p.baseline_spending:
-            TRss = TRguess
-            ss_params_reform = (b_guess, n_guess, TRss, factor, p, client)
+            TR_ss = TRguess
+            ss_params_reform = (b_guess, n_guess, TR_ss, factor, p, client)
             if p.use_zeta:
                 guesses = [rguess] + list([BQguess]) + [Yguess]
             else:
@@ -627,8 +627,8 @@ def run_SS(p, client=None):
                            full_output=True)
             rss = solutions_fsolve[0]
             BQss = solutions_fsolve[1:-1]
-            TRss = solutions_fsolve[-1]
-            Yss = TRss/p.alpha_T[-1]  # may not be right - if
+            TR_ss = solutions_fsolve[-1]
+            Yss = TR_ss/p.alpha_T[-1]  # may not be right - if
             # budget_balance = True, but that's ok - will be fixed in
             # SS_solver
         if ENFORCE_SOLUTION_CHECKS and not ier == 1:
@@ -636,7 +636,7 @@ def run_SS(p, client=None):
         # Return SS values of variables
         fsolve_flag = True
         # Return SS values of variables
-        output = SS_solver(b_guess, n_guess, rss, BQss, TRss, factor,
+        output = SS_solver(b_guess, n_guess, rss, BQss, TR_ss, factor,
                            Yss, p, client, fsolve_flag)
         if output['Gss'] < 0.:
             warnings.warn('Warning: The combination of the tax policy '

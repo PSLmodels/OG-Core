@@ -464,13 +464,13 @@ def run_TPI(p, client=None):
               [ss_vars['BQss']] * p.S)
         BQ = np.array(BQ)
     if p.budget_balance:
-        if np.abs(ss_vars['TRss']) < 1e-13:
-            TRss2 = 0.0  # sometimes SS is very small but not zero,
+        if np.abs(ss_vars['TR_ss']) < 1e-13:
+            TR_ss2 = 0.0  # sometimes SS is very small but not zero,
             # even if taxes are zero, this get's rid of the approximation
             # error, which affects the perc changes below
         else:
-            TRss2 = ss_vars['TRss']
-        TR = np.ones(p.T + p.S) * TRss2
+            TR_ss2 = ss_vars['TR_ss']
+        TR = np.ones(p.T + p.S) * TR_ss2
         total_revenue = TR
         G = np.zeros(p.T + p.S)
     elif not p.baseline_spending:
