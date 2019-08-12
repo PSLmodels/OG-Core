@@ -178,20 +178,21 @@ def get_tr(TR, j, p, method):
     '''
     if j is not None:
         if method == 'SS':
-            tr = (p.eta[:, j] * TR) / (p.lambdas[j] * p.omega_SS)
+            tr = (p.eta[-1, :, j] * TR) / (p.lambdas[j] * p.omega_SS)
         else:
             len_T = TR.shape[0]
-            tr = ((np.reshape(p.eta[:, j], (1, p.S)) *
+            tr = ((p.eta[:len_T, :, j] *
                   TR.reshape((len_T, 1))) /
                   (p.lambdas[j] * p.omega[:len_T, :]))
     else:
         if method == 'SS':
-            tr = ((p.eta * TR) / (p.lambdas.reshape((1, p.J)) *
-                                  p.omega_SS.reshape((p.S, 1))))
+            tr = ((p.eta[-1, :, :] * TR) /
+                  (p.lambdas.reshape((1, p.J)) *
+                   p.omega_SS.reshape((p.S, 1))))
         else:
             len_T = TR.shape[0]
-            tr = ((np.reshape(p.eta, (1, p.S, p.J)) *
-                  utils.to_timepath_shape(TR, p)) /
+            tr = ((p.eta[:len_T, :, :] *
+                   utils.to_timepath_shape(TR, p)) /
                   (p.lambdas.reshape((1, 1, p.J)) *
                    p.omega[:len_T, :].reshape((len_T, p.S, 1))))
 

@@ -159,7 +159,37 @@ class Specifications(ParametersBase):
             setattr(self, 'tau_c',  tau_c_to_set)
         else:
             print('please give a tau_c that is a single element or 3-D array')
-            quit()
+            assert False
+
+        # Try to deal with size of eta.  It may vary by S, J, T, but
+        # want to allow user to enter one that varies by only S, S and J,
+        # S and T, or T and S and J.
+        eta_to_set = getattr(self, 'eta')
+        # this is the case that vary only by S
+        if eta_to_set.ndim == 1:
+            assert eta_to_set.shape[0] == self.S
+            eta_to_set = np.tile(
+                (np.tile(eta_to_set.reshape(self.S, 1), (1, self.J)) /
+                 self.J).reshape(1, self.S, self.J),
+                (self.T + self.S, 1, 1))
+        # this could be where vary by S anbd J or T and S
+        elif eta_to_set.ndim == 2:
+            if eta_to_set.shape[0] == self.S:
+                eta_to_set = np.tile(
+                    eta_to_set.reshape(1, self.S, self.J),
+                    (self.T + self.S, 1, 1))
+            elif eta_to_set.shape[0] == self.J:
+                eta_to_set = (np.tile(
+                    eta_to_set.reshape(self.T, self.S, 1),
+                    (1, 1, self.J)) / self.J)
+                eta_to_set = np.stack(eta_to_set, eta_to_set[-1, :, :],
+                                      axis=0)
+            else:
+                print('please give an eta that is either SxJ or TxS')
+                assert False
+        elif eta_to_set.ndim == 3:  # this is the case where vary by S, J, T
+            eta_to_set = np.stack(eta_to_set, eta_to_set[-1, :, :],
+                                  axis=0)
 
         # open economy parameters
         firm_r_annual = self.world_int_rate
