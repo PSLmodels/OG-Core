@@ -41,11 +41,13 @@ def test_firstdoughnutring():
     p.lambdas = lambdas.reshape(p.J, 1)
     p.num_workers = 1
     bq = BQ / p.lambdas[j]
-    test_list = TPI.firstdoughnutring(guesses, r, w, bq, TR, theta,
+    tr = TR
+    test_list = TPI.firstdoughnutring(guesses, r, w, bq, tr, theta,
                                       factor, j, initial_b, p)
 
     expected_list = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', 'firstdoughnutring_outputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'firstdoughnutring_outputs.pkl'))
 
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
@@ -83,7 +85,8 @@ def test_twist_doughnut():
     length = int(len(guesses) / 2)
     tau_c_to_use = np.diag(p.tau_c[:p.S, :, j], p.S - (s + 2))
     bq = BQ[t:t + length] / p.lambdas[j]
-    test_list = TPI.twist_doughnut(guesses, r, w, bq, TR, theta,
+    tr = TR[t:t + length]
+    test_list = TPI.twist_doughnut(guesses, r, w, bq, tr, theta,
                                    factor, j, s, t, tau_c_to_use,
                                    etr_params, mtrx_params, mtry_params,
                                    initial_b, p)
@@ -110,6 +113,7 @@ def test_inner_loop():
      p.imm_rates, p.e, retire, p.mean_income_data, factor, h_wealth,
      p_wealth, m_wealth, p.b_ellipse, p.upsilon, p.chi_b, p.chi_n,
      theta, p.baseline) = tpi_params
+    p.eta = p.omega.reshape(p.T + p.S, p.S, 1) * p.lambdas.reshape(1, p.J)
     p.Z = np.ones(p.T + p.S) * Z
     p.tau_bq = np.ones(p.T + p.S) * 0.0
     p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
@@ -181,6 +185,7 @@ def test_run_TPI():
      p.imm_rates, p.e, retire, p.mean_income_data, factor, h_wealth,
      p_wealth, m_wealth, p.b_ellipse, p.upsilon, p.chi_b, p.chi_n,
      theta, p.baseline) = tpi_params
+    p.eta = p.omega.reshape(T + S, S, 1) * lambdas.reshape(1, J)
     p.Z = np.ones(p.T + p.S) * Z
     p.tau_bq = np.ones(p.T + p.S) * 0.0
     p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
@@ -244,7 +249,7 @@ def test_run_TPI():
     del test_dict['D_d'], test_dict['D_f']
     del test_dict['new_borrowing_f'], test_dict['debt_service_f']
     del test_dict['resource_constraint_error'], test_dict['T_C']
-    del test_dict['r_gov'], test_dict['r_hh']
+    del test_dict['r_gov'], test_dict['r_hh'], test_dict['tr_path']
 
     for k, v in expected_dict.items():
         try:

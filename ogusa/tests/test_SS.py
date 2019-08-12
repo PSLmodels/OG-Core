@@ -19,6 +19,8 @@ p1 = Specifications()
  p1.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p1.e,
  retire, p1.mean_income_data, h_wealth, p_wealth, m_wealth,
  p1.b_ellipse, p1.upsilon) = ss_params
+p1.eta = (p1.omega_SS.reshape(p1.S, 1) *
+          p1.lambdas.reshape(1, p1.J)).reshape(1, p1.S, p1.J)
 p1.Z = np.ones(p1.T + p1.S) * Z
 p1.tau_bq = np.ones(p1.T + p1.S) * 0.0
 p1.tau_payroll = np.ones(p1.T + p1.S) * tau_payroll
@@ -68,6 +70,8 @@ p2 = Specifications()
  p2.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p2.e,
  retire, p2.mean_income_data, h_wealth, p_wealth, m_wealth,
  p2.b_ellipse, p2.upsilon) = ss_params
+p2.eta = (p2.omega_SS.reshape(p2.S, 1) *
+          p2.lambdas.reshape(1, p2.J)).reshape(1, p2.S, p2.J)
 p2.Z = np.ones(p2.T + p2.S) * Z
 p2.tau_bq = np.ones(p2.T + p2.S) * 0.0
 p2.tau_payroll = np.ones(p2.T + p2.S) * tau_payroll
@@ -119,6 +123,8 @@ p3 = Specifications()
  p3.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p3.e,
  retire, p3.mean_income_data, h_wealth, p_wealth, m_wealth,
  p3.b_ellipse, p3.upsilon) = ss_params
+p3.eta = (p3.omega_SS.reshape(p3.S, 1) *
+          p3.lambdas.reshape(1, p3.J)).reshape(1, p3.S, p3.J)
 p3.Z = np.ones(p3.T + p3.S) * Z
 p3.tau_bq = np.ones(p3.T + p3.S) * 0.0
 p3.tau_payroll = np.ones(p3.T + p3.S) * tau_payroll
@@ -187,6 +193,8 @@ def test_SS_solver():
      p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
      retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
      p.b_ellipse, p.upsilon) = ss_params
+    p.eta = (p.omega_SS.reshape(p.S, 1) *
+             p.lambdas.reshape(1, p.J)).reshape(1, p.S, p.J)
     p.Z = np.ones(p.T + p.S) * Z
     p.tau_bq = np.ones(p.T + p.S) * 0.0
     p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
@@ -232,7 +240,7 @@ def test_SS_solver():
                                        test_dict['business_revenue'])
     del test_dict['T_Pss'], test_dict['T_BQss'], test_dict['T_Wss']
     del test_dict['K_d_ss'], test_dict['K_f_ss'], test_dict['D_d_ss']
-    del test_dict['D_f_ss'], test_dict['I_d_ss']
+    del test_dict['D_f_ss'], test_dict['I_d_ss'], test_dict['trssmat']
     del test_dict['debt_service_f'], test_dict['new_borrowing_f']
     del test_dict['bqssmat'], test_dict['T_Css'], test_dict['Iss_total']
     test_dict['revenue_ss'] = test_dict.pop('total_revenue_ss')
@@ -258,6 +266,8 @@ def test_inner_loop():
      p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
      retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
      p.b_ellipse, p.upsilon) = ss_params
+    p.eta = (p.omega_SS.reshape(p.S, 1) *
+             p.lambdas.reshape(1, p.J)).reshape(1, p.S, p.J)
     p.Z = np.ones(p.T + p.S) * Z
     p.tau_bq = np.ones(p.T + p.S) * 0.0
     p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
@@ -314,6 +324,8 @@ def test_euler_equation_solver():
      p_wealth, m_wealth, p.b_ellipse, p.upsilon, j, p.chi_b,
      p.chi_n, tau_bq, p.rho, lambdas, p.omega_SS, p.e,
      p.analytical_mtrs, etr_params, mtrx_params, mtry_params) = params
+    p.eta = (p.omega_SS.reshape(p.S, 1) *
+             p.lambdas.reshape(1, p.J)).reshape(1, p.S, p.J)
     p.tau_bq = np.ones(p.T + p.S) * 0.0
     p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
     p.h_wealth = np.ones(p.T + p.S) * h_wealth
@@ -331,7 +343,8 @@ def test_euler_equation_solver():
     b_splus1 = np.array(guesses[:p.S]).reshape(p.S, 1) + 0.005
     BQ = aggregates.get_BQ(r, b_splus1, j, p, 'SS', False)
     bq = household.get_bq(BQ, j, p, 'SS')
-    args = (r, w, bq, TR, factor, j, p)
+    tr = household.get_tr(TR, j, p, 'SS')
+    args = (r, w, bq, tr, factor, j, p)
     test_list = SS.euler_equation_solver(guesses, *args)
 
     expected_list = np.array([
@@ -408,6 +421,8 @@ def test_run_SS(input_path, expected_path):
      p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
      retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
      p.b_ellipse, p.upsilon) = ss_params
+    p.eta = (p.omega_SS.reshape(p.S, 1) *
+             p.lambdas.reshape(1, p.J)).reshape(1, p.S, p.J)
     p.Z = np.ones(p.T + p.S) * Z
     p.tau_bq = np.ones(p.T + p.S) * 0.0
     p.tau_payroll = np.ones(p.T + p.S) * tau_payroll

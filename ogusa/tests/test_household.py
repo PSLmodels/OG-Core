@@ -135,14 +135,16 @@ test_data = [(BQ1, None, p1, 'SS', expected1),
                               'TPI, not use zeta, all j',
                               'TPI, not use zeta, one j'])
 def test_get_bq(BQ, j, p, method, expected):
-    # Test the get_BQ function
+    # Test the get_bq function
     test_value = household.get_bq(BQ, j, p, method)
     print('Test value = ', test_value)
     assert np.allclose(test_value, expected)
 
 
 p1 = Specifications()
-p1.eta = np.array([[0.1, 0.3], [0.15, 0.4], [0.05, 0.0]])
+p1.eta = np.tile(np.array([[0.1, 0.3], [0.15, 0.4],
+                           [0.05, 0.0]]).reshape(1, p2.S, p2.J),
+                 (p2.T, 1, 1))
 p1.S = 3
 p1.J = 2
 p1.T = 3
@@ -152,10 +154,12 @@ p1.omega = np.tile(p1.omega_SS.reshape((1, p1.S)), (p1.T, 1))
 TR1 = 2.5
 expected1 = np.array([[1.66666667, 7.5], [2.5, 10.0], [0.416666667, 0.0]])
 p2 = Specifications()
-p2.eta = np.array([[0.1, 0.3], [0.15, 0.4], [0.05, 0.0]])
 p2.S = 3
 p2.J = 2
 p2.T = 3
+p2.eta = np.tile(np.array([[0.1, 0.3], [0.15, 0.4],
+                           [0.05, 0.0]]).reshape(1, p2.S, p2.J),
+                 (p2.T, 1, 1))
 p2.lambdas = np.array([0.6, 0.4])
 p2.omega_SS = np.array([0.25, 0.25, 0.5])
 p2.omega = np.tile(p2.omega_SS.reshape((1, p2.S)), (p2.T, 1))
@@ -179,7 +183,7 @@ test_data = [(TR1, None, p1, 'SS', expected1),
                               'TPI, all j',
                               'TPI, one j'])
 def test_get_tr(TR, j, p, method, expected):
-    # Test the get_BQ function
+    # Test the get_tr function
     test_value = household.get_tr(TR, j, p, method)
     print('Test value = ', test_value)
     assert np.allclose(test_value, expected)

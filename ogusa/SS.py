@@ -37,7 +37,7 @@ def euler_equation_solver(guesses, *args):
         args (tuple): tuple of arguments (r, w, bq, TR, factor, j, p)
         w (scalar): real wage rate
         bq (Numpy array): bequest amounts by age, length S
-        TR (scalar): lump sum transfer amount
+        tr (scalar): government transfer amount by age, length S
         factor (scalar): scaling factor converting model units to dollars
         p (OG-USA Specifcations object): model parameters
 
@@ -45,7 +45,7 @@ def euler_equation_solver(guesses, *args):
         errros (Numpy array): errors from FOCs, length 2S
 
     '''
-    (r, w, bq, TR, factor, j, p) = args
+    (r, w, bq, tr, factor, j, p) = args
 
     b_guess = np.array(guesses[:p.S])
     n_guess = np.array(guesses[p.S:])
@@ -55,13 +55,13 @@ def euler_equation_solver(guesses, *args):
     theta = tax.replacement_rate_vals(n_guess, w, factor, j, p)
 
     error1 = household.FOC_savings(r, w, b_s, b_splus1, n_guess, bq,
-                                   factor, TR, theta, p.e[:, j], p.rho,
+                                   factor, tr, theta, p.e[:, j], p.rho,
                                    p.tau_c[-1, :, j],
                                    p.etr_params[-1, :, :],
                                    p.mtry_params[-1, :, :], None, j, p,
                                    'SS')
     error2 = household.FOC_labor(r, w, b_s, b_splus1, n_guess, bq,
-                                 factor, TR, theta, p.chi_n, p.e[:, j],
+                                 factor, tr, theta, p.chi_n, p.e[:, j],
                                  p.tau_c[-1, :, j],
                                  p.etr_params[-1, :, :],
                                  p.mtrx_params[-1, :, :], None, j, p,
@@ -82,7 +82,7 @@ def euler_equation_solver(guesses, *args):
     error1[mask3] = 1e14
     error1[mask5] = 1e14
     error2[mask4] = 1e14
-    taxes = tax.total_taxes(r, w, b_s, n_guess, bq, factor, TR, theta,
+    taxes = tax.total_taxes(r, w, b_s, n_guess, bq, factor, tr, theta,
                             None, j, False, 'SS', p.e[:, j],
                             p.etr_params[-1, :, :], p)
     cons = household.get_cons(r, w, b_s, b_splus1, n_guess, bq, taxes,
@@ -150,11 +150,12 @@ def inner_loop(outer_loop_vars, p, client):
     if p.small_open:
         r_hh = p.hh_r[-1]
     bq = household.get_bq(BQ, None, p, 'SS')
+    tr = household.get_tr(TR, None, p, 'SS')
 
     lazy_values = []
     for j in range(p.J):
         guesses = np.append(bssmat[:, j], nssmat[:, j])
-        euler_params = (r_hh, w, bq[:, j], TR, factor, j, p)
+        euler_params = (r_hh, w, bq[:, j], tr[:, j], factor, j, p)
         lazy_values.append(delayed(opt.fsolve)(euler_equation_solver,
                                                guesses * .9,
                                                args=euler_params,
@@ -207,6 +208,7 @@ def inner_loop(outer_loop_vars, p, client):
         new_factor = factor
     new_BQ = aggr.get_BQ(new_r_hh, bssmat, None, p, 'SS', False)
     new_bq = household.get_bq(new_BQ, None, p, 'SS')
+    tr = household.get_tr(TR, None, p, 'SS')
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
 
     if p.budget_balance:
@@ -214,7 +216,7 @@ def inner_loop(outer_loop_vars, p, client):
             p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])),
                                 (1, p.J, 1))
         taxss = tax.total_taxes(new_r_hh, new_w, b_s, nssmat, new_bq,
-                                factor, TR, theta, None, None, False,
+                                factor, tr, theta, None, None, False,
                                 'SS', p.e, etr_params_3D, p)
         cssmat = household.get_cons(new_r_hh, new_w, b_s, bssmat,
                                     nssmat, new_bq, taxss,
@@ -357,6 +359,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     factor_ss = factor
     TR_ss = TR
     bqssmat = household.get_bq(BQss, None, p, 'SS')
+    trssmat = household.get_tr(TR_ss, None, p, 'SS')
 
     Yss = firm.get_Y(Kss, Lss, p, 'SS')
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
@@ -378,7 +381,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
                             etr_params_3D, p)
 
     taxss = tax.total_taxes(r_hh_ss, wss, bssmat_s, nssmat, bqssmat,
-                            factor_ss, TR_ss, theta, None, None, False,
+                            factor_ss, trssmat, theta, None, None, False,
                             'SS', p.e, etr_params_3D, p)
     cssmat = household.get_cons(r_hh_ss, wss, bssmat_s, bssmat_splus1,
                                 nssmat, bqssmat, taxss,
@@ -444,8 +447,8 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
               'BQss': BQss, 'factor_ss': factor_ss, 'bssmat_s': bssmat_s,
               'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
               'yss_before_tax_mat': yss_before_tax_mat,
-              'bqssmat': bqssmat, 'TR_ss': TR_ss, 'Gss': Gss,
-              'total_revenue_ss': total_revenue_ss,
+              'bqssmat': bqssmat, 'TR_ss': TR_ss, 'trssmat': trssmat,
+              'Gss': Gss, 'total_revenue_ss': total_revenue_ss,
               'business_revenue': business_revenue,
               'IITpayroll_revenue': T_Iss,
               'T_Pss': T_Pss, 'T_BQss': T_BQss, 'T_Wss': T_Wss,

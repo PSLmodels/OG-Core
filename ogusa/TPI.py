@@ -95,7 +95,7 @@ def get_initial_SS_values(p):
     return initial_values, ss_vars, theta, baseline_values
 
 
-def firstdoughnutring(guesses, r, w, bq, TR, theta, factor, j,
+def firstdoughnutring(guesses, r, w, bq, tr, theta, factor, j,
                       initial_b, p):
     '''
     Solves the first entries of the upper triangle of the twist
@@ -108,7 +108,7 @@ def firstdoughnutring(guesses, r, w, bq, TR, theta, factor, j,
         r (scalar): real interest rate
         w (scalar): real wage rate
         bq (scalar): bequest amounts by age
-        TR (scalar): lump sum transfer amount
+        tr (scalar): government transfer amount
         theta (Numpy array): retirement replacement rates, length J
         factor (scalar): scaling factor converting model units to dollars
         j (int): index of ability type
@@ -129,7 +129,7 @@ def firstdoughnutring(guesses, r, w, bq, TR, theta, factor, j,
     error1 = household.FOC_savings(np.array([r]), np.array([w]), b_s,
                                    np.array([b_splus1]), np.array([n]),
                                    np.array([bq]), factor,
-                                   np.array([TR]), theta[j],
+                                   np.array([tr]), theta[j],
                                    p.e[-1, j], p.rho[-1],
                                    np.array([p.tau_c[0, -1, j]]),
                                    p.etr_params[0, -1, :],
@@ -138,7 +138,7 @@ def firstdoughnutring(guesses, r, w, bq, TR, theta, factor, j,
 
     error2 = household.FOC_labor(
         np.array([r]), np.array([w]), b_s, b_splus1, np.array([n]),
-        np.array([bq]), factor, np.array([TR]), theta[j], p.chi_n[-1],
+        np.array([bq]), factor, np.array([tr]), theta[j], p.chi_n[-1],
         p.e[-1, j], np.array([p.tau_c[0, -1, j]]), p.etr_params[0, -1, :],
         p.mtrx_params[0, -1, :], None, j, p, 'TPI_scalar')
 
@@ -149,7 +149,7 @@ def firstdoughnutring(guesses, r, w, bq, TR, theta, factor, j,
     return [np.squeeze(error1)] + [np.squeeze(error2)]
 
 
-def twist_doughnut(guesses, r, w, bq, TR, theta, factor, j, s, t,
+def twist_doughnut(guesses, r, w, bq, tr, theta, factor, j, s, t,
                    tau_c, etr_params, mtrx_params, mtry_params,
                    initial_b, p):
     '''
@@ -162,7 +162,7 @@ def twist_doughnut(guesses, r, w, bq, TR, theta, factor, j, s, t,
         r (scalar): real interest rate
         w (scalar): real wage rate
         bq (Numpy array): bequest amounts by age, length s
-        TR (scalar): lump sum transfer amount
+        tr (scalar): government transfer amount
         theta (Numpy array): retirement replacement rates, length J
         factor (scalar): scaling factor converting model units to dollars
         j (int): index of ability type
@@ -200,15 +200,14 @@ def twist_doughnut(guesses, r, w, bq, TR, theta, factor, j, s, t,
     chi_n_s = p.chi_n[-length:]
     e_s = p.e[-length:, j]
     rho_s = p.rho[-length:]
-    TR_s = TR[t:t + length]
 
     error1 = household.FOC_savings(r_s, w_s, b_s, b_splus1, n_s, bq,
-                                   factor, TR_s, theta, e_s, rho_s,
+                                   factor, tr, theta, e_s, rho_s,
                                    tau_c, etr_params, mtry_params, t,
                                    j, p, 'TPI')
 
     error2 = household.FOC_labor(r_s, w_s, b_s, b_splus1, n_s, bq,
-                                 factor, TR_s, theta, chi_n_s, e_s,
+                                 factor, tr, theta, chi_n_s, e_s,
                                  tau_c, etr_params, mtrx_params, t, j,
                                  p, 'TPI')
 
@@ -265,6 +264,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
     w[:p.T] = firm.get_w_from_r(r[:p.T], p, 'TPI')
     # compute bq
     bq = household.get_bq(BQ, None, p, 'TPI')
+    # compute tr
+    tr = household.get_tr(TR, None, p, 'TPI')
 
     # initialize arrays
     b_mat = np.zeros((p.T + p.S, p.S))
@@ -274,7 +275,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
     b_mat[0, -1], n_mat[0, -1] =\
         np.array(opt.fsolve(firstdoughnutring, [guesses_b[0, -1],
                                                 guesses_n[0, -1]],
-                            args=(r_hh[0], w[0], bq[0, -1, j], TR[0],
+                            args=(r_hh[0], w[0], bq[0, -1, j],
+                                  tr[0, -1, j],
                                   theta * p.replacement_rate_adjust[0],
                                   factor, j, initial_b, p),
                             xtol=MINIMIZER_TOL))
@@ -285,6 +287,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
         n_guesses_to_use = np.diag(guesses_n[:p.S, :], p.S - (s + 2))
         theta_to_use = theta[j] * p.replacement_rate_adjust[:p.S]
         bq_to_use = np.diag(bq[:p.S, :, j], p.S - (s + 2))
+        tr_to_use = np.diag(tr[:p.S, :, j], p.S - (s + 2))
         tau_c_to_use = np.diag(p.tau_c[:p.S, :, j], p.S - (s + 2))
 
         length_diag =\
@@ -303,8 +306,9 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
         solutions = opt.fsolve(twist_doughnut,
                                list(b_guesses_to_use) +
                                list(n_guesses_to_use),
-                               args=(r_hh, w, bq_to_use, TR, theta_to_use,
-                                     factor, j, s, 0, tau_c_to_use,
+                               args=(r_hh, w, bq_to_use, tr_to_use,
+                                     theta_to_use, factor, j, s, 0,
+                                     tau_c_to_use,
                                      etr_params_to_use,
                                      mtrx_params_to_use,
                                      mtry_params_to_use, initial_b, p),
@@ -321,6 +325,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
         n_guesses_to_use = np.diag(guesses_n[t:t + p.S, :])
         theta_to_use = theta[j] * p.replacement_rate_adjust[t:t + p.S]
         bq_to_use = np.diag(bq[t:t + p.S, :, j])
+        tr_to_use = np.diag(tr[t:t + p.S, :, j])
         tau_c_to_use = np.diag(p.tau_c[t:t + p.S, :, j])
 
         # initialize array of diagonal elements
@@ -351,7 +356,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
         [solutions, infodict, ier, message] =\
             opt.fsolve(twist_doughnut, list(b_guesses_to_use) +
                        list(n_guesses_to_use),
-                       args=(r_hh, w, bq_to_use, TR,
+                       args=(r_hh, w, bq_to_use, tr_to_use,
                              theta_to_use, factor,
                              j, None, t, tau_c_to_use,
                              etr_params_to_use, mtrx_params_to_use,
@@ -535,10 +540,12 @@ def run_TPI(p, client=None):
             p.etr_params.reshape(p.T, p.S, 1, p.etr_params.shape[2]),
             (1, 1, p.J, 1))
         bqmat = household.get_bq(BQ, None, p, 'TPI')
+        trmat = household.get_tr(TR, None, p, 'TPI')
         tax_mat = tax.total_taxes(r_hh[:p.T], w[:p.T], bmat_s,
                                   n_mat[:p.T, :, :], bqmat[:p.T, :, :],
-                                  factor, TR[:p.T], theta, 0, None,
-                                  False, 'TPI', p.e, etr_params_4D, p)
+                                  factor, trmat[:p.T, :, :], theta, 0,
+                                  None, False, 'TPI', p.e,
+                                  etr_params_4D, p)
         r_hh_path = utils.to_timepath_shape(r_hh, p)
         wpath = utils.to_timepath_shape(w, p)
         c_mat = household.get_cons(r_hh_path[:p.T, :, :], wpath[:p.T, :, :],
@@ -757,7 +764,7 @@ def run_TPI(p, client=None):
               'r': r, 'r_gov': r_gov,
               'r_hh': r_hh, 'w': w, 'bmat_splus1': bmat_splus1,
               'bmat_s': bmat_s[:p.T, :, :], 'n_mat': n_mat[:p.T, :, :],
-              'c_path': c_mat, 'bq_path': bqmat,
+              'c_path': c_mat, 'bq_path': bqmat, 'tr_path': trmat,
               'y_before_tax_mat': y_before_tax_mat,
               'tax_path': tax_mat, 'eul_savings': eul_savings,
               'eul_laborleisure': eul_laborleisure,
