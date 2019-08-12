@@ -142,6 +142,50 @@ def test_get_bq(BQ, j, p, method, expected):
 
 
 p1 = Specifications()
+p1.eta = np.array([[0.1, 0.3], [0.15, 0.4], [0.05, 0.0]])
+p1.S = 3
+p1.J = 2
+p1.T = 3
+p1.lambdas = np.array([0.6, 0.4])
+p1.omega_SS = np.array([0.25, 0.25, 0.5])
+p1.omega = np.tile(p1.omega_SS.reshape((1, p1.S)), (p1.T, 1))
+TR1 = 2.5
+expected1 = np.array([[1.66666667, 7.5], [2.5, 10.0], [0.416666667, 0.0]])
+p2 = Specifications()
+p2.eta = np.array([[0.1, 0.3], [0.15, 0.4], [0.05, 0.0]])
+p2.S = 3
+p2.J = 2
+p2.T = 3
+p2.lambdas = np.array([0.6, 0.4])
+p2.omega_SS = np.array([0.25, 0.25, 0.5])
+p2.omega = np.tile(p2.omega_SS.reshape((1, p2.S)), (p2.T, 1))
+TR2 = np.array([2.5, 0.8, 3.6])
+expected2 = np.array([7.5, 10.0, 0.0])
+expected3 = np.array([[[1.666666667, 7.5], [2.5, 10.0], [0.416666667, 0.0]],
+                      [[0.533333333, 2.4], [0.8, 3.2], [0.133333333, 0.0]],
+                      [[2.4, 10.8], [3.6, 14.4], [0.6, 0.0]]])
+expected4 = np.array([[7.5, 10.0, 0.0], [2.4, 3.2, 0.0],
+                      [10.8, 14.4, 0.0]])
+test_data = [(TR1, None, p1, 'SS', expected1),
+             (TR1, 1, p1, 'SS', expected2),
+             (TR2, None, p2, 'TPI', expected3),
+             (TR2, 1, p2, 'TPI', expected4)]
+
+
+@pytest.mark.parametrize('TR,j,p,method,expected',
+                         test_data,
+                         ids=['SS, all j',
+                              'SS, one j',
+                              'TPI, all j',
+                              'TPI, one j'])
+def test_get_tr(TR, j, p, method, expected):
+    # Test the get_BQ function
+    test_value = household.get_tr(TR, j, p, method)
+    print('Test value = ', test_value)
+    assert np.allclose(test_value, expected)
+
+
+p1 = Specifications()
 p1.e = 0.99
 p1.lambdas = np.array([0.25])
 p1.g_y = 0.03
