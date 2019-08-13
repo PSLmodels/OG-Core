@@ -21,7 +21,7 @@ BASELINE_DIR = "./OUTPUT_BASELINE"
 DEFAULT_START_YEAR = 2018
 
 # Latest year TaxData extrapolates to
-TC_LAST_YEAR = 2027
+TC_LAST_YEAR = 2028
 
 # Year of data used (e.g. PUF or CPS year)
 CPS_START_YEAR = taxcalc.Records.CPSCSV_YEAR
@@ -32,14 +32,12 @@ def mkdirs(path):
     '''
     Makes directories to save output.
 
-    Inputs:
-        path = string, path name for new directory
+    Args:
+        path (str): path name for new directory
 
-    Functions called: None
+    Returns:
+        None
 
-    Objects in function:
-
-    Returns: N/A
     '''
 
     try:
@@ -54,19 +52,15 @@ def pct_diff_func(simul, data):
     Used to calculate the absolute percent difference between data
     moments and model moments.
 
-    Inputs:
-        simul = any shape, model moments
-        data  = same shape as simul, data moments
+    Args:
+        simul (array_like): any shape, model moments
+        data (array_like): same shape as simul, data moments
 
     Functions called: None
 
-    Objects in function:
-        frac   = same shape as simul, percent difference between data
-                 and model moments
-        output = same shape as simul, absolute percent difference
-                 between data and model moments
-
-    Returns: output
+    Returns:
+        output (array_like): percentage differences between model and
+            data moments
     '''
     frac = (simul - data) / data
     output = np.abs(frac)
@@ -77,17 +71,15 @@ def convex_combo(var1, var2, nu):
     '''
     Takes the convex combination of two variables, where nu is in [0,1].
 
-    Inputs:
-        var1 = any shape, variable 1
-        var2 = same shape as var1, variable 2
-        nu   = scalar, weight on var1 in convex combination
+    Args:
+        var1 (array_like): any shape, variable 1
+        var2 (array_like): same shape as var1, variable 2
+        nu (scalar): weight on var1 in convex combination, in [0, 1]
 
-    Functions called: None
+    Returns:
+        combo (array_like): same shape as var1, convex combination of
+        var1 and var2
 
-    Objects in function:
-        combo = same shape as var1, convex combination of var1 and var2
-
-    Returns: combo
     '''
     combo = nu * var1 + (1 - nu) * var2
     return combo
@@ -98,18 +90,13 @@ def read_file(path, fname):
     Read the contents of 'path'. If it does not exist, assume the file
     is installed in a .egg file, and adjust accordingly.
 
-    Inputs:
-        path  = string, path name for new directory
-        fname = string, filename
+    Args:
+        path (str): path name for new directory
+        fname (str): filename
 
-    Functions called: None
+    Returns:
+        file contents (str)
 
-    Objects in function:
-        path_in_egg
-        buf
-        _bytes
-
-    Returns: file contents
     '''
 
     if not os.path.exists(os.path.join(path, fname)):
@@ -124,25 +111,19 @@ def read_file(path, fname):
 def pickle_file_compare(fname1, fname2, tol=1e-3, exceptions={},
                         relative=False):
     '''
-    Read two pickle files and unpickle each. We assume that each resulting
-    object is a dictionary. The values of each dict are either numpy arrays
-    or else types that are comparable with the == operator.
+    Read two pickle files and unpickle each. We assume that each
+    resulting object is a dictionary. The values of each dict are either
+    numpy arrays or else types that are comparable with the == operator.
 
-    Inputs:
-        fname1  = string, file name of file 1
-        fname2  = string, file name of file 2
-        tol     = scalar, tolerance
-        exceptions = dictionary, exceptions
-        relative = boolean,
+    Args:
+        fname1 (str): file name of file 1
+        fname2 (str): file name of file 2
+        tol (scalar): tolerance
+        exceptions (dict): exceptions
+        relative (bool): whether comparison compares relative values
 
-    Functions called:
-        dict_compare
-
-    Objects in function:
-        pkl1 =  dictionary, from first pickle file
-        pkl2 = dictionary, from second pickle file
-
-    Returns: difference between dictionaries
+    Returns:
+        comparison (bool): whether therea two dictionaries are the same
     '''
     try:
         pkl1 = pickle.load(open(fname1, 'rb'), encoding='latin1')
@@ -152,9 +133,10 @@ def pickle_file_compare(fname1, fname2, tol=1e-3, exceptions={},
         pkl2 = pickle.load(open(fname2, 'rb'), encoding='latin1')
     except TypeError:
         pkl2 = pickle.load(open(fname2, 'rb'))
+    comparison = dict_compare(fname1, pkl1, fname2, pkl2, tol=tol,
+                              exceptions=exceptions, relative=relative)
 
-    return dict_compare(fname1, pkl1, fname2, pkl2, tol=tol,
-                        exceptions=exceptions, relative=relative)
+    return comparison
 
 
 def comp_array(name, a, b, tol, unequal, exceptions={}, relative=False):
@@ -164,17 +146,17 @@ def comp_array(name, a, b, tol, unequal, exceptions={}, relative=False):
     If not equal, add items to the unequal list
     name: the name of the value being compared
 
-    Inputs:
+    Args:
+        name (str): name of variable being compared
+        a (array_like): first array to compare
+        b (array_like): second array to compare
+        tol (scalar): tolerance used for comparison
+        unequal (dict): dict of variables that are not equal
+        exceptions (dict): exceptions
+        relative (bool): whether comparison compares relative values
 
-
-    Functions called:
-
-
-    Objects in function:
-
-
-    Returns: Boolean
-
+    Returns:
+        (bool): whether two arrays are the same or not
 
     '''
 
@@ -212,6 +194,19 @@ def comp_scalar(name, a, b, tol, unequal, exceptions={}, relative=False):
     Compare two scalars in the L inifinity norm
     Return True if abs(a - b) < tol, False otherwise
     If not equal, add items to the unequal list
+
+    Args:
+        name (str): name of variable being compared
+        a (scalar): first scalar to compare
+        b (scalra): second scalar to compare
+        tol (scalar): tolerance used for comparison
+        unequal (dict): dict of variables that are not equal
+        exceptions (dict): exceptions
+        relative (bool): whether comparison compares relative values
+
+    Returns:
+        (bool): whether two arrays are the same or not
+
     '''
 
     if name in exceptions:
@@ -243,6 +238,20 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False,
     For arrays, they are considered the same if |x - y| < tol in
     the L_inf norm.
     For scalars, they are considered the same if x - y < tol
+
+    Args:
+        fname1 (str): files name for pickle file
+        pk1 (dict): first dictionary to compare
+        fname2 (str): files name for pickle file
+        pk2 (dict): second dictionary to compare
+        tol (scalar): tolerance used for comparison
+        verbose (bool): whether print messages
+        exceptions (dict): exceptions
+        relative (bool): whether comparison compares relative values
+
+    Returns:
+        (bool): whether two dictionaries are the same or not
+
     '''
 
     keys1 = set(pkl1.keys())
@@ -299,6 +308,14 @@ def to_timepath_shape(some_array, p):
     '''
     This function takes an vector of length T and tiles it to fill a
     Tx1x1 array for time path computations.
+
+    Args:
+        some_array (Numpy array): array to reshape
+        p (OG-USA Specifcations object): model parameters
+
+    Returns:
+        tp_array (Numpy  array): reshaped array
+
     '''
     tp_array = some_array.reshape(some_array.shape[0], 1, 1)
     return tp_array
@@ -306,7 +323,6 @@ def to_timepath_shape(some_array, p):
 
 def get_initial_path(x1, xT, T, spec):
     '''
-    --------------------------------------------------------------------
     This function generates a path from point x1 to point xT such that
     that the path x is a linear or quadratic function of time t.
         linear:    x = d*t + e
@@ -315,21 +331,16 @@ def get_initial_path(x1, xT, T, spec):
         (1) x1 is the value at time t=0: x1 = c
         (2) xT is the value at time t=T-1: xT = a*(T-1)^2 + b*(T-1) + c
         (3) the slope of the path at t=T-1 is 0: 0 = 2*a*(T-1) + b
-    --------------------------------------------------------------------
-    INPUTS:
-    x1 = scalar, initial value of the function x(t) at t=0
-    xT = scalar, value of the function x(t) at t=T-1
-    T  = integer >= 3, number of periods of the path
-    spec = string, "linear" or "quadratic"
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
-    OBJECTS CREATED WITHIN FUNCTION:
-    cc    = scalar, constant coefficient in quadratic function
-    bb    = scalar, coefficient on t in quadratic function
-    aa    = scalar, coefficient on t^2 in quadratic function
-    xpath = (T,) vector, parabolic xpath from x1 to xT
-    FILES CREATED BY THIS FUNCTION: None
-    RETURNS: xpath
-    --------------------------------------------------------------------
+
+    Args:
+        x1 (scalar): initial value of the function x(t) at t=0
+        xT (scalar): value of the function x(t) at t=T-1
+        T (int): number of periods of the path, must be >= 3
+        spec (str): shape of guess for time path, "linear" or "quadratic"
+
+    Returns:
+        xpath (Numpy array): guess of variable over the time path
+
     '''
     if spec == "linear":
         xpath = np.linspace(x1, xT, T)
@@ -346,6 +357,13 @@ def get_initial_path(x1, xT, T, spec):
 def safe_read_pickle(file_path):
     '''
     This function reads a pickle from Python 2 into Python 2 or Python 3
+
+    Args:
+        file_path (str): path to pickle file
+
+    Returns:
+        obj (object): object saved in pickle file
+
     '''
     with open(file_path, 'rb') as f:
         try:
@@ -366,46 +384,58 @@ def rate_conversion(annual_rate, start_age, end_age, s):
 def save_return_table(table_df, output_type, path, precision=0):
     '''
     Function to save or return a table of data.
+
     Args:
-        table_df: DataFrame, table
-        output_type: string, specifies the type of file to save
-            table to:
-                - 'csv'
-                - 'tex'
-                - 'excel'
-                - 'json'
-        path: string, specifies path to save file with table to
-        precision: integer, number of significant digits to print
+        table_df (Pandas DataFrame): table
+        output_type (string): specifies the type of file to save
+            table to: 'csv', 'tex', 'excel', 'json'
+        path (string): specifies path to save file with table to
+        precision (integer): number of significant digits to print.
+            Defaults to 0.
+
     Returns:
-        table_df: DataFrame, table
-        or
-        None
+        table_df (Pandas DataFrame): table
+
     '''
     if path is None:
         if output_type == 'tex':
             tab_str = table_df.to_latex(
                 buf=path, index=False, na_rep='',
-                float_format='%.' + str(precision) + 'f%%')
+                float_format=lambda x: '%.' + str(precision) + '0f' % x)
             return tab_str
         elif output_type == 'json':
             tab_str = table_df.to_json(
                 path_or_buf=path, double_precision=0)
             return tab_str
+        elif output_type == 'html':
+            print('Output html...')
+            # with pd.option_context('display.precision', precision):
+            tab_html = (
+                table_df.round(2).style
+                # .format({'': '', '%.' + str(precision) + '0f')
+                .set_properties(**{'font-size': '9pt',
+                                   'font-family': 'Calibri',
+                                   'text-align': 'left'})
+                .hide_index()
+                .render()
+            )
+            return tab_html
         else:
             return table_df
     else:
         if output_type == 'tex':
             table_df.to_latex(buf=path, index=False, na_rep='',
-                              float_format='%.' + str(precision) + 'f%%')
+                              float_format=lambda x: '%.' +
+                              str(precision) + '0f' % x)
         elif output_type == 'csv':
             table_df.to_csv(path_or_buf=path, index=False, na_rep='',
-                            float_format='%.' + str(precision) + 'f%%')
+                            float_format='%.' + str(precision) + '0f')
         elif output_type == 'json':
             table_df.to_json(path_or_buf=path,
                              double_precision=precision)
         elif output_type == 'excel':
             table_df.to_excel(excel_writer=path, index=False, na_rep='',
-                              float_format='%.' + str(precision) + 'f%%')
+                              float_format='%.' + str(precision) + '0f')
         else:
             print('Please enter a valid output format')
             assert(False)

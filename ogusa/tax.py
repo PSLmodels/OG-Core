@@ -17,25 +17,20 @@ from ogusa import utils
 
 def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
     '''
-    Calculates replacement rate values for the payroll tax.
-    Inputs:
-        nssmat    = [S,J] array, steady state labor supply
-        wss       = scalar, steady state wage rate
-        factor_ss = scalar, factor that converts model income to dollars
-        params    = length 3 tuple, (e, S, retire)
-        e         = [S,J] array, effective labor units
-        S         = integer, length of economic life
-        retire    = integer, retirement age
-    Functions called: None
-    Objects in function:
-        AIME       = [J,] vector, average indexed monthly earnings by
-                          lifetime income group
-        PIA        = [J,] vector, primary insurance amount by lifetime
-                          income group
-        maxpayment = scalar, maximum replacement rate
-        theta      = [J,] vector, replacement rates by lifetime income
-                          group
-    Returns: theta
+    Calculates replacement rate values for the social security system.
+
+    Args:
+        nssmat (Numpy array): initial guess at labor supply, size = SxJ
+        new_w (scalar): steady state real wage rate
+        factor_ss (scalar): scaling factor converting model units to
+            dollars
+        j (int): index of lifetime income group
+        p (OG-USA Specifcations object): model parameters
+
+    Returns:
+        theta (Numpy array): social security replacement rate value for
+            lifetime income group j
+
     '''
     if j is not None:
         e = p.e[:, j]
@@ -76,16 +71,18 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
 def ETR_wealth(b, h_wealth, m_wealth, p_wealth):
     '''
     Calculates the effective tax rate on wealth.
-    Inputs:
-        b        = [T,S,J] array, wealth holdings
-        params   = length 3 tuple, (h_wealth, p_wealth, m_wealth)
-        h_wealth = scalar, parameter of wealth tax function
-        p_wealth = scalar, parameter of wealth tax function
-        m_wealth = scalar, parameter of wealth tax function
-    Functions called: None
-    Objects in function:
-        tau_w = [T,S,J] array, effective tax rate on wealth
-    Returns: tau_w
+
+    .. math::
+        T_{j,s,t}^{w} = \frac{h^{w}p_{w}b_{j,s,t}}{h^{w}b_{j,s,t} + m^{w}}
+
+    Args:
+        b (Numpy array): savings
+        h_wealth (scalar): parameter of wealth tax function
+        p_wealth (scalar): parameter of wealth tax function
+        m_wealth (scalar): parameter of wealth tax function
+
+    Returns:
+        tau_w (Numpy array): effective tax rate on wealth, size = SxJ
 
     '''
     tau_w = (p_wealth * h_wealth * b) / (h_wealth * b + m_wealth)
@@ -95,17 +92,19 @@ def ETR_wealth(b, h_wealth, m_wealth, p_wealth):
 def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
     '''
     Calculates the marginal tax rate on wealth from the wealth tax.
-    Inputs:
-        b        = [T,S,J] array, wealth holdings
-        params   = length 3 tuple, (h_wealth, p_wealth, m_wealth)
-        h_wealth = scalar, parameter of wealth tax function
-        p_wealth = scalar, parameter of wealth tax function
-        m_wealth = scalar, parameter of wealth tax function
-    Functions called: None
-    Objects in function:
-        tau_w_prime = [T,S,J] array, marginal tax rate on wealth from
-                                     wealth tax
-    Returns: tau_w_prime
+
+    .. math::
+        \frac{\partial T_{j,s,t}^{w}}{\partial b_{j,s,t}} = \frac{h^{w}m^{w}p_{w}}{(b_{j,s,t}h^{w}m^{w})^{2}}
+
+    Args:
+        b (Numpy array): savings
+        h_wealth (scalar): parameter of wealth tax function
+        p_wealth (scalar): parameter of wealth tax function
+        m_wealth (scalar): parameter of wealth tax function
+
+    Returns:
+        tau_prime (Numpy array): marginal tax rate on wealth, size = SxJ
+
     '''
     tau_prime = (h_wealth * m_wealth * p_wealth /
                  (b * h_wealth + m_wealth) ** 2)
@@ -114,50 +113,22 @@ def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
 
 def ETR_income(r, w, b, n, factor, e, etr_params, p):
     '''
-    --------------------------------------------------------------------
     Calculates effective personal income tax rate.
-    --------------------------------------------------------------------
-    INPUTS:
-    r          = [T,] vector, interest rate
-    w          = [T,] vector, wage rate
-    b          = [T,S,J] array, wealth holdings
-    n          = [T,S,J] array, labor supply
-    factor     = scalar, model income scaling factor
-    params     = length 2 tuple, (e, etr_params)
-    e          = [T,S,J] array, effective labor units
-    etr_params = [T,S,J] array, effective tax rate function parameters
 
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+    Args:
+        r (array_like): real interest rate
+        w (array_like): real wage rate
+        b (Numpy array): savings
+        n (Numpy array): labor supply
+        factor (scalar): scaling factor converting model units to
+            dollars
+        e (Numpy array): effective labor units
+        etr_params (Numpy array): effective tax rate function parameters
+        p (OG-USA Specifcations object): model parameters
 
-    OBJECTS CREATED WITHIN FUNCTION:
-    A       = [T,S,J] array, polynomial coefficient on x**2
-    B       = [T,S,J] array, polynomial coefficient on x
-    C       = [T,S,J] array, polynomial coefficient on y**2
-    D       = [T,S,J] array, polynomial coefficient on y
-    max_x   = [T,S,J] array, maximum effective tax rate for x given y=0
-    min_x   = [T,S,J] array, minimum effective tax rate for x given y=0
-    max_y   = [T,S,J] array, maximum effective tax rate for y given x=0
-    min_y   = [T,S,J] array, minimum effective tax rate for y given x=0
-    shift_x = (T, S, J) array, shift parameter on labor income in Cobb-
-              Douglas function
-    shift_y = (T, S, J) array, shift parameter on capital income in
-              Cobb-Douglas function
-    shift   = (T, S, J) array, shift parameter on total function in
-              Cobb-Douglas function
-    share   = (T, S, J) array, share parameter (exponent) in Cobb-
-              Douglas functions
-    X       = [T,S,J] array, labor income
-    Y       = [T,S,J] array, capital income
-    X2      = [T,S,J] array, labor income squared X**2
-    Y2      = [T,S,J] array, capital income squared Y**2
-    tau_x   = [T,S,J] array, labor income portion of the function with
-              ratio of polynomials
-    tau_y   = [T,S,J] array, capital income portion of the function with
-              ratio of polynomials
-    tau     = [T,S,J] array, effective personal income tax rate
+    Returns:
+        tau (Numpy array): effective tax rate on total income
 
-    RETURNS: tau
-    --------------------------------------------------------------------
     '''
     X = (w * e * n) * factor
     Y = (r * b) * factor
@@ -210,55 +181,24 @@ def ETR_income(r, w, b, n, factor, e, etr_params, p):
 def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params,
                mtr_params, p):
     '''
-    --------------------------------------------------------------------
     Generates the marginal tax rate on labor income for households.
-    --------------------------------------------------------------------
-    INPUTS:
-    r               = [T,] vector, interest rate
-    w               = [T,] vector, wage rate
-    b               = [T,S,J] array, wealth holdings
-    n               = [T,S,J] array, labor supply
-    factor          = scalar, model income scaling factor
-    params          = length 4 tuple, (e, mtry_params, tax_func_type,
-                      analytical_mtrs)
-    e               = [T,S,J] array, effective labor units
-    mtr_params      = [T,S,J] array, marginal tax rate on labor/capital
-                      income function parameters
-    tax_func_type   = string, type of tax function used
-    analytical_mtrs = boolean, =True if use analytical mtrs rather than
-                      estimated mtrs
 
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+    Args:
+        r (array_like): real interest rate
+        w (array_like): real wage rate
+        b (Numpy array): savings
+        n (Numpy array): labor supply
+        factor (scalar): scaling factor converting model units to
+            dollars
+        mtr_capital (bool): whether to compute the marginal tax rate on
+            capital income or labor income
+        e (Numpy array): effective labor units
+        etr_params (Numpy array): effective tax rate function parameters
+        p (OG-USA Specifcations object): model parameters
 
-    OBJECTS CREATED WITHIN FUNCTION:
-    A       = [T,S,J] array, polynomial coefficient on x**2
-    B       = [T,S,J] array, polynomial coefficient on x
-    C       = [T,S,J] array, polynomial coefficient on y**2
-    D       = [T,S,J] array, polynomial coefficient on y
-    max_x   = [T,S,J] array, maximum effective tax rate for x given y=0
-    min_x   = [T,S,J] array, minimum effective tax rate for x given y=0
-    max_y   = [T,S,J] array, maximum effective tax rate for y given x=0
-    min_y   = [T,S,J] array, minimum effective tax rate for y given x=0
-    shift_x = (T, S, J) array, shift parameter on labor income in Cobb-
-              Douglas function
-    shift_y = (T, S, J) array, shift parameter on capital income in
-              Cobb-Douglas function
-    shift   = (T, S, J) array, shift parameter on total function in
-              Cobb-Douglas function
-    share   = (T, S, J) array, share parameter (exponent) in Cobb-
-              Douglas functions
-    X       = [T,S,J] array, labor income
-    Y       = [T,S,J] array, capital income
-    X2      = [T,S,J] array, labor income squared X**2
-    Y2      = [T,S,J] array, capital income squared Y**2
-    tau_x   = [T,S,J] array, labor income portion of the function with
-              ratio of polynomials
-    tau_y   = [T,S,J] array, capital income portion of the function with
-              ratio of polynomials
-    tau     = [T,S,J] array, marginal tax rate on labor income
+    Returns:
+        tau (Numpy array): marginal tax rate on income source
 
-    RETURNS: tau
-    --------------------------------------------------------------------
     '''
     X = (w * e * n) * factor
     Y = (r * b) * factor
@@ -366,16 +306,18 @@ def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params,
 
 def get_biz_tax(w, Y, L, K, p, method):
     '''
-    Finds total business income tax receipts
-    Inputs:
-        r           = [T,] vector, interest rate
-        Y           = [T,] vector, aggregate output
-        L           = [T,] vector, aggregate labor demand
-        K           = [T,] vector, aggregate capital demand
-    Objects in function:
-        business_revenue    = [T,] vector, total revenue from business
-                                           income taxes
-    Returns: T_H
+    Finds total business income tax revenue.
+
+    .. math::
+        R_{t}^{b} = \tau_{t}^{b}(Y_{t} - w_{t}L_{t}) - \tau_{t}^{b}\delta_{t}^{\tau}K_{t}^{\tau}
+    Args:
+        r (array_like): real interest rate
+        Y (array_like): aggregate output
+        L (array_like): aggregate labor demand
+        K (array_like): aggregate capital demand
+
+    Returns:
+        business_revenue (array_like): aggregate business tax revenue
 
     '''
     if method == 'SS':
@@ -391,48 +333,31 @@ def get_biz_tax(w, Y, L, K, p, method):
 def total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, shift, method,
                 e, etr_params, p):
     '''
-    Gives net taxes paid values.
-    Inputs:
-        r          = [T,] vector, interest rate
-        w          = [T,] vector, wage rate
-        b          = [T,S,J] array, wealth holdings
-        n          = [T,S,J] array, labor supply
-        BQ         = [T,J] vector,  bequest amounts
-        factor     = scalar, model income scaling factor
-        T_H        = [T,] vector, lump sum transfer amount(s)
-        j          = integer, lifetime incoem group being computed
-        shift      = boolean, computing for periods 0--s or 1--(s+1)
-                              (bool) (True for 1--(s+1))
-        params = length 13 tuple, (e, lambdas, method, retire,
-                                   etr_params, h_wealth, p_wealth,
-                                   m_wealth, tau_payroll, theta, tau_bq,
-                                   J, S)
-        e           = [T,S,J] array, effective labor units
-        lambdas     = [J,] vector, population weights by lifetime income group
-        method      = string, 'SS' or 'TPI'
-        retire      = integer, retirement age
-        etr_params  = [T,S,J] array, effective tax rate function parameters
-        h_wealth    = scalar, wealth tax function parameter
-        p_wealth    = scalar, wealth tax function parameter
-        m_wealth    = scalar, wealth tax function parameter
-        tau_payroll = scalar, payroll tax rate
-        theta       = [J,] vector, replacement rate values by lifetime
-                                   income group
-        tau_bq      = scalar, bequest tax rate
-        S           = integer, number of age groups
-        J           = integer, number of lifetime income groups
-    Functions called:
-        ETR_income
-        ETR_wealth
-    Objects in function:
-        income          = [T,S,J] array, total income
-        T_I        = [T,S,J] array, total income taxes
-        T_P         = [T,S,J] array, total payroll taxes
-        T_W         = [T,S,J] array, total wealth taxes
-        T_BQ        = [T,S,J] array, total bequest taxes
-        retireTPI  = integer, =(retire - S)
-        total_taxes = [T,] vector, net taxes
-    Returns: total_taxes
+    Calculate net taxes paid for each household.
+
+    Args:
+        r (array_like): real interest rate
+        w (array_like): real wage rate
+        b (Numpy array): savings
+        n (Numpy array): labor supply
+        bq (Numpy array): bequests received
+        factor (scalar): scaling factor converting model units to
+            dollars
+        T_H (Numpy array): government transfers to the household
+        theta (Numpy array): social security replacement rate value for
+            lifetime income group j
+        t (int): time period
+        j (int): index of lifetime income group
+        shift (bool): whether computing for periods 0--s or 1--(s+1),
+            =True for 1--(s+1)
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+        e (Numpy array): effective labor units
+        etr_params (Numpy array): effective tax rate function parameters
+        p (OG-USA Specifcations object): model parameters
+
+    Returns:
+        total_taxes (Numpy array): net taxes paid for each household
 
     '''
     if j is not None:

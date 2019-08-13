@@ -17,23 +17,19 @@ from ogusa import tax, household, utils
 
 def get_L(n, p, method):
     '''
-    Generates vector of aggregate labor supply.
+    Calculate aggregate labor supply.
 
-    Inputs:
-        n               = [T,S,J] array, labor supply
-        params          = length 4 tuple, (e, omega, lambdas, method)
-        e               = [T,S,J] array, effective labor units
-        omega     = [T,S,1] array, population weights
-        lambdas = [1,1,J] array, ability weights
-        method          = string, 'SS' or 'TPI'
+    .. math::
+        L_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}n_{j,s,t}
 
-    Functions called: None
+    Args:
+        n (Numpy array): labor supply of households
+        p (OG-USA Specifcations object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
 
-    Objects in function:
-        L_presum = [T,S,J] array, weighted labor supply
-        L = [T+S,] vector, aggregate labor
-
-    Returns: L
+    Returns:
+        L (array_like): aggregate labor supply
 
     '''
     if method == 'SS':
@@ -49,22 +45,21 @@ def get_L(n, p, method):
 
 def get_I(b_splus1, K_p1, K, p, method):
     '''
-    Generates vector of aggregate investment.
+    Calculate aggregate investment.
 
-    Inputs:
-        K_p1   = [T,] vector, aggregate capital, one period ahead
-        K      = [T,] vector, aggregate capital
-        params = length 3 tuple, (delta, g_y, g_n)
-        delta  = scalar, depreciation rate of capital
-        g_y    = scalar, production growth rate
-        g_n    = [T,] vector, population growth rate
+    .. math::
+        I_{t} = (1 + g_{n,t+1})e^{g_{y}}(K_{t+1} - \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s+1,t}i_{s+1,t}\lambda_{j}b_{j,s+1,t+1} \ (1+ g_{n,t+1})) - (1 - \delta)K_{t}
 
-    Functions called: None
+    Args:
+        b_splus1 (Numpy array): savings of households
+        K_p1 (array_like): aggregate capital, one period ahead
+        K (array_like): aggregate capital
+        p (OG-USA Specifcations object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
 
-    Objects in function:
-        aggI = [T,] vector, aggregate investment
-
-    Returns: aggI
+    Returns:
+        aggI (array_like): aggregate investment
 
     '''
     if method == 'SS':
@@ -102,24 +97,23 @@ def get_I(b_splus1, K_p1, K, p, method):
 
 def get_K(b, p, method, preTP):
     '''
-    Calculates aggregate capital supplied.
+    Calculate aggregate savings
 
-    Inputs:
-        b           = [T,S,J] array, distribution of wealth/capital holdings
-        params      = length 4 tuple, (omega, lambdas, g_n, method)
-        omega       = [S,T] array, population weights
-        lambdas     = [J,] vector, fraction in each lifetime income group
-        g_n         = [T,] vector, population growth rate
-        method      = string, 'SS' or 'TPI'
+    .. math::
+        K_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}b_{j,s,t}
 
-    Functions called: None
+    Args:
+        b (Numpy array): savings of households
+        p (OG-USA Specifcations object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+        preTP (bool): whether calculation is for the pre-time path
+            period amount of savings.  If True, then need to use
+            `omega_S_preTP`.
 
-    Objects in function:
-        K_presum = [T,S,J] array, weighted distribution of wealth/capital
-                   holdings
-        K        = [T,] vector, aggregate capital supply
+    Returns:
+        K (array_like): aggregate capital supply
 
-    Returns: K
     '''
     if method == 'SS':
         if preTP:
@@ -154,28 +148,28 @@ def get_K(b, p, method, preTP):
 
 
 def get_BQ(r, b_splus1, j, p, method, preTP):
-    '''
-    Calculation of bequests to each lifetime income group.
+    r'''
+    Calculation of aggregate bequests.  If `use_zeta` is False, then
+    computes aggregate bequests within each lifetime income group.
 
-    Inputs:
-        r           = [T,] vector, interest rates
-        b_splus1    = [T,S,J] array, distribution of wealth/capital
-                      holdings one period ahead
-        params      = length 5 tuple, (omega, lambdas, rho, g_n, method)
-        omega       = [S,T] array, population weights
-        lambdas     = [J,] vector, fraction in each lifetime income group
-        rho         = [S,] vector, mortality rates
-        g_n         = scalar, population growth rate
-        method      = string, 'SS' or 'TPI'
+    .. math::
+        BQ_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\rho_{s}\omega_{s,t}\lambda_{j}b_{j,s+1,1}
 
-    Functions called: None
+    Args:
+        r (array_like): the real interest rate
+        b_splus1 (numpy array): household savings one period ahead
+        j (int): index of lifetime income group
+        p (OG-USA Specifcations object): model parameters
+        method (str): adjusts calculation dimensions based on SS or
+            TPI
+        preTP (bool): whether calculation is for the pre-time path
+            period amount of savings.  If True, then need to use
+            `omega_S_preTP`.
 
-    Objects in function:
-        BQ_presum = [T,S,J] array, weighted distribution of
-                    wealth/capital holdings one period ahead
-        BQ        = [T,J] array, aggregate bequests by lifetime income group
+    Returns:
+        BQ (array_like): aggregate bequests, overall or by lifetime
+            income group, depending on `use_zeta` value.
 
-    Returns: BQ
     '''
     if method == 'SS':
         if preTP:
@@ -215,23 +209,21 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
 
 
 def get_C(c, p, method):
-    '''
+    r'''
     Calculation of aggregate consumption.
 
-    Inputs:
-        cons        = [T,S,J] array, household consumption
-        params      = length 3 tuple (omega, lambdas, method)
-        omega       = [S,T] array, population weights by age (Sx1 array)
-        lambdas     = [J,1] vector, lifetime income group weights
-        method      = string, 'SS' or 'TPI'
+    .. math::
+        C_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}c_{j,s,t}
 
-    Functions called: None
+    Args:
+        c (Numpy array): consumption of households
+        p (OG-USA Specifcations object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
 
-    Objects in function:
-        aggC_presum = [T,S,J] array, weighted consumption by household
-        aggC        = [T,] vector, aggregate consumption
+    Returns:
+        C (array_like): aggregate consumption
 
-    Returns: aggC
     '''
 
     if method == 'SS':
@@ -245,46 +237,41 @@ def get_C(c, p, method):
 
 def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
             p, method):
-    '''
-    Gives lump sum transfer value.
-    Inputs:
-        r           = [T,] vector, interest rate
-        w           = [T,] vector, wage rate
-        b           = [T,S,J] array, wealth holdings
-        n           = [T,S,J] array, labor supply
-        BQ          = [T,J] array, bequest amounts
-        factor      = scalar, model income scaling factor
-        params      = length 12 tuple, (e, lambdas, omega, method, etr_params,
-                                        theta, tau_bq, tau_payroll, h_wealth,
-                                        p_wealth, m_wealth, retire, T, S, J)
-        e           = [T,S,J] array, effective labor units
-        lambdas     = [J,] vector, population weights by lifetime income group
-        omega       = [T,S] array, population weights by age
-        method      = string, 'SS' or 'TPI'
-        etr_params  = [T,S,J] array, effective tax rate function parameters
-        tax_func_types = string, type of tax function used
-        theta       = [J,] vector, replacement rate values by lifetime
-                      income group
-        tau_bq      = scalar, bequest tax rate
-        h_wealth    = scalar, wealth tax function parameter
-        p_wealth    = scalar, wealth tax function parameter
-        m_wealth    = scalar, wealth tax function parameter
-        tau_payroll = scalar, payroll tax rate
-        retire      = integer, retirement age
-        T           = integer, number of periods in transition path
-        S           = integer, number of age groups
-        J           = integer, number of lifetime income groups
-    Functions called:
-        ETR_income
-        ETR_wealth
-    Objects in function:
-        I    = [T,S,J] array, total income
-        T_I  = [T,S,J] array, total income taxes
-        T_P  = [T,S,J] array, total payroll taxes
-        T_W  = [T,S,J] array, total wealth taxes
-        T_BQ = [T,S,J] array, total bequest taxes
-        T_H  = [T,] vector, lump sum transfer amount(s)
-    Returns: T_H
+    r'''
+    Calculate aggregate tax revenue.
+
+    .. math::
+        R_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}(T_{j,s,t} + \tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t} - \theta_{j}w_{t} + \tau^{bq}bq_{j,s,t} + \tau^{c}_{s,t}c_{j,s,t} + \tau^{w}_{t}b_{j,s,t}) + \tau^{b}_{t}(Y_{t}-w_{t}L_{t}) - \tau^{b}_{t}\delta^{\tau}_{t}K^{\tau}_{t}
+
+    Args:
+        r (array_like): the real interest rate
+        w (array_like): the real wage rate
+        b (Numpy array): household savings
+        n (Numpy array): household labor supply
+        bq (Numpy array): household bequests received
+        c (Numpy array): household consumption
+        Y (array_like): aggregate output
+        L (array_like): aggregate labor
+        K (array_like): aggregate capital
+        factor (scalar): factor (scalar): scaling factor converting
+            model units to dollars
+        theta (Numpy array): social security replacement rate for each
+            lifetime income group
+        etr_params (Numpy array): paramters of the effective tax rate
+            functions
+        p (OG-USA Specifcations object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+
+    Returns:
+        REVENUE (array_like): aggregate tax revenue
+        T_I (array_like): aggregate income tax revenue
+        T_P (array_like): aggregate net payroll tax revenue, revenues
+            minus social security benefits paid
+        T_BQ (array_like): aggregate bequest tax revenue
+        T_W (array_like): aggregate wealth tax revenue
+        T_C (array_like): aggregate consumption tax revenue
+        business_revenue (array_like): aggregate business tax revenue
 
     '''
     if method == 'SS':
@@ -329,9 +316,23 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
 
 
 def get_r_hh(r, r_gov, K, D):
-    '''
+    r'''
     Compute the interest rate on the household's portfolio of assets,
-    a mix of government debt and private equity
+    a mix of government debt and private equity.
+
+    .. math::
+        r_{hh,t} = \frac{r_{gov,t}D_{t} + r_{t}K_{t}}{D_{t} + K_{t}}
+
+    Args:
+        r (array_like): the real interest rate
+        r_gov (array_like): the real interest rate on government debt
+        K (array_like): aggregate capital
+        K (array_like): aggregate government debt
+
+    Returns:
+        r_hh (array_like): the real interest rate on the households
+            portfolio
+
     '''
     r_hh = ((r * K) + (r_gov * D)) / (K + D)
 
@@ -341,7 +342,27 @@ def get_r_hh(r, r_gov, K, D):
 def resource_constraint(Y, C, G, I, K_f, new_borrowing_f,
                         debt_service_f, r, p):
     '''
-    Compute the error in the resource constraint
+    Compute the error in the resource constraint.
+
+    .. math::
+        \hat{Y}_{t} = \hat{C}_{t} + (\hat{K}^{d}_{t+1}e^{g_{y}}(1+g_{n,t+1}) - \hat{K}^{d}_{t}) + \delta \hat{K}_{t} +  \hat{G}_{t} + r_{hh, t}\hat{K}^{f}_{t} - (\hat{D}^{f}_{t+1}e^{g_{y}}(1+g_{n,t+1})- \hat{D}^{f}_{t}) + r_{hh,t}\hat{D}^{f}_{t}
+
+    Args:
+        Y (array_like): aggregate output
+        C (array_like): aggregate consumption
+        G (array_like): aggregate government spending
+        I (array_like): aggregate investment
+        K_f (array_like): aggregate capital that is foreign-owned
+        new_borrowing_f (array_like): new borrowing of government debt
+            from foreign investors
+        debt_service_f (array_like): interest payments on government
+            debt owned by foreigners
+        r (array_like): the real interest rate
+        p (OG-USA Specifcations object): model parameters
+
+    Returns:
+        rc_error (array_like): error in the resource constraint
+
     '''
     rc_error = (Y - C - I - G - (r + p.delta) * K_f + new_borrowing_f -
                 debt_service_f)

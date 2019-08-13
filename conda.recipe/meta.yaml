@@ -7,39 +7,48 @@ source:
 
 requirements:
   build:
-    - python=3.6
-    - taxcalc
+    - python
+    - "taxcalc>=2.4.2"
     - setuptools
     - scipy
     - matplotlib
     - dask
+    - mkl
 
   run:
-    - python=3.6
-    - taxcalc
+    - python
+    - "taxcalc>=2.4.2"
     - setuptools
     - scipy
     - matplotlib
     - dask
+    - mkl
 
 about:
-  home: https://github.com/open-source-economics/OG-USA/
+  home: https://github.com/PSLmodels/OG-USA/
 
 test:
   imports:
     - ogusa
     - ogusa.SS
     - ogusa.TPI
+    - ogusa.aggregates
+    - ogusa.constants
     - ogusa.demographics
     - ogusa.elliptical_u_est
+    - ogusa.execute
     - ogusa.firm
     - ogusa.fiscal
     - ogusa.get_micro_data
     - ogusa.household
     - ogusa.income
-    - ogusa.labor
     - ogusa.macro_output
+    - ogusa.output_plots
+    - ogusa.parameter_plots
+    - ogusa.parameter_tables
     - ogusa.parameters
+    - ogusa.parametersbase
+    - ogusa.postprocess
     - ogusa.tax
     - ogusa.txfunc
     - ogusa.utils
