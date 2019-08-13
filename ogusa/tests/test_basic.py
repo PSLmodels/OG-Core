@@ -65,6 +65,7 @@ def test_import_ok():
     import ogusa
 
 
+@pytest.mark.full_run
 @pytest.mark.parametrize('time_path', [False, True], ids=['SS', 'TPI'])
 def test_run_small(time_path):
     from ogusa.execute import runner
