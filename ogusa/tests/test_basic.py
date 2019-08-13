@@ -94,10 +94,6 @@ def test_constant_demographics_TPI():
     '''
     output_base = "./OUTPUT"
     baseline_dir = "./OUTPUT"
-    user_params = {'constant_demographics': True,
-                   'budget_balance': True,
-                   'zero_taxes': True,
-                   'maxiter': 2}
     # Create output directory structure
     ss_dir = os.path.join(output_base, "SS")
     tpi_dir = os.path.join(output_base, "TPI")
@@ -112,6 +108,12 @@ def test_constant_demographics_TPI():
                           baseline_dir=baseline_dir, test=False,
                           time_path=True, baseline=True, reform={},
                           guid='')
+    user_params = {'constant_demographics': True,
+                   'budget_balance': True,
+                   'zero_taxes': True,
+                   'maxiter': 2,
+                   'eta': (spec.omega_SS.reshape(spec.S, 1) *
+                           spec.lambdas.reshape(1, spec.J))}
     spec.update_specifications(user_params)
     spec.get_tax_function_parameters(None, False)
     # Run SS

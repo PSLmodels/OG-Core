@@ -10,6 +10,7 @@ new_param_values = {
     'S': 4,
     'J': 1,
     'T': 4,
+    'eta': (np.ones((4, 1)) / (4 * 1))
 }
 p.update_specifications(new_param_values)
 p.retire = [3, 3, 3, 3, 3, 3, 3, 3]
@@ -60,6 +61,7 @@ new_param_values = {
     'S': 3,
     'J': 1,
     'T': 3,
+    'eta': (np.ones((3, 1)) / (3 * 1)),
     'h_wealth': [2],
     'p_wealth': [3],
     'm_wealth': [4]
@@ -71,6 +73,7 @@ new_param_values2 = {
     'S': 3,
     'J': 1,
     'T': 3,
+    'eta': (np.ones((3, 1)) / (3 * 1)),
     'h_wealth': [1.2, 1.1, 2.3],
     'p_wealth': [2.2, 2.3, 1.8],
     'm_wealth': [3, 4, 3]
@@ -98,6 +101,7 @@ new_param_values = {
     'S': 3,
     'J': 1,
     'T': 3,
+    'eta': (np.ones((3, 1)) / (3 * 1)),
     'h_wealth': [3],
     'p_wealth': [4],
     'm_wealth': [5]
@@ -110,6 +114,7 @@ new_param_values2 = {
     'S': 3,
     'J': 1,
     'T': 3,
+    'eta': (np.ones((3, 1)) / (3 * 1)),
     'h_wealth': [1.2, 1.1, 2.3],
     'p_wealth': [2.2, 2.3, 1.8],
     'm_wealth': [3, 4, 3]

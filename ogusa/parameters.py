@@ -83,6 +83,7 @@ class Specifications(ParametersBase):
             self.S = int(40)
             self.lambdas = np.array([0.6, 0.4]).reshape(2, 1)
             self.J = self.lambdas.shape[0]
+            self.eta = np.ones((self.S, self.J)) / (self.S * self.J)
             self.maxiter = 35
             self.mindist_SS = 1e-6
             self.mindist_TPI = 1e-3
@@ -172,24 +173,36 @@ class Specifications(ParametersBase):
                 (np.tile(eta_to_set.reshape(self.S, 1), (1, self.J)) /
                  self.J).reshape(1, self.S, self.J),
                 (self.T + self.S, 1, 1))
-        # this could be where vary by S anbd J or T and S
+        # this could be where vary by S and J or T and S
         elif eta_to_set.ndim == 2:
+            # case if S by J input
             if eta_to_set.shape[0] == self.S:
                 eta_to_set = np.tile(
                     eta_to_set.reshape(1, self.S, self.J),
                     (self.T + self.S, 1, 1))
-            elif eta_to_set.shape[0] == self.J:
+                eta_to_set = eta_to_set = np.concatenate(
+                    (eta_to_set,
+                     np.tile(eta_to_set[-1, :, :].reshape(1, self.S, self.J),
+                             (self.S, 1, 1))), axis=0)
+            # case if T by S input
+            elif eta_to_set.shape[0] == self.T:
                 eta_to_set = (np.tile(
                     eta_to_set.reshape(self.T, self.S, 1),
                     (1, 1, self.J)) / self.J)
-                eta_to_set = np.stack(eta_to_set, eta_to_set[-1, :, :],
-                                      axis=0)
+                eta_to_set = eta_to_set = np.concatenate(
+                    (eta_to_set,
+                     np.tile(eta_to_set[-1, :, :].reshape(1, self.S, self.J),
+                             (self.S, 1, 1))), axis=0)
             else:
                 print('please give an eta that is either SxJ or TxS')
                 assert False
-        elif eta_to_set.ndim == 3:  # this is the case where vary by S, J, T
-            eta_to_set = np.stack(eta_to_set, eta_to_set[-1, :, :],
-                                  axis=0)
+        # this is the case where vary by S, J, T
+        elif eta_to_set.ndim == 3:
+            eta_to_set = eta_to_set = np.concatenate(
+                (eta_to_set,
+                 np.tile(eta_to_set[-1, :, :].reshape(1, self.S, self.J),
+                         (self.S, 1, 1))), axis=0)
+        setattr(self, 'eta',  eta_to_set)
 
         # open economy parameters
         firm_r_annual = self.world_int_rate

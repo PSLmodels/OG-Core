@@ -9,6 +9,7 @@ new_param_values = {
     'T': 160,
     'S': 40,
     'J': 2,
+    'eta': (np.ones((40, 2)) / (40 * 2)),
     'lambdas': [0.6, 0.4]
 }
 # update parameters instance with new values for test
@@ -39,6 +40,7 @@ new_param_values = {
     'T': 160,
     'S': 40,
     'J': 2,
+    'eta': (np.ones((40, 2)) / (40 * 2)),
     'lambdas': [0.6, 0.4],
 }
 # update parameters instance with new values for test
@@ -83,6 +85,7 @@ new_param_values = {
     'T': 160,
     'S': 40,
     'J': 2,
+    'eta': (np.ones((40, 2)) / (40 * 2)),
     'lambdas': [0.6, 0.4],
 }
 # update parameters instance with new values for test
@@ -120,6 +123,7 @@ new_param_values = {
     'T': 160,
     'S': 40,
     'J': 2,
+    'eta': (np.ones((40, 2)) / (40 * 2)),
     'lambdas': [0.6, 0.4],
 }
 # update parameters instance with new values for test
@@ -161,6 +165,7 @@ new_param_values = {
     'T': 160,
     'S': 40,
     'J': 2,
+    'eta': (np.ones((40, 2)) / (40 * 2)),
     'lambdas': [0.6, 0.4],
 }
 # update parameters instance with new values for test
@@ -192,6 +197,7 @@ new_param_values = {
     'T': 30,
     'S': 20,
     'J': 2,
+    'eta': (np.ones((20, 2)) / (20 * 2)),
     'lambdas': [0.6, 0.4],
     'tau_bq': [0.17],
     'tau_payroll': [0.5],
@@ -239,6 +245,7 @@ new_param_values3 = {
     'T': 30,
     'S': 20,
     'J': 2,
+    'eta': (np.ones((20, 2)) / (20 * 2)),
     'lambdas': [0.6, 0.4],
     'tau_bq': [0.17],
     'tau_payroll': [0.5],
