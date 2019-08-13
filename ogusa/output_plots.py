@@ -40,6 +40,7 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
 
     Returns:
         fig (Matplotlib plot object): plot of immigration rates
+
     '''
     assert (isinstance(start_year, int))
     assert (isinstance(num_years_to_plot, int))
@@ -255,6 +256,7 @@ def ss_profiles(base_ss, base_params, reform_ss=None,
 
     Returns:
         fig (Matplotlib plot object): plot of immigration rates
+
     '''
     if reform_ss is not None:
         assert (base_params.S == reform_params.S)
@@ -298,9 +300,13 @@ def plot_all(base_output_path, reform_output_path, save_path):
     Function to plot all default output plots.
 
     Args:
+        base_output_path (str): path to baseline results
+        reform_output_path (str): path to reform results
+        save_path (str): path to save plots to
 
     Returns:
         None: All output figures saved to disk.
+
     '''
     # Read in data
     # Read in TPI output and parameters

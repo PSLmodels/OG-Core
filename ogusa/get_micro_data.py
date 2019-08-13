@@ -1,18 +1,7 @@
 '''
 ------------------------------------------------------------------------
 This program extracts tax rate and income data from the microsimulation
-model (tax-calculator) and saves it in pickle files.
-
-This module defines the following functions:
-    get_data()
-
-This Python script calls the following functions:
-    get_micro_data.py
-    taxcalc
-
-This py-file creates the following other file(s):
-    ./TAX_ESTIMATE_PATH/TxFuncEst_baseline{}.pkl
-    ./TAX_ESTIMATE_PATH/TxFuncEst_policy{}.pkl
+model (Tax-Calculator).
 ------------------------------------------------------------------------
 '''
 from taxcalc import *
@@ -27,25 +16,29 @@ from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR, PUF_START_YEAR
 
 
 def get_calculator(baseline, calculator_start_year, reform=None,
-                   data=None, weights=None,
+                   data=None, gfactors=None, weights=None,
                    records_start_year=PUF_START_YEAR):
     '''
-    --------------------------------------------------------------------
-    This function creates the tax calculator object for the microsim
-    --------------------------------------------------------------------
-    INPUTS:
-    baseline                 = boolean, True if baseline tax policy
-    calculator_start_year    = integer, first year of budget window
-    reform                   = dictionary, reform parameters
-    data                     = DataFrame for Records object
-    weights                  = weights DataFrame for Records object
-    records_start_year       = the start year for the data and weights
-                               dfs (default is set to the PUF start year
-                               as defined in the Tax-Calculator project)
+    This function creates the tax calculator object with the policy
+    specified in reform and the data specified with the data kwarg.
 
-    RETURNS: Calculator object with a current_year equal to
-             calculator_start_year
-    --------------------------------------------------------------------
+    Args:
+        baseline (boolean): True if baseline tax policy
+        calculator_start_year (int): first year of budget window
+        reform (dictionary): IIT policy reform parameters, None if
+            baseline
+        data (DataFrame or str): DataFrame or path to datafile for
+            Records object
+        gfactors (Tax-Calculator GrowthFactors object): growth factors
+            to use to extrapolate data over budget window
+        weights (DataFrame): weights for Records object
+        records_start_year (int): the start year for the data and
+            weights dfs (default is set to the PUF start year as defined
+            in the Tax-Calculator project)
+
+    Returns:
+        calc1 (Tax-Calculator Calculator object): Calulaotr object with
+            current_year equal to calculator_start_year
 
     '''
     # create a calculator
@@ -59,7 +52,7 @@ def get_calculator(baseline, calculator_start_year, reform=None,
         # set total capital gains to zero
         records1.e01100 = np.zeros(records1.e01100.shape[0])
     elif data is not None:
-        records1 = Records(data=data, weights=weights,
+        records1 = Records(data=data, gfactors=gfactors, weights=weights,
                            start_year=records_start_year)
     else:
         records1 = Records()
@@ -96,30 +89,28 @@ def get_calculator(baseline, calculator_start_year, reform=None,
 def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
              data=None, client=None, num_workers=1):
     '''
-    --------------------------------------------------------------------
-    This function creates dataframes of micro data from the
-    tax calculator
-    --------------------------------------------------------------------
-    INPUTS:
-    baseline        = boolean, =True if baseline tax policy,
-                               =False if reform
-    start_year      = integer, first year of budget window
-    reform          = dictionary, reform parameters
+    This function creates dataframes of micro data with marginal tax
+    rates and information to compute effective tax rates from the
+    Tax-Calculator output.  The resulting dictionary of dataframes is
+    returned and saved to disk in a pickle file.
 
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
+    Args:
+        baseline (boolean): True if baseline tax policy
+        calculator_start_year (int): first year of budget window
+        reform (dictionary): IIT policy reform parameters, None if
+            baseline
+        data (DataFrame or str): DataFrame or path to datafile for
+            Records object
+        client (Dask Client object): client for Dask multiprocessing
+        num_workers (int): number of workers to use for Dask
+            multiprocessing
 
-    OBJECTS CREATED WITHIN FUNCTION:
-    micro_data_dict = dictionary, contains pandas dataframe for each
-                      year of budget window.  Dataframe contain mtrs,
-                      etrs, income variables, age from tax-calculator
-                      and PUF-CPS match
+    Returns:
+        micro_data_dict (dict): dict of Pandas Dataframe, one for each
+            year from start_year to the maximum year Tax-Calculator can
+            analyze
+        taxcalc_version (str): version of Tax-Calculator used
 
-    OUTPUT:
-        ./micro_data_policy.pkl
-        ./micro_data_baseline.pkl
-
-    RETURNS: micro_data_dict
-    --------------------------------------------------------------------
     '''
     calc1 = get_calculator(baseline=baseline,
                            calculator_start_year=start_year,
@@ -199,6 +190,19 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
 
 
 def taxcalc_advance(calc1, year, length):
+    '''
+    This function advances the year used in Tax-Calculator and save the
+    results to a numpy array.
+
+    Args:
+        calc1 (Tax-Calculator Calculator object): TC calculator
+        year (int): year to advance data to
+        length (int): length of TC Records object
+
+    Returns:
+        temp (Numpy array): an array of microdata with marginal tax
+            rates and other information computed in TC
+    '''
     calc1.advance_to_year(year)
     print('year: ', str(calc1.current_year))
     [mtr_fica, mtr_iit, mtr_combined] = calc1.mtr('e00200p')
@@ -224,7 +228,19 @@ def taxcalc_advance(calc1, year, length):
 
 
 def cap_inc_mtr(calc1):
-    # find mtr on capital income
+    '''
+    This function computes the marginal tax rate on capital income,
+    which is calculated as weighted average of the marginal tax rates
+    on different sources of capital income.
+
+    Args:
+        calc1 (Tax-Calculator Calculator object): TC calculator
+
+    Returns:
+        mtr_combined_capinc (Numpy array): array with marginal tax rates
+            for each observation in the TC Records object
+
+    '''
     capital_income_sources_taxed = (
         'e00300', 'e00400', 'e00600', 'e00650', 'e01400', 'e01700',
         'p22250', 'p23250', 'e26270')

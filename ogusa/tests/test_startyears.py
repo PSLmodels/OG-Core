@@ -3,14 +3,13 @@ import os
 from ogusa import SS, TPI
 from ogusa.execute import runner
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-PUF_PATH = os.path.join(CUR_PATH, '../puf.csv')
 
 
 @pytest.mark.full_run
 @pytest.mark.parametrize(
         'year',
-        [2013, 2017, 2026],
-        ids=['2013', '2017', '2026'])
+        [2014, 2017, 2026],
+        ids=['2014', '2017', '2026'])
 def test_diff_start_year(year):
     # Monkey patch enforcement flag since small data won't pass checks
     SS.ENFORCE_SOLUTION_CHECKS = False
@@ -21,4 +20,4 @@ def test_diff_start_year(year):
                    'start_year': year}
     runner(output_base=output_base, baseline_dir=input_dir, test=True,
            time_path=True, baseline=True, user_params=user_params,
-           run_micro=True, data=PUF_PATH)
+           run_micro=True, data='cps')
