@@ -373,14 +373,24 @@ def safe_read_pickle(file_path):
     return obj
 
 
-<<<<<<< HEAD
-def rate_conversion(annual_rate, start_age, end_age, s):
+def rate_conversion(annual_rate, start_age, end_age, S):
     '''
-    This function converts annual rates to model period rates
+    This function converts annual rates to model period ratesself.
+
+    Args:
+        annual_rate (array_like): annualized rates
+        start_age (int): age at which agents become economically active
+        end_age (int): maximum age of agents
+        S (int): number of model periods in agents life
+
+    Returns:
+        rate (array_like): model period rates
+
     '''
-    rate = (1 +  annual_rate) ** ((end_age - start_age)/s) -1
+    rate = (1 + annual_rate) ** ((end_age - start_age) / S) - 1
     return rate
-=======
+
+
 def save_return_table(table_df, output_type, path, precision=0):
     '''
     Function to save or return a table of data.
