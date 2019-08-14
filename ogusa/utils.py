@@ -449,4 +449,3 @@ def save_return_table(table_df, output_type, path, precision=0):
         else:
             print('Please enter a valid output format')
             assert(False)
->>>>>>> upstream/master
