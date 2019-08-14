@@ -265,7 +265,6 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
     # compute bq
     bq = household.get_bq(BQ, None, p, 'TPI')
     # compute tr
-    print('Length BQ and TR = ', BQ.shape, TR.shape)
     tr = household.get_tr(TR, None, p, 'TPI')
 
     # initialize arrays
