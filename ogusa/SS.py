@@ -237,12 +237,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
               fsolve_flag=False):
     '''
     Solves for the steady state distribution of capital, labor, as well
-<<<<<<< HEAD
     as w, r, TR and the scaling factor, using functional iteration.
-=======
-    as w, r, T_H and the scaling factor, using a bisection method
-    similar to TPI.
->>>>>>> upstream/master
 
     Args:
         bmat (Numpy array): initial guess at savings, size = SxJ
@@ -471,7 +466,6 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
 
 def SS_fsolve(guesses, *args):
     '''
-        (bssmat, nssmat, TR_ss, factor_ss, p, client)
     Solves for the steady state distribution of capital, labor, as well
     as w, r, TR and the scaling factor, using a root finder.
 
