@@ -95,27 +95,27 @@ omega_extended = np.append(p.omega[:p.T, 1:], np.zeros((p.T, 1)),
                            axis=1)
 imm_extended = np.append(p.imm_rates[:p.T, 1:], np.zeros((p.T, 1)),
                          axis=1)
-K_test = ((b * np.squeeze(p.lambdas) *
+B_test = ((b * np.squeeze(p.lambdas) *
            np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
                    (1, 1, p.J))) +
           (b * np.squeeze(p.lambdas) *
            np.tile(np.reshape(omega_extended *
                               imm_extended, (p.T, p.S, 1)),
                    (1, 1, p.J))))
-expected1 = K_test[-1, :, :].sum() / (1.0 + p.g_n_ss)
-expected2 = K_test.sum(1).sum(1) / (1.0 + np.hstack((p.g_n[1:p.T], p.g_n_ss)))
+expected1 = B_test[-1, :, :].sum() / (1.0 + p.g_n_ss)
+expected2 = B_test.sum(1).sum(1) / (1.0 + np.hstack((p.g_n[1:p.T], p.g_n_ss)))
 test_data = [(b[-1, :, :], p, 'SS', expected1),
              (b, p, 'TPI', expected2)]
 
 
 @pytest.mark.parametrize('b,p,method,expected', test_data,
                          ids=['SS', 'TPI'])
-def test_get_K(b, p, method, expected):
+def test_get_B(b, p, method, expected):
     """
-    Test aggregate capital function.
+    Test aggregate savings function.
     """
-    K = aggr.get_K(b, p, method, False)
-    assert np.allclose(K, expected)
+    B = aggr.get_B(b, p, method, False)
+    assert np.allclose(B, expected)
 
 
 p = Specifications()
@@ -307,13 +307,13 @@ test_data = [(0.04, 0.02, 2.0, 4.0, 0.026666667),
              (0.04, 0.02, 2.0, 0.0, 0.04)]
 
 
-@pytest.mark.parametrize('r,r_gov,K,D,expected', test_data,
+@pytest.mark.parametrize('r,r_gov,B,D,expected', test_data,
                          ids=['scalar', 'vector', 'no debt'])
-def test_get_r_hh(r, r_gov, K, D, expected):
+def test_get_r_hh(r, r_gov, B, D, expected):
     """
     Test function to compute interet rate on household portfolio.
     """
-    r_hh_test = aggr.get_r_hh(r, r_gov, K, D)
+    r_hh_test = aggr.get_r_hh(r, r_gov, B, D)
 
     assert(np.allclose(r_hh_test, expected))
 

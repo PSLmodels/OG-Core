@@ -172,7 +172,7 @@ def inner_loop(outer_loop_vars, p, client):
         nssmat[:, j] = solutions[p.S:]
 
     L = aggr.get_L(nssmat, p, 'SS')
-    B = aggr.get_K(bssmat, p, 'SS', False)
+    B = aggr.get_B(bssmat, p, 'SS', False)
     K_demand_open = firm.get_K(L, p.firm_r[-1], p, 'SS')
     D_f = p.zeta_D[-1] * D
     D_d = D - D_f
@@ -237,7 +237,12 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
               fsolve_flag=False):
     '''
     Solves for the steady state distribution of capital, labor, as well
+<<<<<<< HEAD
     as w, r, TR and the scaling factor, using functional iteration.
+=======
+    as w, r, T_H and the scaling factor, using a bisection method
+    similar to TPI.
+>>>>>>> upstream/master
 
     Args:
         bmat (Numpy array): initial guess at savings, size = SxJ
@@ -334,7 +339,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     else:
         Dss = p.debt_ratio_ss * Y
     Lss = aggr.get_L(nssmat, p, 'SS')
-    Bss = aggr.get_K(bssmat_splus1, p, 'SS', False)
+    Bss = aggr.get_B(bssmat_splus1, p, 'SS', False)
     K_demand_open_ss = firm.get_K(Lss, p.firm_r[-1], p, 'SS')
     D_f_ss = p.zeta_D[-1] * Dss
     D_d_ss = Dss - D_f_ss
