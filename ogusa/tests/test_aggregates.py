@@ -44,15 +44,15 @@ new_param_values = {
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
 b_splus1 = 10 * np.random.rand(p.T * p.S * p.J).reshape(p.T, p.S, p.J)
-B_p1 = 0.9 + np.random.rand(p.T)
-B = 0.9 + np.random.rand(p.T)
+K_p1 = 0.9 + np.random.rand(p.T)
+K = 0.9 + np.random.rand(p.T)
 omega_extended = np.append(p.omega_SS[1:], [0.0])
 imm_extended = np.append(p.imm_rates[-1, 1:], [0.0])
 part2 = (((b_splus1[-1, :, :] *
            np.transpose((omega_extended * imm_extended) *
            p.lambdas)).sum()) / (1 + p.g_n_ss))
-aggI_SS = ((1 + p.g_n_ss) * np.exp(p.g_y) * (B_p1[-1] - part2) -
-           (1.0 - p.delta) * B[-1])
+aggI_SS = ((1 + p.g_n_ss) * np.exp(p.g_y) * (K_p1[-1] - part2) -
+           (1.0 - p.delta) * K[-1])
 omega_shift = np.append(p.omega[:p.T, 1:], np.zeros((p.T, 1)),
                         axis=1)
 imm_shift = np.append(p.imm_rates[:p.T, 1:], np.zeros((p.T, 1)),
@@ -63,18 +63,18 @@ part2 = ((((b_splus1 * np.squeeze(p.lambdas)) *
                   (1, 1, p.J))).sum(1).sum(1)) /
          (1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))))
 aggI_TPI = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss))))
-            * np.exp(p.g_y) * (B_p1 - part2) - (1.0 - p.delta) * B)
-test_data = [(b_splus1[-1, :, :], B_p1[-1], B[-1], p, 'SS', aggI_SS),
-             (b_splus1, B_p1, B, p, 'TPI', aggI_TPI)]
+            * np.exp(p.g_y) * (K_p1 - part2) - (1.0 - p.delta) * K)
+test_data = [(b_splus1[-1, :, :], K_p1[-1], K[-1], p, 'SS', aggI_SS),
+             (b_splus1, K_p1, K, p, 'TPI', aggI_TPI)]
 
 
-@pytest.mark.parametrize('b_splus1,B_p1,B,p,method,expected', test_data,
+@pytest.mark.parametrize('b_splus1,K_p1,K,p,method,expected', test_data,
                          ids=['SS', 'TPI'])
-def test_get_I(b_splus1, B_p1, B, p, method, expected):
+def test_get_I(b_splus1, K_p1, K, p, method, expected):
     """
         Text aggregate investment function.
     """
-    aggI = aggr.get_I(b_splus1, B_p1, B, p, method)
+    aggI = aggr.get_I(b_splus1, K_p1, K, p, method)
     assert (np.allclose(aggI, expected))
 
 
@@ -109,7 +109,7 @@ test_data = [(b[-1, :, :], p, 'SS', expected1),
                          ids=['SS', 'TPI'])
 def test_get_B(b, p, method, expected):
     """
-    Test aggregate capital function.
+    Test aggregate savings function.
     """
     B = aggr.get_B(b, p, method, False)
     assert np.allclose(B, expected)
@@ -218,7 +218,7 @@ BQ = (0.032 + (0.055 - 0.032) *
 bq = BQ / p.lambdas.reshape(1, 1, p.J)
 Y = 0.561 + (0.602 - 0.561) * random_state.rand(p.T).reshape(p.T)
 L = 0.416 + (0.423 - 0.416) * random_state.rand(p.T).reshape(p.T)
-B = 0.957 + (1.163 - 0.957) * random_state.rand(p.T).reshape(p.T)
+K = 0.957 + (1.163 - 0.957) * random_state.rand(p.T).reshape(p.T)
 factor = 140000.0
 # update parameters instance with new values for test
 p.e = (0.263 + (2.024 - 0.263) *
@@ -271,24 +271,24 @@ expected3 = np.array(
              0.60292137, 0.56621788, 0.51913478, 0.48952262, 0.52142782,
              0.5735005, 0.51166718, 0.57939994, 0.52585236, 0.53767652])
 test_data = [(r[0], w[0], b[0, :, :], n[0, :, :], bq[0, :, :],
-              c[0, :, :], Y[0], L[0], B[0], factor, theta,
+              c[0, :, :], Y[0], L[0], K[0], factor, theta,
               etr_params[-1, :, :, :], p, 'SS', expected1),
-             (r, w, b, n, bq, c, Y, L, B, factor, theta, etr_params, p,
+             (r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p,
               'TPI', expected2),
-             (r, w, b, n, bq, c, Y, L, B, factor, theta, etr_params, p3,
+             (r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p3,
               'TPI', expected3)]
 
 
-@pytest.mark.parametrize('r,w,b,n,bq,c,Y,L,B,factor,theta,etr_params,p,' +
+@pytest.mark.parametrize('r,w,b,n,bq,c,Y,L,K,factor,theta,etr_params,p,' +
                          'method,expected', test_data,
                          ids=['SS', 'TPI', 'TPI, replace rate adjust'])
-def test_revenue(r, w, b, n, bq, c, Y, L, B, factor, theta, etr_params, p,
+def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p,
                  method, expected):
     """
     Test aggregate revenue function.
     """
     revenue, _, _, _, _, _, _ = aggr.revenue(
-        r, w, b, n, bq, c, Y, L, B, factor, theta, etr_params, p, method)
+        r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p, method)
 
     assert(np.allclose(revenue, expected))
 
