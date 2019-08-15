@@ -7,7 +7,7 @@ from ogusa.parameters import Specifications
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 input_tuple = utils.safe_read_pickle(
-    os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_inputs.pkl'))
+    os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_inputs.pkl'))
 guesses_in, params = input_tuple
 params = params + (None, 1)
 (bssmat, nssmat, chi_params, ss_params, income_tax_params,
@@ -55,7 +55,7 @@ expected1 = np.array([0.28753454, 0.01889046, 0.02472582, 0.02669199,
                       -0.07014671494961716, 0.00626609])
 
 input_tuple = utils.safe_read_pickle(
-    os.path.join(CUR_PATH, 'test_io_data/SS_fsolve_reform_inputs.pkl'))
+    os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_reform_inputs.pkl'))
 guesses_in2, params = input_tuple
 params = params + (None, 1)
 (bssmat, nssmat, chi_params, ss_params, income_tax_params,
@@ -106,7 +106,7 @@ expected2 = np.array([0.01325131, 0.01430768, 0.01938654, 0.02069931,
 input_tuple = utils.safe_read_pickle(
     os.path.join(
         CUR_PATH,
-        'test_io_data/SS_fsolve_reform_baselinespend_inputs.pkl'))
+        'test_io_data', 'SS_fsolve_reform_baselinespend_inputs.pkl'))
 guesses_in3, params = input_tuple
 params = params + (None, 1)
 (bssmat, nssmat, T_Hss, chi_params, ss_params, income_tax_params,
@@ -174,7 +174,7 @@ def test_SS_solver():
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/SS_solver_inputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data', 'SS_solver_inputs.pkl'))
     (b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss, params,
      baseline, fsolve_flag, baseline_spending) = input_tuple
     (bssmat, nssmat, chi_params, ss_params, income_tax_params,
@@ -218,7 +218,7 @@ def test_SS_solver():
     p.num_workers = 1
 
     expected_dict = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/SS_solver_outputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data', 'SS_solver_outputs.pkl'))
 
     BQss = expected_dict['BQss']
     test_dict = SS.SS_solver(b_guess_init, n_guess_init, rss, BQss, T_Hss,
@@ -246,7 +246,7 @@ def test_inner_loop():
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/inner_loop_inputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data', 'inner_loop_inputs.pkl'))
     (outer_loop_vars_in, params, baseline, baseline_spending) = input_tuple
     ss_params, income_tax_params, chi_params, small_open_params = params
     (bssmat, nssmat, r, Y, T_H, factor) = outer_loop_vars_in
@@ -295,7 +295,7 @@ def test_inner_loop():
                   average_income_model)
 
     expected_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/inner_loop_outputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data', 'inner_loop_outputs.pkl'))
 
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v, atol=1e-05))
@@ -305,7 +305,7 @@ def test_euler_equation_solver():
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/euler_eqn_solver_inputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data', 'euler_eqn_solver_inputs.pkl'))
     (guesses, params) = input_tuple
     p = Specifications()
     (r, w, T_H, factor, j, p.J, p.S, p.beta, p.sigma, p.ltilde, p.g_y,

@@ -12,7 +12,7 @@ def test_firstdoughnutring():
     # Test TPI.firstdoughnutring function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/firstdoughnutring_inputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data', 'firstdoughnutring_inputs.pkl'))
     guesses, r, w, b, BQ, T_H, j, params = input_tuple
     income_tax_params, tpi_params, initial_b = params
     tpi_params = tpi_params + [True]
@@ -45,7 +45,7 @@ def test_firstdoughnutring():
                                       factor, j, initial_b, p)
 
     expected_list = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/firstdoughnutring_outputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data', 'firstdoughnutring_outputs.pkl'))
 
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
@@ -54,7 +54,7 @@ def test_twist_doughnut():
     # Test TPI.twist_doughnut function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/twist_doughnut_inputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data', 'twist_doughnut_inputs.pkl'))
     guesses, r, w, BQ, T_H, j, s, t, params = input_tuple
     income_tax_params, tpi_params, initial_b = params
     tpi_params = tpi_params + [True]
@@ -88,7 +88,7 @@ def test_twist_doughnut():
                                    etr_params, mtrx_params, mtry_params,
                                    initial_b, p)
     expected_list = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/twist_doughnut_outputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data', 'twist_doughnut_outputs.pkl'))
 
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
@@ -98,7 +98,7 @@ def test_inner_loop():
     # Test TPI.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/tpi_inner_loop_inputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data', 'tpi_inner_loop_inputs.pkl'))
     guesses, outer_loop_vars, params, j = input_tuple
     income_tax_params, tpi_params, initial_values, ind = params
     initial_values = initial_values
@@ -142,7 +142,7 @@ def test_inner_loop():
                                 initial_values_in, j, ind, p)
 
     expected_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/tpi_inner_loop_outputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data', 'tpi_inner_loop_outputs.pkl'))
 
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
@@ -153,7 +153,7 @@ def test_run_TPI():
     # Test TPI.run_TPI function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/run_TPI_inputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data', 'run_TPI_inputs.pkl'))
     (income_tax_params, tpi_params, iterative_params, small_open_params,
      initial_values, SS_values, fiscal_params, biz_tax_params,
      output_dir, baseline_spending) = input_tuple
@@ -228,7 +228,7 @@ def test_run_TPI():
     test_dict = TPI.run_TPI(p, None)
 
     expected_dict = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/run_TPI_outputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data', 'run_TPI_outputs.pkl'))
 
     # delete values key-value pairs that are not in both dicts
     del expected_dict['I_total']

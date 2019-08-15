@@ -3,7 +3,6 @@ import os
 import six
 import re
 import numpy as np
-import pickle
 import scipy.interpolate as si
 import pkg_resources
 
@@ -13,7 +12,8 @@ from ogusa import elliptical_u_est
 from ogusa import demographics
 from ogusa import income
 from ogusa import txfunc
-from ogusa.utils import BASELINE_DIR, TC_LAST_YEAR
+from ogusa.utils import (BASELINE_DIR, TC_LAST_YEAR, rate_conversion,
+                         safe_read_pickle)
 # from ogusa import elliptical_u_est
 
 
@@ -113,13 +113,16 @@ class Specifications(ParametersBase):
         self.E = int(self.starting_age * (self.S / (self.ending_age -
                                                     self.starting_age)))
         # Find rates in model periods from annualized rates
-        self.beta = (self.beta_annual ** ((self.ending_age -
-                                          self.starting_age) / self.S))
-        self.delta = (1 - ((1 - self.delta_annual) **
-                           ((self.ending_age - self.starting_age) / self.S)))
-        self.g_y = ((1 + self.g_y_annual) ** ((self.ending_age -
-                                               self.starting_age) /
-                                              self.S) - 1)
+        self.beta = (
+            1 / (rate_conversion(1 / self.beta_annual - 1,
+                                 self.starting_age, self.ending_age,
+                                 self.S) + 1))
+        self.delta = (
+            -1 * rate_conversion(-1 * self.delta_annual,
+                                 self.starting_age, self.ending_age,
+                                 self.S))
+        self.g_y = rate_conversion(self.g_y_annual, self.starting_age,
+                                   self.ending_age, self.S)
 
         # Extend parameters that may vary over the time path
         tp_param_list = ['alpha_G', 'alpha_T', 'Z', 'world_int_rate',
@@ -164,21 +167,19 @@ class Specifications(ParametersBase):
         # open economy parameters
         firm_r_annual = self.world_int_rate
         hh_r_annual = firm_r_annual
-        self.firm_r = ((1 + firm_r_annual) **
-                       ((self.ending_age - self.starting_age) /
-                        self.S) - 1)
-        self.hh_r = ((1 + hh_r_annual) **
-                     ((self.ending_age - self.starting_age) /
-                      self.S) - 1)
-
+        self.firm_r = rate_conversion(
+            firm_r_annual, self.starting_age, self.ending_age, self.S)
+        self.hh_r = rate_conversion(
+            hh_r_annual, self.starting_age, self.ending_age, self.S)
         # set period of retirement
         self.retire = (np.round(((self.retirement_age -
                                   self.starting_age) * self.S) /
                                 80.0) - 1).astype(int)
 
-        self.delta_tau = (1 - ((1 - self.delta_tau_annual) **
-                               ((self.ending_age - self.starting_age) /
-                                self.S)))
+        self.delta_tau = (
+            -1 * rate_conversion(-1 * self.delta_tau_annual,
+                                 self.starting_age, self.ending_age,
+                                 self.S))
 
         # get population objects
         (self.omega, self.g_n_ss, self.omega_SS, self.surv_rate,
@@ -398,20 +399,12 @@ class Specifications(ParametersBase):
         '''
         if os.path.exists(pickle_path):
             print('pickle path exists')
-            with open(pickle_path, 'rb') as pfile:
-                try:
-                    dict_params = pickle.load(pfile, encoding='latin1')
-                except TypeError:
-                    dict_params = pickle.load(pfile)
+            dict_params = safe_read_pickle(pickle_path)
         else:
             path_in_egg = pickle_file
-            pkl_path = os.path.join(os.path.dirname(__file__), '..',
+            pkl_path = os.path.join(os.path.dirname(__file__), 'tests',
                                     path_in_egg)
-            with open(pkl_path, 'rb') as pfile:
-                try:
-                    dict_params = pickle.load(pfile, encoding='latin1')
-                except TypeError:
-                    dict_params = pickle.load(pfile)
+            dict_params = dict_params = safe_read_pickle(pkl_path)
 
         return dict_params
 
