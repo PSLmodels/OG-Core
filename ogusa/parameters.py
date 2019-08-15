@@ -83,6 +83,7 @@ class Specifications(ParametersBase):
             self.S = int(40)
             self.lambdas = np.array([0.6, 0.4]).reshape(2, 1)
             self.J = self.lambdas.shape[0]
+            self.eta = np.ones((self.S, self.J)) / (self.S * self.J)
             self.maxiter = 35
             self.mindist_SS = 1e-6
             self.mindist_TPI = 1e-3
@@ -162,7 +163,49 @@ class Specifications(ParametersBase):
             setattr(self, 'tau_c',  tau_c_to_set)
         else:
             print('please give a tau_c that is a single element or 3-D array')
-            quit()
+            assert False
+
+        # Try to deal with size of eta.  It may vary by S, J, T, but
+        # want to allow user to enter one that varies by only S, S and J,
+        # S and T, or T and S and J.
+        eta_to_set = getattr(self, 'eta')
+        # this is the case that vary only by S
+        if eta_to_set.ndim == 1:
+            assert eta_to_set.shape[0] == self.S
+            eta_to_set = np.tile(
+                (np.tile(eta_to_set.reshape(self.S, 1), (1, self.J)) /
+                 self.J).reshape(1, self.S, self.J),
+                (self.T + self.S, 1, 1))
+        # this could be where vary by S and J or T and S
+        elif eta_to_set.ndim == 2:
+            # case if S by J input
+            if eta_to_set.shape[0] == self.S:
+                eta_to_set = np.tile(
+                    eta_to_set.reshape(1, self.S, self.J),
+                    (self.T + self.S, 1, 1))
+                eta_to_set = eta_to_set = np.concatenate(
+                    (eta_to_set,
+                     np.tile(eta_to_set[-1, :, :].reshape(1, self.S, self.J),
+                             (self.S, 1, 1))), axis=0)
+            # case if T by S input
+            elif eta_to_set.shape[0] == self.T:
+                eta_to_set = (np.tile(
+                    eta_to_set.reshape(self.T, self.S, 1),
+                    (1, 1, self.J)) / self.J)
+                eta_to_set = eta_to_set = np.concatenate(
+                    (eta_to_set,
+                     np.tile(eta_to_set[-1, :, :].reshape(1, self.S, self.J),
+                             (self.S, 1, 1))), axis=0)
+            else:
+                print('please give an eta that is either SxJ or TxS')
+                assert False
+        # this is the case where vary by S, J, T
+        elif eta_to_set.ndim == 3:
+            eta_to_set = eta_to_set = np.concatenate(
+                (eta_to_set,
+                 np.tile(eta_to_set[-1, :, :].reshape(1, self.S, self.J),
+                         (self.S, 1, 1))), axis=0)
+        setattr(self, 'eta',  eta_to_set)
 
         # open economy parameters
         firm_r_annual = self.world_int_rate
@@ -564,6 +607,7 @@ class Specifications(ParametersBase):
                     pval_is_int = type(pval) == int
                     pval_is_float = type(pval) == float
                     pval_is_string = type(pval) == str
+                    pval_is_ndarray = type(pval) == np.ndarray
                     if bool_param_type:
                         if not pval_is_bool:
                             msg = '{} value {} is not boolean'
@@ -588,8 +632,9 @@ class Specifications(ParametersBase):
                                 msg.format(param_name, pval) +
                                 '\n'
                             )
-                    else:  # param is float type
-                        if not (pval_is_int or pval_is_float):
+                    else:  # param is float or array type
+                        if not (pval_is_int or
+                                pval_is_float or pval_is_ndarray):
                             msg = '{} value {} is not a number'
                             self.parameter_errors += (
                                 'ERROR: ' +
@@ -624,15 +669,16 @@ class Specifications(ParametersBase):
                         msg = '{} value {} not in possible values {}'
                         if out_of_range:
                             self.parameter_errors += (
-                                'ERROR: ' + msg.format(param_name,
-                                                       param_value,
-                                                       validation_value) + '\n'
+                                'ERROR: ' + msg.format(
+                                    param_name, param_value,
+                                    validation_value) + '\n'
                                 )
                 else:
                     # print(validation_op, param_value, validation_value)
                     if isinstance(validation_value, six.string_types):
                         validation_value = self.simple_eval(validation_value)
-                    validation_value = np.full(param_value.shape, validation_value)
+                    validation_value = np.full(param_value.shape,
+                                               validation_value)
                     assert param_value.shape == validation_value.shape
                     for idx in np.ndindex(param_value.shape):
                         out_of_range = False

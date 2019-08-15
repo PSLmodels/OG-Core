@@ -30,7 +30,7 @@ def create_diff(baseline_dir, policy_dir, dump_output=False):
         pct_changes (Numpy array): [7,12] array, numpy array with pct
             changes in macro variables from baseline to reform for each
             year. Final column = steady state. Macro vars: Y, C, K, L,
-            w, r, T_H
+            w, r, TR
 
     '''
     out = macro_output.dump_diff_output(baseline_dir, policy_dir)

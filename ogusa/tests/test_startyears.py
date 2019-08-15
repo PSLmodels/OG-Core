@@ -1,5 +1,6 @@
 import pytest
 import os
+import numpy as np
 from ogusa import SS, TPI
 from ogusa.execute import runner
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))

@@ -3,7 +3,6 @@ import pytest
 import tempfile
 import pickle
 import numpy as np
-import pandas as pd
 from ogusa.utils import CPS_START_YEAR
 from ogusa.utils import comp_array, comp_scalar, dict_compare
 from ogusa.get_micro_data import get_calculator
@@ -65,6 +64,7 @@ def test_import_ok():
     import ogusa
 
 
+@pytest.mark.full_run
 @pytest.mark.parametrize('time_path', [False, True], ids=['SS', 'TPI'])
 def test_run_small(time_path):
     from ogusa.execute import runner
@@ -94,10 +94,6 @@ def test_constant_demographics_TPI():
     '''
     output_base = "./OUTPUT"
     baseline_dir = "./OUTPUT"
-    user_params = {'constant_demographics': True,
-                   'budget_balance': True,
-                   'zero_taxes': True,
-                   'maxiter': 2}
     # Create output directory structure
     ss_dir = os.path.join(output_base, "SS")
     tpi_dir = os.path.join(output_base, "TPI")
@@ -112,6 +108,12 @@ def test_constant_demographics_TPI():
                           baseline_dir=baseline_dir, test=False,
                           time_path=True, baseline=True, reform={},
                           guid='')
+    user_params = {'constant_demographics': True,
+                   'budget_balance': True,
+                   'zero_taxes': True,
+                   'maxiter': 2,
+                   'eta': (spec.omega_SS.reshape(spec.S, 1) *
+                           spec.lambdas.reshape(1, spec.J))}
     spec.update_specifications(user_params)
     spec.get_tax_function_parameters(None, False)
     # Run SS

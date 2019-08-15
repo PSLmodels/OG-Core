@@ -19,6 +19,8 @@ p1 = Specifications()
  p1.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p1.e,
  retire, p1.mean_income_data, h_wealth, p_wealth, m_wealth,
  p1.b_ellipse, p1.upsilon) = ss_params
+p1.eta = (p1.omega_SS.reshape(p1.S, 1) *
+          p1.lambdas.reshape(1, p1.J)).reshape(1, p1.S, p1.J)
 p1.Z = np.ones(p1.T + p1.S) * Z
 p1.tau_bq = np.ones(p1.T + p1.S) * 0.0
 p1.tau_payroll = np.ones(p1.T + p1.S) * tau_payroll
@@ -68,6 +70,8 @@ p2 = Specifications()
  p2.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p2.e,
  retire, p2.mean_income_data, h_wealth, p_wealth, m_wealth,
  p2.b_ellipse, p2.upsilon) = ss_params
+p2.eta = (p2.omega_SS.reshape(p2.S, 1) *
+          p2.lambdas.reshape(1, p2.J)).reshape(1, p2.S, p2.J)
 p2.Z = np.ones(p2.T + p2.S) * Z
 p2.tau_bq = np.ones(p2.T + p2.S) * 0.0
 p2.tau_payroll = np.ones(p2.T + p2.S) * tau_payroll
@@ -109,7 +113,7 @@ input_tuple = utils.safe_read_pickle(
         'test_io_data', 'SS_fsolve_reform_baselinespend_inputs.pkl'))
 guesses_in3, params = input_tuple
 params = params + (None, 1)
-(bssmat, nssmat, T_Hss, chi_params, ss_params, income_tax_params,
+(bssmat, nssmat, TR_ss, chi_params, ss_params, income_tax_params,
  iterative_params, factor_ss, small_open_params, client,
  num_workers) = params
 p3 = Specifications()
@@ -119,6 +123,8 @@ p3 = Specifications()
  p3.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p3.e,
  retire, p3.mean_income_data, h_wealth, p_wealth, m_wealth,
  p3.b_ellipse, p3.upsilon) = ss_params
+p3.eta = (p3.omega_SS.reshape(p3.S, 1) *
+          p3.lambdas.reshape(1, p3.J)).reshape(1, p3.S, p3.J)
 p3.Z = np.ones(p3.T + p3.S) * Z
 p3.tau_bq = np.ones(p3.T + p3.S) * 0.0
 p3.tau_payroll = np.ones(p3.T + p3.S) * tau_payroll
@@ -150,7 +156,7 @@ p3.hh_r = np.ones(p3.T + p3.S) * hh_r
 p3.num_workers = 1
 BQ3 = np.ones((p3.J)) * 0.00019646295986015257
 guesses3 = [guesses_in3[0]] + list(BQ3) + [guesses_in3[1]]
-args3 = (bssmat, nssmat, T_Hss, factor_ss, p3, client)
+args3 = (bssmat, nssmat, TR_ss, factor_ss, p3, client)
 expected3 = np.array([0.01325131, 0.01430768, 0.01938654, 0.02069931,
                       0.01232291, 0.0145351, 0.0171059, 0.00309562,
                       0.01866492])
@@ -175,7 +181,7 @@ def test_SS_solver():
     # ensure that output returned matches what it has been before.
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', 'SS_solver_inputs.pkl'))
-    (b_guess_init, n_guess_init, rss, T_Hss, factor_ss, Yss, params,
+    (b_guess_init, n_guess_init, rss, TR_ss, factor_ss, Yss, params,
      baseline, fsolve_flag, baseline_spending) = input_tuple
     (bssmat, nssmat, chi_params, ss_params, income_tax_params,
      iterative_params, small_open_params) = params
@@ -187,6 +193,8 @@ def test_SS_solver():
      p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
      retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
      p.b_ellipse, p.upsilon) = ss_params
+    p.eta = (p.omega_SS.reshape(p.S, 1) *
+             p.lambdas.reshape(1, p.J)).reshape(1, p.S, p.J)
     p.Z = np.ones(p.T + p.S) * Z
     p.tau_bq = np.ones(p.T + p.S) * 0.0
     p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
@@ -221,7 +229,7 @@ def test_SS_solver():
         os.path.join(CUR_PATH, 'test_io_data', 'SS_solver_outputs.pkl'))
 
     BQss = expected_dict['BQss']
-    test_dict = SS.SS_solver(b_guess_init, n_guess_init, rss, BQss, T_Hss,
+    test_dict = SS.SS_solver(b_guess_init, n_guess_init, rss, BQss, TR_ss,
                              factor_ss, Yss, p, None, fsolve_flag)
 
     # delete values key-value pairs that are not in both dicts
@@ -232,10 +240,11 @@ def test_SS_solver():
                                        test_dict['business_revenue'])
     del test_dict['T_Pss'], test_dict['T_BQss'], test_dict['T_Wss']
     del test_dict['K_d_ss'], test_dict['K_f_ss'], test_dict['D_d_ss']
-    del test_dict['D_f_ss'], test_dict['I_d_ss']
+    del test_dict['D_f_ss'], test_dict['I_d_ss'], test_dict['trssmat']
     del test_dict['debt_service_f'], test_dict['new_borrowing_f']
     del test_dict['bqssmat'], test_dict['T_Css'], test_dict['Iss_total']
     test_dict['revenue_ss'] = test_dict.pop('total_revenue_ss')
+    test_dict['T_Hss'] = test_dict.pop('TR_ss')
 
     for k, v in expected_dict.items():
         print('Testing ', k)
@@ -249,7 +258,7 @@ def test_inner_loop():
         os.path.join(CUR_PATH, 'test_io_data', 'inner_loop_inputs.pkl'))
     (outer_loop_vars_in, params, baseline, baseline_spending) = input_tuple
     ss_params, income_tax_params, chi_params, small_open_params = params
-    (bssmat, nssmat, r, Y, T_H, factor) = outer_loop_vars_in
+    (bssmat, nssmat, r, Y, TR, factor) = outer_loop_vars_in
     p = Specifications()
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
      Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, tau_payroll,
@@ -257,6 +266,8 @@ def test_inner_loop():
      p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
      retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
      p.b_ellipse, p.upsilon) = ss_params
+    p.eta = (p.omega_SS.reshape(p.S, 1) *
+             p.lambdas.reshape(1, p.J)).reshape(1, p.S, p.J)
     p.Z = np.ones(p.T + p.S) * Z
     p.tau_bq = np.ones(p.T + p.S) * 0.0
     p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
@@ -286,12 +297,12 @@ def test_inner_loop():
     p.hh_r = np.ones(p.T + p.S) * hh_r
     p.num_workers = 1
     BQ = np.ones(p.J) * 0.00019646295986015257
-    outer_loop_vars = (bssmat, nssmat, r, BQ, Y, T_H, factor)
+    outer_loop_vars = (bssmat, nssmat, r, BQ, Y, TR, factor)
     (euler_errors, new_bmat, new_nmat, new_r, new_r_gov, new_r_hh,
-     new_w, new_T_H, new_Y, new_factor, new_BQ,
+     new_w, new_TR, new_Y, new_factor, new_BQ,
      average_income_model) = SS.inner_loop(outer_loop_vars, p, None)
     test_tuple = (euler_errors, new_bmat, new_nmat, new_r, new_w,
-                  new_T_H, new_Y, new_factor, new_BQ,
+                  new_TR, new_Y, new_factor, new_BQ,
                   average_income_model)
 
     expected_tuple = utils.safe_read_pickle(
@@ -308,11 +319,13 @@ def test_euler_equation_solver():
         os.path.join(CUR_PATH, 'test_io_data', 'euler_eqn_solver_inputs.pkl'))
     (guesses, params) = input_tuple
     p = Specifications()
-    (r, w, T_H, factor, j, p.J, p.S, p.beta, p.sigma, p.ltilde, p.g_y,
+    (r, w, TR, factor, j, p.J, p.S, p.beta, p.sigma, p.ltilde, p.g_y,
      p.g_n_ss, tau_payroll, retire, p.mean_income_data, h_wealth,
      p_wealth, m_wealth, p.b_ellipse, p.upsilon, j, p.chi_b,
      p.chi_n, tau_bq, p.rho, lambdas, p.omega_SS, p.e,
      p.analytical_mtrs, etr_params, mtrx_params, mtry_params) = params
+    p.eta = (p.omega_SS.reshape(p.S, 1) *
+             p.lambdas.reshape(1, p.J)).reshape(1, p.S, p.J)
     p.tau_bq = np.ones(p.T + p.S) * 0.0
     p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
     p.h_wealth = np.ones(p.T + p.S) * h_wealth
@@ -330,7 +343,8 @@ def test_euler_equation_solver():
     b_splus1 = np.array(guesses[:p.S]).reshape(p.S, 1) + 0.005
     BQ = aggregates.get_BQ(r, b_splus1, j, p, 'SS', False)
     bq = household.get_bq(BQ, j, p, 'SS')
-    args = (r, w, bq, T_H, factor, j, p)
+    tr = household.get_tr(TR, j, p, 'SS')
+    args = (r, w, bq, tr, factor, j, p)
     test_list = SS.euler_equation_solver(guesses, *args)
 
     expected_list = np.array([
@@ -407,6 +421,8 @@ def test_run_SS(input_path, expected_path):
      p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
      retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
      p.b_ellipse, p.upsilon) = ss_params
+    p.eta = (p.omega_SS.reshape(p.S, 1) *
+             p.lambdas.reshape(1, p.J)).reshape(1, p.S, p.J)
     p.Z = np.ones(p.T + p.S) * Z
     p.tau_bq = np.ones(p.T + p.S) * 0.0
     p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
@@ -455,6 +471,7 @@ def test_run_SS(input_path, expected_path):
     del test_dict['D_f_ss'], test_dict['I_d_ss'], test_dict['Iss_total']
     del test_dict['debt_service_f'], test_dict['new_borrowing_f']
     test_dict['revenue_ss'] = test_dict.pop('total_revenue_ss')
+    test_dict['T_Hss'] = test_dict.pop('TR_ss')
 
     for k, v in expected_dict.items():
         assert(np.allclose(test_dict[k], v))
