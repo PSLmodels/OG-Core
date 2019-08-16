@@ -13,7 +13,7 @@ path
 
 
 def get_Y(K, L, p, method):
-    '''
+    r'''
     Generates aggregate output (GDP) from aggregate capital stock,
     aggregate labor, and CES production function parameters.
 
@@ -50,7 +50,7 @@ def get_Y(K, L, p, method):
 
 
 def get_r(Y, K, p, method):
-    '''
+    r'''
     This function computes the interest rate as a function of Y, K, and
     parameters using the firm's first order condition for capital
     demand.
@@ -85,7 +85,7 @@ def get_r(Y, K, p, method):
 
 
 def get_w(Y, L, p, method):
-    '''
+    r'''
     This function computes the wage as a function of Y, L, and
     parameters using the firm's first order condition for labor demand.
 
@@ -114,7 +114,7 @@ def get_w(Y, L, p, method):
 
 
 def get_KLratio_from_r(r, p, method):
-    '''
+    r'''
     This function solves for the capital-labor ratio given the interest
     rate r and parameters.
 
@@ -158,7 +158,7 @@ def get_KLratio_from_r(r, p, method):
 
 
 def get_w_from_r(r, p, method):
-    '''
+    r'''
     Solve for steady-state wage w or time path of wages w_t given
     interest rate.
 
@@ -219,7 +219,7 @@ def get_K(L, r, p, method):
 
 
 def get_K_from_Y(Y, r, p, method):
-    '''
+    r'''
     Generates vector of aggregate capital. Use with the open economy
     options.
 
@@ -239,7 +239,7 @@ def get_K_from_Y(Y, r, p, method):
     '''
     KLratio = get_KLratio_from_r(r, p, method)
     LKratio = KLratio ** -1
-    YKratio = get_Y(1, LKratio, p, method)  #can use get_Y because CRS
+    YKratio = get_Y(1, LKratio, p, method)  # can use get_Y because CRS
     K = Y / YKratio
 
     return K
