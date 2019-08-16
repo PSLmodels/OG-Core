@@ -1,6 +1,6 @@
 # OG-USA
 
-OG-USA is an overlapping-generations (OG) model of the economy of the United States (USA) that allows for dynamic general equilibrium analysis of federal tax policy. The model output focuses changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Careful documentation of the model--its output, and solution method--is available [here](https://github.com/PSLmodels/OG-USA/blob/master/docs/OGUSAdoc.pdf) and is regularly updated.
+OG-USA is an overlapping-generations (OG) model of the economy of the United States (USA) that allows for dynamic general equilibrium analysis of federal tax policy. The model output focuses changes in macroeconomic aggregates (GDP, investment, consumption), wages, interest rates, and the stream of tax revenues over time. Documentation of the model theory--its output, and solution method--is available [here](https://github.com/PSLmodels/OG-USA/blob/master/docs/OGUSAdoc.pdf) and is regularly updated.  Documentation for the Python API for OG-USA is available [here](https://og-usa.readthedocs.io/en/latest/index.html).
 
 
 ## Disclaimer
@@ -20,7 +20,7 @@ ARTICLES, OR RESEARCH PURPOSES. Essentially, you should assume the calculations 
 * Then install by `pip install -e .`
 * Navigate to `./run_examples`
 * Run the model with an example reform from terminal/command prompt by typing `python run_ogusa_example.py`
-* You can adjust the `./run_examples/run_ogusa_example.py` by adjusting the individual income tax reform (using a dictionary or JSON file in a format that is consistent with [Tax Calculator](https://github.com/open-source-economics/Tax-Calculator)) or other model parameters specified in the `user_params` or `kwargs` dictionaries.
+* You can adjust the `./run_examples/run_ogusa_example.py` by adjusting the individual income tax reform (using a dictionary or JSON file in a format that is consistent with [Tax Calculator](https://github.com/PSLmodels/Tax-Calculator)) or other model parameters specified in the `user_params` or `kwargs` dictionaries.
 * Model outputs will be saved in the following files:
   * `./run_examples/OUTPUT_BASELINE/model_params.pkl`
     * Model parameters used in the baseline run
@@ -43,4 +43,4 @@ If you run into errors running the example script, please open a new issue in th
 
 ## Citing OG-USA
 
-OG-USA (Version 0.5.7)[Source code], https://github.com/PSLmodels/OG-USA
+OG-USA (Version 0.5.13)[Source code], https://github.com/PSLmodels/OG-USA
