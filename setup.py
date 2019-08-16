@@ -18,7 +18,7 @@ config = {
     'packages': ['ogusa'],
     'include_package_data': True,
     'name': 'ogusa',
-    'install_requires': ['taxcalc', 'dask', 'scipy', 'matplotlib', 'mkl'],
+    'install_requires': [],
     'package_data': {
                      'ogusa': [
                                'parameters_metadata.json',
