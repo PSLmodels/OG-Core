@@ -2,7 +2,7 @@ import numpy as np
 import os
 import pickle
 import matplotlib.pyplot as plt
-from ogusa.constants import VAR_LABELS, ToGDP_LABELS
+from ogusa.constants import VAR_LABELS, ToGDP_LABELS, GROUP_LABELS
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(cur_path, 'OGUSAplots.mplstyle')
 plt.style.use(style_file)
@@ -265,13 +265,15 @@ def ss_profiles(base_ss, base_params, reform_ss=None,
     age_vec = np.arange(base_params.starting_age,
                         base_params.starting_age + base_params.S)
     fig1, ax1 = plt.subplots()
+    cm = plt.get_cmap('coolwarm')
+    ax1.set_prop_cycle([cm(1. * i / 7) for i in range(7)])
     if by_j:
         for j in range(base_params.J):
             plt.plot(age_vec, base_ss[var][:, j],
                      label='Baseline, j = ' + str(j))
             if reform_ss is not None:
                 plt.plot(age_vec, reform_ss[var][:, j],
-                         label='Reform, j = ' + str(j))
+                         label='Reform, j = ' + str(j), linestyle='--')
     else:
         base_var = (
             base_ss[var][:, :] *
@@ -281,7 +283,7 @@ def ss_profiles(base_ss, base_params, reform_ss=None,
             reform_var = (
                 reform_ss[var][:, :] *
                 reform_params.lambdas.reshape(1, reform_params.J)).sum(axis=1)
-            plt.plot(age_vec, reform_var, label='Reform')
+            plt.plot(age_vec, reform_var, label='Reform', linestyle='--')
     plt.xlabel(r'Age')
     plt.ylabel(VAR_LABELS[var])
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.1), ncol=2)
