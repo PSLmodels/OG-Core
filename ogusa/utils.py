@@ -231,13 +231,12 @@ def comp_scalar(name, a, b, tol, unequal, exceptions={}, relative=False):
 
 def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False,
                  exceptions={}, relative=False):
-    '''
+    r'''
     Compare two dictionaries. The values of each dict are either
-    numpy arrays
-    or else types that are comparable with the == operator.
-    For arrays, they are considered the same if |x - y| < tol in
-    the L_inf norm.
-    For scalars, they are considered the same if x - y < tol
+    numpy arrays or else types that are comparable with the `==` operator.
+    For arrays, they are considered the same if `|x - y| < tol` in
+    the L_inf norm. For scalars, they are considered the same if
+    `x - y < tol`.
 
     Args:
         fname1 (str): files name for pickle file
@@ -322,15 +321,12 @@ def to_timepath_shape(some_array, p):
 
 
 def get_initial_path(x1, xT, T, spec):
-    '''
+    r'''
     This function generates a path from point x1 to point xT such that
     that the path x is a linear or quadratic function of time t.
-        linear:    x = d*t + e
-        quadratic: x = a*t^2 + b*t + c
-    The identifying assumptions for quadratic are the following:
-        (1) x1 is the value at time t=0: x1 = c
-        (2) xT is the value at time t=T-1: xT = a*(T-1)^2 + b*(T-1) + c
-        (3) the slope of the path at t=T-1 is 0: 0 = 2*a*(T-1) + b
+
+        * linear:    `x = d*t + e`
+        * quadratic: `x = a*t^2 + b*t + c`
 
     Args:
         x1 (scalar): initial value of the function x(t) at t=0
@@ -340,6 +336,12 @@ def get_initial_path(x1, xT, T, spec):
 
     Returns:
         xpath (Numpy array): guess of variable over the time path
+
+    Notes:
+        The identifying assumptions for quadratic are the following:
+            1. `x1` is the value at time `t=0: x1 = c
+            2. `xT` is the value at time `t=T-1: xT = a*(T-1)^2 + b*(T-1) + c`
+            3. the slope of the path at `t=T-1` is 0: 0 = 2*a*(T-1) + b`
 
     '''
     if spec == "linear":

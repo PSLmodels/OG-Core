@@ -69,7 +69,7 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
 
 
 def ETR_wealth(b, h_wealth, m_wealth, p_wealth):
-    '''
+    r'''
     Calculates the effective tax rate on wealth.
 
     .. math::
@@ -90,7 +90,7 @@ def ETR_wealth(b, h_wealth, m_wealth, p_wealth):
 
 
 def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
-    '''
+    r'''
     Calculates the marginal tax rate on wealth from the wealth tax.
 
     .. math::
@@ -180,7 +180,7 @@ def ETR_income(r, w, b, n, factor, e, etr_params, p):
 
 def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params,
                mtr_params, p):
-    '''
+    r'''
     Generates the marginal tax rate on labor income for households.
 
     Args:
@@ -305,7 +305,7 @@ def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params,
 
 
 def get_biz_tax(w, Y, L, K, p, method):
-    '''
+    r'''
     Finds total business income tax revenue.
 
     .. math::

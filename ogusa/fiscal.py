@@ -18,7 +18,7 @@ import numpy as np
 
 
 def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
-    '''
+    r'''
     Calculate the time paths of debt and government spending
 
     .. math::
@@ -45,8 +45,10 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
         p (OG-USA Specifcations object): model parameters
 
     Returns:
-        D (Numpy array): government debt over the time path
-        G (Numpy array): government spending over the time path
+        (tuple): fiscal variable path output:
+
+            * D (Numpy array): government debt over the time path
+            * G (Numpy array): government spending over the time path
 
     '''
     Y, total_revenue, TR, D0, G0 = dg_fixed_values
@@ -90,7 +92,7 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
 
 
 def get_r_gov(r, p):
-    '''
+    r'''
     Determine the interest rate on government debt
 
     .. math::
