@@ -204,7 +204,7 @@ def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
     Calculate household consumption.
 
     .. math::
-        c_{j,s,t} =  \frac{(1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + bq_{j,s,t} + tr_{j,s,t} - T_{j,s,t} - e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}}_{s,t}}
+        c_{j,s,t} =  \frac{(1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + bq_{j,s,t} + tr_{j,s,t} - T_{j,s,t} - e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}
 
     Args:
         r (array_like): the real interest rate

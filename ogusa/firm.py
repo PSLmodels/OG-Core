@@ -18,7 +18,7 @@ def get_Y(K, L, p, method):
     aggregate labor, and CES production function parameters.
 
     .. math::
-        Y_{t} = Z_{t}\[\gamma^{\frac{1}{\varepsilon}}K_{t}^{\frac{\varepsilon - 1}{\varepsilon}} + (1 - \gamma)^{\frac{1}{\varepsilon}}L_{t}^{\frac{\varepsilon - 1}{\varepsilon}}\]^{\frac{\varepsilon}{\varepsilon - 1}}
+        Y_{t} = Z_{t}\left[\gamma^{\frac{1}{\varepsilon}}K_{t}^{\frac{\varepsilon - 1}{\varepsilon}} + (1 - \gamma)^{\frac{1}{\varepsilon}}L_{t}^{\frac{\varepsilon - 1}{\varepsilon}}\right]^{\frac{\varepsilon}{\varepsilon - 1}}
 
     Args:
         K (array_like): aggregate capital
@@ -119,7 +119,7 @@ def get_KLratio_from_r(r, p, method):
     rate r and parameters.
 
     .. math::
-        \frac{K}{L} = \left(\frac{(1-\gamma)^\frac{1}{\varepislon}}{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})\gamma^\frac{1}{\varepislon}Z}\right]^{\varepislon-1} - \gamma^\frac{1}{\varepislon}}\right)^\frac{\varepislon}{\varepislon-1}
+        \frac{K}{L} = \left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})\gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} - \gamma^\frac{1}{\varepsilon}}\right)^\frac{\varepsilon}{\varepsilon-1}
 
     Args:
         r (array_like): the real interest rate
@@ -163,7 +163,7 @@ def get_w_from_r(r, p, method):
     interest rate.
 
     .. math::
-        w = (1-\gamma)^\frac{1}{\varepislon}Z\left[(\gamma)^\frac{1}{\varepislon}\left(\frac{(1-\gamma)^\frac{1}{\varepislon}}{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})\gamma^\frac{1}{\varepislon}Z}\right]^{\varepislon-1} - \gamma^\frac{1}{\varepislon}}\right) + (1-\gamma)^\frac{1}{\varepislon}\right]^\frac{1}{\varepislon-1}
+        w = (1-\gamma)^\frac{1}{\varepsilon}Z\left[(\gamma)^\frac{1}{\varepsilon}\left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})\gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} - \gamma^\frac{1}{\varepsilon}}\right) + (1-\gamma)^\frac{1}{\varepsilon}\right]^\frac{1}{\varepsilon-1}
 
     Args:
         r (array_like): the real interest rate
@@ -194,7 +194,7 @@ def get_w_from_r(r, p, method):
 
 
 def get_K(L, r, p, method):
-    '''
+    r'''
     Generates vector of aggregate capital. Use with the open economy
     options.
 
