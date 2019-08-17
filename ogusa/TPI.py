@@ -30,15 +30,17 @@ def get_initial_SS_values(p):
         p (OG-USA Specifcations object): model parameters
 
     Returns:
-        initial_values (tuple): initial period variable values,
-            (b_sinit, b_splus1init, factor, initial_b, initial_n, D0)
-        ss_vars (dictionary): dictionary with steady state solution
-            results
-        theta (Numpy array): steady-state retirement replacement rates,
-            length J
-        baseline_values (tuple): (TRbaseline, Gbaseline), lump sum
-            transfer and government spending amounts from the baseline
-            model run
+        (tuple): initial period and steady state values:
+
+            * initial_values (tuple): initial period variable values,
+                (b_sinit, b_splus1init, factor, initial_b, initial_n, D0)
+            * ss_vars (dictionary): dictionary with steady state
+                solution results
+            * theta (Numpy array): steady-state retirement replacement
+                rates, length J
+            * baseline_values (tuple): (TRbaseline, Gbaseline), lump sum
+                transfer and government spending amounts from the
+                baseline model run
 
     '''
     baseline_ss = os.path.join(p.baseline_dir, "SS/SS_vars.pkl")
@@ -249,9 +251,11 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
         p (OG-USA Specifcations object): model parameters
 
     Returns:
-        euler_errors (Numpy array): errors from FOCs, size = Tx2S
-        b_mat (Numpy array): savings amounts, size = TxS
-        n_mat (Numpy array): labor supply amounts, size = TxS
+        (tuple): household solution results:
+
+            * euler_errors (Numpy array): errors from FOCs, size = Tx2S
+            * b_mat (Numpy array): savings amounts, size = TxS
+            * n_mat (Numpy array): labor supply amounts, size = TxS
 
     '''
     # unpack variables and parameters pass to function

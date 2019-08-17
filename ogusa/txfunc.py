@@ -634,9 +634,12 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
             to the data
 
     Returns:
-        params (Numpy array): vector of estimated parameters
-        wsse (scalar): weighted sum of squared deviations from minimization,
-        obs (int): number of obervations in the data, > 600
+        (tuple): tax function estimation output:
+
+            * params (Numpy array): vector of estimated parameters
+            * wsse (scalar): weighted sum of squared deviations from
+                minimization
+            * obs (int): number of obervations in the data, > 600
 
     '''
     X = df['Total labor income']
@@ -906,32 +909,39 @@ def tax_func_loop(t, micro_data, start_year, s_min, s_max, age_specific,
         numparams (int): number of parameters in tax functions
 
     Returns:
-        TotPop_yr (int): total population derived from micro data
-        Pct_age (Numpy array): fraction of observations that are in each
-            age bin
-        AvgInc (scalar): mean income in the data
-        AvgETR (scalar): mean effective tax rate in data
-        AvgMTRx (scalar): mean marginal tax rate on labor income in data
-        AvgMTRy (scalar): mean marginal tax rate on capital income in
-            data
-        etrparam_arr (Numpy array): parameters of the effective tax rate
-            functions
-        etr_wsumsq_arr (Numpy array): weighted sum of squares from
-            estimation of the effective tax rate functions
-        etr_obs_arr (Numpy array): weighted sum of squares from
-            estimation of the effective tax rate functions
-        mtrxparam_arr (Numpy array): parameters of the marginal tax rate
-            on labor income functions
-        mtrx_wsumsq_arr (Numpy array): weighted sum of squares from
-            estimation of the marginal tax rate on labor income functions
-        mtrx_obs_arr (Numpy array): weighted sum of squares from
-            estimation of the marginal tax rate on labor income functions
-        mtryparam_arr (Numpy array): parameters of the marginal tax rate
-            on capital income functions
-        mtry_wsumsq_arr (Numpy array): weighted sum of squares from
-            estimation of the marginal tax rate on capital income functions
-        mtry_obs_arr (Numpy array): weighted sum of squares from
-            estimation of the marginal tax rate on capital income functions
+        (tuple): tax function estimation output:
+
+            * TotPop_yr (int): total population derived from micro data
+            * Pct_age (Numpy array): fraction of observations that are
+                in each age bin
+            * AvgInc (scalar): mean income in the data
+            * AvgETR (scalar): mean effective tax rate in data
+            * AvgMTRx (scalar): mean marginal tax rate on labor income
+                in data
+            * AvgMTRy (scalar): mean marginal tax rate on capital income
+                in data
+            * etrparam_arr (Numpy array): parameters of the effective
+                tax rate functions
+            * etr_wsumsq_arr (Numpy array): weighted sum of squares from
+                estimation of the effective tax rate functions
+            * etr_obs_arr (Numpy array): weighted sum of squares from
+                estimation of the effective tax rate functions
+            * mtrxparam_arr (Numpy array): parameters of the marginal
+                tax rate on labor income functions
+            * mtrx_wsumsq_arr (Numpy array): weighted sum of squares
+                from estimation of the marginal tax rate on labor income
+                functions
+            * mtrx_obs_arr (Numpy array): weighted sum of squares from
+                estimation of the marginal tax rate on labor income
+                functions
+            * mtryparam_arr (Numpy array): parameters of the marginal
+                tax rate on capital income functions
+            * mtry_wsumsq_arr (Numpy array): weighted sum of squares
+                from estimation of the marginal tax rate on capital
+                income functions
+            * mtry_obs_arr (Numpy array): weighted sum of squares from
+                estimation of the marginal tax rate on capital income
+                functions
 
     '''
     # initialize arrays for output

@@ -115,19 +115,24 @@ def inner_loop(outer_loop_vars, p, client):
         client (Dask client object): client
 
     Returns:
-        euler_errors (Numpy array): errors terms from FOCs, size = 2SxJ
-        bssmat (Numpy array): savings, size = SxJ
-        nssmat (Numpy array): labor supply, size = SxJ
-        new_r (scalar): real interest rate on firm capital
-        new_r_gov (scalar): real interest rate on government debt
-        new_r_hh (scalar): real interest rate on household portfolio
-        new_w (scalar): real wage rate
-        new_TR (scalar): lump sum transfer amount
-        new_Y (scalar): real GDP
-        new_factor (scalar): scaling factor converting model units to
-            dollars
-        new_BQ (array_like): aggregate bequest amount(s)
-        average_income_model (scalar): average income in model units
+        (tuple): results from household solution:
+
+            * euler_errors (Numpy array): errors terms from FOCs,
+                size = 2SxJ
+            * bssmat (Numpy array): savings, size = SxJ
+            * nssmat (Numpy array): labor supply, size = SxJ
+            * new_r (scalar): real interest rate on firm capital
+            * new_r_gov (scalar): real interest rate on government debt
+            * new_r_hh (scalar): real interest rate on household
+                portfolio
+            * new_w (scalar): real wage rate
+            * new_TR (scalar): lump sum transfer amount
+            * new_Y (scalar): real GDP
+            * new_factor (scalar): scaling factor converting model
+                units to dollars
+            * new_BQ (array_like): aggregate bequest amount(s)
+            * average_income_model (scalar): average income in model
+                units
 
     '''
     # unpack variables to pass to function
