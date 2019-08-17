@@ -21,7 +21,6 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
         base_params (OG-USA Specifications class): baseline parameters object
         reform_tpi (dictionary): TPI output from reform run
         reform_params (OG-USA Specifications class): reform parameters object
-        p (OG-USA Specifications class): parameters object
         var_list (list): names of variable to plot
         plot_type (string): type of plot, can be:
             'pct_diff': plots percentage difference between baselien
@@ -71,10 +70,11 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
                      base_tpi[v][start_index: start_index +
                                  num_years_to_plot],
                      label='Baseline ' + VAR_LABELS[v])
-            plt.plot(year_vec,
-                     reform_tpi[v][start_index: start_index +
-                                   num_years_to_plot],
-                     label='Reform ' + VAR_LABELS[v])
+            if reform_tpi is not None:
+                plt.plot(year_vec,
+                         reform_tpi[v][start_index: start_index +
+                                       num_years_to_plot],
+                         label='Reform ' + VAR_LABELS[v])
             ylabel = r'Model Units'
         elif plot_type == 'cbo':
             # This option is not complete.  Need to think about how to
