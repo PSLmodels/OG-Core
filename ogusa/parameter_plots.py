@@ -117,14 +117,14 @@ def plot_ability_profiles(p, include_title=False, path=None):
     age_vec = np.arange(p.starting_age, p.starting_age + p.S)
     fig, ax = plt.subplots()
     cm = plt.get_cmap('coolwarm')
-    ax.set_color_cycle([cm(1. * i / 7) for i in range(7)])
+    ax.set_prop_cycle(color=[cm(1. * i / 7) for i in range(7)])
     for j in range(p.J):
         plt.plot(age_vec, p.e[:, j], label=GROUP_LABELS[j])
     plt.xlabel(r'Age')
     plt.ylabel(r'Earnings ability')
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.1), ncol=2)
     if include_title:
-            plt.title('Lifecycle Profiles of Effective Labor Units')
+        plt.title('Lifecycle Profiles of Effective Labor Units')
     if path is None:
         return fig
     else:
