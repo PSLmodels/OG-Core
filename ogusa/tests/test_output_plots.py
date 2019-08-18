@@ -9,7 +9,6 @@ from ogusa import utils, output_plots
 
 # Load in test results and parameters
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-
 base_ss = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'SS_vars_baseline.pkl'))
 base_tpi = utils.safe_read_pickle(

@@ -1,5 +1,5 @@
 '''
-Tests of parameter_plots.py module
+Tests of parameter_table.py module
 '''
 
 import pytest

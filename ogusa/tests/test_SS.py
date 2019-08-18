@@ -1,4 +1,7 @@
-from __future__ import print_function
+'''
+Test of steady-state module
+'''
+
 import pytest
 import numpy as np
 import os
