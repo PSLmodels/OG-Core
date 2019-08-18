@@ -2,7 +2,7 @@ OG-USA
 ==============
 
 OG-USA is a general equilibrium overlapping generations model of the United
-States. Open CGE is written in Python, an interpreted language that can execute
+States. OG-USA is written in Python, an interpreted language that can execute
 on Windows, Mac, or Linux.
 
 This documentation is about **developing** OG-USA.
