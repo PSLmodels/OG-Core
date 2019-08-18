@@ -129,7 +129,7 @@ def plot_ability_profiles(p, include_title=False, path=None):
         return fig
     else:
         fig_path = os.path.join(path, "ability_profiles")
-        plt.savefig(fig_path)
+        plt.savefig(fig_path, bbox_inches='tight')
 
 
 def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
