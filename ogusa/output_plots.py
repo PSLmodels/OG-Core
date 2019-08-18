@@ -1,8 +1,10 @@
 import numpy as np
+import pandas as pd
 import os
 import pickle
 import matplotlib.pyplot as plt
 from ogusa.constants import VAR_LABELS, ToGDP_LABELS, GROUP_LABELS
+import ogusa.utils as utils
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(cur_path, 'OGUSAplots.mplstyle')
 plt.style.use(style_file)
@@ -241,16 +243,20 @@ def ability_bar(base_tpi, base_params, reform_tpi,
 
 def ss_profiles(base_ss, base_params, reform_ss=None,
                 reform_params=None, by_j=True, var='nssmat',
+                plot_data=False,
                 plot_title=None, path=None):
     '''
     Plot lifecycle profiles of given variable in the SS.
 
     Args:
         base_ss (dictionary): SS output from baseline run
-        base_params (OG-USA Specifications class): baseline parameters object
+        base_params (OG-USA Specifications class): baseline parameters
+            object
         reform_ss (dictionary): SS output from reform run
-        reform_params (OG-USA Specifications class): reform parameters object
+        reform_params (OG-USA Specifications class): reform parameters
+            object
         var (string): name of variable to plot
+        plot_data (bool): whether to plot data values for given variable
         plot_title (string): title for plot
         path (string): path to save figure to
 
@@ -265,9 +271,9 @@ def ss_profiles(base_ss, base_params, reform_ss=None,
     age_vec = np.arange(base_params.starting_age,
                         base_params.starting_age + base_params.S)
     fig1, ax1 = plt.subplots()
-    cm = plt.get_cmap('coolwarm')
-    ax1.set_prop_cycle([cm(1. * i / 7) for i in range(7)])
     if by_j:
+        cm = plt.get_cmap('coolwarm')
+        ax1.set_prop_cycle(color=[cm(1. * i / 7) for i in range(7)])
         for j in range(base_params.J):
             plt.plot(age_vec, base_ss[var][:, j],
                      label='Baseline, j = ' + str(j))
@@ -284,6 +290,25 @@ def ss_profiles(base_ss, base_params, reform_ss=None,
                 reform_ss[var][:, :] *
                 reform_params.lambdas.reshape(1, reform_params.J)).sum(axis=1)
             plt.plot(age_vec, reform_var, label='Reform', linestyle='--')
+        if plot_data:
+            assert var == 'nssmat'
+            labor_file = utils.read_file(
+                cur_path, "data/labor/cps_hours_by_age_hourspct.txt")
+            data = pd.read_csv(labor_file, header=0, delimiter='\t')
+            piv = data.pivot(index='age', columns='hours_pct',
+                             values='mean_hrs')
+            lab_mat_basic = np.array(piv)
+            lab_mat_basic /= np.nanmax(lab_mat_basic)
+            piv2 = data.pivot(index='age', columns='hours_pct',
+                              values='num_obs')
+            weights = np.array(piv2)
+            weights /= np.nansum(weights, axis=1).reshape(
+                60, 1)
+            weighted = np.nansum((lab_mat_basic * weights), axis=1)
+            weighted = np.append(weighted, np.zeros(20))
+            weighted[60:] = np.nan
+            plt.plot(age_vec, weighted, linewidth=2.0, label='Data',
+                     linestyle=':')
     plt.xlabel(r'Age')
     plt.ylabel(VAR_LABELS[var])
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.1), ncol=2)
