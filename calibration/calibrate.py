@@ -1,5 +1,3 @@
-from __future__ import print_function
-
 '''
 This module should be organized as follows:
 
