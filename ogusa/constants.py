@@ -30,7 +30,7 @@ VAR_LABELS = {'Y': 'GDP ($Y_t$)', 'C': 'Consumption ($C_t$)',
               'Total Taxes',
               'nssmat': 'Labor Supply ($\\bar{n}_{j,s}$)',
               'bssmat_s': 'Savings ($\\bar{b}_{j,s}$)',
-              'bssmat_splus1': 'Savings ($\\bar{n}_{j,s+1}$)',
+              'bssmat_splus1': 'Savings ($\\bar{b}_{j,s+1}$)',
               'cssmat': 'Consumption ($\\bar{c}_{j,s}$)',
               'yss_before_tax_mat': 'Before-tax Income',
               'etr_ss': 'Effective Tax Rate ($\\bar{ETR}_{j,s}$)',
@@ -55,3 +55,6 @@ ToGDP_LABELS = {'D': 'Debt-to-GDP ($D_{t}/Y_t$)',
                 'C': 'Consumption-Output Ratio ($C_{t}/Y_t$)',
                 'I': 'Investment-Output Ratio ($I_{t}/Y_t$)',
                 'total_revenue': 'Tax Revenue-to-GDP ($REV_{t}/Y_t$)'}
+
+GROUP_LABELS = {0: '0-25%', 1: '25-50%', 2: '50-70%', 3: '70-80%',
+                4: '80-90%', 5: '90-99%', 6: 'Top 1%'}
