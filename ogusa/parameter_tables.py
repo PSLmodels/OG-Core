@@ -13,8 +13,12 @@ def tax_rate_table(base_TxFuncEst, base_params, reform_TxFuncEst=None,
     Args:
         base_TxFuncEst(dictionary): Baseline tax function parameter
             estimates
+        base_params (OG-USA Specifications class): baseline parameters
+            object
         reform_TxFuncEst (dictionary): Reform tax function parameter
             estimates
+        reform_params (OG-USA Specifications class): reform parameters
+            object
         rate_type (string): Tax rate to include in table
         start_year (integer): year to start table
         num_years (integer): number of years to include in table

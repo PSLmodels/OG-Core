@@ -1,9 +1,9 @@
 '''
 ------------------------------------------------------------------------
 Functions for created the matrix of ability levels, e.  This can
-    only be used for looking at the 25, 50, 70, 80, 90, 99, and 100th
-    percentiles, as it uses fitted polynomials to those percentiles.
-    For a more generic version, see income_nopoly.py.
+only be used for looking at the 25, 50, 70, 80, 90, 99, and 100th
+percentiles, as it uses fitted polynomials to those percentiles.
+For a more generic version, see income_nopoly.py.
 ------------------------------------------------------------------------
 '''
 import numpy as np
@@ -33,7 +33,7 @@ def graph_income(ages, abil_midp, abil_pcts, emat, filesuffix=""):
 
     Returns:
         None
-    --------------------------------------------------------------------
+
     '''
     J = abil_midp.shape[0]
     abil_mesh, age_mesh = np.meshgrid(abil_midp, ages)
@@ -116,7 +116,7 @@ def graph_income(ages, abil_midp, abil_pcts, emat, filesuffix=""):
 
 
 def arctan_func(xvals, a, b, c):
-    '''
+    r'''
     This function generates predicted ability levels given data (xvals)
     and parameters a, b, and c, from the following arctan function:
 
@@ -139,7 +139,7 @@ def arctan_func(xvals, a, b, c):
 
 
 def arctan_deriv_func(xvals, a, b, c):
-    '''
+    r'''
     This function generates predicted derivatives of arctan function
     given data (xvals) and parameters a, b, and c. The functional form
     of the derivative of the function is the following:
@@ -289,7 +289,7 @@ def get_e_interp(S, age_wgts, age_wgts_80, abil_wgts, plot=False):
     if S == 80 and np.array_equal(abil_wgts,
                                   np.array([0.25, 0.25, 0.2, 0.1, 0.1,
                                             0.09, 0.01])) is True:
-            emat_new_scaled = emat_orig
+        emat_new_scaled = emat_orig
     else:
         # generate abil_midp vector
         J = abil_wgts.shape[0]
@@ -330,7 +330,7 @@ def get_e_interp(S, age_wgts, age_wgts_80, abil_wgts, plot=False):
 
 
 def get_e_orig(age_wgts, abil_wgts, plot=False):
-    '''
+    r'''
     This function generates the 80 x 7 matrix of lifetime earnings
     ability profiles, corresponding to annual ages from 21 to 100 and to
     paths based on income percentiles 0-25, 25-50, 50-70, 70-80, 80-90,
