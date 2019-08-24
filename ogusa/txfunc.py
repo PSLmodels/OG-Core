@@ -25,6 +25,14 @@ from ogusa import get_micro_data
 from ogusa.utils import DEFAULT_START_YEAR
 
 TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
+MIN_OBS = 240  # 240 is 8 parameters to estimate X 30 obs per parameter
+MIN_ETR = -0.15
+MAX_ETR = 0.65
+MIN_MTR = -0.45
+MAX_MTR = 0.99
+MIN_INCOME = 5
+MIN_INC_GRAPH = 5
+MAX_INC_GRAPH = 500000
 
 '''
 ------------------------------------------------------------------------
@@ -51,10 +59,10 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
 
     '''
     # Truncate the data
-    df_trnc = df[(df['Total labor income'] > 5) &
-                 (df['Total labor income'] < 500000) &
-                 (df['Total capital income'] > 5) &
-                 (df['Total capital income'] < 500000)]
+    df_trnc = df[(df['Total labor income'] > MIN_INC_GRAPH) &
+                 (df['Total labor income'] < MAX_INC_GRAPH) &
+                 (df['Total capital income'] > MIN_INC_GRAPH) &
+                 (df['Total capital income'] < MAX_INC_GRAPH)]
     inc_lab = df_trnc['Total labor income']
     inc_cap = df_trnc['Total capital income']
     etr_data = df_trnc['ETR']
@@ -207,10 +215,10 @@ def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
 
     else:
         # Make comparison plot with truncated income domains
-        data_trnc = data[(data['Total labor income'] > 5) &
-                         (data['Total labor income'] < 800000) &
-                         (data['Total capital income'] > 5) &
-                         (data['Total capital income'] < 800000)]
+        data_trnc = data[(data['Total labor income'] > MIN_INC_GRAPH) &
+                         (data['Total labor income'] < MAX_INC_GRAPH) &
+                         (data['Total capital income'] > MIN_INC_GRAPH) &
+                         (data['Total capital income'] < MAX_INC_GRAPH)]
         X_trnc = data_trnc['Total labor income']
         Y_trnc = data_trnc['Total capital income']
         if rate_type == 'etr':
@@ -1008,25 +1016,25 @@ def tax_func_loop(t, micro_data, start_year, s_min, s_max, age_specific,
     TotPop_yr = data['Weights'].sum()
 
     # Clean up the data by dropping outliers
-    # drop all obs with ETR > 0.65
-    data.drop(data[data['ETR'] > 0.65].index, inplace=True)
-    # drop all obs with ETR < -0.15
-    data.drop(data[data['ETR'] < -0.15].index, inplace=True)
-    # drop all obs with ATI, TLI, TCincome< $5
-    data.drop(data[(data['Adjusted total income'] < 5) |
-                   (data['Total labor income'] < 5) |
-                   (data['Total capital income'] < 5)].index,
+    # drop all obs with ETR > MAX_ETR
+    data.drop(data[data['ETR'] > MAX_ETR].index, inplace=True)
+    # drop all obs with ETR < MIN_ETR
+    data.drop(data[data['ETR'] < MIN_ETR].index, inplace=True)
+    # drop all obs with ATI, TLI, TCincome< MIN_INCOME
+    data.drop(data[(data['Adjusted total income'] < MIN_INCOME) |
+                   (data['Total labor income'] < MIN_INCOME) |
+                   (data['Total capital income'] < MIN_INCOME)].index,
               inplace=True)
-    # drop all obs with MTR on capital income > 0.99
-    data.drop(data[data['MTR capital income'] > 0.99].index,
+    # drop all obs with MTR on capital income > MAX_MTR
+    data.drop(data[data['MTR capital income'] > MAX_MTR].index,
               inplace=True)
-    # drop all obs with MTR on capital income < -0.45
-    data.drop(data[data['MTR capital income'] < -0.45].index,
+    # drop all obs with MTR on capital income < MIN_MTR
+    data.drop(data[data['MTR capital income'] < MIN_MTR].index,
               inplace=True)
-    # drop all obs with MTR on labor income > 0.99
-    data.drop(data[data['MTR labor income'] > 0.99].index, inplace=True)
-    # drop all obs with MTR on labor income < -0.45
-    data.drop(data[data['MTR labor income'] < -0.45].index, inplace=True)
+    # drop all obs with MTR on labor income > MAX_MTR
+    data.drop(data[data['MTR labor income'] > MAX_MTR].index, inplace=True)
+    # drop all obs with MTR on labor income < MIN_MTR
+    data.drop(data[data['MTR labor income'] < MIN_MTR].index, inplace=True)
 
     # Create an array of the different ages in the data
     min_age = int(np.maximum(data['Age'].min(), s_min))
@@ -1076,8 +1084,8 @@ def tax_func_loop(t, micro_data, start_year, s_min, s_max, age_specific,
         df_minobs = np.min([df_etr.shape[0], df_mtrx.shape[0],
                             df_mtry.shape[0]])
         del df
-        # 240 is 8 parameters to estimate times 30 obs per parameter
-        if df_minobs < 240 and s < max_age:
+
+        if df_minobs < MIN_OBS and s < max_age:
             # '''
             # --------------------------------------------------------
             # Don't estimate function on this iteration if obs < 500.
@@ -1092,7 +1100,7 @@ def tax_func_loop(t, micro_data, start_year, s_min, s_max, age_specific,
             mtrxparam_arr[s-s_min, :] = np.nan
             mtryparam_arr[s-s_min, :] = np.nan
 
-        elif df_minobs < 240 and s == max_age:
+        elif df_minobs < MIN_OBS and s == max_age:
             # '''
             # --------------------------------------------------------
             # If last period does not have sufficient data, fill in
