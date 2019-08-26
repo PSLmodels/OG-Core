@@ -122,7 +122,7 @@ def plot_ability_profiles(p, include_title=False, path=None):
         plt.plot(age_vec, p.e[:, j], label=GROUP_LABELS[j])
     plt.xlabel(r'Age')
     plt.ylabel(r'Earnings ability')
-    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.1), ncol=2)
+    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
     if include_title:
         plt.title('Lifecycle Profiles of Effective Labor Units')
     if path is None:

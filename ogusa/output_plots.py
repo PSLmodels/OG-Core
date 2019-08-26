@@ -106,7 +106,7 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
         ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
     plt.xlim((base_params.start_year - 1, base_params.start_year +
               num_years_to_plot))
-    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.1), ncol=2)
+    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
     if path is not None:
         fig_path1 = os.path.join(path)
         plt.savefig(fig_path1, bbox_inches="tight")
@@ -177,7 +177,7 @@ def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
     ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
     plt.xlim((base_params.start_year - 1, base_params.start_year +
               num_years_to_plot))
-    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.1), ncol=2)
+    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
     if path is not None:
         fig_path1 = os.path.join(path)
         plt.savefig(fig_path1, bbox_inches="tight")
@@ -232,7 +232,7 @@ def ability_bar(base_tpi, base_params, reform_tpi,
     plt.ylabel(r'Percentage Change in ' + VAR_LABELS[var])
     if plot_title is not None:
         plt.title(plot_title, fontsize=15)
-    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.1), ncol=2)
+    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
     if path is not None:
         fig_path1 = os.path.join(path)
         plt.savefig(fig_path1, bbox_inches="tight")
@@ -311,7 +311,7 @@ def ss_profiles(base_ss, base_params, reform_ss=None,
                      linestyle=':')
     plt.xlabel(r'Age')
     plt.ylabel(VAR_LABELS[var])
-    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.1), ncol=2)
+    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
     if plot_title is not None:
         plt.title(plot_title, fontsize=15)
     if path is not None:
