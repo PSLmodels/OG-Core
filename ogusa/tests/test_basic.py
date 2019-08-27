@@ -75,9 +75,9 @@ def test_run_small(time_path):
     TPI.MINIMIZER_TOL = 1e-6
     output_base = "./OUTPUT"
     input_dir = "./OUTPUT"
-    user_params = {'frisch': 0.41, 'debt_ratio_ss': 0.4}
+    og_spec = {'frisch': 0.41, 'debt_ratio_ss': 0.4}
     runner(output_base=output_base, baseline_dir=input_dir, test=True,
-           time_path=time_path, baseline=True, user_params=user_params,
+           time_path=time_path, baseline=True, og_spec=og_spec,
            run_micro=False)
 
 
@@ -106,15 +106,15 @@ def test_constant_demographics_TPI():
             pass
     spec = Specifications(run_micro=False, output_base=output_base,
                           baseline_dir=baseline_dir, test=False,
-                          time_path=True, baseline=True, reform={},
+                          time_path=True, baseline=True, iit_reform={},
                           guid='')
-    user_params = {'constant_demographics': True,
+    og_spec = {'constant_demographics': True,
                    'budget_balance': True,
                    'zero_taxes': True,
                    'maxiter': 2,
                    'eta': (spec.omega_SS.reshape(spec.S, 1) *
                            spec.lambdas.reshape(1, spec.J))}
-    spec.update_specifications(user_params)
+    spec.update_specifications(og_spec)
     spec.get_tax_function_parameters(None, False)
     # Run SS
     ss_outputs = SS.run_SS(spec, None)
@@ -219,7 +219,7 @@ def test_compare_dict_diff_ndarrays_relative():
 
 
 def test_get_micro_data_get_calculator():
-    reform = {
+    iit_reform = {
         'II_rt1': {2017: 0.09},
         'II_rt2': {2017: 0.135},
         'II_rt3': {2017: 0.225},
@@ -230,7 +230,7 @@ def test_get_micro_data_get_calculator():
         }
 
     calc = get_calculator(baseline=False, calculator_start_year=2017,
-                          reform=reform, data='cps',
+                          iit_reform=reform, data='cps',
                           gfactors=GrowFactors(),
                           records_start_year=CPS_START_YEAR)
     assert calc.current_year == 2017

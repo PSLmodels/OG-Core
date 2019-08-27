@@ -14,7 +14,7 @@ from ogusa.execute import runner
 from ogusa.utils import REFORM_DIR, BASELINE_DIR
 
 
-def run_micro_macro(user_params):
+def run_micro_macro(og_spec):
     # Grab a reform JSON file already in Tax-Calculator
     # In this example the 'reform' is a change to 2017 law (the
     # baseline policy is tax law in 2018)
@@ -22,7 +22,7 @@ def run_micro_macro(user_params):
                   'PSLmodels/Tax-Calculator/master/taxcalc/'
                   'reforms/2017_law.json')
     ref = Calculator.read_json_param_objects(reform_url, None)
-    reform = ref['policy']
+    iit_reform = ref['policy']
 
     # Define parameters to use for multiprocessing
     client = Client(processes=False)
@@ -42,10 +42,10 @@ def run_micro_macro(user_params):
     alpha_G[3:6] = 0.05 - 0.005
     alpha_G[6:] = 0.05
     small_open = False
-    user_params = {'frisch': 0.41, 'start_year': 2018,
-                   'tau_b': [(0.21 * 0.55) * (0.017 / 0.055), (0.21 * 0.55) * (0.017 / 0.055)],
-                   'debt_ratio_ss': 1.0, 'alpha_T': alpha_T.tolist(),
-                   'alpha_G': alpha_G.tolist(), 'small_open': small_open}
+    og_spec = {'frisch': 0.41, 'start_year': 2018,
+               'tau_b': [(0.21 * 0.55) * (0.017 / 0.055), (0.21 * 0.55) * (0.017 / 0.055)],
+               'debt_ratio_ss': 1.0, 'alpha_T': alpha_T.tolist(),
+               'alpha_G': alpha_G.tolist(), 'small_open': small_open}
 
     '''
     ------------------------------------------------------------------------
@@ -55,7 +55,7 @@ def run_micro_macro(user_params):
     output_base = BASELINE_DIR
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': False, 'time_path': True, 'baseline': True,
-              'user_params': user_params, 'guid': '_example',
+              'og_spec': og_spec, 'guid': '_example',
               'run_micro': True, 'data': 'cps', 'client': client,
               'num_workers': num_workers}
 
@@ -68,15 +68,15 @@ def run_micro_macro(user_params):
     Run reform policy
     ------------------------------------------------------------------------
     '''
-    user_params = {'frisch': 0.41, 'start_year': 2018,
-                   'tau_b': [(0.35 * 0.55) * (0.017 / 0.055)],
-                   'debt_ratio_ss': 1.0, 'alpha_T': alpha_T.tolist(),
-                   'alpha_G': alpha_G.tolist(), 'small_open': small_open}
+    og_spec = {'frisch': 0.41, 'start_year': 2018,
+               'tau_b': [(0.35 * 0.55) * (0.017 / 0.055)],
+               'debt_ratio_ss': 1.0, 'alpha_T': alpha_T.tolist(),
+               'alpha_G': alpha_G.tolist(), 'small_open': small_open}
     output_base = REFORM_DIR
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': False, 'time_path': True, 'baseline': False,
-              'user_params': user_params, 'guid': '_example',
-              'reform': reform, 'run_micro': True, 'data': 'cps',
+              'og_spec': og_spec, 'guid': '_example',
+              'iit_reform': iit_reform, 'run_micro': True, 'data': 'cps',
               'client': client, 'num_workers': num_workers}
 
     start_time = time.time()
@@ -93,4 +93,4 @@ def run_micro_macro(user_params):
 
 
 if __name__ == "__main__":
-    run_micro_macro(user_params={})
+    run_micro_macro(og_spec={})
