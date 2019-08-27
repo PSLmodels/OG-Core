@@ -43,9 +43,9 @@ def get_fert(totpers, min_yr, max_yr, graph=False):
     '''
     # Get current population data (2013) for weighting
     cur_path = os.path.split(os.path.abspath(__file__))[0]
-    pop_file = utils.read_file(
+    pop_file = os.path.join(
         cur_path, 'data', 'demographic', 'pop_data.csv')
-    pop_data = pd.read_csv(pop_file)
+    pop_data = pd.read_csv(pop_file, thousands=',')
     pop_data_samp = pop_data[(pop_data['Age'] >= min_yr - 1) &
                              (pop_data['Age'] <= max_yr - 1)]
     curr_pop = np.array(pop_data_samp['2013'], dtype='f')
@@ -170,9 +170,9 @@ def get_mort(totpers, min_yr, max_yr, graph=False):
     # Get mortality rate by age data
     infmort_rate = 0.00587  # taken from 2015 U.S. infant mortality rate
     cur_path = os.path.split(os.path.abspath(__file__))[0]
-    mort_file = utils.read_file(
-        cur_path, 'data/demographic/mort_rates2011.csv')
-    mort_data = pd.read_csv(mort_file, sep=',', thousands=',')
+    mort_file = os.path.join(
+        cur_path, 'data', 'demographic', 'mort_rates2011.csv')
+    mort_data = pd.read_csv(mort_file, thousands=',')
     age_year_all = mort_data['Age'] + 1
     mort_rates_all = (
         ((mort_data['Male Mort. Rate'] * mort_data['Num. Male Lives']) +
@@ -317,9 +317,9 @@ def get_imm_resid(totpers, min_yr, max_yr, graph=True):
 
     '''
     cur_path = os.path.split(os.path.abspath(__file__))[0]
-    pop_file = utils.read_file(
+    pop_file = os.path.join(
         cur_path, 'data', 'demographic', 'pop_data.csv')
-    pop_data = pd.read_csv(pop_file)
+    pop_data = pd.read_csv(pop_file, thousands=',')
     pop_data_samp = pop_data[(pop_data['Age'] >= min_yr - 1) &
                              (pop_data['Age'] <= max_yr - 1)]
     pop_2010, pop_2011, pop_2012, pop_2013 = (
@@ -485,9 +485,9 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     # Generate time path of the nonstationary population distribution
     omega_path_lev = np.zeros((E + S, T + S))
     cur_path = os.path.split(os.path.abspath(__file__))[0]
-    pop_file = utils.read_file(
+    pop_file = os.path.join(
         cur_path, 'data', 'demographic', 'pop_data.csv')
-    pop_data = pd.read_csv(pop_file)
+    pop_data = pd.read_csv(pop_file, thousands=',')
     pop_data_samp = pop_data[(pop_data['Age'] >= min_yr - 1) &
                              (pop_data['Age'] <= max_yr - 1)]
     pop_2013 = np.array(pop_data_samp['2013'], dtype='f')
@@ -556,11 +556,11 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
                                      omega_path_lev[:, T].sum())).max()
         if omegaSSmaxdif > 0.0003:
             print('POP. WARNING: Max. abs. dist. between original SS ' +
-                  'pop. dist'n and period-T pop. dist'n is greater than' +
+                  "pop. dist'n and period-T pop. dist'n is greater than" +
                   ' 0.0003. It is ' + str(omegaSSmaxdif) + '.')
         else:
             print('POP. SUCCESS: orig. SS pop. dist is very close to ' +
-                  'period-T pop. dist'n. The maximum absolute ' +
+                  "period-T pop. dist'n. The maximum absolute " +
                   'difference is ' + str(omegaSSmaxdif) + '.')
 
         # Plot the adjusted steady-state population distribution versus
@@ -579,8 +579,8 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
                   + ' and adjusted steady-state population ' +
                   'distributions is ' + str(omegaSSvTmaxdiff))
         fig, ax = plt.subplots()
-        plt.plot(age_per_EpS, omega_SS_orig, label='Original Dist'n')
-        plt.plot(age_per_EpS, omega_SSfx, label='Fixed Dist'n')
+        plt.plot(age_per_EpS, omega_SS_orig, label="Original Dist'n")
+        plt.plot(age_per_EpS, omega_SSfx, label="Fixed Dist'n")
         # for the minor ticks, use no labels; default NullFormatter
         minorLocator = MultipleLocator(1)
         ax.xaxis.set_minor_locator(minorLocator)
@@ -589,7 +589,7 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
             'Original steady-state population distribution vs. fixed',
             fontsize=20)
         plt.xlabel(r'Age $s$')
-        plt.ylabel(r'Pop. dist'n $\omega_{s}$')
+        plt.ylabel(r"Pop. dist'n $\omega_{s}$")
         plt.xlim((0, E + S + 1))
         plt.legend(loc='upper right')
         # Create directory if OUTPUT directory does not already exist
@@ -708,7 +708,7 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
             'Population distribution at points in time path',
             fontsize=20)
         plt.xlabel(r'Age $s$')
-        plt.ylabel(r'Pop. dist'n $\omega_{s}$')
+        plt.ylabel(r"Pop. dist'n $\omega_{s}$")
         plt.xlim((0, E+S+1))
         plt.legend(loc='lower left')
         # Create directory if OUTPUT directory does not already exist
