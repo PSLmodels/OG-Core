@@ -260,8 +260,8 @@ def pop_rebin(curr_pop_dist, totpers_new):
     Args:
         curr_pop_dist (Numpy array): population distribution over N
             periods
-    totpers_new (int): number of periods to which we are
-        transforming the population distribution, >= 4
+        totpers_new (int): number of periods to which we are
+            transforming the population distribution, >= 4
 
     Returns:
         curr_pop_new (Numpy array): new population distribution over
@@ -269,6 +269,7 @@ def pop_rebin(curr_pop_dist, totpers_new):
 
     '''
     # Number of periods in original data
+    assert totpers_new >= 4
     totpers_orig = len(curr_pop_dist)
     if int(totpers_new) == totpers_orig:
         curr_pop_new = curr_pop_dist
