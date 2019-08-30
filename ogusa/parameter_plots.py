@@ -180,3 +180,29 @@ def plot_elliptical_u(p, plot_MU=True, include_title=False, path=None):
     else:
         fig_path = os.path.join(path, "ellipse_v_CFE")
         plt.savefig(fig_path)
+
+
+def plot_chi_n(p, include_title=False, path=None):
+    '''
+    Create a plot of showing the values of the chi_n parameters.
+
+    Args:
+        p (OG-USA Specifications class): parameters object
+        path (string): path to save figure to
+
+    Returns:
+        fig (Matplotlib plot object): plot of chi_n parameters
+
+    '''
+    age = np.linspace(p.starting_age, p.ending_age, p.S)
+    fig, ax = plt.subplots()
+    plt.plot(age, p.chi_n)
+    if include_title:
+        plt.title('Utility Weight on the Disutility of Labor Supply')
+    plt.xlabel(r'Age, $s$')
+    plt.ylabel(r'\chi^{n}_{s}')
+    if path is None:
+        return fig
+    else:
+        fig_path = os.path.join(path, "chi_n_values")
+        plt.savefig(fig_path)
