@@ -555,7 +555,7 @@ class Inequality():
             pctile_share (scalar): share of variable attributed to the
                 top pctile group
         '''
-        loc_pctile = np.argmin(np.abs(self.cum_weights - pctile))
+        loc_pctile = np.argmin(np.abs(self.cum_weights - (1 - pctile)))
         pctile_share = ((
             self.sort_dist[loc_pctile:] *
             self.sort_weights[loc_pctile:]).sum() /
