@@ -537,6 +537,10 @@ class Inequality():
         Notes:
             usually pct1 > pct 2
         '''
+        assert pct1 > 0
+        assert pct1 < 1
+        assert pct2 > 0
+        assert pct2 < 1
         loc_pct1 = np.argmin(np.abs(self.cum_weights - pct1))
         loc_pct2 = np.argmin(np.abs(self.cum_weights - pct2))
         pct_ratio = self.sort_dist[loc_pct1] / self.sort_dist[loc_pct2]
@@ -555,6 +559,8 @@ class Inequality():
             pctile_share (scalar): share of variable attributed to the
                 top pctile group
         '''
+        assert pctile > 0
+        assert pctile < 1
         loc_pctile = np.argmin(np.abs(self.cum_weights - (1 - pctile)))
         pctile_share = ((
             self.sort_dist[loc_pctile:] *
