@@ -199,8 +199,8 @@ def plot_chi_n(p, include_title=False, path=None):
     plt.plot(age, p.chi_n)
     if include_title:
         plt.title('Utility Weight on the Disutility of Labor Supply')
-    plt.xlabel(r'Age, $s$')
-    plt.ylabel(r'\chi^{n}_{s}')
+    plt.xlabel('Age, $s$')
+    plt.ylabel(r'$\chi^{n}_{s}$')
     if path is None:
         return fig
     else:
