@@ -686,9 +686,11 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         Ctil_init = 1.0
         Dtil_init = 1.0
         max_x_init = np.minimum(
-            txrates[(df['Total capital income'] < y_20pctl)].max(), 0.7)
+            txrates[(df['Total capital income'] < y_20pctl)].max(),
+            MAX_ETR + 0.05)
         max_y_init = np.minimum(
-            txrates[(df['Total labor income'] < x_20pctl)].max(), 0.7)
+            txrates[(df['Total labor income'] < x_20pctl)].max(),
+            MAX_ETR + 0.05)
         shift = txrates[(df['Total labor income'] < x_20pctl) |
                         (df['Total capital income'] < y_20pctl)].min()
         share_init = 0.5
@@ -700,7 +702,8 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         lb_max_x = np.maximum(min_x, 0.0) + 1e-4
         lb_max_y = np.maximum(min_y, 0.0) + 1e-4
         bnds = ((1e-12, None), (1e-12, None), (1e-12, None), (1e-12, None),
-                (lb_max_x, 0.8), (lb_max_y, 0.8), (0, 1))
+                (lb_max_x, MAX_ETR + 0.15), (lb_max_y, MAX_ETR + 0.15),
+                (0, 1))
         params_til = opt.minimize(wsumsq, params_init, args=(tx_objs),
                                   method="L-BFGS-B", bounds=bnds, tol=1e-15)
         Atil, Btil, Ctil, Dtil, max_x, max_y, share = params_til.x
@@ -727,9 +730,11 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         Atil_init = 1.0
         Btil_init = 1.0
         max_x_init = np.minimum(
-            txrates[(df['Total capital income'] < y_20pctl)].max(), 0.7)
+            txrates[(df['Total capital income'] < y_20pctl)].max(),
+            MAX_ETR + 0.05)
         max_y_init = np.minimum(
-            txrates[(df['Total labor income'] < x_20pctl)].max(), 0.7)
+            txrates[(df['Total labor income'] < x_20pctl)].max(),
+            MAX_ETR + 0.05)
         max_income_init = max(max_x_init, max_y_init)
         min_income = min(min_x, min_y)
         shift = txrates[(df['Total labor income'] < x_20pctl) |
@@ -739,7 +744,8 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         tx_objs = (np.array([min_income, shift]), X, Y, txrates, wgts,
                    tax_func_type, rate_type)
         lb_max_income = np.maximum(min_income, 0.0) + 1e-4
-        bnds = ((1e-12, None), (1e-12, None), (lb_max_income, 0.8))
+        bnds = ((1e-12, None), (1e-12, None), (lb_max_income,
+                                               MAX_ETR + 0.15))
         params_til = opt.minimize(wsumsq, params_init, args=(tx_objs),
                                   method="L-BFGS-B", bounds=bnds, tol=1e-15)
         Atil, Btil, max_income = params_til.x
