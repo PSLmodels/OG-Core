@@ -289,8 +289,8 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
                     (T_I + T_P + T_BQ + T_W + T_C)).sum() +
                    business_revenue)
     elif method == 'TPI':
-        r_array = utils.to_timepath_shape(r, p)
-        w_array = utils.to_timepath_shape(w, p)
+        r_array = utils.to_timepath_shape(r)
+        w_array = utils.to_timepath_shape(w)
         I = r_array * b + w_array * n * p.e
         T_I = np.zeros_like(I)
         T_I = tax.ETR_income(r_array, w_array, b, n, factor, p.e,

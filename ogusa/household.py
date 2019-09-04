@@ -135,7 +135,7 @@ def get_bq(BQ, j, p, method):
             else:
                 len_T = BQ.shape[0]
                 bq = ((np.reshape(p.zeta, (1, p.S, p.J)) *
-                      utils.to_timepath_shape(BQ, p)) /
+                      utils.to_timepath_shape(BQ)) /
                       (p.lambdas.reshape((1, 1, p.J)) *
                        p.omega[:len_T, :].reshape((len_T, p.S, 1))))
     else:
@@ -192,7 +192,7 @@ def get_tr(TR, j, p, method):
         else:
             len_T = TR.shape[0]
             tr = ((p.eta[:len_T, :, :] *
-                   utils.to_timepath_shape(TR, p)) /
+                   utils.to_timepath_shape(TR)) /
                   (p.lambdas.reshape((1, 1, p.J)) *
                    p.omega[:len_T, :].reshape((len_T, p.S, 1))))
 
@@ -271,8 +271,8 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, theta, e, rho,
     else:
         chi_b = p.chi_b
         if method == 'TPI':
-            r = utils.to_timepath_shape(r, p)
-            w = utils.to_timepath_shape(w, p)
+            r = utils.to_timepath_shape(r)
+            w = utils.to_timepath_shape(w)
 
     taxes = tax.total_taxes(r, w, b, n, bq, factor, tr, theta, t, j,
                             False, method, e, etr_params, p)
@@ -350,9 +350,9 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, tr, theta, chi_n, e,
             w = w.reshape(w.shape[0], 1)
             tau_payroll = tau_payroll.reshape(tau_payroll.shape[0], 1)
         elif b.ndim == 3:
-            r = utils.to_timepath_shape(r, p)
-            w = utils.to_timepath_shape(w, p)
-            tau_payroll = utils.to_timepath_shape(tau_payroll, p)
+            r = utils.to_timepath_shape(r)
+            w = utils.to_timepath_shape(w)
+            tau_payroll = utils.to_timepath_shape(tau_payroll)
 
     taxes = tax.total_taxes(r, w, b, n, bq, factor, tr, theta, t, j,
                             False, method, e, etr_params, p)
