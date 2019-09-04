@@ -16,7 +16,7 @@ from ogusa import tax, household, utils
 
 
 def get_L(n, p, method):
-    '''
+    r'''
     Calculate aggregate labor supply.
 
     .. math::
@@ -44,7 +44,7 @@ def get_L(n, p, method):
 
 
 def get_I(b_splus1, K_p1, K, p, method):
-    '''
+    r'''
     Calculate aggregate investment.
 
     .. math::
@@ -96,7 +96,7 @@ def get_I(b_splus1, K_p1, K, p, method):
 
 
 def get_B(b, p, method, preTP):
-    '''
+    r'''
     Calculate aggregate savings
 
     .. math::
@@ -341,7 +341,7 @@ def get_r_hh(r, r_gov, K, D):
 
 def resource_constraint(Y, C, G, I, K_f, new_borrowing_f,
                         debt_service_f, r, p):
-    '''
+    r'''
     Compute the error in the resource constraint.
 
     .. math::
