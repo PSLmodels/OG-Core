@@ -320,7 +320,7 @@ def to_timepath_shape(some_array, p):
     return tp_array
 
 
-def get_initial_path(x1, xT, T, spec):
+def get_initial_path(x1, xT, p, shape):
     r'''
     This function generates a path from point x1 to point xT such that
     that the path x is a linear or quadratic function of time t.
@@ -332,7 +332,8 @@ def get_initial_path(x1, xT, T, spec):
         x1 (scalar): initial value of the function x(t) at t=0
         xT (scalar): value of the function x(t) at t=T-1
         T (int): number of periods of the path, must be >= 3
-        spec (str): shape of guess for time path, "linear" or "quadratic"
+        shape (str): shape of guess for time path, "linear", "ratio",
+            or "quadratic"
 
     Returns:
         xpath (Numpy array): guess of variable over the time path
@@ -344,16 +345,23 @@ def get_initial_path(x1, xT, T, spec):
             3. the slope of the path at `t=T-1` is 0: 0 = 2*a*(T-1) + b`
 
     '''
-    if spec == "linear":
-        xpath = np.linspace(x1, xT, T)
-    elif spec == "quadratic":
+    if shape == "linear":
+        xpath = np.linspace(x1, xT, p.T)
+    elif shape == "ratio":
+        domain = np.linspace(0, p.T, p.T)
+        domain2 = np.tile(domain.reshape(p.T, 1, 1), (1, p.S, p.J))
+        xpath = (-1 / (domain2 + 1)) * (xT - x1) + xT
+    elif shape == "quadratic":
         cc = x1
-        bb = 2 * (xT - x1) / (T - 1)
-        aa = (x1 - xT) / ((T - 1) ** 2)
-        xpath = (aa * (np.arange(0, T) ** 2) + (bb * np.arange(0, T)) +
-                 cc)
+        bb = 2 * (xT - x1) / (p.T - 1)
+        aa = (x1 - xT) / ((p.T - 1) ** 2)
+        xpath = (aa * (np.arange(0, p.T).reshape(p.T, 1, 1) ** 2) +
+                 (bb * np.arange(0, p.T).reshape(p.T, 1, 1)) + cc)
+    ending_x_tail = np.tile(xT.reshape(1, p.S, p.J),
+                            (p.S, 1, 1))
+    xpath_full = np.append(xpath, ending_x_tail, axis=0)
 
-    return xpath
+    return xpath_full
 
 
 def safe_read_pickle(file_path):
