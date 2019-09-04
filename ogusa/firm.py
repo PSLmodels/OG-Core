@@ -14,12 +14,12 @@ import numpy as np
 
 
 def get_Y(K, L, p, method):
-    '''
+    r'''
     Generates aggregate output (GDP) from aggregate capital stock,
     aggregate labor, and CES production function parameters.
 
     .. math::
-        Y_{t} = Z_{t}\[\gamma^{\frac{1}{\varepsilon}}K_{t}^{\frac{\varepsilon - 1}{\varepsilon}} + (1 - \gamma)^{\frac{1}{\varepsilon}}L_{t}^{\frac{\varepsilon - 1}{\varepsilon}}\]^{\frac{\varepsilon}{\varepsilon - 1}}
+        Y_{t} = Z_{t}\left[\gamma^{\frac{1}{\varepsilon}}K_{t}^{\frac{\varepsilon - 1}{\varepsilon}} + (1 - \gamma)^{\frac{1}{\varepsilon}}L_{t}^{\frac{\varepsilon - 1}{\varepsilon}}\right]^{\frac{\varepsilon}{\varepsilon - 1}}
 
     Args:
         K (array_like): aggregate capital
@@ -79,7 +79,7 @@ def get_MPL(Y, L, p, method):
 
 
 def get_r(Y, K, p, method):
-    '''
+    r'''
     This function computes the interest rate as a function of Y, K, and
     parameters using the firm's first order condition for capital
     demand.
@@ -162,7 +162,7 @@ def get_r_dyn(Y, K, Kp1, Kp2, p, method):
 
 
 def get_w(Y, L, p, method):
-    '''
+    r'''
     This function computes the wage as a function of Y, L, and
     parameters using the firm's first order condition for labor demand.
 
@@ -186,12 +186,12 @@ def get_w(Y, L, p, method):
 
 
 def get_KLratio_from_r(r, p, method):
-    '''
+    r'''
     This function solves for the capital-labor ratio given the interest
     rate r and parameters.
 
     .. math::
-        \frac{K}{L} = \left(\frac{(1-\gamma)^\frac{1}{\varepislon}}{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})\gamma^\frac{1}{\varepislon}Z}\right]^{\varepislon-1} - \gamma^\frac{1}{\varepislon}}\right)^\frac{\varepislon}{\varepislon-1}
+        \frac{K}{L} = \left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})\gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} - \gamma^\frac{1}{\varepsilon}}\right)^\frac{\varepsilon}{\varepsilon-1}
 
     Args:
         r (array_like): the real interest rate
@@ -230,12 +230,12 @@ def get_KLratio_from_r(r, p, method):
 
 
 def get_w_from_r(r, p, method):
-    '''
+    r'''
     Solve for steady-state wage w or time path of wages w_t given
     interest rate.
 
     .. math::
-        w = (1-\gamma)^\frac{1}{\varepislon}Z\left[(\gamma)^\frac{1}{\varepislon}\left(\frac{(1-\gamma)^\frac{1}{\varepislon}}{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})\gamma^\frac{1}{\varepislon}Z}\right]^{\varepislon-1} - \gamma^\frac{1}{\varepislon}}\right) + (1-\gamma)^\frac{1}{\varepislon}\right]^\frac{1}{\varepislon-1}
+        w = (1-\gamma)^\frac{1}{\varepsilon}Z\left[(\gamma)^\frac{1}{\varepsilon}\left(\frac{(1-\gamma)^\frac{1}{\varepsilon}}{\left[\frac{r + \delta - \tau^{corp}\delta^\tau}{(1 - \tau^{corp})\gamma^\frac{1}{\varepsilon}Z}\right]^{\varepsilon-1} - \gamma^\frac{1}{\varepsilon}}\right) + (1-\gamma)^\frac{1}{\varepsilon}\right]^\frac{1}{\varepsilon-1}
 
     Args:
         r (array_like): the real interest rate
@@ -266,7 +266,7 @@ def get_w_from_r(r, p, method):
 
 
 def get_K(L, r, p, method):
-    '''
+    r'''
     Generates vector of aggregate capital. Use with the open economy
     options.
 
@@ -291,7 +291,7 @@ def get_K(L, r, p, method):
 
 
 def get_K_from_Y(Y, r, p, method):
-    '''
+    r'''
     Generates vector of aggregate capital. Use with the open economy
     options.
 
@@ -311,7 +311,7 @@ def get_K_from_Y(Y, r, p, method):
     '''
     KLratio = get_KLratio_from_r(r, p, method)
     LKratio = KLratio ** -1
-    YKratio = get_Y(1, LKratio, p, method)  #can use get_Y because CRS
+    YKratio = get_Y(1, LKratio, p, method)  # can use get_Y because CRS
     K = Y / YKratio
 
     return K

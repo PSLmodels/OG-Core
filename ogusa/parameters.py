@@ -3,7 +3,6 @@ import os
 import six
 import re
 import numpy as np
-import pickle
 import scipy.interpolate as si
 import pkg_resources
 
@@ -13,7 +12,8 @@ from ogusa import elliptical_u_est
 from ogusa import demographics
 from ogusa import income
 from ogusa import txfunc
-from ogusa.utils import BASELINE_DIR, TC_LAST_YEAR, safe_read_pickle
+from ogusa.utils import (BASELINE_DIR, TC_LAST_YEAR, rate_conversion,
+                         safe_read_pickle)
 # from ogusa import elliptical_u_est
 
 
@@ -26,7 +26,7 @@ class Specifications(ParametersBase):
     def __init__(self,
                  run_micro=False, output_base=BASELINE_DIR,
                  baseline_dir=BASELINE_DIR, test=False, time_path=True,
-                 baseline=False, reform={}, guid='', data='cps',
+                 baseline=False, iit_reform={}, guid='', data='cps',
                  flag_graphs=False, client=None, num_workers=1):
         super(Specifications, self).__init__()
 
@@ -38,7 +38,7 @@ class Specifications(ParametersBase):
         self.test = test
         self.time_path = time_path
         self.baseline = baseline
-        self.reform = reform
+        self.iit_reform = iit_reform
         self.guid = guid
         self.data = data
         self.flag_graphs = flag_graphs
@@ -83,6 +83,7 @@ class Specifications(ParametersBase):
             self.S = int(40)
             self.lambdas = np.array([0.6, 0.4]).reshape(2, 1)
             self.J = self.lambdas.shape[0]
+            self.eta = np.ones((self.S, self.J)) / (self.S * self.J)
             self.maxiter = 35
             self.mindist_SS = 1e-6
             self.mindist_TPI = 1e-3
@@ -113,13 +114,16 @@ class Specifications(ParametersBase):
         self.E = int(self.starting_age * (self.S / (self.ending_age -
                                                     self.starting_age)))
         # Find rates in model periods from annualized rates
-        self.beta = (self.beta_annual ** ((self.ending_age -
-                                          self.starting_age) / self.S))
-        self.delta = (1 - ((1 - self.delta_annual) **
-                           ((self.ending_age - self.starting_age) / self.S)))
-        self.g_y = ((1 + self.g_y_annual) ** ((self.ending_age -
-                                               self.starting_age) /
-                                              self.S) - 1)
+        self.beta = (
+            1 / (rate_conversion(1 / self.beta_annual - 1,
+                                 self.starting_age, self.ending_age,
+                                 self.S) + 1))
+        self.delta = (
+            -1 * rate_conversion(-1 * self.delta_annual,
+                                 self.starting_age, self.ending_age,
+                                 self.S))
+        self.g_y = rate_conversion(self.g_y_annual, self.starting_age,
+                                   self.ending_age, self.S)
 
         # Extend parameters that may vary over the time path
         tp_param_list = ['alpha_G', 'alpha_T', 'Z', 'world_int_rate',
@@ -159,26 +163,66 @@ class Specifications(ParametersBase):
             setattr(self, 'tau_c',  tau_c_to_set)
         else:
             print('please give a tau_c that is a single element or 3-D array')
-            quit()
+            assert False
+
+        # Try to deal with size of eta.  It may vary by S, J, T, but
+        # want to allow user to enter one that varies by only S, S and J,
+        # S and T, or T and S and J.
+        eta_to_set = getattr(self, 'eta')
+        # this is the case that vary only by S
+        if eta_to_set.ndim == 1:
+            assert eta_to_set.shape[0] == self.S
+            eta_to_set = np.tile(
+                (np.tile(eta_to_set.reshape(self.S, 1), (1, self.J)) /
+                 self.J).reshape(1, self.S, self.J),
+                (self.T + self.S, 1, 1))
+        # this could be where vary by S and J or T and S
+        elif eta_to_set.ndim == 2:
+            # case if S by J input
+            if eta_to_set.shape[0] == self.S:
+                eta_to_set = np.tile(
+                    eta_to_set.reshape(1, self.S, self.J),
+                    (self.T + self.S, 1, 1))
+                eta_to_set = eta_to_set = np.concatenate(
+                    (eta_to_set,
+                     np.tile(eta_to_set[-1, :, :].reshape(1, self.S, self.J),
+                             (self.S, 1, 1))), axis=0)
+            # case if T by S input
+            elif eta_to_set.shape[0] == self.T:
+                eta_to_set = (np.tile(
+                    eta_to_set.reshape(self.T, self.S, 1),
+                    (1, 1, self.J)) / self.J)
+                eta_to_set = eta_to_set = np.concatenate(
+                    (eta_to_set,
+                     np.tile(eta_to_set[-1, :, :].reshape(1, self.S, self.J),
+                             (self.S, 1, 1))), axis=0)
+            else:
+                print('please give an eta that is either SxJ or TxS')
+                assert False
+        # this is the case where vary by S, J, T
+        elif eta_to_set.ndim == 3:
+            eta_to_set = eta_to_set = np.concatenate(
+                (eta_to_set,
+                 np.tile(eta_to_set[-1, :, :].reshape(1, self.S, self.J),
+                         (self.S, 1, 1))), axis=0)
+        setattr(self, 'eta',  eta_to_set)
 
         # open economy parameters
         firm_r_annual = self.world_int_rate
         hh_r_annual = firm_r_annual
-        self.firm_r = ((1 + firm_r_annual) **
-                       ((self.ending_age - self.starting_age) /
-                        self.S) - 1)
-        self.hh_r = ((1 + hh_r_annual) **
-                     ((self.ending_age - self.starting_age) /
-                      self.S) - 1)
-
+        self.firm_r = rate_conversion(
+            firm_r_annual, self.starting_age, self.ending_age, self.S)
+        self.hh_r = rate_conversion(
+            hh_r_annual, self.starting_age, self.ending_age, self.S)
         # set period of retirement
         self.retire = (np.round(((self.retirement_age -
                                   self.starting_age) * self.S) /
                                 80.0) - 1).astype(int)
 
-        self.delta_tau = (1 - ((1 - self.delta_tau_annual) **
-                               ((self.ending_age - self.starting_age) /
-                                self.S)))
+        self.delta_tau = (
+            -1 * rate_conversion(-1 * self.delta_tau_annual,
+                                 self.starting_age, self.ending_age,
+                                 self.S))
 
         # get population objects
         (self.omega, self.g_n_ss, self.omega_SS, self.surv_rate,
@@ -254,8 +298,9 @@ class Specifications(ParametersBase):
             txfunc.get_tax_func_estimate(
                 self.BW, self.S, self.starting_age, self.ending_age,
                 self.baseline, self.analytical_mtrs, self.tax_func_type,
-                self.age_specific, self.start_year, self.reform, self.guid,
-                tx_func_est_path, self.data, client, self.num_workers)
+                self.age_specific, self.start_year, self.iit_reform,
+                self.guid, tx_func_est_path, self.data, client,
+                self.num_workers)
         if self.baseline:
             baseline_pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
             estimate_file = tx_func_est_path
@@ -569,6 +614,7 @@ class Specifications(ParametersBase):
                     pval_is_int = type(pval) == int
                     pval_is_float = type(pval) == float
                     pval_is_string = type(pval) == str
+                    pval_is_ndarray = type(pval) == np.ndarray
                     if bool_param_type:
                         if not pval_is_bool:
                             msg = '{} value {} is not boolean'
@@ -593,8 +639,9 @@ class Specifications(ParametersBase):
                                 msg.format(param_name, pval) +
                                 '\n'
                             )
-                    else:  # param is float type
-                        if not (pval_is_int or pval_is_float):
+                    else:  # param is float or array type
+                        if not (pval_is_int or
+                                pval_is_float or pval_is_ndarray):
                             msg = '{} value {} is not a number'
                             self.parameter_errors += (
                                 'ERROR: ' +
@@ -629,15 +676,16 @@ class Specifications(ParametersBase):
                         msg = '{} value {} not in possible values {}'
                         if out_of_range:
                             self.parameter_errors += (
-                                'ERROR: ' + msg.format(param_name,
-                                                       param_value,
-                                                       validation_value) + '\n'
+                                'ERROR: ' + msg.format(
+                                    param_name, param_value,
+                                    validation_value) + '\n'
                                 )
                 else:
                     # print(validation_op, param_value, validation_value)
                     if isinstance(validation_value, six.string_types):
                         validation_value = self.simple_eval(validation_value)
-                    validation_value = np.full(param_value.shape, validation_value)
+                    validation_value = np.full(param_value.shape,
+                                               validation_value)
                     assert param_value.shape == validation_value.shape
                     for idx in np.ndindex(param_value.shape):
                         out_of_range = False

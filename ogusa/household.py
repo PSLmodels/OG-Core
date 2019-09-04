@@ -106,7 +106,7 @@ def get_bq(BQ, j, p, method):
     Calculate bequests to each household.
 
     .. math::
-        bq_{j,s,t} = zeta_{j,s}BQ_{t}
+        bq_{j,s,t} = zeta_{j,s}\frac{BQ_{t}}{\lambda_{j}\omega_{s,t}}
 
     Args:
         BQ (array_like): aggregate bequests
@@ -135,7 +135,7 @@ def get_bq(BQ, j, p, method):
             else:
                 len_T = BQ.shape[0]
                 bq = ((np.reshape(p.zeta, (1, p.S, p.J)) *
-                      utils.to_timepath_shape(BQ, p)) /
+                      utils.to_timepath_shape(BQ)) /
                       (p.lambdas.reshape((1, 1, p.J)) *
                        p.omega[:len_T, :].reshape((len_T, p.S, 1))))
     else:
@@ -158,12 +158,53 @@ def get_bq(BQ, j, p, method):
     return bq
 
 
+def get_tr(TR, j, p, method):
+    r'''
+    Calculate transfers to each household.
+
+    .. math::
+        tr_{j,s,t} = zeta_{j,s}\frac{TR_{t}}{\lambda_{j}\omega_{s,t}}
+
+    Args:
+        TR (array_like): aggregate transfers
+        j (int): index of lifetime ability group
+        p (OG-USA Specifcations object): model parameters
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+
+    Returns:
+        tr (array_like): bequests received by each household
+
+    '''
+    if j is not None:
+        if method == 'SS':
+            tr = (p.eta[-1, :, j] * TR) / (p.lambdas[j] * p.omega_SS)
+        else:
+            len_T = TR.shape[0]
+            tr = ((p.eta[:len_T, :, j] *
+                  TR.reshape((len_T, 1))) /
+                  (p.lambdas[j] * p.omega[:len_T, :]))
+    else:
+        if method == 'SS':
+            tr = ((p.eta[-1, :, :] * TR) /
+                  (p.lambdas.reshape((1, p.J)) *
+                   p.omega_SS.reshape((p.S, 1))))
+        else:
+            len_T = TR.shape[0]
+            tr = ((p.eta[:len_T, :, :] *
+                   utils.to_timepath_shape(TR)) /
+                  (p.lambdas.reshape((1, 1, p.J)) *
+                   p.omega[:len_T, :].reshape((len_T, p.S, 1))))
+
+    return tr
+
+
 def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
     r'''
     Calculate household consumption.
 
     .. math::
-        c_{j,s,t} =  \frac{(1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + bq_{j,s,t} + tr_{j,s,t} - T_{j,s,t} - e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}}_{s,t}}
+        c_{j,s,t} =  \frac{(1 + r_{t})b_{j,s,t} + w_t e_{j,s} n_{j,s,t} + bq_{j,s,t} + tr_{j,s,t} - T_{j,s,t} - e^{g_y}b_{j,s+1,t+1}}{1 - \tau^{c}_{s,t}}
 
     Args:
         r (array_like): the real interest rate
@@ -186,7 +227,7 @@ def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
     return cons
 
 
-def FOC_savings(r, w, b, b_splus1, n, bq, factor, T_H, theta, e, rho,
+def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, theta, e, rho,
                 tau_c, etr_params, mtry_params, t, j, p, method):
     r'''
     Computes Euler errors for the FOC for savings in the steady state.
@@ -205,7 +246,7 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, T_H, theta, e, rho,
         n (Numpy array): household labor supply
         bq (Numpy array): household bequests received
         factor (scalar): scaling factor converting model units to dollars
-        T_H (Numpy array): government tranfers to households
+        tr (Numpy array): government tranfers to household
         theta (Numpy array): social security replacement rate for each
             lifetime income group
         e (Numpy array): effective labor units
@@ -230,11 +271,10 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, T_H, theta, e, rho,
     else:
         chi_b = p.chi_b
         if method == 'TPI':
-            r = utils.to_timepath_shape(r, p)
-            w = utils.to_timepath_shape(w, p)
-            T_H = utils.to_timepath_shape(T_H, p)
+            r = utils.to_timepath_shape(r)
+            w = utils.to_timepath_shape(w)
 
-    taxes = tax.total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j,
+    taxes = tax.total_taxes(r, w, b, n, bq, factor, tr, theta, t, j,
                             False, method, e, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
     deriv = ((1 + r) - r * (tax.MTR_income(r, w, b, n, factor, True, e,
@@ -258,7 +298,7 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, T_H, theta, e, rho,
     return euler_error
 
 
-def FOC_labor(r, w, b, b_splus1, n, bq, factor, T_H, theta, chi_n, e,
+def FOC_labor(r, w, b, b_splus1, n, bq, factor, tr, theta, chi_n, e,
               tau_c, etr_params, mtrx_params, t, j, p, method):
     r'''
     Computes errors for the FOC for labor supply in the steady
@@ -276,7 +316,7 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, T_H, theta, chi_n, e,
         n (Numpy array): household labor supply
         bq (Numpy array): household bequests received
         factor (scalar): scaling factor converting model units to dollars
-        T_H (Numpy array): government tranfers to households
+        tr (Numpy array): government tranfers to household
         theta (Numpy array): social security replacement rate for each
             lifetime income group
         chi_n (Numpy array): utility weight on the disutility of labor
@@ -308,15 +348,13 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, T_H, theta, chi_n, e,
         if b.ndim == 2:
             r = r.reshape(r.shape[0], 1)
             w = w.reshape(w.shape[0], 1)
-            T_H = T_H.reshape(T_H.shape[0], 1)
             tau_payroll = tau_payroll.reshape(tau_payroll.shape[0], 1)
         elif b.ndim == 3:
-            r = utils.to_timepath_shape(r, p)
-            w = utils.to_timepath_shape(w, p)
-            T_H = utils.to_timepath_shape(T_H, p)
-            tau_payroll = utils.to_timepath_shape(tau_payroll, p)
+            r = utils.to_timepath_shape(r)
+            w = utils.to_timepath_shape(w)
+            tau_payroll = utils.to_timepath_shape(tau_payroll)
 
-    taxes = tax.total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j,
+    taxes = tax.total_taxes(r, w, b, n, bq, factor, tr, theta, t, j,
                             False, method, e, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
     deriv = (1 - tau_payroll - tax.MTR_income(r, w, b, n, factor,

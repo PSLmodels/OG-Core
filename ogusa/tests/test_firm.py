@@ -41,7 +41,8 @@ new_param_values4 = {
     'gamma': 0.5,
     'epsilon': 1.0,
     'T': 3,
-    'S': 3
+    'S': 3,
+    'eta': (np.ones((3, p4.J)) / (3 * p4.J))
 }
 # update parameters instance with new values for test
 p4.update_specifications(new_param_values4)
@@ -54,7 +55,8 @@ new_param_values5 = {
     'gamma': 0.5,
     'epsilon': 1.0,
     'T': 3,
-    'S': 3
+    'S': 3,
+    'eta': (np.ones((3, p5.J)) / (3 * p5.J))
 }
 # update parameters instance with new values for test
 p5.update_specifications(new_param_values5)
@@ -277,7 +279,8 @@ new_param_values4 = {
     'epsilon': 1.2,
     'delta_annual': [0.5],
     'T': 3,
-    'S': 3
+    'S': 3,
+    'eta': (np.ones((3, p4.J)) / (3 * p4.J))
 }
 # update parameters instance with new values for test
 p4.update_specifications(new_param_values4)
@@ -294,7 +297,8 @@ new_param_values5 = {
     'epsilon': 1.2,
     'delta_annual': [0.5],
     'T': 3,
-    'S': 3
+    'S': 3,
+    'eta': (np.ones((3, p5.J)) / (3 * p5.J))
 }
 # update parameters instance with new values for test
 p5.update_specifications(new_param_values5)
@@ -354,7 +358,8 @@ new_param_values4 = {
     'gamma': 0.5,
     'epsilon': 1.2,
     'T': 3,
-    'S': 3
+    'S': 3,
+    'eta': (np.ones((3, p4.J)) / (3 * p4.J))
 }
 # update parameters instance with new values for test
 p4.update_specifications(new_param_values4)
@@ -425,7 +430,8 @@ new_param_values4 = {
     'epsilon': 0.5,
     'tau_b': [0.0357],
     'T': 3,
-    'S': 3
+    'S': 3,
+    'eta': (np.ones((3, p4.J)) / (3 * p4.J))
 }
 # update parameters instance with new values for test
 p4.update_specifications(new_param_values4)
@@ -495,7 +501,8 @@ new_param_values4 = {
     'epsilon': 1.2,
     'tau_b': [0.0357],
     'T': 3,
-    'S': 3
+    'S': 3,
+    'eta': (np.ones((3, p4.J)) / (3 * p4.J))
 }
 # update parameters instance with new values for test
 p4.update_specifications(new_param_values4)
@@ -566,7 +573,8 @@ new_param_values4 = {
     'delta_annual': [0.05],
     'tau_b': [0.5],
     'T': 3,
-    'S': 3
+    'S': 3,
+    'eta': (np.ones((3, p4.J)) / (3 * p4.J))
 }
 # update parameters instance with new values for test
 p4.update_specifications(new_param_values4)

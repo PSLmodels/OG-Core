@@ -1,4 +1,4 @@
-'''
+B'''
 ------------------------------------------------------------------------
 Functions to compute economic aggregates.
 ------------------------------------------------------------------------
@@ -16,7 +16,7 @@ from ogusa import tax, household, utils
 
 
 def get_L(n, p, method):
-    '''
+    r'''
     Calculate aggregate labor supply.
 
     .. math::
@@ -44,7 +44,7 @@ def get_L(n, p, method):
 
 
 def get_I(b_splus1, K_p1, K, p, method):
-    '''
+    r'''
     Calculate aggregate investment.
 
     .. math::
@@ -95,12 +95,12 @@ def get_I(b_splus1, K_p1, K, p, method):
     return aggI
 
 
-def get_K(b, p, method, preTP):
-    '''
+def get_B(b, p, method, preTP):
+    r'''
     Calculate aggregate savings
 
     .. math::
-        K_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}b_{j,s,t}
+        B_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}b_{j,s,t}
 
     Args:
         b (Numpy array): savings of households
@@ -112,7 +112,7 @@ def get_K(b, p, method, preTP):
             `omega_S_preTP`.
 
     Returns:
-        K (array_like): aggregate capital supply
+        B (array_like): aggregate supply of savings
 
     '''
     if method == 'SS':
@@ -127,9 +127,9 @@ def get_K(b, p, method, preTP):
             imm_extended = np.append(p.imm_rates[-1, 1:], [0.0])
             pop_growth_rate = p.g_n_ss
         part2 = b * np.transpose(omega_extended * imm_extended * p.lambdas)
-        K_presum = part1 + part2
-        K = K_presum.sum()
-        K /= (1.0 + pop_growth_rate)
+        B_presum = part1 + part2
+        B = B_presum.sum()
+        B /= (1.0 + pop_growth_rate)
     elif method == 'TPI':
         part1 = ((b * np.squeeze(p.lambdas)) *
                  np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
@@ -141,10 +141,10 @@ def get_K(b, p, method, preTP):
         part2 = ((b * np.squeeze(p.lambdas)) *
                  np.tile(np.reshape(imm_shift * omega_shift,
                                     (p.T, p.S, 1)), (1, 1, p.J)))
-        K_presum = part1 + part2
-        K = K_presum.sum(1).sum(1)
-        K /= (1.0 + np.hstack((p.g_n[1:p.T], p.g_n_ss)))
-    return K
+        B_presum = part1 + part2
+        B = B_presum.sum(1).sum(1)
+        B /= (1.0 + np.hstack((p.g_n[1:p.T], p.g_n_ss)))
+    return B
 
 
 def get_BQ(r, b_splus1, j, p, method, preTP):
@@ -289,8 +289,8 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
                     (T_I + T_P + T_BQ + T_W + T_C)).sum() +
                    business_revenue)
     elif method == 'TPI':
-        r_array = utils.to_timepath_shape(r, p)
-        w_array = utils.to_timepath_shape(w, p)
+        r_array = utils.to_timepath_shape(r)
+        w_array = utils.to_timepath_shape(w)
         I = r_array * b + w_array * n * p.e
         T_I = np.zeros_like(I)
         T_I = tax.ETR_income(r_array, w_array, b, n, factor, p.e,
@@ -327,7 +327,7 @@ def get_r_hh(r, r_gov, K, D):
         r (array_like): the real interest rate
         r_gov (array_like): the real interest rate on government debt
         K (array_like): aggregate capital
-        K (array_like): aggregate government debt
+        D (array_like): aggregate government debt
 
     Returns:
         r_hh (array_like): the real interest rate on the households
@@ -341,7 +341,7 @@ def get_r_hh(r, r_gov, K, D):
 
 def resource_constraint(Y, C, G, I, K_f, new_borrowing_f,
                         debt_service_f, r, p):
-    '''
+    r'''
     Compute the error in the resource constraint.
 
     .. math::

@@ -231,13 +231,12 @@ def comp_scalar(name, a, b, tol, unequal, exceptions={}, relative=False):
 
 def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False,
                  exceptions={}, relative=False):
-    '''
+    r'''
     Compare two dictionaries. The values of each dict are either
-    numpy arrays
-    or else types that are comparable with the == operator.
-    For arrays, they are considered the same if |x - y| < tol in
-    the L_inf norm.
-    For scalars, they are considered the same if x - y < tol
+    numpy arrays or else types that are comparable with the `==` operator.
+    For arrays, they are considered the same if `|x - y| < tol` in
+    the L_inf norm. For scalars, they are considered the same if
+    `x - y < tol`.
 
     Args:
         fname1 (str): files name for pickle file
@@ -304,14 +303,13 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False,
     return check
 
 
-def to_timepath_shape(some_array, p):
+def to_timepath_shape(some_array):
     '''
     This function takes an vector of length T and tiles it to fill a
     Tx1x1 array for time path computations.
 
     Args:
         some_array (Numpy array): array to reshape
-        p (OG-USA Specifcations object): model parameters
 
     Returns:
         tp_array (Numpy  array): reshaped array
@@ -321,37 +319,48 @@ def to_timepath_shape(some_array, p):
     return tp_array
 
 
-def get_initial_path(x1, xT, T, spec):
-    '''
+def get_initial_path(x1, xT, p, shape):
+    r'''
     This function generates a path from point x1 to point xT such that
     that the path x is a linear or quadratic function of time t.
-        linear:    x = d*t + e
-        quadratic: x = a*t^2 + b*t + c
-    The identifying assumptions for quadratic are the following:
-        (1) x1 is the value at time t=0: x1 = c
-        (2) xT is the value at time t=T-1: xT = a*(T-1)^2 + b*(T-1) + c
-        (3) the slope of the path at t=T-1 is 0: 0 = 2*a*(T-1) + b
+
+        * linear:    `x = d*t + e`
+        * quadratic: `x = a*t^2 + b*t + c`
 
     Args:
         x1 (scalar): initial value of the function x(t) at t=0
         xT (scalar): value of the function x(t) at t=T-1
         T (int): number of periods of the path, must be >= 3
-        spec (str): shape of guess for time path, "linear" or "quadratic"
+        shape (str): shape of guess for time path, "linear", "ratio",
+            or "quadratic"
 
     Returns:
         xpath (Numpy array): guess of variable over the time path
 
-    '''
-    if spec == "linear":
-        xpath = np.linspace(x1, xT, T)
-    elif spec == "quadratic":
-        cc = x1
-        bb = 2 * (xT - x1) / (T - 1)
-        aa = (x1 - xT) / ((T - 1) ** 2)
-        xpath = (aa * (np.arange(0, T) ** 2) + (bb * np.arange(0, T)) +
-                 cc)
+    Notes:
+        The identifying assumptions for quadratic are the following:
+            1. `x1` is the value at time `t=0: x1 = c
+            2. `xT` is the value at time `t=T-1: xT = a*(T-1)^2 + b*(T-1) + c`
+            3. the slope of the path at `t=T-1` is 0: 0 = 2*a*(T-1) + b`
 
-    return xpath
+    '''
+    if shape == "linear":
+        xpath = np.linspace(x1, xT, p.T)
+    elif shape == "ratio":
+        domain = np.linspace(0, p.T, p.T)
+        domain2 = np.tile(domain.reshape(p.T, 1, 1), (1, p.S, p.J))
+        xpath = (-1 / (domain2 + 1)) * (xT - x1) + xT
+    elif shape == "quadratic":
+        cc = x1
+        bb = 2 * (xT - x1) / (p.T - 1)
+        aa = (x1 - xT) / ((p.T - 1) ** 2)
+        xpath = (aa * (np.arange(0, p.T).reshape(p.T, 1, 1) ** 2) +
+                 (bb * np.arange(0, p.T).reshape(p.T, 1, 1)) + cc)
+    ending_x_tail = np.tile(xT.reshape(1, p.S, p.J),
+                            (p.S, 1, 1))
+    xpath_full = np.append(xpath, ending_x_tail, axis=0)
+
+    return xpath_full
 
 
 def safe_read_pickle(file_path):
@@ -371,6 +380,24 @@ def safe_read_pickle(file_path):
         except TypeError:
             obj = pickle.load(f)
     return obj
+
+
+def rate_conversion(annual_rate, start_age, end_age, S):
+    '''
+    This function converts annual rates to model period ratesself.
+
+    Args:
+        annual_rate (array_like): annualized rates
+        start_age (int): age at which agents become economically active
+        end_age (int): maximum age of agents
+        S (int): number of model periods in agents life
+
+    Returns:
+        rate (array_like): model period rates
+
+    '''
+    rate = (1 + annual_rate) ** ((end_age - start_age) / S) - 1
+    return rate
 
 
 def save_return_table(table_df, output_type, path, precision=0):
@@ -431,3 +458,120 @@ def save_return_table(table_df, output_type, path, precision=0):
         else:
             print('Please enter a valid output format')
             assert(False)
+
+
+class Inequality():
+    '''
+    A class with methods to compute different measures of inequality.
+    '''
+
+    def __init__(self, dist, pop_weights, ability_weights, S, J):
+        '''
+        Args:
+            dist (Numpy array): distribution of endogenous variables
+                over age and lifetime income group, size, SxJ
+            pop_weights (Numpy array): fraction of population by each
+                age, length S
+            ability_weights (Numpy array): fraction of population for
+                each lifetime income group, length J
+            S (int): number of economically active periods in lifetime
+            J (int): number of ability types
+
+        Returns:
+            None
+
+        '''
+
+        weights = (np.tile(pop_weights.reshape(S, 1), (1, J)) *
+                   ability_weights.reshape(1, J))
+        flattened_dist = dist.flatten()
+        flattened_weights = weights.flatten()
+        idx = np.argsort(flattened_dist)
+        self.sort_dist = flattened_dist[idx]
+        self.sort_weights = flattened_weights[idx]
+        self.cum_weights = np.cumsum(self.sort_weights)
+
+    def gini(self):
+        '''
+        Compute the Gini coefficient
+
+        Args:
+            None
+
+        Returns:
+            gini_coeff (scalar): Gini coefficient
+        '''
+        p = np.cumsum(self.sort_weights)
+        nu = np.cumsum(self.sort_dist * self.sort_weights)
+        nu = nu / nu[-1]
+        gini_coeff = (nu[1:] * p[:-1]).sum() - (nu[:-1] * p[1:]).sum()
+
+        return gini_coeff
+
+    def var_of_logs(self):
+        '''
+        Compute the variance of logs
+
+        Args:
+            None
+
+        Returns:
+            var_ln_dist (scalar): variance of logs
+
+        '''
+        ln_dist = np.log(self.sort_dist)
+        weight_mean = ((
+            ln_dist * self.sort_weights).sum() / self.sort_weights.sum())
+        var_ln_dist = ((
+            (self.sort_weights * ((ln_dist - weight_mean) ** 2)).sum())
+                       * (1. / (self.sort_weights.sum())))
+
+        return var_ln_dist
+
+    def ratio_pct1_pct2(self, pct1, pct2):
+        '''
+        Compute the pct1/pct2 percentile ratio
+
+        Args:
+            pct1 (scalar): percentile to compute the top pctile% for,
+                in (0, 1).
+            pct2 (scalar): percentile to compute the top pctile% for,
+                in (0, 1)
+
+        Returns:
+            pct_ratio (scalar): ratio of pct1 to pct2
+
+        Notes:
+            usually pct1 > pct 2
+        '''
+        assert pct1 > 0
+        assert pct1 < 1
+        assert pct2 > 0
+        assert pct2 < 1
+        loc_pct1 = np.argmin(np.abs(self.cum_weights - pct1))
+        loc_pct2 = np.argmin(np.abs(self.cum_weights - pct2))
+        pct_ratio = self.sort_dist[loc_pct1] / self.sort_dist[loc_pct2]
+
+        return pct_ratio
+
+    def top_share(self, pctile):
+        '''
+        Compute the top X% share
+
+        Args:
+            pctile (scalar): percentile to compute the top pctile% for,
+                in (0, 1).
+
+        Returns:
+            pctile_share (scalar): share of variable attributed to the
+                top pctile group
+        '''
+        assert pctile > 0
+        assert pctile < 1
+        loc_pctile = np.argmin(np.abs(self.cum_weights - (1 - pctile)))
+        pctile_share = ((
+            self.sort_dist[loc_pctile:] *
+            self.sort_weights[loc_pctile:]).sum() /
+                        (self.sort_dist * self.sort_weights).sum())
+
+        return pctile_share

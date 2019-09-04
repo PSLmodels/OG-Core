@@ -1,4 +1,3 @@
-from __future__ import print_function
 import pytest
 from ogusa import SS, TPI, postprocess
 import time
@@ -7,7 +6,7 @@ SS.ENFORCE_SOLUTION_CHECKS = False
 TPI.ENFORCE_SOLUTION_CHECKS = False
 
 
-def run_micro_macro(reform, user_params, guid):
+def run_micro_macro(iit_reform, og_spec, guid):
 
     guid = ''
     start_time = time.time()
@@ -16,13 +15,13 @@ def run_micro_macro(reform, user_params, guid):
     BASELINE_DIR = "./OUTPUT_BASELINE_" + guid
 
     # Add start year from reform to user parameters
-    start_year = sorted(reform.keys())[0]
-    user_params['start_year'] = start_year
+    start_year = sorted(iit_reform.keys())[0]
+    og_spec['start_year'] = start_year
 
     with open("log_{}.log".format(guid), 'w') as f:
         f.write("guid: {}\n".format(guid))
-        f.write("reform: {}\n".format(reform))
-        f.write("user_params: {}\n".format(user_params))
+        f.write("iit_reform: {}\n".format(iit_reform))
+        f.write("og_spec: {}\n".format(og_spec))
 
     '''
     ------------------------------------------------------------------------
@@ -32,7 +31,7 @@ def run_micro_macro(reform, user_params, guid):
     output_base = BASELINE_DIR
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': True, 'time_path': True, 'baseline': True,
-              'user_params': user_params, 'run_micro': False,
+              'og_spec': og_spec, 'run_micro': False,
               'guid': guid}
     runner(**kwargs)
 
@@ -45,7 +44,7 @@ def run_micro_macro(reform, user_params, guid):
     output_base = REFORM_DIR
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': True, 'time_path': True, 'baseline': False,
-              'reform': reform, 'user_params': user_params,
+              'iit_reform': iit_reform, 'og_spec': og_spec,
               'guid': guid, 'run_micro': False}
     runner(**kwargs)
     time.sleep(0.5)
@@ -59,7 +58,7 @@ def run_micro_macro(reform, user_params, guid):
 @pytest.mark.full_run
 def test_run_micro_macro():
 
-    reform = {
+    iit_reform = {
         2018: {
             '_II_rt1': [.09],
             '_II_rt2': [.135],
@@ -69,5 +68,5 @@ def test_run_micro_macro():
             '_II_rt6': [.315],
             '_II_rt7': [0.3564],
             }, }
-    run_micro_macro(reform=reform, user_params={
+    run_micro_macro(iit_reform=iit_reform, og_spec={
         'frisch': 0.44, 'g_y_annual': 0.021}, guid='abc')

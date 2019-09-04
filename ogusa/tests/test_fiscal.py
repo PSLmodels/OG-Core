@@ -27,7 +27,7 @@ Y = np.append(np.array([
     2., 2., 2., 2., 2., 2., 2., 2., 2., 2., 2., 2., 2., 2., 2., 2., 2.,
     2., 2., 2., 2., 2., 2., 2., 2., 2., 2., 2., 2., 2., 2., 2., 2., 2.,
     2., 2., 2., 2., 2., 2., 2.]), np.ones(S) * 2.)
-T_H = np.append(np.array([
+TR = np.append(np.array([
     0.09, 0.09297, 0.09603801, 0.09920726, 0.1024811, 0.10586298,
     0.10935646, 0.11296522, 0.11669307, 0.12054395, 0.1245219,
     0.12863112, 0.13287595, 0.13726085, 0.14179046, 0.14646954,
@@ -388,12 +388,12 @@ D2 = np.append(np.array([
     2.4, 2.4, 2.4, 2.4, 2.4, 2.4, 2.4]), np.ones(1) * 2.4)
 
 
-@pytest.mark.parametrize('baseline_spending, Y,T_H,REVENUE,Gbaseline,D_expected,G_expected',
-                         [(False, Y, T_H, REVENUE, Gbaseline, D1, G1),
-                          (True, Y, T_H, REVENUE, Gbaseline, D2, G2)],
+@pytest.mark.parametrize('baseline_spending, Y,TR,REVENUE,Gbaseline,D_expected,G_expected',
+                         [(False, Y, TR, REVENUE, Gbaseline, D1, G1),
+                          (True, Y, TR, REVENUE, Gbaseline, D2, G2)],
                          ids=['baseline_spending = False',
                               'baseline_spending = True'])
-def test_D_G_path(baseline_spending, Y, T_H, REVENUE, Gbaseline,
+def test_D_G_path(baseline_spending, Y, TR, REVENUE, Gbaseline,
                   D_expected, G_expected):
     p = Specifications()
     new_param_values = {
@@ -414,7 +414,7 @@ def test_D_G_path(baseline_spending, Y, T_H, REVENUE, Gbaseline,
     p.g_n = np.ones(p.T + p.S) * 0.02
     D0 = 0.59
     G0 = 0.05
-    dg_fixed_values = (Y, REVENUE, T_H, D0, G0)
+    dg_fixed_values = (Y, REVENUE, TR, D0, G0)
     test_D, test_G = fiscal.D_G_path(r_gov, dg_fixed_values, Gbaseline,
                                      p)
     assert np.allclose(test_D, D_expected)

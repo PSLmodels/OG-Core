@@ -11,9 +11,9 @@ PUF_PATH = os.path.join(CUR_PATH, '../puf.csv')
 def test_frisch(frisch):
     output_base = os.path.join(CUR_PATH, "OUTPUT")
     input_dir = os.path.join(CUR_PATH, "OUTPUT")
-    user_params = {'frisch': frisch, 'debt_ratio_ss': 1.0}
+    og_spec = {'frisch': frisch, 'debt_ratio_ss': 1.0}
     runner(output_base=output_base, baseline_dir=input_dir, test=False,
-           time_path=False, baseline=True, user_params=user_params,
+           time_path=False, baseline=True, og_spec=og_spec,
            run_micro=False, data=PUF_PATH)
 
 
@@ -23,8 +23,8 @@ def test_frisch(frisch):
 def test_gy(g_y_annual):
     output_base = os.path.join(CUR_PATH, "OUTPUT")
     input_dir = os.path.join(CUR_PATH, "OUTPUT")
-    user_params = {'frisch': 0.41, 'debt_ratio_ss': 1.0,
-                   'g_y_annual': g_y_annual}
+    og_spec = {'frisch': 0.41, 'debt_ratio_ss': 1.0,
+               'g_y_annual': g_y_annual}
     runner(output_base=output_base, baseline_dir=input_dir, test=False,
-           time_path=False, baseline=True, user_params=user_params,
+           time_path=False, baseline=True, og_spec=og_spec,
            run_micro=False, data=PUF_PATH)

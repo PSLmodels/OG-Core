@@ -25,7 +25,6 @@ There is also a link to the source code for each documented member.
    get_micro_data
    household
    income
-   labor
    macro_output
    output_plots
    parameter_plots

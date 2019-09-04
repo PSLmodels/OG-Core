@@ -69,7 +69,7 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
 
 
 def ETR_wealth(b, h_wealth, m_wealth, p_wealth):
-    '''
+    r'''
     Calculates the effective tax rate on wealth.
 
     .. math::
@@ -90,7 +90,7 @@ def ETR_wealth(b, h_wealth, m_wealth, p_wealth):
 
 
 def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
-    '''
+    r'''
     Calculates the marginal tax rate on wealth from the wealth tax.
 
     .. math::
@@ -180,7 +180,7 @@ def ETR_income(r, w, b, n, factor, e, etr_params, p):
 
 def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params,
                mtr_params, p):
-    '''
+    r'''
     Generates the marginal tax rate on labor income for households.
 
     Args:
@@ -305,7 +305,7 @@ def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params,
 
 
 def get_biz_tax(w, Y, L, K, p, method):
-    '''
+    r'''
     Finds total business income tax revenue.
 
     .. math::
@@ -330,7 +330,7 @@ def get_biz_tax(w, Y, L, K, p, method):
     return business_revenue
 
 
-def total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, shift, method,
+def total_taxes(r, w, b, n, bq, factor, tr, theta, t, j, shift, method,
                 e, etr_params, p):
     '''
     Calculate net taxes paid for each household.
@@ -343,7 +343,7 @@ def total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, shift, method,
         bq (Numpy array): bequests received
         factor (scalar): scaling factor converting model units to
             dollars
-        T_H (Numpy array): government transfers to the household
+        tr (Numpy array): government transfers to the household
         theta (Numpy array): social security replacement rate value for
             lifetime income group j
         t (int): time period
@@ -366,13 +366,11 @@ def total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, shift, method,
             if b.ndim == 2:
                 r = r.reshape(r.shape[0], 1)
                 w = w.reshape(w.shape[0], 1)
-                T_H = T_H.reshape(T_H.shape[0], 1)
     else:
         lambdas = np.transpose(p.lambdas)
         if method == 'TPI':
-            r = utils.to_timepath_shape(r, p)
-            w = utils.to_timepath_shape(w, p)
-            T_H = utils.to_timepath_shape(T_H, p)
+            r = utils.to_timepath_shape(r)
+            w = utils.to_timepath_shape(w)
 
     income = r * b + w * e * n
     T_I = ETR_income(r, w, b, n, factor, e, etr_params, p) * income
@@ -440,6 +438,6 @@ def total_taxes(r, w, b, n, bq, factor, T_H, theta, t, j, shift, method,
         T_BQ = p.tau_bq[0] * bq
         T_W = (ETR_wealth(b, p.h_wealth[0], p.m_wealth[0],
                           p.p_wealth[0]) * b)
-    total_tax = T_I + T_P + T_BQ + T_W - T_H
+    total_tax = T_I + T_P + T_BQ + T_W - tr
 
     return total_tax
