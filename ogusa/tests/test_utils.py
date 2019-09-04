@@ -17,6 +17,15 @@ def test_rate_conversion():
     assert(np.allclose(expected_rate, test_rate))
 
 
+def test_to_timepath_shape():
+    '''
+    Test of function that converts vector to time path conformable array
+    '''
+    in_array = np.ones(40)
+    test_array = utils.to_timepath_shape(in_array)
+    assert test_array.shape == (40, 1, 1)
+
+
 p = Specifications()
 p.T = 40
 p.S = 3
