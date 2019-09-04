@@ -402,23 +402,15 @@ def run_TPI(p, client=None):
 
     # Initialize guesses at time paths
     # Make array of initial guesses for labor supply and savings
-    domain = np.linspace(0, p.T, p.T)
-    domain2 = np.tile(domain.reshape(p.T, 1, 1), (1, p.S, p.J))
-    ending_b = ss_vars['bssmat_splus1']
-    guesses_b = (-1 / (domain2 + 1)) * (ending_b - initial_b) + ending_b
-    ending_b_tail = np.tile(ending_b.reshape(1, p.S, p.J), (p.S, 1, 1))
-    guesses_b = np.append(guesses_b, ending_b_tail, axis=0)
-
-    domain3 = np.tile(np.linspace(0, 1, p.T).reshape(p.T, 1, 1),
-                      (1, p.S, p.J))
-    guesses_n = domain3 * (ss_vars['nssmat'] - initial_n) + initial_n
-    ending_n_tail = np.tile(ss_vars['nssmat'].reshape(1, p.S, p.J),
-                            (p.S, 1, 1))
-    guesses_n = np.append(guesses_n, ending_n_tail, axis=0)
+    guesses_b = utils.get_initial_path(
+        initial_b, ss_vars['bssmat_splus1'], p, 'ratio')
+    guesses_n = utils.get_initial_path(
+        initial_n, ss_vars['nssmat'], p, 'ratio')
     b_mat = guesses_b
     n_mat = guesses_n
     ind = np.arange(p.S)
 
+    # Get path for aggregate savings and labor supply`
     L_init = np.ones((p.T + p.S,)) * ss_vars['Lss']
     B_init = np.ones((p.T + p.S,)) * ss_vars['Bss']
     L_init[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
@@ -550,8 +542,8 @@ def run_TPI(p, client=None):
                                   factor, trmat[:p.T, :, :], theta, 0,
                                   None, False, 'TPI', p.e,
                                   etr_params_4D, p)
-        r_hh_path = utils.to_timepath_shape(r_hh, p)
-        wpath = utils.to_timepath_shape(w, p)
+        r_hh_path = utils.to_timepath_shape(r_hh)
+        wpath = utils.to_timepath_shape(w)
         c_mat = household.get_cons(r_hh_path[:p.T, :, :], wpath[:p.T, :, :],
                                    bmat_s, bmat_splus1,
                                    n_mat[:p.T, :, :], bqmat[:p.T, :, :],
