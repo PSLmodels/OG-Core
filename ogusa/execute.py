@@ -10,7 +10,7 @@ from ogusa.parameters import Specifications
 
 
 def runner(output_base, baseline_dir, test=False, time_path=True,
-           baseline=True, reform={}, user_params={}, guid='',
+           baseline=True, iit_reform={}, og_spec={}, guid='',
            run_micro=True, data=None, client=None, num_workers=1):
     '''
     This function runs the OG-USA model, solving for the steady-state
@@ -23,8 +23,8 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
             a smaller state space and higher tolerances for solution)
         time_path (bool): whether to solve for the time path equlibrium
         baseline (bool): whether the model run is the baseline run
-        reform (dict): Tax-Calculator policy dictionary
-        user_params (dict): dictionary with updates to default
+        iit_reform (dict): Tax-Calculator policy dictionary
+        og_spec (dict): dictionary with updates to default
             parameters in OG-USA
         guid (str): id for OG-USA run
         run_micro (bool): whether to estimate tax functions from micro
@@ -60,10 +60,10 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     spec = Specifications(run_micro=False, output_base=output_base,
                           baseline_dir=baseline_dir, test=test,
                           time_path=time_path, baseline=baseline,
-                          reform=reform, guid=guid, data=data,
+                          iit_reform=iit_reform, guid=guid, data=data,
                           client=client, num_workers=num_workers)
 
-    spec.update_specifications(user_params)
+    spec.update_specifications(og_spec)
     print('path for tax functions: ', spec.output_base)
     spec.get_tax_function_parameters(client, run_micro)
 

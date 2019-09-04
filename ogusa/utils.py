@@ -458,3 +458,120 @@ def save_return_table(table_df, output_type, path, precision=0):
         else:
             print('Please enter a valid output format')
             assert(False)
+
+
+class Inequality():
+    '''
+    A class with methods to compute different measures of inequality.
+    '''
+
+    def __init__(self, dist, pop_weights, ability_weights, S, J):
+        '''
+        Args:
+            dist (Numpy array): distribution of endogenous variables
+                over age and lifetime income group, size, SxJ
+            pop_weights (Numpy array): fraction of population by each
+                age, length S
+            ability_weights (Numpy array): fraction of population for
+                each lifetime income group, length J
+            S (int): number of economically active periods in lifetime
+            J (int): number of ability types
+
+        Returns:
+            None
+
+        '''
+
+        weights = (np.tile(pop_weights.reshape(S, 1), (1, J)) *
+                   ability_weights.reshape(1, J))
+        flattened_dist = dist.flatten()
+        flattened_weights = weights.flatten()
+        idx = np.argsort(flattened_dist)
+        self.sort_dist = flattened_dist[idx]
+        self.sort_weights = flattened_weights[idx]
+        self.cum_weights = np.cumsum(self.sort_weights)
+
+    def gini(self):
+        '''
+        Compute the Gini coefficient
+
+        Args:
+            None
+
+        Returns:
+            gini_coeff (scalar): Gini coefficient
+        '''
+        p = np.cumsum(self.sort_weights)
+        nu = np.cumsum(self.sort_dist * self.sort_weights)
+        nu = nu / nu[-1]
+        gini_coeff = (nu[1:] * p[:-1]).sum() - (nu[:-1] * p[1:]).sum()
+
+        return gini_coeff
+
+    def var_of_logs(self):
+        '''
+        Compute the variance of logs
+
+        Args:
+            None
+
+        Returns:
+            var_ln_dist (scalar): variance of logs
+
+        '''
+        ln_dist = np.log(self.sort_dist)
+        weight_mean = ((
+            ln_dist * self.sort_weights).sum() / self.sort_weights.sum())
+        var_ln_dist = ((
+            (self.sort_weights * ((ln_dist - weight_mean) ** 2)).sum())
+                       * (1. / (self.sort_weights.sum())))
+
+        return var_ln_dist
+
+    def ratio_pct1_pct2(self, pct1, pct2):
+        '''
+        Compute the pct1/pct2 percentile ratio
+
+        Args:
+            pct1 (scalar): percentile to compute the top pctile% for,
+                in (0, 1).
+            pct2 (scalar): percentile to compute the top pctile% for,
+                in (0, 1)
+
+        Returns:
+            pct_ratio (scalar): ratio of pct1 to pct2
+
+        Notes:
+            usually pct1 > pct 2
+        '''
+        assert pct1 > 0
+        assert pct1 < 1
+        assert pct2 > 0
+        assert pct2 < 1
+        loc_pct1 = np.argmin(np.abs(self.cum_weights - pct1))
+        loc_pct2 = np.argmin(np.abs(self.cum_weights - pct2))
+        pct_ratio = self.sort_dist[loc_pct1] / self.sort_dist[loc_pct2]
+
+        return pct_ratio
+
+    def top_share(self, pctile):
+        '''
+        Compute the top X% share
+
+        Args:
+            pctile (scalar): percentile to compute the top pctile% for,
+                in (0, 1).
+
+        Returns:
+            pctile_share (scalar): share of variable attributed to the
+                top pctile group
+        '''
+        assert pctile > 0
+        assert pctile < 1
+        loc_pctile = np.argmin(np.abs(self.cum_weights - (1 - pctile)))
+        pctile_share = ((
+            self.sort_dist[loc_pctile:] *
+            self.sort_weights[loc_pctile:]).sum() /
+                        (self.sort_dist * self.sort_weights).sum())
+
+        return pctile_share

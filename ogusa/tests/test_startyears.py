@@ -17,8 +17,8 @@ def test_diff_start_year(year):
     TPI.ENFORCE_SOLUTION_CHECKS = False
     output_base = os.path.join(CUR_PATH, "STARTYEAR_OUTPUT")
     input_dir = os.path.join(CUR_PATH, "STARTYEAR_OUTPUT")
-    user_params = {'frisch': 0.41, 'debt_ratio_ss': 1.0,
+    og_spec = {'frisch': 0.41, 'debt_ratio_ss': 1.0,
                    'start_year': year}
     runner(output_base=output_base, baseline_dir=input_dir, test=True,
-           time_path=True, baseline=True, user_params=user_params,
+           time_path=True, baseline=True, og_spec=og_spec,
            run_micro=True, data='cps')

@@ -182,93 +182,8 @@ Plot Timepath for K, N, w, r, Y, U
 ------------------------------------------------------------------------
 '''
 
-plt.figure()
-plt.plot(np.arange(T), Kpath_TPIbase[:T], 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), Kpath_TPI[:T], 'g--', linewidth=2, label="Tax")
-plt.xlabel(r"Time $t$")
-plt.ylabel(r"Aggregate Capital Stock $\hat{K}$")
-plt.legend(loc=0)
-TPI_K = os.path.join(TPI_FIG_DIR, "TPI/TPI_K")
-plt.savefig(TPI_K)
 
-plt.figure()
-plt.plot(np.arange(T), Kpath_TPIbase[:T], 'b', linewidth=2, label='Baseline')
-plt.xlabel(r"Time $t$")
-plt.ylabel(r"Aggregate Capital Stock $\hat{K}$")
-plt.legend(loc=0)
-TPI_K = os.path.join(TPI_FIG_DIR, "TPIinit/TPI_K")
-plt.savefig(TPI_K)
 
-plt.figure()
-plt.plot(np.arange(T), Lpath_TPIbase[:T], 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), Lpath_TPI[:T], 'g--', linewidth=2, label="Tax")
-plt.xlabel(r"Time $t$")
-plt.ylabel(r"Aggregate Labor Supply $\hat{L}$")
-plt.legend(loc=0)
-TPI_L = os.path.join(TPI_FIG_DIR, "TPI/TPI_L")
-plt.savefig(TPI_L)
-
-plt.figure()
-plt.plot(np.arange(T), Lpath_TPIbase[:T], 'b', linewidth=2, label='Baseline')
-plt.xlabel(r"Time $t$")
-plt.ylabel(r"Aggregate Labor Supply $\hat{L}$")
-plt.legend(loc=0)
-TPI_L = os.path.join(TPI_FIG_DIR, "TPIinit/TPI_L")
-plt.savefig(TPI_L)
-
-plt.figure()
-plt.plot(np.arange(T), (y_mat_init * omega_stationary.reshape(T, S, 1)
-                        * lambdas).sum(1).sum(1)[:T], 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), (y_mat * omega_stationary.reshape(T, S, 1) *
-                        lambdas).sum(1).sum(1)[:T], 'g--', linewidth=2, label="Tax")
-plt.xlabel(r"Time $t$")
-plt.ylabel(r"Aggregate Output $\hat{Y}$")
-plt.legend(loc=0)
-TPI_Y = os.path.join(TPI_FIG_DIR, "TPI/TPI_Y")
-plt.savefig(TPI_Y)
-
-plt.figure()
-plt.plot(np.arange(T), (y_mat_init * omega_stationary.reshape(T, S, 1)
-                        * lambdas).sum(1).sum(1)[:T], 'b', linewidth=2, label='Baseline')
-plt.xlabel(r"Time $t$")
-plt.ylabel(r"Aggregate Output $\hat{Y}$")
-plt.legend(loc=0)
-TPI_Y = os.path.join(TPI_FIG_DIR, "TPIinit/TPI_Y")
-plt.savefig(TPI_Y)
-
-plt.figure()
-plt.plot(np.arange(T), w_base[:T], 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), winit[:T], 'g--', linewidth=2, label="Tax")
-plt.xlabel(r"Time $t$")
-plt.ylabel(r"Wage $\hat{w}$")
-plt.legend(loc=0)
-TPI_w = os.path.join(TPI_FIG_DIR, "TPI/TPI_w")
-plt.savefig(TPI_w)
-
-plt.figure()
-plt.plot(np.arange(T), w_base[:T], 'b', linewidth=2, label='Baseline')
-plt.xlabel(r"Time $t$")
-plt.ylabel(r"Wage $\hat{w}$")
-plt.legend(loc=0)
-TPI_w = os.path.join(TPI_FIG_DIR, "TPIinit/TPI_w")
-plt.savefig(TPI_w)
-
-plt.figure()
-plt.plot(np.arange(T), r_base[:T], 'b', linewidth=2, label='Baseline')
-plt.plot(np.arange(T), rinit[:T], 'g--', linewidth=2, label="Tax")
-plt.xlabel(r"Time $t$")
-plt.ylabel(r"Rental Rate $\hat{r}$")
-plt.legend(loc=0)
-TPI_r = os.path.join(TPI_FIG_DIR, "TPI/TPI_r")
-plt.savefig(TPI_r)
-
-plt.figure()
-plt.plot(np.arange(T), r_base[:T], 'b', linewidth=2, label='Baseline')
-plt.xlabel(r"Time $t$")
-plt.ylabel(r"Rental Rate $\hat{r}$")
-plt.legend(loc=0)
-TPI_r = os.path.join(TPI_FIG_DIR, "TPIinit/TPI_r")
-plt.savefig(TPI_r)
 
 X3, Y3 = np.meshgrid(np.arange(S), np.arange(J) + 1)
 cmap2 = matplotlib.cm.get_cmap('winter')
@@ -351,35 +266,7 @@ for i in range(J):
     fig_i = os.path.join(TPI_FIG_DIR, "TPI/TPI_B_j{}".format(i + 1))
     plt.savefig(fig_i)
 
-'''
-------------------------------------------------------------------------
-Compute Plot Euler Errors
-------------------------------------------------------------------------
-domain     = 1 x S vector of each age cohort
-------------------------------------------------------------------------
-'''
 
-domain = np.linspace(1, T, T)
-plt.figure()
-plt.plot(domain, eul_savings_init, label='Euler1')
-plt.plot(domain, eul_laborleisure_init, label='Euler2')
-plt.ylabel('Error Value')
-plt.xlabel(r'Time $t$')
-plt.legend(loc=0)
-plt.title('Maximum Euler Error for each period across S and J')
-euler_errors_TPI = os.path.join(TPI_FIG_DIR, "TPIinit/euler_errors_TPI")
-plt.savefig(euler_errors_TPI)
-
-domain = np.linspace(1, T, T)
-plt.figure()
-plt.plot(domain, eul_savings, label='Euler1')
-plt.plot(domain, eul_laborleisure, label='Euler2')
-plt.ylabel('Error Value')
-plt.xlabel(r'Time $t$')
-plt.legend(loc=0)
-plt.title('Maximum Euler Error for each period across S and J')
-euler_errors_TPI = os.path.join(TPI_FIG_DIR, "TPI/euler_errors_TPI")
-plt.savefig(euler_errors_TPI)
 
 '''
 ------------------------------------------------------------------------

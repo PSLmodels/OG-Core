@@ -1,5 +1,6 @@
 import pytest
 from ogusa import utils
+from ogusa.utils import Inequality
 import numpy as np
 from ogusa.parameters import Specifications
 
@@ -17,6 +18,59 @@ def test_rate_conversion():
     assert(np.allclose(expected_rate, test_rate))
 
 
+# Parameter values to use for inequality tests
+J = 2
+S = 10
+dist = np.array([[1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                 [1, 1, 1, 2, 3, 4, 5, 6, 7, 20]])
+pop_weights = np.ones(S) / S
+ability_weights = np.array([0.5, 0.5])
+
+
+def test_create_ineq_object():
+    '''
+    Test that Inequality class and be created
+    '''
+    ineq = Inequality(dist, pop_weights, ability_weights, S, J)
+    assert ineq
+
+
+def test_gini():
+    '''
+    Test of Gini coefficient calculation
+    '''
+    ineq = Inequality(dist, pop_weights, ability_weights, S, J)
+    gini = ineq.gini()
+    assert np.allclose(gini, 0.41190476190476133)
+
+
+def test_var_of_logs():
+    '''
+    Test of variance of logs calculation
+    '''
+    ineq = Inequality(dist, pop_weights, ability_weights, S, J)
+    var_log = ineq.var_of_logs()
+    assert np.allclose(var_log, 0.7187890928713506)
+
+
+def test_ratio_pct1_pct2():
+    '''
+    Test of percentile ratio calculation
+    '''
+    ineq = Inequality(dist, pop_weights, ability_weights, S, J)
+    ratio = ineq.ratio_pct1_pct2(0.9, 0.1)
+    assert np.allclose(ratio, 9)
+
+
+def test_top_share():
+    '''
+    Test of top share calculation
+    '''
+    ineq = Inequality(dist, pop_weights, ability_weights, S, J)
+    top_share = ineq.top_share(0.05)
+    assert np.allclose(top_share, 0.285714286)
+
+
 def test_to_timepath_shape():
     '''
     Test of function that converts vector to time path conformable array
@@ -30,13 +84,6 @@ p = Specifications()
 p.T = 40
 p.S = 3
 p.J = 1
-# new_param_values = {
-#     'T': 40,
-#     'S': 3,
-#     'J': 1
-# }
-# # update parameters instance with new values for test
-# p.update_specifications(new_param_values)
 x1 = np.ones((p.S, p.J)) * 0.4
 xT = np.ones((p.S, p.J)) * 5.0
 expected1 = np.tile(np.array([

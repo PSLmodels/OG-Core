@@ -26,7 +26,7 @@ class Specifications(ParametersBase):
     def __init__(self,
                  run_micro=False, output_base=BASELINE_DIR,
                  baseline_dir=BASELINE_DIR, test=False, time_path=True,
-                 baseline=False, reform={}, guid='', data='cps',
+                 baseline=False, iit_reform={}, guid='', data='cps',
                  flag_graphs=False, client=None, num_workers=1):
         super(Specifications, self).__init__()
 
@@ -38,7 +38,7 @@ class Specifications(ParametersBase):
         self.test = test
         self.time_path = time_path
         self.baseline = baseline
-        self.reform = reform
+        self.iit_reform = iit_reform
         self.guid = guid
         self.data = data
         self.flag_graphs = flag_graphs
@@ -292,8 +292,9 @@ class Specifications(ParametersBase):
             txfunc.get_tax_func_estimate(
                 self.BW, self.S, self.starting_age, self.ending_age,
                 self.baseline, self.analytical_mtrs, self.tax_func_type,
-                self.age_specific, self.start_year, self.reform, self.guid,
-                tx_func_est_path, self.data, client, self.num_workers)
+                self.age_specific, self.start_year, self.iit_reform,
+                self.guid, tx_func_est_path, self.data, client,
+                self.num_workers)
         if self.baseline:
             baseline_pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
             estimate_file = tx_func_est_path

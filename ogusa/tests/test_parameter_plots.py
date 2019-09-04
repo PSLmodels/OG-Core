@@ -36,3 +36,8 @@ def test_plot_ability_profiles():
 def test_plot_elliptical_u():
     fig = parameter_plots.plot_elliptical_u(base_params)
     assert fig
+
+
+def test_plot_chi_n():
+    fig = parameter_plots.plot_chi_n(base_params)
+    assert fig
