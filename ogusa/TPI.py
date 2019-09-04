@@ -542,8 +542,8 @@ def run_TPI(p, client=None):
                                   factor, trmat[:p.T, :, :], theta, 0,
                                   None, False, 'TPI', p.e,
                                   etr_params_4D, p)
-        r_hh_path = utils.to_timepath_shape(r_hh, p)
-        wpath = utils.to_timepath_shape(w, p)
+        r_hh_path = utils.to_timepath_shape(r_hh)
+        wpath = utils.to_timepath_shape(w)
         c_mat = household.get_cons(r_hh_path[:p.T, :, :], wpath[:p.T, :, :],
                                    bmat_s, bmat_splus1,
                                    n_mat[:p.T, :, :], bqmat[:p.T, :, :],
