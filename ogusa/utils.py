@@ -303,14 +303,13 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False,
     return check
 
 
-def to_timepath_shape(some_array, p):
+def to_timepath_shape(some_array):
     '''
     This function takes an vector of length T and tiles it to fill a
     Tx1x1 array for time path computations.
 
     Args:
         some_array (Numpy array): array to reshape
-        p (OG-USA Specifcations object): model parameters
 
     Returns:
         tp_array (Numpy  array): reshaped array
