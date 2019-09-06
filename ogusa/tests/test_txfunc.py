@@ -125,8 +125,15 @@ def test_txfunc_est():
     # Test txfunc.txfunc_est() function.  The test is that given
     # inputs from previous run, the outputs are unchanged.
     input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/txfunc_est_inputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data', 'txfunc_est_inputs.pkl'))
     (df, s, t, rate_type, output_dir, graph) = input_tuple
+    # Put old df variables into new df var names
+    df.rename(columns={
+        'MTR labor income': 'mtr_labinc',
+        'MTR capital income': 'mtr_capinc',
+        'Total labor income': 'total_labinc',
+        'Total capital income': 'total_capinc', 'ETR': 'etr',
+        'Weights': 'weight'}, inplace=True)
     tax_func_type = 'DEP'
     numparams = 12
     test_tuple = txfunc.txfunc_est(df, s, t, rate_type, tax_func_type,
