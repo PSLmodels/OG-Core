@@ -1,13 +1,14 @@
 import pytest
 import os
 from ogusa.utils import CPS_START_YEAR
+from ogusa import get_micro_data
+from taxcalc import GrowFactors
 
 
 def test_cps():
     """
     Check that setting `data` to 'cps' uses cps data
     """
-    from ogusa import get_micro_data
     baseline = False
     start_year = 2016
     reform = {"II_em": {2017: 10000}}
@@ -26,7 +27,6 @@ def test_set_path():
     Check that 'notapath.csv' is passed to taxcalc. An error
     containing 'notapath.csv' is sufficient proof for this
     """
-    from ogusa import get_micro_data
     baseline = False
     start_year = 2016
     reform = {"II_em": {2017: 10000}}
@@ -45,7 +45,6 @@ def test_puf_path():
     """
     Check that setting `data` to None uses the puf file
     """
-    from ogusa import get_micro_data
     baseline = False
     start_year = 2016
     reform = {"II_em": {2017: 10000}}
@@ -69,3 +68,20 @@ def test_puf_path():
             get_micro_data.get_calculator(
                 baseline, start_year, reform=reform,
                 records_start_year=CPS_START_YEAR, data=None)
+
+
+def test_get_calculator():
+    iit_reform = {
+        'II_rt1': {2017: 0.09},
+        'II_rt2': {2017: 0.135},
+        'II_rt3': {2017: 0.225},
+        'II_rt4': {2017: 0.252},
+        'II_rt5': {2017: 0.297},
+        'II_rt6': {2017: 0.315},
+        'II_rt7': {2017: 0.3564}
+        }
+    calc = get_micro_data.get_calculator(
+        baseline=False, calculator_start_year=2017, reform=iit_reform,
+        data='cps', gfactors=GrowFactors(),
+        records_start_year=CPS_START_YEAR)
+    assert calc.current_year == CPS_START_YEAR
