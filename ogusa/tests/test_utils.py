@@ -4,6 +4,8 @@ from ogusa.utils import Inequality
 import numpy as np
 from ogusa.parameters import Specifications
 
+TOL = 1e-5
+
 
 def test_rate_conversion():
     '''
@@ -135,3 +137,89 @@ def test_get_initial_path(x1, xT, p, shape, expected):
     '''
     test_path = utils.get_initial_path(x1, xT, p, shape)
     assert np.allclose(test_path, expected)
+
+
+def test_compare_pickle_file_bad(picklefile1, picklefile2):
+    assert not utils.pickle_file_compare(picklefile1.name, picklefile2.name)
+
+
+def test_compare_pickle_file_bad2(picklefile3, picklefile4):
+    assert not utils.pickle_file_compare(picklefile3.name, picklefile4.name)
+
+
+def test_compare_pickle_file_relative(picklefile3, picklefile4):
+    assert utils.pickle_file_compare(
+        picklefile3.name, picklefile4.name, relative=True)
+
+
+def test_compare_pickle_file_basic(picklefile1):
+    assert utils.pickle_file_compare(picklefile1.name, picklefile1.name)
+
+
+def test_compare_dict_basic():
+    from ogusa.utils import dict_compare
+    lhs = {'a': 1, 'b': 2}
+    rhs = {'c': 4, 'b': 2}
+    assert not dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs, tol=TOL)
+
+
+def test_compare_dict_more_lhs():
+    lhs = {'a': 1, 'b': 2, 'c': 3}
+    rhs = {'c': 4, 'b': 2}
+    assert not utils.dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs,
+                                  tol=TOL)
+
+
+def test_compare_dict_diff_ndarrays():
+    lhs = {'a': np.array([1, 2, 3]), 'b': 2}
+    rhs = {'a': np.array([1, 3]), 'b': 2}
+    assert not utils.dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs,
+                                  tol=TOL)
+
+
+def test_compare_dict_diff_ndarrays2():
+    lhs = {'a': np.array([1., 2., 3.]), 'b': 2}
+    rhs = {'a': np.array([1., 2., 3.1]), 'b': 2}
+    assert not utils.dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs,
+                                  tol=TOL)
+
+
+def test_comp_array_relative():
+    x = np.array([100., 200., 300.])
+    y = np.array([100.01, 200.02, 300.03])
+    unequal = []
+    assert not utils.comp_array("test", y, x, 1e-3, unequal)
+    assert utils.comp_array("test", y, x, 1e-3, unequal, relative=True)
+
+
+def test_comp_array_relative_exception():
+    x = np.array([100., 200., 300.])
+    y = np.array([100.01, 200.02, 300.03])
+    unequal = []
+    exc = {'var': 1e-3}
+    assert utils.comp_array("var", y, x, 1e-5, unequal, exceptions=exc,
+                            relative=True)
+
+
+def test_comp_scalar_relative():
+    x = 100
+    y = 100.01
+    unequal = []
+    assert not utils.comp_scalar("test", y, x, 1e-3, unequal)
+    assert utils.comp_scalar("test", y, x, 1e-3, unequal, relative=True)
+
+
+def test_comp_scalar_relative_exception():
+    x = 100
+    y = 100.01
+    unequal = []
+    exc = {"var": 1e-3}
+    assert utils.comp_scalar("var", y, x, 1e-5, unequal, exceptions=exc,
+                             relative=True)
+
+
+def test_compare_dict_diff_ndarrays_relative():
+    lhs = {'a': np.array([100., 200., 300.]), 'b': 2}
+    rhs = {'a': np.array([100., 200., 300.1]), 'b': 2}
+    assert utils.dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs,
+                              tol=1e-3, relative=True)

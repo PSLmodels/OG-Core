@@ -3,14 +3,8 @@ import pytest
 import tempfile
 import pickle
 import numpy as np
-from ogusa.utils import CPS_START_YEAR
-from ogusa.utils import comp_array, comp_scalar, dict_compare
-from ogusa.get_micro_data import get_calculator
 from ogusa import SS, TPI, utils
 from ogusa.parameters import Specifications
-from taxcalc import GrowFactors
-
-TOL = 1e-5
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
@@ -58,10 +52,6 @@ def picklefile4():
     # must close and then yield for Windows platform
     yield pfile
     os.remove(pfile.name)
-
-
-def test_import_ok():
-    import ogusa
 
 
 @pytest.mark.full_run
@@ -126,111 +116,3 @@ def test_constant_demographics_TPI():
     tpi_output = TPI.run_TPI(spec, None)
     assert(np.allclose(tpi_output['bmat_splus1'][:spec.T, :, :],
                        ss_outputs['bssmat_splus1']))
-
-
-def test_compare_pickle_file_bad(picklefile1, picklefile2):
-    from ogusa.utils import pickle_file_compare
-    assert not pickle_file_compare(picklefile1.name, picklefile2.name)
-
-
-def test_compare_pickle_file_bad2(picklefile3, picklefile4):
-    from ogusa.utils import pickle_file_compare
-    assert not pickle_file_compare(picklefile3.name, picklefile4.name)
-
-
-def test_compare_pickle_file_relative(picklefile3, picklefile4):
-    from ogusa.utils import pickle_file_compare
-    assert pickle_file_compare(
-        picklefile3.name, picklefile4.name, relative=True)
-
-
-def test_compare_pickle_file_basic(picklefile1):
-    from ogusa.utils import pickle_file_compare
-    assert pickle_file_compare(picklefile1.name, picklefile1.name)
-
-
-def test_compare_dict_basic():
-    from ogusa.utils import dict_compare
-    lhs = {'a': 1, 'b': 2}
-    rhs = {'c': 4, 'b': 2}
-    assert not dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs, tol=TOL)
-
-
-def test_compare_dict_more_lhs():
-    from ogusa.utils import dict_compare
-    lhs = {'a': 1, 'b': 2, 'c': 3}
-    rhs = {'c': 4, 'b': 2}
-    assert not dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs, tol=TOL)
-
-
-def test_compare_dict_diff_ndarrays():
-    from ogusa.utils import dict_compare
-    lhs = {'a': np.array([1, 2, 3]), 'b': 2}
-    rhs = {'a': np.array([1, 3]), 'b': 2}
-    assert not dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs, tol=TOL)
-
-
-def test_compare_dict_diff_ndarrays2():
-    from ogusa.utils import dict_compare
-    lhs = {'a': np.array([1., 2., 3.]), 'b': 2}
-    rhs = {'a': np.array([1., 2., 3.1]), 'b': 2}
-    assert not dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs, tol=TOL)
-
-
-def test_comp_array_relative():
-    x = np.array([100., 200., 300.])
-    y = np.array([100.01, 200.02, 300.03])
-    unequal = []
-    assert not comp_array("test", y, x, 1e-3, unequal)
-    assert comp_array("test", y, x, 1e-3, unequal, relative=True)
-
-
-def test_comp_array_relative_exception():
-    x = np.array([100., 200., 300.])
-    y = np.array([100.01, 200.02, 300.03])
-    unequal = []
-    exc = {'var': 1e-3}
-    assert comp_array("var", y, x, 1e-5, unequal,
-                      exceptions=exc, relative=True)
-
-
-def test_comp_scalar_relative():
-    x = 100
-    y = 100.01
-    unequal = []
-    assert not comp_scalar("test", y, x, 1e-3, unequal)
-    assert comp_scalar("test", y, x, 1e-3, unequal, relative=True)
-
-
-def test_comp_scalar_relative_exception():
-    x = 100
-    y = 100.01
-    unequal = []
-    exc = {"var": 1e-3}
-    assert comp_scalar("var", y, x, 1e-5, unequal,
-                       exceptions=exc, relative=True)
-
-
-def test_compare_dict_diff_ndarrays_relative():
-    lhs = {'a': np.array([100., 200., 300.]), 'b': 2}
-    rhs = {'a': np.array([100., 200., 300.1]), 'b': 2}
-    assert dict_compare("lhs.pkle", lhs, "rhs.pkle",
-                        rhs, tol=1e-3, relative=True)
-
-
-def test_get_micro_data_get_calculator():
-    iit_reform = {
-        'II_rt1': {2017: 0.09},
-        'II_rt2': {2017: 0.135},
-        'II_rt3': {2017: 0.225},
-        'II_rt4': {2017: 0.252},
-        'II_rt5': {2017: 0.297},
-        'II_rt6': {2017: 0.315},
-        'II_rt7': {2017: 0.3564}
-        }
-
-    calc = get_calculator(baseline=False, calculator_start_year=2017,
-                          reform=iit_reform, data='cps',
-                          gfactors=GrowFactors(),
-                          records_start_year=CPS_START_YEAR)
-    assert calc.current_year == 2017
