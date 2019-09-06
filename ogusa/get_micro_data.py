@@ -241,34 +241,46 @@ def cap_inc_mtr(calc1):
             for each observation in the TC Records object
 
     '''
-    capital_income_sources_taxed = (
-        'e00300', 'e00400', 'e00600', 'e00650', 'e01400', 'e01700',
-        'p22250', 'p23250', 'e26270')
-
-    # PUF does not have variable for non-taxable IRA distributions
+    # Note: PUF does not have variable for non-taxable IRA distributions
+    # Exclude Sch E income (e02000) from this list since we'll compute
+    # MTRs for this income in two parts - one for overall Sch C and one
+    # for S Corp and Partnerhsip income (e26270) (note that TaxCalc
+    # doesn't allow for an MTR on rents and royalties alone)
+    # e00300 = interest income
+    # e00400 = nontaxable interest income
+    # e00600 = ordinary dividend income
+    # e00650 = qualified dividend income
+    # e01400 = taxable IRA distributions
+    # e01700 = pension and annuity income
+    # p22250 = short term cap gain/loss
+    # p23250 = long term cap gain/loss
+    # e26270 = partnership and s corp income/loss
+    # e02000 = Sch E income (includes e26270)
     capital_income_sources = (
         'e00300', 'e00400', 'e00600', 'e00650', 'e01400', 'e01700',
         'p22250', 'p23250', 'e26270')
-
+    rent_royalty_inc = np.abs(
+        calc1.array('e02000') - calc1.array('e26270'))
+    # assign overall Sch E mtr to rent and royalities since TC can't do
+    # this component separately
+    rent_royalty_mtr = calc1.mtr('e02000')[2]
     # calculating MTRs separately - can skip items with zero tax
     all_mtrs = {income_source: calc1.mtr(income_source) for
-                income_source in capital_income_sources_taxed}
+                income_source in capital_income_sources}
     # Get each column of income sources, to include non-taxable income
     record_columns = [calc1.array(x) for x in capital_income_sources]
-    # weighted average of all those MTRs
-    total = (sum(map(abs, record_columns)) +
-             np.abs(calc1.array('e02000') - calc1.array('e26270')))
+    # Compute weighted average of all those MTRs
+    # first find total capital income
+    total_cap_inc = (sum(map(abs, record_columns)) + rent_royalty_inc)
     # Note that all_mtrs gives fica (0), iit (1), and combined (2) mtrs
     # We'll use the combined - hence all_mtrs[source][2]
     capital_mtr = [abs(col) * all_mtrs[source][2] for col, source in
-                   zip(record_columns, capital_income_sources_taxed)]
-    mtr_combined_capinc = np.zeros_like(total)
-    mtr_combined_capinc[total != 0] = (
-        sum(capital_mtr + (calc1.mtr('e02000')[2] *
-                           np.abs(calc1.array('e02000') -
-                                  calc1.array('e26270'))))[total != 0] /
-        total[total != 0])
-    # no capital income taxpayers
-    # give all the weight to interest income
-    mtr_combined_capinc[total == 0] = all_mtrs['e00300'][2][total == 0]
+                   zip(record_columns, capital_income_sources)]
+    mtr_combined_capinc = np.zeros_like(total_cap_inc)
+    mtr_combined_capinc[total_cap_inc != 0] = (
+        sum(capital_mtr + rent_royalty_mtr *
+            rent_royalty_inc)[total_cap_inc != 0] /
+        total_cap_inc[total_cap_inc != 0])
+    mtr_combined_capinc[total_cap_inc == 0] = (
+        all_mtrs['e00300'][2][total_cap_inc == 0])
     return mtr_combined_capinc
