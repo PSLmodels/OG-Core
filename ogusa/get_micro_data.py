@@ -4,9 +4,8 @@ This program extracts tax rate and income data from the microsimulation
 model (Tax-Calculator).
 ------------------------------------------------------------------------
 '''
-from taxcalc import *
+from taxcalc import Records, Calculator, Policy
 from pandas import DataFrame
-from dask.distributed import Client
 from dask import compute, delayed
 import dask.multiprocessing
 import numpy as np
