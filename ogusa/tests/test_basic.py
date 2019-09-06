@@ -1,57 +1,11 @@
 import os
 import pytest
-import tempfile
 import pickle
 import numpy as np
 from ogusa import SS, TPI, utils
 from ogusa.parameters import Specifications
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-
-
-@pytest.yield_fixture
-def picklefile1():
-    x = {'a': 1}
-    pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
-    pickle.dump(x, open(pfile.name, 'wb'))
-    pfile.close()
-    # must close and then yield for Windows platform
-    yield pfile
-    os.remove(pfile.name)
-
-
-@pytest.yield_fixture
-def picklefile2():
-    y = {'a': 1, 'b': 2}
-
-    pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
-    pickle.dump(y, open(pfile.name, 'wb'))
-    pfile.close()
-    # must close and then yield for Windows platform
-    yield pfile
-    os.remove(pfile.name)
-
-
-@pytest.yield_fixture
-def picklefile3():
-    x = {'a': np.array([100., 200., 300.]), 'b': 2}
-    pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
-    pickle.dump(x, open(pfile.name, 'wb'))
-    pfile.close()
-    # must close and then yield for Windows platform
-    yield pfile
-    os.remove(pfile.name)
-
-
-@pytest.yield_fixture
-def picklefile4():
-    x = {'a': np.array([100., 200., 300.1]), 'b': 2}
-    pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
-    pickle.dump(x, open(pfile.name, 'wb'))
-    pfile.close()
-    # must close and then yield for Windows platform
-    yield pfile
-    os.remove(pfile.name)
 
 
 @pytest.mark.full_run
@@ -63,8 +17,8 @@ def test_run_small(time_path):
     TPI.ENFORCE_SOLUTION_CHECKS = False
     SS.MINIMIZER_TOL = 1e-6
     TPI.MINIMIZER_TOL = 1e-6
-    output_base = "./OUTPUT"
-    input_dir = "./OUTPUT"
+    output_base = os.path.join(CUR_PATH, 'OUTPUT')
+    input_dir = output_base
     og_spec = {'frisch': 0.41, 'debt_ratio_ss': 0.4}
     runner(output_base=output_base, baseline_dir=input_dir, test=True,
            time_path=time_path, baseline=True, og_spec=og_spec,
@@ -82,8 +36,8 @@ def test_constant_demographics_TPI():
     iteration and the values all along the time path should equal their
     steady-state values.
     '''
-    output_base = "./OUTPUT"
-    baseline_dir = "./OUTPUT"
+    output_base = os.path.join(CUR_PATH, 'OUTPUT')
+    baseline_dir = output_base
     # Create output directory structure
     ss_dir = os.path.join(output_base, "SS")
     tpi_dir = os.path.join(output_base, "TPI")

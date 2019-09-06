@@ -2,6 +2,9 @@ import pytest
 from ogusa import utils
 from ogusa.utils import Inequality
 import numpy as np
+import tempfile
+import os
+import pickle
 from ogusa.parameters import Specifications
 
 TOL = 1e-5
@@ -137,6 +140,51 @@ def test_get_initial_path(x1, xT, p, shape, expected):
     '''
     test_path = utils.get_initial_path(x1, xT, p, shape)
     assert np.allclose(test_path, expected)
+
+
+@pytest.yield_fixture
+def picklefile1():
+    x = {'a': 1}
+    pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
+    pickle.dump(x, open(pfile.name, 'wb'))
+    pfile.close()
+    # must close and then yield for Windows platform
+    yield pfile
+    os.remove(pfile.name)
+
+
+@pytest.yield_fixture
+def picklefile2():
+    y = {'a': 1, 'b': 2}
+
+    pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
+    pickle.dump(y, open(pfile.name, 'wb'))
+    pfile.close()
+    # must close and then yield for Windows platform
+    yield pfile
+    os.remove(pfile.name)
+
+
+@pytest.yield_fixture
+def picklefile3():
+    x = {'a': np.array([100., 200., 300.]), 'b': 2}
+    pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
+    pickle.dump(x, open(pfile.name, 'wb'))
+    pfile.close()
+    # must close and then yield for Windows platform
+    yield pfile
+    os.remove(pfile.name)
+
+
+@pytest.yield_fixture
+def picklefile4():
+    x = {'a': np.array([100., 200., 300.1]), 'b': 2}
+    pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
+    pickle.dump(x, open(pfile.name, 'wb'))
+    pfile.close()
+    # must close and then yield for Windows platform
+    yield pfile
+    os.remove(pfile.name)
 
 
 def test_compare_pickle_file_bad(picklefile1, picklefile2):
