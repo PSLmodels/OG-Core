@@ -158,22 +158,28 @@ def taxcalc_advance(calc1, year):
     # Compute mtr on capital income
     mtr_combined_capinc = cap_inc_mtr(calc1)
 
-    # Put MTRs, income, tax liability, and other variables in dict
+    # Compute weighted avg mtr for labor income
     # Note the index [2] in the mtr results means that we are pulling
     # the combined mtr from the IIT + FICA taxes
+    mtr_combined_labinc = ((
+        calc1.mtr('e00200p')[2] * np.abs(calc1.array('e00200')) +
+        calc1.mtr('e00900p')[2] * np.abs(calc1.array('sey'))) /
+        (np.abs(calc1.array('sey')) + np.abs(calc1.array('e00200'))))
+
+    # Put MTRs, income, tax liability, and other variables in dict
     length = len(calc1.array('s006'))
     tax_dict = {
-        'MTR wage income': calc1.mtr('e00200p')[2],
-        'MTR SE income': calc1.mtr('e00900p')[2],
-        'MTR capital income': mtr_combined_capinc,
-        'Age': calc1.array('age_head'),
-        'Wage income': calc1.array('e00200'),
-        'SE income': calc1.array('sey'),
-        'Wage + SE income': calc1.array('sey') + calc1.array('e00200'),
-        'Adjusted total income': calc1.array('expanded_income'),
-        'Total tax liability': calc1.array('combined'),
-        'Year': calc1.current_year * np.ones(length),
-        'Weights': calc1.array('s006')}
+        'mtr_labinc': mtr_combined_labinc,
+        'mtr_capinc': mtr_combined_capinc,
+        'age': calc1.array('age_head'),
+        'total_labinc': calc1.array('sey') + calc1.array('e00200'),
+        'total_capinc': (calc1.array('expanded_income') -
+                         calc1.array('sey') + calc1.array('e00200')),
+        'expanded_income': calc1.array('expanded_income'),
+        'total_tax_liab': calc1.array('combined'),
+        'etr': calc1.array('combined') / calc1.array('expanded_income'),
+        'year': calc1.current_year * np.ones(length),
+        'weight': calc1.array('s006')}
 
     return tax_dict
 
