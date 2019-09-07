@@ -2,7 +2,6 @@ from ogusa import txfunc
 import pytest
 import numpy as np
 import os
-import pickle
 from ogusa import utils
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -189,9 +188,6 @@ def test_tax_func_loop():
         tax_func_type, analytical_mtrs, desc_data, graph_data,
         graph_est, output_dir, numparams)
     age_specific = False
-    pickle.dump(test_tuple, open(
-        os.path.join(CUR_PATH, 'test_io_data',
-                     'tax_func_loop_outputs.pkl'), 'wb'))
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_loop_outputs.pkl'))
@@ -277,9 +273,6 @@ def test_tax_func_estimate():
         BW, S, starting_age, ending_age, beg_yr, baseline,
         analytical_mtrs, tax_func_type, age_specific, reform, data,
         client, num_workers)
-    pickle.dump(test_dict, open(
-        os.path.join(CUR_PATH, 'test_io_data',
-                     'tax_func_estimate_outputs.pkl'), 'wb'))
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_estimate_outputs.pkl'))
