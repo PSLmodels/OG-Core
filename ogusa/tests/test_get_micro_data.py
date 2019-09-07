@@ -1,8 +1,14 @@
 import pytest
+from pandas.util.testing import assert_frame_equal
+import numpy as np
 import os
 from ogusa.utils import CPS_START_YEAR
-from ogusa import get_micro_data
+from ogusa import get_micro_data, utils
 from taxcalc import GrowFactors
+
+# get path to puf if puf.csv in ogusa/ directory
+CUR_PATH = os.path.abspath(os.path.dirname(__file__))
+PUF_PATH = os.path.join(CUR_PATH, '..', 'puf.csv')
 
 
 def test_cps():
@@ -49,14 +55,10 @@ def test_puf_path():
     start_year = 2016
     reform = {"II_em": {2017: 10000}}
 
-    # get path to puf if puf.csv in ogusa/ directory
-    cur_dir = os.path.abspath(os.path.dirname(__file__))
-    puf_path = os.path.join(cur_dir, "../puf.csv")
-
     # puf.csv in ogusa/
-    if os.path.exists(puf_path):
+    if os.path.exists(PUF_PATH):
         calc = get_micro_data.get_calculator(
-            baseline, start_year, reform=reform, data=puf_path)
+            baseline, start_year, reform=reform, data=PUF_PATH)
         # blind_head is only in the CPS file and e00700 is only in the PUF.
         # See taxcalc/records_variables.json
         assert (calc.array('blind_head').sum() == 0 and
@@ -85,3 +87,45 @@ def test_get_calculator():
         data='cps', gfactors=GrowFactors(),
         records_start_year=CPS_START_YEAR)
     assert calc.current_year == CPS_START_YEAR
+
+
+def test_get_data():
+    '''
+    Test of get_micro_data.get_data() function
+    '''
+    expected_data = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'micro_data_dict_for_tests.pkl'))
+    test_data, _ = get_micro_data.get_data(
+        baseline=True, start_year=2028, reform={}, data='cps',
+        client=None, num_workers=1)
+    for k, v in test_data.items():
+        assert_frame_equal(expected_data[k], v)
+
+
+def test_taxcalc_advance():
+    '''
+    Test of the get_micro_data.taxcalc_advance() function
+    '''
+    calc1 = utils.safe_read_pickle(os.path.join(
+            CUR_PATH, 'test_io_data', 'calc_object_for_tests.pkl'))
+    expected_dict = utils.safe_read_pickle(os.path.join(
+        CUR_PATH, 'test_io_data', 'tax_dict_for_tests.pkl'))
+    test_dict = get_micro_data.taxcalc_advance(calc1, 2028)
+    for k, v in test_dict.items():
+        assert np.allclose(expected_dict[k], v, equal_nan=True)
+
+
+def test_cap_inc_mtr():
+    '''
+    Test of teh get_micro_data.cap_inc_mtr() function
+    '''
+    calc1 = utils.safe_read_pickle(os.path.join(
+            CUR_PATH, 'test_io_data', 'calc_object_for_tests.pkl'))
+    calc1.advance_to_year(2028)
+    expected = np.genfromtxt(os.path.join(
+            CUR_PATH, 'test_io_data',
+            'mtr_combined_capinc_for_tests.csv'), delimiter=',')
+    test_data = get_micro_data.cap_inc_mtr(calc1)
+
+    assert np.allclose(expected, test_data, equal_nan=True)

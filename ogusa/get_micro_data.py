@@ -125,7 +125,7 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
     if reform:
         pkl_path = "micro_data_policy.pkl"
     else:
-        pkl_path = "micro_data_baseline_new.pkl"
+        pkl_path = "micro_data_baseline.pkl"
     pickle.dump(micro_data_dict, open(pkl_path, "wb"))
 
     # Do some garbage collection
@@ -144,7 +144,7 @@ def taxcalc_advance(calc1, year):
 
     Args:
         calc1 (Tax-Calculator Calculator object): TC calculator
-        year (int): year to advance data to
+        year (int): year to begin advancing from
 
     Returns:
         tax_dict (dict): a dictionary of microdata with marginal tax
@@ -152,7 +152,7 @@ def taxcalc_advance(calc1, year):
     '''
     calc1.advance_to_year(year)
     calc1.calc_all()
-    print('year: ', str(calc1.current_year))
+    print('Year: ', str(calc1.current_year))
 
     # Compute mtr on capital income
     mtr_combined_capinc = cap_inc_mtr(calc1)
