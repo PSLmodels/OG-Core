@@ -143,125 +143,125 @@ def gen_3Dscatters_hist(df, s, t, output_dir):
     del df, df_trnc, inc_lab, inc_cap, etr_data, mtrx_data, mtry_data
 
 
-def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
-    '''
-    This function plots a single estimated tax function against its
-    corresponding data
-
-    Args:
-        tx_params (Numpy array):
-        data (Pandas DataFrame): 11 variables with N observations of tax
-            rates
-        params (tuple): containts (s, t, rate_type, plot_full,
-            show_plots, save_plots, output_dir)
-        s (int): age of individual, >= 21
-        t (int): year of analysis, >= 2016
-        tax_func_type (str): functional form of tax functions
-        rate_type (str): type of tax rate: mtrx, mtry, etr
-        plot_full (bool): whether to plot all data points or a truncated
-            set of data
-        show_plots (bool): whether to show plots
-        save_plots (bool): whether to save plots
-        output_dir (str): output directory for saving plot files
-
-    Returns:
-        None
-
-    '''
-    X_data = data['total_labinc']
-    Y_data = data['total_capinc']
-    (s, t, tax_func_type, rate_type, plot_full, show_plots,
-     save_plots, output_dir) = params
-
-    cmap1 = matplotlib.cm.get_cmap('summer')
-
-    if plot_full:
-        if rate_type == 'etr':
-            txrate_data = data['etr']
-            tx_label = 'etr'
-        elif rate_type == 'mtrx':
-            txrate_data = data['mtr_labinc']
-            tx_label = 'MTRx'
-        elif rate_type == 'mtry':
-            txrate_data = data['mtr_capinc']
-            tx_label = 'MTRy'
-        # Make comparison plot with full income domains
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.scatter(X_data, Y_data, txrate_data, c='r', marker='o')
-        ax.set_xlabel('Total Labor Income')
-        ax.set_ylabel('Total Capital Income')
-        ax.set_zlabel(tx_label)
-        plt.title(tx_label + ' vs. Predicted ' + tx_label + ': Age=' +
-                  str(s) + ', Year=' + str(t))
-
-        gridpts = 50
-        X_vec = np.exp(np.linspace(np.log(1), np.log(X_data.max()),
-                                   gridpts))
-        Y_vec = np.exp(np.linspace(np.log(1), np.log(Y_data.max()),
-                                   gridpts))
-        X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-        txrate_grid = get_tax_rates(
-            tx_params, X_grid, Y_grid, None, tax_func_type, rate_type,
-            for_estimation=False)
-        ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
-                        linewidth=0)
-
-        if save_plots:
-            filename = (tx_label + '_age_' + str(s) + '_Year_' + str(t)
-                        + '_vsPred.png')
-            fullpath = os.path.join(output_dir, filename)
-            fig.savefig(fullpath, bbox_inches='tight')
-
-    else:
-        # Make comparison plot with truncated income domains
-        data_trnc = data[(data['total_labinc'] > MIN_INC_GRAPH) &
-                         (data['total_labinc'] < MAX_INC_GRAPH) &
-                         (data['total_capinc'] > MIN_INC_GRAPH) &
-                         (data['total_capinc'] < MAX_INC_GRAPH)]
-        X_trnc = data_trnc['total_labinc']
-        Y_trnc = data_trnc['total_capinc']
-        if rate_type == 'etr':
-            txrates_trnc = data_trnc['etr']
-            tx_label = 'etr'
-        elif rate_type == 'mtrx':
-            txrates_trnc = data_trnc['mtr_labinc']
-            tx_label = 'MTRx'
-        elif rate_type == 'mtry':
-            txrates_trnc = data_trnc['mtr_capinc']
-            tx_label = 'MTRy'
-
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.scatter(X_trnc, Y_trnc, txrates_trnc, c='r', marker='o')
-        ax.set_xlabel('Total Labor Income')
-        ax.set_ylabel('Total Capital Income')
-        ax.set_zlabel(tx_label)
-        plt.title('Truncated ' + tx_label + ', Lab. Inc., and Cap. ' +
-                  'Inc., Age=' + str(s) + ', Year=' + str(t))
-
-        gridpts = 50
-        X_vec = np.exp(np.linspace(np.log(1), np.log(X_trnc.max()),
-                                   gridpts))
-        Y_vec = np.exp(np.linspace(np.log(1), np.log(Y_trnc.max()),
-                                   gridpts))
-        X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-        txrate_grid = get_tax_rates(
-            tx_params, X_grid, Y_grid, None, tax_func_type, rate_type,
-            for_estimation=False)
-        ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
-                        linewidth=0)
-
-        if save_plots:
-            filename = (tx_label + 'trunc_age_' + str(s) + '_Year_' +
-                        str(t) + '_vsPred.png')
-            fullpath = os.path.join(output_dir, filename)
-            fig.savefig(fullpath, bbox_inches='tight')
-
-        if show_plots:
-            plt.show()
-
-        plt.close()
+# def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
+#     '''
+#     This function plots a single estimated tax function against its
+#     corresponding data
+#
+#     Args:
+#         tx_params (Numpy array):
+#         data (Pandas DataFrame): 11 variables with N observations of tax
+#             rates
+#         params (tuple): containts (s, t, rate_type, plot_full,
+#             show_plots, save_plots, output_dir)
+#         s (int): age of individual, >= 21
+#         t (int): year of analysis, >= 2016
+#         tax_func_type (str): functional form of tax functions
+#         rate_type (str): type of tax rate: mtrx, mtry, etr
+#         plot_full (bool): whether to plot all data points or a truncated
+#             set of data
+#         show_plots (bool): whether to show plots
+#         save_plots (bool): whether to save plots
+#         output_dir (str): output directory for saving plot files
+#
+#     Returns:
+#         None
+#
+#     '''
+#     X_data = data['total_labinc']
+#     Y_data = data['total_capinc']
+#     (s, t, tax_func_type, rate_type, plot_full, show_plots,
+#      save_plots, output_dir) = params
+#
+#     cmap1 = matplotlib.cm.get_cmap('summer')
+#
+#     if plot_full:
+#         if rate_type == 'etr':
+#             txrate_data = data['etr']
+#             tx_label = 'etr'
+#         elif rate_type == 'mtrx':
+#             txrate_data = data['mtr_labinc']
+#             tx_label = 'MTRx'
+#         elif rate_type == 'mtry':
+#             txrate_data = data['mtr_capinc']
+#             tx_label = 'MTRy'
+#         # Make comparison plot with full income domains
+#         fig = plt.figure()
+#         ax = fig.add_subplot(111, projection='3d')
+#         ax.scatter(X_data, Y_data, txrate_data, c='r', marker='o')
+#         ax.set_xlabel('Total Labor Income')
+#         ax.set_ylabel('Total Capital Income')
+#         ax.set_zlabel(tx_label)
+#         plt.title(tx_label + ' vs. Predicted ' + tx_label + ': Age=' +
+#                   str(s) + ', Year=' + str(t))
+#
+#         gridpts = 50
+#         X_vec = np.exp(np.linspace(np.log(1), np.log(X_data.max()),
+#                                    gridpts))
+#         Y_vec = np.exp(np.linspace(np.log(1), np.log(Y_data.max()),
+#                                    gridpts))
+#         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
+#         txrate_grid = get_tax_rates(
+#             tx_params, X_grid, Y_grid, None, tax_func_type, rate_type,
+#             for_estimation=False)
+#         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
+#                         linewidth=0)
+#
+#         if save_plots:
+#             filename = (tx_label + '_age_' + str(s) + '_Year_' + str(t)
+#                         + '_vsPred.png')
+#             fullpath = os.path.join(output_dir, filename)
+#             fig.savefig(fullpath, bbox_inches='tight')
+#
+#     else:
+#         # Make comparison plot with truncated income domains
+#         data_trnc = data[(data['total_labinc'] > MIN_INC_GRAPH) &
+#                          (data['total_labinc'] < MAX_INC_GRAPH) &
+#                          (data['total_capinc'] > MIN_INC_GRAPH) &
+#                          (data['total_capinc'] < MAX_INC_GRAPH)]
+#         X_trnc = data_trnc['total_labinc']
+#         Y_trnc = data_trnc['total_capinc']
+#         if rate_type == 'etr':
+#             txrates_trnc = data_trnc['etr']
+#             tx_label = 'etr'
+#         elif rate_type == 'mtrx':
+#             txrates_trnc = data_trnc['mtr_labinc']
+#             tx_label = 'MTRx'
+#         elif rate_type == 'mtry':
+#             txrates_trnc = data_trnc['mtr_capinc']
+#             tx_label = 'MTRy'
+#
+#         fig = plt.figure()
+#         ax = fig.add_subplot(111, projection='3d')
+#         ax.scatter(X_trnc, Y_trnc, txrates_trnc, c='r', marker='o')
+#         ax.set_xlabel('Total Labor Income')
+#         ax.set_ylabel('Total Capital Income')
+#         ax.set_zlabel(tx_label)
+#         plt.title('Truncated ' + tx_label + ', Lab. Inc., and Cap. ' +
+#                   'Inc., Age=' + str(s) + ', Year=' + str(t))
+#
+#         gridpts = 50
+#         X_vec = np.exp(np.linspace(np.log(1), np.log(X_trnc.max()),
+#                                    gridpts))
+#         Y_vec = np.exp(np.linspace(np.log(1), np.log(Y_trnc.max()),
+#                                    gridpts))
+#         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
+#         txrate_grid = get_tax_rates(
+#             tx_params, X_grid, Y_grid, None, tax_func_type, rate_type,
+#             for_estimation=False)
+#         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
+#                         linewidth=0)
+#
+#         if save_plots:
+#             filename = (tx_label + 'trunc_age_' + str(s) + '_Year_' +
+#                         str(t) + '_vsPred.png')
+#             fullpath = os.path.join(output_dir, filename)
+#             fig.savefig(fullpath, bbox_inches='tight')
+#
+#         if show_plots:
+#             plt.show()
+#
+#         plt.close()
 
 
 def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
