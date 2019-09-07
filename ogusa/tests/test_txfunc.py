@@ -2,6 +2,7 @@ from ogusa import txfunc
 import pytest
 import numpy as np
 import os
+import pickle
 from ogusa import utils
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -146,28 +147,56 @@ def test_txfunc_est():
         assert(np.allclose(test_tuple[i], v))
 
 
-# @pytest.mark.full_run
-# def test_tax_func_loop():
-#     # Test txfunc.tax_func_loop() function.  The test is that given
-#     # inputs from previous run, the outputs are unchanged.
-#     with open(os.path.join(CUR_PATH,
-#                            'test_io_data/tax_func_loop_inputs_large.pkl'),
-#               'rb') as f:
-#         input_tuple = pickle.load(f, encoding='latin1')
-#     (t, micro_data, beg_yr, s_min, s_max, age_specific, analytical_mtrs,
-#      desc_data, graph_data, graph_est, output_dir, numparams,
-#      tpers) = input_tuple
-#     tax_func_type = 'DEP'
-#     test_tuple = txfunc.tax_func_loop(
-#         t, micro_data, beg_yr, s_min, s_max, age_specific,
-#         tax_func_type, analytical_mtrs, desc_data, graph_data,
-#         graph_est, output_dir, numparams, tpers)
-#     with open(os.path.join(CUR_PATH,
-#                            'test_io_data/tax_func_loop_outputs.pkl'),
-#               'rb') as f:
-#         expected_tuple = pickle.load(f, encoding='latin1')
-#     for i, v in enumerate(expected_tuple):
-#         assert(np.allclose(test_tuple[i], v))
+@pytest.mark.full_run
+def test_tax_func_loop():
+    '''
+    Test txfunc.tax_func_loop() function.  The test is that given
+    inputs from previous run, the outputs are unchanged.
+    '''
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'tax_func_loop_inputs_large.pkl'))
+    (t, micro_data, beg_yr, s_min, s_max, age_specific, analytical_mtrs,
+     desc_data, graph_data, graph_est, output_dir, numparams,
+     tpers) = input_tuple
+    tax_func_type = 'DEP'
+    # Rename and create vars to suit new micro_data var names
+    micro_data['total_labinc'] = (micro_data['Wage income'] +
+                                  micro_data['SE income'])
+    micro_data['etr'] = (micro_data['Total tax liability'] /
+                         micro_data["Adjusted total income"])
+    micro_data['total_capinc'] = (
+        micro_data['Adjusted total income'] -
+        micro_data['total_labinc'])
+    # use weighted avg for MTR labor - abs value because
+    # SE income may be negative
+    micro_data['mtr_labinc'] = (
+        micro_data['MTR wage income'] * (micro_data['Wage income'] /
+                                         (micro_data['Wage income'].abs()
+                                          +
+                                          micro_data['SE income'].abs()))
+        + micro_data['MTR SE income'] * (micro_data['SE income'].abs() /
+                                         (micro_data['Wage income'].abs()
+                                          +
+                                          micro_data['SE income'].abs())))
+    micro_data.rename(columns={
+        'Adjusted total income': 'expanded_income',
+        'MTR capital income': 'mtr_capinc',
+        'Year': 'year', 'Age': 'age',
+        'Weights': 'weight'}, inplace=True)
+    test_tuple = txfunc.tax_func_loop(
+        t, micro_data, beg_yr, s_min, s_max, age_specific,
+        tax_func_type, analytical_mtrs, desc_data, graph_data,
+        graph_est, output_dir, numparams)
+    age_specific = False
+    pickle.dump(test_tuple, open(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'tax_func_loop_outputs.pkl'), 'wb'))
+    expected_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'tax_func_loop_outputs.pkl'))
+    for i, v in enumerate(expected_tuple):
+        assert(np.allclose(test_tuple[i], v))
 
 
 A = 0.02
@@ -228,31 +257,37 @@ def test_get_tax_rates(tax_func_type, rate_type, params, for_estimation,
     assert np.allclose(test_txrates, expected)
 
 
-# @pytest.mark.full_run
-# def test_tax_func_estimate():
-#     # Test txfunc.tax_func_loop() function.  The test is that given
-#     # inputs from previous run, the outputs are unchanged.
-#     with open(os.path.join(CUR_PATH,
-#                            'test_io_data/tax_func_estimate_inputs.pkl'),
-#               'rb') as f:
-#         input_tuple = pickle.load(f, encoding='latin1')
-#     (BW, S, starting_age, ending_age, beg_yr, baseline,
-#      analytical_mtrs, age_specific, reform, data, client,
-#      num_workers) = input_tuple
-#     tax_func_type = 'DEP'
-#     test_dict = txfunc.tax_func_estimate(
-#         BW, S, starting_age, ending_age, beg_yr, baseline,
-#         analytical_mtrs, tax_func_type, age_specific, reform, data,
-#         client, num_workers)
-#     with open(os.path.join(CUR_PATH,
-#                            'test_io_data/tax_func_estimate_outputs.pkl'),
-#               'rb') as f:
-#         expected_dict = pickle.load(f, encoding='latin1')
-#     expected_dict['tax_func_type'] = 'DEP'
-#     for k, v in expected_dict.items():
-#         try:
-#             assert(all(test_dict[k] == v))
-#         except ValueError:
-#             assert((test_dict[k] == v).all())
-#         except TypeError:
-#             assert(test_dict[k] == v)
+@pytest.mark.full_run
+def test_tax_func_estimate():
+    '''
+    Test txfunc.tax_func_loop() function.  The test is that given
+    inputs from previous run, the outputs are unchanged.
+    '''
+    with open(os.path.join(CUR_PATH,
+                           'test_io_data/tax_func_estimate_inputs.pkl'),
+              'rb') as f:
+        input_tuple = pickle.load(f, encoding='latin1')
+    (BW, S, starting_age, ending_age, beg_yr, baseline,
+     analytical_mtrs, age_specific, reform, data, client,
+     num_workers) = input_tuple
+    tax_func_type = 'DEP'
+    age_specific = False
+    BW = 1
+    test_dict = txfunc.tax_func_estimate(
+        BW, S, starting_age, ending_age, beg_yr, baseline,
+        analytical_mtrs, tax_func_type, age_specific, reform, data,
+        client, num_workers)
+    pickle.dump(test_dict, open(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'tax_func_estimate_outputs.pkl'), 'wb'))
+    expected_dict = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'tax_func_estimate_outputs.pkl'))
+    expected_dict['tax_func_type'] = 'DEP'
+    for k, v in expected_dict.items():
+        try:
+            assert(all(test_dict[k] == v))
+        except ValueError:
+            assert((test_dict[k] == v).all())
+        except TypeError:
+            assert(test_dict[k] == v)
