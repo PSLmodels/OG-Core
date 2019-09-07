@@ -11,6 +11,9 @@ CUR_PATH = os.path.abspath(os.path.dirname(__file__))
                          [('DEP', 0.032749763), ('GS', 0.007952744)],
                          ids=['DEP', 'GS'])
 def test_wsumsq(tax_func_type, expected):
+    '''
+    Test of the weighted sum of squares calculation
+    '''
     rate_type = 'etr'
     A = 0.01
     B = 0.02
@@ -121,8 +124,10 @@ def test_replace_outliers():
 # affects results from scipy.opt that is called in this test - so it'll
 # pass if run on Mac with MKL, but not necessarily on other platforms
 def test_txfunc_est():
-    # Test txfunc.txfunc_est() function.  The test is that given
-    # inputs from previous run, the outputs are unchanged.
+    '''
+    Test txfunc.txfunc_est() function.  The test is that given
+    inputs from previous run, the outputs are unchanged.
+    '''
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', 'txfunc_est_inputs.pkl'))
     (df, s, t, rate_type, output_dir, graph) = input_tuple
@@ -259,10 +264,9 @@ def test_tax_func_estimate():
     Test txfunc.tax_func_loop() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
     '''
-    with open(os.path.join(CUR_PATH,
-                           'test_io_data/tax_func_estimate_inputs.pkl'),
-              'rb') as f:
-        input_tuple = pickle.load(f, encoding='latin1')
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'tax_func_estimate_inputs.pkl'))
     (BW, S, starting_age, ending_age, beg_yr, baseline,
      analytical_mtrs, age_specific, reform, data, client,
      num_workers) = input_tuple
