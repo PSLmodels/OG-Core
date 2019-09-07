@@ -13,14 +13,12 @@ import time
 import os
 import numpy as np
 import scipy.optimize as opt
-from dask.distributed import Client
 from dask import compute, delayed
 import dask.multiprocessing
 import pickle
 import matplotlib
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator, FormatStrFormatter
-from mpl_toolkits.mplot3d import Axes3D
+from matplotlib.ticker import MultipleLocator
 from ogusa import get_micro_data
 from ogusa.utils import DEFAULT_START_YEAR
 
