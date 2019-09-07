@@ -103,12 +103,20 @@ def test_get_data():
         assert_frame_equal(expected_data[k], v)
 
 
+@pytest.mark.full_run
 def test_taxcalc_advance():
     '''
     Test of the get_micro_data.taxcalc_advance() function
+
+    Note that this test may fail if the Tax-Calculator is not v 2.4.0
+    In that case, you can use the pickeld caculator object, however
+    this is too large for GitHub, so it won't be available there.
     '''
-    calc1 = utils.safe_read_pickle(os.path.join(
-            CUR_PATH, 'test_io_data', 'calc_object_for_tests.pkl'))
+    # calc1 = utils.safe_read_pickle(os.path.join(
+    #         CUR_PATH, 'test_io_data', 'calc_object_for_tests.pkl'))
+    calc1 = get_micro_data.get_calculator(
+        baseline=True, calculator_start_year=2028, reform={},
+        data='cps')
     expected_dict = utils.safe_read_pickle(os.path.join(
         CUR_PATH, 'test_io_data', 'tax_dict_for_tests.pkl'))
     test_dict = get_micro_data.taxcalc_advance(calc1, 2028)
@@ -116,12 +124,20 @@ def test_taxcalc_advance():
         assert np.allclose(expected_dict[k], v, equal_nan=True)
 
 
+@pytest.mark.full_run
 def test_cap_inc_mtr():
     '''
-    Test of teh get_micro_data.cap_inc_mtr() function
+    Test of the get_micro_data.cap_inc_mtr() function
+
+    Note that this test may fail if the Tax-Calculator is not v 2.4.0
+    In that case, you can use the pickeld caculator object, however
+    this is too large for GitHub, so it won't be available there.
     '''
-    calc1 = utils.safe_read_pickle(os.path.join(
-            CUR_PATH, 'test_io_data', 'calc_object_for_tests.pkl'))
+    # calc1 = utils.safe_read_pickle(os.path.join(
+    #         CUR_PATH, 'test_io_data', 'calc_object_for_tests.pkl'))
+    calc1 = get_micro_data.get_calculator(
+        baseline=True, calculator_start_year=2028, reform={},
+        data='cps')
     calc1.advance_to_year(2028)
     expected = np.genfromtxt(os.path.join(
             CUR_PATH, 'test_io_data',
