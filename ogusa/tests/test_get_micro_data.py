@@ -109,7 +109,7 @@ def test_taxcalc_advance():
     Test of the get_micro_data.taxcalc_advance() function
 
     Note that this test may fail if the Tax-Calculator is not v 2.4.0
-    In that case, you can use the pickeld caculator object, however
+    In that case, you can use the pickeld calculator object, however
     this is too large for GitHub, so it won't be available there.
     '''
     # calc1 = utils.safe_read_pickle(os.path.join(

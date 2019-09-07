@@ -156,6 +156,10 @@ def test_tax_func_loop():
     '''
     Test txfunc.tax_func_loop() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
+
+    Note that the data for this test is too large for GitHub, so it
+    won't be available there.
+
     '''
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
