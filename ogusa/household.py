@@ -288,9 +288,7 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, theta, e, rho,
     deriv = ((1 + r) - (
         r * tax.MTR_income(r, w, b, n, factor, True, e, etr_params,
                            mtry_params, p)) -
-             (tax.MTR_wealth(b_splus1, h_wealth, m_wealth, p_wealth) *
-              b_splus1) - tax.ETR_wealth(b_splus1, h_wealth, m_wealth,
-                                         p_wealth))
+             tax.MTR_wealth(b_splus1, h_wealth, m_wealth, p_wealth))
     savings_ut = (rho * np.exp(-p.sigma * p.g_y) * chi_b *
                   b_splus1 ** (-p.sigma))
     euler_error = np.zeros_like(n)
