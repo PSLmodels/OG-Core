@@ -27,7 +27,7 @@ def get_initial_SS_values(p):
     equlibrium values.
 
     Args:
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
 
     Returns:
         (tuple): initial period and steady state values:
@@ -116,7 +116,7 @@ def firstdoughnutring(guesses, r, w, bq, tr, theta, factor, j,
         j (int): index of ability type
         initial_b (Numpy array): savings of agents alive at T=0,
             size = SxJ
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
 
     Returns:
         euler errors (Numpy array): errors from first order conditions,
@@ -179,7 +179,7 @@ def twist_doughnut(guesses, r, w, bq, tr, theta, factor, j, s, t,
             parameters, size = sxsxnum_params
         initial_b (Numpy array): savings of agents alive at T=0,
             size = SxJ
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
 
     Returns:
         euler errors (Numpy array): errors from first order conditions,
@@ -248,7 +248,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
             (b_sinit, b_splus1init, factor, initial_b, initial_n, D0)
         j (int): index of ability type
         ind (Numpy array): integers from 0 to S-1
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
 
     Returns:
         (tuple): household solution results:
@@ -383,7 +383,7 @@ def run_TPI(p, client=None):
     Solve for transition path equilibrium of OG-USA.
 
     Args:
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         client (Dask client object): client
 
     Returns:
