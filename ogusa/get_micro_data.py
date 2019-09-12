@@ -4,9 +4,8 @@ This program extracts tax rate and income data from the microsimulation
 model (Tax-Calculator).
 ------------------------------------------------------------------------
 '''
-from taxcalc import *
+from taxcalc import Records, Calculator, Policy
 from pandas import DataFrame
-from dask.distributed import Client
 from dask import compute, delayed
 import dask.multiprocessing
 import numpy as np
@@ -73,15 +72,9 @@ def get_calculator(baseline, calculator_start_year, reform=None,
     # the default set up increments year to 2013
     calc1 = Calculator(records=records1, policy=policy1)
 
-    # this increment_year function extrapolates all PUF variables to
-    # the next year so this step takes the calculator to the start_year
+    # Check that start_year is appropriate
     if calculator_start_year > TC_LAST_YEAR:
         raise RuntimeError("Start year is beyond data extrapolation.")
-    while calc1.current_year < calculator_start_year:
-        calc1.increment_year()
-
-    # running all the functions and calculates taxes
-    calc1.calc_all()
 
     return calc1
 
@@ -115,65 +108,19 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
     calc1 = get_calculator(baseline=baseline,
                            calculator_start_year=start_year,
                            reform=reform, data=data)
-
-    # running marginal tax rate function for wage and salaries of
-    # primary three results returned for fica tax, iit tax, and combined
-    # mtr_iit: marginal tax rate of individual income tax
-    [mtr_fica, mtr_iit, mtr_combined] = calc1.mtr('e00200p')
-
-    # the sum of the two e-variables here are self-employed income
-    [mtr_fica_sey, mtr_iit_sey, mtr_combined_sey] = calc1.mtr('e00900p')
-
-    # find mtr on capital income
-    mtr_combined_capinc = cap_inc_mtr(calc1)
-
-    # create a temporary array to save all variables we need
-    length = len(calc1.array('s006'))
-    temp = np.empty((length, 11))
-    # Put values of variables in temp array
-    # most e-variable definition can be found here
-    # https://docs.google.com/spreadsheets/d/1WlgbgEAMwhjMI8s9eG117bBEKFioXUY0aUTfKwHwXdA/edit#gid=1029315862
-    temp[:, 0] = mtr_combined
-    temp[:, 1] = mtr_combined_sey
-    temp[:, 2] = mtr_combined_capinc
-    temp[:, 3] = calc1.array('age_head')
-    temp[:, 4] = calc1.array('e00200')
-    temp[:, 5] = calc1.array('sey')
-    temp[:, 6] = calc1.array('sey') + calc1.array('e00200')
-    temp[:, 7] = calc1.array('expanded_income')
-    temp[:, 8] = calc1.array('combined')
-    temp[:, 9] = calc1.current_year * np.ones(length)
-    temp[:, 10] = calc1.array('s006')
+    # Compute MTRs and taxes or each year, but not beyond TC_LAST_YEAR
+    lazy_values = []
+    for year in range(start_year, TC_LAST_YEAR + 1):
+        lazy_values.append(
+            delayed(taxcalc_advance)(calc1, year))
+    results = compute(*lazy_values, scheduler=dask.multiprocessing.get,
+                      num_workers=num_workers)
 
     # dictionary of data frames to return
     micro_data_dict = {}
-
-    micro_data_dict[str(start_year)] = DataFrame(
-        data=temp, columns=['MTR wage income', 'MTR SE income',
-                            'MTR capital income', 'Age', 'Wage income',
-                            'SE income', 'Wage + SE income',
-                            'Adjusted total income',
-                            'Total tax liability', 'Year', 'Weights'])
-
-    # Repeat the process for each year
-    # Increment years into the future but not beyond TC_LAST_YEAR
-    lazy_values = []
-    for year in range(start_year + 1, TC_LAST_YEAR + 1):
-        lazy_values.append(
-            delayed(taxcalc_advance)(calc1, year, length))
-    results = compute(*lazy_values, scheduler=dask.multiprocessing.get,
-                      num_workers=num_workers)
-    # for i, result in results.items():
     for i, result in enumerate(results):
-        year = start_year + 1 + i
-        micro_data_dict[str(year)] = DataFrame(
-            data=result, columns=['MTR wage income', 'MTR SE income',
-                                  'MTR capital income', 'Age',
-                                  'Wage income', 'SE income',
-                                  'Wage + SE income',
-                                  'Adjusted total income',
-                                  'Total tax liability', 'Year',
-                                  'Weights'])
+        year = start_year + i
+        micro_data_dict[str(year)] = DataFrame(result)
 
     if reform:
         pkl_path = "micro_data_policy.pkl"
@@ -182,55 +129,64 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
     pickle.dump(micro_data_dict, open(pkl_path, "wb"))
 
     # Do some garbage collection
-    del (calc1, temp, mtr_fica, mtr_iit, mtr_combined, mtr_fica_sey,
-         mtr_iit_sey, mtr_combined_sey, mtr_combined_capinc)
+    del calc1, results
 
+    # Pull Tax-Calc version for reference
     taxcalc_version = pkg_resources.get_distribution("taxcalc").version
+
     return micro_data_dict, taxcalc_version
 
 
-def taxcalc_advance(calc1, year, length):
+def taxcalc_advance(calc1, year):
     '''
-    This function advances the year used in Tax-Calculator and save the
-    results to a numpy array.
+    This function advances the year used in Tax-Calculator, compute
+    taxes and rates, and save the results to a dictionary.
 
     Args:
         calc1 (Tax-Calculator Calculator object): TC calculator
-        year (int): year to advance data to
-        length (int): length of TC Records object
+        year (int): year to begin advancing from
 
     Returns:
-        temp (Numpy array): an array of microdata with marginal tax
+        tax_dict (dict): a dictionary of microdata with marginal tax
             rates and other information computed in TC
     '''
     calc1.advance_to_year(year)
-    print('year: ', str(calc1.current_year))
-    [mtr_fica, mtr_iit, mtr_combined] = calc1.mtr('e00200p')
-    [mtr_fica_sey, mtr_iit_sey, mtr_combined_sey] =\
-        calc1.mtr('e00900p')
-    # find mtr on capital income
+    calc1.calc_all()
+    print('Year: ', str(calc1.current_year))
+
+    # Compute mtr on capital income
     mtr_combined_capinc = cap_inc_mtr(calc1)
 
-    temp = np.empty((length, 11))
-    temp[:, 0] = mtr_combined
-    temp[:, 1] = mtr_combined_sey
-    temp[:, 2] = mtr_combined_capinc
-    temp[:, 3] = calc1.array('age_head')
-    temp[:, 4] = calc1.array('e00200')
-    temp[:, 5] = calc1.array('sey')
-    temp[:, 6] = calc1.array('sey') + calc1.array('e00200')
-    temp[:, 7] = calc1.array('expanded_income')
-    temp[:, 8] = calc1.array('combined')
-    temp[:, 9] = calc1.current_year * np.ones(length)
-    temp[:, 10] = calc1.array('s006')
+    # Compute weighted avg mtr for labor income
+    # Note the index [2] in the mtr results means that we are pulling
+    # the combined mtr from the IIT + FICA taxes
+    mtr_combined_labinc = ((
+        calc1.mtr('e00200p')[2] * np.abs(calc1.array('e00200')) +
+        calc1.mtr('e00900p')[2] * np.abs(calc1.array('sey'))) /
+        (np.abs(calc1.array('sey')) + np.abs(calc1.array('e00200'))))
 
-    return temp
+    # Put MTRs, income, tax liability, and other variables in dict
+    length = len(calc1.array('s006'))
+    tax_dict = {
+        'mtr_labinc': mtr_combined_labinc,
+        'mtr_capinc': mtr_combined_capinc,
+        'age': calc1.array('age_head'),
+        'total_labinc': calc1.array('sey') + calc1.array('e00200'),
+        'total_capinc': (calc1.array('expanded_income') -
+                         calc1.array('sey') + calc1.array('e00200')),
+        'expanded_income': calc1.array('expanded_income'),
+        'total_tax_liab': calc1.array('combined'),
+        'etr': calc1.array('combined') / calc1.array('expanded_income'),
+        'year': calc1.current_year * np.ones(length),
+        'weight': calc1.array('s006')}
+
+    return tax_dict
 
 
 def cap_inc_mtr(calc1):
     '''
     This function computes the marginal tax rate on capital income,
-    which is calculated as weighted average of the marginal tax rates
+    which is calculated as a weighted average of the marginal tax rates
     on different sources of capital income.
 
     Args:
@@ -241,34 +197,46 @@ def cap_inc_mtr(calc1):
             for each observation in the TC Records object
 
     '''
-    capital_income_sources_taxed = (
-        'e00300', 'e00400', 'e00600', 'e00650', 'e01400', 'e01700',
-        'p22250', 'p23250', 'e26270')
-
-    # PUF does not have variable for non-taxable IRA distributions
+    # Note: PUF does not have variable for non-taxable IRA distributions
+    # Exclude Sch E income (e02000) from this list since we'll compute
+    # MTRs for this income in two parts - one for overall Sch C and one
+    # for S Corp and Partnerhsip income (e26270) (note that TaxCalc
+    # doesn't allow for an MTR on rents and royalties alone)
+    # e00300 = interest income
+    # e00400 = nontaxable interest income
+    # e00600 = ordinary dividend income
+    # e00650 = qualified dividend income
+    # e01400 = taxable IRA distributions
+    # e01700 = pension and annuity income
+    # p22250 = short term cap gain/loss
+    # p23250 = long term cap gain/loss
+    # e26270 = partnership and s corp income/loss
+    # e02000 = Sch E income (includes e26270)
     capital_income_sources = (
         'e00300', 'e00400', 'e00600', 'e00650', 'e01400', 'e01700',
         'p22250', 'p23250', 'e26270')
-
+    rent_royalty_inc = np.abs(
+        calc1.array('e02000') - calc1.array('e26270'))
+    # assign overall Sch E mtr to rent and royalities since TC can't do
+    # this component separately
+    rent_royalty_mtr = calc1.mtr('e02000')[2]
     # calculating MTRs separately - can skip items with zero tax
     all_mtrs = {income_source: calc1.mtr(income_source) for
-                income_source in capital_income_sources_taxed}
+                income_source in capital_income_sources}
     # Get each column of income sources, to include non-taxable income
     record_columns = [calc1.array(x) for x in capital_income_sources]
-    # weighted average of all those MTRs
-    total = (sum(map(abs, record_columns)) +
-             np.abs(calc1.array('e02000') - calc1.array('e26270')))
+    # Compute weighted average of all those MTRs
+    # first find total capital income
+    total_cap_inc = (sum(map(abs, record_columns)) + rent_royalty_inc)
     # Note that all_mtrs gives fica (0), iit (1), and combined (2) mtrs
     # We'll use the combined - hence all_mtrs[source][2]
     capital_mtr = [abs(col) * all_mtrs[source][2] for col, source in
-                   zip(record_columns, capital_income_sources_taxed)]
-    mtr_combined_capinc = np.zeros_like(total)
-    mtr_combined_capinc[total != 0] = (
-        sum(capital_mtr + (calc1.mtr('e02000')[2] *
-                           np.abs(calc1.array('e02000') -
-                                  calc1.array('e26270'))))[total != 0] /
-        total[total != 0])
-    # no capital income taxpayers
-    # give all the weight to interest income
-    mtr_combined_capinc[total == 0] = all_mtrs['e00300'][2][total == 0]
+                   zip(record_columns, capital_income_sources)]
+    mtr_combined_capinc = np.zeros_like(total_cap_inc)
+    mtr_combined_capinc[total_cap_inc != 0] = (
+        sum(capital_mtr + rent_royalty_mtr *
+            rent_royalty_inc)[total_cap_inc != 0] /
+        total_cap_inc[total_cap_inc != 0])
+    mtr_combined_capinc[total_cap_inc == 0] = (
+        all_mtrs['e00300'][2][total_cap_inc == 0])
     return mtr_combined_capinc

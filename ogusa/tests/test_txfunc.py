@@ -1,7 +1,6 @@
 from ogusa import txfunc
 import pytest
 import numpy as np
-import pickle
 import os
 from ogusa import utils
 
@@ -12,6 +11,9 @@ CUR_PATH = os.path.abspath(os.path.dirname(__file__))
                          [('DEP', 0.032749763), ('GS', 0.007952744)],
                          ids=['DEP', 'GS'])
 def test_wsumsq(tax_func_type, expected):
+    '''
+    Test of the weighted sum of squares calculation
+    '''
     rate_type = 'etr'
     A = 0.01
     B = 0.02
@@ -122,11 +124,20 @@ def test_replace_outliers():
 # affects results from scipy.opt that is called in this test - so it'll
 # pass if run on Mac with MKL, but not necessarily on other platforms
 def test_txfunc_est():
-    # Test txfunc.txfunc_est() function.  The test is that given
-    # inputs from previous run, the outputs are unchanged.
+    '''
+    Test txfunc.txfunc_est() function.  The test is that given
+    inputs from previous run, the outputs are unchanged.
+    '''
     input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data/txfunc_est_inputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data', 'txfunc_est_inputs.pkl'))
     (df, s, t, rate_type, output_dir, graph) = input_tuple
+    # Put old df variables into new df var names
+    df.rename(columns={
+        'MTR labor income': 'mtr_labinc',
+        'MTR capital income': 'mtr_capinc',
+        'Total labor income': 'total_labinc',
+        'Total capital income': 'total_capinc', 'ETR': 'etr',
+        'Weights': 'weight'}, inplace=True)
     tax_func_type = 'DEP'
     numparams = 12
     test_tuple = txfunc.txfunc_est(df, s, t, rate_type, tax_func_type,
@@ -140,28 +151,57 @@ def test_txfunc_est():
         assert(np.allclose(test_tuple[i], v))
 
 
-# @pytest.mark.full_run
-# def test_tax_func_loop():
-#     # Test txfunc.tax_func_loop() function.  The test is that given
-#     # inputs from previous run, the outputs are unchanged.
-#     with open(os.path.join(CUR_PATH,
-#                            'test_io_data/tax_func_loop_inputs_large.pkl'),
-#               'rb') as f:
-#         input_tuple = pickle.load(f, encoding='latin1')
-#     (t, micro_data, beg_yr, s_min, s_max, age_specific, analytical_mtrs,
-#      desc_data, graph_data, graph_est, output_dir, numparams,
-#      tpers) = input_tuple
-#     tax_func_type = 'DEP'
-#     test_tuple = txfunc.tax_func_loop(
-#         t, micro_data, beg_yr, s_min, s_max, age_specific,
-#         tax_func_type, analytical_mtrs, desc_data, graph_data,
-#         graph_est, output_dir, numparams, tpers)
-#     with open(os.path.join(CUR_PATH,
-#                            'test_io_data/tax_func_loop_outputs.pkl'),
-#               'rb') as f:
-#         expected_tuple = pickle.load(f, encoding='latin1')
-#     for i, v in enumerate(expected_tuple):
-#         assert(np.allclose(test_tuple[i], v))
+@pytest.mark.full_run
+def test_tax_func_loop():
+    '''
+    Test txfunc.tax_func_loop() function.  The test is that given
+    inputs from previous run, the outputs are unchanged.
+
+    Note that the data for this test is too large for GitHub, so it
+    won't be available there.
+
+    '''
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'tax_func_loop_inputs_large.pkl'))
+    (t, micro_data, beg_yr, s_min, s_max, age_specific, analytical_mtrs,
+     desc_data, graph_data, graph_est, output_dir, numparams,
+     tpers) = input_tuple
+    tax_func_type = 'DEP'
+    # Rename and create vars to suit new micro_data var names
+    micro_data['total_labinc'] = (micro_data['Wage income'] +
+                                  micro_data['SE income'])
+    micro_data['etr'] = (micro_data['Total tax liability'] /
+                         micro_data["Adjusted total income"])
+    micro_data['total_capinc'] = (
+        micro_data['Adjusted total income'] -
+        micro_data['total_labinc'])
+    # use weighted avg for MTR labor - abs value because
+    # SE income may be negative
+    micro_data['mtr_labinc'] = (
+        micro_data['MTR wage income'] * (micro_data['Wage income'] /
+                                         (micro_data['Wage income'].abs()
+                                          +
+                                          micro_data['SE income'].abs()))
+        + micro_data['MTR SE income'] * (micro_data['SE income'].abs() /
+                                         (micro_data['Wage income'].abs()
+                                          +
+                                          micro_data['SE income'].abs())))
+    micro_data.rename(columns={
+        'Adjusted total income': 'expanded_income',
+        'MTR capital income': 'mtr_capinc',
+        'Year': 'year', 'Age': 'age',
+        'Weights': 'weight'}, inplace=True)
+    test_tuple = txfunc.tax_func_loop(
+        t, micro_data, beg_yr, s_min, s_max, age_specific,
+        tax_func_type, analytical_mtrs, desc_data, graph_data,
+        graph_est, output_dir, numparams)
+    age_specific = False
+    expected_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'tax_func_loop_outputs.pkl'))
+    for i, v in enumerate(expected_tuple):
+        assert(np.allclose(test_tuple[i], v))
 
 
 A = 0.02
@@ -179,38 +219,27 @@ phi1 = 0.5
 phi2 = 0.6
 
 
-@pytest.mark.parametrize('tax_func_type,rate_type,params,for_estimation,expected',
-                         [('DEP', 'etr',
-                           np.array([A, B, C, D, max_x, max_y, share,
-                                     min_x, min_y, shift]), True,
-                           np.array([0.1894527, 0.216354953,
-                                     0.107391574, 0.087371974])),
-                          ('DEP', 'etr',
-                           np.array([A, B, C, D, max_x, max_y, share,
-                                     min_x, min_y, shift]), False,
-                           np.array([0.669061481, 0.678657921,
-                                     0.190301075, 0.103958946])),
-                          ('GS', 'etr',
-                           np.array([phi0, phi1, phi2]), False,
-                           np.array([0.58216409, 0.5876492, 0.441995766,
-                                     0.290991255])),
-                          ('GS', 'mtrx',
-                           np.array([phi0, phi1, phi2]), False,
-                           np.array([0.596924843, 0.598227987,
-                                     0.518917438, 0.37824137])),
-                          ('DEP_totalinc', 'etr',
-                           np.array([A, B, max_x, min_x, shift]), True,
-                           np.array([0.110821747, 0.134980034,
-                                     0.085945843, 0.085573318])),
-                          ('DEP_totalinc', 'etr',
-                           np.array([A, B, max_x, min_x, shift]),
-                           False,
-                           np.array([0.628917903, 0.632722363,
-                                     0.15723913, 0.089863997]))],
-                         ids=['DEP for estimation',
-                              'DEP not for estimation', 'GS, etr',
-                              'GS, mtr', 'DEP_totalinc for estimation',
-                              'DEP_totalinc not for estimation'])
+@pytest.mark.parametrize(
+    'tax_func_type,rate_type,params,for_estimation,expected',
+    [('DEP', 'etr', np.array([A, B, C, D, max_x, max_y, share, min_x,
+                              min_y, shift]), True,
+      np.array([0.1894527, 0.216354953, 0.107391574, 0.087371974])),
+     ('DEP', 'etr', np.array([A, B, C, D, max_x, max_y, share, min_x,
+                              min_y, shift]), False,
+      np.array([0.669061481, 0.678657921, 0.190301075, 0.103958946])),
+     ('GS', 'etr', np.array([phi0, phi1, phi2]), False,
+      np.array([0.58216409, 0.5876492, 0.441995766, 0.290991255])),
+     ('GS', 'mtrx', np.array([phi0, phi1, phi2]), False,
+      np.array([0.596924843, 0.598227987, 0.518917438, 0.37824137])),
+     ('DEP_totalinc', 'etr', np.array([A, B, max_x, min_x, shift]),
+      True, np.array([0.110821747, 0.134980034, 0.085945843,
+                      0.085573318])),
+     ('DEP_totalinc', 'etr', np.array([A, B, max_x, min_x, shift]),
+      False, np.array([0.628917903, 0.632722363, 0.15723913,
+                       0.089863997]))],
+    ids=['DEP for estimation', 'DEP not for estimation', 'GS, etr',
+         'GS, mtr', 'DEP_totalinc for estimation',
+         'DEP_totalinc not for estimation'])
 def test_get_tax_rates(tax_func_type, rate_type, params, for_estimation,
                        expected):
     '''
@@ -233,31 +262,33 @@ def test_get_tax_rates(tax_func_type, rate_type, params, for_estimation,
     assert np.allclose(test_txrates, expected)
 
 
-# @pytest.mark.full_run
-# def test_tax_func_estimate():
-#     # Test txfunc.tax_func_loop() function.  The test is that given
-#     # inputs from previous run, the outputs are unchanged.
-#     with open(os.path.join(CUR_PATH,
-#                            'test_io_data/tax_func_estimate_inputs.pkl'),
-#               'rb') as f:
-#         input_tuple = pickle.load(f, encoding='latin1')
-#     (BW, S, starting_age, ending_age, beg_yr, baseline,
-#      analytical_mtrs, age_specific, reform, data, client,
-#      num_workers) = input_tuple
-#     tax_func_type = 'DEP'
-#     test_dict = txfunc.tax_func_estimate(
-#         BW, S, starting_age, ending_age, beg_yr, baseline,
-#         analytical_mtrs, tax_func_type, age_specific, reform, data,
-#         client, num_workers)
-#     with open(os.path.join(CUR_PATH,
-#                            'test_io_data/tax_func_estimate_outputs.pkl'),
-#               'rb') as f:
-#         expected_dict = pickle.load(f, encoding='latin1')
-#     expected_dict['tax_func_type'] = 'DEP'
-#     for k, v in expected_dict.items():
-#         try:
-#             assert(all(test_dict[k] == v))
-#         except ValueError:
-#             assert((test_dict[k] == v).all())
-#         except TypeError:
-#             assert(test_dict[k] == v)
+@pytest.mark.full_run
+def test_tax_func_estimate():
+    '''
+    Test txfunc.tax_func_loop() function.  The test is that given
+    inputs from previous run, the outputs are unchanged.
+    '''
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'tax_func_estimate_inputs.pkl'))
+    (BW, S, starting_age, ending_age, beg_yr, baseline,
+     analytical_mtrs, age_specific, reform, data, client,
+     num_workers) = input_tuple
+    tax_func_type = 'DEP'
+    age_specific = False
+    BW = 1
+    test_dict = txfunc.tax_func_estimate(
+        BW, S, starting_age, ending_age, beg_yr, baseline,
+        analytical_mtrs, tax_func_type, age_specific, reform, data,
+        client, num_workers)
+    expected_dict = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data',
+                     'tax_func_estimate_outputs.pkl'))
+    expected_dict['tax_func_type'] = 'DEP'
+    for k, v in expected_dict.items():
+        try:
+            assert(all(test_dict[k] == v))
+        except ValueError:
+            assert((test_dict[k] == v).all())
+        except TypeError:
+            assert(test_dict[k] == v)

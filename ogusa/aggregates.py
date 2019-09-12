@@ -24,7 +24,7 @@ def get_L(n, p, method):
 
     Args:
         n (Numpy array): labor supply of households
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
 
@@ -54,7 +54,7 @@ def get_I(b_splus1, K_p1, K, p, method):
         b_splus1 (Numpy array): savings of households
         K_p1 (array_like): aggregate capital, one period ahead
         K (array_like): aggregate capital
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
 
@@ -104,7 +104,7 @@ def get_B(b, p, method, preTP):
 
     Args:
         b (Numpy array): savings of households
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
         preTP (bool): whether calculation is for the pre-time path
@@ -159,7 +159,7 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
         r (array_like): the real interest rate
         b_splus1 (numpy array): household savings one period ahead
         j (int): index of lifetime income group
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on SS or
             TPI
         preTP (bool): whether calculation is for the pre-time path
@@ -217,7 +217,7 @@ def get_C(c, p, method):
 
     Args:
         c (Numpy array): consumption of households
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
 
@@ -259,7 +259,7 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
             lifetime income group
         etr_params (Numpy array): paramters of the effective tax rate
             functions
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
 
@@ -358,7 +358,7 @@ def resource_constraint(Y, C, G, I, K_f, new_borrowing_f,
         debt_service_f (array_like): interest payments on government
             debt owned by foreigners
         r (array_like): the real interest rate
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
 
     Returns:
         rc_error (array_like): error in the resource constraint

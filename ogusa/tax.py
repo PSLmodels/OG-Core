@@ -25,7 +25,7 @@ def replacement_rate_vals(nssmat, wss, factor_ss, j, p):
         factor_ss (scalar): scaling factor converting model units to
             dollars
         j (int): index of lifetime income group
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
 
     Returns:
         theta (Numpy array): social security replacement rate value for
@@ -106,8 +106,9 @@ def MTR_wealth(b, h_wealth, m_wealth, p_wealth):
         tau_prime (Numpy array): marginal tax rate on wealth, size = SxJ
 
     '''
-    tau_prime = (h_wealth * m_wealth * p_wealth /
-                 (b * h_wealth + m_wealth) ** 2)
+    tau_prime = ((b * h_wealth * m_wealth * p_wealth) /
+                 ((b * h_wealth + m_wealth) ** 2) +
+                 ETR_wealth(b, h_wealth, m_wealth, p_wealth))
     return tau_prime
 
 
@@ -124,7 +125,7 @@ def ETR_income(r, w, b, n, factor, e, etr_params, p):
             dollars
         e (Numpy array): effective labor units
         etr_params (Numpy array): effective tax rate function parameters
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
 
     Returns:
         tau (Numpy array): effective tax rate on total income
@@ -194,7 +195,7 @@ def MTR_income(r, w, b, n, factor, mtr_capital, e, etr_params,
             capital income or labor income
         e (Numpy array): effective labor units
         etr_params (Numpy array): effective tax rate function parameters
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
 
     Returns:
         tau (Numpy array): marginal tax rate on income source
@@ -354,7 +355,7 @@ def total_taxes(r, w, b, n, bq, factor, tr, theta, t, j, shift, method,
             'TPI'
         e (Numpy array): effective labor units
         etr_params (Numpy array): effective tax rate function parameters
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
 
     Returns:
         total_taxes (Numpy array): net taxes paid for each household

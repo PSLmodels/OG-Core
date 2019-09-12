@@ -107,7 +107,7 @@ new_param_values = {
     'm_wealth': [5]
 }
 p1.update_specifications(new_param_values)
-expected1 = np.array([1.91326531, 1.29757785, 1.09569028])
+expected1 = np.array([0.81122449, 1.837370242, 2.173849525])
 b2 = np.array([0.1, 0.5, 0.9])
 p2 = Specifications()
 new_param_values2 = {
@@ -120,7 +120,7 @@ new_param_values2 = {
     'm_wealth': [3, 4, 3]
 }
 p2.update_specifications(new_param_values2)
-expected2 = np.array([0.813609467, 0.488829851, 0.483176359])
+expected2 = np.array([0.165976331, 0.522436904, 1.169769966])
 
 test_data = [(b1, p1, expected1),
              (b2, p2, expected2)]

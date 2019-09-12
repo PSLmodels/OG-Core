@@ -55,7 +55,7 @@ def marg_ut_labor(n, chi_n, p):
     Args:
         n (array_like): household labor supply
         chi_n (array_like): utility weights on disutility of labor
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
 
     Returns:
         output (array_like): marginal disutility of labor supply
@@ -111,7 +111,7 @@ def get_bq(BQ, j, p, method):
     Args:
         BQ (array_like): aggregate bequests
         j (int): index of lifetime ability group
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
 
@@ -168,7 +168,7 @@ def get_tr(TR, j, p, method):
     Args:
         TR (array_like): aggregate transfers
         j (int): index of lifetime ability group
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
 
@@ -216,7 +216,7 @@ def get_cons(r, w, b, b_splus1, n, bq, net_tax, e, tau_c, p):
         net_tax (Numpy array): household net taxes paid
         e (Numpy array): effective labor units
         tau_c (array_like): consumption tax rates
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
 
     Returns:
         cons (Numpy array): household consumption
@@ -258,7 +258,7 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, theta, e, rho,
             on capital income functions
         t (int): model period
         j (int): index of ability type
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
 
@@ -273,12 +273,22 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, theta, e, rho,
         if method == 'TPI':
             r = utils.to_timepath_shape(r)
             w = utils.to_timepath_shape(w)
+    if method == 'SS':
+        h_wealth = p.h_wealth[-1]
+        m_wealth = p.m_wealth[-1]
+        p_wealth = p.p_wealth[-1]
+    else:
+        h_wealth = p.h_wealth[t]
+        m_wealth = p.m_wealth[t]
+        p_wealth = p.p_wealth[t]
 
     taxes = tax.total_taxes(r, w, b, n, bq, factor, tr, theta, t, j,
                             False, method, e, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
-    deriv = ((1 + r) - r * (tax.MTR_income(r, w, b, n, factor, True, e,
-                                           etr_params, mtry_params, p)))
+    deriv = ((1 + r) - (
+        r * tax.MTR_income(r, w, b, n, factor, True, e, etr_params,
+                           mtry_params, p)) -
+             tax.MTR_wealth(b, h_wealth, m_wealth, p_wealth))
     savings_ut = (rho * np.exp(-p.sigma * p.g_y) * chi_b *
                   b_splus1 ** (-p.sigma))
     euler_error = np.zeros_like(n)
@@ -329,7 +339,7 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, tr, theta, chi_n, e,
             on labor income functions
         t (int): model period
         j (int): index of ability type
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
 

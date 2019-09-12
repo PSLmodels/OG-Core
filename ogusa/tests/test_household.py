@@ -397,12 +397,31 @@ test_vars_tpi = (r_vec, w_vec, np.diag(b_path), np.diag(b_splus1_path),
                  tau_c_tpi, etr_params_tpi, mtry_params_tpi, 0, j,
                  method_tpi)
 expected_tpi = np.array([328.1253524, 3.057420747, -139.8514249])
-test_data = [(test_vars_ss, test_params_ss, expected_ss),
-             (test_vars_tpi, test_params_tpi, expected_tpi)]
+
+
+# Define variables for test of SS and TPI with non-zero wealth tax
+test_params_ss_tau_w = copy.deepcopy(p1)
+test_params_ss_tau_w.h_wealth = np.array([0.305509])
+test_params_ss_tau_w.m_wealth = np.array([2.16051])
+test_params_ss_tau_w.p_wealth = np.array([0.025])
+expected_ss_tau_w = np.array([10.8610679, -0.975864602, -140.5180448])
+
+test_params_tpi_tau_w = copy.deepcopy(test_params_tpi)
+test_params_tpi_tau_w.h_wealth = np.array([0.305509, 0.305509, 0.305509])
+test_params_tpi_tau_w.m_wealth = np.array([2.16051, 2.16051, 2.16051])
+test_params_tpi_tau_w.p_wealth = np.array([0.025, 0.025, 0.025])
+expected_tpi_tau_w = np.array([328.1066462, 3.105699478, -139.8487143])
+
+test_data = [
+    (test_vars_ss, test_params_ss, expected_ss),
+    (test_vars_tpi, test_params_tpi, expected_tpi),
+    (test_vars_ss, test_params_ss_tau_w, expected_ss_tau_w),
+    (test_vars_tpi, test_params_tpi_tau_w, expected_tpi_tau_w)]
 
 
 @pytest.mark.parametrize('model_vars,params,expected', test_data,
-                         ids=['SS', 'TPI'])
+                         ids=['SS', 'TPI', 'SS - wealth tax',
+                              'TPI - wealth tax'])
 def test_FOC_savings(model_vars, params, expected):
     # Test FOC condition for household's choice of savings
     (r, w, b, b_splus1, n, BQ, factor, tr, theta, tau_c, etr_params,
