@@ -42,7 +42,7 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
         Gbaseline (Numpy array): government spending over the time path
             in the baseline equilibrium, used only if
             baseline_spending=True
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
 
     Returns:
         (tuple): fiscal variable path output:
@@ -101,7 +101,7 @@ def get_r_gov(r, p):
     Args:
         r (array_like): interest rate on private capital debt over the
             time path or in the steady state
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
 
     Returns:
         r_gov (array_like): interest rate on government debt over the
