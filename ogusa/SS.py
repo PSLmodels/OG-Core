@@ -39,7 +39,7 @@ def euler_equation_solver(guesses, *args):
         bq (Numpy array): bequest amounts by age, length S
         tr (scalar): government transfer amount by age, length S
         factor (scalar): scaling factor converting model units to dollars
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
 
     Returns:
         errros (Numpy array): errors from FOCs, length 2S
@@ -111,7 +111,7 @@ def inner_loop(outer_loop_vars, p, client):
         TR (scalar): lump sum transfer amount
         factor (scalar): scaling factor converting model units to dollars
         w (scalar): real wage rate
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         client (Dask client object): client
 
     Returns:
@@ -252,7 +252,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
         TR (scalar): lump sum transfer amount
         factor (scalar): scaling factor converting model units to dollars
         Y (scalar): real GDP
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         client (Dask client object): client
 
     Returns:
@@ -483,7 +483,7 @@ def SS_fsolve(guesses, *args):
         nssmat (Numpy array): initial guess at labor supply, size = SxJ
         TR_ss (scalar): lump sum transfer amount
         factor_ss (scalar): scaling factor converting model units to dollars
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         client (Dask client object): client
 
     Returns:
@@ -558,7 +558,7 @@ def run_SS(p, client=None):
     Solve for steady-state equilibrium of OG-USA.
 
     Args:
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         client (Dask client object): client
 
     Returns:

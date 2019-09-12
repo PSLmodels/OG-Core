@@ -23,7 +23,7 @@ def get_Y(K, L, p, method):
     Args:
         K (array_like): aggregate capital
         L (array_like): aggregate labor
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
 
@@ -61,7 +61,7 @@ def get_r(Y, K, p, method):
     Args:
         Y (array_like): aggregate output
         K (array_like): aggregate capital
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
 
@@ -95,7 +95,7 @@ def get_w(Y, L, p, method):
     Args:
         Y (array_like): aggregate output
         L (array_like): aggregate labor
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
 
@@ -123,7 +123,7 @@ def get_KLratio_from_r(r, p, method):
 
     Args:
         r (array_like): the real interest rate
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
 
@@ -167,7 +167,7 @@ def get_w_from_r(r, p, method):
 
     Args:
         r (array_like): the real interest rate
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
 
@@ -204,7 +204,7 @@ def get_K(L, r, p, method):
     Inputs:
         L (array_like): aggregate labor
         r (array_like): the real interest rate
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
 
@@ -229,7 +229,7 @@ def get_K_from_Y(Y, r, p, method):
     Args:
         Y (array_like): aggregate output
         r (array_like): the real interest rate
-        p (OG-USA Specifcations object): model parameters
+        p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
 
