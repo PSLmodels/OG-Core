@@ -273,12 +273,22 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, theta, e, rho,
         if method == 'TPI':
             r = utils.to_timepath_shape(r)
             w = utils.to_timepath_shape(w)
+    if method == 'SS':
+        h_wealth = p.h_wealth[-1]
+        m_wealth = p.m_wealth[-1]
+        p_wealth = p.p_wealth[-1]
+    else:
+        h_wealth = p.h_wealth[t]
+        m_wealth = p.m_wealth[t]
+        p_wealth = p.p_wealth[t]
 
     taxes = tax.total_taxes(r, w, b, n, bq, factor, tr, theta, t, j,
                             False, method, e, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
-    deriv = ((1 + r) - r * (tax.MTR_income(r, w, b, n, factor, True, e,
-                                           etr_params, mtry_params, p)))
+    deriv = ((1 + r) - (
+        r * tax.MTR_income(r, w, b, n, factor, True, e, etr_params,
+                           mtry_params, p)) -
+             tax.MTR_wealth(b, h_wealth, m_wealth, p_wealth))
     savings_ut = (rho * np.exp(-p.sigma * p.g_y) * chi_b *
                   b_splus1 ** (-p.sigma))
     euler_error = np.zeros_like(n)
