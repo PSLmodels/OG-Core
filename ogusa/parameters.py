@@ -5,23 +5,20 @@ import re
 import numpy as np
 import scipy.interpolate as si
 import pkg_resources
+import paramtools
 
 # import ogusa
-from ogusa.parametersbase import ParametersBase
-from ogusa import elliptical_u_est
-from ogusa import demographics
-from ogusa import income
-from ogusa import txfunc
+from ogusa import elliptical_u_est, demographics, income, txfunc
 from ogusa.utils import (BASELINE_DIR, TC_LAST_YEAR, rate_conversion,
                          safe_read_pickle)
-# from ogusa import elliptical_u_est
+CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
-class Specifications(ParametersBase):
+class Specifications(paramtools.Parameters):
     '''
-    Inherits ParametersBase. Implements the PolicyBrain API for OG-USA
+    Inherits ParamTools Parameters abstract base class.
     '''
-    DEFAULTS_FILENAME = 'default_parameters.json'
+    defaults = os.path.join(CURRENT_PATH, "default_parameters.json")
 
     def __init__(self,
                  run_micro=False, output_base=BASELINE_DIR,
