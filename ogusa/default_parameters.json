@@ -82,7 +82,7 @@
         ],
         "validators": {
             "range": {
-                "min": 80,
+                "min": 3,
                 "max": 1000
             }
         }
