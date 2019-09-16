@@ -266,6 +266,7 @@
         "description": "Total factor productivity in firm production function",
         "notes": "",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
                 "value": [
@@ -331,6 +332,7 @@
         "description": "Exogenous annual world interest rate to be used when modeling a small open economy",
         "notes": "",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
                 "value": [
@@ -367,6 +369,7 @@
         "description": "Share of new debt issues from government that are purchased by foreigners",
         "notes": "This value is about 0.4 historically for the U.S., set to zero to have closed econ as default",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
                 "value": [
@@ -386,6 +389,7 @@
         "description": "Share of excess demand for capital that is supplied by foreingers",
         "notes": "Set to 0.1 when running large-open verion of US economy, but hard to find data to pin this down",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
                 "value": [
@@ -439,6 +443,7 @@
         "description": "Exogenous ratio of government transfers to GDP when budget balance is false.",
         "notes": "",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
                 "value": [
@@ -458,6 +463,7 @@
         "description": "Exogenous ratio of government spending to GDP when budget balance is false.",
         "notes": "",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
                 "value": [
@@ -562,6 +568,7 @@
         "description": "Entity level tax on businesses",
         "notes": "With a single representative firm, this should be a weighted average of the entity level rate on pass-through businesses (0) and the corporate income tax rate.  It does not reflect statutory rates, but rather effective rates.",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
                 "value": [
@@ -598,8 +605,9 @@
     "delta_tau_annual": {
         "title": "Annual rate of depreciation of capital for tax purposes",
         "description": "Annual rate of depreciation of capital for tax purposes",
-        "notes": "B-Tax can help to calibrate this parameter",
+        "notes": "Cost-of-Capital-Calculator can help to calibrate this parameter",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
                 "value": [
@@ -619,6 +627,7 @@
         "description": "Numerator in wealth tax function",
         "notes": "",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
                 "value": [
@@ -638,6 +647,7 @@
         "description": "Term in denominator in wealth tax function",
         "notes": "",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
                 "value": [
@@ -657,6 +667,7 @@
         "description": "Scale parameter in wealth tax function",
         "notes": "Set to 0 to have no wealth tax",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
                 "value": [
@@ -676,6 +687,7 @@
         "description": "Linear tax rate on bequests",
         "notes": "",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
                 "value": [
@@ -695,6 +707,7 @@
         "description": "Linear payroll tax rate",
         "notes": "Set to zero as default since tax functions include income and payroll taxes",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
                 "value": [
@@ -2377,6 +2390,7 @@
         "description": "Age at which agents can collect social security benefits.",
         "notes": "",
         "type": "int",
+        "number_dims": 1,
         "value": [
             {
                 "value": [
@@ -2532,6 +2546,7 @@
         "description": "Adjustment to the social security retirement benefits replacement rate.",
         "notes": "This parameter willy only vary along the time path.  It is assumed to be one in the steady state.  The steady state retirement rate can be adjusted by changing the parameters of the retirement benefits function.",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
                 "value": [
