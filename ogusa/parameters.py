@@ -19,16 +19,14 @@ class Specifications(paramtools.Parameters):
     Inherits ParamTools Parameters abstract base class.
     '''
     defaults = os.path.join(CURRENT_PATH, "default_parameters.json")
+    array_first = True
 
     def __init__(self,
                  run_micro=False, output_base=BASELINE_DIR,
                  baseline_dir=BASELINE_DIR, test=False, time_path=True,
                  baseline=False, iit_reform={}, guid='', data='cps',
                  flag_graphs=False, client=None, num_workers=1):
-        super(Specifications, self).__init__()
-
-        # reads in default parameter values
-        self._vals = self._params_dict_from_json_file()
+        super().__init__()
 
         self.output_base = output_base
         self.baseline_dir = baseline_dir
@@ -67,13 +65,6 @@ class Specifications(paramtools.Parameters):
             None
 
         '''
-        for name, data in self._vals.items():
-            intg_val = data.get('integer_value', None)
-            bool_val = data.get('boolean_value', None)
-            string_val = data.get('string_value', None)
-            values = data.get('value', None)
-            setattr(self, name, self._expand_array(values, intg_val,
-                                                   bool_val, string_val))
 
         if self.test:
             # Make smaller statespace for testing
