@@ -47,14 +47,12 @@ def test_update_specifications_with_dict():
 def test_update_specification_with_json():
     spec = Specifications()
     new_spec_json = """
-    {
-        "frisch": {
-            "value": [{"value": 0.3}]
+        {
+            "frisch": 0.3
         }
-    }
     """
     spec.update_specifications(new_spec_json)
-    assert spec.profit_rate == 0.3
+    assert spec.frisch == 0.3
     assert len(spec.errors) == 0
 
 
