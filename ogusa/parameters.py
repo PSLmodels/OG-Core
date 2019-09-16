@@ -195,6 +195,9 @@ class Specifications(paramtools.Parameters):
                          (self.S, 1, 1))), axis=0)
         setattr(self, 'eta',  eta_to_set)
 
+        # reshape lambdas
+        self.lambdas = self.lambdas.reshape(self.lambdas.shape[0], 1)
+
         # open economy parameters
         firm_r_annual = self.world_int_rate
         hh_r_annual = firm_r_annual
@@ -440,21 +443,6 @@ class Specifications(paramtools.Parameters):
 
         return dict_params
 
-    def default_parameters(self):
-        '''
-        Return Policy object same as self except with current-law policy.
-        Returns
-
-        Args:
-            None
-
-        Returns:
-            None
-
-        '''
-        dp = Specifications()
-        return dp
-
     def update_specifications(self, revision, raise_errors=True):
         '''
         Updates parameter specification with values in revision
@@ -490,234 +478,47 @@ class Specifications(paramtools.Parameters):
                 }
 
         '''
-        # check that all revisions dictionary keys are integers
-        if not isinstance(revision, dict):
-            raise ValueError('ERROR: revision is not a dictionary')
+        if not (isinstance(revision, dict) or isinstance(revision, str)):
+            raise ValueError(
+                'ERROR: revision is not a dictionary of string')
         if not revision:
             return  # no revision to implement
-        # check range of remaining revision_years
-        # validate revision parameter names and types
-        self.parameter_errors = ''
-        self.parameter_warnings = ''
-        self._validate_parameter_names_types(revision)
-        if not self._ignore_errors and self.parameter_errors:
-            raise ValueError(self.parameter_errors)
-        # implement the revision
-        revision_parameters = set()
-        revision_parameters.update(revision.keys())
-        self._update(revision)
-        # validate revision parameter values
-        self._validate_parameter_values(revision_parameters)
-        if self.parameter_errors and raise_errors:
-            raise ValueError('\n' + self.parameter_errors)
+        self.adjust(revision, raise_errors=raise_errors)
+        if self.errors and raise_errors:
+            raise ValueError('\n' + self.errors)
         self.compute_default_params()
 
     @staticmethod
-    def read_json_param_objects(revision):
+    def read_json_revision(obj):
         '''
-        Read JSON file and convert to dictionary
-
-        Args:
-            revision (str): r JSON string with one or more
-                `PARAM: VALUE` pairs
-
-        Returns:
-            rev_dict (dict): formatted dictionary of parameters
-
+        Return a revision dictionary, which is suitable for use with the
+        update_specification method, that is derived from the specified
+        JSON object, which can be None or a string containing
+        a local filename,
+        a URL beginning with 'http' pointing to a JSON file hosted
+        online, or a valid JSON text.
         '''
-        # next process first reform parameter
-        if revision is None:
-            rev_dict = dict()
-        elif isinstance(revision, six.string_types):
-            if os.path.isfile(revision):
-                txt = open(revision, 'r').read()
-            else:
-                txt = revision
-            # strip out //-comments without changing line numbers
-            json_str = re.sub('//.*', ' ', txt)
-            # convert JSON text into a Python dictionary
-            try:
-                rev_dict = json.loads(json_str)
-            except ValueError as valerr:
-                msg = 'Policy reform text below contains invalid JSON:\n'
-                msg += str(valerr) + '\n'
-                msg += 'Above location of the first error may be approximate.\n'
-                msg += 'The invalid JSON reform text is between the lines:\n'
-                bline = 'XX----.----1----.----2----.----3----.----4'
-                bline += '----.----5----.----6----.----7'
-                msg += bline + '\n'
-                linenum = 0
-                for line in json_str.split('\n'):
-                    linenum += 1
-                    msg += '{:02d}{}'.format(linenum, line) + '\n'
-                msg += bline + '\n'
-                raise ValueError(msg)
-        else:
-            raise ValueError('reform is neither None nor string')
-
-        return rev_dict
-
-    def _validate_parameter_names_types(self, revision):
-        '''
-        Check validity of parameter names and parameter types used
-        in the specified revision dictionary.
-
-        Args:
-            revision (dict): dictionary or JSON string with one or more
-                `PARAM: VALUE` pairs
-
-        Returns:
-            None
-
-        '''
-        param_names = set(self._vals.keys())
-        # print('Parameter names = ', param_names)
-        revision_param_names = list(revision.keys())
-        for param_name in revision_param_names:
-            if param_name not in param_names:
-                msg = '{} unknown parameter name'
-                self.parameter_errors += (
-                    'ERROR: ' + msg.format(param_name) + '\n'
-                )
-            else:
-                # check parameter value type avoiding use of isinstance
-                # because isinstance(True, (int,float)) is True, which
-                # makes it impossible to check float parameters
-                bool_param_type = self._vals[param_name]['boolean_value']
-                int_param_type = self._vals[param_name]['integer_value']
-                string_param_type = self._vals[param_name]['string_value']
-                if isinstance(revision[param_name], list):
-                    param_value = revision[param_name]
-                else:
-                    param_value = [revision[param_name]]
-                for idx in range(0, len(param_value)):
-                    pval = param_value[idx]
-                    pval_is_bool = type(pval) == bool
-                    pval_is_int = type(pval) == int
-                    pval_is_float = type(pval) == float
-                    pval_is_string = type(pval) == str
-                    pval_is_ndarray = type(pval) == np.ndarray
-                    if bool_param_type:
-                        if not pval_is_bool:
-                            msg = '{} value {} is not boolean'
-                            self.parameter_errors += (
-                                'ERROR: ' +
-                                msg.format(param_name, pval) +
-                                '\n'
-                            )
-                    elif int_param_type:
-                        if not pval_is_int:  # pragma: no cover
-                            msg = '{} value {} is not integer'
-                            self.parameter_errors += (
-                                'ERROR: ' +
-                                msg.format(param_name, pval) +
-                                '\n'
-                            )
-                    elif string_param_type:
-                        if not pval_is_string:  # pragma: no cover
-                            msg = '{} value {} is not string'
-                            self.parameter_errors += (
-                                'ERROR: ' +
-                                msg.format(param_name, pval) +
-                                '\n'
-                            )
-                    else:  # param is float or array type
-                        if not (pval_is_int or
-                                pval_is_float or pval_is_ndarray):
-                            msg = '{} value {} is not a number'
-                            self.parameter_errors += (
-                                'ERROR: ' +
-                                msg.format(param_name, pval) +
-                                '\n'
-                            )
-        del param_names
-
-    def _validate_parameter_values(self, parameters_set):
-        '''
-        Check values of parameters in specified parameter_set using
-        range information from the default_parameters.json file.
-
-        Args:
-            parameters_set (dict): set of parameters whose values need
-                to be validated
-
-        Returns:
-            None
-
-        '''
-        dp = self.default_parameters()
-        parameters = sorted(parameters_set)
-        for param_name in parameters:
-            param_value = getattr(self, param_name)
-            if not hasattr(param_value, 'shape'):  # value is not a numpy array
-                param_value = np.array([param_value])
-            for validation_op, validation_value in self._vals[param_name]['range'].items():
-                if validation_op == 'possible_values':
-                    if param_value not in validation_value:
-                        out_of_range = True
-                        msg = '{} value {} not in possible values {}'
-                        if out_of_range:
-                            self.parameter_errors += (
-                                'ERROR: ' + msg.format(
-                                    param_name, param_value,
-                                    validation_value) + '\n'
-                                )
-                else:
-                    # print(validation_op, param_value, validation_value)
-                    if isinstance(validation_value, six.string_types):
-                        validation_value = self.simple_eval(validation_value)
-                    validation_value = np.full(param_value.shape,
-                                               validation_value)
-                    assert param_value.shape == validation_value.shape
-                    for idx in np.ndindex(param_value.shape):
-                        out_of_range = False
-                        # Ensure that parameter value is above minimum allowed
-                        if validation_op == 'min' and (param_value[idx] <
-                                                       validation_value[idx]):
-                            out_of_range = True
-                            msg = '{} value {} < min value {}'
-                            extra = self._vals[param_name]['out_of_range_minmsg']
-                            if extra:
-                                msg += ' {}'.format(extra)
-                        # Ensure that parameter value is below max allowed
-                        if validation_op == 'max' and (param_value[idx] >
-                                                       validation_value[idx]):
-                            out_of_range = True
-                            msg = '{} value {} > max value {}'
-                            extra = self._vals[param_name]['out_of_range_maxmsg']
-                            if extra:
-                                msg += ' {}'.format(extra)
-                        if out_of_range:
-                            self.parameter_errors += (
-                                'ERROR: ' + msg.format(
-                                    param_name, param_value[idx],
-                                    validation_value[idx]) + '\n')
-        del dp
-        del parameters
+        return paramtools.Parameters.read_params(obj, 'revision')
 
 
-# copied from taxcalc.tbi.tbi.reform_errors_warnings--probably needs further
-# changes
-def reform_warnings_errors(user_mods):
+def revision_warnings_errors(spec_revision):
     '''
     Generate warnings and errors for OG-USA parameter specifications
 
     Args:
-        user_mods (dict): created by read_json_param_objects
+        spec_revision (dict): dictionary suitable for use with the
+            `Specifications.update_specifications method`.
 
     Returns:
         rtn_dict (dict): with endpoint specific warning and error messages
 
     '''
-    rtn_dict = {'ogusa': {'warnings': '', 'errors': ''}}
-
-    # create Specifications object and implement reform
-    specs = Specifications()
-    specs._ignore_errors = True
+    rtn_dict = {'warnings': '', 'errors': ''}
+    spec = Specifications()
     try:
-        specs.update_specifications(user_mods['ogusa'], raise_errors=False)
-        rtn_dict['ogusa']['warnings'] = specs.parameter_warnings
-        rtn_dict['ogusa']['errors'] = specs.parameter_errors
+        spec.update_specifications(spec_revision, raise_errors=False)
+        if spec._errors:
+            rtn_dict['errors'] = spec._errors
     except ValueError as valerr_msg:
-        rtn_dict['ogusa']['errors'] = valerr_msg.__str__()
+        rtn_dict['errors'] = valerr_msg.__str__()
     return rtn_dict
