@@ -197,6 +197,10 @@ class Specifications(paramtools.Parameters):
 
         # reshape lambdas
         self.lambdas = self.lambdas.reshape(self.lambdas.shape[0], 1)
+        # cast integers as integers
+        self.S = int(self.S)
+        self.T = int(self.T)
+        self.J = int(self.J)
 
         # open economy parameters
         firm_r_annual = self.world_int_rate
