@@ -176,7 +176,6 @@ def test_run_TPI():
         'J': J,
         'S': S,
         'T': T,
-        # 'eta': (np.ones((S, J)) / (S * J)).tolist()
         'eta': (np.ones((S, J)) / (S * J))
     }
     # update parameters instance with new values for test
