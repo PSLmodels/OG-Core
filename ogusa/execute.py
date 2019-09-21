@@ -67,8 +67,6 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     spec.update_specifications(og_spec)
     print('path for tax functions: ', spec.output_base)
     spec.get_tax_function_parameters(client, run_micro)
-    print('test versions? = = ', spec.test)
-    print('SS tolerance = ', spec.mindist_SS, ', S = ', spec.S)
 
     '''
     ------------------------------------------------------------------------
