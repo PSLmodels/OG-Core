@@ -2,6 +2,7 @@ import ogusa
 from ogusa.parameters import Specifications
 from ogusa.utils import TC_LAST_YEAR, REFORM_DIR, BASELINE_DIR
 from ogusa import output_plots as op
+from ogusa import SS
 import os
 import paramtools
 from .helpers import retrieve_puf
@@ -67,9 +68,10 @@ def run_model(meta_param_dict, adjustment):
     different policies.  Then calls function get output objects.
     '''
     # Create output directory structure
-    ss_dir = os.path.join(output_base, "SS")
-    tpi_dir = os.path.join(output_base, "TPI")
-    dirs = [ss_dir, tpi_dir]
+    output_base = BASELINE_DIR
+    base_dir = os.path.join(output_base, "SS")
+    reform_dir = os.path.join(REFORM_DIR, "SS")
+    dirs = [base_dir, reform_dir]
     for _dir in dirs:
         try:
             print("making dir: ", _dir)
@@ -85,30 +87,30 @@ def run_model(meta_param_dict, adjustment):
 
     # Solve baseline model
     base_spec = {'start_year': meta_param_dict['year'],
-                 'debt_ratio_ss': 1.5, 'debt_ratio_ss': 2.0,
+                 'debt_ratio_ss': 2.0,
                  'r_gov_scale': 1.0, 'r_gov_shift': 0.02,
                  'zeta_D': [0.4], 'zeta_K': [0.1],
                  'initial_debt_ratio': 0.78,
                  'initial_foreign_debt_ratio': 0.4}
     base_params = Specifications(
-        run_micro=False, output_base=BASELINE_DIR,
+        run_micro=False, output_base=output_base,
         baseline_dir=BASELINE_DIR, test=False, time_path=False,
         baseline=True, iit_reform={}, guid='',
         data=meta_param_dict['data_source'],
         client=client, num_workers=num_workers)
-    base_params.update_specifications(og_spec)
+    base_params.update_specifications(base_spec)
     base_params.get_tax_function_parameters(client, run_micro)
     base_ss = SS.run_SS(base_params, client=client)
 
     # Solve reform model
     reform_spec = {'start_year': meta_param_dict['year'],
-                   'debt_ratio_ss': 1.5, 'debt_ratio_ss': 2.0,
+                   'debt_ratio_ss': 2.0,
                    'r_gov_scale': 1.0, 'r_gov_shift': 0.02,
                    'zeta_D': [0.4], 'zeta_K': [0.1],
                    'initial_debt_ratio': 0.78,
                    'initial_foreign_debt_ratio': 0.4}.update(adjustment)
     reform_params = Specifications(
-        run_micro=False, output_base=BASELINE_DIR,
+        run_micro=False, output_base=REFORM_DIR,
         baseline_dir=BASELINE_DIR, test=False, time_path=False,
         baseline=False, iit_reform={}, guid='',
         data=meta_param_dict['data_source'],
