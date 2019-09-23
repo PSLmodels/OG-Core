@@ -1,5 +1,5 @@
 import ogusa
-from ogusa.parameters import Specifications
+from ogusa.parameters import Specifications, revision_warnings_errors
 from ogusa.utils import TC_LAST_YEAR, REFORM_DIR, BASELINE_DIR
 from ogusa import output_plots as op
 from ogusa import SS
@@ -57,8 +57,8 @@ def validate_inputs(meta_param_dict, adjustment, errors_warnings):
     '''
     # ogusa doesn't look at meta_param_dict for validating inputs.
     params = Specifications()
-    params.adjust(adjustment["ogusa"], raise_errors=False)
-    errors_warnings["ogusa"]["errors"].update(params.errors)
+    params.adjust(adjustment, raise_errors=False)
+    errors_warnings = revision_warnings_errors(adjustment)
     return errors_warnings
 
 
@@ -67,6 +67,12 @@ def run_model(meta_param_dict, adjustment):
     Initializes classes from OG-USA that compute the model under
     different policies.  Then calls function get output objects.
     '''
+    meta_params = MetaParams()
+    meta_params.adjust(meta_param_dict)
+    if meta_params.data_source == "PUF":
+        data = retrieve_puf(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+    else:
+        data = "cps"
     # Create output directory structure
     output_base = BASELINE_DIR
     base_dir = os.path.join(output_base, "SS")
@@ -96,7 +102,7 @@ def run_model(meta_param_dict, adjustment):
         run_micro=False, output_base=output_base,
         baseline_dir=BASELINE_DIR, test=False, time_path=False,
         baseline=True, iit_reform={}, guid='',
-        data=meta_param_dict['data_source'],
+        data=data,
         client=client, num_workers=num_workers)
     base_params.update_specifications(base_spec)
     base_params.get_tax_function_parameters(client, run_micro)
@@ -113,7 +119,7 @@ def run_model(meta_param_dict, adjustment):
         run_micro=False, output_base=REFORM_DIR,
         baseline_dir=BASELINE_DIR, test=False, time_path=False,
         baseline=False, iit_reform={}, guid='',
-        data=meta_param_dict['data_source'],
+        data=data,
         client=client, num_workers=num_workers)
     reform_params.update_specifications(reform_spec)
     reform_params.get_tax_function_parameters(client, run_micro)
