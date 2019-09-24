@@ -43,8 +43,7 @@ def get_inputs(meta_param_dict):
     meta_params = MetaParams()
     meta_params.adjust(meta_param_dict)
     params = Specifications()
-    # TODO: does OG-USA use year?
-    # params.set_state(year=meta_params.year)
+    params.start_year = meta_params.year
     return {
         "meta_parameters": meta_params.dump(),
         "model_parameters": {
