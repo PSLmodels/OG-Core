@@ -9,8 +9,8 @@ def test_get_parameters():
         get_inputs=functions.get_inputs,
         validate_inputs=functions.validate_inputs,
         run_model=functions.run_model,
-        ok_adjustment={"ogusa": {"frisch": 0.41}},
-        bad_adjustment={"ogusa": {"frisch": 1.5}}
+        ok_adjustment={"frisch": 0.41},
+        bad_adjustment={"frisch": 1.5}
     )
     ta.test()
 
