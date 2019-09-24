@@ -35,31 +35,32 @@ class MetaParams(paramtools.Parameters):
     }
 
 
-def get_inputs(meta_params_dict):
-    '''
-    Function to get user input parameters from COMP
-    '''
+def get_version():
+    return ogusa.__version__
+
+
+def get_inputs(meta_param_dict):
     meta_params = MetaParams()
-    meta_params.adjust(meta_params_dict)
+    meta_params.adjust(meta_param_dict)
     params = Specifications()
-    spec = params.specification(
-        meta_data=True,
-        serializable=True,
-        year=meta_params.year
-    )
-    return (meta_params.specification(meta_data=True, serializable=True),
-            {"ogusa": spec})
+    # TODO: does OG-USA use year?
+    # params.set_state(year=meta_params.year)
+    return {
+        "meta_parameters": meta_params.dump(),
+        "model_parameters": {
+            "ogusa": params.dump()
+        }
+    }
 
 
 def validate_inputs(meta_param_dict, adjustment, errors_warnings):
-    '''
-    Validates user inputs for parameters
-    '''
     # ogusa doesn't look at meta_param_dict for validating inputs.
     params = Specifications()
-    params.adjust(adjustment, raise_errors=False)
-    errors_warnings = revision_warnings_errors(adjustment)
-    return errors_warnings
+    params.adjust(adjustment["ogusa"], raise_errors=False)
+    # errors_warnings = revision_warnings_errors(adjustment["ogusa"])
+    # return {"errors_warnings": errors_warnings}
+
+    return {"errors_warnings": {"ogusa": {"errors": params.errors}}}
 
 
 def run_model(meta_param_dict, adjustment):
@@ -141,7 +142,6 @@ def comp_output(base_ss, base_params, reform_ss, reform_params,
         reform_params=reform_params, by_j=True, var=var,
         plot_title='Labor Supply in Baseline and Reform Policy')
     comp_dict = {
-        "model_version": ogusa.__version__,
         "renderable": [
             {
               "media_type": "matplotlib",
