@@ -1,9 +1,10 @@
 import ogusa
-from ogusa.parameters import Specifications, revision_warnings_errors
+from ogusa.parameters import Specifications
 from ogusa.utils import TC_LAST_YEAR, REFORM_DIR, BASELINE_DIR
 from ogusa import output_plots as op
 from ogusa import SS
 import os
+import io
 import paramtools
 from .helpers import retrieve_puf
 
@@ -140,13 +141,15 @@ def comp_output(base_ss, base_params, reform_ss, reform_params,
         base_ss, base_params, reform_ss=reform_ss,
         reform_params=reform_params, by_j=True, var=var,
         plot_title='Labor Supply in Baseline and Reform Policy')
+    in_memory_file = io.BytesIO()
+    plt.savefig(in_memory_file, format="png")
     comp_dict = {
         "renderable": [
             {
-              "media_type": "matplotlib",
+              "media_type": "PNG",
               "title": plt.title,
               "data": {
-                        "png": plt.savefig()
+                        "png": in_memory_file.read()
                     }
               }
             ]
