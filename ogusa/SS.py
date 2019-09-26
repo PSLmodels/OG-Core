@@ -600,9 +600,9 @@ def run_SS(p, client=None):
                            factor_ss, Yss, p, client, fsolve_flag)
     else:
         # Use the baseline solution to get starting values for the reform
-        baseline_ss_dir = os.path.join(p.baseline_dir, 'SS/SS_vars.pkl')
-        ss_solutions = pickle.load(open(baseline_ss_dir, 'rb'),
-                                   encoding='latin1')
+        baseline_ss_dir = os.path.join(
+            p.baseline_dir, 'SS', 'SS_vars.pkl')
+        ss_solutions = utils.safe_read_pickle(baseline_ss_dir)
         (b_guess, n_guess, rguess, BQguess, TRguess, Yguess, factor) =\
             (ss_solutions['bssmat_splus1'], ss_solutions['nssmat'],
              ss_solutions['rss'], ss_solutions['BQss'],
