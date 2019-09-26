@@ -12,7 +12,7 @@ def macro_table(base_tpi, base_params, reform_tpi=None,
                 var_list=['Y', 'C', 'K', 'L', 'r', 'w'],
                 output_type='pct_diff', num_years=10, include_SS=True,
                 include_overall=True, start_year=2019,
-                table_title=None, table_format='tex',
+                table_title=None, table_format=None,
                 path=None):
     '''
     Create a table of macro aggregates.
