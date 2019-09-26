@@ -2,14 +2,16 @@ import ogusa
 from ogusa.parameters import Specifications
 from ogusa.utils import TC_LAST_YEAR, REFORM_DIR, BASELINE_DIR
 from ogusa import output_plots as op
-from ogusa import SS
+from ogusa import SS, utils
 import os
 import io
 import paramtools
+import pickle
 from .helpers import retrieve_puf
 
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "")
 AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
+CUR_DIR = os.path.dirname(os.path.realpath(__file__))
 
 
 class MetaParams(paramtools.Parameters):
@@ -75,16 +77,11 @@ def run_model(meta_param_dict, adjustment):
     else:
         data = "cps"
     # Create output directory structure
-    output_base = BASELINE_DIR
-    base_dir = os.path.join(output_base, "SS")
-    reform_dir = os.path.join(REFORM_DIR, "SS")
+    base_dir = os.path.join(CUR_DIR, BASELINE_DIR)
+    reform_dir = os.path.join(CUR_DIR, REFORM_DIR)
     dirs = [base_dir, reform_dir]
     for _dir in dirs:
-        try:
-            print("making dir: ", _dir)
-            os.makedirs(_dir)
-        except OSError:
-            pass
+        utils.mkdirs(_dir)
     # Dask parmeters
     client = None
     num_workers = 1
@@ -100,25 +97,24 @@ def run_model(meta_param_dict, adjustment):
                  'initial_debt_ratio': 0.78,
                  'initial_foreign_debt_ratio': 0.4}
     base_params = Specifications(
-        run_micro=False, output_base=output_base,
-        baseline_dir=BASELINE_DIR, test=False, time_path=False,
+        run_micro=False, output_base=base_dir,
+        baseline_dir=base_dir, test=False, time_path=False,
         baseline=True, iit_reform={}, guid='',
         data=data,
         client=client, num_workers=num_workers)
     base_params.update_specifications(base_spec)
     base_params.get_tax_function_parameters(client, run_micro)
     base_ss = SS.run_SS(base_params, client=client)
+    utils.mkdirs(os.path.join(base_dir, "SS"))
+    ss_dir = os.path.join(base_dir, "SS", "SS_vars.pkl")
+    pickle.dump(base_ss, open(ss_dir, "wb"))
 
     # Solve reform model
-    reform_spec = {'start_year': meta_param_dict['year'],
-                   'debt_ratio_ss': 2.0,
-                   'r_gov_scale': 1.0, 'r_gov_shift': 0.02,
-                   'zeta_D': [0.4], 'zeta_K': [0.1],
-                   'initial_debt_ratio': 0.78,
-                   'initial_foreign_debt_ratio': 0.4}.update(adjustment)
+    reform_spec = base_spec
+    reform_spec.update(adjustment['ogusa'])
     reform_params = Specifications(
-        run_micro=False, output_base=REFORM_DIR,
-        baseline_dir=BASELINE_DIR, test=False, time_path=False,
+        run_micro=False, output_base=reform_dir,
+        baseline_dir=base_dir, test=False, time_path=False,
         baseline=False, iit_reform={}, guid='',
         data=data,
         client=client, num_workers=num_workers)
@@ -137,22 +133,22 @@ def comp_output(base_ss, base_params, reform_ss, reform_params,
     '''
     Function to create output for the COMP platform
     '''
-    plt = op.ss_profiles(
+    fig = op.ss_profiles(
         base_ss, base_params, reform_ss=reform_ss,
         reform_params=reform_params, by_j=True, var=var,
         plot_title='Labor Supply in Baseline and Reform Policy')
     in_memory_file = io.BytesIO()
-    plt.savefig(in_memory_file, format="png")
+    fig.savefig(in_memory_file, format="png")
+    in_memory_file.seek(0)
     comp_dict = {
         "renderable": [
             {
               "media_type": "PNG",
-              "title": plt.title,
-              "data": {
-                        "png": in_memory_file.read()
-                    }
+              "title": 'Labor Supply in Baseline and Reform Policy',
+              "data": in_memory_file.read()
               }
-            ]
+            ],
+        "downloadable": []
         }
 
     return comp_dict
