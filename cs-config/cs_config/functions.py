@@ -87,7 +87,7 @@ def run_model(meta_param_dict, adjustment):
     num_workers = 1
 
     # whether to estimate tax functions from microdata
-    run_micro = False
+    run_micro = True
 
     # Solve baseline model
     base_spec = {'start_year': meta_param_dict['year'],
@@ -95,7 +95,9 @@ def run_model(meta_param_dict, adjustment):
                  'r_gov_scale': 1.0, 'r_gov_shift': 0.02,
                  'zeta_D': [0.4], 'zeta_K': [0.1],
                  'initial_debt_ratio': 0.78,
-                 'initial_foreign_debt_ratio': 0.4}
+                 'initial_foreign_debt_ratio': 0.4,
+                 'tax_func_type': 'linear',
+                 'age_specific': False}
     base_params = Specifications(
         run_micro=False, output_base=base_dir,
         baseline_dir=base_dir, test=False, time_path=False,
