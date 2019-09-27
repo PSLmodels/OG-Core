@@ -7,7 +7,7 @@ import multiprocessing
 from dask.distributed import Client
 import time
 import numpy as np
-
+import os
 from taxcalc import Calculator
 from ogusa import postprocess
 from ogusa.execute import runner
@@ -27,6 +27,11 @@ reform_url = ('https://raw.githubusercontent.com/'
               'reforms/2017_law.json')
 ref = Calculator.read_json_param_objects(reform_url, None)
 iit_reform = ref['policy']
+
+# Directories to save data
+CUR_DIR = os.path.dirname(os.path.realpath(__file__))
+base_dir = os.path.join(CUR_DIR, BASELINE_DIR, "SS")
+reform_dir = os.path.join(CUR_DIR, REFORM_DIR, "SS")
 
 # Set some OG model parameters
 # See default_parameters.json for more description of these parameters
@@ -51,7 +56,7 @@ Run baseline policy first
 ------------------------------------------------------------------------
 '''
 output_base = BASELINE_DIR
-kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
+kwargs = {'output_base': base_dir, 'baseline_dir': base_dir,
           'test': False, 'time_path': True, 'baseline': True,
           'og_spec': og_spec, 'guid': '_example',
           'run_micro': True, 'data': 'cps', 'client': client,
@@ -72,7 +77,7 @@ og_spec = {'frisch': 0.41, 'start_year': 2018,
            'alpha_T': alpha_T.tolist(),
            'alpha_G': alpha_G.tolist()}
 output_base = REFORM_DIR
-kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
+kwargs = {'output_base': reform_dir, 'baseline_dir': base_dir,
           'test': False, 'time_path': True, 'baseline': False,
           'og_spec': og_spec, 'guid': '_example',
           'iit_reform': iit_reform, 'run_micro': True, 'data': 'cps',
@@ -85,7 +90,7 @@ print('run time = ', time.time()-start_time)
 # return ans - the percentage changes in macro aggregates and prices
 # due to policy changes from the baseline to the reform
 ans = postprocess.create_diff(
-    baseline_dir=BASELINE_DIR, policy_dir=REFORM_DIR)
+    baseline_dir=base_dir, policy_dir=reform_dir)
 
 print("total time was ", (time.time() - run_start_time))
 print('Percentage changes in aggregates:', ans)

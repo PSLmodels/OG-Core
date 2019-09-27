@@ -1,7 +1,4 @@
-import json
 import os
-import six
-import re
 import numpy as np
 import scipy.interpolate as si
 import pkg_resources
@@ -349,14 +346,14 @@ class Specifications(paramtools.Parameters):
         # After printing warning, make it work by tiling
         if self.S > S_in_tax_params:
             for item in params_list:
-                    dict_params['tfunc_' + item + '_params_S'] =\
-                        np.concatenate(
-                            (dict_params['tfunc_' + item + '_params_S'],
-                             np.tile(dict_params['tfunc_' + item +
-                                                 '_params_S'][-1, :, :].
-                                     reshape(1, self.BW, num_etr_params),
-                                     (self.S - S_in_tax_params, 1, 1))),
-                            axis=0)
+                dict_params['tfunc_' + item + '_params_S'] =\
+                    np.concatenate(
+                        (dict_params['tfunc_' + item + '_params_S'],
+                         np.tile(dict_params['tfunc_' + item +
+                                             '_params_S'][-1, :, :].
+                                 reshape(1, self.BW, num_etr_params),
+                                 (self.S - S_in_tax_params, 1, 1))),
+                        axis=0)
         self.etr_params = np.empty((self.T, self.S, num_etr_params))
         self.mtrx_params = np.empty((self.T, self.S, num_mtrx_params))
         self.mtry_params = np.empty((self.T, self.S, num_mtry_params))

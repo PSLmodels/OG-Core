@@ -12,7 +12,7 @@ def macro_table(base_tpi, base_params, reform_tpi=None,
                 var_list=['Y', 'C', 'K', 'L', 'r', 'w'],
                 output_type='pct_diff', num_years=10, include_SS=True,
                 include_overall=True, start_year=2019,
-                table_title=None, table_format='tex',
+                table_title=None, table_format=None,
                 path=None):
     '''
     Create a table of macro aggregates.
@@ -126,7 +126,8 @@ def macro_table(base_tpi, base_params, reform_tpi=None,
                         results_for_table, results_SS)
                 table_dict[VAR_LABELS[v] + ' Reform'] = results_for_table
         # Make df with dict so can use pandas functions
-        table_df = pd.DataFrame.from_dict(table_dict, orient='columns').set_index('Year').transpose()
+        table_df = pd.DataFrame.from_dict(table_dict, orient='columns'
+                                          ).set_index('Year').transpose()
         table = save_return_table(table_df, table_format, path)
 
-    return table_df
+    return table

@@ -43,16 +43,17 @@ def get_initial_SS_values(p):
                 baseline model run
 
     '''
-    baseline_ss = os.path.join(p.baseline_dir, "SS/SS_vars.pkl")
-    ss_baseline_vars = pickle.load(open(baseline_ss, "rb"))
+    baseline_ss = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
+    ss_baseline_vars = utils.safe_read_pickle(baseline_ss)
     factor = ss_baseline_vars['factor_ss']
     initial_b = ss_baseline_vars['bssmat_splus1']
     initial_n = ss_baseline_vars['nssmat']
     TRbaseline = None
     Gbaseline = None
     if p.baseline_spending:
-        baseline_tpi = os.path.join(p.baseline_dir, "TPI/TPI_vars.pkl")
-        tpi_baseline_vars = pickle.load(open(baseline_tpi, "rb"))
+        baseline_tpi = os.path.join(
+            p.baseline_dir, "TPI", "TPI_vars.pkl")
+        tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
         TRbaseline = tpi_baseline_vars['TR']
         Gbaseline = tpi_baseline_vars['G']
 
@@ -85,8 +86,9 @@ def get_initial_SS_values(p):
 
     # Intial gov't debt must match that in the baseline
     if not p.baseline:
-        baseline_tpi = os.path.join(p.baseline_dir, "TPI/TPI_vars.pkl")
-        tpi_baseline_vars = pickle.load(open(baseline_tpi, "rb"))
+        baseline_tpi = os.path.join(
+            p.baseline_dir, "TPI", "TPI_vars.pkl")
+        tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
         D0 = tpi_baseline_vars['D'][0]
     else:
         D0 = 0.0

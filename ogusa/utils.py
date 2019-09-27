@@ -14,8 +14,8 @@ from pkg_resources import resource_stream, Requirement
 EPSILON = 1e-10
 PATH_EXISTS_ERRNO = 17
 
-REFORM_DIR = "./OUTPUT_REFORM"
-BASELINE_DIR = "./OUTPUT_BASELINE"
+REFORM_DIR = "OUTPUT_REFORM"
+BASELINE_DIR = "OUTPUT_BASELINE"
 
 # Default year for model runs
 DEFAULT_START_YEAR = 2018
