@@ -63,6 +63,17 @@ def get_inputs(meta_param_dict):
     # Set default OG-USA parameters
     ogusa_params = Specifications()
     ogusa_params.start_year = meta_params.year
+    filtered_ogusa_params = OrderedDict()
+    filter_list = [
+        'chi_n_80', 'chi_b', 'eta', 'zeta', 'constant_demographics',
+        'ltilde', 'use_zeta', 'constant_rates', 'zero_taxes',
+        'analytical_mtrs', 'age_specific']
+    for k, v in ogusa_params.dump().items():
+        if ((k not in filter_list) and
+            (v.get("section_1", False) != "Model Solution Parameters")
+            and (v.get("section_2", False) != "Model Dimensions")):
+            filtered_ogusa_params[k] = v
+            print('filtered ogusa = ', k)
     # Set default TC params
     iit_params = TCParams()
     iit_params.set_state(year=meta_params.year.tolist())
@@ -72,7 +83,7 @@ def get_inputs(meta_param_dict):
             filtered_iit_params[k] = v
 
     default_params = {
-        "OG-USA Parameters": ogusa_params.dump(),
+        "OG-USA Parameters": filtered_ogusa_params,
         "Tax-Calculator Parameters": filtered_iit_params
     }
 
