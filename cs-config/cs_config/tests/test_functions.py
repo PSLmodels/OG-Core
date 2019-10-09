@@ -11,6 +11,8 @@ class TestFunctions1(CoreTestFunctions):
     ok_adjustment = {"ogusa": {"frisch": 0.41}}
     bad_adjustment = {"ogusa": {"frisch": 1.5}}
 
+    def test_run_model(self):
+        pass
 
 # Comment out until do tabular output
 # def test_param_effect():
