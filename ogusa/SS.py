@@ -167,7 +167,7 @@ def inner_loop(outer_loop_vars, p, client):
                                                args=euler_params,
                                                xtol=MINIMIZER_TOL,
                                                full_output=True))
-    with Client() as c:
+    with Client(direct_to_workers=True) as c:
         futures = c.compute(lazy_values, scheduler=dask.multiprocessing.get,
                             num_workers=p.num_workers)
         results = c.gather(futures)

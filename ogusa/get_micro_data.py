@@ -114,7 +114,7 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
     for year in range(start_year, TC_LAST_YEAR + 1):
         lazy_values.append(
             delayed(taxcalc_advance)(calc1, year))
-    with Client() as c:
+    with Client(direct_to_workers=True) as c:
         futures = c.compute(lazy_values, scheduler=dask.multiprocessing.get,
                             num_workers=num_workers)
         results = c.gather(futures)

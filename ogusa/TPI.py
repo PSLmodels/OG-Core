@@ -523,7 +523,7 @@ def run_TPI(p, client=None):
             lazy_values.append(
                 delayed(inner_loop)(guesses, outer_loop_vars,
                                     initial_values, j, ind, p))
-        with Client() as c:
+        with Client(direct_to_workers=True) as c:
             futures = c.compute(lazy_values, scheduler=dask.multiprocessing.get,
                                 num_workers=p.num_workers)
             result = c.gather(futures)
