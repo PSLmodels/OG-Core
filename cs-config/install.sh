@@ -1,12 +1,11 @@
 # bash commands for installing your package
 
-# point at my branch to test my changes
-git clone https://github.com/hdoupe/OG-USA
+git clone https://github.com/PSLmodels/OG-USA
 cd OG-USA
+# make sure the git object is up to date, in case
+# it's cached.
 git fetch origin
-git checkout cs-tweaks
-git fetch origin
-git merge origin/cs-tweaks
+git merge origin/master
 
 # Explicitly add channels for looking up dependencies outside of
 # taxcalc and paramtools. If the channels are not specified like this,
