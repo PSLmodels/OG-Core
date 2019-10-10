@@ -39,7 +39,8 @@ def create_diff(baseline_dir, policy_dir, dump_output=False):
                                     'ClosedEconPctChanges.csv')
     np.savetxt(pct_changes_path, pct_changes, delimiter=",")
     if dump_output:
-        pickle.dump(pct_changes, open("ogusa_output.pkl", "wb"))
+        with open("ogusa_output.pkl", "wb") as f:
+            pickle.dump(pct_changes, f)
 
     closed_econ_base_path = os.path.join(baseline_dir,
                                          'ClosedEconBaseline.csv')

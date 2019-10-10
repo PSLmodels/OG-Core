@@ -146,7 +146,8 @@ def test_get_initial_path(x1, xT, p, shape, expected):
 def picklefile1():
     x = {'a': 1}
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
-    pickle.dump(x, open(pfile.name, 'wb'))
+    with open(pfile.name, 'wb') as f:
+        pickle.dump(x, f)
     pfile.close()
     # must close and then yield for Windows platform
     yield pfile
@@ -158,7 +159,8 @@ def picklefile2():
     y = {'a': 1, 'b': 2}
 
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
-    pickle.dump(y, open(pfile.name, 'wb'))
+    with open(pfile.name, 'wb') as f:
+        pickle.dump(y, f)
     pfile.close()
     # must close and then yield for Windows platform
     yield pfile
@@ -169,7 +171,8 @@ def picklefile2():
 def picklefile3():
     x = {'a': np.array([100., 200., 300.]), 'b': 2}
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
-    pickle.dump(x, open(pfile.name, 'wb'))
+    with open(pfile.name, 'wb') as f:
+        pickle.dump(x, f)
     pfile.close()
     # must close and then yield for Windows platform
     yield pfile
@@ -180,7 +183,8 @@ def picklefile3():
 def picklefile4():
     x = {'a': np.array([100., 200., 300.1]), 'b': 2}
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
-    pickle.dump(x, open(pfile.name, 'wb'))
+    with open(pfile.name, 'wb') as f:
+        pickle.dump(x, )
     pfile.close()
     # must close and then yield for Windows platform
     yield pfile

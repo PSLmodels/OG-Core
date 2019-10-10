@@ -225,11 +225,13 @@ def test_run_TPI():
     if p.baseline:
         utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
         ss_dir = os.path.join(p.baseline_dir, "SS/SS_vars.pkl")
-        pickle.dump(ss_outputs, open(ss_dir, "wb"))
+        with open(ss_dir, "wb") as f:
+            pickle.dump(ss_outputs, f)
     else:
         utils.mkdirs(os.path.join(p.output_base, "SS"))
         ss_dir = os.path.join(p.output_base, "SS/SS_vars.pkl")
-        pickle.dump(ss_outputs, open(ss_dir, "wb"))
+        with open(ss_dir, "wb") as f:
+            pickle.dump(ss_outputs, f)
 
     test_dict = TPI.run_TPI(p, None)
 

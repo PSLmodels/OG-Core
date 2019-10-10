@@ -43,7 +43,8 @@ SS_FIG_DIR = "OUTPUT"
 COMPARISON_DIR = "OUTPUT"
 
 ss_init = os.path.join(SS_FIG_DIR, "SSinit/ss_init_vars.pkl")
-variables = pickle.load(open(ss_init, "rb"))
+with open(ss_init, "rb") as f:
+    variables = pickle.load(f)
 for key in variables:
     globals()[key] = variables[key]
 

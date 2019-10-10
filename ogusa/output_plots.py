@@ -337,18 +337,23 @@ def plot_all(base_output_path, reform_output_path, save_path):
     '''
     # Read in data
     # Read in TPI output and parameters
-    base_tpi = pickle.load(open(os.path.join(
-        base_output_path, 'TPI', 'TPI_vars.pkl'), 'rb'))
-    base_ss = pickle.load(open(os.path.join(
-        base_output_path, 'SS', 'SS_vars.pkl'), 'rb'))
-    base_params = pickle.load(open(os.path.join(
-        base_output_path, 'model_params.pkl'), 'rb'))
-    reform_tpi = pickle.load(open(os.path.join(
-        reform_output_path, 'TPI', 'TPI_vars.pkl'), 'rb'))
-    reform_ss = pickle.load(open(os.path.join(
-        reform_output_path, 'SS', 'SS_vars.pkl'), 'rb'))
-    reform_params = pickle.load(open(os.path.join(
-        reform_output_path, 'model_params.pkl'), 'rb'))
+    with open(os.path.join(base_output_path, 'TPI', 'TPI_vars.pkl'), 'rb') as f:
+        base_tpi = pickle.load(f)
+    with open(os.path.join(base_output_path, 'SS', 'SS_vars.pkl'), 'rb') as f:
+        base_ss = pickle.load(f)
+
+    with open(os.path.join(base_output_path, 'model_params.pkl'), 'rb') as f:
+        base_params = pickle.load(f)
+
+    with open(os.path.join(reform_output_path, 'TPI', 'TPI_vars.pkl'), 'rb') as f:
+        reform_tpi = pickle.load(f)
+
+    with open(os.path.join(reform_output_path, 'SS', 'SS_vars.pkl'), 'rb') as f:
+        reform_ss = pickle.load(f)
+
+    with open(os.path.join(reform_output_path, 'model_params.pkl'), 'rb')
+        reform_params = pickle.load(f)
+
     # Percentage changes in macro vars (Y, K, L, C)
     plot_aggregates(base_tpi, base_params, reform_tpi=reform_tpi,
                     reform_params=reform_params,
