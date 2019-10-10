@@ -27,6 +27,7 @@ import os
 
 import firm
 import household
+from ogusa import utils
 
 import parameters
 parameters.DATASET = 'REAL'
@@ -43,8 +44,8 @@ SS_FIG_DIR = "OUTPUT"
 COMPARISON_DIR = "OUTPUT"
 
 ss_init = os.path.join(SS_FIG_DIR, "SSinit/ss_init_vars.pkl")
-with open(ss_init, "rb") as f:
-    variables = pickle.load(f)
+variables = utils.safe_read_pickle(ss_init)
+
 for key in variables:
     globals()[key] = variables[key]
 
