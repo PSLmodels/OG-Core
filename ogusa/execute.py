@@ -116,7 +116,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         tpi_dir = os.path.join(output_base, "TPI")
         utils.mkdirs(tpi_dir)
         tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
-        with open(ss_dir, "wb") as f:
+        with open(tpi_vars, "wb") as f:
             pickle.dump(tpi_output, f)
 
         print("Time path iteration complete.")
