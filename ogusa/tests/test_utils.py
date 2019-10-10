@@ -184,7 +184,7 @@ def picklefile4():
     x = {'a': np.array([100., 200., 300.1]), 'b': 2}
     pfile = tempfile.NamedTemporaryFile(mode="a", delete=False)
     with open(pfile.name, 'wb') as f:
-        pickle.dump(x, )
+        pickle.dump(x, f)
     pfile.close()
     # must close and then yield for Windows platform
     yield pfile
