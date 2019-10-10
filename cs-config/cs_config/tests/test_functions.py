@@ -12,8 +12,6 @@ class TestFunctions1(CoreTestFunctions):
     bad_adjustment = {"OG-USA Parameters": {"frisch": 1.5},
                       "Tax-Calculator Parameters": {"STD": -1}}
 
-    def test_run_model(self):
-        pass
 
 # Comment out until do tabular output
 # def test_param_effect():
