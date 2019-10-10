@@ -2,7 +2,7 @@
 import numpy as np
 import pickle
 import scipy.optimize as opt
-from dask.distributed import Client
+from distributed import Client
 from dask import compute, delayed
 import dask.multiprocessing
 from ogusa import tax, utils, household, firm, fiscal
@@ -523,8 +523,11 @@ def run_TPI(p, client=None):
             lazy_values.append(
                 delayed(inner_loop)(guesses, outer_loop_vars,
                                     initial_values, j, ind, p))
-        results = compute(*lazy_values, scheduler=dask.multiprocessing.get,
-                          num_workers=p.num_workers)
+        with Client(direct_to_workers=True) as c:
+            futures = c.compute(lazy_values, scheduler=dask.multiprocessing.get,
+                                num_workers=p.num_workers)
+            result = c.gather(futures)
+
         for j, result in enumerate(results):
             euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result
 

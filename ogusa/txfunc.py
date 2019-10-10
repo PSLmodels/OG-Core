@@ -15,6 +15,7 @@ import numpy as np
 import scipy.optimize as opt
 from dask import compute, delayed
 import dask.multiprocessing
+from distributed import Client
 import pickle
 import matplotlib
 import matplotlib.pyplot as plt
@@ -1369,8 +1370,10 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
                 t, micro_data[str(t)], start_year, s_min, s_max,
                 age_specific, tax_func_type, analytical_mtrs, desc_data,
                 graph_data, graph_est, output_dir, numparams))
-    results = compute(*lazy_values, scheduler=dask.multiprocessing.get,
-                      num_workers=num_workers)
+    with Client(direct_to_workers=True) as c:
+        futures = c.compute(lazy_values, scheduler=dask.multiprocessing.get,
+                            num_workers=num_workers)
+        results = c.gather(futures)
 
     # Garbage collection
     del micro_data
