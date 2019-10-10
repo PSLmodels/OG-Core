@@ -351,7 +351,7 @@ def plot_all(base_output_path, reform_output_path, save_path):
     with open(os.path.join(reform_output_path, 'SS', 'SS_vars.pkl'), 'rb') as f:
         reform_ss = pickle.load(f)
 
-    with open(os.path.join(reform_output_path, 'model_params.pkl'), 'rb')
+    with open(os.path.join(reform_output_path, 'model_params.pkl'), 'rb') as f:
         reform_params = pickle.load(f)
 
     # Percentage changes in macro vars (Y, K, L, C)
