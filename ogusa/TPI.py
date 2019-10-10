@@ -526,7 +526,7 @@ def run_TPI(p, client=None):
         with Client(direct_to_workers=True) as c:
             futures = c.compute(lazy_values, scheduler=dask.multiprocessing.get,
                                 num_workers=p.num_workers)
-            result = c.gather(futures)
+            results = c.gather(futures)
 
         for j, result in enumerate(results):
             euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result
