@@ -63,7 +63,7 @@ def get_initial_SS_values(p):
         ss_vars = ss_baseline_vars
     else:
         reform_ss_path = os.path.join(p.output_base, "SS/SS_vars.pkl")
-        ss_vars = pickle.load(open(reform_ss_path, "rb"))
+        ss_vars = utils.safe_read_pickle(reform_ss_path)
     theta = ss_vars['theta']
     # What is going on here?  Whatever it is, why not done in parameters.py???
     N_tilde = p.omega.sum(1)  # this should equal one in
@@ -775,7 +775,8 @@ def run_TPI(p, client=None):
     tpi_dir = os.path.join(p.output_base, "TPI")
     utils.mkdirs(tpi_dir)
     tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
-    pickle.dump(output, open(tpi_vars, "wb"))
+    with open(tpi_vars, "wb") as f:
+        pickle.dump(output, f)
 
     if np.any(G) < 0:
         print('Government spending is negative along transition path' +

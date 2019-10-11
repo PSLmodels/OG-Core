@@ -126,13 +126,17 @@ def pickle_file_compare(fname1, fname2, tol=1e-3, exceptions={},
         comparison (bool): whether therea two dictionaries are the same
     '''
     try:
-        pkl1 = pickle.load(open(fname1, 'rb'), encoding='latin1')
+        with open(fname1, 'rb') as f:
+            pkl1 = pickle.load(f, encoding='latin1')
     except TypeError:
-        pkl1 = pickle.load(open(fname1, 'rb'))
+        with open(fname1, 'rb') as f:
+            pkl1 = pickle.load(f)
     try:
-        pkl2 = pickle.load(open(fname2, 'rb'), encoding='latin1')
+        with open(fname2, 'rb') as f:
+            pkl2 = pickle.load(f, encoding='latin1')
     except TypeError:
-        pkl2 = pickle.load(open(fname2, 'rb'))
+        with open(fname2, 'rb') as f:
+            pkl2 = pickle.load(f)
     comparison = dict_compare(fname1, pkl1, fname2, pkl2, tol=tol,
                               exceptions=exceptions, relative=relative)
 
