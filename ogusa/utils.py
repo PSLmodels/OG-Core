@@ -424,23 +424,13 @@ def save_return_table(table_df, output_type, path, precision=2):
     pd.options.display.float_format = ('{:,.' + str(precision) + 'f}').format
     if path is None:
         if output_type == 'tex':
-            tab_str = table_df.to_latex(
-                buf=path, index=False, na_rep='')
+            tab_str = table_df.to_latex(index=False, na_rep='')
             return tab_str
         elif output_type == 'json':
-            tab_str = table_df.to_json(
-                path_or_buf=path, double_precision=precision)
+            tab_str = table_df.to_json(double_precision=precision)
             return tab_str
         elif output_type == 'html':
-            print('Output html...')
-            # with pd.option_context('display.precision', precision):
-            tab_html = (
-                table_df.round(precision).style.set_properties(
-                    **{'font-size': '9pt', 'font-family': 'Calibri',
-                       'text-align': 'left'})
-                .hide_index()
-                .render()
-            )
+            tab_html = table_df.to_html()
             return tab_html
         else:
             return table_df
