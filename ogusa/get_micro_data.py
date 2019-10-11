@@ -129,7 +129,9 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
         pkl_path = "micro_data_policy.pkl"
     else:
         pkl_path = "micro_data_baseline.pkl"
-    pickle.dump(micro_data_dict, open(pkl_path, "wb"))
+
+    with open(pkl_path, "wb") as f:
+        pickle.dump(micro_data_dict, f)
 
     # Do some garbage collection
     del calc1, results

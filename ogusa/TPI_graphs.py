@@ -27,6 +27,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 # import cPickle as pickle
 
+from ogusa import utils
 import firm
 
 '''
@@ -38,11 +39,11 @@ import firm
 TPI_FIG_DIR = "OUTPUT"
 VAR_DIR = "OUTPUT"
 ss_init = os.path.join(VAR_DIR, "SSinit/ss_init_vars.pkl")
-variables = pickle.load(open(ss_init, "rb"))
+variables = utils.safe_read_pickle(ss_init)
 for key in variables:
     globals()[key] = variables[key]
 tpi_init = os.path.join(VAR_DIR, "TPIinit/TPIinit_vars.pkl")
-variables = pickle.load(open(tpi_init, "rb"))
+variables = utils.safe_read_pickle(tpi_init)
 for key in variables:
     globals()[key] = variables[key]
 
@@ -118,11 +119,11 @@ utility_period_init = utility_period.sum(1)
 
 
 ss_vars = os.path.join(VAR_DIR, "SS/ss_vars.pkl")
-variables = pickle.load(open(ss_vars, "rb"))
+variables = utils.safe_read_pickle(ss_vars)
 for key in variables:
     globals()[key] = variables[key]
 tpi_vars = os.path.join(VAR_DIR, "TPI/TPI_vars.pkl")
-variables = pickle.load(open(tpi_vars, "rb"))
+variables = utils.safe_read_pickle(tpi_vars)
 for key in variables:
     globals()[key] = variables[key]
 

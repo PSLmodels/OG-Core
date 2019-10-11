@@ -1598,4 +1598,5 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
             tx_func_est_path or "TxFuncEst_policy{}.pkl".format(guid))
         pkl_path = os.path.join(policy_pckl)
 
-    pickle.dump(dict_params, open(pkl_path, "wb"))
+    with open(pkl_path, "wb") as f:
+        pickle.dump(dict_params, f)

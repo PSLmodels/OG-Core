@@ -162,7 +162,8 @@ def run_model(meta_param_dict, adjustment):
     base_ss = SS.run_SS(base_params, client=client)
     utils.mkdirs(os.path.join(base_dir, "SS"))
     ss_dir = os.path.join(base_dir, "SS", "SS_vars.pkl")
-    pickle.dump(base_ss, open(ss_dir, "wb"))
+    with open(ss_dir, "wb") as f:
+        pickle.dump(base_ss, f)
 
     # Solve reform model
     reform_spec = base_spec
