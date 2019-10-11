@@ -173,6 +173,6 @@ def macro_table_SS(base_ss, reform_ss,
         table_df = pd.DataFrame.from_dict(
             table_dict, orient='columns').set_index('Variable')
         table = save_return_table(table_df, table_format, path,
-                                  precision=2)
+                                  precision=3)
 
     return table
