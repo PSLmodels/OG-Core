@@ -303,6 +303,13 @@ class Specifications(paramtools.Parameters):
 
         self.mean_income_data = dict_params['tfunc_avginc'][0]
         try:
+            self.frac_tax_payroll = np.append(
+                dict_params['tfunc_frac_tax_payroll'],
+                np.ones(self.T + self.S - self.BW) *
+                dict_params['tfunc_frac_tax_payroll'][-1])
+        except KeyError:
+            self.frac_tax_payroll = np.zeros(self.T + self.S)
+        try:
             self.taxcalc_version = dict_params['taxcalc_version']
         except KeyError:
             self.taxcalc_version = 'No version recorded'
