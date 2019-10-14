@@ -215,6 +215,7 @@ def test_run_TPI():
     p.lambdas = lambdas.reshape(p.J, 1)
     p.output = output_dir
     p.baseline_spending = baseline_spending
+    p.frac_tax_payroll = 0.5 * np.ones(p.T + p.S)
     p.num_workers = 1
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n,
      p.omega_S_preTP, initial_debt, D0) = initial_values
@@ -251,6 +252,7 @@ def test_run_TPI():
     del test_dict['y_before_tax_mat'], test_dict['K_f'], test_dict['K_d']
     del test_dict['D_d'], test_dict['D_f']
     del test_dict['new_borrowing_f'], test_dict['debt_service_f']
+    del test_dict['iit_revenue'], test_dict['payroll_tax_revenue']
     del test_dict['resource_constraint_error'], test_dict['T_C']
     del test_dict['r_gov'], test_dict['r_hh'], test_dict['tr_path']
 
