@@ -933,6 +933,8 @@ def tax_func_loop(t, data, start_year, s_min, s_max, age_specific,
                 in data
             * AvgMTRy (scalar): mean marginal tax rate on capital income
                 in data
+            * frac_tax_payroll (scalar): fraction of total tax revenue
+                the comes from payroll taxes
             * etrparam_arr (Numpy array): parameters of the effective
                 tax rate functions
             * etr_wsumsq_arr (Numpy array): weighted sum of squares from
@@ -989,6 +991,12 @@ def tax_func_loop(t, data, start_year, s_min, s_max, age_specific,
         ((data['mtr_capinc'] * data['expanded_income'] *
           data['weight']).sum()) / (data['expanded_income'] *
                                     data['weight']).sum())
+
+    # Caulcatoe fraction of total tax liability that is from payroll
+    # taxes
+    frac_tax_payroll = (
+        (data['payroll_tax_liab'] * data['weight']).sum() /
+        (data['total_tax_liab'] * data['weight']).sum())
 
     # Calculate total population in each year
     TotPop_yr = data['weight'].sum()
@@ -1266,6 +1274,7 @@ def tax_func_loop(t, data, start_year, s_min, s_max, age_specific,
                     (s_max - max_age, 1))
 
     return (TotPop_yr, PopPct_age, AvgInc, AvgETR, AvgMTRx, AvgMTRy,
+            frac_tax_payroll,
             etrparam_arr, etr_wsumsq_arr, etr_obs_arr,
             mtrxparam_arr, mtrx_wsumsq_arr, mtrx_obs_arr,
             mtryparam_arr, mtry_wsumsq_arr, mtry_obs_arr)
@@ -1337,6 +1346,7 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     AvgETR = np.zeros(BW)
     AvgMTRx = np.zeros(BW)
     AvgMTRy = np.zeros(BW)
+    frac_tax_payroll = np.zeros(BW)
     TotPop_yr = np.zeros(BW)
     PopPct_age = np.zeros((s_max-s_min+1, BW))
 
@@ -1381,7 +1391,7 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     # for i, result in results.items():
     for i, result in enumerate(results):
         (TotPop_yr[i], PopPct_age[:, i], AvgInc[i],
-         AvgETR[i], AvgMTRx[i], AvgMTRy[i],
+         AvgETR[i], AvgMTRx[i], AvgMTRy[i], frac_tax_payroll[i],
          etrparam_arr[:, i, :], etr_wsumsq_arr[:, i],
          etr_obs_arr[:, i], mtrxparam_arr[:, i, :],
          mtrx_wsumsq_arr[:, i], mtrx_obs_arr[:, i],
@@ -1533,6 +1543,7 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
          ('tfunc_mtry_params_S', mtryparam_arr_S),
          ('tfunc_avginc', AvgInc), ('tfunc_avg_etr', AvgETR),
          ('tfunc_avg_mtrx', AvgMTRx), ('tfunc_avg_mtry', AvgMTRy),
+         ('tfunc_frac_tax_payroll', frac_tax_payroll),
          ('tfunc_etr_sumsq', etr_wsumsq_arr),
          ('tfunc_mtrx_sumsq', mtrx_wsumsq_arr),
          ('tfunc_mtry_sumsq', mtry_wsumsq_arr),

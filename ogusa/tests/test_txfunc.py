@@ -190,8 +190,10 @@ def test_tax_func_loop():
     micro_data.rename(columns={
         'Adjusted total income': 'expanded_income',
         'MTR capital income': 'mtr_capinc',
+        'Total tax liability': 'total_tax_liab',
         'Year': 'year', 'Age': 'age',
         'Weights': 'weight'}, inplace=True)
+    micro_data['payroll_tax_liab'] = 0
     test_tuple = txfunc.tax_func_loop(
         t, micro_data, beg_yr, s_min, s_max, age_specific,
         tax_func_type, analytical_mtrs, desc_data, graph_data,
@@ -200,8 +202,9 @@ def test_tax_func_loop():
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_loop_outputs.pkl'))
+    test_tuple_to_use = test_tuple[:6] + test_tuple[7:]
     for i, v in enumerate(expected_tuple):
-        assert(np.allclose(test_tuple[i], v))
+        assert(np.allclose(test_tuple_to_use[i], v))
 
 
 A = 0.02

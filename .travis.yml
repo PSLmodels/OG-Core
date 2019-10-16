@@ -12,7 +12,7 @@ install:
   - bash miniconda.sh -b -p $HOME/miniconda
   - export PATH="$HOME/miniconda/bin:$PATH"
   - conda config --set always_yes yes
-  - conda update -n base -c defaults conda
+  - conda update -y -n base conda setuptools
   - conda create -n ogusa-dev python=$TRAVIS_PYTHON_VERSION
   - source activate ogusa-dev
   - conda env update -f environment.yml

@@ -734,6 +734,12 @@ def run_TPI(p, client=None):
     I_total = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
                (1.0 - p.delta) * K[:p.T])
 
+    # Compute income tax revenues
+    tax_rev = aggr.get_L(T_Ipath, p, 'TPI')
+    payroll_tax_revenue = p.frac_tax_payroll[:p.T] * tax_rev[:p.T]
+    iit_revenue = tax_rev[:p.T] - payroll_tax_revenue
+
+    # Compute resource constraint error
     rce_max = np.amax(np.abs(RC_error))
     print('Max absolute value resource constraint error:', rce_max)
 
@@ -759,7 +765,8 @@ def run_TPI(p, client=None):
               'I_total': I_total, 'I_d': I_d, 'BQ': BQ,
               'total_revenue': total_revenue,
               'business_revenue': business_revenue,
-              'IITpayroll_revenue': T_Ipath, 'TR': TR,
+              'IITpayroll_revenue': T_Ipath, 'iit_revenue': iit_revenue,
+              'payroll_tax_revenue': payroll_tax_revenue, 'TR': TR,
               'T_P': T_Ppath, 'T_BQ': T_BQpath, 'T_W': T_Wpath,
               'T_C': T_Cpath, 'G': G, 'D': D, 'D_f': D_f, 'D_d': D_d,
               'r': r, 'r_gov': r_gov,

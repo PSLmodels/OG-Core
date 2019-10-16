@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import pickle
 import matplotlib.pyplot as plt
+import matplotlib
 from ogusa.constants import VAR_LABELS, ToGDP_LABELS, GROUP_LABELS
 import ogusa.utils as utils
 cur_path = os.path.split(os.path.abspath(__file__))[0]
@@ -40,7 +41,7 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
         path (string): path to save figure to
 
     Returns:
-        fig (Matplotlib plot object): plot of immigration rates
+        fig (Matplotlib plot object): plot of macro aggregates
 
     '''
     assert (isinstance(start_year, int))
@@ -115,6 +116,61 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
     plt.close()
 
 
+def ss_3Dplot(base_params, base_ss, reform_params=None, reform_ss=None,
+              var='bssmat_splus1', plot_type='levels', plot_title=None,
+              path=None):
+    '''
+    Create a 3d plot of household decisions.
+
+    Args:
+        base_params (OG-USA Specifications class): baseline parameters object
+        base_ss (dictionary): SS output from baseline run
+        reform_params (OG-USA Specifications class): reform parameters object
+        reform_ss (dictionary): SS output from reform run
+        var (string): name of variable to plot
+        plot_type (string): type of plot, can be:
+            'pct_diff': plots percentage difference between baselien
+                and reform ((reform-base)/base)
+            'diff': plots difference between baseline and reform (reform-base)
+            'levels': plot variables in model units
+        plot_title (string): title for plot
+        path (string): path to save figure to
+
+    Returns:
+        fig (Matplotlib plot object): plot of household decisions
+
+    '''
+    if reform_params:
+        assert(base_params.J == reform_params.J)
+        assert(base_params.starting_age == reform_params.starting_age)
+        assert(base_params.ending_age == reform_params.ending_age)
+        assert(base_params.S ==  reform_params.S)
+    domain = np.linspace(base_params.starting_age, base_params.ending_age,base_params.S)
+    Jgrid = np.zeros(base_params.J)
+    for j in range(base_params.J):
+        Jgrid[j:] += base_params.lambdas[j]
+    if plot_type == 'levels':
+        data=base_ss[var].T
+    elif plot_type == 'diff':
+        data=(reform_ss[var]-base_ss[var]).T
+    elif plot_type == 'pct_diff':
+        data=((reform_ss[var]-base_ss[var])/base_ss[var]).T
+    cmap1 = matplotlib.cm.get_cmap('jet')
+    X, Y = np.meshgrid(domain, Jgrid)
+    fig5 = plt.figure()
+    ax5 = fig5.gca(projection='3d')
+    ax5.set_xlabel(r'age-$s$')
+    ax5.set_ylabel(r'ability type-$j$')
+    ax5.set_zlabel(r'individual savings $\bar{b}_{j,s}$')
+    ax5.plot_surface(X, Y, data, rstride=1, cstride=1, cmap=cmap1)
+    if plot_title:
+        plt.title(plot_title)
+    if path:
+        plt.savefig(path)
+    else:
+        return plt
+
+
 def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
                    reform_params=None, var_list=['D'],
                    num_years_to_plot=50,
@@ -138,7 +194,7 @@ def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
         path (string): path to save figure to
 
     Returns:
-        fig (Matplotlib plot object): plot of immigration rates
+        fig (Matplotlib plot object): plot of ratio of a variable to GDP
     '''
     assert (isinstance(start_year, int))
     assert (isinstance(num_years_to_plot, int))
@@ -206,7 +262,7 @@ def ability_bar(base_tpi, base_params, reform_tpi,
         path (string): path to save figure to
 
     Returns:
-        fig (Matplotlib plot object): plot of immigration rates
+        fig (Matplotlib plot object): plot of results by ability type
     '''
     assert (isinstance(start_year, int))
     assert (isinstance(num_years, int))
@@ -261,7 +317,7 @@ def ss_profiles(base_ss, base_params, reform_ss=None,
         path (string): path to save figure to
 
     Returns:
-        fig (Matplotlib plot object): plot of immigration rates
+        fig (Matplotlib plot object): plot of lifecycle profiles
 
     '''
     if reform_ss is not None:

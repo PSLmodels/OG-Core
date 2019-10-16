@@ -7,6 +7,7 @@ Miscellaneous functions used in the OG-USA model.
 import os
 from io import StringIO
 import numpy as np
+import pandas as pd
 import taxcalc
 import pickle
 from pkg_resources import resource_stream, Requirement
@@ -404,7 +405,7 @@ def rate_conversion(annual_rate, start_age, end_age, S):
     return rate
 
 
-def save_return_table(table_df, output_type, path, precision=0):
+def save_return_table(table_df, output_type, path, precision=2):
     '''
     Function to save or return a table of data.
 
@@ -420,45 +421,29 @@ def save_return_table(table_df, output_type, path, precision=0):
         table_df (Pandas DataFrame): table
 
     '''
+    pd.options.display.float_format = ('{:,.' + str(precision) + 'f}').format
     if path is None:
         if output_type == 'tex':
-            tab_str = table_df.to_latex(
-                buf=path, index=False, na_rep='',
-                float_format=lambda x: '%.' + str(precision) + '0f' % x)
+            tab_str = table_df.to_latex(index=False, na_rep='')
             return tab_str
         elif output_type == 'json':
-            tab_str = table_df.to_json(
-                path_or_buf=path, double_precision=0)
+            tab_str = table_df.to_json(double_precision=precision)
             return tab_str
         elif output_type == 'html':
-            print('Output html...')
-            # with pd.option_context('display.precision', precision):
-            tab_html = (
-                table_df.round(2).style
-                # .format({'': '', '%.' + str(precision) + '0f')
-                .set_properties(**{'font-size': '9pt',
-                                   'font-family': 'Calibri',
-                                   'text-align': 'left'})
-                .hide_index()
-                .render()
-            )
+            tab_html = table_df.to_html()
             return tab_html
         else:
             return table_df
     else:
         if output_type == 'tex':
-            table_df.to_latex(buf=path, index=False, na_rep='',
-                              float_format=lambda x: '%.' +
-                              str(precision) + '0f' % x)
+            table_df.to_latex(buf=path, index=False, na_rep='')
         elif output_type == 'csv':
-            table_df.to_csv(path_or_buf=path, index=False, na_rep='',
-                            float_format='%.' + str(precision) + '0f')
+            table_df.to_csv(path_or_buf=path, index=False, na_rep='')
         elif output_type == 'json':
             table_df.to_json(path_or_buf=path,
                              double_precision=precision)
         elif output_type == 'excel':
-            table_df.to_excel(excel_writer=path, index=False, na_rep='',
-                              float_format='%.' + str(precision) + '0f')
+            table_df.to_excel(excel_writer=path, index=False, na_rep='')
         else:
             print('Please enter a valid output format')
             assert(False)

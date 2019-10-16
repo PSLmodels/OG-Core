@@ -181,6 +181,7 @@ def taxcalc_advance(calc1, year):
                          calc1.array('sey') + calc1.array('e00200')),
         'expanded_income': calc1.array('expanded_income'),
         'total_tax_liab': calc1.array('combined'),
+        'payroll_tax_liab': calc1.array('payrolltax'),
         'etr': calc1.array('combined') / calc1.array('expanded_income'),
         'year': calc1.current_year * np.ones(length),
         'weight': calc1.array('s006')}

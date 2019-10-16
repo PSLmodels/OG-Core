@@ -402,6 +402,8 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
         aggr.revenue(r_hh_ss, wss, bssmat_s, nssmat, bqssmat, cssmat,
                      Yss, Lss, Kss, factor, theta, etr_params_3D, p,
                      'SS')
+    payroll_tax_revenue = p.frac_tax_payroll[-1] * T_Iss
+    iit_revenue = T_Iss - payroll_tax_revenue
     debt_service_ss = r_gov_ss * Dss
     new_borrowing = Dss * ((1 + p.g_n_ss) * np.exp(p.g_y) - 1)
     # government spends such that it expands its debt at the same rate as GDP
@@ -459,6 +461,8 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
               'Gss': Gss, 'total_revenue_ss': total_revenue_ss,
               'business_revenue': business_revenue,
               'IITpayroll_revenue': T_Iss,
+              'iit_revenue': iit_revenue,
+              'payroll_tax_revenue': payroll_tax_revenue,
               'T_Pss': T_Pss, 'T_BQss': T_BQss, 'T_Wss': T_Wss,
               'T_Css': T_Css, 'euler_savings': euler_savings,
               'debt_service_f': debt_service_f,
