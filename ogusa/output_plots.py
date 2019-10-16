@@ -3,6 +3,7 @@ import pandas as pd
 import os
 import pickle
 import matplotlib.pyplot as plt
+import matplotlib
 from ogusa.constants import VAR_LABELS, ToGDP_LABELS, GROUP_LABELS
 import ogusa.utils as utils
 cur_path = os.path.split(os.path.abspath(__file__))[0]
@@ -162,12 +163,12 @@ def ss_3Dplot(base_params, base_ss, reform_params=None, reform_ss=None,
     ax5.set_ylabel(r'ability type-$j$')
     ax5.set_zlabel(r'individual savings $\bar{b}_{j,s}$')
     ax5.plot_surface(X, Y, data, rstride=1, cstride=1, cmap=cmap1)
-    if title:
-        plt.title(title)
+    if plot_title:
+        plt.title(plot_title)
     if path:
         plt.savefig(path)
     else:
-        plt.show()
+        return plt
 
 
 def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
