@@ -31,10 +31,14 @@ def macro_table(base_tpi, base_params, reform_tpi=None,
             'diff': plots difference between baseline and reform (reform-base)
             'levels': variables in model units
         num_years (integer): number of years to include in table
+        include_SS (bool): whether to include the steady-state results
+            in the table
+        include_overall (bool): whether to include results over the
+            entire budget window as a column in the table
         start_year (integer): year to start table
         table_title (string): title for plot
         table_format (string): format to return table in: 'csv', 'tex',
-        'excel', 'json', if None, a DataFrame is returned
+            'excel', 'json', if None, a DataFrame is returned
         path (string): path to save table to
 
     Returns:
@@ -129,5 +133,46 @@ def macro_table(base_tpi, base_params, reform_tpi=None,
         table_df = pd.DataFrame.from_dict(table_dict, orient='columns'
                                           ).set_index('Year').transpose()
         table = save_return_table(table_df, table_format, path)
+
+    return table
+
+
+def macro_table_SS(base_ss, reform_ss,
+                   var_list=['Yss', 'Css', 'Kss', 'Lss', 'rss', 'wss'],
+                   table_title=None, table_format=None, path=None):
+    '''
+    Create a table of macro aggregates from the steady-state solutions.
+
+    Args:
+        base_ss (dictionary): SS output from baseline run
+        reform_ss (dictionary): SS output from reform run
+        var_list (list): names of variable to use in table
+        table_title (string): title for plot
+        table_format (string): format to return table in: 'csv', 'tex',
+            'excel', 'json', if None, a DataFrame is returned
+        path (string): path to save table to
+
+    Returns:
+        table (various): table in DataFrame or string format or `None`
+            if saved to disk
+
+    '''
+    table_dict = {'Variable': [], 'Baseline': [], 'Reform': [],
+                  '% Change (or pp diff)': []}
+    for i, v in enumerate(var_list):
+        table_dict['Variable'].append(VAR_LABELS[v])
+        table_dict['Baseline'].append(base_ss[v])
+        table_dict['Reform'].append(reform_ss[v])
+        if v != 'D/Y':
+            diff = (reform_ss[v] - base_ss[v]) / base_ss[v]
+        else:
+            diff = (reform_ss['Dss'] / reform_ss['Yss'] -
+                    base_ss['Dss'] / base_ss['Yss'])
+        table_dict['% Change (or pp diff)'].append(diff)
+        # Make df with dict so can use pandas functions
+        table_df = pd.DataFrame.from_dict(
+            table_dict, orient='columns').set_index('Variable')
+        table = save_return_table(table_df, table_format, path,
+                                  precision=3)
 
     return table

@@ -1,6 +1,7 @@
 VAR_LABELS = {'Y': 'GDP ($Y_t$)', 'C': 'Consumption ($C_t$)',
-              'L': 'Labor ($L_t$)', 'G': 'Government Expenditures',
-              'T_H': 'Lump sum transfers',
+              'L': 'Labor ($L_t$)',
+              'G': 'Government Expenditures ($G_t$)',
+              'TR': 'Lump sum transfers ($TR_t$)',
               'B': 'Wealth ($B_t$)', 'I_total': 'Investment ($I_t$)',
               'K': 'Capital Stock ($K_t$)',
               'K_d': 'Domestically-owned Capital Stock ($K^d_t$)',
@@ -40,7 +41,34 @@ VAR_LABELS = {'Y': 'GDP ($Y_t$)', 'C': 'Consumption ($C_t$)',
               'Marginal Tax Rate, Capital Income ($\\bar{MTRy}_{j,s}$)',
               'ETR': 'Effective Tax Rates',
               'MTRx': 'Marginal Tax Rates on Labor Income',
-              'MTRy': 'Marginal Tax Rates on Capital Income'
+              'MTRy': 'Marginal Tax Rates on Capital Income',
+              'Yss': 'GDP ($\\bar{Y}$)',
+              'Css': 'Consumption ($\\bar{C}$)',
+              'Lss': 'Labor ($\\bar{L}$)',
+              'Gss': 'Government Expenditures ($\\bar{G}$)',
+              'TR_ss': 'Lump sum transfers, ($\\bar{TR}$)',
+              'Bss': 'Wealth ($\\bar{B}$)',
+              'Iss_total': 'Investment ($\\bar{I}$)',
+              'Kss': 'Capital Stock ($\\bar{K}$)',
+              'K_d_ss':
+                  'Domestically-owned Capital Stock ($\\bar{K}^d$)',
+              'K_f_ss': 'Foreign-owned Capital Stock ($\\bar{K}^f$)',
+              'Dss': 'Government Debt ($\\bar{D}$)',
+              'D_d_ss': 'Domestically-owned Gov Debt ($\\bar{D}^d$)',
+              'D_f_ss': 'Foreign-owned Gov Debt ($\\bar{D}^f$)',
+              'rss': 'Real interest rate ($\\bar{r}$)',
+              'r_gov_ss':
+                  'Real interest rate on gov debt ($\\bar{r}_{gov}$)',
+              'r_hh_ss':
+                  'Real interest rate on HH portfolio ($\\bar{r}_{hh}$)',
+              'wss': 'Wage rate ($\\bar{w}$)',
+              'BQss': 'Aggregate bequests ($\\bar{BQ}_{j}$)',
+              'total_revenue_ss': 'Total tax revenue ($\\bar{REV}$)',
+              'business_revenue': 'Business tax revenue',
+              'IITpayroll_revenue': 'IIT and payroll tax revenue',
+              'debt_service_ss':
+                  'Debt service cost ($\\bar{r}_{gov}\\bar{D}$)',
+              'D/Y': 'Debt to GDP ratio', 'T_Pss': 'Government Pensions'
               }
 
 ToGDP_LABELS = {'D': 'Debt-to-GDP ($D_{t}/Y_t$)',
