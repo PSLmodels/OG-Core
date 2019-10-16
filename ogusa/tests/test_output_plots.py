@@ -48,3 +48,8 @@ def test_ss_profiles():
     fig = output_plots.ss_profiles(base_ss, base_params, reform_ss,
                                    reform_params)
     assert fig
+
+
+def test_ss_3Dplot():
+        fig = output_plots.ss_3Dplot(base_params, base_ss)
+        assert fig
