@@ -18,7 +18,6 @@ from ogusa.output_plots import *
 from ogusa.parameter_plots import *
 from ogusa.parameter_tables import *
 from ogusa.parameters import *
-from ogusa.parametersbase import *
 from ogusa.postprocess import *
 from ogusa.tax import *
 from ogusa.txfunc import *

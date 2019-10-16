@@ -6,13 +6,16 @@ dependencies:
 - python
 - setuptools
 - mkl
-- scipy>=0.18.1
+- "scipy>=0.18.1"
 - matplotlib
-- taxcalc>=2.4.2
-- dask>=0.20.0
+- "taxcalc>=2.4.2"
+- "dask>=0.20.0"
+- "paramtools>=0.7.1"
 - pytest
 - pytest-pep8
 - pytest-xdist
 - pycodestyle
 - pylint
 - coverage
+- pip:
+  - cs-kit

@@ -1,243 +1,265 @@
 {
+    "schema": {
+        "labels": {}
+    },
     "frisch": {
-        "long_name": "Frisch elasticity of labor supply",
+        "title": "Frisch elasticity of labor supply",
         "description": "Frisch elasticity of labor supply",
         "notes": "See Altonji (JPE, 1996) and Peterman (Econ Inquiry, 2016) for estimates of the Frisch elasticity",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": 0.4,
-        "range": {"min": 0.2, "max": 0.62},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "value": [
+            {
+                "value": 0.4
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.2,
+                "max": 0.62
+            }
+        }
     },
     "g_y_annual": {
-        "long_name": "Exogenous growth rate of labor augmenting technological change",
+        "title": "Exogenous growth rate of labor augmenting technological change",
         "description": "Growth rate of labor augmenting technological change",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": 0.03,
-        "range": {"min": -0.01, "max": 0.04},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "value": [
+            {
+                "value": 0.03
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": -0.01,
+                "max": 0.04
+            }
+        }
     },
     "S": {
-        "long_name": "Maximum number of periods of economic life of model agent",
+        "title": "Maximum number of periods of economic life of model agent",
         "description": "Maximum number of periods of economic life of model agent",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": true,
-        "string_value": false,
-        "value": 80,
-        "range": {"min": 3, "max": 80},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "int",
+        "value": [
+            {
+                "value": 80
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 3,
+                "max": 80
+            }
+        }
     },
     "J": {
-        "long_name": "Number of different labor productivity types of agents",
+        "title": "Number of different labor productivity types of agents",
         "description": "Number of different labor productivity types of agents",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": true,
-        "string_value": false,
-        "value": 7,
-        "range": {"min": 1, "max": 100},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "int",
+        "value": [
+            {
+                "value": 7
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1,
+                "max": 100
+            }
+        }
     },
     "T": {
-        "long_name": "Number of periods until it is assumed that the model reaches its steady state",
+        "title": "Number of periods until it is assumed that the model reaches its steady state",
         "description": "Number of periods until it is assumed that the model reaches its steady state",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": true,
-        "string_value": false,
-        "value": 320,
-        "range": {"min": "S", "max": 1000},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "int",
+        "value": [
+            {
+                "value": 320
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 3,
+                "max": 1000
+            }
+        }
     },
     "lambdas": {
-        "long_name": "Fraction of population of each labor productivity type",
+        "title": "Fraction of population of each labor productivity type",
         "description": "Fraction of population of each labor productivity type",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": [0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01],
-        "range": {"min": 0.0, "max": 1.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.25,
+                    0.25,
+                    0.2,
+                    0.1,
+                    0.1,
+                    0.09,
+                    0.01
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
     },
     "starting_age": {
-        "long_name": "Age at which households become economically active",
+        "title": "Age at which households become economically active",
         "description": "Age at which households become economically active",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": true,
-        "string_value": false,
-        "value": 20,
-        "range": {"min": 0, "max": "ending_age - 1"},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "int",
+        "value": [
+            {
+                "value": 20
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0,
+                "max": 80
+            }
+        }
     },
     "ending_age": {
-        "long_name": "Maximum age a household can live until",
+        "title": "Maximum age a household can live until",
         "description": "Maximum age a household can live until",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": true,
-        "string_value": false,
-        "value": 100,
-        "range": {"min": "starting_age + 1", "max": 120},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "int",
+        "value": [
+            {
+                "value": 100
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0,
+                "max": 120
+            }
+        }
     },
     "constant_demographics": {
-        "long_name": "Use constant demographics.",
+        "title": "Use constant demographics.",
         "description": "Use constant demographics.",
         "notes": "This boolean allows one to use empirical mortality rates, but keep the population distribution constant across periods.  Note that immigration is shut off when this is true.",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": true,
-        "integer_value": false,
-        "string_value": false,
-        "value": false,
-        "range": {"min": false, "max": true},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "bool",
+        "value": [
+            {
+                "value": false
+            }
+        ],
+        "validators": {}
     },
     "beta_annual": {
-        "long_name": "Annual rate of time preference for households",
+        "title": "Annual rate of time preference for households",
         "description": "Annual rate of time preference for households",
         "notes": "Default value from Carroll (JME, 2009)",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": 0.96,
-        "range": {"min": 0.0, "max": 0.9999},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "value": [
+            {
+                "value": 0.96
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 0.9999
+            }
+        }
     },
     "sigma": {
-        "long_name": "Coefficient of relative risk aversion in household utility function",
+        "title": "Coefficient of relative risk aversion in household utility function",
         "description": "Coefficient of relative risk aversion in household utility function",
         "notes": "Default value from Attanasio, Banks, Meghir and Weber (JEBS, 1999)",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": 1.5,
-        "range": {"min": 1.0, "max": 3.5},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "value": [
+            {
+                "value": 1.5
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1.0,
+                "max": 3.5
+            }
+        }
     },
     "gamma_s": {
-      "long_name": "Bond's share of assets in the household portfolio problem",
-      "description": "Bond's share of assets in the household portfolio problem",
-      "notes": "",
-      "col_var": "",
-      "col_label": "",
-      "boolean_value": false,
-      "integer_value": false,
-      "string_value": false,
-      "value": 0.5,
-      "range": {"min": 0.0, "max": 1.0},
-      "out_of_range_minmsg": "",
-      "out_of_range_maxmsg": "",
-      "out_of_range_action": "stop",
-      "compatible_data": {"puf": true, "cps": true}
+        "title": "Bond's share of assets in the household portfolio problem",
+        "description": "Bond's share of assets in the household portfolio problem",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.5
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
     },
     "epsilon_s": {
-        "long_name": "Elasticity of substitution between bonds and equity in the household portfolio problem",
+        "title": "Elasticity of substitution between bonds and equity in the household portfolio problem",
         "description": "Elasticity of substitution between bonds and equity in the household portfolio problem",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": 1.0,
-        "range": {"min": 0.1, "max": 10.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "value": [
+            {
+                "value": 1.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.1,
+                "max": 10.0
+            }
+        }
     },
     "gamma": {
-      "long_name": "Capital's share of output in firm production funtion",
-      "description": "Capital's share of output in firm production funtion",
-      "notes": "Histroical value in U.S. is about 0.33, but Elsby, Hobijn, and Sahin (BPEA, 2013) find capital's share is increasing, so default value is above this",
-      "col_var": "",
-      "col_label": "",
-      "boolean_value": false,
-      "integer_value": false,
-      "string_value": false,
-      "value": 0.35,
-      "range": {"min": 0.0, "max": 1.0},
-      "out_of_range_minmsg": "",
-      "out_of_range_maxmsg": "",
-      "out_of_range_action": "stop",
-      "compatible_data": {"puf": true, "cps": true}
+        "title": "Capital's share of output in firm production funtion",
+        "description": "Capital's share of output in firm production funtion",
+        "notes": "Histroical value in U.S. is about 0.33, but Elsby, Hobijn, and Sahin (BPEA, 2013) find capital's share is increasing, so default value is above this",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.35
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
     },
     "epsilon": {
-        "long_name": "Elasticity of substitution between capital and labor in firm production function",
+        "title": "Elasticity of substitution between capital and labor in firm production function",
         "description": "Elasticity of substitution between capital and labor in firm production function",
         "notes": "If epislon=1, then production function is Cobb-Douglas.  If epislon=0, then production function is perfect substitutes.",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": 1.0,
-        "range": {"min": 0.2, "max": 10.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "value": [
+            {
+                "value": 1.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.2,
+                "max": 10.0
+            }
+        }
     },
     "psi": {
         "long_name": "Scale parameter in quadratic capital adjustment cost function",
@@ -256,1009 +278,2433 @@
         "compatible_data": {"puf": true, "cps": true}
     },
     "Z": {
-        "long_name": "Total factor productivity in firm production function",
+        "title": "Total factor productivity in firm production function",
         "description": "Total factor productivity in firm production function",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": [1.0],
-        "range": {"min": 0.0, "max": 5.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    1.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 5.0
+            }
+        }
     },
     "delta_annual": {
-        "long_name": "Annual rate of economic depreciation of capital",
+        "title": "Annual rate of economic depreciation of capital",
         "description": "Annual rate of economic depreciation of capital",
         "notes": "Approximately the value from Kehoe calibration exercise: http://www.econ.umn.edu/~tkehoe/classes/calibration-04.pdf",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": 0.05,
-        "range": {"min": 0.0, "max": 1.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "value": [
+            {
+                "value": 0.05
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
     },
     "ltilde": {
-        "long_name": "Total time endowment of household",
+        "title": "Total time endowment of household",
         "description": "Total time endowment of household",
         "notes": "Can be normalized to 1.0 without loss of generality",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": 1.0,
-        "range": {"min": 0.01, "max": 5.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "value": [
+            {
+                "value": 1.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.01,
+                "max": 5.0
+            }
+        }
     },
     "small_open": {
-        "long_name": "Boolean to indicate using a small open economy model",
+        "title": "Boolean to indicate using a small open economy model",
         "description": "Boolean to indicate using a small open economy model",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": true,
-        "integer_value": false,
-        "string_value": false,
-        "value": false,
-        "range": {"min": false, "max": true},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "bool",
+        "value": [
+            {
+                "value": false
+            }
+        ],
+        "validators": {}
     },
     "world_int_rate": {
-        "long_name": "Exogenous annual world interest rate to be used when modeling a small open economy",
+        "title": "Exogenous annual world interest rate to be used when modeling a small open economy",
         "description": "Exogenous annual world interest rate to be used when modeling a small open economy",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": [0.04],
-        "range": {"min": 0.01, "max": 0.08},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.04
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.01,
+                "max": 0.08
+            }
+        }
     },
-    "initial_foreign_debt_ratio":{
-      "long_name": "Share of government debt held by foreigners in model start year",
-      "description": "Share of government debt held by foreigners in model start year",
-      "notes": "",
-      "col_var": "",
-      "col_label": "",
-      "boolean_value": false,
-      "integer_value": false,
-      "string_value": false,
-      "value": 0.0,
-      "range": {"min": 0.00, "max": 1.0},
-      "out_of_range_minmsg": "",
-      "out_of_range_maxmsg": "",
-      "out_of_range_action": "stop",
-      "compatible_data": {"puf": true, "cps": true}
+    "initial_foreign_debt_ratio": {
+        "title": "Share of government debt held by foreigners in model start year",
+        "description": "Share of government debt held by foreigners in model start year",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
     },
     "zeta_D": {
-        "long_name": "Share of new debt issues from government that are purchased by foreigners",
+        "title": "Share of new debt issues from government that are purchased by foreigners",
         "description": "Share of new debt issues from government that are purchased by foreigners",
         "notes": "This value is about 0.4 historically for the U.S., set to zero to have closed econ as default",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": [0.0],
-        "range": {"min": 0.00, "max": 1.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
     },
     "zeta_K": {
-        "long_name": "Share of excess demand for capital that is supplied by foreingers",
+        "title": "Share of excess demand for capital that is supplied by foreingers",
         "description": "Share of excess demand for capital that is supplied by foreingers",
         "notes": "Set to 0.1 when running large-open verion of US economy, but hard to find data to pin this down",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": [0.0],
-        "range": {"min": 0.00, "max": 1.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
     },
     "tG1": {
-        "long_name": "Number of model periods until budget closure rule kicks in",
+        "title": "Number of model periods until budget closure rule kicks in",
         "description": "Number of model periods until budget closure rule kicks in",
         "notes": "It may make sense for this tG1 to exceed the length of the budget window one is looking at.  But it must also not be too late into the time path that a steady-state won't be reached by time T.",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": true,
-        "string_value": false,
-        "value": 20,
-        "range": {"min": 0, "max": "T / 2"},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "int",
+        "value": [
+            {
+                "value": 20
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0,
+                "max": 300
+            }
+        }
     },
     "tG2": {
-        "long_name": "Number of model periods until budget closure ends and budgetary variables jump to steady-state values",
+        "title": "Number of model periods until budget closure ends and budgetary variables jump to steady-state values",
         "description": "Number of model periods until budget closure ends and budgetary variables jump to steady-state values",
         "notes": "The number of periods until the closure rule ends must not exceed T, the time at which the model is assumed to reach the steady-state.",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": true,
-        "string_value": false,
-        "value": 256,
-        "range": {"min": 0, "max": "T"},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "int",
+        "value": [
+            {
+                "value": 256
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0,
+                "max": 500
+            }
+        }
     },
     "alpha_T": {
-        "long_name": "Exogenous ratio of government transfers to GDP when budget balance is false.",
+        "title": "Exogenous ratio of government transfers to GDP when budget balance is false.",
         "description": "Exogenous ratio of government transfers to GDP when budget balance is false.",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": [0.09],
-        "range": {"min": 0.0, "max": 0.3},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.09
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 0.3
+            }
+        }
     },
     "alpha_G": {
-        "long_name": "Exogenous ratio of government spending to GDP when budget balance is false.",
+        "title": "Exogenous ratio of government spending to GDP when budget balance is false.",
         "description": "Exogenous ratio of government spending to GDP when budget balance is false.",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": [0.05],
-        "range": {"min": 0.0, "max": 0.3},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.05
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 0.3
+            }
+        }
     },
     "rho_G": {
-        "long_name": "Speed of convergence to a stable government budget deficit for periods [tG1, tG2-1]",
+        "title": "Speed of convergence to a stable government budget deficit for periods [tG1, tG2-1]",
         "description": "Speed of convergence to a stable government budget deficit for periods [tG1, tG2-1]",
         "notes": "Lower rho_G => slower convergence.",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": 0.1,
-        "range": {"min": 0.01, "max": 0.9},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "value": [
+            {
+                "value": 0.1
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.01,
+                "max": 0.9
+            }
+        }
     },
     "debt_ratio_ss": {
-        "long_name": "Debt to GDP ratio to be achieved in the steady state",
+        "title": "Debt to GDP ratio to be achieved in the steady state",
         "description": "Debt to GDP ratio to be achieved in the steady state",
         "notes": "Note that depending upon the tax policy parameters, some debt to GDP ratios may not be achievable with positive government spending",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": 1.0,
-        "range": {"min": 0.0, "max": 5.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "value": [
+            {
+                "value": 1.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 5.0
+            }
+        }
     },
     "initial_debt_ratio": {
-        "long_name": "Debt to GDP ratio in the initial period",
+        "title": "Debt to GDP ratio in the initial period",
         "description": "Debt to GDP ratio in the initial period",
         "notes": "Should be calibrated based on government debt held by the public to GDP in the model start year.",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": 0.78,
-        "range": {"min": 0.0, "max": 2.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "value": [
+            {
+                "value": 0.78
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 2.0
+            }
+        }
     },
     "r_gov_scale": {
-        "long_name": "Scale parameter to determine government interest rate.",
+        "title": "Scale parameter to determine government interest rate.",
         "description": "Parameter to scale the market interest rate to find interest rate on government debt.",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": 1.0,
-        "range": {"min": 0.0, "max": 2.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "value": [
+            {
+                "value": 1.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 2.0
+            }
+        }
     },
     "r_gov_shift": {
-        "long_name": "Shift parameter to determine government interest rate.",
+        "title": "Shift parameter to determine government interest rate.",
         "description": "Parameter to shift the market interest rate to find interest rate on government debt.",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": 0.0,
-        "range": {"min": 0.0, "max": 0.2},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 0.2
+            }
+        }
     },
     "tau_b": {
-        "long_name": "Entity level tax on businesses",
+        "title": "Entity level tax on businesses",
         "description": "Entity level tax on businesses",
         "notes": "With a single representative firm, this should be a weighted average of the entity level rate on pass-through businesses (0) and the corporate income tax rate.  It does not reflect statutory rates, but rather effective rates.",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": [0.0357],
-        "range": {"min": 0.00, "max": 0.9},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.0357
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 0.9
+            }
+        }
     },
     "tau_c": {
-        "long_name": "Consumption tax rate",
+        "title": "Consumption tax rate",
         "description": "Consumption tax rate",
         "notes": "This policy parameter represents the effective consumption tax rate from sales taxes, VATs, and excise taxes.  To capture exemptions of certain goods, this is assumed to vary by age and ability type.  It is thus a SxJ matrix.",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": [0.0],
-        "range": {"min": 0.00, "max": 0.9},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "value": [
+            {
+                "value": [
+                    0.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 0.9
+            }
+        }
     },
     "delta_tau_annual": {
-        "long_name": "Annual rate of depreciation of capital for tax purposes",
+        "title": "Annual rate of depreciation of capital for tax purposes",
         "description": "Annual rate of depreciation of capital for tax purposes",
-        "notes": "B-Tax can help to calibrate this parameter",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": [0.027],
-        "range": {"min": 0.0, "max": 1.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "notes": "Cost-of-Capital-Calculator can help to calibrate this parameter",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.027
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
     },
     "h_wealth": {
-        "long_name": "Numerator in wealth tax function",
+        "title": "Numerator in wealth tax function",
         "description": "Numerator in wealth tax function",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": [0.1],
-        "range": {"min": 0.0, "max": 10.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.1
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 10.0
+            }
+        }
     },
     "m_wealth": {
-        "long_name": "Term in denominator in wealth tax function",
+        "title": "Term in denominator in wealth tax function",
         "description": "Term in denominator in wealth tax function",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": [1.0],
-        "range": {"min": 0.0, "max": 10.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    1.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 10.0
+            }
+        }
     },
     "p_wealth": {
-        "long_name": "Scale parameter in wealth tax function",
+        "title": "Scale parameter in wealth tax function",
         "description": "Scale parameter in wealth tax function",
         "notes": "Set to 0 to have no wealth tax",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": [0.0],
-        "range": {"min": 0.0, "max": 10.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 10.0
+            }
+        }
     },
     "tau_bq": {
-        "long_name": "Linear tax rate on bequests",
+        "title": "Linear tax rate on bequests",
         "description": "Linear tax rate on bequests",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": [0.0],
-        "range": {"min": 0.0, "max": 0.99},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 0.99
+            }
+        }
     },
     "tau_payroll": {
-        "long_name": "Linear payroll tax rate",
+        "title": "Linear payroll tax rate",
         "description": "Linear payroll tax rate",
         "notes": "Set to zero as default since tax functions include income and payroll taxes",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": [0.0],
-        "range": {"min": 0.0, "max": 0.99},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    0.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 0.99
+            }
+        }
     },
     "chi_b": {
-        "long_name": "Utility weight on bequests",
+        "title": "Utility weight on bequests",
         "description": "Household utility weight on bequests",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": [80.0, 80.0, 80.0, 80.0, 80.0, 80.0, 80.0],
-        "range": {"min": 0.0, "max": 10000.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    80.0,
+                    80.0,
+                    80.0,
+                    80.0,
+                    80.0,
+                    80.0,
+                    80.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 10000.0
+            }
+        }
     },
     "eta": {
-      "long_name": "Government transfer allocation",
-      "description": "Matrix that allocated government transfers across households.",
-      "notes": "This SxJ matrix gives the fraction of total aggregate transfers going to each age s and ability type j.",
-      "col_var": "",
-      "col_label": "",
-      "boolean_value": false,
-      "integer_value": false,
-      "string_value": false,
-      "value": [[3.95156539e-03, 3.95156539e-03, 3.16125231e-03, 1.58062616e-03,
-               1.58062616e-03, 1.42256354e-03, 1.58062616e-04],
-              [3.97057633e-03, 3.97057633e-03, 3.17646106e-03, 1.58823053e-03,
-               1.58823053e-03, 1.42940748e-03, 1.58823053e-04],
-              [3.99140521e-03, 3.99140521e-03, 3.19312416e-03, 1.59656208e-03,
-               1.59656208e-03, 1.43690587e-03, 1.59656208e-04],
-              [4.01335125e-03, 4.01335125e-03, 3.21068100e-03, 1.60534050e-03,
-               1.60534050e-03, 1.44480645e-03, 1.60534050e-04],
-              [4.03533960e-03, 4.03533960e-03, 3.22827168e-03, 1.61413584e-03,
-               1.61413584e-03, 1.45272226e-03, 1.61413584e-04],
-              [4.05670193e-03, 4.05670193e-03, 3.24536154e-03, 1.62268077e-03,
-               1.62268077e-03, 1.46041269e-03, 1.62268077e-04],
-              [4.07611530e-03, 4.07611530e-03, 3.26089224e-03, 1.63044612e-03,
-               1.63044612e-03, 1.46740151e-03, 1.63044612e-04],
-              [4.09333545e-03, 4.09333545e-03, 3.27466836e-03, 1.63733418e-03,
-               1.63733418e-03, 1.47360076e-03, 1.63733418e-04],
-              [4.10837135e-03, 4.10837135e-03, 3.28669708e-03, 1.64334854e-03,
-               1.64334854e-03, 1.47901369e-03, 1.64334854e-04],
-              [4.12086399e-03, 4.12086399e-03, 3.29669119e-03, 1.64834560e-03,
-               1.64834560e-03, 1.48351104e-03, 1.64834560e-04],
-              [4.13081400e-03, 4.13081400e-03, 3.30465120e-03, 1.65232560e-03,
-               1.65232560e-03, 1.48709304e-03, 1.65232560e-04],
-              [4.13889370e-03, 4.13889370e-03, 3.31111496e-03, 1.65555748e-03,
-               1.65555748e-03, 1.49000173e-03, 1.65555748e-04],
-              [4.14547736e-03, 4.14547736e-03, 3.31638188e-03, 1.65819094e-03,
-               1.65819094e-03, 1.49237185e-03, 1.65819094e-04],
-              [4.15083838e-03, 4.15083838e-03, 3.32067070e-03, 1.66033535e-03,
-               1.66033535e-03, 1.49430182e-03, 1.66033535e-04],
-              [4.15488494e-03, 4.15488494e-03, 3.32390795e-03, 1.66195398e-03,
-               1.66195398e-03, 1.49575858e-03, 1.66195398e-04],
-              [4.15765147e-03, 4.15765147e-03, 3.32612118e-03, 1.66306059e-03,
-               1.66306059e-03, 1.49675453e-03, 1.66306059e-04],
-              [4.15882813e-03, 4.15882813e-03, 3.32706251e-03, 1.66353125e-03,
-               1.66353125e-03, 1.49717813e-03, 1.66353125e-04],
-              [4.15877597e-03, 4.15877597e-03, 3.32702078e-03, 1.66351039e-03,
-               1.66351039e-03, 1.49715935e-03, 1.66351039e-04],
-              [4.15741548e-03, 4.15741548e-03, 3.32593239e-03, 1.66296619e-03,
-               1.66296619e-03, 1.49666957e-03, 1.66296619e-04],
-              [4.15480168e-03, 4.15480168e-03, 3.32384134e-03, 1.66192067e-03,
-               1.66192067e-03, 1.49572860e-03, 1.66192067e-04],
-              [4.15094623e-03, 4.15094623e-03, 3.32075698e-03, 1.66037849e-03,
-               1.66037849e-03, 1.49434064e-03, 1.66037849e-04],
-              [4.14595663e-03, 4.14595663e-03, 3.31676531e-03, 1.65838265e-03,
-               1.65838265e-03, 1.49254439e-03, 1.65838265e-04],
-              [4.13994913e-03, 4.13994913e-03, 3.31195931e-03, 1.65597965e-03,
-               1.65597965e-03, 1.49038169e-03, 1.65597965e-04],
-              [4.13307009e-03, 4.13307009e-03, 3.30645607e-03, 1.65322804e-03,
-               1.65322804e-03, 1.48790523e-03, 1.65322804e-04],
-              [4.12533994e-03, 4.12533994e-03, 3.30027195e-03, 1.65013598e-03,
-               1.65013598e-03, 1.48512238e-03, 1.65013598e-04],
-              [4.11571867e-03, 4.11571867e-03, 3.29257494e-03, 1.64628747e-03,
-               1.64628747e-03, 1.48165872e-03, 1.64628747e-04],
-              [4.10463912e-03, 4.10463912e-03, 3.28371129e-03, 1.64185565e-03,
-               1.64185565e-03, 1.47767008e-03, 1.64185565e-04],
-              [4.09238220e-03, 4.09238220e-03, 3.27390576e-03, 1.63695288e-03,
-               1.63695288e-03, 1.47325759e-03, 1.63695288e-04],
-              [4.07842935e-03, 4.07842935e-03, 3.26274348e-03, 1.63137174e-03,
-               1.63137174e-03, 1.46823457e-03, 1.63137174e-04],
-              [4.06247076e-03, 4.06247076e-03, 3.24997661e-03, 1.62498830e-03,
-               1.62498830e-03, 1.46248947e-03, 1.62498830e-04],
-              [4.04485785e-03, 4.04485785e-03, 3.23588628e-03, 1.61794314e-03,
-               1.61794314e-03, 1.45614883e-03, 1.61794314e-04],
-              [4.02617428e-03, 4.02617428e-03, 3.22093943e-03, 1.61046971e-03,
-               1.61046971e-03, 1.44942274e-03, 1.61046971e-04],
-              [4.00535937e-03, 4.00535937e-03, 3.20428750e-03, 1.60214375e-03,
-               1.60214375e-03, 1.44192937e-03, 1.60214375e-04],
-              [3.98258969e-03, 3.98258969e-03, 3.18607175e-03, 1.59303588e-03,
-               1.59303588e-03, 1.43373229e-03, 1.59303588e-04],
-              [3.95814392e-03, 3.95814392e-03, 3.16651514e-03, 1.58325757e-03,
-               1.58325757e-03, 1.42493181e-03, 1.58325757e-04],
-              [3.93179647e-03, 3.93179647e-03, 3.14543717e-03, 1.57271859e-03,
-               1.57271859e-03, 1.41544673e-03, 1.57271859e-04],
-              [3.90383957e-03, 3.90383957e-03, 3.12307165e-03, 1.56153583e-03,
-               1.56153583e-03, 1.40538224e-03, 1.56153583e-04],
-              [3.87400035e-03, 3.87400035e-03, 3.09920028e-03, 1.54960014e-03,
-               1.54960014e-03, 1.39464013e-03, 1.54960014e-04],
-              [3.84196877e-03, 3.84196877e-03, 3.07357502e-03, 1.53678751e-03,
-               1.53678751e-03, 1.38310876e-03, 1.53678751e-04],
-              [3.80787789e-03, 3.80787789e-03, 3.04630231e-03, 1.52315115e-03,
-               1.52315115e-03, 1.37083604e-03, 1.52315115e-04],
-              [3.77185201e-03, 3.77185201e-03, 3.01748161e-03, 1.50874080e-03,
-               1.50874080e-03, 1.35786672e-03, 1.50874080e-04],
-              [3.73404740e-03, 3.73404740e-03, 2.98723792e-03, 1.49361896e-03,
-               1.49361896e-03, 1.34425707e-03, 1.49361896e-04],
-              [3.69312767e-03, 3.69312767e-03, 2.95450213e-03, 1.47725107e-03,
-               1.47725107e-03, 1.32952596e-03, 1.47725107e-04],
-              [3.64931125e-03, 3.64931125e-03, 2.91944900e-03, 1.45972450e-03,
-               1.45972450e-03, 1.31375205e-03, 1.45972450e-04],
-              [3.60766197e-03, 3.60766197e-03, 2.88612958e-03, 1.44306479e-03,
-               1.44306479e-03, 1.29875831e-03, 1.44306479e-04],
-              [3.56285967e-03, 3.56285967e-03, 2.85028773e-03, 1.42514387e-03,
-               1.42514387e-03, 1.28262948e-03, 1.42514387e-04],
-              [3.51155021e-03, 3.51155021e-03, 2.80924016e-03, 1.40462008e-03,
-               1.40462008e-03, 1.26415807e-03, 1.40462008e-04],
-              [3.45670257e-03, 3.45670257e-03, 2.76536205e-03, 1.38268103e-03,
-               1.38268103e-03, 1.24441292e-03, 1.38268103e-04],
-              [3.40163241e-03, 3.40163241e-03, 2.72130593e-03, 1.36065297e-03,
-               1.36065297e-03, 1.22458767e-03, 1.36065297e-04],
-              [3.34480304e-03, 3.34480304e-03, 2.67584243e-03, 1.33792122e-03,
-               1.33792122e-03, 1.20412909e-03, 1.33792122e-04],
-              [3.28292059e-03, 3.28292059e-03, 2.62633647e-03, 1.31316824e-03,
-               1.31316824e-03, 1.18185141e-03, 1.31316824e-04],
-              [3.21650788e-03, 3.21650788e-03, 2.57320631e-03, 1.28660315e-03,
-               1.28660315e-03, 1.15794284e-03, 1.28660315e-04],
-              [3.14624315e-03, 3.14624315e-03, 2.51699452e-03, 1.25849726e-03,
-               1.25849726e-03, 1.13264753e-03, 1.25849726e-04],
-              [3.07157839e-03, 3.07157839e-03, 2.45726271e-03, 1.22863136e-03,
-               1.22863136e-03, 1.10576822e-03, 1.22863136e-04],
-              [2.99199285e-03, 2.99199285e-03, 2.39359428e-03, 1.19679714e-03,
-               1.19679714e-03, 1.07711743e-03, 1.19679714e-04],
-              [2.90744259e-03, 2.90744259e-03, 2.32595407e-03, 1.16297703e-03,
-               1.16297703e-03, 1.04667933e-03, 1.16297703e-04],
-              [2.81749792e-03, 2.81749792e-03, 2.25399834e-03, 1.12699917e-03,
-               1.12699917e-03, 1.01429925e-03, 1.12699917e-04],
-              [2.72138616e-03, 2.72138616e-03, 2.17710893e-03, 1.08855447e-03,
-               1.08855447e-03, 9.79699019e-04, 1.08855447e-04],
-              [2.61938813e-03, 2.61938813e-03, 2.09551051e-03, 1.04775525e-03,
-               1.04775525e-03, 9.42979727e-04, 1.04775525e-04],
-              [2.51105115e-03, 2.51105115e-03, 2.00884092e-03, 1.00442046e-03,
-               1.00442046e-03, 9.03978414e-04, 1.00442046e-04],
-              [2.39617674e-03, 2.39617674e-03, 1.91694139e-03, 9.58470695e-04,
-               9.58470695e-04, 8.62623626e-04, 9.58470695e-05],
-              [2.27487878e-03, 2.27487878e-03, 1.81990302e-03, 9.09951512e-04,
-               9.09951512e-04, 8.18956361e-04, 9.09951512e-05],
-              [2.14701698e-03, 2.14701698e-03, 1.71761358e-03, 8.58806792e-04,
-               8.58806792e-04, 7.72926113e-04, 8.58806792e-05],
-              [2.01259941e-03, 2.01259941e-03, 1.61007953e-03, 8.05039765e-04,
-               8.05039765e-04, 7.24535788e-04, 8.05039765e-05],
-              [1.87184833e-03, 1.87184833e-03, 1.49747867e-03, 7.48739333e-04,
-               7.48739333e-04, 6.73865399e-04, 7.48739333e-05],
-              [1.72541264e-03, 1.72541264e-03, 1.38033011e-03, 6.90165054e-04,
-               6.90165054e-04, 6.21148549e-04, 6.90165054e-05],
-              [1.57491245e-03, 1.57491245e-03, 1.25992996e-03, 6.29964979e-04,
-               6.29964979e-04, 5.66968481e-04, 6.29964979e-05],
-              [1.42220089e-03, 1.42220089e-03, 1.13776071e-03, 5.68880357e-04,
-               5.68880357e-04, 5.11992321e-04, 5.68880357e-05],
-              [1.26948236e-03, 1.26948236e-03, 1.01558589e-03, 5.07792943e-04,
-               5.07792943e-04, 4.57013648e-04, 5.07792943e-05],
-              [1.11831414e-03, 1.11831414e-03, 8.94651316e-04, 4.47325658e-04,
-               4.47325658e-04, 4.02593092e-04, 4.47325658e-05],
-              [9.71364381e-04, 9.71364381e-04, 7.77091505e-04, 3.88545752e-04,
-               3.88545752e-04, 3.49691177e-04, 3.88545752e-05],
-              [8.30982831e-04, 8.30982831e-04, 6.64786265e-04, 3.32393132e-04,
-               3.32393132e-04, 2.99153819e-04, 3.32393132e-05],
-              [6.99517695e-04, 6.99517695e-04, 5.59614156e-04, 2.79807078e-04,
-               2.79807078e-04, 2.51826370e-04, 2.79807078e-05],
-              [5.78728940e-04, 5.78728940e-04, 4.62983152e-04, 2.31491576e-04,
-               2.31491576e-04, 2.08342418e-04, 2.31491576e-05],
-              [4.69422939e-04, 4.69422939e-04, 3.75538351e-04, 1.87769176e-04,
-               1.87769176e-04, 1.68992258e-04, 1.87769176e-05],
-              [3.73067125e-04, 3.73067125e-04, 2.98453700e-04, 1.49226850e-04,
-               1.49226850e-04, 1.34304165e-04, 1.49226850e-05],
-              [2.90043322e-04, 2.90043322e-04, 2.32034658e-04, 1.16017329e-04,
-               1.16017329e-04, 1.04415596e-04, 1.16017329e-05],
-              [2.20585214e-04, 2.20585214e-04, 1.76468171e-04, 8.82340856e-05,
-               8.82340856e-05, 7.94106770e-05, 8.82340856e-06],
-              [1.63827444e-04, 1.63827444e-04, 1.31061955e-04, 6.55309777e-05,
-               6.55309777e-05, 5.89778799e-05, 6.55309777e-06],
-              [1.18543187e-04, 1.18543187e-04, 9.48345498e-05, 4.74172749e-05,
-               4.74172749e-05, 4.26755474e-05, 4.74172749e-06]],
-      "range": {"min": 0.0, "max": 1.0},
-      "out_of_range_minmsg": "",
-      "out_of_range_maxmsg": "",
-      "out_of_range_action": "stop",
-      "compatible_data": {"puf": true, "cps": true}
+        "title": "Government transfer allocation",
+        "description": "Matrix that allocated government transfers across households.",
+        "notes": "This SxJ matrix gives the fraction of total aggregate transfers going to each age s and ability type j.",
+        "type": "float",
+        "number_dims": 2,
+        "value": [
+            {
+                "value": [
+                    [
+                        0.00395156539,
+                        0.00395156539,
+                        0.00316125231,
+                        0.00158062616,
+                        0.00158062616,
+                        0.00142256354,
+                        0.000158062616
+                    ],
+                    [
+                        0.00397057633,
+                        0.00397057633,
+                        0.00317646106,
+                        0.00158823053,
+                        0.00158823053,
+                        0.00142940748,
+                        0.000158823053
+                    ],
+                    [
+                        0.00399140521,
+                        0.00399140521,
+                        0.00319312416,
+                        0.00159656208,
+                        0.00159656208,
+                        0.00143690587,
+                        0.000159656208
+                    ],
+                    [
+                        0.00401335125,
+                        0.00401335125,
+                        0.003210681,
+                        0.0016053405,
+                        0.0016053405,
+                        0.00144480645,
+                        0.00016053405
+                    ],
+                    [
+                        0.0040353396,
+                        0.0040353396,
+                        0.00322827168,
+                        0.00161413584,
+                        0.00161413584,
+                        0.00145272226,
+                        0.000161413584
+                    ],
+                    [
+                        0.00405670193,
+                        0.00405670193,
+                        0.00324536154,
+                        0.00162268077,
+                        0.00162268077,
+                        0.00146041269,
+                        0.000162268077
+                    ],
+                    [
+                        0.0040761153,
+                        0.0040761153,
+                        0.00326089224,
+                        0.00163044612,
+                        0.00163044612,
+                        0.00146740151,
+                        0.000163044612
+                    ],
+                    [
+                        0.00409333545,
+                        0.00409333545,
+                        0.00327466836,
+                        0.00163733418,
+                        0.00163733418,
+                        0.00147360076,
+                        0.000163733418
+                    ],
+                    [
+                        0.00410837135,
+                        0.00410837135,
+                        0.00328669708,
+                        0.00164334854,
+                        0.00164334854,
+                        0.00147901369,
+                        0.000164334854
+                    ],
+                    [
+                        0.00412086399,
+                        0.00412086399,
+                        0.00329669119,
+                        0.0016483456,
+                        0.0016483456,
+                        0.00148351104,
+                        0.00016483456
+                    ],
+                    [
+                        0.004130814,
+                        0.004130814,
+                        0.0033046512,
+                        0.0016523256,
+                        0.0016523256,
+                        0.00148709304,
+                        0.00016523256
+                    ],
+                    [
+                        0.0041388937,
+                        0.0041388937,
+                        0.00331111496,
+                        0.00165555748,
+                        0.00165555748,
+                        0.00149000173,
+                        0.000165555748
+                    ],
+                    [
+                        0.00414547736,
+                        0.00414547736,
+                        0.00331638188,
+                        0.00165819094,
+                        0.00165819094,
+                        0.00149237185,
+                        0.000165819094
+                    ],
+                    [
+                        0.00415083838,
+                        0.00415083838,
+                        0.0033206707,
+                        0.00166033535,
+                        0.00166033535,
+                        0.00149430182,
+                        0.000166033535
+                    ],
+                    [
+                        0.00415488494,
+                        0.00415488494,
+                        0.00332390795,
+                        0.00166195398,
+                        0.00166195398,
+                        0.00149575858,
+                        0.000166195398
+                    ],
+                    [
+                        0.00415765147,
+                        0.00415765147,
+                        0.00332612118,
+                        0.00166306059,
+                        0.00166306059,
+                        0.00149675453,
+                        0.000166306059
+                    ],
+                    [
+                        0.00415882813,
+                        0.00415882813,
+                        0.00332706251,
+                        0.00166353125,
+                        0.00166353125,
+                        0.00149717813,
+                        0.000166353125
+                    ],
+                    [
+                        0.00415877597,
+                        0.00415877597,
+                        0.00332702078,
+                        0.00166351039,
+                        0.00166351039,
+                        0.00149715935,
+                        0.000166351039
+                    ],
+                    [
+                        0.00415741548,
+                        0.00415741548,
+                        0.00332593239,
+                        0.00166296619,
+                        0.00166296619,
+                        0.00149666957,
+                        0.000166296619
+                    ],
+                    [
+                        0.00415480168,
+                        0.00415480168,
+                        0.00332384134,
+                        0.00166192067,
+                        0.00166192067,
+                        0.0014957286,
+                        0.000166192067
+                    ],
+                    [
+                        0.00415094623,
+                        0.00415094623,
+                        0.00332075698,
+                        0.00166037849,
+                        0.00166037849,
+                        0.00149434064,
+                        0.000166037849
+                    ],
+                    [
+                        0.00414595663,
+                        0.00414595663,
+                        0.00331676531,
+                        0.00165838265,
+                        0.00165838265,
+                        0.00149254439,
+                        0.000165838265
+                    ],
+                    [
+                        0.00413994913,
+                        0.00413994913,
+                        0.00331195931,
+                        0.00165597965,
+                        0.00165597965,
+                        0.00149038169,
+                        0.000165597965
+                    ],
+                    [
+                        0.00413307009,
+                        0.00413307009,
+                        0.00330645607,
+                        0.00165322804,
+                        0.00165322804,
+                        0.00148790523,
+                        0.000165322804
+                    ],
+                    [
+                        0.00412533994,
+                        0.00412533994,
+                        0.00330027195,
+                        0.00165013598,
+                        0.00165013598,
+                        0.00148512238,
+                        0.000165013598
+                    ],
+                    [
+                        0.00411571867,
+                        0.00411571867,
+                        0.00329257494,
+                        0.00164628747,
+                        0.00164628747,
+                        0.00148165872,
+                        0.000164628747
+                    ],
+                    [
+                        0.00410463912,
+                        0.00410463912,
+                        0.00328371129,
+                        0.00164185565,
+                        0.00164185565,
+                        0.00147767008,
+                        0.000164185565
+                    ],
+                    [
+                        0.0040923822,
+                        0.0040923822,
+                        0.00327390576,
+                        0.00163695288,
+                        0.00163695288,
+                        0.00147325759,
+                        0.000163695288
+                    ],
+                    [
+                        0.00407842935,
+                        0.00407842935,
+                        0.00326274348,
+                        0.00163137174,
+                        0.00163137174,
+                        0.00146823457,
+                        0.000163137174
+                    ],
+                    [
+                        0.00406247076,
+                        0.00406247076,
+                        0.00324997661,
+                        0.0016249883,
+                        0.0016249883,
+                        0.00146248947,
+                        0.00016249883
+                    ],
+                    [
+                        0.00404485785,
+                        0.00404485785,
+                        0.00323588628,
+                        0.00161794314,
+                        0.00161794314,
+                        0.00145614883,
+                        0.000161794314
+                    ],
+                    [
+                        0.00402617428,
+                        0.00402617428,
+                        0.00322093943,
+                        0.00161046971,
+                        0.00161046971,
+                        0.00144942274,
+                        0.000161046971
+                    ],
+                    [
+                        0.00400535937,
+                        0.00400535937,
+                        0.0032042875,
+                        0.00160214375,
+                        0.00160214375,
+                        0.00144192937,
+                        0.000160214375
+                    ],
+                    [
+                        0.00398258969,
+                        0.00398258969,
+                        0.00318607175,
+                        0.00159303588,
+                        0.00159303588,
+                        0.00143373229,
+                        0.000159303588
+                    ],
+                    [
+                        0.00395814392,
+                        0.00395814392,
+                        0.00316651514,
+                        0.00158325757,
+                        0.00158325757,
+                        0.00142493181,
+                        0.000158325757
+                    ],
+                    [
+                        0.00393179647,
+                        0.00393179647,
+                        0.00314543717,
+                        0.00157271859,
+                        0.00157271859,
+                        0.00141544673,
+                        0.000157271859
+                    ],
+                    [
+                        0.00390383957,
+                        0.00390383957,
+                        0.00312307165,
+                        0.00156153583,
+                        0.00156153583,
+                        0.00140538224,
+                        0.000156153583
+                    ],
+                    [
+                        0.00387400035,
+                        0.00387400035,
+                        0.00309920028,
+                        0.00154960014,
+                        0.00154960014,
+                        0.00139464013,
+                        0.000154960014
+                    ],
+                    [
+                        0.00384196877,
+                        0.00384196877,
+                        0.00307357502,
+                        0.00153678751,
+                        0.00153678751,
+                        0.00138310876,
+                        0.000153678751
+                    ],
+                    [
+                        0.00380787789,
+                        0.00380787789,
+                        0.00304630231,
+                        0.00152315115,
+                        0.00152315115,
+                        0.00137083604,
+                        0.000152315115
+                    ],
+                    [
+                        0.00377185201,
+                        0.00377185201,
+                        0.00301748161,
+                        0.0015087408,
+                        0.0015087408,
+                        0.00135786672,
+                        0.00015087408
+                    ],
+                    [
+                        0.0037340474,
+                        0.0037340474,
+                        0.00298723792,
+                        0.00149361896,
+                        0.00149361896,
+                        0.00134425707,
+                        0.000149361896
+                    ],
+                    [
+                        0.00369312767,
+                        0.00369312767,
+                        0.00295450213,
+                        0.00147725107,
+                        0.00147725107,
+                        0.00132952596,
+                        0.000147725107
+                    ],
+                    [
+                        0.00364931125,
+                        0.00364931125,
+                        0.002919449,
+                        0.0014597245,
+                        0.0014597245,
+                        0.00131375205,
+                        0.00014597245
+                    ],
+                    [
+                        0.00360766197,
+                        0.00360766197,
+                        0.00288612958,
+                        0.00144306479,
+                        0.00144306479,
+                        0.00129875831,
+                        0.000144306479
+                    ],
+                    [
+                        0.00356285967,
+                        0.00356285967,
+                        0.00285028773,
+                        0.00142514387,
+                        0.00142514387,
+                        0.00128262948,
+                        0.000142514387
+                    ],
+                    [
+                        0.00351155021,
+                        0.00351155021,
+                        0.00280924016,
+                        0.00140462008,
+                        0.00140462008,
+                        0.00126415807,
+                        0.000140462008
+                    ],
+                    [
+                        0.00345670257,
+                        0.00345670257,
+                        0.00276536205,
+                        0.00138268103,
+                        0.00138268103,
+                        0.00124441292,
+                        0.000138268103
+                    ],
+                    [
+                        0.00340163241,
+                        0.00340163241,
+                        0.00272130593,
+                        0.00136065297,
+                        0.00136065297,
+                        0.00122458767,
+                        0.000136065297
+                    ],
+                    [
+                        0.00334480304,
+                        0.00334480304,
+                        0.00267584243,
+                        0.00133792122,
+                        0.00133792122,
+                        0.00120412909,
+                        0.000133792122
+                    ],
+                    [
+                        0.00328292059,
+                        0.00328292059,
+                        0.00262633647,
+                        0.00131316824,
+                        0.00131316824,
+                        0.00118185141,
+                        0.000131316824
+                    ],
+                    [
+                        0.00321650788,
+                        0.00321650788,
+                        0.00257320631,
+                        0.00128660315,
+                        0.00128660315,
+                        0.00115794284,
+                        0.000128660315
+                    ],
+                    [
+                        0.00314624315,
+                        0.00314624315,
+                        0.00251699452,
+                        0.00125849726,
+                        0.00125849726,
+                        0.00113264753,
+                        0.000125849726
+                    ],
+                    [
+                        0.00307157839,
+                        0.00307157839,
+                        0.00245726271,
+                        0.00122863136,
+                        0.00122863136,
+                        0.00110576822,
+                        0.000122863136
+                    ],
+                    [
+                        0.00299199285,
+                        0.00299199285,
+                        0.00239359428,
+                        0.00119679714,
+                        0.00119679714,
+                        0.00107711743,
+                        0.000119679714
+                    ],
+                    [
+                        0.00290744259,
+                        0.00290744259,
+                        0.00232595407,
+                        0.00116297703,
+                        0.00116297703,
+                        0.00104667933,
+                        0.000116297703
+                    ],
+                    [
+                        0.00281749792,
+                        0.00281749792,
+                        0.00225399834,
+                        0.00112699917,
+                        0.00112699917,
+                        0.00101429925,
+                        0.000112699917
+                    ],
+                    [
+                        0.00272138616,
+                        0.00272138616,
+                        0.00217710893,
+                        0.00108855447,
+                        0.00108855447,
+                        0.000979699019,
+                        0.000108855447
+                    ],
+                    [
+                        0.00261938813,
+                        0.00261938813,
+                        0.00209551051,
+                        0.00104775525,
+                        0.00104775525,
+                        0.000942979727,
+                        0.000104775525
+                    ],
+                    [
+                        0.00251105115,
+                        0.00251105115,
+                        0.00200884092,
+                        0.00100442046,
+                        0.00100442046,
+                        0.000903978414,
+                        0.000100442046
+                    ],
+                    [
+                        0.00239617674,
+                        0.00239617674,
+                        0.00191694139,
+                        0.000958470695,
+                        0.000958470695,
+                        0.000862623626,
+                        9.58470695e-05
+                    ],
+                    [
+                        0.00227487878,
+                        0.00227487878,
+                        0.00181990302,
+                        0.000909951512,
+                        0.000909951512,
+                        0.000818956361,
+                        9.09951512e-05
+                    ],
+                    [
+                        0.00214701698,
+                        0.00214701698,
+                        0.00171761358,
+                        0.000858806792,
+                        0.000858806792,
+                        0.000772926113,
+                        8.58806792e-05
+                    ],
+                    [
+                        0.00201259941,
+                        0.00201259941,
+                        0.00161007953,
+                        0.000805039765,
+                        0.000805039765,
+                        0.000724535788,
+                        8.05039765e-05
+                    ],
+                    [
+                        0.00187184833,
+                        0.00187184833,
+                        0.00149747867,
+                        0.000748739333,
+                        0.000748739333,
+                        0.000673865399,
+                        7.48739333e-05
+                    ],
+                    [
+                        0.00172541264,
+                        0.00172541264,
+                        0.00138033011,
+                        0.000690165054,
+                        0.000690165054,
+                        0.000621148549,
+                        6.90165054e-05
+                    ],
+                    [
+                        0.00157491245,
+                        0.00157491245,
+                        0.00125992996,
+                        0.000629964979,
+                        0.000629964979,
+                        0.000566968481,
+                        6.29964979e-05
+                    ],
+                    [
+                        0.00142220089,
+                        0.00142220089,
+                        0.00113776071,
+                        0.000568880357,
+                        0.000568880357,
+                        0.000511992321,
+                        5.68880357e-05
+                    ],
+                    [
+                        0.00126948236,
+                        0.00126948236,
+                        0.00101558589,
+                        0.000507792943,
+                        0.000507792943,
+                        0.000457013648,
+                        5.07792943e-05
+                    ],
+                    [
+                        0.00111831414,
+                        0.00111831414,
+                        0.000894651316,
+                        0.000447325658,
+                        0.000447325658,
+                        0.000402593092,
+                        4.47325658e-05
+                    ],
+                    [
+                        0.000971364381,
+                        0.000971364381,
+                        0.000777091505,
+                        0.000388545752,
+                        0.000388545752,
+                        0.000349691177,
+                        3.88545752e-05
+                    ],
+                    [
+                        0.000830982831,
+                        0.000830982831,
+                        0.000664786265,
+                        0.000332393132,
+                        0.000332393132,
+                        0.000299153819,
+                        3.32393132e-05
+                    ],
+                    [
+                        0.000699517695,
+                        0.000699517695,
+                        0.000559614156,
+                        0.000279807078,
+                        0.000279807078,
+                        0.00025182637,
+                        2.79807078e-05
+                    ],
+                    [
+                        0.00057872894,
+                        0.00057872894,
+                        0.000462983152,
+                        0.000231491576,
+                        0.000231491576,
+                        0.000208342418,
+                        2.31491576e-05
+                    ],
+                    [
+                        0.000469422939,
+                        0.000469422939,
+                        0.000375538351,
+                        0.000187769176,
+                        0.000187769176,
+                        0.000168992258,
+                        1.87769176e-05
+                    ],
+                    [
+                        0.000373067125,
+                        0.000373067125,
+                        0.0002984537,
+                        0.00014922685,
+                        0.00014922685,
+                        0.000134304165,
+                        1.4922685e-05
+                    ],
+                    [
+                        0.000290043322,
+                        0.000290043322,
+                        0.000232034658,
+                        0.000116017329,
+                        0.000116017329,
+                        0.000104415596,
+                        1.16017329e-05
+                    ],
+                    [
+                        0.000220585214,
+                        0.000220585214,
+                        0.000176468171,
+                        8.82340856e-05,
+                        8.82340856e-05,
+                        7.9410677e-05,
+                        8.82340856e-06
+                    ],
+                    [
+                        0.000163827444,
+                        0.000163827444,
+                        0.000131061955,
+                        6.55309777e-05,
+                        6.55309777e-05,
+                        5.89778799e-05,
+                        6.55309777e-06
+                    ],
+                    [
+                        0.000118543187,
+                        0.000118543187,
+                        9.48345498e-05,
+                        4.74172749e-05,
+                        4.74172749e-05,
+                        4.26755474e-05,
+                        4.74172749e-06
+                    ]
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
     },
     "zeta": {
-      "long_name": "Bequest distribution process",
-      "description": "Matrix that describes the bequest distribution process.",
-      "notes": "This SxJ matrix gives the fraction of total aggregate bequests going to each age s and ability type j.",
-      "col_var": "",
-      "col_label": "",
-      "boolean_value": false,
-      "integer_value": false,
-      "string_value": false,
-      "value": [[0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571], [0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571, 0.00178571]],
-      "range": {"min": 0.0, "max": 1.0},
-      "out_of_range_minmsg": "",
-      "out_of_range_maxmsg": "",
-      "out_of_range_action": "stop",
-      "compatible_data": {"puf": true, "cps": true}
+        "title": "Bequest distribution process",
+        "description": "Matrix that describes the bequest distribution process.",
+        "notes": "This SxJ matrix gives the fraction of total aggregate bequests going to each age s and ability type j.",
+        "type": "float",
+        "number_dims": 2,
+        "value": [
+            {
+                "value": [
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ],
+                    [
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571,
+                        0.00178571
+                    ]
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
     },
     "use_zeta": {
-        "long_name": "Indicator variable for whether or not to use the zeta matrix to distribute bequests",
+        "title": "Indicator variable for whether or not to use the zeta matrix to distribute bequests",
         "description": "Indicator variable for whether or not to use the zeta matrix to distribute bequests.",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": true,
-        "integer_value": false,
-        "string_value": false,
-        "value": false,
-        "range": {"min": false, "max": true},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "bool",
+        "value": [
+            {
+                "value": false
+            }
+        ],
+        "validators": {}
     },
     "chi_n_80": {
-        "long_name": "Utility weight on disutility of labor supply",
+        "title": "Utility weight on disutility of labor supply",
         "description": "Household utility weight on on disutility of labor supply",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": [38.12000874, 33.22762421, 25.3484224, 26.67954008, 24.41097278,
-            23.15059004, 22.46771332, 21.85495452, 21.46242013, 22.00364263,
-            21.57322063, 21.53371545, 21.29828515, 21.10144524, 20.8617942,
-            20.57282, 20.47473172, 20.31111347, 19.04137299, 18.92616951,
-            20.58517969, 20.48761429, 20.21744847, 19.9577682, 19.66931057,
-            19.6878927, 19.63107201, 19.63390543, 19.5901486, 19.58143606,
-            19.58005578, 19.59073213, 19.60190899, 19.60001831, 21.67763741,
-            21.70451784, 21.85430468, 21.97291208, 21.97017228, 22.25518398,
-            22.43969757, 23.21870602, 24.18334822, 24.97772026, 26.37663164,
-            29.65075992, 30.46944758, 31.51634777, 33.13353793, 32.89186997,
-            38.07083882, 39.2992811, 40.07987878, 35.19951571, 35.97943562,
-            37.05601334, 37.42979341, 37.91576867, 38.62775142, 39.4885405,
-            37.10609921, 40.03988031, 40.86564363, 41.73645892, 42.6208256,
-            43.37786072, 45.38166073, 46.22395387, 50.21419653, 51.05246704,
-            53.86896121, 53.90029708, 61.83586775, 64.87563699, 66.91207845,
-            68.07449767, 71.27919965, 73.57195873, 74.95045988, 76.6230815],
-        "range": {"min": 0.0, "max": 10000.0},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    38.12000874,
+                    33.22762421,
+                    25.3484224,
+                    26.67954008,
+                    24.41097278,
+                    23.15059004,
+                    22.46771332,
+                    21.85495452,
+                    21.46242013,
+                    22.00364263,
+                    21.57322063,
+                    21.53371545,
+                    21.29828515,
+                    21.10144524,
+                    20.8617942,
+                    20.57282,
+                    20.47473172,
+                    20.31111347,
+                    19.04137299,
+                    18.92616951,
+                    20.58517969,
+                    20.48761429,
+                    20.21744847,
+                    19.9577682,
+                    19.66931057,
+                    19.6878927,
+                    19.63107201,
+                    19.63390543,
+                    19.5901486,
+                    19.58143606,
+                    19.58005578,
+                    19.59073213,
+                    19.60190899,
+                    19.60001831,
+                    21.67763741,
+                    21.70451784,
+                    21.85430468,
+                    21.97291208,
+                    21.97017228,
+                    22.25518398,
+                    22.43969757,
+                    23.21870602,
+                    24.18334822,
+                    24.97772026,
+                    26.37663164,
+                    29.65075992,
+                    30.46944758,
+                    31.51634777,
+                    33.13353793,
+                    32.89186997,
+                    38.07083882,
+                    39.2992811,
+                    40.07987878,
+                    35.19951571,
+                    35.97943562,
+                    37.05601334,
+                    37.42979341,
+                    37.91576867,
+                    38.62775142,
+                    39.4885405,
+                    37.10609921,
+                    40.03988031,
+                    40.86564363,
+                    41.73645892,
+                    42.6208256,
+                    43.37786072,
+                    45.38166073,
+                    46.22395387,
+                    50.21419653,
+                    51.05246704,
+                    53.86896121,
+                    53.90029708,
+                    61.83586775,
+                    64.87563699,
+                    66.91207845,
+                    68.07449767,
+                    71.27919965,
+                    73.57195873,
+                    74.95045988,
+                    76.6230815
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 10000.0
+            }
+        }
     },
     "constant_rates": {
-        "long_name": "Flag to use linear tax functions",
+        "title": "Flag to use linear tax functions",
         "description": "Flag to use linear tax functions",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": true,
-        "integer_value": false,
-        "string_value": false,
-        "value": false,
-        "range": {"min": false, "max": true},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "bool",
+        "value": [
+            {
+                "value": false
+            }
+        ],
+        "validators": {}
     },
     "zero_taxes": {
-        "long_name": "Flag to run model without any individual income taxes.",
+        "title": "Flag to run model without any individual income taxes.",
         "description": "Flag to run model without any individual income taxes.",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": true,
-        "integer_value": false,
-        "string_value": false,
-        "value": false,
-        "range": {"min": false, "max": true},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "bool",
+        "value": [
+            {
+                "value": false
+            }
+        ],
+        "validators": {}
     },
     "analytical_mtrs": {
-        "long_name": "Flag to use analytically derived marginal tax rates in tax functions",
+        "title": "Flag to use analytically derived marginal tax rates in tax functions",
         "description": "Flag to use analytically derived marginal tax rates in tax functions",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": true,
-        "integer_value": false,
-        "string_value": false,
-        "value": false,
-        "range": {"min": false, "max": true},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "bool",
+        "value": [
+            {
+                "value": false
+            }
+        ],
+        "validators": {}
     },
     "age_specific": {
-        "long_name": "Flag to use analytically derived marginal tax rates in tax functions",
+        "title": "Flag to use analytically derived marginal tax rates in tax functions",
         "description": "Flag to use analytically derived marginal tax rates in tax functions",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": true,
-        "integer_value": false,
-        "string_value": false,
-        "value": true,
-        "range": {"min": false, "max": true},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "bool",
+        "value": [
+            {
+                "value": true
+            }
+        ],
+        "validators": {}
     },
-    "retirement_age":{
-      "long_name": "Age at which agents can collect social security benefits.",
-      "description": "Age at which agents can collect social security benefits.",
-      "notes": "",
-      "col_var": "",
-      "col_label": "",
-      "boolean_value": false,
-      "integer_value": true,
-      "string_value": false,
-      "value": [65],
-      "range": {"min": "starting_age", "max": "ending_age"},
-      "out_of_range_minmsg": "",
-      "out_of_range_maxmsg": "",
-      "out_of_range_action": "stop",
-      "compatible_data": {"puf": true, "cps": true}
+    "retirement_age": {
+        "title": "Age at which agents can collect social security benefits.",
+        "description": "Age at which agents can collect social security benefits.",
+        "notes": "",
+        "type": "int",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    65
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0,
+                "max": 100
+            }
+        }
     },
-    "AIME_num_years":{
-      "long_name": "Number of years used to compute average index monthly earnings (AIME).",
-      "description": "Number of years used to compute average index monthly earnings (AIME).",
-      "notes": "AIME is computed using average earnings from the highest earnings years for the number of years specified here.",
-      "col_var": "",
-      "col_label": "",
-      "boolean_value": false,
-      "integer_value": true,
-      "string_value": false,
-      "value": 35,
-      "range": {"min": 1, "max": "S"},
-      "out_of_range_minmsg": "",
-      "out_of_range_maxmsg": "",
-      "out_of_range_action": "stop",
-      "compatible_data": {"puf": true, "cps": true}
+    "AIME_num_years": {
+        "title": "Number of years used to compute average index monthly earnings (AIME).",
+        "description": "Number of years used to compute average index monthly earnings (AIME).",
+        "notes": "AIME is computed using average earnings from the highest earnings years for the number of years specified here.",
+        "type": "int",
+        "value": [
+            {
+                "value": 35
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1,
+                "max": 80
+            }
+        }
     },
-    "AIME_bkt_1":{
-      "long_name": "Upper bound to the first average index monthly earnings (AIME) bracket.",
-      "description": "Upper bound to the first average index monthly earnings (AIME) bracket.",
-      "notes": "",
-      "col_var": "",
-      "col_label": "",
-      "boolean_value": false,
-      "integer_value": false,
-      "string_value": false,
-      "value": 749.0,
-      "range": {"min": 0.0, "max": "AIME_bkt_2"},
-      "out_of_range_minmsg": "",
-      "out_of_range_maxmsg": "",
-      "out_of_range_action": "stop",
-      "compatible_data": {"puf": true, "cps": true}
+    "AIME_bkt_1": {
+        "title": "Upper bound to the first average index monthly earnings (AIME) bracket.",
+        "description": "Upper bound to the first average index monthly earnings (AIME) bracket.",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 749.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 9999999999.0
+            }
+        }
     },
-    "AIME_bkt_2":{
-      "long_name": "Upper bound to the second average index monthly earnings (AIME) bracket.",
-      "description": "Upper bound to the second average index monthly earnings (AIME) bracket.",
-      "notes": "",
-      "col_var": "",
-      "col_label": "",
-      "boolean_value": false,
-      "integer_value": false,
-      "string_value": false,
-      "value": 4517.0,
-      "range": {"min": "AIME_bkt_1", "max": 9999999999999.9},
-      "out_of_range_minmsg": "",
-      "out_of_range_maxmsg": "",
-      "out_of_range_action": "stop",
-      "compatible_data": {"puf": true, "cps": true}
+    "AIME_bkt_2": {
+        "title": "Upper bound to the second average index monthly earnings (AIME) bracket.",
+        "description": "Upper bound to the second average index monthly earnings (AIME) bracket.",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 4517.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 9999999999999.9
+            }
+        }
     },
-    "PIA_rate_bkt_1":{
-      "long_name": "The rate used to determine the primary insurance amount (PIA) in the first bracket for average index monthly earnings (AIME).",
-      "description": "The rate used to determine the primary insurance amount (PIA) in the first bracket for average index monthly earnings (AIME).",
-      "notes": "",
-      "col_var": "",
-      "col_label": "",
-      "boolean_value": false,
-      "integer_value": false,
-      "string_value": false,
-      "value": 0.9,
-      "range": {"min": 0.0, "max": 1.0},
-      "out_of_range_minmsg": "",
-      "out_of_range_maxmsg": "",
-      "out_of_range_action": "stop",
-      "compatible_data": {"puf": true, "cps": true}
+    "PIA_rate_bkt_1": {
+        "title": "The rate used to determine the primary insurance amount (PIA) in the first bracket for average index monthly earnings (AIME).",
+        "description": "The rate used to determine the primary insurance amount (PIA) in the first bracket for average index monthly earnings (AIME).",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.9
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
     },
-    "PIA_rate_bkt_2":{
-      "long_name": "The rate used to determine the primary insurance amount (PIA) in the second bracket for average index monthly earnings (AIME).",
-      "description": "The rate used to determine the primary insurance amount (PIA) in the second bracket for average index monthly earnings (AIME).",
-      "notes": "",
-      "col_var": "",
-      "col_label": "",
-      "boolean_value": false,
-      "integer_value": false,
-      "string_value": false,
-      "value": 0.32,
-      "range": {"min": 0.0, "max": 1.0},
-      "out_of_range_minmsg": "",
-      "out_of_range_maxmsg": "",
-      "out_of_range_action": "stop",
-      "compatible_data": {"puf": true, "cps": true}
+    "PIA_rate_bkt_2": {
+        "title": "The rate used to determine the primary insurance amount (PIA) in the second bracket for average index monthly earnings (AIME).",
+        "description": "The rate used to determine the primary insurance amount (PIA) in the second bracket for average index monthly earnings (AIME).",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.32
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
     },
-    "PIA_rate_bkt_3":{
-      "long_name": "The rate used to determine the primary insurance amount (PIA) in the third bracket for average index monthly earnings (AIME).",
-      "description": "The rate used to determine the primary insurance amount (PIA) in the third bracket for average index monthly earnings (AIME).",
-      "notes": "",
-      "col_var": "",
-      "col_label": "",
-      "boolean_value": false,
-      "integer_value": false,
-      "string_value": false,
-      "value": 0.15,
-      "range": {"min": 0.0, "max": 1.0},
-      "out_of_range_minmsg": "",
-      "out_of_range_maxmsg": "",
-      "out_of_range_action": "stop",
-      "compatible_data": {"puf": true, "cps": true}
+    "PIA_rate_bkt_3": {
+        "title": "The rate used to determine the primary insurance amount (PIA) in the third bracket for average index monthly earnings (AIME).",
+        "description": "The rate used to determine the primary insurance amount (PIA) in the third bracket for average index monthly earnings (AIME).",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.15
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 1.0
+            }
+        }
     },
-    "PIA_maxpayment":{
-      "long_name": "The maximum primary insurance amount (PIA) payment.",
-      "description": "The maximum primary insurance amount (PIA) payment.",
-      "notes": "",
-      "col_var": "",
-      "col_label": "",
-      "boolean_value": false,
-      "integer_value": false,
-      "string_value": false,
-      "value": 3501.0,
-      "range": {"min": 0.0, "max": 9999999999999.9},
-      "out_of_range_minmsg": "",
-      "out_of_range_maxmsg": "",
-      "out_of_range_action": "stop",
-      "compatible_data": {"puf": true, "cps": true}
+    "PIA_maxpayment": {
+        "title": "The maximum primary insurance amount (PIA) payment.",
+        "description": "The maximum primary insurance amount (PIA) payment.",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 3501.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 9999999999999.9
+            }
+        }
     },
-    "PIA_minpayment":{
-      "long_name": "The minimum primary insurance amount (PIA) payment.",
-      "description": "The minimum primary insurance amount (PIA) payment.",
-      "notes": "",
-      "col_var": "",
-      "col_label": "",
-      "boolean_value": false,
-      "integer_value": false,
-      "string_value": false,
-      "value": 0.0,
-      "range": {"min": 0.0, "max": "PIA_maxpayment"},
-      "out_of_range_minmsg": "",
-      "out_of_range_maxmsg": "",
-      "out_of_range_action": "stop",
-      "compatible_data": {"puf": true, "cps": true}
+    "PIA_minpayment": {
+        "title": "The minimum primary insurance amount (PIA) payment.",
+        "description": "The minimum primary insurance amount (PIA) payment.",
+        "notes": "",
+        "type": "float",
+        "value": [
+            {
+                "value": 0.0
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 999999999.9
+            }
+        }
     },
-    "replacement_rate_adjust":{
-      "long_name": "Adjustment to the social security retirement benefits replacement rate.",
-      "description": "Adjustment to the social security retirement benefits replacement rate.",
-      "notes": "This parameter willy only vary along the time path.  It is assumed to be one in the steady state.  The steady state retirement rate can be adjusted by changing the parameters of the retirement benefits function.",
-      "col_var": "",
-      "col_label": "",
-      "boolean_value": false,
-      "integer_value": false,
-      "string_value": false,
-      "value": [1.0],
-      "range": {"min": 0.0, "max": 10.0},
-      "out_of_range_minmsg": "",
-      "out_of_range_maxmsg": "",
-      "out_of_range_action": "stop",
-      "compatible_data": {"puf": true, "cps": true}
+    "replacement_rate_adjust": {
+        "title": "Adjustment to the social security retirement benefits replacement rate.",
+        "description": "Adjustment to the social security retirement benefits replacement rate.",
+        "notes": "This parameter willy only vary along the time path.  It is assumed to be one in the steady state.  The steady state retirement rate can be adjusted by changing the parameters of the retirement benefits function.",
+        "type": "float",
+        "number_dims": 1,
+        "value": [
+            {
+                "value": [
+                    1.0
+                ]
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.0,
+                "max": 10.0
+            }
+        }
     },
     "budget_balance": {
-        "long_name": "Flag to balance government budget in each period",
+        "title": "Flag to balance government budget in each period",
         "description": "Flag to balance government budget in each period",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": true,
-        "integer_value": false,
-        "string_value": false,
-        "value": false,
-        "range": {"min": false, "max": true},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "bool",
+        "value": [
+            {
+                "value": false
+            }
+        ],
+        "validators": {}
     },
     "baseline_spending": {
-        "long_name": "Flag to keep level of government spending and transfers constant between baseline and reform runs",
+        "title": "Flag to keep level of government spending and transfers constant between baseline and reform runs",
         "description": "Flag to keep level of government spending and transfers constant between baseline and reform runs",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": true,
-        "integer_value": false,
-        "string_value": false,
-        "value": false,
-        "range": {"min": false, "max": true},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "bool",
+        "value": [
+            {
+                "value": false
+            }
+        ],
+        "validators": {}
     },
     "start_year": {
-        "long_name": "Calendar year in which to start model analysis",
+        "title": "Calendar year in which to start model analysis",
         "description": "Calendar year in which to start model analysis",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": true,
-        "string_value": false,
-        "value": 2019,
-        "range": {"min": 2013, "max": 2028},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "int",
+        "value": [
+            {
+                "value": 2019
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 2013,
+                "max": 2028
+            }
+        }
     },
     "tax_func_type": {
-        "long_name": "Functional form for individual income tax functions",
+        "title": "Functional form for individual income tax functions",
         "description": "Functional form for individual income tax functions",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": true,
-        "value": "DEP",
-        "range": {"possible_values": ["DEP", "DEP_totalinc", "GS", "linear"]},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "str",
+        "value": [
+            {
+                "value": "DEP"
+            }
+        ],
+        "validators": {
+            "choice": {
+                "choices": [
+                    "DEP",
+                    "DEP_totalinc",
+                    "GS",
+                    "linear"
+                ]
+            }
+        }
     },
     "nu": {
-        "long_name": "Parameter for convergence rate of functional iteration",
+        "title": "Parameter for convergence rate of functional iteration",
         "description": "Parameter for convergence rate of functional iteration",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": 0.4,
-        "range": {"min": 0.01, "max": 0.5},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "value": [
+            {
+                "value": 0.4
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 0.01,
+                "max": 0.5
+            }
+        }
     },
     "maxiter": {
-        "long_name": "Max iterations for time path iteration",
+        "title": "Max iterations for time path iteration",
         "description": "Max iterations for time path iteration",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": true,
-        "string_value": false,
-        "value": 250,
-        "range": {"min": 2, "max": 500},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "int",
+        "value": [
+            {
+                "value": 250
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 2,
+                "max": 500
+            }
+        }
     },
     "mindist_SS": {
-        "long_name": "Tolerance for convergence of steady state solution",
+        "title": "Tolerance for convergence of steady state solution",
         "description": "Tolerance for convergence of steady state solution",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": 1e-9,
-        "range": {"min": 1e-13, "max": 0.001},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "value": [
+            {
+                "value": 1e-09
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1e-13,
+                "max": 0.001
+            }
+        }
     },
     "mindist_TPI": {
-        "long_name": "Tolerance for convergence of time path solution",
+        "title": "Tolerance for convergence of time path solution",
         "description": "Tolerance for convergence of time path solution",
         "notes": "",
-        "col_var": "",
-        "col_label": "",
-        "boolean_value": false,
-        "integer_value": false,
-        "string_value": false,
-        "value": 1e-5,
-        "range": {"min": 1e-13, "max": 0.001},
-        "out_of_range_minmsg": "",
-        "out_of_range_maxmsg": "",
-        "out_of_range_action": "stop",
-        "compatible_data": {"puf": true, "cps": true}
+        "type": "float",
+        "value": [
+            {
+                "value": 1e-05
+            }
+        ],
+        "validators": {
+            "range": {
+                "min": 1e-13,
+                "max": 0.001
+            }
+        }
     }
 }

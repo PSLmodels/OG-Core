@@ -176,7 +176,6 @@ def test_run_TPI():
         'J': J,
         'S': S,
         'T': T,
-        # 'eta': (np.ones((S, J)) / (S * J)).tolist()
         'eta': (np.ones((S, J)) / (S * J))
     }
     # update parameters instance with new values for test
@@ -216,6 +215,7 @@ def test_run_TPI():
     p.lambdas = lambdas.reshape(p.J, 1)
     p.output = output_dir
     p.baseline_spending = baseline_spending
+    p.frac_tax_payroll = 0.5 * np.ones(p.T + p.S)
     p.num_workers = 1
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n,
      p.omega_S_preTP, initial_debt, D0) = initial_values
@@ -226,11 +226,13 @@ def test_run_TPI():
     if p.baseline:
         utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
         ss_dir = os.path.join(p.baseline_dir, "SS/SS_vars.pkl")
-        pickle.dump(ss_outputs, open(ss_dir, "wb"))
+        with open(ss_dir, "wb") as f:
+            pickle.dump(ss_outputs, f)
     else:
         utils.mkdirs(os.path.join(p.output_base, "SS"))
         ss_dir = os.path.join(p.output_base, "SS/SS_vars.pkl")
-        pickle.dump(ss_outputs, open(ss_dir, "wb"))
+        with open(ss_dir, "wb") as f:
+            pickle.dump(ss_outputs, f)
 
     test_dict = TPI.run_TPI(p, None)
 
@@ -250,6 +252,7 @@ def test_run_TPI():
     del test_dict['y_before_tax_mat'], test_dict['K_f'], test_dict['K_d']
     del test_dict['D_d'], test_dict['D_f']
     del test_dict['new_borrowing_f'], test_dict['debt_service_f']
+    del test_dict['iit_revenue'], test_dict['payroll_tax_revenue']
     del test_dict['resource_constraint_error'], test_dict['T_C']
     del test_dict['r_gov'], test_dict['r_hh'], test_dict['tr_path']
 

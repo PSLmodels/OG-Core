@@ -43,16 +43,17 @@ def get_initial_SS_values(p):
                 baseline model run
 
     '''
-    baseline_ss = os.path.join(p.baseline_dir, "SS/SS_vars.pkl")
-    ss_baseline_vars = pickle.load(open(baseline_ss, "rb"))
+    baseline_ss = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
+    ss_baseline_vars = utils.safe_read_pickle(baseline_ss)
     factor = ss_baseline_vars['factor_ss']
     initial_b = ss_baseline_vars['bssmat_splus1']
     initial_n = ss_baseline_vars['nssmat']
     TRbaseline = None
     Gbaseline = None
     if p.baseline_spending:
-        baseline_tpi = os.path.join(p.baseline_dir, "TPI/TPI_vars.pkl")
-        tpi_baseline_vars = pickle.load(open(baseline_tpi, "rb"))
+        baseline_tpi = os.path.join(
+            p.baseline_dir, "TPI", "TPI_vars.pkl")
+        tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
         TRbaseline = tpi_baseline_vars['TR']
         Gbaseline = tpi_baseline_vars['G']
 
@@ -62,7 +63,7 @@ def get_initial_SS_values(p):
         ss_vars = ss_baseline_vars
     else:
         reform_ss_path = os.path.join(p.output_base, "SS/SS_vars.pkl")
-        ss_vars = pickle.load(open(reform_ss_path, "rb"))
+        ss_vars = utils.safe_read_pickle(reform_ss_path)
     theta = ss_vars['theta']
     # What is going on here?  Whatever it is, why not done in parameters.py???
     N_tilde = p.omega.sum(1)  # this should equal one in
@@ -85,8 +86,9 @@ def get_initial_SS_values(p):
 
     # Intial gov't debt must match that in the baseline
     if not p.baseline:
-        baseline_tpi = os.path.join(p.baseline_dir, "TPI/TPI_vars.pkl")
-        tpi_baseline_vars = pickle.load(open(baseline_tpi, "rb"))
+        baseline_tpi = os.path.join(
+            p.baseline_dir, "TPI", "TPI_vars.pkl")
+        tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
         D0 = tpi_baseline_vars['D'][0]
     else:
         D0 = 0.0
@@ -729,6 +731,12 @@ def run_TPI(p, client=None):
     I_total = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
                (1.0 - p.delta) * K[:p.T])
 
+    # Compute income tax revenues
+    tax_rev = aggr.get_L(T_Ipath, p, 'TPI')
+    payroll_tax_revenue = p.frac_tax_payroll[:p.T] * tax_rev[:p.T]
+    iit_revenue = tax_rev[:p.T] - payroll_tax_revenue
+
+    # Compute resource constraint error
     rce_max = np.amax(np.abs(RC_error))
     print('Max absolute value resource constraint error:', rce_max)
 
@@ -754,7 +762,8 @@ def run_TPI(p, client=None):
               'I_total': I_total, 'I_d': I_d, 'BQ': BQ,
               'total_revenue': total_revenue,
               'business_revenue': business_revenue,
-              'IITpayroll_revenue': T_Ipath, 'TR': TR,
+              'IITpayroll_revenue': T_Ipath, 'iit_revenue': iit_revenue,
+              'payroll_tax_revenue': payroll_tax_revenue, 'TR': TR,
               'T_P': T_Ppath, 'T_BQ': T_BQpath, 'T_W': T_Wpath,
               'T_C': T_Cpath, 'G': G, 'D': D, 'D_f': D_f, 'D_d': D_d,
               'r': r, 'r_gov': r_gov,
@@ -773,7 +782,8 @@ def run_TPI(p, client=None):
     tpi_dir = os.path.join(p.output_base, "TPI")
     utils.mkdirs(tpi_dir)
     tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
-    pickle.dump(output, open(tpi_vars, "wb"))
+    with open(tpi_vars, "wb") as f:
+        pickle.dump(output, f)
 
     if np.any(G) < 0:
         print('Government spending is negative along transition path' +

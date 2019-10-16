@@ -187,7 +187,8 @@ def chi_estimate(income_tax_params, ss_params, iterative_params, chi_guesses, ba
     VCV_params = np.linalg.inv(np.dot(np.dot(deriv_moments.T,W),deriv_moments))
     std_errors_chi = (np.diag(VCV_params))**(1/2.)
     sd_dir = os.path.join(baseline_dir, "Calibration/chi_std_errors.pkl")
-    pickle.dump(std_errors_chi, open(sd_dir, "wb"))
+    with open(sd_dir, "wb") as f:
+        pickle.dump(std_errors_chi, f)
 
     np.savetxt('chi_std_errors.csv',std_errors_chi)
 

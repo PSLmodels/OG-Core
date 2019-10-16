@@ -9,19 +9,21 @@ requirements:
   build:
     - python
     - "taxcalc>=2.4.2"
+    - "paramtools>=0.7.1"
     - setuptools
-    - scipy
+    - "scipy>=0.18.1"
     - matplotlib
-    - dask
+    - "dask>=0.20.0"
     - mkl
 
   run:
     - python
     - "taxcalc>=2.4.2"
+    - "paramtools>=0.7.1"
     - setuptools
-    - scipy
+    - "scipy>=0.18.1"
     - matplotlib
-    - dask
+    - "dask>=0.20.0"
     - mkl
 
 about:
@@ -47,7 +49,6 @@ test:
     - ogusa.parameter_plots
     - ogusa.parameter_tables
     - ogusa.parameters
-    - ogusa.parametersbase
     - ogusa.postprocess
     - ogusa.tax
     - ogusa.txfunc

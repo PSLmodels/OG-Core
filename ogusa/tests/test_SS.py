@@ -226,6 +226,7 @@ def test_SS_solver():
     p.small_open, firm_r, hh_r = small_open_params
     p.firm_r = np.ones(p.T + p.S) * firm_r
     p.hh_r = np.ones(p.T + p.S) * hh_r
+    p.frac_tax_payroll = 0.5 * np.ones(p.T + p.S)
     p.num_workers = 1
 
     expected_dict = utils.safe_read_pickle(
@@ -246,6 +247,7 @@ def test_SS_solver():
     del test_dict['D_f_ss'], test_dict['I_d_ss'], test_dict['trssmat']
     del test_dict['debt_service_f'], test_dict['new_borrowing_f']
     del test_dict['bqssmat'], test_dict['T_Css'], test_dict['Iss_total']
+    del test_dict['iit_revenue'], test_dict['payroll_tax_revenue']
     test_dict['revenue_ss'] = test_dict.pop('total_revenue_ss')
     test_dict['T_Hss'] = test_dict.pop('TR_ss')
 
@@ -456,6 +458,7 @@ def test_run_SS(input_path, expected_path):
     p.firm_r = np.ones(p.T + p.S) * firm_r
     p.hh_r = np.ones(p.T + p.S) * hh_r
     p.num_workers = 1
+    p.frac_tax_payroll = 0.5 * np.ones(p.T + p.S)
     test_dict = SS.run_SS(p, None)
 
     expected_dict = utils.safe_read_pickle(
@@ -473,6 +476,7 @@ def test_run_SS(input_path, expected_path):
     del test_dict['K_d_ss'], test_dict['K_f_ss'], test_dict['D_d_ss']
     del test_dict['D_f_ss'], test_dict['I_d_ss'], test_dict['Iss_total']
     del test_dict['debt_service_f'], test_dict['new_borrowing_f']
+    del test_dict['iit_revenue'], test_dict['payroll_tax_revenue']
     test_dict['revenue_ss'] = test_dict.pop('total_revenue_ss')
     test_dict['T_Hss'] = test_dict.pop('TR_ss')
 

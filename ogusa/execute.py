@@ -3,6 +3,7 @@ This module defines the runner() function, which is used to run OG-USA
 '''
 
 import pickle
+import cloudpickle
 import os
 import time
 from ogusa import SS, TPI, utils
@@ -81,18 +82,23 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     '''
     if baseline:
         utils.mkdirs(os.path.join(baseline_dir, "SS"))
-        ss_dir = os.path.join(baseline_dir, "SS/SS_vars.pkl")
-        pickle.dump(ss_outputs, open(ss_dir, "wb"))
+        ss_dir = os.path.join(baseline_dir, "SS", "SS_vars.pkl")
+        with open(ss_dir, "wb") as f:
+            pickle.dump(ss_outputs, f)
+        print('JUST SAVED SS output to ', ss_dir)
         # Save pickle with parameter values for the run
         param_dir = os.path.join(baseline_dir, "model_params.pkl")
-        pickle.dump(spec, open(param_dir, "wb"))
+        with open(param_dir, "wb") as f:
+            cloudpickle.dump((spec), f)
     else:
         utils.mkdirs(os.path.join(output_base, "SS"))
-        ss_dir = os.path.join(output_base, "SS/SS_vars.pkl")
-        pickle.dump(ss_outputs, open(ss_dir, "wb"))
+        ss_dir = os.path.join(output_base, "SS", "SS_vars.pkl")
+        with open(ss_dir, "wb") as f:
+            pickle.dump(ss_outputs, f)
         # Save pickle with parameter values for the run
         param_dir = os.path.join(output_base, "model_params.pkl")
-        pickle.dump(spec, open(param_dir, "wb"))
+        with open(param_dir, "wb") as f:
+            cloudpickle.dump((spec), f)
 
     if time_path:
         '''
@@ -110,7 +116,8 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         tpi_dir = os.path.join(output_base, "TPI")
         utils.mkdirs(tpi_dir)
         tpi_vars = os.path.join(tpi_dir, "TPI_vars.pkl")
-        pickle.dump(tpi_output, open(tpi_vars, "wb"))
+        with open(tpi_vars, "wb") as f:
+            pickle.dump(tpi_output, f)
 
         print("Time path iteration complete.")
     print("It took {0} seconds to get that part done.".format(

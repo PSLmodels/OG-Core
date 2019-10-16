@@ -7,6 +7,7 @@ Miscellaneous functions used in the OG-USA model.
 import os
 from io import StringIO
 import numpy as np
+import pandas as pd
 import taxcalc
 import pickle
 from pkg_resources import resource_stream, Requirement
@@ -14,8 +15,8 @@ from pkg_resources import resource_stream, Requirement
 EPSILON = 1e-10
 PATH_EXISTS_ERRNO = 17
 
-REFORM_DIR = "./OUTPUT_REFORM"
-BASELINE_DIR = "./OUTPUT_BASELINE"
+REFORM_DIR = "OUTPUT_REFORM"
+BASELINE_DIR = "OUTPUT_BASELINE"
 
 # Default year for model runs
 DEFAULT_START_YEAR = 2018
@@ -126,13 +127,17 @@ def pickle_file_compare(fname1, fname2, tol=1e-3, exceptions={},
         comparison (bool): whether therea two dictionaries are the same
     '''
     try:
-        pkl1 = pickle.load(open(fname1, 'rb'), encoding='latin1')
+        with open(fname1, 'rb') as f:
+            pkl1 = pickle.load(f, encoding='latin1')
     except TypeError:
-        pkl1 = pickle.load(open(fname1, 'rb'))
+        with open(fname1, 'rb') as f:
+            pkl1 = pickle.load(f)
     try:
-        pkl2 = pickle.load(open(fname2, 'rb'), encoding='latin1')
+        with open(fname2, 'rb') as f:
+            pkl2 = pickle.load(f, encoding='latin1')
     except TypeError:
-        pkl2 = pickle.load(open(fname2, 'rb'))
+        with open(fname2, 'rb') as f:
+            pkl2 = pickle.load(f)
     comparison = dict_compare(fname1, pkl1, fname2, pkl2, tol=tol,
                               exceptions=exceptions, relative=relative)
 
@@ -400,7 +405,7 @@ def rate_conversion(annual_rate, start_age, end_age, S):
     return rate
 
 
-def save_return_table(table_df, output_type, path, precision=0):
+def save_return_table(table_df, output_type, path, precision=2):
     '''
     Function to save or return a table of data.
 
@@ -416,45 +421,29 @@ def save_return_table(table_df, output_type, path, precision=0):
         table_df (Pandas DataFrame): table
 
     '''
+    pd.options.display.float_format = ('{:,.' + str(precision) + 'f}').format
     if path is None:
         if output_type == 'tex':
-            tab_str = table_df.to_latex(
-                buf=path, index=False, na_rep='',
-                float_format=lambda x: '%.' + str(precision) + '0f' % x)
+            tab_str = table_df.to_latex(index=False, na_rep='')
             return tab_str
         elif output_type == 'json':
-            tab_str = table_df.to_json(
-                path_or_buf=path, double_precision=0)
+            tab_str = table_df.to_json(double_precision=precision)
             return tab_str
         elif output_type == 'html':
-            print('Output html...')
-            # with pd.option_context('display.precision', precision):
-            tab_html = (
-                table_df.round(2).style
-                # .format({'': '', '%.' + str(precision) + '0f')
-                .set_properties(**{'font-size': '9pt',
-                                   'font-family': 'Calibri',
-                                   'text-align': 'left'})
-                .hide_index()
-                .render()
-            )
+            tab_html = table_df.to_html()
             return tab_html
         else:
             return table_df
     else:
         if output_type == 'tex':
-            table_df.to_latex(buf=path, index=False, na_rep='',
-                              float_format=lambda x: '%.' +
-                              str(precision) + '0f' % x)
+            table_df.to_latex(buf=path, index=False, na_rep='')
         elif output_type == 'csv':
-            table_df.to_csv(path_or_buf=path, index=False, na_rep='',
-                            float_format='%.' + str(precision) + '0f')
+            table_df.to_csv(path_or_buf=path, index=False, na_rep='')
         elif output_type == 'json':
             table_df.to_json(path_or_buf=path,
                              double_precision=precision)
         elif output_type == 'excel':
-            table_df.to_excel(excel_writer=path, index=False, na_rep='',
-                              float_format='%.' + str(precision) + '0f')
+            table_df.to_excel(excel_writer=path, index=False, na_rep='')
         else:
             print('Please enter a valid output format')
             assert(False)

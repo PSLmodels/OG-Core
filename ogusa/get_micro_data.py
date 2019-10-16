@@ -126,7 +126,9 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
         pkl_path = "micro_data_policy.pkl"
     else:
         pkl_path = "micro_data_baseline.pkl"
-    pickle.dump(micro_data_dict, open(pkl_path, "wb"))
+
+    with open(pkl_path, "wb") as f:
+        pickle.dump(micro_data_dict, f)
 
     # Do some garbage collection
     del calc1, results
@@ -176,6 +178,7 @@ def taxcalc_advance(calc1, year):
                          calc1.array('sey') + calc1.array('e00200')),
         'expanded_income': calc1.array('expanded_income'),
         'total_tax_liab': calc1.array('combined'),
+        'payroll_tax_liab': calc1.array('payrolltax'),
         'etr': calc1.array('combined') / calc1.array('expanded_income'),
         'year': calc1.current_year * np.ones(length),
         'weight': calc1.array('s006')}
