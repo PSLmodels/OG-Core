@@ -6,9 +6,6 @@ model (Tax-Calculator).
 '''
 from taxcalc import Records, Calculator, Policy
 from pandas import DataFrame
-from dask import compute, delayed
-import dask.multiprocessing
-from distributed import Client
 import numpy as np
 import pickle
 import pkg_resources
@@ -106,18 +103,16 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
         taxcalc_version (str): version of Tax-Calculator used
 
     '''
-    calc1 = get_calculator(baseline=baseline,
-                           calculator_start_year=start_year,
-                           reform=reform, data=data)
     # Compute MTRs and taxes or each year, but not beyond TC_LAST_YEAR
     lazy_values = []
     for year in range(start_year, TC_LAST_YEAR + 1):
+        # lazy_values.append(
+        #     delayed(taxcalc_advance)(calc1, year))
         lazy_values.append(
-            delayed(taxcalc_advance)(calc1, year))
-    with Client(direct_to_workers=True) as c:
-        futures = c.compute(lazy_values, scheduler=dask.multiprocessing.get,
-                            num_workers=num_workers)
-        results = c.gather(futures)
+            delayed(taxcalc_advance)(baseline, start_year, reform,
+                                     data, year))
+    futures = client.compute(lazy_values, num_workers=num_workers)
+    results = client.gather(futures)
 
     # dictionary of data frames to return
     micro_data_dict = {}
@@ -134,7 +129,7 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
         pickle.dump(micro_data_dict, f)
 
     # Do some garbage collection
-    del calc1, results
+    del results
 
     # Pull Tax-Calc version for reference
     taxcalc_version = pkg_resources.get_distribution("taxcalc").version
@@ -142,7 +137,7 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
     return micro_data_dict, taxcalc_version
 
 
-def taxcalc_advance(calc1, year):
+def taxcalc_advance(baseline, start_year, reform, data, year):
     '''
     This function advances the year used in Tax-Calculator, compute
     taxes and rates, and save the results to a dictionary.
@@ -155,6 +150,9 @@ def taxcalc_advance(calc1, year):
         tax_dict (dict): a dictionary of microdata with marginal tax
             rates and other information computed in TC
     '''
+    calc1 = get_calculator(baseline=baseline,
+                           calculator_start_year=start_year,
+                           reform=reform, data=data)
     calc1.advance_to_year(year)
     calc1.calc_all()
     print('Year: ', str(calc1.current_year))
@@ -185,6 +183,9 @@ def taxcalc_advance(calc1, year):
         'etr': calc1.array('combined') / calc1.array('expanded_income'),
         'year': calc1.current_year * np.ones(length),
         'weight': calc1.array('s006')}
+
+    # garbage collection
+    del calc1
 
     return tax_dict
 
