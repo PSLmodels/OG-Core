@@ -1380,12 +1380,12 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
                 age_specific, tax_func_type, analytical_mtrs, desc_data,
                 graph_data, graph_est, output_dir, numparams))
     if client:
-        futures = client.compute(lazy_values, num_workers=p.num_workers)
+        futures = client.compute(lazy_values, num_workers=num_workers)
         results = client.gather(futures)
     else:
         results = results = compute(
             *lazy_values, scheduler=dask.multiprocessing.get,
-            num_workers=p.num_workers)
+            num_workers=num_workers)
 
     # Garbage collection
     del micro_data

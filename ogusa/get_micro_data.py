@@ -114,12 +114,12 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
             delayed(taxcalc_advance)(baseline, start_year, reform,
                                      data, year))
     if client:
-        futures = client.compute(lazy_values, num_workers=p.num_workers)
+        futures = client.compute(lazy_values, num_workers=num_workers)
         results = client.gather(futures)
     else:
         results = results = compute(
             *lazy_values, scheduler=dask.multiprocessing.get,
-            num_workers=p.num_workers)
+            num_workers=num_workers)
 
     # dictionary of data frames to return
     micro_data_dict = {}
