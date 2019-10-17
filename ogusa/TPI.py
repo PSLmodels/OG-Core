@@ -379,7 +379,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
     return euler_errors, b_mat, n_mat
 
 
-def run_TPI(p, client=Client()):
+def run_TPI(p, client=None):
     '''
     Solve for transition path equilibrium of OG-USA.
 
