@@ -2,8 +2,7 @@
 import numpy as np
 import pickle
 import scipy.optimize as opt
-from distributed import Client
-from dask import compute, delayed
+from dask import delayed, compute
 import dask.multiprocessing
 from ogusa import tax, utils, household, firm, fiscal
 from ogusa import aggregates as aggr
@@ -380,7 +379,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
     return euler_errors, b_mat, n_mat
 
 
-def run_TPI(p, client=None):
+def run_TPI(p, client=Client()):
     '''
     Solve for transition path equilibrium of OG-USA.
 
@@ -523,10 +522,14 @@ def run_TPI(p, client=None):
             lazy_values.append(
                 delayed(inner_loop)(guesses, outer_loop_vars,
                                     initial_values, j, ind, p))
-        with Client(direct_to_workers=True) as c:
-            futures = c.compute(lazy_values, scheduler=dask.multiprocessing.get,
-                                num_workers=p.num_workers)
-            results = c.gather(futures)
+        if client:
+            futures = client.compute(lazy_values,
+                                     num_workers=p.num_workers)
+            results = client.gather(futures)
+        else:
+            results = results = compute(
+                *lazy_values, scheduler=dask.multiprocessing.get,
+                num_workers=p.num_workers)
 
         for j, result in enumerate(results):
             euler_errors[:, :, j], b_mat[:, :, j], n_mat[:, :, j] = result

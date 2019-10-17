@@ -6,6 +6,8 @@ model (Tax-Calculator).
 '''
 from taxcalc import Records, Calculator, Policy
 from pandas import DataFrame
+from dask import delayed, compute
+import dask.multiprocessing
 import numpy as np
 import pickle
 import pkg_resources
@@ -111,8 +113,13 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
         lazy_values.append(
             delayed(taxcalc_advance)(baseline, start_year, reform,
                                      data, year))
-    futures = client.compute(lazy_values, num_workers=num_workers)
-    results = client.gather(futures)
+    if client:
+        futures = client.compute(lazy_values, num_workers=p.num_workers)
+        results = client.gather(futures)
+    else:
+        results = results = compute(
+            *lazy_values, scheduler=dask.multiprocessing.get,
+            num_workers=p.num_workers)
 
     # dictionary of data frames to return
     micro_data_dict = {}
