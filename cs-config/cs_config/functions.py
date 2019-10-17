@@ -9,6 +9,7 @@ import pickle
 import json
 import inspect
 import paramtools
+from distributed import Client
 from taxcalc import Policy
 from collections import OrderedDict
 from .helpers import retrieve_puf, convert_adj, convert_defaults
@@ -135,9 +136,10 @@ def run_model(meta_param_dict, adjustment):
     dirs = [base_dir, reform_dir]
     for _dir in dirs:
         utils.mkdirs(_dir)
+
     # Dask parmeters
-    client = None
-    num_workers = 1
+    client = Client()
+    num_workers = 4
 
     # whether to estimate tax functions from microdata
     run_micro = True
