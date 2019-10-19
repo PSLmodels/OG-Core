@@ -1,7 +1,9 @@
 from cs_kit import CoreTestFunctions
 from cs_config import functions, helpers
+import pytest
 
 
+@pytest.mark.full_run
 class TestFunctions1(CoreTestFunctions):
     get_version = functions.get_version
     get_inputs = functions.get_inputs
@@ -21,6 +23,7 @@ class TestFunctions1(CoreTestFunctions):
 #     assert df.loc[0, 'Change from Baseline (pp)'] != 0
 
 
+@pytest.mark.full_run
 def test_convert_adj():
     adj = {
         "STD": [
