@@ -1,6 +1,6 @@
 # bash commands for installing your package
 
-git clone https://github.com/PSLmodels/OG-USA
+git clone -b master --depth 1 https://github.com/PSLmodels/OG-USA
 cd OG-USA
 # make sure the git object is up to date, in case
 # it's cached.
