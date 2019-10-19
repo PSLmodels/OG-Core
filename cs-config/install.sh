@@ -2,10 +2,6 @@
 
 git clone -b master --depth 1 https://github.com/PSLmodels/OG-USA
 cd OG-USA
-# make sure the git object is up to date, in case
-# it's cached.
-git fetch origin
-git merge origin/master
 
 # Explicitly add channels for looking up dependencies outside of
 # taxcalc and paramtools. If the channels are not specified like this,
