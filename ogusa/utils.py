@@ -564,3 +564,13 @@ class Inequality():
                         (self.sort_dist * self.sort_weights).sum())
 
         return pctile_share
+
+
+def read_cbo_lt_forecast():
+    '''
+    This function reads the CBO Long-Term Budget Projections document
+    from https://www.cbo.gov/about/products/budget-economic-data#1
+    and then formats the relevant data for use with OG-USA
+    '''
+    CBO_URL = 'https://www.cbo.gov/system/files/2019-07/51119-CBO-2019-06-ltbo.xlsx'
+    df1 = pandas.from_excel(CBO_URL, )
