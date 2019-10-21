@@ -572,5 +572,35 @@ def read_cbo_lt_forecast():
     from https://www.cbo.gov/about/products/budget-economic-data#1
     and then formats the relevant data for use with OG-USA
     '''
-    CBO_URL = 'https://www.cbo.gov/system/files/2019-07/51119-CBO-2019-06-ltbo.xlsx'
-    df1 = pandas.from_excel(CBO_URL, )
+    CBO_LT_URL = 'https://www.cbo.gov/system/files/2019-07/51119-CBO-2019-06-ltbo.xlsx'
+    # Read in data
+    df = pd.read_excel(CBO_LT_URL, sheet_name='3. Economic Vars', skiprows=6, nrows=45)
+    df.drop(columns=['Unnamed: 3', 'Unnamed: 4'], inplace=True)
+    df[~((pd.isnull(df['Unnamed: 0'])) &
+           (pd.isnull(df['Unnamed: 1'])) &
+            (pd.isnull(df['Unnamed: 2'])))]
+    df.fillna(value='', inplace=True)
+    df['full_var_name'] = df['Unnamed: 0'] + df['Unnamed: 1'] + df['Unnamed: 2']
+    CBO_VAR_NAMES = {'Real GDP (Billions of 2019 dollars) ': 'Y',
+                     'On 10-year Treasury notes and the OASDI trust funds': 'r',
+                     'Growth of Real Earnings per Worker': 'w_growth',
+                     'Growth of Total Hours Worked': 'L_growth'}
+    df['var_name'] = df['full_var_name'].replace(CBO_VAR_NAMES)
+    # keep just variables of interest
+    df.drop(columns=['Unnamed: 0', 'Unnamed: 1', 'Unnamed: 2', 'full_var_name'], inplace=True)
+    df = df[df['var_name'].isin(CBO_VAR_NAMES.values())]
+    # Keep just real interest rate (not nominal)
+    # Note that real interest rate comes first in table
+    df.drop_duplicates(subset='var_name', inplace=True)
+    # reshape solve variable names down column
+    df = pd.melt(df, id_vars='var_name', value_vars=[i for i in range(1989, 2050)])
+    # df = df[df['var_name']!='r']
+    df = df.pivot(index='variable', columns='var_name', values='value')
+    df.reset_index(inplace=True)
+    df.rename(columns={'variable': 'year'}, inplace=True)
+    # add debt forcast
+    df_fiscal = pd.read_excel(CBO_URL, sheet_name='1. Summary Extended Baseline', skiprows=9, nrows=32)
+    df_fiscal = df_fiscal[['Fiscal Year', 'Revenues', 'Federal Debt Held by the Public']]
+    df_fiscal = df_fiscal.merge(df_fiscal, left_on='year', right_on='Fiscal Year', how='left')
+    df_fiscal.rename(columns={'Federal Debt Held by the Public': 'D/Y'}, inplace=True)
+    df_fiscal['D'] = df_fiscal['Y'] * df_fiscal['D/Y']
