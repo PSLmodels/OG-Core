@@ -4,7 +4,7 @@ Example script for setting policy and running OG-USA.
 
 # import modules
 import multiprocessing
-from dask.distributed import Client
+from distributed import Client
 import time
 import numpy as np
 import os
@@ -13,9 +13,10 @@ from ogusa import postprocess
 from ogusa.execute import runner
 from ogusa.utils import REFORM_DIR, BASELINE_DIR
 
+
 def main():
     # Define parameters to use for multiprocessing
-    client = Client(processes=False)
+    client = Client()
     num_workers = min(multiprocessing.cpu_count(), 7)
     print('Number of workers = ', num_workers)
     run_start_time = time.time()
@@ -47,7 +48,7 @@ def main():
     alpha_G[6:] = 0.05
     # Also adjust the Frisch elasticity, the start year, the
     # effective corporate income tax rate, and the SS debt-to-GDP ratio
-    og_spec = {'frisch': 0.41, 'start_year': 2018, 'tau_b': [0.0357],
+    og_spec = {'frisch': 0.41, 'start_year': 2020, 'tau_b': [0.0357],
                'debt_ratio_ss': 1.0, 'alpha_T': alpha_T.tolist(),
                'alpha_G': alpha_G.tolist()}
 
@@ -73,7 +74,7 @@ def main():
     ------------------------------------------------------------------------
     '''
     # update the effective corporate income tax rate
-    og_spec = {'frisch': 0.41, 'start_year': 2018,
+    og_spec = {'frisch': 0.41, 'start_year': 2020,
                'tau_b': [0.0595], 'debt_ratio_ss': 1.0,
                'alpha_T': alpha_T.tolist(),
                'alpha_G': alpha_G.tolist()}

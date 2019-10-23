@@ -288,7 +288,7 @@ def test_tax_func_estimate():
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_estimate_outputs.pkl'))
     expected_dict['tax_func_type'] = 'DEP'
-    del expected_dict['tfunc_time']
+    del expected_dict['tfunc_time'], expected_dict['taxcalc_version']
     for k, v in expected_dict.items():
         try:
             assert(all(test_dict[k] == v))
