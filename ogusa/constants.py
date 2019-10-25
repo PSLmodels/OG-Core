@@ -86,3 +86,12 @@ ToGDP_LABELS = {'D': 'Debt-to-GDP ($D_{t}/Y_t$)',
 
 GROUP_LABELS = {0: '0-25%', 1: '25-50%', 2: '50-70%', 3: '70-80%',
                 4: '80-90%', 5: '90-99%', 6: 'Top 1%'}
+
+CBO_UNITS = {
+    'Y': r'Billions of \$', 'r': 'Percent', 'w_growth': 'Percent',
+    'L_growth': 'Percent', 'I_total': r'Billions of \$', 'L': '2012=100',
+    'C': r'Billions of \$', 'T_P': r'Billions of \$',
+    'G': r'Billions of \$', 'iit_revenue': r'Billions of \$',
+    'payroll_tax_revenue': r'Billions of \$',
+    'business_revenue': r'Billions of \$', 'wL': r'Billions of \$',
+    'D': r'Billions of \$'}

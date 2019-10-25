@@ -275,3 +275,13 @@ def test_compare_dict_diff_ndarrays_relative():
     rhs = {'a': np.array([100., 200., 300.1]), 'b': 2}
     assert utils.dict_compare("lhs.pkle", lhs, "rhs.pkle", rhs,
                               tol=1e-3, relative=True)
+
+
+def test_read_cbo_forecast():
+    '''
+    Test that CBO data read as expected.
+    '''
+    test_df = utils.read_cbo_forecast()
+
+    assert np.allclose(
+        test_df.loc[test_df['year'] == 2017, 'Y'].values[0], 20330)
