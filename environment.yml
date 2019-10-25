@@ -20,3 +20,4 @@ dependencies:
 - coverage
 - pip:
   - cs-kit
+  - xlrd
