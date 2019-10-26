@@ -2,8 +2,8 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 from ogusa.constants import GROUP_LABELS
-cur_path = os.path.split(os.path.abspath(__file__))[0]
-style_file = os.path.join(cur_path, 'OGUSAplots.mplstyle')
+CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
+style_file = os.path.join(CUR_PATH, 'OGUSAplots.mplstyle')
 plt.style.use(style_file)
 
 
@@ -31,7 +31,7 @@ def plot_imm_rates(p, year=2019, include_title=False, path=None):
     vals = ax.get_yticks()
     ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
     if include_title:
-            plt.title('Immigration Rates in ' + str(year))
+        plt.title('Immigration Rates in ' + str(year))
     if path is None:
         return fig
     else:
@@ -59,7 +59,7 @@ def plot_mort_rates(p, include_title=False, path=None):
     vals = ax.get_yticks()
     ax.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
     if include_title:
-            plt.title('Mortality Rates')
+        plt.title('Mortality Rates')
     if path is None:
         return fig
     else:
@@ -94,7 +94,7 @@ def plot_pop_growth(p, start_year=2019, include_title=False,
     vals = ax.get_yticks()
     ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
     if include_title:
-            plt.title('Population Growth Rates')
+        plt.title('Population Growth Rates')
     if path is None:
         return fig
     else:
@@ -206,3 +206,59 @@ def plot_chi_n(p, include_title=False, path=None):
     else:
         fig_path = os.path.join(path, "chi_n_values")
         plt.savefig(fig_path)
+
+
+def plot_fert_rates(fert_func, age_midp, totpers, min_yr, max_yr,
+                    fert_data, fert_rates):
+    '''
+    Plot fertility rates from the data along with smoothed function to
+    use for model fertility rates.
+
+    Args:
+        fert_func (Scipy interpolation object): interpolated fertility
+            rates
+        age_midp (NumPy array): midpoint of age for each age group in
+            data
+        totpers (int): total number of agent life periods (E+S), >= 3
+        min_yr (int): age in years at which agents are born, >= 0
+        max_yr (int): age in years at which agents die with certainty,
+            >= 4
+        fert_data (NumPy array): fertility rates by age group from data
+        fert_rates (NumPy array): fitted fertility rates for each of
+            totpers
+
+    Returns:
+        fig (Matplotlib plot object): plot of elliptical vs CFE utility
+
+    '''
+    # Generate finer age vector and fertility rate vector for
+    # graphing cubic spline interpolating function
+    age_fine_pred = np.linspace(age_midp[0], age_midp[-1], 300)
+    fert_fine_pred = fert_func(age_fine_pred)
+    age_fine = np.hstack((min_yr, age_fine_pred, max_yr))
+    fert_fine = np.hstack((0, fert_fine_pred, 0))
+    age_mid_new = (np.linspace(np.float(max_yr) / totpers, max_yr,
+                               totpers) - (0.5 * np.float(max_yr) /
+                                           totpers))
+
+    fig, ax = plt.subplots()
+    plt.scatter(age_midp, fert_data, s=70, c='blue', marker='o',
+                label='Data')
+    plt.scatter(age_mid_new, fert_rates, s=40, c='red', marker='d',
+                label='Model period (integrated)')
+    plt.plot(age_fine, fert_fine, label='Cubic spline')
+    # plt.title('Fitted fertility rate function by age ($f_{s}$)',
+    #     fontsize=20)
+    plt.xlabel(r'Age $s$')
+    plt.ylabel(r'Fertility rate $f_{s}$')
+    plt.legend(loc='upper right')
+    plt.text(-5, -0.023,
+             'Source: National Vital Statistics Reports, ' +
+             'Volume 64, Number 1, January 15, 2015.', fontsize=9)
+    plt.tight_layout(rect=(0, 0.035, 1, 1))
+    # Create directory if OUTPUT directory does not already exist
+    output_dir = os.path.join(CUR_PATH, 'OUTPUT', 'Demographics')
+    if os.access(output_dir, os.F_OK) is False:
+        os.makedirs(output_dir)
+    output_path = os.path.join(output_dir, 'fert_rates')
+    plt.savefig(output_path)
