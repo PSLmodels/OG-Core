@@ -10,7 +10,7 @@ import numpy as np
 import scipy.optimize as opt
 import scipy.interpolate as si
 import pandas as pd
-from ogusa import utils
+from ogusa import parameter_plots as pp
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 
@@ -84,63 +84,8 @@ def get_fert(totpers, min_yr, max_yr, graph=False):
             curr_pop_sub[beg_sub_bin:end_sub_bin].sum())
 
     if graph:
-        '''
-        ----------------------------------------------------------------
-        age_fine_pred  = (300,) vector, equally spaced support of ages
-                         between the minimum and maximum interpolating
-                         ages
-        fert_fine_pred = (300,) vector, interpolated fertility rates
-                         based on age_fine_pred
-        age_fine       = (300+some,) vector of ages including leading
-                         and trailing zeros
-        fert_fine      = (300+some,) vector of fertility rates including
-                         leading and trailing zeros
-        age_mid_new    = (totpers,) vector, midpoint age of each model
-                         period age bin
-        output_fldr    = string, folder in current path to save files
-        output_dir     = string, total path of OUTPUT folder
-        output_path    = string, path of file name of figure to be saved
-        ----------------------------------------------------------------
-        '''
-        # Generate finer age vector and fertility rate vector for
-        # graphing cubic spline interpolating function
-        age_fine_pred = np.linspace(age_midp[0], age_midp[-1], 300)
-        fert_fine_pred = fert_func(age_fine_pred)
-        age_fine = np.hstack((min_yr, age_fine_pred, max_yr))
-        fert_fine = np.hstack((0, fert_fine_pred, 0))
-        age_mid_new = (np.linspace(np.float(max_yr) / totpers, max_yr,
-                                   totpers) - (0.5 * np.float(max_yr) /
-                                               totpers))
-
-        fig, ax = plt.subplots()
-        plt.scatter(age_midp, fert_data, s=70, c='blue', marker='o',
-                    label='Data')
-        plt.scatter(age_mid_new, fert_rates, s=40, c='red', marker='d',
-                    label='Model period (integrated)')
-        plt.plot(age_fine, fert_fine, label='Cubic spline')
-        # for the minor ticks, use no labels; default NullFormatter
-        minorLocator = MultipleLocator(1)
-        ax.xaxis.set_minor_locator(minorLocator)
-        plt.grid(b=True, which='major', color='0.65', linestyle='-')
-        # plt.title('Fitted fertility rate function by age ($f_{s}$)',
-        #     fontsize=20)
-        plt.xlabel(r'Age $s$')
-        plt.ylabel(r'Fertility rate $f_{s}$')
-        plt.xlim((min_yr - 1, max_yr + 1))
-        plt.ylim((-0.15 * (fert_fine_pred.max()),
-                  1.15 * (fert_fine_pred.max())))
-        plt.legend(loc='upper right')
-        plt.text(-5, -0.018,
-                 'Source: National Vital Statistics Reports, ' +
-                 'Volume 64, Number 1, January 15, 2015.', fontsize=9)
-        plt.tight_layout(rect=(0, 0.03, 1, 1))
-        # Create directory if OUTPUT directory does not already exist
-        output_fldr = 'OUTPUT/Demographics'
-        output_dir = os.path.join(cur_path, output_fldr)
-        if os.access(output_dir, os.F_OK) is False:
-            os.makedirs(output_dir)
-        output_path = os.path.join(output_dir, 'fert_rates')
-        plt.savefig(output_path)
+        pp.plot_fert_rates(fert_func, age_midp, min_yr, max_yr, totpers,
+                           fert_data, fert_rates)
 
     return fert_rates
 
