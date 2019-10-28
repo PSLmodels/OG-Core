@@ -193,7 +193,7 @@ def pop_rebin(curr_pop_dist, totpers_new):
     return curr_pop_new
 
 
-def get_imm_resid(totpers, min_yr, max_yr, graph=True):
+def get_imm_resid(totpers, min_yr, max_yr):
     '''
     Calculate immigration rates by age as a residual given population
     levels in different periods, then output average calculated
@@ -259,35 +259,6 @@ def get_imm_resid(totpers, min_yr, max_yr, graph=True):
     # Final estimated immigration rates are the averages over 3 years
     imm_rates = imm_mat.mean(axis=0)
     age_per = np.linspace(1, totpers, totpers)
-
-    if graph:
-        '''
-        ----------------------------------------------------------------
-        output_fldr = string, path of the OUTPUT folder from cur_path
-        output_dir  = string, total path of OUTPUT folder
-        output_path = string, path of file name of figure to be saved
-        ----------------------------------------------------------------
-        '''
-        fig, ax = plt.subplots()
-        plt.scatter(age_per, imm_rates, s=40, c='red', marker='d')
-        plt.plot(age_per, imm_rates)
-        # for the minor ticks, use no labels; default NullFormatter
-        minorLocator = MultipleLocator(1)
-        ax.xaxis.set_minor_locator(minorLocator)
-        plt.grid(b=True, which='major', color='0.65', linestyle='-')
-        # plt.title('Fitted immigration rates by age ($i_{s}$), residual',
-        #     fontsize=20)
-        plt.xlabel(r'Age $s$ (model periods)')
-        plt.ylabel(r'Imm. rate $i_{s}$')
-        plt.xlim((0, totpers + 1))
-        # Create directory if OUTPUT directory does not already exist
-        output_fldr = 'OUTPUT/Demographics'
-        output_dir = os.path.join(cur_path, output_fldr)
-        if os.access(output_dir, os.F_OK) is False:
-            os.makedirs(output_dir)
-        output_path = os.path.join(output_dir, 'imm_rates_orig')
-        plt.savefig(output_path)
-        # plt.show()
 
     return imm_rates
 
@@ -366,7 +337,7 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     mort_rates, infmort_rate = get_mort(E + S, min_yr, max_yr,
                                         graph=False)
     mort_rates_S = mort_rates[-S:]
-    imm_rates_orig = get_imm_resid(E + S, min_yr, max_yr, graph=False)
+    imm_rates_orig = get_imm_resid(E + S, min_yr, max_yr)
     OMEGA_orig = np.zeros((E + S, E + S))
     OMEGA_orig[0, :] = ((1 - infmort_rate) * fert_rates +
                         np.hstack((imm_rates_orig[0], np.zeros(E+S-1))))
