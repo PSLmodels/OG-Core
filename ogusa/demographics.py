@@ -450,36 +450,6 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
                   'between any two corresponding points in the original'
                   + ' and adjusted steady-state population ' +
                   'distributions is ' + str(omegaSSvTmaxdiff))
-        fig, ax = plt.subplots()
-        plt.plot(age_per_EpS, omega_SS_orig, label="Original Dist'n")
-        plt.plot(age_per_EpS, omega_SSfx, label="Fixed Dist'n")
-        # for the minor ticks, use no labels; default NullFormatter
-        minorLocator = MultipleLocator(1)
-        ax.xaxis.set_minor_locator(minorLocator)
-        plt.grid(b=True, which='major', color='0.65', linestyle='-')
-        plt.title(
-            'Original steady-state population distribution vs. fixed',
-            fontsize=20)
-        plt.xlabel(r'Age $s$')
-        plt.ylabel(r"Pop. dist'n $\omega_{s}$")
-        plt.xlim((0, E + S + 1))
-        plt.legend(loc='upper right')
-        # Create directory if OUTPUT directory does not already exist
-        '''
-        ----------------------------------------------------------------
-        output_fldr = string, path of the OUTPUT folder from cur_path
-        output_dir  = string, total path of OUTPUT folder
-        output_path = string, path of file name of figure to be saved
-        ----------------------------------------------------------------
-        '''
-        cur_path = os.path.split(os.path.abspath(__file__))[0]
-        output_fldr = 'OUTPUT/Demographics'
-        output_dir = os.path.join(cur_path, output_fldr)
-        if os.access(output_dir, os.F_OK) is False:
-            os.makedirs(output_dir)
-        output_path = os.path.join(output_dir, 'OrigVsFixSSpop')
-        plt.savefig(output_path)
-        plt.show()
 
         # Print whether or not the adjusted immigration rates solved the
         # zero condition
@@ -539,54 +509,12 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
         print('The maximum absolute distance between any two points ' +
               'of the original immigration rates and adjusted ' +
               'immigration rates is ' + str(immratesmaxdiff))
-        fig, ax = plt.subplots()
-        plt.plot(age_per_EpS, imm_rates_orig, label='Original Imm. Rates')
-        plt.plot(age_per_EpS, imm_rates_adj, label='Adj. Imm. Rates')
-        # for the minor ticks, use no labels; default NullFormatter
-        minorLocator = MultipleLocator(1)
-        ax.xaxis.set_minor_locator(minorLocator)
-        plt.grid(b=True, which='major', color='0.65', linestyle='-')
-        plt.title(
-            'Original immigration rates vs. adjusted',
-            fontsize=20)
-        plt.xlabel(r'Age $s$')
-        plt.ylabel(r'Imm. rates $i_{s}$')
-        plt.xlim((0, E + S + 1))
-        plt.legend(loc='upper center')
-        # Create directory if OUTPUT directory does not already exist
-        output_path = os.path.join(output_dir, 'OrigVsAdjImm')
-        plt.savefig(output_path)
-        plt.show()
 
-        # Plot population distributions for data_year, curr_year,
-        # curr_year+20, omega_SSfx, and omega_SS_orig
-        fig, ax = plt.subplots()
-        plt.plot(age_per_EpS, pop_2013_pct, label='2013 pop.')
-        plt.plot(age_per_EpS, (omega_path_lev[:, 0] /
-                               omega_path_lev[:, 0].sum()),
-                 label=str(curr_year) + ' pop.')
-        plt.plot(age_per_EpS, (omega_path_lev[:, int(0.5 * S)] /
-                               omega_path_lev[:, int(0.5 * S)].sum()),
-                 label='T=' + str(int(0.5 * S)) + ' pop.')
-        plt.plot(age_per_EpS, (omega_path_lev[:, int(S)] /
-                               omega_path_lev[:, int(S)].sum()),
-                 label='T=' + str(int(S)) + ' pop.')
-        plt.plot(age_per_EpS, omega_SSfx, label='Adj. SS pop.')
-        # for the minor ticks, use no labels; default NullFormatter
-        minorLocator = MultipleLocator(1)
-        ax.xaxis.set_minor_locator(minorLocator)
-        plt.grid(b=True, which='major', color='0.65', linestyle='-')
-        plt.title(
-            'Population distribution at points in time path',
-            fontsize=20)
-        plt.xlabel(r'Age $s$')
-        plt.ylabel(r"Pop. dist'n $\omega_{s}$")
-        plt.xlim((0, E+S+1))
-        plt.legend(loc='lower left')
-        # Create directory if OUTPUT directory does not already exist
-        output_path = os.path.join(output_dir, 'PopDistPath')
-        plt.savefig(output_path)
-        plt.show()
+        # plots
+        pp.plot_omega_fixed(age_per_EpS, omega_SS_orig, omega_SSfx, E, S)
+        pp.plot_imm_fixed(age_per_EpS, imm_rates_orig, imm_rates_adj, E, S)
+        pp.plot_population_path(age_per_EpS, pop_2013_pct, omega_path_lev,
+                                omega_SSfx, curr_year, E, S)
 
     # return omega_path_S, g_n_SS, omega_SSfx, survival rates,
     # mort_rates_S, and g_n_path
