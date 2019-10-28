@@ -252,7 +252,7 @@ def plot_chi_n(p, include_title=False, path=None):
 
 
 def plot_fert_rates(fert_func, age_midp, totpers, min_yr, max_yr,
-                    fert_data, fert_rates):
+                    fert_data, fert_rates, output_dir=None):
     '''
     Plot fertility rates from the data along with smoothed function to
     use for model fertility rates.
@@ -299,18 +299,18 @@ def plot_fert_rates(fert_func, age_midp, totpers, min_yr, max_yr,
              'Source: National Vital Statistics Reports, ' +
              'Volume 64, Number 1, January 15, 2015.', fontsize=9)
     plt.tight_layout(rect=(0, 0.035, 1, 1))
-    # Create directory if OUTPUT directory does not already exist
-    output_dir = os.path.join(CUR_PATH, 'OUTPUT', 'Demographics')
-    if os.access(output_dir, os.F_OK) is False:
-        os.makedirs(output_dir)
-    output_path = os.path.join(output_dir, 'fert_rates')
-    plt.savefig(output_path)
-    plt.close()
+    # Save or return figure
+    if output_dir:
+        output_path = os.path.join(output_dir, 'fert_rates')
+        plt.savefig(output_path)
+        plt.close()
+    else:
+        return fig
 
 
 def plot_mort_rates_data(totpers, min_yr, max_yr, age_year_all,
                          mort_rates_all, infmort_rate,
-                         mort_rates):
+                         mort_rates, output_dir=None):
     '''
     Plots mortality rates from the model and data.
 
@@ -355,16 +355,17 @@ def plot_mort_rates_data(totpers, min_yr, max_yr, age_year_all,
              'Source: Actuarial Life table, 2011 Social Security ' +
              'Administration.', fontsize=9)
     plt.tight_layout(rect=(0, 0.03, 1, 1))
-    # Create directory if OUTPUT directory does not already exist
-    output_dir = os.path.join(CUR_PATH, 'OUTPUT', 'Demographics')
-    if os.access(output_dir, os.F_OK) is False:
-        os.makedirs(output_dir)
-    output_path = os.path.join(output_dir, 'mort_rates')
-    plt.savefig(output_path)
-    plt.close()
+    # Save or return figure
+    if output_dir:
+        output_path = os.path.join(output_dir, 'mort_rates')
+        plt.savefig(output_path)
+        plt.close()
+    else:
+        return fig
 
 
-def plot_omega_fixed(age_per_EpS, omega_SS_orig, omega_SSfx, E, S):
+def plot_omega_fixed(age_per_EpS, omega_SS_orig, omega_SSfx, E, S,
+                     output_dir=None):
     '''
     Plot the steady-state population distribution implied by the data
     on fertility and mortality rates versus the the steady-state
@@ -386,16 +387,17 @@ def plot_omega_fixed(age_per_EpS, omega_SS_orig, omega_SSfx, E, S):
     plt.ylabel(r"Pop. dist'n $\omega_{s}$")
     plt.xlim((0, E + S + 1))
     plt.legend(loc='upper right')
-    # Create directory if OUTPUT directory does not already exist
-    output_dir = os.path.join(CUR_PATH, 'OUTPUT', 'Demographics')
-    if os.access(output_dir, os.F_OK) is False:
-        os.makedirs(output_dir)
-    output_path = os.path.join(output_dir, 'OrigVsFixSSpop')
-    plt.savefig(output_path)
-    plt.close()
+    # Save or return figure
+    if output_dir:
+        output_path = os.path.join(output_dir, 'OrigVsFixSSpop')
+        plt.savefig(output_path)
+        plt.close()
+    else:
+        return fig
 
 
-def plot_imm_fixed(age_per_EpS, imm_rates_orig, imm_rates_adj, E, S):
+def plot_imm_fixed(age_per_EpS, imm_rates_orig, imm_rates_adj, E, S,
+                   output_dir=None):
     '''
     Plot the immigration rates implied by the data on population,
     mortality, and fertility versus the adjusted immigration rates
@@ -415,17 +417,17 @@ def plot_imm_fixed(age_per_EpS, imm_rates_orig, imm_rates_adj, E, S):
     plt.ylabel(r'Imm. rates $i_{s}$')
     plt.xlim((0, E + S + 1))
     plt.legend(loc='upper center')
-    # Create directory if OUTPUT directory does not already exist
-    output_dir = os.path.join(CUR_PATH, 'OUTPUT', 'Demographics')
-    if os.access(output_dir, os.F_OK) is False:
-        os.makedirs(output_dir)
-    output_path = os.path.join(output_dir, 'OrigVsAdjImm')
-    plt.savefig(output_path)
-    plt.close()
+    # Save or return figure
+    if output_dir:
+        output_path = os.path.join(output_dir, 'OrigVsAdjImm')
+        plt.savefig(output_path)
+        plt.close()
+    else:
+        return fig
 
 
 def plot_population_path(age_per_EpS, pop_2013_pct, omega_path_lev,
-                         omega_SSfx, curr_year, E, S):
+                         omega_SSfx, curr_year, E, S, output_dir=None):
     '''
     Plot the distribution of the population over age for various years.
 
@@ -450,10 +452,10 @@ def plot_population_path(age_per_EpS, pop_2013_pct, omega_path_lev,
     plt.xlabel(r'Age $s$')
     plt.ylabel(r"Pop. dist'n $\omega_{s}$")
     plt.legend(loc='lower left')
-    # Create directory if OUTPUT directory does not already exist
-    output_dir = os.path.join(CUR_PATH, 'OUTPUT', 'Demographics')
-    if os.access(output_dir, os.F_OK) is False:
-        os.makedirs(output_dir)
-    output_path = os.path.join(output_dir, 'PopDistPath')
-    plt.savefig(output_path)
-    plt.close()
+    # Save or return figure
+    if output_dir:
+        output_path = os.path.join(output_dir, 'PopDistPath')
+        plt.savefig(output_path)
+        plt.close()
+    else:
+        return fig
