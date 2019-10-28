@@ -11,8 +11,14 @@ import scipy.optimize as opt
 import scipy.interpolate as si
 import pandas as pd
 from ogusa import parameter_plots as pp
-import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator
+
+
+# create output director for figures
+CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
+OUTPUT_DIR = os.path.join(CUR_PATH, 'OUTPUT', 'Demographics')
+if os.access(OUTPUT_DIR, os.F_OK) is False:
+    os.makedirs(OUTPUT_DIR)
+
 
 '''
 ------------------------------------------------------------------------
@@ -84,8 +90,8 @@ def get_fert(totpers, min_yr, max_yr, graph=False):
             curr_pop_sub[beg_sub_bin:end_sub_bin].sum())
 
     if graph:
-        pp.plot_fert_rates(fert_func, age_midp, min_yr, max_yr, totpers,
-                           fert_data, fert_rates)
+        pp.plot_fert_rates(fert_func, age_midp, totpers, min_yr, max_yr,
+                           fert_data, fert_rates, output_dir=OUTPUT_DIR)
 
     return fert_rates
 
@@ -146,7 +152,8 @@ def get_mort(totpers, min_yr, max_yr, graph=False):
 
     if graph:
         pp.plot_mort_rates_data(totpers, min_yr, max_yr, age_year_all,
-                                mort_rates_all, infmort_rate, mort_rates)
+                                mort_rates_all, infmort_rate,
+                                mort_rates, output_dir=OUTPUT_DIR)
 
     return mort_rates, infmort_rate
 
@@ -511,10 +518,13 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
               'immigration rates is ' + str(immratesmaxdiff))
 
         # plots
-        pp.plot_omega_fixed(age_per_EpS, omega_SS_orig, omega_SSfx, E, S)
-        pp.plot_imm_fixed(age_per_EpS, imm_rates_orig, imm_rates_adj, E, S)
-        pp.plot_population_path(age_per_EpS, pop_2013_pct, omega_path_lev,
-                                omega_SSfx, curr_year, E, S)
+        pp.plot_omega_fixed(age_per_EpS, omega_SS_orig, omega_SSfx, E,
+                            S, output_dir=OUTPUT_DIR)
+        pp.plot_imm_fixed(age_per_EpS, imm_rates_orig, imm_rates_adj, E,
+                          S, output_dir=OUTPUT_DIR)
+        pp.plot_population_path(age_per_EpS, pop_2013_pct,
+                                omega_path_lev, omega_SSfx, curr_year,
+                                E, S, output_dir=OUTPUT_DIR)
 
     # return omega_path_S, g_n_SS, omega_SSfx, survival rates,
     # mort_rates_S, and g_n_path
