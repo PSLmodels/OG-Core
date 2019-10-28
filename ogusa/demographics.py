@@ -48,9 +48,8 @@ def get_fert(totpers, min_yr, max_yr, graph=False):
 
     '''
     # Get current population data (2013) for weighting
-    cur_path = os.path.split(os.path.abspath(__file__))[0]
     pop_file = os.path.join(
-        cur_path, 'data', 'demographic', 'pop_data.csv')
+        CUR_PATH, 'data', 'demographic', 'pop_data.csv')
     pop_data = pd.read_csv(pop_file, thousands=',')
     pop_data_samp = pop_data[(pop_data['Age'] >= min_yr - 1) &
                              (pop_data['Age'] <= max_yr - 1)]
@@ -120,9 +119,8 @@ def get_mort(totpers, min_yr, max_yr, graph=False):
     '''
     # Get mortality rate by age data
     infmort_rate = 0.00587  # taken from 2015 U.S. infant mortality rate
-    cur_path = os.path.split(os.path.abspath(__file__))[0]
     mort_file = os.path.join(
-        cur_path, 'data', 'demographic', 'mort_rates2011.csv')
+        CUR_PATH, 'data', 'demographic', 'mort_rates2011.csv')
     mort_data = pd.read_csv(mort_file, thousands=',')
     age_year_all = mort_data['Age'] + 1
     mort_rates_all = (
@@ -224,9 +222,8 @@ def get_imm_resid(totpers, min_yr, max_yr):
             each period of life, length E+S
 
     '''
-    cur_path = os.path.split(os.path.abspath(__file__))[0]
     pop_file = os.path.join(
-        cur_path, 'data', 'demographic', 'pop_data.csv')
+        CUR_PATH, 'data', 'demographic', 'pop_data.csv')
     pop_data = pd.read_csv(pop_file, thousands=',')
     pop_data_samp = pop_data[(pop_data['Age'] >= min_yr - 1) &
                              (pop_data['Age'] <= max_yr - 1)]
@@ -265,7 +262,6 @@ def get_imm_resid(totpers, min_yr, max_yr):
     imm_mat[:, 1:] = (pop22mat - (1 - mort_mat) * pop11mat) / pop12mat
     # Final estimated immigration rates are the averages over 3 years
     imm_rates = imm_mat.mean(axis=0)
-    age_per = np.linspace(1, totpers, totpers)
 
     return imm_rates
 
@@ -363,9 +359,8 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
 
     # Generate time path of the nonstationary population distribution
     omega_path_lev = np.zeros((E + S, T + S))
-    cur_path = os.path.split(os.path.abspath(__file__))[0]
     pop_file = os.path.join(
-        cur_path, 'data', 'demographic', 'pop_data.csv')
+        CUR_PATH, 'data', 'demographic', 'pop_data.csv')
     pop_data = pd.read_csv(pop_file, thousands=',')
     pop_data_samp = pop_data[(pop_data['Age'] >= min_yr - 1) &
                              (pop_data['Age'] <= max_yr - 1)]
