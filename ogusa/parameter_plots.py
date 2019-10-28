@@ -14,6 +14,7 @@ def plot_imm_rates(p, year=2019, include_title=False, path=None):
     Args:
         p (OG-USA Specifications class): parameters object
         year (integer): year of mortality ratese to plot
+        include_title (bool): whether to include a title in the plot
         path (string): path to save figure to
 
     Returns:
@@ -45,6 +46,7 @@ def plot_mort_rates(p, include_title=False, path=None):
 
     Args:
         p (OG-USA Specifications class): parameters object
+        include_title (bool): whether to include a title in the plot
         path (string): path to save figure to
 
     Returns:
@@ -67,8 +69,8 @@ def plot_mort_rates(p, include_title=False, path=None):
         plt.savefig(fig_path)
 
 
-def plot_pop_growth(p, start_year=2019, include_title=False,
-                    num_years_to_plot=150, path=None):
+def plot_pop_growth(p, start_year=2019, num_years_to_plot=150,
+                    include_title=False, path=None):
     '''
     Create a plot of population growth rates by year.
 
@@ -76,6 +78,7 @@ def plot_pop_growth(p, start_year=2019, include_title=False,
         p (OG-USA Specifications class): parameters object
         start_year (integer): year to begin plotting
         num_years_to_plot (integer): number of years to plot
+        include_title (bool): whether to include a title in the plot
         path (string): path to save figure to
 
     Returns:
@@ -102,43 +105,44 @@ def plot_pop_growth(p, start_year=2019, include_title=False,
         plt.savefig(fig_path)
 
 
-# def plot_population(p, years_to_plot=[2013], include_title=False,
-#                     num_years_to_plot=150, path=None):
-#     '''
-#     Plot the distribution of the population over age for various years.
-#
-#     Args:
-#
-#     Returns:
-#
-#     '''
-#     fig, ax = plt.subplots()
-#     plt.plot(age_per_EpS, pop_2013_pct, label='2013 pop.')
-#     plt.plot(age_per_EpS, (omega_path_lev[:, 0] /
-#                            omega_path_lev[:, 0].sum()),
-#              label=str(curr_year) + ' pop.')
-#     plt.plot(age_per_EpS, (omega_path_lev[:, int(0.5 * S)] /
-#                            omega_path_lev[:, int(0.5 * S)].sum()),
-#              label='T=' + str(int(0.5 * S)) + ' pop.')
-#     plt.plot(age_per_EpS, (omega_path_lev[:, int(S)] /
-#                            omega_path_lev[:, int(S)].sum()),
-#              label='T=' + str(int(S)) + ' pop.')
-#     plt.plot(age_per_EpS, omega_SSfx, label='Adj. SS pop.')
-#     # for the minor ticks, use no labels; default NullFormatter
-#     minorLocator = MultipleLocator(1)
-#     ax.xaxis.set_minor_locator(minorLocator)
-#     plt.grid(b=True, which='major', color='0.65', linestyle='-')
-#     plt.title(
-#         'Population distribution at points in time path',
-#         fontsize=20)
-#     plt.xlabel(r'Age $s$')
-#     plt.ylabel(r"Pop. dist'n $\omega_{s}$")
-#     plt.xlim((0, E+S+1))
-#     plt.legend(loc='lower left')
-#     # Create directory if OUTPUT directory does not already exist
-#     output_path = os.path.join(output_dir, 'PopDistPath')
-#     plt.savefig(output_path)
-#     plt.show()
+def plot_population(p, years_to_plot=['SS'], include_title=False,
+                    path=None):
+    '''
+    Plot the distribution of the population over age for various years.
+
+    Args:
+        p (OG-USA Specifications class): parameters object
+        years_to_plot (list): list of years to plot, 'SS' will denote
+            the steady-state period
+        include_title (bool): whether to include a title in the plot
+        path (string): path to save figure to
+
+    Returns:
+        fig (Matplotlib plot object): plot of population distribution
+
+    '''
+    for i, v in enumerate(years_to_plot):
+        assert (isinstance(v, int) | (v == 'SS'))
+        if isinstance(v, int):
+            assert (v >= p.start_year)
+    age_vec = np.arange(p.E, p.S + p.E)
+    fig, ax = plt.subplots()
+    for i, v in enumerate(years_to_plot):
+        if v == 'SS':
+            pop_dist = p.omega_SS
+        else:
+            pop_dist = p.omega[v - p.start_year, :]
+        plt.plot(age_vec, pop_dist, label=str(v) + ' pop.')
+    plt.xlabel(r'Age $s$')
+    plt.ylabel(r"Pop. dist'n $\omega_{s}$")
+    plt.legend(loc='lower left')
+    if include_title:
+        plt.title('Population Distribution by Year')
+    if path is None:
+        return fig
+    else:
+        fig_path = os.path.join(path, "pop_distribution")
+        plt.savefig(fig_path)
 
 
 def plot_ability_profiles(p, include_title=False, path=None):
