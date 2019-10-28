@@ -41,3 +41,8 @@ def test_plot_elliptical_u():
 def test_plot_chi_n():
     fig = parameter_plots.plot_chi_n(base_params)
     assert fig
+
+
+def test_plot_population():
+    fig = parameter_plots.plot_population(base_params)
+    assert fig
