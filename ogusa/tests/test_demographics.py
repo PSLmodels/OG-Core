@@ -99,5 +99,5 @@ def test_get_imm_resid():
     Test of function to solve for immigration rates from population data
     '''
     S = 100
-    imm_rates = demographics.get_imm_resid(S, 0, 100, graph=False)
+    imm_rates = demographics.get_imm_resid(S, 0, 100)
     assert (imm_rates.shape[0] == S)

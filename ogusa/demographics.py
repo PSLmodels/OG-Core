@@ -10,9 +10,15 @@ import numpy as np
 import scipy.optimize as opt
 import scipy.interpolate as si
 import pandas as pd
-from ogusa import utils
-import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator
+from ogusa import parameter_plots as pp
+
+
+# create output director for figures
+CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
+OUTPUT_DIR = os.path.join(CUR_PATH, 'OUTPUT', 'Demographics')
+if os.access(OUTPUT_DIR, os.F_OK) is False:
+    os.makedirs(OUTPUT_DIR)
+
 
 '''
 ------------------------------------------------------------------------
@@ -42,9 +48,8 @@ def get_fert(totpers, min_yr, max_yr, graph=False):
 
     '''
     # Get current population data (2013) for weighting
-    cur_path = os.path.split(os.path.abspath(__file__))[0]
     pop_file = os.path.join(
-        cur_path, 'data', 'demographic', 'pop_data.csv')
+        CUR_PATH, 'data', 'demographic', 'pop_data.csv')
     pop_data = pd.read_csv(pop_file, thousands=',')
     pop_data_samp = pop_data[(pop_data['Age'] >= min_yr - 1) &
                              (pop_data['Age'] <= max_yr - 1)]
@@ -84,63 +89,8 @@ def get_fert(totpers, min_yr, max_yr, graph=False):
             curr_pop_sub[beg_sub_bin:end_sub_bin].sum())
 
     if graph:
-        '''
-        ----------------------------------------------------------------
-        age_fine_pred  = (300,) vector, equally spaced support of ages
-                         between the minimum and maximum interpolating
-                         ages
-        fert_fine_pred = (300,) vector, interpolated fertility rates
-                         based on age_fine_pred
-        age_fine       = (300+some,) vector of ages including leading
-                         and trailing zeros
-        fert_fine      = (300+some,) vector of fertility rates including
-                         leading and trailing zeros
-        age_mid_new    = (totpers,) vector, midpoint age of each model
-                         period age bin
-        output_fldr    = string, folder in current path to save files
-        output_dir     = string, total path of OUTPUT folder
-        output_path    = string, path of file name of figure to be saved
-        ----------------------------------------------------------------
-        '''
-        # Generate finer age vector and fertility rate vector for
-        # graphing cubic spline interpolating function
-        age_fine_pred = np.linspace(age_midp[0], age_midp[-1], 300)
-        fert_fine_pred = fert_func(age_fine_pred)
-        age_fine = np.hstack((min_yr, age_fine_pred, max_yr))
-        fert_fine = np.hstack((0, fert_fine_pred, 0))
-        age_mid_new = (np.linspace(np.float(max_yr) / totpers, max_yr,
-                                   totpers) - (0.5 * np.float(max_yr) /
-                                               totpers))
-
-        fig, ax = plt.subplots()
-        plt.scatter(age_midp, fert_data, s=70, c='blue', marker='o',
-                    label='Data')
-        plt.scatter(age_mid_new, fert_rates, s=40, c='red', marker='d',
-                    label='Model period (integrated)')
-        plt.plot(age_fine, fert_fine, label='Cubic spline')
-        # for the minor ticks, use no labels; default NullFormatter
-        minorLocator = MultipleLocator(1)
-        ax.xaxis.set_minor_locator(minorLocator)
-        plt.grid(b=True, which='major', color='0.65', linestyle='-')
-        # plt.title('Fitted fertility rate function by age ($f_{s}$)',
-        #     fontsize=20)
-        plt.xlabel(r'Age $s$')
-        plt.ylabel(r'Fertility rate $f_{s}$')
-        plt.xlim((min_yr - 1, max_yr + 1))
-        plt.ylim((-0.15 * (fert_fine_pred.max()),
-                  1.15 * (fert_fine_pred.max())))
-        plt.legend(loc='upper right')
-        plt.text(-5, -0.018,
-                 'Source: National Vital Statistics Reports, ' +
-                 'Volume 64, Number 1, January 15, 2015.', fontsize=9)
-        plt.tight_layout(rect=(0, 0.03, 1, 1))
-        # Create directory if OUTPUT directory does not already exist
-        output_fldr = 'OUTPUT/Demographics'
-        output_dir = os.path.join(cur_path, output_fldr)
-        if os.access(output_dir, os.F_OK) is False:
-            os.makedirs(output_dir)
-        output_path = os.path.join(output_dir, 'fert_rates')
-        plt.savefig(output_path)
+        pp.plot_fert_rates(fert_func, age_midp, totpers, min_yr, max_yr,
+                           fert_data, fert_rates, output_dir=OUTPUT_DIR)
 
     return fert_rates
 
@@ -169,9 +119,8 @@ def get_mort(totpers, min_yr, max_yr, graph=False):
     '''
     # Get mortality rate by age data
     infmort_rate = 0.00587  # taken from 2015 U.S. infant mortality rate
-    cur_path = os.path.split(os.path.abspath(__file__))[0]
     mort_file = os.path.join(
-        cur_path, 'data', 'demographic', 'mort_rates2011.csv')
+        CUR_PATH, 'data', 'demographic', 'mort_rates2011.csv')
     mort_data = pd.read_csv(mort_file, thousands=',')
     age_year_all = mort_data['Age'] + 1
     mort_rates_all = (
@@ -200,53 +149,9 @@ def get_mort(totpers, min_yr, max_yr, graph=False):
     mort_rates[-1] = 1  # Mortality rate in last period is set to 1
 
     if graph:
-        '''
-        ----------------------------------------------------------------
-        age_mid_new = (totpers,) vector, midpoint age of each model
-                      period age bin
-        output_fldr = string, folder in current path to save files
-        output_dir  = string, total path of OUTPUT folder
-        output_path = string, path of file name of figure to be saved
-        ----------------------------------------------------------------
-        '''
-        age_mid_new = (np.linspace(np.float(max_yr) / totpers, max_yr,
-                                   totpers) - (0.5 * np.float(max_yr) /
-                                               totpers))
-        fig, ax = plt.subplots()
-        plt.scatter(np.hstack([0, age_year_all]),
-                    np.hstack([infmort_rate, mort_rates_all]),
-                    s=20, c='blue', marker='o', label='Data')
-        plt.scatter(np.hstack([0, age_mid_new]),
-                    np.hstack([infmort_rate, mort_rates]),
-                    s=40, c='red', marker='d',
-                    label='Model period (cumulative)')
-        plt.plot(np.hstack([0, age_year_all[min_yr - 1:max_yr]]),
-                 np.hstack([infmort_rate,
-                            mort_rates_all[min_yr - 1:max_yr]]))
-        plt.axvline(x=max_yr, color='red', linestyle='-', linewidth=1)
-        # for the minor ticks, use no labels; default NullFormatter
-        minorLocator = MultipleLocator(1)
-        ax.xaxis.set_minor_locator(minorLocator)
-        plt.grid(b=True, which='major', color='0.65', linestyle='-')
-        # plt.title('Fitted mortality rate function by age ($rho_{s}$)',
-        #     fontsize=20)
-        plt.xlabel(r'Age $s$')
-        plt.ylabel(r'Mortality rate $\rho_{s}$')
-        plt.xlim((min_yr-2, age_year_all.max()+2))
-        plt.ylim((-0.05, 1.05))
-        plt.legend(loc='upper left')
-        plt.text(-5, -0.2,
-                 'Source: Actuarial Life table, 2011 Social Security ' +
-                 'Administration.', fontsize=9)
-        plt.tight_layout(rect=(0, 0.03, 1, 1))
-        # Create directory if OUTPUT directory does not already exist
-        output_fldr = 'OUTPUT/Demographics'
-        output_dir = os.path.join(cur_path, output_fldr)
-        if os.access(output_dir, os.F_OK) is False:
-            os.makedirs(output_dir)
-        output_path = os.path.join(output_dir, 'mort_rates')
-        plt.savefig(output_path)
-        # plt.show()
+        pp.plot_mort_rates_data(totpers, min_yr, max_yr, age_year_all,
+                                mort_rates_all, infmort_rate,
+                                mort_rates, output_dir=OUTPUT_DIR)
 
     return mort_rates, infmort_rate
 
@@ -293,7 +198,7 @@ def pop_rebin(curr_pop_dist, totpers_new):
     return curr_pop_new
 
 
-def get_imm_resid(totpers, min_yr, max_yr, graph=True):
+def get_imm_resid(totpers, min_yr, max_yr):
     '''
     Calculate immigration rates by age as a residual given population
     levels in different periods, then output average calculated
@@ -317,9 +222,8 @@ def get_imm_resid(totpers, min_yr, max_yr, graph=True):
             each period of life, length E+S
 
     '''
-    cur_path = os.path.split(os.path.abspath(__file__))[0]
     pop_file = os.path.join(
-        cur_path, 'data', 'demographic', 'pop_data.csv')
+        CUR_PATH, 'data', 'demographic', 'pop_data.csv')
     pop_data = pd.read_csv(pop_file, thousands=',')
     pop_data_samp = pop_data[(pop_data['Age'] >= min_yr - 1) &
                              (pop_data['Age'] <= max_yr - 1)]
@@ -358,36 +262,6 @@ def get_imm_resid(totpers, min_yr, max_yr, graph=True):
     imm_mat[:, 1:] = (pop22mat - (1 - mort_mat) * pop11mat) / pop12mat
     # Final estimated immigration rates are the averages over 3 years
     imm_rates = imm_mat.mean(axis=0)
-    age_per = np.linspace(1, totpers, totpers)
-
-    if graph:
-        '''
-        ----------------------------------------------------------------
-        output_fldr = string, path of the OUTPUT folder from cur_path
-        output_dir  = string, total path of OUTPUT folder
-        output_path = string, path of file name of figure to be saved
-        ----------------------------------------------------------------
-        '''
-        fig, ax = plt.subplots()
-        plt.scatter(age_per, imm_rates, s=40, c='red', marker='d')
-        plt.plot(age_per, imm_rates)
-        # for the minor ticks, use no labels; default NullFormatter
-        minorLocator = MultipleLocator(1)
-        ax.xaxis.set_minor_locator(minorLocator)
-        plt.grid(b=True, which='major', color='0.65', linestyle='-')
-        # plt.title('Fitted immigration rates by age ($i_{s}$), residual',
-        #     fontsize=20)
-        plt.xlabel(r'Age $s$ (model periods)')
-        plt.ylabel(r'Imm. rate $i_{s}$')
-        plt.xlim((0, totpers + 1))
-        # Create directory if OUTPUT directory does not already exist
-        output_fldr = 'OUTPUT/Demographics'
-        output_dir = os.path.join(cur_path, output_fldr)
-        if os.access(output_dir, os.F_OK) is False:
-            os.makedirs(output_dir)
-        output_path = os.path.join(output_dir, 'imm_rates_orig')
-        plt.savefig(output_path)
-        # plt.show()
 
     return imm_rates
 
@@ -466,7 +340,7 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
     mort_rates, infmort_rate = get_mort(E + S, min_yr, max_yr,
                                         graph=False)
     mort_rates_S = mort_rates[-S:]
-    imm_rates_orig = get_imm_resid(E + S, min_yr, max_yr, graph=False)
+    imm_rates_orig = get_imm_resid(E + S, min_yr, max_yr)
     OMEGA_orig = np.zeros((E + S, E + S))
     OMEGA_orig[0, :] = ((1 - infmort_rate) * fert_rates +
                         np.hstack((imm_rates_orig[0], np.zeros(E+S-1))))
@@ -485,9 +359,8 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
 
     # Generate time path of the nonstationary population distribution
     omega_path_lev = np.zeros((E + S, T + S))
-    cur_path = os.path.split(os.path.abspath(__file__))[0]
     pop_file = os.path.join(
-        cur_path, 'data', 'demographic', 'pop_data.csv')
+        CUR_PATH, 'data', 'demographic', 'pop_data.csv')
     pop_data = pd.read_csv(pop_file, thousands=',')
     pop_data_samp = pop_data[(pop_data['Age'] >= min_yr - 1) &
                              (pop_data['Age'] <= max_yr - 1)]
@@ -579,36 +452,6 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
                   'between any two corresponding points in the original'
                   + ' and adjusted steady-state population ' +
                   'distributions is ' + str(omegaSSvTmaxdiff))
-        fig, ax = plt.subplots()
-        plt.plot(age_per_EpS, omega_SS_orig, label="Original Dist'n")
-        plt.plot(age_per_EpS, omega_SSfx, label="Fixed Dist'n")
-        # for the minor ticks, use no labels; default NullFormatter
-        minorLocator = MultipleLocator(1)
-        ax.xaxis.set_minor_locator(minorLocator)
-        plt.grid(b=True, which='major', color='0.65', linestyle='-')
-        plt.title(
-            'Original steady-state population distribution vs. fixed',
-            fontsize=20)
-        plt.xlabel(r'Age $s$')
-        plt.ylabel(r"Pop. dist'n $\omega_{s}$")
-        plt.xlim((0, E + S + 1))
-        plt.legend(loc='upper right')
-        # Create directory if OUTPUT directory does not already exist
-        '''
-        ----------------------------------------------------------------
-        output_fldr = string, path of the OUTPUT folder from cur_path
-        output_dir  = string, total path of OUTPUT folder
-        output_path = string, path of file name of figure to be saved
-        ----------------------------------------------------------------
-        '''
-        cur_path = os.path.split(os.path.abspath(__file__))[0]
-        output_fldr = 'OUTPUT/Demographics'
-        output_dir = os.path.join(cur_path, output_fldr)
-        if os.access(output_dir, os.F_OK) is False:
-            os.makedirs(output_dir)
-        output_path = os.path.join(output_dir, 'OrigVsFixSSpop')
-        plt.savefig(output_path)
-        plt.show()
 
         # Print whether or not the adjusted immigration rates solved the
         # zero condition
@@ -668,54 +511,15 @@ def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
         print('The maximum absolute distance between any two points ' +
               'of the original immigration rates and adjusted ' +
               'immigration rates is ' + str(immratesmaxdiff))
-        fig, ax = plt.subplots()
-        plt.plot(age_per_EpS, imm_rates_orig, label='Original Imm. Rates')
-        plt.plot(age_per_EpS, imm_rates_adj, label='Adj. Imm. Rates')
-        # for the minor ticks, use no labels; default NullFormatter
-        minorLocator = MultipleLocator(1)
-        ax.xaxis.set_minor_locator(minorLocator)
-        plt.grid(b=True, which='major', color='0.65', linestyle='-')
-        plt.title(
-            'Original immigration rates vs. adjusted',
-            fontsize=20)
-        plt.xlabel(r'Age $s$')
-        plt.ylabel(r'Imm. rates $i_{s}$')
-        plt.xlim((0, E + S + 1))
-        plt.legend(loc='upper center')
-        # Create directory if OUTPUT directory does not already exist
-        output_path = os.path.join(output_dir, 'OrigVsAdjImm')
-        plt.savefig(output_path)
-        plt.show()
 
-        # Plot population distributions for data_year, curr_year,
-        # curr_year+20, omega_SSfx, and omega_SS_orig
-        fig, ax = plt.subplots()
-        plt.plot(age_per_EpS, pop_2013_pct, label='2013 pop.')
-        plt.plot(age_per_EpS, (omega_path_lev[:, 0] /
-                               omega_path_lev[:, 0].sum()),
-                 label=str(curr_year) + ' pop.')
-        plt.plot(age_per_EpS, (omega_path_lev[:, int(0.5 * S)] /
-                               omega_path_lev[:, int(0.5 * S)].sum()),
-                 label='T=' + str(int(0.5 * S)) + ' pop.')
-        plt.plot(age_per_EpS, (omega_path_lev[:, int(S)] /
-                               omega_path_lev[:, int(S)].sum()),
-                 label='T=' + str(int(S)) + ' pop.')
-        plt.plot(age_per_EpS, omega_SSfx, label='Adj. SS pop.')
-        # for the minor ticks, use no labels; default NullFormatter
-        minorLocator = MultipleLocator(1)
-        ax.xaxis.set_minor_locator(minorLocator)
-        plt.grid(b=True, which='major', color='0.65', linestyle='-')
-        plt.title(
-            'Population distribution at points in time path',
-            fontsize=20)
-        plt.xlabel(r'Age $s$')
-        plt.ylabel(r"Pop. dist'n $\omega_{s}$")
-        plt.xlim((0, E+S+1))
-        plt.legend(loc='lower left')
-        # Create directory if OUTPUT directory does not already exist
-        output_path = os.path.join(output_dir, 'PopDistPath')
-        plt.savefig(output_path)
-        plt.show()
+        # plots
+        pp.plot_omega_fixed(age_per_EpS, omega_SS_orig, omega_SSfx, E,
+                            S, output_dir=OUTPUT_DIR)
+        pp.plot_imm_fixed(age_per_EpS, imm_rates_orig, imm_rates_adj, E,
+                          S, output_dir=OUTPUT_DIR)
+        pp.plot_population_path(age_per_EpS, pop_2013_pct,
+                                omega_path_lev, omega_SSfx, curr_year,
+                                E, S, output_dir=OUTPUT_DIR)
 
     # return omega_path_S, g_n_SS, omega_SSfx, survival rates,
     # mort_rates_S, and g_n_path
