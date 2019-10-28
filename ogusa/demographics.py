@@ -145,53 +145,8 @@ def get_mort(totpers, min_yr, max_yr, graph=False):
     mort_rates[-1] = 1  # Mortality rate in last period is set to 1
 
     if graph:
-        '''
-        ----------------------------------------------------------------
-        age_mid_new = (totpers,) vector, midpoint age of each model
-                      period age bin
-        output_fldr = string, folder in current path to save files
-        output_dir  = string, total path of OUTPUT folder
-        output_path = string, path of file name of figure to be saved
-        ----------------------------------------------------------------
-        '''
-        age_mid_new = (np.linspace(np.float(max_yr) / totpers, max_yr,
-                                   totpers) - (0.5 * np.float(max_yr) /
-                                               totpers))
-        fig, ax = plt.subplots()
-        plt.scatter(np.hstack([0, age_year_all]),
-                    np.hstack([infmort_rate, mort_rates_all]),
-                    s=20, c='blue', marker='o', label='Data')
-        plt.scatter(np.hstack([0, age_mid_new]),
-                    np.hstack([infmort_rate, mort_rates]),
-                    s=40, c='red', marker='d',
-                    label='Model period (cumulative)')
-        plt.plot(np.hstack([0, age_year_all[min_yr - 1:max_yr]]),
-                 np.hstack([infmort_rate,
-                            mort_rates_all[min_yr - 1:max_yr]]))
-        plt.axvline(x=max_yr, color='red', linestyle='-', linewidth=1)
-        # for the minor ticks, use no labels; default NullFormatter
-        minorLocator = MultipleLocator(1)
-        ax.xaxis.set_minor_locator(minorLocator)
-        plt.grid(b=True, which='major', color='0.65', linestyle='-')
-        # plt.title('Fitted mortality rate function by age ($rho_{s}$)',
-        #     fontsize=20)
-        plt.xlabel(r'Age $s$')
-        plt.ylabel(r'Mortality rate $\rho_{s}$')
-        plt.xlim((min_yr-2, age_year_all.max()+2))
-        plt.ylim((-0.05, 1.05))
-        plt.legend(loc='upper left')
-        plt.text(-5, -0.2,
-                 'Source: Actuarial Life table, 2011 Social Security ' +
-                 'Administration.', fontsize=9)
-        plt.tight_layout(rect=(0, 0.03, 1, 1))
-        # Create directory if OUTPUT directory does not already exist
-        output_fldr = 'OUTPUT/Demographics'
-        output_dir = os.path.join(cur_path, output_fldr)
-        if os.access(output_dir, os.F_OK) is False:
-            os.makedirs(output_dir)
-        output_path = os.path.join(output_dir, 'mort_rates')
-        plt.savefig(output_path)
-        # plt.show()
+        pp.plot_mort_rates_data(totpers, min_yr, max_yr, age_year_all,
+                                mort_rates_all, infmort_rate, mort_rates)
 
     return mort_rates, infmort_rate
 

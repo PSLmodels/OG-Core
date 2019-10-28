@@ -228,7 +228,7 @@ def plot_fert_rates(fert_func, age_midp, totpers, min_yr, max_yr,
             totpers
 
     Returns:
-        fig (Matplotlib plot object): plot of elliptical vs CFE utility
+        None
 
     '''
     # Generate finer age vector and fertility rate vector for
@@ -262,3 +262,60 @@ def plot_fert_rates(fert_func, age_midp, totpers, min_yr, max_yr,
         os.makedirs(output_dir)
     output_path = os.path.join(output_dir, 'fert_rates')
     plt.savefig(output_path)
+    plt.close()
+
+
+def plot_mort_rates_data(totpers, min_yr, max_yr, age_year_all,
+                         mort_rates_all, infmort_rate,
+                         mort_rates):
+    '''
+    Plots mortality rates from the model and data.
+
+    Args:
+        totpers (int): total number of agent life periods (E+S), >= 3
+        min_yr (int): age in years at which agents are born, >= 0
+        max_yr (int): age in years at which agents die with certainty,
+            >= 4
+        age_year_all (array_like): ages in mortality rate data
+        mort_rates_all (array_like): mortality rates by age from data,
+            average across males and females
+        infmort_rate (scalar): infant mortality rate
+        mort_rates (array_like): fitted mortality rates for each of
+            totpers
+
+    Returns:
+        None
+
+    '''
+    age_mid_new = (np.linspace(np.float(max_yr) / totpers, max_yr,
+                               totpers) - (0.5 * np.float(max_yr) /
+                                           totpers))
+    fig, ax = plt.subplots()
+    plt.scatter(np.hstack([0, age_year_all]),
+                np.hstack([infmort_rate, mort_rates_all]),
+                s=20, c='blue', marker='o', label='Data')
+    plt.scatter(np.hstack([0, age_mid_new]),
+                np.hstack([infmort_rate, mort_rates]),
+                s=40, c='red', marker='d',
+                label='Model period (cumulative)')
+    plt.plot(np.hstack([0, age_year_all[min_yr - 1:max_yr]]),
+             np.hstack([infmort_rate,
+                        mort_rates_all[min_yr - 1:max_yr]]))
+    plt.axvline(x=max_yr, color='red', linestyle='-', linewidth=1)
+    plt.grid(b=True, which='major', color='0.65', linestyle='-')
+    # plt.title('Fitted mortality rate function by age ($rho_{s}$)',
+    #     fontsize=20)
+    plt.xlabel(r'Age $s$')
+    plt.ylabel(r'Mortality rate $\rho_{s}$')
+    plt.legend(loc='upper left')
+    plt.text(-5, -0.2,
+             'Source: Actuarial Life table, 2011 Social Security ' +
+             'Administration.', fontsize=9)
+    plt.tight_layout(rect=(0, 0.03, 1, 1))
+    # Create directory if OUTPUT directory does not already exist
+    output_dir = os.path.join(CUR_PATH, 'OUTPUT', 'Demographics')
+    if os.access(output_dir, os.F_OK) is False:
+        os.makedirs(output_dir)
+    output_path = os.path.join(output_dir, 'mort_rates')
+    plt.savefig(output_path)
+    plt.close()
