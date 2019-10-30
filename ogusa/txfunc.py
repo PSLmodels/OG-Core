@@ -16,14 +16,13 @@ import scipy.optimize as opt
 from dask import delayed, compute
 import dask.multiprocessing
 import pickle
-import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator
 from ogusa import get_micro_data
 from ogusa.utils import DEFAULT_START_YEAR
 import ogusa.parameter_plots as pp
 
-TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
+CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 MIN_OBS = 240  # 240 is 8 parameters to estimate X 30 obs per parameter
 MIN_ETR = -0.15
 MAX_ETR = 0.65
@@ -336,8 +335,7 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
         plt.xlabel(r'age $s$')
         plt.ylabel(r'SSE')
         # Create directory if OUTPUT directory does not already exist
-        cur_path = os.path.split(os.path.abspath(__file__))[0]
-        output_dir = os.path.join(cur_path, 'OUTPUT', 'TaxFunctions')
+        output_dir = os.path.join(CUR_PATH, 'OUTPUT', 'TaxFunctions')
         if not os.access(output_dir, os.F_OK):
             os.makedirs(output_dir)
         graphname = "SSE_" + varstr
@@ -1262,8 +1260,7 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     # --------------------------------------------------------------------
     # '''
     start_time = time.time()
-    cur_path = os.path.split(os.path.abspath(__file__))[0]
-    output_dir = os.path.join(cur_path, 'OUTPUT', 'TaxFunctions')
+    output_dir = os.path.join(cCUR_PATH, 'OUTPUT', 'TaxFunctions')
     if not os.access(output_dir, os.F_OK):
         os.makedirs(output_dir)
 
