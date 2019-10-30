@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+import matplotlib
 from ogusa.constants import GROUP_LABELS
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(CUR_PATH, 'OGUSAplots.mplstyle')
@@ -459,3 +460,194 @@ def plot_population_path(age_per_EpS, pop_2013_pct, omega_path_lev,
         plt.close()
     else:
         return fig
+
+
+def gen_3Dscatters_hist(df, s, t, output_dir):
+    '''
+    Create 3-D scatterplots and corresponding 3D histogram of ETR, MTRx,
+    and MTRy as functions of labor income and capital income with
+    truncated data in the income dimension
+
+    Args:
+        df (Pandas DataFrame): 11 variables with N observations of tax
+            rates
+        s (int): age of individual, >= 21
+        t (int): year of analysis, >= 2016
+        output_dir (str): output directory for saving plot files
+
+    Returns:
+        None
+
+    '''
+    from ogusa.txfunc import MAX_INC_GRAPH, MIN_INC_GRAPH
+    # Truncate the data
+    df_trnc = df[(df['total_labinc'] > MIN_INC_GRAPH) &
+                 (df['total_labinc'] < MAX_INC_GRAPH) &
+                 (df['total_capinc'] > MIN_INC_GRAPH) &
+                 (df['total_capinc'] < MAX_INC_GRAPH)]
+    inc_lab = df_trnc['total_labinc']
+    inc_cap = df_trnc['total_capinc']
+    etr_data = df_trnc['etr']
+    mtrx_data = df_trnc['mtr_labinc']
+    mtry_data = df_trnc['mtr_capinc']
+
+    # Plot 3D scatterplot of ETR data
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(inc_lab, inc_cap, etr_data, c='r', marker='o')
+    ax.set_xlabel('Total Labor Income')
+    ax.set_ylabel('Total Capital Income')
+    ax.set_zlabel('ETR')
+    plt.title('ETR, Lab. Inc., and Cap. Inc., Age=' + str(s) +
+              ', Year=' + str(t))
+    filename = ("ETR_age_" + str(s) + "_Year_" + str(t) + "_data.png")
+    fullpath = os.path.join(output_dir, filename)
+    fig.savefig(fullpath, bbox_inches='tight')
+    plt.close()
+
+    # Plot 3D histogram for all data
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    bin_num = int(30)
+    hist, xedges, yedges = np.histogram2d(inc_lab, inc_cap,
+                                          bins=bin_num)
+    hist = hist / hist.sum()
+    x_midp = xedges[:-1] + 0.5 * (xedges[1] - xedges[0])
+    y_midp = yedges[:-1] + 0.5 * (yedges[1] - yedges[0])
+    elements = (len(xedges) - 1) * (len(yedges) - 1)
+    ypos, xpos = np.meshgrid(y_midp, x_midp)
+    xpos = xpos.flatten()
+    ypos = ypos.flatten()
+    zpos = np.zeros(elements)
+    dx = (xedges[1] - xedges[0]) * np.ones_like(bin_num)
+    dy = (yedges[1] - yedges[0]) * np.ones_like(bin_num)
+    dz = hist.flatten()
+    ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color='b', zsort='average')
+    ax.set_xlabel('Total Labor Income')
+    ax.set_ylabel('Total Capital Income')
+    ax.set_zlabel('Percent of obs.')
+    plt.title('Histogram by lab. inc., and cap. inc., Age=' + str(s) +
+              ', Year=' + str(t))
+    filename = ("Hist_Age_" + str(s) + "_Year_" + str(t) + ".png")
+    fullpath = os.path.join(output_dir, filename)
+    fig.savefig(fullpath, bbox_inches='tight')
+    plt.close()
+
+    # Plot 3D scatterplot of MTRx data
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(inc_lab, inc_cap, mtrx_data, c='r', marker='o')
+    ax.set_xlabel('Total Labor Income')
+    ax.set_ylabel('Total Capital Income')
+    ax.set_zlabel('Marginal Tax Rate, Labor Inc.)')
+    plt.title("MTR Labor Income, Lab. Inc., and Cap. Inc., Age="
+              + str(s) + ", Year=" + str(t))
+    filename = ("MTRx_Age_" + str(s) + "_Year_" + str(t) + "_data.png")
+    fullpath = os.path.join(output_dir, filename)
+    fig.savefig(fullpath, bbox_inches='tight')
+    plt.close()
+
+    # Plot 3D scatterplot of MTRy data
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(inc_lab, inc_cap, mtry_data, c='r', marker='o')
+    ax.set_xlabel('Total Labor Income')
+    ax.set_ylabel('Total Capital Income')
+    ax.set_zlabel('Marginal Tax Rate (Capital Inc.)')
+    plt.title("MTR Capital Income, Cap. Inc., and Cap. Inc., Age=" +
+              str(s) + ", Year=" + str(t))
+    filename = ("MTRy_Age_" + str(s) + "_Year_" + str(t) + "_data.png")
+    fullpath = os.path.join(output_dir, filename)
+    fig.savefig(fullpath, bbox_inches='tight')
+    plt.close()
+
+    # Garbage collection
+    del df, df_trnc, inc_lab, inc_cap, etr_data, mtrx_data, mtry_data
+
+
+def txfunc_graph(s, t, df, X, Y, txrates, rate_type, tax_func_type,
+                 get_tax_rates, params_to_plot, output_dir):
+    '''
+    This function creates a 3D plot of the fitted tax function against
+    the data.
+
+    Args:
+
+    Returns:
+        None
+
+    '''
+    cmap1 = matplotlib.cm.get_cmap('summer')
+
+    # Make comparison plot with full income domains
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(X, Y, txrates, c='r', marker='o')
+    ax.set_xlabel('Total Labor Income')
+    ax.set_ylabel('Total Capital Income')
+    if rate_type == 'etr':
+        tx_label = 'ETR'
+    elif rate_type == 'mtrx':
+        tx_label = 'MTRx'
+    elif rate_type == 'mtry':
+        tx_label = 'MTRy'
+    ax.set_zlabel(tx_label)
+    plt.title(tx_label + ' vs. Predicted ' + tx_label + ': Age=' +
+              str(s) + ', Year=' + str(t))
+
+    gridpts = 50
+    X_vec = np.exp(np.linspace(np.log(5), np.log(X.max()), gridpts))
+    Y_vec = np.exp(np.linspace(np.log(5), np.log(Y.max()), gridpts))
+    X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
+    txrate_grid = get_tax_rates(params_to_plot, X_grid, Y_grid, None,
+                                tax_func_type, rate_type,
+                                for_estimation=False)
+    ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
+                    linewidth=0)
+    filename = (tx_label + '_age_' + str(s) + '_Year_' + str(t) +
+                '_vsPred.png')
+    fullpath = os.path.join(output_dir, filename)
+    fig.savefig(fullpath, bbox_inches='tight')
+    plt.close()
+
+    # Make comparison plot with truncated income domains
+    df_trnc_gph = df[(df['total_labinc'] > 5) &
+                     (df['total_labinc'] < 800000) &
+                     (df['total_capinc'] > 5) &
+                     (df['total_capinc'] < 800000)]
+    X_gph = df_trnc_gph['total_labinc']
+    Y_gph = df_trnc_gph['total_capinc']
+    if rate_type == 'etr':
+        txrates_gph = df_trnc_gph['etr']
+    elif rate_type == 'mtrx':
+        txrates_gph = df_trnc_gph['mtr_labinc']
+    elif rate_type == 'mtry':
+        txrates_gph = df_trnc_gph['mtr_capinc']
+
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(X_gph, Y_gph, txrates_gph, c='r', marker='o')
+    ax.set_xlabel('Total Labor Income')
+    ax.set_ylabel('Total Capital Income')
+    ax.set_zlabel(tx_label)
+    plt.title('Truncated ' + tx_label + ', Lab. Inc., and Cap. ' +
+              'Inc., Age=' + str(s) + ', Year=' + str(t))
+
+    gridpts = 50
+    X_vec = np.exp(np.linspace(np.log(5), np.log(X_gph.max()),
+                               gridpts))
+    Y_vec = np.exp(np.linspace(np.log(5), np.log(Y_gph.max()),
+                               gridpts))
+    X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
+    txrate_grid = get_tax_rates(
+        params_to_plot, X_grid, Y_grid, None, tax_func_type,
+        rate_type, for_estimation=False)
+    ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
+                    linewidth=0)
+    filename = (tx_label + 'trunc_age_' + str(s) + '_Year_' +
+                str(t) + '_vsPred.png')
+    fullpath = os.path.join(output_dir, filename)
+    fig.savefig(fullpath, bbox_inches='tight')
+    plt.close()
+
+    del df_trnc_gph
