@@ -695,100 +695,6 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
         pp.txfunc_graph(s, t, df, X, Y, txrates, rate_type,
                         tax_func_type, get_tax_rates, params_to_plot,
                         output_dir)
-        # '''
-        # ----------------------------------------------------------------
-        # cmap1       = color map object for matplotlib 3D plots
-        # tx_label    = string, text representing type of tax rate
-        # gridpts     = scalar > 2, number of grid points in X and Y
-        #               dimensions
-        # X_vec       = (gridpts,) vector, discretized log support of X
-        # Y_vec       = (gridpts,) vector, discretized log support of Y
-        # X_grid      = (gridpts, gridpts) matrix, ?
-        # Y_grid      = (gridpts, gridpts) matrix, ?
-        # txrate_grid = (gridpts, gridpts) matrix, ?
-        # filename    = string, name of plot to be saved
-        # fullpath    = string, full path name of file to be saved
-        # df_trnc_gph = (Nb, 11) DataFrame, truncated data for plotting
-        # X_gph       = (Nb,) Series, truncated labor income data
-        # Y_gph       = (Nb,) Series, truncated capital income data
-        # txrates_gph = (Nb,) Series, truncated tax rate (ETR, MTRx, or
-        #               MTRy) data
-        # ----------------------------------------------------------------
-        # '''
-        # cmap1 = matplotlib.cm.get_cmap('summer')
-        #
-        # # Make comparison plot with full income domains
-        # fig = plt.figure()
-        # ax = fig.add_subplot(111, projection='3d')
-        # ax.scatter(X, Y, txrates, c='r', marker='o')
-        # ax.set_xlabel('Total Labor Income')
-        # ax.set_ylabel('Total Capital Income')
-        # if rate_type == 'etr':
-        #     tx_label = 'ETR'
-        # elif rate_type == 'mtrx':
-        #     tx_label = 'MTRx'
-        # elif rate_type == 'mtry':
-        #     tx_label = 'MTRy'
-        # ax.set_zlabel(tx_label)
-        # plt.title(tx_label + ' vs. Predicted ' + tx_label + ': Age=' +
-        #           str(s) + ', Year=' + str(t))
-        #
-        # gridpts = 50
-        # X_vec = np.exp(np.linspace(np.log(5), np.log(X.max()), gridpts))
-        # Y_vec = np.exp(np.linspace(np.log(5), np.log(Y.max()), gridpts))
-        # X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-        # txrate_grid = get_tax_rates(params_to_plot, X_grid, Y_grid, None,
-        #                             tax_func_type, rate_type,
-        #                             for_estimation=False)
-        # ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
-        #                 linewidth=0)
-        # filename = (tx_label + '_age_' + str(s) + '_Year_' + str(t) +
-        #             '_vsPred.png')
-        # fullpath = os.path.join(output_dir, filename)
-        # fig.savefig(fullpath, bbox_inches='tight')
-        # plt.close()
-        #
-        # # Make comparison plot with truncated income domains
-        # df_trnc_gph = df[(df['total_labinc'] > 5) &
-        #                  (df['total_labinc'] < 800000) &
-        #                  (df['total_capinc'] > 5) &
-        #                  (df['total_capinc'] < 800000)]
-        # X_gph = df_trnc_gph['total_labinc']
-        # Y_gph = df_trnc_gph['total_capinc']
-        # if rate_type == 'etr':
-        #     txrates_gph = df_trnc_gph['etr']
-        # elif rate_type == 'mtrx':
-        #     txrates_gph = df_trnc_gph['mtr_labinc']
-        # elif rate_type == 'mtry':
-        #     txrates_gph = df_trnc_gph['mtr_capinc']
-        #
-        # fig = plt.figure()
-        # ax = fig.add_subplot(111, projection='3d')
-        # ax.scatter(X_gph, Y_gph, txrates_gph, c='r', marker='o')
-        # ax.set_xlabel('Total Labor Income')
-        # ax.set_ylabel('Total Capital Income')
-        # ax.set_zlabel(tx_label)
-        # plt.title('Truncated ' + tx_label + ', Lab. Inc., and Cap. ' +
-        #           'Inc., Age=' + str(s) + ', Year=' + str(t))
-        #
-        # gridpts = 50
-        # X_vec = np.exp(np.linspace(np.log(5), np.log(X_gph.max()),
-        #                            gridpts))
-        # Y_vec = np.exp(np.linspace(np.log(5), np.log(Y_gph.max()),
-        #                            gridpts))
-        # X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-        # txrate_grid = get_tax_rates(
-        #     params_to_plot, X_grid, Y_grid, None, tax_func_type,
-        #     rate_type, for_estimation=False)
-        # ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
-        #                 linewidth=0)
-        # filename = (tx_label + 'trunc_age_' + str(s) + '_Year_' +
-        #             str(t) + '_vsPred.png')
-        # fullpath = os.path.join(output_dir, filename)
-        # fig.savefig(fullpath, bbox_inches='tight')
-        # plt.close()
-        #
-        # del df_trnc_gph
 
     # Garbage collection
     del df, txrates
@@ -1260,7 +1166,7 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     # --------------------------------------------------------------------
     # '''
     start_time = time.time()
-    output_dir = os.path.join(cCUR_PATH, 'OUTPUT', 'TaxFunctions')
+    output_dir = os.path.join(CUR_PATH, 'OUTPUT', 'TaxFunctions')
     if not os.access(output_dir, os.F_OK):
         os.makedirs(output_dir)
 
