@@ -16,13 +16,11 @@ import scipy.optimize as opt
 from dask import delayed, compute
 import dask.multiprocessing
 import pickle
-import matplotlib
-import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator
 from ogusa import get_micro_data
 from ogusa.utils import DEFAULT_START_YEAR
+import ogusa.parameter_plots as pp
 
-TAX_ESTIMATE_PATH = os.environ.get("TAX_ESTIMATE_PATH", ".")
+CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 MIN_OBS = 240  # 240 is 8 parameters to estimate X 30 obs per parameter
 MIN_ETR = -0.15
 MAX_ETR = 0.65
@@ -37,229 +35,6 @@ MAX_INC_GRAPH = 500000
 Define Functions
 ------------------------------------------------------------------------
 '''
-
-
-def gen_3Dscatters_hist(df, s, t, output_dir):
-    '''
-    Create 3-D scatterplots and corresponding 3D histogram of ETR, MTRx,
-    and MTRy as functions of labor income and capital income with
-    truncated data in the income dimension
-
-    Args:
-        df (Pandas DataFrame): 11 variables with N observations of tax
-            rates
-        s (int): age of individual, >= 21
-        t (int): year of analysis, >= 2016
-        output_dir (str): output directory for saving plot files
-
-    Returns:
-        None
-
-    '''
-    # Truncate the data
-    df_trnc = df[(df['total_labinc'] > MIN_INC_GRAPH) &
-                 (df['total_labinc'] < MAX_INC_GRAPH) &
-                 (df['total_capinc'] > MIN_INC_GRAPH) &
-                 (df['total_capinc'] < MAX_INC_GRAPH)]
-    inc_lab = df_trnc['total_labinc']
-    inc_cap = df_trnc['total_capinc']
-    etr_data = df_trnc['etr']
-    mtrx_data = df_trnc['mtr_labinc']
-    mtry_data = df_trnc['mtr_capinc']
-
-    # Plot 3D scatterplot of ETR data
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(inc_lab, inc_cap, etr_data, c='r', marker='o')
-    ax.set_xlabel('Total Labor Income')
-    ax.set_ylabel('Total Capital Income')
-    ax.set_zlabel('ETR')
-    plt.title('ETR, Lab. Inc., and Cap. Inc., Age=' + str(s) +
-              ', Year=' + str(t))
-    filename = ("ETR_age_" + str(s) + "_Year_" + str(t) + "_data.png")
-    fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches='tight')
-    plt.close()
-
-    # Plot 3D histogram for all data
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    bin_num = int(30)
-    hist, xedges, yedges = np.histogram2d(inc_lab, inc_cap,
-                                          bins=bin_num)
-    hist = hist / hist.sum()
-    x_midp = xedges[:-1] + 0.5 * (xedges[1] - xedges[0])
-    y_midp = yedges[:-1] + 0.5 * (yedges[1] - yedges[0])
-    elements = (len(xedges) - 1) * (len(yedges) - 1)
-    ypos, xpos = np.meshgrid(y_midp, x_midp)
-    xpos = xpos.flatten()
-    ypos = ypos.flatten()
-    zpos = np.zeros(elements)
-    dx = (xedges[1] - xedges[0]) * np.ones_like(bin_num)
-    dy = (yedges[1] - yedges[0]) * np.ones_like(bin_num)
-    dz = hist.flatten()
-    ax.bar3d(xpos, ypos, zpos, dx, dy, dz, color='b', zsort='average')
-    ax.set_xlabel('Total Labor Income')
-    ax.set_ylabel('Total Capital Income')
-    ax.set_zlabel('Percent of obs.')
-    plt.title('Histogram by lab. inc., and cap. inc., Age=' + str(s) +
-              ', Year=' + str(t))
-    filename = ("Hist_Age_" + str(s) + "_Year_" + str(t) + ".png")
-    fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches='tight')
-    plt.close()
-
-    # Plot 3D scatterplot of MTRx data
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(inc_lab, inc_cap, mtrx_data, c='r', marker='o')
-    ax.set_xlabel('Total Labor Income')
-    ax.set_ylabel('Total Capital Income')
-    ax.set_zlabel('Marginal Tax Rate, Labor Inc.)')
-    plt.title("MTR Labor Income, Lab. Inc., and Cap. Inc., Age="
-              + str(s) + ", Year=" + str(t))
-    filename = ("MTRx_Age_" + str(s) + "_Year_" + str(t) + "_data.png")
-    fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches='tight')
-    plt.close()
-
-    # Plot 3D scatterplot of MTRy data
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-    ax.scatter(inc_lab, inc_cap, mtry_data, c='r', marker='o')
-    ax.set_xlabel('Total Labor Income')
-    ax.set_ylabel('Total Capital Income')
-    ax.set_zlabel('Marginal Tax Rate (Capital Inc.)')
-    plt.title("MTR Capital Income, Cap. Inc., and Cap. Inc., Age=" +
-              str(s) + ", Year=" + str(t))
-    filename = ("MTRy_Age_" + str(s) + "_Year_" + str(t) + "_data.png")
-    fullpath = os.path.join(output_dir, filename)
-    fig.savefig(fullpath, bbox_inches='tight')
-    plt.close()
-
-    # Garbage collection
-    del df, df_trnc, inc_lab, inc_cap, etr_data, mtrx_data, mtry_data
-
-
-# def plot_txfunc_v_data(tx_params, data, params):  # This isn't in use yet
-#     '''
-#     This function plots a single estimated tax function against its
-#     corresponding data
-#
-#     Args:
-#         tx_params (Numpy array):
-#         data (Pandas DataFrame): 11 variables with N observations of tax
-#             rates
-#         params (tuple): containts (s, t, rate_type, plot_full,
-#             show_plots, save_plots, output_dir)
-#         s (int): age of individual, >= 21
-#         t (int): year of analysis, >= 2016
-#         tax_func_type (str): functional form of tax functions
-#         rate_type (str): type of tax rate: mtrx, mtry, etr
-#         plot_full (bool): whether to plot all data points or a truncated
-#             set of data
-#         show_plots (bool): whether to show plots
-#         save_plots (bool): whether to save plots
-#         output_dir (str): output directory for saving plot files
-#
-#     Returns:
-#         None
-#
-#     '''
-#     X_data = data['total_labinc']
-#     Y_data = data['total_capinc']
-#     (s, t, tax_func_type, rate_type, plot_full, show_plots,
-#      save_plots, output_dir) = params
-#
-#     cmap1 = matplotlib.cm.get_cmap('summer')
-#
-#     if plot_full:
-#         if rate_type == 'etr':
-#             txrate_data = data['etr']
-#             tx_label = 'etr'
-#         elif rate_type == 'mtrx':
-#             txrate_data = data['mtr_labinc']
-#             tx_label = 'MTRx'
-#         elif rate_type == 'mtry':
-#             txrate_data = data['mtr_capinc']
-#             tx_label = 'MTRy'
-#         # Make comparison plot with full income domains
-#         fig = plt.figure()
-#         ax = fig.add_subplot(111, projection='3d')
-#         ax.scatter(X_data, Y_data, txrate_data, c='r', marker='o')
-#         ax.set_xlabel('Total Labor Income')
-#         ax.set_ylabel('Total Capital Income')
-#         ax.set_zlabel(tx_label)
-#         plt.title(tx_label + ' vs. Predicted ' + tx_label + ': Age=' +
-#                   str(s) + ', Year=' + str(t))
-#
-#         gridpts = 50
-#         X_vec = np.exp(np.linspace(np.log(1), np.log(X_data.max()),
-#                                    gridpts))
-#         Y_vec = np.exp(np.linspace(np.log(1), np.log(Y_data.max()),
-#                                    gridpts))
-#         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-#         txrate_grid = get_tax_rates(
-#             tx_params, X_grid, Y_grid, None, tax_func_type, rate_type,
-#             for_estimation=False)
-#         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
-#                         linewidth=0)
-#
-#         if save_plots:
-#             filename = (tx_label + '_age_' + str(s) + '_Year_' + str(t)
-#                         + '_vsPred.png')
-#             fullpath = os.path.join(output_dir, filename)
-#             fig.savefig(fullpath, bbox_inches='tight')
-#
-#     else:
-#         # Make comparison plot with truncated income domains
-#         data_trnc = data[(data['total_labinc'] > MIN_INC_GRAPH) &
-#                          (data['total_labinc'] < MAX_INC_GRAPH) &
-#                          (data['total_capinc'] > MIN_INC_GRAPH) &
-#                          (data['total_capinc'] < MAX_INC_GRAPH)]
-#         X_trnc = data_trnc['total_labinc']
-#         Y_trnc = data_trnc['total_capinc']
-#         if rate_type == 'etr':
-#             txrates_trnc = data_trnc['etr']
-#             tx_label = 'etr'
-#         elif rate_type == 'mtrx':
-#             txrates_trnc = data_trnc['mtr_labinc']
-#             tx_label = 'MTRx'
-#         elif rate_type == 'mtry':
-#             txrates_trnc = data_trnc['mtr_capinc']
-#             tx_label = 'MTRy'
-#
-#         fig = plt.figure()
-#         ax = fig.add_subplot(111, projection='3d')
-#         ax.scatter(X_trnc, Y_trnc, txrates_trnc, c='r', marker='o')
-#         ax.set_xlabel('Total Labor Income')
-#         ax.set_ylabel('Total Capital Income')
-#         ax.set_zlabel(tx_label)
-#         plt.title('Truncated ' + tx_label + ', Lab. Inc., and Cap. ' +
-#                   'Inc., Age=' + str(s) + ', Year=' + str(t))
-#
-#         gridpts = 50
-#         X_vec = np.exp(np.linspace(np.log(1), np.log(X_trnc.max()),
-#                                    gridpts))
-#         Y_vec = np.exp(np.linspace(np.log(1), np.log(Y_trnc.max()),
-#                                    gridpts))
-#         X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-#         txrate_grid = get_tax_rates(
-#             tx_params, X_grid, Y_grid, None, tax_func_type, rate_type,
-#             for_estimation=False)
-#         ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
-#                         linewidth=0)
-#
-#         if save_plots:
-#             filename = (tx_label + 'trunc_age_' + str(s) + '_Year_' +
-#                         str(t) + '_vsPred.png')
-#             fullpath = os.path.join(output_dir, filename)
-#             fig.savefig(fullpath, bbox_inches='tight')
-#
-#         if show_plots:
-#             plt.show()
-#
-#         plt.close()
 
 
 def get_tax_rates(params, X, Y, wgts, tax_func_type, rate_type,
@@ -398,9 +173,9 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
         age_vec (numpy array): vector of ages, length S
         se_mult (scalar): multiple of standard deviations before
             consider estimate an outlier
-    start_year (int): first year of budget window
-    varstr (str): name of tax function being evaluated
-    graph (bool): whether to output graphs
+        start_year (int): first year of budget window
+        varstr (str): name of tax function being evaluated
+        graph (bool): whether to output graphs
 
     Returns:
         sse_big_mat (Numpy array): indicators of weither tax function
@@ -413,38 +188,10 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
     sse_big_mat = sse_mat > thresh
     print(varstr, ": ", str(sse_big_mat.sum()),
           " observations tagged as outliers.")
+    output_dir = os.path.join(CUR_PATH, 'OUTPUT', 'TaxFunctions')
     if graph:
-        # Plot sum of squared errors of tax functions over age for each
-        # year of budget window
-        fig, ax = plt.subplots()
-        plt.plot(age_vec, sse_mat[:, 0], label=str(start_year))
-        plt.plot(age_vec, sse_mat[:, 1], label=str(start_year + 1))
-        plt.plot(age_vec, sse_mat[:, 2], label=str(start_year + 2))
-        plt.plot(age_vec, sse_mat[:, 3], label=str(start_year + 3))
-        plt.plot(age_vec, sse_mat[:, 4], label=str(start_year + 4))
-        plt.plot(age_vec, sse_mat[:, 5], label=str(start_year + 5))
-        plt.plot(age_vec, sse_mat[:, 6], label=str(start_year + 6))
-        plt.plot(age_vec, sse_mat[:, 7], label=str(start_year + 7))
-        plt.plot(age_vec, sse_mat[:, 8], label=str(start_year + 8))
-        plt.plot(age_vec, sse_mat[:, 9], label=str(start_year + 9))
-        # for the minor ticks, use no labels; default NullFormatter
-        minorLocator = MultipleLocator(1)
-        ax.xaxis.set_minor_locator(minorLocator)
-        plt.grid(b=True, which='major', color='0.65', linestyle='-')
-        plt.legend(loc='upper left')
-        titletext = "Sum of Squared Errors by age and Tax Year: " + varstr
-        plt.title(titletext)
-        plt.xlabel(r'age $s$')
-        plt.ylabel(r'SSE')
-        # Create directory if OUTPUT directory does not already exist
-        cur_path = os.path.split(os.path.abspath(__file__))[0]
-        output_dir = os.path.join(cur_path, 'OUTPUT', 'TaxFunctions')
-        if not os.access(output_dir, os.F_OK):
-            os.makedirs(output_dir)
-        graphname = "SSE_" + varstr
-        output_path = os.path.join(output_dir, graphname)
-        plt.savefig(output_path)
-        # plt.show()
+        pp.txfunc_sse_plot(age_vec, sse_mat, start_year, varstr,
+                           output_dir, 0)
     if sse_big_mat.sum() > 0:
         # Mark the outliers from the first sweep above. Then mark the
         # new outliers in a second sweep
@@ -457,84 +204,15 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
               str(sse_big_mat.sum()),
               " observations tagged as outliers (cumulative).")
         if graph:
-            # Plot sum of squared errors of tax functions over age for
-            # each year of budget window
-            fig, ax = plt.subplots()
-            plt.plot(age_vec, sse_mat_new[:, 0], label=str(start_year))
-            plt.plot(age_vec, sse_mat_new[:, 1],
-                     label=str(start_year + 1))
-            plt.plot(age_vec, sse_mat_new[:, 2],
-                     label=str(start_year + 2))
-            plt.plot(age_vec, sse_mat_new[:, 3],
-                     label=str(start_year + 3))
-            plt.plot(age_vec, sse_mat_new[:, 4],
-                     label=str(start_year + 4))
-            plt.plot(age_vec, sse_mat_new[:, 5],
-                     label=str(start_year + 5))
-            plt.plot(age_vec, sse_mat_new[:, 6],
-                     label=str(start_year + 6))
-            plt.plot(age_vec, sse_mat_new[:, 7],
-                     label=str(start_year + 7))
-            plt.plot(age_vec, sse_mat_new[:, 8],
-                     label=str(start_year + 8))
-            plt.plot(age_vec, sse_mat_new[:, 9],
-                     label=str(start_year + 9))
-            # for the minor ticks, use no labels; default NullFormatter
-            minorLocator = MultipleLocator(1)
-            ax.xaxis.set_minor_locator(minorLocator)
-            plt.grid(b=True, which='major', color='0.65', linestyle='-')
-            plt.legend(loc='upper left')
-            titletext = ("Sum of Squared Errors by age and Tax Year" +
-                         " minus outliers (round 1): " + varstr)
-            plt.title(titletext)
-            plt.xlabel(r'age $s$')
-            plt.ylabel(r'SSE')
-            graphname = "SSE_" + varstr + "_NoOut1"
-            output_path = os.path.join(output_dir, graphname)
-            plt.savefig(output_path)
-            # plt.show()
+            pp.txfunc_sse_plot(age_vec, sse_mat_new, start_year, varstr,
+                               output_dir, 1)
         if (sse_mat_new > thresh2).sum() > 0:
             # Mark the outliers from the second sweep above
             sse_mat_new2 = sse_mat_new.copy()
             sse_mat_new2[sse_big_mat] = np.nan
             if graph:
-                # Plot sum of squared errors of tax functions over age
-                # for each year of budget window
-                fig, ax = plt.subplots()
-                plt.plot(age_vec, sse_mat_new2[:, 0], label=str(start_year))
-                plt.plot(age_vec, sse_mat_new2[:, 1],
-                         label=str(start_year + 1))
-                plt.plot(age_vec, sse_mat_new2[:, 2],
-                         label=str(start_year + 2))
-                plt.plot(age_vec, sse_mat_new2[:, 3],
-                         label=str(start_year + 3))
-                plt.plot(age_vec, sse_mat_new2[:, 4],
-                         label=str(start_year + 4))
-                plt.plot(age_vec, sse_mat_new2[:, 5],
-                         label=str(start_year + 5))
-                plt.plot(age_vec, sse_mat_new2[:, 6],
-                         label=str(start_year + 6))
-                plt.plot(age_vec, sse_mat_new2[:, 7],
-                         label=str(start_year + 7))
-                plt.plot(age_vec, sse_mat_new2[:, 8],
-                         label=str(start_year + 8))
-                plt.plot(age_vec, sse_mat_new2[:, 9],
-                         label=str(start_year + 9))
-                # for the minor ticks, use no labels; default NullFormatter
-                minorLocator = MultipleLocator(1)
-                ax.xaxis.set_minor_locator(minorLocator)
-                plt.grid(b=True, which='major', color='0.65',
-                         linestyle='-')
-                plt.legend(loc='upper left')
-                titletext = ("Sum of Squared Errors by age and Tax Year"
-                             + " minus outliers (round 2): " + varstr)
-                plt.title(titletext)
-                plt.xlabel(r'age $s$')
-                plt.ylabel(r'SSE')
-                graphname = "SSE_" + varstr + "_NoOut2"
-                output_path = os.path.join(output_dir, graphname)
-                plt.savefig(output_path)
-                # plt.show()
+                pp.txfunc_sse_plot(age_vec, sse_mat_new2, start_year,
+                                   varstr, output_dir, 2)
 
     return sse_big_mat
 
@@ -795,100 +473,9 @@ def txfunc_est(df, s, t, rate_type, tax_func_type, numparams,
                            + " possible tax functions.  Please select"
                            + " from: DEP, DEP_totalinc, GS, linear.")
     if graph:
-        # '''
-        # ----------------------------------------------------------------
-        # cmap1       = color map object for matplotlib 3D plots
-        # tx_label    = string, text representing type of tax rate
-        # gridpts     = scalar > 2, number of grid points in X and Y
-        #               dimensions
-        # X_vec       = (gridpts,) vector, discretized log support of X
-        # Y_vec       = (gridpts,) vector, discretized log support of Y
-        # X_grid      = (gridpts, gridpts) matrix, ?
-        # Y_grid      = (gridpts, gridpts) matrix, ?
-        # txrate_grid = (gridpts, gridpts) matrix, ?
-        # filename    = string, name of plot to be saved
-        # fullpath    = string, full path name of file to be saved
-        # df_trnc_gph = (Nb, 11) DataFrame, truncated data for plotting
-        # X_gph       = (Nb,) Series, truncated labor income data
-        # Y_gph       = (Nb,) Series, truncated capital income data
-        # txrates_gph = (Nb,) Series, truncated tax rate (ETR, MTRx, or
-        #               MTRy) data
-        # ----------------------------------------------------------------
-        # '''
-        cmap1 = matplotlib.cm.get_cmap('summer')
-
-        # Make comparison plot with full income domains
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.scatter(X, Y, txrates, c='r', marker='o')
-        ax.set_xlabel('Total Labor Income')
-        ax.set_ylabel('Total Capital Income')
-        if rate_type == 'etr':
-            tx_label = 'ETR'
-        elif rate_type == 'mtrx':
-            tx_label = 'MTRx'
-        elif rate_type == 'mtry':
-            tx_label = 'MTRy'
-        ax.set_zlabel(tx_label)
-        plt.title(tx_label + ' vs. Predicted ' + tx_label + ': Age=' +
-                  str(s) + ', Year=' + str(t))
-
-        gridpts = 50
-        X_vec = np.exp(np.linspace(np.log(5), np.log(X.max()), gridpts))
-        Y_vec = np.exp(np.linspace(np.log(5), np.log(Y.max()), gridpts))
-        X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-        txrate_grid = get_tax_rates(params_to_plot, X_grid, Y_grid, None,
-                                    tax_func_type, rate_type,
-                                    for_estimation=False)
-        ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
-                        linewidth=0)
-        filename = (tx_label + '_age_' + str(s) + '_Year_' + str(t) +
-                    '_vsPred.png')
-        fullpath = os.path.join(output_dir, filename)
-        fig.savefig(fullpath, bbox_inches='tight')
-        plt.close()
-
-        # Make comparison plot with truncated income domains
-        df_trnc_gph = df[(df['total_labinc'] > 5) &
-                         (df['total_labinc'] < 800000) &
-                         (df['total_capinc'] > 5) &
-                         (df['total_capinc'] < 800000)]
-        X_gph = df_trnc_gph['total_labinc']
-        Y_gph = df_trnc_gph['total_capinc']
-        if rate_type == 'etr':
-            txrates_gph = df_trnc_gph['etr']
-        elif rate_type == 'mtrx':
-            txrates_gph = df_trnc_gph['mtr_labinc']
-        elif rate_type == 'mtry':
-            txrates_gph = df_trnc_gph['mtr_capinc']
-
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.scatter(X_gph, Y_gph, txrates_gph, c='r', marker='o')
-        ax.set_xlabel('Total Labor Income')
-        ax.set_ylabel('Total Capital Income')
-        ax.set_zlabel(tx_label)
-        plt.title('Truncated ' + tx_label + ', Lab. Inc., and Cap. ' +
-                  'Inc., Age=' + str(s) + ', Year=' + str(t))
-
-        gridpts = 50
-        X_vec = np.exp(np.linspace(np.log(5), np.log(X_gph.max()),
-                                   gridpts))
-        Y_vec = np.exp(np.linspace(np.log(5), np.log(Y_gph.max()),
-                                   gridpts))
-        X_grid, Y_grid = np.meshgrid(X_vec, Y_vec)
-        txrate_grid = get_tax_rates(
-            params_to_plot, X_grid, Y_grid, None, tax_func_type,
-            rate_type, for_estimation=False)
-        ax.plot_surface(X_grid, Y_grid, txrate_grid, cmap=cmap1,
-                        linewidth=0)
-        filename = (tx_label + 'trunc_age_' + str(s) + '_Year_' +
-                    str(t) + '_vsPred.png')
-        fullpath = os.path.join(output_dir, filename)
-        fig.savefig(fullpath, bbox_inches='tight')
-        plt.close()
-
-        del df_trnc_gph
+        pp.txfunc_graph(s, t, df, X, Y, txrates, rate_type,
+                        tax_func_type, get_tax_rates, params_to_plot,
+                        output_dir)
 
     # Garbage collection
     del df, txrates
@@ -1140,7 +727,7 @@ def tax_func_loop(t, data, start_year, s_min, s_max, age_specific,
                 print(df_mtry.describe())
 
             if graph_data:
-                gen_3Dscatters_hist(df_etr, s, t, output_dir)
+                pp.gen_3Dscatters_hist(df_etr, s, t, output_dir)
 
             # Estimate effective tax rate function ETR(x,y)
             (etrparams, etr_wsumsq_arr[s - s_min],
@@ -1283,7 +870,8 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
                       start_year=DEFAULT_START_YEAR, baseline=True,
                       analytical_mtrs=False, tax_func_type='DEP',
                       age_specific=False, reform={}, data=None,
-                      client=None, num_workers=1):
+                      desc_data=False, graph_data=False,
+                      graph_est=False, client=None, num_workers=1):
     '''
     This function performs analysis on the source data from Tax-
     Calculator and estimates functions for the effective tax rate (ETR),
@@ -1323,9 +911,6 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     print('BW = ', BW, "begin year = ", start_year,
           "end year = ", end_yr)
     numparams = int(12)
-    desc_data = False
-    graph_data = False
-    graph_est = False
     years_list = np.arange(start_year, end_yr + 1)
     if age_specific:
         ages_list = np.arange(s_min, s_max+1)
@@ -1362,8 +947,7 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
     # --------------------------------------------------------------------
     # '''
     start_time = time.time()
-    cur_path = os.path.split(os.path.abspath(__file__))[0]
-    output_dir = os.path.join(cur_path, 'OUTPUT', 'TaxFunctions')
+    output_dir = os.path.join(CUR_PATH, 'OUTPUT', 'TaxFunctions')
     if not os.access(output_dir, os.F_OK):
         os.makedirs(output_dir)
 
@@ -1436,7 +1020,8 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
         age_sup = np.linspace(s_min, s_max, s_max-s_min+1)
         se_mult = 3.5
         etr_sse_big = find_outliers(etr_wsumsq_arr / etr_obs_arr,
-                                    age_sup, se_mult, start_year, "ETR")
+                                    age_sup, se_mult, start_year, "ETR",
+                                    graph=graph_est)
         if etr_sse_big.sum() > 0:
             etrparam_arr_adj = replace_outliers(etrparam_arr,
                                                 etr_sse_big)
@@ -1444,7 +1029,8 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
             etrparam_arr_adj = etrparam_arr
 
         mtrx_sse_big = find_outliers(mtrx_wsumsq_arr / mtrx_obs_arr,
-                                     age_sup, se_mult, start_year, "MTRx")
+                                     age_sup, se_mult, start_year,
+                                     "MTRx", graph=graph_est)
         if mtrx_sse_big.sum() > 0:
             mtrxparam_arr_adj = replace_outliers(mtrxparam_arr,
                                                  mtrx_sse_big)
@@ -1452,7 +1038,8 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
             mtrxparam_arr_adj = mtrxparam_arr
 
         mtry_sse_big = find_outliers(mtry_wsumsq_arr / mtry_obs_arr,
-                                     age_sup, se_mult, start_year, "MTRy")
+                                     age_sup, se_mult, start_year,
+                                     "MTRy", graph=graph_est)
         if mtry_sse_big.sum() > 0:
             mtryparam_arr_adj = replace_outliers(mtryparam_arr,
                                                  mtry_sse_big)
