@@ -16,8 +16,6 @@ import scipy.optimize as opt
 from dask import delayed, compute
 import dask.multiprocessing
 import pickle
-import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator
 from ogusa import get_micro_data
 from ogusa.utils import DEFAULT_START_YEAR
 import ogusa.parameter_plots as pp
