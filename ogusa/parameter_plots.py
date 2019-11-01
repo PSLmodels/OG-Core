@@ -572,6 +572,19 @@ def txfunc_graph(s, t, df, X, Y, txrates, rate_type, tax_func_type,
     the data.
 
     Args:
+        s (int): age of individual, >= 21
+        t (int): year of analysis, >= 2016
+        df (Pandas DataFrame): 11 variables with N observations of tax
+            rates
+        X (Pandas DataSeries): labor income
+        Y (Pandas DataSeries): capital income
+        Y (Pandas DataSeries): tax rates from the data
+        rate_type (str): type of tax rate: mtrx, mtry, etr
+        tax_func_type (str): functional form of tax functions
+        get_tax_rates (function): function to generate tax rates given
+            parameters
+        params_to_plot (Numpy Array): tax function parameters
+        output_dir (str): output directory for saving plot files
 
     Returns:
         None
@@ -651,3 +664,38 @@ def txfunc_graph(s, t, df, X, Y, txrates, rate_type, tax_func_type,
     plt.close()
 
     del df_trnc_gph
+
+
+def txfunc_sse_plot(age_vec, sse_mat, start_year, varstr, output_dir,
+                    round):
+    '''
+    Plot sum of squared errors of tax functions over age for each year
+    of budget window.
+
+    Args:
+        age_vec (numpy array): vector of ages, length S
+        sse_mat (Numpy array): SSE for each estimated tax function,
+            size is SxBW
+        start_year (int): first year of budget window
+        varstr (str): name of tax function being evaluated
+        output_dir (str): path to save graph to
+        round (int): which round of sweeping for outliers (0, 1, or 2)
+
+    Returns:
+        None
+
+    '''
+    fig, ax = plt.subplots()
+    BW = sse_mat.shape[1]
+    for y in range(BW):
+        plt.plot(age_vec, sse_mat[:, y], label=str(start_year + y))
+    plt.legend(loc='upper left')
+    titletext = ("Sum of Squared Errors by age and Tax Year" +
+                 " minus outliers (Round " + str(round) + "): " + varstr)
+    plt.title(titletext)
+    plt.xlabel(r'age $s$')
+    plt.ylabel(r'SSE')
+    graphname = "SSE_" + varstr + "_Round" + str(round)
+    output_path = os.path.join(output_dir, graphname)
+    plt.savefig(output_path, bbox_inches='tight')
+    plt.close()
