@@ -311,37 +311,10 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
     sse_big_mat = sse_mat > thresh
     print(varstr, ": ", str(sse_big_mat.sum()),
           " observations tagged as outliers.")
+    output_dir = os.path.join(CUR_PATH, 'OUTPUT', 'TaxFunctions')
     if graph:
-        # Plot sum of squared errors of tax functions over age for each
-        # year of budget window
-        fig, ax = plt.subplots()
-        plt.plot(age_vec, sse_mat[:, 0], label=str(start_year))
-        plt.plot(age_vec, sse_mat[:, 1], label=str(start_year + 1))
-        plt.plot(age_vec, sse_mat[:, 2], label=str(start_year + 2))
-        plt.plot(age_vec, sse_mat[:, 3], label=str(start_year + 3))
-        plt.plot(age_vec, sse_mat[:, 4], label=str(start_year + 4))
-        plt.plot(age_vec, sse_mat[:, 5], label=str(start_year + 5))
-        plt.plot(age_vec, sse_mat[:, 6], label=str(start_year + 6))
-        plt.plot(age_vec, sse_mat[:, 7], label=str(start_year + 7))
-        plt.plot(age_vec, sse_mat[:, 8], label=str(start_year + 8))
-        plt.plot(age_vec, sse_mat[:, 9], label=str(start_year + 9))
-        # for the minor ticks, use no labels; default NullFormatter
-        minorLocator = MultipleLocator(1)
-        ax.xaxis.set_minor_locator(minorLocator)
-        plt.grid(b=True, which='major', color='0.65', linestyle='-')
-        plt.legend(loc='upper left')
-        titletext = "Sum of Squared Errors by age and Tax Year: " + varstr
-        plt.title(titletext)
-        plt.xlabel(r'age $s$')
-        plt.ylabel(r'SSE')
-        # Create directory if OUTPUT directory does not already exist
-        output_dir = os.path.join(CUR_PATH, 'OUTPUT', 'TaxFunctions')
-        if not os.access(output_dir, os.F_OK):
-            os.makedirs(output_dir)
-        graphname = "SSE_" + varstr
-        output_path = os.path.join(output_dir, graphname)
-        plt.savefig(output_path)
-        # plt.show()
+        pp.txfunc_sse_plot(age_vec, sse_mat, start_year, varstr,
+                           output_dir, 0)
     if sse_big_mat.sum() > 0:
         # Mark the outliers from the first sweep above. Then mark the
         # new outliers in a second sweep
@@ -354,84 +327,15 @@ def find_outliers(sse_mat, age_vec, se_mult, start_year, varstr,
               str(sse_big_mat.sum()),
               " observations tagged as outliers (cumulative).")
         if graph:
-            # Plot sum of squared errors of tax functions over age for
-            # each year of budget window
-            fig, ax = plt.subplots()
-            plt.plot(age_vec, sse_mat_new[:, 0], label=str(start_year))
-            plt.plot(age_vec, sse_mat_new[:, 1],
-                     label=str(start_year + 1))
-            plt.plot(age_vec, sse_mat_new[:, 2],
-                     label=str(start_year + 2))
-            plt.plot(age_vec, sse_mat_new[:, 3],
-                     label=str(start_year + 3))
-            plt.plot(age_vec, sse_mat_new[:, 4],
-                     label=str(start_year + 4))
-            plt.plot(age_vec, sse_mat_new[:, 5],
-                     label=str(start_year + 5))
-            plt.plot(age_vec, sse_mat_new[:, 6],
-                     label=str(start_year + 6))
-            plt.plot(age_vec, sse_mat_new[:, 7],
-                     label=str(start_year + 7))
-            plt.plot(age_vec, sse_mat_new[:, 8],
-                     label=str(start_year + 8))
-            plt.plot(age_vec, sse_mat_new[:, 9],
-                     label=str(start_year + 9))
-            # for the minor ticks, use no labels; default NullFormatter
-            minorLocator = MultipleLocator(1)
-            ax.xaxis.set_minor_locator(minorLocator)
-            plt.grid(b=True, which='major', color='0.65', linestyle='-')
-            plt.legend(loc='upper left')
-            titletext = ("Sum of Squared Errors by age and Tax Year" +
-                         " minus outliers (round 1): " + varstr)
-            plt.title(titletext)
-            plt.xlabel(r'age $s$')
-            plt.ylabel(r'SSE')
-            graphname = "SSE_" + varstr + "_NoOut1"
-            output_path = os.path.join(output_dir, graphname)
-            plt.savefig(output_path)
-            # plt.show()
+            pp.txfunc_sse_plot(age_vec, sse_mat_new, start_year, varstr,
+                               output_dir, 1)
         if (sse_mat_new > thresh2).sum() > 0:
             # Mark the outliers from the second sweep above
             sse_mat_new2 = sse_mat_new.copy()
             sse_mat_new2[sse_big_mat] = np.nan
             if graph:
-                # Plot sum of squared errors of tax functions over age
-                # for each year of budget window
-                fig, ax = plt.subplots()
-                plt.plot(age_vec, sse_mat_new2[:, 0], label=str(start_year))
-                plt.plot(age_vec, sse_mat_new2[:, 1],
-                         label=str(start_year + 1))
-                plt.plot(age_vec, sse_mat_new2[:, 2],
-                         label=str(start_year + 2))
-                plt.plot(age_vec, sse_mat_new2[:, 3],
-                         label=str(start_year + 3))
-                plt.plot(age_vec, sse_mat_new2[:, 4],
-                         label=str(start_year + 4))
-                plt.plot(age_vec, sse_mat_new2[:, 5],
-                         label=str(start_year + 5))
-                plt.plot(age_vec, sse_mat_new2[:, 6],
-                         label=str(start_year + 6))
-                plt.plot(age_vec, sse_mat_new2[:, 7],
-                         label=str(start_year + 7))
-                plt.plot(age_vec, sse_mat_new2[:, 8],
-                         label=str(start_year + 8))
-                plt.plot(age_vec, sse_mat_new2[:, 9],
-                         label=str(start_year + 9))
-                # for the minor ticks, use no labels; default NullFormatter
-                minorLocator = MultipleLocator(1)
-                ax.xaxis.set_minor_locator(minorLocator)
-                plt.grid(b=True, which='major', color='0.65',
-                         linestyle='-')
-                plt.legend(loc='upper left')
-                titletext = ("Sum of Squared Errors by age and Tax Year"
-                             + " minus outliers (round 2): " + varstr)
-                plt.title(titletext)
-                plt.xlabel(r'age $s$')
-                plt.ylabel(r'SSE')
-                graphname = "SSE_" + varstr + "_NoOut2"
-                output_path = os.path.join(output_dir, graphname)
-                plt.savefig(output_path)
-                # plt.show()
+                pp.txfunc_sse_plot(age_vec, sse_mat_new2, start_year,
+                                   varstr, output_dir, 2)
 
     return sse_big_mat
 
@@ -1239,7 +1143,8 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
         age_sup = np.linspace(s_min, s_max, s_max-s_min+1)
         se_mult = 3.5
         etr_sse_big = find_outliers(etr_wsumsq_arr / etr_obs_arr,
-                                    age_sup, se_mult, start_year, "ETR")
+                                    age_sup, se_mult, start_year, "ETR",
+                                    graph=graph_est)
         if etr_sse_big.sum() > 0:
             etrparam_arr_adj = replace_outliers(etrparam_arr,
                                                 etr_sse_big)
@@ -1247,7 +1152,8 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
             etrparam_arr_adj = etrparam_arr
 
         mtrx_sse_big = find_outliers(mtrx_wsumsq_arr / mtrx_obs_arr,
-                                     age_sup, se_mult, start_year, "MTRx")
+                                     age_sup, se_mult, start_year,
+                                     "MTRx", graph=graph_est)
         if mtrx_sse_big.sum() > 0:
             mtrxparam_arr_adj = replace_outliers(mtrxparam_arr,
                                                  mtrx_sse_big)
@@ -1255,7 +1161,8 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
             mtrxparam_arr_adj = mtrxparam_arr
 
         mtry_sse_big = find_outliers(mtry_wsumsq_arr / mtry_obs_arr,
-                                     age_sup, se_mult, start_year, "MTRy")
+                                     age_sup, se_mult, start_year,
+                                     "MTRy", graph=graph_est)
         if mtry_sse_big.sum() > 0:
             mtryparam_arr_adj = replace_outliers(mtryparam_arr,
                                                  mtry_sse_big)
