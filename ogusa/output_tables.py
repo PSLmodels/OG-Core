@@ -1,8 +1,7 @@
 import numpy as np
 import pandas as pd
 import os
-import pickle
-from ogusa.constants import VAR_LABELS, ToGDP_LABELS
+from ogusa.constants import VAR_LABELS
 from ogusa.utils import save_return_table
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 
