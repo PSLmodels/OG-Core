@@ -1,7 +1,7 @@
-import numpy as np
 import pandas as pd
+import numpy as np
 from ogusa.utils import save_return_table
-from ogusa.constants import VAR_LABELS
+from ogusa.constants import VAR_LABELS, PARAM_LABELS
 
 
 def tax_rate_table(base_TxFuncEst, base_params, reform_TxFuncEst=None,
@@ -26,7 +26,7 @@ def tax_rate_table(base_TxFuncEst, base_params, reform_TxFuncEst=None,
         path (string): path to save table to
 
     Returns:
-        table (string or DataFrame): table of tax rates
+        table_str (string or DataFrame): table of tax rates
 
     '''
     assert (isinstance(start_year, int))
@@ -129,5 +129,30 @@ def tax_rate_table(base_TxFuncEst, base_params, reform_TxFuncEst=None,
     table_df.reindex(table_df.index.drop('Year'))
     table_str = save_return_table(table_df, table_format, path,
                                   precision=2)
+
+    return table_str
+
+
+def param_table(p, table_format='tex', path=None):
+    '''
+    This function creates a table of model parameters for publication.
+
+    Args:
+        p (OG-USA Specifications class): baseline parameters
+            object)
+        table_format (string): format to save/return table as
+        path (string): path to save table to
+
+    Returns:
+        table (string or DataFrame): table of tax rates
+    '''
+    table = {'Symbol': [], 'Description': [], 'Value': []}
+    for k, v in PARAM_LABELS.items():
+        table['Symbol'].append(v[1])
+        table['Description'].append(v[0])
+        table['Value'].append(getattr(p, k))
+    table_df = pd.DataFrame.from_dict(table)
+    table_str = save_return_table(
+        table_df, table_format, path, precision=2)
 
     return table_str
