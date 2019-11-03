@@ -44,12 +44,11 @@ test:
     - ogusa.get_micro_data
     - ogusa.household
     - ogusa.income
-    - ogusa.macro_output
     - ogusa.output_plots
+    - ogusa.output_tables
     - ogusa.parameter_plots
     - ogusa.parameter_tables
     - ogusa.parameters
-    - ogusa.postprocess
     - ogusa.tax
     - ogusa.txfunc
     - ogusa.utils

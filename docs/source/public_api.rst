@@ -26,6 +26,7 @@ There is also a link to the source code for each documented member.
    household
    income
    output_plots
+   output_tables
    parameter_plots
    parameter_tables
    parameters
