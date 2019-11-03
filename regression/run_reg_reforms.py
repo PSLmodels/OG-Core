@@ -5,9 +5,9 @@ import time
 import numpy as np
 import pandas as pd
 import argparse
-from ogusa import postprocess
 from ogusa.execute import runner
-from ogusa.utils import REFORM_DIR, BASELINE_DIR
+import ogusa.output_tables as ot
+from ogusa.utils import REFORM_DIR, BASELINE_DIR, safe_read_pickle
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 PUF_PATH = os.path.join(CUR_PATH, '../ogusa/puf.csv')
@@ -142,8 +142,19 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
               'data': data, 'client': client, 'num_workers': 4}
     runner(**kwargs)
 
-    ans = postprocess.create_diff(baseline_dir=baseline_dir,
-                                  policy_dir=reform_dir)
+    base_tpi = safe_read_pickle(
+        os.path.join(baseline_dir, 'TPI', 'TPI_vars.pkl'))
+    base_params = safe_read_pickle(
+        os.path.join(baseline_dir, 'model_params.pkl'))
+    reform_tpi = safe_read_pickle(
+        os.path.join(reform_dir, 'TPI', 'TPI_vars.pkl'))
+    reform_params = safe_read_pickle(
+        os.path.join(reform_dir, 'model_params.pkl'))
+    ans = ot.macro_table(
+        base_tpi, base_params, reform_tpi=reform_tpi,
+        reform_params=reform_params,
+        var_list=['Y', 'C', 'K', 'L', 'r', 'w'], output_type='pct_diff',
+        num_years=10, start_year=2017)
 
     print("total time was ", (time.time() - start_time))
     print('Percentage changes in aggregates:', ans)
