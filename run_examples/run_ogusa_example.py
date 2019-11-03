@@ -57,7 +57,6 @@ def main():
     Run baseline policy first
     ------------------------------------------------------------------------
     '''
-    output_base = BASELINE_DIR
     kwargs = {'output_base': base_dir, 'baseline_dir': base_dir,
               'test': False, 'time_path': True, 'baseline': True,
               'og_spec': og_spec, 'guid': '_example',
@@ -78,7 +77,6 @@ def main():
                'tau_b': [0.0595], 'debt_ratio_ss': 1.0,
                'alpha_T': alpha_T.tolist(),
                'alpha_G': alpha_G.tolist()}
-    output_base = REFORM_DIR
     kwargs = {'output_base': reform_dir, 'baseline_dir': base_dir,
               'test': False, 'time_path': True, 'baseline': False,
               'og_spec': og_spec, 'guid': '_example',
