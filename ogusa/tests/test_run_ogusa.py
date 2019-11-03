@@ -1,7 +1,10 @@
 import pytest
-from ogusa import SS, TPI, postprocess
+from ogusa import SS, TPI
 import time
+import os
 from ogusa.execute import runner
+from ogusa.utils import safe_read_pickle
+import ogusa.output_tables as ot
 SS.ENFORCE_SOLUTION_CHECKS = False
 TPI.ENFORCE_SOLUTION_CHECKS = False
 
@@ -48,8 +51,19 @@ def run_micro_macro(iit_reform, og_spec, guid):
               'guid': guid, 'run_micro': False}
     runner(**kwargs)
     time.sleep(0.5)
-    ans = postprocess.create_diff(baseline_dir=BASELINE_DIR,
-                                  policy_dir=REFORM_DIR)
+    base_tpi = safe_read_pickle(
+        os.path.join(BASELINE_DIR, 'TPI', 'TPI_vars.pkl'))
+    base_params = safe_read_pickle(
+        os.path.join(BASELINE_DIR, 'model_params.pkl'))
+    reform_tpi = safe_read_pickle(
+        os.path.join(REFORM_DIR, 'TPI', 'TPI_vars.pkl'))
+    reform_params = safe_read_pickle(
+        os.path.join(REFORM_DIR, 'model_params.pkl'))
+    ans = ot.macro_table(
+        base_tpi, base_params, reform_tpi=reform_tpi,
+        reform_params=reform_params,
+        var_list=['Y', 'C', 'K', 'L', 'r', 'w'], output_type='pct_diff',
+        num_years=10, start_year=og_spec['start_year'])
     print("total time was ", (time.time() - start_time))
 
     return ans
