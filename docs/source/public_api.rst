@@ -25,12 +25,10 @@ There is also a link to the source code for each documented member.
    get_micro_data
    household
    income
-   macro_output
    output_plots
    parameter_plots
    parameter_tables
    parameters
-   postprocess
    tax
    txfunc
    utils
