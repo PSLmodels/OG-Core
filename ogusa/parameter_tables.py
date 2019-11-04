@@ -150,9 +150,22 @@ def param_table(p, table_format='tex', path=None):
     for k, v in PARAM_LABELS.items():
         table['Symbol'].append(v[1])
         table['Description'].append(v[0])
-        table['Value'].append(getattr(p, k))
+        value = getattr(p, k)
+        if hasattr(value, '__len__'):
+            if value.ndim > 1:
+                report = 'See elsewhere'
+            else:
+                report = (
+                    '[' + '{0:1.3f}'.format(value[0]) + '...' +
+                    '{0:1.3f}'.format(value[-1]) + ']')
+        else:
+            if isinstance(value, int):
+                report = str(value)
+            else:
+                report = '{0:1.3f}'.format(value)
+        table['Value'].append(report)
     table_df = pd.DataFrame.from_dict(table)
     table_str = save_return_table(
-        table_df, table_format, path, precision=2)
+        table_df, table_format, path, precision=3)
 
     return table_str
