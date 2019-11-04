@@ -107,6 +107,7 @@ def main():
     print('Percentage changes in aggregates:', ans)
     # save percentage change output to csv file
     ans.to_csv('ogusa_example_output.csv')
+    client.close()
 
 
 if __name__ == "__main__":
