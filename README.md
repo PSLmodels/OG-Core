@@ -22,6 +22,8 @@ ARTICLES, OR RESEARCH PURPOSES. Essentially, you should assume the calculations 
 * Run the model with an example reform from terminal/command prompt by typing `python run_ogusa_example.py`
 * You can adjust the `./run_examples/run_ogusa_example.py` by adjusting the individual income tax reform (using a dictionary or JSON file in a format that is consistent with [Tax Calculator](https://github.com/PSLmodels/Tax-Calculator)) or other model parameters specified in the `user_params` or `kwargs` dictionaries.
 * Model outputs will be saved in the following files:
+  * `./run_examples/ogusa_example_output.csv`
+    * This is a summary of the percentage changes in macro variables over the first ten years and in the steady-state.
   * `./run_examples/OUTPUT_BASELINE/model_params.pkl`
     * Model parameters used in the baseline run
     * See `execute.py` for items in the dictionary object in this pickle file
@@ -39,6 +41,8 @@ ARTICLES, OR RESEARCH PURPOSES. Essentially, you should assume the calculations 
 Note that, depending on your machine, a full model run (solving for the full time path equilibrium for the baseline and reform policies) can take from a few to several hours of compute time.
 
 If you run into errors running the example script, please open a new issue in the OG-USA repo with a description of the issue and any relevant tracebacks you receive.
+
+The CSV output file `./run_examples/ogusa_example_output.csv` can be compared to the `./run_examples/expected_ogusa_example_output.csv` file that is checked into the repository to confirm that you are generating the expected output. The easiest way to do this is to use the `sh example-diffs` command (or `example-diffs` on Windows) from the `run_examples` directory. If you run into errors running the example script, please open a new issue in the OG-USA repo with a description of the issue and any relevant tracebacks you receive.
 
 
 ## Citing OG-USA
