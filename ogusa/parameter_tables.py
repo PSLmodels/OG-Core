@@ -159,10 +159,14 @@ def param_table(p, table_format='tex', path=None):
                     '[' + '{0:1.3f}'.format(value[0]) + '...' +
                     '{0:1.3f}'.format(value[-1]) + ']')
         else:
-            if isinstance(value, int) or isinstance(value, str):
+            if (isinstance(value, int) or isinstance(value, str) or
+                isinstance(value, np.int64)):
                 report = str(value)
             else:
-                report = '{0:1.3f}'.format(value)
+                if value < 0.0001:
+                    report = "{:.2E}".format(value)
+                else:
+                    report = '{0:1.3f}'.format(value)
         table['Value'].append(report)
     table_df = pd.DataFrame.from_dict(table)
     table_str = save_return_table(
