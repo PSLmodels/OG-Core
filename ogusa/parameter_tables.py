@@ -151,7 +151,7 @@ def param_table(p, table_format='tex', path=None):
         table['Symbol'].append(v[1])
         table['Description'].append(v[0])
         value = getattr(p, k)
-        if hasattr(value, '__len__'):
+        if hasattr(value, '__len__') & ~isinstance(value, str):
             if value.ndim > 1:
                 report = 'See elsewhere'
             else:
@@ -159,7 +159,7 @@ def param_table(p, table_format='tex', path=None):
                     '[' + '{0:1.3f}'.format(value[0]) + '...' +
                     '{0:1.3f}'.format(value[-1]) + ']')
         else:
-            if isinstance(value, int):
+            if isinstance(value, int) or isinstance(value, str):
                 report = str(value)
             else:
                 report = '{0:1.3f}'.format(value)
