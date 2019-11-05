@@ -421,7 +421,8 @@ def save_return_table(table_df, output_type, path, precision=2):
         table_df (Pandas DataFrame): table
 
     '''
-    pd.options.display.float_format = ('{:,.' + str(precision) + 'f}').format
+    pd.options.display.float_format = (
+        '{:,.' + str(precision) + 'f}').format
     if path is None:
         if output_type == 'tex':
             tab_str = table_df.to_latex(index=False, na_rep='')
@@ -430,7 +431,8 @@ def save_return_table(table_df, output_type, path, precision=2):
             tab_str = table_df.to_json(double_precision=precision)
             return tab_str
         elif output_type == 'html':
-            tab_html = table_df.to_html()
+            tab_html = table_df.to_html().replace('\n', '')
+            tab_html.replace('\n', '')
             return tab_html
         else:
             return table_df
