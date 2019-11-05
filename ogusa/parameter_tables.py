@@ -159,9 +159,10 @@ def param_table(p, table_format='tex', path=None):
                     '[' + '{0:1.3f}'.format(value[0]) + '...' +
                     '{0:1.3f}'.format(value[-1]) + ']')
         else:
-            if (isinstance(value, int) or isinstance(value, str) or
-                isinstance(value, np.int64)):
+            if isinstance(value, int) or isinstance(value, np.int64):
                 report = str(value)
+            elif isinstance(value, str):
+                report = value
             else:
                 if value < 0.0001:
                     report = "{:.2E}".format(value)
