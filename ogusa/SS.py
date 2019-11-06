@@ -1,8 +1,7 @@
 # imports
 import numpy as np
 import scipy.optimize as opt
-import pickle
-from dask import compute, delayed
+from dask import delayed, compute
 import dask.multiprocessing
 from ogusa import tax, household, firm, utils, fiscal
 from ogusa import aggregates as aggr
@@ -166,8 +165,13 @@ def inner_loop(outer_loop_vars, p, client):
                                                args=euler_params,
                                                xtol=MINIMIZER_TOL,
                                                full_output=True))
-    results = compute(*lazy_values, scheduler=dask.multiprocessing.get,
-                      num_workers=p.num_workers)
+    if client:
+        futures = client.compute(lazy_values, num_workers=p.num_workers)
+        results = client.gather(futures)
+    else:
+        results = results = compute(
+            *lazy_values, scheduler=dask.multiprocessing.get,
+            num_workers=p.num_workers)
 
     # for j, result in results.items():
     for j, result in enumerate(results):

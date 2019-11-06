@@ -19,3 +19,8 @@ base_taxfunctions = utils.safe_read_pickle(
 def test_tax_rate_table():
     str = parameter_tables.tax_rate_table(base_taxfunctions, base_params)
     assert str
+
+
+def test_param_table():
+    str = parameter_tables.param_table(base_params)
+    assert str

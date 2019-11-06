@@ -5,13 +5,29 @@ from ogusa import output_plots as op
 from ogusa import SS, utils
 import os
 import io
-import paramtools
 import pickle
-from .helpers import retrieve_puf
+import json
+import inspect
+import paramtools
+from distributed import Client
+from taxcalc import Policy
+from collections import OrderedDict
+from .helpers import retrieve_puf, convert_adj, convert_defaults
 
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID", "")
 AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
 CUR_DIR = os.path.dirname(os.path.realpath(__file__))
+
+# Get Tax-Calculator default parameters
+TCPATH = inspect.getfile(Policy)
+TCDIR = os.path.dirname(TCPATH)
+with open(os.path.join(TCDIR, "policy_current_law.json"), "r") as f:
+    pcl = json.loads(f.read())
+RES = convert_defaults(pcl)
+
+
+class TCParams(paramtools.Parameters):
+    defaults = RES
 
 
 class MetaParams(paramtools.Parameters):
@@ -45,24 +61,58 @@ def get_version():
 def get_inputs(meta_param_dict):
     meta_params = MetaParams()
     meta_params.adjust(meta_param_dict)
-    params = Specifications()
-    params.start_year = meta_params.year
-    return {
-        "meta_parameters": meta_params.dump(),
-        "model_parameters": {
-            "ogusa": params.dump()
-        }
+    # Set default OG-USA parameters
+    ogusa_params = Specifications()
+    ogusa_params.start_year = meta_params.year
+    filtered_ogusa_params = OrderedDict()
+    filter_list = [
+        'chi_n_80', 'chi_b', 'eta', 'zeta', 'constant_demographics',
+        'ltilde', 'use_zeta', 'constant_rates', 'zero_taxes',
+        'analytical_mtrs', 'age_specific']
+    for k, v in ogusa_params.dump().items():
+        if ((k not in filter_list) and
+            (v.get("section_1", False) != "Model Solution Parameters")
+            and (v.get("section_2", False) != "Model Dimensions")):
+            filtered_ogusa_params[k] = v
+            print('filtered ogusa = ', k)
+    # Set default TC params
+    iit_params = TCParams()
+    iit_params.set_state(year=meta_params.year.tolist())
+    filtered_iit_params = OrderedDict()
+    for k, v in iit_params.dump().items():
+        if k == "schema" or v.get("section_1", False):
+            filtered_iit_params[k] = v
+
+    default_params = {
+        "OG-USA Parameters": filtered_ogusa_params,
+        "Tax-Calculator Parameters": filtered_iit_params
     }
+
+    return {
+         "meta_parameters": meta_params.dump(),
+         "model_parameters": default_params
+         }
 
 
 def validate_inputs(meta_param_dict, adjustment, errors_warnings):
     # ogusa doesn't look at meta_param_dict for validating inputs.
     params = Specifications()
-    params.adjust(adjustment["ogusa"], raise_errors=False)
-    # errors_warnings = revision_warnings_errors(adjustment["ogusa"])
-    # return {"errors_warnings": errors_warnings}
+    params.adjust(adjustment["OG-USA Parameters"], raise_errors=False)
+    errors_warnings["OG-USA Parameters"]["errors"].update(
+        params.errors)
+    # Validate TC parameter inputs
+    pol_params = {}
+    # drop checkbox parameters.
+    for param, data in list(adjustment[
+        "Tax-Calculator Parameters"].items()):
+        if not param.endswith("checkbox"):
+            pol_params[param] = data
+    iit_params = TCParams()
+    iit_params.adjust(pol_params, raise_errors=False)
+    errors_warnings["Tax-Calculator Parameters"][
+        "errors"].update(iit_params.errors)
 
-    return {"errors_warnings": {"ogusa": {"errors": params.errors}}}
+    return {"errors_warnings": errors_warnings}
 
 
 def run_model(meta_param_dict, adjustment):
@@ -76,15 +126,20 @@ def run_model(meta_param_dict, adjustment):
         data = retrieve_puf(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
     else:
         data = "cps"
+    # Get TC params adjustments
+    iit_mods = convert_adj(adjustment[
+        "Tax-Calculator Parameters"],
+                           meta_params.year.tolist())
     # Create output directory structure
     base_dir = os.path.join(CUR_DIR, BASELINE_DIR)
     reform_dir = os.path.join(CUR_DIR, REFORM_DIR)
     dirs = [base_dir, reform_dir]
     for _dir in dirs:
         utils.mkdirs(_dir)
+
     # Dask parmeters
-    client = None
-    num_workers = 1
+    client = Client()
+    num_workers = 4
 
     # whether to estimate tax functions from microdata
     run_micro = True
@@ -114,11 +169,11 @@ def run_model(meta_param_dict, adjustment):
 
     # Solve reform model
     reform_spec = base_spec
-    reform_spec.update(adjustment['ogusa'])
+    reform_spec.update(adjustment["OG-USA Parameters"])
     reform_params = Specifications(
         run_micro=False, output_base=reform_dir,
         baseline_dir=base_dir, test=False, time_path=False,
-        baseline=False, iit_reform={}, guid='',
+        baseline=False, iit_reform=iit_mods, guid='',
         data=data,
         client=client, num_workers=num_workers)
     reform_params.update_specifications(reform_spec)

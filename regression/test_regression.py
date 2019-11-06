@@ -1,4 +1,3 @@
-from ogusa.macro_output import dump_diff_output
 from ogusa.utils import safe_read_pickle
 import numpy as np
 import pytest
@@ -6,8 +5,10 @@ import os
 
 
 CURDIR = os.path.abspath(os.path.dirname(__file__))
-REG_BASELINE = os.path.join(CURDIR, 'regression_results/REG_OUTPUT_BASELINE')
-REG_REFORM = os.path.join(CURDIR, 'regression_results/REG_OUTPUT_REFORM_{ref_idx}')
+REG_BASELINE = os.path.join(
+    CURDIR, 'regression_results/REG_OUTPUT_BASELINE')
+REG_REFORM = os.path.join(
+    CURDIR, 'regression_results/REG_OUTPUT_REFORM_{ref_idx}')
 # REF_IDXS = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 REF_IDXS = [0, 1, 2, 3, 4, 5, 6, 7]
 
@@ -17,26 +18,31 @@ REFORM = os.path.join(CURDIR, 'OUTPUT_REFORM_{ref_idx}')
 
 @pytest.fixture(scope="module", params=REF_IDXS)
 def macro_outputs(request):
-    (pct_changes,
-        baseline_macros,
-        policy_macros) = dump_diff_output(
-            BASELINE, REFORM.format(ref_idx=request.param))
-    (reg_pct_changes,
-        reg_baseline_macros,
-        reg_policy_macros) = dump_diff_output(
-            REG_BASELINE, REG_REFORM.format(ref_idx=request.param))
+    '''
+    This function needs to be updated to work with ogusa.output_tables
+    ( or read in output some other way for these regression tests).
+    '''
+    # (pct_changes,
+    #     baseline_macros,
+    #     policy_macros) = dump_diff_output(
+    #         BASELINE, REFORM.format(ref_idx=request.param))
+    # (reg_pct_changes,
+    #     reg_baseline_macros,
+    #     reg_policy_macros) = dump_diff_output(
+    #         REG_BASELINE, REG_REFORM.format(ref_idx=request.param))
+    #
 
-    return {"new": {
-                    "pct_changes": pct_changes,
-                    "baseline_macros": baseline_macros,
-                    "policy_macros": policy_macros
-                   },
-            "reg": {
-                    "pct_changes": reg_pct_changes,
-                    "baseline_macros": reg_baseline_macros,
-                    "policy_macros": reg_policy_macros
-                    },
-            }
+    # return {"new": {
+    #                 "pct_changes": pct_changes,
+    #                 "baseline_macros": baseline_macros,
+    #                 "policy_macros": policy_macros
+    #                },
+    #         "reg": {
+    #                 "pct_changes": reg_pct_changes,
+    #                 "baseline_macros": reg_baseline_macros,
+    #                 "policy_macros": reg_policy_macros
+    #                 },
+    #         }
 
 
 MACRO_VARS = ["Y", "C", "I", "L", "w", "r", "Revenue"]

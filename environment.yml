@@ -11,6 +11,7 @@ dependencies:
 - "taxcalc>=2.4.2"
 - "dask>=0.20.0"
 - "paramtools>=0.7.1"
+- pip
 - pytest
 - pytest-pep8
 - pytest-xdist
@@ -19,3 +20,4 @@ dependencies:
 - coverage
 - pip:
   - cs-kit
+  - xlrd

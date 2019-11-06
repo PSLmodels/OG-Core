@@ -421,7 +421,8 @@ def save_return_table(table_df, output_type, path, precision=2):
         table_df (Pandas DataFrame): table
 
     '''
-    pd.options.display.float_format = ('{:,.' + str(precision) + 'f}').format
+    pd.options.display.float_format = (
+        '{:,.' + str(precision) + 'f}').format
     if path is None:
         if output_type == 'tex':
             tab_str = table_df.to_latex(index=False, na_rep='')
@@ -430,7 +431,8 @@ def save_return_table(table_df, output_type, path, precision=2):
             tab_str = table_df.to_json(double_precision=precision)
             return tab_str
         elif output_type == 'html':
-            tab_html = table_df.to_html()
+            tab_html = table_df.to_html().replace('\n', '')
+            tab_html.replace('\n', '')
             return tab_html
         else:
             return table_df
@@ -564,3 +566,119 @@ class Inequality():
                         (self.sort_dist * self.sort_weights).sum())
 
         return pctile_share
+
+
+def read_cbo_forecast():
+    '''
+    This function reads the CBO Long-Term Budget Projections document
+    from https://www.cbo.gov/about/products/budget-economic-data#1
+    and then formats the relevant data for use with OG-USA
+    '''
+    CBO_LT_URL = (
+        'https://www.cbo.gov/system/files/2019-07/51119-CBO-2019-06-ltbo.xlsx'
+        )
+    # Read in data
+    df = pd.read_excel(CBO_LT_URL, sheet_name='3. Economic Vars',
+                       skiprows=6, nrows=45)
+    df.drop(columns=['Unnamed: 3', 'Unnamed: 4'], inplace=True)
+    df[~((pd.isnull(df['Unnamed: 0'])) & (pd.isnull(df['Unnamed: 1'])) &
+         (pd.isnull(df['Unnamed: 2'])))]
+    df.fillna(value='', inplace=True)
+    df['full_var_name'] = (df['Unnamed: 0'] + df['Unnamed: 1'] +
+                           df['Unnamed: 2'])
+    CBO_VAR_NAMES = {
+        'Real GDP (Billions of 2019 dollars) ': 'Y',
+        'On 10-year Treasury notes and the OASDI trust funds': 'r',
+        'Growth of Real Earnings per Worker': 'w_growth',
+        'Growth of Total Hours Worked': 'L_growth',
+        'Hours of All Persons (Nonfarm Business Sector)': 'L',
+        'Personal Consumption Expenditures': 'C',
+        'Gross Private Domestic Investment': 'I_total',
+        'Government Consumption Expenditures and Gross Investment': 'G',
+        'Old-Age and Survivors Insurance': 'T_P',
+        'Individual income taxes': 'iit_revenue',
+        'Payroll taxes': 'payroll_tax_revenue',
+        'Corporate income taxes': 'business_revenue',
+        'Wages and Salaries': 'wL'}
+    df['var_name'] = df['full_var_name'].replace(CBO_VAR_NAMES)
+    # keep just variables of interest
+    df.drop(columns=[
+        'Unnamed: 0', 'Unnamed: 1', 'Unnamed: 2', 'full_var_name'],
+            inplace=True)
+    df = df[df['var_name'].isin(CBO_VAR_NAMES.values())]
+    # Keep just real interest rate (not nominal)
+    # Note that real interest rate comes first in table
+    df.drop_duplicates(subset='var_name', inplace=True)
+    # reshape so that variable names down column
+    df = pd.melt(df, id_vars='var_name',
+                 value_vars=[i for i in range(1989, 2050)])
+    df = df.pivot(index='variable', columns='var_name', values='value')
+    df.reset_index(inplace=True)
+    df.rename(columns={'variable': 'year'}, inplace=True)
+    # add debt forcast
+    df_fiscal = pd.read_excel(CBO_LT_URL,
+                              sheet_name='1. Summary Extended Baseline',
+                              skiprows=9, nrows=32)
+    df_fiscal = df_fiscal[['Fiscal Year', 'Revenues',
+                           'Federal Debt Held by the Public']]
+    df_lt = df.merge(df_fiscal, left_on='year', right_on='Fiscal Year',
+                     how='left')
+    df_lt.rename(columns={'Federal Debt Held by the Public': 'D/Y'},
+                 inplace=True)
+    df_lt['D'] = df_lt['Y'] * df_lt['D/Y']
+
+    CBO_10yr_budget_URL = (
+        'https://www.cbo.gov/system/files/2019-08/' +
+        '51118-2019-08-budgetprojections_3.xlsx'
+        )
+    df = pd.read_excel(CBO_10yr_budget_URL, sheet_name='Table 1-1',
+                       skiprows=7, nrows=7)
+    df.rename(
+        columns={'Unnamed: 1': 'variable', 'Actual, \n2018': 2018},
+        inplace=True)
+    df.drop(columns=['Unnamed: 0', 'Unnamed: 2', 'Unnamed: 3',
+                     '2020–\n2024', '2020–\n2029'], inplace=True)
+    df1 = df[~((pd.isnull(df.variable)) | (df.variable == 'Other'))]
+
+    CBO_10yr_budget_URL = (
+        'https://www.cbo.gov/system/files/2019-08/' +
+        '51118-2019-08-budgetprojections_3.xlsx'
+        )
+    df = pd.read_excel(CBO_10yr_budget_URL, sheet_name='Table 1-4',
+                       skiprows=8, nrows=22)
+    df.rename(columns={'Unnamed: 1': 'variable',
+                       'Actual, \n2018': 2018}, inplace=True)
+    df.drop(columns=['Unnamed: 0', 'Unnamed: 2', 'Unnamed: 3',
+                     'Unnamed: 4', '2020–\n2024', '2020–\n2029'],
+            inplace=True)
+    df2 = df[~pd.isnull(df.variable)]
+
+    CBO_10yr_macro_URL = (
+        'https://www.cbo.gov/system/files/2019-08/' +
+        '51135-2019-08-economicprojections_1.xlsx'
+        )
+    df = pd.read_excel(CBO_10yr_macro_URL,
+                       sheet_name='2. Calendar Year', skiprows=6,
+                       nrows=131)
+    df.rename(columns={'Unnamed: 1': 'variable'}, inplace=True)
+    df.drop(columns=['Unnamed: 0', 'Unnamed: 2', 'Units'], inplace=True)
+    # Note that real values come second (after nominal values)
+    df.drop_duplicates(subset='variable', keep='last', inplace=True)
+    df3 = df[~pd.isnull(df.variable)]
+    df_st = df1.append(df2, sort=False, ignore_index=True).append(
+        df3, sort=False, ignore_index=True)
+    df_st['var_name'] = df_st['variable'].replace(CBO_VAR_NAMES)
+    df_st = df_st[~pd.isnull(df_st.var_name)]
+    df_st.drop(columns=['variable'], inplace=True)
+    # reshape so each row a year
+    df_st = pd.melt(df_st, id_vars='var_name',
+                    value_vars=[i for i in range(2017, 2030)])
+    df_st = df_st.pivot(index='variable', columns='var_name',
+                        values='value').reset_index()
+    df_st.rename(columns={'variable': 'year'}, inplace=True)
+
+    # merge with long term data
+    df_cbo = df_lt.merge(df_st, how='outer', on='year',
+                         suffixes=('_lt', '_st'))
+
+    return df_cbo

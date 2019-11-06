@@ -1,10 +1,9 @@
 import numpy as np
 import pandas as pd
 import os
-import pickle
 import matplotlib.pyplot as plt
 import matplotlib
-from ogusa.constants import VAR_LABELS, ToGDP_LABELS, GROUP_LABELS
+from ogusa.constants import (VAR_LABELS, ToGDP_LABELS, CBO_UNITS)
 import ogusa.utils as utils
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(cur_path, 'OGUSAplots.mplstyle')
@@ -80,17 +79,33 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
                          label='Reform ' + VAR_LABELS[v])
             ylabel = r'Model Units'
         elif plot_type == 'cbo':
-            # This option is not complete.  Need to think about how to
-            # best load CBO forecasts
-            plt.plot(year_vec,
-                     base_tpi[v][start_index: start_index +
-                                 num_years_to_plot],
-                     label='Baseline ' + VAR_LABELS[v])
-            plt.plot(year_vec,
-                     reform_tpi[v][start_index: start_index +
-                                   num_years_to_plot],
-                     label='Reform ' + VAR_LABELS[v])
-            ylabel = r'Trillions of \$'
+            # Need reform and baseline to ensure CBO plot makes sense
+            assert (reform_tpi is not None)
+            # read in CBO forecasts
+            df_cbo = utils.read_cbo_forecast()
+            # assert variable in cbo data
+            assert (v in df_cbo.columns)
+            # assert cbo data has start year and end year
+            assert (df_cbo.year.min() <= start_year)
+            assert (df_cbo.year.max() >= start_year + num_years_to_plot)
+            cbo_data = df_cbo[
+                (df_cbo['year'] >= start_year) &
+                (df_cbo['year'] <= start_year +
+                 num_years_to_plot - 1)][v].values
+            # Plot CBO baseline
+            plot_var_base = cbo_data
+            plt.plot(year_vec, plot_var_base, label='Baseline ' +
+                     VAR_LABELS[v])
+            # Plot change in CBO baseline
+            pct_change = ((reform_tpi[v] - base_tpi[v]) /
+                          base_tpi[v])[start_index: start_index +
+                                       num_years_to_plot]
+            plot_var_reform = (1 + pct_change) * cbo_data
+            plt.plot(year_vec, plot_var_reform, label='Reform ' +
+                     VAR_LABELS[v])
+            # making units labels will not work if multiple variables
+            # and they are in different units
+            ylabel = CBO_UNITS[v]
         else:
             print('Please enter a valid plot type')
             assert(False)
@@ -144,17 +159,18 @@ def ss_3Dplot(base_params, base_ss, reform_params=None, reform_ss=None,
         assert(base_params.J == reform_params.J)
         assert(base_params.starting_age == reform_params.starting_age)
         assert(base_params.ending_age == reform_params.ending_age)
-        assert(base_params.S ==  reform_params.S)
-    domain = np.linspace(base_params.starting_age, base_params.ending_age,base_params.S)
+        assert(base_params.S == reform_params.S)
+    domain = np.linspace(base_params.starting_age,
+                         base_params.ending_age, base_params.S)
     Jgrid = np.zeros(base_params.J)
     for j in range(base_params.J):
         Jgrid[j:] += base_params.lambdas[j]
     if plot_type == 'levels':
-        data=base_ss[var].T
+        data = base_ss[var].T
     elif plot_type == 'diff':
-        data=(reform_ss[var]-base_ss[var]).T
+        data = (reform_ss[var] - base_ss[var]).T
     elif plot_type == 'pct_diff':
-        data=((reform_ss[var]-base_ss[var])/base_ss[var]).T
+        data = ((reform_ss[var] - base_ss[var]) / base_ss[var]).T
     cmap1 = matplotlib.cm.get_cmap('jet')
     X, Y = np.meshgrid(domain, Jgrid)
     fig5 = plt.figure()
