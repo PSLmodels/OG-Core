@@ -13,12 +13,11 @@ from ogusa.fiscal import *
 from ogusa.get_micro_data import *
 from ogusa.household import *
 from ogusa.income import *
-from ogusa.macro_output import *
 from ogusa.output_plots import *
+from ogusa.output_tables import *
 from ogusa.parameter_plots import *
 from ogusa.parameter_tables import *
 from ogusa.parameters import *
-from ogusa.postprocess import *
 from ogusa.tax import *
 from ogusa.txfunc import *
 from ogusa.utils import *

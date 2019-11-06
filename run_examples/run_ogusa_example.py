@@ -9,9 +9,9 @@ import time
 import numpy as np
 import os
 from taxcalc import Calculator
-from ogusa import postprocess
+from ogusa import output_tables as ot
 from ogusa.execute import runner
-from ogusa.utils import REFORM_DIR, BASELINE_DIR
+from ogusa.utils import REFORM_DIR, BASELINE_DIR, safe_read_pickle
 
 
 def main():
@@ -57,7 +57,6 @@ def main():
     Run baseline policy first
     ------------------------------------------------------------------------
     '''
-    output_base = BASELINE_DIR
     kwargs = {'output_base': base_dir, 'baseline_dir': base_dir,
               'test': False, 'time_path': True, 'baseline': True,
               'og_spec': og_spec, 'guid': '_example',
@@ -78,7 +77,6 @@ def main():
                'tau_b': [0.0595], 'debt_ratio_ss': 1.0,
                'alpha_T': alpha_T.tolist(),
                'alpha_G': alpha_G.tolist()}
-    output_base = REFORM_DIR
     kwargs = {'output_base': reform_dir, 'baseline_dir': base_dir,
               'test': False, 'time_path': True, 'baseline': False,
               'og_spec': og_spec, 'guid': '_example',
@@ -91,11 +89,25 @@ def main():
 
     # return ans - the percentage changes in macro aggregates and prices
     # due to policy changes from the baseline to the reform
-    ans = postprocess.create_diff(
-        baseline_dir=base_dir, policy_dir=reform_dir)
+    base_tpi = safe_read_pickle(
+        os.path.join(base_dir, 'TPI', 'TPI_vars.pkl'))
+    base_params = safe_read_pickle(
+        os.path.join(base_dir, 'model_params.pkl'))
+    reform_tpi = safe_read_pickle(
+        os.path.join(reform_dir, 'TPI', 'TPI_vars.pkl'))
+    reform_params = safe_read_pickle(
+        os.path.join(reform_dir, 'model_params.pkl'))
+    ans = ot.macro_table(
+        base_tpi, base_params, reform_tpi=reform_tpi,
+        reform_params=reform_params,
+        var_list=['Y', 'C', 'K', 'L', 'r', 'w'], output_type='pct_diff',
+        num_years=10, start_year=og_spec['start_year'])
 
     print("total time was ", (time.time() - run_start_time))
     print('Percentage changes in aggregates:', ans)
+    # save percentage change output to csv file
+    ans.to_csv('ogusa_example_output.csv')
+    client.close()
 
 
 if __name__ == "__main__":

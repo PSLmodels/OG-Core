@@ -1,11 +1,9 @@
 import numpy as np
 import pandas as pd
 import os
-import pickle
 import matplotlib.pyplot as plt
 import matplotlib
-from ogusa.constants import (VAR_LABELS, ToGDP_LABELS, GROUP_LABELS,
-                             CBO_UNITS)
+from ogusa.constants import (VAR_LABELS, ToGDP_LABELS, CBO_UNITS)
 import ogusa.utils as utils
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(cur_path, 'OGUSAplots.mplstyle')
@@ -161,17 +159,18 @@ def ss_3Dplot(base_params, base_ss, reform_params=None, reform_ss=None,
         assert(base_params.J == reform_params.J)
         assert(base_params.starting_age == reform_params.starting_age)
         assert(base_params.ending_age == reform_params.ending_age)
-        assert(base_params.S ==  reform_params.S)
-    domain = np.linspace(base_params.starting_age, base_params.ending_age,base_params.S)
+        assert(base_params.S == reform_params.S)
+    domain = np.linspace(base_params.starting_age,
+                         base_params.ending_age, base_params.S)
     Jgrid = np.zeros(base_params.J)
     for j in range(base_params.J):
         Jgrid[j:] += base_params.lambdas[j]
     if plot_type == 'levels':
-        data=base_ss[var].T
+        data = base_ss[var].T
     elif plot_type == 'diff':
-        data=(reform_ss[var]-base_ss[var]).T
+        data = (reform_ss[var] - base_ss[var]).T
     elif plot_type == 'pct_diff':
-        data=((reform_ss[var]-base_ss[var])/base_ss[var]).T
+        data = ((reform_ss[var] - base_ss[var]) / base_ss[var]).T
     cmap1 = matplotlib.cm.get_cmap('jet')
     X, Y = np.meshgrid(domain, Jgrid)
     fig5 = plt.figure()

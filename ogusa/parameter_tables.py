@@ -1,7 +1,7 @@
-import numpy as np
 import pandas as pd
+import numpy as np
 from ogusa.utils import save_return_table
-from ogusa.constants import VAR_LABELS
+from ogusa.constants import VAR_LABELS, PARAM_LABELS
 
 
 def tax_rate_table(base_TxFuncEst, base_params, reform_TxFuncEst=None,
@@ -26,7 +26,7 @@ def tax_rate_table(base_TxFuncEst, base_params, reform_TxFuncEst=None,
         path (string): path to save table to
 
     Returns:
-        table (string or DataFrame): table of tax rates
+        table_str (string or DataFrame): table of tax rates
 
     '''
     assert (isinstance(start_year, int))
@@ -129,5 +129,48 @@ def tax_rate_table(base_TxFuncEst, base_params, reform_TxFuncEst=None,
     table_df.reindex(table_df.index.drop('Year'))
     table_str = save_return_table(table_df, table_format, path,
                                   precision=2)
+
+    return table_str
+
+
+def param_table(p, table_format='tex', path=None):
+    '''
+    This function creates a table of model parameters for publication.
+
+    Args:
+        p (OG-USA Specifications class): baseline parameters
+            object)
+        table_format (string): format to save/return table as
+        path (string): path to save table to
+
+    Returns:
+        table (string or DataFrame): table of tax rates
+    '''
+    table = {'Symbol': [], 'Description': [], 'Value': []}
+    for k, v in PARAM_LABELS.items():
+        table['Symbol'].append(v[1])
+        table['Description'].append(v[0])
+        value = getattr(p, k)
+        if hasattr(value, '__len__') & ~isinstance(value, str):
+            if value.ndim > 1:
+                report = 'See elsewhere'
+            else:
+                report = (
+                    '[' + '{0:1.3f}'.format(value[0]) + '...' +
+                    '{0:1.3f}'.format(value[-1]) + ']')
+        else:
+            if isinstance(value, int) or isinstance(value, np.int64):
+                report = str(value)
+            elif isinstance(value, str):
+                report = value
+            else:
+                if value < 0.0001:
+                    report = "{:.2E}".format(value)
+                else:
+                    report = '{0:1.3f}'.format(value)
+        table['Value'].append(report)
+    table_df = pd.DataFrame.from_dict(table)
+    table_str = save_return_table(
+        table_df, table_format, path, precision=3)
 
     return table_str

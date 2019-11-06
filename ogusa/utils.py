@@ -421,7 +421,8 @@ def save_return_table(table_df, output_type, path, precision=2):
         table_df (Pandas DataFrame): table
 
     '''
-    pd.options.display.float_format = ('{:,.' + str(precision) + 'f}').format
+    pd.options.display.float_format = (
+        '{:,.' + str(precision) + 'f}').format
     if path is None:
         if output_type == 'tex':
             tab_str = table_df.to_latex(index=False, na_rep='')
@@ -430,7 +431,8 @@ def save_return_table(table_df, output_type, path, precision=2):
             tab_str = table_df.to_json(double_precision=precision)
             return tab_str
         elif output_type == 'html':
-            tab_html = table_df.to_html()
+            tab_html = table_df.to_html().replace('\n', '')
+            tab_html.replace('\n', '')
             return tab_html
         else:
             return table_df
@@ -626,7 +628,8 @@ def read_cbo_forecast():
     df_lt['D'] = df_lt['Y'] * df_lt['D/Y']
 
     CBO_10yr_budget_URL = (
-        'https://www.cbo.gov/system/files/2019-08/51118-2019-08-budgetprojections_3.xlsx'
+        'https://www.cbo.gov/system/files/2019-08/' +
+        '51118-2019-08-budgetprojections_3.xlsx'
         )
     df = pd.read_excel(CBO_10yr_budget_URL, sheet_name='Table 1-1',
                        skiprows=7, nrows=7)
@@ -638,7 +641,8 @@ def read_cbo_forecast():
     df1 = df[~((pd.isnull(df.variable)) | (df.variable == 'Other'))]
 
     CBO_10yr_budget_URL = (
-        'https://www.cbo.gov/system/files/2019-08/51118-2019-08-budgetprojections_3.xlsx'
+        'https://www.cbo.gov/system/files/2019-08/' +
+        '51118-2019-08-budgetprojections_3.xlsx'
         )
     df = pd.read_excel(CBO_10yr_budget_URL, sheet_name='Table 1-4',
                        skiprows=8, nrows=22)
@@ -650,7 +654,8 @@ def read_cbo_forecast():
     df2 = df[~pd.isnull(df.variable)]
 
     CBO_10yr_macro_URL = (
-        'https://www.cbo.gov/system/files/2019-08/51135-2019-08-economicprojections_1.xlsx'
+        'https://www.cbo.gov/system/files/2019-08/' +
+        '51135-2019-08-economicprojections_1.xlsx'
         )
     df = pd.read_excel(CBO_10yr_macro_URL,
                        sheet_name='2. Calendar Year', skiprows=6,
