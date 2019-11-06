@@ -33,3 +33,8 @@ def test_macro_table():
 def test_macro_table_SS():
     df = output_tables.macro_table_SS(base_ss, reform_ss)
     assert isinstance(df, pd.DataFrame)
+
+
+def test_ineq_table():
+    df = output_tables.ineq_table(base_ss, base_params)
+    assert isinstance(df, pd.DataFrame)
