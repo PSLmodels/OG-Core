@@ -230,8 +230,7 @@ def ineq_table(base_ss, base_params, reform_ss=None, reform_params=None,
             table_dict['% Change'].extend(list(
                 ((reform_values - base_values) / base_values) * 100))
     # Make df with dict so can use pandas functions
-    table_df = pd.DataFrame.from_dict(
-        table_dict)
+    table_df = pd.DataFrame.from_dict(table_dict)
     table = save_return_table(table_df, table_format, path,
                               precision=3)
 
@@ -291,8 +290,52 @@ def gini_table(base_ss, base_params, reform_ss=None,
             table_dict['% Change'].extend(list(
                 ((reform_values - base_values) / base_values) * 100))
     # Make df with dict so can use pandas functions
-    table_df = pd.DataFrame.from_dict(
-        table_dict)
+    table_df = pd.DataFrame.from_dict(table_dict)
+    table = save_return_table(table_df, table_format, path,
+                              precision=3)
+
+    return table
+
+
+def wealth_moments_table(base_ss, base_params, table_format=None,
+                         path=None):
+    '''
+    Creates table with moments of the wealth distribution from the model
+    and SCF data.
+
+    Args:
+        base_ss (dictionary): SS output from baseline run
+        base_params (OG-USA Specifications class): baseline parameters
+            object
+        table_format (string): format to return table in: 'csv', 'tex',
+            'excel', 'json', if None, a DataFrame is returned
+        path (string): path to save table to
+
+    Returns:
+        table (various): table in DataFrame or string format or `None`
+            if saved to disk
+
+    '''
+    table_dict = {'Moment': [
+        'Share 0-25%', 'Share 25-50%', 'Share 50-70%', 'Share 70-80%',
+        'Share 80-90%', 'Share 90-99%', 'Share 99-100%',
+        'Gini Coefficient', 'var(ln(Wealth))'], 'Data': [], 'Model': []}
+    base_ineq = Inequality(
+        base_ss['bssmat_splus1'], base_params.omega_SS,
+        base_params.lambdas, base_params.S, base_params.J)
+    base_values = [
+        1 - base_ineq.top_share(0.75),
+        base_ineq.top_share(0.75) - base_ineq.top_share(0.5),
+        base_ineq.top_share(0.5) - base_ineq.top_share(0.3),
+        base_ineq.top_share(0.3) - base_ineq.top_share(0.2),
+        base_ineq.top_share(0.2) - base_ineq.top_share(0.1),
+        base_ineq.top_share(0.1) - base_ineq.top_share(0.01),
+        base_ineq.top_share(0.01),
+        base_ineq.gini(), base_ineq.var_of_logs()]
+    table_dict['Model'].extend(base_values)
+    table_dict['Data'] = list(np.zeros(len(base_values)))
+    # Make df with dict so can use pandas functions
+    table_df = pd.DataFrame.from_dict(table_dict)
     table = save_return_table(table_df, table_format, path,
                               precision=3)
 
