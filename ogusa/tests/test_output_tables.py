@@ -43,3 +43,8 @@ def test_ineq_table():
 def test_gini_table():
     df = output_tables.gini_table(base_ss, base_params)
     assert isinstance(df, pd.DataFrame)
+
+
+def test_wealth_moments_table():
+    df = output_tables.wealth_moments_table(base_ss, base_params)
+    assert isinstance(df, pd.DataFrame)
