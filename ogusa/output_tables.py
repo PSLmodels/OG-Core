@@ -334,6 +334,7 @@ def wealth_moments_table(base_ss, base_params, table_format=None,
         base_ineq.top_share(0.01),
         base_ineq.gini(), base_ineq.var_of_logs()]
     table_dict['Model'].extend(base_values)
+    # get moments from Survey of Consumer Finances data
     scf = wealth.get_wealth_data()
     table_dict['Data'] = wealth.compute_wealth_moments(
         scf, base_params.lambdas)
