@@ -5,6 +5,7 @@ Tests of parameter_table.py module
 import pytest
 import os
 from ogusa import utils, parameter_tables
+from ogusa.parameters import Specifications
 
 
 # Load in test results and parameters
@@ -22,5 +23,6 @@ def test_tax_rate_table():
 
 
 def test_param_table():
-    str = parameter_tables.param_table(base_params)
+    p = Specifications()
+    str = parameter_tables.param_table(p)
     assert str
