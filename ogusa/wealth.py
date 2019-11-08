@@ -74,8 +74,8 @@ def compute_wealth_moments(scf, bin_weights):
 
     # compute gini coeff
     scf.sort_values(by='networth', ascending=True, inplace=True)
-    p = (scf.wgt.cumsum() / scf.wgt.sum()).as_matrix()
-    nu = ((scf.wgt * scf.networth).cumsum()).as_matrix()
+    p = (scf.wgt.cumsum() / scf.wgt.sum()).values
+    nu = ((scf.wgt * scf.networth).cumsum()).values
     nu = nu / nu[-1]
     gini_coeff = (nu[1:] * p[:-1]).sum() - (nu[:-1] * p[1:]).sum()
 
