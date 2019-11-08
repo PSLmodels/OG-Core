@@ -45,6 +45,11 @@ def test_gini_table():
     assert isinstance(df, pd.DataFrame)
 
 
+@pytest.mark.full_run
 def test_wealth_moments_table():
+    '''
+    Need SCF data which is too large to check into repo so this will
+    be flagged so as to not run on TravisCI.
+    '''
     df = output_tables.wealth_moments_table(base_ss, base_params)
     assert isinstance(df, pd.DataFrame)
