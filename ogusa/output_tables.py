@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import os
 from ogusa.constants import VAR_LABELS
+from ogusa import wealth
 from ogusa.utils import save_return_table, Inequality
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 
@@ -333,7 +334,9 @@ def wealth_moments_table(base_ss, base_params, table_format=None,
         base_ineq.top_share(0.01),
         base_ineq.gini(), base_ineq.var_of_logs()]
     table_dict['Model'].extend(base_values)
-    table_dict['Data'] = list(np.zeros(len(base_values)))
+    scf = wealth.get_wealth_data()
+    table_dict['Data'] = wealth.compute_wealth_moments(
+        scf, base_params.lambdas)
     # Make df with dict so can use pandas functions
     table_df = pd.DataFrame.from_dict(table_dict)
     table = save_return_table(table_df, table_format, path,
