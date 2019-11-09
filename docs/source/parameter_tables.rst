@@ -11,4 +11,4 @@ ogusa.parameter_tables
 .. currentmodule:: ogusa.parameter_tables
 
 .. automodule:: ogusa.parameter_tables
-  :members: tax_rate_table
+  :members: tax_rate_table, param_table
