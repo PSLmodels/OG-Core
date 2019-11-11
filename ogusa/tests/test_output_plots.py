@@ -50,6 +50,12 @@ def test_ss_profiles():
     assert fig
 
 
+def test_tpi_profiles():
+    fig = output_plots.tpi_profiles(base_tpi, base_params, reform_tpi,
+                                   reform_params)
+    assert fig
+
+
 def test_ss_3Dplot():
         fig = output_plots.ss_3Dplot(base_params, base_ss)
         assert fig
