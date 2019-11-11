@@ -5,6 +5,7 @@ Miscellaneous functions used in the OG-USA model.
 '''
 # Packages
 import os
+import requests
 from io import StringIO
 import numpy as np
 import pandas as pd
@@ -701,3 +702,26 @@ def read_cbo_forecast():
                          suffixes=('_lt', '_st'))
 
     return df_cbo
+
+
+def not_connected(url='http://www.google.com/', timeout=5):
+    '''
+    Checks for internet connection status of machine.
+
+    Args:
+        url (string): any length, url used to check connectivity
+        timeout (float): strictly positive, time to wait for timeout
+
+    Functions called: None
+
+    Returns:
+        Boolean singleton: =True if connection was made within timeout
+
+    Raises:
+        ConnectionError: If no response from url withing timeout
+    '''
+    try:
+        _ = requests.get(url, timeout=timeout)
+        return False
+    except requests.ConnectionError:
+        return True
