@@ -1,22 +1,60 @@
 import numpy as np
 import pandas as pd
-import os
+from ogusa import utils
 
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 
 
-def get_wealth_data():
+def get_wealth_data(scf_yrs_list=[2013, 2010, 2007], web=True,
+                    directory=None):
     '''
     Reads wealth data from the 2007, 2010, and 2013 Survey of Consumer
     Finances (SCF) files.
 
     Args:
-        None
+        scf_yrs_list (list of 4-digit integers): list of SCF years to
+            import
+        web (Boolean): =True if function retrieves data from internet
+        directory (string or None): local directory location if data are
+            stored on local drive, not use internet (web=False)
+
 
     Returns:
         scf (Pandas DataFrame): pooled cross-sectional data from SCFs
 
     '''
+    if web:
+        # Throw an error if the machine is not connected to the internet
+        if utils.not_connected():
+            err_msg = ('SCF DATA ERROR: The local machine is not ' +
+                       'connected to the internet and web=True was ' +
+                       'selected.')
+            raise RuntimeError(err_msg)
+
+        file_urls = file_names_for_range(beg_yr, beg_mth, end_yr, end_mth, web)
+
+        file_paths = fetch_files_from_web(file_urls)
+
+    if not web and directory is None:
+        # Thow an error if web=False no source of files is given
+        err_msg = ('SCF DATA ERROR: No local directory was ' +
+                   'specified as the source for the data.')
+        raise ValueError(err_msg)
+
+    # elif not web and directory is not None:
+    #     full_directory = os.path.expanduser(directory)
+    #     file_list = file_names_for_range(beg_yr, beg_mth, end_yr, end_mth, web)
+
+    #     for name in file_list:
+    #         file_paths.append(os.path.join(full_directory, name))
+    #     # Check to make sure the necessary files are present in the
+    #     # local directory
+    #     err_msg = ('hrs_by_age() ERROR: The file %s was not found in ' +
+    #                'the directory %s')
+    #     for path in file_paths:
+    #         if not os.path.isfile(path):
+    #             raise RuntimeError(err_msg % (path, full_directory))
+
     # read in raw SCF data to calculate moments
     scf_dir = os.path.join(CUR_PATH, '..', 'Data',
                           'Survey_of_Consumer_Finances')
