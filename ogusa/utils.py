@@ -5,6 +5,7 @@ Miscellaneous functions used in the OG-USA model.
 '''
 # Packages
 import os
+import sys
 import requests
 from io import StringIO
 import numpy as np
@@ -704,13 +705,59 @@ def read_cbo_forecast():
     return df_cbo
 
 
+def print_progress(iteration, total, source_name='', prefix='Progress:',
+                   suffix='Complete', decimals=1, bar_length=50):
+    '''
+    Prints a progress bar to the terminal when completing small tasks
+    of a larger job.
+
+    Args:
+        iteration (int>=1): which task the job is currently doing
+        total (int>=1): how many tasks are in the job
+        source_name (string): name of source data
+        prefix (string): what to print before the progress bar
+        suffix (string): what to print after the progress bar
+        decimals (int>=0): how many decimals in the percentage
+        bar_length (int>=3): how many boxes in the progress bar
+
+    Functions called: None
+
+    Objects created within function:
+        str_format (string): string containing percentage completed
+        percents (string): percentage completed
+        filled_length (int): number of boxes in the progress bar to fill
+        bar (string): progress bar
+
+    Returns: None
+    '''
+    str_format = "{0:." + str(decimals) + "f}"
+    percents = str_format.format(100 * (iteration / float(total)))
+    filled_length = int(round(bar_length * iteration / float(total)))
+    bar = '█' * filled_length + '-' * (bar_length - filled_length)
+
+    if iteration == 0:
+        if source_name == '':
+            sys.stdout.write('Accessing data files...\n')
+        else:
+            sys.stdout.write('Accessing ' + source_name +
+                             ' data files...\n')
+
+    sys.stdout.write('\r%s |%s| %s%s %s' %
+                     (prefix, bar, percents, '%', suffix)),
+
+    if iteration == total:
+        sys.stdout.write('\n')
+        sys.stdout.write('Computing...\n')
+    sys.stdout.flush()
+
+
 def not_connected(url='http://www.google.com/', timeout=5):
     '''
     Checks for internet connection status of machine.
 
     Args:
-        url (string): any length, url used to check connectivity
-        timeout (float): strictly positive, time to wait for timeout
+        url (string): url used to check connectivity
+        timeout (float>0): time to wait for timeout
 
     Functions called: None
 
