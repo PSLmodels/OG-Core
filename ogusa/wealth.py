@@ -70,7 +70,7 @@ def get_wealth_data(scf_yrs_list=[2013, 2010, 2007], web=True,
         scf_dict[str(year)] = \
             pd.read_stata(filename, columns=['networth', 'wgt'])
 
-    df_scf = scf_dict[scf_yrs_list[0]]
+    df_scf = scf_dict[str(scf_yrs_list[0])]
     num_yrs = len(scf_yrs_list)
     if num_yrs >= 2:
         for year in scf_yrs_list[1:]:
