@@ -10,7 +10,7 @@ import requests
 from zipfile import ZipFile
 import urllib.request
 from tempfile import NamedTemporaryFile
-from io import BytesIO StringIO
+from io import BytesIO, StringIO
 import numpy as np
 import pandas as pd
 import taxcalc
