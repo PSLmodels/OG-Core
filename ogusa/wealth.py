@@ -6,7 +6,7 @@ from ogusa import utils
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 
 
-def get_wealth_data(scf_yrs_list=[2013, 2010, 2007], web=True,
+def get_wealth_data(scf_yrs_list=[2016, 2013, 2010, 2007], web=True,
                     directory=None):
     '''
     Reads wealth data from the 2007, 2010, and 2013 Survey of Consumer
@@ -14,7 +14,8 @@ def get_wealth_data(scf_yrs_list=[2013, 2010, 2007], web=True,
 
     Args:
         scf_yrs_list (list of 4-digit integers): list of SCF years to
-            import
+            import. Currently the largest set of years that will work is
+            [2016, 2013, 2010, 2007]
         web (Boolean): =True if function retrieves data from internet
         directory (string or None): local directory location if data are
             stored on local drive, not use internet (web=False)
@@ -24,6 +25,11 @@ def get_wealth_data(scf_yrs_list=[2013, 2010, 2007], web=True,
         scf (Pandas DataFrame): pooled cross-sectional data from SCFs
 
     '''
+    # Hard code cpi list for given years (2015=100)
+    cpi_dict = {'cpi2016': 101.2615832057050,
+                'cpi2013': 98.2870778608004,
+                'cpi2010': 91.9999409325069,
+                'cpi2007': 87.4799768230408}
     if web:
         # Throw an error if the machine is not connected to the internet
         if utils.not_connected():
@@ -67,8 +73,11 @@ def get_wealth_data(scf_yrs_list=[2013, 2010, 2007], web=True,
     # read in raw SCF data to calculate moments
     scf_dict = {}
     for filename, year in zip(file_paths, scf_yrs_list):
-        scf_dict[str(year)] = \
-            pd.read_stata(filename, columns=['networth', 'wgt'])
+        df_yr = pd.read_stata(filename, columns=['networth', 'wgt'])
+        # Add inflation adjusted net worth
+        cpi = cpi_dict['cpi' + str(year)]
+        df_yr['networth_infadj'] = df_yr['networth'] * cpi
+        scf_dict[str(year)] = df_yr
 
     df_scf = scf_dict[str(scf_yrs_list[0])]
     num_yrs = len(scf_yrs_list)
@@ -95,8 +104,8 @@ def compute_wealth_moments(scf, bin_weights):
 
     '''
     # calculate percentile shares (percentiles based on lambdas input)
-    scf.sort_values(by='networth', ascending=True, inplace=True)
-    scf['weight_networth'] = scf['wgt'] * scf['networth']
+    scf.sort_values(by='networth_infadj', ascending=True, inplace=True)
+    scf['weight_networth'] = scf['wgt'] * scf['networth_infadj']
     total_weight_wealth = scf.weight_networth.sum()
     cumsum = scf.wgt.cumsum()
     J = bin_weights.shape[0]
@@ -119,15 +128,15 @@ def compute_wealth_moments(scf, bin_weights):
     wealth_share[1:] = wealth[1:] - wealth[0:-1]
 
     # compute gini coeff
-    scf.sort_values(by='networth', ascending=True, inplace=True)
+    scf.sort_values(by='networth_infadj', ascending=True, inplace=True)
     p = (scf.wgt.cumsum() / scf.wgt.sum()).values
-    nu = ((scf.wgt * scf.networth).cumsum()).values
+    nu = ((scf.wgt * scf.networth_infadj).cumsum()).values
     nu = nu / nu[-1]
     gini_coeff = (nu[1:] * p[:-1]).sum() - (nu[:-1] * p[1:]).sum()
 
     # compute variance in logs
-    df = scf.drop(scf[scf['networth'] <= 0.0].index)
-    df['ln_networth'] = np.log(df['networth'])
+    df = scf.drop(scf[scf['networth_infadj'] <= 0.0].index)
+    df['ln_networth'] = np.log(df['networth_infadj'])
     df.sort_values(by='ln_networth', ascending=True, inplace=True)
     weight_mean = ((df.ln_networth * df.wgt).sum()) / (df.wgt.sum())
     var_ln_wealth = (((
