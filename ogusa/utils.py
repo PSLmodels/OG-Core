@@ -7,7 +7,10 @@ Miscellaneous functions used in the OG-USA model.
 import os
 import sys
 import requests
-from io import StringIO
+from zipfile import ZipFile
+import urllib.request
+from tempfile import NamedTemporaryFile
+from io import BytesIO StringIO
 import numpy as np
 import pandas as pd
 import taxcalc
@@ -749,6 +752,62 @@ def print_progress(iteration, total, source_name='', prefix='Progress:',
         sys.stdout.write('\n')
         sys.stdout.write('Computing...\n')
     sys.stdout.flush()
+
+
+def fetch_files_from_web(file_urls):
+    '''
+    Fetches zip files from respective web addresses and saves them as
+    temporary files. Prints progress bar as it downloads the files.
+
+    Args:
+        file_urls (list of strings): list of URLs of respective data zip
+            files
+
+    Functions called:
+        print_progress()
+
+    Objects created within function:
+        local_paths = list, local paths for teporary files
+        iteration   = int, the number of files that have been downloaded
+        total       = total, the total number of files to download
+        f           = temporary file of monthly CPS survey
+        path        = string, local path for temporary file
+        zipped_file = ZipFile object, opened zipfile
+
+    Files created by this function:
+        .dta file for each year of SCF data
+
+    Returns:
+        local_paths (list of strings): local paths of temporary data
+            files
+    '''
+    local_paths = []
+
+    iteration = 0
+    total = len(file_urls)
+    print_progress(iteration, total, source_name='SCF')
+
+    for file_url in file_urls:
+        # url = requests.get(file_url) (if using reuests package)
+        url = urllib.request.urlopen(file_url)
+
+        f = NamedTemporaryFile(delete=False)
+        path = f.name
+
+        # url.content (if using requests package)
+        with ZipFile(BytesIO(url.read())) as zipped_file:
+            for contained_file in zipped_file.namelist():
+                for line in zipped_file.open(contained_file).readlines():
+                    f.write(line)
+
+        local_paths.append(path)
+
+        f.close()
+
+        iteration += 1
+        print_progress(iteration, total, source_name='SCF')
+
+    return local_paths
 
 
 def not_connected(url='http://www.google.com/', timeout=5):
