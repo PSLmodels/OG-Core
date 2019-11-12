@@ -285,3 +285,11 @@ def test_read_cbo_forecast():
 
     assert np.allclose(
         test_df.loc[test_df['year'] == 2017, 'Y'].values[0], 20330)
+
+
+def test_not_connected():
+    '''
+    Test that not_connected function works
+    '''
+    assert not utils.not_connected()
+    assert utils.not_connected(url='jttps://www.Crazy.com')
