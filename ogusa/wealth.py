@@ -6,7 +6,7 @@ from ogusa import utils
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 
 
-def get_wealth_data(scf_yrs_list=[2016, 2013, 2010, 2007], web=True,
+def get_wealth_data(scf_yrs_list=[2013, 2010, 2007], web=True,
                     directory=None):
     '''
     Reads wealth data from the 2007, 2010, and 2013 Survey of Consumer
