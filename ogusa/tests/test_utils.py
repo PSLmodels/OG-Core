@@ -291,5 +291,5 @@ def test_not_connected():
     '''
     Test that not_connected function works
     '''
+    # Default values should return False, i.e., connected
     assert not utils.not_connected()
-    assert utils.not_connected(url='jttps://www.Crazy.com')
