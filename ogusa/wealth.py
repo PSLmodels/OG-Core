@@ -9,8 +9,8 @@ CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 def get_wealth_data(scf_yrs_list=[2016, 2013, 2010, 2007], web=True,
                     directory=None):
     '''
-    Reads wealth data from the 2007, 2010, and 2013 Survey of Consumer
-    Finances (SCF) files.
+    Reads wealth data from the 2007, 2010, 2013, and 2016 Survey of
+    Consumer Finances (SCF) files.
 
     Args:
         scf_yrs_list (list of 4-digit integers): list of SCF years to
