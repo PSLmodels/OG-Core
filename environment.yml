@@ -18,9 +18,10 @@ dependencies:
 - pycodestyle
 - pylint
 - coverage
-- os
-- sys
+- io
 - requests
+- urllib.request
+- tempfile
 - pip:
   - cs-kit
   - xlrd
