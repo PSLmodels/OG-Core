@@ -797,8 +797,9 @@ def fetch_files_from_web(file_urls):
         # url.content (if using requests package)
         with ZipFile(BytesIO(url.read())) as zipped_file:
             for contained_file in zipped_file.namelist():
-                for line in zipped_file.open(contained_file).readlines():
-                    f.write(line)
+                f.write(zipped_file.open(contained_file).read())
+                # for line in zipped_file.open(contained_file).readlines():
+                #     f.write(line)
 
         local_paths.append(path)
 
