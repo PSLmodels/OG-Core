@@ -1,6 +1,6 @@
 package:
   name: ogusa
-  version: 0.0.0
+  version: 0.5.13
 
 source:
   path: ..
@@ -25,6 +25,15 @@ requirements:
     - matplotlib
     - "dask>=0.20.0"
     - mkl
+    - sys
+    - os
+    - urllib.request
+    - tempfile
+    - zipfile
+    - pkg_resources
+    - io
+    - requests
+
 
 about:
   home: https://github.com/PSLmodels/OG-USA/
