@@ -5,7 +5,12 @@ Miscellaneous functions used in the OG-USA model.
 '''
 # Packages
 import os
-from io import StringIO
+import sys
+import requests
+from zipfile import ZipFile
+import urllib.request
+from tempfile import NamedTemporaryFile
+from io import BytesIO, StringIO
 import numpy as np
 import pandas as pd
 import taxcalc
@@ -701,3 +706,134 @@ def read_cbo_forecast():
                          suffixes=('_lt', '_st'))
 
     return df_cbo
+
+
+def print_progress(iteration, total, source_name='', prefix='Progress:',
+                   suffix='Complete', decimals=1, bar_length=50):
+    '''
+    Prints a progress bar to the terminal when completing small tasks
+    of a larger job.
+
+    Args:
+        iteration (int>=1): which task the job is currently doing
+        total (int>=1): how many tasks are in the job
+        source_name (string): name of source data
+        prefix (string): what to print before the progress bar
+        suffix (string): what to print after the progress bar
+        decimals (int>=0): how many decimals in the percentage
+        bar_length (int>=3): how many boxes in the progress bar
+
+    Functions called: None
+
+    Objects created within function:
+        status (string): status of download
+        str_format (string): string containing percentage completed
+        percents (string): percentage completed
+        filled_length (int): number of boxes in the progress bar to fill
+        bar (string): progress bar
+
+    Returns: status
+    '''
+    status = 'Incomplete'
+    str_format = "{0:." + str(decimals) + "f}"
+    percents = str_format.format(100 * (iteration / float(total)))
+    filled_length = int(round(bar_length * iteration / float(total)))
+    bar = '█' * filled_length + '-' * (bar_length - filled_length)
+
+    if iteration == 0:
+        if source_name == '':
+            sys.stdout.write('Accessing data files...\n')
+        else:
+            sys.stdout.write('Accessing ' + source_name +
+                             ' data files...\n')
+
+    sys.stdout.write('\r%s |%s| %s%s %s' %
+                     (prefix, bar, percents, '%', suffix)),
+
+    if iteration == total:
+        sys.stdout.write('\n')
+        sys.stdout.write('Computing...\n')
+        status = 'Complete'
+    sys.stdout.flush()
+
+    return status
+
+
+def fetch_files_from_web(file_urls):
+    '''
+    Fetches zip files from respective web addresses and saves them as
+    temporary files. Prints progress bar as it downloads the files.
+
+    Args:
+        file_urls (list of strings): list of URLs of respective data zip
+            files
+
+    Functions called:
+        print_progress()
+
+    Objects created within function:
+        local_paths = list, local paths for teporary files
+        iteration   = int, the number of files that have been downloaded
+        total       = total, the total number of files to download
+        f           = temporary file of monthly CPS survey
+        path        = string, local path for temporary file
+        zipped_file = ZipFile object, opened zipfile
+
+    Files created by this function:
+        .dta file for each year of SCF data
+
+    Returns:
+        local_paths (list of strings): local paths of temporary data
+            files
+    '''
+    local_paths = []
+
+    iteration = 0
+    total = len(file_urls)
+    _ = print_progress(iteration, total, source_name='SCF')
+
+    for file_url in file_urls:
+        # url = requests.get(file_url) (if using reuests package)
+        url = urllib.request.urlopen(file_url)
+
+        f = NamedTemporaryFile(delete=False)
+        path = f.name
+
+        # url.content (if using requests package)
+        with ZipFile(BytesIO(url.read())) as zipped_file:
+            for contained_file in zipped_file.namelist():
+                f.write(zipped_file.open(contained_file).read())
+                # for line in zipped_file.open(contained_file).readlines():
+                #     f.write(line)
+
+        local_paths.append(path)
+
+        f.close()
+
+        iteration += 1
+        _ = print_progress(iteration, total, source_name='SCF')
+
+    return local_paths
+
+
+def not_connected(url='http://www.google.com/', timeout=5):
+    '''
+    Checks for internet connection status of machine.
+
+    Args:
+        url (string): url used to check connectivity
+        timeout (float>0): time to wait for timeout
+
+    Functions called: None
+
+    Returns:
+        Boolean singleton: =True if connection was made within timeout
+
+    Raises:
+        ConnectionError: If no response from url withing timeout
+    '''
+    try:
+        _ = requests.get(url, timeout=timeout)
+        return False
+    except requests.ConnectionError:
+        return True
