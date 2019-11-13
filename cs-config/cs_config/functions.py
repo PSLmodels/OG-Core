@@ -2,6 +2,7 @@ import ogusa
 from ogusa.parameters import Specifications
 from ogusa.utils import TC_LAST_YEAR, REFORM_DIR, BASELINE_DIR
 from ogusa import output_plots as op
+from ogusa import output_tables as ot
 from ogusa import SS, utils
 import os
 import io
@@ -187,14 +188,24 @@ def run_model(meta_param_dict, adjustment):
 
 
 def comp_output(base_ss, base_params, reform_ss, reform_params,
-                var='nssmat'):
+                var='cssmat'):
     '''
     Function to create output for the COMP platform
     '''
-    fig = op.ss_profiles(
-        base_ss, base_params, reform_ss=reform_ss,
-        reform_params=reform_params, by_j=True, var=var,
-        plot_title='Labor Supply in Baseline and Reform Policy')
+    table_title = 'Percentage Changes in Economic Aggregates Between'
+    table_title += ' Baseline and Reform Policy'
+    out_table = ot.macro_table_SS(
+        base_ss, reform_ss,
+        var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
+                  'Lss', 'rss', 'wss'], table_format='csv')
+    html_table = ot.macro_table_SS(
+        base_ss, reform_ss,
+        var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
+                  'Lss', 'rss', 'wss'], table_format='html')
+    fig = op.ability_bar_ss(
+        base_ss, base_params, reform_ss, reform_params, var=var,
+        plot_title='Percentage Changes in Conumption Between Baseline' +
+        ' and Reform Policy')
     in_memory_file = io.BytesIO()
     fig.savefig(in_memory_file, format="png")
     in_memory_file.seek(0)
@@ -204,9 +215,20 @@ def comp_output(base_ss, base_params, reform_ss, reform_params,
               "media_type": "PNG",
               "title": 'Labor Supply in Baseline and Reform Policy',
               "data": in_memory_file.read()
-              }
+              },
+            {
+              "media_type": "table",
+              "title":  table_title,
+              "data": html_table
+            }
             ],
-        "downloadable": []
+        "downloadable": [
+            {
+              "media_type": "CSV",
+              "title": table_title,
+              "data": out_table.to_csv()
+            }
+        ]
         }
 
     return comp_dict
