@@ -289,10 +289,24 @@ def test_read_cbo_forecast():
 
 def test_print_progress():
     '''
-    Test print_progress() function for
+    Test print_progress() function for complete and incomplete status
     '''
     assert utils.print_progress(1, 5) == 'Incomplete'
     assert utils.print_progress(5, 5) == 'Complete'
+
+
+def test_fetch_files_from_web():
+    '''
+    Test fetch_files_from_web() that it returns a list of local
+    directory paths that is the same length as the input list of URLs
+    '''
+    zipfilename1 = ('https://www.federalreserve.gov/econres/' +
+                    'files/scfp2016s.zip')
+    zipfilename2 = ('https://www.federalreserve.gov/econres/' +
+                    'files/scfp2013s.zip')
+    url_list = [zipfilename1, zipfilename2]
+    paths_list = utils.fetch_files_from_web(url_list)
+    assert len(paths_list) == len(url_list)
 
 
 def test_not_connected():
