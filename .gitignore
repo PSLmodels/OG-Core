@@ -33,5 +33,5 @@ htmlcov/*
 */OUTPUT/*
 envs/
 *.egg-info/
-*/dask-worker-space/*
+*dask-worker-space/*
 *micro_data_*.pkl
