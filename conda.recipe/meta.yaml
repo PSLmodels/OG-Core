@@ -25,14 +25,6 @@ requirements:
     - matplotlib
     - "dask>=0.20.0"
     - mkl
-    - sys
-    - os
-    - urllib.request
-    - tempfile
-    - zipfile
-    - pkg_resources
-    - io
-    - requests
 
 
 about:
