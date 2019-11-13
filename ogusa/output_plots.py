@@ -267,9 +267,11 @@ def ability_bar(base_tpi, base_params, reform_tpi,
 
     Args:
         base_tpi (dictionary): TPI output from baseline run
-        base_params (OG-USA Specifications class): baseline parameters object
+        base_params (OG-USA Specifications class): baseline parameters
+            object
         reform_tpi (dictionary): TPI output from reform run
-        reform_params (OG-USA Specifications class): reform parameters object
+        reform_params (OG-USA Specifications class): reform parameters
+            object
         var (string): name of variable to plot
         num_year (integer): number of years to compute changes over
         start_year (integer): year to start plot
@@ -295,6 +297,53 @@ def ability_bar(base_tpi, base_params, reform_tpi,
         start_index:start_index + num_years, :, :].sum(1).sum(0)
     reform_val = (reform_tpi[var] * omega_to_use)[
         start_index:start_index + num_years, :, :].sum(1).sum(0)
+    var_to_plot = (reform_val - base_val) / base_val
+    ax.bar(ind, var_to_plot * 100, width, bottom=0)
+    ax.set_xticks(ind + width / 4)
+    ax.set_xticklabels(('0-25%', '25-50%', '50-70%', '70-80%', '80-90%',
+                        '90-99%', 'Top 1%'))
+    plt.ylabel(r'Percentage Change in ' + VAR_LABELS[var])
+    if plot_title:
+        plt.title(plot_title, fontsize=15)
+    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
+    if path:
+        fig_path1 = os.path.join(path)
+        plt.savefig(fig_path1, bbox_inches="tight")
+    else:
+        return fig
+    plt.close()
+
+
+def ability_bar_ss(base_ss, base_params, reform_ss, reform_params,
+                   var='nssmat', plot_title=None, path=None):
+    '''
+    Plots percentage changes from baseline by ability group for a
+    given variable.
+
+    Args:
+        base_ss (dictionary): SS output from baseline run
+        base_params (OG-USA Specifications class): baseline parameters
+            object
+        reform_ss (dictionary): SS output from reform run
+        reform_params (OG-USA Specifications class): reform parameters
+            object
+        var (string): name of variable to plot
+        plot_title (string): title for plot
+        path (string): path to save figure to
+
+    Returns:
+        fig (Matplotlib plot object): plot of results by ability type
+    '''
+    N = base_params.J
+    fig, ax = plt.subplots()
+    ind = np.arange(N)  # the x locations for the groups
+    width = 0.2  # the width of the bars
+    base_val = (
+        base_ss[var] *
+        base_params.omega_SS.reshape(base_params.S, 1)).sum(0)
+    reform_val = (
+        reform_ss[var] *
+        reform_params.omega_SS.reshape(reform_params.S, 1)).sum(0)
     var_to_plot = (reform_val - base_val) / base_val
     ax.bar(ind, var_to_plot * 100, width, bottom=0)
     ax.set_xticks(ind + width / 4)
