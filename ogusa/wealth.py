@@ -13,8 +13,8 @@ def get_wealth_data(scf_yrs_list=[2016, 2013, 2010, 2007], web=True,
     Consumer Finances (SCF) files.
 
     Args:
-        scf_yrs_list (list of 4-digit integers): list of SCF years to
-            import. Currently the largest set of years that will work is
+        scf_yrs_list (list): list of SCF years to import. Currently the
+            largest set of years that will work is
             [2016, 2013, 2010, 2007]
         web (Boolean): =True if function retrieves data from internet
         directory (string or None): local directory location if data are
@@ -22,7 +22,7 @@ def get_wealth_data(scf_yrs_list=[2016, 2013, 2010, 2007], web=True,
 
 
     Returns:
-        scf (Pandas DataFrame): pooled cross-sectional data from SCFs
+        df_scf (Pandas DataFrame): pooled cross-sectional data from SCFs
 
     '''
     # Hard code cpi list for given years (2015=100)
