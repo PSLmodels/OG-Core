@@ -28,7 +28,6 @@ requirements:
     - mkl
     -requests
 
-
 about:
   home: https://github.com/PSLmodels/OG-USA/
 
