@@ -18,6 +18,13 @@ dependencies:
 - pycodestyle
 - pylint
 - coverage
+- sys
+- os
+- urllib.request
+- tempfile
+- zipfile
+- pkg_resources
+- io
 - requests
 - pip:
   - cs-kit
