@@ -10,6 +10,9 @@ ogusa.utils
 
 .. currentmodule:: ogusa.utils
 
+.. autoclass:: Inequality
+  :members: gini, var_of_logs, ratio_pct1_pct2, topshare
+
 .. automodule:: ogusa.utils
   :members: mkdirs, pct_diff_func, convex_combo, read_file, pickle_file_compare,
     comp_array, comp_scalar, dict_compare, to_timepath_shape, get_initial_path,
