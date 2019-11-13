@@ -44,6 +44,12 @@ def test_ability_bar():
     assert fig
 
 
+def test_ability_bar_ss():
+    fig = output_plots.ability_bar_ss(
+        base_ss, base_params, reform_ss, reform_params)
+    assert fig
+
+
 def test_ss_profiles():
     fig = output_plots.ss_profiles(base_ss, base_params, reform_ss,
                                    reform_params)
