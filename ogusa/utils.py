@@ -726,13 +726,15 @@ def print_progress(iteration, total, source_name='', prefix='Progress:',
     Functions called: None
 
     Objects created within function:
+        status (string): status of download
         str_format (string): string containing percentage completed
         percents (string): percentage completed
         filled_length (int): number of boxes in the progress bar to fill
         bar (string): progress bar
 
-    Returns: None
+    Returns: status
     '''
+    status = 'Incomplete'
     str_format = "{0:." + str(decimals) + "f}"
     percents = str_format.format(100 * (iteration / float(total)))
     filled_length = int(round(bar_length * iteration / float(total)))
@@ -751,7 +753,10 @@ def print_progress(iteration, total, source_name='', prefix='Progress:',
     if iteration == total:
         sys.stdout.write('\n')
         sys.stdout.write('Computing...\n')
+        status = 'Complete'
     sys.stdout.flush()
+
+    return status
 
 
 def fetch_files_from_web(file_urls):
@@ -785,7 +790,7 @@ def fetch_files_from_web(file_urls):
 
     iteration = 0
     total = len(file_urls)
-    print_progress(iteration, total, source_name='SCF')
+    _ = print_progress(iteration, total, source_name='SCF')
 
     for file_url in file_urls:
         # url = requests.get(file_url) (if using reuests package)
@@ -806,7 +811,7 @@ def fetch_files_from_web(file_urls):
         f.close()
 
         iteration += 1
-        print_progress(iteration, total, source_name='SCF')
+        _ = print_progress(iteration, total, source_name='SCF')
 
     return local_paths
 

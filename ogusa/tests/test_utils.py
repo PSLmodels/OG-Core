@@ -287,6 +287,14 @@ def test_read_cbo_forecast():
         test_df.loc[test_df['year'] == 2017, 'Y'].values[0], 20330)
 
 
+def test_print_progress():
+    '''
+    Test print_progress() function for
+    '''
+    assert utils.print_progress(1, 5) == 'Incomplete'
+    assert utils.print_progress(5, 5) == 'Complete'
+
+
 def test_not_connected():
     '''
     Test that not_connected function works
