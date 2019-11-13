@@ -472,7 +472,9 @@ class Inequality():
             None
 
         '''
-
+        self.dist = dist
+        self.pop_weights = pop_weights
+        self.ability_weights = ability_weights
         weights = (np.tile(pop_weights.reshape(S, 1), (1, J)) *
                    ability_weights.reshape(1, J))
         flattened_dist = dist.flatten()
@@ -482,7 +484,7 @@ class Inequality():
         self.sort_weights = flattened_weights[idx]
         self.cum_weights = np.cumsum(self.sort_weights)
 
-    def gini(self):
+    def gini(self, type='overall'):
         '''
         Compute the Gini coefficient
 
@@ -492,8 +494,25 @@ class Inequality():
         Returns:
             gini_coeff (scalar): Gini coefficient
         '''
-        p = np.cumsum(self.sort_weights)
-        nu = np.cumsum(self.sort_dist * self.sort_weights)
+        if type == 'overall':
+            p = np.cumsum(self.sort_weights)
+            nu = np.cumsum(self.sort_dist * self.sort_weights)
+        elif type == 'age':
+            flattened_dist = self.dist.sum(axis=1).flatten()
+            flattened_weights = self.pop_weights.flatten()
+            idx = np.argsort(flattened_dist)
+            sort_dist = flattened_dist[idx]
+            sort_weights = flattened_weights[idx]/flattened_weights.sum()
+            p = np.cumsum(sort_weights)
+            nu = np.cumsum(sort_dist*sort_weights)
+        elif type == 'ability':
+            flattened_dist = self.dist.sum(axis=0).flatten()
+            flattened_weights = self.ability_weights.flatten()
+            idx = np.argsort(flattened_dist)
+            sort_dist = flattened_dist[idx]
+            sort_weights = flattened_weights[idx]/flattened_weights.sum()
+            p = np.cumsum(sort_weights)
+            nu = np.cumsum(sort_dist*sort_weights)
         nu = nu / nu[-1]
         gini_coeff = (nu[1:] * p[:-1]).sum() - (nu[:-1] * p[1:]).sum()
 

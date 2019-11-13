@@ -2,7 +2,8 @@ import numpy as np
 import pandas as pd
 import os
 from ogusa.constants import VAR_LABELS
-from ogusa.utils import save_return_table
+from ogusa import wealth
+from ogusa.utils import save_return_table, Inequality
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 
 
@@ -11,8 +12,7 @@ def macro_table(base_tpi, base_params, reform_tpi=None,
                 var_list=['Y', 'C', 'K', 'L', 'r', 'w'],
                 output_type='pct_diff', num_years=10, include_SS=True,
                 include_overall=True, start_year=2019,
-                table_title=None, table_format=None,
-                path=None):
+                table_format=None, path=None):
     '''
     Create a table of macro aggregates.
 
@@ -35,7 +35,6 @@ def macro_table(base_tpi, base_params, reform_tpi=None,
         include_overall (bool): whether to include results over the
             entire budget window as a column in the table
         start_year (integer): year to start table
-        table_title (string): title for plot
         table_format (string): format to return table in: 'csv', 'tex',
             'excel', 'json', if None, a DataFrame is returned
         path (string): path to save table to
@@ -138,7 +137,7 @@ def macro_table(base_tpi, base_params, reform_tpi=None,
 
 def macro_table_SS(base_ss, reform_ss,
                    var_list=['Yss', 'Css', 'Kss', 'Lss', 'rss', 'wss'],
-                   table_title=None, table_format=None, path=None):
+                   table_format=None, path=None):
     '''
     Create a table of macro aggregates from the steady-state solutions.
 
@@ -146,7 +145,6 @@ def macro_table_SS(base_ss, reform_ss,
         base_ss (dictionary): SS output from baseline run
         reform_ss (dictionary): SS output from reform run
         var_list (list): names of variable to use in table
-        table_title (string): title for plot
         table_format (string): format to return table in: 'csv', 'tex',
             'excel', 'json', if None, a DataFrame is returned
         path (string): path to save table to
@@ -173,5 +171,176 @@ def macro_table_SS(base_ss, reform_ss,
             table_dict, orient='columns').set_index('Variable')
         table = save_return_table(table_df, table_format, path,
                                   precision=3)
+
+    return table
+
+
+def ineq_table(base_ss, base_params, reform_ss=None, reform_params=None,
+               var_list=['cssmat'], table_format=None, path=None):
+    '''
+    Creates table with various inequality measures in the model
+    steady-state.
+
+    Args:
+        base_ss (dictionary): SS output from baseline run
+        base_params (OG-USA Specifications class): baseline parameters
+            object
+        reform_ss (dictionary): SS output from reform run
+        reform_params (OG-USA Specifications class): reform parameters
+            object
+        var_list (list): names of variable to use in table
+        table_format (string): format to return table in: 'csv', 'tex',
+            'excel', 'json', if None, a DataFrame is returned
+        path (string): path to save table to
+
+    Returns:
+        table (various): table in DataFrame or string format or `None`
+            if saved to disk
+
+    '''
+    table_dict = {'Steady-State Variable': [], 'Inequality Measure': [],
+                  'Baseline': []}
+    if reform_ss:
+        table_dict['Reform'] = []
+        table_dict['% Change'] = []
+    for i, v in enumerate(var_list):
+        base_ineq = Inequality(
+            base_ss[v], base_params.omega_SS, base_params.lambdas,
+            base_params.S, base_params.J)
+        if reform_ss:
+            reform_ineq = Inequality(
+                reform_ss[v], reform_params.omega_SS,
+                reform_params.lambdas, reform_params.S, reform_params.J)
+        table_dict['Steady-State Variable'].extend([VAR_LABELS[v], '',
+                                                    '', '', ''])
+        table_dict['Inequality Measure'].extend(
+            ['Gini Coefficient', 'Var of Logs', '90/10 Ratio',
+             'Top 10% Share', 'Top 1% Share'])
+        base_values = np.array([
+            base_ineq.gini(), base_ineq.var_of_logs(),
+            base_ineq.ratio_pct1_pct2(0.90, 0.10),
+            base_ineq.top_share(0.1), base_ineq.top_share(0.01)])
+        table_dict['Baseline'].extend(list(base_values))
+        if reform_ss:
+            reform_values = np.array([
+                reform_ineq.gini(), reform_ineq.var_of_logs(),
+                reform_ineq.ratio_pct1_pct2(0.90, 0.10),
+                reform_ineq.top_share(0.1),
+                reform_ineq.top_share(0.01)])
+            table_dict['Reform'].extend(list(reform_values))
+            table_dict['% Change'].extend(list(
+                ((reform_values - base_values) / base_values) * 100))
+    # Make df with dict so can use pandas functions
+    table_df = pd.DataFrame.from_dict(table_dict)
+    table = save_return_table(table_df, table_format, path,
+                              precision=3)
+
+    return table
+
+
+def gini_table(base_ss, base_params, reform_ss=None,
+               reform_params=None, var_list=['cssmat'],
+               table_format=None, path=None):
+    '''
+    Creates table with measures of the Gini coefficient: overall,
+    across lifetime earnings group, and across age.
+
+    Args:
+        base_ss (dictionary): SS output from baseline run
+        base_params (OG-USA Specifications class): baseline parameters
+            object
+        reform_ss (dictionary): SS output from reform run
+        reform_params (OG-USA Specifications class): reform parameters
+            object
+        var_list (list): names of variable to use in table
+        table_format (string): format to return table in: 'csv', 'tex',
+            'excel', 'json', if None, a DataFrame is returned
+        path (string): path to save table to
+
+    Returns:
+        table (various): table in DataFrame or string format or `None`
+            if saved to disk
+
+    '''
+    table_dict = {'Steady-State Variable': [], 'Gini Type': [],
+                  'Baseline': []}
+    if reform_ss:
+        table_dict['Reform'] = []
+        table_dict['% Change'] = []
+    for i, v in enumerate(var_list):
+        base_ineq = Inequality(
+            base_ss[v], base_params.omega_SS, base_params.lambdas,
+            base_params.S, base_params.J)
+        if reform_ss:
+            reform_ineq = Inequality(
+                reform_ss[v], reform_params.omega_SS,
+                reform_params.lambdas, reform_params.S, reform_params.J)
+        table_dict['Steady-State Variable'].extend(
+            [VAR_LABELS[v], '', ''])
+        table_dict['Gini Type'].extend(
+            ['Overall', 'Lifetime Income Group, $j$', 'Age , $s$'])
+        base_values = np.array([
+            base_ineq.gini(), base_ineq.gini(type='ability'),
+            base_ineq.gini(type='age')])
+        table_dict['Baseline'].extend(list(base_values))
+        if reform_ss:
+            reform_values = np.array([
+                reform_ineq.gini(), reform_ineq.gini(type='ability'),
+                reform_ineq.gini(type='age')])
+            table_dict['Reform'].extend(list(reform_values))
+            table_dict['% Change'].extend(list(
+                ((reform_values - base_values) / base_values) * 100))
+    # Make df with dict so can use pandas functions
+    table_df = pd.DataFrame.from_dict(table_dict)
+    table = save_return_table(table_df, table_format, path,
+                              precision=3)
+
+    return table
+
+
+def wealth_moments_table(base_ss, base_params, table_format=None,
+                         path=None):
+    '''
+    Creates table with moments of the wealth distribution from the model
+    and SCF data.
+
+    Args:
+        base_ss (dictionary): SS output from baseline run
+        base_params (OG-USA Specifications class): baseline parameters
+            object
+        table_format (string): format to return table in: 'csv', 'tex',
+            'excel', 'json', if None, a DataFrame is returned
+        path (string): path to save table to
+
+    Returns:
+        table (various): table in DataFrame or string format or `None`
+            if saved to disk
+
+    '''
+    table_dict = {'Moment': [
+        'Share 0-25%', 'Share 25-50%', 'Share 50-70%', 'Share 70-80%',
+        'Share 80-90%', 'Share 90-99%', 'Share 99-100%',
+        'Gini Coefficient', 'var(ln(Wealth))'], 'Data': [], 'Model': []}
+    base_ineq = Inequality(
+        base_ss['bssmat_splus1'], base_params.omega_SS,
+        base_params.lambdas, base_params.S, base_params.J)
+    base_values = [
+        1 - base_ineq.top_share(0.75),
+        base_ineq.top_share(0.75) - base_ineq.top_share(0.5),
+        base_ineq.top_share(0.5) - base_ineq.top_share(0.3),
+        base_ineq.top_share(0.3) - base_ineq.top_share(0.2),
+        base_ineq.top_share(0.2) - base_ineq.top_share(0.1),
+        base_ineq.top_share(0.1) - base_ineq.top_share(0.01),
+        base_ineq.top_share(0.01),
+        base_ineq.gini(), base_ineq.var_of_logs()]
+    table_dict['Model'].extend(base_values)
+    # get moments from Survey of Consumer Finances data
+    scf = wealth.get_wealth_data()
+    table_dict['Data'] = wealth.compute_wealth_moments(
+        scf, base_params.lambdas)
+    # Make df with dict so can use pandas functions
+    table_df = pd.DataFrame.from_dict(table_dict)
+    table = save_return_table(table_df, table_format, path,
+                              precision=3)
 
     return table

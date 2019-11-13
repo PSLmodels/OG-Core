@@ -52,3 +52,4 @@ test:
     - ogusa.tax
     - ogusa.txfunc
     - ogusa.utils
+    - ogusa.wealth

@@ -33,3 +33,4 @@ There is also a link to the source code for each documented member.
    tax
    txfunc
    utils
+   wealth
