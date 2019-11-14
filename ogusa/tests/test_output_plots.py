@@ -65,3 +65,8 @@ def test_tpi_profiles():
 def test_ss_3Dplot():
         fig = output_plots.ss_3Dplot(base_params, base_ss)
         assert fig
+
+
+def test_gini_plot():
+        fig = output_plots.gini_plot(base_tpi, base_params)
+        assert fig     
