@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from ogusa.constants import (VAR_LABELS, ToGDP_LABELS, CBO_UNITS)
 import ogusa.utils as utils
+from ogusa.utils import Inequality
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(cur_path, 'OGUSAplots.mplstyle')
 plt.style.use(style_file)
@@ -653,3 +654,29 @@ def plot_all(base_output_path, reform_output_path, save_path):
                     plot_title='Lifecycle Profile of ' + title_list[i],
                     path=os.path.join(save_path, 'SSLifecycleProfile' +
                                       path_list[i] + '_Reform.png'))
+
+
+def gini_plot(base_tpi, base_params, reform_tpi=None, reform_params=None, num_years_to_plot=50, start_year=2019,
+              plot_title=None, path=None):
+    base_values = np.zeros(num_years_to_plot)
+    for t in range(num_years_to_plot):
+        ineq = Inequality(base_tpi['c_path'][(t+start_year)-base_params.start_year,:,:], base_params.omega[t,:],
+                          base_params.lambdas, base_params.S, base_params.J)
+        base_values[t] = ineq.gini()
+    plt.plot(np.arange(num_years_to_plot)+start_year, base_values)
+    plt.xlabel('year')
+    if reform_tpi:
+        reform_values = np.zeros_like(base_values)
+        for t in range(num_years_to_plot):
+            ineq = Inequality(reform_tpi['c_path'][(t+start_year)-reform_params.start_year,:,:], reform_params.omega[t,:],
+                          reform_params.lambdas, reform_params.S, reform_params.J)
+            reform_values[t] = ineq.gini()
+        plt.plot(np.arange(num_years_to_plot)+start_year, reform_values)
+    if plot_title:
+        plt.title(plot_title, fontsize=15)
+    plt.ylabel('gini coefficient')
+    if path: 
+        plt.savefig(path, bbox_inches="tight")
+    else: 
+        return plt
+    plt.close()
