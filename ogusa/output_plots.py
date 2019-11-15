@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 from ogusa.constants import (VAR_LABELS, ToGDP_LABELS, CBO_UNITS)
 import ogusa.utils as utils
+from ogusa.utils import Inequality
 
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(cur_path, 'OGUSAplots.mplstyle')
@@ -656,27 +657,59 @@ def plot_all(base_output_path, reform_output_path, save_path):
                                       path_list[i] + '_Reform.png'))
 
 
-def gini_plot(base_tpi, base_params, reform_tpi=None, reform_params=None, num_years_to_plot=50, start_year=2019,
-              plot_title=None, path=None):
+def gini_plot(base_tpi, base_params, reform_tpi=None,
+              reform_params=None, var='c_path', num_years_to_plot=50,
+              start_year=2019, plot_title=None, path=None):
+    '''
+    Plot measures of inequality over the time path.
+
+    Args:
+        base_tpi (dictionary): TPI output from baseline run
+        base_params (OG-USA Specifications class): baseline parameters object
+        reform_tpi (dictionary): TPI output from reform run
+        reform_params (OG-USA Specifications class): reform parameters object
+        var(string): name of variable to plot
+        plot_type (string): type of plot, can be:
+            'pct_diff': plots percentage difference between baselien
+                and reform ((reform-base)/base)
+            'diff': plots difference between baseline and reform (reform-base)
+            'levels': plot variables in model units
+        num_years_to_plot (integer): number of years to include in plot
+        start_year (integer): year to start plot
+        vertical_line_years (list): list of integers for years want
+            vertical lines at
+        plot_title (string): title for plot
+        path (string): path to save figure to
+
+    Returns:
+        fig (Matplotlib plot object): plot of inequality measure
+
+    '''
     base_values = np.zeros(num_years_to_plot)
     for t in range(num_years_to_plot):
-        ineq = Inequality(base_tpi['c_path'][(t+start_year)-base_params.start_year,:,:], base_params.omega[t,:],
-                          base_params.lambdas, base_params.S, base_params.J)
+        ineq = Inequality(
+            base_tpi[var][(t + start_year) -
+                          base_params.start_year, :, :],
+            base_params.omega[t, :], base_params.lambdas, base_params.S,
+            base_params.J)
         base_values[t] = ineq.gini()
-    plt.plot(np.arange(num_years_to_plot)+start_year, base_values)
+    plt.plot(np.arange(num_years_to_plot) + start_year, base_values)
     plt.xlabel('year')
     if reform_tpi:
         reform_values = np.zeros_like(base_values)
         for t in range(num_years_to_plot):
-            ineq = Inequality(reform_tpi['c_path'][(t+start_year)-reform_params.start_year,:,:], reform_params.omega[t,:],
-                          reform_params.lambdas, reform_params.S, reform_params.J)
+            ineq = Inequality(
+                reform_tpi[var][(t + start_year) -
+                                reform_params.start_year, :, :],
+                reform_params.omega[t, :], reform_params.lambdas,
+                reform_params.S, reform_params.J)
             reform_values[t] = ineq.gini()
-        plt.plot(np.arange(num_years_to_plot)+start_year, reform_values)
+        plt.plot(np.arange(num_years_to_plot) + start_year, reform_values)
     if plot_title:
         plt.title(plot_title, fontsize=15)
-    plt.ylabel('gini coefficient')
-    if path: 
+    plt.ylabel('Gini Coefficient')
+    if path:
         plt.savefig(path, bbox_inches="tight")
-    else: 
+    else:
         return plt
     plt.close()
