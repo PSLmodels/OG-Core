@@ -22,14 +22,17 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
 
     Args:
         base_tpi (dictionary): TPI output from baseline run
-        base_params (OG-USA Specifications class): baseline parameters object
+        base_params (OG-USA Specifications class): baseline parameters
+            object
         reform_tpi (dictionary): TPI output from reform run
-        reform_params (OG-USA Specifications class): reform parameters object
+        reform_params (OG-USA Specifications class): reform parameters
+            object
         var_list (list): names of variable to plot
         plot_type (string): type of plot, can be:
             'pct_diff': plots percentage difference between baselien
                 and reform ((reform-base)/base)
-            'diff': plots difference between baseline and reform (reform-base)
+            'diff': plots difference between baseline and reform
+                (reform-base)
             'levels': plot variables in model units
             'cbo': plots variables in levels relative to CBO baseline
                 projection (only available for macro variables in CBO
@@ -658,21 +661,25 @@ def plot_all(base_output_path, reform_output_path, save_path):
 
 
 def gini_plot(base_tpi, base_params, reform_tpi=None,
-              reform_params=None, var='c_path', num_years_to_plot=50,
-              start_year=2019, plot_title=None, path=None):
+              reform_params=None, var='c_path', plot_type='levels',
+              num_years_to_plot=50, start_year=2019,
+              vertical_line_years=None, plot_title=None, path=None):
     '''
     Plot measures of inequality over the time path.
 
     Args:
         base_tpi (dictionary): TPI output from baseline run
-        base_params (OG-USA Specifications class): baseline parameters object
+        base_params (OG-USA Specifications class): baseline parameters
+            object
         reform_tpi (dictionary): TPI output from reform run
-        reform_params (OG-USA Specifications class): reform parameters object
+        reform_params (OG-USA Specifications class): reform parameters
+            object
         var(string): name of variable to plot
         plot_type (string): type of plot, can be:
             'pct_diff': plots percentage difference between baselien
                 and reform ((reform-base)/base)
-            'diff': plots difference between baseline and reform (reform-base)
+            'diff': plots difference between baseline and reform
+                (reform-base)
             'levels': plot variables in model units
         num_years_to_plot (integer): number of years to include in plot
         start_year (integer): year to start plot
@@ -685,31 +692,61 @@ def gini_plot(base_tpi, base_params, reform_tpi=None,
         fig (Matplotlib plot object): plot of inequality measure
 
     '''
+    assert (isinstance(start_year, int))
+    assert (isinstance(num_years_to_plot, int))
+    # Make sure both runs cover same time period
+    if reform_tpi:
+        assert (base_params.start_year == reform_params.start_year)
+    year_vec = np.arange(start_year, start_year + num_years_to_plot)
+    # Check that reform included if doing pct_diff or diff plot
+    if plot_type == 'pct_diff' or plot_type == 'diff':
+        assert (reform_tpi is not None)
+    fig1, ax1 = plt.subplots()
     base_values = np.zeros(num_years_to_plot)
     for t in range(num_years_to_plot):
+        idx = (t + start_year) - base_params.start_year
         ineq = Inequality(
-            base_tpi[var][(t + start_year) -
-                          base_params.start_year, :, :],
-            base_params.omega[t, :], base_params.lambdas, base_params.S,
-            base_params.J)
+            base_tpi[var][idx, :, :], base_params.omega[idx, :],
+            base_params.lambdas, base_params.S, base_params.J)
         base_values[t] = ineq.gini()
-    plt.plot(np.arange(num_years_to_plot) + start_year, base_values)
-    plt.xlabel('year')
     if reform_tpi:
         reform_values = np.zeros_like(base_values)
         for t in range(num_years_to_plot):
+            idx = (t + start_year) - base_params.start_year
             ineq = Inequality(
-                reform_tpi[var][(t + start_year) -
-                                reform_params.start_year, :, :],
-                reform_params.omega[t, :], reform_params.lambdas,
-                reform_params.S, reform_params.J)
+                reform_tpi[var][idx, :, :], reform_params.omega[idx, :],
+                reform_params.lambdas, reform_params.S, reform_params.J)
             reform_values[t] = ineq.gini()
-        plt.plot(np.arange(num_years_to_plot) + start_year, reform_values)
+    if plot_type == 'pct_diff':
+        plot_var = (reform_values - base_values) / base_values
+        ylabel = r'Pct. change'
+        plt.plot(year_vec, plot_var, label=VAR_LABELS[var])
+    elif plot_type == 'diff':
+        plot_var = reform_values - base_values
+        ylabel = r'Difference'
+        plt.plot(year_vec, plot_var, label=VAR_LABELS[var])
+    elif plot_type == 'levels':
+        ylabel = r'Value'
+        plt.plot(year_vec, base_values, label=VAR_LABELS[var])
+        if reform_tpi:
+            plt.plot(year_vec, reform_values, label=VAR_LABELS[var])
+    # vertical markers at certain years
+    if vertical_line_years:
+        for yr in vertical_line_years:
+            plt.axvline(x=yr, linewidth=0.5, linestyle='--', color='k')
+    plt.xlabel(r'Year $t$')
+    plt.ylabel(ylabel)
     if plot_title:
         plt.title(plot_title, fontsize=15)
-    plt.ylabel('Gini Coefficient')
+    vals = ax1.get_yticks()
+    if plot_type == 'pct_diff':
+        ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
+    plt.xlim((base_params.start_year - 1, base_params.start_year +
+              num_years_to_plot))
+    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
     if path:
-        plt.savefig(path, bbox_inches="tight")
+        fig_path1 = os.path.join(path)
+        plt.savefig(fig_path1, bbox_inches="tight")
     else:
-        return plt
+        return fig1
     plt.close()
