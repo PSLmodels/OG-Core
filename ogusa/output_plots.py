@@ -660,10 +660,11 @@ def plot_all(base_output_path, reform_output_path, save_path):
                                       path_list[i] + '_Reform.png'))
 
 
-def gini_plot(base_tpi, base_params, reform_tpi=None,
-              reform_params=None, var='c_path', plot_type='levels',
-              num_years_to_plot=50, start_year=2019,
-              vertical_line_years=None, plot_title=None, path=None):
+def inequality_plot(
+    base_tpi, base_params, reform_tpi=None, reform_params=None,
+    var='c_path', ineq_measure='gini', pctiles=None, plot_type='levels',
+    num_years_to_plot=50, start_year=2019, vertical_line_years=None,
+    plot_title=None, path=None):
     '''
     Plot measures of inequality over the time path.
 
@@ -675,6 +676,14 @@ def gini_plot(base_tpi, base_params, reform_tpi=None,
         reform_params (OG-USA Specifications class): reform parameters
             object
         var(string): name of variable to plot
+        ineq_measure (string): inequality measure to plot, can be:
+            'gini': Gini coefficient
+            'var_of_logs': variance of logs
+            'pct_ratio': percentile ratio
+            'top_share': top share of total
+        pctiles (tuple or None): percentiles for percentile ratios
+            (numerator, denominator) or percentile for top share (not
+            required for Gini or var_of_logs)
         plot_type (string): type of plot, can be:
             'pct_diff': plots percentage difference between baselien
                 and reform ((reform-base)/base)
@@ -697,6 +706,10 @@ def gini_plot(base_tpi, base_params, reform_tpi=None,
     # Make sure both runs cover same time period
     if reform_tpi:
         assert (base_params.start_year == reform_params.start_year)
+    assert ineq_measure in ['gini', 'var_of_logs', 'pct_ratio',
+                            'top_share']
+    if (ineq_measure == 'pct_ratio') | (ineq_measure == 'top_share'):
+        assert pctiles
     year_vec = np.arange(start_year, start_year + num_years_to_plot)
     # Check that reform included if doing pct_diff or diff plot
     if plot_type == 'pct_diff' or plot_type == 'diff':
@@ -708,7 +721,19 @@ def gini_plot(base_tpi, base_params, reform_tpi=None,
         ineq = Inequality(
             base_tpi[var][idx, :, :], base_params.omega[idx, :],
             base_params.lambdas, base_params.S, base_params.J)
-        base_values[t] = ineq.gini()
+        if ineq_measure == 'gini':
+            base_values[t] = ineq.gini()
+            ylabel = r'Gini Coefficient'
+        elif ineq_measure == 'var_of_logs':
+            base_values[t] = ineq.var_of_logs()
+            ylabel = r'var(ln(' + VAR_LABELS[var] + r'))'
+        elif ineq_measure == 'pct_ratio':
+            base_values[t] = ineq.ratio_pct1_pct2(pctiles[0],
+                                                  pctiles[1])
+            ylabel = r'Ratio'
+        elif ineq_measure == 'top_share':
+            base_values[t] = ineq.top_share(pctiles)
+            ylabel = r'Share of Total ' + VAR_LABELS[var]
     if reform_tpi:
         reform_values = np.zeros_like(base_values)
         for t in range(num_years_to_plot):
@@ -716,20 +741,27 @@ def gini_plot(base_tpi, base_params, reform_tpi=None,
             ineq = Inequality(
                 reform_tpi[var][idx, :, :], reform_params.omega[idx, :],
                 reform_params.lambdas, reform_params.S, reform_params.J)
-            reform_values[t] = ineq.gini()
+            if ineq_measure == 'gini':
+                reform_values[t] = ineq.gini()
+            elif ineq_measure == 'var_of_logs':
+                reform_values[t] = ineq.var_of_logs()
+            elif ineq_measure == 'pct_ratio':
+                reform_values[t] = ineq.ratio_pct1_pct2(pctiles[0],
+                                                        pctiles[1])
+            elif ineq_measure == 'top_share':
+                reform_values[t] = ineq.top_share(pctiles)
     if plot_type == 'pct_diff':
         plot_var = (reform_values - base_values) / base_values
         ylabel = r'Pct. change'
-        plt.plot(year_vec, plot_var, label=VAR_LABELS[var])
+        plt.plot(year_vec, plot_var)
     elif plot_type == 'diff':
         plot_var = reform_values - base_values
         ylabel = r'Difference'
-        plt.plot(year_vec, plot_var, label=VAR_LABELS[var])
+        plt.plot(year_vec, plot_var)
     elif plot_type == 'levels':
-        ylabel = r'Value'
-        plt.plot(year_vec, base_values, label=VAR_LABELS[var])
+        plt.plot(year_vec, base_values, label='Baseline')
         if reform_tpi:
-            plt.plot(year_vec, reform_values, label=VAR_LABELS[var])
+            plt.plot(year_vec, reform_values, label='Reform')
     # vertical markers at certain years
     if vertical_line_years:
         for yr in vertical_line_years:
