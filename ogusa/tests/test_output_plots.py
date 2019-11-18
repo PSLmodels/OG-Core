@@ -58,10 +58,15 @@ def test_ss_profiles():
 
 def test_tpi_profiles():
     fig = output_plots.tpi_profiles(base_tpi, base_params, reform_tpi,
-                                   reform_params)
+                                    reform_params)
     assert fig
 
 
 def test_ss_3Dplot():
-        fig = output_plots.ss_3Dplot(base_params, base_ss)
-        assert fig
+    fig = output_plots.ss_3Dplot(base_params, base_ss)
+    assert fig
+
+
+def test_inequality_plot():
+    fig = output_plots.inequality_plot(base_tpi, base_params)
+    assert fig
