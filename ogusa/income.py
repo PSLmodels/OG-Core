@@ -13,7 +13,7 @@ from ogusa import parameter_plots as pp
 import os
 
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-OUTPUT_DIR = os.path.joion(CUR_PATH, 'OUTPUT', 'ability')
+OUTPUT_DIR = os.path.join(CUR_PATH, 'OUTPUT', 'ability')
 
 
 def arctan_func(xvals, a, b, c):
