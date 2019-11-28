@@ -33,3 +33,23 @@ def test_artctan_deriv_func():
     test_vals = income.arctan_deriv_func(xvals, a, b, c)
 
     assert np.allclose(test_vals, expected_vals)
+
+
+def test_arc_error():
+    '''
+    Test of arc_error()
+    '''
+    expected_vals = np.array([30.19765553, -1.40779391, 14.19212336])
+    a = 1.3
+    b = 2.2
+    c = 0.5
+    abc_vals = (a, b, c)
+    first_point = 30.2
+    coef1 = 0.05995294
+    coef2 = -0.00004086
+    coef3 = -0.00000521
+    abil_deprec = 0.47
+    params = (first_point, coef1, coef2, coef3, abil_deprec)
+    test_vals = income.arc_error(abc_vals, params)
+
+    assert np.allclose(test_vals, expected_vals)
