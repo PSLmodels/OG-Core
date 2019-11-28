@@ -78,33 +78,36 @@ def arc_error(abc_vals, params):
 
     Args:
         abc_vals (tuple): contains (a,b,c)
-        a (scalar): scale parameter for arctan function
-        b (scalar): curvature parameter for arctan function
-        c (scalar): shift parameter for arctan function
+
+            * a (scalar): scale parameter for arctan function
+            * b (scalar): curvature parameter for arctan function
+            * c (scalar): shift parameter for arctan function
         params (tuple): contains (first_point, coef1, coef2, coef3,
             abil_deprec)
-        first_point (scalar): ability level at age 80, > 0
-        coef1 (scalar): coefficient in log ability equation on linear
-            term in age
-        coef2 (scalar): coefficient in log ability equation on
-            quadratic term in age
-        coef3 (scalar): coefficient in log ability equation on cubic
-            term in age
-        abil_deprec (scalar): ability depreciation rate between
-            ages 80 and 100, in (0, 1).
+
+            * first_point (scalar): ability level at age 80, > 0
+            * coef1 (scalar): coefficient in log ability equation on
+                linear term in age
+            * coef2 (scalar): coefficient in log ability equation on
+                quadratic term in age
+            * coef3 (scalar): coefficient in log ability equation on
+                cubic term in age
+            * abil_deprec (scalar): ability depreciation rate between
+                ages 80 and 100, in (0, 1).
 
     Returns:
         error_vec (Numpy array): errors ([error1, error2, error3])
-        error1 (scalar): error between ability level at age 80 from
-            original function minus the predicted ability at age 80 from
-            the arctan function given a, b, and c
-        error2 (scalar): error between the slope of the original
-            function at age 80 minus the slope of the arctan function at
-            age 80 given a, b, and c
-        error3 (scalar): error between the ability level at age 100
-            predicted by the original model value times abil_deprec
-            minus the ability predicted by the arctan function at age
-            100 given a, b, and c
+
+            * error1 (scalar): error between ability level at age 80
+                from original function minus the predicted ability at
+                age 80 from the arctan function given a, b, and c
+            * error2 (scalar): error between the slope of the original
+                function at age 80 minus the slope of the arctan
+                function at age 80 given a, b, and c
+            * error3 (scalar): error between the ability level at age
+                100 predicted by the original model value times
+                abil_deprec minus the ability predicted by the arctan
+                function at age 100 given a, b, and c
 
     '''
     a, b, c = abc_vals
