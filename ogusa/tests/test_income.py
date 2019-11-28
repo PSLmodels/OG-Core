@@ -53,3 +53,28 @@ def test_arc_error():
     test_vals = income.arc_error(abc_vals, params)
 
     assert np.allclose(test_vals, expected_vals)
+
+
+def test_arctan_fit():
+    '''
+    Test arctan_fit() function
+    '''
+    expected_vals = np.array(
+        [30.19999399, 30.19998699, 30.19997918, 30.19997039,
+         30.19996043, 30.19994904, 30.1999359, 30.19992057,
+         30.19990246, 30.19988072, 30.19985415, 30.19982094,
+         30.19977824, 30.19972131, 30.1996416, 30.19952204, 30.19932277,
+         30.19892423, 30.19772859, 14.19399974])
+    a = 1.3
+    b = 2.2
+    c = 0.5
+    init_guesses = (a, b, c)
+    first_point = 30.2
+    coef1 = 0.05995294
+    coef2 = -0.00004086
+    coef3 = -0.00000521
+    abil_deprec = 0.47
+    test_vals = income.arctan_fit(
+        first_point, coef1, coef2, coef3, abil_deprec, init_guesses)
+
+    assert np.allclose(test_vals, expected_vals)

@@ -249,7 +249,8 @@ def get_e_orig(age_wgts, abil_wgts, plot=False):
     The polynomials are of the form
 
     .. math::
-        \ln(abil) = \alpha + \beta_{1}\text{age} + \beta_{2}\text{age}^2 + \beta_{3}\text{age}^3
+        \ln(abil) = \alpha + \beta_{1}\text{age} + \beta_{2}\text{age}^2
+            + \beta_{3}\text{age}^3
 
     Values come from regression analysis using IRS CWHS with hours
     imputed from the CPS.
