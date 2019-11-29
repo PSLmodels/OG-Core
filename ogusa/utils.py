@@ -436,7 +436,9 @@ def save_return_table(table_df, output_type, path, precision=2):
             tab_str = table_df.to_json(double_precision=precision)
             return tab_str
         elif output_type == 'html':
-            tab_html = table_df.to_html().replace('\n', '')
+            tab_html = table_df.to_html(
+                classes="table table-striped table-hover"
+                ).replace('\n', '')
             tab_html.replace('\n', '')
             return tab_html
         else:
