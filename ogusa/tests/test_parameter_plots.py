@@ -6,7 +6,7 @@ import pytest
 import os
 import numpy as np
 import scipy.interpolate as si
-from ogusa import utils, parameter_plots
+from ogusa import utils, parameter_plots, income
 
 
 # Load in test results and parameters
@@ -113,4 +113,22 @@ def test_plot_population_path():
     fig = parameter_plots.plot_population_path(
         age_per_EpS, pop_2013_pct, omega_path_lev, omega_SSfx,
         curr_year, E, S)
+    assert fig
+
+
+# TODO:
+# gen_3Dscatters_hist
+# txfunc_graph
+# txfunc_sse_plot
+
+
+def test_plot_income_data():
+    ages = np.linspace(20 + 0.5, 100 - 0.5, 80)
+    abil_midp = np.array([0.125, 0.375, 0.6, 0.75, 0.85, 0.945, 0.995])
+    abil_pcts = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.01])
+    age_wgts = np.ones(80) * 1 / 80
+    emat = income.get_e_orig(age_wgts, abil_pcts)
+    fig = parameter_plots.plot_income_data(
+        ages, abil_midp, abil_pcts, emat)
+
     assert fig

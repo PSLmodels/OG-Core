@@ -9,110 +9,11 @@ For a more generic version, see income_nopoly.py.
 import numpy as np
 import scipy.optimize as opt
 import scipy.interpolate as si
-from . import utils
-import matplotlib
-import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib import cm
+from ogusa import parameter_plots as pp
 import os
 
-
-def graph_income(ages, abil_midp, abil_pcts, emat, filesuffix=""):
-    '''
-    This function graphs ability matrix in 3D, 2D, log, and nolog
-
-    Args:
-        ages (Numpy array) ages represented in sample, length S
-        abil_midp (Numpy array): midpoints of income percentile bins in
-            each ability group
-        abil_pcts (Numpy array): percent of population in each lifetime
-            income group, length J
-        emat (Numpy array): effective labor units by age and lifetime
-            income group, size SxJ
-        filesuffix (str): suffix to be added to plot files
-
-    Returns:
-        None
-
-    '''
-    J = abil_midp.shape[0]
-    abil_mesh, age_mesh = np.meshgrid(abil_midp, ages)
-    cmap1 = matplotlib.cm.get_cmap('summer')
-    # Make sure that "./OUTPUT/ability" directory is created
-    output_dir = "./OUTPUT/ability"
-    utils.mkdirs(output_dir)
-    if J == 1:
-        # Plot of 2D, J=1 in levels
-        plt.figure()
-        plt.plot(ages, emat)
-        filename = "ability_2D_lev" + filesuffix
-        fullpath = os.path.join(output_dir, filename)
-        plt.savefig(fullpath)
-        plt.close()
-
-        # Plot of 2D, J=1 in logs
-        plt.figure()
-        plt.plot(ages, np.log(emat))
-        filename = "ability_2D_log" + filesuffix
-        fullpath = os.path.join(output_dir, filename)
-        plt.savefig(fullpath)
-        plt.close()
-    else:
-        # Plot of 3D, J>1 in levels
-        fig10 = plt.figure()
-        ax10 = fig10.gca(projection='3d')
-        ax10.plot_surface(
-            age_mesh, abil_mesh, emat, rstride=8, cstride=1,
-            cmap=cmap1)
-        ax10.set_xlabel(r'age-$s$')
-        ax10.set_ylabel(r'ability type -$j$')
-        ax10.set_zlabel(r'ability $e_{j,s}$')
-        filename = "ability_3D_lev" + filesuffix
-        fullpath = os.path.join(output_dir, filename)
-        plt.savefig(fullpath)
-        plt.close()
-
-        # Plot of 3D, J>1 in logs
-        fig11 = plt.figure()
-        ax11 = fig11.gca(projection='3d')
-        ax11.plot_surface(
-            age_mesh, abil_mesh, np.log(emat), rstride=8, cstride=1,
-            cmap=cmap1)
-        ax11.set_xlabel(r'age-$s$')
-        ax11.set_ylabel(r'ability type -$j$')
-        ax11.set_zlabel(r'log ability $log(e_{j,s})$')
-        filename = "ability_3D_log" + filesuffix
-        fullpath = os.path.join(output_dir, filename)
-        plt.savefig(fullpath)
-        plt.close()
-
-        if J <= 10:  # Restricted because of line and marker types
-            # Plot of 2D lines from 3D version in logs
-            ax = plt.subplot(111)
-            linestyles = np.array(["-", "--", "-.", ":", ])
-            markers = np.array(["x", "v", "o", "d", ">", "|"])
-            pct_lb = 0
-            for j in range(J):
-                this_label = (
-                    str(int(np.rint(pct_lb))) + " - " +
-                    str(int(np.rint(pct_lb + 100*abil_pcts[j]))) + "%")
-                pct_lb += 100*abil_pcts[j]
-                if j <= 3:
-                    ax.plot(ages, np.log(emat[:, j]), label=this_label,
-                            linestyle=linestyles[j], color='black')
-                elif j > 3:
-                    ax.plot(ages, np.log(emat[:, j]), label=this_label,
-                            marker=markers[j-4], color='black')
-            ax.axvline(x=80, color='black', linestyle='--')
-            box = ax.get_position()
-            ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
-            ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
-            ax.set_xlabel(r'age-$s$')
-            ax.set_ylabel(r'log ability $log(e_{j,s})$')
-            filename = "ability_2D_log" + filesuffix
-            fullpath = os.path.join(output_dir, filename)
-            plt.savefig(fullpath)
-            plt.close()
+CUR_PATH = os.path.abspath(os.path.dirname(__file__))
+OUTPUT_DIR = os.path.join(CUR_PATH, 'OUTPUT', 'ability')
 
 
 def arctan_func(xvals, a, b, c):
@@ -177,33 +78,36 @@ def arc_error(abc_vals, params):
 
     Args:
         abc_vals (tuple): contains (a,b,c)
-        a (scalar): scale parameter for arctan function
-        b (scalar): curvature parameter for arctan function
-        c (scalar): shift parameter for arctan function
+
+            * a (scalar): scale parameter for arctan function
+            * b (scalar): curvature parameter for arctan function
+            * c (scalar): shift parameter for arctan function
         params (tuple): contains (first_point, coef1, coef2, coef3,
             abil_deprec)
-        first_point (scalar): ability level at age 80, > 0
-        coef1 (scalar): coefficient in log ability equation on linear
-            term in age
-        coef2 (scalar): coefficient in log ability equation on
-            quadratic term in age
-        coef3 (scalar): coefficient in log ability equation on cubic
-            term in age
-        abil_deprec (scalar): ability depreciation rate between
-            ages 80 and 100, in (0, 1).
+
+            * first_point (scalar): ability level at age 80, > 0
+            * coef1 (scalar): coefficient in log ability equation on
+                linear term in age
+            * coef2 (scalar): coefficient in log ability equation on
+                quadratic term in age
+            * coef3 (scalar): coefficient in log ability equation on
+                cubic term in age
+            * abil_deprec (scalar): ability depreciation rate between
+                ages 80 and 100, in (0, 1).
 
     Returns:
         error_vec (Numpy array): errors ([error1, error2, error3])
-        error1 (scalar): error between ability level at age 80 from
-            original function minus the predicted ability at age 80 from
-            the arctan function given a, b, and c
-        error2 (scalar): error between the slope of the original
-            function at age 80 minus the slope of the arctan function at
-            age 80 given a, b, and c
-        error3 (scalar): error between the ability level at age 100
-            predicted by the original model value times abil_deprec
-            minus the ability predicted by the arctan function at age
-            100 given a, b, and c
+
+            * error1 (scalar): error between ability level at age 80
+                from original function minus the predicted ability at
+                age 80 from the arctan function given a, b, and c
+            * error2 (scalar): error between the slope of the original
+                function at age 80 minus the slope of the arctan
+                function at age 80 given a, b, and c
+            * error3 (scalar): error between the ability level at age
+                100 predicted by the original model value times
+                abil_deprec minus the ability predicted by the arctan
+                function at age 100 given a, b, and c
 
     '''
     a, b, c = abc_vals
@@ -323,8 +227,9 @@ def get_e_interp(S, age_wgts, age_wgts_80, abil_wgts, plot=False):
 
         if plot:
             kwargs = {'filesuffix': '_intrp_scaled'}
-            graph_income(new_s_midp, abil_midp, abil_wgts,
-                         emat_new_scaled, **kwargs)
+            pp.plot_income_data(
+                new_s_midp, abil_midp, abil_wgts, emat_new_scaled,
+                OUTPUT_DIR, **kwargs)
 
     return emat_new_scaled
 
@@ -344,7 +249,8 @@ def get_e_orig(age_wgts, abil_wgts, plot=False):
     The polynomials are of the form
 
     .. math::
-        \ln(abil) = \alpha + \beta_{1}\text{age} + \beta_{2}\text{age}^2 + \beta_{3}\text{age}^3
+        \ln(abil) = \alpha + \beta_{1}\text{age} + \beta_{2}\text{age}^2
+            + \beta_{3}\text{age}^3
 
     Values come from regression analysis using IRS CWHS with hours
     imputed from the CPS.
@@ -420,11 +326,12 @@ def get_e_orig(age_wgts, abil_wgts, plot=False):
         abil_midp = np.array([12.5, 37.5, 60.0, 75.0, 85.0, 94.5, 99.5])
         # Plot original unscaled 80 x 7 ability matrix
         kwargs = {'filesuffix': '_orig_unscaled'}
-        graph_income(ages_long, abil_midp, abil_wgts, e_orig, **kwargs)
+        pp.plot_income_data(ages_long, abil_midp, abil_wgts, e_orig,
+                            OUTPUT_DIR, **kwargs)
 
         # Plot original scaled 80 x 7 ability matrix
         kwargs = {'filesuffix': '_orig_scaled'}
-        graph_income(ages_long, abil_midp, abil_wgts, e_orig_scaled,
-                     **kwargs)
+        pp.plot_income_data(ages_long, abil_midp, abil_wgts,
+                            e_orig_scaled, OUTPUT_DIR, **kwargs)
 
     return e_orig_scaled

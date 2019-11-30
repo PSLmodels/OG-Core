@@ -1,21 +1,13 @@
 '''
 ------------------------------------------------------------------------
-
-This script takes a Frisch elasticity parameter from the OSPC's Tax Brain
-and then estimates the parameters of the elliptical utility fuction that
-correspond to a constant Frisch elasticity function with a Frisch elasticity
-as input into Tax Brain.
-
-This Python script calls the following functions:
-
-This Python script outputs the following:
-
+This script takes a Frisch elasticity parameter and then estimates the
+parameters of the elliptical utility fuction that correspond to a
+constant Frisch elasticity function with the input Frisch elasticity.
 ------------------------------------------------------------------------
 '''
 # Import packages
 import numpy as np
 import scipy.optimize as opt
-import matplotlib.pyplot as plt
 
 
 def sumsq(params, *objs):
@@ -126,58 +118,5 @@ def estimation(frisch, l_tilde):
                                          method="L-BFGS-B",
                                          bounds=bnds_MU, tol=1e-15)
     (b_MU_til, upsilon_MU_til) = ellipse_MU_params_til.x
-
-    # Print tax function computation time
-    # if elapsed_time < 60: # seconds
-    #     secs = round(elapsed_time, 3)
-    #     print('Elliptical utility estimation time: ', secs, ' sec.')
-    # elif elapsed_time >= 60 and elapsed_time < 3600: # minutes
-    #     mins = int(elapsed_time / 60)
-    #     secs = round(((elapsed_time / 60) - mins) * 60, 1)
-    #     print('Elliptical utility estimation time: ', mins, ' min, ',
-    #           secs, ' sec')
-
-    # print('Ellipse parameters; b, k, upsilon: ', b_til, k_til,
-    #       upsilon_til, ellipse_params_til)
-    # print('Ellipse MU parameters; b, upsilon: ', b_MU_til,
-    #       upsilon_MU_til, ellipse_MU_params_til)
-
-    if graph:
-        '''
-        ------------------------------------------------------------------------
-        Plot CFE vs Elliptical Function
-        ------------------------------------------------------------------------
-        '''
-        # CFE = ((n_grid / l_tilde) ** (1 + theta)) / (1 + theta)
-        # ellipse_til = (b_til * ((1 - ((n_grid / l_tilde) ** upsilon_til))
-        #                         ** (1 / upsilon_til)) + k_til)
-        # fig, ax = plt.subplots()
-        # plt.plot(n_grid, CFE, 'r--', label='CFE')
-        # plt.plot(n_grid, ellipse_til, 'b', label='Elliptical U')
-        # # for the minor ticks, use no labels; default NullFormatter
-        # # ax.xaxis.set_minor_locator(MinorLocator)
-        # # plt.grid(b=True, which='major', color='0.65',linestyle='-')
-        # plt.legend(loc='center right')
-        # plt.title('Constant Frisch Elasticity vs. Elliptical Utility')
-        # plt.xlabel(r'Labor Supply')
-        # plt.ylabel(r'Utility')
-        # plt.show()
-
-        CFE_MU = (1.0 / l_tilde) * ((n_grid / l_tilde) ** theta)
-        ellipse_MU = (1.0 * b_MU_til * (1.0 / l_tilde) *
-                      ((1.0 - (n_grid / l_tilde) ** upsilon_MU_til) **
-                       ((1.0 / upsilon_MU_til) - 1.0)) *
-                      (n_grid / l_tilde) ** (upsilon_MU_til - 1.0))
-        fig, ax = plt.subplots()
-        plt.plot(n_grid, CFE_MU, 'r--', label='CFE')
-        plt.plot(n_grid, ellipse_MU, 'b', label='Elliptical U')
-        # for the minor ticks, use no labels; default NullFormatter
-        # ax.xaxis.set_minor_locator(MinorLocator)
-        # plt.grid(b=True, which='major', color='0.65',linestyle='-')
-        plt.legend(loc='center right')
-        plt.title('Marginal Utility of CFE and Elliptical')
-        plt.xlabel(r'Labor Supply')
-        plt.ylabel(r'Utility')
-        plt.show()
 
     return b_MU_til, upsilon_MU_til

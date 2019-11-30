@@ -67,6 +67,27 @@ def test_ss_3Dplot():
     assert fig
 
 
-def test_inequality_plot():
-    fig = output_plots.inequality_plot(base_tpi, base_params)
+@pytest.mark.parametrize(
+    'base_tpi,base_params,reform_tpi, reform_params,ineq_measure,' +
+    'pctiles,plot_type',
+    [(base_tpi, base_params, None, None, 'gini', None, 'levels'),
+     (base_tpi, base_params, reform_tpi, reform_params, 'gini', None,
+      'levels'),
+     (base_tpi, base_params, reform_tpi, reform_params, 'var_of_logs',
+      None, 'diff'),
+     (base_tpi, base_params, reform_tpi, reform_params, 'pct_ratio',
+      (0.9, 0.1), 'levels'),
+     (base_tpi, base_params, reform_tpi, reform_params, 'top_share',
+      (0.01), 'pct_diff')],
+    ids=['Just baseline', 'Baseline + Reform',
+         'Base + Refore, var logs, diff',
+         'Base + Refore, pct ratios',
+         'Base + Refore, top share, pct diff'])
+def test_inequality_plot(base_tpi, base_params, reform_tpi,
+                         reform_params, ineq_measure, pctiles,
+                         plot_type):
+    fig = output_plots.inequality_plot(
+        base_tpi, base_params, reform_tpi=reform_tpi,
+        reform_params=reform_params, ineq_measure=ineq_measure,
+        pctiles=pctiles, plot_type=plot_type)
     assert fig

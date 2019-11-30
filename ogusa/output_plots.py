@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import os
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 import matplotlib
 from ogusa.constants import (VAR_LABELS, ToGDP_LABELS, CBO_UNITS)
 import ogusa.utils as utils
