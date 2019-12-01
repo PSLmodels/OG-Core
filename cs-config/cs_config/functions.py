@@ -194,8 +194,8 @@ def comp_output(base_ss, base_params, reform_ss, reform_params,
     '''
     table_title = 'Percentage Changes in Economic Aggregates Between'
     table_title += ' Baseline and Reform Policy'
-    plot_title = 'Percentage Changes in Consumption Between Baseline'
-    plot_title += ' and Reform Policy'
+    plot_title = 'Percentage Changes in Consumption by Lifetime Income'
+    plot_title += ' Percentile Group'
     out_table = ot.macro_table_SS(
         base_ss, reform_ss,
         var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
@@ -205,8 +205,7 @@ def comp_output(base_ss, base_params, reform_ss, reform_params,
         var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
                   'Lss', 'rss', 'wss'], table_format='html')
     fig = op.ability_bar_ss(
-        base_ss, base_params, reform_ss, reform_params, var=var,
-        plot_title=plot_title)
+        base_ss, base_params, reform_ss, reform_params, var=var)
     in_memory_file = io.BytesIO()
     fig.savefig(in_memory_file, format="png")
     in_memory_file.seek(0)
