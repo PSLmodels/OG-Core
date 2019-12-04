@@ -69,7 +69,7 @@ def get_inputs(meta_param_dict):
     filter_list = [
         'chi_n_80', 'chi_b', 'eta', 'zeta', 'constant_demographics',
         'ltilde', 'use_zeta', 'constant_rates', 'zero_taxes',
-        'analytical_mtrs', 'age_specific']
+        'analytical_mtrs', 'age_specific', 'gamma_s', 'epsilon_s']
     for k, v in ogusa_params.dump().items():
         if ((k not in filter_list) and
             (v.get("section_1", False) != "Model Solution Parameters")
@@ -145,15 +145,26 @@ def run_model(meta_param_dict, adjustment):
     # whether to estimate tax functions from microdata
     run_micro = True
 
+    # filter out OG-USA params that will not change between baseline and
+    # reform runs (these are the non-policy parameters)
+    filtered_ogusa_params = {}
+    constant_param_set = {
+        'frisch', 'beta_annual', 'sigma', 'g_y_annual', 'gamma',
+        'epsilon', 'Z', 'delta_annual', 'small_open', 'world_int_rate',
+        'initial_foreign_debt_ratio', 'zeta_D', 'zeta_K', 'tG1', 'tG2',
+        'rho_G', 'debt_ratio_ss', 'start_year'}
+    filtered_ogusa_params = OrderedDict()
+    for k, v in adjustment['OG-USA Parameters'].items():
+        if k in constant_param_set:
+            filtered_ogusa_params[k] = v
+
     # Solve baseline model
-    base_spec = {'start_year': meta_param_dict['year'],
-                 'debt_ratio_ss': 2.0,
-                 'r_gov_scale': 1.0, 'r_gov_shift': 0.02,
-                 'zeta_D': [0.4], 'zeta_K': [0.1],
-                 'initial_debt_ratio': 0.78,
-                 'initial_foreign_debt_ratio': 0.4,
-                 'tax_func_type': 'linear',
-                 'age_specific': False}
+    base_spec = {
+        **{'start_year': meta_param_dict['year'],
+        'debt_ratio_ss': 2.0, 'r_gov_scale': 1.0, 'r_gov_shift': 0.02,
+        'zeta_D': [0.4], 'zeta_K': [0.1], 'initial_debt_ratio': 0.78,
+        'initial_foreign_debt_ratio': 0.4, 'tax_func_type': 'linear',
+        'age_specific': False}, **filtered_ogusa_params}
     base_params = Specifications(
         run_micro=False, output_base=base_dir,
         baseline_dir=base_dir, test=False, time_path=False,
