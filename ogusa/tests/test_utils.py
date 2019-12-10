@@ -1,6 +1,7 @@
 import pytest
 from ogusa import utils
 from ogusa.utils import Inequality
+import pandas as pd
 import numpy as np
 import tempfile
 import os
@@ -285,3 +286,46 @@ def test_read_cbo_forecast():
 
     assert np.allclose(
         test_df.loc[test_df['year'] == 2017, 'Y'].values[0], 20330)
+
+
+def test_print_progress():
+    '''
+    Test print_progress() function for complete and incomplete status
+    '''
+    assert utils.print_progress(1, 5) == 'Incomplete'
+    assert utils.print_progress(5, 5) == 'Complete'
+
+
+def test_fetch_files_from_web():
+    '''
+    Test fetch_files_from_web() that it returns a list of local
+    directory paths that is the same length as the input list of URLs
+    '''
+    zipfilename1 = ('https://www.federalreserve.gov/econres/' +
+                    'files/scfp2016s.zip')
+    zipfilename2 = ('https://www.federalreserve.gov/econres/' +
+                    'files/scfp2013s.zip')
+    url_list = [zipfilename1, zipfilename2]
+    paths_list = utils.fetch_files_from_web(url_list)
+    assert len(paths_list) == len(url_list)
+
+
+def test_not_connected():
+    '''
+    Test that not_connected function works
+    '''
+    # Default values should return False, i.e., connected
+    assert not utils.not_connected()
+
+
+dict1 = {'var1': [1, 2, 3, 4, 5], 'var2': [2, 4, 6, 8, 10]}
+df1 = pd.DataFrame.from_dict(dict1)
+test_data = [(df1, 'tex', 0), (df1, 'json', 2), (df1, 'html', 3)]
+
+
+@pytest.mark.parametrize('df,output_type,precision', test_data,
+                         ids=['tex', 'json', 'html'])
+def test_save_return_table(df, output_type, precision):
+
+    test_str = utils.save_return_table(df, output_type, None, precision)
+    assert isinstance(test_str, str)

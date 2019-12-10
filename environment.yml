@@ -18,6 +18,7 @@ dependencies:
 - pycodestyle
 - pylint
 - coverage
+- requests
 - pip:
   - cs-kit
   - xlrd

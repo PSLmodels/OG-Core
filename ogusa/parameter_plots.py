@@ -3,6 +3,7 @@ import os
 import matplotlib.pyplot as plt
 import matplotlib
 from ogusa.constants import GROUP_LABELS
+from ogusa import utils
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(CUR_PATH, 'OGUSAplots.mplstyle')
 plt.style.use(style_file)
@@ -663,8 +664,6 @@ def txfunc_graph(s, t, df, X, Y, txrates, rate_type, tax_func_type,
     fig.savefig(fullpath, bbox_inches='tight')
     plt.close()
 
-    del df_trnc_gph
-
 
 def txfunc_sse_plot(age_vec, sse_mat, start_year, varstr, output_dir,
                     round):
@@ -699,3 +698,136 @@ def txfunc_sse_plot(age_vec, sse_mat, start_year, varstr, output_dir,
     output_path = os.path.join(output_dir, graphname)
     plt.savefig(output_path, bbox_inches='tight')
     plt.close()
+
+
+def plot_income_data(ages, abil_midp, abil_pcts, emat, output_dir=None,
+                     filesuffix=""):
+    '''
+    Plot income profiles from models estimated from data.
+
+    Args:
+
+    Returns:
+
+    '''
+    '''
+    This function graphs ability matrix in 3D, 2D, log, and nolog
+
+    Args:
+        ages (Numpy array) ages represented in sample, length S
+        abil_midp (Numpy array): midpoints of income percentile bins in
+            each ability group
+        abil_pcts (Numpy array): percent of population in each lifetime
+            income group, length J
+        emat (Numpy array): effective labor units by age and lifetime
+            income group, size SxJ
+        filesuffix (str): suffix to be added to plot files
+
+    Returns:
+        None
+
+    '''
+    J = abil_midp.shape[0]
+    abil_mesh, age_mesh = np.meshgrid(abil_midp, ages)
+    cmap1 = matplotlib.cm.get_cmap('summer')
+    if output_dir:
+        # Make sure that directory is created
+        utils.mkdirs(output_dir)
+        if J == 1:
+            # Plot of 2D, J=1 in levels
+            plt.figure()
+            plt.plot(ages, emat)
+            filename = "ability_2D_lev" + filesuffix
+            fullpath = os.path.join(output_dir, filename)
+            plt.savefig(fullpath)
+            plt.close()
+
+            # Plot of 2D, J=1 in logs
+            plt.figure()
+            plt.plot(ages, np.log(emat))
+            filename = "ability_2D_log" + filesuffix
+            fullpath = os.path.join(output_dir, filename)
+            plt.savefig(fullpath)
+            plt.close()
+        else:
+            # Plot of 3D, J>1 in levels
+            fig10 = plt.figure()
+            ax10 = fig10.gca(projection='3d')
+            ax10.plot_surface(
+                age_mesh, abil_mesh, emat, rstride=8, cstride=1,
+                cmap=cmap1)
+            ax10.set_xlabel(r'age-$s$')
+            ax10.set_ylabel(r'ability type -$j$')
+            ax10.set_zlabel(r'ability $e_{j,s}$')
+            filename = "ability_3D_lev" + filesuffix
+            fullpath = os.path.join(output_dir, filename)
+            plt.savefig(fullpath)
+            plt.close()
+
+            # Plot of 3D, J>1 in logs
+            fig11 = plt.figure()
+            ax11 = fig11.gca(projection='3d')
+            ax11.plot_surface(
+                age_mesh, abil_mesh, np.log(emat), rstride=8, cstride=1,
+                cmap=cmap1)
+            ax11.set_xlabel(r'age-$s$')
+            ax11.set_ylabel(r'ability type -$j$')
+            ax11.set_zlabel(r'log ability $log(e_{j,s})$')
+            filename = "ability_3D_log" + filesuffix
+            fullpath = os.path.join(output_dir, filename)
+            plt.savefig(fullpath)
+            plt.close()
+
+            if J <= 10:  # Restricted because of line and marker types
+                # Plot of 2D lines from 3D version in logs
+                ax = plt.subplot(111)
+                linestyles = np.array(["-", "--", "-.", ":", ])
+                markers = np.array(["x", "v", "o", "d", ">", "|"])
+                pct_lb = 0
+                for j in range(J):
+                    this_label = (
+                        str(int(np.rint(pct_lb))) + " - " +
+                        str(int(np.rint(pct_lb + 100*abil_pcts[j]))) + "%")
+                    pct_lb += 100*abil_pcts[j]
+                    if j <= 3:
+                        ax.plot(ages, np.log(emat[:, j]), label=this_label,
+                                linestyle=linestyles[j], color='black')
+                    elif j > 3:
+                        ax.plot(ages, np.log(emat[:, j]), label=this_label,
+                                marker=markers[j-4], color='black')
+                ax.axvline(x=80, color='black', linestyle='--')
+                box = ax.get_position()
+                ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+                ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+                ax.set_xlabel(r'age-$s$')
+                ax.set_ylabel(r'log ability $log(e_{j,s})$')
+                filename = "ability_2D_log" + filesuffix
+                fullpath = os.path.join(output_dir, filename)
+                plt.savefig(fullpath)
+                plt.close()
+    else:
+        if J <= 10:  # Restricted because of line and marker types
+            # Plot of 2D lines from 3D version in logs
+            ax = plt.subplot(111)
+            linestyles = np.array(["-", "--", "-.", ":", ])
+            markers = np.array(["x", "v", "o", "d", ">", "|"])
+            pct_lb = 0
+            for j in range(J):
+                this_label = (
+                    str(int(np.rint(pct_lb))) + " - " +
+                    str(int(np.rint(pct_lb + 100*abil_pcts[j]))) + "%")
+                pct_lb += 100*abil_pcts[j]
+                if j <= 3:
+                    ax.plot(ages, np.log(emat[:, j]), label=this_label,
+                            linestyle=linestyles[j], color='black')
+                elif j > 3:
+                    ax.plot(ages, np.log(emat[:, j]), label=this_label,
+                            marker=markers[j-4], color='black')
+            ax.axvline(x=80, color='black', linestyle='--')
+            box = ax.get_position()
+            ax.set_position([box.x0, box.y0, box.width * 0.8, box.height])
+            ax.legend(loc='center left', bbox_to_anchor=(1, 0.5))
+            ax.set_xlabel(r'age-$s$')
+            ax.set_ylabel(r'log ability $log(e_{j,s})$')
+
+            return ax

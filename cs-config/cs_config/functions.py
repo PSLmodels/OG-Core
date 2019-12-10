@@ -2,6 +2,7 @@ import ogusa
 from ogusa.parameters import Specifications
 from ogusa.utils import TC_LAST_YEAR, REFORM_DIR, BASELINE_DIR
 from ogusa import output_plots as op
+from ogusa import output_tables as ot
 from ogusa import SS, utils
 import os
 import io
@@ -68,7 +69,7 @@ def get_inputs(meta_param_dict):
     filter_list = [
         'chi_n_80', 'chi_b', 'eta', 'zeta', 'constant_demographics',
         'ltilde', 'use_zeta', 'constant_rates', 'zero_taxes',
-        'analytical_mtrs', 'age_specific']
+        'analytical_mtrs', 'age_specific', 'gamma_s', 'epsilon_s']
     for k, v in ogusa_params.dump().items():
         if ((k not in filter_list) and
             (v.get("section_1", False) != "Model Solution Parameters")
@@ -144,15 +145,26 @@ def run_model(meta_param_dict, adjustment):
     # whether to estimate tax functions from microdata
     run_micro = True
 
+    # filter out OG-USA params that will not change between baseline and
+    # reform runs (these are the non-policy parameters)
+    filtered_ogusa_params = {}
+    constant_param_set = {
+        'frisch', 'beta_annual', 'sigma', 'g_y_annual', 'gamma',
+        'epsilon', 'Z', 'delta_annual', 'small_open', 'world_int_rate',
+        'initial_foreign_debt_ratio', 'zeta_D', 'zeta_K', 'tG1', 'tG2',
+        'rho_G', 'debt_ratio_ss', 'start_year'}
+    filtered_ogusa_params = OrderedDict()
+    for k, v in adjustment['OG-USA Parameters'].items():
+        if k in constant_param_set:
+            filtered_ogusa_params[k] = v
+
     # Solve baseline model
-    base_spec = {'start_year': meta_param_dict['year'],
-                 'debt_ratio_ss': 2.0,
-                 'r_gov_scale': 1.0, 'r_gov_shift': 0.02,
-                 'zeta_D': [0.4], 'zeta_K': [0.1],
-                 'initial_debt_ratio': 0.78,
-                 'initial_foreign_debt_ratio': 0.4,
-                 'tax_func_type': 'linear',
-                 'age_specific': False}
+    base_spec = {
+        **{'start_year': meta_param_dict['year'],
+        'debt_ratio_ss': 2.0, 'r_gov_scale': 1.0, 'r_gov_shift': 0.02,
+        'zeta_D': [0.4], 'zeta_K': [0.1], 'initial_debt_ratio': 0.78,
+        'initial_foreign_debt_ratio': 0.4, 'tax_func_type': 'linear',
+        'age_specific': False}, **filtered_ogusa_params}
     base_params = Specifications(
         run_micro=False, output_base=base_dir,
         baseline_dir=base_dir, test=False, time_path=False,
@@ -187,14 +199,24 @@ def run_model(meta_param_dict, adjustment):
 
 
 def comp_output(base_ss, base_params, reform_ss, reform_params,
-                var='nssmat'):
+                var='cssmat'):
     '''
     Function to create output for the COMP platform
     '''
-    fig = op.ss_profiles(
-        base_ss, base_params, reform_ss=reform_ss,
-        reform_params=reform_params, by_j=True, var=var,
-        plot_title='Labor Supply in Baseline and Reform Policy')
+    table_title = 'Percentage Changes in Economic Aggregates Between'
+    table_title += ' Baseline and Reform Policy'
+    plot_title = 'Percentage Changes in Consumption by Lifetime Income'
+    plot_title += ' Percentile Group'
+    out_table = ot.macro_table_SS(
+        base_ss, reform_ss,
+        var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
+                  'Lss', 'rss', 'wss'], table_format='csv')
+    html_table = ot.macro_table_SS(
+        base_ss, reform_ss,
+        var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
+                  'Lss', 'rss', 'wss'], table_format='html')
+    fig = op.ability_bar_ss(
+        base_ss, base_params, reform_ss, reform_params, var=var)
     in_memory_file = io.BytesIO()
     fig.savefig(in_memory_file, format="png")
     in_memory_file.seek(0)
@@ -202,11 +224,22 @@ def comp_output(base_ss, base_params, reform_ss, reform_params,
         "renderable": [
             {
               "media_type": "PNG",
-              "title": 'Labor Supply in Baseline and Reform Policy',
+              "title": plot_title,
               "data": in_memory_file.read()
-              }
+              },
+            {
+              "media_type": "table",
+              "title":  table_title,
+              "data": html_table
+            }
             ],
-        "downloadable": []
+        "downloadable": [
+            {
+              "media_type": "CSV",
+              "title": table_title,
+              "data": out_table.to_csv()
+            }
+        ]
         }
 
     return comp_dict

@@ -58,10 +58,36 @@ def test_ss_profiles():
 
 def test_tpi_profiles():
     fig = output_plots.tpi_profiles(base_tpi, base_params, reform_tpi,
-                                   reform_params)
+                                    reform_params)
     assert fig
 
 
 def test_ss_3Dplot():
-        fig = output_plots.ss_3Dplot(base_params, base_ss)
-        assert fig
+    fig = output_plots.ss_3Dplot(base_params, base_ss)
+    assert fig
+
+
+@pytest.mark.parametrize(
+    'base_tpi,base_params,reform_tpi, reform_params,ineq_measure,' +
+    'pctiles,plot_type',
+    [(base_tpi, base_params, None, None, 'gini', None, 'levels'),
+     (base_tpi, base_params, reform_tpi, reform_params, 'gini', None,
+      'levels'),
+     (base_tpi, base_params, reform_tpi, reform_params, 'var_of_logs',
+      None, 'diff'),
+     (base_tpi, base_params, reform_tpi, reform_params, 'pct_ratio',
+      (0.9, 0.1), 'levels'),
+     (base_tpi, base_params, reform_tpi, reform_params, 'top_share',
+      (0.01), 'pct_diff')],
+    ids=['Just baseline', 'Baseline + Reform',
+         'Base + Refore, var logs, diff',
+         'Base + Refore, pct ratios',
+         'Base + Refore, top share, pct diff'])
+def test_inequality_plot(base_tpi, base_params, reform_tpi,
+                         reform_params, ineq_measure, pctiles,
+                         plot_type):
+    fig = output_plots.inequality_plot(
+        base_tpi, base_params, reform_tpi=reform_tpi,
+        reform_params=reform_params, ineq_measure=ineq_measure,
+        pctiles=pctiles, plot_type=plot_type)
+    assert fig
