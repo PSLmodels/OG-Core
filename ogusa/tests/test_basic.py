@@ -64,7 +64,7 @@ def test_constant_demographics_TPI():
     ss_outputs = SS.run_SS(spec, None)
     # save SS results
     utils.mkdirs(os.path.join(baseline_dir, "SS"))
-    ss_dir = os.path.join(baseline_dir, "SS/SS_vars.pkl")
+    ss_dir = os.path.join(baseline_dir, "SS", "SS_vars.pkl")
     with open(ss_dir, "wb") as f:
         pickle.dump(ss_outputs, f)
     # Run TPI
