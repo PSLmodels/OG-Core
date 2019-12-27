@@ -362,6 +362,9 @@ j = None
 test_vars_ss = (r, w, b, b_splus1, n, bq, factor, tr, theta, tau_c,
                 etr_params[-1, :, :], mtry_params[-1, :, :], None, j,
                 method)
+test_vars_ss0 = (r, w, b, b_splus1, n, bq, factor, tr, theta, tau_c,
+                 etr_params[-1, :, :], mtry_params[-1, :, :], None, 0,
+                 method)
 expected_ss = np.array([10.86024358, -0.979114982, -140.5190831])
 
 # Define variables/params for test of TPI version
@@ -416,12 +419,13 @@ test_data = [
     (test_vars_ss, test_params_ss, expected_ss),
     (test_vars_tpi, test_params_tpi, expected_tpi),
     (test_vars_ss, test_params_ss_tau_w, expected_ss_tau_w),
-    (test_vars_tpi, test_params_tpi_tau_w, expected_tpi_tau_w)]
+    (test_vars_tpi, test_params_tpi_tau_w, expected_tpi_tau_w),
+    (test_vars_ss0, test_params_ss, expected_ss)]
 
 
 @pytest.mark.parametrize('model_vars,params,expected', test_data,
                          ids=['SS', 'TPI', 'SS - wealth tax',
-                              'TPI - wealth tax'])
+                              'TPI - wealth tax', 'SS - j =0'])
 def test_FOC_savings(model_vars, params, expected):
     # Test FOC condition for household's choice of savings
     (r, w, b, b_splus1, n, BQ, factor, tr, theta, tau_c, etr_params,

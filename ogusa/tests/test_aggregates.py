@@ -90,6 +90,7 @@ new_param_values = {
 }
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
+p.omega_S_preTP = p.omega[0, :]
 b = -0.1 + (7 * np.random.rand(p.T * p.S * p.J).reshape(p.T, p.S, p.J))
 omega_extended = np.append(p.omega[:p.T, 1:], np.zeros((p.T, 1)),
                            axis=1)
@@ -104,17 +105,19 @@ B_test = ((b * np.squeeze(p.lambdas) *
                    (1, 1, p.J))))
 expected1 = B_test[-1, :, :].sum() / (1.0 + p.g_n_ss)
 expected2 = B_test.sum(1).sum(1) / (1.0 + np.hstack((p.g_n[1:p.T], p.g_n_ss)))
-test_data = [(b[-1, :, :], p, 'SS', expected1),
-             (b, p, 'TPI', expected2)]
+expected3 = B_test[0, :, :].sum() / (1.0 + p.g_n[0])
+test_data = [(b[-1, :, :], p, 'SS', False, expected1),
+             (b, p, 'TPI', False, expected2),
+             (b[0, :, :], p, 'SS', True, expected3)]
 
 
-@pytest.mark.parametrize('b,p,method,expected', test_data,
-                         ids=['SS', 'TPI'])
-def test_get_B(b, p, method, expected):
+@pytest.mark.parametrize('b,p,method,PreTP,expected', test_data,
+                         ids=['SS', 'TPI', 'Pre-TP'])
+def test_get_B(b, p, method, PreTP, expected):
     """
     Test aggregate savings function.
     """
-    B = aggr.get_B(b, p, method, False)
+    B = aggr.get_B(b, p, method, PreTP)
     assert np.allclose(B, expected)
 
 
@@ -128,6 +131,7 @@ new_param_values = {
 }
 # update parameters instance with new values for test
 p.update_specifications(new_param_values)
+p.omega_S_preTP = p.omega[0, :]
 # set values for some variables
 r = 0.5 + 0.5 * np.random.rand(p.T)
 b_splus1 = 0.06 + 7 * np.random.rand(p.T, p.S, p.J)
@@ -143,20 +147,27 @@ expected2 = BQ_presum[-1, :, 1].sum(0) * growth_adj[-1]
 expected3 = (BQ_presum.sum(1) *
              np.tile(np.reshape(growth_adj, (p.T, 1)), (1, p.J)))
 expected4 = BQ_presum[:, :, 1].sum(1) * growth_adj
-test_data = [(r[-1], b_splus1[-1, :, :], None, p, 'SS', expected1),
-             (r[-1], b_splus1[-1, :, 1], 1, p, 'SS', expected2),
-             (r, b_splus1, None, p, 'TPI', expected3),
-             (r, b_splus1[:, :, 1], 1, p, 'TPI', expected4)]
+expected5 = BQ_presum[0, :, :].sum(0) * growth_adj[0]
+expected6 = BQ_presum[0, :, 1].sum(0) * growth_adj[0]
+test_data = [(r[-1], b_splus1[-1, :, :], None, p, 'SS', False,
+              expected1),
+             (r[-1], b_splus1[-1, :, 1], 1, p, 'SS', False, expected2),
+             (r, b_splus1, None, p, 'TPI', False, expected3),
+             (r, b_splus1[:, :, 1], 1, p, 'TPI', False, expected4),
+             (r[0], b_splus1[0, :, :], None, p, 'SS', True, expected5),
+             (r[0], b_splus1[0, :, 1], 1, p, 'SS', True, expected6)]
 
 
-@pytest.mark.parametrize('r,b_splus1,j,p,method,expected', test_data,
-                         ids=['SS, all j', 'SS, one j', 'TPI, all j',
-                              'TPI, one j'])
-def test_get_BQ(r, b_splus1, j, p, method, expected):
+@pytest.mark.parametrize('r,b_splus1,j,p,method,PreTP,expected',
+                         test_data, ids=[
+                             'SS, all j', 'SS, one j', 'TPI, all j',
+                             'TPI, one j', 'Pre-TP, all j',
+                             'Pre-TP, one j'])
+def test_get_BQ(r, b_splus1, j, p, method, PreTP, expected):
     """
     Test of aggregate bequest function.
     """
-    BQ = aggr.get_BQ(r, b_splus1, j, p, method, False)
+    BQ = aggr.get_BQ(r, b_splus1, j, p, method, PreTP)
     assert np.allclose(BQ, expected)
 
 

@@ -97,11 +97,11 @@ def test_get_data():
         os.path.join(CUR_PATH, 'test_io_data',
                      'micro_data_dict_for_tests.pkl'))
     test_data, _ = get_micro_data.get_data(
-        baseline=True, start_year=2028, reform={}, data='cps',
+        baseline=True, start_year=2029, reform={}, data='cps',
         client=None, num_workers=1)
     for k, v in test_data.items():
         assert_frame_equal(
-            expected_data[k], v.drop(columns='payroll_tax_liab'))
+            expected_data[k], v)
 
 
 @pytest.mark.full_run
