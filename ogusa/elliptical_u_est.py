@@ -10,6 +10,47 @@ import numpy as np
 import scipy.optimize as opt
 
 
+def CFE_u(theta, l_tilde, n):
+    '''
+    Disutility of labor supply from the constant Frisch elasticity
+    utility function
+    '''
+    u = ((n / l_tilde) ** (1 + theta)) / (1 + theta)
+
+    return u
+
+
+def CFE_mu(theta, l_tilde, n):
+    '''
+    Marginal disutility of labor supply from the constant Frisch
+    elasticity utility function
+    '''
+    mu = (1.0 / l_tilde) * ((n / l_tilde) ** theta)
+
+    return mu
+
+
+def elliptical_u(b, k, upsilon, l_tilde, n):
+    '''
+    Disutility of labor supply from the elliptical utility function
+    '''
+    u = b * ((1 - ((n / l_tilde) ** upsilon)) ** (1 / upsilon)) + k
+
+    return u
+
+
+def elliptical_mu(b, upsilon, l_tilde, n):
+    '''
+    Marginal disutility of labor supply from the elliptical utility
+    function
+    '''
+    mu = (b * (1.0 / l_tilde) * ((1.0 - (n / l_tilde) ** upsilon) **
+                                 ((1.0 / upsilon) - 1.0)) *
+          (n / l_tilde) ** (upsilon - 1.0))
+
+    return mu
+
+
 def sumsq(params, *objs):
     '''
     This function generates the sum of squared deviations between the
@@ -27,9 +68,8 @@ def sumsq(params, *objs):
     '''
     theta, l_tilde, n_grid = objs
     b, k, upsilon = params
-    CFE = ((n_grid / l_tilde) ** (1 + theta)) / (1 + theta)
-    ellipse = (b * ((1 - ((n_grid / l_tilde) ** upsilon)) **
-                    (1 / upsilon)) + k)
+    CFE = CFE_u(theta, l_tilde, n_grid)
+    ellipse = elliptical_u(b, k, upsilon, l_tilde, n_grid)
     errors = CFE - ellipse
     ssqdev = (errors ** 2).sum()
     return ssqdev
@@ -51,11 +91,13 @@ def sumsq_MU(params, *objs):
     '''
     theta, l_tilde, n_grid = objs
     b, upsilon = params
-    CFE_MU = (1.0 / l_tilde) * ((n_grid / l_tilde) ** theta)
-    ellipse_MU = (b * (1.0 / l_tilde) * ((1.0 - (n_grid / l_tilde) **
-                                          upsilon) **
-                                         ((1.0 / upsilon) - 1.0)) *
-                  (n_grid / l_tilde) ** (upsilon - 1.0))
+    CFE_MU = CFE_mu(theta, l_tilde, n_grid)
+    ellipse_MU = elliptical_mu(b, upsilon, l_tilde, n_grid)
+    # CFE_MU = (1.0 / l_tilde) * ((n_grid / l_tilde) ** theta)
+    # ellipse_MU = (b * (1.0 / l_tilde) * ((1.0 - (n_grid / l_tilde) **
+    #                                       upsilon) **
+    #                                      ((1.0 / upsilon) - 1.0)) *
+    #               (n_grid / l_tilde) ** (upsilon - 1.0))
     errors = CFE_MU - ellipse_MU
     ssqdev = (errors ** 2).sum()
     return ssqdev
