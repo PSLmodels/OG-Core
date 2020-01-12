@@ -13,7 +13,16 @@ import scipy.optimize as opt
 def CFE_u(theta, l_tilde, n):
     '''
     Disutility of labor supply from the constant Frisch elasticity
-    utility function
+    utility function.
+
+    Args:
+        theta (scalar): inverse of the Frisch elasticity of labor supply
+        l_tilde (scalar): maximum amount of labor supply
+        n (array_like): labor supply amount
+
+    Returns:
+        u (array_like): disutility of labor supply
+
     '''
     u = ((n / l_tilde) ** (1 + theta)) / (1 + theta)
 
@@ -24,6 +33,15 @@ def CFE_mu(theta, l_tilde, n):
     '''
     Marginal disutility of labor supply from the constant Frisch
     elasticity utility function
+
+    Args:
+        theta (scalar):  inverse of the Frisch elasticity of labor supply
+        l_tilde (scalar): maximum amount of labor supply
+        n (array_like): labor supply amount
+
+    Returns:
+        mu (array_like): marginal disutility of labor supply
+
     '''
     mu = (1.0 / l_tilde) * ((n / l_tilde) ** theta)
 
@@ -33,6 +51,18 @@ def CFE_mu(theta, l_tilde, n):
 def elliptical_u(b, k, upsilon, l_tilde, n):
     '''
     Disutility of labor supply from the elliptical utility function
+
+    Args:
+        b (scalar):  scale parameter of elliptical utility function
+        k (scalar):  shift parametr of elliptical utility function
+        upsilon (scalar):  curvature parameter of elliptical utility
+            function
+        l_tilde (scalar): maximum amount of labor supply
+        n (array_like): labor supply amount
+
+    Returns:
+        u (array_like): disutility of labor supply
+
     '''
     u = b * ((1 - ((n / l_tilde) ** upsilon)) ** (1 / upsilon)) + k
 
@@ -43,6 +73,17 @@ def elliptical_mu(b, upsilon, l_tilde, n):
     '''
     Marginal disutility of labor supply from the elliptical utility
     function
+
+    Args:
+        b (scalar):  scale parameter of elliptical utility function
+        upsilon (scalar):  curvature parameter of elliptical utility
+            function
+        l_tilde (scalar): maximum amount of labor supply
+        n (array_like): labor supply amount
+
+    Returns:
+        mu (array_like): marginal disutility of labor supply
+
     '''
     mu = (b * (1.0 / l_tilde) * ((1.0 - (n / l_tilde) ** upsilon) **
                                  ((1.0 / upsilon) - 1.0)) *
@@ -80,13 +121,14 @@ def sumsq_MU(params, *objs):
     This function generates the sum of squared deviations between the
     marginals of the constant Frisch elasticity function and the
     elliptical utility function
-        Args:
-            params (tuple): parameters to estimate, (b, k, upsilon)
-            objs (tuple): other parameters of utility function,
-                (theta, l_tilde, n_grid)
 
-        Returns:
-            ssqdev (scalar): sum of squared errors
+    Args:
+        params (tuple): parameters to estimate, (b, k, upsilon)
+        objs (tuple): other parameters of utility function,
+            (theta, l_tilde, n_grid)
+
+    Returns:
+        ssqdev (scalar): sum of squared errors
 
     '''
     theta, l_tilde, n_grid = objs
