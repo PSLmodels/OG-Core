@@ -99,3 +99,17 @@ def test_sumsq_MU():
     test_val = ee.sumsq_MU(params, *objs)
 
     assert np.allclose(expected_val, test_val)
+
+
+def test_estimation():
+    '''
+    Test of estimation() function
+    '''
+    expected_b = 0.7048132709249104
+    expected_upsilon = 1.4465752174288222
+    frisch = 1.5
+    l_tilde = 1.0
+    test_b, test_upsilon = ee.estimation(frisch, l_tilde)
+
+    assert np.allclose(expected_b, test_b)
+    assert np.allclose(expected_upsilon, test_upsilon)

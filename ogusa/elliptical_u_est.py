@@ -168,7 +168,6 @@ def estimation(frisch, l_tilde):
     '''
     theta = 1 / frisch
     N = 101
-    graph = False
     '''
     ------------------------------------------------------------------------
     Estimate parameters of ellipitical utility function
