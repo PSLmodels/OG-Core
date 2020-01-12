@@ -88,7 +88,7 @@ def test_sumsq_MU():
     '''
     Test of the sumsq_MU() funcion
     '''
-    expected_val = 2.308834839
+    expected_val = 1.650959619
     theta = 1.5
     l_tilde = 0.8
     b = 1.4
