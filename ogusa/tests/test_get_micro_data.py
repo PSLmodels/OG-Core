@@ -2,7 +2,7 @@ import pytest
 from pandas.util.testing import assert_frame_equal
 import numpy as np
 import os
-from ogusa.utils import CPS_START_YEAR
+from ogusa.utils import CPS_START_YEAR, PUF_START_YEAR, TC_LAST_YEAR
 from ogusa import get_micro_data, utils
 from taxcalc import GrowFactors
 
@@ -72,7 +72,7 @@ def test_puf_path():
                 records_start_year=CPS_START_YEAR, data=None)
 
 
-def test_get_calculator():
+def test_get_calculator_cps():
     iit_reform = {
         'II_rt1': {2017: 0.09},
         'II_rt2': {2017: 0.135},
@@ -87,6 +87,41 @@ def test_get_calculator():
         data='cps', gfactors=GrowFactors(),
         records_start_year=CPS_START_YEAR)
     assert calc.current_year == CPS_START_YEAR
+
+
+def test_get_calculator_exception():
+    iit_reform = {
+        'II_rt1': {2017: 0.09},
+        'II_rt2': {2017: 0.135},
+        'II_rt3': {2017: 0.225},
+        'II_rt4': {2017: 0.252},
+        'II_rt5': {2017: 0.297},
+        'II_rt6': {2017: 0.315},
+        'II_rt7': {2017: 0.3564}
+        }
+    with pytest.raises(Exception):
+        assert get_micro_data.get_calculator(
+            baseline=False, calculator_start_year=TC_LAST_YEAR + 1,
+            reform=iit_reform, data='cps', gfactors=GrowFactors(),
+            records_start_year=CPS_START_YEAR)
+
+
+@pytest.mark.full_run
+def test_get_calculator_puf():
+    iit_reform = {
+        'II_rt1': {2017: 0.09},
+        'II_rt2': {2017: 0.135},
+        'II_rt3': {2017: 0.225},
+        'II_rt4': {2017: 0.252},
+        'II_rt5': {2017: 0.297},
+        'II_rt6': {2017: 0.315},
+        'II_rt7': {2017: 0.3564}
+        }
+    calc = get_micro_data.get_calculator(
+        baseline=False, calculator_start_year=2017, reform=iit_reform,
+        data=None, gfactors=GrowFactors(),
+        records_start_year=PUF_START_YEAR)
+    assert calc.current_year == PUF_START_YEAR
 
 
 def test_get_data():
