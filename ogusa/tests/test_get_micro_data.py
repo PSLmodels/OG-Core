@@ -119,9 +119,27 @@ def test_get_calculator_puf():
         }
     calc = get_micro_data.get_calculator(
         baseline=False, calculator_start_year=2017, reform=iit_reform,
-        data=None, gfactors=GrowFactors(),
+        data=None,
         records_start_year=PUF_START_YEAR)
-    assert calc.current_year == PUF_START_YEAR
+    assert calc.current_year == 2013
+
+
+@pytest.mark.full_run
+def test_get_calculator_puf_from_file():
+    iit_reform = {
+        'II_rt1': {2017: 0.09},
+        'II_rt2': {2017: 0.135},
+        'II_rt3': {2017: 0.225},
+        'II_rt4': {2017: 0.252},
+        'II_rt5': {2017: 0.297},
+        'II_rt6': {2017: 0.315},
+        'II_rt7': {2017: 0.3564}
+        }
+    calc = get_micro_data.get_calculator(
+        baseline=False, calculator_start_year=2017, reform=iit_reform,
+        data=PUF_PATH,
+        records_start_year=PUF_START_YEAR)
+    assert calc.current_year == 2013
 
 
 def test_get_data():
