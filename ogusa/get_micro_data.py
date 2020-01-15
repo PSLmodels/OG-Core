@@ -36,7 +36,7 @@ def get_calculator(baseline, calculator_start_year, reform=None,
             in the Tax-Calculator project)
 
     Returns:
-        calc1 (Tax-Calculator Calculator object): Calulaotr object with
+        calc1 (Tax-Calculator Calculator object): Calulator object with
             current_year equal to calculator_start_year
 
     '''
