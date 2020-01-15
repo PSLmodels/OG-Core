@@ -72,19 +72,29 @@ def test_puf_path():
                 records_start_year=CPS_START_YEAR, data=None)
 
 
-def test_get_calculator_cps():
-    iit_reform = {
-        'II_rt1': {2017: 0.09},
-        'II_rt2': {2017: 0.135},
-        'II_rt3': {2017: 0.225},
-        'II_rt4': {2017: 0.252},
-        'II_rt5': {2017: 0.297},
-        'II_rt6': {2017: 0.315},
-        'II_rt7': {2017: 0.3564}
-        }
+iit_reform_1 = {
+    'II_rt1': {2017: 0.09},
+    'II_rt2': {2017: 0.135},
+    'II_rt3': {2017: 0.225},
+    'II_rt4': {2017: 0.252},
+    'II_rt5': {2017: 0.297},
+    'II_rt6': {2017: 0.315},
+    'II_rt7': {2017: 0.3564}
+    }
+
+
+@pytest.mark.parametrize(
+    'baseline,iit_reform',
+    [(False, iit_reform_1), (False, {}), (True, iit_reform_1),
+     (True, {})],
+    ids=['Reform, Policy change given',
+         'Reform, No policy change given',
+         'Baseline, Policy change given',
+         'Baseline, No policy change given'])
+def test_get_calculator_cps(baseline, iit_reform):
     calc = get_micro_data.get_calculator(
-        baseline=False, calculator_start_year=2017, reform=iit_reform,
-        data='cps', gfactors=GrowFactors(),
+        baseline=baseline, calculator_start_year=2017,
+        reform=iit_reform, data='cps', gfactors=GrowFactors(),
         records_start_year=CPS_START_YEAR)
     assert calc.current_year == CPS_START_YEAR
 
