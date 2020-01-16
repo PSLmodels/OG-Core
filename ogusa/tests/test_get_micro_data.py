@@ -152,7 +152,9 @@ def test_get_calculator_puf_from_file():
     assert calc.current_year == 2013
 
 
-def test_get_data():
+@pytest.mark.parametrize(
+    'baseline', [True, False], ids=['Baseline', 'Reform'])
+def test_get_data(baseline):
     '''
     Test of get_micro_data.get_data() function
     '''
@@ -160,7 +162,7 @@ def test_get_data():
         os.path.join(CUR_PATH, 'test_io_data',
                      'micro_data_dict_for_tests.pkl'))
     test_data, _ = get_micro_data.get_data(
-        baseline=True, start_year=2029, reform={}, data='cps',
+        baseline=baseline, start_year=2029, reform={}, data='cps',
         client=None, num_workers=1)
     for k, v in test_data.items():
         assert_frame_equal(
