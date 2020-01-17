@@ -113,7 +113,7 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
         lazy_values.append(
             delayed(taxcalc_advance)(baseline, start_year, reform,
                                      data, year))
-    if client:
+    if client:  # pragma: no cover
         futures = client.compute(lazy_values, num_workers=num_workers)
         results = client.gather(futures)
     else:
@@ -197,7 +197,7 @@ def taxcalc_advance(baseline, start_year, reform, data, year):
     return tax_dict
 
 
-def cap_inc_mtr(calc1):
+def cap_inc_mtr(calc1):  # pragram: no cover
     '''
     This function computes the marginal tax rate on capital income,
     which is calculated as a weighted average of the marginal tax rates
