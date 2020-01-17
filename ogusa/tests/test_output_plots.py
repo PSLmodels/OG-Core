@@ -27,9 +27,36 @@ reform_taxfunctions = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'TxFuncEst_reform.pkl'))
 
 
-def test_plot_aggregates():
-    fig = output_plots.plot_aggregates(base_tpi, base_params,
-                                       reform_tpi, reform_params)
+test_data = [(base_tpi, base_params, reform_tpi, reform_params,
+              'pct_diff', None, None),
+             (base_tpi, base_params, reform_tpi, reform_params, 'diff',
+              None, None),
+             (base_tpi, base_params, reform_tpi, reform_params, 'cbo',
+              None, None),
+             (base_tpi, base_params, reform_tpi, reform_params,
+              'levels', None, None),
+             (base_tpi, base_params, None, None, 'levels', None, None),
+             (base_tpi, base_params, None, None, 'levels', [2040, 2060],
+              None),
+             (base_tpi, base_params, None, None, 'levels', None,
+              'Test plot title')
+             ]
+
+
+@pytest.mark.parametrize(
+    'base_tpi,base_params,reform_tpi,reform_parms,plot_type,' +
+    'vertical_line_years,plot_title',
+    test_data, ids=['Pct Diff', 'Diff', 'CBO', 'Levels w reform',
+                    'Levels w/o reform', 'Vertical line included',
+                    'Plot title included'])
+def test_plot_aggregates(base_tpi, base_params, reform_tpi,
+                         reform_parms, plot_type, vertical_line_years,
+                         plot_title):
+    fig = output_plots.plot_aggregates(
+        base_tpi, base_params, reform_tpi=reform_tpi,
+        reform_params=reform_params, var_list=['Y'],
+        plot_type=plot_type, num_years_to_plot=20,
+        vertical_line_years=vertical_line_years, plot_title=plot_title)
     assert fig
 
 
