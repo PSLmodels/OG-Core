@@ -89,8 +89,27 @@ def test_tpi_profiles():
     assert fig
 
 
-def test_ss_3Dplot():
-    fig = output_plots.ss_3Dplot(base_params, base_ss)
+test_data = [(base_params, base_ss, None, None, 'levels', None),
+             (base_params, base_ss, reform_params, reform_ss, 'levels',
+              None),
+             (base_params, base_ss, reform_params, reform_ss, 'diff',
+              None),
+             (base_params, base_ss, reform_params, reform_ss,
+              'pct_diff', None),
+             (base_params, base_ss, reform_params, reform_ss,
+              'pct_diff', 'Test Plot Title')
+             ]
+
+
+@pytest.mark.parametrize(
+    'base_params,base_ss,reform_params,reform_ss,plot_type,plot_title',
+    test_data, ids=['Levels', 'Levels w/ reform', 'Differences',
+                    'Pct Diffs', 'Plot title included'])
+def test_ss_3Dplot(base_params, base_ss, reform_params, reform_ss,
+                   plot_type, plot_title):
+    fig = output_plots.ss_3Dplot(
+        base_params, base_ss, reform_params=reform_params,
+        reform_ss=reform_ss, plot_type=plot_type, plot_title=plot_title)
     assert fig
 
 
