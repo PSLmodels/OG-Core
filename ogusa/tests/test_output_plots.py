@@ -85,8 +85,9 @@ def test_plot_gdp_ratio(base_tpi, base_params, reform_tpi,
 
 
 def test_ability_bar():
-    fig = output_plots.ability_bar(base_tpi, base_params, reform_tpi,
-                                   reform_params)
+    fig = output_plots.ability_bar(
+        base_tpi, base_params, reform_tpi, reform_params,
+        plot_title=' Test Plot Title')
     assert fig
 
 
