@@ -93,19 +93,27 @@ def test_ability_bar():
 
 def test_ability_bar_ss():
     fig = output_plots.ability_bar_ss(
-        base_ss, base_params, reform_ss, reform_params)
+        base_ss, base_params, reform_ss, reform_params,
+        plot_title=' Test Plot Title')
     assert fig
 
 
-def test_ss_profiles():
-    fig = output_plots.ss_profiles(base_ss, base_params, reform_ss,
-                                   reform_params)
+@pytest.mark.parametrize(
+    'by_j,plot_data', [(True, False), (False, False), (False, True)],
+    ids=['By j', 'Not by j', 'Plot data'])
+def test_ss_profiles(by_j, plot_data):
+    fig = output_plots.ss_profiles(
+        base_ss, base_params, reform_ss, reform_params, by_j=by_j,
+        plot_data=plot_data, plot_title=' Test Plot Title')
     assert fig
 
 
-def test_tpi_profiles():
-    fig = output_plots.tpi_profiles(base_tpi, base_params, reform_tpi,
-                                    reform_params)
+@pytest.mark.parametrize(
+    'by_j', [True, False], ids=['By j', 'Not by j'])
+def test_tpi_profiles(by_j):
+    fig = output_plots.tpi_profiles(
+        base_tpi, base_params, reform_tpi, reform_params, by_j=by_j,
+        plot_title=' Test Plot Title')
     assert fig
 
 
