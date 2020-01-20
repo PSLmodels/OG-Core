@@ -60,8 +60,27 @@ def test_plot_aggregates(base_tpi, base_params, reform_tpi,
     assert fig
 
 
-def test_plot_gdp_ratio():
-    fig = output_plots.plot_gdp_ratio(base_tpi, base_params)
+test_data = [(base_tpi, base_params, None, None, None, None),
+             (base_tpi, base_params, reform_tpi, reform_params, None,
+              None),
+             (base_tpi, base_params, reform_tpi, reform_params,
+              [2040, 2060], None),
+             (base_tpi, base_params, None, None, None,
+              'Test plot title')
+             ]
+
+
+@pytest.mark.parametrize(
+    'base_tpi,base_params,reform_tpi,reform_params,' +
+    'vertical_line_years,plot_title',
+    test_data, ids=['No reform', 'With reform',
+                    'Vertical line included', 'Plot title included'])
+def test_plot_gdp_ratio(base_tpi, base_params, reform_tpi,
+                        reform_params, vertical_line_years, plot_title):
+    fig = output_plots.plot_gdp_ratio(
+        base_tpi, base_params, reform_tpi=reform_tpi,
+        reform_params=reform_params,
+        vertical_line_years=vertical_line_years, plot_title=plot_title)
     assert fig
 
 
