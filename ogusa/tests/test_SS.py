@@ -346,6 +346,7 @@ def test_euler_equation_solver():
     p.tax_func_type = 'DEP'
     p.lambdas = lambdas.reshape(p.J, 1)
     b_splus1 = np.array(guesses[:p.S]).reshape(p.S, 1) + 0.005
+    print('USE zeta?? ', p.use_zeta)
     BQ = aggregates.get_BQ(r, b_splus1, j, p, 'SS', False)
     bq = household.get_bq(BQ, j, p, 'SS')
     tr = household.get_tr(TR, j, p, 'SS')

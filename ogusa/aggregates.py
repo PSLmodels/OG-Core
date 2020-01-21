@@ -1,4 +1,4 @@
-B'''
+'''
 ------------------------------------------------------------------------
 Functions to compute economic aggregates.
 ------------------------------------------------------------------------
@@ -178,7 +178,7 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
         else:
             omega = p.omega_SS
             pop_growth_rate = p.g_n_ss
-        if j:
+        if j is not None:
             BQ_presum = omega * p.rho * b_splus1 * p.lambdas[j]
         else:
             BQ_presum = (np.transpose(omega * (p.rho * p.lambdas)) *
@@ -188,7 +188,7 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
     elif method == 'TPI':
         pop = np.append(p.omega_S_preTP.reshape(1, p.S),
                         p.omega[:p.T - 1, :], axis=0)
-        if j:
+        if j is not None:
             BQ_presum = ((b_splus1 * p.lambdas[j]) *
                          (pop * p.rho))
             BQ = BQ_presum.sum(1)
