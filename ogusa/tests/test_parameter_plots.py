@@ -16,37 +16,44 @@ base_params = utils.safe_read_pickle(
 
 
 def test_plot_imm_rates():
-    fig = parameter_plots.plot_imm_rates(base_params)
+    fig = parameter_plots.plot_imm_rates(
+        base_params,include_title=True)
     assert fig
 
 
 def test_plot_mort_rates():
-    fig = parameter_plots.plot_mort_rates(base_params)
+    fig = parameter_plots.plot_mort_rates(
+        base_params, include_title=True)
     assert fig
 
 
 def test_plot_pop_growth():
-    fig = parameter_plots.plot_pop_growth(base_params)
+    fig = parameter_plots.plot_pop_growth(
+        base_params, include_title=True)
     assert fig
 
 
 def test_plot_ability_profiles():
-    fig = parameter_plots.plot_ability_profiles(base_params)
+    fig = parameter_plots.plot_ability_profiles(
+        base_params, include_title=True)
     assert fig
 
 
 def test_plot_elliptical_u():
-    fig = parameter_plots.plot_elliptical_u(base_params)
+    fig = parameter_plots.plot_elliptical_u(
+        base_params, include_title=True)
     assert fig
 
 
 def test_plot_chi_n():
-    fig = parameter_plots.plot_chi_n(base_params)
+    fig = parameter_plots.plot_chi_n(
+        base_params, include_title=True)
     assert fig
 
 
 def test_plot_population():
-    fig = parameter_plots.plot_population(base_params)
+    fig = parameter_plots.plot_population(
+        base_params, include_title=True)
     assert fig
 
 
