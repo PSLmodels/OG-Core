@@ -17,7 +17,7 @@ base_params = utils.safe_read_pickle(
 
 def test_plot_imm_rates():
     fig = parameter_plots.plot_imm_rates(
-        base_params,include_title=True)
+        base_params, include_title=True)
     assert fig
 
 
@@ -51,9 +51,12 @@ def test_plot_chi_n():
     assert fig
 
 
-def test_plot_population():
+@pytest.mark.parametrize(
+    'years_to_plot', [['SS'], [2025], [2050, 2070]],
+    ids=['SS', '2025', 'List of years'])
+def test_plot_population(years_to_plot):
     fig = parameter_plots.plot_population(
-        base_params, include_title=True)
+        base_params, years_to_plot=years_to_plot, include_title=True)
     assert fig
 
 
