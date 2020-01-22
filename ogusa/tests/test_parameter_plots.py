@@ -40,9 +40,12 @@ def test_plot_ability_profiles():
 
 
 def test_plot_elliptical_u():
-    fig = parameter_plots.plot_elliptical_u(
+    fig1 = parameter_plots.plot_elliptical_u(
         base_params, include_title=True)
-    assert fig
+    fig2 = parameter_plots.plot_elliptical_u(
+        base_params, plot_MU=False, include_title=True)
+    assert fig1
+    assert fig2
 
 
 def test_plot_chi_n():
