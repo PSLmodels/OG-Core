@@ -17,8 +17,14 @@ base_taxfunctions = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'TxFuncEst_baseline.pkl'))
 
 
-def test_tax_rate_table():
-    str = parameter_tables.tax_rate_table(base_taxfunctions, base_params)
+@pytest.mark.parametrize(
+    'rate_type', ['ETR', 'MTRx', 'MTRy', 'all'],
+    ids=['ETR', 'MTRx', 'MTRy', 'All rates'])
+def test_tax_rate_table(rate_type):
+    str = parameter_tables.tax_rate_table(
+        base_taxfunctions, base_params,
+        reform_TxFuncEst=base_taxfunctions, reform_params=base_params,
+        rate_type=rate_type)
     assert str
 
 
