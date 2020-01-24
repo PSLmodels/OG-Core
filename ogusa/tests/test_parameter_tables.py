@@ -28,6 +28,28 @@ def test_tax_rate_table(rate_type):
     assert str
 
 
+def test_tax_rate_table_exception1():
+    '''
+    Raise exception for not passing valid rate type
+    '''
+    with pytest.raises(Exception):
+        assert parameter_tables.tax_rate_table(
+            base_taxfunctions, base_params,
+            rate_type='not_valid_type')
+
+
+def test_tax_rate_table_exception2():
+    '''
+    Raise exception for not passing valid rate type
+    '''
+    with pytest.raises(Exception):
+        assert parameter_tables.tax_rate_table(
+            base_taxfunctions, base_params,
+            reform_TxFuncEst=base_taxfunctions,
+            reform_params=base_params,
+            rate_type='not_valid_type')
+
+
 def test_param_table():
     p = Specifications()
     str = parameter_tables.param_table(p)
