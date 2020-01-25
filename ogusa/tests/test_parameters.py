@@ -1,6 +1,7 @@
 import os
 import tempfile
 import pytest
+import numpy as np
 from ogusa.parameters import Specifications, revision_warnings_errors
 
 
@@ -24,6 +25,18 @@ def revision_file():
 def test_create_specs_object():
     specs = Specifications()
     assert specs
+
+
+def test_create_specs_object_test():
+    specs = Specifications(test=True)
+    assert specs
+
+
+def test_compute_default_params():
+    specs = Specifications()
+    specs.alpha_G = np.ones((10, 1))
+    specs.compute_default_params()
+    assert specs.alpha_G[10] == 1
 
 
 # def test_read_json_revision(revision_file):
