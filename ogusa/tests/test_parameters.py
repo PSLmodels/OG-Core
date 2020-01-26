@@ -39,6 +39,41 @@ def test_compute_default_params():
     assert specs.alpha_G[10] == 1
 
 
+def test_get_tax_function_parameters():
+    specs = Specifications()
+    specs.get_tax_function_parameters(None, run_micro=False)
+    assert specs.etr_params.shape == (specs.T, specs.S, 12)
+    assert specs.mtrx_params.shape == (specs.T, specs.S, 12)
+    assert specs.mtry_params.shape == (specs.T, specs.S, 12)
+
+
+def test_get_tax_function_parameters_constant_rates():
+    specs = Specifications()
+    specs.constant_rates = True
+    specs.get_tax_function_parameters(None, run_micro=False)
+    assert specs.etr_params.shape == (specs.T, specs.S, 12)
+    assert specs.mtrx_params.shape == (specs.T, specs.S, 12)
+    assert specs.mtry_params.shape == (specs.T, specs.S, 12)
+    assert np.allclose(specs.etr_params[:, :, :10],
+                       np.zeros((specs.T, specs.S, 10)))
+    assert np.allclose(specs.mtrx_params[:, :, :10],
+                       np.zeros((specs.T, specs.S, 10)))
+    assert np.allclose(specs.mtry_params[:, :, :10],
+                       np.zeros((specs.T, specs.S, 10)))
+
+
+def test_get_tax_function_zero_taxes():
+    specs = Specifications()
+    specs.zero_taxes = True
+    specs.get_tax_function_parameters(None, run_micro=False)
+    assert np.allclose(specs.etr_params,
+                       np.zeros((specs.T, specs.S, 12)))
+    assert np.allclose(specs.mtrx_params,
+                       np.zeros((specs.T, specs.S, 12)))
+    assert np.allclose(specs.mtry_params,
+                       np.zeros((specs.T, specs.S, 12)))
+
+
 # def test_read_json_revision(revision_file):
 #     exp = {"frisch": 0.3}
 #     act1 = Specifications.read_json_revision(JSON_REVISION_FILE)
