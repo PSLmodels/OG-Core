@@ -3,13 +3,16 @@ import tempfile
 import pytest
 import numpy as np
 from ogusa.parameters import Specifications, revision_warnings_errors
+from ogusa import utils
 
+# get path to puf if puf.csv in ogusa/ directory
+CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
-# JSON_REVISION_FILE = """{
-#     "revision": {
-#         "frisch": 0.3
-#     }
-# }"""
+JSON_REVISION_FILE = """{
+    "revision": {
+        "frisch": 0.3
+    }
+}"""
 
 
 @pytest.fixture(scope='module')
@@ -72,6 +75,23 @@ def test_get_tax_function_zero_taxes():
                        np.zeros((specs.T, specs.S, 12)))
     assert np.allclose(specs.mtry_params,
                        np.zeros((specs.T, specs.S, 12)))
+
+
+def test_read_tax_func_estimate():
+    specs = Specifications()
+    pickle_path = os.path.join(CUR_PATH, 'test_io_data')
+    pickle_file = 'TxFuncEst_baseline.pkl'
+    expected_dict = utils.safe_read_pickle(os.path.join(
+        pickle_path, pickle_file))
+    expected_dict2 = utils.safe_read_pickle(os.path.join(
+        CUR_PATH, pickle_file))
+    test_dict = specs.read_tax_func_estimate(os.path.join(
+        pickle_path, pickle_file), pickle_file)
+    assert np.allclose(expected_dict['tfunc_avg_etr'],
+                       test_dict['tfunc_avg_etr'])
+    test_dict2 = specs.read_tax_func_estimate('not_a_path', pickle_file)
+    assert np.allclose(expected_dict2['tfunc_avg_etr'],
+                       test_dict2['tfunc_avg_etr'])
 
 
 # def test_read_json_revision(revision_file):
