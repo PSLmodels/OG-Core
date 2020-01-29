@@ -523,10 +523,7 @@ def revision_warnings_errors(spec_revision):
     '''
     rtn_dict = {'warnings': '', 'errors': ''}
     spec = Specifications()
-    try:
-        spec.update_specifications(spec_revision, raise_errors=False)
-        if spec._errors:
-            rtn_dict['errors'] = spec._errors
-    except ValueError as valerr_msg:
-        rtn_dict['errors'] = valerr_msg.__str__()
+    spec.update_specifications(spec_revision, raise_errors=False)
+    if spec._errors:
+        rtn_dict['errors'] = spec._errors
     return rtn_dict
