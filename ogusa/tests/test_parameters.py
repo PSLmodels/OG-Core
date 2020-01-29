@@ -94,13 +94,6 @@ def test_read_tax_func_estimate():
                        test_dict2['tfunc_avg_etr'])
 
 
-# def test_read_json_revision(revision_file):
-#     exp = {"frisch": 0.3}
-#     act1 = Specifications.read_json_revision(JSON_REVISION_FILE)
-#     assert exp == act1
-#     act2 = Specifications.read_json_revision(JSON_REVISION_FILE)
-#     assert exp == act2
-
 
 def test_update_specifications_with_dict():
     spec = Specifications()
@@ -170,6 +163,7 @@ def test_implement_bad_reform2():
     assert len(specs.errors) > 0
     assert specs.errors['tax_func_type'][0] == 'tax_func_type "not_a_functional_form" must be in list of choices DEP, DEP_totalinc, GS, linear.'
     # assert len(specs.warnings) == 0
+
 
 
 def test_revision_warnings_errors():

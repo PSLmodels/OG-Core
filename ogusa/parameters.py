@@ -496,18 +496,6 @@ class Specifications(paramtools.Parameters):
             raise ValueError('\n' + self.errors)
         self.compute_default_params()
 
-    @staticmethod
-    def read_json_revision(obj):
-        '''
-        Return a revision dictionary, which is suitable for use with the
-        update_specification method, that is derived from the specified
-        JSON object, which can be None or a string containing
-        a local filename,
-        a URL beginning with 'http' pointing to a JSON file hosted
-        online, or a valid JSON text.
-        '''
-        return paramtools.Parameters.read_params(obj, 'revision')
-
 
 def revision_warnings_errors(spec_revision):
     '''
