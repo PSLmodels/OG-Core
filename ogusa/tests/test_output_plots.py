@@ -4,6 +4,8 @@ Tests of output_plots.py module
 
 import pytest
 import os
+import numpy as np
+import matplotlib.image as mpimg
 from ogusa import utils, output_plots
 
 
@@ -70,6 +72,25 @@ test_data = [(base_tpi, base_params, None, None, None, None),
              ]
 
 
+def test_plot_aggregates_save_fig(tmpdir):
+    path = os.path.join(tmpdir, 'test_plot.png')
+    output_plots.plot_aggregates(
+        base_tpi, base_params, plot_type='levels', path=path)
+    img = mpimg.imread(path)
+
+    assert isinstance(img, np.ndarray)
+
+
+test_data = [(base_tpi, base_params, None, None, None, None),
+             (base_tpi, base_params, reform_tpi, reform_params, None,
+              None),
+             (base_tpi, base_params, reform_tpi, reform_params,
+              [2040, 2060], None),
+             (base_tpi, base_params, None, None, None,
+              'Test plot title')
+             ]
+
+
 @pytest.mark.parametrize(
     'base_tpi,base_params,reform_tpi,reform_params,' +
     'vertical_line_years,plot_title',
@@ -84,11 +105,30 @@ def test_plot_gdp_ratio(base_tpi, base_params, reform_tpi,
     assert fig
 
 
+def test_plot_gdp_ratio_save_fig(tmpdir):
+    path = os.path.join(tmpdir, 'test_plot.png')
+    output_plots.plot_aggregates(
+        base_tpi, base_params, reform_tpi=reform_tpi,
+        reform_params=reform_params, path=path)
+    img = mpimg.imread(path)
+
+    assert isinstance(img, np.ndarray)
+
+
 def test_ability_bar():
     fig = output_plots.ability_bar(
         base_tpi, base_params, reform_tpi, reform_params,
         plot_title=' Test Plot Title')
     assert fig
+
+
+def test_ability_bar_save_fig(tmpdir):
+    path = os.path.join(tmpdir, 'test_plot.png')
+    output_plots.ability_bar(
+        base_tpi, base_params, reform_tpi, reform_params, path=path)
+    img = mpimg.imread(path)
+
+    assert isinstance(img, np.ndarray)
 
 
 def test_ability_bar_ss():
@@ -106,6 +146,15 @@ def test_ss_profiles(by_j, plot_data):
         base_ss, base_params, reform_ss, reform_params, by_j=by_j,
         plot_data=plot_data, plot_title=' Test Plot Title')
     assert fig
+
+
+def test_ss_profiles_save_fig(tmpdir):
+    path = os.path.join(tmpdir, 'test_plot.png')
+    output_plots.ss_profiles(
+        base_ss, base_params, reform_ss, reform_params, path=path)
+    img = mpimg.imread(path)
+
+    assert isinstance(img, np.ndarray)
 
 
 @pytest.mark.parametrize(
@@ -129,6 +178,15 @@ test_data = [(base_params, base_ss, None, None, 'levels', None),
              ]
 
 
+def test_tpi_profiles_save_fig(tmpdir):
+    path = os.path.join(tmpdir, 'test_plot.png')
+    output_plots.tpi_profiles(
+        base_tpi, base_params, reform_tpi, reform_params, path=path)
+    img = mpimg.imread(path)
+
+    assert isinstance(img, np.ndarray)
+
+
 @pytest.mark.parametrize(
     'base_params,base_ss,reform_params,reform_ss,plot_type,plot_title',
     test_data, ids=['Levels', 'Levels w/ reform', 'Differences',
@@ -139,6 +197,16 @@ def test_ss_3Dplot(base_params, base_ss, reform_params, reform_ss,
         base_params, base_ss, reform_params=reform_params,
         reform_ss=reform_ss, plot_type=plot_type, plot_title=plot_title)
     assert fig
+
+
+def test_ss_3Dplot_save_fig(tmpdir):
+    path = os.path.join(tmpdir, 'test_plot.png')
+    output_plots.ss_3Dplot(
+        base_params, base_ss, reform_params=reform_params,
+        reform_ss=reform_ss, path=path)
+    img = mpimg.imread(path)
+
+    assert isinstance(img, np.ndarray)
 
 
 @pytest.mark.parametrize(
@@ -165,3 +233,13 @@ def test_inequality_plot(base_tpi, base_params, reform_tpi,
         reform_params=reform_params, ineq_measure=ineq_measure,
         pctiles=pctiles, plot_type=plot_type)
     assert fig
+
+
+def test_inequality_plot_save_fig(tmpdir):
+    path = os.path.join(tmpdir, 'test_plot.png')
+    output_plots.inequality_plot(
+        base_tpi, base_params, reform_tpi=reform_tpi,
+        reform_params=reform_params, path=path)
+    img = mpimg.imread(path)
+
+    assert isinstance(img, np.ndarray)
