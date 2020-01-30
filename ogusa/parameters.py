@@ -272,13 +272,6 @@ class Specifications(paramtools.Parameters):
 
         '''
         # Income tax parameters
-        if run_micro:
-            txfunc.get_tax_func_estimate(  # pragma: no cover
-                self.BW, self.S, self.starting_age, self.ending_age,
-                self.baseline, self.analytical_mtrs, self.tax_func_type,
-                self.age_specific, self.start_year, self.iit_reform,
-                self.guid, tx_func_est_path, self.data, client,
-                self.num_workers)
         if self.baseline:
             pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
             tx_func_est_path = os.path.join(self.output_base, pckl)
@@ -289,9 +282,15 @@ class Specifications(paramtools.Parameters):
             tx_func_est_path = os.path.join(self.output_base, pckl)
             print('Using reform policy tax parameters from ',
                   tx_func_est_path)
+        if run_micro:
+            txfunc.get_tax_func_estimate(  # pragma: no cover
+                self.BW, self.S, self.starting_age, self.ending_age,
+                self.baseline, self.analytical_mtrs, self.tax_func_type,
+                self.age_specific, self.start_year, self.iit_reform,
+                self.guid, tx_func_est_path, self.data, client,
+                self.num_workers)
         estimate_file = tx_func_est_path
         dict_params = self.read_tax_func_estimate(estimate_file, pckl)
-
         self.mean_income_data = dict_params['tfunc_avginc'][0]
         try:
             self.frac_tax_payroll = np.append(
@@ -480,11 +479,7 @@ class Specifications(paramtools.Parameters):
         if not (isinstance(revision, dict) or isinstance(revision, str)):
             raise ValueError(
                 'ERROR: revision is not a dictionary of string')
-        if not revision:
-            return  # no revision to implement
         self.adjust(revision, raise_errors=raise_errors)
-        if self.errors and raise_errors:
-            raise ValueError('\n' + self.errors)
         self.compute_default_params()
 
 
