@@ -272,34 +272,25 @@ class Specifications(paramtools.Parameters):
 
         '''
         # Income tax parameters
-        if self.baseline:
-            tx_func_est_path = os.path.join(
-                self.output_base, 'TxFuncEst_baseline{}.pkl'.format(self.guid),
-            )
-        else:
-            tx_func_est_path = os.path.join(
-                self.output_base, 'TxFuncEst_policy{}.pkl'.format(self.guid),
-            )
         if run_micro:
-            txfunc.get_tax_func_estimate(
+            txfunc.get_tax_func_estimate(  # pragma: no cover
                 self.BW, self.S, self.starting_age, self.ending_age,
                 self.baseline, self.analytical_mtrs, self.tax_func_type,
                 self.age_specific, self.start_year, self.iit_reform,
                 self.guid, tx_func_est_path, self.data, client,
                 self.num_workers)
         if self.baseline:
-            baseline_pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
-            estimate_file = tx_func_est_path
-            print('Using baseline tax parameters from ', tx_func_est_path)
-            dict_params = self.read_tax_func_estimate(estimate_file,
-                                                      baseline_pckl)
-
+            pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
+            tx_func_est_path = os.path.join(self.output_base, pckl)
+            print('Using baseline tax parameters from ',
+                  tx_func_est_path)
         else:
-            policy_pckl = "TxFuncEst_policy{}.pkl".format(self.guid)
-            estimate_file = tx_func_est_path
-            print('Using reform policy tax parameters from ', tx_func_est_path)
-            dict_params = self.read_tax_func_estimate(estimate_file,
-                                                      policy_pckl)
+            pckl = "TxFuncEst_policy{}.pkl".format(self.guid)
+            tx_func_est_path = os.path.join(self.output_base, pckl)
+            print('Using reform policy tax parameters from ',
+                  tx_func_est_path)
+        estimate_file = tx_func_est_path
+        dict_params = self.read_tax_func_estimate(estimate_file, pckl)
 
         self.mean_income_data = dict_params['tfunc_avginc'][0]
         try:
