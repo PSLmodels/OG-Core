@@ -50,6 +50,23 @@ def test_get_tax_function_parameters():
     assert specs.mtry_params.shape == (specs.T, specs.S, 12)
 
 
+def test_get_tax_function_parameters_baseline():
+    specs = Specifications(baseline=True)
+    specs.get_tax_function_parameters(None, run_micro=False)
+    assert specs.etr_params.shape == (specs.T, specs.S, 12)
+    assert specs.mtrx_params.shape == (specs.T, specs.S, 12)
+    assert specs.mtry_params.shape == (specs.T, specs.S, 12)
+
+
+def test_get_tax_function_parameters_S():
+    specs = Specifications()
+    specs.S = 40
+    specs.get_tax_function_parameters(None, run_micro=False)
+    assert specs.etr_params.shape == (specs.T, specs.S, 12)
+    assert specs.mtrx_params.shape == (specs.T, specs.S, 12)
+    assert specs.mtry_params.shape == (specs.T, specs.S, 12)
+
+
 def test_get_tax_function_parameters_constant_rates():
     specs = Specifications()
     specs.constant_rates = True
