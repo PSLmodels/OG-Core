@@ -622,25 +622,25 @@
             }
         }
     },
-    "tau_b": {
-        "title": "Entity level tax on businesses",
-        "description": "Entity level tax on businesses",
+    "cit_rate": {
+        "title": "Corporate income tax rate",
+        "description": "Corporate income tax rate",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
-        "notes": "With a single representative firm, this should be a weighted average of the entity level rate on pass-through businesses (0) and the corporate income tax rate.  It does not reflect statutory rates, but rather effective rates.",
+        "notes": "This is the top marginal corporate income tax rate",
         "type": "float",
         "number_dims": 1,
         "value": [
             {
                 "value": [
-                    0.0357
+                    0.21
                 ]
             }
         ],
         "validators": {
             "range": {
                 "min": 0.0,
-                "max": 0.9
+                "max": 0.99
             }
         }
     },
