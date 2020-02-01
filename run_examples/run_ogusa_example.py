@@ -48,7 +48,7 @@ def main():
     alpha_G[6:] = 0.05
     # Also adjust the Frisch elasticity, the start year, the
     # effective corporate income tax rate, and the SS debt-to-GDP ratio
-    og_spec = {'frisch': 0.41, 'start_year': 2020, 'tau_b': [0.0357],
+    og_spec = {'frisch': 0.41, 'start_year': 2020, 'cit_rate': [0.21],
                'debt_ratio_ss': 1.0, 'alpha_T': alpha_T.tolist(),
                'alpha_G': alpha_G.tolist()}
 
@@ -74,7 +74,7 @@ def main():
     '''
     # update the effective corporate income tax rate
     og_spec = {'frisch': 0.41, 'start_year': 2020,
-               'tau_b': [0.0595], 'debt_ratio_ss': 1.0,
+               'cit_rate': [0.35], 'debt_ratio_ss': 1.0,
                'alpha_T': alpha_T.tolist(),
                'alpha_G': alpha_G.tolist()}
     kwargs = {'output_base': reform_dir, 'baseline_dir': base_dir,
