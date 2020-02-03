@@ -1,5 +1,6 @@
 import pytest
 import numpy as np
+import copy
 from ogusa import aggregates as aggr
 from ogusa.parameters import Specifications
 
@@ -149,20 +150,32 @@ expected3 = (BQ_presum.sum(1) *
 expected4 = BQ_presum[:, :, 1].sum(1) * growth_adj
 expected5 = BQ_presum[0, :, :].sum(0) * growth_adj[0]
 expected6 = BQ_presum[0, :, 1].sum(0) * growth_adj[0]
+
+p2 = copy.deepcopy(p)
+p2.use_zeta = True
+expected7 = BQ_presum[-1, :, 1].sum() * growth_adj[-1]
+expected8 = (BQ_presum[:, :, 1].sum(1) * growth_adj)
+expected9 = (BQ_presum.sum(1) *
+             np.tile(np.reshape(growth_adj, (p.T, 1)), (1, p.J))).sum(1)
 test_data = [(r[-1], b_splus1[-1, :, :], None, p, 'SS', False,
               expected1),
              (r[-1], b_splus1[-1, :, 1], 1, p, 'SS', False, expected2),
              (r, b_splus1, None, p, 'TPI', False, expected3),
              (r, b_splus1[:, :, 1], 1, p, 'TPI', False, expected4),
              (r[0], b_splus1[0, :, :], None, p, 'SS', True, expected5),
-             (r[0], b_splus1[0, :, 1], 1, p, 'SS', True, expected6)]
+             (r[0], b_splus1[0, :, 1], 1, p, 'SS', True, expected6),
+             (r[-1], b_splus1[-1, :, 1], 1, p2, 'SS', False, expected7),
+             (r, b_splus1[:, :, 1], 1, p2, 'TPI', False, expected8),
+             (r, b_splus1, None, p2, 'TPI', False, expected9)]
 
 
 @pytest.mark.parametrize('r,b_splus1,j,p,method,PreTP,expected',
                          test_data, ids=[
                              'SS, all j', 'SS, one j', 'TPI, all j',
                              'TPI, one j', 'Pre-TP, all j',
-                             'Pre-TP, one j'])
+                             'Pre-TP, one j', 'Use zeta, SS, one j',
+                             'Use zeta, TPI, one j',
+                             'Use zeta, TPI, all j'])
 def test_get_BQ(r, b_splus1, j, p, method, PreTP, expected):
     """
     Test of aggregate bequest function.

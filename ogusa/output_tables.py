@@ -105,7 +105,7 @@ def macro_table(base_tpi, base_params, reform_tpi=None,
             results_years = base_tpi[v][start_index: start_index +
                                         num_years]
             results_overall = results_years.sum()
-            results_SS = base_tpi[-1]
+            results_SS = base_tpi[v][-1]
             results_for_table = results_years
             if include_overall:
                 results_for_table = np.append(
@@ -118,7 +118,7 @@ def macro_table(base_tpi, base_params, reform_tpi=None,
                 results_years = reform_tpi[v][start_index: start_index +
                                               num_years]
                 results_overall = results_years.sum()
-                results_SS = reform_tpi[-1]
+                results_SS = reform_tpi[v][-1]
                 results_for_table = results_years
                 if include_overall:
                     results_for_table = np.append(

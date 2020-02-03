@@ -273,34 +273,24 @@ class Specifications(paramtools.Parameters):
         '''
         # Income tax parameters
         if self.baseline:
-            tx_func_est_path = os.path.join(
-                self.output_base, 'TxFuncEst_baseline{}.pkl'.format(self.guid),
-            )
+            pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
+            tx_func_est_path = os.path.join(self.output_base, pckl)
+            print('Using baseline tax parameters from ',
+                  tx_func_est_path)
         else:
-            tx_func_est_path = os.path.join(
-                self.output_base, 'TxFuncEst_policy{}.pkl'.format(self.guid),
-            )
+            pckl = "TxFuncEst_policy{}.pkl".format(self.guid)
+            tx_func_est_path = os.path.join(self.output_base, pckl)
+            print('Using reform policy tax parameters from ',
+                  tx_func_est_path)
         if run_micro:
-            txfunc.get_tax_func_estimate(
+            txfunc.get_tax_func_estimate(  # pragma: no cover
                 self.BW, self.S, self.starting_age, self.ending_age,
                 self.baseline, self.analytical_mtrs, self.tax_func_type,
                 self.age_specific, self.start_year, self.iit_reform,
                 self.guid, tx_func_est_path, self.data, client,
                 self.num_workers)
-        if self.baseline:
-            baseline_pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
-            estimate_file = tx_func_est_path
-            print('Using baseline tax parameters from ', tx_func_est_path)
-            dict_params = self.read_tax_func_estimate(estimate_file,
-                                                      baseline_pckl)
-
-        else:
-            policy_pckl = "TxFuncEst_policy{}.pkl".format(self.guid)
-            estimate_file = tx_func_est_path
-            print('Using reform policy tax parameters from ', tx_func_est_path)
-            dict_params = self.read_tax_func_estimate(estimate_file,
-                                                      policy_pckl)
-
+        estimate_file = tx_func_est_path
+        dict_params = self.read_tax_func_estimate(estimate_file, pckl)
         self.mean_income_data = dict_params['tfunc_avginc'][0]
         try:
             self.frac_tax_payroll = np.append(
@@ -489,24 +479,8 @@ class Specifications(paramtools.Parameters):
         if not (isinstance(revision, dict) or isinstance(revision, str)):
             raise ValueError(
                 'ERROR: revision is not a dictionary of string')
-        if not revision:
-            return  # no revision to implement
         self.adjust(revision, raise_errors=raise_errors)
-        if self.errors and raise_errors:
-            raise ValueError('\n' + self.errors)
         self.compute_default_params()
-
-    @staticmethod
-    def read_json_revision(obj):
-        '''
-        Return a revision dictionary, which is suitable for use with the
-        update_specification method, that is derived from the specified
-        JSON object, which can be None or a string containing
-        a local filename,
-        a URL beginning with 'http' pointing to a JSON file hosted
-        online, or a valid JSON text.
-        '''
-        return paramtools.Parameters.read_params(obj, 'revision')
 
 
 def revision_warnings_errors(spec_revision):
@@ -523,10 +497,7 @@ def revision_warnings_errors(spec_revision):
     '''
     rtn_dict = {'warnings': '', 'errors': ''}
     spec = Specifications()
-    try:
-        spec.update_specifications(spec_revision, raise_errors=False)
-        if spec._errors:
-            rtn_dict['errors'] = spec._errors
-    except ValueError as valerr_msg:
-        rtn_dict['errors'] = valerr_msg.__str__()
+    spec.update_specifications(spec_revision, raise_errors=False)
+    if spec._errors:
+        rtn_dict['errors'] = spec._errors
     return rtn_dict

@@ -87,43 +87,43 @@ def tax_rate_table(base_TxFuncEst, base_params, reform_TxFuncEst=None,
         else:
             raise ValueError(
                 'Value {!r} is not a valid rate_type'.format(rate_type))
-        if rate_type == 'all':
-            len_rates = len(base_etr_rates[start_index: start_index +
-                                           num_years])
-            table = {
-                'Year': years[:len_rates],
-                'Baseline ' + VAR_LABELS['ETR']:
-                base_etr_rates[start_index: start_index + num_years],
-                'Reform ' + VAR_LABELS['ETR']:
-                reform_etr_rates[start_index: start_index + num_years],
-                'Differences in ' + VAR_LABELS['ETR']:
-                reform_etr_rates[start_index: start_index + num_years]
-                - base_etr_rates[start_index: start_index + num_years],
-                'Baseline ' + VAR_LABELS['MTRx']:
-                base_mtrx_rates[start_index: start_index + num_years],
-                'Reform ' + VAR_LABELS['MTRx']:
-                reform_mtrx_rates[start_index: start_index + num_years],
-                'Differences in ' + VAR_LABELS['MTRx']:
-                reform_mtrx_rates[start_index: start_index + num_years]
-                - base_mtrx_rates[start_index: start_index + num_years],
-                'Baseline ' + VAR_LABELS['MTRy']:
-                base_mtry_rates[start_index: start_index + num_years],
-                'Reform ' + VAR_LABELS['MTRy']:
-                reform_mtry_rates[start_index: start_index + num_years],
-                'Differences in ' + VAR_LABELS['MTRy']:
-                reform_mtry_rates[start_index: start_index + num_years]
-                - base_mtry_rates[start_index: start_index + num_years]}
-        else:
-            len_rates = len(base_rates[start_index: start_index +
+    if rate_type == 'all':
+        len_rates = len(base_etr_rates[start_index: start_index +
                                        num_years])
-            table = {'Year': years[:len_rates],
-                     'Baseline ' + VAR_LABELS[rate_type]:
-                     base_rates[start_index: start_index + num_years],
-                     'Reform ' + VAR_LABELS[rate_type]:
-                     reform_rates[start_index: start_index + num_years],
-                     'Difference':
-                     reform_rates[start_index: start_index + num_years]
-                     - base_rates[start_index: start_index + num_years]}
+        table = {
+            'Year': years[:len_rates],
+            'Baseline ' + VAR_LABELS['ETR']:
+            base_etr_rates[start_index: start_index + num_years],
+            'Reform ' + VAR_LABELS['ETR']:
+            reform_etr_rates[start_index: start_index + num_years],
+            'Differences in ' + VAR_LABELS['ETR']:
+            reform_etr_rates[start_index: start_index + num_years]
+            - base_etr_rates[start_index: start_index + num_years],
+            'Baseline ' + VAR_LABELS['MTRx']:
+            base_mtrx_rates[start_index: start_index + num_years],
+            'Reform ' + VAR_LABELS['MTRx']:
+            reform_mtrx_rates[start_index: start_index + num_years],
+            'Differences in ' + VAR_LABELS['MTRx']:
+            reform_mtrx_rates[start_index: start_index + num_years]
+            - base_mtrx_rates[start_index: start_index + num_years],
+            'Baseline ' + VAR_LABELS['MTRy']:
+            base_mtry_rates[start_index: start_index + num_years],
+            'Reform ' + VAR_LABELS['MTRy']:
+            reform_mtry_rates[start_index: start_index + num_years],
+            'Differences in ' + VAR_LABELS['MTRy']:
+            reform_mtry_rates[start_index: start_index + num_years]
+            - base_mtry_rates[start_index: start_index + num_years]}
+    else:
+        len_rates = len(base_rates[start_index: start_index +
+                                   num_years])
+        table = {'Year': years[:len_rates],
+                 'Baseline ' + VAR_LABELS[rate_type]:
+                 base_rates[start_index: start_index + num_years],
+                 'Reform ' + VAR_LABELS[rate_type]:
+                 reform_rates[start_index: start_index + num_years],
+                 'Difference':
+                 reform_rates[start_index: start_index + num_years]
+                 - base_rates[start_index: start_index + num_years]}
     table_df = (pd.DataFrame.from_dict(table, orient='columns')).transpose()
     table_df.columns = table_df.iloc[0].astype('int').astype('str')
     table_df.reindex(table_df.index.drop('Year'))

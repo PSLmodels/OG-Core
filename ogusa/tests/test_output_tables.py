@@ -24,9 +24,24 @@ reform_params = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'model_params_reform.pkl'))
 
 
-def test_macro_table():
-    df = output_tables.macro_table(base_tpi, base_params, reform_tpi,
-                                   reform_params)
+test_data = [(base_tpi, base_params, reform_tpi, reform_params,
+              'pct_diff'),
+             (base_tpi, base_params, reform_tpi, reform_params,
+              'diff'),
+             (base_tpi, base_params, reform_tpi, reform_params,
+              'levels')
+             ]
+
+
+@pytest.mark.parametrize(
+    'base_tpi,base_params,reform_tpi,reform_params,output_type',
+    test_data, ids=['Pct Diff', 'Diff', 'Levels'])
+def test_macro_table(base_tpi, base_params, reform_tpi, reform_params,
+    output_type):
+    df = output_tables.macro_table(
+        base_tpi, base_params, reform_tpi=reform_tpi,
+        reform_params=reform_params, output_type=output_type,
+        include_SS=True, include_overall=True)
     assert isinstance(df, pd.DataFrame)
 
 
