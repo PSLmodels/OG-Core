@@ -396,7 +396,7 @@ def test_get_biz_tax():
     # Test function for business tax receipts
     p = Specifications()
     new_param_values = {
-        'tau_b': [0.20],
+        'cit_rate': [0.20],
         'delta_tau_annual': [0.06]
     }
     p.update_specifications(new_param_values)
@@ -406,7 +406,7 @@ def test_get_biz_tax():
     L = np.array([2.0, 3.0, 2.0])
     K = np.array([5.0, 6.0, 5.0])
     biz_tax = tax.get_biz_tax(w, Y, L, K, p, 'TPI')
-    assert np.allclose(biz_tax, np.array([0.06, 0.668, 0.06]))
+    assert np.allclose(biz_tax, np.array([0.0102, 0.11356, 0.0102]))
 
 
 # Set parameter class for each case

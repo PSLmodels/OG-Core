@@ -112,7 +112,7 @@ class Specifications(paramtools.Parameters):
 
         # Extend parameters that may vary over the time path
         tp_param_list = ['alpha_G', 'alpha_T', 'Z', 'world_int_rate',
-                         'delta_tau_annual', 'tau_b', 'tau_bq',
+                         'delta_tau_annual', 'cit_rate', 'tau_bq',
                          'tau_payroll', 'h_wealth', 'm_wealth',
                          'p_wealth', 'retirement_age',
                          'replacement_rate_adjust', 'zeta_D', 'zeta_K']
@@ -211,6 +211,17 @@ class Specifications(paramtools.Parameters):
                                   self.starting_age) * self.S) /
                                 80.0) - 1).astype(int)
 
+        # Calculations for business income taxes
+        # at some point, we will want to make Cost of Capital Calculator
+        # a dependency to compute tau_b
+        c_corp_share_of_assets = 0.55
+        # this adjustment factor has as the numerator CIT receipts/GDP
+        # from US data and as the demoninator CIT receipts/GDP from the
+        # model with baseline parameterization and no adjustment to the
+        # CIT_rate
+        adjustment_factor_for_cit_receipts = 0.017 / 0.055
+        self.tau_b = (self.cit_rate * c_corp_share_of_assets *
+                      adjustment_factor_for_cit_receipts)
         self.delta_tau = (
             -1 * rate_conversion(-1 * self.delta_tau_annual,
                                  self.starting_age, self.ending_age,
