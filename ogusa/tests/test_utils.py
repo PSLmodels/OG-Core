@@ -329,3 +329,29 @@ def test_save_return_table(df, output_type, precision):
 
     test_str = utils.save_return_table(df, output_type, None, precision)
     assert isinstance(test_str, str)
+
+
+path1 = 'output.tex'
+path2 = 'output.csv'
+path3 = 'output.json'
+path4 = 'output.xlsx'
+# # writetoafile(file.strpath)  # or use str(file)
+# assert file.read() == 'Hello\n'
+test_data = [(df1, 'tex', path1), (df1, 'csv', path2),
+             (df1, 'json', path3), (df1, 'excel', path4)]
+
+
+@pytest.mark.parametrize('df,output_type,path', test_data,
+                         ids=['tex', 'csv', 'json', 'excel'])
+def test_save_return_table_write(df, output_type, path):
+    '''
+    Test of the utils.save_return_table function for case when write to
+    disk
+    '''
+    utils.save_return_table(df, output_type, path=path)
+    filehandle = open(path)
+    try:
+        assert filehandle.read() is not None
+    except UnicodeDecodeError:
+        from openpyxl import load_workbook
+        wb = load_workbook(filename=path)
