@@ -318,6 +318,14 @@ def test_not_connected():
     assert not utils.not_connected()
 
 
+def test_not_connected_true():
+    '''
+    Test that not_connected function works
+    '''
+    # Default values should return True, i.e., not connected
+    assert utils.not_connected('http://10.255.255.1')
+
+
 dict1 = {'var1': [1, 2, 3, 4, 5], 'var2': [2, 4, 6, 8, 10]}
 df1 = pd.DataFrame.from_dict(dict1)
 test_data = [(df1, 'tex', 0), (df1, 'json', 2), (df1, 'html', 3)]
