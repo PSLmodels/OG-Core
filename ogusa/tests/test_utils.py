@@ -294,6 +294,7 @@ def test_print_progress():
     '''
     assert utils.print_progress(1, 5) == 'Incomplete'
     assert utils.print_progress(5, 5) == 'Complete'
+    assert utils.print_progress(0, 5) == 'Incomplete'
 
 
 def test_fetch_files_from_web():
