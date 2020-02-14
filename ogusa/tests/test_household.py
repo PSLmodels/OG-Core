@@ -566,11 +566,25 @@ def test_FOC_labor(model_vars, params, expected):
     assert np.allclose(test_value, expected)
 
 
-# def test_constraint_checker_SS():
-#
-#     assert np.allclose()
-#
-#
+bssmat0 = np.array([[0.1, 0.2], [0.3, 0.4]])
+nssmat0 = np.array([[0.1, 0.2], [0.3, 0.4]])
+cssmat0 = np.array([[0.1, 0.2], [0.3, 0.4]])
+
+bssmat1 = np.array([[-0.1, -0.2], [-0.3, -0.4]])
+nssmat1 = np.array([[-0.1, -0.2], [3.3, 4.4]])
+cssmat1 = np.array([[-0.1, -0.2], [-0.3, -0.4]])
+test_data = [(bssmat0, nssmat0, cssmat0, 1.0),
+             (bssmat1, nssmat1, cssmat1, 1.0)]
+
+
+@pytest.mark.parametrize('bssmat,nssmat,cssmat,ltilde', test_data,
+                         ids=['passing', 'failing'])
+def test_constraint_checker_SS(bssmat, nssmat, cssmat, ltilde):
+
+    household.constraint_checker_SS(bssmat, nssmat, cssmat, ltilde)
+    assert True
+
+
 # def test_constraint_checker_TPI():
 #
 #     assert np.allclose()
