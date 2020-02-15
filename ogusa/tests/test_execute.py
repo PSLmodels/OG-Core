@@ -14,6 +14,7 @@ def test_runner_baseline():
            data='cps')
 
 
+@pytest.mark.full_run
 def test_runner_reform():
     # Monkey patch enforcement flag since small data won't pass checks
     SS.ENFORCE_SOLUTION_CHECKS = False
