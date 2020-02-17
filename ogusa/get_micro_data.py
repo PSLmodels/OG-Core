@@ -195,7 +195,7 @@ def taxcalc_advance(baseline, start_year, reform, data, year):
     return tax_dict
 
 
-def cap_inc_mtr(calc1):  # pragram: no cover
+def cap_inc_mtr(calc1):  # pragma: no cover
     '''
     This function computes the marginal tax rate on capital income,
     which is calculated as a weighted average of the marginal tax rates
