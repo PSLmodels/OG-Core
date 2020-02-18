@@ -248,9 +248,29 @@ def test_get_e_orig():
 
     age_wgts = np.ones(80) * 1 / 80
     abil_wgts = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.014])
-    test_vals = income.get_e_orig(age_wgts, abil_wgts)
+    test_vals = income.get_e_orig(age_wgts, abil_wgts, plot=True)
 
     assert np.allclose(test_vals, expected_vals)
+
+
+def test_get_e_orig_exception1():
+    '''
+    Test that RuntimeError is raised if age_wgts does not have length 80
+    '''
+    age_wgts = np.ones(70) * 1 / 80
+    abil_wgts = np.array([0.25, 0.25, 0.2, 0.1, 0.1, 0.09, 0.014])
+    with pytest.raises(RuntimeError):
+        income.get_e_orig(age_wgts, abil_wgts)
+
+
+def test_get_e_orig_exception2():
+    '''
+    Test that RuntimeError is raised if abil_wgts does not have length 87
+    '''
+    age_wgts = np.ones(80) * 1 / 80
+    abil_wgts = np.array([0.25, 0.25, 0.2, 0.1, 0.1])
+    with pytest.raises(RuntimeError):
+        income.get_e_orig(age_wgts, abil_wgts)
 
 
 def test_get_e_interp():
