@@ -20,6 +20,19 @@ def test_makedirs(tmp_path):
     assert os.path.exists(tmp_path)
 
 
+def test_pct_diff_func():
+    '''
+    Test of utils.pct_diff_func(), which returns the absolute value of
+    the percentage difference between to arrays or scalars
+    '''
+    simul = np.array([110, 23.4, -5.0])
+    data = np.array([100, 44.4, 6.0])
+    expected = np.array([0.1, 0.47297297297297297, 1.8333333333333333])
+    pct_diff = utils.pct_diff_func(simul, data)
+
+    assert np.allclose(expected, pct_diff)
+
+
 def test_rate_conversion():
     '''
     Test of utils.rate_conversion
