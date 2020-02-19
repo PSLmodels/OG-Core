@@ -11,6 +11,15 @@ from ogusa.parameters import Specifications
 TOL = 1e-5
 
 
+def test_makedirs(tmp_path):
+    '''
+    Test of utils.makedirs() function
+    '''
+    utils.mkdirs(tmp_path)
+
+    assert os.path.exists(tmp_path)
+
+
 def test_rate_conversion():
     '''
     Test of utils.rate_conversion
