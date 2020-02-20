@@ -33,6 +33,20 @@ def test_pct_diff_func():
     assert np.allclose(expected, pct_diff)
 
 
+def test_convex_combo():
+    '''
+    Test of utils.convex_combo() function
+    '''
+    expected = np.array([16.0, 1.5])
+    nu = 0.4
+    var1 = np.array([10.0, 1.5])
+    var2 = np.array([20.0, 1.5])
+
+    combo = utils.convex_combo(var1, var2, nu)
+
+    assert np.allclose(expected, combo)
+
+
 def test_rate_conversion():
     '''
     Test of utils.rate_conversion
