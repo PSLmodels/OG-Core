@@ -5,10 +5,12 @@ import pandas as pd
 import numpy as np
 import tempfile
 import os
+import io
 import pickle
 from ogusa.parameters import Specifications
 
 TOL = 1e-5
+CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
 def test_makedirs(tmp_path):
@@ -45,6 +47,18 @@ def test_convex_combo():
     combo = utils.convex_combo(var1, var2, nu)
 
     assert np.allclose(expected, combo)
+
+
+def test_read_file():
+    '''
+    Test of utils.read_file() function
+    '''
+    path = os.path.join(CUR_PATH, 'test_io_data')
+    fname = 'SS_fsolve_inputs.pkl'
+    bytes_data = utils.read_file(path, fname)
+    print('Instance = ', type(bytes_data))
+    print('bytes_data = ', bytes_data)
+    assert isinstance(bytes_data, io.TextIOWrapper)
 
 
 def test_rate_conversion():
