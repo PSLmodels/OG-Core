@@ -61,6 +61,16 @@ def test_read_file():
     assert isinstance(bytes_data, io.TextIOWrapper)
 
 
+def test_pickle_file_compare():
+    '''
+    Test of utils.pickle_file_compare() function
+    '''
+    fname = os.path.join(CUR_PATH, 'test_io_data',
+                         'SS_solver_outputs.pkl')
+    comparison = utils.pickle_file_compare(fname, fname)
+    assert comparison
+
+
 def test_rate_conversion():
     '''
     Test of utils.rate_conversion
