@@ -71,6 +71,47 @@ def test_pickle_file_compare():
     assert comparison
 
 
+a = np.array([1.0, 1.0])
+b = np.ones(2)
+a0b0 = np.zeros(4)
+
+
+@pytest.mark.parametrize(
+    'a,b,relative', [(a, b, False), (a, b, True), (a0b0, a0b0, False)],
+    ids=['not relative', 'relative', 'less than epsilon'])
+def test_comp_array(a, b, relative):
+    '''
+    Test of utils.comp_array() function
+    '''
+    name = 'Test arrays'
+    exceptions = {'Test arrays': 1e-6}
+    tol = 1e-5
+    comparison = utils.comp_array(
+        name, a, b, tol, [], exceptions=exceptions, relative=relative)
+
+    assert comparison
+
+
+a1 = np.array([1.0, 1.0])
+b1 = np.zeros(2)
+a2 = np.array([1.0, 1.0, 1.0])
+b2 = np.ones(2)
+
+
+@pytest.mark.parametrize(
+    'a,b', [(a1, b1), (a2, b2)],
+    ids=['distance fail', 'shape not the same'])
+def test_comp_array_failures(a, b):
+    '''
+    Test of failures of utils.comp_array() function
+    '''
+    name = 'Test arrays'
+    tol = 1e-5
+    comparison = utils.comp_array(name, a, b, tol, [])
+
+    assert not comparison
+
+
 def test_rate_conversion():
     '''
     Test of utils.rate_conversion
