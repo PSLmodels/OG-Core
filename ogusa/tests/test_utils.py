@@ -112,6 +112,40 @@ def test_comp_array_failures(a, b):
     assert not comparison
 
 
+a = 1.0
+b = 1.0
+a0b0 = 0.0
+
+
+@pytest.mark.parametrize(
+    'a,b,relative', [(a, b, False), (a, b, True), (a0b0, a0b0, False)],
+    ids=['not relative', 'relative', 'less than epsilon'])
+def test_comp_scalar(a, b, relative):
+    '''
+    Test of utils.comp_scalar() function
+    '''
+    name = 'Test arrays'
+    exceptions = {'Test arrays': 1e-6}
+    tol = 1e-5
+    comparison = utils.comp_scalar(
+        name, a, b, tol, [], exceptions=exceptions, relative=relative)
+
+    assert comparison
+
+
+def test_comp_scalar_failures():
+    '''
+    Test of failures of utils.comp_scalar() function
+    '''
+    name = 'Test arrays'
+    tol = 1e-5
+    a = 1.0
+    b = 2.0
+    comparison = utils.comp_scalar(name, a, b, tol, [])
+
+    assert not comparison
+
+
 def test_rate_conversion():
     '''
     Test of utils.rate_conversion
