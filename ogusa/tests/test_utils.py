@@ -146,6 +146,54 @@ def test_comp_scalar_failures():
     assert not comparison
 
 
+a1 = {'key1': 1.0, 'key2': 1.0}
+b1 = {'key1': 1.0, 'key2': 1.0}
+a2 = {'key1': np.ones(2), 'key2': np.ones(2)}
+b2 = {'key1': np.ones(2), 'key2': np.ones(2)}
+
+
+@pytest.mark.parametrize(
+    'a,b', [(a1, b1), (a2, b2)],
+    ids=['scalar', 'array'])
+def test_dict_compare(a, b):
+    '''
+    Test of utils.dict_compare() function
+    '''
+    name1 = 'Dictionary 1'
+    name2 = 'Dictionary 2'
+    tol = 1e-5
+    comparison = utils.dict_compare(name1, a, name2, b, tol, [])
+
+    assert comparison
+
+
+a1 = {'key1': 1.0, 'key2': 1.0}
+b1 = {'key1': 0.0, 'key2': 1.0}
+a2 = {'key1': 1.0, 'key2': 1.0, 'key3': 1.0}
+b2 = {'key1': 0.0, 'key2': 1.0}
+a3 = {'key1': 0.0, 'key2': 1.0}
+b3 = {'key1': 1.0, 'key2': 1.0, 'key3': 1.0}
+a4 = {'key1': 1.0, 'key22': 1.0}
+b4 = {'key1': 1.0, 'key2': 1.0}
+
+
+@pytest.mark.parametrize(
+    'a,b', [(a1, b1), (a2, b2), (a3, b3), (a4, b4)],
+    ids=['unequal', 'shape not the same - left longer',
+         'shape not the same - right longer',
+         'same size, but keys differ'])
+def test_dict_compare_failures(a, b):
+    '''
+    Test of failures of utils.comp_array() function
+    '''
+    name1 = 'Dictionary 1'
+    name2 = 'Dictionary 2'
+    tol = 1e-5
+    comparison = utils.dict_compare(name1, a, name2, b, tol, [])
+
+    assert not comparison
+
+
 def test_rate_conversion():
     '''
     Test of utils.rate_conversion
