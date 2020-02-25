@@ -150,11 +150,13 @@ a1 = {'key1': 1.0, 'key2': 1.0}
 b1 = {'key1': 1.0, 'key2': 1.0}
 a2 = {'key1': np.ones(2), 'key2': np.ones(2)}
 b2 = {'key1': np.ones(2), 'key2': np.ones(2)}
+a3 = {'key1': 1.0, 'key2': 1.0}
+b3 = {'key1': 1.0, 'key2': np.array([1.0])}
 
 
 @pytest.mark.parametrize(
-    'a,b', [(a1, b1), (a2, b2)],
-    ids=['scalar', 'array'])
+    'a,b', [(a1, b1), (a2, b2), (a3, b3)],
+    ids=['scalar', 'array', 'mix of scalar and array'])
 def test_dict_compare(a, b):
     '''
     Test of utils.dict_compare() function
