@@ -328,6 +328,17 @@ def test_get_initial_path(x1, xT, p, shape, expected):
     assert np.allclose(test_path, expected)
 
 
+def test_safe_read_pickle():
+    '''
+    Test of utils.safe_read_pickle() function
+    '''
+    fname = os.path.join(CUR_PATH, 'test_io_data',
+                         'SS_solver_outputs.pkl')
+    utils.safe_read_pickle(fname)
+
+    assert True
+
+
 @pytest.yield_fixture
 def picklefile1():
     x = {'a': 1}
