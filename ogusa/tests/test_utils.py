@@ -56,9 +56,19 @@ def test_read_file():
     path = os.path.join(CUR_PATH, 'test_io_data')
     fname = 'SS_fsolve_inputs.pkl'
     bytes_data = utils.read_file(path, fname)
-    print('Instance = ', type(bytes_data))
-    print('bytes_data = ', bytes_data)
+
     assert isinstance(bytes_data, io.TextIOWrapper)
+
+
+def test_read_file_from_egg():
+    '''
+    Test of utils.read_file() function, case of reading file from .egg
+    '''
+    path = os.path.join(CUR_PATH)
+    fname = 'default_parameters.json'
+    bytes_data = utils.read_file(path, fname)
+
+    assert isinstance(bytes_data, io.StringIO)
 
 
 def test_pickle_file_compare():
