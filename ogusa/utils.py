@@ -454,8 +454,8 @@ def save_return_table(table_df, output_type, path, precision=2):
         elif output_type == 'excel':
             table_df.to_excel(excel_writer=path, index=False, na_rep='')
         else:
-            print('Please enter a valid output format')
-            assert(False)
+            print('Please enter a valid output format')  # pragma no cover
+            assert(False)  # pragma no cover
 
 
 class Inequality():
