@@ -71,14 +71,17 @@ def test_read_file_from_egg():
     assert isinstance(bytes_data, io.StringIO)
 
 
-def test_pickle_file_compare():
-    '''
-    Test of utils.pickle_file_compare() function
-    '''
-    fname = os.path.join(CUR_PATH, 'test_io_data',
-                         'SS_solver_outputs.pkl')
-    comparison = utils.pickle_file_compare(fname, fname)
-    assert comparison
+# @pytest.mark.parametrize(
+#     'filename', [('SS_solver_outputs.pkl'),
+#                  ('TxFuncEst_baseline.pkl')],
+#     ids=['Python 2 pickle file', 'Python 3 pickle file'])
+# def test_pickle_file_compare(filename):
+#     '''
+#     Test of utils.pickle_file_compare() function
+#     '''
+#     fname = os.path.join(CUR_PATH, 'test_io_data', filename)
+#     comparison = utils.pickle_file_compare(fname, fname)
+#     assert comparison
 
 
 a = np.array([1.0, 1.0])
@@ -338,12 +341,15 @@ def test_get_initial_path(x1, xT, p, shape, expected):
     assert np.allclose(test_path, expected)
 
 
-def test_safe_read_pickle():
+@pytest.mark.parametrize(
+    'filename', [('SS_solver_outputs.pkl'),
+                 ('tax_dict_for_tests.pkl')],
+    ids=['Python 2 pickle file', 'Python 3 pickle file'])
+def test_safe_read_pickle(filename):
     '''
     Test of utils.safe_read_pickle() function
     '''
-    fname = os.path.join(CUR_PATH, 'test_io_data',
-                         'SS_solver_outputs.pkl')
+    fname = os.path.join(CUR_PATH, 'test_io_data', filename)
     utils.safe_read_pickle(fname)
 
     assert True
