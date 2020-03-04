@@ -71,24 +71,12 @@ def test_read_file_from_egg():
     assert isinstance(bytes_data, io.StringIO)
 
 
-def test_pickle_file_compare_Python2():
+def test_pickle_file_compare():
     '''
     Test of utils.pickle_file_compare() function
     '''
     fname = os.path.join(CUR_PATH, 'test_io_data',
                          'SS_solver_outputs.pkl')
-    comparison = utils.pickle_file_compare(fname, fname)
-    assert comparison
-
-
-def test_pickle_file_compare_Python3(tmpdir):
-    '''
-    Test of utils.pickle_file_compare() function
-    '''
-    object_to_pickle = {'a': np.array([1.0, 2.0]),
-                        'b': np.array([1.0, 2.0])}
-    fname = os.path.join(tmpdir, 'test_pickle.pkl')
-    pickle.dump(object_to_pickle, open(fname, 'wb'))
     comparison = utils.pickle_file_compare(fname, fname)
     assert comparison
 
