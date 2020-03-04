@@ -174,7 +174,8 @@ def test_dict_compare(a, b):
     name1 = 'Dictionary 1'
     name2 = 'Dictionary 2'
     tol = 1e-5
-    comparison = utils.dict_compare(name1, a, name2, b, tol, [])
+    comparison = utils.dict_compare(name1, a, name2, b, tol, [],
+                                    verbose=True)
 
     assert comparison
 
@@ -201,7 +202,8 @@ def test_dict_compare_failures(a, b):
     name1 = 'Dictionary 1'
     name2 = 'Dictionary 2'
     tol = 1e-5
-    comparison = utils.dict_compare(name1, a, name2, b, tol, [])
+    comparison = utils.dict_compare(name1, a, name2, b, tol, [],
+                                    verbose=True)
 
     assert not comparison
 
