@@ -377,8 +377,8 @@ def safe_read_pickle(file_path):
     with open(file_path, 'rb') as f:
         try:
             obj = pickle.load(f, encoding='latin1')
-        except TypeError:
-            obj = pickle.load(f)
+        except TypeError:  # pragma no cover
+            obj = pickle.load(f)  # pragma no cover
     return obj
 
 
