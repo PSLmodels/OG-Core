@@ -152,7 +152,7 @@ def run_model(meta_param_dict, adjustment):
         'frisch', 'beta_annual', 'sigma', 'g_y_annual', 'gamma',
         'epsilon', 'Z', 'delta_annual', 'small_open', 'world_int_rate',
         'initial_foreign_debt_ratio', 'zeta_D', 'zeta_K', 'tG1', 'tG2',
-        'rho_G', 'debt_ratio_ss', 'start_year'}
+        'rho_G', 'debt_ratio_ss', 'start_year', 'budget_balance'}
     filtered_ogusa_params = OrderedDict()
     for k, v in adjustment['OG-USA Parameters'].items():
         if k in constant_param_set:
