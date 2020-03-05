@@ -174,7 +174,7 @@ def test_dict_compare(a, b):
     name1 = 'Dictionary 1'
     name2 = 'Dictionary 2'
     tol = 1e-5
-    comparison = utils.dict_compare(name1, a, name2, b, tol, [],
+    comparison = utils.dict_compare(name1, a, name2, b, tol,
                                     verbose=True)
 
     assert comparison
@@ -188,13 +188,16 @@ a3 = {'key1': 0.0, 'key2': 1.0}
 b3 = {'key1': 1.0, 'key2': 1.0, 'key3': 1.0}
 a4 = {'key1': 1.0, 'key22': 1.0}
 b4 = {'key1': 1.0, 'key2': 1.0}
+a5 = {'key1': [1.0, 1.0], 'key2': [1.0, 1.0]}
+b5 = {'key1': 0.0, 'key2': 1.0}
 
 
 @pytest.mark.parametrize(
-    'a,b', [(a1, b1), (a2, b2), (a3, b3), (a4, b4)],
+    'a,b', [(a1, b1), (a2, b2), (a3, b3), (a4, b4), (a5, b5)],
     ids=['unequal', 'shape not the same - left longer',
          'shape not the same - right longer',
-         'same size, but keys differ'])
+         'same size, but keys differ',
+         'raise type error'])
 def test_dict_compare_failures(a, b):
     '''
     Test of failures of utils.comp_array() function
@@ -202,7 +205,7 @@ def test_dict_compare_failures(a, b):
     name1 = 'Dictionary 1'
     name2 = 'Dictionary 2'
     tol = 1e-5
-    comparison = utils.dict_compare(name1, a, name2, b, tol, [],
+    comparison = utils.dict_compare(name1, a, name2, b, tol,
                                     verbose=True)
 
     assert not comparison
