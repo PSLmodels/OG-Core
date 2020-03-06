@@ -169,7 +169,6 @@ def test_get_data(baseline):
             expected_data[k], v)
 
 
-@pytest.mark.full_run
 def test_taxcalc_advance():
     '''
     Test of the get_micro_data.taxcalc_advance() function

@@ -131,18 +131,8 @@ def pickle_file_compare(fname1, fname2, tol=1e-3, exceptions={},
     Returns:
         comparison (bool): whether therea two dictionaries are the same
     '''
-    try:
-        with open(fname1, 'rb') as f:
-            pkl1 = pickle.load(f, encoding='latin1')
-    except TypeError:
-        with open(fname1, 'rb') as f:
-            pkl1 = pickle.load(f)
-    try:
-        with open(fname2, 'rb') as f:
-            pkl2 = pickle.load(f, encoding='latin1')
-    except TypeError:
-        with open(fname2, 'rb') as f:
-            pkl2 = pickle.load(f)
+    pkl1 = safe_read_pickle(fname1)
+    pkl2 = safe_read_pickle(fname2)
     comparison = dict_compare(fname1, pkl1, fname2, pkl2, tol=tol,
                               exceptions=exceptions, relative=relative)
 
@@ -210,7 +200,7 @@ def comp_scalar(name, a, b, tol, unequal, exceptions={}, relative=False):
         a (scalar): first scalar to compare
         b (scalra): second scalar to compare
         tol (scalar): tolerance used for comparison
-        unequal (dict): dict of variables that are not equal
+        unequal (list):  list of variables that are not equal
         exceptions (dict): exceptions
         relative (bool): whether comparison compares relative values
 
@@ -239,7 +229,7 @@ def comp_scalar(name, a, b, tol, unequal, exceptions={}, relative=False):
         return True
 
 
-def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False,
+def dict_compare(name1, dict1, name2, dict2, tol, verbose=False,
                  exceptions={}, relative=False):
     r'''
     Compare two dictionaries. The values of each dict are either
@@ -249,10 +239,10 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False,
     `x - y < tol`.
 
     Args:
-        fname1 (str): files name for pickle file
-        pk1 (dict): first dictionary to compare
-        fname2 (str): files name for pickle file
-        pk2 (dict): second dictionary to compare
+        name1 (str): name of dictionary 1
+        dict1 (dict): first dictionary to compare
+        name2 (str): name of dictionary 2
+        dict2 (dict): second dictionary to compare
         tol (scalar): tolerance used for comparison
         verbose (bool): whether print messages
         exceptions (dict): exceptions
@@ -263,24 +253,24 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False,
 
     '''
 
-    keys1 = set(pkl1.keys())
-    keys2 = set(pkl2.keys())
+    keys1 = set(dict1.keys())
+    keys2 = set(dict2.keys())
     check = True
     if keys1 != keys2:
         if len(keys1) == len(keys2):
             extra1 = keys1 - keys2
             extra2 = keys2 - keys1
             msg1 = "extra items in {0}: {1}"
-            print(msg1.format(fname1, extra1))
-            print(msg1.format(fname2, extra2))
+            print(msg1.format(name1, extra1))
+            print(msg1.format(name2, extra2))
             return False
         elif len(keys1) > len(keys2):
             bigger = keys1
-            bigger_file = fname1
+            bigger_file = name1
             smaller = keys2
         else:
             bigger = keys2
-            bigger_file = fname2
+            bigger_file = name2
             smaller = keys1
         res = bigger - smaller
         msg = "more items in {0}: {1}"
@@ -288,21 +278,21 @@ def dict_compare(fname1, pkl1, fname2, pkl2, tol, verbose=False,
         return False
     else:
         unequal_items = []
-        for k, v in pkl1.items():
+        for k, v in dict1.items():
             if type(v) == np.ndarray:
-                check &= comp_array(k, v, pkl2[k], tol, unequal_items,
+                check &= comp_array(k, v, dict2[k], tol, unequal_items,
                                     exceptions=exceptions,
                                     relative=relative)
             else:
                 try:
-                    check &= comp_scalar(k, v, pkl2[k], tol, unequal_items,
-                                         exceptions=exceptions,
-                                         relative=relative)
+                    check &= comp_scalar(
+                        k, v, dict2[k], tol, unequal_items,
+                        exceptions=exceptions, relative=relative)
                 except TypeError:
-                    check &= comp_array(k, np.array(v), np.array(pkl2[k]), tol,
-                                        unequal_items,
-                                        exceptions=exceptions,
-                                        relative=relative)
+                    check &= comp_array(
+                        k, np.array(v), np.array(dict2[k]), tol,
+                        unequal_items, exceptions=exceptions,
+                        relative=relative)
 
         if verbose and unequal_items:
             frmt = "Name {0}"
@@ -387,8 +377,8 @@ def safe_read_pickle(file_path):
     with open(file_path, 'rb') as f:
         try:
             obj = pickle.load(f, encoding='latin1')
-        except TypeError:
-            obj = pickle.load(f)
+        except TypeError:  # pragma no cover
+            obj = pickle.load(f)  # pragma no cover
     return obj
 
 
@@ -454,8 +444,8 @@ def save_return_table(table_df, output_type, path, precision=2):
         elif output_type == 'excel':
             table_df.to_excel(excel_writer=path, index=False, na_rep='')
         else:
-            print('Please enter a valid output format')
-            assert(False)
+            print('Please enter a valid output format')  # pragma no cover
+            assert(False)  # pragma no cover
 
 
 class Inequality():
