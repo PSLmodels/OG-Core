@@ -108,8 +108,6 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
     # Compute MTRs and taxes or each year, but not beyond TC_LAST_YEAR
     lazy_values = []
     for year in range(start_year, TC_LAST_YEAR + 1):
-        # lazy_values.append(
-        #     delayed(taxcalc_advance)(calc1, year))
         lazy_values.append(
             delayed(taxcalc_advance)(baseline, start_year, reform,
                                      data, year))
@@ -127,10 +125,10 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
         year = start_year + i
         micro_data_dict[str(year)] = DataFrame(result)
 
-    if reform:
-        pkl_path = "micro_data_policy.pkl"
-    else:
+    if baseline:
         pkl_path = "micro_data_baseline.pkl"
+    else:
+        pkl_path = "micro_data_policy.pkl"
 
     with open(pkl_path, "wb") as f:
         pickle.dump(micro_data_dict, f)
@@ -197,7 +195,7 @@ def taxcalc_advance(baseline, start_year, reform, data, year):
     return tax_dict
 
 
-def cap_inc_mtr(calc1):  # pragram: no cover
+def cap_inc_mtr(calc1):  # pragma: no cover
     '''
     This function computes the marginal tax rate on capital income,
     which is calculated as a weighted average of the marginal tax rates

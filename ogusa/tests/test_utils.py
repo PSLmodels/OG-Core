@@ -5,10 +5,210 @@ import pandas as pd
 import numpy as np
 import tempfile
 import os
+import io
 import pickle
 from ogusa.parameters import Specifications
 
 TOL = 1e-5
+CUR_PATH = os.path.abspath(os.path.dirname(__file__))
+
+
+def test_makedirs(tmp_path):
+    '''
+    Test of utils.makedirs() function
+    '''
+    utils.mkdirs(tmp_path)
+
+    assert os.path.exists(tmp_path)
+
+
+def test_pct_diff_func():
+    '''
+    Test of utils.pct_diff_func(), which returns the absolute value of
+    the percentage difference between to arrays or scalars
+    '''
+    simul = np.array([110, 23.4, -5.0])
+    data = np.array([100, 44.4, 6.0])
+    expected = np.array([0.1, 0.47297297297297297, 1.8333333333333333])
+    pct_diff = utils.pct_diff_func(simul, data)
+
+    assert np.allclose(expected, pct_diff)
+
+
+def test_convex_combo():
+    '''
+    Test of utils.convex_combo() function
+    '''
+    expected = np.array([16.0, 1.5])
+    nu = 0.4
+    var1 = np.array([10.0, 1.5])
+    var2 = np.array([20.0, 1.5])
+
+    combo = utils.convex_combo(var1, var2, nu)
+
+    assert np.allclose(expected, combo)
+
+
+def test_read_file():
+    '''
+    Test of utils.read_file() function
+    '''
+    path = os.path.join(CUR_PATH, 'test_io_data')
+    fname = 'SS_fsolve_inputs.pkl'
+    bytes_data = utils.read_file(path, fname)
+
+    assert isinstance(bytes_data, io.TextIOWrapper)
+
+
+def test_read_file_from_egg():
+    '''
+    Test of utils.read_file() function, case of reading file from .egg
+    '''
+    path = os.path.join(CUR_PATH)
+    fname = 'default_parameters.json'
+    bytes_data = utils.read_file(path, fname)
+
+    assert isinstance(bytes_data, io.StringIO)
+
+
+def test_pickle_file_compare():
+    '''
+    Test of utils.pickle_file_compare() function
+    '''
+    fname = os.path.join(CUR_PATH, 'test_io_data',
+                         'SS_solver_outputs.pkl')
+    comparison = utils.pickle_file_compare(fname, fname)
+    assert comparison
+
+
+a = np.array([1.0, 1.0])
+b = np.ones(2)
+a0b0 = np.zeros(4)
+
+
+@pytest.mark.parametrize(
+    'a,b,relative', [(a, b, False), (a, b, True), (a0b0, a0b0, False)],
+    ids=['not relative', 'relative', 'less than epsilon'])
+def test_comp_array(a, b, relative):
+    '''
+    Test of utils.comp_array() function
+    '''
+    name = 'Test arrays'
+    exceptions = {'Test arrays': 1e-6}
+    tol = 1e-5
+    comparison = utils.comp_array(
+        name, a, b, tol, [], exceptions=exceptions, relative=relative)
+
+    assert comparison
+
+
+a1 = np.array([1.0, 1.0])
+b1 = np.zeros(2)
+a2 = np.array([1.0, 1.0, 1.0])
+b2 = np.ones(2)
+
+
+@pytest.mark.parametrize(
+    'a,b', [(a1, b1), (a2, b2)],
+    ids=['distance fail', 'shape not the same'])
+def test_comp_array_failures(a, b):
+    '''
+    Test of failures of utils.comp_array() function
+    '''
+    name = 'Test arrays'
+    tol = 1e-5
+    comparison = utils.comp_array(name, a, b, tol, [])
+
+    assert not comparison
+
+
+a = 1.0
+b = 1.0
+a0b0 = 0.0
+
+
+@pytest.mark.parametrize(
+    'a,b,relative', [(a, b, False), (a, b, True), (a0b0, a0b0, False)],
+    ids=['not relative', 'relative', 'less than epsilon'])
+def test_comp_scalar(a, b, relative):
+    '''
+    Test of utils.comp_scalar() function
+    '''
+    name = 'Test arrays'
+    exceptions = {'Test arrays': 1e-6}
+    tol = 1e-5
+    comparison = utils.comp_scalar(
+        name, a, b, tol, [], exceptions=exceptions, relative=relative)
+
+    assert comparison
+
+
+def test_comp_scalar_failures():
+    '''
+    Test of failures of utils.comp_scalar() function
+    '''
+    name = 'Test arrays'
+    tol = 1e-5
+    a = 1.0
+    b = 2.0
+    comparison = utils.comp_scalar(name, a, b, tol, [])
+
+    assert not comparison
+
+
+a1 = {'key1': 1.0, 'key2': 1.0}
+b1 = {'key1': 1.0, 'key2': 1.0}
+a2 = {'key1': np.ones(2), 'key2': np.ones(2)}
+b2 = {'key1': np.ones(2), 'key2': np.ones(2)}
+a3 = {'key1': 1.0, 'key2': 1.0}
+b3 = {'key1': 1.0, 'key2': np.array([1.0])}
+
+
+@pytest.mark.parametrize(
+    'a,b', [(a1, b1), (a2, b2), (a3, b3)],
+    ids=['scalar', 'array', 'mix of scalar and array'])
+def test_dict_compare(a, b):
+    '''
+    Test of utils.dict_compare() function
+    '''
+    name1 = 'Dictionary 1'
+    name2 = 'Dictionary 2'
+    tol = 1e-5
+    comparison = utils.dict_compare(name1, a, name2, b, tol,
+                                    verbose=True)
+
+    assert comparison
+
+
+a1 = {'key1': 1.0, 'key2': 1.0}
+b1 = {'key1': 0.0, 'key2': 1.0}
+a2 = {'key1': 1.0, 'key2': 1.0, 'key3': 1.0}
+b2 = {'key1': 0.0, 'key2': 1.0}
+a3 = {'key1': 0.0, 'key2': 1.0}
+b3 = {'key1': 1.0, 'key2': 1.0, 'key3': 1.0}
+a4 = {'key1': 1.0, 'key22': 1.0}
+b4 = {'key1': 1.0, 'key2': 1.0}
+a5 = {'key1': [1.0, 1.0], 'key2': [1.0, 1.0]}
+b5 = {'key1': 0.0, 'key2': 1.0}
+
+
+@pytest.mark.parametrize(
+    'a,b', [(a1, b1), (a2, b2), (a3, b3), (a4, b4), (a5, b5)],
+    ids=['unequal', 'shape not the same - left longer',
+         'shape not the same - right longer',
+         'same size, but keys differ',
+         'raise type error'])
+def test_dict_compare_failures(a, b):
+    '''
+    Test of failures of utils.comp_array() function
+    '''
+    name1 = 'Dictionary 1'
+    name2 = 'Dictionary 2'
+    tol = 1e-5
+    comparison = utils.dict_compare(name1, a, name2, b, tol,
+                                    verbose=True)
+
+    assert not comparison
 
 
 def test_rate_conversion():
@@ -141,6 +341,20 @@ def test_get_initial_path(x1, xT, p, shape, expected):
     '''
     test_path = utils.get_initial_path(x1, xT, p, shape)
     assert np.allclose(test_path, expected)
+
+
+@pytest.mark.parametrize(
+    'filename', [('SS_solver_outputs.pkl'),
+                 ('tax_dict_for_tests.pkl')],
+    ids=['Python 2 pickle file', 'Python 3 pickle file'])
+def test_safe_read_pickle(filename):
+    '''
+    Test of utils.safe_read_pickle() function
+    '''
+    fname = os.path.join(CUR_PATH, 'test_io_data', filename)
+    utils.safe_read_pickle(fname)
+
+    assert True
 
 
 @pytest.yield_fixture
@@ -294,6 +508,7 @@ def test_print_progress():
     '''
     assert utils.print_progress(1, 5) == 'Incomplete'
     assert utils.print_progress(5, 5) == 'Complete'
+    assert utils.print_progress(0, 5) == 'Incomplete'
 
 
 def test_fetch_files_from_web():
@@ -318,6 +533,14 @@ def test_not_connected():
     assert not utils.not_connected()
 
 
+def test_not_connected_true():
+    '''
+    Test that not_connected function works
+    '''
+    # Default values should return True, i.e., not connected
+    assert utils.not_connected('http://10.255.255.1')
+
+
 dict1 = {'var1': [1, 2, 3, 4, 5], 'var2': [2, 4, 6, 8, 10]}
 df1 = pd.DataFrame.from_dict(dict1)
 test_data = [(df1, 'tex', 0), (df1, 'json', 2), (df1, 'html', 3)]
@@ -329,3 +552,29 @@ def test_save_return_table(df, output_type, precision):
 
     test_str = utils.save_return_table(df, output_type, None, precision)
     assert isinstance(test_str, str)
+
+
+path1 = 'output.tex'
+path2 = 'output.csv'
+path3 = 'output.json'
+path4 = 'output.xlsx'
+# # writetoafile(file.strpath)  # or use str(file)
+# assert file.read() == 'Hello\n'
+test_data = [(df1, 'tex', path1), (df1, 'csv', path2),
+             (df1, 'json', path3), (df1, 'excel', path4)]
+
+
+@pytest.mark.parametrize('df,output_type,path', test_data,
+                         ids=['tex', 'csv', 'json', 'excel'])
+def test_save_return_table_write(df, output_type, path):
+    '''
+    Test of the utils.save_return_table function for case when write to
+    disk
+    '''
+    utils.save_return_table(df, output_type, path=path)
+    filehandle = open(path)
+    try:
+        assert filehandle.read() is not None
+    except UnicodeDecodeError:
+        from openpyxl import load_workbook
+        wb = load_workbook(filename=path)
