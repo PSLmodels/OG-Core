@@ -181,9 +181,7 @@ def test_run_TPI():
         'r_gov_shift': 0.0, 'zeta_D': [0.0, 0.0],
         'zeta_K': [0.0, 0.0], 'debt_ratio_ss': 1.0,
         'initial_foreign_debt_ratio': 0.0,
-        'start_year': 2019, #'cit_rate': [0.0],
-        # 'PIA_rate_bkt_1': 0.0, 'PIA_rate_bkt_2': 0.0,
-        # 'PIA_rate_bkt_3': 0.0,
+        'start_year': 2019
     }
     # update parameters instance with new values for test
     p.update_specifications(new_param_values, raise_errors=False)
@@ -228,6 +226,7 @@ def test_run_TPI():
      p.omega_S_preTP, initial_debt, D0) = initial_values
 
     # Need to run SS first to get results
+    SS.ENFORCE_SOLUTION_CHECKS = False
     ss_outputs = SS.run_SS(p, None)
 
     if p.baseline:
