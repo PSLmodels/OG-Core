@@ -203,7 +203,8 @@ def test_tax_func_loop():
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_loop_outputs.pkl'))
     for i, v in enumerate(expected_tuple):
-        assert(np.allclose(test_tuple[i], v))
+        print('Diffs = ', np.absolute(test_tuple[i] - v).max())
+        assert(np.allclose(test_tuple[i], v, atol=1e-05))
 
 
 A = 0.02
