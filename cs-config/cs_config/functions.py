@@ -163,9 +163,7 @@ def run_model(meta_param_dict, adjustment):
     # Solve baseline model
     base_spec = {
         **{'start_year': meta_param_dict['year'],
-        'debt_ratio_ss': 2.0, 'r_gov_scale': 1.0, 'r_gov_shift': 0.02,
-        'zeta_D': [0.4], 'zeta_K': [0.1], 'initial_debt_ratio': 0.78,
-        'initial_foreign_debt_ratio': 0.4, 'tax_func_type': 'linear',
+        'tax_func_type': 'linear',
         'age_specific': False}, **filtered_ogusa_params}
     base_params = Specifications(
         run_micro=False, output_base=base_dir,
