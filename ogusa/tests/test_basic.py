@@ -52,10 +52,14 @@ def test_constant_demographics_TPI():
                           baseline_dir=baseline_dir, test=False,
                           time_path=True, baseline=True, iit_reform={},
                           guid='')
-    og_spec = {'constant_demographics': True,
-               'budget_balance': True,
-               'zero_taxes': True,
-               'maxiter': 2,
+    og_spec = {'constant_demographics': True, 'budget_balance': True,
+               'zero_taxes': True, 'maxiter': 2,
+               'r_gov_shift': 0.0, 'zeta_D': [0.0, 0.0],
+               'zeta_K': [0.0, 0.0], 'debt_ratio_ss': 1.0,
+               'initial_foreign_debt_ratio': 0.0,
+               'start_year': 2019, 'cit_rate': [0.0],
+               'PIA_rate_bkt_1': 0.0, 'PIA_rate_bkt_2': 0.0,
+               'PIA_rate_bkt_3': 0.0,
                'eta': (spec.omega_SS.reshape(spec.S, 1) *
                        spec.lambdas.reshape(1, spec.J))}
     spec.update_specifications(og_spec)
