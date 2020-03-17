@@ -367,6 +367,94 @@ def test_SS_solver():
         assert(np.allclose(test_dict[k], v))
 
 
+param_updates1 = {
+    'budget_balance': True
+}
+filename1 = 'SS_solver_outputs_baseline_closed.pkl'
+param_updates2 = {
+    'budget_balance': True
+}
+filename2 = 'SS_solver_outputs_reform_closed.pkl'
+param_updates3 = {
+    'baseline_spending': True
+}
+filename3 = 'SS_solver_outputs_reform_closed_baselinespending.pkl'
+param_updates4 = {
+    'zeta_D': [0.4],
+    'zeta_K': [0.1],
+}
+filename4 = 'SS_solver_outputs_baseline_partialopen.pkl'
+param_updates5 = {
+    'small_open': True,
+    'world_int_rate': [0.05]
+}
+filename5 = 'SS_solver_outputs_baseline_smallopen.pkl'
+
+
+@pytest.mark.parametrize('baseline,param_updates,filename',
+                         [(True, param_updates1, filename1),
+                          (False, param_updates2, filename2),
+                          (False, param_updates3, filename3),
+                          (True, param_updates4, filename4),
+                          (True, param_updates5, filename5)],
+                         ids=['Baseline, Closed', 'Reform, Closed',
+                              'Reform, Baseline spending=True, Closed',
+                              'Baseline, Partial Open',
+                              'Baseline, Small Open'])
+def test_SS_solver_cases(baseline, param_updates, filename):
+    # Test SS.SS_solver function.  Provide inputs to function and
+    # ensure that output returned matches what it has been before.
+    input_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data', 'SS_solver_inputs.pkl'))
+    (b_guess_init, n_guess_init, rss, TR_ss, factor_ss, Yss, params,
+     baseline, fsolve_flag, baseline_spending) = input_tuple
+    (bssmat, nssmat, chi_params, ss_params, income_tax_params,
+     iterative_params, small_open_params) = params
+
+    p = Specifications(baseline=baseline)
+    p.update_specifications(param_updates)
+    (J, S, T, BW, beta, sigma, alpha, gamma, epsilon,
+     Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll,
+     tau_bq, rho, omega_SS, budget_balance, alpha_T,
+     debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, e,
+     retire, mean_income_data, h_wealth, p_wealth, m_wealth,
+     b_ellipse, upsilon) = ss_params
+    b_guess = np.ones((p.S, p.J)) * 0.07
+    n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
+    if p.small_open:
+        rguess = p.firm_r[-1]
+    else:
+        rguess = 0.09
+    TRguess = 0.12
+    factorguess = 70000
+    BQguess = aggregates.get_BQ(rguess, b_guess, None, p, 'SS', False)
+    Yguess = TRguess / p.alpha_T[-1]
+
+    p.mean_income_data = mean_income_data
+    p.frac_tax_payroll = np.array([0.4])
+    p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
+        income_tax_params
+    p.etr_params = np.transpose(etr_params.reshape(
+        p.S, 1, etr_params.shape[-1]), (1, 0, 2))
+    p.mtrx_params = np.transpose(mtrx_params.reshape(
+        p.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
+    p.mtry_params = np.transpose(mtry_params.reshape(
+        p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
+
+    test_dict = SS.SS_solver(b_guess, n_guess, rguess, BQguess, TRguess,
+                             factorguess, Yguess, p, None, False)
+
+    import pickle
+    pickle.dump(test_dict, open(
+        os.path.join(CUR_PATH, 'test_io_data', filename), 'wb'))
+    expected_dict = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data', filename))
+
+    for k, v in expected_dict.items():
+        print('Testing ', k)
+        assert(np.allclose(test_dict[k], v))
+
+
 def test_inner_loop():
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
