@@ -380,8 +380,8 @@ param_updates3 = {
 }
 filename3 = 'SS_solver_outputs_reform_closed_baselinespending.pkl'
 param_updates4 = {
-    'zeta_D': [0.4],
-    'zeta_K': [0.1],
+    # 'zeta_D': [0.4],
+    # 'zeta_K': [0.1],
 }
 filename4 = 'SS_solver_outputs_baseline_partialopen.pkl'
 param_updates5 = {
@@ -455,7 +455,42 @@ def test_SS_solver_cases(baseline, param_updates, filename):
         assert(np.allclose(test_dict[k], v))
 
 
-def test_inner_loop():
+
+param_updates1 = {
+    'budget_balance': True
+}
+filename1 = 'inner_loop_outputs_baseline_closed.pkl'
+param_updates2 = {
+    'budget_balance': True
+}
+filename2 = 'inner_loop_outputs_reform_closed.pkl'
+param_updates3 = {
+    'baseline_spending': True
+}
+filename3 = 'inner_loop_outputs_reform_closed_baselinespending.pkl'
+param_updates4 = {
+    'zeta_D': [0.2],
+    'zeta_K': [0.0],
+}
+filename4 = 'inner_loop_outputs_baseline_partialopen.pkl'
+param_updates5 = {
+    'small_open': True,
+    'world_int_rate': [0.05]
+}
+filename5 = 'inner_loop_outputss_baseline_smallopen.pkl'
+
+
+@pytest.mark.parametrize('baseline,param_updates,filename',
+                         [(True, param_updates1, filename1),
+                          (False, param_updates2, filename2),
+                          (False, param_updates3, filename3),
+                          (True, param_updates4, filename4),
+                          (True, param_updates5, filename5)],
+                         ids=['Baseline, Closed', 'Reform, Closed',
+                              'Reform, Baseline spending=True, Closed',
+                              'Baseline, Partial Open',
+                              'Baseline, Small Open'])
+def test_inner_loop(baseline, param_updates, filename):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     input_tuple = utils.safe_read_pickle(
@@ -463,10 +498,11 @@ def test_inner_loop():
     (outer_loop_vars_in, params, baseline, baseline_spending) = input_tuple
     ss_params, income_tax_params, chi_params, small_open_params = params
     (bssmat, nssmat, r, Y, TR, factor) = outer_loop_vars_in
-    p = Specifications()
+    p = Specifications(baseline=baseline)
+    p.update_specifications(param_updates)
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
      Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, tau_payroll,
-     tau_bq, p.rho, p.omega_SS, p.budget_balance, alpha_T,
+     tau_bq, p.rho, p.omega_SS, _, alpha_T,
      p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
      retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
      p.b_ellipse, p.upsilon) = ss_params
@@ -485,8 +521,6 @@ def test_inner_loop():
     p.lambdas = lambdas.reshape(p.J, 1)
     p.imm_rates = imm_rates.reshape(1, p.S)
     p.tax_func_type = 'DEP'
-    p.baseline = baseline
-    p.baseline_spending = baseline_spending
     p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
         income_tax_params
     p.etr_params = np.transpose(etr_params.reshape(
@@ -496,12 +530,12 @@ def test_inner_loop():
     p.mtry_params = np.transpose(mtry_params.reshape(
         p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
     p.chi_b, p.chi_n = chi_params
-    p.small_open, firm_r, hh_r = small_open_params
-    p.firm_r = np.ones(p.T + p.S) * firm_r
-    p.hh_r = np.ones(p.T + p.S) * hh_r
     p.num_workers = 1
     BQ = np.ones(p.J) * 0.00019646295986015257
-    outer_loop_vars = (bssmat, nssmat, r, BQ, Y, TR, factor)
+    if p.budget_balance:
+        outer_loop_vars = (bssmat, nssmat, r, BQ, TR, factor)
+    else:
+        outer_loop_vars = (bssmat, nssmat, r, BQ, Y, TR, factor)
     (euler_errors, new_bmat, new_nmat, new_r, new_r_gov, new_r_hh,
      new_w, new_TR, new_Y, new_factor, new_BQ,
      average_income_model) = SS.inner_loop(outer_loop_vars, p, None)
@@ -510,7 +544,7 @@ def test_inner_loop():
                   average_income_model)
 
     expected_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', 'inner_loop_outputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data', filename))
 
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v, atol=1e-05))
