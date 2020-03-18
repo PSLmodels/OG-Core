@@ -637,81 +637,48 @@ def test_euler_equation_solver():
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
-@pytest.mark.full_run
-@pytest.mark.parametrize('input_path,expected_path',
-                         [('run_SS_open_unbal_inputs.pkl',
-                           'run_SS_open_unbal_outputs.pkl'),
-                          ('run_SS_closed_balanced_inputs.pkl',
-                           'run_SS_closed_balanced_outputs.pkl')],
+param_updates1 = {
+    'small_open': True
+}
+filename1 = 'run_SS_open_unbal_outputs.pkl'
+param_updates2 = {
+    'budget_balance': True
+}
+filename2 = 'run_SS_closed_balanced_outputs.pkl'
+# param_updates3 = {
+#     'baseline_spending': True
+# }
+# filename3 = 'inner_loop_outputs_reform_closed_baselinespending.pkl'
+# param_updates4 = {
+#     'zeta_D': [0.2],
+#     'zeta_K': [0.0],
+# }
+# filename4 = 'inner_loop_outputs_baseline_partialopen.pkl'
+# param_updates5 = {
+#     'small_open': True,
+#     'world_int_rate': [0.05]
+# }
+# filename5 = 'inner_loop_outputss_baseline_smallopen.pkl'
+
+
+@pytest.mark.parametrize('baseline,param_updates,filename',
+                         [(True, param_updates1, filename1),
+                          (True, param_updates2, filename2)],
                          ids=['Open, Unbalanced', 'Closed Balanced'])
-def test_run_SS(input_path, expected_path):
+@pytest.mark.full_run
+def test_run_SS(baseline, param_updates, filename):
     # Test SS.run_SS function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', input_path))
-    (income_tax_params, ss_params, iterative_params, chi_params,
-     small_open_params, baseline, baseline_spending, baseline_dir) =\
-        input_tuple
-    p = Specifications()
-    (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, tau_payroll,
-     tau_bq, p.rho, p.omega_SS, p.budget_balance, alpha_T,
-     p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
-     retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
-     p.b_ellipse, p.upsilon) = ss_params
-    p.eta = (p.omega_SS.reshape(p.S, 1) *
-             p.lambdas.reshape(1, p.J)).reshape(1, p.S, p.J)
-    p.Z = np.ones(p.T + p.S) * Z
-    p.tau_bq = np.ones(p.T + p.S) * 0.0
-    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
-    p.alpha_T = np.ones(p.T + p.S) * alpha_T
-    p.tau_b = np.ones(p.T + p.S) * tau_b
-    p.delta_tau = np.ones(p.T + p.S) * delta_tau
-    p.h_wealth = np.ones(p.T + p.S) * h_wealth
-    p.p_wealth = np.ones(p.T + p.S) * p_wealth
-    p.m_wealth = np.ones(p.T + p.S) * m_wealth
-    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
-    p.lambdas = lambdas.reshape(p.J, 1)
-    p.imm_rates = imm_rates.reshape(1, p.S)
-    p.tax_func_type = 'DEP'
-    p.baseline = baseline
-    p.baseline_spending = baseline_spending
-    p.baseline_dir = baseline_dir
-    p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
-        income_tax_params
-    p.etr_params = np.transpose(etr_params.reshape(
-        p.S, 1, etr_params.shape[-1]), (1, 0, 2))
-    p.mtrx_params = np.transpose(mtrx_params.reshape(
-        p.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-    p.mtry_params = np.transpose(mtry_params.reshape(
-        p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
-    p.maxiter, p.mindist_SS = iterative_params
-    p.chi_b, p.chi_n = chi_params
-    p.small_open, firm_r, hh_r = small_open_params
-    p.firm_r = np.ones(p.T + p.S) * firm_r
-    p.hh_r = np.ones(p.T + p.S) * hh_r
-    p.num_workers = 1
-    p.frac_tax_payroll = 0.5 * np.ones(p.T + p.S)
+    p = Specifications(baseline=baseline)
+    p.update_specifications(param_updates)
+    p.get_tax_function_parameters(None, run_micro=False)
     test_dict = SS.run_SS(p, None)
 
+    import pickle
+    pickle.dump(test_dict, open(
+        os.path.join(CUR_PATH, 'test_io_data', filename), 'wb'))
     expected_dict = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', expected_path))
-
-    # delete values key-value pairs that are not in both dicts
-    del expected_dict['bssmat'], expected_dict['chi_n'], expected_dict['chi_b']
-    del expected_dict['Iss_total']
-    del test_dict['etr_ss'], test_dict['mtrx_ss'], test_dict['mtry_ss']
-    test_dict['IITpayroll_revenue'] = (test_dict['total_revenue_ss'] -
-                                       test_dict['business_revenue'])
-    del test_dict['T_Pss'], test_dict['T_BQss'], test_dict['T_Wss']
-    del test_dict['resource_constraint_error'], test_dict['T_Css']
-    del test_dict['r_gov_ss'], test_dict['r_hh_ss']
-    del test_dict['K_d_ss'], test_dict['K_f_ss'], test_dict['D_d_ss']
-    del test_dict['D_f_ss'], test_dict['I_d_ss'], test_dict['Iss_total']
-    del test_dict['debt_service_f'], test_dict['new_borrowing_f']
-    del test_dict['iit_revenue'], test_dict['payroll_tax_revenue']
-    test_dict['revenue_ss'] = test_dict.pop('total_revenue_ss')
-    test_dict['T_Hss'] = test_dict.pop('TR_ss')
+        os.path.join(CUR_PATH, 'test_io_data', filename))
 
     for k, v in expected_dict.items():
         assert(np.allclose(test_dict[k], v))
