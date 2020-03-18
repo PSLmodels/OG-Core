@@ -37,6 +37,12 @@ p1.retire = (np.ones(p1.T + p1.S) * retire).astype(int)
 p1.lambdas = lambdas.reshape(p1.J, 1)
 p1.imm_rates = imm_rates.reshape(1, p1.S)
 p1.tax_func_type = 'DEP'
+p1.zeta_K = np.array([0.0])
+p1.zeta_D = np.array([0.0])
+p1.initial_foreign_debt_ratio = 0.0
+p1.r_gov_shift = np.array([0.0])
+p1.start_year = 2019
+p1.baseline = False
 p1.baseline = True
 p1.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
     income_tax_params
@@ -88,6 +94,11 @@ p2.retire = (np.ones(p2.T + p2.S) * retire).astype(int)
 p2.lambdas = lambdas.reshape(p2.J, 1)
 p2.imm_rates = imm_rates.reshape(1, p2.S)
 p2.tax_func_type = 'DEP'
+p2.zeta_K = np.array([0.0])
+p2.zeta_D = np.array([0.0])
+p2.initial_foreign_debt_ratio = 0.0
+p2.r_gov_shift = np.array([0.0])
+p2.start_year = 2019
 p2.baseline = False
 p2.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
     income_tax_params
@@ -141,6 +152,11 @@ p3.retire = (np.ones(p3.T + p3.S) * retire).astype(int)
 p3.lambdas = lambdas.reshape(p3.J, 1)
 p3.imm_rates = imm_rates.reshape(1, p3.S)
 p3.tax_func_type = 'DEP'
+p3.zeta_K = np.array([0.0])
+p3.zeta_D = np.array([0.0])
+p3.initial_foreign_debt_ratio = 0.0
+p3.r_gov_shift = np.array([0.0])
+p3.start_year = 2019
 p3.baseline = False
 p3.baseline_spending = True
 p3.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
@@ -212,11 +228,11 @@ p4.num_workers = 1
 BQ4 = np.ones((p4.J)) * 0.00019646295986015257
 guesses4 = [guesses_in[0]] + list(BQ4) + [guesses_in[1]] + [guesses_in[2]]
 args4 = (bssmat, nssmat, None, None, p4, client)
-expected4 = np.array([0.139550482376422, 0.01676279006515464,
-                      0.021947662087247834, 0.023694653463290295,
-                      0.014474128323114979, 0.01708306552129403,
-                      0.019583198114292343, 0.00360152960800146,
-                      -0.06055688468524018, 0.03632742543767925])
+expected4 = np.array([0.14974397993298297, 0.01618780806357498,
+                      0.021237337063436636, 0.023034235208337073,
+                      0.014089407012514552, 0.01666592110291313,
+                      0.01895924076520874, 0.00346219107476825,
+                      -0.06125508233576064, 0.039334851995648276])
 
 input_tuple = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_inputs.pkl'))
@@ -265,11 +281,11 @@ p5.num_workers = 1
 BQ5 = np.ones((p5.J)) * 0.00019646295986015257
 guesses5 = [guesses_in[0]] + list(BQ5) + [guesses_in[1]] + [guesses_in[2]]
 args5 = (bssmat, nssmat, None, None, p5, client)
-expected5 = np.array([0.010000000000000002, 0.01635030944593324,
-                      0.021303969398407056, 0.022737921711008625,
-                      0.0138354929651236, 0.016351881429983797,
-                      0.01897137891346515, 0.0035317449668606548,
-                      -0.05651404751905424, 0.061861898805705584])
+expected5 = np.array([0.010000000000000002, 0.016237540856710347,
+                      0.021157440917488623, 0.0225816206427034,
+                      0.013739863205138253, 0.016239102127467743,
+                      0.018840747365904523, 0.0035063367036709888,
+                      -0.05651404751905424, 0.06608069086945173])
 
 
 @pytest.mark.parametrize('guesses,args,expected',
@@ -286,6 +302,7 @@ def test_SS_fsolve(guesses, args, expected):
     # Test SS.SS_fsolve function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     test_list = SS.SS_fsolve(guesses, *args)
+    print('Test list = ', test_list)
     assert(np.allclose(np.array(test_list), np.array(expected),
                        atol=1e-6))
 
@@ -322,6 +339,11 @@ def test_SS_solver():
     p.lambdas = lambdas.reshape(p.J, 1)
     p.imm_rates = imm_rates.reshape(1, p.S)
     p.tax_func_type = 'DEP'
+    p.zeta_K = np.array([0.0])
+    p.zeta_D = np.array([0.0])
+    p.initial_foreign_debt_ratio = 0.0
+    p.r_gov_shift = np.array([0.0])
+    p.start_year = 2019
     p.baseline = baseline
     p.baseline_spending = baseline_spending
     p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
@@ -453,7 +475,6 @@ def test_SS_solver_cases(baseline, param_updates, filename):
     for k, v in expected_dict.items():
         print('Testing ', k)
         assert(np.allclose(test_dict[k], v))
-
 
 
 param_updates1 = {
