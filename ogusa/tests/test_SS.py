@@ -402,8 +402,8 @@ param_updates3 = {
 }
 filename3 = 'SS_solver_outputs_reform_closed_baselinespending.pkl'
 param_updates4 = {
-    # 'zeta_D': [0.4],
-    # 'zeta_K': [0.1],
+    'zeta_D': [0.0],
+    'zeta_K': [0.0],
 }
 filename4 = 'SS_solver_outputs_baseline_partialopen.pkl'
 param_updates5 = {
@@ -426,21 +426,9 @@ filename5 = 'SS_solver_outputs_baseline_smallopen.pkl'
 def test_SS_solver_cases(baseline, param_updates, filename):
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', 'SS_solver_inputs.pkl'))
-    (b_guess_init, n_guess_init, rss, TR_ss, factor_ss, Yss, params,
-     baseline, fsolve_flag, baseline_spending) = input_tuple
-    (bssmat, nssmat, chi_params, ss_params, income_tax_params,
-     iterative_params, small_open_params) = params
-
     p = Specifications(baseline=baseline)
     p.update_specifications(param_updates)
-    (J, S, T, BW, beta, sigma, alpha, gamma, epsilon,
-     Z, delta, ltilde, nu, g_y, g_n_ss, tau_payroll,
-     tau_bq, rho, omega_SS, budget_balance, alpha_T,
-     debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, e,
-     retire, mean_income_data, h_wealth, p_wealth, m_wealth,
-     b_ellipse, upsilon) = ss_params
+    p.get_tax_function_parameters(None, run_micro=False)
     b_guess = np.ones((p.S, p.J)) * 0.07
     n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
     if p.small_open:
@@ -451,17 +439,6 @@ def test_SS_solver_cases(baseline, param_updates, filename):
     factorguess = 70000
     BQguess = aggregates.get_BQ(rguess, b_guess, None, p, 'SS', False)
     Yguess = TRguess / p.alpha_T[-1]
-
-    p.mean_income_data = mean_income_data
-    p.frac_tax_payroll = np.array([0.4])
-    p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
-        income_tax_params
-    p.etr_params = np.transpose(etr_params.reshape(
-        p.S, 1, etr_params.shape[-1]), (1, 0, 2))
-    p.mtrx_params = np.transpose(mtrx_params.reshape(
-        p.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-    p.mtry_params = np.transpose(mtry_params.reshape(
-        p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
 
     test_dict = SS.SS_solver(b_guess, n_guess, rguess, BQguess, TRguess,
                              factorguess, Yguess, p, None, False)
@@ -514,55 +491,21 @@ filename5 = 'inner_loop_outputss_baseline_smallopen.pkl'
 def test_inner_loop(baseline, param_updates, filename):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', 'inner_loop_inputs.pkl'))
-    (outer_loop_vars_in, params, baseline, baseline_spending) = input_tuple
-    ss_params, income_tax_params, chi_params, small_open_params = params
-    (bssmat, nssmat, r, Y, TR, factor) = outer_loop_vars_in
     p = Specifications(baseline=baseline)
     p.update_specifications(param_updates)
-    (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, tau_payroll,
-     tau_bq, p.rho, p.omega_SS, _, alpha_T,
-     p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
-     retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
-     p.b_ellipse, p.upsilon) = ss_params
-    p.eta = (p.omega_SS.reshape(p.S, 1) *
-             p.lambdas.reshape(1, p.J)).reshape(1, p.S, p.J)
-    p.Z = np.ones(p.T + p.S) * Z
-    p.tau_bq = np.ones(p.T + p.S) * 0.0
-    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
-    p.alpha_T = np.ones(p.T + p.S) * alpha_T
-    p.tau_b = np.ones(p.T + p.S) * tau_b
-    p.delta_tau = np.ones(p.T + p.S) * delta_tau
-    p.h_wealth = np.ones(p.T + p.S) * h_wealth
-    p.p_wealth = np.ones(p.T + p.S) * p_wealth
-    p.m_wealth = np.ones(p.T + p.S) * m_wealth
-    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
-    p.lambdas = lambdas.reshape(p.J, 1)
-    p.imm_rates = imm_rates.reshape(1, p.S)
-    p.tax_func_type = 'DEP'
-    p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
-        income_tax_params
-    p.etr_params = np.transpose(etr_params.reshape(
-        p.S, 1, etr_params.shape[-1]), (1, 0, 2))
-    p.mtrx_params = np.transpose(mtrx_params.reshape(
-        p.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-    p.mtry_params = np.transpose(mtry_params.reshape(
-        p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
-    p.chi_b, p.chi_n = chi_params
-    p.num_workers = 1
+    p.get_tax_function_parameters(None, run_micro=False)
+    bssmat = np.ones((p.S, p.J)) * 0.07
+    nssmat = np.ones((p.S, p.J)) * .4 * p.ltilde
+    r = 0.05
+    TR = 0.12
+    Y = 1.3
+    factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
     if p.budget_balance:
         outer_loop_vars = (bssmat, nssmat, r, BQ, TR, factor)
     else:
         outer_loop_vars = (bssmat, nssmat, r, BQ, Y, TR, factor)
-    (euler_errors, new_bmat, new_nmat, new_r, new_r_gov, new_r_hh,
-     new_w, new_TR, new_Y, new_factor, new_BQ,
-     average_income_model) = SS.inner_loop(outer_loop_vars, p, None)
-    test_tuple = (euler_errors, new_bmat, new_nmat, new_r, new_w,
-                  new_TR, new_Y, new_factor, new_BQ,
-                  average_income_model)
+    test_tuple = SS.inner_loop(outer_loop_vars, p, None)
 
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
