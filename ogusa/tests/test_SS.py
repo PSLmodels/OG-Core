@@ -609,26 +609,39 @@ param_updates2 = {
     'budget_balance': True
 }
 filename2 = 'run_SS_closed_balanced_outputs.pkl'
-# param_updates3 = {
-#     'baseline_spending': True
-# }
-# filename3 = 'inner_loop_outputs_reform_closed_baselinespending.pkl'
-# param_updates4 = {
-#     'zeta_D': [0.2],
-#     'zeta_K': [0.0],
-# }
-# filename4 = 'inner_loop_outputs_baseline_partialopen.pkl'
-# param_updates5 = {
-#     'small_open': True,
-#     'world_int_rate': [0.05]
-# }
-# filename5 = 'inner_loop_outputss_baseline_smallopen.pkl'
+param_updates3 = {
+    'baseline_spending': True
+}
+filename3 = 'inner_loop_outputs_reform_closed_baselinespending.pkl'
+param_updates4 = {
+    'zeta_D': [0.4],
+    'zeta_K': [0.1],
+}
+filename4 = 'inner_loop_outputs_baseline_partialopen.pkl'
+param_updates5 = {
+    'small_open': True,
+    'budget_balance': True,
+    'world_int_rate': [0.05]
+}
+filename5 = 'inner_loop_outputss_baseline_smallopen.pkl'
+param_updates6 = {
+    'use_zeta': True,
+}
+filename6 = 'inner_loop_outputss_baseline_smallopen.pkl'
 
 
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates1, filename1),
-                          (True, param_updates2, filename2)],
-                         ids=['Open, Unbalanced', 'Closed Balanced'])
+                          (True, param_updates2, filename2),
+                          (False, param_updates3, filename3),
+                          (True, param_updates4, filename4),
+                          (True, param_updates5, filename5),
+                          (True, param_updates6, filename6)],
+                         ids=['Open, Unbalanced', 'Closed Balanced',
+                              'Closed, reform, baseline spending',
+                              'Baseline partial open',
+                              'Small open, budget balance',
+                              'Partial open, baseline, use zeta'])
 @pytest.mark.full_run
 def test_run_SS(baseline, param_updates, filename):
     # Test SS.run_SS function.  Provide inputs to function and
