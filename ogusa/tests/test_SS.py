@@ -601,52 +601,52 @@ def test_euler_equation_solver():
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
-param_updates1 = {
-    'small_open': True
-}
-filename1 = 'run_SS_open_unbal_outputs.pkl'
-param_updates2 = {
-    'budget_balance': True
-}
-filename2 = 'run_SS_closed_balanced_outputs.pkl'
-param_updates3 = {
-    'baseline_spending': True
-}
-filename3 = 'inner_loop_outputs_reform_closed_baselinespending.pkl'
-param_updates4 = {
-    'zeta_D': [0.4],
-    'zeta_K': [0.1],
-}
-filename4 = 'inner_loop_outputs_baseline_partialopen.pkl'
-param_updates5 = {
-    'small_open': True,
-    'budget_balance': True,
-    'world_int_rate': [0.05]
-}
-filename5 = 'inner_loop_outputss_baseline_smallopen.pkl'
-param_updates6 = {
-    'use_zeta': True,
-}
-filename6 = 'inner_loop_outputss_baseline_smallopen.pkl'
+param_updates1 = {}
+filename1 = 'run_SS_baseline_outputs.pkl'
+param_updates2 = {'use_zeta': True}
+filename2 = 'run_SS_baseline_use_zeta.pkl'
+param_updates3 = {'small_open': True}
+filename3 = 'run_SS_baseline_small_open.pkl'
+param_updates4 = {'small_open': True, 'use_zeta': True}
+filename4 = 'run_SS_baseline_small_open_use_zeta.pkl'
+param_updates5 = {}
+filename5 = 'run_SS_reform.pkl'
+param_updates6 = {'use_zeta': True}
+filename6 = 'run_SS_reform_use_zeta.pkl'
+param_updates7 = {'small_open': True}
+filename7 = 'run_SS_reform_small_open.pkl'
+param_updates8 = {'small_open': True, 'use_zeta': True}
+filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
+param_updates9 = {'baseline_spending': True}
+filename9 = 'run_SS_reform_baseline_spend.pkl'
+param_updates10 = {'baseline_spending': True, 'use_zeta': True}
+filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
 
 
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates1, filename1),
                           (True, param_updates2, filename2),
-                          (False, param_updates3, filename3),
+                          (True, param_updates3, filename3),
                           (True, param_updates4, filename4),
-                          (True, param_updates5, filename5),
-                          (True, param_updates6, filename6)],
-                         ids=['Open, Unbalanced', 'Closed Balanced',
-                              'Closed, reform, baseline spending',
-                              'Baseline partial open',
-                              'Small open, budget balance',
-                              'Partial open, baseline, use zeta'])
+                          (False, param_updates5, filename5),
+                          (False, param_updates6, filename6),
+                          (False, param_updates7, filename7),
+                          (False, param_updates8, filename8),
+                          (False, param_updates9, filename9),
+                          (False, param_updates10, filename10)],
+                         ids=['Baseline', 'Baseline, use zeta',
+                              'Baseline, small open',
+                              'Baseline, small open use zeta',
+                              'Reform', 'Reform, use zeta',
+                              'Reform, small open',
+                              'Reform, small open use zeta',
+                              'Reform, baseline spending',
+                              'Reform, baseline spending, use zeta'])
 @pytest.mark.full_run
 def test_run_SS(baseline, param_updates, filename):
     # Test SS.run_SS function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    p = Specifications(baseline=baseline)
+    p = Specifications(baseline=baseline, test=False)
     p.update_specifications(param_updates)
     p.get_tax_function_parameters(None, run_micro=False)
     test_dict = SS.run_SS(p, None)
