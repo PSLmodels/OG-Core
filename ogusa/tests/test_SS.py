@@ -307,123 +307,29 @@ def test_SS_fsolve(guesses, args, expected):
                        atol=1e-6))
 
 
-def test_SS_solver():
-    # Test SS.SS_solver function.  Provide inputs to function and
-    # ensure that output returned matches what it has been before.
-    input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', 'SS_solver_inputs.pkl'))
-    (b_guess_init, n_guess_init, rss, TR_ss, factor_ss, Yss, params,
-     baseline, fsolve_flag, baseline_spending) = input_tuple
-    (bssmat, nssmat, chi_params, ss_params, income_tax_params,
-     iterative_params, small_open_params) = params
-
-    p = Specifications()
-    (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, tau_payroll,
-     tau_bq, p.rho, p.omega_SS, p.budget_balance, alpha_T,
-     p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
-     retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
-     p.b_ellipse, p.upsilon) = ss_params
-    p.eta = (p.omega_SS.reshape(p.S, 1) *
-             p.lambdas.reshape(1, p.J)).reshape(1, p.S, p.J)
-    p.Z = np.ones(p.T + p.S) * Z
-    p.tau_bq = np.ones(p.T + p.S) * 0.0
-    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
-    p.alpha_T = np.ones(p.T + p.S) * alpha_T
-    p.tau_b = np.ones(p.T + p.S) * tau_b
-    p.delta_tau = np.ones(p.T + p.S) * delta_tau
-    p.h_wealth = np.ones(p.T + p.S) * h_wealth
-    p.p_wealth = np.ones(p.T + p.S) * p_wealth
-    p.m_wealth = np.ones(p.T + p.S) * m_wealth
-    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
-    p.lambdas = lambdas.reshape(p.J, 1)
-    p.imm_rates = imm_rates.reshape(1, p.S)
-    p.tax_func_type = 'DEP'
-    p.zeta_K = np.array([0.0])
-    p.zeta_D = np.array([0.0])
-    p.initial_foreign_debt_ratio = 0.0
-    p.r_gov_shift = np.array([0.0])
-    p.start_year = 2019
-    p.baseline = baseline
-    p.baseline_spending = baseline_spending
-    p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
-        income_tax_params
-    p.etr_params = np.transpose(etr_params.reshape(
-        p.S, 1, etr_params.shape[-1]), (1, 0, 2))
-    p.mtrx_params = np.transpose(mtrx_params.reshape(
-        p.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-    p.mtry_params = np.transpose(mtry_params.reshape(
-        p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
-    p.maxiter, p.mindist_SS = iterative_params
-    p.chi_b, p.chi_n = chi_params
-    p.small_open, firm_r, hh_r = small_open_params
-    p.firm_r = np.ones(p.T + p.S) * firm_r
-    p.hh_r = np.ones(p.T + p.S) * hh_r
-    p.frac_tax_payroll = 0.5 * np.ones(p.T + p.S)
-    p.num_workers = 1
-
-    expected_dict = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', 'SS_solver_outputs.pkl'))
-
-    BQss = expected_dict['BQss']
-    test_dict = SS.SS_solver(b_guess_init, n_guess_init, rss, BQss, TR_ss,
-                             factor_ss, Yss, p, None, fsolve_flag)
-
-    # delete values key-value pairs that are not in both dicts
-    del expected_dict['bssmat'], expected_dict['chi_n'], expected_dict['chi_b']
-    del expected_dict['Iss_total']
-    del test_dict['etr_ss'], test_dict['mtrx_ss'], test_dict['mtry_ss']
-    test_dict['IITpayroll_revenue'] = (test_dict['total_revenue_ss'] -
-                                       test_dict['business_revenue'])
-    del test_dict['T_Pss'], test_dict['T_BQss'], test_dict['T_Wss']
-    del test_dict['K_d_ss'], test_dict['K_f_ss'], test_dict['D_d_ss']
-    del test_dict['D_f_ss'], test_dict['I_d_ss'], test_dict['trssmat']
-    del test_dict['debt_service_f'], test_dict['new_borrowing_f']
-    del test_dict['bqssmat'], test_dict['T_Css'], test_dict['Iss_total']
-    del test_dict['iit_revenue'], test_dict['payroll_tax_revenue']
-    test_dict['revenue_ss'] = test_dict.pop('total_revenue_ss')
-    test_dict['T_Hss'] = test_dict.pop('TR_ss')
-
-    for k, v in expected_dict.items():
-        print('Testing ', k)
-        assert(np.allclose(test_dict[k], v))
-
-
-param_updates1 = {
-    'budget_balance': True
-}
-filename1 = 'SS_solver_outputs_baseline_closed.pkl'
-param_updates2 = {
-    'budget_balance': True
-}
-filename2 = 'SS_solver_outputs_reform_closed.pkl'
-param_updates3 = {
-    'baseline_spending': True
-}
-filename3 = 'SS_solver_outputs_reform_closed_baselinespending.pkl'
-param_updates4 = {
-    'zeta_D': [0.0],
-    'zeta_K': [0.0],
-}
-filename4 = 'SS_solver_outputs_baseline_partialopen.pkl'
-param_updates5 = {
-    'small_open': True,
-    'world_int_rate': [0.05]
-}
-filename5 = 'SS_solver_outputs_baseline_smallopen.pkl'
+param_updates1 = {}
+filename1 = 'SS_solver_outputs_baseline.pkl'
+param_updates2 = {'budget_balance': True}
+filename2 = 'SS_solver_outputs_baseline_budget_balance.pkl'
+param_updates3 = {'baseline_spending': True}
+filename3 = 'SS_solver_outputs_baseline.pkl'
+param_updates4 = {'small_open': True}
+filename4 = 'SS_solver_outputs_baseline_small_open.pkl'
+param_updates5 = {'small_open': True, 'budget_balance': True}
+filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
 
 
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates1, filename1),
-                          (False, param_updates2, filename2),
+                          (True, param_updates2, filename2),
                           (False, param_updates3, filename3),
                           (True, param_updates4, filename4),
                           (True, param_updates5, filename5)],
-                         ids=['Baseline, Closed', 'Reform, Closed',
-                              'Reform, Baseline spending=True, Closed',
-                              'Baseline, Partial Open',
-                              'Baseline, Small Open'])
-def test_SS_solver_cases(baseline, param_updates, filename):
+                         ids=['Baseline', 'Baseline, budget balance',
+                              'Reform, baseline spending=True',
+                              'Baseline, small open',
+                              'Baseline, small open, budget balance'])
+def test_SS_solver(baseline, param_updates, filename):
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     p = Specifications(baseline=baseline)
@@ -440,12 +346,10 @@ def test_SS_solver_cases(baseline, param_updates, filename):
     BQguess = aggregates.get_BQ(rguess, b_guess, None, p, 'SS', False)
     Yguess = TRguess / p.alpha_T[-1]
 
+    SS.ENFORCE_SOLUTION_CHECKS = False
     test_dict = SS.SS_solver(b_guess, n_guess, rguess, BQguess, TRguess,
                              factorguess, Yguess, p, None, False)
 
-    import pickle
-    pickle.dump(test_dict, open(
-        os.path.join(CUR_PATH, 'test_io_data', filename), 'wb'))
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
 
@@ -454,40 +358,28 @@ def test_SS_solver_cases(baseline, param_updates, filename):
         assert(np.allclose(test_dict[k], v))
 
 
-param_updates1 = {
-    'budget_balance': True
-}
-filename1 = 'inner_loop_outputs_baseline_closed.pkl'
-param_updates2 = {
-    'budget_balance': True
-}
-filename2 = 'inner_loop_outputs_reform_closed.pkl'
-param_updates3 = {
-    'baseline_spending': True
-}
-filename3 = 'inner_loop_outputs_reform_closed_baselinespending.pkl'
-param_updates4 = {
-    'zeta_D': [0.2],
-    'zeta_K': [0.0],
-}
-filename4 = 'inner_loop_outputs_baseline_partialopen.pkl'
-param_updates5 = {
-    'small_open': True,
-    'world_int_rate': [0.05]
-}
-filename5 = 'inner_loop_outputss_baseline_smallopen.pkl'
+param_updates1 = {'small_open': True}
+filename1 = 'inner_loop_outputs_baseline_small_open.pkl'
+param_updates2 = {'budget_balance': True}
+filename2 = 'inner_loop_outputs_baseline_balance_budget.pkl'
+param_updates3 = {}
+filename3 = 'inner_loop_outputs_baseline.pkl'
+param_updates4 = {}
+filename4 = 'inner_loop_outputs_reform.pkl'
+param_updates5 = {'baseline_spending': True}
+filename5 = 'inner_loop_outputs_reform_baselinespending.pkl'
 
 
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates1, filename1),
-                          (False, param_updates2, filename2),
-                          (False, param_updates3, filename3),
-                          (True, param_updates4, filename4),
-                          (True, param_updates5, filename5)],
-                         ids=['Baseline, Closed', 'Reform, Closed',
-                              'Reform, Baseline spending=True, Closed',
-                              'Baseline, Partial Open',
-                              'Baseline, Small Open'])
+                          (True, param_updates2, filename2),
+                          (True, param_updates3, filename3),
+                          (False, param_updates4, filename4),
+                          (False, param_updates5, filename5)],
+                         ids=['Baseline, Small Open',
+                              'Baseline, Balanced Budget',
+                              'Baseline', 'Reform',
+                              'Reform, baseline spending'])
 def test_inner_loop(baseline, param_updates, filename):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
@@ -623,25 +515,33 @@ param_updates10 = {'baseline_spending': True, 'use_zeta': True}
 filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
 
 
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [(True, param_updates1, filename1),
+#                           (True, param_updates2, filename2),
+#                           (True, param_updates3, filename3),
+#                           (True, param_updates4, filename4),
+#                           (False, param_updates5, filename5),
+#                           (False, param_updates6, filename6),
+#                           (False, param_updates7, filename7),
+#                           (False, param_updates8, filename8),
+#                           (False, param_updates9, filename9),
+#                           (False, param_updates10, filename10)],
+#                          ids=['Baseline', 'Baseline, use zeta',
+#                               'Baseline, small open',
+#                               'Baseline, small open use zeta',
+#                               'Reform', 'Reform, use zeta',
+#                               'Reform, small open',
+#                               'Reform, small open use zeta',
+#                               'Reform, baseline spending',
+#                               'Reform, baseline spending, use zeta'])
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates1, filename1),
                           (True, param_updates2, filename2),
                           (True, param_updates3, filename3),
-                          (True, param_updates4, filename4),
-                          (False, param_updates5, filename5),
-                          (False, param_updates6, filename6),
-                          (False, param_updates7, filename7),
-                          (False, param_updates8, filename8),
-                          (False, param_updates9, filename9),
-                          (False, param_updates10, filename10)],
+                          (True, param_updates4, filename4)],
                          ids=['Baseline', 'Baseline, use zeta',
                               'Baseline, small open',
-                              'Baseline, small open use zeta',
-                              'Reform', 'Reform, use zeta',
-                              'Reform, small open',
-                              'Reform, small open use zeta',
-                              'Reform, baseline spending',
-                              'Reform, baseline spending, use zeta'])
+                              'Baseline, small open use zeta'])
 @pytest.mark.full_run
 def test_run_SS(baseline, param_updates, filename):
     # Test SS.run_SS function.  Provide inputs to function and
