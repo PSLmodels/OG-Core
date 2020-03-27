@@ -5,7 +5,7 @@ Test of steady-state module
 import pytest
 import numpy as np
 import os
-from ogusa import SS, utils, aggregates, household
+from ogusa import SS, utils, aggregates, household, execute
 from ogusa.parameters import Specifications
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
@@ -498,7 +498,7 @@ filename1 = 'run_SS_baseline_outputs.pkl'
 param_updates2 = {'use_zeta': True}
 filename2 = 'run_SS_baseline_use_zeta.pkl'
 param_updates3 = {'small_open': True}
-filename3 = 'run_SS_baseline_small_open.pkl'
+filename3 = 'run_SS_baseline_use_zeta.pkl'
 param_updates4 = {'small_open': True, 'use_zeta': True}
 filename4 = 'run_SS_baseline_small_open_use_zeta.pkl'
 param_updates5 = {}
@@ -507,12 +507,12 @@ param_updates6 = {'use_zeta': True}
 filename6 = 'run_SS_reform_use_zeta.pkl'
 param_updates7 = {'small_open': True}
 filename7 = 'run_SS_reform_small_open.pkl'
-param_updates8 = {'small_open': True, 'use_zeta': True}
-filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
-param_updates9 = {'baseline_spending': True}
-filename9 = 'run_SS_reform_baseline_spend.pkl'
-param_updates10 = {'baseline_spending': True, 'use_zeta': True}
-filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
+# param_updates8 = {'small_open': True, 'use_zeta': True}
+# filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
+# param_updates9 = {'baseline_spending': True}
+# filename9 = 'run_SS_reform_baseline_spend.pkl'
+# param_updates10 = {'baseline_spending': True, 'use_zeta': True}
+# filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
 
 
 # @pytest.mark.parametrize('baseline,param_updates,filename',
@@ -538,22 +538,28 @@ filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
                          [(True, param_updates1, filename1),
                           (True, param_updates2, filename2),
                           (True, param_updates3, filename3),
-                          (True, param_updates4, filename4)],
+                          (True, param_updates4, filename4),
+                          (False, param_updates5, filename5),
+                          (False, param_updates6, filename6),
+                          (False, param_updates7, filename7)],
                          ids=['Baseline', 'Baseline, use zeta',
                               'Baseline, small open',
-                              'Baseline, small open use zeta'])
+                              'Baseline, small open use zeta',
+                              'Reform', 'Reform, use zeta',
+                              'Reform, small open'])
 @pytest.mark.full_run
 def test_run_SS(baseline, param_updates, filename):
     # Test SS.run_SS function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    p = Specifications(baseline=baseline, test=False)
+    if baseline is False:
+        execute.runner(utils.BASELINE_DIR, utils.BASELINE_DIR,
+                       time_path=False, baseline=True,
+                       og_spec=param_updates, run_micro=False)
+    p = Specifications(baseline=baseline)
     p.update_specifications(param_updates)
     p.get_tax_function_parameters(None, run_micro=False)
     test_dict = SS.run_SS(p, None)
 
-    import pickle
-    pickle.dump(test_dict, open(
-        os.path.join(CUR_PATH, 'test_io_data', filename), 'wb'))
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
 
