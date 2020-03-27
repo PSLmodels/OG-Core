@@ -423,9 +423,9 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     print('Foreign capital holdings = ', K_f_ss)
     new_borrowing_f = D_f_ss * (np.exp(p.g_y) * (1 + p.g_n_ss) - 1)
     debt_service_f = D_f_ss * r_hh_ss
-    RC = aggr.resource_constraint(Yss, Css, Gss, I_d_ss, K_f_ss,
-                                  new_borrowing_f, debt_service_f, r_hh_ss,
-                                  p)
+    RC = aggr.resource_constraint(
+        Yss, Css, Gss, I_d_ss, K_f_ss, new_borrowing_f, debt_service_f,
+        r_hh_ss, p)
     print('resource constraint: ', RC)
 
     if Gss < 0:
@@ -577,8 +577,12 @@ def run_SS(p, client=None):
     # For initial guesses of w, r, TR, and factor, we use values that
     # are close to some steady state values.
     if p.baseline:
-        b_guess = np.ones((p.S, p.J)) * 0.07
-        n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
+        if p.use_zeta:
+            b_guess = np.ones((p.S, p.J)) * 0.0055
+            n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
+        else:
+            b_guess = np.ones((p.S, p.J)) * 0.07
+            n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
         if p.small_open:
             rguess = p.firm_r[-1]
         else:
@@ -611,11 +615,28 @@ def run_SS(p, client=None):
         baseline_ss_dir = os.path.join(
             p.baseline_dir, 'SS', 'SS_vars.pkl')
         ss_solutions = utils.safe_read_pickle(baseline_ss_dir)
-        (b_guess, n_guess, rguess, BQguess, TRguess, Yguess, factor) =\
-            (ss_solutions['bssmat_splus1'], ss_solutions['nssmat'],
-             ss_solutions['rss'], ss_solutions['BQss'],
-             ss_solutions['TR_ss'], ss_solutions['Yss'],
-             ss_solutions['factor_ss'])
+        # use baseline solution as starting values if dimensions match
+        if ss_solutions['bssmat_splus1'].shape == (p.S, p.J):
+            (b_guess, n_guess, rguess, BQguess, TRguess, Yguess,
+             factor) =\
+                (ss_solutions['bssmat_splus1'], ss_solutions['nssmat'],
+                 ss_solutions['rss'], ss_solutions['BQss'],
+                 ss_solutions['TR_ss'], ss_solutions['Yss'],
+                 ss_solutions['factor_ss'])
+        else:
+            if p.use_zeta:
+                b_guess = np.ones((p.S, p.J)) * 0.0055
+                n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
+            else:
+                b_guess = np.ones((p.S, p.J)) * 0.07
+                n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
+            if p.small_open:
+                rguess = p.firm_r[-1]
+            else:
+                rguess = 0.09
+            TRguess = 0.12
+            factorguess = 70000
+            BQguess = aggr.get_BQ(rguess, b_guess, None, p, 'SS', False)
         if p.baseline_spending:
             TR_ss = TRguess
             ss_params_reform = (b_guess, n_guess, TR_ss, factor, p, client)
