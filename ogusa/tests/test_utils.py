@@ -76,7 +76,7 @@ def test_pickle_file_compare():
     Test of utils.pickle_file_compare() function
     '''
     fname = os.path.join(CUR_PATH, 'test_io_data',
-                         'SS_solver_outputs.pkl')
+                         'SS_solver_outputs_baseline.pkl')
     comparison = utils.pickle_file_compare(fname, fname)
     assert comparison
 
@@ -344,7 +344,7 @@ def test_get_initial_path(x1, xT, p, shape, expected):
 
 
 @pytest.mark.parametrize(
-    'filename', [('SS_solver_outputs.pkl'),
+    'filename', [('SS_solver_outputs_baseline.pkl'),
                  ('tax_dict_for_tests.pkl')],
     ids=['Python 2 pickle file', 'Python 3 pickle file'])
 def test_safe_read_pickle(filename):
