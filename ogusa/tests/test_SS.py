@@ -334,6 +334,7 @@ def test_SS_solver(baseline, param_updates, filename):
     # ensure that output returned matches what it has been before.
     p = Specifications(baseline=baseline)
     p.update_specifications(param_updates)
+    p.output_base = CUR_PATH
     p.get_tax_function_parameters(None, run_micro=False)
     b_guess = np.ones((p.S, p.J)) * 0.07
     n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
@@ -385,6 +386,7 @@ def test_inner_loop(baseline, param_updates, filename):
     # ensure that output returned matches what it has been before.
     p = Specifications(baseline=baseline)
     p.update_specifications(param_updates)
+    p.output_base = CUR_PATH
     p.get_tax_function_parameters(None, run_micro=False)
     bssmat = np.ones((p.S, p.J)) * 0.07
     nssmat = np.ones((p.S, p.J)) * .4 * p.ltilde
