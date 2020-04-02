@@ -32,7 +32,7 @@ def mkdirs(path):
     try:
         os.makedirs(path)
     except OSError as oe:
-        if oe.errno == PATH_EXISTS_ERRNO:
+        if oe.errno == 17:  # 17 is an error code if can't make path
             pass
 
 

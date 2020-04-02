@@ -11,7 +11,7 @@ import dask.multiprocessing
 import numpy as np
 import pickle
 import pkg_resources
-from ogusa.utils import DEFAULT_START_YEAR, TC_LAST_YEAR, PUF_START_YEAR
+from ogusa.constants import DEFAULT_START_YEAR, TC_LAST_YEAR, PUF_START_YEAR
 
 
 def get_calculator(baseline, calculator_start_year, reform=None,
