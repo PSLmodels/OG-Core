@@ -577,21 +577,24 @@ def run_SS(p, client=None):
     # For initial guesses of w, r, TR, and factor, we use values that
     # are close to some steady state values.
     if p.baseline:
-        if p.use_zeta:
-            b_guess = np.ones((p.S, p.J)) * 0.0055
-            n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
-        else:
-            b_guess = np.ones((p.S, p.J)) * 0.07
-            n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
         if p.small_open:
             rguess = p.firm_r[-1]
         else:
-            rguess = 0.09
-        TRguess = 0.12
-        factorguess = 70000
+            rguess = 0.0648
+        if p.use_zeta:
+            b_guess = np.ones((p.S, p.J)) * 0.0055
+            n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
+            TRguess = 0.057
+            factorguess = 139292.27
+        else:
+            b_guess = np.ones((p.S, p.J)) * 0.07
+            n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
+        TRguess = 0.057
+        factorguess = 139355.154
         BQguess = aggr.get_BQ(rguess, b_guess, None, p, 'SS', False)
         ss_params_baseline = (b_guess, n_guess, None, None, p, client)
         if p.use_zeta:
+            BQguess = 0.12231465279007188
             guesses = [rguess] + list([BQguess]) + [TRguess, factorguess]
         else:
             guesses = [rguess] + list(BQguess) + [TRguess, factorguess]
