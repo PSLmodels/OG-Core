@@ -11,7 +11,8 @@ import os
 from taxcalc import Calculator
 from ogusa import output_tables as ot
 from ogusa.execute import runner
-from ogusa.utils import REFORM_DIR, BASELINE_DIR, safe_read_pickle
+from ogusa.constants import REFORM_DIR, BASELINE_DIR
+from ogusa.utils import safe_read_pickle
 
 
 def main():
