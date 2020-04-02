@@ -1,3 +1,24 @@
+import taxcalc
+
+
+SHOW_RUNTIME = False  # Flag to display RuntimeWarings when run model
+
+EPSILON = 1e-10
+PATH_EXISTS_ERRNO = 17
+
+REFORM_DIR = "OUTPUT_REFORM"
+BASELINE_DIR = "OUTPUT_BASELINE"
+
+# Default year for model runs
+DEFAULT_START_YEAR = 2020
+
+# Latest year TaxData extrapolates to
+TC_LAST_YEAR = 2029
+
+# Year of data used (e.g. PUF or CPS year)
+CPS_START_YEAR = taxcalc.Records.CPSCSV_YEAR
+PUF_START_YEAR = taxcalc.Records.PUFCSV_YEAR
+
 VAR_LABELS = {'Y': 'GDP ($Y_t$)', 'C': 'Consumption ($C_t$)',
               'L': 'Labor ($L_t$)',
               'G': 'Government Expenditures ($G_t$)',
