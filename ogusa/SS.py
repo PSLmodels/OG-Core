@@ -5,9 +5,13 @@ from dask import delayed, compute
 import dask.multiprocessing
 from ogusa import tax, household, firm, utils, fiscal
 from ogusa import aggregates as aggr
+from ogusa.constants import SHOW_RUNTIME
 import os
 import warnings
 
+
+if not SHOW_RUNTIME:
+    warnings.simplefilter("ignore", RuntimeWarning)
 
 '''
 Set minimizer tolerance
