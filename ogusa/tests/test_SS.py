@@ -312,7 +312,7 @@ filename1 = 'SS_solver_outputs_baseline.pkl'
 param_updates2 = {'budget_balance': True}
 filename2 = 'SS_solver_outputs_baseline_budget_balance.pkl'
 param_updates3 = {'baseline_spending': True}
-filename3 = 'SS_solver_outputs_baseline.pkl'
+filename3 = 'SS_solver_outputs_reform_baseline_spending.pkl'
 param_updates4 = {'small_open': True}
 filename4 = 'SS_solver_outputs_baseline_small_open.pkl'
 param_updates5 = {'small_open': True, 'budget_balance': True}
@@ -336,18 +336,19 @@ def test_SS_solver(baseline, param_updates, filename):
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
     p.get_tax_function_parameters(None, run_micro=False)
+    print('Use zeta = ', p.use_zeta)
     b_guess = np.ones((p.S, p.J)) * 0.07
-    n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
+    n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
     if p.small_open:
         rguess = p.firm_r[-1]
     else:
-        rguess = 0.09
-    TRguess = 0.12
-    factorguess = 70000
+        rguess = 0.06483431412921253
+    TRguess = 0.05738932081035772
+    factorguess = 139355.1547340256
     BQguess = aggregates.get_BQ(rguess, b_guess, None, p, 'SS', False)
-    Yguess = TRguess / p.alpha_T[-1]
+    Yguess = 0.6376591201150815
 
-    SS.ENFORCE_SOLUTION_CHECKS = False
+    SS.ENFORCE_SOLUTION_CHECKS = True
     test_dict = SS.SS_solver(b_guess, n_guess, rguess, BQguess, TRguess,
                              factorguess, Yguess, p, None, False)
 
@@ -500,7 +501,7 @@ filename1 = 'run_SS_baseline_outputs.pkl'
 param_updates2 = {'use_zeta': True}
 filename2 = 'run_SS_baseline_use_zeta.pkl'
 param_updates3 = {'small_open': True}
-filename3 = 'run_SS_baseline_use_zeta.pkl'
+filename3 = 'run_SS_baseline_small_open.pkl'
 param_updates4 = {'small_open': True, 'use_zeta': True}
 filename4 = 'run_SS_baseline_small_open_use_zeta.pkl'
 param_updates5 = {}
@@ -509,8 +510,8 @@ param_updates6 = {'use_zeta': True}
 filename6 = 'run_SS_reform_use_zeta.pkl'
 param_updates7 = {'small_open': True}
 filename7 = 'run_SS_reform_small_open.pkl'
-# param_updates8 = {'small_open': True, 'use_zeta': True}
-# filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
+param_updates8 = {'small_open': True, 'use_zeta': True}
+filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
 # param_updates9 = {'baseline_spending': True}
 # filename9 = 'run_SS_reform_baseline_spend.pkl'
 # param_updates10 = {'baseline_spending': True, 'use_zeta': True}
@@ -543,12 +544,14 @@ filename7 = 'run_SS_reform_small_open.pkl'
                           (True, param_updates4, filename4),
                           (False, param_updates5, filename5),
                           (False, param_updates6, filename6),
-                          (False, param_updates7, filename7)],
+                          (False, param_updates7, filename7),
+                          (False, param_updates8, filename8)],
                          ids=['Baseline', 'Baseline, use zeta',
                               'Baseline, small open',
                               'Baseline, small open use zeta',
                               'Reform', 'Reform, use zeta',
-                              'Reform, small open'])
+                              'Reform, small open',
+                              'Reform, small open use zeta'])
 @pytest.mark.full_run
 def test_run_SS(baseline, param_updates, filename):
     # Test SS.run_SS function.  Provide inputs to function and
