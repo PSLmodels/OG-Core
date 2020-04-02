@@ -3,9 +3,6 @@ import taxcalc
 
 SHOW_RUNTIME = False  # Flag to display RuntimeWarings when run model
 
-EPSILON = 1e-10
-PATH_EXISTS_ERRNO = 17
-
 REFORM_DIR = "OUTPUT_REFORM"
 BASELINE_DIR = "OUTPUT_BASELINE"
 
