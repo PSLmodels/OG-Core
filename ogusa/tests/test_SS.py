@@ -357,7 +357,7 @@ def test_SS_solver(baseline, param_updates, filename):
 
     for k, v in expected_dict.items():
         print('Testing ', k)
-        assert(np.allclose(test_dict[k], v))
+        assert(np.allclose(test_dict[k], v, atol=1e-07, equal_nan=True))
 
 
 param_updates1 = {'small_open': True}
