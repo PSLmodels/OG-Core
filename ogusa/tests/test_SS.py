@@ -311,8 +311,8 @@ param_updates1 = {}
 filename1 = 'SS_solver_outputs_baseline.pkl'
 param_updates2 = {'budget_balance': True}
 filename2 = 'SS_solver_outputs_baseline_budget_balance.pkl'
-param_updates3 = {'baseline_spending': True}
-filename3 = 'SS_solver_outputs_reform_baseline_spending.pkl'
+# param_updates3 = {'baseline_spending': True}
+# filename3 = 'SS_solver_outputs_reform_baseline_spending.pkl'
 param_updates4 = {'small_open': True}
 filename4 = 'SS_solver_outputs_baseline_small_open.pkl'
 param_updates5 = {'small_open': True, 'budget_balance': True}
@@ -322,11 +322,11 @@ filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates1, filename1),
                           (True, param_updates2, filename2),
-                          (False, param_updates3, filename3),
+                          # (False, param_updates3, filename3),
                           (True, param_updates4, filename4),
                           (True, param_updates5, filename5)],
                          ids=['Baseline', 'Baseline, budget balance',
-                              'Reform, baseline spending=True',
+                              # 'Reform, baseline spending=True',
                               'Baseline, small open',
                               'Baseline, small open, budget balance'])
 def test_SS_solver(baseline, param_updates, filename):
