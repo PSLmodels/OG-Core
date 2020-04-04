@@ -16,6 +16,8 @@ import pandas as pd
 import pickle
 from pkg_resources import resource_stream, Requirement
 
+EPSILON = 1e-10  # tolerance or comparison functions
+
 
 def mkdirs(path):
     '''
