@@ -24,6 +24,7 @@ def test_firstdoughnutring():
      p_wealth, m_wealth, p.b_ellipse, p.upsilon, p.chi_b, p.chi_n,
      theta, p.baseline) = tpi_params
     p.Z = np.ones(p.T + p.S) * Z
+
     p.tau_bq = np.ones(p.T + p.S) * 0.0
     p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
     p.tau_b = np.ones(p.T + p.S) * tau_b
@@ -176,7 +177,11 @@ def test_run_TPI():
         'J': J,
         'S': S,
         'T': T,
-        'eta': (np.ones((S, J)) / (S * J))
+        'eta': (np.ones((S, J)) / (S * J)),
+        'r_gov_shift': 0.0, 'zeta_D': [0.0, 0.0],
+        'zeta_K': [0.0, 0.0], 'debt_ratio_ss': 1.0,
+        'initial_foreign_debt_ratio': 0.0,
+        'start_year': 2019
     }
     # update parameters instance with new values for test
     p.update_specifications(new_param_values, raise_errors=False)
@@ -221,6 +226,7 @@ def test_run_TPI():
      p.omega_S_preTP, initial_debt, D0) = initial_values
 
     # Need to run SS first to get results
+    SS.ENFORCE_SOLUTION_CHECKS = False
     ss_outputs = SS.run_SS(p, None)
 
     if p.baseline:

@@ -112,7 +112,7 @@ class Specifications(paramtools.Parameters):
 
         # Extend parameters that may vary over the time path
         tp_param_list = ['alpha_G', 'alpha_T', 'Z', 'world_int_rate',
-                         'delta_tau_annual', 'tau_b', 'tau_bq',
+                         'delta_tau_annual', 'cit_rate', 'tau_bq',
                          'tau_payroll', 'h_wealth', 'm_wealth',
                          'p_wealth', 'retirement_age',
                          'replacement_rate_adjust', 'zeta_D', 'zeta_K']
@@ -199,6 +199,9 @@ class Specifications(paramtools.Parameters):
         self.T = int(self.T)
         self.J = int(self.J)
 
+        # make sure zeta matrix sums to one (e.g., default off due to rounding)
+        self.zeta = self.zeta / self.zeta.sum()
+
         # open economy parameters
         firm_r_annual = self.world_int_rate
         hh_r_annual = firm_r_annual
@@ -211,6 +214,17 @@ class Specifications(paramtools.Parameters):
                                   self.starting_age) * self.S) /
                                 80.0) - 1).astype(int)
 
+        # Calculations for business income taxes
+        # at some point, we will want to make Cost of Capital Calculator
+        # a dependency to compute tau_b
+        c_corp_share_of_assets = 0.55
+        # this adjustment factor has as the numerator CIT receipts/GDP
+        # from US data and as the demoninator CIT receipts/GDP from the
+        # model with baseline parameterization and no adjustment to the
+        # CIT_rate
+        adjustment_factor_for_cit_receipts = 0.017 / 0.055
+        self.tau_b = (self.cit_rate * c_corp_share_of_assets *
+                      adjustment_factor_for_cit_receipts)
         self.delta_tau = (
             -1 * rate_conversion(-1 * self.delta_tau_annual,
                                  self.starting_age, self.ending_age,
@@ -279,34 +293,24 @@ class Specifications(paramtools.Parameters):
         '''
         # Income tax parameters
         if self.baseline:
-            tx_func_est_path = os.path.join(
-                self.output_base, 'TxFuncEst_baseline{}.pkl'.format(self.guid),
-            )
+            pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
+            tx_func_est_path = os.path.join(self.output_base, pckl)
+            print('Using baseline tax parameters from ',
+                  tx_func_est_path)
         else:
-            tx_func_est_path = os.path.join(
-                self.output_base, 'TxFuncEst_policy{}.pkl'.format(self.guid),
-            )
+            pckl = "TxFuncEst_policy{}.pkl".format(self.guid)
+            tx_func_est_path = os.path.join(self.output_base, pckl)
+            print('Using reform policy tax parameters from ',
+                  tx_func_est_path)
         if run_micro:
-            txfunc.get_tax_func_estimate(
+            txfunc.get_tax_func_estimate(  # pragma: no cover
                 self.BW, self.S, self.starting_age, self.ending_age,
                 self.baseline, self.analytical_mtrs, self.tax_func_type,
                 self.age_specific, self.start_year, self.iit_reform,
                 self.guid, tx_func_est_path, self.data, client,
                 self.num_workers)
-        if self.baseline:
-            baseline_pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
-            estimate_file = tx_func_est_path
-            print('Using baseline tax parameters from ', tx_func_est_path)
-            dict_params = self.read_tax_func_estimate(estimate_file,
-                                                      baseline_pckl)
-
-        else:
-            policy_pckl = "TxFuncEst_policy{}.pkl".format(self.guid)
-            estimate_file = tx_func_est_path
-            print('Using reform policy tax parameters from ', tx_func_est_path)
-            dict_params = self.read_tax_func_estimate(estimate_file,
-                                                      policy_pckl)
-
+        estimate_file = tx_func_est_path
+        dict_params = self.read_tax_func_estimate(estimate_file, pckl)
         self.mean_income_data = dict_params['tfunc_avginc'][0]
         try:
             self.frac_tax_payroll = np.append(
@@ -495,24 +499,8 @@ class Specifications(paramtools.Parameters):
         if not (isinstance(revision, dict) or isinstance(revision, str)):
             raise ValueError(
                 'ERROR: revision is not a dictionary of string')
-        if not revision:
-            return  # no revision to implement
         self.adjust(revision, raise_errors=raise_errors)
-        if self.errors and raise_errors:
-            raise ValueError('\n' + self.errors)
         self.compute_default_params()
-
-    @staticmethod
-    def read_json_revision(obj):
-        '''
-        Return a revision dictionary, which is suitable for use with the
-        update_specification method, that is derived from the specified
-        JSON object, which can be None or a string containing
-        a local filename,
-        a URL beginning with 'http' pointing to a JSON file hosted
-        online, or a valid JSON text.
-        '''
-        return paramtools.Parameters.read_params(obj, 'revision')
 
 
 def revision_warnings_errors(spec_revision):
@@ -529,10 +517,7 @@ def revision_warnings_errors(spec_revision):
     '''
     rtn_dict = {'warnings': '', 'errors': ''}
     spec = Specifications()
-    try:
-        spec.update_specifications(spec_revision, raise_errors=False)
-        if spec._errors:
-            rtn_dict['errors'] = spec._errors
-    except ValueError as valerr_msg:
-        rtn_dict['errors'] = valerr_msg.__str__()
+    spec.update_specifications(spec_revision, raise_errors=False)
+    if spec._errors:
+        rtn_dict['errors'] = spec._errors
     return rtn_dict

@@ -4,6 +4,8 @@ Tests of output_plots.py module
 
 import pytest
 import os
+import numpy as np
+import matplotlib.image as mpimg
 from ogusa import utils, output_plots
 
 
@@ -27,44 +29,184 @@ reform_taxfunctions = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'TxFuncEst_reform.pkl'))
 
 
-def test_plot_aggregates():
-    fig = output_plots.plot_aggregates(base_tpi, base_params,
-                                       reform_tpi, reform_params)
+test_data = [(base_tpi, base_params, reform_tpi, reform_params,
+              'pct_diff', None, None),
+             (base_tpi, base_params, reform_tpi, reform_params, 'diff',
+              None, None),
+             (base_tpi, base_params, reform_tpi, reform_params, 'cbo',
+              None, None),
+             (base_tpi, base_params, reform_tpi, reform_params,
+              'levels', None, None),
+             (base_tpi, base_params, None, None, 'levels', None, None),
+             (base_tpi, base_params, None, None, 'levels', [2040, 2060],
+              None),
+             (base_tpi, base_params, None, None, 'levels', None,
+              'Test plot title')
+             ]
+
+
+@pytest.mark.parametrize(
+    'base_tpi,base_params,reform_tpi,reform_parms,plot_type,' +
+    'vertical_line_years,plot_title',
+    test_data, ids=['Pct Diff', 'Diff', 'CBO', 'Levels w reform',
+                    'Levels w/o reform', 'Vertical line included',
+                    'Plot title included'])
+def test_plot_aggregates(base_tpi, base_params, reform_tpi,
+                         reform_parms, plot_type, vertical_line_years,
+                         plot_title):
+    fig = output_plots.plot_aggregates(
+        base_tpi, base_params, reform_tpi=reform_tpi,
+        reform_params=reform_params, var_list=['Y'],
+        plot_type=plot_type, num_years_to_plot=20,
+        vertical_line_years=vertical_line_years, plot_title=plot_title)
     assert fig
 
 
-def test_plot_gdp_ratio():
-    fig = output_plots.plot_gdp_ratio(base_tpi, base_params)
+test_data = [(base_tpi, base_params, None, None, None, None),
+             (base_tpi, base_params, reform_tpi, reform_params, None,
+              None),
+             (base_tpi, base_params, reform_tpi, reform_params,
+              [2040, 2060], None),
+             (base_tpi, base_params, None, None, None,
+              'Test plot title')
+             ]
+
+
+def test_plot_aggregates_save_fig(tmpdir):
+    path = os.path.join(tmpdir, 'test_plot.png')
+    output_plots.plot_aggregates(
+        base_tpi, base_params, plot_type='levels', path=path)
+    img = mpimg.imread(path)
+
+    assert isinstance(img, np.ndarray)
+
+
+test_data = [(base_tpi, base_params, None, None, None, None),
+             (base_tpi, base_params, reform_tpi, reform_params, None,
+              None),
+             (base_tpi, base_params, reform_tpi, reform_params,
+              [2040, 2060], None),
+             (base_tpi, base_params, None, None, None,
+              'Test plot title')
+             ]
+
+
+@pytest.mark.parametrize(
+    'base_tpi,base_params,reform_tpi,reform_params,' +
+    'vertical_line_years,plot_title',
+    test_data, ids=['No reform', 'With reform',
+                    'Vertical line included', 'Plot title included'])
+def test_plot_gdp_ratio(base_tpi, base_params, reform_tpi,
+                        reform_params, vertical_line_years, plot_title):
+    fig = output_plots.plot_gdp_ratio(
+        base_tpi, base_params, reform_tpi=reform_tpi,
+        reform_params=reform_params,
+        vertical_line_years=vertical_line_years, plot_title=plot_title)
     assert fig
+
+
+def test_plot_gdp_ratio_save_fig(tmpdir):
+    path = os.path.join(tmpdir, 'test_plot.png')
+    output_plots.plot_aggregates(
+        base_tpi, base_params, reform_tpi=reform_tpi,
+        reform_params=reform_params, path=path)
+    img = mpimg.imread(path)
+
+    assert isinstance(img, np.ndarray)
 
 
 def test_ability_bar():
-    fig = output_plots.ability_bar(base_tpi, base_params, reform_tpi,
-                                   reform_params)
+    fig = output_plots.ability_bar(
+        base_tpi, base_params, reform_tpi, reform_params,
+        plot_title=' Test Plot Title')
     assert fig
+
+
+def test_ability_bar_save_fig(tmpdir):
+    path = os.path.join(tmpdir, 'test_plot.png')
+    output_plots.ability_bar(
+        base_tpi, base_params, reform_tpi, reform_params, path=path)
+    img = mpimg.imread(path)
+
+    assert isinstance(img, np.ndarray)
 
 
 def test_ability_bar_ss():
     fig = output_plots.ability_bar_ss(
-        base_ss, base_params, reform_ss, reform_params)
+        base_ss, base_params, reform_ss, reform_params,
+        plot_title=' Test Plot Title')
     assert fig
 
 
-def test_ss_profiles():
-    fig = output_plots.ss_profiles(base_ss, base_params, reform_ss,
-                                   reform_params)
+@pytest.mark.parametrize(
+    'by_j,plot_data', [(True, False), (False, False), (False, True)],
+    ids=['By j', 'Not by j', 'Plot data'])
+def test_ss_profiles(by_j, plot_data):
+    fig = output_plots.ss_profiles(
+        base_ss, base_params, reform_ss, reform_params, by_j=by_j,
+        plot_data=plot_data, plot_title=' Test Plot Title')
     assert fig
 
 
-def test_tpi_profiles():
-    fig = output_plots.tpi_profiles(base_tpi, base_params, reform_tpi,
-                                    reform_params)
+def test_ss_profiles_save_fig(tmpdir):
+    path = os.path.join(tmpdir, 'test_plot.png')
+    output_plots.ss_profiles(
+        base_ss, base_params, reform_ss, reform_params, path=path)
+    img = mpimg.imread(path)
+
+    assert isinstance(img, np.ndarray)
+
+
+@pytest.mark.parametrize(
+    'by_j', [True, False], ids=['By j', 'Not by j'])
+def test_tpi_profiles(by_j):
+    fig = output_plots.tpi_profiles(
+        base_tpi, base_params, reform_tpi, reform_params, by_j=by_j,
+        plot_title=' Test Plot Title')
     assert fig
 
 
-def test_ss_3Dplot():
-    fig = output_plots.ss_3Dplot(base_params, base_ss)
+test_data = [(base_params, base_ss, None, None, 'levels', None),
+             (base_params, base_ss, reform_params, reform_ss, 'levels',
+              None),
+             (base_params, base_ss, reform_params, reform_ss, 'diff',
+              None),
+             (base_params, base_ss, reform_params, reform_ss,
+              'pct_diff', None),
+             (base_params, base_ss, reform_params, reform_ss,
+              'pct_diff', 'Test Plot Title')
+             ]
+
+
+def test_tpi_profiles_save_fig(tmpdir):
+    path = os.path.join(tmpdir, 'test_plot.png')
+    output_plots.tpi_profiles(
+        base_tpi, base_params, reform_tpi, reform_params, path=path)
+    img = mpimg.imread(path)
+
+    assert isinstance(img, np.ndarray)
+
+
+@pytest.mark.parametrize(
+    'base_params,base_ss,reform_params,reform_ss,plot_type,plot_title',
+    test_data, ids=['Levels', 'Levels w/ reform', 'Differences',
+                    'Pct Diffs', 'Plot title included'])
+def test_ss_3Dplot(base_params, base_ss, reform_params, reform_ss,
+                   plot_type, plot_title):
+    fig = output_plots.ss_3Dplot(
+        base_params, base_ss, reform_params=reform_params,
+        reform_ss=reform_ss, plot_type=plot_type, plot_title=plot_title)
     assert fig
+
+
+def test_ss_3Dplot_save_fig(tmpdir):
+    path = os.path.join(tmpdir, 'test_plot.png')
+    output_plots.ss_3Dplot(
+        base_params, base_ss, reform_params=reform_params,
+        reform_ss=reform_ss, path=path)
+    img = mpimg.imread(path)
+
+    assert isinstance(img, np.ndarray)
 
 
 @pytest.mark.parametrize(
@@ -91,3 +233,28 @@ def test_inequality_plot(base_tpi, base_params, reform_tpi,
         reform_params=reform_params, ineq_measure=ineq_measure,
         pctiles=pctiles, plot_type=plot_type)
     assert fig
+
+
+def test_inequality_plot_save_fig(tmpdir):
+    path = os.path.join(tmpdir, 'test_plot.png')
+    output_plots.inequality_plot(
+        base_tpi, base_params, reform_tpi=reform_tpi,
+        reform_params=reform_params, path=path)
+    img = mpimg.imread(path)
+
+    assert isinstance(img, np.ndarray)
+
+
+def test_plot_all(tmpdir):
+    base_output_path = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
+    reform_output_path = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
+    output_plots.plot_all(base_output_path, reform_output_path, tmpdir)
+    img1 = mpimg.imread(os.path.join(tmpdir, 'MacroAgg_PctChange.png'))
+    img2 = mpimg.imread(os.path.join(
+        tmpdir, 'SSLifecycleProfile_Cons_Reform.png'))
+    img3 = mpimg.imread(os.path.join(
+        tmpdir, 'SSLifecycleProfile_Save_Reform.png'))
+
+    assert isinstance(img1, np.ndarray)
+    assert isinstance(img2, np.ndarray)
+    assert isinstance(img3, np.ndarray)

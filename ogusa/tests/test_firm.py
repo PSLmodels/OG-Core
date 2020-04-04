@@ -86,7 +86,7 @@ new_param_values1 = {
     'Z': [0.5],
     'gamma': 0.5,
     'delta_annual': [0.25],
-    'tau_b': [0.5],
+    'cit_rate': [0.5],
     'delta_tau_annual': [0.35],
     'epsilon': 1.2
 }
@@ -245,36 +245,36 @@ p1.update_specifications(new_param_values1)
 # assign values for Y and K variables
 Y1 = np.array([2.0])
 K1 = np.array([1.0])
-expected1 = np.array([0.370449359])
+expected1 = np.array([0.59492233])
 p2 = Specifications()
 new_param_values2 = {
     'Z': [0.5],
     'gamma': 0.5,
-    'tau_b': [0.5],
+    'cit_rate': [0.5],
     'delta_tau_annual': [0.35],
     'epsilon': 0.5,
     'delta_annual': [0.5]
 }
 # update parameters instance with new values for test
 p2.update_specifications(new_param_values2)
-expected2 = np.array([0.675])
+expected2 = np.array([1.35975])
 p3 = Specifications()
 new_param_values3 = {
     'Z': [0.5],
     'gamma': 0.5,
-    'tau_b': [0.5],
+    'cit_rate': [0.5],
     'delta_tau_annual': [0.35],
     'epsilon': 1.0,
     'delta_annual': [0.5]
 }
 # update parameters instance with new values for test
 p3.update_specifications(new_param_values3)
-expected3 = np.array([0.175])
+expected3 = np.array([0.44475])
 p4 = Specifications()
 new_param_values4 = {
     'Z': [0.5],
     'gamma': 0.5,
-    'tau_b': [0.5],
+    'cit_rate': [0.5],
     'delta_tau_annual': [0.35],
     'epsilon': 1.2,
     'delta_annual': [0.5],
@@ -286,13 +286,13 @@ new_param_values4 = {
 p4.update_specifications(new_param_values4)
 Y4 = np.array([3.0, 3.2, 3.8])
 K4 = np.array([1.8, 1.2, 1.0])
-expected4 = np.array([-0.117344327, 0.066121991, 0.260484002])
+expected4 = np.array([-0.21473161, 0.12101175, 0.47669423])
 
 p5 = Specifications()
 new_param_values5 = {
     'Z': [1.5, 2.5, 0.6],
     'gamma': 0.5,
-    'tau_b': [0.2, 0.0, 0.5],
+    'cit_rate': [0.2, 0.0, 0.5],
     'delta_tau_annual': [0.35, 0.2, 0.1],
     'epsilon': 1.2,
     'delta_annual': [0.5],
@@ -302,7 +302,7 @@ new_param_values5 = {
 }
 # update parameters instance with new values for test
 p5.update_specifications(new_param_values5)
-expected5 = np.array([-0.064719663, 0.480604113, 0.25383862])
+expected5 = np.array([-0.07814687, 0.48060411, 0.51451412])
 
 
 @pytest.mark.parametrize('Y,K,p,method,expected',
@@ -391,7 +391,7 @@ new_param_values1 = {
     'epsilon': 0.8,
     'delta_annual': [0.05],
     'delta_tau_annual': [0.35],
-    'tau_b': [0.0357]
+    'cit_rate': [(0.0357 / 0.55) * (0.055 / 0.017)]
 }
 # update parameters instance with new values for test
 p1.update_specifications(new_param_values1)
@@ -404,7 +404,7 @@ new_param_values2 = {
     'delta_annual': [0.05],
     'delta_tau_annual': [0.35],
     'epsilon': 1.2,
-    'tau_b': [0.0357]
+    'cit_rate': [(0.0357 / 0.55) * (0.055 / 0.017)]
 }
 # update parameters instance with new values for test
 p2.update_specifications(new_param_values2)
@@ -416,7 +416,7 @@ new_param_values3 = {
     'delta_annual': [0.05],
     'delta_tau_annual': [0.35],
     'epsilon': 1.0,
-    'tau_b': [0.0357]
+    'cit_rate': [(0.0357 / 0.55) * (0.055 / 0.017)]
 }
 # update parameters instance with new values for test
 p3.update_specifications(new_param_values3)
@@ -428,7 +428,7 @@ new_param_values4 = {
     'delta_annual': [0.05],
     'delta_tau_annual': [0.35],
     'epsilon': 0.5,
-    'tau_b': [0.0357],
+    'cit_rate': [(0.0357 / 0.55) * (0.055 / 0.017)],
     'T': 3,
     'S': 3,
     'eta': (np.ones((3, p4.J)) / (3 * p4.J))
@@ -462,7 +462,7 @@ new_param_values1 = {
     'epsilon': 0.8,
     'delta_annual': [0.05],
     'delta_tau_annual': [0.35],
-    'tau_b': [0.0357]
+    'cit_rate': [(0.0357 / 0.55) * (0.055 / 0.017)]
 }
 # update parameters instance with new values for test
 p1.update_specifications(new_param_values1)
@@ -475,7 +475,7 @@ new_param_values2 = {
     'delta_annual': [0.05],
     'delta_tau_annual': [0.35],
     'epsilon': 1.0,
-    'tau_b': [0.0357]
+    'cit_rate': [(0.0357 / 0.55) * (0.055 / 0.017)]
 }
 # update parameters instance with new values for test
 p2.update_specifications(new_param_values2)
@@ -487,7 +487,7 @@ new_param_values3 = {
     'delta_annual': [0.05],
     'delta_tau_annual': [0.35],
     'epsilon': 1.2,
-    'tau_b': [0.0357]
+    'cit_rate': [(0.0357 / 0.55) * (0.055 / 0.017)]
 }
 # update parameters instance with new values for test
 p3.update_specifications(new_param_values3)
@@ -499,7 +499,7 @@ new_param_values4 = {
     'delta_annual': [0.05],
     'delta_tau_annual': [0.35],
     'epsilon': 1.2,
-    'tau_b': [0.0357],
+    'cit_rate': [(0.0357 / 0.55) * (0.055 / 0.017)],
     'T': 3,
     'S': 3,
     'eta': (np.ones((3, p4.J)) / (3 * p4.J))
@@ -529,7 +529,7 @@ def test_get_w_from_r(r, p, method, expected):
 p1 = Specifications()
 new_param_values1 = {
     'gamma': 0.5,
-    'tau_b': [0.75],
+    'cit_rate': [0.75],
     'delta_annual': [0.15],
     'delta_tau_annual': [0.03],
     'Z': [2.0],
@@ -539,11 +539,11 @@ new_param_values1 = {
 p1.update_specifications(new_param_values1)
 L1 = np.array([2.0])
 r1 = np.array([1.0])
-expected1 = np.array([0.325726586])
+expected1 = np.array([5.74454599])
 p2 = Specifications()
 new_param_values2 = {
     'gamma': 0.5,
-    'tau_b': [0.75],
+    'cit_rate': [0.75],
     'delta_annual': [0.15],
     'delta_tau_annual': [0.03],
     'Z': [2.0],
@@ -551,13 +551,13 @@ new_param_values2 = {
 }
 # update parameters instance with new values for test
 p2.update_specifications(new_param_values2)
-expected2 = np.array([0.098327933])
+expected2 = np.array([1.1589348])
 p3 = Specifications()
 new_param_values3 = {
     'gamma': 0.5,
     'epsilon': 0.4,
     'Z': [4.0],
-    'tau_b': [0.0],
+    'cit_rate': [0.0],
     'delta_tau_annual': [0.5],
     'delta_annual': [0.05]
 }
@@ -571,7 +571,7 @@ new_param_values4 = {
     'Z': [4.0, 3.0],
     'delta_tau_annual': [0.5],
     'delta_annual': [0.05],
-    'tau_b': [0.5],
+    'cit_rate': [0.5],
     'T': 3,
     'S': 3,
     'eta': (np.ones((3, p4.J)) / (3 * p4.J))
@@ -580,7 +580,7 @@ new_param_values4 = {
 p4.update_specifications(new_param_values4)
 L4 = np.array([2.0, 2.0, 2.0])
 r4 = np.array([1.0, 1.0, 1.0])
-expected4 = np.array([2.801139363, 2.303692012, 2.303692012])
+expected4 = np.array([3.39707089, 2.85348453, 2.85348453])
 
 
 @pytest.mark.parametrize('L,r,p,method,expected',

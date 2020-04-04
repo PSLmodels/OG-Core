@@ -36,7 +36,7 @@ def get_calculator(baseline, calculator_start_year, reform=None,
             in the Tax-Calculator project)
 
     Returns:
-        calc1 (Tax-Calculator Calculator object): Calulaotr object with
+        calc1 (Tax-Calculator Calculator object): Calulator object with
             current_year equal to calculator_start_year
 
     '''
@@ -50,11 +50,11 @@ def get_calculator(baseline, calculator_start_year, reform=None,
         records1.p23250 = (1 - 0.06587) * records1.e01100
         # set total capital gains to zero
         records1.e01100 = np.zeros(records1.e01100.shape[0])
-    elif data is not None:
+    elif data is not None:  # pragma: no cover
         records1 = Records(data=data, gfactors=gfactors, weights=weights,
-                           start_year=records_start_year)
-    else:
-        records1 = Records()
+                           start_year=records_start_year)  # pragma: no cover
+    else:  # pragma: no cover
+        records1 = Records()  # pragma: no cover
 
     if baseline:
         if not reform:
@@ -108,12 +108,10 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
     # Compute MTRs and taxes or each year, but not beyond TC_LAST_YEAR
     lazy_values = []
     for year in range(start_year, TC_LAST_YEAR + 1):
-        # lazy_values.append(
-        #     delayed(taxcalc_advance)(calc1, year))
         lazy_values.append(
             delayed(taxcalc_advance)(baseline, start_year, reform,
                                      data, year))
-    if client:
+    if client:  # pragma: no cover
         futures = client.compute(lazy_values, num_workers=num_workers)
         results = client.gather(futures)
     else:
@@ -127,10 +125,10 @@ def get_data(baseline=False, start_year=DEFAULT_START_YEAR, reform={},
         year = start_year + i
         micro_data_dict[str(year)] = DataFrame(result)
 
-    if reform:
-        pkl_path = "micro_data_policy.pkl"
-    else:
+    if baseline:
         pkl_path = "micro_data_baseline.pkl"
+    else:
+        pkl_path = "micro_data_policy.pkl"
 
     with open(pkl_path, "wb") as f:
         pickle.dump(micro_data_dict, f)
@@ -197,7 +195,7 @@ def taxcalc_advance(baseline, start_year, reform, data, year):
     return tax_dict
 
 
-def cap_inc_mtr(calc1):
+def cap_inc_mtr(calc1):  # pragma: no cover
     '''
     This function computes the marginal tax rate on capital income,
     which is calculated as a weighted average of the marginal tax rates

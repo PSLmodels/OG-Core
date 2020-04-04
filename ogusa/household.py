@@ -270,9 +270,6 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, theta, e, rho,
         chi_b = p.chi_b[j]
     else:
         chi_b = p.chi_b
-        if method == 'TPI':
-            r = utils.to_timepath_shape(r)
-            w = utils.to_timepath_shape(w)
     if method == 'SS':
         h_wealth = p.h_wealth[-1]
         m_wealth = p.m_wealth[-1]
@@ -359,10 +356,6 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, tr, theta, chi_n, e,
             r = r.reshape(r.shape[0], 1)
             w = w.reshape(w.shape[0], 1)
             tau_payroll = tau_payroll.reshape(tau_payroll.shape[0], 1)
-        elif b.ndim == 3:
-            r = utils.to_timepath_shape(r)
-            w = utils.to_timepath_shape(w)
-            tau_payroll = utils.to_timepath_shape(tau_payroll)
 
     taxes = tax.total_taxes(r, w, b, n, bq, factor, tr, theta, t, j,
                             False, method, e, etr_params, p)

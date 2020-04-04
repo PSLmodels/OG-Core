@@ -1,5 +1,6 @@
 import pytest
 import numpy as np
+import copy
 from ogusa import aggregates as aggr
 from ogusa.parameters import Specifications
 
@@ -149,20 +150,32 @@ expected3 = (BQ_presum.sum(1) *
 expected4 = BQ_presum[:, :, 1].sum(1) * growth_adj
 expected5 = BQ_presum[0, :, :].sum(0) * growth_adj[0]
 expected6 = BQ_presum[0, :, 1].sum(0) * growth_adj[0]
+
+p2 = copy.deepcopy(p)
+p2.use_zeta = True
+expected7 = BQ_presum[-1, :, 1].sum() * growth_adj[-1]
+expected8 = (BQ_presum[:, :, 1].sum(1) * growth_adj)
+expected9 = (BQ_presum.sum(1) *
+             np.tile(np.reshape(growth_adj, (p.T, 1)), (1, p.J))).sum(1)
 test_data = [(r[-1], b_splus1[-1, :, :], None, p, 'SS', False,
               expected1),
              (r[-1], b_splus1[-1, :, 1], 1, p, 'SS', False, expected2),
              (r, b_splus1, None, p, 'TPI', False, expected3),
              (r, b_splus1[:, :, 1], 1, p, 'TPI', False, expected4),
              (r[0], b_splus1[0, :, :], None, p, 'SS', True, expected5),
-             (r[0], b_splus1[0, :, 1], 1, p, 'SS', True, expected6)]
+             (r[0], b_splus1[0, :, 1], 1, p, 'SS', True, expected6),
+             (r[-1], b_splus1[-1, :, 1], 1, p2, 'SS', False, expected7),
+             (r, b_splus1[:, :, 1], 1, p2, 'TPI', False, expected8),
+             (r, b_splus1, None, p2, 'TPI', False, expected9)]
 
 
 @pytest.mark.parametrize('r,b_splus1,j,p,method,PreTP,expected',
                          test_data, ids=[
                              'SS, all j', 'SS, one j', 'TPI, all j',
                              'TPI, one j', 'Pre-TP, all j',
-                             'Pre-TP, one j'])
+                             'Pre-TP, one j', 'Use zeta, SS, one j',
+                             'Use zeta, TPI, one j',
+                             'Use zeta, TPI, all j'])
 def test_get_BQ(r, b_splus1, j, p, method, PreTP, expected):
     """
     Test of aggregate bequest function.
@@ -215,7 +228,7 @@ new_param_values = {
     'h_wealth': [0.1],
     'p_wealth': [0.2],
     'm_wealth': [1.0],
-    'tau_b': [0.2],
+    'cit_rate': [0.2],
     'delta_tau_annual': [float(1 - ((1 - 0.0975) **
                                     (20 / (p.ending_age -
                                            p.starting_age))))]
@@ -263,7 +276,7 @@ new_param_values3 = {
     'h_wealth': [0.1],
     'p_wealth': [0.2],
     'm_wealth': [1.0],
-    'tau_b': [0.2],
+    'cit_rate': [0.2],
     'replacement_rate_adjust': [1.5, 1.5, 1.5, 1.6, 1.0],
     'delta_tau_annual': [float(1 - ((1 - 0.0975) **
                                     (20 / (p3.ending_age -
@@ -273,21 +286,23 @@ p3.update_specifications(new_param_values3)
 p3.e = p.e
 p3.omega = p.omega
 p3.omega_SS = p.omega_SS
-expected1 = 0.5562489534339288
+expected1 = 0.5370699180829722
 expected2 = np.array(
-            [0.52178543, 0.49977116, 0.52015768, 0.52693363, 0.59695398,
-             0.61360011, 0.54679056, 0.54096669, 0.56301133, 0.5729165,
-             0.52734917, 0.51432562, 0.50060814, 0.5633982,  0.51509517,
-             0.60189683, 0.56766507, 0.56439768, 0.68919173, 0.57765917,
-             0.60292137, 0.56621788, 0.51913478, 0.48952262, 0.52142782,
-             0.5735005, 0.51166718, 0.57939994, 0.52585236, 0.53767652])
+            [0.50260639, 0.48109794, 0.5059882, 0.50527725, 0.57985594,
+             0.59290848, 0.52345093, 0.52404633, 0.54382821, 0.55482053,
+             0.51400707, 0.50237146, 0.4868004, 0.55008867, 0.49817611,
+             0.58803381, 0.54893319, 0.5484411, 0.66892545, 0.56201835,
+             0.58842445, 0.54289658, 0.50051496, 0.47262093, 0.50623643,
+             0.55579704, 0.49693837, 0.56426605, 0.51268459,
+             0.52148645])
 expected3 = np.array(
-            [0.49088403, 0.47079763, 0.488186, 0.4926552, 0.59695398,
-             0.61360011, 0.54679056, 0.54096669, 0.56301133, 0.5729165,
-             0.52734917, 0.51432562, 0.50060814, 0.5633982,  0.51509517,
-             0.60189683, 0.56766507, 0.56439768, 0.68919173, 0.57765917,
-             0.60292137, 0.56621788, 0.51913478, 0.48952262, 0.52142782,
-             0.5735005, 0.51166718, 0.57939994, 0.52585236, 0.53767652])
+            [0.471705, 0.45212442, 0.47401651, 0.47099882, 0.57985594,
+             0.59290848, 0.52345093, 0.52404633, 0.54382821, 0.55482053,
+             0.51400707, 0.50237146, 0.4868004, 0.55008867, 0.49817611,
+             0.58803381, 0.54893319, 0.5484411, 0.66892545, 0.56201835,
+             0.58842445, 0.54289658, 0.50051496, 0.47262093, 0.50623643,
+             0.55579704, 0.49693837, 0.56426605, 0.51268459,
+             0.52148645])
 test_data = [(r[0], w[0], b[0, :, :], n[0, :, :], bq[0, :, :],
               c[0, :, :], Y[0], L[0], K[0], factor, theta,
               etr_params[-1, :, :, :], p, 'SS', expected1),
@@ -308,6 +323,7 @@ def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p,
     revenue, _, _, _, _, _, _ = aggr.revenue(
         r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p, method)
 
+    print(revenue)
     assert(np.allclose(revenue, expected))
 
 

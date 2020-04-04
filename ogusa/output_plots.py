@@ -634,7 +634,7 @@ def plot_all(base_output_path, reform_output_path, save_path):
         ability_bar(base_tpi, base_params, reform_tpi, reform_params,
                     var=v, num_years=10, start_year=2019,
                     plot_title='Percentage changes in ' + title_list[i],
-                    path=os.path.join(save_path, 'PctChange' +
+                    path=os.path.join(save_path, 'PctChange_' +
                                       path_list[i] + '.png'))
 
     # lifetime profiles, base vs reform, SS for c, n, b, y - not by j
@@ -644,7 +644,7 @@ def plot_all(base_output_path, reform_output_path, save_path):
         ss_profiles(base_ss, base_params, reform_ss, reform_params,
                     by_j=False, var=v,
                     plot_title='Lifecycle Profile of ' + title_list[i],
-                    path=os.path.join(save_path, 'SSLifecycleProfile' +
+                    path=os.path.join(save_path, 'SSLifecycleProfile_' +
                                       path_list[i] + '.png'))
 
     # lifetime profiles, c, n , b, y by j, separately for base and reform
@@ -652,12 +652,12 @@ def plot_all(base_output_path, reform_output_path, save_path):
         ss_profiles(base_ss, base_params,
                     by_j=True, var=v,
                     plot_title='Lifecycle Profile of ' + title_list[i],
-                    path=os.path.join(save_path, 'SSLifecycleProfile' +
+                    path=os.path.join(save_path, 'SSLifecycleProfile_' +
                                       path_list[i] + '_Baseline.png'))
         ss_profiles(reform_ss, reform_params,
                     by_j=True, var=v,
                     plot_title='Lifecycle Profile of ' + title_list[i],
-                    path=os.path.join(save_path, 'SSLifecycleProfile' +
+                    path=os.path.join(save_path, 'SSLifecycleProfile_' +
                                       path_list[i] + '_Reform.png'))
 
 

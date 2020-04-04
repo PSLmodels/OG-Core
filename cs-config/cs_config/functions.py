@@ -139,8 +139,10 @@ def run_model(meta_param_dict, adjustment):
         utils.mkdirs(_dir)
 
     # Dask parmeters
-    client = Client()
-    num_workers = 4
+    # Limit to one worker and one thread to satisfy celery
+    # constraints on multiprocessing.
+    client = Client(n_workers=1, threads_per_worker=1, processes=False)
+    num_workers = 1
 
     # whether to estimate tax functions from microdata
     run_micro = True
@@ -152,7 +154,7 @@ def run_model(meta_param_dict, adjustment):
         'frisch', 'beta_annual', 'sigma', 'g_y_annual', 'gamma',
         'epsilon', 'Z', 'delta_annual', 'small_open', 'world_int_rate',
         'initial_foreign_debt_ratio', 'zeta_D', 'zeta_K', 'tG1', 'tG2',
-        'rho_G', 'debt_ratio_ss', 'start_year'}
+        'rho_G', 'debt_ratio_ss', 'start_year', 'budget_balance'}
     filtered_ogusa_params = OrderedDict()
     for k, v in adjustment['OG-USA Parameters'].items():
         if k in constant_param_set:
@@ -161,9 +163,7 @@ def run_model(meta_param_dict, adjustment):
     # Solve baseline model
     base_spec = {
         **{'start_year': meta_param_dict['year'],
-        'debt_ratio_ss': 2.0, 'r_gov_scale': 1.0, 'r_gov_shift': 0.02,
-        'zeta_D': [0.4], 'zeta_K': [0.1], 'initial_debt_ratio': 0.78,
-        'initial_foreign_debt_ratio': 0.4, 'tax_func_type': 'linear',
+        'tax_func_type': 'linear',
         'age_specific': False}, **filtered_ogusa_params}
     base_params = Specifications(
         run_micro=False, output_base=base_dir,
@@ -194,6 +194,11 @@ def run_model(meta_param_dict, adjustment):
 
     comp_dict = comp_output(base_ss, base_params, reform_ss,
                             reform_params)
+
+    # Shut down client and make sure all of its references are
+    # cleaned up.
+    client.close()
+    del client
 
     return comp_dict
 

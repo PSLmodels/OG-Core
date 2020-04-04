@@ -1,4 +1,4 @@
-B'''
+'''
 ------------------------------------------------------------------------
 Functions to compute economic aggregates.
 ------------------------------------------------------------------------
@@ -204,7 +204,8 @@ def get_BQ(r, b_splus1, j, p, method, preTP):
         if method == 'SS':
             BQ = BQ.sum()
         else:
-            BQ = BQ.sum(1)
+            if not j:
+                BQ = BQ.sum(1)
     return BQ
 
 
