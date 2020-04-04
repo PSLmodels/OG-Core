@@ -5,7 +5,7 @@ Test of steady-state module
 import pytest
 import numpy as np
 import os
-from ogusa import SS, utils, aggregates, household
+from ogusa import SS, utils, aggregates, household, execute
 from ogusa.parameters import Specifications
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
@@ -180,164 +180,230 @@ expected3 = np.array([0.01325131, 0.01430768, 0.01938654, 0.02069931,
                       0.01232291, 0.0145351, 0.0171059, 0.00309562,
                       0.01866492])
 
+input_tuple = utils.safe_read_pickle(
+    os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_inputs.pkl'))
+guesses_in, params = input_tuple
+params = params + (None, 1)
+(bssmat, nssmat, chi_params, ss_params, income_tax_params,
+ iterative_params, small_open_params, client, num_workers) = params
+p4 = Specifications()
+new_param_values = {
+    'zeta_D': [0.4],
+    'zeta_K': [0.2]
+}
+p4.update_specifications(new_param_values)
+(p4.J, p4.S, p4.T, p4.BW, p4.beta, p4.sigma, p4.alpha, p4.gamma, p4.epsilon,
+ Z, p4.delta, p4.ltilde, p4.nu, p4.g_y, p4.g_n_ss, tau_payroll,
+ tau_bq, p4.rho, p4.omega_SS, p4.budget_balance, alpha_T,
+ p4.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p4.e,
+ retire, p4.mean_income_data, h_wealth, p_wealth, m_wealth,
+ p4.b_ellipse, p4.upsilon) = ss_params
+p4.eta = (p4.omega_SS.reshape(p4.S, 1) *
+          p4.lambdas.reshape(1, p4.J)).reshape(1, p4.S, p4.J)
+p4.Z = np.ones(p4.T + p4.S) * Z
+p4.tau_bq = np.ones(p4.T + p4.S) * 0.0
+p4.tau_payroll = np.ones(p4.T + p4.S) * tau_payroll
+p4.alpha_T = np.ones(p4.T + p4.S) * alpha_T
+p4.tau_b = np.ones(p4.T + p4.S) * tau_b
+p4.delta_tau = np.ones(p4.T + p4.S) * delta_tau
+p4.h_wealth = np.ones(p4.T + p4.S) * h_wealth
+p4.p_wealth = np.ones(p4.T + p4.S) * p_wealth
+p4.m_wealth = np.ones(p4.T + p4.S) * m_wealth
+p4.retire = (np.ones(p4.T + p4.S) * retire).astype(int)
+p4.lambdas = lambdas.reshape(p4.J, 1)
+p4.imm_rates = imm_rates.reshape(1, p4.S)
+p4.tax_func_type = 'DEP'
+p4.baseline = True
+p4.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
+    income_tax_params
+p4.etr_params = np.transpose(etr_params.reshape(
+    p4.S, 1, etr_params.shape[-1]), (1, 0, 2))
+p4.mtrx_params = np.transpose(mtrx_params.reshape(
+    p4.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
+p4.mtry_params = np.transpose(mtry_params.reshape(
+    p4.S, 1, mtry_params.shape[-1]), (1, 0, 2))
+p4.maxiter, p4.mindist_SS = iterative_params
+p4.chi_b, p4.chi_n = chi_params
+p4.num_workers = 1
+BQ4 = np.ones((p4.J)) * 0.00019646295986015257
+guesses4 = [guesses_in[0]] + list(BQ4) + [guesses_in[1]] + [guesses_in[2]]
+args4 = (bssmat, nssmat, None, None, p4, client)
+expected4 = np.array([0.14974397993298297, 0.01618780806357498,
+                      0.021237337063436636, 0.023034235208337073,
+                      0.014089407012514552, 0.01666592110291313,
+                      0.01895924076520874, 0.00346219107476825,
+                      -0.06125508233576064, 0.039334851995648276])
+
+input_tuple = utils.safe_read_pickle(
+    os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_inputs.pkl'))
+guesses_in, params = input_tuple
+params = params + (None, 1)
+(bssmat, nssmat, chi_params, ss_params, income_tax_params,
+ iterative_params, small_open_params, client, num_workers) = params
+p5 = Specifications()
+(p5.J, p5.S, p5.T, p5.BW, p5.beta, p5.sigma, p5.alpha, p5.gamma, p5.epsilon,
+ Z, p5.delta, p5.ltilde, p5.nu, p5.g_y, p5.g_n_ss, tau_payroll,
+ tau_bq, p5.rho, p5.omega_SS, p5.budget_balance, alpha_T,
+ p5.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p5.e,
+ retire, p5.mean_income_data, h_wealth, p_wealth, m_wealth,
+ p5.b_ellipse, p5.upsilon) = ss_params
+p5.eta = (p5.omega_SS.reshape(p5.S, 1) *
+          p5.lambdas.reshape(1, p5.J)).reshape(1, p5.S, p5.J)
+p5.small_open = True
+p5.world_int_rate = 0.05
+p5.Z = np.ones(p5.T + p5.S) * Z
+p5.tau_bq = np.ones(p5.T + p5.S) * 0.0
+p5.tau_payroll = np.ones(p5.T + p5.S) * tau_payroll
+p5.alpha_T = np.ones(p5.T + p5.S) * alpha_T
+p5.tau_b = np.ones(p5.T + p5.S) * tau_b
+p5.delta_tau = np.ones(p5.T + p5.S) * delta_tau
+p5.h_wealth = np.ones(p5.T + p5.S) * h_wealth
+p5.p_wealth = np.ones(p5.T + p5.S) * p_wealth
+p5.m_wealth = np.ones(p5.T + p5.S) * m_wealth
+p5.retire = (np.ones(p5.T + p5.S) * retire).astype(int)
+p5.lambdas = lambdas.reshape(p5.J, 1)
+p5.imm_rates = imm_rates.reshape(1, p5.S)
+p5.tax_func_type = 'DEP'
+p5.baseline = True
+p5.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
+    income_tax_params
+p5.etr_params = np.transpose(etr_params.reshape(
+    p5.S, 1, etr_params.shape[-1]), (1, 0, 2))
+p5.mtrx_params = np.transpose(mtrx_params.reshape(
+    p5.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
+p5.mtry_params = np.transpose(mtry_params.reshape(
+    p5.S, 1, mtry_params.shape[-1]), (1, 0, 2))
+p5.maxiter, p5.mindist_SS = iterative_params
+p5.chi_b, p5.chi_n = chi_params
+p5.firm_r = np.ones(p5.T + p5.S) * p5.world_int_rate
+p5.hh_r = np.ones(p5.T + p5.S) * p5.world_int_rate
+p5.num_workers = 1
+BQ5 = np.ones((p5.J)) * 0.00019646295986015257
+guesses5 = [guesses_in[0]] + list(BQ5) + [guesses_in[1]] + [guesses_in[2]]
+args5 = (bssmat, nssmat, None, None, p5, client)
+expected5 = np.array([0.010000000000000002, 0.016237540856710347,
+                      0.021157440917488623, 0.0225816206427034,
+                      0.013739863205138253, 0.016239102127467743,
+                      0.018840747365904523, 0.0035063367036709888,
+                      -0.05651404751905424, 0.06608069086945173])
+
 
 @pytest.mark.parametrize('guesses,args,expected',
                          [(guesses1, args1, expected1),
                           (guesses2, args2, expected2),
-                          (guesses3, args3, expected3)],
+                          (guesses3, args3, expected3),
+                          (guesses4, args4, expected4),
+                          (guesses5, args5, expected5)],
                          ids=['Baseline, Closed', 'Reform, Closed',
-                              'Reform, Baseline spending=True, Closed'])
+                              'Reform, Baseline spending=True, Closed',
+                              'Baseline, Partial Open',
+                              'Baseline, Small Open'])
 def test_SS_fsolve(guesses, args, expected):
     # Test SS.SS_fsolve function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     test_list = SS.SS_fsolve(guesses, *args)
+    print('Test list = ', test_list)
     assert(np.allclose(np.array(test_list), np.array(expected),
                        atol=1e-6))
 
 
-def test_SS_solver():
+param_updates1 = {}
+filename1 = 'SS_solver_outputs_baseline.pkl'
+param_updates2 = {'budget_balance': True}
+filename2 = 'SS_solver_outputs_baseline_budget_balance.pkl'
+# param_updates3 = {'baseline_spending': True}
+# filename3 = 'SS_solver_outputs_reform_baseline_spending.pkl'
+param_updates4 = {'small_open': True}
+filename4 = 'SS_solver_outputs_baseline_small_open.pkl'
+param_updates5 = {'small_open': True, 'budget_balance': True}
+filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
+
+
+@pytest.mark.parametrize('baseline,param_updates,filename',
+                         [(True, param_updates1, filename1),
+                          (True, param_updates2, filename2),
+                          # (False, param_updates3, filename3),
+                          (True, param_updates4, filename4),
+                          (True, param_updates5, filename5)],
+                         ids=['Baseline', 'Baseline, budget balance',
+                              # 'Reform, baseline spending=True',
+                              'Baseline, small open',
+                              'Baseline, small open, budget balance'])
+def test_SS_solver(baseline, param_updates, filename):
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', 'SS_solver_inputs.pkl'))
-    (b_guess_init, n_guess_init, rss, TR_ss, factor_ss, Yss, params,
-     baseline, fsolve_flag, baseline_spending) = input_tuple
-    (bssmat, nssmat, chi_params, ss_params, income_tax_params,
-     iterative_params, small_open_params) = params
+    p = Specifications(baseline=baseline)
+    p.update_specifications(param_updates)
+    p.output_base = CUR_PATH
+    p.get_tax_function_parameters(None, run_micro=False)
+    print('Use zeta = ', p.use_zeta)
+    b_guess = np.ones((p.S, p.J)) * 0.07
+    n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
+    if p.small_open:
+        rguess = p.firm_r[-1]
+    else:
+        rguess = 0.06483431412921253
+    TRguess = 0.05738932081035772
+    factorguess = 139355.1547340256
+    BQguess = aggregates.get_BQ(rguess, b_guess, None, p, 'SS', False)
+    Yguess = 0.6376591201150815
 
-    p = Specifications()
-    (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, tau_payroll,
-     tau_bq, p.rho, p.omega_SS, p.budget_balance, alpha_T,
-     p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
-     retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
-     p.b_ellipse, p.upsilon) = ss_params
-    p.eta = (p.omega_SS.reshape(p.S, 1) *
-             p.lambdas.reshape(1, p.J)).reshape(1, p.S, p.J)
-    p.Z = np.ones(p.T + p.S) * Z
-    p.tau_bq = np.ones(p.T + p.S) * 0.0
-    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
-    p.alpha_T = np.ones(p.T + p.S) * alpha_T
-    p.tau_b = np.ones(p.T + p.S) * tau_b
-    p.delta_tau = np.ones(p.T + p.S) * delta_tau
-    p.h_wealth = np.ones(p.T + p.S) * h_wealth
-    p.p_wealth = np.ones(p.T + p.S) * p_wealth
-    p.m_wealth = np.ones(p.T + p.S) * m_wealth
-    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
-    p.lambdas = lambdas.reshape(p.J, 1)
-    p.imm_rates = imm_rates.reshape(1, p.S)
-    p.tax_func_type = 'DEP'
-    p.zeta_K = np.array([0.0])
-    p.zeta_D = np.array([0.0])
-    p.initial_foreign_debt_ratio = 0.0
-    p.r_gov_shift = np.array([0.0])
-    p.start_year = 2019
-    p.baseline = baseline
-    p.baseline_spending = baseline_spending
-    p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
-        income_tax_params
-    p.etr_params = np.transpose(etr_params.reshape(
-        p.S, 1, etr_params.shape[-1]), (1, 0, 2))
-    p.mtrx_params = np.transpose(mtrx_params.reshape(
-        p.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-    p.mtry_params = np.transpose(mtry_params.reshape(
-        p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
-    p.maxiter, p.mindist_SS = iterative_params
-    p.chi_b, p.chi_n = chi_params
-    p.small_open, firm_r, hh_r = small_open_params
-    p.firm_r = np.ones(p.T + p.S) * firm_r
-    p.hh_r = np.ones(p.T + p.S) * hh_r
-    p.frac_tax_payroll = 0.5 * np.ones(p.T + p.S)
-    p.num_workers = 1
+    SS.ENFORCE_SOLUTION_CHECKS = True
+    test_dict = SS.SS_solver(b_guess, n_guess, rguess, BQguess, TRguess,
+                             factorguess, Yguess, p, None, False)
 
     expected_dict = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', 'SS_solver_outputs.pkl'))
-
-    BQss = expected_dict['BQss']
-    test_dict = SS.SS_solver(b_guess_init, n_guess_init, rss, BQss, TR_ss,
-                             factor_ss, Yss, p, None, fsolve_flag)
-
-    # delete values key-value pairs that are not in both dicts
-    del expected_dict['bssmat'], expected_dict['chi_n'], expected_dict['chi_b']
-    del expected_dict['Iss_total']
-    del test_dict['etr_ss'], test_dict['mtrx_ss'], test_dict['mtry_ss']
-    test_dict['IITpayroll_revenue'] = (test_dict['total_revenue_ss'] -
-                                       test_dict['business_revenue'])
-    del test_dict['T_Pss'], test_dict['T_BQss'], test_dict['T_Wss']
-    del test_dict['K_d_ss'], test_dict['K_f_ss'], test_dict['D_d_ss']
-    del test_dict['D_f_ss'], test_dict['I_d_ss'], test_dict['trssmat']
-    del test_dict['debt_service_f'], test_dict['new_borrowing_f']
-    del test_dict['bqssmat'], test_dict['T_Css'], test_dict['Iss_total']
-    del test_dict['iit_revenue'], test_dict['payroll_tax_revenue']
-    test_dict['revenue_ss'] = test_dict.pop('total_revenue_ss')
-    test_dict['T_Hss'] = test_dict.pop('TR_ss')
+        os.path.join(CUR_PATH, 'test_io_data', filename))
 
     for k, v in expected_dict.items():
         print('Testing ', k)
-        assert(np.allclose(test_dict[k], v))
+        assert(np.allclose(test_dict[k], v, atol=1e-07, equal_nan=True))
 
 
-def test_inner_loop():
+param_updates1 = {'small_open': True}
+filename1 = 'inner_loop_outputs_baseline_small_open.pkl'
+param_updates2 = {'budget_balance': True}
+filename2 = 'inner_loop_outputs_baseline_balance_budget.pkl'
+param_updates3 = {}
+filename3 = 'inner_loop_outputs_baseline.pkl'
+param_updates4 = {}
+filename4 = 'inner_loop_outputs_reform.pkl'
+param_updates5 = {'baseline_spending': True}
+filename5 = 'inner_loop_outputs_reform_baselinespending.pkl'
+
+
+@pytest.mark.parametrize('baseline,param_updates,filename',
+                         [(True, param_updates1, filename1),
+                          (True, param_updates2, filename2),
+                          (True, param_updates3, filename3),
+                          (False, param_updates4, filename4),
+                          (False, param_updates5, filename5)],
+                         ids=['Baseline, Small Open',
+                              'Baseline, Balanced Budget',
+                              'Baseline', 'Reform',
+                              'Reform, baseline spending'])
+def test_inner_loop(baseline, param_updates, filename):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', 'inner_loop_inputs.pkl'))
-    (outer_loop_vars_in, params, baseline, baseline_spending) = input_tuple
-    ss_params, income_tax_params, chi_params, small_open_params = params
-    (bssmat, nssmat, r, Y, TR, factor) = outer_loop_vars_in
-    p = Specifications()
-    (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, tau_payroll,
-     tau_bq, p.rho, p.omega_SS, p.budget_balance, alpha_T,
-     p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
-     retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
-     p.b_ellipse, p.upsilon) = ss_params
-    p.eta = (p.omega_SS.reshape(p.S, 1) *
-             p.lambdas.reshape(1, p.J)).reshape(1, p.S, p.J)
-    p.Z = np.ones(p.T + p.S) * Z
-    p.tau_bq = np.ones(p.T + p.S) * 0.0
-    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
-    p.alpha_T = np.ones(p.T + p.S) * alpha_T
-    p.tau_b = np.ones(p.T + p.S) * tau_b
-    p.delta_tau = np.ones(p.T + p.S) * delta_tau
-    p.h_wealth = np.ones(p.T + p.S) * h_wealth
-    p.p_wealth = np.ones(p.T + p.S) * p_wealth
-    p.m_wealth = np.ones(p.T + p.S) * m_wealth
-    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
-    p.lambdas = lambdas.reshape(p.J, 1)
-    p.imm_rates = imm_rates.reshape(1, p.S)
-    p.tax_func_type = 'DEP'
-    p.zeta_K = np.array([0.0])
-    p.zeta_D = np.array([0.0])
-    p.initial_foreign_debt_ratio = 0.0
-    p.r_gov_shift = np.array([0.0])
-    p.start_year = 2019
-    p.baseline = baseline
-    p.baseline_spending = baseline_spending
-    p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
-        income_tax_params
-    p.etr_params = np.transpose(etr_params.reshape(
-        p.S, 1, etr_params.shape[-1]), (1, 0, 2))
-    p.mtrx_params = np.transpose(mtrx_params.reshape(
-        p.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-    p.mtry_params = np.transpose(mtry_params.reshape(
-        p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
-    p.chi_b, p.chi_n = chi_params
-    p.small_open, firm_r, hh_r = small_open_params
-    p.firm_r = np.ones(p.T + p.S) * firm_r
-    p.hh_r = np.ones(p.T + p.S) * hh_r
-    p.num_workers = 1
+    p = Specifications(baseline=baseline)
+    p.update_specifications(param_updates)
+    p.output_base = CUR_PATH
+    p.get_tax_function_parameters(None, run_micro=False)
+    bssmat = np.ones((p.S, p.J)) * 0.07
+    nssmat = np.ones((p.S, p.J)) * .4 * p.ltilde
+    r = 0.05
+    TR = 0.12
+    Y = 1.3
+    factor = 100000
     BQ = np.ones(p.J) * 0.00019646295986015257
-    outer_loop_vars = (bssmat, nssmat, r, BQ, Y, TR, factor)
-    (euler_errors, new_bmat, new_nmat, new_r, new_r_gov, new_r_hh,
-     new_w, new_TR, new_Y, new_factor, new_BQ,
-     average_income_model) = SS.inner_loop(outer_loop_vars, p, None)
-    test_tuple = (euler_errors, new_bmat, new_nmat, new_r, new_w,
-                  new_TR, new_Y, new_factor, new_BQ,
-                  average_income_model)
+    if p.budget_balance:
+        outer_loop_vars = (bssmat, nssmat, r, BQ, TR, factor)
+    else:
+        outer_loop_vars = (bssmat, nssmat, r, BQ, Y, TR, factor)
+    test_tuple = SS.inner_loop(outer_loop_vars, p, None)
 
     expected_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', 'inner_loop_outputs.pkl'))
+        os.path.join(CUR_PATH, 'test_io_data', filename))
 
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v, atol=1e-05))
@@ -430,86 +496,77 @@ def test_euler_equation_solver():
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
+param_updates1 = {}
+filename1 = 'run_SS_baseline_outputs.pkl'
+param_updates2 = {'use_zeta': True}
+filename2 = 'run_SS_baseline_use_zeta.pkl'
+param_updates3 = {'small_open': True}
+filename3 = 'run_SS_baseline_small_open.pkl'
+param_updates4 = {'small_open': True, 'use_zeta': True}
+filename4 = 'run_SS_baseline_small_open_use_zeta.pkl'
+param_updates5 = {}
+filename5 = 'run_SS_reform.pkl'
+param_updates6 = {'use_zeta': True}
+filename6 = 'run_SS_reform_use_zeta.pkl'
+param_updates7 = {'small_open': True}
+filename7 = 'run_SS_reform_small_open.pkl'
+param_updates8 = {'small_open': True, 'use_zeta': True}
+filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
+# param_updates9 = {'baseline_spending': True}
+# filename9 = 'run_SS_reform_baseline_spend.pkl'
+# param_updates10 = {'baseline_spending': True, 'use_zeta': True}
+# filename10 = 'run_SS_reform_baseline_spend_use_zeta.pkl'
+
+
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [(True, param_updates1, filename1),
+#                           (True, param_updates2, filename2),
+#                           (True, param_updates3, filename3),
+#                           (True, param_updates4, filename4),
+#                           (False, param_updates5, filename5),
+#                           (False, param_updates6, filename6),
+#                           (False, param_updates7, filename7),
+#                           (False, param_updates8, filename8),
+#                           (False, param_updates9, filename9),
+#                           (False, param_updates10, filename10)],
+#                          ids=['Baseline', 'Baseline, use zeta',
+#                               'Baseline, small open',
+#                               'Baseline, small open use zeta',
+#                               'Reform', 'Reform, use zeta',
+#                               'Reform, small open',
+#                               'Reform, small open use zeta',
+#                               'Reform, baseline spending',
+#                               'Reform, baseline spending, use zeta'])
+@pytest.mark.parametrize('baseline,param_updates,filename',
+                         [(True, param_updates1, filename1),
+                          (True, param_updates2, filename2),
+                          (True, param_updates3, filename3),
+                          (True, param_updates4, filename4),
+                          (False, param_updates5, filename5),
+                          (False, param_updates6, filename6),
+                          (False, param_updates7, filename7),
+                          (False, param_updates8, filename8)],
+                         ids=['Baseline', 'Baseline, use zeta',
+                              'Baseline, small open',
+                              'Baseline, small open use zeta',
+                              'Reform', 'Reform, use zeta',
+                              'Reform, small open',
+                              'Reform, small open use zeta'])
 @pytest.mark.full_run
-@pytest.mark.parametrize('input_path,expected_path',
-                         [('run_SS_open_unbal_inputs.pkl',
-                           'run_SS_open_unbal_outputs.pkl'),
-                          ('run_SS_closed_balanced_inputs.pkl',
-                           'run_SS_closed_balanced_outputs.pkl')],
-                         ids=['Open, Unbalanced', 'Closed Balanced'])
-def test_run_SS(input_path, expected_path):
+def test_run_SS(baseline, param_updates, filename):
     # Test SS.run_SS function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', input_path))
-    (income_tax_params, ss_params, iterative_params, chi_params,
-     small_open_params, baseline, baseline_spending, baseline_dir) =\
-        input_tuple
-    p = Specifications()
-    (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n_ss, tau_payroll,
-     tau_bq, p.rho, p.omega_SS, p.budget_balance, alpha_T,
-     p.debt_ratio_ss, tau_b, delta_tau, lambdas, imm_rates, p.e,
-     retire, p.mean_income_data, h_wealth, p_wealth, m_wealth,
-     p.b_ellipse, p.upsilon) = ss_params
-    p.eta = (p.omega_SS.reshape(p.S, 1) *
-             p.lambdas.reshape(1, p.J)).reshape(1, p.S, p.J)
-    p.Z = np.ones(p.T + p.S) * Z
-    p.tau_bq = np.ones(p.T + p.S) * 0.0
-    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
-    p.alpha_T = np.ones(p.T + p.S) * alpha_T
-    p.tau_b = np.ones(p.T + p.S) * tau_b
-    p.delta_tau = np.ones(p.T + p.S) * delta_tau
-    p.h_wealth = np.ones(p.T + p.S) * h_wealth
-    p.p_wealth = np.ones(p.T + p.S) * p_wealth
-    p.m_wealth = np.ones(p.T + p.S) * m_wealth
-    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
-    p.lambdas = lambdas.reshape(p.J, 1)
-    p.imm_rates = imm_rates.reshape(1, p.S)
-    p.tax_func_type = 'DEP'
-    p.zeta_K = np.array([0.0])
-    p.zeta_D = np.array([0.0])
-    p.initial_foreign_debt_ratio = 0.0
-    p.r_gov_shift = np.array([0.0])
-    p.start_year = 2019
-    p.baseline = baseline
-    p.baseline_spending = baseline_spending
-    p.baseline_dir = baseline_dir
-    p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
-        income_tax_params
-    p.etr_params = np.transpose(etr_params.reshape(
-        p.S, 1, etr_params.shape[-1]), (1, 0, 2))
-    p.mtrx_params = np.transpose(mtrx_params.reshape(
-        p.S, 1, mtrx_params.shape[-1]), (1, 0, 2))
-    p.mtry_params = np.transpose(mtry_params.reshape(
-        p.S, 1, mtry_params.shape[-1]), (1, 0, 2))
-    p.maxiter, p.mindist_SS = iterative_params
-    p.chi_b, p.chi_n = chi_params
-    p.small_open, firm_r, hh_r = small_open_params
-    p.firm_r = np.ones(p.T + p.S) * firm_r
-    p.hh_r = np.ones(p.T + p.S) * hh_r
-    p.num_workers = 1
-    p.frac_tax_payroll = 0.5 * np.ones(p.T + p.S)
+    if baseline is False:
+        execute.runner(utils.BASELINE_DIR, utils.BASELINE_DIR,
+                       time_path=False, baseline=True,
+                       og_spec=param_updates, run_micro=False)
+    p = Specifications(baseline=baseline)
+    p.update_specifications(param_updates)
+    p.get_tax_function_parameters(None, run_micro=False)
     test_dict = SS.run_SS(p, None)
 
     expected_dict = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', expected_path))
-
-    # delete values key-value pairs that are not in both dicts
-    del expected_dict['bssmat'], expected_dict['chi_n'], expected_dict['chi_b']
-    del expected_dict['Iss_total']
-    del test_dict['etr_ss'], test_dict['mtrx_ss'], test_dict['mtry_ss']
-    test_dict['IITpayroll_revenue'] = (test_dict['total_revenue_ss'] -
-                                       test_dict['business_revenue'])
-    del test_dict['T_Pss'], test_dict['T_BQss'], test_dict['T_Wss']
-    del test_dict['resource_constraint_error'], test_dict['T_Css']
-    del test_dict['r_gov_ss'], test_dict['r_hh_ss']
-    del test_dict['K_d_ss'], test_dict['K_f_ss'], test_dict['D_d_ss']
-    del test_dict['D_f_ss'], test_dict['I_d_ss'], test_dict['Iss_total']
-    del test_dict['debt_service_f'], test_dict['new_borrowing_f']
-    del test_dict['iit_revenue'], test_dict['payroll_tax_revenue']
-    test_dict['revenue_ss'] = test_dict.pop('total_revenue_ss')
-    test_dict['T_Hss'] = test_dict.pop('TR_ss')
+        os.path.join(CUR_PATH, 'test_io_data', filename))
 
     for k, v in expected_dict.items():
         assert(np.allclose(test_dict[k], v))
