@@ -33,8 +33,8 @@ def main():
 
     # Directories to save data
     CUR_DIR = os.path.dirname(os.path.realpath(__file__))
-    base_dir = os.path.join(CUR_DIR, BASELINE_DIR, "SS")
-    reform_dir = os.path.join(CUR_DIR, REFORM_DIR, "SS")
+    base_dir = os.path.join(CUR_DIR, BASELINE_DIR)
+    reform_dir = os.path.join(CUR_DIR, REFORM_DIR)
 
     # Set some OG model parameters
     # See default_parameters.json for more description of these parameters
