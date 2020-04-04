@@ -5,7 +5,7 @@ Test of steady-state module
 import pytest
 import numpy as np
 import os
-from ogusa import SS, utils, aggregates, household, execute
+from ogusa import SS, utils, aggregates, household, execute, constants
 from ogusa.parameters import Specifications
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
@@ -557,7 +557,7 @@ def test_run_SS(baseline, param_updates, filename):
     # Test SS.run_SS function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     if baseline is False:
-        execute.runner(utils.BASELINE_DIR, utils.BASELINE_DIR,
+        execute.runner(constants.BASELINE_DIR, constants.BASELINE_DIR,
                        time_path=False, baseline=True,
                        og_spec=param_updates, run_micro=False)
     p = Specifications(baseline=baseline)
