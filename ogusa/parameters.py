@@ -199,6 +199,9 @@ class Specifications(paramtools.Parameters):
         self.T = int(self.T)
         self.J = int(self.J)
 
+        # make sure zeta matrix sums to one (e.g., default off due to rounding)
+        self.zeta = self.zeta / self.zeta.sum()
+
         # open economy parameters
         firm_r_annual = self.world_int_rate
         hh_r_annual = firm_r_annual

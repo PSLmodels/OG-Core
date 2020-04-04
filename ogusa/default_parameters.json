@@ -396,7 +396,7 @@
         "type": "float",
         "value": [
             {
-                "value": 0.0
+                "value": 0.4
             }
         ],
         "validators": {
@@ -416,7 +416,7 @@
         "value": [
             {
                 "value": [
-                    0.0
+                    0.4
                 ]
             }
         ],
@@ -437,7 +437,7 @@
         "value": [
             {
                 "value": [
-                    0.0
+                    0.1
                 ]
             }
         ],
@@ -558,7 +558,7 @@
         "type": "float",
         "value": [
             {
-                "value": 1.0
+                "value": 2.0
             }
         ],
         "validators": {
@@ -612,7 +612,7 @@
         "type": "float",
         "value": [
             {
-                "value": 0.0
+                "value": 0.02
             }
         ],
         "validators": {
@@ -2707,7 +2707,7 @@
         "type": "int",
         "value": [
             {
-                "value": 2019
+                "value": 2020
             }
         ],
         "validators": {
