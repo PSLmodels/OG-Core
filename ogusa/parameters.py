@@ -484,11 +484,14 @@ class Specifications(paramtools.Parameters):
                     flag = 1
             except KeyError:
                 pass
-            if self.tax_func_type != dict_params['tax_func_type']:
-                print('Model tax function type is not ' +
-                      'consistent with tax function parameter ' +
-                      'esimtates')
-                flag = 1
+            try:
+                if self.tax_func_type != dict_params['tax_func_type']:
+                    print('Model tax function type is not ' +
+                          'consistent with tax function parameter ' +
+                          'esimtates')
+                    flag = 1
+            except KeyError:
+                pass
             if flag >= 1:
                 print('Tax function parameter estimates at given path' +
                       ' are not consistent with model parameters ' +
