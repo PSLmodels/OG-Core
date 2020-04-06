@@ -462,36 +462,26 @@ class Specifications(paramtools.Parameters):
             # check to see if tax_functions compatible
             current_taxcalc =\
                 pkg_resources.get_distribution("taxcalc").version
-            try:
-                if current_taxcalc != dict_params['taxcalc_version']:
-                    print('WARNING: Tax function parameters estimated' +
-                          ' from Tax Calculator version that is not ' +
-                          ' the one currently installed on this machine.')
-            except KeyError:
-                pass
-            try:
-                if self.start_year != dict_params['start_year']:
-                    print('Model start year not consistent with tax ' +
-                          'function parameter esimtates')
-                    flag = 1
-            except KeyError:
-                pass
-            try:
-                if self.BW != dict_params['BW']:
-                    print('Model budget window length is not ' +
-                          'consistent with tax function parameter ' +
-                          'esimtates')
-                    flag = 1
-            except KeyError:
-                pass
-            try:
-                if self.tax_func_type != dict_params['tax_func_type']:
-                    print('Model tax function type is not ' +
-                          'consistent with tax function parameter ' +
-                          'esimtates')
-                    flag = 1
-            except KeyError:
-                pass
+            if current_taxcalc != dict_params.get('tax_calc_version',
+                                                  None):
+                print('WARNING: Tax function parameters estimated' +
+                      ' from Tax Calculator version that is not ' +
+                      ' the one currently installed on this machine.')
+            if self.start_year != dict_params.get('start_year', None):
+                print('Model start year not consistent with tax ' +
+                      'function parameter estimates')
+                flag = 1
+            if self.BW != dict_params.get('BW', None):
+                print('Model budget window length is not ' +
+                      'consistent with tax function parameter ' +
+                      'estimates')
+                flag = 1
+            if self.tax_func_type != dict_params.get('tax_func_type',
+                                                     None):
+                print('Model tax function type is not ' +
+                      'consistent with tax function parameter ' +
+                      'estimates')
+                flag = 1
             if flag >= 1:
                 print('Tax function parameter estimates at given path' +
                       ' are not consistent with model parameters ' +
