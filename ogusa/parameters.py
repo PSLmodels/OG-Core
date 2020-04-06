@@ -22,7 +22,7 @@ class Specifications(paramtools.Parameters):
                  run_micro=False, tax_func_path=None,
                  output_base=BASELINE_DIR, baseline_dir=BASELINE_DIR,
                  test=False, time_path=True, baseline=False,
-                 iit_reform={}, guid='', data='cps', flag_graphs=False,
+                 iit_reform={}, guid='', data='cps',
                  client=None, num_workers=1):
         super().__init__()
 
@@ -34,7 +34,6 @@ class Specifications(paramtools.Parameters):
         self.iit_reform = iit_reform
         self.guid = guid
         self.data = data
-        self.flag_graphs = flag_graphs
         self.num_workers = num_workers
 
         # put OG-USA version in parameters to save for reference
@@ -237,8 +236,7 @@ class Specifications(paramtools.Parameters):
         (self.omega, self.g_n_ss, self.omega_SS, self.surv_rate,
          self.rho, self.g_n, self.imm_rates,
          self.omega_S_preTP) = demographics.get_pop_objs(
-                self.E, self.S, self.T, 1, 100, self.start_year,
-                self.flag_graphs)
+                self.E, self.S, self.T, 1, 100, self.start_year)
         # for constant demographics
         if self.constant_demographics:
             self.g_n_ss = 0.0
