@@ -32,8 +32,8 @@ def main():
 
     # Directories to save data
     CUR_DIR = os.path.dirname(os.path.realpath(__file__))
-    base_dir = os.path.join(CUR_DIR, BASELINE_DIR, "SS")
-    reform_dir = os.path.join(CUR_DIR, REFORM_DIR, "SS")
+    base_dir = os.path.join(CUR_DIR, BASELINE_DIR)
+    reform_dir = os.path.join(CUR_DIR, REFORM_DIR)
 
     # Set some OG model parameters
     # See default_parameters.json for more description of these parameters
@@ -57,10 +57,14 @@ def main():
     Run baseline policy first
     ------------------------------------------------------------------------
     '''
+    tax_func_path = os.path.join(
+        CUR_DIR, '..', 'ogusa', 'data', 'tax_functions',
+        'TxFuncEst_baseline_CPS.pkl')  # use cached baseline estimates
     kwargs = {'output_base': base_dir, 'baseline_dir': base_dir,
               'test': False, 'time_path': True, 'baseline': True,
               'og_spec': og_spec, 'guid': '_example',
-              'run_micro': True, 'data': 'cps', 'client': client,
+              'run_micro': False, 'tax_func_path': tax_func_path,
+              'data': 'cps', 'client': client,
               'num_workers': num_workers}
 
     start_time = time.time()
