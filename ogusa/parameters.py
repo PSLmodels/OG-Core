@@ -6,8 +6,8 @@ import paramtools
 
 # import ogusa
 from ogusa import elliptical_u_est, demographics, income, txfunc
-from ogusa.utils import (BASELINE_DIR, TC_LAST_YEAR, rate_conversion,
-                         safe_read_pickle)
+from ogusa.utils import rate_conversion, safe_read_pickle
+from ogusa.constants import BASELINE_DIR, TC_LAST_YEAR
 CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
 
 

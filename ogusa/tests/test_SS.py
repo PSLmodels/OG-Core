@@ -5,7 +5,7 @@ Test of steady-state module
 import pytest
 import numpy as np
 import os
-from ogusa import SS, utils, aggregates, household, execute
+from ogusa import SS, utils, aggregates, household, execute, constants
 from ogusa.parameters import Specifications
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 

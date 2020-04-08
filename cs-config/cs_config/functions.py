@@ -1,6 +1,6 @@
 import ogusa
 from ogusa.parameters import Specifications
-from ogusa.utils import TC_LAST_YEAR, REFORM_DIR, BASELINE_DIR
+from ogusa.constants import TC_LAST_YEAR, REFORM_DIR, BASELINE_DIR
 from ogusa import output_plots as op
 from ogusa import output_tables as ot
 from ogusa import SS, utils
