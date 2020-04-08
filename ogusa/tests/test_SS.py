@@ -557,12 +557,21 @@ def test_run_SS(baseline, param_updates, filename):
     # Test SS.run_SS function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     if baseline is False:
+        tax_func_path_baseline = os.path.join(CUR_PATH,
+                                              'TxFuncEst_baseline.pkl')
+        tax_func_path = os.path.join(CUR_PATH,
+                                     'TxFuncEst_policy.pkl')
         execute.runner(utils.BASELINE_DIR, utils.BASELINE_DIR,
                        time_path=False, baseline=True,
-                       og_spec=param_updates, run_micro=False)
+                       og_spec=param_updates, run_micro=False,
+                       tax_func_path=tax_func_path_baseline)
+    else:
+        tax_func_path = os.path.join(CUR_PATH,
+                                     'TxFuncEst_baseline.pkl')
     p = Specifications(baseline=baseline)
     p.update_specifications(param_updates)
-    p.get_tax_function_parameters(None, run_micro=False)
+    p.get_tax_function_parameters(None, run_micro=False,
+                                  tax_func_path=tax_func_path)
     test_dict = SS.run_SS(p, None)
 
     expected_dict = utils.safe_read_pickle(
