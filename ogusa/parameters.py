@@ -313,7 +313,7 @@ class Specifications(paramtools.Parameters):
                 self.age_specific, self.start_year, self.iit_reform,
                 self.guid, tax_func_path, self.data, client,
                 self.num_workers)
-            dict_params = self.read_tax_func_estimate(tax_func_path)
+            dict_params, _ = self.read_tax_func_estimate(tax_func_path)
         self.mean_income_data = dict_params['tfunc_avginc'][0]
         try:
             self.frac_tax_payroll = np.append(
@@ -500,8 +500,8 @@ class Specifications(paramtools.Parameters):
                       ' specified. Running new estimation.')
         else:
             flag = 1
-            print('Tax function parameter estimates do not exist at ' +
-                  ' given path. Running new estimation')
+            print('Tax function parameter estimates do not exist at' +
+                  ' given path. Running new estimation.')
         if flag >= 1:
             dict_params = None
             run_micro = True
