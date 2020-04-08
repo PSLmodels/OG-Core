@@ -8,6 +8,8 @@ import ogusa.output_tables as ot
 SS.ENFORCE_SOLUTION_CHECKS = False
 TPI.ENFORCE_SOLUTION_CHECKS = False
 
+CUR_PATH = os.path.abspath(os.path.dirname(__file__))
+
 
 def run_micro_macro(iit_reform, og_spec, guid):
 
@@ -16,6 +18,10 @@ def run_micro_macro(iit_reform, og_spec, guid):
 
     REFORM_DIR = "./OUTPUT_REFORM_" + guid
     BASELINE_DIR = "./OUTPUT_BASELINE_" + guid
+    tax_func_path_baseline = os.path.join(CUR_PATH, 'OUTPUT_BASELINE',
+                                          'TxFuncEst_baseline.pkl')
+    tax_func_path_reform = os.path.join(CUR_PATH, 'OUTPUT_REFORM',
+                                        'TxFuncEst_policy.pkl')
 
     # Add start year from reform to user parameters
     start_year = sorted(iit_reform.keys())[0]
@@ -35,7 +41,7 @@ def run_micro_macro(iit_reform, og_spec, guid):
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': True, 'time_path': True, 'baseline': True,
               'og_spec': og_spec, 'run_micro': False,
-              'guid': guid}
+              'tax_func_path': tax_func_path_baseline, 'guid': guid}
     runner(**kwargs)
 
     '''
@@ -48,7 +54,8 @@ def run_micro_macro(iit_reform, og_spec, guid):
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': True, 'time_path': True, 'baseline': False,
               'iit_reform': iit_reform, 'og_spec': og_spec,
-              'guid': guid, 'run_micro': False}
+              'guid': guid, 'run_micro': False,
+              'tax_func_path': tax_func_path_reform}
     runner(**kwargs)
     time.sleep(0.5)
     base_tpi = safe_read_pickle(
