@@ -561,7 +561,7 @@ def test_run_SS(baseline, param_updates, filename):
                                               'TxFuncEst_baseline.pkl')
         tax_func_path = os.path.join(CUR_PATH,
                                      'TxFuncEst_policy.pkl')
-        execute.runner(utils.BASELINE_DIR, utils.BASELINE_DIR,
+        execute.runner(constants.BASELINE_DIR, constants.BASELINE_DIR,
                        time_path=False, baseline=True,
                        og_spec=param_updates, run_micro=False,
                        tax_func_path=tax_func_path_baseline)
