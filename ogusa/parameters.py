@@ -495,9 +495,10 @@ class Specifications(paramtools.Parameters):
             except KeyError:
                 pass
             if flag >= 1:
-                print('Tax function parameter estimates at given path' +
-                      ' are not consistent with model parameters' +
-                      ' specified. Running new estimation.')
+                raise RuntimeError(
+                    'Tax function parameter estimates at given path' +
+                    ' are not consistent with model parameters' +
+                    ' specified.')
         else:
             flag = 1
             print('Tax function parameter estimates do not exist at' +
