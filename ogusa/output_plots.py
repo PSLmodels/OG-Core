@@ -4,7 +4,8 @@ import os
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib
-from ogusa.constants import (VAR_LABELS, ToGDP_LABELS, CBO_UNITS)
+from ogusa.constants import (VAR_LABELS, ToGDP_LABELS, CBO_UNITS,
+                             DEFAULT_START_YEAR)
 import ogusa.utils as utils
 from ogusa.utils import Inequality
 
@@ -16,7 +17,7 @@ plt.style.use(style_file)
 def plot_aggregates(base_tpi, base_params, reform_tpi=None,
                     reform_params=None, var_list=['Y', 'C', 'K', 'L'],
                     plot_type='pct_diff', num_years_to_plot=50,
-                    start_year=2019, vertical_line_years=None,
+                    start_year=DEFAULT_START_YEAR, vertical_line_years=None,
                     plot_title=None, path=None):
     '''
     Create a plot of macro aggregates.
@@ -196,7 +197,7 @@ def ss_3Dplot(base_params, base_ss, reform_params=None, reform_ss=None,
 def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
                    reform_params=None, var_list=['D'],
                    num_years_to_plot=50,
-                   start_year=2019, vertical_line_years=None,
+                   start_year=DEFAULT_START_YEAR, vertical_line_years=None,
                    plot_title=None, path=None):
     '''
     Create a plot of some variable to GDP.
@@ -266,7 +267,7 @@ def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
 
 def ability_bar(base_tpi, base_params, reform_tpi,
                 reform_params, var='n_mat', num_years=5,
-                start_year=2019, plot_title=None, path=None):
+                start_year=DEFAULT_START_YEAR, plot_title=None, path=None):
     '''
     Plots percentage changes from baseline by ability group for a
     given variable.
@@ -369,7 +370,7 @@ def ability_bar_ss(base_ss, base_params, reform_ss, reform_params,
 
 def tpi_profiles(base_tpi, base_params, reform_tpi=None,
                  reform_params=None, by_j=True, var='n_mat',
-                 num_years=5, start_year=2019, plot_title=None,
+                 num_years=5, start_year=DEFAULT_START_YEAR, plot_title=None,
                  path=None):
     '''
     Plot lifecycle profiles of given variable in the SS.
@@ -607,7 +608,7 @@ def plot_all(base_output_path, reform_output_path, save_path):
     # Debt-GDP in base and reform-- vertical lines at tG1, tG2
     plot_gdp_ratio(base_tpi, base_params, reform_tpi, reform_params,
                    var_list=['D'], num_years_to_plot=150,
-                   start_year=2019, vertical_line_years=[
+                   start_year=DEFAULT_START_YEAR, vertical_line_years=[
                            base_params.start_year + base_params.tG1,
                            base_params.start_year + base_params.tG2],
                    plot_title='Debt-to-GDP',
@@ -616,7 +617,7 @@ def plot_all(base_output_path, reform_output_path, save_path):
     # Tax revenue to GDP in base and reform-- vertical lines at tG1, tG2
     plot_gdp_ratio(base_tpi, base_params, reform_tpi, reform_params,
                    var_list=['total_revenue'], num_years_to_plot=150,
-                   start_year=2019, vertical_line_years=[
+                   start_year=DEFAULT_START_YEAR, vertical_line_years=[
                            base_params.start_year + base_params.tG1,
                            base_params.start_year + base_params.tG2],
                    plot_title='Tax Revenue to GDP',
@@ -632,7 +633,7 @@ def plot_all(base_output_path, reform_output_path, save_path):
     path_list = ['Cons', 'Labor', 'Save', 'ETR', 'MTRx', 'MTRy']
     for i, v in enumerate(var_list):
         ability_bar(base_tpi, base_params, reform_tpi, reform_params,
-                    var=v, num_years=10, start_year=2019,
+                    var=v, num_years=10, start_year=DEFAULT_START_YEAR,
                     plot_title='Percentage changes in ' + title_list[i],
                     path=os.path.join(save_path, 'PctChange_' +
                                       path_list[i] + '.png'))
@@ -664,7 +665,7 @@ def plot_all(base_output_path, reform_output_path, save_path):
 def inequality_plot(
     base_tpi, base_params, reform_tpi=None, reform_params=None,
     var='c_path', ineq_measure='gini', pctiles=None, plot_type='levels',
-    num_years_to_plot=50, start_year=2019, vertical_line_years=None,
+    num_years_to_plot=50, start_year=DEFAULT_START_YEAR, vertical_line_years=None,
     plot_title=None, path=None):
     '''
     Plot measures of inequality over the time path.
