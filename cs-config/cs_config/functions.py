@@ -3,7 +3,7 @@ from ogusa.parameters import Specifications
 from ogusa.constants import TC_LAST_YEAR, REFORM_DIR, BASELINE_DIR
 from ogusa import output_plots as op
 from ogusa import output_tables as ot
-from ogusa import SS, utils
+from ogusa import SS, TPI, utils
 import os
 import io
 import pickle
@@ -51,6 +51,14 @@ class MetaParams(paramtools.Parameters):
             "type": "str",
             "value": "CPS",
             "validators": {"choice": {"choices": ["PUF", "CPS"]}}
+        },
+        "time_path": {
+            "title": "Solve for economy's transition path?",
+            "description": ("Whether to solve for the transition path" +
+                            " in addition to the steady-state"),
+            "type": "bool",
+            "value": False,
+            "validators": {"choice": {"choices": [True, False]}}
         }
     }
 
@@ -146,6 +154,7 @@ def run_model(meta_param_dict, adjustment):
 
     # whether to estimate tax functions from microdata
     run_micro = True
+    time_path = meta_param_dict['time_path']
 
     # filter out OG-USA params that will not change between baseline and
     # reform runs (these are the non-policy parameters)
@@ -163,11 +172,11 @@ def run_model(meta_param_dict, adjustment):
     # Solve baseline model
     base_spec = {
         **{'start_year': meta_param_dict['year'],
-        'tax_func_type': 'linear',
-        'age_specific': False}, **filtered_ogusa_params}
+           'tax_func_type': 'linear',
+           'age_specific': False}, **filtered_ogusa_params}
     base_params = Specifications(
         run_micro=False, output_base=base_dir,
-        baseline_dir=base_dir, test=False, time_path=False,
+        baseline_dir=base_dir, test=False, time_path=time_path,
         baseline=True, iit_reform={}, guid='',
         data=data,
         client=client, num_workers=num_workers)
@@ -178,22 +187,29 @@ def run_model(meta_param_dict, adjustment):
     ss_dir = os.path.join(base_dir, "SS", "SS_vars.pkl")
     with open(ss_dir, "wb") as f:
         pickle.dump(base_ss, f)
+    if time_path:
+        base_tpi = TPI.run_TPI(base_params, client=client)
+        tpi_dir = os.path.join(base_dir, "TPI", "TPI_vars.pkl")
+        with open(tpi_dir, "wb") as f:
+            pickle.dump(base_tpi, f)
 
     # Solve reform model
     reform_spec = base_spec
     reform_spec.update(adjustment["OG-USA Parameters"])
     reform_params = Specifications(
         run_micro=False, output_base=reform_dir,
-        baseline_dir=base_dir, test=False, time_path=False,
+        baseline_dir=base_dir, test=False, time_path=time_path,
         baseline=False, iit_reform=iit_mods, guid='',
         data=data,
         client=client, num_workers=num_workers)
     reform_params.update_specifications(reform_spec)
     reform_params.get_tax_function_parameters(client, run_micro)
     reform_ss = SS.run_SS(reform_params, client=client)
+    if time_path:
+        reform_tpi = TPI.run_TPI(reform_params, client=client)
 
-    comp_dict = comp_output(base_ss, base_params, reform_ss,
-                            reform_params)
+    comp_dict = comp_output(base_params, base_ss, base_tpi,
+                            reform_params, reform_ss, reform_tpi)
 
     # Shut down client and make sure all of its references are
     # cleaned up.
@@ -203,8 +219,8 @@ def run_model(meta_param_dict, adjustment):
     return comp_dict
 
 
-def comp_output(base_ss, base_params, reform_ss, reform_params,
-                var='cssmat'):
+def comp_output(base_params, base_ss, base_tpi, reform_params,
+                reform_ss, reform_tpi, var='cssmat'):
     '''
     Function to create output for the COMP platform
     '''
