@@ -11,7 +11,8 @@ import os
 from taxcalc import Calculator
 from ogusa import output_tables as ot
 from ogusa.execute import runner
-from ogusa.utils import REFORM_DIR, BASELINE_DIR, safe_read_pickle
+from ogusa.constants import REFORM_DIR, BASELINE_DIR
+from ogusa.utils import safe_read_pickle
 
 
 def main():
@@ -32,8 +33,8 @@ def main():
 
     # Directories to save data
     CUR_DIR = os.path.dirname(os.path.realpath(__file__))
-    base_dir = os.path.join(CUR_DIR, BASELINE_DIR, "SS")
-    reform_dir = os.path.join(CUR_DIR, REFORM_DIR, "SS")
+    base_dir = os.path.join(CUR_DIR, BASELINE_DIR)
+    reform_dir = os.path.join(CUR_DIR, REFORM_DIR)
 
     # Set some OG model parameters
     # See default_parameters.json for more description of these parameters

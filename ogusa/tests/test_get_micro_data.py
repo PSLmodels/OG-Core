@@ -2,7 +2,7 @@ import pytest
 from pandas.util.testing import assert_frame_equal
 import numpy as np
 import os
-from ogusa.utils import CPS_START_YEAR, PUF_START_YEAR, TC_LAST_YEAR
+from ogusa.constants import CPS_START_YEAR, PUF_START_YEAR, TC_LAST_YEAR
 from ogusa import get_micro_data, utils
 from taxcalc import GrowFactors
 

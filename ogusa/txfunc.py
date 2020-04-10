@@ -17,8 +17,13 @@ from dask import delayed, compute
 import dask.multiprocessing
 import pickle
 from ogusa import get_micro_data
-from ogusa.utils import DEFAULT_START_YEAR
 import ogusa.parameter_plots as pp
+from ogusa.constants import DEFAULT_START_YEAR, SHOW_RUNTIME
+import warnings
+
+
+if not SHOW_RUNTIME:
+    warnings.simplefilter("ignore", RuntimeWarning)
 
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 MIN_OBS = 240  # 240 is 8 parameters to estimate X 30 obs per parameter
