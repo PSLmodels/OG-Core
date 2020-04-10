@@ -485,7 +485,7 @@ def run_TPI(p, client=None):
         G = np.ones(p.T + p.S) * ss_vars['Gss']
     elif p.baseline_spending:
         TR = TRbaseline
-        TR_new = p.TR   # Need to set TR_new for later reference
+        TR_new = TR   # Need to set TR_new for later reference
         G = Gbaseline
         G_0 = Gbaseline[0]
 
@@ -564,7 +564,7 @@ def run_TPI(p, client=None):
         y_before_tax_mat = (r_hh_path[:p.T, :, :] * bmat_s[:p.T, :, :] +
                             wpath[:p.T, :, :] * p.e * n_mat[:p.T, :, :])
 
-        if not p.baseline_spending and not p.budget_balance:
+        if not p.budget_balance:
             Y[:p.T] = TR[:p.T] / p.alpha_T[:p.T]  # maybe unecessary
 
             (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
