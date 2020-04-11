@@ -167,14 +167,12 @@ def run_model(meta_param_dict, adjustment):
     # Solve baseline model
     start_year = meta_param_dict['year'][0]['value']
     if start_year == 2020:
-        print('In path where use cached file')
         OGPATH = inspect.getfile(SS)
         OGDIR = os.path.dirname(OGPATH)
-        tax_func_path = os.path.join(OGDIR, 'data', 'tax_functions',
-                                     cached_pickle)
+        tax_func_path = None#os.path.join(OGDIR, 'data', 'tax_functions',
+                        #             cached_pickle)
         run_micro_baseline = False
     else:
-        print('Not in path where use cached file')
         tax_func_path = None
         run_micro_baseline = True
     base_spec = {
@@ -186,7 +184,6 @@ def run_model(meta_param_dict, adjustment):
         test=False, time_path=False, baseline=True, iit_reform={},
         guid='', data=data, client=client, num_workers=num_workers)
     base_params.update_specifications(base_spec)
-    print('Args for getting basline tax functions are: ', run_micro_baseline, tax_func_path)
     base_params.get_tax_function_parameters(
         client, run_micro_baseline, tax_func_path=tax_func_path)
     base_ss = SS.run_SS(base_params, client=client)
