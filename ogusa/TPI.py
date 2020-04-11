@@ -487,6 +487,7 @@ def run_TPI(p, client=None):
         TR = TRbaseline
         TR_new = TR   # Need to set TR_new for later reference
         G = Gbaseline
+        G[p.T:] = ss_vars['Gss']
         G_0 = Gbaseline[0]
 
     # Initialize some starting values
@@ -565,7 +566,8 @@ def run_TPI(p, client=None):
                             wpath[:p.T, :, :] * p.e * n_mat[:p.T, :, :])
 
         if not p.budget_balance:
-            Y[:p.T] = TR[:p.T] / p.alpha_T[:p.T]  # maybe unecessary
+            if not p.baseline_spending:
+                Y[:p.T] = TR[:p.T] / p.alpha_T[:p.T]  # maybe unecessary
 
             (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
              T_Cpath, business_revenue) = aggr.revenue(
