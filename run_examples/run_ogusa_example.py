@@ -10,6 +10,7 @@ import numpy as np
 import os
 from taxcalc import Calculator
 from ogusa import output_tables as ot
+from ogusa import output_plots as op
 from ogusa.execute import runner
 from ogusa.constants import REFORM_DIR, BASELINE_DIR
 from ogusa.utils import safe_read_pickle
@@ -107,6 +108,10 @@ def main():
         reform_params=reform_params,
         var_list=['Y', 'C', 'K', 'L', 'r', 'w'], output_type='pct_diff',
         num_years=10, start_year=og_spec['start_year'])
+
+    # create plots of output
+    op.plot_all(base_dir, reform_dir,
+                os.path.join(CUR_DIR, 'run_example_plots'))
 
     print("total time was ", (time.time() - run_start_time))
     print('Percentage changes in aggregates:', ans)
