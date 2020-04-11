@@ -43,7 +43,8 @@ class MetaParams(paramtools.Parameters):
             "description": "Year for parameters.",
             "type": "int",
             "value": 2019,
-            "validators": {"range": {"min": 2015, "max": TC_LAST_YEAR}}
+            "validators": {"range": {"min": 2015,
+                                     "max": TC_LAST_YEAR - 1}}
         },
         "data_source": {
             "title": "Data source",
@@ -58,7 +59,7 @@ class MetaParams(paramtools.Parameters):
                             " in addition to the steady-state"),
             "type": "bool",
             "value": False,
-            "validators": {"choice": {"choices": [True, False]}}
+            "validators": {"range": {"min": False, "max": True}}
         }
     }
 
@@ -154,6 +155,7 @@ def run_model(meta_param_dict, adjustment):
 
     # whether to estimate tax functions from microdata
     run_micro = True
+    print('MEta param dict time_path = ', meta_param_dict['time_path'])
     time_path = meta_param_dict['time_path']
 
     # filter out OG-USA params that will not change between baseline and
@@ -184,14 +186,16 @@ def run_model(meta_param_dict, adjustment):
     base_params.get_tax_function_parameters(client, run_micro)
     base_ss = SS.run_SS(base_params, client=client)
     utils.mkdirs(os.path.join(base_dir, "SS"))
-    ss_dir = os.path.join(base_dir, "SS", "SS_vars.pkl")
-    with open(ss_dir, "wb") as f:
+    base_ss_dir = os.path.join(base_dir, "SS", "SS_vars.pkl")
+    with open(base_ss_dir, "wb") as f:
         pickle.dump(base_ss, f)
     if time_path:
         base_tpi = TPI.run_TPI(base_params, client=client)
         tpi_dir = os.path.join(base_dir, "TPI", "TPI_vars.pkl")
         with open(tpi_dir, "wb") as f:
             pickle.dump(base_tpi, f)
+    else:
+        base_tpi = None
 
     # Solve reform model
     reform_spec = base_spec
@@ -205,11 +209,18 @@ def run_model(meta_param_dict, adjustment):
     reform_params.update_specifications(reform_spec)
     reform_params.get_tax_function_parameters(client, run_micro)
     reform_ss = SS.run_SS(reform_params, client=client)
+    utils.mkdirs(os.path.join(reform_dir, "SS"))
+    reform_ss_dir = os.path.join(reform_dir, "SS", "SS_vars.pkl")
+    with open(reform_ss_dir, "wb") as f:
+        pickle.dump(reform_ss, f)
     if time_path:
         reform_tpi = TPI.run_TPI(reform_params, client=client)
+    else:
+        reform_tpi = None
 
-    comp_dict = comp_output(base_params, base_ss, base_tpi,
-                            reform_params, reform_ss, reform_tpi)
+    comp_dict = comp_output(base_params, base_ss, reform_params,
+                            reform_ss, time_path, base_tpi,
+                            reform_tpi)
 
     # Shut down client and make sure all of its references are
     # cleaned up.
@@ -219,28 +230,54 @@ def run_model(meta_param_dict, adjustment):
     return comp_dict
 
 
-def comp_output(base_params, base_ss, base_tpi, reform_params,
-                reform_ss, reform_tpi, var='cssmat'):
+def comp_output(base_params, base_ss, reform_params, reform_ss,
+                time_path, base_tpi=None,  reform_tpi=None,
+                var='cssmat'):
     '''
     Function to create output for the COMP platform
     '''
-    table_title = 'Percentage Changes in Economic Aggregates Between'
-    table_title += ' Baseline and Reform Policy'
-    plot_title = 'Percentage Changes in Consumption by Lifetime Income'
-    plot_title += ' Percentile Group'
-    out_table = ot.macro_table_SS(
-        base_ss, reform_ss,
-        var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
-                  'Lss', 'rss', 'wss'], table_format='csv')
-    html_table = ot.macro_table_SS(
-        base_ss, reform_ss,
-        var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
-                  'Lss', 'rss', 'wss'], table_format='html')
-    fig = op.ability_bar_ss(
-        base_ss, base_params, reform_ss, reform_params, var=var)
-    in_memory_file = io.BytesIO()
-    fig.savefig(in_memory_file, format="png")
-    in_memory_file.seek(0)
+    if time_path:
+        table_title = 'Percentage Changes in Economic Aggregates Between'
+        table_title += ' Baseline and Reform Policy'
+        plot_title = 'Percentage Changes in Economic Aggregates Between'
+        plot_title += ' Baseline and Reform Policy'
+        out_table = ot.tp_output_dump_table(
+            base_params, base_tpi, reform_params, reform_tpi,
+            table_format='csv')
+        html_table = ot.macro_table(
+            base_tpi, base_params, reform_tpi, reform_params,
+            var_list=['Y', 'C', 'I_total', 'L', 'D', 'G', 'r', 'w'],
+            output_type='pct_diff', num_years=10, include_SS=True,
+            include_overall=True, start_year=base_params.start_year,
+            table_format='html')
+        fig = op.plot_aggregates(
+            base_tpi, base_params, reform_tpi, reform_params,
+            var_list=['Y', 'C', 'K', 'L'], plot_type='pct_diff',
+            num_years_to_plot=50, start_year=base_params.start_year,
+            vertical_line_years=[base_params.tG1, base_params.tG2],
+            plot_title=None, path=None)
+        in_memory_file = io.BytesIO()
+        fig.savefig(in_memory_file, format="png")
+        in_memory_file.seek(0)
+    else:
+        table_title = 'Percentage Changes in Economic Aggregates Between'
+        table_title += ' Baseline and Reform Policy'
+        plot_title = 'Percentage Changes in Consumption by Lifetime Income'
+        plot_title += ' Percentile Group'
+        out_table = ot.macro_table_SS(
+            base_ss, reform_ss,
+            var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
+                      'Lss', 'rss', 'wss'], table_format='csv')
+        html_table = ot.macro_table_SS(
+            base_ss, reform_ss,
+            var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
+                      'Lss', 'rss', 'wss'], table_format='html')
+        fig = op.ability_bar_ss(
+            base_ss, base_params, reform_ss, reform_params, var=var)
+        in_memory_file = io.BytesIO()
+        fig.savefig(in_memory_file, format="png")
+        in_memory_file.seek(0)
+
     comp_dict = {
         "renderable": [
             {
