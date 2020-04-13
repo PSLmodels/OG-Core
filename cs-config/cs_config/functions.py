@@ -58,7 +58,7 @@ class MetaParams(paramtools.Parameters):
             "description": ("Whether to solve for the transition path" +
                             " in addition to the steady-state"),
             "type": "bool",
-            "value": False,
+            "value": True,
             "validators": {"range": {"min": False, "max": True}}
         }
     }
@@ -155,8 +155,9 @@ def run_model(meta_param_dict, adjustment):
 
     # whether to estimate tax functions from microdata
     run_micro = True
-    print('MEta param dict time_path = ', meta_param_dict['time_path'])
-    time_path = meta_param_dict['time_path']
+    print('MEta param dict time_path = ', meta_param_dict['time_path'][0]['value'])
+    print('Start year = ', meta_param_dict['year'][0]['value'])
+    time_path = meta_param_dict['time_path'][0]['value']
 
     # filter out OG-USA params that will not change between baseline and
     # reform runs (these are the non-policy parameters)
@@ -173,7 +174,7 @@ def run_model(meta_param_dict, adjustment):
 
     # Solve baseline model
     base_spec = {
-        **{'start_year': meta_param_dict['year'],
+        **{'start_year': int(meta_param_dict['year'][0]['value']),
            'tax_func_type': 'linear',
            'age_specific': False}, **filtered_ogusa_params}
     base_params = Specifications(
