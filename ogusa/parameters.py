@@ -19,10 +19,11 @@ class Specifications(paramtools.Parameters):
     array_first = True
 
     def __init__(self,
-                 run_micro=False, output_base=BASELINE_DIR,
-                 baseline_dir=BASELINE_DIR, test=False, time_path=True,
-                 baseline=False, iit_reform={}, guid='', data='cps',
-                 flag_graphs=False, client=None, num_workers=1):
+                 run_micro=False, tax_func_path=None,
+                 output_base=BASELINE_DIR, baseline_dir=BASELINE_DIR,
+                 test=False, time_path=True, baseline=False,
+                 iit_reform={}, guid='', data='cps',
+                 client=None, num_workers=1):
         super().__init__()
 
         self.output_base = output_base
@@ -33,7 +34,6 @@ class Specifications(paramtools.Parameters):
         self.iit_reform = iit_reform
         self.guid = guid
         self.data = data
-        self.flag_graphs = flag_graphs
         self.num_workers = num_workers
 
         # put OG-USA version in parameters to save for reference
@@ -44,7 +44,9 @@ class Specifications(paramtools.Parameters):
 
         # does more costly tax function estimation
         if run_micro:
-            self.get_tax_function_parameters(self, client, run_micro=True)
+            self.get_tax_function_parameters(
+                self, client, run_micro=True,
+                tax_func_path=tax_func_path)
 
         self.parameter_warnings = ''
         self.parameter_errors = ''
@@ -234,8 +236,7 @@ class Specifications(paramtools.Parameters):
         (self.omega, self.g_n_ss, self.omega_SS, self.surv_rate,
          self.rho, self.g_n, self.imm_rates,
          self.omega_S_preTP) = demographics.get_pop_objs(
-                self.E, self.S, self.T, 1, 100, self.start_year,
-                self.flag_graphs)
+                self.E, self.S, self.T, 1, 100, self.start_year)
         # for constant demographics
         if self.constant_demographics:
             self.g_n_ss = 0.0
@@ -271,7 +272,8 @@ class Specifications(paramtools.Parameters):
             self.S, self.omega_SS, self.omega_SS_80, self.lambdas,
             plot=False)
 
-    def get_tax_function_parameters(self, client, run_micro=False):
+    def get_tax_function_parameters(self, client, run_micro=False,
+                                    tax_func_path=None):
         '''
         Reads pickle file of tax function parameters or estimates the
         parameters from microsimulation model output.
@@ -280,31 +282,38 @@ class Specifications(paramtools.Parameters):
             client (Dask client object): client
             run_micro (bool): whether to estimate parameters from
                 microsimulation model
+            tax_func_path (string): path where find or save tax
+                function parameter estimates
 
         Returns:
             None
 
         '''
-        # Income tax parameters
-        if self.baseline:
-            pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
-            tx_func_est_path = os.path.join(self.output_base, pckl)
-            print('Using baseline tax parameters from ',
-                  tx_func_est_path)
-        else:
-            pckl = "TxFuncEst_policy{}.pkl".format(self.guid)
-            tx_func_est_path = os.path.join(self.output_base, pckl)
-            print('Using reform policy tax parameters from ',
-                  tx_func_est_path)
+        # set paths if none given
+        if tax_func_path is None:
+            if self.baseline:
+                pckl = "TxFuncEst_baseline{}.pkl".format(self.guid)
+                tax_func_path = os.path.join(self.output_base, pckl)
+                print('Using baseline tax parameters from ',
+                      tax_func_path)
+            else:
+                pckl = "TxFuncEst_policy{}.pkl".format(self.guid)
+                tax_func_path = os.path.join(self.output_base, pckl)
+                print('Using reform policy tax parameters from ',
+                      tax_func_path)
+        # If run_micro is false, check to see if parameters file exists
+        # and if it is consistent with Specifications instance
+        if not run_micro:
+            dict_params, run_micro = self.read_tax_func_estimate(
+                tax_func_path)
         if run_micro:
             txfunc.get_tax_func_estimate(  # pragma: no cover
                 self.BW, self.S, self.starting_age, self.ending_age,
                 self.baseline, self.analytical_mtrs, self.tax_func_type,
                 self.age_specific, self.start_year, self.iit_reform,
-                self.guid, tx_func_est_path, self.data, client,
+                self.guid, tax_func_path, self.data, client,
                 self.num_workers)
-        estimate_file = tx_func_est_path
-        dict_params = self.read_tax_func_estimate(estimate_file, pckl)
+            dict_params, _ = self.read_tax_func_estimate(tax_func_path)
         self.mean_income_data = dict_params['tfunc_avginc'][0]
         try:
             self.frac_tax_payroll = np.append(
@@ -428,32 +437,79 @@ class Specifications(paramtools.Parameters):
             self.mtrx_params = np.zeros(self.mtrx_params.shape)
             self.mtry_params = np.zeros(self.mtry_params.shape)
 
-    def read_tax_func_estimate(self, pickle_path, pickle_file):
+    def read_tax_func_estimate(self, tax_func_path):
         '''
         This function reads in tax function parameters from pickle
         files.
 
         Args:
-            pickle_path (str): path to pickle with tax function
+            tax_func_path (str): path to pickle with tax function
                 parameter estimates
-            pickle_file (str): name of pickle file with tax function
-                parameter estimates
+
 
         Returns:
             dict_params (dict): dictionary containing arrays of tax
                 function parameters
+            run_micro (bool): whether to estimate tax function parameters
 
         '''
-        if os.path.exists(pickle_path):
-            print('pickle path exists')
-            dict_params = safe_read_pickle(pickle_path)
+        flag = 0
+        if os.path.exists(tax_func_path):
+            print('Tax Function Path Exists')
+            dict_params = safe_read_pickle(tax_func_path)
+            # check to see if tax_functions compatible
+            current_taxcalc =\
+                pkg_resources.get_distribution("taxcalc").version
+            try:
+                if current_taxcalc != dict_params['tax_calc_version']:
+                    print('WARNING: Tax function parameters estimated' +
+                          ' from Tax Calculator version that is not ' +
+                          ' the one currently installed on this machine.')
+                    print('Current TC version is ', current_taxcalc,
+                          ', Estimated tax functions from version ',
+                          dict_params.get('tax_calc_version', None))
+                    flag = 1
+            except KeyError:
+                pass
+            try:
+                if self.start_year != dict_params['start_year']:
+                    print('Model start year not consistent with tax ' +
+                          'function parameter estimates')
+                    flag = 1
+            except KeyError:
+                pass
+            try:
+                if self.BW != dict_params['BW']:
+                    print('Model budget window length is not ' +
+                          'consistent with tax function parameter ' +
+                          'estimates')
+                    flag = 1
+            except KeyError:
+                pass
+            try:
+                if self.tax_func_type != dict_params['tax_func_type']:
+                    print('Model tax function type is not ' +
+                          'consistent with tax function parameter ' +
+                          'estimates')
+                    flag = 1
+            except KeyError:
+                pass
+            if flag >= 1:
+                raise RuntimeError(
+                    'Tax function parameter estimates at given path' +
+                    ' are not consistent with model parameters' +
+                    ' specified.')
         else:
-            path_in_egg = pickle_file
-            pkl_path = os.path.join(os.path.dirname(__file__), 'tests',
-                                    path_in_egg)
-            dict_params = dict_params = safe_read_pickle(pkl_path)
+            flag = 1
+            print('Tax function parameter estimates do not exist at' +
+                  ' given path. Running new estimation.')
+        if flag >= 1:
+            dict_params = None
+            run_micro = True
+        else:
+            run_micro = False
 
-        return dict_params
+        return dict_params, run_micro
 
     def update_specifications(self, revision, raise_errors=True):
         '''

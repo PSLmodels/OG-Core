@@ -42,7 +42,7 @@ class MetaParams(paramtools.Parameters):
             "title": "Start year",
             "description": "Year for parameters.",
             "type": "int",
-            "value": 2019,
+            "value": 2020,
             "validators": {"range": {"min": 2015, "max": TC_LAST_YEAR}}
         },
         "data_source": {
@@ -125,8 +125,12 @@ def run_model(meta_param_dict, adjustment):
     meta_params.adjust(meta_param_dict)
     if meta_params.data_source == "PUF":
         data = retrieve_puf(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+        # set name of cached baseline file in case use below
+        cached_pickle = 'TxFuncEst_baseline_PUF.pkl'
     else:
         data = "cps"
+        # set name of cached baseline file in case use below
+        cached_pickle = 'TxFuncEst_baseline_CPS.pkl'
     # Get TC params adjustments
     iit_mods = convert_adj(adjustment[
         "Tax-Calculator Parameters"],
@@ -161,18 +165,27 @@ def run_model(meta_param_dict, adjustment):
             filtered_ogusa_params[k] = v
 
     # Solve baseline model
+    start_year = meta_param_dict['year'][0]['value']
+    if start_year == 2020:
+        OGPATH = inspect.getfile(SS)
+        OGDIR = os.path.dirname(OGPATH)
+        tax_func_path = None#os.path.join(OGDIR, 'data', 'tax_functions',
+                        #             cached_pickle)
+        run_micro_baseline = False
+    else:
+        tax_func_path = None
+        run_micro_baseline = True
     base_spec = {
-        **{'start_year': meta_param_dict['year'],
-        'tax_func_type': 'linear',
-        'age_specific': False}, **filtered_ogusa_params}
+        **{'start_year': start_year,
+           'tax_func_type': 'linear',
+           'age_specific': False}, **filtered_ogusa_params}
     base_params = Specifications(
-        run_micro=False, output_base=base_dir,
-        baseline_dir=base_dir, test=False, time_path=False,
-        baseline=True, iit_reform={}, guid='',
-        data=data,
-        client=client, num_workers=num_workers)
+        run_micro=False, output_base=base_dir, baseline_dir=base_dir,
+        test=False, time_path=False, baseline=True, iit_reform={},
+        guid='', data=data, client=client, num_workers=num_workers)
     base_params.update_specifications(base_spec)
-    base_params.get_tax_function_parameters(client, run_micro)
+    base_params.get_tax_function_parameters(
+        client, run_micro_baseline, tax_func_path=tax_func_path)
     base_ss = SS.run_SS(base_params, client=client)
     utils.mkdirs(os.path.join(base_dir, "SS"))
     ss_dir = os.path.join(base_dir, "SS", "SS_vars.pkl")
@@ -186,8 +199,7 @@ def run_model(meta_param_dict, adjustment):
         run_micro=False, output_base=reform_dir,
         baseline_dir=base_dir, test=False, time_path=False,
         baseline=False, iit_reform=iit_mods, guid='',
-        data=data,
-        client=client, num_workers=num_workers)
+        data=data, client=client, num_workers=num_workers)
     reform_params.update_specifications(reform_spec)
     reform_params.get_tax_function_parameters(client, run_micro)
     reform_ss = SS.run_SS(reform_params, client=client)
