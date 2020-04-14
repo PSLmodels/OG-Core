@@ -19,7 +19,7 @@ POLICY_SCHEMA = {
             "validators": {
                 "choice": {
                     "choices": [
-                        yr for yr in range(2013, TC_LAST_YEAR)
+                        yr for yr in range(2013, TC_LAST_YEAR + 1)
                     ]
                 }
             }
