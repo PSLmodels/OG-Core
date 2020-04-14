@@ -1,6 +1,6 @@
 import ogusa
 from ogusa.parameters import Specifications
-from ogusa.constants import TC_LAST_YEAR, REFORM_DIR, BASELINE_DIR
+from ogusa.constants import REFORM_DIR, BASELINE_DIR
 from ogusa import output_plots as op
 from ogusa import output_tables as ot
 from ogusa import SS, TPI, utils
@@ -43,7 +43,8 @@ class MetaParams(paramtools.Parameters):
             "description": "Year for parameters.",
             "type": "int",
             "value": 2020,
-            "validators": {"range": {"min": 2015, "max": TC_LAST_YEAR - 1}}
+            "validators": {"range": {"min": 2015, "max":
+                                     Policy.LAST_BUDGET_YEAR}}
         },
         "data_source": {
             "title": "Data source",
@@ -57,7 +58,7 @@ class MetaParams(paramtools.Parameters):
             "description": ("Whether to solve for the transition path" +
                             " in addition to the steady-state"),
             "type": "bool",
-            "value": True,
+            "value": False,
             "validators": {"range": {"min": False, "max": True}}
         }
     }
@@ -162,8 +163,6 @@ def run_model(meta_param_dict, adjustment):
 
     # whether to estimate tax functions from microdata
     run_micro = True
-    print('MEta param dict time_path = ', meta_param_dict['time_path'][0]['value'])
-    print('Start year = ', meta_param_dict['year'][0]['value'])
     time_path = meta_param_dict['time_path'][0]['value']
 
     # filter out OG-USA params that will not change between baseline and

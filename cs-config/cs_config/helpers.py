@@ -8,8 +8,9 @@ except ImportError:
 import gzip
 import pandas as pd
 from taxcalc import Policy
-from ogusa.constants import TC_LAST_YEAR
 from collections import defaultdict
+
+TC_LAST_YEAR = Policy.LAST_BUDGET_YEAR
 
 POLICY_SCHEMA = {
     "labels": {
