@@ -63,7 +63,11 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
     fig1, ax1 = plt.subplots()
     for i, v in enumerate(var_list):
         if plot_type == 'pct_diff':
-            plot_var = (reform_tpi[v] - base_tpi[v]) / base_tpi[v]
+            if v in ['r_gov', 'r', 'r_hh']:
+                # Compute just percentage point changes for rates
+                plot_var = reform_tpi[v] - base_tpi[v]
+            else:
+                plot_var = (reform_tpi[v] - base_tpi[v]) / base_tpi[v]
             ylabel = r'Pct. change'
             plt.plot(year_vec,
                      plot_var[start_index: start_index +
