@@ -200,7 +200,7 @@ def ss_3Dplot(base_params, base_ss, reform_params=None, reform_ss=None,
 
 def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
                    reform_params=None, var_list=['D'],
-                   num_years_to_plot=50,
+                   plot_type='levels', num_years_to_plot=50,
                    start_year=DEFAULT_START_YEAR, vertical_line_years=None,
                    plot_title=None, path=None):
     '''
@@ -213,6 +213,10 @@ def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
         reform_params (OG-USA Specifications class): reform parameters object
         p (OG-USA Specifications class): parameters object
         var_list (list): names of variable to plot
+        plot_type (string): type of plot, can be:
+            'diff': plots difference between baseline and reform
+                (reform-base)
+            'levels': plot variables in model units
         num_years_to_plot (integer): number of years to include in plot
         start_year (integer): year to start plot
         vertical_line_years (list): list of integers for years want
@@ -225,6 +229,8 @@ def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
     '''
     assert isinstance(start_year, (int, np.integer))
     assert (isinstance(num_years_to_plot, int))
+    if plot_type == 'diff':
+        assert (reform_tpi is not None)
     # Make sure both runs cover same time period
     if reform_tpi:
         assert (base_params.start_year == reform_params.start_year)
@@ -232,20 +238,30 @@ def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
     start_index = start_year - base_params.start_year
     fig1, ax1 = plt.subplots()
     for i, v in enumerate(var_list):
-        plot_var_base = (base_tpi[v][:base_params.T] /
-                         base_tpi['Y'][:base_params.T])
-        if reform_tpi:
-            plot_var_reform = (reform_tpi[v][:base_params.T] /
-                               reform_tpi['Y'][:base_params.T])
-            plt.plot(year_vec, plot_var_base[start_index: start_index +
-                                             num_years_to_plot],
-                     label='Baseline ' + ToGDP_LABELS[v])
-            plt.plot(year_vec, plot_var_reform[start_index: start_index +
-                                               num_years_to_plot],
-                     label='Reform ' + ToGDP_LABELS[v])
-        else:
-            plt.plot(year_vec, plot_var_base[start_index: start_index +
-                                             num_years_to_plot],
+        if plot_type == 'levels':
+            plot_var_base = (base_tpi[v][:base_params.T] /
+                             base_tpi['Y'][:base_params.T])
+            if reform_tpi:
+                plot_var_reform = (reform_tpi[v][:base_params.T] /
+                                   reform_tpi['Y'][:base_params.T])
+                plt.plot(year_vec, plot_var_base[start_index: start_index +
+                                                 num_years_to_plot],
+                         label='Baseline ' + ToGDP_LABELS[v])
+                plt.plot(year_vec, plot_var_reform[start_index: start_index +
+                                                   num_years_to_plot],
+                         label='Reform ' + ToGDP_LABELS[v])
+            else:
+                plt.plot(year_vec, plot_var_base[start_index: start_index +
+                                                 num_years_to_plot],
+                         label=ToGDP_LABELS[v])
+        else:  # if plotting differences in ratios
+            var_base = (base_tpi[v][:base_params.T] /
+                        base_tpi['Y'][:base_params.T])
+            var_reform = (reform_tpi[v][:base_params.T] /
+                          reform_tpi['Y'][:base_params.T])
+            plot_var = var_reform - var_base
+            plt.plot(year_vec, plot_var[start_index: start_index +
+                                        num_years_to_plot],
                      label=ToGDP_LABELS[v])
     ylabel = r'Percent of GDP'
     # vertical markers at certain years
