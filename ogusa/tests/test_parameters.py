@@ -44,7 +44,9 @@ def test_compute_default_params():
 
 def test_get_tax_function_parameters():
     specs = Specifications()
-    specs.get_tax_function_parameters(None, run_micro=False)
+    tax_func_path = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
+    specs.get_tax_function_parameters(None, run_micro=False,
+                                      tax_func_path=tax_func_path)
     assert specs.etr_params.shape == (specs.T, specs.S, 12)
     assert specs.mtrx_params.shape == (specs.T, specs.S, 12)
     assert specs.mtry_params.shape == (specs.T, specs.S, 12)
@@ -52,7 +54,9 @@ def test_get_tax_function_parameters():
 
 def test_get_tax_function_parameters_baseline():
     specs = Specifications(baseline=True)
-    specs.get_tax_function_parameters(None, run_micro=False)
+    tax_func_path = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
+    specs.get_tax_function_parameters(None, run_micro=False,
+                                      tax_func_path=tax_func_path)
     assert specs.etr_params.shape == (specs.T, specs.S, 12)
     assert specs.mtrx_params.shape == (specs.T, specs.S, 12)
     assert specs.mtry_params.shape == (specs.T, specs.S, 12)
@@ -61,7 +65,9 @@ def test_get_tax_function_parameters_baseline():
 def test_get_tax_function_parameters_S():
     specs = Specifications()
     specs.S = 40
-    specs.get_tax_function_parameters(None, run_micro=False)
+    tax_func_path = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
+    specs.get_tax_function_parameters(None, run_micro=False,
+                                      tax_func_path=tax_func_path)
     assert specs.etr_params.shape == (specs.T, specs.S, 12)
     assert specs.mtrx_params.shape == (specs.T, specs.S, 12)
     assert specs.mtry_params.shape == (specs.T, specs.S, 12)
@@ -70,7 +76,9 @@ def test_get_tax_function_parameters_S():
 def test_get_tax_function_parameters_constant_rates():
     specs = Specifications()
     specs.constant_rates = True
-    specs.get_tax_function_parameters(None, run_micro=False)
+    tax_func_path = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
+    specs.get_tax_function_parameters(None, run_micro=False,
+                                      tax_func_path=tax_func_path)
     assert specs.etr_params.shape == (specs.T, specs.S, 12)
     assert specs.mtrx_params.shape == (specs.T, specs.S, 12)
     assert specs.mtry_params.shape == (specs.T, specs.S, 12)
@@ -85,7 +93,9 @@ def test_get_tax_function_parameters_constant_rates():
 def test_get_tax_function_zero_taxes():
     specs = Specifications()
     specs.zero_taxes = True
-    specs.get_tax_function_parameters(None, run_micro=False)
+    tax_func_path = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
+    specs.get_tax_function_parameters(None, run_micro=False,
+                                      tax_func_path=tax_func_path)
     assert np.allclose(specs.etr_params,
                        np.zeros((specs.T, specs.S, 12)))
     assert np.allclose(specs.mtrx_params,
@@ -96,19 +106,11 @@ def test_get_tax_function_zero_taxes():
 
 def test_read_tax_func_estimate():
     specs = Specifications()
-    pickle_path = os.path.join(CUR_PATH, 'test_io_data')
-    pickle_file = 'TxFuncEst_baseline.pkl'
-    expected_dict = utils.safe_read_pickle(os.path.join(
-        pickle_path, pickle_file))
-    expected_dict2 = utils.safe_read_pickle(os.path.join(
-        CUR_PATH, pickle_file))
-    test_dict = specs.read_tax_func_estimate(os.path.join(
-        pickle_path, pickle_file), pickle_file)
+    tax_func_path = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
+    expected_dict = utils.safe_read_pickle(tax_func_path)
+    test_dict, _ = specs.read_tax_func_estimate(tax_func_path)
     assert np.allclose(expected_dict['tfunc_avg_etr'],
                        test_dict['tfunc_avg_etr'])
-    test_dict2 = specs.read_tax_func_estimate('not_a_path', pickle_file)
-    assert np.allclose(expected_dict2['tfunc_avg_etr'],
-                       test_dict2['tfunc_avg_etr'])
 
 
 def test_update_specifications_with_dict():

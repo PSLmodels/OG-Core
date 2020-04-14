@@ -12,7 +12,8 @@ from ogusa.parameters import Specifications
 
 def runner(output_base, baseline_dir, test=False, time_path=True,
            baseline=True, iit_reform={}, og_spec={}, guid='',
-           run_micro=True, data=None, client=None, num_workers=1):
+           run_micro=True, tax_func_path=None, data=None, client=None,
+           num_workers=1):
     '''
     This function runs the OG-USA model, solving for the steady-state
     and (optionally) the time path equilibrium.
@@ -58,7 +59,8 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
     # Get parameter class
     # Note - set run_micro false when initially load class
     # Update later with call to spec.get_tax_function_parameters()
-    spec = Specifications(run_micro=False, output_base=output_base,
+    spec = Specifications(run_micro=False, tax_func_path=tax_func_path,
+                          output_base=output_base,
                           baseline_dir=baseline_dir, test=test,
                           time_path=time_path, baseline=baseline,
                           iit_reform=iit_reform, guid=guid, data=data,
@@ -66,7 +68,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
 
     spec.update_specifications(og_spec)
     print('path for tax functions: ', spec.output_base)
-    spec.get_tax_function_parameters(client, run_micro)
+    spec.get_tax_function_parameters(client, run_micro, tax_func_path)
 
     '''
     ------------------------------------------------------------------------

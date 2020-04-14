@@ -44,8 +44,8 @@ def macro_table(base_tpi, base_params, reform_tpi=None,
             if saved to disk
 
     '''
-    assert (isinstance(start_year, int))
-    assert (isinstance(num_years, int))
+    assert isinstance(start_year, (int, np.integer))
+    assert isinstance(num_years, (int, np.integer))
     # Make sure both runs cover same time period
     if reform_tpi is not None:
         assert (base_params.start_year == reform_params.start_year)

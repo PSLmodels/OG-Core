@@ -59,7 +59,7 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
         G = p.alpha_G[:p.T] * Y[:p.T]
         G[0] = G0
     else:
-        G = Gbaseline
+        G = Gbaseline[:p.T]
     growth = (1 + p.g_n) * np.exp(p.g_y)
 
     t = 1
