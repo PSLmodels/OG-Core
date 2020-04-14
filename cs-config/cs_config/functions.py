@@ -57,7 +57,7 @@ class MetaParams(paramtools.Parameters):
             "description": ("Whether to solve for the transition path" +
                             " in addition to the steady-state"),
             "type": "bool",
-            "value": False,
+            "value": True,
             "validators": {"range": {"min": False, "max": True}}
         }
     }
@@ -255,9 +255,12 @@ def comp_output(base_params, base_ss, reform_params, reform_ss,
     if time_path:
         table_title = 'Percentage Changes in Economic Aggregates Between'
         table_title += ' Baseline and Reform Policy'
-        plot_title = 'Percentage Changes in Economic Aggregates Between'
-        plot_title += ' Baseline and Reform Policy'
-        print('Base params start year = ', base_params.start_year, type(base_params.start_year))
+        plot1_title = 'Pct Changes in Economic Aggregates Between'
+        plot1_title += ' Baseline and Reform Policy'
+        plot2_title = 'Pct Changes in Interest Rates and Wages'
+        plot2_title = ' Between Baseline and Reform Policy'
+        plot3_title = 'Differences in Fiscal Variables Relative to GDP'
+        plot3_title = ' Between Baseline and Reform Policy'
         out_table = ot.tp_output_dump_table(
             base_params, base_tpi, reform_params, reform_tpi,
             table_format='csv')
@@ -267,15 +270,66 @@ def comp_output(base_params, base_ss, reform_params, reform_ss,
             output_type='pct_diff', num_years=10, include_SS=True,
             include_overall=True, start_year=base_params.start_year,
             table_format='html')
-        fig = op.plot_aggregates(
+        fig1 = op.plot_aggregates(
             base_tpi, base_params, reform_tpi, reform_params,
             var_list=['Y', 'C', 'K', 'L'], plot_type='pct_diff',
             num_years_to_plot=50, start_year=base_params.start_year,
             vertical_line_years=[base_params.tG1, base_params.tG2],
             plot_title=None, path=None)
-        in_memory_file = io.BytesIO()
-        fig.savefig(in_memory_file, format="png")
-        in_memory_file.seek(0)
+        in_memory_file1 = io.BytesIO()
+        fig1.savefig(in_memory_file1, format="png")
+        in_memory_file1.seek(0)
+        fig2 = op.plot_aggregates(
+            base_tpi, base_params, reform_tpi, reform_params,
+            var_list=['r_gov', 'w'], plot_type='pct_diffs',
+            num_years_to_plot=50, start_year=base_params.start_year,
+            vertical_line_years=[base_params.tG1, base_params.tG2],
+            plot_title=None, path=None)
+        in_memory_file2 = io.BytesIO()
+        fig2.savefig(in_memory_file2, format="png")
+        in_memory_file2.seek(0)
+        fig3 = op. plot_gdp_ratio(
+            base_tpi, base_params, reform_tpi, reform_params,
+            var_list=['D', 'G', 'total_revenue'],
+            plot_type='diffs', num_years_to_plot=50,
+            start_year=base_params.start_year,
+            vertical_line_years=[base_params.tG1, base_params.tG2],
+            plot_title=None, path=None)
+        in_memory_file3 = io.BytesIO()
+        fig3.savefig(in_memory_file3, format="png")
+        in_memory_file3.seek(0)
+
+        comp_dict = {
+            "renderable": [
+                {
+                  "media_type": "PNG",
+                  "title": plot1_title,
+                  "data": in_memory_file1.read()
+                  },
+                {
+                  "media_type": "PNG",
+                  "title": plot2_title,
+                  "data": in_memory_file2.read()
+                  },
+                {
+                  "media_type": "PNG",
+                  "title": plot3_title,
+                  "data": in_memory_file3.read()
+                  },
+                {
+                  "media_type": "table",
+                  "title":  table_title,
+                  "data": html_table
+                }
+                ],
+            "downloadable": [
+                {
+                  "media_type": "CSV",
+                  "title": table_title,
+                  "data": out_table.to_csv()
+                }
+            ]
+            }
     else:
         table_title = 'Percentage Changes in Economic Aggregates Between'
         table_title += ' Baseline and Reform Policy'
@@ -295,26 +349,26 @@ def comp_output(base_params, base_ss, reform_params, reform_ss,
         fig.savefig(in_memory_file, format="png")
         in_memory_file.seek(0)
 
-    comp_dict = {
-        "renderable": [
-            {
-              "media_type": "PNG",
-              "title": plot_title,
-              "data": in_memory_file.read()
-              },
-            {
-              "media_type": "table",
-              "title":  table_title,
-              "data": html_table
+        comp_dict = {
+            "renderable": [
+                {
+                  "media_type": "PNG",
+                  "title": plot_title,
+                  "data": in_memory_file.read()
+                  },
+                {
+                  "media_type": "table",
+                  "title":  table_title,
+                  "data": html_table
+                }
+                ],
+            "downloadable": [
+                {
+                  "media_type": "CSV",
+                  "title": table_title,
+                  "data": out_table.to_csv()
+                }
+            ]
             }
-            ],
-        "downloadable": [
-            {
-              "media_type": "CSV",
-              "title": table_title,
-              "data": out_table.to_csv()
-            }
-        ]
-        }
 
     return comp_dict
