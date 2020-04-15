@@ -58,7 +58,7 @@ class MetaParams(paramtools.Parameters):
             "description": ("Whether to solve for the transition path" +
                             " in addition to the steady-state"),
             "type": "bool",
-            "value": False,
+            "value": True,
             "validators": {"range": {"min": False, "max": True}}
         }
     }
@@ -157,9 +157,8 @@ def run_model(meta_param_dict, adjustment):
     # Dask parmeters
     # Limit to one worker and one thread to satisfy celery
     # constraints on multiprocessing.
-    client = Client(n_workers=4, threads_per_worker=1, processes=False)
-    # client = Client()
-    num_workers = 4
+    client = Client(n_workers=1, threads_per_worker=1, processes=False)
+    num_workers = 1
 
     # whether to estimate tax functions from microdata
     run_micro = True
@@ -191,7 +190,7 @@ def run_model(meta_param_dict, adjustment):
         run_micro_baseline = True
     base_spec = {
         **{'start_year': start_year,
-           'tax_func_type': 'linear',
+           'tax_func_type': 'DEP',
            'age_specific': False}, **filtered_ogusa_params}
     base_params = Specifications(
         run_micro=False, output_base=base_dir, baseline_dir=base_dir,
@@ -257,9 +256,9 @@ def comp_output(base_params, base_ss, reform_params, reform_ss,
         plot1_title = 'Pct Changes in Economic Aggregates Between'
         plot1_title += ' Baseline and Reform Policy'
         plot2_title = 'Pct Changes in Interest Rates and Wages'
-        plot2_title = ' Between Baseline and Reform Policy'
+        plot2_title += ' Between Baseline and Reform Policy'
         plot3_title = 'Differences in Fiscal Variables Relative to GDP'
-        plot3_title = ' Between Baseline and Reform Policy'
+        plot3_title += ' Between Baseline and Reform Policy'
         out_table = ot.tp_output_dump_table(
             base_params, base_tpi, reform_params, reform_tpi,
             table_format='csv')
@@ -276,26 +275,26 @@ def comp_output(base_params, base_ss, reform_params, reform_ss,
             vertical_line_years=[base_params.tG1, base_params.tG2],
             plot_title=None, path=None)
         in_memory_file1 = io.BytesIO()
-        fig1.savefig(in_memory_file1, format="png")
+        fig1.savefig(in_memory_file1, format="png",  bbox_inches="tight")
         in_memory_file1.seek(0)
         fig2 = op.plot_aggregates(
             base_tpi, base_params, reform_tpi, reform_params,
-            var_list=['r_gov', 'w'], plot_type='pct_diffs',
+            var_list=['r_gov', 'w'], plot_type='pct_diff',
             num_years_to_plot=50, start_year=base_params.start_year,
             vertical_line_years=[base_params.tG1, base_params.tG2],
             plot_title=None, path=None)
         in_memory_file2 = io.BytesIO()
-        fig2.savefig(in_memory_file2, format="png")
+        fig2.savefig(in_memory_file2, format="png",  bbox_inches="tight")
         in_memory_file2.seek(0)
         fig3 = op. plot_gdp_ratio(
             base_tpi, base_params, reform_tpi, reform_params,
             var_list=['D', 'G', 'total_revenue'],
-            plot_type='diffs', num_years_to_plot=50,
+            plot_type='diff', num_years_to_plot=50,
             start_year=base_params.start_year,
             vertical_line_years=[base_params.tG1, base_params.tG2],
             plot_title=None, path=None)
         in_memory_file3 = io.BytesIO()
-        fig3.savefig(in_memory_file3, format="png")
+        fig3.savefig(in_memory_file3, format="png",  bbox_inches="tight")
         in_memory_file3.seek(0)
 
         comp_dict = {
@@ -345,7 +344,7 @@ def comp_output(base_params, base_ss, reform_params, reform_ss,
         fig = op.ability_bar_ss(
             base_ss, base_params, reform_ss, reform_params, var=var)
         in_memory_file = io.BytesIO()
-        fig.savefig(in_memory_file, format="png")
+        fig.savefig(in_memory_file, format="png",  bbox_inches="tight")
         in_memory_file.seek(0)
 
         comp_dict = {
