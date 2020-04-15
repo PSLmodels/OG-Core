@@ -67,7 +67,7 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
                           client=client, num_workers=num_workers)
 
     spec.update_specifications(og_spec)
-    print('path for tax functions: ', spec.output_base)
+    print('path for tax functions: ', tax_func_path)
     spec.get_tax_function_parameters(client, run_micro, tax_func_path)
 
     '''

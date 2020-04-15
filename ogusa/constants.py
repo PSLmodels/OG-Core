@@ -10,7 +10,7 @@ BASELINE_DIR = "OUTPUT_BASELINE"
 DEFAULT_START_YEAR = 2020
 
 # Latest year TaxData extrapolates to
-TC_LAST_YEAR = 2029
+TC_LAST_YEAR = taxcalc.Policy.LAST_BUDGET_YEAR
 
 # Year of data used (e.g. PUF or CPS year)
 CPS_START_YEAR = taxcalc.Records.CPSCSV_YEAR

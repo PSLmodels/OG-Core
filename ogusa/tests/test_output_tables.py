@@ -37,7 +37,7 @@ test_data = [(base_tpi, base_params, reform_tpi, reform_params,
     'base_tpi,base_params,reform_tpi,reform_params,output_type',
     test_data, ids=['Pct Diff', 'Diff', 'Levels'])
 def test_macro_table(base_tpi, base_params, reform_tpi, reform_params,
-    output_type):
+                     output_type):
     df = output_tables.macro_table(
         base_tpi, base_params, reform_tpi=reform_tpi,
         reform_params=reform_params, output_type=output_type,
@@ -67,4 +67,11 @@ def test_wealth_moments_table():
     be flagged so as to not run on TravisCI.
     '''
     df = output_tables.wealth_moments_table(base_ss, base_params)
+    assert isinstance(df, pd.DataFrame)
+
+
+def test_tp_output_dump_table():
+    df = output_tables.tp_output_dump_table(base_params, base_tpi,
+                                            reform_params=reform_params,
+                                            reform_tpi=reform_tpi)
     assert isinstance(df, pd.DataFrame)
