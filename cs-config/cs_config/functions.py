@@ -272,7 +272,9 @@ def comp_output(base_params, base_ss, reform_params, reform_ss,
             base_tpi, base_params, reform_tpi, reform_params,
             var_list=['Y', 'C', 'K', 'L'], plot_type='pct_diff',
             num_years_to_plot=50, start_year=base_params.start_year,
-            vertical_line_years=[base_params.tG1, base_params.tG2],
+            vertical_line_years=[
+                base_params.start_year + base_params.tG1,
+                base_params.start_year + base_params.tG2],
             plot_title=None, path=None)
         in_memory_file1 = io.BytesIO()
         fig1.savefig(in_memory_file1, format="png",  bbox_inches="tight")
@@ -281,7 +283,9 @@ def comp_output(base_params, base_ss, reform_params, reform_ss,
             base_tpi, base_params, reform_tpi, reform_params,
             var_list=['r_gov', 'w'], plot_type='pct_diff',
             num_years_to_plot=50, start_year=base_params.start_year,
-            vertical_line_years=[base_params.tG1, base_params.tG2],
+            vertical_line_years=[
+                base_params.start_year + base_params.tG1,
+                base_params.start_year + base_params.tG2],
             plot_title=None, path=None)
         in_memory_file2 = io.BytesIO()
         fig2.savefig(in_memory_file2, format="png",  bbox_inches="tight")
@@ -291,7 +295,9 @@ def comp_output(base_params, base_ss, reform_params, reform_ss,
             var_list=['D', 'G', 'total_revenue'],
             plot_type='diff', num_years_to_plot=50,
             start_year=base_params.start_year,
-            vertical_line_years=[base_params.tG1, base_params.tG2],
+            vertical_line_years=[
+                base_params.start_year + base_params.tG1,
+                base_params.start_year + base_params.tG2],
             plot_title=None, path=None)
         in_memory_file3 = io.BytesIO()
         fig3.savefig(in_memory_file3, format="png",  bbox_inches="tight")
