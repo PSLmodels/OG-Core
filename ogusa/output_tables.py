@@ -161,7 +161,7 @@ def macro_table_SS(base_ss, reform_ss,
         table_dict['Baseline'].append(base_ss[v])
         table_dict['Reform'].append(reform_ss[v])
         if v != 'D/Y':
-            diff = (reform_ss[v] - base_ss[v]) / base_ss[v]
+            diff = ((reform_ss[v] - base_ss[v]) / base_ss[v]) * 100
         else:
             diff = (reform_ss['Dss'] / reform_ss['Yss'] -
                     base_ss['Dss'] / base_ss['Yss'])
