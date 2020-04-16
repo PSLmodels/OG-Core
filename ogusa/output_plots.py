@@ -130,7 +130,7 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
         plt.title(plot_title, fontsize=15)
     vals = ax1.get_yticks()
     if plot_type == 'pct_diff':
-        ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
+        ax1.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
     plt.xlim((base_params.start_year - 1, base_params.start_year +
               num_years_to_plot))
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
@@ -273,7 +273,10 @@ def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
     if plot_title:
         plt.title(plot_title, fontsize=15)
     vals = ax1.get_yticks()
-    ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
+    if plot_type == 'levels':
+        ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
+    else:
+        ax1.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
     plt.xlim((base_params.start_year - 1, base_params.start_year +
               num_years_to_plot))
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
@@ -802,7 +805,7 @@ def inequality_plot(
         plt.title(plot_title, fontsize=15)
     vals = ax1.get_yticks()
     if plot_type == 'pct_diff':
-        ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
+        ax1.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
     plt.xlim((base_params.start_year - 1, base_params.start_year +
               num_years_to_plot))
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
