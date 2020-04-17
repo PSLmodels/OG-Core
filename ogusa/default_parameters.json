@@ -651,6 +651,7 @@
         "section_2": "Taxes",
         "notes": "This policy parameter represents the effective consumption tax rate from sales taxes, VATs, and excise taxes.  To capture exemptions of certain goods, this is assumed to vary by age and ability type.  It is thus a SxJ matrix.",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
                 "value": [
