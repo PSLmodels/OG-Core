@@ -72,7 +72,6 @@ def main():
     start_time = time.time()
     runner(**kwargs)
     print('run time = ', time.time()-start_time)
-    quit()
 
     '''
     ------------------------------------------------------------------------
