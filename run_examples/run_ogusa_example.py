@@ -65,7 +65,7 @@ def main():
     kwargs = {'output_base': base_dir, 'baseline_dir': base_dir,
               'test': False, 'time_path': True, 'baseline': True,
               'og_spec': og_spec, 'guid': '_example',
-              'run_micro': True, 'tax_func_path': tax_func_path,
+              'run_micro': False, 'tax_func_path': tax_func_path,
               'data': 'cps', 'client': client,
               'num_workers': num_workers}
 
