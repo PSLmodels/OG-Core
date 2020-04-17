@@ -65,7 +65,7 @@ class MetaParams(paramtools.Parameters):
 
 
 def get_version():
-    return ogusa.__version__
+    return "0.6.0"
 
 
 def get_inputs(meta_param_dict):
