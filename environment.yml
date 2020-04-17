@@ -10,7 +10,7 @@ dependencies:
 - matplotlib
 - "taxcalc>=2.4.2"
 - "dask>=0.20.0"
-- "paramtools==0.13.0"
+- "paramtools>=0.13.0"
 - openpyxl
 - pip
 - pytest
