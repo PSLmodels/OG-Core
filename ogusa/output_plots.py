@@ -130,7 +130,7 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
         plt.title(plot_title, fontsize=15)
     vals = ax1.get_yticks()
     if plot_type == 'pct_diff':
-        ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
+        ax1.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
     plt.xlim((base_params.start_year - 1, base_params.start_year +
               num_years_to_plot))
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
@@ -273,7 +273,10 @@ def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
     if plot_title:
         plt.title(plot_title, fontsize=15)
     vals = ax1.get_yticks()
-    ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
+    if plot_type == 'levels':
+        ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
+    else:
+        ax1.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
     plt.xlim((base_params.start_year - 1, base_params.start_year +
               num_years_to_plot))
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
@@ -557,6 +560,8 @@ def plot_all(base_output_path, reform_output_path, save_path):
         None: All output figures saved to disk.
 
     '''
+    # Make directory in case it doesn't exist
+    utils.mkdirs(save_path)
     # Read in data
     # Read in TPI output and parameters
     base_tpi = utils.safe_read_pickle(
@@ -587,6 +592,7 @@ def plot_all(base_output_path, reform_output_path, save_path):
                     reform_params=reform_params,
                     var_list=['Y', 'K', 'L', 'C'], plot_type='pct_diff',
                     num_years_to_plot=150,
+                    start_year=base_params.start_year,
                     vertical_line_years=[
                         base_params.start_year + base_params.tG1,
                         base_params.start_year + base_params.tG2],
@@ -598,6 +604,7 @@ def plot_all(base_output_path, reform_output_path, save_path):
                     reform_params=reform_params,
                     var_list=['D', 'G', 'TR', 'total_revenue'],
                     plot_type='pct_diff', num_years_to_plot=150,
+                    start_year=base_params.start_year,
                     vertical_line_years=[
                         base_params.start_year + base_params.tG1,
                         base_params.start_year + base_params.tG2],
@@ -609,6 +616,7 @@ def plot_all(base_output_path, reform_output_path, save_path):
                     reform_params=reform_params,
                     var_list=['r'],
                     plot_type='levels', num_years_to_plot=150,
+                    start_year=base_params.start_year,
                     vertical_line_years=[
                         base_params.start_year + base_params.tG1,
                         base_params.start_year + base_params.tG2],
@@ -619,6 +627,7 @@ def plot_all(base_output_path, reform_output_path, save_path):
                     reform_params=reform_params,
                     var_list=['w'],
                     plot_type='levels', num_years_to_plot=150,
+                    start_year=base_params.start_year,
                     vertical_line_years=[
                         base_params.start_year + base_params.tG1,
                         base_params.start_year + base_params.tG2],
@@ -628,7 +637,8 @@ def plot_all(base_output_path, reform_output_path, save_path):
     # Debt-GDP in base and reform-- vertical lines at tG1, tG2
     plot_gdp_ratio(base_tpi, base_params, reform_tpi, reform_params,
                    var_list=['D'], num_years_to_plot=150,
-                   start_year=DEFAULT_START_YEAR, vertical_line_years=[
+                   start_year=base_params.start_year,
+                   vertical_line_years=[
                            base_params.start_year + base_params.tG1,
                            base_params.start_year + base_params.tG2],
                    plot_title='Debt-to-GDP',
@@ -637,7 +647,8 @@ def plot_all(base_output_path, reform_output_path, save_path):
     # Tax revenue to GDP in base and reform-- vertical lines at tG1, tG2
     plot_gdp_ratio(base_tpi, base_params, reform_tpi, reform_params,
                    var_list=['total_revenue'], num_years_to_plot=150,
-                   start_year=DEFAULT_START_YEAR, vertical_line_years=[
+                   start_year=base_params.start_year,
+                   vertical_line_years=[
                            base_params.start_year + base_params.tG1,
                            base_params.start_year + base_params.tG2],
                    plot_title='Tax Revenue to GDP',
@@ -685,8 +696,8 @@ def plot_all(base_output_path, reform_output_path, save_path):
 def inequality_plot(
     base_tpi, base_params, reform_tpi=None, reform_params=None,
     var='c_path', ineq_measure='gini', pctiles=None, plot_type='levels',
-    num_years_to_plot=50, start_year=DEFAULT_START_YEAR, vertical_line_years=None,
-    plot_title=None, path=None):
+    num_years_to_plot=50, start_year=DEFAULT_START_YEAR,
+    vertical_line_years=None, plot_title=None, path=None):
     '''
     Plot measures of inequality over the time path.
 
@@ -794,7 +805,7 @@ def inequality_plot(
         plt.title(plot_title, fontsize=15)
     vals = ax1.get_yticks()
     if plot_type == 'pct_diff':
-        ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
+        ax1.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
     plt.xlim((base_params.start_year - 1, base_params.start_year +
               num_years_to_plot))
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)

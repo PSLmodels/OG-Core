@@ -429,7 +429,7 @@ def run_TPI(p, client=None):
         else:
             K_init = B_init * ss_vars['Kss'] / ss_vars['Bss']
     else:
-        K_init = firm.get_B(L_init, p.firm_r, p, 'TPI')
+        K_init = firm.get_K(L_init, p.firm_r, p, 'TPI')
 
     K = K_init
     K_d = K_init * ss_vars['K_d_ss'] / ss_vars['Kss']
