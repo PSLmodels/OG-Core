@@ -142,12 +142,11 @@ def test_txfunc_est():
     numparams = 12
     test_tuple = txfunc.txfunc_est(df, s, t, rate_type, tax_func_type,
                                    numparams, output_dir, graph)
-    expected_tuple = (np.array([
-         6.37000261e-22, 2.73404765e-03, 1.62463424e-08,
-         1.48147213e-02, 2.32797191e-01, -3.69059719e-02,
-         1.00000000e-04, -1.01967001e-01, 3.96030035e-02,
-         1.02987671e-01, -1.30433574e-01, 1.00000000e+00]),
-                      19527.162030047846, 3798)
+    expected_tuple = ((np.array([
+        6.37000261e-22, 2.73413298e-03, 1.49073835e-08, 1.39727771e-02,
+        2.32796890e-01, -3.69059719e-02, 1.00000000e-04,
+        -1.01967001e-01, 3.96030005e-02,  1.02987671e-01,
+        -1.30433574e-01,  1.00000000e+00]), 19527.162030362062, 3798))
 
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
@@ -201,9 +200,6 @@ def test_tax_func_loop():
         tax_func_type, analytical_mtrs, desc_data, graph_data,
         graph_est, output_dir, numparams)
     age_specific = False
-    import pickle
-    pickle.dump(test_tuple, open(os.path.join(CUR_PATH, 'test_io_data',
-                'tax_func_loop_outputs.pkl'), 'wb'))
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_loop_outputs.pkl'))
