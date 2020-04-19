@@ -8,6 +8,51 @@ from ogusa.parameters import Specifications
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
+filename1 = 'intial_SS_values_baseline.pkl'
+filename2 = 'intial_SS_values_reform.pkl'
+filename3 = 'intial_SS_values_reform_base_spend.pkl'
+param_updates1 = {}
+param_updates2 = {}
+param_updates3 = {'baseline_spending': True}
+
+
+@pytest.mark.parametrize('baseline,param_updates,filename',
+                         [(True, param_updates1, filename1),
+                          (False, param_updates2, filename2),
+                          (False, param_updates3, filename3)],
+                         ids=['Baseline', 'Reform',
+                              'Reform, baseline_spending'])
+def test_get_initial_SS_values(baseline, param_updates, filename):
+    p = Specifications(baseline=baseline, test=True)
+    p.update_specifications(param_updates)
+    p.baseline_dir = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
+    p.output_base = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
+    test_tuple = TPI.get_initial_SS_values(p)
+    (test_initial_values, test_ss_vars, test_theta,
+     test_baseline_values) = test_tuple
+    import pickle
+    pickle.dump(test_tuple, open(
+        os.path.join(CUR_PATH, 'test_io_data', filename), 'wb'))
+
+    expected_tuple = utils.safe_read_pickle(
+        os.path.join(CUR_PATH, 'test_io_data', filename))
+
+    (exp_initial_values, exp_ss_vars, exp_theta,
+     exp_baseline_values) = expected_tuple
+
+    for i, v in enumerate(exp_initial_values):
+        assert(np.allclose(test_initial_values[i], v, equal_nan=True))
+
+    if p.baseline_spending:
+        for i, v in enumerate(exp_baseline_values):
+            assert(np.allclose(test_baseline_values[i], v, equal_nan=True))
+
+    assert(np.allclose(test_theta, exp_theta))
+
+    for k, v in exp_ss_vars.items():
+        assert(np.allclose(test_ss_vars[k], v, equal_nan=True))
+
+
 def test_firstdoughnutring():
     # Test TPI.firstdoughnutring function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
