@@ -98,46 +98,27 @@ def test_firstdoughnutring():
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
-def test_twist_doughnut():
-    # Test TPI.twist_doughnut function.  Provide inputs to function and
-    # ensure that output returned matches what it has been before.
-    input_tuple = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', 'twist_doughnut_inputs.pkl'))
-    guesses, r, w, BQ, TR, j, s, t, params = input_tuple
-    income_tax_params, tpi_params, initial_b = params
-    tpi_params = tpi_params + [True]
-    p = Specifications()
-    (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
-     Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, tau_b, delta_tau,
-     tau_payroll, tau_bq, p.rho, p.omega, N_tilde, lambdas,
-     p.imm_rates, p.e, retire, p.mean_income_data, factor, h_wealth,
-     p_wealth, m_wealth, p.b_ellipse, p.upsilon, p.chi_b, p.chi_n,
-     theta, p.baseline) = tpi_params
-    p.Z = np.ones(p.T + p.S) * Z
-    p.tau_bq = np.ones(p.T + p.S) * 0.0
-    p.tau_c = np.ones((p.T + p.S, p.S, p.J)) * 0.0
-    p.tau_payroll = np.ones(p.T + p.S) * tau_payroll
-    p.tau_b = np.ones(p.T + p.S) * tau_b
-    p.delta_tau = np.ones(p.T + p.S) * delta_tau
-    p.h_wealth = np.ones(p.T + p.S) * h_wealth
-    p.p_wealth = np.ones(p.T + p.S) * p_wealth
-    p.m_wealth = np.ones(p.T + p.S) * m_wealth
-    p.retire = (np.ones(p.T + p.S) * retire).astype(int)
-    p.tax_func_type = 'DEP'
-    p.analytical_mtrs, etr_params, mtrx_params, mtry_params =\
-        income_tax_params
-    p.lambdas = lambdas.reshape(p.J, 1)
-    p.num_workers = 1
-    length = int(len(guesses) / 2)
-    tau_c_to_use = np.diag(p.tau_c[:p.S, :, j], p.S - (s + 2))
-    bq = BQ[t:t + length] / p.lambdas[j]
-    tr = TR[t:t + length]
-    test_list = TPI.twist_doughnut(guesses, r, w, bq, tr, theta,
-                                   factor, j, s, t, tau_c_to_use,
-                                   etr_params, mtrx_params, mtry_params,
-                                   initial_b, p)
-    expected_list = utils.safe_read_pickle(
-        os.path.join(CUR_PATH, 'test_io_data', 'twist_doughnut_outputs.pkl'))
+file_in1 = os.path.join(CUR_PATH, 'test_io_data',
+                        'twist_doughnut_inputs_2.pkl')
+file_in2 = os.path.join(CUR_PATH, 'test_io_data',
+                        'twist_doughnut_inputs_S.pkl')
+file_out1 = os.path.join(CUR_PATH, 'test_io_data',
+                         'twist_doughnut_outputs_2.pkl')
+file_out2 = os.path.join(CUR_PATH, 'test_io_data',
+                         'twist_doughnut_outputs_S.pkl')
+
+
+@pytest.mark.parametrize('file_inputs,file_outputs',
+                         [(file_in1, file_out1), (file_in2, file_out2)],
+                         ids=['s<S', 's==S'])
+def test_twist_doughnut(file_inputs, file_outputs):
+    '''
+    Test TPI.twist_doughnut function.  Provide inputs to function and
+    ensure that output returned matches what it has been before.
+    '''
+    input_tuple = utils.safe_read_pickle(file_inputs)
+    test_list = TPI.twist_doughnut(*input_tuple)
+    expected_list = utils.safe_read_pickle(file_outputs)
 
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
