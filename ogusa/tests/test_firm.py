@@ -85,7 +85,7 @@ p1 = Specifications()
 new_param_values1 = {
     'Z': [0.5],
     'gamma': 0.5,
-    'delta_annual': [0.25],
+    'delta_annual': 0.25,
     'cit_rate': [0.5],
     'delta_tau_annual': [0.35],
     'epsilon': 1.2
@@ -103,7 +103,7 @@ new_param_values2 = {
     'cit_rate': [0.5],
     'delta_tau_annual': [0.35],
     'epsilon': 0.5,
-    'delta_annual': [0.5]
+    'delta_annual': 0.5
 }
 # update parameters instance with new values for test
 p2.update_specifications(new_param_values2)
@@ -115,7 +115,7 @@ new_param_values3 = {
     'cit_rate': [0.5],
     'delta_tau_annual': [0.35],
     'epsilon': 1.0,
-    'delta_annual': [0.5]
+    'delta_annual': 0.5
 }
 # update parameters instance with new values for test
 p3.update_specifications(new_param_values3)
@@ -127,7 +127,7 @@ new_param_values4 = {
     'cit_rate': [0.5],
     'delta_tau_annual': [0.35],
     'epsilon': 1.2,
-    'delta_annual': [0.5],
+    'delta_annual': 0.5,
     'T': 3,
     'S': 3,
     'eta': (np.ones((3, p4.J)) / (3 * p4.J))
@@ -145,7 +145,7 @@ new_param_values5 = {
     'cit_rate': [0.2, 0.0, 0.5],
     'delta_tau_annual': [0.35, 0.2, 0.1],
     'epsilon': 1.2,
-    'delta_annual': [0.5],
+    'delta_annual': 0.5,
     'T': 3,
     'S': 3,
     'eta': (np.ones((3, p5.J)) / (3 * p5.J))
@@ -239,7 +239,7 @@ new_param_values1 = {
     'Z': [0.5],
     'gamma': 0.4,
     'epsilon': 0.8,
-    'delta_annual': [0.05],
+    'delta_annual': 0.05,
     'delta_tau_annual': [0.35],
     'cit_rate': [(0.0357 / 0.55) * (0.055 / 0.017)]
 }
@@ -251,7 +251,7 @@ p2 = Specifications()
 new_param_values2 = {
     'Z': [0.5],
     'gamma': 0.4,
-    'delta_annual': [0.05],
+    'delta_annual': 0.05,
     'delta_tau_annual': [0.35],
     'epsilon': 1.2,
     'cit_rate': [(0.0357 / 0.55) * (0.055 / 0.017)]
@@ -263,7 +263,7 @@ p3 = Specifications()
 new_param_values3 = {
     'Z': [0.5],
     'gamma': 0.4,
-    'delta_annual': [0.05],
+    'delta_annual': 0.05,
     'delta_tau_annual': [0.35],
     'epsilon': 1.0,
     'cit_rate': [(0.0357 / 0.55) * (0.055 / 0.017)]
@@ -275,7 +275,7 @@ p4 = Specifications()
 new_param_values4 = {
     'Z': [0.5, 0.1, 1.1],
     'gamma': 0.4,
-    'delta_annual': [0.05],
+    'delta_annual': 0.05,
     'delta_tau_annual': [0.35],
     'epsilon': 0.5,
     'cit_rate': [(0.0357 / 0.55) * (0.055 / 0.017)],
@@ -310,7 +310,7 @@ new_param_values1 = {
     'Z': [0.5],
     'gamma': 0.4,
     'epsilon': 0.8,
-    'delta_annual': [0.05],
+    'delta_annual': 0.05,
     'delta_tau_annual': [0.35],
     'cit_rate': [(0.0357 / 0.55) * (0.055 / 0.017)]
 }
@@ -322,7 +322,7 @@ p2 = Specifications()
 new_param_values2 = {
     'Z': [0.5],
     'gamma': 0.4,
-    'delta_annual': [0.05],
+    'delta_annual': 0.05,
     'delta_tau_annual': [0.35],
     'epsilon': 1.0,
     'cit_rate': [(0.0357 / 0.55) * (0.055 / 0.017)]
@@ -334,7 +334,7 @@ p3 = Specifications()
 new_param_values3 = {
     'Z': [0.5],
     'gamma': 0.4,
-    'delta_annual': [0.05],
+    'delta_annual': 0.05,
     'delta_tau_annual': [0.35],
     'epsilon': 1.2,
     'cit_rate': [(0.0357 / 0.55) * (0.055 / 0.017)]
@@ -346,7 +346,7 @@ p4 = Specifications()
 new_param_values4 = {
     'Z': [0.5, 1.0, 4.0],
     'gamma': 0.4,
-    'delta_annual': [0.05],
+    'delta_annual': 0.05,
     'delta_tau_annual': [0.35],
     'epsilon': 1.2,
     'cit_rate': [(0.0357 / 0.55) * (0.055 / 0.017)],
@@ -380,7 +380,7 @@ p1 = Specifications()
 new_param_values1 = {
     'gamma': 0.5,
     'cit_rate': [0.75],
-    'delta_annual': [0.15],
+    'delta_annual': 0.15,
     'delta_tau_annual': [0.03],
     'Z': [2.0],
     'epsilon': 1.2
@@ -394,7 +394,7 @@ p2 = Specifications()
 new_param_values2 = {
     'gamma': 0.5,
     'cit_rate': [0.75],
-    'delta_annual': [0.15],
+    'delta_annual': 0.15,
     'delta_tau_annual': [0.03],
     'Z': [2.0],
     'epsilon': 1.0
@@ -409,7 +409,7 @@ new_param_values3 = {
     'Z': [4.0],
     'cit_rate': [0.0],
     'delta_tau_annual': [0.5],
-    'delta_annual': [0.05]
+    'delta_annual': 0.05
 }
 # update parameters instance with new values for test
 p3.update_specifications(new_param_values3)
@@ -420,7 +420,7 @@ new_param_values4 = {
     'epsilon': 0.4,
     'Z': [4.0, 3.0],
     'delta_tau_annual': [0.5],
-    'delta_annual': [0.05],
+    'delta_annual': 0.05,
     'cit_rate': [0.5],
     'T': 3,
     'S': 3,
