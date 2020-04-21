@@ -205,12 +205,10 @@ class Specifications(paramtools.Parameters):
         self.zeta = self.zeta / self.zeta.sum()
 
         # open economy parameters
-        firm_r_annual = self.world_int_rate
-        hh_r_annual = firm_r_annual
-        self.firm_r = rate_conversion(
-            firm_r_annual, self.starting_age, self.ending_age, self.S)
-        self.hh_r = rate_conversion(
-            hh_r_annual, self.starting_age, self.ending_age, self.S)
+        self.world_int_rate = rate_conversion(
+            self.world_int_rate_annual, self.starting_age,
+            self.ending_age, self.S)
+
         # set period of retirement
         self.retire = (np.round(((self.retirement_age -
                                   self.starting_age) * self.S) /

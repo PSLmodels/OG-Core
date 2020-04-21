@@ -155,8 +155,6 @@ def inner_loop(outer_loop_vars, p, client):
         D = p.debt_ratio_ss * Y
         K = firm.get_K_from_Y(Y, r, p, 'SS')
         r_hh = aggr.get_r_hh(r, r_gov, K, D)
-    if p.small_open:
-        r_hh = p.hh_r[-1]
     bq = household.get_bq(BQ, None, p, 'SS')
     tr = household.get_tr(TR, None, p, 'SS')
 
@@ -186,7 +184,7 @@ def inner_loop(outer_loop_vars, p, client):
 
     L = aggr.get_L(nssmat, p, 'SS')
     B = aggr.get_B(bssmat, p, 'SS', False)
-    K_demand_open = firm.get_K(L, p.firm_r[-1], p, 'SS')
+    K_demand_open = firm.get_K(L, p.world_int_rate[-1], p, 'SS')
     D_f = p.zeta_D[-1] * D
     D_d = D - D_f
     if not p.small_open:
@@ -205,7 +203,7 @@ def inner_loop(outer_loop_vars, p, client):
     if not p.small_open:
         new_r = firm.get_r(Y, K, p, 'SS')
     else:
-        new_r = p.firm_r[-1]
+        new_r = p.world_int_rate[-1]
     new_w = firm.get_w_from_r(new_r, p, 'SS')
 
     b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
@@ -272,8 +270,6 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     if not p.budget_balance:
         if not p.baseline_spending:
             Y = TR / p.alpha_T[-1]
-    if p.small_open:
-        r = p.hh_r[-1]
 
     dist = 10
     iteration = 0
@@ -348,7 +344,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
         Dss = p.debt_ratio_ss * Y
     Lss = aggr.get_L(nssmat, p, 'SS')
     Bss = aggr.get_B(bssmat_splus1, p, 'SS', False)
-    K_demand_open_ss = firm.get_K(Lss, p.firm_r[-1], p, 'SS')
+    K_demand_open_ss = firm.get_K(Lss, p.world_int_rate[-1], p, 'SS')
     D_f_ss = p.zeta_D[-1] * Dss
     D_d_ss = Dss - D_f_ss
     K_d_ss = Bss - D_d_ss
@@ -582,7 +578,7 @@ def run_SS(p, client=None):
     # are close to some steady state values.
     if p.baseline:
         if p.small_open:
-            rguess = p.firm_r[-1]
+            rguess = p.world_int_rate[-1]
         else:
             rguess = 0.0648
         if p.use_zeta:
@@ -638,7 +634,7 @@ def run_SS(p, client=None):
                 b_guess = np.ones((p.S, p.J)) * 0.07
                 n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
             if p.small_open:
-                rguess = p.firm_r[-1]
+                rguess = p.world_int_rate[-1]
             else:
                 rguess = 0.09
             TRguess = 0.12

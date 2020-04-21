@@ -430,7 +430,7 @@ def run_TPI(p, client=None):
         else:
             K_init = B_init * ss_vars['Kss'] / ss_vars['Bss']
     else:
-        K_init = firm.get_K(L_init, p.firm_r, p, 'TPI')
+        K_init = firm.get_K(L_init, p.world_int_rate, p, 'TPI')
 
     K = K_init
     K_d = K_init * ss_vars['K_d_ss'] / ss_vars['Kss']
@@ -446,7 +446,7 @@ def run_TPI(p, client=None):
         r[:p.T] = firm.get_r(Y[:p.T], K[:p.T], p, 'TPI')
         r[p.T:] = ss_vars['rss']
     else:
-        r = p.firm_r
+        r = p.world_int_rate
     # compute w
     w = np.zeros_like(r)
     w[:p.T] = firm.get_w_from_r(r[:p.T], p, 'TPI')
@@ -457,7 +457,7 @@ def run_TPI(p, client=None):
     else:
         r_hh = aggr.get_r_hh(r, r_gov, K, ss_vars['Dss'])
     if p.small_open:
-        r_hh = p.hh_r
+        r_hh = aggr.get_r_hh(r, r_gov, K, ss_vars['Dss'])
 
     BQ0 = aggr.get_BQ(r[0], initial_b, None, p, 'SS', True)
     if not p.use_zeta:
@@ -516,9 +516,11 @@ def run_TPI(p, client=None):
             r_hh[:p.T] = r[:p.T]
         else:
             K[:p.T] = firm.get_K_from_Y(Y[:p.T], r[:p.T], p, 'TPI')
-            r_hh[:p.T] = aggr.get_r_hh(r[:p.T], r_gov[:p.T], K[:p.T], D[:p.T])
+            r_hh[:p.T] = aggr.get_r_hh(r[:p.T], r_gov[:p.T], K[:p.T],
+                                       D[:p.T])
         if p.small_open:
-            r_hh[:p.T] = p.hh_r[:p.T]
+            r_hh[:p.T] = aggr.get_r_hh(r[:p.T], r_gov[:p.T], K[:p.T],
+                                       D[:p.T])
 
         outer_loop_vars = (r, w, r_hh, BQ, TR, theta)
 
@@ -603,7 +605,8 @@ def run_TPI(p, client=None):
         L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
         B[1:p.T] = aggr.get_B(bmat_splus1[:p.T], p, 'TPI',
                               False)[:p.T - 1]
-        K_demand_open = firm.get_K(L[:p.T], p.firm_r[:p.T], p, 'TPI')
+        K_demand_open = firm.get_K(
+            L[:p.T], p.world_int_rate[:p.T], p, 'TPI')
         K_d[:p.T] = B[:p.T] - D_d[:p.T]
         if np.any(K_d < 0):
             print('K_d has negative elements. Setting them ' +
@@ -629,7 +632,8 @@ def run_TPI(p, client=None):
             r_hh_new = aggr.get_r_hh(rnew[:p.T], r_gov_new[:p.T], K[:p.T],
                                      Dnew[:p.T])
         if p.small_open:
-            r_hh_new = p.hh_r[:p.T]
+            r_hh_new = aggr.get_r_hh(rnew[:p.T], r_gov_new[:p.T], K[:p.T],
+                                     Dnew[:p.T])
         # compute w
         wnew = firm.get_w_from_r(rnew[:p.T], p, 'TPI')
 
