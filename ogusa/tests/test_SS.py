@@ -333,10 +333,9 @@ def test_SS_solver(baseline, param_updates, filename):
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
     p.get_tax_function_parameters(None, run_micro=False)
-    print('Use zeta = ', p.use_zeta)
     b_guess = np.ones((p.S, p.J)) * 0.07
     n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
-    if p.zeta_D[-1] == 1.0:
+    if p.zeta_K[-1] == 1.0:
         rguess = p.world_int_rate[-1]
     else:
         rguess = 0.06483431412921253
@@ -345,10 +344,8 @@ def test_SS_solver(baseline, param_updates, filename):
     BQguess = aggregates.get_BQ(rguess, b_guess, None, p, 'SS', False)
     Yguess = 0.6376591201150815
 
-    SS.ENFORCE_SOLUTION_CHECKS = True
     test_dict = SS.SS_solver(b_guess, n_guess, rguess, BQguess, TRguess,
                              factorguess, Yguess, p, None, False)
-
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
 
@@ -571,7 +568,6 @@ def test_run_SS(baseline, param_updates, filename):
     p.get_tax_function_parameters(None, run_micro=False,
                                   tax_func_path=tax_func_path)
     test_dict = SS.run_SS(p, None)
-
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
 
