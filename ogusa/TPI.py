@@ -228,6 +228,7 @@ def twist_doughnut(guesses, r, w, bq, tr, theta, factor, j, s, t,
     error2[mask4] += 1e12
     mask5 = b_splus1 < 0
     error2[mask5] += 1e12
+
     return list(error1.flatten()) + list(error2.flatten())
 
 
