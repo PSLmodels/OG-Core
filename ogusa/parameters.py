@@ -113,11 +113,11 @@ class Specifications(paramtools.Parameters):
                                    self.ending_age, self.S)
 
         # Extend parameters that may vary over the time path
-        tp_param_list = ['alpha_G', 'alpha_T', 'Z', 'world_int_rate',
-                         'delta_tau_annual', 'cit_rate', 'tau_bq',
-                         'tau_payroll', 'h_wealth', 'm_wealth',
-                         'p_wealth', 'retirement_age',
-                         'replacement_rate_adjust', 'zeta_D', 'zeta_K']
+        tp_param_list = [
+            'alpha_G', 'alpha_T', 'Z', 'world_int_rate_annual',
+            'delta_tau_annual', 'cit_rate', 'tau_bq', 'tau_payroll',
+            'h_wealth', 'm_wealth', 'p_wealth', 'retirement_age',
+            'replacement_rate_adjust', 'zeta_D', 'zeta_K']
         for item in tp_param_list:
             this_attr = getattr(self, item)
             if this_attr.ndim > 1:
