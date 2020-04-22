@@ -237,7 +237,6 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path):
             pickle.dump(ss_outputs, f)
 
     test_dict = TPI.run_TPI(p, None)
-    pickle.dump(test_dict, open(filename, 'wb'))
     expected_dict = utils.safe_read_pickle(filename)
 
     for k, v in expected_dict.items():
