@@ -1,10 +1,13 @@
+import multiprocessing
+from distributed import Client
 import pytest
 import pickle
 import numpy as np
 import os
 from ogusa import SS, TPI, utils, firm
 from ogusa.parameters import Specifications
-
+CLIENT = Client()
+NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -23,7 +26,8 @@ param_updates3 = {'baseline_spending': True}
                          ids=['Baseline', 'Reform',
                               'Reform, baseline_spending'])
 def test_get_initial_SS_values(baseline, param_updates, filename):
-    p = Specifications(baseline=baseline, test=True)
+    p = Specifications(baseline=baseline, test=True, client=CLIENT,
+                       num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.baseline_dir = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
     p.output_base = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
@@ -61,7 +65,7 @@ def test_firstdoughnutring():
     guesses, r, w, b, BQ, TR, j, params = input_tuple
     income_tax_params, tpi_params, initial_b = params
     tpi_params = tpi_params + [True]
-    p = Specifications()
+    p = Specifications(client=CLIENT, num_workers=NUM_WORKERS)
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
      Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, tau_b, delta_tau,
      tau_payroll, tau_bq, p.rho, p.omega, N_tilde, lambdas,
@@ -133,7 +137,7 @@ def test_inner_loop():
     income_tax_params, tpi_params, initial_values, ind = params
     initial_values = initial_values
     tpi_params = tpi_params
-    p = Specifications()
+    p = Specifications(client=CLIENT, num_workers=NUM_WORKERS)
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
      Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, tau_b, delta_tau,
      tau_payroll, tau_bq, p.rho, p.omega, N_tilde, lambdas,
@@ -213,7 +217,8 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path):
     else:
         output_base = os.path.join(CUR_PATH, 'reform')
     p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
-                       output_base=output_base)
+                       output_base=output_base, client=CLIENT,
+                       num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.get_tax_function_parameters(
         None, run_micro=False,

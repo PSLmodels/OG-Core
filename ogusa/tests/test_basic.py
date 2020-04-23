@@ -1,10 +1,13 @@
+import multiprocessing
+from distributed import Client
 import os
 import pytest
 import pickle
 import numpy as np
 from ogusa import SS, TPI, utils
 from ogusa.parameters import Specifications
-
+CLIENT = Client()
+NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 TAX_FUNC_PATH = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
 OUTPUT_DIR = os.path.join(CUR_PATH, "OUTPUT")
@@ -22,7 +25,8 @@ def test_run_small(time_path):
     og_spec = {'frisch': 0.41, 'debt_ratio_ss': 0.4}
     runner(output_base=OUTPUT_DIR, baseline_dir=OUTPUT_DIR, test=True,
            time_path=time_path, baseline=True, og_spec=og_spec,
-           run_micro=False, tax_func_path=TAX_FUNC_PATH)
+           run_micro=False, tax_func_path=TAX_FUNC_PATH,
+           client=CLIENT, num_workers=NUM_WORKERS)
 
 
 @pytest.mark.full_run
@@ -40,7 +44,8 @@ def test_constant_demographics_TPI():
     spec = Specifications(run_micro=False, output_base=OUTPUT_DIR,
                           baseline_dir=OUTPUT_DIR, test=False,
                           time_path=True, baseline=True, iit_reform={},
-                          guid='')
+                          guid='', client=CLIENT,
+                          num_workers=NUM_WORKERS)
     og_spec = {'constant_demographics': True, 'budget_balance': True,
                'zero_taxes': True, 'maxiter': 2,
                'r_gov_shift': 0.0, 'zeta_D': [0.0, 0.0],

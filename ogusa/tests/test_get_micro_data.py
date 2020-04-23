@@ -1,3 +1,5 @@
+import multiprocessing
+from distributed import Client
 import pytest
 from pandas.util.testing import assert_frame_equal
 import numpy as np
@@ -5,7 +7,8 @@ import os
 from ogusa.constants import CPS_START_YEAR, PUF_START_YEAR, TC_LAST_YEAR
 from ogusa import get_micro_data, utils
 from taxcalc import GrowFactors
-
+CLIENT = Client()
+NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 # get path to puf if puf.csv in ogusa/ directory
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 PUF_PATH = os.path.join(CUR_PATH, '..', 'puf.csv')
@@ -163,7 +166,7 @@ def test_get_data(baseline):
                      'micro_data_dict_for_tests.pkl'))
     test_data, _ = get_micro_data.get_data(
         baseline=baseline, start_year=2029, reform={}, data='cps',
-        client=None, num_workers=1)
+        client=CLIENT, num_workers=NUM_WORKERS)
     for k, v in test_data.items():
         try:
             assert_frame_equal(

@@ -1,9 +1,12 @@
 from ogusa import txfunc
+import multiprocessing
+from distributed import Client
 import pytest
 import numpy as np
 import os
 from ogusa import utils
-
+CLIENT = Client()
+NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -283,7 +286,7 @@ def test_tax_func_estimate():
     test_dict = txfunc.tax_func_estimate(
         BW, S, starting_age, ending_age, beg_yr, baseline,
         analytical_mtrs, tax_func_type, age_specific, reform, data,
-        client, num_workers)
+        CLIENT, NUM_WORKERS)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_estimate_outputs.pkl'))

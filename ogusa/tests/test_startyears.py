@@ -1,8 +1,12 @@
+import multiprocessing
+from distributed import Client
 import pytest
 import os
 import numpy as np
 from ogusa import SS, TPI
 from ogusa.execute import runner
+CLIENT = Client()
+NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -21,4 +25,5 @@ def test_diff_start_year(year):
                    'start_year': year}
     runner(output_base=output_base, baseline_dir=input_dir, test=True,
            time_path=True, baseline=True, og_spec=og_spec,
-           run_micro=True, data='cps')
+           run_micro=True, data='cps', client=CLIENT,
+           num_workers=NUM_WORKERS)

@@ -1,6 +1,10 @@
+import multiprocessing
+from distributed import Client
 import pytest
 import os
 from ogusa.execute import runner
+CLIENT = Client()
+NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 PUF_PATH = os.path.join(CUR_PATH, '..', 'puf.csv')
 TAX_FUNC_PATH = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
@@ -14,7 +18,8 @@ def test_frisch(frisch):
     og_spec = {'frisch': frisch, 'debt_ratio_ss': 1.0}
     runner(output_base=OUTPUT_DIR, baseline_dir=OUTPUT_DIR, test=False,
            time_path=False, baseline=True, og_spec=og_spec,
-           run_micro=False, tax_func_path=TAX_FUNC_PATH, data=PUF_PATH)
+           run_micro=False, tax_func_path=TAX_FUNC_PATH, data=PUF_PATH,
+           client=CLIENT, num_workers=NUM_WORKERS)
 
 
 @pytest.mark.full_run
@@ -25,7 +30,8 @@ def test_gy(g_y_annual):
                'g_y_annual': g_y_annual}
     runner(output_base=OUTPUT_DIR, baseline_dir=OUTPUT_DIR, test=False,
            time_path=False, baseline=True, og_spec=og_spec,
-           run_micro=False, tax_func_path=TAX_FUNC_PATH, data=PUF_PATH)
+           run_micro=False, tax_func_path=TAX_FUNC_PATH, data=PUF_PATH,
+           client=CLIENT, num_workers=NUM_WORKERS)
 
 
 @pytest.mark.full_run
@@ -37,4 +43,5 @@ def test_sigma(sigma):
                'sigma': sigma}
     runner(output_base=OUTPUT_DIR, baseline_dir=OUTPUT_DIR, test=False,
            time_path=False, baseline=True, og_spec=og_spec,
-           run_micro=False, tax_func_path=TAX_FUNC_PATH, data=PUF_PATH)
+           run_micro=False, tax_func_path=TAX_FUNC_PATH, data=PUF_PATH,
+           client=CLIENT, num_workers=NUM_WORKERS)

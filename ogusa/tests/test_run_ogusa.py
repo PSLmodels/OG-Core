@@ -1,3 +1,5 @@
+import multiprocessing
+from distributed import Client
 import pytest
 from ogusa import SS, TPI
 import time
@@ -7,7 +9,8 @@ from ogusa.utils import safe_read_pickle
 import ogusa.output_tables as ot
 SS.ENFORCE_SOLUTION_CHECKS = False
 TPI.ENFORCE_SOLUTION_CHECKS = False
-
+CLIENT = Client()
+NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -41,7 +44,8 @@ def run_micro_macro(iit_reform, og_spec, guid):
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': True, 'time_path': True, 'baseline': True,
               'og_spec': og_spec, 'run_micro': False,
-              'tax_func_path': tax_func_path_baseline, 'guid': guid}
+              'tax_func_path': tax_func_path_baseline, 'guid': guid,
+              'client': CLIENT, 'num_workers': NUM_WORKERS}
     runner(**kwargs)
 
     '''
@@ -55,7 +59,8 @@ def run_micro_macro(iit_reform, og_spec, guid):
               'test': True, 'time_path': True, 'baseline': False,
               'iit_reform': iit_reform, 'og_spec': og_spec,
               'guid': guid, 'run_micro': False,
-              'tax_func_path': tax_func_path_reform}
+              'tax_func_path': tax_func_path_reform,
+              'client': CLIENT, 'num_workers': NUM_WORKERS}
     runner(**kwargs)
     time.sleep(0.5)
     base_tpi = safe_read_pickle(
