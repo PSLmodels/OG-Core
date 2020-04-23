@@ -66,7 +66,7 @@ def get_initial_SS_values(p):
     if p.baseline:
         ss_vars = ss_baseline_vars
     else:
-        reform_ss_path = os.path.join(p.output_base, "SS/SS_vars.pkl")
+        reform_ss_path = os.path.join(p.output_base, "SS", "SS_vars.pkl")
         ss_vars = utils.safe_read_pickle(reform_ss_path)
     theta = ss_vars['theta']
     # What is going on here?  Whatever it is, why not done in parameters.py???
@@ -228,6 +228,7 @@ def twist_doughnut(guesses, r, w, bq, tr, theta, factor, j, s, t,
     error2[mask4] += 1e12
     mask5 = b_splus1 < 0
     error2[mask5] += 1e12
+
     return list(error1.flatten()) + list(error2.flatten())
 
 
