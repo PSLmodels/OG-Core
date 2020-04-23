@@ -2,12 +2,16 @@
 Test of steady-state module
 '''
 
+import multiprocessing
+from distributed import Client
 import pytest
 import numpy as np
 import os
 from ogusa import SS, utils, aggregates, household, execute, constants
 from ogusa.parameters import Specifications
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
+CLIENT = Client()
+NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 
 input_tuple = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_inputs.pkl'))
@@ -568,7 +572,8 @@ def test_run_SS(baseline, param_updates, filename):
     else:
         tax_func_path = os.path.join(CUR_PATH,
                                      'TxFuncEst_baseline.pkl')
-    p = Specifications(baseline=baseline)
+    p = Specifications(baseline=baseline, client=CLIENT,
+                       num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.get_tax_function_parameters(None, run_micro=False,
                                   tax_func_path=tax_func_path)
