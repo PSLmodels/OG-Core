@@ -196,8 +196,8 @@ filename4 = os.path.join(CUR_PATH, 'test_io_data',
 
 @pytest.mark.full_run
 @pytest.mark.parametrize('baseline,param_updates,filename',
-                         [(True, param_updates1, filename1),
-                          (True, param_updates2, filename2),
+                         [(True, param_updates2, filename2),
+                          (True, param_updates1, filename1),
                           (False, param_updates3, filename3),
                           (False, param_updates4, filename4)],
                          ids=['Baseline', 'Baseline, balanced budget',
@@ -207,11 +207,11 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path):
     Test TPI.run_TPI function.  Provide inputs to function and
     ensure that output returned matches what it has been before.
     '''
-    baseline_dir = os.path.join(tmp_path, 'baseline')
+    baseline_dir = os.path.join(CUR_PATH, 'baseline')
     if baseline:
         output_base = baseline_dir
     else:
-        output_base = os.path.join(tmp_path, 'reform')
+        output_base = os.path.join(CUR_PATH, 'reform')
     p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
                        output_base=output_base)
     p.update_specifications(param_updates)
@@ -222,6 +222,7 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path):
                                    'TxFuncEst_baseline_CPS.pkl'))
 
     # Need to run SS first to get results
+    SS.ENFORCE_SOLUTION_CHECKS = False
     ss_outputs = SS.run_SS(p, None)
 
     if p.baseline:
@@ -236,7 +237,6 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path):
             pickle.dump(ss_outputs, f)
 
     test_dict = TPI.run_TPI(p, None)
-    pickle.dump(test_dict, open(filename, 'wb'))
     expected_dict = utils.safe_read_pickle(filename)
 
     for k, v in expected_dict.items():
