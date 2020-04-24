@@ -192,6 +192,12 @@ filename3 = os.path.join(CUR_PATH, 'test_io_data',
 param_updates4 = {'baseline_spending': True}
 filename4 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_reform_baseline_spend.pkl')
+param_updates5 = {'zeta_K': [1.0]}
+filename5 = os.path.join(CUR_PATH, 'test_io_data',
+                         'run_TPI_outputs_reform_baseline_spend.pkl')
+param_updates6 = {'zeta_K': [0.2, 0.2, 0.2, 1.0, 1.0, 1.0, 0.2]}
+filename6 = os.path.join(CUR_PATH, 'test_io_data',
+                         'run_TPI_outputs_reform_baseline_spend.pkl')
 
 
 @pytest.mark.full_run
@@ -199,9 +205,13 @@ filename4 = os.path.join(CUR_PATH, 'test_io_data',
                          [(True, param_updates2, filename2),
                           (True, param_updates1, filename1),
                           (False, param_updates3, filename3),
-                          (False, param_updates4, filename4)],
+                          (False, param_updates4, filename4),
+                          (False, param_updates5, filename5),
+                          (False, param_updates6, filename6)],
                          ids=['Baseline', 'Baseline, balanced budget',
-                              'Reform', 'Reform, baseline spending'])
+                              'Reform', 'Reform, baseline spending',
+                              'Baseline, small open',
+                              'Baseline, small open some periods'])
 def test_run_TPI(baseline, param_updates, filename, tmp_path):
     '''
     Test TPI.run_TPI function.  Provide inputs to function and
