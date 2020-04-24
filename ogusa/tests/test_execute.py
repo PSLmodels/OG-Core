@@ -4,7 +4,6 @@ import pytest
 from ogusa import SS, TPI
 from ogusa.execute import runner
 import os
-# CLIENT = Client()
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 BASELINE_DIR = os.path.join(CUR_PATH, 'OUTPUT_BASELINE')

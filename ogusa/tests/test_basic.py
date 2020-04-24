@@ -6,7 +6,6 @@ import pickle
 import numpy as np
 from ogusa import SS, TPI, utils
 from ogusa.parameters import Specifications
-# CLIENT = Client()
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 TAX_FUNC_PATH = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')

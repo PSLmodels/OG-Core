@@ -10,7 +10,6 @@ import os
 from ogusa import SS, utils, aggregates, household, execute, constants
 from ogusa.parameters import Specifications
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-# CLIENT = Client()
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 
 

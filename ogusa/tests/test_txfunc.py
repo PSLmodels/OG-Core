@@ -5,7 +5,6 @@ import pytest
 import numpy as np
 import os
 from ogusa import utils
-# CLIENT = Client()
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 

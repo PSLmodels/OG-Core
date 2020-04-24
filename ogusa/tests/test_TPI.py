@@ -6,7 +6,6 @@ import numpy as np
 import os
 from ogusa import SS, TPI, utils, firm
 from ogusa.parameters import Specifications
-# CLIENT = Client()
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 

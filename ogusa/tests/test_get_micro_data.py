@@ -7,7 +7,6 @@ import os
 from ogusa.constants import CPS_START_YEAR, PUF_START_YEAR, TC_LAST_YEAR
 from ogusa import get_micro_data, utils
 from taxcalc import GrowFactors
-# CLIENT = Client()
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 # get path to puf if puf.csv in ogusa/ directory
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))

@@ -3,7 +3,6 @@ from distributed import Client, LocalCluster
 import pytest
 import os
 from ogusa.execute import runner
-# CLIENT = Client()
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 PUF_PATH = os.path.join(CUR_PATH, '..', 'puf.csv')
