@@ -1,3 +1,5 @@
+import multiprocessing
+from distributed import Client, LocalCluster
 import pytest
 from pandas.util.testing import assert_frame_equal
 import numpy as np
@@ -5,10 +7,20 @@ import os
 from ogusa.constants import CPS_START_YEAR, PUF_START_YEAR, TC_LAST_YEAR
 from ogusa import get_micro_data, utils
 from taxcalc import GrowFactors
-
+NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 # get path to puf if puf.csv in ogusa/ directory
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 PUF_PATH = os.path.join(CUR_PATH, '..', 'puf.csv')
+
+
+@pytest.fixture(scope="module")
+def dask_client():
+    cluster = LocalCluster(n_workers=NUM_WORKERS, threads_per_worker=2)
+    client = Client(cluster)
+    yield client
+    # teardown
+    client.close()
+    cluster.close()
 
 
 def test_cps():
@@ -154,7 +166,7 @@ def test_get_calculator_puf_from_file():
 
 @pytest.mark.parametrize(
     'baseline', [True, False], ids=['Baseline', 'Reform'])
-def test_get_data(baseline):
+def test_get_data(baseline, dask_client):
     '''
     Test of get_micro_data.get_data() function
     '''
@@ -163,7 +175,7 @@ def test_get_data(baseline):
                      'micro_data_dict_for_tests.pkl'))
     test_data, _ = get_micro_data.get_data(
         baseline=baseline, start_year=2029, reform={}, data='cps',
-        client=None, num_workers=1)
+        client=dask_client, num_workers=NUM_WORKERS)
     for k, v in test_data.items():
         try:
             assert_frame_equal(
