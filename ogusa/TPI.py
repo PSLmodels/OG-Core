@@ -423,12 +423,7 @@ def run_TPI(p, client=None):
     L_init[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
     B_init[1:p.T] = aggr.get_B(b_mat[:p.T], p, 'TPI', False)[:p.T - 1]
     B_init[0] = B0
-
-    if p.budget_balance:
-        K_init = B_init
-    else:
-        K_init = B_init * ss_vars['Kss'] / ss_vars['Bss']
-
+    K_init = np.ones((p.T + p.S,)) * ss_vars['Kss']
     K = K_init
     K_d = K_init * ss_vars['K_d_ss'] / ss_vars['Kss']
     K_f = K_init * ss_vars['K_f_ss'] / ss_vars['Kss']
@@ -442,7 +437,7 @@ def run_TPI(p, client=None):
     r[:p.T] = firm.get_r(Y[:p.T], K[:p.T], p, 'TPI')
     r[p.T:] = ss_vars['rss']
     # For case where economy is small open econ
-    r[p.zeta_K == 1] = p.world_int_rate
+    r[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
     # Compute other interest rates
     r_gov = fiscal.get_r_gov(r, p)
     r_hh = aggr.get_r_hh(r, r_gov, K, ss_vars['Dss'])
@@ -608,9 +603,11 @@ def run_TPI(p, client=None):
         Ynew = firm.get_Y(K[:p.T], L[:p.T], p, 'TPI')
         rnew = r.copy()
         rnew[:p.T] = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
+        # For case where economy is small open econ
+        r[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
         r_gov_new = fiscal.get_r_gov(rnew, p)
         r_hh_new = aggr.get_r_hh(rnew[:p.T], r_gov_new[:p.T], K[:p.T],
-                                     Dnew[:p.T])
+                                 Dnew[:p.T])
         # compute w
         wnew = firm.get_w_from_r(rnew[:p.T], p, 'TPI')
 
@@ -715,13 +712,14 @@ def run_TPI(p, client=None):
     new_borrowing_f = (D_f[1:p.T + 1] * np.exp(p.g_y) *
                        (1 + p.g_n[1:p.T + 1]) - D_f[:p.T])
     debt_service_f = D_f * r_hh
+    print('Foreign debt service = ', np.max(D_f))
+    print('Diff in r and r_hh = ', np.absolute(r_hh - r).max())
     RC_error = aggr.resource_constraint(Y[:p.T - 1], C[:p.T - 1],
                                         G[:p.T - 1], I_d[:p.T - 1],
                                         K_f[:p.T - 1],
                                         new_borrowing_f[:p.T - 1],
                                         debt_service_f[:p.T - 1],
                                         r_hh[:p.T - 1], p)
-
     # Compute total investment (not just domestic)
     I_total = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
                (1.0 - p.delta) * K[:p.T])
