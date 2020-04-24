@@ -3,15 +3,26 @@ Test of steady-state module
 '''
 
 import multiprocessing
-from distributed import Client
+from distributed import Client, LocalCluster
 import pytest
 import numpy as np
 import os
 from ogusa import SS, utils, aggregates, household, execute, constants
 from ogusa.parameters import Specifications
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
-CLIENT = Client()
+# CLIENT = Client()
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
+
+
+@pytest.fixture(scope="module")
+def dask_client():
+    cluster = LocalCluster(n_workers=NUM_WORKERS, threads_per_worker=2)
+    client = Client(cluster)
+    yield client
+    # teardown
+    client.close()
+    cluster.close()
+
 
 input_tuple = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_inputs.pkl'))
@@ -19,7 +30,7 @@ guesses_in, params = input_tuple
 params = params + (None, 1)
 (bssmat, nssmat, chi_params, ss_params, income_tax_params,
  iterative_params, small_open_params, client, num_workers) = params
-p1 = Specifications(client=CLIENT, num_workers=NUM_WORKERS)
+p1 = Specifications()
 (p1.J, p1.S, p1.T, p1.BW, p1.beta, p1.sigma, p1.alpha, p1.gamma, p1.epsilon,
  Z, p1.delta, p1.ltilde, p1.nu, p1.g_y, p1.g_n_ss, tau_payroll,
  tau_bq, p1.rho, p1.omega_SS, p1.budget_balance, alpha_T,
@@ -76,7 +87,7 @@ params = params + (None, 1)
 (bssmat, nssmat, chi_params, ss_params, income_tax_params,
  iterative_params, factor, small_open_params, client,
  num_workers) = params
-p2 = Specifications(client=CLIENT, num_workers=NUM_WORKERS)
+p2 = Specifications()
 (p2.J, p2.S, p2.T, p2.BW, p2.beta, p2.sigma, p2.alpha, p2.gamma, p2.epsilon,
  Z, p2.delta, p2.ltilde, p2.nu, p2.g_y, p2.g_n_ss, tau_payroll,
  tau_bq, p2.rho, p2.omega_SS, p2.budget_balance, alpha_T,
@@ -134,7 +145,7 @@ params = params + (None, 1)
 (bssmat, nssmat, TR_ss, chi_params, ss_params, income_tax_params,
  iterative_params, factor_ss, small_open_params, client,
  num_workers) = params
-p3 = Specifications(client=CLIENT, num_workers=NUM_WORKERS)
+p3 = Specifications()
 (p3.J, p3.S, p3.T, p3.BW, p3.beta, p3.sigma, p3.alpha, p3.gamma, p3.epsilon,
  Z, p3.delta, p3.ltilde, p3.nu, p3.g_y, p3.g_n_ss, tau_payroll,
  tau_bq, p3.rho, p3.omega_SS, p3.budget_balance, alpha_T,
@@ -190,7 +201,7 @@ guesses_in, params = input_tuple
 params = params + (None, 1)
 (bssmat, nssmat, chi_params, ss_params, income_tax_params,
  iterative_params, small_open_params, client, num_workers) = params
-p4 = Specifications(client=CLIENT, num_workers=NUM_WORKERS)
+p4 = Specifications()
 new_param_values = {
     'zeta_D': [0.4],
     'zeta_K': [0.2]
@@ -244,7 +255,7 @@ guesses_in, params = input_tuple
 params = params + (None, 1)
 (bssmat, nssmat, chi_params, ss_params, income_tax_params,
  iterative_params, small_open_params, client, num_workers) = params
-p5 = Specifications(client=CLIENT, num_workers=NUM_WORKERS)
+p5 = Specifications()
 (p5.J, p5.S, p5.T, p5.BW, p5.beta, p5.sigma, p5.alpha, p5.gamma, p5.epsilon,
  Z, p5.delta, p5.ltilde, p5.nu, p5.g_y, p5.g_n_ss, tau_payroll,
  tau_bq, p5.rho, p5.omega_SS, p5.budget_balance, alpha_T,
@@ -333,10 +344,10 @@ filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
                               # 'Reform, baseline spending=True',
                               'Baseline, small open',
                               'Baseline, small open, budget balance'])
-def test_SS_solver(baseline, param_updates, filename):
+def test_SS_solver(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    p = Specifications(baseline=baseline, client=CLIENT,
+    p = Specifications(baseline=baseline, client=dask_client,
                        num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
@@ -387,10 +398,10 @@ filename5 = 'inner_loop_outputs_reform_baselinespending.pkl'
                               'Baseline, Balanced Budget',
                               'Baseline', 'Reform',
                               'Reform, baseline spending'])
-def test_inner_loop(baseline, param_updates, filename):
+def test_inner_loop(baseline, param_updates, filename, dask_client):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    p = Specifications(baseline=baseline, client=CLIENT,
+    p = Specifications(baseline=baseline, client=dask_client,
                        num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
@@ -415,13 +426,13 @@ def test_inner_loop(baseline, param_updates, filename):
         assert(np.allclose(test_tuple[i], v, atol=1e-05))
 
 
-def test_euler_equation_solver():
+def test_euler_equation_solver(dask_client):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', 'euler_eqn_solver_inputs.pkl'))
     (guesses, params) = input_tuple
-    p = Specifications(client=CLIENT, num_workers=NUM_WORKERS)
+    p = Specifications(client=dask_client, num_workers=NUM_WORKERS)
     (r, w, TR, factor, j, p.J, p.S, p.beta, p.sigma, p.ltilde, p.g_y,
      p.g_n_ss, tau_payroll, retire, p.mean_income_data, h_wealth,
      p_wealth, m_wealth, p.b_ellipse, p.upsilon, j, p.chi_b,
@@ -559,7 +570,7 @@ filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
                               'Reform, small open',
                               'Reform, small open use zeta'])
 @pytest.mark.full_run
-def test_run_SS(baseline, param_updates, filename):
+def test_run_SS(baseline, param_updates, filename, dask_client):
     # Test SS.run_SS function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     if baseline is False:
@@ -574,7 +585,7 @@ def test_run_SS(baseline, param_updates, filename):
     else:
         tax_func_path = os.path.join(CUR_PATH,
                                      'TxFuncEst_baseline.pkl')
-    p = Specifications(baseline=baseline, client=CLIENT,
+    p = Specifications(baseline=baseline, client=dask_client,
                        num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.get_tax_function_parameters(None, run_micro=False,

@@ -1,13 +1,23 @@
 from ogusa import txfunc
 import multiprocessing
-from distributed import Client
+from distributed import Client, LocalCluster
 import pytest
 import numpy as np
 import os
 from ogusa import utils
-CLIENT = Client()
+# CLIENT = Client()
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
+
+
+@pytest.fixture(scope="module")
+def dask_client():
+    cluster = LocalCluster(n_workers=NUM_WORKERS, threads_per_worker=2)
+    client = Client(cluster)
+    yield client
+    # teardown
+    client.close()
+    cluster.close()
 
 
 @pytest.mark.parametrize('tax_func_type,expected',
@@ -269,7 +279,7 @@ def test_get_tax_rates(tax_func_type, rate_type, params, for_estimation,
 
 
 @pytest.mark.full_run
-def test_tax_func_estimate():
+def test_tax_func_estimate(dask_client):
     '''
     Test txfunc.tax_func_loop() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
@@ -286,7 +296,7 @@ def test_tax_func_estimate():
     test_dict = txfunc.tax_func_estimate(
         BW, S, starting_age, ending_age, beg_yr, baseline,
         analytical_mtrs, tax_func_type, age_specific, reform, data,
-        CLIENT, NUM_WORKERS)
+        dask_client, NUM_WORKERS)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_estimate_outputs.pkl'))

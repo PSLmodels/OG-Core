@@ -1,14 +1,24 @@
 import multiprocessing
-from distributed import Client
+from distributed import Client, LocalCluster
 import pytest
 import pickle
 import numpy as np
 import os
 from ogusa import SS, TPI, utils, firm
 from ogusa.parameters import Specifications
-CLIENT = Client()
+# CLIENT = Client()
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
+
+
+@pytest.fixture(scope="module")
+def dask_client():
+    cluster = LocalCluster(n_workers=NUM_WORKERS, threads_per_worker=2)
+    client = Client(cluster)
+    yield client
+    # teardown
+    client.close()
+    cluster.close()
 
 
 filename1 = 'intial_SS_values_baseline.pkl'
@@ -25,8 +35,9 @@ param_updates3 = {'baseline_spending': True}
                           (False, param_updates3, filename3)],
                          ids=['Baseline', 'Reform',
                               'Reform, baseline_spending'])
-def test_get_initial_SS_values(baseline, param_updates, filename):
-    p = Specifications(baseline=baseline, test=True, client=CLIENT,
+def test_get_initial_SS_values(baseline, param_updates, filename,
+                               dask_client):
+    p = Specifications(baseline=baseline, test=True, client=dask_client,
                        num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.baseline_dir = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
@@ -57,7 +68,7 @@ def test_get_initial_SS_values(baseline, param_updates, filename):
         assert(np.allclose(test_ss_vars[k], v, equal_nan=True))
 
 
-def test_firstdoughnutring():
+def test_firstdoughnutring(dask_client):
     # Test TPI.firstdoughnutring function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     input_tuple = utils.safe_read_pickle(
@@ -65,7 +76,7 @@ def test_firstdoughnutring():
     guesses, r, w, b, BQ, TR, j, params = input_tuple
     income_tax_params, tpi_params, initial_b = params
     tpi_params = tpi_params + [True]
-    p = Specifications(client=CLIENT, num_workers=NUM_WORKERS)
+    p = Specifications(client=dask_client, num_workers=NUM_WORKERS)
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
      Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, tau_b, delta_tau,
      tau_payroll, tau_bq, p.rho, p.omega, N_tilde, lambdas,
@@ -128,7 +139,7 @@ def test_twist_doughnut(file_inputs, file_outputs):
 
 
 @pytest.mark.full_run
-def test_inner_loop():
+def test_inner_loop(dask_client):
     # Test TPI.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     input_tuple = utils.safe_read_pickle(
@@ -137,7 +148,7 @@ def test_inner_loop():
     income_tax_params, tpi_params, initial_values, ind = params
     initial_values = initial_values
     tpi_params = tpi_params
-    p = Specifications(client=CLIENT, num_workers=NUM_WORKERS)
+    p = Specifications(client=dask_client, num_workers=NUM_WORKERS)
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
      Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, tau_b, delta_tau,
      tau_payroll, tau_bq, p.rho, p.omega, N_tilde, lambdas,
@@ -206,7 +217,8 @@ filename4 = os.path.join(CUR_PATH, 'test_io_data',
                           (False, param_updates4, filename4)],
                          ids=['Baseline', 'Baseline, balanced budget',
                               'Reform', 'Reform, baseline spending'])
-def test_run_TPI(baseline, param_updates, filename, tmp_path):
+def test_run_TPI(baseline, param_updates, filename, tmp_path,
+                 dask_client):
     '''
     Test TPI.run_TPI function.  Provide inputs to function and
     ensure that output returned matches what it has been before.
@@ -217,7 +229,7 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path):
     else:
         output_base = os.path.join(CUR_PATH, 'reform')
     p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
-                       output_base=output_base, client=CLIENT,
+                       output_base=output_base, client=dask_client,
                        num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.get_tax_function_parameters(

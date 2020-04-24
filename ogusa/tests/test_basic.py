@@ -1,21 +1,31 @@
 import multiprocessing
-from distributed import Client
+from distributed import Client, LocalCluster
 import os
 import pytest
 import pickle
 import numpy as np
 from ogusa import SS, TPI, utils
 from ogusa.parameters import Specifications
-CLIENT = Client()
+# CLIENT = Client()
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 TAX_FUNC_PATH = os.path.join(CUR_PATH, 'TxFuncEst_baseline.pkl')
 OUTPUT_DIR = os.path.join(CUR_PATH, "OUTPUT")
 
 
+@pytest.fixture(scope="module")
+def dask_client():
+    cluster = LocalCluster(n_workers=NUM_WORKERS, threads_per_worker=2)
+    client = Client(cluster)
+    yield client
+    # teardown
+    client.close()
+    cluster.close()
+
+
 @pytest.mark.full_run
 @pytest.mark.parametrize('time_path', [False, True], ids=['SS', 'TPI'])
-def test_run_small(time_path):
+def test_run_small(time_path, dask_client):
     from ogusa.execute import runner
     # Monkey patch enforcement flag since small data won't pass checks
     SS.ENFORCE_SOLUTION_CHECKS = False
@@ -26,11 +36,11 @@ def test_run_small(time_path):
     runner(output_base=OUTPUT_DIR, baseline_dir=OUTPUT_DIR, test=True,
            time_path=time_path, baseline=True, og_spec=og_spec,
            run_micro=False, tax_func_path=TAX_FUNC_PATH,
-           client=CLIENT, num_workers=NUM_WORKERS)
+           client=dask_client, num_workers=NUM_WORKERS)
 
 
 @pytest.mark.full_run
-def test_constant_demographics_TPI():
+def test_constant_demographics_TPI(dask_client):
     '''
     This tests solves the model under the assumption of constant
     demographics, a balanced budget, and tax functions that do not vary
@@ -44,7 +54,7 @@ def test_constant_demographics_TPI():
     spec = Specifications(run_micro=False, output_base=OUTPUT_DIR,
                           baseline_dir=OUTPUT_DIR, test=False,
                           time_path=True, baseline=True, iit_reform={},
-                          guid='', client=CLIENT,
+                          guid='', client=dask_client,
                           num_workers=NUM_WORKERS)
     og_spec = {'constant_demographics': True, 'budget_balance': True,
                'zero_taxes': True, 'maxiter': 2,

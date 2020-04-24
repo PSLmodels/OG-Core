@@ -1,13 +1,22 @@
 import multiprocessing
-from distributed import Client
+from distributed import Client, LocalCluster
 import pytest
 import os
-import numpy as np
 from ogusa import SS, TPI
 from ogusa.execute import runner
-CLIENT = Client()
+# CLIENT = Client()
 NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
+
+
+@pytest.fixture(scope="module")
+def dask_client():
+    cluster = LocalCluster(n_workers=NUM_WORKERS, threads_per_worker=2)
+    client = Client(cluster)
+    yield client
+    # teardown
+    client.close()
+    cluster.close()
 
 
 @pytest.mark.full_run
@@ -15,7 +24,7 @@ CUR_PATH = os.path.abspath(os.path.dirname(__file__))
         'year',
         [2014, 2017, 2026],
         ids=['2014', '2017', '2026'])
-def test_diff_start_year(year):
+def test_diff_start_year(year, dask_client):
     # Monkey patch enforcement flag since small data won't pass checks
     SS.ENFORCE_SOLUTION_CHECKS = False
     TPI.ENFORCE_SOLUTION_CHECKS = False
@@ -25,5 +34,5 @@ def test_diff_start_year(year):
                    'start_year': year}
     runner(output_base=output_base, baseline_dir=input_dir, test=True,
            time_path=True, baseline=True, og_spec=og_spec,
-           run_micro=True, data='cps', client=CLIENT,
+           run_micro=True, data='cps', client=dask_client,
            num_workers=NUM_WORKERS)
