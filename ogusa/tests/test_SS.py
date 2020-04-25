@@ -2,12 +2,26 @@
 Test of steady-state module
 '''
 
+import multiprocessing
+from distributed import Client, LocalCluster
 import pytest
 import numpy as np
 import os
 from ogusa import SS, utils, aggregates, household, execute, constants
 from ogusa.parameters import Specifications
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
+NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
+
+
+@pytest.fixture(scope="module")
+def dask_client():
+    cluster = LocalCluster(n_workers=NUM_WORKERS, threads_per_worker=2)
+    client = Client(cluster)
+    yield client
+    # teardown
+    client.close()
+    cluster.close()
+
 
 input_tuple = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_inputs.pkl'))
@@ -329,10 +343,11 @@ filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
                               # 'Reform, baseline spending=True',
                               'Baseline, small open',
                               'Baseline, small open, budget balance'])
-def test_SS_solver(baseline, param_updates, filename):
+def test_SS_solver(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    p = Specifications(baseline=baseline)
+    p = Specifications(baseline=baseline, client=dask_client,
+                       num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
     p.get_tax_function_parameters(None, run_micro=False)
@@ -382,10 +397,11 @@ filename5 = 'inner_loop_outputs_reform_baselinespending.pkl'
                               'Baseline, Balanced Budget',
                               'Baseline', 'Reform',
                               'Reform, baseline spending'])
-def test_inner_loop(baseline, param_updates, filename):
+def test_inner_loop(baseline, param_updates, filename, dask_client):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    p = Specifications(baseline=baseline)
+    p = Specifications(baseline=baseline, client=dask_client,
+                       num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
     p.get_tax_function_parameters(None, run_micro=False)
@@ -409,13 +425,13 @@ def test_inner_loop(baseline, param_updates, filename):
         assert(np.allclose(test_tuple[i], v, atol=1e-05))
 
 
-def test_euler_equation_solver():
+def test_euler_equation_solver(dask_client):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', 'euler_eqn_solver_inputs.pkl'))
     (guesses, params) = input_tuple
-    p = Specifications()
+    p = Specifications(client=dask_client, num_workers=NUM_WORKERS)
     (r, w, TR, factor, j, p.J, p.S, p.beta, p.sigma, p.ltilde, p.g_y,
      p.g_n_ss, tau_payroll, retire, p.mean_income_data, h_wealth,
      p_wealth, m_wealth, p.b_ellipse, p.upsilon, j, p.chi_b,
@@ -553,7 +569,7 @@ filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
                               'Reform, small open',
                               'Reform, small open use zeta'])
 @pytest.mark.full_run
-def test_run_SS(baseline, param_updates, filename):
+def test_run_SS(baseline, param_updates, filename, dask_client):
     # Test SS.run_SS function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     if baseline is False:
@@ -568,7 +584,8 @@ def test_run_SS(baseline, param_updates, filename):
     else:
         tax_func_path = os.path.join(CUR_PATH,
                                      'TxFuncEst_baseline.pkl')
-    p = Specifications(baseline=baseline)
+    p = Specifications(baseline=baseline, client=dask_client,
+                       num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.get_tax_function_parameters(None, run_micro=False,
                                   tax_func_path=tax_func_path)
