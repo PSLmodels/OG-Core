@@ -266,8 +266,11 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
     expected_dict = utils.safe_read_pickle(filename)
 
     for k, v in expected_dict.items():
+        print('Checkiing ', k)
         try:
+            print('diff = ', test_dict[k] - v)
             assert(np.allclose(test_dict[k], v, rtol=1e-04, atol=1e-04))
         except ValueError:
+            print('diff = ', test_dict[k] - v[:p.T, :, :])
             assert(np.allclose(test_dict[k], v[:p.T, :, :], rtol=1e-04,
                                atol=1e-04))

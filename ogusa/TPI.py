@@ -427,6 +427,7 @@ def run_TPI(p, client=None):
     K = K_init
     K_d = K_init * ss_vars['K_d_ss'] / ss_vars['Kss']
     K_f = K_init * ss_vars['K_f_ss'] / ss_vars['Kss']
+    print('K diffs = ', np.absolute(K-(K_d+K_f)).max())
 
     L = L_init
     B = B_init
@@ -714,12 +715,10 @@ def run_TPI(p, client=None):
     debt_service_f = D_f * r_hh
     print('Foreign debt service = ', np.max(D_f))
     print('Diff in r and r_hh = ', np.absolute(r_hh - r).max())
-    RC_error = aggr.resource_constraint(Y[:p.T - 1], C[:p.T - 1],
-                                        G[:p.T - 1], I_d[:p.T - 1],
-                                        K_f[:p.T - 1],
-                                        new_borrowing_f[:p.T - 1],
-                                        debt_service_f[:p.T - 1],
-                                        r_hh[:p.T - 1], p)
+    RC_error = aggr.resource_constraint(
+        Y[:p.T - 1], C[:p.T - 1], G[:p.T - 1], I_d[:p.T - 1],
+        K_f[:p.T - 1], new_borrowing_f[:p.T - 1],
+        debt_service_f[:p.T - 1], r_hh[:p.T - 1], p)
     # Compute total investment (not just domestic)
     I_total = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
                (1.0 - p.delta) * K[:p.T])
