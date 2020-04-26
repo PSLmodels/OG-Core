@@ -423,7 +423,11 @@ def run_TPI(p, client=None):
     L_init[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
     B_init[1:p.T] = aggr.get_B(b_mat[:p.T], p, 'TPI', False)[:p.T - 1]
     B_init[0] = B0
-    K_init = np.ones((p.T + p.S,)) * ss_vars['Kss']
+    if p.budget_balance:
+        K_init = B_init
+    else:
+        K_init = B_init * ss_vars['Kss'] / ss_vars['Bss']
+    # K_init = np.ones((p.T + p.S,)) * ss_vars['Kss']
     K = K_init
     K_d = K_init * ss_vars['K_d_ss'] / ss_vars['Kss']
     K_f = K_init * ss_vars['K_f_ss'] / ss_vars['Kss']
@@ -597,7 +601,7 @@ def run_TPI(p, client=None):
                   'positive to prevent NAN.')
             K_d[:p.T] = np.fmax(K_d[:p.T], 0.05 * B[:p.T])
         K_f[:p.T] = p.zeta_K[:p.T] * (K_demand_open - B[:p.T] + D_d[:p.T])
-        K = K_f + K_d
+        K[:p.T] = K_f[:p.T] + K_d[:p.T]
         if np.any(B) < 0:
             print('B has negative elements. B[0:9]:', B[0:9])
             print('B[T-2:T]:', B[p.T - 2, p.T])
