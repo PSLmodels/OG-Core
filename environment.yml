@@ -4,6 +4,7 @@ channels:
 - conda-forge
 dependencies:
 - python
+- ipython
 - setuptools
 - mkl
 - "scipy>=0.18.1"
