@@ -423,11 +423,7 @@ def run_TPI(p, client=None):
     L_init[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
     B_init[1:p.T] = aggr.get_B(b_mat[:p.T], p, 'TPI', False)[:p.T - 1]
     B_init[0] = B0
-    if p.budget_balance:
-        K_init = B_init * ss_vars['Kss'] / ss_vars['Bss']
-    else:
-        K_init = B_init * ss_vars['Kss'] / ss_vars['Bss']
-    # K_init = np.ones((p.T + p.S,)) * ss_vars['Kss']
+    K_init = B_init * ss_vars['Kss'] / ss_vars['Bss']
     K = K_init
     K_d = K_init * ss_vars['K_d_ss'] / ss_vars['Kss']
     K_f = K_init * ss_vars['K_f_ss'] / ss_vars['Kss']
@@ -718,22 +714,13 @@ def run_TPI(p, client=None):
                        (1 + p.g_n[1:p.T + 1]) - D_f[:p.T])
     debt_service_f = D_f * r_hh
     print('Foreign debt service = ', np.max(D_f))
-    print('Diff in r and r_hh = ', np.absolute(r_hh - r).max())
     RC_error = aggr.resource_constraint(
         Y[:p.T - 1], C[:p.T - 1], G[:p.T - 1], I_d[:p.T - 1],
         K_f[:p.T - 1], new_borrowing_f[:p.T - 1],
         debt_service_f[:p.T - 1], r_hh[:p.T - 1], p)
-    idx = np.argmax(np.absolute(RC_error))
-    print('Index of RC error max =', idx)
-    print('RC components at max = ', Y[idx], C[idx], G[idx], I_d[idx],
-          K_f[idx], new_borrowing_f[idx], debt_service_f[idx], r_hh[idx])
-    print('Also, ', (r_hh[idx] + p.delta) * K_f[idx])
-    print('K and L = ', K[idx], L[idx])
     # Compute total investment (not just domestic)
     I_total = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
                (1.0 - p.delta) * K[:p.T])
-    print('I total = ', I_total[idx])
-    print('RC errors = ', RC_error)
     # Compute income tax revenues
     tax_rev = aggr.get_L(T_Ipath, p, 'TPI')
     payroll_tax_revenue = p.frac_tax_payroll[:p.T] * tax_rev[:p.T]

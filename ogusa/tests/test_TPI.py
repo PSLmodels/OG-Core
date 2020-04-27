@@ -221,16 +221,12 @@ filename6 = os.path.join(
                           (True, param_updates1, filename1),
                           (False, param_updates3, filename3),
                           (False, param_updates4, filename4),
-                          (False, param_updates5, filename5),
-                          (False, param_updates6, filename6)],
-                         ids=['Baseline', 'Baseline, balanced budget',
+                          (True, param_updates5, filename5),
+                          (True, param_updates6, filename6)],
+                         ids=['Baseline, balanced budget', 'Baseline',
                               'Reform', 'Reform, baseline spending',
                               'Baseline, small open',
                               'Baseline, small open some periods'])
-# @pytest.mark.parametrize('baseline,param_updates,filename',
-#                          [(True, param_updates2, filename2),
-#                           (True, param_updates1, filename1)],
-#                          ids=['Baseline, balanced budget', 'Baseline'])
 def test_run_TPI(baseline, param_updates, filename, tmp_path,
                  dask_client):
     '''
@@ -270,15 +266,9 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
     test_dict = TPI.run_TPI(p, None)
     expected_dict = utils.safe_read_pickle(filename)
 
-    import pickle
-    pickle.dump(test_dict, open(filename))
-
     for k, v in expected_dict.items():
-        print('Checkiing ', k)
         try:
-            print('diff = ', test_dict[k] - v)
             assert(np.allclose(test_dict[k], v, rtol=1e-04, atol=1e-04))
         except ValueError:
-            print('diff = ', test_dict[k] - v[:p.T, :, :])
             assert(np.allclose(test_dict[k], v[:p.T, :, :], rtol=1e-04,
                                atol=1e-04))
