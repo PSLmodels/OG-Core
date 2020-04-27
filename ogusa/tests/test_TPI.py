@@ -208,10 +208,11 @@ filename4 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_reform_baseline_spend.pkl')
 param_updates5 = {'zeta_K': [1.0]}
 filename5 = os.path.join(CUR_PATH, 'test_io_data',
-                         'run_TPI_outputs_reform_baseline_spend.pkl')
+                         'run_TPI_outputs_baseline_small_open.pkl')
 param_updates6 = {'zeta_K': [0.2, 0.2, 0.2, 1.0, 1.0, 1.0, 0.2]}
-filename6 = os.path.join(CUR_PATH, 'test_io_data',
-                         'run_TPI_outputs_reform_baseline_spend.pkl')
+filename6 = os.path.join(
+    CUR_PATH, 'test_io_data',
+    'run_TPI_outputs_baseline_small_open_some_periods.pkl')
 
 
 @pytest.mark.full_run
@@ -226,6 +227,10 @@ filename6 = os.path.join(CUR_PATH, 'test_io_data',
                               'Reform', 'Reform, baseline spending',
                               'Baseline, small open',
                               'Baseline, small open some periods'])
+# @pytest.mark.parametrize('baseline,param_updates,filename',
+#                          [(True, param_updates2, filename2),
+#                           (True, param_updates1, filename1)],
+#                          ids=['Baseline, balanced budget', 'Baseline'])
 def test_run_TPI(baseline, param_updates, filename, tmp_path,
                  dask_client):
     '''
@@ -264,6 +269,9 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
 
     test_dict = TPI.run_TPI(p, None)
     expected_dict = utils.safe_read_pickle(filename)
+
+    import pickle
+    pickle.dump(test_dict, open(filename))
 
     for k, v in expected_dict.items():
         print('Checkiing ', k)
