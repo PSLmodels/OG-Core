@@ -221,8 +221,6 @@ PARAM_LABELS = {
                        r'$\texttt{PIA_maxpayment}$'],
     'replacement_rate_adjust': ['Adjustment to replacement rate',
                                 r'$theta_{adj,t}$'],
-    'small_open': ['Whether modeling a small, open economy',
-                   r'$\texttt{small_open}$'],
     'world_int_rate': ['World interest rate', r'$r^{*}_{t}$'],
     'initial_foreign_debt_ratio': [
         'Share of government debt held by foreigners in initial period',
