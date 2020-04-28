@@ -5,7 +5,7 @@ import pytest
 import numpy as np
 import os
 from ogusa import utils
-NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
+NUM_WORKERS = 2
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
@@ -293,9 +293,11 @@ def test_tax_func_estimate(dask_client):
     age_specific = False
     BW = 1
     test_dict = txfunc.tax_func_estimate(
-        BW, S, starting_age, ending_age, beg_yr, baseline,
-        analytical_mtrs, tax_func_type, age_specific, reform, data,
-        dask_client, NUM_WORKERS)
+        BW, S, starting_age, ending_age, start_year=beg_yr,
+        baseline=baseline, analytical_mtrs=analytical_mtrs,
+        tax_func_type=tax_func_type, age_specific=age_specific,
+        reform=reform, data=data, client=dask_client,
+        num_workers=NUM_WORKERS)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_estimate_outputs.pkl'))
