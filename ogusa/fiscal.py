@@ -58,13 +58,14 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
     Y, total_revenue, TR, D0, G0 = dg_fixed_values
 
     D = np.zeros(p.T + 1)
+    growth = (1 + p.g_n) * np.exp(p.g_y)
     D[0] = D0
+
     if p.baseline_spending:
         G = Gbaseline[:p.T]
     else:
         G = p.alpha_G[:p.T] * Y[:p.T]
         G[0] = G0
-    growth = (1 + p.g_n) * np.exp(p.g_y)
 
     if p.budget_balance:
         D = np.zeros(p.T + 1)
@@ -103,11 +104,9 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
         D_f = np.zeros(p.T + 1)
         D_f[0] = p.initial_foreign_debt_ratio * D[0]
         for t in range(0, p.T):
-            D_f[t + 1] = (D_f[t] / (np.exp(p.g_y) * (1 + p.g_n[t + 1]))
-                          + p.zeta_D[t] * (D[t + 1] -
-                                           (D[t] /
-                                            (np.exp(p.g_y) *
-                                             (1 + p.g_n[t + 1])))))
+            D_f[t + 1] = ((D_f[t] / growth[t + 1]) +
+                          (p.zeta_D[t] * (D[t + 1] -
+                                          (D[t] / growth[t + 1]))))
         D_d = D[:p.T] - D_f[:p.T]
 
     return D, G, D_d, D_f[:p.T]
