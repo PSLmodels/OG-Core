@@ -68,7 +68,6 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
         G[0] = G0
 
     if p.budget_balance:
-        D = np.zeros(p.T + 1)
         G = np.zeros(p.T)
         D_f = np.zeros(p.T)
         D_d = np.zeros(p.T)
