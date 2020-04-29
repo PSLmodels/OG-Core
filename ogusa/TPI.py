@@ -423,18 +423,11 @@ def run_TPI(p, client=None):
     L_init[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
     B_init[1:p.T] = aggr.get_B(b_mat[:p.T], p, 'TPI', False)[:p.T - 1]
     B_init[0] = B0
-
-    if not p.small_open:
-        if p.budget_balance:
-            K_init = B_init
-        else:
-            K_init = B_init * ss_vars['Kss'] / ss_vars['Bss']
-    else:
-        K_init = firm.get_K(L_init, p.firm_r, p, 'TPI')
-
+    K_init = B_init * ss_vars['Kss'] / ss_vars['Bss']
     K = K_init
     K_d = K_init * ss_vars['K_d_ss'] / ss_vars['Kss']
     K_f = K_init * ss_vars['K_f_ss'] / ss_vars['Kss']
+    print('K diffs = ', np.absolute(K-(K_d+K_f)).max())
 
     L = L_init
     B = B_init
@@ -442,24 +435,51 @@ def run_TPI(p, client=None):
     Y[:p.T] = firm.get_Y(K[:p.T], L[:p.T], p, 'TPI')
     Y[p.T:] = ss_vars['Yss']
     r = np.zeros_like(Y)
-    if not p.small_open:
-        r[:p.T] = firm.get_r(Y[:p.T], K[:p.T], p, 'TPI')
-        r[p.T:] = ss_vars['rss']
-    else:
-        r = p.firm_r
+    r[:p.T] = firm.get_r(Y[:p.T], K[:p.T], p, 'TPI')
+    r[p.T:] = ss_vars['rss']
+    # For case where economy is small open econ
+    r[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
+    # Compute other interest rates
+    r_gov = fiscal.get_r_gov(r, p)
+    r_hh = aggr.get_r_hh(r, r_gov, K, ss_vars['Dss'])
+
     # compute w
     w = np.zeros_like(r)
     w[:p.T] = firm.get_w_from_r(r[:p.T], p, 'TPI')
     w[p.T:] = ss_vars['wss']
-    r_gov = fiscal.get_r_gov(r, p)
-    if p.budget_balance:
-        r_hh = r
-    else:
-        r_hh = aggr.get_r_hh(r, r_gov, K, ss_vars['Dss'])
-    if p.small_open:
-        r_hh = p.hh_r
 
-    BQ0 = aggr.get_BQ(r[0], initial_b, None, p, 'SS', True)
+    # initial guesses at fiscal vars
+    if p.budget_balance:
+        if np.abs(ss_vars['TR_ss']) < 1e-13:
+            TR_ss2 = 0.0  # sometimes SS is very small but not zero,
+            # even if taxes are zero, this get's rid of the
+            # approximation error, which affects the perc changes below
+        else:
+            TR_ss2 = ss_vars['TR_ss']
+        TR = np.ones(p.T + p.S) * TR_ss2
+        total_revenue = TR
+        G = np.zeros(p.T + p.S)
+        D = np.zeros(p.T + p.S)
+        D_d = np.zeros(p.T + p.S)
+        D_f = np.zeros(p.T + p.S)
+    else:
+        if p.baseline_spending:
+            TR = TRbaseline
+            TR_new = TR   # Need to set TR_new for later reference
+            G = Gbaseline
+            G[p.T:] = ss_vars['Gss']
+            G_0 = Gbaseline[0]
+        else:
+            TR = p.alpha_T * Y
+            G = np.ones(p.T + p.S) * ss_vars['Gss']
+        D = np.ones(p.T + p.S) * ss_vars['Dss']
+        D_d = D * ss_vars['D_d_ss'] / ss_vars['Dss']
+        D_f = D * ss_vars['D_f_ss'] / ss_vars['Dss']
+
+    total_revenue = np.ones(p.T + p.S) * ss_vars['total_revenue_ss']
+
+    # Initialize bequests
+    BQ0 = aggr.get_BQ(r_hh[0], initial_b, None, p, 'SS', True)
     if not p.use_zeta:
         BQ = np.zeros((p.T + p.S, p.J))
         for j in range(p.J):
@@ -471,38 +491,6 @@ def run_TPI(p, client=None):
         BQ = (list(np.linspace(BQ0, ss_vars['BQss'], p.T)) +
               [ss_vars['BQss']] * p.S)
         BQ = np.array(BQ)
-    if p.budget_balance:
-        if np.abs(ss_vars['TR_ss']) < 1e-13:
-            TR_ss2 = 0.0  # sometimes SS is very small but not zero,
-            # even if taxes are zero, this get's rid of the approximation
-            # error, which affects the perc changes below
-        else:
-            TR_ss2 = ss_vars['TR_ss']
-        TR = np.ones(p.T + p.S) * TR_ss2
-        total_revenue = TR
-        G = np.zeros(p.T + p.S)
-    elif not p.baseline_spending:
-        TR = p.alpha_T * Y
-        G = np.ones(p.T + p.S) * ss_vars['Gss']
-    elif p.baseline_spending:
-        TR = TRbaseline
-        TR_new = TR   # Need to set TR_new for later reference
-        G = Gbaseline
-        G[p.T:] = ss_vars['Gss']
-        G_0 = Gbaseline[0]
-
-    # Initialize some starting values
-    if p.budget_balance:
-        D = np.zeros(p.T + p.S)
-    else:
-        D = np.ones(p.T + p.S) * ss_vars['Dss']
-    if ss_vars['Dss'] == 0:
-        D_d = np.zeros(p.T + p.S)
-        D_f = np.zeros(p.T + p.S)
-    else:
-        D_d = D * ss_vars['D_d_ss'] / ss_vars['Dss']
-        D_f = D * ss_vars['D_f_ss'] / ss_vars['Dss']
-    total_revenue = np.ones(p.T + p.S) * ss_vars['total_revenue_ss']
 
     TPIiter = 0
     TPIdist = 10
@@ -512,13 +500,11 @@ def run_TPI(p, client=None):
     # TPI loop
     while (TPIiter < p.maxiter) and (TPIdist >= p.mindist_TPI):
         r_gov[:p.T] = fiscal.get_r_gov(r[:p.T], p)
-        if p.budget_balance:
-            r_hh[:p.T] = r[:p.T]
-        else:
+        if not p.budget_balance:
             K[:p.T] = firm.get_K_from_Y(Y[:p.T], r[:p.T], p, 'TPI')
-            r_hh[:p.T] = aggr.get_r_hh(r[:p.T], r_gov[:p.T], K[:p.T], D[:p.T])
-        if p.small_open:
-            r_hh[:p.T] = p.hh_r[:p.T]
+
+        r_hh[:p.T] = aggr.get_r_hh(r[:p.T], r_gov[:p.T], K[:p.T],
+                                   D[:p.T])
 
         outer_loop_vars = (r, w, r_hh, BQ, TR, theta)
 
@@ -603,33 +589,26 @@ def run_TPI(p, client=None):
         L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
         B[1:p.T] = aggr.get_B(bmat_splus1[:p.T], p, 'TPI',
                               False)[:p.T - 1]
-        K_demand_open = firm.get_K(L[:p.T], p.firm_r[:p.T], p, 'TPI')
+        K_demand_open = firm.get_K(
+            L[:p.T], p.world_int_rate[:p.T], p, 'TPI')
         K_d[:p.T] = B[:p.T] - D_d[:p.T]
         if np.any(K_d < 0):
             print('K_d has negative elements. Setting them ' +
                   'positive to prevent NAN.')
             K_d[:p.T] = np.fmax(K_d[:p.T], 0.05 * B[:p.T])
         K_f[:p.T] = p.zeta_K[:p.T] * (K_demand_open - B[:p.T] + D_d[:p.T])
-        K = K_f + K_d
+        K[:p.T] = K_f[:p.T] + K_d[:p.T]
         if np.any(B) < 0:
             print('B has negative elements. B[0:9]:', B[0:9])
             print('B[T-2:T]:', B[p.T - 2, p.T])
-        if p.small_open:
-            K[:p.T] = K_demand_open
         Ynew = firm.get_Y(K[:p.T], L[:p.T], p, 'TPI')
         rnew = r.copy()
-        if not p.small_open:
-            rnew[:p.T] = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
-        else:
-            rnew[:p.T] = r[:p.T].copy()
+        rnew[:p.T] = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
+        # For case where economy is small open econ
+        r[p.zeta_K == 1] = p.world_int_rate[p.zeta_K == 1]
         r_gov_new = fiscal.get_r_gov(rnew, p)
-        if p.budget_balance:
-            r_hh_new = rnew[:p.T]
-        else:
-            r_hh_new = aggr.get_r_hh(rnew[:p.T], r_gov_new[:p.T], K[:p.T],
-                                     Dnew[:p.T])
-        if p.small_open:
-            r_hh_new = p.hh_r[:p.T]
+        r_hh_new = aggr.get_r_hh(rnew[:p.T], r_gov_new[:p.T], K[:p.T],
+                                 Dnew[:p.T])
         # compute w
         wnew = firm.get_w_from_r(rnew[:p.T], p, 'TPI')
 
@@ -734,17 +713,14 @@ def run_TPI(p, client=None):
     new_borrowing_f = (D_f[1:p.T + 1] * np.exp(p.g_y) *
                        (1 + p.g_n[1:p.T + 1]) - D_f[:p.T])
     debt_service_f = D_f * r_hh
-    RC_error = aggr.resource_constraint(Y[:p.T - 1], C[:p.T - 1],
-                                        G[:p.T - 1], I_d[:p.T - 1],
-                                        K_f[:p.T - 1],
-                                        new_borrowing_f[:p.T - 1],
-                                        debt_service_f[:p.T - 1],
-                                        r_hh[:p.T - 1], p)
-
+    print('Foreign debt service = ', np.max(D_f))
+    RC_error = aggr.resource_constraint(
+        Y[:p.T - 1], C[:p.T - 1], G[:p.T - 1], I_d[:p.T - 1],
+        K_f[:p.T - 1], new_borrowing_f[:p.T - 1],
+        debt_service_f[:p.T - 1], r_hh[:p.T - 1], p)
     # Compute total investment (not just domestic)
     I_total = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
                (1.0 - p.delta) * K[:p.T])
-
     # Compute income tax revenues
     tax_rev = aggr.get_L(T_Ipath, p, 'TPI')
     payroll_tax_revenue = p.frac_tax_payroll[:p.T] * tax_rev[:p.T]

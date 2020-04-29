@@ -113,11 +113,11 @@ class Specifications(paramtools.Parameters):
                                    self.ending_age, self.S)
 
         # Extend parameters that may vary over the time path
-        tp_param_list = ['alpha_G', 'alpha_T', 'Z', 'world_int_rate',
-                         'delta_tau_annual', 'cit_rate', 'tau_bq',
-                         'tau_payroll', 'h_wealth', 'm_wealth',
-                         'p_wealth', 'retirement_age',
-                         'replacement_rate_adjust', 'zeta_D', 'zeta_K']
+        tp_param_list = [
+            'alpha_G', 'alpha_T', 'Z', 'world_int_rate_annual',
+            'delta_tau_annual', 'cit_rate', 'tau_bq', 'tau_payroll',
+            'h_wealth', 'm_wealth', 'p_wealth', 'retirement_age',
+            'replacement_rate_adjust', 'zeta_D', 'zeta_K']
         for item in tp_param_list:
             this_attr = getattr(self, item)
             if this_attr.ndim > 1:
@@ -205,12 +205,10 @@ class Specifications(paramtools.Parameters):
         self.zeta = self.zeta / self.zeta.sum()
 
         # open economy parameters
-        firm_r_annual = self.world_int_rate
-        hh_r_annual = firm_r_annual
-        self.firm_r = rate_conversion(
-            firm_r_annual, self.starting_age, self.ending_age, self.S)
-        self.hh_r = rate_conversion(
-            hh_r_annual, self.starting_age, self.ending_age, self.S)
+        self.world_int_rate = rate_conversion(
+            self.world_int_rate_annual, self.starting_age,
+            self.ending_age, self.S)
+
         # set period of retirement
         self.retire = (np.round(((self.retirement_age -
                                   self.starting_age) * self.S) /

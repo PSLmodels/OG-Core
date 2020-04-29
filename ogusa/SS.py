@@ -155,8 +155,6 @@ def inner_loop(outer_loop_vars, p, client):
         D = p.debt_ratio_ss * Y
         K = firm.get_K_from_Y(Y, r, p, 'SS')
         r_hh = aggr.get_r_hh(r, r_gov, K, D)
-    if p.small_open:
-        r_hh = p.hh_r[-1]
     bq = household.get_bq(BQ, None, p, 'SS')
     tr = household.get_tr(TR, None, p, 'SS')
 
@@ -186,26 +184,19 @@ def inner_loop(outer_loop_vars, p, client):
 
     L = aggr.get_L(nssmat, p, 'SS')
     B = aggr.get_B(bssmat, p, 'SS', False)
-    K_demand_open = firm.get_K(L, p.firm_r[-1], p, 'SS')
+    K_demand_open = firm.get_K(L, p.world_int_rate[-1], p, 'SS')
     D_f = p.zeta_D[-1] * D
     D_d = D - D_f
-    if not p.small_open:
-        K_d = B - D_d
-        K_f = p.zeta_K[-1] * (K_demand_open - B + D_d)
-        K = K_f + K_d
-    else:
-        # can remove this else statement by making small open the case
-        # where zeta_K = 1
-        K_d = B - D_d
-        K_f = K_demand_open - B + D_d
-        K = K_f + K_d
+    K_d = B - D_d
+    K_f = p.zeta_K[-1] * (K_demand_open - B + D_d)
+    K = K_f + K_d
     new_Y = firm.get_Y(K, L, p, 'SS')
     if p.budget_balance:
         Y = new_Y
-    if not p.small_open:
-        new_r = firm.get_r(Y, K, p, 'SS')
+    if p.zeta_K[-1] == 1.0:
+        new_r = p.world_int_rate[-1]
     else:
-        new_r = p.firm_r[-1]
+        new_r = firm.get_r(Y, K, p, 'SS')
     new_w = firm.get_w_from_r(new_r, p, 'SS')
 
     b_s = np.array(list(np.zeros(p.J).reshape(1, p.J)) +
@@ -272,8 +263,6 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     if not p.budget_balance:
         if not p.baseline_spending:
             Y = TR / p.alpha_T[-1]
-    if p.small_open:
-        r = p.hh_r[-1]
 
     dist = 10
     iteration = 0
@@ -348,24 +337,16 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
         Dss = p.debt_ratio_ss * Y
     Lss = aggr.get_L(nssmat, p, 'SS')
     Bss = aggr.get_B(bssmat_splus1, p, 'SS', False)
-    K_demand_open_ss = firm.get_K(Lss, p.firm_r[-1], p, 'SS')
+    K_demand_open_ss = firm.get_K(Lss, p.world_int_rate[-1], p, 'SS')
     D_f_ss = p.zeta_D[-1] * Dss
     D_d_ss = Dss - D_f_ss
     K_d_ss = Bss - D_d_ss
-    if not p.small_open:
-        K_f_ss = p.zeta_K[-1] * (K_demand_open_ss - Bss + D_d_ss)
-        Kss = K_f_ss + K_d_ss
-        # Note that implicity in this computation is that immigrants'
-        # wealth is all in the form of private capital
-        I_d_ss = aggr.get_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')
-        Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS')
-    else:
-        K_d_ss = Bss - D_d_ss
-        K_f_ss = K_demand_open_ss - Bss + D_d_ss
-        Kss = K_f_ss + K_d_ss
-        InvestmentPlaceholder = np.zeros(bssmat_splus1.shape)
-        Iss = aggr.get_I(InvestmentPlaceholder, Kss, Kss, p, 'SS')
-        I_d_ss = aggr.get_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')
+    K_f_ss = p.zeta_K[-1] * (K_demand_open_ss - Bss + D_d_ss)
+    Kss = K_f_ss + K_d_ss
+    # Note that implicity in this computation is that immigrants'
+    # wealth is all in the form of private capital
+    I_d_ss = aggr.get_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')
+    Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS')
     r_hh_ss = aggr.get_r_hh(rss, r_gov_ss, Kss, Dss)
     wss = new_w
     BQss = new_BQ
@@ -581,8 +562,8 @@ def run_SS(p, client=None):
     # For initial guesses of w, r, TR, and factor, we use values that
     # are close to some steady state values.
     if p.baseline:
-        if p.small_open:
-            rguess = p.firm_r[-1]
+        if p.zeta_D[-1] == 1.0:
+            rguess = p.world_int_rate[-1]
         else:
             rguess = 0.0648
         if p.use_zeta:
@@ -637,8 +618,8 @@ def run_SS(p, client=None):
             else:
                 b_guess = np.ones((p.S, p.J)) * 0.07
                 n_guess = np.ones((p.S, p.J)) * .4 * p.ltilde
-            if p.small_open:
-                rguess = p.firm_r[-1]
+            if p.zeta_D[-1] == 1.0:
+                rguess = p.world_int_rate[-1]
             else:
                 rguess = 0.09
             TRguess = 0.12

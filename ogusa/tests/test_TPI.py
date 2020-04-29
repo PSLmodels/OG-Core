@@ -206,6 +206,13 @@ filename3 = os.path.join(CUR_PATH, 'test_io_data',
 param_updates4 = {'baseline_spending': True}
 filename4 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_reform_baseline_spend.pkl')
+param_updates5 = {'zeta_K': [1.0]}
+filename5 = os.path.join(CUR_PATH, 'test_io_data',
+                         'run_TPI_outputs_baseline_small_open.pkl')
+param_updates6 = {'zeta_K': [0.2, 0.2, 0.2, 1.0, 1.0, 1.0, 0.2]}
+filename6 = os.path.join(
+    CUR_PATH, 'test_io_data',
+    'run_TPI_outputs_baseline_small_open_some_periods.pkl')
 
 
 @pytest.mark.full_run
@@ -213,11 +220,15 @@ filename4 = os.path.join(CUR_PATH, 'test_io_data',
                          [(True, param_updates2, filename2),
                           (True, param_updates1, filename1),
                           (False, param_updates3, filename3),
-                          (False, param_updates4, filename4)],
-                         ids=['Baseline', 'Baseline, balanced budget',
-                              'Reform', 'Reform, baseline spending'])
-def test_run_TPI(baseline, param_updates, filename, tmp_path,
-                 dask_client):
+                          (False, param_updates4, filename4),
+                          (True, param_updates5, filename5),
+                          (True, param_updates6, filename6)],
+                         ids=['Baseline, balanced budget', 'Baseline',
+                              'Reform', 'Reform, baseline spending',
+                              'Baseline, small open',
+                              'Baseline, small open some periods'])
+def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
+                          dask_client):
     '''
     Test TPI.run_TPI function.  Provide inputs to function and
     ensure that output returned matches what it has been before.
@@ -252,6 +263,87 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
         with open(ss_dir, "wb") as f:
             pickle.dump(ss_outputs, f)
 
+    test_dict = TPI.run_TPI(p, None)
+    expected_dict = utils.safe_read_pickle(filename)
+
+    for k, v in expected_dict.items():
+        try:
+            assert(np.allclose(test_dict[k], v, rtol=1e-04, atol=1e-04))
+        except ValueError:
+            assert(np.allclose(test_dict[k], v[:p.T, :, :], rtol=1e-04,
+                               atol=1e-04))
+
+
+param_updates1 = {}
+filename1 = os.path.join(CUR_PATH, 'test_io_data',
+                         'run_TPI_outputs_baseline_2.pkl')
+param_updates2 = {'budget_balance': True}
+filename2 = os.path.join(CUR_PATH, 'test_io_data',
+                         'run_TPI_outputs_baseline_balanced_budget_2.pkl')
+param_updates3 = {}
+filename3 = os.path.join(CUR_PATH, 'test_io_data',
+                         'run_TPI_outputs_reform_2.pkl')
+param_updates4 = {'baseline_spending': True}
+filename4 = os.path.join(CUR_PATH, 'test_io_data',
+                         'run_TPI_outputs_reform_baseline_spend_2.pkl')
+param_updates5 = {'zeta_K': [1.0]}
+filename5 = os.path.join(CUR_PATH, 'test_io_data',
+                         'run_TPI_outputs_baseline_small_open_2.pkl')
+param_updates6 = {'zeta_K': [0.2, 0.2, 0.2, 1.0, 1.0, 1.0, 0.2]}
+filename6 = os.path.join(
+    CUR_PATH, 'test_io_data',
+    'run_TPI_outputs_baseline_small_open_some_periods_2.pkl')
+
+
+@pytest.mark.parametrize('baseline,param_updates,filename',
+                         [(True, param_updates2, filename2),
+                          (True, param_updates1, filename1),
+                          (False, param_updates3, filename3),
+                          (False, param_updates4, filename4),
+                          (True, param_updates5, filename5),
+                          (True, param_updates6, filename6)],
+                         ids=['Baseline, balanced budget', 'Baseline',
+                              'Reform', 'Reform, baseline spending',
+                              'Baseline, small open',
+                              'Baseline, small open some periods'])
+def test_run_TPI(baseline, param_updates, filename, tmp_path,
+                 dask_client):
+    '''
+    Test TPI.run_TPI function.  Provide inputs to function and
+    ensure that output returned matches what it has been before.
+    '''
+    baseline_dir = os.path.join(CUR_PATH, 'baseline')
+    if baseline:
+        output_base = baseline_dir
+    else:
+        output_base = os.path.join(CUR_PATH, 'reform')
+    p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
+                       output_base=output_base, test=True,
+                       client=dask_client, num_workers=NUM_WORKERS)
+    p.update_specifications(param_updates)
+    p.maxiter = 2  # this test runs through just two iterations
+    p.get_tax_function_parameters(
+        None, run_micro=False,
+        tax_func_path=os.path.join(CUR_PATH, '..', 'data',
+                                   'tax_functions',
+                                   'TxFuncEst_baseline_CPS.pkl'))
+
+    # Need to run SS first to get results
+    SS.ENFORCE_SOLUTION_CHECKS = False
+    ss_outputs = SS.run_SS(p, None)
+
+    if p.baseline:
+        utils.mkdirs(os.path.join(p.baseline_dir, "SS"))
+        ss_dir = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
+        with open(ss_dir, "wb") as f:
+            pickle.dump(ss_outputs, f)
+    else:
+        utils.mkdirs(os.path.join(p.output_base, "SS"))
+        ss_dir = os.path.join(p.output_base, "SS", "SS_vars.pkl")
+        with open(ss_dir, "wb") as f:
+            pickle.dump(ss_outputs, f)
+
+    TPI.ENFORCE_SOLUTION_CHECKS = False
     test_dict = TPI.run_TPI(p, None)
     expected_dict = utils.safe_read_pickle(filename)
 
