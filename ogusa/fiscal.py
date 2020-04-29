@@ -49,6 +49,10 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
 
             * D (Numpy array): government debt over the time path
             * G (Numpy array): government spending over the time path
+            * D_d (Numpy array): domestic held government debt over the
+                time path
+            * D_f (Numpy array): foreign held government debt over the
+                time path
 
     '''
     Y, total_revenue, TR, D0, G0 = dg_fixed_values
@@ -88,7 +92,22 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
     D_ratio_max = np.amax(D[:p.T] / Y[:p.T])
     print('Maximum debt ratio: ', D_ratio_max)
 
-    return D, G
+    # Find foreign and domestic debt holding
+    # Fix initial amount of foreign debt holding
+    D_f = np.zeros(p.T + 1)
+    D_f[0] = p.initial_foreign_debt_ratio * D[0]
+    for t in range(0, p.T):
+        D_f[t + 1] = (D_f[t] / (np.exp(p.g_y) * (1 + p.g_n[t + 1]))
+                      + p.zeta_D[t] * (D[t + 1] -
+                                       (D[t] /
+                                        (np.exp(p.g_y) *
+                                         (1 + p.g_n[t + 1])))))
+    D_d = D[:p.T] - D_f[:p.T]
+    print('D = ', D[:10])
+    print('D_d = ', D_d[:10])
+    print('D_f = ', D_f[:10])
+
+    return D, G, D_d, D_f[:p.T]
 
 
 def get_r_gov(r, p):

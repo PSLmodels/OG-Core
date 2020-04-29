@@ -569,17 +569,8 @@ def run_TPI(p, client=None):
             if not p.baseline_spending:
                 G_0 = p.alpha_G[0] * Y[0]
             dg_fixed_values = (Y, total_revenue, TR, D0, G_0)
-            Dnew, G[:p.T] = fiscal.D_G_path(r_gov, dg_fixed_values,
-                                            Gbaseline, p)
-            # Fix initial amount of foreign debt holding
-            D_f[0] = p.initial_foreign_debt_ratio * Dnew[0]
-            for t in range(1, p.T):
-                D_f[t + 1] = (D_f[t] / (np.exp(p.g_y) * (1 + p.g_n[t + 1]))
-                              + p.zeta_D[t] * (Dnew[t + 1] -
-                                               (Dnew[t] /
-                                                (np.exp(p.g_y) *
-                                                 (1 + p.g_n[t + 1])))))
-            D_d[:p.T] = Dnew[:p.T] - D_f[:p.T]
+            Dnew, G[:p.T], D_d[:p.T], D_f[:p.T] = fiscal.D_G_path(
+                r_gov, dg_fixed_values, Gbaseline, p)
         else:  # if budget balance
             Dnew = np.zeros(p.T + 1)
             G[:p.T] = np.zeros(p.T)
