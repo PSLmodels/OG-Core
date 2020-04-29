@@ -59,53 +59,56 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
 
     D = np.zeros(p.T + 1)
     D[0] = D0
-    if not p.baseline_spending:
+    if p.baseline_spending:
+        G = Gbaseline[:p.T]
+    else:
         G = p.alpha_G[:p.T] * Y[:p.T]
         G[0] = G0
-    else:
-        G = Gbaseline[:p.T]
     growth = (1 + p.g_n) * np.exp(p.g_y)
 
-    t = 1
-    while t < p.T-1:
-        D[t] = ((1 / growth[t]) * ((1 + r_gov[t - 1]) * D[t - 1] +
-                                   G[t - 1] + TR[t - 1] -
-                                   total_revenue[t - 1]))
-        if (t >= p.tG1) and (t < p.tG2):
-            G[t] = (growth[t + 1] * (p.rho_G * p.debt_ratio_ss * Y[t] +
-                                     (1 - p.rho_G) * D[t]) -
-                    (1 + r_gov[t]) * D[t] + total_revenue[t] - TR[t])
-        elif t >= p.tG2:
-            G[t] = (growth[t + 1] * (p.debt_ratio_ss * Y[t]) -
-                    (1 + r_gov[t]) * D[t] + total_revenue[t] - TR[t])
-        t += 1
+    if p.budget_balance:
+        D = np.zeros(p.T + 1)
+        G = np.zeros(p.T)
+        D_f = np.zeros(p.T)
+        D_d = np.zeros(p.T)
+    else:
+        t = 1
+        while t < p.T-1:
+            D[t] = ((1 / growth[t]) * ((1 + r_gov[t - 1]) * D[t - 1] +
+                                       G[t - 1] + TR[t - 1] -
+                                       total_revenue[t - 1]))
+            if (t >= p.tG1) and (t < p.tG2):
+                G[t] = (growth[t + 1] * (p.rho_G * p.debt_ratio_ss * Y[t] +
+                                         (1 - p.rho_G) * D[t]) -
+                        (1 + r_gov[t]) * D[t] + total_revenue[t] - TR[t])
+            elif t >= p.tG2:
+                G[t] = (growth[t + 1] * (p.debt_ratio_ss * Y[t]) -
+                        (1 + r_gov[t]) * D[t] + total_revenue[t] - TR[t])
+            t += 1
 
-    # in final period, growth rate has stabilized, so we can replace
-    # growth[t+1] with growth[t]
-    t = p.T - 1
-    D[t] = ((1 / growth[t]) * ((1 + r_gov[t - 1]) * D[t - 1] + G[t - 1]
-                               + TR[t - 1] - total_revenue[t - 1]))
-    G[t] = (growth[t] * (p.debt_ratio_ss * Y[t]) - (1 + r_gov[t]) * D[t]
-            + total_revenue[t] - TR[t])
-    D[t + 1] = ((1 / growth[t + 1]) * ((1 + r_gov[t]) * D[t] + G[t] +
-                                       TR[t] - total_revenue[t]))
-    D_ratio_max = np.amax(D[:p.T] / Y[:p.T])
-    print('Maximum debt ratio: ', D_ratio_max)
+        # in final period, growth rate has stabilized, so we can replace
+        # growth[t+1] with growth[t]
+        t = p.T - 1
+        D[t] = ((1 / growth[t]) * ((1 + r_gov[t - 1]) * D[t - 1] + G[t - 1]
+                                   + TR[t - 1] - total_revenue[t - 1]))
+        G[t] = (growth[t] * (p.debt_ratio_ss * Y[t]) - (1 + r_gov[t]) * D[t]
+                + total_revenue[t] - TR[t])
+        D[t + 1] = ((1 / growth[t + 1]) * ((1 + r_gov[t]) * D[t] + G[t] +
+                                           TR[t] - total_revenue[t]))
+        D_ratio_max = np.amax(D[:p.T] / Y[:p.T])
+        print('Maximum debt ratio: ', D_ratio_max)
 
-    # Find foreign and domestic debt holding
-    # Fix initial amount of foreign debt holding
-    D_f = np.zeros(p.T + 1)
-    D_f[0] = p.initial_foreign_debt_ratio * D[0]
-    for t in range(0, p.T):
-        D_f[t + 1] = (D_f[t] / (np.exp(p.g_y) * (1 + p.g_n[t + 1]))
-                      + p.zeta_D[t] * (D[t + 1] -
-                                       (D[t] /
-                                        (np.exp(p.g_y) *
-                                         (1 + p.g_n[t + 1])))))
-    D_d = D[:p.T] - D_f[:p.T]
-    print('D = ', D[:10])
-    print('D_d = ', D_d[:10])
-    print('D_f = ', D_f[:10])
+        # Find foreign and domestic debt holding
+        # Fix initial amount of foreign debt holding
+        D_f = np.zeros(p.T + 1)
+        D_f[0] = p.initial_foreign_debt_ratio * D[0]
+        for t in range(0, p.T):
+            D_f[t + 1] = (D_f[t] / (np.exp(p.g_y) * (1 + p.g_n[t + 1]))
+                          + p.zeta_D[t] * (D[t + 1] -
+                                           (D[t] /
+                                            (np.exp(p.g_y) *
+                                             (1 + p.g_n[t + 1])))))
+        D_d = D[:p.T] - D_f[:p.T]
 
     return D, G, D_d, D_f[:p.T]
 

@@ -27,22 +27,17 @@ D_f2 = df['D_f2'].values
 D_f3 = df['D_f3'].values
 
 
-# @pytest.mark.parametrize(
-#     ('baseline_spending,Y,TR,Revenue,Gbaseline,D_expected,G_expected,' +
-#      'D_d_expected,D_f_expected'),
-#     [(False, Y, TR, Revenue, Gbaseline, D1, G1, D_d1, D_f1),
-#      (True, Y, TR, Revenue, Gbaseline, D2, G2, D_d2, D_f2),
-#      (False, Y, TR, Revenue, Gbaseline, D3, G3, D_d3, D_f3)],
-#     ids=['baseline_spending = False', 'baseline_spending = True',
-#          'balanced_budget = True'])
 @pytest.mark.parametrize(
     ('baseline_spending,Y,TR,Revenue,Gbaseline,D_expected,G_expected,' +
-     'D_d_expected,D_f_expected'),
-    [(False, Y, TR, Revenue, Gbaseline, D1, G1, D_d1, D_f1),
-     (True, Y, TR, Revenue, Gbaseline, D2, G2, D_d2, D_f2)],
-    ids=['baseline_spending = False', 'baseline_spending = True'])
+     'D_d_expected,D_f_expected,budget_balance'),
+    [(False, Y, TR, Revenue, Gbaseline, D1, G1, D_d1, D_f1, False),
+     (True, Y, TR, Revenue, Gbaseline, D2, G2, D_d2, D_f2, False),
+     (False, Y, TR, Revenue, Gbaseline, D3, G3, D_d3, D_f3, True)],
+    ids=['baseline_spending = False', 'baseline_spending = True',
+         'balanced_budget = True'])
 def test_D_G_path(baseline_spending, Y, TR, Revenue, Gbaseline,
-                  D_expected, G_expected, D_d_expected, D_f_expected):
+                  D_expected, G_expected, D_d_expected, D_f_expected,
+                  budget_balance):
     p = Specifications()
     new_param_values = {
         'T': 320,
@@ -54,8 +49,8 @@ def test_D_G_path(baseline_spending, Y, TR, Revenue, Gbaseline,
         'alpha_G': [0.05],
         'rho_G': 0.1,
         'g_y_annual': 0.03,
-        'budget_balance': False,
-        'baseline_spending': baseline_spending
+        'baseline_spending': baseline_spending,
+        'budget_balance': budget_balance
     }
     p.update_specifications(new_param_values, raise_errors=False)
     r_gov = np.ones(p.T + p.S) * 0.03

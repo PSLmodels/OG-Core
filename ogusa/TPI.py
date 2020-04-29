@@ -568,14 +568,9 @@ def run_TPI(p, client=None):
                 D0 = p.initial_debt_ratio * Y[0]
             if not p.baseline_spending:
                 G_0 = p.alpha_G[0] * Y[0]
-            dg_fixed_values = (Y, total_revenue, TR, D0, G_0)
-            Dnew, G[:p.T], D_d[:p.T], D_f[:p.T] = fiscal.D_G_path(
-                r_gov, dg_fixed_values, Gbaseline, p)
-        else:  # if budget balance
-            Dnew = np.zeros(p.T + 1)
-            G[:p.T] = np.zeros(p.T)
-            D_f[:p.T] = np.zeros(p.T)
-            D_d[:p.T] = np.zeros(p.T)
+        dg_fixed_values = (Y, total_revenue, TR, D0, G_0)
+        Dnew, G[:p.T], D_d[:p.T], D_f[:p.T] = fiscal.D_G_path(
+            r_gov, dg_fixed_values, Gbaseline, p)
 
         L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
         B[1:p.T] = aggr.get_B(bmat_splus1[:p.T], p, 'TPI',
