@@ -9,7 +9,6 @@ functions require time-path calculation.
 
 # Packages
 import numpy as np
-from ogusa import aggregates as aggr
 
 '''
 ------------------------------------------------------------------------
