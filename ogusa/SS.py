@@ -337,7 +337,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
      new_borrowing_f) = fiscal.get_D_ss(r_gov_ss, Y, p)
     K_demand_open_ss = firm.get_K(Lss, p.world_int_rate[-1], p, 'SS')
     Kss, K_d_ss, K_f_ss = aggr.get_K_splits(
-        Bss, Lss, K_demand_open_ss, D_d_ss, p.zeta_K[-1])
+        Bss, K_demand_open_ss, D_d_ss, p.zeta_K[-1])
     Yss = firm.get_Y(Kss, Lss, p, 'SS')
     r_hh_ss = aggr.get_r_hh(rss, r_gov_ss, Kss, Dss)
     # Note that implicity in this computation is that immigrants'
