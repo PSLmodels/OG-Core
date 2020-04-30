@@ -70,9 +70,13 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
         G[0] = G0
 
     if p.budget_balance:
+        D = np.zeros(p.T + 1)
         G = np.zeros(p.T)
         D_f = np.zeros(p.T)
         D_d = np.zeros(p.T)
+        new_borrowing = np.zeros(p.T)
+        debt_service = np.zeros(p.T)
+        new_borrowing_f = np.zeros(p.T)
     else:
         t = 1
         while t < p.T-1:
@@ -109,10 +113,14 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
                           (p.zeta_D[t] * (D[t + 1] -
                                           (D[t] / growth[t + 1]))))
         D_d = D[:p.T] - D_f[:p.T]
+        new_borrowing = (D[1:p.T + 1] * np.exp(p.g_y) *
+                         (1 + p.g_n[1:p.T + 1]) - D[:p.T])
+        debt_service = r_gov[:p.T] * D[:p.T]
         new_borrowing_f = (D_f[1:p.T + 1] * np.exp(p.g_y) *
                            (1 + p.g_n[1:p.T + 1]) - D_f[:p.T])
 
-    return D, G, D_d, D_f[:p.T], new_borrowing_f
+    return (D, G, D_d, D_f[:p.T], new_borrowing, debt_service,
+            new_borrowing_f)
 
 
 def get_D_ss(r_gov, Y, p):
@@ -122,7 +130,11 @@ def get_D_ss(r_gov, Y, p):
     .. math::
         \begin{split}
             \bar{D} = \alpha_D \bar{Y}\\
-            \bar{D} = \alpha_D \bar{Y}\\
+            \bar{D_d} = \bar{D} - \bar{D}^{f}\\
+            \bar{D_f} = \zeta_{D}\bar{D} \\
+            \text{new borrowing} = (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D}\\
+            \bar{debt service} = \bar{r}_{gov}\bar{D} \\
+            \text{new foreign borrowing} = (e^{g_{y}}(1 + \bar{g}_n) - 1)\bar{D_f}\\
         \end{split}
 
     Args:
@@ -147,7 +159,6 @@ def get_D_ss(r_gov, Y, p):
         D = p.debt_ratio_ss * Y
     debt_service = r_gov * D
     new_borrowing = D * ((1 + p.g_n_ss) * np.exp(p.g_y) - 1)
-    # government spends such that it expands its debt at the same rate as GDP
     D_f = p.zeta_D[-1] * D
     D_d = D - D_f
     new_borrowing_f = D_f * (np.exp(p.g_y) * (1 + p.g_n_ss) - 1)
@@ -157,16 +168,16 @@ def get_D_ss(r_gov, Y, p):
 
 def get_G_ss(Revenue, TR, new_borrowing, debt_service, p):
     r'''
-    Calculate the steady-state values of government spending
+    Calculate the steady-state values of government spending.
 
     .. math::
             \bar{G} = \bar{Rev} + \bar{D}((1 + \bar{g}_n)e^{g_y} - 1) - \bar{TR} - \bar{r}_{gov}\bar{D}
 
     Args:
-        r_gov (scalar): steady-state interest rate on government debt
-        Y (scalar): steady-state GDP
         Revenue (scalar): steady-state net tax revenue
         TR (scalar): steady-state transfer spending
+        new_borrowing (scalar): steady-state amount of new borowing
+        debt_service (scalar): steady-state debt service costs
         p (OG-USA Specifications object): model parameters
 
     Returns:

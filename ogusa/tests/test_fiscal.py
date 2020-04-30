@@ -25,19 +25,29 @@ D_d3 = df['D_d3'].values
 D_f1 = df['D_f1'].values
 D_f2 = df['D_f2'].values
 D_f3 = df['D_f3'].values
+nb1 = df['new_borrow1'].values
+nb2 = df['new_borrow2'].values
+nb3 = df['new_borrow3'].values
+ds1 = df['debt_service1'].values
+ds2 = df['debt_service2'].values
+ds3 = df['debt_service3'].values
+nbf1 = df['new_borrow_f1'].values
+nbf2 = df['new_borrow_f2'].values
+nbf3 = df['new_borrow_f3'].values
+expected_tuple1 = (D1, G1, D_d1, D_f1, nb1, ds1, nbf1)
+expected_tuple2 = (D2, G2, D_d2, D_f2, nb2, ds2, nbf2)
+expected_tuple3 = (D3, G3, D_d3, D_f3, nb3, ds3, nbf3)
 
 
 @pytest.mark.parametrize(
-    ('baseline_spending,Y,TR,Revenue,Gbaseline,D_expected,G_expected,' +
-     'D_d_expected,D_f_expected,budget_balance'),
-    [(False, Y, TR, Revenue, Gbaseline, D1, G1, D_d1, D_f1, False),
-     (True, Y, TR, Revenue, Gbaseline, D2, G2, D_d2, D_f2, False),
-     (False, Y, TR, Revenue, Gbaseline, D3, G3, D_d3, D_f3, True)],
+    ('baseline_spending,Y,TR,Revenue,Gbaseline,budget_balance,expected_tuple'),
+    [(False, Y, TR, Revenue, Gbaseline, False, expected_tuple1),
+     (True, Y, TR, Revenue, Gbaseline, False, expected_tuple2),
+     (False, Y, TR, Revenue, Gbaseline, True, expected_tuple3)],
     ids=['baseline_spending = False', 'baseline_spending = True',
          'balanced_budget = True'])
 def test_D_G_path(baseline_spending, Y, TR, Revenue, Gbaseline,
-                  D_expected, G_expected, D_d_expected, D_f_expected,
-                  budget_balance):
+                  budget_balance, expected_tuple):
     p = Specifications()
     new_param_values = {
         'T': 320,
@@ -58,12 +68,58 @@ def test_D_G_path(baseline_spending, Y, TR, Revenue, Gbaseline,
     D0 = 0.59
     G0 = 0.05
     dg_fixed_values = (Y, Revenue, TR, D0, G0)
-    test_D, test_G, test_D_d, test_D_f = fiscal.D_G_path(
-        r_gov, dg_fixed_values, Gbaseline, p)
-    assert np.allclose(test_D[:p.T], D_expected[:p.T])
-    assert np.allclose(test_G[:p.T], G_expected[:p.T])
-    assert np.allclose(test_D_d[:p.T], D_d_expected[:p.T])
-    assert np.allclose(test_D_f[:p.T], D_f_expected[:p.T])
+    test_tuple = fiscal.D_G_path(r_gov, dg_fixed_values, Gbaseline, p)
+    for i, v in enumerate(test_tuple):
+        assert np.allclose(v[:p.T], expected_tuple[i][:p.T])
+
+
+D1 = 1.411506406
+D_d1 = 0.846903844
+D_f1 = 0.564602563
+new_borrowing1 = 0.072076633
+debt_service1 = 0.042345192
+new_borrowing_f1 = 0.028830653
+expected_tuple1 = (D1, D_d1, D_f1, new_borrowing1, debt_service1,
+                   new_borrowing_f1)
+expected_tuple2 = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
+
+
+@pytest.mark.parametrize(
+    ('budget_balance,expected_tuple'),
+    [(False, expected_tuple1), (True, expected_tuple2)],
+    ids=['balanced_budget = False', 'balanced_budget = True'])
+def test_get_D_ss(budget_balance, expected_tuple):
+    r_gov = 0.03
+    Y = 1.176255339
+    p = Specifications()
+    p.debt_ratio_ss = 1.2
+    p.budget_balance = budget_balance
+    p.g_n_ss = 0.02
+    test_tuple = fiscal.get_D_ss(r_gov, Y, p)
+
+    for i, v in enumerate(test_tuple):
+        assert np.allclose(v, expected_tuple[i])
+
+
+expected_G1 = 0.729731441
+expected_G2 = 0.0
+
+
+@pytest.mark.parametrize(
+    ('budget_balance,expected_G'),
+    [(False, expected_G1), (True, expected_G2)],
+    ids=['balanced_budget = False', 'balanced_budget = True'])
+def test_get_G_ss(budget_balance, expected_G):
+    total_revenue = 2.3
+    TR = 1.6
+    new_borrowing = 0.072076633
+    debt_service = 0.042345192
+    p = Specifications()
+    p.budget_balance = budget_balance
+    test_G = fiscal.get_G_ss(
+        total_revenue, TR, new_borrowing, debt_service, p)
+
+    assert np.allclose(test_G, expected_G)
 
 
 p1 = Specifications()
@@ -81,11 +137,10 @@ r_gov2 = 0.01
 r_gov3 = 0.0
 
 
-@pytest.mark.parametrize('r,p,r_gov_expected',
-                         [(r, p1, r_gov1), (r, p2, r_gov2),
-                          (r, p3, r_gov3),],
-                         ids=['Scale only', 'Scale and shift',
-                              'r_gov < 0'])
+@pytest.mark.parametrize(
+    'r,p,r_gov_expected', [(r, p1, r_gov1), (r, p2, r_gov2),
+                           (r, p3, r_gov3)],
+    ids=['Scale only', 'Scale and shift', 'r_gov < 0'])
 def test_get_r_gov(r, p, r_gov_expected):
     r_gov = fiscal.get_r_gov(r, p)
     assert np.allclose(r_gov, r_gov_expected)
