@@ -89,6 +89,9 @@ expected_tuple2 = (0.0, 0.0, 0.0, 0.0, 0.0, 0.0)
     [(False, expected_tuple1), (True, expected_tuple2)],
     ids=['balanced_budget = False', 'balanced_budget = True'])
 def test_get_D_ss(budget_balance, expected_tuple):
+    '''
+    Test of the fiscla.get_D_ss() function.
+    '''
     r_gov = 0.03
     Y = 1.176255339
     p = Specifications()
@@ -110,6 +113,9 @@ expected_G2 = 0.0
     [(False, expected_G1), (True, expected_G2)],
     ids=['balanced_budget = False', 'balanced_budget = True'])
 def test_get_G_ss(budget_balance, expected_G):
+    '''
+    Test of the fiscla.get_G_ss() function.
+    '''
     total_revenue = 2.3
     TR = 1.6
     new_borrowing = 0.072076633
