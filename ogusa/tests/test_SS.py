@@ -363,6 +363,7 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
                              factorguess, Yguess, p, None, False)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
+    expected_dict['debt_service'] = expected_dict.pop('debt_service_ss')
 
     for k, v in expected_dict.items():
         print('Testing ', k)
@@ -587,6 +588,7 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
     test_dict = SS.run_SS(p, None)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
+    expected_dict['debt_service'] = expected_dict.pop('debt_service_ss')
 
     for k, v in expected_dict.items():
         assert(np.allclose(test_dict[k], v))

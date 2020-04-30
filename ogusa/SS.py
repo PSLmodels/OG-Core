@@ -330,32 +330,25 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
 
     rss = r
     r_gov_ss = fiscal.get_r_gov(rss, p)
-    if p.budget_balance:
-        r_hh_ss = rss
-        Dss = 0.0
-    else:
-        Dss = p.debt_ratio_ss * Y
+    TR_ss = TR
     Lss = aggr.get_L(nssmat, p, 'SS')
     Bss = aggr.get_B(bssmat_splus1, p, 'SS', False)
+    (Dss, D_d_ss, D_f_ss, new_borrowing, debt_service,
+     new_borrowing_f) = fiscal.get_D_ss(r_gov_ss, Y, p)
     K_demand_open_ss = firm.get_K(Lss, p.world_int_rate[-1], p, 'SS')
-    D_f_ss = p.zeta_D[-1] * Dss
-    D_d_ss = Dss - D_f_ss
-    K_d_ss = Bss - D_d_ss
-    K_f_ss = p.zeta_K[-1] * (K_demand_open_ss - Bss + D_d_ss)
-    Kss = K_f_ss + K_d_ss
+    Kss, K_d_ss, K_f_ss = aggr.get_K_splits(
+        Bss, Lss, K_demand_open_ss, D_d_ss, p.zeta_K[-1])
+    Yss = firm.get_Y(Kss, Lss, p, 'SS')
+    r_hh_ss = aggr.get_r_hh(rss, r_gov_ss, Kss, Dss)
     # Note that implicity in this computation is that immigrants'
     # wealth is all in the form of private capital
     I_d_ss = aggr.get_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')
     Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS')
-    r_hh_ss = aggr.get_r_hh(rss, r_gov_ss, Kss, Dss)
     wss = new_w
     BQss = new_BQ
     factor_ss = factor
-    TR_ss = TR
     bqssmat = household.get_bq(BQss, None, p, 'SS')
     trssmat = household.get_tr(TR_ss, None, p, 'SS')
-
-    Yss = firm.get_Y(Kss, Lss, p, 'SS')
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
 
     # Compute effective and marginal tax rates for all agents
@@ -390,14 +383,8 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
                      'SS')
     payroll_tax_revenue = p.frac_tax_payroll[-1] * T_Iss
     iit_revenue = T_Iss - payroll_tax_revenue
-    debt_service_ss = r_gov_ss * Dss
-    new_borrowing = Dss * ((1 + p.g_n_ss) * np.exp(p.g_y) - 1)
-    # government spends such that it expands its debt at the same rate as GDP
-    if p.budget_balance:
-        Gss = 0.0
-    else:
-        Gss = total_revenue_ss + new_borrowing - (TR_ss + debt_service_ss)
-        print('G components = ', new_borrowing, TR_ss, debt_service_ss)
+    Gss = fiscal.get_G_ss(
+        total_revenue_ss, TR_ss, new_borrowing, debt_service, p)
 
     # Compute total investment (not just domestic)
     Iss_total = ((1 + p.g_n_ss) * np.exp(p.g_y) - 1 + p.delta) * Kss
@@ -406,7 +393,6 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     # net foreign borrowing
     print('Foreign debt holdings = ', D_f_ss)
     print('Foreign capital holdings = ', K_f_ss)
-    new_borrowing_f = D_f_ss * (np.exp(p.g_y) * (1 + p.g_n_ss) - 1)
     debt_service_f = D_f_ss * r_hh_ss
     RC = aggr.resource_constraint(
         Yss, Css, Gss, I_d_ss, K_f_ss, new_borrowing_f, debt_service_f,
@@ -453,7 +439,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
               'T_Css': T_Css, 'euler_savings': euler_savings,
               'debt_service_f': debt_service_f,
               'new_borrowing_f': new_borrowing_f,
-              'debt_service_ss': debt_service_ss,
+              'debt_service': debt_service,
               'new_borrowing': new_borrowing,
               'euler_labor_leisure': euler_labor_leisure,
               'resource_constraint_error': RC,
