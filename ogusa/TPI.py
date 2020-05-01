@@ -571,24 +571,16 @@ def run_TPI(p, client=None):
         else:
             G_0 = 0.0
         dg_fixed_values = (Y, total_revenue, TR, D0, G_0)
-        Dnew, G[:p.T], D_d[:p.T], D_f[:p.T] = fiscal.D_G_path(
-            r_gov, dg_fixed_values, Gbaseline, p)
-
+        (Dnew, G[:p.T], D_d[:p.T], D_f[:p.T], new_borrowing,
+         debt_service, new_borrowing_f) =\
+            fiscal.D_G_path(r_gov, dg_fixed_values, Gbaseline, p)
         L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
         B[1:p.T] = aggr.get_B(bmat_splus1[:p.T], p, 'TPI',
                               False)[:p.T - 1]
         K_demand_open = firm.get_K(
             L[:p.T], p.world_int_rate[:p.T], p, 'TPI')
-        K_d[:p.T] = B[:p.T] - D_d[:p.T]
-        if np.any(K_d < 0):
-            print('K_d has negative elements. Setting them ' +
-                  'positive to prevent NAN.')
-            K_d[:p.T] = np.fmax(K_d[:p.T], 0.05 * B[:p.T])
-        K_f[:p.T] = p.zeta_K[:p.T] * (K_demand_open - B[:p.T] + D_d[:p.T])
-        K[:p.T] = K_f[:p.T] + K_d[:p.T]
-        if np.any(B) < 0:
-            print('B has negative elements. B[0:9]:', B[0:9])
-            print('B[T-2:T]:', B[p.T - 2, p.T])
+        K[:p.T], K_d[:p.T], K_f[:p.T] = aggr.get_K_splits(
+            B[:p.T], K_demand_open, D_d[:p.T], p.zeta_K[:p.T])
         Ynew = firm.get_Y(K[:p.T], L[:p.T], p, 'TPI')
         rnew = r.copy()
         rnew[:p.T] = firm.get_r(Ynew[:p.T], K[:p.T], p, 'TPI')
@@ -697,11 +689,8 @@ def run_TPI(p, client=None):
                      'TPI')
     I = aggr.get_I(bmat_splus1[:p.T], K[1:p.T + 1], K[:p.T], p, 'TPI')
     # solve resource constraint
-    # net foreign borrowing
-    new_borrowing_f = (D_f[1:p.T + 1] * np.exp(p.g_y) *
-                       (1 + p.g_n[1:p.T + 1]) - D_f[:p.T])
+    # foreign debt service costs
     debt_service_f = D_f * r_hh
-    print('Foreign debt service = ', np.max(D_f))
     RC_error = aggr.resource_constraint(
         Y[:p.T - 1], C[:p.T - 1], G[:p.T - 1], I_d[:p.T - 1],
         K_f[:p.T - 1], new_borrowing_f[:p.T - 1],

@@ -324,9 +324,9 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
     p.maxiter = 2  # this test runs through just two iterations
     p.get_tax_function_parameters(
         None, run_micro=False,
-        tax_func_path=os.path.join(CUR_PATH, '..', 'data',
-                                   'tax_functions',
-                                   'TxFuncEst_baseline_CPS.pkl'))
+        tax_func_path=os.path.join(
+            CUR_PATH, '..', 'data', 'tax_functions',
+            'TxFuncEst_baseline_CPS.pkl'))
 
     # Need to run SS first to get results
     SS.ENFORCE_SOLUTION_CHECKS = False
