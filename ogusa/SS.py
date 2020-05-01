@@ -226,7 +226,7 @@ def inner_loop(outer_loop_vars, p, client):
     total_revenue, _, _, _, _, _, _ = aggr.revenue(
         new_r_hh, new_w, b_s, nssmat, new_bq, cssmat, new_Y, L, K,
         factor, theta, etr_params_3D, p, 'SS')
-    new_TR = fiscal.get_TR(new_Y, TR, total_revenue, p)
+    new_TR = fiscal.get_TR(new_Y, TR, total_revenue, p, 'SS')
 
     return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_hh, \
         new_w, new_TR, new_Y, new_factor, new_BQ, average_income_model

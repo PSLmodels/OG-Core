@@ -129,18 +129,21 @@ def test_get_G_ss(budget_balance, expected_G):
 
 
 expected_TR1 = 0.288
-expceted_TR2 = 1.9
+expected_TR2 = 1.9
 expected_TR3 = 1.5
+expected_TR4 = np.ones(320) * 0.288
 
 
 @pytest.mark.parametrize(
-    ('baseline,budget_balance,baseline_spending,expected_TR'),
-    [(True, False, False, expected_TR1),
-     (True, True, False, expected_TR2),
-     (False, False, True, expected_TR3)],
+    ('baseline,budget_balance,baseline_spending,method,expected_TR'),
+    [(True, False, False, 'SS', expected_TR1),
+     (True, True, False, 'SS', expected_TR2),
+     (False, False, True, 'SS', expected_TR3),
+     (True, False, False, 'TPI', expected_TR4)],
     ids=['balanced_budget = False', 'balanced_budget = True',
-         'baseline_spending = True'])
-def test_get_TR(baseline, budget_balance, baseline_spending,
+         'baseline_spending = True',
+         'Time path, balanced_budget = False'])
+def test_get_TR(baseline, budget_balance, baseline_spending, method,
                 expected_TR):
     '''
     Test of the fiscal.get_TR() function.
@@ -151,7 +154,11 @@ def test_get_TR(baseline, budget_balance, baseline_spending,
     p = Specifications(baseline=baseline)
     p.budget_balance = budget_balance
     p.baseline_spending = baseline_spending
-    test_TR = fiscal.get_TR(Y, TR, total_revenue, p)
+    if method == 'TPI':
+        Y = np.ones(p.T * p.S) * Y
+        TR = np.ones(p.T * p.S) * TR
+        total_revenue = np.ones(p.T * p.S) * total_revenue
+    test_TR = fiscal.get_TR(Y, TR, total_revenue, p, method)
 
     assert np.allclose(test_TR, expected_TR)
 
