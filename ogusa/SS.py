@@ -214,24 +214,19 @@ def inner_loop(outer_loop_vars, p, client):
     new_bq = household.get_bq(new_BQ, None, p, 'SS')
     tr = household.get_tr(TR, None, p, 'SS')
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
-
-    if p.budget_balance:
-        etr_params_3D = np.tile(np.reshape(
-            p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])),
-                                (1, p.J, 1))
-        taxss = tax.total_taxes(new_r_hh, new_w, b_s, nssmat, new_bq,
-                                factor, tr, theta, None, None, False,
-                                'SS', p.e, etr_params_3D, p)
-        cssmat = household.get_cons(new_r_hh, new_w, b_s, bssmat,
-                                    nssmat, new_bq, taxss,
-                                    p.e, p.tau_c[-1, :, :], p)
-        new_TR, _, _, _, _, _, _ = aggr.revenue(
-            new_r_hh, new_w, b_s, nssmat, new_bq, cssmat, new_Y, L, K,
-            factor, theta, etr_params_3D, p, 'SS')
-    elif p.baseline_spending:
-        new_TR = TR
-    else:
-        new_TR = p.alpha_T[-1] * new_Y
+    etr_params_3D = np.tile(
+        np.reshape(p.etr_params[-1, :, :],
+                   (p.S, 1, p.etr_params.shape[2])), (1, p.J, 1))
+    taxss = tax.total_taxes(
+        new_r_hh, new_w, b_s, nssmat, new_bq, factor, tr, theta, None,
+        None, False, 'SS', p.e, etr_params_3D, p)
+    cssmat = household.get_cons(
+        new_r_hh, new_w, b_s, bssmat, nssmat, new_bq, taxss, p.e,
+        p.tau_c[-1, :, :], p)
+    total_revenue, _, _, _, _, _, _ = aggr.revenue(
+        new_r_hh, new_w, b_s, nssmat, new_bq, cssmat, new_Y, L, K,
+        factor, theta, etr_params_3D, p, 'SS')
+    new_TR = fiscal.get_TR(new_Y, TR, total_revenue, p)
 
     return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_hh, \
         new_w, new_TR, new_Y, new_factor, new_BQ, average_income_model
@@ -377,10 +372,9 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     Css = aggr.get_C(cssmat, p, 'SS')
 
     (total_revenue_ss, T_Iss, T_Pss, T_BQss, T_Wss, T_Css,
-     business_revenue) =\
-        aggr.revenue(r_hh_ss, wss, bssmat_s, nssmat, bqssmat, cssmat,
-                     Yss, Lss, Kss, factor, theta, etr_params_3D, p,
-                     'SS')
+     business_revenue) = aggr.revenue(
+         r_hh_ss, wss, bssmat_s, nssmat, bqssmat, cssmat, Yss, Lss, Kss,
+         factor, theta, etr_params_3D, p, 'SS')
     payroll_tax_revenue = p.frac_tax_payroll[-1] * T_Iss
     iit_revenue = T_Iss - payroll_tax_revenue
     Gss = fiscal.get_G_ss(
