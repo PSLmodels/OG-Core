@@ -192,7 +192,7 @@ def get_G_ss(Revenue, TR, new_borrowing, debt_service, p):
     return G
 
 
-def get_TR(Y, TR, total_revenue, p):
+def get_TR(Y, TR, total_revenue, p, method):
     r'''
     Function to compute aggregate transfers.  Note that this excludes
     transfer spending through the public pension system.
@@ -214,6 +214,7 @@ def get_TR(Y, TR, total_revenue, p):
         total_revenue (array_like): total tax revenue net of government
             pension benefits
         p (OG-USA Specifications object): model parameters
+        method (str): whether doing SS or TP calculation
 
     Returns:
         new_TR (array_like): new value of aggregate government transfers
@@ -224,7 +225,10 @@ def get_TR(Y, TR, total_revenue, p):
     elif p.baseline_spending:
         new_TR = TR
     else:
-        new_TR = p.alpha_T[-1] * Y
+        if method == 'SS':
+            new_TR = p.alpha_T[-1] * Y
+        else:  # time path case
+            new_TR = p.alpha_T[:p.T] * Y[:p.T]
 
     return new_TR
 

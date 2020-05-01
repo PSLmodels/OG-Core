@@ -465,7 +465,7 @@ def run_TPI(p, client=None):
     else:
         if p.baseline_spending:
             TR = TRbaseline
-            TR_new = TR   # Need to set TR_new for later reference
+            # TR_new = TR   # Need to set TR_new for later reference
             G = Gbaseline
             G[p.T:] = ss_vars['Gss']
             G_0 = Gbaseline[0]
@@ -603,12 +603,8 @@ def run_TPI(p, client=None):
                 bqmat_new[:p.T, :, :], c_mat[:p.T, :, :], Ynew[:p.T],
                 L[:p.T], K[:p.T], factor, theta, etr_params_4D, p, 'TPI')
         total_revenue[:p.T] = total_rev
-
-        if p.budget_balance:
-            TR_new = total_revenue
-        elif not p.baseline_spending:
-            TR_new = p.alpha_T[:p.T] * Ynew[:p.T]
-        # If baseline_spending==True, no need to update TR, it's fixed
+        TR_new = fiscal.get_TR(
+            Ynew[:p.T], TR[:p.T], total_revenue[:p.T], p, 'TPI')
 
         # update vars for next iteration
         w[:p.T] = wnew[:p.T]
