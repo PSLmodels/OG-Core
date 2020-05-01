@@ -192,6 +192,43 @@ def get_G_ss(Revenue, TR, new_borrowing, debt_service, p):
     return G
 
 
+def get_TR(Y, TR, total_revenue, p):
+    r'''
+    Function to compute aggregate transfers.  Note that this excludes
+    transfer spending through the public pension system.
+
+    ..math::
+        \[
+        TR^{'}_{t}=
+        \begin{cases}
+            Revenue,& \text{if balanced budget} \\
+            TR^{baseline}, & \text{if baseline spending}\\
+            \alpha_{T,t}Y_{t},   & \text{otherwise}
+        \end{cases}
+        \]
+
+
+    Args:
+        Y (array_like): aggregate output
+        TR (array_like): aggregate government transfers
+        total_revenue (array_like): total tax revenue net of government
+            pension benefits
+        p (OG-USA Specifications object): model parameters
+
+    Returns:
+        new_TR (array_like): new value of aggregate government transfers
+
+    '''
+    if p.budget_balance:
+        new_TR = total_revenue
+    elif p.baseline_spending:
+        new_TR = TR
+    else:
+        new_TR = p.alpha_T[-1] * Y
+
+    return new_TR
+
+
 def get_r_gov(r, p):
     r'''
     Determine the interest rate on government debt

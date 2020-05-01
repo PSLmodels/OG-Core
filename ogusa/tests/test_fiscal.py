@@ -128,6 +128,34 @@ def test_get_G_ss(budget_balance, expected_G):
     assert np.allclose(test_G, expected_G)
 
 
+expected_TR1 = 0.288
+expceted_TR2 = 1.9
+expected_TR3 = 1.5
+
+
+@pytest.mark.parametrize(
+    ('baseline,budget_balance,baseline_spending,expected_TR'),
+    [(True, False, False, expected_TR1),
+     (True, True, False, expected_TR2),
+     (False, False, True, expected_TR3)],
+    ids=['balanced_budget = False', 'balanced_budget = True',
+         'baseline_spending = True'])
+def test_get_TR(baseline, budget_balance, baseline_spending,
+                expected_TR):
+    '''
+    Test of the fiscal.get_TR() function.
+    '''
+    Y = 3.2
+    TR = 1.5
+    total_revenue = 1.9
+    p = Specifications(baseline=baseline)
+    p.budget_balance = budget_balance
+    p.baseline_spending = baseline_spending
+    test_TR = fiscal.get_TR(Y, TR, total_revenue, p)
+
+    assert np.allclose(test_TR, expected_TR)
+
+
 p1 = Specifications()
 p1.r_gov_scale = 0.5
 p1.r_gov_shift = 0.0
