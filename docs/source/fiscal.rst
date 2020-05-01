@@ -11,4 +11,4 @@ ogusa.fiscal
 .. currentmodule:: ogusa.fiscal
 
 .. automodule:: ogusa.fiscal
-  :members: D_G_path, get_D_ss, get_G_ss, get_r_gov
+  :members: D_G_path, get_D_ss, get_G_ss, get_TR, get_r_gov
