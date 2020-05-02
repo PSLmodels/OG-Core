@@ -427,8 +427,6 @@ def run_TPI(p, client=None):
     K = K_init
     K_d = K_init * ss_vars['K_d_ss'] / ss_vars['Kss']
     K_f = K_init * ss_vars['K_f_ss'] / ss_vars['Kss']
-    print('K diffs = ', np.absolute(K-(K_d+K_f)).max())
-
     L = L_init
     B = B_init
     Y = np.zeros_like(K)
@@ -453,7 +451,7 @@ def run_TPI(p, client=None):
         if np.abs(ss_vars['TR_ss']) < 1e-13:
             TR_ss2 = 0.0  # sometimes SS is very small but not zero,
             # even if taxes are zero, this get's rid of the
-            # approximation error, which affects the perc changes below
+            # approximation error, which affects the pct changes below
         else:
             TR_ss2 = ss_vars['TR_ss']
         TR = np.ones(p.T + p.S) * TR_ss2
@@ -468,7 +466,7 @@ def run_TPI(p, client=None):
             # TR_new = TR   # Need to set TR_new for later reference
             G = Gbaseline
             G[p.T:] = ss_vars['Gss']
-            G_0 = Gbaseline[0]
+            G0 = Gbaseline[0]
         else:
             TR = p.alpha_T * Y
             G = np.ones(p.T + p.S) * ss_vars['Gss']
@@ -552,25 +550,19 @@ def run_TPI(p, client=None):
         y_before_tax_mat = (r_hh_path[:p.T, :, :] * bmat_s[:p.T, :, :] +
                             wpath[:p.T, :, :] * p.e * n_mat[:p.T, :, :])
 
-        if not p.budget_balance:
-            if not p.baseline_spending:
-                Y[:p.T] = TR[:p.T] / p.alpha_T[:p.T]  # maybe unecessary
-
-            (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
-             T_Cpath, business_revenue) = aggr.revenue(
-                r_hh[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
-                bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y[:p.T],
-                L[:p.T], K[:p.T], factor, theta, etr_params_4D,
-                p, 'TPI')
-            total_revenue[:p.T] = total_rev
-            # set intial debt value
-            if p.baseline:
-                D0 = p.initial_debt_ratio * Y[0]
-            if not p.baseline_spending:
-                G_0 = p.alpha_G[0] * Y[0]
-        else:
-            G_0 = 0.0
-        dg_fixed_values = (Y, total_revenue, TR, D0, G_0)
+        (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
+         T_Cpath, business_revenue) = aggr.revenue(
+            r_hh[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
+            bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y[:p.T],
+            L[:p.T], K[:p.T], factor, theta, etr_params_4D,
+            p, 'TPI')
+        total_revenue[:p.T] = total_rev
+        # set intial debt and spending amounts
+        if p.baseline:
+            D0 = p.initial_debt_ratio * Y[0]
+        if not p.baseline_spending:
+            G0 = p.alpha_G[0] * Y[0]
+        dg_fixed_values = (Y, total_revenue, TR, D0, G0)
         (Dnew, G[:p.T], D_d[:p.T], D_f[:p.T], new_borrowing,
          debt_service, new_borrowing_f) =\
             fiscal.D_G_path(r_gov, dg_fixed_values, Gbaseline, p)
@@ -604,7 +596,7 @@ def run_TPI(p, client=None):
                 L[:p.T], K[:p.T], factor, theta, etr_params_4D, p, 'TPI')
         total_revenue[:p.T] = total_rev
         TR_new = fiscal.get_TR(
-            Ynew[:p.T], TR[:p.T], total_revenue[:p.T], p, 'TPI')
+            Ynew[:p.T], TR[:p.T], G[:p.T], total_revenue[:p.T], p, 'TPI')
 
         # update vars for next iteration
         w[:p.T] = wnew[:p.T]

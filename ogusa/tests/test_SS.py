@@ -320,13 +320,14 @@ def test_SS_fsolve(guesses, args, expected):
 
 param_updates1 = {}
 filename1 = 'SS_solver_outputs_baseline.pkl'
-param_updates2 = {'budget_balance': True}
+param_updates2 = {'budget_balance': True, 'alpha_G': [0.0]}
 filename2 = 'SS_solver_outputs_baseline_budget_balance.pkl'
 # param_updates3 = {'baseline_spending': True}
 # filename3 = 'SS_solver_outputs_reform_baseline_spending.pkl'
 param_updates4 = {'zeta_K': [1.0]}
 filename4 = 'SS_solver_outputs_baseline_small_open.pkl'
-param_updates5 = {'zeta_K': [1.0], 'budget_balance': True}
+param_updates5 = {'zeta_K': [1.0], 'budget_balance': True,
+                  'alpha_G': [0.0]}
 filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
 
 
@@ -372,7 +373,7 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
 
 param_updates1 = {'zeta_K': [1.0]}
 filename1 = 'inner_loop_outputs_baseline_small_open.pkl'
-param_updates2 = {'budget_balance': True}
+param_updates2 = {'budget_balance': True, 'alpha_G': [0.0]}
 filename2 = 'inner_loop_outputs_baseline_balance_budget.pkl'
 param_updates3 = {}
 filename3 = 'inner_loop_outputs_baseline.pkl'

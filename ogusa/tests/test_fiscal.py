@@ -105,7 +105,7 @@ def test_get_D_ss(budget_balance, expected_tuple):
 
 
 expected_G1 = 0.729731441
-expected_G2 = 0.0
+expected_G2 = 0.05 * 2.2
 
 
 @pytest.mark.parametrize(
@@ -116,6 +116,7 @@ def test_get_G_ss(budget_balance, expected_G):
     '''
     Test of the fiscla.get_G_ss() function.
     '''
+    Y = 2.2
     total_revenue = 2.3
     TR = 1.6
     new_borrowing = 0.072076633
@@ -123,7 +124,7 @@ def test_get_G_ss(budget_balance, expected_G):
     p = Specifications()
     p.budget_balance = budget_balance
     test_G = fiscal.get_G_ss(
-        total_revenue, TR, new_borrowing, debt_service, p)
+        Y, total_revenue, TR, new_borrowing, debt_service, p)
 
     assert np.allclose(test_G, expected_G)
 
@@ -150,6 +151,7 @@ def test_get_TR(baseline, budget_balance, baseline_spending, method,
     '''
     Y = 3.2
     TR = 1.5
+    G = 0.0
     total_revenue = 1.9
     p = Specifications(baseline=baseline)
     p.budget_balance = budget_balance
@@ -158,7 +160,7 @@ def test_get_TR(baseline, budget_balance, baseline_spending, method,
         Y = np.ones(p.T * p.S) * Y
         TR = np.ones(p.T * p.S) * TR
         total_revenue = np.ones(p.T * p.S) * total_revenue
-    test_TR = fiscal.get_TR(Y, TR, total_revenue, p, method)
+    test_TR = fiscal.get_TR(Y, TR, G, total_revenue, p, method)
 
     assert np.allclose(test_TR, expected_TR)
 

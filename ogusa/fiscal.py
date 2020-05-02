@@ -70,7 +70,7 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
 
     if p.budget_balance:
         D = np.zeros(p.T + 1)
-        G = np.zeros(p.T)
+        G = p.alpha_G[:p.T] * Y[:p.T]
         D_f = np.zeros(p.T)
         D_d = np.zeros(p.T)
         new_borrowing = np.zeros(p.T)
@@ -165,7 +165,7 @@ def get_D_ss(r_gov, Y, p):
     return D, D_d, D_f, new_borrowing, debt_service, new_borrowing_f
 
 
-def get_G_ss(Revenue, TR, new_borrowing, debt_service, p):
+def get_G_ss(Y, Revenue, TR, new_borrowing, debt_service, p):
     r'''
     Calculate the steady-state values of government spending.
 
@@ -173,6 +173,7 @@ def get_G_ss(Revenue, TR, new_borrowing, debt_service, p):
             \bar{G} = \bar{Rev} + \bar{D}((1 + \bar{g}_n)e^{g_y} - 1) - \bar{TR} - \bar{r}_{gov}\bar{D}
 
     Args:
+        Y (scalar): aggregate output
         Revenue (scalar): steady-state net tax revenue
         TR (scalar): steady-state transfer spending
         new_borrowing (scalar): steady-state amount of new borowing
@@ -184,7 +185,7 @@ def get_G_ss(Revenue, TR, new_borrowing, debt_service, p):
 
     '''
     if p.budget_balance:
-        G = 0.0
+        G = p.alpha_G[-1] * Y
     else:
         G = Revenue + new_borrowing - (TR + debt_service)
         print('G components = ', new_borrowing, TR, debt_service)
@@ -192,7 +193,7 @@ def get_G_ss(Revenue, TR, new_borrowing, debt_service, p):
     return G
 
 
-def get_TR(Y, TR, total_revenue, p, method):
+def get_TR(Y, TR, G, total_revenue, p, method):
     r'''
     Function to compute aggregate transfers.  Note that this excludes
     transfer spending through the public pension system.
@@ -211,6 +212,7 @@ def get_TR(Y, TR, total_revenue, p, method):
     Args:
         Y (array_like): aggregate output
         TR (array_like): aggregate government transfers
+        G (array_like): total government spending
         total_revenue (array_like): total tax revenue net of government
             pension benefits
         p (OG-USA Specifications object): model parameters
@@ -221,7 +223,7 @@ def get_TR(Y, TR, total_revenue, p, method):
 
     '''
     if p.budget_balance:
-        new_TR = total_revenue
+        new_TR = total_revenue - G
     elif p.baseline_spending:
         new_TR = TR
     else:

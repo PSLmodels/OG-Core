@@ -197,7 +197,7 @@ def test_inner_loop(dask_client):
 param_updates1 = {}
 filename1 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_baseline.pkl')
-param_updates2 = {'budget_balance': True}
+param_updates2 = {'budget_balance': True, 'alpha_G': [0.0]}
 filename2 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_baseline_balanced_budget.pkl')
 param_updates3 = {}
@@ -277,7 +277,7 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
 param_updates1 = {}
 filename1 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_baseline_2.pkl')
-param_updates2 = {'budget_balance': True}
+param_updates2 = {'budget_balance': True, 'alpha_G': [0.0]}
 filename2 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_baseline_balanced_budget_2.pkl')
 param_updates3 = {}
