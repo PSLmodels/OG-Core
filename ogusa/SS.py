@@ -141,20 +141,20 @@ def inner_loop(outer_loop_vars, p, client):
     # unpack variables to pass to function
     if p.budget_balance:
         bssmat, nssmat, r, BQ, TR, factor = outer_loop_vars
+        r_hh = r
+        Y = 1.0  # placeholder
+        K = 1.0  # placeholder
     else:
         bssmat, nssmat, r, BQ, Y, TR, factor = outer_loop_vars
+        K = firm.get_K_from_Y(Y, r, p, 'SS')
 
     euler_errors = np.zeros((2 * p.S, p.J))
 
     w = firm.get_w_from_r(r, p, 'SS')
     r_gov = fiscal.get_r_gov(r, p)
-    if p.budget_balance:
-        r_hh = r
-        D = 0
-    else:
-        D = p.debt_ratio_ss * Y
-        K = firm.get_K_from_Y(Y, r, p, 'SS')
-        r_hh = aggr.get_r_hh(r, r_gov, K, D)
+    D, D_d, D_f, new_borrowing, debt_service, new_borrowing_f =\
+        fiscal.get_D_ss(r_gov, Y, p)
+    r_hh = aggr.get_r_hh(r, r_gov, K, D)
     bq = household.get_bq(BQ, None, p, 'SS')
     tr = household.get_tr(TR, None, p, 'SS')
 
@@ -185,11 +185,7 @@ def inner_loop(outer_loop_vars, p, client):
     L = aggr.get_L(nssmat, p, 'SS')
     B = aggr.get_B(bssmat, p, 'SS', False)
     K_demand_open = firm.get_K(L, p.world_int_rate[-1], p, 'SS')
-    D_f = p.zeta_D[-1] * D
-    D_d = D - D_f
-    K_d = B - D_d
-    K_f = p.zeta_K[-1] * (K_demand_open - B + D_d)
-    K = K_f + K_d
+    K, K_d, K_f = aggr.get_K_splits(B, K_demand_open, D_d, p.zeta_K[-1])
     new_Y = firm.get_Y(K, L, p, 'SS')
     if p.budget_balance:
         Y = new_Y
@@ -226,7 +222,9 @@ def inner_loop(outer_loop_vars, p, client):
     total_revenue, _, _, _, _, _, _ = aggr.revenue(
         new_r_hh, new_w, b_s, nssmat, new_bq, cssmat, new_Y, L, K,
         factor, theta, etr_params_3D, p, 'SS')
-    new_TR = fiscal.get_TR(new_Y, TR, total_revenue, p, 'SS')
+    G = fiscal.get_G_ss(new_Y, total_revenue, TR, new_borrowing,
+                        debt_service, p)
+    new_TR = fiscal.get_TR(new_Y, TR, G, total_revenue, p, 'SS')
 
     return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_hh, \
         new_w, new_TR, new_Y, new_factor, new_BQ, average_income_model
@@ -378,7 +376,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     payroll_tax_revenue = p.frac_tax_payroll[-1] * T_Iss
     iit_revenue = T_Iss - payroll_tax_revenue
     Gss = fiscal.get_G_ss(
-        total_revenue_ss, TR_ss, new_borrowing, debt_service, p)
+        Yss, total_revenue_ss, TR_ss, new_borrowing, debt_service, p)
 
     # Compute total investment (not just domestic)
     Iss_total = ((1 + p.g_n_ss) * np.exp(p.g_y) - 1 + p.delta) * Kss
