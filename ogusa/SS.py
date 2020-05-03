@@ -147,7 +147,7 @@ def inner_loop(outer_loop_vars, p, client):
     else:
         bssmat, nssmat, r, BQ, Y, TR, factor = outer_loop_vars
         K = firm.get_K_from_Y(Y, r, p, 'SS')
-
+    # initialize array for euler errors
     euler_errors = np.zeros((2 * p.S, p.J))
 
     w = firm.get_w_from_r(r, p, 'SS')
@@ -262,10 +262,8 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     dist_vec = np.zeros(p.maxiter)
     maxiter_ss = p.maxiter
     nu_ss = p.nu
-
     if fsolve_flag:
         maxiter_ss = 1
-
     while (dist > p.mindist_SS) and (iteration < maxiter_ss):
         # Solve for the steady state levels of b and n, given w, r,
         # Y and factor
@@ -282,15 +280,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
         r = utils.convex_combo(new_r, r, nu_ss)
         factor = utils.convex_combo(new_factor, factor, nu_ss)
         BQ = utils.convex_combo(new_BQ, BQ, nu_ss)
-        # bmat = utils.convex_combo(new_bmat, bmat, nu_ss)
-        # nmat = utils.convex_combo(new_nmat, nmat, nu_ss)
-        if not p.baseline_spending:
-            TR = utils.convex_combo(new_TR, TR, nu_ss)
-            dist = np.array([utils.pct_diff_func(new_r, r)] +
-                            list(utils.pct_diff_func(new_BQ, BQ)) +
-                            [utils.pct_diff_func(new_TR, TR)] +
-                            [utils.pct_diff_func(new_factor, factor)]).max()
-        else:
+        if p.baseline_spending:
             Y = utils.convex_combo(new_Y, Y, nu_ss)
             if Y != 0:
                 dist = np.array([utils.pct_diff_func(new_r, r)] +
@@ -306,6 +296,12 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
                                 [abs(new_Y - Y)] +
                                 [utils.pct_diff_func(new_factor,
                                                      factor)]).max()
+        else:
+            TR = utils.convex_combo(new_TR, TR, nu_ss)
+            dist = np.array([utils.pct_diff_func(new_r, r)] +
+                            list(utils.pct_diff_func(new_BQ, BQ)) +
+                            [utils.pct_diff_func(new_TR, TR)] +
+                            [utils.pct_diff_func(new_factor, factor)]).max()
         dist_vec[iteration] = dist
         # Similar to TPI: if the distance between iterations increases, then
         # decrease the value of nu to prevent cycling

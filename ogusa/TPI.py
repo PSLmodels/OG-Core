@@ -362,8 +362,7 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
             etr_params_to_use[:, i] = np.diag(etr_params_TP[t:t + p.S, :, i])
             mtrx_params_to_use[:, i] = np.diag(mtrx_params_TP[t:t + p.S, :, i])
             mtry_params_to_use[:, i] = np.diag(mtry_params_TP[t:t + p.S, :, i])
-        #
-        # TPI_solver_params = (inc_tax_params_TP, tpi_params, None)
+
         [solutions, infodict, ier, message] =\
             opt.fsolve(twist_doughnut, list(b_guesses_to_use) +
                        list(n_guesses_to_use),
@@ -463,7 +462,6 @@ def run_TPI(p, client=None):
     else:
         if p.baseline_spending:
             TR = TRbaseline
-            # TR_new = TR   # Need to set TR_new for later reference
             G = Gbaseline
             G[p.T:] = ss_vars['Gss']
             G0 = Gbaseline[0]
@@ -473,7 +471,6 @@ def run_TPI(p, client=None):
         D = np.ones(p.T + p.S) * ss_vars['Dss']
         D_d = D * ss_vars['D_d_ss'] / ss_vars['Dss']
         D_f = D * ss_vars['D_f_ss'] / ss_vars['Dss']
-
     total_revenue = np.ones(p.T + p.S) * ss_vars['total_revenue_ss']
 
     # Initialize bequests
