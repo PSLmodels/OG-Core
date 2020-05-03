@@ -250,17 +250,12 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
             results
 
     '''
-    # Rename the inputs
-    if not p.budget_balance:
-        if not p.baseline_spending:
-            Y = TR / p.alpha_T[-1]
-
     dist = 10
     iteration = 0
     dist_vec = np.zeros(p.maxiter)
     maxiter_ss = p.maxiter
     nu_ss = p.nu
-    if fsolve_flag:
+    if fsolve_flag:  # case where already solved via SS_fsolve
         maxiter_ss = 1
     while (dist > p.mindist_SS) and (iteration < maxiter_ss):
         # Solve for the steady state levels of b and n, given w, r,
