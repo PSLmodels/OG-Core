@@ -74,9 +74,11 @@ p1.num_workers = 1
 BQ1 = np.ones((p1.J)) * 0.00019646295986015257
 guesses1 = [guesses_in[0]] + list(BQ1) + [guesses_in[1]] + [guesses_in[2]]
 args1 = (bssmat, nssmat, None, None, p1, client)
-expected1 = np.array([0.28753454, 0.01889046, 0.02472582, 0.02669199,
-                      0.01631467, 0.01925092, 0.02206471, 0.00407802,
-                      -0.07014671494961716, 0.00626609])
+expected1 = np.array([0.06858352869423862, 0.0157424466869841,
+                      0.020615373965602958, 0.02225725864386594,
+                      0.01359148091834126, 0.01604345296066714,
+                      0.018393166562212734, 0.0033730256425707566,
+                      -0.07014671511880782, 0.05424969771042221])
 
 input_tuple = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_reform_inputs.pkl'))
@@ -129,9 +131,11 @@ p2.num_workers = 1
 BQ2 = np.ones((p2.J)) * 0.00019646295986015257
 guesses2 = [guesses_in2[0]] + list(BQ2) + [guesses_in2[1]]
 args2 = (bssmat, nssmat, None, factor, p2, client)
-expected2 = np.array([0.01325131, 0.01430768, 0.01938654, 0.02069931,
-                      0.01232291, 0.0145351, 0.0171059, 0.00309562,
-                      0.0016798427500707008])
+expected2 = np.array([0.016757343762877415, 0.01435509375160598,
+                      0.019450554513959047, 0.020767620498430173,
+                      0.012363834824786278, 0.014583252714123543,
+                      0.01716246184210253, 0.003106382567096101,
+                      0.0016798428580572025])
 
 input_tuple = utils.safe_read_pickle(
     os.path.join(
@@ -187,9 +191,11 @@ p3.num_workers = 1
 BQ3 = np.ones((p3.J)) * 0.00019646295986015257
 guesses3 = [guesses_in3[0]] + list(BQ3) + [guesses_in3[1]]
 args3 = (bssmat, nssmat, TR_ss, factor_ss, p3, client)
-expected3 = np.array([0.01325131, 0.01430768, 0.01938654, 0.02069931,
-                      0.01232291, 0.0145351, 0.0171059, 0.00309562,
-                      0.01866492])
+expected3 = np.array([0.016757345515050044, 0.014355093775301265,
+                      0.019450554545951612, 0.020767620470159415,
+                      0.01236383484523906, 0.014583252738190352,
+                      0.01716246187036924, 0.0031063825724743474,
+                      0.018664915456857223])
 
 input_tuple = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_inputs.pkl'))
@@ -239,11 +245,11 @@ p4.num_workers = 1
 BQ4 = np.ones((p4.J)) * 0.00019646295986015257
 guesses4 = [guesses_in[0]] + list(BQ4) + [guesses_in[1]] + [guesses_in[2]]
 args4 = (bssmat, nssmat, None, None, p4, client)
-expected4 = np.array([0.14974397993298297, 0.01618780806357498,
-                      0.021237337063436636, 0.023034235208337073,
-                      0.014089407012514552, 0.01666592110291313,
-                      0.01895924076520874, 0.00346219107476825,
-                      -0.06125508233576064, 0.039334851995648276])
+expected4 = np.array([0.028883118596741857, 0.014511613659907734,
+                      0.019044550115699707, 0.02065761642516883,
+                      0.012627889727738099, 0.014940813299332474,
+                      0.016999514675696315, 0.0030878921261591253,
+                      -0.06125508233576064, 0.06697984483743183])
 
 input_tuple = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_inputs.pkl'))
@@ -313,7 +319,6 @@ def test_SS_fsolve(guesses, args, expected):
     ensure that output returned matches what it has been before.
     '''
     test_list = SS.SS_fsolve(guesses, *args)
-
     assert(np.allclose(np.array(test_list), np.array(expected),
                        atol=1e-6))
 

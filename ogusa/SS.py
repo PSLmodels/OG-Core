@@ -186,9 +186,7 @@ def inner_loop(outer_loop_vars, p, client):
     B = aggr.get_B(bssmat, p, 'SS', False)
     K_demand_open = firm.get_K(L, p.world_int_rate[-1], p, 'SS')
     K, K_d, K_f = aggr.get_K_splits(B, K_demand_open, D_d, p.zeta_K[-1])
-    new_Y = firm.get_Y(K, L, p, 'SS')
-    if p.budget_balance:
-        Y = new_Y
+    Y = firm.get_Y(K, L, p, 'SS')
     if p.zeta_K[-1] == 1.0:
         new_r = p.world_int_rate[-1]
     else:
@@ -220,14 +218,14 @@ def inner_loop(outer_loop_vars, p, client):
         new_r_hh, new_w, b_s, bssmat, nssmat, new_bq, taxss, p.e,
         p.tau_c[-1, :, :], p)
     total_revenue, _, _, _, _, _, _ = aggr.revenue(
-        new_r_hh, new_w, b_s, nssmat, new_bq, cssmat, new_Y, L, K,
+        new_r_hh, new_w, b_s, nssmat, new_bq, cssmat, Y, L, K,
         factor, theta, etr_params_3D, p, 'SS')
-    G = fiscal.get_G_ss(new_Y, total_revenue, TR, new_borrowing,
+    G = fiscal.get_G_ss(Y, total_revenue, TR, new_borrowing,
                         debt_service, p)
-    new_TR = fiscal.get_TR(new_Y, TR, G, total_revenue, p, 'SS')
+    new_TR = fiscal.get_TR(Y, TR, G, total_revenue, p, 'SS')
 
     return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_hh, \
-        new_w, new_TR, new_Y, new_factor, new_BQ, average_income_model
+        new_w, new_TR, Y, new_factor, new_BQ, average_income_model
 
 
 def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
