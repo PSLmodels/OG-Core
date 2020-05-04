@@ -544,8 +544,9 @@ def run_TPI(p, client=None):
                                    bmat_s, bmat_splus1,
                                    n_mat[:p.T, :, :], bqmat[:p.T, :, :],
                                    tax_mat, p.e, p.tau_c[:p.T, :, :], p)
-        y_before_tax_mat = (r_hh_path[:p.T, :, :] * bmat_s[:p.T, :, :] +
-                            wpath[:p.T, :, :] * p.e * n_mat[:p.T, :, :])
+        y_before_tax_mat = household.get_y(
+            r_hh_path[:p.T, :, :], wpath[:p.T, :, :],
+            bmat_s[:p.T, :, :], n_mat[:p.T, :, :], p)
 
         (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
          T_Cpath, business_revenue) = aggr.revenue(

@@ -355,7 +355,8 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     cssmat = household.get_cons(r_hh_ss, wss, bssmat_s, bssmat_splus1,
                                 nssmat, bqssmat, taxss,
                                 p.e, p.tau_c[-1, :, :], p)
-    yss_before_tax_mat = r_hh_ss * bssmat_s + wss * p.e * nssmat
+    yss_before_tax_mat = household.get_y(
+        r_hh_ss, wss, bssmat_s, nssmat, p)
     Css = aggr.get_C(cssmat, p, 'SS')
 
     (total_revenue_ss, T_Iss, T_Pss, T_BQss, T_Wss, T_Css,
