@@ -112,6 +112,10 @@ class Specifications(paramtools.Parameters):
         self.g_y = rate_conversion(self.g_y_annual, self.starting_age,
                                    self.ending_age, self.S)
 
+        # set fraction of income taxes from payroll to zero initially
+        # will be updated when function tax function parameters
+        self.frac_tax_payroll = np.zeros(self.T + self.S)
+
         # Extend parameters that may vary over the time path
         tp_param_list = [
             'alpha_G', 'alpha_T', 'Z', 'world_int_rate_annual',
@@ -319,7 +323,7 @@ class Specifications(paramtools.Parameters):
                 np.ones(self.T + self.S - self.BW) *
                 dict_params['tfunc_frac_tax_payroll'][-1])
         except KeyError:
-            self.frac_tax_payroll = np.zeros(self.T + self.S)
+            pass
         try:
             self.taxcalc_version = dict_params['taxcalc_version']
         except KeyError:
