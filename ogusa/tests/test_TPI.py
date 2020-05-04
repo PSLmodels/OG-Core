@@ -44,9 +44,6 @@ def test_get_initial_SS_values(baseline, param_updates, filename,
     test_tuple = TPI.get_initial_SS_values(p)
     (test_initial_values, test_ss_vars, test_theta,
      test_baseline_values) = test_tuple
-    import pickle
-    pickle.dump(test_tuple, open(
-        os.path.join(CUR_PATH, 'test_io_data', filename), 'wb'))
 
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
