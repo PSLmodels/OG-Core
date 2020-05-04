@@ -217,7 +217,7 @@ def inner_loop(outer_loop_vars, p, client):
     cssmat = household.get_cons(
         new_r_hh, new_w, b_s, bssmat, nssmat, new_bq, taxss, p.e,
         p.tau_c[-1, :, :], p)
-    total_revenue, _, _, _, _, _, _ = aggr.revenue(
+    total_revenue, _, _, _, _, _, _, _, _ = aggr.revenue(
         new_r_hh, new_w, b_s, nssmat, new_bq, cssmat, Y, L, K,
         factor, theta, etr_params_3D, p, 'SS')
     G = fiscal.get_G_ss(Y, total_revenue, TR, new_borrowing,
@@ -360,11 +360,9 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     Css = aggr.get_C(cssmat, p, 'SS')
 
     (total_revenue_ss, T_Iss, T_Pss, T_BQss, T_Wss, T_Css,
-     business_revenue) = aggr.revenue(
+     business_revenue, payroll_tax_revenue, iit_revenue) = aggr.revenue(
          r_hh_ss, wss, bssmat_s, nssmat, bqssmat, cssmat, Yss, Lss, Kss,
          factor, theta, etr_params_3D, p, 'SS')
-    payroll_tax_revenue = p.frac_tax_payroll[-1] * T_Iss
-    iit_revenue = T_Iss - payroll_tax_revenue
     Gss = fiscal.get_G_ss(
         Yss, total_revenue_ss, TR_ss, new_borrowing, debt_service, p)
 

@@ -320,10 +320,9 @@ def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p,
     """
     Test aggregate revenue function.
     """
-    revenue, _, _, _, _, _, _ = aggr.revenue(
+    revenue, _, _, _, _, _, _, _, _ = aggr.revenue(
         r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p, method)
 
-    print(revenue)
     assert(np.allclose(revenue, expected))
 
 

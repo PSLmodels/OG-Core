@@ -545,11 +545,12 @@ def run_TPI(p, client=None):
             bmat_s[:p.T, :, :], n_mat[:p.T, :, :], p)
 
         (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
-         T_Cpath, business_revenue) = aggr.revenue(
-            r_hh[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
-            bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y[:p.T],
-            L[:p.T], K[:p.T], factor, theta, etr_params_4D,
-            p, 'TPI')
+         T_Cpath, business_revenue, payroll_tax_revenue, iit_revenue) =\
+            aggr.revenue(
+                r_hh[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
+                bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y[:p.T],
+                L[:p.T], K[:p.T], factor, theta, etr_params_4D,
+                p, 'TPI')
         total_revenue[:p.T] = total_rev
         # set intial debt and spending amounts
         if p.baseline:
@@ -584,7 +585,8 @@ def run_TPI(p, client=None):
                             'TPI', False)
         bqmat_new = household.get_bq(BQnew, None, p, 'TPI')
         (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath, T_Cpath,
-         business_revenue) = aggr.revenue(
+         business_revenue, payroll_tax_revenue, iit_revenue) =\
+            aggr.revenue(
                 r_hh_new[:p.T], wnew[:p.T], bmat_s, n_mat[:p.T, :, :],
                 bqmat_new[:p.T, :, :], c_mat[:p.T, :, :], Ynew[:p.T],
                 L[:p.T], K[:p.T], factor, theta, etr_params_4D, p, 'TPI')
@@ -680,10 +682,6 @@ def run_TPI(p, client=None):
     # Compute total investment (not just domestic)
     I_total = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
                (1.0 - p.delta) * K[:p.T])
-    # Compute income tax revenues
-    tax_rev = aggr.get_L(T_Ipath, p, 'TPI')
-    payroll_tax_revenue = p.frac_tax_payroll[:p.T] * tax_rev[:p.T]
-    iit_revenue = tax_rev[:p.T] - payroll_tax_revenue
 
     # Compute resource constraint error
     rce_max = np.amax(np.abs(RC_error))
