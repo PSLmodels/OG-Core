@@ -290,6 +290,8 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
         T_BQ = (p.tau_bq[-1] * bq * pop_weights).sum()
         T_C = (p.tau_c[-1, :, :] * c * pop_weights).sum()
         business_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
+        payroll_tax_revenue = p.frac_tax_payroll[-1] * T_I
+        iit_revenue = T_I - payroll_tax_revenue
     elif method == 'TPI':
         pop_weights = (
             np.squeeze(p.lambdas) *
@@ -319,9 +321,13 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
             pop_weights).sum(1).sum(1)
         T_C = (p.tau_c[:p.T, :, :] * c * pop_weights).sum(1).sum(1)
         business_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
-    REVENUE = T_I + T_P + T_BQ + T_W + T_C + business_revenue
+        payroll_tax_revenue = p.frac_tax_payroll[:p.T] * T_I[:p.T]
 
-    return REVENUE, T_I, T_P, T_BQ, T_W, T_C, business_revenue
+    REVENUE = T_I + T_P + T_BQ + T_W + T_C + business_revenue
+    iit_revenue = T_I - payroll_tax_revenue
+
+    return (REVENUE, T_I, T_P, T_BQ, T_W, T_C, business_revenue,
+            payroll_tax_revenue, iit_revenue)
 
 
 def get_r_hh(r, r_gov, K, D):
