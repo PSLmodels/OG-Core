@@ -44,7 +44,6 @@ def test_get_initial_SS_values(baseline, param_updates, filename,
     test_tuple = TPI.get_initial_SS_values(p)
     (test_initial_values, test_ss_vars, test_theta,
      test_baseline_values) = test_tuple
-
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
 
@@ -142,7 +141,7 @@ def test_inner_loop(dask_client):
         os.path.join(CUR_PATH, 'test_io_data', 'tpi_inner_loop_inputs.pkl'))
     guesses, outer_loop_vars, params, j = input_tuple
     income_tax_params, tpi_params, initial_values, ind = params
-    initial_values = initial_values
+    initial_values = initial_values[:-1]
     tpi_params = tpi_params
     p = Specifications(client=dask_client, num_workers=NUM_WORKERS)
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
@@ -170,9 +169,9 @@ def test_inner_loop(dask_client):
     p.lambdas = lambdas.reshape(p.J, 1)
     p.num_workers = 1
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n,
-     p.omega_S_preTP, initial_debt, D0) = initial_values
+     p.omega_S_preTP, initial_debt) = initial_values
     initial_values_in = (K0, b_sinit, b_splus1init, factor, initial_b,
-                         initial_n, D0)
+                         initial_n)
     (r, K, BQ, TR) = outer_loop_vars
     wss = firm.get_w_from_r(r[-1], p, 'SS')
     w = np.ones(p.T + p.S) * wss
