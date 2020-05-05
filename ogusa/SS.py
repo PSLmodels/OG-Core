@@ -373,7 +373,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     # net foreign borrowing
     print('Foreign debt holdings = ', D_f_ss)
     print('Foreign capital holdings = ', K_f_ss)
-    debt_service_f = D_f_ss * r_hh_ss
+    debt_service_f = fiscal.get_debt_service_f(r_hh_ss, D_f_ss)
     RC = aggr.resource_constraint(
         Yss, Css, Gss, I_d_ss, K_f_ss, new_borrowing_f, debt_service_f,
         r_hh_ss, p)

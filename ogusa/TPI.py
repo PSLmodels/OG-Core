@@ -674,7 +674,7 @@ def run_TPI(p, client=None):
     I = aggr.get_I(bmat_splus1[:p.T], K[1:p.T + 1], K[:p.T], p, 'TPI')
     # solve resource constraint
     # foreign debt service costs
-    debt_service_f = D_f * r_hh
+    debt_service_f = fiscal.get_debt_service_f(r_hh, D_f)
     RC_error = aggr.resource_constraint(
         Y[:p.T - 1], C[:p.T - 1], G[:p.T - 1], I_d[:p.T - 1],
         K_f[:p.T - 1], new_borrowing_f[:p.T - 1],

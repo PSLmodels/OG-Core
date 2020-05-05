@@ -129,6 +129,16 @@ def test_get_G_ss(budget_balance, expected_G):
     assert np.allclose(test_G, expected_G)
 
 
+def test_get_debt_service_f():
+    '''
+    Test of fiscal.get_debt_service_f() function.
+    '''
+    expected_debt_service_f = 0.7
+    test_debt_service_f = fiscal.get_debt_service_f(0.07, 10)
+
+    assert np.allclose(test_debt_service_f, expected_debt_service_f)
+
+
 expected_TR1 = 0.288
 expected_TR2 = 1.9
 expected_TR3 = 1.5

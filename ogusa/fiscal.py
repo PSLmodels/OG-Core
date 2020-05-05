@@ -193,6 +193,24 @@ def get_G_ss(Y, Revenue, TR, new_borrowing, debt_service, p):
     return G
 
 
+def get_debt_service_f(r_hh, D_f):
+    r'''
+    Function to compute foreign debt service payments.
+
+    ..math::
+        \text{Foreign debt service}_{t} = r_{hh,t} * D^{f}_{t}
+
+    Args:
+
+    Returns:
+        debt_service_f (array_like): foreign debt service payment amount
+
+    '''
+    debt_service_f = r_hh * D_f
+
+    return debt_service_f
+
+
 def get_TR(Y, TR, G, total_revenue, p, method):
     r'''
     Function to compute aggregate transfers.  Note that this excludes
