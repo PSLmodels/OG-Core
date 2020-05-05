@@ -373,8 +373,8 @@ def resource_constraint(Y, C, G, I, K_f, new_borrowing_f,
 
 def get_K_splits(B, K_demand_open, D_d, zeta_K):
     r'''
-    Returns total domestic capital as well as amounts domestica capital
-    held by domestic and foreign investors separately.
+    Returns total domestic capital as well as amounts of domestic
+    capital held by domestic and foreign investors separately.
 
     .. math::
         \begin{split}
