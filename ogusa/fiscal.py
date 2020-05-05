@@ -17,7 +17,7 @@ import numpy as np
 '''
 
 
-def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
+def D_G_path(r_gov, dg_fixed_values, p):
     r'''
     Calculate the time paths of debt and government spending
 
@@ -56,17 +56,20 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
             * new_borrowing_f: new borrowing from foreigners
 
     '''
-    Y, total_revenue, TR, D0, G0 = dg_fixed_values
+    Y, total_revenue, TR, Gbaseline, D0_baseline = dg_fixed_values
+
+    growth = (1 + p.g_n) * np.exp(p.g_y)
 
     D = np.zeros(p.T + 1)
-    growth = (1 + p.g_n) * np.exp(p.g_y)
-    D[0] = D0
+    if p.baseline:
+        D[0] = p.initial_debt_ratio * Y[0]
+    else:
+        D[0] = D0_baseline
 
     if p.baseline_spending:
         G = Gbaseline[:p.T]
     else:
         G = p.alpha_G[:p.T] * Y[:p.T]
-        G[0] = G0
 
     if p.budget_balance:
         D = np.zeros(p.T + 1)

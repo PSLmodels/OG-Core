@@ -65,10 +65,10 @@ def test_D_G_path(baseline_spending, Y, TR, Revenue, Gbaseline,
     p.update_specifications(new_param_values, raise_errors=False)
     r_gov = np.ones(p.T + p.S) * 0.03
     p.g_n = np.ones(p.T + p.S) * 0.02
-    D0 = 0.59
-    G0 = 0.05
-    dg_fixed_values = (Y, Revenue, TR, D0, G0)
-    test_tuple = fiscal.D_G_path(r_gov, dg_fixed_values, Gbaseline, p)
+    D0_baseline = 0.59
+    Gbaseline[0] = 0.05
+    dg_fixed_values = (Y, Revenue, TR, Gbaseline, D0_baseline)
+    test_tuple = fiscal.D_G_path(r_gov, dg_fixed_values, p)
     for i, v in enumerate(test_tuple):
         assert np.allclose(v[:p.T], expected_tuple[i][:p.T])
 
