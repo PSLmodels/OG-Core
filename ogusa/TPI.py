@@ -680,8 +680,7 @@ def run_TPI(p, client=None):
         K_f[:p.T - 1], new_borrowing_f[:p.T - 1],
         debt_service_f[:p.T - 1], r_hh[:p.T - 1], p)
     # Compute total investment (not just domestic)
-    I_total = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
-               (1.0 - p.delta) * K[:p.T])
+    I_total = aggr.get_I(None, K[1:p.T + 1], K[:p.T], p, 'total_tpi')
 
     # Compute resource constraint error
     rce_max = np.amax(np.abs(RC_error))

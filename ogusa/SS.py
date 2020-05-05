@@ -367,7 +367,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
         Yss, total_revenue_ss, TR_ss, new_borrowing, debt_service, p)
 
     # Compute total investment (not just domestic)
-    Iss_total = ((1 + p.g_n_ss) * np.exp(p.g_y) - 1 + p.delta) * Kss
+    Iss_total = aggr.get_I(None, Kss, Kss, p, 'total_ss')
 
     # solve resource constraint
     # net foreign borrowing

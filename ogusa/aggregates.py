@@ -56,7 +56,7 @@ def get_I(b_splus1, K_p1, K, p, method):
         K (array_like): aggregate capital
         p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
-            'TPI'
+            'TPI', also compute total investment (not net of immigrants)
 
     Returns:
         aggI (array_like): aggregate investment
@@ -91,6 +91,11 @@ def get_I(b_splus1, K_p1, K, p, method):
                  (1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))))
         aggI = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))) *
                 np.exp(p.g_y) * (K_p1 - part2) - (1.0 - p.delta) * K)
+    elif method == 'total_ss':
+        aggI = ((1 + p.g_n_ss) * np.exp(p.g_y) - 1 + p.delta) * K
+    elif method == 'total_tpi':
+        aggI = ((1 + p.g_n[1:p.T+1]) * np.exp(p.g_y) * K_p1 -
+                (1.0 - p.delta) * K)
 
     return aggI
 
