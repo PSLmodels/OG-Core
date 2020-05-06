@@ -141,20 +141,20 @@ def inner_loop(outer_loop_vars, p, client):
     # unpack variables to pass to function
     if p.budget_balance:
         bssmat, nssmat, r, BQ, TR, factor = outer_loop_vars
+        r_hh = r
+        Y = 1.0  # placeholder
+        K = 1.0  # placeholder
     else:
         bssmat, nssmat, r, BQ, Y, TR, factor = outer_loop_vars
-
+        K = firm.get_K_from_Y(Y, r, p, 'SS')
+    # initialize array for euler errors
     euler_errors = np.zeros((2 * p.S, p.J))
 
     w = firm.get_w_from_r(r, p, 'SS')
     r_gov = fiscal.get_r_gov(r, p)
-    if p.budget_balance:
-        r_hh = r
-        D = 0
-    else:
-        D = p.debt_ratio_ss * Y
-        K = firm.get_K_from_Y(Y, r, p, 'SS')
-        r_hh = aggr.get_r_hh(r, r_gov, K, D)
+    D, D_d, D_f, new_borrowing, debt_service, new_borrowing_f =\
+        fiscal.get_D_ss(r_gov, Y, p)
+    r_hh = aggr.get_r_hh(r, r_gov, K, D)
     bq = household.get_bq(BQ, None, p, 'SS')
     tr = household.get_tr(TR, None, p, 'SS')
 
@@ -185,11 +185,7 @@ def inner_loop(outer_loop_vars, p, client):
     L = aggr.get_L(nssmat, p, 'SS')
     B = aggr.get_B(bssmat, p, 'SS', False)
     K_demand_open = firm.get_K(L, p.world_int_rate[-1], p, 'SS')
-    D_f = p.zeta_D[-1] * D
-    D_d = D - D_f
-    K_d = B - D_d
-    K_f = p.zeta_K[-1] * (K_demand_open - B + D_d)
-    K = K_f + K_d
+    K, K_d, K_f = aggr.get_K_splits(B, K_demand_open, D_d, p.zeta_K[-1])
     new_Y = firm.get_Y(K, L, p, 'SS')
     if p.budget_balance:
         Y = new_Y
@@ -214,24 +210,21 @@ def inner_loop(outer_loop_vars, p, client):
     new_bq = household.get_bq(new_BQ, None, p, 'SS')
     tr = household.get_tr(TR, None, p, 'SS')
     theta = tax.replacement_rate_vals(nssmat, new_w, new_factor, None, p)
-
-    if p.budget_balance:
-        etr_params_3D = np.tile(np.reshape(
-            p.etr_params[-1, :, :], (p.S, 1, p.etr_params.shape[2])),
-                                (1, p.J, 1))
-        taxss = tax.total_taxes(new_r_hh, new_w, b_s, nssmat, new_bq,
-                                factor, tr, theta, None, None, False,
-                                'SS', p.e, etr_params_3D, p)
-        cssmat = household.get_cons(new_r_hh, new_w, b_s, bssmat,
-                                    nssmat, new_bq, taxss,
-                                    p.e, p.tau_c[-1, :, :], p)
-        new_TR, _, _, _, _, _, _ = aggr.revenue(
-            new_r_hh, new_w, b_s, nssmat, new_bq, cssmat, new_Y, L, K,
-            factor, theta, etr_params_3D, p, 'SS')
-    elif p.baseline_spending:
-        new_TR = TR
-    else:
-        new_TR = p.alpha_T[-1] * new_Y
+    etr_params_3D = np.tile(
+        np.reshape(p.etr_params[-1, :, :],
+                   (p.S, 1, p.etr_params.shape[2])), (1, p.J, 1))
+    taxss = tax.total_taxes(
+        new_r_hh, new_w, b_s, nssmat, new_bq, factor, tr, theta, None,
+        None, False, 'SS', p.e, etr_params_3D, p)
+    cssmat = household.get_cons(
+        new_r_hh, new_w, b_s, bssmat, nssmat, new_bq, taxss, p.e,
+        p.tau_c[-1, :, :], p)
+    total_revenue, _, _, _, _, _, _ = aggr.revenue(
+        new_r_hh, new_w, b_s, nssmat, new_bq, cssmat, new_Y, L, K,
+        factor, theta, etr_params_3D, p, 'SS')
+    G = fiscal.get_G_ss(new_Y, total_revenue, TR, new_borrowing,
+                        debt_service, p)
+    new_TR = fiscal.get_TR(new_Y, TR, G, total_revenue, p, 'SS')
 
     return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_hh, \
         new_w, new_TR, new_Y, new_factor, new_BQ, average_income_model
@@ -269,10 +262,8 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     dist_vec = np.zeros(p.maxiter)
     maxiter_ss = p.maxiter
     nu_ss = p.nu
-
     if fsolve_flag:
         maxiter_ss = 1
-
     while (dist > p.mindist_SS) and (iteration < maxiter_ss):
         # Solve for the steady state levels of b and n, given w, r,
         # Y and factor
@@ -289,15 +280,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
         r = utils.convex_combo(new_r, r, nu_ss)
         factor = utils.convex_combo(new_factor, factor, nu_ss)
         BQ = utils.convex_combo(new_BQ, BQ, nu_ss)
-        # bmat = utils.convex_combo(new_bmat, bmat, nu_ss)
-        # nmat = utils.convex_combo(new_nmat, nmat, nu_ss)
-        if not p.baseline_spending:
-            TR = utils.convex_combo(new_TR, TR, nu_ss)
-            dist = np.array([utils.pct_diff_func(new_r, r)] +
-                            list(utils.pct_diff_func(new_BQ, BQ)) +
-                            [utils.pct_diff_func(new_TR, TR)] +
-                            [utils.pct_diff_func(new_factor, factor)]).max()
-        else:
+        if p.baseline_spending:
             Y = utils.convex_combo(new_Y, Y, nu_ss)
             if Y != 0:
                 dist = np.array([utils.pct_diff_func(new_r, r)] +
@@ -313,6 +296,12 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
                                 [abs(new_Y - Y)] +
                                 [utils.pct_diff_func(new_factor,
                                                      factor)]).max()
+        else:
+            TR = utils.convex_combo(new_TR, TR, nu_ss)
+            dist = np.array([utils.pct_diff_func(new_r, r)] +
+                            list(utils.pct_diff_func(new_BQ, BQ)) +
+                            [utils.pct_diff_func(new_TR, TR)] +
+                            [utils.pct_diff_func(new_factor, factor)]).max()
         dist_vec[iteration] = dist
         # Similar to TPI: if the distance between iterations increases, then
         # decrease the value of nu to prevent cycling
@@ -330,32 +319,25 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
 
     rss = r
     r_gov_ss = fiscal.get_r_gov(rss, p)
-    if p.budget_balance:
-        r_hh_ss = rss
-        Dss = 0.0
-    else:
-        Dss = p.debt_ratio_ss * Y
+    TR_ss = TR
     Lss = aggr.get_L(nssmat, p, 'SS')
     Bss = aggr.get_B(bssmat_splus1, p, 'SS', False)
+    (Dss, D_d_ss, D_f_ss, new_borrowing, debt_service,
+     new_borrowing_f) = fiscal.get_D_ss(r_gov_ss, Y, p)
     K_demand_open_ss = firm.get_K(Lss, p.world_int_rate[-1], p, 'SS')
-    D_f_ss = p.zeta_D[-1] * Dss
-    D_d_ss = Dss - D_f_ss
-    K_d_ss = Bss - D_d_ss
-    K_f_ss = p.zeta_K[-1] * (K_demand_open_ss - Bss + D_d_ss)
-    Kss = K_f_ss + K_d_ss
+    Kss, K_d_ss, K_f_ss = aggr.get_K_splits(
+        Bss, K_demand_open_ss, D_d_ss, p.zeta_K[-1])
+    Yss = firm.get_Y(Kss, Lss, p, 'SS')
+    r_hh_ss = aggr.get_r_hh(rss, r_gov_ss, Kss, Dss)
     # Note that implicity in this computation is that immigrants'
     # wealth is all in the form of private capital
     I_d_ss = aggr.get_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')
     Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS')
-    r_hh_ss = aggr.get_r_hh(rss, r_gov_ss, Kss, Dss)
     wss = new_w
     BQss = new_BQ
     factor_ss = factor
-    TR_ss = TR
     bqssmat = household.get_bq(BQss, None, p, 'SS')
     trssmat = household.get_tr(TR_ss, None, p, 'SS')
-
-    Yss = firm.get_Y(Kss, Lss, p, 'SS')
     theta = tax.replacement_rate_vals(nssmat, wss, factor_ss, None, p)
 
     # Compute effective and marginal tax rates for all agents
@@ -384,20 +366,13 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     Css = aggr.get_C(cssmat, p, 'SS')
 
     (total_revenue_ss, T_Iss, T_Pss, T_BQss, T_Wss, T_Css,
-     business_revenue) =\
-        aggr.revenue(r_hh_ss, wss, bssmat_s, nssmat, bqssmat, cssmat,
-                     Yss, Lss, Kss, factor, theta, etr_params_3D, p,
-                     'SS')
+     business_revenue) = aggr.revenue(
+         r_hh_ss, wss, bssmat_s, nssmat, bqssmat, cssmat, Yss, Lss, Kss,
+         factor, theta, etr_params_3D, p, 'SS')
     payroll_tax_revenue = p.frac_tax_payroll[-1] * T_Iss
     iit_revenue = T_Iss - payroll_tax_revenue
-    debt_service_ss = r_gov_ss * Dss
-    new_borrowing = Dss * ((1 + p.g_n_ss) * np.exp(p.g_y) - 1)
-    # government spends such that it expands its debt at the same rate as GDP
-    if p.budget_balance:
-        Gss = 0.0
-    else:
-        Gss = total_revenue_ss + new_borrowing - (TR_ss + debt_service_ss)
-        print('G components = ', new_borrowing, TR_ss, debt_service_ss)
+    Gss = fiscal.get_G_ss(
+        Yss, total_revenue_ss, TR_ss, new_borrowing, debt_service, p)
 
     # Compute total investment (not just domestic)
     Iss_total = ((1 + p.g_n_ss) * np.exp(p.g_y) - 1 + p.delta) * Kss
@@ -406,7 +381,6 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     # net foreign borrowing
     print('Foreign debt holdings = ', D_f_ss)
     print('Foreign capital holdings = ', K_f_ss)
-    new_borrowing_f = D_f_ss * (np.exp(p.g_y) * (1 + p.g_n_ss) - 1)
     debt_service_f = D_f_ss * r_hh_ss
     RC = aggr.resource_constraint(
         Yss, Css, Gss, I_d_ss, K_f_ss, new_borrowing_f, debt_service_f,
@@ -453,7 +427,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
               'T_Css': T_Css, 'euler_savings': euler_savings,
               'debt_service_f': debt_service_f,
               'new_borrowing_f': new_borrowing_f,
-              'debt_service_ss': debt_service_ss,
+              'debt_service': debt_service,
               'new_borrowing': new_borrowing,
               'euler_labor_leisure': euler_labor_leisure,
               'resource_constraint_error': RC,

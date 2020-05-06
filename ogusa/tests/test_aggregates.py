@@ -364,3 +364,45 @@ def test_resource_constraint():
                                        debt_service_f, r, p)
 
     assert(np.allclose(test_RC, expected))
+
+
+def test_get_K_splits():
+    '''
+    Test of the get_K_splits function.
+    '''
+    B = 2.2
+    K_demand_open = 0.5
+    D_d = 1.1
+    zeta_K = 0.2
+
+    expected_K_d = 1.1
+    expected_K_f = 0.2 * (0.5 - (2.2 - 1.1))
+    expected_K = expected_K_d + expected_K_f
+
+    test_K, test_K_d, test_K_f = aggr.get_K_splits(
+        B, K_demand_open, D_d, zeta_K)
+
+    np.allclose(test_K, expected_K)
+    np.allclose(test_K_d, expected_K_d)
+    np.allclose(test_K_f, expected_K_f)
+
+
+def test_get_K_splits_negative_K_d():
+    '''
+    Test of the get_K_splits function for case where K_d < 0.
+    '''
+    B = 2.2
+    K_demand_open = 0.5
+    D_d = 2.3
+    zeta_K = 0.2
+
+    expected_K_d = 0.05
+    expected_K_f = 0.2 * (0.5 - (2.2 - 2.3))
+    expected_K = expected_K_d + expected_K_f
+
+    test_K, test_K_d, test_K_f = aggr.get_K_splits(
+        B, K_demand_open, D_d, zeta_K)
+
+    np.allclose(test_K, expected_K)
+    np.allclose(test_K_d, expected_K_d)
+    np.allclose(test_K_f, expected_K_f)

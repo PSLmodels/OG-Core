@@ -369,3 +369,43 @@ def resource_constraint(Y, C, G, I, K_f, new_borrowing_f,
                 debt_service_f)
 
     return rc_error
+
+
+def get_K_splits(B, K_demand_open, D_d, zeta_K):
+    r'''
+    Returns total domestic capital as well as amounts of domestic
+    capital held by domestic and foreign investors separately.
+
+    .. math::
+        \begin{split}
+            \hat{K}_{t} = \hat{K}^{f}_{t} + \hat{K}^{d}_{t}\\
+            \hat{K}^{d}_{t} = \hat{B}_{t} + \hat{D}^{d}_{t}\\
+            \hat{K}^{f}_{t} = \zeta_{D}(\hat{K}^{open)_{t} - K^{d}_{t})\\
+        \end{split}
+
+    Args:
+        B (array_like): aggregate savings by domestic households
+        K_demand_open (array_like): capital demand at the world
+            interest rate
+        D_d (array_like): governmet debt held by domestic households
+        zeta_K (array_like): fraction of excess capital demand satisfied
+            by foreign investors
+
+    Returns:
+        (tuple): series of capital stocks:
+
+            * K (array_like): total capital
+            * K_d (array_like): capital held by domestic households
+            * K_f (array_like): capital held by foreign households
+
+    '''
+    K_d = B - D_d
+    # if isinstance(K_d, (np.ndarray, np.generic)):
+    if np.any(K_d < 0):
+        print('K_d has negative elements. Setting them ' +
+              'positive to prevent NAN.')
+        K_d = np.fmax(K_d, 0.05 * B)
+    K_f = zeta_K * (K_demand_open - B + D_d)
+    K = K_f + K_d
+
+    return K, K_d, K_f

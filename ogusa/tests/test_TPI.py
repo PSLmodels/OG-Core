@@ -197,7 +197,7 @@ def test_inner_loop(dask_client):
 param_updates1 = {}
 filename1 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_baseline.pkl')
-param_updates2 = {'budget_balance': True}
+param_updates2 = {'budget_balance': True, 'alpha_G': [0.0]}
 filename2 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_baseline_balanced_budget.pkl')
 param_updates3 = {}
@@ -277,7 +277,7 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
 param_updates1 = {}
 filename1 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_baseline_2.pkl')
-param_updates2 = {'budget_balance': True}
+param_updates2 = {'budget_balance': True, 'alpha_G': [0.0]}
 filename2 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_baseline_balanced_budget_2.pkl')
 param_updates3 = {}
@@ -324,9 +324,9 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
     p.maxiter = 2  # this test runs through just two iterations
     p.get_tax_function_parameters(
         None, run_micro=False,
-        tax_func_path=os.path.join(CUR_PATH, '..', 'data',
-                                   'tax_functions',
-                                   'TxFuncEst_baseline_CPS.pkl'))
+        tax_func_path=os.path.join(
+            CUR_PATH, '..', 'data', 'tax_functions',
+            'TxFuncEst_baseline_CPS.pkl'))
 
     # Need to run SS first to get results
     SS.ENFORCE_SOLUTION_CHECKS = False
