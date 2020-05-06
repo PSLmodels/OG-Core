@@ -6,7 +6,7 @@ Functions to compute economic aggregates.
 
 # Packages
 import numpy as np
-from ogusa import tax, utils
+from ogusa import tax, utils, household
 
 '''
 ------------------------------------------------------------------------
@@ -56,7 +56,7 @@ def get_I(b_splus1, K_p1, K, p, method):
         K (array_like): aggregate capital
         p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
-            'TPI'
+            'TPI', also compute total investment (not net of immigrants)
 
     Returns:
         aggI (array_like): aggregate investment
@@ -91,6 +91,11 @@ def get_I(b_splus1, K_p1, K, p, method):
                  (1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))))
         aggI = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss)))) *
                 np.exp(p.g_y) * (K_p1 - part2) - (1.0 - p.delta) * K)
+    elif method == 'total_ss':
+        aggI = ((1 + p.g_n_ss) * np.exp(p.g_y) - 1 + p.delta) * K
+    elif method == 'total_tpi':
+        aggI = ((1 + p.g_n[1:p.T+1]) * np.exp(p.g_y) * K_p1 -
+                (1.0 - p.delta) * K)
 
     return aggI
 
@@ -276,44 +281,58 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
 
     '''
     if method == 'SS':
-        I = r * b + w * p.e * n
-        T_I = np.zeros_like(I)
-        T_I = tax.ETR_income(r, w, b, n, factor, p.e, etr_params, p) * I
-        T_P = p.tau_payroll[-1] * w * p.e * n
-        T_P[p.retire[-1]:] -= theta * w
-        T_W = (tax.ETR_wealth(b, p.h_wealth[-1], p.m_wealth[-1],
-                              p.p_wealth[-1]) * b)
-        T_BQ = p.tau_bq[-1] * bq
-        T_C = p.tau_c[-1, :, :] * c
+        pop_weights = np.transpose(p.omega_SS * p.lambdas)
+        income = household.get_y(r, w, b, n, p)
+        T_I = ((
+            tax.ETR_income(r, w, b, n, factor, p.e, etr_params, p) *
+            income) * pop_weights).sum()
+        payroll_tax = p.tau_payroll[-1] * w * p.e * n
+        payroll_tax[p.retire[-1]:] -= theta * w
+        T_P = (payroll_tax * pop_weights).sum()
+        T_W = (
+            tax.ETR_wealth(b, p.h_wealth[-1], p.m_wealth[-1],
+                           p.p_wealth[-1]) * b * pop_weights).sum()
+        T_BQ = (p.tau_bq[-1] * bq * pop_weights).sum()
+        T_C = (p.tau_c[-1, :, :] * c * pop_weights).sum()
         business_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
-        REVENUE = ((np.transpose(p.omega_SS * p.lambdas) *
-                    (T_I + T_P + T_BQ + T_W + T_C)).sum() +
-                   business_revenue)
+        payroll_tax_revenue = p.frac_tax_payroll[-1] * T_I
+        iit_revenue = T_I - payroll_tax_revenue
     elif method == 'TPI':
+        pop_weights = (
+            np.squeeze(p.lambdas) *
+            np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
+                    (1, 1, p.J)))
         r_array = utils.to_timepath_shape(r)
         w_array = utils.to_timepath_shape(w)
-        I = r_array * b + w_array * n * p.e
-        T_I = np.zeros_like(I)
-        T_I = tax.ETR_income(r_array, w_array, b, n, factor, p.e,
-                             etr_params, p) * I
-        T_P = p.tau_payroll[:p.T].reshape(p.T, 1, 1) * w_array * n * p.e
-        for t in range(T_P.shape[0]):
-            T_P[t, p.retire[t]:, :] -= (theta.reshape(1, p.J) *
-                                        p.replacement_rate_adjust[t] *
-                                        w_array[t])
-        T_W = (tax.ETR_wealth(b, p.h_wealth[:p.T].reshape(p.T, 1, 1),
-                              p.m_wealth[:p.T].reshape(p.T, 1, 1),
-                              p.p_wealth[:p.T].reshape(p.T, 1, 1)) * b)
-        T_BQ = p.tau_bq[:p.T].reshape(p.T, 1, 1) * bq
-        T_C = p.tau_c[:p.T, :, :] * c
+        income = household.get_y(r_array, w_array, b, n, p)
+        T_I = (
+            tax.ETR_income(r_array, w_array, b, n, factor, p.e,
+                           etr_params, p) * income *
+            pop_weights).sum(1).sum(1)
+        payroll_tax = (
+            p.tau_payroll[:p.T].reshape(p.T, 1, 1) * w_array * n * p.e)
+        for t in range(payroll_tax.shape[0]):
+            payroll_tax[t, p.retire[t]:, :] -= (
+                theta.reshape(1, p.J) * p.replacement_rate_adjust[t] *
+                w_array[t])
+        T_P = (payroll_tax * pop_weights).sum(1).sum(1)
+        T_W = ((
+            tax.ETR_wealth(b, p.h_wealth[:p.T].reshape(p.T, 1, 1),
+                           p.m_wealth[:p.T].reshape(p.T, 1, 1),
+                           p.p_wealth[:p.T].reshape(p.T, 1, 1)) *
+            b) * pop_weights).sum(1).sum(1)
+        T_BQ = (
+            p.tau_bq[:p.T].reshape(p.T, 1, 1) * bq *
+            pop_weights).sum(1).sum(1)
+        T_C = (p.tau_c[:p.T, :, :] * c * pop_weights).sum(1).sum(1)
         business_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
-        REVENUE = ((((np.squeeze(p.lambdas)) *
-                   np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
-                           (1, 1, p.J)))
-                   * (T_I + T_P + T_BQ + T_W + T_C)).sum(1).sum(1) +
-                   business_revenue)
+        payroll_tax_revenue = p.frac_tax_payroll[:p.T] * T_I[:p.T]
 
-    return REVENUE, T_I, T_P, T_BQ, T_W, T_C, business_revenue
+    REVENUE = T_I + T_P + T_BQ + T_W + T_C + business_revenue
+    iit_revenue = T_I - payroll_tax_revenue
+
+    return (REVENUE, T_I, T_P, T_BQ, T_W, T_C, business_revenue,
+            payroll_tax_revenue, iit_revenue)
 
 
 def get_r_hh(r, r_gov, K, D):

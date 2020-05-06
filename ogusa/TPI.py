@@ -37,14 +37,14 @@ def get_initial_SS_values(p):
         (tuple): initial period and steady state values:
 
             * initial_values (tuple): initial period variable values,
-                (b_sinit, b_splus1init, factor, initial_b, initial_n, D0)
+                (b_sinit, b_splus1init, factor, initial_b, initial_n)
             * ss_vars (dictionary): dictionary with steady state
                 solution results
             * theta (Numpy array): steady-state retirement replacement
                 rates, length J
-            * baseline_values (tuple): (TRbaseline, Gbaseline), lump sum
-                transfer and government spending amounts from the
-                baseline model run
+            * baseline_values (tuple): (TRbaseline, Gbaseline,
+                D0_baseline), lump sum transfer and government spending
+                amounts from the baseline model run
 
     '''
     baseline_ss = os.path.join(p.baseline_dir, "SS", "SS_vars.pkl")
@@ -61,18 +61,12 @@ def get_initial_SS_values(p):
         TRbaseline = tpi_baseline_vars['TR']
         Gbaseline = tpi_baseline_vars['G']
 
-    baseline_values = (TRbaseline, Gbaseline)
-
     if p.baseline:
         ss_vars = ss_baseline_vars
     else:
         reform_ss_path = os.path.join(p.output_base, "SS", "SS_vars.pkl")
         ss_vars = utils.safe_read_pickle(reform_ss_path)
     theta = ss_vars['theta']
-    # What is going on here?  Whatever it is, why not done in parameters.py???
-    N_tilde = p.omega.sum(1)  # this should equal one in
-    # each year given how we've constructed omega
-    p.omega = p.omega / N_tilde.reshape(p.T + p.S, 1)
 
     '''
     ------------------------------------------------------------------------
@@ -93,12 +87,13 @@ def get_initial_SS_values(p):
         baseline_tpi = os.path.join(
             p.baseline_dir, "TPI", "TPI_vars.pkl")
         tpi_baseline_vars = utils.safe_read_pickle(baseline_tpi)
-        D0 = tpi_baseline_vars['D'][0]
+        D0_baseline = tpi_baseline_vars['D'][0]
     else:
-        D0 = 0.0
+        D0_baseline = None
 
     initial_values = (B0, b_sinit, b_splus1init, factor, initial_b,
-                      initial_n, D0)
+                      initial_n)
+    baseline_values = (TRbaseline, Gbaseline, D0_baseline)
 
     return initial_values, ss_vars, theta, baseline_values
 
@@ -252,7 +247,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
         TR (Numpy array): lump sum transfer amount
         theta (Numpy array): retirement replacement rates, length J
         initial_values (tuple): initial period variable values,
-            (b_sinit, b_splus1init, factor, initial_b, initial_n, D0)
+            (b_sinit, b_splus1init, factor, initial_b, initial_n,
+            D0_baseline)
         j (int): index of ability type
         ind (Numpy array): integers from 0 to S-1
         p (OG-USA Specifications object): model parameters
@@ -266,8 +262,8 @@ def inner_loop(guesses, outer_loop_vars, initial_values, j, ind, p):
 
     '''
     # unpack variables and parameters pass to function
-    (K0, b_sinit, b_splus1init, factor, initial_b, initial_n,
-     D0) = initial_values
+    (K0, b_sinit, b_splus1init, factor, initial_b, initial_n) =\
+        initial_values
     guesses_b, guesses_n = guesses
     r, w, r_hh, BQ, TR, theta = outer_loop_vars
 
@@ -399,9 +395,9 @@ def run_TPI(p, client=None):
     '''
     # unpack tuples of parameters
     initial_values, ss_vars, theta, baseline_values = get_initial_SS_values(p)
-    (B0, b_sinit, b_splus1init, factor, initial_b, initial_n,
-     D0) = initial_values
-    (TRbaseline, Gbaseline) = baseline_values
+    (B0, b_sinit, b_splus1init, factor, initial_b, initial_n) =\
+        initial_values
+    (TRbaseline, Gbaseline, D0_baseline) = baseline_values
 
     print('Government spending breakpoints are tG1: ', p.tG1,
           '; and tG2:', p.tG2)
@@ -464,7 +460,6 @@ def run_TPI(p, client=None):
             TR = TRbaseline
             G = Gbaseline
             G[p.T:] = ss_vars['Gss']
-            G0 = Gbaseline[0]
         else:
             TR = p.alpha_T * Y
             G = np.ones(p.T + p.S) * ss_vars['Gss']
@@ -544,25 +539,22 @@ def run_TPI(p, client=None):
                                    bmat_s, bmat_splus1,
                                    n_mat[:p.T, :, :], bqmat[:p.T, :, :],
                                    tax_mat, p.e, p.tau_c[:p.T, :, :], p)
-        y_before_tax_mat = (r_hh_path[:p.T, :, :] * bmat_s[:p.T, :, :] +
-                            wpath[:p.T, :, :] * p.e * n_mat[:p.T, :, :])
+        y_before_tax_mat = household.get_y(
+            r_hh_path[:p.T, :, :], wpath[:p.T, :, :],
+            bmat_s[:p.T, :, :], n_mat[:p.T, :, :], p)
 
         (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
-         T_Cpath, business_revenue) = aggr.revenue(
-            r_hh[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
-            bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y[:p.T],
-            L[:p.T], K[:p.T], factor, theta, etr_params_4D,
-            p, 'TPI')
+         T_Cpath, business_revenue, payroll_tax_revenue, iit_revenue) =\
+            aggr.revenue(
+                r_hh[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
+                bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y[:p.T],
+                L[:p.T], K[:p.T], factor, theta, etr_params_4D,
+                p, 'TPI')
         total_revenue[:p.T] = total_rev
-        # set intial debt and spending amounts
-        if p.baseline:
-            D0 = p.initial_debt_ratio * Y[0]
-        if not p.baseline_spending:
-            G0 = p.alpha_G[0] * Y[0]
-        dg_fixed_values = (Y, total_revenue, TR, D0, G0)
+        dg_fixed_values = (Y, total_revenue, TR, Gbaseline, D0_baseline)
         (Dnew, G[:p.T], D_d[:p.T], D_f[:p.T], new_borrowing,
          debt_service, new_borrowing_f) =\
-            fiscal.D_G_path(r_gov, dg_fixed_values, Gbaseline, p)
+            fiscal.D_G_path(r_gov, dg_fixed_values, p)
         L[:p.T] = aggr.get_L(n_mat[:p.T], p, 'TPI')
         B[1:p.T] = aggr.get_B(bmat_splus1[:p.T], p, 'TPI',
                               False)[:p.T - 1]
@@ -587,7 +579,8 @@ def run_TPI(p, client=None):
                             'TPI', False)
         bqmat_new = household.get_bq(BQnew, None, p, 'TPI')
         (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath, T_Cpath,
-         business_revenue) = aggr.revenue(
+         business_revenue, payroll_tax_revenue, iit_revenue) =\
+            aggr.revenue(
                 r_hh_new[:p.T], wnew[:p.T], bmat_s, n_mat[:p.T, :, :],
                 bqmat_new[:p.T, :, :], c_mat[:p.T, :, :], Ynew[:p.T],
                 L[:p.T], K[:p.T], factor, theta, etr_params_4D, p, 'TPI')
@@ -675,18 +668,13 @@ def run_TPI(p, client=None):
     I = aggr.get_I(bmat_splus1[:p.T], K[1:p.T + 1], K[:p.T], p, 'TPI')
     # solve resource constraint
     # foreign debt service costs
-    debt_service_f = D_f * r_hh
+    debt_service_f = fiscal.get_debt_service_f(r_hh, D_f)
     RC_error = aggr.resource_constraint(
         Y[:p.T - 1], C[:p.T - 1], G[:p.T - 1], I_d[:p.T - 1],
         K_f[:p.T - 1], new_borrowing_f[:p.T - 1],
         debt_service_f[:p.T - 1], r_hh[:p.T - 1], p)
     # Compute total investment (not just domestic)
-    I_total = ((1 + p.g_n[:p.T]) * np.exp(p.g_y) * K[1:p.T + 1] -
-               (1.0 - p.delta) * K[:p.T])
-    # Compute income tax revenues
-    tax_rev = aggr.get_L(T_Ipath, p, 'TPI')
-    payroll_tax_revenue = p.frac_tax_payroll[:p.T] * tax_rev[:p.T]
-    iit_revenue = tax_rev[:p.T] - payroll_tax_revenue
+    I_total = aggr.get_I(None, K[1:p.T + 1], K[:p.T], p, 'total_tpi')
 
     # Compute resource constraint error
     rce_max = np.amax(np.abs(RC_error))

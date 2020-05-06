@@ -17,7 +17,7 @@ import numpy as np
 '''
 
 
-def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
+def D_G_path(r_gov, dg_fixed_values, p):
     r'''
     Calculate the time paths of debt and government spending
 
@@ -56,17 +56,20 @@ def D_G_path(r_gov, dg_fixed_values, Gbaseline, p):
             * new_borrowing_f: new borrowing from foreigners
 
     '''
-    Y, total_revenue, TR, D0, G0 = dg_fixed_values
+    Y, total_revenue, TR, Gbaseline, D0_baseline = dg_fixed_values
+
+    growth = (1 + p.g_n) * np.exp(p.g_y)
 
     D = np.zeros(p.T + 1)
-    growth = (1 + p.g_n) * np.exp(p.g_y)
-    D[0] = D0
+    if p.baseline:
+        D[0] = p.initial_debt_ratio * Y[0]
+    else:
+        D[0] = D0_baseline
 
     if p.baseline_spending:
         G = Gbaseline[:p.T]
     else:
         G = p.alpha_G[:p.T] * Y[:p.T]
-        G[0] = G0
 
     if p.budget_balance:
         D = np.zeros(p.T + 1)
@@ -191,6 +194,24 @@ def get_G_ss(Y, Revenue, TR, new_borrowing, debt_service, p):
         print('G components = ', new_borrowing, TR, debt_service)
 
     return G
+
+
+def get_debt_service_f(r_hh, D_f):
+    r'''
+    Function to compute foreign debt service payments.
+
+    ..math::
+        \text{Foreign debt service}_{t} = r_{hh,t} * D^{f}_{t}
+
+    Args:
+
+    Returns:
+        debt_service_f (array_like): foreign debt service payment amount
+
+    '''
+    debt_service_f = r_hh * D_f
+
+    return debt_service_f
 
 
 def get_TR(Y, TR, G, total_revenue, p, method):
