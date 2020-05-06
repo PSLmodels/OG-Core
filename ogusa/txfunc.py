@@ -1145,7 +1145,8 @@ def tax_func_estimate(BW, S, starting_age, ending_age,
          ('tfunc_mtrx_obs', mtrx_obs_arr),
          ('tfunc_mtry_obs', mtry_obs_arr), ('tfunc_time', elapsed_time),
          ('tax_func_type', tax_func_type),
-         ('taxcalc_version', taxcalc_version)])
+         ('taxcalc_version', taxcalc_version),
+         ('start_year', start_year), ('BW', BW)])
 
     return dict_params
 
@@ -1154,7 +1155,7 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
                           baseline=False, analytical_mtrs=False,
                           tax_func_type='DEP', age_specific=False,
                           start_year=DEFAULT_START_YEAR, reform={},
-                          guid='', tx_func_est_path=None, data=None,
+                          guid='', tax_func_path=None, data=None,
                           client=None, num_workers=1):
     '''
     This function calls the tax function estimation routine and saves
@@ -1178,7 +1179,7 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
         start_yr (int): first year of budget window
         reform (dict): policy reform dictionary for Tax-Calculator
         guid (str): id for the particular run
-        tx_func_est_path (str): path to save pickle with estimated tax
+        tax_func_path (str): path to save pickle with estimated tax
             function parameters to
         data (str or Pandas DataFrame): path to or data to use in
             Tax-Calculator
@@ -1194,14 +1195,6 @@ def get_tax_func_estimate(BW, S, starting_age, ending_age,
         BW, S, starting_age, ending_age, start_year, baseline,
         analytical_mtrs, tax_func_type, age_specific, reform, data=data,
         client=client, num_workers=num_workers)
-    if baseline:
-        baseline_pckl = (
-            tx_func_est_path or "TxFuncEst_baseline{}.pkl".format(guid))
-        pkl_path = os.path.join(baseline_pckl)
-    else:
-        policy_pckl = (
-            tx_func_est_path or "TxFuncEst_policy{}.pkl".format(guid))
-        pkl_path = os.path.join(policy_pckl)
 
-    with open(pkl_path, "wb") as f:
+    with open(tax_func_path, "wb") as f:
         pickle.dump(dict_params, f)

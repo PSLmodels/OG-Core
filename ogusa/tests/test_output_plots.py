@@ -56,7 +56,7 @@ def test_plot_aggregates(base_tpi, base_params, reform_tpi,
                          plot_title):
     fig = output_plots.plot_aggregates(
         base_tpi, base_params, reform_tpi=reform_tpi,
-        reform_params=reform_params, var_list=['Y'],
+        reform_params=reform_params, var_list=['Y', 'r'],
         plot_type=plot_type, num_years_to_plot=20,
         vertical_line_years=vertical_line_years, plot_title=plot_title)
     assert fig
@@ -81,26 +81,29 @@ def test_plot_aggregates_save_fig(tmpdir):
     assert isinstance(img, np.ndarray)
 
 
-test_data = [(base_tpi, base_params, None, None, None, None),
+test_data = [(base_tpi, base_params, None, None, None, None, 'levels'),
              (base_tpi, base_params, reform_tpi, reform_params, None,
-              None),
+              None, 'levels'),
+             (base_tpi, base_params, reform_tpi, reform_params, None,
+              None, 'diffs'),
              (base_tpi, base_params, reform_tpi, reform_params,
-              [2040, 2060], None),
+              [2040, 2060], None, 'levels'),
              (base_tpi, base_params, None, None, None,
-              'Test plot title')
+              'Test plot title', 'levels')
              ]
 
 
 @pytest.mark.parametrize(
     'base_tpi,base_params,reform_tpi,reform_params,' +
-    'vertical_line_years,plot_title',
-    test_data, ids=['No reform', 'With reform',
+    'vertical_line_years,plot_title,plot_type',
+    test_data, ids=['No reform', 'With reform', 'Differences',
                     'Vertical line included', 'Plot title included'])
 def test_plot_gdp_ratio(base_tpi, base_params, reform_tpi,
-                        reform_params, vertical_line_years, plot_title):
+                        reform_params, vertical_line_years, plot_title,
+                        plot_type):
     fig = output_plots.plot_gdp_ratio(
         base_tpi, base_params, reform_tpi=reform_tpi,
-        reform_params=reform_params,
+        reform_params=reform_params, plot_type=plot_type,
         vertical_line_years=vertical_line_years, plot_title=plot_title)
     assert fig
 

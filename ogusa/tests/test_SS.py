@@ -2,12 +2,26 @@
 Test of steady-state module
 '''
 
+import multiprocessing
+from distributed import Client, LocalCluster
 import pytest
 import numpy as np
 import os
 from ogusa import SS, utils, aggregates, household, execute, constants
 from ogusa.parameters import Specifications
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
+NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
+
+
+@pytest.fixture(scope="module")
+def dask_client():
+    cluster = LocalCluster(n_workers=NUM_WORKERS, threads_per_worker=2)
+    client = Client(cluster)
+    yield client
+    # teardown
+    client.close()
+    cluster.close()
+
 
 input_tuple = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_inputs.pkl'))
@@ -54,16 +68,17 @@ p1.mtry_params = np.transpose(mtry_params.reshape(
     p1.S, 1, mtry_params.shape[-1]), (1, 0, 2))
 p1.maxiter, p1.mindist_SS = iterative_params
 p1.chi_b, p1.chi_n = chi_params
-p1.small_open, firm_r, hh_r = small_open_params
-p1.firm_r = np.ones(p1.T + p1.S) * firm_r
-p1.hh_r = np.ones(p1.T + p1.S) * hh_r
+small_open, firm_r, hh_r = small_open_params
+p1.world_int_rate = np.ones(p1.T + p1.S) * firm_r
 p1.num_workers = 1
 BQ1 = np.ones((p1.J)) * 0.00019646295986015257
 guesses1 = [guesses_in[0]] + list(BQ1) + [guesses_in[1]] + [guesses_in[2]]
 args1 = (bssmat, nssmat, None, None, p1, client)
-expected1 = np.array([0.28753454, 0.01889046, 0.02472582, 0.02669199,
-                      0.01631467, 0.01925092, 0.02206471, 0.00407802,
-                      -0.07014671494961716, 0.00626609])
+expected1 = np.array([0.06858352869423862, 0.0157424466869841,
+                      0.020615373965602958, 0.02225725864386594,
+                      0.01359148091834126, 0.01604345296066714,
+                      0.018393166562212734, 0.0033730256425707566,
+                      -0.07014671511880782, 0.05424969771042221])
 
 input_tuple = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_reform_inputs.pkl'))
@@ -110,16 +125,17 @@ p2.mtry_params = np.transpose(mtry_params.reshape(
     p2.S, 1, mtry_params.shape[-1]), (1, 0, 2))
 p2.maxiter, p2.mindist_SS = iterative_params
 p2.chi_b, p2.chi_n = chi_params
-p2.small_open, firm_r, hh_r = small_open_params
-p2.firm_r = np.ones(p2.T + p2.S) * firm_r
-p2.hh_r = np.ones(p2.T + p2.S) * hh_r
+small_open, firm_r, hh_r = small_open_params
+p2.world_int_rate = np.ones(p2.T + p2.S) * firm_r
 p2.num_workers = 1
 BQ2 = np.ones((p2.J)) * 0.00019646295986015257
 guesses2 = [guesses_in2[0]] + list(BQ2) + [guesses_in2[1]]
 args2 = (bssmat, nssmat, None, factor, p2, client)
-expected2 = np.array([0.01325131, 0.01430768, 0.01938654, 0.02069931,
-                      0.01232291, 0.0145351, 0.0171059, 0.00309562,
-                      0.0016798427500707008])
+expected2 = np.array([0.016757343762877415, 0.01435509375160598,
+                      0.019450554513959047, 0.020767620498430173,
+                      0.012363834824786278, 0.014583252714123543,
+                      0.01716246184210253, 0.003106382567096101,
+                      0.0016798428580572025])
 
 input_tuple = utils.safe_read_pickle(
     os.path.join(
@@ -169,16 +185,17 @@ p3.mtry_params = np.transpose(mtry_params.reshape(
     p3.S, 1, mtry_params.shape[-1]), (1, 0, 2))
 p3.maxiter, p3.mindist_SS = iterative_params
 p3.chi_b, p3.chi_n = chi_params
-p3.small_open, firm_r, hh_r = small_open_params
-p3.firm_r = np.ones(p3.T + p3.S) * firm_r
-p3.hh_r = np.ones(p3.T + p3.S) * hh_r
+small_open, firm_r, hh_r = small_open_params
+p3.world_int_rate = np.ones(p3.T + p3.S) * firm_r
 p3.num_workers = 1
 BQ3 = np.ones((p3.J)) * 0.00019646295986015257
 guesses3 = [guesses_in3[0]] + list(BQ3) + [guesses_in3[1]]
 args3 = (bssmat, nssmat, TR_ss, factor_ss, p3, client)
-expected3 = np.array([0.01325131, 0.01430768, 0.01938654, 0.02069931,
-                      0.01232291, 0.0145351, 0.0171059, 0.00309562,
-                      0.01866492])
+expected3 = np.array([0.016757345515050044, 0.014355093775301265,
+                      0.019450554545951612, 0.020767620470159415,
+                      0.01236383484523906, 0.014583252738190352,
+                      0.01716246187036924, 0.0031063825724743474,
+                      0.018664915456857223])
 
 input_tuple = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_inputs.pkl'))
@@ -228,11 +245,11 @@ p4.num_workers = 1
 BQ4 = np.ones((p4.J)) * 0.00019646295986015257
 guesses4 = [guesses_in[0]] + list(BQ4) + [guesses_in[1]] + [guesses_in[2]]
 args4 = (bssmat, nssmat, None, None, p4, client)
-expected4 = np.array([0.14974397993298297, 0.01618780806357498,
-                      0.021237337063436636, 0.023034235208337073,
-                      0.014089407012514552, 0.01666592110291313,
-                      0.01895924076520874, 0.00346219107476825,
-                      -0.06125508233576064, 0.039334851995648276])
+expected4 = np.array([0.028883118596741857, 0.014511613659907734,
+                      0.019044550115699707, 0.02065761642516883,
+                      0.012627889727738099, 0.014940813299332474,
+                      0.016999514675696315, 0.0030878921261591253,
+                      -0.06125508233576064, 0.06697984483743183])
 
 input_tuple = utils.safe_read_pickle(
     os.path.join(CUR_PATH, 'test_io_data', 'SS_fsolve_inputs.pkl'))
@@ -249,8 +266,8 @@ p5 = Specifications()
  p5.b_ellipse, p5.upsilon) = ss_params
 p5.eta = (p5.omega_SS.reshape(p5.S, 1) *
           p5.lambdas.reshape(1, p5.J)).reshape(1, p5.S, p5.J)
-p5.small_open = True
-p5.world_int_rate = 0.05
+p5.zeta_K = np.ones(p5.T + p5.S) * 1.0
+p5.world_int_rate = np.ones(p5.T + p5.S) * 0.05
 p5.Z = np.ones(p5.T + p5.S) * Z
 p5.tau_bq = np.ones(p5.T + p5.S) * 0.0
 p5.tau_payroll = np.ones(p5.T + p5.S) * tau_payroll
@@ -275,17 +292,15 @@ p5.mtry_params = np.transpose(mtry_params.reshape(
     p5.S, 1, mtry_params.shape[-1]), (1, 0, 2))
 p5.maxiter, p5.mindist_SS = iterative_params
 p5.chi_b, p5.chi_n = chi_params
-p5.firm_r = np.ones(p5.T + p5.S) * p5.world_int_rate
-p5.hh_r = np.ones(p5.T + p5.S) * p5.world_int_rate
 p5.num_workers = 1
 BQ5 = np.ones((p5.J)) * 0.00019646295986015257
 guesses5 = [guesses_in[0]] + list(BQ5) + [guesses_in[1]] + [guesses_in[2]]
 args5 = (bssmat, nssmat, None, None, p5, client)
-expected5 = np.array([0.010000000000000002, 0.016237540856710347,
-                      0.021157440917488623, 0.0225816206427034,
-                      0.013739863205138253, 0.016239102127467743,
-                      0.018840747365904523, 0.0035063367036709888,
-                      -0.05651404751905424, 0.06608069086945173])
+expected5 = np.array([
+    0.010000000000000002, 0.014267680343491978, 0.01872543808956217,
+    0.02031175170902025, 0.012415197955534063, 0.014689761710816571,
+    0.016714319543654727, 0.003033421127052222, -0.05535189569237248,
+    0.06644990365361061])
 
 
 @pytest.mark.parametrize('guesses,args,expected',
@@ -299,23 +314,25 @@ expected5 = np.array([0.010000000000000002, 0.016237540856710347,
                               'Baseline, Partial Open',
                               'Baseline, Small Open'])
 def test_SS_fsolve(guesses, args, expected):
-    # Test SS.SS_fsolve function.  Provide inputs to function and
-    # ensure that output returned matches what it has been before.
+    '''
+    Test SS.SS_fsolve function.  Provide inputs to function and
+    ensure that output returned matches what it has been before.
+    '''
     test_list = SS.SS_fsolve(guesses, *args)
-    print('Test list = ', test_list)
     assert(np.allclose(np.array(test_list), np.array(expected),
                        atol=1e-6))
 
 
 param_updates1 = {}
 filename1 = 'SS_solver_outputs_baseline.pkl'
-param_updates2 = {'budget_balance': True}
+param_updates2 = {'budget_balance': True, 'alpha_G': [0.0]}
 filename2 = 'SS_solver_outputs_baseline_budget_balance.pkl'
 # param_updates3 = {'baseline_spending': True}
 # filename3 = 'SS_solver_outputs_reform_baseline_spending.pkl'
-param_updates4 = {'small_open': True}
+param_updates4 = {'zeta_K': [1.0]}
 filename4 = 'SS_solver_outputs_baseline_small_open.pkl'
-param_updates5 = {'small_open': True, 'budget_balance': True}
+param_updates5 = {'zeta_K': [1.0], 'budget_balance': True,
+                  'alpha_G': [0.0]}
 filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
 
 
@@ -329,18 +346,18 @@ filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
                               # 'Reform, baseline spending=True',
                               'Baseline, small open',
                               'Baseline, small open, budget balance'])
-def test_SS_solver(baseline, param_updates, filename):
+def test_SS_solver(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    p = Specifications(baseline=baseline)
+    p = Specifications(baseline=baseline, client=dask_client,
+                       num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
     p.get_tax_function_parameters(None, run_micro=False)
-    print('Use zeta = ', p.use_zeta)
     b_guess = np.ones((p.S, p.J)) * 0.07
     n_guess = np.ones((p.S, p.J)) * .35 * p.ltilde
-    if p.small_open:
-        rguess = p.firm_r[-1]
+    if p.zeta_K[-1] == 1.0:
+        rguess = p.world_int_rate[-1]
     else:
         rguess = 0.06483431412921253
     TRguess = 0.05738932081035772
@@ -348,10 +365,8 @@ def test_SS_solver(baseline, param_updates, filename):
     BQguess = aggregates.get_BQ(rguess, b_guess, None, p, 'SS', False)
     Yguess = 0.6376591201150815
 
-    SS.ENFORCE_SOLUTION_CHECKS = True
     test_dict = SS.SS_solver(b_guess, n_guess, rguess, BQguess, TRguess,
                              factorguess, Yguess, p, None, False)
-
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
 
@@ -360,9 +375,9 @@ def test_SS_solver(baseline, param_updates, filename):
         assert(np.allclose(test_dict[k], v, atol=1e-07, equal_nan=True))
 
 
-param_updates1 = {'small_open': True}
+param_updates1 = {'zeta_K': [1.0]}
 filename1 = 'inner_loop_outputs_baseline_small_open.pkl'
-param_updates2 = {'budget_balance': True}
+param_updates2 = {'budget_balance': True, 'alpha_G': [0.0]}
 filename2 = 'inner_loop_outputs_baseline_balance_budget.pkl'
 param_updates3 = {}
 filename3 = 'inner_loop_outputs_baseline.pkl'
@@ -382,16 +397,20 @@ filename5 = 'inner_loop_outputs_reform_baselinespending.pkl'
                               'Baseline, Balanced Budget',
                               'Baseline', 'Reform',
                               'Reform, baseline spending'])
-def test_inner_loop(baseline, param_updates, filename):
+def test_inner_loop(baseline, param_updates, filename, dask_client):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
-    p = Specifications(baseline=baseline)
+    p = Specifications(baseline=baseline, client=dask_client,
+                       num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
     p.get_tax_function_parameters(None, run_micro=False)
     bssmat = np.ones((p.S, p.J)) * 0.07
     nssmat = np.ones((p.S, p.J)) * .4 * p.ltilde
-    r = 0.05
+    if p.zeta_K[-1] == 1.0:
+        r = p.world_int_rate[-1]
+    else:
+        r = 0.05
     TR = 0.12
     Y = 1.3
     factor = 100000
@@ -401,21 +420,19 @@ def test_inner_loop(baseline, param_updates, filename):
     else:
         outer_loop_vars = (bssmat, nssmat, r, BQ, Y, TR, factor)
     test_tuple = SS.inner_loop(outer_loop_vars, p, None)
-
     expected_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
-
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v, atol=1e-05))
 
 
-def test_euler_equation_solver():
+def test_euler_equation_solver(dask_client):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', 'euler_eqn_solver_inputs.pkl'))
     (guesses, params) = input_tuple
-    p = Specifications()
+    p = Specifications(client=dask_client, num_workers=NUM_WORKERS)
     (r, w, TR, factor, j, p.J, p.S, p.beta, p.sigma, p.ltilde, p.g_y,
      p.g_n_ss, tau_payroll, retire, p.mean_income_data, h_wealth,
      p_wealth, m_wealth, p.b_ellipse, p.upsilon, j, p.chi_b,
@@ -500,17 +517,17 @@ param_updates1 = {}
 filename1 = 'run_SS_baseline_outputs.pkl'
 param_updates2 = {'use_zeta': True}
 filename2 = 'run_SS_baseline_use_zeta.pkl'
-param_updates3 = {'small_open': True}
+param_updates3 = {'zeta_K': [1.0]}
 filename3 = 'run_SS_baseline_small_open.pkl'
-param_updates4 = {'small_open': True, 'use_zeta': True}
+param_updates4 = {'zeta_K': [1.0], 'use_zeta': True}
 filename4 = 'run_SS_baseline_small_open_use_zeta.pkl'
 param_updates5 = {}
 filename5 = 'run_SS_reform.pkl'
 param_updates6 = {'use_zeta': True}
 filename6 = 'run_SS_reform_use_zeta.pkl'
-param_updates7 = {'small_open': True}
+param_updates7 = {'zeta_K': [1.0]}
 filename7 = 'run_SS_reform_small_open.pkl'
-param_updates8 = {'small_open': True, 'use_zeta': True}
+param_updates8 = {'zeta_K': [1.0], 'use_zeta': True}
 filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
 # param_updates9 = {'baseline_spending': True}
 # filename9 = 'run_SS_reform_baseline_spend.pkl'
@@ -553,18 +570,27 @@ filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
                               'Reform, small open',
                               'Reform, small open use zeta'])
 @pytest.mark.full_run
-def test_run_SS(baseline, param_updates, filename):
+def test_run_SS(baseline, param_updates, filename, dask_client):
     # Test SS.run_SS function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     if baseline is False:
+        tax_func_path_baseline = os.path.join(CUR_PATH,
+                                              'TxFuncEst_baseline.pkl')
+        tax_func_path = os.path.join(CUR_PATH,
+                                     'TxFuncEst_policy.pkl')
         execute.runner(constants.BASELINE_DIR, constants.BASELINE_DIR,
                        time_path=False, baseline=True,
-                       og_spec=param_updates, run_micro=False)
-    p = Specifications(baseline=baseline)
+                       og_spec=param_updates, run_micro=False,
+                       tax_func_path=tax_func_path_baseline)
+    else:
+        tax_func_path = os.path.join(CUR_PATH,
+                                     'TxFuncEst_baseline.pkl')
+    p = Specifications(baseline=baseline, client=dask_client,
+                       num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
-    p.get_tax_function_parameters(None, run_micro=False)
+    p.get_tax_function_parameters(None, run_micro=False,
+                                  tax_func_path=tax_func_path)
     test_dict = SS.run_SS(p, None)
-
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
 

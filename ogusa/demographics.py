@@ -301,7 +301,7 @@ def immsolve(imm_rates, *args):
     return omega_errs
 
 
-def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=True):
+def get_pop_objs(E, S, T, min_yr, max_yr, curr_year, GraphDiag=False):
     '''
     This function produces the demographics objects to be used in the
     OG-USA model package.

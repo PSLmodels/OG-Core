@@ -1,9 +1,9 @@
 import ogusa
 from ogusa.parameters import Specifications
-from ogusa.constants import TC_LAST_YEAR, REFORM_DIR, BASELINE_DIR
+from ogusa.constants import REFORM_DIR, BASELINE_DIR
 from ogusa import output_plots as op
 from ogusa import output_tables as ot
-from ogusa import SS, utils
+from ogusa import SS, TPI, utils
 import os
 import io
 import pickle
@@ -42,8 +42,9 @@ class MetaParams(paramtools.Parameters):
             "title": "Start year",
             "description": "Year for parameters.",
             "type": "int",
-            "value": 2019,
-            "validators": {"range": {"min": 2015, "max": TC_LAST_YEAR}}
+            "value": 2020,
+            "validators": {"range": {"min": 2015, "max":
+                                     Policy.LAST_BUDGET_YEAR}}
         },
         "data_source": {
             "title": "Data source",
@@ -51,12 +52,20 @@ class MetaParams(paramtools.Parameters):
             "type": "str",
             "value": "CPS",
             "validators": {"choice": {"choices": ["PUF", "CPS"]}}
+        },
+        "time_path": {
+            "title": "Solve for economy's transition path?",
+            "description": ("Whether to solve for the transition path" +
+                            " in addition to the steady-state"),
+            "type": "bool",
+            "value": True,
+            "validators": {"range": {"min": False, "max": True}}
         }
     }
 
 
 def get_version():
-    return ogusa.__version__
+    return "0.6.0"
 
 
 def get_inputs(meta_param_dict):
@@ -121,12 +130,19 @@ def run_model(meta_param_dict, adjustment):
     Initializes classes from OG-USA that compute the model under
     different policies.  Then calls function get output objects.
     '''
+    print('Meta_param_dict = ', meta_param_dict)
+    print('adjustment dict = ', adjustment)
+
     meta_params = MetaParams()
     meta_params.adjust(meta_param_dict)
     if meta_params.data_source == "PUF":
         data = retrieve_puf(AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY)
+        # set name of cached baseline file in case use below
+        cached_pickle = 'TxFuncEst_baseline_PUF.pkl'
     else:
         data = "cps"
+        # set name of cached baseline file in case use below
+        cached_pickle = 'TxFuncEst_baseline_CPS.pkl'
     # Get TC params adjustments
     iit_mods = convert_adj(adjustment[
         "Tax-Calculator Parameters"],
@@ -146,6 +162,7 @@ def run_model(meta_param_dict, adjustment):
 
     # whether to estimate tax functions from microdata
     run_micro = True
+    time_path = meta_param_dict['time_path'][0]['value']
 
     # filter out OG-USA params that will not change between baseline and
     # reform runs (these are the non-policy parameters)
@@ -161,39 +178,63 @@ def run_model(meta_param_dict, adjustment):
             filtered_ogusa_params[k] = v
 
     # Solve baseline model
+    start_year = meta_param_dict['year'][0]['value']
+    if start_year == 2020:
+        OGPATH = inspect.getfile(SS)
+        OGDIR = os.path.dirname(OGPATH)
+        tax_func_path = None#os.path.join(OGDIR, 'data', 'tax_functions',
+                        #             cached_pickle)
+        run_micro_baseline = False
+    else:
+        tax_func_path = None
+        run_micro_baseline = True
     base_spec = {
-        **{'start_year': meta_param_dict['year'],
-        'tax_func_type': 'linear',
-        'age_specific': False}, **filtered_ogusa_params}
+        **{'start_year': start_year,
+           'tax_func_type': 'DEP',
+           'age_specific': False}, **filtered_ogusa_params}
     base_params = Specifications(
-        run_micro=False, output_base=base_dir,
-        baseline_dir=base_dir, test=False, time_path=False,
-        baseline=True, iit_reform={}, guid='',
-        data=data,
-        client=client, num_workers=num_workers)
+        run_micro=False, output_base=base_dir, baseline_dir=base_dir,
+        test=False, time_path=False, baseline=True, iit_reform={},
+        guid='', data=data, client=client, num_workers=num_workers)
     base_params.update_specifications(base_spec)
-    base_params.get_tax_function_parameters(client, run_micro)
+    base_params.get_tax_function_parameters(
+        client, run_micro_baseline, tax_func_path=tax_func_path)
     base_ss = SS.run_SS(base_params, client=client)
     utils.mkdirs(os.path.join(base_dir, "SS"))
-    ss_dir = os.path.join(base_dir, "SS", "SS_vars.pkl")
-    with open(ss_dir, "wb") as f:
+    base_ss_dir = os.path.join(base_dir, "SS", "SS_vars.pkl")
+    with open(base_ss_dir, "wb") as f:
         pickle.dump(base_ss, f)
+    if time_path:
+        base_tpi = TPI.run_TPI(base_params, client=client)
+        tpi_dir = os.path.join(base_dir, "TPI", "TPI_vars.pkl")
+        with open(tpi_dir, "wb") as f:
+            pickle.dump(base_tpi, f)
+    else:
+        base_tpi = None
 
     # Solve reform model
     reform_spec = base_spec
     reform_spec.update(adjustment["OG-USA Parameters"])
     reform_params = Specifications(
         run_micro=False, output_base=reform_dir,
-        baseline_dir=base_dir, test=False, time_path=False,
+        baseline_dir=base_dir, test=False, time_path=time_path,
         baseline=False, iit_reform=iit_mods, guid='',
-        data=data,
-        client=client, num_workers=num_workers)
+        data=data, client=client, num_workers=num_workers)
     reform_params.update_specifications(reform_spec)
     reform_params.get_tax_function_parameters(client, run_micro)
     reform_ss = SS.run_SS(reform_params, client=client)
+    utils.mkdirs(os.path.join(reform_dir, "SS"))
+    reform_ss_dir = os.path.join(reform_dir, "SS", "SS_vars.pkl")
+    with open(reform_ss_dir, "wb") as f:
+        pickle.dump(reform_ss, f)
+    if time_path:
+        reform_tpi = TPI.run_TPI(reform_params, client=client)
+    else:
+        reform_tpi = None
 
-    comp_dict = comp_output(base_ss, base_params, reform_ss,
-                            reform_params)
+    comp_dict = comp_output(base_params, base_ss, reform_params,
+                            reform_ss, time_path, base_tpi,
+                            reform_tpi)
 
     # Shut down client and make sure all of its references are
     # cleaned up.
@@ -203,48 +244,135 @@ def run_model(meta_param_dict, adjustment):
     return comp_dict
 
 
-def comp_output(base_ss, base_params, reform_ss, reform_params,
+def comp_output(base_params, base_ss, reform_params, reform_ss,
+                time_path, base_tpi=None,  reform_tpi=None,
                 var='cssmat'):
     '''
     Function to create output for the COMP platform
     '''
-    table_title = 'Percentage Changes in Economic Aggregates Between'
-    table_title += ' Baseline and Reform Policy'
-    plot_title = 'Percentage Changes in Consumption by Lifetime Income'
-    plot_title += ' Percentile Group'
-    out_table = ot.macro_table_SS(
-        base_ss, reform_ss,
-        var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
-                  'Lss', 'rss', 'wss'], table_format='csv')
-    html_table = ot.macro_table_SS(
-        base_ss, reform_ss,
-        var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
-                  'Lss', 'rss', 'wss'], table_format='html')
-    fig = op.ability_bar_ss(
-        base_ss, base_params, reform_ss, reform_params, var=var)
-    in_memory_file = io.BytesIO()
-    fig.savefig(in_memory_file, format="png")
-    in_memory_file.seek(0)
-    comp_dict = {
-        "renderable": [
-            {
-              "media_type": "PNG",
-              "title": plot_title,
-              "data": in_memory_file.read()
-              },
-            {
-              "media_type": "table",
-              "title":  table_title,
-              "data": html_table
+    if time_path:
+        table_title = 'Percentage Changes in Economic Aggregates Between'
+        table_title += ' Baseline and Reform Policy'
+        plot1_title = 'Pct Changes in Economic Aggregates Between'
+        plot1_title += ' Baseline and Reform Policy'
+        plot2_title = 'Pct Changes in Interest Rates and Wages'
+        plot2_title += ' Between Baseline and Reform Policy'
+        plot3_title = 'Differences in Fiscal Variables Relative to GDP'
+        plot3_title += ' Between Baseline and Reform Policy'
+        out_table = ot.tp_output_dump_table(
+            base_params, base_tpi, reform_params, reform_tpi,
+            table_format='csv')
+        html_table = ot.macro_table(
+            base_tpi, base_params, reform_tpi, reform_params,
+            var_list=['Y', 'C', 'I_total', 'L', 'D', 'G', 'r', 'w'],
+            output_type='pct_diff', num_years=10, include_SS=True,
+            include_overall=True, start_year=base_params.start_year,
+            table_format='html')
+        fig1 = op.plot_aggregates(
+            base_tpi, base_params, reform_tpi, reform_params,
+            var_list=['Y', 'C', 'K', 'L'], plot_type='pct_diff',
+            num_years_to_plot=50, start_year=base_params.start_year,
+            vertical_line_years=[
+                base_params.start_year + base_params.tG1,
+                base_params.start_year + base_params.tG2],
+            plot_title=None, path=None)
+        in_memory_file1 = io.BytesIO()
+        fig1.savefig(in_memory_file1, format="png",  bbox_inches="tight")
+        in_memory_file1.seek(0)
+        fig2 = op.plot_aggregates(
+            base_tpi, base_params, reform_tpi, reform_params,
+            var_list=['r_gov', 'w'], plot_type='pct_diff',
+            num_years_to_plot=50, start_year=base_params.start_year,
+            vertical_line_years=[
+                base_params.start_year + base_params.tG1,
+                base_params.start_year + base_params.tG2],
+            plot_title=None, path=None)
+        in_memory_file2 = io.BytesIO()
+        fig2.savefig(in_memory_file2, format="png",  bbox_inches="tight")
+        in_memory_file2.seek(0)
+        fig3 = op. plot_gdp_ratio(
+            base_tpi, base_params, reform_tpi, reform_params,
+            var_list=['D', 'G', 'total_revenue'],
+            plot_type='diff', num_years_to_plot=50,
+            start_year=base_params.start_year,
+            vertical_line_years=[
+                base_params.start_year + base_params.tG1,
+                base_params.start_year + base_params.tG2],
+            plot_title=None, path=None)
+        in_memory_file3 = io.BytesIO()
+        fig3.savefig(in_memory_file3, format="png",  bbox_inches="tight")
+        in_memory_file3.seek(0)
+
+        comp_dict = {
+            "renderable": [
+                {
+                  "media_type": "PNG",
+                  "title": plot1_title,
+                  "data": in_memory_file1.read()
+                  },
+                {
+                  "media_type": "PNG",
+                  "title": plot2_title,
+                  "data": in_memory_file2.read()
+                  },
+                {
+                  "media_type": "PNG",
+                  "title": plot3_title,
+                  "data": in_memory_file3.read()
+                  },
+                {
+                  "media_type": "table",
+                  "title":  table_title,
+                  "data": html_table
+                }
+                ],
+            "downloadable": [
+                {
+                  "media_type": "CSV",
+                  "title": table_title,
+                  "data": out_table.to_csv()
+                }
+            ]
             }
-            ],
-        "downloadable": [
-            {
-              "media_type": "CSV",
-              "title": table_title,
-              "data": out_table.to_csv()
+    else:
+        table_title = 'Percentage Changes in Economic Aggregates Between'
+        table_title += ' Baseline and Reform Policy'
+        plot_title = 'Percentage Changes in Consumption by Lifetime Income'
+        plot_title += ' Percentile Group'
+        out_table = ot.macro_table_SS(
+            base_ss, reform_ss,
+            var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
+                      'Lss', 'rss', 'wss'], table_format='csv')
+        html_table = ot.macro_table_SS(
+            base_ss, reform_ss,
+            var_list=['Yss', 'Css', 'Iss_total', 'Gss', 'total_revenue_ss',
+                      'Lss', 'rss', 'wss'], table_format='html')
+        fig = op.ability_bar_ss(
+            base_ss, base_params, reform_ss, reform_params, var=var)
+        in_memory_file = io.BytesIO()
+        fig.savefig(in_memory_file, format="png",  bbox_inches="tight")
+        in_memory_file.seek(0)
+
+        comp_dict = {
+            "renderable": [
+                {
+                  "media_type": "PNG",
+                  "title": plot_title,
+                  "data": in_memory_file.read()
+                  },
+                {
+                  "media_type": "table",
+                  "title":  table_title,
+                  "data": html_table
+                }
+                ],
+            "downloadable": [
+                {
+                  "media_type": "CSV",
+                  "title": table_title,
+                  "data": out_table.to_csv()
+                }
+            ]
             }
-        ]
-        }
 
     return comp_dict

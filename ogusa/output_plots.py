@@ -4,7 +4,8 @@ import os
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib
-from ogusa.constants import (VAR_LABELS, ToGDP_LABELS, CBO_UNITS)
+from ogusa.constants import (VAR_LABELS, ToGDP_LABELS, CBO_UNITS,
+                             DEFAULT_START_YEAR)
 import ogusa.utils as utils
 from ogusa.utils import Inequality
 
@@ -16,7 +17,7 @@ plt.style.use(style_file)
 def plot_aggregates(base_tpi, base_params, reform_tpi=None,
                     reform_params=None, var_list=['Y', 'C', 'K', 'L'],
                     plot_type='pct_diff', num_years_to_plot=50,
-                    start_year=2019, vertical_line_years=None,
+                    start_year=DEFAULT_START_YEAR, vertical_line_years=None,
                     plot_title=None, path=None):
     '''
     Create a plot of macro aggregates.
@@ -49,7 +50,7 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
         fig (Matplotlib plot object): plot of macro aggregates
 
     '''
-    assert (isinstance(start_year, int))
+    assert isinstance(start_year, (int, np.integer))
     assert (isinstance(num_years_to_plot, int))
     # Make sure both runs cover same time period
     if reform_tpi:
@@ -62,7 +63,11 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
     fig1, ax1 = plt.subplots()
     for i, v in enumerate(var_list):
         if plot_type == 'pct_diff':
-            plot_var = (reform_tpi[v] - base_tpi[v]) / base_tpi[v]
+            if v in ['r_gov', 'r', 'r_hh']:
+                # Compute just percentage point changes for rates
+                plot_var = reform_tpi[v] - base_tpi[v]
+            else:
+                plot_var = (reform_tpi[v] - base_tpi[v]) / base_tpi[v]
             ylabel = r'Pct. change'
             plt.plot(year_vec,
                      plot_var[start_index: start_index +
@@ -125,7 +130,7 @@ def plot_aggregates(base_tpi, base_params, reform_tpi=None,
         plt.title(plot_title, fontsize=15)
     vals = ax1.get_yticks()
     if plot_type == 'pct_diff':
-        ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
+        ax1.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
     plt.xlim((base_params.start_year - 1, base_params.start_year +
               num_years_to_plot))
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
@@ -195,8 +200,8 @@ def ss_3Dplot(base_params, base_ss, reform_params=None, reform_ss=None,
 
 def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
                    reform_params=None, var_list=['D'],
-                   num_years_to_plot=50,
-                   start_year=2019, vertical_line_years=None,
+                   plot_type='levels', num_years_to_plot=50,
+                   start_year=DEFAULT_START_YEAR, vertical_line_years=None,
                    plot_title=None, path=None):
     '''
     Create a plot of some variable to GDP.
@@ -208,6 +213,10 @@ def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
         reform_params (OG-USA Specifications class): reform parameters object
         p (OG-USA Specifications class): parameters object
         var_list (list): names of variable to plot
+        plot_type (string): type of plot, can be:
+            'diff': plots difference between baseline and reform
+                (reform-base)
+            'levels': plot variables in model units
         num_years_to_plot (integer): number of years to include in plot
         start_year (integer): year to start plot
         vertical_line_years (list): list of integers for years want
@@ -218,8 +227,10 @@ def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
     Returns:
         fig (Matplotlib plot object): plot of ratio of a variable to GDP
     '''
-    assert (isinstance(start_year, int))
+    assert isinstance(start_year, (int, np.integer))
     assert (isinstance(num_years_to_plot, int))
+    if plot_type == 'diff':
+        assert (reform_tpi is not None)
     # Make sure both runs cover same time period
     if reform_tpi:
         assert (base_params.start_year == reform_params.start_year)
@@ -227,20 +238,30 @@ def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
     start_index = start_year - base_params.start_year
     fig1, ax1 = plt.subplots()
     for i, v in enumerate(var_list):
-        plot_var_base = (base_tpi[v][:base_params.T] /
-                         base_tpi['Y'][:base_params.T])
-        if reform_tpi:
-            plot_var_reform = (reform_tpi[v][:base_params.T] /
-                               reform_tpi['Y'][:base_params.T])
-            plt.plot(year_vec, plot_var_base[start_index: start_index +
-                                             num_years_to_plot],
-                     label='Baseline ' + ToGDP_LABELS[v])
-            plt.plot(year_vec, plot_var_reform[start_index: start_index +
-                                               num_years_to_plot],
-                     label='Reform ' + ToGDP_LABELS[v])
-        else:
-            plt.plot(year_vec, plot_var_base[start_index: start_index +
-                                             num_years_to_plot],
+        if plot_type == 'levels':
+            plot_var_base = (base_tpi[v][:base_params.T] /
+                             base_tpi['Y'][:base_params.T])
+            if reform_tpi:
+                plot_var_reform = (reform_tpi[v][:base_params.T] /
+                                   reform_tpi['Y'][:base_params.T])
+                plt.plot(year_vec, plot_var_base[start_index: start_index +
+                                                 num_years_to_plot],
+                         label='Baseline ' + ToGDP_LABELS[v])
+                plt.plot(year_vec, plot_var_reform[start_index: start_index +
+                                                   num_years_to_plot],
+                         label='Reform ' + ToGDP_LABELS[v])
+            else:
+                plt.plot(year_vec, plot_var_base[start_index: start_index +
+                                                 num_years_to_plot],
+                         label=ToGDP_LABELS[v])
+        else:  # if plotting differences in ratios
+            var_base = (base_tpi[v][:base_params.T] /
+                        base_tpi['Y'][:base_params.T])
+            var_reform = (reform_tpi[v][:base_params.T] /
+                          reform_tpi['Y'][:base_params.T])
+            plot_var = var_reform - var_base
+            plt.plot(year_vec, plot_var[start_index: start_index +
+                                        num_years_to_plot],
                      label=ToGDP_LABELS[v])
     ylabel = r'Percent of GDP'
     # vertical markers at certain years
@@ -252,7 +273,10 @@ def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
     if plot_title:
         plt.title(plot_title, fontsize=15)
     vals = ax1.get_yticks()
-    ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
+    if plot_type == 'levels':
+        ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
+    else:
+        ax1.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
     plt.xlim((base_params.start_year - 1, base_params.start_year +
               num_years_to_plot))
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
@@ -266,7 +290,7 @@ def plot_gdp_ratio(base_tpi, base_params, reform_tpi=None,
 
 def ability_bar(base_tpi, base_params, reform_tpi,
                 reform_params, var='n_mat', num_years=5,
-                start_year=2019, plot_title=None, path=None):
+                start_year=DEFAULT_START_YEAR, plot_title=None, path=None):
     '''
     Plots percentage changes from baseline by ability group for a
     given variable.
@@ -287,8 +311,8 @@ def ability_bar(base_tpi, base_params, reform_tpi,
     Returns:
         fig (Matplotlib plot object): plot of results by ability type
     '''
-    assert (isinstance(start_year, int))
-    assert (isinstance(num_years, int))
+    assert isinstance(start_year, (int, np.integer))
+    assert isinstance(num_years, (int, np.integer))
     # Make sure both runs cover same time period
     if reform_tpi:
         assert (base_params.start_year == reform_params.start_year)
@@ -369,7 +393,7 @@ def ability_bar_ss(base_ss, base_params, reform_ss, reform_params,
 
 def tpi_profiles(base_tpi, base_params, reform_tpi=None,
                  reform_params=None, by_j=True, var='n_mat',
-                 num_years=5, start_year=2019, plot_title=None,
+                 num_years=5, start_year=DEFAULT_START_YEAR, plot_title=None,
                  path=None):
     '''
     Plot lifecycle profiles of given variable in the SS.
@@ -391,8 +415,8 @@ def tpi_profiles(base_tpi, base_params, reform_tpi=None,
         fig (Matplotlib plot object): plot of lifecycle profiles
 
     '''
-    assert (isinstance(start_year, int))
-    assert (isinstance(num_years, int))
+    assert isinstance(start_year, (int, np.integer))
+    assert isinstance(num_years, (int, np.integer))
     if reform_tpi:
         assert (base_params.start_year == reform_params.start_year)
         assert (base_params.S == reform_params.S)
@@ -536,6 +560,8 @@ def plot_all(base_output_path, reform_output_path, save_path):
         None: All output figures saved to disk.
 
     '''
+    # Make directory in case it doesn't exist
+    utils.mkdirs(save_path)
     # Read in data
     # Read in TPI output and parameters
     base_tpi = utils.safe_read_pickle(
@@ -566,6 +592,7 @@ def plot_all(base_output_path, reform_output_path, save_path):
                     reform_params=reform_params,
                     var_list=['Y', 'K', 'L', 'C'], plot_type='pct_diff',
                     num_years_to_plot=150,
+                    start_year=base_params.start_year,
                     vertical_line_years=[
                         base_params.start_year + base_params.tG1,
                         base_params.start_year + base_params.tG2],
@@ -577,6 +604,7 @@ def plot_all(base_output_path, reform_output_path, save_path):
                     reform_params=reform_params,
                     var_list=['D', 'G', 'TR', 'total_revenue'],
                     plot_type='pct_diff', num_years_to_plot=150,
+                    start_year=base_params.start_year,
                     vertical_line_years=[
                         base_params.start_year + base_params.tG1,
                         base_params.start_year + base_params.tG2],
@@ -588,6 +616,7 @@ def plot_all(base_output_path, reform_output_path, save_path):
                     reform_params=reform_params,
                     var_list=['r'],
                     plot_type='levels', num_years_to_plot=150,
+                    start_year=base_params.start_year,
                     vertical_line_years=[
                         base_params.start_year + base_params.tG1,
                         base_params.start_year + base_params.tG2],
@@ -598,6 +627,7 @@ def plot_all(base_output_path, reform_output_path, save_path):
                     reform_params=reform_params,
                     var_list=['w'],
                     plot_type='levels', num_years_to_plot=150,
+                    start_year=base_params.start_year,
                     vertical_line_years=[
                         base_params.start_year + base_params.tG1,
                         base_params.start_year + base_params.tG2],
@@ -607,7 +637,8 @@ def plot_all(base_output_path, reform_output_path, save_path):
     # Debt-GDP in base and reform-- vertical lines at tG1, tG2
     plot_gdp_ratio(base_tpi, base_params, reform_tpi, reform_params,
                    var_list=['D'], num_years_to_plot=150,
-                   start_year=2019, vertical_line_years=[
+                   start_year=base_params.start_year,
+                   vertical_line_years=[
                            base_params.start_year + base_params.tG1,
                            base_params.start_year + base_params.tG2],
                    plot_title='Debt-to-GDP',
@@ -616,7 +647,8 @@ def plot_all(base_output_path, reform_output_path, save_path):
     # Tax revenue to GDP in base and reform-- vertical lines at tG1, tG2
     plot_gdp_ratio(base_tpi, base_params, reform_tpi, reform_params,
                    var_list=['total_revenue'], num_years_to_plot=150,
-                   start_year=2019, vertical_line_years=[
+                   start_year=base_params.start_year,
+                   vertical_line_years=[
                            base_params.start_year + base_params.tG1,
                            base_params.start_year + base_params.tG2],
                    plot_title='Tax Revenue to GDP',
@@ -632,7 +664,7 @@ def plot_all(base_output_path, reform_output_path, save_path):
     path_list = ['Cons', 'Labor', 'Save', 'ETR', 'MTRx', 'MTRy']
     for i, v in enumerate(var_list):
         ability_bar(base_tpi, base_params, reform_tpi, reform_params,
-                    var=v, num_years=10, start_year=2019,
+                    var=v, num_years=10, start_year=DEFAULT_START_YEAR,
                     plot_title='Percentage changes in ' + title_list[i],
                     path=os.path.join(save_path, 'PctChange_' +
                                       path_list[i] + '.png'))
@@ -664,8 +696,8 @@ def plot_all(base_output_path, reform_output_path, save_path):
 def inequality_plot(
     base_tpi, base_params, reform_tpi=None, reform_params=None,
     var='c_path', ineq_measure='gini', pctiles=None, plot_type='levels',
-    num_years_to_plot=50, start_year=2019, vertical_line_years=None,
-    plot_title=None, path=None):
+    num_years_to_plot=50, start_year=DEFAULT_START_YEAR,
+    vertical_line_years=None, plot_title=None, path=None):
     '''
     Plot measures of inequality over the time path.
 
@@ -702,7 +734,7 @@ def inequality_plot(
         fig (Matplotlib plot object): plot of inequality measure
 
     '''
-    assert (isinstance(start_year, int))
+    assert isinstance(start_year, (int, np.integer))
     assert (isinstance(num_years_to_plot, int))
     # Make sure both runs cover same time period
     if reform_tpi:
@@ -773,7 +805,7 @@ def inequality_plot(
         plt.title(plot_title, fontsize=15)
     vals = ax1.get_yticks()
     if plot_type == 'pct_diff':
-        ax1.set_yticklabels(['{:,.0%}'.format(x) for x in vals])
+        ax1.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
     plt.xlim((base_params.start_year - 1, base_params.start_year +
               num_years_to_plot))
     plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)

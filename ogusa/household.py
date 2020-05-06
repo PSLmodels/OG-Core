@@ -369,6 +369,26 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, tr, theta, chi_n, e,
     return FOC_error
 
 
+def get_y(r_hh, w, b_s, n, p):
+    '''
+    Compute houshold income before taxes.
+
+    ..math::
+        y_{j,s,t} = r_{hh,t}b_{j,s,t} + w_{t}e_{j,s}n_{j,s,t}
+
+    Args:
+        r_hh (array_like): real interest rate on the household portfolio
+        w (array_like): real wage rate
+        b_s (Numpy array): household savings coming into the period
+        n (Numpy array): household labor supply
+        p (OG-USA Specifications object): model parameters
+    '''
+
+    y = r_hh * b_s + w * p.e * n
+
+    return y
+
+
 def constraint_checker_SS(bssmat, nssmat, cssmat, ltilde):
     '''
     Checks constraints on consumption, savings, and labor supply in the

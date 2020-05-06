@@ -10,7 +10,7 @@ BASELINE_DIR = "OUTPUT_BASELINE"
 DEFAULT_START_YEAR = 2020
 
 # Latest year TaxData extrapolates to
-TC_LAST_YEAR = 2029
+TC_LAST_YEAR = taxcalc.Policy.LAST_BUDGET_YEAR
 
 # Year of data used (e.g. PUF or CPS year)
 CPS_START_YEAR = taxcalc.Records.CPSCSV_YEAR
@@ -221,8 +221,6 @@ PARAM_LABELS = {
                        r'$\texttt{PIA_maxpayment}$'],
     'replacement_rate_adjust': ['Adjustment to replacement rate',
                                 r'$theta_{adj,t}$'],
-    'small_open': ['Whether modeling a small, open economy',
-                   r'$\texttt{small_open}$'],
     'world_int_rate': ['World interest rate', r'$r^{*}_{t}$'],
     'initial_foreign_debt_ratio': [
         'Share of government debt held by foreigners in initial period',

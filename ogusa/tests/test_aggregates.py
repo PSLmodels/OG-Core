@@ -69,10 +69,18 @@ aggI_TPI = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss))))
             * np.exp(p.g_y) * (K_p1 - part2) - (1.0 - p.delta) * K)
 test_data = [(b_splus1[-1, :, :], K_p1[-1], K[-1], p, 'SS', aggI_SS),
              (b_splus1, K_p1, K, p, 'TPI', aggI_TPI)]
+aggI_total_SS = ((1 + p.g_n_ss) * np.exp(p.g_y) * (K[-1]) -
+                 (1.0 - p.delta) * K[-1])
+aggI_total_TPI = (((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss))))
+                   * np.exp(p.g_y) * K_p1) - (1.0 - p.delta) * K)
+test_data = [(b_splus1[-1, :, :], K_p1[-1], K[-1], p, 'SS', aggI_SS),
+             (b_splus1, K_p1, K, p, 'TPI', aggI_TPI),
+             (None, K[-1], K[-1], p, 'total_ss', aggI_total_SS),
+             (None, K_p1, K, p, 'total_tpi', aggI_total_TPI)]
 
 
 @pytest.mark.parametrize('b_splus1,K_p1,K,p,method,expected', test_data,
-                         ids=['SS', 'TPI'])
+                         ids=['SS', 'TPI', 'total_ss', 'total_tpi'])
 def test_get_I(b_splus1, K_p1, K, p, method, expected):
     """
         Text aggregate investment function.
@@ -320,10 +328,9 @@ def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p,
     """
     Test aggregate revenue function.
     """
-    revenue, _, _, _, _, _, _ = aggr.revenue(
+    revenue, _, _, _, _, _, _, _, _ = aggr.revenue(
         r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p, method)
 
-    print(revenue)
     assert(np.allclose(revenue, expected))
 
 
@@ -364,3 +371,45 @@ def test_resource_constraint():
                                        debt_service_f, r, p)
 
     assert(np.allclose(test_RC, expected))
+
+
+def test_get_K_splits():
+    '''
+    Test of the get_K_splits function.
+    '''
+    B = 2.2
+    K_demand_open = 0.5
+    D_d = 1.1
+    zeta_K = 0.2
+
+    expected_K_d = 1.1
+    expected_K_f = 0.2 * (0.5 - (2.2 - 1.1))
+    expected_K = expected_K_d + expected_K_f
+
+    test_K, test_K_d, test_K_f = aggr.get_K_splits(
+        B, K_demand_open, D_d, zeta_K)
+
+    np.allclose(test_K, expected_K)
+    np.allclose(test_K_d, expected_K_d)
+    np.allclose(test_K_f, expected_K_f)
+
+
+def test_get_K_splits_negative_K_d():
+    '''
+    Test of the get_K_splits function for case where K_d < 0.
+    '''
+    B = 2.2
+    K_demand_open = 0.5
+    D_d = 2.3
+    zeta_K = 0.2
+
+    expected_K_d = 0.05
+    expected_K_f = 0.2 * (0.5 - (2.2 - 2.3))
+    expected_K = expected_K_d + expected_K_f
+
+    test_K, test_K_d, test_K_f = aggr.get_K_splits(
+        B, K_demand_open, D_d, zeta_K)
+
+    np.allclose(test_K, expected_K)
+    np.allclose(test_K_d, expected_K_d)
+    np.allclose(test_K_f, expected_K_f)

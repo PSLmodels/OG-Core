@@ -1,10 +1,22 @@
 from ogusa import txfunc
+import multiprocessing
+from distributed import Client, LocalCluster
 import pytest
 import numpy as np
 import os
 from ogusa import utils
-
+NUM_WORKERS = 2
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
+
+
+@pytest.fixture(scope="module")
+def dask_client():
+    cluster = LocalCluster(n_workers=NUM_WORKERS, threads_per_worker=2)
+    client = Client(cluster)
+    yield client
+    # teardown
+    client.close()
+    cluster.close()
 
 
 @pytest.mark.parametrize('tax_func_type,expected',
@@ -142,11 +154,12 @@ def test_txfunc_est():
     numparams = 12
     test_tuple = txfunc.txfunc_est(df, s, t, rate_type, tax_func_type,
                                    numparams, output_dir, graph)
-    expected_tuple = (np.array([
+    expected_tuple = ((np.array([
         6.37000261e-22, 2.73413298e-03, 1.49073835e-08, 1.39727771e-02,
         2.32796890e-01, -3.69059719e-02, 1.00000000e-04,
         -1.01967001e-01, 3.96030005e-02,  1.02987671e-01,
-        -1.30433574e-01,  1.00000000e+00]), 19527.162030362062, 3798)
+        -1.30433574e-01,  1.00000000e+00]), 19527.162030362062, 3798))
+
     for i, v in enumerate(expected_tuple):
         assert(np.allclose(test_tuple[i], v))
 
@@ -265,7 +278,7 @@ def test_get_tax_rates(tax_func_type, rate_type, params, for_estimation,
 
 
 @pytest.mark.full_run
-def test_tax_func_estimate():
+def test_tax_func_estimate(dask_client):
     '''
     Test txfunc.tax_func_loop() function.  The test is that given
     inputs from previous run, the outputs are unchanged.
@@ -280,9 +293,11 @@ def test_tax_func_estimate():
     age_specific = False
     BW = 1
     test_dict = txfunc.tax_func_estimate(
-        BW, S, starting_age, ending_age, beg_yr, baseline,
-        analytical_mtrs, tax_func_type, age_specific, reform, data,
-        client, num_workers)
+        BW, S, starting_age, ending_age, start_year=beg_yr,
+        baseline=baseline, analytical_mtrs=analytical_mtrs,
+        tax_func_type=tax_func_type, age_specific=age_specific,
+        reform=reform, data=data, client=dask_client,
+        num_workers=NUM_WORKERS)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data',
                      'tax_func_estimate_outputs.pkl'))

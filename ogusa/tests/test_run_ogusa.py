@@ -1,3 +1,5 @@
+import multiprocessing
+from distributed import Client, LocalCluster
 import pytest
 from ogusa import SS, TPI
 import time
@@ -7,15 +9,31 @@ from ogusa.utils import safe_read_pickle
 import ogusa.output_tables as ot
 SS.ENFORCE_SOLUTION_CHECKS = False
 TPI.ENFORCE_SOLUTION_CHECKS = False
+NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
+CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 
 
-def run_micro_macro(iit_reform, og_spec, guid):
+@pytest.fixture(scope="module")
+def dask_client():
+    cluster = LocalCluster(n_workers=NUM_WORKERS, threads_per_worker=2)
+    client = Client(cluster)
+    yield client
+    # teardown
+    client.close()
+    cluster.close()
+
+
+def run_micro_macro(iit_reform, og_spec, guid, client):
 
     guid = ''
     start_time = time.time()
 
     REFORM_DIR = "./OUTPUT_REFORM_" + guid
     BASELINE_DIR = "./OUTPUT_BASELINE_" + guid
+    tax_func_path_baseline = os.path.join(CUR_PATH, 'OUTPUT_BASELINE',
+                                          'TxFuncEst_baseline.pkl')
+    tax_func_path_reform = os.path.join(CUR_PATH, 'OUTPUT_REFORM',
+                                        'TxFuncEst_policy.pkl')
 
     # Add start year from reform to user parameters
     start_year = sorted(iit_reform.keys())[0]
@@ -35,7 +53,8 @@ def run_micro_macro(iit_reform, og_spec, guid):
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': True, 'time_path': True, 'baseline': True,
               'og_spec': og_spec, 'run_micro': False,
-              'guid': guid}
+              'tax_func_path': tax_func_path_baseline, 'guid': guid,
+              'client': client, 'num_workers': NUM_WORKERS}
     runner(**kwargs)
 
     '''
@@ -48,7 +67,9 @@ def run_micro_macro(iit_reform, og_spec, guid):
     kwargs = {'output_base': output_base, 'baseline_dir': BASELINE_DIR,
               'test': True, 'time_path': True, 'baseline': False,
               'iit_reform': iit_reform, 'og_spec': og_spec,
-              'guid': guid, 'run_micro': False}
+              'guid': guid, 'run_micro': False,
+              'tax_func_path': tax_func_path_reform,
+              'client': client, 'num_workers': NUM_WORKERS}
     runner(**kwargs)
     time.sleep(0.5)
     base_tpi = safe_read_pickle(
@@ -70,7 +91,7 @@ def run_micro_macro(iit_reform, og_spec, guid):
 
 
 @pytest.mark.full_run
-def test_run_micro_macro():
+def test_run_micro_macro(dask_client):
 
     iit_reform = {
         2018: {
@@ -83,4 +104,5 @@ def test_run_micro_macro():
             '_II_rt7': [0.3564],
             }, }
     run_micro_macro(iit_reform=iit_reform, og_spec={
-        'frisch': 0.44, 'g_y_annual': 0.021}, guid='abc')
+        'frisch': 0.44, 'g_y_annual': 0.021}, guid='abc',
+                    client=dask_client)

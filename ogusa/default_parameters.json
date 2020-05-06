@@ -370,20 +370,7 @@
             }
         }
     },
-    "small_open": {
-        "title": "Boolean to indicate using a small open economy model",
-        "description": "Boolean to indicate using a small open economy model",
-        "section_1": "Open Economy Parameters",
-        "notes": "",
-        "type": "bool",
-        "value": [
-            {
-                "value": false
-            }
-        ],
-        "validators": {}
-    },
-    "world_int_rate": {
+    "world_int_rate_annual": {
         "title": "Exogenous annual world interest rate to be used when modeling a small open economy",
         "description": "Exogenous annual world interest rate to be used when modeling a small open economy",
         "section_1": "Open Economy Parameters",
@@ -667,6 +654,7 @@
         "section_2": "Taxes",
         "notes": "This policy parameter represents the effective consumption tax rate from sales taxes, VATs, and excise taxes.  To capture exemptions of certain goods, this is assumed to vary by age and ability type.  It is thus a SxJ matrix.",
         "type": "float",
+        "number_dims": 1,
         "value": [
             {
                 "value": [

@@ -566,6 +566,25 @@ def test_FOC_labor(model_vars, params, expected):
     assert np.allclose(test_value, expected)
 
 
+def test_get_y():
+    '''
+    Test of household.get_y() function.
+    '''
+    r_hh = np.array([0.05, 0.04, 0.09])
+    w = np.array([1.2, 0.8, 2.5])
+    b_s = np.array([0.5, 0.99, 9])
+    n = np.array([0.8, 3.2, 0.2])
+    expected_y = np.array([0.9754, 3.8796, 0.91])
+    p = Specifications()
+    # p.update_specifications({'S': 4, 'J': 1})
+    p.S = 3
+    p.e = np.array([0.99, 1.5, 0.2])
+
+    test_y = household.get_y(r_hh, w, b_s, n, p)
+
+    assert np.allclose(test_y, expected_y)
+
+
 bssmat0 = np.array([[0.1, 0.2], [0.3, 0.4]])
 nssmat0 = np.array([[0.1, 0.2], [0.3, 0.4]])
 cssmat0 = np.array([[0.1, 0.2], [0.3, 0.4]])

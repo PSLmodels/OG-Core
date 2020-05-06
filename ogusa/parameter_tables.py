@@ -1,12 +1,13 @@
 import pandas as pd
 import numpy as np
 from ogusa.utils import save_return_table
-from ogusa.constants import VAR_LABELS, PARAM_LABELS
+from ogusa.constants import VAR_LABELS, PARAM_LABELS, DEFAULT_START_YEAR
 
 
 def tax_rate_table(base_TxFuncEst, base_params, reform_TxFuncEst=None,
-                   reform_params=None, rate_type='ETR', start_year=2019,
-                   num_years=10, table_format='tex', path=None):
+                   reform_params=None, rate_type='ETR',
+                   start_year=DEFAULT_START_YEAR, num_years=10,
+                   table_format='tex', path=None):
     '''
     Table of average tax rates over several years.
 
@@ -29,8 +30,8 @@ def tax_rate_table(base_TxFuncEst, base_params, reform_TxFuncEst=None,
         table_str (string or DataFrame): table of tax rates
 
     '''
-    assert (isinstance(start_year, int))
-    assert (isinstance(num_years, int))
+    assert isinstance(start_year, (int, np.integer))
+    assert isinstance(num_years, (int, np.integer))
     # Make sure both runs cover same time period
     if reform_TxFuncEst is not None:
         assert (base_params.start_year == reform_params.start_year)
@@ -116,7 +117,8 @@ def tax_rate_table(base_TxFuncEst, base_params, reform_TxFuncEst=None,
     else:
         len_rates = len(base_rates[start_index: start_index +
                                    num_years])
-        table = {'Year': years[:len_rates],
+        table = {
+                'Year': years[:len_rates],
                  'Baseline ' + VAR_LABELS[rate_type]:
                  base_rates[start_index: start_index + num_years],
                  'Reform ' + VAR_LABELS[rate_type]:
@@ -127,6 +129,7 @@ def tax_rate_table(base_TxFuncEst, base_params, reform_TxFuncEst=None,
     table_df = (pd.DataFrame.from_dict(table, orient='columns')).transpose()
     table_df.columns = table_df.iloc[0].astype('int').astype('str')
     table_df.reindex(table_df.index.drop('Year'))
+    table_df.drop('Year', inplace=True)
     table_str = save_return_table(table_df, table_format, path,
                                   precision=2)
 

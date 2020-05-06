@@ -44,8 +44,8 @@ def macro_table(base_tpi, base_params, reform_tpi=None,
             if saved to disk
 
     '''
-    assert (isinstance(start_year, int))
-    assert (isinstance(num_years, int))
+    assert isinstance(start_year, (int, np.integer))
+    assert isinstance(num_years, (int, np.integer))
     # Make sure both runs cover same time period
     if reform_tpi is not None:
         assert (base_params.start_year == reform_params.start_year)
@@ -161,7 +161,7 @@ def macro_table_SS(base_ss, reform_ss,
         table_dict['Baseline'].append(base_ss[v])
         table_dict['Reform'].append(reform_ss[v])
         if v != 'D/Y':
-            diff = (reform_ss[v] - base_ss[v]) / base_ss[v]
+            diff = ((reform_ss[v] - base_ss[v]) / base_ss[v]) * 100
         else:
             diff = (reform_ss['Dss'] / reform_ss['Yss'] -
                     base_ss['Dss'] / base_ss['Yss'])
@@ -342,5 +342,60 @@ def wealth_moments_table(base_ss, base_params, table_format=None,
     table_df = pd.DataFrame.from_dict(table_dict)
     table = save_return_table(table_df, table_format, path,
                               precision=3)
+
+    return table
+
+
+def tp_output_dump_table(base_params, base_tpi, reform_params=None,
+                         reform_tpi=None, table_format=None, path=None):
+    '''
+    This function dumps many of the macro time series from the
+    transition path into an output table.
+
+    Args:
+        base_params (OG-USA Specifications class): baseline parameters
+            object
+        base_tpi (dictionary): TP output from baseline run
+        reform_params (OG-USA Specifications class): reform parameters
+            object
+        reform_tpi (dictionary): TP output from reform run
+        table_format (string): format to return table in: 'csv', 'tex',
+            'excel', 'json', if None, a DataFrame is returned
+        path (string): path to save table to
+
+    Returns:
+        table (various): table in DataFrame or string format or `None`
+            if saved to disk
+
+    '''
+    T = base_params.T
+    # keep just items of interest for final table
+    vars_to_keep = ['Y', 'L', 'G', 'TR', 'B', 'K', 'K_d', 'K_f', 'D',
+                    'D_d', 'D_f', 'r', 'r_gov', 'r_hh', 'w',
+                    'total_revenue', 'business_revenue']
+    base_dict = {k: base_tpi[k] for k in vars_to_keep}
+    # update key names
+    base_dict_final = dict((VAR_LABELS[k] + ': Baseline', v[:T]) for (k, v)
+                           in base_dict.items())
+    # create df
+    table_df = pd.DataFrame.from_dict(base_dict_final)
+    if reform_tpi is not None:
+        assert (base_params.start_year == reform_params.start_year)
+        assert (base_params.T == reform_params.T)
+        reform_dict = {k: reform_tpi[k] for k in vars_to_keep}
+        # update key names
+        reform_dict_final = dict((VAR_LABELS[k] + ': Reform', v[:T]) for
+                                 (k, v) in reform_dict.items())
+        df_reform = pd.DataFrame.from_dict(reform_dict_final)
+        # merge dfs
+        table_df = table_df.merge(df_reform, left_index=True,
+                                  right_index=True)
+    # rename index to year
+    table_df.reset_index(inplace=True)
+    table_df.rename(columns={'index': 'Year'}, inplace=True)
+    # update index to reflect years
+    table_df['Year'] = table_df['Year'] + base_params.start_year
+
+    table = save_return_table(table_df, table_format, path)
 
     return table
