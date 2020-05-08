@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 import os
-from ogusa.constants import VAR_LABELS
+from ogusa.constants import VAR_LABELS, DEFAULT_START_YEAR
 from ogusa import wealth
 from ogusa.utils import save_return_table, Inequality
 cur_path = os.path.split(os.path.abspath(__file__))[0]
@@ -11,7 +11,7 @@ def macro_table(base_tpi, base_params, reform_tpi=None,
                 reform_params=None,
                 var_list=['Y', 'C', 'K', 'L', 'r', 'w'],
                 output_type='pct_diff', num_years=10, include_SS=True,
-                include_overall=True, start_year=2019,
+                include_overall=True, start_year=DEFAULT_START_YEAR,
                 table_format=None, path=None):
     '''
     Create a table of macro aggregates.
