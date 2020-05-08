@@ -130,6 +130,8 @@ def macro_table(base_tpi, base_params, reform_tpi=None,
         # Make df with dict so can use pandas functions
         table_df = pd.DataFrame.from_dict(table_dict, orient='columns'
                                           ).set_index('Year').transpose()
+        table_df.reset_index(inplace=True)
+        table_df.rename(columns={'index': 'Variable'}, inplace=True)
         table = save_return_table(table_df, table_format, path)
 
     return table
