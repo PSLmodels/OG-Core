@@ -655,12 +655,14 @@ def plot_all(base_output_path, reform_output_path, save_path):
 
     # Pct change in c, n, b, y, etr, mtrx, mtry by ability group over 10 years
     var_list = ['c_path', 'n_mat', 'bmat_splus1', 'etr_path',
-                'mtrx_path', 'mtry_path']
+                'mtrx_path', 'mtry_path', 'y_before_tax_mat']
     title_list = ['consumption', 'labor supply', 'savings',
                   'effective tax rates',
                   'marginal tax rates on labor income',
-                  'marginal tax rates on capital income']
-    path_list = ['Cons', 'Labor', 'Save', 'ETR', 'MTRx', 'MTRy']
+                  'marginal tax rates on capital income',
+                  'before tax income']
+    path_list = ['Cons', 'Labor', 'Save', 'ETR', 'MTRx', 'MTRy',
+                 'Income']
     for i, v in enumerate(var_list):
         ability_bar(base_tpi, base_params, reform_tpi, reform_params,
                     var=v, num_years=10,
