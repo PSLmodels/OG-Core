@@ -4,9 +4,9 @@ except ImportError:
     from distutils.core import setup
 
 with open('README.md') as f:
-        longdesc = f.read()
+    longdesc = f.read()
 
-version = '0.5.13'
+version = '0.6.2'
 
 config = {
     'description': 'General equilibribum, overlapping generations model for the USA',
