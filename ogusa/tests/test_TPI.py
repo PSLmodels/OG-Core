@@ -282,20 +282,15 @@ filename3 = os.path.join(CUR_PATH, 'test_io_data',
 param_updates4 = {'baseline_spending': True}
 filename4 = os.path.join(CUR_PATH, 'test_io_data',
                          'run_TPI_outputs_reform_baseline_spend_2.pkl')
-param_updates5 = {'zeta_K': [1.0]}
-filename5 = os.path.join(CUR_PATH, 'test_io_data',
-                         'run_TPI_outputs_baseline_small_open_2.pkl')
 
 
 @pytest.mark.parametrize('baseline,param_updates,filename',
                          [(True, param_updates2, filename2),
                           (True, param_updates1, filename1),
                           (False, param_updates3, filename3),
-                          (False, param_updates4, filename4),
-                          (True, param_updates5, filename5)],
+                          (False, param_updates4, filename4)],
                          ids=['Baseline, balanced budget', 'Baseline',
-                              'Reform', 'Reform, baseline spending',
-                              'Baseline, small open'])
+                              'Reform', 'Reform, baseline spending'])
 def test_run_TPI(baseline, param_updates, filename, tmp_path,
                  dask_client):
     '''
@@ -345,21 +340,32 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
                                atol=1e-04))
 
 
+param_updates5 = {'zeta_K': [1.0]}
+filename5 = os.path.join(CUR_PATH, 'test_io_data',
+                         'run_TPI_outputs_baseline_small_open_2.pkl')
+param_updates6 = {'zeta_K': [0.2, 0.2, 0.2, 1.0, 1.0, 1.0, 0.2]}
+filename6 = filename = os.path.join(
+    CUR_PATH, 'test_io_data',
+    'run_TPI_outputs_baseline_small_open_some_periods_2.pkl')
+
+
 @pytest.mark.full_run
-def test_run_TPI_small_open_some_periods(tmp_path, dask_client):
+@pytest.mark.parametrize('baseline,param_updates,filename',
+                         [(True, param_updates5, filename5),
+                          (True, param_updates6, filename6)],
+                         ids=['Baseline, small open',
+                              'Baseline, small open for some periods'])
+def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
+                       dask_client):
     '''
     Test TPI.run_TPI function.  Provide inputs to function and
     ensure that output returned matches what it has been before.
     '''
-    filename = os.path.join(
-        CUR_PATH, 'test_io_data',
-        'run_TPI_outputs_baseline_small_open_some_periods_2.pkl')
     baseline_dir = os.path.join(CUR_PATH, 'baseline')
     output_base = baseline_dir
     p = Specifications(baseline=True, baseline_dir=baseline_dir,
                        output_base=output_base, test=True,
                        client=dask_client, num_workers=NUM_WORKERS)
-    param_updates = {'zeta_K': [0.2, 0.2, 0.2, 1.0, 1.0, 1.0, 0.2]}
     p.update_specifications(param_updates)
     p.maxiter = 2  # this test runs through just two iterations
     p.get_tax_function_parameters(
