@@ -86,12 +86,14 @@ def D_G_path(r_gov, dg_fixed_values, p):
                                        G[t - 1] + TR[t - 1] -
                                        total_revenue[t - 1]))
             if (t >= p.tG1) and (t < p.tG2):
-                G[t] = (growth[t + 1] * (p.rho_G * p.debt_ratio_ss * Y[t] +
-                                         (1 - p.rho_G) * D[t]) -
-                        (1 + r_gov[t]) * D[t] + total_revenue[t] - TR[t])
+                G[t] = (
+                    growth[t + 1] * (p.rho_G * p.debt_ratio_ss * Y[t] +
+                                     (1 - p.rho_G) * D[t]) -
+                    (1 + r_gov[t]) * D[t] + total_revenue[t] - TR[t])
             elif t >= p.tG2:
-                G[t] = (growth[t + 1] * (p.debt_ratio_ss * Y[t]) -
-                        (1 + r_gov[t]) * D[t] + total_revenue[t] - TR[t])
+                G[t] = (
+                    growth[t + 1] * (p.debt_ratio_ss * Y[t]) -
+                    (1 + r_gov[t]) * D[t] + total_revenue[t] - TR[t])
             t += 1
 
         # in final period, growth rate has stabilized, so we can replace

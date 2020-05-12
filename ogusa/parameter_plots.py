@@ -4,12 +4,14 @@ import matplotlib.pyplot as plt
 import matplotlib
 from ogusa.constants import GROUP_LABELS
 from ogusa import utils
+from ogusa.constants import DEFAULT_START_YEAR
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 style_file = os.path.join(CUR_PATH, 'OGUSAplots.mplstyle')
 plt.style.use(style_file)
 
 
-def plot_imm_rates(p, year=2019, include_title=False, path=None):
+def plot_imm_rates(p, year=DEFAULT_START_YEAR, include_title=False,
+                   path=None):
     '''
     Create a plot of immigration rates from OG-USA parameterization.
 
@@ -71,8 +73,9 @@ def plot_mort_rates(p, include_title=False, path=None):
         plt.savefig(fig_path)
 
 
-def plot_pop_growth(p, start_year=2019, num_years_to_plot=150,
-                    include_title=False, path=None):
+def plot_pop_growth(p, start_year=DEFAULT_START_YEAR,
+                    num_years_to_plot=150, include_title=False,
+                    path=None):
     '''
     Create a plot of population growth rates by year.
 

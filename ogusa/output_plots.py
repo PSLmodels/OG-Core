@@ -335,7 +335,6 @@ def ability_bar(base_tpi, base_params, reform_tpi,
     plt.ylabel(r'Percentage Change in ' + VAR_LABELS[var])
     if plot_title:
         plt.title(plot_title, fontsize=15)
-    plt.legend(loc=9, bbox_to_anchor=(0.5, -0.15), ncol=2)
     if path:
         fig_path1 = os.path.join(path)
         plt.savefig(fig_path1, bbox_inches="tight")
@@ -656,15 +655,18 @@ def plot_all(base_output_path, reform_output_path, save_path):
 
     # Pct change in c, n, b, y, etr, mtrx, mtry by ability group over 10 years
     var_list = ['c_path', 'n_mat', 'bmat_splus1', 'etr_path',
-                'mtrx_path', 'mtry_path']
+                'mtrx_path', 'mtry_path', 'y_before_tax_mat']
     title_list = ['consumption', 'labor supply', 'savings',
                   'effective tax rates',
                   'marginal tax rates on labor income',
-                  'marginal tax rates on capital income']
-    path_list = ['Cons', 'Labor', 'Save', 'ETR', 'MTRx', 'MTRy']
+                  'marginal tax rates on capital income',
+                  'before tax income']
+    path_list = ['Cons', 'Labor', 'Save', 'ETR', 'MTRx', 'MTRy',
+                 'Income']
     for i, v in enumerate(var_list):
         ability_bar(base_tpi, base_params, reform_tpi, reform_params,
-                    var=v, num_years=10, start_year=DEFAULT_START_YEAR,
+                    var=v, num_years=10,
+                    start_year=base_params.start_year,
                     plot_title='Percentage changes in ' + title_list[i],
                     path=os.path.join(save_path, 'PctChange_' +
                                       path_list[i] + '.png'))

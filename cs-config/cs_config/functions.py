@@ -65,7 +65,7 @@ class MetaParams(paramtools.Parameters):
 
 
 def get_version():
-    return "0.6.0"
+    return "0.6.2"
 
 
 def get_inputs(meta_param_dict):
