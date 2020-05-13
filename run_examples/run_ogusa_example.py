@@ -27,10 +27,10 @@ def main():
     client = Client()
     num_workers_max = int(min(multiprocessing.cpu_count(), 7))
     num_workers_txf = \
-        np.minimum(num_workers_max, int(np.floor((0.6 * RAM_total_GB) /
+        np.minimum(num_workers_max, int(np.floor((0.7 * RAM_total_GB) /
                                                  mem_per_wkr_txf)))
     num_workers_mod = \
-        np.minimum(num_workers_max, int(np.floor((0.6 * RAM_total_GB) /
+        np.minimum(num_workers_max, int(np.floor((0.7 * RAM_total_GB) /
                                                  mem_per_wkr_mod)))
     print('Number of workers for tax function est. = ', num_workers_txf)
     print('Number of workers for model solutions = ', num_workers_mod)

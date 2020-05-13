@@ -16,7 +16,7 @@ RAM_total_GB = RAM_total_bytes / 1073741824
 mem_per_wkr_txf = 3.5  # Memory per worker (GB) in tax function estimation
 num_workers_max = min(multiprocessing.cpu_count(), 7)
 NUM_WORKERS_TXF = \
-    np.minimum(num_workers_max, int(np.floor((0.6 * RAM_total_GB) /
+    np.minimum(num_workers_max, int(np.floor((0.7 * RAM_total_GB) /
                                              mem_per_wkr_txf)))
 
 # get path to puf if puf.csv in ogusa/ directory
