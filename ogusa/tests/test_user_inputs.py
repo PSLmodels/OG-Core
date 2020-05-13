@@ -28,7 +28,7 @@ def test_frisch(frisch, dask_client):
     runner(output_base=OUTPUT_DIR, baseline_dir=OUTPUT_DIR, test=False,
            time_path=False, baseline=True, og_spec=og_spec,
            run_micro=False, tax_func_path=TAX_FUNC_PATH, data=PUF_PATH,
-           client=dask_client, num_workers=NUM_WORKERS)
+           client=dask_client, num_workers_mod=NUM_WORKERS)
 
 
 @pytest.mark.full_run
@@ -40,7 +40,7 @@ def test_gy(g_y_annual, dask_client):
     runner(output_base=OUTPUT_DIR, baseline_dir=OUTPUT_DIR, test=False,
            time_path=False, baseline=True, og_spec=og_spec,
            run_micro=False, tax_func_path=TAX_FUNC_PATH, data=PUF_PATH,
-           client=dask_client, num_workers=NUM_WORKERS)
+           client=dask_client, num_workers_mod=NUM_WORKERS)
 
 
 @pytest.mark.full_run
@@ -53,4 +53,4 @@ def test_sigma(sigma, dask_client):
     runner(output_base=OUTPUT_DIR, baseline_dir=OUTPUT_DIR, test=False,
            time_path=False, baseline=True, og_spec=og_spec,
            run_micro=False, tax_func_path=TAX_FUNC_PATH, data=PUF_PATH,
-           client=dask_client, num_workers=NUM_WORKERS)
+           client=dask_client, num_workers_mod=NUM_WORKERS)

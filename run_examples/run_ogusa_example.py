@@ -8,6 +8,7 @@ from distributed import Client
 import time
 import numpy as np
 import os
+import psutil
 from taxcalc import Calculator
 from ogusa import output_tables as ot
 from ogusa import output_plots as op
@@ -18,9 +19,21 @@ from ogusa.utils import safe_read_pickle
 
 def main():
     # Define parameters to use for multiprocessing
+    RAM_stats = psutil.virtual_memory()
+    RAM_total_bytes = RAM_stats.total
+    RAM_total_GB = RAM_total_bytes / 1073741824
+    mem_per_wkr_txf = 3.5  # Memory per worker (GB) in tax function estimation
+    mem_per_wkr_mod = 0.05  # Memory per worker (GB) in model solution
     client = Client()
-    num_workers = min(multiprocessing.cpu_count(), 7)
-    print('Number of workers = ', num_workers)
+    num_workers_max = int(min(multiprocessing.cpu_count(), 7))
+    num_workers_txf = \
+        np.minimum(num_workers_max, int(np.floor((0.6 * RAM_total_GB) /
+                                                 mem_per_wkr_txf)))
+    num_workers_mod = \
+        np.minimum(num_workers_max, int(np.floor((0.6 * RAM_total_GB) /
+                                                 mem_per_wkr_mod)))
+    print('Number of workers for tax function est. = ', num_workers_txf)
+    print('Number of workers for model solutions = ', num_workers_mod)
     run_start_time = time.time()
 
     # Grab a reform JSON file already in Tax-Calculator
@@ -67,7 +80,8 @@ def main():
               'og_spec': og_spec, 'guid': '_example',
               'run_micro': False, 'tax_func_path': tax_func_path,
               'data': 'cps', 'client': client,
-              'num_workers': num_workers}
+              'num_workers_txf': num_workers_txf,
+              'num_workers_mod': num_workers_mod}
 
     start_time = time.time()
     runner(**kwargs)
@@ -87,7 +101,8 @@ def main():
               'test': False, 'time_path': True, 'baseline': False,
               'og_spec': og_spec, 'guid': '_example',
               'iit_reform': iit_reform, 'run_micro': True, 'data': 'cps',
-              'client': client, 'num_workers': num_workers}
+              'client': client, 'num_workers_txf': num_workers_txf,
+              'num_workers_mod': num_workers_mod}
 
     start_time = time.time()
     runner(**kwargs)

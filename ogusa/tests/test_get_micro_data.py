@@ -1,3 +1,4 @@
+import psutil
 import multiprocessing
 from distributed import Client, LocalCluster
 import pytest
@@ -7,7 +8,17 @@ import os
 from ogusa.constants import CPS_START_YEAR, PUF_START_YEAR, TC_LAST_YEAR
 from ogusa import get_micro_data, utils
 from taxcalc import GrowFactors
-NUM_WORKERS = min(multiprocessing.cpu_count(), 7)
+
+# Set NUM_WORKERS_TXF
+RAM_stats = psutil.virtual_memory()
+RAM_total_bytes = RAM_stats.total
+RAM_total_GB = RAM_total_bytes / 1073741824
+mem_per_wkr_txf = 3.5  # Memory per worker (GB) in tax function estimation
+num_workers_max = min(multiprocessing.cpu_count(), 7)
+NUM_WORKERS_TXF = \
+    np.minimum(num_workers_max, int(np.floor((0.6 * RAM_total_GB) /
+                                             mem_per_wkr_txf)))
+
 # get path to puf if puf.csv in ogusa/ directory
 CUR_PATH = os.path.abspath(os.path.dirname(__file__))
 PUF_PATH = os.path.join(CUR_PATH, '..', 'puf.csv')
@@ -15,7 +26,7 @@ PUF_PATH = os.path.join(CUR_PATH, '..', 'puf.csv')
 
 @pytest.fixture(scope="module")
 def dask_client():
-    cluster = LocalCluster(n_workers=NUM_WORKERS, threads_per_worker=2)
+    cluster = LocalCluster(n_workers=NUM_WORKERS_TXF, threads_per_worker=2)
     client = Client(cluster)
     yield client
     # teardown
@@ -175,7 +186,7 @@ def test_get_data(baseline, dask_client):
                      'micro_data_dict_for_tests.pkl'))
     test_data, _ = get_micro_data.get_data(
         baseline=baseline, start_year=2029, reform={}, data='cps',
-        client=dask_client, num_workers=NUM_WORKERS)
+        client=dask_client, num_workers=NUM_WORKERS_TXF)
     for k, v in test_data.items():
         try:
             assert_frame_equal(

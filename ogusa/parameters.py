@@ -23,7 +23,7 @@ class Specifications(paramtools.Parameters):
                  output_base=BASELINE_DIR, baseline_dir=BASELINE_DIR,
                  test=False, time_path=True, baseline=False,
                  iit_reform={}, guid='', data='cps',
-                 client=None, num_workers=1):
+                 client=None, num_workers_txf=1, num_workers_mod=1):
         super().__init__()
 
         self.output_base = output_base
@@ -34,7 +34,8 @@ class Specifications(paramtools.Parameters):
         self.iit_reform = iit_reform
         self.guid = guid
         self.data = data
-        self.num_workers = num_workers
+        self.num_workers_txf = num_workers_txf
+        self.num_workers_mod = num_workers_mod
 
         # put OG-USA version in parameters to save for reference
         self.ogusa_version = pkg_resources.get_distribution("ogusa").version
@@ -314,7 +315,7 @@ class Specifications(paramtools.Parameters):
                 self.baseline, self.analytical_mtrs, self.tax_func_type,
                 self.age_specific, self.start_year, self.iit_reform,
                 self.guid, tax_func_path, self.data, client,
-                self.num_workers)
+                self.num_workers_txf)
             dict_params, _ = self.read_tax_func_estimate(tax_func_path)
         self.mean_income_data = dict_params['tfunc_avginc'][0]
         try:

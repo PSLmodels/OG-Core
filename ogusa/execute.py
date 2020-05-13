@@ -13,7 +13,7 @@ from ogusa.parameters import Specifications
 def runner(output_base, baseline_dir, test=False, time_path=True,
            baseline=True, iit_reform={}, og_spec={}, guid='',
            run_micro=True, tax_func_path=None, data=None, client=None,
-           num_workers=1):
+           num_workers_txf=1, num_workers_mod=1):
     '''
     This function runs the OG-USA model, solving for the steady-state
     and (optionally) the time path equilibrium.
@@ -34,8 +34,10 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
         data (str or Pandas DataFrame): path to or data to use in
             Tax-Calculator
         client (Dask client object): client
-        num_workers (int): number of workers to use for parallelization
-            with Dask
+        num_workers_txf (int): number of workers to use for parallelization
+            of tax function estimation with Dask
+        num_workers_mod (int): number of workers to use for parallelization
+            of model solution with Dask
 
     Returns:
         None
@@ -64,7 +66,8 @@ def runner(output_base, baseline_dir, test=False, time_path=True,
                           baseline_dir=baseline_dir, test=test,
                           time_path=time_path, baseline=baseline,
                           iit_reform=iit_reform, guid=guid, data=data,
-                          client=client, num_workers=num_workers)
+                          client=client, num_workers_txf=num_workers_txf,
+                          num_workers_mod=num_workers_mod)
 
     spec.update_specifications(og_spec)
     print('path for tax functions: ', tax_func_path)

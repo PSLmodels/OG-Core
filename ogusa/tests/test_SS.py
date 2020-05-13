@@ -350,7 +350,7 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
     # Test SS.SS_solver function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     p = Specifications(baseline=baseline, client=dask_client,
-                       num_workers=NUM_WORKERS)
+                       num_workers_mod=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
     p.get_tax_function_parameters(None, run_micro=False)
@@ -401,7 +401,7 @@ def test_inner_loop(baseline, param_updates, filename, dask_client):
     # Test SS.inner_loop function.  Provide inputs to function and
     # ensure that output returned matches what it has been before.
     p = Specifications(baseline=baseline, client=dask_client,
-                       num_workers=NUM_WORKERS)
+                       num_workers_mod=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.output_base = CUR_PATH
     p.get_tax_function_parameters(None, run_micro=False)
@@ -432,7 +432,7 @@ def test_euler_equation_solver(dask_client):
     input_tuple = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', 'euler_eqn_solver_inputs.pkl'))
     (guesses, params) = input_tuple
-    p = Specifications(client=dask_client, num_workers=NUM_WORKERS)
+    p = Specifications(client=dask_client, num_workers_mod=NUM_WORKERS)
     (r, w, TR, factor, j, p.J, p.S, p.beta, p.sigma, p.ltilde, p.g_y,
      p.g_n_ss, tau_payroll, retire, p.mean_income_data, h_wealth,
      p_wealth, m_wealth, p.b_ellipse, p.upsilon, j, p.chi_b,
@@ -586,7 +586,7 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
         tax_func_path = os.path.join(CUR_PATH,
                                      'TxFuncEst_baseline.pkl')
     p = Specifications(baseline=baseline, client=dask_client,
-                       num_workers=NUM_WORKERS)
+                       num_workers_mod=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.get_tax_function_parameters(None, run_micro=False,
                                   tax_func_path=tax_func_path)

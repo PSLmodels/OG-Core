@@ -35,7 +35,8 @@ def test_run_small(time_path, dask_client):
     runner(output_base=OUTPUT_DIR, baseline_dir=OUTPUT_DIR, test=True,
            time_path=time_path, baseline=True, og_spec=og_spec,
            run_micro=False, tax_func_path=TAX_FUNC_PATH,
-           client=dask_client, num_workers=NUM_WORKERS)
+           client=dask_client, num_workers_txf=NUM_WORKERS,
+           num_workers_mod=NUM_WORKERS)
 
 
 @pytest.mark.full_run
@@ -54,7 +55,8 @@ def test_constant_demographics_TPI(dask_client):
                           baseline_dir=OUTPUT_DIR, test=False,
                           time_path=True, baseline=True, iit_reform={},
                           guid='', client=dask_client,
-                          num_workers=NUM_WORKERS)
+                          num_workers_txf=NUM_WORKERS,
+                          num_workers_mod=NUM_WORKERS)
     og_spec = {'constant_demographics': True, 'budget_balance': True,
                'zero_taxes': True, 'maxiter': 2,
                'r_gov_shift': 0.0, 'zeta_D': [0.0, 0.0],

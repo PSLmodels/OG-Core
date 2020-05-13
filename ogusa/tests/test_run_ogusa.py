@@ -54,7 +54,7 @@ def run_micro_macro(iit_reform, og_spec, guid, client):
               'test': True, 'time_path': True, 'baseline': True,
               'og_spec': og_spec, 'run_micro': False,
               'tax_func_path': tax_func_path_baseline, 'guid': guid,
-              'client': client, 'num_workers': NUM_WORKERS}
+              'client': client, 'num_workers_mod': NUM_WORKERS}
     runner(**kwargs)
 
     '''
@@ -69,7 +69,7 @@ def run_micro_macro(iit_reform, og_spec, guid, client):
               'iit_reform': iit_reform, 'og_spec': og_spec,
               'guid': guid, 'run_micro': False,
               'tax_func_path': tax_func_path_reform,
-              'client': client, 'num_workers': NUM_WORKERS}
+              'client': client, 'num_workers_mod': NUM_WORKERS}
     runner(**kwargs)
     time.sleep(0.5)
     base_tpi = safe_read_pickle(

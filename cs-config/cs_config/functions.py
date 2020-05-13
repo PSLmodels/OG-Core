@@ -157,8 +157,9 @@ def run_model(meta_param_dict, adjustment):
     # Dask parmeters
     # Limit to one worker and one thread to satisfy celery
     # constraints on multiprocessing.
-    client = Client(n_workers=1, threads_per_worker=1, processes=False)
     num_workers = 1
+    client = Client(n_workers=num_workers, threads_per_worker=1,
+                    processes=False)
 
     # whether to estimate tax functions from microdata
     run_micro = True
@@ -195,7 +196,8 @@ def run_model(meta_param_dict, adjustment):
     base_params = Specifications(
         run_micro=False, output_base=base_dir, baseline_dir=base_dir,
         test=False, time_path=False, baseline=True, iit_reform={},
-        guid='', data=data, client=client, num_workers=num_workers)
+        guid='', data=data, client=client, num_workers_txf=num_workers,
+        num_workers_mod=num_workers)
     base_params.update_specifications(base_spec)
     base_params.get_tax_function_parameters(
         client, run_micro_baseline, tax_func_path=tax_func_path)
@@ -219,7 +221,8 @@ def run_model(meta_param_dict, adjustment):
         run_micro=False, output_base=reform_dir,
         baseline_dir=base_dir, test=False, time_path=time_path,
         baseline=False, iit_reform=iit_mods, guid='',
-        data=data, client=client, num_workers=num_workers)
+        data=data, client=client, num_workers_txf=num_workers,
+        num_workers_mod=num_workers)
     reform_params.update_specifications(reform_spec)
     reform_params.get_tax_function_parameters(client, run_micro)
     reform_ss = SS.run_SS(reform_params, client=client)

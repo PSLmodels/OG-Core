@@ -37,7 +37,7 @@ param_updates3 = {'baseline_spending': True}
 def test_get_initial_SS_values(baseline, param_updates, filename,
                                dask_client):
     p = Specifications(baseline=baseline, test=True, client=dask_client,
-                       num_workers=NUM_WORKERS)
+                       num_workers_mod=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.baseline_dir = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
     p.output_base = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
@@ -71,7 +71,7 @@ def test_firstdoughnutring(dask_client):
     guesses, r, w, b, BQ, TR, j, params = input_tuple
     income_tax_params, tpi_params, initial_b = params
     tpi_params = tpi_params + [True]
-    p = Specifications(client=dask_client, num_workers=NUM_WORKERS)
+    p = Specifications(client=dask_client, num_workers_mod=NUM_WORKERS)
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
      Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, tau_b, delta_tau,
      tau_payroll, tau_bq, p.rho, p.omega, N_tilde, lambdas,
@@ -95,7 +95,7 @@ def test_firstdoughnutring(dask_client):
     p.mtrx_params = np.transpose(mtrx_params, (1, 0, 2))
     p.mtry_params = np.transpose(mtry_params, (1, 0, 2))
     p.lambdas = lambdas.reshape(p.J, 1)
-    p.num_workers = 1
+    p.num_workers_mod = 1
     bq = BQ / p.lambdas[j]
     tr = TR
     test_list = TPI.firstdoughnutring(guesses, r, w, bq, tr, theta,
@@ -143,7 +143,7 @@ def test_inner_loop(dask_client):
     income_tax_params, tpi_params, initial_values, ind = params
     initial_values = initial_values[:-1]
     tpi_params = tpi_params
-    p = Specifications(client=dask_client, num_workers=NUM_WORKERS)
+    p = Specifications(client=dask_client, num_workers_mod=NUM_WORKERS)
     (p.J, p.S, p.T, p.BW, p.beta, p.sigma, p.alpha, p.gamma, p.epsilon,
      Z, p.delta, p.ltilde, p.nu, p.g_y, p.g_n, tau_b, delta_tau,
      tau_payroll, tau_bq, p.rho, p.omega, N_tilde, lambdas,
@@ -167,7 +167,7 @@ def test_inner_loop(dask_client):
     p.mtrx_params = np.transpose(mtrx_params, (1, 0, 2))[:p.T, :, :]
     p.mtry_params = np.transpose(mtry_params, (1, 0, 2))[:p.T, :, :]
     p.lambdas = lambdas.reshape(p.J, 1)
-    p.num_workers = 1
+    p.num_workers_mod = 1
     (K0, b_sinit, b_splus1init, factor, initial_b, initial_n,
      p.omega_S_preTP, initial_debt) = initial_values
     initial_values_in = (K0, b_sinit, b_splus1init, factor, initial_b,
@@ -236,7 +236,7 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
         output_base = os.path.join(CUR_PATH, 'reform')
     p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
                        output_base=output_base, client=dask_client,
-                       num_workers=NUM_WORKERS)
+                       num_workers_mod=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.get_tax_function_parameters(
         None, run_micro=False,
@@ -304,7 +304,7 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
         output_base = os.path.join(CUR_PATH, 'reform')
     p = Specifications(baseline=baseline, baseline_dir=baseline_dir,
                        output_base=output_base, test=True,
-                       client=dask_client, num_workers=NUM_WORKERS)
+                       client=dask_client, num_workers_mod=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.maxiter = 2  # this test runs through just two iterations
     p.get_tax_function_parameters(
@@ -365,7 +365,7 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
     output_base = baseline_dir
     p = Specifications(baseline=True, baseline_dir=baseline_dir,
                        output_base=output_base, test=True,
-                       client=dask_client, num_workers=NUM_WORKERS)
+                       client=dask_client, num_workers_mod=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.maxiter = 2  # this test runs through just two iterations
     p.get_tax_function_parameters(

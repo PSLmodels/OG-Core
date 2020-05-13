@@ -31,4 +31,4 @@ def test_diff_start_year(year, dask_client):
     runner(output_base=output_base, baseline_dir=input_dir, test=True,
            time_path=True, baseline=True, og_spec=og_spec,
            run_micro=True, data='cps', client=dask_client,
-           num_workers=NUM_WORKERS)
+           num_workers_txf=NUM_WORKERS, num_workers_mod=NUM_WORKERS)

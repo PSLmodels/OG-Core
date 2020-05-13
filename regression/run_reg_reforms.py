@@ -124,7 +124,7 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
                   'user_params': user_params, 'guid': '',
                   'run_micro': False, 'small_open': False,
                   'budget_balance': False, 'baseline_spending': False,
-                  'data': data, 'client': client, 'num_workers': 4}
+                  'data': data, 'client': client, 'num_workers_mod': 4}
         runner(**kwargs)
 
     '''
@@ -139,7 +139,7 @@ def run_micro_macro(user_params, reform=None, baseline_dir=BASELINE_DIR,
               'user_params': user_params, 'guid': guid,
               'reform': reform, 'run_micro': False, 'small_open': False,
               'budget_balance': False, 'baseline_spending': False,
-              'data': data, 'client': client, 'num_workers': 4}
+              'data': data, 'client': client, 'num_workers_mod': 4}
     runner(**kwargs)
 
     base_tpi = safe_read_pickle(

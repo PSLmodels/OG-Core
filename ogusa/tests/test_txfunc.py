@@ -288,7 +288,7 @@ def test_tax_func_estimate(dask_client):
                      'tax_func_estimate_inputs.pkl'))
     (BW, S, starting_age, ending_age, beg_yr, baseline,
      analytical_mtrs, age_specific, reform, data, client,
-     num_workers) = input_tuple
+     num_workers_txf) = input_tuple
     tax_func_type = 'DEP'
     age_specific = False
     BW = 1

@@ -168,12 +168,12 @@ def inner_loop(outer_loop_vars, p, client):
                                                xtol=MINIMIZER_TOL,
                                                full_output=True))
     if client:
-        futures = client.compute(lazy_values, num_workers=p.num_workers)
+        futures = client.compute(lazy_values, num_workers=p.num_workers_mod)
         results = client.gather(futures)
     else:
         results = results = compute(
             *lazy_values, scheduler=dask.multiprocessing.get,
-            num_workers=p.num_workers)
+            num_workers=p.num_workers_mod)
 
     # for j, result in results.items():
     for j, result in enumerate(results):
