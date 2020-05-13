@@ -7,7 +7,7 @@ dependencies:
 - ipython
 - setuptools
 - mkl
-- psutils
+- psutil
 - "scipy>=0.18.1"
 - matplotlib
 - "taxcalc>=2.4.2"
