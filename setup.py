@@ -4,9 +4,9 @@ except ImportError:
     from distutils.core import setup
 
 with open('README.md') as f:
-        longdesc = f.read()
+    longdesc = f.read()
 
-version = '0.5.13'
+version = '0.6.2'
 
 config = {
     'description': 'General equilibribum, overlapping generations model for the USA',
@@ -36,8 +36,8 @@ config = {
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Software Development :: Libraries :: Python Modules'],
     'tests_require': ['pytest']
 }

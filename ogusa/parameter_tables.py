@@ -118,7 +118,7 @@ def tax_rate_table(base_TxFuncEst, base_params, reform_TxFuncEst=None,
         len_rates = len(base_rates[start_index: start_index +
                                    num_years])
         table = {
-                'Year': years[:len_rates],
+                 'Year': years[:len_rates],
                  'Baseline ' + VAR_LABELS[rate_type]:
                  base_rates[start_index: start_index + num_years],
                  'Reform ' + VAR_LABELS[rate_type]:
@@ -130,6 +130,8 @@ def tax_rate_table(base_TxFuncEst, base_params, reform_TxFuncEst=None,
     table_df.columns = table_df.iloc[0].astype('int').astype('str')
     table_df.reindex(table_df.index.drop('Year'))
     table_df.drop('Year', inplace=True)
+    table_df.reset_index(inplace=True)
+    table_df.rename(columns={'index': 'Variable'}, inplace=True)
     table_str = save_return_table(table_df, table_format, path,
                                   precision=2)
 
