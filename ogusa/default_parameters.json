@@ -415,8 +415,8 @@
         }
     },
     "zeta_K": {
-        "title": "Share of excess demand for capital that is supplied by foreingers",
-        "description": "Share of excess demand for capital that is supplied by foreingers",
+        "title": "Share of excess demand for capital that is supplied by foreigners",
+        "description": "Share of excess demand for capital that is supplied by foreigners",
         "section_1": "Open Economy Parameters",
         "notes": "Set to 0.1 when running large-open verion of US economy, but hard to find data to pin this down",
         "type": "float",
