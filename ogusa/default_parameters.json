@@ -257,8 +257,8 @@
         }
     },
     "gamma": {
-        "title": "Capital's share of output in firm production funtion",
-        "description": "Capital's share of output in firm production funtion",
+        "title": "Capital's share of output in firm production function",
+        "description": "Capital's share of output in firm production function",
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
         "notes": "Histroical value in U.S. is about 0.33, but Elsby, Hobijn, and Sahin (BPEA, 2013) find capital's share is increasing, so default value is above this",
@@ -280,7 +280,7 @@
         "description": "Elasticity of substitution between capital and labor in firm production function",
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
-        "notes": "If epislon=1, then production function is Cobb-Douglas.  If epislon=0, then production function is perfect substitutes.",
+        "notes": "If epsilon=1, then production function is Cobb-Douglas.  If epsilon=0, then production function is perfect substitutes.",
         "type": "float",
         "value": [
             {
@@ -2465,8 +2465,8 @@
         "validators": {}
     },
     "retirement_age": {
-        "title": "Age at which agents can collect social security benefits",
-        "description": "Age at which agents can collect social security benefits.",
+        "title": "Age at which agents can collect Social Security benefits",
+        "description": "Age at which agents can collect Social Security benefits.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "",
@@ -2639,8 +2639,8 @@
         }
     },
     "replacement_rate_adjust": {
-        "title": "Adjustment to the social security retirement benefits replacement rate",
-        "description": "Adjustment to the social security retirement benefits replacement rate.",
+        "title": "Adjustment to the Social Security retirement benefits replacement rate",
+        "description": "Adjustment to the Social Security retirement benefits replacement rate.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
         "notes": "This parameter willy only vary along the time path.  It is assumed to be one in the steady state.  The steady state retirement rate can be adjusted by changing the parameters of the retirement benefits function.",
