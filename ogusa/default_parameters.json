@@ -167,7 +167,7 @@
         }
     },
     "constant_demographics": {
-        "title": "Use constant demographics.",
+        "title": "Use constant demographics",
         "description": "Use constant demographics.",
         "section_1": "Household Parameters",
         "section_2": "Demographics",
@@ -474,7 +474,7 @@
         }
     },
     "alpha_T": {
-        "title": "Exogenous ratio of government transfers to GDP when budget balance is false.",
+        "title": "Exogenous ratio of government transfers to GDP when budget balance is false",
         "description": "Exogenous ratio of government transfers to GDP when budget balance is false.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
@@ -496,7 +496,7 @@
         }
     },
     "alpha_G": {
-        "title": "Exogenous ratio of government spending to GDP when budget balance is false.",
+        "title": "Exogenous ratio of government spending to GDP when budget balance is false",
         "description": "Exogenous ratio of government spending to GDP when budget balance is false.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
@@ -574,7 +574,7 @@
         }
     },
     "r_gov_scale": {
-        "title": "Scale parameter to determine government interest rate.",
+        "title": "Scale parameter to determine government interest rate",
         "description": "Parameter to scale the market interest rate to find interest rate on government debt.",
         "section_1": "Fiscal Policy Parameters",
         "notes": "",
@@ -592,7 +592,7 @@
         }
     },
     "r_gov_shift": {
-        "title": "Shift parameter to determine government interest rate.",
+        "title": "Shift parameter to determine government interest rate",
         "section_1": "Fiscal Policy Parameters",
         "description": "Parameter to shift the market interest rate to find interest rate on government debt.",
         "notes": "",
@@ -2423,7 +2423,7 @@
         "validators": {}
     },
     "zero_taxes": {
-        "title": "Flag to run model without any individual income taxes.",
+        "title": "Flag to run model without any individual income taxes",
         "description": "Flag to run model without any individual income taxes.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
@@ -2465,7 +2465,7 @@
         "validators": {}
     },
     "retirement_age": {
-        "title": "Age at which agents can collect social security benefits.",
+        "title": "Age at which agents can collect social security benefits",
         "description": "Age at which agents can collect social security benefits.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
@@ -2487,7 +2487,7 @@
         }
     },
     "AIME_num_years": {
-        "title": "Number of years used to compute average index monthly earnings (AIME).",
+        "title": "Number of years used to compute average index monthly earnings (AIME)",
         "description": "Number of years used to compute average index monthly earnings (AIME).",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
@@ -2506,7 +2506,7 @@
         }
     },
     "AIME_bkt_1": {
-        "title": "Upper bound to the first average index monthly earnings (AIME) bracket.",
+        "title": "Upper bound to the first average index monthly earnings (AIME) bracket",
         "description": "Upper bound to the first average index monthly earnings (AIME) bracket.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
@@ -2525,7 +2525,7 @@
         }
     },
     "AIME_bkt_2": {
-        "title": "Upper bound to the second average index monthly earnings (AIME) bracket.",
+        "title": "Upper bound to the second average index monthly earnings (AIME) bracket",
         "description": "Upper bound to the second average index monthly earnings (AIME) bracket.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
@@ -2544,7 +2544,7 @@
         }
     },
     "PIA_rate_bkt_1": {
-        "title": "The rate used to determine the primary insurance amount (PIA) in the first bracket for average index monthly earnings (AIME).",
+        "title": "The rate used to determine the primary insurance amount (PIA) in the first bracket for average index monthly earnings (AIME)",
         "description": "The rate used to determine the primary insurance amount (PIA) in the first bracket for average index monthly earnings (AIME).",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
@@ -2563,7 +2563,7 @@
         }
     },
     "PIA_rate_bkt_2": {
-        "title": "The rate used to determine the primary insurance amount (PIA) in the second bracket for average index monthly earnings (AIME).",
+        "title": "The rate used to determine the primary insurance amount (PIA) in the second bracket for average index monthly earnings (AIME)",
         "description": "The rate used to determine the primary insurance amount (PIA) in the second bracket for average index monthly earnings (AIME).",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
@@ -2582,7 +2582,7 @@
         }
     },
     "PIA_rate_bkt_3": {
-        "title": "The rate used to determine the primary insurance amount (PIA) in the third bracket for average index monthly earnings (AIME).",
+        "title": "The rate used to determine the primary insurance amount (PIA) in the third bracket for average index monthly earnings (AIME)",
         "description": "The rate used to determine the primary insurance amount (PIA) in the third bracket for average index monthly earnings (AIME).",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
@@ -2601,7 +2601,7 @@
         }
     },
     "PIA_maxpayment": {
-        "title": "The maximum primary insurance amount (PIA) payment.",
+        "title": "The maximum primary insurance amount (PIA) payment",
         "description": "The maximum primary insurance amount (PIA) payment.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
@@ -2620,7 +2620,7 @@
         }
     },
     "PIA_minpayment": {
-        "title": "The minimum primary insurance amount (PIA) payment.",
+        "title": "The minimum primary insurance amount (PIA) payment",
         "description": "The minimum primary insurance amount (PIA) payment.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
@@ -2639,7 +2639,7 @@
         }
     },
     "replacement_rate_adjust": {
-        "title": "Adjustment to the social security retirement benefits replacement rate.",
+        "title": "Adjustment to the social security retirement benefits replacement rate",
         "description": "Adjustment to the social security retirement benefits replacement rate.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Government Pension Parameters",
