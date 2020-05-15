@@ -8,10 +8,10 @@
     },
     "frisch": {
         "title": "Frisch elasticity of labor supply",
-        "description": "Frisch elasticity of labor supply",
+        "description": "Frisch elasticity of labor supply.",
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
-        "notes": "See Altonji (JPE, 1996) and Peterman (Econ Inquiry, 2016) for estimates of the Frisch elasticity",
+        "notes": "See Altonji (JPE, 1996) and Peterman (Econ Inquiry, 2016) for estimates of the Frisch elasticity.",
         "type": "float",
         "value": [
             {
@@ -27,7 +27,7 @@
     },
     "g_y_annual": {
         "title": "Exogenous growth rate of labor augmenting technological change",
-        "description": "Growth rate of labor augmenting technological change",
+        "description": "Growth rate of labor augmenting technological change.",
         "section_1": "Economic Assumptions",
         "notes": "",
         "type": "float",
@@ -45,7 +45,7 @@
     },
     "S": {
         "title": "Maximum number of periods of economic life of model agent",
-        "description": "Maximum number of periods of economic life of model agent",
+        "description": "Maximum number of periods of economic life of model agent.",
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
@@ -64,7 +64,7 @@
     },
     "J": {
         "title": "Number of different labor productivity types of agents",
-        "description": "Number of different labor productivity types of agents",
+        "description": "Number of different labor productivity types of agents.",
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
@@ -83,7 +83,7 @@
     },
     "T": {
         "title": "Number of periods until it is assumed that the model reaches its steady state",
-        "description": "Number of periods until it is assumed that the model reaches its steady state",
+        "description": "Number of periods until it is assumed that the model reaches its steady state.",
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
@@ -102,7 +102,7 @@
     },
     "lambdas": {
         "title": "Fraction of population of each labor productivity type",
-        "description": "Fraction of population of each labor productivity type",
+        "description": "Fraction of population of each labor productivity type.",
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
@@ -130,7 +130,7 @@
     },
     "starting_age": {
         "title": "Age at which households become economically active",
-        "description": "Age at which households become economically active",
+        "description": "Age at which households become economically active.",
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
@@ -149,7 +149,7 @@
     },
     "ending_age": {
         "title": "Maximum age a household can live until",
-        "description": "Maximum age a household can live until",
+        "description": "Maximum age a household can live until.",
         "section_1": "Household Parameters",
         "section_2": "Model Dimensions",
         "notes": "",
@@ -182,10 +182,10 @@
     },
     "beta_annual": {
         "title": "Annual rate of time preference for households",
-        "description": "Annual rate of time preference for households",
+        "description": "Annual rate of time preference for households.",
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
-        "notes": "Default value from Carroll (JME, 2009)",
+        "notes": "Default value from Carroll (JME, 2009).",
         "type": "float",
         "value": [
             {
@@ -201,10 +201,10 @@
     },
     "sigma": {
         "title": "Coefficient of relative risk aversion in household utility function",
-        "description": "Coefficient of relative risk aversion in household utility function",
+        "description": "Coefficient of relative risk aversion in household utility function.",
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
-        "notes": "Default value from Attanasio, Banks, Meghir and Weber (JEBS, 1999)",
+        "notes": "Default value from Attanasio, Banks, Meghir and Weber (JEBS, 1999).",
         "type": "float",
         "value": [
             {
@@ -220,7 +220,7 @@
     },
     "gamma_s": {
         "title": "Bond's share of assets in the household portfolio problem",
-        "description": "Bond's share of assets in the household portfolio problem",
+        "description": "Bond's share of assets in the household portfolio problem.",
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
         "notes": "",
@@ -239,7 +239,7 @@
     },
     "epsilon_s": {
         "title": "Elasticity of substitution between bonds and equity in the household portfolio problem",
-        "description": "Elasticity of substitution between bonds and equity in the household portfolio problem",
+        "description": "Elasticity of substitution between bonds and equity in the household portfolio problem.",
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
         "notes": "",
@@ -258,10 +258,10 @@
     },
     "gamma": {
         "title": "Capital's share of output in firm production function",
-        "description": "Capital's share of output in firm production function",
+        "description": "Capital's share of output in firm production function.",
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
-        "notes": "Histroical value in U.S. is about 0.33, but Elsby, Hobijn, and Sahin (BPEA, 2013) find capital's share is increasing, so default value is above this",
+        "notes": "Histroical value in U.S. is about 0.33, but Elsby, Hobijn, and Sahin (BPEA, 2013) find capital's share is increasing, so default value is above this.",
         "type": "float",
         "value": [
             {
@@ -277,7 +277,7 @@
     },
     "epsilon": {
         "title": "Elasticity of substitution between capital and labor in firm production function",
-        "description": "Elasticity of substitution between capital and labor in firm production function",
+        "description": "Elasticity of substitution between capital and labor in firm production function.",
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
         "notes": "If epsilon=1, then production function is Cobb-Douglas.  If epsilon=0, then production function is perfect substitutes.",
@@ -296,7 +296,7 @@
     },
     "Z": {
         "title": "Total factor productivity in firm production function",
-        "description": "Total factor productivity in firm production function",
+        "description": "Total factor productivity in firm production function.",
         "section_1": "Firm Parameters",
         "section_2": "Production Function",
         "notes": "",
@@ -318,10 +318,10 @@
     },
     "delta_annual": {
         "title": "Annual rate of economic depreciation of capital",
-        "description": "Annual rate of economic depreciation of capital",
+        "description": "Annual rate of economic depreciation of capital.",
         "section_1": "Firm Parameters",
         "section_2": "Capital Accumulation",
-        "notes": "Approximately the value from Kehoe calibration exercise: http://www.econ.umn.edu/~tkehoe/classes/calibration-04.pdf",
+        "notes": "Approximately the value from Kehoe calibration exercise: http://www.econ.umn.edu/~tkehoe/classes/calibration-04.pdf.",
         "type": "float",
         "value": [
             {
@@ -337,10 +337,10 @@
     },
     "ltilde": {
         "title": "Total time endowment of household",
-        "description": "Total time endowment of household",
+        "description": "Total time endowment of household.",
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
-        "notes": "Can be normalized to 1.0 without loss of generality",
+        "notes": "Can be normalized to 1.0 without loss of generality.",
         "type": "float",
         "value": [
             {
@@ -356,7 +356,7 @@
     },
     "world_int_rate_annual": {
         "title": "Exogenous annual world interest rate to be used when modeling a small open economy",
-        "description": "Exogenous annual world interest rate to be used when modeling a small open economy",
+        "description": "Exogenous annual world interest rate to be used when modeling a small open economy.",
         "section_1": "Open Economy Parameters",
         "notes": "",
         "type": "float",
@@ -377,7 +377,7 @@
     },
     "initial_foreign_debt_ratio": {
         "title": "Share of government debt held by foreigners in model start year",
-        "description": "Share of government debt held by foreigners in model start year",
+        "description": "Share of government debt held by foreigners in model start year.",
         "section_1": "Open Economy Parameters",
         "notes": "",
         "type": "float",
@@ -395,9 +395,9 @@
     },
     "zeta_D": {
         "title": "Share of new debt issues from government that are purchased by foreigners",
-        "description": "Share of new debt issues from government that are purchased by foreigners",
+        "description": "Share of new debt issues from government that are purchased by foreigners.",
         "section_1": "Open Economy Parameters",
-        "notes": "This value is about 0.4 historically for the U.S., set to zero to have closed econ as default",
+        "notes": "This value is about 0.4 historically for the U.S., set to zero to have closed econ as default.",
         "type": "float",
         "number_dims": 1,
         "value": [
@@ -416,9 +416,9 @@
     },
     "zeta_K": {
         "title": "Share of excess demand for capital that is supplied by foreigners",
-        "description": "Share of excess demand for capital that is supplied by foreigners",
+        "description": "Share of excess demand for capital that is supplied by foreigners.",
         "section_1": "Open Economy Parameters",
-        "notes": "Set to 0.1 when running large-open verion of US economy, but hard to find data to pin this down",
+        "notes": "Set to 0.1 when running large-open verion of US economy, but hard to find data to pin this down.",
         "type": "float",
         "number_dims": 1,
         "value": [
@@ -437,7 +437,7 @@
     },
     "tG1": {
         "title": "Number of model periods until budget closure rule kicks in",
-        "description": "Number of model periods until budget closure rule kicks in",
+        "description": "Number of model periods until budget closure rule kicks in.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Fiscal Closure Rules",
         "notes": "It may make sense for this tG1 to exceed the length of the budget window one is looking at.  But it must also not be too late into the time path that a steady-state won't be reached by time T.",
@@ -456,7 +456,7 @@
     },
     "tG2": {
         "title": "Number of model periods until budget closure ends and budgetary variables jump to steady-state values",
-        "description": "Number of model periods until budget closure ends and budgetary variables jump to steady-state values",
+        "description": "Number of model periods until budget closure ends and budgetary variables jump to steady-state values.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Fiscal Closure Rules",
         "notes": "The number of periods until the closure rule ends must not exceed T, the time at which the model is assumed to reach the steady-state.",
@@ -519,7 +519,7 @@
     },
     "rho_G": {
         "title": "Speed of convergence to a stable government budget deficit for periods [tG1, tG2-1]",
-        "description": "Speed of convergence to a stable government budget deficit for periods [tG1, tG2-1]",
+        "description": "Speed of convergence to a stable government budget deficit for periods [tG1, tG2-1].",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Fiscal Closure Rules",
         "notes": "Lower rho_G => slower convergence.",
@@ -538,10 +538,10 @@
     },
     "debt_ratio_ss": {
         "title": "Debt to GDP ratio to be achieved in the steady state",
-        "description": "Debt to GDP ratio to be achieved in the steady state",
+        "description": "Debt to GDP ratio to be achieved in the steady state.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Fiscal Closure Rules",
-        "notes": "Note that depending upon the tax policy parameters, some debt to GDP ratios may not be achievable with positive government spending",
+        "notes": "Note that depending upon the tax policy parameters, some debt to GDP ratios may not be achievable with positive government spending.",
         "type": "float",
         "value": [
             {
@@ -557,7 +557,7 @@
     },
     "initial_debt_ratio": {
         "title": "Debt to GDP ratio in the initial period",
-        "description": "Debt to GDP ratio in the initial period",
+        "description": "Debt to GDP ratio in the initial period.",
         "section_1": "Fiscal Policy Parameters",
         "notes": "Should be calibrated based on government debt held by the public to GDP in the model start year.",
         "type": "float",
@@ -611,10 +611,10 @@
     },
     "cit_rate": {
         "title": "Corporate income tax rate",
-        "description": "Corporate income tax rate",
+        "description": "Corporate income tax rate.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
-        "notes": "This is the top marginal corporate income tax rate",
+        "notes": "This is the top marginal corporate income tax rate.",
         "type": "float",
         "number_dims": 1,
         "value": [
@@ -633,7 +633,7 @@
     },
     "tau_c": {
         "title": "Consumption tax rate",
-        "description": "Consumption tax rate",
+        "description": "Consumption tax rate.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "This policy parameter represents the effective consumption tax rate from sales taxes, VATs, and excise taxes.  To capture exemptions of certain goods, this is assumed to vary by age and ability type.  It is thus a SxJ matrix.",
@@ -655,10 +655,10 @@
     },
     "delta_tau_annual": {
         "title": "Annual rate of depreciation of capital for tax purposes",
-        "description": "Annual rate of depreciation of capital for tax purposes",
+        "description": "Annual rate of depreciation of capital for tax purposes.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
-        "notes": "Cost-of-Capital-Calculator can help to calibrate this parameter",
+        "notes": "Cost-of-Capital-Calculator can help to calibrate this parameter.",
         "type": "float",
         "number_dims": 1,
         "value": [
@@ -677,7 +677,7 @@
     },
     "h_wealth": {
         "title": "Numerator in wealth tax function",
-        "description": "Numerator in wealth tax function",
+        "description": "Numerator in wealth tax function.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -699,7 +699,7 @@
     },
     "m_wealth": {
         "title": "Term in denominator in wealth tax function",
-        "description": "Term in denominator in wealth tax function",
+        "description": "Term in denominator in wealth tax function.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -721,10 +721,10 @@
     },
     "p_wealth": {
         "title": "Scale parameter in wealth tax function",
-        "description": "Scale parameter in wealth tax function",
+        "description": "Scale parameter in wealth tax function.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
-        "notes": "Set to 0 to have no wealth tax",
+        "notes": "Set to 0 to have no wealth tax.",
         "type": "float",
         "number_dims": 1,
         "value": [
@@ -743,7 +743,7 @@
     },
     "tau_bq": {
         "title": "Linear tax rate on bequests",
-        "description": "Linear tax rate on bequests",
+        "description": "Linear tax rate on bequests.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -765,10 +765,10 @@
     },
     "tau_payroll": {
         "title": "Linear payroll tax rate",
-        "description": "Linear payroll tax rate",
+        "description": "Linear payroll tax rate.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
-        "notes": "Set to zero as default since tax functions include income and payroll taxes",
+        "notes": "Set to zero as default since tax functions include income and payroll taxes.",
         "type": "float",
         "number_dims": 1,
         "value": [
@@ -787,7 +787,7 @@
     },
     "chi_b": {
         "title": "Utility weight on bequests",
-        "description": "Household utility weight on bequests",
+        "description": "Household utility weight on bequests.",
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
         "notes": "",
@@ -2309,7 +2309,7 @@
     },
     "chi_n_80": {
         "title": "Utility weight on disutility of labor supply",
-        "description": "Household utility weight on on disutility of labor supply",
+        "description": "Household utility weight on on disutility of labor supply.",
         "section_1": "Household Parameters",
         "section_2": "Behavioral Assumptions",
         "notes": "",
@@ -2410,7 +2410,7 @@
     },
     "constant_rates": {
         "title": "Flag to use linear tax functions",
-        "description": "Flag to use linear tax functions",
+        "description": "Flag to use linear tax functions.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -2438,7 +2438,7 @@
     },
     "analytical_mtrs": {
         "title": "Flag to use analytically derived marginal tax rates in tax functions",
-        "description": "Flag to use analytically derived marginal tax rates in tax functions",
+        "description": "Flag to use analytically derived marginal tax rates in tax functions.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -2452,7 +2452,7 @@
     },
     "age_specific": {
         "title": "Flag to use analytically derived marginal tax rates in tax functions",
-        "description": "Flag to use analytically derived marginal tax rates in tax functions",
+        "description": "Flag to use analytically derived marginal tax rates in tax functions.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -2662,7 +2662,7 @@
     },
     "budget_balance": {
         "title": "Flag to balance government budget in each period",
-        "description": "Flag to balance government budget in each period",
+        "description": "Flag to balance government budget in each period.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
@@ -2676,7 +2676,7 @@
     },
     "baseline_spending": {
         "title": "Flag to keep level of government spending and transfers constant between baseline and reform runs",
-        "description": "Flag to keep level of government spending and transfers constant between baseline and reform runs",
+        "description": "Flag to keep level of government spending and transfers constant between baseline and reform runs.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Spending",
         "notes": "",
@@ -2690,7 +2690,7 @@
     },
     "start_year": {
         "title": "Calendar year in which to start model analysis",
-        "description": "Calendar year in which to start model analysis",
+        "description": "Calendar year in which to start model analysis.",
         "notes": "",
         "type": "int",
         "value": [
@@ -2707,7 +2707,7 @@
     },
     "tax_func_type": {
         "title": "Functional form for individual income tax functions",
-        "description": "Functional form for individual income tax functions",
+        "description": "Functional form for individual income tax functions.",
         "section_1": "Fiscal Policy Parameters",
         "section_2": "Taxes",
         "notes": "",
@@ -2730,7 +2730,7 @@
     },
     "nu": {
         "title": "Parameter for convergence rate of functional iteration",
-        "description": "Parameter for convergence rate of functional iteration",
+        "description": "Parameter for convergence rate of functional iteration.",
         "section_1": "Model Solution Parameters",
         "notes": "",
         "type": "float",
@@ -2748,7 +2748,7 @@
     },
     "maxiter": {
         "title": "Max iterations for time path iteration",
-        "description": "Max iterations for time path iteration",
+        "description": "Max iterations for time path iteration.",
         "section_1": "Model Solution Parameters",
         "notes": "",
         "type": "int",
@@ -2766,7 +2766,7 @@
     },
     "mindist_SS": {
         "title": "Tolerance for convergence of steady state solution",
-        "description": "Tolerance for convergence of steady state solution",
+        "description": "Tolerance for convergence of steady state solution.",
         "section_1": "Model Solution Parameters",
         "notes": "",
         "type": "float",
@@ -2784,7 +2784,7 @@
     },
     "mindist_TPI": {
         "title": "Tolerance for convergence of time path solution",
-        "description": "Tolerance for convergence of time path solution",
+        "description": "Tolerance for convergence of time path solution.",
         "section_1": "Model Solution Parameters",
         "notes": "",
         "type": "float",
