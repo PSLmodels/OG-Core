@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import os
 from ogusa.constants import VAR_LABELS, DEFAULT_START_YEAR
-from ogusa import wealth
+from ogusa import wealth, tax
 from ogusa.utils import save_return_table, Inequality
 cur_path = os.path.split(os.path.abspath(__file__))[0]
 
@@ -398,6 +398,106 @@ def tp_output_dump_table(base_params, base_tpi, reform_params=None,
     # update index to reflect years
     table_df['Year'] = table_df['Year'] + base_params.start_year
 
+    table = save_return_table(table_df, table_format, path)
+
+    return table
+
+
+def dynamic_revenue_decomposition(
+    base_params, base_tpi, base_ss, reform_params, reform_tpi,
+    num_years=10, include_SS=True, include_overall=True,
+    start_year=DEFAULT_START_YEAR, table_format=None, path=None):
+    '''
+    This function decomposes the source of changes in tax revenues to
+    determine the percentage change in individual and payroll tax
+    receipt that can be attributed to maroeconomic feedback effects.
+
+    Args:
+        base_params (OG-USA Specifications class): baseline parameters
+            object
+        base_tpi (dictionary): TP output from baseline run
+        base_ss (dictionary): SS output from baseline run
+        reform_params (OG-USA Specifications class): reform parameters
+            object
+        reform_tpi (dictionary): TP output from reform run
+        num_years (integer): number of years to include in table
+        include_SS (bool): whether to include the steady-state results
+            in the table
+        include_overall (bool): whether to include results over the
+            entire budget window as a column in the table
+        start_year (integer): year to start table
+        table_format (string): format to return table in: 'csv', 'tex',
+            'excel', 'json', if None, a DataFrame is returned
+        path (string): path to save table to
+
+    Returns:
+        table (various): table in DataFrame or string format or `None`
+            if saved to disk
+
+    .. note:: The decomoposition if the following:
+        1. Simulate the baseline and reform in OG-USA. Save the
+           resulting series of tax revenues. Call these series for the
+           baseline and reform A and B, respectively.
+        2. Create a third revenue series that is computed using the
+           baseline behavior (i.e., `bmat_s`, `n_mat`, `K`, etc.) and
+           factor prices, but with the tax functions estimated on the
+           reform tax policy. Call this series C.
+        3. Calculate the percentage difference between that C and B and
+           interpret that as percentage macro "feedback" on revenue
+           under the policy.
+
+        One can apply the percentage difference in (3) to the
+        microsimulation model ("static") revenue estimate from the
+        policy change to produce an estimate of the revenue including
+        macro feedback.
+
+    '''
+    assert isinstance(start_year, (int, np.integer))
+    assert isinstance(num_years, (int, np.integer))
+    # Make sure both runs cover same time period
+    assert (base_params.start_year == reform_params.start_year)
+    year_vec = np.arange(start_year, start_year + num_years)
+    start_index = start_year - base_params.start_year
+    year_list = year_vec.tolist()
+    if include_overall:
+        year_list.append(str(year_vec[0]) + '-' + str(year_vec[-1]))
+    if include_SS:
+        year_list.append('SS')
+    table_dict = {'Year': year_list}
+    # base_tax = base_tpi['tax_path']
+    reform_tax = reform_tpi['tax_path']
+    p = reform_params
+    etr_params_4D = np.tile(
+            p.etr_params.reshape(p.T, p.S, 1, p.etr_params.shape[2]),
+            (1, 1, p.J, 1))
+    decomp_tax = tax.total_taxes(
+        base_tpi['r_hh'][:p.T], base_tpi['w'][:p.T], base_tpi['bmat_s'],
+        base_tpi['n_mat'][:p.T, :, :], base_tpi['bq_path'][:p.T, :, :],
+        base_ss['factor_ss'], base_tpi['tr_path'][:p.T, :, :],
+        base_ss['theta'], 0, None, False, 'TPI', p.e, etr_params_4D, p)
+    pop_weights = (
+            np.squeeze(p.lambdas) *
+            np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
+                    (1, 1, p.J)))
+    # base_tax_yr = (base_tax * pop_weights).sum(1).sum(1)
+    reform_tax_yr = (reform_tax * pop_weights).sum(1).sum(1)
+    decomp_tax_yr = (decomp_tax * pop_weights).sum(1).sum(1)
+    pct_diff_tax = (decomp_tax_yr - reform_tax_yr) / reform_tax_yr
+    results_years = pct_diff_tax[start_index: start_index + num_years]
+    results_overall = results_years.sum()
+    results_SS = decomp_tax_yr[-1]
+    results_for_table = results_years
+    if include_overall:
+        results_for_table = np.append(
+            results_for_table, results_overall)
+    if include_SS:
+        results_for_table = np.append(
+            results_for_table, results_SS)
+    # Make df with dict so can use pandas functions
+    table_df = pd.DataFrame.from_dict(table_dict, orient='columns'
+                                      ).set_index('Year').transpose()
+    table_df.reset_index(inplace=True)
+    table_df.rename(columns={'index': 'Variable'}, inplace=True)
     table = save_return_table(table_df, table_format, path)
 
     return table
