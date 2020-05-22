@@ -482,9 +482,10 @@ def dynamic_revenue_decomposition(
     # base_tax_yr = (base_tax * pop_weights).sum(1).sum(1)
     reform_tax_yr = (reform_tax * pop_weights).sum(1).sum(1)
     decomp_tax_yr = (decomp_tax * pop_weights).sum(1).sum(1)
-    pct_diff_tax = (decomp_tax_yr - reform_tax_yr) / reform_tax_yr
+    pct_diff_tax = ((
+        (decomp_tax_yr - reform_tax_yr) / reform_tax_yr) * 100)
     results_years = pct_diff_tax[start_index: start_index + num_years]
-    results_overall = results_years.sum()
+    results_overall = results_years.mean()
     results_SS = decomp_tax_yr[-1]
     results_for_table = results_years
     if include_overall:
@@ -493,6 +494,7 @@ def dynamic_revenue_decomposition(
     if include_SS:
         results_for_table = np.append(
             results_for_table, results_SS)
+    table_dict['Pct Change in Rev due to Macro'] = results_for_table
     # Make df with dict so can use pandas functions
     table_df = pd.DataFrame.from_dict(table_dict, orient='columns'
                                       ).set_index('Year').transpose()
