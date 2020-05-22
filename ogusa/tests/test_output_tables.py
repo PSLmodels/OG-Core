@@ -71,7 +71,13 @@ def test_wealth_moments_table():
 
 
 def test_tp_output_dump_table():
-    df = output_tables.tp_output_dump_table(base_params, base_tpi,
-                                            reform_params=reform_params,
-                                            reform_tpi=reform_tpi)
+    df = output_tables.tp_output_dump_table(
+        base_params, base_tpi, reform_params=reform_params,
+        reform_tpi=reform_tpi)
+    assert isinstance(df, pd.DataFrame)
+
+
+def test_dynamic_revenue_decomposition():
+    df = output_tables.dynamic_revenue_decomposition(
+            base_params, base_tpi, base_ss, reform_params, reform_tpi)
     assert isinstance(df, pd.DataFrame)
