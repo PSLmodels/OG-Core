@@ -79,5 +79,6 @@ def test_tp_output_dump_table():
 
 def test_dynamic_revenue_decomposition():
     df = output_tables.dynamic_revenue_decomposition(
-            base_params, base_tpi, base_ss, reform_params, reform_tpi)
+            base_params, base_tpi, base_ss, reform_params, reform_tpi,
+            reform_ss)
     assert isinstance(df, pd.DataFrame)
