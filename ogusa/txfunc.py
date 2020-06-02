@@ -564,23 +564,23 @@ def tax_func_loop(t, data, start_year, s_min, s_max, age_specific,
 
     # Calculate average total income in each year
     AvgInc = (
-        ((data['expanded_income'] * data['weight']).sum()) /
+        ((data['market_income'] * data['weight']).sum()) /
         data['weight'].sum())
 
     # Calculate average ETR and MTRs (weight by population weights
     #    and income) for each year
     AvgETR = (
-        ((data['etr']*data['expanded_income'] * data['weight']).sum()) /
-        (data['expanded_income'] * data['weight']).sum())
+        ((data['etr']*data['market_income'] * data['weight']).sum()) /
+        (data['market_income'] * data['weight']).sum())
 
     AvgMTRx = (
-        ((data['mtr_labinc'] * data['expanded_income'] *
-          data['weight']).sum()) / (data['expanded_income'] *
+        ((data['mtr_labinc'] * data['market_income'] *
+          data['weight']).sum()) / (data['market_income'] *
                                     data['weight']).sum())
 
     AvgMTRy = (
-        ((data['mtr_capinc'] * data['expanded_income'] *
-          data['weight']).sum()) / (data['expanded_income'] *
+        ((data['mtr_capinc'] * data['market_income'] *
+          data['weight']).sum()) / (data['market_income'] *
                                     data['weight']).sum())
 
     # Caulcatoe fraction of total tax liability that is from payroll
@@ -598,7 +598,7 @@ def tax_func_loop(t, data, start_year, s_min, s_max, age_specific,
     # drop all obs with ETR < MIN_ETR
     data.drop(data[data['etr'] < MIN_ETR].index, inplace=True)
     # drop all obs with ATI, TLI, TCincome< MIN_INCOME
-    data.drop(data[(data['expanded_income'] < MIN_INCOME) |
+    data.drop(data[(data['market_income'] < MIN_INCOME) |
                    (data['total_labinc'] < MIN_INCOME) |
                    (data['total_capinc'] < MIN_INCOME)].index,
               inplace=True)
