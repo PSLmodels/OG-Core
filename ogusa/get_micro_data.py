@@ -162,6 +162,11 @@ def taxcalc_advance(baseline, start_year, reform, data, year):
     calc1.calc_all()
     print('Year: ', str(calc1.current_year))
 
+    # define expanded income as market income - thus excluding gov't
+    # transfer benefits found in the Tax-Calculator expanded income
+    expanded_income = (calc1.array('expanded_income') -
+                       calc1.array('benefit_value_total'))
+
     # Compute mtr on capital income
     mtr_combined_capinc = cap_inc_mtr(calc1)
 
@@ -182,11 +187,11 @@ def taxcalc_advance(baseline, start_year, reform, data, year):
         'total_labinc': calc1.array('sey') + calc1.array('e00200'),
         'total_capinc': (calc1.array('expanded_income') -
                          calc1.array('sey') + calc1.array('e00200')),
-        'expanded_income': calc1.array('expanded_income'),
+        'expanded_income': expanded_income,
         'total_tax_liab': calc1.array('combined'),
         'payroll_tax_liab': calc1.array('payrolltax'),
         'etr': ((calc1.array('combined') - calc1.array('ubi')) /
-                calc1.array('expanded_income')),
+                expanded_income),
         'year': calc1.current_year * np.ones(length),
         'weight': calc1.array('s006')}
 
