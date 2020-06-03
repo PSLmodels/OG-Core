@@ -165,7 +165,8 @@ def taxcalc_advance(baseline, start_year, reform, data, year):
     # define market income - taking expanded_income and excluding gov't
     # transfer benefits found in the Tax-Calculator expanded income
     market_income = (calc1.array('expanded_income') -
-                     calc1.array('benefit_value_total'))
+                     calc1.array('benefit_value_total') -
+                     calc1.array('ubi'))
 
     # Compute mtr on capital income
     mtr_combined_capinc = cap_inc_mtr(calc1)
