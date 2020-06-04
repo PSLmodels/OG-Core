@@ -501,20 +501,13 @@ def income_tax_liab(r, w, b, n, factor, t, j, method, e, etr_params, p):
     return income_payroll_tax_liab
 
 
-def pension_amount(r, w, b, n, bq, factor, tr, theta, t, j, shift, method,
-                   e, etr_params, p):
+def pension_amount(w, n, theta, t, j, shift, method, e, p):
     '''
     Calculate public pension benefit amounts for each household.
 
     Args:
-        r (array_like): real interest rate
         w (array_like): real wage rate
-        b (Numpy array): savings
         n (Numpy array): labor supply
-        bq (Numpy array): bequests received
-        factor (scalar): scaling factor converting model units to
-            dollars
-        tr (Numpy array): government transfers to the household
         theta (Numpy array): social security replacement rate value for
             lifetime income group j
         t (int): time period
@@ -524,21 +517,18 @@ def pension_amount(r, w, b, n, bq, factor, tr, theta, t, j, shift, method,
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
         e (Numpy array): effective labor units
-        etr_params (Numpy array): effective tax rate function parameters
         p (OG-USA Specifications object): model parameters
 
     Returns:
-        total_taxes (Numpy array): net taxes paid for each household
+        pension (Numpy array): pension amount for each household
 
     '''
     if j is not None:
         if method == 'TPI':
-            if b.ndim == 2:
-                r = r.reshape(r.shape[0], 1)
+            if n.ndim == 2:
                 w = w.reshape(w.shape[0], 1)
     else:
         if method == 'TPI':
-            r = utils.to_timepath_shape(r)
             w = utils.to_timepath_shape(w)
 
     pension = np.zeros_like(n)
@@ -561,14 +551,14 @@ def pension_amount(r, w, b, n, bq, factor, tr, theta, t, j, shift, method,
             retireTPI = (p.retire[t: t + length] - p.S)
         else:
             retireTPI = (p.retire[t: t + length] - 1 - p.S)
-        if len(b.shape) == 1:
+        if len(n.shape) == 1:
             if not shift:
                 retireTPI = p.retire[t] - p.S
             else:
                 retireTPI = p.retire[t] - 1 - p.S
             pension[retireTPI:] = (
                 theta[j] * p.replacement_rate_adjust[t] * w[retireTPI:])
-        elif len(b.shape) == 2:
+        elif len(n.shape) == 2:
             for tt in range(pension.shape[0]):
                 pension[tt, retireTPI[tt]:] = (
                     theta * p.replacement_rate_adjust[t + tt] * w[tt])
@@ -583,3 +573,99 @@ def pension_amount(r, w, b, n, bq, factor, tr, theta, t, j, shift, method,
         pension = theta * p.replacement_rate_adjust[0] * w
 
     return pension
+
+
+def wealth_tax_liab(r, b, t, j, method, p):
+    '''
+    Calculate wealth tax liability for each household.
+
+    Args:
+        r (array_like): real interest rate
+        b (Numpy array): savings
+        t (int): time period
+        j (int): index of lifetime income group
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+        p (OG-USA Specifications object): model parameters
+
+    Returns:
+        T_W (Numpy array): wealth tax liability for each household
+
+    '''
+    if j is not None:
+        if method == 'TPI':
+            if b.ndim == 2:
+                r = r.reshape(r.shape[0], 1)
+    else:
+        if method == 'TPI':
+            r = utils.to_timepath_shape(r)
+
+    if method == 'SS':
+        T_W = (ETR_wealth(b, p.h_wealth[-1], p.m_wealth[-1],
+                          p.p_wealth[-1]) * b)
+    elif method == 'TPI':
+        length = r.shape[0]
+        if len(b.shape) == 1:
+            T_W = (ETR_wealth(b, p.h_wealth[t:t + length],
+                              p.m_wealth[t:t + length],
+                              p.p_wealth[t:t + length]) * b)
+        elif len(b.shape) == 2:
+            T_W = (ETR_wealth(b, p.h_wealth[t:t + length],
+                              p.m_wealth[t:t + length],
+                              p.p_wealth[t:t + length]) * b)
+        else:
+            T_W = (ETR_wealth(
+                b, p.h_wealth[t:t + length].reshape(length, 1, 1),
+                p.m_wealth[t:t + length].reshape(length, 1, 1),
+                p.p_wealth[t:t + length].reshape(length, 1, 1)) * b)
+    elif method == 'TPI_scalar':
+        T_W = (ETR_wealth(b, p.h_wealth[0], p.m_wealth[0],
+                          p.p_wealth[0]) * b)
+
+    return T_W
+
+
+def bequest_tax_liab(r, b, bq, t, j, method, p):
+    '''
+    Calculate liability due from taxes on bequests for each household.
+
+    Args:
+        r (array_like): real interest rate
+        b (Numpy array): savings
+        bq (Numpy array): bequests received
+        t (int): time period
+        j (int): index of lifetime income group
+        method (str): adjusts calculation dimensions based on 'SS' or
+            'TPI'
+        p (OG-USA Specifications object): model parameters
+
+    Returns:
+        T_BQ (Numpy array): bequest tax liability for each household
+
+    '''
+    if j is not None:
+        lambdas = p.lambdas[j]
+        if method == 'TPI':
+            if b.ndim == 2:
+                r = r.reshape(r.shape[0], 1)
+    else:
+        lambdas = np.transpose(p.lambdas)
+        if method == 'TPI':
+            r = utils.to_timepath_shape(r)
+
+    if method == 'SS':
+        T_BQ = p.tau_bq[-1] * bq
+    elif method == 'TPI':
+        length = r.shape[0]
+        if len(b.shape) == 1:
+            T_BQ = p.tau_bq[t:t + length] * bq
+        elif len(b.shape) == 2:
+            T_BQ = p.tau_bq[t:t + length].reshape(length, 1) * bq / lambdas
+        else:
+            T_BQ = p.tau_bq[t:t + length].reshape(length, 1, 1) * bq
+    elif method == 'TPI_scalar':
+        # The above methods won't work if scalars are used.  This option
+        # is only called by the SS_TPI_firstdoughnutring function in TPI.
+        T_BQ = p.tau_bq[0] * bq
+
+    return T_BQ
