@@ -1,4 +1,4 @@
-import numpy as np
+net_taxesimport numpy as np
 import copy
 import pytest
 from ogusa import tax
@@ -611,10 +611,10 @@ test_data = [(r1, w1, b1, n1, bq1, factor, tr1, theta1, None, j1, shift1,
                                          'TPI 3D,vary tau_bq',
                                          'TPI 3D,vary retire',
                                          'TPI 3D,vary replacement rate'])
-def test_total_taxes(r, w, b, n, bq, factor, tr, theta, t, j, shift,
-                     method, e, etr_params, p, expected):
+def test_net_taxes(r, w, b, n, bq, factor, tr, theta, t, j, shift,
+                   method, e, etr_params, p, expected):
     # Test function that computes total net taxes for the household
     # method = ss
-    total_taxes = tax.total_taxes(r, w, b, n, bq, factor, tr, theta, t,
-                                  j, shift, method, e, etr_params, p)
-    assert np.allclose(total_taxes, expected)
+    net_taxes = tax.net_taxes(r, w, b, n, bq, factor, tr, theta, t,
+                              j, shift, method, e, etr_params, p)
+    assert np.allclose(net_taxes, expected)

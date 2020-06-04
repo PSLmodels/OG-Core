@@ -528,11 +528,10 @@ def run_TPI(p, client=None):
             (1, 1, p.J, 1))
         bqmat = household.get_bq(BQ, None, p, 'TPI')
         trmat = household.get_tr(TR, None, p, 'TPI')
-        tax_mat = tax.total_taxes(r_hh[:p.T], w[:p.T], bmat_s,
-                                  n_mat[:p.T, :, :], bqmat[:p.T, :, :],
-                                  factor, trmat[:p.T, :, :], theta, 0,
-                                  None, False, 'TPI', p.e,
-                                  etr_params_4D, p)
+        tax_mat = tax.net_taxes(
+            r_hh[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
+            bqmat[:p.T, :, :], factor, trmat[:p.T, :, :], theta, 0,
+            None, False, 'TPI', p.e, etr_params_4D, p)
         r_hh_path = utils.to_timepath_shape(r_hh)
         wpath = utils.to_timepath_shape(w)
         c_mat = household.get_cons(r_hh_path[:p.T, :, :], wpath[:p.T, :, :],

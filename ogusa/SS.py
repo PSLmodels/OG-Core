@@ -211,7 +211,7 @@ def inner_loop(outer_loop_vars, p, client):
     etr_params_3D = np.tile(
         np.reshape(p.etr_params[-1, :, :],
                    (p.S, 1, p.etr_params.shape[2])), (1, p.J, 1))
-    taxss = tax.total_taxes(
+    taxss = tax.net_taxes(
         new_r_hh, new_w, b_s, nssmat, new_bq, factor, tr, theta, None,
         None, False, 'SS', p.e, etr_params_3D, p)
     cssmat = household.get_cons(
@@ -349,9 +349,9 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     etr_ss = tax.ETR_income(r_hh_ss, wss, bssmat_s, nssmat, factor, p.e,
                             etr_params_3D, p)
 
-    taxss = tax.total_taxes(r_hh_ss, wss, bssmat_s, nssmat, bqssmat,
-                            factor_ss, trssmat, theta, None, None, False,
-                            'SS', p.e, etr_params_3D, p)
+    taxss = tax.net_taxes(r_hh_ss, wss, bssmat_s, nssmat, bqssmat,
+                          factor_ss, trssmat, theta, None, None, False,
+                          'SS', p.e, etr_params_3D, p)
     cssmat = household.get_cons(r_hh_ss, wss, bssmat_s, bssmat_splus1,
                                 nssmat, bqssmat, taxss,
                                 p.e, p.tau_c[-1, :, :], p)
