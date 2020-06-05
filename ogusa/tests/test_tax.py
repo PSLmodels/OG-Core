@@ -1,4 +1,4 @@
-net_taxesimport numpy as np
+import numpy as np
 import copy
 import pytest
 from ogusa import tax

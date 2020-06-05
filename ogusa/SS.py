@@ -85,9 +85,9 @@ def euler_equation_solver(guesses, *args):
     error1[mask3] = 1e14
     error1[mask5] = 1e14
     error2[mask4] = 1e14
-    taxes = tax.total_taxes(r, w, b_s, n_guess, bq, factor, tr, theta,
-                            None, j, False, 'SS', p.e[:, j],
-                            p.etr_params[-1, :, :], p)
+    taxes = tax.net_taxes(r, w, b_s, n_guess, bq, factor, tr, theta,
+                          None, j, False, 'SS', p.e[:, j],
+                          p.etr_params[-1, :, :], p)
     cons = household.get_cons(r, w, b_s, b_splus1, n_guess, bq, taxes,
                               p.e[:, j], p.tau_c[-1, :, j], p)
     mask6 = cons < 0
