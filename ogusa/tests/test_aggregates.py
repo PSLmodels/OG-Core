@@ -320,16 +320,17 @@ test_data = [(r[0], w[0], b[0, :, :], n[0, :, :], bq[0, :, :],
               'TPI', expected3)]
 
 
-@pytest.mark.parametrize('r,w,b,n,bq,c,Y,L,K,factor,theta,etr_params,p,' +
-                         'method,expected', test_data,
-                         ids=['SS', 'TPI', 'TPI, replace rate adjust'])
-def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p,
-                 method, expected):
+@pytest.mark.parametrize(
+    'r,w,b,n,bq,c,Y,L,K,factor,theta,etr_params,p,method,expected',
+    test_data, ids=['SS', 'TPI', 'TPI, replace rate adjust'])
+def test_revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
+                 p, method, expected):
     """
     Test aggregate revenue function.
     """
-    revenue, _, _, _, _, _, _, _, _ = aggr.revenue(
+    revenue, _, agg_pension_outlays, _, _, _, _, _, _ = aggr.revenue(
         r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params, p, method)
+    expected += agg_pension_outlays
 
     assert(np.allclose(revenue, expected))
 

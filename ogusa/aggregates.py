@@ -304,8 +304,6 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
             np.squeeze(p.lambdas) *
             np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
                     (1, 1, p.J)))
-        r = utils.to_timepath_shape(r)
-        w = utils.to_timepath_shape(w)
         iit_payroll_tax_revenue = (
             inc_pay_tax_liab * pop_weights).sum(1).sum(1)
         agg_pension_outlays = (
@@ -314,14 +312,14 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
         bequest_tax_revenue = (bq_tax_liab * pop_weights).sum(1).sum(1)
         cons_tax_revenue = (
             p.tau_c[:p.T, :, :] * c * pop_weights).sum(1).sum(1)
-        payroll_tax_revenue = (p.frac_tax_payroll[-1] *
+        payroll_tax_revenue = (p.frac_tax_payroll[:p.T] *
                                iit_payroll_tax_revenue)
     business_tax_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
     iit_revenue = iit_payroll_tax_revenue - payroll_tax_revenue
 
-    total_tax_revenue = (iit_payroll_tax_revenue + wealth_tax_revenue +
-                         bequest_tax_revenue + cons_tax_revenue +
-                         business_tax_revenue)
+    total_tax_revenue = (
+        iit_payroll_tax_revenue + wealth_tax_revenue +
+        bequest_tax_revenue + cons_tax_revenue + business_tax_revenue)
 
     return (total_tax_revenue, iit_payroll_tax_revenue,
             agg_pension_outlays, bequest_tax_revenue,
