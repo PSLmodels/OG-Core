@@ -471,10 +471,10 @@ def pension_amount(w, n, theta, t, j, shift, method, e, p):
     elif method == 'TPI':
         length = w.shape[0]
         if not shift:
-            # retireTPIis different from retire, because in TPincomewe are
-            # counting backwards with different length lists.  This will
-            # always be the correct location of retirement, depending
-            # on the shape of the lists.
+            # retireTPI is different from retire, because in TP income
+            # we are counting backwards with different length lists.
+            # This will always be the correct location of retirement,
+            # depending on the shape of the lists.
             retireTPI = (p.retire[t: t + length] - p.S)
         else:
             retireTPI = (p.retire[t: t + length] - 1 - p.S)

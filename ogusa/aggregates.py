@@ -270,68 +270,62 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
             'TPI'
 
     Returns:
-        REVENUE (array_like): aggregate tax revenue
-        T_I (array_like): aggregate income tax revenue
-        T_P (array_like): aggregate net payroll tax revenue, revenues
-            minus social security benefits paid
-        T_BQ (array_like): aggregate bequest tax revenue
-        T_W (array_like): aggregate wealth tax revenue
-        T_C (array_like): aggregate consumption tax revenue
-        business_revenue (array_like): aggregate business tax revenue
+        total_tax_revenue (array_like): aggregate tax revenue
+        iit_payroll_tax_revenue (array_like): aggregate income and
+            payroll tax revenue
+        agg_pension_outlays (array_like): aggregate outlays for gov't
+            pensions
+        bequest_tax_revenue (array_like): aggregate bequest tax revenue
+        wealth_tax_revenue (array_like): aggregate wealth tax revenue
+        cons_tax_revenue (array_like): aggregate consumption tax revenue
+        business_tax_revenue (array_like): aggregate business tax
+            revenue
+        payroll_tax_revenue (array_like): aggregate payroll tax revenue
+        iit_tax_revenue (array_like): aggregate income tax revenue
 
     '''
+    inc_pay_tax_liab = tax.income_tax_liab(
+        r, w, b, n, factor, 0, None, method, p.e, etr_params, p)
+    pension_benefits = tax.pension_amount(
+        w, n, theta, 0, None, False, method, p.e, p)
+    bq_tax_liab = tax.bequest_tax_liab(r, b, bq, 0, None, method, p)
+    w_tax_liab = tax.wealth_tax_liab(r, b, 0, None, method, p)
     if method == 'SS':
         pop_weights = np.transpose(p.omega_SS * p.lambdas)
-        income = household.get_y(r, w, b, n, p)
-        T_I = ((
-            tax.ETR_income(r, w, b, n, factor, p.e, etr_params, p) *
-            income) * pop_weights).sum()
-        payroll_tax = p.tau_payroll[-1] * w * p.e * n
-        payroll_tax[p.retire[-1]:] -= theta * w
-        T_P = (payroll_tax * pop_weights).sum()
-        T_W = (
-            tax.ETR_wealth(b, p.h_wealth[-1], p.m_wealth[-1],
-                           p.p_wealth[-1]) * b * pop_weights).sum()
-        T_BQ = (p.tau_bq[-1] * bq * pop_weights).sum()
-        T_C = (p.tau_c[-1, :, :] * c * pop_weights).sum()
-        business_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
-        payroll_tax_revenue = p.frac_tax_payroll[-1] * T_I
-        iit_revenue = T_I - payroll_tax_revenue
+        iit_payroll_tax_revenue = (inc_pay_tax_liab * pop_weights).sum()
+        agg_pension_outlays = (pension_benefits * pop_weights).sum()
+        wealth_tax_revenue = (w_tax_liab * pop_weights).sum()
+        bequest_tax_revenue = (bq_tax_liab * pop_weights).sum()
+        cons_tax_revenue = (p.tau_c[-1, :, :] * c * pop_weights).sum()
+        payroll_tax_revenue = (p.frac_tax_payroll[-1] *
+                               iit_payroll_tax_revenue)
     elif method == 'TPI':
         pop_weights = (
             np.squeeze(p.lambdas) *
             np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
                     (1, 1, p.J)))
-        r_array = utils.to_timepath_shape(r)
-        w_array = utils.to_timepath_shape(w)
-        income = household.get_y(r_array, w_array, b, n, p)
-        T_I = (
-            tax.ETR_income(r_array, w_array, b, n, factor, p.e,
-                           etr_params, p) * income *
-            pop_weights).sum(1).sum(1)
-        payroll_tax = (
-            p.tau_payroll[:p.T].reshape(p.T, 1, 1) * w_array * n * p.e)
-        for t in range(payroll_tax.shape[0]):
-            payroll_tax[t, p.retire[t]:, :] -= (
-                theta.reshape(1, p.J) * p.replacement_rate_adjust[t] *
-                w_array[t])
-        T_P = (payroll_tax * pop_weights).sum(1).sum(1)
-        T_W = ((
-            tax.ETR_wealth(b, p.h_wealth[:p.T].reshape(p.T, 1, 1),
-                           p.m_wealth[:p.T].reshape(p.T, 1, 1),
-                           p.p_wealth[:p.T].reshape(p.T, 1, 1)) *
-            b) * pop_weights).sum(1).sum(1)
-        T_BQ = (
-            p.tau_bq[:p.T].reshape(p.T, 1, 1) * bq *
-            pop_weights).sum(1).sum(1)
-        T_C = (p.tau_c[:p.T, :, :] * c * pop_weights).sum(1).sum(1)
-        business_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
-        payroll_tax_revenue = p.frac_tax_payroll[:p.T] * T_I[:p.T]
+        r = utils.to_timepath_shape(r)
+        w = utils.to_timepath_shape(w)
+        iit_payroll_tax_revenue = (
+            inc_pay_tax_liab * pop_weights).sum(1).sum(1)
+        agg_pension_outlays = (
+            pension_benefits * pop_weights).sum(1).sum(1)
+        wealth_tax_revenue = (w_tax_liab * pop_weights).sum(1).sum(1)
+        bequest_tax_revenue = (bq_tax_liab * pop_weights).sum(1).sum(1)
+        cons_tax_revenue = (
+            p.tau_c[:p.T, :, :] * c * pop_weights).sum(1).sum(1)
+        payroll_tax_revenue = (p.frac_tax_payroll[-1] *
+                               iit_payroll_tax_revenue)
+    business_tax_revenue = tax.get_biz_tax(w, Y, L, K, p, method)
+    iit_revenue = iit_payroll_tax_revenue - payroll_tax_revenue
 
-    REVENUE = T_I + T_P + T_BQ + T_W + T_C + business_revenue
-    iit_revenue = T_I - payroll_tax_revenue
+    total_tax_revenue = (iit_payroll_tax_revenue + wealth_tax_revenue +
+                         bequest_tax_revenue + cons_tax_revenue +
+                         business_tax_revenue)
 
-    return (REVENUE, T_I, T_P, T_BQ, T_W, T_C, business_revenue,
+    return (total_tax_revenue, iit_payroll_tax_revenue,
+            agg_pension_outlays, bequest_tax_revenue,
+            wealth_tax_revenue, cons_tax_revenue, business_tax_revenue,
             payroll_tax_revenue, iit_revenue)
 
 
