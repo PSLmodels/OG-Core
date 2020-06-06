@@ -450,7 +450,7 @@ def run_TPI(p, client=None):
         else:
             TR_ss2 = ss_vars['TR_ss']
         TR = np.ones(p.T + p.S) * TR_ss2
-        total_revenue = TR
+        total_tax_revenue = TR
         G = np.zeros(p.T + p.S)
         D = np.zeros(p.T + p.S)
         D_d = np.zeros(p.T + p.S)
@@ -466,7 +466,7 @@ def run_TPI(p, client=None):
         D = np.ones(p.T + p.S) * ss_vars['Dss']
         D_d = D * ss_vars['D_d_ss'] / ss_vars['Dss']
         D_f = D * ss_vars['D_f_ss'] / ss_vars['Dss']
-    total_revenue = np.ones(p.T + p.S) * ss_vars['total_revenue_ss']
+    total_tax_revenue = np.ones(p.T + p.S) * ss_vars['total_tax_revenue']
 
     # Initialize bequests
     BQ0 = aggr.get_BQ(r_hh[0], initial_b, None, p, 'SS', True)
@@ -542,15 +542,16 @@ def run_TPI(p, client=None):
             r_hh_path[:p.T, :, :], wpath[:p.T, :, :],
             bmat_s[:p.T, :, :], n_mat[:p.T, :, :], p)
 
-        (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath,
-         T_Cpath, business_revenue, payroll_tax_revenue, iit_revenue) =\
-            aggr.revenue(
+        (total_tax_rev, iit_payroll_tax_revenue,
+         agg_pension_outlays, bequest_tax_revenue, wealth_tax_revenue,
+         cons_tax_revenue, business_tax_revenue, payroll_tax_revenue,
+         iit_revenue) = aggr.revenue(
                 r_hh[:p.T], w[:p.T], bmat_s, n_mat[:p.T, :, :],
                 bqmat[:p.T, :, :], c_mat[:p.T, :, :], Y[:p.T],
                 L[:p.T], K[:p.T], factor, theta, etr_params_4D,
                 p, 'TPI')
-        total_revenue[:p.T] = total_rev
-        dg_fixed_values = (Y, total_revenue, TR, Gbaseline, D0_baseline)
+        total_tax_revenue[:p.T] = total_tax_rev
+        dg_fixed_values = (Y, total_tax_revenue, TR, Gbaseline, D0_baseline)
         (Dnew, G[:p.T], D_d[:p.T], D_f[:p.T], new_borrowing,
          debt_service, new_borrowing_f) =\
             fiscal.D_G_path(r_gov, dg_fixed_values, p)
@@ -577,15 +578,17 @@ def run_TPI(p, client=None):
         BQnew = aggr.get_BQ(r_hh_new[:p.T], b_mat_shift, None, p,
                             'TPI', False)
         bqmat_new = household.get_bq(BQnew, None, p, 'TPI')
-        (total_rev, T_Ipath, T_Ppath, T_BQpath, T_Wpath, T_Cpath,
-         business_revenue, payroll_tax_revenue, iit_revenue) =\
-            aggr.revenue(
+        (total_tax_rev, iit_payroll_tax_revenue,
+         agg_pension_outlays, bequest_tax_revenue, wealth_tax_revenue,
+         cons_tax_revenue, business_tax_revenue, payroll_tax_revenue,
+         iit_revenue) = aggr.revenue(
                 r_hh_new[:p.T], wnew[:p.T], bmat_s, n_mat[:p.T, :, :],
                 bqmat_new[:p.T, :, :], c_mat[:p.T, :, :], Ynew[:p.T],
                 L[:p.T], K[:p.T], factor, theta, etr_params_4D, p, 'TPI')
-        total_revenue[:p.T] = total_rev
+        total_tax_revenue[:p.T] = total_tax_rev
         TR_new = fiscal.get_TR(
-            Ynew[:p.T], TR[:p.T], G[:p.T], total_revenue[:p.T], p, 'TPI')
+            Ynew[:p.T], TR[:p.T], G[:p.T], total_tax_revenue[:p.T], p,
+            'TPI')
 
         # update vars for next iteration
         w[:p.T] = wnew[:p.T]
@@ -699,13 +702,16 @@ def run_TPI(p, client=None):
     output = {'Y': Y[:p.T], 'B': B, 'K': K, 'K_f': K_f, 'K_d': K_d,
               'L': L, 'C': C, 'I': I,
               'I_total': I_total, 'I_d': I_d, 'BQ': BQ,
-              'total_revenue': total_revenue,
-              'business_revenue': business_revenue,
-              'IITpayroll_revenue': T_Ipath, 'iit_revenue': iit_revenue,
+              'total_tax_revenue': total_tax_revenue,
+              'business_tax_revenue': business_tax_revenue,
+              'iit_payroll_tax_revenue': iit_payroll_tax_revenue,
+              'iit_revenue': iit_revenue,
               'payroll_tax_revenue': payroll_tax_revenue, 'TR': TR,
-              'T_P': T_Ppath, 'T_BQ': T_BQpath, 'T_W': T_Wpath,
-              'T_C': T_Cpath, 'G': G, 'D': D, 'D_f': D_f, 'D_d': D_d,
-              'r': r, 'r_gov': r_gov,
+              'agg_pension_outlays': agg_pension_outlays,
+              'bequest_tax_revenue': bequest_tax_revenue,
+              'wealth_tax_revenue': wealth_tax_revenue,
+              'cons_tax_revenue': cons_tax_revenue, 'G': G, 'D': D,
+              'D_f': D_f, 'D_d': D_d, 'r': r, 'r_gov': r_gov,
               'r_hh': r_hh, 'w': w, 'bmat_splus1': bmat_splus1,
               'bmat_s': bmat_s[:p.T, :, :], 'n_mat': n_mat[:p.T, :, :],
               'c_path': c_mat, 'bq_path': bqmat, 'tr_path': trmat,

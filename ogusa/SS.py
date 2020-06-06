@@ -359,12 +359,14 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
         r_hh_ss, wss, bssmat_s, nssmat, p)
     Css = aggr.get_C(cssmat, p, 'SS')
 
-    (total_revenue_ss, T_Iss, T_Pss, T_BQss, T_Wss, T_Css,
-     business_revenue, payroll_tax_revenue, iit_revenue) = aggr.revenue(
+    (total_tax_revenue, iit_payroll_tax_revenue, agg_pension_outlays,
+     bequest_tax_revenue, wealth_tax_revenue, cons_tax_revenue,
+     business_tax_revenue, payroll_tax_revenue, iit_revenue
+     ) = aggr.revenue(
          r_hh_ss, wss, bssmat_s, nssmat, bqssmat, cssmat, Yss, Lss, Kss,
          factor, theta, etr_params_3D, p, 'SS')
     Gss = fiscal.get_G_ss(
-        Yss, total_revenue_ss, TR_ss, new_borrowing, debt_service, p)
+        Yss, total_tax_revenue, TR_ss, new_borrowing, debt_service, p)
 
     # Compute total investment (not just domestic)
     Iss_total = aggr.get_I(None, Kss, Kss, p, 'total_ss')
@@ -410,13 +412,16 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
               'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
               'yss_before_tax_mat': yss_before_tax_mat,
               'bqssmat': bqssmat, 'TR_ss': TR_ss, 'trssmat': trssmat,
-              'Gss': Gss, 'total_revenue_ss': total_revenue_ss,
-              'business_revenue': business_revenue,
-              'IITpayroll_revenue': T_Iss,
+              'Gss': Gss, 'total_tax_revenue': total_tax_revenue,
+              'business_tax_revenue': business_tax_revenue,
+              'iit_payroll_tax_revenue': iit_payroll_tax_revenue,
               'iit_revenue': iit_revenue,
               'payroll_tax_revenue': payroll_tax_revenue,
-              'T_Pss': T_Pss, 'T_BQss': T_BQss, 'T_Wss': T_Wss,
-              'T_Css': T_Css, 'euler_savings': euler_savings,
+              'agg_pension_outlays': agg_pension_outlays,
+              'bequest_tax_revenue': bequest_tax_revenue,
+              'wealth_tax_revenue': wealth_tax_revenue,
+              'cons_tax_revenue': cons_tax_revenue,
+              'euler_savings': euler_savings,
               'debt_service_f': debt_service_f,
               'new_borrowing_f': new_borrowing_f,
               'debt_service': debt_service,
