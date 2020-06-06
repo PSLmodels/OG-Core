@@ -596,10 +596,10 @@ def read_cbo_forecast():
         'Personal Consumption Expenditures': 'C',
         'Gross Private Domestic Investment': 'I_total',
         'Government Consumption Expenditures and Gross Investment': 'G',
-        'Old-Age and Survivors Insurance': 'T_P',
+        'Old-Age and Survivors Insurance': 'agg_pension_outlays',
         'Individual income taxes': 'iit_revenue',
         'Payroll taxes': 'payroll_tax_revenue',
-        'Corporate income taxes': 'business_revenue',
+        'Corporate income taxes': 'business_tax_revenue',
         'Wages and Salaries': 'wL'}
     df['var_name'] = df['full_var_name'].replace(CBO_VAR_NAMES)
     # keep just variables of interest
