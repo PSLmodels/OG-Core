@@ -374,7 +374,7 @@ def tp_output_dump_table(base_params, base_tpi, reform_params=None,
     # keep just items of interest for final table
     vars_to_keep = ['Y', 'L', 'G', 'TR', 'B', 'K', 'K_d', 'K_f', 'D',
                     'D_d', 'D_f', 'r', 'r_gov', 'r_hh', 'w',
-                    'total_revenue', 'business_revenue']
+                    'total_tax_revenue', 'business_tax_revenue']
     base_dict = {k: base_tpi[k] for k in vars_to_keep}
     # update key names
     base_dict_final = dict((VAR_LABELS[k] + ': Baseline', v[:T]) for (k, v)

@@ -217,12 +217,12 @@ def inner_loop(outer_loop_vars, p, client):
     cssmat = household.get_cons(
         new_r_hh, new_w, b_s, bssmat, nssmat, new_bq, taxss, p.e,
         p.tau_c[-1, :, :], p)
-    total_revenue, _, _, _, _, _, _, _, _ = aggr.revenue(
-        new_r_hh, new_w, b_s, nssmat, new_bq, cssmat, Y, L, K,
-        factor, theta, etr_params_3D, p, 'SS')
-    G = fiscal.get_G_ss(Y, total_revenue, TR, new_borrowing,
-                        debt_service, p)
-    new_TR = fiscal.get_TR(Y, TR, G, total_revenue, p, 'SS')
+    total_tax_revenue, _, agg_pension_outlays, _, _, _, _, _, _ =\
+        aggr.revenue(new_r_hh, new_w, b_s, nssmat, new_bq, cssmat, Y, L,
+                     K, factor, theta, etr_params_3D, p, 'SS')
+    G = fiscal.get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR,
+                        new_borrowing, debt_service, p)
+    new_TR = fiscal.get_TR(Y, TR, G, total_tax_revenue, p, 'SS')
 
     return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_hh, \
         new_w, new_TR, Y, new_factor, new_BQ, average_income_model
@@ -366,7 +366,8 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
          r_hh_ss, wss, bssmat_s, nssmat, bqssmat, cssmat, Yss, Lss, Kss,
          factor, theta, etr_params_3D, p, 'SS')
     Gss = fiscal.get_G_ss(
-        Yss, total_tax_revenue, TR_ss, new_borrowing, debt_service, p)
+        Yss, total_tax_revenue, agg_pension_outlays, TR_ss,
+        new_borrowing, debt_service, p)
 
     # Compute total investment (not just domestic)
     Iss_total = aggr.get_I(None, Kss, Kss, p, 'total_ss')

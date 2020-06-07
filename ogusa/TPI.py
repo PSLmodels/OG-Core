@@ -551,7 +551,8 @@ def run_TPI(p, client=None):
                 L[:p.T], K[:p.T], factor, theta, etr_params_4D,
                 p, 'TPI')
         total_tax_revenue[:p.T] = total_tax_rev
-        dg_fixed_values = (Y, total_tax_revenue, TR, Gbaseline, D0_baseline)
+        dg_fixed_values = (Y, total_tax_revenue, agg_pension_outlays,
+                           TR, Gbaseline, D0_baseline)
         (Dnew, G[:p.T], D_d[:p.T], D_f[:p.T], new_borrowing,
          debt_service, new_borrowing_f) =\
             fiscal.D_G_path(r_gov, dg_fixed_values, p)
