@@ -162,6 +162,12 @@ def taxcalc_advance(baseline, start_year, reform, data, year):
     calc1.calc_all()
     print('Year: ', str(calc1.current_year))
 
+    # define market income - taking expanded_income and excluding gov't
+    # transfer benefits found in the Tax-Calculator expanded income
+    market_income = (calc1.array('expanded_income') -
+                     calc1.array('benefit_value_total') -
+                     calc1.array('ubi'))
+
     # Compute mtr on capital income
     mtr_combined_capinc = cap_inc_mtr(calc1)
 
@@ -180,12 +186,13 @@ def taxcalc_advance(baseline, start_year, reform, data, year):
         'mtr_capinc': mtr_combined_capinc,
         'age': calc1.array('age_head'),
         'total_labinc': calc1.array('sey') + calc1.array('e00200'),
-        'total_capinc': (calc1.array('expanded_income') -
+        'total_capinc': (market_income -
                          calc1.array('sey') + calc1.array('e00200')),
-        'expanded_income': calc1.array('expanded_income'),
+        'market_income': market_income,
         'total_tax_liab': calc1.array('combined'),
         'payroll_tax_liab': calc1.array('payrolltax'),
-        'etr': calc1.array('combined') / calc1.array('expanded_income'),
+        'etr': ((calc1.array('combined') - calc1.array('ubi')) /
+                market_income),
         'year': calc1.current_year * np.ones(length),
         'weight': calc1.array('s006')}
 
