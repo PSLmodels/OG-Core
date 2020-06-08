@@ -6,7 +6,7 @@ Functions for taxes in the steady state and along the transition path.
 
 # Packages
 import numpy as np
-from ogusa import utils, household
+from ogusa import utils
 
 '''
 ------------------------------------------------------------------------
@@ -373,7 +373,7 @@ def total_taxes(r, w, b, n, bq, factor, tr, theta, t, j, shift, method,
             r = utils.to_timepath_shape(r)
             w = utils.to_timepath_shape(w)
 
-    income = r * b  + w * e * n
+    income = r * b + w * e * n
     T_I = ETR_income(r, w, b, n, factor, e, etr_params, p) * income
 
     if method == 'SS':
