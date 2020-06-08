@@ -67,7 +67,9 @@ def test_D_G_path(baseline_spending, Y, TR, Revenue, Gbaseline,
     p.g_n = np.ones(p.T + p.S) * 0.02
     D0_baseline = 0.59
     Gbaseline[0] = 0.05
-    dg_fixed_values = (Y, Revenue, TR, Gbaseline, D0_baseline)
+    net_revenue = Revenue
+    pension_amount = np.zeros_like(net_revenue)
+    dg_fixed_values = (Y, Revenue, pension_amount, TR, Gbaseline, D0_baseline)
     test_tuple = fiscal.D_G_path(r_gov, dg_fixed_values, p)
     for i, v in enumerate(test_tuple):
         assert np.allclose(v[:p.T], expected_tuple[i][:p.T])
@@ -117,14 +119,16 @@ def test_get_G_ss(budget_balance, expected_G):
     Test of the fiscla.get_G_ss() function.
     '''
     Y = 2.2
-    total_revenue = 2.3
+    net_revenue = 2.3
+    pension_amount = 0.0
     TR = 1.6
     new_borrowing = 0.072076633
     debt_service = 0.042345192
     p = Specifications()
     p.budget_balance = budget_balance
     test_G = fiscal.get_G_ss(
-        Y, total_revenue, TR, new_borrowing, debt_service, p)
+        Y, net_revenue, pension_amount, TR, new_borrowing,
+        debt_service, p)
 
     assert np.allclose(test_G, expected_G)
 
