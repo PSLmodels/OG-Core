@@ -98,7 +98,7 @@ def D_G_path(r_gov, dg_fixed_values, p):
                 G[t] = (
                     growth[t + 1] * (p.debt_ratio_ss * Y[t]) -
                     (1 + r_gov[t]) * D[t] + total_tax_revenue[t] -
-                    -agg_pension_outlays[t] - TR[t])
+                    agg_pension_outlays[t] - TR[t])
             t += 1
 
         # in final period, growth rate has stabilized, so we can replace
@@ -228,7 +228,7 @@ def get_debt_service_f(r_hh, D_f):
     return debt_service_f
 
 
-def get_TR(Y, TR, G, total_revenue, p, method):
+def get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays, p, method):
     r'''
     Function to compute aggregate transfers.  Note that this excludes
     transfer spending through the public pension system.
@@ -248,8 +248,10 @@ def get_TR(Y, TR, G, total_revenue, p, method):
         Y (array_like): aggregate output
         TR (array_like): aggregate government transfers
         G (array_like): total government spending
-        total_revenue (array_like): total tax revenue net of government
-            pension benefits
+        total_tax_revenue (array_like): total tax revenue net of
+            government pension benefits
+        agg_pension_outlays (array_like): total government pension
+            outlays
         p (OG-USA Specifications object): model parameters
         method (str): whether doing SS or TP calculation
 
@@ -258,7 +260,7 @@ def get_TR(Y, TR, G, total_revenue, p, method):
 
     '''
     if p.budget_balance:
-        new_TR = total_revenue - G
+        new_TR = total_tax_revenue - agg_pension_outlays - G
     elif p.baseline_spending:
         new_TR = TR
     else:

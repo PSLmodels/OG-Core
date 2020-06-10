@@ -450,7 +450,7 @@ def run_TPI(p, client=None):
         else:
             TR_ss2 = ss_vars['TR_ss']
         TR = np.ones(p.T + p.S) * TR_ss2
-        total_tax_revenue = TR
+        total_tax_revenue = TR - ss_vars['agg_pension_outlays']
         G = np.zeros(p.T + p.S)
         D = np.zeros(p.T + p.S)
         D_d = np.zeros(p.T + p.S)
@@ -588,8 +588,8 @@ def run_TPI(p, client=None):
                 L[:p.T], K[:p.T], factor, theta, etr_params_4D, p, 'TPI')
         total_tax_revenue[:p.T] = total_tax_rev
         TR_new = fiscal.get_TR(
-            Ynew[:p.T], TR[:p.T], G[:p.T], total_tax_revenue[:p.T], p,
-            'TPI')
+            Ynew[:p.T], TR[:p.T], G[:p.T], total_tax_revenue[:p.T],
+            agg_pension_outlays[:p.T], p, 'TPI')
 
         # update vars for next iteration
         w[:p.T] = wnew[:p.T]
