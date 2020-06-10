@@ -261,6 +261,15 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
 
     test_dict = TPI.run_TPI(p, None)
     expected_dict = utils.safe_read_pickle(filename)
+    expected_dict['total_tax_revenue'] = expected_dict.pop('total_revenue')
+    expected_dict['business_tax_revenue'] = expected_dict.pop('business_revenue')
+    expected_dict['iit_payroll_tax_revenue'] = expected_dict.pop('IITpayroll_revenue')
+    expected_dict['agg_pension_outlays'] = expected_dict.pop('T_P')
+    expected_dict['bequest_tax_revenue'] = expected_dict.pop('T_BQ')
+    expected_dict['wealth_tax_revenue'] = expected_dict.pop('T_W')
+    expected_dict['cons_tax_revenue'] = expected_dict.pop('T_C')
+    expected_dict['total_tax_revenue'] = expected_dict['total_tax_revenue'][:p.T] - expected_dict['agg_pension_outlays'][:p.T]
+    expected_dict['agg_pension_outlays'] *= -1
 
     for k, v in expected_dict.items():
         try:
@@ -331,12 +340,23 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
     TPI.ENFORCE_SOLUTION_CHECKS = False
     test_dict = TPI.run_TPI(p, None)
     expected_dict = utils.safe_read_pickle(filename)
+    expected_dict['total_tax_revenue'] = expected_dict.pop('total_revenue')
+    expected_dict['business_tax_revenue'] = expected_dict.pop('business_revenue')
+    expected_dict['iit_payroll_tax_revenue'] = expected_dict.pop('IITpayroll_revenue')
+    expected_dict['agg_pension_outlays'] = expected_dict.pop('T_P')
+    expected_dict['bequest_tax_revenue'] = expected_dict.pop('T_BQ')
+    expected_dict['wealth_tax_revenue'] = expected_dict.pop('T_W')
+    expected_dict['cons_tax_revenue'] = expected_dict.pop('T_C')
+    expected_dict['total_tax_revenue'] = expected_dict['total_tax_revenue'][:p.T] - expected_dict['agg_pension_outlays'][:p.T]
+    expected_dict['agg_pension_outlays'] *= -1
 
     for k, v in expected_dict.items():
+        print('Checking = ', k)
         try:
-            assert(np.allclose(test_dict[k], v, rtol=1e-04, atol=1e-04))
+            print('diffs = ', test_dict[k][:p.T] - v[:p.T])
+            assert(np.allclose(test_dict[k][:p.T], v[:p.T], rtol=1e-04, atol=1e-04))
         except ValueError:
-            assert(np.allclose(test_dict[k], v[:p.T, :, :], rtol=1e-04,
+            assert(np.allclose(test_dict[k][:p.T, :, :], v[:p.T, :, :], rtol=1e-04,
                                atol=1e-04))
 
 
@@ -392,6 +412,15 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
     TPI.ENFORCE_SOLUTION_CHECKS = False
     test_dict = TPI.run_TPI(p, None)
     expected_dict = utils.safe_read_pickle(filename)
+    expected_dict['total_tax_revenue'] = expected_dict.pop('total_revenue')
+    expected_dict['business_tax_revenue'] = expected_dict.pop('business_revenue')
+    expected_dict['iit_payroll_tax_revenue'] = expected_dict.pop('IITpayroll_revenue')
+    expected_dict['agg_pension_outlays'] = expected_dict.pop('T_P')
+    expected_dict['bequest_tax_revenue'] = expected_dict.pop('T_BQ')
+    expected_dict['wealth_tax_revenue'] = expected_dict.pop('T_W')
+    expected_dict['cons_tax_revenue'] = expected_dict.pop('T_C')
+    expected_dict['total_tax_revenue'] = expected_dict['total_tax_revenue'][:p.T] - expected_dict['agg_pension_outlays'][:p.T]
+    expected_dict['agg_pension_outlays'] *= -1
 
     for k, v in expected_dict.items():
         try:
