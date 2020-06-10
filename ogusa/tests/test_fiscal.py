@@ -166,15 +166,17 @@ def test_get_TR(baseline, budget_balance, baseline_spending, method,
     Y = 3.2
     TR = 1.5
     G = 0.0
-    total_revenue = 1.9
+    agg_pension_outlays = 0.0
+    total_tax_revenue = 1.9
     p = Specifications(baseline=baseline)
     p.budget_balance = budget_balance
     p.baseline_spending = baseline_spending
     if method == 'TPI':
         Y = np.ones(p.T * p.S) * Y
         TR = np.ones(p.T * p.S) * TR
-        total_revenue = np.ones(p.T * p.S) * total_revenue
-    test_TR = fiscal.get_TR(Y, TR, G, total_revenue, p, method)
+        total_tax_revenue = np.ones(p.T * p.S) * total_tax_revenue
+    test_TR = fiscal.get_TR(Y, TR, G, total_tax_revenue,
+                            agg_pension_outlays, p, method)
 
     assert np.allclose(test_TR, expected_TR)
 
