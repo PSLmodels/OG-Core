@@ -502,7 +502,7 @@ def dynamic_revenue_decomposition(
         reform_etr_params_4D, reform_params)
     pop_weights = (
             np.squeeze(base_params.lambdas) *
-            np.tile(np.reshape(p.omega[:T, :], (T, S, 1)),
+            np.tile(np.reshape(base_params.omega[:T, :], (T, S, 1)),
                     (1, 1, J)))
     base_tax_yr = (series_A * pop_weights).sum(1).sum(1)
     reform_tax_yr = (series_D * pop_weights).sum(1).sum(1)
