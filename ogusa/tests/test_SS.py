@@ -369,15 +369,6 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
                              factorguess, Yguess, p, None, False)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
-    expected_dict['total_tax_revenue'] = expected_dict.pop('total_revenue_ss')
-    expected_dict['business_tax_revenue'] = expected_dict.pop('business_revenue')
-    expected_dict['iit_payroll_tax_revenue'] = expected_dict.pop('IITpayroll_revenue')
-    expected_dict['agg_pension_outlays'] = expected_dict.pop('T_Pss')
-    expected_dict['bequest_tax_revenue'] = expected_dict.pop('T_BQss')
-    expected_dict['wealth_tax_revenue'] = expected_dict.pop('T_Wss')
-    expected_dict['cons_tax_revenue'] = expected_dict.pop('T_Css')
-    expected_dict['total_tax_revenue'] = expected_dict['total_tax_revenue'] - expected_dict['agg_pension_outlays']
-    expected_dict['agg_pension_outlays'] *= -1
 
     for k, v in expected_dict.items():
         print('Testing ', k)
@@ -602,15 +593,6 @@ def test_run_SS(baseline, param_updates, filename, dask_client):
     test_dict = SS.run_SS(p, None)
     expected_dict = utils.safe_read_pickle(
         os.path.join(CUR_PATH, 'test_io_data', filename))
-    expected_dict['total_tax_revenue'] = expected_dict.pop('total_revenue_ss')
-    expected_dict['business_tax_revenue'] = expected_dict.pop('business_revenue')
-    expected_dict['iit_payroll_tax_revenue'] = expected_dict.pop('IITpayroll_revenue')
-    expected_dict['agg_pension_outlays'] = expected_dict.pop('T_Pss')
-    expected_dict['bequest_tax_revenue'] = expected_dict.pop('T_BQss')
-    expected_dict['wealth_tax_revenue'] = expected_dict.pop('T_Wss')
-    expected_dict['cons_tax_revenue'] = expected_dict.pop('T_Css')
-    expected_dict['total_tax_revenue'] = expected_dict['total_tax_revenue'] - expected_dict['agg_pension_outlays']
-    expected_dict['agg_pension_outlays'] *= -1
 
     for k, v in expected_dict.items():
         assert(np.allclose(test_dict[k], v))
