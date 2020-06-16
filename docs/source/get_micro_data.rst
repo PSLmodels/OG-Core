@@ -1,6 +1,6 @@
 .. _get_micro_data:
 
-Functions to Get Mirco-data from Tax-Calculator
+Functions to Get Micro-data from Tax-Calculator
 =================================================
 
 **Get Micro-data Functions**
