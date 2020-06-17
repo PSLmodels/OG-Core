@@ -27,9 +27,7 @@ if not SHOW_RUNTIME:
 
 CUR_PATH = os.path.split(os.path.abspath(__file__))[0]
 MIN_OBS = 240  # 240 is 8 parameters to estimate X 30 obs per parameter
-MIN_ETR = -0.15
 MAX_ETR = 0.65
-MIN_MTR = -0.45
 MAX_MTR = 0.99
 MIN_INCOME = 5
 MIN_INC_GRAPH = 5
@@ -564,23 +562,23 @@ def tax_func_loop(t, data, start_year, s_min, s_max, age_specific,
 
     # Calculate average total income in each year
     AvgInc = (
-        ((data['expanded_income'] * data['weight']).sum()) /
+        ((data['market_income'] * data['weight']).sum()) /
         data['weight'].sum())
 
     # Calculate average ETR and MTRs (weight by population weights
     #    and income) for each year
     AvgETR = (
-        ((data['etr']*data['expanded_income'] * data['weight']).sum()) /
-        (data['expanded_income'] * data['weight']).sum())
+        ((data['etr']*data['market_income'] * data['weight']).sum()) /
+        (data['market_income'] * data['weight']).sum())
 
     AvgMTRx = (
-        ((data['mtr_labinc'] * data['expanded_income'] *
-          data['weight']).sum()) / (data['expanded_income'] *
+        ((data['mtr_labinc'] * data['market_income'] *
+          data['weight']).sum()) / (data['market_income'] *
                                     data['weight']).sum())
 
     AvgMTRy = (
-        ((data['mtr_capinc'] * data['expanded_income'] *
-          data['weight']).sum()) / (data['expanded_income'] *
+        ((data['mtr_capinc'] * data['market_income'] *
+          data['weight']).sum()) / (data['market_income'] *
                                     data['weight']).sum())
 
     # Caulcatoe fraction of total tax liability that is from payroll
@@ -596,22 +594,28 @@ def tax_func_loop(t, data, start_year, s_min, s_max, age_specific,
     # drop all obs with ETR > MAX_ETR
     data.drop(data[data['etr'] > MAX_ETR].index, inplace=True)
     # drop all obs with ETR < MIN_ETR
+    # set min ETR to value at 10th percentile in distribution of ETRs
+    MIN_ETR = data['etr'].quantile(q=0.10)
     data.drop(data[data['etr'] < MIN_ETR].index, inplace=True)
-    # drop all obs with ATI, TLI, TCincome< MIN_INCOME
-    data.drop(data[(data['expanded_income'] < MIN_INCOME) |
+    # drop all obs with total market income, labor income, or
+    # capital income < MIN_INCOME
+    data.drop(data[(data['market_income'] < MIN_INCOME) |
                    (data['total_labinc'] < MIN_INCOME) |
                    (data['total_capinc'] < MIN_INCOME)].index,
               inplace=True)
     # drop all obs with MTR on capital income > MAX_MTR
     data.drop(data[data['mtr_capinc'] > MAX_MTR].index,
               inplace=True)
-    # drop all obs with MTR on capital income < MIN_MTR
-    data.drop(data[data['mtr_capinc'] < MIN_MTR].index,
+    # drop all obs with MTR on capital income < MIN_CAP_MTR
+    # set min MTR to value at 10th percentile in distribution of MTRs
+    MIN_CAP_MTR = data['mtr_capinc'].quantile(q=0.10)
+    data.drop(data[data['mtr_capinc'] < MIN_CAP_MTR].index,
               inplace=True)
     # drop all obs with MTR on labor income > MAX_MTR
     data.drop(data[data['mtr_labinc'] > MAX_MTR].index, inplace=True)
-    # drop all obs with MTR on labor income < MIN_MTR
-    data.drop(data[data['mtr_labinc'] < MIN_MTR].index, inplace=True)
+    # drop all obs with MTR on labor income < MIN_LAB_MTR
+    MIN_LAB_MTR = data['mtr_labinc'].quantile(q=0.10)
+    data.drop(data[data['mtr_labinc'] < MIN_LAB_MTR].index, inplace=True)
 
     # Create an array of the different ages in the data
     min_age = int(np.maximum(data['age'].min(), s_min))

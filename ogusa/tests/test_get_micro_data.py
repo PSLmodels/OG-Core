@@ -174,7 +174,7 @@ def test_get_data(baseline, dask_client):
         os.path.join(CUR_PATH, 'test_io_data',
                      'micro_data_dict_for_tests.pkl'))
     test_data, _ = get_micro_data.get_data(
-        baseline=baseline, start_year=2029, reform={}, data='cps',
+        baseline=baseline, start_year=2030, reform={}, data='cps',
         client=dask_client, num_workers=NUM_WORKERS)
     for k, v in test_data.items():
         try:
@@ -194,7 +194,8 @@ def test_taxcalc_advance():
     '''
     expected_dict = utils.safe_read_pickle(os.path.join(
         CUR_PATH, 'test_io_data', 'tax_dict_for_tests.pkl'))
-    test_dict = get_micro_data.taxcalc_advance(True, 2028, {}, 'cps', 2028)
+    test_dict = get_micro_data.taxcalc_advance(True, 2028, {}, 'cps',
+                                               2028)
     del test_dict['payroll_tax_liab']
     for k, v in test_dict.items():
         assert np.allclose(expected_dict[k], v, equal_nan=True)

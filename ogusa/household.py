@@ -279,8 +279,8 @@ def FOC_savings(r, w, b, b_splus1, n, bq, factor, tr, theta, e, rho,
         m_wealth = p.m_wealth[t]
         p_wealth = p.p_wealth[t]
 
-    taxes = tax.total_taxes(r, w, b, n, bq, factor, tr, theta, t, j,
-                            False, method, e, etr_params, p)
+    taxes = tax.net_taxes(r, w, b, n, bq, factor, tr, theta, t, j,
+                          False, method, e, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
     deriv = ((1 + r) - (
         r * tax.MTR_income(r, w, b, n, factor, True, e, etr_params,
@@ -357,8 +357,8 @@ def FOC_labor(r, w, b, b_splus1, n, bq, factor, tr, theta, chi_n, e,
             w = w.reshape(w.shape[0], 1)
             tau_payroll = tau_payroll.reshape(tau_payroll.shape[0], 1)
 
-    taxes = tax.total_taxes(r, w, b, n, bq, factor, tr, theta, t, j,
-                            False, method, e, etr_params, p)
+    taxes = tax.net_taxes(r, w, b, n, bq, factor, tr, theta, t, j,
+                          False, method, e, etr_params, p)
     cons = get_cons(r, w, b, b_splus1, n, bq, taxes, e, tau_c, p)
     deriv = (1 - tau_payroll - tax.MTR_income(r, w, b, n, factor,
                                               False, e, etr_params,
