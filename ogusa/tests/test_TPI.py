@@ -36,8 +36,8 @@ param_updates3 = {'baseline_spending': True}
                               'Reform, baseline_spending'])
 def test_get_initial_SS_values(baseline, param_updates, filename,
                                dask_client):
-    p = Specifications(baseline=baseline, test=True, client=dask_client,
-                       num_workers=NUM_WORKERS)
+    p = Specifications(baseline=baseline, test=False,
+                       client=dask_client, num_workers=NUM_WORKERS)
     p.update_specifications(param_updates)
     p.baseline_dir = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
     p.output_base = os.path.join(CUR_PATH, 'test_io_data', 'OUTPUT')
@@ -264,9 +264,9 @@ def test_run_TPI_full_run(baseline, param_updates, filename, tmp_path,
 
     for k, v in expected_dict.items():
         try:
-            assert(np.allclose(test_dict[k], v, rtol=1e-04, atol=1e-04))
+            assert(np.allclose(test_dict[k][:p.T], v[:p.T], rtol=1e-04, atol=1e-04))
         except ValueError:
-            assert(np.allclose(test_dict[k], v[:p.T, :, :], rtol=1e-04,
+            assert(np.allclose(test_dict[k][:p.T, :, :], v[:p.T, :, :], rtol=1e-04,
                                atol=1e-04))
 
 
@@ -334,10 +334,11 @@ def test_run_TPI(baseline, param_updates, filename, tmp_path,
 
     for k, v in expected_dict.items():
         try:
-            assert(np.allclose(test_dict[k], v, rtol=1e-04, atol=1e-04))
-        except ValueError:
-            assert(np.allclose(test_dict[k], v[:p.T, :, :], rtol=1e-04,
+            assert(np.allclose(test_dict[k][:p.T], v[:p.T], rtol=1e-04,
                                atol=1e-04))
+        except ValueError:
+            assert(np.allclose(test_dict[k][:p.T, :, :], v[:p.T, :, :],
+                               rtol=1e-04, atol=1e-04))
 
 
 param_updates5 = {'zeta_K': [1.0]}
@@ -395,7 +396,9 @@ def test_run_TPI_extra(baseline, param_updates, filename, tmp_path,
 
     for k, v in expected_dict.items():
         try:
-            assert(np.allclose(test_dict[k], v, rtol=1e-04, atol=1e-04))
+            assert(np.allclose(test_dict[k][:p.T], v[:p.T], rtol=1e-04,
+                               atol=1e-04))
         except ValueError:
-            assert(np.allclose(test_dict[k], v[:p.T, :, :], rtol=1e-04,
+            assert(np.allclose(test_dict[k][:p.T, :, :], v[:p.T, :, :],
+                               rtol=1e-04,
                                atol=1e-04))

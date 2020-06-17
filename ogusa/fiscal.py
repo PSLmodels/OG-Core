@@ -36,9 +36,9 @@ def D_G_path(r_gov, dg_fixed_values, p):
     Args:
         r_gov (Numpy array): interest rate on government debt over the
             time path
-        dg_fixed_values (tuple): (Y, total_revenue, TR, D0, G0) values
-            of variables that are taken as given in the government
-            budget constraint
+        dg_fixed_values (tuple): (Y, total_tax_revenue,
+            agg_pension_outlays, TR, D0, G0) values of variables that
+            are taken as given in the government budget constraint
         Gbaseline (Numpy array): government spending over the time path
             in the baseline equilibrium, used only if
             baseline_spending=True
@@ -56,7 +56,8 @@ def D_G_path(r_gov, dg_fixed_values, p):
             * new_borrowing_f: new borrowing from foreigners
 
     '''
-    Y, total_revenue, TR, Gbaseline, D0_baseline = dg_fixed_values
+    (Y, total_tax_revenue, agg_pension_outlays, TR, Gbaseline,
+     D0_baseline) = dg_fixed_values
 
     growth = (1 + p.g_n) * np.exp(p.g_y)
 
@@ -82,29 +83,38 @@ def D_G_path(r_gov, dg_fixed_values, p):
     else:
         t = 1
         while t < p.T-1:
-            D[t] = ((1 / growth[t]) * ((1 + r_gov[t - 1]) * D[t - 1] +
-                                       G[t - 1] + TR[t - 1] -
-                                       total_revenue[t - 1]))
+            D[t] = (
+                (1 / growth[t]) * ((1 + r_gov[t - 1]) * D[t - 1] +
+                                   G[t - 1] + TR[t - 1] +
+                                   agg_pension_outlays[t-1] -
+                                   total_tax_revenue[t - 1]))
             if (t >= p.tG1) and (t < p.tG2):
                 G[t] = (
                     growth[t + 1] * (p.rho_G * p.debt_ratio_ss * Y[t] +
                                      (1 - p.rho_G) * D[t]) -
-                    (1 + r_gov[t]) * D[t] + total_revenue[t] - TR[t])
+                    (1 + r_gov[t]) * D[t] + total_tax_revenue[t] -
+                    agg_pension_outlays[t] - TR[t])
             elif t >= p.tG2:
                 G[t] = (
                     growth[t + 1] * (p.debt_ratio_ss * Y[t]) -
-                    (1 + r_gov[t]) * D[t] + total_revenue[t] - TR[t])
+                    (1 + r_gov[t]) * D[t] + total_tax_revenue[t] -
+                    agg_pension_outlays[t] - TR[t])
             t += 1
 
         # in final period, growth rate has stabilized, so we can replace
         # growth[t+1] with growth[t]
         t = p.T - 1
-        D[t] = ((1 / growth[t]) * ((1 + r_gov[t - 1]) * D[t - 1] + G[t - 1]
-                                   + TR[t - 1] - total_revenue[t - 1]))
-        G[t] = (growth[t] * (p.debt_ratio_ss * Y[t]) - (1 + r_gov[t]) * D[t]
-                + total_revenue[t] - TR[t])
-        D[t + 1] = ((1 / growth[t + 1]) * ((1 + r_gov[t]) * D[t] + G[t] +
-                                           TR[t] - total_revenue[t]))
+        D[t] = (
+            (1 / growth[t]) * ((1 + r_gov[t - 1]) * D[t - 1] + G[t - 1]
+                               + TR[t - 1] + agg_pension_outlays[t-1] -
+                               total_tax_revenue[t - 1]))
+        G[t] = (
+            growth[t] * (p.debt_ratio_ss * Y[t]) - (1 + r_gov[t]) * D[t]
+            + total_tax_revenue[t] - agg_pension_outlays[t] - TR[t])
+        D[t + 1] = (
+            (1 / growth[t + 1]) * ((1 + r_gov[t]) * D[t] + G[t] + TR[t]
+                                   + agg_pension_outlays[t] -
+                                   total_tax_revenue[t]))
         D_ratio_max = np.amax(D[:p.T] / Y[:p.T])
         print('Maximum debt ratio: ', D_ratio_max)
 
@@ -170,7 +180,8 @@ def get_D_ss(r_gov, Y, p):
     return D, D_d, D_f, new_borrowing, debt_service, new_borrowing_f
 
 
-def get_G_ss(Y, Revenue, TR, new_borrowing, debt_service, p):
+def get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR,
+             new_borrowing, debt_service, p):
     r'''
     Calculate the steady-state values of government spending.
 
@@ -179,7 +190,8 @@ def get_G_ss(Y, Revenue, TR, new_borrowing, debt_service, p):
 
     Args:
         Y (scalar): aggregate output
-        Revenue (scalar): steady-state net tax revenue
+        total_tax_revenue (scalar): steady-state tax revenue
+        agg_pension_outlays (scalar): steady-state pension outlays
         TR (scalar): steady-state transfer spending
         new_borrowing (scalar): steady-state amount of new borowing
         debt_service (scalar): steady-state debt service costs
@@ -192,8 +204,8 @@ def get_G_ss(Y, Revenue, TR, new_borrowing, debt_service, p):
     if p.budget_balance:
         G = p.alpha_G[-1] * Y
     else:
-        G = Revenue + new_borrowing - (TR + debt_service)
-        print('G components = ', new_borrowing, TR, debt_service)
+        G = (total_tax_revenue + new_borrowing -
+             (agg_pension_outlays + TR + debt_service))
 
     return G
 
@@ -216,7 +228,7 @@ def get_debt_service_f(r_hh, D_f):
     return debt_service_f
 
 
-def get_TR(Y, TR, G, total_revenue, p, method):
+def get_TR(Y, TR, G, total_tax_revenue, agg_pension_outlays, p, method):
     r'''
     Function to compute aggregate transfers.  Note that this excludes
     transfer spending through the public pension system.
@@ -236,8 +248,10 @@ def get_TR(Y, TR, G, total_revenue, p, method):
         Y (array_like): aggregate output
         TR (array_like): aggregate government transfers
         G (array_like): total government spending
-        total_revenue (array_like): total tax revenue net of government
-            pension benefits
+        total_tax_revenue (array_like): total tax revenue net of
+            government pension benefits
+        agg_pension_outlays (array_like): total government pension
+            outlays
         p (OG-USA Specifications object): model parameters
         method (str): whether doing SS or TP calculation
 
@@ -246,7 +260,7 @@ def get_TR(Y, TR, G, total_revenue, p, method):
 
     '''
     if p.budget_balance:
-        new_TR = total_revenue - G
+        new_TR = total_tax_revenue - agg_pension_outlays - G
     elif p.baseline_spending:
         new_TR = TR
     else:

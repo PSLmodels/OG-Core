@@ -374,7 +374,7 @@ def tp_output_dump_table(base_params, base_tpi, reform_params=None,
     # keep just items of interest for final table
     vars_to_keep = ['Y', 'L', 'G', 'TR', 'B', 'K', 'K_d', 'K_f', 'D',
                     'D_d', 'D_f', 'r', 'r_gov', 'r_hh', 'w',
-                    'total_revenue', 'business_revenue']
+                    'total_tax_revenue', 'business_tax_revenue']
     base_dict = {k: base_tpi[k] for k in vars_to_keep}
     # update key names
     base_dict_final = dict((VAR_LABELS[k] + ': Baseline', v[:T]) for (k, v)
@@ -473,29 +473,39 @@ def dynamic_revenue_decomposition(
     if include_SS:
         year_list.append('SS')
     table_dict = {'Year': year_list}
-    base_tax = base_tpi['tax_path']
-    reform_tax = reform_tpi['tax_path']
-    p = reform_params
-    etr_params_4D = np.tile(
-            p.etr_params.reshape(p.T, p.S, 1, p.etr_params.shape[2]),
-            (1, 1, p.J, 1))
-    series_B = tax.total_taxes(
-        base_tpi['r_hh'][:p.T], base_tpi['w'][:p.T], base_tpi['bmat_s'],
-        base_tpi['n_mat'][:p.T, :, :], base_tpi['bq_path'][:p.T, :, :],
-        base_ss['factor_ss'], base_tpi['tr_path'][:p.T, :, :],
-        base_ss['theta'], 0, None, False, 'TPI', p.e, etr_params_4D, p)
-    series_C = tax.total_taxes(
-        base_tpi['r_hh'][:p.T], base_tpi['w'][:p.T],
-        reform_tpi['bmat_s'], reform_tpi['n_mat'][:p.T, :, :],
-        base_tpi['bq_path'][:p.T, :, :], base_ss['factor_ss'],
-        base_tpi['tr_path'][:p.T, :, :], base_ss['theta'], 0, None,
-        False, 'TPI', p.e, etr_params_4D, p)
+    T, S, J = base_params.T, base_params.S, base_params.J
+    base_etr_params_4D = np.tile(
+            base_params.etr_params.reshape(
+                T, S, 1, base_params.etr_params.shape[2]),
+            (1, 1, J, 1))
+    reform_etr_params_4D = np.tile(
+            reform_params.etr_params.reshape(
+                T, S, 1, reform_params.etr_params.shape[2]),
+            (1, 1, J, 1))
+    series_A = tax.income_tax_liab(
+        base_tpi['r_hh'][:T], base_tpi['w'][:T], base_tpi['bmat_s'],
+        base_tpi['n_mat'][:T, :, :], base_ss['factor_ss'], 0, None,
+        'TPI', base_params.e, base_etr_params_4D, base_params)
+    series_B = tax.income_tax_liab(
+        base_tpi['r_hh'][:T], base_tpi['w'][:T], base_tpi['bmat_s'],
+        base_tpi['n_mat'][:T, :, :], base_ss['factor_ss'], 0, None,
+        'TPI', base_params.e, reform_etr_params_4D, base_params)
+    series_C = tax.income_tax_liab(
+        base_tpi['r_hh'][:T], base_tpi['w'][:T],
+        reform_tpi['bmat_s'], reform_tpi['n_mat'][:T, :, :],
+        base_ss['factor_ss'], 0, None, 'TPI', reform_params.e,
+        reform_etr_params_4D, reform_params)
+    series_D = tax.income_tax_liab(
+        reform_tpi['r_hh'][:T], reform_tpi['w'][:T],
+        reform_tpi['bmat_s'], reform_tpi['n_mat'][:T, :, :],
+        base_ss['factor_ss'], 0, None, 'TPI', reform_params.e,
+        reform_etr_params_4D, reform_params)
     pop_weights = (
-            np.squeeze(p.lambdas) *
-            np.tile(np.reshape(p.omega[:p.T, :], (p.T, p.S, 1)),
-                    (1, 1, p.J)))
-    base_tax_yr = (base_tax * pop_weights).sum(1).sum(1)
-    reform_tax_yr = (reform_tax * pop_weights).sum(1).sum(1)
+            np.squeeze(base_params.lambdas) *
+            np.tile(np.reshape(base_params.omega[:T, :], (T, S, 1)),
+                    (1, 1, J)))
+    base_tax_yr = (series_A * pop_weights).sum(1).sum(1)
+    reform_tax_yr = (series_D * pop_weights).sum(1).sum(1)
     series_B_tax_yr = (series_B * pop_weights).sum(1).sum(1)
     series_C_tax_yr = (series_C * pop_weights).sum(1).sum(1)
     total_diff = reform_tax_yr - base_tax_yr

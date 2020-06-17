@@ -85,9 +85,9 @@ def euler_equation_solver(guesses, *args):
     error1[mask3] = 1e14
     error1[mask5] = 1e14
     error2[mask4] = 1e14
-    taxes = tax.total_taxes(r, w, b_s, n_guess, bq, factor, tr, theta,
-                            None, j, False, 'SS', p.e[:, j],
-                            p.etr_params[-1, :, :], p)
+    taxes = tax.net_taxes(r, w, b_s, n_guess, bq, factor, tr, theta,
+                          None, j, False, 'SS', p.e[:, j],
+                          p.etr_params[-1, :, :], p)
     cons = household.get_cons(r, w, b_s, b_splus1, n_guess, bq, taxes,
                               p.e[:, j], p.tau_c[-1, :, j], p)
     mask6 = cons < 0
@@ -211,18 +211,19 @@ def inner_loop(outer_loop_vars, p, client):
     etr_params_3D = np.tile(
         np.reshape(p.etr_params[-1, :, :],
                    (p.S, 1, p.etr_params.shape[2])), (1, p.J, 1))
-    taxss = tax.total_taxes(
+    taxss = tax.net_taxes(
         new_r_hh, new_w, b_s, nssmat, new_bq, factor, tr, theta, None,
         None, False, 'SS', p.e, etr_params_3D, p)
     cssmat = household.get_cons(
         new_r_hh, new_w, b_s, bssmat, nssmat, new_bq, taxss, p.e,
         p.tau_c[-1, :, :], p)
-    total_revenue, _, _, _, _, _, _, _, _ = aggr.revenue(
-        new_r_hh, new_w, b_s, nssmat, new_bq, cssmat, Y, L, K,
-        factor, theta, etr_params_3D, p, 'SS')
-    G = fiscal.get_G_ss(Y, total_revenue, TR, new_borrowing,
-                        debt_service, p)
-    new_TR = fiscal.get_TR(Y, TR, G, total_revenue, p, 'SS')
+    total_tax_revenue, _, agg_pension_outlays, _, _, _, _, _, _ =\
+        aggr.revenue(new_r_hh, new_w, b_s, nssmat, new_bq, cssmat, Y, L,
+                     K, factor, theta, etr_params_3D, p, 'SS')
+    G = fiscal.get_G_ss(Y, total_tax_revenue, agg_pension_outlays, TR,
+                        new_borrowing, debt_service, p)
+    new_TR = fiscal.get_TR(Y, TR, G, total_tax_revenue,
+                           agg_pension_outlays, p, 'SS')
 
     return euler_errors, bssmat, nssmat, new_r, new_r_gov, new_r_hh, \
         new_w, new_TR, Y, new_factor, new_BQ, average_income_model
@@ -349,9 +350,9 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     etr_ss = tax.ETR_income(r_hh_ss, wss, bssmat_s, nssmat, factor, p.e,
                             etr_params_3D, p)
 
-    taxss = tax.total_taxes(r_hh_ss, wss, bssmat_s, nssmat, bqssmat,
-                            factor_ss, trssmat, theta, None, None, False,
-                            'SS', p.e, etr_params_3D, p)
+    taxss = tax.net_taxes(r_hh_ss, wss, bssmat_s, nssmat, bqssmat,
+                          factor_ss, trssmat, theta, None, None, False,
+                          'SS', p.e, etr_params_3D, p)
     cssmat = household.get_cons(r_hh_ss, wss, bssmat_s, bssmat_splus1,
                                 nssmat, bqssmat, taxss,
                                 p.e, p.tau_c[-1, :, :], p)
@@ -359,12 +360,15 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
         r_hh_ss, wss, bssmat_s, nssmat, p)
     Css = aggr.get_C(cssmat, p, 'SS')
 
-    (total_revenue_ss, T_Iss, T_Pss, T_BQss, T_Wss, T_Css,
-     business_revenue, payroll_tax_revenue, iit_revenue) = aggr.revenue(
+    (total_tax_revenue, iit_payroll_tax_revenue, agg_pension_outlays,
+     bequest_tax_revenue, wealth_tax_revenue, cons_tax_revenue,
+     business_tax_revenue, payroll_tax_revenue, iit_revenue
+     ) = aggr.revenue(
          r_hh_ss, wss, bssmat_s, nssmat, bqssmat, cssmat, Yss, Lss, Kss,
          factor, theta, etr_params_3D, p, 'SS')
     Gss = fiscal.get_G_ss(
-        Yss, total_revenue_ss, TR_ss, new_borrowing, debt_service, p)
+        Yss, total_tax_revenue, agg_pension_outlays, TR_ss,
+        new_borrowing, debt_service, p)
 
     # Compute total investment (not just domestic)
     Iss_total = aggr.get_I(None, Kss, Kss, p, 'total_ss')
@@ -410,13 +414,16 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
               'cssmat': cssmat, 'bssmat_splus1': bssmat_splus1,
               'yss_before_tax_mat': yss_before_tax_mat,
               'bqssmat': bqssmat, 'TR_ss': TR_ss, 'trssmat': trssmat,
-              'Gss': Gss, 'total_revenue_ss': total_revenue_ss,
-              'business_revenue': business_revenue,
-              'IITpayroll_revenue': T_Iss,
+              'Gss': Gss, 'total_tax_revenue': total_tax_revenue,
+              'business_tax_revenue': business_tax_revenue,
+              'iit_payroll_tax_revenue': iit_payroll_tax_revenue,
               'iit_revenue': iit_revenue,
               'payroll_tax_revenue': payroll_tax_revenue,
-              'T_Pss': T_Pss, 'T_BQss': T_BQss, 'T_Wss': T_Wss,
-              'T_Css': T_Css, 'euler_savings': euler_savings,
+              'agg_pension_outlays': agg_pension_outlays,
+              'bequest_tax_revenue': bequest_tax_revenue,
+              'wealth_tax_revenue': wealth_tax_revenue,
+              'cons_tax_revenue': cons_tax_revenue,
+              'euler_savings': euler_savings,
               'debt_service_f': debt_service_f,
               'new_borrowing_f': new_borrowing_f,
               'debt_service': debt_service,
