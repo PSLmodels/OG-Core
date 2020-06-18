@@ -432,3 +432,30 @@ def get_NPV_depr(r, tau_b, delta_tau, T, S, method):
                      np.prod(1 / (1 + r[t + 1:T])))
 
     return Z
+
+
+def get_K_tau_p1(K_tau, I, delta_tau):
+    r'''
+    Computes the tax basis of the depreciable capital stock using its
+    law of motion.
+
+    ..math::
+        K^{\tau}_{t+1} = (1 - \delta^{\tau})K^{\tau}_{t} + I_{t}
+
+    Args:
+        K_tau (array_like): Tax basis of depreciable stock of capital
+            at time t
+        I (array_like): Investment at time t
+        delta_tau (array_like): Rate of depreciation for tax purposes
+
+    Returns:
+        K_tau_p1 (array_like): Tax basis of depreciable stock of capital
+            at time t + 1
+
+    '''
+    if delta_tau == 0:
+        K_tau_p1 = np.zeros_like(I)
+    else:
+        K_tau_p1 = (1 - delta_tau) * K_tau + I
+
+    return K_tau_p1

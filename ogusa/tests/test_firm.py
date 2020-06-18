@@ -542,3 +542,16 @@ def test_get_NPV_depr():
     test_val = firm.get_NPV_depr(r, tau_b, delta_tau, T, S, method)
 
     assert np.allclose(test_val, expected_val)
+
+
+def test_get_K_tau_p1():
+    '''
+    Test of firm.get_K_tau_p1()
+    '''
+    expected_val = 2.08
+    K_tau = 1.2
+    I = 1.0
+    delta_tau = 0.1
+    test_val = firm.get_K_tau_p1(K_tau, I, delta_tau)
+
+    assert np.allclose(test_val, expected_val)
