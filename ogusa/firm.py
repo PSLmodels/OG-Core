@@ -5,6 +5,7 @@ path
 ------------------------------------------------------------------------
 '''
 import numpy as np
+import scipy.optimize as opt
 
 '''
 ------------------------------------------------------------------------
@@ -459,3 +460,67 @@ def get_K_tau_p1(K_tau, I, delta_tau):
         K_tau_p1 = (1 - delta_tau) * K_tau + I
 
     return K_tau_p1
+
+
+def get_K_demand(K0, V, K_tau0, Z_tau, delta, psi, mu, tau_c, delta_tau, T2):
+    '''
+    Function to solve for capital demand using the firm's FOC for its
+    choice of investment.
+
+    Args:
+        K0 (scalar): initial period aggregate capital stock, > 0
+        V (array_like): aggregate firm value
+        delta (scalar): per period depreciation rate
+        psi (scalar): scale parameter in adjustment cost function
+        mu (scalar): shift parameter in adjustment cost function
+        T (int): number of periods until the steady-state
+
+    Returns:
+        K (array_like): capital demand by the firm
+
+    '''
+    K = np.zeros(T2)
+    K_tau = np.zeros(T2)
+    K[0] = K0
+    K_tau[0] = K_tau0
+    for t in range(T2 - 1):
+        Kp1_args = (K[t], V[t+1], K_tau[t], Z_tau[t+1], delta, psi,
+                    mu, tau_c, delta_tau)
+        results = opt.root(FOC_I, K[t], args=Kp1_args)
+        K[t + 1] = results.x
+        I = K[t + 1] - (1 - delta) * K[t]
+        K_tau[t + 1] = firms.get_K_tau_p1(K_tau[t], I, delta_tau)
+
+    return K, K_tau
+
+
+def FOC_I(Kp1, *args):
+    '''
+    Returns error from the firm's FOC for its choice of
+    investment.
+
+    ..math::
+
+    Args:
+        Kp1 (scalar): initial guess at one period ahead capital stock
+        args (tuple): tuple of length 5, (K, Vp1, delta, psi, mu)
+            K (scalar): current period aggregate capital stock
+            Vp1 (array_like): one period ahead aggregate firm value
+            delta (scalar): per period depreciation rate
+            psi (scalar): scale parameter in adjustment cost function
+            mu (scalar): shift parameter in adjustment cost function
+
+    Returns:
+        error (scalar): error in  FOC
+
+    '''
+    K, Vp1, K_tau, Zp1, delta, psi, mu, tau_c, delta_tau = args
+    I = Kp1 - (1 - delta) * K
+    K_tau_p1 = get_K_tau_p1(K_tau, I, delta_tau)
+    Xp1 = get_X(Zp1, K_tau_p1)
+    qp1 = get_q(Kp1, Vp1, Xp1)
+
+    error = (qp1 - 1 - (
+        (1 - tau_c) * psi * ((Kp1 / K) - 1 + delta - mu)) + Zp1)
+    # NOTE SURE IF Zp1 in above should be discounted by rp1...
+    return error
