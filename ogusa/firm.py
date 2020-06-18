@@ -489,7 +489,7 @@ def get_K_demand(K0, V, K_tau0, Z_tau, delta, psi, mu, tau_c, delta_tau, T2):
         results = opt.root(FOC_I, K[t], args=Kp1_args)
         K[t + 1] = results.x
         I = K[t + 1] - (1 - delta) * K[t]
-        K_tau[t + 1] = firms.get_K_tau_p1(K_tau[t], I, delta_tau)
+        K_tau[t + 1] = get_K_tau_p1(K_tau[t], I, delta_tau)
 
     return K, K_tau
 
@@ -524,3 +524,19 @@ def FOC_I(Kp1, *args):
         (1 - tau_c) * psi * ((Kp1 / K) - 1 + delta - mu)) + Zp1)
     # NOTE SURE IF Zp1 in above should be discounted by rp1...
     return error
+
+
+def get_X(Z, K_tau):
+    r'''
+    Computes the NPV of future depreciation deductions on old capital
+
+    ..math::
+        X_{t = Z_{t}K^{\tau}_{t}}
+
+    Args:
+        Z (array_like): NPV of depreciation deductions per unit of capital
+        K_tau (array_like): tax basis of the capital stock
+    '''
+    X = Z * K_tau
+
+    return X

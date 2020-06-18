@@ -555,3 +555,16 @@ def test_get_K_tau_p1():
     test_val = firm.get_K_tau_p1(K_tau, I, delta_tau)
 
     assert np.allclose(test_val, expected_val)
+
+
+def test_get_X():
+    '''
+    Test of firm.get_X()
+    '''
+    expected_val = 0.4
+    Z = 0.2
+    K_tau = 2.0
+
+    test_val = firm.get_X(Z, K_tau)
+
+    assert np.allclose(test_val, expected_val)
