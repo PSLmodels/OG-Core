@@ -384,7 +384,7 @@ def adj_cost_dKp1(K, Kp1, p, method):
         Kp1 (array-like): One-period ahead capital stock
         p (OG-USA Parameters class object): Model parameters
 
-    Returns
+    Returns:
         dPsi (array-like): Derivative of capital adjstment costs
     '''
     if method == 'SS':
@@ -397,3 +397,38 @@ def adj_cost_dKp1(K, Kp1, p, method):
             (1 - ((I / K - p.mu) / (2 * I / K))))
 
     return dPsi
+
+
+def get_NPV_depr(r, tau_b, delta_tau, T, S, method):
+    '''
+    Computes the NPV of depreciation deductions per unit of capital.
+
+    ..math::
+
+    Args:
+        r (array_like): the real interest rate
+        tau_c (array_like): the business entity level tax rate
+        delta_tau (array_like): the tax depreciation rate
+        T (int): Number of periods until the steady-state
+        S (int): Number of years in economic life of agents
+        method (str): Whether computing for SS or time path
+
+    Returns:
+        Z (array_like): Net present value of depreciation deductions
+
+    '''
+    if method == 'SS':
+        Z = tau_b * delta_tau / (r + delta_tau)
+    else:
+        Z_ss = tau_b * delta_tau / (r[-1] + delta_tau)
+        Z = np.ones(T + S - 1) * Z_ss
+        for t in range(T):
+            Z[t] = 0
+            for u in range(t + 1, T):
+                Z[t] += (tau_b * delta_tau *
+                         (1 - delta_tau) ** (u - t - 1) *
+                         np.prod(1 / (1 + r[t + 1:u + 1])))
+            Z[t] += (Z_ss * (1 - delta_tau) ** (T - t - 1) *
+                     np.prod(1 / (1 + r[t + 1:T])))
+
+    return Z
