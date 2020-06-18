@@ -568,3 +568,17 @@ def test_get_X():
     test_val = firm.get_X(Z, K_tau)
 
     assert np.allclose(test_val, expected_val)
+
+
+def test_get_q():
+    '''
+    Test of firm.get_q()
+    '''
+    expected_val = 1.3
+    K = 1.0
+    V = 2.0
+    X = 0.7
+
+    test_val = firm.get_q(K, V, X)
+
+    assert np.allclose(test_val, expected_val)

@@ -540,3 +540,27 @@ def get_X(Z, K_tau):
     X = Z * K_tau
 
     return X
+
+
+def get_q(K, V, X):
+    r'''
+    Computes Tobin's q, the marginal increase in firm value for an
+    additional unit of capital.  Derived from Hayashi's (1982) proof
+    that marginal q = average q under quadratic adjustment costs.
+
+    ..math::
+        q_{t} = \frac{V_{t} - X_{t}}{K_{t}}
+
+    Args:
+        K (array_like): firm capital stock
+        V (array_like): firm value
+        X (array_like): value of future depreciation deductions on
+            existing capital
+
+    Returns:
+        q (array_like): Tobin's q
+
+    '''
+    q = (V - X) / K
+
+    return q
