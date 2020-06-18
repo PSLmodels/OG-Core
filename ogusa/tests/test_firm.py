@@ -675,3 +675,17 @@ def test_adj_cost_dKp1(K, Kp1, p, method, expected):
     '''
     test_val = firm.adj_cost_dKp1(K, Kp1, p, method)
     assert np.allclose(test_val, expected)
+
+
+def test_get_NPV_depr():
+    '''
+    Test of firm.get_NPV_depr() function.
+    '''
+    expected_val = 0.044871795
+    r = 0.04
+    tau_b = 0.35
+    delta_tau - 0.05
+    T = None
+    S = None
+    method = 'SS'
+    test_val = firm.get_NPV_depr(r, tau_b, delta_tau, T, S, method)
