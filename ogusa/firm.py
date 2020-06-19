@@ -415,24 +415,24 @@ def get_NPV_depr(r, tau_b, delta_tau, T, S, method):
         method (str): Whether computing for SS or time path
 
     Returns:
-        Z (array_like): Net present value of depreciation deductions
+        z (array_like): Net present value of depreciation deductions
 
     '''
     if method == 'SS':
-        Z = tau_b * delta_tau / (r + delta_tau)
+        z = tau_b * delta_tau / (r + delta_tau)
     else:
-        Z_ss = tau_b * delta_tau / (r[-1] + delta_tau)
-        Z = np.ones(T + S - 1) * Z_ss
+        z_ss = tau_b * delta_tau / (r[-1] + delta_tau)
+        z = np.ones(T + S - 1) * z_ss
         for t in range(T):
-            Z[t] = 0
+            z[t] = 0
             for u in range(t + 1, T):
-                Z[t] += (tau_b * delta_tau *
+                z[t] += (tau_b * delta_tau *
                          (1 - delta_tau) ** (u - t - 1) *
                          np.prod(1 / (1 + r[t + 1:u + 1])))
-            Z[t] += (Z_ss * (1 - delta_tau) ** (T - t - 1) *
+            z[t] += (z_ss * (1 - delta_tau) ** (T - t - 1) *
                      np.prod(1 / (1 + r[t + 1:T])))
 
-    return Z
+    return z
 
 
 def get_K_tau_p1(K_tau, I, delta_tau):
@@ -462,30 +462,36 @@ def get_K_tau_p1(K_tau, I, delta_tau):
     return K_tau_p1
 
 
-def get_K_demand(K0, V, K_tau0, Z_tau, delta, psi, mu, tau_c, delta_tau, T2):
+def get_K_demand(K0, V, K_tau0, z, delta, psi, mu, tau_b, delta_tau,
+                 T):
     '''
     Function to solve for capital demand using the firm's FOC for its
     choice of investment.
 
     Args:
-        K0 (scalar): initial period aggregate capital stock, > 0
+        K0 (scalar): initial period capital stock
         V (array_like): aggregate firm value
+        K_tau0 (scalar): initial period tax depreciable basis of the
+            capital stock
+        z (array_like): NPV of depreciation deductions on a unit of
+            capital
         delta (scalar): per period depreciation rate
         psi (scalar): scale parameter in adjustment cost function
         mu (scalar): shift parameter in adjustment cost function
+        delta_tau (array_like): rate of depreciation for tax purposes
         T (int): number of periods until the steady-state
 
     Returns:
         K (array_like): capital demand by the firm
 
     '''
-    K = np.zeros(T2)
-    K_tau = np.zeros(T2)
+    K = np.zeros(T)
+    K_tau = np.zeros(T)
     K[0] = K0
     K_tau[0] = K_tau0
-    for t in range(T2 - 1):
-        Kp1_args = (K[t], V[t+1], K_tau[t], Z_tau[t+1], delta, psi,
-                    mu, tau_c, delta_tau)
+    for t in range(T - 1):
+        Kp1_args = (K[t], V[t+1], K_tau[t], z[t+1], delta, psi,
+                    mu, tau_b, delta_tau)
         results = opt.root(FOC_I, K[t], args=Kp1_args)
         K[t + 1] = results.x
         I = K[t + 1] - (1 - delta) * K[t]
@@ -526,7 +532,7 @@ def FOC_I(Kp1, *args):
     return error
 
 
-def get_X(Z, K_tau):
+def get_X(z, K_tau):
     r'''
     Computes the NPV of future depreciation deductions on old capital
 
@@ -534,10 +540,10 @@ def get_X(Z, K_tau):
         X_{t = Z_{t}K^{\tau}_{t}}
 
     Args:
-        Z (array_like): NPV of depreciation deductions per unit of capital
+        z (array_like): NPV of depreciation deductions per unit of capital
         K_tau (array_like): tax basis of the capital stock
     '''
-    X = Z * K_tau
+    X = z * K_tau
 
     return X
 
