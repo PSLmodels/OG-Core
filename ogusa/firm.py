@@ -319,7 +319,7 @@ def get_K_from_Y(Y, r, p, method):
 
 
 def adj_cost(K, Kp1, p, method):
-    '''
+    r'''
     Firm capital adjstment costs
 
     ..math::
@@ -345,7 +345,7 @@ def adj_cost(K, Kp1, p, method):
 
 
 def adj_cost_dK(K, Kp1, p, method):
-    '''
+    r'''
     Derivative of firm capital adjstment costs with respect to current
     period capital stock.
 
@@ -373,7 +373,7 @@ def adj_cost_dK(K, Kp1, p, method):
 
 
 def adj_cost_dKp1(K, Kp1, p, method):
-    '''
+    r'''
     Derivative of firm capital adjstment costs with respect to one
     period-ahead capital stock.
 
@@ -520,15 +520,15 @@ def FOC_I(Kp1, *args):
         error (scalar): error in  FOC
 
     '''
-    K, Vp1, K_tau, Zp1, delta, psi, mu, tau_c, delta_tau = args
+    K, Vp1, K_tau, z, delta, psi, mu, tau_b, delta_tau = args
     I = Kp1 - (1 - delta) * K
     K_tau_p1 = get_K_tau_p1(K_tau, I, delta_tau)
-    Xp1 = get_X(Zp1, K_tau_p1)
+    Xp1 = get_X(z, K_tau_p1)
     qp1 = get_q(Kp1, Vp1, Xp1)
 
     error = (qp1 - 1 - (
-        (1 - tau_c) * psi * ((Kp1 / K) - 1 + delta - mu)) + Zp1)
-    # NOTE SURE IF Zp1 in above should be discounted by rp1...
+        (1 - tau_b) * psi * ((Kp1 / K) - 1 + delta - mu)) + z)
+    # NOTE SURE IF z in above should be discounted by rp1...
     return error
 
 

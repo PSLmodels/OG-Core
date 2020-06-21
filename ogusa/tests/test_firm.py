@@ -557,6 +557,28 @@ def test_get_K_tau_p1():
     assert np.allclose(test_val, expected_val)
 
 
+def test_FOC_I():
+    '''
+    Test of firm.FOC_I()
+    '''
+    expected_val = 0.194160526
+    Kp1 = 3.8
+    K = 3.2
+    Vp1 = 4.5
+    K_tau = 2.4
+    z = 0.19
+    delta = 0.05
+    psi = 1.2
+    mu = 0.2
+    tau_b = 0.35
+    delta_tau = 0.06
+
+    args = (K, Vp1, K_tau, z, delta, psi, mu, tau_b, delta_tau)
+    test_val = firm.FOC_I(Kp1, *args)
+
+    assert np.allclose(test_val, expected_val)
+
+
 def test_get_X():
     '''
     Test of firm.get_X()
