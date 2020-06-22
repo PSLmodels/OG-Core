@@ -109,15 +109,23 @@ def get_r(Y, K, Kp1, V, Vp1, X, Xp1, p, method):
     '''
     if method == 'SS':
         tau_b = p.tau_b[-1]
+        method2 = 'total_ss'
     else:
         tau_b = p.tau_b[:p.T]
+        method2 = 'total_tpi'
     MPK = get_MPK(Y, K, p, method)
-    I = aggr.get_I(None, Kp1, K, p, 'total_tpi')
+    I = aggr.get_I(None, Kp1, K, p, method2)
     q = get_q(K, V, X)
     qp1 = get_q(Kp1, Vp1, Xp1)
+    print('MPK = ', MPK)
+    print('I = ', I)
+    print('q = ', q)
+    print('qp1 = ', qp1)
+    dPsi_dK = adj_cost_dK(K, Kp1, p, method)
+    print('adj costs  = ', dPsi_dK)
 
-    r = (((1 - tau_b) * (MPK + ((p.psi / 2) * (
-        (I / K) ** 2 - p.mu ** 2))) + (1 - p.delta) * qp1 - q) / q)
+    r = ((
+        (1 - tau_b) * (MPK - I * dPsi_dK) + (1 - p.delta) * qp1 - q) / q)
 
     return r
 
@@ -360,11 +368,12 @@ def adj_cost_dKp1(K, Kp1, p, method):
     return dPsi
 
 
-def get_NPV_depr(r, tau_b, delta_tau, T, S, method):
-    '''
+def get_NPV_depr(r, p, method):
+    r'''
     Computes the NPV of depreciation deductions per unit of capital.
 
     ..math::
+        z_{t} = \sum_{u=t}^{\infty}\tau^{b}_{u}\delta^{\tau}_{u}\prod_{v=t}^{u}\frac{(1-\delta^{\tau}_{v})}{1+r_{v}}
 
     Args:
         r (array_like): the real interest rate
@@ -379,18 +388,18 @@ def get_NPV_depr(r, tau_b, delta_tau, T, S, method):
 
     '''
     if method == 'SS':
-        z = tau_b * delta_tau / (r + delta_tau)
+        z = p.tau_b[-1] * p.delta_tau[-1] / (r + p.delta_tau[-1])
     else:
-        z_ss = tau_b * delta_tau / (r[-1] + delta_tau)
-        z = np.ones(T + S - 1) * z_ss
-        for t in range(T):
+        z_ss = p.tau_b[-1] * p.delta_tau[-1] / (r[-1] + p.delta_tau[-1])
+        z = np.ones(p.T + p.S - 1) * z_ss
+        for t in range(p.T):
             z[t] = 0
-            for u in range(t + 1, T):
-                z[t] += (tau_b * delta_tau *
-                         (1 - delta_tau) ** (u - t - 1) *
-                         np.prod(1 / (1 + r[t + 1:u + 1])))
-            z[t] += (z_ss * (1 - delta_tau) ** (T - t - 1) *
-                     np.prod(1 / (1 + r[t + 1:T])))
+            for u in range(t + 1, p.T):
+                z[t] += (p.tau_b[u] * p.delta_tau[u] *
+                         np.prod((1 - p.delta_tau[u]) /
+                                 (1 + r[t + 1:u + 1])))
+            z[t] += (z_ss * np.prod((1 - p.delta_tau[t + 1:p.T]) /
+                                    (1 + r[t + 1:p.T])))
 
     return z
 

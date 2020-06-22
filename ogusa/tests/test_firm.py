@@ -156,8 +156,11 @@ expected5 = np.array([-0.07814687, 0.48060411, 0.51451412])
 V1 = K1
 Kp1_1 = K1
 Vp1_1 = Kp1_1
-X1 = np.zeros_like(K1)
-Xp1_1 = np.zeros_like(Kp1_1)
+r1 = expected1
+z1 = firm.get_NPV_depr(r1, p1, 'SS')
+K_tau1 = p1.delta * K1 / p1.delta_tau[-1]
+X1 = firm.get_X(z1, K_tau1)
+Xp1_1 = X1
 V4 = K4
 Kp1_4 = np.array([1.2, 1.0, 1.0])
 Vp1_4 = Kp1_4
@@ -543,13 +546,12 @@ def test_get_NPV_depr():
     Test of firm.get_NPV_depr() function.
     '''
     expected_val = 0.194444444
+    p = Specifications()
     r = 0.04
-    tau_b = 0.35
-    delta_tau = 0.05
-    T = None
-    S = None
+    p.tau_b[-1] = 0.35
+    p.delta_tau[-1] = 0.05
     method = 'SS'
-    test_val = firm.get_NPV_depr(r, tau_b, delta_tau, T, S, method)
+    test_val = firm.get_NPV_depr(r, p, method)
 
     assert np.allclose(test_val, expected_val)
 
