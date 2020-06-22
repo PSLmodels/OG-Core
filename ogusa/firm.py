@@ -6,6 +6,7 @@ path
 '''
 import numpy as np
 import scipy.optimize as opt
+from ogusa import aggregates as aggr
 
 '''
 ------------------------------------------------------------------------
@@ -79,7 +80,7 @@ def get_MPL(Y, L, p, method):
     return MPL
 
 
-def get_r(Y, K, p, method):
+def get_r(Y, K, Kp1, V, Vp1, X, Xp1, p, method):
     r'''
     This function computes the interest rate as a function of Y, K, and
     parameters using the firm's first order condition for capital
@@ -91,6 +92,13 @@ def get_r(Y, K, p, method):
     Args:
         Y (array_like): aggregate output
         K (array_like): aggregate capital
+        Kp1 (array_like): aggregate capital one period ahead
+        V (array_like): aggregate firm value
+        Vp1 (array_like): aggregate firm value one period ahead
+        X (array_like): aggregate value of depreciation deductions on
+            existing capital
+        Xp1 (array_like): one period ahead aggregate value of
+            depreciation deductions on existing capital
         p (OG-USA Specifications object): model parameters
         method (str): adjusts calculation dimensions based on 'SS' or
             'TPI'
@@ -100,65 +108,17 @@ def get_r(Y, K, p, method):
 
     '''
     if method == 'SS':
-        delta_tau = p.delta_tau[-1]
-        delta_tau_m1 = 0.0 #p.delta_tau[-1]
         tau_b = p.tau_b[-1]
     else:
-        delta_tau = p.delta_tau[:p.T]
-        delta_tau_m1 = np.zeros(p.T)#np.append(p.delta_tau[0], p.delta_tau[:p.T - 1])
         tau_b = p.tau_b[:p.T]
     MPK = get_MPK(Y, K, p, method)
-    dPsidK = 0.0
-    dPsidKp1 = 0.0
-    r = ((((1 - tau_b) * MPK + 1 - p.delta + tau_b * delta_tau *
-          (1 - delta_tau_m1) - dPsidK) / (1 + dPsidKp1)) - 1)
-    return r
+    I = aggr.get_I(None, Kp1, K, p, 'total_tpi')
+    q = get_q(K, V, X)
+    qp1 = get_q(Kp1, Vp1, Xp1)
 
+    r = (((1 - tau_b) * (MPK + ((p.psi / 2) * (
+        (I / K) ** 2 - p.mu ** 2))) + (1 - p.delta) * qp1 - q) / q)
 
-def get_r_dyn(Y, K, Kp1, Kp2, p, method):
-    '''
-    --------------------------------------------------------------------
-    This function computes the interest rate as a function of Y, K, and
-    parameters using the firm's first order condition for capital demand
-    --------------------------------------------------------------------
-    INPUTS:
-    Y = scalar or (T+S,) vector, aggregate output
-    K = scalar or (T+S,) vector, aggregate capital
-    p = model parameters object
-
-    OTHER FUNCTIONS AND FILES CALLED BY THIS FUNCTION: None
-
-    OBJECTS CREATED WITHIN FUNCTION:
-    tau_b     = scalar in [0, 1], corporate income tax rate
-    Z         = scalar > 0, total factor productivity
-    epsilon   = scalar > 0, elasticity of substitution between capital
-                and labor
-    gamma     = scalar in [0, 1], share parameter in CES production
-                function (capital share of income in Cobb-Douglas case)
-    delta     = scalar in [0, 1], per-period capital depreciation rate
-    delta_tau = scalar >= 0, percent of capital depreciation rate
-                refunded at the corporate income tax rate
-    r         = scalar or (T+S,) vector, interest rate on (rental rate
-                of) capital
-
-    FILES CREATED BY THIS FUNCTION: None
-
-    RETURNS: r
-    --------------------------------------------------------------------
-    '''
-    if method == 'SS':
-        delta_tau = p.delta_tau[-1]
-        delta_tau_m1 = p.delta_tau[-1]
-        tau_b = p.tau_b[-1]
-    else:
-        delta_tau = p.delta_tau[:p.T]
-        delta_tau_m1 = np.append(p.delta_tau[0], p.delta_tau[:p.T - 1])
-        tau_b = p.tau_b[:p.T]
-    MPK = get_MPK(Y, K, p, method)
-    dPsidK = adj_cost_dK(Kp1, Kp2, p, method)
-    dPsidKp1 = adj_cost_dKp1(K, Kp1, p, method)
-    r = (((1 - tau_b) * MPK + 1 - p.delta + tau_b * delta_tau *
-          (1 - delta_tau_m1) - dPsidK) / (1 + dPsidKp1) - 1)
     return r
 
 

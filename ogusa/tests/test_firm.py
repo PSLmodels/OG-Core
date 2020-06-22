@@ -153,23 +153,33 @@ new_param_values5 = {
 # update parameters instance with new values for test
 p5.update_specifications(new_param_values5)
 expected5 = np.array([-0.07814687, 0.48060411, 0.51451412])
+V1 = K1
+Kp1_1 = K1
+Vp1_1 = Kp1_1
+X1 = np.zeros_like(K1)
+Xp1_1 = np.zeros_like(Kp1_1)
+V4 = K4
+Kp1_4 = np.array([1.2, 1.0, 1.0])
+Vp1_4 = Kp1_4
+X4 = np.zeros_like(K4)
+Xp1_4 = np.zeros_like(Kp1_4)
 
 
-@pytest.mark.parametrize('Y,K,p,method,expected',
-                         [(Y1, K1, p1, 'SS', expected1),
-                          (Y1, K1, p2, 'SS', expected2),
-                          (Y1, K1, p3, 'SS', expected3),
-                          (Y4, K4, p4, 'TPI', expected4),
-                          (Y4, K4, p5, 'TPI', expected5)],
+@pytest.mark.parametrize('Y,K,Kp1,V,Vp1,X,Xp1,p,method,expected', [
+    (Y1, K1, Kp1_1, V1, Vp1_1, X1, Xp1_1, p1, 'SS', expected1),
+    (Y1, K1, Kp1_1, V1, Vp1_1, X1, Xp1_1, p2, 'SS', expected2),
+    (Y1, K1, Kp1_1, V1, Vp1_1, X1, Xp1_1, p3, 'SS', expected3),
+    (Y4, K4, Kp1_4, V4, Vp1_4, X4, Xp1_4, p4, 'TPI', expected4),
+    (Y4, K4, Kp1_4, V4, Vp1_4, X4, Xp1_4, p5, 'TPI', expected5)],
                          ids=['epsilon=1.2,SS', 'epsilon=0.5,SS',
                               'epsilon=1.0,SS', 'epsilon=1.2,TP',
                               'epsilon=1.2,TP,varyParams'])
-def test_get_r(Y, K, p, method, expected):
+def test_get_r(Y, K, Kp1, V, Vp1, X, Xp1, p, method, expected):
     """
         choose values that simplify the calculations and are similar to
         observed values
     """
-    r = firm.get_r(Y, K, p, method)
+    r = firm.get_r(Y, K, Kp1, V, Vp1, X, Xp1, p, method)
     assert (np.allclose(r, expected))
 
 
