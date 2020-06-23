@@ -541,16 +541,27 @@ def test_adj_cost_dKp1(K, Kp1, p, method, expected):
     assert np.allclose(test_val, expected)
 
 
-def test_get_NPV_depr():
+r1 = 0.04
+method1 = 'SS'
+expected_val1 = 0.194444444
+r2 = np.array([0.04, 0.04, 0.04, 0.04])
+method2 = 'TPI'
+expected_val2 = np.array([0.194444444, 0.194444444, 0.194444444,
+                          0.194444444, 0.194444444, 0.194444444])
+
+
+@pytest.mark.parametrize('r,method,expected_val', [
+    (r1, method1, expected_val1), (r2, method2, expected_val2)],
+                         ids=['SS', 'TPI, constant params'])
+def test_get_NPV_depr(r, method, expected_val):
     '''
     Test of firm.get_NPV_depr() function.
     '''
-    expected_val = 0.194444444
     p = Specifications()
-    r = 0.04
-    p.tau_b[-1] = 0.35
-    p.delta_tau[-1] = 0.05
-    method = 'SS'
+    p.T = 4
+    p.S = 3
+    p.tau_b[:] = 0.35
+    p.delta_tau[:] = 0.05
     test_val = firm.get_NPV_depr(r, p, method)
 
     assert np.allclose(test_val, expected_val)
