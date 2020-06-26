@@ -541,27 +541,43 @@ def test_adj_cost_dKp1(K, Kp1, p, method, expected):
     assert np.allclose(test_val, expected)
 
 
+p1 = Specifications()
+p1.tau_b = np.array([0.35, 0.35, 0.35, 0.35])
+p1.delta_tau = np.array([0.05, 0.05, 0.05, 0.05])
+p1.T = 4
+p1.S = 3
 r1 = 0.04
 method1 = 'SS'
 expected_val1 = 0.194444444
+p2 = Specifications()
+p2.tau_b = np.array([0.35, 0.35, 0.35, 0.35])
+p2.delta_tau = np.array([0.05, 0.05, 0.05, 0.05])
+p2.T = 4
+p2.S = 3
 r2 = np.array([0.04, 0.04, 0.04, 0.04])
 method2 = 'TPI'
 expected_val2 = np.array([0.194444444, 0.194444444, 0.194444444,
                           0.194444444, 0.194444444, 0.194444444])
+p3 = Specifications()
+p3.tau_b = np.array([0.35, 0.32, 0.32, 0.32])
+p3.delta_tau = np.array([0.05, 0.055, 0.055, 0.06])
+p3.T = 4
+p3.S = 3
+r3 = np.array([0.04, 0.045, 0.05, 0.05])
+method3 = 'TPI'
+expected_val3 = np.array([0.174058286, 0.173852814, 0.174545455,
+                          0.174545455, 0.174545455, 0.174545455])
 
 
-@pytest.mark.parametrize('r,method,expected_val', [
-    (r1, method1, expected_val1), (r2, method2, expected_val2)],
-                         ids=['SS', 'TPI, constant params'])
-def test_get_NPV_depr(r, method, expected_val):
+@pytest.mark.parametrize('r,method,p,expected_val', [
+    (r1, method1, p1, expected_val1), (r2, method2, p2, expected_val2),
+    (r3, method3, p3, expected_val3)],
+                         ids=['SS', 'TPI, constant params',
+                              'TPI, varying params'])
+def test_get_NPV_depr(r, method, p, expected_val):
     '''
     Test of firm.get_NPV_depr() function.
     '''
-    p = Specifications()
-    p.T = 4
-    p.S = 3
-    p.tau_b[:] = 0.35
-    p.delta_tau[:] = 0.05
     test_val = firm.get_NPV_depr(r, p, method)
 
     assert np.allclose(test_val, expected_val)

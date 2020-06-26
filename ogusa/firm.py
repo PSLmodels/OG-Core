@@ -394,18 +394,13 @@ def get_NPV_depr(r, p, method):
         z = np.ones(p.T + p.S - 1) * z_ss
         for t in range(p.T):
             z[t] = 0
+            depr_basis = 1
+            discount = 1
             for u in range(t + 1, p.T):
-                z[t] += (p.tau_b[u] * p.delta_tau[u] *
-                         (1 - p.delta_tau[u]) ** (u - t - 1) *
-                         np.prod(1 / (1 + r[t + 1:u + 1])))
-            z[t] += (z_ss * (1 - p.delta_tau[t]) ** (p.T - t - 1) *
-                     np.prod(1 / (1 + r[t + 1:p.T])))
-
-            #     z[t] += (p.tau_b[u] * p.delta_tau[u] *
-            #              np.prod((1 - p.delta_tau[u]) /
-            #                      (1 + r[t + 1:u + 1])))
-            # z[t] += (z_ss * np.prod((1 - p.delta_tau[t + 1:p.T]) /
-            #                         (1 + r[t + 1:p.T])))
+                discount *= 1 / (1 + r[u])
+                z[t] += p.tau_b[u] * p.delta_tau[u] * depr_basis * discount
+                depr_basis *= (1 - p.delta_tau[u])
+            z[t] += z_ss * depr_basis * discount
 
     return z
 
