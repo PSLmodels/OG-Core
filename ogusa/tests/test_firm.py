@@ -167,16 +167,34 @@ Vp1_4 = Kp1_4
 X4 = np.zeros_like(K4)
 Xp1_4 = np.zeros_like(Kp1_4)
 
+p6 = Specifications()
+new_param_values6 = {
+    'Z': [0.5],
+    'gamma': 0.5,
+    'delta_annual': 0.25,
+    'cit_rate': [0.5],
+    'delta_tau_annual': [0.0],
+    'epsilon': 1.2
+}
+# update parameters instance with new values for test
+p6.update_specifications(new_param_values6)
+# assign values for Y and K variables
+Y6 = np.array([2.0])
+K6 = np.array([1.0])
+expected6 = np.array([0.565172327])
+
 
 @pytest.mark.parametrize('Y,K,Kp1,V,Vp1,X,Xp1,p,method,expected', [
     (Y1, K1, Kp1_1, V1, Vp1_1, X1, Xp1_1, p1, 'SS', expected1),
     (Y1, K1, Kp1_1, V1, Vp1_1, X1, Xp1_1, p2, 'SS', expected2),
     (Y1, K1, Kp1_1, V1, Vp1_1, X1, Xp1_1, p3, 'SS', expected3),
     (Y4, K4, Kp1_4, V4, Vp1_4, X4, Xp1_4, p4, 'TPI', expected4),
-    (Y4, K4, Kp1_4, V4, Vp1_4, X4, Xp1_4, p5, 'TPI', expected5)],
+    (Y4, K4, Kp1_4, V4, Vp1_4, X4, Xp1_4, p5, 'TPI', expected5),
+    (Y6, K6, Kp1_1, K6, Kp1_1, 0.0, 0.0, p6, 'SS', expected6)],
                          ids=['epsilon=1.2,SS', 'epsilon=0.5,SS',
                               'epsilon=1.0,SS', 'epsilon=1.2,TP',
-                              'epsilon=1.2,TP,varyParams'])
+                              'epsilon=1.2,TP,varyParams',
+                              'epsilon=1.2,SS,delta_tau=0'])
 def test_get_r(Y, K, Kp1, V, Vp1, X, Xp1, p, method, expected):
     """
         choose values that simplify the calculations and are similar to
@@ -480,26 +498,26 @@ p2.g_n_ss = 0.0
 p2.g_y = 0.03
 p2.delta = 0.05
 p2.mu = 0.05
-K_2 = 5
+K_2 = 6
 Kp1_2 = 6
-expected_Psi_2 = 0.19527006
-expected_dPsidK_2 = -0.363533436
-expected_dPsidKp1_2 = 0.193910481
+expected_Psi_2 = 0.011527985
+expected_dPsidK_2 = -0.122196836
+expected_dPsidKp1_2 = 0.102296044
 
 
 p3 = Specifications()
 p3.psi = 4.0
 p3.g_n_ss = 0.0
-p3.g_n = np.array([-0.01, 0.02, 0.03])
+p3.g_n = np.array([-0.01, 0.02, 0.03, 0.0])
 p3.T = 3
 p3.g_y = 0.04
 p3.delta = 0.05
 p3.mu = 0.05
 K_3 = np.array([4, 4.5, 5.5])
 Kp1_3 = np.array([4.5, 5.5, 5])
-expected_Psi_3 = np.array([0.24230623, 0.50947486, 0.052593975])
-expected_dPsidK_3 = np.array([-0.774684006, -0.84164165, 0.748206499])
-expected_dPsidKp1_3 = np.array([0.471438948, 0.435245507, -1.141364702])
+expected_Psi_3 = np.array([0.309124823, 0.534408906, -1.520508524])
+expected_dPsidK_3 = np.array([-0.805820108, -0.846107505, 2.657143029])
+expected_dPsidKp1_3 = np.array([0.479061039, 0.43588367, -62.31580895])
 
 
 @pytest.mark.parametrize('K,Kp1,p,method,expected',
@@ -600,19 +618,21 @@ def test_FOC_I():
     '''
     Test of firm.FOC_I()
     '''
-    expected_val = 0.194160526
+    expected_val = 0.186416301
+    p = Specifications()
     Kp1 = 3.8
     K = 3.2
     Vp1 = 4.5
     K_tau = 2.4
     z = 0.19
-    delta = 0.05
-    psi = 1.2
-    mu = 0.2
-    tau_b = 0.35
-    delta_tau = 0.06
+    p.delta = 0.05
+    p.psi = 1.2
+    p.mu = 0.2
+    p.tau_b = np.ones(p.T + p.S) * 0.35
+    p.delta_tau = np.ones(p.T + p.S) * 0.06
+    p.g_n = np.ones(p.T + p.S) * 0.01
 
-    args = (K, Vp1, K_tau, z, delta, psi, mu, tau_b, delta_tau)
+    args = (K, Vp1, K_tau, z, p, 0)
     test_val = firm.FOC_I(Kp1, *args)
 
     assert np.allclose(test_val, expected_val)

@@ -302,11 +302,10 @@ def adj_cost(K, Kp1, p, method):
         Psi (array-like): Capital adjstment costs
     '''
     if method == 'SS':
-        g_n = p.g_n_ss
+        method2 = 'total_ss'
     else:
-        length = K.shape[0]
-        g_n = p.g_n[:length]
-    I = Kp1 * np.exp(p.g_y) * (1 + g_n) - (1 - p.delta) * K
+        method2 = 'total_tpi'
+    I = aggr.get_I(None, Kp1, K, p, method2)
     Psi = ((p.psi / 2) * (I / K - p.mu) ** 2) / (I / K)
 
     return Psi
@@ -329,11 +328,10 @@ def adj_cost_dK(K, Kp1, p, method):
         dPsi (array-like): Derivative of capital adjstment costs
     '''
     if method == 'SS':
-        g_n = p.g_n_ss
+        method2 = 'total_ss'
     else:
-        length = K.shape[0]
-        g_n = p.g_n[:length]
-    I = Kp1 * np.exp(p.g_y) * (1 + g_n) - (1 - p.delta) * K
+        method2 = 'total_tpi'
+    I = aggr.get_I(None, Kp1, K, p, method2)
     dPsi = (((p.psi * (I / K - p.mu) * Kp1) / (I * K)) *
             ((I / K - p.mu) / (2 * I) - 1))
 
@@ -357,11 +355,10 @@ def adj_cost_dKp1(K, Kp1, p, method):
         dPsi (array-like): Derivative of capital adjstment costs
     '''
     if method == 'SS':
-        g_n = p.g_n_ss
+        method2 = 'total_ss'
     else:
-        length = K.shape[0]
-        g_n = p.g_n[:length]
-    I = Kp1 * np.exp(p.g_y) * (1 + g_n) - (1 - p.delta) * K
+        method2 = 'total_tpi'
+    I = aggr.get_I(None, Kp1, K, p, method2)
     dPsi = (((p.psi * (I / K - p.mu)) / I) *
             (1 - ((I / K - p.mu) / (2 * I / K))))
 
@@ -377,10 +374,7 @@ def get_NPV_depr(r, p, method):
 
     Args:
         r (array_like): the real interest rate
-        tau_c (array_like): the business entity level tax rate
-        delta_tau (array_like): the tax depreciation rate
-        T (int): Number of periods until the steady-state
-        S (int): Number of years in economic life of agents
+        p (OG-USA Parameters class object): Model parameters
         method (str): Whether computing for SS or time path
 
     Returns:
@@ -432,8 +426,7 @@ def get_K_tau_p1(K_tau, I, delta_tau):
     return K_tau_p1
 
 
-def get_K_demand(K0, V, K_tau0, z, delta, psi, mu, tau_b, delta_tau,
-                 T):
+def get_K_demand(K0, V, K_tau0, z, delta, psi, mu, tau_b, delta_tau, p):
     '''
     Function to solve for capital demand using the firm's FOC for its
     choice of investment.
@@ -449,25 +442,24 @@ def get_K_demand(K0, V, K_tau0, z, delta, psi, mu, tau_b, delta_tau,
         psi (scalar): scale parameter in adjustment cost function
         mu (scalar): shift parameter in adjustment cost function
         delta_tau (array_like): rate of depreciation for tax purposes
-        T (int): number of periods until the steady-state
+        p (OG-USA Parameters class object): Model parameters
 
     Returns:
         K (array_like): capital demand by the firm
 
     '''
-    K = np.zeros(T)
-    K_tau = np.zeros(T)
+    K = np.zeros(p.T)
+    K_tau = np.zeros(p.T)
     K[0] = K0
     K_tau[0] = K_tau0
-    for t in range(T - 1):
+    for t in range(p.T - 1):
         Kp1_args = (K[t], V[t+1], K_tau[t], z[t+1], delta, psi,
-                    mu, tau_b, delta_tau)
+                    mu, tau_b, delta_tau, p, t)
         results = opt.root(FOC_I, K[t], args=Kp1_args)
         K[t + 1] = results.x
-        I = K[t + 1] - (1 - delta) * K[t]
+        I = ((1 + p.g_n[t+1]) * np.exp(p.g_y) * K[t+1] -
+                (1.0 - p.delta) * K[t])
         K_tau[t + 1] = get_K_tau_p1(K_tau[t], I, delta_tau)
-
-    return K, K_tau
 
 
 def FOC_I(Kp1, *args):
@@ -482,22 +474,21 @@ def FOC_I(Kp1, *args):
         args (tuple): tuple of length 5, (K, Vp1, delta, psi, mu)
             K (scalar): current period aggregate capital stock
             Vp1 (array_like): one period ahead aggregate firm value
-            delta (scalar): per period depreciation rate
-            psi (scalar): scale parameter in adjustment cost function
-            mu (scalar): shift parameter in adjustment cost function
+            p (OG-USA Parameters class object): Model parameters
+            t (int): period in time path
 
     Returns:
         error (scalar): error in  FOC
 
     '''
-    K, Vp1, K_tau, z, delta, psi, mu, tau_b, delta_tau = args
-    I = Kp1 - (1 - delta) * K
-    K_tau_p1 = get_K_tau_p1(K_tau, I, delta_tau)
+    K, Vp1, K_tau, z, p, t = args
+    I = (1 + p.g_n[t+1]) * np.exp(p.g_y) * Kp1 - (1.0 - p.delta) * K
+    K_tau_p1 = get_K_tau_p1(K_tau, I, p.delta_tau[t])
     Xp1 = get_X(z, K_tau_p1)
     qp1 = get_q(Kp1, Vp1, Xp1)
 
     error = (qp1 - 1 - (
-        (1 - tau_b) * psi * ((Kp1 / K) - 1 + delta - mu)) + z)
+        (1 - p.tau_b[t]) * p.psi * ((Kp1 / K) - 1 + p.delta - p.mu)) + z)
     # NOTE SURE IF z in above should be discounted by rp1...
     return error
 
