@@ -43,9 +43,10 @@ def get_L(n, p, method):
     return L
 
 
-def get_I(b_splus1, K_p1, K, p, method):
+def get_net_I(b_splus1, K_p1, K, p, method):
     r'''
-    Calculate aggregate investment.
+    Calculate aggregate investment, accounting for flows from
+    immigrants.
 
     .. math::
         I_{t} = (1 + g_{n,t+1})e^{g_{y}}(K_{t+1} - \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s+1,t}i_{s+1,t}\lambda_{j}b_{j,s+1,t+1} \ (1+ g_{n,t+1})) - (1 - \delta)K_{t}
@@ -96,6 +97,29 @@ def get_I(b_splus1, K_p1, K, p, method):
     elif method == 'total_tpi':
         aggI = ((1 + p.g_n[1:p.T+1]) * np.exp(p.g_y) * K_p1 -
                 (1.0 - p.delta) * K)
+
+    return aggI
+
+
+def get_I(K_p1, K, g_np1, g_y, delta):
+    r'''
+    Calculate gross aggregate investment.
+
+    .. math::
+        I_{t} = (1 + g_{n,t+1})e^{g_{y}}(K_{t+1} - (1 - \delta)K_{t}
+
+    Args:
+        K_p1 (array_like): aggregate capital, one period ahead
+        K (array_like): aggregate capital
+        g_np1 (array_like): population growth rate one period ahead
+        g_y (scalar): growth rate in labor augmenting tech change
+        delta (scalar): rate of economic depreciation
+
+    Returns:
+        aggI (array_like): aggregate investment
+
+    '''
+    aggI = (1 + g_np1) * np.exp(g_y) * K_p1 - (1.0 - delta) * K
 
     return aggI
 

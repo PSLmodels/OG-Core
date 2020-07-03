@@ -69,23 +69,32 @@ aggI_TPI = ((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss))))
             * np.exp(p.g_y) * (K_p1 - part2) - (1.0 - p.delta) * K)
 test_data = [(b_splus1[-1, :, :], K_p1[-1], K[-1], p, 'SS', aggI_SS),
              (b_splus1, K_p1, K, p, 'TPI', aggI_TPI)]
+
+
+@pytest.mark.parametrize('b_splus1,K_p1,K,p,method,expected', test_data,
+                         ids=['SS', 'TPI'])
+def test_get_net_I(b_splus1, K_p1, K, p, method, expected):
+    """
+        Text aggregate investment function.
+    """
+    aggI = aggr.get_net_I(b_splus1, K_p1, K, p, method)
+    assert (np.allclose(aggI, expected))
+
+
 aggI_total_SS = ((1 + p.g_n_ss) * np.exp(p.g_y) * (K[-1]) -
                  (1.0 - p.delta) * K[-1])
 aggI_total_TPI = (((1 + np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss))))
                    * np.exp(p.g_y) * K_p1) - (1.0 - p.delta) * K)
-test_data = [(b_splus1[-1, :, :], K_p1[-1], K[-1], p, 'SS', aggI_SS),
-             (b_splus1, K_p1, K, p, 'TPI', aggI_TPI),
-             (None, K[-1], K[-1], p, 'total_ss', aggI_total_SS),
-             (None, K_p1, K, p, 'total_tpi', aggI_total_TPI)]
-
-
-@pytest.mark.parametrize('b_splus1,K_p1,K,p,method,expected', test_data,
-                         ids=['SS', 'TPI', 'total_ss', 'total_tpi'])
-def test_get_I(b_splus1, K_p1, K, p, method, expected):
+test_data = [(K[-1], K[-1], p.g_n_ss, p.g_y, p.delta, aggI_total_SS),
+             (K_p1, K, np.squeeze(np.hstack((p.g_n[1:p.T], p.g_n_ss))),
+              p.g_y, p.delta, aggI_total_TPI)]
+@pytest.mark.parametrize('K_p1,K,g_np1,g_y,delta,expected', test_data,
+                         ids=['SS', 'TPI'])
+def test_get_I(K_p1, K, g_np1, g_y, delta, expected):
     """
         Text aggregate investment function.
     """
-    aggI = aggr.get_I(b_splus1, K_p1, K, p, method)
+    aggI = aggr.get_I(K_p1, K, g_np1, g_y, delta)
     assert (np.allclose(aggI, expected))
 
 
