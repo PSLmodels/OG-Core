@@ -626,6 +626,19 @@ def test_get_NPV_depr(r, method, p, expected_val):
     assert np.allclose(test_val, expected_val)
 
 
+def testget_K_from_Y():
+    '''
+    test of firm.get_K_from_Y()
+    '''
+    expected_val = 12.95001519647885
+    r = 0.05
+    Y = 3.8
+    p = Specifications()
+    test_val = firm.get_K_from_Y(Y, r, p, 'SS')
+
+    assert np.allclose(test_val, expected_val)
+
+
 def test_get_K_tau_p1():
     '''
     Test of firm.get_K_tau_p1()
