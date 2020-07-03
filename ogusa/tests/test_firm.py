@@ -92,10 +92,20 @@ new_param_values1 = {
 }
 # update parameters instance with new values for test
 p1.update_specifications(new_param_values1)
+p1.g_y = 0.03
+p1.g_n_ss = 0.02
 # assign values for Y and K variables
 Y1 = np.array([2.0])
 K1 = np.array([1.0])
-expected1 = np.array([0.59492233])
+V1 = K1
+Kp1_1 = K1
+Vp1_1 = Kp1_1
+r1 = 0.05
+z1 = 0.074375
+K_tau1 = 0.714285714
+X1 = 0.053125
+Xp1_1 = 0.053125
+expected1 = np.array([0.610908068])
 p2 = Specifications()
 new_param_values2 = {
     'Z': [0.5],
@@ -107,7 +117,11 @@ new_param_values2 = {
 }
 # update parameters instance with new values for test
 p2.update_specifications(new_param_values2)
-expected2 = np.array([1.35975])
+p2.g_y = 0.03
+p2.g_n_ss = 0.02
+X2 = 0.10625
+Xp1_2 = 0.10625
+expected2 = np.array([1.547552448])
 p3 = Specifications()
 new_param_values3 = {
     'Z': [0.5],
@@ -119,7 +133,11 @@ new_param_values3 = {
 }
 # update parameters instance with new values for test
 p3.update_specifications(new_param_values3)
-expected3 = np.array([0.44475])
+p3.g_y = 0.03
+p3.g_n_ss = 0.02
+X3 = 0.10625
+Xp1_3 = 0.10625
+expected3 = np.array([0.523776224])
 p4 = Specifications()
 new_param_values4 = {
     'Z': [0.5],
@@ -134,9 +152,17 @@ new_param_values4 = {
 }
 # update parameters instance with new values for test
 p4.update_specifications(new_param_values4)
+p4.g_y = 0.03
+p4.g_n_ss = 0.02
+p4.g_n = np.ones(p4.T + p4.S) * 0.02
 Y4 = np.array([3.0, 3.2, 3.8])
 K4 = np.array([1.8, 1.2, 1.0])
-expected4 = np.array([-0.21473161, 0.12101175, 0.47669423])
+V4 = K4
+Kp1_4 = np.array([1.2, 1.0, 1.0])
+Vp1_4 = Kp1_4
+X4 = np.array([0.145715708, 0.085087555, 0.085086933])
+Xp1_4 = np.array([0.085087555, 0.085086933, 0.080953171])
+expected4 = np.array([-0.238048338, 0.115078721, 0.521122772])
 
 p5 = Specifications()
 new_param_values5 = {
@@ -146,26 +172,25 @@ new_param_values5 = {
     'delta_tau_annual': [0.35, 0.2, 0.1],
     'epsilon': 1.2,
     'delta_annual': 0.5,
+    'psi': 1.4,
     'T': 3,
     'S': 3,
     'eta': (np.ones((3, p5.J)) / (3 * p5.J))
 }
 # update parameters instance with new values for test
 p5.update_specifications(new_param_values5)
-expected5 = np.array([-0.07814687, 0.48060411, 0.51451412])
-V1 = K1
-Kp1_1 = K1
-Vp1_1 = Kp1_1
-r1 = expected1
-z1 = firm.get_NPV_depr(r1, p1, 'SS')
-K_tau1 = p1.delta * K1 / p1.delta_tau[-1]
-X1 = firm.get_X(z1, K_tau1)
-Xp1_1 = X1
-V4 = K4
-Kp1_4 = np.array([1.2, 1.0, 1.0])
-Vp1_4 = Kp1_4
-X4 = np.zeros_like(K4)
-Xp1_4 = np.zeros_like(Kp1_4)
+p5.g_y = 0.03
+p5.g_n_ss = 0.02
+p5.g_n = np.ones(p4.T + p4.S) * 0.02
+p5.mu = 1.051063615
+Y5 = np.array([3.0, 3.2, 3.8])
+K5 = np.array([1.8, 1.2, 1.0])
+V5 = K5
+Kp1_5 = np.array([1.2, 1.0, 1.0])
+Vp1_5 = Kp1_5
+X5 = np.array([0.058286283, 0, 0.085048166])
+Xp1_5 = np.array([0, 0.085048166, 0.085878385])
+expected5 = np.array([-0.454225476, 0.259199506, 0.567988021])
 
 p6 = Specifications()
 new_param_values6 = {
@@ -186,10 +211,10 @@ expected6 = np.array([0.565172327])
 
 @pytest.mark.parametrize('Y,K,Kp1,V,Vp1,X,Xp1,p,method,expected', [
     (Y1, K1, Kp1_1, V1, Vp1_1, X1, Xp1_1, p1, 'SS', expected1),
-    (Y1, K1, Kp1_1, V1, Vp1_1, X1, Xp1_1, p2, 'SS', expected2),
-    (Y1, K1, Kp1_1, V1, Vp1_1, X1, Xp1_1, p3, 'SS', expected3),
+    (Y1, K1, Kp1_1, V1, Vp1_1, X2, Xp1_2, p2, 'SS', expected2),
+    (Y1, K1, Kp1_1, V1, Vp1_1, X3, Xp1_3, p3, 'SS', expected3),
     (Y4, K4, Kp1_4, V4, Vp1_4, X4, Xp1_4, p4, 'TPI', expected4),
-    (Y4, K4, Kp1_4, V4, Vp1_4, X4, Xp1_4, p5, 'TPI', expected5),
+    (Y5, K5, Kp1_5, V5, Vp1_5, X5, Xp1_5, p5, 'TPI', expected5),
     (Y6, K6, Kp1_1, K6, Kp1_1, 0.0, 0.0, p6, 'SS', expected6)],
                          ids=['epsilon=1.2,SS', 'epsilon=0.5,SS',
                               'epsilon=1.0,SS', 'epsilon=1.2,TP',

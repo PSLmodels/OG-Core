@@ -109,7 +109,7 @@ def get_r(Y, K, Kp1, V, Vp1, X, Xp1, p, method):
     '''
     if method == 'SS':
         tau_b = p.tau_b[-1]
-        g_np1 = p.g_nss
+        g_np1 = p.g_n_ss
     else:
         tau_b = p.tau_b[:p.T]
         g_np1 = p.g_n[1:p.T+1]
@@ -117,10 +117,6 @@ def get_r(Y, K, Kp1, V, Vp1, X, Xp1, p, method):
     I = aggr.get_I(Kp1, K, g_np1, p.g_y, p.delta)
     q = get_q(K, V, X)
     qp1 = get_q(Kp1, Vp1, Xp1)
-    print('MPK = ', MPK)
-    print('I = ', I)
-    print('q = ', q)
-    print('qp1 = ', qp1)
     dPsi_dK = adj_cost_dK(K, Kp1, p, method)
     print('adj costs  = ', dPsi_dK)
 
