@@ -666,9 +666,10 @@ def run_TPI(p, client=None):
     C = aggr.get_C(c_mat, p, 'TPI')
     # Note that implicity in this computation is that immigrants'
     # wealth is all in the form of private capital
-    I_d = aggr.get_I(bmat_splus1[:p.T], K_d[1:p.T + 1], K_d[:p.T], p,
-                     'TPI')
-    I = aggr.get_I(bmat_splus1[:p.T], K[1:p.T + 1], K[:p.T], p, 'TPI')
+    I_d = aggr.get_net_I(
+        bmat_splus1[:p.T], K_d[1:p.T + 1], K_d[:p.T], p, 'TPI')
+    I = aggr.get_net_I(
+        bmat_splus1[:p.T], K[1:p.T + 1], K[:p.T], p, 'TPI')
     # solve resource constraint
     # foreign debt service costs
     debt_service_f = fiscal.get_debt_service_f(r_hh, D_f)
@@ -677,7 +678,8 @@ def run_TPI(p, client=None):
         K_f[:p.T - 1], new_borrowing_f[:p.T - 1],
         debt_service_f[:p.T - 1], r_hh[:p.T - 1], p)
     # Compute total investment (not just domestic)
-    I_total = aggr.get_I(None, K[1:p.T + 1], K[:p.T], p, 'total_tpi')
+    I_total = aggr.get_net_I(K[1:p.T + 1], K[:p.T], p.g_n[1:p.T+1],
+                             p.g_y, p.delta)
 
     # Compute resource constraint error
     rce_max = np.amax(np.abs(RC_error))

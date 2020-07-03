@@ -109,12 +109,12 @@ def get_r(Y, K, Kp1, V, Vp1, X, Xp1, p, method):
     '''
     if method == 'SS':
         tau_b = p.tau_b[-1]
-        method2 = 'total_ss'
+        g_np1 = p.g_nss
     else:
         tau_b = p.tau_b[:p.T]
-        method2 = 'total_tpi'
+        g_np1 = p.g_n[1:p.T+1]
     MPK = get_MPK(Y, K, p, method)
-    I = aggr.get_I(None, Kp1, K, p, method2)
+    I = aggr.get_I(Kp1, K, g_np1, p.g_y, p.delta)
     q = get_q(K, V, X)
     qp1 = get_q(Kp1, Vp1, Xp1)
     print('MPK = ', MPK)
@@ -302,10 +302,10 @@ def adj_cost(K, Kp1, p, method):
         Psi (array-like): Capital adjstment costs
     '''
     if method == 'SS':
-        method2 = 'total_ss'
+        g_np1 = p.g_n_ss
     else:
-        method2 = 'total_tpi'
-    I = aggr.get_I(None, Kp1, K, p, method2)
+        g_np1 = p.g_n[1:p.T+1]
+    I = aggr.get_I(Kp1, K, g_np1, p.g_y, p.delta)
     Psi = ((p.psi / 2) * (I / K - p.mu) ** 2) / (I / K)
 
     return Psi
@@ -328,10 +328,10 @@ def adj_cost_dK(K, Kp1, p, method):
         dPsi (array-like): Derivative of capital adjstment costs
     '''
     if method == 'SS':
-        method2 = 'total_ss'
+        g_np1 = p.g_n_ss
     else:
-        method2 = 'total_tpi'
-    I = aggr.get_I(None, Kp1, K, p, method2)
+        g_np1 = p.g_n[1:p.T+1]
+    I = aggr.get_I(Kp1, K, g_np1, p.g_y, p.delta)
     dPsi = (((p.psi * (I / K - p.mu) * Kp1) / (I * K)) *
             ((I / K - p.mu) / (2 * I) - 1))
 
@@ -355,10 +355,10 @@ def adj_cost_dKp1(K, Kp1, p, method):
         dPsi (array-like): Derivative of capital adjstment costs
     '''
     if method == 'SS':
-        method2 = 'total_ss'
+        g_np1 = p.g_n_ss
     else:
-        method2 = 'total_tpi'
-    I = aggr.get_I(None, Kp1, K, p, method2)
+        g_np1 = p.g_n[1:p.T+1]
+    I = aggr.get_I(Kp1, K, g_np1, p.g_y, p.delta)
     dPsi = (((p.psi * (I / K - p.mu)) / I) *
             (1 - ((I / K - p.mu) / (2 * I / K))))
 
@@ -457,8 +457,7 @@ def get_K_demand(K0, V, K_tau0, z, delta, psi, mu, tau_b, delta_tau, p):
                     mu, tau_b, delta_tau, p, t)
         results = opt.root(FOC_I, K[t], args=Kp1_args)
         K[t + 1] = results.x
-        I = ((1 + p.g_n[t+1]) * np.exp(p.g_y) * K[t+1] -
-                (1.0 - p.delta) * K[t])
+        I = aggr.get_I(K[t+1], K[t], p.g_n[t+1], p.g_y, p.delta)
         K_tau[t + 1] = get_K_tau_p1(K_tau[t], I, delta_tau)
 
 
@@ -482,7 +481,7 @@ def FOC_I(Kp1, *args):
 
     '''
     K, Vp1, K_tau, z, p, t = args
-    I = (1 + p.g_n[t+1]) * np.exp(p.g_y) * Kp1 - (1.0 - p.delta) * K
+    I = aggr.get_I(Kp1, K, p.g_n[t+1], p.g_y, p.delta)
     K_tau_p1 = get_K_tau_p1(K_tau, I, p.delta_tau[t])
     Xp1 = get_X(z, K_tau_p1)
     qp1 = get_q(Kp1, Vp1, Xp1)

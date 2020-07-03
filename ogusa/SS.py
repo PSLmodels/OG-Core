@@ -325,8 +325,8 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
     r_hh_ss = aggr.get_r_hh(rss, r_gov_ss, Kss, Dss)
     # Note that implicity in this computation is that immigrants'
     # wealth is all in the form of private capital
-    I_d_ss = aggr.get_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')
-    Iss = aggr.get_I(bssmat_splus1, Kss, Kss, p, 'SS')
+    I_d_ss = aggr.get_net_I(bssmat_splus1, K_d_ss, K_d_ss, p, 'SS')
+    Iss = aggr.get_net_I(bssmat_splus1, Kss, Kss, p, 'SS')
     wss = new_w
     BQss = new_BQ
     factor_ss = factor
@@ -371,7 +371,7 @@ def SS_solver(bmat, nmat, r, BQ, TR, factor, Y, p, client,
         new_borrowing, debt_service, p)
 
     # Compute total investment (not just domestic)
-    Iss_total = aggr.get_I(None, Kss, Kss, p, 'total_ss')
+    Iss_total = aggr.get_I(Kss, Kss, p.g_n_ss, p.g_y, p.delta)
 
     # solve resource constraint
     # net foreign borrowing
