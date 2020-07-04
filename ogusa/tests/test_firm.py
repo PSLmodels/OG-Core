@@ -626,7 +626,7 @@ def test_get_NPV_depr(r, method, p, expected_val):
     assert np.allclose(test_val, expected_val)
 
 
-def testget_K_from_Y():
+def test_get_K_from_Y():
     '''
     test of firm.get_K_from_Y()
     '''
@@ -635,6 +635,39 @@ def testget_K_from_Y():
     Y = 3.8
     p = Specifications()
     test_val = firm.get_K_from_Y(Y, r, p, 'SS')
+
+    assert np.allclose(test_val, expected_val)
+
+
+p1 = Specifications()
+K0_1 = 1.3
+V1 = 2
+K_tau0_1 = 1.2
+z1 = 0.08
+p1.delta = 0.05
+p1.delta_tau = np.ones(p1.T + p1.S) * 0.065
+p1.tau_b = np.ones(p1.T + p1.S) * 0.21
+p1.mu = 0.06
+p1.psi = 1.2
+expected_val1 = (2.037617555, 1.567398119)
+p2 = Specifications()
+p2.delta = 0.05
+p2.delta_tau = np.ones(p1.T + p1.S) * 0.0
+p2.tau_b = np.ones(p1.T + p1.S) * 0.21
+p2.mu = 0.06
+p2.psi = 1.2
+expected_val2 = (2.0, 0.0)
+
+
+@pytest.mark.parametrize('K0,V,K_tau0,z,p,method,expected_val', [
+    (K0_1, V1, K_tau0_1, z1, p1, 'SS', expected_val1),
+    (K0_1, V1, K_tau0_1, z1, p2, 'SS', expected_val2)],
+                         ids=['SS', 'SS,delta_tau=0'])
+def test_get_K_demand(K0, V, K_tau0, z, p, method, expected_val):
+    '''
+    Test of firm.get_K_demand()
+    '''
+    test_val = firm.get_K_demand(K0, V, K_tau0, z, p, method)
 
     assert np.allclose(test_val, expected_val)
 

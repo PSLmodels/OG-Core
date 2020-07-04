@@ -422,7 +422,7 @@ def get_K_tau_p1(K_tau, I, delta_tau):
     return K_tau_p1
 
 
-def get_K_demand(K0, V, K_tau0, z, delta, psi, mu, tau_b, delta_tau, p):
+def get_K_demand(K0, V, K_tau0, z, p, method):
     '''
     Function to solve for capital demand using the firm's FOC for its
     choice of investment.
@@ -434,27 +434,33 @@ def get_K_demand(K0, V, K_tau0, z, delta, psi, mu, tau_b, delta_tau, p):
             capital stock
         z (array_like): NPV of depreciation deductions on a unit of
             capital
-        delta (scalar): per period depreciation rate
-        psi (scalar): scale parameter in adjustment cost function
-        mu (scalar): shift parameter in adjustment cost function
-        delta_tau (array_like): rate of depreciation for tax purposes
         p (OG-USA Parameters class object): Model parameters
 
     Returns:
         K (array_like): capital demand by the firm
+        K_tau (array_like): depreciable basis for firm capital
 
     '''
-    K = np.zeros(p.T)
-    K_tau = np.zeros(p.T)
-    K[0] = K0
-    K_tau[0] = K_tau0
-    for t in range(p.T - 1):
-        Kp1_args = (K[t], V[t+1], K_tau[t], z[t+1], delta, psi,
-                    mu, tau_b, delta_tau, p, t)
-        results = opt.root(FOC_I, K[t], args=Kp1_args)
-        K[t + 1] = results.x
-        I = aggr.get_I(K[t+1], K[t], p.g_n[t+1], p.g_y, p.delta)
-        K_tau[t + 1] = get_K_tau_p1(K_tau[t], I, delta_tau)
+    if method == 'SS':
+        if p.delta_tau[-1] == 0.0:
+            K = V
+            K_tau = 0.0
+        else:
+            K = V / (1 + z * (p.delta / (p.delta_tau[-1]) - 1))
+            K_tau = (p.delta / p.delta_tau[-1]) * K
+    else:
+        K = np.zeros(p.T)
+        K_tau = np.zeros(p.T)
+        K[0] = K0
+        K_tau[0] = K_tau0
+        for t in range(p.T - 1):
+            Kp1_args = (K[t], V[t+1], K_tau[t], z[t+1], p, t)
+            results = opt.root(FOC_I, K[t], args=Kp1_args)
+            K[t + 1] = results.x
+            I = aggr.get_I(K[t+1], K[t], p.g_n[t+1], p.g_y, p.delta)
+            K_tau[t + 1] = get_K_tau_p1(K_tau[t], I, p.delta_tau)
+
+    return K, K_tau
 
 
 def FOC_I(Kp1, *args):
