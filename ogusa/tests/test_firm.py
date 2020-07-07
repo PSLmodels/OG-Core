@@ -652,17 +652,34 @@ p1.psi = 1.2
 expected_val1 = (2.037617555, 1.567398119)
 p2 = Specifications()
 p2.delta = 0.05
-p2.delta_tau = np.ones(p1.T + p1.S) * 0.0
-p2.tau_b = np.ones(p1.T + p1.S) * 0.21
+p2.delta_tau = np.ones(p2.T + p2.S) * 0.0
+p2.tau_b = np.ones(p2.T + p2.S) * 0.21
 p2.mu = 0.06
 p2.psi = 1.2
 expected_val2 = (2.0, 0.0)
+K0_3 = 1.3
+V3 = np.array([2, 2.2, 2.3])
+K_tau0_3 = 1.2
+z3 = np.array([0.08, 0.08, 0.08])
+p3 = Specifications()
+p3.T = 3
+p3.S = 3
+p3.delta = 0.05
+p3.delta_tau = np.ones(p3.T + p3.S) * 0.065
+p3.g_n = np.ones(p3.T + p3.S) * 0.02
+p3.g_y = 0.03
+p3.tau_b = np.ones(p3.T + p3.S) * 0.21
+p3.mu = 0.06
+p3.psi = 1.2
+expected_val3 = (np.array([1.3, 1.6633939, 1.9097573]),
+                 np.array([1.2, 3.058132822, 3.662300635]))
 
 
 @pytest.mark.parametrize('K0,V,K_tau0,z,p,method,expected_val', [
     (K0_1, V1, K_tau0_1, z1, p1, 'SS', expected_val1),
-    (K0_1, V1, K_tau0_1, z1, p2, 'SS', expected_val2)],
-                         ids=['SS', 'SS,delta_tau=0'])
+    (K0_1, V1, K_tau0_1, z1, p2, 'SS', expected_val2),
+    (K0_3, V3, K_tau0_3, z3, p3, 'TPI', expected_val3)],
+                         ids=['SS', 'SS,delta_tau=0', 'TPI'])
 def test_get_K_demand(K0, V, K_tau0, z, p, method, expected_val):
     '''
     Test of firm.get_K_demand()
@@ -676,11 +693,13 @@ def test_get_K_tau_p1():
     '''
     Test of firm.get_K_tau_p1()
     '''
-    expected_val = 2.08
+    expected_val = 1.978947755
     K_tau = 1.2
     I = 1.0
     delta_tau = 0.1
-    test_val = firm.get_K_tau_p1(K_tau, I, delta_tau)
+    g_np1 = 0.02
+    g_y = 0.03
+    test_val = firm.get_K_tau_p1(K_tau, I, delta_tau, g_np1, g_y)
 
     assert np.allclose(test_val, expected_val)
 

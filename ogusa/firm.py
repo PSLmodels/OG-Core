@@ -395,7 +395,7 @@ def get_NPV_depr(r, p, method):
     return z
 
 
-def get_K_tau_p1(K_tau, I, delta_tau):
+def get_K_tau_p1(K_tau, I, delta_tau, g_np1, g_y):
     r'''
     Computes the tax basis of the depreciable capital stock using its
     law of motion.
@@ -408,6 +408,8 @@ def get_K_tau_p1(K_tau, I, delta_tau):
             at time t
         I (array_like): Investment at time t
         delta_tau (array_like): Rate of depreciation for tax purposes
+        g_np1 (array_like): population growth rate one period ahead
+        g_y (scalar): exogenous labor augmenting technological change
 
     Returns:
         K_tau_p1 (array_like): Tax basis of depreciable stock of capital
@@ -417,7 +419,8 @@ def get_K_tau_p1(K_tau, I, delta_tau):
     if delta_tau == 0:
         K_tau_p1 = np.zeros_like(I)
     else:
-        K_tau_p1 = (1 - delta_tau) * K_tau + I
+        K_tau_p1 = (((1 - delta_tau) * K_tau + I) /
+                    ((1 + g_np1) * np.exp(g_y)))
 
     return K_tau_p1
 
@@ -457,8 +460,11 @@ def get_K_demand(K0, V, K_tau0, z, p, method):
             Kp1_args = (K[t], V[t+1], K_tau[t], z[t+1], p, t)
             results = opt.root(FOC_I, K[t], args=Kp1_args)
             K[t + 1] = results.x
+            print('K = ', K[t+1], K[t])
             I = aggr.get_I(K[t+1], K[t], p.g_n[t+1], p.g_y, p.delta)
-            K_tau[t + 1] = get_K_tau_p1(K_tau[t], I, p.delta_tau)
+            print('I = ', I)
+            K_tau[t + 1] = get_K_tau_p1(K_tau[t], I, p.delta_tau[t],
+                                        p.g_n[t+1], p.g_y)
 
     return K, K_tau
 
