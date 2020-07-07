@@ -7,7 +7,7 @@ REFORM_DIR = "OUTPUT_REFORM"
 BASELINE_DIR = "OUTPUT_BASELINE"
 
 # Default year for model runs
-DEFAULT_START_YEAR = 2020
+DEFAULT_START_YEAR = 2021
 
 # Latest year TaxData extrapolates to
 TC_LAST_YEAR = taxcalc.Policy.LAST_BUDGET_YEAR
