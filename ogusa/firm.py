@@ -450,7 +450,9 @@ def get_K_demand(K0, V, K_tau0, z, p, method):
             K_tau = 0.0
         else:
             K = V / (1 + z * (p.delta / (p.delta_tau[-1]) - 1))
-            K_tau = (p.delta / p.delta_tau[-1]) * K
+            K_tau = (((1 + p.g_n_ss) * np.exp(p.g_y) - 1 + p.delta) /
+                     ((1 + p.g_n_ss) * np.exp(p.g_y) - 1 +
+                      p.delta_tau[-1])) * K
     else:
         K = np.zeros(p.T)
         K_tau = np.zeros(p.T)
@@ -490,9 +492,13 @@ def FOC_I(Kp1, *args):
     '''
     K, Vp1, K_tau, z, p, t = args
     I = aggr.get_I(Kp1, K, p.g_n[t+1], p.g_y, p.delta)
-    K_tau_p1 = get_K_tau_p1(K_tau, I, p.delta_tau[t])
+    K_tau_p1 = get_K_tau_p1(K_tau, I, p.delta_tau[t], p.g_n[t+1], p.g_y)
     Xp1 = get_X(z, K_tau_p1)
     qp1 = get_q(Kp1, Vp1, Xp1)
+    # print('I in = ', I)
+    # print('K_tau_p1 in = ', K_tau_p1)
+    # print('Xp1 in = ', Xp1)
+    # print('qp1 in = ', qp1)
 
     error = (qp1 - 1 - (
         (1 - p.tau_b[t]) * p.psi * ((Kp1 / K) - 1 + p.delta - p.mu)) + z)
