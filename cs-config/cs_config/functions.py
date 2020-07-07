@@ -78,7 +78,8 @@ def get_inputs(meta_param_dict):
     filter_list = [
         'chi_n_80', 'chi_b', 'eta', 'zeta', 'constant_demographics',
         'ltilde', 'use_zeta', 'constant_rates', 'zero_taxes',
-        'analytical_mtrs', 'age_specific', 'gamma_s', 'epsilon_s']
+        'analytical_mtrs', 'age_specific', 'gamma_s', 'epsilon_s',
+        'start_year']
     for k, v in ogusa_params.dump().items():
         if ((k not in filter_list) and
             (v.get("section_1", False) != "Model Solution Parameters")
@@ -173,7 +174,7 @@ def run_model(meta_param_dict, adjustment):
         'frisch', 'beta_annual', 'sigma', 'g_y_annual', 'gamma',
         'epsilon', 'Z', 'delta_annual', 'small_open', 'world_int_rate',
         'initial_foreign_debt_ratio', 'zeta_D', 'zeta_K', 'tG1', 'tG2',
-        'rho_G', 'debt_ratio_ss', 'start_year', 'budget_balance'}
+        'rho_G', 'debt_ratio_ss', 'budget_balance'}
     filtered_ogusa_params = OrderedDict()
     for k, v in adjustment['OG-USA Parameters'].items():
         if k in constant_param_set:
