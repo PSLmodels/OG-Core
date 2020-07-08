@@ -1,4 +1,4 @@
-- name: Commit documentation changes
+name: Commit documentation changes
   run: |
     git clone https://github.com/PSLmodels/OG-USA.git --branch gh-pages --single-branch gh-pages
     cp -r docs/_build/html/* gh-pages/
@@ -9,7 +9,7 @@
     git commit -m "Update documentation" -a || true
     # The above command will fail if no changes were present, so we ignore
     # the return code.
-- name: Push changes
+name: Push changes
   uses: ad-m/github-push-action@master
   with:
     docs-folder: "docs/"
