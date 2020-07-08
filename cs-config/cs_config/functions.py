@@ -1,6 +1,6 @@
 import ogusa
 from ogusa.parameters import Specifications
-from ogusa.constants import REFORM_DIR, BASELINE_DIR
+from ogusa.constants import REFORM_DIR, BASELINE_DIR, DEFAULT_START_YEAR
 from ogusa import output_plots as op
 from ogusa import output_tables as ot
 from ogusa import SS, TPI, utils
@@ -42,7 +42,7 @@ class MetaParams(paramtools.Parameters):
             "title": "Start year",
             "description": "Year for parameters.",
             "type": "int",
-            "value": 2020,
+            "value": DEFAULT_START_YEAR,
             "validators": {"range": {"min": 2015, "max":
                                      Policy.LAST_BUDGET_YEAR}}
         },

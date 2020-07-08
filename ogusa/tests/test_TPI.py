@@ -23,9 +23,9 @@ def dask_client():
 filename1 = 'intial_SS_values_baseline.pkl'
 filename2 = 'intial_SS_values_reform.pkl'
 filename3 = 'intial_SS_values_reform_base_spend.pkl'
-param_updates1 = {}
-param_updates2 = {}
-param_updates3 = {'baseline_spending': True}
+param_updates1 = {'start_year': 2020}
+param_updates2 = {'start_year': 2020}
+param_updates3 = {'start_year': 2020, 'baseline_spending': True}
 
 
 @pytest.mark.parametrize('baseline,param_updates,filename',

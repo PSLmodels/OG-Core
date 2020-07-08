@@ -323,16 +323,17 @@ def test_SS_fsolve(guesses, args, expected):
                        atol=1e-6))
 
 
-param_updates1 = {}
+param_updates1 = {'start_year': 2020}
 filename1 = 'SS_solver_outputs_baseline.pkl'
-param_updates2 = {'budget_balance': True, 'alpha_G': [0.0]}
+param_updates2 = {'start_year': 2020, 'budget_balance': True,
+                  'alpha_G': [0.0]}
 filename2 = 'SS_solver_outputs_baseline_budget_balance.pkl'
 # param_updates3 = {'baseline_spending': True}
 # filename3 = 'SS_solver_outputs_reform_baseline_spending.pkl'
-param_updates4 = {'zeta_K': [1.0]}
+param_updates4 = {'start_year': 2020, 'zeta_K': [1.0]}
 filename4 = 'SS_solver_outputs_baseline_small_open.pkl'
-param_updates5 = {'zeta_K': [1.0], 'budget_balance': True,
-                  'alpha_G': [0.0]}
+param_updates5 = {'start_year': 2020, 'zeta_K': [1.0],
+                  'budget_balance': True, 'alpha_G': [0.0]}
 filename5 = 'SS_solver_outputs_baseline_small_open_budget_balance.pkl'
 
 
@@ -375,15 +376,16 @@ def test_SS_solver(baseline, param_updates, filename, dask_client):
         assert(np.allclose(test_dict[k], v, atol=1e-07, equal_nan=True))
 
 
-param_updates1 = {'zeta_K': [1.0]}
+param_updates1 = {'start_year': 2020, 'zeta_K': [1.0]}
 filename1 = 'inner_loop_outputs_baseline_small_open.pkl'
-param_updates2 = {'budget_balance': True, 'alpha_G': [0.0]}
+param_updates2 = {'start_year': 2020, 'budget_balance': True,
+                  'alpha_G': [0.0]}
 filename2 = 'inner_loop_outputs_baseline_balance_budget.pkl'
-param_updates3 = {}
+param_updates3 = {'start_year': 2020}
 filename3 = 'inner_loop_outputs_baseline.pkl'
-param_updates4 = {}
+param_updates4 = {'start_year': 2020}
 filename4 = 'inner_loop_outputs_reform.pkl'
-param_updates5 = {'baseline_spending': True}
+param_updates5 = {'start_year': 2020, 'baseline_spending': True}
 filename5 = 'inner_loop_outputs_reform_baselinespending.pkl'
 
 
@@ -513,21 +515,21 @@ def test_euler_equation_solver(dask_client):
     assert(np.allclose(np.array(test_list), np.array(expected_list)))
 
 
-param_updates1 = {}
+param_updates1 = {'start_year': 2020}
 filename1 = 'run_SS_baseline_outputs.pkl'
-param_updates2 = {'use_zeta': True}
+param_updates2 = {'start_year': 2020, 'use_zeta': True}
 filename2 = 'run_SS_baseline_use_zeta.pkl'
-param_updates3 = {'zeta_K': [1.0]}
+param_updates3 = {'start_year': 2020, 'zeta_K': [1.0]}
 filename3 = 'run_SS_baseline_small_open.pkl'
-param_updates4 = {'zeta_K': [1.0], 'use_zeta': True}
+param_updates4 = {'start_year': 2020, 'zeta_K': [1.0], 'use_zeta': True}
 filename4 = 'run_SS_baseline_small_open_use_zeta.pkl'
-param_updates5 = {}
+param_updates5 = {'start_year': 2020}
 filename5 = 'run_SS_reform.pkl'
-param_updates6 = {'use_zeta': True}
+param_updates6 = {'start_year': 2020, 'use_zeta': True}
 filename6 = 'run_SS_reform_use_zeta.pkl'
-param_updates7 = {'zeta_K': [1.0]}
+param_updates7 = {'start_year': 2020, 'zeta_K': [1.0]}
 filename7 = 'run_SS_reform_small_open.pkl'
-param_updates8 = {'zeta_K': [1.0], 'use_zeta': True}
+param_updates8 = {'start_year': 2020, 'zeta_K': [1.0], 'use_zeta': True}
 filename8 = 'run_SS_reform_small_open_use_zeta.pkl'
 # param_updates9 = {'baseline_spending': True}
 # filename9 = 'run_SS_reform_baseline_spend.pkl'
