@@ -6,7 +6,7 @@ Functions to compute economic aggregates.
 
 # Packages
 import numpy as np
-from ogusa import tax, utils, household
+from ogusa import tax
 
 '''
 ------------------------------------------------------------------------
@@ -246,7 +246,7 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
     r'''
     Calculate aggregate tax revenue.
 
-    .. math::
+    .. math::   
         R_{t} = \sum_{s=E}^{E+S}\sum_{j=0}^{J}\omega_{s,t}\lambda_{j}(T_{j,s,t} + \tau^{p}_{t}w_{t}e_{j,s}n_{j,s,t} - \theta_{j}w_{t} + \tau^{bq}bq_{j,s,t} + \tau^{c}_{s,t}c_{j,s,t} + \tau^{w}_{t}b_{j,s,t}) + \tau^{b}_{t}(Y_{t}-w_{t}L_{t}) - \tau^{b}_{t}\delta^{\tau}_{t}K^{\tau}_{t}
 
     Args:
@@ -259,8 +259,8 @@ def revenue(r, w, b, n, bq, c, Y, L, K, factor, theta, etr_params,
         Y (array_like): aggregate output
         L (array_like): aggregate labor
         K (array_like): aggregate capital
-        factor (scalar): factor (scalar): scaling factor converting
-            model units to dollars
+        factor (scalar): scaling factor converting model units to
+            dollars
         theta (Numpy array): social security replacement rate for each
             lifetime income group
         etr_params (Numpy array): paramters of the effective tax rate
