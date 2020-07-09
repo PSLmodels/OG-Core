@@ -16,12 +16,14 @@ ARTICLES, OR RESEARCH PURPOSES. Essentially, you should assume the calculations 
 * Install the [Anaconda distribution](https://www.anaconda.com/distribution/) of Python
 * Clone this repository to a directory on your computer
 * From the terminal (or Conda command prompt), navigate to the directory to which you cloned this repository and run `conda env create -f environment.yml`
-* Then, `source activate ogusa-dev` (on Mac/Linux) or `activate ogusa-dev` on Windows.
+* Then, `conda activate ogusa-dev` (on Mac/Linux) or `activate ogusa-dev` on Windows.
 * Then install by `pip install -e .`
 * Navigate to `./run_examples`
 * Run the model with an example reform from terminal/command prompt by typing `python run_ogusa_example.py`
 * You can adjust the `./run_examples/run_ogusa_example.py` by adjusting the individual income tax reform (using a dictionary or JSON file in a format that is consistent with [Tax Calculator](https://github.com/PSLmodels/Tax-Calculator)) or other model parameters specified in the `user_params` or `kwargs` dictionaries.
 * Model outputs will be saved in the following files:
+  * `./run_examples/run_example_plots`
+    * This folder will contain a number of plots generated from OG-USA to help you visualize the output from your run
   * `./run_examples/ogusa_example_output.csv`
     * This is a summary of the percentage changes in macro variables over the first ten years and in the steady-state.
   * `./run_examples/OUTPUT_BASELINE/model_params.pkl`
@@ -47,4 +49,4 @@ The CSV output file `./run_examples/ogusa_example_output.csv` can be compared to
 
 ## Citing OG-USA
 
-OG-USA (Version 0.5.13)[Source code], https://github.com/PSLmodels/OG-USA
+OG-USA (Version 0.6.2)[Source code], https://github.com/PSLmodels/OG-USA
