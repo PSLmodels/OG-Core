@@ -1,4 +1,4 @@
-.. _parameter_tables:
+.. _output_tables:
 
 OG-USA Output Table Building Functions
 =================================================
