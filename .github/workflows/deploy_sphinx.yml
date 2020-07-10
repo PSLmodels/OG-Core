@@ -1,0 +1,36 @@
+name: Build and Deploy Sphinx docs
+on:
+  push:
+    branches:    
+      - master
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2 # If you're using actions/checkout@v2 you must set persist-credentials to false in most cases for the deployment to work correctly.
+        with:
+          persist-credentials: false
+
+      - name: Setup Miniconda
+        uses: goanpeca/setup-miniconda@v1
+        with:
+          auto-update-conda: true
+          auto-activate-base: false
+          miniconda-version: 'latest'
+          python-version: 3.7
+          environment-file: environment_win.yml
+          activate-environment: wintest
+
+      - name: Install and Build # install Sphinx and build docs
+        run: |
+          conda install sphinx
+          cd docs
+          make html
+
+      - name: Deploy
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages # The branch the action should deploy to.
+          FOLDER: build/html # The folder the action should deploy.
