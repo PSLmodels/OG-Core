@@ -19,8 +19,8 @@ jobs:
           auto-activate-base: false
           miniconda-version: 'latest'
           python-version: 3.7
-          environment-file: environment_win.yml
-          activate-environment: wintest
+          environment-file: environment.yml
+          activate-environment: ogusa-dev
 
       - name: Install and Build # install Sphinx and build docs
         run: |
