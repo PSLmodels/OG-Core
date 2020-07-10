@@ -25,7 +25,9 @@ jobs:
       - name: Install and Build # install Sphinx and build docs
         run: |
           conda install sphinx
+          ls
           cd docs
+          ls
           make html
 
       - name: Deploy
