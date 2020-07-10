@@ -24,7 +24,7 @@ jobs:
 
       - name: Install and Build # install Sphinx and build docs
         run: |
-          conda install sphinx
+          apt-get install python3-sphinx
           ls
           cd docs
           ls
