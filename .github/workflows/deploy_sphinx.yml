@@ -24,7 +24,9 @@ jobs:
 
       - name: Install and Build # install Sphinx and build docs
         run: |
-          pip install sphinx
+          conda install sphinx
+          conda list
+          sphinx-build --version
           ls
           cd docs
           ls
