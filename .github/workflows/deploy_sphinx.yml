@@ -24,6 +24,8 @@ jobs:
 
       - name: Install and Build # install Sphinx and build docs
         run: |
+          conda activate ogusa-dev
+          pip install -e .
           conda install sphinx
           conda list
           sphinx-build --version
